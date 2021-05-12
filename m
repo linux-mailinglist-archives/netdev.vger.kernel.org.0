@@ -2,85 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50A6437EE7B
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:58:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B84E637EE7C
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:58:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242159AbhELVvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 17:51:15 -0400
-Received: from www62.your-server.de ([213.133.104.62]:46736 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241781AbhELU63 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 16:58:29 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lgvuQ-000FjQ-J8; Wed, 12 May 2021 22:56:46 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lgvuQ-000Rj0-9d; Wed, 12 May 2021 22:56:46 +0200
-Subject: Re: [PATCH bpf-next] bpf: arm64: Replace STACK_ALIGN() with
- round_up() to align stack size
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <1620651119-5663-1-git-send-email-yangtiezhu@loongson.cn>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c1f5d54e-333f-733b-5806-498f2b4e3d5a@iogearbox.net>
-Date:   Wed, 12 May 2021 22:56:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S243731AbhELVva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 17:51:30 -0400
+Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:30830 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345615AbhELU7s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 16:59:48 -0400
+Received: from localhost.localdomain ([86.243.172.93])
+        by mwinf5d61 with ME
+        id 3wyW2500621Fzsu03wyW7p; Wed, 12 May 2021 22:58:33 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Wed, 12 May 2021 22:58:33 +0200
+X-ME-IP: 86.243.172.93
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
+        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
+        davem@davemloft.net, kvalo@codeaurora.org, kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] brcmsmac: mac80211_if: Fix a resource leak in an error handling path
+Date:   Wed, 12 May 2021 22:58:30 +0200
+Message-Id: <8fbc171a1a493b38db5a6f0873c6021fca026a6c.1620852921.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <1620651119-5663-1-git-send-email-yangtiezhu@loongson.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26168/Wed May 12 13:07:33 2021)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/10/21 2:51 PM, Tiezhu Yang wrote:
-> Use the common function round_up() directly to show the align size
-> explicitly, the function STACK_ALIGN() is needless, remove it.
-> 
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-> ---
->   arch/arm64/net/bpf_jit_comp.c | 5 +----
->   1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-> index f7b1948..81c380f 100644
-> --- a/arch/arm64/net/bpf_jit_comp.c
-> +++ b/arch/arm64/net/bpf_jit_comp.c
-> @@ -178,9 +178,6 @@ static bool is_addsub_imm(u32 imm)
->   	return !(imm & ~0xfff) || !(imm & ~0xfff000);
->   }
->   
-> -/* Stack must be multiples of 16B */
-> -#define STACK_ALIGN(sz) (((sz) + 15) & ~15)
-> -
->   /* Tail call offset to jump into */
->   #if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
->   #define PROLOGUE_OFFSET 8
-> @@ -255,7 +252,7 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
->   			emit(A64_BTI_J, ctx);
->   	}
->   
-> -	ctx->stack_size = STACK_ALIGN(prog->aux->stack_depth);
-> +	ctx->stack_size = round_up(prog->aux->stack_depth, 16);
->   
+If 'brcms_attach()' fails, we must undo the previous 'ieee80211_alloc_hw()'
+as already done in the remove function.
 
-Applied, thanks! (I retained the comment wrt stack requirement to have it explicitly stated.)
+Fixes: 5b435de0d786 ("net: wireless: add brcm80211 drivers")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ .../wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c    | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
+index 39f3af2d0439..eadac0f5590f 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
+@@ -1220,6 +1220,7 @@ static int brcms_bcma_probe(struct bcma_device *pdev)
+ {
+ 	struct brcms_info *wl;
+ 	struct ieee80211_hw *hw;
++	int ret;
+ 
+ 	dev_info(&pdev->dev, "mfg %x core %x rev %d class %d irq %d\n",
+ 		 pdev->id.manuf, pdev->id.id, pdev->id.rev, pdev->id.class,
+@@ -1244,11 +1245,16 @@ static int brcms_bcma_probe(struct bcma_device *pdev)
+ 	wl = brcms_attach(pdev);
+ 	if (!wl) {
+ 		pr_err("%s: brcms_attach failed!\n", __func__);
+-		return -ENODEV;
++		ret = -ENODEV;
++		goto err_free_ieee80211;
+ 	}
+ 	brcms_led_register(wl);
+ 
+ 	return 0;
++
++err_free_ieee80211:
++	ieee80211_free_hw(hw);
++	return ret;
+ }
+ 
+ static int brcms_suspend(struct bcma_device *pdev)
+-- 
+2.30.2
+
