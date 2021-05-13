@@ -2,112 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 670F637F589
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 12:22:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AE6237F5B7
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 12:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232650AbhEMKX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 06:23:28 -0400
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:59711 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232615AbhEMKWs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 06:22:48 -0400
-X-Originating-IP: 78.45.89.65
-Received: from [192.168.1.23] (ip-78-45-89-65.net.upcbroadband.cz [78.45.89.65])
-        (Authenticated sender: i.maximets@ovn.org)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 66E12E0002;
-        Thu, 13 May 2021 10:21:32 +0000 (UTC)
-Subject: Re: [ovs-dev] [PATCH net] openvswitch: meter: fix race when getting
- now_ms.
-To:     Tao Liu <thomas.liu@ucloud.cn>, pshelar@ovn.org
-Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, i.maximets@ovn.org,
-        jean.tourrilhes@hpe.com, kuba@kernel.org, davem@davemloft.net,
-        Eelco Chaudron <echaudro@redhat.com>
-References: <20210513100300.22735-1-thomas.liu@ucloud.cn>
-From:   Ilya Maximets <i.maximets@ovn.org>
-Message-ID: <801322d2-5b39-2497-bf0a-1ec08122a5c7@ovn.org>
-Date:   Thu, 13 May 2021 12:21:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S231396AbhEMKhM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 May 2021 06:37:12 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:2495 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231231AbhEMKhJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 06:37:09 -0400
+Received: from dggeml755-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fgp0S6ClhzRgKY;
+        Thu, 13 May 2021 18:33:28 +0800 (CST)
+Received: from dggpemm100008.china.huawei.com (7.185.36.125) by
+ dggeml755-chm.china.huawei.com (10.1.199.136) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Thu, 13 May 2021 18:35:57 +0800
+Received: from dggpeml500016.china.huawei.com (7.185.36.70) by
+ dggpemm100008.china.huawei.com (7.185.36.125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 13 May 2021 18:35:57 +0800
+Received: from dggpeml500016.china.huawei.com ([7.185.36.70]) by
+ dggpeml500016.china.huawei.com ([7.185.36.70]) with mapi id 15.01.2176.012;
+ Thu, 13 May 2021 18:35:57 +0800
+From:   "Longpeng (Mike, Cloud Infrastructure Service Product Dept.)" 
+        <longpeng2@huawei.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Gonglei (Arei)" <arei.gonglei@huawei.com>,
+        "Subo (Subo, Cloud Infrastructure Service Product Dept.)" 
+        <subo7@huawei.com>, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        "David Brazdil" <dbrazdil@google.com>,
+        Alexander Popov <alex.popov@linux.com>,
+        "lixianming (E)" <lixianming5@huawei.com>
+Subject: RE: [RFC] vsock: notify server to shutdown when client has pending
+ signal
+Thread-Topic: [RFC] vsock: notify server to shutdown when client has pending
+ signal
+Thread-Index: AQHXRkna70IyCpulcUmMFYMN4BnQYKrgpa2AgACTRtA=
+Date:   Thu, 13 May 2021 10:35:57 +0000
+Message-ID: <558d53dd31dc4841b94c4ec35249ac80@huawei.com>
+References: <20210511094127.724-1-longpeng2@huawei.com>
+ <20210513094143.pir5vzsludut3xdc@steredhat>
+In-Reply-To: <20210513094143.pir5vzsludut3xdc@steredhat>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.148.223]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-In-Reply-To: <20210513100300.22735-1-thomas.liu@ucloud.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/13/21 12:03 PM, Tao Liu wrote:
-> We have observed meters working unexpected if traffic is 3+Gbit/s
-> with multiple connections.
+Hi Stefano,
+
+> -----Original Message-----
+> From: Stefano Garzarella [mailto:sgarzare@redhat.com]
+> Sent: Thursday, May 13, 2021 5:42 PM
+> To: Longpeng (Mike, Cloud Infrastructure Service Product Dept.)
+> <longpeng2@huawei.com>
+> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Gonglei (Arei)
+> <arei.gonglei@huawei.com>; Subo (Subo, Cloud Infrastructure Service Product
+> Dept.) <subo7@huawei.com>; David S . Miller <davem@davemloft.net>; Jakub
+> Kicinski <kuba@kernel.org>; Jorgen Hansen <jhansen@vmware.com>; Norbert
+> Slusarek <nslusarek@gmx.net>; Andra Paraschiv <andraprs@amazon.com>;
+> Colin Ian King <colin.king@canonical.com>; David Brazdil
+> <dbrazdil@google.com>; Alexander Popov <alex.popov@linux.com>;
+> lixianming (E) <lixianming5@huawei.com>
+> Subject: Re: [RFC] vsock: notify server to shutdown when client has pending
+> signal
 > 
-> now_ms is not pretected by meter->lock, we may get a negative
-> long_delta_ms when another cpu updated meter->used, then:
->     delta_ms = (u32)long_delta_ms;
-> which will be a large value.
+> Hi,
+> thanks for this patch, comments below...
 > 
->     band->bucket += delta_ms * band->rate;
-> then we get a wrong band->bucket.
+> On Tue, May 11, 2021 at 05:41:27PM +0800, Longpeng(Mike) wrote:
+> >The client's sk_state will be set to TCP_ESTABLISHED if the server
+> >replay the client's connect request.
+> >However, if the client has pending signal, its sk_state will be set to
+> >TCP_CLOSE without notify the server, so the server will hold the
+> >corrupt connection.
+> >
+> >            client                        server
+> >
+> >1. sk_state=TCP_SYN_SENT         |
+> >2. call ->connect()              |
+> >3. wait reply                    |
+> >                                 | 4. sk_state=TCP_ESTABLISHED
+> >                                 | 5. insert to connected list
+> >                                 | 6. reply to the client
+> >7. sk_state=TCP_ESTABLISHED      |
+> >8. insert to connected list      |
+> >9. *signal pending* <--------------------- the user kill client
+> >10. sk_state=TCP_CLOSE           |
+> >client is exiting...             |
+> >11. call ->release()             |
+> >     virtio_transport_close
+> >      if (!(sk->sk_state == TCP_ESTABLISHED ||
+> >	      sk->sk_state == TCP_CLOSING))
+> >		return true; <------------- return at here As a result, the server
+> >cannot notice the connection is corrupt.
+> >So the client should notify the peer in this case.
+> >
+> >Cc: David S. Miller <davem@davemloft.net>
+> >Cc: Jakub Kicinski <kuba@kernel.org>
+> >Cc: Stefano Garzarella <sgarzare@redhat.com>
+> >Cc: Jorgen Hansen <jhansen@vmware.com>
+> >Cc: Norbert Slusarek <nslusarek@gmx.net>
+> >Cc: Andra Paraschiv <andraprs@amazon.com>
+> >Cc: Colin Ian King <colin.king@canonical.com>
+> >Cc: David Brazdil <dbrazdil@google.com>
+> >Cc: Alexander Popov <alex.popov@linux.com>
+> >Signed-off-by: lixianming <lixianming5@huawei.com>
+> >Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+> >---
+> > net/vmw_vsock/af_vsock.c | 1 +
+> > 1 file changed, 1 insertion(+)
+> >
+> >diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c index
+> >92a72f0..d5df908 100644
+> >--- a/net/vmw_vsock/af_vsock.c
+> >+++ b/net/vmw_vsock/af_vsock.c
+> >@@ -1368,6 +1368,7 @@ static int vsock_stream_connect(struct socket *sock,
+> struct sockaddr *addr,
+> > 		lock_sock(sk);
+> >
+> > 		if (signal_pending(current)) {
+> >+			vsock_send_shutdown(sk, SHUTDOWN_MASK);
 > 
-> Fixes: 96fbc13d7e77 ("openvswitch: Add meter infrastructure")
-> Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
-> ---
+> I see the issue, but I'm not sure is okay to send the shutdown in any case,
+> think about the server didn't setup the connection.
+> 
+> Maybe is better to set TCP_CLOSING if the socket state was TCP_ESTABLISHED,
+> so the shutdown will be handled by the
+> transport->release() as usual.
+> 
+> What do you think?
+> 
 
-Hi.  Thanks for the patch!
-We fixed the same issue in userspace datapath some time ago and
-we did that a bit differently by just setting negative long_delta_ms
-to zero in assumption that all threads received their packets at
-the same millisecond (which is most likely true if we have this
-kind of race).  This should be also cheaper from form the performance
-point of view to not have an extra call and a division under the
-spinlock.   What do you think?
+Your method looks more gracefully, we'll try it and get back to you, thanks.
 
-It's also a good thing to have more or less similar implementation
-for all datapaths.
+> Anyway, also without the patch, the server should receive a RST if it
+> sends any data to the client, but of course, is better to let it know
+> the socket is closed in advance.
+> 
 
-Here is a userspace patch:
+Yes, agree.
 
-commit acc5df0e3cb036524d49891fdb9ba89b609dd26a
-Author: Ilya Maximets <i.maximets@ovn.org>
-Date:   Thu Oct 24 15:15:07 2019 +0200
+> Thanks,
+> Stefano
 
-    dpif-netdev: Fix time delta overflow in case of race for meter lock.
-    
-    There is a race window between getting the time and getting the meter
-    lock.  This could lead to situation where the thread with larger
-    current time (this thread called time_{um}sec() later than others)
-    will acquire meter lock first and update meter->used to the large
-    value.  Next threads will try to calculate time delta by subtracting
-    the large meter->used from their lower time getting the negative value
-    which will be converted to a big unsigned delta.
-    
-    Fix that by assuming that all these threads received packets in the
-    same time in this case, i.e. dropping negative delta to 0.
-    
-    CC: Jarno Rajahalme <jarno@ovn.org>
-    Fixes: 4b27db644a8c ("dpif-netdev: Simple DROP meter implementation.")
-    Reported-at: https://mail.openvswitch.org/pipermail/ovs-dev/2019-September/363126.html
-    Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
-    Acked-by: William Tu <u9012063@gmail.com>
-
-diff --git a/lib/dpif-netdev.c b/lib/dpif-netdev.c
-index c09b8fd95..4720ba1ab 100644
---- a/lib/dpif-netdev.c
-+++ b/lib/dpif-netdev.c
-@@ -5646,6 +5646,14 @@ dp_netdev_run_meter(struct dp_netdev *dp, struct dp_packet_batch *packets_,
-     /* All packets will hit the meter at the same time. */
-     long_delta_t = now / 1000 - meter->used / 1000; /* msec */
- 
-+    if (long_delta_t < 0) {
-+        /* This condition means that we have several threads fighting for a
-+           meter lock, and the one who received the packets a bit later wins.
-+           Assuming that all racing threads received packets at the same time
-+           to avoid overflow. */
-+        long_delta_t = 0;
-+    }
-+
-     /* Make sure delta_t will not be too large, so that bucket will not
-      * wrap around below. */
-     delta_t = (long_delta_t > (long long int)meter->max_delta_t)
----
