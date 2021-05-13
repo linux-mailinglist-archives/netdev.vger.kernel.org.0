@@ -2,123 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C009F37F406
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 10:28:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4958537F43E
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 10:37:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231149AbhEMIaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 04:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47340 "EHLO
+        id S232034AbhEMIik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 04:38:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231305AbhEMIaA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 04:30:00 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EB1C061574;
-        Thu, 13 May 2021 01:28:49 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id x8so24806073qkl.2;
-        Thu, 13 May 2021 01:28:49 -0700 (PDT)
+        with ESMTP id S231939AbhEMIig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 04:38:36 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4569C06174A
+        for <netdev@vger.kernel.org>; Thu, 13 May 2021 01:37:26 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id j10so37470188lfb.12
+        for <netdev@vger.kernel.org>; Thu, 13 May 2021 01:37:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YZuHIqE1Xt0+x34JLFf8F3EO5A3fSgWJriKswBQRHNU=;
-        b=s2u9kp9VqS0VaNIN/T8JeWGd0C7NRwfSRznS7S3J7CXLS+XikyE6DgF0bSscWqVtF4
-         2fhb+NWXyfI2ywyJaQL1pLJfIDK/jpY9kYCdkXCK5teCkTBsoLxp1L/OYcWSYe6H4pVA
-         Pv7gqKzleU5zBmzoadDSi1D1Zs3mfSH5ugpefiN8uce7UXz6WLh/WPAltF/AqXdD2opz
-         dEb7YidI+KBnQvmt9nsHUm6f/35QGPghjDItLpwxaaVdGEui5jfUP90KI5pDa2Kew8sj
-         NNDZKJOXT+VgiWanZAPKDzsnZ47VRw5L5NA9HgtMa25wEkS/ZsVcubVL39Egm1+MP/1a
-         X+2g==
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PHaCWgEE6c4TCqnr20Y2Tb/elcO/UUWT8003QZ9uRCI=;
+        b=LuOJKvNiAT8kHzQImtibnuxjXNT2Ftq34giDbSM3s+GbkMD+01nvAuPIr8cqgEqMZa
+         PP0jbr9fUlYEvPQ5JzoZ+nu7Jq0hEni2K7zzLN7F2lZHj+GPsFZ07YHnNY9YWz6sg1tV
+         UO3PX9KHVUBYDVJW39/Q13+Xp2/Q1IOqdLMgE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YZuHIqE1Xt0+x34JLFf8F3EO5A3fSgWJriKswBQRHNU=;
-        b=NtSlBoY1WgOam1kV0Td3bNoZ2IxkPoIeHRkPc5BECchdK1upV1gmzbzTm5Da7mfVAn
-         pjRd7L+cIiC22NC+SMp7sCbyVZhKgRFqF1yqGnQ3COBtfSZqjEsilvjCxhDPltprg1nR
-         bjpC8YfLuIUddRqEP3Y2kkkrJ/01dBqQk3ULLMfX+uelk7OBIdEh1WJ/H8yMayZ2Z91R
-         XWuJWWKCjJ6wsq1UOe403sXdJydBgJuKMoT8x2cbFyx5aI+w0rqXz3mUE0SalbOQcgld
-         pW2uLz8Zzxhu54To3u2JVsIWCS/4Cu6yhp9AKpPjj+F+wzOEY1gwBq394bdijSruVvED
-         cPhQ==
-X-Gm-Message-State: AOAM532dn+zm3SgG+q8KfUCYEjkzdjTLaVcxNkQFeOPPuhk8FZoTUPCL
-        nrVbt/s5XHJ0xXG8fEktG3tx9Ix5HDT0lA==
-X-Google-Smtp-Source: ABdhPJwBnqnTPyylBOAT+AP4wUwUX+DXyg+HYtYfmfbJ0SHpU1RuthJs2B+skd73CAUTeBZvwMFzSw==
-X-Received: by 2002:a37:916:: with SMTP id 22mr15867553qkj.241.1620894528973;
-        Thu, 13 May 2021 01:28:48 -0700 (PDT)
-Received: from jrr-vaio.internal.cc-sw.com (cpe-74-136-172-82.kya.res.rr.com. [74.136.172.82])
-        by smtp.gmail.com with ESMTPSA id m205sm1874679qke.2.2021.05.13.01.28.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 May 2021 01:28:48 -0700 (PDT)
-From:   Jonathon Reinhart <jonathon.reinhart@gmail.com>
-To:     stable@vger.kernel.org
-Cc:     Jonathon Reinhart <jonathon.reinhart@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
-Subject: [PATCH] netfilter: conntrack: Make global sysctls readonly in non-init netns
-Date:   Thu, 13 May 2021 04:28:35 -0400
-Message-Id: <20210513082835.18854-1-jonathon.reinhart@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PHaCWgEE6c4TCqnr20Y2Tb/elcO/UUWT8003QZ9uRCI=;
+        b=P7xm34x+VJoFifnJvm1LwlCWKuy1UuvdNb/cFhKkI76MuGHrxY5QSuE8A3xpW8BE4G
+         tLjBJLoI9PfqqDFVAmopCO92yh77hyINbvs/Y3uslGP3rHDBE+MHdS8uuKX88VtiHZcG
+         usIwL/17ahwYOoOqNf3F24AvzMmzg9T1flGt6gpgm/GXXQe8cKDwpYBPQGlE52Pb1QBG
+         lmJOJsxtU7XicPC06qJnxo/Ljm8Lz/RglRTrF+DA7x2L85btO/neskTAQjvyibcyUVFw
+         Wz4cga5tFQFQT0eNMpyCgBCaxigFZEckuFteTGb8ozsbC5u3qQL5srtIDAg0mQGXpkVz
+         QYAw==
+X-Gm-Message-State: AOAM5328Ukkk8ymMN2haXmG3acDKV+Z4/pbaaruAQqwzA5WGF2MuZD7e
+        lmm7HtaFVirWR7HZakbkByiE1WlrUAWoseJfPrrGJQ==
+X-Google-Smtp-Source: ABdhPJzeRRycic2njXDn3pfCDB1CZHgy1g/M5uvhqHrDC3Ae39xKnZg0dj+/8raTcyBd/2FHcnwYd1v3KZ6CBxNySvE=
+X-Received: by 2002:a05:6512:3618:: with SMTP id f24mr28416584lfs.34.1620895044869;
+ Thu, 13 May 2021 01:37:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAEf4BzZOmCgmbYDUGA-s5AF6XJFkT1xKinY3Jax3Zm2OLNmguA@mail.gmail.com>
+ <20210426223449.5njjmcjpu63chqbb@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzYZX9YJcoragK20cvQvr_tPTWYBQSRh7diKc1KoCtu4Dg@mail.gmail.com>
+ <20210427022231.pbgtrdbxpgdx2zrw@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZOwTp4vQxvCSXaS4-94fz_eZ7Q4n6uQfkAnMQnLRaTbQ@mail.gmail.com>
+ <20210428045545.egqvhyulr4ybbad6@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZo7_r-hsNvJt3w3kyrmmBJj7ghGY8+k4nvKF0KLjma=w@mail.gmail.com>
+ <20210504044204.kpt6t5kaomj7oivq@ast-mbp> <CAADnVQ+WV8xZqJfWx8em5Ch8aKA8xcPqR0wT0BdFf9M==W5_FQ@mail.gmail.com>
+ <CAEf4BzY2z+oh=N0X26RBLEWw0t9pT7_fN0mWyDqfGcwuK8A-kg@mail.gmail.com>
+ <20210511230505.z3rdnppplk3v3jce@ast-mbp.dhcp.thefacebook.com> <CAEf4BzbJ==4iUFp4pYpkgbKy40+Q6+RTPJVh0gUANHajs88ZTg@mail.gmail.com>
+In-Reply-To: <CAEf4BzbJ==4iUFp4pYpkgbKy40+Q6+RTPJVh0gUANHajs88ZTg@mail.gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Thu, 13 May 2021 09:37:13 +0100
+Message-ID: <CACAyw9-9CwzMPzZGOOs6RD5Rz4X+MsBkDE-y3FZuLCw1znSUEQ@mail.gmail.com>
+Subject: Re: bpf libraries and static variables. Was: [PATCH v2 bpf-next 2/6]
+ libbpf: rename static variables during linking
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit 2671fa4dc0109d3fb581bc3078fdf17b5d9080f6 upstream.
+On Wed, 12 May 2021 at 19:50, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+>
 
-These sysctls point to global variables:
-- [0] "nf_conntrack_max"        (&nf_conntrack_max)
-- [2] "nf_conntrack_buckets"    (&nf_conntrack_htable_size_user)
-- [5] "nf_conntrack_expect_max" (&nf_ct_expect_max)
+...
 
-Because their data pointers are not updated to point to per-netns
-structures, they must be marked read-only in a non-init_net ns.
-Otherwise, changes in any net namespace are reflected in (leaked into)
-all other net namespaces. This problem has existed since the
-introduction of net namespaces.
+> So at least for BPF skeleton, the flow I was imagining would be
+> like this.
 
-This patch is necessarily different from the upstream patch due to the
-heavy refactoring which took place since 4.19:
+Thank you for the worked out example, it's really helpful.
 
-d0febd81ae77 ("netfilter: conntrack: re-visit sysctls in unprivileged namespaces")
-b884fa461776 ("netfilter: conntrack: unify sysctl handling")
-4a65798a9408 ("netfilter: conntrack: add mnemonics for sysctl table")
+>
+> 1. BPF library abc consists of abc1.bpf.c and abc2.bpf.c. It also has
+> user-space component in abc.c.
+> 2. BPF app uses abs library and has its own app1.bpf.c and app2.bpf.c
+> and app.c for user-space.
+> 3. BPF library author sets up its Makefile to do
+>   a. clang -target bpf -g -O2 -c abc1.bpf.c -o abc1.bpf.o
+>   b. clang -target bpf -g -O2 -c abc2.bpf.c -o abc2.bpf.o
+>   c. bpftool gen lib libabc.bpf.o abc1.bpf.o abc2.bpf.o
 
-Signed-off-by: Jonathon Reinhart <jonathon.reinhart@gmail.com>
----
+I think we can plug this into bpf2go [1] on our side in the best case,
+which would avoid duplicating the static linker.
 
-Upstream commit 2671fa4dc010 was already applied to the 5.10, 5.11, and
-5.12 trees.
+>   d. bpftool gen subskeleton libabc.bpf.o > libabc.subskel.h
+>   e. abc.c (user-space library) is of the form
+>
+> #include "libabc.subskel.h"
+>
+> static struct libabc_bpf *subskel;
+>
+> int libabc__init(struct bpf_object *obj)
+> {
+>     subskel = libabc_bpf__open_subskel(obj);
+>
+>     subskel->data->abc_my_var = 123;
+> }
+>
+> int libabc__attach()
+> {
+>     libabc_bpf__attach(subskel);
+> }
+>
+>   f. cc abc.c into libabc.a and then libabc.a and libabc.bpf.o are
+> distributed to end user
+>
+> 3. Now, from BPF application author side:
+>   a. clang -target bpf -g -O2 -c app1.bpf.c -o app1.bpf.o
+>   b. clang -target bpf -g -O2 -c app2.bpf.c -o app2.bpf.o
+>   c. bpftool gen object app.bpf.o app1.bpf.o app2.bpf.o libabc.bpf.o
 
-This was tested on 4.19.190, so please apply to 4.19.y.
+I haven't worked out exactly how things would work, but on the Go side
+it might be possible to distribute libabc.bpf.o plus the Go "library"
+code as a package. So the Go toolchain would never create this merged
+object, but instead do
 
-It should also apply to:
-- 4.14.y
-- 4.9.y
+    bpftool gen object app.bpf.o app1.bpf.o app2.bpf.o
 
-Note that 5.4.y would require a slightly different patch that looks more
-like 2671fa4dc010.
+and later link app.bpf.o and libabc.bpf.o at runtime. It would be
+simpler from our side if bpftool gen object could link both libraries
+and "programs", maybe we can discuss the details of this during office
+hours.
 
----
- net/netfilter/nf_conntrack_standalone.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+1: https://pkg.go.dev/github.com/cilium/ebpf/cmd/bpf2go
 
-diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-index 2e3ae494f369..da0c9fa381d2 100644
---- a/net/netfilter/nf_conntrack_standalone.c
-+++ b/net/netfilter/nf_conntrack_standalone.c
-@@ -594,8 +594,11 @@ static int nf_conntrack_standalone_init_sysctl(struct net *net)
- 	if (net->user_ns != &init_user_ns)
- 		table[0].procname = NULL;
- 
--	if (!net_eq(&init_net, net))
-+	if (!net_eq(&init_net, net)) {
-+		table[0].mode = 0444;
- 		table[2].mode = 0444;
-+		table[5].mode = 0444;
-+	}
- 
- 	net->ct.sysctl_header = register_net_sysctl(net, "net/netfilter", table);
- 	if (!net->ct.sysctl_header)
 -- 
-2.20.1
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
+www.cloudflare.com
