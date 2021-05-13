@@ -2,118 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3631037F2F0
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 08:23:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C6037F30E
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 08:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbhEMGYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 02:24:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44130 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230070AbhEMGYJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 May 2021 02:24:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D6ED0613DE;
-        Thu, 13 May 2021 06:22:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620886980;
-        bh=FyrJgotOWLVRBsH3NkASUT7jP+Bize/BSx+wutxlJyc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DIyQOk4dcuIAJndiSbcJfiMtBMAClX5sOIi9h6vtp7itFDMGVt7WYvntj7BWtlcIy
-         BI4IcnZUUf3fKQV1pju6sQ3YvAB0hj0+Mr6+MhTyX77Eg3I03IiuWPWwBAkqib40CL
-         ctjgKe+1ZmXViDUtTtiZSsEHv3IBlfy8p5chjuvtkD8HQENwT8Int+ijysbZe2YgB5
-         AYg3zDmona6Zrh3kAvdwJVl/20rwc/1s5kJcZRPMhaWwANdYqQ4KSHVsIZDaf56uM/
-         84B1dx8exFQ1x8jSC+489+FP3MQYn20B7UIEuoS0d6BuNlLE0Y9bl+4oVHwq5NSThn
-         7WM/r/8NetrEQ==
-Date:   Thu, 13 May 2021 09:22:56 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH 1/1] libbpf: Delete an unneeded bool conversion
-Message-ID: <YJzFwKCRoFibZdWD@unreal>
-References: <20210510124315.3854-1-thunder.leizhen@huawei.com>
- <CAEf4BzaADXguVoh0KXxGYhzG68eA1bqfKH1T1SWyPvkE5BHa5g@mail.gmail.com>
- <YJoRd4reWa1viW76@unreal>
- <CAEf4BzaYsjWh_10a4yeSVpAAwC-f=zUNANb10VN2xZ1b5dsY-A@mail.gmail.com>
- <f82343ec-9d67-d033-dd07-813e7d981c4f@huawei.com>
+        id S231405AbhEMGbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 02:31:06 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:2465 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230336AbhEMGbC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 02:31:02 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FghXD4S9PzBv01;
+        Thu, 13 May 2021 14:27:08 +0800 (CST)
+Received: from localhost.localdomain (10.67.165.24) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.498.0; Thu, 13 May 2021 14:29:46 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <luobin9@huawei.com>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next 0/4] net: hinic: some cleanups
+Date:   Thu, 13 May 2021 14:26:49 +0800
+Message-ID: <1620887213-49364-1-git-send-email-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f82343ec-9d67-d033-dd07-813e7d981c4f@huawei.com>
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 13, 2021 at 10:14:00AM +0800, Leizhen (ThunderTown) wrote:
-> 
-> 
-> On 2021/5/13 3:02, Andrii Nakryiko wrote:
-> > On Mon, May 10, 2021 at 10:09 PM Leon Romanovsky <leon@kernel.org> wrote:
-> >>
-> >> On Mon, May 10, 2021 at 11:00:29AM -0700, Andrii Nakryiko wrote:
-> >>> On Mon, May 10, 2021 at 5:43 AM Zhen Lei <thunder.leizhen@huawei.com> wrote:
-> >>>>
-> >>>> The result of an expression consisting of a single relational operator is
-> >>>> already of the bool type and does not need to be evaluated explicitly.
-> >>>>
-> >>>> No functional change.
-> >>>>
-> >>>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> >>>> ---
-> >>>
-> >>> See [0] and [1].
-> >>>
-> >>>   [0] https://lore.kernel.org/bpf/CAEf4BzYgLf5g3oztbA-CJR4gQ7AVKQAGrsHWCOgTtUMUM-Mxfg@mail.gmail.com/
-> >>>   [1] https://lore.kernel.org/bpf/CAEf4BzZQ6=-h3g1duXFwDLr92z7nE6ajv8Rz_Zv=qx=-F3sRVA@mail.gmail.com/
-> >>
-> >> How long do you plan to fight with such patches?
-> > 
-> > As long as necessary. There are better ways to contribute to libbpf
-> > than doing cosmetic changes to the perfectly correct code.
-> 
-> No small stream, no river and sea.
-> 
-> There are no improvements to functionality, but may slightly speed up compilation.
-> With more such accumulations, it is possible that the compilation of allmodconfig
-> results in a second-level improvement.
+This patchset adds some cleanups for the hinic ethernet driver.
 
-Unlikely with modern CPUs.
+Guangbin Huang (4):
+  net: hinic: remove unnecessary blank line
+  net: hinic: add blank line after function declaration
+  net: hinic: remove unnecessary parentheses
+  net: hinic: fix misspelled "acessing"
 
-> 
-> I don't know if you agree, at least I think so.
-> 
-> > 
-> >>
-> >> Thanks
-> >>
-> >>>
-> >>>>  tools/lib/bpf/libbpf.c | 2 +-
-> >>>>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>>>
-> >>>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> >>>> index e2a3cf4378140f2..fa02213c451f4d2 100644
-> >>>> --- a/tools/lib/bpf/libbpf.c
-> >>>> +++ b/tools/lib/bpf/libbpf.c
-> >>>> @@ -1504,7 +1504,7 @@ static int set_kcfg_value_tri(struct extern_desc *ext, void *ext_val,
-> >>>>                                 ext->name, value);
-> >>>>                         return -EINVAL;
-> >>>>                 }
-> >>>> -               *(bool *)ext_val = value == 'y' ? true : false;
-> >>>> +               *(bool *)ext_val = value == 'y';
-> >>>>                 break;
-> >>>>         case KCFG_TRISTATE:
-> >>>>                 if (value == 'y')
-> >>>> --
-> >>>> 2.26.0.106.g9fadedd
-> >>>>
-> >>>>
-> > 
-> > .
-> > 
-> 
+ drivers/net/ethernet/huawei/hinic/hinic_ethtool.c |  1 -
+ drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c |  2 +-
+ drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c  | 10 +++++-----
+ drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c  |  6 +++---
+ drivers/net/ethernet/huawei/hinic/hinic_hw_if.c   |  2 +-
+ drivers/net/ethernet/huawei/hinic/hinic_hw_io.c   |  4 ++--
+ drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c |  4 ++--
+ drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c   |  1 +
+ drivers/net/ethernet/huawei/hinic/hinic_main.c    |  1 -
+ drivers/net/ethernet/huawei/hinic/hinic_port.c    | 10 +++++-----
+ drivers/net/ethernet/huawei/hinic/hinic_rx.c      |  1 +
+ drivers/net/ethernet/huawei/hinic/hinic_tx.c      |  2 +-
+ 12 files changed, 22 insertions(+), 22 deletions(-)
+
+-- 
+2.8.1
+
