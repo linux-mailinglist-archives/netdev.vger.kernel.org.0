@@ -2,162 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AE6237F5B7
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 12:36:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0017B37F624
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:00:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbhEMKhM convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 May 2021 06:37:12 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2495 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231231AbhEMKhJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 06:37:09 -0400
-Received: from dggeml755-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fgp0S6ClhzRgKY;
-        Thu, 13 May 2021 18:33:28 +0800 (CST)
-Received: from dggpemm100008.china.huawei.com (7.185.36.125) by
- dggeml755-chm.china.huawei.com (10.1.199.136) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 13 May 2021 18:35:57 +0800
-Received: from dggpeml500016.china.huawei.com (7.185.36.70) by
- dggpemm100008.china.huawei.com (7.185.36.125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 13 May 2021 18:35:57 +0800
-Received: from dggpeml500016.china.huawei.com ([7.185.36.70]) by
- dggpeml500016.china.huawei.com ([7.185.36.70]) with mapi id 15.01.2176.012;
- Thu, 13 May 2021 18:35:57 +0800
-From:   "Longpeng (Mike, Cloud Infrastructure Service Product Dept.)" 
-        <longpeng2@huawei.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Gonglei (Arei)" <arei.gonglei@huawei.com>,
-        "Subo (Subo, Cloud Infrastructure Service Product Dept.)" 
-        <subo7@huawei.com>, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        "David Brazdil" <dbrazdil@google.com>,
-        Alexander Popov <alex.popov@linux.com>,
-        "lixianming (E)" <lixianming5@huawei.com>
-Subject: RE: [RFC] vsock: notify server to shutdown when client has pending
- signal
-Thread-Topic: [RFC] vsock: notify server to shutdown when client has pending
- signal
-Thread-Index: AQHXRkna70IyCpulcUmMFYMN4BnQYKrgpa2AgACTRtA=
-Date:   Thu, 13 May 2021 10:35:57 +0000
-Message-ID: <558d53dd31dc4841b94c4ec35249ac80@huawei.com>
-References: <20210511094127.724-1-longpeng2@huawei.com>
- <20210513094143.pir5vzsludut3xdc@steredhat>
-In-Reply-To: <20210513094143.pir5vzsludut3xdc@steredhat>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.148.223]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+        id S232898AbhEMLBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 07:01:42 -0400
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:58892 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232226AbhEMLBd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 07:01:33 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UYkXWdp_1620903615;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UYkXWdp_1620903615)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 13 May 2021 19:00:21 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     saeedm@nvidia.com
+Cc:     leon@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] net/mlx5: Fix duplicate included vhca_event.h
+Date:   Thu, 13 May 2021 19:00:14 +0800
+Message-Id: <1620903614-65524-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefano,
+Clean up the following includecheck warning:
 
-> -----Original Message-----
-> From: Stefano Garzarella [mailto:sgarzare@redhat.com]
-> Sent: Thursday, May 13, 2021 5:42 PM
-> To: Longpeng (Mike, Cloud Infrastructure Service Product Dept.)
-> <longpeng2@huawei.com>
-> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Gonglei (Arei)
-> <arei.gonglei@huawei.com>; Subo (Subo, Cloud Infrastructure Service Product
-> Dept.) <subo7@huawei.com>; David S . Miller <davem@davemloft.net>; Jakub
-> Kicinski <kuba@kernel.org>; Jorgen Hansen <jhansen@vmware.com>; Norbert
-> Slusarek <nslusarek@gmx.net>; Andra Paraschiv <andraprs@amazon.com>;
-> Colin Ian King <colin.king@canonical.com>; David Brazdil
-> <dbrazdil@google.com>; Alexander Popov <alex.popov@linux.com>;
-> lixianming (E) <lixianming5@huawei.com>
-> Subject: Re: [RFC] vsock: notify server to shutdown when client has pending
-> signal
-> 
-> Hi,
-> thanks for this patch, comments below...
-> 
-> On Tue, May 11, 2021 at 05:41:27PM +0800, Longpeng(Mike) wrote:
-> >The client's sk_state will be set to TCP_ESTABLISHED if the server
-> >replay the client's connect request.
-> >However, if the client has pending signal, its sk_state will be set to
-> >TCP_CLOSE without notify the server, so the server will hold the
-> >corrupt connection.
-> >
-> >            client                        server
-> >
-> >1. sk_state=TCP_SYN_SENT         |
-> >2. call ->connect()              |
-> >3. wait reply                    |
-> >                                 | 4. sk_state=TCP_ESTABLISHED
-> >                                 | 5. insert to connected list
-> >                                 | 6. reply to the client
-> >7. sk_state=TCP_ESTABLISHED      |
-> >8. insert to connected list      |
-> >9. *signal pending* <--------------------- the user kill client
-> >10. sk_state=TCP_CLOSE           |
-> >client is exiting...             |
-> >11. call ->release()             |
-> >     virtio_transport_close
-> >      if (!(sk->sk_state == TCP_ESTABLISHED ||
-> >	      sk->sk_state == TCP_CLOSING))
-> >		return true; <------------- return at here As a result, the server
-> >cannot notice the connection is corrupt.
-> >So the client should notify the peer in this case.
-> >
-> >Cc: David S. Miller <davem@davemloft.net>
-> >Cc: Jakub Kicinski <kuba@kernel.org>
-> >Cc: Stefano Garzarella <sgarzare@redhat.com>
-> >Cc: Jorgen Hansen <jhansen@vmware.com>
-> >Cc: Norbert Slusarek <nslusarek@gmx.net>
-> >Cc: Andra Paraschiv <andraprs@amazon.com>
-> >Cc: Colin Ian King <colin.king@canonical.com>
-> >Cc: David Brazdil <dbrazdil@google.com>
-> >Cc: Alexander Popov <alex.popov@linux.com>
-> >Signed-off-by: lixianming <lixianming5@huawei.com>
-> >Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
-> >---
-> > net/vmw_vsock/af_vsock.c | 1 +
-> > 1 file changed, 1 insertion(+)
-> >
-> >diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c index
-> >92a72f0..d5df908 100644
-> >--- a/net/vmw_vsock/af_vsock.c
-> >+++ b/net/vmw_vsock/af_vsock.c
-> >@@ -1368,6 +1368,7 @@ static int vsock_stream_connect(struct socket *sock,
-> struct sockaddr *addr,
-> > 		lock_sock(sk);
-> >
-> > 		if (signal_pending(current)) {
-> >+			vsock_send_shutdown(sk, SHUTDOWN_MASK);
-> 
-> I see the issue, but I'm not sure is okay to send the shutdown in any case,
-> think about the server didn't setup the connection.
-> 
-> Maybe is better to set TCP_CLOSING if the socket state was TCP_ESTABLISHED,
-> so the shutdown will be handled by the
-> transport->release() as usual.
-> 
-> What do you think?
-> 
+./drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c: vhca_event.h is
+included more than once.
 
-Your method looks more gracefully, we'll try it and get back to you, thanks.
+No functional change.
 
-> Anyway, also without the patch, the server should receive a RST if it
-> sends any data to the client, but of course, is better to let it know
-> the socket is closed in advance.
-> 
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Yes, agree.
-
-> Thanks,
-> Stefano
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
+index ef5f892..500c71f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
+@@ -6,7 +6,6 @@
+ #include "sf.h"
+ #include "mlx5_ifc_vhca_event.h"
+ #include "ecpf.h"
+-#include "vhca_event.h"
+ #include "mlx5_core.h"
+ #include "eswitch.h"
+ 
+-- 
+1.8.3.1
 
