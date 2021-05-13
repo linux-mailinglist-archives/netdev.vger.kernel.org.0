@@ -2,197 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40FAC37FD39
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 20:26:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A880D37FD5D
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 20:46:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231290AbhEMS1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 14:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39780 "EHLO
+        id S231687AbhEMSrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 14:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbhEMS1K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 14:27:10 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB12C061574;
-        Thu, 13 May 2021 11:25:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=6mLn4KuZkGwmj8EyTRAdkwrTMuYQZu+zTcF+KB+C+6w=; b=zP+VI5n5VLaL7a2YAmNQaQ6Q/
-        h9hC1O6YFU2S+rN8VBJ2dPGExrHr8kpgRUflliOrfgUAKVcryjZvqF0bzzNd4e4f1kFlIPWGMSFKU
-        GGwzvaic1hAUBWiMdzcCruB1beWt9v0WUBMupX1t8I3gpX0kccy2AopS9sjdwkWAMy/kWtshR+254
-        cD/qQatXHF6hYt0YaLMK8ic+AHf2YrYqmu6y0N90L7ohecaWcYu74WEfrR7jRl6iCuyPc6jflAdSQ
-        ujidyExsMhj8G1ls7LdIVNCy1mzto0Q4csgRAEixsy7qnouGzBVobEB16LRiTAVVT4dAjtHjN48Yt
-        3KpG3hXmQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43948)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lhG20-0006cx-RA; Thu, 13 May 2021 19:25:56 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lhG1y-0003FE-Kv; Thu, 13 May 2021 19:25:54 +0100
-Date:   Thu, 13 May 2021 19:25:54 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Matteo Croce <mcroce@linux.microsoft.com>
-Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        with ESMTP id S231326AbhEMSrM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 14:47:12 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B021C06174A
+        for <netdev@vger.kernel.org>; Thu, 13 May 2021 11:46:02 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id k127so26497179qkc.6
+        for <netdev@vger.kernel.org>; Thu, 13 May 2021 11:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GAV1fXFSKvWHxmFu4phkc9jQpUPZkv5g9G22iOp3JO4=;
+        b=dhY3VhupK0SgzKHwPC1xzkYkEk7WxIAa/h81o1Ubypz7lzErRGnMJk9GKcdA21PdUU
+         vFqrw9JfClOlVILCb0qqqwsvpD8D0nW5+uHMZM0S9kiv3EEnCY/OfNB8fi0TBVyGQCRr
+         LS1ICdSCUG9twMKjwNjwIVF/5bsS6UKhab1uTJ0xU8mmqmzxJXezXh4CRiLcuoE1RgEN
+         5zB7YaCdXuBIIZ3Rv8CeqbonhU8hI65SfLkukMxvkMK6/UI/pT7UVs1exq6kbBKdijoq
+         Ixzc6ZqVjqRAVoTRNE3d6gT1TJlwwaxb2tZ97za1xLJddXJYL72bkPXx+6ErtcAl5RMf
+         9ZHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GAV1fXFSKvWHxmFu4phkc9jQpUPZkv5g9G22iOp3JO4=;
+        b=jkEQs8kGGv6napLXqUZWgIF2/mrFELTM4CjrhjqQCf4eJRCkpVHqkABhkFbCsuQahO
+         NofRREq1Ms6vpeyp8hIYFLSFMJ36OoOUeDoGFFoY+W/ub62RAb2O2usSHOa80D+4X/L8
+         sRl88sSL3tUEBTRJ4caQtFO+z49sic4Sg8iQhI+aO4cnbvG4EuDh7IchVVirR+mIZ1/w
+         rC9Km6236IRFAky3/7EPzHRIoOxhCQwP1jb+xFnZRvcdJOZ4DCxAiPpN/+vMDoIcJQuE
+         2ZgJtbi1QadFuOOkVrOoMt50SYsqR6dVm6IwCDH0Y6o8uZKHY2UVh1Op5bI/A/uBIeJ9
+         vcBg==
+X-Gm-Message-State: AOAM533BqzdBtuNgbmQLLYQ8HyVSKHKJeAihWrDC5YJfoLcxrh5fZc1H
+        HH/hsZ3FSdp7BbFjgSYjAyhOPg==
+X-Google-Smtp-Source: ABdhPJx+s0dQGv6W+pE8TlEkGxiT8/a7HLuxRXGljDExQTnHDX698hY1AGv+3w/Cr5dqzrT92h104Q==
+X-Received: by 2002:a37:c4d:: with SMTP id 74mr15416387qkm.264.1620931561342;
+        Thu, 13 May 2021 11:46:01 -0700 (PDT)
+Received: from [192.168.1.79] (bras-base-kntaon1617w-grc-25-174-95-97-70.dsl.bell.ca. [174.95.97.70])
+        by smtp.googlemail.com with ESMTPSA id l16sm2917709qtj.30.2021.05.13.11.46.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 May 2021 11:46:00 -0700 (PDT)
+Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+To:     Joe Stringer <joe@cilium.io>, Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>
-Subject: Re: [PATCH net-next v5 5/5] mvneta: recycle buffers
-Message-ID: <20210513182554.GB12395@shell.armlinux.org.uk>
-References: <20210513165846.23722-1-mcroce@linux.microsoft.com>
- <20210513165846.23722-6-mcroce@linux.microsoft.com>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Pedro Tammela <pctammela@mojatatu.com>
+References: <20210402192823.bqwgipmky3xsucs5@ast-mbp>
+ <20210402234500.by3wigegeluy5w7j@ast-mbp>
+ <CAM_iQpWf2aYbY=tKejb=nx7LWBLo1woTp-n4wOLhkUuDCz8u-Q@mail.gmail.com>
+ <20210412230151.763nqvaadrrg77kd@ast-mbp.dhcp.thefacebook.com>
+ <CAM_iQpWePmmpr0RKqCrQ=NPiGrq2Tx9OU9y3e4CTzFjvh5t47w@mail.gmail.com>
+ <CAADnVQLsmULxJYq9rHS4xyg=VAUeexJTh35vTWTVgjeqwX4D6g@mail.gmail.com>
+ <CAM_iQpVtxgZNeqh4_Pqftc3D163JnRvP3AZRuFrYNeyWLgVBVA@mail.gmail.com>
+ <CAADnVQLFehCeQRbwEQ9VM-=Y3V3es2Ze8gFPs6cZHwNH0Ct7vw@mail.gmail.com>
+ <CAM_iQpWDhoY_msU=AowHFq3N3OuQpvxd2ADP_Z+gxBfGduhrPA@mail.gmail.com>
+ <20210427020159.hhgyfkjhzjk3lxgs@ast-mbp.dhcp.thefacebook.com>
+ <CAM_iQpVE4XG7SPAVBmV2UtqUANg3X-1ngY7COYC03NrT6JkZ+g@mail.gmail.com>
+ <CAADnVQK9BgguVorziWgpMktLHuPCgEaKa4fz-KCfhcZtT46teQ@mail.gmail.com>
+ <CAM_iQpWBrxuT=Y3CbhxYpE5a+QSk-O=Vj4euegggXAAKTHRBqw@mail.gmail.com>
+ <CAOftzPh0cj_XRES8mrNWnyKFZDLpRez09NAofmu1F1JAZf43Cw@mail.gmail.com>
+ <ac30da98-97cd-c105-def8-972a8ec573d6@mojatatu.com>
+Message-ID: <e51f235e-f5b7-be64-2340-8e7575d69145@mojatatu.com>
+Date:   Thu, 13 May 2021 14:45:59 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210513165846.23722-6-mcroce@linux.microsoft.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <ac30da98-97cd-c105-def8-972a8ec573d6@mojatatu.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 13, 2021 at 06:58:46PM +0200, Matteo Croce wrote:
-> From: Matteo Croce <mcroce@microsoft.com>
-> 
-> Use the new recycling API for page_pool.
-> In a drop rate test, the packet rate increased di 10%,
+On 2021-05-12 6:43 p.m., Jamal Hadi Salim wrote:
 
-Typo - "by" ?
-
-> from 269 Kpps to 296 Kpps.
 > 
-> perf top on a stock system shows:
-> 
-> Overhead  Shared Object     Symbol
->   21.78%  [kernel]          [k] __pi___inval_dcache_area
->   21.66%  [mvneta]          [k] mvneta_rx_swbm
->    7.00%  [kernel]          [k] kmem_cache_alloc
->    6.05%  [kernel]          [k] eth_type_trans
->    4.44%  [kernel]          [k] kmem_cache_free.part.0
->    3.80%  [kernel]          [k] __netif_receive_skb_core
->    3.68%  [kernel]          [k] dev_gro_receive
->    3.65%  [kernel]          [k] get_page_from_freelist
->    3.43%  [kernel]          [k] page_pool_release_page
->    3.35%  [kernel]          [k] free_unref_page
-> 
-> And this is the same output with recycling enabled:
-> 
-> Overhead  Shared Object     Symbol
->   24.10%  [kernel]          [k] __pi___inval_dcache_area
->   23.02%  [mvneta]          [k] mvneta_rx_swbm
->    7.19%  [kernel]          [k] kmem_cache_alloc
->    6.50%  [kernel]          [k] eth_type_trans
->    4.93%  [kernel]          [k] __netif_receive_skb_core
->    4.77%  [kernel]          [k] kmem_cache_free.part.0
->    3.93%  [kernel]          [k] dev_gro_receive
->    3.03%  [kernel]          [k] build_skb
->    2.91%  [kernel]          [k] page_pool_put_page
->    2.85%  [kernel]          [k] __xdp_return
-> 
-> The test was done with mausezahn on the TX side with 64 byte raw
-> ethernet frames.
-> 
-> Signed-off-by: Matteo Croce <mcroce@microsoft.com>
-
-Other than the typo, I have no objection to the patch.
-
-Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-
-> ---
->  drivers/net/ethernet/marvell/mvneta.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> index 7d5cd9bc6c99..6d2f8dce4900 100644
-> --- a/drivers/net/ethernet/marvell/mvneta.c
-> +++ b/drivers/net/ethernet/marvell/mvneta.c
-> @@ -2320,7 +2320,7 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
->  }
->  
->  static struct sk_buff *
-> -mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
-> +mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
->  		      struct xdp_buff *xdp, u32 desc_status)
->  {
->  	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-> @@ -2331,7 +2331,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
->  	if (!skb)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	page_pool_release_page(rxq->page_pool, virt_to_page(xdp->data));
-> +	skb_mark_for_recycle(skb, virt_to_page(xdp->data), pool);
->  
->  	skb_reserve(skb, xdp->data - xdp->data_hard_start);
->  	skb_put(skb, xdp->data_end - xdp->data);
-> @@ -2343,7 +2343,10 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
->  		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
->  				skb_frag_page(frag), skb_frag_off(frag),
->  				skb_frag_size(frag), PAGE_SIZE);
-> -		page_pool_release_page(rxq->page_pool, skb_frag_page(frag));
-> +		/* We don't need to reset pp_recycle here. It's already set, so
-> +		 * just mark fragments for recycling.
-> +		 */
-> +		page_pool_store_mem_info(skb_frag_page(frag), pool);
->  	}
->  
->  	return skb;
-> @@ -2425,7 +2428,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
->  		    mvneta_run_xdp(pp, rxq, xdp_prog, &xdp_buf, frame_sz, &ps))
->  			goto next;
->  
-> -		skb = mvneta_swbm_build_skb(pp, rxq, &xdp_buf, desc_status);
-> +		skb = mvneta_swbm_build_skb(pp, pp, &xdp_buf, desc_status);
->  		if (IS_ERR(skb)) {
->  			struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
->  
-> -- 
-> 2.31.1
-> 
+> Will run some tests tomorrow to see the effect of batching vs nobatch
+> and capture cost of syscalls and cpu.
 > 
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+So here are some numbers:
+Processor: Intel(R) Xeon(R) Gold 6230R CPU @ 2.10GHz
+This machine is very similar to where a real deployment
+would happen.
+
+Hyperthreading turned off so we can dedicate the core to the
+dumping process and Performance mode on, so no frequency scaling
+meddling.
+Tests were ran about 3 times each. Results eye-balled to make
+sure deviation was reasonable.
+100% of the one core was used just for dumping during each run.
+
+bpftool does linear retrieval whereas our tool does batch dumping.
+bpftool does print the dumped results, for our tool we just count
+the number of entries retrieved (cost would have been higher if
+we actually printed). In any case in the real setup there is
+a processing cost which is much higher.
+
+Summary is: the dumping is problematic costwise as the number of
+entries increase. While batching does improve things it doesnt
+solve our problem (Like i said we have upto 16M entries and most
+of the time we are dumping useless things)
+
+1M entries
+----------
+
+root@SUT:/home/jhs/git-trees/ftables/src# time ./ftables show system 
+cache dev enp179s0f1 > /dev/null
+real    0m0.320s
+user    0m0.004s
+sys     0m0.316s
+
+root@SUT:/home/jhs/git-trees/ftables/src# time 
+/home/jhs/git-trees/foobar/XDP/bpftool map dump  id 3353 > /dev/null
+real    0m5.419s
+user    0m4.347s
+sys     0m1.072s
+
+4M entries
+-----------
+root@SUT:/home/jhs/git-trees/ftables/src# time ./ftables show system cache
+  dev enp179s0f1 > /dev/null
+real    0m1.331s
+user    0m0.004s
+sys     0m1.325s
+
+root@SUT:/home/jhs/git-trees/ftables/src# time 
+/home/jhs/git-trees/foobar/XDP/bpftool map dump id 1178 > /dev/null
+real    0m21.677s
+user    0m17.269s
+sys     0m4.408s
+8M Entries
+------------
+
+root@SUT:/home/jhs/git-trees/ftables/src# time ./ftables show system 
+cache dev enp179s0f1 > /dev/null
+real    0m2.678s
+user    0m0.004s
+sys     0m2.672s
+
+t@SUT:/home/jhs/git-trees/ftables/src# time 
+/home/jhs/git-trees/foobar/XDP/bpftool map dump id 2636 > /dev/null
+real    0m43.267s
+user    0m34.450s
+sys     0m8.817s
+
+16M entries
+------------
+root@SUT:/home/jhs/git-trees/ftables/src# time ./ftables show system cache
+  dev enp179s0f1 > /dev/null
+real    0m5.396s
+user    0m0.004s
+sys     0m5.389s
+
+root@SUT:/home/jhs/git-trees/ftables/src# time 
+/home/jhs/git-trees/foobar/XDP/bpftool map dump id 1919 > /dev/null
+real    1m27.039s
+user    1m8.371s
+sys     0m18.668s
+
+
+
+cheers,
+jamal
