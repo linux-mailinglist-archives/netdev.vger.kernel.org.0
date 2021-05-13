@@ -2,118 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A659B37F0F5
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 03:35:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67B2837F130
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 04:14:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbhEMBgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 21:36:54 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:32829 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232318AbhEMBgv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 21:36:51 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id A23CE5C0066;
-        Wed, 12 May 2021 21:35:40 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 12 May 2021 21:35:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=animalcreek.com;
-         h=date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=DpVUZkigS0YBcpQTAee6c+OCcYp
-        kgSAchYFyPrT0G/I=; b=SJFqvRwXKaHVDrp6yAbs5aDuYPqR5dMZEZPNWhqHCNL
-        bAp/P8hbLXXc6IaZOb2xy7dRFIepJJqymysEeBW3wB1Xg4ThHWx2abvyvYkMsrzC
-        5QqwqQHxeIlHwQCH0kwlFwRMMpBP0w5qD8UMMeTBxuOFYvog8m4PQKcn4FHTMrzz
-        7EZeZlZ40d8YQ4pPlzXLdf1mMAno9mnGPeqZ53ZFRzYhmdEHtK7XLYregQrj74NB
-        thZuThM1IkHXX0/JQuIrLdKagNdh7Ve8KwM8tfDkboF2s49HaNAog6wkg+dWC6i6
-        3cIOeKwWunVWTt9t+6wj4Y+aF8hBB3ZGBCdt8yNAmYQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=DpVUZk
-        igS0YBcpQTAee6c+OCcYpkgSAchYFyPrT0G/I=; b=OefKtoattdw537PpJdXfxG
-        jwqYDSvbE9GmGzKaTQTuiuPs1OXiw+fjvIlGUmED1+GIAs/z9S1DIjZo1CfoVaHo
-        bEFSiD2CXGXQUTVSrXJoVLyqI/vz+7/V4nROPpTSwzFkaMEZDR2Q3RP5yTEj3ACV
-        SdDBYE0bJ7S8qfhxVVnsn4d8ogsQSyeB7afqx8JPA7ktTxoRQBY5NmKl59yDzJp5
-        xhVhbLkkZPHWfL/pir7LPTDOV5IWVXa87Y2g+sc1s92jhGT4AiI+eus0KNYMaX74
-        NZOIm4MDCbaMJUdROT5iyT4/EoXt+0cPzZO0LiYUPIROXY8Ra9OAH2xJIOK/aWLg
-        ==
-X-ME-Sender: <xms:a4KcYGnxGmmAIqp-win5FZOhI6MVjVJJve1clAnteo4EXMvo_xaqBw>
-    <xme:a4KcYN07H9hHVzDyk9dTxy-ymPrbn6H0SWhcxFrh7gxwxOeXdQWJ81Ax5VNtnRO-p
-    meGX1em1rgdaRNPwA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdehfedggeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjohesthdtredttddtvdenucfhrhhomhepofgrrhhk
-    ucfirhgvvghruceomhhgrhgvvghrsegrnhhimhgrlhgtrhgvvghkrdgtohhmqeenucggtf
-    frrghtthgvrhhnpedtheegudevteevkeeffeevudffvdejkeeitdekveeugfetleetheeg
-    gfduhfdtieenucffohhmrghinhepqhhtrdhiohenucfkphepjedtrddujedvrdefvddrvd
-    dukeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehm
-    ghhrvggvrhesrghnihhmrghltghrvggvkhdrtghomh
-X-ME-Proxy: <xmx:a4KcYEpjMeKINo4TqU_tJZq6V7NLnxI15BpHwbBsW0M7eWZobcuQgw>
-    <xmx:a4KcYKkuV6dsV-0TvuGu-2uMprVwns-2DC8Sr7P4ZD6xlkbjoErnBg>
-    <xmx:a4KcYE14GmK2tR9Qk9LF1GNOltslgJUEZrA5oK5rUSoZGVJ6CJO-Xw>
-    <xmx:bIKcYOqCu1RbsC7KTxJUOVVctHLIz-D1bmOwIzTvZ55UVgH6kimb6w>
-Received: from blue.animalcreek.com (ip70-172-32-218.ph.ph.cox.net [70.172.32.218])
-        by mail.messagingengine.com (Postfix) with ESMTPA;
-        Wed, 12 May 2021 21:35:39 -0400 (EDT)
-Received: by blue.animalcreek.com (Postfix, from userid 1000)
-        id 431E4136008E; Wed, 12 May 2021 18:35:38 -0700 (MST)
-Date:   Wed, 12 May 2021 18:35:38 -0700
-From:   Mark Greer <mgreer@animalcreek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Mark Greer <mgreer@animalcreek.com>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org,
-        Alex Blasche <alexander.blasche@qt.io>
-Subject: Re: [linux-nfc] [PATCH 1/2] MAINTAINERS: nfc: add Krzysztof
- Kozlowski as maintainer
-Message-ID: <20210513013538.GA239989@animalcreek.com>
-References: <20210512144319.30852-1-krzysztof.kozlowski@canonical.com>
- <14e78a9a-ed1a-9d7d-b854-db6d811f4622@kontron.de>
- <20210512170135.GB222094@animalcreek.com>
- <cd7a0110-702a-6e14-527e-fb4b53705870@canonical.com>
+        id S230210AbhEMCPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 22:15:18 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:5104 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229813AbhEMCPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 22:15:17 -0400
+Received: from dggeml706-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FgZsL4G5SzYgKH;
+        Thu, 13 May 2021 10:11:34 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggeml706-chm.china.huawei.com (10.3.17.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Thu, 13 May 2021 10:14:02 +0800
+Received: from [127.0.0.1] (10.174.177.72) by dggpemm500006.china.huawei.com
+ (7.185.36.236) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Thu, 13 May
+ 2021 10:14:02 +0800
+Subject: Re: [PATCH 1/1] libbpf: Delete an unneeded bool conversion
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Leon Romanovsky <leon@kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+References: <20210510124315.3854-1-thunder.leizhen@huawei.com>
+ <CAEf4BzaADXguVoh0KXxGYhzG68eA1bqfKH1T1SWyPvkE5BHa5g@mail.gmail.com>
+ <YJoRd4reWa1viW76@unreal>
+ <CAEf4BzaYsjWh_10a4yeSVpAAwC-f=zUNANb10VN2xZ1b5dsY-A@mail.gmail.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <f82343ec-9d67-d033-dd07-813e7d981c4f@huawei.com>
+Date:   Thu, 13 May 2021 10:14:00 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cd7a0110-702a-6e14-527e-fb4b53705870@canonical.com>
-Organization: Animal Creek Technologies, Inc.
+In-Reply-To: <CAEf4BzaYsjWh_10a4yeSVpAAwC-f=zUNANb10VN2xZ1b5dsY-A@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.72]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 12, 2021 at 04:21:25PM -0400, Krzysztof Kozlowski wrote:
-> On 12/05/2021 13:01, Mark Greer wrote:
 
-> > Re: QT - I've already talked to Alex Blasche from QT (CC'd).  With some
-> > work we can get Linux NFC/neard back into their good graces.  I/we need
-> > to find time to put in the work, though.
-> > 
-> > An example of the issues they have seen is:
-> > 
-> > 	https://bugreports.qt.io/browse/QTBUG-43802
-> > 
-> > Another issue I have--and I suspect you, Krzysztof, have as well--is
-> > lack of hardware.  If anyone reading this wants to volunteer to be a
-> > tester, please speak up.
+
+On 2021/5/13 3:02, Andrii Nakryiko wrote:
+> On Mon, May 10, 2021 at 10:09 PM Leon Romanovsky <leon@kernel.org> wrote:
+>>
+>> On Mon, May 10, 2021 at 11:00:29AM -0700, Andrii Nakryiko wrote:
+>>> On Mon, May 10, 2021 at 5:43 AM Zhen Lei <thunder.leizhen@huawei.com> wrote:
+>>>>
+>>>> The result of an expression consisting of a single relational operator is
+>>>> already of the bool type and does not need to be evaluated explicitly.
+>>>>
+>>>> No functional change.
+>>>>
+>>>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>>>> ---
+>>>
+>>> See [0] and [1].
+>>>
+>>>   [0] https://lore.kernel.org/bpf/CAEf4BzYgLf5g3oztbA-CJR4gQ7AVKQAGrsHWCOgTtUMUM-Mxfg@mail.gmail.com/
+>>>   [1] https://lore.kernel.org/bpf/CAEf4BzZQ6=-h3g1duXFwDLr92z7nE6ajv8Rz_Zv=qx=-F3sRVA@mail.gmail.com/
+>>
+>> How long do you plan to fight with such patches?
 > 
-> Yes, testing would be very appreciated. I don't know how many unit tests
-> neard has, but maybe some mockups with unit testing would solve some of
-> problems?
+> As long as necessary. There are better ways to contribute to libbpf
+> than doing cosmetic changes to the perfectly correct code.
 
-I'm not sure what you mean by this.  Do you mean creating some tests that
-sit directly on top of the kernel and test the kernel parts (e.g., use
-netlink)?  If so, that would be useful but you may end up implementing
-some of the NFC stack.  If you mean more/better tests that use neard to
-exercise the whole stack then that would be really good too.
+No small stream, no river and sea.
 
-Speaking of NFC stack, the NFC forum has their specs paywalled which is
-a real bummer/pain.  I can try reaching out to them to see if they will
-help us help their mission but I'm not hopeful.
+There are no improvements to functionality, but may slightly speed up compilation.
+With more such accumulations, it is possible that the compilation of allmodconfig
+results in a second-level improvement.
 
-FYI, most of the issues that I ran into and know still exist are
-timing/race issues in neard.  I'm sure if we tested more, we could find
-some in the kernel though.
+I don't know if you agree, at least I think so.
 
-Mark
---
+> 
+>>
+>> Thanks
+>>
+>>>
+>>>>  tools/lib/bpf/libbpf.c | 2 +-
+>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+>>>> index e2a3cf4378140f2..fa02213c451f4d2 100644
+>>>> --- a/tools/lib/bpf/libbpf.c
+>>>> +++ b/tools/lib/bpf/libbpf.c
+>>>> @@ -1504,7 +1504,7 @@ static int set_kcfg_value_tri(struct extern_desc *ext, void *ext_val,
+>>>>                                 ext->name, value);
+>>>>                         return -EINVAL;
+>>>>                 }
+>>>> -               *(bool *)ext_val = value == 'y' ? true : false;
+>>>> +               *(bool *)ext_val = value == 'y';
+>>>>                 break;
+>>>>         case KCFG_TRISTATE:
+>>>>                 if (value == 'y')
+>>>> --
+>>>> 2.26.0.106.g9fadedd
+>>>>
+>>>>
+> 
+> .
+> 
+
