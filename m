@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C309937F6FF
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:44:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FB8637F6FC
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:44:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233588AbhEMLpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 07:45:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
+        id S233546AbhEMLpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 07:45:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233403AbhEMLox (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 07:44:53 -0400
+        with ESMTP id S231443AbhEMLow (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 07:44:52 -0400
 Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B398C061574;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6CEC061761;
         Thu, 13 May 2021 04:43:42 -0700 (PDT)
 Received: from [2a02:610:7501:feff:1ccf:41ff:fe50:18b9] (helo=localhost.localdomain)
         by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <gatis@mikrotik.com>)
-        id 1lh9kb-0007HF-FW; Thu, 13 May 2021 14:43:33 +0300
+        id 1lh9kb-0007HF-Hj; Thu, 13 May 2021 14:43:33 +0300
 From:   Gatis Peisenieks <gatis@mikrotik.com>
 To:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
         hkallweit1@gmail.com, jesse.brandeburg@intel.com,
         dchickles@marvell.com, tully@mikrotik.com, eric.dumazet@gmail.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Gatis Peisenieks <gatis@mikrotik.com>
-Subject: [PATCH net-next v2 4/5] atl1c: enable rx csum offload on Mikrotik 10/25G NIC
-Date:   Thu, 13 May 2021 14:43:25 +0300
-Message-Id: <20210513114326.699663-5-gatis@mikrotik.com>
+Subject: [PATCH net-next v2 5/5] atl1c: improve link detection reliability on Mikrotik 10/25G NIC
+Date:   Thu, 13 May 2021 14:43:26 +0300
+Message-Id: <20210513114326.699663-6-gatis@mikrotik.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210513114326.699663-1-gatis@mikrotik.com>
 References: <20210513114326.699663-1-gatis@mikrotik.com>
@@ -37,51 +37,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mikrotik 10/25G NIC supports hw checksum verification on rx for
-IP/IPv6 + TCP/UDP packets. HW checksum offload helps reduce host
-cpu load.
+Mikrotik 10/25G NIC emulates the MDIO accesses, but the emulation is
+not 100% reliable - the MDIO ops occasionally can timeout.
 
-This enables the csum offload specifically for Mikrotik 10/25G NIC
-as other HW supported by the driver is known to have problems with it.
-
-TCP iperf3 to Threadripper 3960X with NIC improved 16.5 -> 20.0 Gbps
-with mtu=1500.
+This adds a reliable way of detecting link on Mikrotik 10/25G NIC.
 
 Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
 ---
- drivers/net/ethernet/atheros/atl1c/atl1c.h      | 2 ++
- drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 5 +++++
- 2 files changed, 7 insertions(+)
+ drivers/net/ethernet/atheros/atl1c/atl1c_hw.c | 26 ++++++++++++++-----
+ drivers/net/ethernet/atheros/atl1c/atl1c_hw.h |  1 +
+ .../net/ethernet/atheros/atl1c/atl1c_main.c   | 18 +++++--------
+ 3 files changed, 27 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c.h b/drivers/net/ethernet/atheros/atl1c/atl1c.h
-index 3fda7eb3bd69..9d70cb7544f1 100644
---- a/drivers/net/ethernet/atheros/atl1c/atl1c.h
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c.h
-@@ -241,6 +241,8 @@ struct atl1c_tpd_ext_desc {
- #define RRS_PACKET_PROT_IS_IPV6_ONLY(word) \
- 	((((word) >> RRS_PROT_ID_SHIFT) & RRS_PROT_ID_MASK) == 6)
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_hw.c b/drivers/net/ethernet/atheros/atl1c/atl1c_hw.c
+index ddb9442416cd..7dff20350865 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_hw.c
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_hw.c
+@@ -636,6 +636,23 @@ int atl1c_phy_init(struct atl1c_hw *hw)
+ 	return 0;
+ }
  
-+#define RRS_MT_PROT_ID_TCPUDP	BIT(19)
++bool atl1c_get_link_status(struct atl1c_hw *hw)
++{
++	u16 phy_data;
 +
- struct atl1c_recv_ret_status {
- 	__le32  word0;
- 	__le32	rss_hash;
++	if (hw->nic_type == athr_mt) {
++		u32 spd;
++
++		AT_READ_REG(hw, REG_MT_SPEED, &spd);
++		return !!spd;
++	}
++
++	/* MII_BMSR must be read twice */
++	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
++	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
++	return !!(phy_data & BMSR_LSTATUS);
++}
++
+ /*
+  * Detects the current speed and duplex settings of the hardware.
+  *
+@@ -695,15 +712,12 @@ int atl1c_phy_to_ps_link(struct atl1c_hw *hw)
+ 	int ret = 0;
+ 	u16 autoneg_advertised = ADVERTISED_10baseT_Half;
+ 	u16 save_autoneg_advertised;
+-	u16 phy_data;
+ 	u16 mii_lpa_data;
+ 	u16 speed = SPEED_0;
+ 	u16 duplex = FULL_DUPLEX;
+ 	int i;
+ 
+-	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
+-	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
+-	if (phy_data & BMSR_LSTATUS) {
++	if (atl1c_get_link_status(hw)) {
+ 		atl1c_read_phy_reg(hw, MII_LPA, &mii_lpa_data);
+ 		if (mii_lpa_data & LPA_10FULL)
+ 			autoneg_advertised = ADVERTISED_10baseT_Full;
+@@ -726,9 +740,7 @@ int atl1c_phy_to_ps_link(struct atl1c_hw *hw)
+ 		if (mii_lpa_data) {
+ 			for (i = 0; i < AT_SUSPEND_LINK_TIMEOUT; i++) {
+ 				mdelay(100);
+-				atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
+-				atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
+-				if (phy_data & BMSR_LSTATUS) {
++				if (atl1c_get_link_status(hw)) {
+ 					if (atl1c_get_speed_and_duplex(hw, &speed,
+ 									&duplex) != 0)
+ 						dev_dbg(&pdev->dev,
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_hw.h b/drivers/net/ethernet/atheros/atl1c/atl1c_hw.h
+index 73cbc049a63e..c263b326cec5 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_hw.h
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_hw.h
+@@ -26,6 +26,7 @@ void atl1c_phy_disable(struct atl1c_hw *hw);
+ void atl1c_hw_set_mac_addr(struct atl1c_hw *hw, u8 *mac_addr);
+ int atl1c_phy_reset(struct atl1c_hw *hw);
+ int atl1c_read_mac_addr(struct atl1c_hw *hw);
++bool atl1c_get_link_status(struct atl1c_hw *hw);
+ int atl1c_get_speed_and_duplex(struct atl1c_hw *hw, u16 *speed, u16 *duplex);
+ u32 atl1c_hash_mc_addr(struct atl1c_hw *hw, u8 *mc_addr);
+ void atl1c_hash_set(struct atl1c_hw *hw, u32 hash_value);
 diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-index dbafd8118a86..9693da5028cf 100644
+index 9693da5028cf..740127a6a21d 100644
 --- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
 +++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-@@ -1671,6 +1671,11 @@ static irqreturn_t atl1c_intr(int irq, void *data)
- static inline void atl1c_rx_checksum(struct atl1c_adapter *adapter,
- 		  struct sk_buff *skb, struct atl1c_recv_ret_status *prrs)
+@@ -232,15 +232,14 @@ static void atl1c_check_link_status(struct atl1c_adapter *adapter)
+ 	struct pci_dev    *pdev   = adapter->pdev;
+ 	int err;
+ 	unsigned long flags;
+-	u16 speed, duplex, phy_data;
++	u16 speed, duplex;
++	bool link;
+ 
+ 	spin_lock_irqsave(&adapter->mdio_lock, flags);
+-	/* MII_BMSR must read twise */
+-	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
+-	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
++	link = atl1c_get_link_status(hw);
+ 	spin_unlock_irqrestore(&adapter->mdio_lock, flags);
+ 
+-	if ((phy_data & BMSR_LSTATUS) == 0) {
++	if (!link) {
+ 		/* link down */
+ 		netif_carrier_off(netdev);
+ 		hw->hibernate = true;
+@@ -284,16 +283,13 @@ static void atl1c_link_chg_event(struct atl1c_adapter *adapter)
  {
-+	if (adapter->hw.nic_type == athr_mt) {
-+		if (prrs->word3 & RRS_MT_PROT_ID_TCPUDP)
-+			skb->ip_summed = CHECKSUM_UNNECESSARY;
-+		return;
-+	}
- 	/*
- 	 * The pid field in RRS in not correct sometimes, so we
- 	 * cannot figure out if the packet is fragmented or not,
+ 	struct net_device *netdev = adapter->netdev;
+ 	struct pci_dev    *pdev   = adapter->pdev;
+-	u16 phy_data;
+-	u16 link_up;
++	bool link;
+ 
+ 	spin_lock(&adapter->mdio_lock);
+-	atl1c_read_phy_reg(&adapter->hw, MII_BMSR, &phy_data);
+-	atl1c_read_phy_reg(&adapter->hw, MII_BMSR, &phy_data);
++	link = atl1c_get_link_status(&adapter->hw);
+ 	spin_unlock(&adapter->mdio_lock);
+-	link_up = phy_data & BMSR_LSTATUS;
+ 	/* notify upper layer link down ASAP */
+-	if (!link_up) {
++	if (!link) {
+ 		if (netif_carrier_ok(netdev)) {
+ 			/* old link state: Up */
+ 			netif_carrier_off(netdev);
 -- 
 2.31.1
 
