@@ -2,143 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 041A537F857
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 15:03:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DB8437F869
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 15:08:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbhEMNEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 09:04:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43204 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232733AbhEMNE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 09:04:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1620910999;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=reFKUH6rrlF+AA2394T7GVrIVtOgj3DePRS0lsPMuB0=;
-        b=iU1pLIUggdeYLMe1RxV77TwP4TKS8095Zp61qXjpBza/f0Z8Tm+JsWicylTuwZTxBpBrKC
-        Rqkw/KsfHRHLh/R13T3ePwUM0gMWfOkE/KmJcdYmKPiqRmN9woLdMtj/2u5lQlKJcvltKG
-        s0fWXco4hNiFJdguvQQkM6PSNkzmPv4=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-63-vX2zqPHXN_uVJ4fqqMhYiA-1; Thu, 13 May 2021 09:03:17 -0400
-X-MC-Unique: vX2zqPHXN_uVJ4fqqMhYiA-1
-Received: by mail-ed1-f69.google.com with SMTP id g7-20020aa7c5870000b02903888f809d62so14683548edq.23
-        for <netdev@vger.kernel.org>; Thu, 13 May 2021 06:03:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=reFKUH6rrlF+AA2394T7GVrIVtOgj3DePRS0lsPMuB0=;
-        b=GKrLoWurB0fw4TSQWkJQKs6dNuP10RPbIAYH+3KaCYeykAnzZODgsnBmnt7aqsZQv8
-         bFKHJup5HX4DxFXM8sOOAoobUaAKHRMfC6a6BoIJL86DY6Lozj/9SVW5+GFdo0umuvi3
-         7qtrggcF6Q683RG2Jr1Q58EX3jtOjRgCUVbTRdIR5GwiPoDMnNQWoMTi70CxPmlkSmS7
-         lDd05wMV8RrmSzvOzZZ5yUZJJ6kbPbvp/Gdt+UXlyvSrVLEBvTwTn4ni2htWeNZj8aBF
-         w48GbT015/D4vtJztfU/6VU7Hnu21HdNpaHUJSgbUIGg9GyeJEO9bdYDRY5+TpWYFVjJ
-         gNWw==
-X-Gm-Message-State: AOAM532rqKiPHwR6oTLXVKY37M7F0SWs4Z1Mt7sXCoUKJAzthzPngLE9
-        etphcLM+EXFx8E2b90tw6Tf+YImwaS/JHFgA+eEEzvAlLQ5lM9cvh2WXhdMoZHOwPv87BBsYOQs
-        IM3muRAGAIs728dWW
-X-Received: by 2002:a17:906:a017:: with SMTP id p23mr44269245ejy.460.1620910996139;
-        Thu, 13 May 2021 06:03:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxlZU02TavvxbBUmfRJG32boBnlj1iP4tM0Qg/JAmvchXWsqL5Ii9AcVBluYmGFZU6Zj7oJcg==
-X-Received: by 2002:a17:906:a017:: with SMTP id p23mr44269235ejy.460.1620910995957;
-        Thu, 13 May 2021 06:03:15 -0700 (PDT)
-Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
-        by smtp.gmail.com with ESMTPSA id h4sm2157154edv.97.2021.05.13.06.03.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 May 2021 06:03:15 -0700 (PDT)
-Date:   Thu, 13 May 2021 15:03:13 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        kvm <kvm@vger.kernel.org>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        stsp <stsp2@yandex.ru>, Krasnov Arseniy <oxffffaa@gmail.com>
-Subject: Re: [RFC PATCH v9 13/19] virtio/vsock: rest of SOCK_SEQPACKET support
-Message-ID: <CAGxU2F5M8rMCTAoQLnEorwtnmJ14L3v9mJpywjAsUwUCtNCjDg@mail.gmail.com>
-References: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
- <20210508163558.3432246-1-arseny.krasnov@kaspersky.com>
- <20210513122708.mwooglzkhv7du7jo@steredhat>
+        id S233463AbhEMNJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 09:09:32 -0400
+Received: from mail-m2454.qiye.163.com ([220.194.24.54]:25454 "EHLO
+        mail-m2454.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229466AbhEMNJ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 09:09:29 -0400
+Received: from localhost.localdomain (unknown [106.75.220.3])
+        by mail-m2454.qiye.163.com (Hmail) with ESMTPA id 9EE7CC00202;
+        Thu, 13 May 2021 21:08:14 +0800 (CST)
+From:   Tao Liu <thomas.liu@ucloud.cn>
+To:     pshelar@ovn.org
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, i.maximets@ovn.org,
+        jean.tourrilhes@hpe.com, kuba@kernel.org, davem@davemloft.net,
+        thomas.liu@ucloud.cn, wenxu@ucloud.cn
+Subject: [ovs-dev] [PATCH net v2] openvswitch: meter: fix race when getting now_ms.
+Date:   Thu, 13 May 2021 21:08:00 +0800
+Message-Id: <20210513130800.31913-1-thomas.liu@ucloud.cn>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210513122708.mwooglzkhv7du7jo@steredhat>
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZQx1MSlZMQ0NCSB5JTEodQx9VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWUFZT0tIVUpKS0
+        hKTFVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OE06LTo4OT0yKBQrEh9CKTgC
+        HigKCUhVSlVKTUlLQkpKSUJOSUlIVTMWGhIXVQ8TFBYaCFUXEg47DhgXFA4fVRgVRVlXWRILWUFZ
+        SktNVUxOVUlJS1VIWVdZCAFZQUlNQk83Bg++
+X-HM-Tid: 0a7965d789ec8c13kuqt9ee7cc00202
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sdf
+We have observed meters working unexpected if traffic is 3+Gbit/s
+with multiple connections.
 
-On Thu, May 13, 2021 at 2:27 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> On Sat, May 08, 2021 at 07:35:54PM +0300, Arseny Krasnov wrote:
-> >This adds rest of logic for SEQPACKET:
-> >1) Send SHUTDOWN on socket close for SEQPACKET type.
-> >2) Set SEQPACKET packet type during send.
-> >3) 'seqpacket_allow' flag to virtio transport.
->
-> Please update this commit message, point 3 is not included anymore in
-> this patch, right?
->
-> >4) Set 'VIRTIO_VSOCK_SEQ_EOR' bit in flags for last
-> >   packet of message.
-> >
-> >Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
-> >---
-> > v8 -> v9:
-> > 1) Use cpu_to_le32() to set VIRTIO_VSOCK_SEQ_EOR.
-> >
-> > include/linux/virtio_vsock.h            |  4 ++++
-> > net/vmw_vsock/virtio_transport_common.c | 17 +++++++++++++++--
-> > 2 files changed, 19 insertions(+), 2 deletions(-)
-> >
-> >diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
-> >index 02acf6e9ae04..7360ab7ea0af 100644
-> >--- a/include/linux/virtio_vsock.h
-> >+++ b/include/linux/virtio_vsock.h
-> >@@ -80,6 +80,10 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
-> >                              struct msghdr *msg,
-> >                              size_t len, int flags);
-> >
-> >+int
-> >+virtio_transport_seqpacket_enqueue(struct vsock_sock *vsk,
-> >+                                 struct msghdr *msg,
-> >+                                 size_t len);
-> > ssize_t
-> > virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
-> >                                  struct msghdr *msg,
-> >diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-> >index 7fea0a2192f7..b6608b4ac7c2 100644
-> >--- a/net/vmw_vsock/virtio_transport_common.c
-> >+++ b/net/vmw_vsock/virtio_transport_common.c
-> >@@ -74,6 +74,10 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
-> >               err = memcpy_from_msg(pkt->buf, info->msg, len);
-> >               if (err)
-> >                       goto out;
-> >+
-> >+              if (info->msg->msg_iter.count == 0)
->
-> Also here is better `msg_data_left(info->msg)`
->
-> >+                      pkt->hdr.flags = cpu_to_le32(info->flags |
-> >+                                              VIRTIO_VSOCK_SEQ_EOR);
->
-> Re-thinking an alternative could be to set EOR here...
->
->                         info->flags |= VIRTIO_VSOCK_SEQ_EOR;
+now_ms is not pretected by meter->lock, we may get a negative
+long_delta_ms when another cpu updated meter->used, then:
+    delta_ms = (u32)long_delta_ms;
+which will be a large value.
 
-Or just `pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR)`, as you 
-did in vhost-vsock :-)
+    band->bucket += delta_ms * band->rate;
+then we get a wrong band->bucket.
+
+OpenVswitch userspace datapath has fixed the same issue[1] some
+time ago, and we port the implementation to kernel datapath.
+
+[1] https://patchwork.ozlabs.org/project/openvswitch/patch/20191025114436.9746-1-i.maximets@ovn.org/
+
+Fixes: 96fbc13d7e77 ("openvswitch: Add meter infrastructure")
+Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
+Suggested-by: Ilya Maximets <i.maximets@ovn.org>
+---
+Changelog:
+v2: just set negative long_delta_ms to zero in case of race for meter lock.
+v1: make now_ms protected by meter lock.
+---
+ net/openvswitch/meter.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
+index 96b524c..896b8f5 100644
+--- a/net/openvswitch/meter.c
++++ b/net/openvswitch/meter.c
+@@ -611,6 +611,14 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
+ 	spin_lock(&meter->lock);
+ 
+ 	long_delta_ms = (now_ms - meter->used); /* ms */
++	if (long_delta_ms < 0) {
++		/* This condition means that we have several threads fighting
++		 * for a meter lock, and the one who received the packets a
++		 * bit later wins. Assuming that all racing threads received
++		 * packets at the same time to avoid overflow.
++		 */
++		long_delta_ms = 0;
++	}
+ 
+ 	/* Make sure delta_ms will not be too large, so that bucket will not
+ 	 * wrap around below.
+-- 
+1.8.3.1
 
