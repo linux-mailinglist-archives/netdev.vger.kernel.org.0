@@ -2,55 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95CC237F7D2
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 14:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8072137F7DC
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 14:24:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233692AbhEMMZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 08:25:03 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38600 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230097AbhEMMZB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 May 2021 08:25:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=3RfX3ZTxasf3qaleCTBm0QOY9AWrA3aOMELJWashnxs=; b=itpRKvxPi7HM3zOo8sasRb8H5g
-        GGJ9WkLPsdcVkcTWFKClkPItOT/VDnDPcRdjLF/V9xXD7vBbUtkd8hFDWejq0V6wzzfZxb8YVeqDx
-        GbM8oRZ9HgqfMva6SaTP2SMYYZUm84Cnn6Pj8kaqj6xCqEdxs9cG1eJ38J25u8bfLHF8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lhANW-0043f6-Mn; Thu, 13 May 2021 14:23:46 +0200
-Date:   Thu, 13 May 2021 14:23:46 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, david.daney@cavium.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH V2] net: mdio: thunder: Fix a double free issue in the
- .remove function
-Message-ID: <YJ0aUoUNn7/aIPaC@lunn.ch>
-References: <f8ad9a9e6d7df4cb02731a71a418acca18353380.1620890611.git.christophe.jaillet@wanadoo.fr>
+        id S233833AbhEMMZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 08:25:44 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:34054 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233800AbhEMMZ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 08:25:27 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lhANu-0003dX-6U; Thu, 13 May 2021 12:24:10 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] rtlwifi: rtl8723ae: remove redundant initialization of variable rtstatus
+Date:   Thu, 13 May 2021 13:24:09 +0100
+Message-Id: <20210513122410.59204-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f8ad9a9e6d7df4cb02731a71a418acca18353380.1620890611.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 13, 2021 at 09:44:49AM +0200, Christophe JAILLET wrote:
-> 'bus->mii_bus' have been allocated with 'devm_mdiobus_alloc_size()' in the
-> probe function. So it must not be freed explicitly or there will be a
-> double free.
-> 
-> Remove the incorrect 'mdiobus_free' in the remove function.
-> 
-> Fixes: 379d7ac7ca31 ("phy: mdio-thunder: Add driver for Cavium Thunder SoC MDIO buses.")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Colin Ian King <colin.king@canonical.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+The variable rtstatus is being initialized with a value that is never
+read, it is being updated later on. The assignment is redundant and
+can be removed.
 
-    Andrew
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/rtl8723ae/hw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/hw.c
+index f8a1de6e9849..c98f2216734f 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/hw.c
+@@ -915,7 +915,7 @@ int rtl8723e_hw_init(struct ieee80211_hw *hw)
+ 	struct rtl_phy *rtlphy = &(rtlpriv->phy);
+ 	struct rtl_ps_ctl *ppsc = rtl_psc(rtl_priv(hw));
+ 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
+-	bool rtstatus = true;
++	bool rtstatus;
+ 	int err;
+ 	u8 tmp_u1b;
+ 	unsigned long flags;
+-- 
+2.30.2
+
