@@ -2,165 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FB8637F6FC
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:44:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5182A37F70A
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:46:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233546AbhEMLpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 07:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34460 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231443AbhEMLow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 07:44:52 -0400
-Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6CEC061761;
-        Thu, 13 May 2021 04:43:42 -0700 (PDT)
-Received: from [2a02:610:7501:feff:1ccf:41ff:fe50:18b9] (helo=localhost.localdomain)
-        by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <gatis@mikrotik.com>)
-        id 1lh9kb-0007HF-Hj; Thu, 13 May 2021 14:43:33 +0300
-From:   Gatis Peisenieks <gatis@mikrotik.com>
-To:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        hkallweit1@gmail.com, jesse.brandeburg@intel.com,
-        dchickles@marvell.com, tully@mikrotik.com, eric.dumazet@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Gatis Peisenieks <gatis@mikrotik.com>
-Subject: [PATCH net-next v2 5/5] atl1c: improve link detection reliability on Mikrotik 10/25G NIC
-Date:   Thu, 13 May 2021 14:43:26 +0300
-Message-Id: <20210513114326.699663-6-gatis@mikrotik.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210513114326.699663-1-gatis@mikrotik.com>
-References: <20210513114326.699663-1-gatis@mikrotik.com>
+        id S233500AbhEMLrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 07:47:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56797 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232005AbhEMLrC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 07:47:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620906352;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MT3wo5NP4c6jdkY4rdnz2C8pxWgXXp6JkWRd1hEobAU=;
+        b=Oz+d1hkbtQQL4nu0JPtUVsoz5ubvinQZZMwfOWPPFxdUqQllwtQgt9LpZi1ICzFKX8ehzX
+        iDeNpXkWdgkF8GQ9PhKD/H34oSZjPtUopIksYeCxAJPtQke6NKHHztDY0IPtHeLhWf3168
+        D2uSs6TYR5zRkQAfX5xocRST0EuI9So=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-319-mtwcU8mfOUmIrz625pfr4w-1; Thu, 13 May 2021 07:45:48 -0400
+X-MC-Unique: mtwcU8mfOUmIrz625pfr4w-1
+Received: by mail-ed1-f70.google.com with SMTP id i19-20020a05640242d3b0290388cea34ed3so14472557edc.15
+        for <netdev@vger.kernel.org>; Thu, 13 May 2021 04:45:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MT3wo5NP4c6jdkY4rdnz2C8pxWgXXp6JkWRd1hEobAU=;
+        b=RgTBEt1PJJzodeEEYdaPgCMEUM2z2dDERZ/V2X8BwIZPH+xrbYHKno7C2cbSYqXz2J
+         NNxF6euxA2TFbFxYhCNVFJsfyajn/lEzkrDETSl5lR541pF0Q2a9suEREf6JV2WZ09Fk
+         9aB3GWqYgfUTMJWaib1nvObkkh5yAVSv1IhHi/5Yzep4eIXjKyiiLmzjxp2Mr+TEo3bn
+         oCpy0OvfrfPhSLQTDj5M2JYY4wOoqr4dnsoWEa7y2KCYmokYCJZJCgPV0jttr64HcEVY
+         H1wZvZeQG0++uI3mwvJr9rLlq9eAtDv7Vrh70tT8lOnBHq0KfXXrS8RBL5W387pTwdbk
+         ZPBg==
+X-Gm-Message-State: AOAM530a/DfEoEIPLLSEoBLYVHtwNioOSrj4oee6KpJGfSIkaLtQD9bj
+        c+7HYCo3SVr1BRZ6tzN/xZ780Ko875KX+yWpoFSlg0GnwXTfXOhVemxH+/7/xLD0wVmuVog2yVL
+        ljWHCRW2a43rj8pP5
+X-Received: by 2002:aa7:db90:: with SMTP id u16mr49671406edt.106.1620906347032;
+        Thu, 13 May 2021 04:45:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzK9y97PFsnFtKG2m387tQ7wMAVv4mrXxkCxS1dn+cI2Zu3pe2nfVjZZrdViT0h2czbettl2g==
+X-Received: by 2002:aa7:db90:: with SMTP id u16mr49671388edt.106.1620906346853;
+        Thu, 13 May 2021 04:45:46 -0700 (PDT)
+Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
+        by smtp.gmail.com with ESMTPSA id f7sm1685809ejz.95.2021.05.13.04.45.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 May 2021 04:45:46 -0700 (PDT)
+Date:   Thu, 13 May 2021 13:45:43 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v9 10/19] virtio/vsock: defines and constants for
+ SEQPACKET
+Message-ID: <20210513114543.hucvkhky3tlmvabl@steredhat>
+References: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
+ <20210508163508.3431890-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210508163508.3431890-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mikrotik 10/25G NIC emulates the MDIO accesses, but the emulation is
-not 100% reliable - the MDIO ops occasionally can timeout.
+On Sat, May 08, 2021 at 07:35:05PM +0300, Arseny Krasnov wrote:
+>This adds set of defines and constants for SOCK_SEQPACKET
+>support in vsock. Here is link to spec patch, which uses it:
+>
+>https://lists.oasis-open.org/archives/virtio-comment/202103/msg00069.html
 
-This adds a reliable way of detecting link on Mikrotik 10/25G NIC.
+Will you be submitting a new version?
 
-Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
----
- drivers/net/ethernet/atheros/atl1c/atl1c_hw.c | 26 ++++++++++++++-----
- drivers/net/ethernet/atheros/atl1c/atl1c_hw.h |  1 +
- .../net/ethernet/atheros/atl1c/atl1c_main.c   | 18 +++++--------
- 3 files changed, 27 insertions(+), 18 deletions(-)
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> include/uapi/linux/virtio_vsock.h | 9 +++++++++
+> 1 file changed, 9 insertions(+)
+>
+>diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
+>index 1d57ed3d84d2..3dd3555b2740 100644
+>--- a/include/uapi/linux/virtio_vsock.h
+>+++ b/include/uapi/linux/virtio_vsock.h
+>@@ -38,6 +38,9 @@
+> #include <linux/virtio_ids.h>
+> #include <linux/virtio_config.h>
+>
+>+/* The feature bitmap for virtio vsock */
+>+#define VIRTIO_VSOCK_F_SEQPACKET	1	/* SOCK_SEQPACKET supported */
+>+
+> struct virtio_vsock_config {
+> 	__le64 guest_cid;
+> } __attribute__((packed));
+>@@ -65,6 +68,7 @@ struct virtio_vsock_hdr {
+>
+> enum virtio_vsock_type {
+> 	VIRTIO_VSOCK_TYPE_STREAM = 1,
+>+	VIRTIO_VSOCK_TYPE_SEQPACKET = 2,
+> };
+>
+> enum virtio_vsock_op {
+>@@ -91,4 +95,9 @@ enum virtio_vsock_shutdown {
+> 	VIRTIO_VSOCK_SHUTDOWN_SEND = 2,
+> };
+>
+>+/* VIRTIO_VSOCK_OP_RW flags values */
+>+enum virtio_vsock_rw {
+>+	VIRTIO_VSOCK_SEQ_EOR = 1,
+>+};
+>+
+> #endif /* _UAPI_LINUX_VIRTIO_VSOCK_H */
+>-- 
+>2.25.1
+>
 
-diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_hw.c b/drivers/net/ethernet/atheros/atl1c/atl1c_hw.c
-index ddb9442416cd..7dff20350865 100644
---- a/drivers/net/ethernet/atheros/atl1c/atl1c_hw.c
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c_hw.c
-@@ -636,6 +636,23 @@ int atl1c_phy_init(struct atl1c_hw *hw)
- 	return 0;
- }
- 
-+bool atl1c_get_link_status(struct atl1c_hw *hw)
-+{
-+	u16 phy_data;
-+
-+	if (hw->nic_type == athr_mt) {
-+		u32 spd;
-+
-+		AT_READ_REG(hw, REG_MT_SPEED, &spd);
-+		return !!spd;
-+	}
-+
-+	/* MII_BMSR must be read twice */
-+	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
-+	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
-+	return !!(phy_data & BMSR_LSTATUS);
-+}
-+
- /*
-  * Detects the current speed and duplex settings of the hardware.
-  *
-@@ -695,15 +712,12 @@ int atl1c_phy_to_ps_link(struct atl1c_hw *hw)
- 	int ret = 0;
- 	u16 autoneg_advertised = ADVERTISED_10baseT_Half;
- 	u16 save_autoneg_advertised;
--	u16 phy_data;
- 	u16 mii_lpa_data;
- 	u16 speed = SPEED_0;
- 	u16 duplex = FULL_DUPLEX;
- 	int i;
- 
--	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
--	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
--	if (phy_data & BMSR_LSTATUS) {
-+	if (atl1c_get_link_status(hw)) {
- 		atl1c_read_phy_reg(hw, MII_LPA, &mii_lpa_data);
- 		if (mii_lpa_data & LPA_10FULL)
- 			autoneg_advertised = ADVERTISED_10baseT_Full;
-@@ -726,9 +740,7 @@ int atl1c_phy_to_ps_link(struct atl1c_hw *hw)
- 		if (mii_lpa_data) {
- 			for (i = 0; i < AT_SUSPEND_LINK_TIMEOUT; i++) {
- 				mdelay(100);
--				atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
--				atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
--				if (phy_data & BMSR_LSTATUS) {
-+				if (atl1c_get_link_status(hw)) {
- 					if (atl1c_get_speed_and_duplex(hw, &speed,
- 									&duplex) != 0)
- 						dev_dbg(&pdev->dev,
-diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_hw.h b/drivers/net/ethernet/atheros/atl1c/atl1c_hw.h
-index 73cbc049a63e..c263b326cec5 100644
---- a/drivers/net/ethernet/atheros/atl1c/atl1c_hw.h
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c_hw.h
-@@ -26,6 +26,7 @@ void atl1c_phy_disable(struct atl1c_hw *hw);
- void atl1c_hw_set_mac_addr(struct atl1c_hw *hw, u8 *mac_addr);
- int atl1c_phy_reset(struct atl1c_hw *hw);
- int atl1c_read_mac_addr(struct atl1c_hw *hw);
-+bool atl1c_get_link_status(struct atl1c_hw *hw);
- int atl1c_get_speed_and_duplex(struct atl1c_hw *hw, u16 *speed, u16 *duplex);
- u32 atl1c_hash_mc_addr(struct atl1c_hw *hw, u8 *mc_addr);
- void atl1c_hash_set(struct atl1c_hw *hw, u32 hash_value);
-diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-index 9693da5028cf..740127a6a21d 100644
---- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-@@ -232,15 +232,14 @@ static void atl1c_check_link_status(struct atl1c_adapter *adapter)
- 	struct pci_dev    *pdev   = adapter->pdev;
- 	int err;
- 	unsigned long flags;
--	u16 speed, duplex, phy_data;
-+	u16 speed, duplex;
-+	bool link;
- 
- 	spin_lock_irqsave(&adapter->mdio_lock, flags);
--	/* MII_BMSR must read twise */
--	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
--	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
-+	link = atl1c_get_link_status(hw);
- 	spin_unlock_irqrestore(&adapter->mdio_lock, flags);
- 
--	if ((phy_data & BMSR_LSTATUS) == 0) {
-+	if (!link) {
- 		/* link down */
- 		netif_carrier_off(netdev);
- 		hw->hibernate = true;
-@@ -284,16 +283,13 @@ static void atl1c_link_chg_event(struct atl1c_adapter *adapter)
- {
- 	struct net_device *netdev = adapter->netdev;
- 	struct pci_dev    *pdev   = adapter->pdev;
--	u16 phy_data;
--	u16 link_up;
-+	bool link;
- 
- 	spin_lock(&adapter->mdio_lock);
--	atl1c_read_phy_reg(&adapter->hw, MII_BMSR, &phy_data);
--	atl1c_read_phy_reg(&adapter->hw, MII_BMSR, &phy_data);
-+	link = atl1c_get_link_status(&adapter->hw);
- 	spin_unlock(&adapter->mdio_lock);
--	link_up = phy_data & BMSR_LSTATUS;
- 	/* notify upper layer link down ASAP */
--	if (!link_up) {
-+	if (!link) {
- 		if (netif_carrier_ok(netdev)) {
- 			/* old link state: Up */
- 			netif_carrier_off(netdev);
--- 
-2.31.1
+Looks good:
+
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
