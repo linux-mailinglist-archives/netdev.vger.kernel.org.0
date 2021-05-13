@@ -2,141 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83CF237F6CE
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:32:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BFB737F6D3
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:33:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233413AbhEMLda (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 07:33:30 -0400
-Received: from mail-mw2nam12on2087.outbound.protection.outlook.com ([40.107.244.87]:35393
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        id S233422AbhEMLfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 07:35:03 -0400
+Received: from mail-bn1nam07on2041.outbound.protection.outlook.com ([40.107.212.41]:43318
+        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233374AbhEMLd1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 May 2021 07:33:27 -0400
+        id S233437AbhEMLee (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 May 2021 07:34:34 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YiHaj6ItR/ttmaOmWIWEvhrK9HNLzPVjiRkSMtUE5SGdu+JdcUL5VBlgiegD4m0USMRHUWP0kV/InibPAQGqMo9LI0a/lERRv/Pu+2yDawDF3s2FL58Q1l9MRhjAs3tIYe2K5ancqFsff100Z2yANJjzCPK+TjXwZIGXme9ORTok9Lvy+tJH0R361TiRzRBWHJ/ChfCF3wbh2+dyAPNoq9h0sOvNNTd/BoeuwcXZybk76/vYgYHzAKyENuXZFUDaE3J51YxFsTElQx+YbHNQ9acEF5pxfI0uUnejnufq3A/8tFRK3V4OrwMWIFybe7p7tewk309hLwYoTUDdauoqFw==
+ b=UJBe2FdXZMqu+nIWePqkUFh5gSekOtH5OK3nWdPM3SBLbY66coF+98Nt1VZDug0NhIWPa5zyeIBmRrKYVFmf0DxV2A5bg1IlawEYEU/MU7rSK7xiK5FP5icCUX7RoHfHrYbnLZPvogUXBiDiOTUaR/oovWfHcjENoTMotPO2QuOkJOU88EGPsYeCP+sKoZAgWJknTf+WhU8qLxgsMhLhIlgs9x8CP1PY3tHWTbVk0rYokOvMNGtzPIxFG4RryaBoA98mPSpR2rVezExevM0rQhWP5lprCwEHTiqC2sHm/iJ7D1Nf0KHLQm08IjDSWo1EogvBubFy2J9oKCaB6/WkxA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BbzVia14gGixUTi2PiNzvrcGuAixaykfj10i3Izqs/U=;
- b=L/t8I2VacNDFq/KYcSgd83zI9IRyK2cRAPkC0xDPSoORax+TR72Da5k2UMgXkCeD1CCokeO4MjMHPTENMLwbD76syqIkc5l2BZAcyOqs8Zg3qJOKJHgCNTtxrEdSwIxvRk9b7BDu+AH0iOidoEQ3U6Kiz1yFehn/3cyDNGJgmJiGSdWoptWbNa3zFGj6v6Oc/68GUeiCgXlay42HqgXeqBzAkDXnt8tw/QHls8MFe5hPTeXTecjQYtWaWplbfX81/Y1U9Rq4lh2J7T0HQ3DuCopagzPx7JYP7qZTdFBmmMUk3Qnjcx541J5hlTrzl6LD+tup2ujapCywqSma6ohJAw==
+ bh=qj+idjaX0Iz73ZO0iuV16GW98NGx46EosyA5C19uKeY=;
+ b=TgBFwy2xV3v+u6bOyV6bn08ie9KjEx3vHJOjBb1QJyEe/k6l/m0+frchQdkiP+LT8BO6d/f1ptn4xycPc/EL+V/x0GmzBDP84sPqgSvVrUJZVCJ9WoQQgZlpNkxRfrzRT7UWyxy+pk4gnMup1y5vH+euH4x48u6POeVcvxUK4hecylFHZe+Ky1J+p1FsYA27hrsksimFvdNqsrxXbBvCvv/VSVTck5pO9SQ3zpE92iz/THZkWyv6pj4IFHmxJwX6Rsa9jy14jMMRfjd7U1PsKMCgU8O1nH9RtLsMM2Dt9BCsQPZj7ZK39E82D9kGSLEgRc6LWmtAAcun2fG97TZGlQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BbzVia14gGixUTi2PiNzvrcGuAixaykfj10i3Izqs/U=;
- b=TTLHoP5fIJNwHZIiBa+NWWapp6joBsfViglzCJoqPeUXScAMEIxapaK2z+k9Q2uq+jyNILAnXPUKgj0nERaXqFK1Koo80cxsf0Z+0N3dfqHhSistCHLKsJDzShd1CY1eH2I8lRGlxNKx9Xy/+IvYYRyjQDzNLpunVYJp+kG0NHd9sGbsvzLlAYKjCGlyOEDxDeivHe+jVGFwYyISRK8TzdYflWT0C8p7XDjTl5CJzxFMnlhVdWQV0yw/2CEbdfFc5SnByPxL6igSeFOkHOfwanO1vCp0ULTGYSAPf/djHg4DGySAFad/wCpVPEJEPQdXnlsnk3OSfJSRV0phsy7cxw==
+ bh=qj+idjaX0Iz73ZO0iuV16GW98NGx46EosyA5C19uKeY=;
+ b=XZNwF+iczITK5TcGksNCsH4HrJncIpHS5+R1VBSK1YAB5c6bz5MssA9OWiRDOAmSXYi8uOdxZdZPWK+52r6rgADdXD7XIgaURPQNMcp7g461qCB9AkZAx4vR+guybLvcqgaDx24seO5g52qM2pkEJIHE2F+CI8R218h/c6JVQqs73FgZ70dVgMK8b2zfP4qoPKRlgHbjishrcEkeGwc2TedlVnfcLf9a5QAg+Dy1c/czaUDMQr0QOjGdiWeLRR4lWev0tQfSe2Dhc6CPeT6WrOmpYqfDzV4v7VSkgGi4mDe2XuMCwyweK700W4sWOP/Czhe9yDQmHaAXflDBzlRpkg==
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nvidia.com;
 Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
- by DM6PR12MB5517.namprd12.prod.outlook.com (2603:10b6:5:1be::8) with
+ by DM6PR12MB5566.namprd12.prod.outlook.com (2603:10b6:5:20d::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.25; Thu, 13 May
- 2021 11:32:17 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.27; Thu, 13 May
+ 2021 11:33:21 +0000
 Received: from DM4PR12MB5278.namprd12.prod.outlook.com
  ([fe80::d556:5155:7243:5f0f]) by DM4PR12MB5278.namprd12.prod.outlook.com
  ([fe80::d556:5155:7243:5f0f%6]) with mapi id 15.20.4129.026; Thu, 13 May 2021
- 11:32:17 +0000
-Subject: Re: [net-next v3 05/11] net: bridge: mcast: prepare is-router
- function for mcast router split
+ 11:33:21 +0000
+Subject: Re: [net-next v3 06/11] net: bridge: mcast: prepare expiry functions
+ for mcast router split
 To:     =?UTF-8?Q?Linus_L=c3=bcssing?= <linus.luessing@c0d3.blue>,
         netdev@vger.kernel.org
 Cc:     Roopa Prabhu <roopa@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 References: <20210512231941.19211-1-linus.luessing@c0d3.blue>
- <20210512231941.19211-6-linus.luessing@c0d3.blue>
+ <20210512231941.19211-7-linus.luessing@c0d3.blue>
 From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-Message-ID: <1e18b246-1efd-98ef-60a9-3bbf2a7f06e7@nvidia.com>
-Date:   Thu, 13 May 2021 14:32:10 +0300
+Message-ID: <7b47a9d8-104a-ca57-6550-df0105c72993@nvidia.com>
+Date:   Thu, 13 May 2021 14:33:14 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
-In-Reply-To: <20210512231941.19211-6-linus.luessing@c0d3.blue>
+In-Reply-To: <20210512231941.19211-7-linus.luessing@c0d3.blue>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 X-Originating-IP: [213.179.129.39]
-X-ClientProxiedBy: ZRAP278CA0009.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:10::19) To DM4PR12MB5278.namprd12.prod.outlook.com
+X-ClientProxiedBy: ZRAP278CA0011.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:10::21) To DM4PR12MB5278.namprd12.prod.outlook.com
  (2603:10b6:5:39e::17)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.21.241.170] (213.179.129.39) by ZRAP278CA0009.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:10::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Thu, 13 May 2021 11:32:15 +0000
+Received: from [10.21.241.170] (213.179.129.39) by ZRAP278CA0011.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:10::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Thu, 13 May 2021 11:33:19 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5ce636e0-1913-426d-f953-08d91602c341
-X-MS-TrafficTypeDiagnostic: DM6PR12MB5517:
+X-MS-Office365-Filtering-Correlation-Id: 7bbca84b-e68f-4e74-3d9f-08d91602e944
+X-MS-TrafficTypeDiagnostic: DM6PR12MB5566:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR12MB551733B25FB7A00C257BCFFADF519@DM6PR12MB5517.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <DM6PR12MB5566851173D7F41AC71A6770DF519@DM6PR12MB5566.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: huaEi1u5bzfOAqcn4PfAkBlxNQyCGpnqrtIKm/v3eZfE0B8FBrDHAsUz1PqeS4i2u7HDYH3LurvDK4OVMnH/UaPdWTasigUjHUsljFFamu1rn6/SWspfUdxb+zS8kub2Hn3jVX7I0kaCq8/eMWKrthiEMA5gK7UHpPvWccEQLRhNSpG3qvzteYOp1uvjkpv++YXOLpzFfLUNDRUvjdEob9Lab6nUOLddfIjwo2vvXYmgmlRyi21GhXdKLvUKerxC95ZsQW/mRsxc+i3QauV6sm9IVPBtAK7URAPeHj5NwzVI0Ryscd2v+MoOcsqclFFEb/bH8/uUJfjgvHJJe5wh50N26mrxdmM+MR1/6wOqxGvqNBnf4KdtBuYSPT3R5ltxuoa7FXcjpJ803PoFi5AOTy/6uePCCcU7+jzVoG+lm3xto60RhJ8srbU8dcLoSgLutoMF+5RzQgnUe4v1PJdebquWXviiVP4kOXltk/2BX756vgklTKN7KwP6rdMJh/FY44JyCXz2Cl5Xu5X6BceY8RY5yEvLbnBRGPUGeDZz1dLIFLKwTUQCN8GRSmDH+A4FrEhdy/I7BOTAc5300ZDM8r6PhbgvNIwV2IeZOpz1ty60y2sO6xB5qAnTOt2czfdExPSDq97aRh09P5mRzWJH4bCUn0qoA1OX0ehxgxRNTPn7inJEgMlrqCznH7qG7nI9
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(39860400002)(376002)(396003)(366004)(6486002)(8676002)(54906003)(316002)(16576012)(478600001)(16526019)(186003)(956004)(2616005)(4326008)(2906002)(53546011)(5660300002)(8936002)(31686004)(4744005)(26005)(38100700002)(66574015)(36756003)(31696002)(86362001)(6666004)(66556008)(83380400001)(66946007)(66476007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cjFvNERQcHY5Mnd1TGNNTjFCeDJ6NFRzTjRVS2VSR1FNU0VFbnAraVdLM0hC?=
- =?utf-8?B?eTBsSnRiWTJzbHpEWEs4QnEwYkdhMXh0TEpYbHM1UDJDMDBLdVdRMlk5T1FU?=
- =?utf-8?B?UkRSK1h0d2RrUXNtL1lDb28yWnV3NEZTbzVHTU8xNElZenV4bUdPNnBGYU4r?=
- =?utf-8?B?emtzUXFJaS96SFQzdjFrcFp4ZEx5b0pGKzNSUmRKUmdqZksxZXhxQXk1bGly?=
- =?utf-8?B?WDdFWXYyR0c2YVFZOEVTSFk3endpcFFVUmc1bjVCeWNFL3JWMkgrME5yQnV2?=
- =?utf-8?B?MTQ2MHRoSUhvQzJVNFE0ZUxRU2tOR1hMOUVGZGVhYzdXWDAzRE1sVEVkV3J5?=
- =?utf-8?B?UzJ6ZldFekpjcU5aT0ovYUJNbk5iOUlhRWtETHFJSDJKZFdnOGRhaVJXRkdw?=
- =?utf-8?B?OE95QzVUckhhS3ZXUFlnaktiMmgyWXhIN2RBSXVpNXRMck1VcC9tYmNXZFVl?=
- =?utf-8?B?WjExYjZpbXZLamRtQzE0RE9BUkdmaGY4djFOUEg3MnlkQUY2ME80bXEraGlj?=
- =?utf-8?B?RzF6ek9ZL1RjRzdzRXhqRG80cEtqOHZrTXpUZDBzRUozOXgzaUNHUWNnYmsr?=
- =?utf-8?B?RGJKTExMekY2Rmg1YUE1aWlJQVAzaVluVXl0bFFaNVR1NENOZWZBRkQyOXpL?=
- =?utf-8?B?dXJHR1BiQmpQaGYrNjNnWDhKb1Vpd3IxQnJWOEJDK0p2TGk0NHVCSEM3VjR3?=
- =?utf-8?B?TzdrS1VsWURNRDZxR3ZuMUEyb1ZXRDIwTGtQQWFVblZ4WFNMSjJiSVZxWW9Y?=
- =?utf-8?B?RzVjdktKS3B3R2tDY0NqTkY4bXg4WDBkd2xweUFOempjYWtBakE0cGdHNHRj?=
- =?utf-8?B?N2FNV1NVdEpxTFZia0lBSXpMd05DclZoanJQMy96RHFGWWN1c0FMZ1JQWVBh?=
- =?utf-8?B?TklhZ3BNU3JFcUlZVDVtNTVXOVdxbUE4SWEzSThiaDRSMDBtT21NQVVNTzUy?=
- =?utf-8?B?NHBROVdpM3k4Zmdzdm9weXhmVDN1Mmg4VnVCS1FVcEJSMVpjbk1lNEY3VFdl?=
- =?utf-8?B?Z0VxNjlMcVdOWG5OVHJyY2xwZFhKT1M1cmdTd1NGT0ZqSWVGSzVBcFFPZU1D?=
- =?utf-8?B?UTF3MEQvM0V3cHRxSktOa1p4bU9tK3JQS3J1aUVkTEZxWmdrWnhiL21IanhI?=
- =?utf-8?B?Y3VlTkJ5eVpiTmNNZlhuc2haNGgxY0xYc2d6dWt6UHJ1eHdRNEViYTdqS3g2?=
- =?utf-8?B?M1dEWm84bS92WWxNelBiRWpYcWNIcmtHemlWUnVVKy81NHZBQ3ZzV3N6NVo2?=
- =?utf-8?B?WE9hSjRmOUJXZEw5bEllYk1acVNVVUEvSk9JdHMrZDI1aGhyeW1zaDVoTnJV?=
- =?utf-8?B?T0RNZkZrdlI3Z2k3QW14UzRHdUlIRGpoZWZYRVBsUlFWRWtFNzU5cDZSb3cy?=
- =?utf-8?B?UUdVQ3BaakJDVjdQc0hONHE4SzY0ZUlhazM0T0w2NEM5Y3d4WXYxL0E3Z0po?=
- =?utf-8?B?QzFjTlhSNnQ3S3dsbzRpRGM4d0h2K3ZqeXBUbFVJdFdBV003THhKMlVaa2Mw?=
- =?utf-8?B?Z2k3SC9kZ3dINDZUOWhwU0FOdCtBd3VsOStSNHErd2xpNzlwNENwd2xGMVpy?=
- =?utf-8?B?SVUvRjBSYlpMWDlOVGFvblZjVlMyS1J4RlNQYmpwcElsTlh2eXE0SEVFenZs?=
- =?utf-8?B?dFFMWHloSHRFMlVNeEgrcFBFN1JIb25NTjdiQTJpYldBLzZmbnNDNmtkbjZk?=
- =?utf-8?B?Z3dFdkQ0b3l2REJxcEZvenVOMktCU3hJbDBzbUF2TTFsOThBYnlLNktCa1Yv?=
- =?utf-8?Q?r6pJrc4zWqIZeMZse+eipU0/nmJ2zkBJcdfTJtE?=
+X-Microsoft-Antispam-Message-Info: IeM6MygHb9A+IAjQNj/3yaciI6gp2mZuaejEsiRr7YlUMXr3xzpn0LcxMJfoovbr4b4hi6HsvTeHGUSyms2Eod8i+Tlbv1vHrrVSOVGbgCev7YDHK267VXeLP+rWy3PVkSD6JTO7ILvO74YuEpH3fVG0FyNipC8CRBjMEVAohFbCxLabWU2+DtSgtrpYAaQ2vHR5Fc3MQEQ9z9DG8FRRTtYXKTP70uUTdcrSlQQsAR3wMwPefweIq4mFYUToKmezeKogghIPSFxPBU9iBoJklNoRvk7V66ZEegYBUfXA5GyJbdBCd1dguRZ9OF6B0e5W5ozP68Jv7w6HZxQTu+05b2vL9H8KMG0nJy+006KkDzpVojZPVcRVOwJ47qAT4AXhQHLsvoJJkpAgyLy6OYe7K1k4SX24bHCBbkvd/qsgD/rsyA2RVqof/si3ETnmo5Hk5rTC7bFej911ELDCz2WjM3g7X97xGisx6y0I/i1miErRWXiLgwOUuLdrMAU3YERnW/+JB8Y9nL4CQfZiztzAyyIbF/lITazKbtfMnclqOZogYREhVsRTTqidQ7ua8uEZeOs86kjM/E2U/vXTlyx90nYXeEiwDNexVXzxLknd+om91kSB86DGotagg4+N9yg/4AzbDmHiksRZLQR2C/w9DaR6dOPgn0lt2p0/sU2NZnUo2HQRUlqVGlIl4g8nKLf5
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(39860400002)(366004)(346002)(53546011)(26005)(4326008)(16526019)(186003)(36756003)(2906002)(38100700002)(2616005)(956004)(16576012)(83380400001)(31686004)(316002)(54906003)(4744005)(86362001)(5660300002)(66556008)(66476007)(66946007)(31696002)(66574015)(478600001)(8936002)(6666004)(8676002)(6486002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?T2k0ZlJ2bmpsam5tL3NqMTE2Q1VWVy9HRkhnZXJMZ2crbE9WR2NyTVd0VHZm?=
+ =?utf-8?B?bGxLamFieklMaUllNEZDclc2WlI4NVZ2LzA0ZVVEQzlCM1RRNkpTRUFmaCtH?=
+ =?utf-8?B?ckpGeCtITmlkcldwMTlIRUFaaTN4VkI3ZExjaEF1L0krUXpFUm4wVk9yTS9T?=
+ =?utf-8?B?bWc1blBXbTFTeTZtN21DWGkxQ1VEREZ6bUdpZjk3S0RyTzhQUDl1T25XYTJx?=
+ =?utf-8?B?dEYxamdadWQwWnVNcnY2UHVaWGtpWWlTcmhxZUdVb2RkK2NDa0V2alYxaUE3?=
+ =?utf-8?B?VnhSWVU0WWFZVEFLYSt3U1Z3NHlQK0k2RmdNV1VUUS9rSWJOMFIwYmtBclVD?=
+ =?utf-8?B?K3V1V3dUZE5NL3F4VEpxblNCaDF2YndiTXJwVUpwU3NMZzV0WTJaWkpNdkdm?=
+ =?utf-8?B?S0tpc1BaalpnYzFRUnY4Nm02ZkE5M3pMMUdEZUZseGhUTUc4MVJSY1hqVld2?=
+ =?utf-8?B?RVNaS25qUVA2UkdhVU1QVjBkeXFCc3hBc1pHYXZILzZCWkRXSUF6ZTI0Sm5V?=
+ =?utf-8?B?Q3VON3UrN004NWNVZStMVWVXckw4QlNLcGI4OWNJMCtQUkZrYkx3c1JoK2Fx?=
+ =?utf-8?B?YS93cmRheStoQUVDRUltTkdPcE4wQW9aU2U0VnpYeEdnZEdpMWRsUzgvYXUv?=
+ =?utf-8?B?cXNFOVFKN2YwWmh0eTJXRzh5K1hPdWpPUFVqZEUwWFF0WHBSUTJZajZtRWxM?=
+ =?utf-8?B?N3V5OXF2bk9oTEU5NXdKa25FOTFwSFcrOGVuSGNqNWNabzR3MHFBUmhoZDkv?=
+ =?utf-8?B?UGpFcFJDRHVnSFdKZFdNeHRIcGRqWnJqVVg4K2dsbEoydkxmNHh3NHpiNVlL?=
+ =?utf-8?B?UWlvK0lnUXZib0tzcVpuclhWTXh2UmNZdWc0RmxJeEZVUGJOV1g4WDBIK3BF?=
+ =?utf-8?B?MTdicjRvNGtGck5samZBaHZMOVF2dXV6TmxxWFJWWlFqRGJiMXNKOWpqaklF?=
+ =?utf-8?B?dkVYNldveHUweDEySnA3Z200aXJTMEo0L1lhQWVjQ1M5aFJaSHgxQlBidHZE?=
+ =?utf-8?B?OTJQbzB5OTR2UW00dDFnaDR2M2E5YWYzRmNwbHNRNDhWcHpCRjNlUlVnMmgx?=
+ =?utf-8?B?MTFKQzJMVytSZk1ic3RMUXgrN3VyUVN1VHplUU9NMkNrRUFreHh3dkVPYTZD?=
+ =?utf-8?B?VnQ3bFE0VWdLekVxcmJ0ZXRkSlozTk5JbG0rcmpuZHRtV3FpeGxqQU96SmlV?=
+ =?utf-8?B?eERWeDdrOXQ3M0tVNFE5MS9KR0RMeTA4eTltS0d4ZmRVZ0dGSml3UjFiVWdK?=
+ =?utf-8?B?Q09wZ25jYThlTk1tc0hoaldhSEcyT2VmMUZFQW9IY1ZZOVQ5YWNtVE1WSytX?=
+ =?utf-8?B?YVorRm5JNlRkT0VmUUd2RUZWWkNwdXJ4UnJOSHVuOGJRa0hFcUhFS1lmZFR3?=
+ =?utf-8?B?MWh3MkhXTVNEaFJwRUxkcVp5N1pyZzhrQjRqRUZ4dTNudjQ1eEViK0JRbUN3?=
+ =?utf-8?B?YVNnblVzTjNlMGVlMHZEanlYQzJiQXgySjJIbVYxcTIxZEt2Q0V6NVYzczlk?=
+ =?utf-8?B?SkxiWXJWMUN5NXpSNjM3WGlROHU3S2c5QnM2WmVYN0RKYnNyN2I1dnRBVzJE?=
+ =?utf-8?B?WTlYK3YzL2lxS2RTMEk5cGthZWVUbDlhcHFvQ2F3eEJ0ek9KTTJzQ0pnWDY4?=
+ =?utf-8?B?V3BHVzNmZEV4aml3M3JwUERad3UxdVVjN1VzYzlmS2ZJMGhNZElaWEVVYTZM?=
+ =?utf-8?B?OGsrUE1QSURjWnFEVytzRkxpT3JKQ3pXZ3RXZVRwYzQrM1BSSHpJdnRyTU5G?=
+ =?utf-8?Q?LIdbdVqP1l9yU8tgEUTzrbgzVyztYOvE5AQb1ES?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5ce636e0-1913-426d-f953-08d91602c341
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7bbca84b-e68f-4e74-3d9f-08d91602e944
 X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2021 11:32:17.2496
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2021 11:33:21.1872
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yN4XuzINJ4TLPHTWroas76qNEF22MB6TFMf1sukCqgDBHBbxh26El5nS3eah16F+nb+S913pYsS5qSIpOe2pqw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5517
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6E1RCHL5R7fHzTkY9aS0d3pgQs5z2oQpNXYPNRqT53s6jeuL9bMoj9ktkl70eF1D3gUkQqrVIBvl4jj5z8pyaw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5566
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 13/05/2021 02:19, Linus Lüssing wrote:
 > In preparation for the upcoming split of multicast router state into
-> their IPv4 and IPv6 variants make br_multicast_is_router() protocol
-> family aware.
-> 
-> Note that for now br_ip6_multicast_is_router() uses the currently still
-> common ip4_mc_router_timer for now. It will be renamed to
-> ip6_mc_router_timer later when the split is performed.
-> 
-> While at it also renames the "1" and "2" constants in
-> br_multicast_is_router() to the MDB_RTR_TYPE_TEMP_QUERY and
-> MDB_RTR_TYPE_PERM enums.
+> their IPv4 and IPv6 variants move the protocol specific timer access to
+> an ip4 wrapper function.
 > 
 > Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
 > ---
->  net/bridge/br_input.c     |  2 +-
->  net/bridge/br_multicast.c |  5 +++--
->  net/bridge/br_private.h   | 37 +++++++++++++++++++++++++++++++++----
->  3 files changed, 37 insertions(+), 7 deletions(-)
+>  net/bridge/br_multicast.c | 31 ++++++++++++++++++++++---------
+>  1 file changed, 22 insertions(+), 9 deletions(-)
 > 
 
 Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
