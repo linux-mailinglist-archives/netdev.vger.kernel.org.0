@@ -2,114 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E12937FA79
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 17:18:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A58B337FA94
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 17:22:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234826AbhEMPTw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 May 2021 11:19:52 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:58022 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234810AbhEMPTu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 11:19:50 -0400
-Received: from smtpclient.apple (p4fefc9d6.dip0.t-ipconnect.de [79.239.201.214])
-        by mail.holtmann.org (Postfix) with ESMTPSA id A688CCED28;
-        Thu, 13 May 2021 17:26:25 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.80.0.2.43\))
-Subject: Re: [PATCH] Bluetooth: Shutdown controller after workqueues are
- flushed or cancelled
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210511043029.43682-1-kai.heng.feng@canonical.com>
-Date:   Thu, 13 May 2021 17:18:33 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:BLUETOOTH SUBSYSTEM" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <F4ED8B6E-354E-4E88-8E48-4CF4169505CE@holtmann.org>
-References: <20210511043029.43682-1-kai.heng.feng@canonical.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-X-Mailer: Apple Mail (2.3654.80.0.2.43)
+        id S234868AbhEMPXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 11:23:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39558 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232548AbhEMPXe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 May 2021 11:23:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3684F61182;
+        Thu, 13 May 2021 15:22:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620919344;
+        bh=/M7gWU9HaLG6QbJqmridKAEJyvcI1IJcmogeYbUoJ+U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iukByoWv+Aaq41EUuIYacG4iI7RjoJH+Dv+T3aIsAibxD6+BWgk/crbhd2LbCde7a
+         lQJuVfSIJjjW+ha/iQ90zSXeJ24s6SuZdG4+KYs7mRYRuMVqUAw2zjZ5ddvv5ixI5c
+         akmBnutSNwWueOUI9l5d+0c14qkd5ZK75Z2eJDUIDu/oI3G76zjdm5bL1QfZA+LvtR
+         VwivSTFOzL3OanSzxBaJmVXsEPpXK87m5GbwriuVV7ClD48vvVyDjDXP5MsTCIfYli
+         vV65c/PLopqhwV7E3xueEGqoiJ75yUY2i4tawdqBSK0g4AfKEVb6McH6ii7aXsRqLc
+         +RBpqtIo2cf2w==
+Date:   Thu, 13 May 2021 08:22:22 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     <davem@davemloft.net>, <olteanv@gmail.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andriin@fb.com>, <edumazet@google.com>,
+        <weiwan@google.com>, <cong.wang@bytedance.com>,
+        <ap420073@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
+        <mkl@pengutronix.de>, <linux-can@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
+        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
+        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
+        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
+        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
+        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
+        <alobakin@pm.me>
+Subject: Re: [PATCH net v7 3/3] net: sched: fix tx action reschedule issue
+ with stopped queue
+Message-ID: <20210513082222.3b23d3a3@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <1620868260-32984-4-git-send-email-linyunsheng@huawei.com>
+References: <1620868260-32984-1-git-send-email-linyunsheng@huawei.com>
+        <1620868260-32984-4-git-send-email-linyunsheng@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kai-Heng,
-
-> Rfkill block and unblock Intel USB Bluetooth [8087:0026] may make it
-> stops working:
-> [  509.691509] Bluetooth: hci0: HCI reset during shutdown failed
-> [  514.897584] Bluetooth: hci0: MSFT filter_enable is already on
-> [  530.044751] usb 3-10: reset full-speed USB device number 5 using xhci_hcd
-> [  545.660350] usb 3-10: device descriptor read/64, error -110
-> [  561.283530] usb 3-10: device descriptor read/64, error -110
-> [  561.519682] usb 3-10: reset full-speed USB device number 5 using xhci_hcd
-> [  566.686650] Bluetooth: hci0: unexpected event for opcode 0x0500
-> [  568.752452] Bluetooth: hci0: urb 0000000096cd309b failed to resubmit (113)
-> [  578.797955] Bluetooth: hci0: Failed to read MSFT supported features (-110)
-> [  586.286565] Bluetooth: hci0: urb 00000000c522f633 failed to resubmit (113)
-> [  596.215302] Bluetooth: hci0: Failed to read MSFT supported features (-110)
+On Thu, 13 May 2021 09:11:00 +0800 Yunsheng Lin wrote:
+> The netdev qeueue might be stopped when byte queue limit has
+> reached or tx hw ring is full, net_tx_action() may still be
+> rescheduled endlessly if STATE_MISSED is set, which consumes
+> a lot of cpu without dequeuing and transmiting any skb because
+> the netdev queue is stopped, see qdisc_run_end().
 > 
-> Or kernel panics because other workqueues already freed skb:
-> [ 2048.663763] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> [ 2048.663775] #PF: supervisor read access in kernel mode
-> [ 2048.663779] #PF: error_code(0x0000) - not-present page
-> [ 2048.663782] PGD 0 P4D 0
-> [ 2048.663787] Oops: 0000 [#1] SMP NOPTI
-> [ 2048.663793] CPU: 3 PID: 4491 Comm: rfkill Tainted: G        W         5.13.0-rc1-next-20210510+ #20
-> [ 2048.663799] Hardware name: HP HP EliteBook 850 G8 Notebook PC/8846, BIOS T76 Ver. 01.01.04 12/02/2020
-> [ 2048.663801] RIP: 0010:__skb_ext_put+0x6/0x50
-> [ 2048.663814] Code: 8b 1b 48 85 db 75 db 5b 41 5c 5d c3 be 01 00 00 00 e8 de 13 c0 ff eb e7 be 02 00 00 00 e8 d2 13 c0 ff eb db 0f 1f 44 00 00 55 <8b> 07 48 89 e5 83 f8 01 74 14 b8 ff ff ff ff f0 0f c1
-> 07 83 f8 01
-> [ 2048.663819] RSP: 0018:ffffc1d105b6fd80 EFLAGS: 00010286
-> [ 2048.663824] RAX: 0000000000000000 RBX: ffff9d9ac5649000 RCX: 0000000000000000
-> [ 2048.663827] RDX: ffffffffc0d1daf6 RSI: 0000000000000206 RDI: 0000000000000000
-> [ 2048.663830] RBP: ffffc1d105b6fd98 R08: 0000000000000001 R09: ffff9d9ace8ceac0
-> [ 2048.663834] R10: ffff9d9ace8ceac0 R11: 0000000000000001 R12: ffff9d9ac5649000
-> [ 2048.663838] R13: 0000000000000000 R14: 00007ffe0354d650 R15: 0000000000000000
-> [ 2048.663843] FS:  00007fe02ab19740(0000) GS:ffff9d9e5f8c0000(0000) knlGS:0000000000000000
-> [ 2048.663849] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 2048.663853] CR2: 0000000000000000 CR3: 0000000111a52004 CR4: 0000000000770ee0
-> [ 2048.663856] PKRU: 55555554
-> [ 2048.663859] Call Trace:
-> [ 2048.663865]  ? skb_release_head_state+0x5e/0x80
-> [ 2048.663873]  kfree_skb+0x2f/0xb0
-> [ 2048.663881]  btusb_shutdown_intel_new+0x36/0x60 [btusb]
-> [ 2048.663905]  hci_dev_do_close+0x48c/0x5e0 [bluetooth]
-> [ 2048.663954]  ? __cond_resched+0x1a/0x50
-> [ 2048.663962]  hci_rfkill_set_block+0x56/0xa0 [bluetooth]
-> [ 2048.664007]  rfkill_set_block+0x98/0x170
-> [ 2048.664016]  rfkill_fop_write+0x136/0x1e0
-> [ 2048.664022]  vfs_write+0xc7/0x260
-> [ 2048.664030]  ksys_write+0xb1/0xe0
-> [ 2048.664035]  ? exit_to_user_mode_prepare+0x37/0x1c0
-> [ 2048.664042]  __x64_sys_write+0x1a/0x20
-> [ 2048.664048]  do_syscall_64+0x40/0xb0
-> [ 2048.664055]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [ 2048.664060] RIP: 0033:0x7fe02ac23c27
-> [ 2048.664066] Code: 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
-> [ 2048.664070] RSP: 002b:00007ffe0354d638 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> [ 2048.664075] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007fe02ac23c27
-> [ 2048.664078] RDX: 0000000000000008 RSI: 00007ffe0354d650 RDI: 0000000000000003
-> [ 2048.664081] RBP: 0000000000000000 R08: 0000559b05998440 R09: 0000559b05998440
-> [ 2048.664084] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-> [ 2048.664086] R13: 0000000000000000 R14: ffffffff00000000 R15: 00000000ffffffff
+> This patch fixes it by checking the netdev queue state before
+> calling qdisc_run() and clearing STATE_MISSED if netdev queue is
+> stopped during qdisc_run(), the net_tx_action() is recheduled
+> again when netdev qeueue is restarted, see netif_tx_wake_queue().
 > 
-> So move the shutdown callback to a place where workqueues are either
-> flushed or cancelled to resolve the issue.
+> As there is time window betewwn netif_xmit_frozen_or_stopped()
+> checking and STATE_MISSED clearing, between which STATE_MISSED
+> is set by net_tx_action() scheduled by netif_tx_wake_queue(),
+> so set the STATE_MISSED again if netdev queue is restarted.
 > 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
-> net/bluetooth/hci_core.c | 16 ++++++++--------
-> 1 file changed, 8 insertions(+), 8 deletions(-)
+> Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
+> Reported-by: Michal Kubecek <mkubecek@suse.cz>
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 
-seems this one doesn’t apply cleanly to bluetooth-next, please rebase and re-send.
+> @@ -35,6 +35,25 @@
+>  const struct Qdisc_ops *default_qdisc_ops = &pfifo_fast_ops;
+>  EXPORT_SYMBOL(default_qdisc_ops);
+>  
+> +static void qdisc_maybe_stop_tx(struct Qdisc *q,
 
-Regards
-
-Marcel
-
+nit: qdisc_maybe_clear_missed()?
