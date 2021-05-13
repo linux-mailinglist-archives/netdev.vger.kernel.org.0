@@ -2,87 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB8437F869
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 15:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CB6237F893
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 15:21:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233463AbhEMNJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 09:09:32 -0400
-Received: from mail-m2454.qiye.163.com ([220.194.24.54]:25454 "EHLO
-        mail-m2454.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229466AbhEMNJ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 09:09:29 -0400
-Received: from localhost.localdomain (unknown [106.75.220.3])
-        by mail-m2454.qiye.163.com (Hmail) with ESMTPA id 9EE7CC00202;
-        Thu, 13 May 2021 21:08:14 +0800 (CST)
-From:   Tao Liu <thomas.liu@ucloud.cn>
-To:     pshelar@ovn.org
-Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, i.maximets@ovn.org,
-        jean.tourrilhes@hpe.com, kuba@kernel.org, davem@davemloft.net,
-        thomas.liu@ucloud.cn, wenxu@ucloud.cn
-Subject: [ovs-dev] [PATCH net v2] openvswitch: meter: fix race when getting now_ms.
-Date:   Thu, 13 May 2021 21:08:00 +0800
-Message-Id: <20210513130800.31913-1-thomas.liu@ucloud.cn>
-X-Mailer: git-send-email 2.23.0
+        id S233992AbhEMNWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 09:22:15 -0400
+Received: from mail.aperture-lab.de ([116.203.183.178]:52598 "EHLO
+        mail.aperture-lab.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233682AbhEMNWK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 09:22:10 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id D00A53E8F5;
+        Thu, 13 May 2021 15:20:56 +0200 (CEST)
+From:   =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
+To:     netdev@vger.kernel.org
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v4 00/11] net: bridge: split IPv4/v6 mc router state and export for batman-adv
+Date:   Thu, 13 May 2021 15:20:42 +0200
+Message-Id: <20210513132053.23445-1-linus.luessing@c0d3.blue>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZQx1MSlZMQ0NCSB5JTEodQx9VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWUFZT0tIVUpKS0
-        hKTFVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OE06LTo4OT0yKBQrEh9CKTgC
-        HigKCUhVSlVKTUlLQkpKSUJOSUlIVTMWGhIXVQ8TFBYaCFUXEg47DhgXFA4fVRgVRVlXWRILWUFZ
-        SktNVUxOVUlJS1VIWVdZCAFZQUlNQk83Bg++
-X-HM-Tid: 0a7965d789ec8c13kuqt9ee7cc00202
+X-Last-TLS-Session-Version: TLSv1.2
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have observed meters working unexpected if traffic is 3+Gbit/s
-with multiple connections.
+Hi,
 
-now_ms is not pretected by meter->lock, we may get a negative
-long_delta_ms when another cpu updated meter->used, then:
-    delta_ms = (u32)long_delta_ms;
-which will be a large value.
+The following patches are splitting the so far combined multicast router
+state in the Linux bridge into two ones, one for IPv4 and one for IPv6,
+for a more fine-grained detection of multicast routers. This avoids
+sending IPv4 multicast packets to an IPv6-only multicast router and
+avoids sending IPv6 multicast packets to an IPv4-only multicast router.
+This also allows batman-adv to make use of the now split information in
+the final patch.
 
-    band->bucket += delta_ms * band->rate;
-then we get a wrong band->bucket.
+The first eight patches prepare the bridge code to avoid duplicate
+code or IPv6-#ifdef clutter for the multicast router state split. And 
+contain no functional changes yet.
 
-OpenVswitch userspace datapath has fixed the same issue[1] some
-time ago, and we port the implementation to kernel datapath.
+The ninth patch then implements the IPv4+IPv6 multicast router state
+split.
 
-[1] https://patchwork.ozlabs.org/project/openvswitch/patch/20191025114436.9746-1-i.maximets@ovn.org/
+Patch number ten adds IPv4+IPv6 specific timers to the mdb netlink
+router port dump, so that the timers validity can be checked
+individually
+from userspace.
 
-Fixes: 96fbc13d7e77 ("openvswitch: Add meter infrastructure")
-Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
-Suggested-by: Ilya Maximets <i.maximets@ovn.org>
----
-Changelog:
-v2: just set negative long_delta_ms to zero in case of race for meter lock.
-v1: make now_ms protected by meter lock.
----
- net/openvswitch/meter.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+The final, eleventh patch exports this now per protocol family multicast
+router state so that batman-adv can then later make full use of the 
+Multicast Router Discovery (MRD) support in the Linux bridge. The 
+batman-adv protocol format currently expects separate multicast router
+states for IPv4 and IPv6, therefore it depends on the first patch.
+batman-adv will then make use of this newly exported functions like
+this[0].
 
-diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-index 96b524c..896b8f5 100644
---- a/net/openvswitch/meter.c
-+++ b/net/openvswitch/meter.c
-@@ -611,6 +611,14 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
- 	spin_lock(&meter->lock);
- 
- 	long_delta_ms = (now_ms - meter->used); /* ms */
-+	if (long_delta_ms < 0) {
-+		/* This condition means that we have several threads fighting
-+		 * for a meter lock, and the one who received the packets a
-+		 * bit later wins. Assuming that all racing threads received
-+		 * packets at the same time to avoid overflow.
-+		 */
-+		long_delta_ms = 0;
-+	}
- 
- 	/* Make sure delta_ms will not be too large, so that bucket will not
- 	 * wrap around below.
--- 
-1.8.3.1
+Regards, Linus
+
+[0]:
+https://git.open-mesh.org/batman-adv.git/shortlog/refs/heads/linus/multicast-routeable-mrd
+     ->
+https://git.open-mesh.org/batman-adv.git/commit/d4bed3a92427445708baeb1f2d1841c5fb816fd4
+
+Changelog v4: 
+
+* Patch 01/11:
+  * unchanged
+* Patch 02/11:
+  * renaming br_multicast_rport_from_node() to
+    br_multicast_rport_from_node() to be able to use the name of
+    the former later in Patch 7 in br_multicast.c
+* Patch 03/11 to 06/11:
+  * unchanged
+* Patch 07/11:
+  * fixing >80 characters line length of
+    br_ip4_multicast_get_rport_slot()
+  * restructuring br_(ip4_)multicast_get_rport_slot() and 
+    br_(ip4_)multicast_mark_router() to reduce duplicate code,
+    br_multicast_get_rport_slot() is moved into
+    br_multicast_add_router() and uses hlist_for_each() instead of
+    hlist_for_each_entry() and a helper function to be protocol
+    independent
+  * removed redundant hlist_unhashed(&port->ip4_rlist)) check in
+    __br_multicast_enable_port(), br_ip4_multicast_add_router() already
+    checks this
+* Patch 08/11:
+  * unchanged
+* Patch 09/11:
+  * fixing >80 characters line length of
+    br_ip6_multicast_get_rport_slot()
+  * removed inline attribute from br_ip6_multicast_add_router()
+    and br_ip6_multicast_mark_router() in the !IS_ENABLED(CONFIG_IPV6)
+    case
+  * removed redundant hlist_unhashed(&port->ip6_rlist)) check in
+    __br_multicast_enable_port(), br_ip6_multicast_add_router() already
+    checks this, which removes some IPv6 ifdef clutter in
+     __br_multicast_enable_port()
+* Patch 10/11 + 11/11:
+  * unchanged
+
+Changelog v3: 
+
+* Patch 01/11:
+  * fixed/added missing rename of br->router_list to
+    br->ip4_mc_router_list in br_multicast_flood()
+* Patch 02/11:
+  * moved inline functions from br_forward.c to br_private.h
+* Patch 03/11:
+  * removed inline attribute from functions added to br_mdb.c
+* Patch 04/11:
+  * unchanged
+* Patch 05/11:
+  * converted if()'s into switch-case in br_multicast_is_router()
+* Patch 06/11:
+  * removed inline attribute from function added to br_multicast.c
+* Patch 07/11:
+  * added missing static attribute to function
+    br_ip4_multicast_get_rport_slot() added to br_multicast.c
+* Patch 08/11:
+  * removed inline attribute from function added to br_multicast.c
+* Patch 09/11:
+  * added missing static attribute to function
+    br_ip6_multicast_get_rport_slot() added to br_multicast.c
+  * removed inline attribute from function added to br_multicast.c
+* Patch 10/11:
+  * unchanged
+* Patch 11/11:
+  * simplified bridge check in br_multicast_has_router_adjacent()
+    by using br_port_get_check_rcu()
+  * added missing declaration for br_multicast_has_router_adjacent()
+    in include/linux/if_bridge.h
+
+Changelog v2:
+
+* split into multiple patches as suggested by Nikolay
+* added helper functions to br_multicast_flood(), avoiding
+  IPv6 #ifdef clutter
+* fixed reverse xmas tree ordering in br_rports_fill_info() and
+  added helper functions to avoid IPv6 #ifdef clutter
+* Added a common br_multicast_add_router() and a helper function
+  to retrieve the correct slot to avoid duplicate code for an
+  ip4 and ip6 variant
+* replaced the "1" and "2" constants in br_multicast_is_router()
+  with the appropriate enums
+* added br_{ip4,ip6}_multicast_rport_del() wrappers to reduce
+  IPv6 #ifdef clutter
+* added return values to br_*multicast_rport_del() to only notify
+  if the port was actually removed and did not race with a readdition
+  somewhere else
+* added empty, void br_ip6_multicast_mark_router() if compiled
+  without IPv6, to reduce IPv6 #ifdef clutter
+
 
