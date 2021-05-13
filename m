@@ -2,126 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E96F237F7AC
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 14:16:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D581137F7B1
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 14:19:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233070AbhEMMRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 08:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232106AbhEMMRw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 08:17:52 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09877C061574;
-        Thu, 13 May 2021 05:16:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=7k9evHuGH1EH6qhRcAGkUod6NxjxjEPFyoKIy7f4to0=; b=NNxrWdy161hnak7mWNQpC9Eev
-        27zCcM95SPL7wXwwaTPw8lOEsGBeCK9+7d6SNHkPEFQavjMkz2A9M1i3606GciSHlrxd4AnU0hKFu
-        OJZ7LlLbiio6pDc6zZHmFeAOKFOCcLqXFI6mxQBOTyYeL199clYHbKjWHhumeBRdR4taomFlKaplX
-        IM79hNfGp1J1uv9P9k4xpdbQmXLUzwGcxC8eRGObcaiOLfVrRS01v+AMfSXilxMl6Nc/ezo2kqZbF
-        Iks5Mj2fWmtnJAmuXnNi9O1g4VQGHF5OsublOeGE+kZ2hEJZgPHsFPlw9iSILV+KQYNfbCrgKx/PC
-        4piaPok1w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43930)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lhAGa-00066X-Kv; Thu, 13 May 2021 13:16:36 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lhAGY-000307-Ty; Thu, 13 May 2021 13:16:34 +0100
-Date:   Thu, 13 May 2021 13:16:34 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        David Daney <david.daney@cavium.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, david.daney@cavium.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] net: mdio: thunder: Do not unregister buses that have
- not been registered
-Message-ID: <20210513121634.GX1336@shell.armlinux.org.uk>
-References: <918382e19fdeb172f3836234d07e706460b7d06b.1620906605.git.christophe.jaillet@wanadoo.fr>
+        id S233502AbhEMMUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 08:20:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32728 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233866AbhEMMTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 08:19:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620908323;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IK5KASvNIAH9Eni0vYhJFRLrKtUI3CSzvduC524we5U=;
+        b=Io0l+xS9CDQYBO0fe3bNCJ60Euj0LLrCzh1UrJ3rOYlDf9JTokrQ3fj072/IYi1H3PW1bN
+        W6CW0t+sqUMt0wcUFiHqdQOtrVc7AZU35pGEzognsJfMiDonVICqEZF5uNJkcKH71ZwgQG
+        GjWxNJ8eJUDozjRlLUkI8Xv6RnZgXYU=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-500-e9MWpuTSMqeMcfkUsdJ7nA-1; Thu, 13 May 2021 08:18:42 -0400
+X-MC-Unique: e9MWpuTSMqeMcfkUsdJ7nA-1
+Received: by mail-ed1-f72.google.com with SMTP id r19-20020a05640251d3b02903888eb31cafso14540285edd.13
+        for <netdev@vger.kernel.org>; Thu, 13 May 2021 05:18:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IK5KASvNIAH9Eni0vYhJFRLrKtUI3CSzvduC524we5U=;
+        b=EZVRxUHFM7EITb1KXir/62x7m+WSt8dSi8Lb4r/C/t6tsO5lUsLf4XjnLJcqNNez7f
+         RzDZSurlyAg6GxyUYnkEL2LckfJOWAEQLlrWT2IIjhYKCho1G1ySl4ReinPALvlKtmll
+         4TFje9FMV46y9hkSEjKnM+gOsEIUYxHfJe64Iv08qZz22KcyWCgUlfVuLV/tgJp6MtUt
+         KaljoIVOKA/rryKzMxrc6kcW9bOr1Uh5YkaDNUWfuBIgUFZaP+mKcTQFAJz1bG8bXzvV
+         a5Xf2PwF1Z31AbgCAOgS600qycnAd8xykylxja5qc1SPnKS0K+3cZuXBKfiFkTJraMJI
+         xXmw==
+X-Gm-Message-State: AOAM531/O82VrkrOimifvciBPPJj7Uy3MI0+qt52EvvpAh1p0jidexVE
+        qAjcuRU115FW012xCjPJLTG4DiL0Msv/ek1a6c7q8erIUPtdRp7N8+kb7RUiIP7+eAe7o49apnJ
+        uFqDbXKvVDKTPMcU8
+X-Received: by 2002:a17:906:604a:: with SMTP id p10mr4996090ejj.148.1620908321010;
+        Thu, 13 May 2021 05:18:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz1Vg66JpJOxLpGs+6NIjUxFfgVCqpT78vMAZP1rCCIR2bhxg+eIcIxHZ+9opyz96knLH1DNA==
+X-Received: by 2002:a17:906:604a:: with SMTP id p10mr4996058ejj.148.1620908320779;
+        Thu, 13 May 2021 05:18:40 -0700 (PDT)
+Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
+        by smtp.gmail.com with ESMTPSA id t14sm1697687ejc.121.2021.05.13.05.18.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 May 2021 05:18:40 -0700 (PDT)
+Date:   Thu, 13 May 2021 14:18:38 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v9 11/19] virtio/vsock: dequeue callback for
+ SOCK_SEQPACKET
+Message-ID: <20210513121838.ndpgj56gwcww3pfc@steredhat>
+References: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
+ <20210508163523.3431999-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <918382e19fdeb172f3836234d07e706460b7d06b.1620906605.git.christophe.jaillet@wanadoo.fr>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+In-Reply-To: <20210508163523.3431999-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 13, 2021 at 01:51:40PM +0200, Christophe JAILLET wrote:
-> In the probe, if 'of_mdiobus_register()' fails, 'nexus->buses[i]' will
-> still have a non-NULL value.
-> So in the remove function, we will try to unregister a bus that has not
-> been registered.
-> 
-> In order to avoid that NULLify 'nexus->buses[i]'.
-> 'oct_mdio_writeq(0,...)' must also be called here.
-> 
-> Suggested-by: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> Fixes: 379d7ac7ca31 ("phy: mdio-thunder: Add driver for Cavium Thunder SoC MDIO buses.")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> Calling 'devm_mdiobus_free()' would also be cleaner, IMHO.
-> I've not added it because:
->    - it should be fine, even without it
->    - I'm not sure how to use it
+On Sat, May 08, 2021 at 07:35:20PM +0300, Arseny Krasnov wrote:
+>This adds transport callback and it's logic for SEQPACKET dequeue.
+>Callback fetches RW packets from rx queue of socket until whole record
+>is copied(if user's buffer is full, user is not woken up). This is done
+>to not stall sender, because if we wake up user and it leaves syscall,
+>nobody will send credit update for rest of record, and sender will wait
+>for next enter of read syscall at receiver's side. So if user buffer is
+>full, we just send credit update and drop data.
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> v8 -> v9:
+> 1) Check for RW packet type is removed from loop(all packet now
+>    considered RW).
+> 2) Locking in loop is fixed.
+> 3) cpu_to_le32()/le32_to_cpu() now used.
+> 4) MSG_TRUNC handling removed from transport.
+>
+> include/linux/virtio_vsock.h            |  5 ++
+> net/vmw_vsock/virtio_transport_common.c | 64 +++++++++++++++++++++++++
+> 2 files changed, 69 insertions(+)
+>
+>diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>index dc636b727179..02acf6e9ae04 100644
+>--- a/include/linux/virtio_vsock.h
+>+++ b/include/linux/virtio_vsock.h
+>@@ -80,6 +80,11 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
+> 			       struct msghdr *msg,
+> 			       size_t len, int flags);
+>
+>+ssize_t
+>+virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
+>+				   struct msghdr *msg,
+>+				   int flags,
+>+				   bool *msg_ready);
+> s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
+> s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
+>
+>diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>index ad0d34d41444..f649a21dd23b 100644
+>--- a/net/vmw_vsock/virtio_transport_common.c
+>+++ b/net/vmw_vsock/virtio_transport_common.c
+>@@ -393,6 +393,58 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+> 	return err;
+> }
+>
+>+static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+>+						 struct msghdr *msg,
+>+						 int flags,
+>+						 bool *msg_ready)
+>+{
+>+	struct virtio_vsock_sock *vvs = vsk->trans;
+>+	struct virtio_vsock_pkt *pkt;
+>+	int err = 0;
+>+	size_t user_buf_len = msg->msg_iter.count;
 
-devm_mdiobus_free() is a static function not intended to be used by
-drivers. There is no devm.*free() function available for this, so
-this memory will only ever be freed when either probe fails or the
-driver is unbound from its device.
+Forgot to mention that also here is better to use `msg_data_left(msg)`
 
-That should be fine, but it would be nice to give that memory back
-to the system. Without having a function for drivers to use though,
-that's not possible. Such a function should take a struct device
-pointer and the struct mii_bus pointer returned by the devm
-allocation function.
+Thanks,
+Stefano
 
-So, unless Andrew things we really need to free that, what you're
-doing below should be fine as far as setting the pointer to NULL.
-
-I think I'd want comments from Cavium on setting the register to
-zero - as we don't know how this hardware behaves, and whether that
-would have implications we aren't aware of. So, I'm copying in
-David Daney (the original driver author) for comment, if his email
-address still works!
-
-> ---
->  drivers/net/mdio/mdio-thunder.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/mdio/mdio-thunder.c b/drivers/net/mdio/mdio-thunder.c
-> index 822d2cdd2f35..140c405d4a41 100644
-> --- a/drivers/net/mdio/mdio-thunder.c
-> +++ b/drivers/net/mdio/mdio-thunder.c
-> @@ -97,8 +97,14 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
->  		bus->mii_bus->write = cavium_mdiobus_write;
->  
->  		err = of_mdiobus_register(bus->mii_bus, node);
-> -		if (err)
-> +		if (err) {
->  			dev_err(&pdev->dev, "of_mdiobus_register failed\n");
-> +			/* non-registered buses must not be unregistered in
-> +			 * the .remove function
-> +			 */
-> +			oct_mdio_writeq(0, bus->register_base + SMI_EN);
-> +			nexus->buses[i] = NULL;
-> +		}
->  
->  		dev_info(&pdev->dev, "Added bus at %llx\n", r.start);
->  		if (i >= ARRAY_SIZE(nexus->buses))
-> -- 
-> 2.30.2
-> 
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
