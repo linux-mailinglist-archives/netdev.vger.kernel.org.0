@@ -2,246 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B92437F549
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 12:04:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 670F637F589
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 12:22:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232831AbhEMKF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 06:05:28 -0400
-Received: from mx2.suse.de ([195.135.220.15]:37548 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232823AbhEMKET (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 May 2021 06:04:19 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1620900187; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IvMcIqdk9ustdCpVTzueaYDVUeZhxZ/EAhd4OmpuXOI=;
-        b=ZtkMcNuE8kcXYMHWB1eAm7u1BAxzlLMEVdB2/nA1DPxetMUzGjtcv/vVkiGbyoq1n6El5i
-        PAGibUSBe7Lu5nOiM0Qi+5bXkfUI8pECgwiYR2WcylRx5+Zaxpept3Jo1M/ifP+MvuluDv
-        yvkasKkirJJf3j0dKyowWy7EMykFZjc=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id D6B09B156;
-        Thu, 13 May 2021 10:03:06 +0000 (UTC)
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 7/8] xen/netfront: don't trust the backend response data blindly
-Date:   Thu, 13 May 2021 12:03:01 +0200
-Message-Id: <20210513100302.22027-8-jgross@suse.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210513100302.22027-1-jgross@suse.com>
-References: <20210513100302.22027-1-jgross@suse.com>
+        id S232650AbhEMKX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 06:23:28 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:59711 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232615AbhEMKWs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 06:22:48 -0400
+X-Originating-IP: 78.45.89.65
+Received: from [192.168.1.23] (ip-78-45-89-65.net.upcbroadband.cz [78.45.89.65])
+        (Authenticated sender: i.maximets@ovn.org)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 66E12E0002;
+        Thu, 13 May 2021 10:21:32 +0000 (UTC)
+Subject: Re: [ovs-dev] [PATCH net] openvswitch: meter: fix race when getting
+ now_ms.
+To:     Tao Liu <thomas.liu@ucloud.cn>, pshelar@ovn.org
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, i.maximets@ovn.org,
+        jean.tourrilhes@hpe.com, kuba@kernel.org, davem@davemloft.net,
+        Eelco Chaudron <echaudro@redhat.com>
+References: <20210513100300.22735-1-thomas.liu@ucloud.cn>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Message-ID: <801322d2-5b39-2497-bf0a-1ec08122a5c7@ovn.org>
+Date:   Thu, 13 May 2021 12:21:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210513100300.22735-1-thomas.liu@ucloud.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Today netfront will trust the backend to send only sane response data.
-In order to avoid privilege escalations or crashes in case of malicious
-backends verify the data to be within expected limits. Especially make
-sure that the response always references an outstanding request.
+On 5/13/21 12:03 PM, Tao Liu wrote:
+> We have observed meters working unexpected if traffic is 3+Gbit/s
+> with multiple connections.
+> 
+> now_ms is not pretected by meter->lock, we may get a negative
+> long_delta_ms when another cpu updated meter->used, then:
+>     delta_ms = (u32)long_delta_ms;
+> which will be a large value.
+> 
+>     band->bucket += delta_ms * band->rate;
+> then we get a wrong band->bucket.
+> 
+> Fixes: 96fbc13d7e77 ("openvswitch: Add meter infrastructure")
+> Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
+> ---
 
-Note that only the tx queue needs special id handling, as for the rx
-queue the id is equal to the index in the ring page.
+Hi.  Thanks for the patch!
+We fixed the same issue in userspace datapath some time ago and
+we did that a bit differently by just setting negative long_delta_ms
+to zero in assumption that all threads received their packets at
+the same millisecond (which is most likely true if we have this
+kind of race).  This should be also cheaper from form the performance
+point of view to not have an extra call and a division under the
+spinlock.   What do you think?
 
-Introduce a new indicator for the device whether it is broken and let
-the device stop working when it is set. Set this indicator in case the
-backend sets any weird data.
+It's also a good thing to have more or less similar implementation
+for all datapaths.
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Here is a userspace patch:
+
+commit acc5df0e3cb036524d49891fdb9ba89b609dd26a
+Author: Ilya Maximets <i.maximets@ovn.org>
+Date:   Thu Oct 24 15:15:07 2019 +0200
+
+    dpif-netdev: Fix time delta overflow in case of race for meter lock.
+    
+    There is a race window between getting the time and getting the meter
+    lock.  This could lead to situation where the thread with larger
+    current time (this thread called time_{um}sec() later than others)
+    will acquire meter lock first and update meter->used to the large
+    value.  Next threads will try to calculate time delta by subtracting
+    the large meter->used from their lower time getting the negative value
+    which will be converted to a big unsigned delta.
+    
+    Fix that by assuming that all these threads received packets in the
+    same time in this case, i.e. dropping negative delta to 0.
+    
+    CC: Jarno Rajahalme <jarno@ovn.org>
+    Fixes: 4b27db644a8c ("dpif-netdev: Simple DROP meter implementation.")
+    Reported-at: https://mail.openvswitch.org/pipermail/ovs-dev/2019-September/363126.html
+    Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+    Acked-by: William Tu <u9012063@gmail.com>
+
+diff --git a/lib/dpif-netdev.c b/lib/dpif-netdev.c
+index c09b8fd95..4720ba1ab 100644
+--- a/lib/dpif-netdev.c
++++ b/lib/dpif-netdev.c
+@@ -5646,6 +5646,14 @@ dp_netdev_run_meter(struct dp_netdev *dp, struct dp_packet_batch *packets_,
+     /* All packets will hit the meter at the same time. */
+     long_delta_t = now / 1000 - meter->used / 1000; /* msec */
+ 
++    if (long_delta_t < 0) {
++        /* This condition means that we have several threads fighting for a
++           meter lock, and the one who received the packets a bit later wins.
++           Assuming that all racing threads received packets at the same time
++           to avoid overflow. */
++        long_delta_t = 0;
++    }
++
+     /* Make sure delta_t will not be too large, so that bucket will not
+      * wrap around below. */
+     delta_t = (long_delta_t > (long long int)meter->max_delta_t)
 ---
- drivers/net/xen-netfront.c | 71 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 67 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 261c35be0147..ccd6d1389b0a 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -154,6 +154,8 @@ struct netfront_queue {
- 
- 	struct page_pool *page_pool;
- 	struct xdp_rxq_info xdp_rxq;
-+
-+	bool tx_pending[NET_TX_RING_SIZE];
- };
- 
- struct netfront_info {
-@@ -173,6 +175,9 @@ struct netfront_info {
- 	bool netback_has_xdp_headroom;
- 	bool netfront_xdp_enabled;
- 
-+	/* Is device behaving sane? */
-+	bool broken;
-+
- 	atomic_t rx_gso_checksum_fixup;
- };
- 
-@@ -363,7 +368,7 @@ static int xennet_open(struct net_device *dev)
- 	unsigned int i = 0;
- 	struct netfront_queue *queue = NULL;
- 
--	if (!np->queues)
-+	if (!np->queues || np->broken)
- 		return -ENODEV;
- 
- 	for (i = 0; i < num_queues; ++i) {
-@@ -391,11 +396,17 @@ static void xennet_tx_buf_gc(struct netfront_queue *queue)
- 	unsigned short id;
- 	struct sk_buff *skb;
- 	bool more_to_do;
-+	const struct device *dev = &queue->info->netdev->dev;
- 
- 	BUG_ON(!netif_carrier_ok(queue->info->netdev));
- 
- 	do {
- 		prod = queue->tx.sring->rsp_prod;
-+		if (RING_RESPONSE_PROD_OVERFLOW(&queue->tx, prod)) {
-+			dev_alert(dev, "Illegal number of responses %u\n",
-+				  prod - queue->tx.rsp_cons);
-+			goto err;
-+		}
- 		rmb(); /* Ensure we see responses up to 'rp'. */
- 
- 		for (cons = queue->tx.rsp_cons; cons != prod; cons++) {
-@@ -406,12 +417,25 @@ static void xennet_tx_buf_gc(struct netfront_queue *queue)
- 				continue;
- 
- 			id  = txrsp.id;
-+			if (id >= RING_SIZE(&queue->tx)) {
-+				dev_alert(dev,
-+					  "Response has incorrect id (%u)\n",
-+					  id);
-+				goto err;
-+			}
-+			if (!queue->tx_pending[id]) {
-+				dev_alert(dev,
-+					  "Response for inactive request\n");
-+				goto err;
-+			}
-+
-+			queue->tx_pending[id] = false;
- 			skb = queue->tx_skbs[id].skb;
- 			if (unlikely(gnttab_query_foreign_access(
- 				queue->grant_tx_ref[id]) != 0)) {
--				pr_alert("%s: warning -- grant still in use by backend domain\n",
--					 __func__);
--				BUG();
-+				dev_alert(dev,
-+					  "Grant still in use by backend domain\n");
-+				goto err;
- 			}
- 			gnttab_end_foreign_access_ref(
- 				queue->grant_tx_ref[id], GNTMAP_readonly);
-@@ -429,6 +453,12 @@ static void xennet_tx_buf_gc(struct netfront_queue *queue)
- 	} while (more_to_do);
- 
- 	xennet_maybe_wake_tx(queue);
-+
-+	return;
-+
-+ err:
-+	queue->info->broken = true;
-+	dev_alert(dev, "Disabled for further use\n");
- }
- 
- struct xennet_gnttab_make_txreq {
-@@ -472,6 +502,13 @@ static void xennet_tx_setup_grant(unsigned long gfn, unsigned int offset,
- 
- 	*tx = info->tx_local;
- 
-+	/*
-+	 * The request is not in its final form, as size and flags might be
-+	 * modified later, but even if a malicious backend will send a response
-+	 * now, nothing bad regarding security could happen.
-+	 */
-+	queue->tx_pending[id] = true;
-+
- 	info->tx = tx;
- 	info->size += info->tx_local.size;
- }
-@@ -605,6 +642,8 @@ static int xennet_xdp_xmit(struct net_device *dev, int n,
- 	int nxmit = 0;
- 	int i;
- 
-+	if (unlikely(np->broken))
-+		return -ENODEV;
- 	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
- 		return -EINVAL;
- 
-@@ -649,6 +688,8 @@ static netdev_tx_t xennet_start_xmit(struct sk_buff *skb, struct net_device *dev
- 	/* Drop the packet if no queues are set up */
- 	if (num_queues < 1)
- 		goto drop;
-+	if (unlikely(np->broken))
-+		goto drop;
- 	/* Determine which queue to transmit this SKB on */
- 	queue_index = skb_get_queue_mapping(skb);
- 	queue = &np->queues[queue_index];
-@@ -1153,6 +1194,13 @@ static int xennet_poll(struct napi_struct *napi, int budget)
- 	skb_queue_head_init(&tmpq);
- 
- 	rp = queue->rx.sring->rsp_prod;
-+	if (RING_RESPONSE_PROD_OVERFLOW(&queue->rx, rp)) {
-+		dev_alert(&dev->dev, "Illegal number of responses %u\n",
-+			  rp - queue->rx.rsp_cons);
-+		queue->info->broken = true;
-+		spin_unlock(&queue->rx_lock);
-+		return 0;
-+	}
- 	rmb(); /* Ensure we see queued responses up to 'rp'. */
- 
- 	i = queue->rx.rsp_cons;
-@@ -1373,6 +1421,9 @@ static irqreturn_t xennet_tx_interrupt(int irq, void *dev_id)
- 	struct netfront_queue *queue = dev_id;
- 	unsigned long flags;
- 
-+	if (queue->info->broken)
-+		return IRQ_HANDLED;
-+
- 	spin_lock_irqsave(&queue->tx_lock, flags);
- 	xennet_tx_buf_gc(queue);
- 	spin_unlock_irqrestore(&queue->tx_lock, flags);
-@@ -1385,6 +1436,9 @@ static irqreturn_t xennet_rx_interrupt(int irq, void *dev_id)
- 	struct netfront_queue *queue = dev_id;
- 	struct net_device *dev = queue->info->netdev;
- 
-+	if (queue->info->broken)
-+		return IRQ_HANDLED;
-+
- 	if (likely(netif_carrier_ok(dev) &&
- 		   RING_HAS_UNCONSUMED_RESPONSES(&queue->rx)))
- 		napi_schedule(&queue->napi);
-@@ -1406,6 +1460,10 @@ static void xennet_poll_controller(struct net_device *dev)
- 	struct netfront_info *info = netdev_priv(dev);
- 	unsigned int num_queues = dev->real_num_tx_queues;
- 	unsigned int i;
-+
-+	if (info->broken)
-+		return;
-+
- 	for (i = 0; i < num_queues; ++i)
- 		xennet_interrupt(0, &info->queues[i]);
- }
-@@ -1477,6 +1535,11 @@ static int xennet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 
- static int xennet_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- {
-+	struct netfront_info *np = netdev_priv(dev);
-+
-+	if (np->broken)
-+		return -ENODEV;
-+
- 	switch (xdp->command) {
- 	case XDP_SETUP_PROG:
- 		return xennet_xdp_set(dev, xdp->prog, xdp->extack);
--- 
-2.26.2
-
