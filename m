@@ -2,113 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1B2C37F3F8
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 10:22:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C009F37F406
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 10:28:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231848AbhEMIXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 04:23:23 -0400
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:43080 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231597AbhEMIXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 04:23:22 -0400
-Received: from [192.168.1.18] ([86.243.172.93])
-        by mwinf5d84 with ME
-        id 48NB2500B21Fzsu038NBBM; Thu, 13 May 2021 10:22:12 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 13 May 2021 10:22:12 +0200
-X-ME-IP: 86.243.172.93
-Subject: Re: [PATCH] net: mdio: Fix a double free issue in the .remove
- function
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, david.daney@cavium.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <f8ad939e6d5df4cb0273ea71a418a3ca1835338d.1620855222.git.christophe.jaillet@wanadoo.fr>
- <20210512214403.GQ1336@shell.armlinux.org.uk>
- <0a044473-f3f7-02fc-eca5-84adf8b5c9f2@wanadoo.fr>
- <20210513080957.GS1336@shell.armlinux.org.uk>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-ID: <93bd6133-41a3-f160-ddd2-f89ea4b5c6db@wanadoo.fr>
-Date:   Thu, 13 May 2021 10:22:11 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S231149AbhEMIaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 04:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47340 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231305AbhEMIaA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 04:30:00 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EB1C061574;
+        Thu, 13 May 2021 01:28:49 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id x8so24806073qkl.2;
+        Thu, 13 May 2021 01:28:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YZuHIqE1Xt0+x34JLFf8F3EO5A3fSgWJriKswBQRHNU=;
+        b=s2u9kp9VqS0VaNIN/T8JeWGd0C7NRwfSRznS7S3J7CXLS+XikyE6DgF0bSscWqVtF4
+         2fhb+NWXyfI2ywyJaQL1pLJfIDK/jpY9kYCdkXCK5teCkTBsoLxp1L/OYcWSYe6H4pVA
+         Pv7gqKzleU5zBmzoadDSi1D1Zs3mfSH5ugpefiN8uce7UXz6WLh/WPAltF/AqXdD2opz
+         dEb7YidI+KBnQvmt9nsHUm6f/35QGPghjDItLpwxaaVdGEui5jfUP90KI5pDa2Kew8sj
+         NNDZKJOXT+VgiWanZAPKDzsnZ47VRw5L5NA9HgtMa25wEkS/ZsVcubVL39Egm1+MP/1a
+         X+2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YZuHIqE1Xt0+x34JLFf8F3EO5A3fSgWJriKswBQRHNU=;
+        b=NtSlBoY1WgOam1kV0Td3bNoZ2IxkPoIeHRkPc5BECchdK1upV1gmzbzTm5Da7mfVAn
+         pjRd7L+cIiC22NC+SMp7sCbyVZhKgRFqF1yqGnQ3COBtfSZqjEsilvjCxhDPltprg1nR
+         bjpC8YfLuIUddRqEP3Y2kkkrJ/01dBqQk3ULLMfX+uelk7OBIdEh1WJ/H8yMayZ2Z91R
+         XWuJWWKCjJ6wsq1UOe403sXdJydBgJuKMoT8x2cbFyx5aI+w0rqXz3mUE0SalbOQcgld
+         pW2uLz8Zzxhu54To3u2JVsIWCS/4Cu6yhp9AKpPjj+F+wzOEY1gwBq394bdijSruVvED
+         cPhQ==
+X-Gm-Message-State: AOAM532dn+zm3SgG+q8KfUCYEjkzdjTLaVcxNkQFeOPPuhk8FZoTUPCL
+        nrVbt/s5XHJ0xXG8fEktG3tx9Ix5HDT0lA==
+X-Google-Smtp-Source: ABdhPJwBnqnTPyylBOAT+AP4wUwUX+DXyg+HYtYfmfbJ0SHpU1RuthJs2B+skd73CAUTeBZvwMFzSw==
+X-Received: by 2002:a37:916:: with SMTP id 22mr15867553qkj.241.1620894528973;
+        Thu, 13 May 2021 01:28:48 -0700 (PDT)
+Received: from jrr-vaio.internal.cc-sw.com (cpe-74-136-172-82.kya.res.rr.com. [74.136.172.82])
+        by smtp.gmail.com with ESMTPSA id m205sm1874679qke.2.2021.05.13.01.28.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 May 2021 01:28:48 -0700 (PDT)
+From:   Jonathon Reinhart <jonathon.reinhart@gmail.com>
+To:     stable@vger.kernel.org
+Cc:     Jonathon Reinhart <jonathon.reinhart@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
+Subject: [PATCH] netfilter: conntrack: Make global sysctls readonly in non-init netns
+Date:   Thu, 13 May 2021 04:28:35 -0400
+Message-Id: <20210513082835.18854-1-jonathon.reinhart@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20210513080957.GS1336@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 13/05/2021 à 10:09, Russell King - ARM Linux admin a écrit :
-> On Thu, May 13, 2021 at 08:29:01AM +0200, Christophe JAILLET wrote:
->> Le 12/05/2021 à 23:44, Russell King - ARM Linux admin a écrit :
->>> On Wed, May 12, 2021 at 11:35:38PM +0200, Christophe JAILLET wrote:
->>>> 'bus->mii_bus' have been allocated with 'devm_mdiobus_alloc_size()' in the
->>>> probe function. So it must not be freed explicitly or there will be a
->>>> double free.
->>>>
->>>> Remove the incorrect 'mdiobus_free' in the remove function.
->>>
->>> Yes, this looks correct, thanks.
->>>
->>> Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
->>>
->>> However, there's another issue in this driver that ought to be fixed.
->>>
->>> If devm_mdiobus_alloc_size() succeeds, but of_mdiobus_register() fails,
->>> we continue on to the next bus (which I think is reasonable.) We don't
->>> free the bus.
->>>
->>> When we come to the remove method however, we will call
->>> mdiobus_unregister() on this existent but not-registered bus. Surely we
->>> don't want to do that?
->>>
->>
->> Hmmm, I don't agree here.
->>
->> 'nexus' is 'kzalloc()'ed.
->> So the pointers in 'buses[]' are all NULL by default.
->> We set 'nexus->buses[i] = bus' only when all functions that can fail in the
->> loop have been called. (the very last 'break' is when the array is full)
->>
->> And in the remove function, we have:
->> 	struct cavium_mdiobus *bus = nexus->buses[i];
->> 	if (!bus)
->> 		continue;
->>
->> So, this looks safe to me.
-> 
-> It isn't safe. Please look closer.
-> 
->          device_for_each_child_node(&pdev->dev, fwn) {
->                  mii_bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*bus));
->                  if (!mii_bus)
->                          break;
->                  bus = mii_bus->priv;
->                  bus->mii_bus = mii_bus;
-> 
->                  nexus->buses[i] = bus;
-> 
-> This succeeds and sets nexus->buses[i] to a non-NULL value.
-> 
->                  err = of_mdiobus_register(bus->mii_bus, node);
->                  if (err)
->                          dev_err(&pdev->dev, "of_mdiobus_register failed\n");
-> 
->                  dev_info(&pdev->dev, "Added bus at %llx\n", r.start);
->                  if (i >= ARRAY_SIZE(nexus->buses))
->                          break;
->          }
-> 
-> If of_mdiobus_register() fails, the bus is not registered, and we just
-> move on to the next bus, leaving nexus->buses[i] set to a non-NULL
-> value.
+commit 2671fa4dc0109d3fb581bc3078fdf17b5d9080f6 upstream.
 
-Got it.
+These sysctls point to global variables:
+- [0] "nf_conntrack_max"        (&nf_conntrack_max)
+- [2] "nf_conntrack_buckets"    (&nf_conntrack_htable_size_user)
+- [5] "nf_conntrack_expect_max" (&nf_ct_expect_max)
 
-Thx for the explanation.
+Because their data pointers are not updated to point to per-netns
+structures, they must be marked read-only in a non-init_net ns.
+Otherwise, changes in any net namespace are reflected in (leaked into)
+all other net namespaces. This problem has existed since the
+introduction of net namespaces.
 
-CJ
+This patch is necessarily different from the upstream patch due to the
+heavy refactoring which took place since 4.19:
+
+d0febd81ae77 ("netfilter: conntrack: re-visit sysctls in unprivileged namespaces")
+b884fa461776 ("netfilter: conntrack: unify sysctl handling")
+4a65798a9408 ("netfilter: conntrack: add mnemonics for sysctl table")
+
+Signed-off-by: Jonathon Reinhart <jonathon.reinhart@gmail.com>
+---
+
+Upstream commit 2671fa4dc010 was already applied to the 5.10, 5.11, and
+5.12 trees.
+
+This was tested on 4.19.190, so please apply to 4.19.y.
+
+It should also apply to:
+- 4.14.y
+- 4.9.y
+
+Note that 5.4.y would require a slightly different patch that looks more
+like 2671fa4dc010.
+
+---
+ net/netfilter/nf_conntrack_standalone.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
+index 2e3ae494f369..da0c9fa381d2 100644
+--- a/net/netfilter/nf_conntrack_standalone.c
++++ b/net/netfilter/nf_conntrack_standalone.c
+@@ -594,8 +594,11 @@ static int nf_conntrack_standalone_init_sysctl(struct net *net)
+ 	if (net->user_ns != &init_user_ns)
+ 		table[0].procname = NULL;
+ 
+-	if (!net_eq(&init_net, net))
++	if (!net_eq(&init_net, net)) {
++		table[0].mode = 0444;
+ 		table[2].mode = 0444;
++		table[5].mode = 0444;
++	}
+ 
+ 	net->ct.sysctl_header = register_net_sysctl(net, "net/netfilter", table);
+ 	if (!net->ct.sysctl_header)
+-- 
+2.20.1
+
