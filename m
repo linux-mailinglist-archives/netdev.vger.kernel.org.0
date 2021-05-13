@@ -2,88 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F31383800C8
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 01:23:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4747D3800EE
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 01:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231481AbhEMXY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 19:24:27 -0400
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:10341 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbhEMXYX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 19:24:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1620948194; x=1652484194;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5SJBpI8xr+qMRBkIHhCmRmUBPGxcsbJp1rEQpocKtJY=;
-  b=fcmdxZjfrXz8IdpKayKpGW/PtQLITvpGegd+A/svQKbPAhcK/aw6I4TV
-   +RplO83QQi4fcEwZoWq1EW9ZF7zcH1v+rKgKNRKAdmc4FjN/liI0wb9sA
-   ZVCv+lkcGGI5ZPJ1nyLRlV10FeAaKO7M2QneYhMdxvymBXMp66O+7JoYz
-   c=;
-X-IronPort-AV: E=Sophos;i="5.82,296,1613433600"; 
-   d="scan'208";a="113546482"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 13 May 2021 23:23:13 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com (Postfix) with ESMTPS id B225EA2291;
-        Thu, 13 May 2021 23:23:09 +0000 (UTC)
-Received: from EX13D04ANB001.ant.amazon.com (10.43.156.100) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 13 May 2021 23:23:09 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.137) by
- EX13D04ANB001.ant.amazon.com (10.43.156.100) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Thu, 13 May 2021 23:23:04 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <andrii.nakryiko@gmail.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
-        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kafai@fb.com>,
-        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH v5 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-Date:   Fri, 14 May 2021 08:23:00 +0900
-Message-ID: <20210513232300.30772-1-kuniyu@amazon.co.jp>
+        id S229460AbhEMXiB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 May 2021 19:38:01 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:33292 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230003AbhEMXh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 19:37:59 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14DNUJ76004062
+        for <netdev@vger.kernel.org>; Thu, 13 May 2021 16:36:49 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 38gj9r19q1-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 13 May 2021 16:36:49 -0700
+Received: from intmgw001.06.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 13 May 2021 16:36:47 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 5CF122ED8CFC; Thu, 13 May 2021 16:36:45 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH v2 bpf-next 1/2] selftests/bpf: validate skeleton gen handles skipped fields
+Date:   Thu, 13 May 2021 16:36:42 -0700
+Message-ID: <20210513233643.194711-1-andrii@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CAEf4BzYumt7BO1BgN8kLXZmbYXuJweH0bWiT-CiDRQfvaRg0kQ@mail.gmail.com>
-References: <CAEf4BzYumt7BO1BgN8kLXZmbYXuJweH0bWiT-CiDRQfvaRg0kQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
 Content-Type: text/plain
-X-Originating-IP: [10.43.160.137]
-X-ClientProxiedBy: EX13D06UWC002.ant.amazon.com (10.43.162.205) To
- EX13D04ANB001.ant.amazon.com (10.43.156.100)
+X-Proofpoint-GUID: b_zah8CquqCnQR5bwE1OHyL0_zKhVimk
+X-Proofpoint-ORIG-GUID: b_zah8CquqCnQR5bwE1OHyL0_zKhVimk
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-13_16:2021-05-12,2021-05-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ impostorscore=0 priorityscore=1501 mlxlogscore=997 suspectscore=0
+ malwarescore=0 spamscore=0 lowpriorityscore=0 phishscore=0 mlxscore=0
+ bulkscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2105130166
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 13 May 2021 14:27:13 -0700
-> On Sun, May 9, 2021 at 8:45 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
-> >
-> > The SO_REUSEPORT option allows sockets to listen on the same port and to
-> > accept connections evenly. However, there is a defect in the current
-> > implementation [1]. When a SYN packet is received, the connection is tied
-> > to a listening socket. Accordingly, when the listener is closed, in-flight
-> > requests during the three-way handshake and child sockets in the accept
-> > queue are dropped even if other listeners on the same port could accept
-> > such connections.
-[...]
-> 
-> One test is failing in CI ([0]), please take a look.
-> 
->   [0] https://travis-ci.com/github/kernel-patches/bpf/builds/225784969
+Adjust static_linked selftests to test a mix of global and static variables
+and their handling of bpftool's skeleton generation code.
 
-Thank you for checking.
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ tools/testing/selftests/bpf/prog_tests/static_linked.c  | 4 ++--
+ tools/testing/selftests/bpf/progs/linked_maps1.c        | 2 +-
+ tools/testing/selftests/bpf/progs/test_static_linked1.c | 2 +-
+ tools/testing/selftests/bpf/progs/test_static_linked2.c | 2 +-
+ 4 files changed, 5 insertions(+), 5 deletions(-)
 
-The test needs to drop SYN+ACK and currently it is done by iptables or
-ip6tables. But it seems that I should not use them. Should this be done
-by XDP?
-
----8<---
-iptables v1.8.5 (legacy): can't initialize iptables table `filter': Table does not exist (do you need to insmod?)
-Perhaps iptables or your kernel needs to be upgraded.
-ip6tables v1.8.5 (legacy): can't initialize ip6tables table `filter': Table does not exist (do you need to insmod?)
-Perhaps ip6tables or your kernel needs to be upgraded.
----8<---
+diff --git a/tools/testing/selftests/bpf/prog_tests/static_linked.c b/tools/testing/selftests/bpf/prog_tests/static_linked.c
+index ab6acbaf9d8c..5c4e3014e063 100644
+--- a/tools/testing/selftests/bpf/prog_tests/static_linked.c
++++ b/tools/testing/selftests/bpf/prog_tests/static_linked.c
+@@ -27,8 +27,8 @@ void test_static_linked(void)
+ 	/* trigger */
+ 	usleep(1);
+ 
+-	ASSERT_EQ(skel->bss->var1, 1 * 2 + 2 + 3, "var1");
+-	ASSERT_EQ(skel->bss->var2, 4 * 3 + 5 + 6, "var2");
++	ASSERT_EQ(skel->data->var1, 1 * 2 + 2 + 3, "var1");
++	ASSERT_EQ(skel->data->var2, 4 * 3 + 5 + 6, "var2");
+ 
+ cleanup:
+ 	test_static_linked__destroy(skel);
+diff --git a/tools/testing/selftests/bpf/progs/linked_maps1.c b/tools/testing/selftests/bpf/progs/linked_maps1.c
+index 52291515cc72..00bf1ca95986 100644
+--- a/tools/testing/selftests/bpf/progs/linked_maps1.c
++++ b/tools/testing/selftests/bpf/progs/linked_maps1.c
+@@ -75,7 +75,7 @@ int BPF_PROG(handler_exit1)
+ 	val = bpf_map_lookup_elem(&map_weak, &key);
+ 	if (val)
+ 		output_weak1 = *val;
+-	
++
+ 	return 0;
+ }
+ 
+diff --git a/tools/testing/selftests/bpf/progs/test_static_linked1.c b/tools/testing/selftests/bpf/progs/test_static_linked1.c
+index cae304045d9c..4f0b612e1661 100644
+--- a/tools/testing/selftests/bpf/progs/test_static_linked1.c
++++ b/tools/testing/selftests/bpf/progs/test_static_linked1.c
+@@ -7,7 +7,7 @@
+ /* 8-byte aligned .data */
+ static volatile long static_var1 = 2;
+ static volatile int static_var2 = 3;
+-int var1 = 0;
++int var1 = -1;
+ /* 4-byte aligned .rodata */
+ const volatile int rovar1;
+ 
+diff --git a/tools/testing/selftests/bpf/progs/test_static_linked2.c b/tools/testing/selftests/bpf/progs/test_static_linked2.c
+index c54c4e865ed8..766ebd502a60 100644
+--- a/tools/testing/selftests/bpf/progs/test_static_linked2.c
++++ b/tools/testing/selftests/bpf/progs/test_static_linked2.c
+@@ -7,7 +7,7 @@
+ /* 4-byte aligned .data */
+ static volatile int static_var1 = 5;
+ static volatile int static_var2 = 6;
+-int var2 = 0;
++int var2 = -1;
+ /* 8-byte aligned .rodata */
+ const volatile long rovar2;
+ 
+-- 
+2.30.2
 
