@@ -2,129 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC6737FA04
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 16:51:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 579A237FA0C
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 16:54:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234783AbhEMOwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 10:52:19 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:53699 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234592AbhEMOuJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 10:50:09 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 3A9D0580715;
-        Thu, 13 May 2021 10:48:58 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 13 May 2021 10:48:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=animalcreek.com;
-         h=date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=lEk17EktawF4yxbelteLRZPL1u7
-        6s2v81K0ba/CVsLk=; b=dst6D/19N83Ua2dTF3g8TngtqoC74H416i/EgnfFofw
-        3nDGfArAk0ihsOzFOXuI3Us9IQFYQ3uJIYjuS3vmZtIp7dMORyM203+z/PTZXGIm
-        0K6zTD7y6l2J5h/CKj9LatOU5HmHItaLeCljRBMLW8H50IObu6v7xN61hrQBlAun
-        6EZUSN+eJVy0uOIjrFmPbmTAOV9MFtNXMj3u33s2IbZ80DJyJ4iD/yn+/VW+Poi7
-        AX9+ztICVwZ1fvHg7sSypdr44GHSFY6g5w7oZV0FeWnBFqpvRnixHGvKYTlqQceD
-        QWMFLua5JCumUiEuIfsK4aK4aunhJ25PvbdS2f8m63Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=lEk17E
-        ktawF4yxbelteLRZPL1u76s2v81K0ba/CVsLk=; b=B+ppxc5KqjbyAI6jGMV0c8
-        l3rNFJ7Cuvtgmgbrcd2UqMszPUVD81ml/Z5DXib3PMsSrlyNMRuMkgVd1JP5YhDB
-        hiLV16AtlCPMxN94/W0JHvpl5JzwyH+Jii5h0tTcAjl4JzOCsLtXan7dhBSVBBmt
-        fuqC4rkbUeO7cOauaJuk+/vvkS3SGqGf+SgEK+dGpS2HXcyRUszpwXOlkbzl5kws
-        i3Lb4v9fyJE4UWnkJJlI2yB2QwXpRk70NV+wzeXCWM+TrMpMr/tRnFf9+QrmPQqX
-        pFVLmTp8O3lLVs+5VW/BKfBbTnShAWKcMx6tXDqlRv8ku56C1IWNr06O0BKVgkcA
-        ==
-X-ME-Sender: <xms:WTydYH1AdZuqZV75EQ77wbbQJizOCC4Unx9-FnyVuhYLx93H7zzcqw>
-    <xme:WTydYGHfDqrYYj3_6O5O5cDljxGzb937CMGwW3KvjegyT7vvKnwvQKe1bcNuiEnLD
-    qoUX-N573bSft4oqw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdehgedgkeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjohesthdtredttddtvdenucfhrhhomhepofgrrhhk
-    ucfirhgvvghruceomhhgrhgvvghrsegrnhhimhgrlhgtrhgvvghkrdgtohhmqeenucggtf
-    frrghtthgvrhhnpedujeelgeejleegleevkeekvdevudfhteeuiedtleehtdduleelvdei
-    fffhvdehtdenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppeejtddrudejvd
-    drfedvrddvudeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhf
-    rhhomhepmhhgrhgvvghrsegrnhhimhgrlhgtrhgvvghkrdgtohhm
-X-ME-Proxy: <xmx:WTydYH6a0serpBMN0bhht0OcKsZuXXuzXk4tjPBimH3o0dJE-R0zcw>
-    <xmx:WTydYM1nhEBx9iyhPMUoGqeS88bQ2f-vYGeYFAN_OrfHGz2GqhAOvQ>
-    <xmx:WTydYKEk4iDN7SHNX2RLhWQsQD9KEV9AtFKeSo7gVslAQXas80eZMA>
-    <xmx:WjydYIYeddoIr3gRJY-O7nvnW9ji4XewFauyBzAoYJp89UHtV8wRfQ>
-Received: from blue.animalcreek.com (ip70-172-32-218.ph.ph.cox.net [70.172.32.218])
-        by mail.messagingengine.com (Postfix) with ESMTPA;
-        Thu, 13 May 2021 10:48:56 -0400 (EDT)
-Received: by blue.animalcreek.com (Postfix, from userid 1000)
-        id 8E0EF136008E; Thu, 13 May 2021 07:48:55 -0700 (MST)
-Date:   Thu, 13 May 2021 07:48:55 -0700
-From:   Mark Greer <mgreer@animalcreek.com>
-To:     Stephan Gerhold <stephan@gerhold.net>
-Cc:     Mark Greer <mgreer@animalcreek.com>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        id S234714AbhEMOyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 10:54:06 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:18212 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234757AbhEMOwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 10:52:23 -0400
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 1EE04521B34;
+        Thu, 13 May 2021 17:51:02 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1620917462;
+        bh=8Z+AEBBNVuPdayXwm8/hcRhwkkMnC40weKuhNq36cyc=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=F4DQSZIwEAVMegm6Jn563O4PGrcfb31RgDjVqFRppQy78EKlpAxjbFfFIghmYWeUT
+         hK0cdz+cv9M64cJpdV3RPTpiZ2II9heCnAv4gojhlzdMOU8EcDCjuQXd7+V4HxmPJI
+         RXwN/GADtkrRAX5+GsCzQJMo5pnk2J2oBO3m1m391afc0zMEBTJKMO20+oLHaRLlhP
+         rR/dLR06A99nG27mLeBOAqUt9e3fSRjcOQaFsfYX/+4wEAQlBvGlqo7wkTMY60eDzi
+         Zd0+elBhoZsf7cZZjkYCb54yROAF8FjVOUrtQLzlDHQz0l1bsMyhH5e2em3Bn3BWeS
+         UczL7u2bBjeLA==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id B829F521B2D;
+        Thu, 13 May 2021 17:51:01 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.129) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 13
+ May 2021 17:51:00 +0300
+Subject: Re: [RFC PATCH v9 19/19] af_vsock: serialize writes to shared socket
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org,
-        Alex Blasche <alexander.blasche@qt.io>,
-        phone-devel@vger.kernel.org
-Subject: Re: Testing wanted for Linux NFC subsystem
-Message-ID: <20210513144855.GA266838@animalcreek.com>
-References: <20210512144319.30852-1-krzysztof.kozlowski@canonical.com>
- <14e78a9a-ed1a-9d7d-b854-db6d811f4622@kontron.de>
- <20210512170135.GB222094@animalcreek.com>
- <YJ0SYWJjq3ZmXMy3@gerhold.net>
+        Jorgen Hansen <jhansen@vmware.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stsp2@yandex.ru" <stsp2@yandex.ru>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+References: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
+ <20210508163738.3432975-1-arseny.krasnov@kaspersky.com>
+ <20210513140150.ugw6foy742fxan4w@steredhat>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <3c46d5c3-f5a2-d232-c585-b93d761e6fb6@kaspersky.com>
+Date:   Thu, 13 May 2021 17:51:00 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YJ0SYWJjq3ZmXMy3@gerhold.net>
-Organization: Animal Creek Technologies, Inc.
+In-Reply-To: <20210513140150.ugw6foy742fxan4w@steredhat>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/13/2021 14:36:05
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163646 [May 13 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: LuaCore: 445 445 d5f7ae5578b0f01c45f955a2a751ac25953290c9
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;kaspersky.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 05/13/2021 14:38:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 13.05.2021 13:39:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/05/13 13:03:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/05/13 10:44:00 #16575454
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 13, 2021 at 01:49:53PM +0200, Stephan Gerhold wrote:
-> Hi!
 
-Hi Stephan and thanks for stepping up.
-
-> I have a couple of "recycled" smartphones running mainline Linux
-> and some of them do have NFC chips. I have two with NXP PN547
-> (supported by nxp,nxp-nci-i2c), one with Samsung S3FWRN5
-> (samsung,s3fwrn5-i2c) and even one with Broadcom BCM2079x I think
-> (this one does not have a driver for the Linux NFC subsystem sadly).
-> 
-> +Cc phone-devel@vger.kernel.org, in case other people there are
-> interested in NFC :)
-> 
-> The NXP/Samsung ones seems to work just fine. However, since there are
-> barely any userspace tools making use of Linux NFC all my testing so far
-> was limited to polling for devices with "nfctool" and being happy enough
-> when it realizes that I hold some NFC tag close to the device. :S
-
-There is a user-level daemon that is the counterpart for the in-kernel
-NFC subsystem.  It is called neard and is available here:
-
-	git://git.kernel.org/pub/scm/network/nfc/neard.git
-
-There are a few test script in it that will let you read and write NFC
-tags, and do some other things.  We can add some more tests to that set
-as we go.
-
-> I would be happy to do some more testing if someone has something useful
-> that can be tested. However, I guess ideally we would have someone who
-> actually uses Linux NFC actively for some real application. :)
-
-Ideally, you should have some NFC tags of various types.  Types 2, 3,
-4A, 4B, and 5 tags are supported.  Peer-to-peer mode is supported too
-so you should be able to transfer data from one of your phones to the
-other over NFC (and do a BT hand-over, if you're interested).
-
-Note that the specified range for NFC is only 4 cm and poor antenna
-design, etc. means that the actual range is usually much less (e.g.,
-they amost have to touch).  Also note that there are timing constraints
-so you may need to make the scheduling priority of the interrupt thread
-of your NFC driver real-time.
-
-Mark
---
+On 13.05.2021 17:01, Stefano Garzarella wrote:
+> On Sat, May 08, 2021 at 07:37:35PM +0300, Arseny Krasnov wrote:
+>> This add logic, that serializes write access to single socket
+>> by multiple threads. It is implemented be adding field with TID
+>> of current writer. When writer tries to send something, it checks
+>> that field is -1(free), else it sleep in the same way as waiting
+>> for free space at peers' side.
+>>
+>> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>> ---
+>> include/net/af_vsock.h   |  1 +
+>> net/vmw_vsock/af_vsock.c | 10 +++++++++-
+>> 2 files changed, 10 insertions(+), 1 deletion(-)
+> I think you forgot to move this patch at the beginning of the series.
+> It's important because in this way we can backport to stable branches 
+> easily.
+>
+> About the implementation, can't we just add a mutex that we hold until 
+> we have sent all the payload?
+>
+> I need to check other implementations like TCP.
+>
+>> diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+>> index 1747c0b564ef..413343f18e99 100644
+>> --- a/include/net/af_vsock.h
+>> +++ b/include/net/af_vsock.h
+>> @@ -69,6 +69,7 @@ struct vsock_sock {
+>> 	u64 buffer_size;
+>> 	u64 buffer_min_size;
+>> 	u64 buffer_max_size;
+>> +	pid_t tid_owner;
+>>
+>> 	/* Private to transport. */
+>> 	void *trans;
+>> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>> index 7790728465f4..1fb4a1860f6d 100644
+>> --- a/net/vmw_vsock/af_vsock.c
+>> +++ b/net/vmw_vsock/af_vsock.c
+>> @@ -757,6 +757,7 @@ static struct sock *__vsock_create(struct net *net,
+>> 	vsk->peer_shutdown = 0;
+>> 	INIT_DELAYED_WORK(&vsk->connect_work, vsock_connect_timeout);
+>> 	INIT_DELAYED_WORK(&vsk->pending_work, vsock_pending_work);
+>> +	vsk->tid_owner = -1;
+>>
+>> 	psk = parent ? vsock_sk(parent) : NULL;
+>> 	if (parent) {
+>> @@ -1765,7 +1766,9 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+>> 		ssize_t written;
+>>
+>> 		add_wait_queue(sk_sleep(sk), &wait);
+>> -		while (vsock_stream_has_space(vsk) == 0 &&
+>> +		while ((vsock_stream_has_space(vsk) == 0 ||
+>> +			(vsk->tid_owner != current->pid &&
+>> +			 vsk->tid_owner != -1)) &&
+>> 		       sk->sk_err == 0 &&
+>> 		       !(sk->sk_shutdown & SEND_SHUTDOWN) &&
+>> 		       !(vsk->peer_shutdown & RCV_SHUTDOWN)) {
+>> @@ -1796,6 +1799,8 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+>> 				goto out_err;
+>> 			}
+>> 		}
+>> +
+>> +		vsk->tid_owner = current->pid;
+>> 		remove_wait_queue(sk_sleep(sk), &wait);
+>>
+>> 		/* These checks occur both as part of and after the loop
+>> @@ -1852,7 +1857,10 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+>> 			err = total_written;
+>> 	}
+>> out:
+>> +	vsk->tid_owner = -1;
+>> 	release_sock(sk);
+>> +	sk->sk_write_space(sk);
+>> +
+> Is this change related? Can you explain in the commit message why it is 
+> needed?
+This is "unlocking" of socket
+>
+>> 	return err;
+>> }
+>>
+>> -- 
+>> 2.25.1
+>>
+>
