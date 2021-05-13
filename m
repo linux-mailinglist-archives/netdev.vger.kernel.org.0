@@ -2,70 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B57137FB3B
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 18:08:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6F1D37FB73
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 18:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235040AbhEMQKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 12:10:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51910 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234935AbhEMQJy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 May 2021 12:09:54 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B4AB6613B6;
-        Thu, 13 May 2021 16:08:43 +0000 (UTC)
-Date:   Thu, 13 May 2021 12:08:42 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Joel Fernandes <joelaf@google.com>,
-        Linux Trace Devel <linux-trace-devel@vger.kernel.org>
-Subject: Re: [RFC][PATCH] vhost/vsock: Add vsock_list file to map cid with
- vhost tasks
-Message-ID: <20210513120842.4ed3fb0e@gandalf.local.home>
-In-Reply-To: <YJ1Mbie1YGKRR6b8@stefanha-x1.localdomain>
-References: <20210505163855.32dad8e7@gandalf.local.home>
-        <YJ1Mbie1YGKRR6b8@stefanha-x1.localdomain>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S235142AbhEMQ2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 12:28:19 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:55180 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235130AbhEMQ2P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 12:28:15 -0400
+Received: by mail-il1-f197.google.com with SMTP id g10-20020a056e020d0ab02901b4d3f8a0b2so17124435ilj.21
+        for <netdev@vger.kernel.org>; Thu, 13 May 2021 09:27:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=YKYMJN0wOTOdIhbhWJ09zW38cF2+wNMxDEkbWJQv620=;
+        b=JPHbifKvV5XxmG3wvkFIfbns3XamBpn6W574/k1bZzIDZx2vc54GhTERvYqsdWo+cQ
+         WBVaGrdFWTmtMNWfbvzrJT+F6k01TyBQuPbmMYlcGLIhRA5AMvaKFTU7Qalafi40rZpy
+         xZqBIg3xcdVXOwopuBqESGg+kT/51DbJbJjwm3v7dCEAweWg05wYkw1taTctWN3DzXfB
+         X1wZW//HkFrA29Abw4uAfgL04JyrDy99+V4g5jhGcn18ZexZeadvOdqmBDQo3gxu+q5F
+         ddisetFIUIVU1VlDDZy6JQnpFbD26ZBL95eTbf8tmWWL03hfXtfFrGn4z+av2F2PJGTH
+         wuKA==
+X-Gm-Message-State: AOAM531+d6TEqc7QlIF7+zEit5gqmfzjx683eiFU1Tjr3uVliVkT3sc5
+        f7QalRpEyJTDRlo+Wgukz6ZUQ5J7AMK1SyM4g2CHNIb9jSlP
+X-Google-Smtp-Source: ABdhPJyDfQsqI4Kf8+DTE946kH5/MEOSEHJVBdeLXA8kLQzSGICDYM4ZCGvRpL5XacZosrDhcc4hXoWum6QCXdcpQ6jqvPq3mm23
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:b717:: with SMTP id g23mr39955248jam.109.1620923224227;
+ Thu, 13 May 2021 09:27:04 -0700 (PDT)
+Date:   Thu, 13 May 2021 09:27:04 -0700
+In-Reply-To: <000000000000aaa4a905ac646223@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fd05a005c2389844@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in __queue_work (3)
+From:   syzbot <syzbot+77e5e02c6c81136cdaff@syzkaller.appspotmail.com>
+To:     Markus.Elfring@web.de, anant.thazhemadam@gmail.com,
+        davem@davemloft.net, gregkh@linuxfoundation.org, hdanton@sina.com,
+        johan.hedberg@gmail.com, kuba@kernel.org, linma@zju.edu.cn,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 May 2021 16:57:34 +0100
-Stefan Hajnoczi <stefanha@redhat.com> wrote:
+syzbot suspects this issue was fixed by commit:
 
+commit e2cb6b891ad2b8caa9131e3be70f45243df82a80
+Author: Lin Ma <linma@zju.edu.cn>
+Date:   Mon Apr 12 11:17:57 2021 +0000
 
-> This approach relies on process hierarchy of the VMM (QEMU).
-> Multi-process QEMU is in development and will allow VIRTIO devices to
-> run as separate processes from the main QEMU. It then becomes harder to
-> correlate a VIRTIO device process with its QEMU process.
+    bluetooth: eliminate the potential race condition when removing the HCI controller
 
-And we need to know all these mapping regardless, as we need to map each
-thread / process to the vCPU in order to correlate between host thread and
-vCPU thread for showing in KernelShark.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=127b3593d00000
+start commit:   c0842fbc random32: move the pseudo-random 32-bit definitio..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cf567e8c7428377e
+dashboard link: https://syzkaller.appspot.com/bug?extid=77e5e02c6c81136cdaff
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=140e36a4900000
 
-Thus this mapping to find the main thread/process needs to be done
-regardless.
+If the result looks correct, please mark the issue as fixed by replying with:
 
-> 
-> So I think in the end this approach ends up being as fragile as parsing
-> command-lines. The kernel doesn't really have the concept of a "VM" that
-> the vhost_vsock is associated with :). Maybe just parse QEMU and crosvm
-> command-lines?
->
+#syz fix: bluetooth: eliminate the potential race condition when removing the HCI controller
 
-That's what we do now, and it already broke once, and even parsing the
-command line wont be enough for the stated reasons above.
-
--- Steve
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
