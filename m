@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1B8137F9DF
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 16:42:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA2D337F9E3
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 16:44:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234644AbhEMOnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 10:43:40 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:17219 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234612AbhEMOnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 10:43:32 -0400
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id D1CEA76B06;
-        Thu, 13 May 2021 17:42:17 +0300 (MSK)
+        id S234647AbhEMOpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 10:45:03 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:14889 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234630AbhEMOoQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 10:44:16 -0400
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id DD6D6521A48;
+        Thu, 13 May 2021 17:42:59 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1620916937;
-        bh=cvAMnx0j++B1S8leH4A1OKRsY7smTmc8AgAE5OIS9I4=;
+        s=mail202102; t=1620916980;
+        bh=rrC7pB7ZvT9skg01jvxfGXAPzON2vylog2KME9ggwAg=;
         h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=AJV/oPhBxPeSXQTp7h5iU4XEl/9kQxybmZxxptz9sl3t58uSxq9ezah0ca0Lhf8f0
-         fuxnsiWJK7qHXXUe5ISsLzh+LyWobf81qsw32tPwQgKmFpTfVMUH/EqobqcbV+ExlX
-         f08xATMR2lUOi3qFkdD6d4DbF7AVkMIlxI06lKPGbOKXBm2aa/l7a1eqhSq1dbhwmY
-         pnHBqViLgbNegyYyKYN3dRqI/SIn1X5pEtNgMuG3gXCbdhfBlAm4aSOkWQ7tPL4e/u
-         ICfnubqBZspBk7P/MK8O7NTfbktJlCI/wzgqRBA6Ozes32wq9iAUBJFCbN/49ABI/A
-         B4d8qGsshw+pQ==
+        b=3QmIv7jjqLWHvcOfz6Q/41DWnTUmZ9uSF0AatbmEyFstDkU19KygWZUgF1BAhYwYl
+         nJ8Qa3E/8Ut21rTQd3bYVv6Rg2zn71ZBu3BPRSwEmFCljAVMU4pJU01IxRYfHRXYIe
+         iZOcwjsRJoBT464miKHP/vztNreeXn1l5Ob0RRES6is43frG1VRcXsTn+yE1Ura0q6
+         DdxTK2pFdmWoJ+g1F56rfFc5r+eAIAgTzWaVkSUxnRTijNIIic1ecMMCITiG/jCnU7
+         F19d6SaG7wBrkyVLx1MVGNhxaekqPC7+/W6hhpf0oun89eXcXNwIm5u6Y9BLeYs30V
+         8+ylbZ+el9s3w==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 7F4707693F;
-        Thu, 13 May 2021 17:42:17 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 44D5752196F;
+        Thu, 13 May 2021 17:42:57 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 13
- May 2021 17:42:16 +0300
-Subject: Re: [RFC PATCH v9 10/19] virtio/vsock: defines and constants for
- SEQPACKET
+ May 2021 17:42:48 +0300
+Subject: Re: [RFC PATCH v9 11/19] virtio/vsock: dequeue callback for
+ SOCK_SEQPACKET
 To:     Stefano Garzarella <sgarzare@redhat.com>
 CC:     Stefan Hajnoczi <stefanha@redhat.com>,
         "Michael S. Tsirkin" <mst@redhat.com>,
@@ -53,20 +53,20 @@ CC:     Stefan Hajnoczi <stefanha@redhat.com>,
         "stsp2@yandex.ru" <stsp2@yandex.ru>,
         "oxffffaa@gmail.com" <oxffffaa@gmail.com>
 References: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
- <20210508163508.3431890-1-arseny.krasnov@kaspersky.com>
- <20210513114543.hucvkhky3tlmvabl@steredhat>
+ <20210508163523.3431999-1-arseny.krasnov@kaspersky.com>
+ <20210513115816.332nfej4jyra7vrh@steredhat>
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <5c077288-8380-3d71-1958-59254b4d8dc4@kaspersky.com>
-Date:   Thu, 13 May 2021 17:42:16 +0300
+Message-ID: <ff5e7e54-e56a-6574-2654-4afc3f10a28c@kaspersky.com>
+Date:   Thu, 13 May 2021 17:42:47 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210513114543.hucvkhky3tlmvabl@steredhat>
+In-Reply-To: <20210513115816.332nfej4jyra7vrh@steredhat>
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -78,9 +78,8 @@ X-KSE-AntiSpam-Info: Lua profiles 163644 [May 13 2021]
 X-KSE-AntiSpam-Info: Version: 5.9.20.0
 X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
 X-KSE-AntiSpam-Info: LuaCore: 445 445 d5f7ae5578b0f01c45f955a2a751ac25953290c9
-X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
 X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: lists.oasis-open.org:7.1.1;kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;kaspersky.com:7.1.1
 X-KSE-AntiSpam-Info: Rate: 0
 X-KSE-AntiSpam-Info: Status: not_detected
 X-KSE-AntiSpam-Info: Method: none
@@ -108,57 +107,90 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 13.05.2021 14:45, Stefano Garzarella wrote:
-> On Sat, May 08, 2021 at 07:35:05PM +0300, Arseny Krasnov wrote:
->> This adds set of defines and constants for SOCK_SEQPACKET
->> support in vsock. Here is link to spec patch, which uses it:
+On 13.05.2021 14:58, Stefano Garzarella wrote:
+> On Sat, May 08, 2021 at 07:35:20PM +0300, Arseny Krasnov wrote:
+>> This adds transport callback and it's logic for SEQPACKET dequeue.
+>> Callback fetches RW packets from rx queue of socket until whole record
+>> is copied(if user's buffer is full, user is not woken up). This is done
+>> to not stall sender, because if we wake up user and it leaves syscall,
+>> nobody will send credit update for rest of record, and sender will wait
+>> for next enter of read syscall at receiver's side. So if user buffer is
+>> full, we just send credit update and drop data.
 >>
->> https://lists.oasis-open.org/archives/virtio-comment/202103/msg00069.html
-> Will you be submitting a new version?
-Yes, i'll send new patch to spec in next few days.
->
 >> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 >> ---
->> include/uapi/linux/virtio_vsock.h | 9 +++++++++
->> 1 file changed, 9 insertions(+)
+>> v8 -> v9:
+>> 1) Check for RW packet type is removed from loop(all packet now
+>>    considered RW).
+>> 2) Locking in loop is fixed.
+>> 3) cpu_to_le32()/le32_to_cpu() now used.
+>> 4) MSG_TRUNC handling removed from transport.
 >>
->> diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
->> index 1d57ed3d84d2..3dd3555b2740 100644
->> --- a/include/uapi/linux/virtio_vsock.h
->> +++ b/include/uapi/linux/virtio_vsock.h
->> @@ -38,6 +38,9 @@
->> #include <linux/virtio_ids.h>
->> #include <linux/virtio_config.h>
+>> include/linux/virtio_vsock.h            |  5 ++
+>> net/vmw_vsock/virtio_transport_common.c | 64 +++++++++++++++++++++++++
+>> 2 files changed, 69 insertions(+)
 >>
->> +/* The feature bitmap for virtio vsock */
->> +#define VIRTIO_VSOCK_F_SEQPACKET	1	/* SOCK_SEQPACKET supported */
+>> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>> index dc636b727179..02acf6e9ae04 100644
+>> --- a/include/linux/virtio_vsock.h
+>> +++ b/include/linux/virtio_vsock.h
+>> @@ -80,6 +80,11 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
+>> 			       struct msghdr *msg,
+>> 			       size_t len, int flags);
+>>
+>> +ssize_t
+>> +virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
+>> +				   struct msghdr *msg,
+>> +				   int flags,
+>> +				   bool *msg_ready);
+>> s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
+>> s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
+>>
+>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>> index ad0d34d41444..f649a21dd23b 100644
+>> --- a/net/vmw_vsock/virtio_transport_common.c
+>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>> @@ -393,6 +393,58 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+>> 	return err;
+>> }
+>>
+>> +static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+>> +						 struct msghdr *msg,
+>> +						 int flags,
+>> +						 bool *msg_ready)
+>> +{
+>> +	struct virtio_vsock_sock *vvs = vsk->trans;
+>> +	struct virtio_vsock_pkt *pkt;
+>> +	int err = 0;
+>> +	size_t user_buf_len = msg->msg_iter.count;
 >> +
->> struct virtio_vsock_config {
->> 	__le64 guest_cid;
->> } __attribute__((packed));
->> @@ -65,6 +68,7 @@ struct virtio_vsock_hdr {
->>
->> enum virtio_vsock_type {
->> 	VIRTIO_VSOCK_TYPE_STREAM = 1,
->> +	VIRTIO_VSOCK_TYPE_SEQPACKET = 2,
->> };
->>
->> enum virtio_vsock_op {
->> @@ -91,4 +95,9 @@ enum virtio_vsock_shutdown {
->> 	VIRTIO_VSOCK_SHUTDOWN_SEND = 2,
->> };
->>
->> +/* VIRTIO_VSOCK_OP_RW flags values */
->> +enum virtio_vsock_rw {
->> +	VIRTIO_VSOCK_SEQ_EOR = 1,
->> +};
+>> +	*msg_ready = false;
+>> +	spin_lock_bh(&vvs->rx_lock);
 >> +
->> #endif /* _UAPI_LINUX_VIRTIO_VSOCK_H */
->> -- 
->> 2.25.1
->>
-> Looks good:
+>> +	while (!*msg_ready && !list_empty(&vvs->rx_queue) && err >= 0) {
+>> +		size_t bytes_to_copy;
+>> +		size_t pkt_len;
+>> +
+>> +		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
+>> +		pkt_len = (size_t)le32_to_cpu(pkt->hdr.len);
+>> +		bytes_to_copy = min(user_buf_len, pkt_len);
+>> +
+>> +		if (bytes_to_copy) {
+>> +			/* sk_lock is held by caller so no one else can dequeue.
+>> +			 * Unlock rx_lock since memcpy_to_msg() may sleep.
+>> +			 */
+>> +			spin_unlock_bh(&vvs->rx_lock);
+>> +
+>> +			if (memcpy_to_msg(msg, pkt->buf, bytes_to_copy)) 
+>> {
+>> +				err = -EINVAL;
+>> +			} else {
+>> +				err += pkt_len;
+> If `bytes_to_copy == 0` we are not increasing the real length.
 >
-> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> Anyway is a bit confusing increase a variable called `err`, I think is 
+> better to have another variable to store this information that we return 
+> if there aren't errors.
+Ack
 >
 >
