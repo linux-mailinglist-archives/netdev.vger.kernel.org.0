@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 210AC37FBFE
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 19:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B67D37FC03
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 19:00:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230327AbhEMRBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 13:01:19 -0400
-Received: from mail-ej1-f53.google.com ([209.85.218.53]:38804 "EHLO
-        mail-ej1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230181AbhEMRBH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 13:01:07 -0400
-Received: by mail-ej1-f53.google.com with SMTP id b25so40762631eju.5;
-        Thu, 13 May 2021 09:59:56 -0700 (PDT)
+        id S230289AbhEMRCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 13:02:00 -0400
+Received: from mail-ed1-f43.google.com ([209.85.208.43]:38811 "EHLO
+        mail-ed1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230318AbhEMRBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 13:01:19 -0400
+Received: by mail-ed1-f43.google.com with SMTP id n25so31761751edr.5;
+        Thu, 13 May 2021 10:00:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RPSD4rOiIyDkht9dP550Ooc8Tm65GKpSWccVLOdF3gM=;
-        b=QJuoC3i6YjeUKQkRU5kJr+wXHcgO+ZVTatAwf/Qp8QUUiS+b+8dSulH6vFKVCre8Nv
-         VQQDB4EM5I5aRe4KvyylEtlOu2Tqd8hwD1YjMXK1palq2VJGV1Nnxs+GxlfYBiAPF1Jj
-         R153geiLxE5O+jUNKColwIpaUz4IkMGEMv6ybZ0vYsKxJBWGxABP1q9jnu0hIWsMYAy5
-         hF01lDIhWtQDu6CgAlFGU2yVs4GQpPtoPiGuUzrHF5/EGkJ/UZ+FjZSHlQYO6rRuweIO
-         PqUcGAECsjOqiVLvXjxpOuF5gUXpgUbbl4ugCcJvVajEOfmvhqOjiVuS5WLqKMOpBt7v
-         gvHw==
-X-Gm-Message-State: AOAM533da4lcSM36GO/CF21Js2xwamVHVFOqjib5fMoofho5ON5XzRbe
-        nZP4K1dueWdZ1dIJZNp8S5+72eeLAyEYRygf
-X-Google-Smtp-Source: ABdhPJxPZCw2XIJAUpflxEPjc17/7uk7FOVIVX32n26xoKnr/ktO77VFQ9fqBHaaR6utmNEDAbN2+Q==
-X-Received: by 2002:a17:906:57c3:: with SMTP id u3mr45648755ejr.162.1620925195918;
-        Thu, 13 May 2021 09:59:55 -0700 (PDT)
+        bh=aJ11lVMhqfzweOJ3ay4/tPGlK2PxGXGfkKMCyU2xp1w=;
+        b=kq0rleRkaXhj4VeYgTOqrrqPCs9IzSWb9EavsRyTiSmlKTmZaDwmTSQLh7yrJJPaAM
+         /EpjjtVPkqW5gT2HBCNEcKHo22ZPdqBk7HItS30f14vKNDLT1IZJjUeSKvFcFt5qusLP
+         0UhBOYBQAcfnRWmX1PKzj9xYiKDf8QfUi216nh9cxnOwlKXo3/lZWBH0LuUDbYp+vDbD
+         yWa6w0ICTWnt1CapUFNWAfPdQvYrq1n0/PqHpQn3i7uNoCIm6SvmvCllC3kogtI+gzMe
+         0iK0lwTroviPK6hXVo2K8O/wqGuL/VURrQAYKqtFa++nVCn01C7fTPlx9j7B922X8QBu
+         VtYw==
+X-Gm-Message-State: AOAM532CtxyJ55siu1KeU+irzkGvILRXk5Fv6W0qSp3NlQHKlwot6DeO
+        rpUXF/naaUd1YOipFHnQXfhdw+3E32BBGYQx
+X-Google-Smtp-Source: ABdhPJz78AblB+Dytg88UNqBKz2trgLIRPEr4K7NeibFB2zuV2wvD405/VSLNB5AkNpELTdvTz0eTw==
+X-Received: by 2002:a05:6402:284:: with SMTP id l4mr52315371edv.299.1620925207391;
+        Thu, 13 May 2021 10:00:07 -0700 (PDT)
 Received: from msft-t490s.teknoraver.net (net-5-94-253-60.cust.vodafonedsl.it. [5.94.253.60])
-        by smtp.gmail.com with ESMTPSA id w11sm2959431ede.54.2021.05.13.09.59.53
+        by smtp.gmail.com with ESMTPSA id w11sm2959431ede.54.2021.05.13.10.00.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 May 2021 09:59:55 -0700 (PDT)
+        Thu, 13 May 2021 10:00:06 -0700 (PDT)
 From:   Matteo Croce <mcroce@linux.microsoft.com>
 To:     netdev@vger.kernel.org, linux-mm@kvack.org
 Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
@@ -78,9 +78,9 @@ Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
         Sven Auhagen <sven.auhagen@voleatech.de>
-Subject: [PATCH net-next v5 3/5] page_pool: Allow drivers to hint on SKB recycling
-Date:   Thu, 13 May 2021 18:58:44 +0200
-Message-Id: <20210513165846.23722-4-mcroce@linux.microsoft.com>
+Subject: [PATCH net-next v5 4/5] mvpp2: recycle buffers
+Date:   Thu, 13 May 2021 18:58:45 +0200
+Message-Id: <20210513165846.23722-5-mcroce@linux.microsoft.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210513165846.23722-1-mcroce@linux.microsoft.com>
 References: <20210513165846.23722-1-mcroce@linux.microsoft.com>
@@ -90,266 +90,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+From: Matteo Croce <mcroce@microsoft.com>
 
-Up to now several high speed NICs have custom mechanisms of recycling
-the allocated memory they use for their payloads.
-Our page_pool API already has recycling capabilities that are always
-used when we are running in 'XDP mode'. So let's tweak the API and the
-kernel network stack slightly and allow the recycling to happen even
-during the standard operation.
-The API doesn't take into account 'split page' policies used by those
-drivers currently, but can be extended once we have users for that.
+Use the new recycling API for page_pool.
+In a drop rate test, the packet rate is more than doubled,
+from 962 Kpps to 2047 Kpps.
 
-The idea is to be able to intercept the packet on skb_release_data().
-If it's a buffer coming from our page_pool API recycle it back to the
-pool for further usage or just release the packet entirely.
+perf top on a stock system shows:
 
-To achieve that we introduce a bit in struct sk_buff (pp_recycle:1) and
-a field in struct page (page->pp) to store the page_pool pointer.
-Storing the information in page->pp allows us to recycle both SKBs and
-their fragments.
-The SKB bit is needed for a couple of reasons. First of all in an effort
-to affect the free path as less as possible, reading a single bit,
-is better that trying to derive identical information for the page stored
-data. We do have a special mark in the page, that won't allow this to
-happen, but again deciding without having to read the entire page is
-preferable.
+Overhead  Shared Object     Symbol
+  30.67%  [kernel]          [k] page_pool_release_page
+   8.37%  [kernel]          [k] get_page_from_freelist
+   7.34%  [kernel]          [k] free_unref_page
+   6.47%  [mvpp2]           [k] mvpp2_rx
+   4.69%  [kernel]          [k] eth_type_trans
+   4.55%  [kernel]          [k] __netif_receive_skb_core
+   4.40%  [kernel]          [k] build_skb
+   4.29%  [kernel]          [k] kmem_cache_free
+   4.00%  [kernel]          [k] kmem_cache_alloc
+   3.81%  [kernel]          [k] dev_gro_receive
 
-The driver has to take care of the sync operations on it's own
-during the buffer recycling since the buffer is, after opting-in to the
-recycling, never unmapped.
+With packet rate stable at 962 Kpps:
 
-Since the gain on the drivers depends on the architecture, we are not
-enabling recycling by default if the page_pool API is used on a driver.
-In order to enable recycling the driver must call skb_mark_for_recycle()
-to store the information we need for recycling in page->pp and
-enabling the recycling bit, or page_pool_store_mem_info() for a fragment.
+tx: 0 bps 0 pps rx: 477.4 Mbps 962.6 Kpps
+tx: 0 bps 0 pps rx: 477.6 Mbps 962.8 Kpps
+tx: 0 bps 0 pps rx: 477.6 Mbps 962.9 Kpps
+tx: 0 bps 0 pps rx: 477.2 Mbps 962.1 Kpps
+tx: 0 bps 0 pps rx: 477.5 Mbps 962.7 Kpps
 
-Co-developed-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Co-developed-by: Matteo Croce <mcroce@microsoft.com>
+And this is the same output with recycling enabled:
+
+Overhead  Shared Object     Symbol
+  12.75%  [mvpp2]           [k] mvpp2_rx
+   9.56%  [kernel]          [k] __netif_receive_skb_core
+   9.29%  [kernel]          [k] build_skb
+   9.27%  [kernel]          [k] eth_type_trans
+   8.39%  [kernel]          [k] kmem_cache_alloc
+   7.85%  [kernel]          [k] kmem_cache_free
+   7.36%  [kernel]          [k] page_pool_put_page
+   6.45%  [kernel]          [k] dev_gro_receive
+   4.72%  [kernel]          [k] __xdp_return
+   3.06%  [kernel]          [k] page_pool_refill_alloc_cache
+
+With packet rate above 2000 Kpps:
+
+tx: 0 bps 0 pps rx: 1015 Mbps 2046 Kpps
+tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
+tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
+tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
+tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
+
+The major performance increase is explained by the fact that the most CPU
+consuming functions (page_pool_release_page, get_page_from_freelist
+and free_unref_page) are no longer called on a per packet basis.
+
+The test was done by sending to the macchiatobin 64 byte ethernet frames
+with an invalid ethertype, so the packets are dropped early in the RX path.
+
 Signed-off-by: Matteo Croce <mcroce@microsoft.com>
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 ---
- include/linux/skbuff.h  | 28 +++++++++++++++++++++++++---
- include/net/page_pool.h |  9 +++++++++
- net/core/page_pool.c    | 23 +++++++++++++++++++++++
- net/core/skbuff.c       | 25 +++++++++++++++++++++----
- 4 files changed, 78 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 7fcfea7e7b21..057b40ad29bd 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -40,6 +40,9 @@
- #if IS_ENABLED(CONFIG_NF_CONNTRACK)
- #include <linux/netfilter/nf_conntrack_common.h>
- #endif
-+#ifdef CONFIG_PAGE_POOL
-+#include <net/page_pool.h>
-+#endif
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index b2259bf1d299..9dceabece56c 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -3847,6 +3847,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 	struct mvpp2_pcpu_stats ps = {};
+ 	enum dma_data_direction dma_dir;
+ 	struct bpf_prog *xdp_prog;
++	struct xdp_rxq_info *rxqi;
+ 	struct xdp_buff xdp;
+ 	int rx_received;
+ 	int rx_done = 0;
+@@ -3912,15 +3913,15 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 		else
+ 			frag_size = bm_pool->frag_size;
  
- /* The interface for checksum offload between the stack and networking drivers
-  * is as follows...
-@@ -667,6 +670,8 @@ typedef unsigned char *sk_buff_data_t;
-  *	@head_frag: skb was allocated from page fragments,
-  *		not allocated by kmalloc() or vmalloc().
-  *	@pfmemalloc: skbuff was allocated from PFMEMALLOC reserves
-+ *	@pp_recycle: mark the packet for recycling instead of freeing (implies
-+ *		page_pool support on driver)
-  *	@active_extensions: active extensions (skb_ext_id types)
-  *	@ndisc_nodetype: router type (from link layer)
-  *	@ooo_okay: allow the mapping of a socket to a queue to be changed
-@@ -791,10 +796,12 @@ struct sk_buff {
- 				fclone:2,
- 				peeked:1,
- 				head_frag:1,
--				pfmemalloc:1;
-+				pfmemalloc:1,
-+				pp_recycle:1; /* page_pool recycle indicator */
- #ifdef CONFIG_SKB_EXTENSIONS
- 	__u8			active_extensions;
- #endif
-+
- 	/* fields enclosed in headers_start/headers_end are copied
- 	 * using a single memcpy() in __copy_skb_header()
- 	 */
-@@ -3088,7 +3095,13 @@ static inline void skb_frag_ref(struct sk_buff *skb, int f)
-  */
- static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
- {
--	put_page(skb_frag_page(frag));
-+	struct page *page = skb_frag_page(frag);
-+
-+#ifdef CONFIG_PAGE_POOL
-+	if (recycle && page_pool_return_skb_page(page_address(page)))
-+		return;
-+#endif
-+	put_page(page);
- }
+-		if (xdp_prog) {
+-			struct xdp_rxq_info *xdp_rxq;
++		if (bm_pool->pkt_size == MVPP2_BM_SHORT_PKT_SIZE)
++			rxqi = &rxq->xdp_rxq_short;
++		else
++			rxqi = &rxq->xdp_rxq_long;
  
- /**
-@@ -3100,7 +3113,7 @@ static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
-  */
- static inline void skb_frag_unref(struct sk_buff *skb, int f)
- {
--	__skb_frag_unref(&skb_shinfo(skb)->frags[f], false);
-+	__skb_frag_unref(&skb_shinfo(skb)->frags[f], skb->pp_recycle);
- }
+-			if (bm_pool->pkt_size == MVPP2_BM_SHORT_PKT_SIZE)
+-				xdp_rxq = &rxq->xdp_rxq_short;
+-			else
+-				xdp_rxq = &rxq->xdp_rxq_long;
++		if (xdp_prog) {
++			xdp.rxq = rxqi;
  
- /**
-@@ -4699,5 +4712,14 @@ static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
- #endif
- }
+-			xdp_init_buff(&xdp, PAGE_SIZE, xdp_rxq);
++			xdp_init_buff(&xdp, PAGE_SIZE, rxqi);
+ 			xdp_prepare_buff(&xdp, data,
+ 					 MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM,
+ 					 rx_bytes, false);
+@@ -3964,7 +3965,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 		}
  
-+#ifdef CONFIG_PAGE_POOL
-+static inline void skb_mark_for_recycle(struct sk_buff *skb, struct page *page,
-+					struct page_pool *pp)
-+{
-+	skb->pp_recycle = 1;
-+	page_pool_store_mem_info(page, pp);
-+}
-+#endif
-+
- #endif	/* __KERNEL__ */
- #endif	/* _LINUX_SKBUFF_H */
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 24b3d42c62c0..ce75abeddb29 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -148,6 +148,8 @@ inline enum dma_data_direction page_pool_get_dma_dir(struct page_pool *pool)
- 	return pool->p.dma_dir;
- }
- 
-+bool page_pool_return_skb_page(void *data);
-+
- struct page_pool *page_pool_create(const struct page_pool_params *params);
- 
- #ifdef CONFIG_PAGE_POOL
-@@ -253,4 +255,11 @@ static inline void page_pool_ring_unlock(struct page_pool *pool)
- 		spin_unlock_bh(&pool->ring.producer_lock);
- }
- 
-+/* Store mem_info on struct page and use it while recycling skb frags */
-+static inline
-+void page_pool_store_mem_info(struct page *page, struct page_pool *pp)
-+{
-+	page->pp = pp;
-+}
-+
- #endif /* _NET_PAGE_POOL_H */
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 9de5d8c08c17..fa9f17db7c48 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -626,3 +626,26 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
- 	}
- }
- EXPORT_SYMBOL(page_pool_update_nid);
-+
-+bool page_pool_return_skb_page(void *data)
-+{
-+	struct page_pool *pp;
-+	struct page *page;
-+
-+	page = virt_to_head_page(data);
-+	if (unlikely(page->pp_magic != PP_SIGNATURE))
-+		return false;
-+
-+	pp = (struct page_pool *)page->pp;
-+
-+	/* Driver set this to memory recycling info. Reset it on recycle.
-+	 * This will *not* work for NIC using a split-page memory model.
-+	 * The page will be returned to the pool here regardless of the
-+	 * 'flipped' fragment being in use or not.
-+	 */
-+	page->pp = NULL;
-+	page_pool_put_full_page(pp, virt_to_head_page(data), false);
-+
-+	return true;
-+}
-+EXPORT_SYMBOL(page_pool_return_skb_page);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 12b7e90dd2b5..9581af44d587 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -70,6 +70,9 @@
- #include <net/xfrm.h>
- #include <net/mpls.h>
- #include <net/mptcp.h>
-+#ifdef CONFIG_PAGE_POOL
-+#include <net/page_pool.h>
-+#endif
- 
- #include <linux/uaccess.h>
- #include <trace/events/skb.h>
-@@ -645,10 +648,15 @@ static void skb_free_head(struct sk_buff *skb)
- {
- 	unsigned char *head = skb->head;
- 
--	if (skb->head_frag)
-+	if (skb->head_frag) {
-+#ifdef CONFIG_PAGE_POOL
-+		if (skb->pp_recycle && page_pool_return_skb_page(head))
-+			return;
-+#endif
- 		skb_free_frag(head);
--	else
-+	} else {
- 		kfree(head);
-+	}
- }
- 
- static void skb_release_data(struct sk_buff *skb)
-@@ -664,7 +672,7 @@ static void skb_release_data(struct sk_buff *skb)
- 	skb_zcopy_clear(skb, true);
- 
- 	for (i = 0; i < shinfo->nr_frags; i++)
--		__skb_frag_unref(&shinfo->frags[i], false);
-+		__skb_frag_unref(&shinfo->frags[i], skb->pp_recycle);
- 
- 	if (shinfo->frag_list)
- 		kfree_skb_list(shinfo->frag_list);
-@@ -1046,6 +1054,7 @@ static struct sk_buff *__skb_clone(struct sk_buff *n, struct sk_buff *skb)
- 	n->nohdr = 0;
- 	n->peeked = 0;
- 	C(pfmemalloc);
-+	C(pp_recycle);
- 	n->destructor = NULL;
- 	C(tail);
- 	C(end);
-@@ -1725,6 +1734,7 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
- 	skb->cloned   = 0;
- 	skb->hdr_len  = 0;
- 	skb->nohdr    = 0;
-+	skb->pp_recycle = 0;
- 	atomic_set(&skb_shinfo(skb)->dataref, 1);
- 
- 	skb_metadata_clear(skb);
-@@ -3495,7 +3505,7 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
- 		fragto = &skb_shinfo(tgt)->frags[merge];
- 
- 		skb_frag_size_add(fragto, skb_frag_size(fragfrom));
--		__skb_frag_unref(fragfrom, false);
-+		__skb_frag_unref(fragfrom, skb->pp_recycle);
- 	}
- 
- 	/* Reposition in the original skb */
-@@ -5285,6 +5295,13 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
- 	if (skb_cloned(to))
- 		return false;
- 
-+	/* We can't coalesce skb that are allocated from slab and page_pool
-+	 * The recycle mark is on the skb, so that might end up trying to
-+	 * recycle slab allocated skb->head
-+	 */
-+	if (to->pp_recycle != from->pp_recycle)
-+		return false;
-+
- 	if (len <= skb_tailroom(to)) {
- 		if (len)
- 			BUG_ON(skb_copy_bits(from, 0, skb_put(to, len), len));
+ 		if (pp)
+-			page_pool_release_page(pp, virt_to_page(data));
++			skb_mark_for_recycle(skb, virt_to_page(data), pp);
+ 		else
+ 			dma_unmap_single_attrs(dev->dev.parent, dma_addr,
+ 					       bm_pool->buf_size, DMA_FROM_DEVICE,
 -- 
 2.31.1
 
