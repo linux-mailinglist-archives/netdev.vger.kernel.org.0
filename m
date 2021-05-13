@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1055537F6F7
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:43:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C309937F6FF
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:44:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233465AbhEMLox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 07:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34454 "EHLO
+        id S233588AbhEMLpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 07:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231414AbhEMLow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 07:44:52 -0400
+        with ESMTP id S233403AbhEMLox (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 07:44:53 -0400
 Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B55CC061760;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B398C061574;
         Thu, 13 May 2021 04:43:42 -0700 (PDT)
 Received: from [2a02:610:7501:feff:1ccf:41ff:fe50:18b9] (helo=localhost.localdomain)
         by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <gatis@mikrotik.com>)
-        id 1lh9kb-0007HF-Da; Thu, 13 May 2021 14:43:33 +0300
+        id 1lh9kb-0007HF-FW; Thu, 13 May 2021 14:43:33 +0300
 From:   Gatis Peisenieks <gatis@mikrotik.com>
 To:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
         hkallweit1@gmail.com, jesse.brandeburg@intel.com,
         dchickles@marvell.com, tully@mikrotik.com, eric.dumazet@gmail.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Gatis Peisenieks <gatis@mikrotik.com>
-Subject: [PATCH net-next v2 3/5] atl1c: adjust max mtu according to Mikrotik 10/25G NIC ability
-Date:   Thu, 13 May 2021 14:43:24 +0300
-Message-Id: <20210513114326.699663-4-gatis@mikrotik.com>
+Subject: [PATCH net-next v2 4/5] atl1c: enable rx csum offload on Mikrotik 10/25G NIC
+Date:   Thu, 13 May 2021 14:43:25 +0300
+Message-Id: <20210513114326.699663-5-gatis@mikrotik.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210513114326.699663-1-gatis@mikrotik.com>
 References: <20210513114326.699663-1-gatis@mikrotik.com>
@@ -37,58 +37,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The new Mikrotik 10/25G NIC supports jumbo frames. Jumbo frames are
-supported for TSO as well.
+Mikrotik 10/25G NIC supports hw checksum verification on rx for
+IP/IPv6 + TCP/UDP packets. HW checksum offload helps reduce host
+cpu load.
 
-This enables the support for mtu up to 9500 bytes.
+This enables the csum offload specifically for Mikrotik 10/25G NIC
+as other HW supported by the driver is known to have problems with it.
+
+TCP iperf3 to Threadripper 3960X with NIC improved 16.5 -> 20.0 Gbps
+with mtu=1500.
 
 Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
 ---
- drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/atheros/atl1c/atl1c.h      | 2 ++
+ drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 5 +++++
+ 2 files changed, 7 insertions(+)
 
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c.h b/drivers/net/ethernet/atheros/atl1c/atl1c.h
+index 3fda7eb3bd69..9d70cb7544f1 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c.h
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c.h
+@@ -241,6 +241,8 @@ struct atl1c_tpd_ext_desc {
+ #define RRS_PACKET_PROT_IS_IPV6_ONLY(word) \
+ 	((((word) >> RRS_PROT_ID_SHIFT) & RRS_PROT_ID_MASK) == 6)
+ 
++#define RRS_MT_PROT_ID_TCPUDP	BIT(19)
++
+ struct atl1c_recv_ret_status {
+ 	__le32  word0;
+ 	__le32	rss_hash;
 diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-index 08a0f49e03ce..dbafd8118a86 100644
+index dbafd8118a86..9693da5028cf 100644
 --- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
 +++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-@@ -478,6 +478,9 @@ static void atl1c_set_rxbufsize(struct atl1c_adapter *adapter,
- static netdev_features_t atl1c_fix_features(struct net_device *netdev,
- 	netdev_features_t features)
+@@ -1671,6 +1671,11 @@ static irqreturn_t atl1c_intr(int irq, void *data)
+ static inline void atl1c_rx_checksum(struct atl1c_adapter *adapter,
+ 		  struct sk_buff *skb, struct atl1c_recv_ret_status *prrs)
  {
-+	struct atl1c_adapter *adapter = netdev_priv(netdev);
-+	struct atl1c_hw *hw = &adapter->hw;
-+
- 	/*
- 	 * Since there is no support for separate rx/tx vlan accel
- 	 * enable/disable make sure tx flag is always in same state as rx.
-@@ -487,8 +490,10 @@ static netdev_features_t atl1c_fix_features(struct net_device *netdev,
- 	else
- 		features &= ~NETIF_F_HW_VLAN_CTAG_TX;
- 
--	if (netdev->mtu > MAX_TSO_FRAME_SIZE)
--		features &= ~(NETIF_F_TSO | NETIF_F_TSO6);
-+	if (hw->nic_type != athr_mt) {
-+		if (netdev->mtu > MAX_TSO_FRAME_SIZE)
-+			features &= ~(NETIF_F_TSO | NETIF_F_TSO6);
++	if (adapter->hw.nic_type == athr_mt) {
++		if (prrs->word3 & RRS_MT_PROT_ID_TCPUDP)
++			skb->ip_summed = CHECKSUM_UNNECESSARY;
++		return;
 +	}
- 
- 	return features;
- }
-@@ -515,9 +520,12 @@ static void atl1c_set_max_mtu(struct net_device *netdev)
- 	case athr_l1d:
- 	case athr_l1d_2:
- 		netdev->max_mtu = MAX_JUMBO_FRAME_SIZE -
--				  (ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN);
-+			(ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN);
-+		break;
-+	case athr_mt:
-+		netdev->max_mtu = 9500;
- 		break;
--	/* The 10/100 devices don't support jumbo packets, max_mtu 1500 */
-+		/* The 10/100 devices don't support jumbo packets, max_mtu 1500 */
- 	default:
- 		netdev->max_mtu = ETH_DATA_LEN;
- 		break;
+ 	/*
+ 	 * The pid field in RRS in not correct sometimes, so we
+ 	 * cannot figure out if the packet is fragmented or not,
 -- 
 2.31.1
 
