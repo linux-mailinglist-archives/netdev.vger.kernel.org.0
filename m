@@ -2,79 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9675437F308
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 08:29:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97ECF37F302
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 08:27:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231386AbhEMGaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 02:30:13 -0400
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:51877 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231374AbhEMGaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 02:30:11 -0400
-Received: from [192.168.1.18] ([86.243.172.93])
-        by mwinf5d84 with ME
-        id 46V12500L21Fzsu036V12W; Thu, 13 May 2021 08:29:02 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 13 May 2021 08:29:02 +0200
-X-ME-IP: 86.243.172.93
-Subject: Re: [PATCH] net: mdio: Fix a double free issue in the .remove
- function
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, david.daney@cavium.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <f8ad939e6d5df4cb0273ea71a418a3ca1835338d.1620855222.git.christophe.jaillet@wanadoo.fr>
- <20210512214403.GQ1336@shell.armlinux.org.uk>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-ID: <0a044473-f3f7-02fc-eca5-84adf8b5c9f2@wanadoo.fr>
-Date:   Thu, 13 May 2021 08:29:01 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S231330AbhEMG25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 02:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231300AbhEMG2d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 02:28:33 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311E9C061760
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 23:27:23 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id z4so3079702pgb.9
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 23:27:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e9/24ZqOHq0mWMNAFsZovxhc8ehFUN+8KHcERY7gBtE=;
+        b=Sop7xPVghlzrdPEzHeiFoVTql348kBCsba0EcdMAB6y0VosC8D2PNfe4LiSPTWfHrM
+         7peZwTCZ6h+ifAHx6Pu6iwBpkWgeHduAJPoJpABijbiGh1yR7J/ezwhAN6dczpJtNjO5
+         g7oReuSL7GCRsNB6x1ke85Hb4A2Oy/JGOo5JpqcpG7pcWU+n6Y1KCjjSbuTBdYFMSSYW
+         WY9Rt+AhBZQTG5gRapq6A7EvWcx99bgVVTg75t9xPb+8NzkA8O6lzZvQDDSMHfPZzX9c
+         4iHQHcHjpB5tE5FIa0Hf9fIu/rUFY8sIpv+6DACCjiZOh5zl1vuNeyOE4T0FqbN2HYEB
+         LXmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e9/24ZqOHq0mWMNAFsZovxhc8ehFUN+8KHcERY7gBtE=;
+        b=JQG6/HqTa9ZFT9OMBeCwYwnVLxv4jW4K1gN4WRnI+7QKCsRbk2FS+rN+FPZnL+jAg/
+         hGr0On2vpPJX7yYgaqbUzy2ZtbSBD3pyicMisMm20W9vNfQgME8aqqDJWAP1+gSQmRYd
+         NDVwmd88QWVr5mLbE7AEmVRkfFNT3pcHzM/C1Az8Pw8MovSQY5bX9RGvQiSa3ylW+YZm
+         Ot0bjAeWiB8kAyikxd9qogTZ0oQL123soDDMyovg71yva+/uWMy/00sS7x0Hx8AcRDVa
+         3o0QnyZo9a6poX36MiP2aDvXj0DS7IDRuT6WRsscm4745/bRm+iXezs0tlbWBXxAqdgy
+         li9Q==
+X-Gm-Message-State: AOAM533AtlYU0gZYLavbip/x2QRz4Kti7HTZW+/EJzH9AG1WrdfRBmmN
+        dLl8pqC0Sv/Xq2y7Z+2Zs+/xtFQLNgROJm5NZbAXng==
+X-Google-Smtp-Source: ABdhPJyH9pXtbuhm1ReTHZ+7I7nWY87RzqLnMwvcFTwO/XW5FFbFDqwSj/CUv+ERtllZimPONoT8PoVA6OqvDTXi44M=
+X-Received: by 2002:a63:9d4e:: with SMTP id i75mr39062119pgd.443.1620887242631;
+ Wed, 12 May 2021 23:27:22 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210512214403.GQ1336@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210512095201.09323cda@canb.auug.org.au> <20210512095418.0ad4ea4a@canb.auug.org.au>
+ <20210513111110.02e1caee@canb.auug.org.au>
+In-Reply-To: <20210513111110.02e1caee@canb.auug.org.au>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Thu, 13 May 2021 08:35:50 +0200
+Message-ID: <CAMZdPi_CtyM=Rs+OEdRoscqr55qNxmG70AgUckzvyAMvY-amLQ@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, Greg KH <greg@kroah.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Oliver Neukum <oneukum@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 12/05/2021 à 23:44, Russell King - ARM Linux admin a écrit :
-> On Wed, May 12, 2021 at 11:35:38PM +0200, Christophe JAILLET wrote:
->> 'bus->mii_bus' have been allocated with 'devm_mdiobus_alloc_size()' in the
->> probe function. So it must not be freed explicitly or there will be a
->> double free.
->>
->> Remove the incorrect 'mdiobus_free' in the remove function.
-> 
-> Yes, this looks correct, thanks.
-> 
-> Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
-> 
-> However, there's another issue in this driver that ought to be fixed.
-> 
-> If devm_mdiobus_alloc_size() succeeds, but of_mdiobus_register() fails,
-> we continue on to the next bus (which I think is reasonable.) We don't
-> free the bus.
-> 
-> When we come to the remove method however, we will call
-> mdiobus_unregister() on this existent but not-registered bus. Surely we
-> don't want to do that?
-> 
+Hi Stephen,
 
-Hmmm, I don't agree here.
+On Thu, 13 May 2021 at 03:11, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> On Wed, 12 May 2021 09:54:18 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> >
+> > On Wed, 12 May 2021 09:52:01 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> > >
+> > > After merging the net-next tree, today's linux-next build (x86_64
+> > > allmodconfig) failed like this:
+> > >
+> > > drivers/usb/class/cdc-wdm.c: In function 'wdm_wwan_port_stop':
+> > > drivers/usb/class/cdc-wdm.c:858:2: error: implicit declaration of function 'kill_urbs' [-Werror=implicit-function-declaration]
+> > >   858 |  kill_urbs(desc);
+> > >       |  ^~~~~~~~~
+> > >
+> > > Caused by commit
+> > >
+> > >   cac6fb015f71 ("usb: class: cdc-wdm: WWAN framework integration")
+> > >
+> > > kill_urbs() was removed by commit
+> > >
+> > >   18abf8743674 ("cdc-wdm: untangle a circular dependency between callback and softint")
+> > >
+> > > Which is included in v5.13-rc1.
+> >
+> > Sorry, that commit is only in linux-next (from the usb.current tree).
+> > I will do a merge fix up tomorrow - unless someone provides one.
+> >
+> > > I have used the net-next tree from next-20210511 for today.
+>
+> I have used the following merge fix patch for today.  I don't know if
+> this is sufficient (or even correct), but it does build.
 
-'nexus' is 'kzalloc()'ed.
-So the pointers in 'buses[]' are all NULL by default.
-We set 'nexus->buses[i] = bus' only when all functions that can fail in 
-the loop have been called. (the very last 'break' is when the array is full)
+Thanks for working on this.
 
-And in the remove function, we have:
-	struct cavium_mdiobus *bus = nexus->buses[i];
-	if (!bus)
-		continue;
+>
+> From: Stephen Rothwell <sfr@canb.auug.org.au>
+> Date: Thu, 13 May 2021 11:04:09 +1000
+> Subject: [PATCH] usb: class: cdc-wdm: fix for kill_urbs() removal
+>
+> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> ---
+>  drivers/usb/class/cdc-wdm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/usb/class/cdc-wdm.c b/drivers/usb/class/cdc-wdm.c
+> index c88dcc4b6618..489b0e049402 100644
+> --- a/drivers/usb/class/cdc-wdm.c
+> +++ b/drivers/usb/class/cdc-wdm.c
+> @@ -855,7 +855,7 @@ static void wdm_wwan_port_stop(struct wwan_port *port)
+>         struct wdm_device *desc = wwan_port_get_drvdata(port);
+>
+>         /* Stop all transfers and disable WWAN mode */
+> -       kill_urbs(desc);
+> +       poison_urbs(desc);
+>         desc->manage_power(desc->intf, 0);
+>         clear_bit(WDM_READ, &desc->flags);
+>         clear_bit(WDM_WWAN_IN_USE, &desc->flags);
 
-So, this looks safe to me.
+AFAIU, each poison call must be balanced with unpoison call.
+So you probably want to call unpoison_urbs right here, similarly to
+wdm_release or wdm_suspend.
 
-CJ
+Regards,
+Loic
+
+> --
+> 2.30.2
+>
+> --
+> Cheers,
+> Stephen Rothwell
