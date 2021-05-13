@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E46DA37F30B
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 08:29:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE14137F311
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 08:30:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231389AbhEMGbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 02:31:03 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:2466 "EHLO
+        id S231410AbhEMGbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 02:31:16 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:2467 "EHLO
         szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231211AbhEMGbC (ORCPT
+        with ESMTP id S231256AbhEMGbC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 02:31:02 -0400
 Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FghXD3zfwzBtwg;
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FghXD5Y1rzBv0C;
         Thu, 13 May 2021 14:27:08 +0800 (CST)
 Received: from localhost.localdomain (10.67.165.24) by
  DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
@@ -20,9 +20,9 @@ Received: from localhost.localdomain (10.67.165.24) by
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <luobin9@huawei.com>, <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 1/4] net: hinic: remove unnecessary blank line
-Date:   Thu, 13 May 2021 14:26:50 +0800
-Message-ID: <1620887213-49364-2-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 2/4] net: hinic: add blank line after function declaration
+Date:   Thu, 13 May 2021 14:26:51 +0800
+Message-ID: <1620887213-49364-3-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1620887213-49364-1-git-send-email-huangguangbin2@huawei.com>
 References: <1620887213-49364-1-git-send-email-huangguangbin2@huawei.com>
@@ -34,38 +34,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two blank lines are unnecessary, this patch removes them.
+There should be a blank line after function declaration, so add two
+missed blank lines.
 
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_ethtool.c | 1 -
- drivers/net/ethernet/huawei/hinic/hinic_main.c    | 1 -
- 2 files changed, 2 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c | 1 +
+ drivers/net/ethernet/huawei/hinic/hinic_rx.c    | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-index dc024ef521c0..162d3c330dec 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-@@ -1663,7 +1663,6 @@ static void hinic_diag_test(struct net_device *netdev,
- 	err = hinic_port_link_state(nic_dev, &link_state);
- 	if (!err && link_state == HINIC_LINK_STATE_UP)
- 		netif_carrier_on(netdev);
--
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
+index 5dc3743f8091..7f0f1aa3cedd 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
+@@ -89,6 +89,7 @@ static inline int WQE_PAGE_NUM(struct hinic_wq *wq, u16 idx)
+ 	return (((idx) >> ((wq)->wqebbs_per_page_shift))
+ 		& ((wq)->num_q_pages - 1));
  }
- 
- static int hinic_set_phys_id(struct net_device *netdev,
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index 9a9b09401d01..1da5997f034c 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -172,7 +172,6 @@ static int create_txqs(struct hinic_dev *nic_dev)
- 				  "Failed to add SQ%d debug\n", i);
- 			goto err_add_sq_dbg;
- 		}
--
++
+ /**
+  * queue_alloc_page - allocate page for Queue
+  * @hwif: HW interface for allocating DMA
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_rx.c b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
+index cce08647b9b2..fed3b6bc0d76 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_rx.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
+@@ -118,6 +118,7 @@ static void rx_csum(struct hinic_rxq *rxq, u32 status,
+ 		skb->ip_summed = CHECKSUM_NONE;
  	}
- 
- 	return 0;
+ }
++
+ /**
+  * rx_alloc_skb - allocate skb and map it to dma address
+  * @rxq: rx queue
 -- 
 2.8.1
 
