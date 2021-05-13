@@ -2,74 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0A0137FAA1
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 17:24:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9187337FAC6
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 17:34:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234827AbhEMPZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 11:25:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40038 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232518AbhEMPZQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 May 2021 11:25:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4826F613B5;
-        Thu, 13 May 2021 15:24:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620919446;
-        bh=1kNuS869OF5IBxShiMjWYu0F7KultguVWQekX/GDkks=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WNwDzMIwlQGuwPZ+peL1idWwWvCxGP75xXHrZ9lUN/xSTQWDllSKtns/Rg0waJrkx
-         J532DHIvfaxsIUKYUC3wKbOERf9DFpyefWqoRp7pWok08Dw8iiM2MEFRfH/gYmAQTa
-         evkUVMUt68A5LvcMyyghqXqenhYiQutk58hTXlTTR6KYUV2H8yLzJtfcRdr+Nq+dQK
-         24i5Z3GNoPyweaBC9FQdXMkYMWUSkQ5eacP7LE8yF7uoadW0ihjFhEWN/qtkA/4WA7
-         JAc+ELB44uE4FAzjTS4s8KU9ZBjhMqifiR9WCChXKnm+VD1pUbzyiQgt80FNJYWhlG
-         7eIMKxoj3/lrA==
-Date:   Thu, 13 May 2021 08:24:04 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     <davem@davemloft.net>, <olteanv@gmail.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andriin@fb.com>, <edumazet@google.com>,
-        <weiwan@google.com>, <cong.wang@bytedance.com>,
-        <ap420073@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <mkl@pengutronix.de>, <linux-can@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
-        <alobakin@pm.me>
-Subject: Re: [PATCH net v7 0/3] fix packet stuck problem for lockless qdisc
-Message-ID: <20210513082404.3e07619b@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <1620868260-32984-1-git-send-email-linyunsheng@huawei.com>
-References: <1620868260-32984-1-git-send-email-linyunsheng@huawei.com>
+        id S234895AbhEMPfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 11:35:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231296AbhEMPfS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 11:35:18 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952BBC061574;
+        Thu, 13 May 2021 08:34:08 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: sre)
+        with ESMTPSA id 4FF711F42C47
+Received: by earth.universe (Postfix, from userid 1000)
+        id D36D73C0C95; Thu, 13 May 2021 17:34:02 +0200 (CEST)
+Date:   Thu, 13 May 2021 17:34:02 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Luca Ceresoli <luca@lucaceresoli.net>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Odelu Kukatla <okukatla@codeaurora.org>,
+        Alex Elder <elder@kernel.org>,
+        Shengjiu Wang <shengjiu.wang@nxp.com>,
+        linux-clk@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-input@vger.kernel.org, linux-pm@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: More removals of type references on common
+ properties
+Message-ID: <20210513153402.q3w42oayif2l7rf4@earth.universe>
+References: <20210510204524.617390-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="6zntmlcncahxaxdz"
+Content-Disposition: inline
+In-Reply-To: <20210510204524.617390-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 May 2021 09:10:57 +0800 Yunsheng Lin wrote:
-> This patchset fixes the packet stuck problem mentioned in [1].
-> 
-> Patch 1: Add STATE_MISSED flag to fix packet stuck problem.
-> Patch 2: Fix a tx_action rescheduling problem after STATE_MISSED
->          flag is added in patch 1.
-> Patch 3: Fix the significantly higher CPU consumption problem when
->          multiple threads are competing on a saturated outgoing
->          device.
-> 
-> V7: Fix netif_tx_wake_queue() data race noted by Jakub.
-> V6: Some performance optimization in patch 1 suggested by Jakub
->     and drop NET_XMIT_DROP checking in patch 3.
-> V5: add patch 3 to fix the problem reported by Michal Kubecek.
-> V4: Change STATE_NEED_RESCHEDULE to STATE_MISSED and add patch 2.
 
-Another review from someone who knows this code better would be great,
-but it seems good to me (w/ minor nit on patch 3 addressed):
+--6zntmlcncahxaxdz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+Hi,
+
+On Mon, May 10, 2021 at 03:45:24PM -0500, Rob Herring wrote:
+> Users of common properties shouldn't have a type definition as the
+> common schemas already have one. A few new ones slipped in and
+> *-names was missed in the last clean-up pass. Drop all the unnecessary
+> type references in the tree.
+>=20
+> A meta-schema update to catch these is pending.
+>=20
+> Cc: Luca Ceresoli <luca@lucaceresoli.net>
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Olivier Moysan <olivier.moysan@foss.st.com>
+> Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Georgi Djakov <djakov@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Orson Zhai <orsonzhai@gmail.com>
+> Cc: Baolin Wang <baolin.wang7@gmail.com>
+> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
+> Cc: Liam Girdwood <lgirdwood@gmail.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
+> Cc: Odelu Kukatla <okukatla@codeaurora.org>
+> Cc: Alex Elder <elder@kernel.org>
+> Cc: Shengjiu Wang <shengjiu.wang@nxp.com>
+> Cc: linux-clk@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-iio@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-input@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> [...]
+>  .../devicetree/bindings/power/supply/sc2731-charger.yaml        | 2 +-
+> [...]
+
+Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+
+-- Sebastian
+
+--6zntmlcncahxaxdz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmCdRuoACgkQ2O7X88g7
++pp2eRAAji89IV6U3huPwd3QFqIvXt4J/smg1VWppBF8MRaAl/GQyC0ulamRL7Nw
+JjkjziYNiLcykycKuiWb89OfBsoCPVS5WKRNvI5ckZTu2egIE+lEr7mACjughIpk
+xp0NvbW8iIO3WxjnYh8LkFwJm4GxphCqlUkl32HKbafHkW9UKVEh8Ex6eoqnUk63
+RXluSTs0bDdfkeGzWaR4/2ZBJh+iHoaoVbPiqTr4lLCfIEpg+6tERKBeIHFL82fE
+8bxpm8/YAiG3ymllKDDzQIMTt1NHbBs4WtUcUq4X2gIlRFrLnV8w0DXmVPwDynKW
+tN9mYEhHqR1y8bc0dx5X++M9ZEWX67GbuGa1+Om1rdSnnM2uxEwQEjht7JjpLFg3
+n4urCpUbQjh+uW/hkNZjQlWb43TuUmslUrutHts+vlwf2vD6srxH0uy9I/GwtVGg
+7CtZBtofKACRiYO2Aud7iaMuWYd8wYFx6gfuw7WY9tUJ5vlwQacPeLqedRcYWLPj
+N5y/tY01/DqTBHFJmjUqCsvR2R+W17P9zO0Q4sB+wYLtE82H7O5suUkZFpe79bn5
+rVpnaz3YAWirzucHrMpOsPVP8gs5taBkdSTKClnSQLek1Z/WJKwPAq26gqZ/EPOw
+EJBYc0TMSmzTJIoRSkXxJGAeSwiDp8wCTFJA6r/QyASeQkGfqrM=
+=Tg1h
+-----END PGP SIGNATURE-----
+
+--6zntmlcncahxaxdz--
