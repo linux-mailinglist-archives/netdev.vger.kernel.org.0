@@ -2,95 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB5B837F4FD
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 11:44:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 065D937F53E
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 12:03:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232065AbhEMJpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 05:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231193AbhEMJp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 05:45:28 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D6EC061574;
-        Thu, 13 May 2021 02:44:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=8lKBmdjvyNJC0zSVS9+cqxL1DCxV5U8RNgB+s7i0tH8=; b=aVEmWKaAYpr2okDCcyt3Yv7zs
-        jWLgwljgaZaCitHkfIJaO6qVaNT2ncb4viijtLJXVnZ8W/dooauIr0wgC1MyFb4qTgK+EfMqPscvM
-        X3KADSYrV7XQ5UE8uESnUcIt2ku4uojePpco/7SfH40CIenjESKrNGpjpDA41p0KF4iV4VkaRvuaf
-        YmZtCyc6O5yYnmyDrbgUSu5vQlDycB9rZUV+aQNOWpP4ac2bmUJ/n2ixqklwv27WoBHQHyXS03Cf5
-        BfHfSdJKUsio36PPqASSXhD8mm4mMtitnNuYCXTkVZ/t8eIg/+PlgIX3EP5UZHo/W3Hrjo0dJyvaT
-        fJDzP/mgg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43922)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lh7tA-0005uI-DM; Thu, 13 May 2021 10:44:16 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lh7t9-0002uD-Vh; Thu, 13 May 2021 10:44:16 +0100
-Date:   Thu, 13 May 2021 10:44:15 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, f.fainelli@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] net: mdio: octeon: Fix some double free issues
-Message-ID: <20210513094415.GV1336@shell.armlinux.org.uk>
-References: <7adc1815237605a0b774efb31a2ab22df51462d3.1620890610.git.christophe.jaillet@wanadoo.fr>
+        id S232417AbhEMKEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 06:04:40 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37384 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232803AbhEMKEQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 May 2021 06:04:16 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1620900185; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=mSXvMzPiVbs1p8U5teTrqe++A9Kur1ffFfsRtolTEq4=;
+        b=Bt3HWyrBQzhFA/VHRnLOrbIQmpMXluR0avJegIDgYP/25lKg9FIZAPmZkKNNj4Tn46vHsx
+        DqH+iMtGCUU89BF3407TPvLq70y+9QiQwuomJ/KD69JlH6Mpq8EAgwwGKMJeCtvkebsFoG
+        WMLd9rAM4L+C5WZX30UyH56rbG89gqM=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 85808AFE5;
+        Thu, 13 May 2021 10:03:05 +0000 (UTC)
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH 0/8] xen: harden frontends against malicious backends
+Date:   Thu, 13 May 2021 12:02:54 +0200
+Message-Id: <20210513100302.22027-1-jgross@suse.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7adc1815237605a0b774efb31a2ab22df51462d3.1620890610.git.christophe.jaillet@wanadoo.fr>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 13, 2021 at 09:24:55AM +0200, Christophe JAILLET wrote:
-> 'bus->mii_bus' has been allocated with 'devm_mdiobus_alloc_size()' in the
-> probe function. So it must not be freed explicitly or there will be a
-> double free.
-> 
-> Remove the incorrect 'mdiobus_free' in the error handling path of the
-> probe function and in remove function.
-> 
-> Suggested-By: Andrew Lunn <andrew@lunn.ch>
-> Fixes: 35d2aeac9810 ("phy: mdio-octeon: Use devm_mdiobus_alloc_size()")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Xen backends of para-virtualized devices can live in dom0 kernel, dom0
+user land, or in a driver domain. This means that a backend might
+reside in a less trusted environment than the Xen core components, so
+a backend should not be able to do harm to a Xen guest (it can still
+mess up I/O data, but it shouldn't be able to e.g. crash a guest by
+other means or cause a privilege escalation in the guest).
 
-Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
+Unfortunately many frontends in the Linux kernel are fully trusting
+their respective backends. This series is starting to fix the most
+important frontends: console, disk and network.
 
-> ---
-> The 'smi_en.u64 = 0; oct_mdio_writeq()' looks odd to me. Usually the normal
-> path and the error handling path don't write the same value. Here, both
-> write 0.
-> Having '1' somewhere would 'look' more usual. :)
-> More over I think that 'smi_en.s.en = 1;' in the probe is useless.
+It was discussed to handle this as a security problem, but the topic
+was discussed in public before, so it isn't a real secret.
 
-It looks fine to me.
+Juergen Gross (8):
+  xen: sync include/xen/interface/io/ring.h with Xen's newest version
+  xen/blkfront: read response from backend only once
+  xen/blkfront: don't take local copy of a request from the ring page
+  xen/blkfront: don't trust the backend response data blindly
+  xen/netfront: read response from backend only once
+  xen/netfront: don't read data from request on the ring page
+  xen/netfront: don't trust the backend response data blindly
+  xen/hvc: replace BUG_ON() with negative return value
 
-        smi_en.u64 = 0;
-        smi_en.s.en = 1;
-        oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
-
-smi_en is a union of a u64 and a structure containing a bitfield. s.en
-corresponds on LE systems with the u64 bit 0. So the above has the
-effect of writing a u64 value of '1' to the SMI_EN register, whereas:
-
-        smi_en.u64 = 0;
-        oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
-
-has the effect of writing a u64 value of '0' to the SMI_EN register.
-
-This code is fine.
+ drivers/block/xen-blkfront.c    | 118 +++++++++-----
+ drivers/net/xen-netfront.c      | 184 ++++++++++++++-------
+ drivers/tty/hvc/hvc_xen.c       |  15 +-
+ include/xen/interface/io/ring.h | 278 ++++++++++++++++++--------------
+ 4 files changed, 369 insertions(+), 226 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.26.2
+
