@@ -2,76 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C21EF37F2ED
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 08:21:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3631037F2F0
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 08:23:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229748AbhEMGW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 02:22:56 -0400
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:54505 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbhEMGWz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 02:22:55 -0400
-Received: from [192.168.1.18] ([86.243.172.93])
-        by mwinf5d84 with ME
-        id 46Mh2500H21Fzsu036MiWh; Thu, 13 May 2021 08:21:44 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 13 May 2021 08:21:44 +0200
-X-ME-IP: 86.243.172.93
-Subject: Re: [PATCH] net: mdio: Fix a double free issue in the .remove
- function
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, david.daney@cavium.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <f8ad939e6d5df4cb0273ea71a418a3ca1835338d.1620855222.git.christophe.jaillet@wanadoo.fr>
- <YJxML4HvQd+WiDK6@lunn.ch>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-ID: <6ff7d862-b88a-eea0-d977-b7f71176c5ed@wanadoo.fr>
-Date:   Thu, 13 May 2021 08:21:41 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S230318AbhEMGYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 02:24:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44130 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230070AbhEMGYJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 May 2021 02:24:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D6ED0613DE;
+        Thu, 13 May 2021 06:22:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620886980;
+        bh=FyrJgotOWLVRBsH3NkASUT7jP+Bize/BSx+wutxlJyc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DIyQOk4dcuIAJndiSbcJfiMtBMAClX5sOIi9h6vtp7itFDMGVt7WYvntj7BWtlcIy
+         BI4IcnZUUf3fKQV1pju6sQ3YvAB0hj0+Mr6+MhTyX77Eg3I03IiuWPWwBAkqib40CL
+         ctjgKe+1ZmXViDUtTtiZSsEHv3IBlfy8p5chjuvtkD8HQENwT8Int+ijysbZe2YgB5
+         AYg3zDmona6Zrh3kAvdwJVl/20rwc/1s5kJcZRPMhaWwANdYqQ4KSHVsIZDaf56uM/
+         84B1dx8exFQ1x8jSC+489+FP3MQYn20B7UIEuoS0d6BuNlLE0Y9bl+4oVHwq5NSThn
+         7WM/r/8NetrEQ==
+Date:   Thu, 13 May 2021 09:22:56 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH 1/1] libbpf: Delete an unneeded bool conversion
+Message-ID: <YJzFwKCRoFibZdWD@unreal>
+References: <20210510124315.3854-1-thunder.leizhen@huawei.com>
+ <CAEf4BzaADXguVoh0KXxGYhzG68eA1bqfKH1T1SWyPvkE5BHa5g@mail.gmail.com>
+ <YJoRd4reWa1viW76@unreal>
+ <CAEf4BzaYsjWh_10a4yeSVpAAwC-f=zUNANb10VN2xZ1b5dsY-A@mail.gmail.com>
+ <f82343ec-9d67-d033-dd07-813e7d981c4f@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <YJxML4HvQd+WiDK6@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f82343ec-9d67-d033-dd07-813e7d981c4f@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 12/05/2021 à 23:44, Andrew Lunn a écrit :
-> On Wed, May 12, 2021 at 11:35:38PM +0200, Christophe JAILLET wrote:
->> 'bus->mii_bus' have been allocated with 'devm_mdiobus_alloc_size()' in the
->> probe function. So it must not be freed explicitly or there will be a
->> double free.
+On Thu, May 13, 2021 at 10:14:00AM +0800, Leizhen (ThunderTown) wrote:
 > 
-> Hi Christophe
 > 
-> [PATCH] net: mdio: Fix a double free issue in the .remove function
+> On 2021/5/13 3:02, Andrii Nakryiko wrote:
+> > On Mon, May 10, 2021 at 10:09 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >>
+> >> On Mon, May 10, 2021 at 11:00:29AM -0700, Andrii Nakryiko wrote:
+> >>> On Mon, May 10, 2021 at 5:43 AM Zhen Lei <thunder.leizhen@huawei.com> wrote:
+> >>>>
+> >>>> The result of an expression consisting of a single relational operator is
+> >>>> already of the bool type and does not need to be evaluated explicitly.
+> >>>>
+> >>>> No functional change.
+> >>>>
+> >>>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> >>>> ---
+> >>>
+> >>> See [0] and [1].
+> >>>
+> >>>   [0] https://lore.kernel.org/bpf/CAEf4BzYgLf5g3oztbA-CJR4gQ7AVKQAGrsHWCOgTtUMUM-Mxfg@mail.gmail.com/
+> >>>   [1] https://lore.kernel.org/bpf/CAEf4BzZQ6=-h3g1duXFwDLr92z7nE6ajv8Rz_Zv=qx=-F3sRVA@mail.gmail.com/
+> >>
+> >> How long do you plan to fight with such patches?
+> > 
+> > As long as necessary. There are better ways to contribute to libbpf
+> > than doing cosmetic changes to the perfectly correct code.
 > 
-> Please indicate in the subject which mdio bus driver has a double
-> free.
+> No small stream, no river and sea.
+> 
+> There are no improvements to functionality, but may slightly speed up compilation.
+> With more such accumulations, it is possible that the compilation of allmodconfig
+> results in a second-level improvement.
 
-Ok, will do.
-But looking at [1], it was not not self-explanatory that it was the rule 
-here :)
+Unlikely with modern CPUs.
 
 > 
-> Also, octeon_mdiobus_remove() appears to have the same problem.
-
-In fact, even a little worse. It also calls 'mdiobus_free()' in the 
-error handling path of the probe (which is why my coccinelle script 
-didn't spot it. It looks for discrepancy between error handling path in 
-the probe and the remove function. If both are wrong, it looks safe :) )
-
-I'll send another patch for this driver.
-
-CJ
-
+> I don't know if you agree, at least I think so.
 > 
->        Andrew
+> > 
+> >>
+> >> Thanks
+> >>
+> >>>
+> >>>>  tools/lib/bpf/libbpf.c | 2 +-
+> >>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>>>
+> >>>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> >>>> index e2a3cf4378140f2..fa02213c451f4d2 100644
+> >>>> --- a/tools/lib/bpf/libbpf.c
+> >>>> +++ b/tools/lib/bpf/libbpf.c
+> >>>> @@ -1504,7 +1504,7 @@ static int set_kcfg_value_tri(struct extern_desc *ext, void *ext_val,
+> >>>>                                 ext->name, value);
+> >>>>                         return -EINVAL;
+> >>>>                 }
+> >>>> -               *(bool *)ext_val = value == 'y' ? true : false;
+> >>>> +               *(bool *)ext_val = value == 'y';
+> >>>>                 break;
+> >>>>         case KCFG_TRISTATE:
+> >>>>                 if (value == 'y')
+> >>>> --
+> >>>> 2.26.0.106.g9fadedd
+> >>>>
+> >>>>
+> > 
+> > .
+> > 
 > 
-
-[1]: 
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/drivers/net/mdio
