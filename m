@@ -2,138 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D75237F6EB
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:39:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 132BE37F6F3
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 13:42:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232569AbhEMLkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 07:40:37 -0400
-Received: from mail-mw2nam12on2052.outbound.protection.outlook.com ([40.107.244.52]:59104
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232449AbhEMLke (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 May 2021 07:40:34 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kktu2Y5D2hZo0VEhoz04ibi+Iyu8SHxyDgN/gZ1D6ORLLBU06dM6phwHR8UnDFi1NvujIxv9L/FSOj0554jP5qKHq/XDqRKnRf+VsiCvd9IkBkQZfPalp56VhYCx2cbNQg87Xw2NHSjcUgx9ryteb2bF2L2S/ondKi1kq001d9pJHFOqM1dynwSa8MQoMYhv1WAGTRfNgR9akXfsb5WBD6RLMZYYNAL6lk0WniGUl8C9CP91FjzqarxoaUI3xbevStOMnA4jumGkFRiW5/b8sTSFT5lZB5pqQNVZKcFHr9LtK4BAO2T7YdKjDahKYx84DTnj+bJqOkvDZteJTiQXcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L2NAw2IL+9UQ8hjV0lH7nPLMMbQL4XA9AgK+HUCn4Vg=;
- b=F2ON+5gHsSgKwnd9sIs4UHrxrY72XVQrNzOxJjD9/NrsxPL1hKFPlpxr4aDAtjrU2PdQASS8jmK6D3KWBKFO2XBZETd9vL39akbvkcftNEH4eWRQFxH3nZgeqoNUhrjxg+xV1xNnukq6Csqn/oncqgVs9DHzAGo8HP2DxVfJCIpabgfyqkZ1UebjfkrZLYdGJTlSMosb84JK7Egxdb+NngbNW10FBtxKuqoRW25QNBUe6ONYScFDx+XBKg0nrWOk6v3uv667Kcwp8nmuC/ONQaQQVK+mwwW1gzTNOVr1fPZ/CZ7syAXe8q8kL0AE+9n0npT2D7wXRiGsXKh2Dx54YA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L2NAw2IL+9UQ8hjV0lH7nPLMMbQL4XA9AgK+HUCn4Vg=;
- b=Nor+EEXWve0RDJsd7DzVKtdAF2wXEW4twGvy/q3GU/ucSojfGJw0WgU8ZyL+QIZuLHRx0RIvFxQtOJEl4cmkbgqnJSyKM84r6qvc5GJO/KIr1WiMzcBbwXltimYFm1KZlF6MH7ZiHf0KgJKSxW1V8T+WXXqyP/gptNKc5ClVxk3o9ad5lXLrAazSFXwNzI0ruWkdDt1KGN0AJ7rJz4AAhcxohEViqb/ksCZyfJI7w1zSqMqHUdRy9eiJTMN+IOUf8XkHhJI80NHyUuwNyZLINYzGAz0/Hhw6JGVcBy/dfjDwSFA4IyCd/LVsbVILOGGzZ6RPUavXOLRx6DLp0GzbKw==
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
- by DM4PR12MB5327.namprd12.prod.outlook.com (2603:10b6:5:39e::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.25; Thu, 13 May
- 2021 11:39:23 +0000
-Received: from DM4PR12MB5278.namprd12.prod.outlook.com
- ([fe80::d556:5155:7243:5f0f]) by DM4PR12MB5278.namprd12.prod.outlook.com
- ([fe80::d556:5155:7243:5f0f%6]) with mapi id 15.20.4129.026; Thu, 13 May 2021
- 11:39:23 +0000
-Subject: Re: [net-next v3 11/11] net: bridge: mcast: export multicast router
- presence adjacent to a port
-To:     =?UTF-8?Q?Linus_L=c3=bcssing?= <linus.luessing@c0d3.blue>,
-        netdev@vger.kernel.org
-Cc:     Roopa Prabhu <roopa@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20210512231941.19211-1-linus.luessing@c0d3.blue>
- <20210512231941.19211-12-linus.luessing@c0d3.blue>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-Message-ID: <44fa04ee-752a-34b9-d5d1-e6264aa859c1@nvidia.com>
-Date:   Thu, 13 May 2021 14:39:17 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-In-Reply-To: <20210512231941.19211-12-linus.luessing@c0d3.blue>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [213.179.129.39]
-X-ClientProxiedBy: ZR0P278CA0003.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:16::13) To DM4PR12MB5278.namprd12.prod.outlook.com
- (2603:10b6:5:39e::17)
+        id S233464AbhEMLnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 07:43:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:42005 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232327AbhEMLnc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 07:43:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620906142;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=R+xpriwoqMR4hMxYIDQ9tzTIIOzNsv7iGskqwPCMAtI=;
+        b=c9K1MwA73IAmmeL3NHpniD729Tj8N2NrM0OGLarSP3FUcyfDuf+UZPAiT0UUqE7a66HzaH
+        BFp/nKmMc1kPZEukytk/vTICUx20lbsxhcu4Y/53sFY9jfjgj1aqgBTe/7fquXltVi27DC
+        JlSOQwVjWaKyuBuHnwxyfFjLjHn+F1g=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-392-iHfLPm_6MfOuZidbYdh33A-1; Thu, 13 May 2021 07:42:18 -0400
+X-MC-Unique: iHfLPm_6MfOuZidbYdh33A-1
+Received: by mail-ej1-f69.google.com with SMTP id h4-20020a1709067184b02903cbbd4c3d8fso3422331ejk.6
+        for <netdev@vger.kernel.org>; Thu, 13 May 2021 04:42:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R+xpriwoqMR4hMxYIDQ9tzTIIOzNsv7iGskqwPCMAtI=;
+        b=GoZrATsQQr3G2p8YdsrDoEiWgf7vNUDR7g47zjPqk7RvEyp8sF4pvGlhHEncbAcqBO
+         9zENV251Imyf+Z+OaCSvi5xg2vRiDCgT2o9317r0NwH8jCXOj0IED6lM+pMMDrNJIyg2
+         VqbYh4wa/2Q9eRMxHxXKuPXVzplu38AepTBUBtoRzLHfxdKCuApQWiEAFGHjgSmH5vgJ
+         Yx0aiJ078I5oy6vF+VCr2C68aCPLc7NCHs5qjYxAfZ+ZFkWYO5hiUXNlJW6faB9KgZIf
+         gTWhJHIx3eyA0HgOU3zFpuljcOWuMcfvj3FIvUkIYGFuUONoxdYcLmCzxO+PvSzwf5x6
+         A9bA==
+X-Gm-Message-State: AOAM533FHzZNKl/4FAUrtXaWPS5YHief2VcBMZk5np7irLWNRm/F9r84
+        /kR/e/yzEPCCRE3Tv1B2xKE2ptVQizEmmcmJfRyrY9tCOzOi1qdGK4y08pixaJLxqNnPoXzgOwb
+        Blbb1ac40M1R7eXkA
+X-Received: by 2002:a17:906:11d5:: with SMTP id o21mr39425178eja.176.1620906137651;
+        Thu, 13 May 2021 04:42:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy4evvrqMGAM5r4UR85o5vJGUe4V1rA7BD2JGHOAS51E0jB0311f1ua3YMBd6FJgtBjiTezpQ==
+X-Received: by 2002:a17:906:11d5:: with SMTP id o21mr39425159eja.176.1620906137418;
+        Thu, 13 May 2021 04:42:17 -0700 (PDT)
+Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
+        by smtp.gmail.com with ESMTPSA id q25sm1704765ejd.9.2021.05.13.04.42.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 May 2021 04:42:17 -0700 (PDT)
+Date:   Thu, 13 May 2021 13:42:14 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v9 06/19] af_vsock: rest of SEQPACKET support
+Message-ID: <20210513114214.66mfm76tp65af5yq@steredhat>
+References: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
+ <20210508163350.3431361-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.21.241.170] (213.179.129.39) by ZR0P278CA0003.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:16::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.50 via Frontend Transport; Thu, 13 May 2021 11:39:21 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 92088468-3871-4c6a-8855-08d91603c161
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5327:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5327281914F7B7BCD7CA06E3DF519@DM4PR12MB5327.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SVJHc/ZbP24Dr/WZyl13rr1lPcYtL3yUtK2PMRSMDOfHxBYJU/3wZwMw4EBau2dBAd0v7+OjGvoGoj064u2eXMC8X7TQo8g0+UdsKdVD7Z6JxEH3c9tAZ7EiySFZ98WAs9pN6nWZOfbBKaOlYl9AMO2WL+YyQqolnQi8ZO7BVHBqB+SVWCm4H2dVpboY6HBtZ3+D4mo56nxra8pmkRpUrD6HE32xgfLoFECGzEn1kKxZx6OevFTE7BNkRt5EvFhIinNyDW0f19JKCKMAnMq7pmnUZX9QtP/QRY5doE4SjQa8470rpcAT4dBtqDUbSdFQ7CZYe1g9vTzMzNJ0lsGujzifAMfpGiY9QKhiNlx6C76o+sfpWSI9xTiGTT7+wmfeG0c4UXMumBbhRs2qSXyO6UvprrdfuW8Tsk/Nr/1+EMLZRY/Vg2tjsLdDwAQeGxutwhf6QPFiypGpZeGxsNvAnmwDtwBE6N+EXlKHZVLrsA4nxNkXbS5D0mFjHXO7MB2Lbi9NRRIETBiQ973ZxhQvSy7BWCNVF4ukrsOdtKGQKXwjSiGTbMR9GqiE7/8fS7Df10byHHbaS0ByiSLj/W+j7aNbBhYXKBiaMtmthFQtJWQwfmGjDI2iyFyye0N1Boc1GMAdx3bVl3jrimIKTZkfkjDKNh6gdB6D2jrftFRMi6dhSUn69o9sQLlDokgeCKMy
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(396003)(136003)(366004)(346002)(31696002)(36756003)(86362001)(66574015)(38100700002)(66556008)(31686004)(66476007)(66946007)(2616005)(956004)(6666004)(2906002)(4326008)(16576012)(316002)(54906003)(8676002)(6486002)(4744005)(16526019)(186003)(478600001)(26005)(8936002)(53546011)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?bmRvRkNCYUoyUlRmNTlMcDJ1aGx2MFRnOC94bXBWNG9DMWc1RUlHSDd1RGR1?=
- =?utf-8?B?UmdFbmVXVzQ4eHVNVzhKMjNmR3h3M1JUZXVjbXlNM2lPOWorY3U3cmxQNzVq?=
- =?utf-8?B?bnBCZlhMa0ppZFd4NGpoVGF4UmhUVkowb2hNNXJkVzBLVnQzaWhqMERMcXg1?=
- =?utf-8?B?V1pPSHBTdk0vR0g0K1FOR3QvdjgwaUdONDNCK0Y1M1ptaG5nOVo5UzBWenlX?=
- =?utf-8?B?NXdoZEFBZWVQMnlqNmRWVmt3NlhTb2ZmeURvQ3pVcUpMQjNHdUhTMlFhTmFE?=
- =?utf-8?B?UnRyUVEvUjRkRTBEUjdzSUVNenE0VHA5VUt6Tk56Ym5JYmFiRGhkbkE4QUlW?=
- =?utf-8?B?UmFrWE5HQjA3WGEvRkNOdFdrQlV2UEFHTkY5djY5eVJTZGJlaUVMR0xKQ0J5?=
- =?utf-8?B?d1lZc0R1dDVTcjhpZjdnOEdma2FndDR5SFdGaGpnRGUwdjBHbkpLRWs5MUFn?=
- =?utf-8?B?WGlYaTE2QnJYb0IyWUhFdmJZcDd0NnNINDBheGM2aUhlcjd5Z0FQRnMyZTBW?=
- =?utf-8?B?enBHLzdLQ2Z6M1ZtMEZCRm1vY1BRMUdrbFNnRWt4YWoyeUp2eEVMMmRiNS9q?=
- =?utf-8?B?VXcwbVpwWWxOdWEvaWdqQlVIVm5SM2JCWWswb1UvZU9xbzVjT3JvelFLOW1k?=
- =?utf-8?B?ODlFTzFNUnc4bktFdUxzYXVTeWw3Y0twVEVLZHFDWGVBc0xrQVowY1FQYTYy?=
- =?utf-8?B?SHlGQ2hmUGF1RjNlREVlSHRRbjIvamNsWWEzeWFSa2FCeFp4YXRkRmR6QWxD?=
- =?utf-8?B?M3hhOGJ0N25MQkN5ckJZVGxrK0lQY1pkWUtHOFlBZVBES2FOT2krazNqV1l4?=
- =?utf-8?B?T1VobGtqZnRMNWZ4Rlk2cUhWaVA4WHJzQnkxcTZJUnpEVDR1UlVrQm0wc2tZ?=
- =?utf-8?B?ZHdMWkxqYzZxbVNFMmJHSGs1dVJxeU9YcWFZUlVFVE9ycmY1S0RsdkhLZ2o2?=
- =?utf-8?B?VTh6eFRXcTF5Q2NGMmZFOWEzUXROY0hIMldOeXpRTTVSR2dxN1grelhsazdK?=
- =?utf-8?B?QkQxYkV6VHQra2xOQUk5K0JEVStydUdRZFZaZE9JN3JYbUllR2J0c1dXMHdT?=
- =?utf-8?B?VlBFOElOWWsyZnR2KzVjNkNqWXZzMUg1QnNtOFhBc3hqaHFaenBGSmVIUk1y?=
- =?utf-8?B?SmlLZFdCYXJSZjlGRy9rTWQ4QmhReHdoeWRuUHhkVGpEWktmNGQvOC81VVVR?=
- =?utf-8?B?cVpNcDZpSUZQbXBIV25MbmlZVWJSdytnU3kxK01wSFlTcDNmMENxNXVla0Fr?=
- =?utf-8?B?d2FjT0d1R0tlTGNFWVB0T2lzOGtzWVpmY2JuLy9CcmdHRUsvS2djNnNHck5M?=
- =?utf-8?B?L2RKUjQzajJ0L1YyTVc0Q2hLaGg3NWhFZzlneTBTalFpOGxjSllKM29jK081?=
- =?utf-8?B?c3V2QVRDWmtPOXlQeTF5L1lKdlluRlBYWW1iZE94VEFLVmM0WktQTmRhU21E?=
- =?utf-8?B?WG1RV2RpR0VIY0VWWVRFV2IyeE9RM0hBZ2kxYzdxNkdia3BOWE45T0ZiT3NN?=
- =?utf-8?B?alRHMTlOU2xjZWwzWndMcUJIK0V2QjA1WkFVdTEvTCt5WlBDRllweHFnWGRR?=
- =?utf-8?B?OVdXanR3a3Rvd09oLzRrRlhIajFXVTFPaTlpWVMzdnRqeFI1OFJ1QVAvNUF5?=
- =?utf-8?B?RzZzREdyWlMweFIwNlk1UXhUZm5jZ0hXbnN2VWRFN2w3cWVpRk9sVDlQb1FO?=
- =?utf-8?B?dWRVVktCU2xnL2kwWEtBL2NjbHgySXZORDZjQ2R0VGNuZUZhc3FUNmdLbVRV?=
- =?utf-8?Q?Gm342w/Jpc/h/9bZWNA9dx3We7fUpS0DpG5qs0b?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 92088468-3871-4c6a-8855-08d91603c161
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2021 11:39:23.6366
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9jaH9PY85YFpU+d41prbjTDnnFwYz9Y/GPpqcQ5MJljLMWGACW9+uHLcVYmFlwSOl5WliE40zhvscamYqGAtQA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5327
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210508163350.3431361-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/05/2021 02:19, Linus Lüssing wrote:
-> To properly support routable multicast addresses in batman-adv in a
-> group-aware way, a batman-adv node needs to know if it serves multicast
-> routers.
-> 
-> This adds a function to the bridge to export this so that batman-adv
-> can then make full use of the Multicast Router Discovery capability of
-> the bridge.
-> 
-> Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
-> ---
->  include/linux/if_bridge.h |  8 ++++++
->  net/bridge/br_multicast.c | 55 +++++++++++++++++++++++++++++++++++++++
->  2 files changed, 63 insertions(+)
-> 
+On Sat, May 08, 2021 at 07:33:46PM +0300, Arseny Krasnov wrote:
+>This does rest of SOCK_SEQPACKET support:
+>1) Adds socket ops for SEQPACKET type.
+>2) Allows to create socket with SEQPACKET type.
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+This patch is changed, so usually you should remove the R-b tags.
 
+>---
+> include/net/af_vsock.h   |  1 +
+> net/vmw_vsock/af_vsock.c | 36 +++++++++++++++++++++++++++++++++++-
+> 2 files changed, 36 insertions(+), 1 deletion(-)
+>
+>diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+>index 5860027d5173..1747c0b564ef 100644
+>--- a/include/net/af_vsock.h
+>+++ b/include/net/af_vsock.h
+>@@ -140,6 +140,7 @@ struct vsock_transport {
+> 				     int flags, bool *msg_ready);
+> 	int (*seqpacket_enqueue)(struct vsock_sock *vsk, struct msghdr *msg,
+> 				 size_t len);
+>+	bool (*seqpacket_allow)(u32 remote_cid);
+
+I'm thinking if it's better to follow .dgram_allow() and .stream_allow(),
+specifying also the `port` param, but since it's not used, we can add
+later if needed.
+
+So, I think this is fine:
+
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
