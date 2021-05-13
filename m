@@ -2,148 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63B3E37F4F4
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 11:41:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB8D37F4F6
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 11:42:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232301AbhEMJnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 05:43:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23404 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231523AbhEMJm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 05:42:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1620898908;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tEXPPpt56VkLlB1sxfQc5mmkjZ2bJkUMWLVzzmgeQlI=;
-        b=OO1+bCPOFeaSP47DrmnROwELIuLd+5KTN5dj4Vm+g9wib1WYFlrjxCCmoyfiWYpWZdbwPE
-        hv6B9SKr582namreght0In/k2OAIdO1BEHPebMhF9O/Qanf1cvu67r7deOaeY1UbCkTRKo
-        4q8wtEJB6CUSn7QqtpyKz/l7RAfZ82Y=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-154-NTHvBz_SN_WNqgfdvz9vYA-1; Thu, 13 May 2021 05:41:47 -0400
-X-MC-Unique: NTHvBz_SN_WNqgfdvz9vYA-1
-Received: by mail-ed1-f72.google.com with SMTP id z12-20020aa7d40c0000b0290388179cc8bfso14269150edq.21
-        for <netdev@vger.kernel.org>; Thu, 13 May 2021 02:41:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tEXPPpt56VkLlB1sxfQc5mmkjZ2bJkUMWLVzzmgeQlI=;
-        b=Qnb/9dnQaVMc3mvajHjNPEyaa+pabyKqRYPlPpTZ9OCj4pS1TcNJjZbpzuNW3laxwg
-         Zqvmn/1+OspLoWXwrRtBjiL3PvhMqWP23Fzpkbvhs+Hyj6XRdFYcBBtLk+qrHMtLepQp
-         6Gk9UZ55bF9Fy+dW3uajG4jVO9NQ5uafR2O5jBShWXB9QtumGvuS4xCFS8tq183ap2Yn
-         nHczRMovygu0HBWhNEx6nm4K+XRZVrcd5Awk5ELZSBBLzcAW8p7HlcTA5SUGhy2MPYhl
-         FlW9fut4Mej7ujxeOGjREgCJG3Q1LQm2ckK3UQCiuvf4CpA+DKCQ3xVXwbRayALKL/WG
-         K+HQ==
-X-Gm-Message-State: AOAM532CzT4AprqagJBHz2pbr4QZWoTPwtNLjF6LpQLqnqkES1WWJIo+
-        sPjVDpbK9PRS8NhFbpRyemygpyQiwMWiDVOcsM2jtNOLb8l3Bo9zu/vPwxLeGH22wi+gx0JNw5Q
-        Gq9HY2MhTDb+ISTms
-X-Received: by 2002:a05:6402:2218:: with SMTP id cq24mr32137403edb.213.1620898905994;
-        Thu, 13 May 2021 02:41:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxJVi1oEMy1G+Ywub1hPnPWN5TD5l/FhJybfYGA5Yj2BjUVuK2h8oCU1i60XTsPyqrKWp64mg==
-X-Received: by 2002:a05:6402:2218:: with SMTP id cq24mr32137390edb.213.1620898905840;
-        Thu, 13 May 2021 02:41:45 -0700 (PDT)
-Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
-        by smtp.gmail.com with ESMTPSA id by20sm1493666ejc.74.2021.05.13.02.41.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 May 2021 02:41:45 -0700 (PDT)
-Date:   Thu, 13 May 2021 11:41:43 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Longpeng(Mike)" <longpeng2@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        arei.gonglei@huawei.com, subo7@huawei.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        David Brazdil <dbrazdil@google.com>,
-        Alexander Popov <alex.popov@linux.com>,
-        lixianming <lixianming5@huawei.com>
-Subject: Re: [RFC] vsock: notify server to shutdown when client has pending
- signal
-Message-ID: <20210513094143.pir5vzsludut3xdc@steredhat>
-References: <20210511094127.724-1-longpeng2@huawei.com>
+        id S232442AbhEMJnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 05:43:24 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:46572 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232031AbhEMJnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 05:43:24 -0400
+Received: from heptagon.blr.asicdesigners.com (uefi-pc.asicdesigners.com [10.193.186.108] (may be forged))
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 14D9g6cY024954;
+        Thu, 13 May 2021 02:42:07 -0700
+From:   Ayush Sawal <ayush.sawal@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     secdev@chelsio.com, Ayush Sawal <ayush.sawal@chelsio.com>
+Subject: [PATCH net] cxgb4/ch_ktls: Clear resources when pf4 device is removed
+Date:   Thu, 13 May 2021 15:11:51 +0530
+Message-Id: <20210513094151.32520-1-ayush.sawal@chelsio.com>
+X-Mailer: git-send-email 2.28.0.rc1.6.gae46588
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210511094127.724-1-longpeng2@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-thanks for this patch, comments below...
+This patch maintain the list of active tids and clear all the active
+connection resources when DETACH notification comes.
 
-On Tue, May 11, 2021 at 05:41:27PM +0800, Longpeng(Mike) wrote:
->The client's sk_state will be set to TCP_ESTABLISHED if the
->server replay the client's connect request.
->However, if the client has pending signal, its sk_state will
->be set to TCP_CLOSE without notify the server, so the server
->will hold the corrupt connection.
->
->            client                        server
->
->1. sk_state=TCP_SYN_SENT         |
->2. call ->connect()              |
->3. wait reply                    |
->                                 | 4. sk_state=TCP_ESTABLISHED
->                                 | 5. insert to connected list
->                                 | 6. reply to the client
->7. sk_state=TCP_ESTABLISHED      |
->8. insert to connected list      |
->9. *signal pending* <--------------------- the user kill client
->10. sk_state=TCP_CLOSE           |
->client is exiting...             |
->11. call ->release()             |
->     virtio_transport_close
->      if (!(sk->sk_state == TCP_ESTABLISHED ||
->	      sk->sk_state == TCP_CLOSING))
->		return true; <------------- return at here
->As a result, the server cannot notice the connection is corrupt.
->So the client should notify the peer in this case.
->
->Cc: David S. Miller <davem@davemloft.net>
->Cc: Jakub Kicinski <kuba@kernel.org>
->Cc: Stefano Garzarella <sgarzare@redhat.com>
->Cc: Jorgen Hansen <jhansen@vmware.com>
->Cc: Norbert Slusarek <nslusarek@gmx.net>
->Cc: Andra Paraschiv <andraprs@amazon.com>
->Cc: Colin Ian King <colin.king@canonical.com>
->Cc: David Brazdil <dbrazdil@google.com>
->Cc: Alexander Popov <alex.popov@linux.com>
->Signed-off-by: lixianming <lixianming5@huawei.com>
->Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
->---
-> net/vmw_vsock/af_vsock.c | 1 +
-> 1 file changed, 1 insertion(+)
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index 92a72f0..d5df908 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -1368,6 +1368,7 @@ static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
-> 		lock_sock(sk);
->
-> 		if (signal_pending(current)) {
->+			vsock_send_shutdown(sk, SHUTDOWN_MASK);
+Fixes: a8c16e8ed624f ("crypto/chcr: move nic TLS functionality to drivers/net")
+Signed-off-by: Ayush Sawal <ayush.sawal@chelsio.com>
+---
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  2 +-
+ .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 80 ++++++++++++++++++-
+ .../chelsio/inline_crypto/ch_ktls/chcr_ktls.h |  2 +
+ 3 files changed, 82 insertions(+), 2 deletions(-)
 
-I see the issue, but I'm not sure is okay to send the shutdown in any 
-case, think about the server didn't setup the connection.
-
-Maybe is better to set TCP_CLOSING if the socket state was 
-TCP_ESTABLISHED, so the shutdown will be handled by the 
-transport->release() as usual.
-
-What do you think?
-
-Anyway, also without the patch, the server should receive a RST if it 
-sends any data to the client, but of course, is better to let it know 
-the socket is closed in advance.
-
-Thanks,
-Stefano
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index 6264bc66a4fc..421bd9b88028 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -6480,9 +6480,9 @@ static void cxgb4_ktls_dev_del(struct net_device *netdev,
+ 
+ 	adap->uld[CXGB4_ULD_KTLS].tlsdev_ops->tls_dev_del(netdev, tls_ctx,
+ 							  direction);
+-	cxgb4_set_ktls_feature(adap, FW_PARAMS_PARAM_DEV_KTLS_HW_DISABLE);
+ 
+ out_unlock:
++	cxgb4_set_ktls_feature(adap, FW_PARAMS_PARAM_DEV_KTLS_HW_DISABLE);
+ 	mutex_unlock(&uld_mutex);
+ }
+ 
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
+index ef3f1e92632f..59683f79959c 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
+@@ -59,6 +59,7 @@ static int chcr_get_nfrags_to_send(struct sk_buff *skb, u32 start, u32 len)
+ }
+ 
+ static int chcr_init_tcb_fields(struct chcr_ktls_info *tx_info);
++static void clear_conn_resources(struct chcr_ktls_info *tx_info);
+ /*
+  * chcr_ktls_save_keys: calculate and save crypto keys.
+  * @tx_info - driver specific tls info.
+@@ -364,10 +365,14 @@ static void chcr_ktls_dev_del(struct net_device *netdev,
+ 				chcr_get_ktls_tx_context(tls_ctx);
+ 	struct chcr_ktls_info *tx_info = tx_ctx->chcr_info;
+ 	struct ch_ktls_port_stats_debug *port_stats;
++	struct chcr_ktls_uld_ctx *u_ctx;
+ 
+ 	if (!tx_info)
+ 		return;
+ 
++	u_ctx = tx_info->adap->uld[CXGB4_ULD_KTLS].handle;
++	if (u_ctx && u_ctx->detach)
++		return;
+ 	/* clear l2t entry */
+ 	if (tx_info->l2te)
+ 		cxgb4_l2t_release(tx_info->l2te);
+@@ -384,6 +389,8 @@ static void chcr_ktls_dev_del(struct net_device *netdev,
+ 	if (tx_info->tid != -1) {
+ 		cxgb4_remove_tid(&tx_info->adap->tids, tx_info->tx_chan,
+ 				 tx_info->tid, tx_info->ip_family);
++
++		xa_erase(&u_ctx->tid_list, tx_info->tid);
+ 	}
+ 
+ 	port_stats = &tx_info->adap->ch_ktls_stats.ktls_port[tx_info->port_id];
+@@ -411,6 +418,7 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
+ 	struct tls_context *tls_ctx = tls_get_ctx(sk);
+ 	struct ch_ktls_port_stats_debug *port_stats;
+ 	struct chcr_ktls_ofld_ctx_tx *tx_ctx;
++	struct chcr_ktls_uld_ctx *u_ctx;
+ 	struct chcr_ktls_info *tx_info;
+ 	struct dst_entry *dst;
+ 	struct adapter *adap;
+@@ -425,6 +433,7 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
+ 	adap = pi->adapter;
+ 	port_stats = &adap->ch_ktls_stats.ktls_port[pi->port_id];
+ 	atomic64_inc(&port_stats->ktls_tx_connection_open);
++	u_ctx = adap->uld[CXGB4_ULD_KTLS].handle;
+ 
+ 	if (direction == TLS_OFFLOAD_CTX_DIR_RX) {
+ 		pr_err("not expecting for RX direction\n");
+@@ -434,6 +443,9 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
+ 	if (tx_ctx->chcr_info)
+ 		goto out;
+ 
++	if (u_ctx && u_ctx->detach)
++		goto out;
++
+ 	tx_info = kvzalloc(sizeof(*tx_info), GFP_KERNEL);
+ 	if (!tx_info)
+ 		goto out;
+@@ -569,6 +581,8 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
+ 	cxgb4_remove_tid(&tx_info->adap->tids, tx_info->tx_chan,
+ 			 tx_info->tid, tx_info->ip_family);
+ 
++	xa_erase(&u_ctx->tid_list, tx_info->tid);
++
+ put_module:
+ 	/* release module refcount */
+ 	module_put(THIS_MODULE);
+@@ -633,8 +647,12 @@ static int chcr_ktls_cpl_act_open_rpl(struct adapter *adap,
+ {
+ 	const struct cpl_act_open_rpl *p = (void *)input;
+ 	struct chcr_ktls_info *tx_info = NULL;
++	struct chcr_ktls_ofld_ctx_tx *tx_ctx;
++	struct chcr_ktls_uld_ctx *u_ctx;
+ 	unsigned int atid, tid, status;
++	struct tls_context *tls_ctx;
+ 	struct tid_info *t;
++	int ret = 0;
+ 
+ 	tid = GET_TID(p);
+ 	status = AOPEN_STATUS_G(ntohl(p->atid_status));
+@@ -666,14 +684,29 @@ static int chcr_ktls_cpl_act_open_rpl(struct adapter *adap,
+ 	if (!status) {
+ 		tx_info->tid = tid;
+ 		cxgb4_insert_tid(t, tx_info, tx_info->tid, tx_info->ip_family);
++		/* Adding tid */
++		tls_ctx = tls_get_ctx(tx_info->sk);
++		tx_ctx = chcr_get_ktls_tx_context(tls_ctx);
++		u_ctx = adap->uld[CXGB4_ULD_KTLS].handle;
++		if (u_ctx) {
++			ret = xa_insert_bh(&u_ctx->tid_list, tid, tx_ctx,
++					   GFP_NOWAIT);
++			if (ret < 0) {
++				pr_err("%s: Failed to allocate tid XA entry = %d\n",
++				       __func__, tx_info->tid);
++				tx_info->open_state = CH_KTLS_OPEN_FAILURE;
++				goto out;
++			}
++		}
+ 		tx_info->open_state = CH_KTLS_OPEN_SUCCESS;
+ 	} else {
+ 		tx_info->open_state = CH_KTLS_OPEN_FAILURE;
+ 	}
++out:
+ 	spin_unlock(&tx_info->lock);
+ 
+ 	complete(&tx_info->completion);
+-	return 0;
++	return ret;
+ }
+ 
+ /*
+@@ -2090,6 +2123,8 @@ static void *chcr_ktls_uld_add(const struct cxgb4_lld_info *lldi)
+ 		goto out;
+ 	}
+ 	u_ctx->lldi = *lldi;
++	u_ctx->detach = false;
++	xa_init_flags(&u_ctx->tid_list, XA_FLAGS_LOCK_BH);
+ out:
+ 	return u_ctx;
+ }
+@@ -2123,6 +2158,45 @@ static int chcr_ktls_uld_rx_handler(void *handle, const __be64 *rsp,
+ 	return 0;
+ }
+ 
++static void clear_conn_resources(struct chcr_ktls_info *tx_info)
++{
++	/* clear l2t entry */
++	if (tx_info->l2te)
++		cxgb4_l2t_release(tx_info->l2te);
++
++#if IS_ENABLED(CONFIG_IPV6)
++	/* clear clip entry */
++	if (tx_info->ip_family == AF_INET6)
++		cxgb4_clip_release(tx_info->netdev, (const u32 *)
++				   &tx_info->sk->sk_v6_rcv_saddr,
++				   1);
++#endif
++
++	/* clear tid */
++	if (tx_info->tid != -1)
++		cxgb4_remove_tid(&tx_info->adap->tids, tx_info->tx_chan,
++				 tx_info->tid, tx_info->ip_family);
++}
++
++static void ch_ktls_reset_all_conn(struct chcr_ktls_uld_ctx *u_ctx)
++{
++	struct ch_ktls_port_stats_debug *port_stats;
++	struct chcr_ktls_ofld_ctx_tx *tx_ctx;
++	struct chcr_ktls_info *tx_info;
++	unsigned long index;
++
++	xa_for_each(&u_ctx->tid_list, index, tx_ctx) {
++		tx_info = tx_ctx->chcr_info;
++		clear_conn_resources(tx_info);
++		port_stats = &tx_info->adap->ch_ktls_stats.ktls_port[tx_info->port_id];
++		atomic64_inc(&port_stats->ktls_tx_connection_close);
++		kvfree(tx_info);
++		tx_ctx->chcr_info = NULL;
++		/* release module refcount */
++		module_put(THIS_MODULE);
++	}
++}
++
+ static int chcr_ktls_uld_state_change(void *handle, enum cxgb4_state new_state)
+ {
+ 	struct chcr_ktls_uld_ctx *u_ctx = handle;
+@@ -2139,7 +2213,10 @@ static int chcr_ktls_uld_state_change(void *handle, enum cxgb4_state new_state)
+ 	case CXGB4_STATE_DETACH:
+ 		pr_info("%s: Down\n", pci_name(u_ctx->lldi.pdev));
+ 		mutex_lock(&dev_mutex);
++		u_ctx->detach = true;
+ 		list_del(&u_ctx->entry);
++		ch_ktls_reset_all_conn(u_ctx);
++		xa_destroy(&u_ctx->tid_list);
+ 		mutex_unlock(&dev_mutex);
+ 		break;
+ 	default:
+@@ -2178,6 +2255,7 @@ static void __exit chcr_ktls_exit(void)
+ 		adap = pci_get_drvdata(u_ctx->lldi.pdev);
+ 		memset(&adap->ch_ktls_stats, 0, sizeof(adap->ch_ktls_stats));
+ 		list_del(&u_ctx->entry);
++		xa_destroy(&u_ctx->tid_list);
+ 		kfree(u_ctx);
+ 	}
+ 	mutex_unlock(&dev_mutex);
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.h b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.h
+index 18b3b1f02415..10572dc55365 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.h
++++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.h
+@@ -75,6 +75,8 @@ struct chcr_ktls_ofld_ctx_tx {
+ struct chcr_ktls_uld_ctx {
+ 	struct list_head entry;
+ 	struct cxgb4_lld_info lldi;
++	struct xarray tid_list;
++	bool detach;
+ };
+ 
+ static inline struct chcr_ktls_ofld_ctx_tx *
+-- 
+2.28.0.rc1.6.gae46588
 
