@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85753381250
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 23:01:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 576F638124D
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 23:01:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231644AbhENVCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 17:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
+        id S233139AbhENVCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 17:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231691AbhENVBo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 17:01:44 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1699C06134C;
-        Fri, 14 May 2021 14:00:28 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id l1so561823ejb.6;
-        Fri, 14 May 2021 14:00:28 -0700 (PDT)
+        with ESMTP id S231743AbhENVBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 17:01:45 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8893FC061756;
+        Fri, 14 May 2021 14:00:29 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id l7so80446edb.1;
+        Fri, 14 May 2021 14:00:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yD4Erupp9AwCtDe5FZLfHVR9rF7hUw4t5/pS+QNEVOM=;
-        b=IaimTxgLCLesbcQVxo6C+sYAJmBYRmeffPzoMgkFvKX4ZyF/067fa37PTe4qBte/3F
-         HPfJL0MGRjlBrOobg3eUHn3B3jSdIzhfqjC8rAwdB2cVR45OgOHmZgsfto1mNnXD+ivW
-         kj6NPY+/Jryk9NawCZrWRNMd83Kk/viLXIAVUOBfuReJW5XsZOG5JgeTkDk+ZL/FwDz5
-         /cAAfB6Sg7ocF96VdmVqCAVTgiHP2Jjy1HmPnUdPAm6MPwWk2/qyelCVW0WgIZcIE/yq
-         f/Awav7UNO7NU0Ivjf241loSv/E4lK+1O0p5mY6OJEOwxumPfgFKkwpOeXYCNbYCE9Bz
-         nxpw==
+        bh=2uJO2aO8VGq4uIw0TCHk6HQMIpt50sRO38SxfxJU7NU=;
+        b=NzSd8+Ts2MFXhw5Dq+TR+o0yi/Vo4bXQCMnFv9BwLc6WJcZE4w81PXGU8bw96JQ15c
+         Ltu3rtpEBZHkLVa7vjQp25n9BWlUrGN4AXvY50WRLSQE1EQYoLFfBa5LNo9sefmW4iBe
+         vlzBIHe/xAXTQMR56gCQu7ITDS/uTZq3NpSzzqVB6LljJyOLAc6XWWPPUCra4TqDVBNs
+         vSg33qmQ3Z0OQXpDkeI34Ua5KvIwTv99pg6YCfRdbBdNw+X2iPPuAOnfUrZgVRc4Pm/T
+         vIC61dnLgHyzikC3ZNFY4GBRZSFqx0v73uqi5inkwd0qYsGBhRRiYe5GG1qbdcsBvEwj
+         D2sA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yD4Erupp9AwCtDe5FZLfHVR9rF7hUw4t5/pS+QNEVOM=;
-        b=GF50IbxBrYPw409BQO8D3GBHbm7bfKV0FK5Gg9rDozSQw1aUJIszU/8vUb/b7cg2An
-         pp0YyCK3RO2HeAKPirwNEfmcks87kcPhxqbdUU7e/6b7WCPZr9ZsgzQQJ875wMImpFdg
-         TGaVsb0Y24usivF4eyIhAtPjs4l5HiQzWd48nWmZYe7E8Vn1BrL21pKQM97xp85UN1mZ
-         07imNQz9ezSUhuQKNEvpu6QOYrehAw4anobi615YIG6qww6z0gDQeNUEOmAESDoyBtSF
-         XXyRtREx3bC8W4Sb8X92fRi7Vh3qQHQgehzB3TSoxCjWxPGaNJyWtV2oIO2h0IPrMn1S
-         8MeA==
-X-Gm-Message-State: AOAM532I21G1vA5v8h0XcczT9vJCbZxCk0byZeQ5wR+RS+pJaMRSqCz8
-        s56Oo1GG0xkM7wpTQgbD4/c=
-X-Google-Smtp-Source: ABdhPJx6MbdgaOrD3RxAuswnyKRM0+RveRijdpnnf6iVZD7J+IDpwIeIZqEkenbKuN+UBhXVeea8Rg==
-X-Received: by 2002:a17:906:33da:: with SMTP id w26mr51509662eja.472.1621026027127;
-        Fri, 14 May 2021 14:00:27 -0700 (PDT)
+        bh=2uJO2aO8VGq4uIw0TCHk6HQMIpt50sRO38SxfxJU7NU=;
+        b=Co3jEdoK8Mo3gT4z6siqjjkHf9V8W7RZqkgIMNJzSHXVHXnWcvrHLk0VvLj5NdWp5e
+         3vwC9cQb4s/g5J+nCD7KymHaKogDMSqTfiSdvAE/Ef60nCuIywEEcXmlACnEVVN1+GeD
+         Y5et3tW/Lqy92EVBJuosjOYBw55apS8M5R3RjpBtslV91TNLmQ0YN2Bxz21FnqW1hEPf
+         S5WtxCywvf/t91dgi7ecsm2n9K07sCjpboYwuuJXkOauxwUisNHdsiQlJB5hZ4qBIZ9W
+         x7FBNa07akMM7T3vqiDQE2neMBa/5pEy/fDoHqXB2CfhauHy1l1HyCNVXXOX92Bgev/o
+         Xofw==
+X-Gm-Message-State: AOAM531jkbia0yzfJakwdI64EZMrdCX4sZ7BXfhXTntMwD7CX+7fpxPs
+        XK6+qmtAnqonboH9iwozaNs=
+X-Google-Smtp-Source: ABdhPJytdzy51WCrRT0DMnj+YaNrqAp1FOlPdfjRtJcmMK4EUm5RU1E+Vwg021B2vzXg/Yn5htlZQw==
+X-Received: by 2002:a05:6402:b2c:: with SMTP id bo12mr58592673edb.196.1621026028204;
+        Fri, 14 May 2021 14:00:28 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id c3sm5455237edn.16.2021.05.14.14.00.26
+        by smtp.googlemail.com with ESMTPSA id c3sm5455237edn.16.2021.05.14.14.00.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 May 2021 14:00:26 -0700 (PDT)
+        Fri, 14 May 2021 14:00:27 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,9 +59,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH net-next v6 11/25] net: dsa: qca8k: add priority tweak to qca8337 switch
-Date:   Fri, 14 May 2021 23:00:01 +0200
-Message-Id: <20210514210015.18142-12-ansuelsmth@gmail.com>
+Subject: [PATCH net-next v6 12/25] net: dsa: qca8k: limit port5 delay to qca8337
+Date:   Fri, 14 May 2021 23:00:02 +0200
+Message-Id: <20210514210015.18142-13-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210514210015.18142-1-ansuelsmth@gmail.com>
 References: <20210514210015.18142-1-ansuelsmth@gmail.com>
@@ -71,134 +71,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The port 5 of the qca8337 have some problem in flood condition. The
-original legacy driver had some specific buffer and priority settings
-for the different port suggested by the QCA switch team. Add this
-missing settings to improve switch stability under load condition.
-The packet priority tweak is only needed for the qca8337 switch and
-other qca8k switch are not affected.
+Limit port5 rx delay to qca8337. This is taken from the legacy QSDK code
+that limits the rx delay on port5 to only this particular switch version,
+on other switch only the tx and rx delay for port0 are needed.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/dsa/qca8k.c | 47 +++++++++++++++++++++++++++++++++++++++++
- drivers/net/dsa/qca8k.h | 25 ++++++++++++++++++++++
- 2 files changed, 72 insertions(+)
+ drivers/net/dsa/qca8k.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 693bd9fd532b..65f27d136aef 100644
+index 65f27d136aef..b598930190e1 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -779,6 +779,7 @@ qca8k_setup(struct dsa_switch *ds)
- {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
- 	int ret, i;
-+	u32 mask;
- 
- 	/* Make sure that port 0 is the cpu port */
- 	if (!dsa_is_cpu_port(ds, 0)) {
-@@ -884,6 +885,51 @@ qca8k_setup(struct dsa_switch *ds)
- 		}
- 	}
- 
-+	/* The port 5 of the qca8337 have some problem in flood condition. The
-+	 * original legacy driver had some specific buffer and priority settings
-+	 * for the different port suggested by the QCA switch team. Add this
-+	 * missing settings to improve switch stability under load condition.
-+	 * This problem is limited to qca8337 and other qca8k switch are not affected.
-+	 */
-+	if (priv->switch_id == QCA8K_ID_QCA8337) {
-+		for (i = 0; i < QCA8K_NUM_PORTS; i++) {
-+			switch (i) {
-+			/* The 2 CPU port and port 5 requires some different
-+			 * priority than any other ports.
-+			 */
-+			case 0:
-+			case 5:
-+			case 6:
-+				mask = QCA8K_PORT_HOL_CTRL0_EG_PRI0(0x3) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI1(0x4) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI2(0x4) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI3(0x4) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI4(0x6) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI5(0x8) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PORT(0x1e);
-+				break;
-+			default:
-+				mask = QCA8K_PORT_HOL_CTRL0_EG_PRI0(0x3) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI1(0x4) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI2(0x6) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI3(0x8) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PORT(0x19);
-+			}
-+			qca8k_write(priv, QCA8K_REG_PORT_HOL_CTRL0(i), mask);
-+
-+			mask = QCA8K_PORT_HOL_CTRL1_ING(0x6) |
-+			QCA8K_PORT_HOL_CTRL1_EG_PRI_BUF_EN |
-+			QCA8K_PORT_HOL_CTRL1_EG_PORT_BUF_EN |
-+			QCA8K_PORT_HOL_CTRL1_WRED_EN;
-+			qca8k_rmw(priv, QCA8K_REG_PORT_HOL_CTRL1(i),
-+				  QCA8K_PORT_HOL_CTRL1_ING_BUF |
-+				  QCA8K_PORT_HOL_CTRL1_EG_PRI_BUF_EN |
-+				  QCA8K_PORT_HOL_CTRL1_EG_PORT_BUF_EN |
-+				  QCA8K_PORT_HOL_CTRL1_WRED_EN,
-+				  mask);
-+		}
-+	}
-+
- 	/* Setup our port MTUs to match power on defaults */
- 	for (i = 0; i < QCA8K_NUM_PORTS; i++)
- 		priv->port_mtu[i] = ETH_FRAME_LEN + ETH_FCS_LEN;
-@@ -1569,6 +1615,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 		return -ENODEV;
- 	}
- 
-+	priv->switch_id = id;
- 	priv->ds = devm_kzalloc(&mdiodev->dev, sizeof(*priv->ds), GFP_KERNEL);
- 	if (!priv->ds)
- 		return -ENOMEM;
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 87a8b10459c6..42d90836dffa 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -168,6 +168,30 @@
- #define   QCA8K_PORT_LOOKUP_STATE			GENMASK(18, 16)
- #define   QCA8K_PORT_LOOKUP_LEARN			BIT(20)
- 
-+#define QCA8K_REG_PORT_HOL_CTRL0(_i)			(0x970 + (_i) * 0x8)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI0_BUF		GENMASK(3, 0)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI0(x)		((x) << 0)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI1_BUF		GENMASK(7, 4)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI1(x)		((x) << 4)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI2_BUF		GENMASK(11, 8)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI2(x)		((x) << 8)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI3_BUF		GENMASK(15, 12)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI3(x)		((x) << 12)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI4_BUF		GENMASK(19, 16)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI4(x)		((x) << 16)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI5_BUF		GENMASK(23, 20)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PRI5(x)		((x) << 20)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PORT_BUF		GENMASK(29, 24)
-+#define   QCA8K_PORT_HOL_CTRL0_EG_PORT(x)		((x) << 24)
-+
-+#define QCA8K_REG_PORT_HOL_CTRL1(_i)			(0x974 + (_i) * 0x8)
-+#define   QCA8K_PORT_HOL_CTRL1_ING_BUF			GENMASK(3, 0)
-+#define   QCA8K_PORT_HOL_CTRL1_ING(x)			((x) << 0)
-+#define   QCA8K_PORT_HOL_CTRL1_EG_PRI_BUF_EN		BIT(6)
-+#define   QCA8K_PORT_HOL_CTRL1_EG_PORT_BUF_EN		BIT(7)
-+#define   QCA8K_PORT_HOL_CTRL1_WRED_EN			BIT(8)
-+#define   QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN		BIT(16)
-+
- /* Pkt edit registers */
- #define QCA8K_EGRESS_VLAN(x)				(0x0c70 + (4 * (x / 2)))
- 
-@@ -220,6 +244,7 @@ struct qca8k_match_data {
- };
- 
- struct qca8k_priv {
-+	u8 switch_id;
- 	struct regmap *regmap;
- 	struct mii_bus *bus;
- 	struct ar8xxx_port_status port_sts[QCA8K_NUM_PORTS];
+@@ -1003,8 +1003,10 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 			    QCA8K_PORT_PAD_RGMII_EN |
+ 			    QCA8K_PORT_PAD_RGMII_TX_DELAY(QCA8K_MAX_DELAY) |
+ 			    QCA8K_PORT_PAD_RGMII_RX_DELAY(QCA8K_MAX_DELAY));
+-		qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
+-			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
++		/* QCA8337 requires to set rgmii rx delay */
++		if (priv->switch_id == QCA8K_ID_QCA8337)
++			qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
++				    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
+ 		break;
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 	case PHY_INTERFACE_MODE_1000BASEX:
 -- 
 2.30.2
 
