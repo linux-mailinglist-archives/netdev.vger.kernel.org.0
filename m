@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EDDC38122E
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 23:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67B56381231
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 23:01:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231200AbhENVBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 17:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55504 "EHLO
+        id S231537AbhENVBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 17:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbhENVBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 17:01:30 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427AAC06174A;
-        Fri, 14 May 2021 14:00:18 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id di13so74901edb.2;
-        Fri, 14 May 2021 14:00:18 -0700 (PDT)
+        with ESMTP id S230295AbhENVBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 17:01:31 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD8FC061574;
+        Fri, 14 May 2021 14:00:19 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id s6so36186edu.10;
+        Fri, 14 May 2021 14:00:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=iLW13GfpsJUzvkPWyitZyY28PPsAaoSpQ+0kP4qbd2Y=;
-        b=bFV7z8ZtgBfu9mdtsF49tdTPY5ZDZ+Ru8hnb0M5L9k2oSBEZm/YxTJ2zGdujINc8Uv
-         iU57iRuZrEzTS72c+O0roGXEZr6HI9D/rT0nIjCUtfneNjr2K7WrcODPcmqydDHKk0Pp
-         xDDtTmtctI+as3G0H1RYOn343D82bsMsNDtQcSk4OK9905kK4z7r8abLvctpRJhf4WTp
-         whqjXdwFqz/kMF3c7b2mRNi54tVOPWJ+8eSc5HAMBULqezisRaEbfk4estISfhmjvN7V
-         ULPyKA4zz64DTz/WJxW4P48o0a1w5xc/gsHlfPe1K8V8RdiHmydrb6mu5jsMaDf91GFp
-         v27w==
+        bh=sK60gaKU0JJ3ab7RUURP4mNP0+dSnJ2h4FVnp3sZLXc=;
+        b=um/3IbsKe/Wrgc71UoyDsMMwPbxcbsFuu+p+UhgvB3myJD1cTFnxCRdDUtVwio10YE
+         ppmjb724xcLScRW2+TayZ4pEcIZo1CH6B37wYGTc3ZnGxL9NcKMVwRP6dXugL7ZFLwU4
+         R3FrBJmz0zVEidiLnxIEXE6JvlmqSqz2eZL7IJkdB9xGzWxUVjfVQM4mEBCBzXipETg7
+         QVhvkKa1IqRFkrt9yrwg/cshk7psAFoI/QGOeGXZcb3BbhTb6iqki4TieVXcJlkKLbYH
+         OBOyaY2ClidIe+vHeN2BWMpR2szPf/nT/eoMGCsDK/0bDHusQ+IHxLLZ0OKu0vznECsK
+         8YGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=iLW13GfpsJUzvkPWyitZyY28PPsAaoSpQ+0kP4qbd2Y=;
-        b=H1PJY63P2WohrFephKPOp8G67RwG7N/+jvV77erVFJjPcoWDAv4/ndUcKNtBPUaVv0
-         bdnlMi7BX/UE7jqi79XwIMocjGPSGw1hPNuYcdvOz9XdWxckzpr2mKMTsXs59CqGjfM0
-         p8ki4adrR2F5q1Z0Y7Br0BHRz83Nx8IJ9U/wP4B6VYUBjxccKad9WeCHyamNAPpoEk5g
-         ULSONVG+UhofOiSSHidEQQaPJkFYXv33lYmbmQpbBJhqDs5WLBGKEBAlmcQhcQgL7MTi
-         yN3eO1sFGv1eqN4uYKhjWSx6j2Xw6kqUVWbOvsmtdCZtIgMLgbJplnTvPQgS1vrqnqJz
-         5ILw==
-X-Gm-Message-State: AOAM531iLyPT88/Ju5TmZxUWJoOrg8dH+PC/a0drA0M5SB9wbhTh2lvm
-        MFZSCKrZSxOh1xkbAm32tuc=
-X-Google-Smtp-Source: ABdhPJxcXic1mn7HxKuBgEWaVuJNec0+ZsB7HR7gV0qPcxlP0FO7zq4tnllxsXwbn67OX1A1H/haDg==
-X-Received: by 2002:a05:6402:515:: with SMTP id m21mr58428029edv.117.1621026016905;
-        Fri, 14 May 2021 14:00:16 -0700 (PDT)
+        bh=sK60gaKU0JJ3ab7RUURP4mNP0+dSnJ2h4FVnp3sZLXc=;
+        b=ZvVr3/2uVHeDf95AZl1deGhTqEsbxzox6VkMkkSA1poQgAKhjJUE7bJ/ZhDtQbXQMx
+         BdHa63BNi5qFwB8wp7iqDA2li7Gb1PwRScJJIzxmE4Nq1A769esXGYcu8M1l8iM91yUq
+         V1IjHgUZNciXKUqNSbnC25XEArFJCcQ6grzVgD6T3CK/0uIg8f44qa5eNznk8bZZL+4y
+         TcG6xd5MuNMeNAj6Ks07Gbz57Grnmxn8lmza94Ra0Ejc94cL214V8+LlUTosrK9ysCMf
+         oEKLTs1527GBHDjy8mAvWeIu65pPmbdB9WDKa/LmJGiLRw2XjRywmFSUXXccxfyr3lLw
+         NSsQ==
+X-Gm-Message-State: AOAM530RPmDqO2emN8vhkqzHFt10UFsXs+25xOzFoqKm57PpsuEW+U3y
+        b/FqaDTik/mXtj9wxvmEw4g=
+X-Google-Smtp-Source: ABdhPJz9Z2H/GXFT4OFM33cEFRJP/5nB6FDaETomUF2NTZheHoEUMNLbJ5LL98eqTOo2+1KVqUc/Jw==
+X-Received: by 2002:a05:6402:48f:: with SMTP id k15mr57502548edv.262.1621026017860;
+        Fri, 14 May 2021 14:00:17 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
         by smtp.googlemail.com with ESMTPSA id c3sm5455237edn.16.2021.05.14.14.00.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 May 2021 14:00:16 -0700 (PDT)
+        Fri, 14 May 2021 14:00:17 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,9 +59,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH net-next v6 01/25] net: dsa: qca8k: change simple print to dev variant
-Date:   Fri, 14 May 2021 22:59:51 +0200
-Message-Id: <20210514210015.18142-2-ansuelsmth@gmail.com>
+Subject: [PATCH net-next v6 02/25] net: dsa: qca8k: use iopoll macro for qca8k_busy_wait
+Date:   Fri, 14 May 2021 22:59:52 +0200
+Message-Id: <20210514210015.18142-3-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210514210015.18142-1-ansuelsmth@gmail.com>
 References: <20210514210015.18142-1-ansuelsmth@gmail.com>
@@ -71,37 +71,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change pr_err and pr_warn to dev variant.
+Use iopoll macro instead of while loop.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/dsa/qca8k.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/dsa/qca8k.c | 23 +++++++++++------------
+ drivers/net/dsa/qca8k.h |  2 ++
+ 2 files changed, 13 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index cdaf9f85a2cb..0b295da6c356 100644
+index 0b295da6c356..25fa7084e820 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -701,7 +701,7 @@ qca8k_setup(struct dsa_switch *ds)
+@@ -262,21 +262,20 @@ static struct regmap_config qca8k_regmap_config = {
+ static int
+ qca8k_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
+ {
+-	unsigned long timeout;
+-
+-	timeout = jiffies + msecs_to_jiffies(20);
++	u32 val;
++	int ret;
  
- 	/* Make sure that port 0 is the cpu port */
- 	if (!dsa_is_cpu_port(ds, 0)) {
--		pr_err("port 0 is not the CPU port\n");
-+		dev_err(priv->dev, "port 0 is not the CPU port");
- 		return -EINVAL;
- 	}
+-	/* loop until the busy flag has cleared */
+-	do {
+-		u32 val = qca8k_read(priv, reg);
+-		int busy = val & mask;
++	ret = read_poll_timeout(qca8k_read, val, !(val & mask),
++				0, QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC, false,
++				priv, reg);
  
-@@ -711,7 +711,7 @@ qca8k_setup(struct dsa_switch *ds)
- 	priv->regmap = devm_regmap_init(ds->dev, NULL, priv,
- 					&qca8k_regmap_config);
- 	if (IS_ERR(priv->regmap))
--		pr_warn("regmap initialization failed");
-+		dev_warn(priv->dev, "regmap initialization failed");
+-		if (!busy)
+-			break;
+-		cond_resched();
+-	} while (!time_after_eq(jiffies, timeout));
++	/* Check if qca8k_read has failed for a different reason
++	 * before returning -ETIMEDOUT
++	 */
++	if (ret < 0 && val < 0)
++		return val;
  
- 	ret = qca8k_setup_mdio_bus(priv);
- 	if (ret)
+-	return time_after_eq(jiffies, timeout);
++	return ret;
+ }
+ 
+ static void
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index 7ca4b93e0bb5..86c585b7ec4a 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -18,6 +18,8 @@
+ #define PHY_ID_QCA8337					0x004dd036
+ #define QCA8K_ID_QCA8337				0x13
+ 
++#define QCA8K_BUSY_WAIT_TIMEOUT				20
++
+ #define QCA8K_NUM_FDB_RECORDS				2048
+ 
+ #define QCA8K_CPU_PORT					0
 -- 
 2.30.2
 
