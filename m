@@ -2,101 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0013380A2D
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 15:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 669DB380A5D
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 15:24:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231829AbhENNK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 09:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230306AbhENNKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 09:10:24 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F291C06174A;
-        Fri, 14 May 2021 06:09:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=BXqAC1pbKs3j4NOO8yWXGrt0LNNTBr4iLV2yAP7ms80=; b=OgwWUSq1igQM+qijDhyiGpZbB
-        7pJhTLrdVnAZ5DZ3iS5WTWxGeL+xy8flu9DxXz2OkAC+kU5Vf/DMusm6P3V9sMJSWrz4SqgBJeFTU
-        fmI8iThYjOUYoR7z3wz+2xklLyju2B9NLCEQi09WwkXwo4BRs3k3O5BnAnl6/mK0Vak55wjvlKEHR
-        O91YCtVgJcoS/7vJOzu4DkGu5iTk/x9u/UNK8QvK47UO1m1TcIuG8Wdmuh97HFjzNCxpxy6RU5EBF
-        npNVpKRklFtY0KrDX597FXumGg26Id1krUVYbQ2hrBo4LCA8lkivL1pmswzIKPnNVI30X3enx4uS9
-        El6wrBUFA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43972)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lhXZ0-0008Bd-5t; Fri, 14 May 2021 14:09:10 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lhXYy-00042P-TJ; Fri, 14 May 2021 14:09:08 +0100
-Date:   Fri, 14 May 2021 14:09:08 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+        id S233963AbhENN0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 09:26:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40250 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230075AbhENN0C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 May 2021 09:26:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=bKrIdux+WQDhbsuj/L6O78Gu9Fpi7TdC9aFvwWVLPns=; b=Uu7s+m0wpC6i6cokaQjN2ujZPy
+        46SprCmSQxX+gHsLgzdWIUPaC9JeDRtKNZh9U+08/n3Uf2SG6hGMEmCcbC5UHLqBXrzd48DFJ2NaX
+        XzWrdLAk3WP9OOzcX1jfQqypi2sbqw70RFOrOweG/bdCxUOUElNSDsOjni+IxUiSisNM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lhXo3-004BmE-AI; Fri, 14 May 2021 15:24:43 +0200
+Date:   Fri, 14 May 2021 15:24:43 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, linux-rockchip@lists.infradead.org
 Subject: Re: [PATCH v3] net: phy: add driver for Motorcomm yt8511 phy
-Message-ID: <20210514130908.GD12395@shell.armlinux.org.uk>
+Message-ID: <YJ56G23e930pg4Iv@lunn.ch>
 References: <20210514115826.3025223-1-pgwipeout@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20210514115826.3025223-1-pgwipeout@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
-
 On Fri, May 14, 2021 at 07:58:26AM -0400, Peter Geis wrote:
-> +	/* set rgmii delay mode */
-> +	val = __phy_read(phydev, YT8511_PAGE);
+> Add a driver for the Motorcomm yt8511 phy that will be used in the
+> production Pine64 rk3566-quartz64 development board.
+> It supports gigabit transfer speeds, rgmii, and 125mhz clk output.
+
+Thanks for adding RGMII support.
+
+> +#define PHY_ID_YT8511		0x0000010a
+
+No OUI in the PHY ID?
+
+Humm, the datasheet says it defaults to zero. That is not very
+good. This could be a source of problems in the future, if some other
+manufacture also does not use an OUI.
+
+> +/* RX Delay enabled = 1.8ns 1000T, 8ns 10/100T */
+> +#define YT8511_DELAY_RX		BIT(0)
+> +
+> +/* TX Delay is bits 7:4, default 0x5
+> + * Delay = 150ps * N - 250ps, Default = 500ps
+> + */
+> +#define YT8511_DELAY_TX		(0x5 << 4)
+
 > +
 > +	switch (phydev->interface) {
 > +	case PHY_INTERFACE_MODE_RGMII:
 > +		val &= ~(YT8511_DELAY_RX | YT8511_DELAY_TX);
 > +		break;
+
+This is not correct. YT8511_DELAY_TX will only mask the 2 bits in 0x5,
+not all the bits in 7:4. And since the formula is
+
+Delay = 150ps * N - 250ps
+
+setting N to 0 is not what you want. You probably want N=2, so you end up with 50ps
+
 > +	case PHY_INTERFACE_MODE_RGMII_ID:
 > +		val |= YT8511_DELAY_RX | YT8511_DELAY_TX;
 > +		break;
 > +	case PHY_INTERFACE_MODE_RGMII_RXID:
 > +		val &= ~(YT8511_DELAY_TX);
 > +		val |= YT8511_DELAY_RX;
-> +		break;
-> +	case PHY_INTERFACE_MODE_RGMII_TXID:
-> +		val &= ~(YT8511_DELAY_RX);
-> +		val |= YT8511_DELAY_TX;
-> +		break;
-> +	default: /* leave everything alone in other modes */
-> +		break;
-> +	}
-> +
-> +	ret = __phy_write(phydev, YT8511_PAGE, val);
-> +	if (ret < 0)
-> +		goto err_restore_page;
 
-Another way of writing the above is to set "val" to be the value of the
-YT8511_DELAY_RX and YT8511_DELAY_TX bits, and then do:
+The delay should be around 2ns. For RX you only have 1.8ns, which is
+probably good enough. But for TX you have more flexibility. You are
+setting it to the default of 500ps which is too small. I would suggest
+1.85ns, N=14, so it is the same as RX.
 
-	ret = __phy_modify(phydev, YT8511_PAGE,
-			   (YT8511_DELAY_RX | YT8511_DELAY_TX), val);
-	if (ret < 0)
-		goto err_restore_page;
+I also wonder about bits 15:12 of PHY EXT ODH: Delay and driver
+strength CFG register.
 
-which moves the read-modify-write out of the driver into core code and
-makes the driver code smaller. It also handles your missing error check
-on __phy_read() above - would you want the above code to attempt to
-write a -ve error number back to this register? I suspect not!
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+	 Andrew
