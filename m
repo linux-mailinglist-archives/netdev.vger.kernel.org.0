@@ -2,127 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F17380480
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 09:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD32380490
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 09:43:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233188AbhENHkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 03:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44642 "EHLO
+        id S233158AbhENHoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 03:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbhENHkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 03:40:03 -0400
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2304C061574
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 00:38:52 -0700 (PDT)
-Received: by mail-oo1-xc34.google.com with SMTP id v13-20020a4aa40d0000b02902052145a469so4545914ool.3
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 00:38:52 -0700 (PDT)
+        with ESMTP id S230102AbhENHoN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 03:44:13 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA527C061574;
+        Fri, 14 May 2021 00:43:02 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id b21so15845683plz.0;
+        Fri, 14 May 2021 00:43:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vLowYfteA+ucPyvyyoQpMI476zm+fyQH6C5ncpnpK5E=;
-        b=AYk72NwD5Q3AzJdlfMcjSDolwuKh6xqP/rjNsmWzcoa/+Qu5YhHpWqZo1aUKAzLIv0
-         ICAA1RY7CZXcksq2+uGo33ifQlK7+xMSrYLMazMUNMsBfX/lKtdas+bRz0jNb8NJSDjR
-         NszP6uDYsaA4OsOtdXYMYItno9bQxuGnNdlaY4K9yoBDPoYnHUUzkrQUnANC4uwhD9xn
-         Tb9CSvNHZ0Hs1fSInn+yUEx1YeWrQJ/OQ9zz7buXzDn/+t/nNzZO/qEIdRKrWO8gfsoJ
-         lyWu0gHWooSM67NF0PPyyM34fCoPed4R6XIAotCAvTfb060LzBT7cnKRqqzFw9QwiVFb
-         qe3g==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cHaPvQmto+Bhanxbj9NMPMs12GXkBO31FUth1AEaHek=;
+        b=FrDgQLtER5/YdbTwCRCrwoevZ/VwPgEnAhp4jszaUaMmiakqXrEk+3n0S1gFLVMnnY
+         tfe9P9fj8EbpXppRnuobTQnjDz7T3EIlTgFEx59/8VTIfRCWNGP86BA9iiH3FLXtDwRF
+         S2yEnr2VsO1QA5IY+O3R7DwLRNuZRFYNEtpOXDsiH9zIFY1X1PsDo6OZHCC+agiwGCdu
+         D3hJBbmIL7WelGrdRVlUITdFDk4LQUKG24WnOZ6dGFYaf6BVzrDEtnSDxBEML12oiLYS
+         EKkaDHmE/lGfEl4Hg4wmmsgH18IjsowZEx7iRe6dO5X9vvT1LYcV6ZU90Vkse6a1vizv
+         /4TQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vLowYfteA+ucPyvyyoQpMI476zm+fyQH6C5ncpnpK5E=;
-        b=TKX2r1DAipaNjTw6od+mprrCqY/Ss6bXqIfrJqGYwstjVDgbKZeoys8FCRvSoryLO2
-         hk89jd8hVIrzU8T2BUyy/9WmFciRGNWj4bQ90L9EH2cyhn6VEKu1xcvu94y+hWwAjkSP
-         bzoILavlbCCenVYDWKDrZ0NttSUUWunCc+eFOSnQWCp+jk5NtsoIACqzxWnyzfFTvkvL
-         RuFlWxrEbD5t3NOT6u5xfSVkagXnR1pp7RqA0YpChxLJm6QpmhRxzJLjCltdpgJpMPcW
-         Nu5Ws3JbYQ2s9H7AJ84Liy0nqvJUwWAiPr/rHuB8AKaiO0P3rqToarIWNleHk03ggNS9
-         I1tA==
-X-Gm-Message-State: AOAM532Y+EDANMpq8wGm18YSn13J77+CaivdCTQRocGHj1ny1ArnsAWc
-        q8dsR8+Bzz2lXYLNuTQU6gdknV86ngKnBIiuhFCP2g==
-X-Google-Smtp-Source: ABdhPJwS1fSKvV1YIb9Gu98m+Ob1K+gDnK+Fe1TYbqTQc1uLfyMToTcidxd+FUgOrDr3q3AMCSBbn2CU9cbW97R66N8=
-X-Received: by 2002:a05:6820:100a:: with SMTP id v10mr31723524oor.55.1620977932134;
- Fri, 14 May 2021 00:38:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cHaPvQmto+Bhanxbj9NMPMs12GXkBO31FUth1AEaHek=;
+        b=DIB2+nsUhvupFbo/jbp/diULFeE3DuSAsxtQ0Jx6EhR4QPRKhaykahtjuFsQhSxfhj
+         tQXf11j5eFKv1uWPdE53ClMFFGy8SbeB5AOAKspq7OM0yJl19cRFruzCD1ChopB540Yb
+         PyXgBLUQPs3kh93uD9tLWwM6z6AhYWobvGIM0wdTxb0BZMZi1K1sqMtxnZF0EtmOr3me
+         tAG3jI2zGFxCHLsLy+osdSYhqpyC9QJssA1WiOneZW07XLkQwDbHHHHjCtY/EpvZDvba
+         U8neuHiUIFCnUyZ5B3A2FwdMiQz5Ahlvzs/ZDj1K6afqBwngtv2iRrdbsGsynWjkbl9B
+         7jGg==
+X-Gm-Message-State: AOAM532aTfY67Sx3d0jqNiefIOe3Cq5H1qSF+FACCAzkNS4IyLxgxBM1
+        nY6l4VNGaspmBuZexo6elDH5YuSqk58Nr8YjoA9Ayw==
+X-Google-Smtp-Source: ABdhPJxV16yttVfW058Hp47noZTL/oMwnx9HrRTufQxH5EmjKT6Xrc5oUS+RKyNzCIldjH5gEdS+sw==
+X-Received: by 2002:a17:902:e84c:b029:ee:d129:3b1c with SMTP id t12-20020a170902e84cb02900eed1293b1cmr43573452plg.73.1620978182363;
+        Fri, 14 May 2021 00:43:02 -0700 (PDT)
+Received: from localhost.localdomain ([45.135.186.84])
+        by smtp.gmail.com with ESMTPSA id n53sm122817pfv.67.2021.05.14.00.42.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 May 2021 00:43:01 -0700 (PDT)
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        bongsu.jeon@samsung.com, andrew@lunn.ch, wanghai38@huawei.com,
+        zhengyongjun3@huawei.com, alexs@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot+19bcfc64a8df1318d1c3@syzkaller.appspotmail.com
+Subject: [PATCH] NFC: nci: fix memory leak in nci_allocate_device
+Date:   Fri, 14 May 2021 15:42:48 +0800
+Message-Id: <20210514074248.780647-1-mudongliangabcd@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210511044253.469034-1-yuri.benditovich@daynix.com>
- <20210511044253.469034-5-yuri.benditovich@daynix.com> <eb8c4984-f0cc-74ee-537f-fc60deaaaa73@redhat.com>
- <CAOEp5OdrCDPx4ijLcEOm=Wxma6hc=nyqw4Xm6bggBxvgtR0tbg@mail.gmail.com>
- <89759261-3a72-df6c-7a81-b7a48abfad44@redhat.com> <CAOEp5Ocm9Q69Fv=oeyCs01F9J4nCTPiOPpw9_BRZ0WnF+LtEFQ@mail.gmail.com>
- <CACGkMEsZBCzV+d_eLj1aYT+pkS5m1QAy7q8rUkNsdV0C8aL8tQ@mail.gmail.com>
- <CAOEp5OeSankfA6urXLW_fquSMrZ+WYXDtKNacort1UwR=WgxqA@mail.gmail.com>
- <CACGkMEt3bZrdqbWtWjSkXvv5v8iCHiN8hkD3T602RZnb6nPd9A@mail.gmail.com>
- <CAOEp5Odw=eaQWZCXr+U8PipPtO1Avjw-t3gEdKyvNYxuNa5TfQ@mail.gmail.com>
- <CACGkMEuqXaJxGqC+CLoq7k4XDu+W3E3Kk3WvG-D6tnn2K4ZPNA@mail.gmail.com>
- <CAOEp5OfB62SQzxMj_GkVD4EM=Z+xf43TPoTZwMbPPa3BsX2ooA@mail.gmail.com>
- <CACGkMEu4NdyMoFKbyUGG1aGX+K=ShMZuVuMKYPauEBYz5pxYzA@mail.gmail.com>
- <CA+FuTScV+AJ+O3shOMLjUcy+PjBE8uWqCNt0FXWnq9L3gzrvaw@mail.gmail.com> <CACGkMEuUF1vDNWbL9dRr1ZM4vFTLwc3j9uB-66451U1NvQ+2EA@mail.gmail.com>
-In-Reply-To: <CACGkMEuUF1vDNWbL9dRr1ZM4vFTLwc3j9uB-66451U1NvQ+2EA@mail.gmail.com>
-From:   Yuri Benditovich <yuri.benditovich@daynix.com>
-Date:   Fri, 14 May 2021 10:38:39 +0300
-Message-ID: <CAOEp5OcozfSWszTm9VArOAH+wm2Fo8tH1QJDsLPZD8ieBLtg-g@mail.gmail.com>
-Subject: Re: [PATCH 4/4] tun: indicate support for USO feature
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Yan Vugenfirer <yan@daynix.com>, davem <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mst <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 10:16 AM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Fri, May 14, 2021 at 4:35 AM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > > > But surprisingly when TUN receives TUN_F_UFO it does not propagate it
-> > > > anywhere, there is no corresponding NETIF flag.
-> > >
-> > > (It looks like I drop the community and other ccs accidentally, adding
-> > > them back and sorry)
-> > >
-> > > Actually, there is one, NETIF_F_GSO_UDP.
-> > >
-> > > Kernel used to have NETIF_F_UFO, but it was removed due to bugs and
-> > > the lack of real hardware support. Then we found it breaks uABI, so
-> > > Willem tries to make it appear for userspace again, and then it was
-> > > renamed to NETIF_F_GSO_UDP.
-> > >
-> > > But I think it's a bug that we don't proporate TUN_F_UFO to NETIF
-> > > flag, this is a must for the driver that doesn't support
-> > > VIRTIO_NET_F_GUEST_UFO. I just try to disable all offloads and
-> > > mrg_rxbuf, then netperf UDP_STREAM from host to guest gives me bad
-> > > length packet in the guest.
-> > >
-> > > Willem, I think we probably need to fix this.
-> >
-> > We had to add back support for the kernel to accept UFO packets from
-> > userspace over tuntap.
-> >
-> > The kernel does not generate such packets, so a guest should never be
-> > concerned of receiving UFO packets.
->
-> That's my feeling as well.
->
-> But when I:
->
-> 1) turn off all guest gso feature and mrg rx buffers, in this case
-> virtio-net will only allocate 1500 bytes for each packet
-> 2) doing netperf (UDP_STREAM) from local host to guest, I see packet
-> were truncated in the guest
+nfcmrvl_disconnect fails to free the hci_dev field in struct nci_dev.
+Fix this by freeing hci_dev in nci_free_device.
 
-Is it possible that the virtio-net does not disable UFO offload?
-IMO it sets NETIF_F_LRO too bravely.
->
-> >
-> > Perhaps i'm misunderstanding the problem here.
-> >
->
-> I will re-check and get back to you.
-> (probably need a while since I will not be online for the next week).
->
-> Thanks
->
+BUG: memory leak
+unreferenced object 0xffff888111ea6800 (size 1024):
+  comm "kworker/1:0", pid 19, jiffies 4294942308 (age 13.580s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 60 fd 0c 81 88 ff ff  .........`......
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<000000004bc25d43>] kmalloc include/linux/slab.h:552 [inline]
+    [<000000004bc25d43>] kzalloc include/linux/slab.h:682 [inline]
+    [<000000004bc25d43>] nci_hci_allocate+0x21/0xd0 net/nfc/nci/hci.c:784
+    [<00000000c59cff92>] nci_allocate_device net/nfc/nci/core.c:1170 [inline]
+    [<00000000c59cff92>] nci_allocate_device+0x10b/0x160 net/nfc/nci/core.c:1132
+    [<00000000006e0a8e>] nfcmrvl_nci_register_dev+0x10a/0x1c0 drivers/nfc/nfcmrvl/main.c:153
+    [<000000004da1b57e>] nfcmrvl_probe+0x223/0x290 drivers/nfc/nfcmrvl/usb.c:345
+    [<00000000d506aed9>] usb_probe_interface+0x177/0x370 drivers/usb/core/driver.c:396
+    [<00000000bc632c92>] really_probe+0x159/0x4a0 drivers/base/dd.c:554
+    [<00000000f5009125>] driver_probe_device+0x84/0x100 drivers/base/dd.c:740
+    [<000000000ce658ca>] __device_attach_driver+0xee/0x110 drivers/base/dd.c:846
+    [<000000007067d05f>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:431
+    [<00000000f8e13372>] __device_attach+0x122/0x250 drivers/base/dd.c:914
+    [<000000009cf68860>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:491
+    [<00000000359c965a>] device_add+0x5be/0xc30 drivers/base/core.c:3109
+    [<00000000086e4bd3>] usb_set_configuration+0x9d9/0xb90 drivers/usb/core/message.c:2164
+    [<00000000ca036872>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<00000000d40d36f6>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<00000000bc632c92>] really_probe+0x159/0x4a0 drivers/base/dd.c:554
+
+Reported-by: syzbot+19bcfc64a8df1318d1c3@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+---
+ include/net/nfc/nci_core.h | 1 +
+ net/nfc/nci/core.c         | 1 +
+ net/nfc/nci/hci.c          | 5 +++++
+ 3 files changed, 7 insertions(+)
+
+diff --git a/include/net/nfc/nci_core.h b/include/net/nfc/nci_core.h
+index bd76e8e082c0..aa2e0f169015 100644
+--- a/include/net/nfc/nci_core.h
++++ b/include/net/nfc/nci_core.h
+@@ -298,6 +298,7 @@ int nci_nfcc_loopback(struct nci_dev *ndev, void *data, size_t data_len,
+ 		      struct sk_buff **resp);
+ 
+ struct nci_hci_dev *nci_hci_allocate(struct nci_dev *ndev);
++void nci_hci_allocate(struct nci_dev *ndev);
+ int nci_hci_send_event(struct nci_dev *ndev, u8 gate, u8 event,
+ 		       const u8 *param, size_t param_len);
+ int nci_hci_send_cmd(struct nci_dev *ndev, u8 gate,
+diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+index 9a585332ea84..da7fe9db1b00 100644
+--- a/net/nfc/nci/core.c
++++ b/net/nfc/nci/core.c
+@@ -1191,6 +1191,7 @@ EXPORT_SYMBOL(nci_allocate_device);
+ void nci_free_device(struct nci_dev *ndev)
+ {
+ 	nfc_free_device(ndev->nfc_dev);
++	nci_hci_deallocate(ndev);
+ 	kfree(ndev);
+ }
+ EXPORT_SYMBOL(nci_free_device);
+diff --git a/net/nfc/nci/hci.c b/net/nfc/nci/hci.c
+index 6b275a387a92..96865142104f 100644
+--- a/net/nfc/nci/hci.c
++++ b/net/nfc/nci/hci.c
+@@ -792,3 +792,8 @@ struct nci_hci_dev *nci_hci_allocate(struct nci_dev *ndev)
+ 
+ 	return hdev;
+ }
++
++void nci_hci_deallocate(struct nci_dev *ndev)
++{
++	kfree(ndev->hci_dev);
++}
+-- 
+2.25.1
+
