@@ -2,118 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6843380B25
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 16:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 949BB380B2D
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 16:10:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234183AbhENOKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 10:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47998 "EHLO
+        id S234216AbhENOLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 10:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234177AbhENOKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 10:10:43 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD455C06174A;
-        Fri, 14 May 2021 07:09:30 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id m9so39057392ybm.3;
-        Fri, 14 May 2021 07:09:30 -0700 (PDT)
+        with ESMTP id S232302AbhENOLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 10:11:24 -0400
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C66C061574;
+        Fri, 14 May 2021 07:10:12 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id n32-20020a9d1ea30000b02902a53d6ad4bdso26544208otn.3;
+        Fri, 14 May 2021 07:10:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Otk7mMiSc5A5v5B8dOYgVn2Dr/WcLxHSnAJOb5ykiJo=;
-        b=o4vcd6YLzAV5hIR888IZxIQTBfO7VGvGH0dFK+chAvKgiX1CnalEE45VV3VFSfsMyD
-         ivwRRQVHidAtYS3702n6ZEzdgSTldrjE0GcpZ6/PBqzPt38dIrZHfOLvkH6OSiKRvWkh
-         Kx1XKRvUIyP1lk+koKPKdnhKi44jj0oZ9HecrsdlatSlAPpVEvnvxaquhr3tSDQcw40C
-         0Y/0dlCQFVRV4+Sk0Fdsrk0OrZ96uF6Pz5uU2T+eNhIF3xDtbyOJIQ7VWtQ0SMdj96i6
-         mfOpX7EqqWjAR+RHRThg7qr5CP5HOwk+pOl4qMX0fm/BxXwJL0/WiVBxRLM9jJvQ2TBO
-         xxxg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IYkHGxl+vXpHG5+jn/GdOJhUfxjNFIaEZMKys7siCUM=;
+        b=G+/CaNr62gesmlOkjUKxZszrYb5aX7ttcgQmqbDMWqj8lIKin0VQE5TB9rKnzmJ6Yj
+         /O6bi1FaTrYa/9HhoydS12Sxgmlc/MG1EChHv1fx6mnhlBtsINzQpW5ZDzAitYW6GMaO
+         xRdHhAJa/q1nx6AXokPBj8TNU22PdIaZ9hA/efZZA4Jtkbq/EM/qyuR1VqWFZlwT6r4q
+         XwxsSgkho+uD6ISqnKdXsSSR8MG/LYwUYdMrsQ9SpuB/WHV/TZeBICcGBI/MGPtmSKnc
+         Q3E3+50VlexPhKCUoZp9UI25ohIGQShsJtj20IZf2UhWud2GC721Qe66j8tSDYS5P+4L
+         nMUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Otk7mMiSc5A5v5B8dOYgVn2Dr/WcLxHSnAJOb5ykiJo=;
-        b=AkE3yJtVQVWY3IYbrms3GOvkx7Iu45cPkMqHJdONkCMujvmw9ekcleOhgl/s/BPn3C
-         WT0oFKIod2Y5MV++9LmYBYmwjJpb5exVsTnd9cR/xHB4ijR9NcmJAa5OZKwEcQ1IaEmY
-         f4aFXlyFzGS01LAdwIKpBnlItgegLuzRPW4u4vygmrEIWWRoNXfoYIxa7glPCl/AIe1p
-         aeVm4IiPQJn3gs6RYA4BRJsIZ0C0ZVj3nJp1pz1g1ktDmqrwqb8LXTFmFXVoPVRdNHf0
-         MT2OIKiy6BBz3JHnJ4h4Q8gJS72AHN0S++QoOg7jrDFw42JKc884kOmq55BzAIViVjC0
-         vpCA==
-X-Gm-Message-State: AOAM5311F3VPVYSwn86w7ScUSb8F6QNOm/eUzU33T9+8XOKDi5QnNl//
-        3stUdRYpD15mZqkACdtDoY4FQDBLnUAlsu4ufA4=
-X-Google-Smtp-Source: ABdhPJzDd/2DcOIs+kq2kBBNEw4Yh0u/Eq93ffNmw8V2bV3zYPrRg2hFsFr6eQcNA5Mwh2OWwfVYTaHftdfjVboC698=
-X-Received: by 2002:a25:4d56:: with SMTP id a83mr57107356ybb.437.1621001370174;
- Fri, 14 May 2021 07:09:30 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IYkHGxl+vXpHG5+jn/GdOJhUfxjNFIaEZMKys7siCUM=;
+        b=A2JKBUiMCqzslypUFd7kOCFquw0YqpTBetGXL0LgSYzAfkH6b072m2DzjVzUJUr+W3
+         Yp5ATrjyWXX5jjnsyYSEjAjtOFTleZec/7pSN51PoKKuRinIjzwDIHytkJePcsXkWVxo
+         7T+tJwVC09UQ9Yo0DV5+YQFe/+qM6EmSnwjCeEmmmDKXmreCqU9ei15IXeLJtjsDXOuX
+         FcocWTTmeP1PdVCyK/Rnwz20sUG1cyjPBMbfF05MWTcwFj9P0kbQv/TZw/8CMmiI2k4Q
+         qxT6q1wuOLvbxpTMxsJBzpKKUtKxJCZ185DsA1kGSDjE6oN+1/nlKO8Nyg08JKJqZe+Y
+         xbSA==
+X-Gm-Message-State: AOAM531tNXETmw3b8CmOCNvYTNQLJyu1TRbYiX02seM1CN+syGN3Dk7O
+        WCh3c3KQ++SVjjSo0n1c2hc=
+X-Google-Smtp-Source: ABdhPJzbHDACCTEeXmNSXYWCgTqL1ui7BKhaIj2qt2rxnHA1wPVSst/qWx3Y2f2/mAuF3Qkn08c7iQ==
+X-Received: by 2002:a9d:f66:: with SMTP id 93mr39917381ott.229.1621001411846;
+        Fri, 14 May 2021 07:10:11 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.22])
+        by smtp.googlemail.com with ESMTPSA id f2sm1194979otp.77.2021.05.14.07.10.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 May 2021 07:10:11 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v3] lib/fs: fix issue when
+ {name,open}_to_handle_at() is not implemented
+To:     Petr Vorel <petr.vorel@gmail.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stephen@networkplumber.org, Dmitry Yakunin <zeil@yandex-team.ru>
+References: <20210508064925.8045-1-heiko.thiery@gmail.com>
+ <6ba0adf4-5177-c50a-e921-bee898e3fdb9@gmail.com>
+ <CAEyMn7a4Z3U-fUvFLcWmPW3hf-x6LfcTi8BZrcDfhhFF0_9=ow@mail.gmail.com>
+ <YJ5rJbdEc2OWemu+@pevik>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <82c9159f-0644-40af-fb4c-cc8507456719@gmail.com>
+Date:   Fri, 14 May 2021 08:10:09 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20210514115826.3025223-1-pgwipeout@gmail.com> <20210514130908.GD12395@shell.armlinux.org.uk>
-In-Reply-To: <20210514130908.GD12395@shell.armlinux.org.uk>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Fri, 14 May 2021 10:09:18 -0400
-Message-ID: <CAMdYzYqQ4gaFRD8wbdm9PRpT-ZeiL6WVj_eHKnF_uF=mKx3A4g@mail.gmail.com>
-Subject: Re: [PATCH v3] net: phy: add driver for Motorcomm yt8511 phy
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YJ5rJbdEc2OWemu+@pevik>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 9:09 AM Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> Hi!
->
-> On Fri, May 14, 2021 at 07:58:26AM -0400, Peter Geis wrote:
-> > +     /* set rgmii delay mode */
-> > +     val = __phy_read(phydev, YT8511_PAGE);
-> > +
-> > +     switch (phydev->interface) {
-> > +     case PHY_INTERFACE_MODE_RGMII:
-> > +             val &= ~(YT8511_DELAY_RX | YT8511_DELAY_TX);
-> > +             break;
-> > +     case PHY_INTERFACE_MODE_RGMII_ID:
-> > +             val |= YT8511_DELAY_RX | YT8511_DELAY_TX;
-> > +             break;
-> > +     case PHY_INTERFACE_MODE_RGMII_RXID:
-> > +             val &= ~(YT8511_DELAY_TX);
-> > +             val |= YT8511_DELAY_RX;
-> > +             break;
-> > +     case PHY_INTERFACE_MODE_RGMII_TXID:
-> > +             val &= ~(YT8511_DELAY_RX);
-> > +             val |= YT8511_DELAY_TX;
-> > +             break;
-> > +     default: /* leave everything alone in other modes */
-> > +             break;
-> > +     }
-> > +
-> > +     ret = __phy_write(phydev, YT8511_PAGE, val);
-> > +     if (ret < 0)
-> > +             goto err_restore_page;
->
-> Another way of writing the above is to set "val" to be the value of the
-> YT8511_DELAY_RX and YT8511_DELAY_TX bits, and then do:
->
->         ret = __phy_modify(phydev, YT8511_PAGE,
->                            (YT8511_DELAY_RX | YT8511_DELAY_TX), val);
->         if (ret < 0)
->                 goto err_restore_page;
->
-> which moves the read-modify-write out of the driver into core code and
-> makes the driver code smaller. It also handles your missing error check
-> on __phy_read() above - would you want the above code to attempt to
-> write a -ve error number back to this register? I suspect not!
+On 5/14/21 6:20 AM, Petr Vorel wrote:
+> 
+>>> This causes compile failures if anyone is reusing a tree. It would be
+>>> good to require config.mk to be updated if configure is newer.
+>> Do you mean the config.mk should have a dependency to configure in the
+>> Makefile? Wouldn't that be better as a separate patch?
+> I guess it should be a separate patch. I'm surprised it wasn't needed before.
+> 
 
-That makes sense, thanks!
-I was thinking about how to use __phy_modify with a functional mask,
-but it didn't click until I had already sent it in.
-Also thanks for catching handling that ret on the read!
 
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+yes, it should be a separate patch, but it needs to precede this one.
+
+This worked for me last weekend; I'll send it when I get a chance.
+
+diff --git a/Makefile b/Makefile
+index 19bd163e2e04..5bc11477ab7a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -60,7 +60,7 @@ SUBDIRS=lib ip tc bridge misc netem genl tipc devlink
+rdma dcb man vdpa
+ LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
+ LDLIBS += $(LIBNETLINK)
+
+-all: config.mk
++all: config
+        @set -e; \
+        for i in $(SUBDIRS); \
+        do echo; echo $$i; $(MAKE) -C $$i; done
+@@ -80,8 +80,10 @@ all: config.mk
+        @echo "Make Arguments:"
+        @echo " V=[0|1]             - set build verbosity level"
+
+-config.mk:
+-       sh configure $(KERNEL_INCLUDE)
++config:
++       @if [ ! -f config.mk -o configure -nt config.mk ]; then \
++               sh configure $(KERNEL_INCLUDE); \
++       fi
+
+ install: all
+        install -m 0755 -d $(DESTDIR)$(SBINDIR)
+
