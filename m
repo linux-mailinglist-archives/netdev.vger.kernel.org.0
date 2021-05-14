@@ -2,114 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE1D538128D
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 23:05:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08E993812A6
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 23:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232143AbhENVGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 17:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbhENVGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 17:06:06 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB10C061361;
-        Fri, 14 May 2021 14:03:58 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id lg14so549912ejb.9;
-        Fri, 14 May 2021 14:03:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DuIZvkVyxl0vo+4ykBws9GPNTneGdS9CaBr3gH+w73E=;
-        b=sc7EZNWCUByl4ePiwgGpHBKYBaDZi/cH44mbVm+BUFNkpbt3qtbaFKN0jidLehegWI
-         P6/2efXFcwibqEV8dqYV+f5QV2XUCkt7jE0TXbdRAV/w74n2QT0eXp3jN9yQWpxgMHQ8
-         gtuDb51v0Oe00EobGXWSa00+DlO5iuDarousBf3ApE6RoQSVuYFKdKHznPDPyhXTwkqq
-         9IsWSOFPNUguoAEpYRkz6CgPzqBa3vYKKupRMPOymI3VygHhEVmd8yg3CcSc91Iusb1Q
-         GmFygDmDUmcFAWVpNQMCxsz+xd2QS5DM8DDunw8vgafONKuCEz22OwwHkW3AbDkzAvCt
-         9o2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DuIZvkVyxl0vo+4ykBws9GPNTneGdS9CaBr3gH+w73E=;
-        b=QXGyylnl1oVmgp3fmPmHwUXMJ77i9mUbKuQUK0Y/zcvhVZ27HtvUXYrknhhb6IxMrD
-         4ZBa6Cga+2Mu1hrCfJgNaAJ8r5zqdkmGZrezY+AiHyhD5RWNHmjqwY/ndh4kfSu3U2BU
-         7drnnNmq2bs+ebgoX+VeOMrFi2VdsDZEhoMD5w2cTNiAuWVX9xuBIsBFpDziH6xToJED
-         +KRP/Gme2AW92XKDV1nxlZgGxwpsuplGHaVj1B7umJlrbNii4KomX9rKmxl8wcwZiexc
-         4P0UOlsY9j4xuVJZAG4NeDjj/VzreqMK+iTgrWdRTg5hqnyuFpkhkapmzMgWKL8P7/lZ
-         cNhQ==
-X-Gm-Message-State: AOAM533cVSjzhzTTkzZp5VQtFNxLbF421XI6ksEYhSshRur7j4WEj1H8
-        fTGvzqJA9MEd9AwnvecRf1o=
-X-Google-Smtp-Source: ABdhPJyB48CHxHQu+e51fgG6b4y+BQUivEKolcF9s+7qXmdtr4n2v6BWhFdQ2N9jK4vuUKq3Eue6bQ==
-X-Received: by 2002:a17:907:161f:: with SMTP id hb31mr50946633ejc.514.1621026237411;
-        Fri, 14 May 2021 14:03:57 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id f7sm5428330edd.5.2021.05.14.14.03.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 May 2021 14:03:57 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        id S231159AbhENVL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 17:11:59 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:39440 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229681AbhENVL5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 17:11:57 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1621026644;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HuQvs+H+wjkT6I+2nUWTUWeXuTsNhwlXdcp3435Vxqw=;
+        b=jFTDsdR4VeSzUAc9RTs4K8LqgnhX2+5Zg30oHaSRUTTN1IbzGqXHs/wmihLDimHSl3ojbd
+        fFIek99KoE2Ozxl1T3Z4pWt5bZp8yKnUbwkvs77uOgBsMRbwo3sfsaOPTRXndJ7kOvTSGX
+        TjcQJ3kqPPgumkLLYjVyYsYqYx+2nPsLY+P30CFyxs2C0RtMFKfGOYKys+jTprmvPnSS5s
+        BmXrfQkArcp0qAbG5a9K9EyHI/cRsPzIxTBco0o50NPlANgMuSUO3ToW9w+9RvI7q9aqM6
+        RkGo++IRHxrpwln4kxxcEnUlPL0Zuyc9ECZSUB0SwmkosYjCMbnM+pSDKvsGZA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1621026644;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HuQvs+H+wjkT6I+2nUWTUWeXuTsNhwlXdcp3435Vxqw=;
+        b=W+TRZDgQ8NNM1DyfaLuyZJriSpmzC8a+b9HuwW3natPtRwAOnFguGcyk05vtxadvYW7evk
+        ALG+W4WP62EiyRAQ==
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        Michal Svec <msvec@suse.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [net-next 3/3] net: mdio: ipq8064: enlarge sleep after read/write operation
-Date:   Fri, 14 May 2021 23:03:51 +0200
-Message-Id: <20210514210351.22240-3-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210514210351.22240-1-ansuelsmth@gmail.com>
-References: <20210514210351.22240-1-ansuelsmth@gmail.com>
+        Hayes Wang <hayeswang@realtek.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH RFC] r8152: Ensure that napi_schedule() is handled
+In-Reply-To: <20210514134655.73d972cb@kicinski-fedora-PC1C0HJN>
+References: <877dk162mo.ffs@nanos.tec.linutronix.de> <20210514123838.10d78c35@kicinski-fedora-PC1C0HJN> <87sg2p2hbl.ffs@nanos.tec.linutronix.de> <20210514134655.73d972cb@kicinski-fedora-PC1C0HJN>
+Date:   Fri, 14 May 2021 23:10:43 +0200
+Message-ID: <87fsyp2f8s.ffs@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the use of the qca8k dsa driver, some problem arised related to
-port status detection. With a load on a specific port (for example a
-simple speed test), the driver starts to behave in a strange way and
-garbage data is produced. To address this, enlarge the sleep delay and
-address a bug for the reg offset 31 that require additional delay for
-this specific reg.
+On Fri, May 14 2021 at 13:46, Jakub Kicinski wrote:
+> On Fri, 14 May 2021 22:25:50 +0200 Thomas Gleixner wrote:
+>> Except that some instruction cycle beancounters might complain about
+>> the extra conditional for the sane cases.
+>> 
+>> But yes, I'm fine with that as well. That's why this patch is marked RFC :)
+>
+> When we're in the right context (irq/bh disabled etc.) the cost is just
+> read of preempt_count() and jump, right? And presumably preempt_count()
+> is in the cache already, because those sections aren't very long. Let me
+> make this change locally and see if it is in any way perceivable.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/mdio/mdio-ipq8064.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+Right. Just wanted to mention it :)
 
-diff --git a/drivers/net/mdio/mdio-ipq8064.c b/drivers/net/mdio/mdio-ipq8064.c
-index 14b3c310af73..bd1aea2d5a26 100644
---- a/drivers/net/mdio/mdio-ipq8064.c
-+++ b/drivers/net/mdio/mdio-ipq8064.c
-@@ -65,7 +65,7 @@ ipq8064_mdio_read(struct mii_bus *bus, int phy_addr, int reg_offset)
- 		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
- 
- 	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
--	usleep_range(8, 10);
-+	usleep_range(10, 13);
- 
- 	err = ipq8064_mdio_wait_busy(priv);
- 	if (err)
-@@ -91,7 +91,14 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
- 		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
- 
- 	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
--	usleep_range(8, 10);
-+
-+	/* For the specific reg 31 extra time is needed or the next
-+	 * read will produce garbage data.
-+	 */
-+	if (reg_offset == 31)
-+		usleep_range(30, 43);
-+	else
-+		usleep_range(10, 13);
- 
- 	return ipq8064_mdio_wait_busy(priv);
- }
--- 
-2.30.2
+> Obviously if anyone sees a way to solve the problem without much
+> ifdefinery and force_irqthreads checks that'd be great - I don't.
 
+This is not related to force_irqthreads at all. This very driver invokes
+it from plain thread context.
+
+> I'd rather avoid pushing this kind of stuff out to the drivers.
+
+You could have napi_schedule_intask() or something like that which would
+do the local_bh_disable()/enable() dance around the invocation of
+napi_schedule(). That would also document it clearly in the drivers. A
+quick grep shows a bunch of instances which could be replaced:
+
+drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c-5704-		local_bh_disable();
+drivers/net/ethernet/mellanox/mlx4/en_netdev.c-1830-		local_bh_disable();
+drivers/net/usb/r8152.c-1552-	local_bh_disable();
+drivers/net/virtio_net.c-1355-	local_bh_disable();
+drivers/net/wireless/intel/iwlwifi/pcie/rx.c-1650-	local_bh_disable();
+drivers/net/wireless/intel/iwlwifi/pcie/rx.c-2015-		local_bh_disable();
+drivers/net/wireless/intel/iwlwifi/pcie/rx.c-2225-		local_bh_disable();
+drivers/net/wireless/intel/iwlwifi/pcie/rx.c-2235-		local_bh_disable();
+drivers/s390/net/qeth_core_main.c-3515-	local_bh_disable();
+
+Thanks,
+
+        tglx
