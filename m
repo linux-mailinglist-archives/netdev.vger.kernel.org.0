@@ -2,129 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44CF5380A0A
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 15:00:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C8BB380A2C
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 15:09:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231182AbhENNBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 09:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60768 "EHLO
+        id S231609AbhENNKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 09:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbhENNBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 09:01:32 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C44C061574
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 06:00:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=KDmoL/PICwH0qpSvIByP4TbOr9/b6+oGluUGWMZZRYk=; b=xyTVk0YPxXQEse69+Y5OMqxVe
-        c7EaOUGmOmVyL4b5S0sOQq3BbcbK14YKKfvTc4DmFLrN9dhhKXe4CUiyKezeNYfZ0mckIYm8gx6qo
-        FYDpW9DUwfyw0+VvZMaRJgEBVLpDuE1XEtCo3jnj2QlDxrZlruiLv69JqLoFivXUyLSGwvaCQRxXa
-        6DI9x1N12bAhE7Lf6w+T5rSPaEzQxMxNKewM/WIcREKG3ogaHaHLX6c4mGsfKzbMny1tt9Gbl47hr
-        bqigh0sjHVOv6TsWqqkBKFWHLKxT3pqJGE8to4zq8icQg2X2ERU4Duje3qufKuVpA9ZwZoI9fu54P
-        NkSoILCUg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43970)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lhXQR-0008Av-HI; Fri, 14 May 2021 14:00:19 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lhXQQ-00041P-DA; Fri, 14 May 2021 14:00:18 +0100
-Date:   Fri, 14 May 2021 14:00:18 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Stefan Chulski <stefanc@marvell.com>
-Cc:     Marcin Wojtas <mw@semihalf.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: mvpp2: incorrect max mtu?
-Message-ID: <20210514130018.GC12395@shell.armlinux.org.uk>
+        with ESMTP id S230034AbhENNKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 09:10:24 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF16C061574;
+        Fri, 14 May 2021 06:09:11 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id o6-20020a05600c4fc6b029015ec06d5269so1457591wmq.0;
+        Fri, 14 May 2021 06:09:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vxd4gwielh/In9s2yHd9jiHsp29Niwe75ha9kBzTWs0=;
+        b=LGxjrpHGNyYhLFlwL2a72H7JiX+/tsYzkAWbknpuXwSRXQqwNK3vj+9ZhrUMq/Na37
+         LSce4PkpVFDuwHLUo0wqPkqybncZqFRHrAKjVi6IkGpoEdUMf3yD2CAtQnB/I5mggUhH
+         CDEH63OcpQh+avALxw+92DtGFfI5r+Sbk2rq9Y/PSJZXih+UfJv+KMvHdSha7A95KO4D
+         4pbSj7cPUVu2YuxrhBbTPRbiOtAMYnHbI8hY7mcYEAhiqkdiqGX/gsR9uUdhKwAyTBHe
+         UruIlx543Acb1dNLLSs6XDR1XAZ61qiUpq/ukTeJOKXqoeeCyx2xXAPQ0AQvfeP02xuP
+         F7CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vxd4gwielh/In9s2yHd9jiHsp29Niwe75ha9kBzTWs0=;
+        b=ae8JED6asaXXC1yW3ZCO4aR1XFSI+3wlz0UIfvU1D8E24r24bqg9smHJwdmmSBEr26
+         ZfUx3agR1NbxIiFQ7VMNIDcbXIy10cawHvPCWPVrNcGjyWdXIibfEn+3W53OusbRidNz
+         u/1WOl/7lHkI30zhKYhLvaJCAx6rXpV7kmSyV18ytbZU0IACv36H2nMZZqd1cwxTn7SC
+         SX7883v0stpjRfd2NR5ElUQR/N8so/YFl5kldCxSwvuQjFo571y2/yWXL8zNzhi5AMnG
+         AjkUC6CBb0vO790Dl6AyLbgHak/1rPbcRnXwuT5At/dsGZOrWQea9TpjsQWlGbDTOQGB
+         Uugw==
+X-Gm-Message-State: AOAM532B16CUk0EZwSD17pqmZOQ6hLpjVET+SO4odOuaqiHctXfHRyw+
+        VMAAFXSNK3lQ/12uCsByGuw=
+X-Google-Smtp-Source: ABdhPJxBx8G4jKyl3XMe5aM0P5dHCwLZ7ZEQCpNBtBztGJ81yWYpUAPSAQLl9n/5Yogclopa+rOdMg==
+X-Received: by 2002:a1c:7e82:: with SMTP id z124mr9554769wmc.51.1620997750591;
+        Fri, 14 May 2021 06:09:10 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f38:4600:e164:efbc:883:51b9? (p200300ea8f384600e164efbc088351b9.dip0.t-ipconnect.de. [2003:ea:8f38:4600:e164:efbc:883:51b9])
+        by smtp.googlemail.com with ESMTPSA id b6sm11543548wmj.2.2021.05.14.06.09.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 May 2021 06:09:10 -0700 (PDT)
+To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+References: <20210514115826.3025223-1-pgwipeout@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v3] net: phy: add driver for Motorcomm yt8511 phy
+Message-ID: <a4e2188f-bd3e-d505-f922-2c2930b3838f@gmail.com>
+Date:   Fri, 14 May 2021 15:09:04 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20210514115826.3025223-1-pgwipeout@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On 14.05.2021 13:58, Peter Geis wrote:
+> Add a driver for the Motorcomm yt8511 phy that will be used in the
+> production Pine64 rk3566-quartz64 development board.
+> It supports gigabit transfer speeds, rgmii, and 125mhz clk output.
+> 
+> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> ---
+> Changes v3:
+> - Add rgmii mode selection support
+> 
+> Changes v2:
+> - Change to __phy_modify
+> - Handle return errors
+> - Remove unnecessary &
+> 
+>  MAINTAINERS                 |   6 ++
+>  drivers/net/phy/Kconfig     |   6 ++
+>  drivers/net/phy/Makefile    |   1 +
+>  drivers/net/phy/motorcomm.c | 121 ++++++++++++++++++++++++++++++++++++
+>  4 files changed, 134 insertions(+)
+>  create mode 100644 drivers/net/phy/motorcomm.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 601b5ae0368a..2a2e406238fc 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -12388,6 +12388,12 @@ F:	Documentation/userspace-api/media/drivers/meye*
+>  F:	drivers/media/pci/meye/
+>  F:	include/uapi/linux/meye.h
+>  
+> +MOTORCOMM PHY DRIVER
+> +M:	Peter Geis <pgwipeout@gmail.com>
+> +L:	netdev@vger.kernel.org
+> +S:	Maintained
+> +F:	drivers/net/phy/motorcomm.c
+> +
+>  MOXA SMARTIO/INDUSTIO/INTELLIO SERIAL CARD
+>  S:	Orphan
+>  F:	Documentation/driver-api/serial/moxa-smartio.rst
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index 288bf405ebdb..16db9f8037b5 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -229,6 +229,12 @@ config MICROSEMI_PHY
+>  	help
+>  	  Currently supports VSC8514, VSC8530, VSC8531, VSC8540 and VSC8541 PHYs
+>  
+> +config MOTORCOMM_PHY
+> +	tristate "Motorcomm PHYs"
+> +	help
+> +	  Enables support for Motorcomm network PHYs.
+> +	  Currently supports the YT8511 gigabit PHY.
+> +
+>  config NATIONAL_PHY
+>  	tristate "National Semiconductor PHYs"
+>  	help
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index bcda7ed2455d..37ffbc6e3c87 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -70,6 +70,7 @@ obj-$(CONFIG_MICREL_PHY)	+= micrel.o
+>  obj-$(CONFIG_MICROCHIP_PHY)	+= microchip.o
+>  obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
+>  obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
+> +obj-$(CONFIG_MOTORCOMM_PHY)	+= motorcomm.o
+>  obj-$(CONFIG_NATIONAL_PHY)	+= national.o
+>  obj-$(CONFIG_NXP_C45_TJA11XX_PHY)	+= nxp-c45-tja11xx.o
+>  obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
+> diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
+> new file mode 100644
+> index 000000000000..b85f10efa28e
+> --- /dev/null
+> +++ b/drivers/net/phy/motorcomm.c
+> @@ -0,0 +1,121 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * Driver for Motorcomm PHYs
+> + *
+> + * Author: Peter Geis <pgwipeout@gmail.com>
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/phy.h>
+> +
+> +#define PHY_ID_YT8511		0x0000010a
 
-While testing out the 10G speeds on my Macchiatobin platforms, the first
-thing I notice is that they only manage about 1Gbps at a MTU of 1500.
-As expected, this increases when the MTU is increased - a MTU of 9000
-works, and gives a useful performance boost.
+This PHY ID looks weird, the OUI part is empty.
+Looking here http://standards-oui.ieee.org/cid/cid.txt
+it seems Motorcomm has been assigned at least a CID.
+An invalid OUI leaves a good chance for a PHY ID conflict.
 
-Then comes the obvious question - what is the maximum MTU.
+> +
+> +#define YT8511_PAGE_SELECT	0x1e
+> +#define YT8511_PAGE		0x1f
+> +#define YT8511_EXT_CLK_GATE	0x0c
+> +#define YT8511_EXT_SLEEP_CTRL	0x27
+> +
+> +/* 2b00 25m from pll
+> + * 2b01 25m from xtl *default*
+> + * 2b10 62.m from pll
+> + * 2b11 125m from pll
+> + */
+> +#define YT8511_CLK_125M		(BIT(2) | BIT(1))
+> +
+> +/* RX Delay enabled = 1.8ns 1000T, 8ns 10/100T */
+> +#define YT8511_DELAY_RX		BIT(0)
+> +
+> +/* TX Delay is bits 7:4, default 0x5
+> + * Delay = 150ps * N - 250ps, Default = 500ps
+> + */
+> +#define YT8511_DELAY_TX		(0x5 << 4)
+> +
+> +static int yt8511_read_page(struct phy_device *phydev)
+> +{
+> +	return __phy_read(phydev, YT8511_PAGE_SELECT);
+> +};
+> +
+> +static int yt8511_write_page(struct phy_device *phydev, int page)
+> +{
+> +	return __phy_write(phydev, YT8511_PAGE_SELECT, page);
+> +};
+> +
+> +static int yt8511_config_init(struct phy_device *phydev)
+> +{
+> +	int ret, oldpage, val;
+> +
+> +	/* set clock mode to 125mhz */
+> +	oldpage = phy_select_page(phydev, YT8511_EXT_CLK_GATE);
+> +	if (oldpage < 0)
+> +		goto err_restore_page;
+> +
+> +	ret = __phy_modify(phydev, YT8511_PAGE, 0, YT8511_CLK_125M);
+> +	if (ret < 0)
+> +		goto err_restore_page;
+> +
+> +	/* set rgmii delay mode */
+> +	val = __phy_read(phydev, YT8511_PAGE);
+> +
+> +	switch (phydev->interface) {
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +		val &= ~(YT8511_DELAY_RX | YT8511_DELAY_TX);
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII_ID:
+> +		val |= YT8511_DELAY_RX | YT8511_DELAY_TX;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> +		val &= ~(YT8511_DELAY_TX);
+> +		val |= YT8511_DELAY_RX;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> +		val &= ~(YT8511_DELAY_RX);
+> +		val |= YT8511_DELAY_TX;
+> +		break;
+> +	default: /* leave everything alone in other modes */
+> +		break;
+> +	}
+> +
+> +	ret = __phy_write(phydev, YT8511_PAGE, val);
+> +	if (ret < 0)
+> +		goto err_restore_page;
+> +
+> +	/* disable auto sleep */
+> +	ret = __phy_write(phydev, YT8511_PAGE_SELECT, YT8511_EXT_SLEEP_CTRL);
+> +	if (ret < 0)
+> +		goto err_restore_page;
+> +	ret = __phy_modify(phydev, YT8511_PAGE, BIT(15), 0);
+> +	if (ret < 0)
+> +		goto err_restore_page;
+> +
+> +err_restore_page:
+> +	return phy_restore_page(phydev, oldpage, ret);
+> +}
+> +
+> +static struct phy_driver motorcomm_phy_drvs[] = {
+> +	{
+> +		PHY_ID_MATCH_EXACT(PHY_ID_YT8511),
+> +		.name		= "YT8511 Gigabit Ethernet",
+> +		.config_init	= yt8511_config_init,
+> +		.get_features	= genphy_read_abilities,
+> +		.config_aneg	= genphy_config_aneg,
+> +		.read_status	= genphy_read_status,
 
-#define MVPP2_BM_JUMBO_FRAME_SIZE       10432   /* frame size 9856 */
+These three genphy callbacks are fallbacks anyway.
+So you don't have to set them.
 
-So, one may assume that 9856 is the maximum. However:
+> +		.suspend	= genphy_suspend,
+> +		.resume		= genphy_resume,
+> +		.read_page	= yt8511_read_page,
+> +		.write_page	= yt8511_write_page,
+> +	},
+> +};
+> +
+> +module_phy_driver(motorcomm_phy_drvs);
+> +
+> +MODULE_DESCRIPTION("Motorcomm PHY driver");
+> +MODULE_AUTHOR("Peter Geis");
+> +MODULE_LICENSE("GPL");
+> +
+> +static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
+> +	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
+> +	{ /* sentinal */ }
+> +};
+> +
+> +MODULE_DEVICE_TABLE(mdio, motorcomm_tbl);
+> 
 
-# ip li set dev eth0 mtu 9888
-# ip li set dev eth0 mtu 9889
-Error: mtu greater than device maximum.
-
-So, the maximum that userspace can set appears to be 9888. If this is
-set, then, while running iperf3, we get:
-
-mvpp2 f2000000.ethernet eth0: bad rx status 9202e510 (resource error), size=9888
-
-So clearly this is too large, and we should not be allowing userspace
-to set this large a MTU.
-
-At this point, it seems to be impossible to regain the previous speed of
-the interface by lowering the MTU. Here is a MTU of 9000:
-
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.00   sec  1.37 MBytes  11.5 Mbits/sec   40   17.5 KBytes       
-[  5]   1.00-2.00   sec  1.25 MBytes  10.5 Mbits/sec   39   8.74 KBytes       
-[  5]   2.00-3.00   sec  1.13 MBytes  9.45 Mbits/sec   36   17.5 KBytes       
-[  5]   3.00-4.00   sec  1.13 MBytes  9.45 Mbits/sec   39   8.74 KBytes       
-[  5]   4.00-5.00   sec  1.13 MBytes  9.45 Mbits/sec   36   17.5 KBytes       
-[  5]   5.00-6.00   sec  1.28 MBytes  10.7 Mbits/sec   39   8.74 KBytes       
-[  5]   6.00-7.00   sec  1.13 MBytes  9.45 Mbits/sec   36   17.5 KBytes       
-[  5]   7.00-8.00   sec  1.25 MBytes  10.5 Mbits/sec   39   8.74 KBytes       
-[  5]   8.00-9.00   sec  1.13 MBytes  9.45 Mbits/sec   36   17.5 KBytes       
-[  5]   9.00-10.00  sec  1.13 MBytes  9.45 Mbits/sec   39   8.74 KBytes       
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.00  sec  11.9 MBytes  9.99 Mbits/sec  379             sender
-[  5]   0.00-10.00  sec  11.7 MBytes  9.80 Mbits/sec                  receiver
-
-Whereas before the test, it was:
-
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-1.00   sec   729 MBytes  6.11 Gbits/sec
-[  5]   1.00-2.00   sec   719 MBytes  6.03 Gbits/sec
-[  5]   2.00-3.00   sec   773 MBytes  6.49 Gbits/sec
-[  5]   3.00-4.00   sec   769 MBytes  6.45 Gbits/sec
-[  5]   4.00-5.00   sec   779 MBytes  6.54 Gbits/sec
-[  5]   5.00-6.00   sec   784 MBytes  6.58 Gbits/sec
-[  5]   6.00-7.00   sec   777 MBytes  6.52 Gbits/sec
-[  5]   7.00-8.00   sec   774 MBytes  6.50 Gbits/sec
-[  5]   8.00-9.00   sec   769 MBytes  6.45 Gbits/sec
-[  5]   9.00-10.00  sec   774 MBytes  6.49 Gbits/sec
-[  5]  10.00-10.00  sec  3.07 MBytes  5.37 Gbits/sec
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-10.00  sec  7.47 GBytes  6.41 Gbits/sec                  receiver
-
-(this is on the server end of iperf3, the others are the client end,
-but the results were pretty very similar to that.)
-
-So, clearly something bad has happened to the buffer management as a
-result of raising the MTU so high.
-
-As the end which has suffered this issue is the mcbin VM host, I'm not
-currently in a position I can reboot it without cause major disruption
-to my network. However, thoughts on this (and... can others reproduce
-it) would be useful.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
