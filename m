@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E63DF38025C
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 05:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 338FF380263
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 05:17:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231390AbhENDSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 23:18:20 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:3751 "EHLO
+        id S231496AbhENDSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 23:18:31 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:3753 "EHLO
         szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230310AbhENDSR (ORCPT
+        with ESMTP id S231362AbhENDSR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 23:18:17 -0400
 Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FhDBX10fxzqTnN;
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FhDBX3W1lzqTpS;
         Fri, 14 May 2021 11:13:40 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 14 May 2021 11:17:00 +0800
+ 14.3.498.0; Fri, 14 May 2021 11:17:01 +0800
 From:   Yunsheng Lin <linyunsheng@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
@@ -35,9 +35,9 @@ CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
         <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
         <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
         <alobakin@pm.me>
-Subject: [PATCH net v8 2/3] net: sched: fix tx action rescheduling issue during deactivation
-Date:   Fri, 14 May 2021 11:17:00 +0800
-Message-ID: <1620962221-40131-3-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH net v8 3/3] net: sched: fix tx action reschedule issue with stopped queue
+Date:   Fri, 14 May 2021 11:17:01 +0800
+Message-ID: <1620962221-40131-4-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1620962221-40131-1-git-send-email-linyunsheng@huawei.com>
 References: <1620962221-40131-1-git-send-email-linyunsheng@huawei.com>
@@ -49,165 +49,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently qdisc_run() checks the STATE_DEACTIVATED of lockless
-qdisc before calling __qdisc_run(), which ultimately clear the
-STATE_MISSED when all the skb is dequeued. If STATE_DEACTIVATED
-is set before clearing STATE_MISSED, there may be rescheduling
-of net_tx_action() at the end of qdisc_run_end(), see below:
+The netdev qeueue might be stopped when byte queue limit has
+reached or tx hw ring is full, net_tx_action() may still be
+rescheduled if STATE_MISSED is set, which consumes unnecessary
+cpu without dequeuing and transmiting any skb because the
+netdev queue is stopped, see qdisc_run_end().
 
-CPU0(net_tx_atcion)  CPU1(__dev_xmit_skb)  CPU2(dev_deactivate)
-          .                   .                     .
-          .            set STATE_MISSED             .
-          .           __netif_schedule()            .
-          .                   .           set STATE_DEACTIVATED
-          .                   .                qdisc_reset()
-          .                   .                     .
-          .<---------------   .              synchronize_net()
-clear __QDISC_STATE_SCHED  |  .                     .
-          .                |  .                     .
-          .                |  .            some_qdisc_is_busy()
-          .                |  .               return *false*
-          .                |  .                     .
-  test STATE_DEACTIVATED   |  .                     .
-__qdisc_run() *not* called |  .                     .
-          .                |  .                     .
-   test STATE_MISS         |  .                     .
- __netif_schedule()--------|  .                     .
-          .                   .                     .
-          .                   .                     .
+This patch fixes it by checking the netdev queue state before
+calling qdisc_run() and clearing STATE_MISSED if netdev queue is
+stopped during qdisc_run(), the net_tx_action() is rescheduled
+again when netdev qeueue is restarted, see netif_tx_wake_queue().
 
-__qdisc_run() is not called by net_tx_atcion() in CPU0 because
-CPU2 has set STATE_DEACTIVATED flag during dev_deactivate(), and
-STATE_MISSED is only cleared in __qdisc_run(), __netif_schedule
-is called at the end of qdisc_run_end(), causing tx action
-rescheduling problem.
-
-qdisc_run() called by net_tx_action() runs in the softirq context,
-which should has the same semantic as the qdisc_run() called by
-__dev_xmit_skb() protected by rcu_read_lock_bh(). And there is a
-synchronize_net() between STATE_DEACTIVATED flag being set and
-qdisc_reset()/some_qdisc_is_busy in dev_deactivate(), we can safely
-bail out for the deactived lockless qdisc in net_tx_action(), and
-qdisc_reset() will reset all skb not dequeued yet.
-
-So add the rcu_read_lock() explicitly to protect the qdisc_run()
-and do the STATE_DEACTIVATED checking in net_tx_action() before
-calling qdisc_run_begin(). Another option is to do the checking in
-the qdisc_run_end(), but it will add unnecessary overhead for
-non-tx_action case, because __dev_queue_xmit() will not see qdisc
-with STATE_DEACTIVATED after synchronize_net(), the qdisc with
-STATE_DEACTIVATED can only be seen by net_tx_action() because of
-__netif_schedule().
-
-The STATE_DEACTIVATED checking in qdisc_run() is to avoid race
-between net_tx_action() and qdisc_reset(), see:
-commit d518d2ed8640 ("net/sched: fix race between deactivation
-and dequeue for NOLOCK qdisc"). As the bailout added above for
-deactived lockless qdisc in net_tx_action() provides better
-protection for the race without calling qdisc_run() at all, so
-remove the STATE_DEACTIVATED checking in qdisc_run().
-
-After qdisc_reset(), there is no skb in qdisc to be dequeued, so
-clear the STATE_MISSED in dev_reset_queue() too.
+As there is time window between netif_xmit_frozen_or_stopped()
+checking and STATE_MISSED clearing, between which STATE_MISSED
+may set by net_tx_action() scheduled by netif_tx_wake_queue(),
+so set the STATE_MISSED again if netdev queue is restarted.
 
 Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
+Reported-by: Michal Kubecek <mkubecek@suse.cz>
 Acked-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-V8: Clearing STATE_MISSED before calling __netif_schedule() has
-    avoid the endless rescheduling problem, but there may still
-    be a unnecessary rescheduling, so adjust the commit log.
 ---
- include/net/pkt_sched.h |  7 +------
- net/core/dev.c          | 26 ++++++++++++++++++++++----
- net/sched/sch_generic.c |  4 +++-
- 3 files changed, 26 insertions(+), 11 deletions(-)
+V8: Change qdisc_maybe_stop_tx() to qdisc_maybe_clear_missed()
+    as suggested by Jakub.
+V7: Fix the netif_tx_wake_queue() data race noted by Jakub.
+V6: Drop NET_XMIT_DROP checking for it is not really relevant
+    to this patch, and it may cause performance performance
+    regression with multi pktgen threads on dummy netdev with
+    pfifo_fast qdisc case.
+---
+ net/core/dev.c          |  3 ++-
+ net/sched/sch_generic.c | 27 ++++++++++++++++++++++++++-
+ 2 files changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index f5c1bee..6d7b12c 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -128,12 +128,7 @@ void __qdisc_run(struct Qdisc *q);
- static inline void qdisc_run(struct Qdisc *q)
- {
- 	if (qdisc_run_begin(q)) {
--		/* NOLOCK qdisc must check 'state' under the qdisc seqlock
--		 * to avoid racing with dev_qdisc_reset()
--		 */
--		if (!(q->flags & TCQ_F_NOLOCK) ||
--		    likely(!test_bit(__QDISC_STATE_DEACTIVATED, &q->state)))
--			__qdisc_run(q);
-+		__qdisc_run(q);
- 		qdisc_run_end(q);
- 	}
- }
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 222b1d3..d596cd7 100644
+index d596cd7..ef8cf76 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -5025,25 +5025,43 @@ static __latent_entropy void net_tx_action(struct softirq_action *h)
- 		sd->output_queue_tailp = &sd->output_queue;
- 		local_irq_enable();
+@@ -3853,7 +3853,8 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
  
-+		rcu_read_lock();
-+
- 		while (head) {
- 			struct Qdisc *q = head;
- 			spinlock_t *root_lock = NULL;
+ 	if (q->flags & TCQ_F_NOLOCK) {
+ 		rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
+-		qdisc_run(q);
++		if (likely(!netif_xmit_frozen_or_stopped(txq)))
++			qdisc_run(q);
  
- 			head = head->next_sched;
- 
--			if (!(q->flags & TCQ_F_NOLOCK)) {
--				root_lock = qdisc_lock(q);
--				spin_lock(root_lock);
--			}
- 			/* We need to make sure head->next_sched is read
- 			 * before clearing __QDISC_STATE_SCHED
- 			 */
- 			smp_mb__before_atomic();
-+
-+			if (!(q->flags & TCQ_F_NOLOCK)) {
-+				root_lock = qdisc_lock(q);
-+				spin_lock(root_lock);
-+			} else if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED,
-+						     &q->state))) {
-+				/* There is a synchronize_net() between
-+				 * STATE_DEACTIVATED flag being set and
-+				 * qdisc_reset()/some_qdisc_is_busy() in
-+				 * dev_deactivate(), so we can safely bail out
-+				 * early here to avoid data race between
-+				 * qdisc_deactivate() and some_qdisc_is_busy()
-+				 * for lockless qdisc.
-+				 */
-+				clear_bit(__QDISC_STATE_SCHED, &q->state);
-+				continue;
-+			}
-+
- 			clear_bit(__QDISC_STATE_SCHED, &q->state);
- 			qdisc_run(q);
- 			if (root_lock)
- 				spin_unlock(root_lock);
- 		}
-+
-+		rcu_read_unlock();
- 	}
- 
- 	xfrm_dev_backlog(sd);
+ 		if (unlikely(to_free))
+ 			kfree_skb_list(to_free);
 diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 795d986..d86c4cc 100644
+index d86c4cc..fc8b56b 100644
 --- a/net/sched/sch_generic.c
 +++ b/net/sched/sch_generic.c
-@@ -1177,8 +1177,10 @@ static void dev_reset_queue(struct net_device *dev,
- 	qdisc_reset(qdisc);
+@@ -35,6 +35,25 @@
+ const struct Qdisc_ops *default_qdisc_ops = &pfifo_fast_ops;
+ EXPORT_SYMBOL(default_qdisc_ops);
  
- 	spin_unlock_bh(qdisc_lock(qdisc));
--	if (nolock)
-+	if (nolock) {
-+		clear_bit(__QDISC_STATE_MISSED, &qdisc->state);
- 		spin_unlock_bh(&qdisc->seqlock);
++static void qdisc_maybe_clear_missed(struct Qdisc *q,
++				     const struct netdev_queue *txq)
++{
++	clear_bit(__QDISC_STATE_MISSED, &q->state);
++
++	/* Make sure the below netif_xmit_frozen_or_stopped()
++	 * checking happens after clearing STATE_MISSED.
++	 */
++	smp_mb__after_atomic();
++
++	/* Checking netif_xmit_frozen_or_stopped() again to
++	 * make sure STATE_MISSED is set if the STATE_MISSED
++	 * set by netif_tx_wake_queue()'s rescheduling of
++	 * net_tx_action() is cleared by the above clear_bit().
++	 */
++	if (!netif_xmit_frozen_or_stopped(txq))
++		set_bit(__QDISC_STATE_MISSED, &q->state);
++}
++
+ /* Main transmission queue. */
+ 
+ /* Modifications to data participating in scheduling must be protected with
+@@ -74,6 +93,7 @@ static inline struct sk_buff *__skb_dequeue_bad_txq(struct Qdisc *q)
+ 			}
+ 		} else {
+ 			skb = SKB_XOFF_MAGIC;
++			qdisc_maybe_clear_missed(q, txq);
+ 		}
+ 	}
+ 
+@@ -242,6 +262,7 @@ static struct sk_buff *dequeue_skb(struct Qdisc *q, bool *validate,
+ 			}
+ 		} else {
+ 			skb = NULL;
++			qdisc_maybe_clear_missed(q, txq);
+ 		}
+ 		if (lock)
+ 			spin_unlock(lock);
+@@ -251,8 +272,10 @@ static struct sk_buff *dequeue_skb(struct Qdisc *q, bool *validate,
+ 	*validate = true;
+ 
+ 	if ((q->flags & TCQ_F_ONETXQUEUE) &&
+-	    netif_xmit_frozen_or_stopped(txq))
++	    netif_xmit_frozen_or_stopped(txq)) {
++		qdisc_maybe_clear_missed(q, txq);
+ 		return skb;
 +	}
- }
  
- static bool some_qdisc_is_busy(struct net_device *dev)
+ 	skb = qdisc_dequeue_skb_bad_txq(q);
+ 	if (unlikely(skb)) {
+@@ -311,6 +334,8 @@ bool sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
+ 		HARD_TX_LOCK(dev, txq, smp_processor_id());
+ 		if (!netif_xmit_frozen_or_stopped(txq))
+ 			skb = dev_hard_start_xmit(skb, dev, txq, &ret);
++		else
++			qdisc_maybe_clear_missed(q, txq);
+ 
+ 		HARD_TX_UNLOCK(dev, txq);
+ 	} else {
 -- 
 2.7.4
 
