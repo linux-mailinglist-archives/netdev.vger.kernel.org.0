@@ -2,69 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE75A38138A
+	by mail.lfdr.de (Postfix) with ESMTP id 4C8C6381388
 	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 00:10:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233745AbhENWL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 18:11:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42310 "EHLO mail.kernel.org"
+        id S233677AbhENWLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 18:11:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42282 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229459AbhENWLW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233435AbhENWLW (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 14 May 2021 18:11:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D551A61461;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7231E61182;
         Fri, 14 May 2021 22:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1621030210;
-        bh=0644Hxl3cYYHB0tCAJJLMMRQ/pCawIJWC/df87nRxNI=;
+        bh=jWBX/acuhaeVj4kkF31faeLjsTNbku1YNA2ws2xJ4Jc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JSlwIinz1pXfaCkNRsAXc/y7savHkzu+cXu5JjkqECbHgnNG+MwgNyygEniF8YQEl
-         6MjondPkOCnnuk34XqubkRloe3fBTfG6+XSIRVYz3Wz+MRuc9sOAAbwtZQ75RucWYK
-         HUmrt6xhfvyqz2O+081mAU9hN2kKkWpjVK4+c9zySsIHg5geoUn/e7Uxlqi7vWhnPM
-         4r1r+gynkOii7w1EbBcGMSzfyLn//bmGnYphtpTPhR6AcIMvMAonYAA8vOvKeBHuXx
-         g8LpB+iqDh7vRNfTpH7L2L49EXT6YLuOWiYovyAEY+E8P87XvtmJJ0TJWzblZXYCPc
-         1aYL6TZD2rH1Q==
+        b=MlUhu0CUUtTqCrL4tkKDGWCkeURC+hR75HjBYYiHVUnPJzfyFx7aQMhZLlUUluKwz
+         7QgJxR0rwDxiRc6P2uPV/1glnrPLQs8DKmgnH7GHAQKMsrPU79WTBxr3diRK/PkNWt
+         F7CttXMGoOkGFDljCTLcAK1KDDjPzwBBsRQ0bz6mzivhHu+X0Mo0NyWWv8Hit1ILuP
+         +TDoavjC4nFjdskTR/owp6OWVIDcNAQyc6nz9bCsH586aCFEFkZtx7LqNdjYA3ySET
+         QkOEw7ZECftOa5Zlwy7E12ewx9Yg7dNRtHpT2hlO8MS25joNd1ahCyn3mh/elHw3dM
+         4VZdGx+cdS8wg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D00EC60A02;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 688DF60A0A;
         Fri, 14 May 2021 22:10:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: thunderx: Drop unnecessary NULL check after container_of
+Subject: Re: [PATCH] tls splice: check SPLICE_F_NONBLOCK instead of MSG_DONTWAIT
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162103021084.1424.4996581481002361141.git-patchwork-notify@kernel.org>
+Message-Id: <162103021042.1424.11162684679127652413.git-patchwork-notify@kernel.org>
 Date:   Fri, 14 May 2021 22:10:10 +0000
-References: <20210513230418.919219-1-linux@roeck-us.net>
-In-Reply-To: <20210513230418.919219-1-linux@roeck-us.net>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <96f2e74095e655a401bb921062a6f09e94f8a57a.1620961779.git.majinjing3@gmail.com>
+In-Reply-To: <96f2e74095e655a401bb921062a6f09e94f8a57a.1620961779.git.majinjing3@gmail.com>
+To:     Jim Ma <majinjing3@gmail.com>
+Cc:     kuba@kernel.org, borisp@nvidia.com, john.fastabend@gmail.com,
+        daniel@iogearbox.net, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 13 May 2021 16:04:18 -0700 you wrote:
-> The result of container_of() operations is never NULL unless the embedded
-> element is the first element of the structure. This is not the case here.
-> The NULL check is therefore unnecessary and misleading. Remove it.
+On Fri, 14 May 2021 11:11:02 +0800 you wrote:
+> In tls_sw_splice_read, checkout MSG_* is inappropriate, should use
+> SPLICE_*, update tls_wait_data to accept nonblock arguments instead
+> of flags for recvmsg and splice.
 > 
-> This change was made automatically with the following Coccinelle script.
-> 
-> @@
-> type t;
-> identifier v;
-> statement s;
-> @@
-> 
-> [...]
+> Signed-off-by: Jim Ma <majinjing3@gmail.com>
+> ---
+>  net/tls/tls_sw.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
 
 Here is the summary with links:
-  - net: thunderx: Drop unnecessary NULL check after container_of
-    https://git.kernel.org/netdev/net-next/c/fc25f9f631ac
+  - tls splice: check SPLICE_F_NONBLOCK instead of MSG_DONTWAIT
+    https://git.kernel.org/netdev/net/c/974271e5ed45
 
 You are awesome, thank you!
 --
