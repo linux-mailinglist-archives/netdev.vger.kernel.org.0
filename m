@@ -2,72 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDB36380F41
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 19:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2A9380F6B
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 20:07:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235236AbhENRvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 13:51:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49222 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231331AbhENRvW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 May 2021 13:51:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 20EF761451;
-        Fri, 14 May 2021 17:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621014611;
-        bh=ITIYWRThVy75hL8YSOEF42po6HdS2uvCYIMvsA9CPXM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nzvebk6ixZSOl/chKmhwPNg45zybUy8HuH1Oa04fgdj6kLhzQAMOUN+VvET0asVEd
-         XdQNH6DCALVM50P9xcl2E14j8kuREpiO0vHYKOW/Uppokm08jh/GTHIZ6gwTmp8V2d
-         boIEJN/YFYc9HgbXFifM5tqvTlTO1vZ43DBbCt76vcyCDcEObJiDjSEhScuaSTa9SB
-         SAhjZOpGQ+i7dg86dEen4O+LtH/O/e0g9jaT0Vx5b0dbt6+rLKYsGr0RaGg4d04Jap
-         hFfUfpIRKBTyD52DzoijEn7w2+IbBRCJynQ8k5wJqimyNj1/EMWhKZwbQv9OIBZOtI
-         cM5UPpvWUsrcQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 13DE660981;
-        Fri, 14 May 2021 17:50:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232897AbhENSIw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 14 May 2021 14:08:52 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:5548 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231394AbhENSIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 14:08:52 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14EI41Xd015816
+        for <netdev@vger.kernel.org>; Fri, 14 May 2021 11:07:40 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 38gpr1kxdv-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 14 May 2021 11:07:40 -0700
+Received: from intmgw001.06.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 14 May 2021 11:07:39 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 95AF82ED8EB5; Fri, 14 May 2021 11:07:36 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH bpf] selftests/bpf: test ringbuf mmap read-only and read-write restrictions
+Date:   Fri, 14 May 2021 11:07:26 -0700
+Message-ID: <20210514180726.843157-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH nf 1/2] netfilter: flowtable: Remove redundant hw refresh bit
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162101461107.25927.14176689671275717682.git-patchwork-notify@kernel.org>
-Date:   Fri, 14 May 2021 17:50:11 +0000
-References: <20210514144912.4519-2-pablo@netfilter.org>
-In-Reply-To: <20210514144912.4519-2-pablo@netfilter.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: WauRRt8rduFUnDLPEOI-A2vVEH5NQYU5
+X-Proofpoint-GUID: WauRRt8rduFUnDLPEOI-A2vVEH5NQYU5
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-14_08:2021-05-12,2021-05-14 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ spamscore=0 priorityscore=1501 adultscore=0 suspectscore=0
+ lowpriorityscore=0 bulkscore=0 phishscore=0 malwarescore=0 mlxlogscore=999
+ mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2105140142
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Extend ringbuf selftest to validate read/write and read-only restrictions on
+memory mapping consumer/producer/data pages. Ensure no "escalations" from
+PROT_READ to PROT_WRITE/PROT_EXEC is allowed. And test that mremap() fails to
+expand mmap()'ed area.
 
-This series was applied to netdev/net.git (refs/heads/master):
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ .../selftests/bpf/prog_tests/ringbuf.c        | 49 ++++++++++++++++++-
+ 1 file changed, 48 insertions(+), 1 deletion(-)
 
-On Fri, 14 May 2021 16:49:11 +0200 you wrote:
-> From: Roi Dayan <roid@nvidia.com>
-> 
-> Offloading conns could fail for multiple reasons and a hw refresh bit is
-> set to try to reoffload it in next sw packet.
-> But it could be in some cases and future points that the hw refresh bit
-> is not set but a refresh could succeed.
-> Remove the hw refresh bit and do offload refresh if requested.
-> There won't be a new work entry if a work is already pending
-> anyway as there is the hw pending bit.
-> 
-> [...]
-
-Here is the summary with links:
-  - [nf,1/2] netfilter: flowtable: Remove redundant hw refresh bit
-    https://git.kernel.org/netdev/net/c/c07531c01d82
-  - [nf,2/2] netfilter: nft_set_pipapo_avx2: Add irq_fpu_usable() check, fallback to non-AVX2 version
-    https://git.kernel.org/netdev/net/c/f0b3d338064e
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/tools/testing/selftests/bpf/prog_tests/ringbuf.c b/tools/testing/selftests/bpf/prog_tests/ringbuf.c
+index de78617f6550..f9a8ae331963 100644
+--- a/tools/testing/selftests/bpf/prog_tests/ringbuf.c
++++ b/tools/testing/selftests/bpf/prog_tests/ringbuf.c
+@@ -86,8 +86,9 @@ void test_ringbuf(void)
+ 	const size_t rec_sz = BPF_RINGBUF_HDR_SZ + sizeof(struct sample);
+ 	pthread_t thread;
+ 	long bg_ret = -1;
+-	int err, cnt;
++	int err, cnt, rb_fd;
+ 	int page_size = getpagesize();
++	void *mmap_ptr, *tmp_ptr;
+ 
+ 	skel = test_ringbuf__open();
+ 	if (CHECK(!skel, "skel_open", "skeleton open failed\n"))
+@@ -101,6 +102,52 @@ void test_ringbuf(void)
+ 	if (CHECK(err != 0, "skel_load", "skeleton load failed\n"))
+ 		goto cleanup;
+ 
++	rb_fd = bpf_map__fd(skel->maps.ringbuf);
++	/* good read/write cons_pos */
++	mmap_ptr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, rb_fd, 0);
++	ASSERT_OK_PTR(mmap_ptr, "rw_cons_pos");
++	tmp_ptr = mremap(mmap_ptr, page_size, 2 * page_size, MREMAP_MAYMOVE);
++	if (!ASSERT_ERR_PTR(tmp_ptr, "rw_extend"))
++		goto cleanup;
++	ASSERT_ERR(mprotect(mmap_ptr, page_size, PROT_EXEC), "exec_cons_pos_protect");
++	ASSERT_OK(munmap(mmap_ptr, page_size), "unmap_rw");
++
++	/* bad writeable prod_pos */
++	mmap_ptr = mmap(NULL, page_size, PROT_WRITE, MAP_SHARED, rb_fd, page_size);
++	err = -errno;
++	ASSERT_ERR_PTR(mmap_ptr, "wr_prod_pos");
++	ASSERT_EQ(err, -EPERM, "wr_prod_pos_err");
++
++	/* bad writeable data pages */
++	mmap_ptr = mmap(NULL, page_size, PROT_WRITE, MAP_SHARED, rb_fd, 2 * page_size);
++	err = -errno;
++	ASSERT_ERR_PTR(mmap_ptr, "wr_data_page_one");
++	ASSERT_EQ(err, -EPERM, "wr_data_page_one_err");
++	mmap_ptr = mmap(NULL, page_size, PROT_WRITE, MAP_SHARED, rb_fd, 3 * page_size);
++	ASSERT_ERR_PTR(mmap_ptr, "wr_data_page_two");
++	mmap_ptr = mmap(NULL, 2 * page_size, PROT_WRITE, MAP_SHARED, rb_fd, 2 * page_size);
++	ASSERT_ERR_PTR(mmap_ptr, "wr_data_page_all");
++
++	/* good read-only pages */
++	mmap_ptr = mmap(NULL, 4 * page_size, PROT_READ, MAP_SHARED, rb_fd, 0);
++	if (!ASSERT_OK_PTR(mmap_ptr, "ro_prod_pos"))
++		goto cleanup;
++
++	ASSERT_ERR(mprotect(mmap_ptr, 4 * page_size, PROT_WRITE), "write_protect");
++	ASSERT_ERR(mprotect(mmap_ptr, 4 * page_size, PROT_EXEC), "exec_protect");
++	ASSERT_ERR_PTR(mremap(mmap_ptr, 0, 4 * page_size, MREMAP_MAYMOVE), "ro_remap");
++	ASSERT_OK(munmap(mmap_ptr, 4 * page_size), "unmap_ro");
++
++	/* good read-only pages with initial offset */
++	mmap_ptr = mmap(NULL, page_size, PROT_READ, MAP_SHARED, rb_fd, page_size);
++	if (!ASSERT_OK_PTR(mmap_ptr, "ro_prod_pos"))
++		goto cleanup;
++
++	ASSERT_ERR(mprotect(mmap_ptr, page_size, PROT_WRITE), "write_protect");
++	ASSERT_ERR(mprotect(mmap_ptr, page_size, PROT_EXEC), "exec_protect");
++	ASSERT_ERR_PTR(mremap(mmap_ptr, 0, 3 * page_size, MREMAP_MAYMOVE), "ro_remap");
++	ASSERT_OK(munmap(mmap_ptr, page_size), "unmap_ro");
++
+ 	/* only trigger BPF program for current process */
+ 	skel->bss->pid = getpid();
+ 
+-- 
+2.30.2
 
