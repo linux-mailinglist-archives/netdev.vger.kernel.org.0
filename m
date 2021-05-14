@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 984FA38123E
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 23:01:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 563F0381243
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 23:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232420AbhENVBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 17:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55546 "EHLO
+        id S233015AbhENVCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 17:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231644AbhENVBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 17:01:43 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D22C061347;
-        Fri, 14 May 2021 14:00:26 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id v5so47192edc.8;
-        Fri, 14 May 2021 14:00:26 -0700 (PDT)
+        with ESMTP id S231826AbhENVBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 17:01:45 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0FB2C06134A;
+        Fri, 14 May 2021 14:00:27 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id v5so47237edc.8;
+        Fri, 14 May 2021 14:00:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=K9KqwbyK1Q3VDjWrofbQ+zgHpIlHIo2ipNbgP/x0V4A=;
-        b=A9AnwpOzkPJvBzm0pPCx1GHzrBvcieOj2HShHwH2Ml4g0A6qBuvyy0RWVny15vWWLh
-         2EGdKO+U4qwpz6ka8X0oJE7Gf5csDttYJBW/6lsIB/AdIHSp1eHPaGsXDCZzzjpGm5Wc
-         YkoJtljX4HHpQT/iRxb8S/jES9Vy2PABIvg9FoTY4h0J2vmNqxQJFtfVov/H0WP5nJD7
-         AClo+BczByJqWx8AlGSDqwlqIFUkMTxcqvAAg6k7TrHRZTK+wYWyAKxJLIhxTWNNYbig
-         n5gL3lpYhmVUT7T0YWZA79J4DbF21Oi5oyxLbs+X+eq6xhlCWqi6KkSlP7Mw/RCeG/2s
-         Ff1g==
+        bh=jXAbPq5h3YA9NQN4q/AURsjkpOOLQrTGRK7wcDN+KLA=;
+        b=uiqsts2V4vvFMMFhYnJq3AMjLXaqgxYcY3YxhkgPhZB5t45aT58TqCdeU6q2SEvoHK
+         gZNftdm2nv+rq+GHbIRSaPcg7mmaKuQYLu2fgBOy0ZgJjmg2S/eerHZAQ3kp+ekWbGG9
+         AlNE6TIV/EG6uS3qpZ1osqg7NZtG7Cha+k2HByexjfA0bLWXOTpUe52tz1W6TA7eq9Hq
+         jn6vMyNgsEdv5c9WKug29PM4xDLJcr5sAnwMtulNNvtlqg/6eyR4bX5fwn0ZpuY0RfK9
+         hUIv3OLCGuWbN1BQKzgnIgkZu3tO+6egf/bw+Yvg7dJI41kXKwK1YtdC+o0Xyo2c/5KO
+         RVdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=K9KqwbyK1Q3VDjWrofbQ+zgHpIlHIo2ipNbgP/x0V4A=;
-        b=VIHn5nXB2Ti+K2atPT4wqbdloodi/jL4NQVADYKOZvjFmABlPAbE1tEMWR9YsOd+MN
-         veooqiGLk49Ei4tZC2VGzYuPuRzt0wp3AB3l9Nf7ohiBdKqaRLy5CieEnMyA2A2Dxmhz
-         VMrz3vKx4hrH2O7eJllVPNJTTHO0z3D7K3CIKqE8W6vxD6YJzk6SAbK8oEPBrvWz7qLO
-         UuMqZ27eAqQV/5hptnwE2nIuIPTizvnPc1c2/Bw5CeBUdDERFWc47ZY3QKlRvOVlKkBk
-         JjQ2XBUC7opdNZM11HKHXf/c86c2M74V0z+S/dL2LcHNYnzE+SO6O3ljGh17U5zCn+Q6
-         +FsQ==
-X-Gm-Message-State: AOAM532BAsdgzFlgqJPqjyPkvyLhMRz7w4OqPcRKBeQRRhjRaIpvXlIk
-        qmlqJk/9sHXkKX5Jo0et6E8=
-X-Google-Smtp-Source: ABdhPJzWQax5ZKNFD/BqAdK82xyxL2nwTuDPpYNi8ZFjxXfpLl274LMF/F2m3fTulkVKrVi9j+Fc2A==
-X-Received: by 2002:aa7:d2c1:: with SMTP id k1mr59780818edr.138.1621026025071;
-        Fri, 14 May 2021 14:00:25 -0700 (PDT)
+        bh=jXAbPq5h3YA9NQN4q/AURsjkpOOLQrTGRK7wcDN+KLA=;
+        b=HUbZ92g/gpe5i8gxMRVJBOplC5ipNrIAZi2/friEwSh1NB1zaxU9uTieK+v2VtwhBl
+         JMAHw0gx48FzfpGxYF36NrrN4WoSZgNe0NQYEehstk4RJkBZrlQ4ck5HlI3GmOv8Dq5B
+         Gy+8YZ3XjrNqIvMtlF1SKqqxCfBC0COPPV4lKj71D+4py8+serVJTHalZDJ85QgzNum7
+         uoZF+29v5Bhov4dIvEt20bqZOFxzBgbn1e1z011+CClEXGyF+p6guZR/ZwrlrEJDekNj
+         7VLCxD9vG9bCUUsRpjlveEJLZfi9RaojBMY6llkrKNhFmH7AFqqUFMc13BmGlhY2y57M
+         hXWQ==
+X-Gm-Message-State: AOAM5327OmEEGj5Lis9TAyOahtHmtw1KVfHeoTz+dRfvF9D+tQhgnSlP
+        OXx1ZE4tZw0kBBQWf5FrWIKSqRAiSlzF6A==
+X-Google-Smtp-Source: ABdhPJwvVwXNdhG0DcfQ44pCWwAgM2nuQIjiJRMYQPEFzRowzgRcPYD9VUvHNA7wycDCoMAAubC1SA==
+X-Received: by 2002:a05:6402:17d9:: with SMTP id s25mr26604736edy.337.1621026026088;
+        Fri, 14 May 2021 14:00:26 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id c3sm5455237edn.16.2021.05.14.14.00.24
+        by smtp.googlemail.com with ESMTPSA id c3sm5455237edn.16.2021.05.14.14.00.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 May 2021 14:00:24 -0700 (PDT)
+        Fri, 14 May 2021 14:00:25 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -58,10 +58,10 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH net-next v6 09/25] net: dsa: qca8k: add support for qca8327 switch
-Date:   Fri, 14 May 2021 22:59:59 +0200
-Message-Id: <20210514210015.18142-10-ansuelsmth@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Rob Herring <robh@kernel.org>
+Subject: [PATCH net-next v6 10/25] devicetree: net: dsa: qca8k: Document new compatible qca8327
+Date:   Fri, 14 May 2021 23:00:00 +0200
+Message-Id: <20210514210015.18142-11-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210514210015.18142-1-ansuelsmth@gmail.com>
 References: <20210514210015.18142-1-ansuelsmth@gmail.com>
@@ -71,100 +71,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-qca8327 switch is a low tier version of the more recent qca8337.
-It does share the same regs used by the qca8k driver and can be
-supported with minimal change.
+Add support for qca8327 in the compatible list.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Acked-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 23 ++++++++++++++++++++---
- drivers/net/dsa/qca8k.h |  6 ++++++
- 2 files changed, 26 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/net/dsa/qca8k.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index d4e3f81576ec..693bd9fd532b 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1524,6 +1524,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- static int
- qca8k_sw_probe(struct mdio_device *mdiodev)
- {
-+	const struct qca8k_match_data *data;
- 	struct qca8k_priv *priv;
- 	u32 id;
+diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+index ccbc6d89325d..1daf68e7ae19 100644
+--- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
++++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+@@ -3,6 +3,7 @@
+ Required properties:
  
-@@ -1551,6 +1552,11 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 		gpiod_set_value_cansleep(priv->reset_gpio, 0);
- 	}
+ - compatible: should be one of:
++    "qca,qca8327"
+     "qca,qca8334"
+     "qca,qca8337"
  
-+	/* get the switches ID from the compatible */
-+	data = of_device_get_match_data(&mdiodev->dev);
-+	if (!data)
-+		return -ENODEV;
-+
- 	/* read the switches ID register */
- 	id = qca8k_read(priv, QCA8K_REG_MASK_CTRL);
- 	if (id < 0)
-@@ -1558,8 +1564,10 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 
- 	id >>= QCA8K_MASK_CTRL_ID_S;
- 	id &= QCA8K_MASK_CTRL_ID_M;
--	if (id != QCA8K_ID_QCA8337)
-+	if (id != data->id) {
-+		dev_err(&mdiodev->dev, "Switch id detected %x but expected %x", id, data->id);
- 		return -ENODEV;
-+	}
- 
- 	priv->ds = devm_kzalloc(&mdiodev->dev, sizeof(*priv->ds), GFP_KERNEL);
- 	if (!priv->ds)
-@@ -1624,9 +1632,18 @@ static int qca8k_resume(struct device *dev)
- static SIMPLE_DEV_PM_OPS(qca8k_pm_ops,
- 			 qca8k_suspend, qca8k_resume);
- 
-+static const struct qca8k_match_data qca832x = {
-+	.id = QCA8K_ID_QCA8327,
-+};
-+
-+static const struct qca8k_match_data qca833x = {
-+	.id = QCA8K_ID_QCA8337,
-+};
-+
- static const struct of_device_id qca8k_of_match[] = {
--	{ .compatible = "qca,qca8334" },
--	{ .compatible = "qca,qca8337" },
-+	{ .compatible = "qca,qca8327", .data = &qca832x },
-+	{ .compatible = "qca,qca8334", .data = &qca833x },
-+	{ .compatible = "qca,qca8337", .data = &qca833x },
- 	{ /* sentinel */ },
- };
- 
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 86c585b7ec4a..87a8b10459c6 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -15,6 +15,8 @@
- #define QCA8K_NUM_PORTS					7
- #define QCA8K_MAX_MTU					9000
- 
-+#define PHY_ID_QCA8327					0x004dd034
-+#define QCA8K_ID_QCA8327				0x12
- #define PHY_ID_QCA8337					0x004dd036
- #define QCA8K_ID_QCA8337				0x13
- 
-@@ -213,6 +215,10 @@ struct ar8xxx_port_status {
- 	int enabled;
- };
- 
-+struct qca8k_match_data {
-+	u8 id;
-+};
-+
- struct qca8k_priv {
- 	struct regmap *regmap;
- 	struct mii_bus *bus;
 -- 
 2.30.2
 
