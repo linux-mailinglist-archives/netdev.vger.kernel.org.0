@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C8C6381388
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 00:10:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C133A381387
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 00:10:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233677AbhENWLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 18:11:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42282 "EHLO mail.kernel.org"
+        id S233648AbhENWLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 18:11:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42268 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233435AbhENWLW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230144AbhENWLW (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 14 May 2021 18:11:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7231E61182;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 68E2C6144B;
         Fri, 14 May 2021 22:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1621030210;
-        bh=jWBX/acuhaeVj4kkF31faeLjsTNbku1YNA2ws2xJ4Jc=;
+        bh=cGxMkc+WjwkN0n5pvSHNp8hX7/3cfZcjPwNj2h8VKLc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MlUhu0CUUtTqCrL4tkKDGWCkeURC+hR75HjBYYiHVUnPJzfyFx7aQMhZLlUUluKwz
-         7QgJxR0rwDxiRc6P2uPV/1glnrPLQs8DKmgnH7GHAQKMsrPU79WTBxr3diRK/PkNWt
-         F7CttXMGoOkGFDljCTLcAK1KDDjPzwBBsRQ0bz6mzivhHu+X0Mo0NyWWv8Hit1ILuP
-         +TDoavjC4nFjdskTR/owp6OWVIDcNAQyc6nz9bCsH586aCFEFkZtx7LqNdjYA3ySET
-         QkOEw7ZECftOa5Zlwy7E12ewx9Yg7dNRtHpT2hlO8MS25joNd1ahCyn3mh/elHw3dM
-         4VZdGx+cdS8wg==
+        b=incbnrlmY5xhp1IeZx1kBAc66sRVM7qyDqyyK3OcVKJrCxQ+uipHZBrWoChy2itJM
+         UBspdeIL62W4VvwdGyoXrKEgJ0A0pbcdxNHy+KTPYMIPfWU0lM8zDe+gCwaLqAw5zs
+         1dGYtyvxqiFG00V8qzDU92S0A4cBKpgV4E+xvaSC3b9zBsRw1THNOaLRfF1PxLDyXn
+         FKosdH0jZCoRX7L7rqWH/xi2DZELlqAHfBBofp3dpjiG61Q91xkOgK4/HvLfKzWzCi
+         pJaWqW7j5oRTQ5OnsSdQ1KjtgDYVrYu+oSlVWRvI0IBhnqQdtE8xo3wUsSjJDnXrfs
+         H41Gbq0hbpQLQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 688DF60A0A;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5D54260727;
         Fri, 14 May 2021 22:10:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] tls splice: check SPLICE_F_NONBLOCK instead of MSG_DONTWAIT
+Subject: Re: [net] Revert "net:tipc: Fix a double free in tipc_sk_mcast_rcv"
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162103021042.1424.11162684679127652413.git-patchwork-notify@kernel.org>
+Message-Id: <162103021037.1424.641148387270376542.git-patchwork-notify@kernel.org>
 Date:   Fri, 14 May 2021 22:10:10 +0000
-References: <96f2e74095e655a401bb921062a6f09e94f8a57a.1620961779.git.majinjing3@gmail.com>
-In-Reply-To: <96f2e74095e655a401bb921062a6f09e94f8a57a.1620961779.git.majinjing3@gmail.com>
-To:     Jim Ma <majinjing3@gmail.com>
-Cc:     kuba@kernel.org, borisp@nvidia.com, john.fastabend@gmail.com,
-        daniel@iogearbox.net, netdev@vger.kernel.org
+References: <20210514012303.6177-1-hoang.h.le@dektech.com.au>
+In-Reply-To: <20210514012303.6177-1-hoang.h.le@dektech.com.au>
+To:     Hoang Le <hoang.h.le@dektech.com.au>
+Cc:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net, tung.q.nguyen@dektech.com.au
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,19 +47,20 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 14 May 2021 11:11:02 +0800 you wrote:
-> In tls_sw_splice_read, checkout MSG_* is inappropriate, should use
-> SPLICE_*, update tls_wait_data to accept nonblock arguments instead
-> of flags for recvmsg and splice.
+On Fri, 14 May 2021 08:23:03 +0700 you wrote:
+> This reverts commit 6bf24dc0cc0cc43b29ba344b66d78590e687e046.
+> Above fix is not correct and caused memory leak issue.
 > 
-> Signed-off-by: Jim Ma <majinjing3@gmail.com>
-> ---
->  net/tls/tls_sw.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
+> Fixes: 6bf24dc0cc0c ("net:tipc: Fix a double free in tipc_sk_mcast_rcv")
+> Acked-by: Jon Maloy <jmaloy@redhat.com>
+> Acked-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+> Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+> 
+> [...]
 
 Here is the summary with links:
-  - tls splice: check SPLICE_F_NONBLOCK instead of MSG_DONTWAIT
-    https://git.kernel.org/netdev/net/c/974271e5ed45
+  - [net] Revert "net:tipc: Fix a double free in tipc_sk_mcast_rcv"
+    https://git.kernel.org/netdev/net/c/75016891357a
 
 You are awesome, thank you!
 --
