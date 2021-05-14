@@ -2,105 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 983883803C0
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 08:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC6FB3803C5
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 08:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232658AbhENGuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 02:50:06 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:56717 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231741AbhENGuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 02:50:05 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 6DF7E581119;
-        Fri, 14 May 2021 02:48:54 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Fri, 14 May 2021 02:48:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm3; bh=nq4wATHZa1IcXgPqo1r1s13/RAx
-        BQUj7qBKm49N4hi4=; b=vVrhisulHii45TWUytq4TpjfNCSq+FeM1fXbrcnTGC6
-        rMpO4+A1vq2jz0ye5q9tKC+r1u5S8hJW0ZzUMV9Xq8oDNAd6GxCBFShUBBUCEYkr
-        LabevX5XTVNFZbSymm1b8s1IIshAsV76q7YLj7HXjx7ZTXRXmYo4ZB8XHpueJonZ
-        R9jE3hpdUThYjPN8kkHBFF60ZKELNZN+M+YfxpHYD3CU3fyXD3026lpIDDGF6kHY
-        bx2flLsyDFTmxlDs9zbMWaJF59HB0zfwUkjMWfmAiK9f1HrIbLewmtTfBUZuapkM
-        dUF88HmFAom0HxwHVRRUNZ4JdZTURNYVmtbkSw7ZgDQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=nq4wAT
-        HZa1IcXgPqo1r1s13/RAxBQUj7qBKm49N4hi4=; b=unuQ2lBKXTbSB/MqJU3X39
-        U6liNAMd66PtA0UprxVm9aIIpQBP03Azq1vyqFcxayl9TkcsBQMyTL345q2fgdWw
-        KfCptKWtNB94tJKrrqMqgE8Trhfm1nHNFuGbMv69rHUTGtIWukIUNy87UGTOa4Ob
-        YE4j69xZHof5Iylim1ZJ1wE6CYBYVdK+wpUjSAv5Egvc2nVHtk9Jz1jraPdYYd8/
-        HGZ7jKNOgzLZ1Qp+gWLy0kynj/0RsWN7GP5mkTM+wQ/3pU8jRZ8zUNbsm9RTx/js
-        1F8x40rATqYfxomemgpIypxJc+uIIsVSBsxGh6h7mLEf61EapimzI8uV8oLGMlPg
-        ==
-X-ME-Sender: <xms:VR2eYPo-9iIoly19HBufDAesMQqGBNaqiiITdBl4xVDy5fB1XBpyIQ>
-    <xme:VR2eYJqI20GvDBiwFpfIv6KLuH6bBvEIoTJnA0Ub3HqiBBxTQt2KRp8caKChiOCX7
-    pV1JFQZEk5k9A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdehhedguddutdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
-    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepveeuhe
-    ejgfffgfeivddukedvkedtleelleeghfeljeeiueeggeevueduudekvdetnecukfhppeek
-    fedrkeeirdejgedrieegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
-    hilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
-X-ME-Proxy: <xmx:VR2eYMPdi7gcnakWvpNREvXNbFncghaV017Z8uxTuKTHDZ9rJ2XUHw>
-    <xmx:VR2eYC4Kcgt8SNo2dik1X6clwR9Tr7BbADg0PbPvSVPhALPYIXLw4A>
-    <xmx:VR2eYO5tX9c3S9wI3qgeNbzBH8Byhzr1bHK-pN-IL2cXikQuz7ENFA>
-    <xmx:Vh2eYDPrk0_kjqqYaYx8-jzVxpZUQ8B-fYN_3X2Hka4PRJSgFfG_-A>
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        by mail.messagingengine.com (Postfix) with ESMTPA;
-        Fri, 14 May 2021 02:48:53 -0400 (EDT)
-Date:   Fri, 14 May 2021 08:48:51 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        syzbot <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: Re: [syzbot] WARNING in rtl8152_probe
-Message-ID: <YJ4dU3yCwd2wMq5f@kroah.com>
-References: <0000000000009df1b605c21ecca8@google.com>
- <7de0296584334229917504da50a0ac38@realtek.com>
- <20210513142552.GA967812@rowland.harvard.edu>
- <bde8fc1229ec41e99ec77f112cc5ee01@realtek.com>
+        id S232292AbhENGvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 02:51:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21017 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231741AbhENGvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 02:51:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620975006;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WryXNKzHBf+U+FRAhkOnw8sHZGpDGcdZ7IuPAI0tQ+s=;
+        b=ZiIPhshQ5rav6BgMZ7eg2K+n0RQe94JIGuirHPxc88kQwPuiGpWMUKWblMLBePKXFAPZaT
+        THsZcWTsOP9Pey4t6mYXt63QnMLEP3CV/Stu0QBgguKb6V7AUU4I36KncMwp3pRjA/PNMa
+        dH3p5XQSvb26SxN8yfoaEyRppNp3fuA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-194-xlw6VoJYNaOK-LsVZslTEA-1; Fri, 14 May 2021 02:50:02 -0400
+X-MC-Unique: xlw6VoJYNaOK-LsVZslTEA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 44CB46D4E0;
+        Fri, 14 May 2021 06:50:01 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3AB7560BF1;
+        Fri, 14 May 2021 06:49:57 +0000 (UTC)
+Date:   Fri, 14 May 2021 08:49:56 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFQ=?= =?UTF-8?B?w7ZwZWw=?= 
+        <bjorn.topel@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH RESEND v11 1/4] bpf: run devmap xdp_prog on flush
+ instead of bulk enqueue
+Message-ID: <20210514084956.2e41f3dd@carbon>
+In-Reply-To: <20210513070447.1878448-2-liuhangbin@gmail.com>
+References: <20210513070447.1878448-1-liuhangbin@gmail.com>
+        <20210513070447.1878448-2-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bde8fc1229ec41e99ec77f112cc5ee01@realtek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 02:58:00AM +0000, Hayes Wang wrote:
-> Alan Stern <stern@rowland.harvard.edu>
-> > Sent: Thursday, May 13, 2021 10:26 PM
-> [...]
-> > Syzbot doesn't test real devices.  It tests emulations, and the emulated
-> > devices usually behave very strangely and in very peculiar and
-> > unexpected ways, so as to trigger bugs in the kernel.  That's why the
-> > USB devices you see in syzbot logs usually have bizarre descriptors.
-> 
-> Do you mean I have to debug for a device which doesn't exist?
-> I don't understand why I must consider a fake device
-> which provide unexpected USB descriptor deliberately?
+On Thu, 13 May 2021 15:04:44 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-Because people can create "bad" devices and plug them into a system
-which causes the driver to load and then potentially crash the system or
-do other bad things.
+> From: Jesper Dangaard Brouer <brouer@redhat.com>
+>=20
+> This changes the devmap XDP program support to run the program when the
+> bulk queue is flushed instead of before the frame is enqueued. This has
+> a couple of benefits:
+>=20
+> - It "sorts" the packets by destination devmap entry, and then runs the
+>   same BPF program on all the packets in sequence. This ensures that we
+>   keep the XDP program and destination device properties hot in I-cache.
+>=20
+> - It makes the multicast implementation simpler because it can just
+>   enqueue packets using bq_enqueue() without having to deal with the
+>   devmap program at all.
+>=20
+> The drawback is that if the devmap program drops the packet, the enqueue
+> step is redundant. However, arguably this is mostly visible in a
+> micro-benchmark, and with more mixed traffic the I-cache benefit should
+> win out. The performance impact of just this patch is as follows:
+>=20
+> Using 2 10Gb i40e NIC, redirecting one to another, or into a veth interfa=
+ce,
+> which do XDP_DROP on veth peer. With xdp_redirect_map in sample/bpf, send
+> pkts via pktgen cmd:
+> ./pktgen_sample03_burst_single_flow.sh -i eno1 -d $dst_ip -m $dst_mac -t =
+10 -s 64
+>=20
+> There are about +/- 0.1M deviation for native testing, the performance
+> improved for the base-case, but some drop back with xdp devmap prog attac=
+hed.
+>=20
+> Version          | Test                           | Generic | Native | Na=
+tive + 2nd xdp_prog
+> 5.12 rc4         | xdp_redirect_map   i40e->i40e  |    1.9M |   9.6M |  8=
+.4M
+> 5.12 rc4         | xdp_redirect_map   i40e->veth  |    1.7M |  11.7M |  9=
+.8M
+> 5.12 rc4 + patch | xdp_redirect_map   i40e->i40e  |    1.9M |   9.8M |  8=
+.0M
+> 5.12 rc4 + patch | xdp_redirect_map   i40e->veth  |    1.7M |  12.0M |  9=
+.4M
+>=20
+> When bq_xmit_all() is called from bq_enqueue(), another packet will
+> always be enqueued immediately after, so clearing dev_rx, xdp_prog and
+> flush_node in bq_xmit_all() is redundant. Move the clear to __dev_flush(),
+> and only check them once in bq_enqueue() since they are all modified
+> together.
+>=20
+> This change also has the side effect of extending the lifetime of the
+> RCU-protected xdp_prog that lives inside the devmap entries: Instead of
+> just living for the duration of the XDP program invocation, the
+> reference now lives all the way until the bq is flushed. This is safe
+> because the bq flush happens at the end of the NAPI poll loop, so
+> everything happens between a local_bh_disable()/local_bh_enable() pair.
+> However, this is by no means obvious from looking at the call sites; in
+> particular, some drivers have an additional rcu_read_lock() around only
+> the XDP program invocation, which only confuses matters further.
+> Cleaning this up will be done in a separate patch series.
+>=20
+> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-USB drivers now need to be able to handle "malicious" devices, it's been
-that way for many years now.
+For the sake of good order
 
-thanks,
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-greg k-h
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
