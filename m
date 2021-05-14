@@ -2,89 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABE5F381452
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 01:39:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0EEE38145B
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 01:47:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234415AbhENXkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 19:40:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44230 "EHLO mail.kernel.org"
+        id S234435AbhENXsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 19:48:18 -0400
+Received: from mga05.intel.com ([192.55.52.43]:27461 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234359AbhENXkj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 May 2021 19:40:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 813BF613AF;
-        Fri, 14 May 2021 23:39:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621035567;
-        bh=uCnRxCzxT4jtW/+RePRVO8X2RC5kc5CB3ewbkJjyuWk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aF17/21XizEIOCVAufD/YMV1yEk9xL5TzbEbXzBKm0DgU+v4JsD1LyJYXky+GWwoE
-         XMueAPLkcAIujuf5GGUQsKRSEodl+SSTzy5hFe0VrEuQ3FracNiYrHHW79u4ovnETL
-         ch6qdibfzF1APnyuWoGiE5cvfMuydeWmqAVy30uFio86kox73kRtZRYXammlGosnK6
-         fQXW6e8t2yS7YkkSabrrELKr+o8vRGvGKkz0azjABFbE4Ckxn8D0cAeZo5tjmf4r9Q
-         H2I7WQsjiV8PWbmJXab5wtQpxIJoVH1XUGO3hRPLKO6y7OpbdkzKAVK9rvY2q0/r2u
-         vISjSwGdiPa0g==
-Date:   Fri, 14 May 2021 16:39:23 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        David Miller <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        "Cong Wang ." <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        id S232042AbhENXsR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 May 2021 19:48:17 -0400
+IronPort-SDR: W1rKUBnv3bubPIFLteIkhZvdGnH+qwBE0uH2u8J9mLU2KJi1xf+yvTXZV7u8blcstxICktlrHE
+ ok5ziup5EydQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,9984"; a="285775852"
+X-IronPort-AV: E=Sophos;i="5.82,300,1613462400"; 
+   d="scan'208";a="285775852"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2021 16:47:05 -0700
+IronPort-SDR: mdLnzuXlfcA6xXcrWP0Z9ES3zXM2J8//LYK9pWlA1dlJ5h+V7HGK2OKgZOEjx0krqlsCweJl36
+ 8aN8w65QdChA==
+X-IronPort-AV: E=Sophos;i="5.82,300,1613462400"; 
+   d="scan'208";a="624965528"
+Received: from daherman-mobl.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.209.126.53])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2021 16:47:04 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Yannick Vignon <yannick.vignon@oss.nxp.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
-        bpf <bpf@vger.kernel.org>, Jonas Bonn <jonas.bonn@netrounds.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michael Zhivich <mzhivich@akamai.com>,
-        Josh Hunt <johunt@akamai.com>, Jike Song <albcamus@gmail.com>,
-        Kehuan Feng <kehuan.feng@gmail.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>, atenart@kernel.org,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Hillf Danton <hdanton@sina.com>, jgross@suse.com,
-        JKosina@suse.com, Michal Kubecek <mkubecek@suse.cz>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH net v8 1/3] net: sched: fix packet stuck problem for
- lockless qdisc
-Message-ID: <20210514163923.53f39888@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <CAM_iQpXWgYQxf8Ba-D4JQJMPUaR9MBfQFTLFCHWJMVq9PcUWRg@mail.gmail.com>
-References: <1620959218-17250-1-git-send-email-linyunsheng@huawei.com>
-        <1620959218-17250-2-git-send-email-linyunsheng@huawei.com>
-        <CAM_iQpXWgYQxf8Ba-D4JQJMPUaR9MBfQFTLFCHWJMVq9PcUWRg@mail.gmail.com>
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        sebastien.laveze@oss.nxp.com,
+        Yannick Vignon <yannick.vignon@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vedang Patel <vedang.patel@intel.com>,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH net v1] net: taprio offload: enforce qdisc to netdev
+ queue mapping
+In-Reply-To: <20210514140154.475e7f3b@kicinski-fedora-PC1C0HJN>
+References: <20210511171829.17181-1-yannick.vignon@oss.nxp.com>
+ <20210514083226.6d3912c4@kicinski-fedora-PC1C0HJN>
+ <87y2ch121x.fsf@vcostago-mobl2.amr.corp.intel.com>
+ <20210514140154.475e7f3b@kicinski-fedora-PC1C0HJN>
+Date:   Fri, 14 May 2021 16:47:02 -0700
+Message-ID: <87sg2o2809.fsf@vcostago-mobl2.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 May 2021 16:36:16 -0700 Cong Wang wrote:
-> > @@ -176,8 +202,15 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
-> >  static inline void qdisc_run_end(struct Qdisc *qdisc)
-> >  {
-> >         write_seqcount_end(&qdisc->running);
-> > -       if (qdisc->flags & TCQ_F_NOLOCK)
-> > +       if (qdisc->flags & TCQ_F_NOLOCK) {
-> >                 spin_unlock(&qdisc->seqlock);
-> > +
-> > +               if (unlikely(test_bit(__QDISC_STATE_MISSED,
-> > +                                     &qdisc->state))) {
-> > +                       clear_bit(__QDISC_STATE_MISSED, &qdisc->state);  
-> 
-> We have test_and_clear_bit() which is atomic, test_bit()+clear_bit()
-> is not.
+Jakub Kicinski <kuba@kernel.org> writes:
 
-It doesn't have to be atomic, right? I asked to split the test because
-test_and_clear is a locked op on x86, test by itself is not.
+> On Fri, 14 May 2021 13:40:58 -0700 Vinicius Costa Gomes wrote:
+>> Jakub Kicinski <kuba@kernel.org> writes:
+>> > You haven't CCed anyone who worked on this Qdisc in the last 2 years :/
+>> > CCing them now. Comments, anyone?  
+>> 
+>> I guess I should suggest myself as maintainer, to reduce chances of this
+>> happening again.
+>
+> Yes, please.
+>
+>> > This looks like a very drastic change. Are you expecting the qdisc will
+>> > always be bypassed?  
+>> 
+>> Only when running in full offload mode it will be bypassed.
+>> 
+>> And it's kind of by design, in offload mode, the idea was: configure the
+>> netdev traffic class to queue mapping, send the schedule to the hardware
+>> and stay out of the way.
+>> 
+>> But as per Yannick's report, it seems that taprio doesn't stay enough
+>> out of the yay.
+>> 
+>> > After a 1 minute looks it seems like taprio is using device queues in
+>> > strict priority fashion. Maybe a different model is needed, but a qdisc
+>> > with:
+>> >
+>> > enqueue()
+>> > {
+>> > 	WARN_ONCE(1)
+>> > }
+>> >
+>> > really doesn't look right to me.  
+>> 
+>> This patch takes the "stay out of the way" to the extreme, I kind of
+>> like it/I am not opposed to it, if I had this idea a couple of years
+>> ago, perhaps I would have used this same approach.
+>
+> Sorry for my ignorance, but for TXTIME is the hardware capable of
+> reordering or the user is supposed to know how to send packets?
+
+At least the hardware that I am familiar with doesn't reorder packets.
+
+For TXTIME, we have ETF (the qdisc) that re-order packets. The way
+things work when taprio and ETF are used together is something like
+this: taprio only has enough knowledge about TXTIME to drop packets that
+would be transmitted outside their "transmission window" (e.g. for
+traffic class 0 the transmission window is only for 10 to 50, the TXTIME
+for a packet is 60, this packet is "invalid" and is dropped). And then
+when the packet is enqueued to the "child" ETF, it's re-ordered and then
+sent to the driver.
+
+And this is something that this patch breaks, the ability of dropping
+those invalid packets (I really wouldn't like to do this verification
+inside our drivers). Thanks for noticing this.
+
+>
+> My biggest problem with this patch is that unless the application is
+> very careful that WARN_ON_ONCE(1) will trigger. E.g. if softirq is
+> servicing the queue when the application sends - the qdisc will not 
+> be bypassed, right?
+>
+>> I am now thinking if this idea locks us out of anything.
+>> 
+>> Anyway, a nicer alternative would exist if we had a way to tell the core
+>> "this qdisc should be bypassed" (i.e. don't call enqueue()/dequeue())
+>> after init() runs.
+>
+> I don't think calling enqueue() and dequeue() is a problem. The problem
+> is that RT process does unrelated work.
+
+That is true. But this seems like a much bigger (or at least more
+"core") issue.
+
+
+Cheers,
+-- 
+Vinicius
