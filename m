@@ -2,132 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 168AA380B4F
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 16:14:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAF2C380BA3
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 16:18:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234251AbhENOPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 10:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49246 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbhENOPv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 10:15:51 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA37C061574;
-        Fri, 14 May 2021 07:14:39 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id l7so38984772ybf.8;
-        Fri, 14 May 2021 07:14:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nttpRZs1g+ECIwTlOlKEVgc7K4EvlGQDJ8iK+5sNCik=;
-        b=kcCKtQO1X5QpY9ffYMYFxFLZ0g9MnaVd9kYBpNpvbYaGJ0uTg59WF6nlEaxuZzd9hU
-         3zzv1z5FAVOjcKUpF5qrRD4Zz9k+v87ZNv/eM7LPcjTB+ycux/SAmHMTVfREd99Rr+jF
-         2FtrTE9ynDWoQoVIg2itwrA3Rpl0LZwnfgrWQC8Xe/bzLMBAWIF8bVpM4i6Ah4UFx1V6
-         Tw90gW6ijsTPEl4WQNwUHLZA+9uji3Z3znbDi3mnaLp5YutGptBnZCSHtZarjmdh8YPN
-         GAHc9zi13f2A7LSgFgm5P9G+IIr5WmQsUIy707kYBQamN7ivUsCdO2WBd7H8cGZTvyGk
-         NNgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nttpRZs1g+ECIwTlOlKEVgc7K4EvlGQDJ8iK+5sNCik=;
-        b=fu+BkS6/hSnyZF2FJvkbhuftp3uYFmuGbvA49i7YALR3LhZu0DLb1z6/d95tTUoa/Q
-         Ohu+12zDJZXQVUvzpy7o4ByYYpd6MswtUljhc+6yJ6fx5dssMQzf9/5n9v7frmfMGlh9
-         Ersp3SZwjr45hxNzpuyTAA9NrLjVzxOmepiEQ0bv/0MA/NqQBdn2SkqV64xLWow1wBGa
-         cYezuZNht0ClOyh06h+7MAeh7OKZpFgc6SXM4Ka3w7Z/zwzY9LR+PwIxx+PNJ9+cHn2/
-         eW4ZEslRx51O80bcSgRqr0Jd5kwEkdWTHDHllJKGPNwKDfafLdstnE4F9F35k8kpTqZE
-         gLZQ==
-X-Gm-Message-State: AOAM533vvVimSgdJjpQHt22xHMXqBuexMbDmIUT8J08XYFKYq541n7Rl
-        ldD8JfSUvs7RTUQXLm4eSqKsPqK6TbbW4SobVgA=
-X-Google-Smtp-Source: ABdhPJzi3HRVqzFQJgeSHMexWxFS1Qng1v69CknCeldIP8G2COuQM0zsJD/5JbMl1mLIPs0Mmo2s/ImzTJn6iPEw14M=
-X-Received: by 2002:a25:4241:: with SMTP id p62mr52757613yba.141.1621001679203;
- Fri, 14 May 2021 07:14:39 -0700 (PDT)
+        id S234364AbhENOTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 10:19:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37092 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230097AbhENOTu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 May 2021 10:19:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C73C61408;
+        Fri, 14 May 2021 14:18:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621001918;
+        bh=c7dfcDSUedN/VQoQv/XM8fRZG2HhOOW57vq4i3XI37w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OQ+w8jq41p/pK8QPzt383K43rnWDvG9IebEZzoZj7WKu0EgpEM3a4OB9pZnDV5/lC
+         MxVWpkmQpp2inFtKTGn6bM1fAR+gA+04aBXFsHrR34k+VM9wQUFTEenWCHNxw8mV5S
+         Rr3kzMIGVT+KJ8CgQJfj5jt0KJvZQg0gfBfD7ImGjDrz6TXEWqjpD0nn1NC8t6bBSV
+         Y2m7PBzQCXheFvsYF9jZqx3chr66nJXcElBiHfvACPcxjY0VNJoiSeft4M6sPjRp9i
+         /15Ta8qfh6z3LjSIBpnNeZl0hFKEsFjvWWGKfF/qxDT0jcgdTLCyifuXI2D1S1QhIL
+         whK9i7cORQs2g==
+Date:   Fri, 14 May 2021 16:18:25 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     David Woodhouse <dwmw2@infradead.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Mali DP Maintainers <malidp@foss.arm.com>,
+        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
+        kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
+        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
+        rcu@vger.kernel.org
+Subject: Re: [PATCH v2 00/40] Use ASCII subset instead of UTF-8 alternate
+ symbols
+Message-ID: <20210514161825.4e4c0d3e@coco.lan>
+In-Reply-To: <8b8bc929-2f07-049d-f24c-cb1f1d85bbaa@gmail.com>
+References: <cover.1620823573.git.mchehab+huawei@kernel.org>
+        <d2fed242fbe200706b8d23a53512f0311d900297.camel@infradead.org>
+        <20210514102118.1b71bec3@coco.lan>
+        <61c286b7afd6c4acf71418feee4eecca2e6c80c8.camel@infradead.org>
+        <8b8bc929-2f07-049d-f24c-cb1f1d85bbaa@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <20210514115826.3025223-1-pgwipeout@gmail.com> <YJ56G23e930pg4Iv@lunn.ch>
-In-Reply-To: <YJ56G23e930pg4Iv@lunn.ch>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Fri, 14 May 2021 10:14:27 -0400
-Message-ID: <CAMdYzYrSB0G7jfG9fo85X0DxVG_r-qaWUyVAa5paAW0ugLvoxw@mail.gmail.com>
-Subject: Re: [PATCH v3] net: phy: add driver for Motorcomm yt8511 phy
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 9:24 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Fri, May 14, 2021 at 07:58:26AM -0400, Peter Geis wrote:
-> > Add a driver for the Motorcomm yt8511 phy that will be used in the
-> > production Pine64 rk3566-quartz64 development board.
-> > It supports gigabit transfer speeds, rgmii, and 125mhz clk output.
->
-> Thanks for adding RGMII support.
->
-> > +#define PHY_ID_YT8511                0x0000010a
->
-> No OUI in the PHY ID?
->
-> Humm, the datasheet says it defaults to zero. That is not very
-> good. This could be a source of problems in the future, if some other
-> manufacture also does not use an OUI.
->
-> > +/* RX Delay enabled = 1.8ns 1000T, 8ns 10/100T */
-> > +#define YT8511_DELAY_RX              BIT(0)
-> > +
-> > +/* TX Delay is bits 7:4, default 0x5
-> > + * Delay = 150ps * N - 250ps, Default = 500ps
-> > + */
-> > +#define YT8511_DELAY_TX              (0x5 << 4)
->
-> > +
-> > +     switch (phydev->interface) {
-> > +     case PHY_INTERFACE_MODE_RGMII:
-> > +             val &= ~(YT8511_DELAY_RX | YT8511_DELAY_TX);
-> > +             break;
->
-> This is not correct. YT8511_DELAY_TX will only mask the 2 bits in 0x5,
-> not all the bits in 7:4. And since the formula is
->
-> Delay = 150ps * N - 250ps
->
-> setting N to 0 is not what you want. You probably want N=2, so you end up with 50ps
+Em Fri, 14 May 2021 12:08:36 +0100
+Edward Cree <ecree.xilinx@gmail.com> escreveu:
 
-The manufacturer's driver set this to <0> to disable, but I agree the
-datasheet disagrees with this.
+> For anyone who doesn't know about it: X has this wonderful thing called
+>  the Compose key[1].  For instance, type =E2=8E=84--- to get =E2=80=94, o=
+r =E2=8E=84<" for =E2=80=9C.
+> Much more mnemonic than Unicode codepoints; and you can extend it with
+>  user-defined sequences in your ~/.XCompose file.
 
->
-> > +     case PHY_INTERFACE_MODE_RGMII_ID:
-> > +             val |= YT8511_DELAY_RX | YT8511_DELAY_TX;
-> > +             break;
-> > +     case PHY_INTERFACE_MODE_RGMII_RXID:
-> > +             val &= ~(YT8511_DELAY_TX);
-> > +             val |= YT8511_DELAY_RX;
->
-> The delay should be around 2ns. For RX you only have 1.8ns, which is
-> probably good enough. But for TX you have more flexibility. You are
-> setting it to the default of 500ps which is too small. I would suggest
-> 1.85ns, N=14, so it is the same as RX.
+Good tip. I haven't use composite for years, as US-intl with dead keys is
+enough for 99.999% of my needs.=20
 
-Makes sense, these are the insights I was hoping for!
+Btw, at least on Fedora with Mate, Composite is disabled by default. It has
+to be enabled first using the same tool that allows changing the Keyboard
+layout[1].
 
->
-> I also wonder about bits 15:12 of PHY EXT ODH: Delay and driver
-> strength CFG register.
+Yet, typing an EN DASH for example, would be "<composite>--.", with is 4
+keystrokes instead of just two ('--'). It means twice the effort ;-)
 
-The default value *works*, and from an emi perspective we want the
-lowest strength single that is reliable.
-Unfortunately I don't have the equipment to *test* the actual output
-strengths and the datasheet isn't explicitly clear about them either.
-This is one of the values I was considering having defined in the devicetree.
+[1] KDE, GNome, Mate, ... have different ways to enable it and to=20
+    select what key would be considered <composite>:
 
->
->          Andrew
+	https://dry.sailingissues.com/us-international-keyboard-layout.html
+	https://help.ubuntu.com/community/ComposeKey
+
+Thanks,
+Mauro
