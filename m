@@ -2,155 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4647A3809C7
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 14:41:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C0AE3809EC
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 14:53:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233711AbhENMm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 08:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
+        id S233848AbhENMyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 08:54:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233676AbhENMm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 08:42:58 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C4CC06174A
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 05:41:47 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id i13so4596451edb.9
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 05:41:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nHv2uj1+b6Ls/HccEvEXRYAb530bVVnX88BdEJ3onyc=;
-        b=JlbCbr+YSBBjvbbbmMPif0StXP8x9Sxq9ELa6SgM1G0kYcX/aIh4JSE6TkY1gvFPZC
-         oPISoTLPEx5aGEjpM+0bT0wKgwoB3HbE0vAcOj8RK2WFaInrRRWm/u5MorFhdML5hbNG
-         746ZpknFLLN8aghQRMLmsdXwSaBNImQxakLzLtlqPJVERgHXcndGg4SOXwNQYsDlRi2g
-         wHH1XtlRo99XtFWmsCiA5ApAAAgdM0sOT1s7vJR7bJMMvU+5nhh+oA5Q1PdNRUz05/mT
-         7TlOTQRLY8OsQBfvRG6JH3jbd0GiLN+sZWK/aUoPMgMZdgRj7mp639G32eFGVPj4DjKf
-         lOWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nHv2uj1+b6Ls/HccEvEXRYAb530bVVnX88BdEJ3onyc=;
-        b=qJPJFWfc5IgDBdZoHetEPbyq0PCY3viIPJgZkEz8RUm9OPHJBNFP6NCxocYSGJvVe9
-         blyhVKyyTNdDuEXri33iaVPx2xjE1CAQ/V2mQr3zHfI9h2T1JiQsW3DPyhkH99JVLr9L
-         BHMn0PnSFS1kXhemgY8Xa1fMDjKkqfVx8JUZrEPcGCJ4MOta+MytG2BO/e9GC8jm/iJP
-         k9a8hLoE3GIb0NszH7ym54qOwh4aD32t+wbNI4LoRFmtRWIlPp2zEeaMZURpmTv1EPGA
-         HDD7N8lpN13xC+wyISx4d8lRBxpsmIbyupZGwj52/WgsfhFBtHcjJ0uRq2CR5p1PqWj0
-         +8BQ==
-X-Gm-Message-State: AOAM53143qWlyvZi3Bn8cg3Oct4cRLC88PPM/Po+dDcgpCDhF4tiviUb
-        XlCtLYyBj84OjKQMvpipBF9h8SNzIEbpSg==
-X-Google-Smtp-Source: ABdhPJxRWyesSz/snxC6K7TeaZuoaE+x6vFamEZw+lNBzCf5XsgI3sSHPr2cIS/cjh2Q4+8ClmyGUQ==
-X-Received: by 2002:a05:6402:2793:: with SMTP id b19mr38427693ede.279.1620996105775;
-        Fri, 14 May 2021 05:41:45 -0700 (PDT)
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
-        by smtp.gmail.com with ESMTPSA id z7sm4801922edi.39.2021.05.14.05.41.43
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 May 2021 05:41:43 -0700 (PDT)
-Received: by mail-wr1-f43.google.com with SMTP id x5so29915914wrv.13
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 05:41:43 -0700 (PDT)
-X-Received: by 2002:a5d:64cf:: with SMTP id f15mr56760401wri.327.1620996102914;
- Fri, 14 May 2021 05:41:42 -0700 (PDT)
+        with ESMTP id S233814AbhENMyL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 08:54:11 -0400
+X-Greylist: delayed 459 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 14 May 2021 05:53:00 PDT
+Received: from outbound5.mail.transip.nl (outbound5.mail.transip.nl [IPv6:2a01:7c8:7c9:ca11:136:144:136:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E2B7C061574;
+        Fri, 14 May 2021 05:53:00 -0700 (PDT)
+Received: from submission4.mail.transip.nl (unknown [10.103.8.155])
+        by outbound5.mail.transip.nl (Postfix) with ESMTP id 4FhSt62j4JzHCtB;
+        Fri, 14 May 2021 14:45:18 +0200 (CEST)
+Received: from transip.email (unknown [10.103.8.118])
+        by submission4.mail.transip.nl (Postfix) with ESMTPA id 4FhSt30ljYznTYs;
+        Fri, 14 May 2021 14:45:10 +0200 (CEST)
 MIME-Version: 1.0
-References: <20210511044253.469034-1-yuri.benditovich@daynix.com>
- <20210511044253.469034-5-yuri.benditovich@daynix.com> <eb8c4984-f0cc-74ee-537f-fc60deaaaa73@redhat.com>
- <CAOEp5OdrCDPx4ijLcEOm=Wxma6hc=nyqw4Xm6bggBxvgtR0tbg@mail.gmail.com>
- <89759261-3a72-df6c-7a81-b7a48abfad44@redhat.com> <CAOEp5Ocm9Q69Fv=oeyCs01F9J4nCTPiOPpw9_BRZ0WnF+LtEFQ@mail.gmail.com>
- <CACGkMEsZBCzV+d_eLj1aYT+pkS5m1QAy7q8rUkNsdV0C8aL8tQ@mail.gmail.com>
- <CAOEp5OeSankfA6urXLW_fquSMrZ+WYXDtKNacort1UwR=WgxqA@mail.gmail.com>
- <CACGkMEt3bZrdqbWtWjSkXvv5v8iCHiN8hkD3T602RZnb6nPd9A@mail.gmail.com>
- <CAOEp5Odw=eaQWZCXr+U8PipPtO1Avjw-t3gEdKyvNYxuNa5TfQ@mail.gmail.com>
- <CACGkMEuqXaJxGqC+CLoq7k4XDu+W3E3Kk3WvG-D6tnn2K4ZPNA@mail.gmail.com>
- <CAOEp5OfB62SQzxMj_GkVD4EM=Z+xf43TPoTZwMbPPa3BsX2ooA@mail.gmail.com>
- <CACGkMEu4NdyMoFKbyUGG1aGX+K=ShMZuVuMKYPauEBYz5pxYzA@mail.gmail.com>
- <CA+FuTScV+AJ+O3shOMLjUcy+PjBE8uWqCNt0FXWnq9L3gzrvaw@mail.gmail.com>
- <CACGkMEuUF1vDNWbL9dRr1ZM4vFTLwc3j9uB-66451U1NvQ+2EA@mail.gmail.com> <CAOEp5OcozfSWszTm9VArOAH+wm2Fo8tH1QJDsLPZD8ieBLtg-g@mail.gmail.com>
-In-Reply-To: <CAOEp5OcozfSWszTm9VArOAH+wm2Fo8tH1QJDsLPZD8ieBLtg-g@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 14 May 2021 08:41:06 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSeqzN0SPKNEyD=ZntYb6q4u0u_p=VsPfux4mFpPBZzCxQ@mail.gmail.com>
-Message-ID: <CA+FuTSeqzN0SPKNEyD=ZntYb6q4u0u_p=VsPfux4mFpPBZzCxQ@mail.gmail.com>
-Subject: Re: [PATCH 4/4] tun: indicate support for USO feature
-To:     Yuri Benditovich <yuri.benditovich@daynix.com>
-Cc:     Jason Wang <jasowang@redhat.com>, Yan Vugenfirer <yan@daynix.com>,
-        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        mst <mst@redhat.com>, netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Date:   Fri, 14 May 2021 14:45:10 +0200
+From:   dave@bewaar.me
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        anapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Johannes Berg <johannes.berg@intel.com>
+Subject: [BUG] recursive lock in mwifiex_uninit_sw
+Message-ID: <ab4d00ce52f32bd8e45ad0448a44737e@bewaar.me>
+X-Sender: dave@bewaar.me
+User-Agent: Webmail
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: ClueGetter at submission4.mail.transip.nl
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=transip-a; d=bewaar.me; t=1620996315; h=from:subject:to:cc:date:
+ mime-version:content-type;
+ bh=Daxo7C8BJ0xC7g75uEADc0HoTfZJdqRTKuWOYREQ42k=;
+ b=Qk0HpLX1u+qkvPHuVsDr8wxvuF2hho6/VXE7YgqrcSM6GgtxquAL4/SdAKFvSXArvcLOaZ
+ SV1I6zl5AWd0BQttT2gNs/EQg5TfK6mxKWBF7Kemuxuw2s894NUQXOw4WPL50SBp8NOsGG
+ uD3T84qyviMlEu2Uc+iMRTlhr769hyycHhgDjtphPwhuB4VjwbbvQJW5Mhgw9hRmL/v6FE
+ J3nFo4GEkonhQi6qtgO/JRz/lbwW/iW+EkJxY2FWmHUZeW7hyV6IzTWrgUIOAIg0W9Ff6G
+ 3HYM29RSQY+oaAdyaVeR/MhKoYFTrdrqrZe8JAXMT1S5nv2M9orpmjTJsbextA==
+X-Report-Abuse-To: abuse@transip.nl
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 3:39 AM Yuri Benditovich
-<yuri.benditovich@daynix.com> wrote:
->
-> On Fri, May 14, 2021 at 10:16 AM Jason Wang <jasowang@redhat.com> wrote:
-> >
-> > On Fri, May 14, 2021 at 4:35 AM Willem de Bruijn
-> > <willemdebruijn.kernel@gmail.com> wrote:
-> > >
-> > > > > But surprisingly when TUN receives TUN_F_UFO it does not propagate it
-> > > > > anywhere, there is no corresponding NETIF flag.
-> > > >
-> > > > (It looks like I drop the community and other ccs accidentally, adding
-> > > > them back and sorry)
-> > > >
-> > > > Actually, there is one, NETIF_F_GSO_UDP.
-> > > >
-> > > > Kernel used to have NETIF_F_UFO, but it was removed due to bugs and
-> > > > the lack of real hardware support. Then we found it breaks uABI, so
-> > > > Willem tries to make it appear for userspace again, and then it was
-> > > > renamed to NETIF_F_GSO_UDP.
-> > > >
-> > > > But I think it's a bug that we don't proporate TUN_F_UFO to NETIF
-> > > > flag, this is a must for the driver that doesn't support
-> > > > VIRTIO_NET_F_GUEST_UFO. I just try to disable all offloads and
-> > > > mrg_rxbuf, then netperf UDP_STREAM from host to guest gives me bad
-> > > > length packet in the guest.
-> > > >
-> > > > Willem, I think we probably need to fix this.
-> > >
-> > > We had to add back support for the kernel to accept UFO packets from
-> > > userspace over tuntap.
-> > >
-> > > The kernel does not generate such packets, so a guest should never be
-> > > concerned of receiving UFO packets.
-> >
-> > That's my feeling as well.
-> >
-> > But when I:
-> >
-> > 1) turn off all guest gso feature and mrg rx buffers, in this case
-> > virtio-net will only allocate 1500 bytes for each packet
-> > 2) doing netperf (UDP_STREAM) from local host to guest, I see packet
-> > were truncated in the guest
->
-> Is it possible that the virtio-net does not disable UFO offload?
-> IMO it sets NETIF_F_LRO too bravely.
+A firmware crash of the Marvell 88W8897, which are spurious on Microsoft
+Surface devices, will unload/reset the device. However this can also 
+fail
+in more recent kernels, which can cause more problems since the driver
+does not unload. This causes programs trying to reach the network or
+networking devices to hang which in turn causes a reboot/poweroff to 
+hang.
 
-After we removed UFO completely, we found that guests may be migrated
-from old hosts with UFO support to newer without. And that they do not
-renegotiate features, so will continue to send UFO packets.
+This can happen on the following fedora rawhide kernels:
+- 5.12.0-0.rc8.20210423git7af08140979a.193.fc35.x86_64 [1]
+- 5.13.0-0.rc1.20210512git88b06399c9c7.15.fc35.x86_64 [2]
 
-I added back the absolute minimum support for UFO: for a host to be
-able to accept such UFO packets from userspace. But no device can
-advertise or negotiate the NETIF_F_USO feature again. If these packets
-arrive on the egress path, they will be immediately software segmented
-(or fragmented) in skb_segment. So the host will not forward such
-packets to another guest.
+The latter seems to be more consistent in triggering this behaviour
+(and crashing the firmware). If someone can give me some pointers
+I would gladly help and debug this.
 
-The behavior that Jason is experiencing, truncated packets received in
-a guest from the host, sound unrelated to this feature to me. Can you
-see what the original UDP datagram length is? Are these packets just
-marginally larger, or indeed clearly U[SF]O packets well beyond any
-reasonable MTU size?
+I know there is a set of patches for surface devices which address
+these firmware crashes [3], however they have not made it upstream
+yet and are not in the before mentioned kernels with this issue.
 
-Another option is that this is related to the host stack support for
-UDP_GRO. The stack can now build large packets, segments these on
-demand if needed (e.g., if such a packet arrives at a local socket
-that does not advertise UDP_GRO). Perhaps somehow such packets escape
-un-segmented to a guest. Do any devices where these packets may
-originate have features NETIF_F_GRO_UDP_FWD or NETIF_F_GRO_FRAGLIST
-enabled?
+Regards,
+Dave
+
+[1]: 
+https://gitlab.com/cki-project/kernel-ark/-/commit/bfe9c6281b1e9a08ad94ff76629279326a8483c1
+[2]: 
+https://gitlab.com/cki-project/kernel-ark/-/commit/b996c16ff61d147d9a02c74d600b4c576aea9f3a
+[3]: 
+https://github.com/linux-surface/linux-surface/blob/master/patches/5.12/0002-mwifiex.patch
+
+[  440.345579] ============================================
+[  440.345583] WARNING: possible recursive locking detected
+[  440.345587] 5.13.0-0.rc1.20210512git88b06399c9c7.15.fc35.x86_64 #1 
+Not tainted
+[  440.345592] --------------------------------------------
+[  440.345595] kworker/0:2/121 is trying to acquire lock:
+[  440.345599] ffff9bbbc6792670 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: 
+cfg80211_netdev_notifier_call+0xf8/0x5c0 [cfg80211]
+[  440.345734]
+                but task is already holding lock:
+[  440.345737] ffff9bbbc6792670 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: 
+mwifiex_uninit_sw+0x151/0x1f0 [mwifiex]
+[  440.345783]
+                other info that might help us debug this:
+[  440.345786]  Possible unsafe locking scenario:
+
+[  440.345788]        CPU0
+[  440.345790]        ----
+[  440.345792]   lock(&rdev->wiphy.mtx);
+[  440.345797]   lock(&rdev->wiphy.mtx);
+[  440.345801]
+                 *** DEADLOCK ***
+
+[  440.345804]  May be due to missing lock nesting notation
+
+[  440.345806] 5 locks held by kworker/0:2/121:
+[  440.345810]  #0: ffff9bbb80055148 
+((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x21a/0x5e0
+[  440.345825]  #1: ffffba12814b3e70 
+((work_completion)(&card->work)){+.+.}-{0:0}, at: 
+process_one_work+0x21a/0x5e0
+[  440.345837]  #2: ffff9bbb82263258 (&dev->mutex){....}-{3:3}, at: 
+pci_try_reset_function+0x3d/0x90
+[  440.345852]  #3: ffffffffa11e7f90 (rtnl_mutex){+.+.}-{3:3}, at: 
+mwifiex_uninit_sw+0x146/0x1f0 [mwifiex]
+[  440.345879]  #4: ffff9bbbc6792670 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: 
+mwifiex_uninit_sw+0x151/0x1f0 [mwifiex]
+[  440.345906]
+                stack backtrace:
+[  440.345909] CPU: 0 PID: 121 Comm: kworker/0:2 Not tainted 
+5.13.0-0.rc1.20210512git88b06399c9c7.15.fc35.x86_64 #1
+[  440.345915] Hardware name: Microsoft Corporation Surface Pro/Surface 
+Pro, BIOS 235.3440.768 11.16.2020
+[  440.345919] Workqueue: events mwifiex_pcie_work [mwifiex_pcie]
+[  440.345928] Call Trace:
+[  440.345935]  dump_stack+0x7f/0xa1
+[  440.345943]  __lock_acquire.cold+0x17d/0x2bf
+[  440.345953]  ? lock_is_held_type+0xa7/0x120
+[  440.345961]  lock_acquire+0xc4/0x3a0
+[  440.345967]  ? cfg80211_netdev_notifier_call+0xf8/0x5c0 [cfg80211]
+[  440.346062]  ? __bfs+0xf5/0x230
+[  440.346069]  ? lock_is_held_type+0xa7/0x120
+[  440.346077]  __mutex_lock+0x91/0x830
+[  440.346082]  ? cfg80211_netdev_notifier_call+0xf8/0x5c0 [cfg80211]
+[  440.346175]  ? __bfs+0xf5/0x230
+[  440.346181]  ? cfg80211_netdev_notifier_call+0xf8/0x5c0 [cfg80211]
+[  440.346270]  ? check_path.constprop.0+0x24/0x50
+[  440.346278]  ? check_noncircular+0x70/0x100
+[  440.346286]  ? cfg80211_netdev_notifier_call+0xf8/0x5c0 [cfg80211]
+[  440.346375]  cfg80211_netdev_notifier_call+0xf8/0x5c0 [cfg80211]
+[  440.346471]  ? __lock_acquire+0x3ac/0x1e10
+[  440.346481]  ? lock_acquire+0xc4/0x3a0
+[  440.346486]  ? lock_is_held_type+0xa7/0x120
+[  440.346492]  ? find_held_lock+0x32/0x90
+[  440.346499]  ? sched_clock_cpu+0xc/0xb0
+[  440.346505]  ? lock_is_held_type+0xa7/0x120
+[  440.346510]  ? cfg80211_register_netdevice+0x130/0x130 [cfg80211]
+[  440.346604]  ? rcu_read_lock_sched_held+0x3f/0x80
+[  440.346615]  notifier_call_chain+0x42/0xb0
+[  440.346624]  __dev_close_many+0x62/0x100
+[  440.346634]  dev_close_many+0x7b/0x110
+[  440.346641]  unregister_netdevice_many+0x14b/0x760
+[  440.346650]  unregister_netdevice_queue+0xab/0xf0
+[  440.346658]  _cfg80211_unregister_wdev+0x170/0x210 [cfg80211]
+[  440.346752]  mwifiex_del_virtual_intf+0x178/0x1a0 [mwifiex]
+[  440.346778]  mwifiex_uninit_sw+0x1d5/0x1f0 [mwifiex]
+[  440.346801]  mwifiex_shutdown_sw+0x5c/0x90 [mwifiex]
+[  440.346822]  mwifiex_pcie_reset_prepare+0x4d/0x90 [mwifiex_pcie]
+[  440.346829]  pci_dev_save_and_disable+0x29/0x50
+[  440.346835]  pci_try_reset_function+0x49/0x90
+[  440.346840]  process_one_work+0x2b0/0x5e0
+[  440.346849]  worker_thread+0x55/0x3c0
+[  440.346854]  ? process_one_work+0x5e0/0x5e0
+[  440.346860]  kthread+0x13a/0x150
+[  440.346865]  ? __kthread_bind_mask+0x60/0x60
+[  440.346871]  ret_from_fork+0x22/0x30
