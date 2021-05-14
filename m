@@ -2,97 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60B48380EB6
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 19:19:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FA87380EC0
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 19:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235081AbhENRVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 13:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
+        id S233477AbhENRWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 13:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234792AbhENRVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 13:21:00 -0400
+        with ESMTP id S231654AbhENRWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 13:22:52 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC03DC061574
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 10:19:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B7BC061574
+        for <netdev@vger.kernel.org>; Fri, 14 May 2021 10:21:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=iySrnbfW16Rxiwqj/hCwANi8fjAvoHIod8ma2eHQLQU=; b=0/LpkPmwSDZN0ntt7VJuJjdOH
-        yjhFxiXnHps3K887jYNo25/cOPa/ci7zOgPxDzkjEJreJszm+ScAkcCPPePJ+hMRmnyzTOX7rTL8f
-        2KqFpaTjwxTr1xbGpx/6BeAu2/G1aXPaaNUA5ABIFp0IUzuYpwjq/9AF4q6NLWOqCfH3YBfvmhl73
-        N3EuHFilt75q/C910MrpwThxK/CwYrMcUiC9jWfY9Ya+l0pLhP4dEGDRBYu5a+mqVjnZyw418Lm0C
-        NDXwjO3/CUDvQmz4Yh8sI59E6ZnuTphWH/ObIYHZRiKdfIjrmF/2kvgpJIPM9rbIXrYS/DMQpNTN8
-        ipVPo2BWQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43976)
+         bh=hf/FgC7qO5NbYar+qO/nUlU5H+LrckSNa8N1UCGQhSw=; b=smde3aGBjk8S4M8aK5+hXc+qd
+        aSvKz8JMsD+Rmjdrbn52zoLTtlyX4tCi5J5C5K/kVAQkbd1xZrDp3WF15kir1oFRZi7uNXCjgIZGl
+        ky7hthgslSswO6SoxdM7bD8kk5pbJrAOHJnj447uWUXCxF5nuZvZL3kdndR43N9P8OrOWaZzJfv61
+        2ABGPgou9zFSiGUh/am10grrYa1sszTa8aYkVVLfLmyyBNzh6iOArdT1DopmHIPus239AEF6jNIjY
+        jwkNYj7jOwOih9RGm8J9b4+38ocbcO04nNdmGncyebMs56ljaJbIawB2iMknWyQWwh5aMrGOmFe4U
+        oESCBs3NQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43978)
         by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1lhbTW-0008VH-LL; Fri, 14 May 2021 18:19:46 +0100
+        id 1lhbVK-0008VU-T6; Fri, 14 May 2021 18:21:38 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lhbTV-0004Af-Lk; Fri, 14 May 2021 18:19:45 +0100
-Date:   Fri, 14 May 2021 18:19:45 +0100
+        id 1lhbVK-0004Aq-60; Fri, 14 May 2021 18:21:38 +0100
+Date:   Fri, 14 May 2021 18:21:38 +0100
 From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marcin Wojtas <mw@semihalf.com>
+To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Stefan Chulski <stefanc@marvell.com>,
+        Marcin Wojtas <mw@semihalf.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Subject: Re: mvpp2: incorrect max mtu?
-Message-ID: <20210514171945.GF12395@shell.armlinux.org.uk>
+Message-ID: <20210514172138.GG12395@shell.armlinux.org.uk>
 References: <20210514130018.GC12395@shell.armlinux.org.uk>
- <CAPv3WKcRpk+7y_TN1dsSE0rS90vTk5opU59i5=4=XP-805axfQ@mail.gmail.com>
+ <YJ6KoBEoEDb0VC7a@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAPv3WKcRpk+7y_TN1dsSE0rS90vTk5opU59i5=4=XP-805axfQ@mail.gmail.com>
+In-Reply-To: <YJ6KoBEoEDb0VC7a@lunn.ch>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 04:25:48PM +0200, Marcin Wojtas wrote:
-> Thank your for the information. I will take a look after the weekend.
-> To be aligned - what exactly kernel baseline are you using?
+On Fri, May 14, 2021 at 04:35:12PM +0200, Andrew Lunn wrote:
+> On Fri, May 14, 2021 at 02:00:18PM +0100, Russell King (Oracle) wrote:
+> > Hi all,
+> > 
+> > While testing out the 10G speeds on my Macchiatobin platforms, the first
+> > thing I notice is that they only manage about 1Gbps at a MTU of 1500.
+> > As expected, this increases when the MTU is increased - a MTU of 9000
+> > works, and gives a useful performance boost.
+> > 
+> > Then comes the obvious question - what is the maximum MTU.
+> > 
+> > #define MVPP2_BM_JUMBO_FRAME_SIZE       10432   /* frame size 9856 */
+> > 
+> > So, one may assume that 9856 is the maximum. However:
+> > 
+> > # ip li set dev eth0 mtu 9888
+> > # ip li set dev eth0 mtu 9889
+> > Error: mtu greater than device maximum.
+> 
+> Hi Russell
+> 
+> It all seems inconsistent:
+> 
+> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c#L6879
+> 
+> 	/* MTU range: 68 - 9704 */
+> 	dev->min_mtu = ETH_MIN_MTU;
+> 	/* 9704 == 9728 - 20 and rounding to 8 */
+> 	dev->max_mtu = MVPP2_BM_JUMBO_PKT_SIZE;
+> 
+> Maybe this comment is correct, the code is now wrong, and the MAX MTU
+> should be 9704?
 
-That was with 5.11 with these additional mvpp2 patches:
-
-net: mvpp2: add TX FC firmware check
-net: mvpp2: set 802.3x GoP Flow Control mode
-net: mvpp2: add PPv23 RX FIFO flow control
-net: mvpp2: add BM protection underrun feature support
-net: mvpp2: add ethtool flow control configuration support
-net: mvpp2: add RXQ flow control configurations
-net: mvpp2: enable global flow control
-net: mvpp2: add FCA RXQ non occupied descriptor threshold
-net: mvpp2: add FCA periodic timer configurations
-net: mvpp2: increase BM pool and RXQ size
-net: mvpp2: add PPv23 version definition
-net: mvpp2: always compare hw-version vs MVPP21
-net: mvpp2: add CM3 SRAM memory map
-dts: marvell: add CM3 SRAM memory to cp11x ethernet device tree
-doc: marvell: add CM3 address space and PPv2.3 description
-net: marvell: Fixed two spellings,controling to controlling and oen to one
-net: mvpp2: prs: improve ipv4 parse flow
-
-I'll also try to work out what's happening, but I think we need to find
-out what the correct value for dev->max_mtu should be. That's all rather
-convoluted:
-
-	dev->max_mtu = MVPP2_BM_JUMBO_PKT_SIZE;
-
-#define MVPP2_BM_JUMBO_PKT_SIZE MVPP2_RX_MAX_PKT_SIZE(MVPP2_BM_JUMBO_FRAME_SIZE)
-#define MVPP2_BM_JUMBO_FRAME_SIZE       10432   /* frame size 9856 */
-#define MVPP2_RX_MAX_PKT_SIZE(total_size) \
-        ((total_size) - MVPP2_SKB_HEADROOM - MVPP2_SKB_SHINFO_SIZE)
-
-The maximum settable MTU on eth0 (9888) disagrees with the comment
-"frame size 9856" by 32 bytes.
-
-I haven't checked to see whether 9856 works yet, because that will
-first need me to reboot the machine... which I'll do over the weekend.
+Oh, there's more values given elsewhere that disagree, see my reply to
+Marcin. I would not be surprised if this was all "confused" about
+what the proper value is. Certainly the comment you mention above
+disagrees with what is in mvpp2.h
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
