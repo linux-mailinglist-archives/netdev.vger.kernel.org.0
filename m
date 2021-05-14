@@ -2,149 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0703380BBD
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 16:26:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ACE7380BE2
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 16:33:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234406AbhENO1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 10:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51824 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231712AbhENO1M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 10:27:12 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61CC3C061574
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 07:26:01 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id ee9so5228132qvb.8
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 07:26:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FpTvFQJrnNK/eV5EDnxsSGUVAlc8R32pjHB6ZjHCF3c=;
-        b=vO1IitILypXNKLqrMrmMCroEVcFoBuVIx6eI5JU6CJPqEUK1PT8/JZORt2AbDosAzE
-         8SaEZmZuDrrWKXPFx8XfuB/cif0GJj8ccByaIUUv7IZ0pMgK5p9ijHbKmuMl0NA4lBMr
-         Myf+r31h/fB84anWNeoDK4t0yb5OI8XCI+VXBb0GZo1CfoeUVq+drcmgx0dgLnwZl1GO
-         +G0+Q3iM/X3VUZz+JvN93iwffD6jfgi+n1WYmPDhzjUjW5INgMRP4Llav21hM0IUvBpE
-         BmwH0VFkc16O44GJV1JpUWUDh1zp5Xf7GNV5ANVuULTcSJYQszX0dZQPbFefiHXOwBAe
-         boMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FpTvFQJrnNK/eV5EDnxsSGUVAlc8R32pjHB6ZjHCF3c=;
-        b=YDaqbeYeEbimAbnBUFHFVtF1E4j3BSis7a7/5ElgPgp0T1G5GKFtBYgMDm5zFHe3tw
-         /jgrN/ytykDOlp1wAlUAB9xKWLfwZ4PmvmvKl0DjhWuO6Xcy1fXbaZhO6M8UPsBXuiiB
-         V6eGm5VmI0EAXsKFdWcpekq1DjBlI1h5EsLehSoe7VhJy/cY8tQEcoD2uyAR+h0yVCbI
-         dXkEs6bjSLiSbtXLf+xmFvsxKQ6zmH+2yWuinKtEDOHrazUhd8KBwzSdLyd5qr0Z5G++
-         yfuhj1KsV3b2038I/1E01lqTDgZxbNrEVzBa6mMEHo2ziJ4L0W7UfaZADJIw5nzJ5v1B
-         T65Q==
-X-Gm-Message-State: AOAM531kWAkYlcfgEKtWMlCnmh68BRc9Z6GagrM2b4/ZCF0vZatSit6/
-        /z8d82ntXE6YszbUI6wTveLOKsPhYjpYxWAkImKuoWxl8s++xn04
-X-Google-Smtp-Source: ABdhPJwpxBswr8Dyk85cY10GlhUqtrR5XOXXmvhMsb2Wklnjj2cT2OiVP2dGQdoym+cncT9W+C2ROP82y6WPfQyv3Zo=
-X-Received: by 2002:a0c:a163:: with SMTP id d90mr46528162qva.24.1621002360572;
- Fri, 14 May 2021 07:26:00 -0700 (PDT)
+        id S234477AbhENOeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 10:34:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42326 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234452AbhENOeS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 May 2021 10:34:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D55036144A;
+        Fri, 14 May 2021 14:33:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1621002786;
+        bh=dYTBVfySMjVbB9U61SiRuwIXRmeQ7xm3yrwwQXGeH6Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Iix3adaG/VjT9C1Dc3KSOp3wzrgKU/ze4Nge3Q/KlTbh1wlffaJhWBeZ2mc9iXXNO
+         rv2hTWJEwlwryNC33AIonQPCMauwlM3bTCPcg2kBN44V0HThVv2bChfspkB+lgG+Z5
+         ib6w1ACwqzEJYu/d1lF4C794n1DWVTlpCI+j8Gss=
+Date:   Fri, 14 May 2021 16:33:03 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     "Chen, Mike Ximing" <mike.ximing.chen@intel.com>,
+        Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>
+Subject: Re: [PATCH v10 00/20] dlb: introduce DLB device driver
+Message-ID: <YJ6KHznWTKvKQZEl@kroah.com>
+References: <20210210175423.1873-1-mike.ximing.chen@intel.com>
+ <YEiLI8fGoa9DoCnF@kroah.com>
+ <CAPcyv4gCMjoDCc2azLEc8QC5mVhdKeLibic9gj4Lm=Xwpft9ZA@mail.gmail.com>
+ <BYAPR11MB30950965A223EDE5414EAE08D96F9@BYAPR11MB3095.namprd11.prod.outlook.com>
+ <CAPcyv4htddEBB9ePPSheH+rO+=VJULeHzx0gc384if7qXTUHHg@mail.gmail.com>
+ <BYAPR11MB309515F449B8660043A559E5D96C9@BYAPR11MB3095.namprd11.prod.outlook.com>
+ <YFBz1BICsjDsSJwv@kroah.com>
+ <CAPcyv4g89PjKqPuPp2ag0vB9Vq8igTqh0gdP0h+7ySTVPagQ9w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210514130018.GC12395@shell.armlinux.org.uk>
-In-Reply-To: <20210514130018.GC12395@shell.armlinux.org.uk>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Fri, 14 May 2021 16:25:48 +0200
-Message-ID: <CAPv3WKcRpk+7y_TN1dsSE0rS90vTk5opU59i5=4=XP-805axfQ@mail.gmail.com>
-Subject: Re: mvpp2: incorrect max mtu?
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Stefan Chulski <stefanc@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPcyv4g89PjKqPuPp2ag0vB9Vq8igTqh0gdP0h+7ySTVPagQ9w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+On Wed, May 12, 2021 at 12:07:31PM -0700, Dan Williams wrote:
+> [ add kvm@vger.kernel.org for VFIO discussion ]
+> 
+> 
+> On Tue, Mar 16, 2021 at 2:01 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+> [..]
+> > > Ioctl interface
+> > > Kernel driver provides ioctl interface for user applications to setup and configure dlb domains, ports, queues, scheduling types, credits,
+> > > sequence numbers, and links between ports and queues.  Applications also use the interface to start, stop and inquire the dlb operations.
+> >
+> > What applications use any of this?  What userspace implementation today
+> > interacts with this?  Where is that code located?
+> >
+> > Too many TLAs here, I have even less of an understanding of what this
+> > driver is supposed to be doing, and what this hardware is now than
+> > before.
+> >
+> > And here I thought I understood hardware devices, and if I am confused,
+> > I pity anyone else looking at this code...
+> >
+> > You all need to get some real documentation together to explain
+> > everything here in terms that anyone can understand.  Without that, this
+> > code is going nowhere.
+> 
+> Hi Greg,
+> 
+> So, for the last few weeks Mike and company have patiently waded
+> through my questions and now I think we are at a point to work through
+> the upstream driver architecture options and tradeoffs. You were not
+> alone in struggling to understand what this device does because it is
+> unlike any other accelerator Linux has ever considered. It shards /
+> load balances a data stream for processing by CPU threads. This is
+> typically a network appliance function / protocol, but could also be
+> any other generic thread pool like the kernel's padata. It saves the
+> CPU cycles spent load balancing work items and marshaling them through
+> a thread pool pipeline. For example, in DPDK applications, DLB2 frees
+> up entire cores that would otherwise be consumed with scheduling and
+> work distribution. A separate proof-of-concept, using DLB2 to
+> accelerate the kernel's "padata" thread pool for a crypto workload,
+> demonstrated ~150% higher throughput with hardware employed to manage
+> work distribution and result ordering. Yes, you need a sufficiently
+> high touch / high throughput protocol before the software load
+> balancing overhead coordinating CPU threads starts to dominate the
+> performance, but there are some specific workloads willing to switch
+> to this regime.
+> 
+> The primary consumer to date has been as a backend for the event
+> handling in the userspace networking stack, DPDK. DLB2 has an existing
+> polled-mode-userspace driver for that use case. So I said, "great,
+> just add more features to that userspace driver and you're done". In
+> fact there was DLB1 hardware that also had a polled-mode-userspace
+> driver. So, the next question is "what's changed in DLB2 where a
+> userspace driver is no longer suitable?". The new use case for DLB2 is
+> new hardware support for a host driver to carve up device resources
+> into smaller sets (vfio-mdevs) that can be assigned to guests (Intel
+> calls this new hardware capability SIOV: Scalable IO Virtualization).
+> 
+> Hardware resource management is difficult to handle in userspace
+> especially when bare-metal hardware events need to coordinate with
+> guest-VM device instances. This includes a mailbox interface for the
+> guest VM to negotiate resources with the host driver. Another more
+> practical roadblock for a "DLB2 in userspace" proposal is the fact
+> that it implements what are in-effect software-defined-interrupts to
+> go beyond the scalability limits of PCI MSI-x (Intel calls this
+> Interrupt Message Store: IMS). So even if hardware resource management
+> was awkwardly plumbed into a userspace daemon there would still need
+> to be kernel enabling for device-specific extensions to
+> drivers/vfio/pci/vfio_pci_intrs.c for it to understand the IMS
+> interrupts of DLB2 in addition to PCI MSI-x.
+> 
+> While that still might be solvable in userspace if you squint at it, I
+> don't think Linux end users are served by pushing all of hardware
+> resource management to userspace. VFIO is mostly built to pass entire
+> PCI devices to guests, or in coordination with a kernel driver to
+> describe a subset of the hardware to a virtual-device (vfio-mdev)
+> interface. The rub here is that to date kernel drivers using VFIO to
+> provision mdevs have some existing responsibilities to the core kernel
+> like a network driver or DMA offload driver. The DLB2 driver offers no
+> such service to the kernel for its primary role of accelerating a
+> userspace data-plane. I am assuming here that  the padata
+> proof-of-concept is interesting, but not a compelling reason to ship a
+> driver compared to giving end users competent kernel-driven
+> hardware-resource assignment for deploying DLB2 virtual instances into
+> guest VMs.
+> 
+> My "just continue in userspace" suggestion has no answer for the IMS
+> interrupt and reliable hardware resource management support
+> requirements. If you're with me so far we can go deeper into the
+> details, but in answer to your previous questions most of the TLAs
+> were from the land of "SIOV" where the VFIO community should be
+> brought in to review. The driver is mostly a configuration plane where
+> the fast path data-plane is entirely in userspace. That configuration
+> plane needs to manage hardware events and resourcing on behalf of
+> guest VMs running on a partitioned subset of the device. There are
+> worthwhile questions about whether some of the uapi can be refactored
+> to common modules like uacce, but I think we need to get to a first
+> order understanding on what DLB2 is and why the kernel has a role
+> before diving into the uapi discussion.
+> 
+> Any clearer?
 
+A bit, yes, thanks.
 
-pt., 14 maj 2021 o 15:00 Russell King (Oracle) <linux@armlinux.org.uk>
-napisa=C5=82(a):
->
-> Hi all,
->
-> While testing out the 10G speeds on my Macchiatobin platforms, the first
-> thing I notice is that they only manage about 1Gbps at a MTU of 1500.
-> As expected, this increases when the MTU is increased - a MTU of 9000
-> works, and gives a useful performance boost.
->
-> Then comes the obvious question - what is the maximum MTU.
->
-> #define MVPP2_BM_JUMBO_FRAME_SIZE       10432   /* frame size 9856 */
->
-> So, one may assume that 9856 is the maximum. However:
->
-> # ip li set dev eth0 mtu 9888
-> # ip li set dev eth0 mtu 9889
-> Error: mtu greater than device maximum.
->
-> So, the maximum that userspace can set appears to be 9888. If this is
-> set, then, while running iperf3, we get:
->
-> mvpp2 f2000000.ethernet eth0: bad rx status 9202e510 (resource error), si=
-ze=3D9888
->
-> So clearly this is too large, and we should not be allowing userspace
-> to set this large a MTU.
->
-> At this point, it seems to be impossible to regain the previous speed of
-> the interface by lowering the MTU. Here is a MTU of 9000:
->
-> [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> [  5]   0.00-1.00   sec  1.37 MBytes  11.5 Mbits/sec   40   17.5 KBytes
-> [  5]   1.00-2.00   sec  1.25 MBytes  10.5 Mbits/sec   39   8.74 KBytes
-> [  5]   2.00-3.00   sec  1.13 MBytes  9.45 Mbits/sec   36   17.5 KBytes
-> [  5]   3.00-4.00   sec  1.13 MBytes  9.45 Mbits/sec   39   8.74 KBytes
-> [  5]   4.00-5.00   sec  1.13 MBytes  9.45 Mbits/sec   36   17.5 KBytes
-> [  5]   5.00-6.00   sec  1.28 MBytes  10.7 Mbits/sec   39   8.74 KBytes
-> [  5]   6.00-7.00   sec  1.13 MBytes  9.45 Mbits/sec   36   17.5 KBytes
-> [  5]   7.00-8.00   sec  1.25 MBytes  10.5 Mbits/sec   39   8.74 KBytes
-> [  5]   8.00-9.00   sec  1.13 MBytes  9.45 Mbits/sec   36   17.5 KBytes
-> [  5]   9.00-10.00  sec  1.13 MBytes  9.45 Mbits/sec   39   8.74 KBytes
-> - - - - - - - - - - - - - - - - - - - - - - - - -
-> [ ID] Interval           Transfer     Bitrate         Retr
-> [  5]   0.00-10.00  sec  11.9 MBytes  9.99 Mbits/sec  379             sen=
-der
-> [  5]   0.00-10.00  sec  11.7 MBytes  9.80 Mbits/sec                  rec=
-eiver
->
-> Whereas before the test, it was:
->
-> [ ID] Interval           Transfer     Bitrate
-> [  5]   0.00-1.00   sec   729 MBytes  6.11 Gbits/sec
-> [  5]   1.00-2.00   sec   719 MBytes  6.03 Gbits/sec
-> [  5]   2.00-3.00   sec   773 MBytes  6.49 Gbits/sec
-> [  5]   3.00-4.00   sec   769 MBytes  6.45 Gbits/sec
-> [  5]   4.00-5.00   sec   779 MBytes  6.54 Gbits/sec
-> [  5]   5.00-6.00   sec   784 MBytes  6.58 Gbits/sec
-> [  5]   6.00-7.00   sec   777 MBytes  6.52 Gbits/sec
-> [  5]   7.00-8.00   sec   774 MBytes  6.50 Gbits/sec
-> [  5]   8.00-9.00   sec   769 MBytes  6.45 Gbits/sec
-> [  5]   9.00-10.00  sec   774 MBytes  6.49 Gbits/sec
-> [  5]  10.00-10.00  sec  3.07 MBytes  5.37 Gbits/sec
-> - - - - - - - - - - - - - - - - - - - - - - - - -
-> [ ID] Interval           Transfer     Bitrate
-> [  5]   0.00-10.00  sec  7.47 GBytes  6.41 Gbits/sec                  rec=
-eiver
->
-> (this is on the server end of iperf3, the others are the client end,
-> but the results were pretty very similar to that.)
->
-> So, clearly something bad has happened to the buffer management as a
-> result of raising the MTU so high.
->
-> As the end which has suffered this issue is the mcbin VM host, I'm not
-> currently in a position I can reboot it without cause major disruption
-> to my network. However, thoughts on this (and... can others reproduce
-> it) would be useful.
->
+> So, in summary drivers/misc/ appears to be the first stop in the
+> review since a host driver needs to be established to start the VFIO
+> enabling campaign. With my community hat on, I think requiring
+> standalone host drivers is healthier for Linux than broaching the
+> subject of VFIO-only drivers. Even if, as in this case, the initial
+> host driver is mostly implementing a capability that could be achieved
+> with a userspace driver.
 
-Thank your for the information. I will take a look after the weekend.
-To be aligned - what exactly kernel baseline are you using?
+Ok, then how about a much "smaller" kernel driver for all of this, and a
+whole lot of documentation to describe what is going on and what all of
+the TLAs are.
 
-Best regards,
-Marcin
+thanks,
+
+greg k-h
