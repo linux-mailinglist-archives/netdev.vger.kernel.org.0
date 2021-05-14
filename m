@@ -2,95 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 669DB380A5D
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 15:24:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE9D380AA2
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 15:46:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233963AbhENN0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 09:26:03 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40250 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230075AbhENN0C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 May 2021 09:26:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=bKrIdux+WQDhbsuj/L6O78Gu9Fpi7TdC9aFvwWVLPns=; b=Uu7s+m0wpC6i6cokaQjN2ujZPy
-        46SprCmSQxX+gHsLgzdWIUPaC9JeDRtKNZh9U+08/n3Uf2SG6hGMEmCcbC5UHLqBXrzd48DFJ2NaX
-        XzWrdLAk3WP9OOzcX1jfQqypi2sbqw70RFOrOweG/bdCxUOUElNSDsOjni+IxUiSisNM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lhXo3-004BmE-AI; Fri, 14 May 2021 15:24:43 +0200
-Date:   Fri, 14 May 2021 15:24:43 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH v3] net: phy: add driver for Motorcomm yt8511 phy
-Message-ID: <YJ56G23e930pg4Iv@lunn.ch>
-References: <20210514115826.3025223-1-pgwipeout@gmail.com>
+        id S231476AbhENNr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 09:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42748 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231196AbhENNr0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 09:47:26 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337DCC061574;
+        Fri, 14 May 2021 06:46:14 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id a4so30114916wrr.2;
+        Fri, 14 May 2021 06:46:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ymmwx+IZNZPtmksX0LXS0g42bC5sLEqQJ+dxtmdHYAA=;
+        b=L1hlMocshLK/8w3hl4DzeGupCK4WzLVF0cSbeTtoaPnsXJDk+135j/93Y9dCVhM4hO
+         zdyJXwNH2byhNXJIRIDSOmpFYaPUX2HHAz7eYkc02FCylvuwNVJgVHt/ok99/hAshpUI
+         00WJofJl4eCM2gAJLOOcONh6tJL9+nxb89V8K2cB8g/YfV1CoPnFKXvNys/czaOzRVgN
+         u9RnA5qiEjai6yNuTXp655zcwP1EHR2hBW/oup5mJ+oq5NkJ9V5H2KTFqZbu8Kkok6rw
+         ZJal0ErO1X8YRJx8+hqvg9KRQpjreGgrEe12GNK6h3utAieKw7fCxPdZxojGp1MGNmBm
+         tHog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ymmwx+IZNZPtmksX0LXS0g42bC5sLEqQJ+dxtmdHYAA=;
+        b=KV/COAIxw4jKIlIdx9U06PzJ2Edga0ouHs6hiN/gZ4xloZWMK2qVxrClDBN7+8BuMv
+         xs0Z8SZ1ZXMO18x1QkSeQam6KjCENGTg20/+HCLZ+AKw0wd0p3Y5i+xRz3po5xi22/45
+         d+xK5uqecuTorirvFvD/YB+NkvYcteAvZAShmWpvtkutIDBlPEhzhsdngIRoMNaSqLb9
+         uqWWIs+maPS0Rl/wq2KukXy9zWhM33c/H7wksGvpE5IhbryYbxMcGo0eXFQKfp/KSmck
+         o8GbveMG+cPq7wIdeBOy669pkJdMRygkwVImw/lQOFodr1pRB9bUmBaAYbzR6yWFXuNm
+         30Hw==
+X-Gm-Message-State: AOAM530W04q1MAa9rFtxG0klQJeFdUTpCc1Yqo29RLdW7anCmRCpeAmt
+        wTFMzhXXddYtEloIVC+7d5w=
+X-Google-Smtp-Source: ABdhPJw3flR6Q8XtcnS7uEUlO2rb16YVbcmlkDfIxQUCIWFEz+R8GpKG3A679HYO9Kz5vKY7yn8uXg==
+X-Received: by 2002:adf:ebc4:: with SMTP id v4mr259508wrn.217.1620999973011;
+        Fri, 14 May 2021 06:46:13 -0700 (PDT)
+Received: from [192.168.2.202] (pd9e5a369.dip0.t-ipconnect.de. [217.229.163.105])
+        by smtp.gmail.com with ESMTPSA id q12sm6626954wrx.17.2021.05.14.06.46.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 May 2021 06:46:12 -0700 (PDT)
+Subject: Re: [BUG] Deadlock in _cfg80211_unregister_wdev()
+From:   Maximilian Luz <luzmaximilian@gmail.com>
+To:     Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>, dave@bewaar.me
+References: <98392296-40ee-6300-369c-32e16cff3725@gmail.com>
+Message-ID: <da9f48e0-42fe-1f27-6ed8-ea796f95f894@gmail.com>
+Date:   Fri, 14 May 2021 15:46:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210514115826.3025223-1-pgwipeout@gmail.com>
+In-Reply-To: <98392296-40ee-6300-369c-32e16cff3725@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 07:58:26AM -0400, Peter Geis wrote:
-> Add a driver for the Motorcomm yt8511 phy that will be used in the
-> production Pine64 rk3566-quartz64 development board.
-> It supports gigabit transfer speeds, rgmii, and 125mhz clk output.
+On 5/14/21 1:07 AM, Maximilian Luz wrote:
+> Following commit a05829a7222e ("cfg80211: avoid holding the RTNL when
+> calling the driver"), the mwifiex_pcie module fails to unload. This also
+> prevents the device from rebooting / shutting down.
+> 
+> Attempting to unload the module produces the log pasted below. Upon
+> further investigation, this looks like a deadlock inside
+> _cfg80211_unregister_wdev():
+> 
+> - According to [1], this function expects the rdev->wiphy.mtx to be
+>    held.
+> - Down the line, this function (through some indirections, see third
+>    trace in log below) calls call_netdevice_notifiers(NETDEV_GOING_DOWN,
+>    ...) [2].
+> - One of the registered notifiers seems to be
+>    cfg80211_netdev_notifier_call(), which attempts to lock
+>    rdev->wiphy.mtx again [3], completing the deadlock.
 
-Thanks for adding RGMII support.
+Looks like the underlying issue also leads to
 
-> +#define PHY_ID_YT8511		0x0000010a
+   https://lore.kernel.org/linux-wireless/ab4d00ce52f32bd8e45ad0448a44737e@bewaar.me/
 
-No OUI in the PHY ID?
-
-Humm, the datasheet says it defaults to zero. That is not very
-good. This could be a source of problems in the future, if some other
-manufacture also does not use an OUI.
-
-> +/* RX Delay enabled = 1.8ns 1000T, 8ns 10/100T */
-> +#define YT8511_DELAY_RX		BIT(0)
-> +
-> +/* TX Delay is bits 7:4, default 0x5
-> + * Delay = 150ps * N - 250ps, Default = 500ps
-> + */
-> +#define YT8511_DELAY_TX		(0x5 << 4)
-
-> +
-> +	switch (phydev->interface) {
-> +	case PHY_INTERFACE_MODE_RGMII:
-> +		val &= ~(YT8511_DELAY_RX | YT8511_DELAY_TX);
-> +		break;
-
-This is not correct. YT8511_DELAY_TX will only mask the 2 bits in 0x5,
-not all the bits in 7:4. And since the formula is
-
-Delay = 150ps * N - 250ps
-
-setting N to 0 is not what you want. You probably want N=2, so you end up with 50ps
-
-> +	case PHY_INTERFACE_MODE_RGMII_ID:
-> +		val |= YT8511_DELAY_RX | YT8511_DELAY_TX;
-> +		break;
-> +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> +		val &= ~(YT8511_DELAY_TX);
-> +		val |= YT8511_DELAY_RX;
-
-The delay should be around 2ns. For RX you only have 1.8ns, which is
-probably good enough. But for TX you have more flexibility. You are
-setting it to the default of 500ps which is too small. I would suggest
-1.85ns, N=14, so it is the same as RX.
-
-I also wonder about bits 15:12 of PHY EXT ODH: Delay and driver
-strength CFG register.
-
-	 Andrew
+Regards,
+Max
