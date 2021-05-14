@@ -2,143 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA79538040D
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 09:15:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1C70380412
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 09:16:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233004AbhENHQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 03:16:15 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:60693 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbhENHQO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 03:16:14 -0400
-Received: from 1-171-223-194.dynamic-ip.hinet.net ([1.171.223.194] helo=localhost)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1lhS2E-0001af-5i; Fri, 14 May 2021 07:14:58 +0000
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth@vger.kernel.org (open list:BLUETOOTH SUBSYSTEM),
-        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] Bluetooth: Shutdown controller after workqueues are flushed or cancelled
-Date:   Fri, 14 May 2021 15:14:52 +0800
-Message-Id: <20210514071452.25220-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.30.2
+        id S233019AbhENHSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 03:18:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36467 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232997AbhENHRy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 03:17:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620976603;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bs6XAiqm+++NgmbBMX048ZVKuxbmYHB+gyl0ZWTysSo=;
+        b=DMnA5UIqQNrSNLAX5qn9ZpHc02ihGmUxJX8ZFZCe7OZ6rL4ofejVyKCDg6AUKdtJ/bIKMf
+        QyXOohJh0Fs48FOZPhLN4SuXj4nmMvSjhVUUySwFSseh5W0y6B+3T3M4385otcoE+58Fm7
+        cata/kL9c4PWvN0ul3XrN0hFL3xxnog=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-186-mZrX33JIPnCFBrx4tc02aw-1; Fri, 14 May 2021 03:16:36 -0400
+X-MC-Unique: mZrX33JIPnCFBrx4tc02aw-1
+Received: by mail-lj1-f199.google.com with SMTP id g6-20020a05651c0446b02900dee525f111so15595757ljg.19
+        for <netdev@vger.kernel.org>; Fri, 14 May 2021 00:16:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bs6XAiqm+++NgmbBMX048ZVKuxbmYHB+gyl0ZWTysSo=;
+        b=ZawIqS1FHESlV3hGaXLuDAo5kavfptEJ+TCmU0TYrIJIqSR698kMkN9gk6hwScGFrL
+         iGb0DAJIeXQWoXMrk1zdOXWT50gH2GcBlNlaHQRMETjLvi6yXGARnTtebuC2Cd0ptCh0
+         ci+hocHA7mQj8lvhou9ogHcrEKerZAB5aHQo1YgovTlEYmzSwq2qOye4qs+NM43qUtKX
+         KEwnmS1YOmHEgTBlsAF7YK/X2wCef5m1CMSRsUb2MUkLvZcnxnarAKChTAakEmR6OTQk
+         ArAQKxWhbzEBTjgP/85epK2np+fovmxE6ae+cNsP01IkG7Hj/04IMJvIJc4/FP86fkUY
+         b0yQ==
+X-Gm-Message-State: AOAM53072ObdY3FGP3B1Ug4z8iU/P6kyye5QgxsBWPF0fvAqNXvBJ9Kb
+        Ccmi5rSvpb+7M0bQ1yRAKIycxP/yFx5Umb9UzSUllgGIlBtEXnM8bx7f10YiLmsm5DwI/IEZgJY
+        p0MhsK0W/oxTqfA8Kyp46s/0wp5a1Abm7
+X-Received: by 2002:a05:6512:1027:: with SMTP id r7mr13858030lfr.153.1620976595398;
+        Fri, 14 May 2021 00:16:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJylEHgvD1At56XNI5YMYNsfY9iCPgmWpzVeYV6PPpvkCHSx7kuHth0tuPQkubc2oMXxR1C5ZImuUDudNmzwUls=
+X-Received: by 2002:a05:6512:1027:: with SMTP id r7mr13858008lfr.153.1620976595150;
+ Fri, 14 May 2021 00:16:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210511044253.469034-1-yuri.benditovich@daynix.com>
+ <20210511044253.469034-5-yuri.benditovich@daynix.com> <eb8c4984-f0cc-74ee-537f-fc60deaaaa73@redhat.com>
+ <CAOEp5OdrCDPx4ijLcEOm=Wxma6hc=nyqw4Xm6bggBxvgtR0tbg@mail.gmail.com>
+ <89759261-3a72-df6c-7a81-b7a48abfad44@redhat.com> <CAOEp5Ocm9Q69Fv=oeyCs01F9J4nCTPiOPpw9_BRZ0WnF+LtEFQ@mail.gmail.com>
+ <CACGkMEsZBCzV+d_eLj1aYT+pkS5m1QAy7q8rUkNsdV0C8aL8tQ@mail.gmail.com>
+ <CAOEp5OeSankfA6urXLW_fquSMrZ+WYXDtKNacort1UwR=WgxqA@mail.gmail.com>
+ <CACGkMEt3bZrdqbWtWjSkXvv5v8iCHiN8hkD3T602RZnb6nPd9A@mail.gmail.com>
+ <CAOEp5Odw=eaQWZCXr+U8PipPtO1Avjw-t3gEdKyvNYxuNa5TfQ@mail.gmail.com>
+ <CACGkMEuqXaJxGqC+CLoq7k4XDu+W3E3Kk3WvG-D6tnn2K4ZPNA@mail.gmail.com>
+ <CAOEp5OfB62SQzxMj_GkVD4EM=Z+xf43TPoTZwMbPPa3BsX2ooA@mail.gmail.com>
+ <CACGkMEu4NdyMoFKbyUGG1aGX+K=ShMZuVuMKYPauEBYz5pxYzA@mail.gmail.com> <CA+FuTScV+AJ+O3shOMLjUcy+PjBE8uWqCNt0FXWnq9L3gzrvaw@mail.gmail.com>
+In-Reply-To: <CA+FuTScV+AJ+O3shOMLjUcy+PjBE8uWqCNt0FXWnq9L3gzrvaw@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 14 May 2021 15:16:23 +0800
+Message-ID: <CACGkMEuUF1vDNWbL9dRr1ZM4vFTLwc3j9uB-66451U1NvQ+2EA@mail.gmail.com>
+Subject: Re: [PATCH 4/4] tun: indicate support for USO feature
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Yuri Benditovich <yuri.benditovich@daynix.com>,
+        Yan Vugenfirer <yan@daynix.com>, davem <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mst <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rfkill block and unblock Intel USB Bluetooth [8087:0026] may make it
-stops working:
-[  509.691509] Bluetooth: hci0: HCI reset during shutdown failed
-[  514.897584] Bluetooth: hci0: MSFT filter_enable is already on
-[  530.044751] usb 3-10: reset full-speed USB device number 5 using xhci_hcd
-[  545.660350] usb 3-10: device descriptor read/64, error -110
-[  561.283530] usb 3-10: device descriptor read/64, error -110
-[  561.519682] usb 3-10: reset full-speed USB device number 5 using xhci_hcd
-[  566.686650] Bluetooth: hci0: unexpected event for opcode 0x0500
-[  568.752452] Bluetooth: hci0: urb 0000000096cd309b failed to resubmit (113)
-[  578.797955] Bluetooth: hci0: Failed to read MSFT supported features (-110)
-[  586.286565] Bluetooth: hci0: urb 00000000c522f633 failed to resubmit (113)
-[  596.215302] Bluetooth: hci0: Failed to read MSFT supported features (-110)
+On Fri, May 14, 2021 at 4:35 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> > > But surprisingly when TUN receives TUN_F_UFO it does not propagate it
+> > > anywhere, there is no corresponding NETIF flag.
+> >
+> > (It looks like I drop the community and other ccs accidentally, adding
+> > them back and sorry)
+> >
+> > Actually, there is one, NETIF_F_GSO_UDP.
+> >
+> > Kernel used to have NETIF_F_UFO, but it was removed due to bugs and
+> > the lack of real hardware support. Then we found it breaks uABI, so
+> > Willem tries to make it appear for userspace again, and then it was
+> > renamed to NETIF_F_GSO_UDP.
+> >
+> > But I think it's a bug that we don't proporate TUN_F_UFO to NETIF
+> > flag, this is a must for the driver that doesn't support
+> > VIRTIO_NET_F_GUEST_UFO. I just try to disable all offloads and
+> > mrg_rxbuf, then netperf UDP_STREAM from host to guest gives me bad
+> > length packet in the guest.
+> >
+> > Willem, I think we probably need to fix this.
+>
+> We had to add back support for the kernel to accept UFO packets from
+> userspace over tuntap.
+>
+> The kernel does not generate such packets, so a guest should never be
+> concerned of receiving UFO packets.
 
-Or kernel panics because other workqueues already freed skb:
-[ 2048.663763] BUG: kernel NULL pointer dereference, address: 0000000000000000
-[ 2048.663775] #PF: supervisor read access in kernel mode
-[ 2048.663779] #PF: error_code(0x0000) - not-present page
-[ 2048.663782] PGD 0 P4D 0
-[ 2048.663787] Oops: 0000 [#1] SMP NOPTI
-[ 2048.663793] CPU: 3 PID: 4491 Comm: rfkill Tainted: G        W         5.13.0-rc1-next-20210510+ #20
-[ 2048.663799] Hardware name: HP HP EliteBook 850 G8 Notebook PC/8846, BIOS T76 Ver. 01.01.04 12/02/2020
-[ 2048.663801] RIP: 0010:__skb_ext_put+0x6/0x50
-[ 2048.663814] Code: 8b 1b 48 85 db 75 db 5b 41 5c 5d c3 be 01 00 00 00 e8 de 13 c0 ff eb e7 be 02 00 00 00 e8 d2 13 c0 ff eb db 0f 1f 44 00 00 55 <8b> 07 48 89 e5 83 f8 01 74 14 b8 ff ff ff ff f0 0f c1
-07 83 f8 01
-[ 2048.663819] RSP: 0018:ffffc1d105b6fd80 EFLAGS: 00010286
-[ 2048.663824] RAX: 0000000000000000 RBX: ffff9d9ac5649000 RCX: 0000000000000000
-[ 2048.663827] RDX: ffffffffc0d1daf6 RSI: 0000000000000206 RDI: 0000000000000000
-[ 2048.663830] RBP: ffffc1d105b6fd98 R08: 0000000000000001 R09: ffff9d9ace8ceac0
-[ 2048.663834] R10: ffff9d9ace8ceac0 R11: 0000000000000001 R12: ffff9d9ac5649000
-[ 2048.663838] R13: 0000000000000000 R14: 00007ffe0354d650 R15: 0000000000000000
-[ 2048.663843] FS:  00007fe02ab19740(0000) GS:ffff9d9e5f8c0000(0000) knlGS:0000000000000000
-[ 2048.663849] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 2048.663853] CR2: 0000000000000000 CR3: 0000000111a52004 CR4: 0000000000770ee0
-[ 2048.663856] PKRU: 55555554
-[ 2048.663859] Call Trace:
-[ 2048.663865]  ? skb_release_head_state+0x5e/0x80
-[ 2048.663873]  kfree_skb+0x2f/0xb0
-[ 2048.663881]  btusb_shutdown_intel_new+0x36/0x60 [btusb]
-[ 2048.663905]  hci_dev_do_close+0x48c/0x5e0 [bluetooth]
-[ 2048.663954]  ? __cond_resched+0x1a/0x50
-[ 2048.663962]  hci_rfkill_set_block+0x56/0xa0 [bluetooth]
-[ 2048.664007]  rfkill_set_block+0x98/0x170
-[ 2048.664016]  rfkill_fop_write+0x136/0x1e0
-[ 2048.664022]  vfs_write+0xc7/0x260
-[ 2048.664030]  ksys_write+0xb1/0xe0
-[ 2048.664035]  ? exit_to_user_mode_prepare+0x37/0x1c0
-[ 2048.664042]  __x64_sys_write+0x1a/0x20
-[ 2048.664048]  do_syscall_64+0x40/0xb0
-[ 2048.664055]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ 2048.664060] RIP: 0033:0x7fe02ac23c27
-[ 2048.664066] Code: 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
-[ 2048.664070] RSP: 002b:00007ffe0354d638 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-[ 2048.664075] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007fe02ac23c27
-[ 2048.664078] RDX: 0000000000000008 RSI: 00007ffe0354d650 RDI: 0000000000000003
-[ 2048.664081] RBP: 0000000000000000 R08: 0000559b05998440 R09: 0000559b05998440
-[ 2048.664084] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-[ 2048.664086] R13: 0000000000000000 R14: ffffffff00000000 R15: 00000000ffffffff
+That's my feeling as well.
 
-So move the shutdown callback to a place where workqueues are either
-flushed or cancelled to resolve the issue.
+But when I:
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v2:
- - Rebased on bluetooth-next.
+1) turn off all guest gso feature and mrg rx buffers, in this case
+virtio-net will only allocate 1500 bytes for each packet
+2) doing netperf (UDP_STREAM) from local host to guest, I see packet
+were truncated in the guest
 
- net/bluetooth/hci_core.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+>
+> Perhaps i'm misunderstanding the problem here.
+>
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 7baf93eda936..6eedf334f943 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -1716,14 +1716,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
- 
- 	BT_DBG("%s %p", hdev->name, hdev);
- 
--	if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
--	    !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
--	    test_bit(HCI_UP, &hdev->flags)) {
--		/* Execute vendor specific shutdown routine */
--		if (hdev->shutdown)
--			hdev->shutdown(hdev);
--	}
--
- 	cancel_delayed_work(&hdev->power_off);
- 	cancel_delayed_work(&hdev->ncmd_timer);
- 
-@@ -1801,6 +1793,14 @@ int hci_dev_do_close(struct hci_dev *hdev)
- 		clear_bit(HCI_INIT, &hdev->flags);
- 	}
- 
-+	if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-+	    !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-+	    test_bit(HCI_UP, &hdev->flags)) {
-+		/* Execute vendor specific shutdown routine */
-+		if (hdev->shutdown)
-+			hdev->shutdown(hdev);
-+	}
-+
- 	/* flush cmd  work */
- 	flush_work(&hdev->cmd_work);
- 
--- 
-2.30.2
+I will re-check and get back to you.
+(probably need a while since I will not be online for the next week).
+
+Thanks
 
