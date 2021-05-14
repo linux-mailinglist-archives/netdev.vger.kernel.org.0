@@ -2,124 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1312F38073F
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 12:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD9EE3807B5
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 12:49:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231734AbhENKd7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 14 May 2021 06:33:59 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:35111 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbhENKd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 06:33:59 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 14EAWQLD0000693, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 14EAWQLD0000693
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 14 May 2021 18:32:26 +0800
-Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 14 May 2021 18:32:25 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 14 May 2021 18:32:24 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74]) by
- RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74%5]) with mapi id
- 15.01.2106.013; Fri, 14 May 2021 18:32:24 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Greg KH <greg@kroah.com>
-CC:     Alan Stern <stern@rowland.harvard.edu>,
-        syzbot <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: RE: [syzbot] WARNING in rtl8152_probe
-Thread-Topic: [syzbot] WARNING in rtl8152_probe
-Thread-Index: AQHXRxMNo04dZcfiN0eNJrSRsQsh6qrguwNggAA4ewCAAVQHMP//vp6AgACQRgD//4sbgIAApcsA
-Date:   Fri, 14 May 2021 10:32:24 +0000
-Message-ID: <d7ea3cfd8bde4b8ba7ed6ea4c545c9dc@realtek.com>
-References: <0000000000009df1b605c21ecca8@google.com>
- <7de0296584334229917504da50a0ac38@realtek.com>
- <20210513142552.GA967812@rowland.harvard.edu>
- <bde8fc1229ec41e99ec77f112cc5ee01@realtek.com> <YJ4dU3yCwd2wMq5f@kroah.com>
- <bddf302301f5420db0fa049c895c9b14@realtek.com> <YJ40S1eHnbg1dsYv@kroah.com>
-In-Reply-To: <YJ40S1eHnbg1dsYv@kroah.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.203]
-x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/5/14_=3F=3F_06:04:00?=
-x-kse-attachment-filter-triggered-rules: Clean
-x-kse-attachment-filter-triggered-filters: Clean
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S231449AbhENKvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 06:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59484 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229516AbhENKvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 06:51:02 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCE7C06174A
+        for <netdev@vger.kernel.org>; Fri, 14 May 2021 03:49:50 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id p20so13368831ljj.8
+        for <netdev@vger.kernel.org>; Fri, 14 May 2021 03:49:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:date:from:user-agent:mime-version:to:cc:subject
+         :references:in-reply-to:content-transfer-encoding;
+        bh=tLXYr9FRmgWUeZYIBm0XdxDuEUGBAcMG+g+2Ty3DMhM=;
+        b=vXSbgkx54XgqfbnCPtZQKOH1q5eloLh0jp9c9AXy6RkhCzfxLw/UTHJLMa/qOUpRmT
+         Q4YqrEo2RuQE2feJtrbqM3NGxYYo3sNONO8YUre8HItaEQlP//XP25zQAHW7q8GZRlP5
+         3Th1eNEgycBnhx1T8PSrfynavLmdQ3EpATidEW+eJZmPpDlDGIbmVxRhGyjI8lOylfnV
+         IQuI1nD0CR0imHaSiR5xv+nBRTxFJxNRutYE1+almPSdhadJR9XEcqXV0NEEksYXQlQu
+         4lkhtEGI6T7QG1W7MfQPqH7ZzwlPOQX76WPZTRYEClCR9x8Jg9GN1QkeXUxZwmtMpDPL
+         8+zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
+         :cc:subject:references:in-reply-to:content-transfer-encoding;
+        bh=tLXYr9FRmgWUeZYIBm0XdxDuEUGBAcMG+g+2Ty3DMhM=;
+        b=uOGAoDQ4S8AEN7GL7k5PXnnDCXT3qaZkOe+jCrKAU/9Bvg/+utJgjjqVu/2KFuZOX+
+         Sc/jxX4dCkpH4vKLkjxYzB00N769qgZuQG8JAtRiFd0cTbUxdXskX3K9A5RFAwRwdc9s
+         GhkdIsL5D8UW5phHSR99qAYw1AOMQF9tQmmWMLcZ7p0RHsCYIMphRj7sj1EEyXbXD8G7
+         pufZ9uVDFrwUu1/kh91XU8Mib21+ncYz8KKYBlV/aKEkLMO/HY+Rl3kquYGfujQvVjYS
+         9psPdRlgf59jtY4up3/i83AtgbKlhQ/6SnJEqLt75OwUZSlA7GvUhRIIKbKm8LuAKfIx
+         AJ5A==
+X-Gm-Message-State: AOAM531CLUbKrKS3IGd5M0lnzKdZbI7j9qhPP6RmE3qeUwu7eoK8zeOA
+        jqZDNUMlZlZogLGiOegNlw28bNEnBrk=
+X-Google-Smtp-Source: ABdhPJxIoW0ATmFim1iDablLNHaUroHg6jAWOrMquCKQj3cOBva9QQ5ybf1ZqLff42Zz72OzeyHY/w==
+X-Received: by 2002:a2e:bf2a:: with SMTP id c42mr36253912ljr.208.1620989388692;
+        Fri, 14 May 2021 03:49:48 -0700 (PDT)
+Received: from [192.168.0.91] ([188.242.181.97])
+        by smtp.googlemail.com with ESMTPSA id h19sm982581ljg.119.2021.05.14.03.49.48
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Fri, 14 May 2021 03:49:48 -0700 (PDT)
+Message-ID: <609E5817.8090000@gmail.com>
+Date:   Fri, 14 May 2021 13:59:35 +0300
+From:   Nikolai Zhubr <zhubr.2@gmail.com>
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.2.4) Gecko/20100608 Thunderbird/3.1
 MIME-Version: 1.0
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/14/2021 10:22:47
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163662 [May 14 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 445 445 d5f7ae5578b0f01c45f955a2a751ac25953290c9
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 05/14/2021 10:10:00
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/14/2021 10:12:41
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163661 [May 14 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 445 445 d5f7ae5578b0f01c45f955a2a751ac25953290c9
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;realtek.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 05/14/2021 10:15:00
+To:     Johannes Berg <johannes@sipsolutions.net>
+CC:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] alx: use fine-grained locking instead of RTNL
+References: <20210512121950.c93ce92d90b3.I085a905dea98ed1db7f023405860945ea3ac82d5@changeid>
+In-Reply-To: <20210512121950.c93ce92d90b3.I085a905dea98ed1db7f023405860945ea3ac82d5@changeid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greg KH <greg@kroah.com>
-> Sent: Friday, May 14, 2021 4:27 PM
+Hi Johannes,
+
+12.05.2021 13:19, Johannes Berg:
+> In the alx driver, all locking depended on the RTNL, but
 [...]
-> Checking the whole USB decriptor is fine, yes, they can duplicate that.
-> So that means you need to validate _ALL_ data coming from the device
-> that it is in an acceptable range of values that the driver can
-> correctly handle.
+> @@ -232,7 +240,7 @@ static int alx_set_pauseparam(struct net_device *netdev,
+>   	if (pause->autoneg)
+>   		fc |= ALX_FC_ANEG;
+>
+> -	ASSERT_RTNL();
+> +	mutex_lock(&alx->mtx);
+>
+>   	/* restart auto-neg for auto-mode */
+>   	if (hw->adv_cfg&  ADVERTISED_Autoneg) {
+> @@ -254,6 +262,7 @@ static int alx_set_pauseparam(struct net_device *netdev,
+>   		alx_cfg_mac_flowcontrol(hw, fc);
+>
+>   	hw->flowctrl = fc;
+> +	mutex_unlock(&alx->mtx);
+>
+>   	return 0;
+>   }
 
-I see.
+Isn't this fragment missing a mutex_unlock(&alx->mtx) for the "return 
+err" codepath in the middle? I'm not sure, its like very suspicious, 
+please have a look.
 
-Best Regards,
-Hayes
 
+Thank you,
+
+Regards,
+Nikolai
