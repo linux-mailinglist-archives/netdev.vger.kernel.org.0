@@ -2,85 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DFF838121F
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 22:53:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B8A38122C
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 23:00:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232431AbhENUyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 16:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53928 "EHLO
+        id S230230AbhENVBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 17:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231175AbhENUyP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 16:54:15 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368F8C061574
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 13:53:03 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id v22so708230oic.2
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 13:53:03 -0700 (PDT)
+        with ESMTP id S229524AbhENVBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 17:01:30 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A55AC061574;
+        Fri, 14 May 2021 14:00:17 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id a25so26930edr.12;
+        Fri, 14 May 2021 14:00:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YlQKt8y0EZtuZH7/4tDzDRPxNpRChNxKVQZsAVkn9XE=;
-        b=fst7rL662oJOZebki9o9DxkZYx2J7YMRs2i4EP0CPMDRJssKQ0MmZ9PgYYRmTZp2kF
-         J+EV1YASJvE/rV9NJvqjFlHcfeA7osimfs6EeS4PR6bZFwNWU92v46K3fjbPKTgDCqKL
-         X5AMZlxCpZyGsN9aubtZcOAEz90/XdDqW42QORKIs7vTEqc3WUsDcd70t3LcLoJz3E76
-         zv0nQAlgatYBSvO/9xSgwqozOixzehUv8OhAtRgS/VfWKOptMKrSY9aKUwTBqeXedQVA
-         BCn9u9CUAX3pBJffbrjNXoG61vL9C4vT98//dewLj2vE7LoBYU/VYYIuIAIAkTaVoKpD
-         4OMg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mdWgE6cI2x3bH7vYaDr/JQ4J+dMeZdc878Zv32lrssE=;
+        b=P/N/j/ue7uIPUpU++4wwn9yPrC0AaVs9IgBMIjtY/znNcWkdnPb0vi9JehWEN58JOw
+         I4BAxuYgyi35v9BcgfXSDPNKV7FDYSfG/xBlC22fc2rWIYXQJCR9+TYOrnGmG16KTUZs
+         PzACKJd43OWbSnt0mtgrk9CIhSdk/Z/VDfoaM+DoEgHKOGwpTKP5uqVzmqOoynMuKsjo
+         hXOraxi66fPysmmBeVzuBR1PF13j1fhuEl4zYlsGlGHE8lC2n82gCuLUSNOPrmp4Y3+L
+         14Q+M69cnPoWewKuzURH9arZxf3nUMJB2pscBQWZb5yfzesrAFg8LL3W3Ym00JX57PQn
+         l4Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YlQKt8y0EZtuZH7/4tDzDRPxNpRChNxKVQZsAVkn9XE=;
-        b=r7pew80XPrnYnyQaW6e+BlkRiq0kcTbMBpWkNq4W0giS4aEm3tUtJ+RCE9QJ7SOr+a
-         sXD7aZm/rADGhVb7BfmlpUli27fnETE0yftUt7ryzWz4AeONjozqvNlf1arrq47XVfKv
-         6/eTn0snzOJ0J48UsmcPBLkBuMqiubsakjVRow0Sv+A9tRoM+xqlqHMEqUFoi0bRphLx
-         1Q2z+nmVepjke6cgHDg94KW7BkIslhB2QWfk2tbLrbD0tThLkYxJEqwQfksz5pahSmIB
-         I+8/U6YeJoEz1+lS2uJidHGmyP2Y4VSwCsMwQVUryOJ/GzrpL35QURi5m2k3P7GM3EI6
-         W58g==
-X-Gm-Message-State: AOAM530DAwkF/6/vEluaN6hNmu1L21jEDpQIiMZHDwjTA524V2Rzz0+8
-        AQlc136EIUQzXTC/8FOQz47JqRnT7VZz7XJnjFagUzM+PVI=
-X-Google-Smtp-Source: ABdhPJyKFpid0DBNvfKWF4YUtkZRG6g3Kj6WH5n5bZ8KJMBauQIesjgb+oWzptp4vm3noe7Zs6xzcyTIM1AFFXi3zVI=
-X-Received: by 2002:aca:4e55:: with SMTP id c82mr7881296oib.17.1621025582683;
- Fri, 14 May 2021 13:53:02 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mdWgE6cI2x3bH7vYaDr/JQ4J+dMeZdc878Zv32lrssE=;
+        b=PQC47t83cCI9BPsyaUVHnWutidc0RWZtMID31zQYHUrft44lJb9utSA7Ir8wQbvtop
+         WI1JMCh3mOBhOx65Ww4V+svmY6ORD2NdBOHDCZMesQ78w9zuXD7UomiaXGpi4sy9WvNq
+         vRIWVwj9VNghecIrHdvBeKtwWMAvvMcU9ganVRo1GRNC22ESIJ+xaAZRFSkCXQbK77ET
+         bs3UonpsswnW9yRbW6YuYA2PqFkCEs/P9kGRDm3YbMea+SnyDlH2milKZ9ZnKF+gDuqf
+         6T94jEcHcffv46EOThiApMtb7wpFZiBc9+udJUAwyooDudp1Xe+SkF6qN5LKZOWRHK0m
+         X+sQ==
+X-Gm-Message-State: AOAM531RWl5p9lq22hvZ6qv0oLU69QAh+qn8cBkhp5mxE9naGC1NkcxI
+        LAM7GJhQCioV9qikd/KSXpAx3ov8yE8ZTA==
+X-Google-Smtp-Source: ABdhPJyt+XO/kKm5gxPHGXzw/EqcM4cwJBKc7qc+fdmHVVQHAFV2VL3mIQ14bh3ebnY51mVJhRE4TA==
+X-Received: by 2002:aa7:d513:: with SMTP id y19mr56993183edq.9.1621026015888;
+        Fri, 14 May 2021 14:00:15 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
+        by smtp.googlemail.com with ESMTPSA id c3sm5455237edn.16.2021.05.14.14.00.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 May 2021 14:00:15 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH net-next v6 00/25] Multiple improvement to qca8k stability
+Date:   Fri, 14 May 2021 22:59:50 +0200
+Message-Id: <20210514210015.18142-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20210512212956.4727-1-ryazanov.s.a@gmail.com> <20210514121433.2d5082b3@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20210514121433.2d5082b3@kicinski-fedora-PC1C0HJN>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Fri, 14 May 2021 23:52:51 +0300
-Message-ID: <CAHNKnsSM6dcMDnOOEo5zs6wdzdA1S43pMpB+rkKpuuBrBxj3pg@mail.gmail.com>
-Subject: Re: [PATCH net] netns: export get_net_ns_by_id()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        "list@hauke-m.de:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 10:14 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> On Thu, 13 May 2021 00:29:56 +0300 Sergey Ryazanov wrote:
-> > No one loadable module is able to obtain netns by id since the
-> > corresponding function has not been exported. Export it to be able to
-> > use netns id API in loadable modules too as already done for
-> > peernet2id_alloc().
->
-> peernet2id_alloc() is used by OvS, what's the user for get_net_ns_by_id()?
+Currently qca8337 switch are widely used on ipq8064 based router.
+On these particular router it was notice a very unstable switch with
+port not link detected as link with unknown speed, port dropping
+randomly and general unreliability. Lots of testing and comparison
+between this dsa driver and the original qsdk driver showed lack of some
+additional delay and values. A main difference arised from the original
+driver and the dsa one. The original driver didn't use MASTER regs to
+read phy status and the dedicated mdio driver worked correctly. Now that
+the dsa driver actually use these regs, it was found that these special
+read/write operation required mutual exclusion to normal
+qca8k_read/write operation. The add of mutex for these operation fixed
+the random port dropping and now only the actual linked port randomly
+dropped. Adding additional delay for set_page operation and fixing a bug
+in the mdio dedicated driver fixed also this problem. The current driver
+requires also more time to apply vlan switch. All of these changes and
+tweak permit a now very stable and reliable dsa driver and 0 port
+dropping. This series is currently tested by at least 5 user with
+different routers and all reports positive results and no problems.
 
-There are currently no active users of get_net_ns_by_id(), that is why
-I did not add a "Fix" tag. Missed function export does not break
-existing code in any way.
+Changes v6:
+- Fix spelling mistake
+- Change ms to ns (confirmed by datasheet)
+Changes v5:
+- Removed mdio patch (sent separetly to try to reduce the series)
+  I know it was asked to reduced this series since it big, but rework
+  the new changes to skip and error check looks wrong. Since half of them
+  are actually already reviewed I think it's better to keep this series as is.
+- Improve rgmii configurable patch
+- Move qca8k phy dedicated driver to at803x phy driver
+- Add support for dedicated internal mdio driver for qca8k
+Changes v4:
+- Use iopoll for busy_wait function
+- Better describe and split some confusing commits
+- Fix bad rgmii delay configurable patch
+- Drop phy generic patch to pass flags with phylink_connect_phy
+- Add dsa2 patch to declare mdio node in the switch node
+- Add dsa patch to permit dsa driver to declare custom get_phys_mii_mask
+    Some background about the last 2 patch.
+    The qca8k switch doesn't have a 1:1 map between port reg and phy reg.
+    Currently it's used a function to convert port to the internal phy reg.
+    I added some patch to fix this.
+    - The dsa driver now check if the mdio node is present and use the of variant
+      of the mdiobus_register
+    - A custom phy_mii_mask is required as currently the mask is generated from
+      the port reg, but in our case the mask would be different as it should be
+      generated from the phy reg. To generalize this I added an extra function
+      that driver can provide to pass custom phy_mii_mask.
+Changes v3:
+- Revert mdio writel changes (use regmap with REGCACHE disabled)
+- Split propagate error patch to 4 different patch
+Changes v2:
+- Implemented phy driver for internal PHYs
+  I'm testing cable test functions as I found some documentation that
+  actually declare regs about it. Problem is that it doesn't actually
+  work. It seems that the value set are ignored by the phy.
+- Made the rgmii delay configurable
+- Reordered patch
+- Split mdio patches to more specific ones
+- Reworked mdio driver to use readl/writel instead of regmap
+- Reworked the entire driver to make it aware of any read/write error.
+- Added phy generic patch to pass flags with phylink_connect_phy
+  function
 
-On the other hand netns id API is incomplete without this export. You
-have no way to write and test a code that uses netns id API without
-manual kernel patching and rebuilding. This is annoying, but could be
-trivially fixed.
+Ansuel Smith (25):
+  net: dsa: qca8k: change simple print to dev variant
+  net: dsa: qca8k: use iopoll macro for qca8k_busy_wait
+  net: dsa: qca8k: improve qca8k read/write/rmw bus access
+  net: dsa: qca8k: handle qca8k_set_page errors
+  net: dsa: qca8k: handle error with qca8k_read operation
+  net: dsa: qca8k: handle error with qca8k_write operation
+  net: dsa: qca8k: handle error with qca8k_rmw operation
+  net: dsa: qca8k: handle error from qca8k_busy_wait
+  net: dsa: qca8k: add support for qca8327 switch
+  devicetree: net: dsa: qca8k: Document new compatible qca8327
+  net: dsa: qca8k: add priority tweak to qca8337 switch
+  net: dsa: qca8k: limit port5 delay to qca8337
+  net: dsa: qca8k: add GLOBAL_FC settings needed for qca8327
+  net: dsa: qca8k: add support for switch rev
+  net: dsa: qca8k: add ethernet-ports fallback to setup_mdio_bus
+  net: dsa: qca8k: make rgmii delay configurable
+  net: dsa: qca8k: clear MASTER_EN after phy read/write
+  net: dsa: qca8k: dsa: qca8k: protect MASTER busy_wait with mdio mutex
+  net: dsa: qca8k: enlarge mdio delay and timeout
+  net: dsa: qca8k: add support for internal phy and internal mdio
+  devicetree: bindings: dsa: qca8k: Document internal mdio definition
+  net: dsa: qca8k: improve internal mdio read/write bus access
+  net: dsa: qca8k: pass switch_revision info to phy dev_flags
+  net: phy: at803x: clean whitespace errors
+  net: phy: add support for qca8k switch internal PHY in at803x
 
-Accounting for the fact that this change is trivial, closer to a fix
-than to a new functionality, I prefered net tree over the net-next
-tree. This way I expect the new API to reach mainstream distros faster
-than over 5 years :)
+ .../devicetree/bindings/net/dsa/qca8k.txt     |  40 +
+ drivers/net/dsa/qca8k.c                       | 758 ++++++++++++++----
+ drivers/net/dsa/qca8k.h                       |  58 +-
+ drivers/net/phy/Kconfig                       |   5 +-
+ drivers/net/phy/at803x.c                      | 162 +++-
+ 5 files changed, 835 insertions(+), 188 deletions(-)
 
 -- 
-Sergey
+2.30.2
+
