@@ -2,88 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29D2B380189
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 03:43:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D190380196
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 03:54:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232153AbhENBo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 21:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230460AbhENBo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 21:44:26 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD109C061574
-        for <netdev@vger.kernel.org>; Thu, 13 May 2021 18:43:14 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id q7-20020a9d57870000b02902a5c2bd8c17so25269411oth.5
-        for <netdev@vger.kernel.org>; Thu, 13 May 2021 18:43:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=pNZvmZvKd1iamWe2K0NJ3BobbL0ETJfh8Aahfbg8xIg=;
-        b=NWJt2ujFOj1oPxKlQXbDsEd6dTbPzL97qrr7C54RC0ZM3VMQA7rsEpDlkdXqlVjU99
-         RXjQEG68No3Z7KhYALkc6ivd5MiWpp1jUzqQd7q1ByQkqqJK+QNWpKoE8jDaQngYWrrL
-         alTVFruyGtkfGAk/E5J8UzL0N8S51V5pVXWM14+1yCX4LZGC8e61stDn3vY8AOhdUUQF
-         gKFzEBLZwWzPczV8pSwFooGgogzVHS7FwbTPIX5O6GMwsEe5pH2fllwelfKrA2FXCq9G
-         lMTSzxh3Tglbb6Dy76jfpccCIA4bY1i37IsQA5fupFvWNWWb2Ad4ng2D623vliSyxqwH
-         mjqQ==
+        id S232214AbhENBzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 21:55:05 -0400
+Received: from mail-ej1-f51.google.com ([209.85.218.51]:35595 "EHLO
+        mail-ej1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231154AbhENBzF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 21:55:05 -0400
+Received: by mail-ej1-f51.google.com with SMTP id m12so42540277eja.2;
+        Thu, 13 May 2021 18:53:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=pNZvmZvKd1iamWe2K0NJ3BobbL0ETJfh8Aahfbg8xIg=;
-        b=dyT8U7P9YXvbaXtzcAiSs7Ap2x+wOZfxnLd6Yn/r9j1+/1NNAoKmYf+NBO/RETEuE6
-         mXG0pbR/r+ZKTyYNs97pWiKjSfhTNL5sr5riPSj95ATCKKg98SRTb7IVNDUoUAjqoKlB
-         u89+3qbawvt7OyvHTNC9pGN0pH/stHE4m/ue7TyyShtKcqpb3Jjjpa+kqdSsjPSUF9PY
-         SGPz8bRNUlM9HP9LYwR4OTT+E/daguqbgjM7nkIf2YT2rw4Z5e9H6JyH5PWsCpY8SMas
-         r3FYJlcEaJKlZ1AZ2/znqFBlRWbd2lhH4dbaeqH0Yb6CoyMQpvmzp769nFnw41GmF7Ti
-         sv9A==
-X-Gm-Message-State: AOAM531imw51MQ8iWIcNFHdh0oSRg2OOPjMMZkjkifHla91bY2doJtaw
-        EvQj1WzC0e3GydUuXsa+N2M=
-X-Google-Smtp-Source: ABdhPJyFw9XbjeVISLQX03zedP05O7NvOkgr+i6Oq5Rk7eK8B0MYHkjPGdAZFOfj2CBGuevqppJt9A==
-X-Received: by 2002:a9d:761a:: with SMTP id k26mr36648698otl.193.1620956594236;
-        Thu, 13 May 2021 18:43:14 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id 2sm1028078ota.67.2021.05.13.18.43.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 May 2021 18:43:14 -0700 (PDT)
-Subject: Re: [RESEND PATCH net-next 2/2] selftests: Lowest IPv4 address in a
- subnet is valid
-To:     Seth David Schoen <schoen@loyalty.org>, netdev@vger.kernel.org,
-        John Gilmore <gnu@toad.com>, Dave Taht <dave.taht@gmail.com>,
+        bh=vf/w0gIA31yDofWDFARiKyZ1Z+Y8XK+6F1QRv5/kfU4=;
+        b=WmLNMnnE3vOtWOsu/xxqAn62x+VJI8bbm3FhP01TxgjzD/1vG5e4zDX3GGyo389zOt
+         hz4ADJgSSXpFtFAmePOa8L8d1iF4Kiz2H8X3+305rumCXo65pBCebEwA3tnIyZolRBYU
+         fGAMPtp8LesvD6YgMU6BZOgtYbjOJVFl2/DWG+CKgbhGvJFhBa38gUGafpW0S5KTQWGP
+         +a4t8VgC9ltafuu0iU/MBCL/PJrH742QlYkO8AghlIMXZnMKOfgDH1K1YjtjR/j6uIPB
+         SZQJcRsQPokRUorTXX9bKgONph0GK8sOZa3rlDk6El4FT8/2kghfwgufXILVJrSsWEGv
+         XEFg==
+X-Gm-Message-State: AOAM5314rPfvvu+m0ZAZnUQ2KSEqZrwftegHQzYgSUAjoJkBNb1/DeEw
+        CrY7fQjlyAq6tsVuK045L/+bM8gnS9Rr1z3l
+X-Google-Smtp-Source: ABdhPJwmNc70bqvNpE9Th6f/yEkJ1KOeim08uzo3Hnotd+SFjmYkETjPqnU1qh91bd+VYsVqs20Dbw==
+X-Received: by 2002:a17:907:161e:: with SMTP id hb30mr45346717ejc.360.1620957233559;
+        Thu, 13 May 2021 18:53:53 -0700 (PDT)
+Received: from msft-t490s.teknoraver.net (net-5-94-253-60.cust.vodafonedsl.it. [5.94.253.60])
+        by smtp.gmail.com with ESMTPSA id w6sm3322574edc.25.2021.05.13.18.53.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 May 2021 18:53:53 -0700 (PDT)
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>
-References: <20210513043625.GL1047389@frotz.zork.net>
- <20210513043825.GN1047389@frotz.zork.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2d21eacb-68f8-767c-5aec-e42ae6aab544@gmail.com>
-Date:   Thu, 13 May 2021 19:43:12 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: bridge: fix build when IPv6 is disabled
+Date:   Fri, 14 May 2021 03:53:48 +0200
+Message-Id: <20210514015348.15448-1-mcroce@linux.microsoft.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20210513043825.GN1047389@frotz.zork.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/12/21 10:38 PM, Seth David Schoen wrote:
-> Expect the lowest IPv4 address in a subnet to be assignable
-> and addressable as a unicast (non-broadcast) address on a
-> local network segment.
-> 
-> Signed-off-by: Seth David Schoen <schoen@loyalty.org>
-> Suggested-by: John Gilmore <gnu@toad.com>
-> Acked-by: Dave Taht <dave.taht@gmail.com>
-> ---
->  .../testing/selftests/net/unicast_extensions.sh | 17 +++++++++--------
->  1 file changed, 9 insertions(+), 8 deletions(-)
-> 
+From: Matteo Croce <mcroce@microsoft.com>
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+The br_ip6_multicast_add_router() prototype is defined only when
+CONFIG_IPV6 is enabled, but the function is always referenced, so there
+is this build error with CONFIG_IPV6 not defined:
 
+net/bridge/br_multicast.c: In function ‘__br_multicast_enable_port’:
+net/bridge/br_multicast.c:1743:3: error: implicit declaration of function ‘br_ip6_multicast_add_router’; did you mean ‘br_ip4_multicast_add_router’? [-Werror=implicit-function-declaration]
+ 1743 |   br_ip6_multicast_add_router(br, port);
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |   br_ip4_multicast_add_router
+net/bridge/br_multicast.c: At top level:
+net/bridge/br_multicast.c:2804:13: warning: conflicting types for ‘br_ip6_multicast_add_router’
+ 2804 | static void br_ip6_multicast_add_router(struct net_bridge *br,
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+net/bridge/br_multicast.c:2804:13: error: static declaration of ‘br_ip6_multicast_add_router’ follows non-static declaration
+net/bridge/br_multicast.c:1743:3: note: previous implicit declaration of ‘br_ip6_multicast_add_router’ was here
+ 1743 |   br_ip6_multicast_add_router(br, port);
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Fix this build error by moving the definition out of the #ifdef.
+
+Fixes: a3c02e769efe ("net: bridge: mcast: split multicast router state for IPv4 and IPv6")
+Signed-off-by: Matteo Croce <mcroce@microsoft.com>
+---
+ net/bridge/br_multicast.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index 0703725527b3..53c3a9d80d9c 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -62,9 +62,9 @@ static void br_multicast_port_group_rexmit(struct timer_list *t);
+ 
+ static void
+ br_multicast_rport_del_notify(struct net_bridge_port *p, bool deleted);
+-#if IS_ENABLED(CONFIG_IPV6)
+ static void br_ip6_multicast_add_router(struct net_bridge *br,
+ 					struct net_bridge_port *port);
++#if IS_ENABLED(CONFIG_IPV6)
+ static void br_ip6_multicast_leave_group(struct net_bridge *br,
+ 					 struct net_bridge_port *port,
+ 					 const struct in6_addr *group,
+-- 
+2.31.1
 
