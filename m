@@ -2,76 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47904380528
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 10:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF1638052A
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 10:27:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231590AbhENI1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 04:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230459AbhENI1v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 04:27:51 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BF5C061574;
-        Fri, 14 May 2021 01:26:40 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94.2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1lhT9O-008yB6-De; Fri, 14 May 2021 10:26:26 +0200
-Message-ID: <57d41364f14ea660915b7afeebaa5912c4300541.camel@sipsolutions.net>
-Subject: Re: [BUG] Deadlock in _cfg80211_unregister_wdev()
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Maximilian Luz <luzmaximilian@gmail.com>,
-        linux-wireless@vger.kernel.org
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>
-Date:   Fri, 14 May 2021 10:26:25 +0200
-In-Reply-To: <98392296-40ee-6300-369c-32e16cff3725@gmail.com> (sfid-20210514_010737_196027_BACAA222)
-References: <98392296-40ee-6300-369c-32e16cff3725@gmail.com>
-         (sfid-20210514_010737_196027_BACAA222)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S233549AbhENI2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 04:28:07 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:43457 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230459AbhENI2G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 04:28:06 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 556B9580E50;
+        Fri, 14 May 2021 04:26:55 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Fri, 14 May 2021 04:26:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm3; bh=daR/M5MALqqc200eLyQkU6f/JMT
+        STdMzWTRNACNiQw4=; b=k4GcSF5jp6KuVfMXBuyqOgjNsDg8Ca9pvOJZQM/qJT0
+        Da6sqGhNt27t1UsZWpgLPURjiT3gDNTMwAxeSa7orl715t2qYJHdlde0L/znl+9m
+        GwdsyUBcxbnJavIhbtuW44HsF43RFFh99BTLYNTM4pzAFf6XgSl81O0Mv5UnJcBH
+        A2Or/96PbExkUd8MgusNZUdtNJdEizEpjsIcGfSLdx5bcNRYLiz2qUVBHF3Mn8EL
+        P6sg+Rl8EctdfENO+I+jDz9HKD+8cgedRWDA8BuwY8MI0xCIgW+EY77/ov+z1a3u
+        fwpcvnWniLW0FMgIz/Lqr4lgJPH2x6a6JR2aPkfamEw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=daR/M5
+        MALqqc200eLyQkU6f/JMTSTdMzWTRNACNiQw4=; b=bo/Ua6DozGeIGmITh9k9Id
+        5Q1unfPHaWNc/hsY36psAXHgRUCp3HfLey3x+jM9gSQ1qKFxfpYBk8kP1nnp4+mF
+        fDL6BsboNbc4u/F2opK9yNGDUEeDorFIFO3tiHL25PnGobFB47Trl/U1AB3mCWAr
+        kr3rdwdoS3KXNI2+T9UUgZg/JihJffXzXSLeVE1zkePsm50YTLTWh9yoLRoipD4X
+        UqItxgT+Wp46cxMJHmqbmvcJioXVua7RGXCe6SWq3ImMh0iZ/2vTl5MHHyd0rCKW
+        bpZTDbNZKnRBDuHhzCZYRedAkhW84MSKyHPMwfBNjGDeQbp5YHTTSJ9qBRqpBbKQ
+        ==
+X-ME-Sender: <xms:TjSeYJtd9meb5NaHEKAtelePkAKapXwGgyR9D1Ng6Eo3yGbuPpyTvw>
+    <xme:TjSeYCc52ZjBZtKVSj281lFXyYO6pgy_vuMj3ielpigRaLKq4_6t8j4c05BUHkWvO
+    G156ayD1hrOkw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdehhedgudefudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
+    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepveeuhe
+    ejgfffgfeivddukedvkedtleelleeghfeljeeiueeggeevueduudekvdetnecukfhppeek
+    fedrkeeirdejgedrieegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
+    hilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
+X-ME-Proxy: <xmx:TjSeYMy3Krfgm5GPO85Gn2BG4pNgXLIirSR7V4-DZwfFOzUVx3W5iQ>
+    <xmx:TjSeYAP2RPsjOP13qy4fbp23D8yXVIUqdlO1mdmYS7ye0GAEdMoPuA>
+    <xmx:TjSeYJ81a5JyFL_lVHp0CbL2Cqy-19dVo3MLc9LhuktNVs_a7pfLdw>
+    <xmx:TzSeYOjjGabp7Z_KJLtpHYFXTZe8M8YLifp_Rig0OcnNrmDG3WaRow>
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        by mail.messagingengine.com (Postfix) with ESMTPA;
+        Fri, 14 May 2021 04:26:54 -0400 (EDT)
+Date:   Fri, 14 May 2021 10:26:51 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Hayes Wang <hayeswang@realtek.com>
+Cc:     Alan Stern <stern@rowland.harvard.edu>,
+        syzbot <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: Re: [syzbot] WARNING in rtl8152_probe
+Message-ID: <YJ40S1eHnbg1dsYv@kroah.com>
+References: <0000000000009df1b605c21ecca8@google.com>
+ <7de0296584334229917504da50a0ac38@realtek.com>
+ <20210513142552.GA967812@rowland.harvard.edu>
+ <bde8fc1229ec41e99ec77f112cc5ee01@realtek.com>
+ <YJ4dU3yCwd2wMq5f@kroah.com>
+ <bddf302301f5420db0fa049c895c9b14@realtek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bddf302301f5420db0fa049c895c9b14@realtek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-05-14 at 01:07 +0200, Maximilian Luz wrote:
-> Following commit a05829a7222e ("cfg80211: avoid holding the RTNL when
-> calling the driver"), the mwifiex_pcie module fails to unload. This also
-> prevents the device from rebooting / shutting down.
+On Fri, May 14, 2021 at 07:50:19AM +0000, Hayes Wang wrote:
+> Greg KH <greg@kroah.com>
+> > Sent: Friday, May 14, 2021 2:49 PM
+> [...]
+> > Because people can create "bad" devices and plug them into a system
+> > which causes the driver to load and then potentially crash the system or
+> > do other bad things.
+> > 
+> > USB drivers now need to be able to handle "malicious" devices, it's been
+> > that way for many years now.
 > 
-> Attempting to unload the module
-> 
+> My question is that even I check whole the USB descriptor, the malicious
+> devices could duplicate it easily to pass my checks. That is, I could add a
+> lot of checks, but it still doesn't prevent malicious devices. Is this meaningful?
 
-I'm *guessing* that you're attempting to unload the module while the
-interface is still up, i.e. you didn't "ip link set wlan0 down" first?
+Checking the whole USB decriptor is fine, yes, they can duplicate that.
+So that means you need to validate _ALL_ data coming from the device
+that it is in an acceptable range of values that the driver can
+correctly handle.
 
-If so, that is likely fixed by this commit as well:
+thanks,
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ea6b2098dd02789f68770fd3d5a373732207be2f
-
-However, your log says:
-
-> [  245.504764]       Tainted: G         C OE     5.11.0-1-surface-dev #2
-
-so I have no idea what kernel you're using, because 5.11 did *not*
-contain commit a05829a7222e ("cfg80211: avoid holding the RTNL when
-calling the driver"). If you backported the bug you get to be
-responsible for backporting the fixes too?
-
-
-If that's all not solving the issue then please try to resolve with gdb
-what line of code "cfg80211_netdev_notifier_call+0x12a" is, and please
-also clarify exactly what (upstream!) kernel you're using.
-
-johannes
-
-
+greg k-h
