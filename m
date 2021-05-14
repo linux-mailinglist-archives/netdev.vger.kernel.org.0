@@ -2,88 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAF2C380BA3
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 16:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD755380BC1
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 16:26:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234364AbhENOTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 10:19:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37092 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230097AbhENOTu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 May 2021 10:19:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C73C61408;
-        Fri, 14 May 2021 14:18:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621001918;
-        bh=c7dfcDSUedN/VQoQv/XM8fRZG2HhOOW57vq4i3XI37w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OQ+w8jq41p/pK8QPzt383K43rnWDvG9IebEZzoZj7WKu0EgpEM3a4OB9pZnDV5/lC
-         MxVWpkmQpp2inFtKTGn6bM1fAR+gA+04aBXFsHrR34k+VM9wQUFTEenWCHNxw8mV5S
-         Rr3kzMIGVT+KJ8CgQJfj5jt0KJvZQg0gfBfD7ImGjDrz6TXEWqjpD0nn1NC8t6bBSV
-         Y2m7PBzQCXheFvsYF9jZqx3chr66nJXcElBiHfvACPcxjY0VNJoiSeft4M6sPjRp9i
-         /15Ta8qfh6z3LjSIBpnNeZl0hFKEsFjvWWGKfF/qxDT0jcgdTLCyifuXI2D1S1QhIL
-         whK9i7cORQs2g==
-Date:   Fri, 14 May 2021 16:18:25 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     David Woodhouse <dwmw2@infradead.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Mali DP Maintainers <malidp@foss.arm.com>,
-        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
-        kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
-        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
-        rcu@vger.kernel.org
-Subject: Re: [PATCH v2 00/40] Use ASCII subset instead of UTF-8 alternate
- symbols
-Message-ID: <20210514161825.4e4c0d3e@coco.lan>
-In-Reply-To: <8b8bc929-2f07-049d-f24c-cb1f1d85bbaa@gmail.com>
-References: <cover.1620823573.git.mchehab+huawei@kernel.org>
-        <d2fed242fbe200706b8d23a53512f0311d900297.camel@infradead.org>
-        <20210514102118.1b71bec3@coco.lan>
-        <61c286b7afd6c4acf71418feee4eecca2e6c80c8.camel@infradead.org>
-        <8b8bc929-2f07-049d-f24c-cb1f1d85bbaa@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S234409AbhENO1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 10:27:51 -0400
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:14674 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229942AbhENO1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 10:27:48 -0400
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14EEMNDg027629;
+        Fri, 14 May 2021 14:25:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type : in-reply-to;
+ s=corp-2020-01-29; bh=5bl1zmUBree67gp8ksHVfQp53E6olxx+qbucqo8ZA7c=;
+ b=gxJi051NTXSXHm8q738zmdTQ8mihP1X1ixC0KXc1vk5xe9oOS22ZiTTpFgLC4MZp06Mj
+ pRQHwWI/dFOOCbV2qKantlsRmzlNOAFCo6IsrtoQlFv0kty0ZbHIVO0eJ6l4P+gAtJne
+ J/pyXFgp47RHZaDepiXX8bdpoe5fha0OAeE0LMT9NUn2GP4sI0t5ydZWFyjTQ0eHOME3
+ ohAaotzy1GkXSbR5w7xGCe3eiftiad5QTioDQcPpDX7cqVa5x6bKaTaBeIS3mWmlx4jm
+ f0TwrzjKu0VuSuOTb2uRWjkBQr5cGRcQCmkfSDeAwuG6qBF9wqfbvGSzjVOxOL8GLFfO UQ== 
+Received: from oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 38gpqsrq3b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 May 2021 14:25:04 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.podrdrct (8.16.0.36/8.16.0.36) with SMTP id 14EEO5p2106870;
+        Fri, 14 May 2021 14:25:03 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 38gppq53yg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 May 2021 14:25:03 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 14EEM3bl103577;
+        Fri, 14 May 2021 14:25:02 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 38gppq53wp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 May 2021 14:25:02 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 14EEOumt008995;
+        Fri, 14 May 2021 14:24:57 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 14 May 2021 07:24:56 -0700
+Date:   Fri, 14 May 2021 17:24:48 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Johan Hovold <johan@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Oliver Neukum <oneukum@suse.com>,
+        Anirudh Rayabharam <mail@anirudhrb.com>,
+        Johan Hovold <johan@kernel.org>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Rustam Kovhaev <rkovhaev@gmail.com>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH v2 net] net: hso: check for allocation failure in
+ hso_create_bulk_serial_device()
+Message-ID: <YJ6IMH7jI9QFdGIX@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YJurlxqQ9L+zzIAS@hovoldconsulting.com>
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-GUID: iw5OUc9nxGpX4DRnwmKRtU1O-Z93NsTo
+X-Proofpoint-ORIG-GUID: iw5OUc9nxGpX4DRnwmKRtU1O-Z93NsTo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Fri, 14 May 2021 12:08:36 +0100
-Edward Cree <ecree.xilinx@gmail.com> escreveu:
+In current kernels, small allocations never actually fail so this
+patch shouldn't affect runtime.
 
-> For anyone who doesn't know about it: X has this wonderful thing called
->  the Compose key[1].  For instance, type =E2=8E=84--- to get =E2=80=94, o=
-r =E2=8E=84<" for =E2=80=9C.
-> Much more mnemonic than Unicode codepoints; and you can extend it with
->  user-defined sequences in your ~/.XCompose file.
+Originally this error handling code written with the idea that if
+the "serial->tiocmget" allocation failed, then we would continue
+operating instead of bailing out early.  But in later years we added
+an unchecked dereference on the next line.
 
-Good tip. I haven't use composite for years, as US-intl with dead keys is
-enough for 99.999% of my needs.=20
+	serial->tiocmget->serial_state_notification = kzalloc();
+        ^^^^^^^^^^^^^^^^^^
 
-Btw, at least on Fedora with Mate, Composite is disabled by default. It has
-to be enabled first using the same tool that allows changing the Keyboard
-layout[1].
+Since these allocations are never going fail in real life, this is
+mostly a philosophical debate, but I think bailing out early is the
+correct behavior that the user would want.  And generally it's safer to
+bail as soon an error happens.
 
-Yet, typing an EN DASH for example, would be "<composite>--.", with is 4
-keystrokes instead of just two ('--'). It means twice the effort ;-)
+Fixes: af0de1303c4e ("usb: hso: obey DMA rules in tiocmget")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+v2: Do more extensive clean up.  As Johan pointed out the comments and
+later NULL checks can be removed.
 
-[1] KDE, GNome, Mate, ... have different ways to enable it and to=20
-    select what key would be considered <composite>:
+ drivers/net/usb/hso.c | 37 ++++++++++++++++++-------------------
+ 1 file changed, 18 insertions(+), 19 deletions(-)
 
-	https://dry.sailingissues.com/us-international-keyboard-layout.html
-	https://help.ubuntu.com/community/ComposeKey
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index 3ef4b2841402..260f850d69eb 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -2618,29 +2618,28 @@ static struct hso_device *hso_create_bulk_serial_device(
+ 		num_urbs = 2;
+ 		serial->tiocmget = kzalloc(sizeof(struct hso_tiocmget),
+ 					   GFP_KERNEL);
++		if (!serial->tiocmget)
++			goto exit;
+ 		serial->tiocmget->serial_state_notification
+ 			= kzalloc(sizeof(struct hso_serial_state_notification),
+ 					   GFP_KERNEL);
+-		/* it isn't going to break our heart if serial->tiocmget
+-		 *  allocation fails don't bother checking this.
+-		 */
+-		if (serial->tiocmget && serial->tiocmget->serial_state_notification) {
+-			tiocmget = serial->tiocmget;
+-			tiocmget->endp = hso_get_ep(interface,
+-						    USB_ENDPOINT_XFER_INT,
+-						    USB_DIR_IN);
+-			if (!tiocmget->endp) {
+-				dev_err(&interface->dev, "Failed to find INT IN ep\n");
+-				goto exit;
+-			}
+-
+-			tiocmget->urb = usb_alloc_urb(0, GFP_KERNEL);
+-			if (tiocmget->urb) {
+-				mutex_init(&tiocmget->mutex);
+-				init_waitqueue_head(&tiocmget->waitq);
+-			} else
+-				hso_free_tiomget(serial);
++		if (!serial->tiocmget->serial_state_notification)
++			goto exit;
++		tiocmget = serial->tiocmget;
++		tiocmget->endp = hso_get_ep(interface,
++					    USB_ENDPOINT_XFER_INT,
++					    USB_DIR_IN);
++		if (!tiocmget->endp) {
++			dev_err(&interface->dev, "Failed to find INT IN ep\n");
++			goto exit;
+ 		}
++
++		tiocmget->urb = usb_alloc_urb(0, GFP_KERNEL);
++		if (tiocmget->urb) {
++			mutex_init(&tiocmget->mutex);
++			init_waitqueue_head(&tiocmget->waitq);
++		} else
++			hso_free_tiomget(serial);
+ 	}
+ 	else
+ 		num_urbs = 1;
+-- 
+2.30.2
 
-Thanks,
-Mauro
