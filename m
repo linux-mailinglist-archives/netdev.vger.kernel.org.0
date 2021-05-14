@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B989380278
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 05:25:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A81E338027D
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 05:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231827AbhEND0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 May 2021 23:26:53 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:3675 "EHLO
+        id S231941AbhEND1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 May 2021 23:27:01 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:3678 "EHLO
         szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231716AbhEND0t (ORCPT
+        with ESMTP id S231736AbhEND0t (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 13 May 2021 23:26:49 -0400
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FhDPB2czzz1BMPq;
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FhDPB35zMz1BMPv;
         Fri, 14 May 2021 11:22:54 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
@@ -21,10 +21,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 06/12] net: hns3: refactor dump mac list of debugfs
-Date:   Fri, 14 May 2021 11:25:14 +0800
-Message-ID: <1620962720-62216-7-git-send-email-tanhuazhong@huawei.com>
+        <linuxarm@huawei.com>, Yufeng Mo <moyufeng@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 07/12] net: hns3: refactor dump mng tbl of debugfs
+Date:   Fri, 14 May 2021 11:25:15 +0800
+Message-ID: <1620962720-62216-8-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1620962720-62216-1-git-send-email-tanhuazhong@huawei.com>
 References: <1620962720-62216-1-git-send-email-tanhuazhong@huawei.com>
@@ -36,296 +37,204 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the debugfs command for mac list info is implemented
-by "echo xxxx > cmd", and record the information in dmesg. It's
-unnecessary and heavy. To improve it, create two files "uc" and
-"mc" under directory "mac_list" for it, and query mac list info
-by "cat mac_list/uc" and "mac_list/mc", return the result to
-userspace, rather than record in dmesg.
+From: Yufeng Mo <moyufeng@huawei.com>
+
+Currently, the debugfs command for mng tbl is implemented by
+"echo xxxx > cmd", and record the information in dmesg. It's
+unnecessary and heavy. To improve it, create a single file
+"mng_tbl" for it, and query it by command "cat mng_tbl",
+return the result to userspace, rather than record in dmesg.
 
 The display style is below:
-$ cat mac_list/uc
-UC MAC_LIST:
-FUNC_ID  MAC_ADDR            STATE
-pf       00:18:2d:00:00:71   ACTIVE
+$ cat mng_tbl
+entry  mac_addr          mask  ether  mask  vlan  mask  i_map ...
+00     00:00:00:00:00:00 0     88cc   0     0000  1     0f    ...
 
-$ cat mac_list/mc
-MC MAC_LIST:
-FUNC_ID  MAC_ADDR            STATE
-pf       01:80:c2:00:00:21   ACTIVE
-
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   2 +
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  19 ++-
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h |   1 +
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 127 +++++++++++++++------
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h |   9 ++
- 5 files changed, 119 insertions(+), 39 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  8 ++-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 80 ++++++++++------------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h |  1 -
+ 4 files changed, 45 insertions(+), 45 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 6ec504a..ce3910f 100644
+index ce3910f..a2033cb 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -257,6 +257,8 @@ enum hnae3_dbg_cmd {
- 	HNAE3_DBG_CMD_DEV_INFO,
- 	HNAE3_DBG_CMD_TX_BD,
+@@ -259,6 +259,7 @@ enum hnae3_dbg_cmd {
  	HNAE3_DBG_CMD_RX_BD,
-+	HNAE3_DBG_CMD_MAC_UC,
-+	HNAE3_DBG_CMD_MAC_MC,
+ 	HNAE3_DBG_CMD_MAC_UC,
+ 	HNAE3_DBG_CMD_MAC_MC,
++	HNAE3_DBG_CMD_MNG_TBL,
  	HNAE3_DBG_CMD_UNKNOWN,
  };
  
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index fb3c2d4..5e02786 100644
+index 5e02786..4af997d 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -20,6 +20,9 @@ static struct hns3_dbg_dentry_info hns3_dbg_dentry[] = {
- 	{
- 		.name = "rx_bd_info"
+@@ -90,6 +90,13 @@ static struct hns3_dbg_cmd_info hns3_dbg_cmd[] = {
+ 		.buf_len = HNS3_DBG_READ_LEN,
+ 		.init = hns3_dbg_common_file_init,
  	},
 +	{
-+		.name = "mac_list"
-+	},
- 	/* keep common at the bottom and add new directory above */
- 	{
- 		.name = "common"
-@@ -73,6 +76,20 @@ static struct hns3_dbg_cmd_info hns3_dbg_cmd[] = {
- 		.buf_len = HNS3_DBG_READ_LEN_4MB,
- 		.init = hns3_dbg_bd_file_init,
- 	},
-+	{
-+		.name = "uc",
-+		.cmd = HNAE3_DBG_CMD_MAC_UC,
-+		.dentry = HNS3_DBG_DENTRY_MAC,
-+		.buf_len = HNS3_DBG_READ_LEN,
-+		.init = hns3_dbg_common_file_init,
-+	},
-+	{
-+		.name = "mc",
-+		.cmd = HNAE3_DBG_CMD_MAC_MC,
-+		.dentry = HNS3_DBG_DENTRY_MAC,
++		.name = "mng_tbl",
++		.cmd = HNAE3_DBG_CMD_MNG_TBL,
++		.dentry = HNS3_DBG_DENTRY_COMMON,
 +		.buf_len = HNS3_DBG_READ_LEN,
 +		.init = hns3_dbg_common_file_init,
 +	},
  };
  
  static struct hns3_dbg_cap_info hns3_dbg_cap[] = {
-@@ -474,8 +491,6 @@ static void hns3_dbg_help(struct hnae3_handle *h)
- 	dev_info(&h->pdev->dev, "dump mac tnl status\n");
- 	dev_info(&h->pdev->dev, "dump loopback\n");
- 	dev_info(&h->pdev->dev, "dump qs shaper [qs id]\n");
--	dev_info(&h->pdev->dev, "dump uc mac list <func id>\n");
--	dev_info(&h->pdev->dev, "dump mc mac list <func id>\n");
- 	dev_info(&h->pdev->dev, "dump intr\n");
- 
- 	memset(printf_buf, 0, HNS3_DBG_BUF_LEN);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
-index 06868b6..3d2ee36 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
-@@ -27,6 +27,7 @@ enum hns3_dbg_dentry_type {
- 	HNS3_DBG_DENTRY_TM,
- 	HNS3_DBG_DENTRY_TX_BD,
- 	HNS3_DBG_DENTRY_RX_BD,
-+	HNS3_DBG_DENTRY_MAC,
- 	HNS3_DBG_DENTRY_COMMON,
- };
- 
+@@ -484,7 +491,6 @@ static void hns3_dbg_help(struct hnae3_handle *h)
+ 	dev_info(&h->pdev->dev, "dump qos pause cfg\n");
+ 	dev_info(&h->pdev->dev, "dump qos pri map\n");
+ 	dev_info(&h->pdev->dev, "dump qos buf cfg\n");
+-	dev_info(&h->pdev->dev, "dump mng tbl\n");
+ 	dev_info(&h->pdev->dev, "dump reset info\n");
+ 	dev_info(&h->pdev->dev, "dump m7 info\n");
+ 	dev_info(&h->pdev->dev, "dump ncl_config <offset> <length>(in hex)\n");
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-index 7f1abdf..ea0d43f 100644
+index ea0d43f..613730f 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-@@ -8,6 +8,10 @@
- #include "hclge_tm.h"
- #include "hnae3.h"
- 
-+static const char * const hclge_mac_state_str[] = {
-+	"TO_ADD", "TO_DEL", "ACTIVE"
-+};
-+
- static const struct hclge_dbg_reg_type_info hclge_dbg_reg_info[] = {
- 	{ .reg_type = "bios common",
- 	  .dfx_msg = &hclge_dbg_bios_common_reg[0],
-@@ -71,6 +75,35 @@ static const struct hclge_dbg_reg_type_info hclge_dbg_reg_info[] = {
- 		       .cmd = HCLGE_OPC_DFX_TQP_REG } },
- };
- 
-+static void hclge_dbg_fill_content(char *content, u16 len,
-+				   const struct hclge_dbg_item *items,
-+				   const char **result, u16 size)
-+{
-+	char *pos = content;
-+	u16 i;
-+
-+	memset(content, ' ', len);
-+	for (i = 0; i < size; i++) {
-+		if (result)
-+			strncpy(pos, result[i], strlen(result[i]));
-+		else
-+			strncpy(pos, items[i].name, strlen(items[i].name));
-+		pos += strlen(items[i].name) + items[i].interval;
-+	}
-+	*pos++ = '\n';
-+	*pos++ = '\0';
-+}
-+
-+static char *hclge_dbg_get_func_id_str(char *buf, u8 id)
-+{
-+	if (id)
-+		sprintf(buf, "vf%u", id - 1);
-+	else
-+		sprintf(buf, "pf");
-+
-+	return buf;
-+}
-+
- static int hclge_dbg_get_dfx_bd_num(struct hclge_dev *hdev, int offset)
- {
- 	struct hclge_desc desc[HCLGE_GET_DFX_REG_TYPE_CNT];
-@@ -1693,45 +1726,65 @@ static void hclge_dbg_dump_qs_shaper(struct hclge_dev *hdev,
- 	hclge_dbg_dump_qs_shaper_single(hdev, qsid);
+@@ -1212,24 +1212,19 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
+ 		"dump qos buf cfg fail(0x%x), ret = %d\n", cmd, ret);
  }
  
--static int hclge_dbg_dump_mac_list(struct hclge_dev *hdev, const char *cmd_buf,
--				   bool is_unicast)
-+static const struct hclge_dbg_item mac_list_items[] = {
-+	{ "FUNC_ID", 2 },
-+	{ "MAC_ADDR", 12 },
-+	{ "STATE", 2 },
-+};
-+
-+static void hclge_dbg_dump_mac_list(struct hclge_dev *hdev, char *buf, int len,
-+				    bool is_unicast)
+-static void hclge_dbg_dump_mng_table(struct hclge_dev *hdev)
++static int hclge_dbg_dump_mng_table(struct hclge_dev *hdev, char *buf, int len)
  {
-+	char data_str[ARRAY_SIZE(mac_list_items)][HCLGE_DBG_DATA_STR_LEN];
-+	char content[HCLGE_DBG_INFO_LEN], str_id[HCLGE_DBG_ID_LEN];
-+	char *result[ARRAY_SIZE(mac_list_items)];
- 	struct hclge_mac_node *mac_node, *tmp;
- 	struct hclge_vport *vport;
- 	struct list_head *list;
- 	u32 func_id;
--	int ret;
--
--	ret = kstrtouint(cmd_buf, 0, &func_id);
--	if (ret < 0) {
--		dev_err(&hdev->pdev->dev,
--			"dump mac list: bad command string, ret = %d\n", ret);
--		return -EINVAL;
--	}
+ 	struct hclge_mac_ethertype_idx_rd_cmd *req0;
+-	char printf_buf[HCLGE_DBG_BUF_LEN];
+ 	struct hclge_desc desc;
+ 	u32 msg_egress_port;
 +	int pos = 0;
-+	int i;
+ 	int ret, i;
  
--	if (func_id >= hdev->num_alloc_vport) {
--		dev_err(&hdev->pdev->dev,
--			"function id(%u) is out of range(0-%u)\n", func_id,
--			hdev->num_alloc_vport - 1);
--		return -EINVAL;
-+	for (i = 0; i < ARRAY_SIZE(mac_list_items); i++)
-+		result[i] = &data_str[i][0];
+-	dev_info(&hdev->pdev->dev, "mng tab:\n");
+-	memset(printf_buf, 0, HCLGE_DBG_BUF_LEN);
+-	strncat(printf_buf,
+-		"entry|mac_addr         |mask|ether|mask|vlan|mask",
+-		HCLGE_DBG_BUF_LEN - 1);
+-	strncat(printf_buf + strlen(printf_buf),
+-		"|i_map|i_dir|e_type|pf_id|vf_id|q_id|drop\n",
+-		HCLGE_DBG_BUF_LEN - strlen(printf_buf) - 1);
+-
+-	dev_info(&hdev->pdev->dev, "%s", printf_buf);
++	pos += scnprintf(buf + pos, len - pos,
++			 "entry  mac_addr          mask  ether  ");
++	pos += scnprintf(buf + pos, len - pos,
++			 "mask  vlan  mask  i_map  i_dir  e_type  ");
++	pos += scnprintf(buf + pos, len - pos, "pf_id  vf_id  q_id  drop\n");
+ 
+ 	for (i = 0; i < HCLGE_DBG_MNG_TBL_MAX; i++) {
+ 		hclge_cmd_setup_basic_desc(&desc, HCLGE_MAC_ETHERTYPE_IDX_RD,
+@@ -1240,43 +1235,40 @@ static void hclge_dbg_dump_mng_table(struct hclge_dev *hdev)
+ 		ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+ 		if (ret) {
+ 			dev_err(&hdev->pdev->dev,
+-				"call hclge_cmd_send fail, ret = %d\n", ret);
+-			return;
++				"failed to dump manage table, ret = %d\n", ret);
++			return ret;
+ 		}
+ 
+ 		if (!req0->resp_code)
+ 			continue;
+ 
+-		memset(printf_buf, 0, HCLGE_DBG_BUF_LEN);
+-		snprintf(printf_buf, HCLGE_DBG_BUF_LEN,
+-			 "%02u   |%02x:%02x:%02x:%02x:%02x:%02x|",
+-			 le16_to_cpu(req0->index),
+-			 req0->mac_addr[0], req0->mac_addr[1],
+-			 req0->mac_addr[2], req0->mac_addr[3],
+-			 req0->mac_addr[4], req0->mac_addr[5]);
+-
+-		snprintf(printf_buf + strlen(printf_buf),
+-			 HCLGE_DBG_BUF_LEN - strlen(printf_buf),
+-			 "%x   |%04x |%x   |%04x|%x   |%02x   |%02x   |",
+-			 !!(req0->flags & HCLGE_DBG_MNG_MAC_MASK_B),
+-			 le16_to_cpu(req0->ethter_type),
+-			 !!(req0->flags & HCLGE_DBG_MNG_ETHER_MASK_B),
+-			 le16_to_cpu(req0->vlan_tag) & HCLGE_DBG_MNG_VLAN_TAG,
+-			 !!(req0->flags & HCLGE_DBG_MNG_VLAN_MASK_B),
+-			 req0->i_port_bitmap, req0->i_port_direction);
++		pos += scnprintf(buf + pos, len - pos, "%02u     %pM ",
++				 le16_to_cpu(req0->index), req0->mac_addr);
 +
-+	pos += scnprintf(buf + pos, len - pos, "%s MAC_LIST:\n",
-+			 is_unicast ? "UC" : "MC");
-+	hclge_dbg_fill_content(content, sizeof(content), mac_list_items,
-+			       NULL, ARRAY_SIZE(mac_list_items));
-+	pos += scnprintf(buf + pos, len - pos, "%s", content);
++		pos += scnprintf(buf + pos, len - pos,
++				 "%x     %04x   %x     %04x  ",
++				 !!(req0->flags & HCLGE_DBG_MNG_MAC_MASK_B),
++				 le16_to_cpu(req0->ethter_type),
++				 !!(req0->flags & HCLGE_DBG_MNG_ETHER_MASK_B),
++				 le16_to_cpu(req0->vlan_tag) &
++				 HCLGE_DBG_MNG_VLAN_TAG);
 +
-+	for (func_id = 0; func_id < hdev->num_alloc_vport; func_id++) {
-+		vport = &hdev->vport[func_id];
-+		list = is_unicast ? &vport->uc_mac_list : &vport->mc_mac_list;
-+		spin_lock_bh(&vport->mac_list_lock);
-+		list_for_each_entry_safe(mac_node, tmp, list, node) {
-+			i = 0;
-+			result[i++] = hclge_dbg_get_func_id_str(str_id,
-+								func_id);
-+			sprintf(result[i++], "%pM", mac_node->mac_addr);
-+			sprintf(result[i++], "%5s",
-+				hclge_mac_state_str[mac_node->state]);
-+			hclge_dbg_fill_content(content, sizeof(content),
-+					       mac_list_items,
-+					       (const char **)result,
-+					       ARRAY_SIZE(mac_list_items));
-+			pos += scnprintf(buf + pos, len - pos, "%s", content);
-+		}
-+		spin_unlock_bh(&vport->mac_list_lock);
++		pos += scnprintf(buf + pos, len - pos,
++				 "%x     %02x     %02x     ",
++				 !!(req0->flags & HCLGE_DBG_MNG_VLAN_MASK_B),
++				 req0->i_port_bitmap, req0->i_port_direction);
+ 
+ 		msg_egress_port = le16_to_cpu(req0->egress_port);
+-		snprintf(printf_buf + strlen(printf_buf),
+-			 HCLGE_DBG_BUF_LEN - strlen(printf_buf),
+-			 "%x     |%x    |%02x   |%04x|%x\n",
+-			 !!(msg_egress_port & HCLGE_DBG_MNG_E_TYPE_B),
+-			 msg_egress_port & HCLGE_DBG_MNG_PF_ID,
+-			 (msg_egress_port >> 3) & HCLGE_DBG_MNG_VF_ID,
+-			 le16_to_cpu(req0->egress_queue),
+-			 !!(msg_egress_port & HCLGE_DBG_MNG_DROP_B));
+-
+-		dev_info(&hdev->pdev->dev, "%s", printf_buf);
++		pos += scnprintf(buf + pos, len - pos,
++				 "%x       %x      %02x     %04x  %x\n",
++				 !!(msg_egress_port & HCLGE_DBG_MNG_E_TYPE_B),
++				 msg_egress_port & HCLGE_DBG_MNG_PF_ID,
++				 (msg_egress_port >> 3) & HCLGE_DBG_MNG_VF_ID,
++				 le16_to_cpu(req0->egress_queue),
++				 !!(msg_egress_port & HCLGE_DBG_MNG_DROP_B));
  	}
-+}
- 
--	vport = &hdev->vport[func_id];
--
--	list = is_unicast ? &vport->uc_mac_list : &vport->mc_mac_list;
--
--	dev_info(&hdev->pdev->dev, "vport %u %s mac list:\n",
--		 func_id, is_unicast ? "uc" : "mc");
--	dev_info(&hdev->pdev->dev, "mac address              state\n");
--
--	spin_lock_bh(&vport->mac_list_lock);
-+static int hclge_dbg_dump_mac_uc(struct hclge_dev *hdev, char *buf, int len)
-+{
-+	hclge_dbg_dump_mac_list(hdev, buf, len, true);
- 
--	list_for_each_entry_safe(mac_node, tmp, list, node) {
--		dev_info(&hdev->pdev->dev, "%pM         %d\n",
--			 mac_node->mac_addr, mac_node->state);
--	}
++
 +	return 0;
-+}
- 
--	spin_unlock_bh(&vport->mac_list_lock);
-+static int hclge_dbg_dump_mac_mc(struct hclge_dev *hdev, char *buf, int len)
-+{
-+	hclge_dbg_dump_mac_list(hdev, buf, len, false);
- 
- 	return 0;
  }
-@@ -1781,14 +1834,6 @@ int hclge_dbg_run_cmd(struct hnae3_handle *handle, const char *cmd_buf)
- 	} else if (strncmp(cmd_buf, "dump qs shaper", 14) == 0) {
- 		hclge_dbg_dump_qs_shaper(hdev,
- 					 &cmd_buf[sizeof("dump qs shaper")]);
--	} else if (strncmp(cmd_buf, "dump uc mac list", 16) == 0) {
--		hclge_dbg_dump_mac_list(hdev,
--					&cmd_buf[sizeof("dump uc mac list")],
--					true);
--	} else if (strncmp(cmd_buf, "dump mc mac list", 16) == 0) {
--		hclge_dbg_dump_mac_list(hdev,
--					&cmd_buf[sizeof("dump mc mac list")],
--					false);
- 	} else if (strncmp(cmd_buf, DUMP_INTERRUPT,
- 		   strlen(DUMP_INTERRUPT)) == 0) {
- 		hclge_dbg_dump_interrupt(hdev);
-@@ -1813,6 +1858,14 @@ static const struct hclge_dbg_func hclge_dbg_cmd_func[] = {
- 		.cmd = HNAE3_DBG_CMD_TM_QSET,
- 		.dbg_dump = hclge_dbg_dump_tm_qset,
+ 
+ static int hclge_dbg_fd_tcam_read(struct hclge_dev *hdev, u8 stage,
+@@ -1813,8 +1805,6 @@ int hclge_dbg_run_cmd(struct hnae3_handle *handle, const char *cmd_buf)
+ 		hclge_dbg_dump_qos_pri_map(hdev);
+ 	} else if (strncmp(cmd_buf, "dump qos buf cfg", 16) == 0) {
+ 		hclge_dbg_dump_qos_buf_cfg(hdev);
+-	} else if (strncmp(cmd_buf, "dump mng tbl", 12) == 0) {
+-		hclge_dbg_dump_mng_table(hdev);
+ 	} else if (strncmp(cmd_buf, DUMP_REG, strlen(DUMP_REG)) == 0) {
+ 		hclge_dbg_dump_reg_cmd(hdev, &cmd_buf[sizeof(DUMP_REG)]);
+ 	} else if (strncmp(cmd_buf, "dump reset info", 15) == 0) {
+@@ -1866,6 +1856,10 @@ static const struct hclge_dbg_func hclge_dbg_cmd_func[] = {
+ 		.cmd = HNAE3_DBG_CMD_MAC_MC,
+ 		.dbg_dump = hclge_dbg_dump_mac_mc,
  	},
 +	{
-+		.cmd = HNAE3_DBG_CMD_MAC_UC,
-+		.dbg_dump = hclge_dbg_dump_mac_uc,
-+	},
-+	{
-+		.cmd = HNAE3_DBG_CMD_MAC_MC,
-+		.dbg_dump = hclge_dbg_dump_mac_mc,
++		.cmd = HNAE3_DBG_CMD_MNG_TBL,
++		.dbg_dump = hclge_dbg_dump_mng_table,
 +	},
  };
  
  int hclge_dbg_read_cmd(struct hnae3_handle *handle, enum hnae3_dbg_cmd cmd,
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
-index 0c14453..c5c18af 100644
+index c5c18af..bf6a0ff 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
-@@ -728,4 +728,13 @@ static const struct hclge_dbg_dfx_message hclge_dbg_tqp_reg[] = {
- 	{true, "RCB_CFG_TX_RING_EBDNUM"},
- };
+@@ -7,7 +7,6 @@
+ #include <linux/etherdevice.h>
+ #include "hclge_cmd.h"
  
-+#define HCLGE_DBG_INFO_LEN			256
-+#define HCLGE_DBG_ID_LEN			16
-+#define HCLGE_DBG_ITEM_NAME_LEN			32
-+#define HCLGE_DBG_DATA_STR_LEN			32
-+struct hclge_dbg_item {
-+	char name[HCLGE_DBG_ITEM_NAME_LEN];
-+	u16 interval; /* blank numbers after the item */
-+};
-+
- #endif
+-#define HCLGE_DBG_BUF_LEN	   256
+ #define HCLGE_DBG_MNG_TBL_MAX	   64
+ 
+ #define HCLGE_DBG_MNG_VLAN_MASK_B  BIT(0)
 -- 
 2.7.4
 
