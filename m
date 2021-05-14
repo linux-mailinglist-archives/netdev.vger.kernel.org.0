@@ -2,74 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E503380D32
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 17:33:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7485380D80
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 17:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234854AbhENPeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 11:34:22 -0400
-Received: from netrider.rowland.org ([192.131.102.5]:47751 "HELO
-        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with SMTP id S234864AbhENPeG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 May 2021 11:34:06 -0400
-Received: (qmail 1009388 invoked by uid 1000); 14 May 2021 11:32:53 -0400
-Date:   Fri, 14 May 2021 11:32:53 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     Greg KH <greg@kroah.com>,
-        syzbot <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: Re: [syzbot] WARNING in rtl8152_probe
-Message-ID: <20210514153253.GA1007561@rowland.harvard.edu>
-References: <0000000000009df1b605c21ecca8@google.com>
- <7de0296584334229917504da50a0ac38@realtek.com>
- <20210513142552.GA967812@rowland.harvard.edu>
- <bde8fc1229ec41e99ec77f112cc5ee01@realtek.com>
- <YJ4dU3yCwd2wMq5f@kroah.com>
- <bddf302301f5420db0fa049c895c9b14@realtek.com>
+        id S234985AbhENPmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 11:42:51 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40526 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232426AbhENPmu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 May 2021 11:42:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=JGPg2rGN1c6V/ZgAIaVM+slcrBMKD0rGiiBx+eLZO3E=; b=GVdjFcI8OK/Bo9hHneBzVr4s8W
+        V+xQ9NkGYW0TWXNNZ0pqk4c9dbcSYJ6BI9eOBM3H9/zcF+u2Q007kZYjvogndKCw0jtgZ31r14M+A
+        HnotK1H/rKZ+jnYF6mQm8ThH/wZ2J8fKi0bzJIaWgPqHQa/IDcD3Ojevhg5CA50WRfq8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lhZwT-004Cnj-AV; Fri, 14 May 2021 17:41:33 +0200
+Date:   Fri, 14 May 2021 17:41:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
+Subject: Re: [PATCH v3] net: phy: add driver for Motorcomm yt8511 phy
+Message-ID: <YJ6aLTo3fJ6kRvzK@lunn.ch>
+References: <20210514115826.3025223-1-pgwipeout@gmail.com>
+ <YJ56G23e930pg4Iv@lunn.ch>
+ <CAMdYzYrSB0G7jfG9fo85X0DxVG_r-qaWUyVAa5paAW0ugLvoxw@mail.gmail.com>
+ <YJ6OqpRTo+rlfb51@lunn.ch>
+ <CAMdYzYrdNqDZdkCj5Jf9+MmGtZgy263cYmwWkB3rZY02dPefYw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bddf302301f5420db0fa049c895c9b14@realtek.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAMdYzYrdNqDZdkCj5Jf9+MmGtZgy263cYmwWkB3rZY02dPefYw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 07:50:19AM +0000, Hayes Wang wrote:
-> Greg KH <greg@kroah.com>
-> > Sent: Friday, May 14, 2021 2:49 PM
-> [...]
-> > Because people can create "bad" devices and plug them into a system
-> > which causes the driver to load and then potentially crash the system or
-> > do other bad things.
-> > 
-> > USB drivers now need to be able to handle "malicious" devices, it's been
-> > that way for many years now.
+> Good Catch!
 > 
-> My question is that even I check whole the USB descriptor, the malicious
-> devices could duplicate it easily to pass my checks. That is, I could add a
-> lot of checks, but it still doesn't prevent malicious devices. Is this meaningful?
+> Guess I'll have to set that too, anything else you'd recommend looking into?
 
-The real motivation here, which nobody has mentioned explicitly yet, is 
-that the driver needs to be careful enough that it won't crash no matter 
-what bizarre, malfunctioning, or malicious device is attached.
+I think for a first submission, you have the basics. I'm just pushing
+RGMII delays because we have had backwards compatibility problems in
+that area when added later. Experience suggests adding features in
+other areas is much less of a problem. So as you suggested, you can
+add cable test, downshift control, interrupts etc later.
 
-Even if a device isn't malicious, if it is buggy, broken, or 
-malfunctioning in some way then it can present input that a normal 
-device would never generate.  If the driver isn't prepared to handle 
-this unusual input, it may crash.  That is specifically what we want to 
-avoid.
-
-So if a peculiar emulated device created by syzbot is capable of 
-crashing the driver, then somewhere there is a bug which needs to be 
-fixed.  It's true that fixing all these bugs might not protect against a 
-malicious device which deliberately behaves in an apparently reasonable 
-manner.  But it does reduce the attack surface.
-
-Alan Stern
+    Andrew
