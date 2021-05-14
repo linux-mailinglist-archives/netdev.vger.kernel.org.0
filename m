@@ -2,195 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22B11380713
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 12:22:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1312F38073F
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 12:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233133AbhENKXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 06:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53206 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230362AbhENKXp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 06:23:45 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509A2C061574;
-        Fri, 14 May 2021 03:22:34 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id d24so17742234ios.2;
-        Fri, 14 May 2021 03:22:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vciAZqDU3ir+miOY/c7xjJLyqmaPkD7glWg5FdGX3lY=;
-        b=XANmncykDgONXxd5g+YwoNKuC8fm4sVElj64OHGnox0hzdUjbNah0fUBzBQ6MEwuQb
-         9s9paqy7FfmSKHdswHuDJLeL+wVWi8a9UNtM4XAXay4Jc4+kHrHXSjnVjLviFh+Vh1UP
-         wH6tbAQUWHA4gBTxH73mLNsqGqJUWoYxMt10lhvQxQV9hq7fHGE/UDEBUVKTvfVSHgv2
-         oWNq2Iw3wCeCx/jWUtH25lPJMNTQAYIp9LbhbQ5N/bVOoKTp8kX+6xPOpIYpInPXQpuY
-         OKF1SoRhc6E6X3NpGvIQzz7woCBL+85Nc/N0mxAjii0MK+ZlGq+twA3SxWPdyrq2LtK0
-         epMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vciAZqDU3ir+miOY/c7xjJLyqmaPkD7glWg5FdGX3lY=;
-        b=n2AfuUst/066x+z3GZO7AghiSvkK64Bf3tZIc/p4vdRd0we4QVzoLrXw02EnFIRzhJ
-         p1RaSwmBsyVj3ZW8WWmBfP3sHeYC7oWAVfGXI2AusnAjRd52sOgN/rVp5nBRDd+ELiYR
-         pGrnMRGJ7ZzvDVRujvDYVou0jji3PVg6cIu3HEeupDVvjcJtUjweacLHU9xuJbdlYUGh
-         vsmGkgHWtYwvhpXm2GnCGW58oLK8IssMbc098s5Vs50AwALByLRsR3Gv2jRup54Jh/iQ
-         TEp3Y+Z8bxq1SsIE2c5ddmVfXR7AxqPE4vGTEprTN6sXxny/RXkjT+mOBXybnEtRMoM7
-         Bz6A==
-X-Gm-Message-State: AOAM530OHVC1abyuhmtOQPyHUMslzqB2jyV6NWHuHjrFVnBpKiZCDCV4
-        9Lte34xyDrjckTlamC8tjG8ce1kkNHAahhv727Lguzpb2OxQ7w==
-X-Google-Smtp-Source: ABdhPJxCBq0WKbmQfe3tbmghJnthfS9nt+aIfJHRG+QvcfF51Uf8VEpK99LZaz+JVXwkI8sjGr8+khCEf1RbMwYacpA=
-X-Received: by 2002:a05:6638:963:: with SMTP id o3mr33954478jaj.0.1620987753729;
- Fri, 14 May 2021 03:22:33 -0700 (PDT)
+        id S231734AbhENKd7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 14 May 2021 06:33:59 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:35111 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230018AbhENKd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 06:33:59 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 14EAWQLD0000693, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 14EAWQLD0000693
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 14 May 2021 18:32:26 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 14 May 2021 18:32:25 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 14 May 2021 18:32:24 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74]) by
+ RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74%5]) with mapi id
+ 15.01.2106.013; Fri, 14 May 2021 18:32:24 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Greg KH <greg@kroah.com>
+CC:     Alan Stern <stern@rowland.harvard.edu>,
+        syzbot <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: RE: [syzbot] WARNING in rtl8152_probe
+Thread-Topic: [syzbot] WARNING in rtl8152_probe
+Thread-Index: AQHXRxMNo04dZcfiN0eNJrSRsQsh6qrguwNggAA4ewCAAVQHMP//vp6AgACQRgD//4sbgIAApcsA
+Date:   Fri, 14 May 2021 10:32:24 +0000
+Message-ID: <d7ea3cfd8bde4b8ba7ed6ea4c545c9dc@realtek.com>
+References: <0000000000009df1b605c21ecca8@google.com>
+ <7de0296584334229917504da50a0ac38@realtek.com>
+ <20210513142552.GA967812@rowland.harvard.edu>
+ <bde8fc1229ec41e99ec77f112cc5ee01@realtek.com> <YJ4dU3yCwd2wMq5f@kroah.com>
+ <bddf302301f5420db0fa049c895c9b14@realtek.com> <YJ40S1eHnbg1dsYv@kroah.com>
+In-Reply-To: <YJ40S1eHnbg1dsYv@kroah.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/5/14_=3F=3F_06:04:00?=
+x-kse-attachment-filter-triggered-rules: Clean
+x-kse-attachment-filter-triggered-filters: Clean
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20210508064925.8045-1-heiko.thiery@gmail.com> <6ba0adf4-5177-c50a-e921-bee898e3fdb9@gmail.com>
-In-Reply-To: <6ba0adf4-5177-c50a-e921-bee898e3fdb9@gmail.com>
-From:   Heiko Thiery <heiko.thiery@gmail.com>
-Date:   Fri, 14 May 2021 12:22:22 +0200
-Message-ID: <CAEyMn7a4Z3U-fUvFLcWmPW3hf-x6LfcTi8BZrcDfhhFF0_9=ow@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next v3] lib/fs: fix issue when
- {name,open}_to_handle_at() is not implemented
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, petr.vorel@gmail.com,
-        linux-kernel@vger.kernel.org, stephen@networkplumber.org,
-        Dmitry Yakunin <zeil@yandex-team.ru>
-Content-Type: text/plain; charset="UTF-8"
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/14/2021 10:22:47
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163662 [May 14 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 445 445 d5f7ae5578b0f01c45f955a2a751ac25953290c9
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 05/14/2021 10:10:00
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/14/2021 10:12:41
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163661 [May 14 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 445 445 d5f7ae5578b0f01c45f955a2a751ac25953290c9
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 05/14/2021 10:15:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Greg KH <greg@kroah.com>
+> Sent: Friday, May 14, 2021 4:27 PM
+[...]
+> Checking the whole USB decriptor is fine, yes, they can duplicate that.
+> So that means you need to validate _ALL_ data coming from the device
+> that it is in an acceptable range of values that the driver can
+> correctly handle.
 
-Am Mo., 10. Mai 2021 um 00:20 Uhr schrieb David Ahern <dsahern@gmail.com>:
->
-> On 5/8/21 12:49 AM, Heiko Thiery wrote:
-> > With commit d5e6ee0dac64 the usage of functions name_to_handle_at() and
-> > open_by_handle_at() are introduced. But these function are not available
-> > e.g. in uclibc-ng < 1.0.35. To have a backward compatibility check for the
-> > availability in the configure script and in case of absence do a direct
-> > syscall.
-> >
-> > Fixes: d5e6ee0dac64 ("ss: introduce cgroup2 cache and helper functions")
-> > Cc: Dmitry Yakunin <zeil@yandex-team.ru>
-> > Cc: Petr Vorel <petr.vorel@gmail.com>
-> > Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
-> > ---
-> > v3:
-> >  - use correct syscall number (thanks to Petr Vorel)
-> >  - add #include <sys/syscall.h> (thanks to Petr Vorel)
-> >  - remove bogus parameters (thanks to Petr Vorel)
-> >  - fix #ifdef (thanks to Petr Vorel)
-> >  - added Fixes tag (thanks to David Ahern)
-> >  - build test with buildroot 2020.08.3 using uclibc 1.0.34
-> >
-> > v2:
-> >  - small correction to subject
-> >  - removed IP_CONFIG_HANDLE_AT:=y option since it is not required
-> >  - fix indentation in check function
-> >  - removed empty lines (thanks to Petr Vorel)
-> >  - add #define _GNU_SOURCE in check (thanks to Petr Vorel)
-> >  - check only for name_to_handle_at (thanks to Petr Vorel)
-> >
-> >  configure | 28 ++++++++++++++++++++++++++++
-> >  lib/fs.c  | 25 +++++++++++++++++++++++++
-> >  2 files changed, 53 insertions(+)
-> >
-> > diff --git a/configure b/configure
-> > index 2c363d3b..179eae08 100755
-> > --- a/configure
-> > +++ b/configure
-> > @@ -202,6 +202,31 @@ EOF
-> >      rm -f $TMPDIR/setnstest.c $TMPDIR/setnstest
-> >  }
-> >
-> > +check_name_to_handle_at()
-> > +{
-> > +    cat >$TMPDIR/name_to_handle_at_test.c <<EOF
-> > +#define _GNU_SOURCE
-> > +#include <sys/types.h>
-> > +#include <sys/stat.h>
-> > +#include <fcntl.h>
-> > +int main(int argc, char **argv)
-> > +{
-> > +     struct file_handle *fhp;
-> > +     int mount_id, flags, dirfd;
-> > +     char *pathname;
-> > +     name_to_handle_at(dirfd, pathname, fhp, &mount_id, flags);
-> > +     return 0;
-> > +}
-> > +EOF
-> > +    if $CC -I$INCLUDE -o $TMPDIR/name_to_handle_at_test $TMPDIR/name_to_handle_at_test.c >/dev/null 2>&1; then
-> > +        echo "yes"
-> > +        echo "CFLAGS += -DHAVE_HANDLE_AT" >>$CONFIG
-> > +    else
-> > +        echo "no"
-> > +    fi
-> > +    rm -f $TMPDIR/name_to_handle_at_test.c $TMPDIR/name_to_handle_at_test
-> > +}
-> > +
-> >  check_ipset()
-> >  {
-> >      cat >$TMPDIR/ipsettest.c <<EOF
-> > @@ -492,6 +517,9 @@ fi
-> >  echo -n "libc has setns: "
-> >  check_setns
-> >
-> > +echo -n "libc has name_to_handle_at: "
-> > +check_name_to_handle_at
-> > +
-> >  echo -n "SELinux support: "
-> >  check_selinux
-> >
-> > diff --git a/lib/fs.c b/lib/fs.c
-> > index f161d888..05697a7e 100644
-> > --- a/lib/fs.c
-> > +++ b/lib/fs.c
-> > @@ -25,11 +25,36 @@
-> >
-> >  #include "utils.h"
-> >
-> > +#ifndef HAVE_HANDLE_AT
-> > +# include <sys/syscall.h>
-> > +#endif
-> > +
-> >  #define CGROUP2_FS_NAME "cgroup2"
-> >
-> >  /* if not already mounted cgroup2 is mounted here for iproute2's use */
-> >  #define MNT_CGRP2_PATH  "/var/run/cgroup2"
-> >
-> > +
-> > +#ifndef HAVE_HANDLE_AT
-> > +struct file_handle {
-> > +     unsigned handle_bytes;
-> > +     int handle_type;
-> > +     unsigned char f_handle[];
-> > +};
-> > +
-> > +static int name_to_handle_at(int dirfd, const char *pathname,
-> > +     struct file_handle *handle, int *mount_id, int flags)
-> > +{
-> > +     return syscall(__NR_name_to_handle_at, dirfd, pathname, handle,
-> > +                    mount_id, flags);
-> > +}
-> > +
-> > +static int open_by_handle_at(int mount_fd, struct file_handle *handle, int flags)
-> > +{
-> > +     return syscall(__NR_open_by_handle_at, mount_fd, handle, flags);
-> > +}
-> > +#endif
-> > +
-> >  /* return mount path of first occurrence of given fstype */
-> >  static char *find_fs_mount(const char *fs_to_find)
-> >  {
-> >
->
-> This causes compile failures if anyone is reusing a tree. It would be
-> good to require config.mk to be updated if configure is newer.
+I see.
 
-Do you mean the config.mk should have a dependency to configure in the
-Makefile? Wouldn't that be better as a separate patch?
+Best Regards,
+Hayes
 
-Thanks
--- 
-Heiko
