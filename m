@@ -2,90 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B3553811EF
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 22:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B32AF3811F8
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 22:47:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231744AbhENUmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 16:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51262 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231704AbhENUmW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 16:42:22 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C55A3C061574
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 13:41:10 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lhecK-0006lj-3Z; Fri, 14 May 2021 22:41:04 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:d2a9:f0ae:b10b:5ba5])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 7929A6246DB;
-        Fri, 14 May 2021 20:40:59 +0000 (UTC)
-Date:   Fri, 14 May 2021 22:40:58 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     zuoqilin1@163.com
-Cc:     socketcan@hartkopp.net, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zuoqilin <zuoqilin@yulong.com>
-Subject: Re: [PATCH] net: Remove unnecessary variables
-Message-ID: <20210514204058.lqd2gryxbfkto4ra@pengutronix.de>
-References: <20210514100806.792-1-zuoqilin1@163.com>
+        id S231777AbhENUsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 16:48:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40208 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231607AbhENUsI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 May 2021 16:48:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EE30F61106;
+        Fri, 14 May 2021 20:46:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621025216;
+        bh=mkns6LF2/0IsfAvHI7FNhoNi0kJUepJlW1v2yduiTHY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZnS3kvkqfNSGUbnLoPGFV4VANmMUsj/0vzeKICiTfLdy+8qAMhg9Gmicpw+seA5h0
+         2gp6GeJp1V4Jw4awkP5phUsYmgndgEU4DsWiIHjZ/FjkVgtKb4DoEsbQTvBlWaxY8O
+         +pKGvQbRdE81PTrFQu0FguOigC0F8bVTJr+ecytDpSK+kQJbRuP6TvsIg1l/99OhDv
+         wPrmt7UNDjaIAJJeSoij/zeqBHbg4S5gS9qMXGZF4PJwtSUA/QZHbDyWZHIZCCx73k
+         YFsGvkHxNXIViG+CYdLFI4tRGAKZmbttQSx6q1draRM9kZWY4yRxuEVUfyIFS+OjeF
+         ng7PpCYba+wsQ==
+Date:   Fri, 14 May 2021 13:46:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        Michal Svec <msvec@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hayes Wang <hayeswang@realtek.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH RFC] r8152: Ensure that napi_schedule() is handled
+Message-ID: <20210514134655.73d972cb@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <87sg2p2hbl.ffs@nanos.tec.linutronix.de>
+References: <877dk162mo.ffs@nanos.tec.linutronix.de>
+        <20210514123838.10d78c35@kicinski-fedora-PC1C0HJN>
+        <87sg2p2hbl.ffs@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gyij337c7zi7s5x5"
-Content-Disposition: inline
-In-Reply-To: <20210514100806.792-1-zuoqilin1@163.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 14 May 2021 22:25:50 +0200 Thomas Gleixner wrote:
+> On Fri, May 14 2021 at 12:38, Jakub Kicinski wrote:
+> 
+> > On Fri, 14 May 2021 12:17:19 +0200 Thomas Gleixner wrote:  
+> >> The driver invokes napi_schedule() in several places from task
+> >> context. napi_schedule() raises the NET_RX softirq bit and relies on the
+> >> calling context to ensure that the softirq is handled. That's usually on
+> >> return from interrupt or on the outermost local_bh_enable().
+> >> 
+> >> But that's not the case here which causes the soft interrupt handling to be
+> >> delayed to the next interrupt or local_bh_enable(). If the task in which
+> >> context this is invoked is the last runnable task on a CPU and the CPU goes
+> >> idle before an interrupt arrives or a local_bh_disable/enable() pair
+> >> handles the pending soft interrupt then the NOHZ idle code emits the
+> >> following warning.
+> >> 
+> >>   NOHZ tick-stop error: Non-RCU local softirq work is pending, handler #08!!!
+> >> 
+> >> Prevent this by wrapping the napi_schedule() invocation from task context
+> >> into a local_bh_disable/enable() pair.  
+> >
+> > I should have read through my inbox before replying :)
+> >
+> > I'd go for switching to raise_softirq_irqoff() in ____napi_schedule()...
+> > why not?  
+> 
+> Except that some instruction cycle beancounters might complain about
+> the extra conditional for the sane cases.
+> 
+> But yes, I'm fine with that as well. That's why this patch is marked RFC :)
 
---gyij337c7zi7s5x5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+When we're in the right context (irq/bh disabled etc.) the cost is just
+read of preempt_count() and jump, right? And presumably preempt_count()
+is in the cache already, because those sections aren't very long. Let me
+make this change locally and see if it is in any way perceivable.
 
-On 14.05.2021 18:08:06, zuoqilin1@163.com wrote:
-> From: zuoqilin <zuoqilin@yulong.com>
->=20
-> There is no need to define the variable "rate" to receive,
-> just return directly.
->=20
-> Signed-off-by: zuoqilin <zuoqilin@yulong.com>
-
-Applied to linux-can-next/testing.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---gyij337c7zi7s5x5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmCe4FgACgkQqclaivrt
-76n23Qf/cgv1dhi3wsb0LE/7sAE/Ui1kVpBZ4FnrVb39mfj9OwlaGIw9kq+Ibfzg
-BNZcFYkNh5Je/B7sEkdtLrmuITgdidzhZyfMRa8Dx21kTxD1FQL+fO2Zx45imfzn
-BfvyVPrxLdypRxvrD6QyvfwI7iqPxasBXfu0Hzz9TpNSEXCs+SAn9WEYUHl6HHrn
-y7T/tPQx+NxUTXM1WsuA+rNTyWG0BcLECG78ivgxtPbFNtHyfRKj4uWTReZpa3Ae
-5kJCWSL77ZmhJc0cQeuH1rHJsIJLWqKVJ1EcBGwYPUdI9P5WxSGo92Bnukg66o4V
-ex1yG02lzElETbg5ogIXTzRLiunO/Q==
-=Ds8o
------END PGP SIGNATURE-----
-
---gyij337c7zi7s5x5--
+Obviously if anyone sees a way to solve the problem without much
+ifdefinery and force_irqthreads checks that'd be great - I don't.
+I'd rather avoid pushing this kind of stuff out to the drivers.
