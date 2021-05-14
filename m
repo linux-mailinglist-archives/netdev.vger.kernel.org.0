@@ -2,96 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A97603804AA
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 09:50:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67B263804BD
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 09:56:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233287AbhENHwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 03:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233244AbhENHwC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 03:52:02 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0388C061574
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 00:50:51 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id g13so21671219qts.4
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 00:50:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kOfBJat+mqyQtxfMSdBFqXn3AB6r0NiX2/D+7z9FVyo=;
-        b=oBvVTruIns4DBa2mnrwIcWIU4SJx73VtUiBhpiZiiQ4AgdcUXLULLIJjdLp156rle+
-         hbbOl8MNj27y0QoSF1Sxomo69kVzLSL/Sn8XQDn9ubtKa/5+AML8FGLfW/8V90tU7YZh
-         HmvAJ+pCRWihBeTP8mSMCXhjLvgR/v/c9nMjDfspMVYG6TkRoM8EBz0hFJ14/zsHyqRv
-         Huyyff6Uq5YpEHTn+MOVWTugf14j65wzj96QL+NMlGTb3vufHVjTADePtQW55oPqg7H8
-         /YaTx+TDc++XoUxZOxnXzxjw2VNHP5VV0DZnLKPXpsQHPPdEsbTWrO8Fe9dl71d8KmL/
-         yOxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kOfBJat+mqyQtxfMSdBFqXn3AB6r0NiX2/D+7z9FVyo=;
-        b=ab1ef1gLmx2acCuPIB3jKac1NiICHukWG7uZf5jQGHyAD7aG0CtOMT6WH7Oycp2ieq
-         hY5UdRvVQitC8HeeG1CZSNeu4KtMQ7v7+hgKqTq+hOCfTqboLockuxSsS1Q4xoT0z+Yj
-         LgPZROKzKmLbwJvX34Kq4Fns0zLJxkJ6qDif5qAAtk4q7F85FPBLQxsVCHXMsK0FJ1tg
-         e0pjBnmRP8TQO+qghdtbRBjirL3PgD/UPFDqXTvrZR1Y9lr1UynH9ZGA7RIWmFTQAic8
-         fnVbEfClhrH980dua4dzWH6q2xc6VTUNqUspf9AeR5bwihQDLrB4dGkoH5Jx8HqdSczg
-         S9BQ==
-X-Gm-Message-State: AOAM531c4azBKMUW0t68ckQXLQ3aXEwqWkArRFLNE2lXZAYufMoJHyo4
-        QLo0XU8OYsOIa11kN38gpsB05ptB5NfMAb99WMTzbA==
-X-Google-Smtp-Source: ABdhPJwO2h2BkNL/icMM2Oo2w/4OPTUpvyJcOesVWoDMUs+CyOXTk6AsniBs441KSzBS+qWlvmbJDR9FhZma/QKevLg=
-X-Received: by 2002:ac8:7c8a:: with SMTP id y10mr3974414qtv.337.1620978650818;
- Fri, 14 May 2021 00:50:50 -0700 (PDT)
+        id S233340AbhENH5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 03:57:16 -0400
+Received: from m12-13.163.com ([220.181.12.13]:47603 "EHLO m12-13.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232903AbhENH5P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 May 2021 03:57:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=CBLat
+        +ZXhC8qxPjdaARxRUWnTKRDHA0cZBqWH1oRFFc=; b=B9gQs9L4XDbWA7T2k8nJh
+        839Z+b6dLSsv60RZR1sH50Oi1HFi6ZCO2QeXZ0ALy6S5FNNbScpq7bnDKGXQF5r2
+        nnch87v/e/JlQ0pA+hbVQglLcwy6qjcPj2NAoAmjCutT5yUwHHoPoef1B4hTwa+j
+        40zAEIPKWst0nxLe1ilALo=
+Received: from COOL-20201210PM.ccdomain.com (unknown [218.94.48.178])
+        by smtp9 (Coremail) with SMTP id DcCowAB3mffjLJ5gGvMlAg--.37879S2;
+        Fri, 14 May 2021 15:55:19 +0800 (CST)
+From:   zuoqilin1@163.com
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zuoqilin <zuoqilin@yulong.com>
+Subject: [PATCH] net: Remove unnecessary variables
+Date:   Fri, 14 May 2021 15:55:13 +0800
+Message-Id: <20210514075513.1801-1-zuoqilin1@163.com>
+X-Mailer: git-send-email 2.28.0.windows.1
 MIME-Version: 1.0
-References: <000000000000aaa4a905ac646223@google.com> <000000000000fd05a005c2389844@google.com>
-In-Reply-To: <000000000000fd05a005c2389844@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 14 May 2021 09:50:39 +0200
-Message-ID: <CACT4Y+aAhVHiDyuiwxAh4KfHp3UnquQPGBJ52fa46Cm7LT_hdw@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in __queue_work (3)
-To:     syzbot <syzbot+77e5e02c6c81136cdaff@syzkaller.appspotmail.com>
-Cc:     Markus Elfring <Markus.Elfring@web.de>,
-        Anant Thazhemadam <anant.thazhemadam@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hillf Danton <hdanton@sina.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linma@zju.edu.cn,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, luiz.dentz@gmail.com,
-        Marcel Holtmann <marcel@holtmann.org>, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcCowAB3mffjLJ5gGvMlAg--.37879S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7GF1fGrWrur4UJryfXFykGrg_yoW8Jr4xpF
+        4UGryDu3yUtrWaga1rJF4Du34Syw18GrsFk34rXwn3Zw1vgw1rta48trWj9FnY9rW8C3Wf
+        JFWqgr4v9F4jkrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j5cTQUUUUU=
+X-Originating-IP: [218.94.48.178]
+X-CM-SenderInfo: 52xr1xpolqiqqrwthudrp/1tbiHgeSiVSIug-K0gAAsz
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 13, 2021 at 6:27 PM syzbot
-<syzbot+77e5e02c6c81136cdaff@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit e2cb6b891ad2b8caa9131e3be70f45243df82a80
-> Author: Lin Ma <linma@zju.edu.cn>
-> Date:   Mon Apr 12 11:17:57 2021 +0000
->
->     bluetooth: eliminate the potential race condition when removing the HCI controller
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=127b3593d00000
-> start commit:   c0842fbc random32: move the pseudo-random 32-bit definitio..
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=cf567e8c7428377e
-> dashboard link: https://syzkaller.appspot.com/bug?extid=77e5e02c6c81136cdaff
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=140e36a4900000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: bluetooth: eliminate the potential race condition when removing the HCI controller
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+From: zuoqilin <zuoqilin@yulong.com>
+
+It is not necessary to define variables to receive -ENOMEM,
+directly return -ENOMEM.
+
+Signed-off-by: zuoqilin <zuoqilin@yulong.com>
+---
+ net/key/af_key.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index ef9b4ac..de24a7d 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -141,7 +141,6 @@ static int pfkey_create(struct net *net, struct socket *sock, int protocol,
+ 	struct netns_pfkey *net_pfkey = net_generic(net, pfkey_net_id);
+ 	struct sock *sk;
+ 	struct pfkey_sock *pfk;
+-	int err;
+ 
+ 	if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
+ 		return -EPERM;
+@@ -150,10 +149,9 @@ static int pfkey_create(struct net *net, struct socket *sock, int protocol,
+ 	if (protocol != PF_KEY_V2)
+ 		return -EPROTONOSUPPORT;
+ 
+-	err = -ENOMEM;
+ 	sk = sk_alloc(net, PF_KEY, GFP_KERNEL, &key_proto, kern);
+ 	if (sk == NULL)
+-		goto out;
++		return -ENOMEM;
+ 
+ 	pfk = pfkey_sk(sk);
+ 	mutex_init(&pfk->dump_lock);
+@@ -169,8 +167,6 @@ static int pfkey_create(struct net *net, struct socket *sock, int protocol,
+ 	pfkey_insert(sk);
+ 
+ 	return 0;
+-out:
+-	return err;
+ }
+ 
+ static int pfkey_release(struct socket *sock)
+-- 
+1.9.1
 
 
-Looks reasonable based on the commit and bisection log.
-Unfortunately I cannot easily send this as my email client will wrap
-the commit title line (longer than 80 chars)...
