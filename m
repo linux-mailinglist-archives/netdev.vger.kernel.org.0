@@ -2,101 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76A91380AD5
-	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 15:57:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A006C380B04
+	for <lists+netdev@lfdr.de>; Fri, 14 May 2021 16:04:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232139AbhENN6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 09:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45266 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbhENN6w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 09:58:52 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC53C061574;
-        Fri, 14 May 2021 06:57:39 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id l14so30133430wrx.5;
-        Fri, 14 May 2021 06:57:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:subject:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=64AidklKtzy410V0pglTKLFGmNORBfPabub/NAvEf3A=;
-        b=G+RU4vLKaG6EbQVY/jjpW7a8xhWwXD/GpnLOmIHQSWLkjCdWajwk/0NrDHNLShqikY
-         AujRmsjGYIBuPG2MlrUQylydrKUPeLE8szDCbRcFSROfXzV3oX2Eq/B5sRhoovXqTW5H
-         8/0dSZHHWoZplUuBxHJL7PU1u8tsvQG1RWBrdG6KWQwexwm6Nyo0PM/Y1PZ52+UsoaAy
-         6dZxffvKqfsCENW94G7Uj6VnBQavtEGlbXVLu6Ws7OEBn8R1cEzEbB8p3Cc+4vvHnxWX
-         YfnogaCbX0Zr+StyhbO6ZBMS8W0+k1P34UZDe6WiGU0bkDlWtVIPisWdescAPdPbVcoa
-         6x3w==
+        id S234080AbhENOF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 10:05:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41229 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232136AbhENOFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 10:05:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621001083;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=is4w+TCn3msJ9Lv2hnDIZ3A/ae5d78m5BGbhOBjRDwM=;
+        b=BS5Ujx69U2GrtCwJEcYwhJX7xD3G6yPIAUghVI0AFElZaTG6XBepLWE1Ro1nYNNa+6xnHP
+        qaKidnK+ywDFT/+PIJkOjiblofaZftWXJ6SpXbgNblvAfeJNX0a/wJrAb9KL+rleoRr04V
+        8LVZjrGSKor1CVe5UzOFPpPS/e0Uq/0=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-561-vMDvEAw1NcOeRGnpB2SAOg-1; Fri, 14 May 2021 10:04:41 -0400
+X-MC-Unique: vMDvEAw1NcOeRGnpB2SAOg-1
+Received: by mail-wm1-f72.google.com with SMTP id w7-20020a1cdf070000b02901698cfc1c04so1337784wmg.6
+        for <netdev@vger.kernel.org>; Fri, 14 May 2021 07:04:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:subject:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=64AidklKtzy410V0pglTKLFGmNORBfPabub/NAvEf3A=;
-        b=sVIlY9RTmLCiBmm+WjTgA8ECD68gpeaPh1JnCj0to/mCUBgeX6nRga7JpfYuvlzsuH
-         ujTvFuxZEP/y+KaO5CuARnKWPnnBqGPQjaMeYj77W6+WTAOKiT5Pm2Pe5WZpnKZBqTqe
-         J7quu6KjYpZ++luHrlVWq6P3pyOk2hri922aSdPELkuAA/kJm8u1qk96VJaGgiD5S6ta
-         QkCOBTepsN0yCT340TsYx8QLiZQJ2cIxj6A5KJ+JtgqaGUrvgIkfgPKPlYlxqaO3cl9z
-         Ru3ZGqRUCtRKeGnXzrlwlQuaXmFAT7VMn41JeK/C+VMPgiMY+SezxdrcAkoPshjVx2R+
-         LrOQ==
-X-Gm-Message-State: AOAM532td946FvW78H7JyuGiRoJcyEbLpgoJEH2sJiwB50y8xyR/Cxb1
-        bTcbdzsfDz/e+yXkgmyjAAE=
-X-Google-Smtp-Source: ABdhPJwn0XDk5r5vhrYkRPn+YTPwixBWC0Cs+pK2BB609anwLLg/9fZhfovjHaV97qDpG5LHuqfFuw==
-X-Received: by 2002:a5d:6d81:: with SMTP id l1mr58577922wrs.17.1621000658680;
-        Fri, 14 May 2021 06:57:38 -0700 (PDT)
-Received: from [192.168.2.202] (pd9e5a369.dip0.t-ipconnect.de. [217.229.163.105])
-        by smtp.gmail.com with ESMTPSA id v17sm6509828wrd.89.2021.05.14.06.57.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 May 2021 06:57:38 -0700 (PDT)
-To:     dave@bewaar.me
-Cc:     amitkarwar@gmail.com, davem@davemloft.net, ganapathi017@gmail.com,
-        huxinming820@gmail.com, johannes.berg@intel.com, kuba@kernel.org,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        sharvari.harisangam@nxp.com
-References: <ab4d00ce52f32bd8e45ad0448a44737e@bewaar.me>
-Subject: Re: [BUG] recursive lock in mwifiex_uninit_sw
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-Message-ID: <bf0c987a-8830-0f44-cf82-bd378e87e000@gmail.com>
-Date:   Fri, 14 May 2021 15:57:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=is4w+TCn3msJ9Lv2hnDIZ3A/ae5d78m5BGbhOBjRDwM=;
+        b=rj6z+3vZJYkp5CMW67rpuCbar279QKYi1eIXiQEf3Llt42M9gFWDbbpx78zAXoQIMe
+         +qhhPbAepX3MGMIWdIp0Hy/z0InhIy/KrMd6l1ZQhhwJUvZi7fKSjH3kDteXe71lJNKt
+         YoQNqQ9spSWQui7LV+cyB5ulsVkPOj3hBRszwNWeyiqSwGHmjqZXOAFeto6gV4OkZ4uK
+         HACxCtPFvvhw19GFtU/4s/uIRcKM0RdrEmIBxG4ulXjqtPgmSzfZDabHFfg1AC0YNX1i
+         uUIYVkOmx3liYM4eRhDe9YExartd3YX0Nle71YyWIJAJjFR0K+irlox1K9Tvr74TjaD/
+         FXGw==
+X-Gm-Message-State: AOAM5313Sj48VDFtUmF30VIF6A2r80OzokskgV0XrBiBHQCnOkAPi9gk
+        tPtIaOdBF4dT2LEKEv9dbRlUIPtWj+5sx65znMXgdlaTFYcWCe8o3OXMlnzw9AEgMDndBnl0QBG
+        vKgOYEcuiW6culhqL
+X-Received: by 2002:a5d:4c46:: with SMTP id n6mr23646424wrt.95.1621001079447;
+        Fri, 14 May 2021 07:04:39 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz4iA/HgadsB2lsRId4OOvBGpKAqwH3PMIW7YVjgLLNeMDpfssFX4UIjarUvAw16XstGk4aKg==
+X-Received: by 2002:a5d:4c46:: with SMTP id n6mr23646401wrt.95.1621001079232;
+        Fri, 14 May 2021 07:04:39 -0700 (PDT)
+Received: from redhat.com (bzq-79-181-160-222.red.bezeqint.net. [79.181.160.222])
+        by smtp.gmail.com with ESMTPSA id f13sm3003855wrt.86.2021.05.14.07.04.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 May 2021 07:04:38 -0700 (PDT)
+Date:   Fri, 14 May 2021 10:04:34 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org,
+        jasowang@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] virtio-net: fix for build_skb()
+Message-ID: <20210514100326-mutt-send-email-mst@kernel.org>
+References: <20210513114808.120031-1-xuanzhuo@linux.alibaba.com>
+ <162094681137.5074.5504584757048483865.git-patchwork-notify@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <ab4d00ce52f32bd8e45ad0448a44737e@bewaar.me>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <162094681137.5074.5504584757048483865.git-patchwork-notify@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/14/21 14:45 AM, dave@bewaar.me wrote:
-> A firmware crash of the Marvell 88W8897, which are spurious on Microsoft
-> Surface devices, will unload/reset the device. However this can also 
-> fail
-> in more recent kernels, which can cause more problems since the driver
-> does not unload. This causes programs trying to reach the network or
-> networking devices to hang which in turn causes a reboot/poweroff to 
-> hang.
+On Thu, May 13, 2021 at 11:00:11PM +0000, patchwork-bot+netdevbpf@kernel.org wrote:
+> Hello:
 > 
-> This can happen on the following fedora rawhide kernels:
-> - 5.12.0-0.rc8.20210423git7af08140979a.193.fc35.x86_64 [1]
-> - 5.13.0-0.rc1.20210512git88b06399c9c7.15.fc35.x86_64 [2]
+> This series was applied to netdev/net-next.git (refs/heads/master):
 > 
-> The latter seems to be more consistent in triggering this behaviour
-> (and crashing the firmware). If someone can give me some pointers
-> I would gladly help and debug this.
+> On Thu, 13 May 2021 19:48:06 +0800 you wrote:
+> > #1 Fixed a serious error.
+> > #2 Fixed a logical error, but this error did not cause any serious consequences.
+> > 
+> > The logic of this piece is really messy. Fortunately, my refactored patch can be
+> > completed with a small amount of testing.
+> > 
+> > Thanks.
+> > 
+> > [...]
+> 
+> Here is the summary with links:
+>   - [net-next,1/2] virtio-net: fix for unable to handle page fault for address
+>     https://git.kernel.org/netdev/net-next/c/6c66c147b9a4
+>   - [net-next,2/2] virtio-net: get build_skb() buf by data ptr
+>     https://git.kernel.org/netdev/net-next/c/7bf64460e3b2
+> 
+> You are awesome, thank you!
 
-I believe the same issue (with slightly different symptoms) is also
-reported in
+I actually think this is a bugfix patchset and belongs in net, not
+net-next. And maybe stable? For there
 
-   https://lore.kernel.org/linux-wireless/98392296-40ee-6300-369c-32e16cff3725@gmail.com/
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-See also
 
-   https://lore.kernel.org/linux-wireless/522833b9-08c1-f470-a328-0e7419e86617@gmail.com/
+> --
+> Deet-doot-dot, I am a bot.
+> https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
 
-for more details.
-
-Regards,
-Max
