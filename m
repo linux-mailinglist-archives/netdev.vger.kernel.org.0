@@ -2,30 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 904543817E4
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 12:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D4233817E9
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 12:56:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235155AbhEOK5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 06:57:13 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3540 "EHLO
+        id S234926AbhEOK5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 06:57:32 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3548 "EHLO
         szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232919AbhEOKzy (ORCPT
+        with ESMTP id S232975AbhEOKzy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 06:55:54 -0400
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fj2Jn4k0HzsRFy;
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fj2Jn4zHHzsRHC;
         Sat, 15 May 2021 18:51:53 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.498.0; Sat, 15 May 2021 18:54:27 +0800
+ 14.3.498.0; Sat, 15 May 2021 18:54:28 +0800
 From:   Yang Shen <shenyang39@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Yang Shen <shenyang39@huawei.com>,
-        Cyril Chemparathy <cyril@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH 21/34] net: ti: Fix wrong struct name in comments
-Date:   Sat, 15 May 2021 18:53:46 +0800
-Message-ID: <1621076039-53986-22-git-send-email-shenyang39@huawei.com>
+        Francois Romieu <romieu@fr.zoreil.com>
+Subject: [PATCH 22/34] net: via: Fix wrong function name in comments
+Date:   Sat, 15 May 2021 18:53:47 +0800
+Message-ID: <1621076039-53986-23-git-send-email-shenyang39@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1621076039-53986-1-git-send-email-shenyang39@huawei.com>
 References: <1621076039-53986-1-git-send-email-shenyang39@huawei.com>
@@ -39,28 +38,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/ethernet/ti/cpsw_ale.c:88: warning: expecting prototype for struct ale_dev_id. Prototype was for struct cpsw_ale_dev_id instead
+ drivers/net/ethernet/via/via-velocity.c:1908: warning: expecting prototype for tx_srv(). Prototype was for velocity_tx_srv() instead
+ drivers/net/ethernet/via/via-velocity.c:2466: warning: expecting prototype for velocity_get_status(). Prototype was for velocity_get_stats() instead
+ drivers/net/ethernet/via/via-velocity.c:3734: warning: expecting prototype for velocity_cleanup(). Prototype was for velocity_cleanup_module() instead
 
-Cc: Cyril Chemparathy <cyril@ti.com>
-Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+Cc: Francois Romieu <romieu@fr.zoreil.com>
 Signed-off-by: Yang Shen <shenyang39@huawei.com>
 ---
- drivers/net/ethernet/ti/cpsw_ale.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/via/via-velocity.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
-index d828f85..0c75e05 100644
---- a/drivers/net/ethernet/ti/cpsw_ale.c
-+++ b/drivers/net/ethernet/ti/cpsw_ale.c
-@@ -70,7 +70,7 @@ enum {
- };
+diff --git a/drivers/net/ethernet/via/via-velocity.c b/drivers/net/ethernet/via/via-velocity.c
+index fecc4d7..88426b5 100644
+--- a/drivers/net/ethernet/via/via-velocity.c
++++ b/drivers/net/ethernet/via/via-velocity.c
+@@ -1897,7 +1897,7 @@ static void velocity_error(struct velocity_info *vptr, int status)
+ }
  
  /**
-- * struct ale_dev_id - The ALE version/SoC specific configuration
-+ * struct cpsw_ale_dev_id - The ALE version/SoC specific configuration
-  * @dev_id: ALE version/SoC id
-  * @features: features supported by ALE
-  * @tbl_entries: number of ALE entries
+- *	tx_srv		-	transmit interrupt service
++ *	velocity_tx_srv		-	transmit interrupt service
+  *	@vptr: Velocity
+  *
+  *	Scan the queues looking for transmitted packets that
+@@ -2453,7 +2453,7 @@ static int velocity_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ }
+ 
+ /**
+- *	velocity_get_status	-	statistics callback
++ *	velocity_get_stats	-	statistics callback
+  *	@dev: network device
+  *
+  *	Callback from the network layer to allow driver statistics
+@@ -3723,7 +3723,7 @@ static int __init velocity_init_module(void)
+ }
+ 
+ /**
+- *	velocity_cleanup	-	module unload
++ *	velocity_cleanup_module		-	module unload
+  *
+  *	When the velocity hardware is unloaded this function is called.
+  *	It will clean up the notifiers and the unregister the PCI
 -- 
 2.7.4
 
