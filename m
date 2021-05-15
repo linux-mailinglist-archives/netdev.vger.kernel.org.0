@@ -2,421 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2262D3818A3
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 14:02:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B37B53818DD
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 14:46:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232322AbhEOMDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 08:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54456 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbhEOMDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 08:03:45 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE5CC061573;
-        Sat, 15 May 2021 05:02:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
-        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=4HwhbcACMsQ6s8PrbvOFRolJmBpaq4E6wTiGJdn+Rfg=; b=oAopGDw6kOXXXvbnLCgClsmskk
-        MeZ5Tr5aCNXfbglGv/GQq7DT63pvWOsnjfyHwLojAKtJXOOGUdlek5QEPpzWWZARiMob6rFJzsAqp
-        A47PKtxwi8QpabQy3/MvPt7FOkWXhi3JJMnnNB8BGVr3q16MNigyeXbdWkwfNyu+JTSscFsGG41a7
-        AAgxmh3wi7yKwuV7jH2ilVQO/m/+kbsO7cfD2craR18FEN8yJlt/HjVuP3chUTi6QreT9MUNZUPcM
-        DLa7Z0NvOA2HbMBZNfPZDhUJNfj1hTPSaPLdbi47CrU3ntBymsfvGDiutxgZiwVHSRI346gyg8kUe
-        otwkz9MQ==;
-Received: from [2001:8b0:10b:1::3ae] (helo=u3832b3a9db3152.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lhszy-00CW1g-Ev; Sat, 15 May 2021 12:02:28 +0000
-Message-ID: <74696d9a8906e3c16dcdff558aaab4f9663b06f5.camel@infradead.org>
-Subject: Re: [PATCH v2 00/40] Use ASCII subset instead of UTF-8 alternate
- symbols
-From:   David Woodhouse <dwmw2@infradead.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Mali DP Maintainers <malidp@foss.arm.com>,
-        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
-        intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org,
-        keyrings@vger.kernel.org, kvm@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-edac@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
-        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
-        rcu@vger.kernel.org
-Date:   Sat, 15 May 2021 13:02:18 +0100
-In-Reply-To: <20210515132344.0206c8fc@coco.lan>
-References: <cover.1620823573.git.mchehab+huawei@kernel.org>
-         <d2fed242fbe200706b8d23a53512f0311d900297.camel@infradead.org>
-         <20210514102118.1b71bec3@coco.lan>
-         <61c286b7afd6c4acf71418feee4eecca2e6c80c8.camel@infradead.org>
-         <20210515102239.2ffd0451@coco.lan>
-         <c2a4cb8457823685ecba6833d57047d059b36fbb.camel@infradead.org>
-         <20210515132344.0206c8fc@coco.lan>
-Content-Type: multipart/signed; micalg="sha-256";
-        protocol="application/x-pkcs7-signature";
-        boundary="=-0pItJwY7zPHv3JqMO44E"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        id S230022AbhEOMsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 08:48:04 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:61041 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229551AbhEOMsD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 08:48:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1621082810; x=1652618810;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=yNlXDLdGgHSaOLoBZTYSTdbeGTcV8E4apz+CGjW4hvI=;
+  b=XUmuSRNRlFTyYWRdKSPQWDMJlKuR+ByqK5FEMu2lvyS73NSRqlI+rI9D
+   cDAWWFFCfKpo9B+cG7Cpl+t6SFTzccI1GQgMwf2PLmdIjWkjkoAAcYPCC
+   Kk+xkgtbMLWduo8la53tgA7ALtrJTCpHZgi+JXDW4m2k9RB1hUmLUKx2x
+   cX6rZkk8G1ZTCYIUykLVbvAwHHGlx+q2dxbRSv6oFQNhg/OQyrOi8w3dU
+   K3xFpYPIe+E6RxB0FpHQRLBQeSBF8Zck+rGT2g4VSA9NpdZml7zSAtO/o
+   dzu7/o4H1xSHH0eTNnFyHYN2fez3281fe2p9iSVy8bxK7G+Ssfny/YFb8
+   A==;
+IronPort-SDR: AjP9T3QgWO4O9KYeet0hyx/WgoTC2T6BAZSRvC6SuKtnkE4REsJ0J8RbOmhlbo5rAoMs1uUwfh
+ ePYS1JX8NH9lzRWu3c1p1mPcAMXpRIKkh45h+T2/x3ZCZYPIR1ny/NhwBe5QCa+88bRluZJwAU
+ fkw21x5m0psArqczqe9xkdY3NLlqM2ZaCOdlHgt8vGBeQcuvGPi8jVCMtgW0HmGuoJSdPRYc9f
+ A/LHOQs/bC/niaOci9WwaWSSQ8nO/9SWuv/fXeoJzY5KHkC0Oy9fiPKAxyDPytHCXYYEuy+0Di
+ iQQ=
+X-IronPort-AV: E=Sophos;i="5.82,301,1613458800"; 
+   d="scan'208";a="115419278"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 May 2021 05:46:49 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Sat, 15 May 2021 05:46:49 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2 via Frontend
+ Transport; Sat, 15 May 2021 05:46:49 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YVT5jqEc0IWkP25bXqiWAiMy8A/PwJ7gTpAgjWJD4OR1D/2lJ3a9Hg2F3/y9H/uX3/++7VE4+zFkX2iPsy7t83lmU9LkeKISOIPYBbzTDxk3Jp7t4zEwXxeI4rUjEcD+/8vxigdPKE/35SNCdjPIoIQSQfIaWC/8f02SfmocZ9XL7rn01DcT6uJoaRZh8glZB+HzNpConlV5xL+k1jmj4OYEEc9PiD7G/8kRh/y7gmNFt837Ype33t0Ks7i9Q2+M4brUp9rmXeP8PlP7HK/wmZwwv9KQDlXUm7j1RgsVZydFTow3u90xgQH30Eao+skvLGokDeJ3KIlh3WPjwODiUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jRxsQ21tkxGf2foZ/PsfTKtpfJSZI0O0R4gFPIOQHG4=;
+ b=EJ4N9A/DvfnsVeuOmrMzNnHpplfPPuMaswXlzjGvn/UCh4Kutipoyyar2wSEr2TVcSJxoLQzaqa/EoZjWvdCn+jeRLZ8Je4KIRJHAH7BjY4RQRPwEapt7h6u87mp8SGaGjswQy/OX19JaulTpT+QIs6b/T0GtVk9V/xPtScboAJNu6bjn3bfVEc79nVwt2w2l1Aq6t0AxWe3w4oAeMk8abhOOkHXi7LghaJsu+jXavrQySPVvHY1vwdDvsDE/v2KyGwMxP6FW0B6K2JSQOXWDv+fik+qC8n1xBZtA+W+cfea/DaxeYzGsMfalMLka7GEhleMrWo1nD1SPKCXlPHLqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jRxsQ21tkxGf2foZ/PsfTKtpfJSZI0O0R4gFPIOQHG4=;
+ b=LygSGl+CfTHxoGWgkXNhBkTBj155+gj5Jl5p6E2oEh8d8RDVGMnayCpbA00Z+Iw+dNkZHGcxu4T5F4WwwWtKQvkjzsToVD8Fn3bQp/5ydhS2smYx+mXdaP79ifcpMFnSWh961PH4Qd3nzwTxmZfBvPSZ5QOb8mb8YE5BLov0y+0=
+Received: from BY5PR11MB4404.namprd11.prod.outlook.com (2603:10b6:a03:1c3::19)
+ by BYAPR11MB2869.namprd11.prod.outlook.com (2603:10b6:a02:c0::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.28; Sat, 15 May
+ 2021 12:46:46 +0000
+Received: from BY5PR11MB4404.namprd11.prod.outlook.com
+ ([fe80::ed45:4caf:ab04:86a]) by BY5PR11MB4404.namprd11.prod.outlook.com
+ ([fe80::ed45:4caf:ab04:86a%6]) with mapi id 15.20.4129.028; Sat, 15 May 2021
+ 12:46:45 +0000
+From:   <Nicolas.Ferre@microchip.com>
+To:     <shenyang39@huawei.com>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <Claudiu.Beznea@microchip.com>
+Subject: Re: [PATCH 07/34] net: cadence: macb_ptp: Demote non-compliant
+ kernel-doc headers
+Thread-Topic: [PATCH 07/34] net: cadence: macb_ptp: Demote non-compliant
+ kernel-doc headers
+Thread-Index: AQHXSYhcfQ7X2PpkrEmud7cbBvaxSw==
+Date:   Sat, 15 May 2021 12:46:45 +0000
+Message-ID: <bbfb694c-5d48-137c-e394-4d718887f03d@microchip.com>
+References: <1621076039-53986-1-git-send-email-shenyang39@huawei.com>
+ <1621076039-53986-8-git-send-email-shenyang39@huawei.com>
+In-Reply-To: <1621076039-53986-8-git-send-email-shenyang39@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+authentication-results: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=microchip.com;
+x-originating-ip: [2a01:cb1c:aea:8c00:3352:c736:f35d:1682]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 33b18e2b-4331-4747-be2b-08d9179f7f8a
+x-ms-traffictypediagnostic: BYAPR11MB2869:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR11MB28692978F3CECEEFC7FD549EE02F9@BYAPR11MB2869.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:227;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0ONohtVvYTK++eXsFWDVYlEKDKcuvlFZFNMuRFd9LEtfpv4JVWS8oviq9zhcwu2JzqeX4IvHm4/AUGIemADS2Pp9+WNRvB89GDkVd5sCwL7lKnBkEbY9F3cPmH64xGOxjSckUUJIAXXGq2VpFA+mCblPCXJrgQKvyxcnsdIeS1RvkEMT3ufs6TqBZNzJCFbYK5LFIe96K2jZ3gGhJWGl9zjw/aCR63pS8hcRG/PNZo3CCTf83wBC8tuFHCerno82Kpos1G3ZUoS+zHjKmzzloiqxdkwQRjZVZnpqcOlnTmhTwdhCaMZSlmhucHMENpXBYQSHEbrrdFwyYkxdlsoVV5FdFHkKqX2JtdLopThhRXFxknmQcp1YZe7vbV2+4HXKsakW+KEYGINCaNCytv2+wvq8ij3CNuU5yzerIUvwlBbC5uC9IMRtmt0b39wIfSp6xlFLNd5+WKM2e6tCU9eKF64RbycX/AIrXCII/AHKhez3Ko8p/EkdnTyf80VKows7cOe14p5enmWfpnj9/a4tPWRZ5Co5+15/nUl397stXzCoRv8SyVs44Oqdq0HWe99geoCn20HpZhS1tZrOe/vsbO4T725eh5u+mtk/lhLMz2qkM0ePu0by2rwZwq/45XEcwNikZy/yhOdJdpS9cXQ+89tttPXtGIvK+g5lLf0SVXZNQiNXdK4jxd5bAqi9KNCFztseOdz1kvFZKlo52g3bRvk7E8s54JaLvtUWJ733a5Mp9CUcfAK9dFzuq72mKVbM9zQElZ/kl4ML7G14EyXYTg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR11MB4404.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(39850400004)(136003)(366004)(396003)(38100700002)(966005)(76116006)(53546011)(4326008)(6506007)(31686004)(91956017)(5660300002)(186003)(83380400001)(6486002)(2616005)(107886003)(122000001)(8936002)(66476007)(64756008)(66556008)(66446008)(8676002)(31696002)(478600001)(71200400001)(36756003)(6512007)(110136005)(54906003)(316002)(66946007)(86362001)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?Windows-1252?Q?SVyW8duEnQxtmKUPG+oOMHs5NLHGhIcB1kV/pfhTs1is0Npa2GE3isLU?=
+ =?Windows-1252?Q?aNg3xax43QL99c4iA05BTTg/duVsHaXPZDFB+KXV+jI42PQ19f1PqXyv?=
+ =?Windows-1252?Q?mK8lVY3/Edb+sY3H5L+73Pw+dl5cZ41xiraZnFILj2FE+P8HvINKsiiC?=
+ =?Windows-1252?Q?1xfQbM1hx50pRP7EgVU/R7UV5SBeifM/l8pGhksFzSyb52lpQZCGjX+H?=
+ =?Windows-1252?Q?HIE/dXJt9voWhV9oTbZDxClv5YO1IObsEnhi8OCg6R6+9pxvtIN5aBXs?=
+ =?Windows-1252?Q?90AisZ/ia+G9sWfzQrw4GjlT3l3qRXR6oiQ7gw4wj5NjtwFyatSw9R3D?=
+ =?Windows-1252?Q?pT180GccN4kNE6b+K/sI23V86einv0wpa4nsEvQP2vXjUmquNt5X3BpF?=
+ =?Windows-1252?Q?GaTx7Vyqpo/+DAGE/dpfm+RAUbDY0Wyuo1JEEN/1zu0C1uLWTpd08grS?=
+ =?Windows-1252?Q?wRwMIEq8Fu/WX8HgdfpizMPWUmEnR+wzLkVjpcCST1v7mCXZcoKPh5ch?=
+ =?Windows-1252?Q?wSqzbMme9rC5dVl8w/hcvXQR5lUI3PlUwTfNK0mT5RClJ+2Xp2qZuSrR?=
+ =?Windows-1252?Q?gHaEghkcQOMs4ZUmUZhfdvdKkpvaXVI9ViowVZodxz5UATjS5DsIbKAL?=
+ =?Windows-1252?Q?8fpAVDUqm0HG2UsNuikDDK04tWdFyVavWbHQ3WMYZTCdAW2CTBl4y31m?=
+ =?Windows-1252?Q?eN4H5BlEUL74HMm0P77AaX8Dd7HViL+EQH5X8VIfpKqZnZeZUbB1Noln?=
+ =?Windows-1252?Q?tjStWtOK7oQu6EWyIaafF+ixJtwXM7SFJDL2c0OoVbuFLLXeUiU39k25?=
+ =?Windows-1252?Q?6QrJEejwQ9DIhKAfFhInRSut1/xRFO6JDNG9gILzWNUN9Juw11jiamhQ?=
+ =?Windows-1252?Q?gwBuaIbEZOhIUDC9Qk/rVg5CJmi/B3tS1jJrsz7YS9KKCEc7e37MeqJ6?=
+ =?Windows-1252?Q?waFwcNjVsX0rVYVinijbTpfxjaET0DvarHP2M9QKAfTIYWi3WEacZRLW?=
+ =?Windows-1252?Q?pWMY45P2d2y7juxkvrY/tFM8eWE9LQ8vim0I/07Ho/7nrqCaKNCusZ81?=
+ =?Windows-1252?Q?/6UaVyVE/HPsfcAbfB9W8yuXqZIlEHHu66ZiWTsiy6zBUvWMg/4hutPk?=
+ =?Windows-1252?Q?mOvXxgdCs8jULCf1C70hJC68WrggE0Y9DXbzguwY/e59hw27881lqbPy?=
+ =?Windows-1252?Q?iZepk0to+foB/Ea9DYm8lm50CAGiLv59bf+jH6X3m39c4+Q9GvOeO4ao?=
+ =?Windows-1252?Q?J5uBt+GLzhtwKsb8zgOJRYcStt+e/mqwa1HpEXcBcwmb6UavmX/pPeSi?=
+ =?Windows-1252?Q?WOr8vIxJHIQKnCbtwiedV3/82t2W1Lu37gB4wdn5JBltSyIbh0wtePD3?=
+ =?Windows-1252?Q?HfU4YThLQDlaASJpZQ+j4aK+Xz9JJYWLjEqVXcxytzzdSb8hqioeNGTF?=
+ =?Windows-1252?Q?H+hFBI30uNYS2FRNm+k/tyjuEETF76aXti0ppb6PBY3f1OErhWeq6k3p?=
+ =?Windows-1252?Q?/bY0uTGY?=
+Content-Type: text/plain; charset="Windows-1252"
+Content-ID: <1F93986D1338744F9A042CEAF862C7BA@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR11MB4404.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 33b18e2b-4331-4747-be2b-08d9179f7f8a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 May 2021 12:46:45.5114
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mLHNCijTuWk2YajUJ69aNMZIIDxTQ4s2kVkBwrEQMttk36ucSiH3QGNYDmh2lTaQmj8sHdfVs9pix///HgdhtHps0TTjhvwqJMHJgcNJxIo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2869
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---=-0pItJwY7zPHv3JqMO44E
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Sat, 2021-05-15 at 13:23 +0200, Mauro Carvalho Chehab wrote:
-> Em Sat, 15 May 2021 10:24:28 +0100
-> David Woodhouse <dwmw2@infradead.org> escreveu:
-> > > Let's take one step back, in order to return to the intents of this
-> > > UTF-8, as the discussions here are not centered into the patches, but
-> > > instead, on what to do and why.
-> > >=20
-> > > This discussion started originally at linux-doc ML.
-> > >=20
-> > > While discussing about an issue when machine's locale was not set
-> > > to UTF-8 on a build VM,  =20
-> >=20
-> > Stop. Stop *right* there before you go any further.
-> >=20
-> > The machine's locale should have *nothing* to do with anything.
->
-> Now, you're making a lot of wrong assumptions here ;-)
+On 15/05/2021 at 12:53, Yang Shen wrote:
+> Fixes the following W=3D1 kernel build warning(s):
 >=20
-> 1. I didn't report the bug. Another person reported it at linux-doc;
-> 2. I fully agree with you that the building system should work fine
->    whatever locate the machine has;
-> 3. Sphinx supported charset for the REST input and its output is UTF-8.
-
-OK, fine. So that's an unrelated issue really, and just happened to be
-what historically triggered the discussion. Let's set it aside.
-
-> > > I actually checked the current UTF-8 issues =E2=80=A6=20
-> >=20
-> > No, these aren't "UTF-8 issues". Those are *conversion* issues, and=20
-> > =E2=80=A6 *nothing* to do with the encoding that we happen to be using.
+>   drivers/net/ethernet/cadence/macb_ptp.c:3: warning: This comment starts=
+ with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/=
+kernel-doc.rst
 >=20
-> Yes. That's what I said.
+> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Er=E2=80=A6 I'm fairly sure you *did* call them "UTF-8 issues". Whatever.
+Ok, if it raises a warning.
+
+But I would prefer that you add drivers/net/ethernet/cadence/macb_pci.c=20
+with same change to a combined patch.
+
+Regards,
+   Nicolas
 
 
+> Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
+> Signed-off-by: Yang Shen <shenyang39@huawei.com>
+> ---
+>   drivers/net/ethernet/cadence/macb_ptp.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethern=
+et/cadence/macb_ptp.c
+> index 283918a..5c368a9 100644
+> --- a/drivers/net/ethernet/cadence/macb_ptp.c
+> +++ b/drivers/net/ethernet/cadence/macb_ptp.c
+> @@ -1,5 +1,5 @@
+>   // SPDX-License-Identifier: GPL-2.0-only
+> -/**
+> +/*
+>    * 1588 PTP support for Cadence GEM device.
+>    *
+>    * Copyright (C) 2017 Cadence Design Systems - https://www.cadence.com
+> --
+> 2.7.4
+>=20
 
 
-> >=20
-> > Fixing the conversion issues makes a lot of sense. Try to do it without
-> > making *any* mention of UTF-8 at all.
-> >=20
-> > > In summary, based on the discussions we have so far, I suspect that
-> > > there's not much to be discussed for the above cases.
-> > >=20
-> > > So, I'll post a v3 of this series, changing only:
-> > >=20
-> > >         - U+00a0 (' '): NO-BREAK SPACE
-> > >         - U+feff ('=EF=BB=BF'): ZERO WIDTH NO-BREAK SPACE (BOM) =20
-> >=20
-> > Ack, as long as those make *no* mention of UTF-8. Except perhaps to
-> > note that BOM is redundant because UTF-8 doesn't have a byteorder.
->=20
-> I need to tell what UTF-8 codes are replaced, as otherwise the patch
-> wouldn't make much sense to reviewers, as both U+00a0 and whitespaces
-> are displayed the same way, and BOM is invisible.
->=20
-
-No. Again, this is *nothing* to do with UTF-8. The encoding we choose
-to map between byte in the file and characters is *utterly* irrelevant
-here. If we were using UTF-7, UTF-16, or even (in the case of non-
-breaking space) one of the legacy 8-bit charsets that includes it like
-ISO8859-1, the issue would be precisely the same.=20
-
-It's about the *character* U+00A0 NO-BREAK SPACE; nothing to do with
-UTF-8 at all. Don't mention UTF-8. It's *irrelevant* and just shows
-that you can't actually bothered to stop and do any critical thinking
-about the matter at all.
-
-As I said, the only time that it makes sense to mention UTF-8 in this
-context is when talking about *why* the BOM is not needed. And even
-then, you could say "because we *aren't* using an encoding where
-endianness matters, such as UTF-16", instead of actually mentioning
-UTF-8. Try it =E2=98=BA
-
-> >=20
-> > > ---
-> > >=20
-> > > Now, this specific patch series address also this extra case:
-> > >=20
-> > > 5. curly commas:
-> > >=20
-> > >         - U+2018 ('=E2=80=98'): LEFT SINGLE QUOTATION MARK
-> > >         - U+2019 ('=E2=80=99'): RIGHT SINGLE QUOTATION MARK
-> > >         - U+201c ('=E2=80=9C'): LEFT DOUBLE QUOTATION MARK
-> > >         - U+201d ('=E2=80=9D'): RIGHT DOUBLE QUOTATION MARK
-> > >=20
-> > > IMO, those should be replaced by ASCII commas: ' and ".
-> > >=20
-> > > The rationale is simple:=20
-> > >=20
-> > > - most were introduced during the conversion from Docbook,
-> > >   markdown and LaTex;
-> > > - they don't add any extra value, as using "foo" of =E2=80=9Cfoo=E2=
-=80=9D means
-> > >   the same thing;
-> > > - Sphinx already use "fancy" commas at the output.=20
-> > >=20
-> > > I guess I will put this on a separate series, as this is not a bug
-> > > fix, but just a cleanup from the conversion work.
-> > >=20
-> > > I'll re-post those cleanups on a separate series, for patch per patch
-> > > review. =20
-> >=20
-> > Makes sense.=20
-> >=20
-> > The left/right quotation marks exists to make human-readable text much
-> > easier to read, but the key point here is that they are redundant
-> > because the tooling already emits them in the *output* so they don't
-> > need to be in the source, yes?
->=20
-> Yes.
->=20
-> > As long as the tooling gets it *right* and uses them where it should,
-> > that seems sane enough.
-> >=20
-> > However, it *does* break 'grep', because if I cut/paste a snippet from
-> > the documentation and try to grep for it, it'll no longer match.
-> >=20
-> > Consistency is good, but perhaps we should actually be consistent the
-> > other way round and always use the left/right versions in the source
-> > *instead* of relying on the tooling, to make searches work better?
-> > You claimed to care about that, right?
->=20
-> That's indeed a good point. It would be interesting to have more
-> opinions with that matter.
->=20
-> There are a couple of things to consider:
->=20
-> 1. It is (usually) trivial to discover what document produced a
->    certain page at the documentation.
->=20
->    For instance, if you want to know where the text under this
->    file came from, or to grep a text from it:
->=20
-> 	https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html
->=20
->    You can click at the "View page source" button at the first line.
->    It will show the .rst file used to produce it:
->=20
-> 	https://www.kernel.org/doc/html/latest/_sources/admin-guide/cgroup-v2.rs=
-t.txt
->=20
-> 2. If all you want is to search for a text inside the docs,
->    you can click at the "Search docs" box, which is part of the
->    Read the Docs theme.
->=20
-> 3. Kernel has several extensions for Sphinx, in order to make life=20
->    easier for Kernel developers:
->=20
-> 	Documentation/sphinx/automarkup.py
-> 	Documentation/sphinx/cdomain.py
-> 	Documentation/sphinx/kernel_abi.py
-> 	Documentation/sphinx/kernel_feat.py
-> 	Documentation/sphinx/kernel_include.py
-> 	Documentation/sphinx/kerneldoc.py
-> 	Documentation/sphinx/kernellog.py
-> 	Documentation/sphinx/kfigure.py
-> 	Documentation/sphinx/load_config.py
-> 	Documentation/sphinx/maintainers_include.py
-> 	Documentation/sphinx/rstFlatTable.py
->=20
-> Those (in particular automarkup and kerneldoc) will also dynamically=20
-> change things during ReST conversion, which may cause grep to not work.=
-=20
->=20
-> 5. some PDF tools like evince will match curly commas if you
->    type an ASCII comma on their search boxes.
->=20
-> 6. Some developers prefer to only deal with the files inside the
->    Kernel tree. Those are very unlikely to do grep with curly aspas.
->=20
-> My opinion on that matter is that we should make life easier for
-> developers to grep on text files, as the ones using the web interface
-> are already served by the search box in html format or by tools like
-> evince.
->=20
-> So, my vote here is to keep aspas as plain ASCII.
-
-OK, but all your reasoning is about the *character* used, not the
-encoding. So try to do it without mentioning ASCII, and especially
-without mentioning UTF-8.
-
-Your point is that the *character* is the one easily reachable on
-standard keyboard layouts, and the one which people are most likely to
-enter manually. It has *nothing* to do with charset encodings, so don't
-conflate is with talking about charset encodings.
-
->=20
-> >=20
-> > > The remaining cases are future work, outside the scope of this v2:
-> > >=20
-> > > 6. Hyphen/Dashes and ellipsis
-> > >=20
-> > >         - U+2212 ('=E2=88=92'): MINUS SIGN
-> > >         - U+00ad ('=C2=AD'): SOFT HYPHEN
-> > >         - U+2010 ('=E2=80=90'): HYPHEN
-> > >=20
-> > >             Those three are used on places where a normal ASCII hyphe=
-n/minus
-> > >             should be used instead. There are even a couple of C file=
-s which
-> > >             use them instead of '-' on comments.
-> > >=20
-> > >             IMO are fixes/cleanups from conversions and bad cut-and-p=
-aste. =20
-> >=20
-> > That seems to make sense.
-> >=20
-> > >         - U+2013 ('=E2=80=93'): EN DASH
-> > >         - U+2014 ('=E2=80=94'): EM DASH
-> > >         - U+2026 ('=E2=80=A6'): HORIZONTAL ELLIPSIS
-> > >=20
-> > >             Those are auto-replaced by Sphinx from "--", "---" and ".=
-..",
-> > >             respectively.
-> > >=20
-> > >             I guess those are a matter of personal preference about
-> > >             weather using ASCII or UTF-8.
-> > >=20
-> > >             My personal preference (and Ted seems to have a similar
-> > >             opinion) is to let Sphinx do the conversion.
-> > >=20
-> > >             For those, I intend to post a separate series, to be
-> > >             reviewed patch per patch, as this is really a matter
-> > >             of personal taste. Hardly we'll reach a consensus here.
-> > >  =20
-> >=20
-> > Again using the trigraph-like '--' and '...' instead of just using the
-> > plain text '=E2=80=94' and '=E2=80=A6' breaks searching, because what's=
- in the output
-> > doesn't match the input. Again consistency is good, but perhaps we
-> > should standardise on just putting these in their plain text form
-> > instead of the trigraphs?
->=20
-> Good point.=20
->=20
-> While I don't have any strong preferences here, there's something that
-> annoys me with regards to EM/EN DASH:
->=20
-> With the monospaced fonts I'm using here - both at my e-mailer and
-> on my terminals, both EM and EN DASH are displayed look *exactly*
-> the same.
-
-Interesting. They definitely show differently in my terminal, and in
-the monospaced font in email.
-
-
---=-0pItJwY7zPHv3JqMO44E
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
-ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
-OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
-RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
-cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
-uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
-Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
-Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
-xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
-BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
-dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
-LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
-Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
-Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
-KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
-YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
-nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
-PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
-7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
-Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
-MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
-NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
-/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
-0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
-vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
-ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
-ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
-CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
-BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
-aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
-bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
-bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
-LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
-CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
-W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
-vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
-gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
-RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
-jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
-AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
-BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
-+bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
-WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
-aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
-CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
-u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
-RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
-QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
-b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
-cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
-SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
-0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
-KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
-E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
-M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
-jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
-yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
-gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
-R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
-ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
-NTE1MTIwMjE4WjAvBgkqhkiG9w0BCQQxIgQgfW+vho0CWarq8S9OvME99jJ1PMHkjC8+kBJcG3U0
-p6Mwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
-TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
-PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
-aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBACF4r0vrHTdaJGL5lZsMwS1/Dkh9o3EITVDKNULzCTcMSjUroYNAEiS0NdDrDNwV
-LM0bqWq2SQlVSZESZJjwPLYhCcbylYLpdlJfnrQZ02CRbaj3mv6al5tIgVcCkzo+U6e1+FZmUPjr
-kzU29zFz8X0c9ha64GYmmewP+XJmmGBlCsriwWB0+2Ne2vyh8VGLZGOiuZ2bx60soXTZD5gANksJ
-3J30LCsNqg2oEOkjFpgs38DykfU6OYvCjeuXHXQjSBF1HSXuLkN45DQ5ufbp8s9ML+JW59NOqg8K
-u4+VyT08fa+tMV05K2JoAdTVYHbhfobGEo0Qogwl7skUqcE8Af4AAAAAAAA=
-
-
---=-0pItJwY7zPHv3JqMO44E--
-
+--=20
+Nicolas Ferre
