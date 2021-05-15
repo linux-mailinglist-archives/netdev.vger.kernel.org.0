@@ -2,135 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60E7F381B75
-	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 00:17:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5812381B96
+	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 00:58:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235265AbhEOWSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 18:18:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47970 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235386AbhEOWQa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 May 2021 18:16:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3A460613BE;
-        Sat, 15 May 2021 22:15:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621116916;
-        bh=s7CSIpvZHbOWXeWkAI+whfYDuggnhcGoY3rP609LlF8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KJk3QfQE7NcUQ6w6PZrDI4pgoJPfuoPKVEZMcVNlUuesR0XObHzObKw6Ugyx/xY5T
-         wulTApabqCl0KlRoU0JkEUhX1oIckpa1CFKfMp/2jTfoElVVgYOh3TXH80ozUKWf7O
-         qUfFMEMJQ5qZ3DjxATAaFu22UnOpfL4kd001RHfO1sHW15DxBPt9ZbeqTkU7DFgtfV
-         IKE7fp1SgvOrL1aJLtjFTieJF5V5zyk35wp9bulSsi21GY+CMS6TD0WhkeWEUlIR+/
-         LDiG6ozsZakv5mhUo2rLOby2+HknV/OOj6d2ND0O6BFrGR3Z6I/xWu4tTg6uuUrDP/
-         i03KK4ealUYZw==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sam Creasey <sammy@sammy.net>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Finn Thain <fthain@telegraphics.com.au>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
-Subject: [RFC 13/13] [net-next] 8390: xsurf100: avoid including lib8390.c
-Date:   Sun, 16 May 2021 00:13:20 +0200
-Message-Id: <20210515221320.1255291-14-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210515221320.1255291-1-arnd@kernel.org>
-References: <20210515221320.1255291-1-arnd@kernel.org>
+        id S230092AbhEOW7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 18:59:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30041 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229568AbhEOW7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 18:59:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621119478;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9+7OU1jiXcuN+JE+ZENa1/WzM8XgPqJzZW5eKBUcv7I=;
+        b=CRskjGbRZW7s0NNWw6Exv6owoIbH3/pQ16rvPE2NDNp5P1doAAGVL8y13kgDkzXJvSpJcW
+        hypIvnWnI7aWpOLMOm1yOaYgAWE/EeUDSfmKU4vurA7AX1YQ8Qu0J/cqh9Asd2dQlgMTQr
+        G07RQnmMTOwpkEmn74WCq5L+lTUI8pE=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-104-phDzVN7YM-6MqJ3ldxjHJw-1; Sat, 15 May 2021 18:57:57 -0400
+X-MC-Unique: phDzVN7YM-6MqJ3ldxjHJw-1
+Received: by mail-qt1-f199.google.com with SMTP id e28-20020ac84b5c0000b02901cd9b2b2170so2293998qts.13
+        for <netdev@vger.kernel.org>; Sat, 15 May 2021 15:57:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=9+7OU1jiXcuN+JE+ZENa1/WzM8XgPqJzZW5eKBUcv7I=;
+        b=Zn9ileSh/ufVGbL/4S/GgAu6eL7GVTiu/wA6RPM/8yBYHqR+QjGLG4o1IyfSMqsvKN
+         AFRJJfPl3Lkcd8KlRUT7c2JSB6HAzHtwJ560y4OrtXA7QQ+mi/QzBySuynqz0D9sdJD1
+         dI5J5qkcqbpskYouWx9KLkeEpV9dC6EUgZD1df0Bp6bkLdTo/5ujHTgmBIFhrf/vdbWD
+         pwSXwcCySgPqZhZmwsOvJNnVb+d+AXytE7W7WaDJvERzC2Gvkk5DLafmCKG1Jw1zKZ7l
+         rGaUOlVc1geGhVNL9AxzVS06yEiXk2I7bLhIU5i6eMMpA+Ysi1Du+es83rhgREeMA9bW
+         rUSg==
+X-Gm-Message-State: AOAM533d1veWyv8/Ufl5Ya/3PornNG25sRCumr1O9oc8VdOkRIp6pZ/x
+        RxAJMe2KFUBE2c66fpoIUddV5z/8h1vSVtknOh2sfEEoV5XxGoJTqwMf5FHPPdiRXpN58vwlLko
+        nrTD/bJZ4Sm4ZLqCb
+X-Received: by 2002:a05:6214:1433:: with SMTP id o19mr1671466qvx.59.1621119476370;
+        Sat, 15 May 2021 15:57:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzKwOrtaeteO9NmLX1KUl053C7yobMvcddlNcbBg6LmnS9TOilpr6UZNHO1lvzeOYNU1Ne6Cw==
+X-Received: by 2002:a05:6214:1433:: with SMTP id o19mr1671460qvx.59.1621119476204;
+        Sat, 15 May 2021 15:57:56 -0700 (PDT)
+Received: from [192.168.0.106] ([24.225.235.43])
+        by smtp.gmail.com with ESMTPSA id b23sm7891095qtq.0.2021.05.15.15.57.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 15 May 2021 15:57:55 -0700 (PDT)
+Subject: Re: [PATCH net] tipc: skb_linearize the head skb when reassembling
+ msgs
+To:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        tipc-discussion@lists.sourceforge.net
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Ying Xue <ying.xue@windriver.com>
+References: <c7d752b5522360de0a6886202c59fe49524a9fda.1620417423.git.lucien.xin@gmail.com>
+From:   Jon Maloy <jmaloy@redhat.com>
+Message-ID: <6b5deaab-d91a-8008-961e-805274f8989f@redhat.com>
+Date:   Sat, 15 May 2021 18:57:54 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <c7d752b5522360de0a6886202c59fe49524a9fda.1620417423.git.lucien.xin@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
 
-This driver always warns about unused functions because it includes
-an file that it doesn't actually need:
 
-In file included from drivers/net/ethernet/8390/xsurf100.c:48:
-drivers/net/ethernet/8390/lib8390.c:995:27: error: '____alloc_ei_netdev' defined but not used [-Werror=unused-function]
-  995 | static struct net_device *____alloc_ei_netdev(int size)
-      |                           ^~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/8390/lib8390.c:957:13: error: '__ei_set_multicast_list' defined but not used [-Werror=unused-function]
-  957 | static void __ei_set_multicast_list(struct net_device *dev)
-      |             ^~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/8390/lib8390.c:857:33: error: '__ei_get_stats' defined but not used [-Werror=unused-function]
-  857 | static struct net_device_stats *__ei_get_stats(struct net_device *dev)
-      |                                 ^~~~~~~~~~~~~~
-drivers/net/ethernet/8390/lib8390.c:512:13: error: '__ei_poll' defined but not used [-Werror=unused-function]
-  512 | static void __ei_poll(struct net_device *dev)
-      |             ^~~~~~~~~
-drivers/net/ethernet/8390/lib8390.c:303:20: error: '__ei_start_xmit' defined but not used [-Werror=unused-function]
-  303 | static netdev_tx_t __ei_start_xmit(struct sk_buff *skb,
-      |                    ^~~~~~~~~~~~~~~
-drivers/net/ethernet/8390/lib8390.c:257:13: error: '__ei_tx_timeout' defined but not used [-Werror=unused-function]
-  257 | static void __ei_tx_timeout(struct net_device *dev, unsigned int txqueue)
-      |             ^~~~~~~~~~~~~~~
-drivers/net/ethernet/8390/lib8390.c:233:12: error: '__ei_close' defined but not used [-Werror=unused-function]
-  233 | static int __ei_close(struct net_device *dev)
-      |            ^~~~~~~~~~
-drivers/net/ethernet/8390/lib8390.c:204:12: error: '__ei_open' defined but not used [-Werror=unused-function]
-  204 | static int __ei_open(struct net_device *dev)
-      |            ^~~~~~~~~
-
-Use the normal library module instead and call the NS8390p_init()
-function.
-
-Fixes: 861928f4e60e ("net-next: New ax88796 platform driver for Amiga X-Surf 100 Zorro board (m68k)")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/ethernet/8390/Makefile   | 2 +-
- drivers/net/ethernet/8390/xsurf100.c | 7 ++-----
- 2 files changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/8390/Makefile b/drivers/net/ethernet/8390/Makefile
-index 85c83c566ec6..304897d5f0f9 100644
---- a/drivers/net/ethernet/8390/Makefile
-+++ b/drivers/net/ethernet/8390/Makefile
-@@ -16,5 +16,5 @@ obj-$(CONFIG_PCMCIA_PCNET) += pcnet_cs.o 8390.o
- obj-$(CONFIG_STNIC) += stnic.o 8390.o
- obj-$(CONFIG_ULTRA) += smc-ultra.o 8390.o
- obj-$(CONFIG_WD80x3) += wd.o 8390.o
--obj-$(CONFIG_XSURF100) += xsurf100.o
-+obj-$(CONFIG_XSURF100) += xsurf100.o 8390.o
- obj-$(CONFIG_ZORRO8390) += zorro8390.o
-diff --git a/drivers/net/ethernet/8390/xsurf100.c b/drivers/net/ethernet/8390/xsurf100.c
-index e2c963821ffe..11d5d43e7202 100644
---- a/drivers/net/ethernet/8390/xsurf100.c
-+++ b/drivers/net/ethernet/8390/xsurf100.c
-@@ -42,10 +42,7 @@
- /* Ensure we have our RCR base value */
- #define AX88796_PLATFORM
- 
--static unsigned char version[] =
--		"ax88796.c: Copyright 2005,2007 Simtec Electronics\n";
--
--#include "lib8390.c"
-+#include "8390.h"
- 
- /* from ne.c */
- #define NE_CMD		EI_SHIFT(0x00)
-@@ -232,7 +229,7 @@ static void xs100_block_output(struct net_device *dev, int count,
- 		if (jiffies - dma_start > 2 * HZ / 100) {	/* 20ms */
- 			netdev_warn(dev, "timeout waiting for Tx RDC.\n");
- 			ei_local->reset_8390(dev);
--			ax_NS8390_init(dev, 1);
-+			NS8390p_init(dev, 1);
- 			break;
- 		}
- 	}
--- 
-2.29.2
+On 5/7/21 3:57 PM, Xin Long wrote:
+> It's not a good idea to append the frag skb to a skb's frag_list if
+> the frag_list already has skbs from elsewhere, such as this skb was
+> created by pskb_copy() where the frag_list was cloned (all the skbs
+> in it were skb_get'ed) and shared by multiple skbs.
+>
+> However, the new appended frag skb should have been only seen by the
+> current skb. Otherwise, it will cause use after free crashes as this
+> appended frag skb are seen by multiple skbs but it only got skb_get
+> called once.
+>
+> The same thing happens with a skb updated by pskb_may_pull() with a
+> skb_cloned skb. Li Shuang has reported quite a few crashes caused
+> by this when doing testing over macvlan devices:
+>
+>    [] kernel BUG at net/core/skbuff.c:1970!
+>    [] Call Trace:
+>    []  skb_clone+0x4d/0xb0
+>    []  macvlan_broadcast+0xd8/0x160 [macvlan]
+>    []  macvlan_process_broadcast+0x148/0x150 [macvlan]
+>    []  process_one_work+0x1a7/0x360
+>    []  worker_thread+0x30/0x390
+>
+>    [] kernel BUG at mm/usercopy.c:102!
+>    [] Call Trace:
+>    []  __check_heap_object+0xd3/0x100
+>    []  __check_object_size+0xff/0x16b
+>    []  simple_copy_to_iter+0x1c/0x30
+>    []  __skb_datagram_iter+0x7d/0x310
+>    []  __skb_datagram_iter+0x2a5/0x310
+>    []  skb_copy_datagram_iter+0x3b/0x90
+>    []  tipc_recvmsg+0x14a/0x3a0 [tipc]
+>    []  ____sys_recvmsg+0x91/0x150
+>    []  ___sys_recvmsg+0x7b/0xc0
+>
+>    [] kernel BUG at mm/slub.c:305!
+>    [] Call Trace:
+>    []  <IRQ>
+>    []  kmem_cache_free+0x3ff/0x400
+>    []  __netif_receive_skb_core+0x12c/0xc40
+>    []  ? kmem_cache_alloc+0x12e/0x270
+>    []  netif_receive_skb_internal+0x3d/0xb0
+>    []  ? get_rx_page_info+0x8e/0xa0 [be2net]
+>    []  be_poll+0x6ef/0xd00 [be2net]
+>    []  ? irq_exit+0x4f/0x100
+>    []  net_rx_action+0x149/0x3b0
+>
+>    ...
+>
+> This patch is to fix it by linearizing the head skb if it has frag_list
+> set in tipc_buf_append(). Note that we choose to do this before calling
+> skb_unshare(), as __skb_linearize() will avoid skb_copy(). Also, we can
+> not just drop the frag_list either as the early time.
+>
+> Fixes: 45c8b7b175ce ("tipc: allow non-linear first fragment buffer")
+> Reported-by: Li Shuang <shuali@redhat.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>   net/tipc/msg.c | 9 ++-------
+>   1 file changed, 2 insertions(+), 7 deletions(-)
+>
+> diff --git a/net/tipc/msg.c b/net/tipc/msg.c
+> index 3f0a253..ce6ab54 100644
+> --- a/net/tipc/msg.c
+> +++ b/net/tipc/msg.c
+> @@ -149,18 +149,13 @@ int tipc_buf_append(struct sk_buff **headbuf, struct sk_buff **buf)
+>   		if (unlikely(head))
+>   			goto err;
+>   		*buf = NULL;
+> +		if (skb_has_frag_list(frag) && __skb_linearize(frag))
+> +			goto err;
+>   		frag = skb_unshare(frag, GFP_ATOMIC);
+>   		if (unlikely(!frag))
+>   			goto err;
+>   		head = *headbuf = frag;
+>   		TIPC_SKB_CB(head)->tail = NULL;
+> -		if (skb_is_nonlinear(head)) {
+> -			skb_walk_frags(head, tail) {
+> -				TIPC_SKB_CB(head)->tail = tail;
+> -			}
+> -		} else {
+> -			skb_frag_list_init(head);
+> -		}
+>   		return 0;
+>   	}
+>   
+Acked-by: Jon Maloy <jmaloy@redhat.com>
 
