@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5B1E381B73
-	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 00:17:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60E7F381B75
+	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 00:17:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbhEOWSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 18:18:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47832 "EHLO mail.kernel.org"
+        id S235265AbhEOWSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 18:18:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47970 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235378AbhEOWQ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 May 2021 18:16:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C510613C1;
-        Sat, 15 May 2021 22:15:09 +0000 (UTC)
+        id S235386AbhEOWQa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 May 2021 18:16:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3A460613BE;
+        Sat, 15 May 2021 22:15:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621116912;
-        bh=jEmQ4F4DQI85bt3ZsLutWQ3JtDm4YI/P1Np4Bm2J9ZY=;
+        s=k20201202; t=1621116916;
+        bh=s7CSIpvZHbOWXeWkAI+whfYDuggnhcGoY3rP609LlF8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fgDV+Gw89Ovuh2W7pRIsYZOaMSpEhMII6dgH2Dee0tfKFU/MagMYKCvDdfsl5PjDE
-         cdgtotQgBNpMG17c/cnObgp+SN56ByqJP3HvbsSqarFS5DvukUpw090vAgmU94YcqY
-         M5aKqhTzoCPXknMSgZHaf+SYZ6aMtHjDVItVwIxnuxMitwJvpp2i8ray3dOa2ZeDyC
-         jF9bpPgU7uDJo84aDhO1x7xo5HD/6+Kil+qgA6DmSj/Yt04pRrgrmxdrVOV3743pCc
-         /sN5NrUudHk28ASeS8Vt8NsTf30Ds1pJfL+0BrB6+S565ctT3AzwILQZ5rs8AcMI25
-         QWUVLxGBKHiow==
+        b=KJk3QfQE7NcUQ6w6PZrDI4pgoJPfuoPKVEZMcVNlUuesR0XObHzObKw6Ugyx/xY5T
+         wulTApabqCl0KlRoU0JkEUhX1oIckpa1CFKfMp/2jTfoElVVgYOh3TXH80ozUKWf7O
+         qUfFMEMJQ5qZ3DjxATAaFu22UnOpfL4kd001RHfO1sHW15DxBPt9ZbeqTkU7DFgtfV
+         IKE7fp1SgvOrL1aJLtjFTieJF5V5zyk35wp9bulSsi21GY+CMS6TD0WhkeWEUlIR+/
+         LDiG6ozsZakv5mhUo2rLOby2+HknV/OOj6d2ND0O6BFrGR3Z6I/xWu4tTg6uuUrDP/
+         i03KK4ealUYZw==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     Arnd Bergmann <arnd@arndb.de>,
@@ -42,9 +42,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Andrii Nakryiko <andriin@fb.com>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
-Subject: [RFC 12/13] [net-next] ethernet: isa: convert to module_init/module_exit
-Date:   Sun, 16 May 2021 00:13:19 +0200
-Message-Id: <20210515221320.1255291-13-arnd@kernel.org>
+Subject: [RFC 13/13] [net-next] 8390: xsurf100: avoid including lib8390.c
+Date:   Sun, 16 May 2021 00:13:20 +0200
+Message-Id: <20210515221320.1255291-14-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210515221320.1255291-1-arnd@kernel.org>
 References: <20210515221320.1255291-1-arnd@kernel.org>
@@ -56,278 +56,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-There are a couple of ISA ethernet drivers that use the old
-init_module/cleanup_module function names for the main entry
-points, practically nothing else uses those.
+This driver always warns about unused functions because it includes
+an file that it doesn't actually need:
 
-Change them to the documented method with module_init()
-and module_exit() markers next to static functions.
+In file included from drivers/net/ethernet/8390/xsurf100.c:48:
+drivers/net/ethernet/8390/lib8390.c:995:27: error: '____alloc_ei_netdev' defined but not used [-Werror=unused-function]
+  995 | static struct net_device *____alloc_ei_netdev(int size)
+      |                           ^~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/8390/lib8390.c:957:13: error: '__ei_set_multicast_list' defined but not used [-Werror=unused-function]
+  957 | static void __ei_set_multicast_list(struct net_device *dev)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/8390/lib8390.c:857:33: error: '__ei_get_stats' defined but not used [-Werror=unused-function]
+  857 | static struct net_device_stats *__ei_get_stats(struct net_device *dev)
+      |                                 ^~~~~~~~~~~~~~
+drivers/net/ethernet/8390/lib8390.c:512:13: error: '__ei_poll' defined but not used [-Werror=unused-function]
+  512 | static void __ei_poll(struct net_device *dev)
+      |             ^~~~~~~~~
+drivers/net/ethernet/8390/lib8390.c:303:20: error: '__ei_start_xmit' defined but not used [-Werror=unused-function]
+  303 | static netdev_tx_t __ei_start_xmit(struct sk_buff *skb,
+      |                    ^~~~~~~~~~~~~~~
+drivers/net/ethernet/8390/lib8390.c:257:13: error: '__ei_tx_timeout' defined but not used [-Werror=unused-function]
+  257 | static void __ei_tx_timeout(struct net_device *dev, unsigned int txqueue)
+      |             ^~~~~~~~~~~~~~~
+drivers/net/ethernet/8390/lib8390.c:233:12: error: '__ei_close' defined but not used [-Werror=unused-function]
+  233 | static int __ei_close(struct net_device *dev)
+      |            ^~~~~~~~~~
+drivers/net/ethernet/8390/lib8390.c:204:12: error: '__ei_open' defined but not used [-Werror=unused-function]
+  204 | static int __ei_open(struct net_device *dev)
+      |            ^~~~~~~~~
 
+Use the normal library module instead and call the NS8390p_init()
+function.
+
+Fixes: 861928f4e60e ("net-next: New ax88796 platform driver for Amiga X-Surf 100 Zorro board (m68k)")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/3com/3c515.c     | 3 ++-
- drivers/net/ethernet/8390/ne.c        | 3 ++-
- drivers/net/ethernet/8390/smc-ultra.c | 9 ++++-----
- drivers/net/ethernet/8390/wd.c        | 7 ++++---
- drivers/net/ethernet/amd/lance.c      | 6 ++++--
- drivers/net/ethernet/amd/ni65.c       | 6 ++++--
- drivers/net/ethernet/cirrus/cs89x0.c  | 7 ++++---
- drivers/net/ethernet/smsc/smc9194.c   | 6 ++++--
- 8 files changed, 28 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/8390/Makefile   | 2 +-
+ drivers/net/ethernet/8390/xsurf100.c | 7 ++-----
+ 2 files changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/3com/3c515.c b/drivers/net/ethernet/3com/3c515.c
-index 47b4215bb93b..8d90fed5d33e 100644
---- a/drivers/net/ethernet/3com/3c515.c
-+++ b/drivers/net/ethernet/3com/3c515.c
-@@ -407,7 +407,7 @@ MODULE_PARM_DESC(max_interrupt_work, "3c515 maximum events handled per interrupt
- /* we will need locking (and refcounting) if we ever use it for more */
- static LIST_HEAD(root_corkscrew_dev);
+diff --git a/drivers/net/ethernet/8390/Makefile b/drivers/net/ethernet/8390/Makefile
+index 85c83c566ec6..304897d5f0f9 100644
+--- a/drivers/net/ethernet/8390/Makefile
++++ b/drivers/net/ethernet/8390/Makefile
+@@ -16,5 +16,5 @@ obj-$(CONFIG_PCMCIA_PCNET) += pcnet_cs.o 8390.o
+ obj-$(CONFIG_STNIC) += stnic.o 8390.o
+ obj-$(CONFIG_ULTRA) += smc-ultra.o 8390.o
+ obj-$(CONFIG_WD80x3) += wd.o 8390.o
+-obj-$(CONFIG_XSURF100) += xsurf100.o
++obj-$(CONFIG_XSURF100) += xsurf100.o 8390.o
+ obj-$(CONFIG_ZORRO8390) += zorro8390.o
+diff --git a/drivers/net/ethernet/8390/xsurf100.c b/drivers/net/ethernet/8390/xsurf100.c
+index e2c963821ffe..11d5d43e7202 100644
+--- a/drivers/net/ethernet/8390/xsurf100.c
++++ b/drivers/net/ethernet/8390/xsurf100.c
+@@ -42,10 +42,7 @@
+ /* Ensure we have our RCR base value */
+ #define AX88796_PLATFORM
  
--int init_module(void)
-+static int corkscrew_init_module(void)
- {
- 	int found = 0;
- 	if (debug >= 0)
-@@ -416,6 +416,7 @@ int init_module(void)
- 		found++;
- 	return found ? 0 : -ENODEV;
- }
-+module_init(corkscrew_init_module);
- 
- #else
- struct net_device *tc515_probe(int unit)
-diff --git a/drivers/net/ethernet/8390/ne.c b/drivers/net/ethernet/8390/ne.c
-index d0bbe2180b9e..53660bc8d6ff 100644
---- a/drivers/net/ethernet/8390/ne.c
-+++ b/drivers/net/ethernet/8390/ne.c
-@@ -923,7 +923,7 @@ static void __init ne_add_devices(void)
- }
- 
- #ifdef MODULE
--int __init init_module(void)
-+static int __init ne_init(void)
- {
- 	int retval;
- 	ne_add_devices();
-@@ -940,6 +940,7 @@ int __init init_module(void)
- 	ne_loop_rm_unreg(0);
- 	return retval;
- }
-+module_init(ne_init);
- #else /* MODULE */
- static int __init ne_init(void)
- {
-diff --git a/drivers/net/ethernet/8390/smc-ultra.c b/drivers/net/ethernet/8390/smc-ultra.c
-index 3fe3b4dfa7c5..0600e05512da 100644
---- a/drivers/net/ethernet/8390/smc-ultra.c
-+++ b/drivers/net/ethernet/8390/smc-ultra.c
-@@ -522,7 +522,6 @@ static void ultra_pio_input(struct net_device *dev, int count,
- 	/* We know skbuffs are padded to at least word alignment. */
- 	insw(ioaddr + IOPD, buf, (count+1)>>1);
- }
+-static unsigned char version[] =
+-		"ax88796.c: Copyright 2005,2007 Simtec Electronics\n";
 -
- static void ultra_pio_output(struct net_device *dev, int count,
- 							const unsigned char *buf, const int start_page)
- {
-@@ -572,8 +571,7 @@ MODULE_LICENSE("GPL");
+-#include "lib8390.c"
++#include "8390.h"
  
- /* This is set up so that only a single autoprobe takes place per call.
- ISA device autoprobes on a running machine are not recommended. */
--int __init
--init_module(void)
-+static int __init ultra_init_module(void)
- {
- 	struct net_device *dev;
- 	int this_dev, found = 0;
-@@ -600,6 +598,7 @@ init_module(void)
- 		return 0;
- 	return -ENXIO;
- }
-+module_init(ultra_init_module);
- 
- static void cleanup_card(struct net_device *dev)
- {
-@@ -613,8 +612,7 @@ static void cleanup_card(struct net_device *dev)
- 	iounmap(ei_status.mem);
- }
- 
--void __exit
--cleanup_module(void)
-+static void __exit ultra_cleanup_module(void)
- {
- 	int this_dev;
- 
-@@ -627,4 +625,5 @@ cleanup_module(void)
+ /* from ne.c */
+ #define NE_CMD		EI_SHIFT(0x00)
+@@ -232,7 +229,7 @@ static void xs100_block_output(struct net_device *dev, int count,
+ 		if (jiffies - dma_start > 2 * HZ / 100) {	/* 20ms */
+ 			netdev_warn(dev, "timeout waiting for Tx RDC.\n");
+ 			ei_local->reset_8390(dev);
+-			ax_NS8390_init(dev, 1);
++			NS8390p_init(dev, 1);
+ 			break;
  		}
  	}
- }
-+module_exit(ultra_cleanup_module);
- #endif /* MODULE */
-diff --git a/drivers/net/ethernet/8390/wd.c b/drivers/net/ethernet/8390/wd.c
-index c834123560f1..263a942d81fa 100644
---- a/drivers/net/ethernet/8390/wd.c
-+++ b/drivers/net/ethernet/8390/wd.c
-@@ -519,7 +519,7 @@ MODULE_LICENSE("GPL");
- /* This is set up so that only a single autoprobe takes place per call.
- ISA device autoprobes on a running machine are not recommended. */
- 
--int __init init_module(void)
-+static int __init wd_init_module(void)
- {
- 	struct net_device *dev;
- 	int this_dev, found = 0;
-@@ -548,6 +548,7 @@ int __init init_module(void)
- 		return 0;
- 	return -ENXIO;
- }
-+module_init(wd_init_module);
- 
- static void cleanup_card(struct net_device *dev)
- {
-@@ -556,8 +557,7 @@ static void cleanup_card(struct net_device *dev)
- 	iounmap(ei_status.mem);
- }
- 
--void __exit
--cleanup_module(void)
-+static void __exit wd_cleanup_module(void)
- {
- 	int this_dev;
- 
-@@ -570,4 +570,5 @@ cleanup_module(void)
- 		}
- 	}
- }
-+module_exit(wd_cleanup_module);
- #endif /* MODULE */
-diff --git a/drivers/net/ethernet/amd/lance.c b/drivers/net/ethernet/amd/lance.c
-index aff44241988c..997f9f2f84f4 100644
---- a/drivers/net/ethernet/amd/lance.c
-+++ b/drivers/net/ethernet/amd/lance.c
-@@ -327,7 +327,7 @@ MODULE_PARM_DESC(dma, "LANCE/PCnet ISA DMA channel (ignored for some devices)");
- MODULE_PARM_DESC(irq, "LANCE/PCnet IRQ number (ignored for some devices)");
- MODULE_PARM_DESC(lance_debug, "LANCE/PCnet debug level (0-7)");
- 
--int __init init_module(void)
-+static int __init lance_init_module(void)
- {
- 	struct net_device *dev;
- 	int this_dev, found = 0;
-@@ -356,6 +356,7 @@ int __init init_module(void)
- 		return 0;
- 	return -ENXIO;
- }
-+module_init(lance_init_module);
- 
- static void cleanup_card(struct net_device *dev)
- {
-@@ -368,7 +369,7 @@ static void cleanup_card(struct net_device *dev)
- 	kfree(lp);
- }
- 
--void __exit cleanup_module(void)
-+static void __exit lance_cleanup_module(void)
- {
- 	int this_dev;
- 
-@@ -381,6 +382,7 @@ void __exit cleanup_module(void)
- 		}
- 	}
- }
-+module_exit(lance_cleanup_module);
- #endif /* MODULE */
- MODULE_LICENSE("GPL");
- 
-diff --git a/drivers/net/ethernet/amd/ni65.c b/drivers/net/ethernet/amd/ni65.c
-index c38edf6f03a3..da9ca21fecf7 100644
---- a/drivers/net/ethernet/amd/ni65.c
-+++ b/drivers/net/ethernet/amd/ni65.c
-@@ -1230,18 +1230,20 @@ MODULE_PARM_DESC(irq, "ni6510 IRQ number (ignored for some cards)");
- MODULE_PARM_DESC(io, "ni6510 I/O base address");
- MODULE_PARM_DESC(dma, "ni6510 ISA DMA channel (ignored for some cards)");
- 
--int __init init_module(void)
-+static int __init ni65_init_module(void)
- {
-  	dev_ni65 = ni65_probe(-1);
- 	return PTR_ERR_OR_ZERO(dev_ni65);
- }
-+module_init(ni65_init_module);
- 
--void __exit cleanup_module(void)
-+static void __exit ni65_cleanup_module(void)
- {
-  	unregister_netdev(dev_ni65);
-  	cleanup_card(dev_ni65);
-  	free_netdev(dev_ni65);
- }
-+module_exit(ni65_cleanup_module);
- #endif /* MODULE */
- 
- MODULE_LICENSE("GPL");
-diff --git a/drivers/net/ethernet/cirrus/cs89x0.c b/drivers/net/ethernet/cirrus/cs89x0.c
-index 3b08cd943b7b..d0c4c8b7a15a 100644
---- a/drivers/net/ethernet/cirrus/cs89x0.c
-+++ b/drivers/net/ethernet/cirrus/cs89x0.c
-@@ -1753,7 +1753,7 @@ MODULE_LICENSE("GPL");
-  * (hw or software util)
-  */
- 
--int __init init_module(void)
-+static int __init cs89x0_isa_init_module(void)
- {
- 	struct net_device *dev;
- 	struct net_local *lp;
-@@ -1823,9 +1823,9 @@ int __init init_module(void)
- 	free_netdev(dev);
- 	return ret;
- }
-+module_init(cs89x0_isa_init_module);
- 
--void __exit
--cleanup_module(void)
-+static void __exit cs89x0_isa_cleanup_module(void)
- {
- 	struct net_local *lp = netdev_priv(dev_cs89x0);
- 
-@@ -1835,6 +1835,7 @@ cleanup_module(void)
- 	release_region(dev_cs89x0->base_addr, NETCARD_IO_EXTENT);
- 	free_netdev(dev_cs89x0);
- }
-+module_exit(cs89x0_isa_cleanup_module);
- #endif /* MODULE */
- #endif /* CONFIG_CS89x0_ISA */
- 
-diff --git a/drivers/net/ethernet/smsc/smc9194.c b/drivers/net/ethernet/smsc/smc9194.c
-index 4b2330deed47..d7a394d4b460 100644
---- a/drivers/net/ethernet/smsc/smc9194.c
-+++ b/drivers/net/ethernet/smsc/smc9194.c
-@@ -1508,7 +1508,7 @@ MODULE_PARM_DESC(io, "SMC 99194 I/O base address");
- MODULE_PARM_DESC(irq, "SMC 99194 IRQ number");
- MODULE_PARM_DESC(ifport, "SMC 99194 interface port (0-default, 1-TP, 2-AUI)");
- 
--int __init init_module(void)
-+static int __init smc_init_module(void)
- {
- 	if (io == 0)
- 		printk(KERN_WARNING
-@@ -1518,13 +1518,15 @@ int __init init_module(void)
- 	devSMC9194 = smc_init(-1);
- 	return PTR_ERR_OR_ZERO(devSMC9194);
- }
-+module_init(smc_init_module);
- 
--void __exit cleanup_module(void)
-+static void __exit smc_cleanup_module(void)
- {
- 	unregister_netdev(devSMC9194);
- 	free_irq(devSMC9194->irq, devSMC9194);
- 	release_region(devSMC9194->base_addr, SMC_IO_EXTENT);
- 	free_netdev(devSMC9194);
- }
-+module_exit(smc_cleanup_module);
- 
- #endif /* MODULE */
 -- 
 2.29.2
 
