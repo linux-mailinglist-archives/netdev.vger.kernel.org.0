@@ -2,96 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07871381B12
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 22:46:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 526A0381B17
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 22:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234968AbhEOUrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 16:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234966AbhEOUrl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 16:47:41 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E4BC061573;
-        Sat, 15 May 2021 13:46:26 -0700 (PDT)
+        id S234993AbhEOUwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 16:52:01 -0400
+Received: from gateway31.websitewelcome.com ([192.185.143.36]:28866 "EHLO
+        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234997AbhEOUv4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 16:51:56 -0400
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id 2B38D61294
+        for <netdev@vger.kernel.org>; Sat, 15 May 2021 15:50:39 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id i1F9lEJrgAEP6i1F9lrgpN; Sat, 15 May 2021 15:50:39 -0500
+X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=UoJ9DFfErbajmQEYJKCqN6Ov0S2aMEodekeWmwF9UXs=; b=Ha8GFjiLgIF5p/vutkuHnNkj8X
-        +ZHJeYbzLAFq6/hYfPXadLpKaV5J+MI6LN6bdkCmzce1FbH6whyMJLnWo8E93Kyq7Lv0Hj1uO0dx1
-        5FoyvdvrjChkAzsYT8qmpAnkxvxS5/wdr4mTlDDRSZtgQru4PsQGGeOvtngUq9K90ODOV+QBU/rZ7
-        bID5QH8oDiadMzrMjGHmtUAioBsGbeUWYvbdl4mr2jBqcIpX49L4LkkrPCvZhlPMXuEebvKx9ui3l
-        u86V92lEYBy1wF3O32tMQ92QNPfK+9aiT+QgIJLj4V111PJfn+bKg+aDa64BxdXDdrV17SKWbYQ3U
-        9mJMb+hQ==;
-Received: from [2601:1c0:6280:3f0::7376]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1li1B3-00CgFX-GE; Sat, 15 May 2021 20:46:25 +0000
-Subject: Re: [PATCH] net: bridge: fix signature of stub br_multicast_is_router
-To:     trix@redhat.com, roopa@nvidia.com, nikolay@nvidia.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210515203849.1756371-1-trix@redhat.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <17c9c0cb-6f7a-20e7-62dd-9a2845e962ba@infradead.org>
-Date:   Sat, 15 May 2021 13:46:24 -0700
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=sDv7533fJ1Jh0SB9Oldb7u8J3ATKjHKiiLr7bcd/BjU=; b=aNK6UN5jnEUebgHmWXzHpHApMK
+        LATBBxaW6BNJof+vibX4Esr+yDsu/EQJTK8XqhOALEoIwNE4FUhHt+RwuvhhzhSsW+fsoUnbb+I3X
+        nKdnM4ces1ohCsIIR8RILuqhDxTrmccUNY5zttUdslURgdFZNAawokwQAa6dKEfKzaHJbj/+Dp6Kq
+        X+ImYvl2WGpQxyMUVBp6go2ZZn8cUt+wXgATik6JmB946foKmOzqIqyCPyZKMUGudk4Cnfysm6ZaU
+        uye3Yg3LNePTromt9hKbn0uq4+MSi8wCLm72qPAQs7bWAojEuI43ZOrV61/VkvZks1RGWSTLsEMA4
+        QhNWP2TQ==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:47424 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1li1F4-0005hh-WA; Sat, 15 May 2021 15:50:35 -0500
+Subject: Re: [PATCH][next] ceph: Replace zero-length array with flexible array
+ member
+To:     Ilya Dryomov <idryomov@gmail.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Jeff Layton <jlayton@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ceph Development <ceph-devel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-hardening@vger.kernel.org
+References: <20210514215209.GA33310@embeddedor>
+ <CAOi1vP8NARpXVsK2AVOZ4_m58gXMKVQSi_okZVcrLsew1nLizg@mail.gmail.com>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <e1b6364c-e73e-fdc8-1fc0-9f35b181c288@embeddedor.com>
+Date:   Sat, 15 May 2021 15:50:44 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210515203849.1756371-1-trix@redhat.com>
+In-Reply-To: <CAOi1vP8NARpXVsK2AVOZ4_m58gXMKVQSi_okZVcrLsew1nLizg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1li1F4-0005hh-WA
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:47424
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 7
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/15/21 1:38 PM, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
+
+
+On 5/15/21 05:42, Ilya Dryomov wrote:
 > 
-> Building with CONFIG_IPV6 off causes this build error
+> Hi Gustavo,
 > 
-> br_input.c:135:8: error: too many arguments to function
->   ‘br_multicast_is_router’
->         br_multicast_is_router(br, skb)) {
->         ^~~~~~~~~~~~~~~~~~~~~~
-> In file included from net/bridge/br_input.c:23:
-> net/bridge/br_private.h:1059:20: note: declared here
->  static inline bool br_multicast_is_router(struct net_bridge *br)
->                     ^~~~~~~~~~~~~~~~~~~~~~
-> 
-> Comparing the stub with the real function shows the stub needs
-> another parameter.
-> 
-> Signed-off-by: Tom Rix <trix@redhat.com>
+> I went ahead and removed reply_buf.  We never receive authorizer
+> replies in auth_none mode, so patching it to be a flexible array
+> is rather pointless.
 
-Hi,
+Sounds great. :)
 
-A similar patch has already been merged:
-
-https://lore.kernel.org/netdev/20210514073233.2564187-1-razor@blackwall.org/
-
-> ---
->  net/bridge/br_private.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> index f9a381fcff094..9fd54626ca809 100644
-> --- a/net/bridge/br_private.h
-> +++ b/net/bridge/br_private.h
-> @@ -1056,7 +1056,7 @@ static inline void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
->  {
->  }
->  
-> -static inline bool br_multicast_is_router(struct net_bridge *br)
-> +static inline bool br_multicast_is_router(struct net_bridge *br, struct sk_buff *skb)
->  {
->  	return false;
->  }
-> 
-
-
--- 
-~Randy
-
+Thanks, Ilya.
+--
+Gustavo
