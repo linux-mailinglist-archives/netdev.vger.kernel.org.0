@@ -2,95 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 526A0381B17
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 22:50:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57E6E381B1E
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 22:53:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234993AbhEOUwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 16:52:01 -0400
-Received: from gateway31.websitewelcome.com ([192.185.143.36]:28866 "EHLO
-        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234997AbhEOUv4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 16:51:56 -0400
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id 2B38D61294
-        for <netdev@vger.kernel.org>; Sat, 15 May 2021 15:50:39 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id i1F9lEJrgAEP6i1F9lrgpN; Sat, 15 May 2021 15:50:39 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=sDv7533fJ1Jh0SB9Oldb7u8J3ATKjHKiiLr7bcd/BjU=; b=aNK6UN5jnEUebgHmWXzHpHApMK
-        LATBBxaW6BNJof+vibX4Esr+yDsu/EQJTK8XqhOALEoIwNE4FUhHt+RwuvhhzhSsW+fsoUnbb+I3X
-        nKdnM4ces1ohCsIIR8RILuqhDxTrmccUNY5zttUdslURgdFZNAawokwQAa6dKEfKzaHJbj/+Dp6Kq
-        X+ImYvl2WGpQxyMUVBp6go2ZZn8cUt+wXgATik6JmB946foKmOzqIqyCPyZKMUGudk4Cnfysm6ZaU
-        uye3Yg3LNePTromt9hKbn0uq4+MSi8wCLm72qPAQs7bWAojEuI43ZOrV61/VkvZks1RGWSTLsEMA4
-        QhNWP2TQ==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:47424 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1li1F4-0005hh-WA; Sat, 15 May 2021 15:50:35 -0500
-Subject: Re: [PATCH][next] ceph: Replace zero-length array with flexible array
- member
-To:     Ilya Dryomov <idryomov@gmail.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Jeff Layton <jlayton@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ceph Development <ceph-devel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-hardening@vger.kernel.org
-References: <20210514215209.GA33310@embeddedor>
- <CAOi1vP8NARpXVsK2AVOZ4_m58gXMKVQSi_okZVcrLsew1nLizg@mail.gmail.com>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <e1b6364c-e73e-fdc8-1fc0-9f35b181c288@embeddedor.com>
-Date:   Sat, 15 May 2021 15:50:44 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S234955AbhEOUyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 16:54:45 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:44496 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230371AbhEOUyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 16:54:43 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1621112009;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=20Hw+TFKWUeeing3YBFehjeWi00clpvEhJGIjm1XtDc=;
+        b=w4nKqKLHEXhZkimR8UxhHXtO+U7U1K4C7sgXiAoTJkwPJqhuhHuIkRMt50gebF2/Gc7CQp
+        lHzCeMdItrS1FfbiNvcqJDpcMIbFmH/4aroAsv+h+Ogf1uxW9rlh3jbMcA6VQFxQIlj2jC
+        I1HOd5rgk9VW89tEXJFnZQkFP6ED7LFSHOMfL4HRwt80KtzaE//o5BrjTBqkwzFru0GGn5
+        vqb/z6Nkn0ZEKdzt1CkqxwXxR9A7GDkYTU4DORaXGca8chyk9R6R1cCLaUhToUunZgRiyv
+        3cyvDb7XkivmVabbmtB/3KnqXC3o4aqxsIj8g1uRpBlTe67YV6vWrjMHS0dK6w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1621112009;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=20Hw+TFKWUeeing3YBFehjeWi00clpvEhJGIjm1XtDc=;
+        b=J0tUp3sDG4jt2p5EySqFlYQJDPzorS8tve4mzIdlL9SVJUqcFNxVxX4Gc9KmCqa5PZ3rk1
+        3wZFMvz2nyrOu3Cw==
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, simon.horman@netronome.com,
+        oss-drivers@netronome.com, Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>
+Subject: Re: [PATCH net-next 1/2] net: add a napi variant for RT-well-behaved drivers
+In-Reply-To: <20210515133104.491fc691@kicinski-fedora-PC1C0HJN>
+References: <20210514222402.295157-1-kuba@kernel.org> <20210515110740.lwt6wlw6wq73ifat@linutronix.de> <20210515133104.491fc691@kicinski-fedora-PC1C0HJN>
+Date:   Sat, 15 May 2021 22:53:28 +0200
+Message-ID: <87cztr1zxz.ffs@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <CAOi1vP8NARpXVsK2AVOZ4_m58gXMKVQSi_okZVcrLsew1nLizg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1li1F4-0005hh-WA
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:47424
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 7
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, May 15 2021 at 13:31, Jakub Kicinski wrote:
+> On Sat, 15 May 2021 13:07:40 +0200 Sebastian Andrzej Siewior wrote:
+>> Now assume another interrupt comes in which wakes a force-threaded
+>> handler (while ksoftirqd is preempted). Before the forced-threaded
+>> handler is invoked, BH is disabled via local_bh_disable(). Since
+>> ksoftirqd is preempted with BH disabled, disabling BH forces the
+>> ksoftirqd thread to the priority of the interrupt thread (SCHED_FIFO,
+>> prio 50 by default) due to the priority inheritance protocol. The
+>> threaded handler will run once ksoftirqd is done which has now been
+>> accelerated.
+>
+> Thanks for the explanation. I'm not married to the patch, if you prefer
+> we can keep the status quo.
+>
+> I'd think, however, that always deferring to ksoftirqd is conceptually
+> easier to comprehend. For power users who need networking there is
+> prefer-busy-poll (which allows application to ask the kernel to service
+> queues when it wants to, with some minimal poll frequency guarantees)
+> and threaded NAPI - which some RT users already started to adapt.
+>
+> Your call.
+>
+>> Part of the problem from RT perspective is the heavy use of softirq and
+>> the BH disabled regions which act as a BKL. I *think* having the network
+>> driver running in a thread would be better (in terms of prioritisation).
+>> I know, davem explained the benefits of NAPI/softirq when it comes to
+>> routing/forwarding (incl. NET_RX/TX priority) and part where NAPI kicks
+>> in during a heavy load (say a packet flood) and system is still
+>> responsible.
+>
+> Right, although with modern multi-core systems where only a subset 
+> of cores process network Rx things look different.
 
+Bah, I completely forgot about that aspect. Thanks Sebastian for
+bringing it up. I was too focussed on the other questions and there is
+obviously the onset of alzheimer.
 
-On 5/15/21 05:42, Ilya Dryomov wrote:
-> 
-> Hi Gustavo,
-> 
-> I went ahead and removed reply_buf.  We never receive authorizer
-> replies in auth_none mode, so patching it to be a flexible array
-> is rather pointless.
+Anyway it's a touch choice to make. There are too many options to chose
+from nowadays. 10 years ago running the softirq at the back of the
+threaded irq handler which just scheduled NAPI was definitely a win, but
+with threaded NAPI, zero copy and other things it's not that important
+anymore IMO. But I might be missing something obviously.
 
-Sounds great. :)
+I've cc'ed a few RT folks @RHT who might give some insight.
 
-Thanks, Ilya.
---
-Gustavo
+Thanks,
+
+        tglx
