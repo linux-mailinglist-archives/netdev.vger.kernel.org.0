@@ -2,111 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD47738153F
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 04:44:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C904C381597
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 05:48:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234049AbhEOCp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 May 2021 22:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233991AbhEOCp4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 22:45:56 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E935C06174A
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 19:44:43 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id 69so301755plc.5
-        for <netdev@vger.kernel.org>; Fri, 14 May 2021 19:44:43 -0700 (PDT)
+        id S234242AbhEODtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 May 2021 23:49:46 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:49126 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229898AbhEODtp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 May 2021 23:49:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fqlb9FJ9bvutrCLGYYm6pgevoaNctKxTi7Wniq8GfTk=;
-        b=Rndg/eYVXv3WTa6K+Mkn/S8oeeRPLE/OfMbxJzt99ZVZexECAz+wU0Htm+LVORmtn+
-         qdI9HQrNquAsE8f9EU1W229nNzXCIc9qkzfdRz5XsUMdielKgS85H5d1FjREfcS6X7Pz
-         Kq97crapYnA0RldeTrjXJ/nErD0uqzfpVIEuE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fqlb9FJ9bvutrCLGYYm6pgevoaNctKxTi7Wniq8GfTk=;
-        b=YpIBfvRowEYej3zgTihNZi7o/VxhfgaXT2t8fNxf8Qjyb+l8xrGvGyee7yCO+a/8St
-         uzzubtQ3EJzbxvAt/boiNwcTphVHBbWPmyQTqPofRBxil97R1t4OZAqt1Pv8v86uWdFi
-         sKo4fOpp5aJxFX7nup6IkfmmowXHrG7VTvVgmgC4rBdnljJK/uVIkdhEY91SM/sgDuRs
-         aespn9ya7AeC5uRfyrQFWfcQ9vGjye4fHRBNPzpji+K2EDHB6iKGYU58/HUUo2On7N0x
-         gyuP4AznuAaUvrNRzWj2tjqvQvbKZVoZecJBHaydBuZq9wMgvLJGqU5MdTMyN5f9DXCW
-         jjig==
-X-Gm-Message-State: AOAM532o14MRvyi1OrPR2c9zU5xi5fBFWb+Q/02YP7Er8/e2OLtjynTE
-        /Eum1K7jE0mv0OlibnCJK7eJ0g==
-X-Google-Smtp-Source: ABdhPJw9SD2Oc2h0pZvNgjprvbb7tC8z3cieKby+hdx554YnmYGjXaLptF7BivZUGWfOvR/mbYMBVQ==
-X-Received: by 2002:a17:90a:20b:: with SMTP id c11mr54170278pjc.44.1621046681725;
-        Fri, 14 May 2021 19:44:41 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:c853:454e:e506:af89])
-        by smtp.gmail.com with ESMTPSA id n18sm4851574pfa.30.2021.05.14.19.44.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 May 2021 19:44:41 -0700 (PDT)
-Date:   Fri, 14 May 2021 19:44:38 -0700
-From:   Brian Norris <briannorris@chromium.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
-        linux-wireless@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>
-Subject: Re: [BUG] Deadlock in _cfg80211_unregister_wdev()
-Message-ID: <YJ81llg7EKFXUaIo@google.com>
-References: <98392296-40ee-6300-369c-32e16cff3725@gmail.com>
- <57d41364f14ea660915b7afeebaa5912c4300541.camel@sipsolutions.net>
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1621050514; x=1652586514;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=sx6X6iGWIuUFegawsI8UjhCFW9TvkVrGkXDiyldSErQ=;
+  b=IpmIQJsYYgTq/G/LqqWQX8RrgIFQO84NU/6WdGVq3DxYQPlrX+6gCYV3
+   oU7rYQDOvYZp0qz0YQLedBOomACCS5c67Y9UviJ2QFdPC0vawgRqbOkhN
+   ul9YeE10KQCM8a5zzuYmgGjfHagfFgXaWUMnU6QiqYpJsj0iiIBVpeYTH
+   U=;
+X-IronPort-AV: E=Sophos;i="5.82,300,1613433600"; 
+   d="scan'208";a="107902101"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-397e131e.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-4101.iad4.amazon.com with ESMTP; 15 May 2021 03:48:32 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2c-397e131e.us-west-2.amazon.com (Postfix) with ESMTPS id CBE48A25C0;
+        Sat, 15 May 2021 03:48:30 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Sat, 15 May 2021 03:48:30 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.239) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Sat, 15 May 2021 03:48:25 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kafai@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <andrii@kernel.org>, <ast@kernel.org>,
+        <benh@amazon.com>, <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v5 bpf-next 00/11] Socket migration for SO_REUSEPORT.
+Date:   Sat, 15 May 2021 12:48:21 +0900
+Message-ID: <20210515034821.79264-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210514062625.5zg626xquffvmrr7@kafai-mbp>
+References: <20210514062625.5zg626xquffvmrr7@kafai-mbp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <57d41364f14ea660915b7afeebaa5912c4300541.camel@sipsolutions.net>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.239]
+X-ClientProxiedBy: EX13D07UWA004.ant.amazon.com (10.43.160.32) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 10:26:25AM +0200, Johannes Berg wrote:
-> If that's all not solving the issue then please try to resolve with gdb
-> what line of code "cfg80211_netdev_notifier_call+0x12a" is, and please
-> also clarify exactly what (upstream!) kernel you're using.
+From:   Martin KaFai Lau <kafai@fb.com>
+Date:   Thu, 13 May 2021 23:26:25 -0700
+> On Fri, May 14, 2021 at 08:23:00AM +0900, Kuniyuki Iwashima wrote:
+> > From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > Date:   Thu, 13 May 2021 14:27:13 -0700
+> > > On Sun, May 9, 2021 at 8:45 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+> > > >
+> > > > The SO_REUSEPORT option allows sockets to listen on the same port and to
+> > > > accept connections evenly. However, there is a defect in the current
+> > > > implementation [1]. When a SYN packet is received, the connection is tied
+> > > > to a listening socket. Accordingly, when the listener is closed, in-flight
+> > > > requests during the three-way handshake and child sockets in the accept
+> > > > queue are dropped even if other listeners on the same port could accept
+> > > > such connections.
+> > [...]
+> > > 
+> > > One test is failing in CI ([0]), please take a look.
+> > > 
+> > >   [0] https://travis-ci.com/github/kernel-patches/bpf/builds/225784969 
+> > 
+> > Thank you for checking.
+> > 
+> > The test needs to drop SYN+ACK and currently it is done by iptables or
+                           ^^^^^^^
+                           the final ACK of 3WHS
+Sorry, this was typo.
 
-I can reproduce on v5.12 and v5.12.4 as well. With v5.12.4, I'm at:
 
-net/wireless/core.c:
-1428			wiphy_lock(&rdev->wiphy);
-include/net/cfg80211.h:
-5269		mutex_lock(&wiphy->mtx);
+> > ip6tables. But it seems that I should not use them. Should this be done
+> > by XDP?
+> or drop it at a bpf_prog@tc-egress.
+> 
+> I also don't have iptables in my kconfig and I had to add them
+> to run this test.  None of the test_progs depends on iptables also.
+
+I'll rewrite the dropping part with XDP or TC.
+Thank you.
 
 
-i.e.,
-
-static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
-					 unsigned long state, void *ptr)
-{
-...
-	case NETDEV_GOING_DOWN:
-		wiphy_lock(&rdev->wiphy);  <--- right here
-		cfg80211_leave(rdev, wdev);
-		wiphy_unlock(&rdev->wiphy);
-...
-
-It would seem like _anyone_ that calls cfg80211_unregister_wdev() with
-an interface up will hit this -- not unique to mwifiex. In fact, apart
-from the fact that all his line numbers are wrong, Maximilian's original
-email points out exactly where the deadlock is.
-cfg80211_unregister_wdev() holds the wiphy lock, and the GOING_DOWN
-notification also tries to grab it.
-
-It does happen that in many other paths, you've already ensured that you
-bring the interface down, so e.g., mac80211 drivers don't tend to hit
-this. But I wouldn't be surprised if a few other cfg80211 drivers hit
-this too.
-
-The best solution I could figure was to do a similar lock dance done in
-nl80211_del_interface() -- close the netdev without holding the wiphy
-lock. I'll send out a patch shortly.
-
-Brian
+> 
+> > 
+> > ---8<---
+> > iptables v1.8.5 (legacy): can't initialize iptables table `filter': Table does not exist (do you need to insmod?)
+> > Perhaps iptables or your kernel needs to be upgraded.
+> > ip6tables v1.8.5 (legacy): can't initialize ip6tables table `filter': Table does not exist (do you need to insmod?)
+> > Perhaps ip6tables or your kernel needs to be upgraded.
+> > ---8<---
