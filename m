@@ -2,54 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C06AB38193E
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 16:07:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2294A381946
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 16:14:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231597AbhEOOIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 10:08:13 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41740 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230210AbhEOOIF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 May 2021 10:08:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=D0vB53EGV7pBSyBp8RPfA5JvjdEHg/tl7GOvHK6yzFU=; b=hQkSvwsQdB2DHxJP76JCUSJmmM
-        mIovO0uUbEfz6iHKHD5w6eNvgR6RWUS5a9u3qMem6etk5VYqh8jCsZwNcTdZBVI7stWte013HbEfk
-        EGokmkfzPvE3AExXR6iIR0mPSisGUHwwaUTv94Xo514nSo7yfVGDSasYjk3T3lrSLJqI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lhuw5-004Kf7-UX; Sat, 15 May 2021 16:06:33 +0200
-Date:   Sat, 15 May 2021 16:06:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] net: mdiobus: get rid of a BUG_ON()
-Message-ID: <YJ/VaQW54hM5btjP@lunn.ch>
-References: <YJ+b52c5bGLdewFz@mwanda>
+        id S231373AbhEOOPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 10:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229504AbhEOOPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 10:15:20 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822CDC061573
+        for <netdev@vger.kernel.org>; Sat, 15 May 2021 07:14:07 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id lj11-20020a17090b344bb029015bc3073608so1219548pjb.3
+        for <netdev@vger.kernel.org>; Sat, 15 May 2021 07:14:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=mAvmW5ssoBll+sRAWII3vmKsYdgitI1sTnfJZEXdQ+A=;
+        b=ZkZcZGimpAyWcN8H+tPbeqoS13TXNAazPyLzxZIC6WQ2Av6EExl15Fr1Fu2Wvy+Msl
+         7YnfcHmHqqzglcpllXmDxdAJ44+8I8xKocPr3k04tpKV0yNTGejch8YkQX66P4o54rIf
+         EeIV6wA4sDzkpEhz9326xggA3SLMboKPR8uowH3VP5DFPSCa19hkdGOBWvVQF7BJNTTJ
+         CZ0RhjMpp685lfqBskZTwA0o8wA5Hp4AFSspuOQfqFE2my9Nu1lL7lIe8mp+z87Ay/MH
+         QfAeqZQP++GRKEOfQKi1LJxxeWMRJODpmFJA7McI/2vlnagGU9mdA6ss4QMd+PmgmI2M
+         u0kQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=mAvmW5ssoBll+sRAWII3vmKsYdgitI1sTnfJZEXdQ+A=;
+        b=a4kt48iA9wFYqft4c9YKpDRwCxNTBHIja1B681pPvFp8Z1QlomzTOq3uy5+75X8Dyd
+         uFPMLCHZXebNo3fRRtfj+KuEZVmCIagtO8LKro1PoCDztFeg14tR162DSRqVuDOFBqBT
+         HrhcIGAFKBl+GF+iIJkxJC6Z/9pcCm9p9K0L6SIkXZEEHFM034IO5obD2uHyFsLdCzOx
+         p9YKFEIyjvQBA7/zmsw0r+0jP0Xu7ky88va49lF8eMZSZqMfhOP1LEB9vxEmLveh1tdQ
+         2DXiNSgfKjdz2kXztzhCwAiKGr8qOF1rnP5QrkzdDEyRxW4MXh3cdxHI6XR64Y+wYXpi
+         u4og==
+X-Gm-Message-State: AOAM532Q+oFrnGTmD2JBNGQLgmztYCPm7hnhndVfFVF0mDG3iPeUT5kf
+        dLX9DU1HtY3zT0KLAm+wPG5JNLw7jlg3Y8YDxyU=
+X-Google-Smtp-Source: ABdhPJy0ZJ/diRRk65D/m4Q3h4H2e4cnnHv1iAGLnbFtmBB+yz9PwLExZudL0607OrNNy6Nxzs/hHVb+4hWZVmvoVzU=
+X-Received: by 2002:a17:902:8c97:b029:ee:f8c1:7bbe with SMTP id
+ t23-20020a1709028c97b02900eef8c17bbemr51161030plo.8.1621088046972; Sat, 15
+ May 2021 07:14:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YJ+b52c5bGLdewFz@mwanda>
+Received: by 2002:a05:6a10:2918:0:0:0:0 with HTTP; Sat, 15 May 2021 07:14:06
+ -0700 (PDT)
+Reply-To: mrs.chantalmuammar2021@email.com
+From:   mrs bill chantal <hjjiiyeqascf@gmail.com>
+Date:   Sat, 15 May 2021 14:14:06 +0000
+Message-ID: <CAAMg-iH6v7E9eh7jRd+d5NjV6d4yD-r-EvSmjiZZwAnf4DhK9Q@mail.gmail.com>
+Subject: Hello Dear,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 15, 2021 at 01:01:11PM +0300, Dan Carpenter wrote:
-> We spotted a bug recently during a review where a driver was
-> unregistering a bus that wasn't registered, which would trigger this
-> BUG_ON().  Let's handle that situation more gracefully, and just print
-> a warning and return.
-> 
-> Reported-by: Russell King <linux@armlinux.org.uk>
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Dear Friend
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+You have been compensated with the sum of 4.4 million dollars in this
+bunited nation the payment will be Issue into atm visa card and send
+to you from the Santander bank we need your address passport and your
+whatsapp number.
+thanks
 
-    Andrew
+Mrs. bill Chantal
