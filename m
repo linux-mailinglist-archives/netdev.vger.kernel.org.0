@@ -2,75 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 021CE38160F
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 07:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01D7C381647
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 08:23:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233436AbhEOF1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 01:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233005AbhEOF1X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 01:27:23 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B57C06174A;
-        Fri, 14 May 2021 22:26:10 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id y2so1672535ybq.13;
-        Fri, 14 May 2021 22:26:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3qC/HEtqoIJGROP6iKnL5XKtySpCPC8sBZ3oZgPSb2o=;
-        b=YS6AL4E9YEoTcTaGqW8QD69+yniVavqR+wfxH1ILWdY8MCsDal2aj27Iyxw2CcqP5L
-         rB1xOlq2C75wrjZQpWh2fUn2MdK/bCpo01LVb17BfSyQUaO3PlIDM+rr3JRPGZsrX0a4
-         FrOo2tH2m5kxzT+zoZ4VOwc017tfdFZ0QInAnvwoObOEiawDNVz9kSBwBtwVYNS+e6Hz
-         UhIR6sjWlNgNpend+vuqhEPq2Hx9SnApsOHSn93EU0EXnMocJPyFCiDr0Ge3GaUtzpXH
-         Z4vWa1eorn4NSPV2Z9B3fzc6sl/uLYi+b43S2o++O8HUfOhYE22Wu17pdxPYX0Jadm32
-         SXGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3qC/HEtqoIJGROP6iKnL5XKtySpCPC8sBZ3oZgPSb2o=;
-        b=CZ6JLw1Ww+D1ukeCEp6OWvonX1z2pzmDom+E5WxzE5S8dONtwy3PjRztXMSlEjA6QU
-         eZTsCDz0HKRZHWPPv0YsQHNNEdq5TZWaJHzQoc/89JrpSnRS3NQntbIcO50Gz5L7lATs
-         zsZUj6qwf1g5xBVKqBW7EdXkwOUU1p5iTaW5E3s9O9DyvuYX564Wld2vZZe6es3l8N5I
-         ahM4ZCrADZtmH7y55WuPVgHmABKNFrqrIzWz3RJQtNMjRyeGRvIVI394XPlpVB9Do5Vk
-         t27HAMPZpzVZ6gbWj6krq04B+18bLFdk1wCzAYUB19Oa8Hb8FTES/KBRE2ZP8uj5A6kP
-         h3tw==
-X-Gm-Message-State: AOAM532gHFWGqEBEBd8gufwy841smJuety3ngZrdC3UaUDpZJb3567Ra
-        7uvVgiXXQ35vJSr9LfDRKiiM7vnWaN3s9Zs7u+M=
-X-Google-Smtp-Source: ABdhPJwOgutSNIwen1bh3ICH32d1zZF/Am7UP2GmI1G6PjPKp1RG2ZnCANI1oBUsW2Nn6wzUZailDEBbEoDe9wwx1Fo=
-X-Received: by 2002:a25:3357:: with SMTP id z84mr67444368ybz.260.1621056369263;
- Fri, 14 May 2021 22:26:09 -0700 (PDT)
+        id S230363AbhEOGYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 02:24:35 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:52377 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230075AbhEOGY3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 May 2021 02:24:29 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1621059797; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=J4/UV+VBlg6J8gPLAtNX47KgtZ3wzwsbV6BDKY/gyAA=; b=wjWQsnW8zAW8Z8S+5F9eTaaQOLgNGfVyOASvDCCb6ljydVUky9WHFL3oNs5XUclD9vUiDL9y
+ RydmJjbgtiV3NA0P4VMnF+3hl90Qwp4HEd0Ccf29/faMoOIkmbQ9lDWfMIU+eZGc3B9PgJj0
+ HqXmm0qwUDeNCVkNHhYQ0onbLaA=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 609f68cb7b5af81b5c17b37f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 15 May 2021 06:23:07
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id CAB54C4338A; Sat, 15 May 2021 06:23:06 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A4786C433D3;
+        Sat, 15 May 2021 06:23:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A4786C433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-arch@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Devidas Puranik <devidas@marvell.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 10/13] mwifiex: re-fix for unaligned accesses
+References: <20210514100106.3404011-1-arnd@kernel.org>
+        <20210514100106.3404011-11-arnd@kernel.org>
+Date:   Sat, 15 May 2021 09:22:58 +0300
+In-Reply-To: <20210514100106.3404011-11-arnd@kernel.org> (Arnd Bergmann's
+        message of "Fri, 14 May 2021 12:00:58 +0200")
+Message-ID: <87lf8gikhp.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <20210514195534.1440970-1-andrii@kernel.org> <CAADnVQJEWUJ68SQG=bDHG007384xsbPzH5-hdXuZYpDR-txBBA@mail.gmail.com>
-In-Reply-To: <CAADnVQJEWUJ68SQG=bDHG007384xsbPzH5-hdXuZYpDR-txBBA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 14 May 2021 22:25:58 -0700
-Message-ID: <CAEf4BzbBJgcD-QOyWPLWdMf+CZHFnpyLd-F9-eiZ-4fGsS_y6A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: reject static entry-point BPF programs
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 4:14 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, May 14, 2021 at 1:34 PM Andrii Nakryiko <andrii@kernel.org> wrote:
-> >
-> > Detect use of static entry-point BPF programs (those with SEC() markings) and
-> > emit error message.
->
-> Applied. I was wondering whether you've seen such combinations ?
+Arnd Bergmann <arnd@kernel.org> writes:
 
-Haven't seen this anywhere in the real code, only tested locally by
-adding static to one of selftests. Unlikely to break anyone, but good
-to be as strict as with maps.
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> A patch from 2017 changed some accesses to DMA memory to use
+> get_unaligned_le32() and similar interfaces, to avoid problems
+> with doing unaligned accesson uncached memory.
+>
+> However, the change in the mwifiex_pcie_alloc_sleep_cookie_buf()
+> function ended up changing the size of the access instead,
+> as it operates on a pointer to u8.
+>
+> Change this function back to actually access the entire 32 bits.
+> Note that the pointer is aligned by definition because it came
+> from dma_alloc_coherent().
+>
+> Fixes: 92c70a958b0b ("mwifiex: fix for unaligned reads")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+Via which tree should this go? I assume it will go via some other tree
+so:
+
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
