@@ -2,164 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 475D23815E6
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 06:27:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 021CE38160F
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 07:26:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbhEOE2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 00:28:33 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:15736 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230410AbhEOE2c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 00:28:32 -0400
+        id S233436AbhEOF1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 01:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233005AbhEOF1X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 01:27:23 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B57C06174A;
+        Fri, 14 May 2021 22:26:10 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id y2so1672535ybq.13;
+        Fri, 14 May 2021 22:26:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1621052840; x=1652588840;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=p7KNGkx6kXHjAg2/6FjVNBOs8d74NTHOunw4tm9OCE4=;
-  b=SNDyUbM5EScUduv0soI5Wz0X/+yCbLUknWWOiWdLse1hvlDuyDJWbA9I
-   EFyBQrvPlTnG6Hvg5UTpD+WGY+U2y9+mbxTgn2cLUxj1GyISlyXS4TsT8
-   p3WUBdMQXUleXldNup4DUQyB3bNM4noscxi/Jin4KgZr7/yYXplkdW+UW
-   U=;
-X-IronPort-AV: E=Sophos;i="5.82,300,1613433600"; 
-   d="scan'208";a="112350673"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 15 May 2021 04:27:18 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com (Postfix) with ESMTPS id 9C2BBA1B7A;
-        Sat, 15 May 2021 04:27:17 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Sat, 15 May 2021 04:27:17 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.29) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Sat, 15 May 2021 04:27:06 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kafai@fb.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
-        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH v5 bpf-next 11/11] bpf: Test BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.
-Date:   Sat, 15 May 2021 13:27:02 +0900
-Message-ID: <20210515042702.82265-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210515020515.mq2b3gqaq5edepk7@kafai-mbp>
-References: <20210515020515.mq2b3gqaq5edepk7@kafai-mbp>
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3qC/HEtqoIJGROP6iKnL5XKtySpCPC8sBZ3oZgPSb2o=;
+        b=YS6AL4E9YEoTcTaGqW8QD69+yniVavqR+wfxH1ILWdY8MCsDal2aj27Iyxw2CcqP5L
+         rB1xOlq2C75wrjZQpWh2fUn2MdK/bCpo01LVb17BfSyQUaO3PlIDM+rr3JRPGZsrX0a4
+         FrOo2tH2m5kxzT+zoZ4VOwc017tfdFZ0QInAnvwoObOEiawDNVz9kSBwBtwVYNS+e6Hz
+         UhIR6sjWlNgNpend+vuqhEPq2Hx9SnApsOHSn93EU0EXnMocJPyFCiDr0Ge3GaUtzpXH
+         Z4vWa1eorn4NSPV2Z9B3fzc6sl/uLYi+b43S2o++O8HUfOhYE22Wu17pdxPYX0Jadm32
+         SXGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3qC/HEtqoIJGROP6iKnL5XKtySpCPC8sBZ3oZgPSb2o=;
+        b=CZ6JLw1Ww+D1ukeCEp6OWvonX1z2pzmDom+E5WxzE5S8dONtwy3PjRztXMSlEjA6QU
+         eZTsCDz0HKRZHWPPv0YsQHNNEdq5TZWaJHzQoc/89JrpSnRS3NQntbIcO50Gz5L7lATs
+         zsZUj6qwf1g5xBVKqBW7EdXkwOUU1p5iTaW5E3s9O9DyvuYX564Wld2vZZe6es3l8N5I
+         ahM4ZCrADZtmH7y55WuPVgHmABKNFrqrIzWz3RJQtNMjRyeGRvIVI394XPlpVB9Do5Vk
+         t27HAMPZpzVZ6gbWj6krq04B+18bLFdk1wCzAYUB19Oa8Hb8FTES/KBRE2ZP8uj5A6kP
+         h3tw==
+X-Gm-Message-State: AOAM532gHFWGqEBEBd8gufwy841smJuety3ngZrdC3UaUDpZJb3567Ra
+        7uvVgiXXQ35vJSr9LfDRKiiM7vnWaN3s9Zs7u+M=
+X-Google-Smtp-Source: ABdhPJwOgutSNIwen1bh3ICH32d1zZF/Am7UP2GmI1G6PjPKp1RG2ZnCANI1oBUsW2Nn6wzUZailDEBbEoDe9wwx1Fo=
+X-Received: by 2002:a25:3357:: with SMTP id z84mr67444368ybz.260.1621056369263;
+ Fri, 14 May 2021 22:26:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.29]
-X-ClientProxiedBy: EX13D28UWB004.ant.amazon.com (10.43.161.56) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+References: <20210514195534.1440970-1-andrii@kernel.org> <CAADnVQJEWUJ68SQG=bDHG007384xsbPzH5-hdXuZYpDR-txBBA@mail.gmail.com>
+In-Reply-To: <CAADnVQJEWUJ68SQG=bDHG007384xsbPzH5-hdXuZYpDR-txBBA@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 14 May 2021 22:25:58 -0700
+Message-ID: <CAEf4BzbBJgcD-QOyWPLWdMf+CZHFnpyLd-F9-eiZ-4fGsS_y6A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: reject static entry-point BPF programs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Martin KaFai Lau <kafai@fb.com>
-Date:   Fri, 14 May 2021 19:05:15 -0700
-> On Mon, May 10, 2021 at 12:44:33PM +0900, Kuniyuki Iwashima wrote:
-> > diff --git a/tools/testing/selftests/bpf/network_helpers.c b/tools/testing/selftests/bpf/network_helpers.c
-> > index 12ee40284da0..2060bc122c53 100644
-> [ ... ]
-> 
-> > +static int setup_fastopen(char *buf, int size, int *saved_len, bool restore)
-> > +{
-> > +	int err = 0, fd, len;
-> > +
-> > +	fd = open("/proc/sys/net/ipv4/tcp_fastopen", O_RDWR);
-> > +	if (!ASSERT_NEQ(fd, -1, "open"))
-> > +		return -1;
-> > +
-> > +	if (restore) {
-> > +		len = write(fd, buf, *saved_len);
-> > +		if (!ASSERT_EQ(len, *saved_len, "write - restore"))
-> > +			err = -1;
-> > +	} else {
-> > +		*saved_len = read(fd, buf, size);
-> > +		if (!ASSERT_GE(*saved_len, 1, "read")) {
-> > +			err = -1;
-> > +			goto close;
-> > +		}
-> > +
-> > +		err = lseek(fd, 0, SEEK_SET);
-> > +		if (!ASSERT_OK(err, "lseek"))
-> > +			goto close;
-> > +
-> > +		/* (TFO_CLIENT_ENABLE | TFO_SERVER_ENABLE) */
-> > +		len = write(fd, "3", 1);
-> > +		if (!ASSERT_EQ(len, 1, "write - setup"))
-> Is it to trigger the tcp_try_fastopen() case?
-> I am not sure it is enough.  At least, I think not for the
-> very first connection before the cookie is saved.
-> The second run of the test may be able to trigger it.
-> 
-> setsockopt(TCP_FASTOPEN_NO_COOKIE) or another value in the
-> "/proc/sys/net/ipv4/tcp_fastopen" (ip-sysctl.rst) may be
-> needed.
+On Fri, May 14, 2021 at 4:14 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, May 14, 2021 at 1:34 PM Andrii Nakryiko <andrii@kernel.org> wrote:
+> >
+> > Detect use of static entry-point BPF programs (those with SEC() markings) and
+> > emit error message.
+>
+> Applied. I was wondering whether you've seen such combinations ?
 
-Ah, right. I missed that point while testing in the same host.
-TFO should be always forced without cookies.
-
-
-> 
-> > +			err = -1;
-> > +	}
-> > +
-> > +close:
-> > +	close(fd);
-> > +
-> > +	return err;
-> > +}
-> > +
-> [ ... ]
-> 
-> > diff --git a/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c b/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
-> > new file mode 100644
-> > index 000000000000..72978b5d1fcb
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
-> > @@ -0,0 +1,67 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Check if we can migrate child sockets.
-> > + *
-> > + *   1. If reuse_md->migrating_sk is NULL (SYN packet),
-> > + *        return SK_PASS without selecting a listener.
-> > + *   2. If reuse_md->migrating_sk is not NULL (socket migration),
-> > + *        select a listener (reuseport_map[migrate_map[cookie]])
-> > + *
-> > + * Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> > + */
-> > +
-> > +#include <stddef.h>
-> > +#include <linux/bpf.h>
-> > +#include <bpf/bpf_helpers.h>
-> > +
-> > +struct {
-> > +	__uint(type, BPF_MAP_TYPE_REUSEPORT_SOCKARRAY);
-> > +	__uint(max_entries, 256);
-> > +	__type(key, int);
-> > +	__type(value, __u64);
-> > +} reuseport_map SEC(".maps");
-> > +
-> > +struct {
-> > +	__uint(type, BPF_MAP_TYPE_HASH);
-> > +	__uint(max_entries, 256);
-> > +	__type(key, __u64);
-> > +	__type(value, int);
-> > +} migrate_map SEC(".maps");
-> > +
-> > +int migrated_at_close SEC(".data");
-> > +int migrated_at_send_synack SEC(".data");
-> > +int migrated_at_recv_ack SEC(".data");
-> int migrated_at_close = 0;
-> int migrated_at_send_synack = 0;
-> int migrated_at_recv_ack = 0;
-> 
-> and then use skel->bss->migrated_at_* in migrate_reuseport.c.
-
-I'll fix them.
-
-Thank you.
+Haven't seen this anywhere in the real code, only tested locally by
+adding static to one of selftests. Unlikely to break anyone, but good
+to be as strict as with maps.
