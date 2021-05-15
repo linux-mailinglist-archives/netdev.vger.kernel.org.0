@@ -2,119 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 060D6381A08
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 18:58:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4EF3381A0B
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 19:00:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233922AbhEOQ7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 12:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34382 "EHLO
+        id S233955AbhEORBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 13:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230040AbhEOQ7r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 12:59:47 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F071CC061573;
-        Sat, 15 May 2021 09:58:32 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id k10so2982020ejj.8;
-        Sat, 15 May 2021 09:58:32 -0700 (PDT)
+        with ESMTP id S230040AbhEORBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 13:01:12 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B663C061573;
+        Sat, 15 May 2021 09:59:59 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id n2so3000099ejy.7;
+        Sat, 15 May 2021 09:59:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
          :content-disposition:in-reply-to;
-        bh=on/6xZCIaJvpMROmrp4eRzeLAabPNhtVrx6dFCuT2lk=;
-        b=e8/vbb43yCbzHOadD5bO8RpHIe1t+OA+zJrcpmlbbZwQ+wW5rLk1JJnTbIxHhCV6FG
-         XSblTExamToYMXLT2kguSziT1YpaNO8U64M5cGNSehhZhzSHU5WhNaEsq1JYwPvNmDd5
-         Wc0Dhq9dLKw+bpRW8KAzSbNZLBd5HL1L6aOp18vkLEq2r/A8XAO4/m/HEBZwC7GpOlJb
-         874yMAA2ReY+htqQv2biA0IgTSfdNZvU4P+IDyqKDwtTiMEvYISfrk4LkRp+hgPVQVYy
-         82uSs1+jiiUfOgS4l+LH+pZE4w0k4j0NBxDFBzorgKT92MXPq3cg1eoPsM4nrAQ9vgot
-         LOig==
+        bh=tqEToDv/so/qf119uO+29f9FwYlBxlT+71skBV44zX0=;
+        b=m/UKQ0l9394YvnXW1/Be/2C/B72Ebae+8aByku9/ea+yk62dVF+jxmuNzH08imnK26
+         9aO4OXcdNh5z9MGXRrOUQt74oAo8fDWY37mdNz9LveGGbawAgmRujQJUGf3y3BtP25EY
+         jzr2rWvAtc/DAqqBEq6CDS9Yc8uncpZRiTmdDBr+4COl6gs5hvlXpJqpCZNndxj7KpdM
+         ebJsvifyI8Pnco8zaM1MXTxks2BoQBZG0lEdzQcNTBWLWRZaOnomxd5/Ed1T8CtdRIEK
+         9pHa6GXJ0kTg2ISDKNQBSbFhY/DwIEVYECYrg/HDf1T36+zCZCJ2lt5s6Gkh9nBXKGO3
+         NH9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
          :references:mime-version:content-disposition:in-reply-to;
-        bh=on/6xZCIaJvpMROmrp4eRzeLAabPNhtVrx6dFCuT2lk=;
-        b=owZ2Seja/81SZhk1XryxHNnwxpZdCOvTS5qX9TnOhNomHkOqrtv/sQo3iOFCIFFmpe
-         mCSnPbbTonVymvbPeaJTMrdaWKpW/Qt7IaItJdae9Wldnd5K2SFqAdfBDjA0GSyzVmKx
-         pKF/XQgoedJMTZxFE83qMshEt21hxl9Q1d2rth2Idedk1Kvft+2ouFsrX4puHxe/mTSj
-         G5POt6A8ioCOkncBWOTevJa4vWD37SHjdpI9JWkEBKwI/eTCEuAL/Epb6QjpHo4xrkzy
-         Q7UGXzB58FkLr1HR7ACnTdyS96sYsmWxER9GN9wHCIeyesqqJzgD1gWqPBS2uQ3MAOTF
-         VdiA==
-X-Gm-Message-State: AOAM532Uuh8d479iMrMYiHTWO8EM4BzWt97mWGp+K20TmBoL12l4lHUa
-        REQ03vWJfJxTGkXqbw3oyQU=
-X-Google-Smtp-Source: ABdhPJwhthevKP5yGoOzZj4wlifyRwLYXyNGAErQk8mjcxmNXjfNVYR+EE8Mph1cBInnfRn9fsDKPQ==
-X-Received: by 2002:a17:906:64c3:: with SMTP id p3mr24496673ejn.351.1621097911671;
-        Sat, 15 May 2021 09:58:31 -0700 (PDT)
+        bh=tqEToDv/so/qf119uO+29f9FwYlBxlT+71skBV44zX0=;
+        b=Vkf4lkxcAacXSeM7jhDHSjyIFDGVFp2ClAtai+XcUN013vNntWveg2VsozJWk6juf2
+         tlVAf32A1/u8abHXvXR7KeX3He7UNwvlpRarDBSx7YVAexpzamERyPO7pcG4dMxsHNrL
+         woLiv2Sxq+qJRo+fm1e8eCWbb3AtYdjGnOMtQ6Kr66mnYFIPUXGAI7cx+4jHoaYS6L+v
+         HPgT4ririfkM2BiteVIuWQk1jR0a1oOMR8EAluIIaKna9P59Imos7Af6F4+VZdqfPZJA
+         78dHOKhF+3Q9n5ZKvzV6DNGgjcMg56cDEmsSqtDtDuFQMVvDwUiQh2rs58en8jg+rCQz
+         AZSA==
+X-Gm-Message-State: AOAM533z3K0BztGcW6ZCYLxxd9Kw1KWIDS+2/UDCya5a4pZ4z6R3ozos
+        K0epunvimNM5dGJQh4D7vII=
+X-Google-Smtp-Source: ABdhPJzVuNPldRVV+mkSNNwEnSGsRJF2yqpxsFiVpBFMHoy1wNLXJ0GL4MOVpNtWRBmDrbn3h+p3PA==
+X-Received: by 2002:a17:907:990f:: with SMTP id ka15mr46157837ejc.132.1621097998108;
+        Sat, 15 May 2021 09:59:58 -0700 (PDT)
 Received: from pevik ([62.201.25.198])
-        by smtp.gmail.com with ESMTPSA id i8sm7291715edu.64.2021.05.15.09.58.30
+        by smtp.gmail.com with ESMTPSA id r10sm5497630ejd.112.2021.05.15.09.59.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 May 2021 09:58:30 -0700 (PDT)
-Date:   Sat, 15 May 2021 18:58:28 +0200
+        Sat, 15 May 2021 09:59:57 -0700 (PDT)
+Date:   Sat, 15 May 2021 18:59:55 +0200
 From:   Petr Vorel <petr.vorel@gmail.com>
-To:     Heiko Thiery <heiko.thiery@gmail.com>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Heiko Thiery <heiko.thiery@gmail.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, stephen@networkplumber.org,
-        Dmitry Yakunin <zeil@yandex-team.ru>,
-        Peter Korsgaard <peter@korsgaard.com>
+        Dmitry Yakunin <zeil@yandex-team.ru>
 Subject: Re: [PATCH iproute2-next v3] lib/fs: fix issue when
  {name,open}_to_handle_at() is not implemented
-Message-ID: <YJ/9tBaZmw4UkI2t@pevik>
+Message-ID: <YJ/+C+FVEIRnnJBq@pevik>
 Reply-To: Petr Vorel <petr.vorel@gmail.com>
 References: <20210508064925.8045-1-heiko.thiery@gmail.com>
+ <6ba0adf4-5177-c50a-e921-bee898e3fdb9@gmail.com>
+ <CAEyMn7a4Z3U-fUvFLcWmPW3hf-x6LfcTi8BZrcDfhhFF0_9=ow@mail.gmail.com>
+ <YJ5rJbdEc2OWemu+@pevik>
+ <82c9159f-0644-40af-fb4c-cc8507456719@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210508064925.8045-1-heiko.thiery@gmail.com>
+In-Reply-To: <82c9159f-0644-40af-fb4c-cc8507456719@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi David,
+> On 5/14/21 6:20 AM, Petr Vorel wrote:
 
-[ Cc Petr (Buildroot maintainer) ]
-> With commit d5e6ee0dac64 the usage of functions name_to_handle_at() and
-> open_by_handle_at() are introduced. But these function are not available
-> e.g. in uclibc-ng < 1.0.35. To have a backward compatibility check for the
-> availability in the configure script and in case of absence do a direct
-> syscall.
+> >>> This causes compile failures if anyone is reusing a tree. It would be
+> >>> good to require config.mk to be updated if configure is newer.
+> >> Do you mean the config.mk should have a dependency to configure in the
+> >> Makefile? Wouldn't that be better as a separate patch?
+> > I guess it should be a separate patch. I'm surprised it wasn't needed before.
 
-> Fixes: d5e6ee0dac64 ("ss: introduce cgroup2 cache and helper functions")
-> Cc: Dmitry Yakunin <zeil@yandex-team.ru>
-> Cc: Petr Vorel <petr.vorel@gmail.com>
-> Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
-> ---
-> v3:
->  - use correct syscall number (thanks to Petr Vorel)
->  - add #include <sys/syscall.h> (thanks to Petr Vorel)
->  - remove bogus parameters (thanks to Petr Vorel)
->  - fix #ifdef (thanks to Petr Vorel)
->  - added Fixes tag (thanks to David Ahern)
->  - build test with buildroot 2020.08.3 using uclibc 1.0.34
-I tested it to some extent. I was not able to test it on buildroot uclibc:
-$ ss -a --cgroup # I put debugging printf
-ss.c:3336 inet_show_sock(): tb[INET_DIAG_CGROUP_ID]: (nil), INET_DIAG_CGROUP_ID: 21
 
-I tried mount both cgroup (with cgroupfs-mount) and cgroup2 (using mount).
 
-But it's hard to trigger this code also on regular linux distro with glibc:
+> yes, it should be a separate patch, but it needs to precede this one.
 
-$ ss --cgroup -a >/dev/null
-Failed to open cgroup2 by ID
-Failed to open cgroup2 by ID
-Failed to open cgroup2 by ID
-Failed to open cgroup2 by ID
-Failed to open cgroup2 by ID
-Failed to open cgroup2 by ID
+> This worked for me last weekend; I'll send it when I get a chance.
 
-Debugging when replacing glibc wrapper with these functions calling raw syscall
-it works the same (i.e. "Failed to open cgroup2 by ID")
+> diff --git a/Makefile b/Makefile
+> index 19bd163e2e04..5bc11477ab7a 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -60,7 +60,7 @@ SUBDIRS=lib ip tc bridge misc netem genl tipc devlink
+> rdma dcb man vdpa
+>  LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
+>  LDLIBS += $(LIBNETLINK)
 
-Thus:
-Tested-by: Petr Vorel <petr.vorel@gmail.com>
-(to my previous Reviewed-by: tag).
+> -all: config.mk
+> +all: config
+>         @set -e; \
+>         for i in $(SUBDIRS); \
+>         do echo; echo $$i; $(MAKE) -C $$i; done
+> @@ -80,8 +80,10 @@ all: config.mk
+>         @echo "Make Arguments:"
+>         @echo " V=[0|1]             - set build verbosity level"
 
-Hope David Ahern send his patch for config.mk dependency to configure,
-as his fragment [1] LGTM.
+> -config.mk:
+> -       sh configure $(KERNEL_INCLUDE)
+> +config:
+> +       @if [ ! -f config.mk -o configure -nt config.mk ]; then \
+> +               sh configure $(KERNEL_INCLUDE); \
+> +       fi
+
+>  install: all
+>         install -m 0755 -d $(DESTDIR)$(SBINDIR)
+
+Thanks a lot, please send it.
+
+I know this is only a fragment, but:
+Reviewed-by: Petr Vorel <petr.vorel@gmail.com>
+
+-nt is supported by dash and busybox sh.
 
 Kind regards,
 Petr
-
-[1] https://lore.kernel.org/netdev/82c9159f-0644-40af-fb4c-cc8507456719@gmail.com/
