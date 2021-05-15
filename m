@@ -2,93 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78CB2381AA2
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 21:06:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9B63381AC9
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 21:38:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234573AbhEOTHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 15:07:20 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:44106 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231558AbhEOTHR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 15:07:17 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1621105562;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zALTCEjPn7sztZNd85u8yKI0LRF8p9B5oT1vb4kC4jA=;
-        b=Mf3g6XafW+5Mdu/oDormRTpHArjnxMIoM7A6M91I9DWkStkG2Hmp1L1R8efGMsDOIQMdnj
-        ifFak5poU+DhdItzq5Lr5K7xEc48UZWCgHEwv4T9ry/8dunwKSyIwmT39mRAbEB7UC5hx5
-        mamsVyq8MQV6H1kvK6RWduRcumvlL+7ob1Mpq2+xh0l+dvyj0TGn/ZJ/NNnhptQl+vi+7q
-        KRTEkC8zwNVoKBHncLNaFBZao6/AG+FlE/YkjcdGiZOJ1Pfe3XyjcEf5radzuTVqMoDQKN
-        mmhlH2TYyyF+AfTMwftGf4o/GiC6qW+Diwfn3epK91oo6gskej72U+5IJXK9LA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1621105562;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zALTCEjPn7sztZNd85u8yKI0LRF8p9B5oT1vb4kC4jA=;
-        b=YHxvqS/DXfYP5E3WLEomds0pQNYkCPQqE33PLYC/wRV1n2dn+6vvamXw1bTneAg5b3VZYm
-        2BNQg/fPrMcnUTAQ==
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, Michal Svec <msvec@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hayes Wang <hayeswang@realtek.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Borislav Petkov <bp@alien8.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>
-Subject: Re: [PATCH RFC] r8152: Ensure that napi_schedule() is handled
-In-Reply-To: <20210515130926.GC21560@worktop.programming.kicks-ass.net>
-References: <877dk162mo.ffs@nanos.tec.linutronix.de> <20210514123838.10d78c35@kicinski-fedora-PC1C0HJN> <87sg2p2hbl.ffs@nanos.tec.linutronix.de> <20210514134655.73d972cb@kicinski-fedora-PC1C0HJN> <87fsyp2f8s.ffs@nanos.tec.linutronix.de> <20210514144130.7287af8e@kicinski-fedora-PC1C0HJN> <871ra83nop.ffs@nanos.tec.linutronix.de> <20210515130926.GC21560@worktop.programming.kicks-ass.net>
-Date:   Sat, 15 May 2021 21:06:01 +0200
-Message-ID: <87k0nz24x2.ffs@nanos.tec.linutronix.de>
+        id S234660AbhEOTd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 15:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231334AbhEOTd4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 15:33:56 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E42C061573
+        for <netdev@vger.kernel.org>; Sat, 15 May 2021 12:32:43 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id m12so3353956eja.2
+        for <netdev@vger.kernel.org>; Sat, 15 May 2021 12:32:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=CBzb0xG+UvURsB9kNJTGzZDCQbolAM+N5wgrUrMHeF0=;
+        b=iOD3fo9da/8G74L1U18UYmTOyVPysCupa3rUhi3vMPs55zvD+A+rj5t5SAKql7w8tu
+         IXG+8mr8mqieUezqNkiaWsZEDpLJIQP5VtF3W50KjBQZlQHoK76svESRWUnGlsNZxCgw
+         lzEyS+kilMPOkoDX5DoTrlGVqrQJyYl3JIATM2OI3TgDpSZQaTun5YWCvil+ZKWQonAt
+         /ksI6ZybL/Rh+a3TwR+5/s512CKVx9rh5c+quVReIc9Da6kgimWn8+WQuLvHDlNthnBG
+         7tXLDfRBnLYR//TafEWH4ypDOYQB+33AmyMasM7bV8Q8Pz9mxdg89iOflzP91x2RoLeN
+         SbWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=CBzb0xG+UvURsB9kNJTGzZDCQbolAM+N5wgrUrMHeF0=;
+        b=MfktAbjFw859IKiTdT3xO+CXHQEXKHWrowBxUqamo8B7r9hzcA9Eq9Xvv75Jn2PQ9L
+         4Tc+a3OOM8dDoN0+gaGmgc5STOvbt4Y+RUm6gLgsWnBGeLwrDUwDjk9TYJngt2EIb8u3
+         t6GJChMkMHur6qHSvFElBb6L5QEfmtAGYivHdFfZwKlLkHk6UrbHqnoffhAcAgk/k04m
+         TJM6I6bo5WjCum9+2d66CROawC29+4mT/+qIIt0OxcUp/GrIGBAAallzcUc0us+dWMF9
+         Ey3QC6XaYkPsCTx+GlQvlFy1yEiDwXn/ZCMvyiTBm+lgYrugCbWLtA3YwBljXhz4PTBI
+         Z9FQ==
+X-Gm-Message-State: AOAM532+4DBXxTHQvKvD9RRwx0o4lOCZzKsH46H8Ig2OfL5IU2lqCVQj
+        QkAuXzQ1GKO77Sj2lc66rfgizNu5KNYkCtS9iIE=
+X-Google-Smtp-Source: ABdhPJwubnPHvidFf0UHrlC4MCEThQ+6jWDOeOyTAK26ktko7Ff62hEf3NhKCZV/bCmyBbK0r938XA4HAUx6c5gyDBc=
+X-Received: by 2002:a17:906:6ad0:: with SMTP id q16mr54767870ejs.286.1621107162071;
+ Sat, 15 May 2021 12:32:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+Received: by 2002:a17:906:1916:0:0:0:0 with HTTP; Sat, 15 May 2021 12:32:41
+ -0700 (PDT)
+Reply-To: delivery.postoffice@post.com
+From:   Dr Fatima Salatt <terry.ola20188@gmail.com>
+Date:   Sat, 15 May 2021 21:32:41 +0200
+Message-ID: <CAMFTZEEXJ4GQEk7_z2oDD4H4bXw3mD9KzkwrhqyJHKgRta1gyw@mail.gmail.com>
+Subject: Your visa debit card is working online
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 15 2021 at 15:09, Peter Zijlstra wrote:
-> On Sat, May 15, 2021 at 01:23:02AM +0200, Thomas Gleixner wrote:
->> --- a/kernel/smp.c
->> +++ b/kernel/smp.c
->> @@ -691,7 +691,9 @@ void flush_smp_call_function_from_idle(v
->>  	cfd_seq_store(this_cpu_ptr(&cfd_seq_local)->idle, CFD_SEQ_NOCPU,
->>  		      smp_processor_id(), CFD_SEQ_IDLE);
->>  	local_irq_save(flags);
->> +	lockdep_set_softirq_raise_safe();
->>  	flush_smp_call_function_queue(true);
->> +	lockdep_clear_softirq_raise_safe();
->>  	if (local_softirq_pending())
->>  		do_softirq();
->
-> I think it might make more sense to raise hardirq_count() in/for
-> flush_smp_call_function_queue() callers that aren't already from hardirq
-> context. That's this site and smpcfd_dying_cpu().
->
-> Then we can do away with this new special case.
+ATTN; DEAR,
 
-Right.
+This is Dr Fatima Salatt ,I have registered your ATM CARD to the POST
+OFFICE BENIN REPUBLIC so that they will Post it to your home address
+and I believe your current address is still the same. Your total
+amount in the envelope is $3.2 Million USD and the POST OFFICE assured
+me that there will be no stoppage until it gets to your hand. I want
+you to contact them and re- confirm your address where to Post it.
 
-Though I just checked smpcfd_dying_cpu(). That ones does not run
-softirqs after flushing the function queue and it can't do that because
-that's in the CPU dying phase with interrupts disabled where the CPU is
-already half torn down.
+Contact Dr.Hameed Wani,
+03 BP 1000,COTONOU
+BENIN REPUBLIC.
+E-mail: (delivery.postoffice@post.com)
+Your full information for the Postal.
+PHONE NUMBER;
+FULL NAME: ==============
+COUNTRY: ==============
+CITY: ==============
+CURRENT HOME ADDRESS: ===========
+TELEPHONE/CELL PHONE NUMBER.=========
+AGE/OCCUPATION: =============
+SEX/A COPY OF YOUR IDENTIFICATION: ===============
 
-Especially as softirq processing enables interrupts, which might cause
-even more havoc.
+The manager informed me that it will take 3 days to get to your house
+and your Envelope accumulate. Your Current address has to be
+reconfirmed when contacting the post office.
 
-Anyway how is it safe to run arbitrary functions there after the CPU
-removed itself from the online mask? That's daft to put it mildly.
-
-Thanks,
-
-        tglx
-
-
-
-
+Thanks & remain blessed.
+Ms. Fatima Salatt
