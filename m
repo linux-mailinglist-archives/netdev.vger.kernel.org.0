@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 500F03817F8
-	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 12:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB18E3817EF
+	for <lists+netdev@lfdr.de>; Sat, 15 May 2021 12:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235048AbhEOK6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 06:58:16 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3542 "EHLO
+        id S235247AbhEOK5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 06:57:51 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3550 "EHLO
         szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232137AbhEOKz4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 06:55:56 -0400
+        with ESMTP id S233048AbhEOKzz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 06:55:55 -0400
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fj2Jn5g1CzsRHh;
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fj2Jn66XPzsRHn;
         Sat, 15 May 2021 18:51:53 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
@@ -21,9 +21,9 @@ From:   Yang Shen <shenyang39@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Yang Shen <shenyang39@huawei.com>, Jon Mason <jdmason@kudzu.us>
-Subject: [PATCH 15/34] net: neterion: Fix wrong function name in comments
-Date:   Sat, 15 May 2021 18:53:40 +0800
-Message-ID: <1621076039-53986-16-git-send-email-shenyang39@huawei.com>
+Subject: [PATCH 16/34] net: neterion: vxge: Fix wrong function name in comments
+Date:   Sat, 15 May 2021 18:53:41 +0800
+Message-ID: <1621076039-53986-17-git-send-email-shenyang39@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1621076039-53986-1-git-send-email-shenyang39@huawei.com>
 References: <1621076039-53986-1-git-send-email-shenyang39@huawei.com>
@@ -37,37 +37,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/ethernet/neterion/s2io.c:2759: warning: expecting prototype for s2io_poll(). Prototype was for s2io_poll_msix() instead
- drivers/net/ethernet/neterion/s2io.c:5304: warning: expecting prototype for s2io_ethtol_get_link_ksettings(). Prototype was for s2io_ethtool_get_link_ksettings() instead
+ drivers/net/ethernet/neterion/vxge/vxge-config.c:4895: warning: expecting prototype for vxge_hw_vpath_rx_doorbell_post(). Prototype was for vxge_hw_vpath_rx_doorbell_init() instead
+ drivers/net/ethernet/neterion/vxge/vxge-main.c:1814: warning: expecting prototype for vxge_poll(). Prototype was for vxge_poll_msix() instead
+ drivers/net/ethernet/neterion/vxge/vxge-main.c:4761: warning: expecting prototype for vxge_rem_nic(). Prototype was for vxge_remove() instead
 
 Cc: Jon Mason <jdmason@kudzu.us>
 Signed-off-by: Yang Shen <shenyang39@huawei.com>
 ---
- drivers/net/ethernet/neterion/s2io.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/neterion/vxge/vxge-config.c | 2 +-
+ drivers/net/ethernet/neterion/vxge/vxge-main.c   | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/neterion/s2io.c b/drivers/net/ethernet/neterion/s2io.c
-index 9cfcd55..27a65ab3 100644
---- a/drivers/net/ethernet/neterion/s2io.c
-+++ b/drivers/net/ethernet/neterion/s2io.c
-@@ -2743,7 +2743,7 @@ static int s2io_chk_rx_buffers(struct s2io_nic *nic, struct ring_info *ring)
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-config.c b/drivers/net/ethernet/neterion/vxge/vxge-config.c
+index 5162b93..38a273c 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-config.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-config.c
+@@ -4884,7 +4884,7 @@ vxge_hw_vpath_open(struct __vxge_hw_device *hldev,
  }
  
  /**
-- * s2io_poll - Rx interrupt handler for NAPI support
-+ * s2io_poll_msix - Rx interrupt handler for NAPI support
-  * @napi : pointer to the napi structure.
-  * @budget : The number of packets that were budgeted to be processed
-  * during  one pass through the 'Poll" function.
-@@ -5288,7 +5288,7 @@ s2io_ethtool_set_link_ksettings(struct net_device *dev,
+- * vxge_hw_vpath_rx_doorbell_post - Close the handle got from previous vpath
++ * vxge_hw_vpath_rx_doorbell_init - Close the handle got from previous vpath
+  * (vpath) open
+  * @vp: Handle got from previous vpath open
+  *
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+index 87892bd..b113c15 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+@@ -1799,7 +1799,7 @@ static void vxge_reset(struct work_struct *work)
  }
  
  /**
-- * s2io_ethtol_get_link_ksettings - Return link specific information.
-+ * s2io_ethtool_get_link_ksettings - Return link specific information.
-  * @dev: pointer to netdev
-  * @cmd : pointer to the structure with parameters given by ethtool
-  * to return link information.
+- * vxge_poll - Receive handler when Receive Polling is used.
++ * vxge_poll_msix - Receive handler when Receive Polling is used.
+  * @napi: pointer to the napi structure.
+  * @budget: Number of packets budgeted to be processed in this iteration.
+  *
+@@ -4752,7 +4752,7 @@ vxge_probe(struct pci_dev *pdev, const struct pci_device_id *pre)
+ }
+ 
+ /**
+- * vxge_rem_nic - Free the PCI device
++ * vxge_remove - Free the PCI device
+  * @pdev: structure containing the PCI related information of the device.
+  * Description: This function is called by the Pci subsystem to release a
+  * PCI device and free up all resource held up by the device.
 -- 
 2.7.4
 
