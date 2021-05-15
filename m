@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6122A381B58
-	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 00:14:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B7D8381B5A
+	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 00:14:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235218AbhEOWP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 18:15:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46806 "EHLO mail.kernel.org"
+        id S235260AbhEOWQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 18:16:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46862 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235212AbhEOWPt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 May 2021 18:15:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1AA9F6135C;
-        Sat, 15 May 2021 22:14:31 +0000 (UTC)
+        id S235225AbhEOWPw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 May 2021 18:15:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CAD6760C3F;
+        Sat, 15 May 2021 22:14:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621116875;
-        bh=Thy3xh0aPPD4aGsyyWrTD32Yur4vUloVpUXX/JJXgWY=;
+        s=k20201202; t=1621116879;
+        bh=TnmI0Tt4l/vUEyEMDzwuUMGskOueZuQukAa7BRBP30s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fbVEe/DGhS8d5Qv/oEkgSM5JApOmsgtbPRaGoKUnS/1pnw3O6mFa+WLuoJ0fFRYxA
-         2pieWtDuy63d0yUaYRhoHgwCbjoq9lQgonVrKAQOFHpMLJoso7ybTxkRNVuo8iifNa
-         XEdVUs2f+jqnqsct2GyczVdq4wLi+qUj2kr4vVoE7jLh521nMZ/aE/XlgwJVqrr2Ap
-         4elrazHohuE0dDYLmjF64bmdU9LJw8IVZ6VGaEFsf4iTTg1AfuuYen4caOawMZHigm
-         /X4jn/TFJbupdMh37NjdUIDbix3WGeRTSxAjwQcgoq09XpEpcrNgVW5RB2MB3wZLtO
-         uBAZaGjIU1sEA==
+        b=IlFvjeb80LSGhLHhUUIaR2AXtzOXHignio44xj4m1q0sbRLQFOgeGN/rqT9pB0xDL
+         QJ7K6C0MRZ5WupMlDlvHWHTZY8siuDkBUOH4rXjWe/KX9X63LibajFaVLZB3+ZRajd
+         Pr91oPsxIOuwknHIxjPD7cnQ/XFmeEAa0c2ZpVx0BD6WJDGCqwUM+csBulslf7Lr+a
+         1dzJoFLZJmki8YJSX4y344Fhk1lubir/ApATQWPSKKxqmX6YW7nEXyfLFnShy59RU7
+         9N01cC/Nhoj+J+3C0RGPXxOZVo3oXrTrGpKSdVTwtCbomgL8zENFZ4jkCFp4c5nMWB
+         wp81HbLvkANQQ==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     Arnd Bergmann <arnd@arndb.de>,
@@ -42,9 +42,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Andrii Nakryiko <andriin@fb.com>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
-Subject: [RFC 02/13] [net-next] natsemi: sonic: stop calling netdev_boot_setup_check
-Date:   Sun, 16 May 2021 00:13:09 +0200
-Message-Id: <20210515221320.1255291-3-arnd@kernel.org>
+Subject: [RFC 03/13] [net-next] appletalk: ltpc: remove static probing
+Date:   Sun, 16 May 2021 00:13:10 +0200
+Message-Id: <20210515221320.1255291-4-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210515221320.1255291-1-arnd@kernel.org>
 References: <20210515221320.1255291-1-arnd@kernel.org>
@@ -56,44 +56,78 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The data from the kernel command line is no longer used since the
-probe function gets it from the platform device resources instead.
+This driver never relies on the netdev_boot_setup_check()
+to get its configuration, so it can just as well do its
+own probing all the time.
 
-The jazz version was changed to be like this in 2007, the xtensa
-version apparently copied the code from there.
-
-Fixes: ed9f0e0bf3ce ("remove setup of platform device from jazzsonic.c")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/natsemi/jazzsonic.c | 2 --
- drivers/net/ethernet/natsemi/xtsonic.c   | 1 -
- 2 files changed, 3 deletions(-)
+ drivers/net/Space.c          | 3 ---
+ drivers/net/appletalk/ltpc.c | 7 ++-----
+ include/net/Space.h          | 1 -
+ 3 files changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/natsemi/jazzsonic.c b/drivers/net/ethernet/natsemi/jazzsonic.c
-index ce3eca5d152b..d74a80f010c5 100644
---- a/drivers/net/ethernet/natsemi/jazzsonic.c
-+++ b/drivers/net/ethernet/natsemi/jazzsonic.c
-@@ -193,8 +193,6 @@ static int jazz_sonic_probe(struct platform_device *pdev)
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 	platform_set_drvdata(pdev, dev);
+diff --git a/drivers/net/Space.c b/drivers/net/Space.c
+index df79e7370bcc..9196a26615cc 100644
+--- a/drivers/net/Space.c
++++ b/drivers/net/Space.c
+@@ -142,9 +142,6 @@ static int __init net_olddevs_init(void)
+ 	cops_probe(1);
+ 	cops_probe(2);
+ #endif
+-#ifdef CONFIG_LTPC
+-	ltpc_probe();
+-#endif
  
--	netdev_boot_setup_check(dev);
+ 	return 0;
+ }
+diff --git a/drivers/net/appletalk/ltpc.c b/drivers/net/appletalk/ltpc.c
+index c6f73aa3700c..9e7d3c686561 100644
+--- a/drivers/net/appletalk/ltpc.c
++++ b/drivers/net/appletalk/ltpc.c
+@@ -1013,7 +1013,7 @@ static const struct net_device_ops ltpc_netdev = {
+ 	.ndo_set_rx_mode	= set_multicast_list,
+ };
+ 
+-struct net_device * __init ltpc_probe(void)
++static struct net_device * __init ltpc_probe(void)
+ {
+ 	struct net_device *dev;
+ 	int err = -ENOMEM;
+@@ -1219,12 +1219,10 @@ static int __init ltpc_setup(char *str)
+ }
+ 
+ __setup("ltpc=", ltpc_setup);
+-#endif /* MODULE */
++#endif
+ 
+ static struct net_device *dev_ltpc;
+ 
+-#ifdef MODULE
 -
- 	dev->base_addr = res->start;
- 	dev->irq = platform_get_irq(pdev, 0);
- 	err = sonic_probe1(dev);
-diff --git a/drivers/net/ethernet/natsemi/xtsonic.c b/drivers/net/ethernet/natsemi/xtsonic.c
-index 28d9e98db81a..ca4686094701 100644
---- a/drivers/net/ethernet/natsemi/xtsonic.c
-+++ b/drivers/net/ethernet/natsemi/xtsonic.c
-@@ -215,7 +215,6 @@ int xtsonic_probe(struct platform_device *pdev)
- 	lp->device = &pdev->dev;
- 	platform_set_drvdata(pdev, dev);
- 	SET_NETDEV_DEV(dev, &pdev->dev);
--	netdev_boot_setup_check(dev);
+ MODULE_LICENSE("GPL");
+ module_param(debug, int, 0);
+ module_param_hw(io, int, ioport, 0);
+@@ -1242,7 +1240,6 @@ static int __init ltpc_module_init(void)
+ 	return PTR_ERR_OR_ZERO(dev_ltpc);
+ }
+ module_init(ltpc_module_init);
+-#endif
  
- 	dev->base_addr = resmem->start;
- 	dev->irq = resirq->start;
+ static void __exit ltpc_cleanup(void)
+ {
+diff --git a/include/net/Space.h b/include/net/Space.h
+index 9cce0d80d37a..e30e7a70ea99 100644
+--- a/include/net/Space.h
++++ b/include/net/Space.h
+@@ -21,7 +21,6 @@ struct net_device *mvme147lance_probe(int unit);
+ struct net_device *tc515_probe(int unit);
+ struct net_device *lance_probe(int unit);
+ struct net_device *cops_probe(int unit);
+-struct net_device *ltpc_probe(void);
+ 
+ /* Fibre Channel adapters */
+ int iph5526_probe(struct net_device *dev);
 -- 
 2.29.2
 
