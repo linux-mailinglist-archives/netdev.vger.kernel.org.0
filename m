@@ -2,145 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3065D381DA5
-	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 11:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD97F381DAE
+	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 11:37:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234521AbhEPJ3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 May 2021 05:29:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54488 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231187AbhEPJ3a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 May 2021 05:29:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6166E61104;
-        Sun, 16 May 2021 09:28:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621157296;
-        bh=fFd2d0XlbgMYyrzCgiskzC9VaHK5qDI8g3rJ7OxTXXw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=MbKIOqJpJOFM58gaPee85wsnzEMyVwDOUOB4XWhlvdhA9bABdq97BmVg+9gecI+Kc
-         BbBq5KmyJdrTkGfIzMfzXy9Ig89bzf6XE80SRTCs0N+dcZQAEeZaZ5qOWlCHSF+Rkb
-         YKskHYFn5rl5t9Zk5mPSAf6hirGc3Qr6bp8ShNY+tiNpG1AFzOpeQrdW/yW2PEhNXs
-         Rjgo4gFxZcEg8YaVtoMqPo8prQHWlxLh1RRm5QTIc6oVww7S6ropE5z7RZ8wl1Csf5
-         H5WithiPk6LIwGHbbNtnJcV+DqMPh1UWH5reEXUN+rgGYhQOkbxshxSKW7Rbm+k6yS
-         O7bYpbH+LGGrg==
-Received: by mail-wr1-f43.google.com with SMTP id r12so3318099wrp.1;
-        Sun, 16 May 2021 02:28:16 -0700 (PDT)
-X-Gm-Message-State: AOAM533Q/W8Vdy2z6MAipAtF4FxEWIYfIa60mbZTtVspcFCjhx9zdqPb
-        IUE3iGvTYvjorF8Xa3+5py5B9z0oj+KH45kEi6Y=
-X-Google-Smtp-Source: ABdhPJzqTuvFO+QTf5+WsSOlZsU5ksZomCt+AxH8tQFExcL2xlflMUftwOBDNVAtEwbfp821gF2dTircpUfQRqj/g6Q=
-X-Received: by 2002:a5d:6dc4:: with SMTP id d4mr70402713wrz.105.1621157295043;
- Sun, 16 May 2021 02:28:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210515221320.1255291-1-arnd@kernel.org> <alpine.DEB.2.21.2105160145080.3032@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2105160145080.3032@angie.orcam.me.uk>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Sun, 16 May 2021 11:27:09 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1ytpYNNGkoJJGXf669TxOuzC9_Txn7c593YCCL=ATJ0Q@mail.gmail.com>
-Message-ID: <CAK8P3a1ytpYNNGkoJJGXf669TxOuzC9_Txn7c593YCCL=ATJ0Q@mail.gmail.com>
-Subject: Re: [RFC 00/13] [net-next] drivers/net/Space.c cleanup
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Doug Berger <opendmb@gmail.com>,
+        id S235008AbhEPJi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 May 2021 05:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229455AbhEPJi2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 May 2021 05:38:28 -0400
+Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ECFC061573;
+        Sun, 16 May 2021 02:37:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
+         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
+        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=rJh4Vdo5L1QIm502PoGYhFOjqJgCYsz59OFOfwGXTfM=; b=IHR5xqzX8OqoIC4Z7tfna9w4sW
+        FYzgqfxjXOi3Sj90pGKtPXq0zx0UgUa16GNH0Fqkf1xVnCgX+1PvNUmxxztG14RMiESc3PmPoxcnH
+        /Jxy6wTxLajsJuyxas/nAZO6LP+yQ6CLc37QvaC0T91A7V2ZllQp0lnbx9WijLuLDO+z8k06xab7G
+        2JupSs8BWRWc0tCOLsTgUZZKBfeTyHEsR3nk52YhMe1BmMxdYyHLeRjemxL1nuJ9ICff/olgm3oxC
+        O+YsM3HyjwiCjTi/J7zi8OVCld5ve4dElrUp1AyT6N16hwTWffMBmES3Qa59vIIG9yUDDfcnt0EHs
+        os1CYyoA==;
+Received: from noodles by the.earth.li with local (Exim 4.92)
+        (envelope-from <noodles@earth.li>)
+        id 1liDCt-0001UJ-5B; Sun, 16 May 2021 10:37:07 +0100
+Date:   Sun, 16 May 2021 10:37:07 +0100
+From:   Jonathan McDowell <noodles@earth.li>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Sam Creasey <sammy@sammy.net>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Finn Thain <fthain@telegraphics.com.au>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
-Content-Type: text/plain; charset="UTF-8"
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next v4 01/28] net: mdio: ipq8064: clean
+ whitespaces in define
+Message-ID: <20210516093707.GL11733@earth.li>
+References: <YJbSOYBxskVdqGm5@lunn.ch>
+ <YJbTBuKobu1fBGoM@Ansuel-xps.localdomain>
+ <20210515170046.GA18069@earth.li>
+ <YKAFMg+rJsspgE84@Ansuel-xps.localdomain>
+ <20210515180856.GI11733@earth.li>
+ <YKAQ+BggTCzc7aZW@Ansuel-xps.localdomain>
+ <20210515194047.GJ11733@earth.li>
+ <YKAlUEt/9MU8CwsQ@Ansuel-xps.localdomain>
+ <YKBepW5Hu3FEG/JJ@lunn.ch>
+ <YKBl9kK3AvG1wWXZ@Ansuel-xps.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YKBl9kK3AvG1wWXZ@Ansuel-xps.localdomain>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 16, 2021 at 2:06 AM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
->
-> On Sun, 16 May 2021, Arnd Bergmann wrote:
->
-> > For the ISA drivers, there is usually no way to probe multiple devices
-> > at boot time other than the netdev= arguments, so all that logic is left
-> > in place for the moment, but centralized in a single file that only gets
-> > included in the kernel build if one or more of the drivers are built-in.
->
->  As I recall at least some ISA drivers did probe multiple interfaces in
-> their monolithic configuration; I used a configuration with as many as
-> five ne2k clones for a bridge machine for a fairly large network (~300
-> machines) and as I recall it required no command-line parameters (but then
-> it was some 25 years ago, so I may well not remember correctly anymore).
-> It may have been with ISA PnP though (damn!).
->
->  For modular drivers it was deemed too dangerous, for obvious reasons, and
-> explicit parameters were the only way.
+On Sun, May 16, 2021 at 02:23:18AM +0200, Ansuel Smith wrote:
+> On Sun, May 16, 2021 at 01:52:05AM +0200, Andrew Lunn wrote:
+> > > > They're on 2 separate sets of GPIOs if that makes a difference - switch0
+> > > > is in gpio0/1 and switch1 is on gpio10/11. Is the internal MDIO logic
+> > > > shared between these? Also even if that's the case it seems odd that
+> > > > enabling the MDIO for just switch0 doesn't work?
+> > > > 
+> > > 
+> > > The dedicated internal mdio on ipq8064 is unique and present on the
+> > > gmac0 address so yes it's shared between them. And this seems to be the
+> > > problem... As you notice the fact that different gpio are used for the
+> > > different switch fix the problem. So think that to use the dedicated
+> > > mdio bus with both switch we need to introduce some type of
+> > > syncronization or something like that.
+> > 
+> > Please could you describe the hardware in a bit more details. Or point
+> > me at a datasheet. It sounds like you have an MDIO mux? Linux has this
+> > concept, so you might need to implement a mux driver.
+> > 
+> > 	 Andrew
+> 
+> Datasheet of ipq8064 are hard to find and pricey.
+> Will try hoping I don't write something very wrong.
+> Anyway on the SoC there are 4 gmac (most of the time 2 are used
+> and represent the 2 cpu port) and one mdio bus present on the gmac0
+> address. 
 
-I did use two ne2k compatible pre-PnP cards in a router, by loading two
-copies of the same driver module, and I'm fairly sure that would still work,
-but it's obviously not how it was meant to be used. ;-)
+There's a suggestion of an additional mdio bus on the gmac1 address at:
 
-To clarify: the code drivers/net/Space.c logic can probe these drivers
-both with and without explicit configuration. Using the netdev= arguments
-will result in reliable assignment of device names and prevent drivers
-from poking ports that may be used by other devices, but drivers can
-also implement their own device detection, in case of
-drivers/net/ethernet/8390/ne.c, it can find devices at up to six addresses:
-static unsigned int netcard_portlist[] __initdata = {
-    0x300, 0x280, 0x320, 0x340, 0x360, 0x380, 0
-};
+https://github.com/adron-s/openwrt-rb3011/commit/dd63b3ef563fa77fd2fb7d6ca12ca9411cd18740
 
-> > * Most of ISA drivers could be trivially converted to use the module_init()
-> >   entry point, which would slightly change the command line syntax and
-> >   still support a single device of that type, but not more than one. We
-> >   could decide that this is fine, as few users remain that have any of
-> >   these devices, let alone more than one.
-> >
-> > * Alternatively, the fact that the ISA drivers have never been cleaned
-> >   up can be seen as an indication that there isn't really much remaining
-> >   interest in them. We could move them to drivers/staging along with the
-> >   consolidated contents of drivers/net/Space.c and see if anyone still
-> >   uses them and eventually remove the ones that nobody has.
->
->  I have a 3c509b interface in active use (although in the EISA mode, so no
-> need for weird probing, but it can be reconfigured),
+is that not accurate?
 
-The 3c509 driver already doesn't use the drivers/net/Space.c probing,
-Marc Zyngier addressed this when he added EISA support in 2003.
-It also supports multiple non-PnP cards with module parameters
-as well as pre-standard jumperless autoconfiguration. My only change
-to this driver was to remove a few lines of dead code that I guess Marc
-missed at the time.
+J.
 
-I probably should have listed the drivers that still use Space.c after
-my series. Here is the list I'm talking about:
-
-3com:
-    3c515/corkscrew: supports PnP mode, ignores command line and
-        module parameters but scans for devices on all ports
-8390:
-   wd80x3: supports module parameters up to four cards, no PnP
-   smc-ultra: supports up to four devices with module parameters, plus PnP
-   ne2k/iosa: supports up to four devices with module parameters, plus PnP
-amd
-   lance: supports up to eight devices with module parameters, no PnP
-   ni65: supports only one device as loadable module, no PnP
-smsc
-   smc9194: supports only one device as loadable module, no PnP
-cirrus
-   cs89x0 (supports only one device as loadable module, plus custom
-        PnP-like probing in built-in mode)
-
-> and I have an ne2k clone in storage, so I could do some run-time
-> verification if there is no one else available.  I'll see if I can do some driver
-> polishing for these devices, but given the number of other tasks on my
-> table this is somewhat low priority for me.
-
-I don't think it's necessary to validate the changes I did to the
-ne2k driver specifically, though it might be nice to see that I didn't
-break the overall logic in Space.c.
-
-        Arnd
+-- 
+   Funny how life imitates LSD.    |  .''`.  Debian GNU/Linux Developer
+                                   | : :' :  Happy to accept PGP signed
+                                   | `. `'   or encrypted mail - RSA
+                                   |   `-    key on the keyservers.
