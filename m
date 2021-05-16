@@ -2,71 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6A76381BC3
-	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 01:52:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F4C5381BC8
+	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 02:06:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231560AbhEOXxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 May 2021 19:53:33 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42222 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230102AbhEOXx2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 May 2021 19:53:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=RP7yGAEHZlhCRQ2Dd9FV88IXokX2WkuH4I1RMy1fDuA=; b=wmE93zq4qsXp62qUP9gyku4vin
-        jJZ5XJx3eBfJfB1dYbWETZylRioIp9dgyqQsatqaSCftXhIU4+HTdr5eDsZIio8viOBLMjJW05pga
-        sL60/Bdj4Qad7tSdU6eqXm+8M6pzA8wYotI/wVs0c1O2IT7szUa5hsEBbwvqoj+BZhgo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1li44j-004NOO-Q4; Sun, 16 May 2021 01:52:05 +0200
-Date:   Sun, 16 May 2021 01:52:05 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Jonathan McDowell <noodles@earth.li>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        id S231658AbhEPAGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 May 2021 20:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229681AbhEPAGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 May 2021 20:06:13 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9EE4C061573;
+        Sat, 15 May 2021 17:04:59 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id h127so2495856pfe.9;
+        Sat, 15 May 2021 17:04:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yuIe23T1ZzwA/hvnEoZmSVtQo6uyXi3XeYJGd2J9de4=;
+        b=Qk5cxF8sN2LyF0dF/TPowq3xn1EdWyF7BvnltDTCCMtwORUtnmEkde/CMz0kMckg+5
+         Y1FKVmc6eTFQDgmhMvReKCFcSn2kksfk7cDnnaLoF/r5pj3Jw9zS+vssfWfoQGqGrJOi
+         aMQlwCu5f9YvUEfigERZulZCm0eBBE9C3YM0rZMmzHxap39Kni4DyNQc8zOTa4uxxCoK
+         h4VIJTxvtcwvLRuxz9dcYnMgZSYajkeHpQgi/Yu9sVnhiE3PzvE5MGj6pivboDdEq4Oe
+         zO++W41Xk1QiqT0lGf3nSUZfw9tK46Dw/KRjC1MVQlozXYSOdAAFTazw8IwBd2RHuYXn
+         DwYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=yuIe23T1ZzwA/hvnEoZmSVtQo6uyXi3XeYJGd2J9de4=;
+        b=iy3j8zn3ePZnAyjBQPGrNLKhlosJAQQjB68m5erH/Atj09QG5G57op8xel4SoFIMEi
+         0A1vn6lKMDHI2izXk2N5WeLf2cY2LhPAD7yTEI0tsA3u/rMhB5Te/WIXxToi/CtuBo4z
+         I8cCC1ALCNuO1HQ9xapfZ3CYRd6rKJXQOQcQxcB1Bm3TQ3Nxr4GW0Jza2JDx29KZULiQ
+         xvOMeuD3SHyNfepFYq20/JfUyzKPjRiHsW/K5BrqoWK2ZUtNbRtyO339Aib/bWXcYl0V
+         Of/DQqMx0NacnhwOKhCGEdxL2L20tTAEYjiBO67i2wNkbVNeow5R6tfnTBiFMAxN8eqe
+         /QOg==
+X-Gm-Message-State: AOAM533NEohZN0XQF6NJF8j7C1z2AQlJPSL7Fz78pnpmA5Gm7WAHWKmX
+        Gz4tUmA+TFw4Dl+2GFTU8o4=
+X-Google-Smtp-Source: ABdhPJyKXGE763dXQtkEMj6clFouoy6q3jHPfFagv9TuboK8gOc+kBFPumS+05mU0mg/4SgJBI4ydQ==
+X-Received: by 2002:a63:5b5b:: with SMTP id l27mr7064469pgm.55.1621123499223;
+        Sat, 15 May 2021 17:04:59 -0700 (PDT)
+Received: from [192.168.1.67] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id y14sm4639500pjn.48.2021.05.15.17.04.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 15 May 2021 17:04:58 -0700 (PDT)
+Subject: Re: [RFC 01/13] [net-next] bcmgenet: remove call to
+ netdev_boot_setup_check
+To:     Arnd Bergmann <arnd@kernel.org>, netdev@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next v4 01/28] net: mdio: ipq8064: clean
- whitespaces in define
-Message-ID: <YKBepW5Hu3FEG/JJ@lunn.ch>
-References: <20210508002920.19945-1-ansuelsmth@gmail.com>
- <YJbSOYBxskVdqGm5@lunn.ch>
- <YJbTBuKobu1fBGoM@Ansuel-xps.localdomain>
- <20210515170046.GA18069@earth.li>
- <YKAFMg+rJsspgE84@Ansuel-xps.localdomain>
- <20210515180856.GI11733@earth.li>
- <YKAQ+BggTCzc7aZW@Ansuel-xps.localdomain>
- <20210515194047.GJ11733@earth.li>
- <YKAlUEt/9MU8CwsQ@Ansuel-xps.localdomain>
+        Jakub Kicinski <kuba@kernel.org>,
+        Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sam Creasey <sammy@sammy.net>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Finn Thain <fthain@telegraphics.com.au>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
+References: <20210515221320.1255291-1-arnd@kernel.org>
+ <20210515221320.1255291-2-arnd@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <48c1bfa7-901d-bed7-7ab4-1ebd0ca7c63e@gmail.com>
+Date:   Sat, 15 May 2021 17:04:54 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YKAlUEt/9MU8CwsQ@Ansuel-xps.localdomain>
+In-Reply-To: <20210515221320.1255291-2-arnd@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > They're on 2 separate sets of GPIOs if that makes a difference - switch0
-> > is in gpio0/1 and switch1 is on gpio10/11. Is the internal MDIO logic
-> > shared between these? Also even if that's the case it seems odd that
-> > enabling the MDIO for just switch0 doesn't work?
-> > 
+
+
+On 5/15/2021 3:13 PM, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> The dedicated internal mdio on ipq8064 is unique and present on the
-> gmac0 address so yes it's shared between them. And this seems to be the
-> problem... As you notice the fact that different gpio are used for the
-> different switch fix the problem. So think that to use the dedicated
-> mdio bus with both switch we need to introduce some type of
-> syncronization or something like that.
+> The driver has never used the netdev->{irq,base_addr,mem_start}
+> members, so this call is completely unnecessary.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Please could you describe the hardware in a bit more details. Or point
-me at a datasheet. It sounds like you have an MDIO mux? Linux has this
-concept, so you might need to implement a mux driver.
-
-	 Andrew
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
