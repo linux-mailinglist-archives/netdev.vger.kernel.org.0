@@ -2,102 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD97F381DAE
-	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 11:37:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC19381DB0
+	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 11:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235008AbhEPJi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 May 2021 05:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbhEPJi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 May 2021 05:38:28 -0400
-Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ECFC061573;
-        Sun, 16 May 2021 02:37:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
-        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=rJh4Vdo5L1QIm502PoGYhFOjqJgCYsz59OFOfwGXTfM=; b=IHR5xqzX8OqoIC4Z7tfna9w4sW
-        FYzgqfxjXOi3Sj90pGKtPXq0zx0UgUa16GNH0Fqkf1xVnCgX+1PvNUmxxztG14RMiESc3PmPoxcnH
-        /Jxy6wTxLajsJuyxas/nAZO6LP+yQ6CLc37QvaC0T91A7V2ZllQp0lnbx9WijLuLDO+z8k06xab7G
-        2JupSs8BWRWc0tCOLsTgUZZKBfeTyHEsR3nk52YhMe1BmMxdYyHLeRjemxL1nuJ9ICff/olgm3oxC
-        O+YsM3HyjwiCjTi/J7zi8OVCld5ve4dElrUp1AyT6N16hwTWffMBmES3Qa59vIIG9yUDDfcnt0EHs
-        os1CYyoA==;
-Received: from noodles by the.earth.li with local (Exim 4.92)
-        (envelope-from <noodles@earth.li>)
-        id 1liDCt-0001UJ-5B; Sun, 16 May 2021 10:37:07 +0100
-Date:   Sun, 16 May 2021 10:37:07 +0100
-From:   Jonathan McDowell <noodles@earth.li>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next v4 01/28] net: mdio: ipq8064: clean
- whitespaces in define
-Message-ID: <20210516093707.GL11733@earth.li>
-References: <YJbSOYBxskVdqGm5@lunn.ch>
- <YJbTBuKobu1fBGoM@Ansuel-xps.localdomain>
- <20210515170046.GA18069@earth.li>
- <YKAFMg+rJsspgE84@Ansuel-xps.localdomain>
- <20210515180856.GI11733@earth.li>
- <YKAQ+BggTCzc7aZW@Ansuel-xps.localdomain>
- <20210515194047.GJ11733@earth.li>
- <YKAlUEt/9MU8CwsQ@Ansuel-xps.localdomain>
- <YKBepW5Hu3FEG/JJ@lunn.ch>
- <YKBl9kK3AvG1wWXZ@Ansuel-xps.localdomain>
+        id S231151AbhEPJlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 May 2021 05:41:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58272 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229455AbhEPJlq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 May 2021 05:41:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 21D7261183;
+        Sun, 16 May 2021 09:40:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621158032;
+        bh=HPHAfZvAU6XXPJgmrCVIHUbZpsx6IlX29XORpnfKmZQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=YsQKZIwJh5KvtGgZZPg96UE6XZMndaOHN1BQahTZPkKub0arKiKy8nUhS4EylwQmp
+         uF12aKbaukquUbBvW85QVTimNP0n3ZIdSbkDfEKkpWqBysPrJc+you91MBBvRdaJGI
+         4w9/87kk0BkK1M2TsfnCuBIROHhTXe32KuEqkz/5q9RC3yFQxle6ffFfzHGxsCEVTM
+         Z5vSgMQCzkSJdLPZOucsXuhhu6MlILCwjJIIGIHa6JDv81j/kJzs7iJYcXOssPElKz
+         SmtHD0DptDzst7SO51cUyhGQxfNILB830mZb+GJNdOCuIwEPqISBnYzY9NUEon4a5U
+         VWbZkYC7CJnxA==
+Received: by mail-ot1-f41.google.com with SMTP id u19-20020a0568302493b02902d61b0d29adso3097549ots.10;
+        Sun, 16 May 2021 02:40:32 -0700 (PDT)
+X-Gm-Message-State: AOAM530+QdxvXH2XboYsyU4ORuzNmzgCDBtBusflAuUauCOt4ANUJSxh
+        ChdmMa/dJSO6V0q2ItPoExu9yj02qU0HBIfWFFU=
+X-Google-Smtp-Source: ABdhPJxEqdUoPYIQolx6YQg/gEdLuTmzfjwCY3mv54XNgVpzvySgnm359ZNikGDhue2q1sOqh/OPJhwqvmsGMVVpSdU=
+X-Received: by 2002:a9d:222a:: with SMTP id o39mr44734707ota.246.1621158031417;
+ Sun, 16 May 2021 02:40:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YKBl9kK3AvG1wWXZ@Ansuel-xps.localdomain>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20210515221320.1255291-1-arnd@kernel.org> <20210515221320.1255291-14-arnd@kernel.org>
+ <d4e42d3-9920-8fe0-1a71-6c6de8585f4c@nippy.intranet> <CAMuHMdUJGxyL0kcj06Uxsxmf6bDj4UO_YKZPsZfxtTxCBXf=xg@mail.gmail.com>
+In-Reply-To: <CAMuHMdUJGxyL0kcj06Uxsxmf6bDj4UO_YKZPsZfxtTxCBXf=xg@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Sun, 16 May 2021 11:39:25 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0BzbGFnWLKsdsFkRJ+GyxO7xgxeuipQrCi-p_JEeZNPQ@mail.gmail.com>
+Message-ID: <CAK8P3a0BzbGFnWLKsdsFkRJ+GyxO7xgxeuipQrCi-p_JEeZNPQ@mail.gmail.com>
+Subject: Re: [RFC 13/13] [net-next] 8390: xsurf100: avoid including lib8390.c
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Finn Thain <fthain@telegraphics.com.au>,
+        netdev <netdev@vger.kernel.org>,
+        "Linux/m68k" <linux-m68k@vger.kernel.org>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sam Creasey <sammy@sammy.net>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Michael Schmitz <schmitzmic@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 16, 2021 at 02:23:18AM +0200, Ansuel Smith wrote:
-> On Sun, May 16, 2021 at 01:52:05AM +0200, Andrew Lunn wrote:
-> > > > They're on 2 separate sets of GPIOs if that makes a difference - switch0
-> > > > is in gpio0/1 and switch1 is on gpio10/11. Is the internal MDIO logic
-> > > > shared between these? Also even if that's the case it seems odd that
-> > > > enabling the MDIO for just switch0 doesn't work?
-> > > > 
-> > > 
-> > > The dedicated internal mdio on ipq8064 is unique and present on the
-> > > gmac0 address so yes it's shared between them. And this seems to be the
-> > > problem... As you notice the fact that different gpio are used for the
-> > > different switch fix the problem. So think that to use the dedicated
-> > > mdio bus with both switch we need to introduce some type of
-> > > syncronization or something like that.
-> > 
-> > Please could you describe the hardware in a bit more details. Or point
-> > me at a datasheet. It sounds like you have an MDIO mux? Linux has this
-> > concept, so you might need to implement a mux driver.
-> > 
-> > 	 Andrew
-> 
-> Datasheet of ipq8064 are hard to find and pricey.
-> Will try hoping I don't write something very wrong.
-> Anyway on the SoC there are 4 gmac (most of the time 2 are used
-> and represent the 2 cpu port) and one mdio bus present on the gmac0
-> address. 
+On Sun, May 16, 2021 at 11:04 AM Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
+>
+> On Sun, May 16, 2021 at 6:24 AM Finn Thain <fthain@telegraphics.com.au> wrote:
+> > On Sun, 16 May 2021, Arnd Bergmann wrote:
+> > > From: Arnd Bergmann <arnd@arndb.de>
+> > >
+> > > This driver always warns about unused functions because it includes
+> > > an file that it doesn't actually need:
+> >
+> > I don't think you can omit #include "lib8390.c" here without changing
+> > driver behaviour, because of the macros in effect.
+> >
+> > I think this change would need some actual testing unless you can show
+> > that the module binary does not change.
+>
+> Michael posted a similar but different patch a while ago, involving
+> calling ax_NS8390_reinit():
+> https://lore.kernel.org/linux-m68k/1528604559-972-3-git-send-email-schmitzmic@gmail.com/
 
-There's a suggestion of an additional mdio bus on the gmac1 address at:
+Ah nice. As far as I can tell, the two versions are functionally equivalent
+based on my reading of the port accessors, but he probably tested his
+version, so I'll drop mine from this series. Nothing else depends on this
+one, I just included it since it was an obvious thing to fix.
 
-https://github.com/adron-s/openwrt-rb3011/commit/dd63b3ef563fa77fd2fb7d6ca12ca9411cd18740
-
-is that not accurate?
-
-J.
-
--- 
-   Funny how life imitates LSD.    |  .''`.  Debian GNU/Linux Developer
-                                   | : :' :  Happy to accept PGP signed
-                                   | `. `'   or encrypted mail - RSA
-                                   |   `-    key on the keyservers.
+        Arnd
