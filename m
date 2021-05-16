@@ -2,85 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 199F9381F56
-	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 16:52:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54654382044
+	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 20:12:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234243AbhEPOxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 May 2021 10:53:15 -0400
-Received: from mout.gmx.net ([212.227.17.21]:51929 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233315AbhEPOxP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 May 2021 10:53:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1621176719;
-        bh=JHtFNpY6yauLebNSfe+YG3nn0zTR4q3unSNYar+fztk=;
-        h=X-UI-Sender-Class:From:To:Subject:Date;
-        b=UFg1FFxbx+GKnIvzKEw1BntrgnRnkEp4ZCj3TsVvPVfogWNC01ooGnUWBMA1eIqXF
-         3VrrzmT6jri3nZ5yGN7vbO3tncv0/Bdx7ZRawEVxxu2gynXvZpfi9UGeZjaCVOE0Zm
-         i2m4Dxmo77UioslLiFAsF5CsKRLIfu80JlOKb+/Y=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [80.245.74.199] ([80.245.74.199]) by web-mail.gmx.net
- (3c-app-gmx-bap46.server.lan [172.19.172.116]) (via HTTP); Sun, 16 May 2021
- 16:51:59 +0200
+        id S230248AbhEPSN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 May 2021 14:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52406 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229445AbhEPSN0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 May 2021 14:13:26 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B81BC061573
+        for <netdev@vger.kernel.org>; Sun, 16 May 2021 11:12:11 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id z24so3693730ioj.7
+        for <netdev@vger.kernel.org>; Sun, 16 May 2021 11:12:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=E2FuQgUKxyLwsqCIUkYLRRw5DyzhiK8Ym8+oofH6L/Q=;
+        b=usTfdW2rkW5WwbbcPESt3OG8Ak2est96rgMEEKV2/Gt0hwZBX7b/gtgcjnUdpBjiVi
+         xii66etGvOCty2+dihcA60yL00JNN+7MLAtCaT8GupEa+qJzcgUEX68fIroE4SpkwfVy
+         LQmfzmScU/KPWZGYlhQMXRUjoQco4nWwzIqeBRYkGAyInFBa2j0VxozypcGzOmz4Puyf
+         MP3Xx4SsOmmlaBHblUpJxrEolTt1RbTodPZNs2BVBUsNHrnZOxHLf0T1hpmOvluoZuUI
+         XOcXR41bTt3z1SqSakVVI8Dh1bWvaYS1tXAMhquGTQgIKEt2sqpwwZSpSSERQmYQ0V2b
+         ozxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=E2FuQgUKxyLwsqCIUkYLRRw5DyzhiK8Ym8+oofH6L/Q=;
+        b=JKZAFVBDEDKJe/+wwljHoF/t3RUtANdiH8aBWBR4uZBxzNpz3Dn9q0SLZ7RR8H4IUi
+         K4ADTON/WRLyS5VcJwpHmNUt4Qu0qNf6j5AI+XCeouXSyzYS3u97z1ZvfX4dk9F9arZZ
+         4COSBKn/4pz7hYCPtHAUjltQqgbC/1V1ssxysEDltsKnlu6eTHV2zdc/wX1nfjN7Xldi
+         2L/y912mXrxbQ5XbIfk9+qBBwv45lUMnCaGGjv8fsJUpSf0pEqDlhVNYjcQHxPOLuzL7
+         JdTGonpm99j43p3zhO7sE/3d37NZdPhJfgfUiCLBeOYi4l61CNOtKdL3/W2JZWfTHdnX
+         gLaA==
+X-Gm-Message-State: AOAM531u4Nc1CqIOE9yZe70zo3iHY7sUCCLE4nQKEyHYRz6tcrdcXiOZ
+        t4D/shaoDRbH1pPUF3CYmJe3ZVbeCIuGf1xUo2MOzHwxk18=
+X-Google-Smtp-Source: ABdhPJwRFuITDDTQeqSe2Q9omoujOd/wCBCrIi7HAkfcUeVf2QM8k4LV0LMd2+X+PFirIGfi9xCWgMtYRiK5UTAFxVs=
+X-Received: by 2002:a5d:8787:: with SMTP id f7mr42742794ion.108.1621188730748;
+ Sun, 16 May 2021 11:12:10 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <trinity-a96735e9-a95a-45be-9386-6e0aa9955a86-1621176719037@3c-app-gmx-bap46>
-From:   Frank Wunderlich <frank-w@public-files.de>
+References: <20210515064907.28235-1-heiko.thiery@gmail.com> <CAEyMn7a_ig6-FRjyY0uv1q28KNTjcf4AHG3NZaGch_Zeo3P49g@mail.gmail.com>
+In-Reply-To: <CAEyMn7a_ig6-FRjyY0uv1q28KNTjcf4AHG3NZaGch_Zeo3P49g@mail.gmail.com>
+From:   Heiko Thiery <heiko.thiery@gmail.com>
+Date:   Sun, 16 May 2021 20:11:59 +0200
+Message-ID: <CAEyMn7ap3RL_oh0ucerH9POP+S4VGKfULhJQSb3AVeNFjR4VZw@mail.gmail.com>
+Subject: Re: [PATCH] Fix warning due to format mismatch for field width
+ argument to fprintf()
 To:     netdev@vger.kernel.org
-Subject: Crosscompiling iproute2
-Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 16 May 2021 16:51:59 +0200
-Importance: normal
-Sensitivity: Normal
-X-Priority: 3
-X-Provags-ID: V03:K1:cnv/uN3HSs9V722ENvEnUc9ArnnOWsuT+CQo0PaHh5E6kBB/g8XZrPmnKCEY3Clnx89ZZ
- lF2H+ry8oywoDxthUXHMi8rT8+Z7qk5KPdRZ6Cd2mFvX7wd8zsfTjeDMFgakVtfi+e0dTmdlLC4s
- 5z/Ldf1KEQQndUXIw0DuBECgVA7PASZTxiavEUifACC0FO47eGAxWTiDVG5LLbVJ2Yt4KyvNkO1g
- CPWD1mX5KGb8ptzXeLlotvYLEGPMN48OhzG+n126naJo3b2WAeUbphSCL3HEoMdG9dGoPzOm5z7s
- L0=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:XrdPHXzsriA=:i1N8voSybBCmmqd9sEghze
- /4FrGyEHz9jy/DIgcTp0cfOIjYKOCQF/o60/n3mClUBDhAH5mrtTulMwb/6HS1HvT2pN1CAIS
- pP0uSzUT5njl+ZelAFvbeJzXBxfk+H6A0zKML2sVHUzIR2k0JOfZDFY+8OTRVr2hMASwvFga9
- nKQbAgPnPqiU6tMAIedu7jBqzZPQWqGSoItWqg456TXWlBlPz8V2GDRzJm903LmtctMs1MlfR
- h+XoW3XWLuKl3Ve90qNOj8nddyESB1PzZtbzBa7ic2xyVVtVDKjr42dTxs2/ixrOLV+IEuZs/
- dmj6AbRDktRJv90c/X22lKkhWT7BgN1NvMC9al3N8XYOfsTqJNJ86SG71lyX48bZL+Acud7p9
- FKn9Z/VwbueIWRQ0cowL7CbC6/UY0JaPJI26s/u9xPV5mWjLEheZD54I+1WaNkOdlDoWz8X+e
- iYTv98zU04rWIgbTPk0UodgjUUt8GaVUXM81MZcUGsM+F8RBz7ywYBgqB8bZvQpu1Sp6FsqqY
- qskT7vcZFU1RGmy0INdAtd91XS44nUT+Drq5OTup+P7+NNkmhhuQ2MFnpMdXgeBJ9BvKONKvO
- OVlY2zSQoGkql33La0gYdoVOY88pmnu9C+pauBWZRbvKdMlJvG8HL5RaSCps2hXevyI8qVekb
- knlXbO09u6POeXvChh+m460ZmpY5HYgTpzlL5yfqBABVHiwn8XFIqHVvtB1TnTIBOX80xChyq
- aIeCG/bi9coUbGFE0qgyt4NM69SNk29lAurKE3zPdjMamFIwICK8hMk7tqRBnjDswQl2P6yS0
- pBwAg4AH1ucay7mC+/GccFr/ccEBc+W38iTBzO+RxA9UrBcD4xri5gFw4jXDt3kMSVRuU45zB
- JkkpbU1No7Adw0NgUUNgwhElI9fDXdtXOu7KDrRmbAYhZrQkRvSoXwjMkntMQtrEnrimdUPE5
- gHecpil2wIg==
+Cc:     Ben Hutchings <bhutchings@solarflare.com>,
+        Ben Hutchings <bwh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi all,
 
-i want to crosscompile (a modified version of) iproute2 (git://git.kernel.org/pub/scm/network/iproute2/iproute2.git) for armhf
+Am Sa., 15. Mai 2021 um 09:59 Uhr schrieb Heiko Thiery <heiko.thiery@gmail.=
+com>:
+>
+> Added Ben's other mail addresses.
+>
+> Am Sa., 15. Mai 2021 um 08:49 Uhr schrieb Heiko Thiery <heiko.thiery@gmai=
+l.com>:
+> >
+> > bnxt.c:66:54: warning: format =E2=80=98%lx=E2=80=99 expects argument of=
+ type =E2=80=98long unsigned int=E2=80=99, but argument 3 has type =E2=80=
+=98unsigned int=E2=80=99 [-Wformat=3D]
+> >    66 |   fprintf(stdout, "Length is too short, expected 0x%lx\n",
+> >       |                                                    ~~^
+> >       |                                                      |
+> >       |                                                      long unsig=
+ned int
+> >       |                                                    %x
+> >
+> > Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+> > ---
+> >  bnxt.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/bnxt.c b/bnxt.c
+> > index b46db72..0c62d1e 100644
+> > --- a/bnxt.c
+> > +++ b/bnxt.c
+> > @@ -63,7 +63,7 @@ int bnxt_dump_regs(struct ethtool_drvinfo *info __may=
+be_unused, struct ethtool_r
+> >                 return 0;
+> >
+> >         if (regs->len < (BNXT_PXP_REG_LEN + BNXT_PCIE_STATS_LEN)) {
+> > -               fprintf(stdout, "Length is too short, expected 0x%lx\n"=
+,
+> > +               fprintf(stdout, "Length is too short, expected 0x%x\n",
+> >                         BNXT_PXP_REG_LEN + BNXT_PCIE_STATS_LEN);
 
-do you any idea how?
-configure-script seems to ignore "--host=arm-linux-gnueabihf" like i'm using for nftables
+This does not solve the issue. The provided patch only works on 32bit
+systems. It seems there is a problem with 32bit vs 64bit.
 
-i modified Makefile
-
--CC := gcc
-+CC := arm-linux-gnueabihf-gcc
-
--SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma dcb man vdpa
-+#SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma dcb man vdpa
-+SUBDIRS=ip
-
-and run make like this to use static linking:
-
-make LDFLAGS=-static
-
-but it seems ip always needs libutil
-
-make[1]: *** No rule to make target '../lib/libutil.a', needed by 'ip'.  Stop.
-
-if i include lib in SUBDIRS i get many errors about missing libs like selinux and mnl
-
-regards Frank
+--=20
+Heiko
