@@ -2,97 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4A88381F23
-	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 15:55:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE7B3381F52
+	for <lists+netdev@lfdr.de>; Sun, 16 May 2021 16:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233784AbhEPNsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 May 2021 09:48:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
+        id S234276AbhEPOqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 May 2021 10:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbhEPNsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 May 2021 09:48:50 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62103C061573
-        for <netdev@vger.kernel.org>; Sun, 16 May 2021 06:47:35 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id d25-20020a0568300459b02902f886f7dd43so3374039otc.6
-        for <netdev@vger.kernel.org>; Sun, 16 May 2021 06:47:35 -0700 (PDT)
+        with ESMTP id S230324AbhEPOqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 May 2021 10:46:14 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA7BC061573
+        for <netdev@vger.kernel.org>; Sun, 16 May 2021 07:44:58 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id g6-20020a17090adac6b029015d1a9a6f1aso3299922pjx.1
+        for <netdev@vger.kernel.org>; Sun, 16 May 2021 07:44:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N1arTEe5aKd/oR0jJDOaxKM8WKXOl+5bRER2IyZbGro=;
-        b=BjHP5zZqaICHFYqQvS5gLnkHd+qSiQT/CiZ6k++dq40iBSScw2eje/FKCJaRSqvdx3
-         odnU0unPL/DLsOVBt5I0ZoxiDhut5jqm7NyGXWpMlbR4jQj9OJ+GBc3FjeiQrr1oap3u
-         lVhIx4RJ3iYDRnen92EjX1YbG+FMAXLnSjmDsqtodwAdGEl0zEtzFQmyLDFeWZJ+RhmB
-         Uo8smLpRG0FaEQWMdAbBtphTwb9UOhepDDjY4mEkF1GxGmfGMOtwYBzio7IJrpCc0uNr
-         6tnd99VNt/jMfohcRouWb154kQ3TUTr21JLunmyQGrBczk+OuzYyan/mgenrJ6LE/bI4
-         a4Iw==
+        h=from:to:cc:subject:date:message-id;
+        bh=z9JsyJfRlzMAJOT7FcT3zfUktNZ2mMjszlvqkw6Wvc4=;
+        b=ZQ2aq/cS22ACEuQbiZG6QbtXly07tJzdP6wGgihJtcAliLr7NI/88QuZZ3re2gQSFw
+         9+d4Sjbo7nOZ70clmm0DdDGSTfRrZXFSMJLGmVZJ6Qbb5jo8rf1orwP95wbEll5uAKyI
+         74GYmMTuB+dDASN3FPfPWs30v8eBtPUV0vFxEEzEnG6AT1HKWzd0vPB011kMwIf7kNqY
+         lLnR8FSQ0zLDsRK+Y1vJBdaMLx8R9nE/M/vOde1XU66nv42xk7/pvXI0WgK4Ni6GFlm6
+         AKsrLiAudevELlWCsektsf/0fMGxcOEMK4MCLG85Z5AnHNOWhR0rn70HInR9+JiAWyQF
+         7EwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N1arTEe5aKd/oR0jJDOaxKM8WKXOl+5bRER2IyZbGro=;
-        b=pBOUhCTHaWHvVrmqcQDhFItx6k2BwXL1QpGTHk7xzTW/75qwpdkcVKmCuQCJjXTyGY
-         sHM/UzYyO3JwMchSmYu7rCHdl++/09f7cSmahAoSAGUz/62jtFcAinjMEm26BGebHUvX
-         dlRmNkz3xN+JFlZa0vVJdhdwWAcMODLeCp61MWFN+iJps0JCenWHSE8KhJlcKFPcU5jD
-         b2V+uNUkfeXg6wyL8qrWgE+M9VYqJz8u7MFJcr9+MzUmWjNgBAJf0elYXIFd3ffl60Gb
-         7Iz+AKB/hzJ2y6O1FUdWUD99jw15feS2u1AfjO7AQiJ8dS4g8em87+SI79v9DH77MijU
-         7kGA==
-X-Gm-Message-State: AOAM530lnT+DxpsJ9GyAyLYPtkWQbKaXiOUzlqlVyKlajEXtDXRYhSKZ
-        kWSn1OEAgVN1tBX7yU4r9kPVDoAyVPrJ3zMURaE=
-X-Google-Smtp-Source: ABdhPJxiP75U7KHXQUu7ObYnV8qqQUgAfD0jKRPdeH6TTGubjcrJ3VMKRBrfB/Qn/luiQVf/rYuol3+0uVMhCoMuCfc=
-X-Received: by 2002:a9d:4e88:: with SMTP id v8mr24232166otk.110.1621172854645;
- Sun, 16 May 2021 06:47:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210512212956.4727-1-ryazanov.s.a@gmail.com> <20210514121433.2d5082b3@kicinski-fedora-PC1C0HJN>
- <CAHNKnsSM6dcMDnOOEo5zs6wdzdA1S43pMpB+rkKpuuBrBxj3pg@mail.gmail.com> <YKD8f7wP2EzUU7PX@unreal>
-In-Reply-To: <YKD8f7wP2EzUU7PX@unreal>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Sun, 16 May 2021 16:47:23 +0300
-Message-ID: <CAHNKnsRrpSJtEVwjTV8dNLmmMFH+H0AmF=+22HVy39mMquNe8Q@mail.gmail.com>
-Subject: Re: [PATCH net] netns: export get_net_ns_by_id()
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "list@hauke-m.de:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=z9JsyJfRlzMAJOT7FcT3zfUktNZ2mMjszlvqkw6Wvc4=;
+        b=VumpaY0zgcVwybFqiZs2CN3geA1lsCPLRN4ulNRmnN5H+W8equnAKbN5q7Zofq3rmW
+         bOeY/iovWK4cLnedXaU5SC+E3GzdNWKXMxEnOuz7VWCsQNaXJoperrjscYJfGeTjDAdS
+         Ydg/ukS4JU6TFplIh67MV8HF1IhvyE4KzUDB7BVbw2elxk4aFUH9rYOlUTGwZSJmSzwz
+         NuOLjUU9CETCuMKXgGoKjs/Yf/d3+K+XlwrKIGCYmCo3jgdZEHR3Z9WpL3G0HrSOXhQ0
+         4k9hHpMh5DGZ9XGNs2FtgJAD3hOTyBofXMiiyoEsCFL9E1U5ETFUtLW146lQnLtmEIdi
+         XGlA==
+X-Gm-Message-State: AOAM531F8b7qmJBwbYiozjc6NYR6D3WxMMDmb+5XY93rVZ+x033pwXZ2
+        XVA6EQi3XGVq+VpaVrszz4U=
+X-Google-Smtp-Source: ABdhPJxXJgrnes8LcIxar521p1bRCTEX14ucsJAPsSqDdV0VPvI2o6v0vssfjLrh7jtvWuU77X2tFg==
+X-Received: by 2002:a17:90a:a604:: with SMTP id c4mr21782157pjq.81.1621176298213;
+        Sun, 16 May 2021 07:44:58 -0700 (PDT)
+Received: from localhost.localdomain ([49.173.165.50])
+        by smtp.gmail.com with ESMTPSA id s9sm5390683pfm.120.2021.05.16.07.44.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 16 May 2021 07:44:57 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
+        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, xiyou.wangcong@gmail.com
+Cc:     ap420073@gmail.com
+Subject: [PATCH v2 net] mld: fix panic in mld_newpack()
+Date:   Sun, 16 May 2021 14:44:42 +0000
+Message-Id: <20210516144442.4838-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Leon,
+mld_newpack() doesn't allow to allocate high order page,
+only order-0 allocation is allowed.
+If headroom size is too large, a kernel panic could occur in skb_put().
 
-On Sun, May 16, 2021 at 2:05 PM Leon Romanovsky <leon@kernel.org> wrote:
-> On Fri, May 14, 2021 at 11:52:51PM +0300, Sergey Ryazanov wrote:
-> > On Fri, May 14, 2021 at 10:14 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Thu, 13 May 2021 00:29:56 +0300 Sergey Ryazanov wrote:
-> > > > No one loadable module is able to obtain netns by id since the
-> > > > corresponding function has not been exported. Export it to be able to
-> > > > use netns id API in loadable modules too as already done for
-> > > > peernet2id_alloc().
-> > >
-> > > peernet2id_alloc() is used by OvS, what's the user for get_net_ns_by_id()?
-> >
-> > There are currently no active users of get_net_ns_by_id(), that is why
-> > I did not add a "Fix" tag. Missed function export does not break
-> > existing code in any way.
->
-> It is against kernel rule to do not expose APIs, even internal to the kernel,
-> without real users. There are many patches every cycle that remove such EXPORT_*()s.
->
-> EXPORT_*() creates extra entries in Module.symvers and can be seen as unnecessary
-> namespace pollution.
+Test commands:
+    ip netns del A
+    ip netns del B
+    ip netns add A
+    ip netns add B
+    ip link add veth0 type veth peer name veth1
+    ip link set veth0 netns A
+    ip link set veth1 netns B
 
-Ok, I got it. Maintainers do not like uncontrollable API experiments
-:) I have no more arguments and I give up. Jakub, please drop this
-patch.
+    ip netns exec A ip link set lo up
+    ip netns exec A ip link set veth0 up
+    ip netns exec A ip -6 a a 2001:db8:0::1/64 dev veth0
+    ip netns exec B ip link set lo up
+    ip netns exec B ip link set veth1 up
+    ip netns exec B ip -6 a a 2001:db8:0::2/64 dev veth1
+    for i in {1..99}
+    do
+        let A=$i-1
+        ip netns exec A ip link add ip6gre$i type ip6gre \
+	local 2001:db8:$A::1 remote 2001:db8:$A::2 encaplimit 100
+        ip netns exec A ip -6 a a 2001:db8:$i::1/64 dev ip6gre$i
+        ip netns exec A ip link set ip6gre$i up
 
-BTW, for those who might be interested in experimenting with netnsid.
-I found another way to search netns by its id without the kernel
-rebuild. get_net_ns_by_id() is a simple container for the idr_found()
-invocation, which is wrapped with the RCU lock. So it is no big deal
-to implement this function locally to a module.
+        ip netns exec B ip link add ip6gre$i type ip6gre \
+	local 2001:db8:$A::2 remote 2001:db8:$A::1 encaplimit 100
+        ip netns exec B ip -6 a a 2001:db8:$i::2/64 dev ip6gre$i
+        ip netns exec B ip link set ip6gre$i up
+    done
 
---
-Sergey
+Splat looks like:
+kernel BUG at net/core/skbuff.c:110!
+invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+CPU: 0 PID: 7 Comm: kworker/0:1 Not tainted 5.12.0+ #891
+Workqueue: ipv6_addrconf addrconf_dad_work
+RIP: 0010:skb_panic+0x15d/0x15f
+Code: 92 fe 4c 8b 4c 24 10 53 8b 4d 70 45 89 e0 48 c7 c7 00 ae 79 83
+41 57 41 56 41 55 48 8b 54 24 a6 26 f9 ff <0f> 0b 48 8b 6c 24 20 89
+34 24 e8 4a 4e 92 fe 8b 34 24 48 c7 c1 20
+RSP: 0018:ffff88810091f820 EFLAGS: 00010282
+RAX: 0000000000000089 RBX: ffff8881086e9000 RCX: 0000000000000000
+RDX: 0000000000000089 RSI: 0000000000000008 RDI: ffffed1020123efb
+RBP: ffff888005f6eac0 R08: ffffed1022fc0031 R09: ffffed1022fc0031
+R10: ffff888117e00187 R11: ffffed1022fc0030 R12: 0000000000000028
+R13: ffff888008284eb0 R14: 0000000000000ed8 R15: 0000000000000ec0
+FS:  0000000000000000(0000) GS:ffff888117c00000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f8b801c5640 CR3: 0000000033c2c006 CR4: 00000000003706f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ ? ip6_mc_hdr.isra.26.constprop.46+0x12a/0x600
+ ? ip6_mc_hdr.isra.26.constprop.46+0x12a/0x600
+ skb_put.cold.104+0x22/0x22
+ ip6_mc_hdr.isra.26.constprop.46+0x12a/0x600
+ ? rcu_read_lock_sched_held+0x91/0xc0
+ mld_newpack+0x398/0x8f0
+ ? ip6_mc_hdr.isra.26.constprop.46+0x600/0x600
+ ? lock_contended+0xc40/0xc40
+ add_grhead.isra.33+0x280/0x380
+ add_grec+0x5ca/0xff0
+ ? mld_sendpack+0xf40/0xf40
+ ? lock_downgrade+0x690/0x690
+ mld_send_initial_cr.part.34+0xb9/0x180
+ ipv6_mc_dad_complete+0x15d/0x1b0
+ addrconf_dad_completed+0x8d2/0xbb0
+ ? lock_downgrade+0x690/0x690
+ ? addrconf_rs_timer+0x660/0x660
+ ? addrconf_dad_work+0x73c/0x10e0
+ addrconf_dad_work+0x73c/0x10e0
+
+Allowing high order page allocation could fix this problem.
+
+Fixes: 72e09ad107e7 ("ipv6: avoid high order allocations")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+
+v1 -> v2:
+ - Wait for mld-sleepable patchset to be merged.
+
+ net/ipv6/mcast.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+index 0d59efb6b49e..d36ef9d25e73 100644
+--- a/net/ipv6/mcast.c
++++ b/net/ipv6/mcast.c
+@@ -1745,10 +1745,7 @@ static struct sk_buff *mld_newpack(struct inet6_dev *idev, unsigned int mtu)
+ 		     IPV6_TLV_PADN, 0 };
+ 
+ 	/* we assume size > sizeof(ra) here */
+-	/* limit our allocations to order-0 page */
+-	size = min_t(int, size, SKB_MAX_ORDER(0, 0));
+ 	skb = sock_alloc_send_skb(sk, size, 1, &err);
+-
+ 	if (!skb)
+ 		return NULL;
+ 
+-- 
+2.17.1
+
