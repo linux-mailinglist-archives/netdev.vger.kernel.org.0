@@ -2,131 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 004F2386C13
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:13:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A354386C2F
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:20:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237845AbhEQVOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 17:14:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39058 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237677AbhEQVOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 17:14:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621286013;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cMVyazJ1DXkMnUs3j/wPGjHkILobShDj4cNdkiPTOO8=;
-        b=KFWsQtZHOxaDYVZg7ozn9PfqPfwhgPu6C8LrQrdGdSQ43IjncUsgGxBFZK8TpXjf817WrA
-        n4tt3JKw+vritcNPfcULBeRijhW5UrSeUF3HzyaUaXJtl87zDJdV6t/KwfVxtc1GQ3TYnK
-        asd5i0cZWMlFaLFR/n5rNBGk0/FVC64=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-579-XIJPqR6HMJStZBUes2DlAQ-1; Mon, 17 May 2021 17:13:31 -0400
-X-MC-Unique: XIJPqR6HMJStZBUes2DlAQ-1
-Received: by mail-lj1-f197.google.com with SMTP id y5-20020a2e9d450000b02900f6299549d1so884504ljj.22
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 14:13:31 -0700 (PDT)
+        id S244959AbhEQVWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 17:22:04 -0400
+Received: from mail-ot1-f41.google.com ([209.85.210.41]:44571 "EHLO
+        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238105AbhEQVWC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 17:22:02 -0400
+Received: by mail-ot1-f41.google.com with SMTP id r26-20020a056830121ab02902a5ff1c9b81so6801804otp.11;
+        Mon, 17 May 2021 14:20:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cMVyazJ1DXkMnUs3j/wPGjHkILobShDj4cNdkiPTOO8=;
-        b=gKU7ylbUUu7TS5uxRLXPgbjWinECwqOKMdU8x2fk2oqKXtAXdnHsqbqhVg8qKVnSyV
-         Xm0W/SK5V/eTN2J2Zkhli3Tl0mMipiychfM8RhpcdhWr2BlSQMbSJVdjzsm0KukNWIwk
-         KvoFKe0zfJ3fEfUWcgTYieUYUhQ8Ev8lwwn8b3O973RgafxOt4wuq+KaD4SQ5Akc/cGM
-         ml+90Nd0mJ6c5GPWDasBtrqO4icsBLFt3+PHbvSON8QNEJ26cq2KfysQ9gZLivrhMr8Q
-         XCgmq9lIJA2mgA5GvzkU6/v4ybfvRCwWhjtMQqCv3lyZdVGiyJsPEl8sBobdnTYdoQeQ
-         zW9w==
-X-Gm-Message-State: AOAM530CNXDcoWg8bLe3r3INRw0c36Knv8L9m8BMXG3ljfC6HQzhyGsq
-        eZmxs09FpMPFVxNRTwvz/7MlVrqi5Kt2Fg8l2MHABVE+YoYdhTS21QA97JtzPdZE1YMckbCyK/8
-        F7Pqj48ww//foF/cj9H3bIvEORNRAzsYI
-X-Received: by 2002:a05:6512:3b0f:: with SMTP id f15mr1283915lfv.384.1621286010053;
-        Mon, 17 May 2021 14:13:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyqIbTFw79dJ0F4QTNj1vmQA/K7J9iPzeYKZygGXoFgqrcehoZoCiXVL8VcdElnx9bU093vnbhjyUBh7vmtE5k=
-X-Received: by 2002:a05:6512:3b0f:: with SMTP id f15mr1283890lfv.384.1621286009804;
- Mon, 17 May 2021 14:13:29 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YcPVqnyxUoQRqLqrcd+xwOvSykAyUXn6XXyXXfewed8=;
+        b=mtIO+EMTrhG0OFp22u7lFtRl2KcrfioE8we6bdl6QaDdVzWKkrjHzr5NSSAzjEfEK3
+         +uC0PnHiL6yYpt1AU4vERZqQmbpY0DjPYBf1fbnyA7YiQA1MCdMW9mLCjiwlTmMU+N4/
+         C3WYlQy0Khqzn9C37V4N0EUpchIEmyJbqV3Sj2eFj3omkuG/OLNte89KxujUC53b9WbV
+         pD1ynqWGamMaXuxblqlVsvvRx/ohfMs+gCoq51AmF7iU2TijaEvRJsCunU9XHG5tmkAD
+         1VBX4N6KZsa5IL6TSd/8fmHaS93FpVilsALOrBrjAHcb8eNild+zKygDTLrOgE5q+bsg
+         in9w==
+X-Gm-Message-State: AOAM533tbhNUmyfK3yNKFx8XdslE0i57ER21Ol71btaIivjk1+1+c3m9
+        dldr3jWbHRl0fXuhG+Cxvg==
+X-Google-Smtp-Source: ABdhPJyETxg9k9XJAKSPDZnyLWwwIHaYxzn+ovOlDY4J+ItNb3j1tMU05rQr9vzb7eu8lf00QgA4Rw==
+X-Received: by 2002:a9d:5a1a:: with SMTP id v26mr1334412oth.50.1621286444548;
+        Mon, 17 May 2021 14:20:44 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id y191sm2998370oia.50.2021.05.17.14.19.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 May 2021 14:19:33 -0700 (PDT)
+Received: (nullmailer pid 3215069 invoked by uid 1000);
+        Mon, 17 May 2021 21:18:28 -0000
+Date:   Mon, 17 May 2021 16:18:28 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>, alsa-devel@alsa-project.org,
+        Georgi Djakov <djakov@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org, Alex Elder <elder@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        devicetree@vger.kernel.org,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        Luca Ceresoli <luca@lucaceresoli.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        linux-input@vger.kernel.org,
+        Odelu Kukatla <okukatla@codeaurora.org>,
+        Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Cameron <jic23@kernel.org>, netdev@vger.kernel.org,
+        Orson Zhai <orsonzhai@gmail.com>
+Subject: Re: [PATCH] dt-bindings: More removals of type references on common
+ properties
+Message-ID: <20210517211828.GA3214995@robh.at.kernel.org>
+References: <20210510204524.617390-1-robh@kernel.org>
 MIME-Version: 1.0
-References: <20210501021832.743094-1-jesse.brandeburg@intel.com>
- <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com> <20210504092340.00006c61@intel.com>
- <CAFki+LmR-o+Fng21ggy48FUX7RhjjpjO87dn3Ld+L4BK2pSRZg@mail.gmail.com>
- <bf1d4892-0639-0bbf-443e-ba284a8ed457@arm.com> <CAFki+L=LDizBJmFUieMDg9J=U6mn6XxTPPkAaWiyppTouTzaqw@mail.gmail.com>
- <87y2cddtxb.ffs@nanos.tec.linutronix.de>
-In-Reply-To: <87y2cddtxb.ffs@nanos.tec.linutronix.de>
-From:   Nitesh Lal <nilal@redhat.com>
-Date:   Mon, 17 May 2021 17:13:18 -0400
-Message-ID: <CAFki+L=RaSZXASAaAxBf=RJqXWju+pkSj3ftMkmoqCLPfg0v=g@mail.gmail.com>
-Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when
- setting the hint
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "frederic@kernel.org" <frederic@kernel.org>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
-        Alex Belits <abelits@marvell.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com,
-        Marc Zyngier <maz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210510204524.617390-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 17, 2021 at 3:47 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> Nitesh,
->
-> On Mon, May 17 2021 at 14:21, Nitesh Lal wrote:
-> > On Mon, May 17, 2021 at 1:26 PM Robin Murphy <robin.murphy@arm.com> wrote:
-> >
-> > We can use irq_set_affinity() to set the hint mask as well, however, maybe
-> > there is a specific reason behind separating those two in the
-> > first place (maybe not?).
->
-> Yes, because kernel side settings might overwrite the hint.
->
-> > But even in this case, we have to either modify the PMU drivers' IRQs
-> > affinity from the userspace or we will have to make changes in the existing
-> > request_irq code path.
->
-> Adjusting them from user space does not work for various reasons,
-> especially CPU hotplug.
->
-> > I am not sure about the latter because we already have the required controls
-> > to adjust the device IRQ mask (by using default_smp_affinity or by modifying
-> > them manually).
->
-> default_smp_affinity does not help at all and there is nothing a module
-> can modify manually.
+On Mon, 10 May 2021 15:45:24 -0500, Rob Herring wrote:
+> Users of common properties shouldn't have a type definition as the
+> common schemas already have one. A few new ones slipped in and
+> *-names was missed in the last clean-up pass. Drop all the unnecessary
+> type references in the tree.
+> 
+> A meta-schema update to catch these is pending.
+> 
+> Cc: Luca Ceresoli <luca@lucaceresoli.net>
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Olivier Moysan <olivier.moysan@foss.st.com>
+> Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Georgi Djakov <djakov@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Orson Zhai <orsonzhai@gmail.com>
+> Cc: Baolin Wang <baolin.wang7@gmail.com>
+> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
+> Cc: Liam Girdwood <lgirdwood@gmail.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
+> Cc: Odelu Kukatla <okukatla@codeaurora.org>
+> Cc: Alex Elder <elder@kernel.org>
+> Cc: Shengjiu Wang <shengjiu.wang@nxp.com>
+> Cc: linux-clk@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-iio@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-input@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/clock/idt,versaclock5.yaml    | 2 --
+>  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml         | 1 -
+>  Documentation/devicetree/bindings/input/input.yaml              | 1 -
+>  Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml   | 1 -
+>  Documentation/devicetree/bindings/net/qcom,ipa.yaml             | 1 -
+>  .../devicetree/bindings/power/supply/sc2731-charger.yaml        | 2 +-
+>  Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml          | 2 +-
+>  7 files changed, 2 insertions(+), 8 deletions(-)
+> 
 
-Right, it will not help a module.
-
->
-> I'll send out a patch series which cleans that up soon.
-
-Ack, thanks.
-
->
-> Thanks,
->
->         tglx
->
->
-
-
---
-Nitesh
-
+Applied, thanks!
