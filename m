@@ -2,277 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55832382BFF
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 14:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E239382C72
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 14:43:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236981AbhEQMXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 08:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40336 "EHLO
+        id S237138AbhEQMoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 08:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235039AbhEQMXo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 08:23:44 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE6FC061573;
-        Mon, 17 May 2021 05:22:28 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id gc22-20020a17090b3116b02901558435aec1so3595154pjb.4;
-        Mon, 17 May 2021 05:22:28 -0700 (PDT)
+        with ESMTP id S237104AbhEQMoK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 08:44:10 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93B5C061573
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 05:42:53 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id q10so5503772qkc.5
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 05:42:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=pmtOpzqls0v/g8o8UmNm35xKnZImhknJV+CPfOBnR2I=;
-        b=ZSWDGwnAxGrYQr6RXUC+qdahlBpjYA7g/2VB/7Fk1AkXx6J5OVoJFGLyW9mTzLCl8U
-         86E+m8ChsCyJkvPyJc/C+/Vzc2vh1zMnMRHVGseOupql/aB8ZWSYT7i9CK1KkyGYZ9+E
-         saUhBUVgl+3M8iKLZ2T2cwFS/FL3pDKW8lLEcASZ2YeJ3mIncURhY1cOJJ5ejgGGqW1t
-         S4Tf7IvlDpwBSPSoCidLlMMIO68tK6Nx44uoE8UI9tx9yNt55p6it6CfypRrNhObDsdz
-         w5dkmFvVUUXpYatVK15wp+nBLdhdRMSZhO+Og/vnC3kWcMQlgneK5Btmc7mIQOHqsFEm
-         Gh8w==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=6T4maM20wkpjUTzPHq1v9/9VNN9YGOt3sjTVfNPSz1A=;
+        b=nvQT7F/3r8Y0wxzeiOXETNl8o2OLI4D/k81fdrFR3vutCkklITXoCdrZz9ASp2ZBmB
+         BfcbXLPGRk2XfClI7UJK4ESMbXY+KvUO4w/UGZsvTUd8MZJ8UVl40oZnlzJycdVKsWYa
+         XWB6eqWVefR7y8PZpJB4NXbzuarlMoX5rifOyBq3pwdhnoFsaKvF4UIDhVx0jz0pVU/T
+         R88UfdeYaLiuVfgNA1u9m/iWYDVB7+dntp+c1JfJNdJox30QTs45OTsjzXWxs+VCo/Jk
+         lk510WDJIZZ8ocSVkI15fU6zHj5hxvUeU3461SsSyadTRbUH1lN2ezUL7m7uO1m8sYQa
+         rFWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=pmtOpzqls0v/g8o8UmNm35xKnZImhknJV+CPfOBnR2I=;
-        b=QaHXgFfI8HXcGEX9koRKogJEK1yC3HQtIJ+KpFNFOGnPhx9Btul9ly1/F1UeKD/ZvK
-         d92+BmP508MjDDRtLv87nvc9czYl+tAWSSpQMrM97zy/T1ocUpRYXkJ6YXEdbKryDpa9
-         MEjL8LjDa2uUdCoNubPdqf9sRb6Ujv8xeoDW2xIcmKwjkD7PmyDr5uwgyjE80jAkSChv
-         mfJ88gWRcy/5n+qLpKi3jVpuyM8qomBetPemwSgHQOR+aOBgl4QGDEhsJRKcMDSt91Ue
-         09iK6K/OgKcP9S+Ru/2duyMjBzrf50KUY6KUA4kXH1n+nWyuew/5mgts9QOwNkf0Jj6l
-         YqKg==
-X-Gm-Message-State: AOAM533ysFwqJp/g9Z9LIzRVSVPCjjS+g48FWvsosK0LDyWMHlUxybf3
-        SKE82L1gs4K+f36NmaRbwO4=
-X-Google-Smtp-Source: ABdhPJyY5B0QcOE1jsXz7him0KPOunpY/NeoUHNK0q33VZMgEdlMR4/O6K2+jGqiQrJFZ0wUbJmunw==
-X-Received: by 2002:a17:90a:aa0b:: with SMTP id k11mr26433295pjq.153.1621254147878;
-        Mon, 17 May 2021 05:22:27 -0700 (PDT)
-Received: from sz-dl-056.autox.sz ([45.67.53.159])
-        by smtp.gmail.com with ESMTPSA id x13sm10854990pjl.22.2021.05.17.05.22.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 May 2021 05:22:27 -0700 (PDT)
-From:   Yejune Deng <yejune.deng@gmail.com>
-X-Google-Original-From: Yejune Deng <yejunedeng@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, xeb@mail.ru, steffen.klassert@secunet.com,
-        herbert@gondor.apana.org.au, vyasevich@gmail.com,
-        nhorman@tuxdriver.com, marcelo.leitner@gmail.com,
-        edumazet@google.com, yejunedeng@gmail.com, weiwan@google.com,
-        paul@paul-moore.com, rdunlap@infradead.org, rdias@singlestore.com,
-        fw@strlen.de, andrew@lunn.ch, tparkin@katalix.com,
-        stefan@datenfreihafen.org, matthieu.baerts@tessares.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dccp@vger.kernel.org, linux-sctp@vger.kernel.org
-Subject: [PATCH] net: Remove the member netns_ok
-Date:   Mon, 17 May 2021 20:22:05 +0800
-Message-Id: <1621254125-21588-1-git-send-email-yejunedeng@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6T4maM20wkpjUTzPHq1v9/9VNN9YGOt3sjTVfNPSz1A=;
+        b=MrHX6G4nxBBf2NvNuS8cCpbIfIRtxWuF5FNpD30xFoe41UAK4zr7n5IpzTbzIPU57k
+         BSJjUPQ9cTVwVUi7UNTyrbaXQ342A8b/LSp8R/OdXyaUdM69Irv/UaizOstz4EzOnnKc
+         E/30jlxn2CvvyfKuvWZ7vjyZ3n0nN78DDu/NYDI/NkVrIp96kMJs5mzsp8+3Qo6Cmh8z
+         AnQLTGx6IBcs9V0dO+UqkZRo9IwjwN49nwWQ0m+/i/9T10P3uhiyRyFBncS8vG3Nmak2
+         1/UTirMC3tJEofGp94WcJs7Z02DGz5y3RHW5wOCixbTKlFEBWl6CW7avoGQfXY28QXHC
+         GPcw==
+X-Gm-Message-State: AOAM532yA2Ga7+AJk9n41NiNdF1HZBWIG2Bn/i1xWfatfuspQE+znu1+
+        U6oTf89BGvVesT3jvLeXq480wNyoJCuSYRegUjYZhA==
+X-Google-Smtp-Source: ABdhPJyPjy1frJ81yPJoA2iI4XVIbHNfQ2CW7ecWz7Hh38SxdjORxtgenMKkbPSq2yE5PrFX69JqZnQX3kEyDd/YeSM=
+X-Received: by 2002:ae9:e850:: with SMTP id a77mr52728763qkg.424.1621255372672;
+ Mon, 17 May 2021 05:42:52 -0700 (PDT)
+MIME-Version: 1.0
+References: <0000000000008ce91e05bf9f62bc@google.com> <CACT4Y+a6L_x22XNJVX+VYY-XKmLQ0GaYndCVYnaFmoxk58GPgw@mail.gmail.com>
+ <20210508144657.GC4038@breakpoint.cc> <20210513005608.GA23780@salvia>
+ <CACT4Y+YhQQtHBErLYRDqHyw16Bxu9FCMQymviMBR-ywiKf3VQw@mail.gmail.com> <20210517105745.GA19031@salvia>
+In-Reply-To: <20210517105745.GA19031@salvia>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 17 May 2021 14:42:41 +0200
+Message-ID: <CACT4Y+Y1M7ewJmipTB=B4fbYR2DMn_kX69Vks93yo=g2g-iXKw@mail.gmail.com>
+Subject: Re: [syzbot] WARNING in __nf_unregister_net_hook (4)
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        syzbot <syzbot+154bd5be532a63aa778b@syzkaller.appspotmail.com>,
+        coreteam@netfilter.org, David Miller <davem@davemloft.net>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Every protocol has the 'netns_ok' member and it is euqal to 1. The
-'if (!prot->netns_ok)' always false in inet_add_protocol().
+On Mon, May 17, 2021 at 12:57 PM Pablo Neira Ayuso <pablo@netfilter.org> wr=
+ote:
+> > > On Sat, May 08, 2021 at 04:46:57PM +0200, Florian Westphal wrote:
+> > > > Dmitry Vyukov <dvyukov@google.com> wrote:
+> > > > > > IMPORTANT: if you fix the issue, please add the following tag t=
+o the commit:
+> > > > > > Reported-by: syzbot+154bd5be532a63aa778b@syzkaller.appspotmail.=
+com
+> > > > >
+> > > > > Is this also fixed by "netfilter: arptables: use pernet ops struc=
+t
+> > > > > during unregister"?
+> > > > > The warning is the same, but the stack is different...
+> > > >
+> > > > No, this is a different bug.
+> > > >
+> > > > In both cases the caller attempts to unregister a hook that the cor=
+e
+> > > > can't find, but in this case the caller is nftables, not arptables.
+> > >
+> > > I see no reproducer for this bug. Maybe I broke the dormant flag hand=
+ling?
+> > >
+> > > Or maybe syzbot got here after the arptables bug has been hitted?
+> >
+> > syzbot always stops after the first bug to give you perfect "Not
+> > tainted" oopses.
+>
+> Looking at the log file:
+>
+> https://syzkaller.appspot.com/text?tag=3DCrashLog&x=3D110a3096d00000
+>
+> This is mixing calls to nftables:
+>
+> 14:43:16 executing program 0:
+> r0 =3D socket$nl_netfilter(0x10, 0x3, 0xc)
+> sendmsg$NFT_BATCH(r0, &(0x7f000000c2c0)=3D{0x0, 0x0, &(0x7f0000000000)=3D=
+{&(0x7f00000001c0)=3D{{0x9}, [@NFT_MSG_NEWTABLE=3D{0x28, 0x0, 0xa, 0x3, 0x0=
+, 0x0, {0x2}, [@NFTA_TABLE_NAME=3D{0x9, 0x1, 'syz0\x00'}, @NFTA_TABLE_FLAGS=
+=3D{0x8}]}], {0x14}}, 0x50}}, 0x0)
+>
+> with arptables:
+>
+> 14:43:16 executing program 1:
+> r0 =3D socket$inet_udp(0x2, 0x2, 0x0)
+> setsockopt$ARPT_SO_SET_REPLACE(r0, 0x0, 0x60, &(0x7f0000000000)=3D{'filte=
+r\x00', 0x4, 0x4, 0x3f8, 0x310, 0x200, 0x200, 0x310, 0x310, 0x310, 0x4, 0x0=
+, {[{{@arp=3D{@broadcast, @rand_addr, 0x87010000, 0x0, 0x0, 0x0, {@mac=3D@l=
+ink_local}, {@mac}, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 'bridge0\x00', 'erspan0\x=
+00'}, 0xc0, 0x100}, @unspec=3D@RATEEST=3D{0x40, 'RATEEST\x00', 0x0, {'syz1\=
+x00', 0x0, 0x4}}}, {{@arp=3D{@initdev=3D{0xac, 0x1e, 0x0, 0x0}, @local, 0x0=
+, 0x0, 0x0, 0x0, {@mac=3D@remote}, {}, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 'veth0=
+_to_bridge\x00', 'geneve1\x00'}, 0xc0, 0x100}, @unspec=3D@RATEEST=3D{0x40, =
+'RATEEST\x00', 0x0, {'syz0\x00', 0x0, 0x2}}}, {{@arp=3D{@local, @multicast1=
+, 0x0, 0x0, 0x0, 0x0, {}, {@mac=3D@broadcast}, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0=
+, 'veth0_to_batadv\x00', 'veth0_to_hsr\x00'}, 0xc0, 0x110}, @mangle=3D{0x50=
+, 'mangle\x00', 0x0, {@mac=3D@remote, @mac=3D@local, @multicast2, @initdev=
+=3D{0xac, 0x1e, 0x0, 0x0}}}}], {{[], 0xc0, 0xe8}, {0x28}}}}, 0x448)
+>
+> arptables was buggy at the time this bug has been reported.
+>
+> Am I understanding correctly the syzbot log?
+>
+> I wonder if the (buggy) arptables removed the incorrect hook from
+> nftables, then nftables crashed on the same location when removing the
+> hook. I don't see a clear sequence for this to happen though.
+>
+> Would it be possible to make syzbot exercise the NFT_MSG_NEWTABLE
+> codepath (with NFTA_TABLE_FLAGS) to check if the problem still
+> persists?
 
-Signed-off-by: Yejune Deng <yejunedeng@gmail.com>
----
- include/net/protocol.h    | 1 -
- net/dccp/ipv4.c           | 1 -
- net/ipv4/af_inet.c        | 4 ----
- net/ipv4/gre_demux.c      | 1 -
- net/ipv4/ipmr.c           | 1 -
- net/ipv4/protocol.c       | 6 ------
- net/ipv4/tunnel4.c        | 3 ---
- net/ipv4/udplite.c        | 1 -
- net/ipv4/xfrm4_protocol.c | 3 ---
- net/l2tp/l2tp_ip.c        | 1 -
- net/sctp/protocol.c       | 1 -
- 11 files changed, 23 deletions(-)
 
-diff --git a/include/net/protocol.h b/include/net/protocol.h
-index 2b778e1..f51c06a 100644
---- a/include/net/protocol.h
-+++ b/include/net/protocol.h
-@@ -43,7 +43,6 @@ struct net_protocol {
- 	int			(*err_handler)(struct sk_buff *skb, u32 info);
- 
- 	unsigned int		no_policy:1,
--				netns_ok:1,
- 				/* does the protocol do more stringent
- 				 * icmp tag validation than simple
- 				 * socket lookup?
-diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-index ffc601a..f81c1df 100644
---- a/net/dccp/ipv4.c
-+++ b/net/dccp/ipv4.c
-@@ -977,7 +977,6 @@ static const struct net_protocol dccp_v4_protocol = {
- 	.handler	= dccp_v4_rcv,
- 	.err_handler	= dccp_v4_err,
- 	.no_policy	= 1,
--	.netns_ok	= 1,
- 	.icmp_strict_tag_validation = 1,
- };
- 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index f17870e..d9bccad6 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1720,7 +1720,6 @@ EXPORT_SYMBOL_GPL(snmp_fold_field64);
- #ifdef CONFIG_IP_MULTICAST
- static const struct net_protocol igmp_protocol = {
- 	.handler =	igmp_rcv,
--	.netns_ok =	1,
- };
- #endif
- 
-@@ -1733,7 +1732,6 @@ static struct net_protocol tcp_protocol = {
- 	.handler	=	tcp_v4_rcv,
- 	.err_handler	=	tcp_v4_err,
- 	.no_policy	=	1,
--	.netns_ok	=	1,
- 	.icmp_strict_tag_validation = 1,
- };
- 
-@@ -1746,14 +1744,12 @@ static struct net_protocol udp_protocol = {
- 	.handler =	udp_rcv,
- 	.err_handler =	udp_err,
- 	.no_policy =	1,
--	.netns_ok =	1,
- };
- 
- static const struct net_protocol icmp_protocol = {
- 	.handler =	icmp_rcv,
- 	.err_handler =	icmp_err,
- 	.no_policy =	1,
--	.netns_ok =	1,
- };
- 
- static __net_init int ipv4_mib_init_net(struct net *net)
-diff --git a/net/ipv4/gre_demux.c b/net/ipv4/gre_demux.c
-index 5d1e6fe..cbb2b4b 100644
---- a/net/ipv4/gre_demux.c
-+++ b/net/ipv4/gre_demux.c
-@@ -195,7 +195,6 @@ static int gre_err(struct sk_buff *skb, u32 info)
- static const struct net_protocol net_gre_protocol = {
- 	.handler     = gre_rcv,
- 	.err_handler = gre_err,
--	.netns_ok    = 1,
- };
- 
- static int __init gre_init(void)
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index 939792a..12b564b 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -3007,7 +3007,6 @@ static const struct seq_operations ipmr_mfc_seq_ops = {
- #ifdef CONFIG_IP_PIMSM_V2
- static const struct net_protocol pim_protocol = {
- 	.handler	=	pim_rcv,
--	.netns_ok	=	1,
- };
- #endif
- 
-diff --git a/net/ipv4/protocol.c b/net/ipv4/protocol.c
-index 9a8c089..6913979 100644
---- a/net/ipv4/protocol.c
-+++ b/net/ipv4/protocol.c
-@@ -31,12 +31,6 @@ EXPORT_SYMBOL(inet_offloads);
- 
- int inet_add_protocol(const struct net_protocol *prot, unsigned char protocol)
- {
--	if (!prot->netns_ok) {
--		pr_err("Protocol %u is not namespace aware, cannot register.\n",
--			protocol);
--		return -EINVAL;
--	}
--
- 	return !cmpxchg((const struct net_protocol **)&inet_protos[protocol],
- 			NULL, prot) ? 0 : -1;
- }
-diff --git a/net/ipv4/tunnel4.c b/net/ipv4/tunnel4.c
-index e44aaf4..5048c47 100644
---- a/net/ipv4/tunnel4.c
-+++ b/net/ipv4/tunnel4.c
-@@ -218,7 +218,6 @@ static const struct net_protocol tunnel4_protocol = {
- 	.handler	=	tunnel4_rcv,
- 	.err_handler	=	tunnel4_err,
- 	.no_policy	=	1,
--	.netns_ok	=	1,
- };
- 
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -226,7 +225,6 @@ static const struct net_protocol tunnel64_protocol = {
- 	.handler	=	tunnel64_rcv,
- 	.err_handler	=	tunnel64_err,
- 	.no_policy	=	1,
--	.netns_ok	=	1,
- };
- #endif
- 
-@@ -235,7 +233,6 @@ static const struct net_protocol tunnelmpls4_protocol = {
- 	.handler	=	tunnelmpls4_rcv,
- 	.err_handler	=	tunnelmpls4_err,
- 	.no_policy	=	1,
--	.netns_ok	=	1,
- };
- #endif
- 
-diff --git a/net/ipv4/udplite.c b/net/ipv4/udplite.c
-index bd8773b..cd1cd68 100644
---- a/net/ipv4/udplite.c
-+++ b/net/ipv4/udplite.c
-@@ -31,7 +31,6 @@ static const struct net_protocol udplite_protocol = {
- 	.handler	= udplite_rcv,
- 	.err_handler	= udplite_err,
- 	.no_policy	= 1,
--	.netns_ok	= 1,
- };
- 
- struct proto 	udplite_prot = {
-diff --git a/net/ipv4/xfrm4_protocol.c b/net/ipv4/xfrm4_protocol.c
-index ea595c8..2fe5860 100644
---- a/net/ipv4/xfrm4_protocol.c
-+++ b/net/ipv4/xfrm4_protocol.c
-@@ -181,21 +181,18 @@ static const struct net_protocol esp4_protocol = {
- 	.handler	=	xfrm4_esp_rcv,
- 	.err_handler	=	xfrm4_esp_err,
- 	.no_policy	=	1,
--	.netns_ok	=	1,
- };
- 
- static const struct net_protocol ah4_protocol = {
- 	.handler	=	xfrm4_ah_rcv,
- 	.err_handler	=	xfrm4_ah_err,
- 	.no_policy	=	1,
--	.netns_ok	=	1,
- };
- 
- static const struct net_protocol ipcomp4_protocol = {
- 	.handler	=	xfrm4_ipcomp_rcv,
- 	.err_handler	=	xfrm4_ipcomp_err,
- 	.no_policy	=	1,
--	.netns_ok	=	1,
- };
- 
- static const struct xfrm_input_afinfo xfrm4_input_afinfo = {
-diff --git a/net/l2tp/l2tp_ip.c b/net/l2tp/l2tp_ip.c
-index 97ae125..536c30d 100644
---- a/net/l2tp/l2tp_ip.c
-+++ b/net/l2tp/l2tp_ip.c
-@@ -635,7 +635,6 @@ static struct inet_protosw l2tp_ip_protosw = {
- 
- static struct net_protocol l2tp_ip_protocol __read_mostly = {
- 	.handler	= l2tp_ip_recv,
--	.netns_ok	= 1,
- };
- 
- static int __init l2tp_ip_init(void)
-diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
-index 6f2bbfe..baa4e77 100644
---- a/net/sctp/protocol.c
-+++ b/net/sctp/protocol.c
-@@ -1171,7 +1171,6 @@ static const struct net_protocol sctp_protocol = {
- 	.handler     = sctp4_rcv,
- 	.err_handler = sctp_v4_err,
- 	.no_policy   = 1,
--	.netns_ok    = 1,
- 	.icmp_strict_tag_validation = 1,
- };
- 
--- 
-2.7.4
+This happened only once so far 40 days ago. So if you consider it
+possible that it actually happened due to the arptables issue, I would
+mark it as invalid (with "#syz invalid") and move on. If it ever
+happens again, syzbot will notify, but then we know it happened with
+the aprtables issue fixed.
 
+This bug does not have a reproducer, so it's not possible to test this
+exact scenario. It's possible to replay the whole log, but somehow
+syzkaller wasn't able to retrigger it by replaying the log. I don't
+think it's worth our time at this point.
