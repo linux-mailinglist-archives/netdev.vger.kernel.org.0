@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E90F383C94
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 20:43:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D57A1383CB3
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 20:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235917AbhEQSpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 14:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234106AbhEQSpM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 14:45:12 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4513C061573;
-        Mon, 17 May 2021 11:43:54 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id h11so6933362ili.9;
-        Mon, 17 May 2021 11:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Lhz9D+4Hmsj2IYsFNTcfwhNT/yj5LxHuzYyX8yHCazs=;
-        b=RoFp/Xou2tBzEIS0PJ5higbeUhZNkt7DjYv3TiySBuJU5/LxLgaBc/Uo52xF34vk02
-         yJJAYFXBg9AJSyU8wWrm5sUpNkdQbdvzPM8GbD8q4jlXndx4lLNqQZLBbrVJWDpoQC/m
-         aj+jkcB8HiTrNeBQ1rk1IyZ5B88+IP8rOfU2qV/gCVo2OJT1gOBulCdHL0Ru2heZxxBK
-         rzt+z0/w3AAWLzldYnTTYbpLtNQTmNthRkB9xJTOvauTwkz0tw9mSux+iR369yBJmAUF
-         4+nYRp8acHF2aXLi7wsrWkstMr/et+usCZxHAismjR5IG2T1WlrzE5zj6gsNLFdulKTY
-         yxBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Lhz9D+4Hmsj2IYsFNTcfwhNT/yj5LxHuzYyX8yHCazs=;
-        b=TXynOQMF+nBHtZVwpADq7CxSSHF0hipEPbXvP8sInGOfnS8LtaPPzqJwtniVcOPtb7
-         3v6biYRj+/luRLzsej1aupekg/B1KZHtJvvCCa79meQHaWvWTv58CFJdLMwGzx5XyFG+
-         tRM2R2D/pKAGwHbp9IixlCyjbaTiIgqlIBwMFxwMjaJykg+w/jKWdO5B7i9b2k3e9dx/
-         lxYxHPiXBHYZZC0f0daindkeVNO5HGBvOIKtiIbdN7tGWP3aSVkG9xZwDL25dtwmTo00
-         5Fs8N+dOn64XG5PgN7RYHf5Htqu77pLCFZyR1ZXzzDzeDN34g4LkShbbDuGuzKWOUHFJ
-         09ww==
-X-Gm-Message-State: AOAM532d0ZxCj2uuPi/Oxyb0CXvnZY6IXhI/sev01Xf5OWjCHgb2Cb0P
-        kdssC6ZljchdIH3CJAZkJqDCMl/3s2Z0yFOoeIM=
-X-Google-Smtp-Source: ABdhPJx0L6Eum49ErlCgRNLCv0T46JqEQRPsyyyA6Y87SHSEJN5+yeSXLzLzt2cIFvaLuNBCZTvNNt4ZjYsw9yRqFOo=
-X-Received: by 2002:a05:6e02:d41:: with SMTP id h1mr912406ilj.0.1621277034344;
- Mon, 17 May 2021 11:43:54 -0700 (PDT)
+        id S237295AbhEQSwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 14:52:03 -0400
+Received: from foss.arm.com ([217.140.110.172]:60350 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234049AbhEQSwC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 May 2021 14:52:02 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 28FB331B;
+        Mon, 17 May 2021 11:50:45 -0700 (PDT)
+Received: from [10.57.66.179] (unknown [10.57.66.179])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 60CBF3F73D;
+        Mon, 17 May 2021 11:50:41 -0700 (PDT)
+Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when
+ setting the hint
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Nitesh Lal <nilal@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        Alex Belits <abelits@marvell.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Marc Zyngier <maz@kernel.org>
+References: <20210501021832.743094-1-jesse.brandeburg@intel.com>
+ <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com>
+ <20210504092340.00006c61@intel.com>
+ <CAFki+LmR-o+Fng21ggy48FUX7RhjjpjO87dn3Ld+L4BK2pSRZg@mail.gmail.com>
+ <bf1d4892-0639-0bbf-443e-ba284a8ed457@arm.com>
+ <87sg2lz0zz.ffs@nanos.tec.linutronix.de>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <d1d5e797-49ee-4968-88c6-c07119343492@arm.com>
+Date:   Mon, 17 May 2021 19:50:35 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <56270996-33a6-d71b-d935-452dad121df7@linux.alibaba.com>
-In-Reply-To: <56270996-33a6-d71b-d935-452dad121df7@linux.alibaba.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Mon, 17 May 2021 11:43:43 -0700
-Message-ID: <CAA93jw6LUAnWZj0b5FvefpDKUyd6cajCNLoJ6OKrwbu-V_ffrA@mail.gmail.com>
-Subject: virtio_net: BQL?
-To:     Xianting Tian <xianting.tian@linux.alibaba.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <87sg2lz0zz.ffs@nanos.tec.linutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Not really related to this patch, but is there some reason why virtio
-has no support for BQL?
+On 2021-05-17 19:08, Thomas Gleixner wrote:
+> On Mon, May 17 2021 at 18:26, Robin Murphy wrote:
+>> On 2021-05-17 17:57, Nitesh Lal wrote:
+>> I'm not implying that there isn't a bug, or that this code ever made
+>> sense in the first place, just that fixing it will unfortunately be a
+>> bit more involved than a simple revert. This patch as-is *will* subtly
+>> break at least the system PMU drivers currently using
+> 
+> s/using/abusing/
+> 
+>> irq_set_affinity_hint() - those I know require the IRQ affinity to
+>> follow whichever CPU the PMU context is bound to, in order to meet perf
+>> core's assumptions about mutual exclusion.
+> 
+> Which driver is that?
 
-On Mon, May 17, 2021 at 11:41 AM Xianting Tian
-<xianting.tian@linux.alibaba.com> wrote:
->
-> BUG_ON() uses unlikely in if(), which can be optimized at compile time.
->
-> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-> ---
->   drivers/net/virtio_net.c | 5 ++---
->   1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index c921ebf3ae82..212d52204884 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1646,10 +1646,9 @@ static int xmit_skb(struct send_queue *sq, struct
-> sk_buff *skb)
->         else
->                 hdr =3D skb_vnet_hdr(skb);
->
-> -       if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
-> +       BUG_ON(virtio_net_hdr_from_skb(skb, &hdr->hdr,
->                                     virtio_is_little_endian(vi->vdev), fa=
-lse,
-> -                                   0))
-> -               BUG();
-> +                                   0));
->
->         if (vi->mergeable_rx_bufs)
->                 hdr->num_buffers =3D 0;
-> --
-> 2.17.1
->
+Right now, any driver which wants to control an IRQ's affinity and also 
+build as a module, for one thing. I'm familiar with drivers/perf/ where 
+a basic pattern has been widely copied; some of the callers in other 
+subsystems appear to *expect* it to set the underlying affinity as well, 
+but whether any of those added within the last 6 years represent a 
+functional dependency rather than just a performance concern I don't know.
 
-
---=20
-Latest Podcast:
-https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
-
-Dave T=C3=A4ht CTO, TekLibre, LLC
+Robin.
