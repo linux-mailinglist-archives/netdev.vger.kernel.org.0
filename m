@@ -2,67 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42CBF386C03
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35A08386C00
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:10:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237575AbhEQVLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 17:11:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50848 "EHLO mail.kernel.org"
+        id S244839AbhEQVL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 17:11:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50828 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241547AbhEQVL1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237403AbhEQVL1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 17 May 2021 17:11:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A0EAC61263;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 91A6B611C1;
         Mon, 17 May 2021 21:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1621285810;
-        bh=+yVJ9RBGAAnbVCAfPFsoQPYrGn3Zm8icr3JPPKWsU8A=;
+        bh=TEA/wBQ2bfJOzNxSwWzS/isOhOdg6bEZLH5gpZAr1YQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FahoD6m/fJPKxDc9AhsNDMjBRe78IHMLVcMgSDTJiM+FheqsmOpsyUrNDzWS56UJd
-         UiYMEoWr+v74r/9/9x+WDPFUv3q2gDUtbgZo+8pWZi/p4dJlKs1zPJTEakV7ASXFK0
-         3CHV1sXJBiO4kyzqvaq0IqqdpdCdtlKQc5DOFdFzA7/7ACJTyrqaxgH27mX5d2SKZo
-         mwiEzJhLeCKg9ghefHZ4Cwr2lbeAmazz8EQUYIC50OV4SNNbjyzglMdsFjpRcTFizd
-         o7fs8K1QnHKYNM3AZoRRTDF9KazzKxDato3edbynD6GSjo/Hg2tGFikaSRbVQOe6Ej
-         JXYjIs0433RPA==
+        b=kX/p3SUbSJ5Em+5TjR47pCooSq2H2gJjgg0UaYfSv/l441HCyDi7QEzCLaHyk5MuW
+         qB/V6v/m1UyV8qB2txIqJdxIiUiIl+pVa5mh9yClmgyi9p6LUHwEXc30P1eijX2PFZ
+         LzXSj2eWBG6vxhPANxtJAl+hI3QsIMV3dEnypP96rbXE0dm9jpeCYrloS5rKDr/3fh
+         DiDp6xYrkEthRBqkDDmND+LbZmQk/yK8JOajoaCtkJNL/uWFL98K7SFXtOqkpQFhn7
+         jgXvhy7YNuYHvz7Z9r1MixsnFPXLwHlxNGW6jKRqxtHcCNd1UWUI75E4q4DJj7OR/1
+         KKYxqnxB6XPxg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 978D560A47;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 84A8460963;
         Mon, 17 May 2021 21:10:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] bnxt_en: 2 bug fixes.
+Subject: Re: [PATCH] isdn: mISDN: netjet: Fix crash in nj_probe:
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162128581061.6429.8518800649068439879.git-patchwork-notify@kernel.org>
+Message-Id: <162128581053.6429.12390001025467093897.git-patchwork-notify@kernel.org>
 Date:   Mon, 17 May 2021 21:10:10 +0000
-References: <1621063519-7764-1-git-send-email-michael.chan@broadcom.com>
-In-Reply-To: <1621063519-7764-1-git-send-email-michael.chan@broadcom.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        gospo@broadcom.com
+References: <1621149100-23604-1-git-send-email-zheyuma97@gmail.com>
+In-Reply-To: <1621149100-23604-1-git-send-email-zheyuma97@gmail.com>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     isdn@linux-pingi.de, christophe.jaillet@wanadoo.fr,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Sat, 15 May 2021 03:25:17 -0400 you wrote:
-> The first one fixes a bug to properly identify some recently added HyperV
-> device IDs.  The second one fixes device context memory set up on systems
-> with 64K page size.
+On Sun, 16 May 2021 07:11:40 +0000 you wrote:
+> 'nj_setup' in netjet.c might fail with -EIO and in this case
+> 'card->irq' is initialized and is bigger than zero. A subsequent call to
+> 'nj_release' will free the irq that has not been requested.
 > 
-> Please queue these for -stable as well.  Thanks.
-> 
-> Andy Gospodarek (1):
->   bnxt_en: Include new P5 HV definition in VF check.
+> Fix this bug by deleting the previous assignment to 'card->irq' and just
+> keep the assignment before 'request_irq'.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] bnxt_en: Include new P5 HV definition in VF check.
-    https://git.kernel.org/netdev/net/c/ab21494be9dc
-  - [net,2/2] bnxt_en: Fix context memory setup for 64K page size.
-    https://git.kernel.org/netdev/net/c/702279d2ce46
+  - isdn: mISDN: netjet: Fix crash in nj_probe:
+    https://git.kernel.org/netdev/net/c/9f6f852550d0
 
 You are awesome, thank you!
 --
