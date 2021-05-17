@@ -2,625 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69D78383C17
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 20:17:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C465383C27
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 20:22:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240641AbhEQSSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 14:18:18 -0400
-Received: from azhdrrw-ex01.nvidia.com ([20.51.104.162]:1795 "EHLO
-        AZHDRRW-EX01.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238093AbhEQSSE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 14:18:04 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by mxs.oss.nvidia.com (10.13.234.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.858.12; Mon, 17 May 2021 11:16:46 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EuZODqcd6289Vjm8V840bB6Fd/xTt0JmJ3ok3ShR/ggbc9jkheBetLd7dJxjzidJ4zp/Harc9s692vku45lFAMilEgfPgEYyc2Xg5+6TCQ/gWU6PjpCZydzn4BYL3ydZynJAgERSvv88SaJizD/k2xnSKWAtDyM3dnSTQxKTVstKcIbxGqFU+TJ2/ZJIr8ak74OFmEw/1BWdVnNWChkbYJCk9eFZzk78bb4uD2qZ3tIlbBCgnwfiKDPaa0+ntv7sCo2rikec7Dy6oimTO8EUWKp6TEGlj22YOuPK7QSEWlotlj6dTBq5aHrYnnyjJwDZxGsRnYIuapz1byHF7O35Iw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wAg6xnr7Nw+DwU6EicU+tTcOouQHjf5PTpOwIwIjlVg=;
- b=kjuxvKU7W8zzCtxhkGHNP9uVtr8MRvS3OClwoyY8uFBKBzVCUbElerQLMLCiDdVCU2vgC/PpDYdXiQjo+ShWN4NclEoAspWEyoOe/XsNIrqicm1SliAF3B7tkNCb3jiTM9cvjT2nhDBAld8B8cdXaOSyHf6wiFw8fB0QQA9zIMU9OfSJ6R3M2vZPZ4c9VRs8OZbC1nCg05hriUHlwTubM7wIspVCnhwSudNc6w4RPuSDvSEvxp3OAy8ValbBqbmRE8HLDrhkDHrzUy83mSGzfnV+jMy4uYbysTBawpAMRMrSAsxc6j3JhVt7OnxXvh0Zi/xhh6f3Q328EfxeHpQZ0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wAg6xnr7Nw+DwU6EicU+tTcOouQHjf5PTpOwIwIjlVg=;
- b=qaFZwCaxkCHVGMtopqv5fg9hc44fXLWEY2ST5lYVkXr4pYcdUZ4sXAHo6HKis50eYnL4jh2+1pyFbNAwbE68IysImi+x/n3svpaB0iUrxhEPBfrvPpNJhXmlpUJPfq4yweAbS3Myeeu9V0nO9GCoI1+APsvVu0m71zA821dTnAJviL1JMbOrQsJ6F8wc8XOamJ29aNxpcQOUTaMDbSS6h8xaSK2fX4xHBn9LInDfHQMpOHmLUoIOPlqqewL/k2+ziyExLXh3MY2sZyzY+o9OBiMRcLJD4i9ovzeCDNPyIw4vVCJz3y4UOqShOEJFzMAOchbC1qO3UGFbHee7XFc2tQ==
-Received: from BN9PR03CA0747.namprd03.prod.outlook.com (2603:10b6:408:110::32)
- by MWHPR12MB1149.namprd12.prod.outlook.com (2603:10b6:300:c::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.27; Mon, 17 May
- 2021 18:16:44 +0000
-Received: from BN8NAM11FT034.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:110:cafe::5c) by BN9PR03CA0747.outlook.office365.com
- (2603:10b6:408:110::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.25 via Frontend
- Transport; Mon, 17 May 2021 18:16:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT034.mail.protection.outlook.com (10.13.176.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4129.25 via Frontend Transport; Mon, 17 May 2021 18:16:44 +0000
-Received: from shredder.mellanox.com (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 17 May
- 2021 18:16:40 +0000
-From:   Ido Schimmel <idosch@OSS.NVIDIA.COM>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <dsahern@gmail.com>,
-        <petrm@OSS.NVIDIA.COM>, <roopa@OSS.NVIDIA.COM>,
-        <nikolay@OSS.NVIDIA.COM>, <ssuryaextr@gmail.com>,
-        <mlxsw@OSS.NVIDIA.COM>, Ido Schimmel <idosch@OSS.NVIDIA.COM>
-Subject: [PATCH net-next 10/10] selftests: forwarding: Add test for custom multipath hash with IPv6 GRE
-Date:   Mon, 17 May 2021 21:15:26 +0300
-Message-ID: <20210517181526.193786-11-idosch@nvidia.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210517181526.193786-1-idosch@nvidia.com>
-References: <20210517181526.193786-1-idosch@nvidia.com>
+        id S234681AbhEQSXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 14:23:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56033 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234074AbhEQSXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 14:23:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621275722;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0Ohvz0veaN5YV4OnEyJTkyNbce7kLNQOfav9z5UAAmk=;
+        b=DJ/fNjnO4+bRJXuyaTn10Ml8NJvlql17Xr0kijfoiKNmGtQmqXFUq/TMwy6dsbfQzqx0us
+        0HDmQVrzOLzJ6UXkCHpmQgwjZc55u6MkwEF864GVIxb3EI2ZVw4RP6TA7n5uasPBivQY/n
+        lH7RY6uSxIyxDORHevneLUsviY+S8aI=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-147-_ENcxJt_Ohead6fn9xcsPg-1; Mon, 17 May 2021 14:22:01 -0400
+X-MC-Unique: _ENcxJt_Ohead6fn9xcsPg-1
+Received: by mail-lf1-f72.google.com with SMTP id s23-20020a1977170000b02901fc6bd7b408so1238449lfc.1
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 11:22:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0Ohvz0veaN5YV4OnEyJTkyNbce7kLNQOfav9z5UAAmk=;
+        b=nVv7LMdtqAwzEc5hm65MXgfKQ0HmYfzfmeiWTIfqQHMWprRs732WFXklmxs3nbfSLd
+         lLSDfjLHl9/Cm2/PBWgeAlg0C4YRlpHjIUThurdQAe6ItW+ALD0L7e+zECM5oFUuuz5A
+         FJdo5UKlSns2o0DV6w8vs9udKoy6j6+AuVQ9SzjZgx6Pvx6XC1KCECelB3OawukbYlEp
+         YRBai4tKd0x2lzL7pPyCOXyGxmyib+a81GjoT4HLkzyjn2vs1qCNkKRh8zjrDTgD4EG+
+         +Yl+en/GzzPGQylr6zeEUOVpLKN+9W1PZoiVhIbAE9/A+KiJi+ocXcvZP++PwBAsTz8+
+         kioQ==
+X-Gm-Message-State: AOAM530NPaloi9aES0laVK0t2scOUmdkQf469MhDNzDPE9GbqUcNi6uv
+        NLHWW5BWotoFPEFiBL4tG9qQb67Ze/o/cZAzqy+V1U4g/P2oP+Z3iGsX3ulbTigxWu1cpKKskwC
+        TbSQy5S0CX4D73wHU/20Hz26+qKGMS8Cc
+X-Received: by 2002:a05:6512:2302:: with SMTP id o2mr773399lfu.647.1621275719223;
+        Mon, 17 May 2021 11:21:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwrzOCPhmlYUdV7MidYS7zax5+JMdj0yOGQTWafj9uEJx26idggzqb+1uILAInTM0kZZW7u6CfEAVSGwFUPCng=
+X-Received: by 2002:a05:6512:2302:: with SMTP id o2mr773377lfu.647.1621275718883;
+ Mon, 17 May 2021 11:21:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1776f5dc-6da5-4629-8abc-08d9195fed78
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1149:
-X-Microsoft-Antispam-PRVS: <MWHPR12MB1149982EF131B7761CBE0AD7B22D9@MWHPR12MB1149.namprd12.prod.outlook.com>
-X-MS-Exchange-Transport-Forked: True
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gTdVYWf+cEchMLDZboJ68Q/cflf8ljHOengxSzsEX4t+pW7tUNjbzVfyeg2C9RhXc68wki1EDS7RqtMCI1dO6lrZCa8R4NNqkxrJZlITxrBQlCnNboRV9WaZZ2sm5wdaXF+Wt0+mKVt7ZYL6Mtvi+fOuN4RvyXzXYWn9RN96fydNbSBK2EsOBUnvMvWF/B+MmngzHvnB8lMiD+hH2J3aMGH/KN+Hp29SZSTd40xPcRaw3Axoj1bJfPLlPg74gdLMDSQ7Mjfx83hIl4UbhtL6GuYr9YDkrJIB4RrV8v2CTV2ddMx2rPW9b8FqDc4Nea3ZpLbMavplZTcw/oTqfBKHwxQN7aR9VFPWUyhVjCZ4C+3zBnODd5bKt1mHJAiTEMmLYTHNISow+pmnC/QnaAUe4ymnZF1bMS0rH9wLAwNOX9K3Ifd7KU/lRkahxChERqEBKg1eOgTFVlJB2eSBg1PX3RgV8HNsYl19jTwZh+NZrvX72lyQBhwpqCClP7FrtHdx1CKu2IvwVDU9WJR81n0aZSP3B+9H1wQBkeejPjgJK2aoEdTKg7BCuNoEoOdgAy5/qmHYVRLUetQG3OADfjdBAy0q8qFRjpPHW+OKK+jDnUdFLi3aoYwMmO7qOuekz+B1tbuinJ8u9u2o+9QeFkYDnA==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(39860400002)(136003)(376002)(36840700001)(46966006)(1076003)(8936002)(2906002)(82740400003)(83380400001)(36756003)(86362001)(356005)(16526019)(47076005)(5660300002)(186003)(7636003)(6666004)(70206006)(70586007)(336012)(54906003)(6916009)(82310400003)(36860700001)(4326008)(426003)(478600001)(30864003)(36906005)(316002)(26005)(107886003)(8676002)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2021 18:16:44.4594
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1776f5dc-6da5-4629-8abc-08d9195fed78
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT034.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1149
+References: <20210501021832.743094-1-jesse.brandeburg@intel.com>
+ <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com> <20210504092340.00006c61@intel.com>
+ <CAFki+LmR-o+Fng21ggy48FUX7RhjjpjO87dn3Ld+L4BK2pSRZg@mail.gmail.com> <bf1d4892-0639-0bbf-443e-ba284a8ed457@arm.com>
+In-Reply-To: <bf1d4892-0639-0bbf-443e-ba284a8ed457@arm.com>
+From:   Nitesh Lal <nilal@redhat.com>
+Date:   Mon, 17 May 2021 14:21:47 -0400
+Message-ID: <CAFki+L=LDizBJmFUieMDg9J=U6mn6XxTPPkAaWiyppTouTzaqw@mail.gmail.com>
+Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when
+ setting the hint
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        Alex Belits <abelits@marvell.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Marc Zyngier <maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test that when the hash policy is set to custom, traffic is distributed
-only according to the inner fields set in the fib_multipath_hash_fields
-sysctl.
+On Mon, May 17, 2021 at 1:26 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2021-05-17 17:57, Nitesh Lal wrote:
+> > On Tue, May 4, 2021 at 12:25 PM Jesse Brandeburg
+> > <jesse.brandeburg@intel.com> wrote:
+> >>
+> >> Robin Murphy wrote:
+> >>
+> >>> On 2021-05-01 03:18, Jesse Brandeburg wrote:
+> >>>> It was pointed out by Nitesh that the original work I did in 2014
+> >>>> to automatically set the interrupt affinity when requesting a
+> >>>> mask is no longer necessary. The kernel has moved on and no
+> >>>> longer has the original problem, BUT the original patch
+> >>>> introduced a subtle bug when booting a system with reserved or
+> >>>> excluded CPUs. Drivers calling this function with a mask value
+> >>>> that included a CPU that was currently or in the future
+> >>>> unavailable would generally not update the hint.
+> >>>>
+> >>>> I'm sure there are a million ways to solve this, but the simplest
+> >>>> one is to just remove a little code that tries to force the
+> >>>> affinity, as Nitesh has shown it fixes the bug and doesn't seem
+> >>>> to introduce immediate side effects.
+> >>>
+> >>> Unfortunately, I think there are quite a few other drivers now relying
+> >>> on this behaviour, since they are really using irq_set_affinity_hint()
+> >>> as a proxy for irq_set_affinity(). Partly since the latter isn't
+> >>> exported to modules, but also I have a vague memory of it being said
+> >>> that it's nice to update the user-visible hint to match when the
+> >>> affinity does have to be forced to something specific.
+> >>>
+> >>> Robin.
+> >>
+> >> Thanks for your feedback Robin, but there is definitely a bug here that
+> >> is being exposed by this code. The fact that people are using this
+> >> function means they're all exposed to this bug.
+> >>
+> >> Not sure if you saw, but this analysis from Nitesh explains what
+> >> happened chronologically to the kernel w.r.t this code, it's a useful
+> >> analysis! [1]
+> >>
+> >> I'd add in addition that irqbalance daemon *stopped* paying attention
+> >> to hints quite a while ago, so I'm not quite sure what purpose they
+> >> serve.
+> >>
+> >> [1]
+> >> https://lore.kernel.org/lkml/CAFki+Lm0W_brLu31epqD3gAV+WNKOJfVDfX2M8ZM__aj3nv9uA@mail.gmail.com/
+> >>
+> >
+> > Wanted to follow up to see if there are any more objections or even
+> > suggestions to take this forward?
+>
+> Oops, sorry, seems I got distracted before getting round to actually
+> typing up my response :)
 
-Each time set a different field and make sure traffic is only
-distributed when the field is changed in the packet stream.
+No worries.
 
-The test only verifies the behavior of IPv4/IPv6 overlays on top of an
-IPv6 underlay network. The previous patch verified the same with an IPv4
-underlay network.
+>
+> I'm not implying that there isn't a bug, or that this code ever made
+> sense in the first place, just that fixing it will unfortunately be a
+> bit more involved than a simple revert.
 
-Example output:
+Fair point.
 
- # ./ip6gre_custom_multipath_hash.sh
- TEST: ping                                                          [ OK ]
- TEST: ping6                                                         [ OK ]
- INFO: Running IPv4 overlay custom multipath hash tests
- TEST: Multipath hash field: Inner source IP (balanced)              [ OK ]
- INFO: Packets sent on path1 / path2: 6602 / 6002
- TEST: Multipath hash field: Inner source IP (unbalanced)            [ OK ]
- INFO: Packets sent on path1 / path2: 1 / 12601
- TEST: Multipath hash field: Inner destination IP (balanced)         [ OK ]
- INFO: Packets sent on path1 / path2: 6802 / 5801
- TEST: Multipath hash field: Inner destination IP (unbalanced)       [ OK ]
- INFO: Packets sent on path1 / path2: 12602 / 3
- TEST: Multipath hash field: Inner source port (balanced)            [ OK ]
- INFO: Packets sent on path1 / path2: 16431 / 16344
- TEST: Multipath hash field: Inner source port (unbalanced)          [ OK ]
- INFO: Packets sent on path1 / path2: 0 / 32773
- TEST: Multipath hash field: Inner destination port (balanced)       [ OK ]
- INFO: Packets sent on path1 / path2: 16431 / 16344
- TEST: Multipath hash field: Inner destination port (unbalanced)     [ OK ]
- INFO: Packets sent on path1 / path2: 2 / 32772
- INFO: Running IPv6 overlay custom multipath hash tests
- TEST: Multipath hash field: Inner source IP (balanced)              [ OK ]
- INFO: Packets sent on path1 / path2: 6704 / 5902
- TEST: Multipath hash field: Inner source IP (unbalanced)            [ OK ]
- INFO: Packets sent on path1 / path2: 1 / 12600
- TEST: Multipath hash field: Inner destination IP (balanced)         [ OK ]
- INFO: Packets sent on path1 / path2: 5751 / 6852
- TEST: Multipath hash field: Inner destination IP (unbalanced)       [ OK ]
- INFO: Packets sent on path1 / path2: 12602 / 0
- TEST: Multipath hash field: Inner flowlabel (balanced)              [ OK ]
- INFO: Packets sent on path1 / path2: 8272 / 8181
- TEST: Multipath hash field: Inner flowlabel (unbalanced)            [ OK ]
- INFO: Packets sent on path1 / path2: 3 / 12602
- TEST: Multipath hash field: Inner source port (balanced)            [ OK ]
- INFO: Packets sent on path1 / path2: 16424 / 16351
- TEST: Multipath hash field: Inner source port (unbalanced)          [ OK ]
- INFO: Packets sent on path1 / path2: 3 / 32774
- TEST: Multipath hash field: Inner destination port (balanced)       [ OK ]
- INFO: Packets sent on path1 / path2: 16425 / 16350
- TEST: Multipath hash field: Inner destination port (unbalanced)     [ OK ]
- INFO: Packets sent on path1 / path2: 2 / 32773
+> This patch as-is *will* subtly
+> break at least the system PMU drivers currently using
+> irq_set_affinity_hint() - those I know require the IRQ affinity to
+> follow whichever CPU the PMU context is bound to, in order to meet perf
+> core's assumptions about mutual exclusion.
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- .../ip6gre_custom_multipath_hash.sh           | 458 ++++++++++++++++++
- 1 file changed, 458 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh
+Thanks for bringing this up.
+Please correct me if I am wrong, so the PMU driver(s) is/are written
+in a way that
+it uses the hint API to overwrite the previously set affinity mask with a
+CPU to which the PMU context is bound to?
 
-diff --git a/tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh b/tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh
-new file mode 100755
-index 000000000000..8fea2c2e0b25
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh
-@@ -0,0 +1,458 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test traffic distribution when there are multiple paths between an IPv6 GRE
-+# tunnel. The tunnel carries IPv4 and IPv6 traffic between multiple hosts.
-+# Multiple routes are in the underlay network. With the default multipath
-+# policy, SW2 will only look at the outer IP addresses, hence only a single
-+# route would be used.
-+#
-+# +--------------------------------+
-+# | H1                             |
-+# |                     $h1 +      |
-+# |   198.51.100.{2-253}/24 |      |
-+# |   2001:db8:1::{2-fd}/64 |      |
-+# +-------------------------|------+
-+#                           |
-+# +-------------------------|-------------------+
-+# | SW1                     |                   |
-+# |                    $ol1 +                   |
-+# |         198.51.100.1/24                     |
-+# |        2001:db8:1::1/64                     |
-+# |                                             |
-+# |+ g1 (ip6gre)                                |
-+# |  loc=2001:db8:3::1                          |
-+# |  rem=2001:db8:3::2 -.                       |
-+# |     tos=inherit     |                       |
-+# |                     v                       |
-+# |                     + $ul1                  |
-+# |                     | 2001:db8:10::1/64     |
-+# +---------------------|-----------------------+
-+#                       |
-+# +---------------------|-----------------------+
-+# | SW2                 |                       |
-+# |               $ul21 +                       |
-+# |   2001:db8:10::2/64 |                       |
-+# |                     |                       |
-+# !   __________________+___                    |
-+# |  /                      \                   |
-+# |  |                      |                   |
-+# |  + $ul22.111 (vlan)     + $ul22.222 (vlan)  |
-+# |  | 2001:db8:11::1/64    | 2001:db8:12::1/64 |
-+# |  |                      |                   |
-+# +--|----------------------|-------------------+
-+#    |                      |
-+# +--|----------------------|-------------------+
-+# |  |                      |                   |
-+# |  + $ul32.111 (vlan)     + $ul32.222 (vlan)  |
-+# |  | 2001:db8:11::2/64    | 2001:db8:12::2/64 |
-+# |  |                      |                   |
-+# |  \__________________+___/                   |
-+# |                     |                       |
-+# |                     |                       |
-+# |               $ul31 +                       |
-+# |   2001:db8:13::1/64 |                   SW3 |
-+# +---------------------|-----------------------+
-+#                       |
-+# +---------------------|-----------------------+
-+# |                     + $ul4                  |
-+# |                     ^ 2001:db8:13::2/64     |
-+# |                     |                       |
-+# |+ g2 (ip6gre)        |                       |
-+# |  loc=2001:db8:3::2  |                       |
-+# |  rem=2001:db8:3::1 -'                       |
-+# |  tos=inherit                                |
-+# |                                             |
-+# |                    $ol4 +                   |
-+# |          203.0.113.1/24 |                   |
-+# |        2001:db8:2::1/64 |               SW4 |
-+# +-------------------------|-------------------+
-+#                           |
-+# +-------------------------|------+
-+# |                         |      |
-+# |                     $h2 +      |
-+# |    203.0.113.{2-253}/24        |
-+# |   2001:db8:2::{2-fd}/64     H2 |
-+# +--------------------------------+
-+
-+ALL_TESTS="
-+	ping_ipv4
-+	ping_ipv6
-+	custom_hash
-+"
-+
-+NUM_NETIFS=10
-+source lib.sh
-+
-+h1_create()
-+{
-+	simple_if_init $h1 198.51.100.2/24 2001:db8:1::2/64
-+	ip route add vrf v$h1 default via 198.51.100.1 dev $h1
-+	ip -6 route add vrf v$h1 default via 2001:db8:1::1 dev $h1
-+}
-+
-+h1_destroy()
-+{
-+	ip -6 route del vrf v$h1 default
-+	ip route del vrf v$h1 default
-+	simple_if_fini $h1 198.51.100.2/24 2001:db8:1::2/64
-+}
-+
-+sw1_create()
-+{
-+	simple_if_init $ol1 198.51.100.1/24 2001:db8:1::1/64
-+	__simple_if_init $ul1 v$ol1 2001:db8:10::1/64
-+
-+	tunnel_create g1 ip6gre 2001:db8:3::1 2001:db8:3::2 tos inherit \
-+		dev v$ol1
-+	__simple_if_init g1 v$ol1 2001:db8:3::1/128
-+	ip route add vrf v$ol1 2001:db8:3::2/128 via 2001:db8:10::2
-+
-+	ip route add vrf v$ol1 203.0.113.0/24 dev g1
-+	ip -6 route add vrf v$ol1 2001:db8:2::/64 dev g1
-+}
-+
-+sw1_destroy()
-+{
-+	ip -6 route del vrf v$ol1 2001:db8:2::/64
-+	ip route del vrf v$ol1 203.0.113.0/24
-+
-+	ip route del vrf v$ol1 2001:db8:3::2/128
-+	__simple_if_fini g1 2001:db8:3::1/128
-+	tunnel_destroy g1
-+
-+	__simple_if_fini $ul1 2001:db8:10::1/64
-+	simple_if_fini $ol1 198.51.100.1/24 2001:db8:1::1/64
-+}
-+
-+sw2_create()
-+{
-+	simple_if_init $ul21 2001:db8:10::2/64
-+	__simple_if_init $ul22 v$ul21
-+	vlan_create $ul22 111 v$ul21 2001:db8:11::1/64
-+	vlan_create $ul22 222 v$ul21 2001:db8:12::1/64
-+
-+	ip -6 route add vrf v$ul21 2001:db8:3::1/128 via 2001:db8:10::1
-+	ip -6 route add vrf v$ul21 2001:db8:3::2/128 \
-+	   nexthop via 2001:db8:11::2 \
-+	   nexthop via 2001:db8:12::2
-+}
-+
-+sw2_destroy()
-+{
-+	ip -6 route del vrf v$ul21 2001:db8:3::2/128
-+	ip -6 route del vrf v$ul21 2001:db8:3::1/128
-+
-+	vlan_destroy $ul22 222
-+	vlan_destroy $ul22 111
-+	__simple_if_fini $ul22
-+	simple_if_fini $ul21 2001:db8:10::2/64
-+}
-+
-+sw3_create()
-+{
-+	simple_if_init $ul31 2001:db8:13::1/64
-+	__simple_if_init $ul32 v$ul31
-+	vlan_create $ul32 111 v$ul31 2001:db8:11::2/64
-+	vlan_create $ul32 222 v$ul31 2001:db8:12::2/64
-+
-+	ip -6 route add vrf v$ul31 2001:db8:3::2/128 via 2001:db8:13::2
-+	ip -6 route add vrf v$ul31 2001:db8:3::1/128 \
-+	   nexthop via 2001:db8:11::1 \
-+	   nexthop via 2001:db8:12::1
-+
-+	tc qdisc add dev $ul32 clsact
-+	tc filter add dev $ul32 ingress pref 111 prot 802.1Q \
-+	   flower vlan_id 111 action pass
-+	tc filter add dev $ul32 ingress pref 222 prot 802.1Q \
-+	   flower vlan_id 222 action pass
-+}
-+
-+sw3_destroy()
-+{
-+	tc qdisc del dev $ul32 clsact
-+
-+	ip -6 route del vrf v$ul31 2001:db8:3::1/128
-+	ip -6 route del vrf v$ul31 2001:db8:3::2/128
-+
-+	vlan_destroy $ul32 222
-+	vlan_destroy $ul32 111
-+	__simple_if_fini $ul32
-+	simple_if_fini $ul31 2001:db8:13::1/64
-+}
-+
-+sw4_create()
-+{
-+	simple_if_init $ol4 203.0.113.1/24 2001:db8:2::1/64
-+	__simple_if_init $ul4 v$ol4 2001:db8:13::2/64
-+
-+	tunnel_create g2 ip6gre 2001:db8:3::2 2001:db8:3::1 tos inherit \
-+		dev v$ol4
-+	__simple_if_init g2 v$ol4 2001:db8:3::2/128
-+	ip -6 route add vrf v$ol4 2001:db8:3::1/128 via 2001:db8:13::1
-+
-+	ip route add vrf v$ol4 198.51.100.0/24 dev g2
-+	ip -6 route add vrf v$ol4 2001:db8:1::/64 dev g2
-+}
-+
-+sw4_destroy()
-+{
-+	ip -6 route del vrf v$ol4 2001:db8:1::/64
-+	ip route del vrf v$ol4 198.51.100.0/24
-+
-+	ip -6 route del vrf v$ol4 2001:db8:3::1/128
-+	__simple_if_fini g2 2001:db8:3::2/128
-+	tunnel_destroy g2
-+
-+	__simple_if_fini $ul4 2001:db8:13::2/64
-+	simple_if_fini $ol4 203.0.113.1/24 2001:db8:2::1/64
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 203.0.113.2/24 2001:db8:2::2/64
-+	ip route add vrf v$h2 default via 203.0.113.1 dev $h2
-+	ip -6 route add vrf v$h2 default via 2001:db8:2::1 dev $h2
-+}
-+
-+h2_destroy()
-+{
-+	ip -6 route del vrf v$h2 default
-+	ip route del vrf v$h2 default
-+	simple_if_fini $h2 203.0.113.2/24 2001:db8:2::2/64
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+
-+	ol1=${NETIFS[p2]}
-+	ul1=${NETIFS[p3]}
-+
-+	ul21=${NETIFS[p4]}
-+	ul22=${NETIFS[p5]}
-+
-+	ul32=${NETIFS[p6]}
-+	ul31=${NETIFS[p7]}
-+
-+	ul4=${NETIFS[p8]}
-+	ol4=${NETIFS[p9]}
-+
-+	h2=${NETIFS[p10]}
-+
-+	vrf_prepare
-+	h1_create
-+	sw1_create
-+	sw2_create
-+	sw3_create
-+	sw4_create
-+	h2_create
-+
-+	forwarding_enable
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	forwarding_restore
-+
-+	h2_destroy
-+	sw4_destroy
-+	sw3_destroy
-+	sw2_destroy
-+	sw1_destroy
-+	h1_destroy
-+	vrf_cleanup
-+}
-+
-+ping_ipv4()
-+{
-+	ping_test $h1 203.0.113.2
-+}
-+
-+ping_ipv6()
-+{
-+	ping6_test $h1 2001:db8:2::2
-+}
-+
-+send_src_ipv4()
-+{
-+	$MZ $h1 -q -p 64 -A "198.51.100.2-198.51.100.253" -B 203.0.113.2 \
-+		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
-+}
-+
-+send_dst_ipv4()
-+{
-+	$MZ $h1 -q -p 64 -A 198.51.100.2 -B "203.0.113.2-203.0.113.253" \
-+		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
-+}
-+
-+send_src_udp4()
-+{
-+	$MZ $h1 -q -p 64 -A 198.51.100.2 -B 203.0.113.2 \
-+		-d 1msec -t udp "sp=0-32768,dp=30000"
-+}
-+
-+send_dst_udp4()
-+{
-+	$MZ $h1 -q -p 64 -A 198.51.100.2 -B 203.0.113.2 \
-+		-d 1msec -t udp "sp=20000,dp=0-32768"
-+}
-+
-+send_src_ipv6()
-+{
-+	$MZ -6 $h1 -q -p 64 -A "2001:db8:1::2-2001:db8:1::fd" -B 2001:db8:2::2 \
-+		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
-+}
-+
-+send_dst_ipv6()
-+{
-+	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B "2001:db8:2::2-2001:db8:2::fd" \
-+		-d 1msec -c 50 -t udp "sp=20000,dp=30000"
-+}
-+
-+send_flowlabel()
-+{
-+	# Generate 16384 echo requests, each with a random flow label.
-+	for _ in $(seq 1 16384); do
-+		ip vrf exec v$h1 \
-+			$PING6 2001:db8:2::2 -F 0 -c 1 -q >/dev/null 2>&1
-+	done
-+}
-+
-+send_src_udp6()
-+{
-+	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B 2001:db8:2::2 \
-+		-d 1msec -t udp "sp=0-32768,dp=30000"
-+}
-+
-+send_dst_udp6()
-+{
-+	$MZ -6 $h1 -q -p 64 -A 2001:db8:1::2 -B 2001:db8:2::2 \
-+		-d 1msec -t udp "sp=20000,dp=0-32768"
-+}
-+
-+custom_hash_test()
-+{
-+	local field="$1"; shift
-+	local balanced="$1"; shift
-+	local send_flows="$@"
-+
-+	RET=0
-+
-+	local t0_111=$(tc_rule_stats_get $ul32 111 ingress)
-+	local t0_222=$(tc_rule_stats_get $ul32 222 ingress)
-+
-+	$send_flows
-+
-+	local t1_111=$(tc_rule_stats_get $ul32 111 ingress)
-+	local t1_222=$(tc_rule_stats_get $ul32 222 ingress)
-+
-+	local d111=$((t1_111 - t0_111))
-+	local d222=$((t1_222 - t0_222))
-+
-+	local diff=$((d222 - d111))
-+	local sum=$((d111 + d222))
-+
-+	local pct=$(echo "$diff / $sum * 100" | bc -l)
-+	local is_balanced=$(echo "-20 <= $pct && $pct <= 20" | bc)
-+
-+	[[ ( $is_balanced -eq 1 && $balanced == "balanced" ) ||
-+	   ( $is_balanced -eq 0 && $balanced == "unbalanced" ) ]]
-+	check_err $? "Expected traffic to be $balanced, but it is not"
-+
-+	log_test "Multipath hash field: $field ($balanced)"
-+	log_info "Packets sent on path1 / path2: $d111 / $d222"
-+}
-+
-+custom_hash_v4()
-+{
-+	log_info "Running IPv4 overlay custom multipath hash tests"
-+
-+	# Prevent the neighbour table from overflowing, as different neighbour
-+	# entries will be created on $ol4 when using different destination IPs.
-+	sysctl_set net.ipv4.neigh.default.gc_thresh1 1024
-+	sysctl_set net.ipv4.neigh.default.gc_thresh2 1024
-+	sysctl_set net.ipv4.neigh.default.gc_thresh3 1024
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_fields 0x0040
-+	custom_hash_test "Inner source IP" "balanced" send_src_ipv4
-+	custom_hash_test "Inner source IP" "unbalanced" send_dst_ipv4
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_fields 0x0080
-+	custom_hash_test "Inner destination IP" "balanced" send_dst_ipv4
-+	custom_hash_test "Inner destination IP" "unbalanced" send_src_ipv4
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_fields 0x0400
-+	custom_hash_test "Inner source port" "balanced" send_src_udp4
-+	custom_hash_test "Inner source port" "unbalanced" send_dst_udp4
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_fields 0x0800
-+	custom_hash_test "Inner destination port" "balanced" send_dst_udp4
-+	custom_hash_test "Inner destination port" "unbalanced" send_src_udp4
-+
-+	sysctl_restore net.ipv4.neigh.default.gc_thresh3
-+	sysctl_restore net.ipv4.neigh.default.gc_thresh2
-+	sysctl_restore net.ipv4.neigh.default.gc_thresh1
-+}
-+
-+custom_hash_v6()
-+{
-+	log_info "Running IPv6 overlay custom multipath hash tests"
-+
-+	# Prevent the neighbour table from overflowing, as different neighbour
-+	# entries will be created on $ol4 when using different destination IPs.
-+	sysctl_set net.ipv6.neigh.default.gc_thresh1 1024
-+	sysctl_set net.ipv6.neigh.default.gc_thresh2 1024
-+	sysctl_set net.ipv6.neigh.default.gc_thresh3 1024
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_fields 0x0040
-+	custom_hash_test "Inner source IP" "balanced" send_src_ipv6
-+	custom_hash_test "Inner source IP" "unbalanced" send_dst_ipv6
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_fields 0x0080
-+	custom_hash_test "Inner destination IP" "balanced" send_dst_ipv6
-+	custom_hash_test "Inner destination IP" "unbalanced" send_src_ipv6
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_fields 0x0200
-+	custom_hash_test "Inner flowlabel" "balanced" send_flowlabel
-+	custom_hash_test "Inner flowlabel" "unbalanced" send_src_ipv6
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_fields 0x0400
-+	custom_hash_test "Inner source port" "balanced" send_src_udp6
-+	custom_hash_test "Inner source port" "unbalanced" send_dst_udp6
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_fields 0x0800
-+	custom_hash_test "Inner destination port" "balanced" send_dst_udp6
-+	custom_hash_test "Inner destination port" "unbalanced" send_src_udp6
-+
-+	sysctl_restore net.ipv6.neigh.default.gc_thresh3
-+	sysctl_restore net.ipv6.neigh.default.gc_thresh2
-+	sysctl_restore net.ipv6.neigh.default.gc_thresh1
-+}
-+
-+custom_hash()
-+{
-+	# Test that when the hash policy is set to custom, traffic is
-+	# distributed only according to the fields set in the
-+	# fib_multipath_hash_fields sysctl.
-+	#
-+	# Each time set a different field and make sure traffic is only
-+	# distributed when the field is changed in the packet stream.
-+
-+	sysctl_set net.ipv6.fib_multipath_hash_policy 3
-+
-+	custom_hash_v4
-+	custom_hash_v6
-+
-+	sysctl_restore net.ipv6.fib_multipath_hash_policy
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+tests_run
-+
-+exit $EXIT_STATUS
+Is this context information exposed in the userspace and can we modify the
+IRQ affinity mask from the userspace based on that?
+I do understand that this is a behavior change from the PMU drivers
+perspective.
+
+>
+> As far as the consistency argument goes, maybe that's just backwards and
+> it should be irq_set_affinity() that also sets the hint, to indicate to
+> userspace that the affinity has been forced by the kernel? Either way
+> we'll need to do a little more diligence to figure out which callers
+> actually care about more than just the hint, and sort them out first.
+>
+
+We can use irq_set_affinity() to set the hint mask as well, however, maybe
+there is a specific reason behind separating those two in the
+first place (maybe not?).
+But even in this case, we have to either modify the PMU drivers' IRQs
+affinity from the userspace or we will have to make changes in the existing
+request_irq code path.
+I am not sure about the latter because we already have the required controls
+to adjust the device IRQ mask (by using default_smp_affinity or by modifying
+them manually).
+
 -- 
-2.31.1
+Thanks
+Nitesh
 
