@@ -2,93 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDD8F386C07
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:10:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 004F2386C13
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:13:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245094AbhEQVLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 17:11:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50854 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241743AbhEQVL1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 May 2021 17:11:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B3CFA61350;
-        Mon, 17 May 2021 21:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621285810;
-        bh=41jlKsAxTdXtVg/ZNEArpk8xqZB1Cn7t81dNwL0DisA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tkzMQNqTXfwvFJLbKEkXPmxmGVOzgU6B07Fs0A84jM4fL/i4hO+XkTrEH0f1l660K
-         owt/GdzVCSig7DHaK3q+kp8SbEs5DIsETxPobkUXObxJPhlaCMFGZwAi+ZhSv6GTqs
-         G4Wn+s4MKEMwYRr328fJ5HVDuKduqSqqn5CeQhg57eNhP2Hl22f3MK1MSpzHv9Q17n
-         HKNiiDuCS8Syc8TG95BJpeCQVN7VhvBfpdgF8CU5xVhc6ZsFKtfdf8scuyIj3PwJZp
-         4nikaRz/3640N3Bndx/onG/LUDVi1EYAKVPulgL/pChJeen5QKYc4Z69uiPj1nl3vw
-         JyVXri8G4LI5A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AC58060A35;
-        Mon, 17 May 2021 21:10:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S237845AbhEQVOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 17:14:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39058 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237677AbhEQVOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 17:14:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621286013;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cMVyazJ1DXkMnUs3j/wPGjHkILobShDj4cNdkiPTOO8=;
+        b=KFWsQtZHOxaDYVZg7ozn9PfqPfwhgPu6C8LrQrdGdSQ43IjncUsgGxBFZK8TpXjf817WrA
+        n4tt3JKw+vritcNPfcULBeRijhW5UrSeUF3HzyaUaXJtl87zDJdV6t/KwfVxtc1GQ3TYnK
+        asd5i0cZWMlFaLFR/n5rNBGk0/FVC64=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-579-XIJPqR6HMJStZBUes2DlAQ-1; Mon, 17 May 2021 17:13:31 -0400
+X-MC-Unique: XIJPqR6HMJStZBUes2DlAQ-1
+Received: by mail-lj1-f197.google.com with SMTP id y5-20020a2e9d450000b02900f6299549d1so884504ljj.22
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 14:13:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cMVyazJ1DXkMnUs3j/wPGjHkILobShDj4cNdkiPTOO8=;
+        b=gKU7ylbUUu7TS5uxRLXPgbjWinECwqOKMdU8x2fk2oqKXtAXdnHsqbqhVg8qKVnSyV
+         Xm0W/SK5V/eTN2J2Zkhli3Tl0mMipiychfM8RhpcdhWr2BlSQMbSJVdjzsm0KukNWIwk
+         KvoFKe0zfJ3fEfUWcgTYieUYUhQ8Ev8lwwn8b3O973RgafxOt4wuq+KaD4SQ5Akc/cGM
+         ml+90Nd0mJ6c5GPWDasBtrqO4icsBLFt3+PHbvSON8QNEJ26cq2KfysQ9gZLivrhMr8Q
+         XCgmq9lIJA2mgA5GvzkU6/v4ybfvRCwWhjtMQqCv3lyZdVGiyJsPEl8sBobdnTYdoQeQ
+         zW9w==
+X-Gm-Message-State: AOAM530CNXDcoWg8bLe3r3INRw0c36Knv8L9m8BMXG3ljfC6HQzhyGsq
+        eZmxs09FpMPFVxNRTwvz/7MlVrqi5Kt2Fg8l2MHABVE+YoYdhTS21QA97JtzPdZE1YMckbCyK/8
+        F7Pqj48ww//foF/cj9H3bIvEORNRAzsYI
+X-Received: by 2002:a05:6512:3b0f:: with SMTP id f15mr1283915lfv.384.1621286010053;
+        Mon, 17 May 2021 14:13:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyqIbTFw79dJ0F4QTNj1vmQA/K7J9iPzeYKZygGXoFgqrcehoZoCiXVL8VcdElnx9bU093vnbhjyUBh7vmtE5k=
+X-Received: by 2002:a05:6512:3b0f:: with SMTP id f15mr1283890lfv.384.1621286009804;
+ Mon, 17 May 2021 14:13:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] NFC: nci: fix memory leak in nci_allocate_device
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162128581070.6429.7239816038541020498.git-patchwork-notify@kernel.org>
-Date:   Mon, 17 May 2021 21:10:10 +0000
-References: <20210514232906.982825-1-mudongliangabcd@gmail.com>
-In-Reply-To: <20210514232906.982825-1-mudongliangabcd@gmail.com>
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
-        bongsu.jeon@samsung.com, andrew@lunn.ch, wanghai38@huawei.com,
-        zhengyongjun3@huawei.com, alexs@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+19bcfc64a8df1318d1c3@syzkaller.appspotmail.com
+References: <20210501021832.743094-1-jesse.brandeburg@intel.com>
+ <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com> <20210504092340.00006c61@intel.com>
+ <CAFki+LmR-o+Fng21ggy48FUX7RhjjpjO87dn3Ld+L4BK2pSRZg@mail.gmail.com>
+ <bf1d4892-0639-0bbf-443e-ba284a8ed457@arm.com> <CAFki+L=LDizBJmFUieMDg9J=U6mn6XxTPPkAaWiyppTouTzaqw@mail.gmail.com>
+ <87y2cddtxb.ffs@nanos.tec.linutronix.de>
+In-Reply-To: <87y2cddtxb.ffs@nanos.tec.linutronix.de>
+From:   Nitesh Lal <nilal@redhat.com>
+Date:   Mon, 17 May 2021 17:13:18 -0400
+Message-ID: <CAFki+L=RaSZXASAaAxBf=RJqXWju+pkSj3ftMkmoqCLPfg0v=g@mail.gmail.com>
+Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when
+ setting the hint
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        Alex Belits <abelits@marvell.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Marc Zyngier <maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, May 17, 2021 at 3:47 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+>
+> Nitesh,
+>
+> On Mon, May 17 2021 at 14:21, Nitesh Lal wrote:
+> > On Mon, May 17, 2021 at 1:26 PM Robin Murphy <robin.murphy@arm.com> wrote:
+> >
+> > We can use irq_set_affinity() to set the hint mask as well, however, maybe
+> > there is a specific reason behind separating those two in the
+> > first place (maybe not?).
+>
+> Yes, because kernel side settings might overwrite the hint.
+>
+> > But even in this case, we have to either modify the PMU drivers' IRQs
+> > affinity from the userspace or we will have to make changes in the existing
+> > request_irq code path.
+>
+> Adjusting them from user space does not work for various reasons,
+> especially CPU hotplug.
+>
+> > I am not sure about the latter because we already have the required controls
+> > to adjust the device IRQ mask (by using default_smp_affinity or by modifying
+> > them manually).
+>
+> default_smp_affinity does not help at all and there is nothing a module
+> can modify manually.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Right, it will not help a module.
 
-On Sat, 15 May 2021 07:29:06 +0800 you wrote:
-> nfcmrvl_disconnect fails to free the hci_dev field in struct nci_dev.
-> Fix this by freeing hci_dev in nci_free_device.
-> 
-> BUG: memory leak
-> unreferenced object 0xffff888111ea6800 (size 1024):
->   comm "kworker/1:0", pid 19, jiffies 4294942308 (age 13.580s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 00 60 fd 0c 81 88 ff ff  .........`......
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<000000004bc25d43>] kmalloc include/linux/slab.h:552 [inline]
->     [<000000004bc25d43>] kzalloc include/linux/slab.h:682 [inline]
->     [<000000004bc25d43>] nci_hci_allocate+0x21/0xd0 net/nfc/nci/hci.c:784
->     [<00000000c59cff92>] nci_allocate_device net/nfc/nci/core.c:1170 [inline]
->     [<00000000c59cff92>] nci_allocate_device+0x10b/0x160 net/nfc/nci/core.c:1132
->     [<00000000006e0a8e>] nfcmrvl_nci_register_dev+0x10a/0x1c0 drivers/nfc/nfcmrvl/main.c:153
->     [<000000004da1b57e>] nfcmrvl_probe+0x223/0x290 drivers/nfc/nfcmrvl/usb.c:345
->     [<00000000d506aed9>] usb_probe_interface+0x177/0x370 drivers/usb/core/driver.c:396
->     [<00000000bc632c92>] really_probe+0x159/0x4a0 drivers/base/dd.c:554
->     [<00000000f5009125>] driver_probe_device+0x84/0x100 drivers/base/dd.c:740
->     [<000000000ce658ca>] __device_attach_driver+0xee/0x110 drivers/base/dd.c:846
->     [<000000007067d05f>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:431
->     [<00000000f8e13372>] __device_attach+0x122/0x250 drivers/base/dd.c:914
->     [<000000009cf68860>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:491
->     [<00000000359c965a>] device_add+0x5be/0xc30 drivers/base/core.c:3109
->     [<00000000086e4bd3>] usb_set_configuration+0x9d9/0xb90 drivers/usb/core/message.c:2164
->     [<00000000ca036872>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
->     [<00000000d40d36f6>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
->     [<00000000bc632c92>] really_probe+0x159/0x4a0 drivers/base/dd.c:554
-> 
-> [...]
+>
+> I'll send out a patch series which cleans that up soon.
 
-Here is the summary with links:
-  - [v2] NFC: nci: fix memory leak in nci_allocate_device
-    https://git.kernel.org/netdev/net/c/e0652f8bb44d
+Ack, thanks.
 
-You are awesome, thank you!
+>
+> Thanks,
+>
+>         tglx
+>
+>
+
+
 --
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Nitesh
 
