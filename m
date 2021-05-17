@@ -2,104 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66F04383CEA
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 21:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31CE7383D1E
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 21:19:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231377AbhEQTJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 15:09:47 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:54512 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbhEQTJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 15:09:46 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1621278508;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CZq0Zc1ElW6yPz6imj2oxDmoySZoSSEBMbiufUA2Zmg=;
-        b=o9SQmC70s2eFvxz//H6OLHxYHDqY03vKEABdmcJffUJdxoDE87/lhAJMMZVY2Dwze1oLsn
-        zQgHg1g7DlquvL0lXHsQKQZ4CFqYDHyZSrDXTTKUcrxeUH2CGy41KWgB620tLMpaygbqVR
-        6j+VVrHb7m5+VPg2F/w78jRZ4o2me/U07mY4WQpWYY8J1iJHN5CSuxBf26syFS2tbRkWa7
-        MBfFKEgk5mVCma/Or3ouChFirAD3Ev4R5uo7+jq4PJpCgKQoPA7Ehfx2jKKHe1uqKMz4lB
-        Q1VvgjDheJp1mUFX3NqVjFSclKy0ySROj49btfkJRKs03KvwAGdj0yBp0+ASoQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1621278508;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CZq0Zc1ElW6yPz6imj2oxDmoySZoSSEBMbiufUA2Zmg=;
-        b=e0aQcF3w2r0jSv9EnzJ3s3M+MP2CDaqYaTFGXis35a5At/TqI3mnTBo4LHbiRLWFFb0+5r
-        qoL7yx7aWNgupPDQ==
-To:     Robin Murphy <robin.murphy@arm.com>, Nitesh Lal <nilal@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "frederic\@kernel.org" <frederic@kernel.org>,
-        "juri.lelli\@redhat.com" <juri.lelli@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
-        Alex Belits <abelits@marvell.com>,
-        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas\@google.com" <bhelgaas@google.com>,
-        "linux-pci\@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
-        "peterz\@infradead.org" <peterz@infradead.org>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "akpm\@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr\@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen\@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt\@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi\@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun\@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com,
-        Marc Zyngier <maz@kernel.org>
-Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when setting the hint
-In-Reply-To: <d1d5e797-49ee-4968-88c6-c07119343492@arm.com>
-References: <20210501021832.743094-1-jesse.brandeburg@intel.com> <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com> <20210504092340.00006c61@intel.com> <CAFki+LmR-o+Fng21ggy48FUX7RhjjpjO87dn3Ld+L4BK2pSRZg@mail.gmail.com> <bf1d4892-0639-0bbf-443e-ba284a8ed457@arm.com> <87sg2lz0zz.ffs@nanos.tec.linutronix.de> <d1d5e797-49ee-4968-88c6-c07119343492@arm.com>
-Date:   Mon, 17 May 2021 21:08:27 +0200
-Message-ID: <874kf1faac.ffs@nanos.tec.linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S232773AbhEQTVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 15:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232515AbhEQTU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 15:20:59 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C534DC061573;
+        Mon, 17 May 2021 12:19:42 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id i7so6927333ioa.12;
+        Mon, 17 May 2021 12:19:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=8yOnzHIC3Xtg43c+Z0BxzrFMxEw+BU0kg8+CceoqJ8M=;
+        b=Zmo8ROBR+ZbQN3vQLxMz3JZA7+4uiOq4adz7yBmew9Sl2KkFeoAlrvwOZ136bxPvwj
+         comcBdIebGmI0OZiCAkzOmbpCOxvIzorvt2v5PrdyloCkRL87feiRCE5Fj243GtFwJm3
+         siU7ggpdPFCeOamoL3Zbanq4ekTQzF3nX/XiNfwSQaR5g9r0wpRT/B39fQJHO4IY/ec/
+         IVR4QLQDGGd4ZTBu25xYV4xIoimlablUBqhE03JH4qTkXf+QGW1xfdfoYVzOai6J2Rgx
+         0uETOyYuqtF3neoL+twsV8Vfw19f2ZmPG3trFG5rLbRdG8eyWYDVAReBER8T9UeH9B8I
+         pGXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=8yOnzHIC3Xtg43c+Z0BxzrFMxEw+BU0kg8+CceoqJ8M=;
+        b=aBnL/wm3aj3BNPxaCYYtd+sy8yWHJ2fHA6h+XaS04rUuCI2/z326tbu9Cz00L2rsBI
+         iMR/iOZ2xJfbcoa6M0IgvyVXE2A00J/D8kvZIUot1bAPp0xmPES7wB02nb0mgQRj4Ry5
+         sE4N39cNnJqw0FHBgzwg8om6qOun1bw1zPHPyONcWNQbMFFxhNAgsz1s8X6wdwbZo2uY
+         tiYOwqsE+7PW9cEdceaSSHyoSyvdLR1LDXRDIoxSybfgDiYJTbjfjAOYXfpSYTF55TMi
+         cZ/00z2P7PDX3O+G6b+t50pBve0MHsQ63hY14heZSmkDFNzPFowkiSJfpnagMqbuOkfY
+         fLRg==
+X-Gm-Message-State: AOAM533Uis0sdLZXS3rt7iSsvGNGdhIxenxlglrwHrHCIS+HjczRP9CC
+        d0Eb0zfy5gLB6VYWurvCIhM=
+X-Google-Smtp-Source: ABdhPJzusXHPICl7ElUGIohuEFRMIBSBx+7RqeFyaQFIoOn2bSjqzLOJkXlNnZ6FcBGNBwMCisCM8w==
+X-Received: by 2002:a02:8787:: with SMTP id t7mr1511892jai.53.1621279182318;
+        Mon, 17 May 2021 12:19:42 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id h17sm7723685iog.47.2021.05.17.12.19.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 May 2021 12:19:41 -0700 (PDT)
+Date:   Mon, 17 May 2021 12:19:33 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <60a2c1c5b31bb_18a5f208ae@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210517022348.50555-1-xiyou.wangcong@gmail.com>
+References: <20210517022348.50555-1-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf] skmsg: remove unused parameters of sk_msg_wait_data()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 17 2021 at 19:50, Robin Murphy wrote:
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> 'err' and 'flags' are not used, we can just get rid of them.
+> 
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-> On 2021-05-17 19:08, Thomas Gleixner wrote:
->> On Mon, May 17 2021 at 18:26, Robin Murphy wrote:
->>> On 2021-05-17 17:57, Nitesh Lal wrote:
->>> I'm not implying that there isn't a bug, or that this code ever made
->>> sense in the first place, just that fixing it will unfortunately be a
->>> bit more involved than a simple revert. This patch as-is *will* subtly
->>> break at least the system PMU drivers currently using
->> 
->> s/using/abusing/
->> 
->>> irq_set_affinity_hint() - those I know require the IRQ affinity to
->>> follow whichever CPU the PMU context is bound to, in order to meet perf
->>> core's assumptions about mutual exclusion.
->> 
->> Which driver is that?
->
-> Right now, any driver which wants to control an IRQ's affinity and also 
-> build as a module, for one thing. I'm familiar with drivers/perf/ where 
-> a basic pattern has been widely copied;
+Thanks. At bpf-next would also work.
 
-Bah. Why the heck can't people talk and just go and rumage until they
-find something which hopefully does what they want...
-
-The name of that function should have rang all alarm bells...
-
-> some of the callers in other subsystems appear to *expect* it to set
-> the underlying affinity as well, but whether any of those added within
-> the last 6 years represent a functional dependency rather than just a
-> performance concern I don't know.
-
-Sigh. Let me do yet another tree wide audit...
-
-Thanks,
-
-        tglx
-
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
