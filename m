@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B6FB383989
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 18:20:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75108383993
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 18:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345409AbhEQQVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 12:21:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41886 "EHLO mail.kernel.org"
+        id S245162AbhEQQYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 12:24:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45662 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238677AbhEQQS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 May 2021 12:18:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6A2B160FE9;
-        Mon, 17 May 2021 16:17:40 +0000 (UTC)
+        id S1344054AbhEQQYK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 May 2021 12:24:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C05F6108D;
+        Mon, 17 May 2021 16:22:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621268260;
-        bh=N+mpCk+mQz/P22fRH6HdBrfNddDO4XUGzA5apz0Tuik=;
+        s=k20201202; t=1621268573;
+        bh=j9ObgA0Uk0FJTFckH7PgM4hmZSrWR4u/1ilgsCcRn7E=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=nLMPV+wXjFiPdSYmoMtwoPcDtD4azw73AIj4ctyro9mwBJsoHlOrd4Jsy6uoPk+zR
-         X7nOKwvXjmlb8m4vLLPNVKJ4e1xfDM8AOGq0i/JXOdAPblJEJwPdLnjXwXVLdQ7YOG
-         vP248xJdNhj6CeYPxfxM/NlxbXqAbTdZm1DQ96h5rDKHef8vnve/KzydTby0Usdwty
-         8FBIyP5XgsVUrs7GhRu+ZTrZapVZik03t9Gf4/atT2k5fEtNvr2b1Ex0h+IMNB7vvN
-         cWTkt08edEK32f9OT+I+YghYYYU8GHHRfgZCnRDeyirkSN4bQAS9s8mpiO8B0hCe0z
-         t3gL9krK8XqJA==
-Received: by mail-lf1-f44.google.com with SMTP id q7so8332984lfr.6;
-        Mon, 17 May 2021 09:17:40 -0700 (PDT)
-X-Gm-Message-State: AOAM532wkrUJbyW6PpoRtj3T1moG+aqf47X4YY+c+LAwgorrYc10RHTe
-        I5vCq+VRtiJCtvWWBGJlfvy9qfoObRUCHdiJ4q4=
-X-Google-Smtp-Source: ABdhPJxh6EdWbws2fVp+x0SWstzHJX7NNwNnvu77wYqT7NT6HVVQuv0i+VP+Jw9qokCLy+EP2nPe5o3k/e70AyYq9cs=
-X-Received: by 2002:a19:5e5d:: with SMTP id z29mr449934lfi.281.1621268258815;
- Mon, 17 May 2021 09:17:38 -0700 (PDT)
+        b=Rd50zs6A4bzYGrtxcIExxHzwdZq86wjzG7l67Y8zn5Kr2Uj9KUwjMmFb5DXxrShkH
+         +Bq9tPNQoAQeBNQD4UpOyNm9z8nQgXgsYljNyatn+WoUUEczg3FbsMAT6EZ//6340z
+         d7e05eOMQ85m9y/cQc3MLtSO8Omn/CToHGOPj3kjWXkuCPd7jkEjZU5QMTLE3DoD7s
+         GXNizNqk6Kz8FyLNEG8okPJeKeKBQF0ObzFKv3sSBO2rHeq7h/2aYZZ3oMFxc8vDt+
+         UROqgJM2PNZmg7EvXIELTAgdhHQByIW3vwoAxrmeEaGdUMts+oVXvdtMU62Wa+fhLi
+         zBkkMff6WzXTA==
+Received: by mail-lf1-f48.google.com with SMTP id v9so8338978lfa.4;
+        Mon, 17 May 2021 09:22:53 -0700 (PDT)
+X-Gm-Message-State: AOAM533hrl3+VHtzhhG0RLEjmtUWfOamhp6PQCHx5cIo/TQm2f8j9wEb
+        ixdoOeEmYDFT/EIpod3X/UZEqrlCbRdMD7De3+o=
+X-Google-Smtp-Source: ABdhPJyRdS1gs0WUYWGUfuCZ2HnZE1eV0GPJnEiXBDTZQ6cloD1OCWxdAQ5Q0NmBUOeiUVO5+fX71WNPFVAbewJp9u8=
+X-Received: by 2002:ac2:52b6:: with SMTP id r22mr476382lfm.261.1621268571928;
+ Mon, 17 May 2021 09:22:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210517022348.50555-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20210517022348.50555-1-xiyou.wangcong@gmail.com>
+References: <20210517022322.50501-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <20210517022322.50501-1-xiyou.wangcong@gmail.com>
 From:   Song Liu <song@kernel.org>
-Date:   Mon, 17 May 2021 09:17:27 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW51LJAwOT_LjgYxx3n80hGZm6Tm=QSRQzXUuWXhsNsKSg@mail.gmail.com>
-Message-ID: <CAPhsuW51LJAwOT_LjgYxx3n80hGZm6Tm=QSRQzXUuWXhsNsKSg@mail.gmail.com>
-Subject: Re: [Patch bpf] skmsg: remove unused parameters of sk_msg_wait_data()
+Date:   Mon, 17 May 2021 09:22:41 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW5XVnaL98Qnxtqa1yY4JWW5SSiC+VXXMidKC99JCdjD7A@mail.gmail.com>
+Message-ID: <CAPhsuW5XVnaL98Qnxtqa1yY4JWW5SSiC+VXXMidKC99JCdjD7A@mail.gmail.com>
+Subject: Re: [Patch bpf] udp: fix a memory leak in udp_read_sock()
 To:     Cong Wang <xiyou.wangcong@gmail.com>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Cong Wang <cong.wang@bytedance.com>,
@@ -54,8 +54,11 @@ On Sun, May 16, 2021 at 8:33 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
 > From: Cong Wang <cong.wang@bytedance.com>
 >
-> 'err' and 'flags' are not used, we can just get rid of them.
+> sk_psock_verdict_recv() clones the skb and uses the clone
+> afterward, so udp_read_sock() should free the original skb after
+> done using it.
 >
+> Fixes: d7f571188ecf ("udp: Implement ->read_sock() for sockmap")
 > Cc: John Fastabend <john.fastabend@gmail.com>
 > Cc: Daniel Borkmann <daniel@iogearbox.net>
 > Cc: Jakub Sitnicki <jakub@cloudflare.com>
@@ -63,5 +66,3 @@ On Sun, May 16, 2021 at 8:33 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 
 Acked-by: Song Liu <song@kernel.org>
-
-[...]
