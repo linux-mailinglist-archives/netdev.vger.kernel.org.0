@@ -2,86 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8550C383BB7
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 19:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C679383BEB
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 20:08:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236650AbhEQRz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 13:55:28 -0400
-Received: from www62.your-server.de ([213.133.104.62]:45894 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236507AbhEQRz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 13:55:27 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lihRP-0008yP-Mf; Mon, 17 May 2021 19:54:07 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lihRP-000Nus-DO; Mon, 17 May 2021 19:54:07 +0200
-Subject: Re: [PATCH bpf-next v7 0/3] Add TC-BPF API
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Shaun Crampton <shaun@tigera.io>, netdev@vger.kernel.org
-References: <20210512103451.989420-1-memxor@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <6e3e344c-1b04-b330-c91b-fda92be02a23@iogearbox.net>
-Date:   Mon, 17 May 2021 19:54:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S236922AbhEQSKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 14:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229610AbhEQSKH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 14:10:07 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B482EC061573;
+        Mon, 17 May 2021 11:08:50 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1621274929;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CvTjUMP0IFpl0qRUVo9p7Gf+50VNC5rcsZbQA53CimU=;
+        b=Ey7OfTMIuqEtByYZx90mXd53djFEoEu8K6IQPlvipZNXg5ghONNRHkNCn3ng4fZHJ14yVJ
+        GJFvsrF4jaDT1+cvSLA20ljvzp6GSJku4d78C4Cl9fB+KBVB6k3f9aAEbnFAygXcIBDtoa
+        dZQSyUeukUjJ+r7QVVaTL2WMe2VWaCxzYKzcGwcQEKSHyNyhpuw482nShODXmgnLX53zj0
+        FNDDJY5gMC1aK6TVCRecA6Mj0F9fHIdZGSDYxUF0THBl2/Qu2LsiPsOHutrwBUp5iHhR+W
+        ShmIS0ZMS9bRH5pEk0GZOCGZBu3XBYTzL065HM+NcjX/kLs6ukQ09rczJrw+Ig==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1621274929;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CvTjUMP0IFpl0qRUVo9p7Gf+50VNC5rcsZbQA53CimU=;
+        b=nwk42rkPCNh3s3mfln/GYYElC6A2IeHtvkPV0s3OY/6QuCU3sny3CL8c02/ZY3eO7ySjyt
+        gJbDII33Hb8QQmAg==
+To:     Robin Murphy <robin.murphy@arm.com>, Nitesh Lal <nilal@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "frederic\@kernel.org" <frederic@kernel.org>,
+        "juri.lelli\@redhat.com" <juri.lelli@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        Alex Belits <abelits@marvell.com>,
+        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas\@google.com" <bhelgaas@google.com>,
+        "linux-pci\@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
+        "peterz\@infradead.org" <peterz@infradead.org>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "akpm\@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr\@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen\@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt\@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi\@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun\@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Marc Zyngier <maz@kernel.org>
+Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when setting the hint
+In-Reply-To: <bf1d4892-0639-0bbf-443e-ba284a8ed457@arm.com>
+References: <20210501021832.743094-1-jesse.brandeburg@intel.com> <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com> <20210504092340.00006c61@intel.com> <CAFki+LmR-o+Fng21ggy48FUX7RhjjpjO87dn3Ld+L4BK2pSRZg@mail.gmail.com> <bf1d4892-0639-0bbf-443e-ba284a8ed457@arm.com>
+Date:   Mon, 17 May 2021 20:08:48 +0200
+Message-ID: <87sg2lz0zz.ffs@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20210512103451.989420-1-memxor@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26173/Mon May 17 13:11:33 2021)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/12/21 12:34 PM, Kumar Kartikeya Dwivedi wrote:
-> This is the seventh version of the TC-BPF series.
-> 
-> It adds a simple API that uses netlink to attach the tc filter and its bpf
-> classifier program. Currently, a user needs to shell out to the tc command line
-> to be able to create filters and attach SCHED_CLS programs as classifiers. With
-> the help of this API, it will be possible to use libbpf for doing all parts of
-> bpf program setup and attach.
-> 
-> Changelog contains details of patchset evolution.
-> 
-> In an effort to keep discussion focused, this series doesn't have the high level
-> TC-BPF API. It was clear that there is a need for a bpf_link API in the kernel,
-> hence that will be submitted as a separate patchset based on this.
-> 
-> The individual commit messages contain more details, and also a brief summary of
-> the API.
-> 
-> Changelog:
-> ----------
-> v6 -> v7
-> v6: https://lore.kernel.org/bpf/20210504005023.1240974-1-memxor@gmail.com
-> 
->   * Address all comments from Daniel
->     * Rename BPF_NL_* to NL_*
->     * Make bpf_tc_query only support targeted query
->     * Adjust inconsistencies in the commit message
->     * Drop RTM_GETTFILTER NLM_F_DUMP support
->     * Other misc cleanups (also remove bpf_tc_query selftest for dump mode)
+On Mon, May 17 2021 at 18:26, Robin Murphy wrote:
+> On 2021-05-17 17:57, Nitesh Lal wrote:
+> I'm not implying that there isn't a bug, or that this code ever made 
+> sense in the first place, just that fixing it will unfortunately be a 
+> bit more involved than a simple revert. This patch as-is *will* subtly 
+> break at least the system PMU drivers currently using
 
-Still had to do a major patch cleanup on the first two before pushing out, but I
-think it looks nice now and I do like the simple/straight forward API for tc/BPF.
+s/using/abusing/
 
-Anyway, applied, thanks!
+> irq_set_affinity_hint() - those I know require the IRQ affinity to 
+> follow whichever CPU the PMU context is bound to, in order to meet perf 
+> core's assumptions about mutual exclusion.
+
+Which driver is that?
+
+Thanks,
+
+        tglx
