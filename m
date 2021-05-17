@@ -2,97 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02D663823A8
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 07:10:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DFB23823C9
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 07:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234022AbhEQFLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 01:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbhEQFLg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 01:11:36 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CB9C061573
-        for <netdev@vger.kernel.org>; Sun, 16 May 2021 22:10:20 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1liVWD-0005ay-Sw; Mon, 17 May 2021 07:10:17 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     dsahern@gmail.com, Florian Westphal <fw@strlen.de>
-Subject: [PATCH iproute2 v3] libgenl: make genl_add_mcast_grp set errno on error
-Date:   Mon, 17 May 2021 07:10:10 +0200
-Message-Id: <20210517051010.1355-1-fw@strlen.de>
-X-Mailer: git-send-email 2.26.3
+        id S234592AbhEQFsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 01:48:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54670 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234462AbhEQFry (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 May 2021 01:47:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 21CCF6108D;
+        Mon, 17 May 2021 05:46:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1621230378;
+        bh=UssYIYbkL3qu2UXuoT41PmlhMhpzovvV5hj4VqQqw6c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Vna6C9/eXr0rr9wnsxamGgP6HY53+rapHkKqAnJK3sSoY631+u0j3cZ/Xjleivf8U
+         lDAxln7hHa19MzfzYmHSkNzIK1K5pI/K/AyFyyommMzJ/FNr5UiqNJi1b78GTzBNCc
+         OvydG874aqfpppXC7D0nP3i8lBieHyXygMg/IfKE=
+Date:   Mon, 17 May 2021 07:46:12 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Juerg Haefliger <juerg.haefliger@canonical.com>
+Cc:     aaro.koskinen@iki.fi, tony@atomide.com, linux@prisktech.co.nz,
+        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, lee.jones@linaro.org,
+        daniel.thompson@linaro.org, jingoohan1@gmail.com, mst@redhat.com,
+        jasowang@redhat.com, zbr@ioremap.net, pablo@netfilter.org,
+        kadlec@netfilter.org, fw@strlen.de, horms@verge.net.au, ja@ssi.bg,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-fsdevel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, lvs-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Juerg Haefliger <juergh@canonical.com>
+Subject: Re: [PATCH] treewide: Remove leading spaces in Kconfig files
+Message-ID: <YKIDJIfuufBrTQ4f@kroah.com>
+References: <20210516132209.59229-1-juergh@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210516132209.59229-1-juergh@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-genl_add_mcast_grp doesn't set errno in all cases.
+On Sun, May 16, 2021 at 03:22:09PM +0200, Juerg Haefliger wrote:
+> There are a few occurences of leading spaces before tabs in a couple of
+> Kconfig files. Remove them by running the following command:
+> 
+>   $ find . -name 'Kconfig*' | xargs sed -r -i 's/^[ ]+\t/\t/'
+> 
+> Signed-off-by: Juerg Haefliger <juergh@canonical.com>
+> ---
+>  arch/arm/mach-omap1/Kconfig     | 12 ++++++------
+>  arch/arm/mach-vt8500/Kconfig    |  6 +++---
+>  arch/arm/mm/Kconfig             | 10 +++++-----
+>  drivers/char/hw_random/Kconfig  |  8 ++++----
+>  drivers/net/usb/Kconfig         | 10 +++++-----
+>  drivers/net/wan/Kconfig         |  4 ++--
+>  drivers/scsi/Kconfig            |  2 +-
+>  drivers/uio/Kconfig             |  2 +-
+>  drivers/video/backlight/Kconfig | 10 +++++-----
+>  drivers/virtio/Kconfig          |  2 +-
+>  drivers/w1/masters/Kconfig      |  6 +++---
+>  fs/proc/Kconfig                 |  4 ++--
+>  init/Kconfig                    |  2 +-
+>  net/netfilter/Kconfig           |  2 +-
+>  net/netfilter/ipvs/Kconfig      |  2 +-
+>  15 files changed, 41 insertions(+), 41 deletions(-)
 
-On kernels that support mptcp but lack event support (all kernels <= 5.11)
-MPTCP_PM_EV_GRP_NAME won't be found and ip will exit with
+Please break this up into one patch per subsystem and resend to the
+proper maintainers that way.
 
-    "can't subscribe to mptcp events: Success"
+thanks,
 
-Set errno to a meaningful value (ENOENT) when the group name isn't found
-and also cover other spots where it returns nonzero with errno unset.
-
-Fixes: ff619e4fd370 ("mptcp: add support for event monitoring")
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- Change since v2: include errno.h
- Change since v1: fix libgenl instead of setting errno in the caller.
- lib/libgenl.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/lib/libgenl.c b/lib/libgenl.c
-index 4c51d47af46b..fca07f9fe768 100644
---- a/lib/libgenl.c
-+++ b/lib/libgenl.c
-@@ -3,6 +3,7 @@
-  * libgenl.c	GENL library
-  */
- 
-+#include <errno.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <unistd.h>
-@@ -84,6 +85,7 @@ static int genl_parse_grps(struct rtattr *attr, const char *name, unsigned int *
- 		}
- 	}
- 
-+	errno = ENOENT;
- 	return -1;
- }
- 
-@@ -108,17 +110,22 @@ int genl_add_mcast_grp(struct rtnl_handle *grth, __u16 fnum, const char *group)
- 	ghdr = NLMSG_DATA(answer);
- 	len = answer->nlmsg_len;
- 
--	if (answer->nlmsg_type != GENL_ID_CTRL)
-+	if (answer->nlmsg_type != GENL_ID_CTRL) {
-+		errno = EINVAL;
- 		goto err_free;
-+	}
- 
- 	len -= NLMSG_LENGTH(GENL_HDRLEN);
--	if (len < 0)
-+	if (len < 0) {
-+		errno = EINVAL;
- 		goto err_free;
-+	}
- 
- 	attrs = (struct rtattr *) ((char *) ghdr + GENL_HDRLEN);
- 	parse_rtattr(tb, CTRL_ATTR_MAX, attrs, len);
- 
- 	if (tb[CTRL_ATTR_MCAST_GROUPS] == NULL) {
-+		errno = ENOENT;
- 		fprintf(stderr, "Missing mcast groups TLV\n");
- 		goto err_free;
- 	}
--- 
-2.26.3
-
+greg k-h
