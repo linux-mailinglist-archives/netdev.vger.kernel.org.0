@@ -2,236 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BA25386D11
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 00:42:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 648D1386D28
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 00:44:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343991AbhEQWnp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 17 May 2021 18:43:45 -0400
-Received: from mga02.intel.com ([134.134.136.20]:2067 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234833AbhEQWno (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 May 2021 18:43:44 -0400
-IronPort-SDR: fglZEgIESuhQe3S8iGVwADMJe8FDNfpKJtut4po3mvP4PJoTcYBOKpuEFV9qaWzCxxY9A2eU6q
- PRUDy3fC156g==
-X-IronPort-AV: E=McAfee;i="6200,9189,9987"; a="187703395"
-X-IronPort-AV: E=Sophos;i="5.82,307,1613462400"; 
-   d="scan'208";a="187703395"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2021 15:42:26 -0700
-IronPort-SDR: PYgUB98/plcyAXG5v62/zTWK/BW5GW4K2Sz1UIj6VYd8MM53EjNDt0IX6lz+Tb2QVBqB9DKX00
- ItdjWLJbdG5A==
-X-IronPort-AV: E=Sophos;i="5.82,307,1613462400"; 
-   d="scan'208";a="438381614"
-Received: from mchicks-mobl1.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.212.132.186])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2021 15:42:25 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Yannick Vignon <yannick.vignon@oss.nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        sebastien.laveze@oss.nxp.com,
-        Yannick Vignon <yannick.vignon@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vedang Patel <vedang.patel@intel.com>,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH net v1] net: taprio offload: enforce qdisc to netdev
- queue mapping
-In-Reply-To: <4359e11a-5f72-cc01-0c2f-13ca1583f6ef@oss.nxp.com>
-References: <20210511171829.17181-1-yannick.vignon@oss.nxp.com>
- <20210514083226.6d3912c4@kicinski-fedora-PC1C0HJN>
- <87y2ch121x.fsf@vcostago-mobl2.amr.corp.intel.com>
- <20210514140154.475e7f3b@kicinski-fedora-PC1C0HJN>
- <87sg2o2809.fsf@vcostago-mobl2.amr.corp.intel.com>
- <4359e11a-5f72-cc01-0c2f-13ca1583f6ef@oss.nxp.com>
-Date:   Mon, 17 May 2021 15:42:23 -0700
-Message-ID: <87zgwtyoc0.fsf@vcostago-mobl2.amr.corp.intel.com>
+        id S1344094AbhEQWqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 18:46:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43098 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241604AbhEQWqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 18:46:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621291484;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PzeDuFKqOdq6XOChkUVF1K14DQOzccWrFoItEVYjLtI=;
+        b=L61zr0Cbj4Y9P2kE99SUkfC+/y0NdNkYcIj6JnBKPhgTvNuWaZPBdMtBJAZh3lA5uHgTdJ
+        xj10Qsut4VP4/2jGDeJZQF8oyYFLDuxJc60oNviAtgy4az5YdtjHvNF1oXDfvJVRE0q70F
+        afwEpmafhNA+/gapO1loPirKNCSxNqE=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-359-8zelgdHEMK-0RLc9XeMC-Q-1; Mon, 17 May 2021 18:44:42 -0400
+X-MC-Unique: 8zelgdHEMK-0RLc9XeMC-Q-1
+Received: by mail-lj1-f197.google.com with SMTP id o5-20020a05651c0505b02900e5a95dd51eso3751411ljp.10
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 15:44:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PzeDuFKqOdq6XOChkUVF1K14DQOzccWrFoItEVYjLtI=;
+        b=hisNGVkgOPFq16DoOjSz7Rmy4bl2HTqGPbUdn21YuzgGVsMSSRgdkPlC2/pXyVkV74
+         OqocC4dtzpU0C55Ouo1b/Wg+GZ1w1yBNiCsLVuoc6PdhufFlMMRRSr92r3uHDt6jyCZP
+         s5YahjGPWgpPnhcMSVpSaAAimuMKtS1/HXM0z54wh6tIsVjG2t2h4bbz2s8OA/xv6aWB
+         uloY+LDkL3Bln6d9l2uUsBfHmzkotp+/rx9qMVDqGwqYVEcfHOMgyNgiPg+SehqFI8X0
+         kw+p2Yu3LE1V8Qrso3JADHoWzy6lvUQasT1Y88OizXtlHQvTPCq2NuJ8MguYaU5UN3aA
+         j/1g==
+X-Gm-Message-State: AOAM5330Mr0YXl8O2oEtDaMI4bXgNsvCRDAhKC2R+dwReNI3aSWYBgw7
+        OxKNffYhcXTb9guqOQRUE5blZBIrb5IwdRWYXSWBe69oe9U8Yr0wpt0fx1qp9DKOJIubbhGbsoz
+        Ab495eLCZU6VY2oUrIaNdyryCeHVhGFUG
+X-Received: by 2002:a05:6512:3da1:: with SMTP id k33mr1581757lfv.114.1621291480841;
+        Mon, 17 May 2021 15:44:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJybam1+aZWd8ZoxqggTlhbg2Te1/mPCVDQmAynvHsV1tsF6N/JdmZVJTtQ8LuKC3UoE52OmVHe8fTZ2XXqBun0=
+X-Received: by 2002:a05:6512:3da1:: with SMTP id k33mr1581740lfv.114.1621291480634;
+ Mon, 17 May 2021 15:44:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+References: <20210504092340.00006c61@intel.com> <87pmxpdr32.ffs@nanos.tec.linutronix.de>
+In-Reply-To: <87pmxpdr32.ffs@nanos.tec.linutronix.de>
+From:   Nitesh Lal <nilal@redhat.com>
+Date:   Mon, 17 May 2021 18:44:29 -0400
+Message-ID: <CAFki+Lkjn2VCBcLSAfQZ2PEkx-TR0Ts_jPnK9b-5ne3PUX37TQ@mail.gmail.com>
+Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when
+ setting the hint
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Marc Zyngier <maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yannick Vignon <yannick.vignon@oss.nxp.com> writes:
-
-> On 5/15/2021 1:47 AM, Vinicius Costa Gomes wrote:
->> Jakub Kicinski <kuba@kernel.org> writes:
->> 
->>> On Fri, 14 May 2021 13:40:58 -0700 Vinicius Costa Gomes wrote:
->>>> Jakub Kicinski <kuba@kernel.org> writes:
->>>>> You haven't CCed anyone who worked on this Qdisc in the last 2 years :/
->>>>> CCing them now. Comments, anyone?
->>>>
->>>> I guess I should suggest myself as maintainer, to reduce chances of this
->>>> happening again.
->>>
->>> Yes, please.
->>>
->>>>> This looks like a very drastic change. Are you expecting the qdisc will
->>>>> always be bypassed?
->>>>
->>>> Only when running in full offload mode it will be bypassed.
->>>>
->>>> And it's kind of by design, in offload mode, the idea was: configure the
->>>> netdev traffic class to queue mapping, send the schedule to the hardware
->>>> and stay out of the way.
->>>>
->>>> But as per Yannick's report, it seems that taprio doesn't stay enough
->>>> out of the yay.
->>>>
->>>>> After a 1 minute looks it seems like taprio is using device queues in
->>>>> strict priority fashion. Maybe a different model is needed, but a qdisc
->>>>> with:
->>>>>
->>>>> enqueue()
->>>>> {
->>>>> 	WARN_ONCE(1)
->>>>> }
->>>>>
->>>>> really doesn't look right to me.
->>>>
+On Mon, May 17, 2021 at 4:48 PM Thomas Gleixner <tglx@linutronix.de> wrote:
 >
-> My idea was to follow the logic of the other qdiscs dealing with 
-> hardware multiqueue, namely mq and mqprio. Those do not have any 
-> enqueue/dequeue callbacks, but instead define an attach callback to map 
-> the child qdiscs to the HW queues. However, for taprio all those 
-> callbacks are already defined by the time we choose between software and 
-> full-offload, so the WARN_ONCE was more out of extra caution in case I 
-> missed something. If my understanding is correct however, it would 
-> probably make sense to put a BUG() instead, since those code paths 
-> should never trigger with this patch.
+> On Tue, May 04 2021 at 09:23, Jesse Brandeburg wrote:
+> > I'd add in addition that irqbalance daemon *stopped* paying attention
+> > to hints quite a while ago, so I'm not quite sure what purpose they
+> > serve.
 >
-> OTOH what did bother me a bit is that because I needed an attach 
-> callback for the full-offload case, I ended up duplicating some code 
-> from qdisc_graft in the attach callback, so that the software case would 
-> continue behaving as is.
->
-> Those complexities could be removed by pulling out the full-offload case 
-> into its own qdisc, but as I said it has other drawbacks.
->
->>>> This patch takes the "stay out of the way" to the extreme, I kind of
->>>> like it/I am not opposed to it, if I had this idea a couple of years
->>>> ago, perhaps I would have used this same approach.
->>>
->>> Sorry for my ignorance, but for TXTIME is the hardware capable of
->>> reordering or the user is supposed to know how to send packets?
->> 
->> At least the hardware that I am familiar with doesn't reorder packets.
->> 
->> For TXTIME, we have ETF (the qdisc) that re-order packets. The way
->> things work when taprio and ETF are used together is something like
->> this: taprio only has enough knowledge about TXTIME to drop packets that
->> would be transmitted outside their "transmission window" (e.g. for
->> traffic class 0 the transmission window is only for 10 to 50, the TXTIME
->> for a packet is 60, this packet is "invalid" and is dropped). And then
->> when the packet is enqueued to the "child" ETF, it's re-ordered and then
->> sent to the driver.
->> 
->> And this is something that this patch breaks, the ability of dropping
->> those invalid packets (I really wouldn't like to do this verification
->> inside our drivers). Thanks for noticing this.
->> 
->
-> Hmm, indeed, I missed that check (we don't use ETF currently). I'm not 
-> sure of the best way forward, but here are a few thoughts:
-> . The problem only arises for full-offload taprio, not for the software 
-> or TxTime-assisted cases.
-> . I'm not sure mixing taprio(full-offload) with etf(no-offload) is very 
-> useful, at least with small gate intervals: it's likely you will miss 
-> your window when trying to send a packet at exactly the right time in 
-> software (I am usually testing taprio with a 2ms period and a 4µs 
-> interval for the RT stream).
-> . That leaves the case of taprio(full-offload) with etf(offload). Right 
-> now with the current stmmac driver config, a packet whose tstamp is 
-> outside its gate interval will be sent on the next interval (and block 
-> the queue).
-
-This is the case that is a bit problematic with our hardware. (full taprio
-offload + ETF offload).
-
-> . The stmmac hardware supports an expiryTime, currently unsupported in 
-> the stmmac driver, which I think could be used to drop packets whose 
-> tstamps are wrong (the packet would be dropped once the tstamp 
-> "expires"). We'd need to add an API for configuration though, and it 
-> should be noted that the stmmac config for this is global to the MAC, 
-> not per-queue (so a config through sch-etf would affect all queues).
-> . In general using taprio(full-offload) with etf(offload) will incur a 
-> small latency penalty: you need to post the packet before the ETF qdisc 
-> wakes up (plus some margin), and the ETF qdisc must wake up before the 
-> tx stamp (plus some margin). If possible (number of streams/apps < 
-> number of hw queues), it would be better to just use 
-> taprio(full-offload) alone, since the app will need to post the packet 
-> before the gate opens (so plus one margin, not 2).
-
-It really depends on the workload, and how the schedule is organized,
-but yeah, that might be possible (for some cases :-)).
-
->
->
->>>
->>> My biggest problem with this patch is that unless the application is
->>> very careful that WARN_ON_ONCE(1) will trigger. E.g. if softirq is
->>> servicing the queue when the application sends - the qdisc will not
->>> be bypassed, right?
->
-> See above, unless I'm mistaken the "root" qdisc is never 
-> enqueued/dequeued for multi-queue aware qdiscs.
+> The hint was added so that userspace has a better understanding where it
+> should place the interrupt. So if irqbalanced ignores it anyway, then
+> what's the point of the hint? IOW, why is it still used drivers?
 >
 
-That's true, mq and mqprio don't have enqueue()/dequeue(), but I think
-that's more a detail of their implementation than a rule (that no
-multiqueue-aware root qdisc should implement enqueue()/dequeue()).
+Took a quick look at the irqbalance repo and saw the following commit:
 
-That is, from my point of view, there's nothing wrong in having a root
-qdisc that's also a shaper/scheduler.
+dcc411e7bf    remove affinity_hint infrastructure
 
->>>> I am now thinking if this idea locks us out of anything.
->>>>
->>>> Anyway, a nicer alternative would exist if we had a way to tell the core
->>>> "this qdisc should be bypassed" (i.e. don't call enqueue()/dequeue())
->>>> after init() runs.
->>>
->
-> Again, I don't think enqueue/dequeue are called unless the HW queues 
-> point to the root qdisc. But this does raise an interesting point: the 
-> "scheduling" issue I observed was on the dequeue side, when all the 
-> queues were dequeued within the RT process context. If we could point 
-> the enqueue side to the taprio qdisc and the dequeue side to the child 
-> qdiscs, that would probably work (but I fear that would be a significant 
-> change in the way the qdisc code works).
+The commit message mentions that "PJ is redesiging how affinity hinting
+works in the kernel, the future model will just tell us to ignore an IRQ,
+and the kernel will handle placement for us.  As such we can remove the
+affinity_hint recognition entirely".
 
-I am wondering if there's a simpler solution, right now (as you pointed
-out) taprio traverses all queues during dequeue(), that's the problem.
+This does indicate that apparently, irqbalance moved away from the usage of
+affinity_hint. However, the next question is what was this future model?
+I don't know but I can surely look into it if that helps or maybe someone
+here already knows about it?
 
-What I am thinking is if doing something like:
-
-     sch->dev_queue - netdev_get_tx_queue(dev, 0);
-
-To get the queue "index" and then only dequeuing packets for that queue,
-would solve the issue. (A bit ugly, I know).
-
-I just wanted to write the idea down to see if any one else could find
-any big issues with it. I will try to play with it a bit, if no-one
-beats me to it.
-
->
->>> I don't think calling enqueue() and dequeue() is a problem. The problem
->>> is that RT process does unrelated work.
->> 
->> That is true. But this seems like a much bigger (or at least more
->> "core") issue.
->> 
->> 
->> Cheers,
->> 
+> Now there is another aspect to that. What happens if irqbalanced does
+> not run at all and a driver relies on the side effect of the hint
+> setting the initial affinity. Bah...
 >
 
+Right, but if they only rely on this API so that the IRQs are spread across
+all the CPUs then that issue is already resolved and these other drivers
+should not regress because of changing this behavior. Isn't it?
 
-Cheers,
+> While none of the drivers (except the perf muck) actually prevents
+> userspace from fiddling with the affinity (via IRQF_NOBALANCING) a
+> deeper inspection shows that they actually might rely on the current
+> behaviour if irqbalanced is disabled. Of course every driver has its own
+> convoluted way to do that and all of those functions are well
+> documented. What a mess.
+>
+> If the hint still serves a purpose then we can provide a variant which
+> solely applies the hint and does not fiddle with the actual affinity,
+> but if the hint is useless anyway then we have a way better option to
+> clean that up.
+>
+
++1
+
+
+
 -- 
-Vinicius
+Thanks
+Nitesh
+
