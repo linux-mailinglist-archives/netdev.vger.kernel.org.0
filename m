@@ -2,132 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1719C383D8D
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 21:35:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93551383D8E
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 21:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234727AbhEQThG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 15:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
+        id S234742AbhEQThy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 15:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234701AbhEQThF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 15:37:05 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CF9C061573;
-        Mon, 17 May 2021 12:35:48 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id y9so8660185ljn.6;
-        Mon, 17 May 2021 12:35:48 -0700 (PDT)
+        with ESMTP id S233554AbhEQThy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 15:37:54 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F759C061573
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 12:36:37 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id n40so7017479ioz.4
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 12:36:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YoJFd8EjmPKe3+5qZXDSvXf5TOxjV3ZVJo/hnHMI5XQ=;
-        b=PCm6m7cF/j82uplTUTAoaY6o2csd11PeOCJ+m6LLxz8riIg/nBwMFHxcoBErPkXBzT
-         kUx5lcpiqjbanEOcSndFDzQW7J48F2NosANLr9zhqmYOvgtHFTJQ4rIcPtJnMoS3y9MQ
-         FUCfRowvckgR13pykP7Wum4uGpWMJxh1+WV5Z4qe5L/tyyqrhzznDdAaiF28nzQBisnK
-         tyh/WKzKKFEHOlwGHPDDA2Ih/il3oeR5snjvH33OnCSwxtXdbPLXoM/rn9t0EocczW07
-         GIUV5fdUix98eTU2r4waXBc7Pu67dr96OmAsQYwIdXQzAk5il1QP4E7VPL0+QjjkTuPA
-         bO6Q==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4v2V7azcGbzrCl29TLY1oXgzrrkKk8pui1+Aba8QRDk=;
+        b=uUxF6Ovix+av6a2eqPYJGxNCEbAum/Bus9BKGwvk2jDmWKM6rl9o1nLpi6qNVXNpbo
+         2vmcXBqBHleqt6YkGm8tnmMRKlFYgipLeeFK3P/L1wiIv1VyAcx1WE7W4QAQKQzOHVpc
+         pn/86ZozC87SKsUSvHA5n8Z4KbTI0bPS9+JF7Fe22Yf4ScwthScraD5vVzJT7vweuprJ
+         xIzemv8AAWjV9KZLtM/89PooupZwV5FRtCfYpUrspU4rBH2pkD1vPs/S0KMl+zaRq8P4
+         n99MdgGVh1MB3ZYxZW1SuOEMRyNN5OktsbPdFwMkxJjQfqox9vIeqNfO2Jf5nIb7AQsA
+         wUvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YoJFd8EjmPKe3+5qZXDSvXf5TOxjV3ZVJo/hnHMI5XQ=;
-        b=LwDALYbnDiI6sYPELFg38m5r2Q2YD8pLnOa5+ZUZWPfCgH6SR1ofT7ayhB2YyoQ1W2
-         Da8m14qNxbiCMpYSDdvHWa6UA2FxbFWOwbWTJVc6mX+vvtCTYOvHooa7MDR7PHWtBhTd
-         9cwgarYHGpkQz2R2RWx6fk1nsO4fBhP2U5p7hI/oolbBiP0rHgD+zriQiVDQXZMh+S+h
-         FC9Ur+KVRYf2ywd8CYqAug4gSqYLfzm4Z7/9/IVOkFis//vG0xS7HIxkBQvHT1qA8cT9
-         MwZaQHk15M3MJfAT/U1Tp8wUiyMGEfpPA9W6evvR2q8hxbz/6W96E6PyR7Amda1tnedD
-         B5Sg==
-X-Gm-Message-State: AOAM531POxVJjzSkG21sckJnOCeIMd4Hpsv3CFj2oUmv08dzFyF2YAUp
-        KZ6k3ao6cAGBz1H33iYlxiw=
-X-Google-Smtp-Source: ABdhPJw0nSrWFufd+f0aGFvEIQXlD78bbhp7uXW7nTJWst57n7BOYzVVXDwL4b+iJOJJnBAkXKU2aQ==
-X-Received: by 2002:a2e:8e62:: with SMTP id t2mr813432ljk.20.1621280146634;
-        Mon, 17 May 2021 12:35:46 -0700 (PDT)
-Received: from [192.168.1.102] ([178.176.75.125])
-        by smtp.gmail.com with ESMTPSA id c9sm218039ljr.104.2021.05.17.12.35.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 May 2021 12:35:46 -0700 (PDT)
-Subject: Re: [PATCH] net: renesas: ravb: Fix a stuck issue when a lot of
- frames are received
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-References: <20210421045246.215779-1-yoshihiro.shimoda.uh@renesas.com>
- <68291557-0af5-de1e-4f4f-b104bb65c6b3@gmail.com>
- <04c93015-5fe2-8471-3da5-ee85585d9e6c@gmail.com>
- <TY2PR01MB369211466F9F6DB5EDC41183D8549@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <0ce3a5e2-8e42-3648-83c3-fea7b1147b5a@gmail.com>
-Date:   Mon, 17 May 2021 22:35:44 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4v2V7azcGbzrCl29TLY1oXgzrrkKk8pui1+Aba8QRDk=;
+        b=a3BNmBDn3ym4+eFOx6qQEiWl+6LeeJOM+4nXEn22wpXBH2yIwVaYp4/IDO9ZlkzNw/
+         ryJ9p6QNxKhQE6Yg+NTn10x5Zo9T62Vor4kfJGuUkCLY6TAmvJWdOgPHhI9KPGKLSvr8
+         GFWygLfxof4xi0LiCmPA0XA+aF3vLmtR1aW22waTvMgEM0FZ47AjjoeS6rg/4ANsHdor
+         r3aiIUSQ9dbmwOHjm4aOXToAPuPhnfcAroLbP1QH26oKSYDp0EwOS7dl4Ol4Yiacw4Eb
+         uW7eNHEwrNozwY49+UW+NZeLMInXzL74TFhrdG48FGf4p89xbLzBVuJUz5p8bQkSPnmq
+         ke1A==
+X-Gm-Message-State: AOAM530AyKj53k+LecITnCtXz8dwuJVIIyNX8oQnHx1wuOCwbPoL3dBa
+        JL5/7o0aHyzETgQ3jtm9OMiKIbG00ZP1Eg==
+X-Google-Smtp-Source: ABdhPJze+g861//OtKiQoXlx+xwPnn6Zc5EePp41j5tHrdvB60/BjoFtnlCFT7NOerOXzl0JZuQQ+A==
+X-Received: by 2002:a02:7f57:: with SMTP id r84mr1648786jac.108.1621280197096;
+        Mon, 17 May 2021 12:36:37 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id 67sm7789412iow.16.2021.05.17.12.36.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 May 2021 12:36:36 -0700 (PDT)
+Date:   Mon, 17 May 2021 12:36:28 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: Crosscompiling iproute2
+Message-ID: <20210517123628.13624eeb@hermes.local>
+In-Reply-To: <trinity-00d9e9f2-6c60-48b7-ad84-64fd50043001-1621237461808@3c-app-gmx-bap57>
+References: <trinity-a96735e9-a95a-45be-9386-6e0aa9955a86-1621176719037@3c-app-gmx-bap46>
+        <20210516141745.009403b7@hermes.local>
+        <trinity-00d9e9f2-6c60-48b7-ad84-64fd50043001-1621237461808@3c-app-gmx-bap57>
 MIME-Version: 1.0
-In-Reply-To: <TY2PR01MB369211466F9F6DB5EDC41183D8549@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Mon, 17 May 2021 09:44:21 +0200
+Frank Wunderlich <frank-w@public-files.de> wrote:
 
-On 5/10/21 1:29 PM, Yoshihiro Shimoda wrote:
-
->>>     Posting a review of the already commited (over my head) patch. It would have
->>> been appropriate if the patch looked OK but it's not. :-/
->>>
->>>> When a lot of frames were received in the short term, the driver
->>>> caused a stuck of receiving until a new frame was received. For example,
->>>> the following command from other device could cause this issue.
->>>>
->>>>      $ sudo ping -f -l 1000 -c 1000 <this driver's ipaddress>
->>>
->>>     -l is essential here, right?
+> > Gesendet: Sonntag, 16. Mai 2021 um 23:17 Uhr
+> > Von: "Stephen Hemminger" <stephen@networkplumber.org>  
 > 
-> Yes.
+> > It is possible to mostly do a cross build if you do:
+> >
+> > $ make CC="$CC" LD="$LD"
+> > There are issues with netem local table generation  
 > 
->>>     Have you tried testing sh_eth sriver like that, BTW?
->>
->>     It's driver! :-)
+> Hi,
 > 
-> I have not tried testing sh_eth driver yet. I'll test it after I got an actual board.
-
-   Now you've got it, let's not rush forth with the fix this time.
-
->>>> The previous code always cleared the interrupt flag of RX but checks
->>>> the interrupt flags in ravb_poll(). So, ravb_poll() could not call
->>>> ravb_rx() in the next time until a new RX frame was received if
->>>> ravb_rx() returned true. To fix the issue, always calls ravb_rx()
->>>> regardless the interrupt flags condition.
->>>
->>>     That bacially defeats the purpose of IIUC...
->>                                            ^ NAPI,
->>
->>     I was sure I typed NAPI here, yet it got lost in the edits. :-)
+> thank you for your answer, but with this way i got this:
 > 
-> I could not understand "that" (calling ravb_rx() regardless the interrupt
-> flags condition) defeats the purpose of NAPI. According to an article on
-> the Linux Foundation wiki [1], one of the purpose of NAPI is "Interrupt mitigation".
-
-   Thank you for the pointer, BTW! Would have helped me with enabling NAPI in sh_eth
-(and ravb) drivers...
-
-> In poll(), the interrupts are already disabled, and ravb_rx() will check the
-> descriptor's status. So, this patch keeps the "Interrupt mitigation" IIUC.
-
-   I think we'll still have the short race window, described in section 5.1
-of this doc. So perhaps what we should do is changing the order of the code in
-the poll() method, not eliminating the loops totally. Thoughts?
- 
-> [1]
-> https://wiki.linuxfoundation.org/networking/napi
+> ./normal > normal.dist
+> ./normal: error while loading shared libraries: libm.so.6: cannot open shared object file: No such file or directory
 > 
-> Best regards,
-> Yoshihiro Shimoda
+> i guess it's the netem issue you've mentioned, imho i cannot install armhf-libs on ubuntu, so i disabled subdirs in Makefile beginning with netem
+> 
+> -SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma dcb man vdpa
+> +SUBDIRS=lib ip tc bridge misc
+> +#netem genl tipc devlink rdma dcb man vdpa
+> 
+> it seems to did it now
+> 
+> $ file ip/ip
+> ip/ip: ELF 32-bit LSB executable, ARM, EABI5 version 1 (GNU/Linux), statically linked, BuildID[sha1]=b36e094bc8681713d91ffe3a085ad4d3c6a1c5ea, for GNU/Linux 3.2.0, not stripped
+> 
+> thank you
+> 
+> regards Frank
 
-MBR, Sergei
+Cross compile needs to know the compiler for building non-cross tools as well.
+This works for me:
+
+make CC="$CC" LD="$LD" HOSTCC=gcc
+
