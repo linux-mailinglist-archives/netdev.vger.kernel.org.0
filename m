@@ -2,93 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55A8F38376D
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 17:42:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D7223837B7
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 17:46:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344209AbhEQPn1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 17 May 2021 11:43:27 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:44266 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244961AbhEQPlW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 11:41:22 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1lifLd-0004dy-Nf; Mon, 17 May 2021 15:40:01 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id F28E35FDD5; Mon, 17 May 2021 08:39:59 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id ECAD7A040C;
-        Mon, 17 May 2021 08:39:59 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Johannes Berg <johannes@sipsolutions.net>
-cc:     netdev@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Johannes Berg <johannes.berg@intel.com>,
-        syzbot+bfda097c12a00c8cae67@syzkaller.appspotmail.com
-Subject: Re: [PATCH] bonding: init notify_work earlier to avoid uninitialized use
-In-reply-to: <20210517161335.e40fea7f895a.I8b8487a9c0b8f54716cf44fdae02185381b1f64e@changeid>
-References: <20210517161335.e40fea7f895a.I8b8487a9c0b8f54716cf44fdae02185381b1f64e@changeid>
-Comments: In-reply-to Johannes Berg <johannes@sipsolutions.net>
-   message dated "Mon, 17 May 2021 16:13:35 +0200."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S244481AbhEQPql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 11:46:41 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:52960 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343804AbhEQPmK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 11:42:10 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: ezequiel)
+        with ESMTPSA id C04171F423BA
+From:   Ezequiel Garcia <ezequiel@collabora.com>
+To:     netdev@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        devicetree@vger.kernel.org
+Cc:     Jose Abreu <joabreu@synopsys.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Kever Yang <kever.yang@rock-chips.com>,
+        David Wu <david.wu@rock-chips.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Johan Jonker <jbx6244@gmail.com>,
+        Chen-Yu Tsai <wens213@gmail.com>,
+        Ezequiel Garcia <ezequiel@collabora.com>
+Subject: [PATCH v3 net-next 0/4] net: stmmac: RK3568
+Date:   Mon, 17 May 2021 12:40:33 -0300
+Message-Id: <20210517154037.37946-1-ezequiel@collabora.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <29234.1621265999.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Mon, 17 May 2021 08:39:59 -0700
-Message-ID: <29235.1621265999@famine>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Johannes Berg <johannes@sipsolutions.net> wrote:
+Here's the third version of this patchset, taking
+the feedback from Heiko and Chen-Yu Tsai.
 
->From: Johannes Berg <johannes.berg@intel.com>
->
->If bond_kobj_init() or later kzalloc() in bond_alloc_slave() fail,
->then we call kobject_put() on the slave->kobj. This in turn calls
->the release function slave_kobj_release() which will always try to
->cancel_delayed_work_sync(&slave->notify_work), which shouldn't be
->done on an uninitialized work struct.
->
->Always initialize the work struct earlier to avoid problems here.
->
->Syzbot bisected this down to a completely pointless commit, some
->fault injection may have been at work here that caused the alloc
->failure in the first place, which may interact badly with bisect.
->
->Reported-by: syzbot+bfda097c12a00c8cae67@syzkaller.appspotmail.com
->Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Although this solution is a tad ugly as it hardcodes
+the register addresses, we believe it's the most robust approach.
 
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+See:
 
+https://lore.kernel.org/netdev/CAGb2v67ZBR=XDFPeXQc429HNu_dbY__-KN50tvBW44fXMs78_w@mail.gmail.com/
 
->---
-> drivers/net/bonding/bond_main.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->index 20bbda1b36e1..c5a646d06102 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -1526,6 +1526,7 @@ static struct slave *bond_alloc_slave(struct bonding *bond,
-> 
-> 	slave->bond = bond;
-> 	slave->dev = slave_dev;
->+	INIT_DELAYED_WORK(&slave->notify_work, bond_netdev_notify_work);
-> 
-> 	if (bond_kobj_init(slave))
-> 		return NULL;
->@@ -1538,7 +1539,6 @@ static struct slave *bond_alloc_slave(struct bonding *bond,
-> 			return NULL;
-> 		}
-> 	}
->-	INIT_DELAYED_WORK(&slave->notify_work, bond_netdev_notify_work);
-> 
-> 	return slave;
-> }
->-- 
->2.31.1
->
+This is tested on RK3566 EVB2 and seems to work well.
+Once the RK3568 devicetree lands upstream, we'll post
+patches to add network support for RK3566 and RK3568.
+
+Thanks!
+
+David Wu (2):
+  net: stmmac: dwmac-rk: Check platform-specific ops
+  net: stmmac: Add RK3566/RK3568 SoC support
+
+Ezequiel Garcia (2):
+  net: stmmac: Don't set has_gmac if has_gmac4 is set
+  dt-bindings: net: rockchip-dwmac: add rk3568 compatible string
+
+ .../bindings/net/rockchip-dwmac.yaml          |  30 ++--
+ .../net/ethernet/stmicro/stmmac/dwmac-rk.c    | 158 +++++++++++++++++-
+ 2 files changed, 173 insertions(+), 15 deletions(-)
+
+-- 
+2.30.0
+
