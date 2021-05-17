@@ -2,70 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70230386BD7
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82476386BF7
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:08:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244615AbhEQVBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 17:01:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48118 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236014AbhEQVB1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 May 2021 17:01:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8404461354;
-        Mon, 17 May 2021 21:00:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621285210;
-        bh=gSHAdWQ10jgeC4pFoDRAKwiuFVbfyYRgM9DUofxx7/Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=I+4Dn+xw7XJCP7UDfK3XLzuJ2mVoqQTi8MbZxiqiCsHgKpS2CipM3IKkH+KqbOIOi
-         tGBiBWtCWwNaVV5YrdB4irEAMDT2Jld5DAKpH/JaNvJMppw5iYlZfostAqDlPmLCLI
-         CIOZp+8eQ5NDRGQYqYWviZgn5FhW4bZpTRLFiLI/zeGr3UqKhIuJEdQEeoa7AtiHWq
-         /u3H0ukl1SWW9o/DsjA0sKyjj4ZGP3BQ+HWKNmoTYkIzZYgDrxmUpSsA8ywgCpyGQa
-         r+yo9sBQjTrQn6YuT9LjPuQmIiMg2nb22m+KtF5mDfMkNXhI7BOWkaywJqpCk/7vzW
-         053LQsBBCVknA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7EA0D60A47;
-        Mon, 17 May 2021 21:00:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [RESEND PATCH net-next 0/2] Treat IPv4 lowest address as ordinary
- unicast address
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162128521051.2358.9331634734737426572.git-patchwork-notify@kernel.org>
-Date:   Mon, 17 May 2021 21:00:10 +0000
-References: <20210513043625.GL1047389@frotz.zork.net>
-In-Reply-To: <20210513043625.GL1047389@frotz.zork.net>
-To:     Seth David Schoen <schoen@loyalty.org>
-Cc:     netdev@vger.kernel.org, gnu@toad.com, dave.taht@gmail.com,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org
+        id S237561AbhEQVJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 17:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233139AbhEQVJt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 17:09:49 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B66C061573
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 14:08:31 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id mw15-20020a17090b4d0fb0290157199aadbaso287392pjb.7
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 14:08:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=eSsi0EGf7GOU5+Zww+xYZFZEOwMtDPlrCjBSHtT9TsQ=;
+        b=UWRx0MECQQ6WZjR5v9KrLXzbC7CgoNAdbJjG9XioETgda9UVkvVPph1s1V2xjRsuJX
+         gopKwU0tuxOSjuPqQkZ96wgEv+O8GBW8OBwFwQRLey8V+5R7SnvESjTXp+aOFN51aqYK
+         r334k34n47MLs7ZsYnAXi8YSfdtHDvQ9EzJM1kk/bExqTL3ohx6Onc9hocfW6Qs3adkj
+         sKWV9ih04SZmgciWMQItvGl7xF2TLgcQImRXpDoPIci6H9KiNXl40mkI6KFj04Q3VM+c
+         lR9WXu11hoy0HQgoVLdnj4Sx0pCFJTUfYUetrtWRK4RpbW5pL2OKd0Rw9GVzmaSm4s8q
+         RQQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=eSsi0EGf7GOU5+Zww+xYZFZEOwMtDPlrCjBSHtT9TsQ=;
+        b=tadrZf5LHxZ7+s9Il+Rmcqu5gIP5p1DnEtbXB6cOH7HZNj8LN+/4VhYPUviQ5f9xwc
+         Qp8YmZOWL9JATBScuksz64dF9IzNZLOGH+Jgywtwm+Zh+ruEQd9Bv0zVrXkaq2aFTvvO
+         JzlSmg2UgH0KY7XXRZsJDi7q55VwoR8pWecikjYwMenI/OaqzJoiAIbHJMdIFvMBptNE
+         z5dA0rLzzTMA3aQZu3L08RNLgpxDiLPMmo3HwlokDa0LzV4VelHOUou3qxxXaJcCaxsk
+         FMLNHzubkuRbAH/mAJX0OzI9wFaTb902ewLfOXuduQ6vJnkt1O5KpdTUHTXikA4Wku3u
+         IsSA==
+X-Gm-Message-State: AOAM531JaRIG51vRxYEUcY/RyXE57NmgLkZDt6iCzoAOOh1oFoHg/TDl
+        XjwJJ6WMjmAb2mfGmt+mD6nwIpIjnrr7pZVboMpYK+Vaf/1OvXThsKQg4DyYalIYFlznagaydmS
+        qBjPYogxUfw0JG91H8OK77A4MlAe5pD6NnHr0JZEt2k5L43bB5kzpWZuAOE0W02HryVhVuWO4
+X-Google-Smtp-Source: ABdhPJzt801aIEcmYbj/Dg0wQL9hqsesk89wNMOYhSVc+K3BoI+MNPTavXl4A/Gvq6QqM1pWcPZ9E/M6KOQbk9PQ
+X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:ba72:1464:177a:c6d4])
+ (user=awogbemila job=sendgmr) by 2002:a63:d242:: with SMTP id
+ t2mr1440210pgi.210.1621285710790; Mon, 17 May 2021 14:08:30 -0700 (PDT)
+Date:   Mon, 17 May 2021 14:08:10 -0700
+Message-Id: <20210517210815.3751286-1-awogbemila@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.31.1.751.gd2f1c929bd-goog
+Subject: [PATCH net 0/5] GVE bug fixes
+From:   David Awogbemila <awogbemila@google.com>
+To:     netdev@vger.kernel.org
+Cc:     David Awogbemila <awogbemila@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This patch series includes fixes to some bugs in the gve driver.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Catherine Sullivan (2):
+  gve: Check TX QPL was actually assigned
+  gve: Upgrade memory barrier in poll routine
 
-On Wed, 12 May 2021 21:36:25 -0700 you wrote:
-> Treat the lowest address in a subnet (the address within the subnet
-> which contains all 0 bits) as an ordinary unicast address instead
-> of as a potential second broadcast address.  For example, in subnet
-> 192.168.17.24/29, which contains 8 addresses, make address 192.168.17.24
-> usable as a normal unicast address (while continuing to support
-> 192.168.17.31 as a broadcast address).
-> 
-> [...]
+David Awogbemila (3):
+  gve: Update mgmt_msix_idx if num_ntfy changes
+  gve: Add NULL pointer checks when freeing irqs.
+  gve: Drop skbs with invalid queue index.
 
-Here is the summary with links:
-  - [RESEND,net-next,1/2] ip: Treat IPv4 segment's lowest address as unicast
-    https://git.kernel.org/netdev/net-next/c/94c821c74bf5
-  - [RESEND,net-next,2/2] selftests: Lowest IPv4 address in a subnet is valid
-    https://git.kernel.org/netdev/net-next/c/6101ca0384e3
+ drivers/net/ethernet/google/gve/gve_main.c | 21 ++++++++++++---------
+ drivers/net/ethernet/google/gve/gve_rx.c   |  2 --
+ drivers/net/ethernet/google/gve/gve_tx.c   | 10 +++++++---
+ 3 files changed, 19 insertions(+), 14 deletions(-)
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+-- 
+2.31.1.751.gd2f1c929bd-goog
 
