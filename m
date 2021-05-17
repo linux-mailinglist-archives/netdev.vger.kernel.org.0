@@ -2,65 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7A9C383D49
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 21:28:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1719C383D8D
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 21:35:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233554AbhEQT3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 15:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
+        id S234727AbhEQThG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 15:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232773AbhEQT3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 15:29:35 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F043C061573
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 12:28:19 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id b13so1923706pfv.4
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 12:28:19 -0700 (PDT)
+        with ESMTP id S234701AbhEQThF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 15:37:05 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CF9C061573;
+        Mon, 17 May 2021 12:35:48 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id y9so8660185ljn.6;
+        Mon, 17 May 2021 12:35:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=MzgADEAaLqCZCtsDLm4ffnQ0XJMngefK8MXJLmFTvck=;
-        b=mWOXze+K+JBYlQ4Oso/KR37GAU+UZRgTvgbeEj9LPt1vsLrZTe+sX9iOKPnS1oDDyX
-         6A7DoxQbdEBDeJca6G6HHV2MUU3u94PGS8jCgF7BnARNr49lbLSRCTv/Wm6LdGyIh5Em
-         WSqzs6FQl7E37ueJVuKj6/qSTnocng1SRcXxJlL8EYuGt1FoBaDR85gdSI+0jBUmH/Bs
-         LtLBLjKCs3jiT0OUUIiDuGNBhn9DL6d/YDUjhlyZTx1vWyvWvcpAWP1Ub7D02XNOFddw
-         qtgIrDpVufb4kLN2NlEW+9EmhnswXnc9kzA37YZW/7vzalWp34IqYkaKKOvfg2pY9bMq
-         Mjqw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YoJFd8EjmPKe3+5qZXDSvXf5TOxjV3ZVJo/hnHMI5XQ=;
+        b=PCm6m7cF/j82uplTUTAoaY6o2csd11PeOCJ+m6LLxz8riIg/nBwMFHxcoBErPkXBzT
+         kUx5lcpiqjbanEOcSndFDzQW7J48F2NosANLr9zhqmYOvgtHFTJQ4rIcPtJnMoS3y9MQ
+         FUCfRowvckgR13pykP7Wum4uGpWMJxh1+WV5Z4qe5L/tyyqrhzznDdAaiF28nzQBisnK
+         tyh/WKzKKFEHOlwGHPDDA2Ih/il3oeR5snjvH33OnCSwxtXdbPLXoM/rn9t0EocczW07
+         GIUV5fdUix98eTU2r4waXBc7Pu67dr96OmAsQYwIdXQzAk5il1QP4E7VPL0+QjjkTuPA
+         bO6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=MzgADEAaLqCZCtsDLm4ffnQ0XJMngefK8MXJLmFTvck=;
-        b=LIP482I9HQlROUdhJhef6VgIfxxyxZ3gjINV/fcgiiFpvD0AQcCNZkqW5aLAPrShZV
-         SDHqv1Nc0NM1g7K5fV7iCjNLKv+VMnS8IQBHm0m4/MDXsmyVMmg+bF9HsuxTElWRL7Um
-         tSlQaT/dmcl3H2hoJGxjXYm8s1XS++Zm1bf7gSWrtfvMs2+JtfBWI8vncIrXog5sX4sP
-         2CSOcNLQ9ZhFdnZYFM+WzOyO2sBGh9BBoVxPHhwrEqIsXXq9Z+MA9kerOdMKNIvJ5QYO
-         iw+bxg8Xc75NoT1YpawERzqXLDmd1Wx+IVu/pqSxg0Ps4bFsOjUCSKDnKFQV7e0r9hb8
-         55AQ==
-X-Gm-Message-State: AOAM530AxELH7kHRI+PkH9kMvYsLhGDh1tuqQJSKO06sQ0iqcf43+L13
-        ZKiHyYrK8t8+lNGU8to99ZDADK9/WtTEWLz0XkI=
-X-Google-Smtp-Source: ABdhPJyt3MDt6SjDM1NFCZ2oS4H7L1xkXhubNyUa4hJ/4//13z1TZDkXneZbJT9RhC8L4amIax9Am4dyKegQZqdHQ1k=
-X-Received: by 2002:a63:5060:: with SMTP id q32mr1110298pgl.32.1621279698735;
- Mon, 17 May 2021 12:28:18 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YoJFd8EjmPKe3+5qZXDSvXf5TOxjV3ZVJo/hnHMI5XQ=;
+        b=LwDALYbnDiI6sYPELFg38m5r2Q2YD8pLnOa5+ZUZWPfCgH6SR1ofT7ayhB2YyoQ1W2
+         Da8m14qNxbiCMpYSDdvHWa6UA2FxbFWOwbWTJVc6mX+vvtCTYOvHooa7MDR7PHWtBhTd
+         9cwgarYHGpkQz2R2RWx6fk1nsO4fBhP2U5p7hI/oolbBiP0rHgD+zriQiVDQXZMh+S+h
+         FC9Ur+KVRYf2ywd8CYqAug4gSqYLfzm4Z7/9/IVOkFis//vG0xS7HIxkBQvHT1qA8cT9
+         MwZaQHk15M3MJfAT/U1Tp8wUiyMGEfpPA9W6evvR2q8hxbz/6W96E6PyR7Amda1tnedD
+         B5Sg==
+X-Gm-Message-State: AOAM531POxVJjzSkG21sckJnOCeIMd4Hpsv3CFj2oUmv08dzFyF2YAUp
+        KZ6k3ao6cAGBz1H33iYlxiw=
+X-Google-Smtp-Source: ABdhPJw0nSrWFufd+f0aGFvEIQXlD78bbhp7uXW7nTJWst57n7BOYzVVXDwL4b+iJOJJnBAkXKU2aQ==
+X-Received: by 2002:a2e:8e62:: with SMTP id t2mr813432ljk.20.1621280146634;
+        Mon, 17 May 2021 12:35:46 -0700 (PDT)
+Received: from [192.168.1.102] ([178.176.75.125])
+        by smtp.gmail.com with ESMTPSA id c9sm218039ljr.104.2021.05.17.12.35.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 May 2021 12:35:46 -0700 (PDT)
+Subject: Re: [PATCH] net: renesas: ravb: Fix a stuck issue when a lot of
+ frames are received
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+References: <20210421045246.215779-1-yoshihiro.shimoda.uh@renesas.com>
+ <68291557-0af5-de1e-4f4f-b104bb65c6b3@gmail.com>
+ <04c93015-5fe2-8471-3da5-ee85585d9e6c@gmail.com>
+ <TY2PR01MB369211466F9F6DB5EDC41183D8549@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <0ce3a5e2-8e42-3648-83c3-fea7b1147b5a@gmail.com>
+Date:   Mon, 17 May 2021 22:35:44 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Received: by 2002:a05:6a10:6186:0:0:0:0 with HTTP; Mon, 17 May 2021 12:28:18
- -0700 (PDT)
-Reply-To: cephasagbeh1@gmail.com
-From:   Cephas Agbeh <markcasadyy@gmail.com>
-Date:   Mon, 17 May 2021 21:28:18 +0200
-Message-ID: <CABuFvz9pUAZDLkxsc6uXOZps0c441MQUsXKr=w-ms3MX79RC9A@mail.gmail.com>
-Subject: Important Notification
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <TY2PR01MB369211466F9F6DB5EDC41183D8549@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am bringing this notice to your attention in respect of the death of
-a deceased client of mine that has the same surname with you and his
-fund valued at $19.9M to be paid to you.contact me at
-cephasagbeh1@gmail.com for more details.
+Hello!
 
-Yours Sincerely,
-Cephas Agbeh,
-Attorney At Law.
+On 5/10/21 1:29 PM, Yoshihiro Shimoda wrote:
+
+>>>     Posting a review of the already commited (over my head) patch. It would have
+>>> been appropriate if the patch looked OK but it's not. :-/
+>>>
+>>>> When a lot of frames were received in the short term, the driver
+>>>> caused a stuck of receiving until a new frame was received. For example,
+>>>> the following command from other device could cause this issue.
+>>>>
+>>>>      $ sudo ping -f -l 1000 -c 1000 <this driver's ipaddress>
+>>>
+>>>     -l is essential here, right?
+> 
+> Yes.
+> 
+>>>     Have you tried testing sh_eth sriver like that, BTW?
+>>
+>>     It's driver! :-)
+> 
+> I have not tried testing sh_eth driver yet. I'll test it after I got an actual board.
+
+   Now you've got it, let's not rush forth with the fix this time.
+
+>>>> The previous code always cleared the interrupt flag of RX but checks
+>>>> the interrupt flags in ravb_poll(). So, ravb_poll() could not call
+>>>> ravb_rx() in the next time until a new RX frame was received if
+>>>> ravb_rx() returned true. To fix the issue, always calls ravb_rx()
+>>>> regardless the interrupt flags condition.
+>>>
+>>>     That bacially defeats the purpose of IIUC...
+>>                                            ^ NAPI,
+>>
+>>     I was sure I typed NAPI here, yet it got lost in the edits. :-)
+> 
+> I could not understand "that" (calling ravb_rx() regardless the interrupt
+> flags condition) defeats the purpose of NAPI. According to an article on
+> the Linux Foundation wiki [1], one of the purpose of NAPI is "Interrupt mitigation".
+
+   Thank you for the pointer, BTW! Would have helped me with enabling NAPI in sh_eth
+(and ravb) drivers...
+
+> In poll(), the interrupts are already disabled, and ravb_rx() will check the
+> descriptor's status. So, this patch keeps the "Interrupt mitigation" IIUC.
+
+   I think we'll still have the short race window, described in section 5.1
+of this doc. So perhaps what we should do is changing the order of the code in
+the poll() method, not eliminating the loops totally. Thoughts?
+ 
+> [1]
+> https://wiki.linuxfoundation.org/networking/napi
+> 
+> Best regards,
+> Yoshihiro Shimoda
+
+MBR, Sergei
