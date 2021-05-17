@@ -2,126 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3FCB3828C4
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 11:49:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D9FE3828AB
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 11:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236252AbhEQJuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 05:50:01 -0400
-Received: from mga05.intel.com ([192.55.52.43]:33296 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236234AbhEQJt6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 May 2021 05:49:58 -0400
-IronPort-SDR: WksWsRLUxeIr2cbE1HJjbuXQefwikYv+TL9ozfAb4OHGxck5frpQr61EyVUqrdqR0JnukNgPot
- sqcM+5rPGk+g==
-X-IronPort-AV: E=McAfee;i="6200,9189,9986"; a="285958510"
-X-IronPort-AV: E=Sophos;i="5.82,307,1613462400"; 
-   d="scan'208";a="285958510"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2021 02:48:42 -0700
-IronPort-SDR: rME9TzGhPgHXvRp3v/U89+7RJbt2dOakBUJ5/8pgJkfdJdOLkRJmwiN3xWcaRrh0Ifn+fHXCN7
- PpfVMGmoerZg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,307,1613462400"; 
-   d="scan'208";a="540356013"
-Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
-  by fmsmga001.fm.intel.com with ESMTP; 17 May 2021 02:48:38 -0700
-From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-To:     Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, kuba@kernel.org, netdev@vger.kernel.org,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        davem@davemloft.net, mcoquelin.stm32@gmail.com,
-        weifeng.voon@intel.com, boon.leong.ong@intel.com,
-        tee.min.tan@intel.com, vee.khee.wong@linux.intel.com,
-        vee.khee.wong@intel.com, michael.wei.hong.sit@intel.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/2] net: stmmac: Add callbacks for DWC xpcs Energy Efficient Ethernet
-Date:   Mon, 17 May 2021 17:43:32 +0800
-Message-Id: <20210517094332.24976-3-michael.wei.hong.sit@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210517094332.24976-1-michael.wei.hong.sit@intel.com>
-References: <20210517094332.24976-1-michael.wei.hong.sit@intel.com>
+        id S236164AbhEQJqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 05:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236089AbhEQJq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 05:46:27 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D20CC061573
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 02:45:11 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id k14so4735745eji.2
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 02:45:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aLt22fpVUCej9eNuT5hv0QxiM34SFiWK3fjhN9lD/gI=;
+        b=lappLtdOg/L4pCgHrMqswzXGf0hRPhbNu+a08oA6wQWPqtrlzYv/nmw6BToVjmqDUt
+         p+F79aPLyNUTL4YvDd2wyj0dQ4JtpsP3Tii9LVwAZkt3VsqJQGahRMtzAkDaWTXiu0wQ
+         bM/X3i+up+eyXjFr+Gj/VQJUlL+8EEGpkYmpiCtkx0rX2StYXMY5BXNLKWGGN9QX0VKF
+         9bw+saDgnsjSj/XnAFmtbpXUOPNtIVj3KAGVaAqoR8O8WsRwbVaqpiVbgGKrbLryJMB+
+         oE1AILkiue64dOo1NCtlDq5g6aurzXOdldX1l7jqrYlJ4ekkH31UaokUEbo49RjDVvXz
+         ipwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aLt22fpVUCej9eNuT5hv0QxiM34SFiWK3fjhN9lD/gI=;
+        b=LtptRRkYTygY8my6iTS3hSQeO5rGX9HmTJE23jANv3iEqjKVdmWtBRYIZaNMFizLb6
+         o4UPXy+WpfeBu41CA42zJ6FkuqtB9mi/IeedcUxe3qf9r64mINdqxy000YWhGqY1UbVu
+         F3Zh+nQu30DF3y4M7q+4c1TzL7lNdlKhDDhxm9xceWlyOb25R6zsarbvff4WjOvL7gQM
+         SOcqlfDr+bAS6hGLOC0nSOo+Ro5SPOJPv7+d5UiCx4ZNADW55vdK73zfsF3TGGUxSXyh
+         cQ3zeE5ancjYjwtZb6E8v/aRUUwSNgxFWDwDVAJjkrVnfp/evww2vf/ZQQAhvO7pQfNk
+         rXZg==
+X-Gm-Message-State: AOAM531Bv0AsPbUdtAXe5TjSs10T4M7sQFN6pBlnrrlDS+Cr5nrN2Z8k
+        egYAFju2QJWLSM9WR1suNZM8elbUdO20jQ==
+X-Google-Smtp-Source: ABdhPJzPqScsP9bEPzkGLGjpbkNEjEMLd68G7qVFrs22hfroHJDyZFhP1cQLRaLVjBUl1Pp8u7N4bg==
+X-Received: by 2002:a17:906:b259:: with SMTP id ce25mr12673075ejb.245.1621244710004;
+        Mon, 17 May 2021 02:45:10 -0700 (PDT)
+Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id s2sm10657481edu.89.2021.05.17.02.45.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 May 2021 02:45:09 -0700 (PDT)
+Date:   Mon, 17 May 2021 11:45:08 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Yang Shen <shenyang39@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 17/34] net: netronome: nfp: Fix wrong function name in
+ comments
+Message-ID: <20210517094507.GA17134@netronome.com>
+References: <1621076039-53986-1-git-send-email-shenyang39@huawei.com>
+ <1621076039-53986-18-git-send-email-shenyang39@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1621076039-53986-18-git-send-email-shenyang39@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Link xpcs callback functions for MAC to configure the xpcs EEE feature.
+On Sat, May 15, 2021 at 06:53:42PM +0800, Yang Shen wrote:
+> Fixes the following W=1 kernel build warning(s):
+> 
+>  drivers/net/ethernet/netronome/nfp/ccm_mbox.c:52: warning: expecting prototype for struct nfp_ccm_mbox_skb_cb. Prototype was for struct nfp_ccm_mbox_cmsg_cb instead
+>  drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c:35: warning: expecting prototype for struct nfp_tun_pre_run_rule. Prototype was for struct nfp_tun_pre_tun_rule instead
+>  drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nffw.c:38: warning: expecting prototype for NFFW_INFO_VERSION history(). Prototype was for NFFW_INFO_VERSION_CURRENT() instead
+> 
+> Cc: Simon Horman <simon.horman@netronome.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Yang Shen <shenyang39@huawei.com>
 
-The clk_eee frequency is used to calculate the MULT_FACT_100NS. This is
-to adjust the clock tic closer to 100ns.
+Thanks,
 
-Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c    | 11 +++++++++++
- drivers/net/ethernet/stmicro/stmmac/hwif.h           |  2 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c |  6 ++++++
- include/linux/stmmac.h                               |  1 +
- 4 files changed, 20 insertions(+)
+looks good to me.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 80728a4c0e3f..e36a8cc59ad0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -429,6 +429,17 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 	plat->force_sf_dma_mode = 0;
- 	plat->tso_en = 1;
- 
-+	/* Multiplying factor to the clk_eee_i clock time
-+	 * period to make it closer to 100 ns. This value
-+	 * should be programmed such that the clk_eee_time_period *
-+	 * (MULT_FACT_100NS + 1) should be within 80 ns to 120 ns
-+	 * clk_eee frequency is 19.2Mhz
-+	 * clk_eee_time_period is 52ns
-+	 * 52ns * (1 + 1) = 104ns
-+	 * MULT_FACT_100NS = 1
-+	 */
-+	plat->mult_fact_100ns = 1;
-+
- 	plat->rx_sched_algorithm = MTL_RX_ALGORITHM_SP;
- 
- 	for (i = 0; i < plat->rx_queues_to_use; i++) {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 2cc91759b91f..c678d7b826a3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -624,6 +624,8 @@ struct stmmac_mmc_ops {
- 	stmmac_do_callback(__priv, xpcs, link_up, __args)
- #define stmmac_xpcs_probe(__priv, __args...) \
- 	stmmac_do_callback(__priv, xpcs, probe, __args)
-+#define stmmac_xpcs_config_eee(__priv, __args...) \
-+	stmmac_do_callback(__priv, xpcs, config_eee, __args)
- 
- struct stmmac_regs_off {
- 	u32 ptp_off;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index 61b11639ee0c..1f6d749fd9a3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -720,6 +720,12 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
- 		netdev_warn(priv->dev,
- 			    "Setting EEE tx-lpi is not supported\n");
- 
-+	ret = stmmac_xpcs_config_eee(priv, &priv->hw->xpcs_args,
-+				     priv->plat->mult_fact_100ns,
-+				     edata->eee_enabled);
-+	if (ret)
-+		return ret;
-+
- 	if (!edata->eee_enabled)
- 		stmmac_disable_eee_mode(priv);
- 
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 0db36360ef21..e14a12df381b 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -223,6 +223,7 @@ struct plat_stmmacenet_data {
- 	struct clk *clk_ptp_ref;
- 	unsigned int clk_ptp_rate;
- 	unsigned int clk_ref_rate;
-+	unsigned int mult_fact_100ns;
- 	s32 ptp_max_adj;
- 	struct reset_control *stmmac_rst;
- 	struct stmmac_axi *axi;
--- 
-2.17.1
-
+Signed-off-by: Simon Horman <simon.horman@netronome.com>
