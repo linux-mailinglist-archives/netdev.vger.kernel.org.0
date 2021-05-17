@@ -2,141 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCB61386C61
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:38:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 509F9386C81
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237879AbhEQVkA convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 17 May 2021 17:40:00 -0400
-Received: from mga18.intel.com ([134.134.136.126]:57475 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237741AbhEQVj7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 May 2021 17:39:59 -0400
-IronPort-SDR: J3QOnpPOonV1TUwwgebvfAxTy1ogvtuzy/GMRDh00cXTf4gmENpt/wrv8nGQikMG9SmQg2Elqj
- Zc0m14q8YASQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9987"; a="187977026"
-X-IronPort-AV: E=Sophos;i="5.82,307,1613462400"; 
-   d="scan'208";a="187977026"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2021 14:38:42 -0700
-IronPort-SDR: DTgt40BRnsXHRoqKxB26ZD/dw5GFoXryP099LyL2tsd1+dskddwuSN8JNKppE/WQy16NHbVYUY
- fABfcHDchpOQ==
-X-IronPort-AV: E=Sophos;i="5.82,307,1613462400"; 
-   d="scan'208";a="543853987"
-Received: from mchicks-mobl1.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.212.132.186])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2021 14:38:41 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Michael Walle <michael@walle.cc>,
-        Yannick Vignon <yannick.vignon@oss.nxp.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        sebastien.laveze@oss.nxp.com,
-        Yannick Vignon <yannick.vignon@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vedang Patel <vedang.patel@intel.com>
-Subject: Re: [PATCH net v1] net: taprio offload: enforce qdisc to netdev
- queue mapping
-In-Reply-To: <94d68f6301c085fbdd1940cd0f6f7def@walle.cc>
-References: <20210511171829.17181-1-yannick.vignon@oss.nxp.com>
- <20210514083226.6d3912c4@kicinski-fedora-PC1C0HJN>
- <87y2ch121x.fsf@vcostago-mobl2.amr.corp.intel.com>
- <20210514140154.475e7f3b@kicinski-fedora-PC1C0HJN>
- <87sg2o2809.fsf@vcostago-mobl2.amr.corp.intel.com>
- <4359e11a-5f72-cc01-0c2f-13ca1583f6ef@oss.nxp.com>
- <94d68f6301c085fbdd1940cd0f6f7def@walle.cc>
-Date:   Mon, 17 May 2021 14:38:40 -0700
-Message-ID: <874kf111nj.fsf@vcostago-mobl2.amr.corp.intel.com>
+        id S238139AbhEQVpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 17:45:24 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:58637 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230508AbhEQVpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 17:45:22 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id E9AD25C0172;
+        Mon, 17 May 2021 17:44:04 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Mon, 17 May 2021 17:44:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=tlZBfa
+        KRDABNllg2+fYxJA26vcxtyQM/CjtTLSQKZrM=; b=wmVUTuSrwBIVD7qZwtTXXJ
+        fjslq3lomOz3PPW4idFTqChNCAD87/t0a8guBGZnKurQc77OcSekraUKD/2nZKmP
+        /kS5rJ6OJofq8LznRv1uwrQU7eNq2BC4KjX6Zv09rcCy8TsSWzIvcSA6fyzyNgVt
+        nZKMmk0oGACUfpzw/NApWIMcAjwkF0Mm4VZSK9roLWcnB50chVO+Z5k5jfGqtJoX
+        lhwz3v4rp0PB+h/c47vuh1urr0UIwJznczuHg4kJ+73RWDMebDpTKUG8FY42Jw+E
+        XVvjkJTmrqRBQT24hBz4TyCmR1FaJqBb+wezpVyd5W0Wx4mI/dmTNc2aqHoG2ejg
+        ==
+X-ME-Sender: <xms:pOOiYChedNEkEWou1mpGuigpM6k-D_vi2AQRjwdmiMfsc6NAcSTJGA>
+    <xme:pOOiYDAj-n8vVld6WLCqWAVnM0EBkurCK43h5pCfSGCX_hd0JUUJSXPIhoyTDTzzO
+    zshQKdBMiLLUw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdeihedgudeigecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesghdtreertddtjeenucfhrhhomhepofgrrhgv
+    khcuofgrrhgtiiihkhhofihskhhiqdfikphrvggtkhhiuceomhgrrhhmrghrvghksehinh
+    hvihhsihgslhgvthhhihhnghhslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhepkeeg
+    tdfgvdeihefhhedtvdelieeiueetveehteffjeejjedvieejvefhueeffeegnecuffhomh
+    grihhnpehgihhthhhusgdrtghomhenucfkphepledurdeijedrjeelrdegnecuvehluhhs
+    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrrhhmrghrvghkse
+    hinhhvihhsihgslhgvthhhihhnghhslhgrsgdrtghomh
+X-ME-Proxy: <xmx:pOOiYKFzvkC1uenmtT0zvUAm6JqNUmLYitaTxurgJ-h_vlBy92rGqw>
+    <xmx:pOOiYLRNSSjS09hu-plzFv6O2-M3bz4-3_-RaKUkuEcbTzSlF_1cww>
+    <xmx:pOOiYPyROfmJjGKeG6WqB_ho4GsWglGJWBVhUqjKEQH68PCVBxZ1EQ>
+    <xmx:pOOiYKqQIZ5VBnBjYPQGZ71ZiEB1dPVT6FU0xS9Q_IrC41cgvZZPZA>
+Received: from mail-itl (ip5b434f04.dynamic.kabel-deutschland.de [91.67.79.4])
+        by mail.messagingengine.com (Postfix) with ESMTPA;
+        Mon, 17 May 2021 17:44:03 -0400 (EDT)
+Date:   Mon, 17 May 2021 23:43:59 +0200
+From:   Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>
+To:     "Durrant, Paul" <pdurrant@amazon.co.uk>
+Cc:     Michael Brown <mbrown@fensystems.co.uk>,
+        "paul@xen.org" <paul@xen.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Ian Jackson <iwj@xenproject.org>, Wei Liu <wl@xen.org>,
+        Anthony PERARD <anthony.perard@citrix.com>
+Subject: Re: [PATCH] xen-netback: Check for hotplug-status existence before
+ watching
+Message-ID: <YKLjoALdw4oKSZ04@mail-itl>
+References: <20210413152512.903750-1-mbrown@fensystems.co.uk>
+ <YJl8IC7EbXKpARWL@mail-itl>
+ <404130e4-210d-2214-47a8-833c0463d997@fensystems.co.uk>
+ <YJmBDpqQ12ZBGf58@mail-itl>
+ <21f38a92-c8ae-12a7-f1d8-50810c5eb088@fensystems.co.uk>
+ <YJmMvTkp2Y1hlLLm@mail-itl>
+ <df9e9a32b0294aee814eeb58d2d71edd@EX13D32EUC003.ant.amazon.com>
+ <YJpfORXIgEaWlQ7E@mail-itl>
+ <YJpgNvOmDL9SuRye@mail-itl>
+ <9edd6873034f474baafd70b1df693001@EX13D32EUC003.ant.amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="k7Ovt1DhdVgIdtca"
+Content-Disposition: inline
+In-Reply-To: <9edd6873034f474baafd70b1df693001@EX13D32EUC003.ant.amazon.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Michael Walle <michael@walle.cc> writes:
 
->>> 
->>> At least the hardware that I am familiar with doesn't reorder packets.
->>> 
->>> For TXTIME, we have ETF (the qdisc) that re-order packets. The way
->>> things work when taprio and ETF are used together is something like
->>> this: taprio only has enough knowledge about TXTIME to drop packets 
->>> that
->>> would be transmitted outside their "transmission window" (e.g. for
->>> traffic class 0 the transmission window is only for 10 to 50, the 
->>> TXTIME
->>> for a packet is 60, this packet is "invalid" and is dropped). And then
->>> when the packet is enqueued to the "child" ETF, it's re-ordered and 
->>> then
->>> sent to the driver.
->>> 
->>> And this is something that this patch breaks, the ability of dropping
->>> those invalid packets (I really wouldn't like to do this verification
->>> inside our drivers). Thanks for noticing this.
->
-> Is this really how the taprio should behave? I mean, should the frame
-> really be dropped by taprio if TXTIME is outside of the window? Why
-> would taprio bother with TXTIME at all?
+--k7Ovt1DhdVgIdtca
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 17 May 2021 23:43:59 +0200
+From: Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
+To: "Durrant, Paul" <pdurrant@amazon.co.uk>
+Cc: Michael Brown <mbrown@fensystems.co.uk>, "paul@xen.org" <paul@xen.org>,
+	"xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>,
+	Ian Jackson <iwj@xenproject.org>, Wei Liu <wl@xen.org>,
+	Anthony PERARD <anthony.perard@citrix.com>
+Subject: Re: [PATCH] xen-netback: Check for hotplug-status existence before
+ watching
 
-Yeah, I understand what you are saying, I also didn't like the idea of
-having TXTIME knowledge inside taprio. This trade off was made because
-the HW we have is very... particular about the launchtime, if the
-launchtime for a packet ends after the "close" time for that queue, that
-queue can end up stuck (for multiple seconds in some extreme cases).
+On Tue, May 11, 2021 at 12:46:38PM +0000, Durrant, Paul wrote:
+> > -----Original Message-----
+> > From: Marek Marczykowski-G=C3=B3recki <marmarek@invisiblethingslab.com>
+> > Sent: 11 May 2021 11:45
+> > To: Durrant, Paul <pdurrant@amazon.co.uk>
+> > Cc: Michael Brown <mbrown@fensystems.co.uk>; paul@xen.org; xen-devel@li=
+sts.xenproject.org;
+> > netdev@vger.kernel.org; wei.liu@kernel.org
+> > Subject: RE: [EXTERNAL] [PATCH] xen-netback: Check for hotplug-status e=
+xistence before watching
+> >=20
+> > On Tue, May 11, 2021 at 12:40:54PM +0200, Marek Marczykowski-G=C3=B3rec=
+ki wrote:
+> > > On Tue, May 11, 2021 at 07:06:55AM +0000, Durrant, Paul wrote:
+> > > > > -----Original Message-----
+> > > > > From: Marek Marczykowski-G=C3=B3recki <marmarek@invisiblethingsla=
+b.com>
+> > > > > Sent: 10 May 2021 20:43
+> > > > > To: Michael Brown <mbrown@fensystems.co.uk>; paul@xen.org
+> > > > > Cc: paul@xen.org; xen-devel@lists.xenproject.org; netdev@vger.ker=
+nel.org; wei.liu@kernel.org;
+> > Durrant,
+> > > > > Paul <pdurrant@amazon.co.uk>
+> > > > > Subject: RE: [EXTERNAL] [PATCH] xen-netback: Check for hotplug-st=
+atus existence before watching
+> > > > >
+> > > > > On Mon, May 10, 2021 at 08:06:55PM +0100, Michael Brown wrote:
+> > > > > > If you have a suggested patch, I'm happy to test that it doesn'=
+t reintroduce
+> > > > > > the regression bug that was fixed by this commit.
+> > > > >
+> > > > > Actually, I've just tested with a simple reloading xen-netfront m=
+odule. It
+> > > > > seems in this case, the hotplug script is not re-executed. In fac=
+t, I
+> > > > > think it should not be re-executed at all, since the vif interface
+> > > > > remains in place (it just gets NO-CARRIER flag).
+> > > > >
+> > > > > This brings a question, why removing hotplug-status in the first =
+place?
+> > > > > The interface remains correctly configured by the hotplug script =
+after
+> > > > > all. From the commit message:
+> > > > >
+> > > > >     xen-netback: remove 'hotplug-status' once it has served its p=
+urpose
+> > > > >
+> > > > >     Removing the 'hotplug-status' node in netback_remove() is wro=
+ng; the script
+> > > > >     may not have completed. Only remove the node once the watch h=
+as fired and
+> > > > >     has been unregistered.
+> > > > >
+> > > > > I think the intention was to remove 'hotplug-status' node _later_=
+ in
+> > > > > case of quickly adding and removing the interface. Is that right,=
+ Paul?
+> > > >
+> > > > The removal was done to allow unbind/bind to function correctly. II=
+RC before the original patch
+> > doing a bind would stall forever waiting for the hotplug status to chan=
+ge, which would never happen.
+> > >
+> > > Hmm, in that case maybe don't remove it at all in the backend, and let
+> > > it be cleaned up by the toolstack, when it removes other backend-rela=
+ted
+> > > nodes?
+> >=20
+> > No, unbind/bind _does_ require hotplug script to be called again.
+> >=20
+>=20
+> Yes, sorry I was misremembering. My memory is hazy but there was definite=
+ly a problem at the time with leaving the node in place.
+>=20
+> > When exactly vif interface appears in the system (starts to be available
+> > for the hotplug script)? Maybe remove 'hotplug-status' just before that
+> > point?
+> >=20
+>=20
+> I really can't remember any detail. Perhaps try reverting both patches th=
+en and check that the unbind/rmmod/modprobe/bind sequence still works (and =
+the backend actually makes it into connected state).
 
-The idea is that other vendors could be as particular.
+Ok, I've tried this. I've reverted both commits, then used your test
+script from the 9476654bd5e8ad42abe8ee9f9e90069ff8e60c17:
+   =20
+    This has been tested by running iperf as a server in the test VM and
+    then running a client against it in a continuous loop, whilst also
+    running:
+   =20
+    while true;
+      do echo vif-$DOMID-$VIF >unbind;
+      echo down;
+      rmmod xen-netback;
+      echo unloaded;
+      modprobe xen-netback;
+      cd $(pwd);
+      brctl addif xenbr0 vif$DOMID.$VIF;
+      ip link set vif$DOMID.$VIF up;
+      echo up;
+      sleep 5;
+      done
+   =20
+    in dom0 from /sys/bus/xen-backend/drivers/vif to continuously unbind,
+    unload, re-load, re-bind and re-plumb the backend.
+   =20
+In fact, the need to call `brctl` and `ip link` manually is exactly
+because the hotplug script isn't executed. When I execute it manually,
+the backend properly gets back to working. So, removing 'hotplug-status'
+was in the correct place (netback_remove). The missing part is the toolstack
+calling the hotplug script on xen-netback re-bind.
 
-Also, what helped convince me was that txtime is a feature of the
-socket/skb, and if taprio/whatever can use it to make the driver life's
-easier, then let's use it, that is
+In this case, I'm not sure what is the proper way. If I restart
+xendriverdomain service (I do run the backend in domU), it properly
+executes hotplug script and the backend interface gets properly
+configured. But it doesn't do it on its own. It seems to be related to
+device "state" in xenstore. The specific part of the libxl is
+backend_watch_callback():
+https://github.com/xen-project/xen/blob/master/tools/libs/light/libxl_devic=
+e.c#L1664
 
->
->> Hmm, indeed, I missed that check (we don't use ETF currently). I'm not
->> sure of the best way forward, but here are a few thoughts:
->> . The problem only arises for full-offload taprio, not for the
->> software or TxTime-assisted cases.
->> . I'm not sure mixing taprio(full-offload) with etf(no-offload) is
->> very useful, at least with small gate intervals: it's likely you will
->> miss your window when trying to send a packet at exactly the right
->> time in software (I am usually testing taprio with a 2ms period and a
->> 4µs interval for the RT stream).
->> . That leaves the case of taprio(full-offload) with etf(offload).
->> Right now with the current stmmac driver config, a packet whose tstamp
->> is outside its gate interval will be sent on the next interval (and
->> block the queue).
->
-> If both are offloaded, are the h/w queues reordered if there is a
-> new frame with an earlier TXTIME? Or will the queue be blocked by a
-> frame with a later transmission time?
+    ddev =3D search_for_device(dguest, dev);
+    if (ddev =3D=3D NULL && state =3D=3D XenbusStateClosed) {
+        /*
+         * Spurious state change, device has already been disconnected
+         * or never attached.
+         */
+        goto skip;
+    } else if (ddev =3D=3D NULL) {
+        rc =3D add_device(egc, nested_ao, dguest, dev);
+        if (rc > 0)
+            free_ao =3D true;
+    } else if (state =3D=3D XenbusStateClosed && online =3D=3D 0) {
+        rc =3D remove_device(egc, nested_ao, dguest, ddev);
+        if (rc > 0)
+            free_ao =3D true;
+        check_and_maybe_remove_guest(gc, ddomain, dguest);
+    }
 
-Even if offloaded ETF will re-order packets. In bit more detail, ETF
-will re-order packets if their launchtime is more than "delta"
-nanoseconds in the future.
+In short: if device gets XenbusStateInitWait for the first time (ddev =3D=3D
+NULL case), it goes to add_device() which executes the hotplug script
+and stores the device.
+Then, if device goes to XenbusStateClosed + online=3D=3D0 state, then it
+executes hotplug script again (with "offline" parameter) and forgets the
+device. If you unbind the driver, the device stays in
+XenbusStateConnected state (in xenstore), and after you bind it again,
+it goes to XenbusStateInitWait. It don't think it goes through
+XenbusStateClosed, and online stays at 1 too, so libxl doesn't execute
+the hotplug script again.
 
->
-> TBH I've never understood why the ETF qdisc will drop frames with
-> TXTIME in the past. I mean it makes sense with hardware offloading. But
-> without it, how can you make sure the kernel will wake up the queue
-> at just the right time to be able to send it. You can juggle the delta
-> parameter but on you don't want to send to too early, but on the other
-> hand the frame will likely be dropped if delta is too small. What am
-> I misssing here?
+Some solution could be to add an extra case at the end, like "ddev !=3D
+NULL && state =3D=3D XenbusStateInitWait && hotplug-status !=3D connected".
+And make sure xl devd won't call the same hotplug script multiple times
+for the same device _at the same time_ (I'm not sure about the async
+machinery here).
 
-I don't think you are missing anything.
+But even if xl devd (aka xendriverdomain service) gets "fixes" to
+execute hotplug script in that case, I don't think it would work in
+backend in dom0 case - there, I think nothing watches already configured
+vif interfaces (there is no xl devd daemon in dom0, and xl background
+process watches only domain death and cdrom eject events).=20
 
-Just some background, ETF was written thinking mostly about it being
-offloaded, the non-offloaded/"software" mode was a best-effort
-implementation of that idea.
+I'm adding toolstack maintainers, maybe they'll have some idea...
 
-That is, If you have use cases for non-offloaded ETF and it work better
-if it didn't drop "late" packets, I would be happy hear more.
+In any case, the issue is not calling the hotplug script, responsible
+for configuring newly created vif interface. Not kernel waiting for it.
+So, I think both commits should still be reverted.
 
+--=20
+Best Regards,
+Marek Marczykowski-G=C3=B3recki
+Invisible Things Lab
 
-Cheers,
--- 
-Vinicius
+--k7Ovt1DhdVgIdtca
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhrpukzGPukRmQqkK24/THMrX1ywFAmCi46AACgkQ24/THMrX
+1ywsqAf/VEiZIJ5Qxk9keLiV804ReqfQfqsC6iuj3exTvVtvR7hzRRe1nMxvuVS6
+rjmYRoWYY5V36IH0GXaUb9wri7Kg8uBZ8J9fTsaq8sJTXj+Re0aFckoDTeTwkzJl
+CdpdgL1meNwvE7znIpA92LsObRPKqFPzAYMzFNt7eoaFYA7Y81n4nBKbKLfI4PiS
+r9mzZSevt3yzGnbU6thYvYbGfmlGYArgZZ2mKi8eaMfnh7lLtHBD692t6AARjce3
+j897zPf44EisvYMowITaF1A/D1SVl8cOabPzVj/VC2NP0z2Hjl46aRwrqd5FAM3V
+cVO/tttRGl7cxzMOexxRzyn3GeI2rg==
+=5+LX
+-----END PGP SIGNATURE-----
+
+--k7Ovt1DhdVgIdtca--
