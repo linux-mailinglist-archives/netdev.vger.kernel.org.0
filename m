@@ -2,96 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B66E2382A67
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 12:58:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 333C1382A74
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 13:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236528AbhEQK7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 06:59:08 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:40088 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236471AbhEQK7F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 06:59:05 -0400
-Received: from us.es (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 5EE7664151;
-        Mon, 17 May 2021 12:56:54 +0200 (CEST)
-Date:   Mon, 17 May 2021 12:57:45 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        syzbot <syzbot+154bd5be532a63aa778b@syzkaller.appspotmail.com>,
-        coreteam@netfilter.org, David Miller <davem@davemloft.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: [syzbot] WARNING in __nf_unregister_net_hook (4)
-Message-ID: <20210517105745.GA19031@salvia>
-References: <0000000000008ce91e05bf9f62bc@google.com>
- <CACT4Y+a6L_x22XNJVX+VYY-XKmLQ0GaYndCVYnaFmoxk58GPgw@mail.gmail.com>
- <20210508144657.GC4038@breakpoint.cc>
- <20210513005608.GA23780@salvia>
- <CACT4Y+YhQQtHBErLYRDqHyw16Bxu9FCMQymviMBR-ywiKf3VQw@mail.gmail.com>
+        id S236604AbhEQLB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 07:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49832 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236471AbhEQLB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 07:01:28 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB482C061573;
+        Mon, 17 May 2021 04:00:11 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FkGPL2v7fz9sRK;
+        Mon, 17 May 2021 21:00:06 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1621249208;
+        bh=2Y30Sqquhl/9Xg91SIhYLicrc/NfN9wZV7c3dBixuaM=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=VI5JgnrgZ4xyeV2fG6OMRkRLi9t+nx0yM9RE5QaorROoFyOWMK4Ia15ckRi54qvrV
+         M+w6tLOpjdtpqYyR1YjTNAeSnVWRR5RIXgDzrQsPQt1nWa9Y9ev6r0llmCCwpRp9u5
+         tukI4W67KVjdGfCTlUB5kG8MvJKR3kFs+hSRt4D/EmpGx3efFAQOpCyG2JyaKPFkMy
+         t9NVJ2TggtS98H21zmNkHIxEfdtrweokHsKipNrE4CwK0s04IJEEuV0a8YFGlXvec8
+         FIQmJTzYp/lViFdUAP3QE4RTv9nQWCfzHBBAdqoMSj7x75+zdb+N43yN/oAtcQOUQd
+         lnqc/+sEjPGQA==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Ondrej Mosnacek <omosnace@redhat.com>,
+        linux-security-module@vger.kernel.org,
+        James Morris <jmorris@namei.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Casey Schaufler <casey@schaufler-ca.com>
+Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
+ permission checks
+In-Reply-To: <20210517092006.803332-1-omosnace@redhat.com>
+References: <20210517092006.803332-1-omosnace@redhat.com>
+Date:   Mon, 17 May 2021 21:00:04 +1000
+Message-ID: <87o8d9k4ln.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+YhQQtHBErLYRDqHyw16Bxu9FCMQymviMBR-ywiKf3VQw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 13, 2021 at 09:08:20AM +0200, Dmitry Vyukov wrote:
-> On Thu, May 13, 2021 at 2:56 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> >
-> > On Sat, May 08, 2021 at 04:46:57PM +0200, Florian Westphal wrote:
-> > > Dmitry Vyukov <dvyukov@google.com> wrote:
-> > > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > > > Reported-by: syzbot+154bd5be532a63aa778b@syzkaller.appspotmail.com
-> > > >
-> > > > Is this also fixed by "netfilter: arptables: use pernet ops struct
-> > > > during unregister"?
-> > > > The warning is the same, but the stack is different...
-> > >
-> > > No, this is a different bug.
-> > >
-> > > In both cases the caller attempts to unregister a hook that the core
-> > > can't find, but in this case the caller is nftables, not arptables.
-> >
-> > I see no reproducer for this bug. Maybe I broke the dormant flag handling?
-> >
-> > Or maybe syzbot got here after the arptables bug has been hitted?
-> 
-> syzbot always stops after the first bug to give you perfect "Not
-> tainted" oopses.
+Ondrej Mosnacek <omosnace@redhat.com> writes:
+> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
+> lockdown") added an implementation of the locked_down LSM hook to
+> SELinux, with the aim to restrict which domains are allowed to perform
+> operations that would breach lockdown.
+>
+> However, in several places the security_locked_down() hook is called in
+> situations where the current task isn't doing any action that would
+> directly breach lockdown, leading to SELinux checks that are basically
+> bogus.
+>
+> Since in most of these situations converting the callers such that
+> security_locked_down() is called in a context where the current task
+> would be meaningful for SELinux is impossible or very non-trivial (and
+> could lead to TOCTOU issues for the classic Lockdown LSM
+> implementation), fix this by modifying the hook to accept a struct cred
+> pointer as argument, where NULL will be interpreted as a request for a
+> "global", task-independent lockdown decision only. Then modify SELinux
+> to ignore calls with cred == NULL.
+>
+> Since most callers will just want to pass current_cred() as the cred
+> parameter, rename the hook to security_cred_locked_down() and provide
+> the original security_locked_down() function as a simple wrapper around
+> the new hook.
+>
+> The callers migrated to the new hook, passing NULL as cred:
+> 1. arch/powerpc/xmon/xmon.c
+>      Here the hook seems to be called from non-task context and is only
+>      used for redacting some sensitive values from output sent to
+>      userspace.
 
-Looking at the log file:
+It's hard to follow but it actually disables interactive use of xmon
+entirely if lockdown is in confidentiality mode, and disables
+modifications of the kernel in integrity mode.
 
-https://syzkaller.appspot.com/text?tag=CrashLog&x=110a3096d00000
+But that's not really that important, the patch looks fine.
 
-This is mixing calls to nftables:
+Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
 
-14:43:16 executing program 0:
-r0 = socket$nl_netfilter(0x10, 0x3, 0xc)
-sendmsg$NFT_BATCH(r0, &(0x7f000000c2c0)={0x0, 0x0, &(0x7f0000000000)={&(0x7f00000001c0)={{0x9}, [@NFT_MSG_NEWTABLE={0x28, 0x0, 0xa, 0x3, 0x0, 0x0, {0x2}, [@NFTA_TABLE_NAME={0x9, 0x1, 'syz0\x00'}, @NFTA_TABLE_FLAGS={0x8}]}], {0x14}}, 0x50}}, 0x0)
-
-with arptables:
-
-14:43:16 executing program 1:
-r0 = socket$inet_udp(0x2, 0x2, 0x0)
-setsockopt$ARPT_SO_SET_REPLACE(r0, 0x0, 0x60, &(0x7f0000000000)={'filter\x00', 0x4, 0x4, 0x3f8, 0x310, 0x200, 0x200, 0x310, 0x310, 0x310, 0x4, 0x0, {[{{@arp={@broadcast, @rand_addr, 0x87010000, 0x0, 0x0, 0x0, {@mac=@link_local}, {@mac}, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 'bridge0\x00', 'erspan0\x00'}, 0xc0, 0x100}, @unspec=@RATEEST={0x40, 'RATEEST\x00', 0x0, {'syz1\x00', 0x0, 0x4}}}, {{@arp={@initdev={0xac, 0x1e, 0x0, 0x0}, @local, 0x0, 0x0, 0x0, 0x0, {@mac=@remote}, {}, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 'veth0_to_bridge\x00', 'geneve1\x00'}, 0xc0, 0x100}, @unspec=@RATEEST={0x40, 'RATEEST\x00', 0x0, {'syz0\x00', 0x0, 0x2}}}, {{@arp={@local, @multicast1, 0x0, 0x0, 0x0, 0x0, {}, {@mac=@broadcast}, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 'veth0_to_batadv\x00', 'veth0_to_hsr\x00'}, 0xc0, 0x110}, @mangle={0x50, 'mangle\x00', 0x0, {@mac=@remote, @mac=@local, @multicast2, @initdev={0xac, 0x1e, 0x0, 0x0}}}}], {{[], 0xc0, 0xe8}, {0x28}}}}, 0x448)
-
-arptables was buggy at the time this bug has been reported.
-
-Am I understanding correctly the syzbot log?
-
-I wonder if the (buggy) arptables removed the incorrect hook from
-nftables, then nftables crashed on the same location when removing the
-hook. I don't see a clear sequence for this to happen though.
-
-Would it be possible to make syzbot exercise the NFT_MSG_NEWTABLE
-codepath (with NFTA_TABLE_FLAGS) to check if the problem still
-persists?
-
-Thanks.
+cheers
