@@ -2,98 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E39753827C3
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 11:04:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDB163827F6
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 11:15:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235760AbhEQJGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 05:06:09 -0400
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:31682 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230087AbhEQJGI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 05:06:08 -0400
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14H926mm018652;
-        Mon, 17 May 2021 09:04:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type : in-reply-to;
- s=corp-2020-01-29; bh=OITtMnOQqFatshRwK/G3cSME8UfYiuTbecRPw4JvaYQ=;
- b=rvXSzhOqaSNxmoXYQ0Sy4E0sk9Q7pzYyLGi5pg0hmU4/wtC1q6rZyHatai6JdhcIG99D
- DCwo/fGS/srO8PwIyB3W2YeYXu63R0vFLbTxfqD2ng0XuB5lmTZQ6XPE8Y+dVjaOwcpC
- 0+BpSpk9jfhgtzmU5hlS0oGWZWeU7UOmO6l8/DiJwDEaHua1Bq6LG0rBTjbEZ1LGdRNk
- /AV0M8xFM9kFq/M8jNvRjGCksvT8kUePbJywjF73rxcKnSdilPqfYpajaoVbB/0BAeas
- ziL1Yt5OCzfOJ/WqzkBc1WKlpkar5Bimur4+EDSN2eeWHsnHSPBDwkFWSUxVf1BGT1h6 Bw== 
-Received: from oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 38kjp6g26x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 17 May 2021 09:04:29 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.podrdrct (8.16.0.36/8.16.0.36) with SMTP id 14H93qxP064798;
-        Mon, 17 May 2021 09:04:28 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 38j644u58k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 17 May 2021 09:04:28 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 14H94Mgt025989;
-        Mon, 17 May 2021 09:04:22 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 17 May 2021 09:04:21 +0000
-Date:   Mon, 17 May 2021 12:04:13 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net v2] net: mdiobus: get rid of a BUG_ON()
-Message-ID: <20210517090413.GC1955@kadam>
+        id S235964AbhEQJQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 05:16:12 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:48990 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235968AbhEQJNc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 05:13:32 -0400
+Received: by mail-io1-f69.google.com with SMTP id y191-20020a6bc8c80000b02904313407018fso2870244iof.15
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 02:12:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=mRyf9lv2g3j7nk1w/H4T1H1jAQgqzoEpGRqMuq86u2E=;
+        b=F/LWBV+h1tj1FtXvkiSLJhk2n8LzBIeywrOH+ke2v8okoa1AHlaLdg+/3I01BstBGA
+         LgJ9Ky64eX7EMNGnmcB8h6ZUzoZ+SzRqpMmz2njsOW8b/CYWTJ5H2gx4AGl2DhTvkrqt
+         Zkpfts+c2I6PoWg37uxK1eBNON+GwK9pr2qrClX7wgtxgPws16hYNGGuw21GEiALrbcT
+         UuqFgYGGu2f4IUvJQE33fOfnD/IkYTW1Uluf/h47Y6SSbVVcOLRGqy4LAI7X7GKg/QP8
+         gnbWftl/dyhxCKCfMrUHw3SgsT0YlSEQkm/t94P9ikDP5QH7yxwK8FcCcSzL4gSOuAuw
+         IRUQ==
+X-Gm-Message-State: AOAM531qR7TJ1iZaaE+An3ueA77Q4SFivsA5xFjBkJM6hoi1KXP9HnVy
+        9wziYZXQ7XRpTFVp8UuvTBTDDrTgmGRWl+Mf1ij+q5v86gK5
+X-Google-Smtp-Source: ABdhPJyw89HcafgTnmnXd8Q0mhLCT8K6VI+UsYJH2lobE3ZOmBIIsPzLBSnQG2WX+XN+ZZl9SZvDwQ/xb7l6drPRY+J3+UJmZYnw
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210515101522.GM12395@shell.armlinux.org.uk>
-X-Mailer: git-send-email haha only kidding
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9986 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 malwarescore=0
- bulkscore=0 mlxlogscore=999 phishscore=0 adultscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
- definitions=main-2105170064
-X-Proofpoint-ORIG-GUID: tjSKhXC8lCcUCFRVPsLh710U9N5CiUY6
-X-Proofpoint-GUID: tjSKhXC8lCcUCFRVPsLh710U9N5CiUY6
+X-Received: by 2002:a5e:930d:: with SMTP id k13mr43881968iom.61.1621242736388;
+ Mon, 17 May 2021 02:12:16 -0700 (PDT)
+Date:   Mon, 17 May 2021 02:12:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000065b14e05c282fd15@google.com>
+Subject: [syzbot] memory leak in mgmt_cmd_complete
+From:   syzbot <syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We spotted a bug recently during a review where a driver was
-unregistering a bus that wasn't registered, which would trigger this
-BUG_ON().  Let's handle that situation more gracefully, and just print
-a warning and return.
+Hello,
 
-Reported-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+syzbot found the following issue on:
+
+HEAD commit:    9f67672a Merge tag 'ext4_for_linus' of git://git.kernel.or..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=136256a5d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5427806e749e612b
+dashboard link: https://syzkaller.appspot.com/bug?extid=4c4ffd1e1094dae61035
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17a4d5a3d00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
+
+2021/05/01 15:27:37 executed programs: 23
+BUG: memory leak
+unreferenced object 0xffff8881131d9100 (size 232):
+  comm "kworker/u5:7", pid 8471, jiffies 4294965136 (age 11.710s)
+  hex dump (first 32 bytes):
+    d0 94 18 27 81 88 ff ff d0 94 18 27 81 88 ff ff  ...'.......'....
+    00 00 00 00 00 00 00 00 00 94 18 27 81 88 ff ff  ...........'....
+  backtrace:
+    [<ffffffff83678b3f>] __alloc_skb+0x20f/0x280 net/core/skbuff.c:413
+    [<ffffffff83c9cedd>] alloc_skb include/linux/skbuff.h:1107 [inline]
+    [<ffffffff83c9cedd>] mgmt_cmd_complete+0x3d/0x1a0 net/bluetooth/mgmt_util.c:146
+    [<ffffffff83c5d46e>] send_settings_rsp net/bluetooth/mgmt.c:1126 [inline]
+    [<ffffffff83c5d46e>] settings_rsp+0x5e/0x170 net/bluetooth/mgmt.c:1279
+    [<ffffffff83c9d1c6>] mgmt_pending_foreach+0x76/0xa0 net/bluetooth/mgmt_util.c:226
+    [<ffffffff83c68c3c>] __mgmt_power_off+0x5c/0x1e0 net/bluetooth/mgmt.c:8575
+    [<ffffffff83c392e9>] hci_dev_do_close+0x579/0x720 net/bluetooth/hci_core.c:1776
+    [<ffffffff8125d109>] process_one_work+0x2c9/0x600 kernel/workqueue.c:2275
+    [<ffffffff8125d9f9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2421
+    [<ffffffff81265268>] kthread+0x178/0x1b0 kernel/kthread.c:313
+    [<ffffffff8100227f>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+
+BUG: memory leak
+unreferenced object 0xffff888126cdce00 (size 512):
+  comm "kworker/u5:7", pid 8471, jiffies 4294965136 (age 11.710s)
+  hex dump (first 32 bytes):
+    01 00 00 00 07 00 05 00 00 82 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff83678a0f>] kmalloc_reserve net/core/skbuff.c:354 [inline]
+    [<ffffffff83678a0f>] __alloc_skb+0xdf/0x280 net/core/skbuff.c:425
+    [<ffffffff83c9cedd>] alloc_skb include/linux/skbuff.h:1107 [inline]
+    [<ffffffff83c9cedd>] mgmt_cmd_complete+0x3d/0x1a0 net/bluetooth/mgmt_util.c:146
+    [<ffffffff83c5d46e>] send_settings_rsp net/bluetooth/mgmt.c:1126 [inline]
+    [<ffffffff83c5d46e>] settings_rsp+0x5e/0x170 net/bluetooth/mgmt.c:1279
+    [<ffffffff83c9d1c6>] mgmt_pending_foreach+0x76/0xa0 net/bluetooth/mgmt_util.c:226
+    [<ffffffff83c68c3c>] __mgmt_power_off+0x5c/0x1e0 net/bluetooth/mgmt.c:8575
+    [<ffffffff83c392e9>] hci_dev_do_close+0x579/0x720 net/bluetooth/hci_core.c:1776
+    [<ffffffff8125d109>] process_one_work+0x2c9/0x600 kernel/workqueue.c:2275
+    [<ffffffff8125d9f9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2421
+    [<ffffffff81265268>] kthread+0x178/0x1b0 kernel/kthread.c:313
+    [<ffffffff8100227f>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+
+
+
 ---
-v2: Update the Reported-by tag.
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
- drivers/net/phy/mdio_bus.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index dadf75ff3ab9..6045ad3def12 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -607,7 +607,8 @@ void mdiobus_unregister(struct mii_bus *bus)
- 	struct mdio_device *mdiodev;
- 	int i;
- 
--	BUG_ON(bus->state != MDIOBUS_REGISTERED);
-+	if (WARN_ON_ONCE(bus->state != MDIOBUS_REGISTERED))
-+		return;
- 	bus->state = MDIOBUS_UNREGISTERED;
- 
- 	for (i = 0; i < PHY_MAX_ADDR; i++) {
--- 
-2.30.2
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
