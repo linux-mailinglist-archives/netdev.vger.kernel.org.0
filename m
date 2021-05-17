@@ -2,62 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26838383907
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 18:06:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED6F738398B
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 18:20:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344076AbhEQQGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 12:06:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57500 "EHLO mail.kernel.org"
+        id S1346180AbhEQQVd convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 17 May 2021 12:21:33 -0400
+Received: from mga05.intel.com ([192.55.52.43]:52983 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245465AbhEQQDP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 May 2021 12:03:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B509760E0B;
-        Mon, 17 May 2021 16:01:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621267318;
-        bh=ePyCIQIDrIZo5z8VdIVCHxWyAkz9/FwYMIPyJzA4Gvw=;
-        h=Date:From:To:Subject:In-Reply-To:References:From;
-        b=m6ShAZ5d7LBK3RFs0kkAY+LZ5n9s94qJCgU1Vt9fOCh++xndS4LePAh/nfySpek+0
-         I2PCjFqE+TZ2F/uC8WArB2Qhmzd8v81bz00SSxJKfFAG8voxXkUa+RBydCPCAIGM46
-         FhdwxBJai5waHhsrPNNepS/kDhYtg5vUu0jAHYclzIF6xWR3FNeljSx04w95elJ1XN
-         aXLmNz7u12x1julRfp6WcLjl71H8yTAz0qLfSPDo4xXqxgKdyNcaTTDEZayX/l6+zr
-         jUvEsCCyzJDIEmauR0NBEaBfbKGFmvpbjVgpjddYILJifV1zQDpRyCoXnHOrI836Tr
-         6c52/ZLbnlU4Q==
-Date:   Mon, 17 May 2021 09:01:57 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jim Ma <majinjing3@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] tls splice: check SPLICE_F_NONBLOCK instead of
- MSG_DONTWAIT
-Message-ID: <20210517090157.3e37461e@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <SY4P282MB2854227891D8F8F8FF2406E5A72E9@SY4P282MB2854.AUSP282.PROD.OUTLOOK.COM>
-References: <96f2e74095e655a401bb921062a6f09e94f8a57a.1620961779.git.majinjing3@gmail.com>
-        <20210514122749.6dd15b9e@kicinski-fedora-PC1C0HJN>
-        <SY4P282MB2854227891D8F8F8FF2406E5A72E9@SY4P282MB2854.AUSP282.PROD.OUTLOOK.COM>
+        id S1345781AbhEQQUo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 May 2021 12:20:44 -0400
+IronPort-SDR: kmU6xCnCNKl9vJX0xQFN73tsR3zkzrUV40Uy5IqPIT4OJoSITHW638R3ETA1bVYdU+HekrDunW
+ 6G4rmtCcerPA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9987"; a="286031446"
+X-IronPort-AV: E=Sophos;i="5.82,307,1613462400"; 
+   d="scan'208";a="286031446"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2021 09:11:37 -0700
+IronPort-SDR: 4uRZisQkY0v1wgg3I9c0I+LCJefuPBxXQnE5aPdODni2uP7snwEmunJ27rT0KY3XO3oLyjGPg9
+ 7I1d9/xoyJSw==
+X-IronPort-AV: E=Sophos;i="5.82,307,1613462400"; 
+   d="scan'208";a="438977527"
+Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.212.212.39])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2021 09:11:37 -0700
+Date:   Mon, 17 May 2021 09:11:36 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 11/16] docs: networking: device_drivers: replace some
+ characters
+Message-ID: <20210517091136.00000e96@intel.com>
+In-Reply-To: <23247f10ab58ae1b54ac368f8a2d2769562adcf4.1621159997.git.mchehab+huawei@kernel.org>
+References: <cover.1621159997.git.mchehab+huawei@kernel.org>
+        <23247f10ab58ae1b54ac368f8a2d2769562adcf4.1621159997.git.mchehab+huawei@kernel.org>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 16 May 2021 04:58:11 +0000 Jim Ma wrote:
-> No, this patch fix using MSG_* in splice.
+Mauro Carvalho Chehab wrote:
+
+> The conversion tools used during DocBook/LaTeX/html/Markdown->ReST
+> conversion and some cut-and-pasted text contain some characters that
+> aren't easily reachable on standard keyboards and/or could cause
+> troubles when parsed by the documentation build system.
 > 
-> I have tested read, write, sendmsg, recvmsg fot tls, and try to
-> implement tls in golang. In develop, I have found those issues and
-> try to fix them.
+> Replace the occurences of the following characters:
+> 
+> 	- U+00a0 (' '): NO-BREAK SPACE
+> 	  as it can cause lines being truncated on PDF output
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-To be clear the Fixes tag points to the commit where the issue was
-first introduced. AFAICT the issue was there from the start, that
-is commit c46234ebb4d1 ("tls: RX path for ktls"). Are you saying that 
-it used to work in the beginning and then another commit broke it?
+For the Intel Ethernet Docs, LGTM!
 
-We need the fixes tag to be able to tell how far back (in terms of
-LTS releases) to backport.
-
-> An other issue, when before enable TLS_RX in cleint, the server sends
-> a tls record, client will receive bad message or message too long
-> error. I'm try to fix this issue.
-
-Please reply all and don't top post.
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
