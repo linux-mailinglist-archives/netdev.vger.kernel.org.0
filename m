@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC627383C0B
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 20:16:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E642D383C0D
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 20:16:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244179AbhEQSRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 14:17:41 -0400
-Received: from azhdrrw-ex02.nvidia.com ([20.64.145.131]:53252 "EHLO
+        id S244190AbhEQSRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 14:17:47 -0400
+Received: from azhdrrw-ex02.nvidia.com ([20.64.145.131]:53253 "EHLO
         AZHDRRW-EX02.NVIDIA.COM" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244156AbhEQSRi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 14:17:38 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.103)
+        with ESMTP id S239704AbhEQSRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 14:17:41 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.173)
  by mxs.oss.nvidia.com (10.13.234.37) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.858.12; Mon, 17 May 2021 11:16:21 -0700
+ 15.2.858.12; Mon, 17 May 2021 11:16:24 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OnGcLrq24ysLGQzD0qp1KpuEegzJ6jHCavDC/U8QY1Pdpr3XqMdc4E7v5u61MOOqEBd1tZvVWPr9n3FaH8SacqYt5zkUNAxoOYi49f16pnKHcMkbvg+5jW/0evciuSD5BKTKGWZQi/TDn/h+83kUczwXeT3Mg8X/DolO2t7YZxTRalOPDCXl48fWGhPZjEBi902afhSWFqpNsFZT2kVaqeXhk1zPDB8L1BbyXvJEg4yDIh07GyPpaaWMcmgRQ8RVmErAzjiIAgGInN7DE+kbzoLUWKZTZaw5EuIhgobCgRu9XUb9/gMtd0XhBr2cXhZQT2/QjIZvbQOB/9q5qVJJ9A==
+ b=OngCc30YaBvnhyRACyGQFPp0TMPfpQJav4ZtBePr907ibkpj5qiql/+5lLCVdRdslaFIPRQLd9zOAtOCmsRGvY+uId9g5Hyd5CoBtG0f9PAh5xJSaGlx4RKmXTOiLThFD6LXZktQMVUrX4ZfOYimQ+s+MMysC8rQCL/JjTGHVE8yjbw2DsSHjH2aly4l4NH2e/B5qd1LjSZJRHd2QUNo/bduZXJ9TKiFLpvd5Qa2wB/zplzECrtfnD/f58ngvSazdpAh8nC8wvAnnPmYcdq/AgEGAliivmN5scso8Pv41nyF+Hcujj3L3hzAPgMeYAY5qbMQ5TKUVGlEi1HOi+nldg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vgL1LRcZFnxZ5s2rkXSpzIx5ZqgMZoOhxxf4+ZZ5wck=;
- b=FWYHB4B7PPXis+qGtBZ5+PrXPBDbvi7BW6aYYOG2VQRWUdogO4m4k6AyblkXvVQqf7SpAHS4ChohVhVokTkvjAN6Gz5Im20YHozB4wLZgGL7R7NmzrB8iKBBIbWs1jO7PPnhJM3/dIU6BjPVZqPNQjunkFLhwDSZ7a7iU9qJaFcvbHD9M1a2jjFJFz9oTRsfToBUmSx4pARPdoSDUAWz3ON1xg69E/gebOGFlTjwBlk4veRzLM5dVh2Cn2tVQUnmrLKM6s1B7031G2rd8XTkUmXwC711llDcF2g4FZHFVU8gA4gitJtT0Xvqk53qkeocnGdQuhMHO209/VNT8ChC+Q==
+ bh=6Hb7LJhqYxag4p4A2hyy6aJYl3wSvPqzaD5cruVPeUg=;
+ b=lPLmcoPU2AFMb3P9QMsms3pJRmKxlX6wNXoeQBbQWCgniGUGBeEufvroSfiJ3s7cNDJYbVVCL/DuDh3ZbKbIpfd5TwkuWC0GJtC1W2tlSQXer0o2b7R/sklhHJHpNnoUzoTdQV8yXJhbBjTopi9v/LkWoeiQyxoMtxgBdwHOt40OynC8UZaL78qkKHhK0NLl230yG7OW8tfxo2PpxWt7L9lmHWRcikJggydaAXWTbQtysXhOGNlxZ/5vIvG29+Y6zYW3Iv77dwEmKn5ojrn2TWVLiLcSYsWRtUVTMmS3jwhmQP0GYpuytDNxFGSbXRdUpQCw6wQrP5l5d4GwOJefPA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -29,18 +29,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vgL1LRcZFnxZ5s2rkXSpzIx5ZqgMZoOhxxf4+ZZ5wck=;
- b=uSLVD5QYzyhEK0TGInHRWycABfVLYi24tGMHEbAgNQa/k/KoKj6tE4R+/xv6gFxPB0V7x4qCDaZaF9iCX9gEWr7Xr+EqO8a6X2kmlkWizdPZak2B52AiKj4ERR+DpZ0DGmIA7SupNaBHRj4VMvrDXfSx99J7TwPycIsFJCBa0JMzbSur3no5HT1743WN9LekjHfsKBxZ+3/PNBWoSVShuuS7kFnqFYD021Z49k4hKAieKnwsLCRdoivL15/beRaRiG9YtHE4lS+KWEm8icEm9bp3teYCzGE0lbkqyRu8+lOgu5nmIAlCMfXu2OEXMymOI++h1h+9CZF2Jy4FXtjH8w==
-Received: from BN8PR16CA0016.namprd16.prod.outlook.com (2603:10b6:408:4c::29)
- by PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15) with
+ bh=6Hb7LJhqYxag4p4A2hyy6aJYl3wSvPqzaD5cruVPeUg=;
+ b=VJH7Ogb2pk+OZnJOFdPiCFBLRNtKLQQfCS/v86nZxK5jIzkI1FiGyK6VFD/YhpCxMGWUOJmFWMDmQeff63EdrynOcQGxiA8vG0Id5nqmUiDvjpsezAchs47dOUIxhvHQZn6Wvqt8k72vqHsDRs0KTR+zuZ82Y6vqgahttI6wPDS/6MejOeFzKv5fYqnvpRScwfarHhzMqlcpO0gVmCcnlpUbeGr0C1liOVVkviSDGnIRlaT0o4eurkMZdbyyL7Mg4Mad/U6bP0KCXswpVLczdTF8qL71uWAxIl+y5sTsDKRUNsJBnbGEL+xjH0vXs9PwZOhwXfWQT+depWaX1jWNzA==
+Received: from BN8PR16CA0010.namprd16.prod.outlook.com (2603:10b6:408:4c::23)
+ by BL1PR12MB5206.namprd12.prod.outlook.com (2603:10b6:208:31c::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.26; Mon, 17 May
- 2021 18:16:19 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.25; Mon, 17 May
+ 2021 18:16:23 +0000
 Received: from BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:4c:cafe::3a) by BN8PR16CA0016.outlook.office365.com
- (2603:10b6:408:4c::29) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:408:4c:cafe::65) by BN8PR16CA0010.outlook.office365.com
+ (2603:10b6:408:4c::23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend
- Transport; Mon, 17 May 2021 18:16:19 +0000
+ Transport; Mon, 17 May 2021 18:16:23 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
  header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
@@ -50,19 +50,19 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (216.228.112.34) by
  BN8NAM11FT040.mail.protection.outlook.com (10.13.177.166) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4129.25 via Frontend Transport; Mon, 17 May 2021 18:16:19 +0000
+ 15.20.4129.25 via Frontend Transport; Mon, 17 May 2021 18:16:23 +0000
 Received: from shredder.mellanox.com (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 17 May
- 2021 18:16:15 +0000
+ 2021 18:16:19 +0000
 From:   Ido Schimmel <idosch@OSS.NVIDIA.COM>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <dsahern@gmail.com>,
         <petrm@OSS.NVIDIA.COM>, <roopa@OSS.NVIDIA.COM>,
         <nikolay@OSS.NVIDIA.COM>, <ssuryaextr@gmail.com>,
         <mlxsw@OSS.NVIDIA.COM>, Ido Schimmel <idosch@OSS.NVIDIA.COM>
-Subject: [PATCH net-next 03/10] ipv4: Add custom multipath hash policy
-Date:   Mon, 17 May 2021 21:15:19 +0300
-Message-ID: <20210517181526.193786-4-idosch@nvidia.com>
+Subject: [PATCH net-next 04/10] ipv6: Use a more suitable label name
+Date:   Mon, 17 May 2021 21:15:20 +0300
+Message-ID: <20210517181526.193786-5-idosch@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210517181526.193786-1-idosch@nvidia.com>
 References: <20210517181526.193786-1-idosch@nvidia.com>
@@ -74,222 +74,64 @@ X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a1493045-8d6a-4fa0-a5b5-08d9195fde76
-X-MS-TrafficTypeDiagnostic: PH0PR12MB5481:
-X-Microsoft-Antispam-PRVS: <PH0PR12MB548103AD9A5C6D46E7D446DBB22D9@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: c1792ce9-c2b8-4a76-e938-08d9195fe0f7
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5206:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5206714E3BF259A5FA45173AB22D9@BL1PR12MB5206.namprd12.prod.outlook.com>
 X-MS-Exchange-Transport-Forked: True
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Oob-TLC-OOBClassifiers: OLM:1051;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0VVA187EwLbSzJXjbI+ulbI1FSh6jNLpvVlNgcHii/GdtzojWhR4fJM3H7KsBzjsWwptIdo7XxHwrEoeDFC9JkgrHCM0yegQSxzPjkdCymLppLb1m4w29d9xsWNkIU9rM4YRSn2fMgZz6KlpgKyLpAT1hIrKnpeLuhudYY0d1g/+uDIddljPB8BN77amR3JliOpt3fWgTRo4bJCVy9eSPAoG/RJ7GPLbR1mJMniC8oJ5hPMiHtW+4tUW+EVesqbJEtpF+PylLV472TgzNAl2MlM4X7+Z7r72Kjmy/+6/6dszAtYLPqJZYmdgqI1QRbRZk5DirImeqMwr9LRz526IfiGrNIw/2eNISV7HbhWFYFBcrXj7Cu5HnR0Gxc5uynb4BM3bxwiK2zDMA4rsMLltNLI1YsRWUBZVY729pFz2W7jS4Gkdqn8X8MC5lKM+cCjXufjU3C65uVnoJKUaZ9UaDwUaQduV0NlGRfnkFs5GC5JMjWt00brARnB7XpCwxOHPAU02Q/hzunWxmWWwHZw+j7g0NlgyOT6y+GVJ8CpuweAhFSwlB70RslrQlvR0IGMvdHVWkuExCIuQik0GMlfNj0cFfWQ74OtnGlASYOQCvjbGrGBUiIyt0kIuzyOLu0r1inQGlHUWJWED4TkXwy6msqM1sGA2qHaw+5Okl5yuHLs=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(346002)(396003)(136003)(39860400002)(36840700001)(46966006)(16526019)(186003)(1076003)(336012)(5660300002)(2906002)(426003)(82310400003)(82740400003)(356005)(47076005)(70586007)(70206006)(2616005)(36756003)(6916009)(86362001)(478600001)(8936002)(7636003)(316002)(36906005)(54906003)(8676002)(26005)(36860700001)(4326008)(107886003)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2021 18:16:19.2871
+X-Microsoft-Antispam-Message-Info: mG3FHis80xc/D+ffKGbcLCW2ccXVFsaC3hKRXnw+nfp3MJiOS58ywflW3D3OCsWRkGhb7GGyoWSi/DKg1eK1Nhdlv4Xomh80SVc1fIvInAV9OfLgXmQLAVCE0ZzsAKVfK1wN7pICvpRd0edLbQH0cXOWB5yoq7yeIWttwLUievHmwoAJ4uG7n41kQ6n8qFjeG1IWXIw5JgV4zpHo79vIiCNEGXxMCWS+zSxrDWPbnI24xgq7blhDIclJ8tbB+HxWtNp3ZZdXfFTHvpk+Lhl22E8PMENQ5jgOeDl5vCsAzGexRZYi3DVJ+hwdy/HWqgdYS8KWStgAO+U7SpfPTsI2+HnTZYkRAGauV+oAxeCNNBNoVirWNmKmuhS4CMylPn9p43CH9fXhB5MThki1qvrBW3iGptYSr+7mzOjwmz8ssxbvnsO3KqsrU9RtKQyt8wmmEiiiwzvExpJLw/tPifmv8NrbsAwzgbXNzUWp1kQV9lxyFyDvFSKaVeoyn7i42boFVnn4z2fPyZM9cspSuQRHXIjNZ0VuaabUAzk33zjGdfNsVzzvivbgInpdPZjJH0ve3rPN3jKhqv4I7TH3+ZeGdhRLaHsULlOHRddyzfXu7qrxmfQVzBmlrDnCuwrOzJPnhjNVjxWYN4C7j64NyRYZd7Drwqv/IvUPhL02nW5AQNo=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(396003)(346002)(39860400002)(136003)(36840700001)(46966006)(426003)(83380400001)(336012)(186003)(6916009)(82310400003)(356005)(2616005)(36906005)(1076003)(26005)(2906002)(54906003)(47076005)(36756003)(6666004)(70206006)(86362001)(70586007)(8676002)(36860700001)(8936002)(107886003)(16526019)(7636003)(82740400003)(316002)(4326008)(478600001)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2021 18:16:23.4218
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1493045-8d6a-4fa0-a5b5-08d9195fde76
+X-MS-Exchange-CrossTenant-Network-Message-Id: c1792ce9-c2b8-4a76-e938-08d9195fe0f7
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5481
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5206
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new multipath hash policy where the packet fields used for hash
-calculation are determined by user space via the
-fib_multipath_hash_fields sysctl that was introduced in the previous
-patch.
+The 'out_timer' label was added in commit 63152fc0de4d ("[NETNS][IPV6]
+ip6_fib - gc timer per namespace") when the timer was allocated on the
+heap.
 
-The current set of available packet fields includes both outer and inner
-fields, which requires two invocations of the flow dissector. Avoid
-unnecessary dissection of the outer or inner flows by skipping
-dissection if none of the outer or inner fields are required.
+Commit 417f28bb3407 ("netns: dont alloc ipv6 fib timer list") removed
+the allocation, but kept the label name.
 
-In accordance with the existing policies, when an skb is not available,
-packet fields are extracted from the provided flow key. In which case,
-only outer fields are considered.
+Rename it to a more suitable name.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- Documentation/networking/ip-sysctl.rst |   2 +
- net/ipv4/route.c                       | 121 +++++++++++++++++++++++++
- net/ipv4/sysctl_net_ipv4.c             |   3 +-
- 3 files changed, 125 insertions(+), 1 deletion(-)
+ net/ipv6/ip6_fib.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 47494798d03b..afdcdc0691d6 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -99,6 +99,8 @@ fib_multipath_hash_policy - INTEGER
- 	- 0 - Layer 3
- 	- 1 - Layer 4
- 	- 2 - Layer 3 or inner Layer 3 if present
-+	- 3 - Custom multipath hash. Fields used for multipath hash calculation
-+	  are determined by fib_multipath_hash_fields sysctl
+diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+index 679699e953f1..33d2d6a4e28c 100644
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -2362,7 +2362,7 @@ static int __net_init fib6_net_init(struct net *net)
  
- fib_multipath_hash_fields - UNSIGNED INTEGER
- 	When fib_multipath_hash_policy is set to 3 (custom multipath hash), the
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 9d61e969446e..a4c477475f4c 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1906,6 +1906,121 @@ static void ip_multipath_l3_keys(const struct sk_buff *skb,
- 	hash_keys->addrs.v4addrs.dst = key_iph->daddr;
+ 	net->ipv6.rt6_stats = kzalloc(sizeof(*net->ipv6.rt6_stats), GFP_KERNEL);
+ 	if (!net->ipv6.rt6_stats)
+-		goto out_timer;
++		goto out_notifier;
+ 
+ 	/* Avoid false sharing : Use at least a full cache line */
+ 	size = max_t(size_t, size, L1_CACHE_BYTES);
+@@ -2407,7 +2407,7 @@ static int __net_init fib6_net_init(struct net *net)
+ 	kfree(net->ipv6.fib_table_hash);
+ out_rt6_stats:
+ 	kfree(net->ipv6.rt6_stats);
+-out_timer:
++out_notifier:
+ 	fib6_notifier_exit(net);
+ 	return -ENOMEM;
  }
- 
-+static u32 fib_multipath_custom_hash_outer(const struct net *net,
-+					   const struct sk_buff *skb,
-+					   bool *p_has_inner)
-+{
-+	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
-+	struct flow_keys keys, hash_keys;
-+
-+	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_OUTER_MASK))
-+		return 0;
-+
-+	memset(&hash_keys, 0, sizeof(hash_keys));
-+	skb_flow_dissect_flow_keys(skb, &keys, FLOW_DISSECTOR_F_STOP_AT_ENCAP);
-+
-+	hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_IP)
-+		hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_IP)
-+		hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_IP_PROTO)
-+		hash_keys.basic.ip_proto = keys.basic.ip_proto;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_PORT)
-+		hash_keys.ports.src = keys.ports.src;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_PORT)
-+		hash_keys.ports.dst = keys.ports.dst;
-+
-+	*p_has_inner = !!(keys.control.flags & FLOW_DIS_ENCAPSULATION);
-+	return flow_hash_from_keys(&hash_keys);
-+}
-+
-+static u32 fib_multipath_custom_hash_inner(const struct net *net,
-+					   const struct sk_buff *skb,
-+					   bool has_inner)
-+{
-+	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
-+	struct flow_keys keys, hash_keys;
-+
-+	/* We assume the packet carries an encapsulation, but if none was
-+	 * encountered during dissection of the outer flow, then there is no
-+	 * point in calling the flow dissector again.
-+	 */
-+	if (!has_inner)
-+		return 0;
-+
-+	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_MASK))
-+		return 0;
-+
-+	memset(&hash_keys, 0, sizeof(hash_keys));
-+	skb_flow_dissect_flow_keys(skb, &keys, 0);
-+
-+	if (!(keys.control.flags & FLOW_DIS_ENCAPSULATION))
-+		return 0;
-+
-+	if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
-+		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-+		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_IP)
-+			hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
-+		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_DST_IP)
-+			hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
-+	} else if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
-+		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-+		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_IP)
-+			hash_keys.addrs.v6addrs.src = keys.addrs.v6addrs.src;
-+		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_DST_IP)
-+			hash_keys.addrs.v6addrs.dst = keys.addrs.v6addrs.dst;
-+		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_FLOWLABEL)
-+			hash_keys.tags.flow_label = keys.tags.flow_label;
-+	}
-+
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_IP_PROTO)
-+		hash_keys.basic.ip_proto = keys.basic.ip_proto;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_PORT)
-+		hash_keys.ports.src = keys.ports.src;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_DST_PORT)
-+		hash_keys.ports.dst = keys.ports.dst;
-+
-+	return flow_hash_from_keys(&hash_keys);
-+}
-+
-+static u32 fib_multipath_custom_hash_skb(const struct net *net,
-+					 const struct sk_buff *skb)
-+{
-+	u32 mhash, mhash_inner;
-+	bool has_inner = true;
-+
-+	mhash = fib_multipath_custom_hash_outer(net, skb, &has_inner);
-+	mhash_inner = fib_multipath_custom_hash_inner(net, skb, has_inner);
-+
-+	return jhash_2words(mhash, mhash_inner, 0);
-+}
-+
-+static u32 fib_multipath_custom_hash_fl4(const struct net *net,
-+					 const struct flowi4 *fl4)
-+{
-+	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
-+	struct flow_keys hash_keys;
-+
-+	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_OUTER_MASK))
-+		return 0;
-+
-+	memset(&hash_keys, 0, sizeof(hash_keys));
-+	hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_IP)
-+		hash_keys.addrs.v4addrs.src = fl4->saddr;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_IP)
-+		hash_keys.addrs.v4addrs.dst = fl4->daddr;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_IP_PROTO)
-+		hash_keys.basic.ip_proto = fl4->flowi4_proto;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_PORT)
-+		hash_keys.ports.src = fl4->fl4_sport;
-+	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_PORT)
-+		hash_keys.ports.dst = fl4->fl4_dport;
-+
-+	return flow_hash_from_keys(&hash_keys);
-+}
-+
- /* if skb is set it will be used and fl4 can be NULL */
- int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 		       const struct sk_buff *skb, struct flow_keys *flkeys)
-@@ -1991,6 +2106,12 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 		}
- 		mhash = flow_hash_from_keys(&hash_keys);
- 		break;
-+	case 3:
-+		if (skb)
-+			mhash = fib_multipath_custom_hash_skb(net, skb);
-+		else
-+			mhash = fib_multipath_custom_hash_fl4(net, fl4);
-+		break;
- 	}
- 
- 	if (multipath_hash)
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 45bab3733621..ffb38ea06841 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -30,6 +30,7 @@
- #include <net/netevent.h>
- 
- static int two = 2;
-+static int three __maybe_unused = 3;
- static int four = 4;
- static int thousand = 1000;
- static int tcp_retr1_max = 255;
-@@ -1053,7 +1054,7 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_fib_multipath_hash_policy,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &two,
-+		.extra2		= &three,
- 	},
- 	{
- 		.procname	= "fib_multipath_hash_fields",
 -- 
 2.31.1
 
