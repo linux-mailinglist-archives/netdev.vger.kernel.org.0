@@ -2,85 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0410138229B
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 03:55:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E81D3822A8
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 04:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233488AbhEQB4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 May 2021 21:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbhEQB4n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 May 2021 21:56:43 -0400
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2B0C06174A
-        for <netdev@vger.kernel.org>; Sun, 16 May 2021 18:55:27 -0700 (PDT)
-Received: by mail-ua1-x933.google.com with SMTP id z14so505844uan.7
-        for <netdev@vger.kernel.org>; Sun, 16 May 2021 18:55:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MAqm8ZwHARd9qDoH8piEdy1zx5RC/XRMqtlBHFac8Iw=;
-        b=gWvNp7rLiWKc3q6+XaPxjuFosEkykywx01QpvhkRLxLZqa03LR7bdEBFPk3+rS1rfT
-         QU1h3z1uMf9rWnkIsEtLfzsJU9E4IBt4vm4d8GTdBQEKn8ccOn3R40dPPIf3j3sRcvBu
-         YeQQLrFgeUMXXUSaf9HvocOXDQTRd2DIdzzfN9pnoPrhrQegug05ZlL8nl0/1iqKcrJv
-         Nao21Qol5ubMGN+5xYhWLLdvOFMvf46jVymBW+cIMJy/9vtIPqcl98lq0d6XSeBL57yn
-         rZErUFiDJTfeRpS8ZaB8MJ7SyOlIeeDFRXQM1Lk2OVztn4W+6FdkhYp6YL0EoXe/ATKn
-         tIyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MAqm8ZwHARd9qDoH8piEdy1zx5RC/XRMqtlBHFac8Iw=;
-        b=aEOOQPUXnkRPsLUpDKyBL7unxbyTZDTuvk4D3EPkxu3YQjqmzvRJiHTicdB9yoDOGO
-         X0t7UfI8cFL3p3dbsMKdoXP4q7zk5UE2azMvXvywHFa77yTtXUlkSOGpiL2bZgCaQdm9
-         TzHVIpAlvoCU86xJxQJBNagkZ1ERxQCVmcvNa4Uyxn1VkMfWvkadNAs/U0dT/3YeChvw
-         L34wMZCAo7PRrPkAOSGEL/GYSw9z+CXH2X12q4w9b1L6ut7Z5dVWLI3+SPIzwl88N7AK
-         +WaYUsq6D+/kZhKn2pGP2O1h4pyOIZeslaCnrl37fHqedVPvS1coTum0DEKCC/FLHKXp
-         VoZQ==
-X-Gm-Message-State: AOAM532NZG9RaXamaqB+fTEtQnEdZV2EXbh185LN0xcolDHqZBPMzeeM
-        fptrICcPwASimRibk+CtDDfdnAiMdUuxeWZwe+j74A==
-X-Google-Smtp-Source: ABdhPJzWSj4Ns6LHTFvVaAkcbZ+VhaYqN/CVWknOkhAw/umIXNm/XmJQtFIkdrpqq0w1jAsFQ45Aq0GAI6Omi3qdCm8=
-X-Received: by 2002:a9f:382c:: with SMTP id p41mr14342763uad.65.1621216525807;
- Sun, 16 May 2021 18:55:25 -0700 (PDT)
+        id S230465AbhEQCTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 May 2021 22:19:06 -0400
+Received: from mx.socionext.com ([202.248.49.38]:8370 "EHLO mx.socionext.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230192AbhEQCTF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 May 2021 22:19:05 -0400
+Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
+  by mx.socionext.com with ESMTP; 17 May 2021 11:17:49 +0900
+Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
+        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id 87E402059027;
+        Mon, 17 May 2021 11:17:49 +0900 (JST)
+Received: from 172.31.9.53 (172.31.9.53) by m-FILTER with ESMTP; Mon, 17 May 2021 11:17:49 +0900
+Received: from yuzu2.css.socionext.com (yuzu2 [172.31.9.57])
+        by iyokan2.css.socionext.com (Postfix) with ESMTP id 330F0B1D40;
+        Mon, 17 May 2021 11:17:49 +0900 (JST)
+Received: from [10.212.23.88] (unknown [10.212.23.88])
+        by yuzu2.css.socionext.com (Postfix) with ESMTP id E39B3106B24;
+        Mon, 17 May 2021 11:17:48 +0900 (JST)
+Subject: Re: [PATCH 20/34] net: socionext: Demote non-compliant kernel-doc
+ headers
+To:     Yang Shen <shenyang39@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1621076039-53986-1-git-send-email-shenyang39@huawei.com>
+ <1621076039-53986-21-git-send-email-shenyang39@huawei.com>
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Message-ID: <0927db5b-12f4-6374-f869-84685906df31@socionext.com>
+Date:   Mon, 17 May 2021 11:17:48 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-References: <5J_z4QNPMBAk4y0rGshI7mBykT1tivh3037CbQRYXTu_Ra6zuojEcI0RB04ghXQxgdtDbt3YFv6sA882mrFyTdzQePwHwvLoECnqFTnYNZI=@protonmail.com>
-In-Reply-To: <5J_z4QNPMBAk4y0rGshI7mBykT1tivh3037CbQRYXTu_Ra6zuojEcI0RB04ghXQxgdtDbt3YFv6sA882mrFyTdzQePwHwvLoECnqFTnYNZI=@protonmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Sun, 16 May 2021 21:55:09 -0400
-Message-ID: <CADVnQymGvCTEzdd8dSLZnn0dwnHAoNiwo72yEFeNr47+Na8GDg@mail.gmail.com>
-Subject: Re: Listening on a TCP socket from a Kernel Module
-To:     louisrossberg <louisrossberg@protonmail.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1621076039-53986-21-git-send-email-shenyang39@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 16, 2021 at 7:20 PM louisrossberg
-<louisrossberg@protonmail.com> wrote:
->
-> Hello, can somebody point me in the right direction for
-> what I would use to listen on a TCP socket from the
-> kernel? I am working on a kernel module and have spent the
-> past day looking through include/net and include/linux for
-> something that would allow me to do so. I know TCP
-> listening is typically done in userspace, but it should be
-> possible at the kernel level right?  tcp_diag looks
-> promising, but it seems like that is mainly for monitoring
-> sockets, and I'm not sure if I would be able to provide
-> responses from it.
->
-> Louis Rossberg,
-> Warped Technologies
+Hi Yang,
 
-Perhaps kernel_listen() and related functions (kernel_bind(),
-kernel_accept(), etc.) in net/socket.c might do the trick for your use
-case? Looking at how the callers of these functions structure their
-code might give you enough to go on.
+On 2021/05/15 19:53, Yang Shen wrote:
+> Fixes the following W=1 kernel build warning(s):
+> 
+>   drivers/net/ethernet/socionext/sni_ave.c:28: warning: expecting prototype for sni_ave.c(). Prototype was for AVE_IDR() instead
+> 
+> Cc: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> Signed-off-by: Yang Shen <shenyang39@huawei.com>
 
-(I'm adding the Linux kernel networking mailing list to this thread as well.)
+I confirmed the fix of the warning.
 
-best regards,
-neal
+Reviewed-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+
+Thank you,
+
+---
+Best Regards
+Kunihiko Hayashi
