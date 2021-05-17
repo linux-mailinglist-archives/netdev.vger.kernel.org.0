@@ -2,1904 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38DFD383B25
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 19:21:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6E19383AB9
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 19:06:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231681AbhEQRVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 13:21:55 -0400
-Received: from azhdrrw-ex02.nvidia.com ([20.64.145.131]:52748 "EHLO
-        AZHDRRW-EX02.NVIDIA.COM" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243008AbhEQRVp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 13:21:45 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.175)
- by mxs.oss.nvidia.com (10.13.234.37) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.858.12; Mon, 17 May 2021 10:05:25 -0700
+        id S239133AbhEQRIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 13:08:10 -0400
+Received: from mail-vi1eur05on2078.outbound.protection.outlook.com ([40.107.21.78]:60161
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236000AbhEQRIJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 May 2021 13:08:09 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bKds5MA4PMoEpzVijXFA/OP8oowG5g9myjkHw+FXIipA5JyaKp3Ud3on8WtUkhKm5nI0S4aSe8fBO4Pxe9mqu5meMPv0rUc0RLwZJzR5Ofx1NfWYt3V/pJBEwXLkunWT3UccbQ7LhPA5YU+cYozu2B4IMaxcOqY41m4hd7V/45iSsQTYXxXRABFOK64x3z6SjzyKt0l1DOwTeb90jLw0I+OYuAn43sGu0YlHlwFwodNeSKp1CpVSwkzhmRTYMZtrVMkc8feSxxI6GxY17//yYKuc2qrTh/CZI+FDt/oWqGXkoB0C4jPZ4uTAlcqqVvq2H7khPX1rshRDJQmP5mGEuQ==
+ b=GuTnDoEBAVa55ZzrFt/sEgaZy6yFUwUnSO+glZStHPkdVukD2BUkb1/XQ16YJOdKqUvtsi+2QQEEWpmqZVV+VEdtTr9sUQv2ppFOpkK/EV2owvboV7w9x4ArrYzSk9BJ9kmQTil/KlVhPrArt5/G3jESW8RIjUh8+RbWUiisv4fy7ZqA7f0YMD2Jali1EcapflI4eB+63lFAHehf0xgW7Ommrn86L0s2wyEiVnpiRar7coyCKGj87FowGQDCTgyWVPCGJmjFZ5+1ZZm0OZ3nIqwDQkK+4AcCFhsp29jNHUYzK6qchLdHLqlr71qy8Chb9c15ZxdFPT95Zi+3byOlJQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vde9n/Ycr+rwMqYNPYl7zx50Z00fJK7gNrY3ebln3ac=;
- b=PO4lY1/m4KKMQz5u+fTEESHaXgg0WUtuVltnX98S+S1wrsv8OFHLYr4udbt2+GJw3jgwhms7x3yourOE8FXywiMu9UeXO3mfc+5BwIFH1lrRe7RB1GnvWqf+HYH0NZIOAWwyOzp9qnjLmqkyvlDlsLFKYS3glC6NCPCeckLP6u4O4tnQx3WI2zksI9r89TZpQTiJjWaCF/3+HUpa3KFxy4KXokvYd3ylpiqCqyksqDOaZULnCAJ69qnNWYwVDD/L2hxWJFiFvQANyrQeSlO8lWKdg3YEXz6SSHgpdUCCRXSQgurnOn6VJzJ+qvvMSuDo87q7UxSYKr5L3uRss8+XYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=9xgG8GR39MR9Wl+tWjmDK6zOBkdrdA0kJ0iiF7KZKkY=;
+ b=CUGqgTguMOTj/EMnIWeXmiAf4tjJoM9kzVoX/sZJtR88d21iNuajnxxFhtFlJK2/55cwRX2OPQM8U9inGOMlH9CWmEs1fCjk+4kidKskcoflpolWw/tbJ791+D1g+TRXuZcdpTe3LMQGrxbWEPvtj6gBpsoW+bQqE0XKqrK88Cx/f1ABPI5nXa/+tqKNOa/F6TbSJB8yDHg4ru7x1lvrhCT3dBWbS+qPVbm7ujpHOU3ZMKhUUPPr1n1oHbzqD9LdVl6ATKuEphkkXkBvg+WofDLR9QSBXO0838qgPk9bs3mt4DXhoB4x11SQbUGGhYlRZsYP5SF82gOjTVssFfhyYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vde9n/Ycr+rwMqYNPYl7zx50Z00fJK7gNrY3ebln3ac=;
- b=gHKJT4PhORTuSduxHruQH0jy3DlzRNMqDHeLIfaUUwNQVfAYLyzrCIiyp4Jun4bKN/x70OjAqlpWDf3yn9ekP/O8gOnj46VetYFqvEXZFAghAAb/Vd53hP8+XlLe3n3nttEHKFGCGiwgSsiVWPvfMVcFcHg/Sz2VpYTUI2cJqIhAbDqeXYVlKFCrabvHtkUregMzoVBNKtK3VQaWr/96wEzkZNliLzBl6fB6XtS25l7YhtWE0t5Pb5PlpYfeIsOKGN6sSebppkKbqRrDq8ZdZpr6DSiG96xhCWcxEOD6d7fl9S3vggzwgfMNVOTeb+qhiABehhU6lW5m9QbhsvKwbw==
-Received: from MWHPR11CA0035.namprd11.prod.outlook.com (2603:10b6:300:115::21)
- by DM4PR12MB5293.namprd12.prod.outlook.com (2603:10b6:5:39d::19) with
+ bh=9xgG8GR39MR9Wl+tWjmDK6zOBkdrdA0kJ0iiF7KZKkY=;
+ b=C2vW4tuFafuRRfNA9K1WgI2eIr/AX/joONS4yOzLY8UAOr1tZABFZTNhqDFqQtP+XJ5mHptsFWn4pFpwSKs8eTN8Yy+TxE3Fh7axVFo/FyN2SB5j4rMvM7v1jwvlmysXcSnuu+DCHNKT30thh6zn+W9SJceUemS1Gl5Jl3PrB3k=
+Authentication-Results: walle.cc; dkim=none (message not signed)
+ header.d=none;walle.cc; dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU2PR04MB8807.eurprd04.prod.outlook.com (2603:10a6:10:2e2::23)
+ by DU2PR04MB8808.eurprd04.prod.outlook.com (2603:10a6:10:2e3::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.28; Mon, 17 May
- 2021 17:05:22 +0000
-Received: from CO1NAM11FT021.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:115:cafe::a9) by MWHPR11CA0035.outlook.office365.com
- (2603:10b6:300:115::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend
- Transport; Mon, 17 May 2021 17:05:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT021.mail.protection.outlook.com (10.13.175.51) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4129.25 via Frontend Transport; Mon, 17 May 2021 17:05:22 +0000
-Received: from shredder.mellanox.com (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 17 May
- 2021 17:05:09 +0000
-From:   Ido Schimmel <idosch@OSS.NVIDIA.COM>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@OSS.NVIDIA.COM>,
-        <petrm@OSS.NVIDIA.COM>, <danieller@OSS.NVIDIA.COM>,
-        <amcohen@OSS.NVIDIA.COM>, <mlxsw@OSS.NVIDIA.COM>,
-        Ido Schimmel <idosch@OSS.NVIDIA.COM>
-Subject: [PATCH net-next 11/11] mlxsw: Remove Mellanox SwitchX-2 ASIC support
-Date:   Mon, 17 May 2021 20:04:01 +0300
-Message-ID: <20210517170401.188563-12-idosch@nvidia.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210517170401.188563-1-idosch@nvidia.com>
-References: <20210517170401.188563-1-idosch@nvidia.com>
-MIME-Version: 1.0
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.26; Mon, 17 May
+ 2021 17:06:50 +0000
+Received: from DU2PR04MB8807.eurprd04.prod.outlook.com
+ ([fe80::88ab:35ac:f0f5:2387]) by DU2PR04MB8807.eurprd04.prod.outlook.com
+ ([fe80::88ab:35ac:f0f5:2387%6]) with mapi id 15.20.4129.031; Mon, 17 May 2021
+ 17:06:50 +0000
+Subject: Re: [PATCH net v1] net: taprio offload: enforce qdisc to netdev queue
+ mapping
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        sebastien.laveze@oss.nxp.com,
+        Yannick Vignon <yannick.vignon@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vedang Patel <vedang.patel@intel.com>,
+        Michael Walle <michael@walle.cc>
+References: <20210511171829.17181-1-yannick.vignon@oss.nxp.com>
+ <20210514083226.6d3912c4@kicinski-fedora-PC1C0HJN>
+ <87y2ch121x.fsf@vcostago-mobl2.amr.corp.intel.com>
+ <20210514140154.475e7f3b@kicinski-fedora-PC1C0HJN>
+ <87sg2o2809.fsf@vcostago-mobl2.amr.corp.intel.com>
+From:   Yannick Vignon <yannick.vignon@oss.nxp.com>
+Message-ID: <4359e11a-5f72-cc01-0c2f-13ca1583f6ef@oss.nxp.com>
+Date:   Mon, 17 May 2021 19:06:46 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+In-Reply-To: <87sg2o2809.fsf@vcostago-mobl2.amr.corp.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
+X-Originating-IP: [109.210.25.135]
+X-ClientProxiedBy: AM0PR02CA0100.eurprd02.prod.outlook.com
+ (2603:10a6:208:154::41) To DU2PR04MB8807.eurprd04.prod.outlook.com
+ (2603:10a6:10:2e2::23)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [172.16.18.89] (109.210.25.135) by AM0PR02CA0100.eurprd02.prod.outlook.com (2603:10a6:208:154::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Mon, 17 May 2021 17:06:48 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 07265054-03da-418c-aa77-08d91955f510
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5293:
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5293E029D6A1A467BB18D88BB22D9@DM4PR12MB5293.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: f842913b-9fb1-4b2e-73a0-08d919562930
+X-MS-TrafficTypeDiagnostic: DU2PR04MB8808:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
 X-MS-Exchange-Transport-Forked: True
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Microsoft-Antispam-PRVS: <DU2PR04MB8808D715E3326F65CD0CB5E3D22D9@DU2PR04MB8808.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kSQMVha431UKnR0ZJ/L6TsS5KPizbPgZ7xGWb93jRjdDW7K0dmafNnFNqfLANvxTQ0oEqP/0FznvKsEqTBdXQS6X9btCL1/I+s+agLe3Wj/d+t7ARmt8TBu+3HwMCz+WYi/AQkBsUrk3O1ozokRghTiU4o6FSPDkWS/kzuPZfTNQ7KhoMrixuqhhq1/VviKyD1t6fcKazszYXqz9wvI9E+sYheDQBM0kgROkHStM49zGnjd+qG776YH9zD13ZqCLXoSutZrg1NVlQjIBob648yvcPvEnzT/7VGZXws1arvdxX/Jda2unH6NZcPEPuWZQYERVKSc9cyNxGzCrC2aTvVkQo8+mZuK0BzZJ15BZjiplgc/hAYgvRgPyfJzJ9BO6EsoW1a3HJPFTeQbpOQxQZnyHUVHHyBPtZdqYk4Qv/T9jg+cr6v7iPqa4eFMTM4aHbgRVXzC9w1fItYWQaRXuNklf4KbxIOSzRGBqkH2yxylJMRBjTlqw5AADJwcH3oQ/PvnHKu7auzHr1ZYxNvjom2cZGEPqvAY9K6QMPbPbn6oUil1/KlDl7ipbkDWe2Y2HLNLU2uVAF64tBsAUl3NWygrh/GWMU/kq/rJH4MbPd1xxovUTvGgcw0eYiPLJ1D/nbMPgiOyS0I58KxEHrnKEMQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(66574015)(36860700001)(336012)(426003)(83380400001)(8936002)(70206006)(82310400003)(54906003)(86362001)(498600001)(70586007)(26005)(107886003)(36906005)(8676002)(5660300002)(30864003)(47076005)(356005)(2616005)(4326008)(6916009)(36756003)(6666004)(7636003)(2906002)(1076003)(16526019)(186003)(579004)(559001);DIR:OUT;SFP:1101;
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2021 17:05:22.3021
+X-Microsoft-Antispam-Message-Info: aFFLggBzjvFuOLGc0AUguhAyBOi3H9/5jpEgW8HHSPWG6RdU09w0j6ROsZpdIVkYRBWoxdFJkPsrXeaC1WukHBCHmm3fpeuezhBBXips5swARo0UbDJ7XOT2qOoLMcV5l+19ufE3oahNl1Q61RWnrQniTj8CB5l2Tg0Y6ib9oKvEbBPeU3QJqhHHwp8UkHUdL3kcZyiZfta8FtaKm86c7jeCCnUeStIyjqbgUYJJ46mqSc6EXBY7/QoQuV0nhtOgv1NqcGzipsAuzyL/JMjUsc3eOdsEtfxAY9o8mR5AZnOEb9vytP/CtUYKQf12CYQ7Zy8wuPwIg4kW/zPSHFIesmpMRpvHZ4ToS/BBgrEaHs/slgFdtMYbiy/YZCIc8ZtJaKHzqT7f2deQmkttL2DN/O9AcLIdA+MgisH7Ykl72bPvztr15oVCZRiMhNMShx+gjJDMvug5q3h03bTIrp9sEtPKktyiQqqlFyqpCpoMx5ekd6ZWKftXvF8NW26LFBwC0x5c9OHvhcfODuqbpG3YxLCmPp+sO7LmmhyxoWvrIBHIUsWNFYFd/pxlLvM77Snoj/QG3AsqlCJ3WqfgutzkR1ZzxNbdycVUnYllIQ3y5zaOl0BvwidJXT55gxYltusnjAxj7uoiIv8HzBCo8LQ71HrncxZ0SZObxxcrecQGjSEgQ17ZM7IcFxklcbmQb1ggZK/hQTHiaRmWRyqyaV+HYQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR04MB8807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(376002)(346002)(396003)(39860400002)(956004)(2616005)(4326008)(38100700002)(31696002)(38350700002)(53546011)(66476007)(2906002)(7416002)(31686004)(52116002)(86362001)(44832011)(6486002)(83380400001)(66556008)(8936002)(16526019)(54906003)(316002)(16576012)(8676002)(110136005)(5660300002)(26005)(478600001)(66946007)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cWhOL2xnSzgrM2NsMEZCclFVVmhxTUY0YXZmb0pJeXZSR3lUY1NkemoyVWFw?=
+ =?utf-8?B?WXZlZk8ycjZYSVRlMlVHc1M2R0dRdENLZ05oL0RoZU43TG90WWVocks5RnJI?=
+ =?utf-8?B?S1ExYVQybEttN3NJNXhhejdteUYzSDJZTXd6c2hoSFg2d3V1WXAxc3owNlhY?=
+ =?utf-8?B?TlRBWi9qc0ZaY1M5VVdyanNaZFBNMndaaFhlWVBDTE1WaWdNTjdIRjE4VFFE?=
+ =?utf-8?B?R0RBbi9oRHFQUHRUY1NNU080MVRjbzhiMHJGVWI4VmRZV2FTOEg1YzFvWGpD?=
+ =?utf-8?B?c3l2empaaTh2YUtsME1XSDM2blNQWXNVMldqQ0Z5QThma25sZ1pqT3Jud3A4?=
+ =?utf-8?B?L2pKY092bmZQOXJIdGlRR0FqaWIrMjBPVmV4RVlYOWJ2SlEvaGlTU21JdnBV?=
+ =?utf-8?B?dG9CeFpyb2xrUW9kZ0FHTFhzNnpMRDk4SmY1UitQUk9uU3VOcXliaGFva1Mx?=
+ =?utf-8?B?YllpSnhtV2hSYllMV0YyTHVTY2VaVTJ3b3E2dkhqTmxQK3VxTzF1VWNENitk?=
+ =?utf-8?B?dlgydjUwL2JCYk50emoybHkwMzFPdDYyT2lGVkt1TmVtRjVJVmNibmdSZG94?=
+ =?utf-8?B?WEpkL1dOMnJjQ0NXbHQzVU1TWDBFRHFuWFVXZWJvRG45akJZUFFsU2hET1hI?=
+ =?utf-8?B?L1Bra0pmTm1CeXFHZWgzc1lDVzlacXJud09Gb1RYVGhvVFBpOFBxQ0hNcmFN?=
+ =?utf-8?B?M3JHSGJ5am1sVGt4K2Z0MDBoeTcrcUZTQzJ5cU5qSERwRUFaeURMSjFTdi92?=
+ =?utf-8?B?blgzVW5qNTBKYlRFeVFsdGg3bFd1Zm5xL3VYdS82Y1ZsdXFtL2VneEdtV243?=
+ =?utf-8?B?b3JKR1pEVnNBRGpPWVI2MW1sdHFmelhKcmJ0RXB6SHBmd25BMGg5aUhxVU5M?=
+ =?utf-8?B?bFNFM2I0MWVrRk8waTRlek5scnd6NE9GeXU0WEl3WlFpTlJNN2lsUUl6V0JR?=
+ =?utf-8?B?NzZ4TUlMS0NYZ1JrR2ZGbXovUzNiSzMvLzJ1akFsVzdkZU5OTnZrajZVVUFn?=
+ =?utf-8?B?SnlESEVJZlFTY2xpVzRMWlRWVzF2Z09hZzhQZTRmUnVVRThMOUJNRERDbXBC?=
+ =?utf-8?B?V3J4N1NzOEp0d0VWYUlRaURiVXpLVEExM001YUlEU1FhNGVYT2xwLzBJTVoy?=
+ =?utf-8?B?bjM1bjhLZEZLeFk0V0Vsd0VJT1QwY0RHOVJUcS8weFJ3djJCUWp3UmVDQSs3?=
+ =?utf-8?B?VnYzbDNzK0EzcnZ5WWZwdjJBZGxYMGwxUFIzd0FENTB1T1Mvb2cxNGRUWVMz?=
+ =?utf-8?B?NVhtbmU5bmFXbkRSWFBRQWNlcG42YkwxWGNzRUpqcC9VbmhaYmZTOEFDOE8y?=
+ =?utf-8?B?Q1c0dlNjQXJ2Y1FjSXNMbTZCSjJJUlJBWHpRZWw0YzBmRG0zWGxMWmNxNi9W?=
+ =?utf-8?B?aERheklGRjRpZ1FQT1VnSlNqZ1NWMktrNG5LWFIzeHJpNUEvMTZSVFIyNUpU?=
+ =?utf-8?B?d2NNb2tEaHlEY0pLNS9COWk4QzFWYkNmOFEwZ1Jac0tiQ09pQzlvRzJnRXRN?=
+ =?utf-8?B?YlBKZDkyYkJGS3dvQ0tEWHBNeFY2cXcvR0FickJYNnNHVm9FYzhlbTVmaklm?=
+ =?utf-8?B?Ti9vVFhhTko2WjBlbW1ZZmJjZW83SVZGTWxPUHZnbk4wNldJOHhZaWp1NmJG?=
+ =?utf-8?B?TG9WRXI2ZHArd3RvczF6Qnd2VzVMWGJBVy91a0xVUUN6UXZ0Tzd0UkRSUm1v?=
+ =?utf-8?B?VnZQVmFjQmsycms1c1pFYTVVL1FYQVRMUldvVDJwTnp6TkRReHlhVlVOSnFL?=
+ =?utf-8?Q?QW8JBJuTpnnePFI30cQ3S42nKjRpY/099VSnQLz?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f842913b-9fb1-4b2e-73a0-08d919562930
+X-MS-Exchange-CrossTenant-AuthSource: DU2PR04MB8807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2021 17:06:50.0928
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 07265054-03da-418c-aa77-08d91955f510
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT021.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5293
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MRfC5NAi6NCHMLyhE8LjNY9/CgB97ZCc11vajZ1AG4PYw2NEXeEcwNiK1SgOe/48MeaUsWi45PMWVn2wjd6oTg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8808
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+On 5/15/2021 1:47 AM, Vinicius Costa Gomes wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+> 
+>> On Fri, 14 May 2021 13:40:58 -0700 Vinicius Costa Gomes wrote:
+>>> Jakub Kicinski <kuba@kernel.org> writes:
+>>>> You haven't CCed anyone who worked on this Qdisc in the last 2 years :/
+>>>> CCing them now. Comments, anyone?
+>>>
+>>> I guess I should suggest myself as maintainer, to reduce chances of this
+>>> happening again.
+>>
+>> Yes, please.
+>>
+>>>> This looks like a very drastic change. Are you expecting the qdisc will
+>>>> always be bypassed?
+>>>
+>>> Only when running in full offload mode it will be bypassed.
+>>>
+>>> And it's kind of by design, in offload mode, the idea was: configure the
+>>> netdev traffic class to queue mapping, send the schedule to the hardware
+>>> and stay out of the way.
+>>>
+>>> But as per Yannick's report, it seems that taprio doesn't stay enough
+>>> out of the yay.
+>>>
+>>>> After a 1 minute looks it seems like taprio is using device queues in
+>>>> strict priority fashion. Maybe a different model is needed, but a qdisc
+>>>> with:
+>>>>
+>>>> enqueue()
+>>>> {
+>>>> 	WARN_ONCE(1)
+>>>> }
+>>>>
+>>>> really doesn't look right to me.
+>>>
 
-Initial support for the Mellanox SwitchX-2 ASIC was added in July 2015.
-Since then all development efforts shifted towards the Mellanox Spectrum
-ASICs and development of this driver stopped beside trivial fixes and
-refactoring. Therefore, the driver does not support any switch offloads
-and simply traps all traffic to the CPU, rendering it irrelevant for
-deployment.
+My idea was to follow the logic of the other qdiscs dealing with 
+hardware multiqueue, namely mq and mqprio. Those do not have any 
+enqueue/dequeue callbacks, but instead define an attach callback to map 
+the child qdiscs to the HW queues. However, for taprio all those 
+callbacks are already defined by the time we choose between software and 
+full-offload, so the WARN_ONCE was more out of extra caution in case I 
+missed something. If my understanding is correct however, it would 
+probably make sense to put a BUG() instead, since those code paths 
+should never trigger with this patch.
 
-In addition, support for this ASIC was dropped by Mellanox a few years
-ago.
+OTOH what did bother me a bit is that because I needed an attach 
+callback for the full-offload case, I ended up duplicating some code 
+from qdisc_graft in the attach callback, so that the software case would 
+continue behaving as is.
 
-Given the driver is not used by any users and that there is no
-intention of investing in its development, remove it from the kernel.
+Those complexities could be removed by pulling out the full-offload case 
+into its own qdisc, but as I said it has other drawbacks.
 
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxsw/Kconfig   |   11 -
- drivers/net/ethernet/mellanox/mlxsw/Makefile  |    2 -
- drivers/net/ethernet/mellanox/mlxsw/ib.h      |    9 -
- drivers/net/ethernet/mellanox/mlxsw/pci.c     |    5 -
- drivers/net/ethernet/mellanox/mlxsw/pci.h     |    1 -
- .../net/ethernet/mellanox/mlxsw/switchx2.c    | 1691 -----------------
- 6 files changed, 1719 deletions(-)
- delete mode 100644 drivers/net/ethernet/mellanox/mlxsw/ib.h
- delete mode 100644 drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+>>> This patch takes the "stay out of the way" to the extreme, I kind of
+>>> like it/I am not opposed to it, if I had this idea a couple of years
+>>> ago, perhaps I would have used this same approach.
+>>
+>> Sorry for my ignorance, but for TXTIME is the hardware capable of
+>> reordering or the user is supposed to know how to send packets?
+> 
+> At least the hardware that I am familiar with doesn't reorder packets.
+> 
+> For TXTIME, we have ETF (the qdisc) that re-order packets. The way
+> things work when taprio and ETF are used together is something like
+> this: taprio only has enough knowledge about TXTIME to drop packets that
+> would be transmitted outside their "transmission window" (e.g. for
+> traffic class 0 the transmission window is only for 10 to 50, the TXTIME
+> for a packet is 60, this packet is "invalid" and is dropped). And then
+> when the packet is enqueued to the "child" ETF, it's re-ordered and then
+> sent to the driver.
+> 
+> And this is something that this patch breaks, the ability of dropping
+> those invalid packets (I really wouldn't like to do this verification
+> inside our drivers). Thanks for noticing this.
+> 
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/Kconfig b/drivers/net/ethernet/mellanox/mlxsw/Kconfig
-index 6509b5fab936..12871c8dc7c1 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/Kconfig
-+++ b/drivers/net/ethernet/mellanox/mlxsw/Kconfig
-@@ -49,17 +49,6 @@ config MLXSW_I2C
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called mlxsw_i2c.
- 
--config MLXSW_SWITCHX2
--	tristate "Mellanox Technologies SwitchX-2 support"
--	depends on MLXSW_CORE && MLXSW_PCI && NET_SWITCHDEV
--	default m
--	help
--	  This driver supports Mellanox Technologies SwitchX-2 Ethernet
--	  Switch ASICs.
--
--	  To compile this driver as a module, choose M here: the
--	  module will be called mlxsw_switchx2.
--
- config MLXSW_SPECTRUM
- 	tristate "Mellanox Technologies Spectrum family support"
- 	depends on MLXSW_CORE && MLXSW_PCI && NET_SWITCHDEV && VLAN_8021Q
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/Makefile b/drivers/net/ethernet/mellanox/mlxsw/Makefile
-index b68e5ba323cc..196adeb33495 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlxsw/Makefile
-@@ -8,8 +8,6 @@ obj-$(CONFIG_MLXSW_PCI)		+= mlxsw_pci.o
- mlxsw_pci-objs			:= pci.o
- obj-$(CONFIG_MLXSW_I2C)		+= mlxsw_i2c.o
- mlxsw_i2c-objs			:= i2c.o
--obj-$(CONFIG_MLXSW_SWITCHX2)	+= mlxsw_switchx2.o
--mlxsw_switchx2-objs		:= switchx2.o
- obj-$(CONFIG_MLXSW_SPECTRUM)	+= mlxsw_spectrum.o
- mlxsw_spectrum-objs		:= spectrum.o spectrum_buffers.o \
- 				   spectrum_switchdev.o spectrum_router.o \
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/ib.h b/drivers/net/ethernet/mellanox/mlxsw/ib.h
-deleted file mode 100644
-index 2d0cb0f5eb85..000000000000
---- a/drivers/net/ethernet/mellanox/mlxsw/ib.h
-+++ /dev/null
-@@ -1,9 +0,0 @@
--/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
--/* Copyright (c) 2016-2018 Mellanox Technologies. All rights reserved */
--
--#ifndef _MLXSW_IB_H
--#define _MLXSW_IB_H
--
--#define MLXSW_IB_DEFAULT_MTU 4096
--
--#endif /* _MLXSW_IB_H */
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index 8e8456811384..13b0259f7ea6 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -1426,11 +1426,6 @@ static int mlxsw_pci_sys_ready_wait(struct mlxsw_pci *mlxsw_pci,
- 	unsigned long end;
- 	u32 val;
- 
--	if (id->device == PCI_DEVICE_ID_MELLANOX_SWITCHX2) {
--		msleep(MLXSW_PCI_SW_RESET_TIMEOUT_MSECS);
--		return 0;
--	}
--
- 	/* We must wait for the HW to become responsive. */
- 	msleep(MLXSW_PCI_SW_RESET_WAIT_MSECS);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.h b/drivers/net/ethernet/mellanox/mlxsw/pci.h
-index b0702947d895..9899c1a2ea8f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.h
-@@ -6,7 +6,6 @@
- 
- #include <linux/pci.h>
- 
--#define PCI_DEVICE_ID_MELLANOX_SWITCHX2		0xc738
- #define PCI_DEVICE_ID_MELLANOX_SPECTRUM		0xcb84
- #define PCI_DEVICE_ID_MELLANOX_SPECTRUM2	0xcf6c
- #define PCI_DEVICE_ID_MELLANOX_SPECTRUM3	0xcf70
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-deleted file mode 100644
-index 131b2a53d261..000000000000
---- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
-+++ /dev/null
-@@ -1,1691 +0,0 @@
--// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
--/* Copyright (c) 2015-2018 Mellanox Technologies. All rights reserved */
--
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/types.h>
--#include <linux/pci.h>
--#include <linux/netdevice.h>
--#include <linux/ethtool.h>
--#include <linux/etherdevice.h>
--#include <linux/slab.h>
--#include <linux/device.h>
--#include <linux/skbuff.h>
--#include <linux/if_vlan.h>
--
--#include "pci.h"
--#include "core.h"
--#include "reg.h"
--#include "port.h"
--#include "trap.h"
--#include "txheader.h"
--#include "ib.h"
--
--static const char mlxsw_sx_driver_name[] = "mlxsw_switchx2";
--static const char mlxsw_sx_driver_version[] = "1.0";
--
--struct mlxsw_sx_port;
--
--struct mlxsw_sx {
--	struct mlxsw_sx_port **ports;
--	struct mlxsw_core *core;
--	const struct mlxsw_bus_info *bus_info;
--	u8 hw_id[ETH_ALEN];
--};
--
--struct mlxsw_sx_port_pcpu_stats {
--	u64			rx_packets;
--	u64			rx_bytes;
--	u64			tx_packets;
--	u64			tx_bytes;
--	struct u64_stats_sync	syncp;
--	u32			tx_dropped;
--};
--
--struct mlxsw_sx_port {
--	struct net_device *dev;
--	struct mlxsw_sx_port_pcpu_stats __percpu *pcpu_stats;
--	struct mlxsw_sx *mlxsw_sx;
--	u8 local_port;
--	struct {
--		u8 module;
--	} mapping;
--};
--
--/* tx_hdr_version
-- * Tx header version.
-- * Must be set to 0.
-- */
--MLXSW_ITEM32(tx, hdr, version, 0x00, 28, 4);
--
--/* tx_hdr_ctl
-- * Packet control type.
-- * 0 - Ethernet control (e.g. EMADs, LACP)
-- * 1 - Ethernet data
-- */
--MLXSW_ITEM32(tx, hdr, ctl, 0x00, 26, 2);
--
--/* tx_hdr_proto
-- * Packet protocol type. Must be set to 1 (Ethernet).
-- */
--MLXSW_ITEM32(tx, hdr, proto, 0x00, 21, 3);
--
--/* tx_hdr_etclass
-- * Egress TClass to be used on the egress device on the egress port.
-- * The MSB is specified in the 'ctclass3' field.
-- * Range is 0-15, where 15 is the highest priority.
-- */
--MLXSW_ITEM32(tx, hdr, etclass, 0x00, 18, 3);
--
--/* tx_hdr_swid
-- * Switch partition ID.
-- */
--MLXSW_ITEM32(tx, hdr, swid, 0x00, 12, 3);
--
--/* tx_hdr_port_mid
-- * Destination local port for unicast packets.
-- * Destination multicast ID for multicast packets.
-- *
-- * Control packets are directed to a specific egress port, while data
-- * packets are transmitted through the CPU port (0) into the switch partition,
-- * where forwarding rules are applied.
-- */
--MLXSW_ITEM32(tx, hdr, port_mid, 0x04, 16, 16);
--
--/* tx_hdr_ctclass3
-- * See field 'etclass'.
-- */
--MLXSW_ITEM32(tx, hdr, ctclass3, 0x04, 14, 1);
--
--/* tx_hdr_rdq
-- * RDQ for control packets sent to remote CPU.
-- * Must be set to 0x1F for EMADs, otherwise 0.
-- */
--MLXSW_ITEM32(tx, hdr, rdq, 0x04, 9, 5);
--
--/* tx_hdr_cpu_sig
-- * Signature control for packets going to CPU. Must be set to 0.
-- */
--MLXSW_ITEM32(tx, hdr, cpu_sig, 0x04, 0, 9);
--
--/* tx_hdr_sig
-- * Stacking protocl signature. Must be set to 0xE0E0.
-- */
--MLXSW_ITEM32(tx, hdr, sig, 0x0C, 16, 16);
--
--/* tx_hdr_stclass
-- * Stacking TClass.
-- */
--MLXSW_ITEM32(tx, hdr, stclass, 0x0C, 13, 3);
--
--/* tx_hdr_emad
-- * EMAD bit. Must be set for EMADs.
-- */
--MLXSW_ITEM32(tx, hdr, emad, 0x0C, 5, 1);
--
--/* tx_hdr_type
-- * 0 - Data packets
-- * 6 - Control packets
-- */
--MLXSW_ITEM32(tx, hdr, type, 0x0C, 0, 4);
--
--static void mlxsw_sx_txhdr_construct(struct sk_buff *skb,
--				     const struct mlxsw_tx_info *tx_info)
--{
--	char *txhdr = skb_push(skb, MLXSW_TXHDR_LEN);
--	bool is_emad = tx_info->is_emad;
--
--	memset(txhdr, 0, MLXSW_TXHDR_LEN);
--
--	/* We currently set default values for the egress tclass (QoS). */
--	mlxsw_tx_hdr_version_set(txhdr, MLXSW_TXHDR_VERSION_0);
--	mlxsw_tx_hdr_ctl_set(txhdr, MLXSW_TXHDR_ETH_CTL);
--	mlxsw_tx_hdr_proto_set(txhdr, MLXSW_TXHDR_PROTO_ETH);
--	mlxsw_tx_hdr_etclass_set(txhdr, is_emad ? MLXSW_TXHDR_ETCLASS_6 :
--						  MLXSW_TXHDR_ETCLASS_5);
--	mlxsw_tx_hdr_swid_set(txhdr, 0);
--	mlxsw_tx_hdr_port_mid_set(txhdr, tx_info->local_port);
--	mlxsw_tx_hdr_ctclass3_set(txhdr, MLXSW_TXHDR_CTCLASS3);
--	mlxsw_tx_hdr_rdq_set(txhdr, is_emad ? MLXSW_TXHDR_RDQ_EMAD :
--					      MLXSW_TXHDR_RDQ_OTHER);
--	mlxsw_tx_hdr_cpu_sig_set(txhdr, MLXSW_TXHDR_CPU_SIG);
--	mlxsw_tx_hdr_sig_set(txhdr, MLXSW_TXHDR_SIG);
--	mlxsw_tx_hdr_stclass_set(txhdr, MLXSW_TXHDR_STCLASS_NONE);
--	mlxsw_tx_hdr_emad_set(txhdr, is_emad ? MLXSW_TXHDR_EMAD :
--					       MLXSW_TXHDR_NOT_EMAD);
--	mlxsw_tx_hdr_type_set(txhdr, MLXSW_TXHDR_TYPE_CONTROL);
--}
--
--static int mlxsw_sx_port_admin_status_set(struct mlxsw_sx_port *mlxsw_sx_port,
--					  bool is_up)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char paos_pl[MLXSW_REG_PAOS_LEN];
--
--	mlxsw_reg_paos_pack(paos_pl, mlxsw_sx_port->local_port,
--			    is_up ? MLXSW_PORT_ADMIN_STATUS_UP :
--			    MLXSW_PORT_ADMIN_STATUS_DOWN);
--	return mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(paos), paos_pl);
--}
--
--static int mlxsw_sx_port_oper_status_get(struct mlxsw_sx_port *mlxsw_sx_port,
--					 bool *p_is_up)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char paos_pl[MLXSW_REG_PAOS_LEN];
--	u8 oper_status;
--	int err;
--
--	mlxsw_reg_paos_pack(paos_pl, mlxsw_sx_port->local_port, 0);
--	err = mlxsw_reg_query(mlxsw_sx->core, MLXSW_REG(paos), paos_pl);
--	if (err)
--		return err;
--	oper_status = mlxsw_reg_paos_oper_status_get(paos_pl);
--	*p_is_up = oper_status == MLXSW_PORT_ADMIN_STATUS_UP;
--	return 0;
--}
--
--static int __mlxsw_sx_port_mtu_set(struct mlxsw_sx_port *mlxsw_sx_port,
--				   u16 mtu)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char pmtu_pl[MLXSW_REG_PMTU_LEN];
--	int max_mtu;
--	int err;
--
--	mlxsw_reg_pmtu_pack(pmtu_pl, mlxsw_sx_port->local_port, 0);
--	err = mlxsw_reg_query(mlxsw_sx->core, MLXSW_REG(pmtu), pmtu_pl);
--	if (err)
--		return err;
--	max_mtu = mlxsw_reg_pmtu_max_mtu_get(pmtu_pl);
--
--	if (mtu > max_mtu)
--		return -EINVAL;
--
--	mlxsw_reg_pmtu_pack(pmtu_pl, mlxsw_sx_port->local_port, mtu);
--	return mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(pmtu), pmtu_pl);
--}
--
--static int mlxsw_sx_port_mtu_eth_set(struct mlxsw_sx_port *mlxsw_sx_port,
--				     u16 mtu)
--{
--	mtu += MLXSW_TXHDR_LEN + ETH_HLEN;
--	return __mlxsw_sx_port_mtu_set(mlxsw_sx_port, mtu);
--}
--
--static int mlxsw_sx_port_mtu_ib_set(struct mlxsw_sx_port *mlxsw_sx_port,
--				    u16 mtu)
--{
--	return __mlxsw_sx_port_mtu_set(mlxsw_sx_port, mtu);
--}
--
--static int mlxsw_sx_port_ib_port_set(struct mlxsw_sx_port *mlxsw_sx_port,
--				     u8 ib_port)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char plib_pl[MLXSW_REG_PLIB_LEN] = {0};
--	int err;
--
--	mlxsw_reg_plib_local_port_set(plib_pl, mlxsw_sx_port->local_port);
--	mlxsw_reg_plib_ib_port_set(plib_pl, ib_port);
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(plib), plib_pl);
--	return err;
--}
--
--static int mlxsw_sx_port_swid_set(struct mlxsw_sx_port *mlxsw_sx_port, u8 swid)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char pspa_pl[MLXSW_REG_PSPA_LEN];
--
--	mlxsw_reg_pspa_pack(pspa_pl, swid, mlxsw_sx_port->local_port);
--	return mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(pspa), pspa_pl);
--}
--
--static int
--mlxsw_sx_port_system_port_mapping_set(struct mlxsw_sx_port *mlxsw_sx_port)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char sspr_pl[MLXSW_REG_SSPR_LEN];
--
--	mlxsw_reg_sspr_pack(sspr_pl, mlxsw_sx_port->local_port);
--	return mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(sspr), sspr_pl);
--}
--
--static int mlxsw_sx_port_module_info_get(struct mlxsw_sx *mlxsw_sx,
--					 u8 local_port, u8 *p_module,
--					 u8 *p_width)
--{
--	char pmlp_pl[MLXSW_REG_PMLP_LEN];
--	int err;
--
--	mlxsw_reg_pmlp_pack(pmlp_pl, local_port);
--	err = mlxsw_reg_query(mlxsw_sx->core, MLXSW_REG(pmlp), pmlp_pl);
--	if (err)
--		return err;
--	*p_module = mlxsw_reg_pmlp_module_get(pmlp_pl, 0);
--	*p_width = mlxsw_reg_pmlp_width_get(pmlp_pl);
--	return 0;
--}
--
--static int mlxsw_sx_port_open(struct net_device *dev)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
--	int err;
--
--	err = mlxsw_sx_port_admin_status_set(mlxsw_sx_port, true);
--	if (err)
--		return err;
--	netif_start_queue(dev);
--	return 0;
--}
--
--static int mlxsw_sx_port_stop(struct net_device *dev)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
--
--	netif_stop_queue(dev);
--	return mlxsw_sx_port_admin_status_set(mlxsw_sx_port, false);
--}
--
--static netdev_tx_t mlxsw_sx_port_xmit(struct sk_buff *skb,
--				      struct net_device *dev)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	struct mlxsw_sx_port_pcpu_stats *pcpu_stats;
--	const struct mlxsw_tx_info tx_info = {
--		.local_port = mlxsw_sx_port->local_port,
--		.is_emad = false,
--	};
--	u64 len;
--	int err;
--
--	if (skb_cow_head(skb, MLXSW_TXHDR_LEN)) {
--		this_cpu_inc(mlxsw_sx_port->pcpu_stats->tx_dropped);
--		dev_kfree_skb_any(skb);
--		return NETDEV_TX_OK;
--	}
--
--	memset(skb->cb, 0, sizeof(struct mlxsw_skb_cb));
--
--	if (mlxsw_core_skb_transmit_busy(mlxsw_sx->core, &tx_info))
--		return NETDEV_TX_BUSY;
--
--	mlxsw_sx_txhdr_construct(skb, &tx_info);
--	/* TX header is consumed by HW on the way so we shouldn't count its
--	 * bytes as being sent.
--	 */
--	len = skb->len - MLXSW_TXHDR_LEN;
--	/* Due to a race we might fail here because of a full queue. In that
--	 * unlikely case we simply drop the packet.
--	 */
--	err = mlxsw_core_skb_transmit(mlxsw_sx->core, skb, &tx_info);
--
--	if (!err) {
--		pcpu_stats = this_cpu_ptr(mlxsw_sx_port->pcpu_stats);
--		u64_stats_update_begin(&pcpu_stats->syncp);
--		pcpu_stats->tx_packets++;
--		pcpu_stats->tx_bytes += len;
--		u64_stats_update_end(&pcpu_stats->syncp);
--	} else {
--		this_cpu_inc(mlxsw_sx_port->pcpu_stats->tx_dropped);
--		dev_kfree_skb_any(skb);
--	}
--	return NETDEV_TX_OK;
--}
--
--static int mlxsw_sx_port_change_mtu(struct net_device *dev, int mtu)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
--	int err;
--
--	err = mlxsw_sx_port_mtu_eth_set(mlxsw_sx_port, mtu);
--	if (err)
--		return err;
--	dev->mtu = mtu;
--	return 0;
--}
--
--static void
--mlxsw_sx_port_get_stats64(struct net_device *dev,
--			  struct rtnl_link_stats64 *stats)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
--	struct mlxsw_sx_port_pcpu_stats *p;
--	u64 rx_packets, rx_bytes, tx_packets, tx_bytes;
--	u32 tx_dropped = 0;
--	unsigned int start;
--	int i;
--
--	for_each_possible_cpu(i) {
--		p = per_cpu_ptr(mlxsw_sx_port->pcpu_stats, i);
--		do {
--			start = u64_stats_fetch_begin_irq(&p->syncp);
--			rx_packets	= p->rx_packets;
--			rx_bytes	= p->rx_bytes;
--			tx_packets	= p->tx_packets;
--			tx_bytes	= p->tx_bytes;
--		} while (u64_stats_fetch_retry_irq(&p->syncp, start));
--
--		stats->rx_packets	+= rx_packets;
--		stats->rx_bytes		+= rx_bytes;
--		stats->tx_packets	+= tx_packets;
--		stats->tx_bytes		+= tx_bytes;
--		/* tx_dropped is u32, updated without syncp protection. */
--		tx_dropped	+= p->tx_dropped;
--	}
--	stats->tx_dropped	= tx_dropped;
--}
--
--static struct devlink_port *
--mlxsw_sx_port_get_devlink_port(struct net_device *dev)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--
--	return mlxsw_core_port_devlink_port_get(mlxsw_sx->core,
--						mlxsw_sx_port->local_port);
--}
--
--static const struct net_device_ops mlxsw_sx_port_netdev_ops = {
--	.ndo_open		= mlxsw_sx_port_open,
--	.ndo_stop		= mlxsw_sx_port_stop,
--	.ndo_start_xmit		= mlxsw_sx_port_xmit,
--	.ndo_change_mtu		= mlxsw_sx_port_change_mtu,
--	.ndo_get_stats64	= mlxsw_sx_port_get_stats64,
--	.ndo_get_devlink_port	= mlxsw_sx_port_get_devlink_port,
--};
--
--static void mlxsw_sx_port_get_drvinfo(struct net_device *dev,
--				      struct ethtool_drvinfo *drvinfo)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--
--	strlcpy(drvinfo->driver, mlxsw_sx_driver_name, sizeof(drvinfo->driver));
--	strlcpy(drvinfo->version, mlxsw_sx_driver_version,
--		sizeof(drvinfo->version));
--	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
--		 "%d.%d.%d",
--		 mlxsw_sx->bus_info->fw_rev.major,
--		 mlxsw_sx->bus_info->fw_rev.minor,
--		 mlxsw_sx->bus_info->fw_rev.subminor);
--	strlcpy(drvinfo->bus_info, mlxsw_sx->bus_info->device_name,
--		sizeof(drvinfo->bus_info));
--}
--
--struct mlxsw_sx_port_hw_stats {
--	char str[ETH_GSTRING_LEN];
--	u64 (*getter)(const char *payload);
--};
--
--static const struct mlxsw_sx_port_hw_stats mlxsw_sx_port_hw_stats[] = {
--	{
--		.str = "a_frames_transmitted_ok",
--		.getter = mlxsw_reg_ppcnt_a_frames_transmitted_ok_get,
--	},
--	{
--		.str = "a_frames_received_ok",
--		.getter = mlxsw_reg_ppcnt_a_frames_received_ok_get,
--	},
--	{
--		.str = "a_frame_check_sequence_errors",
--		.getter = mlxsw_reg_ppcnt_a_frame_check_sequence_errors_get,
--	},
--	{
--		.str = "a_alignment_errors",
--		.getter = mlxsw_reg_ppcnt_a_alignment_errors_get,
--	},
--	{
--		.str = "a_octets_transmitted_ok",
--		.getter = mlxsw_reg_ppcnt_a_octets_transmitted_ok_get,
--	},
--	{
--		.str = "a_octets_received_ok",
--		.getter = mlxsw_reg_ppcnt_a_octets_received_ok_get,
--	},
--	{
--		.str = "a_multicast_frames_xmitted_ok",
--		.getter = mlxsw_reg_ppcnt_a_multicast_frames_xmitted_ok_get,
--	},
--	{
--		.str = "a_broadcast_frames_xmitted_ok",
--		.getter = mlxsw_reg_ppcnt_a_broadcast_frames_xmitted_ok_get,
--	},
--	{
--		.str = "a_multicast_frames_received_ok",
--		.getter = mlxsw_reg_ppcnt_a_multicast_frames_received_ok_get,
--	},
--	{
--		.str = "a_broadcast_frames_received_ok",
--		.getter = mlxsw_reg_ppcnt_a_broadcast_frames_received_ok_get,
--	},
--	{
--		.str = "a_in_range_length_errors",
--		.getter = mlxsw_reg_ppcnt_a_in_range_length_errors_get,
--	},
--	{
--		.str = "a_out_of_range_length_field",
--		.getter = mlxsw_reg_ppcnt_a_out_of_range_length_field_get,
--	},
--	{
--		.str = "a_frame_too_long_errors",
--		.getter = mlxsw_reg_ppcnt_a_frame_too_long_errors_get,
--	},
--	{
--		.str = "a_symbol_error_during_carrier",
--		.getter = mlxsw_reg_ppcnt_a_symbol_error_during_carrier_get,
--	},
--	{
--		.str = "a_mac_control_frames_transmitted",
--		.getter = mlxsw_reg_ppcnt_a_mac_control_frames_transmitted_get,
--	},
--	{
--		.str = "a_mac_control_frames_received",
--		.getter = mlxsw_reg_ppcnt_a_mac_control_frames_received_get,
--	},
--	{
--		.str = "a_unsupported_opcodes_received",
--		.getter = mlxsw_reg_ppcnt_a_unsupported_opcodes_received_get,
--	},
--	{
--		.str = "a_pause_mac_ctrl_frames_received",
--		.getter = mlxsw_reg_ppcnt_a_pause_mac_ctrl_frames_received_get,
--	},
--	{
--		.str = "a_pause_mac_ctrl_frames_xmitted",
--		.getter = mlxsw_reg_ppcnt_a_pause_mac_ctrl_frames_transmitted_get,
--	},
--};
--
--#define MLXSW_SX_PORT_HW_STATS_LEN ARRAY_SIZE(mlxsw_sx_port_hw_stats)
--
--static void mlxsw_sx_port_get_strings(struct net_device *dev,
--				      u32 stringset, u8 *data)
--{
--	u8 *p = data;
--	int i;
--
--	switch (stringset) {
--	case ETH_SS_STATS:
--		for (i = 0; i < MLXSW_SX_PORT_HW_STATS_LEN; i++) {
--			memcpy(p, mlxsw_sx_port_hw_stats[i].str,
--			       ETH_GSTRING_LEN);
--			p += ETH_GSTRING_LEN;
--		}
--		break;
--	}
--}
--
--static void mlxsw_sx_port_get_stats(struct net_device *dev,
--				    struct ethtool_stats *stats, u64 *data)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char ppcnt_pl[MLXSW_REG_PPCNT_LEN];
--	int i;
--	int err;
--
--	mlxsw_reg_ppcnt_pack(ppcnt_pl, mlxsw_sx_port->local_port,
--			     MLXSW_REG_PPCNT_IEEE_8023_CNT, 0);
--	err = mlxsw_reg_query(mlxsw_sx->core, MLXSW_REG(ppcnt), ppcnt_pl);
--	for (i = 0; i < MLXSW_SX_PORT_HW_STATS_LEN; i++)
--		data[i] = !err ? mlxsw_sx_port_hw_stats[i].getter(ppcnt_pl) : 0;
--}
--
--static int mlxsw_sx_port_get_sset_count(struct net_device *dev, int sset)
--{
--	switch (sset) {
--	case ETH_SS_STATS:
--		return MLXSW_SX_PORT_HW_STATS_LEN;
--	default:
--		return -EOPNOTSUPP;
--	}
--}
--
--struct mlxsw_sx_port_link_mode {
--	u32 mask;
--	u32 supported;
--	u32 advertised;
--	u32 speed;
--};
--
--static const struct mlxsw_sx_port_link_mode mlxsw_sx_port_link_mode[] = {
--	{
--		.mask		= MLXSW_REG_PTYS_ETH_SPEED_SGMII |
--				  MLXSW_REG_PTYS_ETH_SPEED_1000BASE_KX,
--		.supported	= SUPPORTED_1000baseKX_Full,
--		.advertised	= ADVERTISED_1000baseKX_Full,
--		.speed		= 1000,
--	},
--	{
--		.mask		= MLXSW_REG_PTYS_ETH_SPEED_10GBASE_CX4 |
--				  MLXSW_REG_PTYS_ETH_SPEED_10GBASE_KX4,
--		.supported	= SUPPORTED_10000baseKX4_Full,
--		.advertised	= ADVERTISED_10000baseKX4_Full,
--		.speed		= 10000,
--	},
--	{
--		.mask		= MLXSW_REG_PTYS_ETH_SPEED_10GBASE_KR |
--				  MLXSW_REG_PTYS_ETH_SPEED_10GBASE_CR |
--				  MLXSW_REG_PTYS_ETH_SPEED_10GBASE_SR |
--				  MLXSW_REG_PTYS_ETH_SPEED_10GBASE_ER_LR,
--		.supported	= SUPPORTED_10000baseKR_Full,
--		.advertised	= ADVERTISED_10000baseKR_Full,
--		.speed		= 10000,
--	},
--	{
--		.mask		= MLXSW_REG_PTYS_ETH_SPEED_40GBASE_CR4,
--		.supported	= SUPPORTED_40000baseCR4_Full,
--		.advertised	= ADVERTISED_40000baseCR4_Full,
--		.speed		= 40000,
--	},
--	{
--		.mask		= MLXSW_REG_PTYS_ETH_SPEED_40GBASE_KR4,
--		.supported	= SUPPORTED_40000baseKR4_Full,
--		.advertised	= ADVERTISED_40000baseKR4_Full,
--		.speed		= 40000,
--	},
--	{
--		.mask		= MLXSW_REG_PTYS_ETH_SPEED_40GBASE_SR4,
--		.supported	= SUPPORTED_40000baseSR4_Full,
--		.advertised	= ADVERTISED_40000baseSR4_Full,
--		.speed		= 40000,
--	},
--	{
--		.mask		= MLXSW_REG_PTYS_ETH_SPEED_40GBASE_LR4_ER4,
--		.supported	= SUPPORTED_40000baseLR4_Full,
--		.advertised	= ADVERTISED_40000baseLR4_Full,
--		.speed		= 40000,
--	},
--	{
--		.mask		= MLXSW_REG_PTYS_ETH_SPEED_25GBASE_CR |
--				  MLXSW_REG_PTYS_ETH_SPEED_25GBASE_KR |
--				  MLXSW_REG_PTYS_ETH_SPEED_25GBASE_SR,
--		.speed		= 25000,
--	},
--	{
--		.mask		= MLXSW_REG_PTYS_ETH_SPEED_50GBASE_KR4 |
--				  MLXSW_REG_PTYS_ETH_SPEED_50GBASE_CR2 |
--				  MLXSW_REG_PTYS_ETH_SPEED_50GBASE_KR2,
--		.speed		= 50000,
--	},
--	{
--		.mask		= MLXSW_REG_PTYS_ETH_SPEED_100GBASE_CR4 |
--				  MLXSW_REG_PTYS_ETH_SPEED_100GBASE_SR4 |
--				  MLXSW_REG_PTYS_ETH_SPEED_100GBASE_KR4 |
--				  MLXSW_REG_PTYS_ETH_SPEED_100GBASE_LR4_ER4,
--		.speed		= 100000,
--	},
--};
--
--#define MLXSW_SX_PORT_LINK_MODE_LEN ARRAY_SIZE(mlxsw_sx_port_link_mode)
--#define MLXSW_SX_PORT_BASE_SPEED 10000 /* Mb/s */
--
--static u32 mlxsw_sx_from_ptys_supported_port(u32 ptys_eth_proto)
--{
--	if (ptys_eth_proto & (MLXSW_REG_PTYS_ETH_SPEED_10GBASE_CR |
--			      MLXSW_REG_PTYS_ETH_SPEED_10GBASE_SR |
--			      MLXSW_REG_PTYS_ETH_SPEED_40GBASE_CR4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_40GBASE_SR4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_100GBASE_SR4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_SGMII))
--		return SUPPORTED_FIBRE;
--
--	if (ptys_eth_proto & (MLXSW_REG_PTYS_ETH_SPEED_10GBASE_KR |
--			      MLXSW_REG_PTYS_ETH_SPEED_10GBASE_KX4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_40GBASE_KR4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_100GBASE_KR4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_1000BASE_KX))
--		return SUPPORTED_Backplane;
--	return 0;
--}
--
--static u32 mlxsw_sx_from_ptys_supported_link(u32 ptys_eth_proto)
--{
--	u32 modes = 0;
--	int i;
--
--	for (i = 0; i < MLXSW_SX_PORT_LINK_MODE_LEN; i++) {
--		if (ptys_eth_proto & mlxsw_sx_port_link_mode[i].mask)
--			modes |= mlxsw_sx_port_link_mode[i].supported;
--	}
--	return modes;
--}
--
--static u32 mlxsw_sx_from_ptys_advert_link(u32 ptys_eth_proto)
--{
--	u32 modes = 0;
--	int i;
--
--	for (i = 0; i < MLXSW_SX_PORT_LINK_MODE_LEN; i++) {
--		if (ptys_eth_proto & mlxsw_sx_port_link_mode[i].mask)
--			modes |= mlxsw_sx_port_link_mode[i].advertised;
--	}
--	return modes;
--}
--
--static void mlxsw_sx_from_ptys_speed_duplex(bool carrier_ok, u32 ptys_eth_proto,
--					    struct ethtool_link_ksettings *cmd)
--{
--	u32 speed = SPEED_UNKNOWN;
--	u8 duplex = DUPLEX_UNKNOWN;
--	int i;
--
--	if (!carrier_ok)
--		goto out;
--
--	for (i = 0; i < MLXSW_SX_PORT_LINK_MODE_LEN; i++) {
--		if (ptys_eth_proto & mlxsw_sx_port_link_mode[i].mask) {
--			speed = mlxsw_sx_port_link_mode[i].speed;
--			duplex = DUPLEX_FULL;
--			break;
--		}
--	}
--out:
--	cmd->base.speed = speed;
--	cmd->base.duplex = duplex;
--}
--
--static u8 mlxsw_sx_port_connector_port(u32 ptys_eth_proto)
--{
--	if (ptys_eth_proto & (MLXSW_REG_PTYS_ETH_SPEED_10GBASE_SR |
--			      MLXSW_REG_PTYS_ETH_SPEED_40GBASE_SR4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_100GBASE_SR4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_SGMII))
--		return PORT_FIBRE;
--
--	if (ptys_eth_proto & (MLXSW_REG_PTYS_ETH_SPEED_10GBASE_CR |
--			      MLXSW_REG_PTYS_ETH_SPEED_40GBASE_CR4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_100GBASE_CR4))
--		return PORT_DA;
--
--	if (ptys_eth_proto & (MLXSW_REG_PTYS_ETH_SPEED_10GBASE_KR |
--			      MLXSW_REG_PTYS_ETH_SPEED_10GBASE_KX4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_40GBASE_KR4 |
--			      MLXSW_REG_PTYS_ETH_SPEED_100GBASE_KR4))
--		return PORT_NONE;
--
--	return PORT_OTHER;
--}
--
--static int
--mlxsw_sx_port_get_link_ksettings(struct net_device *dev,
--				 struct ethtool_link_ksettings *cmd)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char ptys_pl[MLXSW_REG_PTYS_LEN];
--	u32 eth_proto_cap;
--	u32 eth_proto_admin;
--	u32 eth_proto_oper;
--	u32 supported, advertising, lp_advertising;
--	int err;
--
--	mlxsw_reg_ptys_eth_pack(ptys_pl, mlxsw_sx_port->local_port, 0, false);
--	err = mlxsw_reg_query(mlxsw_sx->core, MLXSW_REG(ptys), ptys_pl);
--	if (err) {
--		netdev_err(dev, "Failed to get proto");
--		return err;
--	}
--	mlxsw_reg_ptys_eth_unpack(ptys_pl, &eth_proto_cap,
--				  &eth_proto_admin, &eth_proto_oper);
--
--	supported = mlxsw_sx_from_ptys_supported_port(eth_proto_cap) |
--			 mlxsw_sx_from_ptys_supported_link(eth_proto_cap) |
--			 SUPPORTED_Pause | SUPPORTED_Asym_Pause;
--	advertising = mlxsw_sx_from_ptys_advert_link(eth_proto_admin);
--	mlxsw_sx_from_ptys_speed_duplex(netif_carrier_ok(dev),
--					eth_proto_oper, cmd);
--
--	eth_proto_oper = eth_proto_oper ? eth_proto_oper : eth_proto_cap;
--	cmd->base.port = mlxsw_sx_port_connector_port(eth_proto_oper);
--	lp_advertising = mlxsw_sx_from_ptys_advert_link(eth_proto_oper);
--
--	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
--						supported);
--	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
--						advertising);
--	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.lp_advertising,
--						lp_advertising);
--
--	return 0;
--}
--
--static u32 mlxsw_sx_to_ptys_advert_link(u32 advertising)
--{
--	u32 ptys_proto = 0;
--	int i;
--
--	for (i = 0; i < MLXSW_SX_PORT_LINK_MODE_LEN; i++) {
--		if (advertising & mlxsw_sx_port_link_mode[i].advertised)
--			ptys_proto |= mlxsw_sx_port_link_mode[i].mask;
--	}
--	return ptys_proto;
--}
--
--static u32 mlxsw_sx_to_ptys_speed(u32 speed)
--{
--	u32 ptys_proto = 0;
--	int i;
--
--	for (i = 0; i < MLXSW_SX_PORT_LINK_MODE_LEN; i++) {
--		if (speed == mlxsw_sx_port_link_mode[i].speed)
--			ptys_proto |= mlxsw_sx_port_link_mode[i].mask;
--	}
--	return ptys_proto;
--}
--
--static u32 mlxsw_sx_to_ptys_upper_speed(u32 upper_speed)
--{
--	u32 ptys_proto = 0;
--	int i;
--
--	for (i = 0; i < MLXSW_SX_PORT_LINK_MODE_LEN; i++) {
--		if (mlxsw_sx_port_link_mode[i].speed <= upper_speed)
--			ptys_proto |= mlxsw_sx_port_link_mode[i].mask;
--	}
--	return ptys_proto;
--}
--
--static int
--mlxsw_sx_port_set_link_ksettings(struct net_device *dev,
--				 const struct ethtool_link_ksettings *cmd)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = netdev_priv(dev);
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char ptys_pl[MLXSW_REG_PTYS_LEN];
--	u32 speed;
--	u32 eth_proto_new;
--	u32 eth_proto_cap;
--	u32 eth_proto_admin;
--	u32 advertising;
--	bool is_up;
--	int err;
--
--	speed = cmd->base.speed;
--
--	ethtool_convert_link_mode_to_legacy_u32(&advertising,
--						cmd->link_modes.advertising);
--
--	eth_proto_new = cmd->base.autoneg == AUTONEG_ENABLE ?
--		mlxsw_sx_to_ptys_advert_link(advertising) :
--		mlxsw_sx_to_ptys_speed(speed);
--
--	mlxsw_reg_ptys_eth_pack(ptys_pl, mlxsw_sx_port->local_port, 0, false);
--	err = mlxsw_reg_query(mlxsw_sx->core, MLXSW_REG(ptys), ptys_pl);
--	if (err) {
--		netdev_err(dev, "Failed to get proto");
--		return err;
--	}
--	mlxsw_reg_ptys_eth_unpack(ptys_pl, &eth_proto_cap, &eth_proto_admin,
--				  NULL);
--
--	eth_proto_new = eth_proto_new & eth_proto_cap;
--	if (!eth_proto_new) {
--		netdev_err(dev, "Not supported proto admin requested");
--		return -EINVAL;
--	}
--	if (eth_proto_new == eth_proto_admin)
--		return 0;
--
--	mlxsw_reg_ptys_eth_pack(ptys_pl, mlxsw_sx_port->local_port,
--				eth_proto_new, true);
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(ptys), ptys_pl);
--	if (err) {
--		netdev_err(dev, "Failed to set proto admin");
--		return err;
--	}
--
--	err = mlxsw_sx_port_oper_status_get(mlxsw_sx_port, &is_up);
--	if (err) {
--		netdev_err(dev, "Failed to get oper status");
--		return err;
--	}
--	if (!is_up)
--		return 0;
--
--	err = mlxsw_sx_port_admin_status_set(mlxsw_sx_port, false);
--	if (err) {
--		netdev_err(dev, "Failed to set admin status");
--		return err;
--	}
--
--	err = mlxsw_sx_port_admin_status_set(mlxsw_sx_port, true);
--	if (err) {
--		netdev_err(dev, "Failed to set admin status");
--		return err;
--	}
--
--	return 0;
--}
--
--static const struct ethtool_ops mlxsw_sx_port_ethtool_ops = {
--	.get_drvinfo		= mlxsw_sx_port_get_drvinfo,
--	.get_link		= ethtool_op_get_link,
--	.get_strings		= mlxsw_sx_port_get_strings,
--	.get_ethtool_stats	= mlxsw_sx_port_get_stats,
--	.get_sset_count		= mlxsw_sx_port_get_sset_count,
--	.get_link_ksettings	= mlxsw_sx_port_get_link_ksettings,
--	.set_link_ksettings	= mlxsw_sx_port_set_link_ksettings,
--};
--
--static int mlxsw_sx_hw_id_get(struct mlxsw_sx *mlxsw_sx)
--{
--	char spad_pl[MLXSW_REG_SPAD_LEN] = {0};
--	int err;
--
--	err = mlxsw_reg_query(mlxsw_sx->core, MLXSW_REG(spad), spad_pl);
--	if (err)
--		return err;
--	mlxsw_reg_spad_base_mac_memcpy_from(spad_pl, mlxsw_sx->hw_id);
--	return 0;
--}
--
--static int mlxsw_sx_port_dev_addr_get(struct mlxsw_sx_port *mlxsw_sx_port)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	struct net_device *dev = mlxsw_sx_port->dev;
--	char ppad_pl[MLXSW_REG_PPAD_LEN];
--	int err;
--
--	mlxsw_reg_ppad_pack(ppad_pl, false, 0);
--	err = mlxsw_reg_query(mlxsw_sx->core, MLXSW_REG(ppad), ppad_pl);
--	if (err)
--		return err;
--	mlxsw_reg_ppad_mac_memcpy_from(ppad_pl, dev->dev_addr);
--	/* The last byte value in base mac address is guaranteed
--	 * to be such it does not overflow when adding local_port
--	 * value.
--	 */
--	dev->dev_addr[ETH_ALEN - 1] += mlxsw_sx_port->local_port;
--	return 0;
--}
--
--static int mlxsw_sx_port_stp_state_set(struct mlxsw_sx_port *mlxsw_sx_port,
--				       u16 vid, enum mlxsw_reg_spms_state state)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char *spms_pl;
--	int err;
--
--	spms_pl = kmalloc(MLXSW_REG_SPMS_LEN, GFP_KERNEL);
--	if (!spms_pl)
--		return -ENOMEM;
--	mlxsw_reg_spms_pack(spms_pl, mlxsw_sx_port->local_port);
--	mlxsw_reg_spms_vid_pack(spms_pl, vid, state);
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(spms), spms_pl);
--	kfree(spms_pl);
--	return err;
--}
--
--static int mlxsw_sx_port_ib_speed_set(struct mlxsw_sx_port *mlxsw_sx_port,
--				      u16 speed, u16 width)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char ptys_pl[MLXSW_REG_PTYS_LEN];
--
--	mlxsw_reg_ptys_ib_pack(ptys_pl, mlxsw_sx_port->local_port, speed,
--			       width);
--	return mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(ptys), ptys_pl);
--}
--
--static int
--mlxsw_sx_port_speed_by_width_set(struct mlxsw_sx_port *mlxsw_sx_port, u8 width)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	u32 upper_speed = MLXSW_SX_PORT_BASE_SPEED * width;
--	char ptys_pl[MLXSW_REG_PTYS_LEN];
--	u32 eth_proto_admin;
--
--	eth_proto_admin = mlxsw_sx_to_ptys_upper_speed(upper_speed);
--	mlxsw_reg_ptys_eth_pack(ptys_pl, mlxsw_sx_port->local_port,
--				eth_proto_admin, true);
--	return mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(ptys), ptys_pl);
--}
--
--static int
--mlxsw_sx_port_mac_learning_mode_set(struct mlxsw_sx_port *mlxsw_sx_port,
--				    enum mlxsw_reg_spmlr_learn_mode mode)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_sx_port->mlxsw_sx;
--	char spmlr_pl[MLXSW_REG_SPMLR_LEN];
--
--	mlxsw_reg_spmlr_pack(spmlr_pl, mlxsw_sx_port->local_port, mode);
--	return mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(spmlr), spmlr_pl);
--}
--
--static int __mlxsw_sx_port_eth_create(struct mlxsw_sx *mlxsw_sx, u8 local_port,
--				      u8 module, u8 width)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port;
--	struct net_device *dev;
--	int err;
--
--	dev = alloc_etherdev(sizeof(struct mlxsw_sx_port));
--	if (!dev)
--		return -ENOMEM;
--	SET_NETDEV_DEV(dev, mlxsw_sx->bus_info->dev);
--	dev_net_set(dev, mlxsw_core_net(mlxsw_sx->core));
--	mlxsw_sx_port = netdev_priv(dev);
--	mlxsw_sx_port->dev = dev;
--	mlxsw_sx_port->mlxsw_sx = mlxsw_sx;
--	mlxsw_sx_port->local_port = local_port;
--	mlxsw_sx_port->mapping.module = module;
--
--	mlxsw_sx_port->pcpu_stats =
--		netdev_alloc_pcpu_stats(struct mlxsw_sx_port_pcpu_stats);
--	if (!mlxsw_sx_port->pcpu_stats) {
--		err = -ENOMEM;
--		goto err_alloc_stats;
--	}
--
--	dev->netdev_ops = &mlxsw_sx_port_netdev_ops;
--	dev->ethtool_ops = &mlxsw_sx_port_ethtool_ops;
--
--	err = mlxsw_sx_port_dev_addr_get(mlxsw_sx_port);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Unable to get port mac address\n",
--			mlxsw_sx_port->local_port);
--		goto err_dev_addr_get;
--	}
--
--	netif_carrier_off(dev);
--
--	dev->features |= NETIF_F_NETNS_LOCAL | NETIF_F_LLTX | NETIF_F_SG |
--			 NETIF_F_VLAN_CHALLENGED;
--
--	dev->min_mtu = 0;
--	dev->max_mtu = ETH_MAX_MTU;
--
--	/* Each packet needs to have a Tx header (metadata) on top all other
--	 * headers.
--	 */
--	dev->needed_headroom = MLXSW_TXHDR_LEN;
--
--	err = mlxsw_sx_port_system_port_mapping_set(mlxsw_sx_port);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set system port mapping\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_system_port_mapping_set;
--	}
--
--	err = mlxsw_sx_port_swid_set(mlxsw_sx_port, 0);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set SWID\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_swid_set;
--	}
--
--	err = mlxsw_sx_port_speed_by_width_set(mlxsw_sx_port, width);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set speed\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_speed_set;
--	}
--
--	err = mlxsw_sx_port_mtu_eth_set(mlxsw_sx_port, ETH_DATA_LEN);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set MTU\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_mtu_set;
--	}
--
--	err = mlxsw_sx_port_admin_status_set(mlxsw_sx_port, false);
--	if (err)
--		goto err_port_admin_status_set;
--
--	err = mlxsw_sx_port_stp_state_set(mlxsw_sx_port,
--					  MLXSW_PORT_DEFAULT_VID,
--					  MLXSW_REG_SPMS_STATE_FORWARDING);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set STP state\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_stp_state_set;
--	}
--
--	err = mlxsw_sx_port_mac_learning_mode_set(mlxsw_sx_port,
--						  MLXSW_REG_SPMLR_LEARN_MODE_DISABLE);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set MAC learning mode\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_mac_learning_mode_set;
--	}
--
--	err = register_netdev(dev);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to register netdev\n",
--			mlxsw_sx_port->local_port);
--		goto err_register_netdev;
--	}
--
--	mlxsw_core_port_eth_set(mlxsw_sx->core, mlxsw_sx_port->local_port,
--				mlxsw_sx_port, dev);
--	mlxsw_sx->ports[local_port] = mlxsw_sx_port;
--	return 0;
--
--err_register_netdev:
--err_port_mac_learning_mode_set:
--err_port_stp_state_set:
--err_port_admin_status_set:
--err_port_mtu_set:
--err_port_speed_set:
--	mlxsw_sx_port_swid_set(mlxsw_sx_port, MLXSW_PORT_SWID_DISABLED_PORT);
--err_port_swid_set:
--err_port_system_port_mapping_set:
--err_dev_addr_get:
--	free_percpu(mlxsw_sx_port->pcpu_stats);
--err_alloc_stats:
--	free_netdev(dev);
--	return err;
--}
--
--static int mlxsw_sx_port_eth_create(struct mlxsw_sx *mlxsw_sx, u8 local_port,
--				    u8 module, u8 width)
--{
--	int err;
--
--	err = mlxsw_core_port_init(mlxsw_sx->core, local_port,
--				   module + 1, false, 0, false, 0,
--				   mlxsw_sx->hw_id, sizeof(mlxsw_sx->hw_id));
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to init core port\n",
--			local_port);
--		return err;
--	}
--	err = __mlxsw_sx_port_eth_create(mlxsw_sx, local_port, module, width);
--	if (err)
--		goto err_port_create;
--
--	return 0;
--
--err_port_create:
--	mlxsw_core_port_fini(mlxsw_sx->core, local_port);
--	return err;
--}
--
--static void __mlxsw_sx_port_eth_remove(struct mlxsw_sx *mlxsw_sx, u8 local_port)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = mlxsw_sx->ports[local_port];
--
--	mlxsw_core_port_clear(mlxsw_sx->core, local_port, mlxsw_sx);
--	unregister_netdev(mlxsw_sx_port->dev); /* This calls ndo_stop */
--	mlxsw_sx->ports[local_port] = NULL;
--	mlxsw_sx_port_swid_set(mlxsw_sx_port, MLXSW_PORT_SWID_DISABLED_PORT);
--	free_percpu(mlxsw_sx_port->pcpu_stats);
--	free_netdev(mlxsw_sx_port->dev);
--}
--
--static bool mlxsw_sx_port_created(struct mlxsw_sx *mlxsw_sx, u8 local_port)
--{
--	return mlxsw_sx->ports[local_port] != NULL;
--}
--
--static int __mlxsw_sx_port_ib_create(struct mlxsw_sx *mlxsw_sx, u8 local_port,
--				     u8 module, u8 width)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port;
--	int err;
--
--	mlxsw_sx_port = kzalloc(sizeof(*mlxsw_sx_port), GFP_KERNEL);
--	if (!mlxsw_sx_port)
--		return -ENOMEM;
--	mlxsw_sx_port->mlxsw_sx = mlxsw_sx;
--	mlxsw_sx_port->local_port = local_port;
--	mlxsw_sx_port->mapping.module = module;
--
--	err = mlxsw_sx_port_system_port_mapping_set(mlxsw_sx_port);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set system port mapping\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_system_port_mapping_set;
--	}
--
--	/* Adding port to Infiniband swid (1) */
--	err = mlxsw_sx_port_swid_set(mlxsw_sx_port, 1);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set SWID\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_swid_set;
--	}
--
--	/* Expose the IB port number as it's front panel name */
--	err = mlxsw_sx_port_ib_port_set(mlxsw_sx_port, module + 1);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set IB port\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_ib_set;
--	}
--
--	/* Supports all speeds from SDR to FDR (bitmask) and support bus width
--	 * of 1x, 2x and 4x (3 bits bitmask)
--	 */
--	err = mlxsw_sx_port_ib_speed_set(mlxsw_sx_port,
--					 MLXSW_REG_PTYS_IB_SPEED_EDR - 1,
--					 BIT(3) - 1);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set speed\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_speed_set;
--	}
--
--	/* Change to the maximum MTU the device supports, the SMA will take
--	 * care of the active MTU
--	 */
--	err = mlxsw_sx_port_mtu_ib_set(mlxsw_sx_port, MLXSW_IB_DEFAULT_MTU);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to set MTU\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_mtu_set;
--	}
--
--	err = mlxsw_sx_port_admin_status_set(mlxsw_sx_port, true);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to change admin state to UP\n",
--			mlxsw_sx_port->local_port);
--		goto err_port_admin_set;
--	}
--
--	mlxsw_core_port_ib_set(mlxsw_sx->core, mlxsw_sx_port->local_port,
--			       mlxsw_sx_port);
--	mlxsw_sx->ports[local_port] = mlxsw_sx_port;
--	return 0;
--
--err_port_admin_set:
--err_port_mtu_set:
--err_port_speed_set:
--err_port_ib_set:
--	mlxsw_sx_port_swid_set(mlxsw_sx_port, MLXSW_PORT_SWID_DISABLED_PORT);
--err_port_swid_set:
--err_port_system_port_mapping_set:
--	kfree(mlxsw_sx_port);
--	return err;
--}
--
--static void __mlxsw_sx_port_ib_remove(struct mlxsw_sx *mlxsw_sx, u8 local_port)
--{
--	struct mlxsw_sx_port *mlxsw_sx_port = mlxsw_sx->ports[local_port];
--
--	mlxsw_core_port_clear(mlxsw_sx->core, local_port, mlxsw_sx);
--	mlxsw_sx->ports[local_port] = NULL;
--	mlxsw_sx_port_admin_status_set(mlxsw_sx_port, false);
--	mlxsw_sx_port_swid_set(mlxsw_sx_port, MLXSW_PORT_SWID_DISABLED_PORT);
--	kfree(mlxsw_sx_port);
--}
--
--static void __mlxsw_sx_port_remove(struct mlxsw_sx *mlxsw_sx, u8 local_port)
--{
--	enum devlink_port_type port_type =
--		mlxsw_core_port_type_get(mlxsw_sx->core, local_port);
--
--	if (port_type == DEVLINK_PORT_TYPE_ETH)
--		__mlxsw_sx_port_eth_remove(mlxsw_sx, local_port);
--	else if (port_type == DEVLINK_PORT_TYPE_IB)
--		__mlxsw_sx_port_ib_remove(mlxsw_sx, local_port);
--}
--
--static void mlxsw_sx_port_remove(struct mlxsw_sx *mlxsw_sx, u8 local_port)
--{
--	__mlxsw_sx_port_remove(mlxsw_sx, local_port);
--	mlxsw_core_port_fini(mlxsw_sx->core, local_port);
--}
--
--static void mlxsw_sx_ports_remove(struct mlxsw_sx *mlxsw_sx)
--{
--	int i;
--
--	for (i = 1; i < mlxsw_core_max_ports(mlxsw_sx->core); i++)
--		if (mlxsw_sx_port_created(mlxsw_sx, i))
--			mlxsw_sx_port_remove(mlxsw_sx, i);
--	kfree(mlxsw_sx->ports);
--	mlxsw_sx->ports = NULL;
--}
--
--static int mlxsw_sx_ports_create(struct mlxsw_sx *mlxsw_sx)
--{
--	unsigned int max_ports = mlxsw_core_max_ports(mlxsw_sx->core);
--	size_t alloc_size;
--	u8 module, width;
--	int i;
--	int err;
--
--	alloc_size = sizeof(struct mlxsw_sx_port *) * max_ports;
--	mlxsw_sx->ports = kzalloc(alloc_size, GFP_KERNEL);
--	if (!mlxsw_sx->ports)
--		return -ENOMEM;
--
--	for (i = 1; i < max_ports; i++) {
--		err = mlxsw_sx_port_module_info_get(mlxsw_sx, i, &module,
--						    &width);
--		if (err)
--			goto err_port_module_info_get;
--		if (!width)
--			continue;
--		err = mlxsw_sx_port_eth_create(mlxsw_sx, i, module, width);
--		if (err)
--			goto err_port_create;
--	}
--	return 0;
--
--err_port_create:
--err_port_module_info_get:
--	for (i--; i >= 1; i--)
--		if (mlxsw_sx_port_created(mlxsw_sx, i))
--			mlxsw_sx_port_remove(mlxsw_sx, i);
--	kfree(mlxsw_sx->ports);
--	mlxsw_sx->ports = NULL;
--	return err;
--}
--
--static void mlxsw_sx_pude_eth_event_func(struct mlxsw_sx_port *mlxsw_sx_port,
--					 enum mlxsw_reg_pude_oper_status status)
--{
--	if (status == MLXSW_PORT_OPER_STATUS_UP) {
--		netdev_info(mlxsw_sx_port->dev, "link up\n");
--		netif_carrier_on(mlxsw_sx_port->dev);
--	} else {
--		netdev_info(mlxsw_sx_port->dev, "link down\n");
--		netif_carrier_off(mlxsw_sx_port->dev);
--	}
--}
--
--static void mlxsw_sx_pude_ib_event_func(struct mlxsw_sx_port *mlxsw_sx_port,
--					enum mlxsw_reg_pude_oper_status status)
--{
--	if (status == MLXSW_PORT_OPER_STATUS_UP)
--		pr_info("ib link for port %d - up\n",
--			mlxsw_sx_port->mapping.module + 1);
--	else
--		pr_info("ib link for port %d - down\n",
--			mlxsw_sx_port->mapping.module + 1);
--}
--
--static void mlxsw_sx_pude_event_func(const struct mlxsw_reg_info *reg,
--				     char *pude_pl, void *priv)
--{
--	struct mlxsw_sx *mlxsw_sx = priv;
--	struct mlxsw_sx_port *mlxsw_sx_port;
--	enum mlxsw_reg_pude_oper_status status;
--	enum devlink_port_type port_type;
--	u8 local_port;
--
--	local_port = mlxsw_reg_pude_local_port_get(pude_pl);
--	mlxsw_sx_port = mlxsw_sx->ports[local_port];
--	if (!mlxsw_sx_port) {
--		dev_warn(mlxsw_sx->bus_info->dev, "Port %d: Link event received for non-existent port\n",
--			 local_port);
--		return;
--	}
--
--	status = mlxsw_reg_pude_oper_status_get(pude_pl);
--	port_type = mlxsw_core_port_type_get(mlxsw_sx->core, local_port);
--	if (port_type == DEVLINK_PORT_TYPE_ETH)
--		mlxsw_sx_pude_eth_event_func(mlxsw_sx_port, status);
--	else if (port_type == DEVLINK_PORT_TYPE_IB)
--		mlxsw_sx_pude_ib_event_func(mlxsw_sx_port, status);
--}
--
--static void mlxsw_sx_rx_listener_func(struct sk_buff *skb, u8 local_port,
--				      void *priv)
--{
--	struct mlxsw_sx *mlxsw_sx = priv;
--	struct mlxsw_sx_port *mlxsw_sx_port = mlxsw_sx->ports[local_port];
--	struct mlxsw_sx_port_pcpu_stats *pcpu_stats;
--
--	if (unlikely(!mlxsw_sx_port)) {
--		dev_warn_ratelimited(mlxsw_sx->bus_info->dev, "Port %d: skb received for non-existent port\n",
--				     local_port);
--		return;
--	}
--
--	skb->dev = mlxsw_sx_port->dev;
--
--	pcpu_stats = this_cpu_ptr(mlxsw_sx_port->pcpu_stats);
--	u64_stats_update_begin(&pcpu_stats->syncp);
--	pcpu_stats->rx_packets++;
--	pcpu_stats->rx_bytes += skb->len;
--	u64_stats_update_end(&pcpu_stats->syncp);
--
--	skb->protocol = eth_type_trans(skb, skb->dev);
--	netif_receive_skb(skb);
--}
--
--static int mlxsw_sx_port_type_set(struct mlxsw_core *mlxsw_core, u8 local_port,
--				  enum devlink_port_type new_type)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_core_driver_priv(mlxsw_core);
--	u8 module, width;
--	int err;
--
--	if (!mlxsw_sx->ports || !mlxsw_sx->ports[local_port]) {
--		dev_err(mlxsw_sx->bus_info->dev, "Port number \"%d\" does not exist\n",
--			local_port);
--		return -EINVAL;
--	}
--
--	if (new_type == DEVLINK_PORT_TYPE_AUTO)
--		return -EOPNOTSUPP;
--
--	__mlxsw_sx_port_remove(mlxsw_sx, local_port);
--	err = mlxsw_sx_port_module_info_get(mlxsw_sx, local_port, &module,
--					    &width);
--	if (err)
--		goto err_port_module_info_get;
--
--	if (new_type == DEVLINK_PORT_TYPE_ETH)
--		err = __mlxsw_sx_port_eth_create(mlxsw_sx, local_port, module,
--						 width);
--	else if (new_type == DEVLINK_PORT_TYPE_IB)
--		err = __mlxsw_sx_port_ib_create(mlxsw_sx, local_port, module,
--						width);
--
--err_port_module_info_get:
--	return err;
--}
--
--enum {
--	MLXSW_REG_HTGT_TRAP_GROUP_SX2_RX = 1,
--	MLXSW_REG_HTGT_TRAP_GROUP_SX2_CTRL = 2,
--};
--
--#define MLXSW_SX_RXL(_trap_id) \
--	MLXSW_RXL(mlxsw_sx_rx_listener_func, _trap_id, TRAP_TO_CPU,	\
--		  false, SX2_RX, FORWARD)
--
--static const struct mlxsw_listener mlxsw_sx_listener[] = {
--	MLXSW_EVENTL(mlxsw_sx_pude_event_func, PUDE, EMAD),
--	MLXSW_SX_RXL(FDB_MC),
--	MLXSW_SX_RXL(STP),
--	MLXSW_SX_RXL(LACP),
--	MLXSW_SX_RXL(EAPOL),
--	MLXSW_SX_RXL(LLDP),
--	MLXSW_SX_RXL(MMRP),
--	MLXSW_SX_RXL(MVRP),
--	MLXSW_SX_RXL(RPVST),
--	MLXSW_SX_RXL(DHCP),
--	MLXSW_SX_RXL(IGMP_QUERY),
--	MLXSW_SX_RXL(IGMP_V1_REPORT),
--	MLXSW_SX_RXL(IGMP_V2_REPORT),
--	MLXSW_SX_RXL(IGMP_V2_LEAVE),
--	MLXSW_SX_RXL(IGMP_V3_REPORT),
--};
--
--static int mlxsw_sx_traps_init(struct mlxsw_sx *mlxsw_sx)
--{
--	char htgt_pl[MLXSW_REG_HTGT_LEN];
--	int i;
--	int err;
--
--	mlxsw_reg_htgt_pack(htgt_pl, MLXSW_REG_HTGT_TRAP_GROUP_SX2_RX,
--			    MLXSW_REG_HTGT_INVALID_POLICER,
--			    MLXSW_REG_HTGT_DEFAULT_PRIORITY,
--			    MLXSW_REG_HTGT_DEFAULT_TC);
--	mlxsw_reg_htgt_local_path_rdq_set(htgt_pl,
--					  MLXSW_REG_HTGT_LOCAL_PATH_RDQ_SX2_RX);
--
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(htgt), htgt_pl);
--	if (err)
--		return err;
--
--	mlxsw_reg_htgt_pack(htgt_pl, MLXSW_REG_HTGT_TRAP_GROUP_SX2_CTRL,
--			    MLXSW_REG_HTGT_INVALID_POLICER,
--			    MLXSW_REG_HTGT_DEFAULT_PRIORITY,
--			    MLXSW_REG_HTGT_DEFAULT_TC);
--	mlxsw_reg_htgt_local_path_rdq_set(htgt_pl,
--					MLXSW_REG_HTGT_LOCAL_PATH_RDQ_SX2_CTRL);
--
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(htgt), htgt_pl);
--	if (err)
--		return err;
--
--	for (i = 0; i < ARRAY_SIZE(mlxsw_sx_listener); i++) {
--		err = mlxsw_core_trap_register(mlxsw_sx->core,
--					       &mlxsw_sx_listener[i],
--					       mlxsw_sx);
--		if (err)
--			goto err_listener_register;
--
--	}
--	return 0;
--
--err_listener_register:
--	for (i--; i >= 0; i--) {
--		mlxsw_core_trap_unregister(mlxsw_sx->core,
--					   &mlxsw_sx_listener[i],
--					   mlxsw_sx);
--	}
--	return err;
--}
--
--static void mlxsw_sx_traps_fini(struct mlxsw_sx *mlxsw_sx)
--{
--	int i;
--
--	for (i = 0; i < ARRAY_SIZE(mlxsw_sx_listener); i++) {
--		mlxsw_core_trap_unregister(mlxsw_sx->core,
--					   &mlxsw_sx_listener[i],
--					   mlxsw_sx);
--	}
--}
--
--static int mlxsw_sx_flood_init(struct mlxsw_sx *mlxsw_sx)
--{
--	char sfgc_pl[MLXSW_REG_SFGC_LEN];
--	char sgcr_pl[MLXSW_REG_SGCR_LEN];
--	char *sftr_pl;
--	int err;
--
--	/* Configure a flooding table, which includes only CPU port. */
--	sftr_pl = kmalloc(MLXSW_REG_SFTR_LEN, GFP_KERNEL);
--	if (!sftr_pl)
--		return -ENOMEM;
--	mlxsw_reg_sftr_pack(sftr_pl, 0, 0, MLXSW_REG_SFGC_TABLE_TYPE_SINGLE, 0,
--			    MLXSW_PORT_CPU_PORT, true);
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(sftr), sftr_pl);
--	kfree(sftr_pl);
--	if (err)
--		return err;
--
--	/* Flood different packet types using the flooding table. */
--	mlxsw_reg_sfgc_pack(sfgc_pl,
--			    MLXSW_REG_SFGC_TYPE_UNKNOWN_UNICAST,
--			    MLXSW_REG_SFGC_BRIDGE_TYPE_1Q_FID,
--			    MLXSW_REG_SFGC_TABLE_TYPE_SINGLE,
--			    0);
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(sfgc), sfgc_pl);
--	if (err)
--		return err;
--
--	mlxsw_reg_sfgc_pack(sfgc_pl,
--			    MLXSW_REG_SFGC_TYPE_BROADCAST,
--			    MLXSW_REG_SFGC_BRIDGE_TYPE_1Q_FID,
--			    MLXSW_REG_SFGC_TABLE_TYPE_SINGLE,
--			    0);
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(sfgc), sfgc_pl);
--	if (err)
--		return err;
--
--	mlxsw_reg_sfgc_pack(sfgc_pl,
--			    MLXSW_REG_SFGC_TYPE_UNREGISTERED_MULTICAST_NON_IP,
--			    MLXSW_REG_SFGC_BRIDGE_TYPE_1Q_FID,
--			    MLXSW_REG_SFGC_TABLE_TYPE_SINGLE,
--			    0);
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(sfgc), sfgc_pl);
--	if (err)
--		return err;
--
--	mlxsw_reg_sfgc_pack(sfgc_pl,
--			    MLXSW_REG_SFGC_TYPE_UNREGISTERED_MULTICAST_IPV6,
--			    MLXSW_REG_SFGC_BRIDGE_TYPE_1Q_FID,
--			    MLXSW_REG_SFGC_TABLE_TYPE_SINGLE,
--			    0);
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(sfgc), sfgc_pl);
--	if (err)
--		return err;
--
--	mlxsw_reg_sfgc_pack(sfgc_pl,
--			    MLXSW_REG_SFGC_TYPE_UNREGISTERED_MULTICAST_IPV4,
--			    MLXSW_REG_SFGC_BRIDGE_TYPE_1Q_FID,
--			    MLXSW_REG_SFGC_TABLE_TYPE_SINGLE,
--			    0);
--	err = mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(sfgc), sfgc_pl);
--	if (err)
--		return err;
--
--	mlxsw_reg_sgcr_pack(sgcr_pl, true);
--	return mlxsw_reg_write(mlxsw_sx->core, MLXSW_REG(sgcr), sgcr_pl);
--}
--
--static int mlxsw_sx_basic_trap_groups_set(struct mlxsw_core *mlxsw_core)
--{
--	char htgt_pl[MLXSW_REG_HTGT_LEN];
--
--	mlxsw_reg_htgt_pack(htgt_pl, MLXSW_REG_HTGT_TRAP_GROUP_EMAD,
--			    MLXSW_REG_HTGT_INVALID_POLICER,
--			    MLXSW_REG_HTGT_DEFAULT_PRIORITY,
--			    MLXSW_REG_HTGT_DEFAULT_TC);
--	mlxsw_reg_htgt_swid_set(htgt_pl, MLXSW_PORT_SWID_ALL_SWIDS);
--	mlxsw_reg_htgt_local_path_rdq_set(htgt_pl,
--					MLXSW_REG_HTGT_LOCAL_PATH_RDQ_SX2_EMAD);
--	return mlxsw_reg_write(mlxsw_core, MLXSW_REG(htgt), htgt_pl);
--}
--
--static int mlxsw_sx_init(struct mlxsw_core *mlxsw_core,
--			 const struct mlxsw_bus_info *mlxsw_bus_info,
--			 struct netlink_ext_ack *extack)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_core_driver_priv(mlxsw_core);
--	int err;
--
--	mlxsw_sx->core = mlxsw_core;
--	mlxsw_sx->bus_info = mlxsw_bus_info;
--
--	err = mlxsw_sx_hw_id_get(mlxsw_sx);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Failed to get switch HW ID\n");
--		return err;
--	}
--
--	err = mlxsw_sx_ports_create(mlxsw_sx);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Failed to create ports\n");
--		return err;
--	}
--
--	err = mlxsw_sx_traps_init(mlxsw_sx);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Failed to set traps\n");
--		goto err_listener_register;
--	}
--
--	err = mlxsw_sx_flood_init(mlxsw_sx);
--	if (err) {
--		dev_err(mlxsw_sx->bus_info->dev, "Failed to initialize flood tables\n");
--		goto err_flood_init;
--	}
--
--	return 0;
--
--err_flood_init:
--	mlxsw_sx_traps_fini(mlxsw_sx);
--err_listener_register:
--	mlxsw_sx_ports_remove(mlxsw_sx);
--	return err;
--}
--
--static void mlxsw_sx_fini(struct mlxsw_core *mlxsw_core)
--{
--	struct mlxsw_sx *mlxsw_sx = mlxsw_core_driver_priv(mlxsw_core);
--
--	mlxsw_sx_traps_fini(mlxsw_sx);
--	mlxsw_sx_ports_remove(mlxsw_sx);
--}
--
--static const struct mlxsw_config_profile mlxsw_sx_config_profile = {
--	.used_max_vepa_channels		= 1,
--	.max_vepa_channels		= 0,
--	.used_max_mid			= 1,
--	.max_mid			= 7000,
--	.used_max_pgt			= 1,
--	.max_pgt			= 0,
--	.used_max_system_port		= 1,
--	.max_system_port		= 48000,
--	.used_max_vlan_groups		= 1,
--	.max_vlan_groups		= 127,
--	.used_max_regions		= 1,
--	.max_regions			= 400,
--	.used_flood_tables		= 1,
--	.max_flood_tables		= 2,
--	.max_vid_flood_tables		= 1,
--	.used_flood_mode		= 1,
--	.flood_mode			= 3,
--	.used_max_ib_mc			= 1,
--	.max_ib_mc			= 6,
--	.used_max_pkey			= 1,
--	.max_pkey			= 0,
--	.swid_config			= {
--		{
--			.used_type	= 1,
--			.type		= MLXSW_PORT_SWID_TYPE_ETH,
--		},
--		{
--			.used_type	= 1,
--			.type		= MLXSW_PORT_SWID_TYPE_IB,
--		}
--	},
--};
--
--static struct mlxsw_driver mlxsw_sx_driver = {
--	.kind			= mlxsw_sx_driver_name,
--	.priv_size		= sizeof(struct mlxsw_sx),
--	.init			= mlxsw_sx_init,
--	.fini			= mlxsw_sx_fini,
--	.basic_trap_groups_set	= mlxsw_sx_basic_trap_groups_set,
--	.txhdr_construct	= mlxsw_sx_txhdr_construct,
--	.txhdr_len		= MLXSW_TXHDR_LEN,
--	.profile		= &mlxsw_sx_config_profile,
--	.port_type_set		= mlxsw_sx_port_type_set,
--};
--
--static const struct pci_device_id mlxsw_sx_pci_id_table[] = {
--	{PCI_VDEVICE(MELLANOX, PCI_DEVICE_ID_MELLANOX_SWITCHX2), 0},
--	{0, },
--};
--
--static struct pci_driver mlxsw_sx_pci_driver = {
--	.name = mlxsw_sx_driver_name,
--	.id_table = mlxsw_sx_pci_id_table,
--};
--
--static int __init mlxsw_sx_module_init(void)
--{
--	int err;
--
--	err = mlxsw_core_driver_register(&mlxsw_sx_driver);
--	if (err)
--		return err;
--
--	err = mlxsw_pci_driver_register(&mlxsw_sx_pci_driver);
--	if (err)
--		goto err_pci_driver_register;
--
--	return 0;
--
--err_pci_driver_register:
--	mlxsw_core_driver_unregister(&mlxsw_sx_driver);
--	return err;
--}
--
--static void __exit mlxsw_sx_module_exit(void)
--{
--	mlxsw_pci_driver_unregister(&mlxsw_sx_pci_driver);
--	mlxsw_core_driver_unregister(&mlxsw_sx_driver);
--}
--
--module_init(mlxsw_sx_module_init);
--module_exit(mlxsw_sx_module_exit);
--
--MODULE_LICENSE("Dual BSD/GPL");
--MODULE_AUTHOR("Jiri Pirko <jiri@mellanox.com>");
--MODULE_DESCRIPTION("Mellanox SwitchX-2 driver");
--MODULE_DEVICE_TABLE(pci, mlxsw_sx_pci_id_table);
--- 
-2.31.1
+Hmm, indeed, I missed that check (we don't use ETF currently). I'm not 
+sure of the best way forward, but here are a few thoughts:
+. The problem only arises for full-offload taprio, not for the software 
+or TxTime-assisted cases.
+. I'm not sure mixing taprio(full-offload) with etf(no-offload) is very 
+useful, at least with small gate intervals: it's likely you will miss 
+your window when trying to send a packet at exactly the right time in 
+software (I am usually testing taprio with a 2ms period and a 4µs 
+interval for the RT stream).
+. That leaves the case of taprio(full-offload) with etf(offload). Right 
+now with the current stmmac driver config, a packet whose tstamp is 
+outside its gate interval will be sent on the next interval (and block 
+the queue).
+. The stmmac hardware supports an expiryTime, currently unsupported in 
+the stmmac driver, which I think could be used to drop packets whose 
+tstamps are wrong (the packet would be dropped once the tstamp 
+"expires"). We'd need to add an API for configuration though, and it 
+should be noted that the stmmac config for this is global to the MAC, 
+not per-queue (so a config through sch-etf would affect all queues).
+. In general using taprio(full-offload) with etf(offload) will incur a 
+small latency penalty: you need to post the packet before the ETF qdisc 
+wakes up (plus some margin), and the ETF qdisc must wake up before the 
+tx stamp (plus some margin). If possible (number of streams/apps < 
+number of hw queues), it would be better to just use 
+taprio(full-offload) alone, since the app will need to post the packet 
+before the gate opens (so plus one margin, not 2).
+
+
+>>
+>> My biggest problem with this patch is that unless the application is
+>> very careful that WARN_ON_ONCE(1) will trigger. E.g. if softirq is
+>> servicing the queue when the application sends - the qdisc will not
+>> be bypassed, right?
+
+See above, unless I'm mistaken the "root" qdisc is never 
+enqueued/dequeued for multi-queue aware qdiscs.
+
+>>> I am now thinking if this idea locks us out of anything.
+>>>
+>>> Anyway, a nicer alternative would exist if we had a way to tell the core
+>>> "this qdisc should be bypassed" (i.e. don't call enqueue()/dequeue())
+>>> after init() runs.
+>>
+
+Again, I don't think enqueue/dequeue are called unless the HW queues 
+point to the root qdisc. But this does raise an interesting point: the 
+"scheduling" issue I observed was on the dequeue side, when all the 
+queues were dequeued within the RT process context. If we could point 
+the enqueue side to the taprio qdisc and the dequeue side to the child 
+qdiscs, that would probably work (but I fear that would be a significant 
+change in the way the qdisc code works).
+
+>> I don't think calling enqueue() and dequeue() is a problem. The problem
+>> is that RT process does unrelated work.
+> 
+> That is true. But this seems like a much bigger (or at least more
+> "core") issue.
+> 
+> 
+> Cheers,
+> 
 
