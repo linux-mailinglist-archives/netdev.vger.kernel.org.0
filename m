@@ -2,117 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1E94382270
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 03:01:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE9D9382296
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 03:55:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231739AbhEQBDI convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 16 May 2021 21:03:08 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:57664 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229948AbhEQBDG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 May 2021 21:03:06 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 14H11UQr8024911, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 14H11UQr8024911
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 17 May 2021 09:01:30 +0800
-Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 17 May 2021 09:01:29 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 17 May 2021 09:01:28 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74]) by
- RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74%5]) with mapi id
- 15.01.2106.013; Mon, 17 May 2021 09:01:28 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Alan Stern <stern@rowland.harvard.edu>
-CC:     syzbot <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: RE: [syzbot] WARNING in rtl8152_probe
-Thread-Topic: [syzbot] WARNING in rtl8152_probe
-Thread-Index: AQHXRxMNo04dZcfiN0eNJrSRsQsh6qrguwNggAA4ewCAAVQHMP//vp6AgACQRgCAAAIjgIAESHmw
-Date:   Mon, 17 May 2021 01:01:28 +0000
-Message-ID: <547984d34f58406aa2e37861d7e8a44d@realtek.com>
-References: <0000000000009df1b605c21ecca8@google.com>
- <7de0296584334229917504da50a0ac38@realtek.com>
- <20210513142552.GA967812@rowland.harvard.edu>
- <bde8fc1229ec41e99ec77f112cc5ee01@realtek.com> <YJ4dU3yCwd2wMq5f@kroah.com>
- <bddf302301f5420db0fa049c895c9b14@realtek.com>
- <20210514153253.GA1007561@rowland.harvard.edu>
-In-Reply-To: <20210514153253.GA1007561@rowland.harvard.edu>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.203]
-x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/5/16_=3F=3F_11:41:00?=
-x-kse-attachment-filter-triggered-rules: Clean
-x-kse-attachment-filter-triggered-filters: Clean
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S233165AbhEQBuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 May 2021 21:50:05 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:3701 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232322AbhEQBuB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 May 2021 21:50:01 -0400
+Received: from dggems705-chm.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Fk2605TBhz16Qx6;
+        Mon, 17 May 2021 09:46:00 +0800 (CST)
+Received: from dggema704-chm.china.huawei.com (10.3.20.68) by
+ dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Mon, 17 May 2021 09:48:44 +0800
+Received: from [10.69.38.207] (10.69.38.207) by dggema704-chm.china.huawei.com
+ (10.3.20.68) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 17
+ May 2021 09:48:44 +0800
+Subject: Re: [PATCH 07/34] net: cadence: macb_ptp: Demote non-compliant
+ kernel-doc headers
+To:     <Nicolas.Ferre@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+References: <1621076039-53986-1-git-send-email-shenyang39@huawei.com>
+ <1621076039-53986-8-git-send-email-shenyang39@huawei.com>
+ <bbfb694c-5d48-137c-e394-4d718887f03d@microchip.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <Claudiu.Beznea@microchip.com>
+From:   Yang Shen <shenyang39@huawei.com>
+Message-ID: <d7dd358d-1500-a2c9-e29f-bc0e0d8ef59c@huawei.com>
+Date:   Mon, 17 May 2021 09:48:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/17/2021 00:47:47
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163679 [May 17 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 445 445 d5f7ae5578b0f01c45f955a2a751ac25953290c9
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 05/17/2021 00:49:00
+In-Reply-To: <bbfb694c-5d48-137c-e394-4d718887f03d@microchip.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.38.207]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggema704-chm.china.huawei.com (10.3.20.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alan Stern <stern@rowland.harvard.edu>
-> Sent: Friday, May 14, 2021 11:33 PM
-[...]
-> The real motivation here, which nobody has mentioned explicitly yet, is
-> that the driver needs to be careful enough that it won't crash no matter
-> what bizarre, malfunctioning, or malicious device is attached.
-> 
-> Even if a device isn't malicious, if it is buggy, broken, or
-> malfunctioning in some way then it can present input that a normal
-> device would never generate.  If the driver isn't prepared to handle
-> this unusual input, it may crash.  That is specifically what we want to
-> avoid.
-> 
-> So if a peculiar emulated device created by syzbot is capable of
-> crashing the driver, then somewhere there is a bug which needs to be
-> fixed.  It's true that fixing all these bugs might not protect against a
-> malicious device which deliberately behaves in an apparently reasonable
-> manner.  But it does reduce the attack surface.
 
-Thanks for your response.
-I will add some checks.
 
-Best Regards,
-Hayes
+On 2021/5/15 20:46, Nicolas.Ferre@microchip.com wrote:
+> On 15/05/2021 at 12:53, Yang Shen wrote:
+>> Fixes the following W=1 kernel build warning(s):
+>>
+>>   drivers/net/ethernet/cadence/macb_ptp.c:3: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>>
+>> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+>
+> Ok, if it raises a warning.
+>
+> But I would prefer that you add drivers/net/ethernet/cadence/macb_pci.c
+> with same change to a combined patch.
+>
+> Regards,
+>    Nicolas
+>
 
+OK，The compiler missed this warning at 
+drivers/net/ethernet/cadence/macb_pci.c.
+I'll fix this in the next version.
+
+Thanks,
+     Yang
+
+>
+>> Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
+>> Signed-off-by: Yang Shen <shenyang39@huawei.com>
+>> ---
+>>   drivers/net/ethernet/cadence/macb_ptp.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
+>> index 283918a..5c368a9 100644
+>> --- a/drivers/net/ethernet/cadence/macb_ptp.c
+>> +++ b/drivers/net/ethernet/cadence/macb_ptp.c
+>> @@ -1,5 +1,5 @@
+>>   // SPDX-License-Identifier: GPL-2.0-only
+>> -/**
+>> +/*
+>>    * 1588 PTP support for Cadence GEM device.
+>>    *
+>>    * Copyright (C) 2017 Cadence Design Systems - https://www.cadence.com
+>> --
+>> 2.7.4
+>>
+>
+>
