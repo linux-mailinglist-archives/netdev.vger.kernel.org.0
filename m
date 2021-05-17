@@ -2,135 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ABBC383A98
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 18:57:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED400383B19
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 19:19:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239367AbhEQQ7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 12:59:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28194 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239941AbhEQQ7A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 12:59:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621270663;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PWn0ER8ktL8CjGxRv5Ynu626ORHTDXR+dt3CTUoFfXU=;
-        b=iXQ5GxxT5xQROIGzbnEknDB2SENtKVKpHWfVNiBGSkyJ3RXoU2jxzvMgH9txJJsZAKFEC8
-        bOp5ktrfSFl+9bqR+4BSp5n1hQEGhX0kKcTe84seDB3iudVkA1TJkDVvBZEmj2euzUiZoV
-        onLQ8WOOMUWumOmYk34JnMudFqzK4EI=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-74-veG0RX1MO3-kdwgcT0OC4A-1; Mon, 17 May 2021 12:57:40 -0400
-X-MC-Unique: veG0RX1MO3-kdwgcT0OC4A-1
-Received: by mail-lj1-f200.google.com with SMTP id x26-20020a2e9c9a0000b02900eaf62d380eso3378615lji.2
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 09:57:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PWn0ER8ktL8CjGxRv5Ynu626ORHTDXR+dt3CTUoFfXU=;
-        b=pZkoi9UBYIyX0dgY3zOQF2+VLnr9xLJIXYK/P0H3+WQqBIg4urcTxZBKPp7wVS8xex
-         gXaAukvHHB8s5a2vhujFdtB5PWpjcOzAHq/mizOzIucqBnyB2TAZaWjhk9fXFK107I36
-         rotXXcGrEAEgdTnt0GfsFJotI3UYgCGRlNQqMtfqRxCSpNq43HjC8ZCqAVAG4++oVTvw
-         5+1gxPAIeihT/FD81ufd9Ftrj3YZBnYe50Q52W0r9+CYofK6MbxcH5pNb7AnnatezI9Y
-         aPdzId0p1QLBynQKRxPZJ2YMQ/TLR+18SLpEbda+RVEhDr4L/YXsjXGkvAeW2k2xkVzV
-         zXkw==
-X-Gm-Message-State: AOAM530zCJouqBOSNiXvDjIhI0p3LucqPI07uUwJtjt39gQNxCkCP3Xm
-        SaPZoGJSCAjGUXwkUv4ej8/ilPqnp3SvB8OzG/4H3NfGbAJlWI1XlofMP86kw6xGXkRGHojwvvv
-        ZCYb95HI0NU9Pkv1FdlYtqeoME6W9Hc2+
-X-Received: by 2002:ac2:51ce:: with SMTP id u14mr93681lfm.252.1621270658865;
-        Mon, 17 May 2021 09:57:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzyffO4JpeGGpWTWQd6pBCcoqe0gRG4gxJB9gvjMRQo0SkkR936sREfwD/ThH7qQxY0d+BxlHTLIVDrxnuu2xs=
-X-Received: by 2002:ac2:51ce:: with SMTP id u14mr93653lfm.252.1621270658676;
- Mon, 17 May 2021 09:57:38 -0700 (PDT)
+        id S236086AbhEQRUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 13:20:55 -0400
+Received: from azhdrrw-ex01.nvidia.com ([20.51.104.162]:1231 "EHLO
+        AZHDRRW-EX01.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232996AbhEQRUz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 13:20:55 -0400
+X-Greylist: delayed 902 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 May 2021 13:20:55 EDT
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
+ by mxs.oss.nvidia.com (10.13.234.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.858.12; Mon, 17 May 2021 10:04:35 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Kc9PO3Dr+6wo8MgGCKgMdAdWJmdT4yh9tshwWM73YMjcV4i7L9j5+FvE3NS3nQkN/P0HOBiNPuwfPA8/AyfiIG+ZympM1QcCOvoFOWqvQjqq7xzMYZU4fNR5tePi3VKcjUjFrXQ/FvprgiFfptErDkQhF1b9ywONqSseCl7STTSoX+ZCep0plwoz+eVauDe3lgg0voavTo/mtw+bHQs5QKEUC+8J2+r8aIUijAV8g4IvOKGSa7rXZpdjeWy/Egw9Yn3vxyQcrvXeU6lcIXQ2/BU7DlsjBLkulMBISAoJ6aO30BGCgnTRJ5mqwmXwGuRobKSlldedoNRlSc9pIFCsZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GROP0DM8oiw573UiU15OuwADhxQU+clcvCY2c00iqQU=;
+ b=OFNM+mmJ1oEKdKSs4U0+sFVTBXOc3cH+1CBSuL/9CgThyiOoIF1p0OyWIGoK/uBioLAVbmIxbMNOzCnE0BlmyUX7tMw8ly59F+HYuHNeYYrkGhug1i3tUS+in+DR0DB8Mo6b8mIplHmwjbVP+wxtbjbb56mhKy9HjafCpV0kFcRVLsGc/FSqomy7/JumoOuDouv1WFjD6Gm7Py6IGI7WSaIEekU/a1oVMTve+ynjzldY0OqBhXEcINkA6IuFPzVeN1bGymQkSWmrAAJ/YwJmGG1XWsEdy5+HaxnxZbC7VpaFpWp41gCSXQZd4uwyUpIbND0sQ7SURDOJw67uPY6ssA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GROP0DM8oiw573UiU15OuwADhxQU+clcvCY2c00iqQU=;
+ b=OPabxaDq+3PqH2fO38REMnfsJ3vjpbGynIWT4Cwek3LLg7BfKLVLLfERKqoWp3Vl+JRPZrd1dw5PKFURNtMBWhGvoAs4XH4w8Zv/Gnmq3ZPnixZwW21V35d5jelDX4VZ628lsKv2sY5kCEwlPhkVm3lUpkoUHcwQOkwKU3wBZnHMcMqsYF9ZseZniqxE4EomeSi3+lHxkdjC7qHpt/q0ipSOaWWaOgpVknBuARJyikhEBuvQ3iXpBF+o6lU60HnsnXGChN8dBogqfSheOUTJhkDBNlyLCcU/KGb9yWKUegLf4mdD4BKTOIu/00yNXtDfEkxkAhw3egCxXczG9/Dw8g==
+Received: from DM6PR03CA0102.namprd03.prod.outlook.com (2603:10b6:5:333::35)
+ by CH0PR12MB5369.namprd12.prod.outlook.com (2603:10b6:610:d4::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.26; Mon, 17 May
+ 2021 17:04:33 +0000
+Received: from DM6NAM11FT021.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:333:cafe::f1) by DM6PR03CA0102.outlook.office365.com
+ (2603:10b6:5:333::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend
+ Transport; Mon, 17 May 2021 17:04:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT021.mail.protection.outlook.com (10.13.173.76) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4129.25 via Frontend Transport; Mon, 17 May 2021 17:04:33 +0000
+Received: from shredder.mellanox.com (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 17 May
+ 2021 17:04:29 +0000
+From:   Ido Schimmel <idosch@OSS.NVIDIA.COM>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@OSS.NVIDIA.COM>,
+        <petrm@OSS.NVIDIA.COM>, <danieller@OSS.NVIDIA.COM>,
+        <amcohen@OSS.NVIDIA.COM>, <mlxsw@OSS.NVIDIA.COM>,
+        Ido Schimmel <idosch@OSS.NVIDIA.COM>
+Subject: [PATCH net-next 00/11] mlxsw: Various updates
+Date:   Mon, 17 May 2021 20:03:50 +0300
+Message-ID: <20210517170401.188563-1-idosch@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210501021832.743094-1-jesse.brandeburg@intel.com>
- <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com> <20210504092340.00006c61@intel.com>
-In-Reply-To: <20210504092340.00006c61@intel.com>
-From:   Nitesh Lal <nilal@redhat.com>
-Date:   Mon, 17 May 2021 12:57:26 -0400
-Message-ID: <CAFki+LmR-o+Fng21ggy48FUX7RhjjpjO87dn3Ld+L4BK2pSRZg@mail.gmail.com>
-Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when
- setting the hint
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "frederic@kernel.org" <frederic@kernel.org>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
-        Alex Belits <abelits@marvell.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com,
-        Marc Zyngier <maz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f20e816d-cd85-4bcf-69c5-08d91955d80f
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5369:
+X-Microsoft-Antispam-PRVS: <CH0PR12MB53696DC63ECE3661D7A94408B22D9@CH0PR12MB5369.namprd12.prod.outlook.com>
+X-MS-Exchange-Transport-Forked: True
+X-MS-Oob-TLC-OOBClassifiers: OLM:1850;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: j2DRuVvG2nE+VV3kfOfZz7DAV4K774VqHQmRsIRuEi4CIJR7Vsc0KIF39sGIk/N1xumY0aqsHN39phfNDEa+c5CEo6M9yWoVX7miMVdHkb0nM4LDZrhAkFriPkSlZjU/MlWjY8gqIaHcilCrUUlgdu8mJiSdO2RmMx7yxIqiW0UMaJ8e8uf2MOEWdiODyBL3L8t/N/ysko2l1wxWHjhnOeXXhN73VaX+Vp13+6fl0IDwkEnEHMLTlcH5b02o4TvJVs9NgCrBaQV4kd7D8CTTAjjIDC/m0JpC2EnkSfQe7fngmDUr2QTX144kJvui7TKrW+ne4M43KuaS7LlRhY1jh8ZA9JvppdIsqBqqC0eoKdAgN7WG8/iFro6Ck8GLqnZmVDsHuaaiuwozYn1DIh7umK4sC8lP5FhUoRputkjdw97mGnE7MP94rCrZ7oHLNLDW4ybglbefiJRACms6Xz/DUzSI9FcxsfybXBpMPbfYdyFon7k4LnaFwrHZLoDxA5zflUIWaf9misUQCJgUNuAC29kEYrLRBl9orJypQlai7fst9lf76l80m+/aYlCC2FDErheXvxDHqustlcZhRxhXNLJDl/tVfhB2bEyH+iy2QIqQTKz70pv3cZhRNHIjHprzkwi+gKnt0jFELS8DGJ1vCqQrkYg325/Ufm6L/upLMMs=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(39860400002)(346002)(396003)(376002)(36840700001)(46966006)(2616005)(36860700001)(316002)(26005)(36906005)(478600001)(2906002)(36756003)(47076005)(5660300002)(4326008)(82310400003)(16526019)(336012)(66574015)(6666004)(15650500001)(107886003)(8936002)(70586007)(356005)(86362001)(83380400001)(70206006)(1076003)(82740400003)(426003)(8676002)(7636003)(6916009)(186003)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2021 17:04:33.6459
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f20e816d-cd85-4bcf-69c5-08d91955d80f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT021.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5369
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 4, 2021 at 12:25 PM Jesse Brandeburg
-<jesse.brandeburg@intel.com> wrote:
->
-> Robin Murphy wrote:
->
-> > On 2021-05-01 03:18, Jesse Brandeburg wrote:
-> > > It was pointed out by Nitesh that the original work I did in 2014
-> > > to automatically set the interrupt affinity when requesting a
-> > > mask is no longer necessary. The kernel has moved on and no
-> > > longer has the original problem, BUT the original patch
-> > > introduced a subtle bug when booting a system with reserved or
-> > > excluded CPUs. Drivers calling this function with a mask value
-> > > that included a CPU that was currently or in the future
-> > > unavailable would generally not update the hint.
-> > >
-> > > I'm sure there are a million ways to solve this, but the simplest
-> > > one is to just remove a little code that tries to force the
-> > > affinity, as Nitesh has shown it fixes the bug and doesn't seem
-> > > to introduce immediate side effects.
-> >
-> > Unfortunately, I think there are quite a few other drivers now relying
-> > on this behaviour, since they are really using irq_set_affinity_hint()
-> > as a proxy for irq_set_affinity(). Partly since the latter isn't
-> > exported to modules, but also I have a vague memory of it being said
-> > that it's nice to update the user-visible hint to match when the
-> > affinity does have to be forced to something specific.
-> >
-> > Robin.
->
-> Thanks for your feedback Robin, but there is definitely a bug here that
-> is being exposed by this code. The fact that people are using this
-> function means they're all exposed to this bug.
->
-> Not sure if you saw, but this analysis from Nitesh explains what
-> happened chronologically to the kernel w.r.t this code, it's a useful
-> analysis! [1]
->
-> I'd add in addition that irqbalance daemon *stopped* paying attention
-> to hints quite a while ago, so I'm not quite sure what purpose they
-> serve.
->
-> [1]
-> https://lore.kernel.org/lkml/CAFki+Lm0W_brLu31epqD3gAV+WNKOJfVDfX2M8ZM__aj3nv9uA@mail.gmail.com/
->
+This patchset contains various updates to the mlxsw driver and related
+selftests.
 
-Wanted to follow up to see if there are any more objections or even
-suggestions to take this forward?
+Patches #1-#5 contain various updates to mlxsw selftests. The most
+significant change is the conversion of the DCB selftests to use the new
+iproute2 DCB support.
+
+Patches #6-#9 contain mostly trivial changes to the driver itself. No
+user facing changes.
+
+Patches #10-#11 remove support for SwitchX-2 and SwitchIB ASICs that did
+not see any updates in the last 4-5 years and will not see any in the
+future. See individual commit messages for detailed explanation as to
+why it is OK to remove these drivers from the kernel.
+
+Amit Cohen (2):
+  mlxsw: Remove Mellanox SwitchIB ASIC support
+  mlxsw: Remove Mellanox SwitchX-2 ASIC support
+
+Danielle Ratson (3):
+  selftests: mlxsw: Make the unsplit array global in port_scale test
+  mlxsw: spectrum_buffers: Switch function arguments
+  mlxsw: Verify the accessed index doesn't exceed the array length
+
+Ido Schimmel (3):
+  selftests: mlxsw: Make sampling test more robust
+  mlxsw: core: Avoid unnecessary EMAD buffer copy
+  mlxsw: spectrum_router: Avoid missing error code warning
+
+Petr Machata (3):
+  selftests: mlxsw: qos_headroom: Convert to iproute2 dcb
+  selftests: mlxsw: qos_pfc: Convert to iproute2 dcb
+  selftests: mlxsw: qos_lib: Drop __mlnx_qos
+
+ drivers/net/ethernet/mellanox/mlxsw/Kconfig   |   22 -
+ drivers/net/ethernet/mellanox/mlxsw/Makefile  |    4 -
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |    2 +-
+ drivers/net/ethernet/mellanox/mlxsw/ib.h      |    9 -
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c |    4 +
+ drivers/net/ethernet/mellanox/mlxsw/pci.c     |    5 -
+ drivers/net/ethernet/mellanox/mlxsw/pci.h     |    3 -
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |    5 +
+ .../mellanox/mlxsw/spectrum_buffers.c         |    6 +-
+ .../ethernet/mellanox/mlxsw/spectrum_ptp.c    |    3 +
+ .../ethernet/mellanox/mlxsw/spectrum_router.c |    9 +-
+ .../mellanox/mlxsw/spectrum_switchdev.c       |    4 +
+ .../net/ethernet/mellanox/mlxsw/switchib.c    |  595 ------
+ .../net/ethernet/mellanox/mlxsw/switchx2.c    | 1691 -----------------
+ .../selftests/drivers/net/mlxsw/port_scale.sh |    4 +-
+ .../drivers/net/mlxsw/qos_headroom.sh         |   69 +-
+ .../selftests/drivers/net/mlxsw/qos_lib.sh    |   14 -
+ .../selftests/drivers/net/mlxsw/qos_pfc.sh    |   24 +-
+ .../selftests/drivers/net/mlxsw/tc_sample.sh  |   12 +-
+ 19 files changed, 83 insertions(+), 2402 deletions(-)
+ delete mode 100644 drivers/net/ethernet/mellanox/mlxsw/ib.h
+ delete mode 100644 drivers/net/ethernet/mellanox/mlxsw/switchib.c
+ delete mode 100644 drivers/net/ethernet/mellanox/mlxsw/switchx2.c
 
 -- 
-Thanks
-Nitesh
+2.31.1
 
