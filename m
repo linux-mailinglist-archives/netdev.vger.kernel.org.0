@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7BF5383C0F
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 20:16:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56003383C10
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 20:16:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244285AbhEQSRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 14:17:51 -0400
-Received: from azhdrrw-ex01.nvidia.com ([20.51.104.162]:1790 "EHLO
-        AZHDRRW-EX01.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244198AbhEQSRs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 14:17:48 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by mxs.oss.nvidia.com (10.13.234.36) with Microsoft SMTP Server
+        id S244292AbhEQSR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 14:17:58 -0400
+Received: from azhdrrw-ex02.nvidia.com ([20.64.145.131]:53255 "EHLO
+        AZHDRRW-EX02.NVIDIA.COM" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244157AbhEQSRw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 14:17:52 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.169)
+ by mxs.oss.nvidia.com (10.13.234.37) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.858.12; Mon, 17 May 2021 11:16:31 -0700
+ 15.2.858.12; Mon, 17 May 2021 11:16:35 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QnmaI3qVwejlEnSkL10HH0aRqAAXd8NoxSPxM2izpIdaROFeEiCvEgKmrT67lKiPmrsLkMU7p/LA8+OM3bR+h2iiCszPZcmXs6qfz4pmrg02fzCSo8iJjoYui2zCT1hqpAJKmzuawukZ58l6qptdRv7d9Ppbu6BZ4stSnCFp3ARSzAk7IumXJ2BXmC6DUgelhD4+XJi9mp0LMY0nEWiNrgnavD9wTURtzPGyDBTRMHy+Qq2cSjCgl+B2TguAs9NcmNb2N0qo02D76BFlJsoaQLBc/H+2cOeNvmTWecd0DClvItiwO5btYdbjTN3yZQ82WdmFpaTGzeMxql3Zfm0Ffg==
+ b=QbAnkfizO8wg1YjIOLUDochQf9W/THDzNB5uYJInxbJdbFudbHpA0F1w0MkXb7bY+hm8CspnX6c3w0+eSqFluKsGuRIHUzVn+kbG5ix+Y2yfOxVte36Xp8EE3ucOdv8WsvYkDJT2CvixuLAc8jYQJAgmbmFfp1OTc5e4zM1Gm3n8t8hm/egRkTbn9h6qr6kYQCZjY8o+HlU6Yb0zzpIpvHXaMK2U9rLCxYwFYpq0oTtpm7JufYPHENeD3V6PYc+KoyTy6jZmAfh+/RS2GMxrA3D9Xd/9z4Ro36WxEs+i+fs0FuVbdxc4TVT0aL8EpEOPg6YkJiDFKuuAk0xMEhzRxg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aBDQZogAc4aiM5VWcGPukjWAHdzWGmP6RribKq8XE44=;
- b=Vfy7fE7vDLto+RePcvV7x5s55SBpEuUtTMUbSwwUk3HtetiLab0lPpvVM0nodXrkwd4Uq63lww/oMSBkXSegl+psUpEYXEVfgKX12IVLItFuuSmFaI0vXhOeOUV5vu2nUfbIZe0BT4P3JlHqA3QUTUcmI2t6nQaoo2HECBslvjS7+VFl3lTktIDTyy5akD/uN7tMYt3OaBb8Dwf5hnXiIYGebYQ3YQdAKfUplCvvvpHdgNzz7RtS4T1keZQ1nsS2jipGO3cuQO7y6u91xPxDGPlVy0ZA41LDx0WHE6hj0Rih5GOOTuZxicJWGuAu5wwi7D376QChgHqoXEEIv4kfEQ==
+ bh=63Dnq/mZ4a9E6YazWWmcgim36ucTym9vL0GcZ08Ctis=;
+ b=fxfdT/TzMA/9nhJDMKiXr+35NcyIxUdAbPX46fSWRcluY4iZeql+W/L+a2L13COfS+hjKkRkmwvPJXvTlKHUwLzT2jxUlLgPEa+rc+i73VOMSPmQnW2M6OF0NTBbYq67TQ71mpjSt74VU8dhM9rJW1sLR88XtmK6GGkgphKan7vYpXORazfQnozND8cZta3kDiNophA64AKbPNnEPAo19jz20peJAZHa8zShU+JokUq4YJ5t4ZkrIIOFLAlmzewT1D9TmBG2HtkbAmX7xDolic1YtiP/KrHntSLrWJJsiSmvVQTSzYNXI2l0Ps7KFCGU3UjS88uhjEfkKp0r4H793Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -29,18 +29,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aBDQZogAc4aiM5VWcGPukjWAHdzWGmP6RribKq8XE44=;
- b=LZ9aRdti06acoAC0J4a4BPqjYXaVdalsIFY+/634UPfGepWh2/EvXuAKVDRbxn9A5MF0HTeGazjHYYc6kZf31yr/5yQc50fjXdZWQwHXqy6UYDxvLqJDxxh9notmOEHDpzE/d5d13ietn27U5FJ7P/S2uMOJb6pvQS6U59fALi9umokQvBcoC3CjS2GZBFC6RvR0U1C47dL+6Y+kB3o7JEWfQmqKZDs53tEbH9iabuKFB5PCXzziCt3WvKAGV5ZTSHBHcjSfDWxHctFB1ZuQ6/j3CKpqeqjDKrx6ccuTl2FmFQ1wOaOC1MQpRPF2xh0yJLCyNImDUS69oX/c7d1eIw==
-Received: from BN6PR22CA0068.namprd22.prod.outlook.com (2603:10b6:404:ca::30)
- by CH2PR12MB4262.namprd12.prod.outlook.com (2603:10b6:610:af::8) with
+ bh=63Dnq/mZ4a9E6YazWWmcgim36ucTym9vL0GcZ08Ctis=;
+ b=pPbM+IQ2VqI4yko/BeWcPX2xkDy6ifNaqbEMiO1k6PLze6wDr731NNPJ/7b7HBDEGpZckIpBfSlTYuBMgfvEk+j4/OzkKGFU3LvGcoHyRPtcX+ki24zACVgIf62qK8xWqJnDpKMx1o8f2Y0NWC0tSp4Tqxfp8bNunZtUI9n+BCuPd1BHZr8Xv7/eznNZ+eER91Hky64mFP/y1q0FI7lyu6h955/wEki7Qqst8CFMHCZMO5IJ/Di63AMXXg8tkJLW/2bxN6a9mFXWvYEW3vhnnZr6JlV++fsm1/UGRL2Ji0qZ6Z6p8jT9legmeVLGO9/3o+WfX7nMKzAC3mlRMZg9TQ==
+Received: from BN6PR11CA0053.namprd11.prod.outlook.com (2603:10b6:404:f7::15)
+ by BL1PR12MB5206.namprd12.prod.outlook.com (2603:10b6:208:31c::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.28; Mon, 17 May
- 2021 18:16:30 +0000
-Received: from BN8NAM11FT043.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:ca:cafe::fb) by BN6PR22CA0068.outlook.office365.com
- (2603:10b6:404:ca::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.25 via Frontend
- Transport; Mon, 17 May 2021 18:16:30 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.25; Mon, 17 May
+ 2021 18:16:34 +0000
+Received: from BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:f7:cafe::d7) by BN6PR11CA0053.outlook.office365.com
+ (2603:10b6:404:f7::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.24 via Frontend
+ Transport; Mon, 17 May 2021 18:16:34 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
  header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
@@ -48,21 +48,21 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.34 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.34; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT043.mail.protection.outlook.com (10.13.177.218) with Microsoft SMTP
+ BN8NAM11FT017.mail.protection.outlook.com (10.13.177.93) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4129.25 via Frontend Transport; Mon, 17 May 2021 18:16:30 +0000
+ 15.20.4129.25 via Frontend Transport; Mon, 17 May 2021 18:16:34 +0000
 Received: from shredder.mellanox.com (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 17 May
- 2021 18:16:26 +0000
+ 2021 18:16:29 +0000
 From:   Ido Schimmel <idosch@OSS.NVIDIA.COM>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <dsahern@gmail.com>,
         <petrm@OSS.NVIDIA.COM>, <roopa@OSS.NVIDIA.COM>,
         <nikolay@OSS.NVIDIA.COM>, <ssuryaextr@gmail.com>,
         <mlxsw@OSS.NVIDIA.COM>, Ido Schimmel <idosch@OSS.NVIDIA.COM>
-Subject: [PATCH net-next 06/10] ipv6: Add a sysctl to control multipath hash fields
-Date:   Mon, 17 May 2021 21:15:22 +0300
-Message-ID: <20210517181526.193786-7-idosch@nvidia.com>
+Subject: [PATCH net-next 07/10] ipv6: Add custom multipath hash policy
+Date:   Mon, 17 May 2021 21:15:23 +0300
+Message-ID: <20210517181526.193786-8-idosch@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210517181526.193786-1-idosch@nvidia.com>
 References: <20210517181526.193786-1-idosch@nvidia.com>
@@ -74,193 +74,226 @@ X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 907b19e4-7dc5-4dae-ba8a-08d9195fe52f
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4262:
-X-Microsoft-Antispam-PRVS: <CH2PR12MB42629E8FB2924E49904100C7B22D9@CH2PR12MB4262.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 78242c00-6bbb-4ded-4ee3-08d9195fe749
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5206:
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5206B4D04A26D9702F4FA0D3B22D9@BL1PR12MB5206.namprd12.prod.outlook.com>
 X-MS-Exchange-Transport-Forked: True
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5BJIlm0dspQ+d3pmcjEuKAYiR/OBfa/JVi2/+T7KHwJQWJtsY2S78gSpgAtxfesPURVuSqgSMPmIjoCBoOYmsCludVNDLNCao6A7UpZPlI/l94rherqhjf7u73FDdISY6jH6ilu+xA75qq0pxoL/4GzogrP/1aYaaUE3MpJjyeet7r+mecHl/+JAsoK3S6ZVjjCTAz+LTQUke+y+EVkQOjBvSbZtHPDPo3iprr7iz+izJ7OnbOf97JTMSAqMWa3wY7KeOlmRkzh+QtZ4tqjUNrOCs+8XNPIHr06FYNzTHAgzb/7LrKdezwJG7qcASozHHIlFFKJUGjMU9OTsLXdJqnIrgUe3xTNMeDQ6bHtcvTTrGHmmeGpL94guXDDt31i6aAJ7G1Mab9Hgszl2Lz+u9AC14mWSCVRuhRTLR+cZqYVhUncxGsvC+eItr4g7FWpoe/sWocIwN93Ny46qjVosw8Pd/l7XEotUgz188dn3yTEL+sWGT947pSL34rcngMpqUNK3s6LzP6XOZAXz1SIy2QfyGvU6tYZvBnJyUDBDTsZOzKnwAVS6XoYalg6sWEVxXnHJ1PJXVSFz4blfpLQWXb+55RFmfw7G0PhCb/0dnUT3VIEOP+lT9/XXpPPmYwFyXzZARje0znCpz6XsOu74MA==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(39860400002)(396003)(136003)(346002)(46966006)(36840700001)(70206006)(336012)(70586007)(6666004)(36906005)(316002)(426003)(26005)(478600001)(2616005)(107886003)(36860700001)(82310400003)(54906003)(4326008)(8676002)(6916009)(186003)(2906002)(7636003)(1076003)(8936002)(5660300002)(356005)(47076005)(36756003)(86362001)(82740400003)(83380400001)(16526019);DIR:OUT;SFP:1101;
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2021 18:16:30.5514
+X-Microsoft-Antispam-Message-Info: KFrayZl51G/KLGQEOUeRSq6F4f+y35Afo7NcnRdueyIPlJEPfdqbRl/XhAiuwZehpSeB9vgFZXacb/y6BKu1zIkcQQiB8nAAaFlRaV3KQTTO3U8EsqvVmG0At+cSrOD7nw/6TqnIlF3qhFymmY9Xz+EEwSadFeaGdcpUSIRpszi4eCMiCmGZuO3DZRcd+2Oi9NArTYwrGkPRXvXwcILNMgiSTXi1cuu1+QUICVdI9mTMH/f8h5RIMcLkorIyBkZ9Bo8wJ6bsYl9hTibUsXtWzhfjGifUoTvdTPTHfaeGOPUZDqcKmOFd6MFZXLoW3zN1B++qVVfpDoOVL6qlIapv+5JV4Tn6pRlDyGVLJ+YRKv5kr66JYBJ115DvDcEfrDXX0uXlxzccDXr7F1q6lzvG7vu07YJSEq0lkCgS+1XCIP51tgbuf1HS/bHo2DHB8dzNJKTHew+WJrBHl5AlWAeAWF1Zk1yZhn8O/bMTy02NE6jxalsTd2KI6VnTni2Y9Nkr9S82JMZ3GyE4Sa/XucGzMdlvx2rdjeT+tw8g3dG4OwFHPtgGoDJVeNPcrFo1qq7BzU1dKbxSzre4UobupwergV/jhqU/Da749qyrK6mzxycJzgnf4EY6FVhDYNNDLxZBW2PjV6IP5PrZCL3F23McBnQVlaIgb1Eif2jH3SHYh3A=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(396003)(346002)(39860400002)(136003)(36840700001)(46966006)(426003)(83380400001)(336012)(186003)(6916009)(82310400003)(356005)(2616005)(36906005)(1076003)(26005)(2906002)(54906003)(47076005)(36756003)(6666004)(70206006)(86362001)(70586007)(8676002)(36860700001)(8936002)(107886003)(16526019)(7636003)(82740400003)(316002)(4326008)(478600001)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2021 18:16:34.0695
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 907b19e4-7dc5-4dae-ba8a-08d9195fe52f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78242c00-6bbb-4ded-4ee3-08d9195fe749
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT043.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4262
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5206
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A subsequent patch will add a new multipath hash policy where the packet
-fields used for multipath hash calculation are determined by user space.
-This patch adds a sysctl that allows user space to set these fields.
+Add a new multipath hash policy where the packet fields used for hash
+calculation are determined by user space via the
+fib_multipath_hash_fields sysctl that was introduced in the previous
+patch.
 
-The packet fields are represented using a bitmask and are common between
-IPv4 and IPv6 to allow user space to use the same numbering across both
-protocols. For example, to hash based on standard 5-tuple:
+The current set of available packet fields includes both outer and inner
+fields, which requires two invocations of the flow dissector. Avoid
+unnecessary dissection of the outer or inner flows by skipping
+dissection if none of the outer or inner fields are required.
 
- # sysctl -w net.ipv6.fib_multipath_hash_fields=0x0037
- net.ipv6.fib_multipath_hash_fields = 0x0037
-
-To avoid introducing holes in 'struct netns_sysctl_ipv6', move the
-'bindv6only' field after the multipath hash fields.
-
-The kernel rejects unknown fields, for example:
-
- # sysctl -w net.ipv6.fib_multipath_hash_fields=0x1000
- sysctl: setting key "net.ipv6.fib_multipath_hash_fields": Invalid argument
+In accordance with the existing policies, when an skb is not available,
+packet fields are extracted from the provided flow key. In which case,
+only outer fields are considered.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- Documentation/networking/ip-sysctl.rst | 27 ++++++++++++++++++++++++++
- include/net/ipv6.h                     |  8 ++++++++
- include/net/netns/ipv6.h               |  3 ++-
- net/ipv6/ip6_fib.c                     |  5 +++++
- net/ipv6/sysctl_net_ipv6.c             | 12 ++++++++++++
- 5 files changed, 54 insertions(+), 1 deletion(-)
+ Documentation/networking/ip-sysctl.rst |   2 +
+ net/ipv6/route.c                       | 125 +++++++++++++++++++++++++
+ net/ipv6/sysctl_net_ipv6.c             |   3 +-
+ 3 files changed, 129 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index afdcdc0691d6..4246cc4ae35b 100644
+index 4246cc4ae35b..a5c250044500 100644
 --- a/Documentation/networking/ip-sysctl.rst
 +++ b/Documentation/networking/ip-sysctl.rst
-@@ -1773,6 +1773,33 @@ fib_multipath_hash_policy - INTEGER
+@@ -1772,6 +1772,8 @@ fib_multipath_hash_policy - INTEGER
+ 	- 0 - Layer 3 (source and destination addresses plus flow label)
  	- 1 - Layer 4 (standard 5-tuple)
  	- 2 - Layer 3 or inner Layer 3 if present
++	- 3 - Custom multipath hash. Fields used for multipath hash calculation
++	  are determined by fib_multipath_hash_fields sysctl
  
-+fib_multipath_hash_fields - UNSIGNED INTEGER
-+	When fib_multipath_hash_policy is set to 3 (custom multipath hash), the
-+	fields used for multipath hash calculation are determined by this
-+	sysctl.
-+
-+	This value is a bitmask which enables various fields for multipath hash
-+	calculation.
-+
-+	Possible fields are:
-+
-+	====== ============================
-+	0x0001 Source IP address
-+	0x0002 Destination IP address
-+	0x0004 IP protocol
-+	0x0008 Flow Label
-+	0x0010 Source port
-+	0x0020 Destination port
-+	0x0040 Inner source IP address
-+	0x0080 Inner destination IP address
-+	0x0100 Inner IP protocol
-+	0x0200 Inner Flow Label
-+	0x0400 Inner source port
-+	0x0800 Inner destination port
-+	====== ============================
-+
-+	Default: 0x0007 (source IP, destination IP and IP protocol)
-+
- anycast_src_echo_reply - BOOLEAN
- 	Controls the use of anycast addresses as source addresses for ICMPv6
- 	echo reply
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 448bf2b34759..f2d0ecc257bb 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -926,11 +926,19 @@ static inline int ip6_multipath_hash_policy(const struct net *net)
- {
- 	return net->ipv6.sysctl.multipath_hash_policy;
+ fib_multipath_hash_fields - UNSIGNED INTEGER
+ 	When fib_multipath_hash_policy is set to 3 (custom multipath hash), the
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 9935e18146e5..c46889381ae4 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -2326,6 +2326,125 @@ static void ip6_multipath_l3_keys(const struct sk_buff *skb,
+ 	}
  }
-+static inline u32 ip6_multipath_hash_fields(const struct net *net)
+ 
++static u32 rt6_multipath_custom_hash_outer(const struct net *net,
++					   const struct sk_buff *skb,
++					   bool *p_has_inner)
 +{
-+	return net->ipv6.sysctl.multipath_hash_fields;
-+}
- #else
- static inline int ip6_multipath_hash_policy(const struct net *net)
- {
- 	return 0;
- }
-+static inline u32 ip6_multipath_hash_fields(const struct net *net)
-+{
-+	return 0;
-+}
- #endif
- 
- /*
-diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
-index 6153c8067009..bde0b7adb4a3 100644
---- a/include/net/netns/ipv6.h
-+++ b/include/net/netns/ipv6.h
-@@ -28,8 +28,9 @@ struct netns_sysctl_ipv6 {
- 	int ip6_rt_gc_elasticity;
- 	int ip6_rt_mtu_expires;
- 	int ip6_rt_min_advmss;
--	u8 bindv6only;
-+	u32 multipath_hash_fields;
- 	u8 multipath_hash_policy;
-+	u8 bindv6only;
- 	u8 flowlabel_consistency;
- 	u8 auto_flowlabels;
- 	int icmpv6_time;
-diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-index 33d2d6a4e28c..2d650dc24349 100644
---- a/net/ipv6/ip6_fib.c
-+++ b/net/ipv6/ip6_fib.c
-@@ -32,6 +32,7 @@
- #include <net/lwtunnel.h>
- #include <net/fib_notifier.h>
- 
-+#include <net/ip_fib.h>
- #include <net/ip6_fib.h>
- #include <net/ip6_route.h>
- 
-@@ -2355,6 +2356,10 @@ static int __net_init fib6_net_init(struct net *net)
- 	if (err)
- 		return err;
- 
-+	/* Default to 3-tuple */
-+	net->ipv6.sysctl.multipath_hash_fields =
-+		FIB_MULTIPATH_HASH_FIELD_DEFAULT_MASK;
++	u32 hash_fields = ip6_multipath_hash_fields(net);
++	struct flow_keys keys, hash_keys;
 +
- 	spin_lock_init(&net->ipv6.fib6_gc_lock);
- 	rwlock_init(&net->ipv6.fib6_walker_lock);
- 	INIT_LIST_HEAD(&net->ipv6.fib6_walkers);
++	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_OUTER_MASK))
++		return 0;
++
++	memset(&hash_keys, 0, sizeof(hash_keys));
++	skb_flow_dissect_flow_keys(skb, &keys, FLOW_DISSECTOR_F_STOP_AT_ENCAP);
++
++	hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_IP)
++		hash_keys.addrs.v6addrs.src = keys.addrs.v6addrs.src;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_IP)
++		hash_keys.addrs.v6addrs.dst = keys.addrs.v6addrs.dst;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_IP_PROTO)
++		hash_keys.basic.ip_proto = keys.basic.ip_proto;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_FLOWLABEL)
++		hash_keys.tags.flow_label = keys.tags.flow_label;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_PORT)
++		hash_keys.ports.src = keys.ports.src;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_PORT)
++		hash_keys.ports.dst = keys.ports.dst;
++
++	*p_has_inner = !!(keys.control.flags & FLOW_DIS_ENCAPSULATION);
++	return flow_hash_from_keys(&hash_keys);
++}
++
++static u32 rt6_multipath_custom_hash_inner(const struct net *net,
++					   const struct sk_buff *skb,
++					   bool has_inner)
++{
++	u32 hash_fields = ip6_multipath_hash_fields(net);
++	struct flow_keys keys, hash_keys;
++
++	/* We assume the packet carries an encapsulation, but if none was
++	 * encountered during dissection of the outer flow, then there is no
++	 * point in calling the flow dissector again.
++	 */
++	if (!has_inner)
++		return 0;
++
++	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_MASK))
++		return 0;
++
++	memset(&hash_keys, 0, sizeof(hash_keys));
++	skb_flow_dissect_flow_keys(skb, &keys, 0);
++
++	if (!(keys.control.flags & FLOW_DIS_ENCAPSULATION))
++		return 0;
++
++	if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
++		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
++		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_IP)
++			hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
++		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_DST_IP)
++			hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
++	} else if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
++		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
++		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_IP)
++			hash_keys.addrs.v6addrs.src = keys.addrs.v6addrs.src;
++		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_DST_IP)
++			hash_keys.addrs.v6addrs.dst = keys.addrs.v6addrs.dst;
++		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_FLOWLABEL)
++			hash_keys.tags.flow_label = keys.tags.flow_label;
++	}
++
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_IP_PROTO)
++		hash_keys.basic.ip_proto = keys.basic.ip_proto;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_PORT)
++		hash_keys.ports.src = keys.ports.src;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_DST_PORT)
++		hash_keys.ports.dst = keys.ports.dst;
++
++	return flow_hash_from_keys(&hash_keys);
++}
++
++static u32 rt6_multipath_custom_hash_skb(const struct net *net,
++					 const struct sk_buff *skb)
++{
++	u32 mhash, mhash_inner;
++	bool has_inner = true;
++
++	mhash = rt6_multipath_custom_hash_outer(net, skb, &has_inner);
++	mhash_inner = rt6_multipath_custom_hash_inner(net, skb, has_inner);
++
++	return jhash_2words(mhash, mhash_inner, 0);
++}
++
++static u32 rt6_multipath_custom_hash_fl6(const struct net *net,
++					 const struct flowi6 *fl6)
++{
++	u32 hash_fields = ip6_multipath_hash_fields(net);
++	struct flow_keys hash_keys;
++
++	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_OUTER_MASK))
++		return 0;
++
++	memset(&hash_keys, 0, sizeof(hash_keys));
++	hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_IP)
++		hash_keys.addrs.v6addrs.src = fl6->saddr;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_IP)
++		hash_keys.addrs.v6addrs.dst = fl6->daddr;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_IP_PROTO)
++		hash_keys.basic.ip_proto = fl6->flowi6_proto;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_FLOWLABEL)
++		hash_keys.tags.flow_label = (__force u32)flowi6_get_flowlabel(fl6);
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_PORT)
++		hash_keys.ports.src = fl6->fl6_sport;
++	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_PORT)
++		hash_keys.ports.dst = fl6->fl6_dport;
++
++	return flow_hash_from_keys(&hash_keys);
++}
++
+ /* if skb is set it will be used and fl6 can be NULL */
+ u32 rt6_multipath_hash(const struct net *net, const struct flowi6 *fl6,
+ 		       const struct sk_buff *skb, struct flow_keys *flkeys)
+@@ -2416,6 +2535,12 @@ u32 rt6_multipath_hash(const struct net *net, const struct flowi6 *fl6,
+ 		}
+ 		mhash = flow_hash_from_keys(&hash_keys);
+ 		break;
++	case 3:
++		if (skb)
++			mhash = rt6_multipath_custom_hash_skb(net, skb);
++		else
++			mhash = rt6_multipath_custom_hash_fl6(net, fl6);
++		break;
+ 	}
+ 
+ 	return mhash >> 1;
 diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
-index 27102c3d6e1d..ce23c8f7ceb3 100644
+index ce23c8f7ceb3..160bea5db973 100644
 --- a/net/ipv6/sysctl_net_ipv6.c
 +++ b/net/ipv6/sysctl_net_ipv6.c
-@@ -17,6 +17,7 @@
- #include <net/addrconf.h>
- #include <net/inet_frag.h>
- #include <net/netevent.h>
-+#include <net/ip_fib.h>
- #ifdef CONFIG_NETLABEL
- #include <net/calipso.h>
+@@ -23,6 +23,7 @@
  #endif
-@@ -24,6 +25,8 @@
+ 
  static int two = 2;
++static int three = 3;
  static int flowlabel_reflect_max = 0x7;
  static int auto_flowlabels_max = IP6_AUTO_FLOW_LABEL_MAX;
-+static u32 rt6_multipath_hash_fields_all_mask =
-+	FIB_MULTIPATH_HASH_FIELD_ALL_MASK;
- 
- static int proc_rt6_multipath_hash_policy(struct ctl_table *table, int write,
- 					  void *buffer, size_t *lenp, loff_t *ppos)
-@@ -151,6 +154,15 @@ static struct ctl_table ipv6_table_template[] = {
+ static u32 rt6_multipath_hash_fields_all_mask =
+@@ -152,7 +153,7 @@ static struct ctl_table ipv6_table_template[] = {
+ 		.mode		= 0644,
+ 		.proc_handler   = proc_rt6_multipath_hash_policy,
  		.extra1		= SYSCTL_ZERO,
- 		.extra2		= &two,
+-		.extra2		= &two,
++		.extra2		= &three,
  	},
-+	{
-+		.procname	= "fib_multipath_hash_fields",
-+		.data		= &init_net.ipv6.sysctl.multipath_hash_fields,
-+		.maxlen		= sizeof(u32),
-+		.mode		= 0644,
-+		.proc_handler	= proc_douintvec_minmax,
-+		.extra1		= SYSCTL_ONE,
-+		.extra2		= &rt6_multipath_hash_fields_all_mask,
-+	},
  	{
- 		.procname	= "seg6_flowlabel",
- 		.data		= &init_net.ipv6.sysctl.seg6_flowlabel,
+ 		.procname	= "fib_multipath_hash_fields",
 -- 
 2.31.1
 
