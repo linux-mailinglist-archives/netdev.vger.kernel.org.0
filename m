@@ -2,151 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E239382C72
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 14:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF925382C80
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 14:46:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237138AbhEQMoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 08:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
+        id S233271AbhEQMrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 08:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237104AbhEQMoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 08:44:10 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93B5C061573
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 05:42:53 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id q10so5503772qkc.5
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 05:42:53 -0700 (PDT)
+        with ESMTP id S231591AbhEQMrm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 08:47:42 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9115C061756
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 05:46:25 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id u33so2966770qvf.9
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 05:46:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=6T4maM20wkpjUTzPHq1v9/9VNN9YGOt3sjTVfNPSz1A=;
-        b=nvQT7F/3r8Y0wxzeiOXETNl8o2OLI4D/k81fdrFR3vutCkklITXoCdrZz9ASp2ZBmB
-         BfcbXLPGRk2XfClI7UJK4ESMbXY+KvUO4w/UGZsvTUd8MZJ8UVl40oZnlzJycdVKsWYa
-         XWB6eqWVefR7y8PZpJB4NXbzuarlMoX5rifOyBq3pwdhnoFsaKvF4UIDhVx0jz0pVU/T
-         R88UfdeYaLiuVfgNA1u9m/iWYDVB7+dntp+c1JfJNdJox30QTs45OTsjzXWxs+VCo/Jk
-         lk510WDJIZZ8ocSVkI15fU6zHj5hxvUeU3461SsSyadTRbUH1lN2ezUL7m7uO1m8sYQa
-         rFWA==
+         :cc;
+        bh=US7LpJWCwtTmFe0Y8kLTeXtbSfCIEwq3UZFrYiM9u4c=;
+        b=SxM/7RVHpba+L5Xt5BhFbsOC3V88HhUnMKoyePQGE6WaILJzZDs+jWlR7fhVDQ5XoR
+         B9cWducwqElS89loGL8jnaLV88WhUg1mcik87unj2Zk1abJFRr1v70rv5senetfLqJjW
+         MJIYokWCm/v8sQldUk0uExPs8VQHs2hi53wxXAedDRZ/yDaosI96UTWsk7CZHeWRdYz8
+         OeuEO0EGu5TJSKVG+IO8bhzp6ZMi6N5CJI1BjV/JKHo8OZlDGJFi7abdDlbLfb3HfKLY
+         8rGTLw+ZYed+2hcAJTTBVwkCmUgOcPumTd8uJOF7CMXLqfNZQT3YufAAedU6ctJ0kB/v
+         wE1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6T4maM20wkpjUTzPHq1v9/9VNN9YGOt3sjTVfNPSz1A=;
-        b=MrHX6G4nxBBf2NvNuS8cCpbIfIRtxWuF5FNpD30xFoe41UAK4zr7n5IpzTbzIPU57k
-         BSJjUPQ9cTVwVUi7UNTyrbaXQ342A8b/LSp8R/OdXyaUdM69Irv/UaizOstz4EzOnnKc
-         E/30jlxn2CvvyfKuvWZ7vjyZ3n0nN78DDu/NYDI/NkVrIp96kMJs5mzsp8+3Qo6Cmh8z
-         AnQLTGx6IBcs9V0dO+UqkZRo9IwjwN49nwWQ0m+/i/9T10P3uhiyRyFBncS8vG3Nmak2
-         1/UTirMC3tJEofGp94WcJs7Z02DGz5y3RHW5wOCixbTKlFEBWl6CW7avoGQfXY28QXHC
-         GPcw==
-X-Gm-Message-State: AOAM532yA2Ga7+AJk9n41NiNdF1HZBWIG2Bn/i1xWfatfuspQE+znu1+
-        U6oTf89BGvVesT3jvLeXq480wNyoJCuSYRegUjYZhA==
-X-Google-Smtp-Source: ABdhPJyPjy1frJ81yPJoA2iI4XVIbHNfQ2CW7ecWz7Hh38SxdjORxtgenMKkbPSq2yE5PrFX69JqZnQX3kEyDd/YeSM=
-X-Received: by 2002:ae9:e850:: with SMTP id a77mr52728763qkg.424.1621255372672;
- Mon, 17 May 2021 05:42:52 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=US7LpJWCwtTmFe0Y8kLTeXtbSfCIEwq3UZFrYiM9u4c=;
+        b=QAZrNjQQsDdGi3Yr+in039UDfE8BTNjYQyjBAt4XAMXYu5T9Q6DDoBUxasIpr8i4aN
+         77uVDSzXZEz1/MmbDPwzZwfqqro/LN50L38dDlNYKCjhpAoAQXx4oBU4HbHiqhxOVbD9
+         UVYX+gJ/Cj2Yg3F0qBSnm8rzDufj5xJUh8w8Ulzz9tGEpWsCtS8Jk04va51oyMkvSEcJ
+         CShk0ER4/ObCM/mG5zMtzwVey+B2cjOgo70e2UFQYNYpfMxGH1hYsHGll8576jgsDV4i
+         jIUU2NXNhoTuGoKm8/OTvPY+in8tbc8Q0zLm0WkcrO/DNnrnx/sh8kAw6FZfKOuJ0TSn
+         S+WA==
+X-Gm-Message-State: AOAM532kylyGZGI2bQh4SBl2RWvqdwJeSQOhMfqT3uLb0gQSRDJCQQrC
+        C2Ng9fU1hAc/atwBxhS7h8VkkMeja41s6pXNg5QG/g==
+X-Google-Smtp-Source: ABdhPJytLMaCWze97hp4sqs2640skpJNc9pqDB3xaTeoD8HOdx//AFSEpd4TYu6tRlbapl/3Thh/UDKpTCU/BJkFYVw=
+X-Received: by 2002:a05:6214:1705:: with SMTP id db5mr19714811qvb.13.1621255584959;
+ Mon, 17 May 2021 05:46:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <0000000000008ce91e05bf9f62bc@google.com> <CACT4Y+a6L_x22XNJVX+VYY-XKmLQ0GaYndCVYnaFmoxk58GPgw@mail.gmail.com>
- <20210508144657.GC4038@breakpoint.cc> <20210513005608.GA23780@salvia>
- <CACT4Y+YhQQtHBErLYRDqHyw16Bxu9FCMQymviMBR-ywiKf3VQw@mail.gmail.com> <20210517105745.GA19031@salvia>
-In-Reply-To: <20210517105745.GA19031@salvia>
+References: <000000000000b3d89a05c284718f@google.com> <YKJTNcpqVN6gNIHV@hirez.programming.kicks-ass.net>
+In-Reply-To: <YKJTNcpqVN6gNIHV@hirez.programming.kicks-ass.net>
 From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 17 May 2021 14:42:41 +0200
-Message-ID: <CACT4Y+Y1M7ewJmipTB=B4fbYR2DMn_kX69Vks93yo=g2g-iXKw@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in __nf_unregister_net_hook (4)
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        syzbot <syzbot+154bd5be532a63aa778b@syzkaller.appspotmail.com>,
-        coreteam@netfilter.org, David Miller <davem@davemloft.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+Date:   Mon, 17 May 2021 14:46:13 +0200
+Message-ID: <CACT4Y+bucS5_6=rcEEpe+t8p_m3PQVzU5U+u+++ZSVG8E9zzmg@mail.gmail.com>
+Subject: Re: [syzbot] WARNING in __perf_install_in_context
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Cc:     syzbot <syzbot+0fb24f56fa707081e4f2@syzkaller.appspotmail.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        andrii@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>, Martin KaFai Lau <kafai@fb.com>,
+        kpsingh@kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
         netdev <netdev@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 17, 2021 at 12:57 PM Pablo Neira Ayuso <pablo@netfilter.org> wr=
-ote:
-> > > On Sat, May 08, 2021 at 04:46:57PM +0200, Florian Westphal wrote:
-> > > > Dmitry Vyukov <dvyukov@google.com> wrote:
-> > > > > > IMPORTANT: if you fix the issue, please add the following tag t=
-o the commit:
-> > > > > > Reported-by: syzbot+154bd5be532a63aa778b@syzkaller.appspotmail.=
-com
-> > > > >
-> > > > > Is this also fixed by "netfilter: arptables: use pernet ops struc=
-t
-> > > > > during unregister"?
-> > > > > The warning is the same, but the stack is different...
-> > > >
-> > > > No, this is a different bug.
-> > > >
-> > > > In both cases the caller attempts to unregister a hook that the cor=
-e
-> > > > can't find, but in this case the caller is nftables, not arptables.
-> > >
-> > > I see no reproducer for this bug. Maybe I broke the dormant flag hand=
-ling?
-> > >
-> > > Or maybe syzbot got here after the arptables bug has been hitted?
+On Mon, May 17, 2021 at 1:28 PM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Mon, May 17, 2021 at 03:56:22AM -0700, syzbot wrote:
+> > Hello,
 > >
-> > syzbot always stops after the first bug to give you perfect "Not
-> > tainted" oopses.
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    18a3c5f7 Merge tag 'for_linus' of git://git.kernel.org/pub..
+> > git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=1662c153d00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=b8ac1fe5995f69d7
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=0fb24f56fa707081e4f2
+> > userspace arch: riscv64
+> >
+> > Unfortunately, I don't have any reproducer for this issue yet.
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+0fb24f56fa707081e4f2@syzkaller.appspotmail.com
+> >
+> > ------------[ cut here ]------------
+> > WARNING: CPU: 1 PID: 8643 at kernel/events/core.c:2781 __perf_install_in_context+0x1c0/0x47c kernel/events/core.c:2781
+> > Modules linked in:
+> > CPU: 1 PID: 8643 Comm: syz-executor.0 Not tainted 5.12.0-rc8-syzkaller-00011-g18a3c5f7abfd #0
+> > Hardware name: riscv-virtio,qemu (DT)
 >
-> Looking at the log file:
->
-> https://syzkaller.appspot.com/text?tag=3DCrashLog&x=3D110a3096d00000
->
-> This is mixing calls to nftables:
->
-> 14:43:16 executing program 0:
-> r0 =3D socket$nl_netfilter(0x10, 0x3, 0xc)
-> sendmsg$NFT_BATCH(r0, &(0x7f000000c2c0)=3D{0x0, 0x0, &(0x7f0000000000)=3D=
-{&(0x7f00000001c0)=3D{{0x9}, [@NFT_MSG_NEWTABLE=3D{0x28, 0x0, 0xa, 0x3, 0x0=
-, 0x0, {0x2}, [@NFTA_TABLE_NAME=3D{0x9, 0x1, 'syz0\x00'}, @NFTA_TABLE_FLAGS=
-=3D{0x8}]}], {0x14}}, 0x50}}, 0x0)
->
-> with arptables:
->
-> 14:43:16 executing program 1:
-> r0 =3D socket$inet_udp(0x2, 0x2, 0x0)
-> setsockopt$ARPT_SO_SET_REPLACE(r0, 0x0, 0x60, &(0x7f0000000000)=3D{'filte=
-r\x00', 0x4, 0x4, 0x3f8, 0x310, 0x200, 0x200, 0x310, 0x310, 0x310, 0x4, 0x0=
-, {[{{@arp=3D{@broadcast, @rand_addr, 0x87010000, 0x0, 0x0, 0x0, {@mac=3D@l=
-ink_local}, {@mac}, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 'bridge0\x00', 'erspan0\x=
-00'}, 0xc0, 0x100}, @unspec=3D@RATEEST=3D{0x40, 'RATEEST\x00', 0x0, {'syz1\=
-x00', 0x0, 0x4}}}, {{@arp=3D{@initdev=3D{0xac, 0x1e, 0x0, 0x0}, @local, 0x0=
-, 0x0, 0x0, 0x0, {@mac=3D@remote}, {}, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 'veth0=
-_to_bridge\x00', 'geneve1\x00'}, 0xc0, 0x100}, @unspec=3D@RATEEST=3D{0x40, =
-'RATEEST\x00', 0x0, {'syz0\x00', 0x0, 0x2}}}, {{@arp=3D{@local, @multicast1=
-, 0x0, 0x0, 0x0, 0x0, {}, {@mac=3D@broadcast}, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0=
-, 'veth0_to_batadv\x00', 'veth0_to_hsr\x00'}, 0xc0, 0x110}, @mangle=3D{0x50=
-, 'mangle\x00', 0x0, {@mac=3D@remote, @mac=3D@local, @multicast2, @initdev=
-=3D{0xac, 0x1e, 0x0, 0x0}}}}], {{[], 0xc0, 0xe8}, {0x28}}}}, 0x448)
->
-> arptables was buggy at the time this bug has been reported.
->
-> Am I understanding correctly the syzbot log?
->
-> I wonder if the (buggy) arptables removed the incorrect hook from
-> nftables, then nftables crashed on the same location when removing the
-> hook. I don't see a clear sequence for this to happen though.
->
-> Would it be possible to make syzbot exercise the NFT_MSG_NEWTABLE
-> codepath (with NFTA_TABLE_FLAGS) to check if the problem still
-> persists?
+> How serious should I take this thing? ARM64 and x86_64 don't show these
+> errors.
 
-
-This happened only once so far 40 days ago. So if you consider it
-possible that it actually happened due to the arptables issue, I would
-mark it as invalid (with "#syz invalid") and move on. If it ever
-happens again, syzbot will notify, but then we know it happened with
-the aprtables issue fixed.
-
-This bug does not have a reproducer, so it's not possible to test this
-exact scenario. It's possible to replay the whole log, but somehow
-syzkaller wasn't able to retrigger it by replaying the log. I don't
-think it's worth our time at this point.
++riscv mainters for this question
+Is perf on riscv considered stable?
