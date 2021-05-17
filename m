@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A04CA38261B
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 10:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 644AA38261D
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 10:01:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235891AbhEQIBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 04:01:03 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:2939 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235498AbhEQIAN (ORCPT
+        id S235221AbhEQIBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 04:01:05 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:3711 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235505AbhEQIAN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 04:00:13 -0400
-Received: from dggems702-chm.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FkBK731nlzCtWf;
-        Mon, 17 May 2021 15:56:11 +0800 (CST)
+Received: from dggems703-chm.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FkBK81Dr2z16R9Q;
+        Mon, 17 May 2021 15:56:12 +0800 (CST)
 Received: from dggema704-chm.china.huawei.com (10.3.20.68) by
- dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
+ dggems703-chm.china.huawei.com (10.3.19.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Mon, 17 May 2021 15:58:56 +0800
 Received: from localhost.localdomain (10.67.165.2) by
  dggema704-chm.china.huawei.com (10.3.20.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Mon, 17 May 2021 15:58:55 +0800
+ 15.1.2176.2; Mon, 17 May 2021 15:58:56 +0800
 From:   Yang Shen <shenyang39@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Yang Shen <shenyang39@huawei.com>,
-        Francois Romieu <romieu@fr.zoreil.com>
-Subject: [PATCH v2 22/24] net: via: Fix wrong function name in comments
-Date:   Mon, 17 May 2021 12:45:33 +0800
-Message-ID: <20210517044535.21473-23-shenyang39@huawei.com>
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH v2 23/24] net: phy: Demote non-compliant kernel-doc headers
+Date:   Mon, 17 May 2021 12:45:34 +0800
+Message-ID: <20210517044535.21473-24-shenyang39@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210517044535.21473-1-shenyang39@huawei.com>
 References: <20210517044535.21473-1-shenyang39@huawei.com>
@@ -45,47 +46,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/ethernet/via/via-velocity.c:1908: warning: expecting prototype for tx_srv(). Prototype was for velocity_tx_srv() instead
- drivers/net/ethernet/via/via-velocity.c:2466: warning: expecting prototype for velocity_get_status(). Prototype was for velocity_get_stats() instead
- drivers/net/ethernet/via/via-velocity.c:3734: warning: expecting prototype for velocity_cleanup(). Prototype was for velocity_cleanup_module() instead
+ drivers/net/phy/adin.c:3: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+ drivers/net/phy/rockchip.c:3: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
 
-Cc: Francois Romieu <romieu@fr.zoreil.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Russell King <linux@armlinux.org.uk>
 Signed-off-by: Yang Shen <shenyang39@huawei.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/ethernet/via/via-velocity.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/phy/adin.c     | 2 +-
+ drivers/net/phy/rockchip.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/via/via-velocity.c b/drivers/net/ethernet/via/via-velocity.c
-index fecc4d7b00b0..88426b5e410b 100644
---- a/drivers/net/ethernet/via/via-velocity.c
-+++ b/drivers/net/ethernet/via/via-velocity.c
-@@ -1897,7 +1897,7 @@ static void velocity_error(struct velocity_info *vptr, int status)
- }
- 
- /**
-- *	tx_srv		-	transmit interrupt service
-+ *	velocity_tx_srv		-	transmit interrupt service
-  *	@vptr: Velocity
+diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
+index 55a0b91816e2..5ce6da62cc8e 100644
+--- a/drivers/net/phy/adin.c
++++ b/drivers/net/phy/adin.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0+
+-/**
++/*
+  *  Driver for Analog Devices Industrial Ethernet PHYs
   *
-  *	Scan the queues looking for transmitted packets that
-@@ -2453,7 +2453,7 @@ static int velocity_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
- }
- 
- /**
-- *	velocity_get_status	-	statistics callback
-+ *	velocity_get_stats	-	statistics callback
-  *	@dev: network device
+  * Copyright 2019 Analog Devices Inc.
+diff --git a/drivers/net/phy/rockchip.c b/drivers/net/phy/rockchip.c
+index 52f1f65320fe..bb13e75183ee 100644
+--- a/drivers/net/phy/rockchip.c
++++ b/drivers/net/phy/rockchip.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0+
+-/**
++/*
+  * drivers/net/phy/rockchip.c
   *
-  *	Callback from the network layer to allow driver statistics
-@@ -3723,7 +3723,7 @@ static int __init velocity_init_module(void)
- }
- 
- /**
-- *	velocity_cleanup	-	module unload
-+ *	velocity_cleanup_module		-	module unload
-  *
-  *	When the velocity hardware is unloaded this function is called.
-  *	It will clean up the notifiers and the unregister the PCI
+  * Driver for ROCKCHIP Ethernet PHYs
 -- 
 2.17.1
 
