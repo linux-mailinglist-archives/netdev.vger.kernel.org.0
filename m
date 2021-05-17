@@ -2,67 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75108383993
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 18:23:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A40F3839F5
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 18:31:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245162AbhEQQYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 12:24:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45662 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344054AbhEQQYK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 May 2021 12:24:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C05F6108D;
-        Mon, 17 May 2021 16:22:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621268573;
-        bh=j9ObgA0Uk0FJTFckH7PgM4hmZSrWR4u/1ilgsCcRn7E=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Rd50zs6A4bzYGrtxcIExxHzwdZq86wjzG7l67Y8zn5Kr2Uj9KUwjMmFb5DXxrShkH
-         +Bq9tPNQoAQeBNQD4UpOyNm9z8nQgXgsYljNyatn+WoUUEczg3FbsMAT6EZ//6340z
-         d7e05eOMQ85m9y/cQc3MLtSO8Omn/CToHGOPj3kjWXkuCPd7jkEjZU5QMTLE3DoD7s
-         GXNizNqk6Kz8FyLNEG8okPJeKeKBQF0ObzFKv3sSBO2rHeq7h/2aYZZ3oMFxc8vDt+
-         UROqgJM2PNZmg7EvXIELTAgdhHQByIW3vwoAxrmeEaGdUMts+oVXvdtMU62Wa+fhLi
-         zBkkMff6WzXTA==
-Received: by mail-lf1-f48.google.com with SMTP id v9so8338978lfa.4;
-        Mon, 17 May 2021 09:22:53 -0700 (PDT)
-X-Gm-Message-State: AOAM533hrl3+VHtzhhG0RLEjmtUWfOamhp6PQCHx5cIo/TQm2f8j9wEb
-        ixdoOeEmYDFT/EIpod3X/UZEqrlCbRdMD7De3+o=
-X-Google-Smtp-Source: ABdhPJyRdS1gs0WUYWGUfuCZ2HnZE1eV0GPJnEiXBDTZQ6cloD1OCWxdAQ5Q0NmBUOeiUVO5+fX71WNPFVAbewJp9u8=
-X-Received: by 2002:ac2:52b6:: with SMTP id r22mr476382lfm.261.1621268571928;
- Mon, 17 May 2021 09:22:51 -0700 (PDT)
+        id S1344178AbhEQQdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 12:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241561AbhEQQcc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 12:32:32 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4F1C061362
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 08:21:02 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id n2so9770718ejy.7
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 08:21:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3bLr3dvsxNdy0UeY38eDV6Oh4VUIamKJAGy6n2/RNMI=;
+        b=rlWsrHmq5zAdM7pgyI18kXkNymY1FfXFGuMchyiAVtdqJg0nEVDqJbu8FGYMgJsG0W
+         cN3Nqnq2CYCmKguPiAYhgUJK/tR634A4vE3TmGkMFnZTOCFFwTrPPDPBjWgY0qyCm86V
+         Mk17Ak1Hf6uSbTwakS3enaCGsYsJL/h/qCo+/N5FvQ/kOry7+dtQKkd2guN833JcQasW
+         CfnkI5aek693W7Fezpj66GVdwC6kJz3yC21KZnYPy59riueTx9/NVxidckIjI7BocI7o
+         dKiMmGv7Tm1Km1ccCMJyTSmV/yqhJFh3ctvTCIgSGUZF7LXi3Qghvvnhi7u3uLdpafQE
+         ZbvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3bLr3dvsxNdy0UeY38eDV6Oh4VUIamKJAGy6n2/RNMI=;
+        b=WQakHqgzySjT5tuiOcFdz94/PwCQax/z0LxvjKuy8nsB6riyTQGq+HU/JaBgb6fSx0
+         d/keyUZ88pNT8dP0oe7jAVYvfki38zRT5qKsQDAl+yzt+zDVtmKC7Jcn6eiYn9lBy30O
+         a42a67/O8FZj0SuEmY+sQDCxmMn6o4jdXS4/aAtJhAehLyRos8UlaMcQ9vGv+YFJsQEi
+         Qz2UsKlYgBncABTiHSOkegRDJX8xuyWfAmGCzRDedUeQblmZI63qQa8hAsWHrVhnnj9z
+         PbrZFS+T1x/ZskENjkdD0Wsm5R93/OfFRidCuaL9ue1ahRX8Mgen3Ok34bZgxN9g4UtD
+         jv9w==
+X-Gm-Message-State: AOAM530B5ebnv/lmrdgpPC/m5NH49Mc7fRhYNPlEKaPNcGS2YhHlcU4G
+        EE721NUovqX6PN1vwITVogKm+2a22XYGz9mt
+X-Google-Smtp-Source: ABdhPJzTrH75i3HRxbx8hTVoabpMvtHrKLhaFAwE1ItKGZysZBHx3yu2g3NuUE+xKJbNRvZhG+n7IA==
+X-Received: by 2002:a17:907:2646:: with SMTP id ar6mr417981ejc.293.1621264861338;
+        Mon, 17 May 2021 08:21:01 -0700 (PDT)
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com. [209.85.208.54])
+        by smtp.gmail.com with ESMTPSA id h9sm8677255edr.10.2021.05.17.08.21.01
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 May 2021 08:21:01 -0700 (PDT)
+Received: by mail-ed1-f54.google.com with SMTP id v5so7355006edc.8
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 08:21:01 -0700 (PDT)
+X-Received: by 2002:a5d:6285:: with SMTP id k5mr241611wru.50.1621264422296;
+ Mon, 17 May 2021 08:13:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210517022322.50501-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20210517022322.50501-1-xiyou.wangcong@gmail.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 17 May 2021 09:22:41 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5XVnaL98Qnxtqa1yY4JWW5SSiC+VXXMidKC99JCdjD7A@mail.gmail.com>
-Message-ID: <CAPhsuW5XVnaL98Qnxtqa1yY4JWW5SSiC+VXXMidKC99JCdjD7A@mail.gmail.com>
-Subject: Re: [Patch bpf] udp: fix a memory leak in udp_read_sock()
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
+References: <0000000000006a77d205c284e0d2@google.com> <CA+FuTSfjaqntvGGJAWc=QxWFkTPrXF+Ed9rkUKM8sor4=ZAK+Q@mail.gmail.com>
+ <CACT4Y+ZL4cZwTM=_Etizj+gXykxBLU2t6XCb-yA1d0S4N6L3LQ@mail.gmail.com>
+In-Reply-To: <CACT4Y+ZL4cZwTM=_Etizj+gXykxBLU2t6XCb-yA1d0S4N6L3LQ@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 17 May 2021 11:13:04 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeoNgY_kc-zjUc0644k3_YyWfO==ezoi1D=rbjppPrxYA@mail.gmail.com>
+Message-ID: <CA+FuTSeoNgY_kc-zjUc0644k3_YyWfO==ezoi1D=rbjppPrxYA@mail.gmail.com>
+Subject: Re: [syzbot] KMSAN: uninit-value in virtio_net_hdr_to_skb
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+106457891e3cf3b273a9@syzkaller.appspotmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
+        David Miller <davem@davemloft.net>,
+        Alexander Potapenko <glider@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin Lau <kafai@fb.com>, KP Singh <kpsingh@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Tanner Love <tannerlove@google.com>,
+        Xie He <xie.he.0141@gmail.com>, Yonghong Song <yhs@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 16, 2021 at 8:33 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Mon, May 17, 2021 at 10:57 AM Dmitry Vyukov <dvyukov@google.com> wrote:
 >
-> From: Cong Wang <cong.wang@bytedance.com>
+> On Mon, May 17, 2021 at 4:06 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Mon, May 17, 2021 at 7:27 AM syzbot
+> > <syzbot+106457891e3cf3b273a9@syzkaller.appspotmail.com> wrote:
+> > >
+> > > Hello,
+> > >
+> > > syzbot found the following issue on:
+> > >
+> > > HEAD commit:    4ebaab5f kmsan: drop unneeded references to kmsan_context_..
+> > > git tree:       https://github.com/google/kmsan.git master
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=17ac508ed00000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=ab8076fe8508c0d3
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=106457891e3cf3b273a9
+> > > compiler:       Debian clang version 11.0.1-2
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=138f4972d00000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1624ffced00000
+> > >
+> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > Reported-by: syzbot+106457891e3cf3b273a9@syzkaller.appspotmail.com
+> > >
+> > > =====================================================
+> > > BUG: KMSAN: uninit-value in virtio_net_hdr_to_skb+0x1414/0x14f0 include/linux/virtio_net.h:86
+> >
+> > No answer/fix, just initial investigation.
+> >
+> > This is an odd location. Line 86 is the inner if statement. Both
+> > protocol and skb->protocol are clearly initialized by then. But, that
+> > is also not the allocation that MSAN reports, see below.
+> >
+> >                         if (!skb->protocol) {
+> >                                 __be16 protocol =
+> > dev_parse_header_protocol(skb);
+> >
+> >                                 virtio_net_hdr_set_proto(skb, hdr);
+> >                                 if (protocol && protocol != skb->protocol)
+> >                                         return -EINVAL;
+> >                         }
+> >
+> > The repro itself seems mostly straightforward:
+> >
+> > - create a packet socket
+> > - enable PACKET_VNET_HDR with setsockopt(r3, 0x107, 0xf ..)
+> > - bind to AF_PACKET (0x11)
+> >
+> > - create a pipe
+> > - write to pipe[1]
+> > - splice pipe[0] to the packet socket
+> >
+> > there are a few other calls that I think are irrelevant and/or would fail.
+> >
+> > Perhaps there is some race condition in device refcounting, as bind
+> > operates on that?
+> >
+> > > CPU: 0 PID: 8426 Comm: syz-executor777 Not tainted 5.12.0-rc6-syzkaller #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > Call Trace:
+> > >  __dump_stack lib/dump_stack.c:79 [inline]
+> > >  dump_stack+0x24c/0x2e0 lib/dump_stack.c:120
+> > >  kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
+> > >  __msan_warning+0x5c/0xa0 mm/kmsan/kmsan_instr.c:197
+> > >  virtio_net_hdr_to_skb+0x1414/0x14f0 include/linux/virtio_net.h:86
+> > >  packet_snd net/packet/af_packet.c:2994 [inline]
+> > >  packet_sendmsg+0x85b8/0x99d0 net/packet/af_packet.c:3031
+> > >  sock_sendmsg_nosec net/socket.c:654 [inline]
+> > >  sock_sendmsg net/socket.c:674 [inline]
+> > >  kernel_sendmsg+0x22c/0x2f0 net/socket.c:694
+> > >  sock_no_sendpage+0x205/0x2b0 net/core/sock.c:2860
+> > >  kernel_sendpage+0x47a/0x590 net/socket.c:3631
+> > >  sock_sendpage+0x161/0x1a0 net/socket.c:947
+> > >  pipe_to_sendpage+0x3e4/0x520 fs/splice.c:364
+> > >  splice_from_pipe_feed fs/splice.c:418 [inline]
+> > >  __splice_from_pipe+0x5e3/0xff0 fs/splice.c:562
+> > >  splice_from_pipe fs/splice.c:597 [inline]
+> > >  generic_splice_sendpage+0x1d5/0x2c0 fs/splice.c:746
+> > >  do_splice_from fs/splice.c:767 [inline]
+> > >  do_splice+0x23c3/0x2c10 fs/splice.c:1079
+> > >  __do_splice fs/splice.c:1144 [inline]
+> > >  __do_sys_splice fs/splice.c:1350 [inline]
+> > >  __se_sys_splice+0x8fa/0xb50 fs/splice.c:1332
+> > >  __x64_sys_splice+0x6e/0x90 fs/splice.c:1332
+> > >  do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
+> > >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > > RIP: 0033:0x449a39
+> > > Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 d1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> > > RSP: 002b:00007f8ed790b2f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000113
+> > > RAX: ffffffffffffffda RBX: 00000000004cf518 RCX: 0000000000449a39
+> > > RDX: 0000000000000005 RSI: 0000000000000000 RDI: 0000000000000003
+> > > RBP: 00000000004cf510 R08: 000000000004ffe0 R09: 0000000000000000
+> > > R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004cf51c
+> > > R13: 000000000049e46c R14: 6d32cc5e8ead0600 R15: 0000000000022000
+> > >
+> > > Uninit was created at:
+> > >  kmsan_save_stack_with_flags+0x3c/0x90 mm/kmsan/kmsan.c:121
+> > >  kmsan_alloc_page+0xd0/0x1e0 mm/kmsan/kmsan_shadow.c:274
+> > >  __alloc_pages_nodemask+0x827/0xf90 mm/page_alloc.c:5044
+> > >  alloc_pages_current+0x7b6/0xb60 mm/mempolicy.c:2277
+> > >  alloc_pages include/linux/gfp.h:561 [inline]
+> > >  alloc_slab_page mm/slub.c:1653 [inline]
+> > >  allocate_slab+0x364/0x1260 mm/slub.c:1793
+> > >  new_slab mm/slub.c:1856 [inline]
+> > >  new_slab_objects mm/slub.c:2602 [inline]
+> > >  ___slab_alloc+0xd42/0x1930 mm/slub.c:2765
+> > >  __slab_alloc mm/slub.c:2805 [inline]
+> > >  slab_alloc_node mm/slub.c:2886 [inline]
+> > >  slab_alloc mm/slub.c:2931 [inline]
+> > >  kmem_cache_alloc_trace+0xc53/0x1030 mm/slub.c:2948
+> > >  kmalloc include/linux/slab.h:554 [inline]
+> > >  kzalloc include/linux/slab.h:684 [inline]
+> > >  ____ip_mc_inc_group+0x4d7/0x10b0 net/ipv4/igmp.c:1435
+> >
+> > This allocates ip_mc_list, but it uses kzalloc. Can that ever count as
+> > uninitialized?
 >
-> sk_psock_verdict_recv() clones the skb and uses the clone
-> afterward, so udp_read_sock() should free the original skb after
-> done using it.
+> Yes, kzalloc should never be a source of uninitialized-ness.
+> But it's not actually this kzalloc, it's underlying page allocation
+> (that is allocated uninitialized, so can be source of
+> uninitialized-ness).
+> If it would be this kzalloc, then stack would be shorter, along the
+> lines of kzalloc->kmem_cache_alloc_trace->kmsan_save_stack_with_flags.
 >
-> Fixes: d7f571188ecf ("udp: Implement ->read_sock() for sockmap")
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> This smells like a wild access in virtio_net_hdr_to_skb, which just
+> hit a random uninit somewhere.
+> Searching for virtio_net_hdr_to_skb I found this:
+>
+> KASAN: use-after-free Read in eth_header_parse_protocol
+> https://syzkaller.appspot.com/bug?id=a486048b63065fd224f57b16d5a2fdece2b40eca
+>
+> Can it be a dup of that bug?
 
-Acked-by: Song Liu <song@kernel.org>
+Great find.
+
+That commit is not yet present at kmsan.git at 4ebaab5fb428.
+
+Certainly sounds plausible.
