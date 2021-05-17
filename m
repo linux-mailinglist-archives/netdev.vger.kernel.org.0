@@ -2,83 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 235C5382936
+	by mail.lfdr.de (Postfix) with ESMTP id B5BA4382938
 	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 12:01:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236291AbhEQKCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 06:02:00 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34142 "EHLO mx2.suse.de"
+        id S236363AbhEQKCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 06:02:09 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:53693 "EHLO 1wt.eu"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236218AbhEQKBi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 May 2021 06:01:38 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1621245621; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oXKFGvhWgRDh4a44rCYHMonlDFHgBOcrx0uWlKqddC8=;
-        b=TSN1Ocz8jSQnzuNpSXb1BfOYvmg8iF3nGI4HpTkyIWrxbVbPcya/qg3MYSkerhCKbCdF65
-        Ak8Ma1iBdMQiqoeduugC2K5LPtR5kh9325gBFup6/JmjUOZ41cb8GsXdOpmABUgvvkBZOM
-        183XNUwuo7apmZziC6HuGQIlZVhW3PM=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 60A96AE4D;
-        Mon, 17 May 2021 10:00:21 +0000 (UTC)
-Message-ID: <93a10a341eccd8b680cdcc422947e4a1b83099db.camel@suse.com>
-Subject: Re: [syzbot] WARNING in rtl8152_probe
-From:   Oliver Neukum <oneukum@suse.com>
-To:     Hayes Wang <hayeswang@realtek.com>,
-        Alan Stern <stern@rowland.harvard.edu>
-Cc:     syzbot <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        nic_swsd <nic_swsd@realtek.com>
-Date:   Mon, 17 May 2021 12:00:19 +0200
-In-Reply-To: <547984d34f58406aa2e37861d7e8a44d@realtek.com>
-References: <0000000000009df1b605c21ecca8@google.com>
-         <7de0296584334229917504da50a0ac38@realtek.com>
-         <20210513142552.GA967812@rowland.harvard.edu>
-         <bde8fc1229ec41e99ec77f112cc5ee01@realtek.com> <YJ4dU3yCwd2wMq5f@kroah.com>
-         <bddf302301f5420db0fa049c895c9b14@realtek.com>
-         <20210514153253.GA1007561@rowland.harvard.edu>
-         <547984d34f58406aa2e37861d7e8a44d@realtek.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        id S236252AbhEQKCA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 May 2021 06:02:00 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 14HA0cft013419;
+        Mon, 17 May 2021 12:00:38 +0200
+Date:   Mon, 17 May 2021 12:00:38 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Troels Arvin <troels@arvin.dk>
+Cc:     netdev@vger.kernel.org
+Subject: Re: Default value of ipv4.tcp_keepalive_time
+Message-ID: <20210517100038.GA13385@1wt.eu>
+References: <f62489f3-5f58-4df6-b9c6-b190eb3f8c33@arvin.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f62489f3-5f58-4df6-b9c6-b190eb3f8c33@arvin.dk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Montag, den 17.05.2021, 01:01 +0000 schrieb Hayes Wang:
-> Alan Stern <stern@rowland.harvard.edu>
-> > Sent: Friday, May 14, 2021 11:33 PM
+Hello,
 
-> > So if a peculiar emulated device created by syzbot is capable of
-> > crashing the driver, then somewhere there is a bug which needs to
-> > be
-> > fixed.  It's true that fixing all these bugs might not protect
-> > against a
-> > malicious device which deliberately behaves in an apparently
-> > reasonable
-> > manner.  But it does reduce the attack surface.
+On Mon, May 17, 2021 at 10:00:04AM +0200, Troels Arvin wrote:
+> Hello,
 > 
-> Thanks for your response.
-> I will add some checks.
+> At work, we have spent a great deal of work on a situation which ended up
+> being resolved by changing the net.ipv4.tcp_keepalive_time sysctl to a value
+> much lower than the default (we set it to 300). This was two Linux-based
+> systems communicating without any firewalls in-between, where some
+> long-running connections would be considered down by one system, while the
+> other expected them to still be around.
+> 
+> The following is the description of the setting:
+> "The interval between the last data packet sent (simple ACKs are not
+> considered data) and the first keepalive probe; after the connection is
+> marked to need keepalive, this counter is not used any further."
+> 
+> The default value of net.ipv4.tcp_keepalive_time sysctl is 7200 seconds,
+> i.e. two hours.
+> 
+> It seems odd to me to still have such a long period of waiting, before
+> keep-alive kicks in. With such a long initial wait, it's questionable how
+> much value the keep-alive functionality has, I think.
+> 
+> Could it be that it's time to change the default? I would suggest a value of
+> 10 minutes, i.e. 600 seconds, but I have to admit, that I don't have any
+> objective argument for exactly that value.
 
-Hi,
+There is no good value, it's entirely dependent on the application. At
+least with a large default value you have little risk to flood your
+links when dealing with hundreds of thousands to millions of idle
+connections (think WebSocket for example). A 10 minute value would
+still be too large for plenty of users but cause excessive traffic
+for others.
 
-the problem in this particular case is in
-static bool rtl_vendor_mode(struct usb_interface *intf)
-which accepts any config number. It needs to bail out
-if you find config #0 to be what the descriptors say,
-treating that as an unrecoverable error.
+I strongly suggest that the value must be tunable in the application
+instead, that's the only way to get it right for everyone (see
+TCP_KEEPCNT, TCP_KEEPINTVL and TCP_KEEPIDLE).
 
-	Regards
-		Oliver
-
-
+Just my two cents,
+Willy
