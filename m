@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BADAF38222C
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 02:24:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF83382230
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 02:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234766AbhEQAY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 May 2021 20:24:56 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:31649 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234712AbhEQAYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 May 2021 20:24:55 -0400
+        id S234815AbhEQAZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 May 2021 20:25:12 -0400
+Received: from smtp-fw-80006.amazon.com ([99.78.197.217]:57659 "EHLO
+        smtp-fw-80006.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234789AbhEQAZL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 May 2021 20:25:11 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1621211020; x=1652747020;
+  s=amazon201209; t=1621211036; x=1652747036;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=6ZO03lKQ/WPNVG3UvYnIANaz4hxB8S0MeSpixn0HSFY=;
-  b=EKohoHp0D3XmHZYcWPfjpjb0jp6WIwqFW352XtT4hleg0eMsSWM4eNBD
-   rYTzWcyf9yj3j+XtnCs1LnKHqqH49H66HXWBbWDDyNbi8kVXzJweq28gk
-   7lWHmqXqKwW4JoWWMW4K+svYoqxUE/MQWVQc+h6ScGWF1WZny5GDyenIy
+  bh=g6x1WCv+DxHVu1dnCoY7n/b4DxS2J1V7lVJBJSaEQd0=;
+  b=u2ohqiY1K4S8LF5qvlH5nePJK5seigLgsb5mqoxb7ysN2hlxL+kDlA/w
+   VmFX1D/X/NifenHCyojvY3eOWy/Ino/XHHJJ8fNPsVMqA7PkBcDl1FFCP
+   el18UgzEDM6rSnaX5JnuDmAhdFXMqGVxeqnAIjCE0cy0rU3TkdUbyktev
    I=;
 X-IronPort-AV: E=Sophos;i="5.82,306,1613433600"; 
-   d="scan'208";a="112501580"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 17 May 2021 00:23:39 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com (Postfix) with ESMTPS id 3A849A1DF3;
-        Mon, 17 May 2021 00:23:36 +0000 (UTC)
+   d="scan'208";a="1587787"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 17 May 2021 00:23:55 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com (Postfix) with ESMTPS id 13A52A1C0E;
+        Mon, 17 May 2021 00:23:51 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Mon, 17 May 2021 00:23:36 +0000
+ id 15.0.1497.18; Mon, 17 May 2021 00:23:51 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.162.28) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Mon, 17 May 2021 00:23:31 +0000
+ id 15.0.1497.18; Mon, 17 May 2021 00:23:46 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -46,9 +46,9 @@ CC:     Benjamin Herrenschmidt <benh@amazon.com>,
         Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
         Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v6 bpf-next 01/11] net: Introduce net.ipv4.tcp_migrate_req.
-Date:   Mon, 17 May 2021 09:22:48 +0900
-Message-ID: <20210517002258.75019-2-kuniyu@amazon.co.jp>
+Subject: [PATCH v6 bpf-next 02/11] tcp: Add num_closed_socks to struct sock_reuseport.
+Date:   Mon, 17 May 2021 09:22:49 +0900
+Message-ID: <20210517002258.75019-3-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210517002258.75019-1-kuniyu@amazon.co.jp>
 References: <20210517002258.75019-1-kuniyu@amazon.co.jp>
@@ -62,88 +62,197 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds a new sysctl option: net.ipv4.tcp_migrate_req. If this
-option is enabled or eBPF program is attached, we will be able to migrate
-child sockets from a listener to another in the same reuseport group after
-close() or shutdown() syscalls.
+As noted in the following commit, a closed listener has to hold the
+reference to the reuseport group for socket migration. This patch adds a
+field (num_closed_socks) to struct sock_reuseport to manage closed sockets
+within the same reuseport group. Moreover, this and the following commits
+introduce some helper functions to split socks[] into two sections and keep
+TCP_LISTEN and TCP_CLOSE sockets in each section. Like a double-ended
+queue, we will place TCP_LISTEN sockets from the front and TCP_CLOSE
+sockets from the end.
+
+  TCP_LISTEN---------->       <-------TCP_CLOSE
+  +---+---+  ---  +---+  ---  +---+  ---  +---+
+  | 0 | 1 |  ...  | i |  ...  | j |  ...  | k |
+  +---+---+  ---  +---+  ---  +---+  ---  +---+
+
+  i = num_socks - 1
+  j = max_socks - num_closed_socks
+  k = max_socks - 1
+
+This patch also extends reuseport_add_sock() and reuseport_grow() to
+support num_closed_socks.
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
 Acked-by: Martin KaFai Lau <kafai@fb.com>
 ---
- Documentation/networking/ip-sysctl.rst | 25 +++++++++++++++++++++++++
- include/net/netns/ipv4.h               |  1 +
- net/ipv4/sysctl_net_ipv4.c             |  9 +++++++++
- 3 files changed, 35 insertions(+)
+ include/net/sock_reuseport.h |  5 ++-
+ net/core/sock_reuseport.c    | 76 +++++++++++++++++++++++++++---------
+ 2 files changed, 60 insertions(+), 21 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index c2ecc9894fd0..22c80b0d2208 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -732,6 +732,31 @@ tcp_syncookies - INTEGER
- 	network connections you can set this knob to 2 to enable
- 	unconditionally generation of syncookies.
+diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
+index 505f1e18e9bf..0e558ca7afbf 100644
+--- a/include/net/sock_reuseport.h
++++ b/include/net/sock_reuseport.h
+@@ -13,8 +13,9 @@ extern spinlock_t reuseport_lock;
+ struct sock_reuseport {
+ 	struct rcu_head		rcu;
  
-+tcp_migrate_req - BOOLEAN
-+	The incoming connection is tied to a specific listening socket when
-+	the initial SYN packet is received during the three-way handshake.
-+	When a listener is closed, in-flight request sockets during the
-+	handshake and established sockets in the accept queue are aborted.
+-	u16			max_socks;	/* length of socks */
+-	u16			num_socks;	/* elements in socks */
++	u16			max_socks;		/* length of socks */
++	u16			num_socks;		/* elements in socks */
++	u16			num_closed_socks;	/* closed elements in socks */
+ 	/* The last synq overflow event timestamp of this
+ 	 * reuse->socks[] group.
+ 	 */
+diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+index b065f0a103ed..079bd1aca0e7 100644
+--- a/net/core/sock_reuseport.c
++++ b/net/core/sock_reuseport.c
+@@ -18,6 +18,49 @@ DEFINE_SPINLOCK(reuseport_lock);
+ 
+ static DEFINE_IDA(reuseport_ida);
+ 
++static int reuseport_sock_index(struct sock *sk,
++				struct sock_reuseport *reuse,
++				bool closed)
++{
++	int left, right;
 +
-+	If the listener has SO_REUSEPORT enabled, other listeners on the
-+	same port should have been able to accept such connections. This
-+	option makes it possible to migrate such child sockets to another
-+	listener after close() or shutdown().
++	if (!closed) {
++		left = 0;
++		right = reuse->num_socks;
++	} else {
++		left = reuse->max_socks - reuse->num_closed_socks;
++		right = reuse->max_socks;
++	}
 +
-+	The BPF_SK_REUSEPORT_SELECT_OR_MIGRATE type of eBPF program should
-+	usually be used to define the policy to pick an alive listener.
-+	Otherwise, the kernel will randomly pick an alive listener only if
-+	this option is enabled.
++	for (; left < right; left++)
++		if (reuse->socks[left] == sk)
++			return left;
++	return -1;
++}
 +
-+	Note that migration between listeners with different settings may
-+	crash applications. Let's say migration happens from listener A to
-+	B, and only B has TCP_SAVE_SYN enabled. B cannot read SYN data from
-+	the requests migrated from A. To avoid such a situation, cancel
-+	migration by returning SK_DROP in the type of eBPF program, or
-+	disable this option.
++static void __reuseport_add_sock(struct sock *sk,
++				 struct sock_reuseport *reuse)
++{
++	reuse->socks[reuse->num_socks] = sk;
++	/* paired with smp_rmb() in reuseport_select_sock() */
++	smp_wmb();
++	reuse->num_socks++;
++}
 +
-+	Default: 0
++static bool __reuseport_detach_sock(struct sock *sk,
++				    struct sock_reuseport *reuse)
++{
++	int i = reuseport_sock_index(sk, reuse, false);
 +
- tcp_fastopen - INTEGER
- 	Enable TCP Fast Open (RFC7413) to send and accept data in the opening
- 	SYN packet.
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index f6af8d96d3c6..fd63c91addcc 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -126,6 +126,7 @@ struct netns_ipv4 {
- 	u8 sysctl_tcp_syn_retries;
- 	u8 sysctl_tcp_synack_retries;
- 	u8 sysctl_tcp_syncookies;
-+	u8 sysctl_tcp_migrate_req;
- 	int sysctl_tcp_reordering;
- 	u8 sysctl_tcp_retries1;
- 	u8 sysctl_tcp_retries2;
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index a62934b9f15a..7bb013fcbf5f 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -940,6 +940,15 @@ static struct ctl_table ipv4_net_table[] = {
- 		.proc_handler	= proc_dou8vec_minmax,
- 	},
- #endif
-+	{
-+		.procname	= "tcp_migrate_req",
-+		.data		= &init_net.ipv4.sysctl_tcp_migrate_req,
-+		.maxlen		= sizeof(u8),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dou8vec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE
-+	},
- 	{
- 		.procname	= "tcp_reordering",
- 		.data		= &init_net.ipv4.sysctl_tcp_reordering,
++	if (i == -1)
++		return false;
++
++	reuse->socks[i] = reuse->socks[reuse->num_socks - 1];
++	reuse->num_socks--;
++
++	return true;
++}
++
+ static struct sock_reuseport *__reuseport_alloc(unsigned int max_socks)
+ {
+ 	unsigned int size = sizeof(struct sock_reuseport) +
+@@ -72,9 +115,8 @@ int reuseport_alloc(struct sock *sk, bool bind_inany)
+ 	}
+ 
+ 	reuse->reuseport_id = id;
+-	reuse->socks[0] = sk;
+-	reuse->num_socks = 1;
+ 	reuse->bind_inany = bind_inany;
++	__reuseport_add_sock(sk, reuse);
+ 	rcu_assign_pointer(sk->sk_reuseport_cb, reuse);
+ 
+ out:
+@@ -98,6 +140,7 @@ static struct sock_reuseport *reuseport_grow(struct sock_reuseport *reuse)
+ 		return NULL;
+ 
+ 	more_reuse->num_socks = reuse->num_socks;
++	more_reuse->num_closed_socks = reuse->num_closed_socks;
+ 	more_reuse->prog = reuse->prog;
+ 	more_reuse->reuseport_id = reuse->reuseport_id;
+ 	more_reuse->bind_inany = reuse->bind_inany;
+@@ -105,9 +148,13 @@ static struct sock_reuseport *reuseport_grow(struct sock_reuseport *reuse)
+ 
+ 	memcpy(more_reuse->socks, reuse->socks,
+ 	       reuse->num_socks * sizeof(struct sock *));
++	memcpy(more_reuse->socks +
++	       (more_reuse->max_socks - more_reuse->num_closed_socks),
++	       reuse->socks + reuse->num_socks,
++	       reuse->num_closed_socks * sizeof(struct sock *));
+ 	more_reuse->synq_overflow_ts = READ_ONCE(reuse->synq_overflow_ts);
+ 
+-	for (i = 0; i < reuse->num_socks; ++i)
++	for (i = 0; i < reuse->max_socks; ++i)
+ 		rcu_assign_pointer(reuse->socks[i]->sk_reuseport_cb,
+ 				   more_reuse);
+ 
+@@ -158,7 +205,7 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
+ 		return -EBUSY;
+ 	}
+ 
+-	if (reuse->num_socks == reuse->max_socks) {
++	if (reuse->num_socks + reuse->num_closed_socks == reuse->max_socks) {
+ 		reuse = reuseport_grow(reuse);
+ 		if (!reuse) {
+ 			spin_unlock_bh(&reuseport_lock);
+@@ -166,10 +213,7 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
+ 		}
+ 	}
+ 
+-	reuse->socks[reuse->num_socks] = sk;
+-	/* paired with smp_rmb() in reuseport_select_sock() */
+-	smp_wmb();
+-	reuse->num_socks++;
++	__reuseport_add_sock(sk, reuse);
+ 	rcu_assign_pointer(sk->sk_reuseport_cb, reuse);
+ 
+ 	spin_unlock_bh(&reuseport_lock);
+@@ -183,7 +227,6 @@ EXPORT_SYMBOL(reuseport_add_sock);
+ void reuseport_detach_sock(struct sock *sk)
+ {
+ 	struct sock_reuseport *reuse;
+-	int i;
+ 
+ 	spin_lock_bh(&reuseport_lock);
+ 	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
+@@ -200,16 +243,11 @@ void reuseport_detach_sock(struct sock *sk)
+ 	bpf_sk_reuseport_detach(sk);
+ 
+ 	rcu_assign_pointer(sk->sk_reuseport_cb, NULL);
++	__reuseport_detach_sock(sk, reuse);
++
++	if (reuse->num_socks + reuse->num_closed_socks == 0)
++		call_rcu(&reuse->rcu, reuseport_free_rcu);
+ 
+-	for (i = 0; i < reuse->num_socks; i++) {
+-		if (reuse->socks[i] == sk) {
+-			reuse->socks[i] = reuse->socks[reuse->num_socks - 1];
+-			reuse->num_socks--;
+-			if (reuse->num_socks == 0)
+-				call_rcu(&reuse->rcu, reuseport_free_rcu);
+-			break;
+-		}
+-	}
+ 	spin_unlock_bh(&reuseport_lock);
+ }
+ EXPORT_SYMBOL(reuseport_detach_sock);
+@@ -274,7 +312,7 @@ struct sock *reuseport_select_sock(struct sock *sk,
+ 	prog = rcu_dereference(reuse->prog);
+ 	socks = READ_ONCE(reuse->num_socks);
+ 	if (likely(socks)) {
+-		/* paired with smp_wmb() in reuseport_add_sock() */
++		/* paired with smp_wmb() in __reuseport_add_sock() */
+ 		smp_rmb();
+ 
+ 		if (!prog || !skb)
 -- 
 2.30.2
 
