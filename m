@@ -2,287 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 509F9386C81
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:44:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04D24386C9A
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 23:49:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238139AbhEQVpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 17:45:24 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:58637 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230508AbhEQVpW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 17:45:22 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id E9AD25C0172;
-        Mon, 17 May 2021 17:44:04 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Mon, 17 May 2021 17:44:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=tlZBfa
-        KRDABNllg2+fYxJA26vcxtyQM/CjtTLSQKZrM=; b=wmVUTuSrwBIVD7qZwtTXXJ
-        fjslq3lomOz3PPW4idFTqChNCAD87/t0a8guBGZnKurQc77OcSekraUKD/2nZKmP
-        /kS5rJ6OJofq8LznRv1uwrQU7eNq2BC4KjX6Zv09rcCy8TsSWzIvcSA6fyzyNgVt
-        nZKMmk0oGACUfpzw/NApWIMcAjwkF0Mm4VZSK9roLWcnB50chVO+Z5k5jfGqtJoX
-        lhwz3v4rp0PB+h/c47vuh1urr0UIwJznczuHg4kJ+73RWDMebDpTKUG8FY42Jw+E
-        XVvjkJTmrqRBQT24hBz4TyCmR1FaJqBb+wezpVyd5W0Wx4mI/dmTNc2aqHoG2ejg
-        ==
-X-ME-Sender: <xms:pOOiYChedNEkEWou1mpGuigpM6k-D_vi2AQRjwdmiMfsc6NAcSTJGA>
-    <xme:pOOiYDAj-n8vVld6WLCqWAVnM0EBkurCK43h5pCfSGCX_hd0JUUJSXPIhoyTDTzzO
-    zshQKdBMiLLUw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdeihedgudeigecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesghdtreertddtjeenucfhrhhomhepofgrrhgv
-    khcuofgrrhgtiiihkhhofihskhhiqdfikphrvggtkhhiuceomhgrrhhmrghrvghksehinh
-    hvihhsihgslhgvthhhihhnghhslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhepkeeg
-    tdfgvdeihefhhedtvdelieeiueetveehteffjeejjedvieejvefhueeffeegnecuffhomh
-    grihhnpehgihhthhhusgdrtghomhenucfkphepledurdeijedrjeelrdegnecuvehluhhs
-    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrrhhmrghrvghkse
-    hinhhvihhsihgslhgvthhhihhnghhslhgrsgdrtghomh
-X-ME-Proxy: <xmx:pOOiYKFzvkC1uenmtT0zvUAm6JqNUmLYitaTxurgJ-h_vlBy92rGqw>
-    <xmx:pOOiYLRNSSjS09hu-plzFv6O2-M3bz4-3_-RaKUkuEcbTzSlF_1cww>
-    <xmx:pOOiYPyROfmJjGKeG6WqB_ho4GsWglGJWBVhUqjKEQH68PCVBxZ1EQ>
-    <xmx:pOOiYKqQIZ5VBnBjYPQGZ71ZiEB1dPVT6FU0xS9Q_IrC41cgvZZPZA>
-Received: from mail-itl (ip5b434f04.dynamic.kabel-deutschland.de [91.67.79.4])
-        by mail.messagingengine.com (Postfix) with ESMTPA;
-        Mon, 17 May 2021 17:44:03 -0400 (EDT)
-Date:   Mon, 17 May 2021 23:43:59 +0200
-From:   Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>
-To:     "Durrant, Paul" <pdurrant@amazon.co.uk>
-Cc:     Michael Brown <mbrown@fensystems.co.uk>,
-        "paul@xen.org" <paul@xen.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Ian Jackson <iwj@xenproject.org>, Wei Liu <wl@xen.org>,
-        Anthony PERARD <anthony.perard@citrix.com>
-Subject: Re: [PATCH] xen-netback: Check for hotplug-status existence before
- watching
-Message-ID: <YKLjoALdw4oKSZ04@mail-itl>
-References: <20210413152512.903750-1-mbrown@fensystems.co.uk>
- <YJl8IC7EbXKpARWL@mail-itl>
- <404130e4-210d-2214-47a8-833c0463d997@fensystems.co.uk>
- <YJmBDpqQ12ZBGf58@mail-itl>
- <21f38a92-c8ae-12a7-f1d8-50810c5eb088@fensystems.co.uk>
- <YJmMvTkp2Y1hlLLm@mail-itl>
- <df9e9a32b0294aee814eeb58d2d71edd@EX13D32EUC003.ant.amazon.com>
- <YJpfORXIgEaWlQ7E@mail-itl>
- <YJpgNvOmDL9SuRye@mail-itl>
- <9edd6873034f474baafd70b1df693001@EX13D32EUC003.ant.amazon.com>
+        id S245627AbhEQVuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 17:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230508AbhEQVuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 17:50:17 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AF7C061573;
+        Mon, 17 May 2021 14:48:59 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id e14so7326435ils.12;
+        Mon, 17 May 2021 14:48:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=5k+CB7+a281FNvx4AyiO3QnFARm73PakcEl2o60CjU0=;
+        b=Byg+eK9Ri8MLuHrFeOzSlMEqt8c+nOthtNHB2zWpR2gdR9+jDhnbv3eQz6Bz3e6KfT
+         O5nmBP3lCxBqBCGs5iKzyQIwF9mttkHstrRTusVt0o3r/NqTGJY7jcyRsV3MfKutz8sz
+         Dz+j9p0UPByLCL+3nS99hkh5KufrlEbig5C94K1F45f7w6fiUNaaFhGdo62My7Y8jdaC
+         7dt4Koiu0YT60GRN56mnhv/OuVl2SqRaua3+OWPvjhFQnaJ7+56Dv2KvfxpL+YiRtoAT
+         nmNIK6EzoWNt1bjwmhuis+pSZ24mJKrFiKKVU0UcQJ78nZZAoHVpt5OhUfLeGTFds6sm
+         KBPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=5k+CB7+a281FNvx4AyiO3QnFARm73PakcEl2o60CjU0=;
+        b=Spot7NZ1Mp3kJYI1usLpHMaSm9DOAB16ytvWPkueRhXIH9qIiUof0v3Eucjr2rwR8Q
+         bEu6Efv102NUUkUj2/UUWO4CPytRuwxHSMQHUTGkNUWn9Qb8YIw05rvYrNmNBCpGH173
+         zsNFMbLp8yleucrUUi3eTg+PK0hZ2MRqSDFWNL+pJADsdssxbJlgkkDAnqOyAC/fBcXk
+         vSPQAfiZFbxWWK8Xrd4DCA0i31yaj0T4Nal6gcY2l5LYgmvB4S97pYfIejXNHsgg6U2l
+         Vyj/OhEaRT6ykcJ+a+BxpYqmNnunK0VcqQ95SF8pVJPQVJaYwboXPy6L1d5x7Od8y4Kv
+         L2CA==
+X-Gm-Message-State: AOAM530M+MOYTTYja8yCtASZDhmqLfh9jeBUxQdf4WWLzEOeTEnJAJ5x
+        MSEhp7MX2iZdWY7uiFE7KeABL2FsoYzutiI4gIc=
+X-Google-Smtp-Source: ABdhPJwXdm3VL7bieUMtr1BfTjcSmohISUpITGC6QuDiCZ7r6aZrLr+fVUI/Vhh97A0izC4hduG3W7JYPpTz6MfQ1ZI=
+X-Received: by 2002:a05:6e02:1ba5:: with SMTP id n5mr1392214ili.45.1621288139279;
+ Mon, 17 May 2021 14:48:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="k7Ovt1DhdVgIdtca"
-Content-Disposition: inline
-In-Reply-To: <9edd6873034f474baafd70b1df693001@EX13D32EUC003.ant.amazon.com>
+References: <56270996-33a6-d71b-d935-452dad121df7@linux.alibaba.com>
+ <CAA93jw6LUAnWZj0b5FvefpDKUyd6cajCNLoJ6OKrwbu-V_ffrA@mail.gmail.com> <CA+FuTSf0Af2RXEG=rCthNNEb5mwKTG37gpEBBZU16qKkvmF=qw@mail.gmail.com>
+In-Reply-To: <CA+FuTSf0Af2RXEG=rCthNNEb5mwKTG37gpEBBZU16qKkvmF=qw@mail.gmail.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Mon, 17 May 2021 14:48:46 -0700
+Message-ID: <CAA93jw7Vr_pFMsPCrPadqaLGu0BdC-wtCmW2iyHFkHERkaiyWQ@mail.gmail.com>
+Subject: Re: virtio_net: BQL?
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        bloat <bloat@lists.bufferbloat.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, May 17, 2021 at 1:23 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Mon, May 17, 2021 at 2:44 PM Dave Taht <dave.taht@gmail.com> wrote:
+> >
+> > Not really related to this patch, but is there some reason why virtio
+> > has no support for BQL?
+>
+> There have been a few attempts to add it over the years.
+>
+> Most recently, https://lore.kernel.org/lkml/20181205225323.12555-2-mst@re=
+dhat.com/
+>
+> That thread has a long discussion. I think the key open issue remains
+>
+> "The tricky part is the mode switching between napi and no napi."
 
---k7Ovt1DhdVgIdtca
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 17 May 2021 23:43:59 +0200
-From: Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
-To: "Durrant, Paul" <pdurrant@amazon.co.uk>
-Cc: Michael Brown <mbrown@fensystems.co.uk>, "paul@xen.org" <paul@xen.org>,
-	"xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Ian Jackson <iwj@xenproject.org>, Wei Liu <wl@xen.org>,
-	Anthony PERARD <anthony.perard@citrix.com>
-Subject: Re: [PATCH] xen-netback: Check for hotplug-status existence before
- watching
+Oy, vey.
 
-On Tue, May 11, 2021 at 12:46:38PM +0000, Durrant, Paul wrote:
-> > -----Original Message-----
-> > From: Marek Marczykowski-G=C3=B3recki <marmarek@invisiblethingslab.com>
-> > Sent: 11 May 2021 11:45
-> > To: Durrant, Paul <pdurrant@amazon.co.uk>
-> > Cc: Michael Brown <mbrown@fensystems.co.uk>; paul@xen.org; xen-devel@li=
-sts.xenproject.org;
-> > netdev@vger.kernel.org; wei.liu@kernel.org
-> > Subject: RE: [EXTERNAL] [PATCH] xen-netback: Check for hotplug-status e=
-xistence before watching
-> >=20
-> > On Tue, May 11, 2021 at 12:40:54PM +0200, Marek Marczykowski-G=C3=B3rec=
-ki wrote:
-> > > On Tue, May 11, 2021 at 07:06:55AM +0000, Durrant, Paul wrote:
-> > > > > -----Original Message-----
-> > > > > From: Marek Marczykowski-G=C3=B3recki <marmarek@invisiblethingsla=
-b.com>
-> > > > > Sent: 10 May 2021 20:43
-> > > > > To: Michael Brown <mbrown@fensystems.co.uk>; paul@xen.org
-> > > > > Cc: paul@xen.org; xen-devel@lists.xenproject.org; netdev@vger.ker=
-nel.org; wei.liu@kernel.org;
-> > Durrant,
-> > > > > Paul <pdurrant@amazon.co.uk>
-> > > > > Subject: RE: [EXTERNAL] [PATCH] xen-netback: Check for hotplug-st=
-atus existence before watching
-> > > > >
-> > > > > On Mon, May 10, 2021 at 08:06:55PM +0100, Michael Brown wrote:
-> > > > > > If you have a suggested patch, I'm happy to test that it doesn'=
-t reintroduce
-> > > > > > the regression bug that was fixed by this commit.
-> > > > >
-> > > > > Actually, I've just tested with a simple reloading xen-netfront m=
-odule. It
-> > > > > seems in this case, the hotplug script is not re-executed. In fac=
-t, I
-> > > > > think it should not be re-executed at all, since the vif interface
-> > > > > remains in place (it just gets NO-CARRIER flag).
-> > > > >
-> > > > > This brings a question, why removing hotplug-status in the first =
-place?
-> > > > > The interface remains correctly configured by the hotplug script =
-after
-> > > > > all. From the commit message:
-> > > > >
-> > > > >     xen-netback: remove 'hotplug-status' once it has served its p=
-urpose
-> > > > >
-> > > > >     Removing the 'hotplug-status' node in netback_remove() is wro=
-ng; the script
-> > > > >     may not have completed. Only remove the node once the watch h=
-as fired and
-> > > > >     has been unregistered.
-> > > > >
-> > > > > I think the intention was to remove 'hotplug-status' node _later_=
- in
-> > > > > case of quickly adding and removing the interface. Is that right,=
- Paul?
-> > > >
-> > > > The removal was done to allow unbind/bind to function correctly. II=
-RC before the original patch
-> > doing a bind would stall forever waiting for the hotplug status to chan=
-ge, which would never happen.
+I didn't pay any attention to that discussion, sadly enough.
+
+It's been about that long (2018) since I paid any attention to
+bufferbloat in the cloud and my cloudy provider (linode) switched to
+using virtio when I wasn't looking. For over a year now, I'd been
+getting reports saying that comcast's pie rollout wasn't working as
+well as expected, that evenroute's implementation of sch_cake and sqm
+on inbound wasn't working right, nor pf_sense's and numerous other
+issues at Internet scale.
+
+Last week I ran a string of benchmarks against starlink's new services
+and was really aghast at what I found there, too. but the problem
+seemed deeper than in just the dishy...
+
+Without BQL, there's no backpressure for fq_codel to do its thing.
+None. My measurement servers aren't FQ-codeling
+no matter how much load I put on them. Since that qdisc is the default
+now in most linux distributions, I imagine that the bulk of the cloud
+is now behaving as erratically as linux was in 2011 with enormous
+swings in throughput and latency from GSO/TSO hitting overlarge rx/tx
+rings, [1], breaking various rate estimators in codel, pie and the tcp
+stack itself.
+
+See:
+
+http://fremont.starlink.taht.net/~d/virtio_nobql/rrul_-_evenroute_v3_server=
+_fq_codel.png
+
+See the swings in latency there? that's symptomatic of tx/rx rings
+filling and emptying.
+
+it wasn't until I switched my measurement server temporarily over to
+sch_fq that I got a rrul result that was close to the results we used
+to get from the virtualized e1000e drivers we were using in 2014.
+
+http://fremont.starlink.taht.net/~d/virtio_nobql/rrul_-_evenroute_v3_server=
+_fq.png
+
+While I have long supported the use of sch_fq for tcp-heavy workloads,
+it still behaves better with bql in place, and fq_codel is better for
+generic workloads... but needs bql based backpressure to kick in.
+
+[1] I really hope I'm overreacting but, um, er, could someone(s) spin
+up a new patch that does bql in some way even half right for this
+driver and help test it? I haven't built a kernel in a while.
+
+
+> > On Mon, May 17, 2021 at 11:41 AM Xianting Tian
+> > <xianting.tian@linux.alibaba.com> wrote:
 > > >
-> > > Hmm, in that case maybe don't remove it at all in the backend, and let
-> > > it be cleaned up by the toolstack, when it removes other backend-rela=
-ted
-> > > nodes?
-> >=20
-> > No, unbind/bind _does_ require hotplug script to be called again.
-> >=20
->=20
-> Yes, sorry I was misremembering. My memory is hazy but there was definite=
-ly a problem at the time with leaving the node in place.
->=20
-> > When exactly vif interface appears in the system (starts to be available
-> > for the hotplug script)? Maybe remove 'hotplug-status' just before that
-> > point?
-> >=20
->=20
-> I really can't remember any detail. Perhaps try reverting both patches th=
-en and check that the unbind/rmmod/modprobe/bind sequence still works (and =
-the backend actually makes it into connected state).
+> > > BUG_ON() uses unlikely in if(), which can be optimized at compile tim=
+e.
+> > >
+> > > Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+> > > ---
+> > >   drivers/net/virtio_net.c | 5 ++---
+> > >   1 file changed, 2 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index c921ebf3ae82..212d52204884 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -1646,10 +1646,9 @@ static int xmit_skb(struct send_queue *sq, str=
+uct
+> > > sk_buff *skb)
+> > >         else
+> > >                 hdr =3D skb_vnet_hdr(skb);
+> > >
+> > > -       if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
+> > > +       BUG_ON(virtio_net_hdr_from_skb(skb, &hdr->hdr,
+> > >                                     virtio_is_little_endian(vi->vdev)=
+, false,
+> > > -                                   0))
+> > > -               BUG();
+> > > +                                   0));
+> > >
+> > >         if (vi->mergeable_rx_bufs)
+> > >                 hdr->num_buffers =3D 0;
+> > > --
+> > > 2.17.1
+> > >
+> >
+> >
+> > --
+> > Latest Podcast:
+> > https://www.linkedin.com/feed/update/urn:li:activity:679101428493678592=
+0/
+> >
+> > Dave T=C3=A4ht CTO, TekLibre, LLC
 
-Ok, I've tried this. I've reverted both commits, then used your test
-script from the 9476654bd5e8ad42abe8ee9f9e90069ff8e60c17:
-   =20
-    This has been tested by running iperf as a server in the test VM and
-    then running a client against it in a continuous loop, whilst also
-    running:
-   =20
-    while true;
-      do echo vif-$DOMID-$VIF >unbind;
-      echo down;
-      rmmod xen-netback;
-      echo unloaded;
-      modprobe xen-netback;
-      cd $(pwd);
-      brctl addif xenbr0 vif$DOMID.$VIF;
-      ip link set vif$DOMID.$VIF up;
-      echo up;
-      sleep 5;
-      done
-   =20
-    in dom0 from /sys/bus/xen-backend/drivers/vif to continuously unbind,
-    unload, re-load, re-bind and re-plumb the backend.
-   =20
-In fact, the need to call `brctl` and `ip link` manually is exactly
-because the hotplug script isn't executed. When I execute it manually,
-the backend properly gets back to working. So, removing 'hotplug-status'
-was in the correct place (netback_remove). The missing part is the toolstack
-calling the hotplug script on xen-netback re-bind.
 
-In this case, I'm not sure what is the proper way. If I restart
-xendriverdomain service (I do run the backend in domU), it properly
-executes hotplug script and the backend interface gets properly
-configured. But it doesn't do it on its own. It seems to be related to
-device "state" in xenstore. The specific part of the libxl is
-backend_watch_callback():
-https://github.com/xen-project/xen/blob/master/tools/libs/light/libxl_devic=
-e.c#L1664
 
-    ddev =3D search_for_device(dguest, dev);
-    if (ddev =3D=3D NULL && state =3D=3D XenbusStateClosed) {
-        /*
-         * Spurious state change, device has already been disconnected
-         * or never attached.
-         */
-        goto skip;
-    } else if (ddev =3D=3D NULL) {
-        rc =3D add_device(egc, nested_ao, dguest, dev);
-        if (rc > 0)
-            free_ao =3D true;
-    } else if (state =3D=3D XenbusStateClosed && online =3D=3D 0) {
-        rc =3D remove_device(egc, nested_ao, dguest, ddev);
-        if (rc > 0)
-            free_ao =3D true;
-        check_and_maybe_remove_guest(gc, ddomain, dguest);
-    }
+--
+Latest Podcast:
+https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
 
-In short: if device gets XenbusStateInitWait for the first time (ddev =3D=3D
-NULL case), it goes to add_device() which executes the hotplug script
-and stores the device.
-Then, if device goes to XenbusStateClosed + online=3D=3D0 state, then it
-executes hotplug script again (with "offline" parameter) and forgets the
-device. If you unbind the driver, the device stays in
-XenbusStateConnected state (in xenstore), and after you bind it again,
-it goes to XenbusStateInitWait. It don't think it goes through
-XenbusStateClosed, and online stays at 1 too, so libxl doesn't execute
-the hotplug script again.
-
-Some solution could be to add an extra case at the end, like "ddev !=3D
-NULL && state =3D=3D XenbusStateInitWait && hotplug-status !=3D connected".
-And make sure xl devd won't call the same hotplug script multiple times
-for the same device _at the same time_ (I'm not sure about the async
-machinery here).
-
-But even if xl devd (aka xendriverdomain service) gets "fixes" to
-execute hotplug script in that case, I don't think it would work in
-backend in dom0 case - there, I think nothing watches already configured
-vif interfaces (there is no xl devd daemon in dom0, and xl background
-process watches only domain death and cdrom eject events).=20
-
-I'm adding toolstack maintainers, maybe they'll have some idea...
-
-In any case, the issue is not calling the hotplug script, responsible
-for configuring newly created vif interface. Not kernel waiting for it.
-So, I think both commits should still be reverted.
-
---=20
-Best Regards,
-Marek Marczykowski-G=C3=B3recki
-Invisible Things Lab
-
---k7Ovt1DhdVgIdtca
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhrpukzGPukRmQqkK24/THMrX1ywFAmCi46AACgkQ24/THMrX
-1ywsqAf/VEiZIJ5Qxk9keLiV804ReqfQfqsC6iuj3exTvVtvR7hzRRe1nMxvuVS6
-rjmYRoWYY5V36IH0GXaUb9wri7Kg8uBZ8J9fTsaq8sJTXj+Re0aFckoDTeTwkzJl
-CdpdgL1meNwvE7znIpA92LsObRPKqFPzAYMzFNt7eoaFYA7Y81n4nBKbKLfI4PiS
-r9mzZSevt3yzGnbU6thYvYbGfmlGYArgZZ2mKi8eaMfnh7lLtHBD692t6AARjce3
-j897zPf44EisvYMowITaF1A/D1SVl8cOabPzVj/VC2NP0z2Hjl46aRwrqd5FAM3V
-cVO/tttRGl7cxzMOexxRzyn3GeI2rg==
-=5+LX
------END PGP SIGNATURE-----
-
---k7Ovt1DhdVgIdtca--
+Dave T=C3=A4ht CTO, TekLibre, LLC
