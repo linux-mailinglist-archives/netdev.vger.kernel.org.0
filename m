@@ -2,252 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74DCF3839C0
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 18:25:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 510C13839CC
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 18:28:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345486AbhEQQ0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 12:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38396 "EHLO
+        id S1343577AbhEQQ3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 12:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345345AbhEQQ0o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 12:26:44 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AFDC068C8D
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 08:00:36 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id k14so6187014eji.2
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 08:00:36 -0700 (PDT)
+        with ESMTP id S245164AbhEQQ3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 12:29:00 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F43FC08EAE8;
+        Mon, 17 May 2021 08:10:11 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id t4so3305728plc.6;
+        Mon, 17 May 2021 08:10:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pn/+EPQx4YWBX4D95TzzBWysPxewf5b+RmeJB4j91mw=;
-        b=PBKn/Xy3D044E9PzIo/ECmHXKMJmzuz8Z4FpOzrCFrj1kB8HD17IkWMygDtbZzgOFU
-         oBOYtTVjsUHcgtwIgOi0hkt/oVgJfJsy7Au/Neeg5gBmyKd/hTbOWvdb4NqXZjg4eHYc
-         RoPFWop5ILbZzhmwHZi63oNknRwpYoVWPZyatNCu2mXZ88xwcouVj6zBaLqb0yX4BkbV
-         zVaqtEl2vVvoIwKrA6teMVuP1z0YFJYCQQ8t3UcVxJ1HAs6pRDMlJD3srBYoafjD0l7K
-         3wzB5JX2IxQK+OMra65DHbfSxZ9oGNgbb3p46BkHNLWbLo+t3bmn+jWVa0GuIe19npMW
-         auxQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=chSInzVZxBkEohiqw1SSneAq3KAzecc9iWecdDSIEps=;
+        b=VGGER6JsFStjVyWTnshPBgAuAJjHuNWUX/Hz1O7f+PfPU8XV/SouDJW7etR8Uol357
+         kmnIeerL2eABoTYqwUcpLymGda6wjOTfL7h/27yKTauBT2onRFlJl79u2nbm80aDgSU2
+         0ti5XZrWLNLpW7qvkcjlxjqL1xwU9teHhn0f0QIbk0ZiNxviiIZsW0idt8LqX/Qq6QWa
+         ZAGjSXBCmhN55RsXQ7OzkEUdCxsY181ciSge1KaNttuKeTisW4mANDEzmnlCl3Gro5Wf
+         fzbx3I5ebVNsasqngkJU4F0AE+As5cGRZJRu6H9jKmGEvSaJBGvoF1Ofb/zvG/GommpR
+         Z59Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pn/+EPQx4YWBX4D95TzzBWysPxewf5b+RmeJB4j91mw=;
-        b=sRzLhTQdiCgq+UUJ1amPelbRWicOBNNebR9U5HopPUXJ8pBPUxe6MUQe6dLzxE+ox9
-         5mD1xgsA1ZEqxbTBlUlnlCzB65VBTlU/r5herDO7f7ltJ0xbVivFmPLuUNNXpejbv1Ks
-         l6r4NrGSZz5ZjALjxkSCU83J/Otgxg8zzGU4WzK6xGdPqzOZePwnLlhFkhPH+kOulVik
-         QjQRHJV2d3vhzs0PvCWEqO4iS5JWcRAUYyIznTlSSjCDlRvYqCrjk2jwmyS+b/jJC0cf
-         UFtS/o6MVA1QKGF4UQRnVjkAWUgx73rO1F5Il9xCA+KIJYoBVf0j64bclwgq/e6Cfe0f
-         ytWw==
-X-Gm-Message-State: AOAM533iJ7sYyki4ULNyNutHCEVjuFW8RER2G/rxChxnfKzKns3CNQ/Q
-        0DF1WUfX73W604MCma7WWfEzp1cN6Zo=
-X-Google-Smtp-Source: ABdhPJxnwHPkUGA2lIGediv2AruWPU1VDf7EvZ2bJwnUCqDGPDlEXFGzpcDynrMFuNot6qk3jXLh7Q==
-X-Received: by 2002:a17:906:fc1e:: with SMTP id ov30mr326042ejb.526.1621263633001;
-        Mon, 17 May 2021 08:00:33 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id q16sm8696614ejm.12.2021.05.17.08.00.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 May 2021 08:00:32 -0700 (PDT)
-Date:   Mon, 17 May 2021 18:00:31 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Eldar Gasanov <eldargasanov2@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] mv88e6xxx: fixed adding vlan 0
-Message-ID: <20210517150031.bjdmls4kokjo6quf@skbuf>
-References: <20210517062506.5045-1-eldargasanov2@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=chSInzVZxBkEohiqw1SSneAq3KAzecc9iWecdDSIEps=;
+        b=hnVuIEbtOfHFhDz3YHTw9Qx7Pc9hU1V+i58McN7qiXXBbYAD0nSyBeWIltdyRewpEO
+         nGfdm9VRfboIsV3mWEpSALK7v98pEM14lA5mW/nCrnKjvThydy/nDu7z/aE5SDF70gaQ
+         N1Fny/2xoQktGB7tkOj3SPG5e2PHnBMnngGwDn9pRsxkxS5pCyYxJosk3jwyeF82L9/H
+         lpwAOz4OY+q2SVrTtFVhfyj9d/cqJM2P2rTBZAfWZFGatFGBVxQTVSP9yCmyUp99q+3u
+         prCDFzkCi3g2RgE/dm+O7JRstd6qycr2Ww4Ya7G9oKgVy7+27m5uJQZTZRDrd0961QPo
+         HG0w==
+X-Gm-Message-State: AOAM531j3XrGKkBb9IXOt7yqVOmbpXT+JRmtOQANFk6q4O8wwsUrc9uI
+        fgJc+CONee/Cjs27PDHtR2Zxyao5ZZuWXOe8
+X-Google-Smtp-Source: ABdhPJzWj8Pj1VUZhjA/v60Rr8+P7a/bSwobTKIblHiZc9umGQHLN0J3fHj0IXKRF+sMRTGJD3J0LQ==
+X-Received: by 2002:a17:90b:1b4f:: with SMTP id nv15mr424297pjb.56.1621264210688;
+        Mon, 17 May 2021 08:10:10 -0700 (PDT)
+Received: from [192.168.0.111] ([113.172.200.89])
+        by smtp.gmail.com with ESMTPSA id j27sm11328508pgb.54.2021.05.17.08.10.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 May 2021 08:10:10 -0700 (PDT)
+Subject: Re: [PATCH] bpf: Fix integer overflow in argument calculation for
+ bpf_map_area_alloc
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, hawk@kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        kpsingh@kernel.org, Jakub Sitnicki <jakub@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20210126082606.3183-1-minhquangbui99@gmail.com>
+ <CACAyw99bEYWJCSGqfLiJ9Jp5YE1ZsZSiJxb4RFUTwbofipf0dA@mail.gmail.com>
+ <20210127042341.GA4948@ubuntu>
+ <f4d20d92-2370-a8d3-d56c-408819a5f7f4@iogearbox.net>
+From:   Bui Quang Minh <minhquangbui99@gmail.com>
+Message-ID: <728b238e-a481-eb50-98e9-b0f430ab01e7@gmail.com>
+Date:   Mon, 17 May 2021 22:10:03 +0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210517062506.5045-1-eldargasanov2@gmail.com>
+In-Reply-To: <f4d20d92-2370-a8d3-d56c-408819a5f7f4@iogearbox.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eldar,
-
-On Mon, May 17, 2021 at 09:25:06AM +0300, Eldar Gasanov wrote:
-> 8021q module adds vlan 0 to all interfaces when it starts.
-> When 8021q module is loaded it isn't possible to create bond
-> with mv88e6xxx interfaces, bonding module dipslay error
-> "Couldn't add bond vlan ids", because it tries to add vlan 0
-> to slave interfaces.
+On 1/28/21 7:41 AM, Daniel Borkmann wrote:
+> On 1/27/21 5:23 AM, Bui Quang Minh wrote:
+>> On Tue, Jan 26, 2021 at 09:36:57AM +0000, Lorenz Bauer wrote:
+>>> On Tue, 26 Jan 2021 at 08:26, Bui Quang Minh 
+>>> <minhquangbui99@gmail.com> wrote:
+>>>>
+>>>> In 32-bit architecture, the result of sizeof() is a 32-bit integer so
+>>>> the expression becomes the multiplication between 2 32-bit integer 
+>>>> which
+>>>> can potentially leads to integer overflow. As a result,
+>>>> bpf_map_area_alloc() allocates less memory than needed.
+>>>>
+>>>> Fix this by casting 1 operand to u64.
+>>>
+>>> Some quick thoughts:
+>>> * Should this have a Fixes tag?
+>>
+>> Ok, I will add Fixes tag in later version patch.
+>>
+>>> * Seems like there are quite a few similar calls scattered around
+>>> (cpumap, etc.). Did you audit these as well?
+>>
+> [...]
+>> In cpumap,
+>>
+>>     static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+>>     {
+>>         cmap->cpu_map = bpf_map_area_alloc(cmap->map.max_entries *
+>>                            sizeof(struct bpf_cpu_map_entry *),
+>>                            cmap->map.numa_node);
+>>     }
+>>
+>> I think this is safe because max_entries is not permitted to be larger 
+>> than NR_CPUS.
 > 
-> Signed-off-by: Eldar Gasanov <eldargasanov2@gmail.com>
-> ---
->  drivers/net/dsa/mv88e6xxx/chip.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> Yes.
 > 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index eca285aaf72f..961fa6b75cad 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -1618,9 +1618,6 @@ static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
->  	struct mv88e6xxx_vtu_entry vlan;
->  	int i, err;
->  
-> -	if (!vid)
-> -		return -EOPNOTSUPP;
-> -
->  	/* DSA and CPU ports have to be members of multiple vlans */
->  	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
->  		return 0;
-> @@ -2109,6 +2106,9 @@ static int mv88e6xxx_port_vlan_add(struct dsa_switch *ds, int port,
->  	u8 member;
->  	int err;
->  
-> +	if (!vlan->vid)
-> +		return 0;
-> +
->  	err = mv88e6xxx_port_vlan_prepare(ds, port, vlan);
->  	if (err)
->  		return err;
-> -- 
-> 2.25.1
+>> In stackmap, there is a place that I'm not very sure about
+>>
+>>     static int prealloc_elems_and_freelist(struct bpf_stack_map *smap)
+>>     {
+>>         u32 elem_size = sizeof(struct stack_map_bucket) + 
+>> smap->map.value_size;
+>>         smap->elems = bpf_map_area_alloc(elem_size * 
+>> smap->map.max_entries,
+>>                          smap->map.numa_node);
+>>     }
+>>
+>> This is called after another bpf_map_area_alloc in stack_map_alloc(). 
+>> In the first
+>> bpf_map_area_alloc() the argument is calculated in an u64 variable; so 
+>> if in the second
+>> one, there is an integer overflow then the first one must be called 
+>> with size > 4GB. I
+>> think the first one will probably fail (I am not sure about the actual 
+>> limit of vmalloc()),
+>> so the second one might not be called.
 > 
+> I would sanity check this as well. Looks like k*alloc()/v*alloc() call 
+> sites typically
+> use array_size() which returns SIZE_MAX on overflow, 610b15c50e86 
+> ("overflow.h: Add
+> allocation size calculation helpers").
 
-Thank you for your patch.
+Hi,
 
-The reason why the 8021q module adds VLAN 0 to the hardware filtering
-list of the network device is to ensure that 802.1p-tagged packets are
-always received and treated as untagged, while on the other hand
-preserving their VLAN ID of 0.
+I almost forget about this patch, I have checked the bpf_map_area_alloc 
+in in stackmap.c and I can see that integer overflow cannot happen in 
+this stackmap.c case.
 
-This is described in commit ad1afb003939 ("vlan_dev: VLAN 0 should be
-treated as "no vlan tag" (802.1p packet)").
+In stack_map_alloc(),
 
-When we look at vlan_device_event(), we see that vlan_vid_add() is
-called without checking the error code. So when mv88e6xxx returns
--EOPNOTSUPP, the code carries along.
+	u64 cost;
+	...
+	cost = n_buckets * sizeof(struct stack_map_bucket *) + sizeof(*smap);
+	cost += n_buckets * (value_size + sizeof(struct stack_map_bucket));
+	smap = bpf_map_area_alloc(cost, bpf_map_attr_numa_node(attr)); (1)
+	...
+	prealloc_elems_and_freelist(smap);
 
-I spot an inconsistency within the 8021q module, because
-vlan_vids_add_by_dev() then checks the return code of vlan_vid_add(),
-resulting in the problem you are trying to fix here. I think it would be
-more self-consistent if vlan_vids_add_by_dev() would propagate the error
-only if vid is != 0.
+In prealloc_elems_and_freelist(),
 
-It can be said that the bug you are fixing is a regression introduced by
-my commit 9b236d2a69da ("net: dsa: Advertise the VLAN offload netdev
-ability only if switch supports it"). Tobias too tried to fix it here:
-https://patchwork.kernel.org/project/netdevbpf/cover/20210308150405.3694678-1-tobias@waldekranz.com/
+	u32 elem_size = sizeof(struct stack_map_bucket) + smap->map.value_size;
+	smap->elems = bpf_map_area_alloc(elem_size * smap->map.max_entries, 
+smap->map.numa_node); (2)
 
-However that is not the central point. Ignoring the errors operates in
-the good faith that the real_dev driver knows what it's doing, and
-satisfies the requirements of commit ad1afb003939 mentioned above. This
-is user-visible behavior, so it should better be compliant. And this is
-where I am not 100% clear on what is going on.
+Argument calculation at (1) is safe. Argument calculation at (2) can 
+potentially result in an integer overflow in 32-bit architecture. 
+However, if the integer overflow happens, it means argument at (1) must 
+be 2**32, which cannot pass the SIZE_MAX check in __bpf_map_area_alloc()
 
-The mv88e6xxx driver can refuse the configuration of VLAN ID 0 if it
-does the right thing and we can make either the mv88e6xxx layer, or the
-DSA layer (Tobias's patch) or the 8021q layer ignore that error code.
-But I would like to make sure that in either case, a packet with VID 0
-received by the mv88e6xxx ports will still contain VID 0, in the
-following situations:
+In __bpf_map_area_alloc()
 
-- The port is standalone
-- The port is under a VLAN-unaware bridge
-- The port is under a VLAN-aware bridge
+	if (size >= SIZE_MAX)
+		return NULL;
 
-I happen to have a mv88e6xxx testing device, and what I see is not
-exactly that. In the first two cases, we are ok, but when the port is
-under a VLAN-aware bridge, the packets are received as PVID-tagged:
+So I think the original patch has fixed instances of this bug pattern.
 
-# ip link add br0 type bridge vlan_filtering 1
-# ip link set lan24 master br0
-# bridge vlan add dev lan24 vid 34 pvid untagged
-# tcpdump -i lan24 -e -n
-tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
-listening on lan24, link-type EN10MB (Ethernet), capture size 262144 bytes
-17:32:29.896736 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 34, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2ef4 a9a7 d040  ...............@
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0001  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:32:29.898292 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 34, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2ef4 a9b7 1280  ................
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0002  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:32:29.898713 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 34, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2ef4 a9c6 54c0  ..............T.
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0003  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:32:29.899674 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 34, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2ef4 a9d5 9700  ................
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0004  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:32:29.902377 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 34, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2ef4 a9e4 d940  ...............@
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0005  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:32:29.904425 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 34, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2ef4 a9f4 1b80  ................
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0006  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:32:29.905049 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 34, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2ef4 aa03 5dc0  ..............].
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0007  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:32:29.906571 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 34, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2ef4 aa12 a000  ................
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0008  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:32:29.907048 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 34, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2ef4 aa21 e240  .............!.@
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0009  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:32:29.907575 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 34, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2ef4 aa31 2480  .............1$.
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 000a  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-# ip link set br0 type bridge vlan_filtering 0
-# tcpdump -i lan24 -e -n
-tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
-listening on lan24, link-type EN10MB (Ethernet), capture size 262144 bytes
-17:34:39.884637 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 0, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2f12 ee42 6440  ........../..Bd@
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0001  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:34:39.885968 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 0, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2f12 ee51 a680  ........../..Q..
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0002  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:34:39.886179 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 0, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2f12 ee60 e8c0  ........../..`..
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0003  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:34:39.886559 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 0, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2f12 ee70 2b00  ........../..p+.
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0004  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:34:39.887116 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 0, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2f12 ee7f 6d40  ........../...m@
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0005  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:34:39.888090 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 0, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2f12 ee8e af80  ........../.....
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0006  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:34:39.890813 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 0, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2f12 ee9d f1c0  ........../.....
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0007  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:34:39.892526 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 0, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2f12 eead 3400  ........../...4.
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0008  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:34:39.893230 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 0, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2f12 eebc 7640  ........../...v@
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 0009  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-17:34:39.895026 00:1f:7b:63:02:08 > d8:58:d7:00:ca:6d, ethertype 802.1Q (0x8100), length 64: vlan 0, p 0, ethertype 0x88f7,
-        0x0000:  0402 0000 0000 0000 15f1 2f12 eecb b880  ........../.....
-        0x0010:  0000 0000 0000 0000 0000 0000 0000 000a  ................
-        0x0020:  0000 dead beef dead beef dead beef       ..............
-
-The packets that were sent to the switch were the same in both cases.
-
-Strange, huh?
-
-There must be some VLAN retagging going on in the switch between VLAN ID
-0 and the port's PVID, but I can't find it.
+Thank you,
+Quang Minh.
