@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92FEE386D44
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 00:53:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81D85386D47
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 00:53:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344184AbhEQWy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 18:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
+        id S1344231AbhEQWy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 18:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344183AbhEQWys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 18:54:48 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42A8C061763
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 15:53:28 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id z17so8036292wrq.7
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 15:53:28 -0700 (PDT)
+        with ESMTP id S1344178AbhEQWyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 18:54:49 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6106CC061756
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 15:53:32 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id q5so8058164wrs.4
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 15:53:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IsSJbJrrRvUOfFfyLw4/1xRvXLssRnMYFv4V+J+GoJs=;
-        b=ZKmVdbBr7I/Hvq0LeI/DOPynoHXTDV6hINIeXS5sKo2m6nTBy9+OqSPWTqK0V7hyb4
-         cT6aHm9I9AhA+CWT+hJ99tArZ1i9I2iWw4xQpGo7fZCrCc4q7xp28DChULyBD8e5JOP8
-         1scGoeen+AoLjTTrzr1RLSfrcjrDoH/fmWfgbmt3qrBNHoj54LqDa1/2KteE7DTB2nFk
-         0avchn9sRtppSck0oX61zTANro19/jWV2gjifaEw9bZJKsxs4Dp2MN97gswcKtWboCgg
-         Kik0MnOGlchZLTJRzc52Syo/hhAG2xNQHYAIBhwfC4+KrxxjoCe9zlomM9gXIeLCtLMP
-         22TA==
+        bh=pK3iupwBoYGtCvFJdATRExYDmiCQBy7a92C+G/Pbh88=;
+        b=SbxIg04tx+ArMlJADwoOv/T14jsSdg+ly8uLk5Lu6In27+ip2ATi/DaOVhlO4w3eI3
+         KAmn7K5KTETwDpcEn035JbNTZhD1YG1F0Sr9cY/8B56VNtzpZeHsVlnlCip5DoIKGD6U
+         k2wqqncXkbcO5SOt0ZZsrhmJIkT26gzfzbpqDnSwWZyCwszOuEO5xkoTEm2IBMhmwxJl
+         6ANqtkLqZEZAl5KCkvL/dS6pa+RvRZ6qqB73PPF02C5O7g/fURiGTQmp1XcaYZsLEV0x
+         oe0mjkOxxdxKIQHWRKyhSfXchsiTKjAtOFOaagJxPZulK3GczNPZy0LgluK8fFBGN1gr
+         hzPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IsSJbJrrRvUOfFfyLw4/1xRvXLssRnMYFv4V+J+GoJs=;
-        b=uTLEBwoHF/XMj2xYm2Zk4ePoWbpszut/hVJ1LEnI8rgPax76Eb+FQLr3iVRTBPKuo1
-         5rXhSM3/hvzV0aa4or1moxDQqaEK07HrfPmte+PVQCppGFzdc4trGbu51lSz7ieCrWma
-         ehCfT3jO1jnvD7NLP7aXxPr7SIshFRLWxpaRtPUhyr4S57OJkpaSMcVa0KK+DlR6bdhs
-         IGON/vgYQcyrS49a1ISLSpVr4aqLmvOpjoIWlH98xGzWX/8yAeDdXrYqAgilAKd7/jqJ
-         ccva3SpEYRtID5gCpOjpi8N8D/mA5V2YyeRjAu3SD3dWrK8i7JMWgtrtUGHpU8A6R2j6
-         3lDA==
-X-Gm-Message-State: AOAM5331rCf3j4veLpnMThU1HflOZJmcIMO2GM+8rURMPcGUcrAmc84A
-        kL83sZUm6krAovvHwmvfXhaGCQ==
-X-Google-Smtp-Source: ABdhPJwDuvpVHaWIvI9STxcReNex/owAO7gbDE65ygBwWbsImM/w+bsXabDT8rYEWtB4l1CpsAPOMg==
-X-Received: by 2002:a05:6000:10d1:: with SMTP id b17mr2442588wrx.281.1621292007603;
-        Mon, 17 May 2021 15:53:27 -0700 (PDT)
+        bh=pK3iupwBoYGtCvFJdATRExYDmiCQBy7a92C+G/Pbh88=;
+        b=Soxyd0FtkzV8D/ap9c5OrCjX64fWtERBPYRqU8WovpPzbp2ENvGyWMdW/Bv4Et28rO
+         5x/YL4pXXOKnms8ABjI/FFAhxTqf2nEXsvChA+tVWjex4tMkUbJEnS0sFWtAealHitlY
+         AzYfHtShnTjdOIRz8pKrmTykM0IwSN0GHah0KN6GtoFU0E4rlqdjU3w+3y8J19YX+Sdv
+         q9r+0vrWLifZc2rscBXIIC1GY0haAv9QsOa77dJ1pJ2CMkpyevBGIZGZFoqazERN3uDL
+         McP9tyGeqjkNxARs04hDAdroHO7BQM2iRQ/9DdEb+gJf+QebYtrC+Smo6WXQ/al0GkPt
+         cChA==
+X-Gm-Message-State: AOAM532U2Yaf0eiyBJUvJLeT4hvXUpMMSRm+5qQ6D84LCzwVEv271FMr
+        J+S39Cjgd/rX8UrtPOA1lL+Lyg==
+X-Google-Smtp-Source: ABdhPJxV1/zzO94H4gXiuw9I2n83v9F3qnNxRE7auETPKA17XyRgwOIfnPCs9UOydQoEw/FgZq5Cxg==
+X-Received: by 2002:adf:ed46:: with SMTP id u6mr1405382wro.295.1621292011131;
+        Mon, 17 May 2021 15:53:31 -0700 (PDT)
 Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id j14sm770438wmj.19.2021.05.17.15.53.26
+        by smtp.gmail.com with ESMTPSA id h14sm23557487wrq.45.2021.05.17.15.53.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 May 2021 15:53:27 -0700 (PDT)
+        Mon, 17 May 2021 15:53:30 -0700 (PDT)
 From:   Dmitrii Banshchikov <me@ubique.spb.ru>
 To:     bpf@vger.kernel.org
 Cc:     Dmitrii Banshchikov <me@ubique.spb.ru>, ast@kernel.org,
@@ -54,9 +54,9 @@ Cc:     Dmitrii Banshchikov <me@ubique.spb.ru>, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org,
         netdev@vger.kernel.org, rdna@fb.com
-Subject: [PATCH bpf-next 02/11] bpfilter: Add logging facility
-Date:   Tue, 18 May 2021 02:52:59 +0400
-Message-Id: <20210517225308.720677-3-me@ubique.spb.ru>
+Subject: [PATCH bpf-next 03/11] bpfilter: Add IO functions
+Date:   Tue, 18 May 2021 02:53:00 +0400
+Message-Id: <20210517225308.720677-4-me@ubique.spb.ru>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210517225308.720677-1-me@ubique.spb.ru>
 References: <20210517225308.720677-1-me@ubique.spb.ru>
@@ -66,43 +66,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are three logging levels for messages: FATAL, NOTICE and DEBUG.
-When a message is logged with FATAL level it results in bpfilter
-usermode helper termination.
+Introduce IO functions for:
+1) reading and writing data from a descriptor: read_exact(), write_exact(),
+2) reading and writing memory of other processes: pvm_read(), pvm_write().
 
-Introduce struct context to avoid use of global objects and store there
-the logging parameters: log level and log sink.
+read_exact() and write_exact() are wrappers over read(2)/write(2) with
+correct handling of partial read/write. These functions are intended to
+be used for communication over pipe with the kernel part of bpfilter.
+
+pvm_read() and pvm_write() are wrappers over
+process_vm_readv(2)/process_vm_writev(2) with an interface that uses a
+single buffer instead of vectored form. These functions are intended to
+be used for readining/writing memory buffers supplied to iptables ABI
+setsockopt(2) from other processes.
 
 Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
 ---
- net/bpfilter/Makefile  |  2 +-
- net/bpfilter/bflog.c   | 29 +++++++++++++++++++++++++++++
- net/bpfilter/bflog.h   | 24 ++++++++++++++++++++++++
- net/bpfilter/context.h | 16 ++++++++++++++++
- 4 files changed, 70 insertions(+), 1 deletion(-)
- create mode 100644 net/bpfilter/bflog.c
- create mode 100644 net/bpfilter/bflog.h
- create mode 100644 net/bpfilter/context.h
+ net/bpfilter/Makefile                         |   2 +-
+ net/bpfilter/io.c                             |  77 ++++++++++++++
+ net/bpfilter/io.h                             |  18 ++++
+ .../testing/selftests/bpf/bpfilter/.gitignore |   2 +
+ tools/testing/selftests/bpf/bpfilter/Makefile |  17 +++
+ .../testing/selftests/bpf/bpfilter/test_io.c  | 100 ++++++++++++++++++
+ 6 files changed, 215 insertions(+), 1 deletion(-)
+ create mode 100644 net/bpfilter/io.c
+ create mode 100644 net/bpfilter/io.h
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/.gitignore
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/Makefile
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_io.c
 
 diff --git a/net/bpfilter/Makefile b/net/bpfilter/Makefile
-index cdac82b8c53a..874d5ef6237d 100644
+index 874d5ef6237d..69a6c139fc7a 100644
 --- a/net/bpfilter/Makefile
 +++ b/net/bpfilter/Makefile
 @@ -4,7 +4,7 @@
  #
  
  userprogs := bpfilter_umh
--bpfilter_umh-objs := main.o
-+bpfilter_umh-objs := main.o bflog.o
+-bpfilter_umh-objs := main.o bflog.o
++bpfilter_umh-objs := main.o bflog.o io.o
  userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
  
  ifeq ($(CONFIG_BPFILTER_UMH), y)
-diff --git a/net/bpfilter/bflog.c b/net/bpfilter/bflog.c
+diff --git a/net/bpfilter/io.c b/net/bpfilter/io.c
 new file mode 100644
-index 000000000000..2752e39060e4
+index 000000000000..e645ae9d7a50
 --- /dev/null
-+++ b/net/bpfilter/bflog.c
-@@ -0,0 +1,29 @@
++++ b/net/bpfilter/io.c
+@@ -0,0 +1,77 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2021 Telegram FZ-LLC
@@ -110,80 +121,237 @@ index 000000000000..2752e39060e4
 +
 +#define _GNU_SOURCE
 +
-+#include "bflog.h"
++#include "io.h"
 +
-+#include <stdarg.h>
-+#include <stdio.h>
-+#include <stdlib.h>
++#include <errno.h>
++#include <sys/uio.h>
++#include <unistd.h>
 +
-+#include "context.h"
++#define do_exact(fd, op, buffer, count)                                                            \
++	({                                                                                         \
++		size_t total = 0;                                                                  \
++		int err = 0;                                                                       \
++												   \
++		do {                                                                               \
++			const ssize_t part = op(fd, (buffer) + total, (count) - total);            \
++			if (part > 0) {                                                            \
++				total += part;                                                     \
++			} else if (part == 0 && (count) > 0) {                                     \
++				err = -EIO;                                                        \
++				break;                                                             \
++			} else if (part == -1) {                                                   \
++				if (errno == EINTR)                                                \
++					continue;                                                  \
++				err = -errno;                                                      \
++				break;                                                             \
++			}                                                                          \
++		} while (total < (count));                                                         \
++												   \
++		err;                                                                               \
++	})
 +
-+void bflog(struct context *ctx, int level, const char *fmt, ...)
++int read_exact(int fd, void *buffer, size_t count)
 +{
-+	if (ctx->log_file &&
-+	    (level == BFLOG_LEVEL_FATAL || (level & ctx->log_level))) {
-+		va_list va;
-+
-+		va_start(va, fmt);
-+		vfprintf(ctx->log_file, fmt, va);
-+		va_end(va);
-+	}
-+
-+	if (level == BFLOG_LEVEL_FATAL)
-+		exit(EXIT_FAILURE);
++	return do_exact(fd, read, buffer, count);
 +}
-diff --git a/net/bpfilter/bflog.h b/net/bpfilter/bflog.h
++
++int write_exact(int fd, const void *buffer, size_t count)
++{
++	return do_exact(fd, write, buffer, count);
++}
++
++int pvm_read(pid_t pid, void *to, const void *from, size_t count)
++{
++	const struct iovec r_iov = { .iov_base = (void *)from, .iov_len = count };
++	const struct iovec l_iov = { .iov_base = to, .iov_len = count };
++	size_t total_bytes;
++
++	total_bytes = process_vm_readv(pid, &l_iov, 1, &r_iov, 1, 0);
++	if (total_bytes == -1)
++		return -errno;
++
++	if (total_bytes != count)
++		return -EFAULT;
++
++	return 0;
++}
++
++int pvm_write(pid_t pid, void *to, const void *from, size_t count)
++{
++	const struct iovec l_iov = { .iov_base = (void *)from, .iov_len = count };
++	const struct iovec r_iov = { .iov_base = to, .iov_len = count };
++	size_t total_bytes;
++
++	total_bytes = process_vm_writev(pid, &l_iov, 1, &r_iov, 1, 0);
++	if (total_bytes == -1)
++		return -errno;
++
++	if (total_bytes != count)
++		return -EFAULT;
++
++	return 0;
++}
+diff --git a/net/bpfilter/io.h b/net/bpfilter/io.h
 new file mode 100644
-index 000000000000..4ed12791cfa1
+index 000000000000..ab56c8bb8e61
 --- /dev/null
-+++ b/net/bpfilter/bflog.h
-@@ -0,0 +1,24 @@
++++ b/net/bpfilter/io.h
+@@ -0,0 +1,18 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (c) 2021 Telegram FZ-LLC
 + */
 +
-+#ifndef NET_BPFILTER_BFLOG_H
-+#define NET_BPFILTER_BFLOG_H
++#ifndef NET_BPFILTER_IO_H
++#define NET_BPFILTER_IO_H
 +
-+struct context;
++#include <stddef.h>
++#include <sys/types.h>
 +
-+#define BFLOG_IMPL(ctx, level, fmt, ...) bflog(ctx, level, "bpfilter: " fmt, ##__VA_ARGS__)
++int read_exact(int fd, void *buffer, size_t count);
++int write_exact(int fd, const void *buffer, size_t count);
 +
-+#define BFLOG_LEVEL_FATAL (0)
-+#define BFLOG_LEVEL_NOTICE (1)
-+#define BFLOG_LEVEL_DEBUG (2)
++int pvm_read(pid_t pid, void *to, const void *from, size_t count);
++int pvm_write(pid_t pid, void *to, const void *from, size_t count);
 +
-+#define BFLOG_FATAL(ctx, fmt, ...)                                                                 \
-+	BFLOG_IMPL(ctx, BFLOG_LEVEL_FATAL, "fatal error: " fmt, ##__VA_ARGS__)
-+#define BFLOG_NOTICE(ctx, fmt, ...) BFLOG_IMPL(ctx, BFLOG_LEVEL_NOTICE, fmt, ##__VA_ARGS__)
-+#define BFLOG_DEBUG(ctx, fmt, ...) BFLOG_IMPL(ctx, BFLOG_LEVEL_DEBUG, fmt, ##__VA_ARGS__)
-+
-+void bflog(struct context *ctx, int level, const char *fmt, ...);
-+
-+#endif // NET_BPFILTER_BFLOG_H
-diff --git a/net/bpfilter/context.h b/net/bpfilter/context.h
++#endif // NET_BPFILTER_IO_H
+diff --git a/tools/testing/selftests/bpf/bpfilter/.gitignore b/tools/testing/selftests/bpf/bpfilter/.gitignore
 new file mode 100644
-index 000000000000..e85c97c3d010
+index 000000000000..f5785e366013
 --- /dev/null
-+++ b/net/bpfilter/context.h
-@@ -0,0 +1,16 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (c) 2021 Telegram FZ-LLC
-+ */
++++ b/tools/testing/selftests/bpf/bpfilter/.gitignore
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0-only
++test_io
+diff --git a/tools/testing/selftests/bpf/bpfilter/Makefile b/tools/testing/selftests/bpf/bpfilter/Makefile
+new file mode 100644
+index 000000000000..c02d72d89199
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/Makefile
+@@ -0,0 +1,17 @@
++# SPDX-License-Identifier: GPL-2.0
 +
-+#ifndef NET_BPFILTER_CONTEXT_H
-+#define NET_BPFILTER_CONTEXT_H
++top_srcdir = ../../../../..
++TOOLSDIR := $(abspath ../../../../)
++TOOLSINCDIR := $(TOOLSDIR)/include
++APIDIR := $(TOOLSINCDIR)/uapi
++BPFILTERSRCDIR := $(top_srcdir)/net/bpfilter
 +
++CFLAGS += -Wall -g -pthread -I$(TOOLSINCDIR) -I$(APIDIR) -I$(BPFILTERSRCDIR)
++
++TEST_GEN_PROGS += test_io
++
++KSFT_KHDR_INSTALL := 1
++
++include ../../lib.mk
++
++$(OUTPUT)/test_io: test_io.c $(BPFILTERSRCDIR)/io.c
+diff --git a/tools/testing/selftests/bpf/bpfilter/test_io.c b/tools/testing/selftests/bpf/bpfilter/test_io.c
+new file mode 100644
+index 000000000000..e4294930c581
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/test_io.c
+@@ -0,0 +1,100 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include "io.h"
++
++#include <signal.h>
++#include <stdint.h>
 +#include <stdio.h>
++#include <string.h>
++#include <sys/types.h>
++#include <sys/wait.h>
++#include <unistd.h>
 +
-+struct context {
-+	FILE *log_file;
-+	int log_level;
++#include "../../kselftest_harness.h"
++
++FIXTURE(test_pvm)
++{
++	int wstatus;
++	int fd[2];
++	pid_t pid;
++	pid_t ppid;
++	char expected[5];
++	char actual[5];
 +};
 +
-+#endif // NET_BPFILTER_CONTEXT_H
++FIXTURE_SETUP(test_pvm)
++{
++	snprintf(self->expected, sizeof(self->expected), "ipfw");
++	memset(self->actual, 0, sizeof(self->actual));
++	self->ppid = getpid();
++	ASSERT_EQ(pipe(self->fd), 0);
++	self->pid = fork();
++	ASSERT_NE(self->pid, -1) TH_LOG("Cannot fork(): %m\n");
++	close(self->fd[!!self->pid]);
++};
++
++FIXTURE_TEARDOWN(test_pvm)
++{
++	int wstatus;
++
++	if (!self->pid)
++		exit(0);
++
++	kill(self->pid, SIGKILL);
++	waitpid(self->pid, &wstatus, -2);
++	close(self->fd[1]);
++}
++
++TEST_F(test_pvm, read)
++{
++	if (!self->pid) {
++		const uint8_t baton = 'x';
++
++		memcpy(self->actual, self->expected, sizeof(self->actual));
++		ASSERT_EQ(write(self->fd[1], &baton, sizeof(baton)), sizeof(baton));
++
++		pause();
++		exit(0);
++	} else {
++		int err;
++		uint8_t baton;
++
++		EXPECT_EQ(read(self->fd[0], &baton, sizeof(baton)), sizeof(baton));
++		EXPECT_EQ(baton, 'x');
++
++		err = pvm_read(self->pid, &self->actual, &self->actual, sizeof(self->actual));
++		EXPECT_EQ(err, 0)
++		TH_LOG("Cannot pvm_read(): %s\n", strerror(-err));
++
++		EXPECT_EQ(memcmp(&self->expected, &self->actual, sizeof(self->actual)), 0);
++	}
++}
++
++TEST_F(test_pvm, write)
++{
++	if (getuid())
++		SKIP(return, "pvm_write requires CAP_SYS_PTRACE");
++
++	if (!self->pid) {
++		const uint8_t baton = 'x';
++		int err;
++
++		err = pvm_write(self->ppid, &self->actual, &self->expected, sizeof(self->expected));
++		EXPECT_EQ(err, 0) TH_LOG("Cannot pvm_write: %s\n", strerror(-err));
++
++		ASSERT_EQ(write(self->fd[1], &baton, sizeof(baton)), sizeof(baton));
++
++		pause();
++		exit(0);
++
++	} else {
++		uint8_t baton;
++
++		EXPECT_EQ(read(self->fd[0], &baton, sizeof(baton)), sizeof(baton));
++		EXPECT_EQ(baton, 'x');
++
++		EXPECT_EQ(memcmp(&self->expected, &self->actual, sizeof(self->actual)), 0);
++	}
++}
++
++TEST_HARNESS_MAIN
 -- 
 2.25.1
 
