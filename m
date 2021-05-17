@@ -2,81 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87ACD382C90
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 14:50:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E89382D1D
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 15:16:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233280AbhEQMvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 08:51:55 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:47992 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237130AbhEQMvw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 08:51:52 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-149-wut8-mPqOHOv3M2Sd2gB7Q-1; Mon, 17 May 2021 13:50:33 +0100
-X-MC-Unique: wut8-mPqOHOv3M2Sd2gB7Q-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Mon, 17 May 2021 13:50:30 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.015; Mon, 17 May 2021 13:50:30 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Neal Cardwell' <ncardwell@google.com>,
-        louisrossberg <louisrossberg@protonmail.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: RE: Listening on a TCP socket from a Kernel Module
-Thread-Topic: Listening on a TCP socket from a Kernel Module
-Thread-Index: AQHXSr+3GMYNZUgdCkOEAPNeLW2sIqrnnyqg
-Date:   Mon, 17 May 2021 12:50:30 +0000
-Message-ID: <576922badb254ef0a73443a7752ba9c8@AcuMS.aculab.com>
-References: <5J_z4QNPMBAk4y0rGshI7mBykT1tivh3037CbQRYXTu_Ra6zuojEcI0RB04ghXQxgdtDbt3YFv6sA882mrFyTdzQePwHwvLoECnqFTnYNZI=@protonmail.com>
- <CADVnQymGvCTEzdd8dSLZnn0dwnHAoNiwo72yEFeNr47+Na8GDg@mail.gmail.com>
-In-Reply-To: <CADVnQymGvCTEzdd8dSLZnn0dwnHAoNiwo72yEFeNr47+Na8GDg@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S235627AbhEQNRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 09:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235470AbhEQNRn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 09:17:43 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CADC061573;
+        Mon, 17 May 2021 06:16:27 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94.2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1lid6Y-00ALU5-VK; Mon, 17 May 2021 15:16:19 +0200
+Message-ID: <048c4fb6c91931e9fcd240df7a5586633893c31a.camel@sipsolutions.net>
+Subject: Re: [syzbot] divide error in mac80211_hwsim_bss_info_changed
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     syzbot <syzbot+26727b5e00947e02242c@syzkaller.appspotmail.com>,
+        davem@davemloft.net, kuba@kernel.org, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Date:   Mon, 17 May 2021 15:16:17 +0200
+In-Reply-To: <000000000000fb328005c2844acc@google.com> (sfid-20210517_124535_257596_E84F0A94)
+References: <000000000000fb328005c2844acc@google.com>
+         (sfid-20210517_124535_257596_E84F0A94)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogTmVhbCBDYXJkd2VsbA0KPiBTZW50OiAxNyBNYXkgMjAyMSAwMjo1NQ0KPiANCj4gT24g
-U3VuLCBNYXkgMTYsIDIwMjEgYXQgNzoyMCBQTSBsb3Vpc3Jvc3NiZXJnDQo+IDxsb3Vpc3Jvc3Ni
-ZXJnQHByb3Rvbm1haWwuY29tPiB3cm90ZToNCj4gPg0KPiA+IEhlbGxvLCBjYW4gc29tZWJvZHkg
-cG9pbnQgbWUgaW4gdGhlIHJpZ2h0IGRpcmVjdGlvbiBmb3INCj4gPiB3aGF0IEkgd291bGQgdXNl
-IHRvIGxpc3RlbiBvbiBhIFRDUCBzb2NrZXQgZnJvbSB0aGUNCj4gPiBrZXJuZWw/IEkgYW0gd29y
-a2luZyBvbiBhIGtlcm5lbCBtb2R1bGUgYW5kIGhhdmUgc3BlbnQgdGhlDQo+ID4gcGFzdCBkYXkg
-bG9va2luZyB0aHJvdWdoIGluY2x1ZGUvbmV0IGFuZCBpbmNsdWRlL2xpbnV4IGZvcg0KPiA+IHNv
-bWV0aGluZyB0aGF0IHdvdWxkIGFsbG93IG1lIHRvIGRvIHNvLiBJIGtub3cgVENQDQo+ID4gbGlz
-dGVuaW5nIGlzIHR5cGljYWxseSBkb25lIGluIHVzZXJzcGFjZSwgYnV0IGl0IHNob3VsZCBiZQ0K
-PiA+IHBvc3NpYmxlIGF0IHRoZSBrZXJuZWwgbGV2ZWwgcmlnaHQ/ICB0Y3BfZGlhZyBsb29rcw0K
-PiA+IHByb21pc2luZywgYnV0IGl0IHNlZW1zIGxpa2UgdGhhdCBpcyBtYWlubHkgZm9yIG1vbml0
-b3JpbmcNCj4gPiBzb2NrZXRzLCBhbmQgSSdtIG5vdCBzdXJlIGlmIEkgd291bGQgYmUgYWJsZSB0
-byBwcm92aWRlDQo+ID4gcmVzcG9uc2VzIGZyb20gaXQuDQo+ID4NCj4gPiBMb3VpcyBSb3NzYmVy
-ZywNCj4gPiBXYXJwZWQgVGVjaG5vbG9naWVzDQo+IA0KPiBQZXJoYXBzIGtlcm5lbF9saXN0ZW4o
-KSBhbmQgcmVsYXRlZCBmdW5jdGlvbnMgKGtlcm5lbF9iaW5kKCksDQo+IGtlcm5lbF9hY2NlcHQo
-KSwgZXRjLikgaW4gbmV0L3NvY2tldC5jIG1pZ2h0IGRvIHRoZSB0cmljayBmb3IgeW91ciB1c2UN
-Cj4gY2FzZT8gTG9va2luZyBhdCBob3cgdGhlIGNhbGxlcnMgb2YgdGhlc2UgZnVuY3Rpb25zIHN0
-cnVjdHVyZSB0aGVpcg0KPiBjb2RlIG1pZ2h0IGdpdmUgeW91IGVub3VnaCB0byBnbyBvbi4NCg0K
-VGhleSBzaG91bGQgd29yay4NClRoZXJlIGFyZSBhIGNvdXBsZSBvZiBpc3N1ZXMgdGhvdWdoOg0K
-LSBUaGVyZSBpcyBubyBnZXRzb2Nrb3B0KCkgc3VwcG9ydCBpbiBjdXJyZW50IGtlcm5lbHMuDQot
-IFlvdSBtYXkgbmVlZCB0byB1c2UgX19zb2NrX2NyZWF0ZSgpIHJhdGhlciB0aGFuIHNvY2tfY3Jl
-YXRlX2tlcm4oKQ0KICBpbiBvcmRlciB0byBob2xkIGEgcmVmZXJlbmNlIHRvIHRoZSBuZXR3b3Jr
-IG5hbWVzcGFjZS4NCkl0IG1heSBiZSBwb3NzaWJsZSB0byB1c2UgdGhlIHdha2V1cCBjYWxsYmFj
-a3MgdGhhdCBzZWxlY3QvcG9sbCB1c2UuDQpCdXQgaXQgaXMgcHJvYmFibHkgc2FmZXIgdG8gdXNl
-IGJsb2NraW5nIG9wZXJhdGlvbnMgZnJvbSBhIHNlcGFyYXRlDQprZXJuZWwgdGhyZWFkLg0KDQoJ
-RGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1v
-dW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEz
-OTczODYgKFdhbGVzKQ0K
+On Mon, 2021-05-17 at 03:45 -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    eebe426d Merge tag 'fixes-for-5.12-rc7' of git://git.kerne..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15e73ceed00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=9c3d8981d2bdb103
+> dashboard link: https://syzkaller.appspot.com/bug?extid=26727b5e00947e02242c
+> compiler:       Debian clang version 11.0.1-2
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+
+That's not very surprising ...
+
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+26727b5e00947e02242c@syzkaller.appspotmail.com
+> 
+> divide error: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 1 PID: 13049 Comm: kworker/u4:16 Not tainted 5.12.0-rc7-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Workqueue: phy10 ieee80211_roc_work
+> RIP: 0010:mac80211_hwsim_bss_info_changed+0x514/0xf90 drivers/net/wireless/mac80211_hwsim.c:2024
+
+The issue here is that we have the following code in offchannel.c:
+
+        mutex_lock(&local->iflist_mtx);
+        list_for_each_entry(sdata, &local->interfaces, list) {
+...
+                if (test_and_clear_bit(SDATA_STATE_OFFCHANNEL_BEACON_STOPPED,
+                                       &sdata->state)) {
+                        sdata->vif.bss_conf.enable_beacon = true;
+                        ieee80211_bss_info_change_notify(
+                                sdata, BSS_CHANGED_BEACON_ENABLED);
+                }
+
+
+However, we have the following code in ibss.c
+ieee80211_ibss_disconnect():
+
+        sdata->vif.bss_conf.ibss_joined = false;
+        sdata->vif.bss_conf.ibss_creator = false;
+        sdata->vif.bss_conf.enable_beacon = false;
+        sdata->vif.bss_conf.ssid_len = 0;
+
+        /* remove beacon */
+        presp = rcu_dereference_protected(ifibss->presp,
+                                          lockdep_is_held(&sdata->wdev.mtx));
+        RCU_INIT_POINTER(sdata->u.ibss.presp, NULL);
+        if (presp)
+                kfree_rcu(presp, rcu_head);
+
+        clear_bit(SDATA_STATE_OFFCHANNEL_BEACON_STOPPED, &sdata->state);
+        ieee80211_bss_info_change_notify(sdata, BSS_CHANGED_BEACON_ENABLED |
+                                                BSS_CHANGED_IBSS);
+
+
+There's no common locking here, so it's simply racy.
+
+Normally, all of the ieee80211_ibss_disconnect() happens together, but
+if ieee80211_offchannel_return() happens to hit here before
+SDATA_STATE_OFFCHANNEL_BEACON_STOPPED is cleared, we might inadvertently
+enable beaconing while the interface is actually stopping.
+
+I'm not really sure what happens next, but perhaps the interface is
+going down and the beacon_int is reset to 0, or such, leading to the
+problem at hand.
+
+
+Off the top of my head, I don't really have a good idea about how to fix
+this - we'd want to add some more consistent locking everywhere. I
+assume that with the rtnl-weaning having happened, that might simply
+consist in aligning mac80211 to the cfg80211 wiphy mutex everywhere.
+
+johannes
 
