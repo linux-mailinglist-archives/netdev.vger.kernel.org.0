@@ -2,65 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A449F382AC1
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 13:18:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF797382ADF
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 13:23:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236681AbhEQLTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 07:19:34 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:42815 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236649AbhEQLTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 07:19:32 -0400
-Received: by mail-il1-f200.google.com with SMTP id d3-20020a9287430000b0290181f7671fa1so6016117ilm.9
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 04:18:16 -0700 (PDT)
+        id S236751AbhEQLYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 07:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236724AbhEQLYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 07:24:24 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B90C061756
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 04:23:07 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id o27so5266244qkj.9
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 04:23:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cGXyzC3xCgpRlUaTw4nhuXE8ujIwP8PHRI02BxbUIzk=;
+        b=hHnlguesEZvTDV6FOr8biYKXwcmYfPCRrejdnY94HsmRi2/jQTnWUY4HKqmrXf8ozA
+         TTjZe/epTZyVJHXPeLl1mpSV0TzB0gxtGp15c8cP8u5caTgj/Z0BDwryv9yU0JgYt/Zi
+         VeQZh9Pe4j3DdVPKJAxyHIfONc95kupj3AR2ygeJOk9Py5pZgm3CsfGPq8ODhYpYx6zg
+         xMtgAJdMG9IpQr6T/a3G3/GbIfbVnKu6F3qIm6a5xoacOiNBOc9jZW1rar6TCl1wWe8n
+         HHRMZYs2AoqT8MOgUGqpdetz8TRZWgNqOVFuGdOTVRHqsx5iyug639wN4Hm2Dy7zHkg+
+         rIsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=TumcrPWSHOPmLZFYsJVF0O8QRP0L4167G/1IgC90SgY=;
-        b=AQmKol2eeBWiYBPuUUEj8Nl190Ngim7OVfFn4N0A3dyC6sozf/qarpd3htPOG3q9Sp
-         WXLpe3hWOFKu9ssAiVdQdeg6FLeA1URBdK28njqb378nIXfjmyG77axBZltC5bjL8gyO
-         kvg5fh62Titp0MF45rX6SzyNrICRuHHm4BEJM393hy+SwQ0TjPOUuYXMlqzxFOf+cwjN
-         1t8PapWM/gKw6k9P4wpYbYpSESDEwrf/cvi4eSp3noPuoZeSsCGqqP5Mapenc++KbKhO
-         2kdpFh5+Q4Yo9lTL40MCTEp3GjsG+PJAwno/qSlz6xY+0J2F9Njx9uZjHRfa4NL5shfU
-         +9BQ==
-X-Gm-Message-State: AOAM531oGqaF3rJyrcD6SQDRCG4g5OKmf44J74q/8a4WOIwWTSLemhb0
-        1ZMredju8hywoNY3NA+0e3VWpiC/R8gCA7qOeZUsgz5ueAi+
-X-Google-Smtp-Source: ABdhPJwoVBY9p3imCV8IJuj/vluJrCa6N+ONaXgfkSQsvm0GAZHh8D3LUIsi12UfoL3uTQgXky2a2YpmevmKxui85G7M84TAjA61
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cGXyzC3xCgpRlUaTw4nhuXE8ujIwP8PHRI02BxbUIzk=;
+        b=ZWvzrZ8mqZee1xylzsFayR3jq5+UCsmXC6GxDnRw6z28wSwC4Wnm3tHH7EcH8OUiIB
+         l/TJv8awcmhT4qT3WZubXXGqkXUdOOd19zGBTx1cEURpS345KwdagU3oU5xBuVC+2CNb
+         /mJQqxkDXgikmDd6HQdu8Li8OqFy6tEBvKtqGt2uXfD+rCiy70q5PFgToDpPeGSCw2ZV
+         fhSXL6Ql6y2WhkGBhGsFFhjmromTywPh4NnIjhSEyGTRepHVbayFHHiWF6lP5hejH8nq
+         BjZlI0hlOZkPY8byBijktsQEm4GTEKNLDAs6NL1ecW4z2z5EwU+YMsTvq7F6Kx+0qW8I
+         yRjw==
+X-Gm-Message-State: AOAM5336WaM9/mneesdqQnkK2wNL48l3YY3RYmTFSpN2HhCWCZfgz8r9
+        48GwSqU1HwQ75THT7rcTd+zCb7MqnfBKAep6Aoe3CQ==
+X-Google-Smtp-Source: ABdhPJwgPIEbKldHHF9kAFjl5ptOQnByTRSDuEzK1mg0bz7f2HWmxIgJRgFHN3bsULOZlBTHNecgUD8eHFY2e+kgTlU=
+X-Received: by 2002:a37:c20a:: with SMTP id i10mr56682524qkm.350.1621250585598;
+ Mon, 17 May 2021 04:23:05 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:c87:: with SMTP id b7mr4000428ile.209.1621250296611;
- Mon, 17 May 2021 04:18:16 -0700 (PDT)
-Date:   Mon, 17 May 2021 04:18:16 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000005887605c284c0c9@google.com>
-Subject: [syzbot] net-next boot error: can't ssh into the instance (4)
-From:   syzbot <syzbot+f9386e897a8781058604@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <00000000000005887605c284c0c9@google.com>
+In-Reply-To: <00000000000005887605c284c0c9@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 17 May 2021 13:22:54 +0200
+Message-ID: <CACT4Y+YUYhGr9yTmW4ZHYp_Wa6sEoTTwtAD2JSS4kfc-0fcnjA@mail.gmail.com>
+Subject: Re: [syzbot] net-next boot error: can't ssh into the instance (4)
+To:     syzbot <syzbot+f9386e897a8781058604@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, May 17, 2021 at 1:18 PM syzbot
+<syzbot+f9386e897a8781058604@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    392c36e5 Merge branch 'ehtool-fec-stats'
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11a7cbf9d00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a90b0da0842a411c
+> dashboard link: https://syzkaller.appspot.com/bug?extid=f9386e897a8781058604
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+f9386e897a8781058604@syzkaller.appspotmail.com
 
-syzbot found the following issue on:
 
-HEAD commit:    392c36e5 Merge branch 'ehtool-fec-stats'
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=11a7cbf9d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a90b0da0842a411c
-dashboard link: https://syzkaller.appspot.com/bug?extid=f9386e897a8781058604
+Not sure if this was a flake or not:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+f9386e897a8781058604@syzkaller.appspotmail.com
+[  109.072545][    T1] systemd[1]: Timed out waiting for device
+dev-ttyS0.device.
+ [K[ [0;1;31m TIME  [0m] Timed out waiting for device dev-ttyS0.device.
+[  109.118547][    T1] systemd[1]: Dependency failed for Serial Getty on ttyS0.
 
+but this is very old.
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+#syz invalid
