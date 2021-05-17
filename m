@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 284CD38261A
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 10:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB6638260E
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 10:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235638AbhEQIBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 04:01:01 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:3712 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235507AbhEQIAN (ORCPT
+        id S235781AbhEQIAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 04:00:46 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:2992 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235489AbhEQIAN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 04:00:13 -0400
-Received: from dggems706-chm.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FkBK72NKFz16QfF;
-        Mon, 17 May 2021 15:56:11 +0800 (CST)
+Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FkBJH5zttzQpRD;
+        Mon, 17 May 2021 15:55:27 +0800 (CST)
 Received: from dggema704-chm.china.huawei.com (10.3.20.68) by
- dggems706-chm.china.huawei.com (10.3.19.183) with Microsoft SMTP Server
+ dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Mon, 17 May 2021 15:58:55 +0800
 Received: from localhost.localdomain (10.67.165.2) by
@@ -26,11 +26,10 @@ From:   Yang Shen <shenyang39@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Yang Shen <shenyang39@huawei.com>,
-        Shahed Shaikh <shshaikh@marvell.com>,
-        Manish Chopra <manishc@marvell.com>
-Subject: [PATCH v2 18/24] net: calxeda: Fix wrong function name in comments
-Date:   Mon, 17 May 2021 12:45:29 +0800
-Message-ID: <20210517044535.21473-19-shenyang39@huawei.com>
+        Byungho An <bh74.an@samsung.com>
+Subject: [PATCH v2 19/24] net: samsung: sxgbe: Fix wrong function name in comments
+Date:   Mon, 17 May 2021 12:45:30 +0800
+Message-ID: <20210517044535.21473-20-shenyang39@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210517044535.21473-1-shenyang39@huawei.com>
 References: <20210517044535.21473-1-shenyang39@huawei.com>
@@ -46,43 +45,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c:761: warning: expecting prototype for qlcnic_83xx_idc_cold_state(). Prototype was for qlcnic_83xx_idc_cold_state_handler() instead
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_vnic.c:192: warning: expecting prototype for qlcnic_83xx_vnic_opmode(). Prototype was for qlcnic_83xx_config_vnic_opmode() instead
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c:797: warning: expecting prototype for sxgbe_tx_clean(). Prototype was for sxgbe_tx_all_clean() instead
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c:1026: warning: expecting prototype for sxgbe_init_tx_coalesce(). Prototype was for sxgbe_tx_init_coalesce() instead
 
-Cc: Shahed Shaikh <shshaikh@marvell.com>
-Cc: Manish Chopra <manishc@marvell.com>
+Cc: Byungho An <bh74.an@samsung.com>
 Signed-off-by: Yang Shen <shenyang39@huawei.com>
 ---
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c | 2 +-
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_vnic.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-index d2c190732d3e..0a2f34fc8b24 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-@@ -746,7 +746,7 @@ static int qlcnic_83xx_idc_unknown_state(struct qlcnic_adapter *adapter)
+diff --git a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+index 971f1e54b652..090bcd2fb758 100644
+--- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
++++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+@@ -789,7 +789,7 @@ static void sxgbe_tx_queue_clean(struct sxgbe_tx_queue *tqueue)
  }
  
  /**
-- * qlcnic_83xx_idc_cold_state
-+ * qlcnic_83xx_idc_cold_state_handler
-  *
-  * @adapter: adapter structure
-  *
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_vnic.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_vnic.c
-index c4297aea7d15..711609503ba6 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_vnic.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_vnic.c
-@@ -180,7 +180,7 @@ static int qlcnic_83xx_init_non_privileged_vnic(struct qlcnic_adapter *adapter)
+- * sxgbe_tx_clean:
++ * sxgbe_tx_all_clean:
+  * @priv: driver private structure
+  * Description: it reclaims resources after transmission completes.
+  */
+@@ -1015,7 +1015,7 @@ static void sxgbe_tx_timer(struct timer_list *t)
  }
  
  /**
-- * qlcnic_83xx_vnic_opmode
-+ * qlcnic_83xx_config_vnic_opmode
-  *
-  * @adapter: adapter structure
-  * Identify virtual NIC operational modes.
+- * sxgbe_init_tx_coalesce: init tx mitigation options.
++ * sxgbe_tx_init_coalesce: init tx mitigation options.
+  * @priv: driver private structure
+  * Description:
+  * This inits the transmit coalesce parameters: i.e. timer rate,
 -- 
 2.17.1
 
