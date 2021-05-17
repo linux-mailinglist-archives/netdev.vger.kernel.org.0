@@ -2,269 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3327638285F
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 11:32:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C80D8382877
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 11:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235998AbhEQJdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 05:33:43 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:55977 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235911AbhEQJdg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 05:33:36 -0400
-Received: by mail-io1-f70.google.com with SMTP id p2-20020a5d98420000b029043b3600ac76so51633ios.22
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 02:32:20 -0700 (PDT)
+        id S236047AbhEQJiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 05:38:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236160AbhEQJiI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 05:38:08 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D17C06138C
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 02:36:46 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id k10so8177243ejj.8
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 02:36:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oBONMSeVk3mkFLoo1iBeMpsZIq60WjLRCr3CPYmB9hw=;
+        b=ayS0SjvZNbHk5n5ghskIINknXhtZycIw5XVWXgfvy//i8fpJsxvt/HVxPLhEYJYIxf
+         0O39/j7n9Y7MZuatuZvATJ2Paal0H5hMY6/o/Az5CBvNMZGUtnDsmQSoTruGq3vGmNj2
+         Azko/u2r/sYuDXCa6HJzuTICMwNv2F6tmT3hQ8vOkY8cxwUS8Bgojk+1w8pMY16VUCcA
+         6+xS3h6hRXhrJ4JCaH9dic4L2KHXWZHqNnDViYb0i6dJl+4ewN3ismm+A248w9YlDrkC
+         uwtigYTt4Hk8TZMJ1FzssxqwK5cvTrYBqejU9zOcF6Lpau0oTk10l0zrehPOaufe611n
+         gNHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=chYCG1eSiqpXo7g1lFMI2QJxaUDc/EJp8u1bZRzSMMI=;
-        b=NRQqgFduCsB/7l3OXfX3AdYcwEO8wAt47oM7oY1r3Q5IxlaTm3zt8TNTkqecIsB+rl
-         Nc6RrTNdYzaElFqNOGRT36HnmYDW/Io9dPI/uc6D0ndagmcxox6LYvQLbMk5/JgBQLXg
-         tZOnHBS6T7ucbyckuG0jWdsVWF2QUlbKSa4R9JaxJ06iHNfzEowLHcbAaoHPHF1vqqW4
-         yoS/wSs+WItt+WEmo3vkHWrP2hsFmzmmAq+xaSMq2joc4wLcccVjDRMyiHhhE+IaCumD
-         sKDkz/9T2vb65/nNmGvu8tGWguiOnsSomXCXJHfewATo6XdSNuiZ88Yph6KqG/ZGZqMs
-         dfkA==
-X-Gm-Message-State: AOAM531f3E08UwCwPz5u8I+TT8vwuIlfM+aS6WJFN/+UOBiYn/vUlhCe
-        XJfHIWgEXZ+fSsOfPhoFvu1QRJ1t6kSUHzqmr304FqJwRBXY
-X-Google-Smtp-Source: ABdhPJxBYF7gz9opBvrlF/camk3rBOS+W61VNaQOw8GdBZhSBT5yvQ/bbsTHJyC9kJk7aVzPMvt5xpxlzqiN6X+kCvAmtXP6A1np
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oBONMSeVk3mkFLoo1iBeMpsZIq60WjLRCr3CPYmB9hw=;
+        b=BaINu+/zp549mE1+3osMMpXvDA9XgT0e5BNdmzm1tiVNDv0ER5axIly0UyvXmfz7tV
+         fs82s232SE9/hP0i1dIP4GUz0AepMyu+aDCKxAgWZR5rhLVzdLeN6mCgsmsDJlKERarr
+         Z+5cV3RuJWXIcxzoK9KTi+rDBN+56EUhvFx9i4VbdHEI2Y9UCQujEqjqcZIvKE3QxUmS
+         OcC9mzgPzBJKYv5+UAP7LFjZzDAHP9Vt3/UFctVnlDJYd/cGvdhMLCiCWR9Ilejm69jY
+         QLuSZGMa7m27tQ9VRAbXV0ilRTFta9u2eQU+ze3zr5Af2lcsbASC/+thCa7y/LPuZ/pn
+         q+3w==
+X-Gm-Message-State: AOAM532OO5sy41BBeWVfqI1b1I/ZgoGOfCerLv5qMe1C8M8erCRLZSyQ
+        dDmGxvhAAeoMnFyyQo7/IPJIMQ==
+X-Google-Smtp-Source: ABdhPJzxfIGgl7ar1vm83gi2iU9HO7hLUc61oQG+m8QtupK7WFoN9a/7Kz8tU9OUCMZCwSA/rcW8vw==
+X-Received: by 2002:a17:906:ae10:: with SMTP id le16mr5494911ejb.296.1621244205548;
+        Mon, 17 May 2021 02:36:45 -0700 (PDT)
+Received: from apalos.home ([94.69.77.156])
+        by smtp.gmail.com with ESMTPSA id f20sm3606918edu.24.2021.05.17.02.36.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 May 2021 02:36:45 -0700 (PDT)
+Date:   Mon, 17 May 2021 12:36:39 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Matteo Croce <mcroce@linux.microsoft.com>, netdev@vger.kernel.org,
+        linux-mm@kvack.org, Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>
+Subject: Re: [PATCH net-next v5 3/5] page_pool: Allow drivers to hint on SKB
+ recycling
+Message-ID: <YKI5JxG2rw2y6C1P@apalos.home>
+References: <20210513165846.23722-1-mcroce@linux.microsoft.com>
+ <20210513165846.23722-4-mcroce@linux.microsoft.com>
+ <798d6dad-7950-91b2-46a5-3535f44df4e2@huawei.com>
+ <YJ4ocslvURa/H+6f@apalos.home>
+ <212498cf-376b-2dac-e1cd-12c7cc7910c6@huawei.com>
+ <YJ5APhzabmAKIKCE@apalos.home>
+ <cd0c0a2b-986e-a672-de7e-798ab2843d76@huawei.com>
+ <YKIPcF9ACNmFtksz@enceladus>
+ <fade4bc7-c1c7-517e-a775-0a5bb2e66be6@huawei.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:814d:: with SMTP id f13mr21285700ioo.203.1621243939921;
- Mon, 17 May 2021 02:32:19 -0700 (PDT)
-Date:   Mon, 17 May 2021 02:32:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002227b805c28345f8@google.com>
-Subject: [syzbot] possible deadlock in __schedule
-From:   syzbot <syzbot+a9bb2f97117a3bb1b77d@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
-        axboe@kernel.dk, bpf@vger.kernel.org, christian@brauner.io,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, shakeelb@google.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fade4bc7-c1c7-517e-a775-0a5bb2e66be6@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> >>
 
-syzbot found the following issue on:
+[...]
 
-HEAD commit:    88b06399 Merge tag 'for-5.13-rc1-part2-tag' of git://git.k..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11d47145d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e4fa783e79fe30c8
-dashboard link: https://syzkaller.appspot.com/bug?extid=a9bb2f97117a3bb1b77d
+> >> In that case, the skb_mark_for_recycle() could only set the skb->pp_recycle,
+> >> but not the pool->p.
+> >>
+> >>>
+> >>>>
+> >>>> Another thing accured to me is that if the driver use page from the
+> >>>> page pool to form a skb, and it does not call skb_mark_for_recycle(),
+> >>>> then there will be resource leaking, right? if yes, it seems the
+> >>>> skb_mark_for_recycle() call does not seems to add any value?
+> >>>>
+> >>>
+> >>> Not really, the driver has 2 choices:
+> >>> - call page_pool_release_page() once it receives the payload. That will
+> >>>   clean up dma mappings (if page pool is responsible for them) and free the
+> >>>   buffer
+> >>
+> >> The is only needed before SKB recycling is supported or the driver does not
+> >> want the SKB recycling support explicitly, right?
+> >>
+> > 
+> > This is needed in general even before recycling.  It's used to unmap the
+> > buffer, so once you free the SKB you don't leave any stale DMA mappings.  So
+> > that's what all the drivers that use page_pool call today.
+> 
+> As my understanding:
+> 1. If the driver is using page allocated from page allocator directly to
+>    form a skb, let's say the page is owned by skb(or not owned by anyone:)),
+>    when a skb is freed, the put_page() should be called.
+> 
+> 2. If the driver is using page allocated from page pool to form a skb, let's
+>    say the page is owned by page pool, when a skb is freed, page_pool_put_page()
+>    should be called.
+> 
+> What page_pool_release_page() mainly do is to make page in case 2 return back
+> to case 1.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Yea but this is done deliberately.  Let me try to explain the reasoning a
+bit.  I don't think mixing the SKB path with page_pool is the right idea. 
+page_pool allocates the memory you want to build an SKB and imho it must be 
+kept completely disjoint with the generic SKB code.  So once you free an SKB,
+I don't like having page_pool_put_page() in the release code explicitly.  
+What we do instead is call page_pool_release_page() from the driver.  So the 
+page is disconnected from page pool and the skb release path works as it used 
+to.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a9bb2f97117a3bb1b77d@syzkaller.appspotmail.com
+> 
+> And page_pool_release_page() is replaced with skb_mark_for_recycle() in patch
+> 4/5 to avoid the above "case 2" -> "case 1" changing, so that the page is still
+> owned by page pool, right?
+> 
+> So the point is that skb_mark_for_recycle() does not really do anything about
+> the owner of the page, it is still owned by page pool, so it makes more sense
+> to keep the page pool ptr instead of setting it every time when
+> skb_mark_for_recycle() is called?
 
-======================================================
-WARNING: possible circular locking dependency detected
-5.13.0-rc1-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-executor.0/9979 is trying to acquire lock:
-ffff88803ffffba0 (&pgdat->kswapd_wait){..-.}-{2:2}, at: __wake_up_common_lock+0xb4/0x130 kernel/sched/wait.c:137
+Yes it doesn't do anything wrt to ownership.  The page must always come
+from page pool if you want to recycle it. But as I tried to explain above,
+it felt more intuitive to keep the driver flow as-is as well as  the
+release path.  On a driver right now when you are done with the skb creation, 
+you unmap the skb->head + fragments.  So if you want to recycle it it instead, 
+you mark the skb and fragments.
 
-but task is already holding lock:
-ffff88802cd35358 (&rq->lock){-.-.}-{2:2}, at: rq_lock kernel/sched/sched.h:1334 [inline]
-ffff88802cd35358 (&rq->lock){-.-.}-{2:2}, at: __schedule+0x21c/0x23e0 kernel/sched/core.c:5061
+> 
+> > 
+> >>> - call skb_mark_for_recycle(). Which will end up recycling the buffer.
+> >>
+> >> If the driver need to add extra flag to enable recycling based on skb
+> >> instead of page pool, then adding skb_mark_for_recycle() makes sense to
+> >> me too, otherwise it seems adding a field in pool->p to recycling based
+> >> on skb makes more sense?
+> >>
+> > 
+> > The recycling is essentially an SKB feature though isn't it?  You achieve the
+> > SKB recycling with the help of page_pool API, not the other way around.  So I
+> > think this should remain on the SKB and maybe in the future find ways to turn
+> > in on/off?
+> 
+> As above, does it not make more sense to call page_pool_release_page() if the
+> driver does not need the SKB recycling?
 
-which lock already depends on the new lock.
+Call it were? As i tried to explain it makes no sense to me having it in
+generic SKB code (unless recycling is enabled).
 
+That's what's happening right now when recycling is enabled.
+Basically the call path is:
+if (skb bit is set) {
+	if (page signature matches)
+		page_pool_put_full_page() 
+}
+page_pool_put_full_page() will either:
+1. recycle the page in the 'fast cache' of page pool
+2. recycle the page in the ptr ring of page pool
+3. Release it calling page_pool_release_page()
 
-the existing dependency chain (in reverse order) is:
+If you don't want to enable it you just call page_pool_release_page() on
+your driver and the generic path will free the allocated page.
 
--> #2 (&rq->lock){-.-.}-{2:2}:
-       __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
-       _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
-       rq_lock kernel/sched/sched.h:1334 [inline]
-       task_fork_fair+0x74/0x4d0 kernel/sched/fair.c:10795
-       sched_fork+0x3fc/0xbd0 kernel/sched/core.c:3792
-       copy_process+0x1f32/0x7120 kernel/fork.c:2086
-       kernel_clone+0xe7/0xab0 kernel/fork.c:2503
-       kernel_thread+0xb5/0xf0 kernel/fork.c:2555
-       rest_init+0x23/0x388 init/main.c:687
-       start_kernel+0x475/0x496 init/main.c:1087
-       secondary_startup_64_no_verify+0xb0/0xbb
+> 
+> Even if when skb->pp_recycle is 1, pages allocated from page allocator directly
+> or page pool are both supported, so it seems page->signature need to be reliable
+> to indicate a page is indeed owned by a page pool, which means the skb->pp_recycle
+> is used mainly to short cut the code path for skb->pp_recycle is 0 case, so that
+> the page->signature does not need checking?
 
--> #1 (&p->pi_lock){-.-.}-{2:2}:
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:159
-       try_to_wake_up+0x98/0x14b0 kernel/sched/core.c:3364
-       autoremove_wake_function+0x12/0x140 kernel/sched/wait.c:404
-       __wake_up_common+0x147/0x650 kernel/sched/wait.c:108
-       __wake_up_common_lock+0xd0/0x130 kernel/sched/wait.c:138
-       wakeup_kswapd+0x3f8/0x640 mm/vmscan.c:4185
-       rmqueue mm/page_alloc.c:3572 [inline]
-       get_page_from_freelist+0x17bd/0x2b60 mm/page_alloc.c:3991
-       __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5200
-       alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2272
-       __page_cache_alloc mm/filemap.c:1005 [inline]
-       __page_cache_alloc+0x303/0x3a0 mm/filemap.c:990
-       pagecache_get_page+0x38f/0x18d0 mm/filemap.c:1885
-       grab_cache_page_write_begin+0x64/0x90 mm/filemap.c:3610
-       ext4_da_write_begin+0x35c/0x1160 fs/ext4/inode.c:2984
-       generic_perform_write+0x20a/0x4f0 mm/filemap.c:3660
-       ext4_buffered_write_iter+0x244/0x4d0 fs/ext4/file.c:269
-       ext4_file_write_iter+0x423/0x14e0 fs/ext4/file.c:680
-       call_write_iter include/linux/fs.h:2114 [inline]
-       new_sync_write+0x426/0x650 fs/read_write.c:518
-       vfs_write+0x796/0xa30 fs/read_write.c:605
-       ksys_write+0x12d/0x250 fs/read_write.c:658
-       do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
+Yes, the idea for the recycling bit, is that you don't have to fetch the page
+in cache do do more processing (since freeing is asynchronous and we
+can't have any guarantees on what the cache will have at that point).  So we
+are trying to affect the existing release path a less as possible. However it's
+that new skb bit that triggers the whole path.
 
--> #0 (&pgdat->kswapd_wait){..-.}-{2:2}:
-       check_prev_add kernel/locking/lockdep.c:2938 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3061 [inline]
-       validate_chain kernel/locking/lockdep.c:3676 [inline]
-       __lock_acquire+0x2a17/0x5230 kernel/locking/lockdep.c:4902
-       lock_acquire kernel/locking/lockdep.c:5512 [inline]
-       lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5477
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:159
-       __wake_up_common_lock+0xb4/0x130 kernel/sched/wait.c:137
-       wakeup_kswapd+0x3f8/0x640 mm/vmscan.c:4185
-       wake_all_kswapds+0x143/0x2c0 mm/page_alloc.c:4484
-       __alloc_pages_slowpath.constprop.0+0x17c1/0x2140 mm/page_alloc.c:4756
-       __alloc_pages+0x422/0x500 mm/page_alloc.c:5213
-       alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2272
-       stack_depot_save+0x39d/0x4e0 lib/stackdepot.c:303
-       kasan_save_stack+0x32/0x40 mm/kasan/common.c:40
-       kasan_record_aux_stack+0xa4/0xd0 mm/kasan/generic.c:345
-       irq_work_queue_on+0x9f/0x160 kernel/irq_work.c:104
-       balance_rt+0x202/0x2c0 kernel/sched/rt.c:1541
-       put_prev_task_balance kernel/sched/core.c:4934 [inline]
-       pick_next_task kernel/sched/core.c:4974 [inline]
-       __schedule+0x134c/0x23e0 kernel/sched/core.c:5111
-       schedule+0xcf/0x270 kernel/sched/core.c:5226
-       schedule_timeout+0x14a/0x250 kernel/time/timer.c:1892
-       io_schedule_timeout+0xcb/0x140 kernel/sched/core.c:7203
-       do_wait_for_common kernel/sched/completion.c:85 [inline]
-       __wait_for_common kernel/sched/completion.c:106 [inline]
-       wait_for_common_io kernel/sched/completion.c:123 [inline]
-       wait_for_completion_io_timeout+0x163/0x280 kernel/sched/completion.c:191
-       submit_bio_wait+0x158/0x230 block/bio.c:1160
-       blkdev_issue_flush+0xd6/0x130 block/blk-flush.c:446
-       ext4_sync_file+0x60b/0xfd0 fs/ext4/fsync.c:177
-       vfs_fsync_range+0x13a/0x220 fs/sync.c:200
-       generic_write_sync include/linux/fs.h:2982 [inline]
-       ext4_buffered_write_iter+0x36a/0x4d0 fs/ext4/file.c:277
-       ext4_file_write_iter+0x423/0x14e0 fs/ext4/file.c:680
-       call_write_iter include/linux/fs.h:2114 [inline]
-       do_iter_readv_writev+0x46f/0x740 fs/read_write.c:740
-       do_iter_write+0x188/0x670 fs/read_write.c:866
-       vfs_iter_write+0x70/0xa0 fs/read_write.c:907
-       iter_file_splice_write+0x6fa/0xc10 fs/splice.c:689
-       do_splice_from fs/splice.c:767 [inline]
-       direct_splice_actor+0x110/0x180 fs/splice.c:936
-       splice_direct_to_actor+0x34b/0x8c0 fs/splice.c:891
-       do_splice_direct+0x1b3/0x280 fs/splice.c:979
-       do_sendfile+0x9f0/0x1110 fs/read_write.c:1260
-       __do_sys_sendfile64 fs/read_write.c:1319 [inline]
-       __se_sys_sendfile64 fs/read_write.c:1311 [inline]
-       __x64_sys_sendfile64+0x149/0x210 fs/read_write.c:1311
-       do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
+What you propose could still be doable though.  As you said we can add the
+page pointer to struct page when we allocate a page_pool page and never
+reset it when we recycle the buffer. But I don't think there will be any
+performance impact whatsoever. So I prefer the 'visible' approach, at least for
+the first iteration.
 
-other info that might help us debug this:
-
-Chain exists of:
-  &pgdat->kswapd_wait --> &p->pi_lock --> &rq->lock
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&rq->lock);
-                               lock(&p->pi_lock);
-                               lock(&rq->lock);
-  lock(&pgdat->kswapd_wait);
-
- *** DEADLOCK ***
-
-2 locks held by syz-executor.0/9979:
- #0: ffff888023830460 (sb_writers#5){.+.+}-{0:0}, at: __do_sys_sendfile64 fs/read_write.c:1319 [inline]
- #0: ffff888023830460 (sb_writers#5){.+.+}-{0:0}, at: __se_sys_sendfile64 fs/read_write.c:1311 [inline]
- #0: ffff888023830460 (sb_writers#5){.+.+}-{0:0}, at: __x64_sys_sendfile64+0x149/0x210 fs/read_write.c:1311
- #1: ffff88802cd35358 (&rq->lock){-.-.}-{2:2}, at: rq_lock kernel/sched/sched.h:1334 [inline]
- #1: ffff88802cd35358 (&rq->lock){-.-.}-{2:2}, at: __schedule+0x21c/0x23e0 kernel/sched/core.c:5061
-
-stack backtrace:
-CPU: 3 PID: 9979 Comm: syz-executor.0 Not tainted 5.13.0-rc1-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2129
- check_prev_add kernel/locking/lockdep.c:2938 [inline]
- check_prevs_add kernel/locking/lockdep.c:3061 [inline]
- validate_chain kernel/locking/lockdep.c:3676 [inline]
- __lock_acquire+0x2a17/0x5230 kernel/locking/lockdep.c:4902
- lock_acquire kernel/locking/lockdep.c:5512 [inline]
- lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5477
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
- _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:159
- __wake_up_common_lock+0xb4/0x130 kernel/sched/wait.c:137
- wakeup_kswapd+0x3f8/0x640 mm/vmscan.c:4185
- wake_all_kswapds+0x143/0x2c0 mm/page_alloc.c:4484
- __alloc_pages_slowpath.constprop.0+0x17c1/0x2140 mm/page_alloc.c:4756
- __alloc_pages+0x422/0x500 mm/page_alloc.c:5213
- alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2272
- stack_depot_save+0x39d/0x4e0 lib/stackdepot.c:303
- kasan_save_stack+0x32/0x40 mm/kasan/common.c:40
- kasan_record_aux_stack+0xa4/0xd0 mm/kasan/generic.c:345
- irq_work_queue_on+0x9f/0x160 kernel/irq_work.c:104
- balance_rt+0x202/0x2c0 kernel/sched/rt.c:1541
- put_prev_task_balance kernel/sched/core.c:4934 [inline]
- pick_next_task kernel/sched/core.c:4974 [inline]
- __schedule+0x134c/0x23e0 kernel/sched/core.c:5111
- schedule+0xcf/0x270 kernel/sched/core.c:5226
- schedule_timeout+0x14a/0x250 kernel/time/timer.c:1892
- io_schedule_timeout+0xcb/0x140 kernel/sched/core.c:7203
- do_wait_for_common kernel/sched/completion.c:85 [inline]
- __wait_for_common kernel/sched/completion.c:106 [inline]
- wait_for_common_io kernel/sched/completion.c:123 [inline]
- wait_for_completion_io_timeout+0x163/0x280 kernel/sched/completion.c:191
- submit_bio_wait+0x158/0x230 block/bio.c:1160
- blkdev_issue_flush+0xd6/0x130 block/blk-flush.c:446
- ext4_sync_file+0x60b/0xfd0 fs/ext4/fsync.c:177
- vfs_fsync_range+0x13a/0x220 fs/sync.c:200
- generic_write_sync include/linux/fs.h:2982 [inline]
- ext4_buffered_write_iter+0x36a/0x4d0 fs/ext4/file.c:277
- ext4_file_write_iter+0x423/0x14e0 fs/ext4/file.c:680
- call_write_iter include/linux/fs.h:2114 [inline]
- do_iter_readv_writev+0x46f/0x740 fs/read_write.c:740
- do_iter_write+0x188/0x670 fs/read_write.c:866
- vfs_iter_write+0x70/0xa0 fs/read_write.c:907
- iter_file_splice_write+0x6fa/0xc10 fs/splice.c:689
- do_splice_from fs/splice.c:767 [inline]
- direct_splice_actor+0x110/0x180 fs/splice.c:936
- splice_direct_to_actor+0x34b/0x8c0 fs/splice.c:891
- do_splice_direct+0x1b3/0x280 fs/splice.c:979
- do_sendfile+0x9f0/0x1110 fs/read_write.c:1260
- __do_sys_sendfile64 fs/read_write.c:1319 [inline]
- __se_sys_sendfile64 fs/read_write.c:1311 [inline]
- __x64_sys_sendfile64+0x149/0x210 fs/read_write.c:1311
- do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665f9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f354f1c3188 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
-RAX: ffffffffffffffda RBX: 000000000056c158 RCX: 00000000004665f9
-RDX: 0000000020000100 RSI: 0000000000000006 RDI: 0000000000000006
-RBP: 00000000004bfce1 R08: 0000000000000000 R09: 0000000000000000
-R10: 00008080ffffff80 R11: 0000000000000246 R12: 000000000056c158
-R13: 00007fff4004641f R14: 00007f354f1c3300 R15: 0000000000022000
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks
+/Ilias
+ 
