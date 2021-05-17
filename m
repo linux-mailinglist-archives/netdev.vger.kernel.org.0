@@ -2,148 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715C9386600
-	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 22:11:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAA54386B2F
+	for <lists+netdev@lfdr.de>; Mon, 17 May 2021 22:18:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238689AbhEQUL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 16:11:59 -0400
-Received: from gateway32.websitewelcome.com ([192.185.145.111]:12631 "EHLO
-        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238266AbhEQUL2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 16:11:28 -0400
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway32.websitewelcome.com (Postfix) with ESMTP id BCADD72D20
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 15:09:20 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id ijYGlwQBV8ElSijYGlQebV; Mon, 17 May 2021 15:09:20 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=nNkGB/SMOVehPker/eeuybln3ISVaMpsQpy10U9fYN8=; b=OIDqYC1WeuePW1/YMttvu6mq1o
-        tjzh7lKTt3baCQZH7Oh96AzHUhM2a6b+ERMwpJMivnV+wMd5a8P/zDui4b7rvb5u2mKWfzUvnWlCK
-        X5EYUVkzsRvUd+8pe1/lNR2bNtUcZuDd279Q+e8eny/jCHNnm9bTti9a3nJWzvMdaAhlA0j/XhlHe
-        gN2SI91KafFKqXTcNEYiO1PM1nzpi3if6RTJWsF+bcQKX4Gzkaq8zk+WyPjy2TqaRG/yyH4k83UQi
-        dRHuCN7ORsFmjjsrXskk4CLh8BjWwb03x7hLrNKpwbVAR6HmLpIUs6kTZMfqYZy2mBFVtKDKtkSuC
-        LCtLiXfg==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:52510 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1lijYC-0021s7-SL; Mon, 17 May 2021 15:09:16 -0500
-Subject: Re: [PATCH RESEND][next] net: netrom: Fix fall-through warnings for
- Clang
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20210305092210.GA139864@embeddedor>
- <5047001a-e5a8-ec64-0dc7-662e7cb0d100@embeddedor.com>
-Message-ID: <a3fa4bac-2b30-0954-30e6-e4202949e773@embeddedor.com>
-Date:   Mon, 17 May 2021 15:09:47 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S238981AbhEQUTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 16:19:47 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:55016 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238942AbhEQUTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 16:19:46 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1621282707;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4CblS4NWUSycccK6+ysE1vs1G6nKpvCAliA4XuNuKT4=;
+        b=sZEsINB9gW9rWKIThv/nJUQdVS0LVVxt3mk9SLmr2mnPlVG6wz5VMOrR7yTWtsO+G2D6xU
+        BsKI+EgFjlUDMXiDx5ZOIVJHVJDh9digvYou8HnEtX73UoubWvL37hI5Q5gUp7X55T9mjj
+        DOvrg+Fa5Cpa5GgGRmPsvz97s/IuHhEDUM7F7dXXjqJwipMa2zywAtAX872nuQ6XOq/nZK
+        qFUa/G8sO96R7rbVv6P6biiiDfkCYzjDpIc1iYfmyscNYYql/ptdLI5v31jgwegubZ9sNX
+        NJe6nlaunx1HUNB9R5DV7FYvBa2vEyqI/HssiVTqhgtGPdCPjCergsWkw3eF8w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1621282707;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4CblS4NWUSycccK6+ysE1vs1G6nKpvCAliA4XuNuKT4=;
+        b=nwXJo4JSXCjScrrvNBVQbD7dDyHa0ScZKzi1rD3hgFRAW9j4kIZ6zia4oYhFw9afxGfUeN
+        THODgb+5xRdI+9CA==
+To:     Robin Murphy <robin.murphy@arm.com>, Nitesh Lal <nilal@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "frederic\@kernel.org" <frederic@kernel.org>,
+        "juri.lelli\@redhat.com" <juri.lelli@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        Alex Belits <abelits@marvell.com>,
+        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas\@google.com" <bhelgaas@google.com>,
+        "linux-pci\@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
+        "peterz\@infradead.org" <peterz@infradead.org>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "akpm\@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr\@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen\@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt\@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi\@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun\@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Marc Zyngier <maz@kernel.org>
+Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when setting the hint
+In-Reply-To: <874kf1faac.ffs@nanos.tec.linutronix.de>
+References: <20210501021832.743094-1-jesse.brandeburg@intel.com> <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com> <20210504092340.00006c61@intel.com> <CAFki+LmR-o+Fng21ggy48FUX7RhjjpjO87dn3Ld+L4BK2pSRZg@mail.gmail.com> <bf1d4892-0639-0bbf-443e-ba284a8ed457@arm.com> <87sg2lz0zz.ffs@nanos.tec.linutronix.de> <d1d5e797-49ee-4968-88c6-c07119343492@arm.com> <874kf1faac.ffs@nanos.tec.linutronix.de>
+Date:   Mon, 17 May 2021 22:18:27 +0200
+Message-ID: <87sg2ldsh8.ffs@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <5047001a-e5a8-ec64-0dc7-662e7cb0d100@embeddedor.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1lijYC-0021s7-SL
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:52510
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 6
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
-
-I haven't received any feedback about these patches after resending them.
-
-We had thousands of these warnings and now we are down to less than a hundred in
-linux-next. I'm planning to take these patches in my -next tree for 5.14 as
-I'm planning to enable -Wimplicit-fallthrough for Clang for that release, too.
-
-Are you OK with this?
-
-Thanks
---
-Gustavo
-
-On 4/20/21 15:11, Gustavo A. R. Silva wrote:
-> Hi all,
-> 
-> Friendly ping: who can take this, please?
-> 
-> Thanks
-> --
-> Gustavo
-> 
-> On 3/5/21 03:22, Gustavo A. R. Silva wrote:
->> In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
->> warnings by explicitly adding multiple break statements instead of
->> letting the code fall through to the next case.
+On Mon, May 17 2021 at 21:08, Thomas Gleixner wrote:
+> On Mon, May 17 2021 at 19:50, Robin Murphy wrote:
+>> On 2021-05-17 19:08, Thomas Gleixner wrote:
+>>> On Mon, May 17 2021 at 18:26, Robin Murphy wrote:
+>>>> On 2021-05-17 17:57, Nitesh Lal wrote:
+>>>> I'm not implying that there isn't a bug, or that this code ever made
+>>>> sense in the first place, just that fixing it will unfortunately be a
+>>>> bit more involved than a simple revert. This patch as-is *will* subtly
+>>>> break at least the system PMU drivers currently using
+>>> 
+>>> s/using/abusing/
+>>> 
+>>>> irq_set_affinity_hint() - those I know require the IRQ affinity to
+>>>> follow whichever CPU the PMU context is bound to, in order to meet perf
+>>>> core's assumptions about mutual exclusion.
+>>> 
+>>> Which driver is that?
 >>
->> Link: https://github.com/KSPP/linux/issues/115
->> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
->> ---
->>  net/netrom/nr_route.c | 4 ++++
->>  1 file changed, 4 insertions(+)
->>
->> diff --git a/net/netrom/nr_route.c b/net/netrom/nr_route.c
->> index 78da5eab252a..de9821b6a62a 100644
->> --- a/net/netrom/nr_route.c
->> +++ b/net/netrom/nr_route.c
->> @@ -266,6 +266,7 @@ static int __must_check nr_add_node(ax25_address *nr, const char *mnemonic,
->>  		fallthrough;
->>  	case 2:
->>  		re_sort_routes(nr_node, 0, 1);
->> +		break;
->>  	case 1:
->>  		break;
->>  	}
->> @@ -359,6 +360,7 @@ static int nr_del_node(ax25_address *callsign, ax25_address *neighbour, struct n
->>  					fallthrough;
->>  				case 1:
->>  					nr_node->routes[1] = nr_node->routes[2];
->> +					break;
->>  				case 2:
->>  					break;
->>  				}
->> @@ -482,6 +484,7 @@ static int nr_dec_obs(void)
->>  					fallthrough;
->>  				case 1:
->>  					s->routes[1] = s->routes[2];
->> +					break;
->>  				case 2:
->>  					break;
->>  				}
->> @@ -529,6 +532,7 @@ void nr_rt_device_down(struct net_device *dev)
->>  							fallthrough;
->>  						case 1:
->>  							t->routes[1] = t->routes[2];
->> +							break;
->>  						case 2:
->>  							break;
->>  						}
->>
+>> Right now, any driver which wants to control an IRQ's affinity and also 
+>> build as a module, for one thing. I'm familiar with drivers/perf/ where 
+>> a basic pattern has been widely copied;
+>
+> Bah. Why the heck can't people talk and just go and rumage until they
+> find something which hopefully does what they want...
+>
+> The name of that function should have rang all alarm bells...
+
+Aside of that all the warnings around the return value are useless cargo
+cult. Why?
+
+The only reason why this function returns an error code is when there is
+no irq descriptor assigned to the interrupt number, which is well close
+to impossible in that context.
+
+But it does _NOT_ return an error when the actual affinity setting
+fails...
+
+Thanks,
+
+        tglx
