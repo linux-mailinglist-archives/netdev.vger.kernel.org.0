@@ -2,136 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF470386E46
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 02:23:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95398386E44
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 02:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344981AbhERAYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 20:24:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41678 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238828AbhERAYh (ORCPT
+        id S241556AbhERAYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 20:24:38 -0400
+Received: from gateway31.websitewelcome.com ([192.185.144.80]:40124 "EHLO
+        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235539AbhERAYh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 20:24:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621297400;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1CFhwAdeADWfjY+TeEUXI0dttR2qRWxmhTMkaKMBCuk=;
-        b=UYZaEetOebS9zOWu1FUz6LGrN+u/Tw0wjudDwjeHlvrZRWwTYwZG/+maG0ai0yZfc0dB5l
-        DBkmUdaC2lHxEdaPMSiMfXC+/QTb6KpVyPwsU88j8m2v4Qp1u5yqL1JEhXYRsBaQzmKWrS
-        zYPduMi7BE4J9WnNFqHsdM2efYd3Wms=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-474-SPpMYPMTN_es3zOJ7DnspA-1; Mon, 17 May 2021 20:23:18 -0400
-X-MC-Unique: SPpMYPMTN_es3zOJ7DnspA-1
-Received: by mail-lj1-f197.google.com with SMTP id v26-20020a2e481a0000b02900bf48f13296so3866247lja.1
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 17:23:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1CFhwAdeADWfjY+TeEUXI0dttR2qRWxmhTMkaKMBCuk=;
-        b=Lsr/n2NHH+t9vPeQU5bytD1TYP21pfK997LUwnNfpcywlfIbyBy1TtMXn475F0NAWG
-         TQw5f2boNd+9OwN10oHmLIJ03HZ0yL9reQuK6br7VIrldqn+Wje5qvCf4/oT/Lgm5USe
-         dOi+rjSCzUJwStzcalNjgWunDq/S+zEtttb1h4VsYdglIGRQO/KHjXTOE1xsAeJfwHT+
-         ibh4OkSwWCMdVI0x97U4T7REUQi6U8238KkuY6InRaCcA0iyLpMq4MvShZ77du1MZTm5
-         mJTZc+JxZnvQFYi8P72lA6DSr6tGIAT5UYVqYAUmf1Cg1oPj4DIVwAXJ3fqi5mYSlNRe
-         bVog==
-X-Gm-Message-State: AOAM533sGw154G5rEe5tMIZkQ6o7amRs/zqCBonxxAuXgc2BfLRHJKa9
-        rb8IkFwvg1hOu9Lup7JfMuoD7w8VYG3kjjwiLT/oqsYGaq+JajiIEkfjAGGLa/8Ok+d18BLshgs
-        m1tz5b2LtMo/Sh6oUI57+83COTXQrD23X
-X-Received: by 2002:a05:6512:3da1:: with SMTP id k33mr1954913lfv.114.1621297396823;
-        Mon, 17 May 2021 17:23:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyhOM/aeHK0aO1U0IXX7Bz97GQL+BiXI9gjCeNpT1VQx45C+gwAHC4wQS/KVuaPU2Um6MqyAaMyIDDi2YeTCBA=
-X-Received: by 2002:a05:6512:3da1:: with SMTP id k33mr1954902lfv.114.1621297396624;
- Mon, 17 May 2021 17:23:16 -0700 (PDT)
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id 5AEC55EFA29
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 19:23:19 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id inW3lxL6jMGeEinW3lzmAY; Mon, 17 May 2021 19:23:19 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=46ceAfOlKNCtdInhOwoc6rqVFSQAE0W1FJ5BWeIJpvc=; b=Y873GH19+6ShMohch0MS2z6QgQ
+        9Og4YFjFYOEYAKxN456HOZBKwnewIbcBm7SuDN8RF+U4oe7eFzIV89vo1hPCVj3c3JMRLQwPPjcpq
+        1lhit41HgYuq3rNxCHBo1IDTo9UYaAC4frjrnNSlPgOS9a9xIGIKHo//NbyqNDYtWIMVeeYw928yT
+        ygvtZvnvwgtHdslHeF1oz/aOGvLtd3vSpW2VwOC1HAwc1DR8NSEVxx0gnsh2DS1ir83RvGy4I4/ZB
+        nKBqlhxs2ljAkFqUdAfXtk/nC2Gns6L3Bvd+pp3VZyNTn4SIf/ic8CV7WKISkr+tZ3seYCEZ5SLwb
+        Fj1KmFZQ==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:53440 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1linW0-002RhE-Vh; Mon, 17 May 2021 19:23:17 -0500
+Subject: Re: [PATCH RESEND][next] bnxt_en: Fix fall-through warnings for Clang
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+References: <20210305095024.GA141398@embeddedor>
+ <55348913-84be-5149-e43f-7982ecd73c40@embeddedor.com>
+Message-ID: <eae04cb3-cf5e-6508-dccf-574a03254c31@embeddedor.com>
+Date:   Mon, 17 May 2021 19:23:59 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20210504092340.00006c61@intel.com> <87pmxpdr32.ffs@nanos.tec.linutronix.de>
- <CAFki+Lkjn2VCBcLSAfQZ2PEkx-TR0Ts_jPnK9b-5ne3PUX37TQ@mail.gmail.com> <87im3gewlu.ffs@nanos.tec.linutronix.de>
-In-Reply-To: <87im3gewlu.ffs@nanos.tec.linutronix.de>
-From:   Nitesh Lal <nilal@redhat.com>
-Date:   Mon, 17 May 2021 20:23:05 -0400
-Message-ID: <CAFki+L=gp10W1ygv7zdsee=BUGpx9yPAckKr7pyo=tkFJPciEg@mail.gmail.com>
-Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when
- setting the hint
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
-        "frederic@kernel.org" <frederic@kernel.org>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com,
-        Marc Zyngier <maz@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <55348913-84be-5149-e43f-7982ecd73c40@embeddedor.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1linW0-002RhE-Vh
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:53440
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 27
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 17, 2021 at 8:04 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> On Mon, May 17 2021 at 18:44, Nitesh Lal wrote:
-> > On Mon, May 17, 2021 at 4:48 PM Thomas Gleixner <tglx@linutronix.de> wrote:
-> >> The hint was added so that userspace has a better understanding where it
-> >> should place the interrupt. So if irqbalanced ignores it anyway, then
-> >> what's the point of the hint? IOW, why is it still used drivers?
-> >>
-> > Took a quick look at the irqbalance repo and saw the following commit:
-> >
-> > dcc411e7bf    remove affinity_hint infrastructure
-> >
-> > The commit message mentions that "PJ is redesiging how affinity hinting
-> > works in the kernel, the future model will just tell us to ignore an IRQ,
-> > and the kernel will handle placement for us.  As such we can remove the
-> > affinity_hint recognition entirely".
->
-> No idea who PJ is. I really love useful commit messages. Maybe Neil can
-> shed some light on that.
->
-> > This does indicate that apparently, irqbalance moved away from the usage of
-> > affinity_hint. However, the next question is what was this future
-> > model?
->
-> I might have missed something in the last 5 years, but that's the first
-> time I hear about someone trying to cleanup that thing.
->
-> > I don't know but I can surely look into it if that helps or maybe someone
-> > here already knows about it?
->
-> I CC'ed Neil :)
+Hi,
 
-Thanks, I have added PJ Waskiewicz as well who I think was referred in
-that commit message as PJ.
+I'm taking this in my -next[1] branch for v5.14.
 
->
-> >> Now there is another aspect to that. What happens if irqbalanced does
-> >> not run at all and a driver relies on the side effect of the hint
-> >> setting the initial affinity. Bah...
-> >>
-> >
-> > Right, but if they only rely on this API so that the IRQs are spread across
-> > all the CPUs then that issue is already resolved and these other drivers
-> > should not regress because of changing this behavior. Isn't it?
->
-> Is that true for all architectures?
-
-Unfortunately, I don't know and that's probably why we have to be careful.
-
+Thanks
 --
-Nitesh
+Gustavo
 
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git/log/?h=for-next/kspp
+
+On 4/20/21 15:27, Gustavo A. R. Silva wrote:
+> Hi all,
+> 
+> Friendly ping: who can take this, please?
+> 
+> Thanks
+> --
+> Gustavo
+> 
+> On 3/5/21 03:50, Gustavo A. R. Silva wrote:
+>> In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
+>> by explicitly adding a break statement instead of just letting the code
+>> fall through to the next case.
+>>
+>> Link: https://github.com/KSPP/linux/issues/115
+>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+>> ---
+>>  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+>> index b53a0d87371a..a34810750058 100644
+>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+>> @@ -2158,6 +2158,7 @@ static int bnxt_hwrm_handler(struct bnxt *bp, struct tx_cmp *txcmp)
+>>  	case CMPL_BASE_TYPE_HWRM_ASYNC_EVENT:
+>>  		bnxt_async_event_process(bp,
+>>  					 (struct hwrm_async_event_cmpl *)txcmp);
+>> +		break;
+>>  
+>>  	default:
+>>  		break;
+>>
