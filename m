@@ -2,97 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C88CE3870FA
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 07:09:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BFF0387108
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 07:11:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241655AbhEREwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 00:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
+        id S240592AbhERFMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 01:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237133AbhEREwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 00:52:32 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A48C061573;
-        Mon, 17 May 2021 21:51:14 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id i5so6189526pgm.0;
-        Mon, 17 May 2021 21:51:14 -0700 (PDT)
+        with ESMTP id S236877AbhERFMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 01:12:45 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D98C061573;
+        Mon, 17 May 2021 22:11:27 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id k16so8158696ios.10;
+        Mon, 17 May 2021 22:11:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p7nAupXvuLIolK4e+vCaQH3SXBCSQE4RKFPGffMyTV0=;
-        b=hLGfAjvrm9QVSDtG7FnDbEiH0lvR7QnHTaCMQu3eUGBPtzMr5ZgjMFUTRZcM1fQ+Bp
-         01qIMEdWTSrEBsYL6wGbf0NE7odwDOybZWDARYOvA4GuA0pS9jJrrGcwlM+1yH8Ji7Fh
-         nkQeXKQVmTAZ16G/sLcJHalTxyO0UW/nE7JMYoG0Ffus33HJ6d1Vo8ZrYQXcpwxU5pax
-         jYNN8vcjYxMZ2jHPyaHSA+Yh2euu/qSn/8YbyVhPf36AGWPlB7dajHYp7jA5S7dO3jLs
-         FyvZoM1uX9M/6aML8yE2RzcqlXw3fAP8/agWnUzp0RcuMutwRl+DEdyyUpQ6PgyyH/ZD
-         hPOA==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=JAEgSviBChxkk23B0EsHo39yWb9O00dsg5aXHej6dCA=;
+        b=FDRoEIkTb0CAZrzUk3bLQEBFp7ErzWF1JMKyVIyHL7Y9xj4VmqyujEec5Icg0hvydy
+         r0E1eqFmK79LXvxcZ7DIgyQhjINRvSN3vPsavJX3k0mgi36f3pMNGaW7xVKvAv9xm0JF
+         u8tHDdfDIoW9o1+zntqDP8jNGVnP9TmvBOl95t8q/ZUDlk2lQIxs0AiIDpmEYISeqdG4
+         3uLcS9Letf+IOU0K5NgdmimM2zalSOmFjU+K/Z5dV9AJMoEjZKhyFXOwMWHxQuru90QS
+         mpdY06hWHyDOR+ekK6hKmnyXRpGcqTJTVJl62GIOyhflcAG0bo4+GM9g9hP9gd0iyKRQ
+         5mcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p7nAupXvuLIolK4e+vCaQH3SXBCSQE4RKFPGffMyTV0=;
-        b=kyQ4QUmf5Wjam7dYPLjCoU4cL1hIu3yB6yg7OHXV7BJQ864LGBsFpKUCXUpQ5CRFqo
-         yKsmybWlux3RVEVC7rptw4QbjF7MeNnQ/66anmqdVCVq3KEVvqPIB9LNlQSJ/L+udZzv
-         TYJNKA8nCxKXo29uqc7r0/A8lACLaTwnliverrxd91F1G6/31Q8qnvctEPIOI7wTIpKL
-         TjVht4NMWq3uZR3c1bEMU3wgo+vdykpGQsA1V4i4ogTOo/Lf4lu37C5JYw1eA506JfX9
-         Czv8whg9CgbCjhkQrm0sYoCDzYhBBhId0K0SNO6nNzWgVp5vJ2dr9P1t7VkiADtUOMLH
-         JK0w==
-X-Gm-Message-State: AOAM5309oksoFRfh8I//5dLZ2u9SWqjQ51/QeQjrcQbwVCsYq6YwFV+w
-        c+EzYRB9Cb5h6VLj1btuxVopHcR/QuX7Th7zRCm1fPIz6JVKhA==
-X-Google-Smtp-Source: ABdhPJxbAe7nT6BcW0UEHMAQ44/kFVaeZfxkfawqcJiBfgMpCbfaYalOYM4mnK0Ca7EsR1t0KHb9vVqBht97GLwROjs=
-X-Received: by 2002:a62:ee07:0:b029:2d8:dea3:7892 with SMTP id
- e7-20020a62ee070000b02902d8dea37892mr3084704pfi.78.1621313473869; Mon, 17 May
- 2021 21:51:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210508220835.53801-1-xiyou.wangcong@gmail.com> <20210508220835.53801-3-xiyou.wangcong@gmail.com>
-In-Reply-To: <20210508220835.53801-3-xiyou.wangcong@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 17 May 2021 21:51:03 -0700
-Message-ID: <CAM_iQpU5Nw6SkRBQ9XthaQNSwVbqpuUpWNgBRZwj=uzcx=LaBQ@mail.gmail.com>
-Subject: Re: [Patch bpf-next v4 02/12] af_unix: implement ->read_sock() for sockmap
-To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Jiang Wang <jiang.wang@bytedance.com>,
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=JAEgSviBChxkk23B0EsHo39yWb9O00dsg5aXHej6dCA=;
+        b=og+NPGdTLV2R2mjQe1i6ZSxp9ykLiJQAdV3WYB9XbXOuamZ+BYBYPEiIBwOTE1/G2r
+         dPOH4IGfS6gfiL6SO8MYdOTv4dEHVQ7qQh0gM6kSADahrBfOj6qycgKePH+mXvlhUNcf
+         l/+UAAIHdAzclZFaGkVMr5OmUUbt1KrEJ7ggKN+jpsSZ1vXfeig7mNOIQuvmElRTWcUQ
+         E/c2pPmgyv/TD7NH1fk52dEUF4KxEkXbQ+AHmmOlWtBnLvC0yeQ0ypyO1bvEr3DAeecd
+         eJo6ZKuQCxMWIjaZSQ2bYYZPmXm0KtzRz2QBbvf1GqxH4BjD8P54muXRRE6X3CEVJRK6
+         pA9A==
+X-Gm-Message-State: AOAM530Daxuwnj24S5+gJCBO/C58TY/3UalcdnzYdNUIXHa9qoV6ZTeI
+        p5a2VcD0QGe7ukckCmQDlLg=
+X-Google-Smtp-Source: ABdhPJwQumxZAL+cBhxgJknLvzDMyo2p7vhIAF0/910ytk+Xi7p1KsitGffKDC4v88V38xOUo5lcAQ==
+X-Received: by 2002:a02:9443:: with SMTP id a61mr3608054jai.60.1621314687481;
+        Mon, 17 May 2021 22:11:27 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id d15sm9873667ila.86.2021.05.17.22.11.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 May 2021 22:11:26 -0700 (PDT)
+Date:   Mon, 17 May 2021 22:11:18 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Jiang Wang <jiang.wang@bytedance.com>,
         Xiongchun Duan <duanxiongchun@bytedance.com>,
         Dongdong Wang <wangdongdong.6@bytedance.com>,
         Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <60a34c768873f_56215208a1@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpUawKFmqL-XLMwoBjSTAwj+NLhZ0Su1r-W+6U_fttZp9Q@mail.gmail.com>
+References: <20210426025001.7899-1-xiyou.wangcong@gmail.com>
+ <20210426025001.7899-3-xiyou.wangcong@gmail.com>
+ <609a1765cf6d7_876892080@john-XPS-13-9370.notmuch>
+ <CAM_iQpUawKFmqL-XLMwoBjSTAwj+NLhZ0Su1r-W+6U_fttZp9Q@mail.gmail.com>
+Subject: Re: [Patch bpf-next v3 02/10] af_unix: implement ->read_sock() for
+ sockmap
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 8, 2021 at 3:09 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> +static int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
-> +                         sk_read_actor_t recv_actor)
-> +{
-> +       int copied = 0;
-> +
-> +       while (1) {
-> +               struct unix_sock *u = unix_sk(sk);
-> +               struct sk_buff *skb;
-> +               int used, err;
-> +
-> +               mutex_lock(&u->iolock);
-> +               skb = skb_recv_datagram(sk, 0, 1, &err);
-> +               mutex_unlock(&u->iolock);
-> +               if (!skb)
-> +                       return err;
-> +
-> +               used = recv_actor(desc, skb, 0, skb->len);
-> +               if (used <= 0) {
-> +                       if (!copied)
-> +                               copied = used;
-> +                       break;
-> +               } else if (used <= skb->len) {
-> +                       copied += used;
-> +               }
-> +
+Cong Wang wrote:
+> On Mon, May 10, 2021 at 10:34 PM John Fastabend
+> <john.fastabend@gmail.com> wrote:
+> > > +static int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
+> > > +                       sk_read_actor_t recv_actor)
+> > > +{
+> > > +     int copied = 0;
+> > > +
+> > > +     while (1) {
+> > > +             struct unix_sock *u = unix_sk(sk);
+> > > +             struct sk_buff *skb;
+> > > +             int used, err;
+> > > +
+> > > +             mutex_lock(&u->iolock);
+> > > +             skb = skb_recv_datagram(sk, 0, 1, &err);
+> > > +             if (!skb) {
+> > > +                     mutex_unlock(&u->iolock);
+> > > +                     return err;
+> >
+> > Here we should check copied and break if copied is >0. Sure the caller here
+> > has desc.count = 1 but its still fairly fragile.
+> 
+> Technically, sockmap does not even care about what we return
+> here, so I am sure what you suggest here even makes a difference.
+> Also, desc->count is always 1 and never changes here.
 
-Like udp_read_sock(), we should also free the skb here.
-I will update this and send V5 soon.
+Right, so either don't wrap it in a while() loop so its obviously
+not workable or fix it so that it returns the correct copied value if
+we ever did pass it count > 1.. 
 
-Thanks.
+> 
+> Thanks.
+
+
