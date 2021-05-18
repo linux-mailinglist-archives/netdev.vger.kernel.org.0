@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16A85387D67
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 18:28:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA756387D6C
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 18:28:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350637AbhERQ3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 12:29:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59776 "EHLO mail.kernel.org"
+        id S1350632AbhERQ3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 12:29:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59932 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350617AbhERQ3V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 May 2021 12:29:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 18A47610E9;
-        Tue, 18 May 2021 16:28:02 +0000 (UTC)
+        id S1350648AbhERQ33 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 May 2021 12:29:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C0AB46109F;
+        Tue, 18 May 2021 16:28:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1621355282;
-        bh=l29V+plxduvFVVEwPaJVlg5NEvGRizZT2b4tdIb+Ieo=;
+        s=korg; t=1621355289;
+        bh=4zLrvE+vCu7f2a/CkEJrYYThP5aozCo8/VKyDst76eM=;
         h=From:To:Cc:Subject:Date:From;
-        b=GkHV7Yhm3o11vOP/dsssFt23BTuzXlTk9RRHUIUiS5lOc1xISfIXHpTSQUN1hLYmX
-         7+kRf0i0PrlT1WtiXJd2WQHnU7N5pWkg2+LC57NU4bYVNr+aFaeqKIdASd0AO4sDMr
-         nB+tEv7ovvOYbJq62uvy959vSLik5RpbJqEWSupI=
+        b=FlOxQ//H9+fiCQb/HN0gC4LrbumTMF98Kh1Gr+E2t7ye1J6sJkWMONWU9/1ZS/Zmm
+         Yfr+8HuUqhxaodL+TwUsWa4VvNi/Ces2/mHbXxEkP1jhqQP/P2YpwlbLB3I2Iz/EBb
+         wjKfk2+9AMWoqukdK5twj+sQg427CpcV1kAoJbAE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-wireless@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Chao Yu <chao@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>, b43-dev@lists.infradead.org,
+        Jakub Kicinski <kuba@kernel.org>, b43-dev@lists.infradead.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 7/9] b43: don't save dentries for debugfs
-Date:   Tue, 18 May 2021 18:27:59 +0200
-Message-Id: <20210518162759.3700269-1-gregkh@linuxfoundation.org>
+Subject: [PATCH 8/9] b43legacy: don't save dentries for debugfs
+Date:   Tue, 18 May 2021 18:28:05 +0200
+Message-Id: <20210518162805.3700405-1-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,44 +47,40 @@ By doing this change, we remove one of the last in-kernel user that was
 storing the result of debugfs_create_bool(), so that api can be cleaned
 up.
 
+Cc: Larry Finger <Larry.Finger@lwfinger.net>
 Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Chao Yu <chao@kernel.org>
-Cc: Leon Romanovsky <leon@kernel.org>
 Cc: linux-wireless@vger.kernel.org
 Cc: b43-dev@lists.infradead.org
 Cc: netdev@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/broadcom/b43/debugfs.c | 34 +++------------------
- drivers/net/wireless/broadcom/b43/debugfs.h |  3 --
- 2 files changed, 5 insertions(+), 32 deletions(-)
+ .../net/wireless/broadcom/b43legacy/debugfs.c | 29 ++++---------------
+ .../net/wireless/broadcom/b43legacy/debugfs.h |  3 --
+ 2 files changed, 5 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43/debugfs.c b/drivers/net/wireless/broadcom/b43/debugfs.c
-index 89a25aefb327..efa98444e3fb 100644
---- a/drivers/net/wireless/broadcom/b43/debugfs.c
-+++ b/drivers/net/wireless/broadcom/b43/debugfs.c
-@@ -643,24 +643,14 @@ bool b43_debug(struct b43_wldev *dev, enum b43_dyndbg feature)
- 	return enabled;
+diff --git a/drivers/net/wireless/broadcom/b43legacy/debugfs.c b/drivers/net/wireless/broadcom/b43legacy/debugfs.c
+index e7e4293c01f2..6b0e8d117061 100644
+--- a/drivers/net/wireless/broadcom/b43legacy/debugfs.c
++++ b/drivers/net/wireless/broadcom/b43legacy/debugfs.c
+@@ -336,24 +336,14 @@ int b43legacy_debug(struct b43legacy_wldev *dev, enum b43legacy_dyndbg feature)
+ 	return !!(dev->dfsentry && dev->dfsentry->dyn_debug[feature]);
  }
  
--static void b43_remove_dynamic_debug(struct b43_wldev *dev)
+-static void b43legacy_remove_dynamic_debug(struct b43legacy_wldev *dev)
 -{
--	struct b43_dfsentry *e = dev->dfsentry;
+-	struct b43legacy_dfsentry *e = dev->dfsentry;
 -	int i;
 -
--	for (i = 0; i < __B43_NR_DYNDBG; i++)
+-	for (i = 0; i < __B43legacy_NR_DYNDBG; i++)
 -		debugfs_remove(e->dyn_debug_dentries[i]);
 -}
 -
- static void b43_add_dynamic_debug(struct b43_wldev *dev)
+ static void b43legacy_add_dynamic_debug(struct b43legacy_wldev *dev)
  {
- 	struct b43_dfsentry *e = dev->dfsentry;
+ 	struct b43legacy_dfsentry *e = dev->dfsentry;
  
  #define add_dyn_dbg(name, id, initstate) do {			\
  	e->dyn_debug[id] = (initstate);				\
@@ -97,8 +91,8 @@ index 89a25aefb327..efa98444e3fb 100644
 +			    &(e->dyn_debug[id]));		\
  	} while (0)
  
- 	add_dyn_dbg("debug_xmitpower", B43_DBG_XMITPOWER, false);
-@@ -713,10 +703,9 @@ void b43_debugfs_add_device(struct b43_wldev *dev)
+ 	add_dyn_dbg("debug_xmitpower", B43legacy_DBG_XMITPOWER, false);
+@@ -396,11 +386,9 @@ void b43legacy_debugfs_add_device(struct b43legacy_wldev *dev)
  
  #define ADD_FILE(name, mode)	\
  	do {							\
@@ -106,53 +100,48 @@ index 89a25aefb327..efa98444e3fb 100644
 -			debugfs_create_file(__stringify(name),	\
 -					mode, e->subdir, dev,	\
 -					&fops_##name.fops);	\
-+		debugfs_create_file(__stringify(name),		\
-+				mode, e->subdir, dev,		\
-+				&fops_##name.fops);		\
+-		e->file_##name.dentry = NULL;			\
++		debugfs_create_file(__stringify(name), mode,	\
++				    e->subdir, dev,		\
++				    &fops_##name.fops);		\
  	} while (0)
  
  
-@@ -746,19 +735,6 @@ void b43_debugfs_remove_device(struct b43_wldev *dev)
+@@ -424,13 +412,6 @@ void b43legacy_debugfs_remove_device(struct b43legacy_wldev *dev)
  	e = dev->dfsentry;
  	if (!e)
  		return;
--	b43_remove_dynamic_debug(dev);
+-	b43legacy_remove_dynamic_debug(dev);
 -
--	debugfs_remove(e->file_shm16read.dentry);
--	debugfs_remove(e->file_shm16write.dentry);
--	debugfs_remove(e->file_shm32read.dentry);
--	debugfs_remove(e->file_shm32write.dentry);
--	debugfs_remove(e->file_mmio16read.dentry);
--	debugfs_remove(e->file_mmio16write.dentry);
--	debugfs_remove(e->file_mmio32read.dentry);
--	debugfs_remove(e->file_mmio32write.dentry);
+-	debugfs_remove(e->file_tsf.dentry);
+-	debugfs_remove(e->file_ucode_regs.dentry);
+-	debugfs_remove(e->file_shm.dentry);
 -	debugfs_remove(e->file_txstat.dentry);
 -	debugfs_remove(e->file_restart.dentry);
--	debugfs_remove(e->file_loctls.dentry);
  
  	debugfs_remove(e->subdir);
  	kfree(e->txstatlog.log);
-diff --git a/drivers/net/wireless/broadcom/b43/debugfs.h b/drivers/net/wireless/broadcom/b43/debugfs.h
-index 0bf437c86c67..6f6b500b8881 100644
---- a/drivers/net/wireless/broadcom/b43/debugfs.h
-+++ b/drivers/net/wireless/broadcom/b43/debugfs.h
-@@ -32,7 +32,6 @@ struct b43_txstatus_log {
+diff --git a/drivers/net/wireless/broadcom/b43legacy/debugfs.h b/drivers/net/wireless/broadcom/b43legacy/debugfs.h
+index 7a37764406b1..924130880dfe 100644
+--- a/drivers/net/wireless/broadcom/b43legacy/debugfs.h
++++ b/drivers/net/wireless/broadcom/b43legacy/debugfs.h
+@@ -28,7 +28,6 @@ struct b43legacy_txstatus_log {
  };
  
- struct b43_dfs_file {
+ struct b43legacy_dfs_file {
 -	struct dentry *dentry;
  	char *buffer;
  	size_t data_len;
  };
-@@ -70,8 +69,6 @@ struct b43_dfsentry {
+@@ -49,8 +48,6 @@ struct b43legacy_dfsentry {
  
  	/* Enabled/Disabled list for the dynamic debugging features. */
- 	bool dyn_debug[__B43_NR_DYNDBG];
+ 	bool dyn_debug[__B43legacy_NR_DYNDBG];
 -	/* Dentries for the dynamic debugging entries. */
--	struct dentry *dyn_debug_dentries[__B43_NR_DYNDBG];
+-	struct dentry *dyn_debug_dentries[__B43legacy_NR_DYNDBG];
  };
  
- bool b43_debug(struct b43_wldev *dev, enum b43_dyndbg feature);
+ int b43legacy_debug(struct b43legacy_wldev *dev,
 -- 
 2.31.1
 
