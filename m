@@ -2,105 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F882387CAD
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 17:45:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DDEA387D60
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 18:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350297AbhERPqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 11:46:17 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:54446 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350273AbhERPqP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 11:46:15 -0400
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 6016C20B7188;
-        Tue, 18 May 2021 08:44:57 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6016C20B7188
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1621352697;
-        bh=3HQYFgD4lxpqADotbbiCx33GTkFHpxK08+XG1XtrjPI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=aAkJCclcikW+/0HQ2xhJWDmuSo5v7++8kyppG7KPOk4FYls1Zr4KkH7FOig1KrT0x
-         ntrA36/umwOyfuecwNuHVZ6ntToWOuTNJ0pu0kn1/nZnuU2sMxEQYFplD9v8InxJ4P
-         aQ39IUDGyxvZV8dxu0tCsJ9FJ0BqtoIMKvM4COxg=
-Received: by mail-pl1-f178.google.com with SMTP id s4so3753280plg.12;
-        Tue, 18 May 2021 08:44:57 -0700 (PDT)
-X-Gm-Message-State: AOAM531qjQTQ8yutVE4m2F6w1hajF6tHAx7wLhTefLKPyxAu3OV76w2D
-        B+fJ2jhlSgJSLxkQYv4iQ5jaMafjtot5ku8Z4fs=
-X-Google-Smtp-Source: ABdhPJyH71DOHHf5vAHuwNoiGYshpXvPej6HckHw0XokpfXTIkipE9bPqtisiMcZNB0rqtLKF6U49DPWaygEV8C2+PI=
-X-Received: by 2002:a17:902:bc88:b029:ee:7ef1:e770 with SMTP id
- bb8-20020a170902bc88b02900ee7ef1e770mr5296175plb.19.1621352697022; Tue, 18
- May 2021 08:44:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210513165846.23722-1-mcroce@linux.microsoft.com>
- <20210513165846.23722-2-mcroce@linux.microsoft.com> <YJ3Lrdx1oIm/MDV8@casper.infradead.org>
-In-Reply-To: <YJ3Lrdx1oIm/MDV8@casper.infradead.org>
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-Date:   Tue, 18 May 2021 17:44:21 +0200
-X-Gmail-Original-Message-ID: <CAFnufp0jwSMx_-CeFguNnec0pC0WNcPnhobiVE0sH9Jo9tjK+g@mail.gmail.com>
-Message-ID: <CAFnufp0jwSMx_-CeFguNnec0pC0WNcPnhobiVE0sH9Jo9tjK+g@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 1/5] mm: add a signature in struct page
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
+        id S1350621AbhERQ25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 12:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345891AbhERQ2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 12:28:52 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F11C061573;
+        Tue, 18 May 2021 09:27:30 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id h16so11932471edr.6;
+        Tue, 18 May 2021 09:27:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VOFL/fyG/xjrj8+07b9ToGpPuhyYKQmDo4H8+IuR4rI=;
+        b=uFs1d4AZfVtBEhTrnUfVDIt9Lx5EiV8ZoYxe/gWr3SZRhteEm2MhGF3IsEz+jzHpSh
+         7SZ+LmFiA9i/5ZaHDk2laiFh3ce7BX5q2oIZoCK0+2+cLMkSicHgAv+dHPDqfmRyeCJr
+         HxWJHpyBm/I1sCQj1JRPSQvprrMBxr4aCp7tC9WeRWz4FTsYOfhu9ebtaBmq4kxzYXaQ
+         TKNHfvoRNVsLavif0N0WziXp7euacnTaMz+OZuXS4f3taUedM2vmgd3s8M7zztgfCVVX
+         hh2RXjuREUCSCQnnL863BrqVwDlRJ9Px5Wof4ttKASB1GqGZzq2tagVzc9KFRJMvefp0
+         BbvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VOFL/fyG/xjrj8+07b9ToGpPuhyYKQmDo4H8+IuR4rI=;
+        b=soVeIt12XPJT/UOdqJghie4I6guT415+tQUL1MsDk+OPGpjlsw8UWqTYVPYpExXDZM
+         SJVP89GSryA2NZKFNyoNF5YQ2lf2oUJtctANTYBgjmpzopqdDKnD38WBOI3m5kzgR8C3
+         U0GHyDDe8gMyHyHbKrC+z/qfplHKMXb98ybLQ2U54geQn4ednLtGpQtswexE8u6kgzSx
+         DEZe3ynGvzmvNjLqjI+XS3Pyy2Ly3yF999wkeHaC/oHQfugekAvVwh4RiwlPoeahrZ67
+         aSlXg6MBTSVSi6ZupaCHlruULsffVtmKVCjUtjVUF6PtYh7uDNR2CKjGetgycnqiUndM
+         9R2g==
+X-Gm-Message-State: AOAM533iDLfHPoThklY3f32W4Qb1bzwDXdQlAyxnvA3G0jOazyDeQlA7
+        lwXdiCD3kTczBqkLntKWXxU=
+X-Google-Smtp-Source: ABdhPJyysjnSYXzu4/b8RUpqjOobCSUz+UeNVUj0Izli1DZ/Y8TeaYA+lH5/K6Ivdw0juTFHF6afcQ==
+X-Received: by 2002:a50:ef15:: with SMTP id m21mr7946158eds.226.1621355249393;
+        Tue, 18 May 2021 09:27:29 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id b19sm12997278edd.66.2021.05.18.09.27.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 May 2021 09:27:29 -0700 (PDT)
+Date:   Tue, 18 May 2021 19:27:27 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>
-Content-Type: text/plain; charset="UTF-8"
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH net-next] net: dsa: qca8k: fix missing unlock on error in
+ qca8k_vlan_(add|del)
+Message-ID: <20210518162727.74gynfdtrzuyneul@skbuf>
+References: <20210518112413.622913-1-weiyongjun1@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210518112413.622913-1-weiyongjun1@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 3:01 AM Matthew Wilcox <willy@infradead.org> wrote:
->
-> I feel like I want to document the pfmemalloc bit in mm_types.h,
-> but I don't have a concrete suggestion yet.
->
+Hi Yongjun,
 
-Maybe simply:
+On Tue, May 18, 2021 at 11:24:13AM +0000, Wei Yongjun wrote:
+> Add the missing unlock before return from function qca8k_vlan_add()
+> and qca8k_vlan_del() in the error handling case.
+> 
+> Fixes: 028f5f8ef44f ("net: dsa: qca8k: handle error with qca8k_read operation")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> ---
 
-/* Bit zero is set
- * Bit one if pfmemalloc page
- */
- unsigned long compound_head;
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-Regards,
--- 
-per aspera ad upstream
+>  drivers/net/dsa/qca8k.c | 16 ++++++++++------
+>  1 file changed, 10 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index 4753228f02b3..1f1b7c4dda13 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -506,8 +506,10 @@ qca8k_vlan_add(struct qca8k_priv *priv, u8 port, u16 vid, bool untagged)
+>  		goto out;
+>  
+>  	reg = qca8k_read(priv, QCA8K_REG_VTU_FUNC0);
+> -	if (reg < 0)
+> -		return reg;
+> +	if (reg < 0) {
+> +		ret = reg;
+> +		goto out;
+> +	}
+
+This is fuzzy and has been pointed out before by Russell. reg is unsigned, ret is signed.
+An extra patch would be good to use an "int" everywhere.
+
+>  	reg |= QCA8K_VTU_FUNC0_VALID | QCA8K_VTU_FUNC0_IVL_EN;
+>  	reg &= ~(QCA8K_VTU_FUNC0_EG_MODE_MASK << QCA8K_VTU_FUNC0_EG_MODE_S(port));
+>  	if (untagged)
+> @@ -519,7 +521,7 @@ qca8k_vlan_add(struct qca8k_priv *priv, u8 port, u16 vid, bool untagged)
+>  
+>  	ret = qca8k_write(priv, QCA8K_REG_VTU_FUNC0, reg);
+>  	if (ret)
+> -		return ret;
+> +		goto out;
+>  	ret = qca8k_vlan_access(priv, QCA8K_VLAN_LOAD, vid);
+>  
+>  out:
+> @@ -541,8 +543,10 @@ qca8k_vlan_del(struct qca8k_priv *priv, u8 port, u16 vid)
+>  		goto out;
+>  
+>  	reg = qca8k_read(priv, QCA8K_REG_VTU_FUNC0);
+> -	if (reg < 0)
+> -		return reg;
+> +	if (reg < 0) {
+> +		ret = reg;
+> +		goto out;
+> +	}
+>  	reg &= ~(3 << QCA8K_VTU_FUNC0_EG_MODE_S(port));
+>  	reg |= QCA8K_VTU_FUNC0_EG_MODE_NOT <<
+>  			QCA8K_VTU_FUNC0_EG_MODE_S(port);
+> @@ -564,7 +568,7 @@ qca8k_vlan_del(struct qca8k_priv *priv, u8 port, u16 vid)
+>  	} else {
+>  		ret = qca8k_write(priv, QCA8K_REG_VTU_FUNC0, reg);
+>  		if (ret)
+> -			return ret;
+> +			goto out;
+>  		ret = qca8k_vlan_access(priv, QCA8K_VLAN_LOAD, vid);
+>  	}
+>  
+> 
+
