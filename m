@@ -2,138 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09ECD387A88
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 15:58:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23A58387AEF
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 16:19:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243387AbhERN7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 09:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343739AbhERN7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 09:59:31 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8E2C061573
-        for <netdev@vger.kernel.org>; Tue, 18 May 2021 06:58:11 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id z137-20020a1c7e8f0000b02901774f2a7dc4so1654668wmc.0
-        for <netdev@vger.kernel.org>; Tue, 18 May 2021 06:58:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vMyccDObEmjyUCovO+Driz6eLppd/QP0Vbhv3sy0Vzw=;
-        b=XypU0co7hOXtdPsmr2/DvAl0A4Q5XWKEHWA+xs+BJRDUZraNQNXlvrq2eRjs/QmZ8a
-         2nQxqMXr18DbK/B+TwSLQm/JcNmOP4arVRh8gx6wUYZNCQcI//IvOaeN+hw2+43yOPaB
-         EUU7rrglPXo4zE+a1p+SdlsZuuEUV41cakO3Qp3nnNZBZ/5c3etAZLKoXXtSip8jfOKg
-         I4YTqd4HvnrCkIj2DMactNdMUridIA0y6IN1CEciFrk41msHvzMEHEilH12BN0garqXP
-         n3a/5Q4Mr8I0+PCqdnkpiO+bOKwHMbtQhscoDoAxdngQdYmSYnSxakemu7nMo2QE7QVk
-         RZqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=vMyccDObEmjyUCovO+Driz6eLppd/QP0Vbhv3sy0Vzw=;
-        b=fZoR6K5HAXUgwIYXeNBwdlNs159u3dGgDfh5V8nv2c7ShX4Se8BVs97e266B3SAmmn
-         KvRpQn4QilckXf/MxQD6aNreD2FGo0dRPVtIMKtdw0Z9nNYyg1dGx55r+Te0/GBPtiUA
-         ZRU3QbzWKJN/m67Y9f9dy1uPEqzNr+a1m7EE01vSENx/W/3kse/SkXSfi65Vq4xdUbbv
-         xiyUYhMdznfPxgOg4oPcO6EB7fi+a34MxMF1maNolnxRB3AWC6/zuMTJuaX+tGc8XQXz
-         pmPBQ8T2AG+FzKMSGfDSJn0gE932P88m49TSn73KuFGsPR3pudL9cIghm1+0Vvg5Tauu
-         7dcw==
-X-Gm-Message-State: AOAM533JE1aXlpTmc7h9CBvDZCv8jzWQysLHfOgM1YaRY6GoscDZRxtt
-        iVXKbOIYwBd3QTNLSxYk4Os4P9zc8AY=
-X-Google-Smtp-Source: ABdhPJwBCakrVjqV6SCRj28ciaIpcslc5W4VNL+ypwc9wWJuvga2WnqZDL1ATpJUvjYPUClHp09/bQ==
-X-Received: by 2002:a05:600c:4f44:: with SMTP id m4mr5721763wmq.50.1621346290694;
-        Tue, 18 May 2021 06:58:10 -0700 (PDT)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id v12sm24253401wrv.76.2021.05.18.06.58.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 18 May 2021 06:58:10 -0700 (PDT)
-Date:   Tue, 18 May 2021 14:58:07 +0100
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] sfc: don't use netif_info et al before
- net_device is registered
-Message-ID: <20210518135807.yswqnksmobc3yei3@gmail.com>
-Mail-Followup-To: Heiner Kallweit <hkallweit1@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <b6773ec4-82ac-51f8-0531-f1d6b30dc9a6@gmail.com>
+        id S1349926AbhEROUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 10:20:52 -0400
+Received: from mout.gmx.net ([212.227.17.20]:38427 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1349941AbhEROUv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 May 2021 10:20:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1621347569;
+        bh=9gdkS+ok6akvdJZ5nD2LelqvZ4Glf/5iO1OJC5Lpn2k=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=BnDoSj9UNos/MtgfD2/YsbYXneNliZM81VTVTy/Rxc1fKU3tmEcQwnI8D4F7I/I/A
+         fbfH+XJVbIU7gYqHf3A5pJ1PDjWllTKNT1E/XyZH3XQExJroDs0ZzGbUugNJpvW9Z6
+         hofIavpbWwjpEDu8O8ToGEmEjn4INnZFCw+wLQTM=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.78.202] ([80.245.78.202]) by web-mail.gmx.net
+ (3c-app-gmx-bs02.server.lan [172.19.170.51]) (via HTTP); Tue, 18 May 2021
+ 16:19:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b6773ec4-82ac-51f8-0531-f1d6b30dc9a6@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Message-ID: <trinity-ebe68814-ee65-4efc-b059-e59e7fea5200-1621347569206@3c-app-gmx-bs02>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Aw: Re: Crosscompiling iproute2
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 18 May 2021 16:19:29 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20210517123628.13624eeb@hermes.local>
+References: <trinity-a96735e9-a95a-45be-9386-6e0aa9955a86-1621176719037@3c-app-gmx-bap46>
+ <20210516141745.009403b7@hermes.local>
+ <trinity-00d9e9f2-6c60-48b7-ad84-64fd50043001-1621237461808@3c-app-gmx-bap57>
+ <20210517123628.13624eeb@hermes.local>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:6NS2NAJt0ncGcYPKhUkkta34Q+lAq5Vyf0qpulH+H6AGSz4IIN6b3kisVxzLUTPPpKTFj
+ T76S7xUl+UWDirP8+ERyszYtSeL23EMfa+gxrGxHg3WtupL1Sz49baEMkwCCn/WV6gIAm9++LQJb
+ 2dBkWggWdl/UhymY5S+/Wz4jG1CrvPq74H5YmlAqjDE+rmFFtzsC9UG/cQht5iuHWYAotI6JLzi1
+ U78SpEVYNlRlz5lGeJ2OfKbazVmm9Qzx0QcjZoPPOR48RkF9iRd51ZOrPCGIj9QcCPOVFvmMNORV
+ Mw=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:TPLqQzcLsBo=:TCMcVQ/7UTglCu0G1lAlEo
+ XLuhg+y03fLbPfwdg7BiGYqF90D4oufQt4QQJdeFVox+bdFtOFO4Sw0uBYWbv4+VM9qF25D8a
+ 4HqCEyG/ptDEXeoLRSuCvaGLRuo0gb8jzuYI+m30r5TOs98f8otyEZuCrUx8y6fdwiFKin82I
+ dGZP9sEQk/RfOED4Bt06j66/pWNZB6oPCdYzHEuzyIZV0Z0vgpYcQ4dKk9nulnIzkvGWtK25S
+ O9I070sRXJ70UsBuyYfkREKNj16CrXx4oOQcDKZ7VyGqZYTs1MrvkG2lmZRMsx+2AZAwDio2I
+ MaXe324QaVGOn40Kj8wQdPDgDXLYN3jNM1WANKsC3sPD0nJbwON8rgj+R8WeHoEqol8H2p4Wf
+ aDbfscwKj3iyUWVspBxdJrbe7EJh7vgkup5b9t1djNr66YYE1ZUFCAFZRWIqhMH7mD2StlZdG
+ U/VKGL6JDE0JNL+YVNifIav6n/8uGLhz2aenKt1oK7Q5vbbNlHLgDpEsY/uaH9gxSMDs2wv1f
+ LBdYF/lQU5sRafHZOartYjgNU2IadNTlUjPlUebwHEiawFmQnxumhA7Ijt2b2I50zK57StqBp
+ 8IV8r79xuou6S68qhcno1wlQxf3aix7kF2gYOTNxLZe+s5BwF+/hYovGxhmPJ+mAXSVoJInrv
+ FwjAGO47R/GUfNmARl1mxxmnV1zuA5tMhpcwyLNpJZQnLmDR3B4u2Ior0c5EU4JaTsJU6joI7
+ Kqk+wKEOA7pnTSuWCjy8rStO0vQbKmX+PpoGavYQnN891hYZiDhV4cvuRYl6IkHsTk9bX0jml
+ 4wYvciHg64uczD9Da9kzqWd2bSEgyYyVq8M5/ZkLMBAFKNRteE6xPCN4SwssubKqxq6XsGvSv
+ Fnq2JGg8ewZez9VVR6BwSbkKYf0l0jRXDA7HbQX/FuGf6ri9cQttAzZSISQnTheOqy58puYH6
+ 2oxGEzNV5Mw==
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 13, 2021 at 11:29:12PM +0200, Heiner Kallweit wrote:
-> Using netif_info() before the net_device is registered results in ugly
-> messages like the following:
-> sfc 0000:01:00.1 (unnamed net_device) (uninitialized): Solarflare NIC detected
-> Therefore use pci_info() et al until net_device is registered.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Hard to believe I've seen those messages for years and not noticed.
-Thanks!
+> Gesendet: Montag, 17. Mai 2021 um 21:36 Uhr
+> Von: "Stephen Hemminger" <stephen@networkplumber.org>
+> An: "Frank Wunderlich" <frank-w@public-files.de>
+> Cc: netdev@vger.kernel.org
+> Betreff: Re: Crosscompiling iproute2
+> Cross compile needs to know the compiler for building non-cross tools as=
+ well.
+> This works for me:
+>
+> make CC=3D"$CC" LD=3D"$LD" HOSTCC=3Dgcc
 
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Thanks, works for me too, also with dynamic linking (without "LDFLAGS=3D-s=
+tatic")
 
-> ---
->  drivers/net/ethernet/sfc/efx.c | 13 +++++--------
->  1 file changed, 5 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-> index c746ca723..4fd9903ff 100644
-> --- a/drivers/net/ethernet/sfc/efx.c
-> +++ b/drivers/net/ethernet/sfc/efx.c
-> @@ -722,8 +722,7 @@ static int efx_register_netdev(struct efx_nic *efx)
->  	efx->state = STATE_READY;
->  	smp_mb(); /* ensure we change state before checking reset_pending */
->  	if (efx->reset_pending) {
-> -		netif_err(efx, probe, efx->net_dev,
-> -			  "aborting probe due to scheduled reset\n");
-> +		pci_err(efx->pci_dev, "aborting probe due to scheduled reset\n");
->  		rc = -EIO;
->  		goto fail_locked;
->  	}
-> @@ -990,8 +989,7 @@ static int efx_pci_probe_main(struct efx_nic *efx)
->  	rc = efx->type->init(efx);
->  	up_write(&efx->filter_sem);
->  	if (rc) {
-> -		netif_err(efx, probe, efx->net_dev,
-> -			  "failed to initialise NIC\n");
-> +		pci_err(efx->pci_dev, "failed to initialise NIC\n");
->  		goto fail3;
->  	}
->  
-> @@ -1038,8 +1036,8 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
->  	if (efx->type->sriov_init) {
->  		rc = efx->type->sriov_init(efx);
->  		if (rc)
-> -			netif_err(efx, probe, efx->net_dev,
-> -				  "SR-IOV can't be enabled rc %d\n", rc);
-> +			pci_err(efx->pci_dev, "SR-IOV can't be enabled rc %d\n",
-> +				rc);
->  	}
->  
->  	/* Determine netdevice features */
-> @@ -1106,8 +1104,7 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
->  	if (rc)
->  		goto fail1;
->  
-> -	netif_info(efx, probe, efx->net_dev,
-> -		   "Solarflare NIC detected\n");
-> +	pci_info(pci_dev, "Solarflare NIC detected\n");
->  
->  	if (!efx->type->is_vf)
->  		efx_probe_vpd_strings(efx);
-> -- 
-> 2.31.1
+CROSS_COMPILE=3Darm-linux-gnueabihf-
+make -j8 CC=3D"${CROSS_COMPILE}gcc" LD=3D"${CROSS_COMPILE}-ld" HOSTCC=3Dgc=
+c
+
+only see warning
+
+libnetlink.c:154:2: warning: #warning "libmnl required for error support" =
+[-Wcpp]
+
+but i guess i can ignore it
+
+regards Frank
