@@ -2,98 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F8FE387EED
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 19:49:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDF05387EF2
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 19:49:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351370AbhERRuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 13:50:16 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:44551 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345469AbhERRuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 13:50:15 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1621360137; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=3YWst4AdCVXIc6w9Pje9d25FR37N7LqTf27SEUIDspw=; b=KRkcOGabloeR0mTai8wVPbqeJZXwO2V4gs3Ad0fxcY3XgC9olcc6q9QS1MS8nUZXtHRbKcfe
- FM5CY2sSaHjLvocE+xH3WQoLKHOGVe5C6zwyZUHf2ryITWJNtgnGgHwG5x54P4lcHrl8wuuR
- f06dSchGVDhHYM+XdnzJjNtAuEs=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 60a3fdfc1449805ea2aa92a5 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 18 May 2021 17:48:44
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id A49E7C4323A; Tue, 18 May 2021 17:48:44 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DBD93C433F1;
-        Tue, 18 May 2021 17:48:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DBD93C433F1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-wireless@vger.kernel.org,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] b43legacy: don't save dentries for debugfs
-References: <20210518163309.3702100-1-gregkh@linuxfoundation.org>
-Date:   Tue, 18 May 2021 20:48:39 +0300
-In-Reply-To: <20210518163309.3702100-1-gregkh@linuxfoundation.org> (Greg
-        Kroah-Hartman's message of "Tue, 18 May 2021 18:33:09 +0200")
-Message-ID: <87zgwsgcg8.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1351380AbhERRu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 13:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345233AbhERRuw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 13:50:52 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA1FC061573
+        for <netdev@vger.kernel.org>; Tue, 18 May 2021 10:49:32 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id c20so15964794ejm.3
+        for <netdev@vger.kernel.org>; Tue, 18 May 2021 10:49:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qOIrXjNEmPihq41EZN0fi6oGGGIK0Yz1blMZtu90Tzk=;
+        b=qTHkaLT9nOsMJVCrC4ZOTh/lxVdJz86RFzOCwT8rAP5j0YpYcw6WezHTDNgkAFi42j
+         nvlwEUc+6jruo6ri0pnC69W+cIaLbYwB5QXxwg0r/WEJUVvu9Vph1ofGy33HKS9gNm3P
+         LBt0NxWGGSbJmGjs14bR6vX5YwoZVGQntia+AXLDvjx9gnYcaR7rH6lH5CcaEIyNnFqt
+         xS2LrQEtU3picH6QKubb9dc1HX8P53L2ycTIAY2ZTjmcBzh7pruUnKZPE+b2GWnep66B
+         P/Y11EAcT2bXWzhv0oFhmHy3HkAOdezo6g8lvkBft8V1oRqSfKY6qJzbvkl01aIIvIgm
+         DDBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qOIrXjNEmPihq41EZN0fi6oGGGIK0Yz1blMZtu90Tzk=;
+        b=nicKrSZ6vCOnPzsZd94LynDZKN0rlkx3G2v179aulI5haguImC25TmbHCNFeDBZJd5
+         +Ly+uXq5NkQOjDE5qJRGKSvmDxqRfCdgWlR7qkZUwEtXs4BgZ37DfAoG8OtpT7sM/vbE
+         96QaXY+JflQLgRLPXX5zow75iZJYP0jqKi53vFukUYTSsi9MHgyQ1mCi4CW6KD1EJemt
+         9lIu/o0ggluolA44p/TJNIGA+7aYd6om0koFlLKhlKo7OdnnZ5303DwwszsT+m0gpNCc
+         4WsPwmKHf9sp7tXkm08qJvPU0F2EvA+XJdfYXGsfaUVXiOOzZLUZ6fgzhbyCKCzxsIK3
+         xoYA==
+X-Gm-Message-State: AOAM530BdsEB/LR85QgwpVVC7jHHG28T8t5hjwVXRCpjlCgXT7Uc9TFy
+        b/EyMrY/n2CLrGpqL2hLEK0=
+X-Google-Smtp-Source: ABdhPJyExUKOJiw289dbieH/2Chdgh+jrG8FZK7FQNg7sVbrSLL02yvIys89/pHHD9NMpgYWq0QDFQ==
+X-Received: by 2002:a17:906:1496:: with SMTP id x22mr7300917ejc.419.1621360171311;
+        Tue, 18 May 2021 10:49:31 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id f7sm10504663ejz.95.2021.05.18.10.49.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 May 2021 10:49:31 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH net-next] net: mdio: provide shim implementation of devm_of_mdiobus_register
+Date:   Tue, 18 May 2021 20:49:24 +0300
+Message-Id: <20210518174924.1808602-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+Similar to the way in which of_mdiobus_register() has a fallback to the
+non-DT based mdiobus_register() when CONFIG_OF is not set, we can create
+a shim for the device-managed devm_of_mdiobus_register() which calls
+devm_mdiobus_register() and discards the struct device_node *.
 
-> There is no need to keep around the dentry pointers for the debugfs
-> files as they will all be automatically removed when the subdir is
-> removed.  So save the space and logic involved in keeping them around by
-> just getting rid of them entirely.
->
-> By doing this change, we remove one of the last in-kernel user that was
-> storing the result of debugfs_create_bool(), so that api can be cleaned
-> up.
->
-> Cc: Larry Finger <Larry.Finger@lwfinger.net>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: b43-dev@lists.infradead.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  .../net/wireless/broadcom/b43legacy/debugfs.c | 29 ++++---------------
->  .../net/wireless/broadcom/b43legacy/debugfs.h |  3 --
->  2 files changed, 5 insertions(+), 27 deletions(-)
->
-> Note, I can take this through my debugfs tree if wanted, that way I can
-> clean up the debugfs_create_bool() api at the same time.  Otherwise it's
-> fine, I can wait until next -rc1 for that to happen.
+In particular, this solves a build issue with the qca8k DSA driver which
+uses devm_of_mdiobus_register and can be compiled without CONFIG_OF.
 
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ include/linux/of_mdio.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
+diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
+index 2b05e7f7c238..da633d34ab86 100644
+--- a/include/linux/of_mdio.h
++++ b/include/linux/of_mdio.h
+@@ -72,6 +72,13 @@ static inline int of_mdiobus_register(struct mii_bus *mdio, struct device_node *
+ 	return mdiobus_register(mdio);
+ }
+ 
++static inline int devm_of_mdiobus_register(struct device *dev,
++					   struct mii_bus *mdio,
++					   struct device_node *np)
++{
++	return devm_mdiobus_register(dev, mdio);
++}
++
+ static inline struct mdio_device *of_mdio_find_device(struct device_node *np)
+ {
+ 	return NULL;
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.25.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
