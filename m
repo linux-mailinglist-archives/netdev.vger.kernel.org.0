@@ -2,105 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B608386DDE
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 01:44:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31ABF386E00
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 01:59:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239176AbhEQXpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 19:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231741AbhEQXpU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 19:45:20 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DC4C061573
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 16:44:02 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id j75so8048621oih.10
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 16:44:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=d0YZFRlCmOw1ZT9+QDMVE2KdtNQFQJXD4ryxKlWjm5c=;
-        b=Km5M5rSPYr8wWgrOkq8uA0WQ8w/yekBVgx7R1ZSLmvgGrIgimn268O3BdL6ghgcPn8
-         NnhswO6akAJZ+8TSNwYoQjME4nLalTNYULukcBZSqbId+cDjWCf/uD75bRT+wMKpWLdR
-         WFnCwGUwT40Jp2vH933fb+MIYv7aN2a/yBkp+MZJ8j9Kpk+0WuuReG6NCcRZDcngCn1s
-         DgTyuxCbBc/jirZNJ3hU2OjbfkbCqKPgPHGpxGpV9EJmx8D7eAwopktCEbnIvz3DJeik
-         2l//x01qvvU9hszEjkSP2L6VB5BMFEwYBt9OXxaTOn4MWqnBTzgI6uzP44YWv88yJwHU
-         ixdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d0YZFRlCmOw1ZT9+QDMVE2KdtNQFQJXD4ryxKlWjm5c=;
-        b=YBmkfIgXjD3YUijajueTzjPCmJZca2/lWWRYc9yKT4fxDlXrAAUSJodLxMd2/GnP0a
-         rdlWkUWtbAFWbvmyABrtnL99IxrS678wDgR9Y3z4CZ6KHv2lYHNbPyDFx8H/X6bWg/t/
-         KCVUTuehwEQv77hQt3coAWygxVmBb1YxewZoUEMgJWvM4mJj+sE0hPqR3a4a8AndipNe
-         Y4mx72vurmp79CdgvQ32TDOf57uGGhI7ODo94a3EwK73VvPwJHG70TJyVhR6oKGYfbb2
-         3jshEbY82hj2V3L7NRUBmdTaG1eTM9O1SLMR0v5EKNrFW5E9Uzrce4+8LnzYH0guEBf9
-         zMsA==
-X-Gm-Message-State: AOAM530m45K7/Qb9CC8SnouAn5FK+/6yNUfayTIJf2kSFAjJqd1Mc2QL
-        Av8Y1iYVq4OVu6/aBsN4KHTK4fdbb5XX1SmG6XnAMmML3Cg=
-X-Google-Smtp-Source: ABdhPJy1smTpWjTWn0eM8qLSz1bApKqibl6aX3mRvuADt/I8aX3H1ZA9y5kvMv8y4+v1ZOr5g4HmVoi2bKfeEfvBoQ4=
-X-Received: by 2002:aca:4e55:: with SMTP id c82mr1216130oib.17.1621295042397;
- Mon, 17 May 2021 16:44:02 -0700 (PDT)
+        id S1344731AbhERAA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 20:00:58 -0400
+Received: from gateway20.websitewelcome.com ([192.185.47.18]:22432 "EHLO
+        gateway20.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238461AbhERAA5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 20:00:57 -0400
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id 4BD1D400F00C2
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 18:47:10 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id in94l2lJzAEP6in94lf1q3; Mon, 17 May 2021 18:59:34 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=WP8OErJcmlKelJqczvCkV0X7DlzM/cT7AhezC/cjhUo=; b=moKGY195TE1gv/tS9z7buZ3Ac2
+        jd7wq+MnQHUnASatBfxg6jtc9t3OjG8BiseeU1D0WUwRzFpU60JGFXlNvnA9zWRGMnvCYoU/6SVP7
+        tsiGluyeOb2IRvgmksmyQLxUg4YmHwlABhrpo3yeIXCCpWnigmlUI56xGBlypqm92dIwcnbDf28/D
+        Kz0bYfrsge0a1/Elr7Q09iZ5New631ZdpQ+Z1FKYe/v0qB7jdbIpMrREtBcVrFjio2FOitahrrT9s
+        3gN/nkHK3BiI0cnX4HrClSQVEBi+an1PJ61GVM7VcqZds8ilTTNvcCLTbQEUi6TgHkF1RY6onsjEC
+        YDf6bykQ==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:53352 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1lin91-001x2Z-FY; Mon, 17 May 2021 18:59:32 -0500
+Subject: Re: [PATCH RESEND][next] vxge: Fix fall-through warnings for Clang
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+References: <20210305094735.GA141111@embeddedor>
+ <e5591c90-1a12-febf-1aca-257895f24d26@embeddedor.com>
+Message-ID: <33df60cb-2122-730b-bff6-dddce39795ac@embeddedor.com>
+Date:   Mon, 17 May 2021 19:00:10 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <1621245214-19343-1-git-send-email-loic.poulain@linaro.org>
-In-Reply-To: <1621245214-19343-1-git-send-email-loic.poulain@linaro.org>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Tue, 18 May 2021 02:43:51 +0300
-Message-ID: <CAHNKnsTnbLKXQF2CHEKA-BN9PBAhuY5GYVaTNK5ztjBV4q2zKg@mail.gmail.com>
-Subject: Re: [PATCH net] net: wwan: Add WWAN port type attribute
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        dcbw@gapps.redhat.com, aleksander@aleksander.es
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <e5591c90-1a12-febf-1aca-257895f24d26@embeddedor.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1lin91-001x2Z-FY
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:53352
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 24
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Loic,
+Hi all,
 
-On Mon, May 17, 2021 at 12:48 PM Loic Poulain <loic.poulain@linaro.org> wrote:
-> The port type is by default part of the WWAN port device name.
-> However device name can not be considered as a 'stable' API and
-> may be subject to change in the future. This change adds a proper
-> device attribute that can be used to determine the WWAN protocol/
-> type.
->
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> ---
->  drivers/net/wwan/wwan_core.c | 34 +++++++++++++++++++++++++---------
->  1 file changed, 25 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-> index cff04e5..92a8a6f 100644
-> --- a/drivers/net/wwan/wwan_core.c
-> +++ b/drivers/net/wwan/wwan_core.c
-> @@ -169,6 +169,30 @@ static void wwan_remove_dev(struct wwan_device *wwandev)
->
->  /* ------- WWAN port management ------- */
->
-> +/* Keep aligned with wwan_port_type enum */
-> +static const char * const wwan_port_type_str[] = {
-> +       "AT",
-> +       "MBIM",
-> +       "QMI",
-> +       "QCDM",
-> +       "FIREHOSE"
-> +};
+I'm taking this in my -next[1] branch for v5.14.
 
-A small nitpick, maybe this array should be defined in a such way:
+Thanks
+--
+Gustavo
 
-static const char * const wwan_port_type_str[WWAN_PORT_MAX] = {
-    [WWAN_PORT_AT] = "AT",
-    [WWAN_PORT_MBIM] = "MBIM",
-    [WWAN_PORT_QMI] = "QMI",
-    [WWAN_PORT_QCDM] = "QCDM",
-    [WWAN_PORT_FIREHOSE] = "FIREHOSE",
-};
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git/log/?h=for-next/kspp
 
-So the array index will be clear without additional notes.
-
--- 
-Sergey
+On 4/20/21 15:22, Gustavo A. R. Silva wrote:
+> Hi all,
+> 
+> Friendly ping: who can take this, please?
+> 
+> Thanks
+> --
+> Gustavo
+> 
+> On 3/5/21 03:47, Gustavo A. R. Silva wrote:
+>> In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
+>> by explicitly adding a return statement instead of letting the code fall
+>> through to the next case.
+>>
+>> Link: https://github.com/KSPP/linux/issues/115
+>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+>> ---
+>>  drivers/net/ethernet/neterion/vxge/vxge-config.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/net/ethernet/neterion/vxge/vxge-config.c b/drivers/net/ethernet/neterion/vxge/vxge-config.c
+>> index 5162b938a1ac..b47d74743f5a 100644
+>> --- a/drivers/net/ethernet/neterion/vxge/vxge-config.c
+>> +++ b/drivers/net/ethernet/neterion/vxge/vxge-config.c
+>> @@ -3784,6 +3784,7 @@ vxge_hw_rts_rth_data0_data1_get(u32 j, u64 *data0, u64 *data1,
+>>  			VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM1_ENTRY_EN |
+>>  			VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM1_BUCKET_DATA(
+>>  			itable[j]);
+>> +		return;
+>>  	default:
+>>  		return;
+>>  	}
+>>
