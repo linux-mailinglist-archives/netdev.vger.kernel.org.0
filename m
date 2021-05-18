@@ -2,153 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B526387DA4
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 18:33:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB48A387DDA
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 18:43:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350844AbhERQel (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 12:34:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37042 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350796AbhERQea (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 May 2021 12:34:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B6EBB61209;
-        Tue, 18 May 2021 16:33:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1621355592;
-        bh=uLxstjwHGlGzQAupdULmHBYdEHkS2cwNy6g10sCE/XM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CuDW/JXBccT6hsVONjPpKXTTU9r0iqsMGcH/NI1in4AMYyYK1POpM+Zh/jLtB/6Lu
-         ueStEtBLnfWOjfsW/ZgrBsKA5voAG601ZGl43WGxvTS93WzICZRIveWW8so8ruAqRu
-         HCWOslYmr1OKcu8hEB7PmBzPiC/EHZM1rK/n559A=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-wireless@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] b43legacy: don't save dentries for debugfs
-Date:   Tue, 18 May 2021 18:33:09 +0200
-Message-Id: <20210518163309.3702100-1-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.31.1
+        id S1350866AbhERQpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 12:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57832 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346670AbhERQpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 12:45:10 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D0FC061573;
+        Tue, 18 May 2021 09:43:51 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id l1so15607791ejb.6;
+        Tue, 18 May 2021 09:43:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=qWBGH+31X26yOkng3p7bz4HR+xMDjcB7PfqrZjkZnA0=;
+        b=T1YERtdqp4Ye+XTK51ACR7Q9kzTO8PoofA84l/tdEvNlitKVWNAg4kN35QYTxO2JEB
+         tZm8o8t52BJKJxKhp1+zbg6lbiOzeCAfXZeO25nnGlIZBs70VVJMj6HLqtVT+bV1p73n
+         s90pQnW4ghIVAsfGLoO/HwR31KdhNCkwvCLWMEPzqJWnmIYtmEV4kF1yh2X3OI91dALB
+         x22Ug5JbZAqveAGjn1+9hEKlBL3p8hXb92AfHt4q+hsEs7SAcoX6dmNTPAgOO4GLeCjX
+         tgioG/S8Bb6kmdE+1HZx2QE/sbMn98wonKOuuEKMfG608MLSWrU43MD8HcsZQBpJENP2
+         Atkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=qWBGH+31X26yOkng3p7bz4HR+xMDjcB7PfqrZjkZnA0=;
+        b=V2ik6Njq8sm7dsQwBkuCsQBy9PZYV+Olr31jXW+B2du3IcSOroooVYmKbkdfT1VoK6
+         enU+ImHZqiKLd9Nin3Bys6jkYcwNJk/IYMU+TK+uqtEj2v0KNqsztt1mYfhnllwDQkDe
+         1xXLnwuyCZeiViEzsrM1OE+SVl1TgroenNlGd5x7TfNjQL/woQ5OWnxx1QijQuoQdVzY
+         po74OJ9up994A8fHJCutv44VEPHoTqUzL5MYcgKuKkrRXl/qIqzx9qsKgWcnbeGysFv1
+         cSOd/jKZ03hZVBIyRb++RBaWhTTApwv7e1W0CPbx0B5nCpbv9yJ/AFNLVXpBLlmJGpgh
+         z1pQ==
+X-Gm-Message-State: AOAM532suvOt6mkA2ALf0f6/msCRL6Ue/RxJfQkiREp7yboVte8FHEs3
+        INE+fOhoqXCSI5CykaIHR4E=
+X-Google-Smtp-Source: ABdhPJydpnHDJ8oT2s80l6Hg0EPCWj+a0ZmcWve880eNG1uVwU+ckDGD8d2kFyHAV3EN7tSXXXDLgg==
+X-Received: by 2002:a17:906:c0c3:: with SMTP id bn3mr6979565ejb.498.1621356230011;
+        Tue, 18 May 2021 09:43:50 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id t9sm13757408edf.70.2021.05.18.09.43.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 May 2021 09:43:49 -0700 (PDT)
+Date:   Tue, 18 May 2021 19:43:48 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: linux-next: Tree for May 18 (drivers/net/dsa/qca8k.c)
+Message-ID: <20210518164348.vbuxaqg4s3mwzp4e@skbuf>
+References: <20210518192729.3131eab0@canb.auug.org.au>
+ <785e9083-174e-5287-8ad0-1b5b842e2282@infradead.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <785e9083-174e-5287-8ad0-1b5b842e2282@infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no need to keep around the dentry pointers for the debugfs
-files as they will all be automatically removed when the subdir is
-removed.  So save the space and logic involved in keeping them around by
-just getting rid of them entirely.
+Hi Randy,
 
-By doing this change, we remove one of the last in-kernel user that was
-storing the result of debugfs_create_bool(), so that api can be cleaned
-up.
+On Tue, May 18, 2021 at 09:32:49AM -0700, Randy Dunlap wrote:
+> On 5/18/21 2:27 AM, Stephen Rothwell wrote:
+> > Hi all,
+> > 
+> > Changes since 20210514:
+> > 
+> 
+> on x86_64:
+> # CONFIG_OF is not set
+> 
+> ../drivers/net/dsa/qca8k.c: In function ‘qca8k_mdio_register’:
+> ../drivers/net/dsa/qca8k.c:797:9: error: implicit declaration of function ‘devm_of_mdiobus_register’; did you mean ‘devm_mdiobus_register’? [-Werror=implicit-function-declaration]
+>   return devm_of_mdiobus_register(priv->dev, bus, mdio);
+> 
+> 
+> Should there be a stub for this function in <linux/of_mdio.h>?
+> or the driver could add a dependency on OF_MDIO.
+> 
+> Full randconfig file is attached.
+> 
+> -- 
+> ~Randy
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> 
 
-Cc: Larry Finger <Larry.Finger@lwfinger.net>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: b43-dev@lists.infradead.org
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Would something like this work?
+
+-----------------------------[ cut here ]-----------------------------
+From 36c0b3f04ebfa51e52bd1bc2dc447d12d1c6e119 Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <olteanv@gmail.com>
+Date: Tue, 18 May 2021 19:39:18 +0300
+Subject: [PATCH] net: mdio: provide shim implementation of
+ devm_of_mdiobus_register
+
+Similar to the way in which of_mdiobus_register() has a fallback to the
+non-DT based mdiobus_register() when CONFIG_OF is not set, we can create
+a shim for the device-managed devm_of_mdiobus_register() which calls
+devm_mdiobus_register() and discards the struct device_node *.
+
+In particular, this solves a build issue with the qca8k DSA driver which
+uses devm_of_mdiobus_register and can be compiled without CONFIG_OF.
+
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- .../net/wireless/broadcom/b43legacy/debugfs.c | 29 ++++---------------
- .../net/wireless/broadcom/b43legacy/debugfs.h |  3 --
- 2 files changed, 5 insertions(+), 27 deletions(-)
+ include/linux/of_mdio.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Note, I can take this through my debugfs tree if wanted, that way I can
-clean up the debugfs_create_bool() api at the same time.  Otherwise it's
-fine, I can wait until next -rc1 for that to happen.
-
-v2: remove X/N from subject, it is a stand-alone patch.
-
-
-diff --git a/drivers/net/wireless/broadcom/b43legacy/debugfs.c b/drivers/net/wireless/broadcom/b43legacy/debugfs.c
-index e7e4293c01f2..6b0e8d117061 100644
---- a/drivers/net/wireless/broadcom/b43legacy/debugfs.c
-+++ b/drivers/net/wireless/broadcom/b43legacy/debugfs.c
-@@ -336,24 +336,14 @@ int b43legacy_debug(struct b43legacy_wldev *dev, enum b43legacy_dyndbg feature)
- 	return !!(dev->dfsentry && dev->dfsentry->dyn_debug[feature]);
+diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
+index 2b05e7f7c238..da633d34ab86 100644
+--- a/include/linux/of_mdio.h
++++ b/include/linux/of_mdio.h
+@@ -72,6 +72,13 @@ static inline int of_mdiobus_register(struct mii_bus *mdio, struct device_node *
+ 	return mdiobus_register(mdio);
  }
  
--static void b43legacy_remove_dynamic_debug(struct b43legacy_wldev *dev)
--{
--	struct b43legacy_dfsentry *e = dev->dfsentry;
--	int i;
--
--	for (i = 0; i < __B43legacy_NR_DYNDBG; i++)
--		debugfs_remove(e->dyn_debug_dentries[i]);
--}
--
- static void b43legacy_add_dynamic_debug(struct b43legacy_wldev *dev)
++static inline int devm_of_mdiobus_register(struct device *dev,
++					   struct mii_bus *mdio,
++					   struct device_node *np)
++{
++	return devm_mdiobus_register(dev, mdio);
++}
++
+ static inline struct mdio_device *of_mdio_find_device(struct device_node *np)
  {
- 	struct b43legacy_dfsentry *e = dev->dfsentry;
- 
- #define add_dyn_dbg(name, id, initstate) do {			\
- 	e->dyn_debug[id] = (initstate);				\
--	e->dyn_debug_dentries[id] =				\
--		debugfs_create_bool(name, 0600, e->subdir,	\
--				&(e->dyn_debug[id]));		\
-+	debugfs_create_bool(name, 0600, e->subdir,		\
-+			    &(e->dyn_debug[id]));		\
- 	} while (0)
- 
- 	add_dyn_dbg("debug_xmitpower", B43legacy_DBG_XMITPOWER, false);
-@@ -396,11 +386,9 @@ void b43legacy_debugfs_add_device(struct b43legacy_wldev *dev)
- 
- #define ADD_FILE(name, mode)	\
- 	do {							\
--		e->file_##name.dentry =				\
--			debugfs_create_file(__stringify(name),	\
--					mode, e->subdir, dev,	\
--					&fops_##name.fops);	\
--		e->file_##name.dentry = NULL;			\
-+		debugfs_create_file(__stringify(name), mode,	\
-+				    e->subdir, dev,		\
-+				    &fops_##name.fops);		\
- 	} while (0)
- 
- 
-@@ -424,13 +412,6 @@ void b43legacy_debugfs_remove_device(struct b43legacy_wldev *dev)
- 	e = dev->dfsentry;
- 	if (!e)
- 		return;
--	b43legacy_remove_dynamic_debug(dev);
--
--	debugfs_remove(e->file_tsf.dentry);
--	debugfs_remove(e->file_ucode_regs.dentry);
--	debugfs_remove(e->file_shm.dentry);
--	debugfs_remove(e->file_txstat.dentry);
--	debugfs_remove(e->file_restart.dentry);
- 
- 	debugfs_remove(e->subdir);
- 	kfree(e->txstatlog.log);
-diff --git a/drivers/net/wireless/broadcom/b43legacy/debugfs.h b/drivers/net/wireless/broadcom/b43legacy/debugfs.h
-index 7a37764406b1..924130880dfe 100644
---- a/drivers/net/wireless/broadcom/b43legacy/debugfs.h
-+++ b/drivers/net/wireless/broadcom/b43legacy/debugfs.h
-@@ -28,7 +28,6 @@ struct b43legacy_txstatus_log {
- };
- 
- struct b43legacy_dfs_file {
--	struct dentry *dentry;
- 	char *buffer;
- 	size_t data_len;
- };
-@@ -49,8 +48,6 @@ struct b43legacy_dfsentry {
- 
- 	/* Enabled/Disabled list for the dynamic debugging features. */
- 	bool dyn_debug[__B43legacy_NR_DYNDBG];
--	/* Dentries for the dynamic debugging entries. */
--	struct dentry *dyn_debug_dentries[__B43legacy_NR_DYNDBG];
- };
- 
- int b43legacy_debug(struct b43legacy_wldev *dev,
--- 
-2.31.1
-
+ 	return NULL;
+-----------------------------[ cut here ]-----------------------------
