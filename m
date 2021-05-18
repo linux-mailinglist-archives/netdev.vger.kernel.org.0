@@ -2,104 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F01913875CC
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 11:55:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB8E1387609
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 12:06:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348072AbhERJ4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 05:56:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58822 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243182AbhERJ4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 05:56:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621331700;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+VCDqtzyoP1/MzTBF9IVeYAYQ0ccxPfD6Ur9tV2oQ+o=;
-        b=QxslfdtDobxarcH53NHc1d5Yvhmg2VC8nDhk3/a3yfeAJ6Yy1BRYx2S3ylP5cgriCo741d
-        IE5LpTQobzL57pZfBfuJEeJhkqis5vvd9Qa22d5ux1eyTSC6KMKyukgKff7k8/jXV7F83g
-        pkTgw6sRJZ6KC/iPjhZu6yC8c4DNJkw=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-462-8oQkVnykN-2gllHtUlmf4w-1; Tue, 18 May 2021 05:54:58 -0400
-X-MC-Unique: 8oQkVnykN-2gllHtUlmf4w-1
-Received: by mail-wr1-f70.google.com with SMTP id a9-20020adfc4490000b0290112095ca785so120913wrg.14
-        for <netdev@vger.kernel.org>; Tue, 18 May 2021 02:54:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+VCDqtzyoP1/MzTBF9IVeYAYQ0ccxPfD6Ur9tV2oQ+o=;
-        b=oozfEzThEpKGMOT8yfPIme5lhZZ1UpuEfzgyo1nmSM4wz8Oyof5g2Fv+SG8UHvDB8n
-         Rdu+Mh+UpT/PLp2PIw7igcyWnDLcXTYIi8QW8XDdMhBzf1ijk/jxVOl5rFWtNZSCuI8Y
-         wf10laBGCO0tCZaxMMnFxa4ouhsokWLfKYcK44605bz5yWmVak0qsvAkYhtrWnVSBs5W
-         n4mZmvnFATZjtNbQrdlghmId6bzjUIH0ONisnh9ZUJmT5NmVbUEauPtEF0YITCZwG4Co
-         zjcfEHRRxybCYw2Vfg9n3T6ZzfARGKGh5fqtfx45sNsq2Pwet7yioaDarVBf2jNgnrZk
-         kI1A==
-X-Gm-Message-State: AOAM5320TGdXiW+Y1HZYQYhCPdEJPbyYv1scE1c6BEPSnyxqZlhPVKx6
-        xaDaHAvkX8WwWlN3wGR6ekNCM5b3N0zmr0mR6HdaDj/Y1mQDy6njq9cd0yiusOeW3OHBXVxy0nD
-        zGtvsuueeMkp3s7Ls
-X-Received: by 2002:a1c:ed0a:: with SMTP id l10mr4484504wmh.151.1621331697560;
-        Tue, 18 May 2021 02:54:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwtNhcvWHDo9BYsG3WxxnHpLZNjEaHmYXrXsXLGKZi1sCaVICC9ZVl/Fur/33Pf1AoORsMwvA==
-X-Received: by 2002:a1c:ed0a:: with SMTP id l10mr4484493wmh.151.1621331697424;
-        Tue, 18 May 2021 02:54:57 -0700 (PDT)
-Received: from redhat.com ([2a10:800c:1fa6:0:3809:fe0c:bb87:250e])
-        by smtp.gmail.com with ESMTPSA id f6sm24076804wru.72.2021.05.18.02.54.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 May 2021 02:54:56 -0700 (PDT)
-Date:   Tue, 18 May 2021 05:54:54 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xianting Tian <xianting.tian@linux.alibaba.com>
-Cc:     jasowang@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] virtio_net: Remove BUG() to aviod machine dead
-Message-ID: <20210518055336-mutt-send-email-mst@kernel.org>
-References: <a351fbe1-0233-8515-2927-adc826a7fb94@linux.alibaba.com>
+        id S1348320AbhERKIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 06:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51262 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241178AbhERKIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 06:08:01 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7E9C061573;
+        Tue, 18 May 2021 03:06:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=XcUE59BbQI5VCk62NQ98jAv25zo//emUHUedcxxcgyA=; b=B+1u6ZG4uJf1OSsB0tVOyeq0N
+        H+f35qC+o3JQhJf0dqEAUIURiaEown3+hepXFL/kFsdRe5AnAXhCIr6odFUcrSryaajMcfXd7lHSV
+        oERv2lMclyCkH88TtgEHbvmIjNuiaaskphGn/68qNsJVObsFzkALdGKWJnX2FP1mqe6ytC45X9SUH
+        JOZlL7c8SLi92/bJOPHxXqYy/CdA1jei51V5eRNuZvzT7bn/n+6/NXPoPu+KSzaxpEWV+9shIdC8z
+        pzsC2s8JthkHOanWWYH+W3ao8o0rzYPudZqRQqUkWQJea5CTgYcaXde0QKP4Qyg7/QjPw/chMtbu+
+        FgWLQSc9Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44126)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1liwcR-00042a-B7; Tue, 18 May 2021 11:06:31 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1liwcN-0007nP-Tc; Tue, 18 May 2021 11:06:27 +0100
+Date:   Tue, 18 May 2021 11:06:27 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     "Sit, Michael Wei Hong" <michael.wei.hong.sit@intel.com>
+Cc:     "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Tan, Tee Min" <tee.min.tan@intel.com>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/2] net: stmmac: Add callbacks for DWC xpcs
+ Energy Efficient Ethernet
+Message-ID: <20210518100627.GT12395@shell.armlinux.org.uk>
+References: <20210517094332.24976-1-michael.wei.hong.sit@intel.com>
+ <20210517094332.24976-3-michael.wei.hong.sit@intel.com>
+ <20210517105424.GP12395@shell.armlinux.org.uk>
+ <CO1PR11MB50447EDBEB4835C3EB5B3C7A9D2D9@CO1PR11MB5044.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a351fbe1-0233-8515-2927-adc826a7fb94@linux.alibaba.com>
+In-Reply-To: <CO1PR11MB50447EDBEB4835C3EB5B3C7A9D2D9@CO1PR11MB5044.namprd11.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-typo in subject
-
-On Tue, May 18, 2021 at 05:46:56PM +0800, Xianting Tian wrote:
-> When met error, we output a print to avoid a BUG().
+On Mon, May 17, 2021 at 11:37:12AM +0000, Sit, Michael Wei Hong wrote:
+> > From: Russell King <linux@armlinux.org.uk>
+> > 
+> > On Mon, May 17, 2021 at 05:43:32PM +0800, Michael Sit Wei Hong
+> > wrote:
+> > > Link xpcs callback functions for MAC to configure the xpcs EEE
+> > feature.
+> > >
+> > > The clk_eee frequency is used to calculate the
+> > MULT_FACT_100NS. This
+> > > is to adjust the clock tic closer to 100ns.
+> > >
+> > > Signed-off-by: Michael Sit Wei Hong
+> > <michael.wei.hong.sit@intel.com>
+> > 
+> > What is the initial state of the EEE configuration before the first
+> > call to stmmac_ethtool_op_set_eee()? Does it reflect the default
+> > EEE settings?
 > 
-> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-> ---
->  drivers/net/virtio_net.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+> The register values before the first call are the default reset values in
+> the registers. The reset values assumes the clk_eee_i time period is 10ns,
+> Hence, the reset value is set to 9.
+> According to the register description,
+> This value should be programmed such that the
+> clk_eee_i_time_period * (MULT_FACT_100NS + 1) should be
+> within 80 ns to 120 ns.
 > 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index c921ebf3ae82..a66174d13e81 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1647,9 +1647,8 @@ static int xmit_skb(struct send_queue *sq, struct
-> sk_buff *skb)
->  		hdr = skb_vnet_hdr(skb);
-> 
->  	if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
-> -				    virtio_is_little_endian(vi->vdev), false,
-> -				    0))
-> -		BUG();
-> +				virtio_is_little_endian(vi->vdev), false, 0))
-> +		return -EPROTO;
-> 
+> Since we are using a fixed 19.2MHz clk_eee, which is 52ns,
+> we are setting the value to 1.
 
-why EPROTO? can you add some comments to explain what is going on pls?
-
-is this related to a malicious hypervisor thing?
-
-don't we want at least a WARN_ON? Or _ONCE?
-
->  	if (vi->mergeable_rx_bufs)
->  		hdr->num_buffers = 0;
-> -- 
-> 2.17.1
-
+Does that hardware default configuration match what is returned by
+ethtool --show-eee ?
+ 
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
