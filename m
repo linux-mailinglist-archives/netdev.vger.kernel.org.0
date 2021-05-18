@@ -2,128 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71C89387E29
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 19:02:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28873387E64
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 19:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351057AbhERRDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 13:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351051AbhERRDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 13:03:45 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D161C061573;
-        Tue, 18 May 2021 10:02:26 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id b17so12102399ede.0;
-        Tue, 18 May 2021 10:02:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xkwOYgQBRIpM16uMwoU+mUrmHBsuGWAbr73e2ncPA0g=;
-        b=sT7fAyu4QfLljdQWFeOwDudseO9RbNBpyFab8AqpAV7vjWXQn4yNdTLoVZkZWw5OFi
-         o1QmudE/Lcw9PWbZC+4HZip153Bii520ydGlx6+y9CvxpgMkTUL/bXufsFD68eboyZdc
-         TrNiFD+ZZrTbgsvVEu3z3InVBbg5UdmQ6XanjhCW6VhmFrFBLevC4BiqB0btxeOhAQNR
-         OwU+QtR1jTbVNapZwXZVyvApfj4qca+suat4h53tzit/GSuJv2wMiO6aVemUGOYUmTMK
-         qWIRgi3WoGH+EjJuq0vO7McYQi0jPmcP/FSUUxN5zqJmUjW1pjh9vm7AOlzjRxpWjitI
-         t+Uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xkwOYgQBRIpM16uMwoU+mUrmHBsuGWAbr73e2ncPA0g=;
-        b=Sc0FGy5UAWBdu5cdGcRnQIM8PPS+c9F+C2zHLXbKz1x/JeuRUe66WGNcRXvA187goC
-         Bz4RMSzCvqjE01YdZMPs6j72uCU9M5W2efVHtDl10qHCoICFTkP3ehL5wr5c8hF2HkF+
-         u9HPM2NMeMSaIUeunvhtcoq7zfEN8rW1s9CPWtmZ8/aBwMnzKkRpfZ/51IcTpw+9VMuy
-         1w+LoNlJedrv7fNPc+jMPUqGN1hkvnUXUADZKbWwvBsPut0Y2LHt+BcMcQOhf12krtGR
-         p2pRSf1gAZDX5rXZCckZOKwyHCZxkWcwv88mit21PCCx5+n+CMwx4pq9V3rqzX67lFN0
-         fERQ==
-X-Gm-Message-State: AOAM533xnyEOuTIOG0f3RJAYz6fQ2iezEXgW2s8vNqr7xjPKdZm8oBdH
-        X59lB0ZRPT7dodLG1NYOVbU=
-X-Google-Smtp-Source: ABdhPJw81MW0rCrNornXhuZKtlng8yDEqdUawUTdWwLI8y2RX7EnkE6M1XbkYHBQAepBnN9GIVu73A==
-X-Received: by 2002:aa7:c150:: with SMTP id r16mr8020182edp.82.1621357344981;
-        Tue, 18 May 2021 10:02:24 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id v1sm10451510ejw.117.2021.05.18.10.02.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 May 2021 10:02:24 -0700 (PDT)
-Date:   Tue, 18 May 2021 20:02:23 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        John Crispin <john@phrozen.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: linux-next: Tree for May 18 (drivers/net/dsa/qca8k.c)
-Message-ID: <20210518170223.pcd32732m2uixfgg@skbuf>
-References: <20210518192729.3131eab0@canb.auug.org.au>
- <785e9083-174e-5287-8ad0-1b5b842e2282@infradead.org>
- <20210518164348.vbuxaqg4s3mwzp4e@skbuf>
- <1e431580-37e5-dc80-8307-eb79125f9b75@infradead.org>
+        id S1351125AbhERRcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 13:32:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43614 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346293AbhERRcQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 May 2021 13:32:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9137A611AC;
+        Tue, 18 May 2021 17:30:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621359058;
+        bh=7Dy8zzNY+4sKyTL/Ac1KDNwYiAMPfo+uyZSJmDyblX8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Is5+vcRYsFcPMbPhcgeJ5G5ILv4eEZZ9SYhvB+dFYIwxzqVlQ4QKpEnf64jmSQTvA
+         dggXD2F33Aock/vfUWjHcRSXYISpBA4r/7Og37K/I1mdvKT8fvr9oXbqVMQl1Lw+5V
+         3wcRPCBoPkug5UTg9YomWuKsz0V+eJ9SmyxKwDVPq7QLp023fSOPOBXlIhxu+n1Qoo
+         G9slCDQjqjo2RW7X+jaRx0hGtSiBwhmTFSTOFZiKez+kB4IU4XeMJaPqmrGZyKXwiB
+         0F0TdI8g99gEgwAlBjlqLUX7ua3Jd57E9pYPFTqybzLVPBEd6BIr/RAk0l103ryfl4
+         c8zgFedTfSNiw==
+Date:   Tue, 18 May 2021 10:30:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "huangguangbin (A)" <huangguangbin2@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <michael.chan@broadcom.com>, <saeedm@nvidia.com>,
+        <leon@kernel.org>, <ecree.xilinx@gmail.com>,
+        <habetsm.xilinx@gmail.com>, <f.fainelli@gmail.com>,
+        <andrew@lunn.ch>, <mkubecek@suse.cz>, <ariela@nvidia.com>
+Subject: Re: [PATCH net-next v2 0/6] ethtool: add standard FEC statistics
+Message-ID: <20210518103056.4e8a8a6f@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <b5bb362e-a430-2cc8-291e-b407e306fd49@huawei.com>
+References: <20210415225318.2726095-1-kuba@kernel.org>
+        <b5bb362e-a430-2cc8-291e-b407e306fd49@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1e431580-37e5-dc80-8307-eb79125f9b75@infradead.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 18, 2021 at 09:57:13AM -0700, Randy Dunlap wrote:
-> On 5/18/21 9:43 AM, Vladimir Oltean wrote:
-> > Hi Randy,
+On Tue, 18 May 2021 14:48:13 +0800 huangguangbin (A) wrote:
+> On 2021/4/16 6:53, Jakub Kicinski wrote:
+> > This set adds uAPI for reporting standard FEC statistics, and
+> > implements it in a handful of drivers.
 > > 
-> > Would something like this work?
+> > The statistics are taken from the IEEE standard, with one
+> > extra seemingly popular but not standard statistics added.
 > > 
-> > -----------------------------[ cut here ]-----------------------------
-> > From 36c0b3f04ebfa51e52bd1bc2dc447d12d1c6e119 Mon Sep 17 00:00:00 2001
-> > From: Vladimir Oltean <olteanv@gmail.com>
-> > Date: Tue, 18 May 2021 19:39:18 +0300
-> > Subject: [PATCH] net: mdio: provide shim implementation of
-> >  devm_of_mdiobus_register
+> > The implementation is similar to that of the pause frame
+> > statistics, user requests the stats by setting a bit
+> > (ETHTOOL_FLAG_STATS) in the common ethtool header of
+> > ETHTOOL_MSG_FEC_GET.
 > > 
-> > Similar to the way in which of_mdiobus_register() has a fallback to the
-> > non-DT based mdiobus_register() when CONFIG_OF is not set, we can create
-> > a shim for the device-managed devm_of_mdiobus_register() which calls
-> > devm_mdiobus_register() and discards the struct device_node *.
+> > Since standard defines the statistics per lane what's
+> > reported is both total and per-lane counters:
 > > 
-> > In particular, this solves a build issue with the qca8k DSA driver which
-> > uses devm_of_mdiobus_register and can be compiled without CONFIG_OF.
-> > 
-> > Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> > ---
-> >  include/linux/of_mdio.h | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> > 
-> > diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
-> > index 2b05e7f7c238..da633d34ab86 100644
-> > --- a/include/linux/of_mdio.h
-> > +++ b/include/linux/of_mdio.h
-> > @@ -72,6 +72,13 @@ static inline int of_mdiobus_register(struct mii_bus *mdio, struct device_node *
-> >  	return mdiobus_register(mdio);
-> >  }
-> >  
-> > +static inline int devm_of_mdiobus_register(struct device *dev,
-> > +					   struct mii_bus *mdio,
-> > +					   struct device_node *np)
-> > +{
-> > +	return devm_mdiobus_register(dev, mdio);
-> > +}
-> > +
-> >  static inline struct mdio_device *of_mdio_find_device(struct device_node *np)
-> >  {
-> >  	return NULL;
-> > -----------------------------[ cut here ]-----------------------------
-> > 
+> >   # ethtool -I --show-fec eth0
+> >   FEC parameters for eth0:
+> >   Configured FEC encodings: None
+> >   Active FEC encoding: None
+> >   Statistics:
+> >    corrected_blocks: 256
+> >      Lane 0: 255
+> >      Lane 1: 1
+> >    uncorrectable_blocks: 145
+> >      Lane 0: 128
+> >      Lane 1: 17
 > 
-> Yes, that's all good. Thanks.
-> 
-> Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+> Hi, I have a doubt that why active FEC encoding is None here? 
+> Should it actually be BaseR or RS if FEC statistics are reported?
 
-Thanks. Waiting for a little bit longer for somebody a little more
-authoritative on the MDIO/PHY topic, will submit formally afterwards.
+Hi! Good point. The values in the example are collected from a netdevsim
+based mock up which I used for testing the interface, not real hardware.
+In reality seeing None and corrected/uncorrectable blocks is not valid.
+That said please keep in mind that the statistics should not be reset
+when settings are changed, so OFF + stats may happen.
