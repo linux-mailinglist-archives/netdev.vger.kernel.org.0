@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 623253877CE
+	by mail.lfdr.de (Postfix) with ESMTP id 1919B3877CD
 	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 13:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244606AbhERLhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 07:37:47 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3011 "EHLO
+        id S244189AbhERLhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 07:37:45 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3010 "EHLO
         szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241908AbhERLho (ORCPT
+        with ESMTP id S240895AbhERLho (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 07:37:44 -0400
 Received: from dggems702-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fkv4l6T4qzQpvL;
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fkv4l6l9pzQpwW;
         Tue, 18 May 2021 19:32:55 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
  dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
@@ -26,11 +26,10 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@huawei.com>, Jian Shen <shenjian15@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net 2/4] net: hns3: put off calling register_netdev() until client initialize complete
-Date:   Tue, 18 May 2021 19:36:01 +0800
-Message-ID: <1621337763-61946-3-git-send-email-tanhuazhong@huawei.com>
+        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net 3/4] net: hns3: fix user's coalesce configuration lost issue
+Date:   Tue, 18 May 2021 19:36:02 +0800
+Message-ID: <1621337763-61946-4-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1621337763-61946-1-git-send-email-tanhuazhong@huawei.com>
 References: <1621337763-61946-1-git-send-email-tanhuazhong@huawei.com>
@@ -44,132 +43,276 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+Currently, when adaptive is on, the user's coalesce configuration
+may be overwritten by the dynamic one. The reason is that user's
+configurations are saved in struct hns3_enet_tqp_vector whose
+value maybe changed by the dynamic algorithm. To fix it, use
+struct hns3_nic_priv instead of struct hns3_enet_tqp_vector to
+save and get the user's configuration.
 
-Currently, the netdevice is registered before client initializing
-complete. So there is a timewindow between netdevice available
-and usable. In this case, if user try to change the channel number
-or ring param, it may cause the hns3_set_rx_cpu_rmap() being called
-twice, and report bug.
+BTW, operations of storing and restoring coalesce info in the reset
+process are unnecessary now, so remove them as well.
 
-[47199.416502] hns3 0000:35:00.0 eth1: set channels: tqp_num=1, rxfh=0
-[47199.430340] hns3 0000:35:00.0 eth1: already uninitialized
-[47199.438554] hns3 0000:35:00.0: rss changes from 4 to 1
-[47199.511854] hns3 0000:35:00.0: Channels changed, rss_size from 4 to 1, tqps from 4 to 1
-[47200.163524] ------------[ cut here ]------------
-[47200.171674] kernel BUG at lib/cpu_rmap.c:142!
-[47200.177847] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-[47200.185259] Modules linked in: hclge(+) hns3(-) hns3_cae(O) hns_roce_hw_v2 hnae3 vfio_iommu_type1 vfio_pci vfio_virqfd vfio pv680_mii(O) [last unloaded: hclge]
-[47200.205912] CPU: 1 PID: 8260 Comm: ethtool Tainted: G           O      5.11.0-rc3+ #1
-[47200.215601] Hardware name:  , xxxxxx 02/04/2021
-[47200.223052] pstate: 60400009 (nZCv daif +PAN -UAO -TCO BTYPE=--)
-[47200.230188] pc : cpu_rmap_add+0x38/0x40
-[47200.237472] lr : irq_cpu_rmap_add+0x84/0x140
-[47200.243291] sp : ffff800010e93a30
-[47200.247295] x29: ffff800010e93a30 x28: ffff082100584880
-[47200.254155] x27: 0000000000000000 x26: 0000000000000000
-[47200.260712] x25: 0000000000000000 x24: 0000000000000004
-[47200.267241] x23: ffff08209ba03000 x22: ffff08209ba038c0
-[47200.273789] x21: 000000000000003f x20: ffff0820e2bc1680
-[47200.280400] x19: ffff0820c970ec80 x18: 00000000000000c0
-[47200.286944] x17: 0000000000000000 x16: ffffb43debe4a0d0
-[47200.293456] x15: fffffc2082990600 x14: dead000000000122
-[47200.300059] x13: ffffffffffffffff x12: 000000000000003e
-[47200.306606] x11: ffff0820815b8080 x10: ffff53e411988000
-[47200.313171] x9 : 0000000000000000 x8 : ffff0820e2bc1700
-[47200.319682] x7 : 0000000000000000 x6 : 000000000000003f
-[47200.326170] x5 : 0000000000000040 x4 : ffff800010e93a20
-[47200.332656] x3 : 0000000000000004 x2 : ffff0820c970ec80
-[47200.339168] x1 : ffff0820e2bc1680 x0 : 0000000000000004
-[47200.346058] Call trace:
-[47200.349324]  cpu_rmap_add+0x38/0x40
-[47200.354300]  hns3_set_rx_cpu_rmap+0x6c/0xe0 [hns3]
-[47200.362294]  hns3_reset_notify_init_enet+0x1cc/0x340 [hns3]
-[47200.370049]  hns3_change_channels+0x40/0xb0 [hns3]
-[47200.376770]  hns3_set_channels+0x12c/0x2a0 [hns3]
-[47200.383353]  ethtool_set_channels+0x140/0x250
-[47200.389772]  dev_ethtool+0x714/0x23d0
-[47200.394440]  dev_ioctl+0x4cc/0x640
-[47200.399277]  sock_do_ioctl+0x100/0x2a0
-[47200.404574]  sock_ioctl+0x28c/0x470
-[47200.409079]  __arm64_sys_ioctl+0xb4/0x100
-[47200.415217]  el0_svc_common.constprop.0+0x84/0x210
-[47200.422088]  do_el0_svc+0x28/0x34
-[47200.426387]  el0_svc+0x28/0x70
-[47200.431308]  el0_sync_handler+0x1a4/0x1b0
-[47200.436477]  el0_sync+0x174/0x180
-[47200.441562] Code: 11000405 79000c45 f8247861 d65f03c0 (d4210000)
-[47200.448869] ---[ end trace a01efe4ce42e5f34 ]---
-
-The process is like below:
-excuting hns3_client_init
-|
-register_netdev()
-|                           hns3_set_channels()
-|                           |
-hns3_set_rx_cpu_rmap()      hns3_reset_notify_uninit_enet()
-|                               |
-|                            quit without calling function
-|                            hns3_free_rx_cpu_rmap for flag
-|                            HNS3_NIC_STATE_INITED is unset.
-|                           |
-|                           hns3_reset_notify_init_enet()
-|                               |
-set HNS3_NIC_STATE_INITED    call hns3_set_rx_cpu_rmap()-- crash
-
-Fix it by calling register_netdev() at the end of function
-hns3_client_init().
-
-Fixes: 08a100689d4b ("net: hns3: re-organize vector handle")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Fixes: 434776a5fae2 ("net: hns3: add ethtool_ops.set_coalesce support to PF")
+Fixes: 7e96adc46633 ("net: hns3: add ethtool_ops.get_coalesce support to PF")
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 84 +++++++++++-----------
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 64 ++++++-----------
+ 2 files changed, 63 insertions(+), 85 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 783fdaf..c64d188 100644
+index c64d188..6d6c0ac 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -4317,12 +4317,6 @@ static int hns3_client_init(struct hnae3_handle *handle)
- 	if (ret)
- 		goto out_init_phy;
+@@ -264,22 +264,17 @@ static void hns3_vector_coalesce_init(struct hns3_enet_tqp_vector *tqp_vector,
+ 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(priv->ae_handle->pdev);
+ 	struct hns3_enet_coalesce *tx_coal = &tqp_vector->tx_group.coal;
+ 	struct hns3_enet_coalesce *rx_coal = &tqp_vector->rx_group.coal;
++	struct hns3_enet_coalesce *ptx_coal = &priv->tx_coal;
++	struct hns3_enet_coalesce *prx_coal = &priv->rx_coal;
  
--	ret = register_netdev(netdev);
--	if (ret) {
--		dev_err(priv->dev, "probe register netdev fail!\n");
--		goto out_reg_netdev_fail;
+-	/* initialize the configuration for interrupt coalescing.
+-	 * 1. GL (Interrupt Gap Limiter)
+-	 * 2. RL (Interrupt Rate Limiter)
+-	 * 3. QL (Interrupt Quantity Limiter)
+-	 *
+-	 * Default: enable interrupt coalescing self-adaptive and GL
+-	 */
+-	tx_coal->adapt_enable = 1;
+-	rx_coal->adapt_enable = 1;
++	tx_coal->adapt_enable = ptx_coal->adapt_enable;
++	rx_coal->adapt_enable = prx_coal->adapt_enable;
+ 
+-	tx_coal->int_gl = HNS3_INT_GL_50K;
+-	rx_coal->int_gl = HNS3_INT_GL_50K;
++	tx_coal->int_gl = ptx_coal->int_gl;
++	rx_coal->int_gl = prx_coal->int_gl;
+ 
+-	rx_coal->flow_level = HNS3_FLOW_LOW;
+-	tx_coal->flow_level = HNS3_FLOW_LOW;
++	rx_coal->flow_level = prx_coal->flow_level;
++	tx_coal->flow_level = ptx_coal->flow_level;
+ 
+ 	/* device version above V3(include V3), GL can configure 1us
+ 	 * unit, so uses 1us unit.
+@@ -294,8 +289,8 @@ static void hns3_vector_coalesce_init(struct hns3_enet_tqp_vector *tqp_vector,
+ 		rx_coal->ql_enable = 1;
+ 		tx_coal->int_ql_max = ae_dev->dev_specs.int_ql_max;
+ 		rx_coal->int_ql_max = ae_dev->dev_specs.int_ql_max;
+-		tx_coal->int_ql = HNS3_INT_QL_DEFAULT_CFG;
+-		rx_coal->int_ql = HNS3_INT_QL_DEFAULT_CFG;
++		tx_coal->int_ql = ptx_coal->int_ql;
++		rx_coal->int_ql = prx_coal->int_ql;
+ 	}
+ }
+ 
+@@ -3844,6 +3839,34 @@ static int hns3_nic_init_vector_data(struct hns3_nic_priv *priv)
+ 	return ret;
+ }
+ 
++static void hns3_nic_init_coal_cfg(struct hns3_nic_priv *priv)
++{
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(priv->ae_handle->pdev);
++	struct hns3_enet_coalesce *tx_coal = &priv->tx_coal;
++	struct hns3_enet_coalesce *rx_coal = &priv->rx_coal;
++
++	/* initialize the configuration for interrupt coalescing.
++	 * 1. GL (Interrupt Gap Limiter)
++	 * 2. RL (Interrupt Rate Limiter)
++	 * 3. QL (Interrupt Quantity Limiter)
++	 *
++	 * Default: enable interrupt coalescing self-adaptive and GL
++	 */
++	tx_coal->adapt_enable = 1;
++	rx_coal->adapt_enable = 1;
++
++	tx_coal->int_gl = HNS3_INT_GL_50K;
++	rx_coal->int_gl = HNS3_INT_GL_50K;
++
++	rx_coal->flow_level = HNS3_FLOW_LOW;
++	tx_coal->flow_level = HNS3_FLOW_LOW;
++
++	if (ae_dev->dev_specs.int_ql_max) {
++		tx_coal->int_ql = HNS3_INT_QL_DEFAULT_CFG;
++		rx_coal->int_ql = HNS3_INT_QL_DEFAULT_CFG;
++	}
++}
++
+ static int hns3_nic_alloc_vector_data(struct hns3_nic_priv *priv)
+ {
+ 	struct hnae3_handle *h = priv->ae_handle;
+@@ -4295,6 +4318,8 @@ static int hns3_client_init(struct hnae3_handle *handle)
+ 		goto out_get_ring_cfg;
+ 	}
+ 
++	hns3_nic_init_coal_cfg(priv);
++
+ 	ret = hns3_nic_alloc_vector_data(priv);
+ 	if (ret) {
+ 		ret = -ENOMEM;
+@@ -4571,31 +4596,6 @@ int hns3_nic_reset_all_ring(struct hnae3_handle *h)
+ 	return 0;
+ }
+ 
+-static void hns3_store_coal(struct hns3_nic_priv *priv)
+-{
+-	/* ethtool only support setting and querying one coal
+-	 * configuration for now, so save the vector 0' coal
+-	 * configuration here in order to restore it.
+-	 */
+-	memcpy(&priv->tx_coal, &priv->tqp_vector[0].tx_group.coal,
+-	       sizeof(struct hns3_enet_coalesce));
+-	memcpy(&priv->rx_coal, &priv->tqp_vector[0].rx_group.coal,
+-	       sizeof(struct hns3_enet_coalesce));
+-}
+-
+-static void hns3_restore_coal(struct hns3_nic_priv *priv)
+-{
+-	u16 vector_num = priv->vector_num;
+-	int i;
+-
+-	for (i = 0; i < vector_num; i++) {
+-		memcpy(&priv->tqp_vector[i].tx_group.coal, &priv->tx_coal,
+-		       sizeof(struct hns3_enet_coalesce));
+-		memcpy(&priv->tqp_vector[i].rx_group.coal, &priv->rx_coal,
+-		       sizeof(struct hns3_enet_coalesce));
+-	}
+-}
+-
+ static int hns3_reset_notify_down_enet(struct hnae3_handle *handle)
+ {
+ 	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
+@@ -4654,8 +4654,6 @@ static int hns3_reset_notify_init_enet(struct hnae3_handle *handle)
+ 	if (ret)
+ 		goto err_put_ring;
+ 
+-	hns3_restore_coal(priv);
+-
+ 	ret = hns3_nic_init_vector_data(priv);
+ 	if (ret)
+ 		goto err_dealloc_vector;
+@@ -4721,8 +4719,6 @@ static int hns3_reset_notify_uninit_enet(struct hnae3_handle *handle)
+ 
+ 	hns3_nic_uninit_vector_data(priv);
+ 
+-	hns3_store_coal(priv);
+-
+ 	hns3_nic_dealloc_vector_data(priv);
+ 
+ 	hns3_uninit_all_ring(priv);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index b48faf7..c1ea403 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1134,50 +1134,32 @@ static void hns3_get_channels(struct net_device *netdev,
+ 		h->ae_algo->ops->get_channels(h, ch);
+ }
+ 
+-static int hns3_get_coalesce_per_queue(struct net_device *netdev, u32 queue,
+-				       struct ethtool_coalesce *cmd)
++static int hns3_get_coalesce(struct net_device *netdev,
++			     struct ethtool_coalesce *cmd)
+ {
+-	struct hns3_enet_tqp_vector *tx_vector, *rx_vector;
+ 	struct hns3_nic_priv *priv = netdev_priv(netdev);
++	struct hns3_enet_coalesce *tx_coal = &priv->tx_coal;
++	struct hns3_enet_coalesce *rx_coal = &priv->rx_coal;
+ 	struct hnae3_handle *h = priv->ae_handle;
+-	u16 queue_num = h->kinfo.num_tqps;
+ 
+ 	if (hns3_nic_resetting(netdev))
+ 		return -EBUSY;
+ 
+-	if (queue >= queue_num) {
+-		netdev_err(netdev,
+-			   "Invalid queue value %u! Queue max id=%u\n",
+-			   queue, queue_num - 1);
+-		return -EINVAL;
 -	}
 -
- 	/* the device can work without cpu rmap, only aRFS needs it */
- 	ret = hns3_set_rx_cpu_rmap(netdev);
- 	if (ret)
-@@ -4355,17 +4349,23 @@ static int hns3_client_init(struct hnae3_handle *handle)
- 	if (ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3)
- 		set_bit(HNAE3_PFLAG_LIMIT_PROMISC, &handle->supported_pflags);
+-	tx_vector = priv->ring[queue].tqp_vector;
+-	rx_vector = priv->ring[queue_num + queue].tqp_vector;
++	cmd->use_adaptive_tx_coalesce = tx_coal->adapt_enable;
++	cmd->use_adaptive_rx_coalesce = rx_coal->adapt_enable;
  
-+	ret = register_netdev(netdev);
-+	if (ret) {
-+		dev_err(priv->dev, "probe register netdev fail!\n");
-+		goto out_reg_netdev_fail;
-+	}
+-	cmd->use_adaptive_tx_coalesce =
+-			tx_vector->tx_group.coal.adapt_enable;
+-	cmd->use_adaptive_rx_coalesce =
+-			rx_vector->rx_group.coal.adapt_enable;
+-
+-	cmd->tx_coalesce_usecs = tx_vector->tx_group.coal.int_gl;
+-	cmd->rx_coalesce_usecs = rx_vector->rx_group.coal.int_gl;
++	cmd->tx_coalesce_usecs = tx_coal->int_gl;
++	cmd->rx_coalesce_usecs = rx_coal->int_gl;
+ 
+ 	cmd->tx_coalesce_usecs_high = h->kinfo.int_rl_setting;
+ 	cmd->rx_coalesce_usecs_high = h->kinfo.int_rl_setting;
+ 
+-	cmd->tx_max_coalesced_frames = tx_vector->tx_group.coal.int_ql;
+-	cmd->rx_max_coalesced_frames = rx_vector->rx_group.coal.int_ql;
++	cmd->tx_max_coalesced_frames = tx_coal->int_ql;
++	cmd->rx_max_coalesced_frames = rx_coal->int_ql;
+ 
+ 	return 0;
+ }
+ 
+-static int hns3_get_coalesce(struct net_device *netdev,
+-			     struct ethtool_coalesce *cmd)
+-{
+-	return hns3_get_coalesce_per_queue(netdev, 0, cmd);
+-}
+-
+ static int hns3_check_gl_coalesce_para(struct net_device *netdev,
+ 				       struct ethtool_coalesce *cmd)
+ {
+@@ -1292,19 +1274,7 @@ static int hns3_check_coalesce_para(struct net_device *netdev,
+ 		return ret;
+ 	}
+ 
+-	ret = hns3_check_ql_coalesce_param(netdev, cmd);
+-	if (ret)
+-		return ret;
+-
+-	if (cmd->use_adaptive_tx_coalesce == 1 ||
+-	    cmd->use_adaptive_rx_coalesce == 1) {
+-		netdev_info(netdev,
+-			    "adaptive-tx=%u and adaptive-rx=%u, tx_usecs or rx_usecs will changed dynamically.\n",
+-			    cmd->use_adaptive_tx_coalesce,
+-			    cmd->use_adaptive_rx_coalesce);
+-	}
+-
+-	return 0;
++	return hns3_check_ql_coalesce_param(netdev, cmd);
+ }
+ 
+ static void hns3_set_coalesce_per_queue(struct net_device *netdev,
+@@ -1350,6 +1320,9 @@ static int hns3_set_coalesce(struct net_device *netdev,
+ 			     struct ethtool_coalesce *cmd)
+ {
+ 	struct hnae3_handle *h = hns3_get_handle(netdev);
++	struct hns3_nic_priv *priv = netdev_priv(netdev);
++	struct hns3_enet_coalesce *tx_coal = &priv->tx_coal;
++	struct hns3_enet_coalesce *rx_coal = &priv->rx_coal;
+ 	u16 queue_num = h->kinfo.num_tqps;
+ 	int ret;
+ 	int i;
+@@ -1364,6 +1337,15 @@ static int hns3_set_coalesce(struct net_device *netdev,
+ 	h->kinfo.int_rl_setting =
+ 		hns3_rl_round_down(cmd->rx_coalesce_usecs_high);
+ 
++	tx_coal->adapt_enable = cmd->use_adaptive_tx_coalesce;
++	rx_coal->adapt_enable = cmd->use_adaptive_rx_coalesce;
 +
- 	if (netif_msg_drv(handle))
- 		hns3_info_show(priv);
++	tx_coal->int_gl = cmd->tx_coalesce_usecs;
++	rx_coal->int_gl = cmd->rx_coalesce_usecs;
++
++	tx_coal->int_ql = cmd->tx_max_coalesced_frames;
++	rx_coal->int_ql = cmd->rx_max_coalesced_frames;
++
+ 	for (i = 0; i < queue_num; i++)
+ 		hns3_set_coalesce_per_queue(netdev, cmd, i);
  
- 	return ret;
- 
-+out_reg_netdev_fail:
-+	hns3_dbg_uninit(handle);
- out_client_start:
- 	hns3_free_rx_cpu_rmap(netdev);
- 	hns3_nic_uninit_irq(priv);
- out_init_irq_fail:
--	unregister_netdev(netdev);
--out_reg_netdev_fail:
- 	hns3_uninit_phy(netdev);
- out_init_phy:
- 	hns3_uninit_all_ring(priv);
 -- 
 2.7.4
 
