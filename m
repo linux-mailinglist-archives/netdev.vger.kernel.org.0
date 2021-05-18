@@ -2,205 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21116386FE4
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 04:20:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65160387007
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 04:48:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240089AbhERCVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 22:21:35 -0400
-Received: from mail-eopbgr1320121.outbound.protection.outlook.com ([40.107.132.121]:2626
-        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237658AbhERCVd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 May 2021 22:21:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MQmAlrAGXYN8kPXSOg8DSxwChQ1+pdU3ffxh87kP/MAaf0KeC0hd1BaqT0sDlQ3ZAAjnOTl4aF3bE89VC7L4hEpukuUwoJzlclXHGyfuhh0uPlg2vDBEaqWK8NnihN/IY/cTeHDOf1kQqP4CWd8Mzu8AnH+GsFTXvGPwRNNgq09PO4LKjta8cZF3+W7bFghetmKOql6GgOFy5pr2u4Fdrs0xzj4SJPm+7BQ65sb5iSn6k9PkAmRy8pHrl60H8i2hZT7vNFwQikDNlRizO9C1xj6sF906MvmIDOEu08Suk9b7jOYXHuJLG23rnms1zq/jDLY8PpIPGYMAQmZciEHNsQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v+BNbyS3ogmImMR4G08jEPTqsfwAgFNa0dHwIR5XtxY=;
- b=W7pk5xx8NU+PDRk7mnC+EtFuysFMZ3jWgjzcaQy9BktqTFaJ16szvkJhOWT9qEQUjBxQPh/6XRUIrW67duR+D7QM+kW0nXeqmsrJUnDx4ElBu4gUfpS4Kjjm9zoZ4wFw9N5Y5h6DIS5XK10JZyDOJEpH/Pg6Sth8lb64dwibM7x5+JpotGnTU0gxESVeoQMgBB4G0SLbGPBZtBWlibhHYf/PiHlf6qdcD7j6C+9LzG7PRJX12UTTi4Wcn88fET8rOW7Ifuj+Oh3It4ghd80BAapr6y0mKBbI8siHXefNo89Fa6dGbbAwQzBX9B+++lyxhpEifGFlsMxjVGbofjGL9A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
+        id S1346262AbhERCtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 22:49:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37844 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241717AbhERCtc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 22:49:32 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA2FC061760
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 19:48:14 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id m1so6134614ilg.10
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 19:48:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v+BNbyS3ogmImMR4G08jEPTqsfwAgFNa0dHwIR5XtxY=;
- b=gRpaKmPFgff8FH+2Tv1wUjD9IvA5RPyPl6SQF36W2fhQFKsFpWIJIgHsCKXpOxvTDAJ5jvHjRXgVMAh9QukQMZxAcjonaYgUz28Fy3DBRSWLmi3+C0O5n5/ADGsnqhOlpO3Tb8cBZ0omU+MBZMq3qFJecZVMiU+rn+/R7MDMBx8=
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
- by TY2PR01MB3515.jpnprd01.prod.outlook.com (2603:1096:404:d6::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.28; Tue, 18 May
- 2021 02:20:12 +0000
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::e413:c5f8:a40a:a349]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::e413:c5f8:a40a:a349%4]) with mapi id 15.20.4129.031; Tue, 18 May 2021
- 02:20:12 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: RE: [PATCH] net: renesas: ravb: Fix a stuck issue when a lot of
- frames are received
-Thread-Topic: [PATCH] net: renesas: ravb: Fix a stuck issue when a lot of
- frames are received
-Thread-Index: AQHXNmo4snkvFkzf+kiCjGV8r1I+Z6raKfAAgADjaICAAZGPAIALm+wAgABtBaA=
-Date:   Tue, 18 May 2021 02:20:12 +0000
-Message-ID: <TY2PR01MB369233B20CC5A48072BA474CD82C9@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-References: <20210421045246.215779-1-yoshihiro.shimoda.uh@renesas.com>
- <68291557-0af5-de1e-4f4f-b104bb65c6b3@gmail.com>
- <04c93015-5fe2-8471-3da5-ee85585d9e6c@gmail.com>
- <TY2PR01MB369211466F9F6DB5EDC41183D8549@TY2PR01MB3692.jpnprd01.prod.outlook.com>
- <0ce3a5e2-8e42-3648-83c3-fea7b1147b5a@gmail.com>
-In-Reply-To: <0ce3a5e2-8e42-3648-83c3-fea7b1147b5a@gmail.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=renesas.com;
-x-originating-ip: [240f:60:5f3e:1:50c0:3460:71a2:ab8f]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9a80efc8-f168-482d-018a-08d919a3775a
-x-ms-traffictypediagnostic: TY2PR01MB3515:
-x-microsoft-antispam-prvs: <TY2PR01MB35159B067640E7CFD2849D50D82C9@TY2PR01MB3515.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ge8MSOMf/vY9vINk9YsVE9WcKgKnP7O7JZ2SNQ33JFgrXhANuHZgTFZQ2+baA4A8CRb5zmDm5Yp6fpiP7RVHYpOReb5ejYVRX0iLmsxslR079Ob4BBv1/OssF2l+/lA8z14DnKsU3mrWCvVVXrcLPGaHsH/5W166hGGaMomNPapKMVGD9M8au0mK3h/8ijDiS+HBR992/DT6uI5+6ud0vktvLJDdHSMhlhaYZluWR8WbfEgyhrrDvRREMTmNNitFxcNwaxrDfYb4qklLkI5hIXcX2iWU6UCQTzXnGIg9vmmmiaw8USszu8oq8SWpP3cUsG8HckAFHBkNZr+8h/KJ7qiSlITQGHn00SfUuy/K6nV8+JwNaOF6U5lSSJ3ttF4T5JAX+m9HZoKI5DUi4o5oitl7mZQg2pkafLQ1Z1E/wZXt8ggy49M41mjqPlA6L8ZG6TNpAySZ3TT6J2uhDeUbxFFklxhp2pzGuW2ST6y1ARvdYGUte1dgmLfUzZMd7H3Zh9HqwPF4xUZlCi+JKjOz4QOpWMNklNr7Xt9WgEa58IBjeDRGNs3/sw0VpusdB3Meb+85oXmX8fU+gpAkTtq5yXsK2jilUnx0M2/Kk+1idIhRD2YH5oYg1bqSPJKQEeNG1L4vccCtovxWNmqPoh50qFW3rlid7mGpaXFBW0IAZL6rM266K6EwPPVNdYd4o2+qYOsfxY14vskEYusVTsy+1+VfmMtzeyAOZcOZGz0e15oiRtljQltSrtAxKchpLmLb
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(39860400002)(376002)(366004)(76116006)(122000001)(83380400001)(33656002)(7696005)(71200400001)(6506007)(66556008)(45080400002)(966005)(316002)(478600001)(66476007)(186003)(54906003)(6916009)(52536014)(8936002)(5660300002)(64756008)(86362001)(53546011)(4326008)(66946007)(8676002)(38100700002)(2906002)(66446008)(9686003)(55016002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?UtRGBZF8Plt8e0R3QdF1OwNdhyo7nIi0pKKORa5Z/JFjUpuhgE1TQ2H6yOU3?=
- =?us-ascii?Q?RuEI/XZjCBI1JQl8kUOyz7FqCUc5PyZ68VggO6z4pOVFusGD/QVnUJjhzB2G?=
- =?us-ascii?Q?Vn5VHlGgx44e0ddIRULHdMM5LJCOeA+Q6Z6yAli2114DkOBNq7BUBD9bXhnq?=
- =?us-ascii?Q?XjwyYb1iOzi0dktTv9DLNcL+9BFC6t8wtb6vXTSN5dD7XTzlvsVm3SfV5wZ5?=
- =?us-ascii?Q?MA8yq3z6eGleMQp1Wrv3i3i0Y3m7oNTlSltLVX2QxYtxCj+GDLdJty22g3O+?=
- =?us-ascii?Q?mprnHN3XPayuDPtPzayAF/HiaMYHAhNEeewGsfkCMyKcLJ1Mwf77Bldq+JYA?=
- =?us-ascii?Q?jAohF6qfjVJHNQgEMaD+Xk7E7KSgEDcGkySzuc4X8BqRm8F350p3HLLFebiV?=
- =?us-ascii?Q?XAV+svY0l1j+2LsTB06CqTtdR7UWh2xz8hncpkKaJGICD7ppmoH4RyD6Kw58?=
- =?us-ascii?Q?caL4km9lXzzKnoXz43rp8EdzCDIqtfMp9C2L+QYkKUFVUuXZHTjlkvj71W5F?=
- =?us-ascii?Q?wYSQ79SmKd5RJbO/ih5yP8ELR77TAQIE8pWKDQLsonGfCiSCWGI4wtglhYuI?=
- =?us-ascii?Q?iRyCEzrts5R8JHpflXeDWlI1TBWzmSoG3HWlhup+h4Eo7dt2WYwv0enYBRC7?=
- =?us-ascii?Q?vmdzxVoQnzFtyOIbPJ7f/H/tjQdfhiw/Mbj17BBm7HGLRgdCdhkkjAk2fudk?=
- =?us-ascii?Q?oBsk3R6z8UlHnS3u76WBNCKzc4xzwEYCSBs7d75tSy5Zk0wa++5dx0lRdpvj?=
- =?us-ascii?Q?pv3GdTHCf/yXBWzl18vRB+sW54DaxSQoenEvjTSuHp4F3oYpU6aC/G/ejFuO?=
- =?us-ascii?Q?cy3YDDOboYfBhLSU1xPiEYsdYFIz+4uE4P2+xpGuEdoAOyKedyVHFcWYz6JR?=
- =?us-ascii?Q?yf/cwoEiSimzlJHr/pSSPzyVFVWdzQ/jqAPTIa30fQbtFizJiujlst9Ku5F4?=
- =?us-ascii?Q?uj9nv/q2jyznXVQ7BqLS122qjVFSYrzajulVwPkj7ocTbmkRSJtXSHCAOP7w?=
- =?us-ascii?Q?gfCuupJZLi4vOPuRpWLEBFCDMR53a9ddA4QneR5Cd/zG+0tLK3E6QtF9PmCm?=
- =?us-ascii?Q?iLuZWj37d4VMUrLAi6bYML7IIU7ej8noMFCg1WbPFaCD0HWguOfNoNbLvXBw?=
- =?us-ascii?Q?AYzw5HckXoU3mmqh5nwgCMtubeCPSpDqBIkmJLNsPqOX2CSVgKQYTk4cPZww?=
- =?us-ascii?Q?6sE9TChlup2JpFUehFXoJ065vP0nlH5m73DdAAp9Hjd5ZDEvJxL6WsIxgplu?=
- =?us-ascii?Q?wRrayekq5OtuileqMtpm+xpvftZQeX16/2q0oyK1GeR40DGoh927ff/2XC86?=
- =?us-ascii?Q?1nt+e4jy+hD8FahwUjd5MSUWTqqOK0fMdCE7PlNmoiTzOwQbiA2jRQQ0C3sj?=
- =?us-ascii?Q?sEcKPHM=3D?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BRkks4605+UoXCWgr/rS+r0/gbRif4B+Nb12472cPkM=;
+        b=EGRnf/dWcD1J6D90hSQhTZm534z305G6fSOkRQZ8l26m0liP6MYzsfNDeo14gZTSek
+         zJHQez0UC3O9rhfxyECwXkN8s8uWmvuJnXSNyNpewsvHnz9dC5Hrg7gFg/rk2Ga9rYOi
+         bXK0By4kDgHUgde+t0LdIIsQMIt04SxCfklwcIN6h+8AcbT8MF6VeaSJXyVIQZqC72jv
+         Vz56n13fYWNLukTwkEYEpo87b2J983tPXuzxMpseNw7EtWIoDEZGlHdC8mlCdNEnT8Aw
+         FjqkVjcL+WmayRZUDKop/tjh/e+a5noeJKbtcN7/neJMFhY12vpuKfNzafv2iApJzlvc
+         c+GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BRkks4605+UoXCWgr/rS+r0/gbRif4B+Nb12472cPkM=;
+        b=VK7O0lCGJnAtuW9l++P3hQo7KF/6yxrNjZyqw4Sut3aSPFwpxvnk0ac59U89nz9XZq
+         33n4vcw5AtWiVon+rlTXsjt1q4D22izBgGVg/3e+c7323bCmYP3n2l26K/flzgLolGD/
+         xf2d8iYnrJd3sQjYFSr7Wtm59xD975v/K2KKFaRKYirXlM6Y2h2RW1tlMVKWA9+Vo6DE
+         A79V6I1OfuSX1GHV1rrH2gDjB3VRpvRJIsZbw7iVEWfusQNymUOvHSVHCnETmHVxB3Wa
+         IgN3pFNTeGVZqi4hG6wR6h8bO0oLt3EmDH9DCvzoEpJib4hNTvF83vL2pgXLUld0Epxw
+         DIig==
+X-Gm-Message-State: AOAM533LIqyjXN6ugw7Vm074FeTdK+5Qbe11M7KbHFw1sD+p6JhIfbGh
+        +preBHKC00ec9ptN9ZA1RceReg==
+X-Google-Smtp-Source: ABdhPJw22/zkz1/TgVaG03mlPKr3hKpRnSstCMcOSyXOdi3X74PyPQdlQSvj2N3vahCgY/SRT/Pqcg==
+X-Received: by 2002:a05:6e02:eb0:: with SMTP id u16mr2267775ilj.263.1621306093533;
+        Mon, 17 May 2021 19:48:13 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id q5sm9580889ilv.19.2021.05.17.19.48.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 May 2021 19:48:13 -0700 (PDT)
+Date:   Mon, 17 May 2021 19:48:09 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Dave Taht <dave.taht@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        bloat <bloat@lists.bufferbloat.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [Bloat] virtio_net: BQL?
+Message-ID: <20210517194809.071fc896@hermes.local>
+In-Reply-To: <CAA93jw4bSx=0gnJtNJLeS00ELMgo2Na+t7hYTNL3G3juDFvcNg@mail.gmail.com>
+References: <56270996-33a6-d71b-d935-452dad121df7@linux.alibaba.com>
+        <CAA93jw6LUAnWZj0b5FvefpDKUyd6cajCNLoJ6OKrwbu-V_ffrA@mail.gmail.com>
+        <CA+FuTSf0Af2RXEG=rCthNNEb5mwKTG37gpEBBZU16qKkvmF=qw@mail.gmail.com>
+        <CAA93jw7Vr_pFMsPCrPadqaLGu0BdC-wtCmW2iyHFkHERkaiyWQ@mail.gmail.com>
+        <20210517160036.4093d3f2@hermes.local>
+        <CAA93jw4bSx=0gnJtNJLeS00ELMgo2Na+t7hYTNL3G3juDFvcNg@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a80efc8-f168-482d-018a-08d919a3775a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2021 02:20:12.0957
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cKzhXZ3JACk2BS53sZLIGccpvY9TosZtZjLtbxuLawcnNVzqlbr66odH34womqnlUKcqCwDz07g/tMujZ1jaq0ue1r5iL8kTG97AupyJ45dClgIBIryG6QIOxiwO01Xe
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB3515
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Mon, 17 May 2021 16:32:21 -0700
+Dave Taht <dave.taht@gmail.com> wrote:
 
-> From: Sergei Shtylyov, Sent: Tuesday, May 18, 2021 4:36 AM
->=20
-> On 5/10/21 1:29 PM, Yoshihiro Shimoda wrote:
->=20
-> >>>     Posting a review of the already commited (over my head) patch. It=
- would have
-> >>> been appropriate if the patch looked OK but it's not. :-/
-> >>>
-> >>>> When a lot of frames were received in the short term, the driver
-> >>>> caused a stuck of receiving until a new frame was received. For exam=
-ple,
-> >>>> the following command from other device could cause this issue.
-> >>>>
-> >>>>      $ sudo ping -f -l 1000 -c 1000 <this driver's ipaddress>
-> >>>
-> >>>     -l is essential here, right?
+> On Mon, May 17, 2021 at 4:00 PM Stephen Hemminger
+> <stephen@networkplumber.org> wrote:
 > >
-> > Yes.
+> > On Mon, 17 May 2021 14:48:46 -0700
+> > Dave Taht <dave.taht@gmail.com> wrote:
+> >  
+> > > On Mon, May 17, 2021 at 1:23 PM Willem de Bruijn
+> > > <willemdebruijn.kernel@gmail.com> wrote:  
+> > > >
+> > > > On Mon, May 17, 2021 at 2:44 PM Dave Taht <dave.taht@gmail.com> wrote:  
+> > > > >
+> > > > > Not really related to this patch, but is there some reason why virtio
+> > > > > has no support for BQL?  
+> > > >
+> > > > There have been a few attempts to add it over the years.
+> > > >
+> > > > Most recently, https://lore.kernel.org/lkml/20181205225323.12555-2-mst@redhat.com/
+> > > >
+> > > > That thread has a long discussion. I think the key open issue remains
+> > > >
+> > > > "The tricky part is the mode switching between napi and no napi."  
+> > >
+> > > Oy, vey.
+> > >
+> > > I didn't pay any attention to that discussion, sadly enough.
+> > >
+> > > It's been about that long (2018) since I paid any attention to
+> > > bufferbloat in the cloud and my cloudy provider (linode) switched to
+> > > using virtio when I wasn't looking. For over a year now, I'd been
+> > > getting reports saying that comcast's pie rollout wasn't working as
+> > > well as expected, that evenroute's implementation of sch_cake and sqm
+> > > on inbound wasn't working right, nor pf_sense's and numerous other
+> > > issues at Internet scale.
+> > >
+> > > Last week I ran a string of benchmarks against starlink's new services
+> > > and was really aghast at what I found there, too. but the problem
+> > > seemed deeper than in just the dishy...
+> > >
+> > > Without BQL, there's no backpressure for fq_codel to do its thing.
+> > > None. My measurement servers aren't FQ-codeling
+> > > no matter how much load I put on them. Since that qdisc is the default
+> > > now in most linux distributions, I imagine that the bulk of the cloud
+> > > is now behaving as erratically as linux was in 2011 with enormous
+> > > swings in throughput and latency from GSO/TSO hitting overlarge rx/tx
+> > > rings, [1], breaking various rate estimators in codel, pie and the tcp
+> > > stack itself.
+> > >
+> > > See:
+> > >
+> > > http://fremont.starlink.taht.net/~d/virtio_nobql/rrul_-_evenroute_v3_server_fq_codel.png
+> > >
+> > > See the swings in latency there? that's symptomatic of tx/rx rings
+> > > filling and emptying.
+> > >
+> > > it wasn't until I switched my measurement server temporarily over to
+> > > sch_fq that I got a rrul result that was close to the results we used
+> > > to get from the virtualized e1000e drivers we were using in 2014.
+> > >
+> > > http://fremont.starlink.taht.net/~d/virtio_nobql/rrul_-_evenroute_v3_server_fq.png
+> > >
+> > > While I have long supported the use of sch_fq for tcp-heavy workloads,
+> > > it still behaves better with bql in place, and fq_codel is better for
+> > > generic workloads... but needs bql based backpressure to kick in.
+> > >
+> > > [1] I really hope I'm overreacting but, um, er, could someone(s) spin
+> > > up a new patch that does bql in some way even half right for this
+> > > driver and help test it? I haven't built a kernel in a while.
+> > >  
 > >
-> >>>     Have you tried testing sh_eth sriver like that, BTW?
-> >>
-> >>     It's driver! :-)
-> >
-> > I have not tried testing sh_eth driver yet. I'll test it after I got an=
- actual board.
->=20
->    Now you've got it, let's not rush forth with the fix this time.
+> > The Azure network driver (netvsc) also does not have BQL. Several years ago
+> > I tried adding it but it benchmarked worse and there is the added complexity
+> > of handling the accelerated networking VF path.  
+> 
+> I certainly agree it adds complexity, but the question is what sort of
+> network behavior resulted without backpressure inside the
+> vm?
+> 
+> What sorts of benchmarks did you do?
+> 
+> I will get setup to do some testing of this that is less adhoc.
 
-I sent a report yesterday:
-https://patchwork.kernel.org/project/linux-renesas-soc/patch/20210421045246=
-.215779-1-yoshihiro.shimoda.uh@renesas.com/#24181167
+Less of an issue than it seems for must users.
 
-> >>>> The previous code always cleared the interrupt flag of RX but checks
-> >>>> the interrupt flags in ravb_poll(). So, ravb_poll() could not call
-> >>>> ravb_rx() in the next time until a new RX frame was received if
-> >>>> ravb_rx() returned true. To fix the issue, always calls ravb_rx()
-> >>>> regardless the interrupt flags condition.
-> >>>
-> >>>     That bacially defeats the purpose of IIUC...
-> >>                                            ^ NAPI,
-> >>
-> >>     I was sure I typed NAPI here, yet it got lost in the edits. :-)
-> >
-> > I could not understand "that" (calling ravb_rx() regardless the interru=
-pt
-> > flags condition) defeats the purpose of NAPI. According to an article o=
-n
-> > the Linux Foundation wiki [1], one of the purpose of NAPI is "Interrupt=
- mitigation".
->=20
->    Thank you for the pointer, BTW! Would have helped me with enabling NAP=
-I in sh_eth
-> (and ravb) drivers...
->=20
-> > In poll(), the interrupts are already disabled, and ravb_rx() will chec=
-k the
-> > descriptor's status. So, this patch keeps the "Interrupt mitigation" II=
-UC.
->=20
->    I think we'll still have the short race window, described in section 5=
-.1
-> of this doc. So perhaps what we should do is changing the order of the co=
-de in
-> the poll() method, not eliminating the loops totally. Thoughts?
+For the most common case, all transmits are passed through to the underlying
+VF network device (Mellanox). So since Mellanox supports BQL, that works.
+The special case is if accelerated networking is disabled or host is being
+serviced and the slow path is used. Optimizing the slow path is not that
+interesting.
 
-The ravb hardware acts as "non-level sensitive IRQs". However, fortunately,
-the hardware can set an interrupt flag even if the interrupt is masked.
-So, I don't think this patch have any race window.
-
-Best regards,
-Yoshihiro Shimoda
-
-> > [1]
-> >
-> https://jpn01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fwiki.=
-linuxfoundation.org%2Fnetworking%2Fnapi&amp;d
-> ata=3D04%7C01%7Cyoshihiro.shimoda.uh%40renesas.com%7C0102c1f2995947bcca16=
-08d9196af978%7C53d82571da1947e49cb4625a166a4a
-> 2a%7C0%7C0%7C637568769530134169%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwM=
-DAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6
-> Mn0%3D%7C1000&amp;sdata=3D47kgAmI3d%2Fz%2BHunT0a8bzHRRQk1VdnxRETSExLkTrdI=
-%3D&amp;reserved=3D0
-> >
-> > Best regards,
-> > Yoshihiro Shimoda
->=20
-> MBR, Sergei
+I wonder if the use of SRIOV with virtio (which requires another layer
+with the failover device) behaves the same way?
