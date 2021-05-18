@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0143877CB
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 13:36:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 623253877CE
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 13:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242209AbhERLhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 07:37:35 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3582 "EHLO
+        id S244606AbhERLhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 07:37:47 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3011 "EHLO
         szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240895AbhERLhd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 07:37:33 -0400
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fkv5P5jShzsRmG;
-        Tue, 18 May 2021 19:33:29 +0800 (CST)
+        with ESMTP id S241908AbhERLho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 07:37:44 -0400
+Received: from dggems702-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fkv4l6T4qzQpvL;
+        Tue, 18 May 2021 19:32:55 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
+ dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 18 May 2021 19:36:14 +0800
+ 15.1.2176.2; Tue, 18 May 2021 19:36:15 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -26,11 +26,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@huawei.com>, Jiaran Zhang <zhangjiaran@huawei.com>,
+        <linuxarm@huawei.com>, Jian Shen <shenjian15@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net 1/4] net: hns3: fix incorrect resp_msg issue
-Date:   Tue, 18 May 2021 19:36:00 +0800
-Message-ID: <1621337763-61946-2-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net 2/4] net: hns3: put off calling register_netdev() until client initialize complete
+Date:   Tue, 18 May 2021 19:36:01 +0800
+Message-ID: <1621337763-61946-3-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1621337763-61946-1-git-send-email-tanhuazhong@huawei.com>
 References: <1621337763-61946-1-git-send-email-tanhuazhong@huawei.com>
@@ -44,45 +44,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiaran Zhang <zhangjiaran@huawei.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-In hclge_mbx_handler(), if there are two consecutive mailbox
-messages that requires resp_msg, the resp_msg is not cleared
-after processing the first message, which will cause the resp_msg
-data of second message incorrect.
+Currently, the netdevice is registered before client initializing
+complete. So there is a timewindow between netdevice available
+and usable. In this case, if user try to change the channel number
+or ring param, it may cause the hns3_set_rx_cpu_rmap() being called
+twice, and report bug.
 
-Fix it by clearing the resp_msg before processing every mailbox
-message.
+[47199.416502] hns3 0000:35:00.0 eth1: set channels: tqp_num=1, rxfh=0
+[47199.430340] hns3 0000:35:00.0 eth1: already uninitialized
+[47199.438554] hns3 0000:35:00.0: rss changes from 4 to 1
+[47199.511854] hns3 0000:35:00.0: Channels changed, rss_size from 4 to 1, tqps from 4 to 1
+[47200.163524] ------------[ cut here ]------------
+[47200.171674] kernel BUG at lib/cpu_rmap.c:142!
+[47200.177847] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+[47200.185259] Modules linked in: hclge(+) hns3(-) hns3_cae(O) hns_roce_hw_v2 hnae3 vfio_iommu_type1 vfio_pci vfio_virqfd vfio pv680_mii(O) [last unloaded: hclge]
+[47200.205912] CPU: 1 PID: 8260 Comm: ethtool Tainted: G           O      5.11.0-rc3+ #1
+[47200.215601] Hardware name:  , xxxxxx 02/04/2021
+[47200.223052] pstate: 60400009 (nZCv daif +PAN -UAO -TCO BTYPE=--)
+[47200.230188] pc : cpu_rmap_add+0x38/0x40
+[47200.237472] lr : irq_cpu_rmap_add+0x84/0x140
+[47200.243291] sp : ffff800010e93a30
+[47200.247295] x29: ffff800010e93a30 x28: ffff082100584880
+[47200.254155] x27: 0000000000000000 x26: 0000000000000000
+[47200.260712] x25: 0000000000000000 x24: 0000000000000004
+[47200.267241] x23: ffff08209ba03000 x22: ffff08209ba038c0
+[47200.273789] x21: 000000000000003f x20: ffff0820e2bc1680
+[47200.280400] x19: ffff0820c970ec80 x18: 00000000000000c0
+[47200.286944] x17: 0000000000000000 x16: ffffb43debe4a0d0
+[47200.293456] x15: fffffc2082990600 x14: dead000000000122
+[47200.300059] x13: ffffffffffffffff x12: 000000000000003e
+[47200.306606] x11: ffff0820815b8080 x10: ffff53e411988000
+[47200.313171] x9 : 0000000000000000 x8 : ffff0820e2bc1700
+[47200.319682] x7 : 0000000000000000 x6 : 000000000000003f
+[47200.326170] x5 : 0000000000000040 x4 : ffff800010e93a20
+[47200.332656] x3 : 0000000000000004 x2 : ffff0820c970ec80
+[47200.339168] x1 : ffff0820e2bc1680 x0 : 0000000000000004
+[47200.346058] Call trace:
+[47200.349324]  cpu_rmap_add+0x38/0x40
+[47200.354300]  hns3_set_rx_cpu_rmap+0x6c/0xe0 [hns3]
+[47200.362294]  hns3_reset_notify_init_enet+0x1cc/0x340 [hns3]
+[47200.370049]  hns3_change_channels+0x40/0xb0 [hns3]
+[47200.376770]  hns3_set_channels+0x12c/0x2a0 [hns3]
+[47200.383353]  ethtool_set_channels+0x140/0x250
+[47200.389772]  dev_ethtool+0x714/0x23d0
+[47200.394440]  dev_ioctl+0x4cc/0x640
+[47200.399277]  sock_do_ioctl+0x100/0x2a0
+[47200.404574]  sock_ioctl+0x28c/0x470
+[47200.409079]  __arm64_sys_ioctl+0xb4/0x100
+[47200.415217]  el0_svc_common.constprop.0+0x84/0x210
+[47200.422088]  do_el0_svc+0x28/0x34
+[47200.426387]  el0_svc+0x28/0x70
+[47200.431308]  el0_sync_handler+0x1a4/0x1b0
+[47200.436477]  el0_sync+0x174/0x180
+[47200.441562] Code: 11000405 79000c45 f8247861 d65f03c0 (d4210000)
+[47200.448869] ---[ end trace a01efe4ce42e5f34 ]---
 
-Fixes: bb5790b71bad ("net: hns3: refactor mailbox response scheme between PF and VF")
-Signed-off-by: Jiaran Zhang <zhangjiaran@huawei.com>
+The process is like below:
+excuting hns3_client_init
+|
+register_netdev()
+|                           hns3_set_channels()
+|                           |
+hns3_set_rx_cpu_rmap()      hns3_reset_notify_uninit_enet()
+|                               |
+|                            quit without calling function
+|                            hns3_free_rx_cpu_rmap for flag
+|                            HNS3_NIC_STATE_INITED is unset.
+|                           |
+|                           hns3_reset_notify_init_enet()
+|                               |
+set HNS3_NIC_STATE_INITED    call hns3_set_rx_cpu_rmap()-- crash
+
+Fix it by calling register_netdev() at the end of function
+hns3_client_init().
+
+Fixes: 08a100689d4b ("net: hns3: re-organize vector handle")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 8e5f9dc..f1c9f4a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -710,7 +710,6 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 	unsigned int flag;
- 	int ret = 0;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 783fdaf..c64d188 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -4317,12 +4317,6 @@ static int hns3_client_init(struct hnae3_handle *handle)
+ 	if (ret)
+ 		goto out_init_phy;
  
--	memset(&resp_msg, 0, sizeof(resp_msg));
- 	/* handle all the mailbox requests in the queue */
- 	while (!hclge_cmd_crq_empty(&hdev->hw)) {
- 		if (test_bit(HCLGE_STATE_CMD_DISABLE, &hdev->state)) {
-@@ -738,6 +737,9 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
+-	ret = register_netdev(netdev);
+-	if (ret) {
+-		dev_err(priv->dev, "probe register netdev fail!\n");
+-		goto out_reg_netdev_fail;
+-	}
+-
+ 	/* the device can work without cpu rmap, only aRFS needs it */
+ 	ret = hns3_set_rx_cpu_rmap(netdev);
+ 	if (ret)
+@@ -4355,17 +4349,23 @@ static int hns3_client_init(struct hnae3_handle *handle)
+ 	if (ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3)
+ 		set_bit(HNAE3_PFLAG_LIMIT_PROMISC, &handle->supported_pflags);
  
- 		trace_hclge_pf_mbx_get(hdev, req);
- 
-+		/* clear the resp_msg before processing every mailbox message */
-+		memset(&resp_msg, 0, sizeof(resp_msg));
++	ret = register_netdev(netdev);
++	if (ret) {
++		dev_err(priv->dev, "probe register netdev fail!\n");
++		goto out_reg_netdev_fail;
++	}
 +
- 		switch (req->msg.code) {
- 		case HCLGE_MBX_MAP_RING_TO_VECTOR:
- 			ret = hclge_map_unmap_ring_to_vf_vector(vport, true,
+ 	if (netif_msg_drv(handle))
+ 		hns3_info_show(priv);
+ 
+ 	return ret;
+ 
++out_reg_netdev_fail:
++	hns3_dbg_uninit(handle);
+ out_client_start:
+ 	hns3_free_rx_cpu_rmap(netdev);
+ 	hns3_nic_uninit_irq(priv);
+ out_init_irq_fail:
+-	unregister_netdev(netdev);
+-out_reg_netdev_fail:
+ 	hns3_uninit_phy(netdev);
+ out_init_phy:
+ 	hns3_uninit_all_ring(priv);
 -- 
 2.7.4
 
