@@ -2,88 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B3D3879AA
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 15:15:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBBE5387A24
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 15:40:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349422AbhERNQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 09:16:16 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4664 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230447AbhERNQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 09:16:15 -0400
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FkxHF2KZ2z16QVj;
-        Tue, 18 May 2021 21:12:09 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 18 May 2021 21:14:54 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 18 May
- 2021 21:14:54 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <ecree.xilinx@gmail.com>
-Subject: [PATCH net-next] sfc: farch: fix compile warning in efx_farch_dimension_resources()
-Date:   Tue, 18 May 2021 21:17:11 +0800
-Message-ID: <20210518131711.1311363-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S230395AbhERNlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 09:41:15 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:30239 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229575AbhERNlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 09:41:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1621345192; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=LNo3e33Jwp/DUaMWUGF2+AqPjxexI2khm2MPog2GVv+qI7lHxv60ObBW1vpYY8GpoL
+    0TwXFCGMlc1GFmu9EC1lQ7gBvCu6ObRZsi256D0LXf3PAN53rLh7yVXlaV8xoEilvHAN
+    vp9uEcP2AugVOkFnD2cnYK0BsWibPaHGC2fvE1Yr31aPLA3wISVDEGVRikHvy9xRqL7Z
+    qSL4qlfRigN4v1F4ar7MkIyS3lo7O8h47g+A+hY5uYdmD7ssYn7q9bmVwnw9+xxG18Uh
+    nByL7H1RPmGmVyCohv1fzxIHQcrga2Bq0YZLFNCG0sGkJUOhKO0LkE0gXST7sNU/zI+G
+    cLpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1621345192;
+    s=strato-dkim-0002; d=strato.com;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=Y1KRDbu5WN3XFPdHGE3A1QrQ6q/NLxWm/b5TELJkolY=;
+    b=rNG/seh7q8wSOqLsG87KzEkp180y5PqYra90vA3Gl8uXMhERDZPjakRKxV9Wo/GfnK
+    vs0zPJ6sXixX0+O9in8RFlXtNNLD8yD+k4oK/FEEOXrgcVv0H01IErN5ySLQaYEEk4SO
+    RXDp0d/xvnj714SrVp/3mHUVPQLeHCzSPYKAfnrwr996akE4q5UDhRi2OBx5DPGplHn7
+    4Ny+1asV+uqmxrv27Ub09pL8I+8qCwyqdUHlygKBLHZF8bk7UGZLF/l4yuMOaNBKB5L4
+    3GbJONprzX6w7cu8JJRPByHzZmZlf7EQRvPsd+HoEQTVgWzTr4BDOUmn70TD0BFAvOFL
+    /cFA==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1621345192;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=Y1KRDbu5WN3XFPdHGE3A1QrQ6q/NLxWm/b5TELJkolY=;
+    b=iERjNiZS708Ahp81a9V91zZEQKq4ddOf32Bfg7NLiFzDVMBC6FgmfgllH05jiaDMz8
+    fo7thxQ0Z4RhiBj6RGC9+fEZMID2r8A7Wtd2RvO0e7wjRUrmJjzyGFgN1GIXsVCljnmF
+    x+hgMZ5LqeflrJjQrMnr+m9hN7LYDz8AAWlA24+YzZWxIZv9zq6WG8KFxr2WWni9whrz
+    OuD3fy+9TX/fwdXDJZoQayaQ56b/FQwMZoedvyipKBGzQu42lH5UjgQVLk6nw8iO2b72
+    2IqBaTz6wgqK3fR0XqLaTKQGg04i+3H0oiXV0Xr6wJ0RjF3C4Kj7S5b2gb0/v/faR1Gb
+    7VCg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxB4W6NZHoD"
+X-RZG-CLASS-ID: mo00
+Received: from droid..
+    by smtp.strato.de (RZmta 47.26.1 DYNA|AUTH)
+    with ESMTPSA id f01503x4IDdp2oJ
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 18 May 2021 15:39:51 +0200 (CEST)
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Krzysztof Opasiak <k.opasiak@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Stephan Gerhold <stephan@gerhold.net>
+Subject: [PATCH 1/2] dt-bindings: net: nfc: s3fwrn5: Add optional clock
+Date:   Tue, 18 May 2021 15:39:34 +0200
+Message-Id: <20210518133935.571298-1-stephan@gerhold.net>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following kernel build warning when CONFIG_SFC_SRIOV is disabled:
+On some systems, S3FWRN5 depends on having an external clock enabled
+to function correctly. Allow declaring that clock (optionally) in the
+device tree.
 
-  drivers/net/ethernet/sfc/farch.c: In function ‘efx_farch_dimension_resources’:
-  drivers/net/ethernet/sfc/farch.c:1671:21: warning: variable ‘buftbl_min’ set but not used [-Wunused-but-set-variable]
-    unsigned vi_count, buftbl_min, total_tx_channels;
-
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
 ---
- drivers/net/ethernet/sfc/farch.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ .../devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml         | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/sfc/farch.c b/drivers/net/ethernet/sfc/farch.c
-index 49df02ecee91..0bd879bd73c7 100644
---- a/drivers/net/ethernet/sfc/farch.c
-+++ b/drivers/net/ethernet/sfc/farch.c
-@@ -1668,13 +1668,17 @@ void efx_farch_rx_pull_indir_table(struct efx_nic *efx)
-  */
- void efx_farch_dimension_resources(struct efx_nic *efx, unsigned sram_lim_qw)
- {
--	unsigned vi_count, buftbl_min, total_tx_channels;
-+	unsigned vi_count, total_tx_channels;
+diff --git a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+index 477066e2b821..081742c2b726 100644
+--- a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+@@ -27,6 +27,9 @@ properties:
+   reg:
+     maxItems: 1
  
- #ifdef CONFIG_SFC_SRIOV
-+	unsigned buftbl_min;
- 	struct siena_nic_data *nic_data = efx->nic_data;
- #endif
- 
- 	total_tx_channels = efx->n_tx_channels + efx->n_extra_tx_channels;
-+	vi_count = max(efx->n_channels, total_tx_channels * EFX_MAX_TXQ_PER_CHANNEL);
++  clocks:
++    maxItems: 1
 +
-+#ifdef CONFIG_SFC_SRIOV
- 	/* Account for the buffer table entries backing the datapath channels
- 	 * and the descriptor caches for those channels.
- 	 */
-@@ -1682,9 +1686,6 @@ void efx_farch_dimension_resources(struct efx_nic *efx, unsigned sram_lim_qw)
- 		       total_tx_channels * EFX_MAX_TXQ_PER_CHANNEL * EFX_MAX_DMAQ_SIZE +
- 		       efx->n_channels * EFX_MAX_EVQ_SIZE)
- 		      * sizeof(efx_qword_t) / EFX_BUF_SIZE);
--	vi_count = max(efx->n_channels, total_tx_channels * EFX_MAX_TXQ_PER_CHANNEL);
--
--#ifdef CONFIG_SFC_SRIOV
- 	if (efx->type->sriov_wanted) {
- 		if (efx->type->sriov_wanted(efx)) {
- 			unsigned vi_dc_entries, buftbl_free;
+   wake-gpios:
+     maxItems: 1
+     description:
+@@ -80,6 +83,8 @@ examples:
+ 
+             en-gpios = <&gpf1 4 GPIO_ACTIVE_HIGH>;
+             wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
++
++            clocks = <&rpmcc 20>;
+         };
+     };
+   # UART example on Raspberry Pi
 -- 
-2.25.1
+2.31.1
 
