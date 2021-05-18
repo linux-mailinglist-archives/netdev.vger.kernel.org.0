@@ -2,134 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4E23386E70
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 02:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF260386E7D
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 02:49:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345071AbhERAtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 20:49:01 -0400
-Received: from gateway30.websitewelcome.com ([192.185.160.12]:27901 "EHLO
-        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239874AbhERAtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 20:49:00 -0400
-X-Greylist: delayed 1356 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 May 2021 20:49:00 EDT
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 2F34B7018
-        for <netdev@vger.kernel.org>; Mon, 17 May 2021 19:25:06 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id inXml3go0vAWvinXmlDfCd; Mon, 17 May 2021 19:25:06 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=17jgeobkFVa1lONgCh3PHoiuxiQYySp4r1X7ZA320/I=; b=gCqIuJE/aNf9EAT1kuQWxDSRs6
-        8apFAREr2OInbd6d8QRxxv3wk/YF0ewMrfEQcALPiGL9XtWK2wacq4JY/XsWfAjcHxUIgCj+eeWEe
-        hcLo1ihouocgkNEIeIUhTo9QT/YENk2OapkB0iXEmhR9VcQ99cV5BHdyi8ynBWyIcsuFzK9Ux/kmA
-        iXP2nLVABM7DlCytE+lqQ+oF9i7qR2eAcHC4NsFSaiGk6ak4krf9B6QLkanKORZZJhCk6bhkPXzMv
-        wXgNdSBguSC9JJMzG+EqfKq79Y74/qbvWD1TDBnAl/wOxgwRNLReyY5WNhQqqSw/RHLzLWHWShSFm
-        m+XBN6aw==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:53444 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1linXh-002TFl-KX; Mon, 17 May 2021 19:25:01 -0500
-Subject: Re: [PATCH RESEND][next] qlcnic: Fix fall-through warnings for Clang
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Shahed Shaikh <shshaikh@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20210305091735.GA139591@embeddedor>
- <9502f47c-4e5c-2406-9cc7-708c90899c9d@embeddedor.com>
-Message-ID: <fccf5380-7898-8a96-be52-a4f6efc64e76@embeddedor.com>
-Date:   Mon, 17 May 2021 19:25:43 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S1345174AbhERAu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 20:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345165AbhERAuy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 20:50:54 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13CE0C061573;
+        Mon, 17 May 2021 17:49:37 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id t11so4620212pjm.0;
+        Mon, 17 May 2021 17:49:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KH84QVoxsXQraCnrDp+zrzvkTxvsgpiKrsXZqfq/Xz4=;
+        b=KxVvzeOuRabT9C0NU6Lj//HMl4gIJgKyl56J5LIEDbtHQB7HZHfUNURxtFy/ciT7Z3
+         D4dgXhhFfmOWKeJGRAY4eElY+oNO3lOrsHXMrMRUkaTuERuuUNbS04rmVirWX8pWEJsK
+         E/UhcI0QiQEVWNAb/HQHmG1O0WIHwssfnokcnI5isRrYDFqF5yFphUEKSGu1MoftSQFB
+         ns2cICOBt0qp0sIenFO6xW5AcoL690QQZV88Vw37xQNsLxEM65BAMEPGLyZY+1MQVRJ3
+         wkHvniBTdSG5B1+ZODRwNl+xoxLnpnt1x0py80k9i7swCUMDpEjDawIpbjMUVISEk+9o
+         0spg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KH84QVoxsXQraCnrDp+zrzvkTxvsgpiKrsXZqfq/Xz4=;
+        b=L1tQnD9plhLLH7e69DRNKfuQthbjBBR4r7p0q0uyLY8tJnbuKneWULQZFjblqd2L3m
+         gO/rdPPmmqbLqL//OQrTCohjJOdmbopLhZ0gSk/8fdjen2Ooi1lOy8fQX3rf8laCacWY
+         8kuQ19gblvLEnpl/RAUX5d0CDwGZKTjvNXhAIilonHbbyudpJniN2mbNHeBhsdh/Nuzg
+         uMkkgfUGNLCIkTdice/JSCK6HQ1KuGdKppMFXWxDmclkvIyDVPfbpag3XyAxgEPyOlFB
+         lozds5EZzmACiQzDtF4ZqeycSnI6DZAAZBl9e9NvoIpEp9bJOcMRzFUmRCjWgkHxqzs7
+         OpqA==
+X-Gm-Message-State: AOAM531tEXRqFe5ArOH34Q5wSOYq4D5iOdmOGf+2dO4+FVDbW68efea2
+        VqEKriyWVV/8m+jb/w5fd2SXvXNwiF1kEpjD9hw=
+X-Google-Smtp-Source: ABdhPJwWvoEgJOE4GgT3wa3staV8IWm+iqdKu7eWqalD/1Y98ngy1UeFpylkhuNX/GV4CY4PdSN6Bc4wsXAIRZqf+oc=
+X-Received: by 2002:a17:902:a60a:b029:f0:ad94:70bf with SMTP id
+ u10-20020a170902a60ab02900f0ad9470bfmr1434578plq.31.1621298976622; Mon, 17
+ May 2021 17:49:36 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <9502f47c-4e5c-2406-9cc7-708c90899c9d@embeddedor.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1linXh-002TFl-KX
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:53444
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 36
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+References: <1620959218-17250-1-git-send-email-linyunsheng@huawei.com>
+ <1620959218-17250-2-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpXWgYQxf8Ba-D4JQJMPUaR9MBfQFTLFCHWJMVq9PcUWRg@mail.gmail.com>
+ <20210514163923.53f39888@kicinski-fedora-PC1C0HJN> <CAM_iQpXZNASp7+kA=OoCVbXuReAtOzHnqMn8kFUVfi9_qWe_kw@mail.gmail.com>
+ <20210514171759.5572c8f0@kicinski-fedora-PC1C0HJN> <def859b3-b6ea-7338-38eb-3f18ec3d60c2@huawei.com>
+In-Reply-To: <def859b3-b6ea-7338-38eb-3f18ec3d60c2@huawei.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 17 May 2021 17:49:25 -0700
+Message-ID: <CAM_iQpWSvbTzhj5+OFDaiMA+ARthRDb4iNrK37gzVYa3caGC+A@mail.gmail.com>
+Subject: Re: [PATCH net v8 1/3] net: sched: fix packet stuck problem for
+ lockless qdisc
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        "Cong Wang ." <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
+        bpf <bpf@vger.kernel.org>, Jonas Bonn <jonas.bonn@netrounds.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michael Zhivich <mzhivich@akamai.com>,
+        Josh Hunt <johunt@akamai.com>, Jike Song <albcamus@gmail.com>,
+        Kehuan Feng <kehuan.feng@gmail.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>, atenart@kernel.org,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Hillf Danton <hdanton@sina.com>, jgross@suse.com,
+        JKosina@suse.com, Michal Kubecek <mkubecek@suse.cz>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Fri, May 14, 2021 at 7:25 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>
+> On 2021/5/15 8:17, Jakub Kicinski wrote:
+> > On Fri, 14 May 2021 16:57:29 -0700 Cong Wang wrote:
+> >> On Fri, May 14, 2021 at 4:39 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >>>
+> >>> On Fri, 14 May 2021 16:36:16 -0700 Cong Wang wrote:
+> >>  [...]
+> >>>>
+> >>>> We have test_and_clear_bit() which is atomic, test_bit()+clear_bit()
+> >>>> is not.
+> >>>
+> >>> It doesn't have to be atomic, right? I asked to split the test because
+> >>> test_and_clear is a locked op on x86, test by itself is not.
+> >>
+> >> It depends on whether you expect the code under the true condition
+> >> to run once or multiple times, something like:
+> >>
+> >> if (test_bit()) {
+> >>   clear_bit();
+> >>   // this code may run multiple times
+> >> }
+> >>
+> >> With the atomic test_and_clear_bit(), it only runs once:
+> >>
+> >> if (test_and_clear_bit()) {
+> >>   // this code runs once
+> >> }
+>
+> I am not sure if the above really matter when the test and clear
+> does not need to be atomic.
+>
+> In order for the above to happens, the MISSED has to set between
+> test and clear, right?
 
-I'm taking this in my -next[1] branch for v5.14.
+Nope, see the following:
 
-Thanks
---
-Gustavo
+// MISSED bit is already set
+CPU0                            CPU1
+if (test_bit(MISSED) ( //true
+                                if (test_bit(MISSED)) { // also true
+        clear_bit(MISSED);
+        do_something();
+                                        clear_bit(MISSED);
+                                        do_something();
+                                }
+}
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git/log/?h=for-next/kspp
+Now do_something() is called twice instead of once. This may or may
+not be a problem, hence I asked this question.
 
-On 4/20/21 15:27, Gustavo A. R. Silva wrote:
-> Hi all,
-> 
-> Friendly ping: who can take this, please?
-> 
-> Thanks
-> --
-> Gustavo
-> 
-> On 3/5/21 03:17, Gustavo A. R. Silva wrote:
->> In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
->> warnings by explicitly adding a break and a goto statements instead of
->> just letting the code fall through to the next case.
->>
->> Link: https://github.com/KSPP/linux/issues/115
->> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
->> ---
->>  drivers/net/ethernet/qlogic/qlcnic/qlcnic_io.c   | 1 +
->>  drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c | 1 +
->>  2 files changed, 2 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_io.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_io.c
->> index bdf15d2a6431..af4c516a9e7c 100644
->> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_io.c
->> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_io.c
->> @@ -1390,6 +1390,7 @@ static int qlcnic_process_rcv_ring(struct qlcnic_host_sds_ring *sds_ring, int ma
->>  			break;
->>  		case QLCNIC_RESPONSE_DESC:
->>  			qlcnic_handle_fw_message(desc_cnt, consumer, sds_ring);
->> +			goto skip;
->>  		default:
->>  			goto skip;
->>  		}
->> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
->> index 96b947fde646..8966f1bcda77 100644
->> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
->> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
->> @@ -3455,6 +3455,7 @@ qlcnic_fwinit_work(struct work_struct *work)
->>  			adapter->fw_wait_cnt = 0;
->>  			return;
->>  		}
->> +		break;
->>  	case QLCNIC_DEV_FAILED:
->>  		break;
->>  	default:
->>
+>
+> >>
+> >> This is why __netif_schedule() uses test_and_set_bit() instead of
+> >> test_bit()+set_bit().
+>
+> I think test_and_set_bit() is needed in __netif_schedule() mainly
+> because STATE_SCHED is also used to indicate if the qdisc is in
+> sd->output_queue, so it has to be atomic.
+
+If you replace the "do_something()" above with __netif_reschedule(),
+this is exactly my point. An entry can not be inserted twice into a
+list, hence it should never be called twice like above.
+
+Thanks.
