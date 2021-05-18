@@ -2,80 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28873387E64
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 19:31:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40496387E69
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 19:33:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351125AbhERRcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 13:32:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43614 "EHLO mail.kernel.org"
+        id S1351139AbhERRet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 13:34:49 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46030 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346293AbhERRcQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 May 2021 13:32:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9137A611AC;
-        Tue, 18 May 2021 17:30:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621359058;
-        bh=7Dy8zzNY+4sKyTL/Ac1KDNwYiAMPfo+uyZSJmDyblX8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Is5+vcRYsFcPMbPhcgeJ5G5ILv4eEZZ9SYhvB+dFYIwxzqVlQ4QKpEnf64jmSQTvA
-         dggXD2F33Aock/vfUWjHcRSXYISpBA4r/7Og37K/I1mdvKT8fvr9oXbqVMQl1Lw+5V
-         3wcRPCBoPkug5UTg9YomWuKsz0V+eJ9SmyxKwDVPq7QLp023fSOPOBXlIhxu+n1Qoo
-         G9slCDQjqjo2RW7X+jaRx0hGtSiBwhmTFSTOFZiKez+kB4IU4XeMJaPqmrGZyKXwiB
-         0F0TdI8g99gEgwAlBjlqLUX7ua3Jd57E9pYPFTqybzLVPBEd6BIr/RAk0l103ryfl4
-         c8zgFedTfSNiw==
-Date:   Tue, 18 May 2021 10:30:56 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "huangguangbin (A)" <huangguangbin2@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <michael.chan@broadcom.com>, <saeedm@nvidia.com>,
-        <leon@kernel.org>, <ecree.xilinx@gmail.com>,
-        <habetsm.xilinx@gmail.com>, <f.fainelli@gmail.com>,
-        <andrew@lunn.ch>, <mkubecek@suse.cz>, <ariela@nvidia.com>
-Subject: Re: [PATCH net-next v2 0/6] ethtool: add standard FEC statistics
-Message-ID: <20210518103056.4e8a8a6f@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <b5bb362e-a430-2cc8-291e-b407e306fd49@huawei.com>
-References: <20210415225318.2726095-1-kuba@kernel.org>
-        <b5bb362e-a430-2cc8-291e-b407e306fd49@huawei.com>
+        id S1351129AbhERRes (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 May 2021 13:34:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=7vaTVRbD5NAxdIe/vpM1HK16oQXk9mflt3rGB8eO3bY=; b=AI7RnZCNBh6e1z35nl6UVgDdY7
+        oCp25LDRaaWkS7Fd6eN0wkWIfIwQV9JfN0RHoFf7O+iczW4Zxmb0MeQEDc3kJEXAtWZdX3ODJRQhj
+        sTWzSxb0S/eIoUEZeAzFiaFBXYfr/Lh6Ir0VcuyZt1+bdTBmBAw8+4de2hKnvGg3abwQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lj3aq-004nBt-NY; Tue, 18 May 2021 19:33:20 +0200
+Date:   Tue, 18 May 2021 19:33:20 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: linux-next: Tree for May 18 (drivers/net/dsa/qca8k.c)
+Message-ID: <YKP6YNUyo1K0ojqQ@lunn.ch>
+References: <20210518192729.3131eab0@canb.auug.org.au>
+ <785e9083-174e-5287-8ad0-1b5b842e2282@infradead.org>
+ <20210518164348.vbuxaqg4s3mwzp4e@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210518164348.vbuxaqg4s3mwzp4e@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 May 2021 14:48:13 +0800 huangguangbin (A) wrote:
-> On 2021/4/16 6:53, Jakub Kicinski wrote:
-> > This set adds uAPI for reporting standard FEC statistics, and
-> > implements it in a handful of drivers.
-> > 
-> > The statistics are taken from the IEEE standard, with one
-> > extra seemingly popular but not standard statistics added.
-> > 
-> > The implementation is similar to that of the pause frame
-> > statistics, user requests the stats by setting a bit
-> > (ETHTOOL_FLAG_STATS) in the common ethtool header of
-> > ETHTOOL_MSG_FEC_GET.
-> > 
-> > Since standard defines the statistics per lane what's
-> > reported is both total and per-lane counters:
-> > 
-> >   # ethtool -I --show-fec eth0
-> >   FEC parameters for eth0:
-> >   Configured FEC encodings: None
-> >   Active FEC encoding: None
-> >   Statistics:
-> >    corrected_blocks: 256
-> >      Lane 0: 255
-> >      Lane 1: 1
-> >    uncorrectable_blocks: 145
-> >      Lane 0: 128
-> >      Lane 1: 17
+> Would something like this work?
 > 
-> Hi, I have a doubt that why active FEC encoding is None here? 
-> Should it actually be BaseR or RS if FEC statistics are reported?
+> -----------------------------[ cut here ]-----------------------------
+> >From 36c0b3f04ebfa51e52bd1bc2dc447d12d1c6e119 Mon Sep 17 00:00:00 2001
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Date: Tue, 18 May 2021 19:39:18 +0300
+> Subject: [PATCH] net: mdio: provide shim implementation of
+>  devm_of_mdiobus_register
+> 
+> Similar to the way in which of_mdiobus_register() has a fallback to the
+> non-DT based mdiobus_register() when CONFIG_OF is not set, we can create
+> a shim for the device-managed devm_of_mdiobus_register() which calls
+> devm_mdiobus_register() and discards the struct device_node *.
+> 
+> In particular, this solves a build issue with the qca8k DSA driver which
+> uses devm_of_mdiobus_register and can be compiled without CONFIG_OF.
+> 
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
-Hi! Good point. The values in the example are collected from a netdevsim
-based mock up which I used for testing the interface, not real hardware.
-In reality seeing None and corrected/uncorrectable blocks is not valid.
-That said please keep in mind that the statistics should not be reset
-when settings are changed, so OFF + stats may happen.
+This should be O.K.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+Thanks
+    Andrew
