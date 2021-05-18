@@ -2,103 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DB0E388078
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 21:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21EB7388084
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 21:29:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351776AbhERTZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 15:25:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58570 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346055AbhERTZO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 May 2021 15:25:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BC8E86112F;
-        Tue, 18 May 2021 19:23:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621365835;
-        bh=/mP6Erw322PpPg6b6lvo9yzRRokiUZwurYU9C13mWB8=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=CAm490MOlXhaav0kS2KW0+NCqPO0iPTrPp7pxsSE0tVOmmIl19kRUHOydxlHVtyiN
-         LHbWNSBmTbDEJaEp6gCgVxwv9xlx5kaEP1wkKSM7yNjSfRuA2H7ZLS/kqDw3Awv53t
-         uILWZ4SecZABQAmo2EnVWuXpYsldc3FW/cCHlJ9C8T4U2NDy6c19BoY8pC9HRyxasU
-         uWgciONCbjNZ4B5GEi/MvDb+PEzzkjZYePiwsfaGLKdE4YDC0WCwmxqel29RONuCip
-         oVePxgjTt+WEjPIW74FCEmDlZd6oAj9O8r66MKr4IU2FRKJhJwdk3QROQ+oFLqf+2K
-         sfFm77+bbePtA==
-Message-ID: <040bc4de947fc4cca74dcad89464c5b714c5949d.camel@kernel.org>
-Subject: Re: [PATCH net] mlx5e: add add missing BH locking around
- napi_schdule()
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>, eric.dumazet@gmail.com
-Cc:     netdev@vger.kernel.org
-Date:   Tue, 18 May 2021 12:23:54 -0700
-In-Reply-To: <20210505202026.778635-1-kuba@kernel.org>
-References: <20210505202026.778635-1-kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S1351871AbhERTbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 15:31:14 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:41472 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232056AbhERTbH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 15:31:07 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1621366189; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=xImqkEVhZ7NBDDa6rAwINqmmjR5AFYmB3VNpZQ5pQL4=;
+ b=sHMIy2+X1kqi1Ezd2c7Pkmimx0uqqLYt7o9z3kIcYwc0Y6lzEHgZND6XqCebe4EP8t/GiWbC
+ YHHBmJKxYJOLMbv+v0JtpUMOHaQehxKCV1YkhrlRjoFmckZcG2DugcoRn98tT1VuAwMLpWQ4
+ PuupvhXRxHmv1ULL2CAyVgfgilE=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 60a415aab15734c8f953d91c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 18 May 2021 19:29:46
+ GMT
+Sender: jjohnson=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id E2BA0C4338A; Tue, 18 May 2021 19:29:45 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: jjohnson)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 675B4C433D3;
+        Tue, 18 May 2021 19:29:44 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 18 May 2021 12:29:44 -0700
+From:   Jeff Johnson <jjohnson@codeaurora.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Chao Yu <chao@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>, b43-dev@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] b43: don't save dentries for debugfs
+In-Reply-To: <20210518163304.3702015-1-gregkh@linuxfoundation.org>
+References: <20210518163304.3702015-1-gregkh@linuxfoundation.org>
+Message-ID: <891f28e4c1f3c24ed1b257de83cbb3a0@codeaurora.org>
+X-Sender: jjohnson@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-05-05 at 13:20 -0700, Jakub Kicinski wrote:
-> It's not correct to call napi_schedule() in pure process
-> context. Because we use __raise_softirq_irqoff() we require
-> callers to be in a context which will eventually lead to
-> softirq handling (hardirq, bh disabled, etc.).
+On 2021-05-18 09:33, Greg Kroah-Hartman wrote:
+> There is no need to keep around the dentry pointers for the debugfs
+> files as they will all be automatically removed when the subdir is
+> removed.  So save the space and logic involved in keeping them around 
+> by
+> just getting rid of them entirely.
 > 
-> With code as is users will see:
-> 
->  NOHZ tick-stop error: Non-RCU local softirq work is pending, handler
-> #08!!!
-> 
-> Fixes: a8dd7ac12fc3 ("net/mlx5e: Generalize RQ activation")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> We may want to patch net-next once it opens to switch
-> from __raise_softirq_irqoff() to raise_softirq_irqoff().
-> The irq_count() check is probably negligable and we'd need
-> to split the hardirq / non-hardirq paths completely to
-> keep the current behaviour. Plus what's hardirq is murky
-> with RT enabled..
-> 
-> Eric WDYT?
-> 
+> By doing this change, we remove one of the last in-kernel user that was
+> storing the result of debugfs_create_bool(), so that api can be cleaned
+> up.
 
-I was waiting for Eric to reply, Anyway i think this patch is correct
-as is, 
+Question not about this specific change, but the general concept
+of keeping (or not keeping) dentry pointers. In the ath drivers,
+as well as in an out-of-tree driver for Android, we keep a
+debugfs dentry pointer to use as a param to relay_open().
 
-Jakub do you want me to submit to net  via net-mlx5 branch? 
+Will we still be able to have a dentry pointer for this purpose?
+Or better, is there a recommended way to get a dentry pointer
+NOT associated with debugfs at all (which would be ideal for
+Android where debugfs is disabled).
 
-Another valid solution is that driver will avoid calling
-napi_schedule() altogether from  process context,  we have the
-mechanism of mlx5e_trigger_irq(), which can be utilized here, but needs
-some re-factoring to move the icosq object from the main rx rq to the
-containing channel object.
+Thanks,
+Jeff
 
->  drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index bca832cdc4cb..11e50f5b3a1e 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -889,10 +889,13 @@ int mlx5e_open_rq(struct mlx5e_params *params,
-> struct mlx5e_rq_param *param,
->  void mlx5e_activate_rq(struct mlx5e_rq *rq)
->  {
->         set_bit(MLX5E_RQ_STATE_ENABLED, &rq->state);
-> -       if (rq->icosq)
-> +       if (rq->icosq) {
->                 mlx5e_trigger_irq(rq->icosq);
-> -       else
-> +       } else {
-> +               local_bh_disable();
->                 napi_schedule(rq->cq.napi);
-> +               local_bh_enable();
-> +       }
->  }
->  
->  void mlx5e_deactivate_rq(struct mlx5e_rq *rq)
-
-
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum,
+a Linux Foundation Collaborative Project
