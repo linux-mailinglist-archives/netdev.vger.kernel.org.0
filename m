@@ -2,76 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9348E387EFE
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 19:51:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E4FD387F17
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 19:57:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345799AbhERRws (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 13:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44960 "EHLO
+        id S1344188AbhERR66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 13:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237923AbhERRwr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 13:52:47 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB72C061573
-        for <netdev@vger.kernel.org>; Tue, 18 May 2021 10:51:29 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id t4so5531134plc.6
-        for <netdev@vger.kernel.org>; Tue, 18 May 2021 10:51:29 -0700 (PDT)
+        with ESMTP id S240327AbhERR66 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 13:58:58 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C977C061573
+        for <netdev@vger.kernel.org>; Tue, 18 May 2021 10:57:39 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id gb21-20020a17090b0615b029015d1a863a91so2000424pjb.2
+        for <netdev@vger.kernel.org>; Tue, 18 May 2021 10:57:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jUm8/rJRSYOFhNkdi7f6FwvrdKDgNUwnFrh19QWt3mw=;
-        b=r96oHqYyHxj2++rGSnzEGbfZMf8I8GbUXPh/xVmjKYoSfvjxxAicYV6fg5k58d52Ku
-         WtOoX4K7jZlU2Omzqwok5pmsztHogwNBTum3zY687nG7Tgv9Xb9GXAV9o0Z31GAkdBhc
-         E6yOEDb0XHAj8ZVJHjajkyYnG9tm46/UezddhUAoJOYqQ0thcifi9Oa56PNuivpo1MxN
-         iMNwJp44ua578xzqOuXaJzmC6ETadp/AwONb+0AZ0vJBoUtDW24tF+IKPg/VhN3O9+EV
-         886gVbhRjsaBM9+WEtPY3KPWXGjPge0krhCSXa60SRvytux/4kAPbazFWR7wHMl8Tlkc
-         Q2PA==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oxaauVHhw5lY1FoxZJi1j49Hg+WpaUu0CMw+4TZkq0Y=;
+        b=YxbZwuoVQ2BxxrK0fv3JUeQvK2mMnQFXSDOVmGs36pD794tgbdLr0w+XpkbjKs/pLj
+         E1cMAahDY2IZS2nUMnubrUrTEnGc6u+yrtSpZGLAzXUx7sdaTdXR1R9I8iHqkwp0Uc6P
+         B8C/3c3yctP8qkKWpAa1vnMrV1F3+jJNrv7piPbkJD46W3hRKA6DUBSf2ea3Hw3Ofs+g
+         6x0NO5qtbYCAmu8tz56ENxM2+IiWwe8tG0Hb/Rp4fX27zNJ7CXXQWoCRM0+vOGWjDWq1
+         QEWxpKHlecbr3zw2rGdOea+Lz8WUhX82Yl0WC4sG5eqRKOGpRr3SzGzdazerAcz4/x9d
+         dXpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=jUm8/rJRSYOFhNkdi7f6FwvrdKDgNUwnFrh19QWt3mw=;
-        b=uHySEtuyk1ZUCSt1NPmVAirNtjgcdskzPPcjOEbzTPDoauawLJv+Lfp9VMgM459o0U
-         bqCgVsFeVj1yH028rv0eRJ22xBNmZ1QRxPA/vtrG6u0knYEmEI12BYPrrw4wTNxhzzOx
-         XB05PKaE6RaSTSQv/019lCZ9YaT/d1shHZ2WI9AM7TdEzgrsINsNDC5dZHZmIrSG6PX4
-         wQMtdyzQcNVyK98Tc4Or1TxCz/M/n9v12v8OKFndH0AnJTJeqaUZgg2/4oudB/x0NEwe
-         JkpxUkS50M9nk8m2H9rnyZlrdwpZLffir/7Rgda4yCYH4ezDkPK8BzlPiJwTShKv5xfe
-         +Ahg==
-X-Gm-Message-State: AOAM530r1Ttio3qJjBEuWPlkO4Z3VCQQ0CMCfYr9dLLEs/6UXtPZQJdj
-        +BU5a3GjWuAfNK/cWiGmgYM5im7iSlIkLw==
-X-Google-Smtp-Source: ABdhPJy/QyLuF4TRlqnr3Kct2vLo9lyCyI9t+I4jWWiMHxa1AOBl+O5PruR8/9RcN6VBxbzbS5zrUw==
-X-Received: by 2002:a17:90a:3bc6:: with SMTP id e64mr6467574pjc.156.1621360288646;
-        Tue, 18 May 2021 10:51:28 -0700 (PDT)
-Received: from [192.168.1.67] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id v14sm13637660pgl.86.2021.05.18.10.51.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 May 2021 10:51:28 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: mdio: provide shim implementation of
- devm_of_mdiobus_register
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Randy Dunlap <rdunlap@infradead.org>
-References: <20210518174924.1808602-1-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <84619ad5-5b19-a848-a264-baadc75fc65c@gmail.com>
-Date:   Tue, 18 May 2021 10:51:25 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.10.1
+        bh=oxaauVHhw5lY1FoxZJi1j49Hg+WpaUu0CMw+4TZkq0Y=;
+        b=A4G3ll9AFLUTMlQeY94P2Q06P2buSwN5CaUkWb0dSYESr/QqPyvXXNRJr0NVTOQV25
+         AAllxe3ZS35FwPDE2TGJ0lbPmZuCoWG5afN1XcrSbBG6nYrWfHKsuX39zn3RIPWqUczx
+         YlJee7cC20Au49uUzX6Dn2is1jY4AuMui3oL2Qsra985wMg27Bw3MngKvTkutIgGBYxo
+         sGyMzvy2KBPkeluwfIbrFCv8Jc0ycGNRmNw0KIL4fsQ3iiVgg5cxIV19shek1x6T6Vfq
+         vqHsCGomYAmG4Sk8rBpJJ38mz7EMPhW5Zf7RfZi3zi40nkFByQZu0SGnsvPjpSkKLb54
+         WA3Q==
+X-Gm-Message-State: AOAM532Yv6iqQq35lsFCq7spl0/E3+7Ve/CNsclGwfYoITStIZm0HBZN
+        oElZolDxNI9cWOVKyRaca3JJvmx41XGj3w==
+X-Google-Smtp-Source: ABdhPJy+GuF1H579pSKix9Iz5A9ZDpo1JI/7Qo582RKSWY/5NINyAV2Uh1qRJfi1vmwZZBkSTMUEsg==
+X-Received: by 2002:a17:90a:dac1:: with SMTP id g1mr6292025pjx.199.1621360658969;
+        Tue, 18 May 2021 10:57:38 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id d13sm12215710pfn.136.2021.05.18.10.57.38
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 May 2021 10:57:38 -0700 (PDT)
+Date:   Tue, 18 May 2021 10:57:35 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 213123] New: The performance deteriorates because the
+ ip_victor function is deleted.
+Message-ID: <20210518105735.4f4f7eeb@hermes.local>
 MIME-Version: 1.0
-In-Reply-To: <20210518174924.1808602-1-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -79,20 +63,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 5/18/2021 10:49 AM, Vladimir Oltean wrote:
-> Similar to the way in which of_mdiobus_register() has a fallback to the
-> non-DT based mdiobus_register() when CONFIG_OF is not set, we can create
-> a shim for the device-managed devm_of_mdiobus_register() which calls
-> devm_mdiobus_register() and discards the struct device_node *.
-> 
-> In particular, this solves a build issue with the qca8k DSA driver which
-> uses devm_of_mdiobus_register and can be compiled without CONFIG_OF.
-> 
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Begin forwarded message:
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Date: Tue, 18 May 2021 07:31:29 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 213123] New: The performance deteriorates because the ip_victor function is deleted.
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=213123
+
+            Bug ID: 213123
+           Summary: The performance deteriorates because the ip_victor
+                    function is deleted.
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 4.19.90
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: kircherlike@outlook.com
+        Regression: No
+
+In the 4.19 kernel, we see that there is this commit
+
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/net/ipv4/ip_fragment.c?id=86e93e470cadedda9181a2bd9aee1d9d2e5e9c0f 
+
+Before the integration, the ip_victor function is used to release the old
+fragmented data when the fragmented IP data occupies the fragmented buffer.
+
+However, in the same scenario, the kernel of 4.19 discards all subsequent data
+until the 30-second buffer wait time set by ipfrag_time expires.
+After this, subsequent fragmented data is received.
+
 -- 
-Florian
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
