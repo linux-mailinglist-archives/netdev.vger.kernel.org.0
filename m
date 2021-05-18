@@ -2,71 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2D86387481
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 11:00:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF67387497
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 11:04:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347641AbhERJB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 05:01:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33974 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346873AbhERJBV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 May 2021 05:01:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 68A2061209;
-        Tue, 18 May 2021 08:59:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621328372;
-        bh=UgRUbJBBnzpQLR7EDO5qOM4DnpZGVxZ1RG6udzAgiSI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cgIBNr/pGVp/2pKxnCVr3/1dfbYoIilVzSYhr8SiMXo35yUdwOvOqcGNOC6paBu5j
-         VUhb4VSaRcSiLLutDH0ZifW8KQyhfEQYIDVfdj+Rbu07DOd9irFFpLhe8Fr1J4H2SG
-         3RFRqbqyByyQw9Z49WATQFDdvf9vGS9m5RhYHfayhwyeKzJg/OTgmMLESJvzp4Y0LZ
-         ZGnCr632Km3OG02yjd4k5lW6MzXDTieI44HgoOff0oX/mApS5Fy22ADiV56qBD11dz
-         gZIOw33NJewTZLKIzlzlhpLLSpSYD0xs6aVfQQFt0FeCjM+4Uv0aO33sMGVP97gXEv
-         xeKXASFC/tZxw==
-Date:   Tue, 18 May 2021 11:59:27 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH] net: phy: add driver for Motorcomm yt8511 phy
-Message-ID: <YKOB7y/9IptUvo4k@unreal>
-References: <20210511214605.2937099-1-pgwipeout@gmail.com>
+        id S1347686AbhERJF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 05:05:58 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:2969 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241978AbhERJF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 05:05:57 -0400
+Received: from dggems706-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FkqkR2MSfzCtfK;
+        Tue, 18 May 2021 17:01:51 +0800 (CST)
+Received: from dggpeml500012.china.huawei.com (7.185.36.15) by
+ dggems706-chm.china.huawei.com (10.3.19.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 18 May 2021 17:04:13 +0800
+Received: from code-website.localdomain (10.175.127.227) by
+ dggpeml500012.china.huawei.com (7.185.36.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 18 May 2021 17:04:13 +0800
+From:   Zheng Yejian <zhengyejian1@huawei.com>
+To:     <paul@paul-moore.com>
+CC:     <netdev@vger.kernel.org>, <zhangjinhao2@huawei.com>,
+        <yuehaibing@huawei.com>
+Subject: [PATCH net-next] cipso: correct comments of cipso_v4_cache_invalidate()
+Date:   Tue, 18 May 2021 17:11:41 +0800
+Message-ID: <20210518091141.2316684-1-zhengyejian1@huawei.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210511214605.2937099-1-pgwipeout@gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500012.china.huawei.com (7.185.36.15)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 05:46:06PM -0400, Peter Geis wrote:
-> Add a driver for the Motorcomm yt8511 phy that will be used in the
-> production Pine64 rk3566-quartz64 development board.
-> It supports gigabit transfer speeds, rgmii, and 125mhz clk output.
-> 
-> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-> ---
->  MAINTAINERS                 |  6 +++
->  drivers/net/phy/Kconfig     |  6 +++
->  drivers/net/phy/Makefile    |  1 +
->  drivers/net/phy/motorcomm.c | 85 +++++++++++++++++++++++++++++++++++++
->  4 files changed, 98 insertions(+)
->  create mode 100644 drivers/net/phy/motorcomm.c
+Since cipso_v4_cache_invalidate() has no return value, so drop
+related descriptions in its comments.
 
-<...>
+Fixes: 446fda4f2682 ("[NetLabel]: CIPSOv4 engine")
+Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
+---
+ net/ipv4/cipso_ipv4.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> +static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
-> +	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
-> +	{ /* sentinal */ }
-> +}
+diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
+index bfaf327e9d12..d6e3a92841e3 100644
+--- a/net/ipv4/cipso_ipv4.c
++++ b/net/ipv4/cipso_ipv4.c
+@@ -187,8 +187,7 @@ static int __init cipso_v4_cache_init(void)
+  * cipso_v4_cache_invalidate - Invalidates the current CIPSO cache
+  *
+  * Description:
+- * Invalidates and frees any entries in the CIPSO cache.  Returns zero on
+- * success and negative values on failure.
++ * Invalidates and frees any entries in the CIPSO cache.
+  *
+  */
+ void cipso_v4_cache_invalidate(void)
+-- 
+2.17.1
 
-Why is this "__maybe_unused"? This *.c file doesn't have any compilation option
-to compile part of it.
-
-The "__maybe_unused" is not needed in this case.
-
-Thanks
