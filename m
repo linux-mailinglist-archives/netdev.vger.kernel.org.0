@@ -2,72 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97FA53881CB
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 23:00:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7A283881CC
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 23:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352319AbhERVBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 17:01:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38684 "EHLO mail.kernel.org"
+        id S1352324AbhERVBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 17:01:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38702 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238437AbhERVB3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S240342AbhERVB3 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 18 May 2021 17:01:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 01359611B0;
-        Tue, 18 May 2021 21:00:10 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 409896135F;
+        Tue, 18 May 2021 21:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1621371611;
-        bh=FnWGp3CwJUEi1nwaH51FrDtvFq9Dx4mxdsde2YRjKMI=;
+        bh=YgnjXRr3zlInXJejH0AVMaGhaSzM+hidVCrj+Sk+6To=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Lm3J//vLnkMVLIA2S6xecQYl01m5OBzT2aWO0wBhjPily8w4VN2x/jdOulKDr1Vy6
-         OtLseSR+nM5BcvXLBh5edEguBMDiYOTvMGJoE8oKuNi1587yGmlXIuDS8O3taahy5g
-         6LSmIZuNNhRkJCCecebiJf40dHqRXmMlg8dR6xdKAGyEVjFblQxfNM77TpuMjEZHM5
-         wVqlvm9oU6Yur02x1EIIhBSDb5sEsJtzrBBd1k9uFzKfaPFcy+enZjfZ0VA5bY8psD
-         Sq/uL9tUa3ygY7F8UEeVUplN3tNLOS2K7rvauXARNTiyv8qrLXm8/JuFZ4eOEVZOGK
-         9HViPYclf/X6w==
+        b=TjapXRvW1crrVVrCLSJKMbK0qUeUrX4SH38FV+5bzOqrZmkUC6e0DD1rvRdgCP7GF
+         3mJZ6niyogYjuE0AQPjkS82TEv72LP94BrDErupmDETQoqtNjzMw1F3tLPPu+FJmx2
+         62SfrnIN6A6WJnoOXpgRzl6Lsyk5Y4wAmBYxR8o9D86fDcGeN+LT6HAOsWErVIsrGQ
+         G2Az3A5zY9g632MSFAGIz+EwbwkydP68Ov2b0uJRVu499HjCJ3uvPY2EI+9ozLzbnz
+         2nFxkf+BLTEjL4VI2YgOmKhhmDEw7DFswJAjdf9kztDPPdnb5WYlqFQQr+xQmg1AFc
+         yx/rhAbDRDShQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E7065608FB;
-        Tue, 18 May 2021 21:00:10 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3A9EE60A4F;
+        Tue, 18 May 2021 21:00:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4] net: hns3: fixes for -net
+Subject: Re: [PATCH net-next] net: mdio: provide shim implementation of
+ devm_of_mdiobus_register
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162137161094.17137.15312250778988192126.git-patchwork-notify@kernel.org>
-Date:   Tue, 18 May 2021 21:00:10 +0000
-References: <1621337763-61946-1-git-send-email-tanhuazhong@huawei.com>
-In-Reply-To: <1621337763-61946-1-git-send-email-tanhuazhong@huawei.com>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
-        huangdaode@huawei.com, linuxarm@huawei.com
+Message-Id: <162137161123.17137.10254644777060405490.git-patchwork-notify@kernel.org>
+Date:   Tue, 18 May 2021 21:00:11 +0000
+References: <20210518174924.1808602-1-olteanv@gmail.com>
+In-Reply-To: <20210518174924.1808602-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, sfr@canb.auug.org.au, ansuelsmth@gmail.com,
+        john@phrozen.org, robh+dt@kernel.org, frowand.list@gmail.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        rdunlap@infradead.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 18 May 2021 19:35:59 +0800 you wrote:
-> This series includes some bugfixes for the HNS3 ethernet driver.
+On Tue, 18 May 2021 20:49:24 +0300 you wrote:
+> Similar to the way in which of_mdiobus_register() has a fallback to the
+> non-DT based mdiobus_register() when CONFIG_OF is not set, we can create
+> a shim for the device-managed devm_of_mdiobus_register() which calls
+> devm_mdiobus_register() and discards the struct device_node *.
 > 
-> Huazhong Tan (1):
->   net: hns3: fix user's coalesce configuration lost issue
-> 
-> Jian Shen (1):
->   net: hns3: put off calling register_netdev() until client initialize
->     complete
+> In particular, this solves a build issue with the qca8k DSA driver which
+> uses devm_of_mdiobus_register and can be compiled without CONFIG_OF.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/4] net: hns3: fix incorrect resp_msg issue
-    https://git.kernel.org/netdev/net/c/a710b9ffbeba
-  - [net,2/4] net: hns3: put off calling register_netdev() until client initialize complete
-    https://git.kernel.org/netdev/net/c/a289a7e5c1d4
-  - [net,3/4] net: hns3: fix user's coalesce configuration lost issue
-    https://git.kernel.org/netdev/net/c/73a13d8dbe33
-  - [net,4/4] net: hns3: check the return of skb_checksum_help()
-    https://git.kernel.org/netdev/net/c/9bb5a495424f
+  - [net-next] net: mdio: provide shim implementation of devm_of_mdiobus_register
+    https://git.kernel.org/netdev/net-next/c/86544c3de6a2
 
 You are awesome, thank you!
 --
