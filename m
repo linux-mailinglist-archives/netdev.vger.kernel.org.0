@@ -2,128 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F279E386E09
-	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 02:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAE30386E12
+	for <lists+netdev@lfdr.de>; Tue, 18 May 2021 02:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344749AbhERAFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 May 2021 20:05:17 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:56162 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231430AbhERAFQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 20:05:16 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1621296237;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GHW7rXkDeIGk/f09UxCJTS97zy7h+pIJUZoYLG1bdJY=;
-        b=azzdYFzdrDBd1cHZb+nfIEb6gPXpuJVbIecZfpj1yx84NpBZx8TdlCkKaP40YGn77M9c9A
-        tl7fXGZS8t9aOWPi3BrzQ+stk8LUxYpV4RMvOEU/B7Z1KpeBRaHwi5xAbJQ4ZAzD+0Yr3i
-        fVh9qavYuNAAna0Ds5WMaCuChBhsW6qpQ4FOLsUW8+JrvdWjeB07XMATzIf2gAnB7cUt3G
-        ZaTNGxYBY91bdtLlaGiQldTD3YGcS7ll5EDzakY1Vi2y4XGcKhfBjL1QmWOVmyl15GKDG6
-        fPcFCJkCABqpd7Tf3nM9P8mltnChwshTp/sMYJxCUpHPAD5iNP4JLWbAhalZWg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1621296237;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GHW7rXkDeIGk/f09UxCJTS97zy7h+pIJUZoYLG1bdJY=;
-        b=aKXRsDXe8OZvqv/EJLQWaYBETlUl0og14+GClrJNmh8MKDKm1XxVvecVbCeN1DyMaI0GdQ
-        oI+7KyfNIXqLTACg==
-To:     Nitesh Lal <nilal@redhat.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
-        "frederic\@kernel.org" <frederic@kernel.org>,
-        "juri.lelli\@redhat.com" <juri.lelli@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas\@google.com" <bhelgaas@google.com>,
-        "linux-pci\@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
-        "peterz\@infradead.org" <peterz@infradead.org>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "akpm\@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr\@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen\@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt\@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi\@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun\@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com,
-        Marc Zyngier <maz@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when setting the hint
-In-Reply-To: <CAFki+Lkjn2VCBcLSAfQZ2PEkx-TR0Ts_jPnK9b-5ne3PUX37TQ@mail.gmail.com>
-References: <20210504092340.00006c61@intel.com> <87pmxpdr32.ffs@nanos.tec.linutronix.de> <CAFki+Lkjn2VCBcLSAfQZ2PEkx-TR0Ts_jPnK9b-5ne3PUX37TQ@mail.gmail.com>
-Date:   Tue, 18 May 2021 02:03:57 +0200
-Message-ID: <87im3gewlu.ffs@nanos.tec.linutronix.de>
+        id S1344799AbhERAJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 May 2021 20:09:40 -0400
+Received: from gateway23.websitewelcome.com ([192.185.50.107]:22612 "EHLO
+        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240964AbhERAJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 May 2021 20:09:40 -0400
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id C3A55677B
+        for <netdev@vger.kernel.org>; Mon, 17 May 2021 19:08:21 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id inHZl2weSAEP6inHZlfD25; Mon, 17 May 2021 19:08:21 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=WdyekvjUUs1pEaBFDAcSeN8/wgj+hgvCSZ8KDF9fgKQ=; b=QGiVLJIoIP2dNncV1y7/ndqv2q
+        3Fii5GAlykxh5JZQtr4Udy9XhV8ub4XyCi6glN6VoyAEC0G/UTI+1eVgUIFf9ZBQkmEKSVpkrGBmj
+        lzdo7z53e63NB73tFQKdt2KJEg9COOVrSQ3eUepQ20wzwM27VGX5NIeZWnqe2XnbENOHM5m8mawdo
+        JfRhGi48eTh1ZniMzncDV/k5SzDnepe+vC9JZW8ya3z6/4XxrGdvbyd3C/P3kO8N5lsTQmg4uzzRC
+        KRbI37HgNcaY0XLgkllH0p7bERfhdGiuP87d9opXrHoPvg6dveQKi9ItZPW6OIWQtw581ZuMEtSb6
+        U6sTxWjw==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:53398 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1linHW-002BXL-8X; Mon, 17 May 2021 19:08:18 -0500
+Subject: Re: [PATCH RESEND][next] netxen_nic: Fix fall-through warnings for
+ Clang
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Manish Chopra <manishc@marvell.com>,
+        Rahul Verma <rahulv@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20210305094529.GA140903@embeddedor>
+ <7b648909-c16d-4f52-7524-896b7e2fdb52@embeddedor.com>
+Message-ID: <79286a03-5e7e-d019-2189-6811bd08c84b@embeddedor.com>
+Date:   Mon, 17 May 2021 19:08:59 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <7b648909-c16d-4f52-7524-896b7e2fdb52@embeddedor.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1linHW-002BXL-8X
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:53398
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 20
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 17 2021 at 18:44, Nitesh Lal wrote:
-> On Mon, May 17, 2021 at 4:48 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->> The hint was added so that userspace has a better understanding where it
->> should place the interrupt. So if irqbalanced ignores it anyway, then
->> what's the point of the hint? IOW, why is it still used drivers?
+Hi,
+
+I'm taking this in my -next[1] branch for v5.14.
+
+Thanks
+--
+Gustavo
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git/log/?h=for-next/kspp
+
+On 4/20/21 15:23, Gustavo A. R. Silva wrote:
+> Hi all,
+> 
+> Friendly ping: who can take this, please?
+> 
+> Thanks
+> --
+> Gustavo
+> 
+> On 3/5/21 03:45, Gustavo A. R. Silva wrote:
+>> In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
+>> by explicitly adding a goto statement instead of just letting the code
+>> fall through to the next case.
 >>
-> Took a quick look at the irqbalance repo and saw the following commit:
->
-> dcc411e7bf    remove affinity_hint infrastructure
->
-> The commit message mentions that "PJ is redesiging how affinity hinting
-> works in the kernel, the future model will just tell us to ignore an IRQ,
-> and the kernel will handle placement for us.  As such we can remove the
-> affinity_hint recognition entirely".
-
-No idea who PJ is. I really love useful commit messages. Maybe Neil can
-shed some light on that.
-
-> This does indicate that apparently, irqbalance moved away from the usage of
-> affinity_hint. However, the next question is what was this future
-> model?
-
-I might have missed something in the last 5 years, but that's the first
-time I hear about someone trying to cleanup that thing.
-
-> I don't know but I can surely look into it if that helps or maybe someone
-> here already knows about it?
-
-I CC'ed Neil :)
-
->> Now there is another aspect to that. What happens if irqbalanced does
->> not run at all and a driver relies on the side effect of the hint
->> setting the initial affinity. Bah...
+>> Link: https://github.com/KSPP/linux/issues/115
+>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+>> ---
+>>  drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c | 1 +
+>>  1 file changed, 1 insertion(+)
 >>
->
-> Right, but if they only rely on this API so that the IRQs are spread across
-> all the CPUs then that issue is already resolved and these other drivers
-> should not regress because of changing this behavior. Isn't it?
-
-Is that true for all architectures?
-
->> While none of the drivers (except the perf muck) actually prevents
->> userspace from fiddling with the affinity (via IRQF_NOBALANCING) a
->> deeper inspection shows that they actually might rely on the current
->> behaviour if irqbalanced is disabled. Of course every driver has its own
->> convoluted way to do that and all of those functions are well
->> documented. What a mess.
+>> diff --git a/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c b/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c
+>> index 08f9477d2ee8..35ec9aab3dc7 100644
+>> --- a/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c
+>> +++ b/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c
+>> @@ -1685,6 +1685,7 @@ netxen_process_rcv_ring(struct nx_host_sds_ring *sds_ring, int max)
+>>  			break;
+>>  		case NETXEN_NIC_RESPONSE_DESC:
+>>  			netxen_handle_fw_message(desc_cnt, consumer, sds_ring);
+>> +			goto skip;
+>>  		default:
+>>  			goto skip;
+>>  		}
 >>
->> If the hint still serves a purpose then we can provide a variant which
->> solely applies the hint and does not fiddle with the actual affinity,
->> but if the hint is useless anyway then we have a way better option to
->> clean that up.
->>
->
-> +1
-
-= 1
-
-Thanks,
-
-        tglx
