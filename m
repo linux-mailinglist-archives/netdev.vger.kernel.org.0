@@ -2,47 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7D503884D8
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 04:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 564503884EF
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 04:48:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236919AbhESCkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 22:40:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49550 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236806AbhESCkS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 May 2021 22:40:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 238436112F;
-        Wed, 19 May 2021 02:38:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621391939;
-        bh=XucpGTi9ahRzp0sdEFDRlL3/Nsl8ezxxQ1FQY3dSJuI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V9JCccr24Bdkx5YPQ/KI4KLB7acqwHfmYRi6yiwTCOUdpSdkrroyLGvKxB6t0oK2f
-         XSFt1rct6eBGKlXpDjkwUW3+1wa3W1nP95g7ffZo/35bOi4rBcFr/bsSMbw6TKfiPk
-         XkYc4rKDKlTr80zO1PbrxU+2t9ZtTMTNlOBjHMhvyzcxjacOhXMGOZjUV3uE13Adr8
-         eGQRM6+cWP3csggPeCkrfzHffsKJLTj5qI5AVfqy18mwuPw2+nCMuiZ28V/26BlqdO
-         XNEmYJ6G/QYL7Qw5soga9zr2sIw/iUcGQLvOdVajHTFngQjo2p/vjWhK6uucGtyGDb
-         VWJnLS4sMWuiw==
-Date:   Tue, 18 May 2021 19:38:58 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] ethtool: stats: Fix a copy-paste error
-Message-ID: <20210518193858.7296623e@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20210519021038.25928-1-yuehaibing@huawei.com>
-References: <20210519021038.25928-1-yuehaibing@huawei.com>
+        id S1352875AbhESCtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 22:49:52 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4739 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236512AbhESCtv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 22:49:51 -0400
+Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FlHK86mDJzpdwJ;
+        Wed, 19 May 2021 10:45:00 +0800 (CST)
+Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
+ dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Wed, 19 May 2021 10:48:26 +0800
+Received: from localhost (10.174.179.215) by dggema769-chm.china.huawei.com
+ (10.1.198.211) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 19
+ May 2021 10:48:26 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <michal.simek@xilinx.com>
+CC:     <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] net: xilinx_emaclite: Do not print real IOMEM pointer
+Date:   Wed, 19 May 2021 10:47:04 +0800
+Message-ID: <20210519024704.21228-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggema769-chm.china.huawei.com (10.1.198.211)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 May 2021 10:10:38 +0800 YueHaibing wrote:
-> data->ctrl_stats should be memset with correct size.
-> 
-> Fixes: bfad2b979ddc ("ethtool: add interface to read standard MAC Ctrl stats")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Printing kernel pointers is discouraged because they might leak kernel
+memory layout.  This fixes smatch warning:
 
-Ah, FWIW this should had been targeting net.
+drivers/net/ethernet/xilinx/xilinx_emaclite.c:1191 xemaclite_of_probe() warn:
+ argument 4 to %08lX specifier is cast from pointer
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+index d9d58a7dabee..b06377fe7293 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
++++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+@@ -1189,9 +1189,8 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
+ 	}
+ 
+ 	dev_info(dev,
+-		 "Xilinx EmacLite at 0x%08lX mapped to 0x%08lX, irq=%d\n",
+-		 (unsigned long __force)ndev->mem_start,
+-		 (unsigned long __force)lp->base_addr, ndev->irq);
++		 "Xilinx EmacLite at 0x%08lX mapped to 0x%p, irq=%d\n",
++		 (unsigned long __force)ndev->mem_start, lp->base_addr, ndev->irq);
+ 	return 0;
+ 
+ error:
+-- 
+2.17.1
+
