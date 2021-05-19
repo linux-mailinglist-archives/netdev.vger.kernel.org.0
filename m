@@ -2,906 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDCA53884B5
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 04:20:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A713884C1
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 04:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231964AbhESCVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 May 2021 22:21:24 -0400
-Received: from mail-ot1-f43.google.com ([209.85.210.43]:45724 "EHLO
-        mail-ot1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbhESCVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 May 2021 22:21:22 -0400
-Received: by mail-ot1-f43.google.com with SMTP id t10-20020a05683022eab0290304ed8bc759so10436022otc.12;
-        Tue, 18 May 2021 19:20:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VEHRgObQq5FzJ8CfxBMfJlCk25oB2JPkzhhW/E1J9y0=;
-        b=mXbDfnxuYPXXXrYSq2ZQ+JRMBy5tdh+M8zuuwzpRHF1ayFfnN18ODctNNUHiCGTHWv
-         PpqaAvYXxVLr7fw5pXnZIQGyz9GjO5zWKLjFkF5IKQtAKlPCWjzRPQTHQ+wExCWl+p1o
-         rXsFC2LLQ8+tlvRiE3q+ANijo7oMp370eBYal6cyqHBa66VnWpQY8Yi8yM1pbd8ai99s
-         0JBuZLWjvfkFzrFPL707oiXMSf0whfIwSlQLJ7C7IB/8hRbrKxtkVZEpIk2OAwdq+4zL
-         ZZYlGZkgMXQorKhBAIxbAZ7/LZxIqrW/iPEuqW1wUHfcCA1zscyIWJDn2YXi22aO8gIA
-         MhtA==
-X-Gm-Message-State: AOAM530aoDm6dl2kYfR/SdlQwKdaqYIzvsRBx+dS+5Xyj1gPM0gaw87/
-        IrYYTxhHEHkcpuSNZJCB5AhQjrrvXw==
-X-Google-Smtp-Source: ABdhPJwtbkbNxfm5hgkA8Jc/eAGFca5kpA5m0w/gr1eLj86PZadBpbvMyDr1jVjPOL1ktpn5/bwWUA==
-X-Received: by 2002:a9d:3bcb:: with SMTP id k69mr6998313otc.206.1621390802102;
-        Tue, 18 May 2021 19:20:02 -0700 (PDT)
-Received: from xps15.herring.priv (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.googlemail.com with ESMTPSA id l11sm3991180ooq.44.2021.05.18.19.20.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 May 2021 19:20:01 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Peter Rosin <peda@axentia.se>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] dt-bindings: net: Convert MDIO mux bindings to DT schema
-Date:   Tue, 18 May 2021 21:20:00 -0500
-Message-Id: <20210519022000.1858188-1-robh@kernel.org>
-X-Mailer: git-send-email 2.27.0
+        id S235025AbhESC2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 May 2021 22:28:39 -0400
+Received: from mga14.intel.com ([192.55.52.115]:15183 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229583AbhESC2i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 May 2021 22:28:38 -0400
+IronPort-SDR: cWbROLAAY2Fe36BfQQYtIafWUy9/oOCKM62c2S4R96hidEG7VAQGgDclnrbo8FUDclL0y1CHAs
+ PBBJ8LsLIotw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9988"; a="200565943"
+X-IronPort-AV: E=Sophos;i="5.82,311,1613462400"; 
+   d="scan'208";a="200565943"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2021 19:27:19 -0700
+IronPort-SDR: rbL3kQZR1uynevmpi5klN6bFZqhRIj9jffrR0XEI/JhlUIhDrP2FiSGGnbt8aheo54aDFtYtXE
+ 4KzoShoIUk2Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,311,1613462400"; 
+   d="scan'208";a="405221785"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by fmsmga007.fm.intel.com with ESMTP; 18 May 2021 19:27:18 -0700
+Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Tue, 18 May 2021 19:27:18 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
+ via Frontend Transport; Tue, 18 May 2021 19:27:18 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.40) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Tue, 18 May 2021 19:27:18 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nwFP/6MFl4OyYWJDt4prbjyawfs1WvYdNxX/mxd2Sx9vDB3EMsq5vyikhFGXJo+jpy1k67JlU65C9FYIoDhGWnLCMzkzEShgbQJ+DRVNy71bmxrHO93O762pixqBzVccTLbSSXSeVXNPFXUs7JrOmJqzowlcYXuu2ZOMS+c3uGTW53U2I081Lh55Ok5G/ZXaTpn/mNdaQaj2zMeudmCaz1SXHHy7EZ+XI+tpt3Eyn38JrlvoHK/jBpInP5qVhVa4yp4/2BHeOXVN2NSokx5W1Gru/GifILYiaw7vibNVI8saTwSMBMMqRtANKVnLGqlUtzUohykMed59KMhNNGlaBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pvQnukiStoPDfyfI3gtqtoZfUWBE3dtpmuc4R/Y4GFQ=;
+ b=ND+gGRLmzA8s2hFbAr5k87yvEqAqM9DNR3h+BOzuB8ll2iZdtKpQkw4Q4gq8U3k52rDLfO9ak9eo8ovZydT/APVyp304h5ClsRLxq6HdfqDQYDsf8LSxgWHDxoEfr92L/kC9E4bTrlLdI/r9PmdFmNTYQbMMp9H+GHEXP4F4fMbyZoZN7xUr7T21WdMDSi7Z35VZ6ZwmjnMk8Z/gVJjFDFnyLRxaqbUsa9G5pHO+cNVw4neDT4lP2dY93fTg7y0nSNsgj0z3+ZUKLsh1Ag3DLbh13gQzgcRsDNb73ljAJ0QPHwjmeP+CyWsysDULJNcXXBGtcIug2ohgSPXvOEMzuA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pvQnukiStoPDfyfI3gtqtoZfUWBE3dtpmuc4R/Y4GFQ=;
+ b=WgA2zs91FtLyfI1JBx2nDoZkEw0adnswONA6eDpUNzp3LvKZ2a23UrjppvGlM1vgcUZmeaseKtNht307Vbkw+OpnJIKVvDIRMcqWq5Tb7lszB5XLogluDXLt4qTMaQLmxSq0G2k57A8djbYmweNzy31W0jKIsNGuMp7t1sCLcuc=
+Received: from CO1PR11MB5044.namprd11.prod.outlook.com (2603:10b6:303:92::5)
+ by MWHPR11MB1709.namprd11.prod.outlook.com (2603:10b6:300:25::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.28; Wed, 19 May
+ 2021 02:27:16 +0000
+Received: from CO1PR11MB5044.namprd11.prod.outlook.com
+ ([fe80::fccf:6de6:458a:9ded]) by CO1PR11MB5044.namprd11.prod.outlook.com
+ ([fe80::fccf:6de6:458a:9ded%3]) with mapi id 15.20.4129.033; Wed, 19 May 2021
+ 02:27:16 +0000
+From:   "Sit, Michael Wei Hong" <michael.wei.hong.sit@intel.com>
+To:     Russell King <linux@armlinux.org.uk>
+CC:     "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Tan, Tee Min" <tee.min.tan@intel.com>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next 2/2] net: stmmac: Add callbacks for DWC xpcs
+ Energy Efficient Ethernet
+Thread-Topic: [PATCH net-next 2/2] net: stmmac: Add callbacks for DWC xpcs
+ Energy Efficient Ethernet
+Thread-Index: AQHXSwHXH3A7a02UTEaLpjsECGhB/Krnf/sAgAAJ7wCAAXsAgIABERPw
+Date:   Wed, 19 May 2021 02:27:15 +0000
+Message-ID: <CO1PR11MB5044577A1B810577AFB25D8E9D2B9@CO1PR11MB5044.namprd11.prod.outlook.com>
+References: <20210517094332.24976-1-michael.wei.hong.sit@intel.com>
+ <20210517094332.24976-3-michael.wei.hong.sit@intel.com>
+ <20210517105424.GP12395@shell.armlinux.org.uk>
+ <CO1PR11MB50447EDBEB4835C3EB5B3C7A9D2D9@CO1PR11MB5044.namprd11.prod.outlook.com>
+ <20210518100627.GT12395@shell.armlinux.org.uk>
+In-Reply-To: <20210518100627.GT12395@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [58.71.211.225]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c8bdb11e-8845-4fb5-609b-08d91a6d9e79
+x-ms-traffictypediagnostic: MWHPR11MB1709:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR11MB170947EB3BCE43AAA82BB0199D2B9@MWHPR11MB1709.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2201;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 4Jn1BdGstg3oEtmOjx0qN2lPxtCbs/6NMeMVxDdlwXNT27Ef0zXYEOsqRLrkb9HqMLGlTZO/4+LbmRr7R3R+SZhr1xpAy16KD9cDcS14QS2JD8D/cC89UuWOv0DySIXzSOeFYqR8RcD5X6kbqv7XefLBAc3/dFlyiTqqo7isBQEtgx7RlVTUIVMKXPDzDSFMn3GtVG/VI6LDC2k6TkdBXXDPLWo+87+DMjxXZQWEBuoLVwOBRclUjAx3x3slLHh2ffdie/XrUebIc//WxCkAHbUajOZRxESDNqt9JDkopAgU/dQDRQ4j9vN9zjaraCxy2z4OV5CEiJ8LhKv3BzHLvmL/seLRzXxUxLStdY6qaUXilzij5pJ6P2Sq6uqCYTUmcd8knxQTDRU9mPlVC1pakdfj/WFtuVY5Ez6qYpunoH2RHTbWDl6o5qkLv0jhoTnIHYuDtKXc8DYMnEaSlpFGLWnP7CbiWiGligHb8o0UoKTX4bL2BrcL7VArIlwJx3AVYeaPaFX4t6u2VsyVoninDBF/TCppHFpF0Z1KkEqZxmEc51qt5kAGZeZ0BNfXuj6dVIjJ/TbFt1Zc1W7cYjRKwgWPQpZoxFJlxId18CqclMMZNAHuz+ko1OWV3Nv+yOwdsjYHnytbfwooTVfZo7dcUU3BWqDO06aW70T24vIUhNkYlAuE/SVuYH4DhvmKLd0z
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5044.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(136003)(376002)(366004)(346002)(396003)(4326008)(7696005)(316002)(53546011)(6506007)(26005)(71200400001)(6916009)(7416002)(5660300002)(966005)(66556008)(66476007)(8936002)(38100700002)(66946007)(2906002)(52536014)(76116006)(64756008)(66446008)(478600001)(8676002)(83380400001)(86362001)(54906003)(33656002)(186003)(9686003)(55016002)(122000001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?IKlen469YmPKfY24dFLvc/CVFqrB85a6DKwNsTQ3tlcx8glKShq0bK4SFI1x?=
+ =?us-ascii?Q?L+uYAy7gLeClVb0/LEInli72onIVD9oYHn191P2uGRnBdW4EC/AfSqNYuQep?=
+ =?us-ascii?Q?7Uix4BN76tuqmF3Z2P6ULgaPb+rGVjoJO626jYpC7fE8TwWI0y6GYVCJtcO2?=
+ =?us-ascii?Q?JWD3zDlXxqwT3FXzwhtEg6hYXRUzfw1f1kNqpk6xFPVip9/ZJkJI+Dsf4Fct?=
+ =?us-ascii?Q?UIe8bxgPmi31cJcN1QpMT5d0iCKwpjL8O2EPZZ9R5amoL0DXrwkKJlbFpUMj?=
+ =?us-ascii?Q?Oi5chEdC37qS9JBhwoHxA6eRHzr2KdmVbJqEzuhslPoh8+n0uvNzMtuforBX?=
+ =?us-ascii?Q?yc0FSl3rpAQd2zmKt9Qd1pULALQhrkZIS1+QUiSfM46gLxgRfjtTnB2uwh0N?=
+ =?us-ascii?Q?ktseDBu+Yhmu/J+kNB1FDIDuKmeio6J4pbF57b73clYttafp31XWcP09LGZ+?=
+ =?us-ascii?Q?3UB/ZlOfYLqbMMpDCPQasY+mQi5eo2U/z9aMP6Bu/jBr1ez1XIbaeNocTJ10?=
+ =?us-ascii?Q?AVX+qp8yoo6gUYvaC55yexXslS/UKWgd6M5TXeSZUrrRG70VfOyF3m5UZ9oH?=
+ =?us-ascii?Q?c2i3lL9ay8wBkxP0EDntz7a05YL+2V9rDB0X1jljvVV5R6tzYFmNCfs+W1cL?=
+ =?us-ascii?Q?/rUXU/3BLlqba3IL39/ml27nDC+Fzpwzxiaqp2j6MHAHUIRc7B338iRLYvrx?=
+ =?us-ascii?Q?mzi39QA2UWRgYcPMf9ETg18tAilDHCYKJhsQK4ml20lnIKamBNtpE1CqZkz9?=
+ =?us-ascii?Q?g1uBOj2G69vFT2JfgPZ5zov+H2nPd2hLVU/DIMlV5xFzrzx9hmdvIEmG9XBf?=
+ =?us-ascii?Q?OhzuAeou1AFFU02oQRLnaKkk5gT344JGPQaqPapJysEVaYMS8fU5qFY2H/TG?=
+ =?us-ascii?Q?MTnU5//MYEun9o2+cfM+gYt+DcnxMAG4xEgt5Xj622YD2Ujc6FwRIvVtj1rc?=
+ =?us-ascii?Q?rts7yrYAHRPOlFLO0QkKygP1VxwLMoFi3m54PyFF6D9yO3UWNp3togkvd1JK?=
+ =?us-ascii?Q?7RKC2BSnlqdqD9N4Abm9q1Ba43oddAEOdgVRhK+Rh7Lp8rXnWafYpVthV3qf?=
+ =?us-ascii?Q?6OjLK7kogx5HIm/HqZbF0RpnR9PTMWZcx6rfphOY3FwOpxw6rbozHQUzRR2m?=
+ =?us-ascii?Q?GCruR79rwAwWvCSKQ2VYuDy5tXIe16kbjvTt8aTcan95KezZ339BkfIPgl4c?=
+ =?us-ascii?Q?V7ebzY8IdyLrZuPQAgY5/9LhFNNVGO5HjU0ToubP9qukgfAgMlNCWIO4uZfu?=
+ =?us-ascii?Q?qq6HMz4VLKwG9us+3duDfqUWCTIWvfqU/dl1aE0zx8PzQXfZiOLiD94MVHTX?=
+ =?us-ascii?Q?fUiHnortniVeUQEcoYU/b/cl?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5044.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8bdb11e-8845-4fb5-609b-08d91a6d9e79
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2021 02:27:16.0405
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: DmNC21fHiu7LjJ9TM9Ip+Xn5VESGLkuglVLtJ19fhnHH5RcTevF1NmofWQ3bRuX4xj5umY4SN1o9OaInlOTrT9vcU8OcPw5iwvGFAkt3ND4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1709
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the common MDIO mux bindings to DT schema.
 
-Drop the example from mdio-mux.yaml as mdio-mux-gpio.yaml has the same one.
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Ray Jui <rjui@broadcom.com>
-Cc: Scott Branden <sbranden@broadcom.com>
-Cc: bcm-kernel-feedback-list@broadcom.com
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Peter Rosin <peda@axentia.se>
-Cc: netdev@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Signed-off-by: Rob Herring <robh@kernel.org>
----
-This is an addition to my mux binding conversions[1].
+> -----Original Message-----
+> From: Russell King <linux@armlinux.org.uk>
+> Sent: Tuesday, 18 May, 2021 6:06 PM
+> To: Sit, Michael Wei Hong <michael.wei.hong.sit@intel.com>
+> Cc: Jose.Abreu@synopsys.com; andrew@lunn.ch;
+> hkallweit1@gmail.com; kuba@kernel.org;
+> netdev@vger.kernel.org; peppe.cavallaro@st.com;
+> alexandre.torgue@foss.st.com; davem@davemloft.net;
+> mcoquelin.stm32@gmail.com; Voon, Weifeng
+> <weifeng.voon@intel.com>; Ong, Boon Leong
+> <boon.leong.ong@intel.com>; Tan, Tee Min
+> <tee.min.tan@intel.com>; vee.khee.wong@linux.intel.com;
+> Wong, Vee Khee <vee.khee.wong@intel.com>; linux-stm32@st-
+> md-mailman.stormreply.com; linux-arm-
+> kernel@lists.infradead.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH net-next 2/2] net: stmmac: Add callbacks for
+> DWC xpcs Energy Efficient Ethernet
+>=20
+> On Mon, May 17, 2021 at 11:37:12AM +0000, Sit, Michael Wei
+> Hong wrote:
+> > > From: Russell King <linux@armlinux.org.uk>
+> > >
+> > > On Mon, May 17, 2021 at 05:43:32PM +0800, Michael Sit Wei
+> Hong
+> > > wrote:
+> > > > Link xpcs callback functions for MAC to configure the xpcs
+> EEE
+> > > feature.
+> > > >
+> > > > The clk_eee frequency is used to calculate the
+> > > MULT_FACT_100NS. This
+> > > > is to adjust the clock tic closer to 100ns.
+> > > >
+> > > > Signed-off-by: Michael Sit Wei Hong
+> > > <michael.wei.hong.sit@intel.com>
+> > >
+> > > What is the initial state of the EEE configuration before the
+> first
+> > > call to stmmac_ethtool_op_set_eee()? Does it reflect the
+> default EEE
+> > > settings?
+> >
+> > The register values before the first call are the default reset
+> values
+> > in the registers. The reset values assumes the clk_eee_i time
+> period
+> > is 10ns, Hence, the reset value is set to 9.
+> > According to the register description, This value should be
+> programmed
+> > such that the clk_eee_i_time_period * (MULT_FACT_100NS + 1)
+> should be
+> > within 80 ns to 120 ns.
+> >
+> > Since we are using a fixed 19.2MHz clk_eee, which is 52ns, we
+> are
+> > setting the value to 1.
+>=20
+> Does that hardware default configuration match what is returned
+> by ethtool --show-eee ?
 
-Rob
-
-[1] https://lore.kernel.org/linux-devicetree/20210518232858.1535403-1-robh@kernel.org/
-
- .../bindings/net/brcm,mdio-mux-iproc.txt      |   2 +-
- .../devicetree/bindings/net/mdio-mux-gpio.txt | 119 ---------------
- .../bindings/net/mdio-mux-gpio.yaml           | 135 ++++++++++++++++++
- .../bindings/net/mdio-mux-mmioreg.txt         |  75 ----------
- .../bindings/net/mdio-mux-mmioreg.yaml        |  78 ++++++++++
- .../bindings/net/mdio-mux-multiplexer.txt     |  82 -----------
- .../bindings/net/mdio-mux-multiplexer.yaml    |  82 +++++++++++
- .../devicetree/bindings/net/mdio-mux.txt      | 129 -----------------
- .../devicetree/bindings/net/mdio-mux.yaml     |  44 ++++++
- 9 files changed, 340 insertions(+), 406 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/mdio-mux-gpio.txt
- create mode 100644 Documentation/devicetree/bindings/net/mdio-mux-gpio.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/mdio-mux-mmioreg.txt
- create mode 100644 Documentation/devicetree/bindings/net/mdio-mux-mmioreg.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/mdio-mux-multiplexer.txt
- create mode 100644 Documentation/devicetree/bindings/net/mdio-mux-multiplexer.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/mdio-mux.txt
- create mode 100644 Documentation/devicetree/bindings/net/mdio-mux.yaml
-
-diff --git a/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt b/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
-index b58843f29591..deb9e852ea27 100644
---- a/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
-+++ b/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
-@@ -17,7 +17,7 @@ Optional properties:
- - clocks: phandle of the core clock which drives the mdio block.
- 
- Additional information regarding generic multiplexer properties can be found
--at- Documentation/devicetree/bindings/net/mdio-mux.txt
-+at- Documentation/devicetree/bindings/net/mdio-mux.yaml
- 
- 
- for example:
-diff --git a/Documentation/devicetree/bindings/net/mdio-mux-gpio.txt b/Documentation/devicetree/bindings/net/mdio-mux-gpio.txt
-deleted file mode 100644
-index 694987d3c17a..000000000000
---- a/Documentation/devicetree/bindings/net/mdio-mux-gpio.txt
-+++ /dev/null
-@@ -1,119 +0,0 @@
--Properties for an MDIO bus multiplexer/switch controlled by GPIO pins.
--
--This is a special case of a MDIO bus multiplexer.  One or more GPIO
--lines are used to control which child bus is connected.
--
--Required properties in addition to the generic multiplexer properties:
--
--- compatible : mdio-mux-gpio.
--- gpios : GPIO specifiers for each GPIO line.  One or more must be specified.
--
--
--Example :
--
--	/* The parent MDIO bus. */
--	smi1: mdio@1180000001900 {
--		compatible = "cavium,octeon-3860-mdio";
--		#address-cells = <1>;
--		#size-cells = <0>;
--		reg = <0x11800 0x00001900 0x0 0x40>;
--	};
--
--	/*
--	   An NXP sn74cbtlv3253 dual 1-of-4 switch controlled by a
--	   pair of GPIO lines.  Child busses 2 and 3 populated with 4
--	   PHYs each.
--	 */
--	mdio-mux {
--		compatible = "mdio-mux-gpio";
--		gpios = <&gpio1 3 0>, <&gpio1 4 0>;
--		mdio-parent-bus = <&smi1>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		mdio@2 {
--			reg = <2>;
--			#address-cells = <1>;
--			#size-cells = <0>;
--
--			phy11: ethernet-phy@1 {
--				reg = <1>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <10 8>; /* Pin 10, active low */
--			};
--			phy12: ethernet-phy@2 {
--				reg = <2>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <10 8>; /* Pin 10, active low */
--			};
--			phy13: ethernet-phy@3 {
--				reg = <3>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <10 8>; /* Pin 10, active low */
--			};
--			phy14: ethernet-phy@4 {
--				reg = <4>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <10 8>; /* Pin 10, active low */
--			};
--		};
--
--		mdio@3 {
--			reg = <3>;
--			#address-cells = <1>;
--			#size-cells = <0>;
--
--			phy21: ethernet-phy@1 {
--				reg = <1>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <12 8>; /* Pin 12, active low */
--			};
--			phy22: ethernet-phy@2 {
--				reg = <2>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <12 8>; /* Pin 12, active low */
--			};
--			phy23: ethernet-phy@3 {
--				reg = <3>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <12 8>; /* Pin 12, active low */
--			};
--			phy24: ethernet-phy@4 {
--				reg = <4>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <12 8>; /* Pin 12, active low */
--			};
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/net/mdio-mux-gpio.yaml b/Documentation/devicetree/bindings/net/mdio-mux-gpio.yaml
-new file mode 100644
-index 000000000000..71c25c4580ea
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/mdio-mux-gpio.yaml
-@@ -0,0 +1,135 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/mdio-mux-gpio.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Properties for an MDIO bus multiplexer/switch controlled by GPIO pins.
-+
-+maintainers:
-+  - Andrew Lunn <andrew@lunn.ch>
-+
-+description:
-+  This is a special case of a MDIO bus multiplexer.  One or more GPIO
-+  lines are used to control which child bus is connected.
-+
-+allOf:
-+  - $ref: /schemas/net/mdio-mux.yaml#
-+
-+properties:
-+  compatible:
-+    const: mdio-mux-gpio
-+
-+  gpios:
-+    description:
-+      List of GPIOs used to control the multiplexer, least significant bit first.
-+    minItems: 1
-+    maxItems: 32
-+
-+required:
-+  - compatible
-+  - gpios
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    /*
-+     An NXP sn74cbtlv3253 dual 1-of-4 switch controlled by a
-+     pair of GPIO lines.  Child busses 2 and 3 populated with 4
-+     PHYs each.
-+     */
-+    mdio-mux {
-+        compatible = "mdio-mux-gpio";
-+        gpios = <&gpio1 3 0>, <&gpio1 4 0>;
-+        mdio-parent-bus = <&smi1>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        mdio@2 {
-+            reg = <2>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            ethernet-phy@1 {
-+                reg = <1>;
-+                marvell,reg-init = <3 0x10 0 0x5777>,
-+                  <3 0x11 0 0x00aa>,
-+                  <3 0x12 0 0x4105>,
-+                  <3 0x13 0 0x0a60>;
-+                interrupt-parent = <&gpio>;
-+                interrupts = <10 8>; /* Pin 10, active low */
-+            };
-+            ethernet-phy@2 {
-+                reg = <2>;
-+                marvell,reg-init = <3 0x10 0 0x5777>,
-+                  <3 0x11 0 0x00aa>,
-+                  <3 0x12 0 0x4105>,
-+                  <3 0x13 0 0x0a60>;
-+                interrupt-parent = <&gpio>;
-+                interrupts = <10 8>; /* Pin 10, active low */
-+            };
-+            ethernet-phy@3 {
-+                reg = <3>;
-+                marvell,reg-init = <3 0x10 0 0x5777>,
-+                  <3 0x11 0 0x00aa>,
-+                  <3 0x12 0 0x4105>,
-+                  <3 0x13 0 0x0a60>;
-+                interrupt-parent = <&gpio>;
-+                interrupts = <10 8>; /* Pin 10, active low */
-+            };
-+            ethernet-phy@4 {
-+                reg = <4>;
-+                marvell,reg-init = <3 0x10 0 0x5777>,
-+                  <3 0x11 0 0x00aa>,
-+                  <3 0x12 0 0x4105>,
-+                  <3 0x13 0 0x0a60>;
-+                interrupt-parent = <&gpio>;
-+                interrupts = <10 8>; /* Pin 10, active low */
-+            };
-+        };
-+
-+        mdio@3 {
-+            reg = <3>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            ethernet-phy@1 {
-+                reg = <1>;
-+                marvell,reg-init = <3 0x10 0 0x5777>,
-+                  <3 0x11 0 0x00aa>,
-+                  <3 0x12 0 0x4105>,
-+                  <3 0x13 0 0x0a60>;
-+                interrupt-parent = <&gpio>;
-+                interrupts = <12 8>; /* Pin 12, active low */
-+            };
-+            ethernet-phy@2 {
-+                reg = <2>;
-+                marvell,reg-init = <3 0x10 0 0x5777>,
-+                  <3 0x11 0 0x00aa>,
-+                  <3 0x12 0 0x4105>,
-+                  <3 0x13 0 0x0a60>;
-+                interrupt-parent = <&gpio>;
-+                interrupts = <12 8>; /* Pin 12, active low */
-+            };
-+            ethernet-phy@3 {
-+                reg = <3>;
-+                marvell,reg-init = <3 0x10 0 0x5777>,
-+                  <3 0x11 0 0x00aa>,
-+                  <3 0x12 0 0x4105>,
-+                  <3 0x13 0 0x0a60>;
-+                interrupt-parent = <&gpio>;
-+                interrupts = <12 8>; /* Pin 12, active low */
-+            };
-+            ethernet-phy@4 {
-+                reg = <4>;
-+                marvell,reg-init = <3 0x10 0 0x5777>,
-+                  <3 0x11 0 0x00aa>,
-+                  <3 0x12 0 0x4105>,
-+                  <3 0x13 0 0x0a60>;
-+                interrupt-parent = <&gpio>;
-+                interrupts = <12 8>; /* Pin 12, active low */
-+            };
-+        };
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/net/mdio-mux-mmioreg.txt b/Documentation/devicetree/bindings/net/mdio-mux-mmioreg.txt
-deleted file mode 100644
-index 065e8bdb957d..000000000000
---- a/Documentation/devicetree/bindings/net/mdio-mux-mmioreg.txt
-+++ /dev/null
-@@ -1,75 +0,0 @@
--Properties for an MDIO bus multiplexer controlled by a memory-mapped device
--
--This is a special case of a MDIO bus multiplexer.  A memory-mapped device,
--like an FPGA, is used to control which child bus is connected.  The mdio-mux
--node must be a child of the memory-mapped device.  The driver currently only
--supports devices with 8, 16 or 32-bit registers.
--
--Required properties in addition to the generic multiplexer properties:
--
--- compatible : string, must contain "mdio-mux-mmioreg"
--
--- reg : integer, contains the offset of the register that controls the bus
--	multiplexer.  The size field in the 'reg' property is the size of
--	register, and must therefore be 1, 2, or 4.
--
--- mux-mask : integer, contains an eight-bit mask that specifies which
--	bits in the register control the actual bus multiplexer.  The
--	'reg' property of each child mdio-mux node must be constrained by
--	this mask.
--
--Example:
--
--The FPGA node defines a memory-mapped FPGA with a register space of 0x30 bytes.
--For the "EMI2" MDIO bus, register 9 (BRDCFG1) controls the mux on that bus.
--A bitmask of 0x6 means that bits 1 and 2 (bit 0 is lsb) are the bits on
--BRDCFG1 that control the actual mux.
--
--	/* The FPGA node */
--	fpga: board-control@3,0 {
--		#address-cells = <1>;
--		#size-cells = <1>;
--		compatible = "fsl,p5020ds-fpga", "fsl,fpga-ngpixis";
--		reg = <3 0 0x30>;
--		ranges = <0 3 0 0x30>;
--
--		mdio-mux-emi2 {
--			compatible = "mdio-mux-mmioreg", "mdio-mux";
--			mdio-parent-bus = <&xmdio0>;
--			#address-cells = <1>;
--			#size-cells = <0>;
--			reg = <9 1>; // BRDCFG1
--			mux-mask = <0x6>; // EMI2
--
--			emi2_slot1: mdio@0 {	// Slot 1 XAUI (FM2)
--				reg = <0>;
--				#address-cells = <1>;
--				#size-cells = <0>;
--
--				phy_xgmii_slot1: ethernet-phy@0 {
--					compatible = "ethernet-phy-ieee802.3-c45";
--					reg = <4>;
--				};
--			};
--
--			emi2_slot2: mdio@2 {	// Slot 2 XAUI (FM1)
--				reg = <2>;
--				#address-cells = <1>;
--				#size-cells = <0>;
--
--				phy_xgmii_slot2: ethernet-phy@4 {
--					compatible = "ethernet-phy-ieee802.3-c45";
--					reg = <0>;
--				};
--			};
--		};
--	};
--
--	/* The parent MDIO bus. */
--	xmdio0: mdio@f1000 {
--		#address-cells = <1>;
--		#size-cells = <0>;
--		compatible = "fsl,fman-xmdio";
--		reg = <0xf1000 0x1000>;
--		interrupts = <100 1 0 0>;
--	};
-diff --git a/Documentation/devicetree/bindings/net/mdio-mux-mmioreg.yaml b/Documentation/devicetree/bindings/net/mdio-mux-mmioreg.yaml
-new file mode 100644
-index 000000000000..3b573c95d3f5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/mdio-mux-mmioreg.yaml
-@@ -0,0 +1,78 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/mdio-mux-mmioreg.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Properties for an MDIO bus multiplexer controlled by a memory-mapped device
-+
-+maintainers:
-+  - Andrew Lunn <andrew@lunn.ch>
-+
-+description: |+
-+  This is a special case of a MDIO bus multiplexer.  A memory-mapped device,
-+  like an FPGA, is used to control which child bus is connected.  The mdio-mux
-+  node must be a child of the memory-mapped device.  The driver currently only
-+  supports devices with 8, 16 or 32-bit registers.
-+
-+allOf:
-+  - $ref: /schemas/net/mdio-mux.yaml#
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: mdio-mux-mmioreg
-+      - const: mdio-mux
-+
-+  reg:
-+    description: Contains the offset of the register that controls the bus
-+      multiplexer. The size field in the 'reg' property is the size of register,
-+      and must therefore be 1, 2, or 4.
-+    maxItems: 1
-+
-+  mux-mask:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Contains an eight-bit mask that specifies which bits in the
-+      register control the actual bus multiplexer.  The 'reg' property of each
-+      child mdio-mux node must be constrained by this mask.
-+
-+required:
-+  - compatible
-+  - reg
-+  - mux-mask
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    mdio-mux@9 {
-+        compatible = "mdio-mux-mmioreg", "mdio-mux";
-+        mdio-parent-bus = <&xmdio0>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        reg = <9 1>; // BRDCFG1
-+        mux-mask = <0x6>; // EMI2
-+
-+        mdio@0 {  // Slot 1 XAUI (FM2)
-+            reg = <0>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            phy_xgmii_slot1: ethernet-phy@0 {
-+                compatible = "ethernet-phy-ieee802.3-c45";
-+                reg = <4>;
-+            };
-+        };
-+
-+        mdio@2 {  // Slot 2 XAUI (FM1)
-+            reg = <2>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            ethernet-phy@4 {
-+                compatible = "ethernet-phy-ieee802.3-c45";
-+                reg = <0>;
-+            };
-+        };
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/net/mdio-mux-multiplexer.txt b/Documentation/devicetree/bindings/net/mdio-mux-multiplexer.txt
-deleted file mode 100644
-index 87fd0b4f654f..000000000000
---- a/Documentation/devicetree/bindings/net/mdio-mux-multiplexer.txt
-+++ /dev/null
-@@ -1,82 +0,0 @@
--Properties for an MDIO bus multiplexer consumer device
--
--This is a special case of MDIO mux  when MDIO mux is defined as a consumer
--of a mux producer device. The mux producer can be of any type like mmio mux
--producer, gpio mux producer or generic register based mux producer.
--
--Required properties in addition to the MDIO Bus multiplexer properties:
--
--- compatible : should be "mmio-mux-multiplexer"
--- mux-controls : mux controller node to use for operating the mux
--- mdio-parent-bus : phandle to the parent MDIO bus.
--
--each child node of mdio bus multiplexer consumer device represent a mdio
--bus.
--
--for more information please refer
--Documentation/devicetree/bindings/mux/mux-controller.yaml
--and Documentation/devicetree/bindings/net/mdio-mux.txt
--
--Example:
--In below example the Mux producer and consumer are separate nodes.
--
--&i2c0 {
--	fpga@66 { // fpga connected to i2c
--		compatible = "fsl,lx2160aqds-fpga", "fsl,fpga-qixis-i2c",
--			     "simple-mfd";
--		reg = <0x66>;
--
--		mux: mux-controller { // Mux Producer
--			compatible = "reg-mux";
--			#mux-control-cells = <1>;
--			mux-reg-masks = <0x54 0xf8>, /* 0: reg 0x54, bits 7:3 */
--					<0x54 0x07>; /* 1: reg 0x54, bits 2:0 */
--		};
--	};
--};
--
--mdio-mux-1 { // Mux consumer
--	compatible = "mdio-mux-multiplexer";
--	mux-controls = <&mux 0>;
--	mdio-parent-bus = <&emdio1>;
--	#address-cells = <1>;
--	#size-cells = <0>;
--
--	mdio@0 {
--		reg = <0x0>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--	};
--
--	mdio@8 {
--		reg = <0x8>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--	};
--
--	..
--	..
--};
--
--mdio-mux-2 { // Mux consumer
--	compatible = "mdio-mux-multiplexer";
--	mux-controls = <&mux 1>;
--	mdio-parent-bus = <&emdio2>;
--	#address-cells = <1>;
--	#size-cells = <0>;
--
--	mdio@0 {
--		reg = <0x0>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--	};
--
--	mdio@1 {
--		reg = <0x1>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--	};
--
--	..
--	..
--};
-diff --git a/Documentation/devicetree/bindings/net/mdio-mux-multiplexer.yaml b/Documentation/devicetree/bindings/net/mdio-mux-multiplexer.yaml
-new file mode 100644
-index 000000000000..282987074ee4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/mdio-mux-multiplexer.yaml
-@@ -0,0 +1,82 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/mdio-mux-multiplexer.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Properties for an MDIO bus multiplexer consumer device
-+
-+maintainers:
-+  - Andrew Lunn <andrew@lunn.ch>
-+
-+description: |+
-+  This is a special case of MDIO mux when MDIO mux is defined as a consumer
-+  of a mux producer device. The mux producer can be of any type like mmio mux
-+  producer, gpio mux producer or generic register based mux producer.
-+
-+
-+allOf:
-+  - $ref: /schemas/net/mdio-mux.yaml#
-+
-+properties:
-+  compatible:
-+    const: mdio-mux-multiplexer
-+
-+  mux-controls:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - mux-controls
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    mux: mux-controller { // Mux Producer
-+        compatible = "reg-mux";
-+        #mux-control-cells = <1>;
-+        mux-reg-masks = <0x54 0xf8>, /* 0: reg 0x54, bits 7:3 */
-+                        <0x54 0x07>; /* 1: reg 0x54, bits 2:0 */
-+    };
-+
-+    mdio-mux-1 { // Mux consumer
-+        compatible = "mdio-mux-multiplexer";
-+        mux-controls = <&mux 0>;
-+        mdio-parent-bus = <&emdio1>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        mdio@0 {
-+            reg = <0x0>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+        };
-+
-+        mdio@8 {
-+            reg = <0x8>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+        };
-+    };
-+
-+    mdio-mux-2 { // Mux consumer
-+        compatible = "mdio-mux-multiplexer";
-+        mux-controls = <&mux 1>;
-+        mdio-parent-bus = <&emdio2>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        mdio@0 {
-+            reg = <0x0>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+        };
-+
-+        mdio@1 {
-+            reg = <0x1>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+        };
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/net/mdio-mux.txt b/Documentation/devicetree/bindings/net/mdio-mux.txt
-deleted file mode 100644
-index f58571f36570..000000000000
---- a/Documentation/devicetree/bindings/net/mdio-mux.txt
-+++ /dev/null
-@@ -1,129 +0,0 @@
--Common MDIO bus multiplexer/switch properties.
--
--An MDIO bus multiplexer/switch will have several child busses that are
--numbered uniquely in a device dependent manner.  The nodes for an MDIO
--bus multiplexer/switch will have one child node for each child bus.
--
--Required properties:
--- #address-cells = <1>;
--- #size-cells = <0>;
--
--Optional properties:
--- mdio-parent-bus : phandle to the parent MDIO bus.
--
--- Other properties specific to the multiplexer/switch hardware.
--
--Required properties for child nodes:
--- #address-cells = <1>;
--- #size-cells = <0>;
--- reg : The sub-bus number.
--
--
--Example :
--
--	/* The parent MDIO bus. */
--	smi1: mdio@1180000001900 {
--		compatible = "cavium,octeon-3860-mdio";
--		#address-cells = <1>;
--		#size-cells = <0>;
--		reg = <0x11800 0x00001900 0x0 0x40>;
--	};
--
--	/*
--	   An NXP sn74cbtlv3253 dual 1-of-4 switch controlled by a
--	   pair of GPIO lines.  Child busses 2 and 3 populated with 4
--	   PHYs each.
--	 */
--	mdio-mux {
--		compatible = "mdio-mux-gpio";
--		gpios = <&gpio1 3 0>, <&gpio1 4 0>;
--		mdio-parent-bus = <&smi1>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		mdio@2 {
--			reg = <2>;
--			#address-cells = <1>;
--			#size-cells = <0>;
--
--			phy11: ethernet-phy@1 {
--				reg = <1>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <10 8>; /* Pin 10, active low */
--			};
--			phy12: ethernet-phy@2 {
--				reg = <2>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <10 8>; /* Pin 10, active low */
--			};
--			phy13: ethernet-phy@3 {
--				reg = <3>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <10 8>; /* Pin 10, active low */
--			};
--			phy14: ethernet-phy@4 {
--				reg = <4>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <10 8>; /* Pin 10, active low */
--			};
--		};
--
--		mdio@3 {
--			reg = <3>;
--			#address-cells = <1>;
--			#size-cells = <0>;
--
--			phy21: ethernet-phy@1 {
--				reg = <1>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <12 8>; /* Pin 12, active low */
--			};
--			phy22: ethernet-phy@2 {
--				reg = <2>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <12 8>; /* Pin 12, active low */
--			};
--			phy23: ethernet-phy@3 {
--				reg = <3>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <12 8>; /* Pin 12, active low */
--			};
--			phy24: ethernet-phy@4 {
--				reg = <4>;
--				marvell,reg-init = <3 0x10 0 0x5777>,
--					<3 0x11 0 0x00aa>,
--					<3 0x12 0 0x4105>,
--					<3 0x13 0 0x0a60>;
--				interrupt-parent = <&gpio>;
--				interrupts = <12 8>; /* Pin 12, active low */
--			};
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/net/mdio-mux.yaml b/Documentation/devicetree/bindings/net/mdio-mux.yaml
-new file mode 100644
-index 000000000000..92163fa45f39
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/mdio-mux.yaml
-@@ -0,0 +1,44 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/mdio-mux.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Common MDIO bus multiplexer/switch properties.
-+
-+maintainers:
-+  - Andrew Lunn <andrew@lunn.ch>
-+
-+description: |+
-+  An MDIO bus multiplexer/switch will have several child busses that are
-+  numbered uniquely in a device dependent manner.  The nodes for an MDIO
-+  bus multiplexer/switch will have one child node for each child bus.
-+
-+properties:
-+  $nodename:
-+    pattern: '^mdio-mux[\-@]?'
-+
-+  mdio-parent-bus:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description:
-+      The phandle of the I2C bus that this multiplexer's master-side port is
-+      connected to.
-+
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 0
-+
-+patternProperties:
-+  '^mdio@[0-9a-f]+$':
-+    type: object
-+
-+    properties:
-+      reg:
-+        maxItems: 1
-+        description: The sub-bus number.
-+
-+additionalProperties: true
-+
-+...
--- 
-2.27.0
-
+May I know what is the hardware default configuration that is expected
+to be returned by ethtool --show-eee?
+The MULT_FACT_100NS value is an internal register setting not meant
+to be exposed to userspace, and only relevant when EEE is enabled.
+>=20
+> --
+> RMK's Patch system:
+> https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at
+> last!
