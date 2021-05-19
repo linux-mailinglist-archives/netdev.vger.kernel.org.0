@@ -2,78 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 920AF389090
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:18:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E3E6389096
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:18:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345897AbhESOTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 10:19:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44130 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347357AbhESOT3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 10:19:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 84FA461244;
-        Wed, 19 May 2021 14:18:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621433889;
-        bh=0pvunetzygNqY35KHnnR9Jx2D12exeL0Npca5/mUUOg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bgigDgU9etIAgCNfP0yys107j8RkZ/rYbGLc+9nAKo/TdLpvxeq14yOM+zHdORoVB
-         AF2gy0O6MnEkA+WXCb8d5WAxDiP0ipTq/gjwjo2vGVrm/pUkPDDO8KSZrDcNbvRHJ/
-         BDvBRZDCzrcdLc6mD5O/X1cbpmuWCGUsPSDSJaBB+/hNojnzwRHw31wWfSM9xUuH5Y
-         H3Q3NtEZL65rwR+EhAvFGnn58Sj4dWuhOXfG653SovAE6XStdm7UC2jNtH/ZjRU/zF
-         2blWFcAGvoH4BlBWvn7u4ujlQvi1IMRfHNI08/9LROtnq14BeaRJ47ajAMsdsFzhUN
-         y57g0RBE25bgA==
-Date:   Wed, 19 May 2021 19:48:01 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Wei Yongjun <weiyongjun1@huawei.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, Hulk Robot <hulkci@huawei.com>
-Subject: Re: [PATCH net-next] net: qrtr: ns: Fix error return code in
- qrtr_ns_init()
-Message-ID: <20210519141801.GB119648@thinkpad>
-References: <20210519141621.3044684-1-weiyongjun1@huawei.com>
+        id S1347541AbhESOUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 10:20:12 -0400
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:45947 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239857AbhESOUJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:20:09 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UZPxG0E_1621433926;
+Received: from B-LB6YLVDL-0141.local(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0UZPxG0E_1621433926)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 19 May 2021 22:18:46 +0800
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+Subject: Re: [PATCH] virtio_net: Remove BUG() to aviod machine dead
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     jasowang@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <a351fbe1-0233-8515-2927-adc826a7fb94@linux.alibaba.com>
+ <20210518055336-mutt-send-email-mst@kernel.org>
+Message-ID: <4aaf5125-ce75-c72a-4b4a-11c91cb85a72@linux.alibaba.com>
+Date:   Wed, 19 May 2021 22:18:46 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210519141621.3044684-1-weiyongjun1@huawei.com>
+In-Reply-To: <20210518055336-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 19, 2021 at 02:16:21PM +0000, Wei Yongjun wrote:
-> Fix to return a negative error code -ENOMEM from the error handling
-> case instead of 0, as done elsewhere in this function.
+thanks, I submit the patch as commented by Andrew 
+https://lkml.org/lkml/2021/5/18/256
+
+Actually, if xmit_skb() returns error, below code will give a warning 
+with error code.
+
+	/* Try to transmit */
+	err = xmit_skb(sq, skb);
+
+	/* This should not happen! */
+	if (unlikely(err)) {
+		dev->stats.tx_fifo_errors++;
+		if (net_ratelimit())
+			dev_warn(&dev->dev,
+				 "Unexpected TXQ (%d) queue failure: %d\n",
+				 qnum, err);
+		dev->stats.tx_dropped++;
+		dev_kfree_skb_any(skb);
+		return NETDEV_TX_OK;
+	}
+
+
+
+
+
+ÔÚ 2021/5/18 ÏÂÎç5:54, Michael S. Tsirkin Ð´µÀ:
+> typo in subject
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-
-You might want to add Fixes tag:
-
-Fixes: c6e08d6251f3 ("net: qrtr: Allocate workqueue before kernel_bind")
-
-Thanks,
-Mani
-
-> ---
->  net/qrtr/ns.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> On Tue, May 18, 2021 at 05:46:56PM +0800, Xianting Tian wrote:
+>> When met error, we output a print to avoid a BUG().
+>>
+>> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+>> ---
+>>   drivers/net/virtio_net.c | 5 ++---
+>>   1 file changed, 2 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>> index c921ebf3ae82..a66174d13e81 100644
+>> --- a/drivers/net/virtio_net.c
+>> +++ b/drivers/net/virtio_net.c
+>> @@ -1647,9 +1647,8 @@ static int xmit_skb(struct send_queue *sq, struct
+>> sk_buff *skb)
+>>   		hdr = skb_vnet_hdr(skb);
+>>
+>>   	if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
+>> -				    virtio_is_little_endian(vi->vdev), false,
+>> -				    0))
+>> -		BUG();
+>> +				virtio_is_little_endian(vi->vdev), false, 0))
+>> +		return -EPROTO;
+>>
 > 
-> diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
-> index 8d00dfe8139e..1990d496fcfc 100644
-> --- a/net/qrtr/ns.c
-> +++ b/net/qrtr/ns.c
-> @@ -775,8 +775,10 @@ int qrtr_ns_init(void)
->  	}
->  
->  	qrtr_ns.workqueue = alloc_workqueue("qrtr_ns_handler", WQ_UNBOUND, 1);
-> -	if (!qrtr_ns.workqueue)
-> +	if (!qrtr_ns.workqueue) {
-> +		ret = -ENOMEM;
->  		goto err_sock;
-> +	}
->  
->  	qrtr_ns.sock->sk->sk_data_ready = qrtr_ns_data_ready;
->  
+> why EPROTO? can you add some comments to explain what is going on pls?
 > 
+> is this related to a malicious hypervisor thing?
+> 
+> don't we want at least a WARN_ON? Or _ONCE?
+> 
+>>   	if (vi->mergeable_rx_bufs)
+>>   		hdr->num_buffers = 0;
+>> -- 
+>> 2.17.1
