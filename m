@@ -2,69 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 797AD388E64
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 14:51:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42376388E65
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 14:54:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353471AbhESMxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 08:53:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58178 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232671AbhESMxJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 08:53:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2ABB961007;
-        Wed, 19 May 2021 12:51:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621428709;
-        bh=Z+GUaK6Vc6lSJWfaRYuD+KXYU6Iu4azZ6NZXx9TBN5U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OujxalV5Jij21E6hZ8j14v6di5ULDEwKfZXvTyL29kwVa0VbwJv6vocZcBf5/17Ux
-         vk3Iog3KQRJRnSyumR/BDfYisEIJH4N4ZSEgLQndOWjdYUJnQh7XgW5YNYjLDOoGBL
-         aaPyjRq/U/Mit5qP3sorztAwrHoqJcPLVfrrz5IpbACO8cb/15X0zpKekLRFPYO42I
-         tCdjUT1jaVJDbgSPt5lZUiaWoIx0Cixe6IxiQXKr2+e6dSRG4wdmaCL4gzY3Gj5WGM
-         ilzpkUkDqz3nkN+WMQV/OIIuU6nZQXo1rYHVbqilOZGNiQSv3f++h0wYPnXRBzUlAq
-         2Up65IHlwnUKg==
-Date:   Wed, 19 May 2021 15:51:46 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Shiraz Saleem <shiraz.saleem@intel.com>
-Cc:     dledford@redhat.com, jgg@nvidia.com, kuba@kernel.org,
-        davem@davemloft.net, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, david.m.ertman@intel.com,
-        anthony.l.nguyen@intel.com
-Subject: Re: [PATCH v5 06/22] i40e: Register auxiliary devices to provide RDMA
-Message-ID: <YKUJ4rnZf4u4qUYc@unreal>
-References: <20210514141214.2120-1-shiraz.saleem@intel.com>
- <20210514141214.2120-7-shiraz.saleem@intel.com>
+        id S1353477AbhESMzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 08:55:20 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:3599 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232671AbhESMzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 08:55:19 -0400
+Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FlXnB2pvbzmXW4
+        for <netdev@vger.kernel.org>; Wed, 19 May 2021 20:51:42 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 19 May 2021 20:53:58 +0800
+Received: from thunder-town.china.huawei.com (10.174.177.72) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 19 May 2021 20:53:58 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     Karsten Keil <isdn@linux-pingi.de>, netdev <netdev@vger.kernel.org>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH 1/1] mISDN: Mark local variable 'incomplete' as __maybe_unused in dsp_pipeline_build()
+Date:   Wed, 19 May 2021 20:53:52 +0800
+Message-ID: <20210519125352.7991-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.26.0.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210514141214.2120-7-shiraz.saleem@intel.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.177.72]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 14, 2021 at 09:11:58AM -0500, Shiraz Saleem wrote:
-> Convert i40e to use the auxiliary bus infrastructure to export
-> the RDMA functionality of the device to the RDMA driver.
-> Register i40e client auxiliary RDMA device on the auxiliary bus per
-> PCIe device function for the new auxiliary rdma driver (irdma) to
-> attach to.
-> 
-> The global i40e_register_client and i40e_unregister_client symbols
-> will be obsoleted once irdma replaces i40iw in the kernel
-> for the X722 device.
-> 
-> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> ---
->  drivers/net/ethernet/intel/Kconfig            |   1 +
->  drivers/net/ethernet/intel/i40e/i40e.h        |   2 +
->  drivers/net/ethernet/intel/i40e/i40e_client.c | 152 ++++++++++++++++++++++----
->  drivers/net/ethernet/intel/i40e/i40e_main.c   |   1 +
->  4 files changed, 136 insertions(+), 20 deletions(-)
+GCC reports the following warning with W=1:
 
-The amount of obfuscation in this driver is astonishing.
+drivers/isdn/mISDN/dsp_pipeline.c:221:6: warning:
+ variable 'incomplete' set but not used [-Wunused-but-set-variable]
+  221 |  int incomplete = 0, found = 0;
+      |      ^~~~~~~~~~
 
-I would expect that after this series, the i40e_client_add_*() would be cleaned,
-for example simple grep of I40E_CLIENT_VERSION_MAJOR shows that i40e_register_client()
-still have no-go code.
+This variable is used only when macro PIPELINE_DEBUG is defined.
 
-Thanks
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ drivers/isdn/mISDN/dsp_pipeline.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/isdn/mISDN/dsp_pipeline.c b/drivers/isdn/mISDN/dsp_pipeline.c
+index 40588692cec7..6a31f6879da8 100644
+--- a/drivers/isdn/mISDN/dsp_pipeline.c
++++ b/drivers/isdn/mISDN/dsp_pipeline.c
+@@ -218,7 +218,7 @@ void dsp_pipeline_destroy(struct dsp_pipeline *pipeline)
+ 
+ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
+ {
+-	int incomplete = 0, found = 0;
++	int __maybe_unused incomplete = 0, found = 0;
+ 	char *dup, *tok, *name, *args;
+ 	struct dsp_element_entry *entry, *n;
+ 	struct dsp_pipeline_entry *pipeline_entry;
+-- 
+2.25.1
+
+
