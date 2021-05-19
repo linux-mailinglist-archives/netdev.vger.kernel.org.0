@@ -2,122 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC5AC389199
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:41:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9ED23891A5
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:44:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354451AbhESOms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 10:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43688 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354378AbhESOm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:42:29 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7EBDC061344;
-        Wed, 19 May 2021 07:40:14 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id o127so7428706wmo.4;
-        Wed, 19 May 2021 07:40:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=siaJh1nJto0dvvaAdmUW7enGPuoUcB3Nw0RE+elDk1k=;
-        b=jRXKUH0Av6zCrqKxBYUpKT23DI6Npf84WcrCXYVFpMV5Guj0UuRPinoBMyjG0ostyY
-         pAyEEAdXDmaU9YRtpRGsdtZsoIg8843cJCjOTYzzio6Csr7WCUiAD8l2jCI/uH4NkyZR
-         SacOCSRGsZ89pr55EcZ/NprKnI/YNkeIOfRAdcKeo0wLISGNPuGjXFS9Wcl/KG4zqqNI
-         Bdj7uzAadbiwThYFGKiZ75d0GgzanLmfaj7sOkW1w100fxY0Eq/N5nq6cqW6+CC0KTTS
-         P/guD4qaDpu0rZqAYcT/9EaS0IlxOCldVBtdbQwBJBxW5j76p74hVt+qaLaHHNZrylHv
-         YImw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=siaJh1nJto0dvvaAdmUW7enGPuoUcB3Nw0RE+elDk1k=;
-        b=ErFDHWByyK39OHmPVcqaYecDGdY3h1cx4U3svs+hIga5DxofzJWZks/llOorYRy0IK
-         fwZ/utvdPn2VpcTyMf9c41rijLExbPa6J8XuDJv9rF26Quqpglihu6oLg8JIaLCNCA9P
-         CFgxTpOYcW8FDQE6smlIVSC3tQKRkF8IdxcGAfPtK15zU0Fkzuxg18nKZCa9ACFOf1/1
-         V0GoCl7DXDBiHVTkkaXABqtqpkco80y/x3KZXpJutjAWrlsfcBiF9Vl9j6wt0v5vHyF2
-         Q5GQE2TkSE142sYG+5Ojm/VKzZASKEJBryQVZaN0pDtHJRZQQf/YjEJxCoMImKhWLZtI
-         0Rpw==
-X-Gm-Message-State: AOAM531/rokksPkw8Mr7TlbX4Z9U9xtFB7Pwj88ZJfsDIk+SoL2dbUTD
-        Q9mz/r6IeLMvWorhquwmUDM=
-X-Google-Smtp-Source: ABdhPJwdJiFzJ+4ZODRYgIGP8E8Bc6SiwRkbRDYhVBB0dAPgfsAZXVk6g52y7I6k3mhs/CUZVNrdKA==
-X-Received: by 2002:a1c:3186:: with SMTP id x128mr10902659wmx.167.1621435213427;
-        Wed, 19 May 2021 07:40:13 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id x13sm15788624wro.31.2021.05.19.07.40.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 May 2021 07:40:12 -0700 (PDT)
-Subject: Re: [PATCH -next resend] sfc: farch: fix compile warning in
- efx_farch_dimension_resources()
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net
-References: <20210519021136.1638370-1-yangyingliang@huawei.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <d90bd556-efd0-1b75-7708-7217fe490cf2@gmail.com>
-Date:   Wed, 19 May 2021 15:40:12 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S1354594AbhESOpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 10:45:19 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:60396 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354506AbhESOok (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:44:40 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 14JEd2KO076034;
+        Wed, 19 May 2021 14:42:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=Lt2hzPnb+NaXsGPtTy/7AUf2I0EdmAttqobMWgtZO9Q=;
+ b=u/a9JuWdYxQLkNIDHI58hoDcvb9f1BrHnAwP+LQbVKVG9TQeMnReuLceUmigqnbBssKn
+ fo9XI/KuRKxFhfQ2Z7tBBxnoJLJI2ShvfWWNCsJknUw9NBhHgfb1jyjUd++1ct0ZERo1
+ 51aES+nCLTAwVyP7BlueT1SayrJqrwDROmowex7349T8YZjIFKdWIVfDdm+QSflVQUKi
+ IN/Ul7VMaaaOZi82UdSfSLzdagrkLWvAaFMm2VV2hZ7pBmxEiUwLE1/3AMB+4O/7HAUt
+ BeB1p9SOPW7RadgJsAx7Wz7eA3EU/+VI5mHvijoLDiMZ0p16N/jjGcC3CY2XxSv5j83R Yg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 38j5qr9tcs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 19 May 2021 14:42:29 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 14JEe8gP099338;
+        Wed, 19 May 2021 14:42:28 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3020.oracle.com with ESMTP id 38mecjdan2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 19 May 2021 14:42:28 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 14JEgROO125671;
+        Wed, 19 May 2021 14:42:27 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 38mecjdajd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 19 May 2021 14:42:27 +0000
+Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 14JEgIBB019066;
+        Wed, 19 May 2021 14:42:18 GMT
+Received: from kadam (/41.212.42.34)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 19 May 2021 07:42:17 -0700
+Date:   Wed, 19 May 2021 17:42:06 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        joro@8bytes.org,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v7 04/12] virtio-blk: Add validation for block size in
+ config space
+Message-ID: <20210519144206.GF32682@kadam>
+References: <20210517095513.850-1-xieyongji@bytedance.com>
+ <20210517095513.850-5-xieyongji@bytedance.com>
+ <CACycT3s1rEvNnNkJKQsHGRsyLPADieFdVkb1Sp3GObR0Vox5Fg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210519021136.1638370-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACycT3s1rEvNnNkJKQsHGRsyLPADieFdVkb1Sp3GObR0Vox5Fg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-GUID: tKs3QWAbwVfnDVYAmbW5IXOFge9uFM4u
+X-Proofpoint-ORIG-GUID: tKs3QWAbwVfnDVYAmbW5IXOFge9uFM4u
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9988 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1011 impostorscore=0
+ mlxscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=999
+ suspectscore=0 adultscore=0 priorityscore=1501 spamscore=0 phishscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2105190092
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/05/2021 03:11, Yang Yingliang wrote:
-> Fix the following kernel build warning when CONFIG_SFC_SRIOV is disabled:
-> 
->   drivers/net/ethernet/sfc/farch.c: In function ‘efx_farch_dimension_resources’:
->   drivers/net/ethernet/sfc/farch.c:1671:21: warning: variable ‘buftbl_min’ set but not used [-Wunused-but-set-variable]
->     unsigned vi_count, buftbl_min, total_tx_channels;
-> 
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/net/ethernet/sfc/farch.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sfc/farch.c b/drivers/net/ethernet/sfc/farch.c
-> index 49df02ecee91..6048b08b89ec 100644
-> --- a/drivers/net/ethernet/sfc/farch.c
-> +++ b/drivers/net/ethernet/sfc/farch.c
-> @@ -1668,13 +1668,17 @@ void efx_farch_rx_pull_indir_table(struct efx_nic *efx)
->   */
->  void efx_farch_dimension_resources(struct efx_nic *efx, unsigned sram_lim_qw)
->  {
-> -	unsigned vi_count, buftbl_min, total_tx_channels;
-> +	unsigned vi_count, total_tx_channels;
->  
->  #ifdef CONFIG_SFC_SRIOV
->  	struct siena_nic_data *nic_data = efx->nic_data;
-> +	unsigned buftbl_min;
->  #endif
-As I said the first time you sent this:
-Reverse xmas tree is messed up here, please fix.
-Apart from that, LGTM.
+On Wed, May 19, 2021 at 09:39:20PM +0800, Yongji Xie wrote:
+> On Mon, May 17, 2021 at 5:56 PM Xie Yongji <xieyongji@bytedance.com> wrote:
+> >
+> > This ensures that we will not use an invalid block size
+> > in config space (might come from an untrusted device).
 
--ed
+I looked at if I should add this as an untrusted function so that Smatch
+could find these sorts of bugs but this is reading data from the host so
+there has to be some level of trust...
 
->  
->  	total_tx_channels = efx->n_tx_channels + efx->n_extra_tx_channels;
-> +	vi_count = max(efx->n_channels, total_tx_channels * EFX_MAX_TXQ_PER_CHANNEL);
-> +
-> +#ifdef CONFIG_SFC_SRIOV
->  	/* Account for the buffer table entries backing the datapath channels
->  	 * and the descriptor caches for those channels.
->  	 */
-> @@ -1682,9 +1686,6 @@ void efx_farch_dimension_resources(struct efx_nic *efx, unsigned sram_lim_qw)
->  		       total_tx_channels * EFX_MAX_TXQ_PER_CHANNEL * EFX_MAX_DMAQ_SIZE +
->  		       efx->n_channels * EFX_MAX_EVQ_SIZE)
->  		      * sizeof(efx_qword_t) / EFX_BUF_SIZE);
-> -	vi_count = max(efx->n_channels, total_tx_channels * EFX_MAX_TXQ_PER_CHANNEL);
-> -
-> -#ifdef CONFIG_SFC_SRIOV
->  	if (efx->type->sriov_wanted) {
->  		if (efx->type->sriov_wanted(efx)) {
->  			unsigned vi_dc_entries, buftbl_free;
+I should add some more untrusted data kvm functions to Smatch.  Right
+now I only have kvm_register_read() and I've added kvm_read_guest_virt()
+just now.
+
+> >
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > ---
+> >  drivers/block/virtio_blk.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+> > index ebb4d3fe803f..c848aa36d49b 100644
+> > --- a/drivers/block/virtio_blk.c
+> > +++ b/drivers/block/virtio_blk.c
+> > @@ -826,7 +826,7 @@ static int virtblk_probe(struct virtio_device *vdev)
+> >         err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
+> >                                    struct virtio_blk_config, blk_size,
+> >                                    &blk_size);
+> > -       if (!err)
+> > +       if (!err && blk_size > 0 && blk_size <= max_size)
 > 
+> The check here is incorrect. I will use PAGE_SIZE as the maximum
+> boundary in the new version.
+
+What does this bug look like to the user?  A minimum block size of 1
+seems pretty crazy.  Surely the minimum should be higher?
+
+regards,
+dan carpenter
 
