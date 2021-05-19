@@ -2,131 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9ED23891A5
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:44:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1269B38922B
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 17:05:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354594AbhESOpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 10:45:19 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:60396 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354506AbhESOok (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:44:40 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 14JEd2KO076034;
-        Wed, 19 May 2021 14:42:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=Lt2hzPnb+NaXsGPtTy/7AUf2I0EdmAttqobMWgtZO9Q=;
- b=u/a9JuWdYxQLkNIDHI58hoDcvb9f1BrHnAwP+LQbVKVG9TQeMnReuLceUmigqnbBssKn
- fo9XI/KuRKxFhfQ2Z7tBBxnoJLJI2ShvfWWNCsJknUw9NBhHgfb1jyjUd++1ct0ZERo1
- 51aES+nCLTAwVyP7BlueT1SayrJqrwDROmowex7349T8YZjIFKdWIVfDdm+QSflVQUKi
- IN/Ul7VMaaaOZi82UdSfSLzdagrkLWvAaFMm2VV2hZ7pBmxEiUwLE1/3AMB+4O/7HAUt
- BeB1p9SOPW7RadgJsAx7Wz7eA3EU/+VI5mHvijoLDiMZ0p16N/jjGcC3CY2XxSv5j83R Yg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 38j5qr9tcs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 May 2021 14:42:29 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 14JEe8gP099338;
-        Wed, 19 May 2021 14:42:28 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 38mecjdan2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 May 2021 14:42:28 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 14JEgROO125671;
-        Wed, 19 May 2021 14:42:27 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 38mecjdajd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 May 2021 14:42:27 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 14JEgIBB019066;
-        Wed, 19 May 2021 14:42:18 GMT
-Received: from kadam (/41.212.42.34)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 19 May 2021 07:42:17 -0700
-Date:   Wed, 19 May 2021 17:42:06 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        joro@8bytes.org,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 04/12] virtio-blk: Add validation for block size in
- config space
-Message-ID: <20210519144206.GF32682@kadam>
-References: <20210517095513.850-1-xieyongji@bytedance.com>
- <20210517095513.850-5-xieyongji@bytedance.com>
- <CACycT3s1rEvNnNkJKQsHGRsyLPADieFdVkb1Sp3GObR0Vox5Fg@mail.gmail.com>
+        id S1348493AbhESPGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 11:06:23 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:22605 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231134AbhESPGW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 11:06:22 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1621436702; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=mbm/KQC14is0rErwVc62s6au2BQPmhOMig0Vh7EVlik=;
+ b=CBL25lE1I2GzVwvZy///q17Rony7kmBqYD7JKp0DJJDf0nDgVC/nqc2pM+obqSaJPim6Wjp6
+ Td+EZkqVDhpnPkIjbz1ja9nbgJZwZben3WORxSVOOrGSFfoZAUyIMMFQyDV5aKsszG1YHg2g
+ tHMQUou9k+xCg+o+g9DiWZmRsT4=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 60a5291b2bff04e53b2d3be8 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 19 May 2021 15:04:59
+ GMT
+Sender: jjohnson=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id AB02CC4338A; Wed, 19 May 2021 15:04:59 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: jjohnson)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1F866C433D3;
+        Wed, 19 May 2021 15:04:59 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACycT3s1rEvNnNkJKQsHGRsyLPADieFdVkb1Sp3GObR0Vox5Fg@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-GUID: tKs3QWAbwVfnDVYAmbW5IXOFge9uFM4u
-X-Proofpoint-ORIG-GUID: tKs3QWAbwVfnDVYAmbW5IXOFge9uFM4u
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9988 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1011 impostorscore=0
- mlxscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=999
- suspectscore=0 adultscore=0 priorityscore=1501 spamscore=0 phishscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2105190092
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Wed, 19 May 2021 08:04:59 -0700
+From:   Jeff Johnson <jjohnson@codeaurora.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Chao Yu <chao@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>, b43-dev@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jjohnson=codeaurora.org@codeaurora.org
+Subject: Re: [PATCH v2] b43: don't save dentries for debugfs
+In-Reply-To: <YKScfFKhxtVqfRkt@kroah.com>
+References: <20210518163304.3702015-1-gregkh@linuxfoundation.org>
+ <891f28e4c1f3c24ed1b257de83cbb3a0@codeaurora.org>
+ <f539277054c06e1719832b9e99cbf7f1@codeaurora.org>
+ <YKScfFKhxtVqfRkt@kroah.com>
+Message-ID: <2eb3af43025436c0832c8f61fbf519ad@codeaurora.org>
+X-Sender: jjohnson@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 19, 2021 at 09:39:20PM +0800, Yongji Xie wrote:
-> On Mon, May 17, 2021 at 5:56 PM Xie Yongji <xieyongji@bytedance.com> wrote:
-> >
-> > This ensures that we will not use an invalid block size
-> > in config space (might come from an untrusted device).
-
-I looked at if I should add this as an untrusted function so that Smatch
-could find these sorts of bugs but this is reading data from the host so
-there has to be some level of trust...
-
-I should add some more untrusted data kvm functions to Smatch.  Right
-now I only have kvm_register_read() and I've added kvm_read_guest_virt()
-just now.
-
-> >
-> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > ---
-> >  drivers/block/virtio_blk.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-> > index ebb4d3fe803f..c848aa36d49b 100644
-> > --- a/drivers/block/virtio_blk.c
-> > +++ b/drivers/block/virtio_blk.c
-> > @@ -826,7 +826,7 @@ static int virtblk_probe(struct virtio_device *vdev)
-> >         err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
-> >                                    struct virtio_blk_config, blk_size,
-> >                                    &blk_size);
-> > -       if (!err)
-> > +       if (!err && blk_size > 0 && blk_size <= max_size)
+On 2021-05-18 22:05, Greg Kroah-Hartman wrote:
+> On Tue, May 18, 2021 at 03:00:44PM -0700, Jeff Johnson wrote:
+>> On 2021-05-18 12:29, Jeff Johnson wrote:
+>> Would still like guidance on if there is a recommended way to get a
+>> dentry not associated with debugfs.
 > 
-> The check here is incorrect. I will use PAGE_SIZE as the maximum
-> boundary in the new version.
+> What do you exactly mean by "not associated with debugfs"?
+> 
+> And why are you passing a debugfs dentry to relay_open()?  That feels
+> really wrong and fragile.
 
-What does this bug look like to the user?  A minimum block size of 1
-seems pretty crazy.  Surely the minimum should be higher?
+I don't know the history but the relay documentation tells us:
+"If you want a directory structure to contain your relay files,
+you should create it using the host filesystem’s directory
+creation function, e.g. debugfs_create_dir()..."
 
-regards,
-dan carpenter
+So my guess is that the original implementation followed that
+advice.  I see 5 clients of this functionality, and all 5 pass a
+dentry returned from debugfs_create_dir():
 
+drivers/gpu/drm/i915/gt/uc/intel_guc_log.c, line 384
+drivers/net/wireless/ath/ath10k/spectral.c, line 534
+drivers/net/wireless/ath/ath11k/spectral.c, line 902
+drivers/net/wireless/ath/ath9k/common-spectral.c, line 1077
+kernel/trace/blktrace.c, line 549
+
+Jeff
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum,
+a Linux Foundation Collaborative Project
