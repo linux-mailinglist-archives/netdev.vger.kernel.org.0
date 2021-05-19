@@ -2,95 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FDC038873E
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 08:05:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE102388743
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 08:06:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233420AbhESGG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 02:06:58 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:58738 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232402AbhESGG5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 02:06:57 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14J634BH127941;
-        Wed, 19 May 2021 02:05:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to; s=pp1;
- bh=EUV0/p8Lz0Kv50ZMioZE56FcvKm0ymaIPCpGgQKVLU8=;
- b=p6Dd2pKdLkyfihHUGFLPJVJR0jqbFen7Xoaj1dGIwyu+JoNe8r0RkIo4SNYx98nO72ZP
- 2BPlVIoyuz6DxTOHfBlQvXnIOcv8T5cHo/XhNtzdjrYqm9YIhEgKVjq6Xhvx+I9my+kx
- TMMUz7Ozhf3cXiU6eoS99Ryi5eDrC+RSboJ4U3vUvnfPS5GH3IcLbxFFEgEWLVfLa81W
- Eb3ZNJBPArze3LZn8EHFbbMy9y7WqhxjuiRGUVORQC2jmGhr8yKrwhbYX9hG1KqHDWVm
- 0P2Nv/LU6siUeu6nb8sdhiA/utonX4ZRKqFkIpnxQONXrMViVNRDiAtj8CJEWBjNKSHA lw== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 38mpbggcew-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 May 2021 02:05:29 -0400
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 14J645n4031052;
-        Wed, 19 May 2021 06:05:29 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma03wdc.us.ibm.com with ESMTP id 38j5x9cq3n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 May 2021 06:05:29 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 14J64R9516777614
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 May 2021 06:04:27 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AF0B96A051;
-        Wed, 19 May 2021 06:04:27 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EB8FD6A04D;
-        Wed, 19 May 2021 06:04:26 +0000 (GMT)
-Received: from [9.65.90.43] (unknown [9.65.90.43])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTPS;
-        Wed, 19 May 2021 06:04:26 +0000 (GMT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH 09/20] net: ibm: remove leading spaces before tabs
-From:   Lijun Pan <ljp@linux.vnet.ibm.com>
-In-Reply-To: <1621402253-27200-10-git-send-email-tanghui20@huawei.com>
-Date:   Wed, 19 May 2021 01:04:25 -0500
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <A4DA295C-5DDE-4758-AD3F-90F2EE740054@linux.vnet.ibm.com>
-References: <1621402253-27200-1-git-send-email-tanghui20@huawei.com>
- <1621402253-27200-10-git-send-email-tanghui20@huawei.com>
-To:     Hui Tang <tanghui20@huawei.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: gT3corWUGNi2_YJIqiR7DtRdTxy80U06
-X-Proofpoint-GUID: gT3corWUGNi2_YJIqiR7DtRdTxy80U06
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-05-19_02:2021-05-18,2021-05-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 spamscore=0 lowpriorityscore=0 phishscore=0 mlxscore=0
- adultscore=0 impostorscore=0 mlxlogscore=752 suspectscore=0 malwarescore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2105190047
+        id S238905AbhESGHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 02:07:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49214 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232402AbhESGHY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 02:07:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C54D760E0B;
+        Wed, 19 May 2021 06:06:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621404365;
+        bh=sIe0zz12Wt5VEbsT3srXd7PQRARn/igSEt8LHrIG2Pw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=k2gJw4zJC+7pfRA88vTPN9X0299drhv0jc9nXGBvE38NmrY31oRb76ZWzhykF9KCd
+         rSZRCBHPDRrr2CrEL76x6nh7LOWy4X58Gx7gihnAFKB8YUzy6BKlxG+Go3Hzdq2zWl
+         wQUq3ZElffUVQws/O4F92QB8hLArR2SgouIL6VfUcI8Htx0ZGFa02j6/JFXq+THhTE
+         s4kVnawH2kkTl3+hqg67p4Kbh4Vcai+DDTflxBuU8BMxdx02ToAbw9N+6JUbvw6A7Z
+         6s14TrEM5RhwiEvQ6pF+nrhIeoJcdim7v9IHs6qYrCEwo2OgNE6rMN2WKGNcAc/Uxt
+         vvywfCw27rQZQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net 00/16] mlx5 fixes 2021-05-18
+Date:   Tue, 18 May 2021 23:05:07 -0700
+Message-Id: <20210519060523.17875-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Saeed Mahameed <saeedm@nvidia.com>
 
+Hi Dave, Jakub,
 
-> On May 19, 2021, at 12:30 AM, Hui Tang <tanghui20@huawei.com> wrote:
->=20
-> There are a few leading spaces before tabs and remove it by running =
-the
-> following commard:
->=20
-> 	$ find . -name '*.c' | xargs sed -r -i 's/^[ ]+\t/\t/'
-> 	$ find . -name '*.h' | xargs sed -r -i 's/^[ ]+\t/\t/'
-> Cc: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-> Signed-off-by: Hui Tang <tanghui20@huawei.com>
-> =E2=80=94
+This series introduces some fixes to mlx5 driver.
 
-Acked-by: Lijun Pan <lijunp213@gmail.com>
+Please pull and let me know if there is any problem.
 
+Thanks,
+Saeed.
+
+---
+The following changes since commit c9fd37a9450b23804868d7a5b0d038b32ba466be:
+
+  Merge branch 'hns3-fixes' (2021-05-18 13:41:04 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2021-05-18
+
+for you to fetch changes up to e63052a5dd3ce7979bff727a8f4bb6d6b3d1317b:
+
+  mlx5e: add add missing BH locking around napi_schdule() (2021-05-18 23:01:55 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2021-05-18
+
+----------------------------------------------------------------
+Ariel Levkovich (1):
+      net/mlx5: Set term table as an unmanaged flow table
+
+Aya Levin (1):
+      net/mlx5e: Fix error path of updating netdev queues
+
+Dima Chumak (3):
+      net/mlx5e: Fix nullptr in add_vlan_push_action()
+      net/mlx5e: Fix nullptr in mlx5e_tc_add_fdb_flow()
+      net/mlx5e: Fix multipath lag activation
+
+Eli Cohen (1):
+      {net,vdpa}/mlx5: Configure interface MAC into mpfs L2 table
+
+Jakub Kicinski (1):
+      mlx5e: add add missing BH locking around napi_schdule()
+
+Jianbo Liu (1):
+      net/mlx5: Set reformat action when needed for termination rules
+
+Leon Romanovsky (1):
+      net/mlx5: Don't overwrite HCA capabilities when setting MSI-X count
+
+Maor Gottlieb (1):
+      {net, RDMA}/mlx5: Fix override of log_max_qp by other device
+
+Parav Pandit (1):
+      net/mlx5: SF, Fix show state inactive when its inactivated
+
+Roi Dayan (3):
+      net/mlx5: Fix err prints and return when creating termination table
+      net/mlx5e: Fix null deref accessing lag dev
+      net/mlx5e: Make sure fib dev exists in fib event
+
+Saeed Mahameed (1):
+      net/mlx5e: reset XPS on error flow if netdev isn't registered yet
+
+Vlad Buslov (1):
+      net/mlx5e: Reject mirroring on source port change encap rules
+
+ drivers/infiniband/hw/mlx5/mr.c                    |  4 +-
+ .../net/ethernet/mellanox/mlx5/core/en/rep/bond.c  |  2 +
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 16 ++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 26 +++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |  1 +
+ .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  | 61 +++++++++-------------
+ drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c   |  6 +++
+ drivers/net/ethernet/mellanox/mlx5/core/lib/mpfs.c |  3 ++
+ drivers/net/ethernet/mellanox/mlx5/core/lib/mpfs.h |  5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     | 11 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  | 22 ++++++--
+ .../net/ethernet/mellanox/mlx5/core/sf/devlink.c   | 18 ++++---
+ drivers/vdpa/mlx5/net/mlx5_vnet.c                  | 19 ++++++-
+ include/linux/mlx5/driver.h                        | 44 ++++++++--------
+ include/linux/mlx5/mpfs.h                          | 18 +++++++
+ 17 files changed, 168 insertions(+), 91 deletions(-)
+ create mode 100644 include/linux/mlx5/mpfs.h
