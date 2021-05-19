@@ -2,135 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C6713885DD
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 06:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E11F38862B
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 06:51:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232007AbhESEHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 00:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbhESEG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 00:06:58 -0400
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0FFC06175F;
-        Tue, 18 May 2021 21:05:39 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FlK6667Q4z9sRf;
-        Wed, 19 May 2021 14:05:34 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1621397136;
-        bh=pauE8XMkpcl5YeU9UQe+H4otsmdHP12qTD5+jPriKds=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=H67ZlgmgSuwuD4q7fx+JZepYdYzW05QsLkRaR08zroGyV4Rm09PROUKNOnyuyB3er
-         xkjfuCzn5U0Pq4j1y5oxclhNo/b2Ai4V6c/6AT+X9BGj/yAQqNBaXBZB5itsdUTymD
-         9ZhOpoUeJtzfLgFDjlsAgySNONun0s5mdjH7jGKHJBWoE0BCpnuc36oou6u3s+udzg
-         cui6LzBqoki/+nHK09tcqLCxb93h+KpKxzCEkxS7ZqFBC4GH8jRr12hS2F2VSNYLdK
-         4XRGtVu/xaNe9JJ9F6qqFSb45X3wsqjgo9HFmvzoviQPARip8zkhtvUkroCIOlH+aK
-         jUEvXHI4Cjnlg==
-Date:   Wed, 19 May 2021 14:05:32 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Stefano Brivio <sbrivio@redhat.com>
-Subject: Re: linux-next: manual merge of the netfilter-next tree with the
- net tree
-Message-ID: <20210519140532.677d1bb6@canb.auug.org.au>
-In-Reply-To: <20210519095627.7697ff12@canb.auug.org.au>
-References: <20210519095627.7697ff12@canb.auug.org.au>
+        id S240487AbhESEw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 00:52:29 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:3027 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229624AbhESEw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 00:52:28 -0400
+Received: from dggems705-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FlL43322yzmWpj;
+        Wed, 19 May 2021 12:48:51 +0800 (CST)
+Received: from dggemi760-chm.china.huawei.com (10.1.198.146) by
+ dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Wed, 19 May 2021 12:51:07 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggemi760-chm.china.huawei.com (10.1.198.146) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Wed, 19 May 2021 12:51:06 +0800
+From:   Hui Tang <tanghui20@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Hui Tang <tanghui20@huawei.com>,
+        Steffen Klassert <klassert@kernel.org>,
+        Jes Sorensen <jes@trained-monkey.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "Rasesh Mody" <rmody@marvell.com>, <GR-Linux-NIC-Dev@marvell.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Denis Kirjanov <kda@linux-powerpc.org>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Daniele Venzano <venza@brownhat.org>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Shannon Nelson <snelson@pensando.io>,
+        "Jeff Kirsher" <jeffrey.t.kirsher@intel.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Joe Perches <joe@perches.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Weihang Li <liweihang@huawei.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        Yixing Liu <liuyixing1@huawei.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Jeremy Kerr" <jk@ozlabs.org>, Moritz Fischer <mdf@kernel.org>,
+        Lucy Yan <lucyyan@google.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "Zheng Yongjun" <zhengyongjun3@huawei.com>,
+        Jason Yan <yanaijie@huawei.com>,
+        "Andrew Lunn" <andrew@lunn.ch>, Wang Hai <wanghai38@huawei.com>,
+        Luo Jiaxing <luojiaxing@huawei.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        "Allen Pais" <apais@linux.microsoft.com>,
+        Qiushi Wu <wu000273@umn.edu>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Kees Cook <keescook@chromium.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        "Gaurav Singh" <gaurav1086@gmail.com>, <linux-acenic@sunsite.dk>,
+        <linux-parisc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH 00/20] net: ethernet: remove leading spaces before tabs
+Date:   Wed, 19 May 2021 12:45:25 +0800
+Message-ID: <1621399671-15517-1-git-send-email-tanghui20@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/fk7n6zHb2ovrZiubd3gbaHl";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggemi760-chm.china.huawei.com (10.1.198.146)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/fk7n6zHb2ovrZiubd3gbaHl
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+There are a few leading spaces before tabs and remove it by running the
+following commard:
 
-Hi all,
+        $ find . -name '*.c' | xargs sed -r -i 's/^[ ]+\t/\t/'
+        $ find . -name '*.h' | xargs sed -r -i 's/^[ ]+\t/\t/'
 
-On Wed, 19 May 2021 09:56:27 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> Today's linux-next merge of the netfilter-next tree got a conflict in:
->=20
->   net/netfilter/nft_set_pipapo.c
->=20
-> between commit:
->=20
->   f0b3d338064e ("netfilter: nft_set_pipapo_avx2: Add irq_fpu_usable() che=
-ck, fallback to non-AVX2 version")
->=20
-> from the net tree and commit:
->=20
->   b1bc08f6474f ("netfilter: nf_tables: prefer direct calls for set lookup=
-s")
->=20
-> from the netfilter-next tree.
->=20
-> I fixed it up (I just used the latter) and can carry the fix as necessary=
-. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
+Hui Tang (20):
+  net: 3com: remove leading spaces before tabs
+  net: alteon: remove leading spaces before tabs
+  net: amd: remove leading spaces before tabs
+  net: apple: remove leading spaces before tabs
+  net: broadcom: remove leading spaces before tabs
+  net: chelsio: remove leading spaces before tabs
+  net: dec: remove leading spaces before tabs
+  net: dlink: remove leading spaces before tabs
+  net: ibm: remove leading spaces before tabs
+  net: marvell: remove leading spaces before tabs
+  net: natsemi: remove leading spaces before tabs
+  net: realtek: remove leading spaces before tabs
+  net: seeq: remove leading spaces before tabs
+  net: sis: remove leading spaces before tabs
+  net: smsc: remove leading spaces before tabs
+  net: sun: remove leading spaces before tabs
+  net: fealnx: remove leading spaces before tabs
+  net: xircom: remove leading spaces before tabs
+  net: 8390: remove leading spaces before tabs
+  net: fujitsu: remove leading spaces before tabs
 
-This merge also needs the following merge resolution patch:
+ drivers/net/ethernet/3com/3c59x.c            |  2 +-
+ drivers/net/ethernet/8390/axnet_cs.c         | 14 +++++-----
+ drivers/net/ethernet/8390/pcnet_cs.c         |  2 +-
+ drivers/net/ethernet/8390/smc-ultra.c        |  6 ++--
+ drivers/net/ethernet/8390/stnic.c            |  2 +-
+ drivers/net/ethernet/alteon/acenic.c         | 26 ++++++++---------
+ drivers/net/ethernet/amd/amd8111e.c          |  4 +--
+ drivers/net/ethernet/amd/amd8111e.h          |  6 ++--
+ drivers/net/ethernet/amd/atarilance.c        |  2 +-
+ drivers/net/ethernet/amd/declance.c          |  2 +-
+ drivers/net/ethernet/amd/lance.c             |  4 +--
+ drivers/net/ethernet/amd/ni65.c              | 12 ++++----
+ drivers/net/ethernet/amd/nmclan_cs.c         | 12 ++++----
+ drivers/net/ethernet/amd/sun3lance.c         | 12 ++++----
+ drivers/net/ethernet/apple/bmac.c            | 30 ++++++++++----------
+ drivers/net/ethernet/apple/mace.c            |  8 +++---
+ drivers/net/ethernet/broadcom/b44.c          | 20 ++++++-------
+ drivers/net/ethernet/broadcom/bnx2.c         |  6 ++--
+ drivers/net/ethernet/chelsio/cxgb3/sge.c     |  2 +-
+ drivers/net/ethernet/dec/tulip/de2104x.c     |  4 +--
+ drivers/net/ethernet/dec/tulip/de4x5.c       |  6 ++--
+ drivers/net/ethernet/dec/tulip/dmfe.c        | 18 ++++++------
+ drivers/net/ethernet/dec/tulip/pnic2.c       |  4 +--
+ drivers/net/ethernet/dec/tulip/uli526x.c     | 10 +++----
+ drivers/net/ethernet/dec/tulip/winbond-840.c |  4 +--
+ drivers/net/ethernet/dlink/sundance.c        | 12 ++++----
+ drivers/net/ethernet/fealnx.c                |  2 +-
+ drivers/net/ethernet/fujitsu/fmvj18x_cs.c    |  6 ++--
+ drivers/net/ethernet/ibm/emac/emac.h         |  2 +-
+ drivers/net/ethernet/marvell/skge.h          |  2 +-
+ drivers/net/ethernet/marvell/sky2.c          | 30 ++++++++++----------
+ drivers/net/ethernet/marvell/sky2.h          |  8 +++---
+ drivers/net/ethernet/natsemi/natsemi.c       |  6 ++--
+ drivers/net/ethernet/realtek/8139cp.c        |  6 ++--
+ drivers/net/ethernet/realtek/8139too.c       |  6 ++--
+ drivers/net/ethernet/realtek/atp.c           |  4 +--
+ drivers/net/ethernet/seeq/ether3.c           | 10 +++----
+ drivers/net/ethernet/sis/sis900.c            | 22 +++++++--------
+ drivers/net/ethernet/smsc/smc9194.c          | 42 ++++++++++++++--------------
+ drivers/net/ethernet/smsc/smc91x.c           | 14 +++++-----
+ drivers/net/ethernet/sun/cassini.c           |  2 +-
+ drivers/net/ethernet/sun/sungem.c            | 20 ++++++-------
+ drivers/net/ethernet/sun/sunhme.c            |  6 ++--
+ drivers/net/ethernet/xircom/xirc2ps_cs.c     |  2 +-
+ 44 files changed, 210 insertions(+), 210 deletions(-)
 
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Wed, 19 May 2021 13:48:22 +1000
-Subject: [PATCH] fix up for merge involving nft_pipapo_lookup()
+--
+2.8.1
 
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- net/netfilter/nft_set_pipapo.h | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/net/netfilter/nft_set_pipapo.h b/net/netfilter/nft_set_pipapo.h
-index d84afb8fa79a..25a75591583e 100644
---- a/net/netfilter/nft_set_pipapo.h
-+++ b/net/netfilter/nft_set_pipapo.h
-@@ -178,8 +178,6 @@ struct nft_pipapo_elem {
-=20
- int pipapo_refill(unsigned long *map, int len, int rules, unsigned long *d=
-st,
- 		  union nft_pipapo_map_bucket *mt, bool match_only);
--bool nft_pipapo_lookup(const struct net *net, const struct nft_set *set,
--		       const u32 *key, const struct nft_set_ext **ext);
-=20
- /**
-  * pipapo_and_field_buckets_4bit() - Intersect 4-bit buckets
---=20
-2.30.2
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/fk7n6zHb2ovrZiubd3gbaHl
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmCkjowACgkQAVBC80lX
-0Gyfhgf+LJu3irilPR9sd9/H8elwRHyLTv6/ff1mBI3efU4oM7G1ucFWmEfgK9Mp
-CpMTpioNmg0O3IlALWc1BbFLQ6oJ9UFbg9gQcMgKllo8sZDoiCdbRCrekTaGDT/R
-P/msJd7qBpxsaoYi2pZ4Dyt5fOd+qFz7BURrWCSpJpNzeXVJPJGJ6W2TpPoqCA7B
-uyVklY5OA3ra8/k1sV8+bIxIUI29r1j2BtdNU4G/rVxv2f5F0SlPjZUyqzxY6Zqe
-gE1WzfDDbu1um6W8dgEOWL9Bq3KT4FWYqDFS7pJJ/FuIH8zkU01GHO2sLPw85HCy
-d+PclL1aPQXgmV44gJg5xZj0Fu8I1g==
-=MFdv
------END PGP SIGNATURE-----
-
---Sig_/fk7n6zHb2ovrZiubd3gbaHl--
