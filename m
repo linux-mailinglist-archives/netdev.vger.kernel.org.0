@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D93E7389020
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:14:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 106AF389026
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:14:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353933AbhESOPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 10:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
+        id S1353973AbhESOPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 10:15:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347217AbhESOPO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:15:14 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7CDC06175F;
-        Wed, 19 May 2021 07:13:54 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id r12so14214939wrp.1;
-        Wed, 19 May 2021 07:13:54 -0700 (PDT)
+        with ESMTP id S1353891AbhESOPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:15:15 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BEFC061760;
+        Wed, 19 May 2021 07:13:55 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id u4-20020a05600c00c4b02901774b80945cso3532150wmm.3;
+        Wed, 19 May 2021 07:13:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=z7dUjeyKGkKe7mPGtbrIQS3SETJnccJ7luLK5I56KT0=;
-        b=JTpKqXzlK+LuzFismUcwFXaHar/t6U//StFAaKNpUCAC3u05X1nNW25ujeSk+TbTIt
-         yvpiKxxRRfYBMsN+5AvXll7oodYpA5XqY52Ybkvl24oaVfZQumC0ghts4+SeQ0KaaycX
-         UgrIKHH422hlkHMFONGKmzwFhL6vWA/vHDDT9pVxmOqQyphwaDIDkbrMoBOHvv6G1biF
-         JB4Zctq90H+TgAc5llDqSkmI59HKSYkgA4dOM1KUUB+4iPyoSw3aolyzBaipTuN766MH
-         WpAeY1TaZir7urK14vQpHGTgzfQbq+z4vsmQ+INXJWQIjdqntHCmiL2DGpXfCcNs8Rwr
-         pL9w==
+        bh=KqEkF4Dijyzr0PPwp8tl6lkEhCqjAVOKZqJtKABlU28=;
+        b=iPwmgJkLjvCL/f8ItIm1m4rk0cwwg0XxIjxDWQkkisNr4iXOEGCpqj8/RTpEi/2hEy
+         eJiREbqnUE+FErrGM97tgGNFx5wvOK/KW8CDycGbEUPTOYVwDmjy18qG6KtZpocXIZ71
+         ZqlO02LE+KunTpU1Z8Lf1oKsFbV2+EHkEJPh/mbGLBQkZ6gNMQA7G6EyZ4KDEcvinlCn
+         UBUxm03NyLvSYiEIWdN+u/mJk18SvktCW7mbEUEwPBu++2Usat8EHcldZLcRTAy0pslS
+         CZBRH5pM0wi9I13cdDPlNgI1GF95QwEdl89BYZgrFCtVhdU5KvScc2ENSbe/5Wj7l5S5
+         NLiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=z7dUjeyKGkKe7mPGtbrIQS3SETJnccJ7luLK5I56KT0=;
-        b=pA6BbPtPBc8X1E6grqvHxBLRpIHgnomCl9F+Mau8PkKp23A8JLm1bVosJ1UaUmZDG6
-         R2oxC2MfQK/Ey8jyggCrmBzkAnKzXBsGlsibXgYQBnl3Bg9qx27WsHB+6aS7yDNSlmkx
-         qDknNovliVNMETqj8uwSQyTJnG+VEFBTY2Om3ZNkqpkyScSPmY60v2xjWvgL0aWRlQCD
-         zPj2lMrrgu4dgx027l0F3cHb51HdO3ErKFlCMzotkRm1xzcyKS3u1d2ab9Ye061n+Azf
-         gjchD0S4gCpTmbE1OT5QhkKgDqB84IUkLaiLe0O7AqQ3KStrDc4nzrhgwefHDkF8oJxl
-         Vs3w==
-X-Gm-Message-State: AOAM532U3GWivNGKxMkubDCntqMa64W7brArAIe0bokogb9XsmsulR/3
-        op7q3qwsaLXnRqC3n+uioVRth68vhZT0A9Iw
-X-Google-Smtp-Source: ABdhPJwyTQyo9hKriKCVc9I2oi9jFiN5ipCN16X8md9iyo0or6DWjVWG0ueCHDflqzV/JCWwGGm2Gw==
-X-Received: by 2002:adf:e781:: with SMTP id n1mr14475380wrm.136.1621433632597;
-        Wed, 19 May 2021 07:13:52 -0700 (PDT)
+        bh=KqEkF4Dijyzr0PPwp8tl6lkEhCqjAVOKZqJtKABlU28=;
+        b=c7VfuPHtQHDruGj8UGkwq/KNZ61mL7YicEgoB68U8rJwAYL3p/WNlibSrRFdXpq4bo
+         Lkcrfc8ofPQ34LYtN5DNziNJ31jDGvtFR19vvLzf60cqS7kSsF7Y2wkzyUsrwJvq5zN/
+         z0JW2rACGJsYYp00+QqOiITfiMV15R8ELGSCtuFJ7VmcCzjoX15XAC+0V1+2NDcq824b
+         gAn67a3c10TmVf/PHi0y3c4hZW1HQP0VKxLVkjh34VaM0LZO4AwPhJFkmiJKxAm10jCJ
+         yyoFu+WuNSdrPtVUXBETk2F7gfTj26+ESibExFU54RhTJmTT9O9ksTcxVI3HkvPTLSEW
+         UAhQ==
+X-Gm-Message-State: AOAM531rISNr9VzZyPZ4ta3Jnmgwxp0bYxlYTASSq/NWNGe3E9po2NYf
+        2InRFywlM6mtXUrew8U7aQCvZ2GhCoE4G4YL
+X-Google-Smtp-Source: ABdhPJzlaROjPTre/59PQ3SeVaTAljdyKaPRGNJMK2c8Ew/36zXwYH2Do7kAdXk5eQ79G60rJamITg==
+X-Received: by 2002:a1c:4c10:: with SMTP id z16mr11515439wmf.134.1621433633790;
+        Wed, 19 May 2021 07:13:53 -0700 (PDT)
 Received: from localhost.localdomain ([85.255.235.154])
-        by smtp.gmail.com with ESMTPSA id z3sm6233569wrq.42.2021.05.19.07.13.51
+        by smtp.gmail.com with ESMTPSA id z3sm6233569wrq.42.2021.05.19.07.13.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 May 2021 07:13:52 -0700 (PDT)
+        Wed, 19 May 2021 07:13:53 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -60,9 +60,9 @@ Cc:     Jens Axboe <axboe@kernel.dk>, Alexei Starovoitov <ast@kernel.org>,
         Horst Schirmeier <horst.schirmeier@tu-dortmund.de>,
         "Franz-B . Tuneke" <franz-bernhard.tuneke@tu-dortmund.de>,
         Christian Dietrich <stettberger@dokucode.de>
-Subject: [PATCH 02/23] io_uring: localise fixed resources fields
-Date:   Wed, 19 May 2021 15:13:13 +0100
-Message-Id: <7672fac6581f2a1656ad6828ebd43ee44c4e808e.1621424513.git.asml.silence@gmail.com>
+Subject: [PATCH 03/23] io_uring: remove dependency on ring->sq/cq_entries
+Date:   Wed, 19 May 2021 15:13:14 +0100
+Message-Id: <1188e30e5693519d59f065669fb1b8c415b076cf.1621424513.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1621424513.git.asml.silence@gmail.com>
 References: <cover.1621424513.git.asml.silence@gmail.com>
@@ -72,77 +72,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ring has two types of resource-related fields, used for request
-submission, and field needed for update/registration. Reshuffle them
-into these two groups for better locality and readability. The second
-group is not in the hot path, so it's natural to place them somewhere in
-the end. Also update an outdated comment.
+We have numbers of {sq,cq} entries cached in ctx, don't look up them in
+user-shared rings as 1) it may fetch additional cacheline 2) user may
+change it and so it's always error prone.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- fs/io_uring.c | 33 +++++++++++++++++----------------
- 1 file changed, 17 insertions(+), 16 deletions(-)
+ fs/io_uring.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 7e3410ce100a..31eca208f675 100644
+index 31eca208f675..15dc5dad1f7d 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -390,21 +390,17 @@ struct io_ring_ctx {
- 	struct list_head	sqd_list;
+@@ -1352,7 +1352,7 @@ static inline bool io_sqring_full(struct io_ring_ctx *ctx)
+ {
+ 	struct io_rings *r = ctx->rings;
  
- 	/*
--	 * If used, fixed file set. Writers must ensure that ->refs is dead,
--	 * readers must ensure that ->refs is alive as long as the file* is
--	 * used. Only updated through io_uring_register(2).
-+	 * Fixed resources fast path, should be accessed only under uring_lock,
-+	 * and updated through io_uring_register(2)
+-	return READ_ONCE(r->sq.tail) - ctx->cached_sq_head == r->sq_ring_entries;
++	return READ_ONCE(r->sq.tail) - ctx->cached_sq_head == ctx->sq_entries;
+ }
+ 
+ static inline unsigned int __io_cqring_events(struct io_ring_ctx *ctx)
+@@ -1370,7 +1370,7 @@ static inline struct io_uring_cqe *io_get_cqring(struct io_ring_ctx *ctx)
+ 	 * control dependency is enough as we're using WRITE_ONCE to
+ 	 * fill the cq entry
  	 */
--	struct io_rsrc_data	*file_data;
-+	struct io_rsrc_node	*rsrc_node;
-+
- 	struct io_file_table	file_table;
- 	unsigned		nr_user_files;
--
--	/* if used, fixed mapped user buffers */
--	struct io_rsrc_data	*buf_data;
- 	unsigned		nr_user_bufs;
- 	struct io_mapped_ubuf	**user_bufs;
+-	if (__io_cqring_events(ctx) == rings->cq_ring_entries)
++	if (__io_cqring_events(ctx) == ctx->cq_entries)
+ 		return NULL;
  
- 	struct xarray		io_buffers;
--
- 	struct xarray		personalities;
- 	u32			pers_next;
+ 	tail = ctx->cached_cq_tail++;
+@@ -1423,11 +1423,10 @@ static void io_cqring_ev_posted_iopoll(struct io_ring_ctx *ctx)
+ /* Returns true if there are no backlogged entries after the flush */
+ static bool __io_cqring_overflow_flush(struct io_ring_ctx *ctx, bool force)
+ {
+-	struct io_rings *rings = ctx->rings;
+ 	unsigned long flags;
+ 	bool all_flushed, posted;
  
-@@ -436,16 +432,21 @@ struct io_ring_ctx {
- 		bool			poll_multi_file;
- 	} ____cacheline_aligned_in_smp;
+-	if (!force && __io_cqring_events(ctx) == rings->cq_ring_entries)
++	if (!force && __io_cqring_events(ctx) == ctx->cq_entries)
+ 		return false;
  
--	struct delayed_work		rsrc_put_work;
--	struct llist_head		rsrc_put_llist;
--	struct list_head		rsrc_ref_list;
--	spinlock_t			rsrc_ref_lock;
--	struct io_rsrc_node		*rsrc_node;
--	struct io_rsrc_node		*rsrc_backup_node;
--	struct io_mapped_ubuf		*dummy_ubuf;
--
- 	struct io_restriction		restrictions;
- 
-+	/* slow path rsrc auxilary data, used by update/register */
-+	struct {
-+		struct io_rsrc_node		*rsrc_backup_node;
-+		struct io_mapped_ubuf		*dummy_ubuf;
-+		struct io_rsrc_data		*file_data;
-+		struct io_rsrc_data		*buf_data;
-+
-+		struct delayed_work		rsrc_put_work;
-+		struct llist_head		rsrc_put_llist;
-+		struct list_head		rsrc_ref_list;
-+		spinlock_t			rsrc_ref_lock;
-+	};
-+
- 	/* Keep this last, we don't need it for the fast path */
- 	struct {
- 		#if defined(CONFIG_UNIX)
+ 	posted = false;
 -- 
 2.31.1
 
