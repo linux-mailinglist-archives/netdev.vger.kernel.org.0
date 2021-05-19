@@ -2,100 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1269B38922B
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 17:05:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2401B389281
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 17:23:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348493AbhESPGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 11:06:23 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:22605 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231134AbhESPGW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 11:06:22 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1621436702; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=mbm/KQC14is0rErwVc62s6au2BQPmhOMig0Vh7EVlik=;
- b=CBL25lE1I2GzVwvZy///q17Rony7kmBqYD7JKp0DJJDf0nDgVC/nqc2pM+obqSaJPim6Wjp6
- Td+EZkqVDhpnPkIjbz1ja9nbgJZwZben3WORxSVOOrGSFfoZAUyIMMFQyDV5aKsszG1YHg2g
- tHMQUou9k+xCg+o+g9DiWZmRsT4=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 60a5291b2bff04e53b2d3be8 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 19 May 2021 15:04:59
- GMT
-Sender: jjohnson=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id AB02CC4338A; Wed, 19 May 2021 15:04:59 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: jjohnson)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1F866C433D3;
-        Wed, 19 May 2021 15:04:59 +0000 (UTC)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Wed, 19 May 2021 08:04:59 -0700
-From:   Jeff Johnson <jjohnson@codeaurora.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1354732AbhESPZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 11:25:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346350AbhESPZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 11:25:12 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2709AC06175F;
+        Wed, 19 May 2021 08:23:52 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id b12so8881307ljp.1;
+        Wed, 19 May 2021 08:23:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vZqm6PyudcGSEfI1UhpCQCBW48YlXZO5HgZI4Wx4nO8=;
+        b=Bsctn8IQ8TOypJMZcrD/cP56fNtLPDpC28hi+wdXT9RBsG8uT+pybRIExKqiv2U1h2
+         1CeaRLl/wW7jCOX8ZsWirRAoh7p42CGKhcdKM2prNT9yFdkZ6QpbCUnsvkK4ybNvCKDX
+         RcxIz5E1rqHDlkFnSHiZBkPUELDwaqZ1SbpQ/8IaGJe/v56qWqHHnNxHY2YtXT9C9t7c
+         DKa17i2LeupTM24mzs0xOUc07K6cwDvlt72gvhHlhWU3iU0s//4eyzpE9ZteA+5YIRfB
+         WBwn9ikxKsRuCiDgoqw0Px2szd5FnnijEAq9vY5uK1gFrDbcq5o0M6UCSiH0jLsG4ZbC
+         4Lcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vZqm6PyudcGSEfI1UhpCQCBW48YlXZO5HgZI4Wx4nO8=;
+        b=tCsn+K10uEdWyegAzv1JVOi19cnsxzCTj/ZosDcvwn/yMZg9rFQcMnJTJUwDnyGZa7
+         SZO1KwN8/yuKewKh7Z5pNnJfqiWa8pIsRl4KBXKOSWusYT/unN5r24TbvhbX+n7u1uLz
+         P6Gdm2yiB04QZfJo8SC9Ogn0C/P4Tx6I4VuEy1t7Hs5FWK1v9dARva2jwndM5yr5hZ41
+         sMmg4ta+6Q+rewYD9HH6F/EbSlPdHLIxnV9hjn7UoAIGiCG14vY2CLpfAXEi98g2g4J7
+         cBOZYvs8QRBqn3WZiF4zTiV2KDaGnnDT1HhUDt+Q5NotJOZG1h03pS6L/RxRhh8QdyAY
+         lFeQ==
+X-Gm-Message-State: AOAM532cNSvWQBQUJwi2WYYqQnwJGEdeBbCr2elZFEeYxjN18BET30Nm
+        byw/DbdqIGVYWvfH8OV3uTZ/qOQjFMo=
+X-Google-Smtp-Source: ABdhPJwSEN1RWsujXeRoEt2h6tX8IMiUPrIOJqBqMey8M27eLZbjedEBzGK7nMIxWzRtlTKukSMyCA==
+X-Received: by 2002:a2e:a7cb:: with SMTP id x11mr9284749ljp.143.1621437830321;
+        Wed, 19 May 2021 08:23:50 -0700 (PDT)
+Received: from [192.168.1.102] ([31.173.83.229])
+        by smtp.gmail.com with ESMTPSA id y3sm1982lfl.34.2021.05.19.08.23.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 May 2021 08:23:50 -0700 (PDT)
+Subject: Re: [PATCH] dt-bindings: net: renesas,ether: Update Sergei's email
+ address
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Chao Yu <chao@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jjohnson=codeaurora.org@codeaurora.org
-Subject: Re: [PATCH v2] b43: don't save dentries for debugfs
-In-Reply-To: <YKScfFKhxtVqfRkt@kroah.com>
-References: <20210518163304.3702015-1-gregkh@linuxfoundation.org>
- <891f28e4c1f3c24ed1b257de83cbb3a0@codeaurora.org>
- <f539277054c06e1719832b9e99cbf7f1@codeaurora.org>
- <YKScfFKhxtVqfRkt@kroah.com>
-Message-ID: <2eb3af43025436c0832c8f61fbf519ad@codeaurora.org>
-X-Sender: jjohnson@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+        Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+References: <15fb12769fcfeac8c761bf860ad94b9b223d3f9c.1621429311.git.geert+renesas@glider.be>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <ac381693-628c-e298-ca82-a6c6d70690e5@gmail.com>
+Date:   Wed, 19 May 2021 18:23:48 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+MIME-Version: 1.0
+In-Reply-To: <15fb12769fcfeac8c761bf860ad94b9b223d3f9c.1621429311.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-05-18 22:05, Greg Kroah-Hartman wrote:
-> On Tue, May 18, 2021 at 03:00:44PM -0700, Jeff Johnson wrote:
->> On 2021-05-18 12:29, Jeff Johnson wrote:
->> Would still like guidance on if there is a recommended way to get a
->> dentry not associated with debugfs.
+Hello!
+
+On 5/19/21 4:02 PM, Geert Uytterhoeven wrote:
+
+> Update Sergei's email address, as per commit 534a8bf0ccdd7b3f
+> ("MAINTAINERS: switch to my private email for Renesas Ethernet
+> drivers").
 > 
-> What do you exactly mean by "not associated with debugfs"?
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  Documentation/devicetree/bindings/net/renesas,ether.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> And why are you passing a debugfs dentry to relay_open()?  That feels
-> really wrong and fragile.
+> diff --git a/Documentation/devicetree/bindings/net/renesas,ether.yaml b/Documentation/devicetree/bindings/net/renesas,ether.yaml
+> index 8ce5ed8a58dd76e6..c101a1ec846ea8e9 100644
+> --- a/Documentation/devicetree/bindings/net/renesas,ether.yaml
+> +++ b/Documentation/devicetree/bindings/net/renesas,ether.yaml
+> @@ -10,7 +10,7 @@ allOf:
+>    - $ref: ethernet-controller.yaml#
+>  
+>  maintainers:
+> -  - Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+> +  - Sergei Shtylyov <sergei.shtylyov@gmail.com>
 
-I don't know the history but the relay documentation tells us:
-"If you want a directory structure to contain your relay files,
-you should create it using the host filesystem’s directory
-creation function, e.g. debugfs_create_dir()..."
+Acked-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
 
-So my guess is that the original implementation followed that
-advice.  I see 5 clients of this functionality, and all 5 pass a
-dentry returned from debugfs_create_dir():
+[...]
 
-drivers/gpu/drm/i915/gt/uc/intel_guc_log.c, line 384
-drivers/net/wireless/ath/ath10k/spectral.c, line 534
-drivers/net/wireless/ath/ath11k/spectral.c, line 902
-drivers/net/wireless/ath/ath9k/common-spectral.c, line 1077
-kernel/trace/blktrace.c, line 549
-
-Jeff
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
-Forum,
-a Linux Foundation Collaborative Project
+MBR, Sergei
