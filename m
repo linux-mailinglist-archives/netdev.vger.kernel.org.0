@@ -2,88 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF6733892DA
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 17:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 477C53892E9
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 17:45:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354958AbhESPov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 11:44:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58426 "EHLO mail.kernel.org"
+        id S1348078AbhESPrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 11:47:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60774 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242076AbhESPos (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 11:44:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A055C611BD;
-        Wed, 19 May 2021 15:43:27 +0000 (UTC)
+        id S241115AbhESPrJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 11:47:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 60A81611B0;
+        Wed, 19 May 2021 15:45:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621439008;
-        bh=DMr8lSulIAPylUxWoxAnCkPFFhWH0Kf0bTYVbrlD5oU=;
+        s=k20201202; t=1621439150;
+        bh=5mq2zuZKNWGNXVkYrvisy1MuhWbWO9mkUZ4l0aSaBjI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZBsRsLtvL3OG+6gDXNSRZE+UBQZ7qyYaRl7IaaqFCLr8JAtCBcGwvWaCkCAfZCR39
-         PDJB2FUHo1Pj09dgtXv9TM4S31AMMet7lAA1fFh7FJDx3uiBMvKMoC1X9pFQn+sAlc
-         TPSaFn7VgzCBug6b+05DyFrIApccSbS6J65rG2tvl9cNFFci0VSW87F5Cb6mnf8Weh
-         caOHUdyc3bU4PPYxoMNvwjOt6/nEi3/nISlh6NSEYaxeCkonnLEwBvlbZVP2r3XFAz
-         wLU/S5EQr/i7vykRTT5cOJLEWDZooAikUHjeiN4K74s8Sh9bDwsbOhBrf+Pr8ePnvo
-         33YvVjgLHfQhQ==
-Date:   Wed, 19 May 2021 18:43:24 +0300
+        b=U8XYy2y9TO1XoEExwcRb5SUOfmX3W3ua2IclWwusIw9WGR23Veww2UNOQLMhzKcET
+         NG/YiptSwY68QO5aL3cNAUTR00HZLOCgB0Zq3GmJyM4sam73EnqZjsTcd7ooc0bH9W
+         PdQjeETbN9TRnemzx/r+GkZYv6GrQN4NHvv5rgG4mnVy/5X8V0SH4/XzV7QHXtFFrc
+         4c/N2O4A2ewS5GWS/cXmJGwrCUJC0I2k4JtHofbakiZOL9ItfYbJNOGxajW18tWSCM
+         7aQvdobEbIfLGDtTeINHy8iCUkuSn3LbKm+MY+vPMtn4/C/mCoozsteSPJwh2DNjLN
+         T+tDJuClF/5bg==
+Date:   Wed, 19 May 2021 18:45:46 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Shiraz Saleem <shiraz.saleem@intel.com>, dledford@redhat.com,
-        kuba@kernel.org, davem@davemloft.net, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, david.m.ertman@intel.com,
-        anthony.l.nguyen@intel.com
-Subject: Re: [PATCH v5 06/22] i40e: Register auxiliary devices to provide RDMA
-Message-ID: <YKUyHBegLKDlYYoN@unreal>
-References: <20210514141214.2120-1-shiraz.saleem@intel.com>
- <20210514141214.2120-7-shiraz.saleem@intel.com>
- <YKUJ4rnZf4u4qUYc@unreal>
- <20210519134349.GK1002214@nvidia.com>
+To:     Zhen Lei <thunder.leizhen@huawei.com>
+Cc:     Karsten Keil <isdn@linux-pingi.de>, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH 1/1] mISDN: Mark local variable 'incomplete' as
+ __maybe_unused in dsp_pipeline_build()
+Message-ID: <YKUyqhva+2UQ44Ly@unreal>
+References: <20210519125352.7991-1-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210519134349.GK1002214@nvidia.com>
+In-Reply-To: <20210519125352.7991-1-thunder.leizhen@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 19, 2021 at 10:43:49AM -0300, Jason Gunthorpe wrote:
-> On Wed, May 19, 2021 at 03:51:46PM +0300, Leon Romanovsky wrote:
-> > On Fri, May 14, 2021 at 09:11:58AM -0500, Shiraz Saleem wrote:
-> > > Convert i40e to use the auxiliary bus infrastructure to export
-> > > the RDMA functionality of the device to the RDMA driver.
-> > > Register i40e client auxiliary RDMA device on the auxiliary bus per
-> > > PCIe device function for the new auxiliary rdma driver (irdma) to
-> > > attach to.
-> > > 
-> > > The global i40e_register_client and i40e_unregister_client symbols
-> > > will be obsoleted once irdma replaces i40iw in the kernel
-> > > for the X722 device.
-> > > 
-> > > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > >  drivers/net/ethernet/intel/Kconfig            |   1 +
-> > >  drivers/net/ethernet/intel/i40e/i40e.h        |   2 +
-> > >  drivers/net/ethernet/intel/i40e/i40e_client.c | 152 ++++++++++++++++++++++----
-> > >  drivers/net/ethernet/intel/i40e/i40e_main.c   |   1 +
-> > >  4 files changed, 136 insertions(+), 20 deletions(-)
-> > 
-> > The amount of obfuscation in this driver is astonishing.
-> > 
-> > I would expect that after this series, the i40e_client_add_*() would
-> > be cleaned, for example simple grep of I40E_CLIENT_VERSION_MAJOR
-> > shows that i40e_register_client() still have no-go code.
+On Wed, May 19, 2021 at 08:53:52PM +0800, Zhen Lei wrote:
+> GCC reports the following warning with W=1:
 > 
-> While it would be nice to see i40e fully cleaned I think we agreed to
-> largely ignore it as-is so long as the new driver's aux implementation
-> was sane.
+> drivers/isdn/mISDN/dsp_pipeline.c:221:6: warning:
+>  variable 'incomplete' set but not used [-Wunused-but-set-variable]
+>   221 |  int incomplete = 0, found = 0;
+>       |      ^~~~~~~~~~
+> 
+> This variable is used only when macro PIPELINE_DEBUG is defined.
 
-It is hard to say, the code is so obfuscated with many layers in between.
-
-For example, I tried to follow where and how they use IDA index that is used
-in aux device creation and went lost. Sometimes they take it from PF, sometimes
-from the client from different allocation pool.
-
-If client logic goes, we will see less code which should be similar for
-netdev and RDMA. It is not the case now.
+That define is commented 13 years ago and can be seen as a dead code
+that should be removed.
 
 Thanks
 
 > 
-> Jason
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  drivers/isdn/mISDN/dsp_pipeline.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/isdn/mISDN/dsp_pipeline.c b/drivers/isdn/mISDN/dsp_pipeline.c
+> index 40588692cec7..6a31f6879da8 100644
+> --- a/drivers/isdn/mISDN/dsp_pipeline.c
+> +++ b/drivers/isdn/mISDN/dsp_pipeline.c
+> @@ -218,7 +218,7 @@ void dsp_pipeline_destroy(struct dsp_pipeline *pipeline)
+>  
+>  int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
+>  {
+> -	int incomplete = 0, found = 0;
+> +	int __maybe_unused incomplete = 0, found = 0;
+>  	char *dup, *tok, *name, *args;
+>  	struct dsp_element_entry *entry, *n;
+>  	struct dsp_pipeline_entry *pipeline_entry;
+> -- 
+> 2.25.1
+> 
+> 
