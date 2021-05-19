@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26040389028
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:14:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE4F138902D
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:14:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353992AbhESOPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 10:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
+        id S1353927AbhESOPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 10:15:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353908AbhESOPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:15:16 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD58C061763;
-        Wed, 19 May 2021 07:13:56 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id b7so6787134wmh.5;
-        Wed, 19 May 2021 07:13:56 -0700 (PDT)
+        with ESMTP id S1353948AbhESOP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:15:28 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BABC06138B;
+        Wed, 19 May 2021 07:13:57 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id a4so14236438wrr.2;
+        Wed, 19 May 2021 07:13:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1LxYRWZUsnSIxOX2Qv7kHLFKMWp6NXKb/JCxteoPhi4=;
-        b=ZFGdykG9VWTjZi5gupEJgX3FD/oRFvi4uH4Ko+eiMjEJW4yRLfyXH/OJiOAKd1q4yi
-         1+kKBEGdJuCZKkyDLC8k4uuC4JB5LU72XNU1VLdXgl+MMc0hDicBfgBiW3MTw2oI8v5g
-         LF9Y0fHU56llWpvBOzIlBmV3TJYmQOvIv86gOmgFHgL7SsHicH7l4/XXO0/sB8y2+wlq
-         QYPvOGnDvUEK2+u3WiCCWmeQFuoZelbGdzL1TZvLMaXNJpG2KdE63GtCBE2jbsx85zeC
-         iIB2M/6PqCwnw9Ef11u0HUDtM2cpnrop9pzwh057QWKy+5+5G0769/BBTU1bgwlEJAoy
-         pa1g==
+        bh=ZPT+0HJmzsc95uwTFh6BaxO4xNAkeAD/mL9HofulqQs=;
+        b=ugKf7X7OZjfuyM0BMA5+9eJmnjeem8TIzS8o3NGQQBbdg//F4mw1EcRMf58jy07IiS
+         J+QHbGfm/uMUrK8Q6zp9twEnp9vI0wGClssYlxIBoSWP/XICWUOoRySpkJRjkwdsh079
+         tvNWrWJWFm0bXiK04IyGz6uty3Isw9b11hcK6ykOhAcHCwKaQyitsCp20aFTRNNZjgw5
+         Ero9VdPiVQ3btsfqtsBVmS/mT5tj6/Nqo2x3bEnRwV9RxhfxVDI7YzvW/DbLw0fMPtSE
+         A0MxJevqdd2fv8OVs/jVH8tl7rBBuRKgP/o+VtcYHqraKeHvxothy/x8Rfh4NpSVje+5
+         OxGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1LxYRWZUsnSIxOX2Qv7kHLFKMWp6NXKb/JCxteoPhi4=;
-        b=nwgOcFLF/s/fod2ke37r2smu7kjjEq5pwNEIwmmeDtLSYWl/MHXnPoaqyDmSXbTeoJ
-         7qzNgpfQHi/i6rmrISnb6atlqPdGDreIY6FqMU+1SjUcVsJaX9YzCB9RGWTebkQdgwxh
-         o+pl/UWmzMCUmnzYh4fhLZJmlYvW3yNxqW7v9ygdTjhIpvu8BMRo7d/0vObtgDhnY3If
-         Nf4J6cwK2cudoLKLTY/xSSzUrTxiySo9CEsj98k3rroHMFiuO9qhLArgPQPjqvxtd++B
-         IXUNxHBu/JW1qO8Eo7bTXB6I7LjBqiYqfF/6q5qjB5KESGNepq35PjPHCdjIATmQV8Ad
-         BtwQ==
-X-Gm-Message-State: AOAM533DYoo98464gyttRladTs2UynKwDuglaFqMLXeeaHRigHBM34od
-        hBye4HIvpR0G1U/uy4Lv4UrpALZE5JPfUbSx
-X-Google-Smtp-Source: ABdhPJzyGiyrMlenYIpS+THnOoIvHrkX2gj9WOMTuPD2+Qh++DG+o95t0zdKSz40zTawQlV6SgljOA==
-X-Received: by 2002:a05:600c:3654:: with SMTP id y20mr6103852wmq.184.1621433635073;
-        Wed, 19 May 2021 07:13:55 -0700 (PDT)
+        bh=ZPT+0HJmzsc95uwTFh6BaxO4xNAkeAD/mL9HofulqQs=;
+        b=bYKkp4VFEugnNKq4M5cbdY6Hls6GEGbUdk3PLkC2WIxA2O+nen7iYn7oWdzLTJMR4c
+         Csf7ltgFm04jR8XrmGLUTeqRY99dj+67eyX/WqVJvRVjKQhy2SZKIsAu7vgI7wskTB+B
+         VnKu3HUpr3DMiA5vfYxG2d+JI0fwoM15L3yDGVtm6UyfAt4qxlfrVLT0hpkKRXSEAzvk
+         wUUDMLjMtVesn/Hr78LgToF1vFhTc/OOa4BobVG8+cbYiBvDJAjGOLUHJ8v9bfDjF8PM
+         rCUyj7q2w1uWJsAq3XeG7WuACP+OqlHdSTmpTf6ErnASN388ZWcg7vsE+Mp/GULDtc0s
+         uBng==
+X-Gm-Message-State: AOAM532+XKstRw5YBabOAc7nwYnWkFMWqWIbZb+rNDcSVG0h3r9E5urd
+        Q9Ns5bn+gjeTRJgcQxmrG06LdLcxVuMmw82S
+X-Google-Smtp-Source: ABdhPJwIGP4B1GsZIjPV9HwTg4I3krYxTRqYaxuRBbbjraw0wXD/gBdvaNtXqSmRKJ/QDmpO7Eh42g==
+X-Received: by 2002:a5d:64c7:: with SMTP id f7mr14861047wri.257.1621433636230;
+        Wed, 19 May 2021 07:13:56 -0700 (PDT)
 Received: from localhost.localdomain ([85.255.235.154])
-        by smtp.gmail.com with ESMTPSA id z3sm6233569wrq.42.2021.05.19.07.13.53
+        by smtp.gmail.com with ESMTPSA id z3sm6233569wrq.42.2021.05.19.07.13.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 May 2021 07:13:54 -0700 (PDT)
+        Wed, 19 May 2021 07:13:55 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -60,9 +60,9 @@ Cc:     Jens Axboe <axboe@kernel.dk>, Alexei Starovoitov <ast@kernel.org>,
         Horst Schirmeier <horst.schirmeier@tu-dortmund.de>,
         "Franz-B . Tuneke" <franz-bernhard.tuneke@tu-dortmund.de>,
         Christian Dietrich <stettberger@dokucode.de>
-Subject: [PATCH 04/23] io_uring: deduce cq_mask from cq_entries
-Date:   Wed, 19 May 2021 15:13:15 +0100
-Message-Id: <f5fc827237c2d339d3fdae8a0588763ba3e1d0f1.1621424513.git.asml.silence@gmail.com>
+Subject: [PATCH 05/23] io_uring: kill cached_cq_overflow
+Date:   Wed, 19 May 2021 15:13:16 +0100
+Message-Id: <740885c2bdc38f2a269cd9591987c80ae7b7ce8a.1621424513.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1621424513.git.asml.silence@gmail.com>
 References: <cover.1621424513.git.asml.silence@gmail.com>
@@ -72,79 +72,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No need to cache cq_mask, it's exactly cq_entries - 1, so just deduce
-it to not carry it around.
+There are two copies of cq_overflow, shared with userspace and internal
+cached one. It was needed for DRAIN accounting, but now we have yet
+another knob to tune the accounting, i.e. cq_extra, and we can throw
+away the internal counter and just increment the one in the shared ring.
+
+If user modifies it as so never gets the right overflow value ever
+again, it's its problem, even though before we would have restored it
+back by next overflow.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- fs/io_uring.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ fs/io_uring.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 15dc5dad1f7d..067c89e63fea 100644
+index 067c89e63fea..b89a781b3f33 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -361,7 +361,6 @@ struct io_ring_ctx {
- 		u32			*sq_array;
- 		unsigned		cached_sq_head;
+@@ -363,7 +363,6 @@ struct io_ring_ctx {
  		unsigned		sq_entries;
--		unsigned		sq_mask;
  		unsigned		sq_thread_idle;
  		unsigned		cached_sq_dropped;
- 		unsigned		cached_cq_overflow;
-@@ -407,7 +406,6 @@ struct io_ring_ctx {
- 	struct {
- 		unsigned		cached_cq_tail;
- 		unsigned		cq_entries;
--		unsigned		cq_mask;
- 		atomic_t		cq_timeouts;
- 		unsigned		cq_last_tm_flush;
- 		unsigned		cq_extra;
-@@ -1363,7 +1361,7 @@ static inline unsigned int __io_cqring_events(struct io_ring_ctx *ctx)
- static inline struct io_uring_cqe *io_get_cqring(struct io_ring_ctx *ctx)
- {
- 	struct io_rings *rings = ctx->rings;
--	unsigned tail;
-+	unsigned tail, mask = ctx->cq_entries - 1;
+-		unsigned		cached_cq_overflow;
+ 		unsigned long		sq_check_overflow;
  
- 	/*
- 	 * writes to the cq entry need to come after reading head; the
-@@ -1374,7 +1372,7 @@ static inline struct io_uring_cqe *io_get_cqring(struct io_ring_ctx *ctx)
- 		return NULL;
- 
- 	tail = ctx->cached_cq_tail++;
--	return &rings->cqes[tail & ctx->cq_mask];
-+	return &rings->cqes[tail & mask];
+ 		struct list_head	defer_list;
+@@ -1195,13 +1194,20 @@ static struct io_ring_ctx *io_ring_ctx_alloc(struct io_uring_params *p)
+ 	return NULL;
  }
  
- static inline bool io_should_trigger_evfd(struct io_ring_ctx *ctx)
-@@ -6677,7 +6675,7 @@ static void io_commit_sqring(struct io_ring_ctx *ctx)
- static const struct io_uring_sqe *io_get_sqe(struct io_ring_ctx *ctx)
++static void io_account_cq_overflow(struct io_ring_ctx *ctx)
++{
++	struct io_rings *r = ctx->rings;
++
++	WRITE_ONCE(r->cq_overflow, READ_ONCE(r->cq_overflow) + 1);
++	ctx->cq_extra--;
++}
++
+ static bool req_need_defer(struct io_kiocb *req, u32 seq)
  {
- 	u32 *sq_array = ctx->sq_array;
--	unsigned head;
-+	unsigned head, mask = ctx->sq_entries - 1;
+ 	if (unlikely(req->flags & REQ_F_IO_DRAIN)) {
+ 		struct io_ring_ctx *ctx = req->ctx;
  
- 	/*
- 	 * The cached sq head (or cq tail) serves two purposes:
-@@ -6687,7 +6685,7 @@ static const struct io_uring_sqe *io_get_sqe(struct io_ring_ctx *ctx)
- 	 * 2) allows the kernel side to track the head on its own, even
- 	 *    though the application is the one updating it.
- 	 */
--	head = READ_ONCE(sq_array[ctx->cached_sq_head++ & ctx->sq_mask]);
-+	head = READ_ONCE(sq_array[ctx->cached_sq_head++ & mask]);
- 	if (likely(head < ctx->sq_entries))
- 		return &ctx->sq_sqes[head];
+-		return seq + ctx->cq_extra != ctx->cached_cq_tail
+-				+ READ_ONCE(ctx->cached_cq_overflow);
++		return seq + READ_ONCE(ctx->cq_extra) != ctx->cached_cq_tail;
+ 	}
  
-@@ -9493,8 +9491,6 @@ static int io_allocate_scq_urings(struct io_ring_ctx *ctx,
- 	rings->cq_ring_mask = p->cq_entries - 1;
- 	rings->sq_ring_entries = p->sq_entries;
- 	rings->cq_ring_entries = p->cq_entries;
--	ctx->sq_mask = rings->sq_ring_mask;
--	ctx->cq_mask = rings->cq_ring_mask;
- 
- 	size = array_size(sizeof(struct io_uring_sqe), p->sq_entries);
- 	if (size == SIZE_MAX) {
+ 	return false;
+@@ -1440,8 +1446,8 @@ static bool __io_cqring_overflow_flush(struct io_ring_ctx *ctx, bool force)
+ 		if (cqe)
+ 			memcpy(cqe, &ocqe->cqe, sizeof(*cqe));
+ 		else
+-			WRITE_ONCE(ctx->rings->cq_overflow,
+-				   ++ctx->cached_cq_overflow);
++			io_account_cq_overflow(ctx);
++
+ 		posted = true;
+ 		list_del(&ocqe->list);
+ 		kfree(ocqe);
+@@ -1525,7 +1531,7 @@ static bool io_cqring_event_overflow(struct io_ring_ctx *ctx, u64 user_data,
+ 		 * or cannot allocate an overflow entry, then we need to drop it
+ 		 * on the floor.
+ 		 */
+-		WRITE_ONCE(ctx->rings->cq_overflow, ++ctx->cached_cq_overflow);
++		io_account_cq_overflow(ctx);
+ 		return false;
+ 	}
+ 	if (list_empty(&ctx->cq_overflow_list)) {
 -- 
 2.31.1
 
