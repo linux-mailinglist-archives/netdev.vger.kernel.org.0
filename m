@@ -2,88 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63081389329
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 17:59:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9373E389330
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 18:03:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355064AbhESQA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 12:00:56 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:35264 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355063AbhESQAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 12:00:43 -0400
-Received: from mail-qk1-f198.google.com ([209.85.222.198])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1ljObT-0007Ea-7n
-        for netdev@vger.kernel.org; Wed, 19 May 2021 15:59:23 +0000
-Received: by mail-qk1-f198.google.com with SMTP id a24-20020a05620a1038b02902fa6ba180ffso10189755qkk.0
-        for <netdev@vger.kernel.org>; Wed, 19 May 2021 08:59:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PnooPKSwa6SmA/H8X8W7wHWC0547PfU+gn/DWorwdGQ=;
-        b=gC5BTW9peh83rVNtol/CtFvrZUDmX4HAed9XZHiit2etZFOCGlk2MvS39Ho6X/lBZo
-         UZkrGoXvDpWE4ePvE5QCoXK+/SLXiQ0WgGhOHB7vjFrTxhb4mr80go2THfrjBWBtQWgW
-         9BFRwhvcQwwqUz+OQch50Jq0JBoixHJ8xuDKuaokAwZ/ajdrzj4c/pMo2+HrmW0JB/oT
-         9qZ2r/4k9ZBUaWhGv1vGXTNJipf4jLtFYHwOOgJWYQPsFukeEJAF198t73furOLulc7d
-         6V87mQL/i56TH7ZT19gtJx4rx7C4bdydSlHgGa9wnhbyoFyJIXFNmneTdhglzckcHBIv
-         ZvWg==
-X-Gm-Message-State: AOAM532qqdkTOjBodqu7iYGMJEFRHQJpbSWUVAFm//FuW8j8i/CDjzs/
-        LAcEUcC0oIpy9/ticSG2hKnJqtJfXZDGEFEWdvNJlCTnm9Do1tWJS63r4yksDHzjxF6ltuU8lwu
-        NYp8/PrsJjUPE5wPXwuJ9umwjNnc4MFw2+A==
-X-Received: by 2002:ac8:5dce:: with SMTP id e14mr77863qtx.183.1621439962420;
-        Wed, 19 May 2021 08:59:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxGwuwn46qYHy7r79lyImK37z9ZMvzPgbLiPqex86I0vyobhhsRXb3Fod9XlHot7MGdUrlG5A==
-X-Received: by 2002:ac8:5dce:: with SMTP id e14mr77836qtx.183.1621439962143;
-        Wed, 19 May 2021 08:59:22 -0700 (PDT)
-Received: from [192.168.1.4] ([45.237.48.3])
-        by smtp.gmail.com with ESMTPSA id g15sm72470qka.49.2021.05.19.08.59.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 May 2021 08:59:21 -0700 (PDT)
-Subject: Re: [linux-nfc] [PATCH v2 1/2] dt-bindings: net: nfc: s3fwrn5: Add
- optional clock
-To:     Stephan Gerhold <stephan@gerhold.net>,
+        id S1355077AbhESQEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 12:04:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50722 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346574AbhESQEa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 12:04:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2CC91611BF;
+        Wed, 19 May 2021 16:03:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1621440190;
+        bh=JZ5ttupHJEOD9whNallqTU+f5HydGhX1QoErpDhMSqc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pK80JGjcsfTNR77RvDU/cvsZsF0N9SpohJW9XQJaXGVTLtFhs9vZO0mfB8Qr/6yP1
+         WeDPA9KpMxok/EFnJe+k7/XORUQWRS1slPmZKqwOWUobnEANqAoyr5w/7wWWmc+RMx
+         qxmSTLpdSAIBzMBO0t4HXq7D8VfJGTzne7w68Wjk=
+Date:   Wed, 19 May 2021 18:03:08 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jeff Johnson <jjohnson@codeaurora.org>
+Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Bongsu Jeon <bongsu.jeon@samsung.com>,
-        ~postmarketos/upstreaming@lists.sr.ht
-References: <20210519091613.7343-1-stephan@gerhold.net>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <c1f02515-a86a-7293-b884-52c388ea70e3@canonical.com>
-Date:   Wed, 19 May 2021 11:59:06 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Jakub Kicinski <kuba@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Chao Yu <chao@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>, b43-dev@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jjohnson=codeaurora.org@codeaurora.org
+Subject: Re: [PATCH v2] b43: don't save dentries for debugfs
+Message-ID: <YKU2vMoDO0Ch1Lyg@kroah.com>
+References: <20210518163304.3702015-1-gregkh@linuxfoundation.org>
+ <891f28e4c1f3c24ed1b257de83cbb3a0@codeaurora.org>
+ <f539277054c06e1719832b9e99cbf7f1@codeaurora.org>
+ <YKScfFKhxtVqfRkt@kroah.com>
+ <2eb3af43025436c0832c8f61fbf519ad@codeaurora.org>
+ <YKUyAoBq/cepglmk@kroah.com>
+ <48aea7ae33faaafab388e24c3b8eb199@codeaurora.org>
 MIME-Version: 1.0
-In-Reply-To: <20210519091613.7343-1-stephan@gerhold.net>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <48aea7ae33faaafab388e24c3b8eb199@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/05/2021 05:16, Stephan Gerhold wrote:
-> On some systems, S3FWRN5 depends on having an external clock enabled
-> to function correctly. Allow declaring that clock in the device tree.
+On Wed, May 19, 2021 at 08:57:00AM -0700, Jeff Johnson wrote:
+> On 2021-05-19 08:42, Greg Kroah-Hartman wrote:
+> > On Wed, May 19, 2021 at 08:04:59AM -0700, Jeff Johnson wrote:
+> > > On 2021-05-18 22:05, Greg Kroah-Hartman wrote:
+> > > > On Tue, May 18, 2021 at 03:00:44PM -0700, Jeff Johnson wrote:
+> > > > > On 2021-05-18 12:29, Jeff Johnson wrote:
+> > > > > Would still like guidance on if there is a recommended way to get a
+> > > > > dentry not associated with debugfs.
+> > > >
+> > > > What do you exactly mean by "not associated with debugfs"?
+> > > >
+> > > > And why are you passing a debugfs dentry to relay_open()?  That feels
+> > > > really wrong and fragile.
+> > > 
+> > > I don't know the history but the relay documentation tells us:
+> > > "If you want a directory structure to contain your relay files,
+> > > you should create it using the host filesystem’s directory
+> > > creation function, e.g. debugfs_create_dir()..."
+> > > 
+> > > So my guess is that the original implementation followed that
+> > > advice.  I see 5 clients of this functionality, and all 5 pass a
+> > > dentry returned from debugfs_create_dir():
+> > > 
+> > > drivers/gpu/drm/i915/gt/uc/intel_guc_log.c, line 384
+> > > drivers/net/wireless/ath/ath10k/spectral.c, line 534
+> > > drivers/net/wireless/ath/ath11k/spectral.c, line 902
+> > > drivers/net/wireless/ath/ath9k/common-spectral.c, line 1077
+> > > kernel/trace/blktrace.c, line 549
+> > 
+> > Ah, that's just the "parent" dentry for the relayfs file.  That's fine,
+> > not a big deal, debugfs will always provide a way for you to get that if
+> > needed.
 > 
-> Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
-> ---
-> Changes in v2: Minor change in commit message only
-> v1: https://lore.kernel.org/netdev/20210518133935.571298-1-stephan@gerhold.net/
-> ---
->  .../devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml         | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
+> Unless debugfs is disabled, like on Android, which is the real problem I'm
+> trying to solve.
 
+Then use some other filesystem to place your relay file in.  A relay
+file is not a file that userspace should rely on for normal operation,
+so why do you need it at all?
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+What tools/operation requires access to this file that systems without
+debugfs support is causing problems on?
 
+thanks,
 
-Best regards,
-Krzysztof
+greg k-h
