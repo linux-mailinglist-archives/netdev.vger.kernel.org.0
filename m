@@ -2,40 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B908738874A
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 08:06:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D9F238874B
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 08:06:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239202AbhESGHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 02:07:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49266 "EHLO mail.kernel.org"
+        id S242533AbhESGHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 02:07:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49248 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238492AbhESGH2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236858AbhESGH2 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 19 May 2021 02:07:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C5DAB613AD;
-        Wed, 19 May 2021 06:06:08 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 60B37613AE;
+        Wed, 19 May 2021 06:06:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1621404369;
-        bh=ImTkEi17xnztBrf4rHv3vHo2rR/vYYEqHmeCwa4w3hg=;
+        bh=icB6kiNO4xW/ejVuNGwjtivwxI7QExeAv4lp/2U8dUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bKei46rjABS9Yvp+yxcpiFZzG5t0L1+khWdY0pOwp+Y7q1PXP0xwURcJWK5oWERRx
-         f0ULWrmFYQ7CVYDae2Gu2+fUhWbKkPJxoQc3YOAiqxtrAaG2I7Em4VktU95gKXq6P7
-         1DjRTvkwtQrvBtIKeq2QOXldqrdmcX1zKDWK8HhZKP90f/K7Sp+Hr0eKc5nu9AkaHY
-         2EM43NjfeJl8P91dzCsmfrBZvaRIhebIlnqsdjH7TfAdkcI99w1kAK2DB3fHKreqDa
-         NCp7E0LvjU1AsJ44UOSmyNkCaxE7TeMS+tfZmM8biZFw3QAze4k5uAy1Z2xp5AOcjq
-         2+ZBUXFI4S2Iw==
+        b=p79kiKVCr7OQxG6WIml3+RQhtYk8kmqUUNO5QtcaR8Iq+YpUfUHkRVp4KuiojN3W1
+         GgiwvlbEOaxOkSzBVfIgCo/Wro0RAvyMU4YnBPJKYutRyuCMwyK/d4VqRLOlwBNkS3
+         q+G7mXlvC/2L5PNOn32kAueDJspTT+TYjNWq6ejaySox3+rmHMo8enXrZet7ZvS7RL
+         Lc5g7bfujeL/0UeLGIrrrlGNHmqciuRoOTFgwoRqcwTYUYewhz1tk3ZFL+pLgto+se
+         9Zg0etuAemjZYI/MbBtteFVTBLOAvSFzmKBNXjr06p5Xx14hUMTPabf8E64jkUeB2q
+         9sE3Yz9S3y7Yw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Dennis Afanasev <dennis.afanasev@stateless.net>,
-        Maor Dickman <maord@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 08/16] net/mlx5e: Make sure fib dev exists in fib event
-Date:   Tue, 18 May 2021 23:05:15 -0700
-Message-Id: <20210519060523.17875-9-saeed@kernel.org>
+        Saeed Mahameed <saeedm@nvidia.com>, Aya Levin <ayal@nvidia.com>
+Subject: [net 09/16] net/mlx5e: reset XPS on error flow if netdev isn't registered yet
+Date:   Tue, 18 May 2021 23:05:16 -0700
+Message-Id: <20210519060523.17875-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210519060523.17875-1-saeed@kernel.org>
 References: <20210519060523.17875-1-saeed@kernel.org>
@@ -45,32 +41,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-For unreachable route entry the fib dev does not exists.
+mlx5e_attach_netdev can be called prior to registering the netdevice:
+Example stack:
 
-Fixes: 8914add2c9e5 ("net/mlx5e: Handle FIB events to update tunnel endpoint device")
-Reported-by: Dennis Afanasev <dennis.afanasev@stateless.net>
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Vlad Buslov <vladbu@nvidia.com>
+ipoib_new_child_link ->
+ipoib_intf_init->
+rdma_init_netdev->
+mlx5_rdma_setup_rn->
+
+mlx5e_attach_netdev->
+mlx5e_num_channels_changed ->
+mlx5e_set_default_xps_cpumasks ->
+netif_set_xps_queue ->
+__netif_set_xps_queue -> kmalloc
+
+If any later stage fails at any point after mlx5e_num_channels_changed()
+returns, XPS allocated maps will never be freed as they
+are only freed during netdev unregistration, which will never happen for
+yet to be registered netdevs.
+
+Fixes: 3909a12e7913 ("net/mlx5e: Fix configuration of XPS cpumasks and netdev queues in corner cases")
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-index 593503bc4d07..f1fb11680d20 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-@@ -1505,7 +1505,7 @@ mlx5e_init_fib_work_ipv4(struct mlx5e_priv *priv,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index bca832cdc4cb..89937b055070 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -5229,6 +5229,11 @@ static void mlx5e_update_features(struct net_device *netdev)
+ 	rtnl_unlock();
+ }
  
- 	fen_info = container_of(info, struct fib_entry_notifier_info, info);
- 	fib_dev = fib_info_nh(fen_info->fi, 0)->fib_nh_dev;
--	if (fib_dev->netdev_ops != &mlx5e_netdev_ops ||
-+	if (!fib_dev || fib_dev->netdev_ops != &mlx5e_netdev_ops ||
- 	    fen_info->dst_len != 32)
- 		return NULL;
++static void mlx5e_reset_channels(struct net_device *netdev)
++{
++	netdev_reset_tc(netdev);
++}
++
+ int mlx5e_attach_netdev(struct mlx5e_priv *priv)
+ {
+ 	const bool take_rtnl = priv->netdev->reg_state == NETREG_REGISTERED;
+@@ -5283,6 +5288,7 @@ int mlx5e_attach_netdev(struct mlx5e_priv *priv)
+ 	profile->cleanup_tx(priv);
+ 
+ out:
++	mlx5e_reset_channels(priv->netdev);
+ 	set_bit(MLX5E_STATE_DESTROYING, &priv->state);
+ 	cancel_work_sync(&priv->update_stats_work);
+ 	return err;
+@@ -5300,6 +5306,7 @@ void mlx5e_detach_netdev(struct mlx5e_priv *priv)
+ 
+ 	profile->cleanup_rx(priv);
+ 	profile->cleanup_tx(priv);
++	mlx5e_reset_channels(priv->netdev);
+ 	cancel_work_sync(&priv->update_stats_work);
+ }
  
 -- 
 2.31.1
