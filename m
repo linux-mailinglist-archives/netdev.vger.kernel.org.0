@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A353897BE
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 22:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3D03897C4
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 22:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229937AbhESUVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 16:21:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51458 "EHLO mail.kernel.org"
+        id S229955AbhESUVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 16:21:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51618 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229659AbhESUVa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 16:21:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 12279611BD;
-        Wed, 19 May 2021 20:20:10 +0000 (UTC)
+        id S229565AbhESUVf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 16:21:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 52EE26135F;
+        Wed, 19 May 2021 20:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621455610;
-        bh=/CnjdlXdsHM2gN1aHWvsXgOja2sz8dV4T0A41nGaqjU=;
+        s=k20201202; t=1621455615;
+        bh=bLfZ6T+0eeJALV2fgqEgxwkeDQvQ35QAOv8EHlCuLis=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HiRj3t/Dw1SXB2RU0hCIGjvSlk1HoTWpUXyM7+RLjZ7SJFHzbnO2iQWzkdIXMvMER
-         /EaA7n7QCN9b9r/Cqoop0ZAs35cijfMohQxlZCQ0oZHHVNf8ZrPu31zSrupnYDoONn
-         S2917r4BIJMqZ4LPGex7SoBlhJ91JI7HN+CwvEYJ9wnWzoMZtIyc8LY75rmWvaNitg
-         6t93r2Pa8lmqecV0DK11sASRE0kVrzW8xX2/xQw2yQc4B8Gt+/uugDLPWb5QgExlBP
-         KaNosOrFYE6fHKg+bAGqsXg6zBiteBJcpeMcII5hyAfINOFFb+riWRYBSn9fNkYRVl
-         S0iKbvR5t2j1w==
+        b=ZM0qvfH2F+J15M1VR0gwmRf5Ya1rVk7hlqb6C97NtEbUZos14f8N3POZvcUTWE6lS
+         i0ynzL5Gf4A8YeMWnYa0cXEYqvMXzgMF3Z95rY7FtiABCRJ4biePO2/YXzTbztyKOQ
+         ZrAiKhL24v3f9/ry5cCgmaeenB7bDJ+hfN0mBlCVZqN0lapY9Rm4PkDa7iUyeYs9Vs
+         KXIP91sSZPRvD+6s0RECDO832nXhd8psPrikDW9A9VCRx5R/YGnD7ihEgfHcImRcKH
+         TIGexv6ZnavRT9YPXvrgybSCbi6eATlXBxK1fy5kGj3sDfmadtgb3vbz+yBimL/e0Z
+         JOl07riBTRFAA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 02BDE60CD2;
-        Wed, 19 May 2021 20:20:10 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4D32F60A0D;
+        Wed, 19 May 2021 20:20:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: hso: bail out on interrupt URB allocation failure
+Subject: Re: [PATCH net-next] net: ethernet: ixp4xx: Fix return value check in
+ ixp4xx_eth_probe()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162145561000.14289.2318045523146834591.git-patchwork-notify@kernel.org>
-Date:   Wed, 19 May 2021 20:20:10 +0000
-References: <20210519124717.31144-1-johan@kernel.org>
-In-Reply-To: <20210519124717.31144-1-johan@kernel.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, dan.carpenter@oracle.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <162145561531.14289.9199299011458304917.git-patchwork-notify@kernel.org>
+Date:   Wed, 19 May 2021 20:20:15 +0000
+References: <20210519141627.3047264-1-weiyongjun1@huawei.com>
+In-Reply-To: <20210519141627.3047264-1-weiyongjun1@huawei.com>
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+Cc:     khalasa@piap.pl, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        hulkci@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 19 May 2021 14:47:17 +0200 you wrote:
-> Commit 31db0dbd7244 ("net: hso: check for allocation failure in
-> hso_create_bulk_serial_device()") recently started returning an error
-> when the driver fails to allocate resources for the interrupt endpoint
-> and tiocmget functionality.
+On Wed, 19 May 2021 14:16:27 +0000 you wrote:
+> In case of error, the function mdiobus_get_phy() returns NULL
+> pointer not ERR_PTR(). The IS_ERR() test in the return value
+> check should be replaced with NULL test.
 > 
-> For consistency let's bail out from probe also if the URB allocation
-> fails.
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: hso: bail out on interrupt URB allocation failure
-    https://git.kernel.org/netdev/net/c/4d52ebc7ace4
+  - [net-next] net: ethernet: ixp4xx: Fix return value check in ixp4xx_eth_probe()
+    https://git.kernel.org/netdev/net-next/c/20e76d3d044d
 
 You are awesome, thank you!
 --
