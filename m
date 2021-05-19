@@ -2,304 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0681F388A53
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 11:17:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B898E388AA7
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 11:31:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344449AbhESJSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 05:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343716AbhESJSq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 05:18:46 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890A6C06175F
-        for <netdev@vger.kernel.org>; Wed, 19 May 2021 02:17:24 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id v14so6281184pgi.6
-        for <netdev@vger.kernel.org>; Wed, 19 May 2021 02:17:24 -0700 (PDT)
+        id S1345413AbhESJcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 05:32:18 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:26576 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229668AbhESJcQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 05:32:16 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14J9PiZf032264;
+        Wed, 19 May 2021 02:30:51 -0700
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2172.outbound.protection.outlook.com [104.47.59.172])
+        by mx0a-0016f401.pphosted.com with ESMTP id 38mqc1hp5m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 19 May 2021 02:30:51 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JCKdWuaEfFrqHLNAf5EYA21DB0jYlp0WFZnYQkFuDCgadipL7W5OIpyaHJ0uvU8Ca9s2Q2THTNhivWaBrm/B0grjPCizDytFYrR8ARonoJfHJ0iS/idQ4HoASA4AtHSV5zDxXCge7gQ7ibj37VkqTVDNtTZYkQEayW8qtaW//ljO5yROJtFVL93SJqrrLz0e8w4KgPd1Hk5U8WpDfy/8Un2OofvcWOx9AAYyAZPokuBrqdlCxy2HVLjDXoJZMoA9cMULDYLUwgLq9dwSI0yAo0HcixVtofck/SgxBH9UJsDXf6aTai+OThMtifMFZlGavi06P8ZHb68vMvMam59FBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/v4cLvCqx03mmA3ch7SWljviVaHIsQoIe8md9tcriyw=;
+ b=dHOzvKzQQPXVNqMen3SvZsjH/ysJFFyJZ0nsbToUFVdqW2klTz6LNUN1H2v2Io0zPCpUuBAGGewsTWOno3dvueIARGMd8RSToszo38tX8tc0pGkoGvCbHpDjj4KX+DP4HaXmi3ch9d8t4FtGE+vbmW4ZcOoKuL9i+t04EAMPE/eXPbqtVtsz5K/2zloI5bnkSk1otW1zyH2VNvRiaO7tkRdond+9e4qmdgv6TQ4ov+2psieodp90FlABv0Q3U+J5vY5kVT0l5wgdrexPcY3jZ5e8+GbHHvbwwdojGMQJUso5cwCguGXbOZBcaAXvK1TXTXkVALCuq/I6ckq9wU8awA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lC0/0TeTVxh+izmemw5dpiDjfn8iYHm/4aAbQIQTNPg=;
-        b=uDzLgNpy5cRzh6GauhaBm2TqS3tTXvRrAogUpjGNPqNNtZcSLaxO9zEDtZE5W0iFGd
-         jTiNAuUv0mB1K3pjy8V036XwqWdUpakxJpxgjePr3bFXeNkYFqobWdhrqaMqShzLm69k
-         9qPWffs5zVeMBPgBzgWVyBH2ms29cf8TCXNRVVEU0Hpp5ypGR3+6vbtYGA2vVZW2RoqZ
-         KSyyVCZp7EinigkEG8RY/Ge/7xaXTntocve8F9KdaKVpQuh8+ktsQHGKKtaugEEbkrrV
-         r3hk2xLjBEPVCzkYN+wZ+1Tx7lS0+yClOtDpeOpSqbRSk4pxw2BVN8Mh/McsqguOd4SE
-         Q5mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lC0/0TeTVxh+izmemw5dpiDjfn8iYHm/4aAbQIQTNPg=;
-        b=kdoCZ13hZHB3KG5cqPPy101T3iqvstpaiTwQ/PBS4goghgNFTkmS9LxWBQBk/pc+4Q
-         fNjn0YHpBP3CSO6TmC0au0RlSeWGgRsqQXgwZ50JlAmejnY+SQMEyDaCbM4raU76wRNE
-         Jy8i0FrctF/nU1ARLfIhitiGP8Hnfc0fweiY7tF33mNfjrcZZj7Ie1nIue5FFA75DVRo
-         vP4KGJeP1c64Gx/3dGifjfONsk3RgVRezImVhyS+UE4USFurT+9+23ntKnY1hTkmDCTZ
-         lD5jgwVWZgVpau+Gk2MC3CCyric8ZGEls+9RFl1y7x8FWOBRNEeEz9T8uuASBBuCgVsc
-         p1rA==
-X-Gm-Message-State: AOAM530lC65qsTMjHR2JnQWMVBxkiAdXc7Y6dV3jbniOLw5gpZBSLNTB
-        d39NBSuEsIonaU7HbhyJsJQW9AhSOL+keFRUbz4MWg==
-X-Google-Smtp-Source: ABdhPJzYGMWc/g8Ql6dibhKPWTCiCkJ7GPqJvMbpY7/rRrvnjBtpOLb16SVR/JGS5Gh8AqrwwHi/wlywlNRRk8zgk8A=
-X-Received: by 2002:a63:1906:: with SMTP id z6mr1668067pgl.173.1621415843670;
- Wed, 19 May 2021 02:17:23 -0700 (PDT)
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/v4cLvCqx03mmA3ch7SWljviVaHIsQoIe8md9tcriyw=;
+ b=dL9OBe4KNtGdGOGVIAG++vw9qTcdDS6F215iQCNSK74BPHi3fYBEoDxL+ZOlCet23z1uRo9QQmZziYF5Z8f21SyBmmmpwj3QvqZl7T3Ha0n58kFwUQMsOVq78q0zS427/JXD2jo42g9x9RUv9q6R/bnjnsQWUBvUIdeEOu4WYnM=
+Received: from PH0PR18MB4039.namprd18.prod.outlook.com (2603:10b6:510:2d::6)
+ by PH0PR18MB3896.namprd18.prod.outlook.com (2603:10b6:510:27::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.26; Wed, 19 May
+ 2021 09:30:49 +0000
+Received: from PH0PR18MB4039.namprd18.prod.outlook.com
+ ([fe80::10ad:7f4c:f888:b700]) by PH0PR18MB4039.namprd18.prod.outlook.com
+ ([fe80::10ad:7f4c:f888:b700%4]) with mapi id 15.20.4129.033; Wed, 19 May 2021
+ 09:30:49 +0000
+From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
+To:     Yang Shen <shenyang39@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>
+Subject: RE: [EXT] [PATCH v2 05/24] net: broadcom: bnx2x: Fix wrong function
+ name in comments
+Thread-Topic: [EXT] [PATCH v2 05/24] net: broadcom: bnx2x: Fix wrong function
+ name in comments
+Thread-Index: AQHXSvJ+eAx++mbHVkmqNK2UfEEjF6rqjNsw
+Date:   Wed, 19 May 2021 09:30:48 +0000
+Message-ID: <PH0PR18MB403932EAA58A847383EA6E54D32B9@PH0PR18MB4039.namprd18.prod.outlook.com>
+References: <20210517044535.21473-1-shenyang39@huawei.com>
+ <20210517044535.21473-6-shenyang39@huawei.com>
+In-Reply-To: <20210517044535.21473-6-shenyang39@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [49.37.151.209]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9590e9fb-8723-4f9e-8dae-08d91aa8c9b5
+x-ms-traffictypediagnostic: PH0PR18MB3896:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <PH0PR18MB38965C22DB957470B4F36221D32B9@PH0PR18MB3896.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4125;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sF3aULvGFOQPHQKv69UcDNCNZAsyg85AHhBiauqgSzQzWyloi/mBw1lJbtq8n8C41nz8be+pUhnSa4N7fsW3IlYHHNkjYlQKzxOk3G/jL1qnE9scS6TVNCY4DSQyMZRYLiBVpgot4PnSSW98ztO0wUPWheRhWSDQzdZQglUMbSFSAXEaIpeYe9Kf+JgsL22ESn42MWH5exQu9C+lbCN/V5C2v4VL3n5u2E3SNBi0bSXTWzv45fHBJkXWc+/y6q1zv/RenSVYWWhEkFhKBEeso1c3/4cWx94tr3L5+Npg8JBjUYjBPKlvNAm0gJ5FRXfIuebQ3PFv0g835djqVyRg/e304jxY+K2ECoSCjzVJZlduiGx9+cdJY7QBhcRZPWZEBM7UiNC2M4yKsarBkS2aMjfWiQBHEgXYfbfXRkMF4lWlOjrZW7J/LWJ9CRwOpfZzZz+S8PdxRFMRzcLkUXSnOXjWlAAllfq0DCoiBYiGSYOvb0YYM1u/n8sMop9gjNB2dUNQp3FFyQdwEeROeLTEc4BmjhI+iYWejoJDdum0ykUj7VObac9n7XdgcvmGkyyusmoY39wsnBQYspoMLo4Ozk+XCDtzXBl18ti4H3mwhjY=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR18MB4039.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(396003)(366004)(346002)(376002)(5660300002)(54906003)(478600001)(122000001)(110136005)(38100700002)(107886003)(26005)(66556008)(6506007)(7696005)(186003)(76116006)(316002)(66946007)(4326008)(66476007)(53546011)(86362001)(66446008)(71200400001)(83380400001)(64756008)(52536014)(8676002)(8936002)(33656002)(2906002)(55016002)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?ZnqkHjNzhDTpk90tQsBmcfNEt5WDMfEvfQwnaFefNoZkOgjc/pPMF0sriwrF?=
+ =?us-ascii?Q?3h+zEjUQD0m1r5586ynHzkLvsuM9D7uk4a5isLt1aONxqlzeBV3L3KrVN0x/?=
+ =?us-ascii?Q?bN/uca0vU+2U0UB2Nj6VJ+4A0wTxFI88f1V0UlyC6qiU0uPFEkw8FUcgv0dp?=
+ =?us-ascii?Q?ye7gsH6M3w5Lhlxo8aizWBB+yS8nyVQfFsa3E89DfykntcfvuE+15ASPr7Kh?=
+ =?us-ascii?Q?ehIHCx2ttrnvUpLNIdp7vNSdDLpHazRVZqcZzgYIAN9pFum9GYowY2Lygs9P?=
+ =?us-ascii?Q?C7qomXA80WFZ2DRuTdu50YhsF0+PcEl2tZ7O3ZLmcF8hKXfyGAlNDt0u7Rr+?=
+ =?us-ascii?Q?J+7JW/fAm/mSWGBwtET213f9z/2EGtTveghnDmK2w+tOYPuWWvaugjSD2iAR?=
+ =?us-ascii?Q?tOStd5ouhNYuHU03Ol8AZb15Wc37u4eEj2fWrwS0/X0vDWRkV3oyb0ZwLDHL?=
+ =?us-ascii?Q?v/2khk5BrYLwevga+PCdKBpY9JcouZoJDTn00CScG9vdmhr3Rs4K8fe+XPXc?=
+ =?us-ascii?Q?S73+tlavWO3kHOja4dpkkDnNPMXn0jckAzoBCIynap3T/z/RFO2PETIslfYS?=
+ =?us-ascii?Q?mm2bstxBdO1TnuVmZsmvRTW0NoVwPwPnNW9k2MO6KHjiCQjiZPCwdzb25kO3?=
+ =?us-ascii?Q?e6Vqb9nE+45zQu+/+LQwLDQ82/LK/35i414Nfq/hZwIXkczfu7JqoP4ddeHs?=
+ =?us-ascii?Q?xt2Xy+4MJ3jdGAPQ1gTVZyfbYFmJR3J8gvRYgkfsAPQ/jShZx9nuofv9QZLB?=
+ =?us-ascii?Q?4AQBVd2Uu788idXiZJYB2Is8cohbaUEf5IMR8R64rJ56JV61sPRobDp+ATe/?=
+ =?us-ascii?Q?QN+1SYjEatW6QRP4xYKg0C8F7OTM+3EyYfvltMsNYNX8cIcpZu1q0ywvi2hs?=
+ =?us-ascii?Q?+0fZe7WsdvgIv7QEOVqerA9kXgVtMZ4tiM6rqGmgI1ibMdJWXSQPE/FIO1N5?=
+ =?us-ascii?Q?QgDvxg0wPY8TOa0bwtNLK2XFpCKT+RIzomsmGqD5uzTtUfiBYYFlDHcDRlbe?=
+ =?us-ascii?Q?0ea/JX+e4MvwtVKmywXy/Bg41q42ZTbhuM2nt6yvIlfKfed8cHFLjm5oan0U?=
+ =?us-ascii?Q?MAghnqg3p3qwbCP8CUWRjZDpQC/l7YQ7ktnhbD98ROiuMw+Y80GFsWXo7nZY?=
+ =?us-ascii?Q?yWt8xwtDqrPUl0qBcULsJU4cO8RLFXnWDVWdtGDfgCCW4zxC//or5M/nnku8?=
+ =?us-ascii?Q?WhmODaNwxCcnrWbZ2AYPKbMMsAt7+2FEv9odFGowzTDoyt/pef50k+cac9aC?=
+ =?us-ascii?Q?yOYr3JwMrZUBi/SEruNGdYRbmwuHodA9xXidZ5xkU9IcGXpar10ftt+WjGAU?=
+ =?us-ascii?Q?JT4GdlfKQMbmogqJDaTr1F+g?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <1620744143-26075-1-git-send-email-loic.poulain@linaro.org>
- <1620744143-26075-2-git-send-email-loic.poulain@linaro.org>
- <CAAP7ucJah5qJXpjyP9gYmnYDyBWS7Qe3ck2SCBonJhJB2NgS5A@mail.gmail.com>
- <CAMZdPi_2PdM9+_RQi0hL=eQauXfN3wFJVyHwSWGsfnK2QBaHbw@mail.gmail.com>
- <CAAP7ucLb=e-mV6YM3LEh_OvttJVnAN+awRpEQGNt9y_grw+Hqw@mail.gmail.com>
- <CAMZdPi9zABtXoKiUuE9mmbnYsSmZoVWR+nLAdq0O5b7=Ghh-rg@mail.gmail.com> <45436a3b8904d08a0835f9a7973c28bc46010f20.camel@gapps.redhat.com>
-In-Reply-To: <45436a3b8904d08a0835f9a7973c28bc46010f20.camel@gapps.redhat.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Wed, 19 May 2021 11:25:46 +0200
-Message-ID: <CAMZdPi-p13nk8OES-Fdc2hjTak8Ywk-TabYaeJBhS=kF0QFyag@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/2] usb: class: cdc-wdm: WWAN framework integration
-To:     Dan Williams <dcbw@gapps.redhat.com>
-Cc:     Aleksander Morgado <aleksander@aleksander.es>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Neukum <oliver@neukum.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR18MB4039.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9590e9fb-8723-4f9e-8dae-08d91aa8c9b5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2021 09:30:48.9308
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: c/gyJUhlF04utbcytI0EqIKoJX0Bdmu8uikQPI01cT1twLsP1B1dEqlzSbeLs3mMD3jCC/OCZZK4f0tk/w8BkQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR18MB3896
+X-Proofpoint-GUID: PQCclEQXzB7tWgHna_Zvygoissw6ByuJ
+X-Proofpoint-ORIG-GUID: PQCclEQXzB7tWgHna_Zvygoissw6ByuJ
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-19_04:2021-05-18,2021-05-19 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dan,
+> -----Original Message-----
+> From: Yang Shen <shenyang39@huawei.com>
+> Sent: Monday, May 17, 2021 10:15 AM
+> To: davem@davemloft.net; kuba@kernel.org
+> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Yang Shen
+> <shenyang39@huawei.com>; Ariel Elior <aelior@marvell.com>; Sudarsana
+> Reddy Kalluru <skalluru@marvell.com>; GR-everest-linux-l2 <GR-everest-
+> linux-l2@marvell.com>
+> Subject: [EXT] [PATCH v2 05/24] net: broadcom: bnx2x: Fix wrong function
+> name in comments
+>=20
+> External Email
+>=20
+> ----------------------------------------------------------------------
+> Fixes the following W=3D1 kernel build warning(s):
+>=20
+>  drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c:13595: warning:
+> expecting prototype for bnx2x_get_num_none_def_sbs(). Prototype was for
+> bnx2x_get_num_non_def_sbs() instead
+>  drivers/net/ethernet/broadcom/bnx2x/bnx2x_sp.c:4165: warning:
+> expecting prototype for atomic_add_ifless(). Prototype was for
+> __atomic_add_ifless() instead
+>  drivers/net/ethernet/broadcom/bnx2x/bnx2x_sp.c:4193: warning:
+> expecting prototype for atomic_dec_ifmoe(). Prototype was for
+> __atomic_dec_ifmoe() instead
+>=20
+> Cc: Ariel Elior <aelior@marvell.com>
+> Cc: Sudarsana Kalluru <skalluru@marvell.com>
+> Cc: GR-everest-linux-l2@marvell.com
+> Signed-off-by: Yang Shen <shenyang39@huawei.com>
+> ---
+>  drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 2 +-
+>  drivers/net/ethernet/broadcom/bnx2x/bnx2x_sp.c   | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+> index 281b1c2e04a7..2acbc73dcd18 100644
+> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+> @@ -13586,7 +13586,7 @@ static int bnx2x_set_qm_cid_count(struct bnx2x
+> *bp)  }
+>=20
+>  /**
+> - * bnx2x_get_num_none_def_sbs - return the number of none default SBs
+> + * bnx2x_get_num_non_def_sbs - return the number of none default SBs
+>   * @pdev: pci device
+>   * @cnic_cnt: count
+>   *
+> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sp.c
+> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sp.c
+> index 6cd1523ad9e5..542c69822649 100644
+> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sp.c
+> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sp.c
+> @@ -4152,7 +4152,7 @@ void bnx2x_init_mcast_obj(struct bnx2x *bp,
+>  /*************************** Credit handling
+> **********************************/
+>=20
+>  /**
+> - * atomic_add_ifless - add if the result is less than a given value.
+> + * __atomic_add_ifless - add if the result is less than a given value.
+>   *
+>   * @v:	pointer of type atomic_t
+>   * @a:	the amount to add to v...
+> @@ -4180,7 +4180,7 @@ static inline bool __atomic_add_ifless(atomic_t *v,
+> int a, int u)  }
+>=20
+>  /**
+> - * atomic_dec_ifmoe - dec if the result is more or equal than a given va=
+lue.
+> + * __atomic_dec_ifmoe - dec if the result is more or equal than a given
+> value.
+>   *
+>   * @v:	pointer of type atomic_t
+>   * @a:	the amount to dec from v...
+> --
+> 2.17.1
 
+Thanks for the changes.
 
-
-
-
-On Wed, 12 May 2021 at 18:34, Dan Williams <dcbw@gapps.redhat.com> wrote:
->
-> On Wed, 2021-05-12 at 13:01 +0200, Loic Poulain wrote:
-> > On Wed, 12 May 2021 at 11:04, Aleksander Morgado
-> > <aleksander@aleksander.es> wrote:
-> > >
-> > > Hey,
-> > >
-> > > > > On Tue, May 11, 2021 at 4:33 PM Loic Poulain <
-> > > > > loic.poulain@linaro.org> wrote:
-> > > > > >
-> > > > > > The WWAN framework provides a unified way to handle
-> > > > > > WWAN/modems and its
-> > > > > > control port(s). It has initially been introduced to support
-> > > > > > MHI/PCI
-> > > > > > modems, offering the same control protocols as the USB
-> > > > > > variants such as
-> > > > > > MBIM, QMI, AT... The WWAN framework exposes these control
-> > > > > > protocols as
-> > > > > > character devices, similarly to cdc-wdm, but in a bus
-> > > > > > agnostic fashion.
-> > > > > >
-> > > > > > This change adds registration of the USB modem cdc-wdm
-> > > > > > control endpoints
-> > > > > > to the WWAN framework as standard control ports (wwanXpY...).
-> > > > > >
-> > > > > > Exposing cdc-wdm through WWAN framework normally maintains
-> > > > > > backward
-> > > > > > compatibility, e.g:
-> > > > > >     $ qmicli --device-open-qmi -d /dev/wwan0p1QMI --dms-get-
-> > > > > > ids
-> > > > > > instead of
-> > > > > >     $ qmicli --device-open-qmi -d /dev/cdc-wdm0 --dms-get-ids
-> > > > > >
-> > > > >
-> > > > > I have some questions regarding how all this would be seen from
-> > > > > userspace.
-> > > > >
-> > > > > Does the MBIM control port retain the ability to query the
-> > > > > maximum
-> > > > > message size with an ioctl like IOCTL_WDM_MAX_COMMAND? Or is
-> > > > > that
-> > > > > lost? For the libmbim case this may not be a big deal, as we
-> > > > > have a
-> > > > > fallback mechanism to read this value from the USB descriptor
-> > > > > itself,
-> > > > > so just wondering.
-> > > >
-> > > > There is no such ioctl but we can add a sysfs property file as
-> > > > proposed by Dan in the Intel iosm thread.
-> > > >
-> > >
-> > > Yeah, that may be a good thing to add I assume.
-> > >
-> > > > >
-> > > > > Is the sysfs hierarchy maintained for this new port type? i.e.
-> > > > > if
-> > > > > doing "udevadm info -p /sys/class/wwan/wwan0p1QMI -a", would we
-> > > > > still
-> > > > > see the immediate parent device with DRIVERS=="qmi_wwan" and
-> > > > > the
-> > > > > correct interface number/class/subclass/protocol attributes?
-> > > >
-> > > > Not an immediate parent since a port is a child of a logical wwan
-> > > > device, but you'll still be able to get these attributes:
-> > > > Below, DRIVERS=="qmi_wwan".
-> > > >
-> > > > $ udevadm info -p /sys/class/wwan/wwan0p1QMI -a
-> > > >
-> > > >   looking at device
-> > > > '/devices/pci0000:00/0000:00:14.0/usb2/2-3/2-
-> > > > 3:1.2/wwan/wwan0/wwan0p1QMI':
-> > > >     KERNEL=="wwan0p1QMI"
-> > > >     SUBSYSTEM=="wwan"
-> > > >     DRIVER==""
-> > > >
-> > > >   looking at parent device
-> > > > '/devices/pci0000:00/0000:00:14.0/usb2/2-3/2-3:1.2/wwan/wwan0':
-> > > >     KERNELS=="wwan0"
-> > > >     SUBSYSTEMS=="wwan"
-> > > >     DRIVERS==""
-> > > >
-> > > >   looking at parent device
-> > > > '/devices/pci0000:00/0000:00:14.0/usb2/2-3/2-3:1.2':
-> > > >     KERNELS=="2-3:1.2"
-> > > >     SUBSYSTEMS=="usb"
-> > > >     DRIVERS=="qmi_wwan"
-> > > >     ATTRS{authorized}=="1"
-> > > >     ATTRS{bInterfaceNumber}=="02"
-> > > >     ATTRS{bInterfaceClass}=="ff"
-> > > >     ATTRS{bNumEndpoints}=="03"
-> > > >     ATTRS{bInterfaceProtocol}=="ff"
-> > > >     ATTRS{bAlternateSetting}==" 0"
-> > > >     ATTRS{bInterfaceSubClass}=="ff"
-> > > >     ATTRS{interface}=="RmNet"
-> > > >     ATTRS{supports_autosuspend}=="1"
-> > > >
-> > >
-> > > Ok, that should be fine, and I think we would not need any
-> > > additional
-> > > change to handle that. The logic looking for what's the driver in
-> > > use
-> > > should still work.
-> > >
-> > > >
-> > > > > > However, some tools may rely on cdc-wdm driver/device name
-> > > > > > for device
-> > > > > > detection. It is then safer to keep the 'legacy' cdc-wdm
-> > > > > > character
-> > > > > > device to prevent any breakage. This is handled in this
-> > > > > > change by
-> > > > > > API mutual exclusion, only one access method can be used at a
-> > > > > > time,
-> > > > > > either cdc-wdm chardev or WWAN API.
-> > > > >
-> > > > > How does this mutual exclusion API work? Is the kernel going to
-> > > > > expose
-> > > > > 2 different chardevs always for the single control port?
-> > > >
-> > > > Yes, if cdc-wdm0 is open, wwan0p1QMI can not be open (-EBUSY),
-> > > > and vice versa.
-> > > >
-> > >
-> > > Oh... but then, what's the benefit of adding the new wwan0p1QMI
-> > > port?
-> > > I may be biased because I have always the MM case in mind, and in
-> > > there we'll need to support both things, but doesn't this new port
-> > > add
-> > > more complexity than making it simpler? I would have thought that
-> > > it's
-> > > either a cdc-wdm port or a wwan port, but both? Wouldn't it make
-> > > more
-> > > sense to default to the new wwan subsystem if the wwan subsystem is
-> > > built, and otherwise fallback to cdc-wdm? (i.e. a build time
-> > > option).
-> > > Having two chardevs to manage exactly the same control port, and
-> > > having them mutually exclusive is a bit strange.
-> > >
-> > >
-> > > > > really want to do that?
-> > > >
-> > > > This conservative way looks safe to me, but feel free to object
-> > > > if any issue.
-> > > >
-> > >
-> > > I don't think adding an additional control port named differently
-> > > while keeping the cdc-wdm name is adding any simplification in
-> > > userspace. I understand your point of view, but if there are users
-> > > setting up configuration with fixed cdc-wdm port names, they're
-> > > probably not doing it right. I have no idea what's the usual
-> > > approach
-> > > of the kernel for this though, are the port names and subsystem
-> > > considered "kernel API"? I do recall in between 3.4 and 3.6 I think
-> > > that the subsystem of QMI ports changed from "usb" to "usbmisc"; I
-> > > would assume your change to be kind of equivalent and therefore not
-> > > a
-> > > big deal?
-> >
-> >
-> > The ultimate objective is to have a unified view of WWAN devices,
-> > whatever the underlying bus or driver is. Accessing /dev/wwanXpY to
-> > submit/receive control packets is strictly equivalent to
-> > /dev/cdc-wdmX, the goal of keeping the 'legacy' cdc-wdm chardev, is
-> > only to prevent breaking of tools relying on the device name. But, as
-> > you said, the point is about considering chardev name/driver change
-> > as
-> > UAPI change or not. From my point of view, this conservative
-> > dual-support approach makes sense, If the user/tool is WWAN framework
-> > aware, it uses the /dev/wwanXpY port, otherwise /dev/cdc-wdmX can be
-> > used (like using DRM/KMS vs legacy framebuffer).
->
-> Names change and have changed in the past. It's sometimes painful but
-> tools *already* should not be relying on a specific device name. eg if
-> you have a tool that hardcodes /dev/cdc-wdm0 there is already no
-> guarantee that you'll get the same port next time, especially with USB.
->
-> Ethernet devices have never been stable, which is why udev and systemd
-> have renamed them to enp0s31f6 and wlp61s0. We also change WWAN
-> ethernet port device names whenever a new device gets tagged with the
-> WWAN hint.
->
-> I agree with Aleksander here, I think having two different devices is
-> not a great solution and will be more confusing.
->
-> I do realize that changing the name can break existing setups but
-> again, names are already not stable.
->
-> > I'm however open discussing other strategies:
-> > - Do not change anything, keep USB WWAN devices out of the WWAN
-> > subsystem.
->
-> -1 from me, consistency is better.
->
-> > - Migrate cdc-wdm completely to WWAN and get rid of the cdc-wdm
-> > chardev
->
-> +1 from me
->
-> > - Build time choice, if CONFIG_WWAN, registered to WWAN, otherwise
-> > exposed through cdc-wdm chardev.
->
-> Agree with Bjorn, -1
->
-> > - Run time choice, use either the new WWAN chardev or the legacy
-> > cdc-wdm chardev (this patch)
->
-> Agree with Aleksander, -1. This is even more confusing than a name
-> change.
->
-> > - ...
-> >
-> > I would be interested in getting input from others/maintainers on
-> > this.
->
-> Input from Oliver and Greg KH would be useful, since Greg was heavily
-> involved with the ethernet/wifi etc device renaming in the past IIRC.
->
-> But another thought: why couldn't wwan_create_port() take a devname
-> template like alloc_netdev() does and cdc-wdm can just pass "cdc-
-> wdm%d"? eg, why do we need to change the name?
-> Tools that care about
-> finding WWAN devices should be looking at sysfs attributes/links and
-> TYPE=XXXX in uevent, not at the device name. Nothing should be looking
-> at device name really.
-
-Right, passing the legacy cdc-wdm dev-name as a parameter seems to be
-a fair solution, making the transition smoother.
-
-Regards,
-Loic
+Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
