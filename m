@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B96373886A0
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 07:36:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 829CF3886A8
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 07:36:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244912AbhESFhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 01:37:24 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4669 "EHLO
+        id S245498AbhESFhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 01:37:40 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4671 "EHLO
         szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242484AbhESFfz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 01:35:55 -0400
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FlM1d0vK9z1BP5d;
+        with ESMTP id S242717AbhESFf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 01:35:56 -0400
+Received: from dggems702-chm.china.huawei.com (unknown [172.30.72.60])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FlM1d32BYz1BP5f;
         Wed, 19 May 2021 13:31:49 +0800 (CST)
 Received: from dggemi760-chm.china.huawei.com (10.1.198.146) by
- dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
+ dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Wed, 19 May 2021 13:34:34 +0800
+ 15.1.2176.2; Wed, 19 May 2021 13:34:35 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  dggemi760-chm.china.huawei.com (10.1.198.146) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
@@ -26,9 +26,9 @@ From:   Hui Tang <tanghui20@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Hui Tang <tanghui20@huawei.com>
-Subject: [PATCH 03/20] net: amd: remove leading spaces before tabs
-Date:   Wed, 19 May 2021 13:30:36 +0800
-Message-ID: <1621402253-27200-4-git-send-email-tanghui20@huawei.com>
+Subject: [PATCH 04/20] net: apple: remove leading spaces before tabs
+Date:   Wed, 19 May 2021 13:30:37 +0800
+Message-ID: <1621402253-27200-5-git-send-email-tanghui20@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1621402253-27200-1-git-send-email-tanghui20@huawei.com>
 References: <1621402253-27200-1-git-send-email-tanghui20@huawei.com>
@@ -47,241 +47,105 @@ following commard:
 
 	$ find . -name '*.c' | xargs sed -r -i 's/^[ ]+\t/\t/'
 	$ find . -name '*.h' | xargs sed -r -i 's/^[ ]+\t/\t/'
+
 Signed-off-by: Hui Tang <tanghui20@huawei.com>
 ---
- drivers/net/ethernet/amd/amd8111e.c   |  4 ++--
- drivers/net/ethernet/amd/amd8111e.h   |  6 +++---
- drivers/net/ethernet/amd/atarilance.c |  2 +-
- drivers/net/ethernet/amd/declance.c   |  2 +-
- drivers/net/ethernet/amd/lance.c      |  4 ++--
- drivers/net/ethernet/amd/ni65.c       | 12 ++++++------
- drivers/net/ethernet/amd/nmclan_cs.c  | 12 ++++++------
- drivers/net/ethernet/amd/sun3lance.c  | 12 ++++++------
- 8 files changed, 27 insertions(+), 27 deletions(-)
+ drivers/net/ethernet/apple/bmac.c | 30 +++++++++++++++---------------
+ drivers/net/ethernet/apple/mace.c |  8 ++++----
+ 2 files changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/amd8111e.c b/drivers/net/ethernet/amd/amd8111e.c
-index 4a1220c..9cac5aa 100644
---- a/drivers/net/ethernet/amd/amd8111e.c
-+++ b/drivers/net/ethernet/amd/amd8111e.c
-@@ -19,14 +19,14 @@ Module Name:
- 
- Abstract:
- 
-- 	 AMD8111 based 10/100 Ethernet Controller Driver.
-+	 AMD8111 based 10/100 Ethernet Controller Driver.
- 
- Environment:
- 
- 	Kernel Mode
- 
- Revision History:
-- 	3.0.0
-+	3.0.0
- 	   Initial Revision.
- 	3.0.1
- 	 1. Dynamic interrupt coalescing.
-diff --git a/drivers/net/ethernet/amd/amd8111e.h b/drivers/net/ethernet/amd/amd8111e.h
-index 493f154..37da79d 100644
---- a/drivers/net/ethernet/amd/amd8111e.h
-+++ b/drivers/net/ethernet/amd/amd8111e.h
-@@ -10,14 +10,14 @@ Module Name:
- 
- Abstract:
- 
-- 	 AMD8111 based 10/100 Ethernet Controller driver definitions.
-+	 AMD8111 based 10/100 Ethernet Controller driver definitions.
- 
- Environment:
- 
- 	Kernel Mode
- 
- Revision History:
-- 	3.0.0
-+	3.0.0
- 	   Initial Revision.
- 	3.0.1
- */
-@@ -692,7 +692,7 @@ enum coal_type{
- };
- 
- enum coal_mode{
--       	RX_INTR_COAL,
-+	RX_INTR_COAL,
- 	TX_INTR_COAL,
- 	DISABLE_COAL,
- 	ENABLE_COAL,
-diff --git a/drivers/net/ethernet/amd/atarilance.c b/drivers/net/ethernet/amd/atarilance.c
-index c1eab91..36f54d13 100644
---- a/drivers/net/ethernet/amd/atarilance.c
-+++ b/drivers/net/ethernet/amd/atarilance.c
-@@ -706,7 +706,7 @@ static void lance_init_ring( struct net_device *dev )
- 		CHECK_OFFSET(offset);
- 		MEM->tx_head[i].base = offset;
- 		MEM->tx_head[i].flag = TMD1_OWN_HOST;
-- 		MEM->tx_head[i].base_hi = 0;
-+		MEM->tx_head[i].base_hi = 0;
- 		MEM->tx_head[i].length = 0;
- 		MEM->tx_head[i].misc = 0;
- 		offset += PKT_BUF_SZ;
-diff --git a/drivers/net/ethernet/amd/declance.c b/drivers/net/ethernet/amd/declance.c
-index 7282ce5..493b0ce 100644
---- a/drivers/net/ethernet/amd/declance.c
-+++ b/drivers/net/ethernet/amd/declance.c
-@@ -937,7 +937,7 @@ static netdev_tx_t lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	dev_kfree_skb(skb);
- 
-- 	return NETDEV_TX_OK;
-+	return NETDEV_TX_OK;
- }
- 
- static void lance_load_multicast(struct net_device *dev)
-diff --git a/drivers/net/ethernet/amd/lance.c b/drivers/net/ethernet/amd/lance.c
-index aff4424..2178e6b 100644
---- a/drivers/net/ethernet/amd/lance.c
-+++ b/drivers/net/ethernet/amd/lance.c
-@@ -780,7 +780,7 @@ lance_open(struct net_device *dev)
- 		outw(0x0002, ioaddr+LANCE_ADDR);
- 		/* Only touch autoselect bit. */
- 		outw(inw(ioaddr+LANCE_BUS_IF) | 0x0002, ioaddr+LANCE_BUS_IF);
-- 	}
-+	}
- 
- 	if (lance_debug > 1)
- 		printk("%s: lance_open() irq %d dma %d tx/rx rings %#x/%#x init %#x.\n",
-@@ -812,7 +812,7 @@ lance_open(struct net_device *dev)
- 	 * We used to clear the InitDone bit, 0x0100, here but Mark Stockton
- 	 * reports that doing so triggers a bug in the '974.
- 	 */
-- 	outw(0x0042, ioaddr+LANCE_DATA);
-+	outw(0x0042, ioaddr+LANCE_DATA);
- 
- 	if (lance_debug > 2)
- 		printk("%s: LANCE open after %d ticks, init block %#x csr0 %4.4x.\n",
-diff --git a/drivers/net/ethernet/amd/ni65.c b/drivers/net/ethernet/amd/ni65.c
-index c38edf6..5c1cfb0 100644
---- a/drivers/net/ethernet/amd/ni65.c
-+++ b/drivers/net/ethernet/amd/ni65.c
-@@ -193,7 +193,7 @@ static struct card {
- 		.vendor_id   = ni_vendor,
- 		.cardname    = "ni6510",
- 		.config	     = 0x1,
--       	},
-+	},
- 	{
- 		.id0	     = NI65_EB_ID0,
- 		.id1	     = NI65_EB_ID1,
-@@ -204,7 +204,7 @@ static struct card {
- 		.vendor_id   = ni_vendor,
- 		.cardname    = "ni6510 EtherBlaster",
- 		.config	     = 0x2,
--       	},
-+	},
- 	{
- 		.id0	     = NE2100_ID0,
- 		.id1	     = NE2100_ID1,
-@@ -1232,15 +1232,15 @@ MODULE_PARM_DESC(dma, "ni6510 ISA DMA channel (ignored for some cards)");
- 
- int __init init_module(void)
- {
-- 	dev_ni65 = ni65_probe(-1);
-+	dev_ni65 = ni65_probe(-1);
- 	return PTR_ERR_OR_ZERO(dev_ni65);
- }
- 
- void __exit cleanup_module(void)
- {
-- 	unregister_netdev(dev_ni65);
-- 	cleanup_card(dev_ni65);
-- 	free_netdev(dev_ni65);
-+	unregister_netdev(dev_ni65);
-+	cleanup_card(dev_ni65);
-+	free_netdev(dev_ni65);
- }
- #endif /* MODULE */
- 
-diff --git a/drivers/net/ethernet/amd/nmclan_cs.c b/drivers/net/ethernet/amd/nmclan_cs.c
-index 11c0b13..4019cab 100644
---- a/drivers/net/ethernet/amd/nmclan_cs.c
-+++ b/drivers/net/ethernet/amd/nmclan_cs.c
-@@ -541,7 +541,7 @@ static int mace_init(mace_private *lp, unsigned int ioaddr, char *enet_addr)
-     if(++ct > 500)
-     {
- 	pr_err("reset failed, card removed?\n");
--    	return -1;
-+	return -1;
-     }
-     udelay(1);
-   }
-@@ -585,11 +585,11 @@ static int mace_init(mace_private *lp, unsigned int ioaddr, char *enet_addr)
-   ct = 0;
-   while (mace_read(lp, ioaddr, MACE_IAC) & MACE_IAC_ADDRCHG)
-   {
--  	if(++ ct > 500)
--  	{
-+	if(++ ct > 500)
-+	{
- 		pr_err("ADDRCHG timeout, card removed?\n");
--  		return -1;
--  	}
-+		return -1;
-+	}
-   }
-   /* Set PADR register */
-   for (i = 0; i < ETH_ALEN; i++)
-@@ -655,7 +655,7 @@ static int nmclan_config(struct pcmcia_device *link)
-   }
- 
-   if(mace_init(lp, ioaddr, dev->dev_addr) == -1)
--  	goto failed;
-+	goto failed;
- 
-   /* The if_port symbol can be set when the module is loaded */
-   if (if_port <= 2)
-diff --git a/drivers/net/ethernet/amd/sun3lance.c b/drivers/net/ethernet/amd/sun3lance.c
-index 00ae108..f8d7a93 100644
---- a/drivers/net/ethernet/amd/sun3lance.c
-+++ b/drivers/net/ethernet/amd/sun3lance.c
-@@ -150,7 +150,7 @@ struct lance_memory {
- struct lance_private {
- 	volatile unsigned short	*iobase;
- 	struct lance_memory	*mem;
--     	int new_rx, new_tx;	/* The next free ring entry */
-+	int new_rx, new_tx;	/* The next free ring entry */
- 	int old_tx, old_rx;     /* ring entry to be processed */
- /* These two must be longs for set_bit() */
- 	long	    tx_full;
-@@ -465,7 +465,7 @@ static void lance_init_ring( struct net_device *dev )
- 	for( i = 0; i < TX_RING_SIZE; i++ ) {
- 		MEM->tx_head[i].base = dvma_vtob(MEM->tx_data[i]);
- 		MEM->tx_head[i].flag = 0;
-- 		MEM->tx_head[i].base_hi =
-+		MEM->tx_head[i].base_hi =
- 			(dvma_vtob(MEM->tx_data[i])) >>16;
- 		MEM->tx_head[i].length = 0;
- 		MEM->tx_head[i].misc = 0;
-@@ -581,8 +581,8 @@ lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/ethernet/apple/bmac.c b/drivers/net/ethernet/apple/bmac.c
+index 1e4e402..a989d2d 100644
+--- a/drivers/net/ethernet/apple/bmac.c
++++ b/drivers/net/ethernet/apple/bmac.c
+@@ -477,26 +477,26 @@ static int bmac_suspend(struct macio_dev *mdev, pm_message_t state)
+ 		config = bmread(dev, RXCFG);
+ 		bmwrite(dev, RXCFG, (config & ~RxMACEnable));
+ 		config = bmread(dev, TXCFG);
+-       		bmwrite(dev, TXCFG, (config & ~TxMACEnable));
++		bmwrite(dev, TXCFG, (config & ~TxMACEnable));
+ 		bmwrite(dev, INTDISABLE, DisableAll); /* disable all intrs */
+-       		/* disable rx and tx dma */
++		/* disable rx and tx dma */
+ 		rd->control = cpu_to_le32(DBDMA_CLEAR(RUN|PAUSE|FLUSH|WAKE));	/* clear run bit */
+ 		td->control = cpu_to_le32(DBDMA_CLEAR(RUN|PAUSE|FLUSH|WAKE));	/* clear run bit */
+-       		/* free some skb's */
+-       		for (i=0; i<N_RX_RING; i++) {
+-       			if (bp->rx_bufs[i] != NULL) {
+-       				dev_kfree_skb(bp->rx_bufs[i]);
+-       				bp->rx_bufs[i] = NULL;
+-       			}
+-       		}
+-       		for (i = 0; i<N_TX_RING; i++) {
++		/* free some skb's */
++		for (i=0; i<N_RX_RING; i++) {
++			if (bp->rx_bufs[i] != NULL) {
++				dev_kfree_skb(bp->rx_bufs[i]);
++				bp->rx_bufs[i] = NULL;
++			}
++		}
++		for (i = 0; i<N_TX_RING; i++) {
+ 			if (bp->tx_bufs[i] != NULL) {
+ 		       		dev_kfree_skb(bp->tx_bufs[i]);
+ 	       			bp->tx_bufs[i] = NULL;
+ 		       	}
+ 		}
  	}
+-       	pmac_call_feature(PMAC_FTR_BMAC_ENABLE, macio_get_of_node(bp->mdev), 0, 0);
++	pmac_call_feature(PMAC_FTR_BMAC_ENABLE, macio_get_of_node(bp->mdev), 0, 0);
+ 	return 0;
+ }
  
- 	AREG = CSR0;
--  	DPRINTK( 2, ( "%s: lance_start_xmit() called, csr0 %4.4x.\n",
--  				  dev->name, DREG ));
-+	DPRINTK( 2, ( "%s: lance_start_xmit() called, csr0 %4.4x.\n",
-+				  dev->name, DREG ));
+@@ -510,9 +510,9 @@ static int bmac_resume(struct macio_dev *mdev)
+ 		bmac_reset_and_enable(dev);
  
- #ifdef CONFIG_SUN3X
- 	/* this weirdness doesn't appear on sun3... */
-@@ -636,8 +636,8 @@ lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	/* Trigger an immediate send poll. */
- 	REGA(CSR0) = CSR0_INEA | CSR0_TDMD | CSR0_STRT;
- 	AREG = CSR0;
--  	DPRINTK( 2, ( "%s: lance_start_xmit() exiting, csr0 %4.4x.\n",
--  				  dev->name, DREG ));
-+	DPRINTK( 2, ( "%s: lance_start_xmit() exiting, csr0 %4.4x.\n",
-+				  dev->name, DREG ));
- 	dev_kfree_skb(skb);
+ 	enable_irq(dev->irq);
+-       	enable_irq(bp->tx_dma_intr);
+-       	enable_irq(bp->rx_dma_intr);
+-       	netif_device_attach(dev);
++	enable_irq(bp->tx_dma_intr);
++	enable_irq(bp->rx_dma_intr);
++	netif_device_attach(dev);
  
- 	lp->lock = 0;
+ 	return 0;
+ }
+@@ -1599,7 +1599,7 @@ static int bmac_remove(struct macio_dev *mdev)
+ 
+ 	unregister_netdev(dev);
+ 
+-       	free_irq(dev->irq, dev);
++	free_irq(dev->irq, dev);
+ 	free_irq(bp->tx_dma_intr, dev);
+ 	free_irq(bp->rx_dma_intr, dev);
+ 
+diff --git a/drivers/net/ethernet/apple/mace.c b/drivers/net/ethernet/apple/mace.c
+index 9e5006e..4b80e3a 100644
+--- a/drivers/net/ethernet/apple/mace.c
++++ b/drivers/net/ethernet/apple/mace.c
+@@ -364,9 +364,9 @@ static void mace_reset(struct net_device *dev)
+ 	out_8(&mb->iac, 0);
+ 
+     if (mp->port_aaui)
+-    	out_8(&mb->plscc, PORTSEL_AUI + ENPLSIO);
++	out_8(&mb->plscc, PORTSEL_AUI + ENPLSIO);
+     else
+-    	out_8(&mb->plscc, PORTSEL_GPSI + ENPLSIO);
++	out_8(&mb->plscc, PORTSEL_GPSI + ENPLSIO);
+ }
+ 
+ static void __mace_set_address(struct net_device *dev, void *addr)
+@@ -378,9 +378,9 @@ static void __mace_set_address(struct net_device *dev, void *addr)
+ 
+     /* load up the hardware address */
+     if (mp->chipid == BROKEN_ADDRCHG_REV)
+-    	out_8(&mb->iac, PHYADDR);
++	out_8(&mb->iac, PHYADDR);
+     else {
+-    	out_8(&mb->iac, ADDRCHG | PHYADDR);
++	out_8(&mb->iac, ADDRCHG | PHYADDR);
+ 	while ((in_8(&mb->iac) & ADDRCHG) != 0)
+ 	    ;
+     }
 -- 
 2.8.1
 
