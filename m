@@ -2,120 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9EA7389726
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 21:58:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C049938972B
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 22:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232437AbhEST71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 15:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232333AbhEST70 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 15:59:26 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6334C06175F;
-        Wed, 19 May 2021 12:58:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=pa6BrMj2NYTUx+FQfaM5GghsBa5Z3C6LhlWK7oeSwIQ=; b=CZmwYV3jYiu3u0QlcRAzcgEYp6
-        N70ofExUBfFF1kwX1ipFzqpMyNGFnVPdiIvNBX2RaByyNGtsyQLk5GMGgB9+JWslTH6SmFTM3yHty
-        3zvHdENLmlK1Mb9rPy4qYAuKRRMX63GFMGjnGlN28JXX7oTwMpK92hkCp8O8RBaMMs6+wz0Njge8m
-        A6B/mGSWKhyjhnrQ1SvZT14sQWAJoP5aJ+hasMUL07tBlbP8vUWujWFQ1Gwghl2HhebyRezgKhiMW
-        6Nbz+I/HWUOeReYO64FxZZGh3DQReLpnehy6prRR+2T22B4xPr7pMyATUFTU1qb8PfN/lrxnLhNqt
-        DH+NzPPQ==;
-Received: from [2601:1c0:6280:3f0::7376]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1ljSKO-00Fklp-OW; Wed, 19 May 2021 19:58:00 +0000
-Subject: Re: [syzbot] BUG: MAX_LOCKDEP_KEYS too low! (2)
-To:     Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+a70a6358abd2c3f9550f@syzkaller.appspotmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>
-References: <0000000000003687bd05c2b2401d@google.com>
- <CACT4Y+YJDGFN4q-aTPritnjjHEXiFovOm9eO6Ay4xC1YOa5z3w@mail.gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <c545268c-fe62-883c-4c46-974b3bb3cea1@infradead.org>
-Date:   Wed, 19 May 2021 12:57:58 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S232471AbhESUBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 16:01:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46684 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230431AbhESUBb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 16:01:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6999D6124C;
+        Wed, 19 May 2021 20:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621454411;
+        bh=gU/NF9fFRNujsjItbYhLHv9MGDQxq7nmuRurZepASD8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TklWvZoCfcJqSXUs3DNxU3sWN94kIM016wSu3bjPruN7JWiIfmKvqItaQMfKZkL73
+         kKLBZotz4sYPcTMonpUXXJ1PpF7q1J27p0ghKHYgaYskZk6FPJ5t5qamZdbHkQj1a5
+         boPoOv4ECZk6O5NaZT/rolORqhFrxy0z7ArOPD++tuhLrf6Nn7oNbqpY5psv+qgX4u
+         2b/UWhP5pNghMpafj2mdb5IYjCX/fWNBxkJU4/gTUerQUij46MEebI9H1JMYY8EvNw
+         5eDP42fF67jgkVRReTHWVFmg+WxmP9s+Bqbx9G6N23LMOgRdJOMWYmpF8tBYByqe20
+         w87OQ+kzVKxPw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5852A60A56;
+        Wed, 19 May 2021 20:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <CACT4Y+YJDGFN4q-aTPritnjjHEXiFovOm9eO6Ay4xC1YOa5z3w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/7] mlxsw: Add support for new multipath hash
+ policies
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162145441135.5368.1464095854041311423.git-patchwork-notify@kernel.org>
+Date:   Wed, 19 May 2021 20:00:11 +0000
+References: <20210519120824.302191-1-idosch@idosch.org>
+In-Reply-To: <20210519120824.302191-1-idosch@idosch.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        mlxsw@nvidia.com, idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/19/21 12:48 PM, Dmitry Vyukov wrote:
-> On Wed, May 19, 2021 at 7:35 PM syzbot
-> <syzbot+a70a6358abd2c3f9550f@syzkaller.appspotmail.com> wrote:
->>
->> Hello,
->>
->> syzbot found the following issue on:
->>
->> HEAD commit:    b81ac784 net: cdc_eem: fix URL to CDC EEM 1.0 spec
->> git tree:       net
->> console output: https://syzkaller.appspot.com/x/log.txt?x=15a257c3d00000
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=5b86a12e0d1933b5
->> dashboard link: https://syzkaller.appspot.com/bug?extid=a70a6358abd2c3f9550f
->>
->> Unfortunately, I don't have any reproducer for this issue yet.
->>
->> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->> Reported-by: syzbot+a70a6358abd2c3f9550f@syzkaller.appspotmail.com
->>
->> BUG: MAX_LOCKDEP_KEYS too low!
+Hello:
+
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Wed, 19 May 2021 15:08:17 +0300 you wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
 > 
-
-include/linux/lockdep.h
-
-#define MAX_LOCKDEP_KEYS_BITS		13
-#define MAX_LOCKDEP_KEYS		(1UL << MAX_LOCKDEP_KEYS_BITS)
-
-Documentation/locking/lockdep-design.rst:
-
-Troubleshooting:
-----------------
-
-The validator tracks a maximum of MAX_LOCKDEP_KEYS number of lock classes.
-Exceeding this number will trigger the following lockdep warning::
-
-	(DEBUG_LOCKS_WARN_ON(id >= MAX_LOCKDEP_KEYS))
-
-By default, MAX_LOCKDEP_KEYS is currently set to 8191, and typical
-desktop systems have less than 1,000 lock classes, so this warning
-normally results from lock-class leakage or failure to properly
-initialize locks.  These two problems are illustrated below:
-
+> This patchset adds support for two new multipath hash policies in mlxsw.
 > 
-> What config controls this? I don't see "MAX_LOCKDEP_KEYS too low" in
-> any of the config descriptions...
-> Here is what syzbot used:
+> Patch #1 emits net events whenever the
+> net.ipv{4,6}.fib_multipath_hash_fields sysctls are changed. This allows
+> listeners to react to changes in the packet fields used for the
+> computation of the multipath hash.
 > 
-> CONFIG_LOCKDEP=y
-> CONFIG_LOCKDEP_BITS=16
-> CONFIG_LOCKDEP_CHAINS_BITS=17
-> CONFIG_LOCKDEP_STACK_TRACE_BITS=20
-> CONFIG_LOCKDEP_STACK_TRACE_HASH_BITS=14
-> CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS=12
-> 
-> We already bumped most of these.
-> The log contains dump of the lockdep debug files, is there any offender?
-> 
-> Also looking at the log I noticed a memory safety bug in lockdep implementation:
+> [...]
 
-...
+Here is the summary with links:
+  - [net-next,1/7] net: Add notifications when multipath hash field change
+    https://git.kernel.org/netdev/net-next/c/eb0e4d59b6ed
+  - [net-next,2/7] mlxsw: spectrum_router: Replace if statement with a switch statement
+    https://git.kernel.org/netdev/net-next/c/7725c1c8f732
+  - [net-next,3/7] mlxsw: spectrum_router: Move multipath hash configuration to a bitmap
+    https://git.kernel.org/netdev/net-next/c/9d23d3eb6f41
+  - [net-next,4/7] mlxsw: reg: Add inner packet fields to RECRv2 register
+    https://git.kernel.org/netdev/net-next/c/28bc824807a5
+  - [net-next,5/7] mlxsw: spectrum_outer: Factor out helper for common outer fields
+    https://git.kernel.org/netdev/net-next/c/b7b8f435ea3b
+  - [net-next,6/7] mlxsw: spectrum_router: Add support for inner layer 3 multipath hash policy
+    https://git.kernel.org/netdev/net-next/c/01848e05f8bb
+  - [net-next,7/7] mlxsw: spectrum_router: Add support for custom multipath hash policy
+    https://git.kernel.org/netdev/net-next/c/daeabf89eb89
 
--- 
-~Randy
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
