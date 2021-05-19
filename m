@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1581A388753
+	by mail.lfdr.de (Postfix) with ESMTP id 5D4E7388754
 	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 08:06:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244103AbhESGIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 02:08:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49380 "EHLO mail.kernel.org"
+        id S244227AbhESGIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 02:08:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49400 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239602AbhESGHc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S238725AbhESGHc (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 19 May 2021 02:07:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5571B613AC;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C1259613B4;
         Wed, 19 May 2021 06:06:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621404372;
-        bh=2AOx7Zv/D8pja3f9d5vucks+T8WeXOiI/DKRq1z30ck=;
+        s=k20201202; t=1621404373;
+        bh=e8odYyZKcPDH3XYm9115kGbNnwxo6ckzZzATiGke4lo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jDoE23yM9WIxJgiIVYJiLZqxkKXsEfkU9r96NvXmhAzWL1HjNVL4HUTHqm1qBN46e
-         /hEs6eU+WIiP2OEAE+3HLhxfLm9AuJFB2FQBTkS4YwdN5/F7A+wNzf1kjnw1lJcD7+
-         xAYOJtfXcmmP+J+uK4llWEHyIASmoq7Y7wAVUoXQiuUSEXdS36WSwW9uV4J+culJfm
-         H6umUo43Du7TfIoEYrYb2mrWpJHtpzPx3Jy8ydB63SMpDGdoh/Q3kAK5DQHwxVUHiP
-         Hboq+kq5M/PI15sLHwSatWebUPRzHv4qqCQQDLknKK4Aw+ZHElLO3+7OaDg1EFtNeJ
-         fD1XfMswx8gaw==
+        b=ZYTb3/dKAbeOkjyJw4Kp8s+5QiNAZVPcIejQwFG72oWS8gBtYOQTJIvMzh+Y+p10l
+         wX8i0OieEldQfsYTcVnyIhwzz+xXouFc9EZet9JeSsd4JTWfbFz8kaMa/wzKDUGvZc
+         687iXD8cvK5d/x/IePqFJuZQgT1aswj6h9T7+VBctg35aZIXDHmhgsNxgBlXjMn94f
+         K2nvUbwzZKp50eJPhsQPBWBajSHLsJP0n21G2tRCf+OQ2ahdw5rvshxJYdtxsiwHMa
+         9gqz7UqBbiEdq/AE2p5Zb5wtxmCSkBs0SILb5bUyeH8+EB3QJgFMivIP/9RxmDztNj
+         zTdyMrl0P5j5w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 15/16] net/mlx5: Set term table as an unmanaged flow table
-Date:   Tue, 18 May 2021 23:05:22 -0700
-Message-Id: <20210519060523.17875-16-saeed@kernel.org>
+Subject: [net 16/16] mlx5e: add add missing BH locking around napi_schdule()
+Date:   Tue, 18 May 2021 23:05:23 -0700
+Message-Id: <20210519060523.17875-17-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210519060523.17875-1-saeed@kernel.org>
 References: <20210519060523.17875-1-saeed@kernel.org>
@@ -42,62 +41,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ariel Levkovich <lariel@nvidia.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-Termination tables are restricted to have the default miss action and
-cannot be set to forward to another table in case of a miss.
-If the fs prio of the termination table is not the last one in the
-list, fs_core will attempt to attach it to another table.
+It's not correct to call napi_schedule() in pure process
+context. Because we use __raise_softirq_irqoff() we require
+callers to be in a context which will eventually lead to
+softirq handling (hardirq, bh disabled, etc.).
 
-Set the unmanaged ft flag when creating the termination table ft
-and select the tc offload prio for it to prevent fs_core from selecting
-the forwarding to next ft miss action and use the default one.
+With code as is users will see:
 
-In addition, set the flow that forwards to the termination table to
-ignore ft level restrictions since the ft level is not set by fs_core
-for unamanged fts.
+ NOHZ tick-stop error: Non-RCU local softirq work is pending, handler #08!!!
 
-Fixes: 249ccc3c95bd ("net/mlx5e: Add support for offloading traffic from uplink to uplink")
-Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
+Fixes: a8dd7ac12fc3 ("net/mlx5e: Generalize RQ activation")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c | 7 +++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++--
  1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
-index d61bee2d35fe..b45954905845 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
-@@ -76,10 +76,11 @@ mlx5_eswitch_termtbl_create(struct mlx5_core_dev *dev,
- 	/* As this is the terminating action then the termination table is the
- 	 * same prio as the slow path
- 	 */
--	ft_attr.flags = MLX5_FLOW_TABLE_TERMINATION |
-+	ft_attr.flags = MLX5_FLOW_TABLE_TERMINATION | MLX5_FLOW_TABLE_UNMANAGED |
- 			MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT;
--	ft_attr.prio = FDB_SLOW_PATH;
-+	ft_attr.prio = FDB_TC_OFFLOAD;
- 	ft_attr.max_fte = 1;
-+	ft_attr.level = 1;
- 	ft_attr.autogroup.max_num_groups = 1;
- 	tt->termtbl = mlx5_create_auto_grouped_flow_table(root_ns, &ft_attr);
- 	if (IS_ERR(tt->termtbl)) {
-@@ -217,6 +218,7 @@ mlx5_eswitch_termtbl_required(struct mlx5_eswitch *esw,
- 	int i;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index d1b9a4040d60..ad0f69480b9c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -889,10 +889,13 @@ int mlx5e_open_rq(struct mlx5e_params *params, struct mlx5e_rq_param *param,
+ void mlx5e_activate_rq(struct mlx5e_rq *rq)
+ {
+ 	set_bit(MLX5E_RQ_STATE_ENABLED, &rq->state);
+-	if (rq->icosq)
++	if (rq->icosq) {
+ 		mlx5e_trigger_irq(rq->icosq);
+-	else
++	} else {
++		local_bh_disable();
+ 		napi_schedule(rq->cq.napi);
++		local_bh_enable();
++	}
+ }
  
- 	if (!MLX5_CAP_ESW_FLOWTABLE_FDB(esw->dev, termination_table) ||
-+	    !MLX5_CAP_ESW_FLOWTABLE_FDB(esw->dev, ignore_flow_level) ||
- 	    attr->flags & MLX5_ESW_ATTR_FLAG_SLOW_PATH ||
- 	    !mlx5_eswitch_offload_is_uplink_port(esw, spec))
- 		return false;
-@@ -289,6 +291,7 @@ mlx5_eswitch_add_termtbl_rule(struct mlx5_eswitch *esw,
- 	/* create the FTE */
- 	flow_act->action &= ~MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
- 	flow_act->pkt_reformat = NULL;
-+	flow_act->flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
- 	rule = mlx5_add_flow_rules(fdb, spec, flow_act, dest, num_dest);
- 	if (IS_ERR(rule))
- 		goto revert_changes;
+ void mlx5e_deactivate_rq(struct mlx5e_rq *rq)
 -- 
 2.31.1
 
