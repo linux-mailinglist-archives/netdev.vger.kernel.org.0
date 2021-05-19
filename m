@@ -2,623 +2,289 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EB8C388A0C
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 11:00:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E80EC388A0F
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 11:01:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344218AbhESJBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 05:01:42 -0400
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:43277 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237641AbhESJBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 05:01:41 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0UZO.g.-_1621414819;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UZO.g.-_1621414819)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 19 May 2021 17:00:19 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     netdev@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S1344343AbhESJCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 05:02:44 -0400
+Received: from mail-mw2nam12on2076.outbound.protection.outlook.com ([40.107.244.76]:18401
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232558AbhESJCn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 05:02:43 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H3UcmwdU2hqpM3K+5EnNns7+yEsbcPJokOqbXX2JgE9H9vrpcsqwxKrRcAoMn5OZuOGk1FoBjQxpN6Ja2CGY3UQdwNLE8Vwzgo8Kv9VmgLQfRCSkZHjl0s433ZcSKJsk/HKQlHfMfEm6jMxudl+y1l+c3tuJBmyxvSm+mVUPpPdqd6rslTXwAq1lWioLu9GAfBDqBniTYdECn6ypx2+GITAs+mEccgkfFOXhtvwYWz8O4Z/RjPiWQV6yhZPPNrFW+Egppr2Ph7unljTIvGFg44l/oIMLxfNARM15yRUWpms9rDPFviZ9iyZI66aaKOks/guR0tqneeooORrOJ6Ne6Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AGN1bcbkNbDNALgpvq1WIMsGMOJY9Rmqqz69b5gzQ2I=;
+ b=euc+iB2LBmNRxpp5CxADDZIDutOQ//Xc48wwXZxvjn5tGpwvG/EKWFhF01nHeidWkzyy84rHmrKvUKrmoMqs1ANjVEvurbRtab6H0cc3taTnybU5QrpM5Ja8Q76Ale2VL1cGnALvFHwYmN1gAhgYQniiw17dMGlEpOCyJ6tVtVv4sGEtCudxFM9uFtlOdliKzT6WQRu9DgvSztHE0nq2BIvIcdqTLvB0qRBi6jDu9bdMPutApvjSB9ncYeCOYIoI2Jj0QUvjo4BObORKTEsaawdUt1iTlZc+g88704A6u26XhmNJ75gs8td4aB8Il/Rs5w6577VsuqisY/iNEytOkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AGN1bcbkNbDNALgpvq1WIMsGMOJY9Rmqqz69b5gzQ2I=;
+ b=Phb0HkV0EhwDKmpc8vPy8oq84ok9MlkRZlhL1fLr1/8O8PWHhe9ZXXdejz53QkcshOB6EvOGQTQyAoRiDcf8IyPcfSQ0qVedNMkoAdbVb4h1sgais0VPk+ESLfVfqPg4A6hfp17UBD3s86tTMLzL9LUfKRoRzr17BKMrxUxvhXCLmwglcKvbLuhtfNyclrGBk5gan7iwnnytbYv3TRI3D9QnWAsrXrdFz//pLbtH23UvPQr6nEn2PaSKM8iiBkve2rT7sBTqPEf2c/e5c9sDC3X1m9n2VIMTdoP+ErIAR0t2xdHFLYZBz1rV+5o8h4PfjTj2XQWq0JGRyXVxrSbxSw==
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nvidia.com;
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
+ by DM6PR12MB5551.namprd12.prod.outlook.com (2603:10b6:5:1bc::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.25; Wed, 19 May
+ 2021 09:01:23 +0000
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::d556:5155:7243:5f0f]) by DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::d556:5155:7243:5f0f%6]) with mapi id 15.20.4129.032; Wed, 19 May 2021
+ 09:01:23 +0000
+Subject: Re: [PATCH 1/4] bonding: add pure source-mac-based tx hashing option
+To:     Jarod Wilson <jarod@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next] virtio-net: Refactor the code related to page_to_skb()
-Date:   Wed, 19 May 2021 17:00:19 +0800
-Message-Id: <20210519090019.1489-1-xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.0
+        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
+References: <20210518210849.1673577-1-jarod@redhat.com>
+ <20210518210849.1673577-2-jarod@redhat.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <57bacfa0-2d51-1c37-209f-44a3934a55a4@nvidia.com>
+Date:   Wed, 19 May 2021 12:01:15 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+In-Reply-To: <20210518210849.1673577-2-jarod@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [213.179.129.39]
+X-ClientProxiedBy: ZR0P278CA0029.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:1c::16) To DM4PR12MB5278.namprd12.prod.outlook.com
+ (2603:10b6:5:39e::17)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.21.241.170] (213.179.129.39) by ZR0P278CA0029.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:1c::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.33 via Frontend Transport; Wed, 19 May 2021 09:01:20 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 12c5c5b7-25e2-4bba-5e91-08d91aa4acf1
+X-MS-TrafficTypeDiagnostic: DM6PR12MB5551:
+X-LD-Processed: 43083d15-7273-40c1-b7db-39efd9ccc17a,ExtAddr
+X-Microsoft-Antispam-PRVS: <DM6PR12MB55515CE083498FEF92D28125DF2B9@DM6PR12MB5551.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: m3lbtCPx4PgdZMnenIU2kaGTurEO/ZEGHEYbqPiwaDmF1fCl5U+yWWGjBlvd9f6BHNM8hmv5l/hMpqlb7FxMoc8UMMvAfG6xS/Sd/LqM4eNPR9Ts/aUhZpWcIkOMrXbMcci93Ueq/yroJvnB9b04XawP6LiBzo3azhPjtTVXNdl5XcE3p5f0XQ0Kf368AAG2WnwhMsMb6qbj+ESBDqzrgbHZN7zE8E6D+i+oE6TQzmY3CiLYTI9Mie4OIbZoJtWNcNSlKyfHyHbZCUGCEEO4W2Lh46yu5nsym96rFRS74REudOgjE+pdReFjXvR3nvBR/l/Ji0T1jhGOGIK+Sd/cTRjMgyuPVe4ybgkO5BVeNaH3NqXA00OxkVjuAFtM148PWFzfCdV8rofDDoK8SdmcVvfVtw6GhcPaEUHTcoxL9ZZAb4liWocs2m+fu1vxhYLFqvm86S2lUaUkhJRZNZQB5viOSQRoH7s4eP0zXpamwnIKds29dUxee5tEG5TxQpgDpu+U/uMqtRmP5zPcdQvK0nUfLuOUDDXoLbBEkTKIzi7oVcxykraFVIISFPltM40mKHRqWWUokVJG6gclGuZi3rM5qYJrYD9RXNfp36SgfU0CxZ+VQYkoxCbr8gylfZCqLcEfLZFa5KctERIaduOrFL8TN8v7dbV7ogKfMQq3XF/75h2S9tRkHnMcTrQvc8fh
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(136003)(366004)(396003)(39860400002)(36756003)(316002)(16576012)(53546011)(16526019)(8676002)(186003)(2616005)(956004)(6486002)(83380400001)(54906003)(26005)(8936002)(31686004)(478600001)(31696002)(6666004)(4326008)(38100700002)(66946007)(86362001)(66476007)(5660300002)(66556008)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?QkZqYnMzK0VTWnEvdmw3UmtoZElBeFJOUVFVL1QrTWExaEFaYUd4RzdjTHYr?=
+ =?utf-8?B?OElYeXpjejRTTWxSS3ZtSjRnekxoM3Bwb3lQc3pvYzZubmQzVFowbXFQekZt?=
+ =?utf-8?B?Z3VHVDdyTEE1UWtPSXNmZFZmRFZkVU9sekNaKzljbGhvM1gxNE1yNHZQT1JE?=
+ =?utf-8?B?OUxRL3NwMkxMVkVLbjYzSEhmV1pyNEU5bTJyZGZNQWYzbG1JM0c2RVlYeWNa?=
+ =?utf-8?B?R3ZaWEFQUmE4TCtGOGt6aXFUS0pRQTZieGJZK3c4Tmh0ZjJIOFdvNDVvNXJ1?=
+ =?utf-8?B?aEVpYVlqaUlXYURBbDNzbDBCR1lJTytXR3RiakxCb25neGdWb1RkVTFlNHhr?=
+ =?utf-8?B?ZjBOQ3ZWUUF0NTRIOUtyWkZpS1Zvd2pzWldyVEFRUDM1RjFWcXd6Z0RDdjFO?=
+ =?utf-8?B?QzRQQ215SUZMWXRIaDczMTk0Ri9QRkt5ZWJsTW9kZFg5YTUxaXhTZ05HbjJs?=
+ =?utf-8?B?RWtzdmp5M1puTHNvYmtHR2tGbndOTG5yY3FkeElHcXR2WUNLT1lLUTJRK1lB?=
+ =?utf-8?B?S0tWZVBWZFhiS0t0Z0IzeHo4ZjArY0kxQlcwZjN6K29BbjVKUmI1UlpIL29R?=
+ =?utf-8?B?UGJEbGduNFRQRzJmRGxTQ09iNlc2R0VwNjl1SXc0WWt3dnZUVUtqbkVINHRt?=
+ =?utf-8?B?S2hjQXJpQm1QazVMZEhPcllqcVVrMUJyY1RaYll3aUMyOS94WjdMTERIempu?=
+ =?utf-8?B?eEdrd3A4R0hJWGh0WkdKbjFCcGZPMG41T0lueENhMTVpVlBFc1gxTmE3NjFr?=
+ =?utf-8?B?akJtcjFqVUw3WHExTkFSelA1VGxuR0c2cjNZaHg3U21FVGZ1ejF2VWx6WnJp?=
+ =?utf-8?B?d2hhWlhRNEhKcG5QampXWHNHaS8wd05rTVF5ZkE3Ym12Qnp6alpVaDlySDdB?=
+ =?utf-8?B?MDZBeWl1cDNVRGtnTlBwSWdjMUdZY0MzdzJOd0hZeDlzblZEdCs3MlhZUTBa?=
+ =?utf-8?B?S3R1dGFZNXQzV0Qvcmtlby8xRWxlMFpRanlXOVFkM1k5MVppT0RWM29kemhi?=
+ =?utf-8?B?eVBzclJZdjBvTXpXdEtEOHpNaFV3bzdYOHF2RkNTcm1WT0FjUlROTFZYUndX?=
+ =?utf-8?B?NEdVMmlSb0pRUkVZaWNwc3JNMXZCTUpnOVZndkJKeWhpN1BmNVZyVjdhTmgy?=
+ =?utf-8?B?WHJMVVhCU3ZhZkd1RndsZnVWTm5BcGxDMm5wVUNvZkxVUit4bk8veFdmcHhu?=
+ =?utf-8?B?TWpVSDNwblA3djA4Z1c3VHNTTW1YYkd6MWxkdGZIdmJsRW9kSFZJVkhTZ3Uy?=
+ =?utf-8?B?M3hkVUlzS1JUakNDMHhobENNcXFpbVZRTEZ2UG1zTFRIc3Q3eVZOeWlDQXdx?=
+ =?utf-8?B?djhKVVZKRlFIR1gyQXVpZ3hvN2pqdG51WjNQaGRLdEMyc1ZYRHpOV1A0SlpZ?=
+ =?utf-8?B?S0g2M3llSHdFMURCalE4T3JtY3YwOVcvRG5GdVdTT3R1cDZ2R2QvMUNvS21a?=
+ =?utf-8?B?blR3RW9LdW4wY3B4ZmdJNmZDdnY1ZlEzbElPL1pCdzRJWmxFYURYMmNtZXJh?=
+ =?utf-8?B?cXE2M1JvVXpTa2JhY1J1Ly9ITGI2M1JUUFZyWWJXb0Iyc3Z1cFZRME5LeURz?=
+ =?utf-8?B?SjRQM3RrekZqWjhub3dxcFd1RHMyc1hUd2dpMDhSV0JyK3QzTkswbVFZZ3RW?=
+ =?utf-8?B?OUI4L0E2MHNqRmM0dWVBcDJWMmRmMEt0SnNuYlQ2M1VqTjJFM2w4cmdiZEZR?=
+ =?utf-8?B?TzhGcnRXUk1WK0FmT1U0b1V5VmxtSkpQenBmd2NSOXdxMDJlM3Y0QVhKQnJ2?=
+ =?utf-8?Q?JMa7i0y/rJiQZkuzm3Zbrzz5JDvHvkJWvSbLJtz?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12c5c5b7-25e2-4bba-5e91-08d91aa4acf1
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2021 09:01:23.2474
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VG7vR/OtnKPRIA2Yc/vI3tBl5oRyhoCJ3HmdyMshtJAa45zv6fRFm1B45wW/12DSR6Skhofyaw7B2buGEAJkGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5551
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Due to long-term development, the current code structure of
-page_to_skb() and the semantic expression of variables are rather
-chaotic, so it is necessary to reconstruct this piece of logic.
+On 19/05/2021 00:08, Jarod Wilson wrote:
+> As it turns out, a pure source-mac only tx hash has a place for some VM
+> setups. The previously added vlan+srcmac hash doesn't work as well for a
+> VM with a single MAC and multiple vlans -- these types of setups path
+> traffic more efficiently if the load is split by source mac alone.
+> 
+> Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+> Cc: Veaceslav Falico <vfalico@gmail.com>
+> Cc: Andy Gospodarek <andy@greyhouse.net>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Thomas Davis <tadavis@lbl.gov>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Jarod Wilson <jarod@redhat.com>
+> ---
+>  Documentation/networking/bonding.rst | 13 +++++++++++++
+>  drivers/net/bonding/bond_main.c      | 26 +++++++++++++++++---------
+>  drivers/net/bonding/bond_options.c   |  1 +
+>  include/linux/netdevice.h            |  1 +
+>  include/uapi/linux/if_bonding.h      |  1 +
+>  5 files changed, 33 insertions(+), 9 deletions(-)
+> 
 
-The code has been tested with the following test code.
-Call test_merge and test_big to test "merge" and "big" modes
-respectively.
+Hi,
+It would seem you keep adding modes for each field, that seems unnecessary to me and
+it also affects the fast path - each new mode you add is another 1+ tests in bond's
+fast path. You could instead just add 1 new mode which has configurable hash fields,
+take the "hit" for it once in the fast-path (if chosen) and use that.
+I'd like to avoid tomorrow getting another "dstmac" mode or something like that.
 
-================================= test.sh ========================
-function test()
-{
-    flag=$1
-    max=$2
-    inc=$3
-    if [ "x$max" == "x" ]
-    then
-        max=4096
-    fi
-    echo $max
+In fact both of these new modes are unnecessary in most cases, you could use any available method
+(e.g. ebpf) to compute and set the skb queue mapping on Tx to choose any slave and that would
+override any hash or bond mode. Check __bond_start_xmit() -> bond_slave_override()
 
-    for s in $(seq 64 $inc $max)
-    do
-        echo >> log
-        echo $flag :UDP_STREAM $s >> log
-        netperf -H 192.168.122.202 -l 5 -t UDP_STREAM -- -m $s >> log
-        echo $flag :UDP_STREAM $s $?
-    done
+Cheers,
+ Nik
 
-    for s in $(seq 64 $inc $max)
-    do
-        echo >> log
-        echo $flag :TCP_STREAM $s >> log
-        netperf -H 192.168.122.202 -l 5 -t TCP_STREAM -- -m $s >> log
-        echo $flag :TCP_STREAM $s $?
-    done
-}
-
-function test_merge()
-{
-    XDP='no-xdp'
-
-    ssh root@192.168.122.202 ip link set dev eth0 xdp off
-    test $XDP
-
-    XDP='xdp-pass'
-
-    ssh root@192.168.122.202 ip link set dev eth0 xdp off
-    ssh root@192.168.122.202 ip link set dev eth0 xdp object xdp.o sec xdp
-    test $XDP
-
-    XDP='xdp-meta'
-
-    ssh root@192.168.122.202 ip link set dev eth0 xdp off
-    ssh root@192.168.122.202 ip link set dev eth0 xdp object xdp_meta.o sec xdp_mark
-    test $XDP
-}
-
-function test_big()
-{
-    # set host net dev mtu to 60000
-    test "big" 5000
-    test "big" 60000 10
-}
-
-ssh root@192.168.122.202 ./netserver
-echo '' > log
-
-test_merge # or test_big
-================================== xdp.c =================================
-
-SEC("xdp")
-int _xdp(struct xdp_md *xdp)
-{
-        return XDP_PASS;
-}
-
-char _license[] SEC("license") = "GPL";
-
-================================== xdp_meta.c =================================
-
-static long (*bpf_xdp_adjust_meta)(struct xdp_md *xdp_md, int delta) = (void *) 54;
-
-struct meta_info {
-        __u32 mark;
-} __attribute__((aligned(4)));
-
-SEC("xdp_mark")
-int _xdp_mark(struct xdp_md *ctx)
-{
-        struct meta_info *meta;
-        void *data, *data_end;
-        int ret;
-
-        ret = bpf_xdp_adjust_meta(ctx, -(int)sizeof(*meta));
-        if (ret < 0)
-                return XDP_ABORTED;
-
-        data = (void *)(unsigned long)ctx->data;
-
-        /* Check data_meta have room for meta_info struct */
-        meta = (void *)(unsigned long)ctx->data_meta;
-        if ((void *)(meta + 1) > data)
-                return XDP_ABORTED;
-
-        meta->mark = 42;
-
-        return XDP_PASS;
-}
-
-char _license[] SEC("license") = "GPL";
-===================================================================
-
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
----
- drivers/net/virtio_net.c | 309 +++++++++++++++++++++++----------------
- 1 file changed, 185 insertions(+), 124 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 7fda2ae4c40f..a117b3496653 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -249,6 +249,35 @@ struct padded_vnet_hdr {
- 	char padding[4];
- };
- 
-+struct virtnet_page_info {
-+	struct virtnet_info *vi;
-+	struct receive_queue *rq;
-+
-+	/* this may be the head_page, buf not starts with this page */
-+	struct page *page;
-+
-+	/* the allcated buf. this may point to the headroom */
-+	char *buf;
-+
-+	/* the size of the buf */
-+	unsigned int buf_size;
-+
-+	/* OUT. the offset of the remaining data in the page */
-+	unsigned int offset;
-+
-+	char *virtnet_hdr;
-+
-+	/* packet data. generally point to eth header */
-+	char *packet;
-+
-+	/* IN. packet len without virtnet hdr
-+	 * OUT. the size of the remaining data
-+	 */
-+	unsigned int len;
-+
-+	unsigned int metasize;
-+};
-+
- static bool is_xdp_frame(void *ptr)
- {
- 	return (unsigned long)ptr & VIRTIO_XDP_FLAG;
-@@ -357,6 +386,89 @@ static void skb_xmit_done(struct virtqueue *vq)
- 		netif_wake_subqueue(vi->dev, vq2txq(vq));
- }
- 
-+static struct sk_buff *virtnet_page_to_skb(struct virtnet_page_info *pinfo)
-+{
-+	int shinfo_size = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+	struct virtio_net_hdr_mrg_rxbuf *hdr;
-+	struct sk_buff *skb;
-+	int tailroom, copy;
-+
-+	/* In the case of "big", tailroom may be negative, because len can be
-+	 * greater than PAGE_SIZE.
-+	 */
-+	tailroom = pinfo->buf + pinfo->buf_size - (pinfo->packet + pinfo->len);
-+
-+	if (!NET_IP_ALIGN && tailroom >= shinfo_size) {
-+		skb = build_skb(pinfo->buf, pinfo->buf_size);
-+		if (unlikely(!skb))
-+			return NULL;
-+
-+		skb_reserve(skb, pinfo->packet - pinfo->buf);
-+		skb_put(skb, pinfo->len);
-+
-+		/* mark. page has been used. */
-+		pinfo->page = NULL;
-+	} else {
-+		/* copy small data so we can reuse these pages for small data
-+		 *
-+		 * GOOD_COPY_LEN is used to save network headers, such as eth
-+		 * header, ip header, tcp header. If you want to save metadata
-+		 * information, we should apply for a larger space. Prevent the
-+		 * network header cannot fit in the linear space.
-+		 */
-+		skb = napi_alloc_skb(&pinfo->rq->napi,
-+				     pinfo->metasize + GOOD_COPY_LEN);
-+		if (unlikely(!skb))
-+			return NULL;
-+
-+		/* Copy all frame if it fits skb->head, otherwise
-+		 * we let virtio_net_hdr_to_skb() and GRO pull headers as needed.
-+		 */
-+		if (pinfo->len <= GOOD_COPY_LEN)
-+			copy = pinfo->len;
-+		else
-+			copy = ETH_HLEN;
-+
-+		skb_put_data(skb, pinfo->packet - pinfo->metasize,
-+			     copy + pinfo->metasize);
-+		__skb_pull(skb, pinfo->metasize);
-+		pinfo->len -= copy;
-+		pinfo->offset = pinfo->packet + copy -
-+				(char *)page_address(pinfo->page);
-+	}
-+
-+	if (pinfo->metasize)
-+		skb_metadata_set(skb, pinfo->metasize);
-+
-+	if (pinfo->virtnet_hdr) {
-+		hdr = skb_vnet_hdr(skb);
-+		memcpy(hdr, pinfo->virtnet_hdr, pinfo->vi->hdr_len);
-+	}
-+
-+	return skb;
-+}
-+
-+static struct sk_buff *virtnet_merge_page_to_skb(struct virtnet_page_info *pinfo)
-+{
-+	struct sk_buff *skb;
-+
-+	skb = virtnet_page_to_skb(pinfo);
-+	if (unlikely(!skb))
-+		return NULL;
-+
-+	/* page has been used by build_skb() */
-+	if (!pinfo->page)
-+		return skb;
-+
-+	if (pinfo->len)
-+		skb_add_rx_frag(skb, 0, pinfo->page, pinfo->offset, pinfo->len,
-+				pinfo->buf_size);
-+	else
-+		put_page(pinfo->page);
-+
-+	return skb;
-+}
-+
- #define MRG_CTX_HEADER_SHIFT 22
- static void *mergeable_len_to_ctx(unsigned int truesize,
- 				  unsigned int headroom)
-@@ -375,86 +487,30 @@ static unsigned int mergeable_ctx_to_truesize(void *mrg_ctx)
- }
- 
- /* Called from bottom half context */
--static struct sk_buff *page_to_skb(struct virtnet_info *vi,
--				   struct receive_queue *rq,
--				   struct page *page, unsigned int offset,
--				   unsigned int len, unsigned int truesize,
--				   bool hdr_valid, unsigned int metasize,
--				   unsigned int headroom)
-+static struct sk_buff *virtnet_big_page_to_skb(struct virtnet_page_info *pinfo)
- {
-+	unsigned int len, offset, truesize;
-+	struct receive_queue *rq;
- 	struct sk_buff *skb;
--	struct virtio_net_hdr_mrg_rxbuf *hdr;
--	unsigned int copy, hdr_len, hdr_padded_len;
--	struct page *page_to_free = NULL;
--	int tailroom, shinfo_size;
--	char *p, *hdr_p, *buf;
-+	struct page *page;
- 
--	p = page_address(page) + offset;
--	hdr_p = p;
-+	/* save next page */
-+	page = (struct page *)pinfo->page->private;
- 
--	hdr_len = vi->hdr_len;
--	if (vi->mergeable_rx_bufs)
--		hdr_padded_len = sizeof(*hdr);
--	else
--		hdr_padded_len = sizeof(struct padded_vnet_hdr);
--
--	/* If headroom is not 0, there is an offset between the beginning of the
--	 * data and the allocated space, otherwise the data and the allocated
--	 * space are aligned.
--	 */
--	if (headroom) {
--		/* Buffers with headroom use PAGE_SIZE as alloc size,
--		 * see add_recvbuf_mergeable() + get_mergeable_buf_len()
--		 */
--		truesize = PAGE_SIZE;
--		tailroom = truesize - len - offset;
--		buf = page_address(page);
--	} else {
--		tailroom = truesize - len;
--		buf = p;
--	}
--
--	len -= hdr_len;
--	offset += hdr_padded_len;
--	p += hdr_padded_len;
--
--	shinfo_size = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
--
--	/* copy small packet so we can reuse these pages */
--	if (!NET_IP_ALIGN && len > GOOD_COPY_LEN && tailroom >= shinfo_size) {
--		skb = build_skb(buf, truesize);
--		if (unlikely(!skb))
--			return NULL;
--
--		skb_reserve(skb, p - buf);
--		skb_put(skb, len);
--		goto ok;
--	}
--
--	/* copy small packet so we can reuse these pages for small data */
--	skb = napi_alloc_skb(&rq->napi, GOOD_COPY_LEN);
-+	skb = virtnet_page_to_skb(pinfo);
- 	if (unlikely(!skb))
- 		return NULL;
- 
--	/* Copy all frame if it fits skb->head, otherwise
--	 * we let virtio_net_hdr_to_skb() and GRO pull headers as needed.
--	 */
--	if (len <= skb_tailroom(skb))
--		copy = len;
--	else
--		copy = ETH_HLEN + metasize;
--	skb_put_data(skb, p, copy);
-+	rq = pinfo->rq;
- 
--	len -= copy;
--	offset += copy;
-+	/* page has been used by build_skb() */
-+	if (!pinfo->page)
-+		goto end;
- 
--	if (vi->mergeable_rx_bufs) {
--		if (len)
--			skb_add_rx_frag(skb, 0, page, offset, len, truesize);
--		else
--			page_to_free = page;
--		goto ok;
--	}
-+	page     = pinfo->page;
-+	len      = pinfo->len;
-+	offset   = pinfo->offset;
-+	truesize = pinfo->buf_size;
- 
- 	/*
- 	 * Verify that we can indeed put this data into a skb.
-@@ -477,23 +533,10 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
- 		offset = 0;
- 	}
- 
-+end:
- 	if (page)
- 		give_pages(rq, page);
- 
--ok:
--	/* hdr_valid means no XDP, so we can copy the vnet header */
--	if (hdr_valid) {
--		hdr = skb_vnet_hdr(skb);
--		memcpy(hdr, hdr_p, hdr_len);
--	}
--	if (page_to_free)
--		put_page(page_to_free);
--
--	if (metasize) {
--		__skb_pull(skb, metasize);
--		skb_metadata_set(skb, metasize);
--	}
--
- 	return skb;
- }
- 
-@@ -654,17 +697,17 @@ static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
-  */
- static struct page *xdp_linearize_page(struct receive_queue *rq,
- 				       u16 *num_buf,
--				       struct page *p,
--				       int offset,
-+				       void *buf,
- 				       int page_off,
- 				       unsigned int *len)
- {
- 	struct page *page = alloc_page(GFP_ATOMIC);
-+	struct page *p;
- 
- 	if (!page)
- 		return NULL;
- 
--	memcpy(page_address(page) + page_off, page_address(p) + offset, *len);
-+	memcpy(page_address(page) + page_off, buf, *len);
- 	page_off += *len;
- 
- 	while (--*num_buf) {
-@@ -739,18 +782,18 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 			goto err_xdp;
- 
- 		if (unlikely(xdp_headroom < virtnet_get_headroom(vi))) {
--			int offset = buf - page_address(page) + header_offset;
- 			unsigned int tlen = len + vi->hdr_len;
- 			u16 num_buf = 1;
- 
-+			buf += header_offset;
-+
- 			xdp_headroom = virtnet_get_headroom(vi);
- 			header_offset = VIRTNET_RX_PAD + xdp_headroom;
- 			headroom = vi->hdr_len + header_offset;
- 			buflen = SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
- 				 SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
--			xdp_page = xdp_linearize_page(rq, &num_buf, page,
--						      offset, header_offset,
--						      &tlen);
-+			xdp_page = xdp_linearize_page(rq, &num_buf, buf,
-+						      header_offset, &tlen);
- 			if (!xdp_page)
- 				goto err_xdp;
- 
-@@ -842,9 +885,21 @@ static struct sk_buff *receive_big(struct net_device *dev,
- 				   unsigned int len,
- 				   struct virtnet_rq_stats *stats)
- {
-+	struct virtnet_page_info pinfo;
- 	struct page *page = buf;
--	struct sk_buff *skb =
--		page_to_skb(vi, rq, page, 0, len, PAGE_SIZE, true, 0, 0);
-+	struct sk_buff *skb;
-+
-+	pinfo.rq          = rq;
-+	pinfo.vi          = vi;
-+	pinfo.page        = page;
-+	pinfo.buf         = page_address(page);
-+	pinfo.buf_size    = PAGE_SIZE;
-+	pinfo.virtnet_hdr = pinfo.buf;
-+	pinfo.packet      = pinfo.virtnet_hdr + sizeof(struct padded_vnet_hdr);
-+	pinfo.len         = len - vi->hdr_len;
-+	pinfo.metasize    = 0;
-+
-+	skb = virtnet_big_page_to_skb(&pinfo);
- 
- 	stats->bytes += len - vi->hdr_len;
- 	if (unlikely(!skb))
-@@ -870,12 +925,11 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 	struct virtio_net_hdr_mrg_rxbuf *hdr = buf;
- 	u16 num_buf = virtio16_to_cpu(vi->vdev, hdr->num_buffers);
- 	struct page *page = virt_to_head_page(buf);
--	int offset = buf - page_address(page);
- 	struct sk_buff *head_skb, *curr_skb;
-+	struct virtnet_page_info pinfo;
- 	struct bpf_prog *xdp_prog;
- 	unsigned int truesize = mergeable_ctx_to_truesize(ctx);
- 	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
--	unsigned int metasize = 0;
- 	unsigned int frame_sz;
- 	int err;
- 
-@@ -887,8 +941,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 	if (xdp_prog) {
- 		struct xdp_frame *xdpf;
- 		struct page *xdp_page;
-+		void *hard_start;
- 		struct xdp_buff xdp;
--		void *data;
- 		u32 act;
- 
- 		/* Transient failure which in theory could occur if
-@@ -912,54 +966,47 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 		if (unlikely(num_buf > 1 ||
- 			     headroom < virtnet_get_headroom(vi))) {
- 			/* linearize data for XDP */
--			xdp_page = xdp_linearize_page(rq, &num_buf,
--						      page, offset,
-+			xdp_page = xdp_linearize_page(rq, &num_buf, buf,
- 						      VIRTIO_XDP_HEADROOM,
- 						      &len);
- 			frame_sz = PAGE_SIZE;
- 
- 			if (!xdp_page)
- 				goto err_xdp;
--			offset = VIRTIO_XDP_HEADROOM;
-+
-+			hard_start = page_address(xdp_page) + vi->hdr_len;
- 		} else {
- 			xdp_page = page;
-+			hard_start = buf + vi->hdr_len - VIRTIO_XDP_HEADROOM;
- 		}
- 
- 		/* Allow consuming headroom but reserve enough space to push
- 		 * the descriptor on if we get an XDP_TX return code.
- 		 */
--		data = page_address(xdp_page) + offset;
- 		xdp_init_buff(&xdp, frame_sz - vi->hdr_len, &rq->xdp_rxq);
--		xdp_prepare_buff(&xdp, data - VIRTIO_XDP_HEADROOM + vi->hdr_len,
--				 VIRTIO_XDP_HEADROOM, len - vi->hdr_len, true);
-+		xdp_prepare_buff(&xdp, hard_start, VIRTIO_XDP_HEADROOM,
-+				 len - vi->hdr_len, true);
- 
- 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
- 		stats->xdp_packets++;
- 
- 		switch (act) {
- 		case XDP_PASS:
--			metasize = xdp.data - xdp.data_meta;
--
--			/* recalculate offset to account for any header
--			 * adjustments and minus the metasize to copy the
--			 * metadata in page_to_skb(). Note other cases do not
--			 * build an skb and avoid using offset
--			 */
--			offset = xdp.data - page_address(xdp_page) -
--				 vi->hdr_len - metasize;
--
--			/* recalculate len if xdp.data, xdp.data_end or
--			 * xdp.data_meta were adjusted
--			 */
--			len = xdp.data_end - xdp.data + vi->hdr_len + metasize;
-+			pinfo.rq          = rq;
-+			pinfo.vi          = vi;
-+			pinfo.page        = xdp_page;
-+			pinfo.buf         = xdp.data_hard_start - vi->hdr_len;
-+			pinfo.buf_size    = PAGE_SIZE;
-+			pinfo.virtnet_hdr = NULL;
-+			pinfo.packet      = xdp.data;
-+			pinfo.len         = xdp.data_end - xdp.data;
-+			pinfo.metasize    = xdp.data - xdp.data_meta;
- 			/* We can only create skb based on xdp_page. */
- 			if (unlikely(xdp_page != page)) {
- 				rcu_read_unlock();
- 				put_page(page);
--				head_skb = page_to_skb(vi, rq, xdp_page, offset,
--						       len, PAGE_SIZE, false,
--						       metasize, headroom);
--				return head_skb;
-+
-+				return virtnet_merge_page_to_skb(&pinfo);
- 			}
- 			break;
- 		case XDP_TX:
-@@ -1005,8 +1052,22 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 				__free_pages(xdp_page, 0);
- 			goto err_xdp;
- 		}
-+		rcu_read_unlock();
-+
-+		/* pinfo has been filled inside XDP_PASS */
-+	} else {
-+		rcu_read_unlock();
-+
-+		pinfo.rq          = rq;
-+		pinfo.vi          = vi;
-+		pinfo.page        = page;
-+		pinfo.buf         = buf - headroom;
-+		pinfo.buf_size    = headroom ? PAGE_SIZE : truesize;
-+		pinfo.virtnet_hdr = buf;
-+		pinfo.packet      = buf + sizeof(*hdr);
-+		pinfo.len         = len - sizeof(*hdr);
-+		pinfo.metasize    = 0;
- 	}
--	rcu_read_unlock();
- 
- 	if (unlikely(len > truesize)) {
- 		pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
-@@ -1015,14 +1076,14 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 		goto err_skb;
- 	}
- 
--	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog,
--			       metasize, headroom);
-+	head_skb = virtnet_merge_page_to_skb(&pinfo);
- 	curr_skb = head_skb;
- 
- 	if (unlikely(!curr_skb))
- 		goto err_skb;
- 	while (--num_buf) {
- 		int num_skb_frags;
-+		int offset;
- 
- 		buf = virtqueue_get_buf_ctx(rq->vq, &len, &ctx);
- 		if (unlikely(!buf)) {
--- 
-2.31.0
+> diff --git a/Documentation/networking/bonding.rst b/Documentation/networking/bonding.rst
+> index 62f2aab8eaec..66c3fa3a9040 100644
+> --- a/Documentation/networking/bonding.rst
+> +++ b/Documentation/networking/bonding.rst
+> @@ -964,6 +964,19 @@ xmit_hash_policy
+>  
+>  		hash = (vlan ID) XOR (source MAC vendor) XOR (source MAC dev)
+>  
+> +	srcmac
+> +
+> +		This policy uses a very rudimentary source mac hash to
+> +		load-balance traffic per-source-mac, with failover should
+> +		one leg fail. The intended use case is for a bond shared
+> +		by multiple virtual machines, each with their own virtual
+> +		mac address, keeping the VMs traffic all limited to the
+> +		same outbound interface.
+> +
+> +		The formula for the hash is simply
+> +
+> +		hash = (source MAC vendor) XOR (source MAC dev)
+> +
+>  	The default value is layer2.  This option was added in bonding
+>  	version 2.6.3.  In earlier versions of bonding, this parameter
+>  	does not exist, and the layer2 policy is the only policy.  The
+> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> index 20bbda1b36e1..d71e398642fb 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -167,7 +167,8 @@ module_param(xmit_hash_policy, charp, 0);
+>  MODULE_PARM_DESC(xmit_hash_policy, "balance-alb, balance-tlb, balance-xor, 802.3ad hashing method; "
+>  				   "0 for layer 2 (default), 1 for layer 3+4, "
+>  				   "2 for layer 2+3, 3 for encap layer 2+3, "
+> -				   "4 for encap layer 3+4, 5 for vlan+srcmac");
+> +				   "4 for encap layer 3+4, 5 for vlan+srcmac, "
+> +				   "6 for srcmac");
+>  module_param(arp_interval, int, 0);
+>  MODULE_PARM_DESC(arp_interval, "arp interval in milliseconds");
+>  module_param_array(arp_ip_target, charp, NULL, 0);
+> @@ -1459,6 +1460,8 @@ static enum netdev_lag_hash bond_lag_hash_type(struct bonding *bond,
+>  		return NETDEV_LAG_HASH_E34;
+>  	case BOND_XMIT_POLICY_VLAN_SRCMAC:
+>  		return NETDEV_LAG_HASH_VLAN_SRCMAC;
+> +	case BOND_XMIT_POLICY_SRCMAC:
+> +		return NETDEV_LAG_HASH_SRCMAC;
+>  	default:
+>  		return NETDEV_LAG_HASH_UNKNOWN;
+>  	}
+> @@ -3521,11 +3524,11 @@ static bool bond_flow_ip(struct sk_buff *skb, struct flow_keys *fk,
+>  	return true;
+>  }
+>  
+> -static u32 bond_vlan_srcmac_hash(struct sk_buff *skb)
+> +static u32 bond_vlan_srcmac_hash(struct sk_buff *skb, bool with_vlan)
+>  {
+> -	struct ethhdr *mac_hdr = (struct ethhdr *)skb_mac_header(skb);
+> +	struct ethhdr *mac_hdr = eth_hdr(skb);
+>  	u32 srcmac_vendor = 0, srcmac_dev = 0;
+> -	u16 vlan;
+> +	u32 hash;
+>  	int i;
+>  
+>  	for (i = 0; i < 3; i++)
+> @@ -3534,12 +3537,14 @@ static u32 bond_vlan_srcmac_hash(struct sk_buff *skb)
+>  	for (i = 3; i < ETH_ALEN; i++)
+>  		srcmac_dev = (srcmac_dev << 8) | mac_hdr->h_source[i];
+>  
+> -	if (!skb_vlan_tag_present(skb))
+> -		return srcmac_vendor ^ srcmac_dev;
+> +	hash = srcmac_vendor ^ srcmac_dev;
+> +
+> +	if (!with_vlan || !skb_vlan_tag_present(skb))
+> +		return hash;
+>  
+> -	vlan = skb_vlan_tag_get(skb);
+> +	hash ^= skb_vlan_tag_get(skb);
+>  
+> -	return vlan ^ srcmac_vendor ^ srcmac_dev;
+> +	return hash;
+>  }
+>  
+>  /* Extract the appropriate headers based on bond's xmit policy */
+> @@ -3618,8 +3623,11 @@ u32 bond_xmit_hash(struct bonding *bond, struct sk_buff *skb)
+>  	    skb->l4_hash)
+>  		return skb->hash;
+>  
+> +	if (bond->params.xmit_policy == BOND_XMIT_POLICY_SRCMAC)
+> +		return bond_vlan_srcmac_hash(skb, false);
+> +
+>  	if (bond->params.xmit_policy == BOND_XMIT_POLICY_VLAN_SRCMAC)
+> -		return bond_vlan_srcmac_hash(skb);
+> +		return bond_vlan_srcmac_hash(skb, true);
+>  
+>  	if (bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER2 ||
+>  	    !bond_flow_dissect(bond, skb, &flow))
+> diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+> index c9d3604ae129..ff68ad2589f0 100644
+> --- a/drivers/net/bonding/bond_options.c
+> +++ b/drivers/net/bonding/bond_options.c
+> @@ -102,6 +102,7 @@ static const struct bond_opt_value bond_xmit_hashtype_tbl[] = {
+>  	{ "encap2+3",    BOND_XMIT_POLICY_ENCAP23,     0},
+>  	{ "encap3+4",    BOND_XMIT_POLICY_ENCAP34,     0},
+>  	{ "vlan+srcmac", BOND_XMIT_POLICY_VLAN_SRCMAC, 0},
+> +	{ "srcmac",      BOND_XMIT_POLICY_SRCMAC,      0},
+>  	{ NULL,          -1,                           0},
+>  };
+>  
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 5cbc950b34df..d88319fca1d3 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -2732,6 +2732,7 @@ enum netdev_lag_hash {
+>  	NETDEV_LAG_HASH_E23,
+>  	NETDEV_LAG_HASH_E34,
+>  	NETDEV_LAG_HASH_VLAN_SRCMAC,
+> +	NETDEV_LAG_HASH_SRCMAC,
+>  	NETDEV_LAG_HASH_UNKNOWN,
+>  };
+>  
+> diff --git a/include/uapi/linux/if_bonding.h b/include/uapi/linux/if_bonding.h
+> index d174914a837d..f3b4d412a73f 100644
+> --- a/include/uapi/linux/if_bonding.h
+> +++ b/include/uapi/linux/if_bonding.h
+> @@ -95,6 +95,7 @@
+>  #define BOND_XMIT_POLICY_ENCAP23	3 /* encapsulated layer 2+3 */
+>  #define BOND_XMIT_POLICY_ENCAP34	4 /* encapsulated layer 3+4 */
+>  #define BOND_XMIT_POLICY_VLAN_SRCMAC	5 /* vlan + source MAC */
+> +#define BOND_XMIT_POLICY_SRCMAC		6 /* source MAC only */
+>  
+>  /* 802.3ad port state definitions (43.4.2.2 in the 802.3ad standard) */
+>  #define LACP_STATE_LACP_ACTIVITY   0x1
+> 
 
