@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 431793886B3
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 07:37:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52C083886B8
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 07:38:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238373AbhESFiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 01:38:25 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:3032 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243243AbhESFgD (ORCPT
+        id S1344733AbhESFiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 01:38:54 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:3417 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243360AbhESFgD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 01:36:03 -0400
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FlM2H0JzDzmX9s;
-        Wed, 19 May 2021 13:32:23 +0800 (CST)
+Received: from dggems702-chm.china.huawei.com (unknown [172.30.72.60])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FlM1h67x3zCt8n;
+        Wed, 19 May 2021 13:31:52 +0800 (CST)
 Received: from dggemi760-chm.china.huawei.com (10.1.198.146) by
- dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
+ dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Wed, 19 May 2021 13:34:38 +0800
+ 15.1.2176.2; Wed, 19 May 2021 13:34:39 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  dggemi760-chm.china.huawei.com (10.1.198.146) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
@@ -25,10 +25,11 @@ Received: from localhost.localdomain (10.67.165.24) by
 From:   Hui Tang <tanghui20@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Hui Tang <tanghui20@huawei.com>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH 15/20] net: smsc: remove leading spaces before tabs
-Date:   Wed, 19 May 2021 13:30:48 +0800
-Message-ID: <1621402253-27200-16-git-send-email-tanghui20@huawei.com>
+        Hui Tang <tanghui20@huawei.com>,
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>
+Subject: [PATCH 16/20] net: sun: remove leading spaces before tabs
+Date:   Wed, 19 May 2021 13:30:49 +0800
+Message-ID: <1621402253-27200-17-git-send-email-tanghui20@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1621402253-27200-1-git-send-email-tanghui20@huawei.com>
 References: <1621402253-27200-1-git-send-email-tanghui20@huawei.com>
@@ -48,213 +49,106 @@ following commard:
 	$ find . -name '*.c' | xargs sed -r -i 's/^[ ]+\t/\t/'
 	$ find . -name '*.h' | xargs sed -r -i 's/^[ ]+\t/\t/'
 
-Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 Signed-off-by: Hui Tang <tanghui20@huawei.com>
 ---
- drivers/net/ethernet/smsc/smc9194.c | 42 ++++++++++++++++++-------------------
- drivers/net/ethernet/smsc/smc91x.c  | 14 ++++++-------
- 2 files changed, 28 insertions(+), 28 deletions(-)
+ drivers/net/ethernet/sun/cassini.c |  2 +-
+ drivers/net/ethernet/sun/sungem.c  | 20 ++++++++++----------
+ drivers/net/ethernet/sun/sunhme.c  |  6 +++---
+ 3 files changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/smsc/smc9194.c b/drivers/net/ethernet/smsc/smc9194.c
-index 4b2330d..bf7c8c8 100644
---- a/drivers/net/ethernet/smsc/smc9194.c
-+++ b/drivers/net/ethernet/smsc/smc9194.c
-@@ -182,8 +182,8 @@ struct smc_local {
- 	struct sk_buff * saved_skb;
+diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
+index 54f45d8..981685c 100644
+--- a/drivers/net/ethernet/sun/cassini.c
++++ b/drivers/net/ethernet/sun/cassini.c
+@@ -486,7 +486,7 @@ static cas_page_t *cas_page_alloc(struct cas *cp, const gfp_t flags)
+ /* initialize spare pool of rx buffers, but allocate during the open */
+ static void cas_spare_init(struct cas *cp)
+ {
+-  	spin_lock(&cp->rx_inuse_lock);
++	spin_lock(&cp->rx_inuse_lock);
+ 	INIT_LIST_HEAD(&cp->rx_inuse_list);
+ 	spin_unlock(&cp->rx_inuse_lock);
  
- 	/*
-- 	 . This keeps track of how many packets that I have
-- 	 . sent out.  When an TX_EMPTY interrupt comes, I know
-+	 . This keeps track of how many packets that I have
-+	 . sent out.  When an TX_EMPTY interrupt comes, I know
- 	 . that all of these have been sent.
- 	*/
- 	int	packets_waiting;
-@@ -343,7 +343,7 @@ static void smc_reset( int ioaddr )
+diff --git a/drivers/net/ethernet/sun/sungem.c b/drivers/net/ethernet/sun/sungem.c
+index 9790656..cfb9e21 100644
+--- a/drivers/net/ethernet/sun/sungem.c
++++ b/drivers/net/ethernet/sun/sungem.c
+@@ -1258,8 +1258,8 @@ static void gem_begin_auto_negotiation(struct gem *gp,
+ 			&advertising, ep->link_modes.advertising);
  
- 	/* Note:  It doesn't seem that waiting for the MMU busy is needed here,
- 	   but this is a place where future chipsets _COULD_ break.  Be wary
-- 	   of issuing another MMU command right after this */
-+	   of issuing another MMU command right after this */
+ 	if (gp->phy_type != phy_mii_mdio0 &&
+-     	    gp->phy_type != phy_mii_mdio1)
+-     	    	goto non_mii;
++	    gp->phy_type != phy_mii_mdio1)
++		goto non_mii;
  
- 	outb( 0, ioaddr + INT_MASK );
- }
-@@ -521,9 +521,9 @@ static netdev_tx_t smc_wait_to_send_packet(struct sk_buff *skb,
- 	SMC_SELECT_BANK( 2 );
- 	outw( MC_ALLOC | numPages, ioaddr + MMU_CMD );
- 	/*
-- 	. Performance Hack
-+	. Performance Hack
- 	.
-- 	. wait a short amount of time.. if I can send a packet now, I send
-+	. wait a short amount of time.. if I can send a packet now, I send
- 	. it now.  Otherwise, I enable an interrupt and wait for one to be
- 	. available.
- 	.
-@@ -540,17 +540,17 @@ static netdev_tx_t smc_wait_to_send_packet(struct sk_buff *skb,
- 		if ( status & IM_ALLOC_INT ) {
- 			/* acknowledge the interrupt */
- 			outb( IM_ALLOC_INT, ioaddr + INTERRUPT );
--  			break;
-+			break;
- 		}
--   	} while ( -- time_out );
-+	} while ( -- time_out );
+ 	/* Setup advertise */
+ 	if (found_mii_phy(gp))
+@@ -1410,7 +1410,7 @@ static int gem_set_link_modes(struct gem *gp)
  
--   	if ( !time_out ) {
-+	if ( !time_out ) {
- 		/* oh well, wait until the chip finds memory later */
- 		SMC_ENABLE_INT( IM_ALLOC_INT );
- 		PRINTK2((CARDNAME": memory allocation deferred.\n"));
- 		/* it's deferred, but I'll handle it later */
- 		return NETDEV_TX_OK;
--   	}
-+	}
- 	/* or YES! I can send the packet now.. */
- 	smc_hardware_send_packet(dev);
- 	netif_wake_queue(dev);
-@@ -616,7 +616,7 @@ static void smc_hardware_send_packet( struct net_device * dev )
- #endif
+ 	if (gp->phy_type == phy_serialink ||
+ 	    gp->phy_type == phy_serdes) {
+- 		u32 pcs_lpa = readl(gp->regs + PCS_MIILP);
++		u32 pcs_lpa = readl(gp->regs + PCS_MIILP);
  
- 	/* send the packet length ( +6 for status, length and ctl byte )
-- 	   and the status word ( set to zeros ) */
-+	   and the status word ( set to zeros ) */
- #ifdef USE_32_BIT
- 	outl(  (length +6 ) << 16 , ioaddr + DATA_1 );
- #else
-@@ -629,8 +629,8 @@ static void smc_hardware_send_packet( struct net_device * dev )
- 	/* send the actual data
- 	 . I _think_ it's faster to send the longs first, and then
- 	 . mop up by sending the last word.  It depends heavily
-- 	 . on alignment, at least on the 486.  Maybe it would be
-- 	 . a good idea to check which is optimal?  But that could take
-+	 . on alignment, at least on the 486.  Maybe it would be
-+	 . a good idea to check which is optimal?  But that could take
- 	 . almost as much time as is saved?
- 	*/
- #ifdef USE_32_BIT
-@@ -757,7 +757,7 @@ static int __init smc_findirq(int ioaddr)
- 	outb( IM_ALLOC_INT, ioaddr + INT_MASK );
+ 		if (pcs_lpa & (PCS_MIIADV_SP | PCS_MIIADV_AP))
+ 			pause = 1;
+@@ -1892,7 +1892,7 @@ static void gem_init_mac(struct gem *gp)
  
- 	/*
-- 	 . Allocate 512 bytes of memory.  Note that the chip was just
-+	 . Allocate 512 bytes of memory.  Note that the chip was just
- 	 . reset so all the memory is available
- 	*/
- 	outw( MC_ALLOC | 1, ioaddr + MMU_CMD );
-@@ -871,7 +871,7 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
- 		goto err_out;
- 	}
- 	/* The above MIGHT indicate a device, but I need to write to further
-- 	 	test this.  */
-+		test this.  */
- 	outw( 0x0, ioaddr + BANK_SELECT );
- 	bank = inw( ioaddr + BANK_SELECT );
- 	if ( (bank & 0xFF00 ) != 0x3300 ) {
-@@ -879,7 +879,7 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
- 		goto err_out;
- 	}
- 	/* well, we've already written once, so hopefully another time won't
-- 	   hurt.  This time, I need to switch the bank register to bank 1,
-+	   hurt.  This time, I need to switch the bank register to bank 1,
- 	   so I can access the base address register */
- 	SMC_SELECT_BANK(1);
- 	base_address_register = inw( ioaddr + BASE );
-@@ -917,7 +917,7 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
- 	dev->base_addr = ioaddr;
+ static void gem_init_pause_thresholds(struct gem *gp)
+ {
+-       	u32 cfg;
++	u32 cfg;
  
- 	/*
-- 	 . Get the MAC address ( bank 1, regs 4 - 9 )
-+	 . Get the MAC address ( bank 1, regs 4 - 9 )
- 	*/
- 	SMC_SELECT_BANK( 1 );
- 	for ( i = 0; i < 6; i += 2 ) {
-@@ -938,8 +938,8 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
- 
- 	/*
- 	 Now, I want to find out more about the chip.  This is sort of
-- 	 redundant, but it's cleaner to have it in both, rather than having
-- 	 one VERY long probe procedure.
-+	 redundant, but it's cleaner to have it in both, rather than having
-+	 one VERY long probe procedure.
- 	*/
- 	SMC_SELECT_BANK(3);
- 	revision_register  = inw( ioaddr + REVISION );
-@@ -967,7 +967,7 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
- 	/*
- 	 . If dev->irq is 0, then the device has to be banged on to see
- 	 . what the IRQ is.
-- 	 .
-+	 .
- 	 . This banging doesn't always detect the IRQ, for unknown reasons.
- 	 . a workaround is to reset the chip and try again.
- 	 .
-@@ -978,7 +978,7 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
- 	 .
- 	 . Specifying an IRQ is done with the assumption that the user knows
- 	 . what (s)he is doing.  No checking is done!!!!
-- 	 .
-+	 .
- 	*/
- 	if ( dev->irq < 2 ) {
- 		int	trials;
-@@ -1070,7 +1070,7 @@ static int smc_open(struct net_device *dev)
- 	}
- 
- 	/*
--  		According to Becker, I have to set the hardware address
-+		According to Becker, I have to set the hardware address
- 		at this point, because the (l)user can set it with an
- 		ioctl.  Easily done...
- 	*/
-diff --git a/drivers/net/ethernet/smsc/smc91x.c b/drivers/net/ethernet/smsc/smc91x.c
-index cbde83f..813ea94 100644
---- a/drivers/net/ethernet/smsc/smc91x.c
-+++ b/drivers/net/ethernet/smsc/smc91x.c
-@@ -671,19 +671,19 @@ smc_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		status = SMC_GET_INT(lp);
- 		if (status & IM_ALLOC_INT) {
- 			SMC_ACK_INT(lp, IM_ALLOC_INT);
--  			break;
-+			break;
- 		}
--   	} while (--poll_count);
-+	} while (--poll_count);
- 
- 	smc_special_unlock(&lp->lock, flags);
- 
- 	lp->pending_tx_skb = skb;
--   	if (!poll_count) {
-+	if (!poll_count) {
- 		/* oh well, wait until the chip finds memory later */
- 		netif_stop_queue(dev);
- 		DBG(2, dev, "TX memory allocation deferred.\n");
- 		SMC_ENABLE_INT(lp, IM_ALLOC_INT);
--   	} else {
-+	} else {
- 		/*
- 		 * Allocation succeeded: push packet to the chip's own memory
- 		 * immediately.
-@@ -1790,7 +1790,7 @@ static int smc_findirq(struct smc_local *lp)
- 	SMC_SET_INT_MASK(lp, IM_ALLOC_INT);
- 
- 	/*
-- 	 * Allocate 512 bytes of memory.  Note that the chip was just
-+	 * Allocate 512 bytes of memory.  Note that the chip was just
- 	 * reset so all the memory is available
+ 	/* Calculate pause thresholds.  Setting the OFF threshold to the
+ 	 * full RX fifo size effectively disables PAUSE generation which
+@@ -1914,15 +1914,15 @@ static void gem_init_pause_thresholds(struct gem *gp)
+ 	/* Configure the chip "burst" DMA mode & enable some
+ 	 * HW bug fixes on Apple version
  	 */
- 	SMC_SET_MMU_CMD(lp, MC_ALLOC | 1);
-@@ -1998,8 +1998,8 @@ static int smc_probe(struct net_device *dev, void __iomem *ioaddr,
+-       	cfg  = 0;
+-       	if (gp->pdev->vendor == PCI_VENDOR_ID_APPLE)
++	cfg  = 0;
++	if (gp->pdev->vendor == PCI_VENDOR_ID_APPLE)
+ 		cfg |= GREG_CFG_RONPAULBIT | GREG_CFG_ENBUG2FIX;
+ #if !defined(CONFIG_SPARC64) && !defined(CONFIG_ALPHA)
+-       	cfg |= GREG_CFG_IBURST;
++	cfg |= GREG_CFG_IBURST;
+ #endif
+-       	cfg |= ((31 << 1) & GREG_CFG_TXDMALIM);
+-       	cfg |= ((31 << 6) & GREG_CFG_RXDMALIM);
+-       	writel(cfg, gp->regs + GREG_CFG);
++	cfg |= ((31 << 1) & GREG_CFG_TXDMALIM);
++	cfg |= ((31 << 6) & GREG_CFG_RXDMALIM);
++	writel(cfg, gp->regs + GREG_CFG);
  
- 	/* Grab the IRQ */
- 	retval = request_irq(dev->irq, smc_interrupt, irq_flags, dev->name, dev);
--      	if (retval)
--      		goto err_out;
-+	if (retval)
-+		goto err_out;
+ 	/* If Infinite Burst didn't stick, then use different
+ 	 * thresholds (and Apple bug fixes don't exist)
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index 54b53db..a2c1a40 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -2286,8 +2286,8 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
+ 					 struct net_device *dev)
+ {
+ 	struct happy_meal *hp = netdev_priv(dev);
+- 	int entry;
+- 	u32 tx_flags;
++	int entry;
++	u32 tx_flags;
  
- #ifdef CONFIG_ARCH_PXA
- #  ifdef SMC_USE_PXA_DMA
+ 	tx_flags = TXFLAG_OWN;
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
+@@ -2301,7 +2301,7 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
+ 
+ 	spin_lock_irq(&hp->happy_lock);
+ 
+- 	if (TX_BUFFS_AVAIL(hp) <= (skb_shinfo(skb)->nr_frags + 1)) {
++	if (TX_BUFFS_AVAIL(hp) <= (skb_shinfo(skb)->nr_frags + 1)) {
+ 		netif_stop_queue(dev);
+ 		spin_unlock_irq(&hp->happy_lock);
+ 		printk(KERN_ERR "%s: BUG! Tx Ring full when queue awake!\n",
 -- 
 2.8.1
 
