@@ -2,115 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58FE93885D8
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 06:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C6713885DD
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 06:05:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231893AbhESEFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 00:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
+        id S232007AbhESEHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 00:07:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231603AbhESEFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 00:05:13 -0400
-Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33109C061761
-        for <netdev@vger.kernel.org>; Tue, 18 May 2021 21:03:53 -0700 (PDT)
-Received: by mail-vk1-xa2a.google.com with SMTP id f10so1568793vkm.12
-        for <netdev@vger.kernel.org>; Tue, 18 May 2021 21:03:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=005H25oHztKG+nSEcvMKBfVQtGisiCUjlVtB3nCowos=;
-        b=egv+k4Y1QK40T83FZPtN2cnbcTTdb67akYxAI57beGc81D97buewAMUxLHAkKJ7Uhi
-         E7fzELVUKv3vIAuvYdZHUg/1czub1vvwUNzTSeuHGEUGSX+LPDI8LYMZcUwnNsHmbJTf
-         dMryL+gz8iODLu5Uj33M2BYyKxL5chy1ayncs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=005H25oHztKG+nSEcvMKBfVQtGisiCUjlVtB3nCowos=;
-        b=dShS79TKxTHxYjRH8HFSfm2TJg2QbhpzWHTIdIlxHdxMi80OCxvKJQRvjTLrhPvCbI
-         jfaPPMzhi5tvUvrTnWfF8awCGm3CEa0zRqJU9q8+V+pa+Ju72bsc5GKqk1ccn9bTlgif
-         1ZJoMSkvILRiUhSkLsLetatTcbIEWzL+sHwK55k9NVqqCK96M3dwY46HpU6qGGSSGrD3
-         cbz5uhezv/6exUjGhN6CSPuHGi8k6z5//McubH9yzAQbIiUh9DL17dQKwVRGPAl6+sCw
-         f5Va21NDLr/jkiWK7asd59hy+JX8iGzRoVa/AFiYRLZo5iKIKm+bqIaVV4HSQhEpqgp4
-         DKvQ==
-X-Gm-Message-State: AOAM530tFK7NW93gSWAdEvfyAh4FtWl+ZITMmQObErjGxxu+DfDXJL+s
-        zH/fM2aSNK8QuCAks0IETK5kG2P1tNHJofcWTSL+xA==
-X-Google-Smtp-Source: ABdhPJzMMU+SSCanJuoajJVYxSRVMJVmh+7Zem+oOk6V9klKze7by2oM00gAyXfOIDfSuLQmjBJGZ4MhF2dJPyrs7ig=
-X-Received: by 2002:a05:6122:124b:: with SMTP id b11mr515013vkp.11.1621397032184;
- Tue, 18 May 2021 21:03:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210518122138.22914-1-yaohaidong369@gmail.com>
- <CAJfpeguv0uMN4zc8OUkYEJ995KAhtBcAwVo4v0nTa-hMoMLbBA@mail.gmail.com> <CA+kUaCcaZCb4+zqQthsUvEApG4xFdGsSZ_vQ_1s=G49JHQQh9w@mail.gmail.com>
-In-Reply-To: <CA+kUaCcaZCb4+zqQthsUvEApG4xFdGsSZ_vQ_1s=G49JHQQh9w@mail.gmail.com>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Wed, 19 May 2021 06:03:41 +0200
-Message-ID: <CAJfpegv_TPLFumONsoCOKP5vuO7Gdy91TkV3LUvNg4tdPSs6zA@mail.gmail.com>
-Subject: Re: [PATCH] ovl: useing ovl_revert_creds() instead of revert_creds(),
-To:     Yao Haidong <yaohaidong369@gmail.com>
-Cc:     Orson Zhai <orsonzhai@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Chunyan Zhang <Chunyan.Zhang@unisoc.com>,
-        Orson Zhai <Orson.Zhai@unisoc.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        overlayfs <linux-unionfs@vger.kernel.org>,
+        with ESMTP id S230250AbhESEG6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 00:06:58 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0FFC06175F;
+        Tue, 18 May 2021 21:05:39 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FlK6667Q4z9sRf;
+        Wed, 19 May 2021 14:05:34 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1621397136;
+        bh=pauE8XMkpcl5YeU9UQe+H4otsmdHP12qTD5+jPriKds=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=H67ZlgmgSuwuD4q7fx+JZepYdYzW05QsLkRaR08zroGyV4Rm09PROUKNOnyuyB3er
+         xkjfuCzn5U0Pq4j1y5oxclhNo/b2Ai4V6c/6AT+X9BGj/yAQqNBaXBZB5itsdUTymD
+         9ZhOpoUeJtzfLgFDjlsAgySNONun0s5mdjH7jGKHJBWoE0BCpnuc36oou6u3s+udzg
+         cui6LzBqoki/+nHK09tcqLCxb93h+KpKxzCEkxS7ZqFBC4GH8jRr12hS2F2VSNYLdK
+         4XRGtVu/xaNe9JJ9F6qqFSb45X3wsqjgo9HFmvzoviQPARip8zkhtvUkroCIOlH+aK
+         jUEvXHI4Cjnlg==
+Date:   Wed, 19 May 2021 14:05:32 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, stable <stable@vger.kernel.org>,
-        Haidong Yao <haidong.yao@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Stefano Brivio <sbrivio@redhat.com>
+Subject: Re: linux-next: manual merge of the netfilter-next tree with the
+ net tree
+Message-ID: <20210519140532.677d1bb6@canb.auug.org.au>
+In-Reply-To: <20210519095627.7697ff12@canb.auug.org.au>
+References: <20210519095627.7697ff12@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/fk7n6zHb2ovrZiubd3gbaHl";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 May 2021 at 05:29, Yao Haidong <yaohaidong369@gmail.com> wrote:
+--Sig_/fk7n6zHb2ovrZiubd3gbaHl
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> Miklos Szeredi <miklos@szeredi.hu> =E4=BA=8E2021=E5=B9=B45=E6=9C=8818=E6=
-=97=A5=E5=91=A8=E4=BA=8C =E4=B8=8B=E5=8D=889:41=E5=86=99=E9=81=93=EF=BC=9A
-> >
-> > On Tue, 18 May 2021 at 14:21, Haidong Yao <yaohaidong369@gmail.com> wro=
-te:
-> > >
-> > > From: Haidong Yao <haidong.yao@unisoc.com>
+Hi all,
 
-[...]
-
-> > > diff --git a/fs/overlayfs/file.c b/fs/overlayfs/file.c
-> > > index 4d53d3b7e5fe..d9bc658f22ee 100644
-> > > --- a/fs/overlayfs/file.c
-> > > +++ b/fs/overlayfs/file.c
-> > > @@ -60,7 +60,7 @@ static struct file *ovl_open_realfile(const struct =
-file *file,
-> > >                 realfile =3D open_with_fake_path(&file->f_path, flags=
-, realinode,
-> > >                                                current_cred());
-> > >         }
-> > > -       revert_creds(old_cred);
-> > > +       ovl_revert_creds(inode->i_sb, old_cred);
-> >
-> > Upstream kernel doesn't have ovl_revert_creds().
-
-> Hi Miklos:
+On Wed, 19 May 2021 09:56:27 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
 >
-> Sorry,
-> Sometimes=EF=BC=8Cold_cred is NULL.
-> Do you think this is a problem?
-> Can I add ovl_revert_creds()? or You have a better way?
+> Today's linux-next merge of the netfilter-next tree got a conflict in:
+>=20
+>   net/netfilter/nft_set_pipapo.c
+>=20
+> between commit:
+>=20
+>   f0b3d338064e ("netfilter: nft_set_pipapo_avx2: Add irq_fpu_usable() che=
+ck, fallback to non-AVX2 version")
+>=20
+> from the net tree and commit:
+>=20
+>   b1bc08f6474f ("netfilter: nf_tables: prefer direct calls for set lookup=
+s")
+>=20
+> from the netfilter-next tree.
+>=20
+> I fixed it up (I just used the latter) and can carry the fix as necessary=
+. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
 
-old_cred can't be NULL on upstream (Linus) kernel.
+This merge also needs the following merge resolution patch:
 
-From the taint flags I can see that this is some weird setup.  Please
-contact the distro that is providing the kerne/modules about this
-issue.  It's not anything the upstream kernel maintainers can help
-with.
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Wed, 19 May 2021 13:48:22 +1000
+Subject: [PATCH] fix up for merge involving nft_pipapo_lookup()
 
-Thanks,
-Miklos
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ net/netfilter/nft_set_pipapo.h | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/net/netfilter/nft_set_pipapo.h b/net/netfilter/nft_set_pipapo.h
+index d84afb8fa79a..25a75591583e 100644
+--- a/net/netfilter/nft_set_pipapo.h
++++ b/net/netfilter/nft_set_pipapo.h
+@@ -178,8 +178,6 @@ struct nft_pipapo_elem {
+=20
+ int pipapo_refill(unsigned long *map, int len, int rules, unsigned long *d=
+st,
+ 		  union nft_pipapo_map_bucket *mt, bool match_only);
+-bool nft_pipapo_lookup(const struct net *net, const struct nft_set *set,
+-		       const u32 *key, const struct nft_set_ext **ext);
+=20
+ /**
+  * pipapo_and_field_buckets_4bit() - Intersect 4-bit buckets
+--=20
+2.30.2
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/fk7n6zHb2ovrZiubd3gbaHl
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmCkjowACgkQAVBC80lX
+0Gyfhgf+LJu3irilPR9sd9/H8elwRHyLTv6/ff1mBI3efU4oM7G1ucFWmEfgK9Mp
+CpMTpioNmg0O3IlALWc1BbFLQ6oJ9UFbg9gQcMgKllo8sZDoiCdbRCrekTaGDT/R
+P/msJd7qBpxsaoYi2pZ4Dyt5fOd+qFz7BURrWCSpJpNzeXVJPJGJ6W2TpPoqCA7B
+uyVklY5OA3ra8/k1sV8+bIxIUI29r1j2BtdNU4G/rVxv2f5F0SlPjZUyqzxY6Zqe
+gE1WzfDDbu1um6W8dgEOWL9Bq3KT4FWYqDFS7pJJ/FuIH8zkU01GHO2sLPw85HCy
+d+PclL1aPQXgmV44gJg5xZj0Fu8I1g==
+=MFdv
+-----END PGP SIGNATURE-----
+
+--Sig_/fk7n6zHb2ovrZiubd3gbaHl--
