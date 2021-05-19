@@ -2,119 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CEB0388676
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 07:21:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 406FF3886A4
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 07:36:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237679AbhESFXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 01:23:04 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:62526 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229598AbhESFXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 01:23:03 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14J54Iv3034025;
-        Wed, 19 May 2021 01:21:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to; s=pp1;
- bh=5tT4m8BqaOgTlUX17i6bD4OUl0fgHC5fsgEB2sipC8k=;
- b=rT2R0ZhOwwNyVUH4JEKgyH7jMrYuBo87l3wdJjyID58sFBdYx9MYTkrsEpFYtfsnx/rH
- tw2c6LTf2W37FWmRpz22/0Nz1N1Nc1K31a/j3RYL0Q5ftbF9j3xmeK1RDkT3DII/m+Er
- TmS/kkEQX7bI3QOx5nuDbFXxvr+5CaHdTU0Llewo3CNJglkmJrbytZOybId26oqXZmKv
- h4ww8l6i4G+GujmOKkaXLcKbN7s4eIbzB+Wlif4WhEs+bOhlsXQNREvTJiqJyiN9TqTv
- sGEzyE+6zm3BBE6KrYPHVyDWnXXOF5sASd+5pAuETDhl1sTm0GsoEb9jF5F65yh8JSbT 3w== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 38mu7fsm14-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 May 2021 01:21:17 -0400
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 14J5IVt2014696;
-        Wed, 19 May 2021 05:20:25 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma03wdc.us.ibm.com with ESMTP id 38j5x9cg31-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 May 2021 05:20:25 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 14J5KOF322479180
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 May 2021 05:20:24 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9063C6A05F;
-        Wed, 19 May 2021 05:20:24 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 63CF46A05A;
-        Wed, 19 May 2021 05:20:23 +0000 (GMT)
-Received: from [9.65.90.43] (unknown [9.65.90.43])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTPS;
-        Wed, 19 May 2021 05:20:23 +0000 (GMT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH net-next] ibmveth: fix kobj_to_dev.cocci warnings
-From:   Lijun Pan <ljp@linux.vnet.ibm.com>
-In-Reply-To: <20210519022849.12752-1-yuehaibing@huawei.com>
-Date:   Wed, 19 May 2021 00:20:22 -0500
-Cc:     benh@kernel.crashing.org, paulus@samba.org,
-        Cristobal Forno <cforno12@linux.ibm.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, dwilder@us.ibm.com,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <276F94E7-2DFB-47EF-91F7-6CDA69A4009F@linux.vnet.ibm.com>
-References: <20210519022849.12752-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: kOdqaP7ZGXu33XGnyGSMNvikZLFvFqgD
-X-Proofpoint-ORIG-GUID: kOdqaP7ZGXu33XGnyGSMNvikZLFvFqgD
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-05-19_01:2021-05-18,2021-05-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- lowpriorityscore=0 malwarescore=0 priorityscore=1501 mlxscore=0
- phishscore=0 adultscore=0 mlxlogscore=999 bulkscore=0 impostorscore=0
- spamscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2105190038
+        id S241912AbhESFhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 01:37:36 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4741 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242407AbhESFfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 01:35:55 -0400
+Received: from dggems705-chm.china.huawei.com (unknown [172.30.72.60])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FlM0m3XlNzpfBj;
+        Wed, 19 May 2021 13:31:04 +0800 (CST)
+Received: from dggemi760-chm.china.huawei.com (10.1.198.146) by
+ dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Wed, 19 May 2021 13:34:33 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggemi760-chm.china.huawei.com (10.1.198.146) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Wed, 19 May 2021 13:34:33 +0800
+From:   Hui Tang <tanghui20@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Hui Tang <tanghui20@huawei.com>
+Subject: [PATCH 00/20] net: ethernet: remove leading spaces before tabs
+Date:   Wed, 19 May 2021 13:30:33 +0800
+Message-ID: <1621402253-27200-1-git-send-email-tanghui20@huawei.com>
+X-Mailer: git-send-email 2.8.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggemi760-chm.china.huawei.com (10.1.198.146)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There are a few leading spaces before tabs and remove it by running the
+following commard:
 
+        $ find . -name '*.c' | xargs sed -r -i 's/^[ ]+\t/\t/'
+        $ find . -name '*.h' | xargs sed -r -i 's/^[ ]+\t/\t/'
 
-> On May 18, 2021, at 9:28 PM, YueHaibing <yuehaibing@huawei.com> wrote:
->=20
-> Use kobj_to_dev() instead of container_of()
->=20
-> Generated by: scripts/coccinelle/api/kobj_to_dev.cocci
->=20
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
+Hui Tang (20):
+  net: 3com: remove leading spaces before tabs
+  net: alteon: remove leading spaces before tabs
+  net: amd: remove leading spaces before tabs
+  net: apple: remove leading spaces before tabs
+  net: broadcom: remove leading spaces before tabs
+  net: chelsio: remove leading spaces before tabs
+  net: dec: remove leading spaces before tabs
+  net: dlink: remove leading spaces before tabs
+  net: ibm: remove leading spaces before tabs
+  net: marvell: remove leading spaces before tabs
+  net: natsemi: remove leading spaces before tabs
+  net: realtek: remove leading spaces before tabs
+  net: seeq: remove leading spaces before tabs
+  net: sis: remove leading spaces before tabs
+  net: smsc: remove leading spaces before tabs
+  net: sun: remove leading spaces before tabs
+  net: fealnx: remove leading spaces before tabs
+  net: xircom: remove leading spaces before tabs
+  net: 8390: remove leading spaces before tabs
+  net: fujitsu: remove leading spaces before tabs
 
-Acked-by: Lijun Pan <lijunp213@gmail.com>
+ drivers/net/ethernet/3com/3c59x.c            |  2 +-
+ drivers/net/ethernet/8390/axnet_cs.c         | 14 +++++-----
+ drivers/net/ethernet/8390/pcnet_cs.c         |  2 +-
+ drivers/net/ethernet/8390/smc-ultra.c        |  6 ++--
+ drivers/net/ethernet/8390/stnic.c            |  2 +-
+ drivers/net/ethernet/alteon/acenic.c         | 26 ++++++++---------
+ drivers/net/ethernet/amd/amd8111e.c          |  4 +--
+ drivers/net/ethernet/amd/amd8111e.h          |  6 ++--
+ drivers/net/ethernet/amd/atarilance.c        |  2 +-
+ drivers/net/ethernet/amd/declance.c          |  2 +-
+ drivers/net/ethernet/amd/lance.c             |  4 +--
+ drivers/net/ethernet/amd/ni65.c              | 12 ++++----
+ drivers/net/ethernet/amd/nmclan_cs.c         | 12 ++++----
+ drivers/net/ethernet/amd/sun3lance.c         | 12 ++++----
+ drivers/net/ethernet/apple/bmac.c            | 30 ++++++++++----------
+ drivers/net/ethernet/apple/mace.c            |  8 +++---
+ drivers/net/ethernet/broadcom/b44.c          | 20 ++++++-------
+ drivers/net/ethernet/broadcom/bnx2.c         |  6 ++--
+ drivers/net/ethernet/chelsio/cxgb3/sge.c     |  2 +-
+ drivers/net/ethernet/dec/tulip/de2104x.c     |  4 +--
+ drivers/net/ethernet/dec/tulip/de4x5.c       |  6 ++--
+ drivers/net/ethernet/dec/tulip/dmfe.c        | 18 ++++++------
+ drivers/net/ethernet/dec/tulip/pnic2.c       |  4 +--
+ drivers/net/ethernet/dec/tulip/uli526x.c     | 10 +++----
+ drivers/net/ethernet/dec/tulip/winbond-840.c |  4 +--
+ drivers/net/ethernet/dlink/sundance.c        | 12 ++++----
+ drivers/net/ethernet/fealnx.c                |  2 +-
+ drivers/net/ethernet/fujitsu/fmvj18x_cs.c    |  6 ++--
+ drivers/net/ethernet/ibm/emac/emac.h         |  2 +-
+ drivers/net/ethernet/marvell/skge.h          |  2 +-
+ drivers/net/ethernet/marvell/sky2.c          | 30 ++++++++++----------
+ drivers/net/ethernet/marvell/sky2.h          |  8 +++---
+ drivers/net/ethernet/natsemi/natsemi.c       |  6 ++--
+ drivers/net/ethernet/realtek/8139cp.c        |  6 ++--
+ drivers/net/ethernet/realtek/8139too.c       |  6 ++--
+ drivers/net/ethernet/realtek/atp.c           |  4 +--
+ drivers/net/ethernet/seeq/ether3.c           | 10 +++----
+ drivers/net/ethernet/sis/sis900.c            | 22 +++++++--------
+ drivers/net/ethernet/smsc/smc9194.c          | 42 ++++++++++++++--------------
+ drivers/net/ethernet/smsc/smc91x.c           | 14 +++++-----
+ drivers/net/ethernet/sun/cassini.c           |  2 +-
+ drivers/net/ethernet/sun/sungem.c            | 20 ++++++-------
+ drivers/net/ethernet/sun/sunhme.c            |  6 ++--
+ drivers/net/ethernet/xircom/xirc2ps_cs.c     |  2 +-
+ 44 files changed, 210 insertions(+), 210 deletions(-)
 
-
-> drivers/net/ethernet/ibm/ibmveth.c | 3 +--
-> 1 file changed, 1 insertion(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/ibm/ibmveth.c =
-b/drivers/net/ethernet/ibm/ibmveth.c
-> index 7fea9ae60f13..bc67a7ee872b 100644
-> --- a/drivers/net/ethernet/ibm/ibmveth.c
-> +++ b/drivers/net/ethernet/ibm/ibmveth.c
-> @@ -1799,8 +1799,7 @@ static ssize_t veth_pool_store(struct kobject =
-*kobj, struct attribute *attr,
-> 	struct ibmveth_buff_pool *pool =3D container_of(kobj,
-> 						      struct =
-ibmveth_buff_pool,
-> 						      kobj);
-> -	struct net_device *netdev =3D dev_get_drvdata(
-> -	    container_of(kobj->parent, struct device, kobj));
-> +	struct net_device *netdev =3D =
-dev_get_drvdata(kobj_to_dev(kobj->parent));
-> 	struct ibmveth_adapter *adapter =3D netdev_priv(netdev);
-> 	long value =3D simple_strtol(buf, NULL, 10);
-> 	long rc;
-> --=20
-> 2.17.1
->=20
+--
+2.8.1
 
