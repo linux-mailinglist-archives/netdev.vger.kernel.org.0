@@ -2,133 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCCAE3892B0
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 17:31:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAAA13892D6
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 17:43:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354892AbhESPdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 11:33:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56020 "EHLO mail.kernel.org"
+        id S1354952AbhESPo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 11:44:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58262 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354862AbhESPdB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 11:33:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7163461019;
-        Wed, 19 May 2021 15:31:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621438302;
-        bh=/5k+h9ogJ0bXYmfxI52m24QI7eZYZB1/fdwBPZW6G1A=;
+        id S242076AbhESPoU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 11:44:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 26F7860D07;
+        Wed, 19 May 2021 15:43:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1621438980;
+        bh=KaSVb/oZ/hbXppu3Y0486KwtT3znvB8EkCNw1WfZ//o=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nYbqRnPUb+Mwh2KgbD3B7EDNkLAtvZDJo5q4bR+n7uoM2GN2w2pGNtLUq/74DrsRo
-         LI2tWamVnzZfnDWBodchGdrLVj9HgXz5Q2NfEkG2MlU4kPaEYsTcft/FzmgyO6vbKQ
-         Lfw3+I8SVJINILOkUOm9GSxd0Dpeo/lEWAYBQx0dGwSbLjfhte0woaKVUL6t2zi3vZ
-         81cJEu/T47PwoftHumNl1qJdbrWPeJrOyMjFjSfLVf1MtylHpZGfaCAjr9BcioSswS
-         nlg6RepccUsw9JhKjh0knMYRFP8LCI7yhQCfJ4yQ3nnYeigl3+m64l8SEHV21EAsAF
-         sa5dB5qL61DPg==
-Date:   Wed, 19 May 2021 18:31:38 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Shai Malin <malin1024@gmail.com>
-Cc:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org, Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>, okulkarni@marvell.com,
-        pkushwaha@marvell.com, Dean Balandin <dbalandin@marvell.com>
-Subject: Re: [RFC PATCH v5 17/27] qedn: Add qedn probe
-Message-ID: <YKUvWqvlZNGJqBCy@unreal>
-References: <20210519111340.20613-1-smalin@marvell.com>
- <20210519111340.20613-18-smalin@marvell.com>
- <YKUFLVHrUdzEsUeq@unreal>
- <CAKKgK4z+Ha9cv0zHtjrBiTb=K9MvWZB-kzg5CP9__pCJYmyNVA@mail.gmail.com>
+        b=vE468iAEIhQmaJ20YTgK/EOOfR+ctZemzuvMSUU67Mh05ibc6eUXvTZkexo13jsTM
+         ZWEIHAygjyv4aNy2oRzUSlhDMeZb63l3XO+swZPuJ7LgJMAJwFrtFHEEeAcfwvNkLv
+         lsUYnNheTWjcRjjU7Os4QhfQLc4tpMkvCBCHFAqw=
+Date:   Wed, 19 May 2021 17:42:58 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jeff Johnson <jjohnson@codeaurora.org>
+Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Chao Yu <chao@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>, b43-dev@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jjohnson=codeaurora.org@codeaurora.org
+Subject: Re: [PATCH v2] b43: don't save dentries for debugfs
+Message-ID: <YKUyAoBq/cepglmk@kroah.com>
+References: <20210518163304.3702015-1-gregkh@linuxfoundation.org>
+ <891f28e4c1f3c24ed1b257de83cbb3a0@codeaurora.org>
+ <f539277054c06e1719832b9e99cbf7f1@codeaurora.org>
+ <YKScfFKhxtVqfRkt@kroah.com>
+ <2eb3af43025436c0832c8f61fbf519ad@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAKKgK4z+Ha9cv0zHtjrBiTb=K9MvWZB-kzg5CP9__pCJYmyNVA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2eb3af43025436c0832c8f61fbf519ad@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 19, 2021 at 05:29:32PM +0300, Shai Malin wrote:
-> On Wed, 19 May 2021 at 15:31, Leon Romanovsky wrote:
-> > On Wed, May 19, 2021 at 02:13:30PM +0300, Shai Malin wrote:
-> > > This patch introduces the functionality of loading and unloading
-> > > physical function.
-> > > qedn_probe() loads the offload device PF(physical function), and
-> > > initialize the HW and the FW with the PF parameters using the
-> > > HW ops->qed_nvmetcp_ops, which are similar to other "qed_*_ops" which
-> > > are used by the qede, qedr, qedf and qedi device drivers.
-> > > qedn_remove() unloads the offload device PF, re-initialize the HW and
-> > > the FW with the PF parameters.
-> > >
-> > > The struct qedn_ctx is per PF container for PF-specific attributes and
-> > > resources.
-> > >
-> > > Acked-by: Igor Russkikh <irusskikh@marvell.com>
-> > > Signed-off-by: Dean Balandin <dbalandin@marvell.com>
-> > > Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> > > Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> > > Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> > > Signed-off-by: Ariel Elior <aelior@marvell.com>
-> > > Signed-off-by: Shai Malin <smalin@marvell.com>
-> > > Reviewed-by: Hannes Reinecke <hare@suse.de>
-> > > ---
-> > >  drivers/nvme/hw/Kconfig          |   1 +
-> > >  drivers/nvme/hw/qedn/qedn.h      |  35 +++++++
-> > >  drivers/nvme/hw/qedn/qedn_main.c | 159 ++++++++++++++++++++++++++++++-
-> > >  3 files changed, 190 insertions(+), 5 deletions(-)
-> > >
-> > > diff --git a/drivers/nvme/hw/Kconfig b/drivers/nvme/hw/Kconfig
-> > > index 374f1f9dbd3d..91b1bd6f07d8 100644
-> > > --- a/drivers/nvme/hw/Kconfig
-> > > +++ b/drivers/nvme/hw/Kconfig
-> > > @@ -2,6 +2,7 @@
-> > >  config NVME_QEDN
-> > >       tristate "Marvell NVM Express over Fabrics TCP offload"
-> > >       depends on NVME_TCP_OFFLOAD
-> > > +     select QED_NVMETCP
-> > >       help
-> > >         This enables the Marvell NVMe TCP offload support (qedn).
-> > >
-> > > diff --git a/drivers/nvme/hw/qedn/qedn.h b/drivers/nvme/hw/qedn/qedn.h
-> > > index bcd0748a10fd..f13073afbced 100644
-> > > --- a/drivers/nvme/hw/qedn/qedn.h
-> > > +++ b/drivers/nvme/hw/qedn/qedn.h
-> > > @@ -6,14 +6,49 @@
-> > >  #ifndef _QEDN_H_
-> > >  #define _QEDN_H_
-> > >
-> > > +#include <linux/qed/qed_if.h>
-> > > +#include <linux/qed/qed_nvmetcp_if.h>
-> > > +
-> > >  /* Driver includes */
-> > >  #include "../../host/tcp-offload.h"
-> > >
-> > > +#define QEDN_MAJOR_VERSION           8
-> > > +#define QEDN_MINOR_VERSION           62
-> > > +#define QEDN_REVISION_VERSION                10
-> > > +#define QEDN_ENGINEERING_VERSION     0
-> > > +#define DRV_MODULE_VERSION __stringify(QEDE_MAJOR_VERSION) "."       \
-> > > +             __stringify(QEDE_MINOR_VERSION) "."             \
-> > > +             __stringify(QEDE_REVISION_VERSION) "."          \
-> > > +             __stringify(QEDE_ENGINEERING_VERSION)
-> > > +
-> >
-> > This driver module version is not used in this series and more
-> > important the module version have no meaning in upstream at all
-> > and the community strongly against addition of new such code.
+On Wed, May 19, 2021 at 08:04:59AM -0700, Jeff Johnson wrote:
+> On 2021-05-18 22:05, Greg Kroah-Hartman wrote:
+> > On Tue, May 18, 2021 at 03:00:44PM -0700, Jeff Johnson wrote:
+> > > On 2021-05-18 12:29, Jeff Johnson wrote:
+> > > Would still like guidance on if there is a recommended way to get a
+> > > dentry not associated with debugfs.
+> > 
+> > What do you exactly mean by "not associated with debugfs"?
+> > 
+> > And why are you passing a debugfs dentry to relay_open()?  That feels
+> > really wrong and fragile.
 > 
-> Will be fixed.
+> I don't know the history but the relay documentation tells us:
+> "If you want a directory structure to contain your relay files,
+> you should create it using the host filesystem’s directory
+> creation function, e.g. debugfs_create_dir()..."
 > 
-> >
-> > >  #define QEDN_MODULE_NAME "qedn"
-> >
-> > And the general note, it will be great if you convert your probe/remove
-> > flows to use auxiliary bus like other drivers that cross subsystems.
+> So my guess is that the original implementation followed that
+> advice.  I see 5 clients of this functionality, and all 5 pass a
+> dentry returned from debugfs_create_dir():
 > 
-> qedn is simply fitting in with the existing design of qed/qede/qedr/qedf/qedi.
+> drivers/gpu/drm/i915/gt/uc/intel_guc_log.c, line 384
+> drivers/net/wireless/ath/ath10k/spectral.c, line 534
+> drivers/net/wireless/ath/ath11k/spectral.c, line 902
+> drivers/net/wireless/ath/ath9k/common-spectral.c, line 1077
+> kernel/trace/blktrace.c, line 549
 
-I know.
+Ah, that's just the "parent" dentry for the relayfs file.  That's fine,
+not a big deal, debugfs will always provide a way for you to get that if
+needed.
 
-> Changing the entire multi-protocol design to auxiliary bus is being studied.
+thanks,
 
-It will be required to do at some point of time.
-
-Thanks
+greg k-h
