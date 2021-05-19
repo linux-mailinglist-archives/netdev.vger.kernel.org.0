@@ -2,131 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D37A4388D34
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 13:48:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84EC4388D39
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 13:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242263AbhESLtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 07:49:20 -0400
-Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:40388 "EHLO
-        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235384AbhESLtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 07:49:19 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R931e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UZPQget_1621424877;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UZPQget_1621424877)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 19 May 2021 19:47:57 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     virtualization@lists.linux-foundation.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH] virtio: Introduce a new kick interface virtqueue_kick_try()
-Date:   Wed, 19 May 2021 19:47:57 +0800
-Message-Id: <20210519114757.6143-1-xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.0
+        id S240948AbhESLv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 07:51:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34104 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229508AbhESLv1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 07:51:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 489F561004;
+        Wed, 19 May 2021 11:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621425008;
+        bh=IyFH+MsqCrUEp11ph7Ebo4LU9kmoq7dPm/W7a9IJJrY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ex5r+6vnzQswyzkWIQOOuU0coY0sHuhTwdvB8liV75Xf3Y4uVBNwCXbcu2TKJOk3v
+         65QFdjAd3ylMiP597Nbubbxqn074d4ZyhGXg6oRj97XbyciTmZRmQFhfZdKBmfVeLi
+         u6OPqikXBlZ5bXnQaEy6O0Fu9F1Wlk1CMid+rgBVPJv2FNVmXE1Q+G8HzsQ597CuJE
+         Ologg02G9671v1mJoIw2bTUEdCoT2hSkOd9JOgZqzXyuSxnfdLrBXBd1A/wftCZwy3
+         ptje/t5UCIesDwBxQaMB16JPYTAxF7HjoRaEi/njmU3PeYcy7zPDmZ9hCvvzdTi8Io
+         Isg52/a3ThXhg==
+Date:   Wed, 19 May 2021 14:50:04 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
+Subject: Re: [PATCH] net: phy: add driver for Motorcomm yt8511 phy
+Message-ID: <YKT7bLjzucl/QEo2@unreal>
+References: <20210511214605.2937099-1-pgwipeout@gmail.com>
+ <YKOB7y/9IptUvo4k@unreal>
+ <CAMdYzYrV0T9H1soxSVpQv=jLCR9k9tuJddo1Kw-c3O5GJvg92A@mail.gmail.com>
+ <YKTJwscaV1WaK98z@unreal>
+ <cbfecaf2-2991-c79e-ba80-c805d119ac2f@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cbfecaf2-2991-c79e-ba80-c805d119ac2f@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unlike virtqueue_kick(), virtqueue_kick_try() returns true only when the
-kick is successful. In virtio-net, we want to count the number of kicks.
-So we need an interface that can perceive whether the kick is actually
-executed.
+On Wed, May 19, 2021 at 12:37:43PM +0200, Heiner Kallweit wrote:
+> On 19.05.2021 10:18, Leon Romanovsky wrote:
+> > On Tue, May 18, 2021 at 08:20:03PM -0400, Peter Geis wrote:
+> >> On Tue, May 18, 2021 at 4:59 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >>>
+> >>> On Tue, May 11, 2021 at 05:46:06PM -0400, Peter Geis wrote:
+> >>>> Add a driver for the Motorcomm yt8511 phy that will be used in the
+> >>>> production Pine64 rk3566-quartz64 development board.
+> >>>> It supports gigabit transfer speeds, rgmii, and 125mhz clk output.
+> >>>>
+> >>>> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> >>>> ---
+> >>>>  MAINTAINERS                 |  6 +++
+> >>>>  drivers/net/phy/Kconfig     |  6 +++
+> >>>>  drivers/net/phy/Makefile    |  1 +
+> >>>>  drivers/net/phy/motorcomm.c | 85 +++++++++++++++++++++++++++++++++++++
+> >>>>  4 files changed, 98 insertions(+)
+> >>>>  create mode 100644 drivers/net/phy/motorcomm.c
+> >>>
+> >>> <...>
+> >>>
+> >>>> +static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
+> >>>> +     { PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
+> >>>> +     { /* sentinal */ }
+> >>>> +}
+> >>>
+> >>> Why is this "__maybe_unused"? This *.c file doesn't have any compilation option
+> >>> to compile part of it.
+> >>>
+> >>> The "__maybe_unused" is not needed in this case.
+> >>
+> >> I was simply following convention, for example the realtek.c,
+> >> micrel.c, and smsc.c drivers all have this as well.
+> > 
+> > Maybe they have a reason, but this specific driver doesn't have such.
+> > 
+> 
+> It's used like this:
+> MODULE_DEVICE_TABLE(mdio, <mdio_device_id_tbl>);
+> 
+> And MODULE_DEVICE_TABLE is a no-op if MODULE isn't defined:
+> 
+> #ifdef MODULE
+> /* Creates an alias so file2alias.c can find device table. */
+> #define MODULE_DEVICE_TABLE(type, name)					\
+> extern typeof(name) __mod_##type##__##name##_device_table		\
+>   __attribute__ ((unused, alias(__stringify(name))))
+> #else  /* !MODULE */
+> #define MODULE_DEVICE_TABLE(type, name)
+> #endif
+> 
+> In this case the table is unused.
 
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
----
- drivers/net/virtio_net.c     |  8 ++++----
- drivers/virtio/virtio_ring.c | 20 ++++++++++++++++++++
- include/linux/virtio.h       |  2 ++
- 3 files changed, 26 insertions(+), 4 deletions(-)
+Do you see compilation warning for such scenario?
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 9b6a4a875c55..167697030cb6 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -617,7 +617,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
- 	ret = nxmit;
- 
- 	if (flags & XDP_XMIT_FLUSH) {
--		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq))
-+		if (virtqueue_kick_try(sq->vq))
- 			kicks = 1;
- 	}
- out:
-@@ -1325,7 +1325,7 @@ static bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq,
- 		if (err)
- 			break;
- 	} while (rq->vq->num_free);
--	if (virtqueue_kick_prepare(rq->vq) && virtqueue_notify(rq->vq)) {
-+	if (virtqueue_kick_try(rq->vq)) {
- 		unsigned long flags;
- 
- 		flags = u64_stats_update_begin_irqsave(&rq->stats.syncp);
-@@ -1533,7 +1533,7 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
- 
- 	if (xdp_xmit & VIRTIO_XDP_TX) {
- 		sq = virtnet_xdp_get_sq(vi);
--		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
-+		if (virtqueue_kick_try(sq->vq)) {
- 			u64_stats_update_begin(&sq->stats.syncp);
- 			sq->stats.kicks++;
- 			u64_stats_update_end(&sq->stats.syncp);
-@@ -1710,7 +1710,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	}
- 
- 	if (kick || netif_xmit_stopped(txq)) {
--		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
-+		if (virtqueue_kick_try(sq->vq)) {
- 			u64_stats_update_begin(&sq->stats.syncp);
- 			sq->stats.kicks++;
- 			u64_stats_update_end(&sq->stats.syncp);
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 71e16b53e9c1..1462be756875 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -1874,6 +1874,26 @@ bool virtqueue_kick(struct virtqueue *vq)
- }
- EXPORT_SYMBOL_GPL(virtqueue_kick);
- 
-+/**
-+ * virtqueue_kick_try - try update after add_buf
-+ * @vq: the struct virtqueue
-+ *
-+ * After one or more virtqueue_add_* calls, invoke this to kick
-+ * the other side.
-+ *
-+ * Caller must ensure we don't call this with other virtqueue
-+ * operations at the same time (except where noted).
-+ *
-+ * Returns true if kick success, otherwise false.
-+ */
-+bool virtqueue_kick_try(struct virtqueue *vq)
-+{
-+	if (virtqueue_kick_prepare(vq) && virtqueue_notify(vq))
-+		return true;
-+	return false;
-+}
-+EXPORT_SYMBOL_GPL(virtqueue_kick_try);
-+
- /**
-  * virtqueue_get_buf - get the next used buffer
-  * @_vq: the struct virtqueue we're talking about.
-diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-index b1894e0323fa..45cd6a0af24d 100644
---- a/include/linux/virtio.h
-+++ b/include/linux/virtio.h
-@@ -59,6 +59,8 @@ int virtqueue_add_sgs(struct virtqueue *vq,
- 
- bool virtqueue_kick(struct virtqueue *vq);
- 
-+bool virtqueue_kick_try(struct virtqueue *vq);
-+
- bool virtqueue_kick_prepare(struct virtqueue *vq);
- 
- bool virtqueue_notify(struct virtqueue *vq);
--- 
-2.31.0
+Thanks
 
+> 
+> > Thanks
+> > 
+> >>
+> >>>
+> >>> Thanks
+> 
+> 
