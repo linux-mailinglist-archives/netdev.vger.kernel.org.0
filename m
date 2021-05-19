@@ -2,121 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 068E5388F38
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 15:34:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6DE2388F4B
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 15:39:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353717AbhESNfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 09:35:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55958 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241996AbhESNfv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 09:35:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621431271;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SdV44jVaacxr1+AFi3mVghLkW/SIKtTOhZzTCyx48gk=;
-        b=NQGETE3/2wXP2azveq6m10ny0eLzaCo1kGEuf7jHzH1UqDq2jLGfjQQJ99YdEDSXWi4Iqy
-        lxxStTTb0OxXzduBj5yd1/KZGZ57580FYHvh2hZa8kluhWUgcKfN4JtRxa0yMFjgeyHnD8
-        atPGBHsYYNulCtNk6NXhutu/rzJKn2s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-574-acL1kEQEPtuwU_yk1ipY-Q-1; Wed, 19 May 2021 09:34:27 -0400
-X-MC-Unique: acL1kEQEPtuwU_yk1ipY-Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9C36A107ACF8;
-        Wed, 19 May 2021 13:34:24 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8265D60CCC;
-        Wed, 19 May 2021 13:34:19 +0000 (UTC)
-Date:   Wed, 19 May 2021 15:34:18 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Tyler S <tylerjstachecki@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        brouer@redhat.com
-Subject: Re: [PATCH net v4] igb: Fix XDP with PTP enabled
-Message-ID: <20210519153418.00c4cc42@carbon>
-In-Reply-To: <20210504102827.342f6302@carbon>
-References: <20210503072800.79936-1-kurt@linutronix.de>
-        <20210504102827.342f6302@carbon>
+        id S1353558AbhESNk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 09:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240097AbhESNk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 09:40:56 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A1AC061760
+        for <netdev@vger.kernel.org>; Wed, 19 May 2021 06:39:32 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id i13so15391188edb.9
+        for <netdev@vger.kernel.org>; Wed, 19 May 2021 06:39:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZyIq8u+kwqwBpbcwfduylW+9xPyGO1H5rtatjl1f/C8=;
+        b=xs/S/LlOVbGml0EAnOsGRxZ5oyqDBbSJlCsgVvbQ04i5427YcKz67n0cj1OtSeZJzl
+         3OctonqM0oElTfaoTOk7R2GorMPYS4s6Btg8XNc/c8YJCgYkjK+9gWKXqHAD42DxLpI8
+         u88O6hu8P5tyhEqbon4FApOFc19n66atecuVED7etO6q1DkSFutUnSZJ47B113wTUxY4
+         BDyFvGJ7MTYq9/FGHolluJ7KGdFbHah2Ii04NPVk3Do6Edo/rTmDaygSrsV/k7OCxbIf
+         5fhm7wm6SKx4287C/a43687P2ouGxwFMVU1e5nxsCdXnJ4V1slDmpOxWqN3L8omzqx2q
+         Gnng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZyIq8u+kwqwBpbcwfduylW+9xPyGO1H5rtatjl1f/C8=;
+        b=hnNW+CkJdC6BZqUMBo3E6JqBG5AdgzwDeGDwhkTBqWKquxFre5tPLo2lskhtIgCbTV
+         jrH3YmLr0ou7KaUOQ9G+L7h+nPIqJTBZ5qDlua/EVoXmoO5z8CvC6Tc4vPmGKWFuBtYz
+         wYXu9BLQl0xe9dhKxZxSpdYuI9rt7Cbje1FkSyRKf5bg7XXndH1jUYIg9hpldfMlAoqV
+         0T8lAfbA9nQ8G0cYESYWTZXdFkyWj2IVf7osZZFr5HtWKfAdj4lKtWdp7O5POIUSmCXv
+         A0rt7bcVO/O99r9Lgc7PQvP86Ydt2mc8exRyIwA9aEhFOTV0J/bflQtpAY8gsyWVccrf
+         DsCA==
+X-Gm-Message-State: AOAM533FDpbupmQ7oQj6WIQp3+LhZxQP+FbWQdSjDlH+GUv/F6LbWQjy
+        FEhPYicekhuoS6ALPzK85noMyAHWWOe0D8vYmeQm
+X-Google-Smtp-Source: ABdhPJyUaoeoU6jHmwL2wRih6mMfwzvW50aSrjBZb35A6Wf6KcfF+IKFvuHwvdNQjGh/v4RZkom8EsJySMDZrk7j/3M=
+X-Received: by 2002:a05:6402:4252:: with SMTP id g18mr14312783edb.195.1621431571306;
+ Wed, 19 May 2021 06:39:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <20210517095513.850-1-xieyongji@bytedance.com> <20210517095513.850-5-xieyongji@bytedance.com>
+In-Reply-To: <20210517095513.850-5-xieyongji@bytedance.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Wed, 19 May 2021 21:39:20 +0800
+Message-ID: <CACycT3s1rEvNnNkJKQsHGRsyLPADieFdVkb1Sp3GObR0Vox5Fg@mail.gmail.com>
+Subject: Re: [PATCH v7 04/12] virtio-blk: Add validation for block size in
+ config space
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maintainers,
+On Mon, May 17, 2021 at 5:56 PM Xie Yongji <xieyongji@bytedance.com> wrote:
+>
+> This ensures that we will not use an invalid block size
+> in config space (might come from an untrusted device).
+>
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> ---
+>  drivers/block/virtio_blk.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+> index ebb4d3fe803f..c848aa36d49b 100644
+> --- a/drivers/block/virtio_blk.c
+> +++ b/drivers/block/virtio_blk.c
+> @@ -826,7 +826,7 @@ static int virtblk_probe(struct virtio_device *vdev)
+>         err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
+>                                    struct virtio_blk_config, blk_size,
+>                                    &blk_size);
+> -       if (!err)
+> +       if (!err && blk_size > 0 && blk_size <= max_size)
 
-What is the status on this patch?
+The check here is incorrect. I will use PAGE_SIZE as the maximum
+boundary in the new version.
 
-I don't see this fix being applied on git-trees net or net-next.
-
-[0] 20210503072800.79936-1-kurt@linutronix.de
-[1] https://patchwork.kernel.org/project/netdevbpf/patch/20210503072800.79936-1-kurt@linutronix.de/
-[2] https://lore.kernel.org/netdev/20210503072800.79936-1-kurt@linutronix.de/
-
-
-On Tue, 4 May 2021 10:28:27 +0200
-Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-
-> On Mon,  3 May 2021 09:28:00 +0200
-> Kurt Kanzenbach <kurt@linutronix.de> wrote:
-> 
-> > When using native XDP with the igb driver, the XDP frame data doesn't point to
-> > the beginning of the packet. It's off by 16 bytes. Everything works as expected
-> > with XDP skb mode.
-> > 
-> > Actually these 16 bytes are used to store the packet timestamps. Therefore, pull
-> > the timestamp before executing any XDP operations and adjust all other code
-> > accordingly. The igc driver does it like that as well.
-> > 
-> > Tested with Intel i210 card and AF_XDP sockets.
-> > 
-> > Fixes: 9cbc948b5a20 ("igb: add XDP support")
-> > Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>  
-> 
-> Thanks for fixing this!
-> 
-> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> 
-> I expect that we/I will (soon) play with getting this area that is
-> stored in front of the packet (the XDP data_meta area) described via
-> BTF.  This way both xdp_frame and AF_XDP can get structured access (e.g.
-> to the PTP timestamp in this case).
-> 
-> I'll be adding my notes on this project here:
->  https://github.com/xdp-project/xdp-project/blob/master/areas/tsn/
-> 
-> Looking forward to collaborate on this with you :-)
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Thanks,
+Yongji
