@@ -2,88 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6D01388657
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 07:05:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CEB0388676
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 07:21:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243123AbhESFGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 01:06:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54296 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232842AbhESFGW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 01:06:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 92D0E6135B;
-        Wed, 19 May 2021 05:05:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1621400703;
-        bh=wYYX9ZqE8MzuuAZRGsD7NWSnysXuKB8JlIKz2SrZG7Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jDTLUdYDPOqGsBMcGlgqJPnqMyaL+6ZyGBbXTrwd5gxKE34zpNCuAW3q48aS8oBCE
-         jVXiydajtZ29294JvxkwdUKOzRZV+CreV+bh8Sqqf2YYgUivccXwr1eshu/5M54dld
-         n7oqYbFPbYfTTEIoA6QBTEOQTIwmguh/aG6WnvO0=
-Date:   Wed, 19 May 2021 07:05:00 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jeff Johnson <jjohnson@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Chao Yu <chao@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jjohnson=codeaurora.org@codeaurora.org
-Subject: Re: [PATCH v2] b43: don't save dentries for debugfs
-Message-ID: <YKScfFKhxtVqfRkt@kroah.com>
-References: <20210518163304.3702015-1-gregkh@linuxfoundation.org>
- <891f28e4c1f3c24ed1b257de83cbb3a0@codeaurora.org>
- <f539277054c06e1719832b9e99cbf7f1@codeaurora.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f539277054c06e1719832b9e99cbf7f1@codeaurora.org>
+        id S237679AbhESFXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 01:23:04 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:62526 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229598AbhESFXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 01:23:03 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14J54Iv3034025;
+        Wed, 19 May 2021 01:21:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to; s=pp1;
+ bh=5tT4m8BqaOgTlUX17i6bD4OUl0fgHC5fsgEB2sipC8k=;
+ b=rT2R0ZhOwwNyVUH4JEKgyH7jMrYuBo87l3wdJjyID58sFBdYx9MYTkrsEpFYtfsnx/rH
+ tw2c6LTf2W37FWmRpz22/0Nz1N1Nc1K31a/j3RYL0Q5ftbF9j3xmeK1RDkT3DII/m+Er
+ TmS/kkEQX7bI3QOx5nuDbFXxvr+5CaHdTU0Llewo3CNJglkmJrbytZOybId26oqXZmKv
+ h4ww8l6i4G+GujmOKkaXLcKbN7s4eIbzB+Wlif4WhEs+bOhlsXQNREvTJiqJyiN9TqTv
+ sGEzyE+6zm3BBE6KrYPHVyDWnXXOF5sASd+5pAuETDhl1sTm0GsoEb9jF5F65yh8JSbT 3w== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 38mu7fsm14-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 19 May 2021 01:21:17 -0400
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 14J5IVt2014696;
+        Wed, 19 May 2021 05:20:25 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma03wdc.us.ibm.com with ESMTP id 38j5x9cg31-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 19 May 2021 05:20:25 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 14J5KOF322479180
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 19 May 2021 05:20:24 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9063C6A05F;
+        Wed, 19 May 2021 05:20:24 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 63CF46A05A;
+        Wed, 19 May 2021 05:20:23 +0000 (GMT)
+Received: from [9.65.90.43] (unknown [9.65.90.43])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTPS;
+        Wed, 19 May 2021 05:20:23 +0000 (GMT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH net-next] ibmveth: fix kobj_to_dev.cocci warnings
+From:   Lijun Pan <ljp@linux.vnet.ibm.com>
+In-Reply-To: <20210519022849.12752-1-yuehaibing@huawei.com>
+Date:   Wed, 19 May 2021 00:20:22 -0500
+Cc:     benh@kernel.crashing.org, paulus@samba.org,
+        Cristobal Forno <cforno12@linux.ibm.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, dwilder@us.ibm.com,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <276F94E7-2DFB-47EF-91F7-6CDA69A4009F@linux.vnet.ibm.com>
+References: <20210519022849.12752-1-yuehaibing@huawei.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: kOdqaP7ZGXu33XGnyGSMNvikZLFvFqgD
+X-Proofpoint-ORIG-GUID: kOdqaP7ZGXu33XGnyGSMNvikZLFvFqgD
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-19_01:2021-05-18,2021-05-19 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ lowpriorityscore=0 malwarescore=0 priorityscore=1501 mlxscore=0
+ phishscore=0 adultscore=0 mlxlogscore=999 bulkscore=0 impostorscore=0
+ spamscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2105190038
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 18, 2021 at 03:00:44PM -0700, Jeff Johnson wrote:
-> On 2021-05-18 12:29, Jeff Johnson wrote:
-> > On 2021-05-18 09:33, Greg Kroah-Hartman wrote:
-> > > There is no need to keep around the dentry pointers for the debugfs
-> > > files as they will all be automatically removed when the subdir is
-> > > removed.  So save the space and logic involved in keeping them
-> > > around by
-> > > just getting rid of them entirely.
-> > > 
-> > > By doing this change, we remove one of the last in-kernel user that
-> > > was
-> > > storing the result of debugfs_create_bool(), so that api can be
-> > > cleaned
-> > > up.
-> > 
-> > Question not about this specific change, but the general concept
-> > of keeping (or not keeping) dentry pointers. In the ath drivers,
-> > as well as in an out-of-tree driver for Android, we keep a
-> > debugfs dentry pointer to use as a param to relay_open().
-> > 
-> > Will we still be able to have a dentry pointer for this purpose?
-> > Or better, is there a recommended way to get a dentry pointer
-> > NOT associated with debugfs at all (which would be ideal for
-> > Android where debugfs is disabled).
-> 
-> Answering one of my questions: The dentry passed to relay_open() comes
-> from debugfs_create_dir() which is expected to return a dentry.
-> 
-> Would still like guidance on if there is a recommended way to get a
-> dentry not associated with debugfs.
 
-What do you exactly mean by "not associated with debugfs"?
 
-And why are you passing a debugfs dentry to relay_open()?  That feels
-really wrong and fragile.
+> On May 18, 2021, at 9:28 PM, YueHaibing <yuehaibing@huawei.com> wrote:
+>=20
+> Use kobj_to_dev() instead of container_of()
+>=20
+> Generated by: scripts/coccinelle/api/kobj_to_dev.cocci
+>=20
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
 
-Ideally I want to get rid of the "raw" dentry that debugfs returns to
-callers, as it has caused odd problems in the past, but that's a very
-long-term project...
+Acked-by: Lijun Pan <lijunp213@gmail.com>
 
-thanks,
 
-greg k-h
+> drivers/net/ethernet/ibm/ibmveth.c | 3 +--
+> 1 file changed, 1 insertion(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/ibm/ibmveth.c =
+b/drivers/net/ethernet/ibm/ibmveth.c
+> index 7fea9ae60f13..bc67a7ee872b 100644
+> --- a/drivers/net/ethernet/ibm/ibmveth.c
+> +++ b/drivers/net/ethernet/ibm/ibmveth.c
+> @@ -1799,8 +1799,7 @@ static ssize_t veth_pool_store(struct kobject =
+*kobj, struct attribute *attr,
+> 	struct ibmveth_buff_pool *pool =3D container_of(kobj,
+> 						      struct =
+ibmveth_buff_pool,
+> 						      kobj);
+> -	struct net_device *netdev =3D dev_get_drvdata(
+> -	    container_of(kobj->parent, struct device, kobj));
+> +	struct net_device *netdev =3D =
+dev_get_drvdata(kobj_to_dev(kobj->parent));
+> 	struct ibmveth_adapter *adapter =3D netdev_priv(netdev);
+> 	long value =3D simple_strtol(buf, NULL, 10);
+> 	long rc;
+> --=20
+> 2.17.1
+>=20
+
