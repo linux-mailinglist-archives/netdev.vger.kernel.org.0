@@ -2,142 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 750CE3890D2
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:29:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B9F33890F1
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:31:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347462AbhESObH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 10:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41238 "EHLO
+        id S1354265AbhESOdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 10:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346545AbhESObG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:31:06 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66630C06175F
-        for <netdev@vger.kernel.org>; Wed, 19 May 2021 07:29:46 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id w12so7875993edx.1
-        for <netdev@vger.kernel.org>; Wed, 19 May 2021 07:29:46 -0700 (PDT)
+        with ESMTP id S1354148AbhESOcl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:32:41 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F78AC061342;
+        Wed, 19 May 2021 07:31:15 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id v12so14260323wrq.6;
+        Wed, 19 May 2021 07:31:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tcFFwK4ubLQGtrrFPo8oxWhQ57twWHPmskXcZ4gjHVg=;
-        b=BtHDAoL/+vmnzwn32dO9VJomqAbxA3WrOWdvMI/O2GfiBg4CuHAKVMC6I0vwHgsuZ4
-         CylF+U8iERN8XVcl3Ql7hVq5hT1OB4jIae3YAOAQcFb9n3q+J9/704oX2lYVRfWy4y72
-         6fFwGXHUuXsHqinRvlK31XoT17jOGw09GBuRtWNk1d3gaLa3UTu9TssB/jyRRXhqRzcq
-         Y/KiN3VxvWrCVUgbgfgR/XgA58pZeRt6/xzgKlYIbwiHLXT0zc72GmA3Hs9B6uqLf6mL
-         9XqsvureCREqDo8pcdj2Wt4maaSPk/3m/eFflPUKdIKdNymktGxgYs/GF/fkTugIL6DA
-         cjbw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/uIuAty7PjxXFt4IM0i+V1A/dMXLvYisaqsv/qbrezE=;
+        b=W+/COpqc5fQ8jmoquxbMKC6Ehnr83ZF2XRb52KqwZYN7L9L0nJoj8xNIabgDHYxZU0
+         F6iZlhockfTfVVlBkn4ud9d63iT87RLJhl0WQV+OQVc0Z9lsHJAAuhWChvkIKFxDEhLd
+         Xoa9cvo6JnHyS6iHtnXsHKHp+ZdMGxHsp/sajjaTvDNFprJ9bSOJGFyOiuU3cfWjhy2C
+         YskgE3TmZMU/r5Xd90LTUeyiE4CVC0A4tBp0aekOUo+UNVY56u8W9gQ6fkhcO9VfRGSx
+         GzoIvK4VI42X9hGqwFgF2D24x6CNomcKUJUvFaU7WURaHypRYJQvhdgxRr44O6trhOlA
+         fB2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tcFFwK4ubLQGtrrFPo8oxWhQ57twWHPmskXcZ4gjHVg=;
-        b=g57KIMKgKKWTdOIp6fru1p667o1sWrIoI3gK1mIJGt8Zn9MjBGAnc85vKmLmzqVZrk
-         T/i/b+gGqVt/SVxorvPmOGd5vW/9GZ++bgFQtdhJorQGu3T994NFSrhXzGZ+GoBtofaP
-         IhTXnyKLiWQG9p2TFLguC6H5jIUMClhs+qV+jUNqbgod5nGdV/pY/U/dWB4n3XkL3wiV
-         dGd67VvEUDw9VKt3TdinEjNFZ95cYF5A4Y+dzoTCbQNXZIYcIAA2KO6nImCa1aLFH1O3
-         u8FoiNJ9D+fc75apdAeqIbIGG2jTP0PTO5yTXE13vYHzMmsUWnn0XiMvmOIkdO0UFCTA
-         N83Q==
-X-Gm-Message-State: AOAM531XW5j8Ux2HN4s7etIFgDV9zsxRBlN0qGm7ES/5w22L4fkMh4+O
-        /sjhUCbvFiESp9orc5c3HQeVu9IBn2y0fI+uko8=
-X-Google-Smtp-Source: ABdhPJwqtoQx+cnuGcYqEPWSAjCfXjw+cIyi4i2isyfaocEzPn/TbP92EHZy+uW7JQnKdl20uXZgyXGNZab7i0NbJSI=
-X-Received: by 2002:aa7:da03:: with SMTP id r3mr14857780eds.121.1621434584929;
- Wed, 19 May 2021 07:29:44 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=/uIuAty7PjxXFt4IM0i+V1A/dMXLvYisaqsv/qbrezE=;
+        b=OTKeX8ewGBBAefsl2ZM7+uk0IgoWihAVVH0uR2IHXDTN+91ccXgB3OAt1hWa80ZGrx
+         m5Ta4wq5pZbd/wiz7NS2MPHbyTxc0ZnSiTAuoT3p8HFPmjzVmQ7eUy9e1ne58rDTpQWb
+         GuO25X45RcSDWwxHodNOuft5/VWhDmL8CVgc4KzIWB9FIPRmoDJNzRQaA3jbZSt1r+7w
+         SKyMNh48HLuXOhZGgyKpJ7BlC2Lu/JZjpO4gvaApLgGeQjatfJdddFNFu91a20xk/v3+
+         Zc7ulqr1BBtmcG2sqcq/OFuvxBW3MVYKayY9SywIq8+Vs9IFh9MASRPl7jSD6w/xPpGI
+         N/Iw==
+X-Gm-Message-State: AOAM5305jymLU/upyPckTMHPiiApfhoPQpe7Tdgy19uvbMWwvNou4fGO
+        zGVIEfvmrhNg//gQX3Y7n5NiFgvu5bQ=
+X-Google-Smtp-Source: ABdhPJyXuJnhzN0eu3ei8cGd0y+n4IYYl4B39s4zlfx5aYYQ7hSLjMfpxGTJMNX9DJK1bCo8vkyTLw==
+X-Received: by 2002:a5d:508e:: with SMTP id a14mr14900327wrt.88.1621434674015;
+        Wed, 19 May 2021 07:31:14 -0700 (PDT)
+Received: from [10.0.0.2] ([37.172.163.196])
+        by smtp.gmail.com with ESMTPSA id c6sm7693369wru.50.2021.05.19.07.31.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 May 2021 07:31:12 -0700 (PDT)
+Subject: Re: [Bloat] virtio_net: BQL?
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Dave Taht <dave.taht@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        bloat <bloat@lists.bufferbloat.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <56270996-33a6-d71b-d935-452dad121df7@linux.alibaba.com>
+ <CAA93jw6LUAnWZj0b5FvefpDKUyd6cajCNLoJ6OKrwbu-V_ffrA@mail.gmail.com>
+ <CA+FuTSf0Af2RXEG=rCthNNEb5mwKTG37gpEBBZU16qKkvmF=qw@mail.gmail.com>
+ <CAA93jw7Vr_pFMsPCrPadqaLGu0BdC-wtCmW2iyHFkHERkaiyWQ@mail.gmail.com>
+ <20210517160036.4093d3f2@hermes.local>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a11eee78-b2a1-3dbc-4821-b5f4bfaae819@gmail.com>
+Date:   Wed, 19 May 2021 16:31:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-References: <20210519111340.20613-1-smalin@marvell.com> <20210519111340.20613-18-smalin@marvell.com>
- <YKUFLVHrUdzEsUeq@unreal>
-In-Reply-To: <YKUFLVHrUdzEsUeq@unreal>
-From:   Shai Malin <malin1024@gmail.com>
-Date:   Wed, 19 May 2021 17:29:32 +0300
-Message-ID: <CAKKgK4z+Ha9cv0zHtjrBiTb=K9MvWZB-kzg5CP9__pCJYmyNVA@mail.gmail.com>
-Subject: Re: [RFC PATCH v5 17/27] qedn: Add qedn probe
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org, Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>, okulkarni@marvell.com,
-        pkushwaha@marvell.com, Dean Balandin <dbalandin@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210517160036.4093d3f2@hermes.local>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 May 2021 at 15:31, Leon Romanovsky wrote:
-> On Wed, May 19, 2021 at 02:13:30PM +0300, Shai Malin wrote:
-> > This patch introduces the functionality of loading and unloading
-> > physical function.
-> > qedn_probe() loads the offload device PF(physical function), and
-> > initialize the HW and the FW with the PF parameters using the
-> > HW ops->qed_nvmetcp_ops, which are similar to other "qed_*_ops" which
-> > are used by the qede, qedr, qedf and qedi device drivers.
-> > qedn_remove() unloads the offload device PF, re-initialize the HW and
-> > the FW with the PF parameters.
-> >
-> > The struct qedn_ctx is per PF container for PF-specific attributes and
-> > resources.
-> >
-> > Acked-by: Igor Russkikh <irusskikh@marvell.com>
-> > Signed-off-by: Dean Balandin <dbalandin@marvell.com>
-> > Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> > Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> > Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> > Signed-off-by: Ariel Elior <aelior@marvell.com>
-> > Signed-off-by: Shai Malin <smalin@marvell.com>
-> > Reviewed-by: Hannes Reinecke <hare@suse.de>
-> > ---
-> >  drivers/nvme/hw/Kconfig          |   1 +
-> >  drivers/nvme/hw/qedn/qedn.h      |  35 +++++++
-> >  drivers/nvme/hw/qedn/qedn_main.c | 159 ++++++++++++++++++++++++++++++-
-> >  3 files changed, 190 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/nvme/hw/Kconfig b/drivers/nvme/hw/Kconfig
-> > index 374f1f9dbd3d..91b1bd6f07d8 100644
-> > --- a/drivers/nvme/hw/Kconfig
-> > +++ b/drivers/nvme/hw/Kconfig
-> > @@ -2,6 +2,7 @@
-> >  config NVME_QEDN
-> >       tristate "Marvell NVM Express over Fabrics TCP offload"
-> >       depends on NVME_TCP_OFFLOAD
-> > +     select QED_NVMETCP
-> >       help
-> >         This enables the Marvell NVMe TCP offload support (qedn).
-> >
-> > diff --git a/drivers/nvme/hw/qedn/qedn.h b/drivers/nvme/hw/qedn/qedn.h
-> > index bcd0748a10fd..f13073afbced 100644
-> > --- a/drivers/nvme/hw/qedn/qedn.h
-> > +++ b/drivers/nvme/hw/qedn/qedn.h
-> > @@ -6,14 +6,49 @@
-> >  #ifndef _QEDN_H_
-> >  #define _QEDN_H_
-> >
-> > +#include <linux/qed/qed_if.h>
-> > +#include <linux/qed/qed_nvmetcp_if.h>
-> > +
-> >  /* Driver includes */
-> >  #include "../../host/tcp-offload.h"
-> >
-> > +#define QEDN_MAJOR_VERSION           8
-> > +#define QEDN_MINOR_VERSION           62
-> > +#define QEDN_REVISION_VERSION                10
-> > +#define QEDN_ENGINEERING_VERSION     0
-> > +#define DRV_MODULE_VERSION __stringify(QEDE_MAJOR_VERSION) "."       \
-> > +             __stringify(QEDE_MINOR_VERSION) "."             \
-> > +             __stringify(QEDE_REVISION_VERSION) "."          \
-> > +             __stringify(QEDE_ENGINEERING_VERSION)
-> > +
->
-> This driver module version is not used in this series and more
-> important the module version have no meaning in upstream at all
-> and the community strongly against addition of new such code.
 
-Will be fixed.
 
->
-> >  #define QEDN_MODULE_NAME "qedn"
->
-> And the general note, it will be great if you convert your probe/remove
-> flows to use auxiliary bus like other drivers that cross subsystems.
+On 5/18/21 1:00 AM, Stephen Hemminger wrote:
 
-qedn is simply fitting in with the existing design of qed/qede/qedr/qedf/qedi.
-Changing the entire multi-protocol design to auxiliary bus is being studied.
+> 
+> The Azure network driver (netvsc) also does not have BQL. Several years ago
+> I tried adding it but it benchmarked worse and there is the added complexity
+> of handling the accelerated networking VF path.
+> 
+
+
+Note that NIC with many TX queues make BQL almost useless, only adding extra
+overhead.
+
+We should probably make BQL something that can be manually turned on/off.
