@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAD81389707
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 21:50:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6EA738970D
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 21:51:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232284AbhESTvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 15:51:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42190 "EHLO mail.kernel.org"
+        id S232311AbhESTw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 15:52:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42858 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232256AbhESTva (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 15:51:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3EB75611B0;
-        Wed, 19 May 2021 19:50:10 +0000 (UTC)
+        id S232256AbhESTw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 15:52:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2D16B600D1;
+        Wed, 19 May 2021 19:51:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621453810;
-        bh=rszwbAkPk9ccvnHq47Mvxi0c53lLCYYj20OpAcPxaJ0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JX0z3LuN9sY5TV+rXJcgajBX4/rZpSuNlMZ7+MQL3uK97uzoHVpALKzj6A7w5GcYr
-         F+QBEAMtvZpM9Vl0oxPb0HtOQldXHPCW2ILdNi2hQtkQ6+hQBppiRJn0pD2+KHBYXt
-         73CKgYF2ZESAgdMaZiKYklCHPyCOJ5fh29FLsxjerq26NBCo1s2PcaeddlIFv5JSBx
-         Ebu8wCkw9lL8kKvVJ8cYQUmUBnS1vzYM+9udxLVB4fV4EInrFScIvSa0Yn8R4w2mR0
-         2yxi+QrGvCPy4v/hs2smtykKrdQqffDvl12XOOOGwd9rW0YAOIcacQCQ1dIqUUsW3J
-         GC9W4di3kb22w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3195C60A56;
-        Wed, 19 May 2021 19:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1621453868;
+        bh=a2/7cLCct144jQogd07ksgL3fT8xb+rKaGyWceqc11o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=udmiB4Bq8ux14aT9m77ofNb+D6XCvzFjWmm9u45yzONNvs/O0TmyuPFYecaDHdSlh
+         AgJl1q9208ChTGFwFP9nhZA5WJKySjCxbiiO4dkDw0P7/EjpsdRMP4sGl1LGIjiqhA
+         dLGA4dtNT4PoSmcxg1PgB92nvpwe3FVI7ylHwM/El01OpXwHDDYCiGeaD8YqZ6p6r8
+         Cn4jhIKTys+498+aUQm/k/vUkmQWjGVEos9cW2Ryb7grCz+YSyo8dXueQ3SFfXmemp
+         rJmjeYj078jHT/xFRKmL+dloP2e41vc+O30UiTPvCYhNIVeSbOuteL2XqCDvV73YuO
+         QmH2dQoNAKMAQ==
+Date:   Wed, 19 May 2021 12:51:07 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lijun Pan <ljp@linux.vnet.ibm.com>
+Cc:     saeedm@nvidia.com, David Miller <davem@davemloft.net>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] mlx5: count all link events
+Message-ID: <20210519125107.578f9c7d@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <155D8D8E-C0FE-4EF9-AD7F-B496A8279F92@linux.vnet.ibm.com>
+References: <20210519171825.600110-1-kuba@kernel.org>
+        <155D8D8E-C0FE-4EF9-AD7F-B496A8279F92@linux.vnet.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 1/2] dt-bindings: net: nfc: s3fwrn5: Add optional clock
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162145381019.1870.2964109189084564601.git-patchwork-notify@kernel.org>
-Date:   Wed, 19 May 2021 19:50:10 +0000
-References: <20210519091613.7343-1-stephan@gerhold.net>
-In-Reply-To: <20210519091613.7343-1-stephan@gerhold.net>
-To:     Stephan Gerhold <stephan@gerhold.net>
-Cc:     krzysztof.kozlowski@canonical.com, davem@davemloft.net,
-        kuba@kernel.org, k.opasiak@samsung.com, robh+dt@kernel.org,
-        linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bongsu.jeon@samsung.com, ~postmarketos/upstreaming@lists.sr.ht
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Wed, 19 May 2021 11:16:12 +0200 you wrote:
-> On some systems, S3FWRN5 depends on having an external clock enabled
-> to function correctly. Allow declaring that clock in the device tree.
+On Wed, 19 May 2021 14:34:34 -0500 Lijun Pan wrote:
+> Is it possible to integrate netif_carrier_event into netif_carrier_on? like,
 > 
-> Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
-> ---
-> Changes in v2: Minor change in commit message only
-> v1: https://lore.kernel.org/netdev/20210518133935.571298-1-stephan@gerhold.net/
 > 
-> [...]
+> void netif_carrier_on(struct net_device *dev)
+> {
+> 	if (test_and_clear_bit(__LINK_STATE_NOCARRIER, &dev->state)) {
+> 		if (dev->reg_state == NETREG_UNINITIALIZED)
+> 			return;
+> 		atomic_inc(&dev->carrier_up_count);
+> 		linkwatch_fire_event(dev);
+> 		if (netif_running(dev))
+> 			__netdev_watchdog_up(dev);
+> 	} else {
+> 		if (dev->reg_state == NETREG_UNINITIALIZED)
+> 			return;
+> 		atomic_inc(&dev->carrier_down_count);
+> 		atomic_inc(&dev->carrier_up_count);
+> 	}
+> }
+> EXPORT_SYMBOL(netif_carrier_on);
 
-Here is the summary with links:
-  - [v2,1/2] dt-bindings: net: nfc: s3fwrn5: Add optional clock
-    https://git.kernel.org/netdev/net-next/c/9cc52f5a533a
-  - [v2,2/2] nfc: s3fwrn5: i2c: Enable optional clock from device tree
-    https://git.kernel.org/netdev/net-next/c/340f42f7ff0b
+Ah, I meant to address that in the commit message, thanks for bringing
+this up. I suspect drivers may depend on the current behavior of
+netif_carrier_on()/off() being idempotent. We have no real reason for
+removing that assumption.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+I assumed netif_carrier_event() would be used specifically in places
+driver is actually servicing a link event from the device, and
+therefore is relatively certain that _something_ has happened.
