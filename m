@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9127B388D93
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 14:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66F8E388D94
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 14:09:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353340AbhESMKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 08:10:49 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:41247 "EHLO
+        id S1353345AbhESMKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 08:10:53 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:32973 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1353324AbhESMKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 08:10:48 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1B5C75C013E;
-        Wed, 19 May 2021 08:09:29 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S232781AbhESMKv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 08:10:51 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id D05F05C014B;
+        Wed, 19 May 2021 08:09:31 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 19 May 2021 08:09:29 -0400
+  by compute4.internal (MEProxy); Wed, 19 May 2021 08:09:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=PhFgUzzdq6cxS7O3K
-        Fs/EFtFtPq+QsDTbyeOUEgfHpQ=; b=l1T4eMMQ27kb1u6cA8/UmljrwIndeks74
-        3s74zWBGyY+UmYMCC6mJtN0Quwn2OIVHmJKILNvH6h/A2Kzn5TI1SGQ7Q9VZiBDb
-        3r9hIO+dTqd9CBylNXYaTau4cAMLf2bfm3h1ZR7509foIJ6vFAtI1k0Bpae2+Pg4
-        mTTsGk/Dp/fusfVutKAva+YlIBdcVURDq3seBTVo7tqP6zFBW/aHi8rVHkBZlNpS
-        lqIznw4C82WpoUh5VQSs7m/aQ/znQjBO6uIUXClqrgq+ScXphbgJVheZxRaw7lJw
-        pXDIaP4PbClWv7Rjjm1dv595vQOzTbRjpzmEs59J87dOuwzHN+iKA==
-X-ME-Sender: <xms:-P-kYOQ9rKA6DluS0Hl_1ZnxMyL5kuB2i73Gf9A6aUi7jWUrbWWgqw>
-    <xme:-P-kYDxOFzeP5hCZVQr7aqsF4TxoC_vqHVkdOBJrtnBkFkaiIURjSCKi9sXhrT7Zf
-    DbrfQj7mptYKFQ>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; bh=sGHfVfpuCS7+3zdRaN2d3hVwIV4+RNWDx7HzoUsD+nM=; b=fqenuCbU
+        D4ljlMnQGSSoVd51EK1bqMtU2eocZlc11kA5jiL43jyDcktDe7BiMlMsUgmm2UBG
+        G1MkYn3vFrgDpEJhjX6NoN/iiTs/QVsxguJnPFzcr5BHZb/Sfx4Om6MXx5RSYN8c
+        D6/D8ugNnnZbdjhIHa5DVQfOjoexWrl4Bf0tclj0DbefsEkCIWCtGX8QUonyfqhJ
+        L8NM1EGENupKAzEzY20fbAc7pNtkU7q0Wq0AqMngPJ3301xa/UU82cjbwPbiB4Qb
+        zozIiFoc5ijtPtODBiYwcUdtPt8x/KcQRGPaVqRYRe/QCgqq/BSObG5mnl1jTSHA
+        LHYlMIBWTFNb4A==
+X-ME-Sender: <xms:-_-kYEmm-E0JY8oBToSyr58ls5YpNkOwrLvI2hSDlP46oMAljf6lEg>
+    <xme:-_-kYD1_hnnyvTBAxKSgiGkvKufPxMne5_naT7jYoOQ8E4jpIQAeX54YkXgvkaAm9
+    8UwzP5CTcwtTfA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdeiledggeekucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrudekjeen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
-    gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:-P-kYL2P5oMtAj46WSae_XbsFUMIFMhaI-IN9IXowc_QTXVGymMn6g>
-    <xmx:-P-kYKBtbvsTxObdEIeeEhYEEyn1eCcRLQiza8T3VQERRNnsOfuV4A>
-    <xmx:-P-kYHgxRlATbrig_8dJJFojaWy3U3kEda48zP-HEsJkYW8O6diLfQ>
-    <xmx:-f-kYHeCRTXG8rjWmmmzHz_HLRFZCig-EMt4PgvhQ9IxpzaeKveatw>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrudek
+    jeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:-_-kYCpTMb4-poiaJLC2X6wLU8oVjLwQmPQuXnCFbgBY90Jf26Y6DA>
+    <xmx:-_-kYAmRU6cCYFj05UDbiKHYWtw5sAoXPUQTVnUDUmybMGrfN-WNVw>
+    <xmx:-_-kYC2bchEwbI_8cZaH7fxtvLO7So9SKzPVZbH_IV63hhkpu76qKw>
+    <xmx:-_-kYFR6NbTpEA4-h75Vkw8AzZDM8LOJSqt2vZPotvORO_s_t3y0CA>
 Received: from shredder.mellanox.com (igld-84-229-153-187.inter.net.il [84.229.153.187])
         by mail.messagingengine.com (Postfix) with ESMTPA;
-        Wed, 19 May 2021 08:09:26 -0400 (EDT)
+        Wed, 19 May 2021 08:09:29 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, dsahern@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 0/7] mlxsw: Add support for new multipath hash policies
-Date:   Wed, 19 May 2021 15:08:17 +0300
-Message-Id: <20210519120824.302191-1-idosch@idosch.org>
+Subject: [PATCH net-next 1/7] net: Add notifications when multipath hash field change
+Date:   Wed, 19 May 2021 15:08:18 +0300
+Message-Id: <20210519120824.302191-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210519120824.302191-1-idosch@idosch.org>
+References: <20210519120824.302191-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -61,45 +64,91 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-This patchset adds support for two new multipath hash policies in mlxsw.
+In-kernel notifications are already sent when the multipath hash policy
+itself changes, but not when the multipath hash fields change.
 
-Patch #1 emits net events whenever the
-net.ipv{4,6}.fib_multipath_hash_fields sysctls are changed. This allows
-listeners to react to changes in the packet fields used for the
-computation of the multipath hash.
+Add these notifications, so that interested listeners (e.g., switch ASIC
+drivers) could perform the necessary configuration.
 
-Patches #2-#3 refactor the code in mlxsw that is responsible for the
-configuration of the multipath hash, so that it will be easier to extend
-for the two new policies.
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+---
+ net/ipv4/sysctl_net_ipv4.c | 18 +++++++++++++++++-
+ net/ipv6/sysctl_net_ipv6.c | 18 +++++++++++++++++-
+ 2 files changed, 34 insertions(+), 2 deletions(-)
 
-Patch #4 adds the register fields required to support the new policies.
-
-Patch #5-#7 add support for inner layer 3 and custom multipath hash
-policies.
-
-Tested using following forwarding selftests:
-
-* custom_multipath_hash.sh
-* gre_custom_multipath_hash.sh
-* gre_inner_v4_multipath.sh
-* gre_inner_v6_multipath.sh
-
-Ido Schimmel (7):
-  net: Add notifications when multipath hash field change
-  mlxsw: spectrum_router: Replace if statement with a switch statement
-  mlxsw: spectrum_router: Move multipath hash configuration to a bitmap
-  mlxsw: reg: Add inner packet fields to RECRv2 register
-  mlxsw: spectrum_outer: Factor out helper for common outer fields
-  mlxsw: spectrum_router: Add support for inner layer 3 multipath hash
-    policy
-  mlxsw: spectrum_router: Add support for custom multipath hash policy
-
- drivers/net/ethernet/mellanox/mlxsw/reg.h     |  84 +++---
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 239 +++++++++++++++---
- net/ipv4/sysctl_net_ipv4.c                    |  18 +-
- net/ipv6/sysctl_net_ipv6.c                    |  18 +-
- 4 files changed, 279 insertions(+), 80 deletions(-)
-
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index ffb38ea06841..4fa77f182dcb 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -465,6 +465,22 @@ static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
+ 
+ 	return ret;
+ }
++
++static int proc_fib_multipath_hash_fields(struct ctl_table *table, int write,
++					  void *buffer, size_t *lenp,
++					  loff_t *ppos)
++{
++	struct net *net;
++	int ret;
++
++	net = container_of(table->data, struct net,
++			   ipv4.sysctl_fib_multipath_hash_fields);
++	ret = proc_douintvec_minmax(table, write, buffer, lenp, ppos);
++	if (write && ret == 0)
++		call_netevent_notifiers(NETEVENT_IPV4_MPATH_HASH_UPDATE, net);
++
++	return ret;
++}
+ #endif
+ 
+ static struct ctl_table ipv4_table[] = {
+@@ -1061,7 +1077,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.data		= &init_net.ipv4.sysctl_fib_multipath_hash_fields,
+ 		.maxlen		= sizeof(u32),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_douintvec_minmax,
++		.proc_handler	= proc_fib_multipath_hash_fields,
+ 		.extra1		= SYSCTL_ONE,
+ 		.extra2		= &fib_multipath_hash_fields_all_mask,
+ 	},
+diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
+index 160bea5db973..d7cf26f730d7 100644
+--- a/net/ipv6/sysctl_net_ipv6.c
++++ b/net/ipv6/sysctl_net_ipv6.c
+@@ -44,6 +44,22 @@ static int proc_rt6_multipath_hash_policy(struct ctl_table *table, int write,
+ 	return ret;
+ }
+ 
++static int
++proc_rt6_multipath_hash_fields(struct ctl_table *table, int write, void *buffer,
++			       size_t *lenp, loff_t *ppos)
++{
++	struct net *net;
++	int ret;
++
++	net = container_of(table->data, struct net,
++			   ipv6.sysctl.multipath_hash_fields);
++	ret = proc_douintvec_minmax(table, write, buffer, lenp, ppos);
++	if (write && ret == 0)
++		call_netevent_notifiers(NETEVENT_IPV6_MPATH_HASH_UPDATE, net);
++
++	return ret;
++}
++
+ static struct ctl_table ipv6_table_template[] = {
+ 	{
+ 		.procname	= "bindv6only",
+@@ -160,7 +176,7 @@ static struct ctl_table ipv6_table_template[] = {
+ 		.data		= &init_net.ipv6.sysctl.multipath_hash_fields,
+ 		.maxlen		= sizeof(u32),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_douintvec_minmax,
++		.proc_handler	= proc_rt6_multipath_hash_fields,
+ 		.extra1		= SYSCTL_ONE,
+ 		.extra2		= &rt6_multipath_hash_fields_all_mask,
+ 	},
 -- 
 2.31.1
 
