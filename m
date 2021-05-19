@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30C92388746
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 08:06:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99E17388747
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 08:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240890AbhESGHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 02:07:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49266 "EHLO mail.kernel.org"
+        id S241518AbhESGHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 02:07:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49248 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238122AbhESGH0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S238146AbhESGH0 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 19 May 2021 02:07:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B1498613B0;
-        Wed, 19 May 2021 06:06:06 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 39637613AD;
+        Wed, 19 May 2021 06:06:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1621404367;
-        bh=+uJTqi8ZT6Zi/Nukx0qKE2ARBOCEExsvt5UUr9wmYN0=;
+        bh=llFr4F2UGZWhuMSZ3QUVxCo0lBZbcydnsxLp5MzYasM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VnRPM01EYqjyg1+hCS75ff2X1qkh4NOBwsr2bj0Wwr1OHNEOq5w1j1DrqgK0x/7r+
-         3ECP+L+dk9s95woOAkru08/tYvzJK3ZdJWDPm7srGktKXsPMg6JcX9x1HWmpIHiZnS
-         ceelTYTiKzvI1PnBEzzx2aBxVZPBDSka7zJDi69xKnKWZ1iye8lPJm49gu8SVuwi6W
-         14JSLSvxQwd0YrPDE+MKgbP7NX0w8e4NArY5FdNi+MB5kXzNEJhAOxwwFN8quYo2uO
-         FPjvvu2HljAaG8fapyWorGyQ8IH6GFgzYUNXAp+xzA5g0Q3Qd1c/Q4z1ixbWQ7AVBq
-         +pr0aFsczc6jg==
+        b=IX1ThkO4yJhorcFWKIMxKlwPgwFRo7Rj6GWfAu7yTgEsBXh2FWlqP0VVB9dvtLtJ1
+         qh6ijnT4MP7AbsBzrFNUymac7VjfZR/CkAkXg7JcLbtXvT4WOupT+1g6ARgCR4pgOR
+         2d093zn29l+LfLSPPaFeBCtLtvFXJ03doW/lGV4R+MAzFcblQLH5EbUODbr1Kpm+Si
+         p9Fksk+Wi5WhlqXXFmteiYgHm0U/bef698TwM4kFAOtUyHutQ+HjHQNFxqfeNUEB7G
+         shLmP+QN78AQULtWNEIEz254W2qV8hGJ2Xjf2lBLqGAmwATg50NlHI/Qp5kAYZ8udp
+         E3pmQosZ9QlQw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Maor Dickman <maord@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 04/16] net/mlx5: Fix err prints and return when creating termination table
-Date:   Tue, 18 May 2021 23:05:11 -0700
-Message-Id: <20210519060523.17875-5-saeed@kernel.org>
+Subject: [net 05/16] net/mlx5: SF, Fix show state inactive when its inactivated
+Date:   Tue, 18 May 2021 23:05:12 -0700
+Message-Id: <20210519060523.17875-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210519060523.17875-1-saeed@kernel.org>
 References: <20210519060523.17875-1-saeed@kernel.org>
@@ -42,79 +42,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
 
-Fix print to print correct error code and not using IS_ERR() which
-will just result in always printing 1.
-Also return real err instead of always -EOPNOTSUPP.
+When a SF is inactivated and when it is in a TEARDOWN_REQUEST
+state, driver still returns its state as active. This is incorrect.
+Fix it by treating TEARDOWN_REQEUST as inactive state. When a SF
+is still attached to the driver, on user request to reactivate EINVAL
+error is returned. Inform user about it with better code EBUSY and
+informative error message.
 
-Fixes: 10caabdaad5a ("net/mlx5e: Use termination table for VLAN push actions")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
+Fixes: 6a3273217469 ("net/mlx5: SF, Port function state change support")
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Vu Pham <vuhuong@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mlx5/core/eswitch_offloads_termtbl.c      | 23 +++++++++----------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ .../ethernet/mellanox/mlx5/core/sf/devlink.c   | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
-index e3e7fdd396ad..d61bee2d35fe 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
-@@ -65,7 +65,7 @@ mlx5_eswitch_termtbl_create(struct mlx5_core_dev *dev,
- {
- 	struct mlx5_flow_table_attr ft_attr = {};
- 	struct mlx5_flow_namespace *root_ns;
--	int err;
-+	int err, err2;
- 
- 	root_ns = mlx5_get_flow_namespace(dev, MLX5_FLOW_NAMESPACE_FDB);
- 	if (!root_ns) {
-@@ -83,26 +83,26 @@ mlx5_eswitch_termtbl_create(struct mlx5_core_dev *dev,
- 	ft_attr.autogroup.max_num_groups = 1;
- 	tt->termtbl = mlx5_create_auto_grouped_flow_table(root_ns, &ft_attr);
- 	if (IS_ERR(tt->termtbl)) {
--		esw_warn(dev, "Failed to create termination table (error %d)\n",
--			 IS_ERR(tt->termtbl));
--		return -EOPNOTSUPP;
-+		err = PTR_ERR(tt->termtbl);
-+		esw_warn(dev, "Failed to create termination table, err %pe\n", tt->termtbl);
-+		return err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
+index a8e73c9ed1ea..1be048769309 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
+@@ -136,10 +136,10 @@ static enum devlink_port_fn_state mlx5_sf_to_devlink_state(u8 hw_state)
+ 	switch (hw_state) {
+ 	case MLX5_VHCA_STATE_ACTIVE:
+ 	case MLX5_VHCA_STATE_IN_USE:
+-	case MLX5_VHCA_STATE_TEARDOWN_REQUEST:
+ 		return DEVLINK_PORT_FN_STATE_ACTIVE;
+ 	case MLX5_VHCA_STATE_INVALID:
+ 	case MLX5_VHCA_STATE_ALLOCATED:
++	case MLX5_VHCA_STATE_TEARDOWN_REQUEST:
+ 	default:
+ 		return DEVLINK_PORT_FN_STATE_INACTIVE;
  	}
- 
- 	tt->rule = mlx5_add_flow_rules(tt->termtbl, NULL, flow_act,
- 				       &tt->dest, 1);
- 	if (IS_ERR(tt->rule)) {
--		esw_warn(dev, "Failed to create termination table rule (error %d)\n",
--			 IS_ERR(tt->rule));
-+		err = PTR_ERR(tt->rule);
-+		esw_warn(dev, "Failed to create termination table rule, err %pe\n", tt->rule);
- 		goto add_flow_err;
- 	}
- 	return 0;
- 
- add_flow_err:
--	err = mlx5_destroy_flow_table(tt->termtbl);
--	if (err)
--		esw_warn(dev, "Failed to destroy termination table\n");
-+	err2 = mlx5_destroy_flow_table(tt->termtbl);
-+	if (err2)
-+		esw_warn(dev, "Failed to destroy termination table, err %d\n", err2);
- 
--	return -EOPNOTSUPP;
-+	return err;
+@@ -192,14 +192,17 @@ int mlx5_devlink_sf_port_fn_state_get(struct devlink *devlink, struct devlink_po
+ 	return err;
  }
  
- static struct mlx5_termtbl_handle *
-@@ -270,8 +270,7 @@ mlx5_eswitch_add_termtbl_rule(struct mlx5_eswitch *esw,
- 		tt = mlx5_eswitch_termtbl_get_create(esw, &term_tbl_act,
- 						     &dest[i], attr);
- 		if (IS_ERR(tt)) {
--			esw_warn(esw->dev, "Failed to get termination table (error %d)\n",
--				 IS_ERR(tt));
-+			esw_warn(esw->dev, "Failed to get termination table, err %pe\n", tt);
- 			goto revert_changes;
- 		}
- 		attr->dests[num_vport_dests].termtbl = tt;
+-static int mlx5_sf_activate(struct mlx5_core_dev *dev, struct mlx5_sf *sf)
++static int mlx5_sf_activate(struct mlx5_core_dev *dev, struct mlx5_sf *sf,
++			    struct netlink_ext_ack *extack)
+ {
+ 	int err;
+ 
+ 	if (mlx5_sf_is_active(sf))
+ 		return 0;
+-	if (sf->hw_state != MLX5_VHCA_STATE_ALLOCATED)
+-		return -EINVAL;
++	if (sf->hw_state != MLX5_VHCA_STATE_ALLOCATED) {
++		NL_SET_ERR_MSG_MOD(extack, "SF is inactivated but it is still attached");
++		return -EBUSY;
++	}
+ 
+ 	err = mlx5_cmd_sf_enable_hca(dev, sf->hw_fn_id);
+ 	if (err)
+@@ -226,7 +229,8 @@ static int mlx5_sf_deactivate(struct mlx5_core_dev *dev, struct mlx5_sf *sf)
+ 
+ static int mlx5_sf_state_set(struct mlx5_core_dev *dev, struct mlx5_sf_table *table,
+ 			     struct mlx5_sf *sf,
+-			     enum devlink_port_fn_state state)
++			     enum devlink_port_fn_state state,
++			     struct netlink_ext_ack *extack)
+ {
+ 	int err = 0;
+ 
+@@ -234,7 +238,7 @@ static int mlx5_sf_state_set(struct mlx5_core_dev *dev, struct mlx5_sf_table *ta
+ 	if (state == mlx5_sf_to_devlink_state(sf->hw_state))
+ 		goto out;
+ 	if (state == DEVLINK_PORT_FN_STATE_ACTIVE)
+-		err = mlx5_sf_activate(dev, sf);
++		err = mlx5_sf_activate(dev, sf, extack);
+ 	else if (state == DEVLINK_PORT_FN_STATE_INACTIVE)
+ 		err = mlx5_sf_deactivate(dev, sf);
+ 	else
+@@ -265,7 +269,7 @@ int mlx5_devlink_sf_port_fn_state_set(struct devlink *devlink, struct devlink_po
+ 		goto out;
+ 	}
+ 
+-	err = mlx5_sf_state_set(dev, table, sf, state);
++	err = mlx5_sf_state_set(dev, table, sf, state, extack);
+ out:
+ 	mlx5_sf_table_put(table);
+ 	return err;
 -- 
 2.31.1
 
