@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 829CF3886A8
+	by mail.lfdr.de (Postfix) with ESMTP id D8E713886A9
 	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 07:36:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245498AbhESFhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 01:37:40 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4671 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242717AbhESFf4 (ORCPT
+        id S235422AbhESFht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 01:37:49 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:3030 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242718AbhESFf4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 01:35:56 -0400
-Received: from dggems702-chm.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FlM1d32BYz1BP5f;
-        Wed, 19 May 2021 13:31:49 +0800 (CST)
+Received: from dggems703-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FlM2C508tzmWtl;
+        Wed, 19 May 2021 13:32:19 +0800 (CST)
 Received: from dggemi760-chm.china.huawei.com (10.1.198.146) by
- dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
+ dggems703-chm.china.huawei.com (10.3.19.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Wed, 19 May 2021 13:34:35 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -25,10 +25,11 @@ Received: from localhost.localdomain (10.67.165.24) by
 From:   Hui Tang <tanghui20@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Hui Tang <tanghui20@huawei.com>
-Subject: [PATCH 04/20] net: apple: remove leading spaces before tabs
-Date:   Wed, 19 May 2021 13:30:37 +0800
-Message-ID: <1621402253-27200-5-git-send-email-tanghui20@huawei.com>
+        Hui Tang <tanghui20@huawei.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: [PATCH 05/20] net: broadcom: remove leading spaces before tabs
+Date:   Wed, 19 May 2021 13:30:38 +0800
+Message-ID: <1621402253-27200-6-git-send-email-tanghui20@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1621402253-27200-1-git-send-email-tanghui20@huawei.com>
 References: <1621402253-27200-1-git-send-email-tanghui20@huawei.com>
@@ -48,104 +49,105 @@ following commard:
 	$ find . -name '*.c' | xargs sed -r -i 's/^[ ]+\t/\t/'
 	$ find . -name '*.h' | xargs sed -r -i 's/^[ ]+\t/\t/'
 
+Cc: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: Hui Tang <tanghui20@huawei.com>
 ---
- drivers/net/ethernet/apple/bmac.c | 30 +++++++++++++++---------------
- drivers/net/ethernet/apple/mace.c |  8 ++++----
- 2 files changed, 19 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/broadcom/b44.c  | 20 ++++++++++----------
+ drivers/net/ethernet/broadcom/bnx2.c |  6 +++---
+ 2 files changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/apple/bmac.c b/drivers/net/ethernet/apple/bmac.c
-index 1e4e402..a989d2d 100644
---- a/drivers/net/ethernet/apple/bmac.c
-+++ b/drivers/net/ethernet/apple/bmac.c
-@@ -477,26 +477,26 @@ static int bmac_suspend(struct macio_dev *mdev, pm_message_t state)
- 		config = bmread(dev, RXCFG);
- 		bmwrite(dev, RXCFG, (config & ~RxMACEnable));
- 		config = bmread(dev, TXCFG);
--       		bmwrite(dev, TXCFG, (config & ~TxMACEnable));
-+		bmwrite(dev, TXCFG, (config & ~TxMACEnable));
- 		bmwrite(dev, INTDISABLE, DisableAll); /* disable all intrs */
--       		/* disable rx and tx dma */
-+		/* disable rx and tx dma */
- 		rd->control = cpu_to_le32(DBDMA_CLEAR(RUN|PAUSE|FLUSH|WAKE));	/* clear run bit */
- 		td->control = cpu_to_le32(DBDMA_CLEAR(RUN|PAUSE|FLUSH|WAKE));	/* clear run bit */
--       		/* free some skb's */
--       		for (i=0; i<N_RX_RING; i++) {
--       			if (bp->rx_bufs[i] != NULL) {
--       				dev_kfree_skb(bp->rx_bufs[i]);
--       				bp->rx_bufs[i] = NULL;
--       			}
--       		}
--       		for (i = 0; i<N_TX_RING; i++) {
-+		/* free some skb's */
-+		for (i=0; i<N_RX_RING; i++) {
-+			if (bp->rx_bufs[i] != NULL) {
-+				dev_kfree_skb(bp->rx_bufs[i]);
-+				bp->rx_bufs[i] = NULL;
-+			}
-+		}
-+		for (i = 0; i<N_TX_RING; i++) {
- 			if (bp->tx_bufs[i] != NULL) {
- 		       		dev_kfree_skb(bp->tx_bufs[i]);
- 	       			bp->tx_bufs[i] = NULL;
- 		       	}
- 		}
+diff --git a/drivers/net/ethernet/broadcom/b44.c b/drivers/net/ethernet/broadcom/b44.c
+index b455b60..ad2655e 100644
+--- a/drivers/net/ethernet/broadcom/b44.c
++++ b/drivers/net/ethernet/broadcom/b44.c
+@@ -1556,8 +1556,8 @@ static void b44_setup_pseudo_magicp(struct b44 *bp)
+ 	plen0 = b44_magic_pattern(bp->dev->dev_addr, pwol_pattern, pwol_mask,
+ 				  B44_ETHIPV4UDP_HLEN);
+ 
+-   	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE, B44_PATTERN_BASE);
+-   	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE, B44_PMASK_BASE);
++	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE, B44_PATTERN_BASE);
++	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE, B44_PMASK_BASE);
+ 
+ 	/* Raw ethernet II magic packet pattern - pattern 1 */
+ 	memset(pwol_pattern, 0, B44_PATTERN_SIZE);
+@@ -1565,9 +1565,9 @@ static void b44_setup_pseudo_magicp(struct b44 *bp)
+ 	plen1 = b44_magic_pattern(bp->dev->dev_addr, pwol_pattern, pwol_mask,
+ 				  ETH_HLEN);
+ 
+-   	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE,
++	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE,
+ 		       B44_PATTERN_BASE + B44_PATTERN_SIZE);
+-  	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE,
++	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE,
+ 		       B44_PMASK_BASE + B44_PMASK_SIZE);
+ 
+ 	/* Ipv6 magic packet pattern - pattern 2 */
+@@ -1576,9 +1576,9 @@ static void b44_setup_pseudo_magicp(struct b44 *bp)
+ 	plen2 = b44_magic_pattern(bp->dev->dev_addr, pwol_pattern, pwol_mask,
+ 				  B44_ETHIPV6UDP_HLEN);
+ 
+-   	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE,
++	bwfilter_table(bp, pwol_pattern, B44_PATTERN_SIZE,
+ 		       B44_PATTERN_BASE + B44_PATTERN_SIZE + B44_PATTERN_SIZE);
+-  	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE,
++	bwfilter_table(bp, pwol_mask, B44_PMASK_SIZE,
+ 		       B44_PMASK_BASE + B44_PMASK_SIZE + B44_PMASK_SIZE);
+ 
+ 	kfree(pwol_pattern);
+@@ -1631,9 +1631,9 @@ static void b44_setup_wol(struct b44 *bp)
+ 		val = br32(bp, B44_DEVCTRL);
+ 		bw32(bp, B44_DEVCTRL, val | DEVCTRL_MPM | DEVCTRL_PFE);
+ 
+- 	} else {
+- 		b44_setup_pseudo_magicp(bp);
+- 	}
++	} else {
++		b44_setup_pseudo_magicp(bp);
++	}
+ 	b44_setup_wol_pci(bp);
+ }
+ 
+@@ -1757,7 +1757,7 @@ static void __b44_set_rx_mode(struct net_device *dev)
+ 			__b44_cam_write(bp, zero, i);
+ 
+ 		bw32(bp, B44_RXCONFIG, val);
+-        	val = br32(bp, B44_CAM_CTRL);
++		val = br32(bp, B44_CAM_CTRL);
+ 	        bw32(bp, B44_CAM_CTRL, val | CAM_CTRL_ENABLE);
  	}
--       	pmac_call_feature(PMAC_FTR_BMAC_ENABLE, macio_get_of_node(bp->mdev), 0, 0);
-+	pmac_call_feature(PMAC_FTR_BMAC_ENABLE, macio_get_of_node(bp->mdev), 0, 0);
- 	return 0;
  }
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index c098609..2c5f36b 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -572,7 +572,7 @@ bnx2_write_phy(struct bnx2 *bp, u32 reg, u32 val)
+ 	}
  
-@@ -510,9 +510,9 @@ static int bmac_resume(struct macio_dev *mdev)
- 		bmac_reset_and_enable(dev);
+ 	if (val1 & BNX2_EMAC_MDIO_COMM_START_BUSY)
+-        	ret = -EBUSY;
++		ret = -EBUSY;
+ 	else
+ 		ret = 0;
  
- 	enable_irq(dev->irq);
--       	enable_irq(bp->tx_dma_intr);
--       	enable_irq(bp->rx_dma_intr);
--       	netif_device_attach(dev);
-+	enable_irq(bp->tx_dma_intr);
-+	enable_irq(bp->rx_dma_intr);
-+	netif_device_attach(dev);
+@@ -3599,7 +3599,7 @@ bnx2_set_rx_mode(struct net_device *dev)
+ 		for (i = 0; i < NUM_MC_HASH_REGISTERS; i++) {
+ 			BNX2_WR(bp, BNX2_EMAC_MULTICAST_HASH0 + (i * 4),
+ 				0xffffffff);
+-        	}
++		}
+ 		sort_mode |= BNX2_RPM_SORT_USER0_MC_EN;
+ 	}
+ 	else {
+@@ -4674,7 +4674,7 @@ bnx2_nvram_write(struct bnx2 *bp, u32 offset, u8 *data_buf,
  
- 	return 0;
- }
-@@ -1599,7 +1599,7 @@ static int bmac_remove(struct macio_dev *mdev)
+ 				if (addr == page_end-4) {
+ 					cmd_flags = BNX2_NVM_COMMAND_LAST;
+-                		}
++				}
+ 				rc = bnx2_nvram_write_dword(bp, addr,
+ 					&flash_buffer[i], cmd_flags);
  
- 	unregister_netdev(dev);
- 
--       	free_irq(dev->irq, dev);
-+	free_irq(dev->irq, dev);
- 	free_irq(bp->tx_dma_intr, dev);
- 	free_irq(bp->rx_dma_intr, dev);
- 
-diff --git a/drivers/net/ethernet/apple/mace.c b/drivers/net/ethernet/apple/mace.c
-index 9e5006e..4b80e3a 100644
---- a/drivers/net/ethernet/apple/mace.c
-+++ b/drivers/net/ethernet/apple/mace.c
-@@ -364,9 +364,9 @@ static void mace_reset(struct net_device *dev)
- 	out_8(&mb->iac, 0);
- 
-     if (mp->port_aaui)
--    	out_8(&mb->plscc, PORTSEL_AUI + ENPLSIO);
-+	out_8(&mb->plscc, PORTSEL_AUI + ENPLSIO);
-     else
--    	out_8(&mb->plscc, PORTSEL_GPSI + ENPLSIO);
-+	out_8(&mb->plscc, PORTSEL_GPSI + ENPLSIO);
- }
- 
- static void __mace_set_address(struct net_device *dev, void *addr)
-@@ -378,9 +378,9 @@ static void __mace_set_address(struct net_device *dev, void *addr)
- 
-     /* load up the hardware address */
-     if (mp->chipid == BROKEN_ADDRCHG_REV)
--    	out_8(&mb->iac, PHYADDR);
-+	out_8(&mb->iac, PHYADDR);
-     else {
--    	out_8(&mb->iac, ADDRCHG | PHYADDR);
-+	out_8(&mb->iac, ADDRCHG | PHYADDR);
- 	while ((in_8(&mb->iac) & ADDRCHG) != 0)
- 	    ;
-     }
 -- 
 2.8.1
 
