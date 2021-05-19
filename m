@@ -2,132 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44CE738995C
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 00:32:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C88C38997D
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 00:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229994AbhESWd1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 19 May 2021 18:33:27 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:44755 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229465AbhESWd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 18:33:26 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1ljUjR-0007Hn-E3; Wed, 19 May 2021 22:32:01 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 9CA415FDD5; Wed, 19 May 2021 15:31:59 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 97494A040C;
-        Wed, 19 May 2021 15:31:59 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jarod Wilson <jarod@redhat.com>
-cc:     linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: Re: [PATCH 2/4] bond_alb: don't rewrite bridged non-local MACs
-In-reply-to: <20210518210849.1673577-3-jarod@redhat.com>
-References: <20210518210849.1673577-1-jarod@redhat.com> <20210518210849.1673577-3-jarod@redhat.com>
-Comments: In-reply-to Jarod Wilson <jarod@redhat.com>
-   message dated "Tue, 18 May 2021 17:08:47 -0400."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S229976AbhESWzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 18:55:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39566 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229465AbhESWzQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 18:55:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7911660FEF;
+        Wed, 19 May 2021 22:53:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621464835;
+        bh=s7sa+JprgdBvQ1TTBk/wVSZdNKM1mjSnAFpxw7k51fc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hQJI7tFZKxZdg+PDwsMQ5V3Ejq/9/oxtN4PUGdWfUSZQWXpykbTgFLzD5uS99rxzm
+         BWLGObvm1W6T+q+Yoxr0aK3w9Dg0omCvkWD1WK9YTcoNZ2oh8favsVLvUH3PAcjkji
+         NUHbwM1RXm68VGDlDpNLChFxhRweqeuK7lJt32+m/eeYBi8j98o6dvpZGrjiGFMMeL
+         qeulZGeZoYN89tefc50Fd/LMepg8uXPHIWRU8ShbBA0YDD3wLiMriXS1VFX3f6SyBs
+         7Rd/JnP5iSqUvWisl9WHhiN7ana9mahi3yWlC68Bwj8n2WdPQChNnfeA7lz44+D45n
+         a1QTC+MMC77Vg==
+Date:   Wed, 19 May 2021 15:53:54 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Dave Taht <dave.taht@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        bloat <bloat@lists.bufferbloat.net>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [Bloat] virtio_net: BQL?
+Message-ID: <20210519155354.4438565e@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <a11eee78-b2a1-3dbc-4821-b5f4bfaae819@gmail.com>
+References: <56270996-33a6-d71b-d935-452dad121df7@linux.alibaba.com>
+        <CAA93jw6LUAnWZj0b5FvefpDKUyd6cajCNLoJ6OKrwbu-V_ffrA@mail.gmail.com>
+        <CA+FuTSf0Af2RXEG=rCthNNEb5mwKTG37gpEBBZU16qKkvmF=qw@mail.gmail.com>
+        <CAA93jw7Vr_pFMsPCrPadqaLGu0BdC-wtCmW2iyHFkHERkaiyWQ@mail.gmail.com>
+        <20210517160036.4093d3f2@hermes.local>
+        <a11eee78-b2a1-3dbc-4821-b5f4bfaae819@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7728.1621463519.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Wed, 19 May 2021 15:31:59 -0700
-Message-ID: <7729.1621463519@famine>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jarod Wilson <jarod@redhat.com> wrote:
-
->With a virtual machine behind a bridge on top of a bond, outgoing traffic
->should retain the VM's source MAC. That works fine most of the time, until
->doing a failover, and then the MAC gets rewritten to the bond slave's MAC,
->and the return traffic gets dropped. If we don't rewrite the MAC there, we
->don't lose any traffic.
-
-	Please have the log message here specify that this applies only
-to balance-alb mode, and, the usual nomenclature for bonding patches is
-"[PATCH] bonding:"; for this case, I'd suggest "balance-alb:" right
-afterwards to be clear that it's only for alb mode.  I didn't really
-spot the "bond_alb" tag for what it was on first read, and it is the
-only indication that this change is specific to alb mode other than the
-patch itself.
-
->Cc: Jay Vosburgh <j.vosburgh@gmail.com>
->Cc: Veaceslav Falico <vfalico@gmail.com>
->Cc: Andy Gospodarek <andy@greyhouse.net>
->Cc: "David S. Miller" <davem@davemloft.net>
->Cc: Jakub Kicinski <kuba@kernel.org>
->Cc: Thomas Davis <tadavis@lbl.gov>
->Cc: netdev@vger.kernel.org
->Signed-off-by: Jarod Wilson <jarod@redhat.com>
->---
-> drivers/net/bonding/bond_alb.c | 23 ++++++++++++++++++++++-
-> 1 file changed, 22 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
->index 3455f2cc13f2..ce8257c7cbea 100644
->--- a/drivers/net/bonding/bond_alb.c
->+++ b/drivers/net/bonding/bond_alb.c
->@@ -1302,6 +1302,26 @@ void bond_alb_deinitialize(struct bonding *bond)
-> 		rlb_deinitialize(bond);
-> }
+On Wed, 19 May 2021 16:31:10 +0200 Eric Dumazet wrote:
+> On 5/18/21 1:00 AM, Stephen Hemminger wrote:
+> > The Azure network driver (netvsc) also does not have BQL. Several years ago
+> > I tried adding it but it benchmarked worse and there is the added complexity
+> > of handling the accelerated networking VF path.
 > 
->+static bool bond_alb_bridged_mac(struct bonding *bond, struct ethhdr *eth_data)
->+{
->+	struct list_head *iter;
->+	struct slave *slave;
->+
->+	if (BOND_MODE(bond) != BOND_MODE_ALB)
->+		return false;
->+
->+	/* Don't modify source MACs that do not originate locally
->+	 * (e.g.,arrive via a bridge).
->+	 */
->+	if (!netif_is_bridge_port(bond->dev))
->+		return false;
-
-	I believe this logic will fail if the plumbing is, e.g., bond ->
-vlan -> bridge, as netif_is_bridge_port() would not return true for the
-bond in that case.
-
-	Making this reliable is tricky at best, and may be impossible to
-be correct for all possible cases.  As such, I think the comment above
-should reflect the limited scope of what is actually being checked here
-(i.e., the bond itself is directly a bridge port).
-
-	-J
-
->+
->+	if (bond_slave_has_mac_rx(bond, eth_data->h_source))
->+		return false;
->+
->+	return true;
->+}
->+
-> static netdev_tx_t bond_do_alb_xmit(struct sk_buff *skb, struct bonding *bond,
-> 				    struct slave *tx_slave)
-> {
->@@ -1316,7 +1336,8 @@ static netdev_tx_t bond_do_alb_xmit(struct sk_buff *skb, struct bonding *bond,
-> 	}
+> Note that NIC with many TX queues make BQL almost useless, only adding extra
+> overhead.
 > 
-> 	if (tx_slave && bond_slave_can_tx(tx_slave)) {
->-		if (tx_slave != rcu_access_pointer(bond->curr_active_slave)) {
->+		if (tx_slave != rcu_access_pointer(bond->curr_active_slave) &&
->+		    !bond_alb_bridged_mac(bond, eth_data)) {
-> 			ether_addr_copy(eth_data->h_source,
-> 					tx_slave->dev->dev_addr);
-> 		}
->-- 
->2.30.2
->
+> We should probably make BQL something that can be manually turned on/off.
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Ah, I've been pondering this. Are you thinking of a bit in
+dev_queue->state? Not perfect, because with a careful driver design 
+one can avoid most dev_queue accesses from the completion path.
+It's still much better than recompiling the kernel to set BQL=n, tho.
