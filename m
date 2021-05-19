@@ -2,139 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AB89388F66
-	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 15:43:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3315F389018
+	for <lists+netdev@lfdr.de>; Wed, 19 May 2021 16:13:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345137AbhESNpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 09:45:12 -0400
-Received: from mail-sn1anam02on2055.outbound.protection.outlook.com ([40.107.96.55]:52590
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229531AbhESNpM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 09:45:12 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NkTdkyHn1yhXkmrdD1R3r0FbkYUoHKtZBqzEzzkfKz14mE+3G2dv45Vt2Kp26Z7/MATHKbqxtkr1HzjI4ncuM2mKwuGbx5fdd0b0vkbPttLelzsWzjVDF1f5YYNBmttTPWIMhVsIEQHFBGDSs8OEbqcjdPAj4nMpN5pbENCYdxQP+xmXO7ApOUc3DixkbE5wylAPOOGvJY506lLWNYegtREGrVqrTny2WI39Y0upf0wvWZEYw5Y42Yv22wvsLNB3lFR5lKOeDWyrWgNm4bvixfdacYb+KzIdQXKOOICufhNQsPfMA+GpPzZ7+dxbv/Wsm2SsaWjMWOCNBBjh12sy8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l0grSqURDkuABa8GkfIIvoFxeePN6reretgubE38N0o=;
- b=Nv3EIvJPByso6F/Jacd0aH8thSV/F24zX3P6LcfYME2TYEFTbLYwxUTNSV/zDhxSBCoU0wglnxA3fa7HYo2YFlL3Y5TR/RXVu9r5ZVqPXbcmZHCDQKVLoji2Neb4oxQsgUNqrM9KpZ2BSbBf6habkBI8Tw9TqUoCA5+8bwpNLLUAqD7IgRxvF+NPfl3Q8lsCihC74BSh4WmQC4HNGWOHA8L2nd3+04gOJcQapgD9C1xEUvcy8TyMNRb9nTqfGzDA2H55UvXikre9StUmywfP+q6hxVfe9knHSPlmBEanJ5VqJkBGYqfIIMu4i9kbR3qqIa5D1V00hulXTIo/9ldmFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l0grSqURDkuABa8GkfIIvoFxeePN6reretgubE38N0o=;
- b=tyyzw7viY4W37TUgvFSfg47XLGtEYxdRjJrTuL5MOArMoyD3g5u31tvpWLFp1FMG7jiAAEW/qPvqahGDX4JExaew+1jMjp/eqpePDvjr6Kjp0jiEH8vbwvRvfDqE4ho1jTlkod13dnx0Hi8adYyXSrwoVsrGx0fSZ0+1gRIMWsoUNLajDHMxCUb7gLwj/qpiHIYCuqDplf1EMbzJjj77g1Z3wpGUvM8TpyC7iHINO9bMZV5hpUWqesJXGP/NdZEHSbIYHyZhAUuJqvuB33NjbEDs2gOiyyCpK5a80zADtXhdcUEjh4igaB34MbaKFQH/vhysPMb4jb6HWlT2DI1kDw==
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB3836.namprd12.prod.outlook.com (2603:10b6:5:1c3::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.26; Wed, 19 May
- 2021 13:43:51 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::ddb4:2cbb:4589:f039]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::ddb4:2cbb:4589:f039%4]) with mapi id 15.20.4129.033; Wed, 19 May 2021
- 13:43:51 +0000
-Date:   Wed, 19 May 2021 10:43:49 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Shiraz Saleem <shiraz.saleem@intel.com>, dledford@redhat.com,
-        kuba@kernel.org, davem@davemloft.net, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, david.m.ertman@intel.com,
-        anthony.l.nguyen@intel.com
-Subject: Re: [PATCH v5 06/22] i40e: Register auxiliary devices to provide RDMA
-Message-ID: <20210519134349.GK1002214@nvidia.com>
-References: <20210514141214.2120-1-shiraz.saleem@intel.com>
- <20210514141214.2120-7-shiraz.saleem@intel.com>
- <YKUJ4rnZf4u4qUYc@unreal>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YKUJ4rnZf4u4qUYc@unreal>
-X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: MN2PR11CA0021.namprd11.prod.outlook.com
- (2603:10b6:208:23b::26) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1347142AbhESOPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 10:15:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240132AbhESOPL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 10:15:11 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CEBC06175F;
+        Wed, 19 May 2021 07:13:51 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id f19-20020a05600c1553b02901794fafcfefso2910479wmg.2;
+        Wed, 19 May 2021 07:13:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IbHUTDLuMB6pIOxs8p0VNd1MCvB6Nfy/ShgHNNj7/Yo=;
+        b=JqC56zZgjLrd6k0/8rlzrpRcWoP7C2iSTTp7RtIE8zlEbZ3fMYHdYUOP459sU5H3pI
+         t9S7q0Lpmu6PuW8vQBTl+aUba3etyUO6BRE/9jF0M8xDOsQ5v2Ca35/Q5NBOcbToBT+s
+         GbhSUI09FwQkTXoR92bRIN5VKUXRvP7nUATK2hbNDILdChBRBf5LUPJ98B1wJz1qEaTc
+         GlUN/isz+msU3cn+LzPjPEY02CFN2yTtD+LeP2QNg9ntM4ccbRc8NLwiV9NFtSJhLs3A
+         NVDiWXhsShSAOj9IJJuWlPkcE/FB4GDrMj82iqaSrucARtIPINgaJH3ocOod01YQk6o8
+         xDrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IbHUTDLuMB6pIOxs8p0VNd1MCvB6Nfy/ShgHNNj7/Yo=;
+        b=nWULpNpqiwuOAUZeFBVdrZGi7UI8nNL20x1rxU3G/rDZ0URnWKOVSS9RXHaGatOZZ0
+         t3uabJ0rGCKMROEluzhmG9VZ22GriA6og0//ekN21sLNNy/AHO8HkdzukMJhTyR+CVt9
+         w0p5OAPn4b4pgY7Mov9e01oBYFbQEqUXpMQSslmALyyPyPJsM9Govwr3sARMT7eQJKan
+         zSvQEL7jm5qOkBhhZRbTmoL0SbJZL23bfFGS9r8zI+QJcKlV5O55UZ4uBiviJjTlsBBb
+         ecxl73OA2fPGjzbQiy/1JKjJ83et4xwnNPPGdVpmIqSzBl7taWhizD4q2MQMFTaqs4eO
+         pSrA==
+X-Gm-Message-State: AOAM533q59j7bjpZ3LkCyPPgAy/ID62/4NHUyef/JdgInyHyxzTXzoBR
+        oJAghGnO6D1K8VrxONsGt0O7WZqQra/yUyKJ
+X-Google-Smtp-Source: ABdhPJyH1EPxE7vJoLh++X0LKIjxgLKfPAzbSKMwLR+3AJ2EmFyCKtBGYruLiohI/HtmlXkvATSS7w==
+X-Received: by 2002:a1c:7e45:: with SMTP id z66mr11788309wmc.126.1621433629967;
+        Wed, 19 May 2021 07:13:49 -0700 (PDT)
+Received: from localhost.localdomain ([85.255.235.154])
+        by smtp.gmail.com with ESMTPSA id z3sm6233569wrq.42.2021.05.19.07.13.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 May 2021 07:13:49 -0700 (PDT)
+From:   Pavel Begunkov <asml.silence@gmail.com>
+To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jens Axboe <axboe@kernel.dk>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Horst Schirmeier <horst.schirmeier@tu-dortmund.de>,
+        "Franz-B . Tuneke" <franz-bernhard.tuneke@tu-dortmund.de>,
+        Christian Dietrich <stettberger@dokucode.de>
+Subject: [RFC v2 00/23] io_uring BPF requests
+Date:   Wed, 19 May 2021 15:13:11 +0100
+Message-Id: <cover.1621424513.git.asml.silence@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (47.55.113.94) by MN2PR11CA0021.namprd11.prod.outlook.com (2603:10b6:208:23b::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.33 via Frontend Transport; Wed, 19 May 2021 13:43:50 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1ljMUH-00AiPp-LP; Wed, 19 May 2021 10:43:49 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 387ddcd4-12b4-419d-43fd-08d91acc22b9
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3836:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3836A4E2A331BA7CFEC03EF9C22B9@DM6PR12MB3836.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MwSUOUGDX2SMrN+jT9Pf1KMDUmrW/cb2tbjvsHpzA+363TS6cu0YAuzQaMVFS1BVyfPx9ObQ/ccZZhLH1Qs+WQyd4prn1pisJIyWetX05sCRsiPSj8wjvIVfvvNe+1S/e+4uccvdQnN6CITL6THFARqNl+MCnJCVKqmauD8KGQ71tt87niaNMGWoRkVQlRODiibPYqFxuPKUYmyupz5xh6WhF+XQcbq61fsh9ls1Skk7rAgX8ShygDGa3Quwt7ogsbNUEAIhIn/pXa+TPrrlmQxxgizWC0jL40nLn79L6AcNqfUE15RzL1Rp+UKDTbVX2veBpaB4o9vqw0tjxKdoNwuiHkBHhSZ/HhVBlwAWxoAHQt+tzM6UePEw64ZnPe2KOi4Zky7GmL+MhPAagprRDIi6W7l2EliUeko7iBTvOYG9fyR2L4pmJ0iGNMVrs00cp+IVvri70B9+213CeMkRZYk/7gsdTHOe8kP2NeGlm5Ra5oa/jDL0nyuqGMPVlmgJQ9Oe0Tuc3mzw/hLbb5zYk/hXhdCFaBaPXeCviBHW6hG+SVLya0iIMA3GAl2w2g8K8WF6htLVExcZJthgarztxTuVmet1mlxYczZ2auEGaxo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(346002)(136003)(396003)(366004)(426003)(83380400001)(86362001)(38100700002)(1076003)(66946007)(26005)(9786002)(4326008)(316002)(2616005)(9746002)(2906002)(66556008)(8936002)(6916009)(66476007)(186003)(33656002)(5660300002)(478600001)(8676002)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?ljERW3N+pLIeYCcJHl1UcILFsK6LGB0g7P7pYQ8A8oDbFO7N/wBR5Yhbja5c?=
- =?us-ascii?Q?DtBZ22aUnIZINY5tPFCM12MwKR5p1fkrEWsv3JMtzqBCX2zseO3aYLfFm6on?=
- =?us-ascii?Q?2MjlI5hQgxEDlzcTpV2TjckbT/c3Mz9R67MKfktx+2kq0uydsoTEa4U5KSrU?=
- =?us-ascii?Q?LlGy62qPBiPsMRsq9Bbw4ZkXSSLWHZNmDaTcfm0hq5GN1vFUHls84PyfzROD?=
- =?us-ascii?Q?qAVIzSjLpH6nOG17UFi2j7VWvsU8v7oVyYUJVdzrG70fWtt6vGpgbbLVceKn?=
- =?us-ascii?Q?fCGxEoCQyFIVwQ6BrfcUTWnGFn8L+4Ckf/7C25YF2PXeDOo+9TzZvC/JrPHJ?=
- =?us-ascii?Q?AbozKoh6CxWclqwPj1j80W73nwMd4ncJyM2A8SCsNzIDUEgripn9yH3KK597?=
- =?us-ascii?Q?3xWzPP09+1g8EH3d+fI5a+HcVcb/ZnVQPPqgI3XMlCjp6IUVL7edfw7TEJC6?=
- =?us-ascii?Q?YwBSgyaC+GC2nYH4trC9X3MG789YyUkgluteNUeAGQv8zJdiZwfu9NgjlWqB?=
- =?us-ascii?Q?8clnx0Kaf4NCZbUS2TpIyxxnUAjkWW3+pEH7c2/y/0Ue2MiLR8sUKzsV+R1y?=
- =?us-ascii?Q?1HAdW9YJe5KKBRBxiKdX7qK/T7Wbrrsj+KyvHZjuSS3DU7ZVxG8i0pYZPtO1?=
- =?us-ascii?Q?xs8Xc9p7QJD+3zc8ggGHVeA03BWl4RAoeIVGC7QYohXoK3JweazW5l3+L6J0?=
- =?us-ascii?Q?Y3NcXtQaLVQZ0K4jXkM+sRJzxukr1+PWqSyAvQdCTirapoNim0bYmlFKrUsP?=
- =?us-ascii?Q?1W/ovgIQNz0dpb5V5qbuqg4M1T+MYWxFrwv2/sScltPq/0h213OeCEShnUSo?=
- =?us-ascii?Q?HHyxbbcbUYJqq8PXOqMJFNmmFGEoLHWbKpddVePgNh2SB2YBbnALAzGxEWTs?=
- =?us-ascii?Q?l1nbMVdszImOHPTr0TFJB1hX/w6eGrykoCaO7uf7JuIw5K8nvZcS63oJQ6xi?=
- =?us-ascii?Q?I95NZIyCpVdgg+3njPte0a4uMjXDUjldBjqLRh2e1PF1zPHNwBP8P5wO8eI4?=
- =?us-ascii?Q?5Nw2Rc/ZcBF75M6cca3XctJJwGBX/kLbqZfZctqAp43a8opLecCxK6bkg65N?=
- =?us-ascii?Q?CCDCXMzk4F+esivssuwl0jFwVNq2O3A07FOXggHG5rFA7ogcNbmCVLlt4Y6u?=
- =?us-ascii?Q?hi5s2hcFbkFLo1CPPQ5DabpuJrV3MHes/TfhvsYugIda1tDRzRbiEPJB+i8q?=
- =?us-ascii?Q?V7HLH6eyk5VWnvsk4RKtFu4cqIxQIsetqGuaJm9OmSNHxQovvG6dSAKOQ68X?=
- =?us-ascii?Q?Q2P4QGZGgjwT7u2nLnj/OpPVvrup0F2+BrupxbK13EpxmxPAuc5nYEnck6T5?=
- =?us-ascii?Q?uMNZJhZGR3K/mk7Twwt/E1+P?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 387ddcd4-12b4-419d-43fd-08d91acc22b9
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2021 13:43:50.8722
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7gMUuZ7TD3UO5hnnWnUfseOaotU2nioaYKxYlPFGWTGYKuZ+L8BOgQDk6cnFMg9q
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3836
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 19, 2021 at 03:51:46PM +0300, Leon Romanovsky wrote:
-> On Fri, May 14, 2021 at 09:11:58AM -0500, Shiraz Saleem wrote:
-> > Convert i40e to use the auxiliary bus infrastructure to export
-> > the RDMA functionality of the device to the RDMA driver.
-> > Register i40e client auxiliary RDMA device on the auxiliary bus per
-> > PCIe device function for the new auxiliary rdma driver (irdma) to
-> > attach to.
-> > 
-> > The global i40e_register_client and i40e_unregister_client symbols
-> > will be obsoleted once irdma replaces i40iw in the kernel
-> > for the X722 device.
-> > 
-> > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> >  drivers/net/ethernet/intel/Kconfig            |   1 +
-> >  drivers/net/ethernet/intel/i40e/i40e.h        |   2 +
-> >  drivers/net/ethernet/intel/i40e/i40e_client.c | 152 ++++++++++++++++++++++----
-> >  drivers/net/ethernet/intel/i40e/i40e_main.c   |   1 +
-> >  4 files changed, 136 insertions(+), 20 deletions(-)
-> 
-> The amount of obfuscation in this driver is astonishing.
-> 
-> I would expect that after this series, the i40e_client_add_*() would
-> be cleaned, for example simple grep of I40E_CLIENT_VERSION_MAJOR
-> shows that i40e_register_client() still have no-go code.
+The main problem solved is feeding completion information of other
+requests in a form of CQEs back into BPF. I decided to wire up support
+for multiple completion queues (aka CQs) and give BPF programs access to
+them, so leaving userspace in control over synchronisation that should
+be much more flexible that the link-based approach.
 
-While it would be nice to see i40e fully cleaned I think we agreed to
-largely ignore it as-is so long as the new driver's aux implementation
-was sane.
+For instance, there can be a separate CQ for each BPF program, so no
+extra sync is needed, and communication can be done by submitting a
+request targeting a neighboring CQ or submitting a CQE there directly
+(see test3 below). CQ is choosen by sqe->cq_idx, so everyone can
+cross-fire if willing.
 
-Jason
+A bunch of other features was added to play around (see v1 changelog
+below or test1), some are just experimental only. The interfaces are
+not even close to settle.
+Note: there are problems known, one may live-lock a task, unlikely
+to happen but better to be aware.
+
+For convenience git branch for the kernel part is at [1],
+libbpf + examples [2]. Examples are written in restricted C and libbpf,
+and are under examples/bpf/, see [3], with 4 BPF programs and 4
+corresponding test cases in uring.c. It's already shaping interesting
+to play with.
+
+test1:            just a set of use examples for features
+test2/counting:   ticks-react N times using timeout reqs and CQ waiting
+test3/pingpong:   two BPF reqs do message-based communication by
+                  repeatedly writing a CQE to another program's CQ and
+                  waiting for a response
+test4/write_file: BPF writes N bytes to a file keeping QD>1
+
+[1] https://github.com/isilence/linux/tree/ebpf_v2
+[2] https://github.com/isilence/liburing/tree/ebpf_v2
+[3] https://github.com/isilence/liburing/tree/ebpf_v2/examples/bpf
+
+since v1:
+- several bug fixes
+- support multiple CQs
+- allow BPF requests to wait on CQs
+- BPF helpers for emit/reap CQE
+- expose user_data to BPF program
+- sleepable + let BPF read/write from userspace
+
+Pavel Begunkov (23):
+  io_uring: shuffle rarely used ctx fields
+  io_uring: localise fixed resources fields
+  io_uring: remove dependency on ring->sq/cq_entries
+  io_uring: deduce cq_mask from cq_entries
+  io_uring: kill cached_cq_overflow
+  io_uring: rename io_get_cqring
+  io_uring: extract struct for CQ
+  io_uring: internally pass CQ indexes
+  io_uring: extract cq size helper
+  io_uring: add support for multiple CQs
+  io_uring: enable mmap'ing additional CQs
+  bpf: add IOURING program type
+  io_uring: implement bpf prog registration
+  io_uring: add support for bpf requests
+  io_uring: enable BPF to submit SQEs
+  io_uring: enable bpf to submit CQEs
+  io_uring: enable bpf to reap CQEs
+  libbpf: support io_uring
+  io_uring: pass user_data to bpf executor
+  bpf: Add bpf_copy_to_user() helper
+  io_uring: wire bpf copy to user
+  io_uring: don't wait on CQ exclusively
+  io_uring: enable bpf reqs to wait for CQs
+
+ fs/io_uring.c                  | 794 +++++++++++++++++++++++++++------
+ include/linux/bpf.h            |   1 +
+ include/linux/bpf_types.h      |   2 +
+ include/uapi/linux/bpf.h       |  12 +
+ include/uapi/linux/io_uring.h  |  15 +-
+ kernel/bpf/helpers.c           |  17 +
+ kernel/bpf/syscall.c           |   1 +
+ kernel/bpf/verifier.c          |   5 +-
+ tools/include/uapi/linux/bpf.h |   7 +
+ tools/lib/bpf/libbpf.c         |   7 +
+ 10 files changed, 722 insertions(+), 139 deletions(-)
+
+-- 
+2.31.1
+
