@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9042838B704
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 21:15:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A69738B712
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 21:16:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237676AbhETTRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 15:17:16 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:28306 "EHLO
+        id S238078AbhETTSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 15:18:02 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:28593 "EHLO
         mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234210AbhETTRO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 15:17:14 -0400
+        with ESMTP id S237241AbhETTR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 15:17:56 -0400
 Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 0AC6152143B;
-        Thu, 20 May 2021 22:15:51 +0300 (MSK)
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 14C74521146;
+        Thu, 20 May 2021 22:16:32 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1621538151;
-        bh=2SCAXQqEnMds5nDI4CYPTbZIWZJpFyRZ6gelmXZ1b6o=;
+        s=mail202102; t=1621538192;
+        bh=UBsavzFZWcT0S3IYlrCNPPD8gQTQS24RNjbAotniV7I=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=un4jlpTlyH1TRtX2GQoB/cLNYJuPYLC52+t3JXHjnOzv10YEMt4Fh2QOnbFTGl3Wk
-         RArMbBu7VBPjL1WwtB5fIHY5vfvLOaYMKui9AZy6uBUOGBamex3ya+MWFYDNDyWM4u
-         A7AxxLx0ku7fC0g5p7+/4qws/JSoNrFouDdX7VFLEEv03WA7jD0i+iwmwamsZm3+vP
-         j2H+zRjqVpTNz0uBiwj/1P6L4qfYXfTDpVlnlFTDSg5pKS8Fr17AoQNYuC06RqEbU0
-         Yd0xd1vIGnRCrNelLqJ8spXHDeJ25jE7L76DRBWNQ02UWjQfu6NPbvbRlsT0gquWpf
-         ifMFSE/SXnIBA==
+        b=ZFx1pcAvi8DCCPPo1yEEOh+J3mFjPMco6wVsmCrrxSH3xOLxB2inx6pAZ0GBUbfrs
+         JqJuSaqvqUWZFarHxWYXr2VQDmXmPChy5knng8VbwezQk/B/uazb6IG2DsDEvLXu04
+         U1+v67Bl4B5WjdoZm6gcFWWCJ8lCy5AWUY5mx3+33+q1+D5w6m7/stnrEXKST59tEe
+         9v5JmPSMJGGpTid7QGu+craZ6N4o8n1bcj5OjFOoYwFjnnl6artjv7GwKjFhohV5gd
+         eSYN8Fb+xsrJh435bfTr1aCslEvGFkkeBQGrGaE/v+d4Q9Yn12kG/8YlUVnnOXHY/k
+         2yC7eyOHKK9LA==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id AC93452142D;
-        Thu, 20 May 2021 22:15:50 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id C0DE0520FB3;
+        Thu, 20 May 2021 22:16:31 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Thu, 20
- May 2021 22:15:49 +0300
+ May 2021 22:16:02 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -42,23 +42,23 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
         Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
-        Colin Ian King <colin.king@canonical.com>
+        Andra Paraschiv <andraprs@amazon.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <oxffffaa@gmail.com>
-Subject: [PATCH v10 02/18] af_vsock: separate wait data loop
-Date:   Thu, 20 May 2021 22:15:41 +0300
-Message-ID: <20210520191544.1270985-1-arseny.krasnov@kaspersky.com>
+Subject: [PATCH v10 03/18] af_vsock: separate receive data loop
+Date:   Thu, 20 May 2021 22:15:54 +0300
+Message-ID: <20210520191557.1271095-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
 References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.129]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -99,197 +99,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wait loop for data could be shared between SEQPACKET and STREAM
-sockets, so move it to dedicated function. While moving the code
-around, let's update an old comment.
+Some code in receive data loop could be shared between SEQPACKET
+and STREAM sockets, while another part is type specific, so move STREAM
+specific data receive logic to '__vsock_stream_recvmsg()' dedicated
+function, while checks, that will be same for both STREAM and SEQPACKET
+sockets, stays in 'vsock_connectible_recvmsg()'.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- net/vmw_vsock/af_vsock.c | 156 +++++++++++++++++++++------------------
- 1 file changed, 84 insertions(+), 72 deletions(-)
+ net/vmw_vsock/af_vsock.c | 116 ++++++++++++++++++++++-----------------
+ 1 file changed, 67 insertions(+), 49 deletions(-)
 
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 7dd8e70d78cd..4269e80b02cd 100644
+index 4269e80b02cd..c4f6bfa1e381 100644
 --- a/net/vmw_vsock/af_vsock.c
 +++ b/net/vmw_vsock/af_vsock.c
-@@ -1833,6 +1833,69 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
- 	return err;
+@@ -1896,65 +1896,22 @@ static int vsock_wait_data(struct sock *sk, struct wait_queue_entry *wait,
+ 	return data;
  }
  
-+static int vsock_wait_data(struct sock *sk, struct wait_queue_entry *wait,
-+			   long timeout,
-+			   struct vsock_transport_recv_notify_data *recv_data,
-+			   size_t target)
-+{
-+	const struct vsock_transport *transport;
+-static int
+-vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+-			  int flags)
++static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
++				  size_t len, int flags)
+ {
+-	struct sock *sk;
+-	struct vsock_sock *vsk;
++	struct vsock_transport_recv_notify_data recv_data;
+ 	const struct vsock_transport *transport;
+-	int err;
+-	size_t target;
 +	struct vsock_sock *vsk;
-+	s64 data;
+ 	ssize_t copied;
++	size_t target;
+ 	long timeout;
+-	struct vsock_transport_recv_notify_data recv_data;
 +	int err;
-+
-+	vsk = vsock_sk(sk);
-+	err = 0;
-+	transport = vsk->transport;
-+
-+	while ((data = vsock_stream_has_data(vsk)) == 0) {
-+		prepare_to_wait(sk_sleep(sk), wait, TASK_INTERRUPTIBLE);
-+
-+		if (sk->sk_err != 0 ||
-+		    (sk->sk_shutdown & RCV_SHUTDOWN) ||
-+		    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
-+			break;
-+		}
-+
-+		/* Don't wait for non-blocking sockets. */
-+		if (timeout == 0) {
-+			err = -EAGAIN;
-+			break;
-+		}
-+
-+		if (recv_data) {
-+			err = transport->notify_recv_pre_block(vsk, target, recv_data);
-+			if (err < 0)
-+				break;
-+		}
-+
-+		release_sock(sk);
-+		timeout = schedule_timeout(timeout);
-+		lock_sock(sk);
-+
-+		if (signal_pending(current)) {
-+			err = sock_intr_errno(timeout);
-+			break;
-+		} else if (timeout == 0) {
-+			err = -EAGAIN;
-+			break;
-+		}
-+	}
-+
-+	finish_wait(sk_sleep(sk), wait);
-+
-+	if (err)
-+		return err;
-+
-+	/* Internal transport error when checking for available
-+	 * data. XXX This should be changed to a connection
-+	 * reset in a later change.
-+	 */
-+	if (data < 0)
-+		return -ENOMEM;
-+
-+	return data;
+ 
+ 	DEFINE_WAIT(wait);
+ 
+-	sk = sock->sk;
+ 	vsk = vsock_sk(sk);
+-	err = 0;
+-
+-	lock_sock(sk);
+-
+ 	transport = vsk->transport;
+ 
+-	if (!transport || sk->sk_state != TCP_ESTABLISHED) {
+-		/* Recvmsg is supposed to return 0 if a peer performs an
+-		 * orderly shutdown. Differentiate between that case and when a
+-		 * peer has not connected or a local shutdown occurred with the
+-		 * SOCK_DONE flag.
+-		 */
+-		if (sock_flag(sk, SOCK_DONE))
+-			err = 0;
+-		else
+-			err = -ENOTCONN;
+-
+-		goto out;
+-	}
+-
+-	if (flags & MSG_OOB) {
+-		err = -EOPNOTSUPP;
+-		goto out;
+-	}
+-
+-	/* We don't check peer_shutdown flag here since peer may actually shut
+-	 * down, but there can be data in the queue that a local socket can
+-	 * receive.
+-	 */
+-	if (sk->sk_shutdown & RCV_SHUTDOWN) {
+-		err = 0;
+-		goto out;
+-	}
+-
+-	/* It is valid on Linux to pass in a zero-length receive buffer.  This
+-	 * is not an error.  We may as well bail out now.
+-	 */
+-	if (!len) {
+-		err = 0;
+-		goto out;
+-	}
+-
+ 	/* We must not copy less than target bytes into the user's buffer
+ 	 * before returning successfully, so we wait for the consume queue to
+ 	 * have that much data to consume before dequeueing.  Note that this
+@@ -2013,6 +1970,67 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 	if (copied > 0)
+ 		err = copied;
+ 
++out:
++	return err;
 +}
 +
- static int
- vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 			  int flags)
-@@ -1912,85 +1975,34 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 
- 
- 	while (1) {
--		s64 ready;
-+		ssize_t read;
- 
--		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
--		ready = vsock_stream_has_data(vsk);
-+		err = vsock_wait_data(sk, &wait, timeout, &recv_data, target);
-+		if (err <= 0)
-+			break;
- 
--		if (ready == 0) {
--			if (sk->sk_err != 0 ||
--			    (sk->sk_shutdown & RCV_SHUTDOWN) ||
--			    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
--				finish_wait(sk_sleep(sk), &wait);
--				break;
--			}
--			/* Don't wait for non-blocking sockets. */
--			if (timeout == 0) {
--				err = -EAGAIN;
--				finish_wait(sk_sleep(sk), &wait);
--				break;
--			}
--
--			err = transport->notify_recv_pre_block(
--					vsk, target, &recv_data);
--			if (err < 0) {
--				finish_wait(sk_sleep(sk), &wait);
--				break;
--			}
--			release_sock(sk);
--			timeout = schedule_timeout(timeout);
--			lock_sock(sk);
--
--			if (signal_pending(current)) {
--				err = sock_intr_errno(timeout);
--				finish_wait(sk_sleep(sk), &wait);
--				break;
--			} else if (timeout == 0) {
--				err = -EAGAIN;
--				finish_wait(sk_sleep(sk), &wait);
--				break;
--			}
--		} else {
--			ssize_t read;
--
--			finish_wait(sk_sleep(sk), &wait);
--
--			if (ready < 0) {
--				/* Invalid queue pair content. XXX This should
--				* be changed to a connection reset in a later
--				* change.
--				*/
--
--				err = -ENOMEM;
--				goto out;
--			}
--
--			err = transport->notify_recv_pre_dequeue(
--					vsk, target, &recv_data);
--			if (err < 0)
--				break;
-+		err = transport->notify_recv_pre_dequeue(vsk, target,
-+							 &recv_data);
-+		if (err < 0)
-+			break;
- 
--			read = transport->stream_dequeue(
--					vsk, msg,
--					len - copied, flags);
--			if (read < 0) {
--				err = -ENOMEM;
--				break;
--			}
-+		read = transport->stream_dequeue(vsk, msg, len - copied, flags);
-+		if (read < 0) {
-+			err = -ENOMEM;
-+			break;
-+		}
- 
--			copied += read;
-+		copied += read;
- 
--			err = transport->notify_recv_post_dequeue(
--					vsk, target, read,
--					!(flags & MSG_PEEK), &recv_data);
--			if (err < 0)
--				goto out;
-+		err = transport->notify_recv_post_dequeue(vsk, target, read,
-+						!(flags & MSG_PEEK), &recv_data);
-+		if (err < 0)
-+			goto out;
- 
--			if (read >= target || flags & MSG_PEEK)
--				break;
-+		if (read >= target || flags & MSG_PEEK)
-+			break;
- 
--			target -= read;
--		}
-+		target -= read;
- 	}
- 
- 	if (sk->sk_err)
++static int
++vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
++			  int flags)
++{
++	struct sock *sk;
++	struct vsock_sock *vsk;
++	const struct vsock_transport *transport;
++	int err;
++
++	DEFINE_WAIT(wait);
++
++	sk = sock->sk;
++	vsk = vsock_sk(sk);
++	err = 0;
++
++	lock_sock(sk);
++
++	transport = vsk->transport;
++
++	if (!transport || sk->sk_state != TCP_ESTABLISHED) {
++		/* Recvmsg is supposed to return 0 if a peer performs an
++		 * orderly shutdown. Differentiate between that case and when a
++		 * peer has not connected or a local shutdown occurred with the
++		 * SOCK_DONE flag.
++		 */
++		if (sock_flag(sk, SOCK_DONE))
++			err = 0;
++		else
++			err = -ENOTCONN;
++
++		goto out;
++	}
++
++	if (flags & MSG_OOB) {
++		err = -EOPNOTSUPP;
++		goto out;
++	}
++
++	/* We don't check peer_shutdown flag here since peer may actually shut
++	 * down, but there can be data in the queue that a local socket can
++	 * receive.
++	 */
++	if (sk->sk_shutdown & RCV_SHUTDOWN) {
++		err = 0;
++		goto out;
++	}
++
++	/* It is valid on Linux to pass in a zero-length receive buffer.  This
++	 * is not an error.  We may as well bail out now.
++	 */
++	if (!len) {
++		err = 0;
++		goto out;
++	}
++
++	err = __vsock_stream_recvmsg(sk, msg, len, flags);
++
+ out:
+ 	release_sock(sk);
+ 	return err;
 -- 
 2.25.1
 
