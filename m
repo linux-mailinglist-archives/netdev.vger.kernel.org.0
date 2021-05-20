@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D9B38B0F2
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 16:05:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E662538B0F8
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 16:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243530AbhETOGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 10:06:35 -0400
-Received: from mga11.intel.com ([192.55.52.93]:5047 "EHLO mga11.intel.com"
+        id S243592AbhETOHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 10:07:40 -0400
+Received: from mga11.intel.com ([192.55.52.93]:5245 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236882AbhETOFd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 10:05:33 -0400
-IronPort-SDR: ZQWC0PCTR1aNb1STCG943FxhRRswGPzr7qc9KsS2dSWTgCihcMEYVnT0SvsCDEVyJZO3gr0LSL
- xJiwyep5dq6w==
-X-IronPort-AV: E=McAfee;i="6200,9189,9989"; a="198144514"
+        id S242098AbhETOGX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 10:06:23 -0400
+IronPort-SDR: FB4DaaaFy3VUU+vyOeFV6iWKaRJoWuv3j78TReGq6dLTh0rnPshbL6pxUAUg9n6faEXtGlJOyt
+ Q6+CjGMC5UrA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9989"; a="198144554"
 X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; 
-   d="scan'208";a="198144514"
+   d="scan'208";a="198144554"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2021 07:02:29 -0700
-IronPort-SDR: Rbrym9VCfjhVre0Kr3NkVoNKMS3wOS5uhDAIPeAt0LDKfXRJ0sgbnf+mSsjQo300JmiRw9juZx
- b6+YP7KgVgww==
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2021 07:02:33 -0700
+IronPort-SDR: AUcBomBuwx9DkosXt1lRnFIVr7npYZVj2absZcdTdR2kldkkPYbmGlUfzi0OlURcIJ8+B3c5SM
+ yIh0xVcxbuZg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; 
-   d="scan'208";a="631407459"
+   d="scan'208";a="631407494"
 Received: from bgsxx0031.iind.intel.com ([10.106.222.40])
-  by fmsmga005.fm.intel.com with ESMTP; 20 May 2021 07:02:28 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 20 May 2021 07:02:32 -0700
 From:   M Chetan Kumar <m.chetan.kumar@intel.com>
 To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Cc:     johannes@sipsolutions.net, krishna.c.sudi@intel.com,
         linuxwwan@intel.com
-Subject: [PATCH V3 02/16] net: iosm: irq handling
-Date:   Thu, 20 May 2021 19:31:44 +0530
-Message-Id: <20210520140158.10132-3-m.chetan.kumar@intel.com>
+Subject: [PATCH V3 03/16] net: iosm: mmio scratchpad
+Date:   Thu, 20 May 2021 19:31:45 +0530
+Message-Id: <20210520140158.10132-4-m.chetan.kumar@intel.com>
 X-Mailer: git-send-email 2.12.3
 In-Reply-To: <20210520140158.10132-1-m.chetan.kumar@intel.com>
 References: <20210520140158.10132-1-m.chetan.kumar@intel.com>
@@ -39,155 +39,449 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1) Request interrupt vector, frees allocated resource.
-2) Registers IRQ handler.
+1) Initializes the Scratchpad region for Host-Device communication.
+2) Exposes device capabilities like chip info and device execution
+   stages.
 
 Signed-off-by: M Chetan Kumar <m.chetan.kumar@intel.com>
 ---
-v3:
-* Removed inline keyword in .c file.
-* Aligned ipc_ prefix for function name to be consistent across file.
-v2: Streamline multiple returns using goto.
+v3: no change.
+v2:
+* Removed space around the : for the bitfields.
+* Return proper error code instead of returning -1.
 ---
- drivers/net/wwan/iosm/iosm_ipc_irq.c | 90 ++++++++++++++++++++++++++++
- drivers/net/wwan/iosm/iosm_ipc_irq.h | 33 ++++++++++
- 2 files changed, 123 insertions(+)
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_irq.c
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_irq.h
+ drivers/net/wwan/iosm/iosm_ipc_mmio.c | 223 ++++++++++++++++++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_mmio.h | 193 ++++++++++++++++++++++
+ 2 files changed, 416 insertions(+)
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_mmio.c
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_mmio.h
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_irq.c b/drivers/net/wwan/iosm/iosm_ipc_irq.c
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_mmio.c b/drivers/net/wwan/iosm/iosm_ipc_mmio.c
 new file mode 100644
-index 000000000000..702f50a48151
+index 000000000000..06c94b1720b6
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_irq.c
-@@ -0,0 +1,90 @@
++++ b/drivers/net/wwan/iosm/iosm_ipc_mmio.c
+@@ -0,0 +1,223 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (C) 2020-21 Intel Corporation.
 + */
 +
-+#include "iosm_ipc_pcie.h"
-+#include "iosm_ipc_protocol.h"
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/io.h>
++#include <linux/io-64-nonatomic-lo-hi.h>
++#include <linux/slab.h>
 +
-+static void ipc_write_dbell_reg(struct iosm_pcie *ipc_pcie, int irq_n, u32 data)
++#include "iosm_ipc_mmio.h"
++
++/* Definition of MMIO offsets
++ * note that MMIO_CI offsets are relative to end of chip info structure
++ */
++
++/* MMIO chip info size in bytes */
++#define MMIO_CHIP_INFO_SIZE 60
++
++/* CP execution stage */
++#define MMIO_OFFSET_EXECUTION_STAGE 0x00
++
++/* Boot ROM Chip Info struct */
++#define MMIO_OFFSET_CHIP_INFO 0x04
++
++#define MMIO_OFFSET_ROM_EXIT_CODE 0x40
++
++#define MMIO_OFFSET_PSI_ADDRESS 0x54
++
++#define MMIO_OFFSET_PSI_SIZE 0x5C
++
++#define MMIO_OFFSET_IPC_STATUS 0x60
++
++#define MMIO_OFFSET_CONTEXT_INFO 0x64
++
++#define MMIO_OFFSET_BASE_ADDR 0x6C
++
++#define MMIO_OFFSET_END_ADDR 0x74
++
++#define MMIO_OFFSET_CP_VERSION 0xF0
++
++#define MMIO_OFFSET_CP_CAPABILITIES 0xF4
++
++/* Timeout in 50 msec to wait for the modem boot code to write a valid
++ * execution stage into mmio area
++ */
++#define IPC_MMIO_EXEC_STAGE_TIMEOUT 50
++
++/* check if exec stage has one of the valid values */
++static bool ipc_mmio_is_valid_exec_stage(enum ipc_mem_exec_stage stage)
 +{
-+	void __iomem *write_reg;
-+
-+	/* Select the first doorbell register, which is only currently needed
-+	 * by CP.
-+	 */
-+	write_reg = (void __iomem *)((u8 __iomem *)ipc_pcie->ipc_regs +
-+				     ipc_pcie->doorbell_write +
-+				     (irq_n * ipc_pcie->doorbell_reg_offset));
-+
-+	/* Fire the doorbell irq by writing data on the doorbell write pointer
-+	 * register.
-+	 */
-+	iowrite32(data, write_reg);
-+}
-+
-+void ipc_doorbell_fire(struct iosm_pcie *ipc_pcie, int irq_n, u32 data)
-+{
-+	ipc_write_dbell_reg(ipc_pcie, irq_n, data);
-+}
-+
-+/* Threaded Interrupt handler for MSI interrupts */
-+static irqreturn_t ipc_msi_interrupt(int irq, void *dev_id)
-+{
-+	struct iosm_pcie *ipc_pcie = dev_id;
-+	int instance = irq - ipc_pcie->pci->irq;
-+
-+	/* Shift the MSI irq actions to the IPC tasklet. IRQ_NONE means the
-+	 * irq was not from the IPC device or could not be served.
-+	 */
-+	if (instance >= ipc_pcie->nvec)
-+		return IRQ_NONE;
-+
-+	if (!test_bit(0, &ipc_pcie->suspend))
-+		ipc_imem_irq_process(ipc_pcie->imem, instance);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+void ipc_release_irq(struct iosm_pcie *ipc_pcie)
-+{
-+	struct pci_dev *pdev = ipc_pcie->pci;
-+
-+	if (pdev->msi_enabled) {
-+		while (--ipc_pcie->nvec >= 0)
-+			free_irq(pdev->irq + ipc_pcie->nvec, ipc_pcie);
++	switch (stage) {
++	case IPC_MEM_EXEC_STAGE_BOOT:
++	case IPC_MEM_EXEC_STAGE_PSI:
++	case IPC_MEM_EXEC_STAGE_EBL:
++	case IPC_MEM_EXEC_STAGE_RUN:
++	case IPC_MEM_EXEC_STAGE_CRASH:
++	case IPC_MEM_EXEC_STAGE_CD_READY:
++		return true;
++	default:
++		return false;
 +	}
-+	pci_free_irq_vectors(pdev);
 +}
 +
-+int ipc_acquire_irq(struct iosm_pcie *ipc_pcie)
++void ipc_mmio_update_cp_capability(struct iosm_mmio *ipc_mmio)
 +{
-+	struct pci_dev *pdev = ipc_pcie->pci;
-+	int i, rc = -EINVAL;
++	u32 cp_cap;
++	unsigned int ver;
 +
-+	ipc_pcie->nvec = pci_alloc_irq_vectors(pdev, IPC_MSI_VECTORS,
-+					       IPC_MSI_VECTORS, PCI_IRQ_MSI);
++	ver = ipc_mmio_get_cp_version(ipc_mmio);
++	cp_cap = readl(ipc_mmio->base + ipc_mmio->offset.cp_capability);
 +
-+	if (ipc_pcie->nvec < 0) {
-+		rc = ipc_pcie->nvec;
-+		goto error;
-+	}
++	ipc_mmio->has_mux_lite = (ver >= IOSM_CP_VERSION) &&
++				 !(cp_cap & DL_AGGR) && !(cp_cap & UL_AGGR);
 +
-+	if (!pdev->msi_enabled)
-+		goto error;
-+
-+	for (i = 0; i < ipc_pcie->nvec; ++i) {
-+		rc = request_threaded_irq(pdev->irq + i, NULL,
-+					  ipc_msi_interrupt, IRQF_ONESHOT,
-+					  KBUILD_MODNAME, ipc_pcie);
-+		if (rc) {
-+			dev_err(ipc_pcie->dev, "unable to grab IRQ, rc=%d", rc);
-+			ipc_pcie->nvec = i;
-+			ipc_release_irq(ipc_pcie);
-+			goto error;
-+		}
-+	}
-+
-+error:
-+	return rc;
++	ipc_mmio->has_ul_flow_credit =
++		(ver >= IOSM_CP_VERSION) && (cp_cap & UL_FLOW_CREDIT);
 +}
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_irq.h b/drivers/net/wwan/iosm/iosm_ipc_irq.h
++
++struct iosm_mmio *ipc_mmio_init(void __iomem *mmio, struct device *dev)
++{
++	struct iosm_mmio *ipc_mmio = kzalloc(sizeof(*ipc_mmio), GFP_KERNEL);
++	int retries = IPC_MMIO_EXEC_STAGE_TIMEOUT;
++	enum ipc_mem_exec_stage stage;
++
++	if (!ipc_mmio)
++		return NULL;
++
++	ipc_mmio->dev = dev;
++
++	ipc_mmio->base = mmio;
++
++	ipc_mmio->offset.exec_stage = MMIO_OFFSET_EXECUTION_STAGE;
++
++	/* Check for a valid execution stage to make sure that the boot code
++	 * has correctly initialized the MMIO area.
++	 */
++	do {
++		stage = ipc_mmio_get_exec_stage(ipc_mmio);
++		if (ipc_mmio_is_valid_exec_stage(stage))
++			break;
++
++		msleep(20);
++	} while (retries-- > 0);
++
++	if (!retries) {
++		dev_err(ipc_mmio->dev, "invalid exec stage %X", stage);
++		goto init_fail;
++	}
++
++	ipc_mmio->offset.chip_info = MMIO_OFFSET_CHIP_INFO;
++
++	/* read chip info size and version from chip info structure */
++	ipc_mmio->chip_info_version =
++		ioread8(ipc_mmio->base + ipc_mmio->offset.chip_info);
++
++	/* Increment of 2 is needed as the size value in the chip info
++	 * excludes the version and size field, which are always present
++	 */
++	ipc_mmio->chip_info_size =
++		ioread8(ipc_mmio->base + ipc_mmio->offset.chip_info + 1) + 2;
++
++	if (ipc_mmio->chip_info_size != MMIO_CHIP_INFO_SIZE) {
++		dev_err(ipc_mmio->dev, "Unexpected Chip Info");
++		goto init_fail;
++	}
++
++	ipc_mmio->offset.rom_exit_code = MMIO_OFFSET_ROM_EXIT_CODE;
++
++	ipc_mmio->offset.psi_address = MMIO_OFFSET_PSI_ADDRESS;
++	ipc_mmio->offset.psi_size = MMIO_OFFSET_PSI_SIZE;
++	ipc_mmio->offset.ipc_status = MMIO_OFFSET_IPC_STATUS;
++	ipc_mmio->offset.context_info = MMIO_OFFSET_CONTEXT_INFO;
++	ipc_mmio->offset.ap_win_base = MMIO_OFFSET_BASE_ADDR;
++	ipc_mmio->offset.ap_win_end = MMIO_OFFSET_END_ADDR;
++
++	ipc_mmio->offset.cp_version = MMIO_OFFSET_CP_VERSION;
++	ipc_mmio->offset.cp_capability = MMIO_OFFSET_CP_CAPABILITIES;
++
++	return ipc_mmio;
++
++init_fail:
++	kfree(ipc_mmio);
++	return NULL;
++}
++
++enum ipc_mem_exec_stage ipc_mmio_get_exec_stage(struct iosm_mmio *ipc_mmio)
++{
++	if (!ipc_mmio)
++		return IPC_MEM_EXEC_STAGE_INVALID;
++
++	return (enum ipc_mem_exec_stage)readl(ipc_mmio->base +
++					      ipc_mmio->offset.exec_stage);
++}
++
++void ipc_mmio_copy_chip_info(struct iosm_mmio *ipc_mmio, void *dest,
++			     size_t size)
++{
++	if (ipc_mmio && dest)
++		memcpy_fromio(dest, ipc_mmio->base + ipc_mmio->offset.chip_info,
++			      size);
++}
++
++enum ipc_mem_device_ipc_state ipc_mmio_get_ipc_state(struct iosm_mmio *ipc_mmio)
++{
++	if (!ipc_mmio)
++		return IPC_MEM_DEVICE_IPC_INVALID;
++
++	return (enum ipc_mem_device_ipc_state)
++		readl(ipc_mmio->base + ipc_mmio->offset.ipc_status);
++}
++
++enum rom_exit_code ipc_mmio_get_rom_exit_code(struct iosm_mmio *ipc_mmio)
++{
++	if (!ipc_mmio)
++		return IMEM_ROM_EXIT_FAIL;
++
++	return (enum rom_exit_code)readl(ipc_mmio->base +
++					 ipc_mmio->offset.rom_exit_code);
++}
++
++void ipc_mmio_config(struct iosm_mmio *ipc_mmio)
++{
++	if (!ipc_mmio)
++		return;
++
++	/* AP memory window (full window is open and active so that modem checks
++	 * each AP address) 0 means don't check on modem side.
++	 */
++	iowrite64_lo_hi(0, ipc_mmio->base + ipc_mmio->offset.ap_win_base);
++	iowrite64_lo_hi(0, ipc_mmio->base + ipc_mmio->offset.ap_win_end);
++
++	iowrite64_lo_hi(ipc_mmio->context_info_addr,
++			ipc_mmio->base + ipc_mmio->offset.context_info);
++}
++
++void ipc_mmio_set_psi_addr_and_size(struct iosm_mmio *ipc_mmio, dma_addr_t addr,
++				    u32 size)
++{
++	if (!ipc_mmio)
++		return;
++
++	iowrite64_lo_hi(addr, ipc_mmio->base + ipc_mmio->offset.psi_address);
++	writel(size, ipc_mmio->base + ipc_mmio->offset.psi_size);
++}
++
++void ipc_mmio_set_contex_info_addr(struct iosm_mmio *ipc_mmio, phys_addr_t addr)
++{
++	if (!ipc_mmio)
++		return;
++
++	/* store context_info address. This will be stored in the mmio area
++	 * during IPC_MEM_DEVICE_IPC_INIT state via ipc_mmio_config()
++	 */
++	ipc_mmio->context_info_addr = addr;
++}
++
++int ipc_mmio_get_cp_version(struct iosm_mmio *ipc_mmio)
++{
++	return ipc_mmio ? readl(ipc_mmio->base + ipc_mmio->offset.cp_version) :
++			  -EFAULT;
++}
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_mmio.h b/drivers/net/wwan/iosm/iosm_ipc_mmio.h
 new file mode 100644
-index 000000000000..a8ed596cb6a5
+index 000000000000..bcf77aea06e7
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_irq.h
-@@ -0,0 +1,33 @@
++++ b/drivers/net/wwan/iosm/iosm_ipc_mmio.h
+@@ -0,0 +1,193 @@
 +/* SPDX-License-Identifier: GPL-2.0-only
 + *
 + * Copyright (C) 2020-21 Intel Corporation.
 + */
 +
-+#ifndef IOSM_IPC_IRQ_H
-+#define IOSM_IPC_IRQ_H
++#ifndef IOSM_IPC_MMIO_H
++#define IOSM_IPC_MMIO_H
 +
-+struct iosm_pcie;
++/* Minimal IOSM CP VERSION which has valid CP_CAPABILITIES field */
++#define IOSM_CP_VERSION 0x0100UL
++
++/* DL dir Aggregation support mask */
++#define DL_AGGR BIT(23)
++
++/* UL dir Aggregation support mask */
++#define UL_AGGR BIT(22)
++
++/* UL flow credit support mask */
++#define UL_FLOW_CREDIT BIT(21)
++
++/* Possible states of the IPC finite state machine. */
++enum ipc_mem_device_ipc_state {
++	IPC_MEM_DEVICE_IPC_UNINIT,
++	IPC_MEM_DEVICE_IPC_INIT,
++	IPC_MEM_DEVICE_IPC_RUNNING,
++	IPC_MEM_DEVICE_IPC_RECOVERY,
++	IPC_MEM_DEVICE_IPC_ERROR,
++	IPC_MEM_DEVICE_IPC_DONT_CARE,
++	IPC_MEM_DEVICE_IPC_INVALID = -1
++};
++
++/* Boot ROM exit status. */
++enum rom_exit_code {
++	IMEM_ROM_EXIT_OPEN_EXT = 0x01,
++	IMEM_ROM_EXIT_OPEN_MEM = 0x02,
++	IMEM_ROM_EXIT_CERT_EXT = 0x10,
++	IMEM_ROM_EXIT_CERT_MEM = 0x20,
++	IMEM_ROM_EXIT_FAIL = 0xFF
++};
++
++/* Boot stages */
++enum ipc_mem_exec_stage {
++	IPC_MEM_EXEC_STAGE_RUN = 0x600DF00D,
++	IPC_MEM_EXEC_STAGE_CRASH = 0x8BADF00D,
++	IPC_MEM_EXEC_STAGE_CD_READY = 0xBADC0DED,
++	IPC_MEM_EXEC_STAGE_BOOT = 0xFEEDB007,
++	IPC_MEM_EXEC_STAGE_PSI = 0xFEEDBEEF,
++	IPC_MEM_EXEC_STAGE_EBL = 0xFEEDCAFE,
++	IPC_MEM_EXEC_STAGE_INVALID = 0xFFFFFFFF
++};
++
++/* mmio scratchpad info */
++struct mmio_offset {
++	int exec_stage;
++	int chip_info;
++	int rom_exit_code;
++	int psi_address;
++	int psi_size;
++	int ipc_status;
++	int context_info;
++	int ap_win_base;
++	int ap_win_end;
++	int cp_version;
++	int cp_capability;
++};
 +
 +/**
-+ * ipc_doorbell_fire - fire doorbell to CP
-+ * @ipc_pcie:	Pointer to iosm_pcie
-+ * @irq_n:	Doorbell type
-+ * @data:	ipc state
++ * struct iosm_mmio - MMIO region mapped to the doorbell scratchpad.
++ * @base:		Base address of MMIO region
++ * @dev:		Pointer to device structure
++ * @offset:		Start offset
++ * @context_info_addr:	Physical base address of context info structure
++ * @chip_info_version:	Version of chip info structure
++ * @chip_info_size:	Size of chip info structure
++ * @has_mux_lite:	It doesn't support mux aggergation
++ * @has_ul_flow_credit:	Ul flow credit support
++ * @has_slp_no_prot:	Device sleep no protocol support
++ * @has_mcr_support:	Usage of mcr support
 + */
-+void ipc_doorbell_fire(struct iosm_pcie *ipc_pcie, int irq_n, u32 data);
++struct iosm_mmio {
++	unsigned char __iomem *base;
++	struct device *dev;
++	struct mmio_offset offset;
++	phys_addr_t context_info_addr;
++	unsigned int chip_info_version;
++	unsigned int chip_info_size;
++	u8 has_mux_lite:1,
++	   has_ul_flow_credit:1,
++	   has_slp_no_prot:1,
++	   has_mcr_support:1;
++};
 +
 +/**
-+ * ipc_release_irq - Release the IRQ handler.
-+ * @ipc_pcie:	Pointer to iosm_pcie struct
-+ */
-+void ipc_release_irq(struct iosm_pcie *ipc_pcie);
-+
-+/**
-+ * ipc_acquire_irq - acquire IRQ & register IRQ handler.
-+ * @ipc_pcie:	Pointer to iosm_pcie struct
++ * ipc_mmio_init - Allocate mmio instance data
++ * @mmio_addr:	Mapped AP base address of the MMIO area.
++ * @dev:	Pointer to device structure
 + *
-+ * Return: 0 on success and failure value on error
++ * Returns: address of mmio instance data or NULL if fails.
 + */
-+int ipc_acquire_irq(struct iosm_pcie *ipc_pcie);
++struct iosm_mmio *ipc_mmio_init(void __iomem *mmio_addr, struct device *dev);
++
++/**
++ * ipc_mmio_set_psi_addr_and_size - Set start address and size of the
++ *				    primary system image (PSI) for the
++ *				    FW dowload.
++ * @ipc_mmio:	Pointer to mmio instance
++ * @addr:	PSI address
++ * @size:	PSI immage size
++ */
++void ipc_mmio_set_psi_addr_and_size(struct iosm_mmio *ipc_mmio, dma_addr_t addr,
++				    u32 size);
++
++/**
++ * ipc_mmio_set_contex_info_addr - Stores the Context Info Address in
++ *				   MMIO instance to share it with CP during
++ *				   mmio_init.
++ * @ipc_mmio:	Pointer to mmio instance
++ * @addr:	64-bit address of AP context information.
++ */
++void ipc_mmio_set_contex_info_addr(struct iosm_mmio *ipc_mmio,
++				   phys_addr_t addr);
++
++/**
++ * ipc_mmio_get_cp_version - Write context info and AP memory range addresses.
++ *			     This needs to be called when CP is in
++ *			     IPC_MEM_DEVICE_IPC_INIT state
++ * @ipc_mmio:	Pointer to mmio instance
++ *
++ * Returns: cp version else failure value on error
++ */
++int ipc_mmio_get_cp_version(struct iosm_mmio *ipc_mmio);
++
++/**
++ * ipc_mmio_get_cp_version - Get the CP IPC version
++ * @ipc_mmio:	Pointer to mmio instance
++ *
++ * Returns: version number on success and failure value on error.
++ */
++int ipc_mmio_get_cp_version(struct iosm_mmio *ipc_mmio);
++
++/**
++ * ipc_mmio_get_rom_exit_code - Get exit code from CP boot rom download app
++ * @ipc_mmio:	Pointer to mmio instance
++ *
++ * Returns: exit code from CP boot rom download APP
++ */
++enum rom_exit_code ipc_mmio_get_rom_exit_code(struct iosm_mmio *ipc_mmio);
++
++/**
++ * ipc_mmio_get_exec_stage - Query CP execution stage
++ * @ipc_mmio:	Pointer to mmio instance
++ *
++ * Returns: CP execution stage
++ */
++enum ipc_mem_exec_stage ipc_mmio_get_exec_stage(struct iosm_mmio *ipc_mmio);
++
++/**
++ * ipc_mmio_get_ipc_state - Query CP IPC state
++ * @ipc_mmio:	Pointer to mmio instance
++ *
++ * Returns: CP IPC state
++ */
++enum ipc_mem_device_ipc_state
++ipc_mmio_get_ipc_state(struct iosm_mmio *ipc_mmio);
++
++/**
++ * ipc_mmio_copy_chip_info - Copy size bytes of CP chip info structure
++ *			     into caller provided buffer
++ * @ipc_mmio:	Pointer to mmio instance
++ * @dest:	Pointer to caller provided buff
++ * @size:	Number of bytes to copy
++ */
++void ipc_mmio_copy_chip_info(struct iosm_mmio *ipc_mmio, void *dest,
++			     size_t size);
++
++/**
++ * ipc_mmio_config - Write context info and AP memory range addresses.
++ *		     This needs to be called when CP is in
++ *		     IPC_MEM_DEVICE_IPC_INIT state
++ *
++ * @ipc_mmio:	Pointer to mmio instance
++ */
++void ipc_mmio_config(struct iosm_mmio *ipc_mmio);
++
++/**
++ * ipc_mmio_update_cp_capability - Read and update modem capability, from mmio
++ *				   capability offset
++ *
++ * @ipc_mmio:	Pointer to mmio instance
++ */
++void ipc_mmio_update_cp_capability(struct iosm_mmio *ipc_mmio);
 +
 +#endif
 -- 
