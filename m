@@ -2,126 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 307D238A95B
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 13:01:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CBC738A9F9
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 13:07:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235263AbhETLBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 07:01:14 -0400
-Received: from mail-sn1anam02on2083.outbound.protection.outlook.com ([40.107.96.83]:29735
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239405AbhETK7R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 06:59:17 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MRxxBKAEf+sBc8JekGzAoOACWoKEF7sjRkm+Wb/33mjWyNN7J4+2tyoaTuNJ5H9H/Zarf6ulk88RPONDVsj8qWXfRs4bRhGQvM9V6Ujl4djumunmRV0BPkPzKOcoAJ4UJRNpYRKtrOfiwVVSRh8nUldESK5L+jCmNyDVQneg/GWi/1lsWwRdngqzEfFBFX+sfO5RonK+KfkvxMTuEog3pH58MJlPZ7KRzAQ5fXwLT6G9wLVSmnigrigmQKTa5DO2wo4bP7WdAcyFn+01Z+I3EgxsnK66pxLgaY5l3x2DX0mk4ugMHZF3/Dmp9PTL6YFk3+1AMPAp5roN0RY7pkXqrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WFPcRL2VTy5CTOsKWfkOEJoP9HrqMTuwvWpIzrmcqhY=;
- b=d/rjPcjNMZvtg6BXkUdQox5RZ1Wv623rdgF92P0XhAVxM9xDCM50H7iQ/vUVMczWiv1hiV+z5ETR+laDkDO0F4VM8Y+2fe7S4j+IGch6lj2Zw5+Ceb3swKdk3+BKxmvQFxr7xeJaVAWdrQyXQII5W/4hpHjVN3qIvjB0G84HO9KHkTOYRvGpKfbJcwc5XdjJ9oHEVGGQaixjg1RXBTNo9qygl+2W5lfAZZaxNOi+BUKhss+qsDNGUxy22XRlOF6O3/qJk2FO5fZ5ZdEX8t4nEraPsNChlOi7Eqj1+l4qkW7Ti/NsxuZVJllJcTHVkatcrvzIg47Ku7F8P2n2eCM6jQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WFPcRL2VTy5CTOsKWfkOEJoP9HrqMTuwvWpIzrmcqhY=;
- b=KqNTWbnukqAy8lq0OyW762kW5UUQU+gyPOASevBvpOFl3gYg7AiLzQyC0z7okcGjon2Yk3FePzhtiVHm28OfGUjoRAlUAOq3XGmmjMdmTyp8o1Q2BTY6oirz4rRx/RqA4mDO/074x4BV8vddPCiuqAHtABTKROfSRzjnB7WSdInAvHuFaWXBTV8buj6JeROS8rqjhvJiIGTHyDpym9K6IcjOAoyCFSw8y22fi9qHGTpT1TY8yFWNdfCenrQQzwmnFr9mL538o0HYKWD22x2GK7iP452ft3I6qUS254m/FwxHCJmb/+fTJeOlggBlAgToxxZGtgO4+6+cBcmXWx5asA==
-Authentication-Results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB2942.namprd12.prod.outlook.com (2603:10b6:208:108::27)
- by MN2PR12MB3088.namprd12.prod.outlook.com (2603:10b6:208:c4::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23; Thu, 20 May
- 2021 10:57:50 +0000
-Received: from MN2PR12MB2942.namprd12.prod.outlook.com
- ([fe80::c151:1117:48cf:f074]) by MN2PR12MB2942.namprd12.prod.outlook.com
- ([fe80::c151:1117:48cf:f074%7]) with mapi id 15.20.4129.033; Thu, 20 May 2021
- 10:57:50 +0000
-Subject: Re: [PATCH iproute2-next 0/2] ] tc: Add missing ct_state flags
-To:     Marcelo Ricardo Leitner <mleitner@redhat.com>
-Cc:     netdev@vger.kernel.org, jiri@nvidia.com
-References: <20210518155231.38359-1-lariel@nvidia.com>
- <CALnP8ZYUsuBRpMZzU=F0711RVZmwGRvLBEk09aM6MKDhAGrMFQ@mail.gmail.com>
-From:   Ariel Levkovich <lariel@nvidia.com>
-Message-ID: <32e2a0ac-1102-3fd1-6094-052bd58415fe@nvidia.com>
-Date:   Thu, 20 May 2021 13:57:43 +0300
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
-In-Reply-To: <CALnP8ZYUsuBRpMZzU=F0711RVZmwGRvLBEk09aM6MKDhAGrMFQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [193.47.165.251]
-X-ClientProxiedBy: PR3P195CA0026.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:102:b6::31) To MN2PR12MB2942.namprd12.prod.outlook.com
- (2603:10b6:208:108::27)
+        id S238175AbhETLIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 07:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239401AbhETLGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 07:06:06 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2CFC0612F3;
+        Thu, 20 May 2021 02:58:15 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id h3-20020a05600c3503b0290176f13c7715so4831135wmq.5;
+        Thu, 20 May 2021 02:58:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VSSStV1UVW9GUULFLbeRmm9wy52EiHMU0utlA/8pnvE=;
+        b=JY2ZSVUWiwcKXQ8VUM4s6Y3HI2Ap+urjh71RlhmLq2jwlRVqBrIM6xYVqrJ5mRpqra
+         ync2ycExhxsHg7qzUjjq5ufVaQ78lN6ZOtubNzY5v/hhZOSRcFobXKJoHntIE3+36P+9
+         8hneODynDFY0zI7ps+cGp8sJbw1M4wMG1fK0bvSL3rTf03w0kezyD9cn0hEL10GKJC4d
+         8tu5VvhGheh7pUCKSoMFjiz7GvWMt6Lk4Jfjv31j/Aq5teZMUZuUhY26Z98M41I/L5q8
+         vkFTUwGDliR6wy8VOIeWeMbyzjSnq359mhF+1HkyH+obQ9wxp/Z8D0cr8RshMkCTpBKW
+         hunw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VSSStV1UVW9GUULFLbeRmm9wy52EiHMU0utlA/8pnvE=;
+        b=kfdcgnpPO6ifp63oFHmwmWEj9vak+UbhOkm1q0MWnXnYKzQAs51ggnVeU1mjfS8SmK
+         NWbU/FheeDTnvKRDWplkASlv0VZPYGyUzYIgW8l9okXFLnQFtkQGl7xuReNT5qv+KFof
+         8dxybcIY7+2QfCKHN16yumRKtKQZzs92WFsBLoFJRd4YsCCZqJ9tAwFF1wtcw7gwt1iC
+         07JuJ8t9e72o6pxnwmjUXIEtSxTMiDs3V/TmaaPCswiNFz3T1o8FNZH7tzciwLDhI3HJ
+         xN0DCtcZ5mBuo6xob7kZ4JgC3mGcHQNQU17z8+YRIQRroML5+Dq9jGrBnB9DrRCsS7fh
+         H2sQ==
+X-Gm-Message-State: AOAM532dmo057kM5J6wYDgqsaDxWn8rNjKblVnO5kP7oeCxqNOcVIYi6
+        tn+6CC8Hd3NgviNup54J+VY=
+X-Google-Smtp-Source: ABdhPJzP8kx3ScHOA9Pi7EFe9kLW2SonhDbJXpzAM/zltPv+hDcrDwtwWVokCY64iOMP4L5vne6BNA==
+X-Received: by 2002:a1c:4601:: with SMTP id t1mr2789609wma.27.1621504693981;
+        Thu, 20 May 2021 02:58:13 -0700 (PDT)
+Received: from ?IPv6:2620:10d:c096:310::2810? ([2620:10d:c093:600::2:130f])
+        by smtp.gmail.com with ESMTPSA id x10sm2561652wrt.65.2021.05.20.02.58.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 May 2021 02:58:13 -0700 (PDT)
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     io-uring@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Horst Schirmeier <horst.schirmeier@tu-dortmund.de>,
+        "Franz-B . Tuneke" <franz-bernhard.tuneke@tu-dortmund.de>,
+        Christian Dietrich <stettberger@dokucode.de>
+References: <cover.1621424513.git.asml.silence@gmail.com>
+ <94134844a6f4be2e0da2c518cb0e2e9ebb1d71b0.1621424513.git.asml.silence@gmail.com>
+ <CAEf4BzZU_QySZFHA1J0jr5Fi+gOFFKzTyxrvCUt1_Gn2H6hxLA@mail.gmail.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+Subject: Re: [PATCH 18/23] libbpf: support io_uring
+Message-ID: <d86035d9-66f0-de37-42ef-8eaa4d849651@gmail.com>
+Date:   Thu, 20 May 2021 10:58:03 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [172.27.14.155] (193.47.165.251) by PR3P195CA0026.EURP195.PROD.OUTLOOK.COM (2603:10a6:102:b6::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23 via Frontend Transport; Thu, 20 May 2021 10:57:49 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c122885f-6e7e-40dd-fd59-08d91b7e1c0a
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3088:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR12MB308848EC9BD58BD3250A7C81B72A9@MN2PR12MB3088.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2331;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Cvy5+nh8ckShZcG1llpmM7EOK/1GerM03KcT/Q3m3P23YGSBKyXHXzXmL8YS13knwiQQUtnfvSP7sXKsriCmYHEZfGblej9xTt3EPSjckJkcZfEOBs2IEMuF3f8sJMKVBdJeDbrIqeppbm1/QKcPjo4pX17VOvxG9+oUAsntWOOlBj8rU9CxKvzVdnFgLrqekNW/ZE+6uLjH5JY493cBlzL3uIburxj1TAyYNXXzSFvCRn4OJfOZ7otIeYF/D2N6GR4pIPf7o0UlE9X1Wy3QbmKwylsALNMk4QcuDD0jDD3jB6FOYsCVukQyn5J1g2qJDQ8OeDepptwDoobOiX102xHLf9LUmSeFckIKl8szRwtb6jX0KYRrKD+vJpF/xPOVBT0Exie3NR19hwWX81az4MNJ41s97WkxxW01oQq82n0qLZ9wWLYLOdn7oCg4V3/jkGdgNAvzY5/bCGs4UHr8PZRBYtmFiS8BFcbOg5g+JBQU2iHwgUBeGM5cHlP4ABP/tooR0X0NEIJimt6BTCaUTLQL02H5qNbJuDCRyA2kxinru2cD5xZel+so/6PllmwEEaPdNDv4S5u+qoAawzmpCGUOBByRziPtA9tLRqdnXW3EEvaTUHshkW8P7y42VC55b/rtBN5wz9vdBZWNQC1IBKmX6T9IbkzQzgGRUTX6OSVTgyeOQ04rfwHTWI1w0SX+
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB2942.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(376002)(136003)(396003)(366004)(8676002)(8936002)(316002)(6666004)(36756003)(2616005)(31696002)(956004)(26005)(5660300002)(4326008)(86362001)(6486002)(186003)(6916009)(16576012)(38100700002)(2906002)(4744005)(66946007)(53546011)(478600001)(16526019)(66556008)(66476007)(107886003)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?VHh6Z3RMakltckE4bGd3WTVpNXFqMzVHaHFLR0pEMlhHeTJBd2VkWncwMHJu?=
- =?utf-8?B?T2VKcmR1a1N1Tk9WazllN3JOMHVPSFFCSk14cWlCbFZodUcrTG5veFM2dy90?=
- =?utf-8?B?cTZYT3pYcWd6QjRYK3VpcTBzcWt5NmxDZVFianNFbG5CYklVVzI2SEhZVi8w?=
- =?utf-8?B?OUMwMTVIMnpmTnFRc052TXBtc21XajM2ajZ0WHhoelBqakJnRXNiTi9EZlIz?=
- =?utf-8?B?SnZEN3dMcjFSL1B5TS9Kc0g1MDJBU0R5dUdJMTFwNGhvOVdudzRsQkcrQW03?=
- =?utf-8?B?V2U1NEYwdFBtaWVMQndZdjBheUtRYkFXZW5DUlR6OGlqd3hYbFJwc1RiUEFp?=
- =?utf-8?B?SzdiRWFzZG1pSlNKQXdnMWNlVkt1Y2h4dzF1VXRDNi9PMndsYm81alBycnBK?=
- =?utf-8?B?ODBpR3hQNmNyQkdDa2tmcWlBMFZ2Ti9rbWtuSzRzQ1ZJUnkwaGxzRGptMTcz?=
- =?utf-8?B?ZVl1b0t5MitFallpN0hsTlNtREdnUjVDOXBOYkhvUmtrQkNTM09VRVhzSUNJ?=
- =?utf-8?B?YVFmbTBGYzltdjBLLzJaZlZmR2gxT285dWx0T1NxYzU4K2pqdnlZQmFYZFY4?=
- =?utf-8?B?T1RnU0pjWjZEeWJveGVyMmdJUkt3WmVFOVczOVlFeHhiOHFSVEYwUTJ5Rmw0?=
- =?utf-8?B?UURmSHdWMFVVOHY0OCs3NjhDbHFrNmY3dVdvVFQxZElXYVhZU1JRU1A5MGhX?=
- =?utf-8?B?WEpIcHF0Nm45eW82NWZpSmRqbE1aTU1NVGFSTmJDc21zdXR4NmpxZTJkL0dX?=
- =?utf-8?B?SWxuZ1ArLzBwS3FncHNFRW4rOWkrSlRzN1hLTnNrTytZT3Y4VG1TMnE0RkZj?=
- =?utf-8?B?WHZFRDVsYkxXMG5sbml0VUVJbDZNTnZKMkFZYzFvS21INXAwWVlxTVpmeTZF?=
- =?utf-8?B?V1pvRDBqbmJDOXdtTEFIWFpTZHJjU1czbkxuMlJDVlhTZE9oeUNhYU4yMlN2?=
- =?utf-8?B?UTlEbktnaDN4dDJvNVdtdzRFRnVPZHVVYmdPNGtucGhGYnRTbjJyV3FJejgy?=
- =?utf-8?B?bFJNRzEveEE1M2w2WFpuV04xdjg4dHY3UnU5NnBQdUgvV1YzQWRkT0d4Mk9W?=
- =?utf-8?B?VUpFd0xhWlRBa0dkNUswaHJNR3FMeEowcW5VNkRnZ1JvRlhUaEI3bWxJTGh1?=
- =?utf-8?B?bzF5dFpQMTVWci9GK2RXTW9JUjAxSXp3b2xpTGxkUjRPWklsSW1vbkViNk53?=
- =?utf-8?B?dktmQ3NncmwydEVWalVUd1c3cEN1VWFSR3RZeVdMUSt1SlJHUlhNTlBVNStI?=
- =?utf-8?B?UnlHNWZmV2duR3F2aUcyMm1DUkxlNmJRUFlRLzF3Nit2OEc1QURQaU1hUTVN?=
- =?utf-8?B?TnpBNEZxQzhqZVRHdjIzUG5QdkFnRFZUUXNlK3JKbDNOSjIyUzhrVVd6SGtU?=
- =?utf-8?B?cnJZdmtNc1dqUm4yTmJPWDNkWVI1cEpXdDJaSTNuSERKL3lCM2dqeUw5RDhu?=
- =?utf-8?B?TTVEaHZONURnNzh4cHMxTnVtVEp6ajlrT0J5WlhBZVF2OTlsZ3lwcEdwSEda?=
- =?utf-8?B?WnhyZWJmV2NSNmZieFZwTmxDL21vOGczQk1RTVQ1Wkowc3ZXRndxQVVDMlpQ?=
- =?utf-8?B?VVYxc3R0TnJnWkE2b2xNQnNrR2pIcDF5SWt1YmdGMVppczBpcTNsVWhKTXBm?=
- =?utf-8?B?WHUwRlI5ODd2QmkyLzZSSThzamdwbGhkREw2NlRaM1dwdFEvanV1aEVCdGFs?=
- =?utf-8?B?b1UydDRSS2hkbVpZNWJWZXdGcVFuZS80bFRDRjMwbU5lZlJVd0gxSEZWcDVY?=
- =?utf-8?Q?q4z4JB1KJYTdPHFEUkiZbYSObQtXY6SUifjbwyU?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c122885f-6e7e-40dd-fd59-08d91b7e1c0a
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB2942.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2021 10:57:50.1476
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: z9VhpRpZdhIrMlaM8jU/d+4TABONQL6j9MG/wd5FhQ/l97Qc9hZ2Y7Lqw7BvGNFS6hrWWIofvjhVDi7in2gSSA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3088
+In-Reply-To: <CAEf4BzZU_QySZFHA1J0jr5Fi+gOFFKzTyxrvCUt1_Gn2H6hxLA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/20/21 4:15 AM, Marcelo Ricardo Leitner wrote:
-> On Tue, May 18, 2021 at 06:52:29PM +0300, Ariel Levkovich wrote:
->> This short series is:
+On 5/19/21 6:38 PM, Andrii Nakryiko wrote:
+> On Wed, May 19, 2021 at 7:14 AM Pavel Begunkov <asml.silence@gmail.com> wrote:
 >>
-> Is it me or this series didn't get to netdev@?
-> I can't find it in patchwork nor lore archives.
->
-Neither do I. Not sure what happened.
+>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+>> ---
+>>  tools/lib/bpf/libbpf.c | 7 +++++++
+>>  1 file changed, 7 insertions(+)
+>>
+>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+>> index 4181d178ee7b..de5d1508f58e 100644
+>> --- a/tools/lib/bpf/libbpf.c
+>> +++ b/tools/lib/bpf/libbpf.c
+>> @@ -13,6 +13,10 @@
+>>  #ifndef _GNU_SOURCE
+>>  #define _GNU_SOURCE
+>>  #endif
+>> +
+>> +/* hack, use local headers instead of system-wide */
+>> +#include "../../../include/uapi/linux/bpf.h"
+>> +
+> 
+> libbpf is already using the latest UAPI headers, so you don't need
+> this hack. You just haven't synced include/uapi/linux/bpf.h into
+> tools/include/uapi/linux/bpf.h
 
-Should I just send it again?
+It's more convenient to keep it local to me while RFC, surely will
+drop it later.
 
+btw, I had a problem with find_sec_def() successfully matching
+"iouring.s" string with "iouring", because section_defs[i].len
+doesn't include final \0 and so does a sort of prefix comparison.
+That's why "iouring/". Can we fix it? Are compatibility concerns?
+
+> 
+>>  #include <stdlib.h>
+>>  #include <stdio.h>
+>>  #include <stdarg.h>
+>> @@ -8630,6 +8634,9 @@ static const struct bpf_sec_def section_defs[] = {
+>>         BPF_PROG_SEC("struct_ops",              BPF_PROG_TYPE_STRUCT_OPS),
+>>         BPF_EAPROG_SEC("sk_lookup/",            BPF_PROG_TYPE_SK_LOOKUP,
+>>                                                 BPF_SK_LOOKUP),
+>> +       SEC_DEF("iouring/",                     IOURING),
+>> +       SEC_DEF("iouring.s/",                   IOURING,
+>> +               .is_sleepable = true),
+>>  };
+>>
+>>  #undef BPF_PROG_SEC_IMPL
+>> --
+>> 2.31.1
+>>
+
+-- 
+Pavel Begunkov
