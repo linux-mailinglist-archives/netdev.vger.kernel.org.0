@@ -2,120 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 930F8389F27
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 09:53:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 660C238A03F
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 10:52:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbhETHy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 03:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
+        id S231319AbhETIxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 04:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbhETHyu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 03:54:50 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE66BC06175F
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:53:28 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id n2so16654695wrm.0
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:53:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CQ67C6wCvhv4qqVS5QHyCWhSP9HxBopjqC+1soAMel8=;
-        b=FCoqFMfzT/I8cnTA3Ddr82z1z+OMj5RtiPe+sXDg5aF4g7LcBRbYNFPseCOaan/va3
-         hIimi0KCynqva4iIH7zAErqUfnGDNkMDlCEWRyqnBpYDlBouIdGYi4svDsN0cFymXcLK
-         0ATdhaOfD7OQIr9PqHmFY7u73wyJTejGQs0Ox9UjCjCbRHcGwDrwE20qRSwCrvwGlSZO
-         5s+wEfejm0x05yrmTL5JELMCxSyRZ8Emayq2z3udsrkVhgfOjxZ5sxp07723jQjw4f+u
-         VD0E6Xeljk7Vy0FO04tWvfn70b0DRHKVFNjPhLbaigXxDjtwcv5J8rINpPdmrF4fkxDA
-         IFXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CQ67C6wCvhv4qqVS5QHyCWhSP9HxBopjqC+1soAMel8=;
-        b=XQwNu/lL6KD3WpE992VclbCWmHXZKPoGbKBsj0iHXwiZKP5w7jEi3QK4NCk6F0uWOZ
-         RNyQxwcO4X4Kl3DXt+ESNsKz3vkCIudaJ58VsBVI1g1hl+ChzORiiozT/T8orNsQXrdq
-         o4Rus4jY7JQh60RSBP3NluWtWQTgi2Yk/R8aQJbG2CXCA/sL7fHsfFi5DAFT1gUGSCVd
-         IeM74spGWhnDzSmSU73lJqxg/EuzuFQW1jw6pRFz7aHMMR4dyMG2pbDk3CuzlHRmHdAO
-         s3/o8rpiUBN7QtbuDZqkkX6ks0XpbCy0H8eTQxkDo2sEUgRNlNAKdT1M4nSdx9dDgMzB
-         y7qg==
-X-Gm-Message-State: AOAM531ULP7t9uvUSAGGtvPN7WJ66U20OxC+XD7y4w8BRjqOeTuoX6yr
-        Ogi2ZDPW0nOiZFTfoHypaPjRJw==
-X-Google-Smtp-Source: ABdhPJwTD6G55yCGUWMDJr4ZLmmIaNIsM7cVGKKByVmlmGCYY3Cj3d1jVcvnQ2onCDAwf0MSf4trDw==
-X-Received: by 2002:adf:cd0b:: with SMTP id w11mr2732687wrm.178.1621497207400;
-        Thu, 20 May 2021 00:53:27 -0700 (PDT)
-Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id b81sm10148451wmd.18.2021.05.20.00.53.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 May 2021 00:53:27 -0700 (PDT)
-Date:   Thu, 20 May 2021 11:53:23 +0400
-From:   Dmitrii Banshchikov <me@ubique.spb.ru>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrey Ignatov <rdna@fb.com>
-Subject: Re: [PATCH bpf-next 00/11] bpfilter
-Message-ID: <20210520075323.ehagaokfbazlhhfj@amnesia>
-References: <20210517225308.720677-1-me@ubique.spb.ru>
- <7312CC5D-510B-4BFD-8099-BB754FBE9CDF@fb.com>
+        with ESMTP id S231182AbhETIxv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 04:53:51 -0400
+X-Greylist: delayed 540 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 20 May 2021 01:52:30 PDT
+Received: from mout-u-107.mailbox.org (mout-u-107.mailbox.org [IPv6:2001:67c:2050:1::465:107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE2CC061574
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 01:52:30 -0700 (PDT)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-u-107.mailbox.org (Postfix) with ESMTPS id 4Fm3DG6p0CzQjhb;
+        Thu, 20 May 2021 10:43:26 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125]) (amavisd-new, port 10030)
+        with ESMTP id 8Nxzs3qch9o5; Thu, 20 May 2021 10:43:21 +0200 (CEST)
+From:   Stefan Roese <sr@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Reto Schneider <code@reto-schneider.ch>,
+        Reto Schneider <reto.schneider@husqvarnagroup.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH net] net: ethernet: mtk_eth_soc: Fix DIM support for MT7628/88
+Date:   Thu, 20 May 2021 10:43:18 +0200
+Message-Id: <20210520084319.1358911-1-sr@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7312CC5D-510B-4BFD-8099-BB754FBE9CDF@fb.com>
+Content-Transfer-Encoding: 8bit
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -2.66 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 9986F17E8
+X-Rspamd-UID: 4232cf
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 04:54:45AM +0000, Song Liu wrote:
-> 
-> 
-> > On May 17, 2021, at 3:52 PM, Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
-> > 
-> > The patchset is based on the patches from David S. Miller [1] and Daniel
-> > Borkmann [2].
-> > 
-> > The main goal of the patchset is to prepare bpfilter for iptables'
-> > configuration blob parsing and code generation.
-> > 
-> > The patchset introduces data structures and code for matches, targets, rules
-> > and tables.
-> > 
-> > It seems inconvenient to continue to use the same blob internally in bpfilter
-> > in parts other than the blob parsing. That is why a superstructure with native
-> > types is introduced. It provides a more convenient way to iterate over the blob
-> > and limit the crazy structs widespread in the bpfilter code.
-> > 
-> 
-> [...]
-> 
-> > 
-> > 
-> > 1. https://lore.kernel.org/patchwork/patch/902785/
-> 
-> [1] used bpfilter_ prefix on struct definitions, like "struct bpfilter_target"
-> I think we should do the same in this version. (Or were there discussions on
-> removing the prefix?). 
+When updating to latest mainline for some testing on the GARDENA smart
+gateway based on the MT7628, I noticed that ethernet does not work any
+more. Commit e9229ffd550b ("net: ethernet: mtk_eth_soc: implement
+dynamic interrupt moderation") introduced this problem, as it missed the
+RX_DIM & TX_DIM configuration for this SoC variant. This patch fixes
+this by calling mtk_dim_rx() & mtk_dim_tx() in this case as well.
 
-There were no discussions about it.
-As those structs are private to bpfilter I assumed that it is
-safe to save some characters.
-I will add the prefix to all internal structs in the next
-iteration.
+Signed-off-by: Stefan Roese <sr@denx.de>
+Fixes: e9229ffd550b ("net: ethernet: mtk_eth_soc: implement dynamic interrupt moderation")
+Cc: Felix Fietkau <nbd@nbd.name>
+Cc: John Crispin <john@phrozen.org>
+Cc: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Cc: Reto Schneider <code@reto-schneider.ch>
+Cc: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Cc: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-
-> 
-> Thanks,
-> Song
-> 
-> [...]
-> 
-
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index ed4eacef17ce..d6cc06ee0caa 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -2423,7 +2423,8 @@ static void mtk_dim_rx(struct work_struct *work)
+ 	val |= cur << MTK_PDMA_DELAY_RX_PINT_SHIFT;
+ 
+ 	mtk_w32(eth, val, MTK_PDMA_DELAY_INT);
+-	mtk_w32(eth, val, MTK_QDMA_DELAY_INT);
++	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
++		mtk_w32(eth, val, MTK_QDMA_DELAY_INT);
+ 
+ 	spin_unlock_bh(&eth->dim_lock);
+ 
+@@ -2452,7 +2453,8 @@ static void mtk_dim_tx(struct work_struct *work)
+ 	val |= cur << MTK_PDMA_DELAY_TX_PINT_SHIFT;
+ 
+ 	mtk_w32(eth, val, MTK_PDMA_DELAY_INT);
+-	mtk_w32(eth, val, MTK_QDMA_DELAY_INT);
++	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
++		mtk_w32(eth, val, MTK_QDMA_DELAY_INT);
+ 
+ 	spin_unlock_bh(&eth->dim_lock);
+ 
+@@ -2480,6 +2482,10 @@ static int mtk_hw_init(struct mtk_eth *eth)
+ 			goto err_disable_pm;
+ 		}
+ 
++		/* set interrupt delays based on current Net DIM sample */
++		mtk_dim_rx(&eth->rx_dim.work);
++		mtk_dim_tx(&eth->tx_dim.work);
++
+ 		/* disable delay and normal interrupt */
+ 		mtk_tx_irq_disable(eth, ~0);
+ 		mtk_rx_irq_disable(eth, ~0);
 -- 
+2.31.1
 
-Dmitrii Banshchikov
