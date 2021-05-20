@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BCAE38B118
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 16:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AC6038B120
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 16:09:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243034AbhETOKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 10:10:32 -0400
-Received: from mga11.intel.com ([192.55.52.93]:5047 "EHLO mga11.intel.com"
+        id S243687AbhETOKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 10:10:45 -0400
+Received: from mga11.intel.com ([192.55.52.93]:5246 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242228AbhETOIq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 10:08:46 -0400
-IronPort-SDR: XqSM+tMS7aAFfg09Kd5VtrlW2lFCqQNDiN7dH00t+YFBIQZrH31zBUgFhFHRaQOeJXNl7tUNIG
- 4JvcGvNQHJKQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9989"; a="198144714"
+        id S243745AbhETOJ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 10:09:27 -0400
+IronPort-SDR: 5wF0aemVNFXJYByydvcEwxjAoX0nRJSzvVFrK00V8k/NOrU6dpP+u+BNQLXLSyreeAyF1XhBNE
+ W57SrKCb9VJA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9989"; a="198144730"
 X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; 
-   d="scan'208";a="198144714"
+   d="scan'208";a="198144730"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2021 07:02:58 -0700
-IronPort-SDR: LyYcg8eCBpqEEsSSzGzyhONUWcXgFgxsHcgC5n64drJQvKIPqmQ210NKYm2v/bwyl8ZMcrHidi
- z4XDdnZa5lIw==
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2021 07:03:01 -0700
+IronPort-SDR: 3QWnmn1cQbZFJx1O0xbiWeQYbE0MTFN6VrU57QDDgJ06g6frAJtOC88GFfLuRWBo94F6858NaE
+ eaXKZT3PKSIQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; 
-   d="scan'208";a="631407600"
+   d="scan'208";a="631407622"
 Received: from bgsxx0031.iind.intel.com ([10.106.222.40])
-  by fmsmga005.fm.intel.com with ESMTP; 20 May 2021 07:02:57 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 20 May 2021 07:03:00 -0700
 From:   M Chetan Kumar <m.chetan.kumar@intel.com>
 To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Cc:     johannes@sipsolutions.net, krishna.c.sudi@intel.com,
         linuxwwan@intel.com
-Subject: [PATCH V3 11/16] net: iosm: power management
-Date:   Thu, 20 May 2021 19:31:53 +0530
-Message-Id: <20210520140158.10132-12-m.chetan.kumar@intel.com>
+Subject: [PATCH V3 12/16] net: iosm: shared memory protocol
+Date:   Thu, 20 May 2021 19:31:54 +0530
+Message-Id: <20210520140158.10132-13-m.chetan.kumar@intel.com>
 X-Mailer: git-send-email 2.12.3
 In-Reply-To: <20210520140158.10132-1-m.chetan.kumar@intel.com>
 References: <20210520140158.10132-1-m.chetan.kumar@intel.com>
@@ -39,572 +39,554 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implements state machine to handle host & device sleep.
+1) Defines messaging protocol for handling Transfer Descriptor
+   in both UL/DL direction.
+2) Ring buffer management.
 
 Signed-off-by: M Chetan Kumar <m.chetan.kumar@intel.com>
 ---
-v3: Aligned ipc_ prefix for function name to be consistent across file.
+v3: no change.
 v2:
-* Removed space around the : for the bitfields.
-* Moved pm module under static allocation
-* Added memory barriers around atomic operations.
+* Endianness type correction for Host-device protocol structure.
+* Function signature documentation correction.
+* Streamline multiple returns using goto.
 ---
- drivers/net/wwan/iosm/iosm_ipc_pm.c | 333 ++++++++++++++++++++++++++++
- drivers/net/wwan/iosm/iosm_ipc_pm.h | 207 +++++++++++++++++
- 2 files changed, 540 insertions(+)
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_pm.c
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_pm.h
+ drivers/net/wwan/iosm/iosm_ipc_protocol.c | 283 ++++++++++++++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_protocol.h | 237 ++++++++++++++++++
+ 2 files changed, 520 insertions(+)
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_protocol.c
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_protocol.h
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_pm.c b/drivers/net/wwan/iosm/iosm_ipc_pm.c
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol.c b/drivers/net/wwan/iosm/iosm_ipc_protocol.c
 new file mode 100644
-index 000000000000..413601c72dcd
+index 000000000000..834d8b146a94
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_pm.c
-@@ -0,0 +1,333 @@
++++ b/drivers/net/wwan/iosm/iosm_ipc_protocol.c
+@@ -0,0 +1,283 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (C) 2020-21 Intel Corporation.
 + */
 +
++#include "iosm_ipc_imem.h"
 +#include "iosm_ipc_protocol.h"
++#include "iosm_ipc_protocol_ops.h"
++#include "iosm_ipc_pm.h"
++#include "iosm_ipc_task_queue.h"
 +
-+/* Timeout value in MS for the PM to wait for device to reach active state */
-+#define IPC_PM_ACTIVE_TIMEOUT_MS (500)
++int ipc_protocol_tq_msg_send(struct iosm_protocol *ipc_protocol,
++			     enum ipc_msg_prep_type msg_type,
++			     union ipc_msg_prep_args *prep_args,
++			     struct ipc_rsp *response)
++{
++	int index = ipc_protocol_msg_prep(ipc_protocol->imem, msg_type,
++					  prep_args);
 +
-+/* Note that here "active" has the value 1, as compared to the enums
-+ * ipc_mem_host_pm_state or ipc_mem_dev_pm_state, where "active" is 0
++	/* Store reference towards caller specified response in response ring
++	 * and signal CP
++	 */
++	if (index >= 0 && index < IPC_MEM_MSG_ENTRIES) {
++		ipc_protocol->rsp_ring[index] = response;
++		ipc_protocol_msg_hp_update(ipc_protocol->imem);
++	}
++
++	return index;
++}
++
++/* Callback for message send */
++static int ipc_protocol_tq_msg_send_cb(struct iosm_imem *ipc_imem, int arg,
++				       void *msg, size_t size)
++{
++	struct ipc_call_msg_send_args *send_args = msg;
++	struct iosm_protocol *ipc_protocol = ipc_imem->ipc_protocol;
++
++	return ipc_protocol_tq_msg_send(ipc_protocol, send_args->msg_type,
++					send_args->prep_args,
++					send_args->response);
++}
++
++/* Remove reference to a response. This is typically used when a requestor timed
++ * out and is no longer interested in the response.
 + */
-+#define IPC_PM_SLEEP (0)
-+#define CONSUME_STATE (0)
-+#define IPC_PM_ACTIVE (1)
-+
-+void ipc_pm_signal_hpda_doorbell(struct iosm_pm *ipc_pm, u32 identifier,
-+				 bool host_slp_check)
++static int ipc_protocol_tq_msg_remove(struct iosm_imem *ipc_imem, int arg,
++				      void *msg, size_t size)
 +{
-+	if (host_slp_check && ipc_pm->host_pm_state != IPC_MEM_HOST_PM_ACTIVE &&
-+	    ipc_pm->host_pm_state != IPC_MEM_HOST_PM_ACTIVE_WAIT) {
-+		ipc_pm->pending_hpda_update = true;
-+		dev_dbg(ipc_pm->dev,
-+			"Pend HPDA update set. Host PM_State: %d identifier:%d",
-+			ipc_pm->host_pm_state, identifier);
-+		return;
-+	}
++	struct iosm_protocol *ipc_protocol = ipc_imem->ipc_protocol;
 +
-+	if (!ipc_pm_trigger(ipc_pm, IPC_PM_UNIT_IRQ, true)) {
-+		ipc_pm->pending_hpda_update = true;
-+		dev_dbg(ipc_pm->dev, "Pending HPDA update set. identifier:%d",
-+			identifier);
-+		return;
-+	}
-+	ipc_pm->pending_hpda_update = false;
-+
-+	/* Trigger the irq towards CP */
-+	ipc_cp_irq_hpda_update(ipc_pm->pcie, identifier);
-+
-+	ipc_pm_trigger(ipc_pm, IPC_PM_UNIT_IRQ, false);
++	ipc_protocol->rsp_ring[arg] = NULL;
++	return 0;
 +}
 +
-+/* Wake up the device if it is in low power mode. */
-+static bool ipc_pm_link_activate(struct iosm_pm *ipc_pm)
++int ipc_protocol_msg_send(struct iosm_protocol *ipc_protocol,
++			  enum ipc_msg_prep_type prep,
++			  union ipc_msg_prep_args *prep_args)
 +{
-+	if (ipc_pm->cp_state == IPC_MEM_DEV_PM_ACTIVE)
-+		return true;
++	struct ipc_call_msg_send_args send_args;
++	unsigned int exec_timeout;
++	struct ipc_rsp response;
++	int index;
 +
-+	if (ipc_pm->cp_state == IPC_MEM_DEV_PM_SLEEP) {
-+		if (ipc_pm->ap_state == IPC_MEM_DEV_PM_SLEEP) {
-+			/* Wake up the device. */
-+			ipc_cp_irq_sleep_control(ipc_pm->pcie,
-+						 IPC_MEM_DEV_PM_WAKEUP);
-+			ipc_pm->ap_state = IPC_MEM_DEV_PM_ACTIVE_WAIT;
++	exec_timeout = (ipc_protocol_get_ap_exec_stage(ipc_protocol) ==
++					IPC_MEM_EXEC_STAGE_RUN ?
++				IPC_MSG_COMPLETE_RUN_DEFAULT_TIMEOUT :
++				IPC_MSG_COMPLETE_BOOT_DEFAULT_TIMEOUT);
 +
-+			goto not_active;
-+		}
++	/* Trap if called from non-preemptible context */
++	might_sleep();
 +
-+		if (ipc_pm->ap_state == IPC_MEM_DEV_PM_ACTIVE_WAIT)
-+			goto not_active;
++	response.status = IPC_MEM_MSG_CS_INVALID;
++	init_completion(&response.completion);
 +
-+		return true;
++	send_args.msg_type = prep;
++	send_args.prep_args = prep_args;
++	send_args.response = &response;
++
++	/* Allocate and prepare message to be sent in tasklet context.
++	 * A positive index returned form tasklet_call references the message
++	 * in case it needs to be cancelled when there is a timeout.
++	 */
++	index = ipc_task_queue_send_task(ipc_protocol->imem,
++					 ipc_protocol_tq_msg_send_cb, 0,
++					 &send_args, 0, true);
++
++	if (index < 0) {
++		dev_err(ipc_protocol->dev, "msg %d failed", prep);
++		return index;
 +	}
 +
-+not_active:
-+	/* link is not ready */
-+	return false;
-+}
-+
-+bool ipc_pm_wait_for_device_active(struct iosm_pm *ipc_pm)
-+{
-+	bool ret_val = false;
-+
-+	if (ipc_pm->ap_state != IPC_MEM_DEV_PM_ACTIVE) {
-+		/* Complete all memory stores before setting bit */
-+		smp_mb__before_atomic();
-+
-+		/* Wait for IPC_PM_ACTIVE_TIMEOUT_MS for Device sleep state
-+		 * machine to enter ACTIVE state.
++	/* Wait for the device to respond to the message */
++	switch (wait_for_completion_timeout(&response.completion,
++					    msecs_to_jiffies(exec_timeout))) {
++	case 0:
++		/* Timeout, there was no response from the device.
++		 * Remove the reference to the local response completion
++		 * object as we are no longer interested in the response.
 +		 */
-+		set_bit(0, &ipc_pm->host_sleep_pend);
-+
-+		/* Complete all memory stores after setting bit */
-+		smp_mb__after_atomic();
-+
-+		if (!wait_for_completion_interruptible_timeout
-+		   (&ipc_pm->host_sleep_complete,
-+		    msecs_to_jiffies(IPC_PM_ACTIVE_TIMEOUT_MS))) {
-+			dev_err(ipc_pm->dev,
-+				"PM timeout. Expected State:%d. Actual: %d",
-+				IPC_MEM_DEV_PM_ACTIVE, ipc_pm->ap_state);
-+			goto  active_timeout;
-+		}
-+	}
-+
-+	ret_val = true;
-+active_timeout:
-+	/* Complete all memory stores before clearing bit */
-+	smp_mb__before_atomic();
-+
-+	/* Reset the atomic variable in any case as device sleep
-+	 * state machine change is no longer of interest.
-+	 */
-+	clear_bit(0, &ipc_pm->host_sleep_pend);
-+
-+	/* Complete all memory stores after clearing bit */
-+	smp_mb__after_atomic();
-+
-+	return ret_val;
-+}
-+
-+static void ipc_pm_on_link_sleep(struct iosm_pm *ipc_pm)
-+{
-+	/* pending sleep ack and all conditions are cleared
-+	 * -> signal SLEEP__ACK to CP
-+	 */
-+	ipc_pm->cp_state = IPC_MEM_DEV_PM_SLEEP;
-+	ipc_pm->ap_state = IPC_MEM_DEV_PM_SLEEP;
-+
-+	ipc_cp_irq_sleep_control(ipc_pm->pcie, IPC_MEM_DEV_PM_SLEEP);
-+}
-+
-+static void ipc_pm_on_link_wake(struct iosm_pm *ipc_pm, bool ack)
-+{
-+	ipc_pm->ap_state = IPC_MEM_DEV_PM_ACTIVE;
-+
-+	if (ack) {
-+		ipc_pm->cp_state = IPC_MEM_DEV_PM_ACTIVE;
-+
-+		ipc_cp_irq_sleep_control(ipc_pm->pcie, IPC_MEM_DEV_PM_ACTIVE);
-+
-+		/* check the consume state !!! */
-+		if (test_bit(CONSUME_STATE, &ipc_pm->host_sleep_pend))
-+			complete(&ipc_pm->host_sleep_complete);
-+	}
-+
-+	/* Check for pending HPDA update.
-+	 * Pending HP update could be because of sending message was
-+	 * put on hold due to Device sleep state or due to TD update
-+	 * which could be because of Device Sleep and Host Sleep
-+	 * states.
-+	 */
-+	if (ipc_pm->pending_hpda_update &&
-+	    ipc_pm->host_pm_state == IPC_MEM_HOST_PM_ACTIVE)
-+		ipc_pm_signal_hpda_doorbell(ipc_pm, IPC_HP_PM_TRIGGER, true);
-+}
-+
-+bool ipc_pm_trigger(struct iosm_pm *ipc_pm, enum ipc_pm_unit unit, bool active)
-+{
-+	union ipc_pm_cond old_cond;
-+	union ipc_pm_cond new_cond;
-+	bool link_active;
-+
-+	/* Save the current D3 state. */
-+	new_cond = ipc_pm->pm_cond;
-+	old_cond = ipc_pm->pm_cond;
-+
-+	/* Calculate the power state only in the runtime phase. */
-+	switch (unit) {
-+	case IPC_PM_UNIT_IRQ: /* CP irq */
-+		new_cond.irq = active;
++		ipc_task_queue_send_task(ipc_protocol->imem,
++					 ipc_protocol_tq_msg_remove, index,
++					 NULL, 0, true);
++		dev_err(ipc_protocol->dev, "msg timeout");
++		ipc_uevent_send(ipc_protocol->pcie->dev, UEVENT_MDM_TIMEOUT);
 +		break;
-+
-+	case IPC_PM_UNIT_LINK: /* Device link state. */
-+		new_cond.link = active;
-+		break;
-+
-+	case IPC_PM_UNIT_HS: /* Host sleep trigger requires Link. */
-+		new_cond.hs = active;
-+		break;
-+
 +	default:
-+		break;
-+	}
-+
-+	/* Something changed ? */
-+	if (old_cond.raw == new_cond.raw) {
-+		/* Stay in the current PM state. */
-+		link_active = old_cond.link == IPC_PM_ACTIVE;
-+		goto ret;
-+	}
-+
-+	ipc_pm->pm_cond = new_cond;
-+
-+	if (new_cond.link)
-+		ipc_pm_on_link_wake(ipc_pm, unit == IPC_PM_UNIT_LINK);
-+	else if (unit == IPC_PM_UNIT_LINK)
-+		ipc_pm_on_link_sleep(ipc_pm);
-+
-+	if (old_cond.link == IPC_PM_SLEEP && new_cond.raw) {
-+		link_active = ipc_pm_link_activate(ipc_pm);
-+		goto ret;
-+	}
-+
-+	link_active = old_cond.link == IPC_PM_ACTIVE;
-+
-+ret:
-+	return link_active;
-+}
-+
-+bool ipc_pm_prepare_host_sleep(struct iosm_pm *ipc_pm)
-+{
-+	/* suspend not allowed if host_pm_state is not IPC_MEM_HOST_PM_ACTIVE */
-+	if (ipc_pm->host_pm_state != IPC_MEM_HOST_PM_ACTIVE) {
-+		dev_err(ipc_pm->dev, "host_pm_state=%d\tExpected to be: %d",
-+			ipc_pm->host_pm_state, IPC_MEM_HOST_PM_ACTIVE);
-+		return false;
-+	}
-+
-+	ipc_pm->host_pm_state = IPC_MEM_HOST_PM_SLEEP_WAIT_D3;
-+
-+	return true;
-+}
-+
-+bool ipc_pm_prepare_host_active(struct iosm_pm *ipc_pm)
-+{
-+	if (ipc_pm->host_pm_state != IPC_MEM_HOST_PM_SLEEP) {
-+		dev_err(ipc_pm->dev, "host_pm_state=%d\tExpected to be: %d",
-+			ipc_pm->host_pm_state, IPC_MEM_HOST_PM_SLEEP);
-+		return false;
-+	}
-+
-+	/* Sending Sleep Exit message to CP. Update the state */
-+	ipc_pm->host_pm_state = IPC_MEM_HOST_PM_ACTIVE_WAIT;
-+
-+	return true;
-+}
-+
-+void ipc_pm_set_s2idle_sleep(struct iosm_pm *ipc_pm, bool sleep)
-+{
-+	if (sleep) {
-+		ipc_pm->ap_state = IPC_MEM_DEV_PM_SLEEP;
-+		ipc_pm->cp_state = IPC_MEM_DEV_PM_SLEEP;
-+		ipc_pm->device_sleep_notification = IPC_MEM_DEV_PM_SLEEP;
-+	} else {
-+		ipc_pm->ap_state = IPC_MEM_DEV_PM_ACTIVE;
-+		ipc_pm->cp_state = IPC_MEM_DEV_PM_ACTIVE;
-+		ipc_pm->device_sleep_notification = IPC_MEM_DEV_PM_ACTIVE;
-+		ipc_pm->pm_cond.link = IPC_PM_ACTIVE;
-+	}
-+}
-+
-+bool ipc_pm_dev_slp_notification(struct iosm_pm *ipc_pm, u32 cp_pm_req)
-+{
-+	if (cp_pm_req == ipc_pm->device_sleep_notification)
-+		return false;
-+
-+	ipc_pm->device_sleep_notification = cp_pm_req;
-+
-+	/* Evaluate the PM request. */
-+	switch (ipc_pm->cp_state) {
-+	case IPC_MEM_DEV_PM_ACTIVE:
-+		switch (cp_pm_req) {
-+		case IPC_MEM_DEV_PM_ACTIVE:
-+			break;
-+
-+		case IPC_MEM_DEV_PM_SLEEP:
-+			/* Inform the PM that the device link can go down. */
-+			ipc_pm_trigger(ipc_pm, IPC_PM_UNIT_LINK, false);
-+			return true;
-+
-+		default:
-+			dev_err(ipc_pm->dev,
-+				"loc-pm=%d active: confused req-pm=%d",
-+				ipc_pm->cp_state, cp_pm_req);
-+			break;
++		/* We got a response in time; check completion status: */
++		if (response.status != IPC_MEM_MSG_CS_SUCCESS) {
++			dev_err(ipc_protocol->dev,
++				"msg completion status error %d",
++				response.status);
++			return -EIO;
 +		}
-+		break;
-+
-+	case IPC_MEM_DEV_PM_SLEEP:
-+		switch (cp_pm_req) {
-+		case IPC_MEM_DEV_PM_ACTIVE:
-+			/* Inform the PM that the device link is active. */
-+			ipc_pm_trigger(ipc_pm, IPC_PM_UNIT_LINK, true);
-+			break;
-+
-+		case IPC_MEM_DEV_PM_SLEEP:
-+			break;
-+
-+		default:
-+			dev_err(ipc_pm->dev,
-+				"loc-pm=%d sleep: confused req-pm=%d",
-+				ipc_pm->cp_state, cp_pm_req);
-+			break;
-+		}
-+		break;
-+
-+	default:
-+		dev_err(ipc_pm->dev, "confused loc-pm=%d, req-pm=%d",
-+			ipc_pm->cp_state, cp_pm_req);
-+		break;
 +	}
 +
++	return 0;
++}
++
++static int ipc_protocol_msg_send_host_sleep(struct iosm_protocol *ipc_protocol,
++					    u32 state)
++{
++	union ipc_msg_prep_args prep_args = {
++		.sleep.target = 0,
++		.sleep.state = state,
++	};
++
++	return ipc_protocol_msg_send(ipc_protocol, IPC_MSG_PREP_SLEEP,
++				     &prep_args);
++}
++
++void ipc_protocol_doorbell_trigger(struct iosm_protocol *ipc_protocol,
++				   u32 identifier)
++{
++	ipc_pm_signal_hpda_doorbell(&ipc_protocol->pm, identifier, true);
++}
++
++bool ipc_protocol_pm_dev_sleep_handle(struct iosm_protocol *ipc_protocol)
++{
++	u32 ipc_status = ipc_protocol_get_ipc_status(ipc_protocol);
++	u32 requested;
++
++	if (ipc_status != IPC_MEM_DEVICE_IPC_RUNNING) {
++		dev_err(ipc_protocol->dev,
++			"irq ignored, CP IPC state is %d, should be RUNNING",
++			ipc_status);
++
++		/* Stop further processing. */
++		return false;
++	}
++
++	/* Get a copy of the requested PM state by the device and the local
++	 * device PM state.
++	 */
++	requested = ipc_protocol_pm_dev_get_sleep_notification(ipc_protocol);
++
++	return ipc_pm_dev_slp_notification(&ipc_protocol->pm, requested);
++}
++
++static int ipc_protocol_tq_wakeup_dev_slp(struct iosm_imem *ipc_imem, int arg,
++					  void *msg, size_t size)
++{
++	struct iosm_pm *ipc_pm = &ipc_imem->ipc_protocol->pm;
++
++	/* Wakeup from device sleep if it is not ACTIVE */
++	ipc_pm_trigger(ipc_pm, IPC_PM_UNIT_HS, true);
++
++	ipc_pm_trigger(ipc_pm, IPC_PM_UNIT_HS, false);
++
++	return 0;
++}
++
++void ipc_protocol_s2idle_sleep(struct iosm_protocol *ipc_protocol, bool sleep)
++{
++	ipc_pm_set_s2idle_sleep(&ipc_protocol->pm, sleep);
++}
++
++bool ipc_protocol_suspend(struct iosm_protocol *ipc_protocol)
++{
++	if (!ipc_pm_prepare_host_sleep(&ipc_protocol->pm))
++		goto err;
++
++	ipc_task_queue_send_task(ipc_protocol->imem,
++				 ipc_protocol_tq_wakeup_dev_slp, 0, NULL, 0,
++				 true);
++
++	if (!ipc_pm_wait_for_device_active(&ipc_protocol->pm)) {
++		ipc_uevent_send(ipc_protocol->pcie->dev, UEVENT_MDM_TIMEOUT);
++		goto err;
++	}
++
++	/* Send the sleep message for sync sys calls. */
++	dev_dbg(ipc_protocol->dev, "send TARGET_HOST, ENTER_SLEEP");
++	if (ipc_protocol_msg_send_host_sleep(ipc_protocol,
++					     IPC_HOST_SLEEP_ENTER_SLEEP)) {
++		/* Sending ENTER_SLEEP message failed, we are still active */
++		ipc_protocol->pm.host_pm_state = IPC_MEM_HOST_PM_ACTIVE;
++		goto err;
++	}
++
++	ipc_protocol->pm.host_pm_state = IPC_MEM_HOST_PM_SLEEP;
++	return true;
++err:
 +	return false;
 +}
 +
-+void ipc_pm_init(struct iosm_protocol *ipc_protocol)
++bool ipc_protocol_resume(struct iosm_protocol *ipc_protocol)
 +{
-+	struct iosm_imem *ipc_imem = ipc_protocol->imem;
-+	struct iosm_pm *ipc_pm = &ipc_protocol->pm;
++	if (!ipc_pm_prepare_host_active(&ipc_protocol->pm))
++		return false;
 +
-+	ipc_pm->pcie = ipc_imem->pcie;
-+	ipc_pm->dev = ipc_imem->dev;
++	dev_dbg(ipc_protocol->dev, "send TARGET_HOST, EXIT_SLEEP");
++	if (ipc_protocol_msg_send_host_sleep(ipc_protocol,
++					     IPC_HOST_SLEEP_EXIT_SLEEP)) {
++		ipc_protocol->pm.host_pm_state = IPC_MEM_HOST_PM_SLEEP;
++		return false;
++	}
 +
-+	ipc_pm->pm_cond.irq = IPC_PM_SLEEP;
-+	ipc_pm->pm_cond.hs = IPC_PM_SLEEP;
-+	ipc_pm->pm_cond.link = IPC_PM_ACTIVE;
++	ipc_protocol->pm.host_pm_state = IPC_MEM_HOST_PM_ACTIVE;
 +
-+	ipc_pm->cp_state = IPC_MEM_DEV_PM_ACTIVE;
-+	ipc_pm->ap_state = IPC_MEM_DEV_PM_ACTIVE;
-+	ipc_pm->host_pm_state = IPC_MEM_HOST_PM_ACTIVE;
-+
-+	/* Create generic wait-for-completion handler for Host Sleep
-+	 * and device sleep coordination.
-+	 */
-+	init_completion(&ipc_pm->host_sleep_complete);
-+
-+	/* Complete all memory stores before clearing bit */
-+	smp_mb__before_atomic();
-+
-+	clear_bit(0, &ipc_pm->host_sleep_pend);
-+
-+	/* Complete all memory stores after clearing bit */
-+	smp_mb__after_atomic();
++	return true;
 +}
 +
-+void ipc_pm_deinit(struct iosm_protocol *proto)
++struct iosm_protocol *ipc_protocol_init(struct iosm_imem *ipc_imem)
 +{
-+	struct iosm_pm *ipc_pm = &proto->pm;
++	struct iosm_protocol *ipc_protocol =
++		kzalloc(sizeof(*ipc_protocol), GFP_KERNEL);
++	struct ipc_protocol_context_info *p_ci;
++	u64 addr;
 +
-+	complete(&ipc_pm->host_sleep_complete);
++	if (!ipc_protocol)
++		return NULL;
++
++	ipc_protocol->dev = ipc_imem->dev;
++	ipc_protocol->pcie = ipc_imem->pcie;
++	ipc_protocol->imem = ipc_imem;
++	ipc_protocol->p_ap_shm = NULL;
++	ipc_protocol->phy_ap_shm = 0;
++
++	ipc_protocol->old_msg_tail = 0;
++
++	ipc_protocol->p_ap_shm =
++		pci_alloc_consistent(ipc_protocol->pcie->pci,
++				     sizeof(*ipc_protocol->p_ap_shm),
++				     &ipc_protocol->phy_ap_shm);
++
++	if (!ipc_protocol->p_ap_shm) {
++		dev_err(ipc_protocol->dev, "pci shm alloc error");
++		kfree(ipc_protocol);
++		return NULL;
++	}
++
++	/* Prepare the context info for CP. */
++	addr = ipc_protocol->phy_ap_shm;
++	p_ci = &ipc_protocol->p_ap_shm->ci;
++	p_ci->device_info_addr =
++		addr + offsetof(struct ipc_protocol_ap_shm, device_info);
++	p_ci->head_array =
++		addr + offsetof(struct ipc_protocol_ap_shm, head_array);
++	p_ci->tail_array =
++		addr + offsetof(struct ipc_protocol_ap_shm, tail_array);
++	p_ci->msg_head = addr + offsetof(struct ipc_protocol_ap_shm, msg_head);
++	p_ci->msg_tail = addr + offsetof(struct ipc_protocol_ap_shm, msg_tail);
++	p_ci->msg_ring_addr =
++		addr + offsetof(struct ipc_protocol_ap_shm, msg_ring);
++	p_ci->msg_ring_entries = cpu_to_le16(IPC_MEM_MSG_ENTRIES);
++	p_ci->msg_irq_vector = IPC_MSG_IRQ_VECTOR;
++	p_ci->device_info_irq_vector = IPC_DEVICE_IRQ_VECTOR;
++
++	ipc_mmio_set_contex_info_addr(ipc_imem->mmio, addr);
++
++	ipc_pm_init(ipc_protocol);
++
++	return ipc_protocol;
 +}
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_pm.h b/drivers/net/wwan/iosm/iosm_ipc_pm.h
++
++void ipc_protocol_deinit(struct iosm_protocol *proto)
++{
++	pci_free_consistent(proto->pcie->pci, sizeof(*proto->p_ap_shm),
++			    proto->p_ap_shm, proto->phy_ap_shm);
++
++	ipc_pm_deinit(proto);
++	kfree(proto);
++}
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol.h b/drivers/net/wwan/iosm/iosm_ipc_protocol.h
 new file mode 100644
-index 000000000000..e7c00f388cb0
+index 000000000000..9b3a6d86ece7
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_pm.h
-@@ -0,0 +1,207 @@
++++ b/drivers/net/wwan/iosm/iosm_ipc_protocol.h
+@@ -0,0 +1,237 @@
 +/* SPDX-License-Identifier: GPL-2.0-only
 + *
 + * Copyright (C) 2020-21 Intel Corporation.
 + */
 +
-+#ifndef IOSM_IPC_PM_H
-+#define IOSM_IPC_PM_H
++#ifndef IOSM_IPC_PROTOCOL_H
++#define IOSM_IPC_PROTOCOL_H
 +
-+/* Trigger the doorbell interrupt on cp to change the PM sleep/active status */
-+#define ipc_cp_irq_sleep_control(ipc_pcie, data)                               \
-+	ipc_doorbell_fire(ipc_pcie, IPC_DOORBELL_IRQ_SLEEP, data)
++#include "iosm_ipc_imem.h"
++#include "iosm_ipc_pm.h"
++#include "iosm_ipc_protocol_ops.h"
 +
-+/* Trigger the doorbell interrupt on CP to do hpda update */
-+#define ipc_cp_irq_hpda_update(ipc_pcie, data)                                 \
-+	ipc_doorbell_fire(ipc_pcie, IPC_DOORBELL_IRQ_HPDA, 0xFF & (data))
++/* Trigger the doorbell interrupt on CP. */
++#define IPC_DOORBELL_IRQ_HPDA 0
++#define IPC_DOORBELL_IRQ_IPC 1
++#define IPC_DOORBELL_IRQ_SLEEP 2
++
++/* IRQ vector number. */
++#define IPC_DEVICE_IRQ_VECTOR 0
++#define IPC_MSG_IRQ_VECTOR 0
++#define IPC_UL_PIPE_IRQ_VECTOR 0
++#define IPC_DL_PIPE_IRQ_VECTOR 0
++
++#define IPC_MEM_MSG_ENTRIES 128
++
++/* Default time out for sending IPC messages like open pipe, close pipe etc.
++ * during run mode.
++ *
++ * If the message interface lock to CP times out, the link to CP is broken.
++ * mode : run mode (IPC_MEM_EXEC_STAGE_RUN)
++ * unit : milliseconds
++ */
++#define IPC_MSG_COMPLETE_RUN_DEFAULT_TIMEOUT 500 /* 0.5 seconds */
++
++/* Default time out for sending IPC messages like open pipe, close pipe etc.
++ * during boot mode.
++ *
++ * If the message interface lock to CP times out, the link to CP is broken.
++ * mode : boot mode
++ * (IPC_MEM_EXEC_STAGE_BOOT | IPC_MEM_EXEC_STAGE_PSI | IPC_MEM_EXEC_STAGE_EBL)
++ * unit : milliseconds
++ */
++#define IPC_MSG_COMPLETE_BOOT_DEFAULT_TIMEOUT 500 /* 0.5 seconds */
 +
 +/**
-+ * union ipc_pm_cond - Conditions for D3 and the sleep message to CP.
-+ * @raw:	raw/combined value for faster check
-+ * @irq:	IRQ towards CP
-+ * @hs:		Host Sleep
-+ * @link:	Device link state.
++ * struct ipc_protocol_context_info - Structure of the context info
++ * @device_info_addr:		64 bit address to device info
++ * @head_array:			64 bit address to head pointer arr for the pipes
++ * @tail_array:			64 bit address to tail pointer arr for the pipes
++ * @msg_head:			64 bit address to message head pointer
++ * @msg_tail:			64 bit address to message tail pointer
++ * @msg_ring_addr:		64 bit pointer to the message ring buffer
++ * @msg_ring_entries:		This field provides the number of entries which
++ *				the MR can hold
++ * @msg_irq_vector:		This field provides the IRQ which shall be
++ *				generated by the EP device when generating
++ *				completion for Messages.
++ * @device_info_irq_vector:	This field provides the IRQ which shall be
++ *				generated by the EP dev after updating Dev. Info
 + */
-+union ipc_pm_cond {
-+	unsigned int raw;
-+
-+	struct {
-+		unsigned int irq:1,
-+			     hs:1,
-+			     link:1;
-+	};
++struct ipc_protocol_context_info {
++	phys_addr_t device_info_addr;
++	phys_addr_t head_array;
++	phys_addr_t tail_array;
++	phys_addr_t msg_head;
++	phys_addr_t msg_tail;
++	phys_addr_t msg_ring_addr;
++	__le16 msg_ring_entries;
++	u8 msg_irq_vector;
++	u8 device_info_irq_vector;
 +};
 +
 +/**
-+ * enum ipc_mem_host_pm_state - Possible states of the HOST SLEEP finite state
-+ *				machine.
-+ * @IPC_MEM_HOST_PM_ACTIVE:		   Host is active
-+ * @IPC_MEM_HOST_PM_ACTIVE_WAIT:	   Intermediate state before going to
-+ *					   active
-+ * @IPC_MEM_HOST_PM_SLEEP_WAIT_IDLE:	   Intermediate state to wait for idle
-+ *					   before going into sleep
-+ * @IPC_MEM_HOST_PM_SLEEP_WAIT_D3:	   Intermediate state to wait for D3
-+ *					   before going to sleep
-+ * @IPC_MEM_HOST_PM_SLEEP:		   after this state the interface is not
-+ *					   accessible host is in suspend to RAM
-+ * @IPC_MEM_HOST_PM_SLEEP_WAIT_EXIT_SLEEP: Intermediate state before exiting
-+ *					   sleep
++ * struct ipc_protocol_device_info - Structure for the device information
++ * @execution_stage:		CP execution stage
++ * @ipc_status:			IPC states
++ * @device_sleep_notification:	Requested device pm states
 + */
-+enum ipc_mem_host_pm_state {
-+	IPC_MEM_HOST_PM_ACTIVE,
-+	IPC_MEM_HOST_PM_ACTIVE_WAIT,
-+	IPC_MEM_HOST_PM_SLEEP_WAIT_IDLE,
-+	IPC_MEM_HOST_PM_SLEEP_WAIT_D3,
-+	IPC_MEM_HOST_PM_SLEEP,
-+	IPC_MEM_HOST_PM_SLEEP_WAIT_EXIT_SLEEP,
++struct ipc_protocol_device_info {
++	__le32 execution_stage;
++	__le32 ipc_status;
++	__le32 device_sleep_notification;
 +};
 +
 +/**
-+ * enum ipc_mem_dev_pm_state - Possible states of the DEVICE SLEEP finite state
-+ *			       machine.
-+ * @IPC_MEM_DEV_PM_ACTIVE:		IPC_MEM_DEV_PM_ACTIVE is the initial
-+ *					power management state.
-+ *					IRQ(struct ipc_mem_device_info:
-+ *					device_sleep_notification)
-+ *					and DOORBELL-IRQ-HPDA(data) values.
-+ * @IPC_MEM_DEV_PM_SLEEP:		IPC_MEM_DEV_PM_SLEEP is PM state for
-+ *					sleep.
-+ * @IPC_MEM_DEV_PM_WAKEUP:		DOORBELL-IRQ-DEVICE_WAKE(data).
-+ * @IPC_MEM_DEV_PM_HOST_SLEEP:		DOORBELL-IRQ-HOST_SLEEP(data).
-+ * @IPC_MEM_DEV_PM_ACTIVE_WAIT:		Local intermediate states.
-+ * @IPC_MEM_DEV_PM_FORCE_SLEEP:		DOORBELL-IRQ-FORCE_SLEEP.
-+ * @IPC_MEM_DEV_PM_FORCE_ACTIVE:	DOORBELL-IRQ-FORCE_ACTIVE.
++ * struct ipc_protocol_ap_shm - Protocol Shared Memory Structure
++ * @ci:			Context information struct
++ * @device_info:	Device information struct
++ * @msg_head:		Point to msg head
++ * @head_array:		Array of head pointer
++ * @msg_tail:		Point to msg tail
++ * @tail_array:		Array of tail pointer
++ * @msg_ring:		Circular buffers for the read/tail and write/head
++ *			indeces.
 + */
-+enum ipc_mem_dev_pm_state {
-+	IPC_MEM_DEV_PM_ACTIVE,
-+	IPC_MEM_DEV_PM_SLEEP,
-+	IPC_MEM_DEV_PM_WAKEUP,
-+	IPC_MEM_DEV_PM_HOST_SLEEP,
-+	IPC_MEM_DEV_PM_ACTIVE_WAIT,
-+	IPC_MEM_DEV_PM_FORCE_SLEEP = 7,
-+	IPC_MEM_DEV_PM_FORCE_ACTIVE,
++struct ipc_protocol_ap_shm {
++	struct ipc_protocol_context_info ci;
++	struct ipc_protocol_device_info device_info;
++	__le32 msg_head;
++	__le32 head_array[IPC_MEM_MAX_PIPES];
++	__le32 msg_tail;
++	__le32 tail_array[IPC_MEM_MAX_PIPES];
++	union ipc_mem_msg_entry msg_ring[IPC_MEM_MSG_ENTRIES];
 +};
 +
 +/**
-+ * struct iosm_pm - Power management instance
-+ * @pcie:			Pointer to iosm_pcie structure
-+ * @dev:			Pointer to device structure
-+ * @host_pm_state:		PM states for host
-+ * @host_sleep_pend:		Variable to indicate Host Sleep Pending
-+ * @host_sleep_complete:	Generic wait-for-completion used in
-+ *				case of Host Sleep
-+ * @pm_cond:			Conditions for power management
-+ * @ap_state:			Current power management state, the
-+ *				initial state is IPC_MEM_DEV_PM_ACTIVE eq. 0.
-+ * @cp_state:			PM State of CP
-+ * @device_sleep_notification:	last handled device_sleep_notfication
-+ * @pending_hpda_update:	is a HPDA update pending?
++ * struct iosm_protocol - Structure for IPC protocol.
++ * @p_ap_shm:		Pointer to Protocol Shared Memory Structure
++ * @pm:			Instance to struct iosm_pm
++ * @pcie:		Pointer to struct iosm_pcie
++ * @imem:		Pointer to struct iosm_imem
++ * @rsp_ring:		Array of OS completion objects to be triggered once CP
++ *			acknowledges a request in the message ring
++ * @dev:		Pointer to device structure
++ * @phy_ap_shm:		Physical/Mapped representation of the shared memory info
++ * @old_msg_tail:	Old msg tail ptr, until AP has handled ACK's from CP
 + */
-+struct iosm_pm {
++struct iosm_protocol {
++	struct ipc_protocol_ap_shm *p_ap_shm;
++	struct iosm_pm pm;
 +	struct iosm_pcie *pcie;
++	struct iosm_imem *imem;
++	struct ipc_rsp *rsp_ring[IPC_MEM_MSG_ENTRIES];
 +	struct device *dev;
-+	enum ipc_mem_host_pm_state host_pm_state;
-+	unsigned long host_sleep_pend;
-+	struct completion host_sleep_complete;
-+	union ipc_pm_cond pm_cond;
-+	enum ipc_mem_dev_pm_state ap_state;
-+	enum ipc_mem_dev_pm_state cp_state;
-+	u32 device_sleep_notification;
-+	u8 pending_hpda_update:1;
++	phys_addr_t phy_ap_shm;
++	u32 old_msg_tail;
 +};
 +
 +/**
-+ * enum ipc_pm_unit - Power management units.
-+ * @IPC_PM_UNIT_IRQ:	IRQ towards CP
-+ * @IPC_PM_UNIT_HS:	Host Sleep for converged protocol
-+ * @IPC_PM_UNIT_LINK:	Link state controlled by CP.
++ * struct ipc_call_msg_send_args - Structure for message argument for
++ *				   tasklet function.
++ * @prep_args:		Arguments for message preparation function
++ * @response:		Can be NULL if result can be ignored
++ * @msg_type:		Message Type
 + */
-+enum ipc_pm_unit {
-+	IPC_PM_UNIT_IRQ,
-+	IPC_PM_UNIT_HS,
-+	IPC_PM_UNIT_LINK,
++struct ipc_call_msg_send_args {
++	union ipc_msg_prep_args *prep_args;
++	struct ipc_rsp *response;
++	enum ipc_msg_prep_type msg_type;
 +};
 +
 +/**
-+ * ipc_pm_init - Allocate power management component
-+ * @ipc_protocol:	Pointer to iosm_protocol structure
-+ */
-+void ipc_pm_init(struct iosm_protocol *ipc_protocol);
-+
-+/**
-+ * ipc_pm_deinit - Free power management component, invalidating its pointer.
-+ * @ipc_protocol:	Pointer to iosm_protocol structure
-+ */
-+void ipc_pm_deinit(struct iosm_protocol *ipc_protocol);
-+
-+/**
-+ * ipc_pm_dev_slp_notification - Handle a sleep notification message from the
-+ *				 device. This can be called from interrupt state
-+ *				 This function handles Host Sleep requests too
-+ *				 if the Host Sleep protocol is register based.
-+ * @ipc_pm:			Pointer to power management component
-+ * @sleep_notification:		Actual notification from device
++ * ipc_protocol_tq_msg_send - prepare the msg and send to CP
++ * @ipc_protocol:	Pointer to ipc_protocol instance
++ * @msg_type:		Message type
++ * @prep_args:		Message arguments
++ * @response:		Pointer to a response object which has a
++ *			completion object and return code.
 + *
-+ * Returns: true if dev sleep state has to be checked, false otherwise.
++ * Returns: 0 on success and failure value on error
 + */
-+bool ipc_pm_dev_slp_notification(struct iosm_pm *ipc_pm,
-+				 u32 sleep_notification);
++int ipc_protocol_tq_msg_send(struct iosm_protocol *ipc_protocol,
++			     enum ipc_msg_prep_type msg_type,
++			     union ipc_msg_prep_args *prep_args,
++			     struct ipc_rsp *response);
 +
 +/**
-+ * ipc_pm_set_s2idle_sleep - Set PM variables to sleep/active
-+ * @ipc_pm:	Pointer to power management component
-+ * @sleep:	true to enter sleep/false to exit sleep
-+ */
-+void ipc_pm_set_s2idle_sleep(struct iosm_pm *ipc_pm, bool sleep);
-+
-+/**
-+ * ipc_pm_prepare_host_sleep - Prepare the PM for sleep by entering
-+ *			       IPC_MEM_HOST_PM_SLEEP_WAIT_D3 state.
-+ * @ipc_pm:	Pointer to power management component
++ * ipc_protocol_msg_send - Send ipc control message to CP and wait for response
++ * @ipc_protocol:	Pointer to ipc_protocol instance
++ * @prep:		Message type
++ * @prep_args:		Message arguments
 + *
-+ * Returns: true on success, false if the host was not active.
++ * Returns: 0 on success and failure value on error
 + */
-+bool ipc_pm_prepare_host_sleep(struct iosm_pm *ipc_pm);
++int ipc_protocol_msg_send(struct iosm_protocol *ipc_protocol,
++			  enum ipc_msg_prep_type prep,
++			  union ipc_msg_prep_args *prep_args);
 +
 +/**
-+ * ipc_pm_prepare_host_active - Prepare the PM for wakeup by entering
-+ *				IPC_MEM_HOST_PM_ACTIVE_WAIT state.
-+ * @ipc_pm:	Pointer to power management component
++ * ipc_protocol_suspend - Signal to CP that host wants to go to sleep (suspend).
++ * @ipc_protocol:	Pointer to ipc_protocol instance
 + *
-+ * Returns: true on success, false if the host was not sleeping.
++ * Returns: true if host can suspend, false if suspend must be aborted.
 + */
-+bool ipc_pm_prepare_host_active(struct iosm_pm *ipc_pm);
++bool ipc_protocol_suspend(struct iosm_protocol *ipc_protocol);
 +
 +/**
-+ * ipc_pm_wait_for_device_active - Wait upto IPC_PM_ACTIVE_TIMEOUT_MS ms
-+ *				   for the device to reach active state
-+ * @ipc_pm:	Pointer to power management component
-+ *
-+ * Returns: true if device is active, false on timeout
++ * ipc_protocol_s2idle_sleep - Call PM function to set PM variables in s2idle
++ *			       sleep/active case
++ * @ipc_protocol:	Pointer to ipc_protocol instance
++ * @sleep:		True for sleep/False for active
 + */
-+bool ipc_pm_wait_for_device_active(struct iosm_pm *ipc_pm);
++void ipc_protocol_s2idle_sleep(struct iosm_protocol *ipc_protocol, bool sleep);
 +
 +/**
-+ * ipc_pm_signal_hpda_doorbell - Wake up the device if it is in low power mode
-+ *				 and trigger a head pointer update interrupt.
-+ * @ipc_pm:		Pointer to power management component
-+ * @identifier:		specifies what component triggered hpda update irq
-+ * @host_slp_check:	if set to true then Host Sleep state machine check will
-+ *			be performed. If Host Sleep state machine allows HP
-+ *			update then only doorbell is triggered otherwise pending
-+ *			flag will be set. If set to false then Host Sleep check
-+ *			will not be performed. This is helpful for Host Sleep
-+ *			negotiation through message ring.
-+ */
-+void ipc_pm_signal_hpda_doorbell(struct iosm_pm *ipc_pm, u32 identifier,
-+				 bool host_slp_check);
-+/**
-+ * ipc_pm_trigger - Update power manager and wake up the link if needed
-+ * @ipc_pm:	Pointer to power management component
-+ * @unit:	Power management units
-+ * @active:	Device link state
++ * ipc_protocol_resume - Signal to CP that host wants to resume operation.
++ * @ipc_protocol:	Pointer to ipc_protocol instance
 + *
-+ * Returns: true if link is unchanged or active, false otherwise
++ * Returns: true if host can resume, false if there is a problem.
 + */
-+bool ipc_pm_trigger(struct iosm_pm *ipc_pm, enum ipc_pm_unit unit, bool active);
++bool ipc_protocol_resume(struct iosm_protocol *ipc_protocol);
++
++/**
++ * ipc_protocol_pm_dev_sleep_handle - Handles the Device Sleep state change
++ *				      notification.
++ * @ipc_protocol:	Pointer to ipc_protocol instance.
++ *
++ * Returns: true if sleep notification handled, false otherwise.
++ */
++bool ipc_protocol_pm_dev_sleep_handle(struct iosm_protocol *ipc_protocol);
++
++/**
++ * ipc_protocol_doorbell_trigger - Wrapper for PM function which wake up the
++ *				   device if it is in low power mode
++ *				   and trigger a head pointer update interrupt.
++ * @ipc_protocol:	Pointer to ipc_protocol instance.
++ * @identifier:		Specifies what component triggered hpda
++ *			update irq
++ */
++void ipc_protocol_doorbell_trigger(struct iosm_protocol *ipc_protocol,
++				   u32 identifier);
++
++/**
++ * ipc_protocol_sleep_notification_string - Returns last Sleep Notification as
++ *					    string.
++ * @ipc_protocol:	Instance pointer of Protocol module.
++ *
++ * Returns: Pointer to string.
++ */
++const char *
++ipc_protocol_sleep_notification_string(struct iosm_protocol *ipc_protocol);
++
++/**
++ * ipc_protocol_init - Allocates IPC protocol instance
++ * @ipc_imem:		Pointer to iosm_imem structure
++ *
++ * Returns: Address of IPC  protocol instance on success & NULL on failure.
++ */
++struct iosm_protocol *ipc_protocol_init(struct iosm_imem *ipc_imem);
++
++/**
++ * ipc_protocol_deinit - Deallocates IPC protocol instance
++ * @ipc_protocol:	pointer to the IPC protocol instance
++ */
++void ipc_protocol_deinit(struct iosm_protocol *ipc_protocol);
 +
 +#endif
 -- 
