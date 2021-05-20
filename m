@@ -2,103 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFA2F389AA2
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 02:44:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6689D389AB1
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 02:59:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229952AbhETAqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 20:46:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55634 "EHLO mail.kernel.org"
+        id S230137AbhETBA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 21:00:58 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48334 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229498AbhETAqE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 20:46:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0AB5560C41;
-        Thu, 20 May 2021 00:44:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621471484;
-        bh=rGWrNR8ypB/67UncpSfVNpvDlWiSPIxH7vvSYJq4gcc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HSBEW7YELZ+VyH5M4GJO1XuoRyZzIV65QO8CLgkncTMhMwxyO4Ura1L6ek5Gk9L+O
-         zgaMB5UCtQz6nGByNre9Iqsl5fvXeU8ytmXcRdmOojEGTw9T7PxGVcVacaGSpezSil
-         pc50VdrV22OTYglkTbZ4XvfXEvKeb+/3nMxoTqzMHIN6JW3FZu1Cp4n3G45qykc6j+
-         deaYEnCm2w6pObnQkuElMXKW9+KWrjBR+QGcdem6wU7R+UHDWZjx3Y4883mTIVTGSI
-         6Bjt9JWIgOE6vTan28om+51TmwT5o4u/Hc7PzPi7Cl+PCFFrwcmPtafAlwErhTcou2
-         /GXyh5NQ7s3cg==
-Date:   Wed, 19 May 2021 17:44:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] mlx5: count all link events
-Message-ID: <20210519174443.39b7cec9@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <35937fe6d371a43aa0bfe70c9fab549b62089592.camel@kernel.org>
-References: <20210519171825.600110-1-kuba@kernel.org>
-        <f48c950330996dcbb11f1a78b7c0a0445c656a20.camel@kernel.org>
-        <20210519140659.30c3813c@kicinski-fedora-PC1C0HJN>
-        <35937fe6d371a43aa0bfe70c9fab549b62089592.camel@kernel.org>
+        id S229498AbhETBA5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 21:00:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=x1FNX0sAiQIZUVXxQspUMNUpkt0RpICL5Fv/PRybBDM=; b=K5ONPXI5zpIYe16pjqMtnbj9lb
+        RuDK6/Hk0MAO4x1JyyFFMk4/O7xxbYINyuD9h2mEeVLStv7aS08lvMGdSEUM+CF9Tc5CPJP+dCnl+
+        ijrADNVnaIq1JSxufasy95Q5KzuBma9hX2cDTn2640DGAalQJAlEOz/0TKto3UJpxyTY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ljX21-0050dM-BI; Thu, 20 May 2021 02:59:21 +0200
+Date:   Thu, 20 May 2021 02:59:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>
+Subject: Re: [PATCH net-next v2 1/4] net: phy: add MediaTek Gigabit Ethernet
+ PHY driver
+Message-ID: <YKW0acoyM+5rVp0X@lunn.ch>
+References: <20210519033202.3245667-1-dqfext@gmail.com>
+ <20210519033202.3245667-2-dqfext@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210519033202.3245667-2-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 May 2021 17:07:00 -0700 Saeed Mahameed wrote:
-> On Wed, 2021-05-19 at 14:06 -0700, Jakub Kicinski wrote:
-> > On Wed, 19 May 2021 13:49:00 -0700 Saeed Mahameed wrote:  
-> > > Can you share more on the actual scenario that has happened ? 
-> > > in mlx5 i know of situations where fw might generate such events,
-> > > just
-> > > as FYI for virtual ports (vports) on some configuration changes.
-> > > 
-> > > another explanation is that in the driver we explicitly query the
-> > > link
-> > > state and we never take the event value, so it could have been that
-> > > the
-> > > link flapped so fast we missed the intermediate state.  
-> > 
-> > The link flaps quite a bit, this is likely a bad cable or port.
-> > I scanned the fleet a little bit more and I see a couple machines 
-> > in such state, in each case the switch is also seeing the link flaps,
-> > not just the NIC. Without this patch the driver registers a full flap
-> > once every ~15min, with the patch it's once a second. That's much
-> > closer to what the switch registers.
-> > 
-> > Also the issue affects all hosts in MH, and persists across reboots
-> > of a single host (hence I could test this patch).
-> 
-> reproduces on reboots even with a good cable ? 
+> +static void mtk_gephy_config_init(struct phy_device *phydev)
+> +{
+> +	/* Disable EEE */
+> +	phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, 0);
 
-I don't have access to the machines so the cable stays the same. I was
-just saying that it doesn't seem like a driver issue since it persists
-across reboots.
+Is EEE broken on this PHY? Or is this just to get it into a defined
+state?
 
-> you reboot the peer machine or the DUT (under test) machine ?
+Otherwise
 
-DUT
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-> > > According to HW spec for some reason we should always query and not
-> > > rely on the event. 
-> > > 
-> > > <quote>
-> > > If software retrieves this indication (port state change event),
-> > > this
-> > > signifies that the state has been
-> > > changed and a QUERY_VPORT_STATE command should be performed to get
-> > > the
-> > > new state.
-> > > </quote>  
-> > 
-> > I see, seems reasonable. I'm guessing the FW generates only one of
-> > the
-> > events on minor type of faults? I don't think the link goes fully
-> > down,
-> > because I can SSH to those machines, they just periodically drop
-> > traffic. But the can't fully retrain the link at such high rate, 
-> > I don't think.
-> >   
-> 
-> hmm, Then i would like to get to the bottom of this, so i will have to
-> consult with FW.
-> But regardless, we can progress with the patch, I think the HW spec
-> description forces us to do so.. 
-
-SGTM :)
+    Andrew
