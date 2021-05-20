@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12623389B4C
+	by mail.lfdr.de (Postfix) with ESMTP id C9E0D389B4E
 	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 04:22:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230270AbhETCXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 22:23:17 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:3431 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbhETCXR (ORCPT
+        id S230312AbhETCXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 22:23:20 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:4543 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230146AbhETCXR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 22:23:17 -0400
-Received: from dggems702-chm.china.huawei.com (unknown [172.30.72.60])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4Flthr0JyzzCs2R;
+Received: from dggems703-chm.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Flthr6M9tzkWb1;
         Thu, 20 May 2021 10:19:08 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
+ dggems703-chm.china.huawei.com (10.3.19.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Thu, 20 May 2021 10:21:55 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 20 May 2021 10:21:54 +0800
+ 15.1.2176.2; Thu, 20 May 2021 10:21:55 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@huawei.com>, Hao Chen <chenhao288@hisilicon.com>,
+        <linuxarm@huawei.com>, Guangbin Huang <huangguangbin2@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 05/15] net: hns3: refactor dump fd tcam of debugfs
-Date:   Thu, 20 May 2021 10:21:34 +0800
-Message-ID: <1621477304-4495-6-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 06/15] net: hns3: refactor dump tm map of debugfs
+Date:   Thu, 20 May 2021 10:21:35 +0800
+Message-ID: <1621477304-4495-7-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1621477304-4495-1-git-send-email-tanhuazhong@huawei.com>
 References: <1621477304-4495-1-git-send-email-tanhuazhong@huawei.com>
@@ -44,315 +44,372 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-Currently, the debugfs command for fd tcam is implemented by
+Currently, the debugfs command for tm map is implemented by
 "echo xxxx > cmd", and record the information in dmesg. It's
 unnecessary and heavy. To improve it, create a single file
-"fd_tcam" for it, and query it by command "cat fd_tcam",
+"tm_map" for it, and query it by command "cat tm_map",
 return the result to userspace, rather than record in dmesg.
 
-The display style is below:
-$ cat fd_tcam
-read result tcam key x(31):
-00000000
-00000000
-00000000
-08000000
-00000600
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-read result tcam key y(31):
-00000000
-00000000
-00000000
-f7ff0000
-0000f900
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-0000fff8
+As user can't specify queue id in cat command, driver will return info
+of all queue id.
 
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+The display style is below:
+$ cat tm_map
+queue_id   qset_id   pri_id   tc_id
+0000         0000      00       00
+INDEX | TM BP QSET MAPPING:
+0000  | 00000000:00000000:00000000:00000000:00000000:00000000:00000000
+0256  | 00000000:00000000:00000000:00000000:00000000:00000002:00000000
+0512  | 00000000:00000000:00000000:00000004:00000000:00000000:00000000
+0768  | 00000000:00000008:00000000:00000000:00000000:00000000:00000000
+
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c | 11 ++-
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h |  1 +
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 88 ++++++++++++++--------
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h |  5 ++
- 5 files changed, 74 insertions(+), 32 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |   8 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 169 +++++++++------------
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  |  60 ++++++++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h  |   2 +
+ 5 files changed, 145 insertions(+), 95 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index f4c8796..730f56d 100644
+index 730f56d..5de8b11 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -279,6 +279,7 @@ enum hnae3_dbg_cmd {
- 	HNAE3_DBG_CMD_QUEUE_MAP,
- 	HNAE3_DBG_CMD_RX_QUEUE_INFO,
- 	HNAE3_DBG_CMD_TX_QUEUE_INFO,
-+	HNAE3_DBG_CMD_FD_TCAM,
- 	HNAE3_DBG_CMD_UNKNOWN,
- };
- 
+@@ -254,6 +254,7 @@ enum hnae3_dbg_cmd {
+ 	HNAE3_DBG_CMD_TM_NODES,
+ 	HNAE3_DBG_CMD_TM_PRI,
+ 	HNAE3_DBG_CMD_TM_QSET,
++	HNAE3_DBG_CMD_TM_MAP,
+ 	HNAE3_DBG_CMD_DEV_INFO,
+ 	HNAE3_DBG_CMD_TX_BD,
+ 	HNAE3_DBG_CMD_RX_BD,
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index 93455c7..37aa891 100644
+index 37aa891..39a24cc 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -29,6 +29,9 @@ static struct hns3_dbg_dentry_info hns3_dbg_dentry[] = {
- 	{
- 		.name = "queue"
- 	},
-+	{
-+		.name = "fd"
-+	},
- 	/* keep common at the bottom and add new directory above */
- 	{
- 		.name = "common"
-@@ -236,6 +239,13 @@ static struct hns3_dbg_cmd_info hns3_dbg_cmd[] = {
- 		.buf_len = HNS3_DBG_READ_LEN_1MB,
+@@ -65,6 +65,13 @@ static struct hns3_dbg_cmd_info hns3_dbg_cmd[] = {
  		.init = hns3_dbg_common_file_init,
  	},
-+	{
-+		.name = "fd_tcam",
-+		.cmd = HNAE3_DBG_CMD_FD_TCAM,
-+		.dentry = HNS3_DBG_DENTRY_FD,
-+		.buf_len = HNS3_DBG_READ_LEN,
+ 	{
++		.name = "tm_map",
++		.cmd = HNAE3_DBG_CMD_TM_MAP,
++		.dentry = HNS3_DBG_DENTRY_TM,
++		.buf_len = HNS3_DBG_READ_LEN_1MB,
 +		.init = hns3_dbg_common_file_init,
 +	},
- };
- 
- static struct hns3_dbg_cap_info hns3_dbg_cap[] = {
-@@ -707,7 +717,6 @@ static void hns3_dbg_help(struct hnae3_handle *h)
- 	if (!hns3_is_phys_func(h->pdev))
++	{
+ 		.name = "dev_info",
+ 		.cmd = HNAE3_DBG_CMD_DEV_INFO,
+ 		.dentry = HNS3_DBG_DENTRY_COMMON,
+@@ -718,7 +725,6 @@ static void hns3_dbg_help(struct hnae3_handle *h)
  		return;
  
--	dev_info(&h->pdev->dev, "dump fd tcam\n");
  	dev_info(&h->pdev->dev, "dump tc\n");
- 	dev_info(&h->pdev->dev, "dump tm map <q_num>\n");
+-	dev_info(&h->pdev->dev, "dump tm map <q_num>\n");
  	dev_info(&h->pdev->dev, "dump tm\n");
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
-index 0e109b0..f3766ff 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
-@@ -32,6 +32,7 @@ enum hns3_dbg_dentry_type {
- 	HNS3_DBG_DENTRY_MAC,
- 	HNS3_DBG_DENTRY_REG,
- 	HNS3_DBG_DENTRY_QUEUE,
-+	HNS3_DBG_DENTRY_FD,
- 	HNS3_DBG_DENTRY_COMMON,
- };
- 
+ 	dev_info(&h->pdev->dev, "dump qos pause cfg\n");
+ 	dev_info(&h->pdev->dev, "dump qos pri map\n");
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-index 1ad7bff..c92800d 100644
+index c92800d..58ee389 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-@@ -1455,13 +1455,17 @@ static int hclge_dbg_dump_mng_table(struct hclge_dev *hdev, char *buf, int len)
- 	return 0;
+@@ -905,115 +905,96 @@ static void hclge_dbg_dump_tm(struct hclge_dev *hdev)
+ 		cmd, ret);
  }
  
--static int hclge_dbg_fd_tcam_read(struct hclge_dev *hdev, u8 stage,
--				  bool sel_x, u32 loc)
-+#define HCLGE_DBG_TCAM_BUF_SIZE 256
-+
-+static int hclge_dbg_fd_tcam_read(struct hclge_dev *hdev, bool sel_x,
-+				  char *tcam_buf,
-+				  struct hclge_dbg_tcam_msg tcam_msg)
+-static void hclge_dbg_dump_tm_map(struct hclge_dev *hdev,
+-				  const char *cmd_buf)
++static int hclge_dbg_dump_tm_bp_qset_map(struct hclge_dev *hdev, u8 tc_id,
++					 char *buf, int len)
  {
- 	struct hclge_fd_tcam_config_1_cmd *req1;
- 	struct hclge_fd_tcam_config_2_cmd *req2;
- 	struct hclge_fd_tcam_config_3_cmd *req3;
- 	struct hclge_desc desc[3];
+-	struct hclge_bp_to_qs_map_cmd *bp_to_qs_map_cmd;
+-	struct hclge_nq_to_qs_link_cmd *nq_to_qs_map;
+ 	u32 qset_mapping[HCLGE_BP_EXT_GRP_NUM];
+-	struct hclge_qs_to_pri_link_cmd *map;
+-	struct hclge_tqp_tx_queue_tc_cmd *tc;
+-	u16 group_id, queue_id, qset_id;
+-	enum hclge_opcode_type cmd;
+-	u8 grp_num, pri_id, tc_id;
++	struct hclge_bp_to_qs_map_cmd *map;
+ 	struct hclge_desc desc;
+-	u16 qs_id_l;
+-	u16 qs_id_h;
 +	int pos = 0;
- 	int ret, i;
- 	u32 *req;
++	u8 group_id;
++	u8 grp_num;
++	u16 i = 0;
+ 	int ret;
+-	u32 i;
+-
+-	ret = kstrtou16(cmd_buf, 0, &queue_id);
+-	queue_id = (ret != 0) ? 0 : queue_id;
+-
+-	cmd = HCLGE_OPC_TM_NQ_TO_QS_LINK;
+-	nq_to_qs_map = (struct hclge_nq_to_qs_link_cmd *)desc.data;
+-	hclge_cmd_setup_basic_desc(&desc, cmd, true);
+-	nq_to_qs_map->nq_id = cpu_to_le16(queue_id);
+-	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+-	if (ret)
+-		goto err_tm_map_cmd_send;
+-	qset_id = le16_to_cpu(nq_to_qs_map->qset_id);
+-
+-	/* convert qset_id to the following format, drop the vld bit
+-	 *            | qs_id_h | vld | qs_id_l |
+-	 * qset_id:   | 15 ~ 11 |  10 |  9 ~ 0  |
+-	 *             \         \   /         /
+-	 *              \         \ /         /
+-	 * qset_id: | 15 | 14 ~ 10 |  9 ~ 0  |
+-	 */
+-	qs_id_l = hnae3_get_field(qset_id, HCLGE_TM_QS_ID_L_MSK,
+-				  HCLGE_TM_QS_ID_L_S);
+-	qs_id_h = hnae3_get_field(qset_id, HCLGE_TM_QS_ID_H_EXT_MSK,
+-				  HCLGE_TM_QS_ID_H_EXT_S);
+-	qset_id = 0;
+-	hnae3_set_field(qset_id, HCLGE_TM_QS_ID_L_MSK, HCLGE_TM_QS_ID_L_S,
+-			qs_id_l);
+-	hnae3_set_field(qset_id, HCLGE_TM_QS_ID_H_MSK, HCLGE_TM_QS_ID_H_S,
+-			qs_id_h);
+-
+-	cmd = HCLGE_OPC_TM_QS_TO_PRI_LINK;
+-	map = (struct hclge_qs_to_pri_link_cmd *)desc.data;
+-	hclge_cmd_setup_basic_desc(&desc, cmd, true);
+-	map->qs_id = cpu_to_le16(qset_id);
+-	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+-	if (ret)
+-		goto err_tm_map_cmd_send;
+-	pri_id = map->priority;
+-
+-	cmd = HCLGE_OPC_TQP_TX_QUEUE_TC;
+-	tc = (struct hclge_tqp_tx_queue_tc_cmd *)desc.data;
+-	hclge_cmd_setup_basic_desc(&desc, cmd, true);
+-	tc->queue_id = cpu_to_le16(queue_id);
+-	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+-	if (ret)
+-		goto err_tm_map_cmd_send;
+-	tc_id = tc->tc_id & 0x7;
+-
+-	dev_info(&hdev->pdev->dev, "queue_id | qset_id | pri_id | tc_id\n");
+-	dev_info(&hdev->pdev->dev, "%04u     | %04u    | %02u     | %02u\n",
+-		 queue_id, qset_id, pri_id, tc_id);
+-
+-	if (!hnae3_dev_dcb_supported(hdev)) {
+-		dev_info(&hdev->pdev->dev,
+-			 "Only DCB-supported dev supports tm mapping\n");
+-		return;
+-	}
  
-@@ -1475,31 +1479,35 @@ static int hclge_dbg_fd_tcam_read(struct hclge_dev *hdev, u8 stage,
- 	req2 = (struct hclge_fd_tcam_config_2_cmd *)desc[1].data;
- 	req3 = (struct hclge_fd_tcam_config_3_cmd *)desc[2].data;
+ 	grp_num = hdev->num_tqps <= HCLGE_TQP_MAX_SIZE_DEV_V2 ?
+ 		  HCLGE_BP_GRP_NUM : HCLGE_BP_EXT_GRP_NUM;
+-	cmd = HCLGE_OPC_TM_BP_TO_QSET_MAPPING;
+-	bp_to_qs_map_cmd = (struct hclge_bp_to_qs_map_cmd *)desc.data;
++	map = (struct hclge_bp_to_qs_map_cmd *)desc.data;
+ 	for (group_id = 0; group_id < grp_num; group_id++) {
+-		hclge_cmd_setup_basic_desc(&desc, cmd, true);
+-		bp_to_qs_map_cmd->tc_id = tc_id;
+-		bp_to_qs_map_cmd->qs_group_id = group_id;
++		hclge_cmd_setup_basic_desc(&desc,
++					   HCLGE_OPC_TM_BP_TO_QSET_MAPPING,
++					   true);
++		map->tc_id = tc_id;
++		map->qs_group_id = group_id;
+ 		ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+-		if (ret)
+-			goto err_tm_map_cmd_send;
++		if (ret) {
++			dev_err(&hdev->pdev->dev,
++				"failed to get bp to qset map, ret = %d\n",
++				ret);
++			return ret;
++		}
  
--	req1->stage  = stage;
-+	req1->stage  = tcam_msg.stage;
- 	req1->xy_sel = sel_x ? 1 : 0;
--	req1->index  = cpu_to_le32(loc);
-+	req1->index  = cpu_to_le32(tcam_msg.loc);
- 
- 	ret = hclge_cmd_send(&hdev->hw, desc, 3);
- 	if (ret)
- 		return ret;
- 
--	dev_info(&hdev->pdev->dev, " read result tcam key %s(%u):\n",
--		 sel_x ? "x" : "y", loc);
-+	pos += scnprintf(tcam_buf + pos, HCLGE_DBG_TCAM_BUF_SIZE - pos,
-+			 "read result tcam key %s(%u):\n", sel_x ? "x" : "y",
-+			 tcam_msg.loc);
- 
- 	/* tcam_data0 ~ tcam_data1 */
- 	req = (u32 *)req1->tcam_data;
- 	for (i = 0; i < 2; i++)
--		dev_info(&hdev->pdev->dev, "%08x\n", *req++);
-+		pos += scnprintf(tcam_buf + pos, HCLGE_DBG_TCAM_BUF_SIZE - pos,
-+				 "%08x\n", *req++);
- 
- 	/* tcam_data2 ~ tcam_data7 */
- 	req = (u32 *)req2->tcam_data;
- 	for (i = 0; i < 6; i++)
--		dev_info(&hdev->pdev->dev, "%08x\n", *req++);
-+		pos += scnprintf(tcam_buf + pos, HCLGE_DBG_TCAM_BUF_SIZE - pos,
-+				 "%08x\n", *req++);
- 
- 	/* tcam_data8 ~ tcam_data12 */
- 	req = (u32 *)req3->tcam_data;
- 	for (i = 0; i < 5; i++)
--		dev_info(&hdev->pdev->dev, "%08x\n", *req++);
-+		pos += scnprintf(tcam_buf + pos, HCLGE_DBG_TCAM_BUF_SIZE - pos,
-+				 "%08x\n", *req++);
- 
- 	return ret;
- }
-@@ -1517,59 +1525,75 @@ static int hclge_dbg_get_rules_location(struct hclge_dev *hdev, u16 *rule_locs)
+-		qset_mapping[group_id] =
+-			le32_to_cpu(bp_to_qs_map_cmd->qs_bit_map);
++		qset_mapping[group_id] = le32_to_cpu(map->qs_bit_map);
  	}
- 	spin_unlock_bh(&hdev->fd_rule_lock);
  
--	if (cnt != hdev->hclge_fd_rule_num)
-+	if (cnt != hdev->hclge_fd_rule_num || cnt == 0)
- 		return -EINVAL;
+-	dev_info(&hdev->pdev->dev, "index | tm bp qset maping:\n");
+-
+-	i = 0;
++	pos += scnprintf(buf + pos, len - pos, "INDEX | TM BP QSET MAPPING:\n");
+ 	for (group_id = 0; group_id < grp_num / 8; group_id++) {
+-		dev_info(&hdev->pdev->dev,
++		pos += scnprintf(buf + pos, len - pos,
+ 			 "%04d  | %08x:%08x:%08x:%08x:%08x:%08x:%08x:%08x\n",
+-			 group_id * 256, qset_mapping[(u32)(i + 7)],
+-			 qset_mapping[(u32)(i + 6)], qset_mapping[(u32)(i + 5)],
+-			 qset_mapping[(u32)(i + 4)], qset_mapping[(u32)(i + 3)],
+-			 qset_mapping[(u32)(i + 2)], qset_mapping[(u32)(i + 1)],
++			 group_id * 256, qset_mapping[i + 7],
++			 qset_mapping[i + 6], qset_mapping[i + 5],
++			 qset_mapping[i + 4], qset_mapping[i + 3],
++			 qset_mapping[i + 2], qset_mapping[i + 1],
+ 			 qset_mapping[i]);
+ 		i += 8;
+ 	}
  
- 	return cnt;
- }
+-	return;
++	return pos;
++}
  
--static void hclge_dbg_fd_tcam(struct hclge_dev *hdev)
-+static int hclge_dbg_dump_fd_tcam(struct hclge_dev *hdev, char *buf, int len)
- {
-+	u32 rule_num = hdev->fd_cfg.rule_num[HCLGE_FD_STAGE_1];
-+	struct hclge_dbg_tcam_msg tcam_msg;
- 	int i, ret, rule_cnt;
- 	u16 *rule_locs;
-+	char *tcam_buf;
+-err_tm_map_cmd_send:
+-	dev_err(&hdev->pdev->dev, "dump tqp map fail(0x%x), ret = %d\n",
+-		cmd, ret);
++static int hclge_dbg_dump_tm_map(struct hclge_dev *hdev, char *buf, int len)
++{
++	u16 queue_id;
++	u16 qset_id;
++	u8 link_vld;
 +	int pos = 0;
- 
- 	if (!hnae3_dev_fd_supported(hdev)) {
- 		dev_err(&hdev->pdev->dev,
- 			"Only FD-supported dev supports dump fd tcam\n");
--		return;
-+		return -EOPNOTSUPP;
- 	}
- 
--	if (!hdev->hclge_fd_rule_num ||
--	    !hdev->fd_cfg.rule_num[HCLGE_FD_STAGE_1])
--		return;
-+	if (!hdev->hclge_fd_rule_num || !rule_num)
-+		return 0;
- 
--	rule_locs = kcalloc(hdev->fd_cfg.rule_num[HCLGE_FD_STAGE_1],
--			    sizeof(u16), GFP_KERNEL);
-+	rule_locs = kcalloc(rule_num, sizeof(u16), GFP_KERNEL);
- 	if (!rule_locs)
--		return;
-+		return -ENOMEM;
++	u8 pri_id;
++	u8 tc_id;
++	int ret;
 +
-+	tcam_buf = kzalloc(HCLGE_DBG_TCAM_BUF_SIZE, GFP_KERNEL);
-+	if (!tcam_buf) {
-+		kfree(rule_locs);
-+		return -ENOMEM;
++	for (queue_id = 0; queue_id < hdev->num_tqps; queue_id++) {
++		ret = hclge_tm_get_q_to_qs_map(hdev, queue_id, &qset_id);
++		if (ret)
++			return ret;
++
++		ret = hclge_tm_get_qset_map_pri(hdev, qset_id, &pri_id,
++						&link_vld);
++		if (ret)
++			return ret;
++
++		ret = hclge_tm_get_q_to_tc(hdev, queue_id, &tc_id);
++		if (ret)
++			return ret;
++
++		pos += scnprintf(buf + pos, len - pos,
++				 "QUEUE_ID   QSET_ID   PRI_ID   TC_ID\n");
++		pos += scnprintf(buf + pos, len - pos,
++				 "%04u        %4u       %3u      %2u\n",
++				 queue_id, qset_id, pri_id, tc_id);
++
++		if (!hnae3_dev_dcb_supported(hdev))
++			continue;
++
++		ret = hclge_dbg_dump_tm_bp_qset_map(hdev, tc_id, buf + pos,
++						    len - pos);
++		if (ret < 0)
++			return ret;
++		pos += ret;
++
++		pos += scnprintf(buf + pos, len - pos, "\n");
 +	}
- 
- 	rule_cnt = hclge_dbg_get_rules_location(hdev, rule_locs);
--	if (rule_cnt <= 0) {
-+	if (rule_cnt < 0) {
-+		ret = rule_cnt;
- 		dev_err(&hdev->pdev->dev,
--			"failed to get rule number, ret = %d\n", rule_cnt);
--		kfree(rule_locs);
--		return;
-+			"failed to get rule number, ret = %d\n", ret);
-+		goto out;
- 	}
- 
- 	for (i = 0; i < rule_cnt; i++) {
--		ret = hclge_dbg_fd_tcam_read(hdev, 0, true, rule_locs[i]);
-+		tcam_msg.stage = HCLGE_FD_STAGE_1;
-+		tcam_msg.loc = rule_locs[i];
 +
-+		ret = hclge_dbg_fd_tcam_read(hdev, true, tcam_buf, tcam_msg);
- 		if (ret) {
- 			dev_err(&hdev->pdev->dev,
- 				"failed to get fd tcam key x, ret = %d\n", ret);
--			kfree(rule_locs);
--			return;
-+			goto out;
- 		}
- 
--		ret = hclge_dbg_fd_tcam_read(hdev, 0, false, rule_locs[i]);
-+		pos += scnprintf(buf + pos, len - pos, "%s", tcam_buf);
-+
-+		ret = hclge_dbg_fd_tcam_read(hdev, false, tcam_buf, tcam_msg);
- 		if (ret) {
- 			dev_err(&hdev->pdev->dev,
- 				"failed to get fd tcam key y, ret = %d\n", ret);
--			kfree(rule_locs);
--			return;
-+			goto out;
- 		}
-+
-+		pos += scnprintf(buf + pos, len - pos, "%s", tcam_buf);
- 	}
- 
-+out:
-+	kfree(tcam_buf);
- 	kfree(rule_locs);
-+	return ret;
++	return 0;
  }
  
- int hclge_dbg_dump_rst_info(struct hclge_dev *hdev, char *buf, int len)
-@@ -1994,9 +2018,7 @@ int hclge_dbg_run_cmd(struct hnae3_handle *handle, const char *cmd_buf)
+ static int hclge_dbg_dump_tm_nodes(struct hclge_dev *hdev, char *buf, int len)
+@@ -2013,15 +1994,11 @@ static int hclge_dbg_dump_mac_mc(struct hclge_dev *hdev, char *buf, int len)
+ 
+ int hclge_dbg_run_cmd(struct hnae3_handle *handle, const char *cmd_buf)
+ {
+-#define DUMP_TM_MAP	"dump tm map"
+-
  	struct hclge_vport *vport = hclge_get_vport(handle);
  	struct hclge_dev *hdev = vport->back;
  
--	if (strncmp(cmd_buf, "dump fd tcam", 12) == 0) {
--		hclge_dbg_fd_tcam(hdev);
--	} else if (strncmp(cmd_buf, "dump tc", 7) == 0) {
-+	if (strncmp(cmd_buf, "dump tc", 7) == 0) {
+ 	if (strncmp(cmd_buf, "dump tc", 7) == 0) {
  		hclge_dbg_dump_tc(hdev);
- 	} else if (strncmp(cmd_buf, DUMP_TM_MAP, strlen(DUMP_TM_MAP)) == 0) {
- 		hclge_dbg_dump_tm_map(hdev, &cmd_buf[sizeof(DUMP_TM_MAP)]);
-@@ -2112,6 +2134,10 @@ static const struct hclge_dbg_func hclge_dbg_cmd_func[] = {
- 		.cmd = HNAE3_DBG_CMD_REG_DCB,
- 		.dbg_dump = hclge_dbg_dump_dcb,
+-	} else if (strncmp(cmd_buf, DUMP_TM_MAP, strlen(DUMP_TM_MAP)) == 0) {
+-		hclge_dbg_dump_tm_map(hdev, &cmd_buf[sizeof(DUMP_TM_MAP)]);
+ 	} else if (strncmp(cmd_buf, "dump tm", 7) == 0) {
+ 		hclge_dbg_dump_tm(hdev);
+ 	} else if (strncmp(cmd_buf, "dump qos pause cfg", 18) == 0) {
+@@ -2059,6 +2036,10 @@ static const struct hclge_dbg_func hclge_dbg_cmd_func[] = {
+ 		.dbg_dump = hclge_dbg_dump_tm_qset,
  	},
-+	{
-+		.cmd = HNAE3_DBG_CMD_FD_TCAM,
-+		.dbg_dump = hclge_dbg_dump_fd_tcam,
+ 	{
++		.cmd = HNAE3_DBG_CMD_TM_MAP,
++		.dbg_dump = hclge_dbg_dump_tm_map,
 +	},
- };
- 
- int hclge_dbg_read_cmd(struct hnae3_handle *handle, enum hnae3_dbg_cmd cmd,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
-index 933f157..25b42da 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
-@@ -69,6 +69,11 @@ struct hclge_dbg_reg_common_msg {
- 	enum hclge_opcode_type cmd;
- };
- 
-+struct hclge_dbg_tcam_msg {
-+	u8 stage;
-+	u32 loc;
-+};
++	{
+ 		.cmd = HNAE3_DBG_CMD_MAC_UC,
+ 		.dbg_dump = hclge_dbg_dump_mac_uc,
+ 	},
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index ebb962b..bd99faf 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -1807,3 +1807,63 @@ int hclge_tm_get_pri_shaper(struct hclge_dev *hdev, u8 pri_id,
+ 	para->rate = le32_to_cpu(shap_cfg_cmd->pri_rate);
+ 	return 0;
+ }
 +
- #define	HCLGE_DBG_MAX_DFX_MSG_LEN	60
- struct hclge_dbg_dfx_message {
- 	int flag;
++int hclge_tm_get_q_to_qs_map(struct hclge_dev *hdev, u16 q_id, u16 *qset_id)
++{
++	struct hclge_nq_to_qs_link_cmd *map;
++	struct hclge_desc desc;
++	u16 qs_id_l;
++	u16 qs_id_h;
++	int ret;
++
++	map = (struct hclge_nq_to_qs_link_cmd *)desc.data;
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_TM_NQ_TO_QS_LINK, true);
++	map->nq_id = cpu_to_le16(q_id);
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret) {
++		dev_err(&hdev->pdev->dev,
++			"failed to get queue to qset map, ret = %d\n", ret);
++		return ret;
++	}
++	*qset_id = le16_to_cpu(map->qset_id);
++
++	/* convert qset_id to the following format, drop the vld bit
++	 *            | qs_id_h | vld | qs_id_l |
++	 * qset_id:   | 15 ~ 11 |  10 |  9 ~ 0  |
++	 *             \         \   /         /
++	 *              \         \ /         /
++	 * qset_id: | 15 | 14 ~ 10 |  9 ~ 0  |
++	 */
++	qs_id_l = hnae3_get_field(*qset_id, HCLGE_TM_QS_ID_L_MSK,
++				  HCLGE_TM_QS_ID_L_S);
++	qs_id_h = hnae3_get_field(*qset_id, HCLGE_TM_QS_ID_H_EXT_MSK,
++				  HCLGE_TM_QS_ID_H_EXT_S);
++	*qset_id = 0;
++	hnae3_set_field(*qset_id, HCLGE_TM_QS_ID_L_MSK, HCLGE_TM_QS_ID_L_S,
++			qs_id_l);
++	hnae3_set_field(*qset_id, HCLGE_TM_QS_ID_H_MSK, HCLGE_TM_QS_ID_H_S,
++			qs_id_h);
++	return 0;
++}
++
++int hclge_tm_get_q_to_tc(struct hclge_dev *hdev, u16 q_id, u8 *tc_id)
++{
++#define HCLGE_TM_TC_MASK		0x7
++
++	struct hclge_tqp_tx_queue_tc_cmd *tc;
++	struct hclge_desc desc;
++	int ret;
++
++	tc = (struct hclge_tqp_tx_queue_tc_cmd *)desc.data;
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_TQP_TX_QUEUE_TC, true);
++	tc->queue_id = cpu_to_le16(q_id);
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret) {
++		dev_err(&hdev->pdev->dev,
++			"failed to get queue to tc map, ret = %d\n", ret);
++		return ret;
++	}
++
++	*tc_id = tc->tc_id & HCLGE_TM_TC_MASK;
++	return 0;
++}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+index b25d760..c21e822 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+@@ -242,4 +242,6 @@ int hclge_tm_get_pri_weight(struct hclge_dev *hdev, u8 pri_id, u8 *weight);
+ int hclge_tm_get_pri_shaper(struct hclge_dev *hdev, u8 pri_id,
+ 			    enum hclge_opcode_type cmd,
+ 			    struct hclge_pri_shaper_para *para);
++int hclge_tm_get_q_to_qs_map(struct hclge_dev *hdev, u16 q_id, u16 *qset_id);
++int hclge_tm_get_q_to_tc(struct hclge_dev *hdev, u16 q_id, u8 *tc_id);
+ #endif
 -- 
 2.7.4
 
