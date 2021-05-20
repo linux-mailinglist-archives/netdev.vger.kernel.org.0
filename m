@@ -2,179 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 217F538B9D4
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 00:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8EF38B9E6
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 01:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232354AbhETW4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 18:56:20 -0400
-Received: from smtp-fw-80006.amazon.com ([99.78.197.217]:51941 "EHLO
-        smtp-fw-80006.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231967AbhETW4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 18:56:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1621551298; x=1653087298;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=x+CmPkt+gS5GHDvNirO+GVQ5AFM4U/vtAYwbl2/w4vw=;
-  b=ngENQGCm+/3DPzB+MofJdkiWd+Q30OlEdbYaOofXogc2yaa8EOflaJnj
-   2bBmSTgjyXtAJWPY6tBC8kwzMrjWxLDOKWVCbTs6XkskTs0ZvGTXA7gAp
-   0bTveUVxVQFxT8AIdmcaHAUo0+a2iAmjddOFsxsfZ00YUJdthUgYmssuW
-   s=;
-X-IronPort-AV: E=Sophos;i="5.82,313,1613433600"; 
-   d="scan'208";a="2453487"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-2c-87a10be6.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 20 May 2021 22:54:58 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2c-87a10be6.us-west-2.amazon.com (Postfix) with ESMTPS id D8908A1EEA;
-        Thu, 20 May 2021 22:54:56 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Thu, 20 May 2021 22:54:55 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.137) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Thu, 20 May 2021 22:54:51 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kafai@fb.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
-        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH v6 bpf-next 03/11] tcp: Keep TCP_CLOSE sockets in the reuseport group.
-Date:   Fri, 21 May 2021 07:54:48 +0900
-Message-ID: <20210520225448.14157-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210520212201.zq3ozwx3vrobd2ua@kafai-mbp.dhcp.thefacebook.com>
-References: <20210520212201.zq3ozwx3vrobd2ua@kafai-mbp.dhcp.thefacebook.com>
+        id S232664AbhETXBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 19:01:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49788 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231919AbhETXBc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 19:01:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 600EB613AE;
+        Thu, 20 May 2021 23:00:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621551610;
+        bh=d3OAH1SWRvHEo0ZPbCi0Z6vsFyuPVS9WwpZ0HO2l2T8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KjzhLn0pulgUajUesBp7AGBpChrD+gXv7ir7cJ7lCThbc3RhstNY9+tmyxTp40Lv5
+         5sVjFxN6CwEfke5AjFZx78T0feXLJ4YfPId9Noy8VhGTiISqsvJTIE0+1iuPQYd3X5
+         Huao7b1YonR1DGYFzkc2mBWpXhm8Mnv43odEmiz0yJzMM9tWeLnOhY78Tz/Fi68Urv
+         wXxLkpqwhQfDwIEfHdnYeL0doKK5JRZTjoY17OT0Ro7OfYvLiQYN6lCRl+WGZeDJ7L
+         lBbm2mvz4Nmsf222fsGNcq7lY+AyNZPOf0yLUT7Lq1KXLUKW/kpjsBr2zKeK2QoVdj
+         SfElfdUVsKwHQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 532F1609F6;
+        Thu, 20 May 2021 23:00:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.137]
-X-ClientProxiedBy: EX13D21UWB002.ant.amazon.com (10.43.161.177) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Subject: Re: [PATCH net 0/2] net: fixes for stmmac
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162155161033.31527.4405992814200131855.git-patchwork-notify@kernel.org>
+Date:   Thu, 20 May 2021 23:00:10 +0000
+References: <20210520125117.1015-1-qiangqing.zhang@nxp.com>
+In-Reply-To: <20210520125117.1015-1-qiangqing.zhang@nxp.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Martin KaFai Lau <kafai@fb.com>
-Date:   Thu, 20 May 2021 14:22:01 -0700
-> On Thu, May 20, 2021 at 05:51:17PM +0900, Kuniyuki Iwashima wrote:
-> > From:   Martin KaFai Lau <kafai@fb.com>
-> > Date:   Wed, 19 May 2021 23:26:48 -0700
-> > > On Mon, May 17, 2021 at 09:22:50AM +0900, Kuniyuki Iwashima wrote:
-> > > 
-> > > > +static int reuseport_resurrect(struct sock *sk, struct sock_reuseport *old_reuse,
-> > > > +			       struct sock_reuseport *reuse, bool bind_inany)
-> > > > +{
-> > > > +	if (old_reuse == reuse) {
-> > > > +		/* If sk was in the same reuseport group, just pop sk out of
-> > > > +		 * the closed section and push sk into the listening section.
-> > > > +		 */
-> > > > +		__reuseport_detach_closed_sock(sk, old_reuse);
-> > > > +		__reuseport_add_sock(sk, old_reuse);
-> > > > +		return 0;
-> > > > +	}
-> > > > +
-> > > > +	if (!reuse) {
-> > > > +		/* In bind()/listen() path, we cannot carry over the eBPF prog
-> > > > +		 * for the shutdown()ed socket. In setsockopt() path, we should
-> > > > +		 * not change the eBPF prog of listening sockets by attaching a
-> > > > +		 * prog to the shutdown()ed socket. Thus, we will allocate a new
-> > > > +		 * reuseport group and detach sk from the old group.
-> > > > +		 */
-> > > For the reuseport_attach_prog() path, I think it needs to consider
-> > > the reuse->num_closed_socks != 0 case also and that should belong
-> > > to the resurrect case.  For example, when
-> > > sk_unhashed(sk) but sk->sk_reuseport == 0.
-> > 
-> > In the path, reuseport_resurrect() is called from reuseport_alloc() only
-> > if reuse->num_closed_socks != 0.
-> > 
-> > 
-> > > @@ -92,6 +117,14 @@ int reuseport_alloc(struct sock *sk, bool bind_inany)
-> > >  	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
-> > >  					  lockdep_is_held(&reuseport_lock));
-> > >  	if (reuse) {
-> > > +		if (reuse->num_closed_socks) {
-> > 
-> > But, should this be
-> > 
-> > 	if (sk->sk_state == TCP_CLOSE && reuse->num_closed_socks)
-> > 
-> > because we need not allocate a new group when we attach a bpf prog to
-> > listeners?
-> The reuseport_alloc() is fine as is.  No need to change.
+Hello:
 
-I missed sk_unhashed(sk) prevents calling reuseport_alloc()
-if sk_state == TCP_LISTEN. I'll keep it as is.
+This series was applied to netdev/net.git (refs/heads/master):
 
-
+On Thu, 20 May 2021 20:51:15 +0800 you wrote:
+> Two clock fixes for stmmac driver.
 > 
-> I should have copied reuseport_attach_prog() in the last reply and
-> commented there instead.
+> Joakim Zhang (2):
+>   net: stmmac: correct clocks enabled in stmmac_vlan_rx_kill_vid()
+>   net: stmmac: fix system hang if change mac address after interface
+>     ifdown
 > 
-> I meant reuseport_attach_prog() needs a change.  In reuseport_attach_prog(),
-> iiuc, currently passing the "else if (!rcu_access_pointer(sk->sk_reuseport_cb))"
-> check implies the sk was (and still is) hashed with sk_reuseport enabled
-> because the current behavior would have set sk_reuseport_cb to NULL during
-> unhash but it is no longer true now.  For example, this will break:
-> 
-> 1. shutdown(lsk); /* lsk was bound with sk_reuseport enabled */
-> 2. setsockopt(lsk, ..., SO_REUSEPORT, &zero, ...); /* disable sk_reuseport */
-> 3. setsockopt(lsk, ..., SO_ATTACH_REUSEPORT_EBPF, &prog_fd, ...);
->    ^---- /* This will work now because sk_reuseport_cb is not NULL.
->           * However, it shouldn't be allowed.
-> 	  */
+> [...]
 
-Thank you for explanation, I understood the case.
+Here is the summary with links:
+  - [net,1/2] net: stmmac: correct clocks enabled in stmmac_vlan_rx_kill_vid()
+    https://git.kernel.org/netdev/net/c/b3dcb3127786
+  - [net,2/2] net: stmmac: fix system hang if change mac address after interface ifdown
+    https://git.kernel.org/netdev/net/c/4691ffb18ac9
 
-Exactly, I've confirmed that the case succeeded in the setsockopt() and I
-could change the active listeners' prog via a shutdowned socket.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-> 
-> I am thinking something like this (uncompiled code):
-> 
-> int reuseport_attach_prog(struct sock *sk, struct bpf_prog *prog)
-> {
-> 	struct sock_reuseport *reuse;
-> 	struct bpf_prog *old_prog;
-> 
-> 	if (sk_unhashed(sk)) {
-> 		int err;
-> 
-> 		if (!sk->sk_reuseport)
-> 			return -EINVAL;
-> 
-> 		err = reuseport_alloc(sk, false);
-> 		if (err)
-> 			return err;
-> 	} else if (!rcu_access_pointer(sk->sk_reuseport_cb)) {
-> 		/* The socket wasn't bound with SO_REUSEPORT */
-> 		return -EINVAL;
-> 	}
-> 
-> 	/* ... */
-> }
-> 
-> WDYT?
-
-I tested this change worked fine. I think this change should be added in
-reuseport_detach_prog() also.
-
----8<---
-int reuseport_detach_prog(struct sock *sk)
-{
-        struct sock_reuseport *reuse;
-        struct bpf_prog *old_prog;
-
-        if (!rcu_access_pointer(sk->sk_reuseport_cb))
-		return sk->sk_reuseport ? -ENOENT : -EINVAL;
----8<---
-
-
-Another option is to add the check in sock_setsockopt():
-SO_ATTACH_REUSEPORT_[CE]BPF, SO_DETACH_REUSEPORT_BPF.
-
-Which do you think is better ?
