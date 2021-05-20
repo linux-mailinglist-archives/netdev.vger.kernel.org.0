@@ -2,112 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E89C38B051
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 15:47:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 976CC38B06C
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 15:50:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239110AbhETNsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 09:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45534 "EHLO
+        id S240022AbhETNwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 09:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231946AbhETNsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 09:48:18 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F85BC06175F;
-        Thu, 20 May 2021 06:46:57 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id i7so7566038ejc.5;
-        Thu, 20 May 2021 06:46:57 -0700 (PDT)
+        with ESMTP id S237905AbhETNwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 09:52:01 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8796DC061574;
+        Thu, 20 May 2021 06:50:38 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id l4so25392148ejc.10;
+        Thu, 20 May 2021 06:50:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aFmQJac4iuxwmbF46KvAyNCQors8o3Kv89Ax85e/fSk=;
-        b=gfp3n9YGxa7K7QrH/kG5G7lPmDgckjSFtBzbP7QN0LXBdbrlGj776BLliSEBgqM95/
-         m/IVG5AhFHf/oP+kzg/Upa9G/dl1UnuvaWRyhzyOMKk7VfECGaMSpKbe1nC1Emw7exAO
-         Drridg9cymRj9v09HdxOQON2wpAvoKYewwipxAyzmA11kIMIHIOh64BUJwxq34PRbgov
-         jPqXLEfv4KLHy7CnBDA42vhhV7VTi+NayC1OW2U2zYTH194RMbGWaIAIg+/xY+W898w3
-         e7kd5O1rs3FG2qI6zalGvnOBAAP62K6MkPVpuuSI13hJj2UtoPQH1lEEkHFiJX/ZcoiM
-         i3fg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1+eek7zhSyb7W9IYs1NtRILlzr2B7O19v2tlO+UoAKM=;
+        b=CdGvOrZxUJMA9XNbmkPXsNUkNe7t82jrEOBjhPv3yi+0mItYOC0EeuCe54Wkie8nRn
+         XUKWR2kLmKA4yKmZWYOQ+2zUgR0o1BL1QbXd8L/eNj1Hf068tDszREx0e+04wVNWbA2T
+         hlhuVLFIkNzbfyycdc7yAKj7+Qwmp8LcAR74j1ryR7s2SakmhyCrK+i99AfolUj1ech3
+         tFjlZITW1zwFkpub7HQ4KM4JlX4KCjJmNunVvYmniAOf2Oxq9nnpfemg+k3rV9KiR6VO
+         n64hQ150b3lRA1hGJUhHNAWuXDGNYkdNMFFrscMgZBlyIGmirZvjjFNNC5iaIkiWiAeV
+         pkpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aFmQJac4iuxwmbF46KvAyNCQors8o3Kv89Ax85e/fSk=;
-        b=F3raFBVbuKxz+LJOIyPuOzBukXlfmbJL5U87IlOPexanUqKCFQt9ysUj51st7A7QAj
-         wsgo7IexMXv2b+NlA3/V5qivEjfDp63rqWT2oi3QzGLANP9kdcQAVOvskQU5S5gwyn0G
-         0t9fR5m3JqERZIl7DmgZH9Z2E7vqQFvQMEFf7lZtQ5SC/0Yxy1I4JMqn3HuM8RO7ANy9
-         mCFaofALclSJU8Opx1XONxKeNuIpMzKQ0lOLKdXyiMUGfzhiRcqWaVPx2cuKgCHN6aju
-         J05mqTRukyzmCYxf158J60ofTYiNFyP13J/GbJFnOcBxtFgpdyGSW6wQvha7pAOsn240
-         0BVA==
-X-Gm-Message-State: AOAM5317cH2esWaJnInoyC7olp3crVTUwGjGhWionXlE6xzVID+gZVgy
-        s2oVRitAtAQ9FmfxxLqIwDY=
-X-Google-Smtp-Source: ABdhPJyEghuZf4q6DPfhgET8q0IkDmgbGMyM7NDdSatnuXlqzH162qSD+d218cYgpqK4TrAH2uovmA==
-X-Received: by 2002:a17:906:5210:: with SMTP id g16mr4915987ejm.116.1621518415727;
-        Thu, 20 May 2021 06:46:55 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id bw26sm1419379ejb.119.2021.05.20.06.46.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1+eek7zhSyb7W9IYs1NtRILlzr2B7O19v2tlO+UoAKM=;
+        b=T2jOFn5RKCr28oIv45B0uIqOzLNdZbsN98F23vhHrbqbj5ZSV5+S3FDijg4FwZSEY2
+         CbigxwAJeTsAl0aOEMyNKOpg/RF68pXp5Shp2yD0VTiYuufd/+Rlm7LyKdntLd4bSgq1
+         GPtAjEEyPCU6r4Ibh1kUXMfGuSe0wZ1vZ9Qg52AnDbpUkVeB6emqjNk3dRxQbrA27UDs
+         E/l5beenhQfq9FprRIsauW38y1Sp4zm4EfT+AV1lzilx/OlsQyg9yw/6xFlUZ5QTDTa7
+         c/NBl23mFfDUQAI1VOpGcTimDp/ISrSFJ3YtdCmTFl8NaIdDm8grfAd6Rpr0p4/HOW8/
+         weIw==
+X-Gm-Message-State: AOAM532rje+Yx4Yrd+0hx7MTM1Ln8k5E2TG1EMfiBMzBpAtuJJCBnvgF
+        uWh5/8kROdbzXav8D1SsD0I=
+X-Google-Smtp-Source: ABdhPJxFrSEodLlVHixLQEIfbcVius+bROx7qOBF0VbE/3yls66rzYXs6DreJyE6BnpziKKMH/dnvA==
+X-Received: by 2002:a17:906:9159:: with SMTP id y25mr4840324ejw.144.1621518637176;
+        Thu, 20 May 2021 06:50:37 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id g13sm1449281ejr.63.2021.05.20.06.50.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 May 2021 06:46:55 -0700 (PDT)
-Date:   Thu, 20 May 2021 16:46:52 +0300
+        Thu, 20 May 2021 06:50:36 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, a.fatoum@pengutronix.de,
-        vladimir.oltean@nxp.com, ast@kernel.org, daniel@iogearbox.net,
-        andriin@fb.com, edumazet@google.com, weiwan@google.com,
-        cong.wang@bytedance.com, ap420073@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@openeuler.org, mkl@pengutronix.de,
-        linux-can@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, bpf@vger.kernel.org,
-        jonas.bonn@netrounds.com, pabeni@redhat.com, mzhivich@akamai.com,
-        johunt@akamai.com, albcamus@gmail.com, kehuan.feng@gmail.com,
-        atenart@kernel.org, alexander.duyck@gmail.com, hdanton@sina.com,
-        jgross@suse.com, JKosina@suse.com, mkubecek@suse.cz,
-        bjorn@kernel.org, alobakin@pm.me
-Subject: Re: [Linuxarm] [PATCH RFC v4 0/3] Some optimization for lockless
- qdisc
-Message-ID: <20210520134652.2sw6gzfdzsqeedzz@skbuf>
-References: <1621502873-62720-1-git-send-email-linyunsheng@huawei.com>
- <829cc4c1-46cc-c96c-47ba-438ae3534b94@huawei.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next] net: dsa: sja1105: adapt to a SPI controller with a limited max transfer size
+Date:   Thu, 20 May 2021 16:50:31 +0300
+Message-Id: <20210520135031.2969183-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <829cc4c1-46cc-c96c-47ba-438ae3534b94@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yunsheng,
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-On Thu, May 20, 2021 at 05:45:14PM +0800, Yunsheng Lin wrote:
-> On 2021/5/20 17:27, Yunsheng Lin wrote:
-> > Patch 1: remove unnecessary seqcount operation.
-> > Patch 2: implement TCQ_F_CAN_BYPASS.
-> > Patch 3: remove qdisc->empty.
-> > 
-> > RFC v4: Use STATE_MISSED and STATE_DRAINING to indicate non-empty
-> >         qdisc, and add patch 1 and 3.
-> 
-> @Vladimir, Ahmad
-> It would be good to run your testcase to see if there are any
-> out of order for this version, because this version has used
-> STATE_MISSED and STATE_DRAINING to indicate non-empty qdisc,
-> thanks.
-> 
-> It is based on newest net branch with qdisc stuck patchset.
-> 
-> Some performance data as below:
-> 
-> pktgen + dummy netdev:
->  threads  without+this_patch   with+this_patch      delta
->     1       2.60Mpps            3.18Mpps             +22%
->     2       3.84Mpps            5.72Mpps             +48%
->     4       5.52Mpps            5.52Mpps             +0.0%
->     8       2.77Mpps            2.81Mpps             +1.4%
->    16       2.24Mpps            2.29Mpps             +2.2%
-> 
-> IP forward testing: 1.05Mpps increases to 1.15Mpps
+The static config of the sja1105 switch is a long stream of bytes which
+is programmed to the hardware in chunks (portions with the chip select
+continuously asserted) of max 256 bytes each.
 
-I will start the regression test with the flexcan driver on LS1028A and
-let you know tomorrow or so if there is any TX reordering issue.
+Only that certain SPI controllers, such as the spi-sc18is602 I2C-to-SPI
+bridge, cannot keep the chip select asserted for that long.
+The spi_max_transfer_size() and spi_max_message_size() functions are how
+the controller can impose its hardware limitations upon the SPI
+peripheral driver.
+
+The sja1105 sends its static config to the SPI master as a huge
+scatter/gather spi_message - commit 08839c06e96f ("net: dsa: sja1105:
+Switch to scatter/gather API for SPI") contains a description of that.
+That spi_message contains the following list of spi_transfers:
+
+                |                         |      cs_change
+ spi_transfer # |       Contents          | (deassert chip select)
+ ---------------|-------------------------|-----------------------
+       1        |   SPI message header 1  |         no
+       2        |  Static config chunk 1  |         yes
+       3        |   SPI message header 2  |         no
+       4        |  Static config chunk 2  |         yes
+      ...       |           ...           |         ...
+
+Since what the SPI master does not support is keeping the CS asserted
+for more than, say, 200 bytes, we must limit the summed length of the
+spi_transfers with cs_change deasserted (1+2, 3+4 etc) lower than 200.
+
+This is a bit fuzzy, but I think the proper way to handle this is to
+just look at the spi_max_transfer_size() reported by the master, and
+adapt to that. We can disregard the spi_max_message_size() limit since I
+suppose that assumes no cs_change - but then again, spi_max_transfer_size
+is itself capped by spi_max_message_size, which makes sense.
+
+Regression-tested on a switch connected to a controller with no
+limitations (spi-fsl-dspi) as well as with one with caps for both
+max_transfer_size and max_message_size (spi-sc18is602).
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/sja1105/sja1105_spi.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
+index f7a1514f81e8..ac766def45c8 100644
+--- a/drivers/net/dsa/sja1105/sja1105_spi.c
++++ b/drivers/net/dsa/sja1105/sja1105_spi.c
+@@ -46,18 +46,22 @@ static int sja1105_xfer(const struct sja1105_private *priv,
+ 			sja1105_spi_rw_mode_t rw, u64 reg_addr, u8 *buf,
+ 			size_t len, struct ptp_system_timestamp *ptp_sts)
+ {
++	struct spi_device *spi = priv->spidev;
+ 	struct sja1105_chunk chunk = {
+-		.len = min_t(size_t, len, SJA1105_SIZE_SPI_MSG_MAXLEN),
+ 		.reg_addr = reg_addr,
+ 		.buf = buf,
+ 	};
+-	struct spi_device *spi = priv->spidev;
+ 	struct spi_transfer *xfers;
++	size_t xfer_len;
+ 	int num_chunks;
+ 	int rc, i = 0;
+ 	u8 *hdr_bufs;
+ 
+-	num_chunks = DIV_ROUND_UP(len, SJA1105_SIZE_SPI_MSG_MAXLEN);
++	xfer_len = min_t(size_t, SJA1105_SIZE_SPI_MSG_MAXLEN,
++			 spi_max_transfer_size(spi) - SJA1105_SIZE_SPI_MSG_HEADER);
++
++	num_chunks = DIV_ROUND_UP(len, xfer_len);
++	chunk.len = min(len, xfer_len);
+ 
+ 	/* One transfer for each message header, one for each message
+ 	 * payload (chunk).
+@@ -127,7 +131,7 @@ static int sja1105_xfer(const struct sja1105_private *priv,
+ 		chunk.buf += chunk.len;
+ 		chunk.reg_addr += chunk.len / 4;
+ 		chunk.len = min_t(size_t, (ptrdiff_t)(buf + len - chunk.buf),
+-				  SJA1105_SIZE_SPI_MSG_MAXLEN);
++				  xfer_len);
+ 
+ 		/* De-assert the chip select after each chunk. */
+ 		if (chunk.len)
+-- 
+2.25.1
+
