@@ -2,137 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D96CE389E96
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 09:03:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D5B5389EA4
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 09:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbhETHEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 03:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
+        id S230403AbhETHJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 03:09:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230377AbhETHEg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 03:04:36 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7D8C061761
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:03:14 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id k14so20092397eji.2
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:03:14 -0700 (PDT)
+        with ESMTP id S229536AbhETHJj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 03:09:39 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B615C061574
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:08:17 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id q5so16438305wrs.4
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:08:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wZuC9MkEtBjxIYtF7kqVL9Ifpq76zVZvowCEWkRzdAs=;
-        b=isU1Bu0LYOcmwo2kZ+cxn6aLNagpy/yAVpavSdt0QoSh70Zxzbz5Cbo9vgX0zVM+vf
-         tJNWmzAPB2voZMyxrgD0fjafieA+/5wH0Mv8ATKJmh53aalUm9SUQODFqqVPbg+PUdXo
-         H9R7EQmWsf3D+ZUsHmp9gvDaJl1QtHo6qQ2vRr8rGBd+2OjYWeVB9bT0M1QVLkN5C8NS
-         CmrUJFwCufbKYOtmvdGOBvbocV6hZEeNWi65kA9s7cR0hY6RVWe/Ei7CHfzZxWR5wnd8
-         oE71NvDhg8fGP9ZL2M9OYpa+NfrMb0l/lEZ9YFBFN741IDnOTCnHVcEs0BWYU0gIhGb4
-         /1xg==
+        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nvNvutw5U6lnRUPBURCHGGCHa2JEZhSNhVEi39PMdZ8=;
+        b=tCxQqsbYzVQEm011DO+lyzx7w+KGgEImTqonurjp5IVJQYfCV6mmWhyKPRneYZqryr
+         WCwER0ilrgnpv9m7l63j4bVceBrFZaaL4253a1x3h6xs1MWj+ZRDtSf1H2iQCL6WBuPj
+         m+BIiZQp93QLQnOTPRSDnkEViXcN0o17Z6i1AAF7KCtyx4qNmYnndxkUOJ0PsFWVR4Fs
+         5u4mPonLst22NHiANW1d2Y9SBo5QryFH3cNYu5lUg506yk9NouHrEsNRAhJW4V49kAwQ
+         Ke5VX1gBAdmDYAqTDVSNEumEI8oTgBHAtFscfO9LLP3t4YytJknuBOlVfbusPcbROA+F
+         eJHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wZuC9MkEtBjxIYtF7kqVL9Ifpq76zVZvowCEWkRzdAs=;
-        b=tMy7ragGMvjZmwKgQbHIRrnMqPJXKZ+Nd0qsP7LJvR4zywzA9z5NLiBN+JiYIBhe6D
-         IBm+uYv8bu9UV9DG5I5RnPgoDEUccSOjfSxx8lQawxWO3StP9w9ONp+8QkMsoYSU6Er8
-         M/9J7fTKe7yagQX4BGzHieWFU4EZ8ljjK+NevcMkagFZtrLggQXOz26YyvDvQG6l6rxV
-         wyjFQgIChDbx5YXbA9V8BKdkcGdsV/RKxwd6c2HcK802iHet98TfB720Ha0ywPf1gWK5
-         TJ0UpYJUGGBvbEmwhZrj+ZZEPfLbvDAPbzK4dYedWRj9XphxLlqlpe2dup7D4UOqfjhO
-         8D3w==
-X-Gm-Message-State: AOAM531TNrySZBGsJgNqW1/E3U8UePSoOZbrUwWO1JJGkLAq8lbLutJu
-        KBmdOo+17+bk6qgJTSVyEHf9l6WNjIUxgaJMjn5c
-X-Google-Smtp-Source: ABdhPJxdx8w+fCqswSdKs59iVuZd4vAf9uGIN8nGG/abyN54M6HaotKLEQyMezCx9lo1kEngrpWm4QyOMlEiGHNAl0E=
-X-Received: by 2002:a17:906:c211:: with SMTP id d17mr3165937ejz.247.1621494192590;
- Thu, 20 May 2021 00:03:12 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nvNvutw5U6lnRUPBURCHGGCHa2JEZhSNhVEi39PMdZ8=;
+        b=KYiLafWTgvkQni0SbeQKcf6S8FVPW3+dpSOHg4/KIxviCHQtaa5/BHARguWuWdbm9E
+         bA0pI96NmKkCSWH5FLDSG3xVfXbC9QWzJsaH2pp7ogYgMDqUN9J55zINzsuloCNL2pb4
+         qh+0TcPqbK9BOaaHD8KvP3zfd/Ef6jH4pmKldE5WO75iucrc114MFFQN+Ef+t5WoJr9w
+         XZJmkc4E+ZP/gry3lhJPMgHk+HC0DWEL0fFEHh0dZ538InD1zpvxC5G+4xhDeMbBdkaL
+         dZxtOyiQMAqjPrkKIR+sgpZSjE6e2LucDNo61QMwqivcs06V64e2mNQe7AaCwIga/rjk
+         iVoA==
+X-Gm-Message-State: AOAM530wcYbHZ9/dtuZowgQVOAUJJoR2n4uy3tRtaefO3/bhiANnKKUU
+        Rlz9smL46GTDUwTabwOGoRZD4w==
+X-Google-Smtp-Source: ABdhPJyxKQ6svKMvsszD2eHww08+OJaqvwJG59ev+lZ+IPZHrRZigYzE5+Rk0HIDnB103F0UDnz27A==
+X-Received: by 2002:a5d:4d05:: with SMTP id z5mr2568820wrt.127.1621494495642;
+        Thu, 20 May 2021 00:08:15 -0700 (PDT)
+Received: from localhost ([154.21.15.43])
+        by smtp.gmail.com with ESMTPSA id s7sm7939504wmh.35.2021.05.20.00.08.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 May 2021 00:08:14 -0700 (PDT)
+Date:   Thu, 20 May 2021 11:08:07 +0400
+From:   Dmitrii Banshchikov <me@ubique.spb.ru>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, Andrey Ignatov <rdna@fb.com>
+Subject: Re: [PATCH bpf-next 02/11] bpfilter: Add logging facility
+Message-ID: <20210520070807.cpmloff4urdsifuy@amnesia>
+References: <20210517225308.720677-1-me@ubique.spb.ru>
+ <20210517225308.720677-3-me@ubique.spb.ru>
+ <CAPhsuW4osuNOagPRwUB30tk3V=ECANktt9jzb+NK1mqOamouSQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210517095513.850-1-xieyongji@bytedance.com> <20210517095513.850-12-xieyongji@bytedance.com>
- <YKYBle/F8aOgHO9p@zeniv-ca.linux.org.uk>
-In-Reply-To: <YKYBle/F8aOgHO9p@zeniv-ca.linux.org.uk>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 20 May 2021 15:03:01 +0800
-Message-ID: <CACycT3vTvdJN4qnp=O8E5fxR15evMexzsK+V_uFT0LZkRSCitw@mail.gmail.com>
-Subject: Re: Re: [PATCH v7 11/12] vduse: Introduce VDUSE - vDPA Device in Userspace
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPhsuW4osuNOagPRwUB30tk3V=ECANktt9jzb+NK1mqOamouSQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 2:28 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> On Mon, May 17, 2021 at 05:55:12PM +0800, Xie Yongji wrote:
->
-> > +     case VDUSE_IOTLB_GET_FD: {
-> > +             struct vduse_iotlb_entry entry;
-> > +             struct vhost_iotlb_map *map;
-> > +             struct vdpa_map_file *map_file;
-> > +             struct vduse_iova_domain *domain = dev->domain;
-> > +             struct file *f = NULL;
+On Wed, May 19, 2021 at 10:32:25AM -0700, Song Liu wrote:
+> On Tue, May 18, 2021 at 11:05 PM Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
+> >
+> > There are three logging levels for messages: FATAL, NOTICE and DEBUG.
+> > When a message is logged with FATAL level it results in bpfilter
+> > usermode helper termination.
+> 
+> Could you please explain why we choose to have 3 levels? Will we need
+> more levels,
+> like WARNING, ERROR, etc.?
+
+
+I found that I need one level for development - to trace what
+goes rignt and wrong. At the same time as those messages go to
+dmesg this level is too verbose to be used under normal
+circumstances. That is why another level is introduced. And the
+last one exists to verify invariants or error condintions from
+which there is no right way to recover and they result in
+bpfilter termination.
+
+Probably we may have just two levels - DEBUG and NOTICE and some
+analogue of BUG_ON/WARN_ON/runtime assert that results in a
+message on NOTICE level and program termination if the checked
+condition is false.
+
+I don't think that we will need more levels - until we decide to
+utilize syslog facility. Even in that case I don't know how to
+differntiate between e.g. NOTICE and INFO messages.
+
+> 
+> >
+> > Introduce struct context to avoid use of global objects and store there
+> > the logging parameters: log level and log sink.
+> >
+> > Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
+> > ---
+> >  net/bpfilter/Makefile  |  2 +-
+> >  net/bpfilter/bflog.c   | 29 +++++++++++++++++++++++++++++
+> >  net/bpfilter/bflog.h   | 24 ++++++++++++++++++++++++
+> >  net/bpfilter/context.h | 16 ++++++++++++++++
+> 
+> Maybe combine bflog.h and context.h into one file? And bflog() can
+> probably fit in
+> that file too.
+
+
+Sure.
+
+> 
+> Thanks,
+> Song
+> 
+> >  4 files changed, 70 insertions(+), 1 deletion(-)
+> >  create mode 100644 net/bpfilter/bflog.c
+> >  create mode 100644 net/bpfilter/bflog.h
+> >  create mode 100644 net/bpfilter/context.h
+> >
+> > diff --git a/net/bpfilter/Makefile b/net/bpfilter/Makefile
+> > index cdac82b8c53a..874d5ef6237d 100644
+> > --- a/net/bpfilter/Makefile
+> > +++ b/net/bpfilter/Makefile
+> > @@ -4,7 +4,7 @@
+> >  #
+> >
+> >  userprogs := bpfilter_umh
+> > -bpfilter_umh-objs := main.o
+> > +bpfilter_umh-objs := main.o bflog.o
+> >  userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
+> >
+> >  ifeq ($(CONFIG_BPFILTER_UMH), y)
+> > diff --git a/net/bpfilter/bflog.c b/net/bpfilter/bflog.c
+> > new file mode 100644
+> > index 000000000000..2752e39060e4
+> > --- /dev/null
+> > +++ b/net/bpfilter/bflog.c
+> > @@ -0,0 +1,29 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * Copyright (c) 2021 Telegram FZ-LLC
+> > + */
 > > +
-> > +             ret = -EFAULT;
-> > +             if (copy_from_user(&entry, argp, sizeof(entry)))
-> > +                     break;
->
->                         return -EFAULT;
-> surely?
+> > +#define _GNU_SOURCE
 > > +
-> > +             ret = -EINVAL;
-> > +             if (entry.start > entry.last)
-> > +                     break;
->
-> ... and similar here, etc.
->
-
-OK.
-
-> > +             spin_lock(&domain->iotlb_lock);
-> > +             map = vhost_iotlb_itree_first(domain->iotlb,
-> > +                                           entry.start, entry.last);
-> > +             if (map) {
-> > +                     map_file = (struct vdpa_map_file *)map->opaque;
-> > +                     f = get_file(map_file->file);
-> > +                     entry.offset = map_file->offset;
-> > +                     entry.start = map->start;
-> > +                     entry.last = map->last;
-> > +                     entry.perm = map->perm;
-> > +             }
-> > +             spin_unlock(&domain->iotlb_lock);
-> > +             ret = -EINVAL;
-> > +             if (!f)
-> > +                     break;
+> > +#include "bflog.h"
 > > +
-> > +             ret = -EFAULT;
-> > +             if (copy_to_user(argp, &entry, sizeof(entry))) {
-> > +                     fput(f);
-> > +                     break;
-> > +             }
-> > +             ret = receive_fd(f, perm_to_file_flags(entry.perm));
-> > +             fput(f);
-> > +             break;
->
-> IDGI.  The main difference between receive_fd() and plain old
-> get_unused_fd_flags() + fd_install() is __receive_sock() call.
-> Which does nothing whatsoever in case of non-sockets.  Can you
-> get a socket here?
->
+> > +#include <stdarg.h>
+> > +#include <stdio.h>
+> > +#include <stdlib.h>
+> > +
+> > +#include "context.h"
+> > +
+> > +void bflog(struct context *ctx, int level, const char *fmt, ...)
+> > +{
+> > +       if (ctx->log_file &&
+> > +           (level == BFLOG_LEVEL_FATAL || (level & ctx->log_level))) {
+> > +               va_list va;
+> > +
+> > +               va_start(va, fmt);
+> > +               vfprintf(ctx->log_file, fmt, va);
+> > +               va_end(va);
+> > +       }
+> > +
+> > +       if (level == BFLOG_LEVEL_FATAL)
+> > +               exit(EXIT_FAILURE);
+> > +}
+> > diff --git a/net/bpfilter/bflog.h b/net/bpfilter/bflog.h
+> > new file mode 100644
+> > index 000000000000..4ed12791cfa1
+> > --- /dev/null
+> > +++ b/net/bpfilter/bflog.h
+> > @@ -0,0 +1,24 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*
+> > + * Copyright (c) 2021 Telegram FZ-LLC
+> > + */
+> > +
+> > +#ifndef NET_BPFILTER_BFLOG_H
+> > +#define NET_BPFILTER_BFLOG_H
+> > +
+> > +struct context;
+> > +
+> > +#define BFLOG_IMPL(ctx, level, fmt, ...) bflog(ctx, level, "bpfilter: " fmt, ##__VA_ARGS__)
+> > +
+> > +#define BFLOG_LEVEL_FATAL (0)
+> > +#define BFLOG_LEVEL_NOTICE (1)
+> > +#define BFLOG_LEVEL_DEBUG (2)
+> > +
+> > +#define BFLOG_FATAL(ctx, fmt, ...)                                                                 \
+> > +       BFLOG_IMPL(ctx, BFLOG_LEVEL_FATAL, "fatal error: " fmt, ##__VA_ARGS__)
+> > +#define BFLOG_NOTICE(ctx, fmt, ...) BFLOG_IMPL(ctx, BFLOG_LEVEL_NOTICE, fmt, ##__VA_ARGS__)
+> > +#define BFLOG_DEBUG(ctx, fmt, ...) BFLOG_IMPL(ctx, BFLOG_LEVEL_DEBUG, fmt, ##__VA_ARGS__)
+> > +
+> > +void bflog(struct context *ctx, int level, const char *fmt, ...);
+> > +
+> > +#endif // NET_BPFILTER_BFLOG_H
+> > diff --git a/net/bpfilter/context.h b/net/bpfilter/context.h
+> > new file mode 100644
+> > index 000000000000..e85c97c3d010
+> > --- /dev/null
+> > +++ b/net/bpfilter/context.h
+> > @@ -0,0 +1,16 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*
+> > + * Copyright (c) 2021 Telegram FZ-LLC
+> > + */
+> > +
+> > +#ifndef NET_BPFILTER_CONTEXT_H
+> > +#define NET_BPFILTER_CONTEXT_H
+> > +
+> > +#include <stdio.h>
+> > +
+> > +struct context {
+> > +       FILE *log_file;
+> > +       int log_level;
+> > +};
+> > +
+> > +#endif // NET_BPFILTER_CONTEXT_H
+> > --
+> > 2.25.1
+> >
 
-Actually what I want here is the security_file_receive() hook in receive_fd().
+-- 
 
-Thanks,
-Yongji
+Dmitrii Banshchikov
