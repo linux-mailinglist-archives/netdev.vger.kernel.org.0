@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB1AB38B803
+	by mail.lfdr.de (Postfix) with ESMTP id 9176638B802
 	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 22:02:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240152AbhETUEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 16:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47200 "EHLO
+        id S240093AbhETUEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 16:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237551AbhETUEE (ORCPT
+        with ESMTP id S236622AbhETUEE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 16:04:04 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3044DC061761;
-        Thu, 20 May 2021 13:02:41 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id y7so3290344eda.2;
-        Thu, 20 May 2021 13:02:41 -0700 (PDT)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB43C061574;
+        Thu, 20 May 2021 13:02:42 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id k14so23715367eji.2;
+        Thu, 20 May 2021 13:02:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FHUJtBq9iJ9xTw4W3wJ7q5IXipUFvoldRp8Yq4IjtY4=;
-        b=FXbDVMvnvTYdQA26aNNwxZnQEBqU+sXeFiVKTC/zSjlrZ1k3A5FerLTxVjqSaIlsPb
-         dDsMj/BZK+lhUfs/Nsb4C4Y3N4W1t91mm/S3UkzKa6bmwrk9A5krW0ykHoisP8J7z6Pj
-         aBt4pf12jKYYSlc1ev7F96IZMIlnDJdiuASaz1bhmG2cahIcnBbGRMYRg8+V9hIzsYe1
-         NC64bQwLH3+rVIoMFws5pqgdoe5lsdG1sOFv6GaeuW2z/yWajk8GGFJK+HAmsQNZZeKo
-         VWFAnDYHMQ6seNqtP/vhFnTeXi53rSV5wYovYGiuP1KAO3kj13Bd/BqzeyzoTtejMWD4
-         xduw==
+        bh=MIwFKnwxsMP/w3Erd5eATPhdPWZJ+enLwYctyGA6yX4=;
+        b=DH2SaswxTa+4eDazZmYb5XWuRAnU9klV7geQEUagDgxouYO5AG3vbApqFprWZz4/U1
+         xSiO1DPuG0nLasiraUrVlxCPhAe2+GZJgjql0HdJSHmWu3Q43nmFbvkNIVojBrlVlmW0
+         OWX7z6MlZkGoFBPFSe1VKrEZQrMrQStqna3nN9zuYo+yF7v/gkU7uN0yV4sEEhTifDRg
+         Pl5BpsG0BTX7w8BEy+baAJtS7j04grwvnqRIXpR1hZN0LXLPVId1jcx9NWmfZQwffndC
+         hYhRIbyxr5YgjwTF3HlKVROnY+XCjhVnrzThVMJdrfUBqyxlqfoy/5bOaZH+shkEO4v/
+         0r8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FHUJtBq9iJ9xTw4W3wJ7q5IXipUFvoldRp8Yq4IjtY4=;
-        b=HOZCT+B7Rlb0uKzoD9k1taoU2m6KKvH6rLFpZo3JPCxVF/2yVLXVVM3CBqb6tWtQVm
-         mrPMTdRZiL5fvsgk8LaYqCnXcrq6Ji77QqZnAhg8kbXLU7Rui4x2l9T9jYPlMVCGL5Hf
-         WquYIfAcPa1obPOcyn7KydlKyTLAeD5F0K7KYdzTiER6FlxzDYmcO/VlQTnZkJk2LD/i
-         NbNW81N3dF+SMYSEnZDoHvcLWDzs72WByzR1Ivl9IO+ZpVZz9P11ya4rJCYD+HEF24ft
-         SMQXyf3LbO4GPfNkR5RGDK0vJHnl0Yw6/Mp6cms3JMPPGHZ5Jut24QmQwFMdMn4A6VZk
-         OXlQ==
-X-Gm-Message-State: AOAM532IOgTwaKEm9W4MSb5sTNdoFlx14N3uxF1Gr0HpVK9i0wy++M0i
-        PUXIMGOTtkv0ksFYX+dh4J0=
-X-Google-Smtp-Source: ABdhPJw7PJfpxXjaxM6+ou8m8BPWeNrRx1W+DAFZoYct+WXm2enQNXeOEAuj7aPDIPSrcF1LFeoGNA==
-X-Received: by 2002:a05:6402:657:: with SMTP id u23mr6798799edx.225.1621540959751;
-        Thu, 20 May 2021 13:02:39 -0700 (PDT)
+        bh=MIwFKnwxsMP/w3Erd5eATPhdPWZJ+enLwYctyGA6yX4=;
+        b=Djat5P31iGBAdNXkKsLJf1EqJpsBziCpAGeGlTjq2nOmVdMjgCC2DW+oZsfDdhqPef
+         R5wciuqZbIWFKHvz+5INGcItIOkT5lnbjdtI7psL/9HoYq/2RTs9C6qe0Phzs0rV7Rqn
+         swagp8AugNHmBWJY//4XI8oM5UI47qu4rZ4TevaT0YmoEGjP4WhNSwcuERpe9gpHQ3sh
+         F3us2pcwpxJlKh2NCofUZl6V2stmNLlSb8Hs9sV7AgEZaW4EW4GpWk1VRQhx6+6ax1dn
+         ivOsAihDM8M65NP402pI/oDCw8BcoIZ5Sx2ITUJBdiybicDob/leRjvWWplk1ePXrWvd
+         Ji1g==
+X-Gm-Message-State: AOAM530WeJAA9j+bII28GH1Quz0MySYh1Vb5V0lWHUgIbcaiknHYp7D5
+        LVELt3Nln1yynJg4UIExJ7w=
+X-Google-Smtp-Source: ABdhPJypqBkxe+bckqqa8/ZI0rgX8KAJWg4GHQOH3HR23DF4ITRQjNVpJVqLuQMEV8gdXbntKtrHnw==
+X-Received: by 2002:a17:906:328c:: with SMTP id 12mr6376131ejw.361.1621540960726;
+        Thu, 20 May 2021 13:02:40 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id y10sm1974288ejh.105.2021.05.20.13.02.38
+        by smtp.gmail.com with ESMTPSA id y10sm1974288ejh.105.2021.05.20.13.02.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 May 2021 13:02:39 -0700 (PDT)
+        Thu, 20 May 2021 13:02:40 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
         Guenter Roeck <linux@roeck-us.net>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 1/2] net: dsa: sja1105: send multiple spi_messages instead of using cs_change
-Date:   Thu, 20 May 2021 23:02:22 +0300
-Message-Id: <20210520200223.3375421-2-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 2/2] net: dsa: sja1105: adapt to a SPI controller with a limited max transfer size
+Date:   Thu, 20 May 2021 23:02:23 +0300
+Message-Id: <20210520200223.3375421-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210520200223.3375421-1-olteanv@gmail.com>
 References: <20210520200223.3375421-1-olteanv@gmail.com>
@@ -70,180 +70,86 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The sja1105 driver has been described by Mark Brown as "not using the
-[ SPI ] API at all idiomatically" due to the use of cs_change:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210520135031.2969183-1-olteanv@gmail.com/
+The static config of the sja1105 switch is a long stream of bytes which
+is programmed to the hardware in chunks (portions with the chip select
+continuously asserted) of max 256 bytes each.
 
-According to include/linux/spi/spi.h, the chip select is supposed to be
-asserted for the entire length of a SPI message, as long as cs_change is
-false for all member transfers. The cs_change flag changes the following:
+Only that certain SPI controllers, such as the spi-sc18is602 I2C-to-SPI
+bridge, cannot keep the chip select asserted for that long.
+The spi_max_transfer_size() and spi_max_message_size() functions are how
+the controller can impose its hardware limitations upon the SPI
+peripheral driver.
 
-(i) When a non-final SPI transfer has cs_change = true, the chip select
-    should temporarily deassert and then reassert starting with the next
-    transfer.
-(ii) When a final SPI transfer has cs_change = true, the chip select
-     should remain asserted until the following SPI message.
+The sja1105 sends its static config to the SPI master in chunks, and
+each chunk is a spi_message composed of 2 spi_transfers: the buffer with
+the data and a preceding buffer with the SPI access header. Both buffers
+must be smaller than the transfer limit, and their sum must be smaller
+than the message limit.
 
-The sja1105 driver only uses cs_change for its first property, to form a
-single SPI message whose layout can be seen below:
-
-                                             this is an entire, single spi_message
-           _______________________________________________________________________________________________
-          /                                                                                               \
-          +-------------+---------------+-------------+---------------+ ... +-------------+---------------+
-          | hdr_xfer[0] | chunk_xfer[0] | hdr_xfer[1] | chunk_xfer[1] |     | hdr_xfer[n] | chunk_xfer[n] |
-          +-------------+---------------+-------------+---------------+ ... +-------------+---------------+
-cs_change      false          true           false           true                false          false
-
-           ____________________________  _____________________________       _____________________________
-CS line __/                            \/                             \ ... /                             \__
-
-The fact of the matter is that spi_max_message_size() has an ambiguous
-meaning if any non-final transfer has cs_change = true.
-
-If the SPI master has a limitation in that it cannot keep the chip
-select asserted for more than, say, 200 bytes (like the spi-sc18is602),
-the normal thing for it to do is to implement .max_transfer_size and
-.max_message_size, and limit both to 200: in the "worst case" where
-cs_change is always false, then the controller can, indeed, not send
-messages larger than 200 bytes.
-
-But the fact that the SPI controller's max_message_size does not
-necessarily mean that we cannot send messages larger than that.
-Notably, if the SPI master special-cases the transfers with cs_change
-and treats every chip select toggling as an entirely new transaction,
-then a SPI message can easily exceed that limit. So there is a
-temptation to ignore the controller's reported max_message_size when
-using cs_change = true in non-final transfers.
-
-But that can lead to false conclusions. As Mark points out, the SPI
-controller might have a different kind of limitation with the max
-message size, that has nothing at all to do with how long it can keep
-the chip select asserted.
-For example, that might be the case if the device is able to offload the
-chip select changes to the hardware as part of the data stream, and it
-packs the entire stream of commands+data (corresponding to a SPI
-message) into a single DMA transfer that is itself limited in size.
-
-So the only thing we can do is avoid ambiguity by not using cs_change at
-all. Instead of sending a single spi_message, we now send multiple SPI
-messages as follows:
-
-                  spi_message 0                 spi_message 1                       spi_message n
-           ____________________________   ___________________________        _____________________________
-          /                            \ /                           \      /                             \
-          +-------------+---------------+-------------+---------------+ ... +-------------+---------------+
-          | hdr_xfer[0] | chunk_xfer[0] | hdr_xfer[1] | chunk_xfer[1] |     | hdr_xfer[n] | chunk_xfer[n] |
-          +-------------+---------------+-------------+---------------+ ... +-------------+---------------+
-cs_change      false          true           false           true                false          false
-
-           ____________________________  _____________________________       _____________________________
-CS line __/                            \/                             \ ... /                             \__
-
-which is clearer because the max_message_size limit is now easier to
-enforce. What is transmitted on the wire stays, of course, the same.
-
-Additionally, because we send no more than 2 transfers at a time, we now
-avoid dynamic memory allocation too, which might be seen as an
-improvement by some.
+Regression-tested on a switch connected to a controller with no
+limitations (spi-fsl-dspi) as well as with one with caps for both
+max_transfer_size and max_message_size (spi-sc18is602).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_spi.c | 52 +++++++--------------------
- 1 file changed, 12 insertions(+), 40 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_spi.c | 30 ++++++++++++++++++++-------
+ 1 file changed, 23 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index f7a1514f81e8..8746e3f158a0 100644
+index 8746e3f158a0..7bcf2e419037 100644
 --- a/drivers/net/dsa/sja1105/sja1105_spi.c
 +++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -29,13 +29,6 @@ sja1105_spi_message_pack(void *buf, const struct sja1105_spi_message *msg)
- 	sja1105_pack(buf, &msg->address,    24,  4, size);
- }
- 
--#define sja1105_hdr_xfer(xfers, chunk) \
--	((xfers) + 2 * (chunk))
--#define sja1105_chunk_xfer(xfers, chunk) \
--	((xfers) + 2 * (chunk) + 1)
--#define sja1105_hdr_buf(hdr_bufs, chunk) \
--	((hdr_bufs) + (chunk) * SJA1105_SIZE_SPI_MSG_HEADER)
--
- /* If @rw is:
-  * - SPI_WRITE: creates and sends an SPI write message at absolute
-  *		address reg_addr, taking @len bytes from *buf
-@@ -46,41 +39,25 @@ static int sja1105_xfer(const struct sja1105_private *priv,
- 			sja1105_spi_rw_mode_t rw, u64 reg_addr, u8 *buf,
+@@ -40,19 +40,35 @@ static int sja1105_xfer(const struct sja1105_private *priv,
  			size_t len, struct ptp_system_timestamp *ptp_sts)
  {
-+	u8 hdr_buf[SJA1105_SIZE_SPI_MSG_HEADER] = {0};
- 	struct sja1105_chunk chunk = {
- 		.len = min_t(size_t, len, SJA1105_SIZE_SPI_MSG_MAXLEN),
- 		.reg_addr = reg_addr,
- 		.buf = buf,
- 	};
+ 	u8 hdr_buf[SJA1105_SIZE_SPI_MSG_HEADER] = {0};
+-	struct sja1105_chunk chunk = {
+-		.len = min_t(size_t, len, SJA1105_SIZE_SPI_MSG_MAXLEN),
+-		.reg_addr = reg_addr,
+-		.buf = buf,
+-	};
  	struct spi_device *spi = priv->spidev;
--	struct spi_transfer *xfers;
-+	struct spi_transfer xfers[2] = {0};
-+	struct spi_transfer *chunk_xfer;
-+	struct spi_transfer *hdr_xfer;
+ 	struct spi_transfer xfers[2] = {0};
+ 	struct spi_transfer *chunk_xfer;
+ 	struct spi_transfer *hdr_xfer;
++	struct sja1105_chunk chunk;
++	ssize_t xfer_len;
  	int num_chunks;
  	int rc, i = 0;
--	u8 *hdr_bufs;
  
- 	num_chunks = DIV_ROUND_UP(len, SJA1105_SIZE_SPI_MSG_MAXLEN);
+-	num_chunks = DIV_ROUND_UP(len, SJA1105_SIZE_SPI_MSG_MAXLEN);
++	/* One spi_message is composed of two spi_transfers: a small one for
++	 * the message header and another one for the current chunk of the
++	 * packed buffer.
++	 * Check that the restrictions imposed by the SPI controller are
++	 * respected: the chunk buffer is smaller than the max transfer size,
++	 * and the total length of the chunk plus its message header is smaller
++	 * than the max message size.
++	 */
++	xfer_len = min_t(ssize_t, SJA1105_SIZE_SPI_MSG_MAXLEN,
++			 spi_max_transfer_size(spi));
++	xfer_len = min_t(ssize_t, SJA1105_SIZE_SPI_MSG_MAXLEN,
++			 spi_max_message_size(spi) - SJA1105_SIZE_SPI_MSG_HEADER);
++	if (xfer_len < 0)
++		return -ERANGE;
++
++	num_chunks = DIV_ROUND_UP(len, xfer_len);
++
++	chunk.reg_addr = reg_addr;
++	chunk.buf = buf;
++	chunk.len = min_t(size_t, len, xfer_len);
  
--	/* One transfer for each message header, one for each message
--	 * payload (chunk).
--	 */
--	xfers = kcalloc(2 * num_chunks, sizeof(struct spi_transfer),
--			GFP_KERNEL);
--	if (!xfers)
--		return -ENOMEM;
--
--	/* Packed buffers for the num_chunks SPI message headers,
--	 * stored as a contiguous array
--	 */
--	hdr_bufs = kcalloc(num_chunks, SJA1105_SIZE_SPI_MSG_HEADER,
--			   GFP_KERNEL);
--	if (!hdr_bufs) {
--		kfree(xfers);
--		return -ENOMEM;
--	}
-+	hdr_xfer = &xfers[0];
-+	chunk_xfer = &xfers[1];
- 
- 	for (i = 0; i < num_chunks; i++) {
--		struct spi_transfer *chunk_xfer = sja1105_chunk_xfer(xfers, i);
--		struct spi_transfer *hdr_xfer = sja1105_hdr_xfer(xfers, i);
--		u8 *hdr_buf = sja1105_hdr_buf(hdr_bufs, i);
- 		struct spi_transfer *ptp_sts_xfer;
- 		struct sja1105_spi_message msg;
- 
-@@ -129,19 +106,14 @@ static int sja1105_xfer(const struct sja1105_private *priv,
+ 	hdr_xfer = &xfers[0];
+ 	chunk_xfer = &xfers[1];
+@@ -104,7 +120,7 @@ static int sja1105_xfer(const struct sja1105_private *priv,
+ 		chunk.buf += chunk.len;
+ 		chunk.reg_addr += chunk.len / 4;
  		chunk.len = min_t(size_t, (ptrdiff_t)(buf + len - chunk.buf),
- 				  SJA1105_SIZE_SPI_MSG_MAXLEN);
+-				  SJA1105_SIZE_SPI_MSG_MAXLEN);
++				  xfer_len);
  
--		/* De-assert the chip select after each chunk. */
--		if (chunk.len)
--			chunk_xfer->cs_change = 1;
-+		rc = spi_sync_transfer(spi, xfers, 2);
-+		if (rc < 0) {
-+			dev_err(&spi->dev, "SPI transfer failed: %d\n", rc);
-+			return rc;
-+		}
- 	}
- 
--	rc = spi_sync_transfer(spi, xfers, 2 * num_chunks);
--	if (rc < 0)
--		dev_err(&spi->dev, "SPI transfer failed: %d\n", rc);
--
--	kfree(hdr_bufs);
--	kfree(xfers);
--
--	return rc;
-+	return 0;
- }
- 
- int sja1105_xfer_buf(const struct sja1105_private *priv,
+ 		rc = spi_sync_transfer(spi, xfers, 2);
+ 		if (rc < 0) {
 -- 
 2.25.1
 
