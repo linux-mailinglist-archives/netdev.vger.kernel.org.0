@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AC6038B120
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 16:09:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 861CC38B124
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 16:09:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243687AbhETOKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 10:10:45 -0400
-Received: from mga11.intel.com ([192.55.52.93]:5246 "EHLO mga11.intel.com"
+        id S238327AbhETOKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 10:10:50 -0400
+Received: from mga11.intel.com ([192.55.52.93]:5245 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243745AbhETOJ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 10:09:27 -0400
-IronPort-SDR: 5wF0aemVNFXJYByydvcEwxjAoX0nRJSzvVFrK00V8k/NOrU6dpP+u+BNQLXLSyreeAyF1XhBNE
- W57SrKCb9VJA==
-X-IronPort-AV: E=McAfee;i="6200,9189,9989"; a="198144730"
+        id S243750AbhETOJ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 10:09:28 -0400
+IronPort-SDR: WZ7HGfOmpHtrzsOmyA4Fx66U6Jgxj8JzdqLzJuFxS8iIrfysIRvrX2GOlhe3YmEH6bPTB9qmho
+ ypO2Y9RXglmg==
+X-IronPort-AV: E=McAfee;i="6200,9189,9989"; a="198144766"
 X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; 
-   d="scan'208";a="198144730"
+   d="scan'208";a="198144766"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2021 07:03:01 -0700
-IronPort-SDR: 3QWnmn1cQbZFJx1O0xbiWeQYbE0MTFN6VrU57QDDgJ06g6frAJtOC88GFfLuRWBo94F6858NaE
- eaXKZT3PKSIQ==
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2021 07:03:04 -0700
+IronPort-SDR: Xb0KJ9G9bEa6cFHd55qvmdrVXTw+lOmtzzFXB9IPqJQ66PBW+XCpjAuX96asQyp10lPflPU7px
+ bI35YlqIbcXQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; 
-   d="scan'208";a="631407622"
+   d="scan'208";a="631407638"
 Received: from bgsxx0031.iind.intel.com ([10.106.222.40])
-  by fmsmga005.fm.intel.com with ESMTP; 20 May 2021 07:03:00 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 20 May 2021 07:03:02 -0700
 From:   M Chetan Kumar <m.chetan.kumar@intel.com>
 To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Cc:     johannes@sipsolutions.net, krishna.c.sudi@intel.com,
         linuxwwan@intel.com
-Subject: [PATCH V3 12/16] net: iosm: shared memory protocol
-Date:   Thu, 20 May 2021 19:31:54 +0530
-Message-Id: <20210520140158.10132-13-m.chetan.kumar@intel.com>
+Subject: [PATCH V3 13/16] net: iosm: protocol operations
+Date:   Thu, 20 May 2021 19:31:55 +0530
+Message-Id: <20210520140158.10132-14-m.chetan.kumar@intel.com>
 X-Mailer: git-send-email 2.12.3
 In-Reply-To: <20210520140158.10132-1-m.chetan.kumar@intel.com>
 References: <20210520140158.10132-1-m.chetan.kumar@intel.com>
@@ -39,555 +39,1030 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1) Defines messaging protocol for handling Transfer Descriptor
-   in both UL/DL direction.
-2) Ring buffer management.
+1) Update UL/DL transfer descriptors in message ring.
+2) Define message set for pipe/sleep protocol.
 
 Signed-off-by: M Chetan Kumar <m.chetan.kumar@intel.com>
 ---
-v3: no change.
+v3: Endianness type correction for transfer descriptor structure.
 v2:
-* Endianness type correction for Host-device protocol structure.
+* Endianness type correction for Host-Device protocol structure.
 * Function signature documentation correction.
 * Streamline multiple returns using goto.
 ---
- drivers/net/wwan/iosm/iosm_ipc_protocol.c | 283 ++++++++++++++++++++++
- drivers/net/wwan/iosm/iosm_ipc_protocol.h | 237 ++++++++++++++++++
- 2 files changed, 520 insertions(+)
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_protocol.c
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_protocol.h
+ drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c | 552 ++++++++++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_protocol_ops.h | 444 ++++++++++++++
+ 2 files changed, 996 insertions(+)
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_protocol_ops.h
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol.c b/drivers/net/wwan/iosm/iosm_ipc_protocol.c
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
 new file mode 100644
-index 000000000000..834d8b146a94
+index 000000000000..91109e27efd3
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_protocol.c
-@@ -0,0 +1,283 @@
++++ b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
+@@ -0,0 +1,552 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (C) 2020-21 Intel Corporation.
 + */
 +
-+#include "iosm_ipc_imem.h"
 +#include "iosm_ipc_protocol.h"
 +#include "iosm_ipc_protocol_ops.h"
-+#include "iosm_ipc_pm.h"
-+#include "iosm_ipc_task_queue.h"
 +
-+int ipc_protocol_tq_msg_send(struct iosm_protocol *ipc_protocol,
-+			     enum ipc_msg_prep_type msg_type,
-+			     union ipc_msg_prep_args *prep_args,
-+			     struct ipc_rsp *response)
++/* Get the next free message element.*/
++static union ipc_mem_msg_entry *
++ipc_protocol_free_msg_get(struct iosm_protocol *ipc_protocol, int *index)
 +{
-+	int index = ipc_protocol_msg_prep(ipc_protocol->imem, msg_type,
-+					  prep_args);
++	u32 head = le32_to_cpu(ipc_protocol->p_ap_shm->msg_head);
++	u32 new_head = (head + 1) % IPC_MEM_MSG_ENTRIES;
++	union ipc_mem_msg_entry *msg;
 +
-+	/* Store reference towards caller specified response in response ring
-+	 * and signal CP
-+	 */
-+	if (index >= 0 && index < IPC_MEM_MSG_ENTRIES) {
-+		ipc_protocol->rsp_ring[index] = response;
-+		ipc_protocol_msg_hp_update(ipc_protocol->imem);
++	if (new_head == le32_to_cpu(ipc_protocol->p_ap_shm->msg_tail)) {
++		dev_err(ipc_protocol->dev, "message ring is full");
++		return NULL;
 +	}
++
++	/* Get the pointer to the next free message element,
++	 * reset the fields and mark is as invalid.
++	 */
++	msg = &ipc_protocol->p_ap_shm->msg_ring[head];
++	memset(msg, 0, sizeof(*msg));
++
++	/* return index in message ring */
++	*index = head;
++
++	return msg;
++}
++
++/* Updates the message ring Head pointer */
++void ipc_protocol_msg_hp_update(struct iosm_imem *ipc_imem)
++{
++	struct iosm_protocol *ipc_protocol = ipc_imem->ipc_protocol;
++	u32 head = le32_to_cpu(ipc_protocol->p_ap_shm->msg_head);
++	u32 new_head = (head + 1) % IPC_MEM_MSG_ENTRIES;
++
++	/* Update head pointer and fire doorbell. */
++	ipc_protocol->p_ap_shm->msg_head = cpu_to_le32(new_head);
++	ipc_protocol->old_msg_tail =
++		le32_to_cpu(ipc_protocol->p_ap_shm->msg_tail);
++
++	ipc_pm_signal_hpda_doorbell(&ipc_protocol->pm, IPC_HP_MR, false);
++}
++
++/* Allocate and prepare a OPEN_PIPE message.
++ * This also allocates the memory for the new TDR structure and
++ * updates the pipe structure referenced in the preparation arguments.
++ */
++static int ipc_protocol_msg_prepipe_open(struct iosm_protocol *ipc_protocol,
++					 union ipc_msg_prep_args *args)
++{
++	int index;
++	union ipc_mem_msg_entry *msg =
++		ipc_protocol_free_msg_get(ipc_protocol, &index);
++	struct ipc_pipe *pipe = args->pipe_open.pipe;
++	struct ipc_protocol_td *tdr;
++	struct sk_buff **skbr;
++
++	if (!msg) {
++		dev_err(ipc_protocol->dev, "failed to get free message");
++		return -EIO;
++	}
++
++	/* Allocate the skbuf elements for the skbuf which are on the way.
++	 * SKB ring is internal memory allocation for driver. No need to
++	 * re-calculate the start and end addresses.
++	 */
++	skbr = kcalloc(pipe->nr_of_entries, sizeof(*skbr), GFP_ATOMIC);
++	if (!skbr)
++		return -ENOMEM;
++
++	/* Allocate the transfer descriptors for the pipe. */
++	tdr = pci_alloc_consistent(ipc_protocol->pcie->pci,
++				   pipe->nr_of_entries * sizeof(*tdr),
++				   &pipe->phy_tdr_start);
++	if (!tdr) {
++		kfree(skbr);
++		dev_err(ipc_protocol->dev, "tdr alloc error");
++		return -ENOMEM;
++	}
++
++	pipe->max_nr_of_queued_entries = pipe->nr_of_entries - 1;
++	pipe->nr_of_queued_entries = 0;
++	pipe->tdr_start = tdr;
++	pipe->skbr_start = skbr;
++	pipe->old_tail = 0;
++
++	ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr] = 0;
++
++	msg->open_pipe.type_of_message = IPC_MEM_MSG_OPEN_PIPE;
++	msg->open_pipe.pipe_nr = pipe->pipe_nr;
++	msg->open_pipe.tdr_addr = cpu_to_le64(pipe->phy_tdr_start);
++	msg->open_pipe.tdr_entries = cpu_to_le16(pipe->nr_of_entries);
++	msg->open_pipe.accumulation_backoff =
++				cpu_to_le32(pipe->accumulation_backoff);
++	msg->open_pipe.irq_vector = cpu_to_le32(pipe->irq);
 +
 +	return index;
 +}
 +
-+/* Callback for message send */
-+static int ipc_protocol_tq_msg_send_cb(struct iosm_imem *ipc_imem, int arg,
-+				       void *msg, size_t size)
++static int ipc_protocol_msg_prepipe_close(struct iosm_protocol *ipc_protocol,
++					  union ipc_msg_prep_args *args)
 +{
-+	struct ipc_call_msg_send_args *send_args = msg;
-+	struct iosm_protocol *ipc_protocol = ipc_imem->ipc_protocol;
++	int index = -1;
++	union ipc_mem_msg_entry *msg =
++		ipc_protocol_free_msg_get(ipc_protocol, &index);
++	struct ipc_pipe *pipe = args->pipe_close.pipe;
 +
-+	return ipc_protocol_tq_msg_send(ipc_protocol, send_args->msg_type,
-+					send_args->prep_args,
-+					send_args->response);
++	if (!msg)
++		return -EIO;
++
++	msg->close_pipe.type_of_message = IPC_MEM_MSG_CLOSE_PIPE;
++	msg->close_pipe.pipe_nr = pipe->pipe_nr;
++
++	dev_dbg(ipc_protocol->dev, "IPC_MEM_MSG_CLOSE_PIPE(pipe_nr=%d)",
++		msg->close_pipe.pipe_nr);
++
++	return index;
 +}
 +
-+/* Remove reference to a response. This is typically used when a requestor timed
-+ * out and is no longer interested in the response.
-+ */
-+static int ipc_protocol_tq_msg_remove(struct iosm_imem *ipc_imem, int arg,
-+				      void *msg, size_t size)
++static int ipc_protocol_msg_prep_sleep(struct iosm_protocol *ipc_protocol,
++				       union ipc_msg_prep_args *args)
 +{
-+	struct iosm_protocol *ipc_protocol = ipc_imem->ipc_protocol;
++	int index = -1;
++	union ipc_mem_msg_entry *msg =
++		ipc_protocol_free_msg_get(ipc_protocol, &index);
 +
-+	ipc_protocol->rsp_ring[arg] = NULL;
-+	return 0;
-+}
-+
-+int ipc_protocol_msg_send(struct iosm_protocol *ipc_protocol,
-+			  enum ipc_msg_prep_type prep,
-+			  union ipc_msg_prep_args *prep_args)
-+{
-+	struct ipc_call_msg_send_args send_args;
-+	unsigned int exec_timeout;
-+	struct ipc_rsp response;
-+	int index;
-+
-+	exec_timeout = (ipc_protocol_get_ap_exec_stage(ipc_protocol) ==
-+					IPC_MEM_EXEC_STAGE_RUN ?
-+				IPC_MSG_COMPLETE_RUN_DEFAULT_TIMEOUT :
-+				IPC_MSG_COMPLETE_BOOT_DEFAULT_TIMEOUT);
-+
-+	/* Trap if called from non-preemptible context */
-+	might_sleep();
-+
-+	response.status = IPC_MEM_MSG_CS_INVALID;
-+	init_completion(&response.completion);
-+
-+	send_args.msg_type = prep;
-+	send_args.prep_args = prep_args;
-+	send_args.response = &response;
-+
-+	/* Allocate and prepare message to be sent in tasklet context.
-+	 * A positive index returned form tasklet_call references the message
-+	 * in case it needs to be cancelled when there is a timeout.
-+	 */
-+	index = ipc_task_queue_send_task(ipc_protocol->imem,
-+					 ipc_protocol_tq_msg_send_cb, 0,
-+					 &send_args, 0, true);
-+
-+	if (index < 0) {
-+		dev_err(ipc_protocol->dev, "msg %d failed", prep);
-+		return index;
++	if (!msg) {
++		dev_err(ipc_protocol->dev, "failed to get free message");
++		return -EIO;
 +	}
 +
-+	/* Wait for the device to respond to the message */
-+	switch (wait_for_completion_timeout(&response.completion,
-+					    msecs_to_jiffies(exec_timeout))) {
-+	case 0:
-+		/* Timeout, there was no response from the device.
-+		 * Remove the reference to the local response completion
-+		 * object as we are no longer interested in the response.
-+		 */
-+		ipc_task_queue_send_task(ipc_protocol->imem,
-+					 ipc_protocol_tq_msg_remove, index,
-+					 NULL, 0, true);
-+		dev_err(ipc_protocol->dev, "msg timeout");
-+		ipc_uevent_send(ipc_protocol->pcie->dev, UEVENT_MDM_TIMEOUT);
-+		break;
-+	default:
-+		/* We got a response in time; check completion status: */
-+		if (response.status != IPC_MEM_MSG_CS_SUCCESS) {
-+			dev_err(ipc_protocol->dev,
-+				"msg completion status error %d",
-+				response.status);
-+			return -EIO;
++	/* Prepare and send the host sleep message to CP to enter or exit D3. */
++	msg->host_sleep.type_of_message = IPC_MEM_MSG_SLEEP;
++	msg->host_sleep.target = args->sleep.target; /* 0=host, 1=device */
++
++	/* state; 0=enter, 1=exit 2=enter w/o protocol */
++	msg->host_sleep.state = args->sleep.state;
++
++	dev_dbg(ipc_protocol->dev, "IPC_MEM_MSG_SLEEP(target=%d; state=%d)",
++		msg->host_sleep.target, msg->host_sleep.state);
++
++	return index;
++}
++
++static int ipc_protocol_msg_prep_feature_set(struct iosm_protocol *ipc_protocol,
++					     union ipc_msg_prep_args *args)
++{
++	int index = -1;
++	union ipc_mem_msg_entry *msg =
++		ipc_protocol_free_msg_get(ipc_protocol, &index);
++
++	if (!msg) {
++		dev_err(ipc_protocol->dev, "failed to get free message");
++		return -EIO;
++	}
++
++	msg->feature_set.type_of_message = IPC_MEM_MSG_FEATURE_SET;
++	msg->feature_set.reset_enable = args->feature_set.reset_enable <<
++					RESET_BIT;
++
++	dev_dbg(ipc_protocol->dev, "IPC_MEM_MSG_FEATURE_SET(reset_enable=%d)",
++		msg->feature_set.reset_enable >> RESET_BIT);
++
++	return index;
++}
++
++/* Processes the message consumed by CP. */
++bool ipc_protocol_msg_process(struct iosm_imem *ipc_imem, int irq)
++{
++	struct iosm_protocol *ipc_protocol = ipc_imem->ipc_protocol;
++	struct ipc_rsp **rsp_ring = ipc_protocol->rsp_ring;
++	bool msg_processed = false;
++	u32 i;
++
++	if (le32_to_cpu(ipc_protocol->p_ap_shm->msg_tail) >=
++			IPC_MEM_MSG_ENTRIES) {
++		dev_err(ipc_protocol->dev, "msg_tail out of range: %d",
++			le32_to_cpu(ipc_protocol->p_ap_shm->msg_tail));
++		return msg_processed;
++	}
++
++	if (irq != IMEM_IRQ_DONT_CARE &&
++	    irq != ipc_protocol->p_ap_shm->ci.msg_irq_vector)
++		return msg_processed;
++
++	for (i = ipc_protocol->old_msg_tail;
++	     i != le32_to_cpu(ipc_protocol->p_ap_shm->msg_tail);
++	     i = (i + 1) % IPC_MEM_MSG_ENTRIES) {
++		union ipc_mem_msg_entry *msg =
++			&ipc_protocol->p_ap_shm->msg_ring[i];
++
++		dev_dbg(ipc_protocol->dev, "msg[%d]: type=%u status=%d", i,
++			msg->common.type_of_message,
++			msg->common.completion_status);
++
++		/* Update response with status and wake up waiting requestor */
++		if (rsp_ring[i]) {
++			rsp_ring[i]->status =
++				le32_to_cpu(msg->common.completion_status);
++			complete(&rsp_ring[i]->completion);
++			rsp_ring[i] = NULL;
 +		}
++		msg_processed = true;
 +	}
 +
-+	return 0;
++	ipc_protocol->old_msg_tail = i;
++	return msg_processed;
 +}
 +
-+static int ipc_protocol_msg_send_host_sleep(struct iosm_protocol *ipc_protocol,
-+					    u32 state)
++/* Sends data from UL list to CP for the provided pipe by updating the Head
++ * pointer of given pipe.
++ */
++bool ipc_protocol_ul_td_send(struct iosm_protocol *ipc_protocol,
++			     struct ipc_pipe *pipe,
++			     struct sk_buff_head *p_ul_list)
 +{
-+	union ipc_msg_prep_args prep_args = {
-+		.sleep.target = 0,
-+		.sleep.state = state,
-+	};
-+
-+	return ipc_protocol_msg_send(ipc_protocol, IPC_MSG_PREP_SLEEP,
-+				     &prep_args);
-+}
-+
-+void ipc_protocol_doorbell_trigger(struct iosm_protocol *ipc_protocol,
-+				   u32 identifier)
-+{
-+	ipc_pm_signal_hpda_doorbell(&ipc_protocol->pm, identifier, true);
-+}
-+
-+bool ipc_protocol_pm_dev_sleep_handle(struct iosm_protocol *ipc_protocol)
-+{
-+	u32 ipc_status = ipc_protocol_get_ipc_status(ipc_protocol);
-+	u32 requested;
-+
-+	if (ipc_status != IPC_MEM_DEVICE_IPC_RUNNING) {
-+		dev_err(ipc_protocol->dev,
-+			"irq ignored, CP IPC state is %d, should be RUNNING",
-+			ipc_status);
-+
-+		/* Stop further processing. */
-+		return false;
-+	}
-+
-+	/* Get a copy of the requested PM state by the device and the local
-+	 * device PM state.
-+	 */
-+	requested = ipc_protocol_pm_dev_get_sleep_notification(ipc_protocol);
-+
-+	return ipc_pm_dev_slp_notification(&ipc_protocol->pm, requested);
-+}
-+
-+static int ipc_protocol_tq_wakeup_dev_slp(struct iosm_imem *ipc_imem, int arg,
-+					  void *msg, size_t size)
-+{
-+	struct iosm_pm *ipc_pm = &ipc_imem->ipc_protocol->pm;
-+
-+	/* Wakeup from device sleep if it is not ACTIVE */
-+	ipc_pm_trigger(ipc_pm, IPC_PM_UNIT_HS, true);
-+
-+	ipc_pm_trigger(ipc_pm, IPC_PM_UNIT_HS, false);
-+
-+	return 0;
-+}
-+
-+void ipc_protocol_s2idle_sleep(struct iosm_protocol *ipc_protocol, bool sleep)
-+{
-+	ipc_pm_set_s2idle_sleep(&ipc_protocol->pm, sleep);
-+}
-+
-+bool ipc_protocol_suspend(struct iosm_protocol *ipc_protocol)
-+{
-+	if (!ipc_pm_prepare_host_sleep(&ipc_protocol->pm))
-+		goto err;
-+
-+	ipc_task_queue_send_task(ipc_protocol->imem,
-+				 ipc_protocol_tq_wakeup_dev_slp, 0, NULL, 0,
-+				 true);
-+
-+	if (!ipc_pm_wait_for_device_active(&ipc_protocol->pm)) {
-+		ipc_uevent_send(ipc_protocol->pcie->dev, UEVENT_MDM_TIMEOUT);
-+		goto err;
-+	}
-+
-+	/* Send the sleep message for sync sys calls. */
-+	dev_dbg(ipc_protocol->dev, "send TARGET_HOST, ENTER_SLEEP");
-+	if (ipc_protocol_msg_send_host_sleep(ipc_protocol,
-+					     IPC_HOST_SLEEP_ENTER_SLEEP)) {
-+		/* Sending ENTER_SLEEP message failed, we are still active */
-+		ipc_protocol->pm.host_pm_state = IPC_MEM_HOST_PM_ACTIVE;
-+		goto err;
-+	}
-+
-+	ipc_protocol->pm.host_pm_state = IPC_MEM_HOST_PM_SLEEP;
-+	return true;
-+err:
-+	return false;
-+}
-+
-+bool ipc_protocol_resume(struct iosm_protocol *ipc_protocol)
-+{
-+	if (!ipc_pm_prepare_host_active(&ipc_protocol->pm))
-+		return false;
-+
-+	dev_dbg(ipc_protocol->dev, "send TARGET_HOST, EXIT_SLEEP");
-+	if (ipc_protocol_msg_send_host_sleep(ipc_protocol,
-+					     IPC_HOST_SLEEP_EXIT_SLEEP)) {
-+		ipc_protocol->pm.host_pm_state = IPC_MEM_HOST_PM_SLEEP;
-+		return false;
-+	}
-+
-+	ipc_protocol->pm.host_pm_state = IPC_MEM_HOST_PM_ACTIVE;
-+
-+	return true;
-+}
-+
-+struct iosm_protocol *ipc_protocol_init(struct iosm_imem *ipc_imem)
-+{
-+	struct iosm_protocol *ipc_protocol =
-+		kzalloc(sizeof(*ipc_protocol), GFP_KERNEL);
-+	struct ipc_protocol_context_info *p_ci;
-+	u64 addr;
-+
-+	if (!ipc_protocol)
-+		return NULL;
-+
-+	ipc_protocol->dev = ipc_imem->dev;
-+	ipc_protocol->pcie = ipc_imem->pcie;
-+	ipc_protocol->imem = ipc_imem;
-+	ipc_protocol->p_ap_shm = NULL;
-+	ipc_protocol->phy_ap_shm = 0;
-+
-+	ipc_protocol->old_msg_tail = 0;
-+
-+	ipc_protocol->p_ap_shm =
-+		pci_alloc_consistent(ipc_protocol->pcie->pci,
-+				     sizeof(*ipc_protocol->p_ap_shm),
-+				     &ipc_protocol->phy_ap_shm);
++	struct ipc_protocol_td *td;
++	bool hpda_pending = false;
++	struct sk_buff *skb;
++	s32 free_elements;
++	u32 head;
++	u32 tail;
 +
 +	if (!ipc_protocol->p_ap_shm) {
-+		dev_err(ipc_protocol->dev, "pci shm alloc error");
-+		kfree(ipc_protocol);
++		dev_err(ipc_protocol->dev, "driver is not initialized");
++		return false;
++	}
++
++	/* Get head and tail of the td list and calculate
++	 * the number of free elements.
++	 */
++	head = le32_to_cpu(ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr]);
++	tail = pipe->old_tail;
++
++	while (!skb_queue_empty(p_ul_list)) {
++		if (head < tail)
++			free_elements = tail - head - 1;
++		else
++			free_elements =
++				pipe->nr_of_entries - head + ((s32)tail - 1);
++
++		if (free_elements <= 0) {
++			dev_dbg(ipc_protocol->dev,
++				"no free td elements for UL pipe %d",
++				pipe->pipe_nr);
++			break;
++		}
++
++		/* Get the td address. */
++		td = &pipe->tdr_start[head];
++
++		/* Take the first element of the uplink list and add it
++		 * to the td list.
++		 */
++		skb = skb_dequeue(p_ul_list);
++		if (WARN_ON(!skb))
++			break;
++
++		/* Save the reference to the uplink skbuf. */
++		pipe->skbr_start[head] = skb;
++
++		td->buffer.address = IPC_CB(skb)->mapping;
++		td->scs = cpu_to_le32(skb->len) & cpu_to_le32(SIZE_MASK);
++		td->next = 0;
++
++		pipe->nr_of_queued_entries++;
++
++		/* Calculate the new head and save it. */
++		head++;
++		if (head >= pipe->nr_of_entries)
++			head = 0;
++
++		ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr] =
++			cpu_to_le32(head);
++	}
++
++	if (pipe->old_head != head) {
++		dev_dbg(ipc_protocol->dev, "New UL TDs Pipe:%d", pipe->pipe_nr);
++
++		pipe->old_head = head;
++		/* Trigger doorbell because of pending UL packets. */
++		hpda_pending = true;
++	}
++
++	return hpda_pending;
++}
++
++/* Checks for Tail pointer update from CP and returns the data as SKB. */
++struct sk_buff *ipc_protocol_ul_td_process(struct iosm_protocol *ipc_protocol,
++					   struct ipc_pipe *pipe)
++{
++	struct ipc_protocol_td *p_td = &pipe->tdr_start[pipe->old_tail];
++	struct sk_buff *skb = pipe->skbr_start[pipe->old_tail];
++
++	pipe->nr_of_queued_entries--;
++	pipe->old_tail++;
++	if (pipe->old_tail >= pipe->nr_of_entries)
++		pipe->old_tail = 0;
++
++	if (!p_td->buffer.address) {
++		dev_err(ipc_protocol->dev, "Td buffer address is NULL");
 +		return NULL;
 +	}
 +
-+	/* Prepare the context info for CP. */
-+	addr = ipc_protocol->phy_ap_shm;
-+	p_ci = &ipc_protocol->p_ap_shm->ci;
-+	p_ci->device_info_addr =
-+		addr + offsetof(struct ipc_protocol_ap_shm, device_info);
-+	p_ci->head_array =
-+		addr + offsetof(struct ipc_protocol_ap_shm, head_array);
-+	p_ci->tail_array =
-+		addr + offsetof(struct ipc_protocol_ap_shm, tail_array);
-+	p_ci->msg_head = addr + offsetof(struct ipc_protocol_ap_shm, msg_head);
-+	p_ci->msg_tail = addr + offsetof(struct ipc_protocol_ap_shm, msg_tail);
-+	p_ci->msg_ring_addr =
-+		addr + offsetof(struct ipc_protocol_ap_shm, msg_ring);
-+	p_ci->msg_ring_entries = cpu_to_le16(IPC_MEM_MSG_ENTRIES);
-+	p_ci->msg_irq_vector = IPC_MSG_IRQ_VECTOR;
-+	p_ci->device_info_irq_vector = IPC_DEVICE_IRQ_VECTOR;
++	if (p_td->buffer.address != IPC_CB(skb)->mapping) {
++		dev_err(ipc_protocol->dev,
++			"pipe %d: invalid buf_addr or skb_data",
++			pipe->pipe_nr);
++		return NULL;
++	}
 +
-+	ipc_mmio_set_contex_info_addr(ipc_imem->mmio, addr);
-+
-+	ipc_pm_init(ipc_protocol);
-+
-+	return ipc_protocol;
++	return skb;
 +}
 +
-+void ipc_protocol_deinit(struct iosm_protocol *proto)
++/* Allocates an SKB for CP to send data and updates the Head Pointer
++ * of the given Pipe#.
++ */
++bool ipc_protocol_dl_td_prepare(struct iosm_protocol *ipc_protocol,
++				struct ipc_pipe *pipe)
 +{
-+	pci_free_consistent(proto->pcie->pci, sizeof(*proto->p_ap_shm),
-+			    proto->p_ap_shm, proto->phy_ap_shm);
++	struct ipc_protocol_td *td;
++	dma_addr_t mapping = 0;
++	u32 head, new_head;
++	struct sk_buff *skb;
++	u32 tail;
 +
-+	ipc_pm_deinit(proto);
-+	kfree(proto);
++	/* Get head and tail of the td list and calculate
++	 * the number of free elements.
++	 */
++	head = le32_to_cpu(ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr]);
++	tail = le32_to_cpu(ipc_protocol->p_ap_shm->tail_array[pipe->pipe_nr]);
++
++	new_head = head + 1;
++	if (new_head >= pipe->nr_of_entries)
++		new_head = 0;
++
++	if (new_head == tail)
++		return false;
++
++	/* Get the td address. */
++	td = &pipe->tdr_start[head];
++
++	/* Allocate the skbuf for the descriptor. */
++	skb = ipc_pcie_alloc_skb(ipc_protocol->pcie, pipe->buf_size, GFP_ATOMIC,
++				 &mapping, DMA_FROM_DEVICE,
++				 IPC_MEM_DL_ETH_OFFSET);
++	if (!skb)
++		return false;
++
++	td->buffer.address = mapping;
++	td->scs = cpu_to_le32(pipe->buf_size) & cpu_to_le32(SIZE_MASK);
++	td->next = 0;
++
++	/* store the new head value. */
++	ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr] =
++		cpu_to_le32(new_head);
++
++	/* Save the reference to the skbuf. */
++	pipe->skbr_start[head] = skb;
++
++	pipe->nr_of_queued_entries++;
++
++	return true;
 +}
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol.h b/drivers/net/wwan/iosm/iosm_ipc_protocol.h
++
++/* Processes DL TD's */
++struct sk_buff *ipc_protocol_dl_td_process(struct iosm_protocol *ipc_protocol,
++					   struct ipc_pipe *pipe)
++{
++	u32 tail =
++		le32_to_cpu(ipc_protocol->p_ap_shm->tail_array[pipe->pipe_nr]);
++	struct ipc_protocol_td *p_td;
++	struct sk_buff *skb;
++
++	if (!pipe->tdr_start)
++		return NULL;
++
++	/* Copy the reference to the downlink buffer. */
++	p_td = &pipe->tdr_start[pipe->old_tail];
++	skb = pipe->skbr_start[pipe->old_tail];
++
++	/* Reset the ring elements. */
++	pipe->skbr_start[pipe->old_tail] = NULL;
++
++	pipe->nr_of_queued_entries--;
++
++	pipe->old_tail++;
++	if (pipe->old_tail >= pipe->nr_of_entries)
++		pipe->old_tail = 0;
++
++	if (!skb) {
++		dev_err(ipc_protocol->dev, "skb is null");
++		goto ret;
++	} else if (!p_td->buffer.address) {
++		dev_err(ipc_protocol->dev, "td/buffer address is null");
++		ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
++		skb = NULL;
++		goto ret;
++	}
++
++	if (!IPC_CB(skb)) {
++		dev_err(ipc_protocol->dev, "pipe# %d, tail: %d skb_cb is NULL",
++			pipe->pipe_nr, tail);
++		ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
++		skb = NULL;
++		goto ret;
++	}
++
++	if (p_td->buffer.address != IPC_CB(skb)->mapping) {
++		dev_err(ipc_protocol->dev, "invalid buf=%p or skb=%p",
++			(void *)p_td->buffer.address, skb->data);
++		ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
++		skb = NULL;
++		goto ret;
++	} else if ((le32_to_cpu(p_td->scs) & SIZE_MASK) > pipe->buf_size) {
++		dev_err(ipc_protocol->dev, "invalid buffer size %d > %d",
++			le32_to_cpu(p_td->scs) & SIZE_MASK,
++			pipe->buf_size);
++		ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
++		skb = NULL;
++		goto ret;
++	} else if (le32_to_cpu(p_td->scs) >> COMPLETION_STATUS ==
++		  IPC_MEM_TD_CS_ABORT) {
++		/* Discard aborted buffers. */
++		dev_dbg(ipc_protocol->dev, "discard 'aborted' buffers");
++		ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
++		skb = NULL;
++		goto ret;
++	}
++
++	/* Set the length field in skbuf. */
++	skb_put(skb, le32_to_cpu(p_td->scs) & SIZE_MASK);
++
++ret:
++	return skb;
++}
++
++void ipc_protocol_get_head_tail_index(struct iosm_protocol *ipc_protocol,
++				      struct ipc_pipe *pipe, u32 *head,
++				      u32 *tail)
++{
++	struct ipc_protocol_ap_shm *ipc_ap_shm = ipc_protocol->p_ap_shm;
++
++	if (head)
++		*head = le32_to_cpu(ipc_ap_shm->head_array[pipe->pipe_nr]);
++
++	if (tail)
++		*tail = le32_to_cpu(ipc_ap_shm->tail_array[pipe->pipe_nr]);
++}
++
++/* Frees the TDs given to CP.  */
++void ipc_protocol_pipe_cleanup(struct iosm_protocol *ipc_protocol,
++			       struct ipc_pipe *pipe)
++{
++	struct sk_buff *skb;
++	u32 head;
++	u32 tail;
++
++	/* Get the start and the end of the buffer list. */
++	head = le32_to_cpu(ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr]);
++	tail = pipe->old_tail;
++
++	/* Reset tail and head to 0. */
++	ipc_protocol->p_ap_shm->tail_array[pipe->pipe_nr] = 0;
++	ipc_protocol->p_ap_shm->head_array[pipe->pipe_nr] = 0;
++
++	/* Free pending uplink and downlink buffers. */
++	if (pipe->skbr_start) {
++		while (head != tail) {
++			/* Get the reference to the skbuf,
++			 * which is on the way and free it.
++			 */
++			skb = pipe->skbr_start[tail];
++			if (skb)
++				ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
++
++			tail++;
++			if (tail >= pipe->nr_of_entries)
++				tail = 0;
++		}
++
++		kfree(pipe->skbr_start);
++		pipe->skbr_start = NULL;
++	}
++
++	pipe->old_tail = 0;
++
++	/* Free and reset the td and skbuf circular buffers. kfree is save! */
++	if (pipe->tdr_start) {
++		pci_free_consistent(ipc_protocol->pcie->pci,
++				    sizeof(*pipe->tdr_start) *
++					    pipe->nr_of_entries,
++				    pipe->tdr_start, pipe->phy_tdr_start);
++
++		pipe->tdr_start = NULL;
++	}
++}
++
++enum ipc_mem_device_ipc_state ipc_protocol_get_ipc_status(struct iosm_protocol
++							  *ipc_protocol)
++{
++	return (enum ipc_mem_device_ipc_state)
++		le32_to_cpu(ipc_protocol->p_ap_shm->device_info.ipc_status);
++}
++
++enum ipc_mem_exec_stage
++ipc_protocol_get_ap_exec_stage(struct iosm_protocol *ipc_protocol)
++{
++	return le32_to_cpu(ipc_protocol->p_ap_shm->device_info.execution_stage);
++}
++
++int ipc_protocol_msg_prep(struct iosm_imem *ipc_imem,
++			  enum ipc_msg_prep_type msg_type,
++			  union ipc_msg_prep_args *args)
++{
++	struct iosm_protocol *ipc_protocol = ipc_imem->ipc_protocol;
++
++	switch (msg_type) {
++	case IPC_MSG_PREP_SLEEP:
++		return ipc_protocol_msg_prep_sleep(ipc_protocol, args);
++
++	case IPC_MSG_PREP_PIPE_OPEN:
++		return ipc_protocol_msg_prepipe_open(ipc_protocol, args);
++
++	case IPC_MSG_PREP_PIPE_CLOSE:
++		return ipc_protocol_msg_prepipe_close(ipc_protocol, args);
++
++	case IPC_MSG_PREP_FEATURE_SET:
++		return ipc_protocol_msg_prep_feature_set(ipc_protocol, args);
++
++		/* Unsupported messages in protocol */
++	case IPC_MSG_PREP_MAP:
++	case IPC_MSG_PREP_UNMAP:
++	default:
++		dev_err(ipc_protocol->dev,
++			"unsupported message type: %d in protocol", msg_type);
++		return -EINVAL;
++	}
++}
++
++u32
++ipc_protocol_pm_dev_get_sleep_notification(struct iosm_protocol *ipc_protocol)
++{
++	struct ipc_protocol_ap_shm *ipc_ap_shm = ipc_protocol->p_ap_shm;
++
++	return le32_to_cpu(ipc_ap_shm->device_info.device_sleep_notification);
++}
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.h b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.h
 new file mode 100644
-index 000000000000..9b3a6d86ece7
+index 000000000000..35aa1387306e
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_protocol.h
-@@ -0,0 +1,237 @@
++++ b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.h
+@@ -0,0 +1,444 @@
 +/* SPDX-License-Identifier: GPL-2.0-only
 + *
 + * Copyright (C) 2020-21 Intel Corporation.
 + */
 +
-+#ifndef IOSM_IPC_PROTOCOL_H
-+#define IOSM_IPC_PROTOCOL_H
++#ifndef IOSM_IPC_PROTOCOL_OPS_H
++#define IOSM_IPC_PROTOCOL_OPS_H
 +
-+#include "iosm_ipc_imem.h"
-+#include "iosm_ipc_pm.h"
-+#include "iosm_ipc_protocol_ops.h"
-+
-+/* Trigger the doorbell interrupt on CP. */
-+#define IPC_DOORBELL_IRQ_HPDA 0
-+#define IPC_DOORBELL_IRQ_IPC 1
-+#define IPC_DOORBELL_IRQ_SLEEP 2
-+
-+/* IRQ vector number. */
-+#define IPC_DEVICE_IRQ_VECTOR 0
-+#define IPC_MSG_IRQ_VECTOR 0
-+#define IPC_UL_PIPE_IRQ_VECTOR 0
-+#define IPC_DL_PIPE_IRQ_VECTOR 0
-+
-+#define IPC_MEM_MSG_ENTRIES 128
-+
-+/* Default time out for sending IPC messages like open pipe, close pipe etc.
-+ * during run mode.
-+ *
-+ * If the message interface lock to CP times out, the link to CP is broken.
-+ * mode : run mode (IPC_MEM_EXEC_STAGE_RUN)
-+ * unit : milliseconds
-+ */
-+#define IPC_MSG_COMPLETE_RUN_DEFAULT_TIMEOUT 500 /* 0.5 seconds */
-+
-+/* Default time out for sending IPC messages like open pipe, close pipe etc.
-+ * during boot mode.
-+ *
-+ * If the message interface lock to CP times out, the link to CP is broken.
-+ * mode : boot mode
-+ * (IPC_MEM_EXEC_STAGE_BOOT | IPC_MEM_EXEC_STAGE_PSI | IPC_MEM_EXEC_STAGE_EBL)
-+ * unit : milliseconds
-+ */
-+#define IPC_MSG_COMPLETE_BOOT_DEFAULT_TIMEOUT 500 /* 0.5 seconds */
++#define SIZE_MASK 0x00FFFFFF
++#define COMPLETION_STATUS 24
++#define RESET_BIT 7
 +
 +/**
-+ * struct ipc_protocol_context_info - Structure of the context info
-+ * @device_info_addr:		64 bit address to device info
-+ * @head_array:			64 bit address to head pointer arr for the pipes
-+ * @tail_array:			64 bit address to tail pointer arr for the pipes
-+ * @msg_head:			64 bit address to message head pointer
-+ * @msg_tail:			64 bit address to message tail pointer
-+ * @msg_ring_addr:		64 bit pointer to the message ring buffer
-+ * @msg_ring_entries:		This field provides the number of entries which
-+ *				the MR can hold
-+ * @msg_irq_vector:		This field provides the IRQ which shall be
-+ *				generated by the EP device when generating
-+ *				completion for Messages.
-+ * @device_info_irq_vector:	This field provides the IRQ which shall be
-+ *				generated by the EP dev after updating Dev. Info
++ * enum ipc_mem_td_cs - Completion status of a TD
++ * @IPC_MEM_TD_CS_INVALID:	      Initial status - td not yet used.
++ * @IPC_MEM_TD_CS_PARTIAL_TRANSFER:   More data pending -> next TD used for this
++ * @IPC_MEM_TD_CS_END_TRANSFER:	      IO transfer is complete.
++ * @IPC_MEM_TD_CS_OVERFLOW:	      IO transfer to small for the buff to write
++ * @IPC_MEM_TD_CS_ABORT:	      TD marked as abort and shall be discarded
++ *				      by AP.
++ * @IPC_MEM_TD_CS_ERROR:	      General error.
 + */
-+struct ipc_protocol_context_info {
-+	phys_addr_t device_info_addr;
-+	phys_addr_t head_array;
-+	phys_addr_t tail_array;
-+	phys_addr_t msg_head;
-+	phys_addr_t msg_tail;
-+	phys_addr_t msg_ring_addr;
-+	__le16 msg_ring_entries;
-+	u8 msg_irq_vector;
-+	u8 device_info_irq_vector;
++enum ipc_mem_td_cs {
++	IPC_MEM_TD_CS_INVALID,
++	IPC_MEM_TD_CS_PARTIAL_TRANSFER,
++	IPC_MEM_TD_CS_END_TRANSFER,
++	IPC_MEM_TD_CS_OVERFLOW,
++	IPC_MEM_TD_CS_ABORT,
++	IPC_MEM_TD_CS_ERROR,
 +};
 +
 +/**
-+ * struct ipc_protocol_device_info - Structure for the device information
-+ * @execution_stage:		CP execution stage
-+ * @ipc_status:			IPC states
-+ * @device_sleep_notification:	Requested device pm states
++ * enum ipc_mem_msg_cs - Completion status of IPC Message
++ * @IPC_MEM_MSG_CS_INVALID:	Initial status.
++ * @IPC_MEM_MSG_CS_SUCCESS:	IPC Message completion success.
++ * @IPC_MEM_MSG_CS_ERROR:	Message send error.
 + */
-+struct ipc_protocol_device_info {
-+	__le32 execution_stage;
-+	__le32 ipc_status;
-+	__le32 device_sleep_notification;
++enum ipc_mem_msg_cs {
++	IPC_MEM_MSG_CS_INVALID,
++	IPC_MEM_MSG_CS_SUCCESS,
++	IPC_MEM_MSG_CS_ERROR,
 +};
 +
 +/**
-+ * struct ipc_protocol_ap_shm - Protocol Shared Memory Structure
-+ * @ci:			Context information struct
-+ * @device_info:	Device information struct
-+ * @msg_head:		Point to msg head
-+ * @head_array:		Array of head pointer
-+ * @msg_tail:		Point to msg tail
-+ * @tail_array:		Array of tail pointer
-+ * @msg_ring:		Circular buffers for the read/tail and write/head
-+ *			indeces.
++ * struct ipc_msg_prep_args_pipe - struct for pipe args for message preparation
++ * @pipe:	Pipe to open/close
 + */
-+struct ipc_protocol_ap_shm {
-+	struct ipc_protocol_context_info ci;
-+	struct ipc_protocol_device_info device_info;
-+	__le32 msg_head;
-+	__le32 head_array[IPC_MEM_MAX_PIPES];
-+	__le32 msg_tail;
-+	__le32 tail_array[IPC_MEM_MAX_PIPES];
-+	union ipc_mem_msg_entry msg_ring[IPC_MEM_MSG_ENTRIES];
++struct ipc_msg_prep_args_pipe {
++	struct ipc_pipe *pipe;
 +};
 +
 +/**
-+ * struct iosm_protocol - Structure for IPC protocol.
-+ * @p_ap_shm:		Pointer to Protocol Shared Memory Structure
-+ * @pm:			Instance to struct iosm_pm
-+ * @pcie:		Pointer to struct iosm_pcie
-+ * @imem:		Pointer to struct iosm_imem
-+ * @rsp_ring:		Array of OS completion objects to be triggered once CP
-+ *			acknowledges a request in the message ring
-+ * @dev:		Pointer to device structure
-+ * @phy_ap_shm:		Physical/Mapped representation of the shared memory info
-+ * @old_msg_tail:	Old msg tail ptr, until AP has handled ACK's from CP
++ * struct ipc_msg_prep_args_sleep - struct for sleep args for message
++ *				    preparation
++ * @target:	0=host, 1=device
++ * @state:	0=enter sleep, 1=exit sleep
 + */
-+struct iosm_protocol {
-+	struct ipc_protocol_ap_shm *p_ap_shm;
-+	struct iosm_pm pm;
-+	struct iosm_pcie *pcie;
-+	struct iosm_imem *imem;
-+	struct ipc_rsp *rsp_ring[IPC_MEM_MSG_ENTRIES];
-+	struct device *dev;
-+	phys_addr_t phy_ap_shm;
-+	u32 old_msg_tail;
++struct ipc_msg_prep_args_sleep {
++	unsigned int target;
++	unsigned int state;
 +};
 +
 +/**
-+ * struct ipc_call_msg_send_args - Structure for message argument for
-+ *				   tasklet function.
-+ * @prep_args:		Arguments for message preparation function
-+ * @response:		Can be NULL if result can be ignored
-+ * @msg_type:		Message Type
++ * struct ipc_msg_prep_feature_set - struct for feature set argument for
++ *				     message preparation
++ * @reset_enable:	0=out-of-band, 1=in-band-crash notification
 + */
-+struct ipc_call_msg_send_args {
-+	union ipc_msg_prep_args *prep_args;
-+	struct ipc_rsp *response;
-+	enum ipc_msg_prep_type msg_type;
++struct ipc_msg_prep_feature_set {
++	u8 reset_enable;
 +};
 +
 +/**
-+ * ipc_protocol_tq_msg_send - prepare the msg and send to CP
-+ * @ipc_protocol:	Pointer to ipc_protocol instance
-+ * @msg_type:		Message type
-+ * @prep_args:		Message arguments
-+ * @response:		Pointer to a response object which has a
-+ *			completion object and return code.
++ * struct ipc_msg_prep_map - struct for map argument for message preparation
++ * @region_id:	Region to map
++ * @addr:	Pcie addr of region to map
++ * @size:	Size of the region to map
++ */
++struct ipc_msg_prep_map {
++	unsigned int region_id;
++	unsigned long addr;
++	size_t size;
++};
++
++/**
++ * struct ipc_msg_prep_unmap - struct for unmap argument for message preparation
++ * @region_id:	Region to unmap
++ */
++struct ipc_msg_prep_unmap {
++	unsigned int region_id;
++};
++
++/**
++ * struct ipc_msg_prep_args - Union to handle different message types
++ * @pipe_open:		Pipe open message preparation struct
++ * @pipe_close:		Pipe close message preparation struct
++ * @sleep:		Sleep message preparation struct
++ * @feature_set:	Feature set message preparation struct
++ * @map:		Memory map message preparation struct
++ * @unmap:		Memory unmap message preparation struct
++ */
++union ipc_msg_prep_args {
++	struct ipc_msg_prep_args_pipe pipe_open;
++	struct ipc_msg_prep_args_pipe pipe_close;
++	struct ipc_msg_prep_args_sleep sleep;
++	struct ipc_msg_prep_feature_set feature_set;
++	struct ipc_msg_prep_map map;
++	struct ipc_msg_prep_unmap unmap;
++};
++
++/**
++ * enum ipc_msg_prep_type - Enum for message prepare actions
++ * @IPC_MSG_PREP_SLEEP:		Sleep message preparation type
++ * @IPC_MSG_PREP_PIPE_OPEN:	Pipe open message preparation type
++ * @IPC_MSG_PREP_PIPE_CLOSE:	Pipe close message preparation type
++ * @IPC_MSG_PREP_FEATURE_SET:	Feature set message preparation type
++ * @IPC_MSG_PREP_MAP:		Memory map message preparation type
++ * @IPC_MSG_PREP_UNMAP:		Memory unmap message preparation type
++ */
++enum ipc_msg_prep_type {
++	IPC_MSG_PREP_SLEEP,
++	IPC_MSG_PREP_PIPE_OPEN,
++	IPC_MSG_PREP_PIPE_CLOSE,
++	IPC_MSG_PREP_FEATURE_SET,
++	IPC_MSG_PREP_MAP,
++	IPC_MSG_PREP_UNMAP,
++};
++
++/**
++ * struct ipc_rsp - Response to sent message
++ * @completion:	For waking up requestor
++ * @status:	Completion status
++ */
++struct ipc_rsp {
++	struct completion completion;
++	enum ipc_mem_msg_cs status;
++};
++
++/**
++ * enum ipc_mem_msg - Type-definition of the messages.
++ * @IPC_MEM_MSG_OPEN_PIPE:	AP ->CP: Open a pipe
++ * @IPC_MEM_MSG_CLOSE_PIPE:	AP ->CP: Close a pipe
++ * @IPC_MEM_MSG_ABORT_PIPE:	AP ->CP: wait for completion of the
++ *				running transfer and abort all pending
++ *				IO-transfers for the pipe
++ * @IPC_MEM_MSG_SLEEP:		AP ->CP: host enter or exit sleep
++ * @IPC_MEM_MSG_FEATURE_SET:	AP ->CP: Intel feature configuration
++ */
++enum ipc_mem_msg {
++	IPC_MEM_MSG_OPEN_PIPE = 0x01,
++	IPC_MEM_MSG_CLOSE_PIPE = 0x02,
++	IPC_MEM_MSG_ABORT_PIPE = 0x03,
++	IPC_MEM_MSG_SLEEP = 0x04,
++	IPC_MEM_MSG_FEATURE_SET = 0xF0,
++};
++
++/**
++ * struct ipc_mem_msg_open_pipe - Message structure for open pipe
++ * @tdr_addr:			Tdr address
++ * @tdr_entries:		Tdr entries
++ * @pipe_nr:			Pipe number
++ * @type_of_message:		Message type
++ * @irq_vector:			MSI vector number
++ * @accumulation_backoff:	Time in usec for data accumalation
++ * @completion_status:		Message Completion Status
++ */
++struct ipc_mem_msg_open_pipe {
++	__le64 tdr_addr;
++	__le16 tdr_entries;
++	u8 pipe_nr;
++	u8 type_of_message;
++	__le32 irq_vector;
++	__le32 accumulation_backoff;
++	__le32 completion_status;
++};
++
++/**
++ * struct ipc_mem_msg_close_pipe - Message structure for close pipe
++ * @reserved1:			Reserved
++ * @reserved2:			Reserved
++ * @pipe_nr:			Pipe number
++ * @type_of_message:		Message type
++ * @reserved3:			Reserved
++ * @reserved4:			Reserved
++ * @completion_status:		Message Completion Status
++ */
++struct ipc_mem_msg_close_pipe {
++	__le32 reserved1[2];
++	__le16 reserved2;
++	u8 pipe_nr;
++	u8 type_of_message;
++	__le32  reserved3;
++	__le32 reserved4;
++	__le32 completion_status;
++};
++
++/**
++ * struct ipc_mem_msg_abort_pipe - Message structure for abort pipe
++ * @reserved1:			Reserved
++ * @reserved2:			Reserved
++ * @pipe_nr:			Pipe number
++ * @type_of_message:		Message type
++ * @reserved3:			Reserved
++ * @reserved4:			Reserved
++ * @completion_status:		Message Completion Status
++ */
++struct ipc_mem_msg_abort_pipe {
++	__le32  reserved1[2];
++	__le16 reserved2;
++	u8 pipe_nr;
++	u8 type_of_message;
++	__le32 reserved3;
++	__le32 reserved4;
++	__le32 completion_status;
++};
++
++/**
++ * struct ipc_mem_msg_host_sleep - Message structure for sleep message.
++ * @reserved1:		Reserved
++ * @target:		0=host, 1=device, host or EP devie
++ *			is the message target
++ * @state:		0=enter sleep, 1=exit sleep,
++ *			2=enter sleep no protocol
++ * @reserved2:		Reserved
++ * @type_of_message:	Message type
++ * @reserved3:		Reserved
++ * @reserved4:		Reserved
++ * @completion_status:	Message Completion Status
++ */
++struct ipc_mem_msg_host_sleep {
++	__le32 reserved1[2];
++	u8 target;
++	u8 state;
++	u8 reserved2;
++	u8 type_of_message;
++	__le32 reserved3;
++	__le32 reserved4;
++	__le32 completion_status;
++};
++
++/**
++ * struct ipc_mem_msg_feature_set - Message structure for feature_set message
++ * @reserved1:			Reserved
++ * @reserved2:			Reserved
++ * @reset_enable:		0=out-of-band, 1=in-band-crash notification
++ * @type_of_message:		Message type
++ * @reserved3:			Reserved
++ * @reserved4:			Reserved
++ * @completion_status:		Message Completion Status
++ */
++struct ipc_mem_msg_feature_set {
++	__le32 reserved1[2];
++	__le16 reserved2;
++	u8 reset_enable;
++	u8 type_of_message;
++	__le32 reserved3;
++	__le32 reserved4;
++	__le32 completion_status;
++};
++
++/**
++ * struct ipc_mem_msg_common - Message structure for completion status update.
++ * @reserved1:			Reserved
++ * @reserved2:			Reserved
++ * @type_of_message:		Message type
++ * @reserved3:			Reserved
++ * @reserved4:			Reserved
++ * @completion_status:		Message Completion Status
++ */
++struct ipc_mem_msg_common {
++	__le32 reserved1[2];
++	u8 reserved2[3];
++	u8 type_of_message;
++	__le32 reserved3;
++	__le32 reserved4;
++	__le32 completion_status;
++};
++
++/**
++ * union ipc_mem_msg_entry - Union with all possible messages.
++ * @open_pipe:		Open pipe message struct
++ * @close_pipe:		Close pipe message struct
++ * @abort_pipe:		Abort pipe message struct
++ * @host_sleep:		Host sleep message struct
++ * @feature_set:	Featuer set message struct
++ * @common:		Used to access msg_type and to set the completion status
++ */
++union ipc_mem_msg_entry {
++	struct ipc_mem_msg_open_pipe open_pipe;
++	struct ipc_mem_msg_close_pipe close_pipe;
++	struct ipc_mem_msg_abort_pipe abort_pipe;
++	struct ipc_mem_msg_host_sleep host_sleep;
++	struct ipc_mem_msg_feature_set feature_set;
++	struct ipc_mem_msg_common common;
++};
++
++/* Transfer descriptor definition. */
++struct ipc_protocol_td {
++	union {
++		/*   0 :  63 - 64-bit address of a buffer in host memory. */
++		dma_addr_t address;
++		struct {
++			/*   0 :  31 - 32 bit address */
++			__le32 address;
++			/*  32 :  63 - corresponding descriptor */
++			__le32 desc;
++		} __packed shm;
++	} buffer;
++
++	/*	0 - 2nd byte - Size of the buffer.
++	 *	The host provides the size of the buffer queued.
++	 *	The EP device reads this value and shall update
++	 *	it for downlink transfers to indicate the
++	 *	amount of data written in buffer.
++	 *	3rd byte - This field provides the completion status
++	 *	of the TD. When queuing the TD, the host sets
++	 *	the status to 0. The EP device updates this
++	 *	field when completing the TD.
++	 */
++	__le32 scs;
++
++	/*	0th - nr of following descriptors
++	 *	1 - 3rd byte - reserved
++	 */
++	__le32 next;
++} __packed;
++
++/**
++ * ipc_protocol_msg_prep - Prepare message based upon message type
++ * @ipc_imem:	iosm_protocol instance
++ * @msg_type:	message prepare type
++ * @args:	message arguments
 + *
-+ * Returns: 0 on success and failure value on error
++ * Return: 0 on success and failure value on error
 + */
-+int ipc_protocol_tq_msg_send(struct iosm_protocol *ipc_protocol,
-+			     enum ipc_msg_prep_type msg_type,
-+			     union ipc_msg_prep_args *prep_args,
-+			     struct ipc_rsp *response);
++int ipc_protocol_msg_prep(struct iosm_imem *ipc_imem,
++			  enum ipc_msg_prep_type msg_type,
++			  union ipc_msg_prep_args *args);
 +
 +/**
-+ * ipc_protocol_msg_send - Send ipc control message to CP and wait for response
-+ * @ipc_protocol:	Pointer to ipc_protocol instance
-+ * @prep:		Message type
-+ * @prep_args:		Message arguments
++ * ipc_protocol_msg_hp_update - Function for head pointer update
++ *				of message ring
++ * @ipc_imem:	iosm_protocol instance
++ */
++void ipc_protocol_msg_hp_update(struct iosm_imem *ipc_imem);
++
++/**
++ * ipc_protocol_msg_process - Function for processing responses
++ *			      to IPC messages
++ * @ipc_imem:	iosm_protocol instance
++ * @irq:	IRQ vector
 + *
-+ * Returns: 0 on success and failure value on error
++ * Return:	True on success, false if error
 + */
-+int ipc_protocol_msg_send(struct iosm_protocol *ipc_protocol,
-+			  enum ipc_msg_prep_type prep,
-+			  union ipc_msg_prep_args *prep_args);
++bool ipc_protocol_msg_process(struct iosm_imem *ipc_imem, int irq);
 +
 +/**
-+ * ipc_protocol_suspend - Signal to CP that host wants to go to sleep (suspend).
-+ * @ipc_protocol:	Pointer to ipc_protocol instance
++ * ipc_protocol_ul_td_send - Function for sending the data to CP
++ * @ipc_protocol:	iosm_protocol instance
++ * @pipe:		Pipe instance
++ * @p_ul_list:		uplink sk_buff list
 + *
-+ * Returns: true if host can suspend, false if suspend must be aborted.
++ * Return: true in success, false in case of error
 + */
-+bool ipc_protocol_suspend(struct iosm_protocol *ipc_protocol);
++bool ipc_protocol_ul_td_send(struct iosm_protocol *ipc_protocol,
++			     struct ipc_pipe *pipe,
++			     struct sk_buff_head *p_ul_list);
 +
 +/**
-+ * ipc_protocol_s2idle_sleep - Call PM function to set PM variables in s2idle
-+ *			       sleep/active case
-+ * @ipc_protocol:	Pointer to ipc_protocol instance
-+ * @sleep:		True for sleep/False for active
-+ */
-+void ipc_protocol_s2idle_sleep(struct iosm_protocol *ipc_protocol, bool sleep);
-+
-+/**
-+ * ipc_protocol_resume - Signal to CP that host wants to resume operation.
-+ * @ipc_protocol:	Pointer to ipc_protocol instance
++ * ipc_protocol_ul_td_process - Function for processing the sent data
++ * @ipc_protocol:	iosm_protocol instance
++ * @pipe:		Pipe instance
 + *
-+ * Returns: true if host can resume, false if there is a problem.
++ * Return: sk_buff instance
 + */
-+bool ipc_protocol_resume(struct iosm_protocol *ipc_protocol);
++struct sk_buff *ipc_protocol_ul_td_process(struct iosm_protocol *ipc_protocol,
++					   struct ipc_pipe *pipe);
 +
 +/**
-+ * ipc_protocol_pm_dev_sleep_handle - Handles the Device Sleep state change
-+ *				      notification.
-+ * @ipc_protocol:	Pointer to ipc_protocol instance.
++ * ipc_protocol_dl_td_prepare - Function for providing DL TDs to CP
++ * @ipc_protocol:	iosm_protocol instance
++ * @pipe:		Pipe instance
 + *
-+ * Returns: true if sleep notification handled, false otherwise.
++ * Return: true in success, false in case of error
 + */
-+bool ipc_protocol_pm_dev_sleep_handle(struct iosm_protocol *ipc_protocol);
++bool ipc_protocol_dl_td_prepare(struct iosm_protocol *ipc_protocol,
++				struct ipc_pipe *pipe);
 +
 +/**
-+ * ipc_protocol_doorbell_trigger - Wrapper for PM function which wake up the
-+ *				   device if it is in low power mode
-+ *				   and trigger a head pointer update interrupt.
-+ * @ipc_protocol:	Pointer to ipc_protocol instance.
-+ * @identifier:		Specifies what component triggered hpda
-+ *			update irq
-+ */
-+void ipc_protocol_doorbell_trigger(struct iosm_protocol *ipc_protocol,
-+				   u32 identifier);
-+
-+/**
-+ * ipc_protocol_sleep_notification_string - Returns last Sleep Notification as
-+ *					    string.
-+ * @ipc_protocol:	Instance pointer of Protocol module.
++ * ipc_protocol_dl_td_process - Function for processing the DL data
++ * @ipc_protocol:	iosm_protocol instance
++ * @pipe:		Pipe instance
 + *
-+ * Returns: Pointer to string.
++ * Return: sk_buff instance
 + */
-+const char *
-+ipc_protocol_sleep_notification_string(struct iosm_protocol *ipc_protocol);
++struct sk_buff *ipc_protocol_dl_td_process(struct iosm_protocol *ipc_protocol,
++					   struct ipc_pipe *pipe);
 +
 +/**
-+ * ipc_protocol_init - Allocates IPC protocol instance
-+ * @ipc_imem:		Pointer to iosm_imem structure
++ * ipc_protocol_get_head_tail_index - Function for getting Head and Tail
++ *				      pointer index of given pipe
++ * @ipc_protocol:	iosm_protocol instance
++ * @pipe:		Pipe Instance
++ * @head:		head pointer index of the given pipe
++ * @tail:		tail pointer index of the given pipe
++ */
++void ipc_protocol_get_head_tail_index(struct iosm_protocol *ipc_protocol,
++				      struct ipc_pipe *pipe, u32 *head,
++				      u32 *tail);
++/**
++ * ipc_protocol_get_ipc_status - Function for getting the IPC Status
++ * @ipc_protocol:	iosm_protocol instance
 + *
-+ * Returns: Address of IPC  protocol instance on success & NULL on failure.
++ * Return: Returns IPC State
 + */
-+struct iosm_protocol *ipc_protocol_init(struct iosm_imem *ipc_imem);
++enum ipc_mem_device_ipc_state ipc_protocol_get_ipc_status(struct iosm_protocol
++							  *ipc_protocol);
 +
 +/**
-+ * ipc_protocol_deinit - Deallocates IPC protocol instance
-+ * @ipc_protocol:	pointer to the IPC protocol instance
++ * ipc_protocol_pipe_cleanup - Function to cleanup pipe resources
++ * @ipc_protocol:	iosm_protocol instance
++ * @pipe:		Pipe instance
 + */
-+void ipc_protocol_deinit(struct iosm_protocol *ipc_protocol);
++void ipc_protocol_pipe_cleanup(struct iosm_protocol *ipc_protocol,
++			       struct ipc_pipe *pipe);
 +
++/**
++ * ipc_protocol_get_ap_exec_stage - Function for getting AP Exec Stage
++ * @ipc_protocol:	pointer to struct iosm protocol
++ *
++ * Return: returns BOOT Stages
++ */
++enum ipc_mem_exec_stage
++ipc_protocol_get_ap_exec_stage(struct iosm_protocol *ipc_protocol);
++
++/**
++ * ipc_protocol_pm_dev_get_sleep_notification - Function for getting Dev Sleep
++ *						notification
++ * @ipc_protocol:	iosm_protocol instance
++ *
++ * Return: Returns dev PM State
++ */
++u32 ipc_protocol_pm_dev_get_sleep_notification(struct iosm_protocol
++					       *ipc_protocol);
 +#endif
 -- 
 2.25.1
