@@ -2,49 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A99F38B973
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 00:24:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 372AF38B97B
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 00:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231501AbhETWZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 18:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230145AbhETWZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 18:25:49 -0400
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF72C061574;
-        Thu, 20 May 2021 15:24:27 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 437744F488CC2;
-        Thu, 20 May 2021 15:24:25 -0700 (PDT)
-Date:   Thu, 20 May 2021 15:24:21 -0700 (PDT)
-Message-Id: <20210520.152421.1110528865195726730.davem@davemloft.net>
-To:     olek2@wp.pl
-Cc:     hauke@hauke-m.de, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: lantiq: fix memory corruption in RX ring
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20210520184054.38477-1-olek2@wp.pl>
-References: <20210520184054.38477-1-olek2@wp.pl>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 20 May 2021 15:24:25 -0700 (PDT)
+        id S231560AbhETWbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 18:31:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37144 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231329AbhETWbc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 18:31:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 62039613AC;
+        Thu, 20 May 2021 22:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621549810;
+        bh=5cDZduWBJFBYYAmarnpupAcbglPvZM4E9xEdY5bWkPE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=SAUlCG1Fv3QQlODUOis6erQ5rGNwqQkoURWfCGKra2fC2rOhan45l28ksz0NF0leA
+         B5daeNJEQDicc5GzMENmFUE+SZmPxeq634MiCJB7km4YtKqH/RwzwCkOXQF6e6gadr
+         EAvT3J1NtozLHSIBD/E5QTBGFZNBIA9MEHb4ZxgcnERxJut5U/m3/6BvrkldCy7bNW
+         tcSPUYqMM0/MSzUAso2L1RQTa5hkLed7E6IZTDt8QzQ7eEOJI6xB6qdmy8Rqp0wM06
+         fEC5pgklUJ+TOvsXJ0qnOWLwbxIsV04EmRSLUYrGpLCLWRIHGinwTeH9Cl9xctyOUp
+         VOzuoWUhyElsw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4CC12609F6;
+        Thu, 20 May 2021 22:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: encx24j600: fix kernel-doc syntax in file headers
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162154981031.17678.7698185941474619213.git-patchwork-notify@kernel.org>
+Date:   Thu, 20 May 2021 22:30:10 +0000
+References: <20210520184915.588-1-yashsri421@gmail.com>
+In-Reply-To: <20210520184915.588-1-yashsri421@gmail.com>
+To:     Aditya Srivastava <yashsri421@gmail.com>
+Cc:     davem@davemloft.net, lukas.bulwahn@gmail.com,
+        rdunlap@infradead.org, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aleksander Jan Bajkowski <olek2@wp.pl>
-Date: Thu, 20 May 2021 20:40:54 +0200
+Hello:
 
-> In a situation where memory allocation or dma mapping fails, an
-> invalid address is programmed into the descriptor. This can lead
-> to memory corruption. If the memory allocation fails, DMA should
-> reuse the previous skb and mapping and drop the packet. This patch
-> also increments rx drop counter.
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Fri, 21 May 2021 00:19:15 +0530 you wrote:
+> The opening comment mark '/**' is used for highlighting the beginning of
+> kernel-doc comments.
+> The header for drivers/net/ethernet/microchip/encx24j600 files follows
+> this syntax, but the content inside does not comply with kernel-doc.
 > 
-> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+> This line was probably not meant for kernel-doc parsing, but is parsed
+> due to the presence of kernel-doc like comment syntax(i.e, '/**'), which
+> causes unexpected warning from kernel-doc.
+> For e.g., running scripts/kernel-doc -none
+> drivers/net/ethernet/microchip/encx24j600_hw.h emits:
+> warning: expecting prototype for h(). Prototype was for _ENCX24J600_HW_H() instead
+> 
+> [...]
 
-Please repost this with an appropriate Fixes: tag, thank you.
+Here is the summary with links:
+  - net: encx24j600: fix kernel-doc syntax in file headers
+    https://git.kernel.org/netdev/net/c/503c599a4f53
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
