@@ -2,158 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B9C38AF83
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 15:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD74F38B00A
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 15:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242822AbhETNDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 09:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238839AbhETNDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 09:03:13 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E64FC049E85;
-        Thu, 20 May 2021 05:33:24 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id ot16so7115166pjb.3;
-        Thu, 20 May 2021 05:33:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=AE4RaGKxoH7cfnhM64HNwu2DhDpNuuWHI6pwKl++Cqs=;
-        b=ckbWutmOAGH6EFFYUheMjYgwrwZ8tOXEVbXjcjW88z5pgsHsl3XbuAjOfvVENDuQyt
-         psidiYCPcppxAsHtLbOx7WBZVQJKZ0/0h8XxlAROyfQkD6ZfjQbIVVbRPRcQCCqov3hY
-         CnJ9xoV5/b0H2wKQLnYM/ZOO+BTe7AeNO3woFf7PgkPADkiorABkYXalCXZzVoR+0fx2
-         P0dhdQYCWzdntfZM/5/PcbuBU/+2sBaVgAwDuwmy45CGxARBMxK/hXIhSNE8jipflPFt
-         jo2eIPBkZJhvD2oJlVAIOMjjZdYyxj82R25aO8KcQF82pL3g7P6aniaLE7tcKKIjpss0
-         q2KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=AE4RaGKxoH7cfnhM64HNwu2DhDpNuuWHI6pwKl++Cqs=;
-        b=Bo6F3x/5tYLErrikV8grZtk8Rqr4ZxWfTtEvC4PvaxxuiqeyxYMoJ58O3KEZhkWRlx
-         n6DiJk1zmHzeEAZb25peVTn/qpvbIeho1sViMdRFHhgIEENmkMvumqlN3m3r6WlUhLRu
-         K6e1LOdPsabogYLKAkFbnbajcOjnAbgcjoNowTj4uE/Xih+W0JrndXosnQgOz8NdZtgY
-         qLlF4i2ATy/7B7D0HJOlrKoflavs90HX8P7kz5vfxOgK4S951E9WR/RSpohYEmc3vIsc
-         cKgajnH4QPE9LwAtYnlmr/+y94s4DqAiL0lC2XxZeGU2DtEZy5ONLMpkYGLuDRljeArE
-         BONw==
-X-Gm-Message-State: AOAM53123DlicKa8x3g9jfKlsEcBQpENBlou+Yo7I2g/M0NTz2XRqZ3G
-        n1XQmm7ZGff86mNAaLrLbg==
-X-Google-Smtp-Source: ABdhPJyNhOyfFXFeoWuZ85y5dUB8WkaL1wh62VX4SM/VIT2iYvGQMtIc8zKjWvxQ8uwumcwBJ5icvQ==
-X-Received: by 2002:a17:90a:7842:: with SMTP id y2mr5053341pjl.68.1621514003645;
-        Thu, 20 May 2021 05:33:23 -0700 (PDT)
-Received: from vultr.guest ([107.191.53.97])
-        by smtp.gmail.com with ESMTPSA id z22sm2054752pfa.157.2021.05.20.05.33.21
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 May 2021 05:33:23 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zheyuma97@gmail.com
-Subject: [PATCH v2] net/qla3xxx: fix schedule while atomic in ql_sem_spinlock
-Date:   Thu, 20 May 2021 12:32:36 +0000
-Message-Id: <1621513956-23060-1-git-send-email-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S237471AbhETNeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 09:34:05 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:3629 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235618AbhETNeF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 09:34:05 -0400
+Received: from dggems702-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Fm9bP2NHQzmW7J;
+        Thu, 20 May 2021 21:30:25 +0800 (CST)
+Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
+ dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Thu, 20 May 2021 21:32:42 +0800
+Received: from localhost (10.174.179.215) by dggema769-chm.china.huawei.com
+ (10.1.198.211) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 20
+ May 2021 21:32:41 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
+        <luiz.dentz@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <yuehaibing@huawei.com>
+CC:     <linux-bluetooth@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] Bluetooth: RFCOMM: Use DEVICE_ATTR_RO macro
+Date:   Thu, 20 May 2021 21:32:35 +0800
+Message-ID: <20210520133235.32244-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggema769-chm.china.huawei.com (10.1.198.211)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calling the 'ql_sem_spinlock', the driver has already acquired the
-spin lock, so the driver should not call 'ssleep' in atomic context.
+Use DEVICE_ATTR_RO helper instead of plain DEVICE_ATTR,
+which makes the code a bit shorter and easier to read.
 
-This bug can be fixed by using 'mdelay' instead of 'ssleep'.
-
-The KASAN's log reveals it:
-
-[    3.238124 ] BUG: scheduling while atomic: swapper/0/1/0x00000002
-[    3.238748 ] 2 locks held by swapper/0/1:
-[    3.239151 ]  #0: ffff88810177b240 (&dev->mutex){....}-{3:3}, at:
-__device_driver_lock+0x41/0x60
-[    3.240026 ]  #1: ffff888107c60e28 (&qdev->hw_lock){....}-{2:2}, at:
-ql3xxx_probe+0x2aa/0xea0
-[    3.240873 ] Modules linked in:
-[    3.241187 ] irq event stamp: 460854
-[    3.241541 ] hardirqs last  enabled at (460853): [<ffffffff843051bf>]
-_raw_spin_unlock_irqrestore+0x4f/0x70
-[    3.242245 ] hardirqs last disabled at (460854): [<ffffffff843058ca>]
-_raw_spin_lock_irqsave+0x2a/0x70
-[    3.242245 ] softirqs last  enabled at (446076): [<ffffffff846002e4>]
-__do_softirq+0x2e4/0x4b1
-[    3.242245 ] softirqs last disabled at (446069): [<ffffffff811ba5e0>]
-irq_exit_rcu+0x100/0x110
-[    3.242245 ] Preemption disabled at:
-[    3.242245 ] [<ffffffff828ca5ba>] ql3xxx_probe+0x2aa/0xea0
-[    3.242245 ] Kernel panic - not syncing: scheduling while atomic
-[    3.242245 ] CPU: 2 PID: 1 Comm: swapper/0 Not tainted
-5.13.0-rc1-00145
--gee7dc339169-dirty #16
-[    3.242245 ] Call Trace:
-[    3.242245 ]  dump_stack+0xba/0xf5
-[    3.242245 ]  ? ql3xxx_probe+0x1f0/0xea0
-[    3.242245 ]  panic+0x15a/0x3f2
-[    3.242245 ]  ? vprintk+0x76/0x150
-[    3.242245 ]  ? ql3xxx_probe+0x2aa/0xea0
-[    3.242245 ]  __schedule_bug+0xae/0xe0
-[    3.242245 ]  __schedule+0x72e/0xa00
-[    3.242245 ]  schedule+0x43/0xf0
-[    3.242245 ]  schedule_timeout+0x28b/0x500
-[    3.242245 ]  ? del_timer_sync+0xf0/0xf0
-[    3.242245 ]  ? msleep+0x2f/0x70
-[    3.242245 ]  msleep+0x59/0x70
-[    3.242245 ]  ql3xxx_probe+0x307/0xea0
-[    3.242245 ]  ? _raw_spin_unlock_irqrestore+0x3a/0x70
-[    3.242245 ]  ? pci_device_remove+0x110/0x110
-[    3.242245 ]  local_pci_probe+0x45/0xa0
-[    3.242245 ]  pci_device_probe+0x12b/0x1d0
-[    3.242245 ]  really_probe+0x2a9/0x610
-[    3.242245 ]  driver_probe_device+0x90/0x1d0
-[    3.242245 ]  ? mutex_lock_nested+0x1b/0x20
-[    3.242245 ]  device_driver_attach+0x68/0x70
-[    3.242245 ]  __driver_attach+0x124/0x1b0
-[    3.242245 ]  ? device_driver_attach+0x70/0x70
-[    3.242245 ]  bus_for_each_dev+0xbb/0x110
-[    3.242245 ]  ? rdinit_setup+0x45/0x45
-[    3.242245 ]  driver_attach+0x27/0x30
-[    3.242245 ]  bus_add_driver+0x1eb/0x2a0
-[    3.242245 ]  driver_register+0xa9/0x180
-[    3.242245 ]  __pci_register_driver+0x82/0x90
-[    3.242245 ]  ? yellowfin_init+0x25/0x25
-[    3.242245 ]  ql3xxx_driver_init+0x23/0x25
-[    3.242245 ]  do_one_initcall+0x7f/0x3d0
-[    3.242245 ]  ? rdinit_setup+0x45/0x45
-[    3.242245 ]  ? rcu_read_lock_sched_held+0x4f/0x80
-[    3.242245 ]  kernel_init_freeable+0x2aa/0x301
-[    3.242245 ]  ? rest_init+0x2c0/0x2c0
-[    3.242245 ]  kernel_init+0x18/0x190
-[    3.242245 ]  ? rest_init+0x2c0/0x2c0
-[    3.242245 ]  ? rest_init+0x2c0/0x2c0
-[    3.242245 ]  ret_from_fork+0x1f/0x30
-[    3.242245 ] Dumping ftrace buffer:
-[    3.242245 ]    (ftrace buffer empty)
-[    3.242245 ] Kernel Offset: disabled
-[    3.242245 ] Rebooting in 1 seconds.
-
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
-Changes in v2:
-    - Use 'mdelay' instead of releasing the lock before the 'ssleep'.
----
- drivers/net/ethernet/qlogic/qla3xxx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bluetooth/rfcomm/tty.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
-index 214e347097a7..2376b2729633 100644
---- a/drivers/net/ethernet/qlogic/qla3xxx.c
-+++ b/drivers/net/ethernet/qlogic/qla3xxx.c
-@@ -114,7 +114,7 @@ static int ql_sem_spinlock(struct ql3_adapter *qdev,
- 		value = readl(&port_regs->CommonRegs.semaphoreReg);
- 		if ((value & (sem_mask >> 16)) == sem_bits)
- 			return 0;
--		ssleep(1);
-+		mdelay(1000);
- 	} while (--seconds);
- 	return -1;
+diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
+index c76dcc0f679b..4e095746e002 100644
+--- a/net/bluetooth/rfcomm/tty.c
++++ b/net/bluetooth/rfcomm/tty.c
+@@ -198,20 +198,22 @@ static void rfcomm_reparent_device(struct rfcomm_dev *dev)
+ 	hci_dev_put(hdev);
  }
+ 
+-static ssize_t show_address(struct device *tty_dev, struct device_attribute *attr, char *buf)
++static ssize_t address_show(struct device *tty_dev,
++			    struct device_attribute *attr, char *buf)
+ {
+ 	struct rfcomm_dev *dev = dev_get_drvdata(tty_dev);
+ 	return sprintf(buf, "%pMR\n", &dev->dst);
+ }
+ 
+-static ssize_t show_channel(struct device *tty_dev, struct device_attribute *attr, char *buf)
++static ssize_t channel_show(struct device *tty_dev,
++			    struct device_attribute *attr, char *buf)
+ {
+ 	struct rfcomm_dev *dev = dev_get_drvdata(tty_dev);
+ 	return sprintf(buf, "%d\n", dev->channel);
+ }
+ 
+-static DEVICE_ATTR(address, 0444, show_address, NULL);
+-static DEVICE_ATTR(channel, 0444, show_channel, NULL);
++static DEVICE_ATTR_RO(address);
++static DEVICE_ATTR_RO(channel);
+ 
+ static struct rfcomm_dev *__rfcomm_dev_add(struct rfcomm_dev_req *req,
+ 					   struct rfcomm_dlc *dlc)
 -- 
 2.17.1
 
