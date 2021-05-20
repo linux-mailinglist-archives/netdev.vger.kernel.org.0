@@ -2,155 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C558A38B04E
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 15:46:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E89C38B051
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 15:47:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237364AbhETNsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 09:48:04 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:3448 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237283AbhETNsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 09:48:01 -0400
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4Fm9tn542KzBttQ;
-        Thu, 20 May 2021 21:43:45 +0800 (CST)
-Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
- dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Thu, 20 May 2021 21:46:33 +0800
-Received: from localhost (10.174.179.215) by dggema769-chm.china.huawei.com
- (10.1.198.211) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 20
- May 2021 21:46:32 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <oliver@neukum.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] net: cdc_ncm: use DEVICE_ATTR_RW macro
-Date:   Thu, 20 May 2021 21:46:19 +0800
-Message-ID: <20210520134619.36356-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S239110AbhETNsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 09:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231946AbhETNsS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 09:48:18 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F85BC06175F;
+        Thu, 20 May 2021 06:46:57 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id i7so7566038ejc.5;
+        Thu, 20 May 2021 06:46:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=aFmQJac4iuxwmbF46KvAyNCQors8o3Kv89Ax85e/fSk=;
+        b=gfp3n9YGxa7K7QrH/kG5G7lPmDgckjSFtBzbP7QN0LXBdbrlGj776BLliSEBgqM95/
+         m/IVG5AhFHf/oP+kzg/Upa9G/dl1UnuvaWRyhzyOMKk7VfECGaMSpKbe1nC1Emw7exAO
+         Drridg9cymRj9v09HdxOQON2wpAvoKYewwipxAyzmA11kIMIHIOh64BUJwxq34PRbgov
+         jPqXLEfv4KLHy7CnBDA42vhhV7VTi+NayC1OW2U2zYTH194RMbGWaIAIg+/xY+W898w3
+         e7kd5O1rs3FG2qI6zalGvnOBAAP62K6MkPVpuuSI13hJj2UtoPQH1lEEkHFiJX/ZcoiM
+         i3fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aFmQJac4iuxwmbF46KvAyNCQors8o3Kv89Ax85e/fSk=;
+        b=F3raFBVbuKxz+LJOIyPuOzBukXlfmbJL5U87IlOPexanUqKCFQt9ysUj51st7A7QAj
+         wsgo7IexMXv2b+NlA3/V5qivEjfDp63rqWT2oi3QzGLANP9kdcQAVOvskQU5S5gwyn0G
+         0t9fR5m3JqERZIl7DmgZH9Z2E7vqQFvQMEFf7lZtQ5SC/0Yxy1I4JMqn3HuM8RO7ANy9
+         mCFaofALclSJU8Opx1XONxKeNuIpMzKQ0lOLKdXyiMUGfzhiRcqWaVPx2cuKgCHN6aju
+         J05mqTRukyzmCYxf158J60ofTYiNFyP13J/GbJFnOcBxtFgpdyGSW6wQvha7pAOsn240
+         0BVA==
+X-Gm-Message-State: AOAM5317cH2esWaJnInoyC7olp3crVTUwGjGhWionXlE6xzVID+gZVgy
+        s2oVRitAtAQ9FmfxxLqIwDY=
+X-Google-Smtp-Source: ABdhPJyEghuZf4q6DPfhgET8q0IkDmgbGMyM7NDdSatnuXlqzH162qSD+d218cYgpqK4TrAH2uovmA==
+X-Received: by 2002:a17:906:5210:: with SMTP id g16mr4915987ejm.116.1621518415727;
+        Thu, 20 May 2021 06:46:55 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id bw26sm1419379ejb.119.2021.05.20.06.46.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 May 2021 06:46:55 -0700 (PDT)
+Date:   Thu, 20 May 2021 16:46:52 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, a.fatoum@pengutronix.de,
+        vladimir.oltean@nxp.com, ast@kernel.org, daniel@iogearbox.net,
+        andriin@fb.com, edumazet@google.com, weiwan@google.com,
+        cong.wang@bytedance.com, ap420073@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxarm@openeuler.org, mkl@pengutronix.de,
+        linux-can@vger.kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, bpf@vger.kernel.org,
+        jonas.bonn@netrounds.com, pabeni@redhat.com, mzhivich@akamai.com,
+        johunt@akamai.com, albcamus@gmail.com, kehuan.feng@gmail.com,
+        atenart@kernel.org, alexander.duyck@gmail.com, hdanton@sina.com,
+        jgross@suse.com, JKosina@suse.com, mkubecek@suse.cz,
+        bjorn@kernel.org, alobakin@pm.me
+Subject: Re: [Linuxarm] [PATCH RFC v4 0/3] Some optimization for lockless
+ qdisc
+Message-ID: <20210520134652.2sw6gzfdzsqeedzz@skbuf>
+References: <1621502873-62720-1-git-send-email-linyunsheng@huawei.com>
+ <829cc4c1-46cc-c96c-47ba-438ae3534b94@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggema769-chm.china.huawei.com (10.1.198.211)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <829cc4c1-46cc-c96c-47ba-438ae3534b94@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use DEVICE_ATTR_RW helper instead of plain DEVICE_ATTR,
-which makes the code a bit shorter and easier to read.
+Hi Yunsheng,
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/usb/cdc_ncm.c | 36 ++++++++++++++++++++++++------------
- 1 file changed, 24 insertions(+), 12 deletions(-)
+On Thu, May 20, 2021 at 05:45:14PM +0800, Yunsheng Lin wrote:
+> On 2021/5/20 17:27, Yunsheng Lin wrote:
+> > Patch 1: remove unnecessary seqcount operation.
+> > Patch 2: implement TCQ_F_CAN_BYPASS.
+> > Patch 3: remove qdisc->empty.
+> > 
+> > RFC v4: Use STATE_MISSED and STATE_DRAINING to indicate non-empty
+> >         qdisc, and add patch 1 and 3.
+> 
+> @Vladimir, Ahmad
+> It would be good to run your testcase to see if there are any
+> out of order for this version, because this version has used
+> STATE_MISSED and STATE_DRAINING to indicate non-empty qdisc,
+> thanks.
+> 
+> It is based on newest net branch with qdisc stuck patchset.
+> 
+> Some performance data as below:
+> 
+> pktgen + dummy netdev:
+>  threads  without+this_patch   with+this_patch      delta
+>     1       2.60Mpps            3.18Mpps             +22%
+>     2       3.84Mpps            5.72Mpps             +48%
+>     4       5.52Mpps            5.52Mpps             +0.0%
+>     8       2.77Mpps            2.81Mpps             +1.4%
+>    16       2.24Mpps            2.29Mpps             +2.2%
+> 
+> IP forward testing: 1.05Mpps increases to 1.15Mpps
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index b04055fd1b79..783d6139fdfa 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -192,7 +192,8 @@ static u32 cdc_ncm_check_tx_max(struct usbnet *dev, u32 new_tx)
- 	return val;
- }
- 
--static ssize_t cdc_ncm_show_min_tx_pkt(struct device *d, struct device_attribute *attr, char *buf)
-+static ssize_t min_tx_pkt_show(struct device *d,
-+			       struct device_attribute *attr, char *buf)
- {
- 	struct usbnet *dev = netdev_priv(to_net_dev(d));
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
-@@ -200,7 +201,8 @@ static ssize_t cdc_ncm_show_min_tx_pkt(struct device *d, struct device_attribute
- 	return sprintf(buf, "%u\n", ctx->min_tx_pkt);
- }
- 
--static ssize_t cdc_ncm_show_rx_max(struct device *d, struct device_attribute *attr, char *buf)
-+static ssize_t rx_max_show(struct device *d,
-+			   struct device_attribute *attr, char *buf)
- {
- 	struct usbnet *dev = netdev_priv(to_net_dev(d));
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
-@@ -208,7 +210,8 @@ static ssize_t cdc_ncm_show_rx_max(struct device *d, struct device_attribute *at
- 	return sprintf(buf, "%u\n", ctx->rx_max);
- }
- 
--static ssize_t cdc_ncm_show_tx_max(struct device *d, struct device_attribute *attr, char *buf)
-+static ssize_t tx_max_show(struct device *d,
-+			   struct device_attribute *attr, char *buf)
- {
- 	struct usbnet *dev = netdev_priv(to_net_dev(d));
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
-@@ -216,7 +219,8 @@ static ssize_t cdc_ncm_show_tx_max(struct device *d, struct device_attribute *at
- 	return sprintf(buf, "%u\n", ctx->tx_max);
- }
- 
--static ssize_t cdc_ncm_show_tx_timer_usecs(struct device *d, struct device_attribute *attr, char *buf)
-+static ssize_t tx_timer_usecs_show(struct device *d,
-+				   struct device_attribute *attr, char *buf)
- {
- 	struct usbnet *dev = netdev_priv(to_net_dev(d));
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
-@@ -224,7 +228,9 @@ static ssize_t cdc_ncm_show_tx_timer_usecs(struct device *d, struct device_attri
- 	return sprintf(buf, "%u\n", ctx->timer_interval / (u32)NSEC_PER_USEC);
- }
- 
--static ssize_t cdc_ncm_store_min_tx_pkt(struct device *d,  struct device_attribute *attr, const char *buf, size_t len)
-+static ssize_t min_tx_pkt_store(struct device *d,
-+				struct device_attribute *attr,
-+				const char *buf, size_t len)
- {
- 	struct usbnet *dev = netdev_priv(to_net_dev(d));
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
-@@ -238,7 +244,9 @@ static ssize_t cdc_ncm_store_min_tx_pkt(struct device *d,  struct device_attribu
- 	return len;
- }
- 
--static ssize_t cdc_ncm_store_rx_max(struct device *d,  struct device_attribute *attr, const char *buf, size_t len)
-+static ssize_t rx_max_store(struct device *d,
-+			    struct device_attribute *attr,
-+			    const char *buf, size_t len)
- {
- 	struct usbnet *dev = netdev_priv(to_net_dev(d));
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
-@@ -251,7 +259,9 @@ static ssize_t cdc_ncm_store_rx_max(struct device *d,  struct device_attribute *
- 	return len;
- }
- 
--static ssize_t cdc_ncm_store_tx_max(struct device *d,  struct device_attribute *attr, const char *buf, size_t len)
-+static ssize_t tx_max_store(struct device *d,
-+			    struct device_attribute *attr,
-+			    const char *buf, size_t len)
- {
- 	struct usbnet *dev = netdev_priv(to_net_dev(d));
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
-@@ -264,7 +274,9 @@ static ssize_t cdc_ncm_store_tx_max(struct device *d,  struct device_attribute *
- 	return len;
- }
- 
--static ssize_t cdc_ncm_store_tx_timer_usecs(struct device *d,  struct device_attribute *attr, const char *buf, size_t len)
-+static ssize_t tx_timer_usecs_store(struct device *d,
-+				    struct device_attribute *attr,
-+				    const char *buf, size_t len)
- {
- 	struct usbnet *dev = netdev_priv(to_net_dev(d));
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
-@@ -285,10 +297,10 @@ static ssize_t cdc_ncm_store_tx_timer_usecs(struct device *d,  struct device_att
- 	return len;
- }
- 
--static DEVICE_ATTR(min_tx_pkt, 0644, cdc_ncm_show_min_tx_pkt, cdc_ncm_store_min_tx_pkt);
--static DEVICE_ATTR(rx_max, 0644, cdc_ncm_show_rx_max, cdc_ncm_store_rx_max);
--static DEVICE_ATTR(tx_max, 0644, cdc_ncm_show_tx_max, cdc_ncm_store_tx_max);
--static DEVICE_ATTR(tx_timer_usecs, 0644, cdc_ncm_show_tx_timer_usecs, cdc_ncm_store_tx_timer_usecs);
-+static DEVICE_ATTR_RW(min_tx_pkt);
-+static DEVICE_ATTR_RW(rx_max);
-+static DEVICE_ATTR_RW(tx_max);
-+static DEVICE_ATTR_RW(tx_timer_usecs);
- 
- static ssize_t ndp_to_end_show(struct device *d, struct device_attribute *attr, char *buf)
- {
--- 
-2.17.1
-
+I will start the regression test with the flexcan driver on LS1028A and
+let you know tomorrow or so if there is any TX reordering issue.
