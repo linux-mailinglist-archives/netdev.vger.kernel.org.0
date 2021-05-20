@@ -2,136 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16C1238ACEA
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 13:50:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 774D238ADCF
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 14:17:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241356AbhETLvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 07:51:31 -0400
-Received: from mx2.suse.de ([195.135.220.15]:55960 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242666AbhETLrc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 07:47:32 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1621511170; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        id S233378AbhETMSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 08:18:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46234 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235280AbhETMS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 08:18:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621513024;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=A8q+fkSuWfl4pXkgwyhK6ygE0KXVq43LbF4JProMcWQ=;
-        b=b6B1/lM0z/Cw4r6XtealbDwhnP3XuTEp9BtAR5mohAmbvgiAu2g9Fx7XGa0bz/96uIi+WY
-        PMkIrGhM7UWTYnhbeZkoKSlgu+ZvsDKQO5HeH0pe4umPHJ35PY9UTbe4sD3ZUel46PCNe7
-        GGA+FXlZiYnLJ+VkJvTAMzcVWeHALXo=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 4EBBAAC4B;
-        Thu, 20 May 2021 11:46:10 +0000 (UTC)
-Subject: Re: [PATCH] xen-netback: correct success/error reporting for the
- SKB-with-fraglist case
-To:     paul@xen.org, Wei Liu <wl@xen.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
-References: <4dd5b8ec-a255-7ab1-6dbf-52705acd6d62@suse.com>
- <67bc0728-761b-c3dd-bdd5-1a850ff79fbb@xen.org>
- <76c94541-21a8-7ae5-c4c4-48552f16c3fd@suse.com>
- <17e50fb5-31f7-60a5-1eec-10d18a40ad9a@xen.org>
- <57580966-3880-9e59-5d82-e1de9006aa0c@suse.com>
- <a26c1ecd-e303-3138-eb7e-96f0203ca888@xen.org>
-From:   Jan Beulich <jbeulich@suse.com>
-Message-ID: <1a522244-4be8-5e33-77c7-4ea5cf130335@suse.com>
-Date:   Thu, 20 May 2021 13:46:09 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
+        bh=SSkwtvHcPBbTlvpNE9P+HcbJy0FqLXXvauvAW90G6bk=;
+        b=gs7rBJl2yc39U9js+XUDYZ83utACMfZqFgveRcYFQ1K0FzNbn/U6jvNkNIsKcFZb1DHuTL
+        FOt0kYHMdIeXCdkeEdBBdVp/RUexnkQ83m+tAkwZkvZU9FAK7IxxUYwjeZeKcO2IOD/M4b
+        7FEl3e+qR+pWQ85l/P5lMZRI7avtoAE=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-199-UvDoJzVyNO-rnKNXZHSbXg-1; Thu, 20 May 2021 08:17:02 -0400
+X-MC-Unique: UvDoJzVyNO-rnKNXZHSbXg-1
+Received: by mail-ej1-f69.google.com with SMTP id n25-20020a170906b319b02903d4dc1bc46cso4920082ejz.2
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 05:17:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SSkwtvHcPBbTlvpNE9P+HcbJy0FqLXXvauvAW90G6bk=;
+        b=XSL+AZrb5pCRRV6DFKA7/1xIh9Kcx7+Gqslrv531ArxGkNVki0zPTDdrJDnG6PjVTy
+         C3qjbGfN5RpP68LC8xuSZAvts648xETPFVC90VKsKfsc+MRwEFGLOzyJZXHI+IxmF74N
+         CAx7sPEOTTC4MaPl3WP7YpU15ctbxpO6Y0mf2TeQiF7c9l+Y3Jo01nSZxONNlFpsW9rO
+         L5+6KYR4dFaKutAe6VSRtxFKGucEZP5Vg50Es/rOSnosux8zndohmL3swOm96mTFMIIs
+         PSC2u4ur3DhEi8aZoO+LQadFCXWF1iCtHbJoYCeU2yKZj1Ggeh5PdqA9XlrOhPu+LZ6A
+         y32A==
+X-Gm-Message-State: AOAM533CxbAMzjhicd2ikhkKHb3MuozzQ1smfneuOzvohnEieMw0wbTc
+        +h0NLEnblShwS/aW8B8Q8tlUSpOGa8fQl9Mv3JSsyJUedFXdpPdTN8zcM8cZ4XpxZGgxCqIXEfZ
+        JdNqBBEVszZINbHk8
+X-Received: by 2002:a17:906:840c:: with SMTP id n12mr4354642ejx.431.1621513021170;
+        Thu, 20 May 2021 05:17:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyYRlXW+ZzxjyWeSpV6egjtivjstTDXAl9TErIaluCjDw6hm9zvdw07z+DPMeDdbCwLW03zZw==
+X-Received: by 2002:a17:906:840c:: with SMTP id n12mr4354633ejx.431.1621513021072;
+        Thu, 20 May 2021 05:17:01 -0700 (PDT)
+Received: from localhost (host-95-245-155-88.retail.telecomitalia.it. [95.245.155.88])
+        by smtp.gmail.com with ESMTPSA id i25sm1327747eje.6.2021.05.20.05.17.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 May 2021 05:17:00 -0700 (PDT)
+Date:   Thu, 20 May 2021 14:16:56 +0200
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     Ariel Levkovich <lariel@nvidia.com>
+Cc:     netdev@vger.kernel.org, jiri@nvidia.com, mleitner@redhat.com
+Subject: Re: [PATCH iproute2-next 0/2] tc: Add missing ct_state flags
+Message-ID: <YKZTOM3bNJQjvwoC@renaissance-vector>
+References: <20210520112518.15304-1-lariel@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <a26c1ecd-e303-3138-eb7e-96f0203ca888@xen.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210520112518.15304-1-lariel@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.02.2021 17:23, Paul Durrant wrote:
-> On 25/02/2021 14:00, Jan Beulich wrote:
->> On 25.02.2021 13:11, Paul Durrant wrote:
->>> On 25/02/2021 07:33, Jan Beulich wrote:
->>>> On 24.02.2021 17:39, Paul Durrant wrote:
->>>>> On 23/02/2021 16:29, Jan Beulich wrote:
->>>>>> When re-entering the main loop of xenvif_tx_check_gop() a 2nd time, the
->>>>>> special considerations for the head of the SKB no longer apply. Don't
->>>>>> mistakenly report ERROR to the frontend for the first entry in the list,
->>>>>> even if - from all I can tell - this shouldn't matter much as the overall
->>>>>> transmit will need to be considered failed anyway.
->>>>>>
->>>>>> Signed-off-by: Jan Beulich <jbeulich@suse.com>
->>>>>>
->>>>>> --- a/drivers/net/xen-netback/netback.c
->>>>>> +++ b/drivers/net/xen-netback/netback.c
->>>>>> @@ -499,7 +499,7 @@ check_frags:
->>>>>>     				 * the header's copy failed, and they are
->>>>>>     				 * sharing a slot, send an error
->>>>>>     				 */
->>>>>> -				if (i == 0 && sharedslot)
->>>>>> +				if (i == 0 && !first_shinfo && sharedslot)
->>>>>>     					xenvif_idx_release(queue, pending_idx,
->>>>>>     							   XEN_NETIF_RSP_ERROR);
->>>>>>     				else
->>>>>>
->>>>>
->>>>> I think this will DTRT, but to my mind it would make more sense to clear
->>>>> 'sharedslot' before the 'goto check_frags' at the bottom of the function.
->>>>
->>>> That was my initial idea as well, but
->>>> - I think it is for a reason that the variable is "const".
->>>> - There is another use of it which would then instead need further
->>>>     amending (and which I believe is at least part of the reason for
->>>>     the variable to be "const").
->>>>
->>>
->>> Oh, yes. But now that I look again, don't you want:
->>>
->>> if (i == 0 && first_shinfo && sharedslot)
->>>
->>> ? (i.e no '!')
->>>
->>> The comment states that the error should be indicated when the first
->>> frag contains the header in the case that the map succeeded but the
->>> prior copy from the same ref failed. This can only possibly be the case
->>> if this is the 'first_shinfo'
->>
->> I don't think so, no - there's a difference between "first frag"
->> (at which point first_shinfo is NULL) and first frag list entry
->> (at which point first_shinfo is non-NULL).
+On Thu, May 20, 2021 at 02:25:16PM +0300, Ariel Levkovich wrote:
+> This short series is:
 > 
-> Yes, I realise I got it backwards. Confusing name but the comment above 
-> its declaration does explain.
+> 1. Adding support for matching on ct_state flag rel in tc flower
+> classifier.
 > 
->>
->>> (which is why I still think it is safe to unconst 'sharedslot' and
->>> clear it).
->>
->> And "no" here as well - this piece of code
->>
->> 		/* First error: if the header haven't shared a slot with the
->> 		 * first frag, release it as well.
->> 		 */
->> 		if (!sharedslot)
->> 			xenvif_idx_release(queue,
->> 					   XENVIF_TX_CB(skb)->pending_idx,
->> 					   XEN_NETIF_RSP_OKAY);
->>
->> specifically requires sharedslot to have the value that was
->> assigned to it at the start of the function (this property
->> doesn't go away when switching from fragments to frag list).
->> Note also how it uses XENVIF_TX_CB(skb)->pending_idx, i.e. the
->> value the local variable pending_idx was set from at the start
->> of the function.
->>
+> 2. Adding some missing description of ct_state flags rpl and inv.
 > 
-> True, we do have to deal with freeing up the header if the first map 
-> error comes on the frag list.
+> Ariel Levkovich (2):
+>   tc: f_flower: Add option to match on related ct state
+>   tc: f_flower: Add missing ct_state flags to usage description
 > 
-> Reviewed-by: Paul Durrant <paul@xen.org>
+>  man/man8/tc-flower.8 | 2 ++
+>  tc/f_flower.c        | 3 ++-
+>  2 files changed, 4 insertions(+), 1 deletion(-)
+>
+Thanks, Ariel.
 
-Since I've not seen this go into 5.13-rc, may I ask what the disposition
-of this is?
+Acked-by: Andrea Claudi <aclaudi@redhat.com>
 
-Jan
