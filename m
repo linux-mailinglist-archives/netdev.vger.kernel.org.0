@@ -2,150 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E85FE38AF44
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 14:54:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B9C38AF83
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 15:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242896AbhETMzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 08:55:05 -0400
-Received: from mail-am6eur05on2070.outbound.protection.outlook.com ([40.107.22.70]:41185
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S242808AbhETMxv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 08:53:51 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nvWvog/jAXZ+CHu0aKRfssGnwb6nKs+9GD04HaiNpqTOU69f4rnIU32Lg1mA9df9kV3d9MO3mD9cEAr9gqyvnl8PkJD5/+2flJ5XQX1taziXNKf/ks4BGfT2zzPuydKHoDUWB5W55WG8+aK36MgoYYdf3pKUsgVrbwKZkhrJJPvRvh0tVHvc+5fcrxf4XneZ/kRQkv1atjux+u0Jw6jklG7KXPR40w3yHDNZ4rKqywdHQURIu/TX1iAScL38yklWOfeDeG0r+cNJcwN7PA2HoN0V/POacWYCXU3R2ScKM5zDNB+jZ3oUtI4W+8yKlYyRdR9JI8nwR+U+ftt318r46g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ipw5TmPIB0VYSze72pR/m0DdVCMChjEwVDAkFx+bL50=;
- b=OC4a9FwypnPVZN0Eas7tTjxGTKnDpR00RZQSquCiUIrNhFhqeswBAsgvUz+h7m1veVD9UB/7CcTMvsttjwMLHnmfGvbsw8o/qlLiJeajKgREArxCqJEjScSfg0bG7NKqu61FydAUYGIj3Nc47+GgzqLp09cZRVkZWR3EMZ1141QnSymSl/3ELaVUlZ8HcCId15A8XMFfelkXUQ7dwJKagfHs6dmdDptUXQDWy3Elp6EYa0FLLRSlMTWFAa3XGyHwfIKUPkIU+AOE/erLx8d56kI0oLLlzNDe/eZc6BIFlQG1FAzPv0Ag+LnQxfurhoZaFd7emyoIwjWNK1qZAJ3XMg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ipw5TmPIB0VYSze72pR/m0DdVCMChjEwVDAkFx+bL50=;
- b=GjaYId9aPEM0ICJgHtPwNDGvL/zxvhyEwVUneQwHtyCgMnlAkwDLLCg+nkutbdF3yEqXIrWDEGY136k0HD4DFhepthDj7dGvfNbOpoueKzLEhgmcje/n3+qaerZDRXakQ5vKOhjwgWCw5YR/dkXERU5uVH9Z3UC3a2/c1cp3w6w=
-Authentication-Results: st.com; dkim=none (message not signed)
- header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB8PR04MB6345.eurprd04.prod.outlook.com (2603:10a6:10:106::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23; Thu, 20 May
- 2021 12:51:30 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4129.034; Thu, 20 May 2021
- 12:51:30 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, andrew@lunn.ch
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH net 2/2] net: stmmac: fix system hang if change mac address after interface ifdown
-Date:   Thu, 20 May 2021 20:51:17 +0800
-Message-Id: <20210520125117.1015-3-qiangqing.zhang@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210520125117.1015-1-qiangqing.zhang@nxp.com>
-References: <20210520125117.1015-1-qiangqing.zhang@nxp.com>
-Content-Type: text/plain
-X-Originating-IP: [119.31.174.71]
-X-ClientProxiedBy: SG2PR06CA0095.apcprd06.prod.outlook.com
- (2603:1096:3:14::21) To DB8PR04MB6795.eurprd04.prod.outlook.com
- (2603:10a6:10:fa::15)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2PR06CA0095.apcprd06.prod.outlook.com (2603:1096:3:14::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.32 via Frontend Transport; Thu, 20 May 2021 12:51:27 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 99d00032-fe4c-465e-096e-08d91b8dfd66
-X-MS-TrafficTypeDiagnostic: DB8PR04MB6345:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB8PR04MB634517E1BC7AE57A0D3B0EC8E62A9@DB8PR04MB6345.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1303;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: weWILU04lxGfCL0thB8HM/nIBV9YKzWKFOmWJCLGAG4Q6kjUoh4WgbGHZrVxmlybLXyClzwbi97zK2PQTJb0ixEwCMi5KAoj9pSUKPcGTKNVRyYxxq0+KlNJCCVO9o0mXip6M7mScBk1o2d4Lb1fHgN/G+hytJN+cZBGhFs08FymOsUMXRxxnhu4mECer2gyZ2dLTty1Iohfl7amEynL0v0DzfV/zpe5+sPJ0EFSDOxy92nmrfZcVBl6Zw1644B64egOfmJ3R5zkAAhJ2NYu8WCcAxpZlWntc4gnhqP4dWRnOhqiVJPriuutjH8j26lCrTpebPTSQpJ1HWEfns6AlZvc5zEu5w58z6FWSe+PXydPwsBa0GDUOqSDTM8hjZd3v5McP7Dg5G2nIj+IPNvoWAD6P/qCAPumpaSUff21DM7Bcuj2u02o/Z8OzoXdabiQwxiyIwcTE8UmnH/4FRhctWfT5x0LNL+FqsafoDofW7/04+eFxqhUg2TwGIjRz5DB14cIKF6DgcpU76SLYCgYJxt7gHED4v5eVELK5AgcwxPCBzQ4nQ0slKzXnsvQk2OCh9kN/HXnX43O9Z26Re9eTvPH7UHxB3xqV80k/ww8As/JJ9LhBytuDUoobcffS431uy1ksHcQZiDZLjOiMfh+ei/sQ3roS3CGnIQPmQ9kZuGLmW7F6CQTcSgvarr5L1fJ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(346002)(396003)(366004)(136003)(8936002)(38100700002)(38350700002)(6512007)(956004)(36756003)(52116002)(4326008)(8676002)(7416002)(1076003)(6506007)(5660300002)(86362001)(316002)(26005)(83380400001)(478600001)(2616005)(66946007)(6666004)(66476007)(66556008)(6486002)(2906002)(186003)(16526019)(69590400013);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?o6K9mIckWmq9UfBF+Re6uwQWly3wynROghxGs0eDu4DhZEKe5ttB5WSq/TaS?=
- =?us-ascii?Q?nkQ6bmiRL9vVTSiQfr5cvfO+SjcEBhnI1g3XTKVCdhKukrkN5JGRq85omv+t?=
- =?us-ascii?Q?qoPJgrj3uqmKC5Ens4h2gWHfo2uJRghhqyN/+xsEH2poF/Cd3sToLtkeyfEz?=
- =?us-ascii?Q?iEaMpMxqHqnLcRI3GDegVfVVO6lQhbt0+q8/+4F0lL4HCfYF/NpCjbeOyUD1?=
- =?us-ascii?Q?6quif8tAprLNklWTNu3bs+0O3IJUz/O7GW9byh3Nlazufzd9T91cx/1LmYqd?=
- =?us-ascii?Q?JNrHV+fmRiztyQ19pimttQyc9/Ah97pA8NBNHj12tPK4CwVHkbV8Nlna8LPG?=
- =?us-ascii?Q?7sbbyh4YG0iYjDl7egpU+TJdC3pbGK0A8Tq23IJU6mKI0C5b4BAJz8eKB0eS?=
- =?us-ascii?Q?wd3nmcw6E7CQ8DO8atj8G4jJi35AWlDXchWfR/XLdaaqBHarYuB1Afnn/H1g?=
- =?us-ascii?Q?8C30eWKgm+TSjXKYBtQnTzFvWc5EDUlae9zF1XTaZlaJqyaCzE9ir3zF4PKl?=
- =?us-ascii?Q?A3qjxqHEklOmd+UVT154kkVT3ZVy9FnmiLeHoCIJUraReasJ/ud4ydfDjw7s?=
- =?us-ascii?Q?61EPCZKaEacuHws4JMQjTW/W9Kp/2jz9txr2Gy3/XrfJZ5rLl+SvhPqHrh8s?=
- =?us-ascii?Q?8Ja7DsYonyTEZM+UVbocsaRhv9kKjboCZDiw1Cz7Q3SU8uHxCj9F+Z2bo3vh?=
- =?us-ascii?Q?GsbuGbHHOQgvUnRXm3l18cw2IlOsbweqF9wpu5+9cDlVaP6YpXD3SXNhDfit?=
- =?us-ascii?Q?xjBcnqyhMFU8BOHIG5ZGH2VC3N8WYU+JCWjKuCEJ7OiMYBpl+/p7ItnCGAhn?=
- =?us-ascii?Q?USpnMwAKu0MS3WvfcxiFkk1g9eU1419h4CRkdKwim572pvP4+ji5oo9ZYC1e?=
- =?us-ascii?Q?GTljSXRQGaaR8NNL9KyBrszaOFYEDhJeb8mZ+96p7itMZfEAVXrObRtMXXKA?=
- =?us-ascii?Q?R6eBswh5LawQv1GIlIivz1gHsHQMGeDNBV+YiTxPDLeKRhSKEY5fs7xp5b32?=
- =?us-ascii?Q?+xDbNH1OBT+MsFanJxg0+myeKWt78QPJjwjWOkjwpm6WANfBTe9Rwae12iU5?=
- =?us-ascii?Q?GczO7kQRzG1Vi37dvemtmxhksuF6uYDhyboSl+R7K17LsZ0Wkx2YTvqxA8xn?=
- =?us-ascii?Q?tjXrAqABoAVQ8ppWnSy9ijS0zGjQ+TgibONB6rSaKIqi5a5XC4CFRiTnJfhP?=
- =?us-ascii?Q?/bhJ/SbxRRZ2ZCjdga0syPOFMkkCWoX9pqtkxtlut8sserwzCtLrzfmeQyiw?=
- =?us-ascii?Q?r1v4tz8uBp6p93zBiAa4QngjpkMp6kZAq/kfr2oBu0XI1snDCIlfGKiRVI1X?=
- =?us-ascii?Q?hG5YZkZxHdj9bGHQpboPpsTl?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99d00032-fe4c-465e-096e-08d91b8dfd66
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2021 12:51:30.8383
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uTWExuoGviA1rfE5TZIinm7rcpC720G2X3nHuuw3UDUFdR82FnW22CG6f9AevWaoUE2OBUh1yiFpUNWUWfgfXA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6345
+        id S242822AbhETNDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 09:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238839AbhETNDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 09:03:13 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E64FC049E85;
+        Thu, 20 May 2021 05:33:24 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id ot16so7115166pjb.3;
+        Thu, 20 May 2021 05:33:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=AE4RaGKxoH7cfnhM64HNwu2DhDpNuuWHI6pwKl++Cqs=;
+        b=ckbWutmOAGH6EFFYUheMjYgwrwZ8tOXEVbXjcjW88z5pgsHsl3XbuAjOfvVENDuQyt
+         psidiYCPcppxAsHtLbOx7WBZVQJKZ0/0h8XxlAROyfQkD6ZfjQbIVVbRPRcQCCqov3hY
+         CnJ9xoV5/b0H2wKQLnYM/ZOO+BTe7AeNO3woFf7PgkPADkiorABkYXalCXZzVoR+0fx2
+         P0dhdQYCWzdntfZM/5/PcbuBU/+2sBaVgAwDuwmy45CGxARBMxK/hXIhSNE8jipflPFt
+         jo2eIPBkZJhvD2oJlVAIOMjjZdYyxj82R25aO8KcQF82pL3g7P6aniaLE7tcKKIjpss0
+         q2KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=AE4RaGKxoH7cfnhM64HNwu2DhDpNuuWHI6pwKl++Cqs=;
+        b=Bo6F3x/5tYLErrikV8grZtk8Rqr4ZxWfTtEvC4PvaxxuiqeyxYMoJ58O3KEZhkWRlx
+         n6DiJk1zmHzeEAZb25peVTn/qpvbIeho1sViMdRFHhgIEENmkMvumqlN3m3r6WlUhLRu
+         K6e1LOdPsabogYLKAkFbnbajcOjnAbgcjoNowTj4uE/Xih+W0JrndXosnQgOz8NdZtgY
+         qLlF4i2ATy/7B7D0HJOlrKoflavs90HX8P7kz5vfxOgK4S951E9WR/RSpohYEmc3vIsc
+         cKgajnH4QPE9LwAtYnlmr/+y94s4DqAiL0lC2XxZeGU2DtEZy5ONLMpkYGLuDRljeArE
+         BONw==
+X-Gm-Message-State: AOAM53123DlicKa8x3g9jfKlsEcBQpENBlou+Yo7I2g/M0NTz2XRqZ3G
+        n1XQmm7ZGff86mNAaLrLbg==
+X-Google-Smtp-Source: ABdhPJyNhOyfFXFeoWuZ85y5dUB8WkaL1wh62VX4SM/VIT2iYvGQMtIc8zKjWvxQ8uwumcwBJ5icvQ==
+X-Received: by 2002:a17:90a:7842:: with SMTP id y2mr5053341pjl.68.1621514003645;
+        Thu, 20 May 2021 05:33:23 -0700 (PDT)
+Received: from vultr.guest ([107.191.53.97])
+        by smtp.gmail.com with ESMTPSA id z22sm2054752pfa.157.2021.05.20.05.33.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 May 2021 05:33:23 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zheyuma97@gmail.com
+Subject: [PATCH v2] net/qla3xxx: fix schedule while atomic in ql_sem_spinlock
+Date:   Thu, 20 May 2021 12:32:36 +0000
+Message-Id: <1621513956-23060-1-git-send-email-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix system hang with below sequences:
-~# ifconfig ethx down
-~# ifconfig ethx hw ether xx:xx:xx:xx:xx:xx
+When calling the 'ql_sem_spinlock', the driver has already acquired the
+spin lock, so the driver should not call 'ssleep' in atomic context.
 
-After ethx down, stmmac all clocks gated off and then register access causes
-system hang.
+This bug can be fixed by using 'mdelay' instead of 'ssleep'.
 
-Fixes: 5ec55823438e ("net: stmmac: add clocks management for gmac driver")
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+The KASAN's log reveals it:
+
+[    3.238124 ] BUG: scheduling while atomic: swapper/0/1/0x00000002
+[    3.238748 ] 2 locks held by swapper/0/1:
+[    3.239151 ]  #0: ffff88810177b240 (&dev->mutex){....}-{3:3}, at:
+__device_driver_lock+0x41/0x60
+[    3.240026 ]  #1: ffff888107c60e28 (&qdev->hw_lock){....}-{2:2}, at:
+ql3xxx_probe+0x2aa/0xea0
+[    3.240873 ] Modules linked in:
+[    3.241187 ] irq event stamp: 460854
+[    3.241541 ] hardirqs last  enabled at (460853): [<ffffffff843051bf>]
+_raw_spin_unlock_irqrestore+0x4f/0x70
+[    3.242245 ] hardirqs last disabled at (460854): [<ffffffff843058ca>]
+_raw_spin_lock_irqsave+0x2a/0x70
+[    3.242245 ] softirqs last  enabled at (446076): [<ffffffff846002e4>]
+__do_softirq+0x2e4/0x4b1
+[    3.242245 ] softirqs last disabled at (446069): [<ffffffff811ba5e0>]
+irq_exit_rcu+0x100/0x110
+[    3.242245 ] Preemption disabled at:
+[    3.242245 ] [<ffffffff828ca5ba>] ql3xxx_probe+0x2aa/0xea0
+[    3.242245 ] Kernel panic - not syncing: scheduling while atomic
+[    3.242245 ] CPU: 2 PID: 1 Comm: swapper/0 Not tainted
+5.13.0-rc1-00145
+-gee7dc339169-dirty #16
+[    3.242245 ] Call Trace:
+[    3.242245 ]  dump_stack+0xba/0xf5
+[    3.242245 ]  ? ql3xxx_probe+0x1f0/0xea0
+[    3.242245 ]  panic+0x15a/0x3f2
+[    3.242245 ]  ? vprintk+0x76/0x150
+[    3.242245 ]  ? ql3xxx_probe+0x2aa/0xea0
+[    3.242245 ]  __schedule_bug+0xae/0xe0
+[    3.242245 ]  __schedule+0x72e/0xa00
+[    3.242245 ]  schedule+0x43/0xf0
+[    3.242245 ]  schedule_timeout+0x28b/0x500
+[    3.242245 ]  ? del_timer_sync+0xf0/0xf0
+[    3.242245 ]  ? msleep+0x2f/0x70
+[    3.242245 ]  msleep+0x59/0x70
+[    3.242245 ]  ql3xxx_probe+0x307/0xea0
+[    3.242245 ]  ? _raw_spin_unlock_irqrestore+0x3a/0x70
+[    3.242245 ]  ? pci_device_remove+0x110/0x110
+[    3.242245 ]  local_pci_probe+0x45/0xa0
+[    3.242245 ]  pci_device_probe+0x12b/0x1d0
+[    3.242245 ]  really_probe+0x2a9/0x610
+[    3.242245 ]  driver_probe_device+0x90/0x1d0
+[    3.242245 ]  ? mutex_lock_nested+0x1b/0x20
+[    3.242245 ]  device_driver_attach+0x68/0x70
+[    3.242245 ]  __driver_attach+0x124/0x1b0
+[    3.242245 ]  ? device_driver_attach+0x70/0x70
+[    3.242245 ]  bus_for_each_dev+0xbb/0x110
+[    3.242245 ]  ? rdinit_setup+0x45/0x45
+[    3.242245 ]  driver_attach+0x27/0x30
+[    3.242245 ]  bus_add_driver+0x1eb/0x2a0
+[    3.242245 ]  driver_register+0xa9/0x180
+[    3.242245 ]  __pci_register_driver+0x82/0x90
+[    3.242245 ]  ? yellowfin_init+0x25/0x25
+[    3.242245 ]  ql3xxx_driver_init+0x23/0x25
+[    3.242245 ]  do_one_initcall+0x7f/0x3d0
+[    3.242245 ]  ? rdinit_setup+0x45/0x45
+[    3.242245 ]  ? rcu_read_lock_sched_held+0x4f/0x80
+[    3.242245 ]  kernel_init_freeable+0x2aa/0x301
+[    3.242245 ]  ? rest_init+0x2c0/0x2c0
+[    3.242245 ]  kernel_init+0x18/0x190
+[    3.242245 ]  ? rest_init+0x2c0/0x2c0
+[    3.242245 ]  ? rest_init+0x2c0/0x2c0
+[    3.242245 ]  ret_from_fork+0x1f/0x30
+[    3.242245 ] Dumping ftrace buffer:
+[    3.242245 ]    (ftrace buffer empty)
+[    3.242245 ] Kernel Offset: disabled
+[    3.242245 ] Rebooting in 1 seconds.
+
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+Changes in v2:
+    - Use 'mdelay' instead of releasing the lock before the 'ssleep'.
+---
+ drivers/net/ethernet/qlogic/qla3xxx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index df4ce5977fad..5d956a553434 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5891,12 +5891,21 @@ static int stmmac_set_mac_address(struct net_device *ndev, void *addr)
- 	struct stmmac_priv *priv = netdev_priv(ndev);
- 	int ret = 0;
- 
-+	ret = pm_runtime_get_sync(priv->device);
-+	if (ret < 0) {
-+		pm_runtime_put_noidle(priv->device);
-+		return ret;
-+	}
-+
- 	ret = eth_mac_addr(ndev, addr);
- 	if (ret)
--		return ret;
-+		goto set_mac_error;
- 
- 	stmmac_set_umac_addr(priv, priv->hw, ndev->dev_addr, 0);
- 
-+set_mac_error:
-+	pm_runtime_put(priv->device);
-+
- 	return ret;
+diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
+index 214e347097a7..2376b2729633 100644
+--- a/drivers/net/ethernet/qlogic/qla3xxx.c
++++ b/drivers/net/ethernet/qlogic/qla3xxx.c
+@@ -114,7 +114,7 @@ static int ql_sem_spinlock(struct ql3_adapter *qdev,
+ 		value = readl(&port_regs->CommonRegs.semaphoreReg);
+ 		if ((value & (sem_mask >> 16)) == sem_bits)
+ 			return 0;
+-		ssleep(1);
++		mdelay(1000);
+ 	} while (--seconds);
+ 	return -1;
  }
- 
 -- 
 2.17.1
 
