@@ -2,180 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D04B638B45B
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 18:36:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8CA338B4A8
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 18:54:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234013AbhETQhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 12:37:33 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:10884 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231761AbhETQhc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 12:37:32 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14KGSkhK028474;
-        Thu, 20 May 2021 09:35:53 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=5MmAF7R9yk5HKFXkxe8QskTpmnEH2dLBVfFm+dc9gsY=;
- b=V36XMPxkDikN0hSIF23wO2Zf/59p5gO3Z56U4ygRjCaU2YtWqCe8B9xkiPc1CN22bzz9
- vkRxaz4Ym9QDqE26aYUcWWsZVxp1MEP0IIYkg9NhsLa68qlEY3r/hurRTRKsSe6zMCci
- chdJlx++sXywzfmTFMDi7odoC9V8VAtxTa0= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 38n979nw8p-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 20 May 2021 09:35:52 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 20 May 2021 09:35:47 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b6Eab/ZryEcJFyfXwHk+9brOZnALiaE2x+oCRJtyzJbIgu4GuVOjBlQGVIwV2H0lS8BXxNVGgxugDF9jhioOQcXEC0YDQ2aolvOoFcD+xCeiMja8E2hWX/vDmTCIaTiUUuB7Q8gcGSz7ZUAVuyBMJ2K4e/eqQvsdUEh3Am75ls3HcGaWAiJ0T3j4a1FyLPE3WVYGVwhjdkQ5/LUoQlqwJx2xfYw2wjqEoBeEhPKXb/ChaDSBLETaLRBgeCxjMIIigC8lT4sUvdXtmVz9EpZAIKyjiV5V/aiirS811w51TmGc8q8H5+OWgiVlbcvp2M/pN1MLlW0CSg2l1rOUXEAmiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5MmAF7R9yk5HKFXkxe8QskTpmnEH2dLBVfFm+dc9gsY=;
- b=QE1+gFjR6v4Tul5FIPdmf1ioQgLY+3vP6Ci4npSV5HEtAEPCPNl7dXvpMI0c4VLi+NesuPvnYAmJfUZeQ0vltlgFmQQK//wcMQ7Kjq6hyXMznjaYO/0yDM86+mv3Zp9XM4+R+eHemKwh6L0OJu1XNkG5ePQmkdDKmdRShJNZZ4YhohiXGdy3VbiZwSTeJ7at6v7HPDDMT2PEpvFMUVNi+EbrxInViDBZR5MieweRJoBYQEkXbOPeOxiYUgGeQ1vIYwEFhfzKg2TFNVybjjBBNOzPnFtXfPDWYI4DcVAD5TXEyoF1srI50r/sZ3QmLI2Y3ADposOPOmtCtKpCE6/4nQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BY3PR15MB4882.namprd15.prod.outlook.com (2603:10b6:a03:3c1::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.25; Thu, 20 May
- 2021 16:35:46 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::38d3:cc71:bca8:dd2a]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::38d3:cc71:bca8:dd2a%5]) with mapi id 15.20.4129.033; Thu, 20 May 2021
- 16:35:45 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Dmitrii Banshchikov <me@ubique.spb.ru>
-CC:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, Andrey Ignatov <rdna@fb.com>
-Subject: Re: [PATCH bpf-next 02/11] bpfilter: Add logging facility
-Thread-Topic: [PATCH bpf-next 02/11] bpfilter: Add logging facility
-Thread-Index: AQHXS2955Y81kbvm3E6M0qT0RiTrzqrrEv6AgADj54CAAJ6XAA==
-Date:   Thu, 20 May 2021 16:35:45 +0000
-Message-ID: <681F9A5A-63F0-432A-B188-CF4FC11AF2A8@fb.com>
-References: <20210517225308.720677-1-me@ubique.spb.ru>
- <20210517225308.720677-3-me@ubique.spb.ru>
- <CAPhsuW4osuNOagPRwUB30tk3V=ECANktt9jzb+NK1mqOamouSQ@mail.gmail.com>
- <20210520070807.cpmloff4urdsifuy@amnesia>
-In-Reply-To: <20210520070807.cpmloff4urdsifuy@amnesia>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3654.80.0.2.43)
-authentication-results: ubique.spb.ru; dkim=none (message not signed)
- header.d=none;ubique.spb.ru; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:fa93]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4b8bc7c8-dfe2-49ad-7aef-08d91bad5172
-x-ms-traffictypediagnostic: BY3PR15MB4882:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY3PR15MB48824C7A6939D57BB4676C68B32A9@BY3PR15MB4882.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WwsL8aCPbYNnMyeJQmOmRLW7DQn4fttKBR0t9iJ5P70NIvQZOeKjPQ69wwjynRRn823jqYlLAfmWNnWk1C8tQZaEOivXUvN1igfhbaFP7qfBRIxE3/UA+wqCmQ+mgqtU7X5m9eE3It2uVGGy6iMxkSUkIgnkPVGhfY/ERa4CaryY4dMb+Gov1G1oNaMxGFJAsxFZFThFbx2MFqYgXxUrF+HaaaUoLXbkrrkFSg5qnrLFcHR0pmB+eXVtCyMUMPgr1SymtzdXqpOemz2ZslHSE95tkYshGmv6tslWx9MVgskHfIT8foqpZrnlYo72OG//y6Mwl81wT9qWV2H3pXEQdWimKA3muWWi4ylI72KaIqzNjZbNm4scSBj6AVhMRNvwTMdSoy7h4GuFMBN6Wfsv/cmZFk6WpmANXiI/umFDPJWlQ+0hRNNdUuQOFjdcZwgkJ/xBtUuOQLTfkvwxTkzYbooiRPvTSktIyU9pUb/DqhkpQRhIgRC3pSDv2BmaEKNgPOIT0spToiWuYWOrHDqHrf57ENzH0r6cR9rd1xYOpqPgXoofM2xGc0+sKHGbll1K5Da4/hhL45BA5/o6mqeoJugEdlK+fyrGfMK/nbmBwQWiqWrk1inyRq6wd+UhV0DiUnPxYLJlQ296P/qJ2V1za40hMjuEK9Qeyu9NGKZwwaQ=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(136003)(39860400002)(396003)(376002)(38100700002)(53546011)(6506007)(86362001)(5660300002)(186003)(4326008)(8676002)(66476007)(122000001)(66946007)(316002)(54906003)(66446008)(2616005)(36756003)(8936002)(71200400001)(91956017)(478600001)(66556008)(64756008)(6512007)(7416002)(2906002)(83380400001)(6486002)(6916009)(33656002)(76116006)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?MaUcpNEqlfcxiTTRfMccJxRwWZtHv84xAyAjDAOwuZlzTgt6lLx+Kynt0xOw?=
- =?us-ascii?Q?z7FQE3zTvBEFkCOOZ0R8+po3/HNolwCinY0L8EV2WXmU95uXSp61EgFUnxra?=
- =?us-ascii?Q?Vlv7XrJGk6l/5+dr8C3GS7czrUH4K4zVW2OpXsuVeiTiKhdy6qJFvBMh2NeY?=
- =?us-ascii?Q?awU/T7ieclMpQFfioKCGEzZPhJ6IzxjspLLj9+t4ApxiCgTewxIlg2RBRvW/?=
- =?us-ascii?Q?NVTNZ5aYwl0o+ULp+bYLuqDTOmhMt8RygCkv1jYDIPNRbCQeplpdWJkXmI8z?=
- =?us-ascii?Q?XikL6eQJ17RVMivRl7VBgtCcX3Pvmw+t8Ws1wNGlAxlIDSRU0kAyoMxvjHLn?=
- =?us-ascii?Q?/2R2KkyEPlqJqwr0a6PbuftYNHwIfRt21asRhP4LhnoRxdU8DikD9ZdnXtxs?=
- =?us-ascii?Q?ykfsltl5PgHQ5GF6SVcZ0+DeqsH4bWXLz2W5c2ntJ9xYUuvdo39hmy+FDBbP?=
- =?us-ascii?Q?kX349BqrcC+/Adsk20arp6421qK/Ar60bn8pG1gd60LO6b76mW4xZjJZe9yh?=
- =?us-ascii?Q?xdNay6Dqx5NdYC2yr+iopZw3ppj/CanFaOccuLOsM9LBruH+zscTnGM6gCMC?=
- =?us-ascii?Q?/HjO/uyDs8+2Obs4OII4vBngHVVK9e8U9I+GGk/r/wDgivDmDmQs4iukIWwX?=
- =?us-ascii?Q?nbmYmoI6s8+vWWFDrseIpfQI2qGM9O/WL1BDsrSoSaiMJot9rSz2RhxP3Dw4?=
- =?us-ascii?Q?ybV0kYsRuEaSSgAWzvRV/jFprRTwL49rsLz2XzlbomMmmQUP2s5Jlc4kqK/H?=
- =?us-ascii?Q?dFccdFZrdGIXfbJtdROlzcZ6IYnGtuKcSVkjseZ6oDMIyWa3DtsB0D6utUdZ?=
- =?us-ascii?Q?m3tjNVIzfILLaUXnCMUtlhxUn3z13j8lhSVOAgAL53+Ry/E63RZB7pl1b9zJ?=
- =?us-ascii?Q?nSIZBXtkHYiBeoSRl62IddXx3t5ZXarjMyWI49+NtbJIrcovPAgz2SgGQoLm?=
- =?us-ascii?Q?MZQI2pF3NMGkWcZu1+R1RDj/tL6T8VcQfqM/kUNddQ5xAZQPEgHNI9XdpK3V?=
- =?us-ascii?Q?cn4z+warR2sz2zCpsFmDHG8/+oO6vWERPuZBtbEg5i3XtVFR4AO03yrIaVCr?=
- =?us-ascii?Q?yvE3ysPyErta3T2NYXIZJoThVMMCnuagf1mIHmPAmxOcEqlNBa/q+1k4YHgF?=
- =?us-ascii?Q?f1B23VT2E2H4Zs8BKwIvfDYFpAFDh88JhhY0kRJspPZGO4pLS1a36aI87uMg?=
- =?us-ascii?Q?puZfO6Hm4iuc6rT9SQi8aBMIaPb6sDd1M7LaVuncbqe06ZQSu6DFqSAXgSdW?=
- =?us-ascii?Q?KsV9Qvod8XyLwdKUY1I62+rwnQrcW8EFaPD9nwQLI0FT2T4OfEG1Bpjz+izV?=
- =?us-ascii?Q?uF2qmGebfUJkUQ7zFsZZckp36r2G5vX3X71S8X/jJP2NNAhHKeFLBEHU0ACF?=
- =?us-ascii?Q?trCvFa8=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <D61B3AEAAF391841AE7D1A65D7ACA9D4@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S233357AbhETQz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 12:55:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50932 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232199AbhETQzY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 12:55:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C678361353;
+        Thu, 20 May 2021 16:54:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621529643;
+        bh=5nm+bhtokncXWRBnxqkc+uQnmmoGj4a7Ij94Tx7ZydQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bVIaz1b6+ICB5FMbV0j2nWHlDchhuYAM1Hu8K2wp1J1iDrwKrMC9zkn2zOvxhTlKm
+         kmgSjdSxznIOgT8bqfWQXSjGGTwGShOI9N1RAE0P3mTa7LuTvybFEA0I73i9bKcouM
+         JthcrExCPMO8WeyldillnCGxoah2gLyURjTC6cVzIySflUrzktd707XoWdqn28L8ah
+         WTnP0NiNXJFOjWEWsxgeKGUlAaWYHkDqhG3ZMN/tNFUCyreSwARE8y2EB5rwKGebPD
+         9qSt1iCUtVdIItgin6wvjNLcbjRVfCPN9+UZUxLDxB8fEQmtEBVuFbS/SjsllBuqMM
+         hU11qq13AlPQQ==
+Date:   Thu, 20 May 2021 17:54:00 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-spi@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next] net: dsa: sja1105: adapt to a SPI controller
+ with a limited max transfer size
+Message-ID: <20210520165400.GD3962@sirena.org.uk>
+References: <20210520135031.2969183-1-olteanv@gmail.com>
+ <20210520135615.GB3962@sirena.org.uk>
+ <20210520140609.mriocqfabkcflsls@skbuf>
+ <20210520142947.GC3962@sirena.org.uk>
+ <20210520145429.yhcaqrhwcl7luazf@skbuf>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b8bc7c8-dfe2-49ad-7aef-08d91bad5172
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 May 2021 16:35:45.6916
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mV8loN9NHgwIzBTxOGu2z0NkiYEydVTPuYeWBa0n4vFwXmVTHSr5GmJv4CTvKBjAMJmszCgbsaU+ngBGpdWnog==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY3PR15MB4882
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: QPOunLBxdlCGjvgIglXDbXbsEyVodQPJ
-X-Proofpoint-GUID: QPOunLBxdlCGjvgIglXDbXbsEyVodQPJ
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-05-20_04:2021-05-20,2021-05-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 phishscore=0
- mlxlogscore=926 impostorscore=0 lowpriorityscore=0 adultscore=0
- malwarescore=0 suspectscore=0 clxscore=1015 priorityscore=1501 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2105200107
-X-FB-Internal: deliver
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zS7rBR6csb6tI2e1"
+Content-Disposition: inline
+In-Reply-To: <20210520145429.yhcaqrhwcl7luazf@skbuf>
+X-Cookie: Offer void where prohibited by law.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--zS7rBR6csb6tI2e1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> On May 20, 2021, at 12:08 AM, Dmitrii Banshchikov <me@ubique.spb.ru> wrot=
-e:
->=20
-> On Wed, May 19, 2021 at 10:32:25AM -0700, Song Liu wrote:
->> On Tue, May 18, 2021 at 11:05 PM Dmitrii Banshchikov <me@ubique.spb.ru> =
-wrote:
->>>=20
->>> There are three logging levels for messages: FATAL, NOTICE and DEBUG.
->>> When a message is logged with FATAL level it results in bpfilter
->>> usermode helper termination.
->>=20
->> Could you please explain why we choose to have 3 levels? Will we need
->> more levels,
->> like WARNING, ERROR, etc.?
->=20
->=20
-> I found that I need one level for development - to trace what
-> goes rignt and wrong. At the same time as those messages go to
-> dmesg this level is too verbose to be used under normal
-> circumstances. That is why another level is introduced. And the
-> last one exists to verify invariants or error condintions from
-> which there is no right way to recover and they result in
-> bpfilter termination.
+On Thu, May 20, 2021 at 05:54:29PM +0300, Vladimir Oltean wrote:
+> On Thu, May 20, 2021 at 03:29:47PM +0100, Mark Brown wrote:
 
-/dev/kmsg supports specifying priority of the message. Like:
+> > Your description sounds like the driver is just stitching a bunch of
+> > messages together into a single big message with lots of cs_changes with
 
-   echo '<4> This message have priority of 4' > /dev/kmsg
+> Stitching a bunch of s/messages/transfers/, but yes, that is more or
+> less correct. I think cs_change is pretty well handled with the SPI
 
-Therefore, with proper priority settings, we can have more levels safely.
-Does this make sense?
+No, if you're just doing plain transfers that's just a perfectly normal
+SPI message (eg, a message consisting of a write only transfer followed
+by a read only one for a register read) - the purpose of the cs_change
+operations seems to be to glue what should normally be a series of
+messages into something that the API sees as a single big message.
 
-Thanks,
-Song
+> SPI controllers that don't treat cs_change properly can always be
+> patched, although there is a sizable user base for this feature at the
+> moment from what I can see, so the semantics are pretty clear to me (and
+> the sja1105 is in line with them).
 
-[...]
+It's not always possible to convince controllers to implement cs_change,
+sometimes the hardware just isn't flexible enough to do anything other
+than assert chip select during a single operation and you can't even put
+the chip selects into GPIO mode to do it by hand as there's no pinmuxing.
 
+> > > The cs_change logic was already there prior to this patch, I am just
+> > > reiterating how it works. Given the way in which it works (which I think
+
+> > It seems like you could avoid this issue and most likely other future
+> > issues by making the way the driver uses the API more normal.
+
+> Does this piece of advice mean "don't use cs_change"? Why does it exist
+
+Yes.
+
+> then? I'm confused. Is it because the max_*_size properties are not well
+> defined in its presence? Isn't that a problem with the self-consistency
+> of the SPI API then?
+
+cs_change is mainly there mainly for devices which require things like
+leaving CS asserted outside of messages, often because the length of the
+message on the bus is not known at the beginning of the the message (eg,
+the device sends a header back including the length so the physical
+message gets split into two Linux level messages with cs_change used to
+hold chip select asserted between them).  There's also some things like
+zero length transfers that bounce CS which some more esoteric hardware
+requires.
+
+> > > is correct), the most natural way to limit the buffer length is to look
+> > > for the max transfer len.
+
+> > No, you really do need to pay attention to both - what makes you think
+> > it is safe to just ignore one of them?
+
+> I think the sja1105 is safe to just ignore the maximum message length
+> because "it knows what it's doing" (famous last words). The only real
+
+No, the maximum message length is a *controller* limitation - if the
+controller is unable to handle a message larger than a given size then
+it's just going to be unable to handle it.
+
+> question is "what does .max_message_size count when its containing
+> spi_transfers have cs_change set?", and while I can perfectly understand
+> why you'd like to avoid that question, I think my interpretation is the
+
+max_message_size always means the same thing, it's the maximum length
+that can be passed safely in a single spi_message.  Similarly for the
+maximum transfer, it's the maximum length that can be passed safely in a
+single spi_transfer.  We do have code in the core which will split
+transfers up, though the rewriting adds overhead so it's best avoided in
+performance sensitive cases.
+
+It would be possible for either the driver (or better the core, as with
+transfer splitting this isn't device specific) to try to pattern match
+and pick apart *some* usages, though not all and mostly not the ones
+that match the intended use of the feature so I'm not convinced it's
+worthwhile.  For usages like sending a stream of messages which can be
+directly expressed in the API it's going to be much better to have code
+that just directly sends a stream of messages, it's a much more common
+pattern so is more likely to benefit from optimisations and less likely
+to get sent down slow paths.
+
+> sane one (it just counts the pieces with continuous CS), and I don't see
+> the problems that this interpretation can cause down the line.
+
+If the device is able to support offloading the chip select changes to
+the hardware as part of the data stream (some work by basically sending
+streams of command packets to the hardware, and some can do fun stuff
+as the DMA controller can chain operations together and is perfectly
+capable of writing to the SPI controller registers) or is queuing all
+the data transfers in a message as a single big DMA then it may run into
+limits with those.
+
+--zS7rBR6csb6tI2e1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmCmlCgACgkQJNaLcl1U
+h9BvRAf/eKBHXa+OTU8mWFTayNo5+PpWP5HdkIYNIVlgCHMCArm+IlQ5NMTOB2vn
+TwtiEv0C0veACj41kNRvnNwgEc0z5Q/UyP6zFsckA49sV8nhOvVnXZqrhxlstq/G
+5+uZVc5lwjhdV9KMj9zD8g5iYaLZfm/MyDn8nVQ0dmQwh/OS1xH1F6odEUpp1ZMN
+3v40pHHyhjB6Yp7ki5Xm1wAYUoF0CBZQ8/+A6TyeNSM2Ka4N6ou0zFrb9htomEBb
+xXMxsDji3u57TGAzDAT6z4LY7TnD3FrGdQbv0uhAqNKFZF/8gmdvSxj5X9xMc5NP
+unRcJeqGVSex3yOAW5d10mNz3sSC8A==
+=bkKA
+-----END PGP SIGNATURE-----
+
+--zS7rBR6csb6tI2e1--
