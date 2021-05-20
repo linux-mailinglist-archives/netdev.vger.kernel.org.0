@@ -2,135 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D01F738A180
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 11:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD0A38A333
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 11:49:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232090AbhETJb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 05:31:29 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:3621 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232374AbhETJ3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 05:29:21 -0400
-Received: from dggems706-chm.china.huawei.com (unknown [172.30.72.58])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Fm4906WpbzmX6w;
-        Thu, 20 May 2021 17:25:40 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggems706-chm.china.huawei.com (10.3.19.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 20 May 2021 17:27:57 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 20 May 2021 17:27:57 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
-        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
-        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
-        <alobakin@pm.me>
-Subject: [PATCH RFC v4 3/3] net: sched: remove qdisc->empty for lockless qdisc
-Date:   Thu, 20 May 2021 17:27:53 +0800
-Message-ID: <1621502873-62720-4-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1621502873-62720-1-git-send-email-linyunsheng@huawei.com>
-References: <1621502873-62720-1-git-send-email-linyunsheng@huawei.com>
+        id S233552AbhETJuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 05:50:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47556 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233568AbhETJsF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 05:48:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EDB6D61469;
+        Thu, 20 May 2021 09:34:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1621503274;
+        bh=yxpHJJ/oK/1gEMlaFBhh+loU3+XnIaEbH6Bn0PlWoqg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ffcyNybZvAXPgBuy6vxGjh1oSJasSQpJk88h0Fg3Db7J3rNvlk9qoD6J7kJiwjx/d
+         v9jJ1xB/ev5+CwE3Y0D16Fj+Op8D42CTPotTq5A3gPY09CPkeDlqGYm96GsllNojmk
+         IIBVTsTcS362MC9H9WlFZh+HmHTg8i8X3xGUGoKs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Angus Ainslie <angus@akkea.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Karun Eagalapati <karun256@gmail.com>,
+        Martin Kepplinger <martink@posteo.de>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
+Subject: [PATCH 4.19 113/425] rsi: Use resume_noirq for SDIO
+Date:   Thu, 20 May 2021 11:18:02 +0200
+Message-Id: <20210520092135.161796297@linuxfoundation.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210520092131.308959589@linuxfoundation.org>
+References: <20210520092131.308959589@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As MISSED and DRAINING state are used to indicate a non-empty
-qdisc, qdisc->empty is not longer needed, so remove it.
+From: Marek Vasut <marex@denx.de>
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+commit c434e5e48dc4e626364491455f97e2db0aa137b1 upstream.
+
+The rsi_resume() does access the bus to enable interrupts on the RSI
+SDIO WiFi card, however when calling sdio_claim_host() in the resume
+path, it is possible the bus is already claimed and sdio_claim_host()
+spins indefinitelly. Enable the SDIO card interrupts in resume_noirq
+instead to prevent anything else from claiming the SDIO bus first.
+
+Fixes: 20db07332736 ("rsi: sdio suspend and resume support")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
+Cc: Angus Ainslie <angus@akkea.ca>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Karun Eagalapati <karun256@gmail.com>
+Cc: Martin Kepplinger <martink@posteo.de>
+Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+Cc: Siva Rebbagondla <siva8118@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210327235932.175896-1-marex@denx.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/sch_generic.h | 13 +++----------
- net/sched/sch_generic.c   |  3 ---
- 2 files changed, 3 insertions(+), 13 deletions(-)
+ drivers/net/wireless/rsi/rsi_91x_sdio.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 0940ad56..51e74fc 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -117,8 +117,6 @@ struct Qdisc {
- 	spinlock_t		busylock ____cacheline_aligned_in_smp;
- 	spinlock_t		seqlock;
- 
--	/* for NOLOCK qdisc, true if there are no enqueued skbs */
--	bool			empty;
- 	struct rcu_head		rcu;
- 
- 	/* private data */
-@@ -160,7 +158,7 @@ static inline bool qdisc_is_percpu_stats(const struct Qdisc *q)
- static inline bool qdisc_is_empty(const struct Qdisc *qdisc)
- {
- 	if (qdisc_is_percpu_stats(qdisc))
--		return READ_ONCE(qdisc->empty);
-+		return !(READ_ONCE(qdisc->state) & QDISC_STATE_NON_EMPTY);
- 	return !READ_ONCE(qdisc->q.qlen);
+--- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
++++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
+@@ -1400,7 +1400,7 @@ static int rsi_restore(struct device *de
  }
- 
-@@ -168,7 +166,7 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
- {
- 	if (qdisc->flags & TCQ_F_NOLOCK) {
- 		if (spin_trylock(&qdisc->seqlock))
--			goto nolock_empty;
-+			return true;
- 
- 		/* If the MISSED flag is set, it means other thread has
- 		 * set the MISSED flag before second spin_trylock(), so
-@@ -190,12 +188,7 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
- 		/* Retry again in case other CPU may not see the new flag
- 		 * after it releases the lock at the end of qdisc_run_end().
- 		 */
--		if (!spin_trylock(&qdisc->seqlock))
--			return false;
--
--nolock_empty:
--		WRITE_ONCE(qdisc->empty, false);
--		return true;
-+		return spin_trylock(&qdisc->seqlock);
- 	} else if (qdisc_is_running(qdisc)) {
- 		return false;
- 	}
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 83d7f5f..1abd9c7 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -707,8 +707,6 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
- 		need_retry = false;
- 
- 		goto retry;
--	} else {
--		WRITE_ONCE(qdisc->empty, true);
- 	}
- 
- 	return skb;
-@@ -909,7 +907,6 @@ struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
- 	sch->enqueue = ops->enqueue;
- 	sch->dequeue = ops->dequeue;
- 	sch->dev_queue = dev_queue;
--	sch->empty = true;
- 	dev_hold(dev);
- 	refcount_set(&sch->refcnt, 1);
- 
--- 
-2.7.4
+ static const struct dev_pm_ops rsi_pm_ops = {
+ 	.suspend = rsi_suspend,
+-	.resume = rsi_resume,
++	.resume_noirq = rsi_resume,
+ 	.freeze = rsi_freeze,
+ 	.thaw = rsi_thaw,
+ 	.restore = rsi_restore,
+
 
