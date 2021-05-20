@@ -2,179 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ECA6389AB8
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 03:05:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F08C5389AC4
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 03:09:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbhETBHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 21:07:14 -0400
-Received: from m12-14.163.com ([220.181.12.14]:57474 "EHLO m12-14.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229498AbhETBHO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 May 2021 21:07:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=YOchqfhpn3lK2OOd3n
-        pIduxooTbqyf1OrzYjh6gcgIE=; b=UfdiT528QWiFQVNDEHQc7ohjshGLBepBWC
-        lIQaK6nm+bM6upKeBT3IPDOvpxA0T8hlHOt3Uekw7j8Eo5zKrG3xJVX3VcunabaT
-        bl/hmPJsscw/s3svgsi1xdoxsoRXUFGAIIfYky5qyUzmi4pz0esOE3GGM9PL/BOW
-        +PZp7btNk=
-Received: from wengjianfeng.ccdomain.com (unknown [218.17.89.92])
-        by smtp10 (Coremail) with SMTP id DsCowAC3EW_ktaVgHLaSJw--.37542S2;
-        Thu, 20 May 2021 09:05:42 +0800 (CST)
-From:   samirweng1979 <samirweng1979@163.com>
-To:     gustavoars@kernel.org, hslester96@gmail.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-Subject: [PATCH RESEND] NFC: st21nfca: remove unnecessary variable and labels
-Date:   Thu, 20 May 2021 09:05:50 +0800
-Message-Id: <20210520010550.31240-1-samirweng1979@163.com>
-X-Mailer: git-send-email 2.15.0.windows.1
-X-CM-TRANSID: DsCowAC3EW_ktaVgHLaSJw--.37542S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxXrWkKF17Gr1rJFy5WF1Dtrb_yoW5ur13pa
-        yagrykArW8Gry2gr45uw4rAas09w4vvry7GFy5C3WSvw4jyr93XF1rG3WS9r45tr95Cw15
-        Aw42qr4kWr9rJrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07b5GQDUUUUU=
-X-Originating-IP: [218.17.89.92]
-X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiLwaYsVUMYlGKBwAAsn
+        id S230062AbhETBK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 21:10:28 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4754 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230049AbhETBK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 21:10:28 -0400
+Received: from dggems705-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Fls3z4BpszpfTK;
+        Thu, 20 May 2021 09:05:35 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 20 May 2021 09:09:05 +0800
+Received: from [127.0.0.1] (10.174.177.72) by dggpemm500006.china.huawei.com
+ (7.185.36.236) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Thu, 20 May
+ 2021 09:09:05 +0800
+Subject: Re: [PATCH 1/1] mISDN: Mark local variable 'incomplete' as
+ __maybe_unused in dsp_pipeline_build()
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Karsten Keil <isdn@linux-pingi.de>, netdev <netdev@vger.kernel.org>
+References: <20210519125352.7991-1-thunder.leizhen@huawei.com>
+ <YKUyqhva+2UQ44Ly@unreal>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <7f462ad9-93b5-9597-664f-d52d252eed01@huawei.com>
+Date:   Thu, 20 May 2021 09:09:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+In-Reply-To: <YKUyqhva+2UQ44Ly@unreal>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.72]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wengjianfeng <wengjianfeng@yulong.com>
 
-assign vlue (EIO/EPROTO) to variable r, and goto exit label,
-but just return r follow exit label, so we delete exit label,
-and just replace with return sentence.
 
-Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
----
- drivers/nfc/st21nfca/dep.c | 59 ++++++++++++++--------------------------------
- 1 file changed, 18 insertions(+), 41 deletions(-)
+On 2021/5/19 23:45, Leon Romanovsky wrote:
+> On Wed, May 19, 2021 at 08:53:52PM +0800, Zhen Lei wrote:
+>> GCC reports the following warning with W=1:
+>>
+>> drivers/isdn/mISDN/dsp_pipeline.c:221:6: warning:
+>>  variable 'incomplete' set but not used [-Wunused-but-set-variable]
+>>   221 |  int incomplete = 0, found = 0;
+>>       |      ^~~~~~~~~~
+>>
+>> This variable is used only when macro PIPELINE_DEBUG is defined.
+> 
+> That define is commented 13 years ago and can be seen as a dead code
+> that should be removed.
 
-diff --git a/drivers/nfc/st21nfca/dep.c b/drivers/nfc/st21nfca/dep.c
-index 8874d60..1ec651e 100644
---- a/drivers/nfc/st21nfca/dep.c
-+++ b/drivers/nfc/st21nfca/dep.c
-@@ -196,38 +196,29 @@ static int st21nfca_tm_recv_atr_req(struct nfc_hci_dev *hdev,
- 
- 	skb_trim(skb, skb->len - 1);
- 
--	if (!skb->len) {
--		r = -EIO;
--		goto exit;
--	}
-+	if (!skb->len)
-+		return -EIO;
- 
--	if (skb->len < ST21NFCA_ATR_REQ_MIN_SIZE) {
--		r = -EPROTO;
--		goto exit;
--	}
-+	if (skb->len < ST21NFCA_ATR_REQ_MIN_SIZE)
-+		return -EPROTO;
- 
- 	atr_req = (struct st21nfca_atr_req *)skb->data;
- 
--	if (atr_req->length < sizeof(struct st21nfca_atr_req)) {
--		r = -EPROTO;
--		goto exit;
--	}
-+	if (atr_req->length < sizeof(struct st21nfca_atr_req))
-+		return -EPROTO;
- 
- 	r = st21nfca_tm_send_atr_res(hdev, atr_req);
- 	if (r)
--		goto exit;
-+		return r;
- 
- 	gb_len = skb->len - sizeof(struct st21nfca_atr_req);
- 
- 	r = nfc_tm_activated(hdev->ndev, NFC_PROTO_NFC_DEP_MASK,
- 			      NFC_COMM_PASSIVE, atr_req->gbi, gb_len);
- 	if (r)
--		goto exit;
--
--	r = 0;
-+		return r;
- 
--exit:
--	return r;
-+	return 0;
- }
- 
- static int st21nfca_tm_send_psl_res(struct nfc_hci_dev *hdev,
-@@ -280,25 +271,18 @@ static int st21nfca_tm_recv_psl_req(struct nfc_hci_dev *hdev,
- 				    struct sk_buff *skb)
- {
- 	struct st21nfca_psl_req *psl_req;
--	int r;
- 
- 	skb_trim(skb, skb->len - 1);
- 
--	if (!skb->len) {
--		r = -EIO;
--		goto exit;
--	}
-+	if (!skb->len)
-+		return -EIO;
- 
- 	psl_req = (struct st21nfca_psl_req *)skb->data;
- 
--	if (skb->len < sizeof(struct st21nfca_psl_req)) {
--		r = -EIO;
--		goto exit;
--	}
-+	if (skb->len < sizeof(struct st21nfca_psl_req))
-+		return -EIO;
- 
--	r = st21nfca_tm_send_psl_res(hdev, psl_req);
--exit:
--	return r;
-+	return st21nfca_tm_send_psl_res(hdev, psl_req);
- }
- 
- int st21nfca_tm_send_dep_res(struct nfc_hci_dev *hdev, struct sk_buff *skb)
-@@ -324,7 +308,6 @@ static int st21nfca_tm_recv_dep_req(struct nfc_hci_dev *hdev,
- {
- 	struct st21nfca_dep_req_res *dep_req;
- 	u8 size;
--	int r;
- 	struct st21nfca_hci_info *info = nfc_hci_get_clientdata(hdev);
- 
- 	skb_trim(skb, skb->len - 1);
-@@ -332,20 +315,16 @@ static int st21nfca_tm_recv_dep_req(struct nfc_hci_dev *hdev,
- 	size = 4;
- 
- 	dep_req = (struct st21nfca_dep_req_res *)skb->data;
--	if (skb->len < size) {
--		r = -EIO;
--		goto exit;
--	}
-+	if (skb->len < size)
-+		return -EIO;
- 
- 	if (ST21NFCA_NFC_DEP_DID_BIT_SET(dep_req->pfb))
- 		size++;
- 	if (ST21NFCA_NFC_DEP_NAD_BIT_SET(dep_req->pfb))
- 		size++;
- 
--	if (skb->len < size) {
--		r = -EIO;
--		goto exit;
--	}
-+	if (skb->len < size)
-+		return -EIO;
- 
- 	/* Receiving DEP_REQ - Decoding */
- 	switch (ST21NFCA_NFC_DEP_PFB_TYPE(dep_req->pfb)) {
-@@ -364,8 +343,6 @@ static int st21nfca_tm_recv_dep_req(struct nfc_hci_dev *hdev,
- 	skb_pull(skb, size);
- 
- 	return nfc_tm_data_received(hdev->ndev, skb);
--exit:
--	return r;
- }
- 
- static int st21nfca_tm_event_send_data(struct nfc_hci_dev *hdev,
--- 
-1.9.1
+OK, I will remove it in V2. Actually, every time incomplete=1, a KERN_ERR message
+is printed in advance. The only new information is the 'cfg'.
+
+> 
+> Thanks
+> 
+>>
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>  drivers/isdn/mISDN/dsp_pipeline.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/isdn/mISDN/dsp_pipeline.c b/drivers/isdn/mISDN/dsp_pipeline.c
+>> index 40588692cec7..6a31f6879da8 100644
+>> --- a/drivers/isdn/mISDN/dsp_pipeline.c
+>> +++ b/drivers/isdn/mISDN/dsp_pipeline.c
+>> @@ -218,7 +218,7 @@ void dsp_pipeline_destroy(struct dsp_pipeline *pipeline)
+>>  
+>>  int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
+>>  {
+>> -	int incomplete = 0, found = 0;
+>> +	int __maybe_unused incomplete = 0, found = 0;
+>>  	char *dup, *tok, *name, *args;
+>>  	struct dsp_element_entry *entry, *n;
+>>  	struct dsp_pipeline_entry *pipeline_entry;
+>> -- 
+>> 2.25.1
+>>
+>>
+> 
+> .
+> 
 
