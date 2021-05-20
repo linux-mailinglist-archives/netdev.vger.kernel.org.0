@@ -2,87 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C67CA38AD0D
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 13:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C1238ACEA
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 13:50:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242787AbhETLwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 07:52:33 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:3445 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241399AbhETLtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 07:49:00 -0400
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4Fm7FX21yszBv3f;
-        Thu, 20 May 2021 19:44:48 +0800 (CST)
-Received: from dggpeml500012.china.huawei.com (7.185.36.15) by
- dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 20 May 2021 19:47:35 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml500012.china.huawei.com
- (7.185.36.15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Thu, 20 May
- 2021 19:47:35 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <netdev@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <yekai13@huawei.com>
-Subject: [PATCH 12/12] net/Bluetooth/smp - use the correct print format
-Date:   Thu, 20 May 2021 19:44:33 +0800
-Message-ID: <1621511073-47766-13-git-send-email-yekai13@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1621511073-47766-1-git-send-email-yekai13@huawei.com>
-References: <1621511073-47766-1-git-send-email-yekai13@huawei.com>
+        id S241356AbhETLvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 07:51:31 -0400
+Received: from mx2.suse.de ([195.135.220.15]:55960 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242666AbhETLrc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 07:47:32 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1621511170; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A8q+fkSuWfl4pXkgwyhK6ygE0KXVq43LbF4JProMcWQ=;
+        b=b6B1/lM0z/Cw4r6XtealbDwhnP3XuTEp9BtAR5mohAmbvgiAu2g9Fx7XGa0bz/96uIi+WY
+        PMkIrGhM7UWTYnhbeZkoKSlgu+ZvsDKQO5HeH0pe4umPHJ35PY9UTbe4sD3ZUel46PCNe7
+        GGA+FXlZiYnLJ+VkJvTAMzcVWeHALXo=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 4EBBAAC4B;
+        Thu, 20 May 2021 11:46:10 +0000 (UTC)
+Subject: Re: [PATCH] xen-netback: correct success/error reporting for the
+ SKB-with-fraglist case
+To:     paul@xen.org, Wei Liu <wl@xen.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+References: <4dd5b8ec-a255-7ab1-6dbf-52705acd6d62@suse.com>
+ <67bc0728-761b-c3dd-bdd5-1a850ff79fbb@xen.org>
+ <76c94541-21a8-7ae5-c4c4-48552f16c3fd@suse.com>
+ <17e50fb5-31f7-60a5-1eec-10d18a40ad9a@xen.org>
+ <57580966-3880-9e59-5d82-e1de9006aa0c@suse.com>
+ <a26c1ecd-e303-3138-eb7e-96f0203ca888@xen.org>
+From:   Jan Beulich <jbeulich@suse.com>
+Message-ID: <1a522244-4be8-5e33-77c7-4ea5cf130335@suse.com>
+Date:   Thu, 20 May 2021 13:46:09 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500012.china.huawei.com (7.185.36.15)
-X-CFilter-Loop: Reflected
+In-Reply-To: <a26c1ecd-e303-3138-eb7e-96f0203ca888@xen.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to Documentation/core-api/printk-formats.rst,
-Use the correct print format. Printing an unsigned int value should use %u
-instead of %d. Otherwise printk() might end up displaying negative numbers.
+On 25.02.2021 17:23, Paul Durrant wrote:
+> On 25/02/2021 14:00, Jan Beulich wrote:
+>> On 25.02.2021 13:11, Paul Durrant wrote:
+>>> On 25/02/2021 07:33, Jan Beulich wrote:
+>>>> On 24.02.2021 17:39, Paul Durrant wrote:
+>>>>> On 23/02/2021 16:29, Jan Beulich wrote:
+>>>>>> When re-entering the main loop of xenvif_tx_check_gop() a 2nd time, the
+>>>>>> special considerations for the head of the SKB no longer apply. Don't
+>>>>>> mistakenly report ERROR to the frontend for the first entry in the list,
+>>>>>> even if - from all I can tell - this shouldn't matter much as the overall
+>>>>>> transmit will need to be considered failed anyway.
+>>>>>>
+>>>>>> Signed-off-by: Jan Beulich <jbeulich@suse.com>
+>>>>>>
+>>>>>> --- a/drivers/net/xen-netback/netback.c
+>>>>>> +++ b/drivers/net/xen-netback/netback.c
+>>>>>> @@ -499,7 +499,7 @@ check_frags:
+>>>>>>     				 * the header's copy failed, and they are
+>>>>>>     				 * sharing a slot, send an error
+>>>>>>     				 */
+>>>>>> -				if (i == 0 && sharedslot)
+>>>>>> +				if (i == 0 && !first_shinfo && sharedslot)
+>>>>>>     					xenvif_idx_release(queue, pending_idx,
+>>>>>>     							   XEN_NETIF_RSP_ERROR);
+>>>>>>     				else
+>>>>>>
+>>>>>
+>>>>> I think this will DTRT, but to my mind it would make more sense to clear
+>>>>> 'sharedslot' before the 'goto check_frags' at the bottom of the function.
+>>>>
+>>>> That was my initial idea as well, but
+>>>> - I think it is for a reason that the variable is "const".
+>>>> - There is another use of it which would then instead need further
+>>>>     amending (and which I believe is at least part of the reason for
+>>>>     the variable to be "const").
+>>>>
+>>>
+>>> Oh, yes. But now that I look again, don't you want:
+>>>
+>>> if (i == 0 && first_shinfo && sharedslot)
+>>>
+>>> ? (i.e no '!')
+>>>
+>>> The comment states that the error should be indicated when the first
+>>> frag contains the header in the case that the map succeeded but the
+>>> prior copy from the same ref failed. This can only possibly be the case
+>>> if this is the 'first_shinfo'
+>>
+>> I don't think so, no - there's a difference between "first frag"
+>> (at which point first_shinfo is NULL) and first frag list entry
+>> (at which point first_shinfo is non-NULL).
+> 
+> Yes, I realise I got it backwards. Confusing name but the comment above 
+> its declaration does explain.
+> 
+>>
+>>> (which is why I still think it is safe to unconst 'sharedslot' and
+>>> clear it).
+>>
+>> And "no" here as well - this piece of code
+>>
+>> 		/* First error: if the header haven't shared a slot with the
+>> 		 * first frag, release it as well.
+>> 		 */
+>> 		if (!sharedslot)
+>> 			xenvif_idx_release(queue,
+>> 					   XENVIF_TX_CB(skb)->pending_idx,
+>> 					   XEN_NETIF_RSP_OKAY);
+>>
+>> specifically requires sharedslot to have the value that was
+>> assigned to it at the start of the function (this property
+>> doesn't go away when switching from fragments to frag list).
+>> Note also how it uses XENVIF_TX_CB(skb)->pending_idx, i.e. the
+>> value the local variable pending_idx was set from at the start
+>> of the function.
+>>
+> 
+> True, we do have to deal with freeing up the header if the first map 
+> error comes on the frag list.
+> 
+> Reviewed-by: Paul Durrant <paul@xen.org>
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
- net/bluetooth/smp.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Since I've not seen this go into 5.13-rc, may I ask what the disposition
+of this is?
 
-diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
-index 2def906..56c59f8 100644
---- a/net/bluetooth/smp.c
-+++ b/net/bluetooth/smp.c
-@@ -859,7 +859,7 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
- 	memset(smp->tk, 0, sizeof(smp->tk));
- 	clear_bit(SMP_FLAG_TK_VALID, &smp->flags);
- 
--	bt_dev_dbg(hcon->hdev, "auth:%d lcl:%d rem:%d", auth, local_io,
-+	bt_dev_dbg(hcon->hdev, "auth:%u lcl:%u rem:%u", auth, local_io,
- 		   remote_io);
- 
- 	/* If neither side wants MITM, either "just" confirm an incoming
-@@ -925,7 +925,7 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
- 		get_random_bytes(&passkey, sizeof(passkey));
- 		passkey %= 1000000;
- 		put_unaligned_le32(passkey, smp->tk);
--		bt_dev_dbg(hcon->hdev, "PassKey: %d", passkey);
-+		bt_dev_dbg(hcon->hdev, "PassKey: %u", passkey);
- 		set_bit(SMP_FLAG_TK_VALID, &smp->flags);
- 	}
- 
-@@ -1654,7 +1654,7 @@ int smp_user_confirm_reply(struct hci_conn *hcon, u16 mgmt_op, __le32 passkey)
- 	case MGMT_OP_USER_PASSKEY_REPLY:
- 		value = le32_to_cpu(passkey);
- 		memset(smp->tk, 0, sizeof(smp->tk));
--		bt_dev_dbg(conn->hcon->hdev, "PassKey: %d", value);
-+		bt_dev_dbg(conn->hcon->hdev, "PassKey: %u", value);
- 		put_unaligned_le32(value, smp->tk);
- 		fallthrough;
- 	case MGMT_OP_USER_CONFIRM_REPLY:
--- 
-2.8.1
-
+Jan
