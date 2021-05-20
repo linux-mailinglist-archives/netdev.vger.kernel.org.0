@@ -2,237 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D5B5389EA4
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 09:08:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEC1E389EA7
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 09:08:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230403AbhETHJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 03:09:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41196 "EHLO
+        id S230508AbhETHKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 03:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbhETHJj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 03:09:39 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B615C061574
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:08:17 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id q5so16438305wrs.4
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:08:17 -0700 (PDT)
+        with ESMTP id S230325AbhETHKD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 03:10:03 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A2AC061760
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:08:42 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id lg14so23565277ejb.9
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:08:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nvNvutw5U6lnRUPBURCHGGCHa2JEZhSNhVEi39PMdZ8=;
-        b=tCxQqsbYzVQEm011DO+lyzx7w+KGgEImTqonurjp5IVJQYfCV6mmWhyKPRneYZqryr
-         WCwER0ilrgnpv9m7l63j4bVceBrFZaaL4253a1x3h6xs1MWj+ZRDtSf1H2iQCL6WBuPj
-         m+BIiZQp93QLQnOTPRSDnkEViXcN0o17Z6i1AAF7KCtyx4qNmYnndxkUOJ0PsFWVR4Fs
-         5u4mPonLst22NHiANW1d2Y9SBo5QryFH3cNYu5lUg506yk9NouHrEsNRAhJW4V49kAwQ
-         Ke5VX1gBAdmDYAqTDVSNEumEI8oTgBHAtFscfO9LLP3t4YytJknuBOlVfbusPcbROA+F
-         eJHw==
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KPPDvbdoZYkF98kJEXLJL5DQM+/NDzpAbyD+0wj0y0A=;
+        b=Se9KYEfzncKvZO5zuibSZNbij3GfLYq8vJWZIp5Rt7L9U5AyliRF9b0kqfP6IAmgge
+         7Krig9HpLukT74foF5zhNSAlQwK2yDEcBbVOWe5ziBdJ8l8A4E0m1P87IPiYFuaIY6UE
+         k79Xf3InR5zOQmjg8jMvS37YGVQm94PGO0lIcvXbhWGWr30k+pNFNRDadGZk8bu2lu9+
+         tTLWF0hTnA816jLyuweb3DM1RTEi+87p0Qe9+TImwfmI+OmewWBM/i8IMHK5U7pWkFGC
+         AbjI3ivFGlXwBO+7i1ZCHXmWnoxS9VFDTqlUmnwJ0M5G8JFKs2Hx0HMa19GMvyknHXal
+         Q+sQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nvNvutw5U6lnRUPBURCHGGCHa2JEZhSNhVEi39PMdZ8=;
-        b=KYiLafWTgvkQni0SbeQKcf6S8FVPW3+dpSOHg4/KIxviCHQtaa5/BHARguWuWdbm9E
-         bA0pI96NmKkCSWH5FLDSG3xVfXbC9QWzJsaH2pp7ogYgMDqUN9J55zINzsuloCNL2pb4
-         qh+0TcPqbK9BOaaHD8KvP3zfd/Ef6jH4pmKldE5WO75iucrc114MFFQN+Ef+t5WoJr9w
-         XZJmkc4E+ZP/gry3lhJPMgHk+HC0DWEL0fFEHh0dZ538InD1zpvxC5G+4xhDeMbBdkaL
-         dZxtOyiQMAqjPrkKIR+sgpZSjE6e2LucDNo61QMwqivcs06V64e2mNQe7AaCwIga/rjk
-         iVoA==
-X-Gm-Message-State: AOAM530wcYbHZ9/dtuZowgQVOAUJJoR2n4uy3tRtaefO3/bhiANnKKUU
-        Rlz9smL46GTDUwTabwOGoRZD4w==
-X-Google-Smtp-Source: ABdhPJyxKQ6svKMvsszD2eHww08+OJaqvwJG59ev+lZ+IPZHrRZigYzE5+Rk0HIDnB103F0UDnz27A==
-X-Received: by 2002:a5d:4d05:: with SMTP id z5mr2568820wrt.127.1621494495642;
-        Thu, 20 May 2021 00:08:15 -0700 (PDT)
-Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id s7sm7939504wmh.35.2021.05.20.00.08.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 May 2021 00:08:14 -0700 (PDT)
-Date:   Thu, 20 May 2021 11:08:07 +0400
-From:   Dmitrii Banshchikov <me@ubique.spb.ru>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, Andrey Ignatov <rdna@fb.com>
-Subject: Re: [PATCH bpf-next 02/11] bpfilter: Add logging facility
-Message-ID: <20210520070807.cpmloff4urdsifuy@amnesia>
-References: <20210517225308.720677-1-me@ubique.spb.ru>
- <20210517225308.720677-3-me@ubique.spb.ru>
- <CAPhsuW4osuNOagPRwUB30tk3V=ECANktt9jzb+NK1mqOamouSQ@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KPPDvbdoZYkF98kJEXLJL5DQM+/NDzpAbyD+0wj0y0A=;
+        b=nTGYi3FKIvCxYeCLIxf/0DzaBnwqaoBOR274gKibRSKXzFFTODatqk/EGnSrfwmi9g
+         mrglwuWNag7DGOvF0hHVT1NNF2/kIMa/v23kofxqIDOz9CkBVQtsa7iqtmXAVoXqn0ff
+         /6N9aRVEBHi1LiHayLcR+j5Y3mxo/WJFbrrZ9IIcT1rtSavDmqclkDoZkALP7p1aQ0nx
+         d2TW7WDi4vyadXDccewwcxlNSgFliDP2EzH9MtDUZKOWC+0LJJc7Lge8aKmhiKalEI3c
+         BgC7NUnI4WoeqQQi4HsbRhgeCCIfQfOzlVwv/uFFtiL91N2/ABwLqJUSbg2xxsagFTVk
+         Pcww==
+X-Gm-Message-State: AOAM533Q0uXQI3oz411FuMftFh4VdCWrmnRrNGjKsClb8YA6HxfnXqw7
+        bZPPblRJdgebC49Xv9PQa8CtFrcNB3Fyo+4eXuWE
+X-Google-Smtp-Source: ABdhPJw1qaVXgdxcGdVjGAKmjj/w5JqA2hGu9Vaio3k3hOBCyVJZ7/UOZ9K52sSkcUhiotF7loRy9jJ04HYXeZSSc/k=
+X-Received: by 2002:a17:906:456:: with SMTP id e22mr3125837eja.427.1621494521280;
+ Thu, 20 May 2021 00:08:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPhsuW4osuNOagPRwUB30tk3V=ECANktt9jzb+NK1mqOamouSQ@mail.gmail.com>
+References: <20210517095513.850-1-xieyongji@bytedance.com> <20210517095513.850-5-xieyongji@bytedance.com>
+ <CACycT3s1rEvNnNkJKQsHGRsyLPADieFdVkb1Sp3GObR0Vox5Fg@mail.gmail.com>
+ <20210519144206.GF32682@kadam> <CACycT3veubBFCg9omxLDJJFP7B7QH8++Q+tKmb_M_hmNS45cmw@mail.gmail.com>
+ <20210520013921-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20210520013921-mutt-send-email-mst@kernel.org>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 20 May 2021 15:08:30 +0800
+Message-ID: <CACycT3v=JDH4SE=2GyeTJVZ7iywhpJoKCYhZ0tAvZTxgfSoOWQ@mail.gmail.com>
+Subject: Re: Re: Re: [PATCH v7 04/12] virtio-blk: Add validation for block
+ size in config space
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        joro@8bytes.org,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 19, 2021 at 10:32:25AM -0700, Song Liu wrote:
-> On Tue, May 18, 2021 at 11:05 PM Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
+On Thu, May 20, 2021 at 1:43 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Thu, May 20, 2021 at 01:25:16PM +0800, Yongji Xie wrote:
+> > On Wed, May 19, 2021 at 10:42 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> > >
+> > > On Wed, May 19, 2021 at 09:39:20PM +0800, Yongji Xie wrote:
+> > > > On Mon, May 17, 2021 at 5:56 PM Xie Yongji <xieyongji@bytedance.com> wrote:
+> > > > >
+> > > > > This ensures that we will not use an invalid block size
+> > > > > in config space (might come from an untrusted device).
+> > >
+> > > I looked at if I should add this as an untrusted function so that Smatch
+> > > could find these sorts of bugs but this is reading data from the host so
+> > > there has to be some level of trust...
+> > >
 > >
-> > There are three logging levels for messages: FATAL, NOTICE and DEBUG.
-> > When a message is logged with FATAL level it results in bpfilter
-> > usermode helper termination.
-> 
-> Could you please explain why we choose to have 3 levels? Will we need
-> more levels,
-> like WARNING, ERROR, etc.?
-
-
-I found that I need one level for development - to trace what
-goes rignt and wrong. At the same time as those messages go to
-dmesg this level is too verbose to be used under normal
-circumstances. That is why another level is introduced. And the
-last one exists to verify invariants or error condintions from
-which there is no right way to recover and they result in
-bpfilter termination.
-
-Probably we may have just two levels - DEBUG and NOTICE and some
-analogue of BUG_ON/WARN_ON/runtime assert that results in a
-message on NOTICE level and program termination if the checked
-condition is false.
-
-I don't think that we will need more levels - until we decide to
-utilize syslog facility. Even in that case I don't know how to
-differntiate between e.g. NOTICE and INFO messages.
-
-> 
+> > It would be great if Smatch could detect this case if possible. The
+> > data might be trusted in traditional VM cases. But now the data can be
+> > read from a userspace daemon when VDUSE is enabled.
 > >
-> > Introduce struct context to avoid use of global objects and store there
-> > the logging parameters: log level and log sink.
+> > > I should add some more untrusted data kvm functions to Smatch.  Right
+> > > now I only have kvm_register_read() and I've added kvm_read_guest_virt()
+> > > just now.
+> > >
+> > > > >
+> > > > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > > > > ---
+> > > > >  drivers/block/virtio_blk.c | 2 +-
+> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+> > > > > index ebb4d3fe803f..c848aa36d49b 100644
+> > > > > --- a/drivers/block/virtio_blk.c
+> > > > > +++ b/drivers/block/virtio_blk.c
+> > > > > @@ -826,7 +826,7 @@ static int virtblk_probe(struct virtio_device *vdev)
+> > > > >         err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
+> > > > >                                    struct virtio_blk_config, blk_size,
+> > > > >                                    &blk_size);
+> > > > > -       if (!err)
+> > > > > +       if (!err && blk_size > 0 && blk_size <= max_size)
+> > > >
+> > > > The check here is incorrect. I will use PAGE_SIZE as the maximum
+> > > > boundary in the new version.
+> > >
+> > > What does this bug look like to the user?
 > >
-> > Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
-> > ---
-> >  net/bpfilter/Makefile  |  2 +-
-> >  net/bpfilter/bflog.c   | 29 +++++++++++++++++++++++++++++
-> >  net/bpfilter/bflog.h   | 24 ++++++++++++++++++++++++
-> >  net/bpfilter/context.h | 16 ++++++++++++++++
-> 
-> Maybe combine bflog.h and context.h into one file? And bflog() can
-> probably fit in
-> that file too.
+> > The kernel will panic if the block size is larger than PAGE_SIZE.
+>
+> Kernel panic at this point is par for the course IMHO.
 
+But it seems better if we can avoid this kind of panic. Because this
+might also be triggered by a buggy VDUSE daemon.
 
-Sure.
+> Let's focus on eliminating data corruption for starters.
 
-> 
-> Thanks,
-> Song
-> 
-> >  4 files changed, 70 insertions(+), 1 deletion(-)
-> >  create mode 100644 net/bpfilter/bflog.c
-> >  create mode 100644 net/bpfilter/bflog.h
-> >  create mode 100644 net/bpfilter/context.h
-> >
-> > diff --git a/net/bpfilter/Makefile b/net/bpfilter/Makefile
-> > index cdac82b8c53a..874d5ef6237d 100644
-> > --- a/net/bpfilter/Makefile
-> > +++ b/net/bpfilter/Makefile
-> > @@ -4,7 +4,7 @@
-> >  #
-> >
-> >  userprogs := bpfilter_umh
-> > -bpfilter_umh-objs := main.o
-> > +bpfilter_umh-objs := main.o bflog.o
-> >  userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
-> >
-> >  ifeq ($(CONFIG_BPFILTER_UMH), y)
-> > diff --git a/net/bpfilter/bflog.c b/net/bpfilter/bflog.c
-> > new file mode 100644
-> > index 000000000000..2752e39060e4
-> > --- /dev/null
-> > +++ b/net/bpfilter/bflog.c
-> > @@ -0,0 +1,29 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (c) 2021 Telegram FZ-LLC
-> > + */
-> > +
-> > +#define _GNU_SOURCE
-> > +
-> > +#include "bflog.h"
-> > +
-> > +#include <stdarg.h>
-> > +#include <stdio.h>
-> > +#include <stdlib.h>
-> > +
-> > +#include "context.h"
-> > +
-> > +void bflog(struct context *ctx, int level, const char *fmt, ...)
-> > +{
-> > +       if (ctx->log_file &&
-> > +           (level == BFLOG_LEVEL_FATAL || (level & ctx->log_level))) {
-> > +               va_list va;
-> > +
-> > +               va_start(va, fmt);
-> > +               vfprintf(ctx->log_file, fmt, va);
-> > +               va_end(va);
-> > +       }
-> > +
-> > +       if (level == BFLOG_LEVEL_FATAL)
-> > +               exit(EXIT_FAILURE);
-> > +}
-> > diff --git a/net/bpfilter/bflog.h b/net/bpfilter/bflog.h
-> > new file mode 100644
-> > index 000000000000..4ed12791cfa1
-> > --- /dev/null
-> > +++ b/net/bpfilter/bflog.h
-> > @@ -0,0 +1,24 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/*
-> > + * Copyright (c) 2021 Telegram FZ-LLC
-> > + */
-> > +
-> > +#ifndef NET_BPFILTER_BFLOG_H
-> > +#define NET_BPFILTER_BFLOG_H
-> > +
-> > +struct context;
-> > +
-> > +#define BFLOG_IMPL(ctx, level, fmt, ...) bflog(ctx, level, "bpfilter: " fmt, ##__VA_ARGS__)
-> > +
-> > +#define BFLOG_LEVEL_FATAL (0)
-> > +#define BFLOG_LEVEL_NOTICE (1)
-> > +#define BFLOG_LEVEL_DEBUG (2)
-> > +
-> > +#define BFLOG_FATAL(ctx, fmt, ...)                                                                 \
-> > +       BFLOG_IMPL(ctx, BFLOG_LEVEL_FATAL, "fatal error: " fmt, ##__VA_ARGS__)
-> > +#define BFLOG_NOTICE(ctx, fmt, ...) BFLOG_IMPL(ctx, BFLOG_LEVEL_NOTICE, fmt, ##__VA_ARGS__)
-> > +#define BFLOG_DEBUG(ctx, fmt, ...) BFLOG_IMPL(ctx, BFLOG_LEVEL_DEBUG, fmt, ##__VA_ARGS__)
-> > +
-> > +void bflog(struct context *ctx, int level, const char *fmt, ...);
-> > +
-> > +#endif // NET_BPFILTER_BFLOG_H
-> > diff --git a/net/bpfilter/context.h b/net/bpfilter/context.h
-> > new file mode 100644
-> > index 000000000000..e85c97c3d010
-> > --- /dev/null
-> > +++ b/net/bpfilter/context.h
-> > @@ -0,0 +1,16 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/*
-> > + * Copyright (c) 2021 Telegram FZ-LLC
-> > + */
-> > +
-> > +#ifndef NET_BPFILTER_CONTEXT_H
-> > +#define NET_BPFILTER_CONTEXT_H
-> > +
-> > +#include <stdio.h>
-> > +
-> > +struct context {
-> > +       FILE *log_file;
-> > +       int log_level;
-> > +};
-> > +
-> > +#endif // NET_BPFILTER_CONTEXT_H
-> > --
-> > 2.25.1
-> >
+OK, now the incorrect used length might cause data corruption in
+virtio-net and virtio-console drivers as I mentioned in another mail.
+I will send a fix ASAP.
 
--- 
-
-Dmitrii Banshchikov
+Thanks,
+Yongji
