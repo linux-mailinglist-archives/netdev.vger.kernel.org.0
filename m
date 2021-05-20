@@ -2,633 +2,328 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B5E738B65C
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 20:55:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8054538B6EC
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 21:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236286AbhETS5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 14:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236112AbhETS5P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 14:57:15 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D6FC061574;
-        Thu, 20 May 2021 11:55:54 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id 6so12497048pgk.5;
-        Thu, 20 May 2021 11:55:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=mZfYo4KWcXivOyuRQ2aD8zkqVkHBzMKa9UDSnSF7cBU=;
-        b=Jyx1zkmqnk59e0/a0BoVK2iO2oOiVwod78OomdTHIMbSf2f7vDCM76fYPXMhFXzk+A
-         hGBV1PRh0r6HrtJ/Pgn7yJUqCtxzoQgdGNGeImky/3WgqmDZJI8jylz6HWPZuyrAtq9e
-         QikGiFkBs68BU97HVGHxs0TSrc1+ecxIrL9lrk7iTskVZuc/GYtNz3uEVLX0ryEqdkX5
-         Fjl9z3NMS7TeH5lAU/Qtt6lE/xxFdjvpK74x+vyN3KkKTrMoy8hahTl47wsjspNA4K6e
-         AcPx2EbWSwDfgNpTfhDU1OwWiUZ47YbkBZwPLgcbIkicBUJ72TzGa28fEIXqgMUDt7Ja
-         Zoow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=mZfYo4KWcXivOyuRQ2aD8zkqVkHBzMKa9UDSnSF7cBU=;
-        b=tcoEXNncNAyUm6V+QZvdt6E/hxrUWn2jHQBUWm+FH58QZHb8+fvb9FOD6CpLxy7g9E
-         FmLVwFDXM2Mkn9UI5/C6v0GCDj5JTvQDEl59VCpq2FPmCV4bg0yIVLz91q7rSDG5unzK
-         L+5chy3y+KbFANd219bJcJTOgKRE76Er/U0gi2RUl4r09t88zRxCFWrbhxj+tXEg8edY
-         mrLGUzSxLDREOov36WcD+zMzFMQ53hu0hJJg7o26iYwTTGFCg/HustUlu321j1FKtlo2
-         GaGnMdSPoyUCdQVBS6SexvAkQ0yJT+fCldbec/vnjkDWflL/+JNe9ZO9/PRO9LvN55pp
-         nYEQ==
-X-Gm-Message-State: AOAM531kwGxv8TDmiS31fnrUQ6iiacRaqrvsu+27TKNsdgMG7jnM67Fc
-        fPXkpIRFO0P3qjrleSMZomC8zKI7Afc=
-X-Google-Smtp-Source: ABdhPJwE+8noCZb8TS5MyEQziN1EsytcPesmarnMkbiu4Ai+YHL6VIwCj8QFVYS5qsROu5dB6cAOpQ==
-X-Received: by 2002:a62:6491:0:b029:28e:8c90:6b16 with SMTP id y139-20020a6264910000b029028e8c906b16mr5704589pfb.24.1621536953580;
-        Thu, 20 May 2021 11:55:53 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.4])
-        by smtp.gmail.com with ESMTPSA id o2sm1793073pfu.80.2021.05.20.11.55.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 May 2021 11:55:53 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, andrii@kernel.org, john.fastabend@gmail.com,
-        lmb@cloudflare.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-Date:   Thu, 20 May 2021 11:55:50 -0700
-Message-Id: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
+        id S237191AbhETTPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 15:15:43 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:27601 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235907AbhETTPn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 15:15:43 -0400
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 04E52520D9D;
+        Thu, 20 May 2021 22:14:19 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1621538059;
+        bh=3klyD4tvb8N7gq7he2gHw03QPZNJqAJLSMWt4+ipLxo=;
+        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+        b=ioL1kmBbBrstVGcqdpuxDqpOqaiaUPj8Vt05HZUIjgObFU7A3lhnkfcVqtdreyBdV
+         pOeJ4oDjvrJ4DN1qmTtBhgmFhDMaYtG4E+CLoVyzXWQdaBWxBFKSK0aLg6MoorWaOk
+         1TLnZEL81RyvjAujuUHdU8UMH5+eOe3o59arY2dQuyRR52iW/2dvHitoRzaxuy/USW
+         GhDQoOmFrCvuaSgKRTzZ5azk2XjA5msPYgXB1pzQOjLMo+pw8d+0qDtQhKWzYgWzH/
+         Eau5GOFFU3EQ71/0e5e8+m/p/+IXRLJxmdTRH6JKcidI4/qBzb7RY2IQe5ZlEHpe2N
+         8+DDUht+lfYNg==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 2A4E1520CD1;
+        Thu, 20 May 2021 22:14:18 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Thu, 20
+ May 2021 22:14:17 +0300
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <oxffffaa@gmail.com>
+Subject: [PATCH v10 00/18] virtio/vsock: introduce SOCK_SEQPACKET support
+Date:   Thu, 20 May 2021 22:13:53 +0300
+Message-ID: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.64.64.121]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/20/2021 18:58:27
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 10
+X-KSE-AntiSpam-Info: Lua profiles 163818 [May 20 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: LuaCore: 446 446 0309aa129ce7cd9d810f87a68320917ac2eba541
+X-KSE-AntiSpam-Info: {Prob_from_in_msgid}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: arseniy-pc.avp.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;kaspersky.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 10
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 05/20/2021 19:01:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 20.05.2021 14:47:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/05/20 17:27:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/05/20 14:47:00 #16622423
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+	This patchset implements support of SOCK_SEQPACKET for virtio
+transport.
+	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+do it, new bit for field 'flags' was added: SEQ_EOR. This bit is
+set to 1 in last RW packet of message.
+	Now as  packets of one socket are not reordered neither on vsock
+nor on vhost transport layers, such bit allows to restore original
+message on receiver's side. If user's buffer is smaller than message
+length, when all out of size data is dropped.
+	Maximum length of datagram is not limited as in stream socket,
+because same credit logic is used. Difference with stream socket is
+that user is not woken up until whole record is received or error
+occurred. Implementation also supports 'MSG_TRUNC' flags.
+	Tests also implemented.
 
-Introduce 'struct bpf_timer' that can be embedded in most BPF map types
-and helpers to operate on it:
-long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
-long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
-long bpf_timer_del(struct bpf_timer *timer)
+	Thanks to stsp2@yandex.ru for encouragements and initial design
+recommendations.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
-This is work in progress, but gives an idea on how API will look.
----
- include/linux/bpf.h                           |   1 +
- include/uapi/linux/bpf.h                      |  25 ++++
- kernel/bpf/helpers.c                          | 106 +++++++++++++++++
- kernel/bpf/verifier.c                         | 110 ++++++++++++++++++
- kernel/trace/bpf_trace.c                      |   2 +-
- scripts/bpf_doc.py                            |   2 +
- tools/include/uapi/linux/bpf.h                |  25 ++++
- .../testing/selftests/bpf/prog_tests/timer.c  |  42 +++++++
- tools/testing/selftests/bpf/progs/timer.c     |  53 +++++++++
- 9 files changed, 365 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/timer.c
- create mode 100644 tools/testing/selftests/bpf/progs/timer.c
+ Arseny Krasnov (18):
+  af_vsock: update functions for connectible socket
+  af_vsock: separate wait data loop
+  af_vsock: separate receive data loop
+  af_vsock: implement SEQPACKET receive loop
+  af_vsock: implement send logic for SEQPACKET
+  af_vsock: rest of SEQPACKET support
+  af_vsock: update comments for stream sockets
+  virtio/vsock: set packet's type in virtio_transport_send_pkt_info()
+  virtio/vsock: simplify credit update function API
+  virtio/vsock: defines and constants for SEQPACKET
+  virtio/vsock: dequeue callback for SOCK_SEQPACKET
+  virtio/vsock: add SEQPACKET receive logic
+  virtio/vsock: rest of SOCK_SEQPACKET support
+  virtio/vsock: enable SEQPACKET for transport
+  vhost/vsock: enable SEQPACKET for transport
+  vsock/loopback: enable SEQPACKET for transport
+  vsock_test: add SOCK_SEQPACKET tests
+  virtio/vsock: update trace event for SEQPACKET
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 9dc44ba97584..18e09cc0c410 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -312,6 +312,7 @@ enum bpf_arg_type {
- 	ARG_PTR_TO_FUNC,	/* pointer to a bpf program function */
- 	ARG_PTR_TO_STACK_OR_NULL,	/* pointer to stack or NULL */
- 	ARG_PTR_TO_CONST_STR,	/* pointer to a null terminated read-only string */
-+	ARG_PTR_TO_TIMER,	/* pointer to bpf_timer */
- 	__BPF_ARG_TYPE_MAX,
- };
- 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 418b9b813d65..c95d7854d9fb 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -4761,6 +4761,24 @@ union bpf_attr {
-  * 		Execute close syscall for given FD.
-  * 	Return
-  * 		A syscall result.
-+ *
-+ * long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
-+ *	Description
-+ *		Initialize the timer to call given static function.
-+ *	Return
-+ *		zero
-+ *
-+ * long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
-+ *	Description
-+ *		Set the timer expiration N msecs from the current time.
-+ *	Return
-+ *		zero
-+ *
-+ * long bpf_timer_del(struct bpf_timer *timer)
-+ *	Description
-+ *		Deactivate the timer.
-+ *	Return
-+ *		zero
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -4932,6 +4950,9 @@ union bpf_attr {
- 	FN(sys_bpf),			\
- 	FN(btf_find_by_name_kind),	\
- 	FN(sys_close),			\
-+	FN(timer_init),			\
-+	FN(timer_mod),			\
-+	FN(timer_del),			\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-@@ -6038,6 +6059,10 @@ struct bpf_spin_lock {
- 	__u32	val;
- };
- 
-+struct bpf_timer {
-+	__u64 opaque;
-+};
-+
- struct bpf_sysctl {
- 	__u32	write;		/* Sysctl is being read (= 0) or written (= 1).
- 				 * Allows 1,2,4-byte read, but no write.
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index 544773970dbc..8ef0ad23c991 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -985,6 +985,106 @@ const struct bpf_func_proto bpf_snprintf_proto = {
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-+struct bpf_timer_list {
-+	struct timer_list tl;
-+	struct bpf_map *map;
-+	struct bpf_prog *prog;
-+	void *callback_fn;
-+	void *key;
-+	void *value;
-+};
-+
-+static void timer_cb(struct timer_list *timer)
-+{
-+	struct bpf_timer_list *tl = from_timer(tl, timer, tl);
-+	struct bpf_map *map;
-+	int ret;
-+
-+	ret = BPF_CAST_CALL(tl->callback_fn)((u64)(long)tl->map,
-+					     (u64)(long)tl->key,
-+					     (u64)(long)tl->value, 0, 0);
-+	WARN_ON(ret != 0); /* todo: define 0 vs 1 or disallow 1 in the verifier */
-+	bpf_prog_put(tl->prog);
-+}
-+
-+BPF_CALL_5(bpf_timer_init, struct bpf_timer *, timer, void *, cb, int, flags,
-+	   struct bpf_map *, map, struct bpf_prog *, prog)
-+{
-+	struct bpf_timer_list *tl;
-+
-+	if (timer->opaque)
-+		return -EBUSY;
-+	tl = kcalloc(1, sizeof(*tl), GFP_ATOMIC);
-+	if (!tl)
-+		return -ENOMEM;
-+	tl->callback_fn = cb;
-+	tl->value = (void *)timer /* - offset of bpf_timer inside elem */;
-+	tl->key = tl->value - round_up(map->key_size, 8);
-+	tl->map = map;
-+	tl->prog = prog;
-+	timer_setup(&tl->tl, timer_cb, 0);
-+	timer->opaque = (long)tl;
-+	return 0;
-+}
-+
-+const struct bpf_func_proto bpf_timer_init_proto = {
-+	.func		= bpf_timer_init,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_TIMER,
-+	.arg2_type	= ARG_PTR_TO_FUNC,
-+	.arg3_type	= ARG_ANYTHING,
-+};
-+
-+BPF_CALL_2(bpf_timer_mod, struct bpf_timer *, timer, u64, msecs)
-+{
-+	struct bpf_timer_list *tl;
-+
-+	tl = (struct bpf_timer_list *)timer->opaque;
-+	if (!tl)
-+		return -EINVAL;
-+	/* keep the prog alive until callback is invoked */
-+	if (!mod_timer(&tl->tl, jiffies + msecs_to_jiffies(msecs))) {
-+		/* The timer was inactive.
-+		 * Keep the prog alive until callback is invoked
-+		 */
-+		bpf_prog_inc(tl->prog);
-+	}
-+	return 0;
-+}
-+
-+const struct bpf_func_proto bpf_timer_mod_proto = {
-+	.func		= bpf_timer_mod,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_TIMER,
-+	.arg2_type	= ARG_ANYTHING,
-+};
-+
-+BPF_CALL_1(bpf_timer_del, struct bpf_timer *, timer)
-+{
-+	struct bpf_timer_list *tl;
-+
-+	tl = (struct bpf_timer_list *)timer->opaque;
-+	if (!tl)
-+		return -EINVAL;
-+	if (del_timer(&tl->tl)) {
-+		/* The timer was active,
-+		 * drop the prog refcnt, since callback
-+		 * will not be invoked.
-+		 */
-+		bpf_prog_put(tl->prog);
-+	}
-+	return 0;
-+}
-+
-+const struct bpf_func_proto bpf_timer_del_proto = {
-+	.func		= bpf_timer_del,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_TIMER,
-+};
-+
- const struct bpf_func_proto bpf_get_current_task_proto __weak;
- const struct bpf_func_proto bpf_probe_read_user_proto __weak;
- const struct bpf_func_proto bpf_probe_read_user_str_proto __weak;
-@@ -1033,6 +1133,12 @@ bpf_base_func_proto(enum bpf_func_id func_id)
- 		return &bpf_ringbuf_query_proto;
- 	case BPF_FUNC_for_each_map_elem:
- 		return &bpf_for_each_map_elem_proto;
-+	case BPF_FUNC_timer_init:
-+		return &bpf_timer_init_proto;
-+	case BPF_FUNC_timer_mod:
-+		return &bpf_timer_mod_proto;
-+	case BPF_FUNC_timer_del:
-+		return &bpf_timer_del_proto;
- 	default:
- 		break;
- 	}
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 9189eecb26dd..606c713be60a 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4656,6 +4656,35 @@ static int process_spin_lock(struct bpf_verifier_env *env, int regno,
- 	return 0;
- }
- 
-+static int process_timer_func(struct bpf_verifier_env *env, int regno,
-+			      struct bpf_call_arg_meta *meta)
-+{
-+	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
-+	bool is_const = tnum_is_const(reg->var_off);
-+	struct bpf_map *map = reg->map_ptr;
-+	u64 val = reg->var_off.value;
-+
-+	if (!is_const) {
-+		verbose(env,
-+			"R%d doesn't have constant offset. bpf_timer has to be at the constant offset\n",
-+			regno);
-+		return -EINVAL;
-+	}
-+	if (!map->btf) {
-+		verbose(env, "map '%s' has to have BTF in order to use bpf_timer\n",
-+			map->name);
-+		return -EINVAL;
-+	}
-+	if (val) {
-+		/* todo: relax this requirement */
-+		verbose(env, "bpf_timer field can only be first in the map value element\n");
-+		return -EINVAL;
-+	}
-+	WARN_ON(meta->map_ptr);
-+	meta->map_ptr = map;
-+	return 0;
-+}
-+
- static bool arg_type_is_mem_ptr(enum bpf_arg_type type)
- {
- 	return type == ARG_PTR_TO_MEM ||
-@@ -4788,6 +4817,7 @@ static const struct bpf_reg_types percpu_btf_ptr_types = { .types = { PTR_TO_PER
- static const struct bpf_reg_types func_ptr_types = { .types = { PTR_TO_FUNC } };
- static const struct bpf_reg_types stack_ptr_types = { .types = { PTR_TO_STACK } };
- static const struct bpf_reg_types const_str_ptr_types = { .types = { PTR_TO_MAP_VALUE } };
-+static const struct bpf_reg_types timer_types = { .types = { PTR_TO_MAP_VALUE } };
- 
- static const struct bpf_reg_types *compatible_reg_types[__BPF_ARG_TYPE_MAX] = {
- 	[ARG_PTR_TO_MAP_KEY]		= &map_key_value_types,
-@@ -4819,6 +4849,7 @@ static const struct bpf_reg_types *compatible_reg_types[__BPF_ARG_TYPE_MAX] = {
- 	[ARG_PTR_TO_FUNC]		= &func_ptr_types,
- 	[ARG_PTR_TO_STACK_OR_NULL]	= &stack_ptr_types,
- 	[ARG_PTR_TO_CONST_STR]		= &const_str_ptr_types,
-+	[ARG_PTR_TO_TIMER]		= &timer_types,
- };
- 
- static int check_reg_type(struct bpf_verifier_env *env, u32 regno,
-@@ -5000,6 +5031,9 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
- 			verbose(env, "verifier internal error\n");
- 			return -EFAULT;
- 		}
-+	} else if (arg_type == ARG_PTR_TO_TIMER) {
-+		if (process_timer_func(env, regno, meta))
-+			return -EACCES;
- 	} else if (arg_type == ARG_PTR_TO_FUNC) {
- 		meta->subprogno = reg->subprogno;
- 	} else if (arg_type_is_mem_ptr(arg_type)) {
-@@ -5742,6 +5776,43 @@ static int set_map_elem_callback_state(struct bpf_verifier_env *env,
- 	return 0;
- }
- 
-+static int set_timer_init_callback_state(struct bpf_verifier_env *env,
-+					 struct bpf_func_state *caller,
-+					 struct bpf_func_state *callee,
-+					 int insn_idx)
-+{
-+	struct bpf_insn_aux_data *insn_aux = &env->insn_aux_data[insn_idx];
-+	struct bpf_map *map_ptr;
-+
-+	if (bpf_map_ptr_poisoned(insn_aux)) {
-+		verbose(env, "bpf_timer_init abusing map_ptr\n");
-+		return -EINVAL;
-+	}
-+
-+	map_ptr = BPF_MAP_PTR(insn_aux->map_ptr_state);
-+
-+	/* bpf_timer_init(struct bpf_timer *timer, void *callback_fn, u64 flags);
-+	 * callback_fn(struct bpf_map *map, void *key, void *value);
-+	 */
-+	callee->regs[BPF_REG_1].type = CONST_PTR_TO_MAP;
-+	__mark_reg_known_zero(&callee->regs[BPF_REG_1]);
-+	callee->regs[BPF_REG_1].map_ptr = map_ptr;
-+
-+	callee->regs[BPF_REG_2].type = PTR_TO_MAP_KEY;
-+	__mark_reg_known_zero(&callee->regs[BPF_REG_2]);
-+	callee->regs[BPF_REG_2].map_ptr = map_ptr;
-+
-+	callee->regs[BPF_REG_3].type = PTR_TO_MAP_VALUE;
-+	__mark_reg_known_zero(&callee->regs[BPF_REG_3]);
-+	callee->regs[BPF_REG_3].map_ptr = map_ptr;
-+
-+	/* unused */
-+	__mark_reg_not_init(env, &callee->regs[BPF_REG_4]);
-+	__mark_reg_not_init(env, &callee->regs[BPF_REG_5]);
-+	callee->in_callback_fn = true;
-+	return 0;
-+}
-+
- static int prepare_func_exit(struct bpf_verifier_env *env, int *insn_idx)
- {
- 	struct bpf_verifier_state *state = env->cur_state;
-@@ -5837,6 +5908,7 @@ record_func_map(struct bpf_verifier_env *env, struct bpf_call_arg_meta *meta,
- 	    func_id != BPF_FUNC_map_pop_elem &&
- 	    func_id != BPF_FUNC_map_peek_elem &&
- 	    func_id != BPF_FUNC_for_each_map_elem &&
-+	    func_id != BPF_FUNC_timer_init &&
- 	    func_id != BPF_FUNC_redirect_map)
- 		return 0;
- 
-@@ -6069,6 +6141,13 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
- 			return -EINVAL;
- 	}
- 
-+	if (func_id == BPF_FUNC_timer_init) {
-+		err = __check_func_call(env, insn, insn_idx_p, meta.subprogno,
-+					set_timer_init_callback_state);
-+		if (err < 0)
-+			return -EINVAL;
-+	}
-+
- 	if (func_id == BPF_FUNC_snprintf) {
- 		err = check_bpf_snprintf_call(env, regs);
- 		if (err < 0)
-@@ -12526,6 +12605,37 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
- 			insn      = new_prog->insnsi + i + delta;
- 			continue;
- 		}
-+		if (insn->imm == BPF_FUNC_timer_init) {
-+
-+			aux = &env->insn_aux_data[i + delta];
-+			if (bpf_map_ptr_poisoned(aux)) {
-+				verbose(env, "bpf_timer_init abusing map_ptr\n");
-+				return -EINVAL;
-+			}
-+			map_ptr = BPF_MAP_PTR(aux->map_ptr_state);
-+			{
-+				struct bpf_insn ld_addrs[4] = {
-+					BPF_LD_IMM64(BPF_REG_4, (long)map_ptr),
-+					BPF_LD_IMM64(BPF_REG_5, (long)prog),
-+				};
-+
-+				insn_buf[0] = ld_addrs[0];
-+				insn_buf[1] = ld_addrs[1];
-+				insn_buf[2] = ld_addrs[2];
-+				insn_buf[3] = ld_addrs[3];
-+			}
-+			insn_buf[4] = *insn;
-+			cnt = 5;
-+
-+			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
-+			if (!new_prog)
-+				return -ENOMEM;
-+
-+			delta    += cnt - 1;
-+			env->prog = prog = new_prog;
-+			insn      = new_prog->insnsi + i + delta;
-+			goto patch_call_imm;
-+		}
- 
- 		/* BPF_EMIT_CALL() assumptions in some of the map_gen_lookup
- 		 * and other inlining handlers are currently limited to 64 bit
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index d2d7cf6cfe83..453a46c2d732 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1065,7 +1065,7 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 	case BPF_FUNC_snprintf:
- 		return &bpf_snprintf_proto;
- 	default:
--		return NULL;
-+		return bpf_base_func_proto(func_id);
- 	}
- }
- 
-diff --git a/scripts/bpf_doc.py b/scripts/bpf_doc.py
-index 2d94025b38e9..00ac7b79cddb 100755
---- a/scripts/bpf_doc.py
-+++ b/scripts/bpf_doc.py
-@@ -547,6 +547,7 @@ COMMANDS
-             'struct inode',
-             'struct socket',
-             'struct file',
-+            'struct bpf_timer',
-     ]
-     known_types = {
-             '...',
-@@ -594,6 +595,7 @@ COMMANDS
-             'struct inode',
-             'struct socket',
-             'struct file',
-+            'struct bpf_timer',
-     }
-     mapped_types = {
-             'u8': '__u8',
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 418b9b813d65..c95d7854d9fb 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -4761,6 +4761,24 @@ union bpf_attr {
-  * 		Execute close syscall for given FD.
-  * 	Return
-  * 		A syscall result.
-+ *
-+ * long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
-+ *	Description
-+ *		Initialize the timer to call given static function.
-+ *	Return
-+ *		zero
-+ *
-+ * long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
-+ *	Description
-+ *		Set the timer expiration N msecs from the current time.
-+ *	Return
-+ *		zero
-+ *
-+ * long bpf_timer_del(struct bpf_timer *timer)
-+ *	Description
-+ *		Deactivate the timer.
-+ *	Return
-+ *		zero
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -4932,6 +4950,9 @@ union bpf_attr {
- 	FN(sys_bpf),			\
- 	FN(btf_find_by_name_kind),	\
- 	FN(sys_close),			\
-+	FN(timer_init),			\
-+	FN(timer_mod),			\
-+	FN(timer_del),			\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-@@ -6038,6 +6059,10 @@ struct bpf_spin_lock {
- 	__u32	val;
- };
- 
-+struct bpf_timer {
-+	__u64 opaque;
-+};
-+
- struct bpf_sysctl {
- 	__u32	write;		/* Sysctl is being read (= 0) or written (= 1).
- 				 * Allows 1,2,4-byte read, but no write.
-diff --git a/tools/testing/selftests/bpf/prog_tests/timer.c b/tools/testing/selftests/bpf/prog_tests/timer.c
-new file mode 100644
-index 000000000000..6b7a16a54e70
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/timer.c
-@@ -0,0 +1,42 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <test_progs.h>
-+#include "timer.skel.h"
-+
-+static int timer(struct timer *timer_skel)
-+{
-+	int err, prog_fd;
-+	__u32 duration = 0, retval;
-+
-+	err = timer__attach(timer_skel);
-+	if (!ASSERT_OK(err, "timer_attach"))
-+		return err;
-+
-+	prog_fd = bpf_program__fd(timer_skel->progs.test1);
-+	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-+				NULL, NULL, &retval, &duration);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(retval, 0, "test_run");
-+
-+	ASSERT_EQ(timer_skel->data->callback_check, 52, "callback_check1");
-+	usleep(50 * 1000); /* 10 msecs should be enough, but give it extra */
-+	ASSERT_EQ(timer_skel->data->callback_check, 42, "callback_check2");
-+
-+	timer__detach(timer_skel);
-+	return 0;
-+}
-+
-+void test_timer(void)
-+{
-+	struct timer *timer_skel = NULL;
-+	int err;
-+
-+	timer_skel = timer__open_and_load();
-+	if (!ASSERT_OK_PTR(timer_skel, "timer_skel_load"))
-+		goto cleanup;
-+
-+	err = timer(timer_skel);
-+	ASSERT_OK(err, "timer");
-+cleanup:
-+	timer__destroy(timer_skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/timer.c b/tools/testing/selftests/bpf/progs/timer.c
-new file mode 100644
-index 000000000000..2cf0634f10c9
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/timer.c
-@@ -0,0 +1,53 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include "bpf_tcp_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+struct map_elem {
-+	struct bpf_timer timer;
-+	int counter;
-+};
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 1000);
-+	__type(key, int);
-+	__type(value, struct map_elem);
-+} hmap SEC(".maps");
-+
-+__u64 callback_check = 52;
-+
-+static int timer_cb(struct bpf_map *map, int *key, struct map_elem *val)
-+{
-+	callback_check--;
-+	if (--val->counter)
-+		/* re-arm the timer again to execute after 1 msec */
-+		bpf_timer_mod(&val->timer, 1);
-+	return 0;
-+}
-+
-+int bpf_timer_test(void)
-+{
-+	struct map_elem *val;
-+	int key = 0;
-+
-+	val = bpf_map_lookup_elem(&hmap, &key);
-+	if (val) {
-+		bpf_timer_init(&val->timer, timer_cb, 0);
-+		bpf_timer_mod(&val->timer, 1);
-+	}
-+	return 0;
-+}
-+
-+SEC("fentry/bpf_fentry_test1")
-+int BPF_PROG(test1, int a)
-+{
-+	struct map_elem val = {};
-+	int key = 0;
-+
-+	val.counter = 10, /* number of times to trigger timer_cb */
-+	bpf_map_update_elem(&hmap, &key, &val, 0);
-+	return bpf_timer_test();
-+}
+ drivers/vhost/vsock.c                        |  44 +-
+ include/linux/virtio_vsock.h                 |   9 +
+ include/net/af_vsock.h                       |   7 +
+ .../events/vsock_virtio_transport_common.h   |   5 +-
+ include/uapi/linux/virtio_vsock.h            |   9 +
+ net/vmw_vsock/af_vsock.c                     | 465 +++++++++++------
+ net/vmw_vsock/virtio_transport.c             |  25 +
+ net/vmw_vsock/virtio_transport_common.c      | 133 ++++-
+ net/vmw_vsock/vsock_loopback.c               |  11 +
+ tools/testing/vsock/util.c                   |  32 +-
+ tools/testing/vsock/util.h                   |   3 +
+ tools/testing/vsock/vsock_test.c             | 116 ++++
+ 12 files changed, 672 insertions(+), 187 deletions(-)
+
+ v9 -> v10:
+ General changelog:
+ - patch for write serialization removed from patchset
+ - commit messages rephrased
+ - RFC tag removed
+
+ Per patch changelog:
+  see every patch after '---' line.
+
+ v8 -> v9:
+ General changelog:
+ - see per patch change log.
+
+ Per patch changelog:
+  see every patch after '---' line.
+
+ v7 -> v8:
+ General changelog:
+ - whole idea is simplified: channel now considered reliable,
+   so SEQ_BEGIN, SEQ_END, 'msg_len' and 'msg_id' were removed.
+   Only thing that is used to mark end of message is bit in
+   'flags' field of packet header: VIRTIO_VSOCK_SEQ_EOR. Packet
+   with such bit set to 1 means, that this is last packet of
+   message.
+
+ - POSIX MSG_EOR support is removed, as there is no exact
+   description how it works.
+
+ - all changes to 'include/uapi/linux/virtio_vsock.h' moved
+   to dedicated patch, as these changes linked with patch to
+   spec.
+
+ - patch 'virtio/vsock: SEQPACKET feature bit support' now merged
+   to 'virtio/vsock: setup SEQPACKET ops for transport'.
+
+ - patch 'vhost/vsock: SEQPACKET feature bit support' now merged
+   to 'vhost/vsock: setup SEQPACKET ops for transport'.
+
+ Per patch changelog:
+  see every patch after '---' line.
+
+ v6 -> v7:
+ General changelog:
+ - virtio transport callback for message length now removed
+   from transport. Length of record is returned by dequeue
+   callback.
+
+ - function which tries to get message length now returns 0
+   when rx queue is empty. Also length of current message in
+   progress is set to 0, when message processed or error
+   happens.
+
+ - patches for virtio feature bit moved after patches with
+   transport ops.
+
+ Per patch changelog:
+  see every patch after '---' line.
+
+ v5 -> v6:
+ General changelog:
+ - virtio transport specific callbacks which send SEQ_BEGIN or
+   SEQ_END now hidden inside virtio transport. Only enqueue,
+   dequeue and record length callbacks are provided by transport.
+
+ - virtio feature bit for SEQPACKET socket support introduced:
+   VIRTIO_VSOCK_F_SEQPACKET.
+
+ - 'msg_cnt' field in 'struct virtio_vsock_seq_hdr' renamed to
+   'msg_id' and used as id.
+
+ Per patch changelog:
+ - 'af_vsock: separate wait data loop':
+    1) Commit message updated.
+    2) 'prepare_to_wait()' moved inside while loop(thanks to
+      Jorgen Hansen).
+    Marked 'Reviewed-by' with 1), but as 2) I removed R-b.
+
+ - 'af_vsock: separate receive data loop': commit message
+    updated.
+    Marked 'Reviewed-by' with that fix.
+
+ - 'af_vsock: implement SEQPACKET receive loop': style fixes.
+
+ - 'af_vsock: rest of SEQPACKET support':
+    1) 'module_put()' added when transport callback check failed.
+    2) Now only 'seqpacket_allow()' callback called to check
+       support of SEQPACKET by transport.
+
+ - 'af_vsock: update comments for stream sockets': commit message
+    updated.
+    Marked 'Reviewed-by' with that fix.
+
+ - 'virtio/vsock: set packet's type in send':
+    1) Commit message updated.
+    2) Parameter 'type' from 'virtio_transport_send_credit_update()'
+       also removed in this patch instead of in next.
+
+ - 'virtio/vsock: dequeue callback for SOCK_SEQPACKET': SEQPACKET
+    related state wrapped to special struct.
+
+ - 'virtio/vsock: update trace event for SEQPACKET': format strings
+    now not broken by new lines.
+
+ v4 -> v5:
+ - patches reorganized:
+   1) Setting of packet's type in 'virtio_transport_send_pkt_info()'
+      is moved to separate patch.
+   2) Simplifying of 'virtio_transport_send_credit_update()' is
+      moved to separate patch and before main virtio/vsock patches.
+ - style problem fixed
+ - in 'af_vsock: separate receive data loop' extra 'release_sock()'
+   removed
+ - added trace event fields for SEQPACKET
+ - in 'af_vsock: separate wait data loop':
+   1) 'vsock_wait_data()' removed 'goto out;'
+   2) Comment for invalid data amount is changed.
+ - in 'af_vsock: rest of SEQPACKET support', 'new_transport' pointer
+   check is moved after 'try_module_get()'
+ - in 'af_vsock: update comments for stream sockets', 'connect-oriented'
+   replaced with 'connection-oriented'
+ - in 'loopback/vsock: setup SEQPACKET ops for transport',
+   'loopback/vsock' replaced with 'vsock/loopback'
+
+ v3 -> v4:
+ - SEQPACKET specific metadata moved from packet header to payload
+   and called 'virtio_vsock_seq_hdr'
+ - record integrity check:
+   1) SEQ_END operation was added, which marks end of record.
+   2) Both SEQ_BEGIN and SEQ_END carries counter which is incremented
+      on every marker send.
+ - af_vsock.c: socket operations for STREAM and SEQPACKET call same
+   functions instead of having own "gates" differs only by names:
+   'vsock_seqpacket/stream_getsockopt()' now replaced with
+   'vsock_connectible_getsockopt()'.
+ - af_vsock.c: 'seqpacket_dequeue' callback returns error and flag that
+   record ready. There is no need to return number of copied bytes,
+   because case when record received successfully is checked at virtio
+   transport layer, when SEQ_END is processed. Also user doesn't need
+   number of copied bytes, because 'recv()' from SEQPACKET could return
+   error, length of users's buffer or length of whole record(both are
+   known in af_vsock.c).
+ - af_vsock.c: both wait loops in af_vsock.c(for data and space) moved
+   to separate functions because now both called from several places.
+ - af_vsock.c: 'vsock_assign_transport()' checks that 'new_transport'
+   pointer is not NULL and returns 'ESOCKTNOSUPPORT' instead of 'ENODEV'
+   if failed to use transport.
+ - tools/testing/vsock/vsock_test.c: rename tests
+
+ v2 -> v3:
+ - patches reorganized: split for prepare and implementation patches
+ - local variables are declared in "Reverse Christmas tree" manner
+ - virtio_transport_common.c: valid leXX_to_cpu() for vsock header
+   fields access
+ - af_vsock.c: 'vsock_connectible_*sockopt()' added as shared code
+   between stream and seqpacket sockets.
+ - af_vsock.c: loops in '__vsock_*_recvmsg()' refactored.
+ - af_vsock.c: 'vsock_wait_data()' refactored.
+
+ v1 -> v2:
+ - patches reordered: af_vsock.c related changes now before virtio vsock
+ - patches reorganized: more small patches, where +/- are not mixed
+ - tests for SOCK_SEQPACKET added
+ - all commit messages updated
+ - af_vsock.c: 'vsock_pre_recv_check()' inlined to
+   'vsock_connectible_recvmsg()'
+ - af_vsock.c: 'vsock_assign_transport()' returns ENODEV if transport
+   was not found
+ - virtio_transport_common.c: transport callback for seqpacket dequeue
+ - virtio_transport_common.c: simplified
+   'virtio_transport_recv_connected()'
+ - virtio_transport_common.c: send reset on socket and packet type
+			      mismatch.
+
+Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+
 -- 
-2.30.2
+2.25.1
 
