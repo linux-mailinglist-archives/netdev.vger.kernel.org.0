@@ -2,69 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C8EF38B9E6
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 01:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D096F38B9E2
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 01:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232664AbhETXBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 19:01:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49788 "EHLO mail.kernel.org"
+        id S232619AbhETXBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 19:01:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49834 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231919AbhETXBc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 19:01:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 600EB613AE;
-        Thu, 20 May 2021 23:00:10 +0000 (UTC)
+        id S231967AbhETXBd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 19:01:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0C71B610CB;
+        Thu, 20 May 2021 23:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621551610;
-        bh=d3OAH1SWRvHEo0ZPbCi0Z6vsFyuPVS9WwpZ0HO2l2T8=;
+        s=k20201202; t=1621551611;
+        bh=RodYAsenl4WrJP+FTPtI4LSzG6NrUntKxs5yYrfyaCQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KjzhLn0pulgUajUesBp7AGBpChrD+gXv7ir7cJ7lCThbc3RhstNY9+tmyxTp40Lv5
-         5sVjFxN6CwEfke5AjFZx78T0feXLJ4YfPId9Noy8VhGTiISqsvJTIE0+1iuPQYd3X5
-         Huao7b1YonR1DGYFzkc2mBWpXhm8Mnv43odEmiz0yJzMM9tWeLnOhY78Tz/Fi68Urv
-         wXxLkpqwhQfDwIEfHdnYeL0doKK5JRZTjoY17OT0Ro7OfYvLiQYN6lCRl+WGZeDJ7L
-         lBbm2mvz4Nmsf222fsGNcq7lY+AyNZPOf0yLUT7Lq1KXLUKW/kpjsBr2zKeK2QoVdj
-         SfElfdUVsKwHQ==
+        b=P029qtln04p09be/HaxbydPchEkslAhGEYq0iYz5fdp4DYTFwXP3D7k+tyi5zBdwU
+         osyVzcRTBPWJ4JeQ0pGdoJIPc7ysH67iPv6QoC07DHzyIpTj093q52B7UG7t7OP0nC
+         a2VobC4YifIsUXTihoa31vJWSeofVnmC2u6mVX5Cd+aIegnj3Jf4ThO4bjpsH7dO76
+         cCPkBEXSoHqJjQ/WEWDdhjxFjbP+Y+dL0EVMUTd5MOF6g3/iwfc4FYA+gSFRcXKyEj
+         ATnYOvXk3t/1fco0m83bMCNt2VZT3js2TPJ/zcnrEAXMIP14FzgN4dbJ73pcVxCV+c
+         pp6l0ft/Qr07A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 532F1609F6;
-        Thu, 20 May 2021 23:00:10 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 063EF60A38;
+        Thu, 20 May 2021 23:00:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] net: fixes for stmmac
+Subject: Re: [PATCH net-next] net: atm: use DEVICE_ATTR_RO macro
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162155161033.31527.4405992814200131855.git-patchwork-notify@kernel.org>
-Date:   Thu, 20 May 2021 23:00:10 +0000
-References: <20210520125117.1015-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20210520125117.1015-1-qiangqing.zhang@nxp.com>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
+Message-Id: <162155161102.31527.6723659556894141191.git-patchwork-notify@kernel.org>
+Date:   Thu, 20 May 2021 23:00:11 +0000
+References: <20210520133645.48412-1-yuehaibing@huawei.com>
+In-Reply-To: <20210520133645.48412-1-yuehaibing@huawei.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 20 May 2021 20:51:15 +0800 you wrote:
-> Two clock fixes for stmmac driver.
+On Thu, 20 May 2021 21:36:45 +0800 you wrote:
+> Use DEVICE_ATTR_RO helper instead of plain DEVICE_ATTR,
+> which makes the code a bit shorter and easier to read.
 > 
-> Joakim Zhang (2):
->   net: stmmac: correct clocks enabled in stmmac_vlan_rx_kill_vid()
->   net: stmmac: fix system hang if change mac address after interface
->     ifdown
-> 
-> [...]
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  net/atm/atm_sysfs.c | 24 ++++++++++++------------
+>  1 file changed, 12 insertions(+), 12 deletions(-)
 
 Here is the summary with links:
-  - [net,1/2] net: stmmac: correct clocks enabled in stmmac_vlan_rx_kill_vid()
-    https://git.kernel.org/netdev/net/c/b3dcb3127786
-  - [net,2/2] net: stmmac: fix system hang if change mac address after interface ifdown
-    https://git.kernel.org/netdev/net/c/4691ffb18ac9
+  - [net-next] net: atm: use DEVICE_ATTR_RO macro
+    https://git.kernel.org/netdev/net-next/c/48afdaea04eb
 
 You are awesome, thank you!
 --
