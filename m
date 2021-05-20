@@ -2,119 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C1F138B07B
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 15:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C58DB38B0A2
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 15:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241592AbhETNwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 09:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242111AbhETNwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 09:52:35 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0059C06175F
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 06:51:13 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id u25-20020a0568302319b02902ac3d54c25eso14941143ote.1
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 06:51:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=QoJKNoGZkLVWx0eGjPbY8LJ6NfNL4w7xAI12ZqlaAHQ=;
-        b=lAL6lpHaFTBHyGDiCOoo4teX9fcwQ2J2thK2sXa0hBhw4ztp+z1CCtLwbIWDrOcLbQ
-         UViEv7rVp2D0edakm3eRMeDn+lSc+VpPi8nSc1lsBYCgBEP12rJVVL1oq8PJ2wg01S9f
-         Gadjssxhsfi2RgR+UsvwZrC1/XRIjfF01jX4oytHpQYy3HsPp9ToPkUnwxkCW4lBqAly
-         zSPYUAjofBi5rA3LK9e+qe0YSv521SiwGlWMhYXO6LOnPLZOKzYi9aw5KaYhHUKCYHGj
-         G9Bi0jtaQXtsD+58Io6kTwtx2UAgcmciQrEZq5qOVkseD5ruSXbZcClkLL1qJ+jeHNqB
-         AHEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=QoJKNoGZkLVWx0eGjPbY8LJ6NfNL4w7xAI12ZqlaAHQ=;
-        b=LGIzjGsc0aNxBZ32pT6ctULJYjQo5kHcdt3aWX4NzURQQzY9wAo5zNTKB9rm8QVb7+
-         0OIG8w9o8z1kF+gw9DmMun98nZ2tEGvdMeVjfeiIK7n5uyWnj8J37BA7VykdtQOEX5zs
-         qtyA417HTtXm7gx2STNakcI8EERp6scQcd5oGw9/VpAjPJ4an4Se1quTZWSKzpqyWUBA
-         9pBJsEibNnMBhnRQ02U3Okoa++6f76ptruOXJyXrCbJ6nmYHqGAFwVgmPXaGEV02YMF1
-         fw5BI4iPs0MigteYCxaGBpfMMjdMnOU0ymhD4Zr1gCMt3fOawAaDO6qQaijsq8DliS5X
-         pG4g==
-X-Gm-Message-State: AOAM532N6tatE1DvRV3f4flOQZ6+ISHsb26Iys5UKONzUG0fIhmSYqyh
-        pF6zSNIbgIbZyapgO6APP/SEIsKw4Lk5wcuZdjzxcg==
-X-Google-Smtp-Source: ABdhPJz67cGvGu69skBiSN6x005PF7+y4xxC1MQ0vAqDxwg7ksNn3OghNs9VED2b8vbGTgq+nRmAcHdYg24lqls6WKo=
-X-Received: by 2002:a05:6830:14c5:: with SMTP id t5mr3948220otq.266.1621518672996;
- Thu, 20 May 2021 06:51:12 -0700 (PDT)
+        id S236481AbhETN5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 09:57:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33688 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232178AbhETN5j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 09:57:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 58C1960FE5;
+        Thu, 20 May 2021 13:56:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621518977;
+        bh=oWI0CzskyFFWD7HQmO6O8g09ywYvI6L/xj9NzKlEn0I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BW/xsRk8YiQ+JS2qpdsxiYiLQrr3vMBc3D0vtWxJf7lBLq0m5TjNwwtUbonl/1DTM
+         Rpck5F2POmkrkWVbrMhWkHql/bFdaKzCU79L22qN4vCLjeng+E+xiHhxHAck4pK0Yg
+         TyYXkIHTvWK4w7MHOXtflxiRIoZjoUIv6lHeSvLXQsANKXe1+Ha5i6WqGxWIs9qA7s
+         TTngB8ZCOezkfWwj84lfqCjfjexpcPlP/eT992PR+vgLo4arTaSGuBVjvc7q9MEH+O
+         nU8RiuqcJ50z8GGy4em2z93lr5Kh9y57EvVObzfkVvATyDZGr70rDSDG/7bnAl0geH
+         Cy0stkbU6IV4Q==
+Date:   Thu, 20 May 2021 14:56:15 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-spi@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next] net: dsa: sja1105: adapt to a SPI controller
+ with a limited max transfer size
+Message-ID: <20210520135615.GB3962@sirena.org.uk>
+References: <20210520135031.2969183-1-olteanv@gmail.com>
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 20 May 2021 19:21:01 +0530
-Message-ID: <CA+G9fYtvmr09BwE79QzNxiauQtUD7tZhCAbVVH3Vv=anaqt-yA@mail.gmail.com>
-Subject: bbpf_internal.h:102:22: error: format '%ld' expects argument of type
- 'long int', but argument 3 has type 'int' [-Werror=format=]
-To:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
-        lkft-triage@lists.linaro.org
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <kernel-team@fb.com>, ast@fb.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        =?UTF-8?B?RGFuaWVsIETDrWF6?= <daniel.diaz@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="cvVnyQ+4j833TQvp"
+Content-Disposition: inline
+In-Reply-To: <20210520135031.2969183-1-olteanv@gmail.com>
+X-Cookie: Offer void where prohibited by law.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The perf build failed on i386 on Linux next-20210519 and next-20210520 tag
- with gcc-7.3 due to below warnings / errors.
 
-In file included from libbpf.c:55:0:
-libbpf.c: In function 'init_map_slots':
-libbpf_internal.h:102:22: error: format '%ld' expects argument of type
-'long int', but argument 3 has type 'int' [-Werror=format=]
-  libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__); \
-                      ^
-libbpf_internal.h:105:27: note: in expansion of macro '__pr'
- #define pr_warn(fmt, ...) __pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
-                           ^~~~
-libbpf.c:4568:4: note: in expansion of macro 'pr_warn'
-    pr_warn("// TODO map_update_elem: idx %ld key %d value==map_idx %ld\n",
-    ^~~~~~~
-libbpf.c:4568:44: note: format string is defined here
-    pr_warn("// TODO map_update_elem: idx %ld key %d value==map_idx %ld\n",
-                                          ~~^
-                                          %d
-In file included from libbpf.c:55:0:
-libbpf_internal.h:102:22: error: format '%ld' expects argument of type
-'long int', but argument 5 has type 'int' [-Werror=format=]
-  libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__); \
-                      ^
-libbpf_internal.h:105:27: note: in expansion of macro '__pr'
- #define pr_warn(fmt, ...) __pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
-                           ^~~~
-libbpf.c:4568:4: note: in expansion of macro 'pr_warn'
-    pr_warn("// TODO map_update_elem: idx %ld key %d value==map_idx %ld\n",
-    ^~~~~~~
-libbpf.c:4568:70: note: format string is defined here
-    pr_warn("// TODO map_update_elem: idx %ld key %d value==map_idx %ld\n",
-                                                                    ~~^
-                                                                    %d
-  CC      /srv/oe/build/tmp-lkft-glibc/work/intel_core2_32-linaro-linux/perf/1.0-r9/perf-1.0/cpu.o
-In file included from libbpf.c:55:0:
-libbpf.c: In function 'bpf_core_apply_relo':
-libbpf_internal.h:102:22: error: format '%ld' expects argument of type
-'long int', but argument 3 has type 'int' [-Werror=format=]
-  libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__); \
-                      ^
-libbpf_internal.h:105:27: note: in expansion of macro '__pr'
- #define pr_warn(fmt, ...) __pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
-                           ^~~~
-libbpf.c:6192:3: note: in expansion of macro 'pr_warn'
-   pr_warn("// TODO core_relo: prog %ld insn[%d] %s %s kind %d\n",
-   ^~~~~~~
-libbpf.c:6192:38: note: format string is defined here
-   pr_warn("// TODO core_relo: prog %ld insn[%d] %s %s kind %d\n",
-                                    ~~^
-                                    %d
+--cvVnyQ+4j833TQvp
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+On Thu, May 20, 2021 at 04:50:31PM +0300, Vladimir Oltean wrote:
 
-https://ci.linaro.org/view/lkft/job/openembedded-lkft-linux-next/DISTRO=lkft,MACHINE=intel-core2-32,label=docker-buster-lkft/1030/consoleText
+> Only that certain SPI controllers, such as the spi-sc18is602 I2C-to-SPI
+> bridge, cannot keep the chip select asserted for that long.
+> The spi_max_transfer_size() and spi_max_message_size() functions are how
+> the controller can impose its hardware limitations upon the SPI
+> peripheral driver.
 
---
-Linaro LKFT
-https://lkft.linaro.org
+You should respect both, frankly I don't see any advantage to using
+cs_change for something like this - just do a bunch of async SPI
+transfers and you'll get the same effect in terms of being able to keep
+the queue for the controller primed with more robust support since it's
+not stressing edge cases.  cs_change is more for doing things that are
+just very non-standard.
+
+--cvVnyQ+4j833TQvp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmCman4ACgkQJNaLcl1U
+h9DGKgf+NlDwQaPvJzLOJ7P64ThCwxkJPyx9M9hlG5tGrcZOzrlVSfR66KNswJQ/
+R6o5BbSe/RMC2PbGdyN5fVDmQM6PPvT9TaQKuEQ6LhRoNRNsPBdZwWy+QqBNU4gq
+6g09yTQ28KWC3TyBw+CO3MEtm6CrWejkWDhYaLLtytcQ1qmOmx8PHyNgtGip+Gb7
+UDzS3FB9p2DML8VfXZXA63jg4v1nHnN00vzDOPpT0OhhoxmgH1eK5bfLcKBYNzuD
+SPOqbKLqq6z8+9bPkxDEWSf8PpAIQX9KCA/U4mQctiF6ob/oxoMPI5y5kQWA8v7P
+/svc3WEWNDyJaoesoTHAg1I29NQr9g==
+=doSf
+-----END PGP SIGNATURE-----
+
+--cvVnyQ+4j833TQvp--
