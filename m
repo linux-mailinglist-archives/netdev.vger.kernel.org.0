@@ -2,110 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45AA538AE81
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 14:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB2E038AF1D
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 14:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238864AbhETMkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 08:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57986 "EHLO
+        id S243014AbhETMvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 08:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235927AbhETMjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 08:39:42 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48FA5C061349;
-        Thu, 20 May 2021 04:52:11 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id u4-20020a05600c00c4b02901774b80945cso5233808wmm.3;
-        Thu, 20 May 2021 04:52:11 -0700 (PDT)
+        with ESMTP id S242269AbhETMvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 08:51:07 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B0DC06916D;
+        Thu, 20 May 2021 05:13:57 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id b25so16244439oic.0;
+        Thu, 20 May 2021 05:13:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2uxlfCGHHwNI4ZnaJxgkqdm0moe7gBXz5cgv/osHn+M=;
-        b=I7+coE1bfp5TvXVTEtyKW0TU2MdfTfPrX5imocNbnoN2awek4D8qoMVfl99S2n8824
-         +bXnOXfu2kKZJygRhAy/32GnO96xYSsHGCuH/J+kMd+SzEG1T4OqF0eeWuFTkEwwAbuu
-         9nlBdVnJdMY2p7/u5KEVkYExg9Whe4tKZ+TO0E5wPRoLrl9YfQb9uiJrn6MLVWHeeke0
-         doCSkuUo1W6QWolMhDmBqu7W08lBH6qhDZIrDJdu682mgcf0IKjgjzPFydvlrt2j/8Ib
-         9wbh0QlcHgmtbwyiPqnLVVbBMWU6hAAyWmtWPsgpIHhzChXrZPlcRnCTCcVTpZxLpwCk
-         52/A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=acaajPzuKCDrOFX5gmmTjekv1R6GhRxiFcjrlWBQ62A=;
+        b=LqFXQaa0+PrzE8lY/mSLntTGLHm6S54Dq1PdCCJQ9YEA6YSs6Sm8UAKNdQYIRX7GFU
+         l0BtZrvCVvQOszSdgDT3oU60EcqmuaUcVSMbtnBYzMEEBmdFuH43r+D4EXPz/Yxzq/Fk
+         TcKaTm5d1E0j/5COr1RmAfmr4SnT6R7jX4SBkEiw48tWdY7ij2bLVp57XnGJWPvnuU58
+         GQe2IEb6ueJWHrU0yF6Z9GkRc+0MT5GCZLMcCwyc6dhM+6yYJtbyZbNyLx4fIt44uHeY
+         3N0YD7VNR0dhqSSkLr0XmA90za38UswtvQR9NFxXqRdIwfl4Pw+0860HeAT8GY6OPfgK
+         Sw5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2uxlfCGHHwNI4ZnaJxgkqdm0moe7gBXz5cgv/osHn+M=;
-        b=Y02fRsKORU4cqVqToCOb2pqf79gCSQZ/av+OCN8iVBGQxISePFzaNkZpR7dhOpwo5n
-         F0IqoH1uNq7KrT/v06ToizvENtX5fM++Hm2wvKNEZDDsrveh4uhVEBFshuFPImrtRHRm
-         KV3neMQKZvfsdpRaprzxrfxkvfxZP7BjGMPSEgnTBHQu6TpE8eckod33hMMC17g2gucw
-         XiFdVMMu/gB3OCearGK4qhYMnc1LinIHO3TbnrLXxGSQwC/LHWIw1PsxqPstOVWyik9X
-         02BpXAvWRNHjHPUfX0Gbrd5lZ89uhOhbtf/SzEMvLKDbfhgRgt1wxALqJhy1jkZKia8S
-         rbIQ==
-X-Gm-Message-State: AOAM5330F1wmdWgKXMzmnySbni0MoDGz6a6+s7RMDzqSaLktZBhk1OXb
-        8R/FHoq0owdX9QCMubEcXdBpEjXvZVaGzQ==
-X-Google-Smtp-Source: ABdhPJwSAxCffJXfSmLtWiyjzZyOXX2v6MdmXu+QLssp6jMoFRaRmrwUhM7vHd2mcpSVuIATEg/3Jw==
-X-Received: by 2002:a1c:67c1:: with SMTP id b184mr3642327wmc.33.1621511529880;
-        Thu, 20 May 2021 04:52:09 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id b7sm2734585wri.83.2021.05.20.04.52.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 May 2021 04:52:09 -0700 (PDT)
-Subject: Re: [PATCH -next resend] sfc: farch: fix compile warning in
- efx_farch_dimension_resources()
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net
-References: <20210519021136.1638370-1-yangyingliang@huawei.com>
- <d90bd556-efd0-1b75-7708-7217fe490cf2@gmail.com>
- <3bf4adf0-ed98-ab86-cd5a-efca3ea856bc@huawei.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <ae7d9137-af9f-7434-a1ea-f390765a73eb@gmail.com>
-Date:   Thu, 20 May 2021 12:52:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=acaajPzuKCDrOFX5gmmTjekv1R6GhRxiFcjrlWBQ62A=;
+        b=jcpwCFTLHXXmg0rRywxCQbqSyVbcP6whu3GMtwBHNhVfp0m2keSbLuoZEJoWPY14om
+         ouBIBCPijX2nU3RT9E709mfCzfr961B7ieKu3TuxSYqBfN1zbqXvgRPwHCXWDn60u9p0
+         iR4Du100/G3PiZTstsmTpSlrqBRPXRRlDoi0Smm2gGbvxpw4g4vZJJ6rn0UqNZbwvcVQ
+         ztrzPwiAP1XyGDSL+4BuEQeZZ64e5ReIgvOlv9JeNW6EzYhUN9ldG7RVuDQHZO0J/DCF
+         GYBMwitelfAbLXv28eSWXwSnVqwD9NO6yRRH0/iB0PWMLO9cnPmBHXUJ+U1GQ+KZ12Ri
+         wLXg==
+X-Gm-Message-State: AOAM530s+Kw2C8GHR3C7bzSBDIHtb1+gw4RXnOBVUbIBGt7zcVlmIqCT
+        6oxBBm9olOhn7KftCBn9EpMnZKRkc1iEGf8HAg==
+X-Google-Smtp-Source: ABdhPJyjLQC8w35cvcxLwyvOQqhRZnBH4AQwZ3j123NQN1fwLUTBeNtwM9PHIPM2mMIQwwddbRiHsEDQ6h8X8yBhDOo=
+X-Received: by 2002:a05:6808:143:: with SMTP id h3mr802936oie.96.1621512836598;
+ Thu, 20 May 2021 05:13:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <3bf4adf0-ed98-ab86-cd5a-efca3ea856bc@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+References: <1621406954-1130-1-git-send-email-zheyuma97@gmail.com> <20210519.122605.1971627339402718160.davem@davemloft.net>
+In-Reply-To: <20210519.122605.1971627339402718160.davem@davemloft.net>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Thu, 20 May 2021 20:13:45 +0800
+Message-ID: <CAMhUBjkCdP-jfnKwAwdCR78tMqgHTPW6qVssE6T66=NrWznkJQ@mail.gmail.com>
+Subject: Re: [PATCH] net/qla3xxx: fix schedule while atomic in ql_sem_spinlock
+To:     David Miller <davem@davemloft.net>
+Cc:     GR-Linux-NIC-Dev@marvell.com, kuba@kernel.org,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/05/2021 03:13, Yang Yingliang wrote:
-> On 2021/5/19 22:40, Edward Cree wrote:
->> As I said the first time you sent this:
->> Reverse xmas tree is messed up here, please fix.
->> Apart from that, LGTM.
-> 
-> Do you mean like this:
-That's one way to do it.  But, a couple of nits:
+On Thu, May 20, 2021 at 3:26 AM David Miller <davem@davemloft.net> wrote:
+>
+> From: Zheyu Ma <zheyuma97@gmail.com>
+> Date: Wed, 19 May 2021 06:49:14 +0000
+>
+> > When calling the 'ql_sem_spinlock', the driver has already acquired the
+> > spin lock, so the driver should not call 'ssleep' in atomic context.
+> >
+> > This bug can be fixed by unlocking before calling 'ssleep'.
+>  ...
+> > diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
+> > index 214e347097a7..af7c142a066f 100644
+> > --- a/drivers/net/ethernet/qlogic/qla3xxx.c
+> > +++ b/drivers/net/ethernet/qlogic/qla3xxx.c
+> > @@ -114,7 +114,9 @@ static int ql_sem_spinlock(struct ql3_adapter *qdev,
+> >               value = readl(&port_regs->CommonRegs.semaphoreReg);
+> >               if ((value & (sem_mask >> 16)) == sem_bits)
+> >                       return 0;
+> > +             spin_unlock_irq(&qdev->hw_lock);
+> >               ssleep(1);
+> > +             spin_lock_irq(&qdev->hw_lock);
+> >       } while (--seconds);
+> >       return -1;
+> >  }
+>
+> Are you sure dropping the lock like this dos not introduce a race condition?
+>
+> Thank you.
 
-> diff --git a/drivers/net/ethernet/sfc/farch.c b/drivers/net/ethernet/sfc/farch.c
-> 
-> index 6048b08b89ec..b16f04cf7223 100644
-> --- a/drivers/net/ethernet/sfc/farch.c
-> +++ b/drivers/net/ethernet/sfc/farch.c
-> @@ -1668,10 +1668,10 @@ void efx_farch_rx_pull_indir_table(struct efx_nic *efx)
->   */
->  void efx_farch_dimension_resources(struct efx_nic *efx, unsigned sram_lim_qw)
->  {
-> -    unsigned vi_count, total_tx_channels;
-> +    unsigned total_tx_channels, vi_count;
-No need to change the order of decls within a line.
-> 
-Probably this blank line should be removed while we're at it.
->  #ifdef CONFIG_SFC_SRIOV
-> -    struct siena_nic_data *nic_data = efx->nic_data;
-> +    struct siena_nic_data *nic_data;
->      unsigned buftbl_min;
->  #endif
-> 
-> @@ -1679,6 +1679,7 @@ void efx_farch_dimension_resources(struct efx_nic *efx, unsigned sram_lim_qw)
->      vi_count = max(efx->n_channels, total_tx_channels * EFX_MAX_TXQ_PER_CHANNEL);
-> 
->  #ifdef CONFIG_SFC_SRIOV
-> +    nic_data = efx->nic_data;
->      /* Account for the buffer table entries backing the datapath channels
->       * and the descriptor caches for those channels.
->       */
-Otherwise, looks fine.
--ed
+Thanks for your comment, it is indeed inappropriate to release the
+lock here, I will resend the second version of the patch.
+
+Zheyu Ma
