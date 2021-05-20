@@ -2,176 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53B7E38BA79
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 01:41:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2468238BA80
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 01:43:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234275AbhETXmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 19:42:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37228 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234379AbhETXmb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 19:42:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621554068;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jvjP3xmaPvbueW2T2LLDyRBRYPus5uAQpfJvGW5jPfA=;
-        b=Yt7QBegdsp3QE6XIUpwqLzZufED8bKG9kdrzsgjN9dAVPCu23ZXK46uo4G1Xx02HJ4vFob
-        er7xTfgx5s2ZjpwY+v7WVDjnlpkqfC1vovz/WigC6h9Jvz7ur2ZArzRUz0L3p8CjtZLoEj
-        m4PouCZjvBtQtkyEDMw025zc8wviqWk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-375-I8SP1Xy4NvCfJFrlUwO-_w-1; Thu, 20 May 2021 19:41:04 -0400
-X-MC-Unique: I8SP1Xy4NvCfJFrlUwO-_w-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 56D5B180FD65;
-        Thu, 20 May 2021 23:41:02 +0000 (UTC)
-Received: from maya.cloud.tilaa.com (unknown [10.36.110.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 665ED10023AF;
-        Thu, 20 May 2021 23:41:01 +0000 (UTC)
-Date:   Fri, 21 May 2021 01:40:58 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the netfilter-next tree with the
- net tree
-Message-ID: <20210521014058.5c84301d@elisabeth>
-In-Reply-To: <20210521091222.3112f371@canb.auug.org.au>
-References: <20210519095627.7697ff12@canb.auug.org.au>
-        <20210519140532.677d1bb6@canb.auug.org.au>
-        <20210521091222.3112f371@canb.auug.org.au>
-Organization: Red Hat
+        id S234473AbhETXov (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 19:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40204 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234443AbhETXop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 19:44:45 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50707C061763
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 16:43:22 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id m11so27026574lfg.3
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 16:43:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=53C1hfvSqmgg+nungZ28Wt68bSH0DONGE5fhh6kZnQc=;
+        b=ENX17ixMrZ6LlFjW2Hbl22WtfgniaMbSi4okNpeMs4vVauku+eqDwyn6oEZESJXMxY
+         PQyf7UprsW4oHu38k5myavH9faHMeACdc956gz0xg+9c6hfrXYWwf/ttU5SyDqe6HIkC
+         XwI52FPB/ACpKyTG/3ghEmAoxWRpNz0TsnvXVvFGzHD6pRaKLL+KWov4ezpDXg2Z7hoZ
+         HRqXf7x6XKl73GWbkCgRLdaKQ55VON9F+LfovOgkqN2So3Es3oA/Ht70YfUXv1VoPM6/
+         dtmNHBcLemlfAUVve/bIApLnwG+SdheSFgmZHY3nlzA4EdEIi6+qXAxcjnFpGiAbebZ/
+         zcXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=53C1hfvSqmgg+nungZ28Wt68bSH0DONGE5fhh6kZnQc=;
+        b=CA6n00kF7hDbpa1+TamqfTwj/jZ8Xu+fDqBFxuqWTSJHkL1kY7F6Ow5yYZ1FLZ9sVH
+         DjIYZGeuwBls9Wm0RoVbdivTKrs6xpXARhwnaqdqtyhWW2m0nHFIu6KB0GxhMrmZm3MX
+         WYz45j1lc7QhDD1t4V4rDa5/l5ijEk2mzHtQpYOjh3hZbdFlPrZ8S//EpkIDjeeqV2Yc
+         lIK4dD0/N46SJVPXUupj80ySzjQ4zPylOMjgUTF5Bpne2savbOdyr92e9sbQSlxgJidf
+         MNKln7RgVbmhKndBAereoQKWPF36+Qr9mgSU/4i5/YfK5wvySipK6IpyvD6AseDhCB6b
+         fb2Q==
+X-Gm-Message-State: AOAM5307QQI+SQS1eDpSJvfdfW5SoEThpNWTBLfykkukEWN9hcjSegoe
+        RFuTW9RrPCStxYypwcwGJOmF10X7bfTCZSmbrleXNQ==
+X-Google-Smtp-Source: ABdhPJygNMj5WuHzIbvLGIODNPR3orcEL5Kz4yD//0OspA/+6bWSXTMD99hFbettxaKcI97pqpWgO+KAhFftCGBncM0=
+X-Received: by 2002:a05:6512:49b:: with SMTP id v27mr4401lfq.29.1621554200649;
+ Thu, 20 May 2021 16:43:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+References: <cover.1621518686.git.geert+renesas@glider.be> <8abfe44e2ad77b6309866531ec662c5daf1e4dbf.1621518686.git.geert+renesas@glider.be>
+In-Reply-To: <8abfe44e2ad77b6309866531ec662c5daf1e4dbf.1621518686.git.geert+renesas@glider.be>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 21 May 2021 01:43:09 +0200
+Message-ID: <CACRpkdY1XY55HMEtkdUa-GDdy9v-47rD2aHQ90yObSKo3cmzVg@mail.gmail.com>
+Subject: Re: [PATCH 3/5] ARM: dts: qcom-apq8060: Correct Ethernet node name
+ and drop bogus irq property
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        MSM <linux-arm-msm@vger.kernel.org>, linux-mips@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, May 20, 2021 at 3:58 PM Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
 
-On Fri, 21 May 2021 09:12:22 +1000
-Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> make dtbs_check:
+>
+>     ethernet-ebi2@2,0: $nodename:0: 'ethernet-ebi2@2,0' does not match '^ethernet(@.*)?$'
+>     ethernet-ebi2@2,0: 'smsc,irq-active-low' does not match any of the regexes: 'pinctrl-[0-9]+'
+>
+> There is no "smsc,irq-active-low" property, as active low is the
+> default.
+>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-> Hi all,
-> 
-> On Wed, 19 May 2021 14:05:32 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > On Wed, 19 May 2021 09:56:27 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:  
-> > >
-> > > Today's linux-next merge of the netfilter-next tree got a conflict in:
-> > > 
-> > >   net/netfilter/nft_set_pipapo.c
-> > > 
-> > > between commit:
-> > > 
-> > >   f0b3d338064e ("netfilter: nft_set_pipapo_avx2: Add irq_fpu_usable() check, fallback to non-AVX2 version")
-> > > 
-> > > from the net tree and commit:
-> > > 
-> > >   b1bc08f6474f ("netfilter: nf_tables: prefer direct calls for set lookups")
-> > > 
-> > > from the netfilter-next tree.
-> > > 
-> > > I fixed it up (I just used the latter) and can carry the fix as necessary. This
-> > > is now fixed as far as linux-next is concerned, but any non trivial
-> > > conflicts should be mentioned to your upstream maintainer when your tree
-> > > is submitted for merging.  You may also want to consider cooperating
-> > > with the maintainer of the conflicting tree to minimise any particularly
-> > > complex conflicts.    
-> > 
-> > This merge also needs the following merge resolution patch:
-> > 
-> > From: Stephen Rothwell <sfr@canb.auug.org.au>
-> > Date: Wed, 19 May 2021 13:48:22 +1000
-> > Subject: [PATCH] fix up for merge involving nft_pipapo_lookup()
-> > 
-> > Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > ---
-> >  net/netfilter/nft_set_pipapo.h | 2 --
-> >  1 file changed, 2 deletions(-)
-> > 
-> > diff --git a/net/netfilter/nft_set_pipapo.h b/net/netfilter/nft_set_pipapo.h
-> > index d84afb8fa79a..25a75591583e 100644
-> > --- a/net/netfilter/nft_set_pipapo.h
-> > +++ b/net/netfilter/nft_set_pipapo.h
-> > @@ -178,8 +178,6 @@ struct nft_pipapo_elem {
-> >  
-> >  int pipapo_refill(unsigned long *map, int len, int rules, unsigned long *dst,
-> >  		  union nft_pipapo_map_bucket *mt, bool match_only);
-> > -bool nft_pipapo_lookup(const struct net *net, const struct nft_set *set,
-> > -		       const u32 *key, const struct nft_set_ext **ext);
-> >  
-> >  /**
-> >   * pipapo_and_field_buckets_4bit() - Intersect 4-bit buckets
-> > -- 
-> > 2.30.2  
-> 
-> Actually it appears to also need this:
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Thanks for the fix, and sorry for the mess. To retain the effect of
-b1bc08f6474f ("netfilter: nf_tables: prefer direct calls for set lookups")
-from nf-next, though,
+I think Bjorn Andersson has to apply this patch.
 
-> diff --git a/include/net/netfilter/nf_tables_core.h b/include/net/netfilter/nf_tables_core.h
-> index 789e9eadd76d..8652b2514e57 100644
-> --- a/include/net/netfilter/nf_tables_core.h
-> +++ b/include/net/netfilter/nf_tables_core.h
-> @@ -89,6 +89,8 @@ extern const struct nft_set_type nft_set_bitmap_type;
->  extern const struct nft_set_type nft_set_pipapo_type;
->  extern const struct nft_set_type nft_set_pipapo_avx2_type;
->  
-> +bool nft_pipapo_lookup(const struct net *net, const struct nft_set *set,
-> +			    const u32 *key, const struct nft_set_ext **ext);
-
-while this looks correct to me (b1bc08f6474f adds the prototype
-conditionally for CONFIG_RETPOLINE, f0b3d338064e adds it
-unconditionally),
-
->  #ifdef CONFIG_RETPOLINE
->  bool nft_rhash_lookup(const struct net *net, const struct nft_set *set,
->  		      const u32 *key, const struct nft_set_ext **ext);
-> @@ -101,8 +103,6 @@ bool nft_hash_lookup_fast(const struct net *net,
->  			  const u32 *key, const struct nft_set_ext **ext);
->  bool nft_hash_lookup(const struct net *net, const struct nft_set *set,
->  		     const u32 *key, const struct nft_set_ext **ext);
-> -bool nft_pipapo_lookup(const struct net *net, const struct nft_set *set,
-> -			    const u32 *key, const struct nft_set_ext **ext);
->  bool nft_set_do_lookup(const struct net *net, const struct nft_set *set,
->  		       const u32 *key, const struct nft_set_ext **ext);
->  #else
-> diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
-> index 9addc0b447f7..dce866d93fee 100644
-> --- a/net/netfilter/nft_set_pipapo.c
-> +++ b/net/netfilter/nft_set_pipapo.c
-> @@ -408,7 +408,6 @@ int pipapo_refill(unsigned long *map, int len, int rules, unsigned long *dst,
->   *
->   * Return: true on match, false otherwise.
->   */
-> -INDIRECT_CALLABLE_SCOPE
-
-this shouldn't be removed.
-
->  bool nft_pipapo_lookup(const struct net *net, const struct nft_set *set,
->  		       const u32 *key, const struct nft_set_ext **ext)
->  {
-> 
-> 
-
-Let me know if I should rather send a patch for linux-next (but it
-might take me a bit).
-
--- 
-Stefano
-
+Yours,
+Linus Walleij
