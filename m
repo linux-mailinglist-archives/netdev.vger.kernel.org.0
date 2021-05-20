@@ -2,111 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA3B638B5DD
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 20:16:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1270238B64E
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 20:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235011AbhETSRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 14:17:44 -0400
-Received: from mga03.intel.com ([134.134.136.65]:39440 "EHLO mga03.intel.com"
+        id S236212AbhETStV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 14:49:21 -0400
+Received: from mx4.wp.pl ([212.77.101.11]:35925 "EHLO mx4.wp.pl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234970AbhETSRm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 14:17:42 -0400
-IronPort-SDR: nTXT33diQo+kctSk1pL6MSjoNO3EHsBAf6MKRkfvxHh98TRTVUp5fAxTTqb57zLqIlK77EQeTm
- OO6LVxh6/Glw==
-X-IronPort-AV: E=McAfee;i="6200,9189,9990"; a="201353958"
-X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; 
-   d="scan'208";a="201353958"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2021 11:16:20 -0700
-IronPort-SDR: EI16ucP3q8q5wMuRFlwcGhjmtJ3M//XIRn82+JUG8z1Pns4+ltyrKMfU77yOb12O6xnj2LK+h4
- t4cK/ago460w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; 
-   d="scan'208";a="468107398"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by FMSMGA003.fm.intel.com with ESMTP; 20 May 2021 11:16:19 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com,
-        Piotr Skajewski <piotrx.skajewski@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 1/1] ixgbe: fix large MTU request from VF
-Date:   Thu, 20 May 2021 11:18:35 -0700
-Message-Id: <20210520181835.2217268-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
+        id S236084AbhETStU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 14:49:20 -0400
+X-Greylist: delayed 399 seconds by postgrey-1.27 at vger.kernel.org; Thu, 20 May 2021 14:49:20 EDT
+Received: (wp-smtpd smtp.wp.pl 17612 invoked from network); 20 May 2021 20:41:11 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1621536071; bh=fY5+omcrJznCtWB0A7TnS3SUznVJFzPnJ8BdRvY4bI4=;
+          h=From:To:Cc:Subject;
+          b=FiQb62MERkmGuBpgdlk+wBtKomPT2ou75/JX9K9CIAfpaT0NYv0/fGX+yz5/I1XlU
+           i9qRCHnYhKsyfQRimdAYHotHWILMdxv8eIN9zwfii7UFo7+UT/oxdovRUUZao9fJJN
+           f7i6bgxPhvu50PYea+M6PJktrFCRjBFnQAUAyn24=
+Received: from riviera.nat.ds.pw.edu.pl (HELO LAPTOP-OLEK.lan) (olek2@wp.pl@[194.29.137.1])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <hauke@hauke-m.de>; 20 May 2021 20:41:11 +0200
+From:   Aleksander Jan Bajkowski <olek2@wp.pl>
+To:     hauke@hauke-m.de, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Aleksander Jan Bajkowski <olek2@wp.pl>
+Subject: [PATCH net] net: lantiq: fix memory corruption in RX ring
+Date:   Thu, 20 May 2021 20:40:54 +0200
+Message-Id: <20210520184054.38477-1-olek2@wp.pl>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-WP-DKIM-Status: good (id: wp.pl)                                      
+X-WP-MailID: 41c3d39c9522285ac9aafd1fc8d36e5f
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [IUP0]                               
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+In a situation where memory allocation or dma mapping fails, an
+invalid address is programmed into the descriptor. This can lead
+to memory corruption. If the memory allocation fails, DMA should
+reuse the previous skb and mapping and drop the packet. This patch
+also increments rx drop counter.
 
-Check that the MTU value requested by the VF is in the supported
-range of MTUs before attempting to set the VF large packet enable,
-otherwise reject the request. This also avoids unnecessary
-register updates in the case of the 82599 controller.
-
-Fixes: 872844ddb9e4 ("ixgbe: Enable jumbo frames support w/ SR-IOV")
-Co-developed-by: Piotr Skajewski <piotrx.skajewski@intel.com>
-Signed-off-by: Piotr Skajewski <piotrx.skajewski@intel.com>
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Co-developed-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/lantiq_xrx200.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-index 988db46bff0e..214a38de3f41 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-@@ -467,12 +467,16 @@ static int ixgbe_set_vf_vlan(struct ixgbe_adapter *adapter, int add, int vid,
- 	return err;
- }
+diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+index 41c2ad210bc9..36dc3e5f6218 100644
+--- a/drivers/net/ethernet/lantiq_xrx200.c
++++ b/drivers/net/ethernet/lantiq_xrx200.c
+@@ -154,6 +154,7 @@ static int xrx200_close(struct net_device *net_dev)
  
--static s32 ixgbe_set_vf_lpe(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
-+static int ixgbe_set_vf_lpe(struct ixgbe_adapter *adapter, u32 max_frame, u32 vf)
+ static int xrx200_alloc_skb(struct xrx200_chan *ch)
  {
- 	struct ixgbe_hw *hw = &adapter->hw;
--	int max_frame = msgbuf[1];
- 	u32 max_frs;
++	dma_addr_t mapping;
+ 	int ret = 0;
  
-+	if (max_frame < ETH_MIN_MTU || max_frame > IXGBE_MAX_JUMBO_FRAME_SIZE) {
-+		e_err(drv, "VF max_frame %d out of range\n", max_frame);
-+		return -EINVAL;
-+	}
-+
- 	/*
- 	 * For 82599EB we have to keep all PFs and VFs operating with
- 	 * the same max_frame value in order to avoid sending an oversize
-@@ -533,12 +537,6 @@ static s32 ixgbe_set_vf_lpe(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
- 		}
+ 	ch->skb[ch->dma.desc] = netdev_alloc_skb_ip_align(ch->priv->net_dev,
+@@ -163,16 +164,17 @@ static int xrx200_alloc_skb(struct xrx200_chan *ch)
+ 		goto skip;
  	}
  
--	/* MTU < 68 is an error and causes problems on some kernels */
--	if (max_frame > IXGBE_MAX_JUMBO_FRAME_SIZE) {
--		e_err(drv, "VF max_frame %d out of range\n", max_frame);
--		return -EINVAL;
--	}
--
- 	/* pull current max frame size from hardware */
- 	max_frs = IXGBE_READ_REG(hw, IXGBE_MAXFRS);
- 	max_frs &= IXGBE_MHADD_MFS_MASK;
-@@ -1249,7 +1247,7 @@ static int ixgbe_rcv_msg_from_vf(struct ixgbe_adapter *adapter, u32 vf)
- 		retval = ixgbe_set_vf_vlan_msg(adapter, msgbuf, vf);
- 		break;
- 	case IXGBE_VF_SET_LPE:
--		retval = ixgbe_set_vf_lpe(adapter, msgbuf, vf);
-+		retval = ixgbe_set_vf_lpe(adapter, msgbuf[1], vf);
- 		break;
- 	case IXGBE_VF_SET_MACVLAN:
- 		retval = ixgbe_set_vf_macvlan_msg(adapter, msgbuf, vf);
+-	ch->dma.desc_base[ch->dma.desc].addr = dma_map_single(ch->priv->dev,
+-			ch->skb[ch->dma.desc]->data, XRX200_DMA_DATA_LEN,
+-			DMA_FROM_DEVICE);
+-	if (unlikely(dma_mapping_error(ch->priv->dev,
+-				       ch->dma.desc_base[ch->dma.desc].addr))) {
++	mapping = dma_map_single(ch->priv->dev, ch->skb[ch->dma.desc]->data,
++				 XRX200_DMA_DATA_LEN, DMA_FROM_DEVICE);
++	if (unlikely(dma_mapping_error(ch->priv->dev, mapping))) {
+ 		dev_kfree_skb_any(ch->skb[ch->dma.desc]);
+ 		ret = -ENOMEM;
+ 		goto skip;
+ 	}
+ 
++	ch->dma.desc_base[ch->dma.desc].addr = mapping;
++	/* Make sure the address is written before we give it to HW */
++	wmb();
+ skip:
+ 	ch->dma.desc_base[ch->dma.desc].ctl =
+ 		LTQ_DMA_OWN | LTQ_DMA_RX_OFFSET(NET_IP_ALIGN) |
+@@ -196,6 +198,8 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+ 	ch->dma.desc %= LTQ_DESC_NUM;
+ 
+ 	if (ret) {
++		ch->skb[ch->dma.desc] = skb;
++		net_dev->stats.rx_dropped++;
+ 		netdev_err(net_dev, "failed to allocate new rx buffer\n");
+ 		return ret;
+ 	}
 -- 
-2.26.2
+2.30.2
 
