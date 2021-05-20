@@ -2,107 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB272389D24
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 07:36:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1B08389D30
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 07:43:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbhETFhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 01:37:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48274 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229526AbhETFhb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 01:37:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A8A526101D;
-        Thu, 20 May 2021 05:36:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621488970;
-        bh=twufdja/8Rmw932vlWCOrtJupdXWpCfHEJiWDx4rg2k=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=a5TuSps/fxDqvITAaSU1srRY1ZVbfuaUdgahWeNNBS/FYpmjZdOeMkuDViQiJsdW1
-         ryitywN7DamuMxYlKZh6S6j9TOVlfDwLKY+HDZbxTTTsEBKDrBOsTgW3R8zPNR6nke
-         xIe5BD7H7C5LhT5uk80IXz/4p7OkjXS67r/9ftlk1lez4ZhWegDAWw3vpuTxY7FWeN
-         vvTxq0zSfW8P3nBE7ZV1KhtWYIl1wEafurAXRrfKAFfUOxJtw71scqFNwR5pLExYRE
-         wo3+fVg17IGmws9tN83i/fV7HqxTTiVCwrdIWqdAtM0lHbtLssVJjeQe8TZL1z1dDo
-         PnpS6qFkwg5hw==
-Message-ID: <3ed3fb510ba62f4911f4ffe01a197df3bb8cd969.camel@kernel.org>
-Subject: Re: [PATCH net-next] mlx5: count all link events
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Lijun Pan <ljp@linux.vnet.ibm.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Date:   Wed, 19 May 2021 22:36:10 -0700
-In-Reply-To: <20210519135603.585a5169@kicinski-fedora-PC1C0HJN>
-References: <20210519171825.600110-1-kuba@kernel.org>
-         <155D8D8E-C0FE-4EF9-AD7F-B496A8279F92@linux.vnet.ibm.com>
-         <20210519125107.578f9c7d@kicinski-fedora-PC1C0HJN>
-         <61bd5f38c223582682f98d5e8f9f3820edde5b7e.camel@kernel.org>
-         <20210519135603.585a5169@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S230367AbhETFo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 01:44:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41026 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230271AbhETFoy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 01:44:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621489412;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GjW4Njna3bnKmMjSqk9By1QrG7BREpE+oMFazMCyiuc=;
+        b=DFKJk+yjl5Dj1vVDgxjUjZLYViMF2qhIqkDvlGtqWame69TX01GkBGvlokrAKgoZ724KNc
+        7wyM0vok8U+0ShkuIp3WAQKV77p9VgMs9oSjUjM9o1wrQW3X0WvBuYG0FzoKm50UsBXlKd
+        uVn4VNwUdkUdXOYfRRWPlFt/0gJJZYU=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-28-wRjCBqNDNIO9rysmyMo2HQ-1; Thu, 20 May 2021 01:43:31 -0400
+X-MC-Unique: wRjCBqNDNIO9rysmyMo2HQ-1
+Received: by mail-wr1-f69.google.com with SMTP id 22-20020adf82960000b02901115ae2f734so8206077wrc.5
+        for <netdev@vger.kernel.org>; Wed, 19 May 2021 22:43:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GjW4Njna3bnKmMjSqk9By1QrG7BREpE+oMFazMCyiuc=;
+        b=TPyrI+cD3Tgds8SBpQijDsg6eVvPfztCgm6rVkxBiHvu/1XUtJBzKObAYROKEl0a+z
+         83F4GQrBUyhkgtXo8glqtZ47iviMwS8jKanbopBaFe5SE5Q/0bsaXq0XmEpfyNASC71F
+         LrTDQIgf3FEFXnfiXqGTFT14py+xJcGeIj1rTfqtytTHOqrUlFLueF+qzrS463Z/T7M+
+         MV55yCD0RJ/aOgyjzns5+ATLMVQE7ow/9rYA2/UELppfyjD160qdbmUmkMUn/SqOfVye
+         6k8DgXMrMZKKl4RE6m5EMbt2+dJZf5tnmqcU9mH1tcki9Q2p7ZFtxxQ9wkvCP45Z3MBL
+         8EwQ==
+X-Gm-Message-State: AOAM533Ylj8qp6ERURqoa6qbZRdSeuj+hMVtagIru8ixKtea8IKdRjek
+        rT4qst1c3X5A05vc/EVkXLURyh5o72x/yBgazxXGk0x3d2l3PmOXbZJenyRFeuyVT6PcNR69L/Y
+        VJzGNv2tl1GRxHwtC
+X-Received: by 2002:a5d:524b:: with SMTP id k11mr2308308wrc.292.1621489410042;
+        Wed, 19 May 2021 22:43:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwPmuJaJcBIzoz51cJHFKBEGSMwRicV/EJnxc2pubykB7VVTdZU5S/RsC7BPoTegDy8gNdFLQ==
+X-Received: by 2002:a5d:524b:: with SMTP id k11mr2308281wrc.292.1621489409886;
+        Wed, 19 May 2021 22:43:29 -0700 (PDT)
+Received: from redhat.com (bzq-79-181-160-222.red.bezeqint.net. [79.181.160.222])
+        by smtp.gmail.com with ESMTPSA id t16sm1717230wrb.66.2021.05.19.22.43.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 May 2021 22:43:29 -0700 (PDT)
+Date:   Thu, 20 May 2021 01:43:25 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        joro@8bytes.org,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: Re: [PATCH v7 04/12] virtio-blk: Add validation for block size
+ in config space
+Message-ID: <20210520013921-mutt-send-email-mst@kernel.org>
+References: <20210517095513.850-1-xieyongji@bytedance.com>
+ <20210517095513.850-5-xieyongji@bytedance.com>
+ <CACycT3s1rEvNnNkJKQsHGRsyLPADieFdVkb1Sp3GObR0Vox5Fg@mail.gmail.com>
+ <20210519144206.GF32682@kadam>
+ <CACycT3veubBFCg9omxLDJJFP7B7QH8++Q+tKmb_M_hmNS45cmw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACycT3veubBFCg9omxLDJJFP7B7QH8++Q+tKmb_M_hmNS45cmw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-05-19 at 13:56 -0700, Jakub Kicinski wrote:
-> On Wed, 19 May 2021 13:18:36 -0700 Saeed Mahameed wrote:
-> > On Wed, 2021-05-19 at 12:51 -0700, Jakub Kicinski wrote:
-> > > 
-> > > 
-> > > I assumed netif_carrier_event() would be used specifically in
-> > > places
-> > > driver is actually servicing a link event from the device, and
-> > > therefore is relatively certain that _something_ has happened.  
-> > 
-> > then according to the above assumption it is safe to make
-> > netif_carrier_event() do everything.
-> > 
-> > netif_carrier_event(netdev, up) {
-> >         if (dev->reg_state == NETREG_UNINITIALIZED)
-> >                 return;
-> > 
-> >         if (up == netif_carrier_ok(netdev) {
-> >                 atomic_inc(&netdev->carrier_up_count);
-> >                 atomic_inc(&netdev->carrier_down_count);
-> >                 linkwatch_fire_event(netdev);
-> >         }
-> > 
-> >         if (up) {
-> >                 netdev_info(netdev, "Link up\n");
-> >                 netif_carrier_on(netdev);
-> >         } else {
-> >                 netdev_info(netdev, "Link down\n");
-> >                 netif_carrier_off(netdev);
-> >         }
-> > }
+On Thu, May 20, 2021 at 01:25:16PM +0800, Yongji Xie wrote:
+> On Wed, May 19, 2021 at 10:42 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> >
+> > On Wed, May 19, 2021 at 09:39:20PM +0800, Yongji Xie wrote:
+> > > On Mon, May 17, 2021 at 5:56 PM Xie Yongji <xieyongji@bytedance.com> wrote:
+> > > >
+> > > > This ensures that we will not use an invalid block size
+> > > > in config space (might come from an untrusted device).
+> >
+> > I looked at if I should add this as an untrusted function so that Smatch
+> > could find these sorts of bugs but this is reading data from the host so
+> > there has to be some level of trust...
+> >
 > 
-> Two things to consider are:
->  - some drivers print more info than just "link up/link down" so
-> they'd
->    have to drop that extra stuff (as much as I'd like the
-> consistency)
-
-+1 for the consistency
-
->  - again with the unnecessary events I was afraid that drivers reuse 
->    the same handler for device events and to read the state in which
->    case we may do something like:
+> It would be great if Smatch could detect this case if possible. The
+> data might be trusted in traditional VM cases. But now the data can be
+> read from a userspace daemon when VDUSE is enabled.
 > 
->         if (from_event && up == netif_carrier_ok(netdev)
+> > I should add some more untrusted data kvm functions to Smatch.  Right
+> > now I only have kvm_register_read() and I've added kvm_read_guest_virt()
+> > just now.
+> >
+> > > >
+> > > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > > > ---
+> > > >  drivers/block/virtio_blk.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+> > > > index ebb4d3fe803f..c848aa36d49b 100644
+> > > > --- a/drivers/block/virtio_blk.c
+> > > > +++ b/drivers/block/virtio_blk.c
+> > > > @@ -826,7 +826,7 @@ static int virtblk_probe(struct virtio_device *vdev)
+> > > >         err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
+> > > >                                    struct virtio_blk_config, blk_size,
+> > > >                                    &blk_size);
+> > > > -       if (!err)
+> > > > +       if (!err && blk_size > 0 && blk_size <= max_size)
+> > >
+> > > The check here is incorrect. I will use PAGE_SIZE as the maximum
+> > > boundary in the new version.
+> >
+> > What does this bug look like to the user?
 > 
+> The kernel will panic if the block size is larger than PAGE_SIZE.
 
-I don't actually understand your point here .. what kind of scenarios
-it is wrong to use this function ? 
+Kernel panic at this point is par for the course IMHO.
+Let's focus on eliminating data corruption for starters.
 
-But anyway, the name of the function makes it very clear this is from
-event.. 
-also we can document this.
-
-> Maybe we can revisit when there's more users?
-goes both ways :), we can do what fits the requirement for mlx5 now and
-revisit in the future, if we do believe this should be general behavior
-for all/most vendors of-course!
-
-
-
+> > A minimum block size of 1 seems pretty crazy.  Surely the minimum should be > higher?
+> >
+> 
+> Yes, 512 is better here.
+> 
+> Thanks,
+> Yongji
 
