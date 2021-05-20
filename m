@@ -2,117 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 981EF3899F1
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 01:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 684B7389A52
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 02:07:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbhESXhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 May 2021 19:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229465AbhESXhn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 May 2021 19:37:43 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8326C061574;
-        Wed, 19 May 2021 16:36:22 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id lx17-20020a17090b4b11b029015f3b32b8dbso2630848pjb.0;
-        Wed, 19 May 2021 16:36:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3yEfjY9MJ8K/vO05lVtPVMVr2Xa3KL3Rhs/sakLXU4E=;
-        b=cqY9Zi2H/abRKZWNJYODAnpRVR9T4ZA0iZg3fYWMMCdZW0A0SPHV2xl02crukP7aWJ
-         0Sib9+sMgSgjKUSJfcmCoyn88F6u7M+UgWyIbcuffDwsUcKr4vaLqzuk3DqxnREPtDc3
-         ktlAp+QovLQgVyyiecsoGoC8lSydHOP1R52OJLJ3ChsXRfg5kmi8LTZS5tgwE4dnoAYN
-         k0yvW+VXh98NUVuWk0ZhCP5B3HqnRT/tPa5Kpzy/rpCn5WldsNf29/kGGidWXKfPldk4
-         0fEM9JKg/i0yHqrmlFUmsZms5rY97cYJ50d++9r697Bowb6ib3O1jPxefBIbL4jya3fW
-         2AnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3yEfjY9MJ8K/vO05lVtPVMVr2Xa3KL3Rhs/sakLXU4E=;
-        b=n9CAkPZSgRWf/GNWPTpBXpX3G28+UHC49DNxrx3qzGqK7ecZ0/TGwrDuS2SuoN+DAL
-         yyfFVgPqlOVRugvTuOzRZxid5h9WFOCNw+BRCA+Srk7+wAH14zIwGLHsvmoPDyNIAP6M
-         rquuCFl1PDNXB7roehXDxDaoOuFKeOesskgjTaAWo5xXB/Q3bhLA0FgGB21D/TdgSw7g
-         vERdaGe8v6VCNsMHfCe/m+/OEWDxs5hIDAzYpJxJVBIcc9T6MD2a14AvxLfxNSk0iTOu
-         DPiv5qhcCTTdYPCLrL8GyZ4bj2Z+Tjl1Qf2xoDMEG7syCuLFEEL87xCatNxgb5kHYiaz
-         r3zw==
-X-Gm-Message-State: AOAM532G5MkE3dLaEysSdiq/3SV23tZNanbN/dHU8pHQyUw/q5UaCQaU
-        7ntDX01t52MxGv1eMXgG6OtHmd9TSb6Ln62wRyY=
-X-Google-Smtp-Source: ABdhPJzT7P2aLGz5PKANTt8yCogoA7LfGFy7vVxwy4T9EpODEq39mN5t/2nkUsH0FN7Ou7p4KoPEnxQiKIwMaGKmAA4=
-X-Received: by 2002:a17:90a:c38c:: with SMTP id h12mr1918548pjt.145.1621467382362;
- Wed, 19 May 2021 16:36:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210519204132.107247-1-xiyou.wangcong@gmail.com> <60a5896ca080d_2aaa720821@john-XPS-13-9370.notmuch>
-In-Reply-To: <60a5896ca080d_2aaa720821@john-XPS-13-9370.notmuch>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 19 May 2021 16:36:11 -0700
-Message-ID: <CAM_iQpUC6ZOiH=ifUe1+cdXtTgiBMwPVLSsWB9zwBA7gWh8mgA@mail.gmail.com>
-Subject: Re: [Patch bpf] selftests/bpf: Retry for EAGAIN in udp_redir_to_connected()
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
+        id S230053AbhETAIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 May 2021 20:08:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49722 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229498AbhETAIV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 May 2021 20:08:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F23F261074;
+        Thu, 20 May 2021 00:07:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621469221;
+        bh=oW9HLixCOVzavCFez1aoL3mPt1aIQQd6USvqcCYfClk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Y4enn5UJK+2NnIeOdKNArG97lC7QFnH0K+g401ySdvkeFzU6CqIl/tDOuO+HhN7Ye
+         msej3Jak1RcuPHxdMMImJFY27JZ4O/PaEI/humVv28rivJDMQlEZ1zq931bj9Juh/O
+         3P96DEtASI4GF7SA32kmcxy3EPgqUijtev8yIPKpBd9JpP5gzZFooWsI4hkefHUx0t
+         aZDUHxs74YPZIDTvDIXRuq1/EpJgXGc/nfpDaAC7MaiCOsE6nwleALSaoq4q9rUu2K
+         GxK96FD77TjQOo2KUfl89vgojejM93IkOHMDowxE16rrWF8DpMGF8S/AB9gImW4XKJ
+         AUFdgV25uX3sw==
+Message-ID: <35937fe6d371a43aa0bfe70c9fab549b62089592.camel@kernel.org>
+Subject: Re: [PATCH net-next] mlx5: count all link events
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Date:   Wed, 19 May 2021 17:07:00 -0700
+In-Reply-To: <20210519140659.30c3813c@kicinski-fedora-PC1C0HJN>
+References: <20210519171825.600110-1-kuba@kernel.org>
+         <f48c950330996dcbb11f1a78b7c0a0445c656a20.camel@kernel.org>
+         <20210519140659.30c3813c@kicinski-fedora-PC1C0HJN>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 19, 2021 at 2:56 PM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> Cong Wang wrote:
-> > From: Cong Wang <cong.wang@bytedance.com>
-> >
-> > We use non-blocking sockets for testing sockmap redirections,
-> > and got some random EAGAIN errors from UDP tests.
-> >
-> > There is no guarantee the packet would be immediately available
-> > to receive as soon as it is sent out, even on the local host.
-> > For UDP, this is especially true because it does not lock the
-> > sock during BH (unlike the TCP path). This is probably why we
-> > only saw this error in UDP cases.
-> >
-> > No matter how hard we try to make the queue empty check accurate,
-> > it is always possible for recvmsg() to beat ->sk_data_ready().
-> > Therefore, we should just retry in case of EAGAIN.
-> >
-> > Fixes: d6378af615275 ("selftests/bpf: Add a test case for udp sockmap")
-> > Reported-by: Jiang Wang <jiang.wang@bytedance.com>
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > Cc: Lorenz Bauer <lmb@cloudflare.com>
-> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > ---
-> >  tools/testing/selftests/bpf/prog_tests/sockmap_listen.c | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-> > index 648d9ae898d2..b1ed182c4720 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-> > @@ -1686,9 +1686,13 @@ static void udp_redir_to_connected(int family, int sotype, int sock_mapfd,
-> >       if (pass != 1)
-> >               FAIL("%s: want pass count 1, have %d", log_prefix, pass);
-> >
-> > +again:
-> >       n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
-> > -     if (n < 0)
-> > +     if (n < 0) {
-> > +             if (errno == EAGAIN)
-> > +                     goto again;
-> >               FAIL_ERRNO("%s: read", log_prefix);
->
-> Needs a counter and abort logic we don't want to loop forever in the
-> case the packet is lost.
+On Wed, 2021-05-19 at 14:06 -0700, Jakub Kicinski wrote:
+> On Wed, 19 May 2021 13:49:00 -0700 Saeed Mahameed wrote:
+> > On Wed, 2021-05-19 at 10:18 -0700, Jakub Kicinski wrote:
+> > > mlx5 devices were observed generating
+> > > MLX5_PORT_CHANGE_SUBTYPE_ACTIVE
+> > > events without an intervening MLX5_PORT_CHANGE_SUBTYPE_DOWN. This
+> > > breaks link flap detection based on Linux carrier state
+> > > transition
+> > > count as netif_carrier_on() does nothing if carrier is already
+> > > on.
+> > > Make sure we count such events.
+> > 
+> > Can you share more on the actual scenario that has happened ? 
+> > in mlx5 i know of situations where fw might generate such events,
+> > just
+> > as FYI for virtual ports (vports) on some configuration changes.
+> > 
+> > another explanation is that in the driver we explicitly query the
+> > link
+> > state and we never take the event value, so it could have been that
+> > the
+> > link flapped so fast we missed the intermediate state.
+> 
+> The link flaps quite a bit, this is likely a bad cable or port.
+> I scanned the fleet a little bit more and I see a couple machines 
+> in such state, in each case the switch is also seeing the link flaps,
+> not just the NIC. Without this patch the driver registers a full flap
+> once every ~15min, with the patch it's once a second. That's much
+> closer to what the switch registers.
+> 
+> Also the issue affects all hosts in MH, and persists across reboots
+> of a single host (hence I could test this patch).
+> 
 
-It should not be lost because selftests must be self-contained,
-if the selftests could not even predict whether its own packet is
-lost or not, we would have a much bigger trouble than just this
-infinite loop.
+reproduces on reboots even with a good cable ? 
+you reboot the peer machine or the DUT (under test) machine ?
 
-Thanks.
+> > According to HW spec for some reason we should always query and not
+> > rely on the event. 
+> > 
+> > <quote>
+> > If software retrieves this indication (port state change event),
+> > this
+> > signifies that the state has been
+> > changed and a QUERY_VPORT_STATE command should be performed to get
+> > the
+> > new state.
+> > </quote>
+> 
+> I see, seems reasonable. I'm guessing the FW generates only one of
+> the
+> events on minor type of faults? I don't think the link goes fully
+> down,
+> because I can SSH to those machines, they just periodically drop
+> traffic. But the can't fully retrain the link at such high rate, 
+> I don't think.
+> 
+
+hmm, Then i would like to get to the bottom of this, so i will have to
+consult with FW.
+But regardless, we can progress with the patch, I think the HW spec
+description forces us to do so.. 
+
+
+
