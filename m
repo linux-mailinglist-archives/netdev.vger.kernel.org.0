@@ -2,86 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC88389ED9
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 09:22:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F98389EF0
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 09:31:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231143AbhETHXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 03:23:38 -0400
-Received: from mailgw02.mediatek.com ([216.200.240.185]:58961 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230102AbhETHXf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 03:23:35 -0400
-X-UUID: 061f921aa6cc47a083df4dae5b853384-20210520
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=ZQ3X2kKIVdd7QGc0Obd6FYCQ+lslLAxE4v/TzH04zFg=;
-        b=EJhtKMJHSLLT7k+TjsgkVYl5TweyxXs7MXcMNVdXRMnyOQxzmuKghYKfKjn6JwLDo1+MD9EAGJJeX2oGS0nY+U3rRYxYZ1Zp4z0Bz0VgSWFQ9a0NGv3hycwnnfYhxtYYiGKu6o1O5ruGvUiA8BvYG+aAOPbrwrBvXshmqREB1RE=;
-X-UUID: 061f921aa6cc47a083df4dae5b853384-20210520
-Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by mailgw02.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (musrelay.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 828172061; Thu, 20 May 2021 00:22:12 -0700
-Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- MTKMBS62DR.mediatek.inc (172.29.94.18) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 20 May 2021 00:13:21 -0700
-Received: from mtksdccf07 (172.21.84.99) by mtkcas07.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 20 May 2021 15:13:20 +0800
-Message-ID: <0adde34f936a2dafca40b06b408d82afe0852327.camel@mediatek.com>
-Subject: Re: [PATCH net-next v2 1/4] net: phy: add MediaTek Gigabit Ethernet
- PHY driver
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-staging@lists.linux.dev>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>, Weijie Gao <weijie.gao@mediatek.com>,
-        Chuanhong Guo <gch981213@gmail.com>,
-        =?ISO-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        "Frank Wunderlich" <frank-w@public-files.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>
-Date:   Thu, 20 May 2021 15:13:20 +0800
-In-Reply-To: <20210520023828.3261270-1-dqfext@gmail.com>
-References: <20210519033202.3245667-1-dqfext@gmail.com>
-         <20210519033202.3245667-2-dqfext@gmail.com> <YKW0acoyM+5rVp0X@lunn.ch>
-         <20210520023828.3261270-1-dqfext@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S230483AbhETHdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 03:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229534AbhETHdI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 03:33:08 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F88C061574
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:31:47 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id g8so4590207qtp.4
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 00:31:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=F5a9PIwJ6/SOxSd9jumI2LYg7K1A7JkU485pAj4J60o=;
+        b=U84k4LsgXt2JIDV40abt4rCN4gavM4D634P1RWFpVG8zDw+LB0Lb24wvQMk8UvMIG+
+         q19XN8/Wkodo7dQ0zyV40/IF1eO26v7aDQyKBeG1i1BrMyVf7jS1rhKyFMv4uGRk4s0h
+         BgOMUISxhiDGxlLPvr+Pinib9bjSyZ6sKTNzIKVDkfLHA8fWIiWCRITG5t9PIlEUXAnf
+         kKuxUEur8mcCm7+9iAKz75WwQrRm3SRdjZGFe7eUk2g7vhfms039bCEHMtsoZIsCGKS4
+         5+wPWFNPCPDTExTQiDZ7pD2pFxLYcqHR3SGpTr0P0F7vjB22kdAe2Nf15OC1Z/e+2UHR
+         Kj5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=F5a9PIwJ6/SOxSd9jumI2LYg7K1A7JkU485pAj4J60o=;
+        b=GWHYgxvT05X55eo/EIcDQMdRjzdxj45OBn9K0cRZHAp6PFgFw/38aslv+/dxcb+bzK
+         clblvwuaTBxOTYlaP64gSLSD/qEu2sjW+m3sdr0rCVODtwMhV+xjGW4wIsoMWJ/jhOdM
+         DrbgPqwLHBMmwPBpd2GrQnBGRwY9xR/5rwEP2zk4InJpIuyWRKDKGkxt6a7Fpvsjh2xn
+         wrWr3Z3uKvhUvy8f40R9vKK/xOEPWvXIjYOHjoCxp/6nRFqSPdO0N3T5+XIjDOxVsJcX
+         yLxnKEutKZFaP4s9FcVa9mlOwgoYb47dmsBw+C8O4nViDmpE66UnJI7dEKR6FyQhRil6
+         9qnw==
+X-Gm-Message-State: AOAM533vKQSI5GmI/GDkj8//OX8epmZaL4N7DFv3Kc0KvDSDmhBqDmen
+        4jf/vne9ibTsD1XiB9cvlDWhBg==
+X-Google-Smtp-Source: ABdhPJytbO97Rz1rvmGBKJ+8skiPWcrltBFUcHH1m9p8kk5rB+FdZW5iMHjJqDGV3STIfJTz3vsjPQ==
+X-Received: by 2002:ac8:7d02:: with SMTP id g2mr3732716qtb.208.1621495906246;
+        Thu, 20 May 2021 00:31:46 -0700 (PDT)
+Received: from localhost ([154.21.15.43])
+        by smtp.gmail.com with ESMTPSA id u186sm1525689qkd.30.2021.05.20.00.31.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 May 2021 00:31:45 -0700 (PDT)
+Date:   Thu, 20 May 2021 11:31:35 +0400
+From:   Dmitrii Banshchikov <me@ubique.spb.ru>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>, Andrey Ignatov <rdna@fb.com>
+Subject: Re: [PATCH bpf-next 06/11] bpfilter: Add struct match
+Message-ID: <20210520073135.bpdtlbryvbp2olkf@amnesia>
+References: <20210517225308.720677-1-me@ubique.spb.ru>
+ <20210517225308.720677-7-me@ubique.spb.ru>
+ <F674F162-FBC0-4F2C-B8A1-BCDD015FFA3F@fb.com>
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <F674F162-FBC0-4F2C-B8A1-BCDD015FFA3F@fb.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIxLTA1LTIwIGF0IDEwOjM4ICswODAwLCBERU5HIFFpbmdmYW5nIHdyb3RlOg0K
-PiBPbiBUaHUsIE1heSAyMCwgMjAyMSBhdCAwMjo1OToyMUFNICswMjAwLCBBbmRyZXcgTHVubiB3
-cm90ZToNCj4gPiA+ICtzdGF0aWMgdm9pZCBtdGtfZ2VwaHlfY29uZmlnX2luaXQoc3RydWN0IHBo
-eV9kZXZpY2UgKnBoeWRldikNCj4gPiA+ICt7DQo+ID4gPiArCS8qIERpc2FibGUgRUVFICovDQo+
-ID4gPiArCXBoeV93cml0ZV9tbWQocGh5ZGV2LCBNRElPX01NRF9BTiwgTURJT19BTl9FRUVfQURW
-LCAwKTsNCj4gPiANCj4gPiBJcyBFRUUgYnJva2VuIG9uIHRoaXMgUEhZPyBPciBpcyB0aGlzIGp1
-c3QgdG8gZ2V0IGl0IGludG8gYSBkZWZpbmVkDQo+ID4gc3RhdGU/DQo+IA0KPiBBcyBJIHNhaWQg
-aW4gY29tbWl0IG1lc3NhZ2UsIHRoZSBpbml0aWFsaXphdGlvbiAoaW5jbHVkaW5nIEVFRSkgaXMN
-Cj4gZnJvbSB0aGUgdmVuZG9yIGRyaXZlci4NCj4gSSBoYXZlIGFsc28gdGVzdGVkIGl0IHdpdGgg
-RUVFIGVuYWJsZWQgYnkgZGVmYXVsdCBvbiBvbmUgb2YgbXkgQVBzLA0KPiBhbmQgZ290IG9jY2Fz
-aW9uYWwgbGluayBkcm9wcy4NCj4gDQoNCkVFRSBvZiB0aGUgMTAteWVhci1vbGQgTVQ3NTMwIGlu
-dGVybmFsIGdlcGh5IGhhcyBtYW55IElPVCBwcm9ibGVtcywgc28NCml0IGlzIHJlY29tbWVuZGVk
-IHRvIGRpc2FibGUgaXRzIEVFRS4NCkVFRSBvZiB0aGUgTVQ3NTMxIGludGVybmFsIGdlcGh5IGhh
-cyBiZWVuIHVwZGF0ZWQsIGJ1dCBpdCBpcyBub3QgeWV0DQp3aWRlbHkgdXNlZC4NClRoZXJlZm9y
-ZSwgRUVFIGlzIGRpc2FibGVkIGluIHZlbmRvciBkcml2ZXIuDQoNCkxhbmRlbg0KPiA+IE90aGVy
-d2lzZQ0KPiA+IA0KPiA+IFJldmlld2VkLWJ5OiBBbmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+
-DQo+ID4gDQo+ID4gICAgIEFuZHJldw0K
+On Thu, May 20, 2021 at 04:26:28AM +0000, Song Liu wrote:
+> 
+> 
+> > On May 17, 2021, at 3:53 PM, Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
+> > 
+> > struct match_ops defines polymorphic interface for matches. A match
+> > consists of pointers to struct match_ops and struct xt_entry_match which
+> > contains a payload for the match's type.
+> > 
+> > All match_ops are kept in map match_ops_map by their name.
+> > 
+> > Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
+> > 
+> [...]
+> 
+> > diff --git a/net/bpfilter/match-ops-map.h b/net/bpfilter/match-ops-map.h
+> > new file mode 100644
+> > index 000000000000..0ff57f2d8da8
+> > --- /dev/null
+> > +++ b/net/bpfilter/match-ops-map.h
+> > @@ -0,0 +1,48 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*
+> > + * Copyright (c) 2021 Telegram FZ-LLC
+> > + */
+> > +
+> > +#ifndef NET_BPFILTER_MATCH_OPS_MAP_H
+> > +#define NET_BPFILTER_MATCH_OPS_MAP_H
+> > +
+> > +#include "map-common.h"
+> > +
+> > +#include <linux/err.h>
+> > +
+> > +#include <errno.h>
+> > +#include <string.h>
+> > +
+> > +#include "match.h"
+> > +
+> > +struct match_ops_map {
+> > +	struct hsearch_data index;
+> > +};
+> 
+> Do we plan to extend match_ops_map? Otherwise, we can just use 
+> hsearch_data in struct context. 
 
+Agreed.
+
+> 
+> > +
+> > +static inline int create_match_ops_map(struct match_ops_map *map, size_t nelem)
+> > +{
+> > +	return create_map(&map->index, nelem);
+> > +}
+> > +
+> > +static inline const struct match_ops *match_ops_map_find(struct match_ops_map *map,
+> > +							 const char *name)
+> > +{
+> > +	const size_t namelen = strnlen(name, BPFILTER_EXTENSION_MAXNAMELEN);
+> > +
+> > +	if (namelen < BPFILTER_EXTENSION_MAXNAMELEN)
+> > +		return map_find(&map->index, name);
+> > +
+> > +	return ERR_PTR(-EINVAL);
+> > +}
+> > +
+> > +static inline int match_ops_map_insert(struct match_ops_map *map, const struct match_ops *match_ops)
+> > +{
+> > +	return map_insert(&map->index, match_ops->name, (void *)match_ops);
+> > +}
+> > +
+> > +static inline void free_match_ops_map(struct match_ops_map *map)
+> > +{
+> > +	free_map(&map->index);
+> > +}
+> > +
+> > +#endif // NET_BPFILTER_MATCT_OPS_MAP_H
+> > diff --git a/net/bpfilter/match.c b/net/bpfilter/match.c
+> > new file mode 100644
+> > index 000000000000..aeca1b93cd2d
+> > --- /dev/null
+> > +++ b/net/bpfilter/match.c
+> > @@ -0,0 +1,73 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * Copyright (c) 2021 Telegram FZ-LLC
+> > + */
+> > +
+> > +#define _GNU_SOURCE
+> > +
+> > +#include "match.h"
+> > +
+> > +#include <linux/err.h>
+> > +#include <linux/netfilter/xt_tcpudp.h>
+> 
+> Besides xt_ filters, do we plan to support others? If so, we probably 
+> want separate files for each of them. 
+
+Do you mean nft filters?
+They use nfilter API and currently we cannot hook into it - so
+probably eventually.
+
+
+> 
+> > +
+> > +#include <errno.h>
+> > +#include <string.h>
+> > +
+> > +#include "bflog.h"
+> > +#include "context.h"
+> > +#include "match-ops-map.h"
+> > +
+> > +#define BPFILTER_ALIGN(__X) __ALIGN_KERNEL(__X, __alignof__(__u64))
+> > +#define MATCH_SIZE(type) (sizeof(struct bpfilter_ipt_match) + BPFILTER_ALIGN(sizeof(type)))
+> > +
+> > +static int udp_match_check(struct context *ctx, const struct bpfilter_ipt_match *ipt_match)
+> > +{
+> > +	const struct xt_udp *udp;
+> > +
+> > +	udp = (const struct xt_udp *)&ipt_match->data;
+> > +
+> > +	if (udp->invflags & XT_UDP_INV_MASK) {
+> > +		BFLOG_DEBUG(ctx, "cannot check match 'udp': invalid flags\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +const struct match_ops udp_match_ops = { .name = "udp",
+> 
+> And maybe we should name this one "xt_udp"? 
+
+Agreed.
+
+
+> 
+> > +					 .size = MATCH_SIZE(struct xt_udp),
+> > +					 .revision = 0,
+> > +					 .check = udp_match_check };
+> > +
+> > +int init_match(struct context *ctx, const struct bpfilter_ipt_match *ipt_match, struct match *match)
+> > +{
+> > +	const size_t maxlen = sizeof(ipt_match->u.user.name);
+> > +	const struct match_ops *found;
+> > +	int err;
+> > +
+> > +	if (strnlen(ipt_match->u.user.name, maxlen) == maxlen) {
+> > +		BFLOG_DEBUG(ctx, "cannot init match: too long match name\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	found = match_ops_map_find(&ctx->match_ops_map, ipt_match->u.user.name);
+> > +	if (IS_ERR(found)) {
+> > +		BFLOG_DEBUG(ctx, "cannot find match by name: '%s'\n", ipt_match->u.user.name);
+> > +		return PTR_ERR(found);
+> > +	}
+> > +
+> > +	if (found->size != ipt_match->u.match_size ||
+> > +	    found->revision != ipt_match->u.user.revision) {
+> > +		BFLOG_DEBUG(ctx, "invalid match: '%s'\n", ipt_match->u.user.name);
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	err = found->check(ctx, ipt_match);
+> > +	if (err)
+> > +		return err;
+> > +
+> > +	match->match_ops = found;
+> > +	match->ipt_match = ipt_match;
+> > +
+> > +	return 0;
+> > +}
+> > diff --git a/net/bpfilter/match.h b/net/bpfilter/match.h
+> > new file mode 100644
+> > index 000000000000..79b7c87016d4
+> > --- /dev/null
+> > +++ b/net/bpfilter/match.h
+> > @@ -0,0 +1,34 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*
+> > + * Copyright (c) 2021 Telegram FZ-LLC
+> > + */
+> > +
+> > +#ifndef NET_BPFILTER_MATCH_H
+> > +#define NET_BPFILTER_MATCH_H
+> > +
+> > +#include "../../include/uapi/linux/bpfilter.h"
+> > +
+> > +#include <stdint.h>
+> > +
+> > +struct bpfilter_ipt_match;
+> > +struct context;
+> > +struct match_ops_map;
+> > +
+> > +struct match_ops {
+> > +	char name[BPFILTER_EXTENSION_MAXNAMELEN];
+> 
+> BPFILTER_EXTENSION_MAXNAMELEN is 29, so "size" below is mis-aligned. I guess
+> we can swap size and revision. 
+
+Agreed.
+
+> 
+> > +	uint16_t size;
+> > +	uint8_t revision;
+> > +	int (*check)(struct context *ctx, const struct bpfilter_ipt_match *ipt_match);
+> > +};
+> > +
+> > +extern const struct match_ops udp_match_ops;
+> > +
+> > +struct match {
+> > +	const struct match_ops *match_ops;
+> > +	const struct bpfilter_ipt_match *ipt_match;
+> > +};
+> 
+> [...]
+> 
+
+-- 
+
+Dmitrii Banshchikov
