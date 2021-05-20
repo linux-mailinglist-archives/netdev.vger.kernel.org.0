@@ -2,137 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF9C938BA6B
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 01:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DECA38BA75
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 01:39:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234174AbhETXgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 19:36:38 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13330 "EHLO
+        id S234353AbhETXkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 19:40:53 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:64650 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234076AbhETXgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 19:36:37 -0400
+        by vger.kernel.org with ESMTP id S234066AbhETXkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 19:40:52 -0400
 Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14KNTWUD025163;
-        Thu, 20 May 2021 16:34:51 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=1QQzZhM+n6Cet4327dMUy/DwT/NWyy/WdIJ8Et3+kcc=;
- b=HCGN9vFVC212AGNSQq7lGoFzCVKMqvls7dD3NxZVwNmmC7kV7736n3ddr7ysCl06Jy+V
- EwWvOnMzHBkuZuViPcTV8XbA30yBUMB+9bbbUofCm0CobYpiAQ4eyKVCpoTjKT26EDE5
- OKcYuus65feJZvgSUxoYa4E8zQuRuhS4oVA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 38n6p31e98-1
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14KNTWw5025130;
+        Thu, 20 May 2021 16:39:12 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=2FC1Xwxqn9fA3zldUusNtb6TCrkpgqyvzx2lY3Z/Ou4=;
+ b=HeVPQUpa+fw5tpRUJOgdBbz9RnM2dvt+agNxDdUNnpO34JN+bdPhkEfRWw4ltqy8lhr6
+ TmiOft7eN0MepWr1ZWyjYIkLB9fxDkIwdOOeVEynAWgd3GI9yVjfAji/c5141XCJ6VDL
+ uojQr0ic8QFGLj6w3EbAJE+INyztLQ40ABQ= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 38n6p31ev1-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 20 May 2021 16:34:50 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+        Thu, 20 May 2021 16:39:12 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 20 May 2021 16:34:49 -0700
+ 15.1.2176.2; Thu, 20 May 2021 16:39:11 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NoEITGKk0upPEfQ2YsUK4RE21jtHLa6T5WESsYyAFzVdWxeGV1qPGV3ms7U7xvWjt+Gb0BMD2uF4b4C1vZWpJxX2rGgriuWUc+Jut9U2wy9NopGadIsK7jZAqzY860Hs2sioxZOZWU+Gt0O0Orb8ywm/eZ9wLhgqAhKU2ttx+fgVuggVoc/gKO0cqJyoPS5QHgdReLCSGWqv3l9TXyLJxTS9kQSGA0k1wWWqsjioJnKnJ0Nx2jTP0aQXFl8XD9jfkEpWe8/9lPYTLyldApK5zHUq0V+r0Hd4yz1oulq7qWd1CSrB7lJyilGH39xJTucme+qtXpJC7HhW+IioEHckMw==
+ b=GUq5ptJBR/LpLeGKF4Mu1oPVMt0m9s8qpYGsrWci7BGytM6/IGF0k3hRUgSBEE9X6po53O2eoJ/mQaJEN/d/yt2ZTTxgKSv1om9WPAyVcYmM7mRRrqA39+0I5FEb3T3PikHgVddotm26POpzoJZYjDI1fC6UT/8ZJo9XiZgsqPqHzwK1D7XzeIFLplgCpqb24GyvPkR59DRe+xe1tH9EYXWiQaGyOkOaZtZMZ6tDQPmkVUvG9b/lmr+OTWwcw/AzGbBOjbWZj4XY3sGayoDYZDIRk+9AXyA7fv6ZjRrCYBIervbwlVh3jev6mJudBgplA7HDB496URkhJwOWzpHnaA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1QQzZhM+n6Cet4327dMUy/DwT/NWyy/WdIJ8Et3+kcc=;
- b=oSfUH9NRZX5VBwMS2n5iFGLaqzyWALN/S4neao2rqyhhga4adBAUMnuE9pfWo8HuiuAODN5dFg4SKbkCfEZx1ftyZ7o4E0KkclCO9W4aV8CtMxoMNKnBbYfrS6NgyD2Ul3Esu9lU1LGgNJ8MWfd5RZI8D98zDcmmyoZdm54Za+3M7ACalbXsUDthkkGBeg3cgQqRV1QhEfaMhc/OLx91quJXRqUeTlA4LQBwYqNI72B+YmuLa1JQiD0ON/c+cvQtbtm6JG13j+A7CZbeJzV5jVmBdGEQL6Yn85POV6TWIz/ufebylEQCVkyeATJFV3Kg43XnYNw7gJhOUJZT/tB52w==
+ bh=2FC1Xwxqn9fA3zldUusNtb6TCrkpgqyvzx2lY3Z/Ou4=;
+ b=H9i+FX7/tLw6NnSpOXPt1wBgUs9+09/ndOCVC1NuQwMiI9Xxu+c4nMaPMcbA4p4QtlcDhf8r3ux2RxcaQUHRAn6w9oAwKY6yliVrtoO9QYHR5RJHiWYQAZEVV5Vh5JpKWgO05ixH1uKzYU5nH3lpdmUgCUs8c7rGb/UqTfv7k2ygTEWAj4fa2NxHoQgh59OamKH13nLtgFqjeHcD3zAhvjWwPdkwPdRJRAdgZsXJZ0qPYbWmUifUvLhcQUMufuNzGNU6o3OHoyZFYha+jnEG6lP8BbjkWZZeBrySLNP7GDfdt3kB28hIhkANTkCFuZimbpi2EmoPMqjiSD9BXOpuQw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB2727.namprd15.prod.outlook.com (2603:10b6:a03:15b::19) with
+Authentication-Results: amazon.co.jp; dkim=none (message not signed)
+ header.d=none;amazon.co.jp; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2583.namprd15.prod.outlook.com (2603:10b6:a03:156::25) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.26; Thu, 20 May
- 2021 23:34:47 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::38d3:cc71:bca8:dd2a]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::38d3:cc71:bca8:dd2a%5]) with mapi id 15.20.4129.033; Thu, 20 May 2021
- 23:34:47 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Pavel Begunkov <asml.silence@gmail.com>
-CC:     "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Horst Schirmeier <horst.schirmeier@tu-dortmund.de>,
-        "Franz-B . Tuneke" <franz-bernhard.tuneke@tu-dortmund.de>,
-        Christian Dietrich <stettberger@dokucode.de>
-Subject: Re: [PATCH 12/23] bpf: add IOURING program type
-Thread-Topic: [PATCH 12/23] bpf: add IOURING program type
-Thread-Index: AQHXTLk7OfFP8xaRkUu1T84OwY8azqrtB/uA
-Date:   Thu, 20 May 2021 23:34:47 +0000
-Message-ID: <5F31E9DE-9DB5-4FEB-AFAD-685F71093105@fb.com>
-References: <cover.1621424513.git.asml.silence@gmail.com>
- <3883680d4638504e3dcf79bf1c15d548a9cb7f3e.1621424513.git.asml.silence@gmail.com>
-In-Reply-To: <3883680d4638504e3dcf79bf1c15d548a9cb7f3e.1621424513.git.asml.silence@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3654.80.0.2.43)
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:fa93]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 506d6bb5-5ca8-4bd6-f986-08d91be7db34
-x-ms-traffictypediagnostic: BYAPR15MB2727:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB2727F133F5229433DE845CB6B32A9@BYAPR15MB2727.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DXY4ytkeJpxOuMFoY2aTEF0TT3SElPjF0uJdmdwsia5sQy2vxpoidKvPHbh2Q7k0kAwtkhLWolGBXTCPsLf7r3INOXbriYpQeLVB0b01lMRRPQNe4p5NSHj6DN+vxuksQAzh2XlNhXJdg5pOhiwgPrs8O3pocSqq1nnLFSX4oktoQ1HIYbVUqdh71MMxE4JpbvWI+QXNWp6IHc6xBaMcpCUndfQr4e+eBdSX/+cbj0sz0XDxjLZuJidE/n4hQvk4zaS73m08vsz5C92d3XfO8ez9/uPU4M5UKOcm2suapkl6n4VNBb5A+ZguOxfCvsPHDGvcj+iAbCewt+fxG6vQu0VvnZWBKuw53Nm1yAXBt9WjFs6Kud/3iCo+UVOAgOhgVduR7D4kBuvOW1nmPe2ezT7hWXVEWniY+tEtzOK3YS/W7Ph5NIj1skZR6DqBVP1T4QC7X/IHjay6eh/fRGh2HcWNejhaIgVIIuYE00weY/XRLKRdI2yT8Oy2Eu/9nEfbu7AU5HFDqr1Gb5/4DDud/phrRdK4EVyNx3/iONHQwl/egYdr/2QgGRWpvwYE8zYpi0ymwmsCMPmfCeoK8+4lkXESBojgf6NpsUEcWnZm+2UYnjIttenn5d2gHbWdoyuH+eWjfauLII7lp/BO2VjvubPDq69XlnB74JCCv8AmpIw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(136003)(396003)(39860400002)(376002)(316002)(6512007)(76116006)(91956017)(5660300002)(83380400001)(71200400001)(2616005)(186003)(478600001)(66556008)(86362001)(7416002)(54906003)(122000001)(38100700002)(6506007)(53546011)(36756003)(66946007)(33656002)(2906002)(6916009)(66476007)(4326008)(8676002)(64756008)(66446008)(8936002)(6486002)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?UHVr2CRy5VwNfrQ4BNODacz4ytnZnFhCNQihHKhDKTT89yAoIzvIua8zNLOY?=
- =?us-ascii?Q?wnEqkaYh7r+FetzDD/qyef1OoufCeO7MqKyQJAc3tO0/68CDnosyV/qgfcsy?=
- =?us-ascii?Q?JBvRLYuCNk2GYGnjXAhECDUoC60GGqg6c0n67F7Yyka+FEIj39D7xP+irjMT?=
- =?us-ascii?Q?upOmPgHwfspWmg1Tnb8ZgXcZrz4uvigerjgUjkbbrr4dJNQDUunxCjyaeQP7?=
- =?us-ascii?Q?YhAsPUJVQOzEJHh3IQousVXkXT954m2AwO/PN/ZvqeOyh9T3NBED6XEHPLEK?=
- =?us-ascii?Q?IgWE6kxScpkV1VqFn0oB7X5KTtZcZW/bL60vGJFiHhoX/90MYoP1E4A1p4Ek?=
- =?us-ascii?Q?P7O0e/JVeS1rluThDhD5hlLooAp0QWRunE6+hWDpU5V/pRXfn4tndqx/dZ7w?=
- =?us-ascii?Q?qU+hxQ5bSxTcmjk5je3YowOVJ/O48WIRSv/DI1TT3ZKyUN5KSnWmnEzBZ3i8?=
- =?us-ascii?Q?7yZKEfI7r41i0IX9QzJmnQF3Pw5HnVQ6Z8s0ID238MpsZDchldNqwXNoLAMS?=
- =?us-ascii?Q?GTgegwlrdBy/wl2CSqjb/PMY/yh9JF+704+/LZSg4SnnNP9uVXAxQr/bmbmA?=
- =?us-ascii?Q?CYotsl2hJAUoRU+q/Yq4OD9E5pLLQbLQxR/aewvXpMos+PBD9ttpCaGhBMrG?=
- =?us-ascii?Q?jWnOVKMLY2BfAG9NOnIqLZIFpjGHMOLMsl61HjywAdQsu+vOKFseyya3L8H2?=
- =?us-ascii?Q?UBgV2zFSsQ5z9yFiB78ca51shpg3PjMbKc4aCYX7nPKBj5JHdGg5KbEDxGNX?=
- =?us-ascii?Q?27QYYh2srJAEQ42UV58UiLB9VtYBS52Ndc6izfIScHW4ZKPWAM1LKppxzLwM?=
- =?us-ascii?Q?+5jkHilUYRnqX8wxEq6THXbFPe57sJUV1OyJ7qmpOPHuTmzltdU/P4Q9nm8C?=
- =?us-ascii?Q?MaLzipQfeh6JQO/V0dogLmC1QfXkxeV8XfX4mAPONCTLNrWfFrocVRmxxFVA?=
- =?us-ascii?Q?PLLzeeVxVAZoS5cOpldc5ysCZHWyZCEFWFpLRuvP3SVsUKbc8xfaPFmF0yBg?=
- =?us-ascii?Q?fALoCQdxJWqLT8UlUvVGdB50KVwWjKAUEp53qvtYoxmK7TQdA4vW8ok3dyk2?=
- =?us-ascii?Q?gsGxH62gkzwEQmlr70T/+Zdvr2l9UafMaHuVW25hkhZLsFw9YcbmNm7OikM/?=
- =?us-ascii?Q?1JKRbubkDvvfM0CR9ErvanbTedwVuPGoAFWfyLvfT2rkErWgAibcNlIAxstj?=
- =?us-ascii?Q?ZWoFWORKBmhhrmfaQPfUZh5glhPuCSRHm9N9u4tDyBD6pgikc0yUx3RNiDpj?=
- =?us-ascii?Q?AHpQ9A3VIdCCc66677PuW4RWOTvjnLuEq/CIA9HFpt3uy7cU6qWHyYrosEN9?=
- =?us-ascii?Q?ohPNeQJZTRzyl4ssuLEOF1BnG5noIrvSpwqgV+FasI35TmoJCrRQamvEKhmD?=
- =?us-ascii?Q?3KwYPJM=3D?=
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.25; Thu, 20 May
+ 2021 23:39:09 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::718a:4142:4c92:732f]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::718a:4142:4c92:732f%6]) with mapi id 15.20.4150.023; Thu, 20 May 2021
+ 23:39:09 +0000
+Date:   Thu, 20 May 2021 16:39:06 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
+        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v6 bpf-next 03/11] tcp: Keep TCP_CLOSE sockets in the
+ reuseport group.
+Message-ID: <20210520233906.c7yphwjrstqmhfk6@kafai-mbp.dhcp.thefacebook.com>
+References: <20210520212201.zq3ozwx3vrobd2ua@kafai-mbp.dhcp.thefacebook.com>
+ <20210520225448.14157-1-kuniyu@amazon.co.jp>
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <19EF86D8FE51084DB877AF232177FA95@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+In-Reply-To: <20210520225448.14157-1-kuniyu@amazon.co.jp>
+X-Originating-IP: [2620:10d:c090:400::5:616c]
+X-ClientProxiedBy: MW4PR04CA0158.namprd04.prod.outlook.com
+ (2603:10b6:303:85::13) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:616c) by MW4PR04CA0158.namprd04.prod.outlook.com (2603:10b6:303:85::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23 via Frontend Transport; Thu, 20 May 2021 23:39:08 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 60849609-4c09-467d-6c20-08d91be87720
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2583:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2583A1664BDD581183D27DB3D52A9@BYAPR15MB2583.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Soo0CIm9XKQcXJnFRwQENF4o5qXDVuWWwTv6d/4ZrH0d84E89fGG+EU0L3GAavaPZG1JTXcd/cpmMi6R7A48AMpwtDWY5WKJinR8+AU6ewfpoNa9aT1HOgHNr34imeMikWYJqSlVNQcjhDBf6wXZb1URWRyI/v7k3hAVVWznp1xaM8rgUpnrIwPAp1zEIFVGasJxaZLe4qBU4Pbt7MxN1OA2mty5oErrqomqtYKg/bbo1WLKM7y0MItt2RZAsg8G/8LTVEF2lTLdlzVJJxjdxqsLThvgpuf2MLXY4z6wmzDpr1mjEedzdJ0RBG2FgWaXgWlf5BRVpZnP6OKqDT5yJf/+1OevRbPhbz1TqBRxk7APDrR1CsdBGwJyE4sFnzMUNENaHi12EI7Lg+ZZ2ptjtgFq1bphZAOyexhLEnhtgN7U05Du3tkqwr5mpQlISd/rYfayDUrDsWMegFbFgubqfPXRis7eyuO4MxTcGiiiYfD2UQzeB0Rn+uaQGzzFgCIfqYMla0Zb4uV8eXifcv9SX1Y5Erm406YPpX+GI6shQ4eKWmthb77KwTTtPr1Tc0JYAnKkZ8a2aT9wPSYEYDK5H6XbrIS6JpL6Pp8JmKLJk/w=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(136003)(376002)(39850400004)(366004)(66946007)(6916009)(66556008)(186003)(16526019)(4326008)(52116002)(7696005)(66476007)(7416002)(316002)(8676002)(8936002)(2906002)(5660300002)(38100700002)(86362001)(83380400001)(55016002)(1076003)(478600001)(6506007)(9686003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?o8X+n7h9/hLtLYbRjJyLwDPJUv21Be/YYz/byqjWOb2727wijyS8alLY8qin?=
+ =?us-ascii?Q?8CzElX6N8nb9ix1P7cDvHq/KMtp/WxVu56EwDHEVa9KTdfLoPaOaqnmbA6n3?=
+ =?us-ascii?Q?PHeOvM47t62Wb3yoaNgFn1SmZhzzVsvD9I7IkXcZKGUP2VYpA3pVNJQE78gD?=
+ =?us-ascii?Q?biRzqHsakJr5i62VJ5PDCyYdT54teszVslD134ozqS/oRWmtcoicencIrerM?=
+ =?us-ascii?Q?hNFREzFzZwDuCEAGzr5EIr4QeWwrC2T9T1InA1mBJilCLPS7tRXZFw7Ed+AW?=
+ =?us-ascii?Q?7k1m6TLcBzwlP5+8PY8dwTbah7Oaia9hlT340xRgvc3UYgC8MDNjO9r+8SHt?=
+ =?us-ascii?Q?Uw2euIqdYwLXP776WUUIF5HzWgW6unFzIkpeG1T+IG4CmoHj3+SDpT5YKtIb?=
+ =?us-ascii?Q?Mu2Mm/xOgiK2C6+Lipok4PnnIQVIHpkPv7nVxPXz950eNUtRIXIB7KEHG9xh?=
+ =?us-ascii?Q?AZKuzYLh1aiwW3nRsn0FEVDw/bNmqgUS4N9Ed8hr6nKrw7aVoAR37Y+5XMPo?=
+ =?us-ascii?Q?PYNmS75Oz2alT21sJ/aZIf9DOwY9XB3IFTqwk46PDVCpYThzXWceFeXFc+Uo?=
+ =?us-ascii?Q?lJubcr3zVX8QnNkA+ZE92JPj8nkIft7NPoq6icsNxje3OwxM+t0xZg8qRABc?=
+ =?us-ascii?Q?9Q/p9ar4N7y4do98CvYJuIN6ZQeQDbm4uMIXQI5GCYQeCOQId0CT0uyZZp52?=
+ =?us-ascii?Q?a1DK14UkqgyW3cJLdHIon03kDnPv9/GfoetSbdZkQ9EwcP5Ab6jeUqNfJcJm?=
+ =?us-ascii?Q?Zs3dXHf8H7vMrOovTyIiQrUeMwosaBw1eDzaJFp0ByUpAyNNFZ2qXBclEqRg?=
+ =?us-ascii?Q?6xrSAxZ3k21keAcCu/J32pHbJRhRduaLRCFvfwJ7QfZJ9/c7EtRXZbi1OeGB?=
+ =?us-ascii?Q?YVsbawc/WnlS1z+02krtpcH5TbSeDxnL4OoSAxPOjyoXyUGGoCQHFkK4f1TR?=
+ =?us-ascii?Q?AhUC59Nc1DDJG1GRJ3ZHfquqFrIXPsAhtMvcxf9ZOjwUWnsIAndv2T1zD+WJ?=
+ =?us-ascii?Q?IpukNbFjmzZDAU6jbepDgz/T3RkuNcpYAhUZTd4izNw4mYri1/mbKlSvIVL6?=
+ =?us-ascii?Q?WK1jIlEuKnRHdIrjcH7ReN1ZXFew4iI5Ed2iLg1d5J7maMmspkaIN5JwwR5/?=
+ =?us-ascii?Q?WiJCtNOEZNkB3qeLesSpM55hYF5WdrO8oIYgJGMMltRbSlO3eRg1OrY6Ux87?=
+ =?us-ascii?Q?jngYAScN/lmNvN3/4658V57EO5DSym9pbhzR0RfrhTFmMlI1J+5+VH4JYgoS?=
+ =?us-ascii?Q?mIL/QwTRTNq+XwRpfYfVFFV4uZtCOcCjS8vTyKGUQqHzaVSPzp6+txWxdhcE?=
+ =?us-ascii?Q?+8PHj47Fuf8qZd5f1qf8pksMZb0pNnuirrL0ropFab2sWQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 60849609-4c09-467d-6c20-08d91be87720
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 506d6bb5-5ca8-4bd6-f986-08d91be7db34
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 May 2021 23:34:47.7054
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2021 23:39:09.6510
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: j2T2rL9d13TdMQJxrZe8+zcp9pcJ0WlaDd+RsjYqjTJ6mids8MQkuCocqj/ojVR5zG8JKKwgQ+2OuPvIe0r9NA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2727
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HDB67MVhDXALUGb5NXPjeCM7k/gHkb6Pn97Yo1K1bjJpnAfaTi1KIuh4foR4JMkS
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2583
 X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: -cSKgsBX2XDQ5aL2_K04bXuqA5q0miyl
-X-Proofpoint-GUID: -cSKgsBX2XDQ5aL2_K04bXuqA5q0miyl
+X-Proofpoint-ORIG-GUID: 9nFXwtgYoprv2_n4My1q_hOujZQHBkik
+X-Proofpoint-GUID: 9nFXwtgYoprv2_n4My1q_hOujZQHBkik
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
  definitions=2021-05-20_07:2021-05-20,2021-05-20 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
@@ -145,128 +130,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> On May 19, 2021, at 7:13 AM, Pavel Begunkov <asml.silence@gmail.com> wrot=
-e:
->=20
-> Draft a new program type BPF_PROG_TYPE_IOURING, which will be used by
-> io_uring to execute BPF-based requests.
->=20
-> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-> ---
-> fs/io_uring.c             | 21 +++++++++++++++++++++
-> include/linux/bpf_types.h |  2 ++
-> include/uapi/linux/bpf.h  |  1 +
-> kernel/bpf/syscall.c      |  1 +
-> kernel/bpf/verifier.c     |  5 ++++-
-> 5 files changed, 29 insertions(+), 1 deletion(-)
->=20
-> diff --git a/fs/io_uring.c b/fs/io_uring.c
-> index 1a4c9e513ac9..882b16b5e5eb 100644
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@ -10201,6 +10201,27 @@ static int __io_uring_register(struct io_ring_ct=
-x *ctx, unsigned opcode,
-> 	return ret;
-> }
->=20
-> +static const struct bpf_func_proto *
-> +io_bpf_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> +{
-> +	return bpf_base_func_proto(func_id);
-> +}
-> +
-> +static bool io_bpf_is_valid_access(int off, int size,
-> +				   enum bpf_access_type type,
-> +				   const struct bpf_prog *prog,
-> +				   struct bpf_insn_access_aux *info)
-> +{
-> +	return false;
-> +}
-> +
-> +const struct bpf_prog_ops bpf_io_uring_prog_ops =3D {};
-> +
-> +const struct bpf_verifier_ops bpf_io_uring_verifier_ops =3D {
-> +	.get_func_proto		=3D io_bpf_func_proto,
-> +	.is_valid_access	=3D io_bpf_is_valid_access,
-> +};
-> +
-> SYSCALL_DEFINE4(io_uring_register, unsigned int, fd, unsigned int, opcode=
-,
-> 		void __user *, arg, unsigned int, nr_args)
+On Fri, May 21, 2021 at 07:54:48AM +0900, Kuniyuki Iwashima wrote:
+> From:   Martin KaFai Lau <kafai@fb.com>
+> Date:   Thu, 20 May 2021 14:22:01 -0700
+> > On Thu, May 20, 2021 at 05:51:17PM +0900, Kuniyuki Iwashima wrote:
+> > > From:   Martin KaFai Lau <kafai@fb.com>
+> > > Date:   Wed, 19 May 2021 23:26:48 -0700
+> > > > On Mon, May 17, 2021 at 09:22:50AM +0900, Kuniyuki Iwashima wrote:
+> > > > 
+> > > > > +static int reuseport_resurrect(struct sock *sk, struct sock_reuseport *old_reuse,
+> > > > > +			       struct sock_reuseport *reuse, bool bind_inany)
+> > > > > +{
+> > > > > +	if (old_reuse == reuse) {
+> > > > > +		/* If sk was in the same reuseport group, just pop sk out of
+> > > > > +		 * the closed section and push sk into the listening section.
+> > > > > +		 */
+> > > > > +		__reuseport_detach_closed_sock(sk, old_reuse);
+> > > > > +		__reuseport_add_sock(sk, old_reuse);
+> > > > > +		return 0;
+> > > > > +	}
+> > > > > +
+> > > > > +	if (!reuse) {
+> > > > > +		/* In bind()/listen() path, we cannot carry over the eBPF prog
+> > > > > +		 * for the shutdown()ed socket. In setsockopt() path, we should
+> > > > > +		 * not change the eBPF prog of listening sockets by attaching a
+> > > > > +		 * prog to the shutdown()ed socket. Thus, we will allocate a new
+> > > > > +		 * reuseport group and detach sk from the old group.
+> > > > > +		 */
+> > > > For the reuseport_attach_prog() path, I think it needs to consider
+> > > > the reuse->num_closed_socks != 0 case also and that should belong
+> > > > to the resurrect case.  For example, when
+> > > > sk_unhashed(sk) but sk->sk_reuseport == 0.
+> > > 
+> > > In the path, reuseport_resurrect() is called from reuseport_alloc() only
+> > > if reuse->num_closed_socks != 0.
+> > > 
+> > > 
+> > > > @@ -92,6 +117,14 @@ int reuseport_alloc(struct sock *sk, bool bind_inany)
+> > > >  	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
+> > > >  					  lockdep_is_held(&reuseport_lock));
+> > > >  	if (reuse) {
+> > > > +		if (reuse->num_closed_socks) {
+> > > 
+> > > But, should this be
+> > > 
+> > > 	if (sk->sk_state == TCP_CLOSE && reuse->num_closed_socks)
+> > > 
+> > > because we need not allocate a new group when we attach a bpf prog to
+> > > listeners?
+> > The reuseport_alloc() is fine as is.  No need to change.
+> 
+> I missed sk_unhashed(sk) prevents calling reuseport_alloc()
+> if sk_state == TCP_LISTEN. I'll keep it as is.
+> 
+> 
+> > 
+> > I should have copied reuseport_attach_prog() in the last reply and
+> > commented there instead.
+> > 
+> > I meant reuseport_attach_prog() needs a change.  In reuseport_attach_prog(),
+> > iiuc, currently passing the "else if (!rcu_access_pointer(sk->sk_reuseport_cb))"
+> > check implies the sk was (and still is) hashed with sk_reuseport enabled
+> > because the current behavior would have set sk_reuseport_cb to NULL during
+> > unhash but it is no longer true now.  For example, this will break:
+> > 
+> > 1. shutdown(lsk); /* lsk was bound with sk_reuseport enabled */
+> > 2. setsockopt(lsk, ..., SO_REUSEPORT, &zero, ...); /* disable sk_reuseport */
+> > 3. setsockopt(lsk, ..., SO_ATTACH_REUSEPORT_EBPF, &prog_fd, ...);
+> >    ^---- /* This will work now because sk_reuseport_cb is not NULL.
+> >           * However, it shouldn't be allowed.
+> > 	  */
+> 
+> Thank you for explanation, I understood the case.
+> 
+> Exactly, I've confirmed that the case succeeded in the setsockopt() and I
+> could change the active listeners' prog via a shutdowned socket.
+> 
+> 
+> > 
+> > I am thinking something like this (uncompiled code):
+> > 
+> > int reuseport_attach_prog(struct sock *sk, struct bpf_prog *prog)
+> > {
+> > 	struct sock_reuseport *reuse;
+> > 	struct bpf_prog *old_prog;
+> > 
+> > 	if (sk_unhashed(sk)) {
+> > 		int err;
+> > 
+> > 		if (!sk->sk_reuseport)
+> > 			return -EINVAL;
+> > 
+> > 		err = reuseport_alloc(sk, false);
+> > 		if (err)
+> > 			return err;
+> > 	} else if (!rcu_access_pointer(sk->sk_reuseport_cb)) {
+> > 		/* The socket wasn't bound with SO_REUSEPORT */
+> > 		return -EINVAL;
+> > 	}
+> > 
+> > 	/* ... */
+> > }
+> > 
+> > WDYT?
+> 
+> I tested this change worked fine. I think this change should be added in
+> reuseport_detach_prog() also.
+> 
+> ---8<---
+> int reuseport_detach_prog(struct sock *sk)
 > {
-> diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-> index 99f7fd657d87..d0b7954887bd 100644
-> --- a/include/linux/bpf_types.h
-> +++ b/include/linux/bpf_types.h
-> @@ -77,6 +77,8 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_LSM, lsm,
-> 	       void *, void *)
-> #endif /* CONFIG_BPF_LSM */
-> #endif
-> +BPF_PROG_TYPE(BPF_PROG_TYPE_IOURING, bpf_io_uring,
-> +	      void *, void *)
->=20
-> BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY, array_map_ops)
-> BPF_MAP_TYPE(BPF_MAP_TYPE_PERCPU_ARRAY, percpu_array_map_ops)
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 4ba4ef0ff63a..de544f0fbeef 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -206,6 +206,7 @@ enum bpf_prog_type {
-> 	BPF_PROG_TYPE_EXT,
-> 	BPF_PROG_TYPE_LSM,
-> 	BPF_PROG_TYPE_SK_LOOKUP,
-> +	BPF_PROG_TYPE_IOURING,
-> };
->=20
-> enum bpf_attach_type {
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 250503482cda..6ef7a26f4dc3 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2041,6 +2041,7 @@ static bool is_net_admin_prog_type(enum bpf_prog_ty=
-pe prog_type)
-> 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
-> 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
-> 	case BPF_PROG_TYPE_SOCK_OPS:
-> +	case BPF_PROG_TYPE_IOURING:
-> 	case BPF_PROG_TYPE_EXT: /* extends any prog */
-> 		return true;
-> 	case BPF_PROG_TYPE_CGROUP_SKB:
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 0399ac092b36..2a53f44618a7 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -8558,6 +8558,9 @@ static int check_return_code(struct bpf_verifier_en=
-v *env)
-> 	case BPF_PROG_TYPE_SK_LOOKUP:
-> 		range =3D tnum_range(SK_DROP, SK_PASS);
-> 		break;
-> +	case BPF_PROG_TYPE_IOURING:
-> +		range =3D tnum_const(0);
-> +		break;
-> 	case BPF_PROG_TYPE_EXT:
-> 		/* freplace program can return anything as its return value
-> 		 * depends on the to-be-replaced kernel func or bpf program.
-> @@ -12560,7 +12563,7 @@ static int check_attach_btf_id(struct bpf_verifie=
-r_env *env)
-> 	u64 key;
->=20
-> 	if (prog->aux->sleepable && prog->type !=3D BPF_PROG_TYPE_TRACING &&
-> -	    prog->type !=3D BPF_PROG_TYPE_LSM) {
-> +	    prog->type !=3D BPF_PROG_TYPE_LSM && prog->type !=3D BPF_PROG_TYPE_=
-IOURING) {
+>         struct sock_reuseport *reuse;
+>         struct bpf_prog *old_prog;
+> 
+>         if (!rcu_access_pointer(sk->sk_reuseport_cb))
+> 		return sk->sk_reuseport ? -ENOENT : -EINVAL;
+> ---8<---
+Right, a quick thought is something like this for detach:
 
-Is IOURING program sleepable? If so, please highlight that in the commit lo=
-g=20
-and update the warning below.=20
+	spin_lock_bh(&reuseport_lock);
+	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
+					  lockdep_is_held(&reuseport_lock));
+	if (sk_unhashed(sk) && reuse->num_closed_socks) {
+		spin_unlock_bh(&reuseport_lock);
+		return -ENOENT;
+	}
 
-> 		verbose(env, "Only fentry/fexit/fmod_ret and lsm programs can be sleepa=
-ble\n");
-> 		return -EINVAL;
-> 	}
-> --=20
-> 2.31.1
->=20
+Although checking with reuseport_sock_index() will also work,
+the above probably is simpler and faster?
 
+> 
+> 
+> Another option is to add the check in sock_setsockopt():
+> SO_ATTACH_REUSEPORT_[CE]BPF, SO_DETACH_REUSEPORT_BPF.
+> 
+> Which do you think is better ?
+I think it is better to have this sock_reuseport specific bits
+staying in sock_reuseport.c.
