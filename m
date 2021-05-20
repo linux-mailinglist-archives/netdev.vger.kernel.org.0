@@ -2,91 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FD0A38A333
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 11:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7F8138A314
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 11:47:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233552AbhETJuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 05:50:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47556 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233568AbhETJsF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 05:48:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EDB6D61469;
-        Thu, 20 May 2021 09:34:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1621503274;
-        bh=yxpHJJ/oK/1gEMlaFBhh+loU3+XnIaEbH6Bn0PlWoqg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffcyNybZvAXPgBuy6vxGjh1oSJasSQpJk88h0Fg3Db7J3rNvlk9qoD6J7kJiwjx/d
-         v9jJ1xB/ev5+CwE3Y0D16Fj+Op8D42CTPotTq5A3gPY09CPkeDlqGYm96GsllNojmk
-         IIBVTsTcS362MC9H9WlFZh+HmHTg8i8X3xGUGoKs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Karun Eagalapati <karun256@gmail.com>,
-        Martin Kepplinger <martink@posteo.de>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH 4.19 113/425] rsi: Use resume_noirq for SDIO
-Date:   Thu, 20 May 2021 11:18:02 +0200
-Message-Id: <20210520092135.161796297@linuxfoundation.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210520092131.308959589@linuxfoundation.org>
-References: <20210520092131.308959589@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S234170AbhETJsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 05:48:43 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4768 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233833AbhETJqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 05:46:39 -0400
+Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Fm4WY03tVzqVFT;
+        Thu, 20 May 2021 17:41:45 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 20 May 2021 17:45:15 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Thu, 20 May
+ 2021 17:45:15 +0800
+Subject: Re: [Linuxarm] [PATCH RFC v4 0/3] Some optimization for lockless
+ qdisc
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <a.fatoum@pengutronix.de>, <vladimir.oltean@nxp.com>
+CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
+        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
+        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
+        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
+        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
+        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
+        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
+        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
+        <alobakin@pm.me>
+References: <1621502873-62720-1-git-send-email-linyunsheng@huawei.com>
+Message-ID: <829cc4c1-46cc-c96c-47ba-438ae3534b94@huawei.com>
+Date:   Thu, 20 May 2021 17:45:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1621502873-62720-1-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme717-chm.china.huawei.com (10.1.199.113) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+On 2021/5/20 17:27, Yunsheng Lin wrote:
+> Patch 1: remove unnecessary seqcount operation.
+> Patch 2: implement TCQ_F_CAN_BYPASS.
+> Patch 3: remove qdisc->empty.
+> 
+> RFC v4: Use STATE_MISSED and STATE_DRAINING to indicate non-empty
+>         qdisc, and add patch 1 and 3.
 
-commit c434e5e48dc4e626364491455f97e2db0aa137b1 upstream.
+@Vladimir, Ahmad
+It would be good to run your testcase to see if there are any
+out of order for this version, because this version has used
+STATE_MISSED and STATE_DRAINING to indicate non-empty qdisc,
+thanks.
 
-The rsi_resume() does access the bus to enable interrupts on the RSI
-SDIO WiFi card, however when calling sdio_claim_host() in the resume
-path, it is possible the bus is already claimed and sdio_claim_host()
-spins indefinitelly. Enable the SDIO card interrupts in resume_noirq
-instead to prevent anything else from claiming the SDIO bus first.
+It is based on newest net branch with qdisc stuck patchset.
 
-Fixes: 20db07332736 ("rsi: sdio suspend and resume support")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
-Cc: Angus Ainslie <angus@akkea.ca>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Karun Eagalapati <karun256@gmail.com>
-Cc: Martin Kepplinger <martink@posteo.de>
-Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210327235932.175896-1-marex@denx.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/wireless/rsi/rsi_91x_sdio.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Some performance data as below:
 
---- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-@@ -1400,7 +1400,7 @@ static int rsi_restore(struct device *de
- }
- static const struct dev_pm_ops rsi_pm_ops = {
- 	.suspend = rsi_suspend,
--	.resume = rsi_resume,
-+	.resume_noirq = rsi_resume,
- 	.freeze = rsi_freeze,
- 	.thaw = rsi_thaw,
- 	.restore = rsi_restore,
+pktgen + dummy netdev:
+ threads  without+this_patch   with+this_patch      delta
+    1       2.60Mpps            3.18Mpps             +22%
+    2       3.84Mpps            5.72Mpps             +48%
+    4       5.52Mpps            5.52Mpps             +0.0%
+    8       2.77Mpps            2.81Mpps             +1.4%
+   16       2.24Mpps            2.29Mpps             +2.2%
 
+IP forward testing: 1.05Mpps increases to 1.15Mpps
+
+> 
+> Yunsheng Lin (3):
+>   net: sched: avoid unnecessary seqcount operation for lockless qdisc
+>   net: sched: implement TCQ_F_CAN_BYPASS for lockless qdisc
+>   net: sched: remove qdisc->empty for lockless qdisc
+> 
+>  include/net/sch_generic.h | 26 +++++++++++++-------------
+>  net/core/dev.c            | 22 ++++++++++++++++++++--
+>  net/sched/sch_generic.c   | 23 ++++++++++++++++-------
+>  3 files changed, 49 insertions(+), 22 deletions(-)
+> 
 
