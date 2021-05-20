@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ED43389DA4
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 08:21:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C228389D98
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 08:19:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230468AbhETGXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 02:23:02 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:3619 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230376AbhETGW4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 02:22:56 -0400
-Received: from dggems702-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Fm01x0fqQzmWx9;
-        Thu, 20 May 2021 14:19:17 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Thu, 20 May 2021 14:21:33 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 20 May 2021 14:21:33 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <andy@greyhouse.net>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <tanhuazhong@huawei.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 4/4] net: bonding: use tabs instead of space for code indent
-Date:   Thu, 20 May 2021 14:18:35 +0800
-Message-ID: <1621491515-53459-5-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1621491515-53459-1-git-send-email-huangguangbin2@huawei.com>
-References: <1621491515-53459-1-git-send-email-huangguangbin2@huawei.com>
+        id S230310AbhETGUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 02:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229526AbhETGUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 02:20:44 -0400
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71335C061574;
+        Wed, 19 May 2021 23:19:23 -0700 (PDT)
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1ljc1B-00GTlF-Uy; Thu, 20 May 2021 06:18:50 +0000
+Date:   Thu, 20 May 2021 06:18:49 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Xie Yongji <xieyongji@bytedance.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
+        sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
+        christian.brauner@canonical.com, rdunlap@infradead.org,
+        willy@infradead.org, axboe@kernel.dk, bcrl@kvack.org,
+        corbet@lwn.net, mika.penttila@nextfour.com,
+        dan.carpenter@oracle.com, joro@8bytes.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 02/12] file: Export receive_fd() to modules
+Message-ID: <YKX/SUq53GDtq84t@zeniv-ca.linux.org.uk>
+References: <20210517095513.850-1-xieyongji@bytedance.com>
+ <20210517095513.850-3-xieyongji@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210517095513.850-3-xieyongji@bytedance.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yufeng Mo <moyufeng@huawei.com>
+On Mon, May 17, 2021 at 05:55:03PM +0800, Xie Yongji wrote:
+> Export receive_fd() so that some modules can use
+> it to pass file descriptor between processes without
+> missing any security stuffs.
 
-Code indent should use tabs where possible, so
-use tabs instead of space for code indent.
+Which tree is that against?  Because in mainline this won't even build, let
+alone work.
 
-Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/bonding/bond_netlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> --- a/fs/file.c
+> +++ b/fs/file.c
+> @@ -1135,6 +1135,12 @@ int __receive_fd(int fd, struct file *file, int __user *ufd, unsigned int o_flag
+>  	return new_fd;
+>  }
+>  
+> +int receive_fd(struct file *file, unsigned int o_flags)
+> +{
+> +	return __receive_fd(-1, file, NULL, o_flags);
+> +}
+> +EXPORT_SYMBOL_GPL(receive_fd);
 
-diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bond_netlink.c
-index f0f9138e967f..0561ece1ba45 100644
---- a/drivers/net/bonding/bond_netlink.c
-+++ b/drivers/net/bonding/bond_netlink.c
-@@ -598,7 +598,7 @@ static int bond_fill_info(struct sk_buff *skb,
- 		goto nla_put_failure;
- 
- 	if (nla_put_u32(skb, IFLA_BOND_RESEND_IGMP,
--		        bond->params.resend_igmp))
-+			bond->params.resend_igmp))
- 		goto nla_put_failure;
- 
- 	if (nla_put_u8(skb, IFLA_BOND_NUM_PEER_NOTIF,
--- 
-2.8.1
+fs/file.c:1097:int __receive_fd(struct file *file, int __user *ufd, unsigned int o_flags)
 
