@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6188038B9B7
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 00:50:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE6238B9B5
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 00:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232167AbhETWvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 18:51:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45262 "EHLO mail.kernel.org"
+        id S232235AbhETWvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 18:51:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45264 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232023AbhETWvd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232024AbhETWvd (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 20 May 2021 18:51:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8CD32613B5;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 8FE71613B9;
         Thu, 20 May 2021 22:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1621551011;
-        bh=w198roiEW5t2pB+0FDnzwgIITTNkrke6dMQYWadyfQ0=;
+        bh=INlJrjoYl9PGqisEjhreiwAhlj09cRI+A9LvyVQpKIQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pUPcUZ0VItCGzAqDIckQ5vUTJi4P9wJqkzL2OGmQBM6DZ6hUyqNCBIXn0r8Katx5L
-         HUTNMJv6QV8T9OZbpvMFQbJ1VudOtQEFtGMqMX8O18vRMebfgFDJBoiu6umahfozGV
-         cEFnG29JhWxykfEesk5zyLhCzLwTplli6QO33+Vb19+BDJ2VpBaAQ6j11IZBm3ZdMC
-         j2vzYFYeapBPkX0OPMCN8FEU3Hds2+m7ceFZMoq31vT00FK0iKw6lsIBpToctTXK3g
-         04wRXIpZMG8VeYmXD2CYdJwr5AYuIE/b/IJI5D7lbgiCcVkjU/mGLh4v2d3vZPBHQv
-         saN3se1fAAWrw==
+        b=IBqNetNdp1CaU1Sc3lCqkKI8frgIgDFO5oFKUlZ2sanzlBmjInUsh/YtnNFE4gQW3
+         kmLecEf5Wymw2n1rFKdgizJaEt9HD/KR2L4O5vn0gJdhudI48NZJr+Y5rmz2+bVM8Q
+         pSdh0p9qyXdVXCnxB4bCVDf8N95AzowkLGMl2+4/0VifuZ6ZLAD+deM5dqCTksHAmh
+         0PD8+u4M/uf+5reGI+cHmAzNkv9MXzdo3pUiU8oZaig54IynihIDdqyCxpaotZ91sz
+         dhchPnZUr+spUjb+qhMyl0OCPzQh+8eI4t6VinvwuAs42zLSdLX+zoNVaJa7JzwTJS
+         rLBNXTCNNvydA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7FDA360A38;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 89A7860997;
         Thu, 20 May 2021 22:50:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests: net: devlink_port_split.py: skip the test if no
- devlink device
+Subject: Re: [PATCH RESEND] NFC: st21nfca: remove unnecessary variable and labels
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162155101151.27401.15951252835468300378.git-patchwork-notify@kernel.org>
+Message-Id: <162155101155.27401.15694736044196651874.git-patchwork-notify@kernel.org>
 Date:   Thu, 20 May 2021 22:50:11 +0000
-References: <20210520104954.25007-1-po-hsu.lin@canonical.com>
-In-Reply-To: <20210520104954.25007-1-po-hsu.lin@canonical.com>
-To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, shuah@kernel.org, kuba@kernel.org,
-        davem@davemloft.net, skhan@linuxfoundation.org
+References: <20210520010550.31240-1-samirweng1979@163.com>
+In-Reply-To: <20210520010550.31240-1-samirweng1979@163.com>
+To:     samirweng1979 <samirweng1979@163.com>
+Cc:     gustavoars@kernel.org, hslester96@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wengjianfeng@yulong.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,20 +47,20 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 20 May 2021 18:49:54 +0800 you wrote:
-> When there is no devlink device, the following command will return:
->   $ devlink -j dev show
->   {dev:{}}
+On Thu, 20 May 2021 09:05:50 +0800 you wrote:
+> From: wengjianfeng <wengjianfeng@yulong.com>
 > 
-> This will cause IndexError when trying to access the first element
-> in dev of this json dataset. Use the kselftest framework skip code
-> to skip this test in this case.
+> assign vlue (EIO/EPROTO) to variable r, and goto exit label,
+> but just return r follow exit label, so we delete exit label,
+> and just replace with return sentence.
+> 
+> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - selftests: net: devlink_port_split.py: skip the test if no devlink device
-    https://git.kernel.org/netdev/net-next/c/25173dd4093a
+  - [RESEND] NFC: st21nfca: remove unnecessary variable and labels
+    https://git.kernel.org/netdev/net-next/c/4b99b7498277
 
 You are awesome, thank you!
 --
