@@ -2,72 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A90F389D1F
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 07:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB272389D24
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 07:36:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230333AbhETFcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 01:32:13 -0400
-Received: from pegase2.c-s.fr ([93.17.235.10]:58749 "EHLO pegase2.c-s.fr"
+        id S229547AbhETFhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 01:37:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48274 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229526AbhETFcM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 May 2021 01:32:12 -0400
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Flyy20rlnz9sVL;
-        Thu, 20 May 2021 07:30:50 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ijUkvh1s94uX; Thu, 20 May 2021 07:30:50 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Flyy171F7z9sVK;
-        Thu, 20 May 2021 07:30:49 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D3FEF8B805;
-        Thu, 20 May 2021 07:30:49 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 5MQwqMwzIuDs; Thu, 20 May 2021 07:30:49 +0200 (CEST)
-Received: from [192.168.4.90] (unknown [192.168.4.90])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 74B368B804;
-        Thu, 20 May 2021 07:30:49 +0200 (CEST)
-To:     Larry Finger <Larry.Finger@lwfinger.net>, fabioaiuto83@gmail.com,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: Conflict between arch/powerpc/include/asm/disassemble.h and
- drivers/staging/rtl8723bs/include/wifi.h
-Message-ID: <6954e633-3908-d175-3030-3e913980af78@csgroup.eu>
-Date:   Thu, 20 May 2021 07:30:49 +0200
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
+        id S229526AbhETFhb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 May 2021 01:37:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A8A526101D;
+        Thu, 20 May 2021 05:36:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621488970;
+        bh=twufdja/8Rmw932vlWCOrtJupdXWpCfHEJiWDx4rg2k=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=a5TuSps/fxDqvITAaSU1srRY1ZVbfuaUdgahWeNNBS/FYpmjZdOeMkuDViQiJsdW1
+         ryitywN7DamuMxYlKZh6S6j9TOVlfDwLKY+HDZbxTTTsEBKDrBOsTgW3R8zPNR6nke
+         xIe5BD7H7C5LhT5uk80IXz/4p7OkjXS67r/9ftlk1lez4ZhWegDAWw3vpuTxY7FWeN
+         vvTxq0zSfW8P3nBE7ZV1KhtWYIl1wEafurAXRrfKAFfUOxJtw71scqFNwR5pLExYRE
+         wo3+fVg17IGmws9tN83i/fV7HqxTTiVCwrdIWqdAtM0lHbtLssVJjeQe8TZL1z1dDo
+         PnpS6qFkwg5hw==
+Message-ID: <3ed3fb510ba62f4911f4ffe01a197df3bb8cd969.camel@kernel.org>
+Subject: Re: [PATCH net-next] mlx5: count all link events
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Lijun Pan <ljp@linux.vnet.ibm.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
+Date:   Wed, 19 May 2021 22:36:10 -0700
+In-Reply-To: <20210519135603.585a5169@kicinski-fedora-PC1C0HJN>
+References: <20210519171825.600110-1-kuba@kernel.org>
+         <155D8D8E-C0FE-4EF9-AD7F-B496A8279F92@linux.vnet.ibm.com>
+         <20210519125107.578f9c7d@kicinski-fedora-PC1C0HJN>
+         <61bd5f38c223582682f98d5e8f9f3820edde5b7e.camel@kernel.org>
+         <20210519135603.585a5169@kicinski-fedora-PC1C0HJN>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, 2021-05-19 at 13:56 -0700, Jakub Kicinski wrote:
+> On Wed, 19 May 2021 13:18:36 -0700 Saeed Mahameed wrote:
+> > On Wed, 2021-05-19 at 12:51 -0700, Jakub Kicinski wrote:
+> > > 
+> > > 
+> > > I assumed netif_carrier_event() would be used specifically in
+> > > places
+> > > driver is actually servicing a link event from the device, and
+> > > therefore is relatively certain that _something_ has happened.  
+> > 
+> > then according to the above assumption it is safe to make
+> > netif_carrier_event() do everything.
+> > 
+> > netif_carrier_event(netdev, up) {
+> >         if (dev->reg_state == NETREG_UNINITIALIZED)
+> >                 return;
+> > 
+> >         if (up == netif_carrier_ok(netdev) {
+> >                 atomic_inc(&netdev->carrier_up_count);
+> >                 atomic_inc(&netdev->carrier_down_count);
+> >                 linkwatch_fire_event(netdev);
+> >         }
+> > 
+> >         if (up) {
+> >                 netdev_info(netdev, "Link up\n");
+> >                 netif_carrier_on(netdev);
+> >         } else {
+> >                 netdev_info(netdev, "Link down\n");
+> >                 netif_carrier_off(netdev);
+> >         }
+> > }
+> 
+> Two things to consider are:
+>  - some drivers print more info than just "link up/link down" so
+> they'd
+>    have to drop that extra stuff (as much as I'd like the
+> consistency)
 
-I was trying to include powerpc asm/disassemble.h in some more widely used headers in order to 
-reduce open coding, and I'm facing the following problem:
++1 for the consistency
 
-drivers/staging/rtl8723bs/include/wifi.h:237:30: error: conflicting types for 'get_ra'
-drivers/staging/rtl8723bs/include/wifi.h:237:30: error: conflicting types for 'get_ra'
-make[4]: *** [scripts/Makefile.build:272: drivers/staging/rtl8723bs/core/rtw_btcoex.o] Error 1
-make[4]: *** [scripts/Makefile.build:272: drivers/staging/rtl8723bs/core/rtw_ap.o] Error 1
-make[3]: *** [scripts/Makefile.build:515: drivers/staging/rtl8723bs] Error 2
+>  - again with the unnecessary events I was afraid that drivers reuse 
+>    the same handler for device events and to read the state in which
+>    case we may do something like:
+> 
+>         if (from_event && up == netif_carrier_ok(netdev)
+> 
 
-(More details at http://kisskb.ellerman.id.au/kisskb/head/ee2dedcaaf3fe176e68498018632767d02639d03/)
+I don't actually understand your point here .. what kind of scenarios
+it is wrong to use this function ? 
 
-Taking into account that asm/disassemble.h has been existing since 2008 while 
-rtl8723bs/include/wifi.h was created in 2017, and that the get_ra() defined in the later is used at 
-exactly one place only, would it be possible to change it there ? 
-(https://elixir.bootlin.com/linux/v5.13-rc2/A/ident/get_ra)
+But anyway, the name of the function makes it very clear this is from
+event.. 
+also we can document this.
 
-Thanks
-Christophe
+> Maybe we can revisit when there's more users?
+goes both ways :), we can do what fits the requirement for mlx5 now and
+revisit in the future, if we do believe this should be general behavior
+for all/most vendors of-course!
+
+
+
+
