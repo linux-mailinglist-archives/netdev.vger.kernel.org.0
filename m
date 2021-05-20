@@ -2,63 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC71B38B81E
-	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 22:10:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24BDB38B820
+	for <lists+netdev@lfdr.de>; Thu, 20 May 2021 22:10:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237467AbhETULc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 16:11:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56008 "EHLO mail.kernel.org"
+        id S237893AbhETULe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 16:11:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56002 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234089AbhETULc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234343AbhETULc (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 20 May 2021 16:11:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6939D61355;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 5B3B66128A;
         Thu, 20 May 2021 20:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1621541410;
-        bh=VoFOOd9J5TqvywW8m8wTbjIHtqHY1KUY6r19bEBdDc4=;
+        bh=WaCgMvfXBR2gKyUZwzBouYnqALdTwOxZMFC0C16Yfqo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tsV4DAoG/I7i5Eig7MqCnK3iX3ynh67DUBomgnms20a+CM1VGIr5rf0L2ovNtstaL
-         ALluUC2txKzfDx6d6+NMVF7WrfO0ASyNz71ah6RKTwNSD320P4qob/gbz9Cz62fdy5
-         msjko3yJ5tLqDrZIe8HX2zJsJ3c3cUsodT/ChNx7FEP9rjTIi4zGDpmdK3NOUAIvqc
-         A6IoRqk/jgSxzIQoKWId1MbRrVzEzPXeaE3YsSQhUYxbY2z7YOoLY+kwzR1eSl0JHC
-         07n9i9MhVs2in5EKNXWxNTKzrzZNzN0IdWT1w0vU6XvTSKYaUv6+WV8xiStYRIUPb1
-         yyCSAy3tEbAGg==
+        b=r0GmfvCV5y8lZ1sXAGwxJgaOTV/M4QhbiaiKN+TtKmof1O7GuR4saIdXK9oMsDOUT
+         h4bnvm5ioDd9Ba9CzavQtpGqFApB79cCbYez0aijCSlJw12MtPWPF9xc3dwCn51o+M
+         GlLOc6KxBkz3LQ9vfzP0tzI/T/9oFOYePrhKkSSz9/ahMZUI+mQHY1CSOf/dpX6Sq6
+         KhLRnNVmb1lQXOzb8fJegJIXpRnHJhTPe5yO+OxhMxcsbEdNlKFp77AiBP2OH2bt6o
+         PmRjGvtWhQ0bA+u+KXT58eE20yjF2tcCKHK5yisYhyrtltoug4ktSzG2LfalvngXZ5
+         vX67EJIavZ63A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 57A6160A53;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4B90D60283;
         Thu, 20 May 2021 20:10:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/1] mISDN: Remove obsolete PIPELINE_DEBUG debugging
- information
+Subject: Re: [PATCH net-next v2 0/4] MT7530 interrupt support
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162154141035.20508.606432183655543086.git-patchwork-notify@kernel.org>
+Message-Id: <162154141030.20508.8664926088973694353.git-patchwork-notify@kernel.org>
 Date:   Thu, 20 May 2021 20:10:10 +0000
-References: <20210520021412.8100-1-thunder.leizhen@huawei.com>
-In-Reply-To: <20210520021412.8100-1-thunder.leizhen@huawei.com>
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-Cc:     isdn@linux-pingi.de, leon@kernel.org, netdev@vger.kernel.org
+References: <20210519033202.3245667-1-dqfext@gmail.com>
+In-Reply-To: <20210519033202.3245667-1-dqfext@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, kuba@kernel.org, Landen.Chao@mediatek.com,
+        matthias.bgg@gmail.com, linux@armlinux.org.uk,
+        sean.wang@mediatek.com, vivien.didelot@gmail.com,
+        olteanv@gmail.com, robh+dt@kernel.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, sergio.paracuellos@gmail.com,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, weijie.gao@mediatek.com,
+        gch981213@gmail.com, opensource@vdorst.com,
+        frank-w@public-files.de, tglx@linutronix.de, maz@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 20 May 2021 10:14:10 +0800 you wrote:
-> v1 --> v2:
-> Remove all obsolete PIPELINE_DEBUG debugging information.
+On Wed, 19 May 2021 11:31:58 +0800 you wrote:
+> Add support for MT7530 interrupt controller.
 > 
-> v1:
-> Mark local variable 'incomplete' as __maybe_unused in dsp_pipeline_build()
-> 
+> DENG Qingfang (4):
+>   net: phy: add MediaTek Gigabit Ethernet PHY driver
+>   net: dsa: mt7530: add interrupt support
+>   dt-bindings: net: dsa: add MT7530 interrupt controller binding
+>   staging: mt7621-dts: enable MT7530 interrupt controller
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/1] mISDN: Remove obsolete PIPELINE_DEBUG debugging information
-    https://git.kernel.org/netdev/net-next/c/2682ea324b00
+  - [net-next,v2,1/4] net: phy: add MediaTek Gigabit Ethernet PHY driver
+    https://git.kernel.org/netdev/net-next/c/e40d2cca0189
+  - [net-next,v2,2/4] net: dsa: mt7530: add interrupt support
+    https://git.kernel.org/netdev/net-next/c/ba751e28d442
+  - [net-next,v2,3/4] dt-bindings: net: dsa: add MT7530 interrupt controller binding
+    https://git.kernel.org/netdev/net-next/c/4006f986c091
+  - [net-next,v2,4/4] staging: mt7621-dts: enable MT7530 interrupt controller
+    https://git.kernel.org/netdev/net-next/c/f494f0935ffb
 
 You are awesome, thank you!
 --
