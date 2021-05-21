@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0809038CB8A
+	by mail.lfdr.de (Postfix) with ESMTP id 0B40438CB8B
 	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 19:07:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237961AbhEURI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 13:08:57 -0400
-Received: from mail-bn8nam12on2075.outbound.protection.outlook.com ([40.107.237.75]:3872
+        id S237973AbhEURJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 13:09:02 -0400
+Received: from mail-bn8nam12on2083.outbound.protection.outlook.com ([40.107.237.83]:65120
         "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234071AbhEURIw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 May 2021 13:08:52 -0400
+        id S237950AbhEURI6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 May 2021 13:08:58 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eomM/HZ8c77B4ulLBvbJhAYXrIZVkh4vSP2a1mmaOAqLRCaHUuq7bwQwbauuVUdBRBaNSckrh45l+BhFCSaXybKuofViDg7EUGB8vaOBKcqpo/e2lnQNRbw3TtqaPSA6l8kaUJcpf9co2DLDWPu9e2LlO9F8BpoH68nUPVzYv2zjpyRJ/v4tVzo7QBb2EOmRLIr6eHTOVJMDXoxfiHb4tCb0q+FwGK8qK+MNeVRgSoXNBW7+oUIbbtGqNofZogh75yZeyPimC/8TyfzB5/wGIamyLjkAGGgsHfobB7WKFBQbfMP9cohzpbdn6aUQoFvc2KGqTT6T8lqKfiPN1U6TOg==
+ b=iuZD8F/3G7TmUGTZfTk0LL0iYYoIwJS3bDUVZOC1RjF4mMRgpFM8F0LnnDUv3/pAqRtfnQV7KR+pQphNGPk6q7aoRenjpYIt6ujyE6K0HJR2bt5JNwLBrdk6qhDfz4Oql2keqrplAfM43d4CiaOkQ/yb0L1mMo5qQrXAq+IW87Lh73abdIT9D9QlFM9YM2yKMSFlQ3wYZlpa/nX3vq2K/itBE3mRMWyKM8XfDkRr28d3MtMSE32qD0xpnmVwZKJU+cu3YlfdWE5Y5hVP2cNeobJMnF0NKzPW/OyZ93ZoO0NKMa7TlInEFNOB9WbptkSTjrLsQNs4+N1C7SFifW5xBQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8ans+1wp9KmQuaOQv+yi2nZKdOvgw5od1B40BT7B4c8=;
- b=K1Qu90fY7ujPTkLooY81J2u4RbH4J4eYA67moXf9yaw/J9teWOuPxGqACA3sS0hxndFuKkVI3iLxYWvQQ4wX0fVXKgr9fcXhPc5poe5T28/j/QR9+d0eYAW1Am2Ov4pyCriElNmdKI7438K/LkromCJR+STD9NYB2w+GUSfuiUhcGGOIA5p2YzqQLRF3WN9UFAVx471i2wovOSx4ec5pgQGTj5wXj2cp4gw1Sk46ifYZ5TbaQ4n2Aa4nzpr57vZGX4SNhlPKo72ZB1mmB9LJL/X262sM7lftqlFBCB6l532Y1gJJsiKvwzDv0hURYHOSo+KnSmgAVD2xvQAqT9IGGw==
+ bh=GeZIJVGXof04G5SS2BlwzsqnsG9I936Hy/9Meq/7xNs=;
+ b=G6qb3zZJBC2Y6N5/v+vTtwEA0d9fh/qnIwqs0g6twJ+Bq8tu9Q87xyxTaSuyae96WW7FeeaZ1HbTn1iQLyC7mLt+9N2F1pwx90PQtAE+TabyvaX01JN6Pi+x2v39e+Z7kOCwOyZU1D0N6RyhzdvLFc10PczXPJTqJoOLapIgff/UX6TzOyfmL8ak4p9MeZf1Aru3BrIwiHLEyRRGGwzhCI9WuGaQPtJyri4kkyHWgmDgJ7AZ6IQ3lZ0Mbs+90XWyDFW6MljSwZ6nmhxZyok9xM0wM9Crm/KdTu0vMTzly1+EYA+RhE0SVk3zjfERpAHyrhBQitR3iRcL3cJE+wKCHw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.35) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8ans+1wp9KmQuaOQv+yi2nZKdOvgw5od1B40BT7B4c8=;
- b=fc4grocEZRP8Bdjegg/FM/egVU2mZ/NFF+A1plvN3+CRaH+qZQAOMMWdmovc1kqNdu1tHOV89X3eU31OtBgPh6qlDHvNiEEV2h26AlxcyOcuGAVBjdK2ETu1jIGS0z9yrzuZr2FExjiUeXunUYds9iwnCrR+PUtOnJSPrrEwURupzqOVmi5Xr/ae7MjY7HcK/E4L/YXJzb1OPDaHXBIZaJvqcZ0YZ7a6icL/X3YCLgJ+piCU4p2NgP4WFOTzCJM4FZGeSCkGeQw4PKRfCQrHUbgfEERehv1MbPsSMFpxCEmJr76iSWpT7gmnZERcOCAn0MR0apq/Q0UT16gAfBY/Yg==
-Received: from BN9PR03CA0118.namprd03.prod.outlook.com (2603:10b6:408:fd::33)
- by DM5PR12MB2454.namprd12.prod.outlook.com (2603:10b6:4:ba::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23; Fri, 21 May
- 2021 17:07:28 +0000
-Received: from BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fd:cafe::74) by BN9PR03CA0118.outlook.office365.com
- (2603:10b6:408:fd::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.26 via Frontend
- Transport; Fri, 21 May 2021 17:07:28 +0000
+ bh=GeZIJVGXof04G5SS2BlwzsqnsG9I936Hy/9Meq/7xNs=;
+ b=NYGasrzKa357XeGe7+obSRicTKRPJzh8/PXIdekG5wx9gnjPTrbnBpFr8HEX5YqDT64He5gKpE9Eer68qz0A1UC5Ta/MBJJu+Ukc75J2FlNB38wYtaBwr3p4xxjbZjaejp8sVjbGrMqvNFPl7jjSB8CiXMDvYH8bUeqT0gclWRTiPOuIGH0SiD1YdDA+ICbEReKp8fFiiRmCv6XBOq7GDgV0JL/OhXX0lAZFXjy2xGkPpbWaNgdD3+QmO/pImUxYQ/4B3YvGGhzpvBs9/gfzv25EG+V6mePYQrfCZTfVZd5ZdU79Da+AzFiOTiktIRQCyirum47Sl6ZNJOuo1L8g7A==
+Received: from BN6PR2001CA0034.namprd20.prod.outlook.com
+ (2603:10b6:405:16::20) by DM6PR12MB4764.namprd12.prod.outlook.com
+ (2603:10b6:5:31::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.25; Fri, 21 May
+ 2021 17:07:33 +0000
+Received: from BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:16:cafe::de) by BN6PR2001CA0034.outlook.office365.com
+ (2603:10b6:405:16::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23 via Frontend
+ Transport; Fri, 21 May 2021 17:07:33 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
  smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
@@ -45,64 +45,105 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.35 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.35; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.35) by
- BN8NAM11FT029.mail.protection.outlook.com (10.13.177.68) with Microsoft SMTP
+ BN8NAM11FT037.mail.protection.outlook.com (10.13.177.182) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4129.25 via Frontend Transport; Fri, 21 May 2021 17:07:27 +0000
+ 15.20.4129.25 via Frontend Transport; Fri, 21 May 2021 17:07:33 +0000
 Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL111.nvidia.com
  (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 21 May
- 2021 17:07:27 +0000
+ 2021 17:07:32 +0000
 Received: from dev-r-vrt-138.mtr.labs.mlnx (172.20.145.6) by mail.nvidia.com
  (172.20.187.18) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 21 May 2021 17:07:26 +0000
+ Transport; Fri, 21 May 2021 17:07:31 +0000
 From:   Ariel Levkovich <lariel@nvidia.com>
 To:     <netdev@vger.kernel.org>
-CC:     Ariel Levkovich <lariel@nvidia.com>
-Subject: [PATCH iproute2-next 0/2] tc: Add missing ct_state flags 
-Date:   Fri, 21 May 2021 20:07:05 +0300
-Message-ID: <20210521170707.704274-1-lariel@nvidia.com>
+CC:     Ariel Levkovich <lariel@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH iproute2-next 1/2] tc: f_flower: Add option to match on related ct state
+Date:   Fri, 21 May 2021 20:07:06 +0300
+Message-ID: <20210521170707.704274-2-lariel@nvidia.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210521170707.704274-1-lariel@nvidia.com>
+References: <20210521170707.704274-1-lariel@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3d8833c2-3fa3-4782-534a-08d91c7ae9b7
-X-MS-TrafficTypeDiagnostic: DM5PR12MB2454:
-X-Microsoft-Antispam-PRVS: <DM5PR12MB24541AB57D24A06615D772CCB7299@DM5PR12MB2454.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-MS-Office365-Filtering-Correlation-Id: c35452cf-fc08-4ed2-4ed7-08d91c7aed12
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4764:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB476440CDFF76AC1868E59EE6B7299@DM6PR12MB4764.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Jd+sDZ/K2qBHTBaP/UK+CWSklxtN8Lvm0XlxSss5Tikx8cwV2leynEsAMYVJh2QSMDOw4a1RhNDGs/RY5Cs2LgM+XwD9C47FwIYA240f8WjXGjUsjoeVBO2tRs1JGvdW8/OPgozdtgbXh3RmycwphzIYhbMUEZzYVR/A9h5Q+h2/m7A1NVggBwrJC+Aj/5RA9SflzaEkoIjT0Ib5YV5377ciwGjFhZOataPlCWr/oCjPZxkNoAdZjP+pi7vC9sCitlQIkfiXEOIoov8sHT0JXeDJtTo2p94Zz4NtBBa1WjUhcrcnV9x38XLFHMzg/oIgFOmuv86duudWEyth74tKN4CoI67exnDnNqt+rAUUIDBM9jC5nwA/VJc/RpYDeCNcangdJPcCIbW1LPbvLxE0QgrBcXPCOMJ5wBnQEHkKmc95jzAYZYvekdhacv1XjQYMH+L5LdbbWf5D1kMd9ZECDjVLEZE3XDFyAuu2lK1bOg0h87NnYf8k4eSwXUtAVz2WASqkBTWDkUkikR6VhGRvvqRoMaDhCaSxSsbAYsc34h46TaJrCq/O+7/PTCP+2p8EQI4ReZV4+DXTqSymjH8CS/3g553Aqv7Z9KLaCYEjhLGbCAoK54DiOUEpL1Qniaq1RQ+PipYuBF9CM6W4ZH6aMw==
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(376002)(396003)(39850400004)(136003)(36840700001)(46966006)(26005)(70586007)(107886003)(2616005)(8936002)(6916009)(426003)(70206006)(6666004)(5660300002)(36756003)(82310400003)(86362001)(8676002)(186003)(4326008)(4743002)(478600001)(1076003)(4744005)(336012)(82740400003)(356005)(36860700001)(47076005)(36906005)(316002)(83380400001)(2906002)(7636003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 1AAP8sEpls+3snQnpZfvyY76PESDunOQLSjdWATYvG7n9uFfLdRur0NOZzInaaHuEuDq8QOUT9YRsUaL7rYBhVDB/wY6KF7oKcukBckgTFRVOBV0j1/Pf1urxtRIGBbsb7IchglSGpRZlJT5zsB4JPFaVAGy6994JlPCfKgGLTBiN6et3L9o9ez1uonhAqrkpN4t45a5164qcOR1+pZw76AfK2hvmmJApRhpMQXbtKJ49/4ROYW+AG2+wSZtGCLsQ4w8o+IMtKYY/Ujy0kOWyEestqwhNxKaWNZsFiY/xhYIiJRH54rZyDZumDJG/pcr3IPnG0GQanvBTGIkx0KUewZj7MKgMI6obDF16yC9qLbeWPjo2pHmNYVR6o8ERZfYtCJyYfJf3iKi8btsc91fMmEFpQRbc659bZO7MiACzyvuFGdSn8T+Kh0/slJNb5PzFcYwax6fHFK1D0EgTiEWx65pi/fOjPUIw5FZH3sBj8NoKumgYC7AWcblvHLn6ksx1QB01Xv3PEK2jZctBKhnrdMypGksEyDaHnrKwH27Nv6EyLPkMnWUGe4pzprZmPxqLawEiLdevrLL6rPeVw9AoBMHxw/5kItjIt1SEUFHghWqUapds38WiTHTlxU8vBVvH6yDtn9ys7ZsHFhK0qUeqq509M8Tnp+yfEQdk+XLNic=
+X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(136003)(39860400002)(396003)(346002)(36840700001)(46966006)(86362001)(336012)(426003)(186003)(6916009)(36860700001)(6666004)(47076005)(1076003)(2906002)(8676002)(478600001)(107886003)(4326008)(8936002)(2616005)(5660300002)(36756003)(26005)(316002)(36906005)(82740400003)(70586007)(82310400003)(83380400001)(70206006)(356005)(7636003)(54906003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2021 17:07:27.9451
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2021 17:07:33.6235
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d8833c2-3fa3-4782-534a-08d91c7ae9b7
+X-MS-Exchange-CrossTenant-Network-Message-Id: c35452cf-fc08-4ed2-4ed7-08d91c7aed12
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2454
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4764
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This short series is:
+Add support for matching on ct_state flag related.
+The related state indicates a packet is associated with an existing
+connection.
 
-1. Adding support for matching on ct_state flag rel in tc flower
-classifier.
+Example:
+$ tc filter add dev ens1f0_0 ingress prio 1 chain 1 proto ip flower \
+  ct_state -est-rel+trk \
+  action mirred egress redirect dev ens1f0_1
 
-2. Adding some missing description of ct_state flags rpl and inv.
+$ tc filter add dev ens1f0_0 ingress prio 1 chain 1 proto ip flower \
+  ct_state +rel+trk \
+  action mirred egress redirect dev ens1f0_1
 
-Ariel Levkovich (2):
-  tc: f_flower: Add option to match on related ct state
-  tc: f_flower: Add missing ct_state flags to usage description
-
+Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
  man/man8/tc-flower.8 | 2 ++
  tc/f_flower.c        | 3 ++-
  2 files changed, 4 insertions(+), 1 deletion(-)
 
+diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
+index f7336b62..4541d937 100644
+--- a/man/man8/tc-flower.8
++++ b/man/man8/tc-flower.8
+@@ -391,6 +391,8 @@ rpl - The packet is in the reply direction, meaning that it is in the opposite d
+ .TP
+ inv - The state is invalid. The packet couldn't be associated to a connection.
+ .TP
++rel - The packet is related to an existing connection.
++.TP
+ Example: +trk+est
+ .RE
+ .TP
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 53822a95..29db2e23 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -94,7 +94,7 @@ static void explain(void)
+ 		"	LSE := lse depth DEPTH { label LABEL | tc TC | bos BOS | ttl TTL }\n"
+ 		"	FILTERID := X:Y:Z\n"
+ 		"	MASKED_LLADDR := { LLADDR | LLADDR/MASK | LLADDR/BITS }\n"
+-		"	MASKED_CT_STATE := combination of {+|-} and flags trk,est,new\n"
++		"	MASKED_CT_STATE := combination of {+|-} and flags trk,est,new,rel\n"
+ 		"	ACTION-SPEC := ... look at individual actions\n"
+ 		"\n"
+ 		"NOTE:	CLASSID, IP-PROTO are parsed as hexadecimal input.\n"
+@@ -345,6 +345,7 @@ static struct flower_ct_states {
+ 	{ "trk", TCA_FLOWER_KEY_CT_FLAGS_TRACKED },
+ 	{ "new", TCA_FLOWER_KEY_CT_FLAGS_NEW },
+ 	{ "est", TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED },
++	{ "rel", TCA_FLOWER_KEY_CT_FLAGS_RELATED },
+ 	{ "inv", TCA_FLOWER_KEY_CT_FLAGS_INVALID },
+ 	{ "rpl", TCA_FLOWER_KEY_CT_FLAGS_REPLY },
+ };
 -- 
 2.25.2
 
