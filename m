@@ -2,315 +2,310 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8494438CD25
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 20:20:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1968438CD65
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 20:26:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238808AbhEUSWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 14:22:00 -0400
-Received: from mga06.intel.com ([134.134.136.31]:33075 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238597AbhEUSVp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 May 2021 14:21:45 -0400
-IronPort-SDR: c1k5Tsq3s3LLEQ0KezjY+fLoFXxLMEtDnj1A0yJKEDe0LokJ0263TpK9JB51ewnPxD7LvCK5Pt
- z63sOizEAxtg==
-X-IronPort-AV: E=McAfee;i="6200,9189,9991"; a="262760041"
-X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
-   d="scan'208";a="262760041"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2021 11:19:58 -0700
-IronPort-SDR: KUzihlyY2Se9in1NLpDEz7NT5k2KcG783YfUzciWLQbkrbLvuDlf5XyAUkWHh8AokOChts2R6I
- urVOZ8XUSxOg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
-   d="scan'208";a="545488386"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga004.jf.intel.com with ESMTP; 21 May 2021 11:19:57 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, dledford@redhat.com,
-        jgg@mellanox.com
-Cc:     Shiraz Saleem <shiraz.saleem@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, anthony.l.nguyen@intel.com,
-        david.m.ertman@intel.com
-Subject: [PATCH net-next v1 6/6] i40e: Register auxiliary devices to provide RDMA
-Date:   Fri, 21 May 2021 11:22:05 -0700
-Message-Id: <20210521182205.3823642-7-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210521182205.3823642-1-anthony.l.nguyen@intel.com>
-References: <20210521182205.3823642-1-anthony.l.nguyen@intel.com>
+        id S233338AbhEUS16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 14:27:58 -0400
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:48804 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229762AbhEUS15 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 14:27:57 -0400
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14LIEvhJ032375;
+        Fri, 21 May 2021 18:26:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2020-01-29;
+ bh=FGrZ+uDZvDNfwjR3Zbb6sxV9h+SIfYPXULbCEYjhqh0=;
+ b=wV50q0UySz4Dm3y4MiXzQtxWy0Qd+rp1bQpk0OYz6V8/BttDWg7W3PIxHVV3UjLE6VXl
+ bFefI6tcogkS28KoUe8rZdjd56xwxWE1a+CGXFuCqpi1tUjw/VXE9djd2Sn8pnFTFgCA
+ 2kj+0rvY0C/XcpzerVGbrVtnMO7rhV2OkWRv1X3uhHanzluyYztOVCiwLKBwo5mTTFji
+ PiPS8iV54lX4DAaWiHOEN7BXvT1x8SfYqZzF092Tvn3igDB2k+8tgo+NlmMnqT3p6ewT
+ 1fzJiSCUSCmtfq6D0LkFPgNa6B4XMeMpCS0bX3+IuKn8m1xVJd7ho6werHSGUFErI1uh TQ== 
+Received: from oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 38n3dg11x1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 May 2021 18:26:20 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.podrdrct (8.16.0.36/8.16.0.36) with SMTP id 14LINHh6067702;
+        Fri, 21 May 2021 18:26:19 GMT
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2176.outbound.protection.outlook.com [104.47.59.176])
+        by userp3020.oracle.com with ESMTP id 38n49313eq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 May 2021 18:26:19 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DwexhI+EEWW/c66bMvteTPF53ylbkBquvyZsQ4F4/q1YCAywkPwe/hKky9A7EjN2dyQLxISh8ghTrZxL4zb3CfxUnWYN+uunLe2ZEZgEV7cm9TwtmW4m3mrY+RMoqM2e0liVjjjzsLDOlsaI4igck8ejDhWppjOyFZbdCn9/3boaCZwDn4k0qkFRHTgH8698pyg6pc5yhQjW0OTLj+Ppd5rq87M7pu/9IJrKkXlXsivYljjgkKzd0k7Gv6fd9GwRW+82O5zL+ds0xlk2CCnRmYKo9KPkC5rOMWqggLihw+Gkh3Oc/c3GoYamY4+FcrD5Cr2NPx5D/lbM0rxa1b/fXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FGrZ+uDZvDNfwjR3Zbb6sxV9h+SIfYPXULbCEYjhqh0=;
+ b=hDhaZEfYnUwNLE+5xTZ6XmRg12TSdxUulbDV2vD/pje+LrC/0jPa8eXcMpkav8uIqV8+7M0GjtOOd1Noyhs09Sl3HHwyOcdRcFBIiqqh86tJIZxtdL9U8Q8sJ/TjmKI1tHvW+QALEoQXoBVIOgq0WgHmZnw5pdDlSm+PVLJHisDaM5W5cy7SLy/bechm/mxN2cNJT11NxNENfA/NhXkXSAWi/CZCj3VVCr/2nk2KuE1X+FxWbcebR4oEl7dmqV0y3RHRsfD/LFq3WYKZU2setAh6PUaNBMHRNhOEIFUc07tqIv1X28Yhmz4c6evMnWn4Az/eNOxE03vq5revXncjkg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FGrZ+uDZvDNfwjR3Zbb6sxV9h+SIfYPXULbCEYjhqh0=;
+ b=IzbLwvNqFFnMoPMMWdfDvIMIY4DsZJGr4B76poFh1febN/XE0BmXvJZEQp12XeuakvTjTV5wpnlON+TkM4V+zNWaBQTE+G2dXkisaEGMsghkw35kOMirQCFHPB6hOSCjPOqFvT3pBJfeceooBj5uIXc6mBSechKT0kCiAPkzImo=
+Authentication-Results: marvell.com; dkim=none (message not signed)
+ header.d=none;marvell.com; dmarc=none action=none header.from=oracle.com;
+Received: from SN6PR10MB2943.namprd10.prod.outlook.com (2603:10b6:805:d4::19)
+ by SA2PR10MB4427.namprd10.prod.outlook.com (2603:10b6:806:114::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23; Fri, 21 May
+ 2021 18:26:17 +0000
+Received: from SN6PR10MB2943.namprd10.prod.outlook.com
+ ([fe80::168:1a9:228:46f3]) by SN6PR10MB2943.namprd10.prod.outlook.com
+ ([fe80::168:1a9:228:46f3%6]) with mapi id 15.20.4129.034; Fri, 21 May 2021
+ 18:26:17 +0000
+Subject: Re: [RFC PATCH v5 07/27] nvme-tcp-offload: Add IO level
+ implementation
+To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
+        kbusch@kernel.org
+Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
+        pkushwaha@marvell.com, malin1024@gmail.com,
+        Dean Balandin <dbalandin@marvell.com>
+References: <20210519111340.20613-1-smalin@marvell.com>
+ <20210519111340.20613-8-smalin@marvell.com>
+From:   Himanshu Madhani <himanshu.madhani@oracle.com>
+Organization: Oracle
+Message-ID: <de07b62f-7e85-c053-1657-2d9bee312377@oracle.com>
+Date:   Fri, 21 May 2021 13:26:15 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+In-Reply-To: <20210519111340.20613-8-smalin@marvell.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [70.114.128.235]
+X-ClientProxiedBy: SN4PR0501CA0141.namprd05.prod.outlook.com
+ (2603:10b6:803:2c::19) To SN6PR10MB2943.namprd10.prod.outlook.com
+ (2603:10b6:805:d4::19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.28] (70.114.128.235) by SN4PR0501CA0141.namprd05.prod.outlook.com (2603:10b6:803:2c::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.12 via Frontend Transport; Fri, 21 May 2021 18:26:16 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ca7f33ed-0efb-4080-a030-08d91c85ec27
+X-MS-TrafficTypeDiagnostic: SA2PR10MB4427:
+X-Microsoft-Antispam-PRVS: <SA2PR10MB44270DF7834FE86D859D8F4DE6299@SA2PR10MB4427.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:644;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hQuyXjz/XCBdywIAC94Hst1/WYPvaFDcEgFLWC1gJU5eDMuCKbZI+flaO1ATVTvzDWNVZOEBkXi1cKMgWvqtFtY4+0WxN2xhMRHQ/4j3FG/mkrXd4wfgHIEWB4rMZqBf32fVUwobdjUg19mbRql8B8aUfscW8zYCVuFSwzAykaiGCh0viIxFwt9dpPXzZLy5EOFWgHThwNNxBZZn0EvAnatME18g0WiUM8Ooa5bfCObWDRToB6mgOmw6SR6nSgY8qIurpyIJchkDGn5hfFM7yd2dBt619LFZBKfktyId/m87YzIxM/x8GWS7O2ImJApr4kzZ2eEWdN8BXQbBTWQVbMtFwuXGiDQ0Oi8U9r4UEZINjJvpF2IVmSWgtx10rL2JrB7RhjjGEC0csgXyBIpN+RGaZt+1iKIcJv6r8mW3nYNL020gjZAhcuNO2tupXnhkAtRjKns0bVEWp8z79F5rpq/6s35QGd0pFWLxy/X3vkRHdSjCOqp5CEWN6otlAqTA0CVLaVw+jzmZnC4joZYCy3nZhcj6jfdFD8ItDF4/HTRTObwio4d/XvsDobUjRB7dcDU5TGsL0MFtdbLWQPMG+eaAsyGMnzLOtjbKsB9M7w8nv8Q4HTcjaIUvUpz4I1egmaGOgzBCGGby3JK6E04DEygye/XJIig0yeSo4VmGfz2LLHS4nD4fb7V4rFyOgA1k
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB2943.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(366004)(376002)(346002)(396003)(136003)(86362001)(2616005)(83380400001)(7416002)(186003)(44832011)(16576012)(16526019)(2906002)(6486002)(8936002)(26005)(36756003)(53546011)(31696002)(956004)(66556008)(316002)(36916002)(38100700002)(8676002)(478600001)(4326008)(66476007)(66946007)(5660300002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: U8+lxVNHuYmWtzRv77TUR0xBdhceu1+ELorL2JbEx1cGT5ixfQhhKVoMo+BbfgO0KcxwaRnp/gzXrh+ubmth4KJRcT841+vGLH5HzL/RLOBu4ixeWaTKTcooeb4q8kLoXc9RQzz+btw/C0isgyhdNAHkKhIn7VXjQbPPv0TwinXMU5tq/RBDK+1vrNZuctSOleG6YtbPsm6iaIK7DZSdCxvK0oT2djlMA5OXfLBh/OHZSq1pyNQbIWHAyQ1ziyUsJGNE1Wk1Ae1zkXUC4Np9TERP13EdebaWjzzZkhe1OcxdbCIRZvDLrLnCr/1EFeHP0t0uI56vAn6g/pHkQSvKlYWEvUBhNw/Zkrld6onUHSvwse1Ns8z91FUu2Y+x5426e+IZYCAF5QBjb2K8IoRzHyZXx/hgtA7hwt7vznTq7RZ/dup8k8TGtJWlUkZyj6iKgGi9c6goNJ9/AoZ2wwzU1a8zb81uFt9Tp4fGepWkCaKWwLSZG7yTNyk27JKVnJz94uWUVxNmfA/N/ZEbrQwNCGn3TjmcoOnZ8TOw0/cH5HmApZi0KW/lewjOnlOibET7no/ImD+5anMLKAaDq/SPBZHDDZ9HR2SvT9y08Bqz5o2poLDKyYmosEMXmZCQFSkq0vOiXmf254tfskPYg05S7IzPwErVm3Vg1p12xGgWBxTlHQvLrs6Dgbf43mS/QtHW4jhD+tVLZQyJq0G/UTVYC9bFR2H680TVbHD2pUdwqp+1OTEvHQ16j0isVKlLoCkF
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca7f33ed-0efb-4080-a030-08d91c85ec27
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB2943.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2021 18:26:16.9872
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /dDFAUiH2fLI6dpxf991NYx21WTKwn29cl2WbIGAqQh5ikp994ViOW75NSxSsLVRRKCnlGLdbn+N9T5a25msqcL1Bvy004NNAt+ZMoyiRAs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4427
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9991 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 bulkscore=0
+ suspectscore=0 mlxlogscore=999 adultscore=0 malwarescore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
+ definitions=main-2105210095
+X-Proofpoint-ORIG-GUID: hPbS2ffp4U2hj3D_xEEO7YaVvYmmQkNp
+X-Proofpoint-GUID: hPbS2ffp4U2hj3D_xEEO7YaVvYmmQkNp
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shiraz Saleem <shiraz.saleem@intel.com>
 
-Convert i40e to use the auxiliary bus infrastructure to export
-the RDMA functionality of the device to the RDMA driver.
-Register i40e client auxiliary RDMA device on the auxiliary bus per
-PCIe device function for the new auxiliary rdma driver (irdma) to
-attach to.
 
-The global i40e_register_client and i40e_unregister_client symbols
-will be obsoleted once irdma replaces i40iw in the kernel
-for the X722 device.
+On 5/19/21 6:13 AM, Shai Malin wrote:
+> From: Dean Balandin <dbalandin@marvell.com>
+> 
+> In this patch, we present the IO level functionality.
+> The nvme-tcp-offload shall work on the IO-level, meaning the
+> nvme-tcp-offload ULP module shall pass the request to the nvme-tcp-offload
+> vendor driver and shall expect for the request completion.
+> No additional handling is needed in between, this design will reduce the
+> CPU utilization as we will describe below.
+> 
+> The nvme-tcp-offload vendor driver shall register to nvme-tcp-offload ULP
+> with the following IO-path ops:
+>   - init_req
+>   - send_req - in order to pass the request to the handling of the offload
+>     driver that shall pass it to the vendor specific device
+>   - poll_queue
+> 
+> The vendor driver will manage the context from which the request will be
+> executed and the request aggregations.
+> Once the IO completed, the nvme-tcp-offload vendor driver shall call
+> command.done() that shall invoke the nvme-tcp-offload ULP layer for
+> completing the request.
+> 
+> This patch also contains initial definition of nvme_tcp_ofld_queue_rq().
+> 
+> Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Dean Balandin <dbalandin@marvell.com>
+> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Shai Malin <smalin@marvell.com>
+> Reviewed-by: Hannes Reinecke <hare@suse.de>
+> ---
+>   drivers/nvme/host/tcp-offload.c | 96 ++++++++++++++++++++++++++++++---
+>   1 file changed, 88 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/nvme/host/tcp-offload.c b/drivers/nvme/host/tcp-offload.c
+> index 8ed7668d987a..276b8475ac85 100644
+> --- a/drivers/nvme/host/tcp-offload.c
+> +++ b/drivers/nvme/host/tcp-offload.c
+> @@ -127,7 +127,10 @@ void nvme_tcp_ofld_req_done(struct nvme_tcp_ofld_req *req,
+>   			    union nvme_result *result,
+>   			    __le16 status)
+>   {
+> -	/* Placeholder - complete request with/without error */
+> +	struct request *rq = blk_mq_rq_from_pdu(req);
+> +
+> +	if (!nvme_try_complete_req(rq, cpu_to_le16(status << 1), *result))
+> +		nvme_complete_rq(rq);
+>   }
+>   
+>   struct nvme_tcp_ofld_dev *
+> @@ -700,6 +703,34 @@ static void nvme_tcp_ofld_free_ctrl(struct nvme_ctrl *nctrl)
+>   	kfree(ctrl);
+>   }
+>   
+> +static void nvme_tcp_ofld_set_sg_null(struct nvme_command *c)
+> +{
+> +	struct nvme_sgl_desc *sg = &c->common.dptr.sgl;
+> +
+> +	sg->addr = 0;
+> +	sg->length = 0;
+> +	sg->type = (NVME_TRANSPORT_SGL_DATA_DESC << 4) | NVME_SGL_FMT_TRANSPORT_A;
+> +}
+> +
+> +inline void nvme_tcp_ofld_set_sg_inline(struct nvme_tcp_ofld_queue *queue,
+> +					struct nvme_command *c, u32 data_len)
+> +{
+> +	struct nvme_sgl_desc *sg = &c->common.dptr.sgl;
+> +
+> +	sg->addr = cpu_to_le64(queue->ctrl->nctrl.icdoff);
+> +	sg->length = cpu_to_le32(data_len);
+> +	sg->type = (NVME_SGL_FMT_DATA_DESC << 4) | NVME_SGL_FMT_OFFSET;
+> +}
+> +
+> +void nvme_tcp_ofld_map_data(struct nvme_command *c, u32 data_len)
+> +{
+> +	struct nvme_sgl_desc *sg = &c->common.dptr.sgl;
+> +
+> +	sg->addr = 0;
+> +	sg->length = cpu_to_le32(data_len);
+> +	sg->type = (NVME_TRANSPORT_SGL_DATA_DESC << 4) | NVME_SGL_FMT_TRANSPORT_A;
+> +}
+> +
+>   static void nvme_tcp_ofld_submit_async_event(struct nvme_ctrl *arg)
+>   {
+>   	/* Placeholder - submit_async_event */
+> @@ -855,9 +886,12 @@ nvme_tcp_ofld_init_request(struct blk_mq_tag_set *set,
+>   {
+>   	struct nvme_tcp_ofld_req *req = blk_mq_rq_to_pdu(rq);
+>   	struct nvme_tcp_ofld_ctrl *ctrl = set->driver_data;
+> +	int qid;
+>   
+> -	/* Placeholder - init request */
+> -
+> +	qid = (set == &ctrl->tag_set) ? hctx_idx + 1 : 0;
+> +	req->queue = &ctrl->queues[qid];
+> +	nvme_req(rq)->ctrl = &ctrl->nctrl;
+> +	nvme_req(rq)->cmd = &req->nvme_cmd;
+>   	req->done = nvme_tcp_ofld_req_done;
+>   	ctrl->dev->ops->init_req(req);
+>   
+> @@ -872,16 +906,60 @@ EXPORT_SYMBOL_GPL(nvme_tcp_ofld_inline_data_size);
+>   
+>   static void nvme_tcp_ofld_commit_rqs(struct blk_mq_hw_ctx *hctx)
+>   {
+> -	/* Call ops->commit_rqs */
+> +	struct nvme_tcp_ofld_queue *queue = hctx->driver_data;
+> +	struct nvme_tcp_ofld_dev *dev = queue->dev;
+> +	struct nvme_tcp_ofld_ops *ops = dev->ops;
+> +
+> +	ops->commit_rqs(queue);
+>   }
+>   
+>   static blk_status_t
+>   nvme_tcp_ofld_queue_rq(struct blk_mq_hw_ctx *hctx,
+>   		       const struct blk_mq_queue_data *bd)
+>   {
+> -	/* Call nvme_setup_cmd(...) */
+> +	struct nvme_tcp_ofld_req *req = blk_mq_rq_to_pdu(bd->rq);
+> +	struct nvme_tcp_ofld_queue *queue = hctx->driver_data;
+> +	struct nvme_tcp_ofld_ctrl *ctrl = queue->ctrl;
+> +	struct nvme_ns *ns = hctx->queue->queuedata;
+> +	struct nvme_tcp_ofld_dev *dev = queue->dev;
+> +	struct nvme_tcp_ofld_ops *ops = dev->ops;
+> +	struct nvme_command *nvme_cmd;
+> +	struct request *rq;
+> +	bool queue_ready;
+> +	u32 data_len;
+> +	int rc;
+> +
+> +	queue_ready = test_bit(NVME_TCP_OFLD_Q_LIVE, &queue->flags);
+> +
+> +	req->rq = bd->rq;
+> +	req->async = false;
+> +	rq = req->rq;
+> +
+> +	if (!nvme_check_ready(&ctrl->nctrl, req->rq, queue_ready))
+> +		return nvme_fail_nonready_command(&ctrl->nctrl, req->rq);
+> +
+> +	rc = nvme_setup_cmd(ns, req->rq);
+> +	if (unlikely(rc))
+> +		return rc;
+>   
+> -	/* Call ops->send_req(...) */
+> +	blk_mq_start_request(req->rq);
+> +	req->last = bd->last;
+> +
+> +	nvme_cmd = &req->nvme_cmd;
+> +	nvme_cmd->common.flags |= NVME_CMD_SGL_METABUF;
+> +
+> +	data_len = blk_rq_nr_phys_segments(rq) ? blk_rq_payload_bytes(rq) : 0;
+> +	if (!data_len)
+> +		nvme_tcp_ofld_set_sg_null(&req->nvme_cmd);
+> +	else if ((rq_data_dir(rq) == WRITE) &&
+> +		 data_len <= nvme_tcp_ofld_inline_data_size(queue))
+> +		nvme_tcp_ofld_set_sg_inline(queue, nvme_cmd, data_len);
+> +	else
+> +		nvme_tcp_ofld_map_data(nvme_cmd, data_len);
+> +
+> +	rc = ops->send_req(req);
+> +	if (unlikely(rc))
+> +		return rc;
+>   
+>   	return BLK_STS_OK;
+>   }
+> @@ -954,9 +1032,11 @@ static int nvme_tcp_ofld_map_queues(struct blk_mq_tag_set *set)
+>   
+>   static int nvme_tcp_ofld_poll(struct blk_mq_hw_ctx *hctx)
+>   {
+> -	/* Placeholder - Implement polling mechanism */
+> +	struct nvme_tcp_ofld_queue *queue = hctx->driver_data;
+> +	struct nvme_tcp_ofld_dev *dev = queue->dev;
+> +	struct nvme_tcp_ofld_ops *ops = dev->ops;
+>   
+> -	return 0;
+> +	return ops->poll_queue(queue);
+>   }
+>   
+>   static struct blk_mq_ops nvme_tcp_ofld_mq_ops = {
+> 
 
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/Kconfig            |   1 +
- drivers/net/ethernet/intel/i40e/i40e.h        |   2 +
- drivers/net/ethernet/intel/i40e/i40e_client.c | 130 +++++++++++++++---
- drivers/net/ethernet/intel/i40e/i40e_main.c   |   1 +
- 4 files changed, 114 insertions(+), 20 deletions(-)
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
 
-diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
-index d8a12da5c49a..eae1b42e48db 100644
---- a/drivers/net/ethernet/intel/Kconfig
-+++ b/drivers/net/ethernet/intel/Kconfig
-@@ -241,6 +241,7 @@ config I40E
- 	tristate "Intel(R) Ethernet Controller XL710 Family support"
- 	imply PTP_1588_CLOCK
- 	depends on PCI
-+	select AUXILIARY_BUS
- 	help
- 	  This driver supports Intel(R) Ethernet Controller XL710 Family of
- 	  devices.  For more information on how to identify your adapter, go
-diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-index 85d3dd3a3339..b9417dc0007c 100644
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -870,6 +870,8 @@ struct i40e_netdev_priv {
- 	struct i40e_vsi *vsi;
- };
- 
-+extern struct ida i40e_client_ida;
-+
- /* struct that defines an interrupt vector */
- struct i40e_q_vector {
- 	struct i40e_vsi *vsi;
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_client.c b/drivers/net/ethernet/intel/i40e/i40e_client.c
-index 32f3facbed1a..45094a0bdd85 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_client.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_client.c
-@@ -12,6 +12,7 @@ static const char i40e_client_interface_version_str[] = I40E_CLIENT_VERSION_STR;
- static struct i40e_client *registered_client;
- static LIST_HEAD(i40e_devices);
- static DEFINE_MUTEX(i40e_device_mutex);
-+DEFINE_IDA(i40e_client_ida);
- 
- static int i40e_client_virtchnl_send(struct i40e_info *ldev,
- 				     struct i40e_client *client,
-@@ -275,6 +276,57 @@ void i40e_client_update_msix_info(struct i40e_pf *pf)
- 	cdev->lan_info.msix_entries = &pf->msix_entries[pf->iwarp_base_vector];
- }
- 
-+static void i40e_auxiliary_dev_release(struct device *dev)
-+{
-+	struct i40e_auxiliary_device *i40e_aux_dev =
-+			container_of(dev, struct i40e_auxiliary_device, aux_dev.dev);
-+
-+	ida_free(&i40e_client_ida, i40e_aux_dev->aux_dev.id);
-+	kfree(i40e_aux_dev);
-+}
-+
-+static int i40e_register_auxiliary_dev(struct i40e_info *ldev, const char *name)
-+{
-+	struct i40e_auxiliary_device *i40e_aux_dev;
-+	struct pci_dev *pdev = ldev->pcidev;
-+	struct auxiliary_device *aux_dev;
-+	int ret;
-+
-+	i40e_aux_dev = kzalloc(sizeof(*i40e_aux_dev), GFP_KERNEL);
-+	if (!i40e_aux_dev)
-+		return -ENOMEM;
-+
-+	i40e_aux_dev->ldev = ldev;
-+
-+	aux_dev = &i40e_aux_dev->aux_dev;
-+	aux_dev->name = name;
-+	aux_dev->dev.parent = &pdev->dev;
-+	aux_dev->dev.release = i40e_auxiliary_dev_release;
-+	ldev->aux_dev = aux_dev;
-+
-+	ret = ida_alloc(&i40e_client_ida, GFP_KERNEL);
-+	if (ret < 0) {
-+		kfree(i40e_aux_dev);
-+		return ret;
-+	}
-+	aux_dev->id = ret;
-+
-+	ret = auxiliary_device_init(aux_dev);
-+	if (ret < 0) {
-+		ida_free(&i40e_client_ida, aux_dev->id);
-+		kfree(i40e_aux_dev);
-+		return ret;
-+	}
-+
-+	ret = auxiliary_device_add(aux_dev);
-+	if (ret) {
-+		auxiliary_device_uninit(aux_dev);
-+		return ret;
-+	}
-+
-+	return ret;
-+}
-+
- /**
-  * i40e_client_add_instance - add a client instance struct to the instance list
-  * @pf: pointer to the board struct
-@@ -286,9 +338,6 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	struct netdev_hw_addr *mac = NULL;
- 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
- 
--	if (!registered_client || pf->cinst)
--		return;
--
- 	cdev = kzalloc(sizeof(*cdev), GFP_KERNEL);
- 	if (!cdev)
- 		return;
-@@ -308,11 +357,8 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	cdev->lan_info.fw_build = pf->hw.aq.fw_build;
- 	set_bit(__I40E_CLIENT_INSTANCE_NONE, &cdev->state);
- 
--	if (i40e_client_get_params(vsi, &cdev->lan_info.params)) {
--		kfree(cdev);
--		cdev = NULL;
--		return;
--	}
-+	if (i40e_client_get_params(vsi, &cdev->lan_info.params))
-+		goto free_cdev;
- 
- 	mac = list_first_entry(&cdev->lan_info.netdev->dev_addrs.list,
- 			       struct netdev_hw_addr, list);
-@@ -324,7 +370,17 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	cdev->client = registered_client;
- 	pf->cinst = cdev;
- 
--	i40e_client_update_msix_info(pf);
-+	cdev->lan_info.msix_count = pf->num_iwarp_msix;
-+	cdev->lan_info.msix_entries = &pf->msix_entries[pf->iwarp_base_vector];
-+
-+	if (i40e_register_auxiliary_dev(&cdev->lan_info, "iwarp"))
-+		goto free_cdev;
-+
-+	return;
-+
-+free_cdev:
-+	kfree(cdev);
-+	pf->cinst = NULL;
- }
- 
- /**
-@@ -345,7 +401,7 @@ void i40e_client_del_instance(struct i40e_pf *pf)
-  **/
- void i40e_client_subtask(struct i40e_pf *pf)
- {
--	struct i40e_client *client = registered_client;
-+	struct i40e_client *client;
- 	struct i40e_client_instance *cdev;
- 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
- 	int ret = 0;
-@@ -359,9 +415,11 @@ void i40e_client_subtask(struct i40e_pf *pf)
- 	    test_bit(__I40E_CONFIG_BUSY, pf->state))
- 		return;
- 
--	if (!client || !cdev)
-+	if (!cdev || !cdev->client)
- 		return;
- 
-+	client = cdev->client;
-+
- 	/* Here we handle client opens. If the client is down, and
- 	 * the netdev is registered, then open the client.
- 	 */
-@@ -423,16 +481,8 @@ int i40e_lan_add_device(struct i40e_pf *pf)
- 		 pf->hw.pf_id, pf->hw.bus.bus_id,
- 		 pf->hw.bus.device, pf->hw.bus.func);
- 
--	/* If a client has already been registered, we need to add an instance
--	 * of it to our new LAN device.
--	 */
--	if (registered_client)
--		i40e_client_add_instance(pf);
-+	i40e_client_add_instance(pf);
- 
--	/* Since in some cases register may have happened before a device gets
--	 * added, we can schedule a subtask to go initiate the clients if
--	 * they can be launched at probe time.
--	 */
- 	set_bit(__I40E_CLIENT_SERVICE_REQUESTED, pf->state);
- 	i40e_service_event_schedule(pf);
- 
-@@ -449,9 +499,13 @@ int i40e_lan_add_device(struct i40e_pf *pf)
-  **/
- int i40e_lan_del_device(struct i40e_pf *pf)
- {
-+	struct auxiliary_device *aux_dev = pf->cinst->lan_info.aux_dev;
- 	struct i40e_device *ldev, *tmp;
- 	int ret = -ENODEV;
- 
-+	auxiliary_device_delete(aux_dev);
-+	auxiliary_device_uninit(aux_dev);
-+
- 	/* First, remove any client instance. */
- 	i40e_client_del_instance(pf);
- 
-@@ -732,6 +786,42 @@ static int i40e_client_update_vsi_ctxt(struct i40e_info *ldev,
- 	return err;
- }
- 
-+void i40e_client_device_register(struct i40e_info *ldev, struct i40e_client *client)
-+{
-+	struct i40e_pf *pf = ldev->pf;
-+
-+	pf->cinst->client = client;
-+	set_bit(__I40E_CLIENT_SERVICE_REQUESTED, pf->state);
-+	i40e_service_event_schedule(pf);
-+}
-+EXPORT_SYMBOL_GPL(i40e_client_device_register);
-+
-+void i40e_client_device_unregister(struct i40e_info *ldev)
-+{
-+	struct i40e_pf *pf = ldev->pf;
-+	struct i40e_client_instance *cdev = pf->cinst;
-+
-+	if (!cdev)
-+		return;
-+
-+	while (test_and_set_bit(__I40E_SERVICE_SCHED, pf->state))
-+		usleep_range(500, 1000);
-+
-+	if (test_bit(__I40E_CLIENT_INSTANCE_OPENED, &cdev->state)) {
-+		cdev->client->ops->close(&cdev->lan_info, cdev->client, false);
-+		clear_bit(__I40E_CLIENT_INSTANCE_OPENED, &cdev->state);
-+		i40e_client_release_qvlist(&cdev->lan_info);
-+	}
-+
-+	pf->cinst->client = NULL;
-+	clear_bit(__I40E_SERVICE_SCHED, pf->state);
-+}
-+EXPORT_SYMBOL_GPL(i40e_client_device_unregister);
-+
-+/* Retain these legacy global registration/unregistration calls till i40iw is
-+ * removed from the kernel. The irdma unified driver does not use these
-+ * exported symbols.
-+ */
- /**
-  * i40e_register_client - Register a i40e client driver with the L2 driver
-  * @client: pointer to the i40e_client struct
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 704e474879c5..9db1968fc491 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -16270,6 +16270,7 @@ static void __exit i40e_exit_module(void)
- {
- 	pci_unregister_driver(&i40e_driver);
- 	destroy_workqueue(i40e_wq);
-+	ida_destroy(&i40e_client_ida);
- 	i40e_dbg_exit();
- }
- module_exit(i40e_exit_module);
 -- 
-2.26.2
-
+Himanshu Madhani                                Oracle Linux Engineering
