@@ -2,125 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4142C38BFF3
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 08:47:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC0D738C05A
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 09:07:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232930AbhEUGsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 02:48:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
+        id S235170AbhEUHIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 03:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232533AbhEUGs2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 02:48:28 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C76C0C061763
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 23:46:51 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id h7so9251010qvs.12
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 23:46:51 -0700 (PDT)
+        with ESMTP id S235360AbhEUHIu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 03:08:50 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F06C06138E
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 00:04:52 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id v4so14667241qtp.1
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 00:04:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xkcqft7IFEvhd4rZvjQTycxIt/7SM6fwOYhfxgeUU/8=;
-        b=xo/iAwYxJFXLPRSYNkmZEM2ANcZrrcj3GAONNgnSnSC638ALOC9rea3BwxJKqqKR6K
-         Ihjuh9mP6DeDWgHlQnlSQbLRAIKzw2PQNax6T5QrU+BWLongmcDSf6GoT61qaIyD4nyF
-         QarSQPEdt0v+Bd1scWWrQMa6o2mX/3lQkT3oUfH5AXBDXB7R6IqdQHgnjfvmIZd4zk2Y
-         Ch9SKaPUM4gsnzec4VyjxS+MoVrMuCaC3qsBJFBlSGtrDcdIQTJu43Gc19+IBSjbgbLd
-         1LLnm8ApGBusoVOotvcMbsvXR81pQpUlJoCyI+T18FDepApOAnA0GOkojSssaB3jLMHv
-         n/tg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AEw/2V7/xpmVmNpjjOkVlxPAcJgRBwQ9KZP9S0+LhGs=;
+        b=vgb3uAFmlPGVXAd91EJa6J4LHy8LHu+U29axDVp5UZhMh+fe91loAj1CTq+Gdm3t9H
+         HDxcGhiah+7YPM/Hk6PLL4W0/2u1/z0X5YNxOVspAv2Ku8vnZPWkQti+J9JjowrHG7bI
+         z46AGqk0o6qyNmV3pBM2jC81hIDUfUkrkQXCDBc/ci7c8Fqt3LcLGF/q25GEFtJVbDQg
+         3TDJUYCgV+ROCX6L2zmMWVjPqOGLgLDwjeMTsS2XWhjM5OwAL2QoEzl17X1Kk5AzWcYs
+         8wXTqDa+d6CARDy0yZ8IJ7ZvbYrcC9aYEzH9LO7cWosbxY/dBTZeQz1MxNs7qKVEc5J7
+         TAKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xkcqft7IFEvhd4rZvjQTycxIt/7SM6fwOYhfxgeUU/8=;
-        b=HVZBtNpetWzAsFxE/CrpjU2/tSxDY/ERea7M34UVKqOrrivuEl/bdItXGV0oktIwsG
-         f/yZaFnhQ726UAktTNaXwYnYrkBVpLCxmmNpNW8znqMa62sVP9OU318F62aSxyGthxzA
-         y8PotHo6q2nQJBdOMb3e4Xvil8xCtxs2Cqas0FoZVLkOLP9ON+l0fQG45DvRMr6MrF2O
-         bqx/fYUtBz40Miq+KSDtp2Irs8Mq1IWAsqT1gUGi77VlD2yd8dGckUqsk6KBsU4KJ+2C
-         L1THcE2gdsNMtPjGoaqkb2FjVGnxDL/V3brj+eVJw8+qxObkqQ/E1qqIikVzmBCi3+UY
-         j8eQ==
-X-Gm-Message-State: AOAM530HSK4C+88KWTWpRfmuBvY4UdNbwy+MbS8f5iQIQAHG0vpeJGkQ
-        9bmBWbMSyHm+V4etzcNzl9BvgQ==
-X-Google-Smtp-Source: ABdhPJxcICEBMFCt1GiRkk4SvPNNmZMH+gOwPEnggK6FMXD6xNVIjbAMGMBB3NFDHXiMip3sLjpz6w==
-X-Received: by 2002:a0c:9c0f:: with SMTP id v15mr10879355qve.24.1621579610100;
-        Thu, 20 May 2021 23:46:50 -0700 (PDT)
-Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id h3sm4202813qkk.82.2021.05.20.23.46.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 May 2021 23:46:49 -0700 (PDT)
-Date:   Fri, 21 May 2021 10:46:45 +0400
-From:   Dmitrii Banshchikov <me@ubique.spb.ru>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, Andrey Ignatov <rdna@fb.com>
-Subject: Re: [PATCH bpf-next 02/11] bpfilter: Add logging facility
-Message-ID: <20210521064645.xhligmlrremyva4q@amnesia>
-References: <20210517225308.720677-1-me@ubique.spb.ru>
- <20210517225308.720677-3-me@ubique.spb.ru>
- <CAPhsuW4osuNOagPRwUB30tk3V=ECANktt9jzb+NK1mqOamouSQ@mail.gmail.com>
- <20210520070807.cpmloff4urdsifuy@amnesia>
- <681F9A5A-63F0-432A-B188-CF4FC11AF2A8@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AEw/2V7/xpmVmNpjjOkVlxPAcJgRBwQ9KZP9S0+LhGs=;
+        b=Bc6o3yXINLQsNWvnqA+WcmAbYYL2d7kGkqC4vQgJS9+EqUqTkMjbkoaxOzOFBMYOJK
+         WQ7DuemWx4ABHCRlPIjfhaHrm81z83Lqr21WVJqKy91e3rXMe4gmnXRp1EHOWO3XN+N5
+         6c8HnvcNkT5YmLiiBFzlzR3/t4O/Iiy6kH+EFbcebmbt81Fw5vRWP9nMPtizmEkcY/Xv
+         +HJk/aSYt36+Sq66EbzJ+MTFiOgJreYf80fkH5PKLNnjFuIYcPP341pOcWekwJl8Ajb8
+         SbWC8qzsS7g+rd6KH6GFBx5IG+rr6422WoYDx9fkcx6lWo9z8GT4/B5YjeHk4RIoLJx6
+         IRMw==
+X-Gm-Message-State: AOAM532E9NcxzNKbgpf7f3e+NJQscTF249KZwOnFhl1ipGuOHKeXs2IZ
+        wMl90yteW7ZvAfF4mP2vZzgJ0VsFW+ravHYBHXh1BQ==
+X-Google-Smtp-Source: ABdhPJxBl69YJ2DivfUpEV1speNJDfx8ufFZ4oirpKc3gjTnIcoQhKPkIj8PsdvtwiF9BnwCBN/zC96sHLv1rhA0bxc=
+X-Received: by 2002:ac8:4e21:: with SMTP id d1mr9657232qtw.290.1621580691240;
+ Fri, 21 May 2021 00:04:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <681F9A5A-63F0-432A-B188-CF4FC11AF2A8@fb.com>
+References: <0000000000003687bd05c2b2401d@google.com> <CACT4Y+YJDGFN4q-aTPritnjjHEXiFovOm9eO6Ay4xC1YOa5z3w@mail.gmail.com>
+ <c545268c-fe62-883c-4c46-974b3bb3cea1@infradead.org> <CACT4Y+aEtYPAdrU7KkE303yDw__QiG7m1tWVJewV8C_Mt9=1qg@mail.gmail.com>
+ <208cd812-214f-ef2f-26ec-cc7a73953885@i-love.sakura.ne.jp>
+In-Reply-To: <208cd812-214f-ef2f-26ec-cc7a73953885@i-love.sakura.ne.jp>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Fri, 21 May 2021 09:04:39 +0200
+Message-ID: <CACT4Y+Y8KmaoEj0L8g=wX4owS38mjNLVMMLsjyoN8DU9n=FrrQ@mail.gmail.com>
+Subject: Re: [syzbot] BUG: MAX_LOCKDEP_KEYS too low! (2)
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        David Miller <davem@davemloft.net>,
+        syzbot <syzbot+a70a6358abd2c3f9550f@syzkaller.appspotmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 04:35:45PM +0000, Song Liu wrote:
-> 
-> 
-> > On May 20, 2021, at 12:08 AM, Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
-> > 
-> > On Wed, May 19, 2021 at 10:32:25AM -0700, Song Liu wrote:
-> >> On Tue, May 18, 2021 at 11:05 PM Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
-> >>> 
-> >>> There are three logging levels for messages: FATAL, NOTICE and DEBUG.
-> >>> When a message is logged with FATAL level it results in bpfilter
-> >>> usermode helper termination.
-> >> 
-> >> Could you please explain why we choose to have 3 levels? Will we need
-> >> more levels,
-> >> like WARNING, ERROR, etc.?
-> > 
-> > 
-> > I found that I need one level for development - to trace what
-> > goes rignt and wrong. At the same time as those messages go to
-> > dmesg this level is too verbose to be used under normal
-> > circumstances. That is why another level is introduced. And the
-> > last one exists to verify invariants or error condintions from
-> > which there is no right way to recover and they result in
-> > bpfilter termination.
-> 
-> /dev/kmsg supports specifying priority of the message. Like:
-> 
->    echo '<4> This message have priority of 4' > /dev/kmsg
-> 
-> Therefore, with proper priority settings, we can have more levels safely.
-> Does this make sense?
+On Thu, May 20, 2021 at 7:02 AM Tetsuo Handa
+<penguin-kernel@i-love.sakura.ne.jp> wrote:
+>
+> On 2021/05/20 5:09, Dmitry Vyukov wrote:
+> > On Wed, May 19, 2021 at 9:58 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+> >>
+> >> On 5/19/21 12:48 PM, Dmitry Vyukov wrote:
+> >>> On Wed, May 19, 2021 at 7:35 PM syzbot
+> >>> <syzbot+a70a6358abd2c3f9550f@syzkaller.appspotmail.com> wrote:
+> >>>>
+> >>>> Hello,
+> >>>>
+> >>>> syzbot found the following issue on:
+> >>>>
+> >>>> HEAD commit:    b81ac784 net: cdc_eem: fix URL to CDC EEM 1.0 spec
+> >>>> git tree:       net
+> >>>> console output: https://syzkaller.appspot.com/x/log.txt?x=15a257c3d00000
+> >>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=5b86a12e0d1933b5
+> >>>> dashboard link: https://syzkaller.appspot.com/bug?extid=a70a6358abd2c3f9550f
+> >>>>
+> >>>> Unfortunately, I don't have any reproducer for this issue yet.
+> >>>>
+> >>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> >>>> Reported-by: syzbot+a70a6358abd2c3f9550f@syzkaller.appspotmail.com
+> >>>>
+> >>>> BUG: MAX_LOCKDEP_KEYS too low!
+> >>>
+> >>
+> >> include/linux/lockdep.h
+> >>
+> >> #define MAX_LOCKDEP_KEYS_BITS           13
+> >> #define MAX_LOCKDEP_KEYS                (1UL << MAX_LOCKDEP_KEYS_BITS)
+> >
+> > Ouch, so it's not configurable yet :(
+>
+> I didn't try to make this value configurable, for
+>
+> > Unless, of course, we identify the offender that produced thousands of
+> > lock classes in the log and fix it.
+>
+> number of currently active locks should decrease over time.
+> If this message is printed, increasing this value unlikely helps.
+>
+> We have https://lkml.kernel.org/r/c099ad52-0c2c-b886-bae2-c64bd8626452@ozlabs.ru
+> which seems to be unresolved.
+>
+> Regarding this report, cleanup of bonding device is too slow to catch up to
+> creation of bonding device?
+>
+> We might need to throttle creation of BPF, bonding etc. which involve WQ operation for clean up?
 
-Yes, it makes.
-BPFILTER_FATAL should be renamed to BPFILTER_EMERG to match
-printk() counterpart. All bpfilter log levels should match
-printk() levels. All bpfilter log messages should include log
-level. And BPFILTER_DEBUG should be easily turned on/off during
-compilation to enable tracing/debug.
+I see, thanks for digging into it.
 
+Unbounded asynchronous queueing is always a recipe for disaster... I
+assume such issues can affect production as well, if some program
+creates namespaces/devices in a loop. So I think ideally such things
+are throttled/restricted in the kernel, e.g. new namespaces/devices
+are not created if some threshold is reached.
 
-> 
-> Thanks,
-> Song
-> 
-> [...]
-> 
-
--- 
-
-Dmitrii Banshchikov
+Potentially syzkaller could throttle creation of new
+namespaces/devices if we find a good and reliable way to monitor
+backlog. Something like the length of a particular workqueue. It may
+also help with OOMs. But so far I haven't found it.
