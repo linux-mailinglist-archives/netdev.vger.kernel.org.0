@@ -2,241 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1293338C61B
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 13:58:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10CFD38C62B
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 14:03:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234264AbhEUL7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 07:59:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
+        id S230391AbhEUMEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 08:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231706AbhEUL7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 07:59:03 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAF2C061574
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 04:57:39 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lk3mP-0007Wd-IE; Fri, 21 May 2021 13:57:25 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lk3mL-0001z8-Jc; Fri, 21 May 2021 13:57:21 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Robin van der Gracht <robin@protonic.nl>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Hillf Danton <hdanton@sina.com>,
-        syzbot+220c1a29987a9a490903@syzkaller.appspotmail.com,
-        syzbot+45199c1b73b4013525cf@syzkaller.appspotmail.com,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v1] can: j1939: fix Use-after-Free, hold skb ref while in use
-Date:   Fri, 21 May 2021 13:57:20 +0200
-Message-Id: <20210521115720.7533-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
+        with ESMTP id S229512AbhEUMEb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 08:04:31 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7C0C061574;
+        Fri, 21 May 2021 05:03:08 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1621598586;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=73BhFEnE00P9EM7W8eDaV9ldNZ5X2YG6+sa8CRY7WwM=;
+        b=L25M5Zy6NkFNkFQBlo/MBFeB3Te3ulISHeXqR86FRlFCq8g6/qWe3XZ9/pwYYjkJ12704U
+        q9oPzIRd0iGCg1nN3gY3diTI02L0JBvQSKYWgiTFFoH/ZRePhtv2PYf5UsVDswqr7r+DwQ
+        5zJSxlP4BkqdpHUn2cv5x/8f/hXJK1toxKuforc+pQ193/UextIlqjeeGgMSPvANL+vr+p
+        iIg82cUse/0NSDAEaaV0af9Jig2TmfUADkV5cd6/QqMDOfDCFqcqJJG1rZUTNJ//Gl1gZp
+        6xZSGTHaCw0eAQW50oGNbgCMYvaZatY6jV+UxSdVx1J3k1tD1GaaYLHk1Vh6Qw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1621598586;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=73BhFEnE00P9EM7W8eDaV9ldNZ5X2YG6+sa8CRY7WwM=;
+        b=HEmmL6baryu7dXT+7IwyJWArNzSXr5UDH3j4xtBPCKgdAYRJHTQFzFPDgdTW9qDXx7Dk2G
+        3SF1UU9zwPJyrCBA==
+To:     Nitesh Lal <nilal@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        "frederic\@kernel.org" <frederic@kernel.org>,
+        "juri.lelli\@redhat.com" <juri.lelli@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas\@google.com" <bhelgaas@google.com>,
+        "linux-pci\@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
+        "peterz\@infradead.org" <peterz@infradead.org>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "akpm\@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr\@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen\@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt\@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi\@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun\@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Marc Zyngier <maz@kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com
+Subject: [PATCH] genirq: Provide new interfaces for affinity hints
+In-Reply-To: <87zgwo9u79.ffs@nanos.tec.linutronix.de>
+References: <20210504092340.00006c61@intel.com> <87pmxpdr32.ffs@nanos.tec.linutronix.de> <CAFki+Lkjn2VCBcLSAfQZ2PEkx-TR0Ts_jPnK9b-5ne3PUX37TQ@mail.gmail.com> <87im3gewlu.ffs@nanos.tec.linutronix.de> <CAFki+L=gp10W1ygv7zdsee=BUGpx9yPAckKr7pyo=tkFJPciEg@mail.gmail.com> <CAFki+L=eQoMq+mWhw_jVT-biyuDXpxbXY5nO+F6HvCtpbG9V2w@mail.gmail.com> <CAFki+LkB1sk3mOv4dd1D-SoPWHOs28ZwN-PqL_6xBk=Qkm40Lw@mail.gmail.com> <87zgwo9u79.ffs@nanos.tec.linutronix.de>
+Date:   Fri, 21 May 2021 14:03:06 +0200
+Message-ID: <87wnrs9tvp.ffs@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a Use-after-Free found by the syzbot.
+The discussion about removing the side effect of irq_set_affinity_hint() of
+actually applying the cpumask (if not NULL) as affinity to the interrupt,
+unearthed a few unpleasantries:
 
-The problem is that a skb is taken from the per-session skb queue,
-without incrementing the ref count. This leads to a Use-after-Free if
-the skb is taken concurrently from the session queue due to a CTS.
+  1) The modular perf drivers rely on the current behaviour for the very
+     wrong reasons.
 
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Cc: Hillf Danton <hdanton@sina.com>
-Reported-by: syzbot+220c1a29987a9a490903@syzkaller.appspotmail.com
-Reported-by: syzbot+45199c1b73b4013525cf@syzkaller.appspotmail.com
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+  2) While none of the other drivers prevents user space from changing
+     the affinity, a cursorily inspection shows that there are at least
+     expectations in some drivers.
+
+#1 needs to be cleaned up anyway, so that's not a problem
+
+#2 might result in subtle regressions especially when irqbalanced (which
+   nowadays ignores the affinity hint) is disabled.
+
+Provide new interfaces:
+
+  irq_update_affinity_hint() - Only sets the affinity hint pointer
+  irq_apply_affinity_hint()  - Set the pointer and apply the affinity to
+  			       the interrupt
+
+Make irq_set_affinity_hint() a wrapper around irq_apply_affinity_hint() and
+document it to be phased out.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20210501021832.743094-1-jesse.brandeburg@intel.com
 ---
- net/can/j1939/transport.c | 54 +++++++++++++++++++++++++++++----------
- 1 file changed, 40 insertions(+), 14 deletions(-)
+Applies on:
+   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
+---
+ include/linux/interrupt.h |   41 ++++++++++++++++++++++++++++++++++++++++-
+ kernel/irq/manage.c       |    8 ++++----
+ 2 files changed, 44 insertions(+), 5 deletions(-)
 
-diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-index e09d087ba240..c3946c355882 100644
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -330,6 +330,9 @@ static void j1939_session_skb_drop_old(struct j1939_session *session)
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -328,7 +328,46 @@ extern int irq_force_affinity(unsigned i
+ extern int irq_can_set_affinity(unsigned int irq);
+ extern int irq_select_affinity(unsigned int irq);
  
- 	if ((do_skcb->offset + do_skb->len) < offset_start) {
- 		__skb_unlink(do_skb, &session->skb_queue);
-+		/* drop ref taken in j1939_session_skb_queue() */
-+		skb_unref(do_skb);
+-extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
++extern int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
++				     bool setaffinity);
 +
- 		kfree_skb(do_skb);
- 	}
- 	spin_unlock_irqrestore(&session->skb_queue.lock, flags);
-@@ -349,12 +352,13 @@ void j1939_session_skb_queue(struct j1939_session *session,
++/**
++ * irq_update_affinity_hint - Update the affinity hint
++ * @irq:	Interrupt to update
++ * @cpumask:	cpumask pointer (NULL to clear the hint)
++ *
++ * Updates the affinity hint, but does not change the affinity of the interrupt.
++ */
++static inline int
++irq_update_affinity_hint(unsigned int irq, const struct cpumask *m)
++{
++	return __irq_apply_affinity_hint(irq, m, true);
++}
++
++/**
++ * irq_apply_affinity_hint - Update the affinity hint and apply the provided
++ *			     cpumask to the interrupt
++ * @irq:	Interrupt to update
++ * @cpumask:	cpumask pointer (NULL to clear the hint)
++ *
++ * Updates the affinity hint and if @cpumask is not NULL it applies it as
++ * the affinity of that interrupt.
++ */
++static inline int
++irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m)
++{
++	return __irq_apply_affinity_hint(irq, m, true);
++}
++
++/*
++ * Deprecated. Use irq_update_affinity_hint() or irq_apply_affinity_hint()
++ * instead.
++ */
++static inline int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
++{
++	return irq_apply_affinity_hint(irq, cpumask);
++}
++
+ extern int irq_update_affinity_desc(unsigned int irq,
+ 				    struct irq_affinity_desc *affinity);
  
- 	skcb->flags |= J1939_ECU_LOCAL_SRC;
- 
-+	skb_get(skb);
- 	skb_queue_tail(&session->skb_queue, skb);
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -487,7 +487,8 @@ int irq_force_affinity(unsigned int irq,
  }
+ EXPORT_SYMBOL_GPL(irq_force_affinity);
  
- static struct
--sk_buff *j1939_session_skb_find_by_offset(struct j1939_session *session,
--					  unsigned int offset_start)
-+sk_buff *j1939_session_skb_get_by_offset(struct j1939_session *session,
-+					 unsigned int offset_start)
+-int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
++int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
++			      bool setaffinity)
  {
- 	struct j1939_priv *priv = session->priv;
- 	struct j1939_sk_buff_cb *do_skcb;
-@@ -371,6 +375,10 @@ sk_buff *j1939_session_skb_find_by_offset(struct j1939_session *session,
- 			skb = do_skb;
- 		}
- 	}
-+
-+	if (skb)
-+		skb_get(skb);
-+
- 	spin_unlock_irqrestore(&session->skb_queue.lock, flags);
- 
- 	if (!skb)
-@@ -381,12 +389,12 @@ sk_buff *j1939_session_skb_find_by_offset(struct j1939_session *session,
- 	return skb;
+ 	unsigned long flags;
+ 	struct irq_desc *desc = irq_get_desc_lock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
+@@ -496,12 +497,11 @@ int irq_set_affinity_hint(unsigned int i
+ 		return -EINVAL;
+ 	desc->affinity_hint = m;
+ 	irq_put_desc_unlock(desc, flags);
+-	/* set the initial affinity to prevent every interrupt being on CPU0 */
+-	if (m)
++	if (m && setaffinity)
+ 		__irq_set_affinity(irq, m, false);
+ 	return 0;
  }
+-EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
++EXPORT_SYMBOL_GPL(__irq_apply_affinity_hint);
  
--static struct sk_buff *j1939_session_skb_find(struct j1939_session *session)
-+static struct sk_buff *j1939_session_skb_get(struct j1939_session *session)
+ static void irq_affinity_notify(struct work_struct *work)
  {
- 	unsigned int offset_start;
- 
- 	offset_start = session->pkt.dpo * 7;
--	return j1939_session_skb_find_by_offset(session, offset_start);
-+	return j1939_session_skb_get_by_offset(session, offset_start);
- }
- 
- /* see if we are receiver
-@@ -776,7 +784,7 @@ static int j1939_session_tx_dat(struct j1939_session *session)
- 	int ret = 0;
- 	u8 dat[8];
- 
--	se_skb = j1939_session_skb_find_by_offset(session, session->pkt.tx * 7);
-+	se_skb = j1939_session_skb_get_by_offset(session, session->pkt.tx * 7);
- 	if (!se_skb)
- 		return -ENOBUFS;
- 
-@@ -801,7 +809,8 @@ static int j1939_session_tx_dat(struct j1939_session *session)
- 			netdev_err_once(priv->ndev,
- 					"%s: 0x%p: requested data outside of queued buffer: offset %i, len %i, pkt.tx: %i\n",
- 					__func__, session, skcb->offset, se_skb->len , session->pkt.tx);
--			return -EOVERFLOW;
-+			ret = -EOVERFLOW;
-+			goto out_free;
- 		}
- 
- 		if (!len) {
-@@ -835,6 +844,12 @@ static int j1939_session_tx_dat(struct j1939_session *session)
- 	if (pkt_done)
- 		j1939_tp_set_rxtimeout(session, 250);
- 
-+ out_free:
-+	if (ret)
-+		kfree_skb(se_skb);
-+	else
-+		consume_skb(se_skb);
-+
- 	return ret;
- }
- 
-@@ -1007,7 +1022,7 @@ static int j1939_xtp_txnext_receiver(struct j1939_session *session)
- static int j1939_simple_txnext(struct j1939_session *session)
- {
- 	struct j1939_priv *priv = session->priv;
--	struct sk_buff *se_skb = j1939_session_skb_find(session);
-+	struct sk_buff *se_skb = j1939_session_skb_get(session);
- 	struct sk_buff *skb;
- 	int ret;
- 
-@@ -1015,8 +1030,10 @@ static int j1939_simple_txnext(struct j1939_session *session)
- 		return 0;
- 
- 	skb = skb_clone(se_skb, GFP_ATOMIC);
--	if (!skb)
--		return -ENOMEM;
-+	if (!skb) {
-+		ret = -ENOMEM;
-+		goto out_free;
-+	}
- 
- 	can_skb_set_owner(skb, se_skb->sk);
- 
-@@ -1024,12 +1041,18 @@ static int j1939_simple_txnext(struct j1939_session *session)
- 
- 	ret = j1939_send_one(priv, skb);
- 	if (ret)
--		return ret;
-+		goto out_free;
- 
- 	j1939_sk_errqueue(session, J1939_ERRQUEUE_SCHED);
- 	j1939_sk_queue_activate_next(session);
- 
--	return 0;
-+ out_free:
-+	if (ret)
-+		kfree_skb(se_skb);
-+	else
-+		consume_skb(se_skb);
-+
-+	return ret;
- }
- 
- static bool j1939_session_deactivate_locked(struct j1939_session *session)
-@@ -1170,9 +1193,10 @@ static void j1939_session_completed(struct j1939_session *session)
- 	struct sk_buff *skb;
- 
- 	if (!session->transmission) {
--		skb = j1939_session_skb_find(session);
-+		skb = j1939_session_skb_get(session);
- 		/* distribute among j1939 receivers */
- 		j1939_sk_recv(session->priv, skb);
-+		consume_skb(skb);
- 	}
- 
- 	j1939_session_deactivate_activate_next(session);
-@@ -1744,7 +1768,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
- {
- 	struct j1939_priv *priv = session->priv;
- 	struct j1939_sk_buff_cb *skcb;
--	struct sk_buff *se_skb;
-+	struct sk_buff *se_skb = NULL;
- 	const u8 *dat;
- 	u8 *tpdat;
- 	int offset;
-@@ -1786,7 +1810,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
- 		goto out_session_cancel;
- 	}
- 
--	se_skb = j1939_session_skb_find_by_offset(session, packet * 7);
-+	se_skb = j1939_session_skb_get_by_offset(session, packet * 7);
- 	if (!se_skb) {
- 		netdev_warn(priv->ndev, "%s: 0x%p: no skb found\n", __func__,
- 			    session);
-@@ -1848,11 +1872,13 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
- 		j1939_tp_set_rxtimeout(session, 250);
- 	}
- 	session->last_cmd = 0xff;
-+	consume_skb(se_skb);
- 	j1939_session_put(session);
- 
- 	return;
- 
-  out_session_cancel:
-+	kfree_skb(se_skb);
- 	j1939_session_timers_cancel(session);
- 	j1939_session_cancel(session, J1939_XTP_ABORT_FAULT);
- 	j1939_session_put(session);
--- 
-2.29.2
-
