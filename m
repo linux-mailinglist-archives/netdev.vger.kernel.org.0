@@ -2,119 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BEF438D20D
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 01:40:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53EF338D213
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 01:42:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230157AbhEUXla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 19:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbhEUXl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 19:41:29 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE60C061574;
-        Fri, 21 May 2021 16:40:06 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id t193so15445473pgb.4;
-        Fri, 21 May 2021 16:40:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p9pEshn70i3/F8zDHAvfBp+zto3tjMu5UZEkuuxo6Xk=;
-        b=VQTnUuDyMCXEkrsuj5Ae0Itdwk7pNSMzmLJJYTauOBJm4Ir7Bz9ZZO5BdH7+nOfI7f
-         uVz7Q1wLOD6z2Ub8HumtMw6rUPv2wQrJXbeJm6BwT7nzlE5Zw+2KQsYcNkRjWiD++rM4
-         94j2iM1i0ZuDrrO3/Z5bSnTb3Wdtc8SHIOYdVnR0rntfWjFAGgS/32+gRUO/fumLjyie
-         f69rumsVk8EYNERj2nlln+yX53kPwx07R4R2NEqqfHHCI4uKS6IxhZHU2VDj2Z22O6Qp
-         KJywySDBVtMI9HbONhCjKd+Wm1Tnma4YD3vdpRbY5G9G4LGq45z6YO4qSf/4oNCMA4g4
-         w5Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p9pEshn70i3/F8zDHAvfBp+zto3tjMu5UZEkuuxo6Xk=;
-        b=b6UXWZvpaAa8xVT2WNP5OHwApp7LrtNzjUgd87Kk2nczehQEEht2y6jPmJMs8IET+d
-         56URhtdVe21uzD/9QEJ+hSElx8zGIVrY9k93gk2z1V+sQRWWBzAHda52HRHAwd2+J3kJ
-         wgUJFvXJ/eGCHDLrL+SS8/i0SG4cKWE78NclayTGLande1LfS9GA3wtfoezuPUPi5uOb
-         BSPL6A+3vyDqIJyTQCHSaIauEDh8MPcOfy9Kzf2m05sVQMRe4aruRko9/fejg68SgZHW
-         l7KLU6VyBqwxxZdrcOdBME6uonI3saW39AN1AaIpZxOQWhQONFg31nCPWYKLZO0F3xSZ
-         5H9A==
-X-Gm-Message-State: AOAM530i4h/F9QQQPMrLDe9xbzz5KErjutRf3SpvhL/LmpjKLI2IcS5T
-        oGyLIPKEiBXt91xh2yVx91u9ot9sUebKZeajPw3XnxzS6GW52A==
-X-Google-Smtp-Source: ABdhPJynhZq53u41wRMGZudNFKL77KkNK0y7NqOCIsN/qdqiGYdx7zVXADDdDbxiVxetlvNV2yt43kk/ZNt4EBd0Cys=
-X-Received: by 2002:a63:e709:: with SMTP id b9mr1241070pgi.18.1621640405536;
- Fri, 21 May 2021 16:40:05 -0700 (PDT)
+        id S230150AbhEUXnu convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 21 May 2021 19:43:50 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:60882 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230114AbhEUXns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 19:43:48 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14LNfVUR023175
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 16:42:24 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 38p4yt5qh4-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 16:42:24 -0700
+Received: from intmgw002.06.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 21 May 2021 16:42:22 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 475222EDB019; Fri, 21 May 2021 16:42:05 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH bpf-next 0/5] libbpf: error reporting changes for v1.0
+Date:   Fri, 21 May 2021 16:42:03 -0700
+Message-ID: <20210521234203.1283033-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: lRJDW8_3zl2px-rIv6x8S629G24xf495
+X-Proofpoint-GUID: lRJDW8_3zl2px-rIv6x8S629G24xf495
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20210517022322.50501-1-xiyou.wangcong@gmail.com>
- <60a3525d188d9_18a5f208f5@john-XPS-13-9370.notmuch> <CAM_iQpVCfGEA+TOfWvXYxJ1kk9z_thdbvRmZHxhWpuBMx9x2zg@mail.gmail.com>
- <60a41be5629ab_10e7720815@john-XPS-13-9370.notmuch> <CAM_iQpXkYsf=LF=g4aKLmas_9jHNqXGy-P2gi3R4eb65+ktz4A@mail.gmail.com>
- <60a561b63598a_22c462082f@john-XPS-13-9370.notmuch> <CAM_iQpV=XPW08hS3UyakLxPZrujS_HV-BB9bRbnZ1m+vWQytcQ@mail.gmail.com>
- <60a58913d51e2_2aaa72084c@john-XPS-13-9370.notmuch> <CAM_iQpU5HEB_=+ih7_4FKqdkXJ4eYuw_ej5BTOdRK8wFVa7jig@mail.gmail.com>
- <60a69f9f1610_4ea08208a3@john-XPS-13-9370.notmuch> <CAM_iQpWxJrXhdxyhO6O+h1d9dz=4BBk8i-EYrVG6v8ix_0gCnQ@mail.gmail.com>
- <60a82f9c96de2_1c22f2086e@john-XPS-13-9370.notmuch>
-In-Reply-To: <60a82f9c96de2_1c22f2086e@john-XPS-13-9370.notmuch>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 21 May 2021 16:39:54 -0700
-Message-ID: <CAM_iQpUdSQmpH3rWpDUh_xFGDA1NHLjTBCEhv4qAgYh9wyt-pA@mail.gmail.com>
-Subject: Re: [Patch bpf] udp: fix a memory leak in udp_read_sock()
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-21_11:2021-05-20,2021-05-21 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=804
+ bulkscore=0 spamscore=0 suspectscore=0 mlxscore=0 adultscore=0
+ lowpriorityscore=0 impostorscore=0 clxscore=1015 phishscore=0
+ priorityscore=1501 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2104190000 definitions=main-2105210136
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 21, 2021 at 3:09 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> OK either add the counters in this patch or as a series of two
-> patches so we get a complete fix in one series. Without it some
-> box out there will randomly drop UDP packets, probably DNS
-> packets for extra fun, and we will have no way of knowing other
-> than sporadic packet loss. Unless your arguing against having the
-> counters or that the counters don't make sense for some reason?
+Implement error reporting changes discussed in "Libbpf: the road to v1.0"
+([0]) document.
 
-I never object increasing any counter here, My argument is it
-belongs to a separate patch for 3 reasons:
+Libbpf gets a new API, libbpf_set_strict_mode() which accepts a set of flags
+that turn on a set of libbpf 1.0 changes, that might be potentially breaking.
+It's possible to opt-in into all current and future 1.0 features by specifying
+LIBBPF_STRICT_ALL flag.
 
-1) TCP does not have one either, hence needs to fix together;
+When some of the 1.0 "features" are requested, libbpf APIs might behave
+differently. In this patch set a first set of changes are implemented, all
+related to the way libbpf returns errors. See individual patches for details.
 
-2) A patch should fix one bug, not two or more bugs together;
+Patch #1 adds a no-op libbpf_set_strict_mode() functionality to enable
+updating selftests.
 
-3) It is not the only one place which needs to increase the
-counter, all of these kfree_skb()'s need, for example, this one
-inside sk_psock_verdict_recv():
+Patch #2 gets rid of all the bad code patterns that will break in libbpf 1.0
+(exact -1 comparison for low-level APIs, direct IS_ERR() macro usage to check
+pointer-returning APIs for error, etc). These changes make selftest work in
+both legacy and 1.0 libbpf modes. Selftests also opt-in into 100% libbpf 1.0
+mode to automatically gain all the subsequent changes, which will come in
+follow up patches.
 
-        psock = sk_psock(sk);
-        if (unlikely(!psock)) {
-                len = 0;
-                kfree_skb(skb);
-                goto out;
-        }
+Patch #3 streamlines error reporting for low-level APIs wrapping bpf() syscall.
 
-This example also shows it is harder to do so, because
-sk_psock_verdict_recv() is independent of any protocol, it is
-hard to increase a protocol-specific counter there.
+Patch #4 streamlines errors for all the rest APIs.
 
-(Another one is in sk_psock_verdict_apply().)
+Patch #5 ensures that BPF skeletons propagate errors properly as well, as
+currently on error some APIs will return NULL with no way of checking exact
+error code.
 
->
-> > counters either, yet another reason it deserves a separate patch
-> > to address both.
->
-> TCP case is different if we drop packets in a TCP error case
-> thats not a 'lets increment the counters' problem the drop needs
-> to be fixed we can't let data fall out of a TCP stream because
-> no one will retransmit it. We've learned this the hard way.
+  [0] https://docs.google.com/document/d/1UyjTZuPFWiPFyKk1tV5an11_iaRuec6U-ZESZ54nNTY
 
-I think TCP always increases some counter when dropping
-a packet despite of retransmission, for example:
+Andrii Nakryiko (5):
+  libbpf: add libbpf_set_strict_mode() API to turn on libbpf 1.0
+    behaviors
+  selftests/bpf: turn on libbpf 1.0 mode and fix all IS_ERR checks
+  libbpf: streamline error reporting for low-level APIs
+  libbpf: streamline error reporting for high-level APIs
+  bpftool: set errno on skeleton failures and propagate errors
 
-static void tcp_drop(struct sock *sk, struct sk_buff *skb)
-{
-        sk_drops_add(sk, skb);
-        __kfree_skb(skb);
-}
+ tools/bpf/bpftool/gen.c                       |  27 +-
+ tools/lib/bpf/Makefile                        |   1 +
+ tools/lib/bpf/bpf.c                           | 168 ++++--
+ tools/lib/bpf/bpf_prog_linfo.c                |  18 +-
+ tools/lib/bpf/btf.c                           | 302 +++++-----
+ tools/lib/bpf/btf_dump.c                      |  14 +-
+ tools/lib/bpf/libbpf.c                        | 519 ++++++++++--------
+ tools/lib/bpf/libbpf.h                        |   1 +
+ tools/lib/bpf/libbpf.map                      |   5 +
+ tools/lib/bpf/libbpf_errno.c                  |   7 +-
+ tools/lib/bpf/libbpf_internal.h               |  53 ++
+ tools/lib/bpf/libbpf_legacy.h                 |  59 ++
+ tools/lib/bpf/linker.c                        |  22 +-
+ tools/lib/bpf/netlink.c                       |  81 +--
+ tools/lib/bpf/ringbuf.c                       |  26 +-
+ tools/testing/selftests/bpf/bench.c           |   1 +
+ .../selftests/bpf/benchs/bench_rename.c       |   2 +-
+ .../selftests/bpf/benchs/bench_ringbufs.c     |   6 +-
+ .../selftests/bpf/benchs/bench_trigger.c      |   2 +-
+ .../selftests/bpf/prog_tests/attach_probe.c   |  12 +-
+ .../selftests/bpf/prog_tests/bpf_iter.c       |  31 +-
+ .../selftests/bpf/prog_tests/bpf_tcp_ca.c     |   8 +-
+ tools/testing/selftests/bpf/prog_tests/btf.c  |  93 ++--
+ .../selftests/bpf/prog_tests/btf_dump.c       |   8 +-
+ .../selftests/bpf/prog_tests/btf_write.c      |   4 +-
+ .../bpf/prog_tests/cg_storage_multi.c         |  84 +--
+ .../bpf/prog_tests/cgroup_attach_multi.c      |   2 +-
+ .../selftests/bpf/prog_tests/cgroup_link.c    |  14 +-
+ .../bpf/prog_tests/cgroup_skb_sk_lookup.c     |   2 +-
+ .../selftests/bpf/prog_tests/check_mtu.c      |   2 +-
+ .../selftests/bpf/prog_tests/core_reloc.c     |  15 +-
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |  25 +-
+ .../selftests/bpf/prog_tests/flow_dissector.c |   2 +-
+ .../bpf/prog_tests/flow_dissector_reattach.c  |  10 +-
+ .../bpf/prog_tests/get_stack_raw_tp.c         |  10 +-
+ .../prog_tests/get_stackid_cannot_attach.c    |   9 +-
+ .../selftests/bpf/prog_tests/hashmap.c        |   9 +-
+ .../selftests/bpf/prog_tests/kfree_skb.c      |  19 +-
+ .../selftests/bpf/prog_tests/ksyms_btf.c      |   3 +-
+ .../selftests/bpf/prog_tests/link_pinning.c   |   7 +-
+ .../selftests/bpf/prog_tests/obj_name.c       |   8 +-
+ .../selftests/bpf/prog_tests/perf_branches.c  |   4 +-
+ .../selftests/bpf/prog_tests/perf_buffer.c    |   2 +-
+ .../bpf/prog_tests/perf_event_stackmap.c      |   3 +-
+ .../selftests/bpf/prog_tests/probe_user.c     |   7 +-
+ .../selftests/bpf/prog_tests/prog_run_xattr.c |   4 +-
+ .../bpf/prog_tests/raw_tp_test_run.c          |   4 +-
+ .../selftests/bpf/prog_tests/rdonly_maps.c    |   7 +-
+ .../bpf/prog_tests/reference_tracking.c       |   2 +-
+ .../selftests/bpf/prog_tests/resolve_btfids.c |   2 +-
+ .../selftests/bpf/prog_tests/ringbuf_multi.c  |   2 +-
+ .../bpf/prog_tests/select_reuseport.c         |  53 +-
+ .../selftests/bpf/prog_tests/send_signal.c    |   3 +-
+ .../selftests/bpf/prog_tests/sk_lookup.c      |   2 +-
+ .../selftests/bpf/prog_tests/sock_fields.c    |  14 +-
+ .../selftests/bpf/prog_tests/sockmap_basic.c  |   8 +-
+ .../selftests/bpf/prog_tests/sockmap_ktls.c   |   2 +-
+ .../selftests/bpf/prog_tests/sockmap_listen.c |  10 +-
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c  |   3 +-
+ .../selftests/bpf/prog_tests/stacktrace_map.c |   2 +-
+ .../bpf/prog_tests/stacktrace_map_raw_tp.c    |   5 +-
+ .../bpf/prog_tests/tcp_hdr_options.c          |  15 +-
+ .../selftests/bpf/prog_tests/test_overhead.c  |  12 +-
+ .../bpf/prog_tests/trampoline_count.c         |  14 +-
+ .../selftests/bpf/prog_tests/udp_limit.c      |   7 +-
+ .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    |   2 +-
+ .../selftests/bpf/prog_tests/xdp_link.c       |   8 +-
+ tools/testing/selftests/bpf/test_maps.c       | 168 +++---
+ tools/testing/selftests/bpf/test_progs.c      |   3 +
+ tools/testing/selftests/bpf/test_progs.h      |   9 +-
+ .../selftests/bpf/test_tcpnotify_user.c       |   7 +-
+ 71 files changed, 1123 insertions(+), 952 deletions(-)
+ create mode 100644 tools/lib/bpf/libbpf_legacy.h
 
-Thanks.
+-- 
+2.30.2
+
