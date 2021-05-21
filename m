@@ -2,260 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C38B38CAA7
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 18:12:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4DFA38CAB5
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 18:13:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235360AbhEUQN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 12:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36526 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236522AbhEUQN0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 12:13:26 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11ADFC061574
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 09:12:03 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id ne24-20020a17090b3758b029015f2dafecb0so6247032pjb.4
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 09:12:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Qg39hQlAq19vHdFcBq8NvG4CDwowpREHnm0puW3V86o=;
-        b=Q5CpW09NM55Tw8ZKSTDVkJNvGwVLRnAABW9YEi/6wuqd96E5RC09qXBnubLLY5hEl1
-         raZAcDki0jsPfNH89oQ+spcxEYQpB2Y4uSLRiN+BDnMsxA8wAIXU6gBWEkrMxGifOS05
-         s6KLpDm2M0dnXb595/QBZSCNFz/Hpr7X6HH/CWOTHelm6a9PFzUhyRbQEyJxVeBsnxr1
-         93pcVStaL/bQ6gAyOInZlXEb8QWwpQoUD11Jac/VD7lkxRXJzcuKv46pHww83Gy9KD1G
-         dTaHVPl9dARejXFBg0prVP8nIjQRCuFmYdBcbV2tI72CFiXzcN9R3aYQqW7DMcrof67u
-         3m/A==
+        id S237407AbhEUQOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 12:14:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43111 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232265AbhEUQOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 12:14:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621613609;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0dYw+1ty9M4F1TS3R0pdrlfe9TmD8aidnu0vhpgiO6k=;
+        b=ColLrhaayxqwBLjuYZ2gTDqQJ9ptqMg/Qt0IWGdZVs35Lik1rHyvjIrpspsw3mUR9ewAeO
+        c2worbt+sL2GF4LoXIwo9Jh+ME2O4AHTWxD4DOvgcHW1td/h43MyrSNuzhhlA8kYWzen+S
+        2TSYEebo8Yx/rFoOhra6N/nuifpLIqQ=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-427-uB20a5N4PF6rSSuf7cH54A-1; Fri, 21 May 2021 12:13:28 -0400
+X-MC-Unique: uB20a5N4PF6rSSuf7cH54A-1
+Received: by mail-lj1-f199.google.com with SMTP id c16-20020a2ea7900000b02900ef529209ccso9016261ljf.11
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 09:13:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Qg39hQlAq19vHdFcBq8NvG4CDwowpREHnm0puW3V86o=;
-        b=mrtc+inj5UYVyBfClHJ9Gf1n5LKqgyXMVknTW2bIzdjoA1J6KAy5ktNcqV5NZilajz
-         S9DgnWIx2nBncipMR7tjkkN37a8nB41bSLriky/jifWUOCUVptFKlCbCikFB2FnURvJ2
-         Q/D+pjd3PP7mIF/iZ/mab07M/vEe2+s6dMmia/nW8EaJFdvKGRV+U185Qc5p1Micxbcc
-         wmNrLqmzA+dDfCcldN0emI5Vs8fKjvmADl63Jr0FT/wW6lgReijBk4mwdBHfflNdE32t
-         rqwmTxOPgurdeaXKwUoE28P6Pe9StjZEreSpNFzpHMqbkT6jAk4U1JpYNN/PWmKHv1KC
-         9WUw==
-X-Gm-Message-State: AOAM531hasiomqF4HNk5G/ta7Mmu0dD/Sdt2a13M9LDxXTV91tn5K+tE
-        whbbcoTaTfYmQRC5+sX4O5dyrhLSXWOJpw==
-X-Google-Smtp-Source: ABdhPJwp2cC5XwDDe7OPf5NUNTcrFkUqmjMo59z+IDV7yaz1EAk8MkkpLX6rRnoF9gCH2vy9erEIkA==
-X-Received: by 2002:a17:90b:1003:: with SMTP id gm3mr11553411pjb.126.1621613522451;
-        Fri, 21 May 2021 09:12:02 -0700 (PDT)
-Received: from [192.168.0.4] ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id g13sm4686521pfr.75.2021.05.21.09.11.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 May 2021 09:12:01 -0700 (PDT)
-Subject: Re: [PATCH v2 net] mld: fix panic in mld_newpack()
-To:     Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, dsahern@kernel.org, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, xiyou.wangcong@gmail.com
-References: <20210516144442.4838-1-ap420073@gmail.com>
- <00922799-f302-b17b-2f2c-032c4a562315@gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Message-ID: <905ec725-3d38-e110-e1ef-1300da80c2de@gmail.com>
-Date:   Sat, 22 May 2021 01:11:57 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0dYw+1ty9M4F1TS3R0pdrlfe9TmD8aidnu0vhpgiO6k=;
+        b=JsKmbpElcEUfZFUDzJBOsyH0AtA6WBhvlbuVvDx9TsUg9OhhVamuLizF+Hc5wCpxBh
+         OMwBScxkDsnMZiPtesn6dVXcnRd9S+fz8/Vqsbas1yfou2uoCRg9oe7sbjNxlIJOXo1B
+         AFxj+DsxqV6MZKrVsHLsAodBVnXNGeHHVrMTYjbvLwak+KVVCUOvpljbp9jWD3Z1C0V6
+         Pxpu3QszJZDj8PqkNSYZ5OV23l8wNd4ymuqjfT4QzDhpetTS6dULAoNVRcPWf6ms2GlV
+         ndvbWFiXNBVGM/5xCEcadCLRUTCzir0rh5B4pU3PbGna7m1/yRl8+F9+zKTzOh+/tzkw
+         C5Zw==
+X-Gm-Message-State: AOAM532abvC8LLxmQQlJ+qjE9qm1FkJq0i5FkdmZ2c1lIy5OvyRmM5ur
+        Te/9xRT4G/rYxmoIldm9fFEiU4q+JwN5QAfp3izJ3cq2pu/T71IIWTpxrmEWo4AXd5MQvrdb8vg
+        svgNCNp4RgfTsg0+Dx6753qXkq4f7vSm+
+X-Received: by 2002:a19:6a13:: with SMTP id u19mr2632856lfu.252.1621613606477;
+        Fri, 21 May 2021 09:13:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxcQ1NWe596jnGhcNjYe2J09TkPUM7blmWDbIf1NVN1FdeURq8gjDCG56i3qI32jqqzyZ4Ad08J+veH32YL/kw=
+X-Received: by 2002:a19:6a13:: with SMTP id u19mr2632844lfu.252.1621613606258;
+ Fri, 21 May 2021 09:13:26 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <00922799-f302-b17b-2f2c-032c4a562315@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210504092340.00006c61@intel.com> <87pmxpdr32.ffs@nanos.tec.linutronix.de>
+ <CAFki+Lkjn2VCBcLSAfQZ2PEkx-TR0Ts_jPnK9b-5ne3PUX37TQ@mail.gmail.com>
+ <87im3gewlu.ffs@nanos.tec.linutronix.de> <CAFki+L=gp10W1ygv7zdsee=BUGpx9yPAckKr7pyo=tkFJPciEg@mail.gmail.com>
+ <CAFki+L=eQoMq+mWhw_jVT-biyuDXpxbXY5nO+F6HvCtpbG9V2w@mail.gmail.com>
+ <CAFki+LkB1sk3mOv4dd1D-SoPWHOs28ZwN-PqL_6xBk=Qkm40Lw@mail.gmail.com>
+ <87zgwo9u79.ffs@nanos.tec.linutronix.de> <87wnrs9tvp.ffs@nanos.tec.linutronix.de>
+In-Reply-To: <87wnrs9tvp.ffs@nanos.tec.linutronix.de>
+From:   Nitesh Lal <nilal@redhat.com>
+Date:   Fri, 21 May 2021 12:13:15 -0400
+Message-ID: <CAFki+LkqBHnVYB5VBx_8Ch0u8RfXrJsRzxyuDfHhbR-dCeN3Lg@mail.gmail.com>
+Subject: Re: [PATCH] genirq: Provide new interfaces for affinity hints
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Marc Zyngier <maz@kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/21/21 2:20 AM, Eric Dumazet wrote:
+On Fri, May 21, 2021 at 8:03 AM Thomas Gleixner <tglx@linutronix.de> wrote:
+>
+> The discussion about removing the side effect of irq_set_affinity_hint() of
+> actually applying the cpumask (if not NULL) as affinity to the interrupt,
+> unearthed a few unpleasantries:
+>
+>   1) The modular perf drivers rely on the current behaviour for the very
+>      wrong reasons.
+>
+>   2) While none of the other drivers prevents user space from changing
+>      the affinity, a cursorily inspection shows that there are at least
+>      expectations in some drivers.
+>
+> #1 needs to be cleaned up anyway, so that's not a problem
+>
+> #2 might result in subtle regressions especially when irqbalanced (which
+>    nowadays ignores the affinity hint) is disabled.
+>
+> Provide new interfaces:
+>
+>   irq_update_affinity_hint() - Only sets the affinity hint pointer
+>   irq_apply_affinity_hint()  - Set the pointer and apply the affinity to
+>                                the interrupt
+>
 
-Hi Eric,
-Thank you for your review!
+Any reason why you ruled out the usage of irq_set_affinity_and_hint()?
+IMHO the latter makes it very clear what the function is meant to do.
 
- >
- >
- > On 5/16/21 4:44 PM, Taehee Yoo wrote:
- >> mld_newpack() doesn't allow to allocate high order page,
- >> only order-0 allocation is allowed.
- >> If headroom size is too large, a kernel panic could occur in skb_put().
- >>
- >> Test commands:
- >>      ip netns del A
- >>      ip netns del B
- >>      ip netns add A
- >>      ip netns add B
- >>      ip link add veth0 type veth peer name veth1
- >>      ip link set veth0 netns A
- >>      ip link set veth1 netns B
- >>
- >>      ip netns exec A ip link set lo up
- >>      ip netns exec A ip link set veth0 up
- >>      ip netns exec A ip -6 a a 2001:db8:0::1/64 dev veth0
- >>      ip netns exec B ip link set lo up
- >>      ip netns exec B ip link set veth1 up
- >>      ip netns exec B ip -6 a a 2001:db8:0::2/64 dev veth1
- >>      for i in {1..99}
- >>      do
- >>          let A=$i-1
- >>          ip netns exec A ip link add ip6gre$i type ip6gre \
- >> 	local 2001:db8:$A::1 remote 2001:db8:$A::2 encaplimit 100
- >>          ip netns exec A ip -6 a a 2001:db8:$i::1/64 dev ip6gre$i
- >>          ip netns exec A ip link set ip6gre$i up
- >>
- >>          ip netns exec B ip link add ip6gre$i type ip6gre \
- >> 	local 2001:db8:$A::2 remote 2001:db8:$A::1 encaplimit 100
- >>          ip netns exec B ip -6 a a 2001:db8:$i::2/64 dev ip6gre$i
- >>          ip netns exec B ip link set ip6gre$i up
- >>      done
- >>
- >> Splat looks like:
- >> kernel BUG at net/core/skbuff.c:110!
- >> invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
- >> CPU: 0 PID: 7 Comm: kworker/0:1 Not tainted 5.12.0+ #891
- >> Workqueue: ipv6_addrconf addrconf_dad_work
- >> RIP: 0010:skb_panic+0x15d/0x15f
- >> Code: 92 fe 4c 8b 4c 24 10 53 8b 4d 70 45 89 e0 48 c7 c7 00 ae 79 83
- >> 41 57 41 56 41 55 48 8b 54 24 a6 26 f9 ff <0f> 0b 48 8b 6c 24 20 89
- >> 34 24 e8 4a 4e 92 fe 8b 34 24 48 c7 c1 20
- >> RSP: 0018:ffff88810091f820 EFLAGS: 00010282
- >> RAX: 0000000000000089 RBX: ffff8881086e9000 RCX: 0000000000000000
- >> RDX: 0000000000000089 RSI: 0000000000000008 RDI: ffffed1020123efb
- >> RBP: ffff888005f6eac0 R08: ffffed1022fc0031 R09: ffffed1022fc0031
- >> R10: ffff888117e00187 R11: ffffed1022fc0030 R12: 0000000000000028
- >> R13: ffff888008284eb0 R14: 0000000000000ed8 R15: 0000000000000ec0
- >> FS:  0000000000000000(0000) GS:ffff888117c00000(0000)
- >> knlGS:0000000000000000
- >> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- >> CR2: 00007f8b801c5640 CR3: 0000000033c2c006 CR4: 00000000003706f0
- >> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- >> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- >> Call Trace:
- >>   ? ip6_mc_hdr.isra.26.constprop.46+0x12a/0x600
- >>   ? ip6_mc_hdr.isra.26.constprop.46+0x12a/0x600
- >>   skb_put.cold.104+0x22/0x22
- >>   ip6_mc_hdr.isra.26.constprop.46+0x12a/0x600
- >>   ? rcu_read_lock_sched_held+0x91/0xc0
- >>   mld_newpack+0x398/0x8f0
- >>   ? ip6_mc_hdr.isra.26.constprop.46+0x600/0x600
- >>   ? lock_contended+0xc40/0xc40
- >>   add_grhead.isra.33+0x280/0x380
- >>   add_grec+0x5ca/0xff0
- >>   ? mld_sendpack+0xf40/0xf40
- >>   ? lock_downgrade+0x690/0x690
- >>   mld_send_initial_cr.part.34+0xb9/0x180
- >>   ipv6_mc_dad_complete+0x15d/0x1b0
- >>   addrconf_dad_completed+0x8d2/0xbb0
- >>   ? lock_downgrade+0x690/0x690
- >>   ? addrconf_rs_timer+0x660/0x660
- >>   ? addrconf_dad_work+0x73c/0x10e0
- >>   addrconf_dad_work+0x73c/0x10e0
- >>
- >> Allowing high order page allocation could fix this problem.
- >>
- >> Fixes: 72e09ad107e7 ("ipv6: avoid high order allocations")
- >> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
- >> ---
- >>
- >> v1 -> v2:
- >>   - Wait for mld-sleepable patchset to be merged.
- >>
- >>   net/ipv6/mcast.c | 3 ---
- >>   1 file changed, 3 deletions(-)
- >>
- >> diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
- >> index 0d59efb6b49e..d36ef9d25e73 100644
- >> --- a/net/ipv6/mcast.c
- >> +++ b/net/ipv6/mcast.c
- >> @@ -1745,10 +1745,7 @@ static struct sk_buff *mld_newpack(struct 
-inet6_dev *idev, unsigned int mtu)
- >>   		     IPV6_TLV_PADN, 0 };
- >>
- >>   	/* we assume size > sizeof(ra) here */
- >> -	/* limit our allocations to order-0 page */
- >> -	size = min_t(int, size, SKB_MAX_ORDER(0, 0));
- >>   	skb = sock_alloc_send_skb(sk, size, 1, &err);
- >> -
- >>   	if (!skb)
- >>   		return NULL;
- >>
- >>
- >
- > Sorry for being late to the party.
- >
- > This is forcing high-order allocations for devices with big mtu,
- > even for non pathological cases.
- >
- > (lo has MTU 65535, so we attempt order-5 allocations :/ )
- >
- > I think this could be smarter [1], addressing both the common case
- > and syzbot-like abuses.
- >
- > XMIT_RECURSION_LIMIT being 8, I doubt the repro makes any sense in 
-real world.
- > Maybe it is time to limit netdev chains to 8 as well.
- >
- > Also, veth MTU being 1500, I fail to understand how your script
- > was crashing your host.
 
-The root problem is that dev->need_headroom can be abnormally big.
-Because when the tunneling interface begins to send a packet, it 
-recalculates dev->needed_headroom.
+> Make irq_set_affinity_hint() a wrapper around irq_apply_affinity_hint() and
+> document it to be phased out.
 
-int ip6_tnl_xmit(struct sk_buff *skb, struct net_device *dev, __u8 dsfield,
-                  struct flowi6 *fl6, int encap_limit, __u32 *pmtu,
-                  __u8 proto)
-{
-...
-         max_headroom = LL_RESERVED_SPACE(dst->dev) + sizeof(struct ipv6hdr)
-                         + dst->header_len + t->hlen;
-         if (max_headroom > dev->needed_headroom)
-                 dev->needed_headroom = max_headroom;
+Right, so eventually we will be only left with the following APIs that
+the driver will use:
+irq_set_affinity()- for drivers that only wants to set the affinity mask
+irq_apply_affinity_hint/irq_set_affinity_and_hint() - for drivers that
+wants to set same affinity and hint mask
+irq_update_affinity_hint() - for drivers that only wants to update the hint mask
 
-Every time an interface sends a packet, this function is called and it 
-increases dev->needed_headroom.
-The first time, ip6gre1 will recalculate its own needed_headroom value.
-Then, when ip6gre2 is used and if a dst interface is ip6gre1, it 
-increases ip6gre->needed_headroom.
-This logic will be repeated until it uses ip6gre100.
-Actually, most packets will be drop because of XMIT_RECURSION_LIMIT.
-But updating dev->needed_headroom will be updated regardless of the 
-success of sending packets.
-So, the needed_headroom value can be too big.
+Thanks for clearing this.
 
-I think your suggestion can fix this problem more smartly because It can 
-avoid high-order allocation by mtu and it allows high-order if hlen or 
-tlen is too big.
-So, I think it deserves to be used.
-And If we deny setting ->needed_headrom to a too big value at the 
-ip6_tnl_xmit(), it's safer I think.
-How do you think about it?
+>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Link: https://lore.kernel.org/r/20210501021832.743094-1-jesse.brandeburg@intel.com
+> ---
+> Applies on:
+>    git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
+> ---
+>  include/linux/interrupt.h |   41 ++++++++++++++++++++++++++++++++++++++++-
+>  kernel/irq/manage.c       |    8 ++++----
+>  2 files changed, 44 insertions(+), 5 deletions(-)
+>
+> --- a/include/linux/interrupt.h
+> +++ b/include/linux/interrupt.h
+> @@ -328,7 +328,46 @@ extern int irq_force_affinity(unsigned i
+>  extern int irq_can_set_affinity(unsigned int irq);
+>  extern int irq_select_affinity(unsigned int irq);
+>
+> -extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
+> +extern int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
+> +                                    bool setaffinity);
+> +
+> +/**
+> + * irq_update_affinity_hint - Update the affinity hint
+> + * @irq:       Interrupt to update
+> + * @cpumask:   cpumask pointer (NULL to clear the hint)
+> + *
+> + * Updates the affinity hint, but does not change the affinity of the interrupt.
+> + */
+> +static inline int
+> +irq_update_affinity_hint(unsigned int irq, const struct cpumask *m)
+> +{
+> +       return __irq_apply_affinity_hint(irq, m, true);
+> +}
+> +
+> +/**
+> + * irq_apply_affinity_hint - Update the affinity hint and apply the provided
+> + *                          cpumask to the interrupt
+> + * @irq:       Interrupt to update
+> + * @cpumask:   cpumask pointer (NULL to clear the hint)
+> + *
+> + * Updates the affinity hint and if @cpumask is not NULL it applies it as
+> + * the affinity of that interrupt.
+> + */
+> +static inline int
+> +irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m)
+> +{
+> +       return __irq_apply_affinity_hint(irq, m, true);
+> +}
+> +
+> +/*
+> + * Deprecated. Use irq_update_affinity_hint() or irq_apply_affinity_hint()
+> + * instead.
+> + */
+> +static inline int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
+> +{
+> +       return irq_apply_affinity_hint(irq, cpumask);
+> +}
+> +
+>  extern int irq_update_affinity_desc(unsigned int irq,
+>                                     struct irq_affinity_desc *affinity);
+>
+> --- a/kernel/irq/manage.c
+> +++ b/kernel/irq/manage.c
+> @@ -487,7 +487,8 @@ int irq_force_affinity(unsigned int irq,
+>  }
+>  EXPORT_SYMBOL_GPL(irq_force_affinity);
+>
+> -int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
+> +int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
+> +                             bool setaffinity)
+>  {
+>         unsigned long flags;
+>         struct irq_desc *desc = irq_get_desc_lock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
+> @@ -496,12 +497,11 @@ int irq_set_affinity_hint(unsigned int i
+>                 return -EINVAL;
+>         desc->affinity_hint = m;
+>         irq_put_desc_unlock(desc, flags);
+> -       /* set the initial affinity to prevent every interrupt being on CPU0 */
+> -       if (m)
+> +       if (m && setaffinity)
+>                 __irq_set_affinity(irq, m, false);
+>         return 0;
+>  }
+> -EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
+> +EXPORT_SYMBOL_GPL(__irq_apply_affinity_hint);
+>
+>  static void irq_affinity_notify(struct work_struct *work)
+>  {
+>
 
- >
- > [1]
- > diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
- > index 
-d36ef9d25e73cb14eed45701acafcaf78e08451e..420bf2038e810173fc6f86622378b5151463f204 
-100644
- > --- a/net/ipv6/mcast.c
- > +++ b/net/ipv6/mcast.c
- > @@ -1738,13 +1738,16 @@ static struct sk_buff *mld_newpack(struct 
-inet6_dev *idev, unsigned int mtu)
- >          const struct in6_addr *saddr;
- >          int hlen = LL_RESERVED_SPACE(dev);
- >          int tlen = dev->needed_tailroom;
- > -       unsigned int size = mtu + hlen + tlen;
- > +       unsigned int size;
- >          int err;
- >          u8 ra[8] = { IPPROTO_ICMPV6, 0,
- >                       IPV6_TLV_ROUTERALERT, 2, 0, 0,
- >                       IPV6_TLV_PADN, 0 };
- >
- > -       /* we assume size > sizeof(ra) here */
- > +       /* We assume size > sizeof(ra) here.
- > +        * Also try to not allocate high-order pages for big MTU.
- > +        */
- > +       size = min_t(int, mtu, PAGE_SIZE/2) + hlen + tlen;
- >          skb = sock_alloc_send_skb(sk, size, 1, &err);
- >          if (!skb)
- >                  return NULL;
+
+--
+Nitesh
+
