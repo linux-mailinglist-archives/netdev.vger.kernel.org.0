@@ -2,222 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4DFA38CAB5
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 18:13:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40E0038CABC
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 18:15:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237407AbhEUQOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 12:14:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43111 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232265AbhEUQOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 12:14:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621613609;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0dYw+1ty9M4F1TS3R0pdrlfe9TmD8aidnu0vhpgiO6k=;
-        b=ColLrhaayxqwBLjuYZ2gTDqQJ9ptqMg/Qt0IWGdZVs35Lik1rHyvjIrpspsw3mUR9ewAeO
-        c2worbt+sL2GF4LoXIwo9Jh+ME2O4AHTWxD4DOvgcHW1td/h43MyrSNuzhhlA8kYWzen+S
-        2TSYEebo8Yx/rFoOhra6N/nuifpLIqQ=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-427-uB20a5N4PF6rSSuf7cH54A-1; Fri, 21 May 2021 12:13:28 -0400
-X-MC-Unique: uB20a5N4PF6rSSuf7cH54A-1
-Received: by mail-lj1-f199.google.com with SMTP id c16-20020a2ea7900000b02900ef529209ccso9016261ljf.11
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 09:13:27 -0700 (PDT)
+        id S234376AbhEUQRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 12:17:01 -0400
+Received: from mail-ed1-f53.google.com ([209.85.208.53]:36782 "EHLO
+        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231995AbhEUQRA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 12:17:00 -0400
+Received: by mail-ed1-f53.google.com with SMTP id df21so23938395edb.3;
+        Fri, 21 May 2021 09:15:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0dYw+1ty9M4F1TS3R0pdrlfe9TmD8aidnu0vhpgiO6k=;
-        b=JsKmbpElcEUfZFUDzJBOsyH0AtA6WBhvlbuVvDx9TsUg9OhhVamuLizF+Hc5wCpxBh
-         OMwBScxkDsnMZiPtesn6dVXcnRd9S+fz8/Vqsbas1yfou2uoCRg9oe7sbjNxlIJOXo1B
-         AFxj+DsxqV6MZKrVsHLsAodBVnXNGeHHVrMTYjbvLwak+KVVCUOvpljbp9jWD3Z1C0V6
-         Pxpu3QszJZDj8PqkNSYZ5OV23l8wNd4ymuqjfT4QzDhpetTS6dULAoNVRcPWf6ms2GlV
-         ndvbWFiXNBVGM/5xCEcadCLRUTCzir0rh5B4pU3PbGna7m1/yRl8+F9+zKTzOh+/tzkw
-         C5Zw==
-X-Gm-Message-State: AOAM532abvC8LLxmQQlJ+qjE9qm1FkJq0i5FkdmZ2c1lIy5OvyRmM5ur
-        Te/9xRT4G/rYxmoIldm9fFEiU4q+JwN5QAfp3izJ3cq2pu/T71IIWTpxrmEWo4AXd5MQvrdb8vg
-        svgNCNp4RgfTsg0+Dx6753qXkq4f7vSm+
-X-Received: by 2002:a19:6a13:: with SMTP id u19mr2632856lfu.252.1621613606477;
-        Fri, 21 May 2021 09:13:26 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxcQ1NWe596jnGhcNjYe2J09TkPUM7blmWDbIf1NVN1FdeURq8gjDCG56i3qI32jqqzyZ4Ad08J+veH32YL/kw=
-X-Received: by 2002:a19:6a13:: with SMTP id u19mr2632844lfu.252.1621613606258;
- Fri, 21 May 2021 09:13:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kXlRaBMJoWOhAWHALOYN55NWGuEBwklQq4V7CKcJSkA=;
+        b=SfWJar+FICff2TRIXpGloL9uOmNcsBMdLJTJ3/E9eDGPn8p6za2a3HQZIEnKG7iuR5
+         xzvT/EIeaNYSRVKFh48ZfXpUie9M3bnPPcN5zXboUk2HMGlwf15VJHOnL3d4FrX6ic7j
+         OwfAcs8NTlBb8dqbL6ZKb5JEtwSKgQEDfZeZcKkZAKOHCGVduG4mfxLJlOGroZOuirvg
+         NuYIjgY21+sI2JZJNCUuV1Yc9qiLpnEG9BqPBtIPiyPckkoDFklA9N7XYDS+C0jpybRi
+         acCrjYLkRX8ScL2MGu/2Z48TETF9N4O4HUvvjnlnxWIFMKDEQhX5nEy09iRnApu6TpYT
+         FR/g==
+X-Gm-Message-State: AOAM531klu8qbyfDyn7C7FyRtmJHXgETabRdxtQOIqG4fbwQEJdm0DgS
+        jctZ2+os88a26ueMKiegRtRKZyKv2WPsJj9m
+X-Google-Smtp-Source: ABdhPJwj4cSc9QZl/beB2hgQ9AcqcPq/X5efuEiyVneN+LuPycp9x16/jNvla0FZjjMcKfQZWZYRSw==
+X-Received: by 2002:aa7:cd6b:: with SMTP id ca11mr12064239edb.115.1621613735185;
+        Fri, 21 May 2021 09:15:35 -0700 (PDT)
+Received: from msft-t490s.teknoraver.net (net-5-94-253-60.cust.vodafonedsl.it. [5.94.253.60])
+        by smtp.gmail.com with ESMTPSA id f7sm3871644ejz.95.2021.05.21.09.15.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 May 2021 09:15:34 -0700 (PDT)
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+To:     netdev@vger.kernel.org, linux-mm@kvack.org
+Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>
+Subject: [PATCH net-next v6 0/5] page_pool: recycle buffers
+Date:   Fri, 21 May 2021 18:15:22 +0200
+Message-Id: <20210521161527.34607-1-mcroce@linux.microsoft.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210504092340.00006c61@intel.com> <87pmxpdr32.ffs@nanos.tec.linutronix.de>
- <CAFki+Lkjn2VCBcLSAfQZ2PEkx-TR0Ts_jPnK9b-5ne3PUX37TQ@mail.gmail.com>
- <87im3gewlu.ffs@nanos.tec.linutronix.de> <CAFki+L=gp10W1ygv7zdsee=BUGpx9yPAckKr7pyo=tkFJPciEg@mail.gmail.com>
- <CAFki+L=eQoMq+mWhw_jVT-biyuDXpxbXY5nO+F6HvCtpbG9V2w@mail.gmail.com>
- <CAFki+LkB1sk3mOv4dd1D-SoPWHOs28ZwN-PqL_6xBk=Qkm40Lw@mail.gmail.com>
- <87zgwo9u79.ffs@nanos.tec.linutronix.de> <87wnrs9tvp.ffs@nanos.tec.linutronix.de>
-In-Reply-To: <87wnrs9tvp.ffs@nanos.tec.linutronix.de>
-From:   Nitesh Lal <nilal@redhat.com>
-Date:   Fri, 21 May 2021 12:13:15 -0400
-Message-ID: <CAFki+LkqBHnVYB5VBx_8Ch0u8RfXrJsRzxyuDfHhbR-dCeN3Lg@mail.gmail.com>
-Subject: Re: [PATCH] genirq: Provide new interfaces for affinity hints
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
-        "frederic@kernel.org" <frederic@kernel.org>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com,
-        Marc Zyngier <maz@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 21, 2021 at 8:03 AM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> The discussion about removing the side effect of irq_set_affinity_hint() of
-> actually applying the cpumask (if not NULL) as affinity to the interrupt,
-> unearthed a few unpleasantries:
->
->   1) The modular perf drivers rely on the current behaviour for the very
->      wrong reasons.
->
->   2) While none of the other drivers prevents user space from changing
->      the affinity, a cursorily inspection shows that there are at least
->      expectations in some drivers.
->
-> #1 needs to be cleaned up anyway, so that's not a problem
->
-> #2 might result in subtle regressions especially when irqbalanced (which
->    nowadays ignores the affinity hint) is disabled.
->
-> Provide new interfaces:
->
->   irq_update_affinity_hint() - Only sets the affinity hint pointer
->   irq_apply_affinity_hint()  - Set the pointer and apply the affinity to
->                                the interrupt
->
+From: Matteo Croce <mcroce@microsoft.com>
 
-Any reason why you ruled out the usage of irq_set_affinity_and_hint()?
-IMHO the latter makes it very clear what the function is meant to do.
+This is a respin of [1]
 
+This patchset shows the plans for allowing page_pool to handle and
+maintain DMA map/unmap of the pages it serves to the driver. For this
+to work a return hook in the network core is introduced.
 
-> Make irq_set_affinity_hint() a wrapper around irq_apply_affinity_hint() and
-> document it to be phased out.
+The overall purpose is to simplify drivers, by providing a page
+allocation API that does recycling, such that each driver doesn't have
+to reinvent its own recycling scheme. Using page_pool in a driver
+does not require implementing XDP support, but it makes it trivially
+easy to do so. Instead of allocating buffers specifically for SKBs
+we now allocate a generic buffer and either wrap it on an SKB
+(via build_skb) or create an XDP frame.
+The recycling code leverages the XDP recycle APIs.
 
-Right, so eventually we will be only left with the following APIs that
-the driver will use:
-irq_set_affinity()- for drivers that only wants to set the affinity mask
-irq_apply_affinity_hint/irq_set_affinity_and_hint() - for drivers that
-wants to set same affinity and hint mask
-irq_update_affinity_hint() - for drivers that only wants to update the hint mask
+The Marvell mvpp2 and mvneta drivers are used in this patchset to
+demonstrate how to use the API, and tested on a MacchiatoBIN
+and EspressoBIN boards respectively.
 
-Thanks for clearing this.
+Please let this going in on a future -rc1 so to allow enough time
+to have wider tests.
 
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Link: https://lore.kernel.org/r/20210501021832.743094-1-jesse.brandeburg@intel.com
-> ---
-> Applies on:
->    git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
-> ---
->  include/linux/interrupt.h |   41 ++++++++++++++++++++++++++++++++++++++++-
->  kernel/irq/manage.c       |    8 ++++----
->  2 files changed, 44 insertions(+), 5 deletions(-)
->
-> --- a/include/linux/interrupt.h
-> +++ b/include/linux/interrupt.h
-> @@ -328,7 +328,46 @@ extern int irq_force_affinity(unsigned i
->  extern int irq_can_set_affinity(unsigned int irq);
->  extern int irq_select_affinity(unsigned int irq);
->
-> -extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
-> +extern int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
-> +                                    bool setaffinity);
-> +
-> +/**
-> + * irq_update_affinity_hint - Update the affinity hint
-> + * @irq:       Interrupt to update
-> + * @cpumask:   cpumask pointer (NULL to clear the hint)
-> + *
-> + * Updates the affinity hint, but does not change the affinity of the interrupt.
-> + */
-> +static inline int
-> +irq_update_affinity_hint(unsigned int irq, const struct cpumask *m)
-> +{
-> +       return __irq_apply_affinity_hint(irq, m, true);
-> +}
-> +
-> +/**
-> + * irq_apply_affinity_hint - Update the affinity hint and apply the provided
-> + *                          cpumask to the interrupt
-> + * @irq:       Interrupt to update
-> + * @cpumask:   cpumask pointer (NULL to clear the hint)
-> + *
-> + * Updates the affinity hint and if @cpumask is not NULL it applies it as
-> + * the affinity of that interrupt.
-> + */
-> +static inline int
-> +irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m)
-> +{
-> +       return __irq_apply_affinity_hint(irq, m, true);
-> +}
-> +
-> +/*
-> + * Deprecated. Use irq_update_affinity_hint() or irq_apply_affinity_hint()
-> + * instead.
-> + */
-> +static inline int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
-> +{
-> +       return irq_apply_affinity_hint(irq, cpumask);
-> +}
-> +
->  extern int irq_update_affinity_desc(unsigned int irq,
->                                     struct irq_affinity_desc *affinity);
->
-> --- a/kernel/irq/manage.c
-> +++ b/kernel/irq/manage.c
-> @@ -487,7 +487,8 @@ int irq_force_affinity(unsigned int irq,
->  }
->  EXPORT_SYMBOL_GPL(irq_force_affinity);
->
-> -int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
-> +int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
-> +                             bool setaffinity)
->  {
->         unsigned long flags;
->         struct irq_desc *desc = irq_get_desc_lock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
-> @@ -496,12 +497,11 @@ int irq_set_affinity_hint(unsigned int i
->                 return -EINVAL;
->         desc->affinity_hint = m;
->         irq_put_desc_unlock(desc, flags);
-> -       /* set the initial affinity to prevent every interrupt being on CPU0 */
-> -       if (m)
-> +       if (m && setaffinity)
->                 __irq_set_affinity(irq, m, false);
->         return 0;
->  }
-> -EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
-> +EXPORT_SYMBOL_GPL(__irq_apply_affinity_hint);
->
->  static void irq_affinity_notify(struct work_struct *work)
->  {
->
+Note that this series depends on the change "mm: fix struct page layout
+on 32-bit systems"[2] which is not yet in master.
 
+v5 -> v6
+- preserve pfmemalloc bit when setting signature
+- fix typo in mvneta
+- rebase on next-next with the new cache
+- don't clear the skb->pp_recycle in pskb_expand_head()
 
---
-Nitesh
+v4 -> v5:
+- move the signature so it doesn't alias with page->mapping
+- use an invalid pointer as magic
+- incorporate Matthew Wilcox's changes for pfmemalloc pages
+- move the __skb_frag_unref() changes to a preliminary patch
+- refactor some cpp directives
+- only attempt recycling if skb->head_frag
+- clear skb->pp_recycle in pskb_expand_head()
+
+v3 -> v4:
+- store a pointer to page_pool instead of xdp_mem_info
+- drop a patch which reduces xdp_mem_info size
+- do the recycling in the page_pool code instead of xdp_return
+- remove some unused headers include
+- remove some useless forward declaration
+
+v2 -> v3:
+- added missing SOBs
+- CCed the MM people
+
+v1 -> v2:
+- fix a commit message
+- avoid setting pp_recycle multiple times on mvneta
+- squash two patches to avoid breaking bisect
+
+[1] https://lore.kernel.org/netdev/154413868810.21735.572808840657728172.stgit@firesoul/
+[2] https://lore.kernel.org/linux-mm/20210510153211.1504886-1-willy@infradead.org/
+
+Ilias Apalodimas (1):
+  page_pool: Allow drivers to hint on SKB recycling
+
+Matteo Croce (4):
+  mm: add a signature in struct page
+  skbuff: add a parameter to __skb_frag_unref
+  mvpp2: recycle buffers
+  mvneta: recycle buffers
+
+ drivers/net/ethernet/marvell/mvneta.c         | 11 +++---
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  2 +-
+ drivers/net/ethernet/marvell/sky2.c           |  2 +-
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  2 +-
+ include/linux/mm.h                            | 12 ++++---
+ include/linux/mm_types.h                      | 12 ++++++-
+ include/linux/poison.h                        |  3 ++
+ include/linux/skbuff.h                        | 34 ++++++++++++++++---
+ include/net/page_pool.h                       |  9 +++++
+ net/core/page_pool.c                          | 29 ++++++++++++++++
+ net/core/skbuff.c                             | 24 ++++++++++---
+ net/tls/tls_device.c                          |  2 +-
+ 12 files changed, 119 insertions(+), 23 deletions(-)
+
+-- 
+2.31.1
 
