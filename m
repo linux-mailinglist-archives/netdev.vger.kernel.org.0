@@ -2,206 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE40438CB24
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 18:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0746438CB49
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 18:52:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237662AbhEUQhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 12:37:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236370AbhEUQhC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 May 2021 12:37:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A35D3613E3;
-        Fri, 21 May 2021 16:35:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621614939;
-        bh=fbS4tegkDEGEwjG+qSSclbPKmztmBb0iRMLQXbmx4/4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iDWMlKelM2KVVp9hgNrNjtTZpPuH/fL6EYO4kccVeu+v1g5bGC7QrXsqnBe5fiCFX
-         cSW0/3Ony/CFYht98GfuRxgIYyIxH0liquTJlLSCWXPDFvPhAw3CXIOAO7zkRfQzpx
-         JXbNEcN2UZUIyWzf4AnnP5S6ZL/Mbmxyc8C6537o/pojNlSVRBmC9uTbNT/ZVA3qa1
-         3lbnSpSKPM+MEN2oS8ZLPMMlRgBYB+aIm0ZwbhNwSufvYgDzLjbCM4xMAinwNDZPLz
-         O6nfDJng503NBlqZN7GU4CJuICJjVU9acmY3ABhqhaMLGSFRIslam/zmBo84JZPoul
-         taKhEuNR5YwPg==
-Date:   Fri, 21 May 2021 22:05:30 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     hemantk@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        bbhatt@codeaurora.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org
-Subject: Re: [PATCH v2] bus: mhi: Add inbound buffers allocation flag
-Message-ID: <20210521163530.GO70095@thinkpad>
-References: <1621603519-16773-1-git-send-email-loic.poulain@linaro.org>
+        id S237727AbhEUQxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 12:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230471AbhEUQxU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 12:53:20 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8410AC061574;
+        Fri, 21 May 2021 09:51:57 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id x18so11038338pfi.9;
+        Fri, 21 May 2021 09:51:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=fvVKZIh08je3V7R57Yy3qgYSEUd5usbVkYa2j9NtTvI=;
+        b=ECakFYMpqdrwjwDhbEDysTwyFEuOK4nvyYfIKeZsuiVs8l2bJc6tkJi8nHWIGmGflx
+         CClQfiUpo2+cN1aSF8W/R7TAm0W9GeXSCkkky48O5JGYntoxqiTlczoUS9HN0hx23TsA
+         4PA6p0YWQYap4vdXyX8XFPn0WkzFIA2NOOox+c874qL7ChxlPH8THgpMQEVv/K1ylIXM
+         BcAIcU4sx5g8fStVeQncfvfBHknPd0OOP51PuUjM6KFc6eoYlRMvX+hzYh0wSc/45cdw
+         aCdQJVLeh9sdFSaBPQnRQ1YjhXfX/KPt9gZN/553XKKdGHa1cebBYjffkePI36pA6qkd
+         QsbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fvVKZIh08je3V7R57Yy3qgYSEUd5usbVkYa2j9NtTvI=;
+        b=RV5aYLlsZBcdTrkrincPUW2KsKvW4nLkjIRNpdG2OdUprXV0oFxTkCyXOiEimjIVzl
+         gSflafctA/JxtJLP4BgGH1XXjjBHBw5KragXYIR/CgzKWo/N2Sdl9GoIBOvMfC8pQX9o
+         vOzrCzT0c2SHwbPD2x4whGeJG0iQvQmiq2FIbUusPajLUOlU+0i3wENIGRpPOyT9bXBO
+         yLwdZ9e56pvLgSWAfq6rRB2iPkZ1BuTUH7fMwXcpeh+3MaHSma/Uj1lofNVFDbor7sBg
+         orSPzU0XyU+Pop6qBXY0GZ+5OTylvuiq1CGxT5T49DkhK8yS0bU/VVCdZssCLAmBX+Sq
+         qreA==
+X-Gm-Message-State: AOAM532CHt3PDkK8FVmLwr5oHdIWpaAm0lxOMxpTUr2xlYAdq9lISPls
+        XPFwHcfs5Saf4XOdYmZzqt4=
+X-Google-Smtp-Source: ABdhPJzog69dC6PiYJE/OJf2iYLaUtAZO9F2WqIysgASxjem1UQTGQg7xPYvszEfYAuPlJRBb54fXw==
+X-Received: by 2002:aa7:8010:0:b029:254:f083:66fa with SMTP id j16-20020aa780100000b0290254f08366famr11332600pfi.17.1621615917028;
+        Fri, 21 May 2021 09:51:57 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id u7sm3580352pjc.16.2021.05.21.09.51.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 May 2021 09:51:56 -0700 (PDT)
+Subject: Re: [PATCH] net: macb: ensure the device is available before
+ accessing GEMGXL control registers
+To:     Zong Li <zong.li@sifive.com>, nicolas.ferre@microchip.com,
+        claudiu.beznea@microchip.com, davem@davemloft.net, kuba@kernel.org,
+        palmer@dabbelt.com, paul.walmsley@sifive.com,
+        schwab@linux-m68k.org, sboyd@kernel.org, aou@eecs.berkeley.edu,
+        mturquette@baylibre.com, geert@linux-m68k.org, yixun.lan@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+References: <20210521124859.101012-1-zong.li@sifive.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <b4088995-605e-85ca-2f07-47d2654ac2c8@gmail.com>
+Date:   Fri, 21 May 2021 09:51:46 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1621603519-16773-1-git-send-email-loic.poulain@linaro.org>
+In-Reply-To: <20210521124859.101012-1-zong.li@sifive.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ netdev, Dave, Jakub
 
-On Fri, May 21, 2021 at 03:25:19PM +0200, Loic Poulain wrote:
-> Currently, the MHI controller driver defines which channels should
-> have their inbound buffers allocated and queued. But ideally, this is
-> something that should be decided by the MHI device driver instead,
-> which actually deals with that buffers.
+
+On 5/21/2021 5:48 AM, Zong Li wrote:
+> If runtime power menagement is enabled, the gigabit ethernet PLL would
+> be disabled after macb_probe(). During this period of time, the system
+> would hang up if we try to access GEMGXL control registers.
 > 
-> Add a flag parameter to mhi_prepare_for_transfer allowing to specify
-> if buffers have to be allocated and queued by the MHI stack.
+> We can't put runtime_pm_get/runtime_pm_put/ there due to the issue of
+> sleep inside atomic section (7fa2955ff70ce453 ("sh_eth: Fix sleeping
+> function called from invalid context"). Add the similar flag to ensure
+> the device is available before accessing GEMGXL device.
 > 
-> Keep auto_queue flag for now, but should be removed at some point.
-> 
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> Tested-by: Bhaumik Bhatt <bbhatt@codeaurora.org>
-> Reviewed-by: Bhaumik Bhatt <bbhatt@codeaurora.org>
-> Reviewed-by: Hemant Kumar <hemantk@codeaurora.org>
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> Signed-off-by: Zong Li <zong.li@sifive.com>
 > ---
->  v2: Update API in mhi_wwan_ctrl driver
+>  drivers/net/ethernet/cadence/macb.h      | 2 ++
+>  drivers/net/ethernet/cadence/macb_main.c | 7 +++++++
+>  2 files changed, 9 insertions(+)
 > 
->  drivers/bus/mhi/core/internal.h  |  2 +-
->  drivers/bus/mhi/core/main.c      | 11 ++++++++---
->  drivers/net/mhi/net.c            |  2 +-
->  drivers/net/wwan/mhi_wwan_ctrl.c |  2 +-
-
-Since this patch touches the drivers under net/, I need an Ack from Dave or
-Jakub to take it via MHI tree.
-
-Thanks,
-Mani
-
->  include/linux/mhi.h              | 12 +++++++++++-
->  net/qrtr/mhi.c                   |  2 +-
->  6 files changed, 23 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/bus/mhi/core/internal.h b/drivers/bus/mhi/core/internal.h
-> index 5b9ea66..672052f 100644
-> --- a/drivers/bus/mhi/core/internal.h
-> +++ b/drivers/bus/mhi/core/internal.h
-> @@ -682,7 +682,7 @@ void mhi_rddm_prepare(struct mhi_controller *mhi_cntrl,
->  		      struct image_info *img_info);
->  void mhi_fw_load_handler(struct mhi_controller *mhi_cntrl);
->  int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
-> -			struct mhi_chan *mhi_chan);
-> +			struct mhi_chan *mhi_chan, enum mhi_chan_flags flags);
->  int mhi_init_chan_ctxt(struct mhi_controller *mhi_cntrl,
->  		       struct mhi_chan *mhi_chan);
->  void mhi_deinit_chan_ctxt(struct mhi_controller *mhi_cntrl,
-> diff --git a/drivers/bus/mhi/core/main.c b/drivers/bus/mhi/core/main.c
-> index 0f1febf..432b53b 100644
-> --- a/drivers/bus/mhi/core/main.c
-> +++ b/drivers/bus/mhi/core/main.c
-> @@ -1384,7 +1384,8 @@ static void mhi_unprepare_channel(struct mhi_controller *mhi_cntrl,
->  }
+> diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+> index d8d87213697c..acf5242ce715 100644
+> --- a/drivers/net/ethernet/cadence/macb.h
+> +++ b/drivers/net/ethernet/cadence/macb.h
+> @@ -1309,6 +1309,8 @@ struct macb {
 >  
->  int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
-> -			struct mhi_chan *mhi_chan)
-> +			struct mhi_chan *mhi_chan,
-> +			enum mhi_chan_flags flags)
->  {
->  	int ret = 0;
->  	struct device *dev = &mhi_chan->mhi_dev->dev;
-> @@ -1409,6 +1410,9 @@ int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
->  	if (ret)
->  		goto error_pm_state;
+>  	u32	rx_intr_mask;
 >  
-> +	if (mhi_chan->dir == DMA_FROM_DEVICE)
-> +		mhi_chan->pre_alloc = !!(flags & MHI_CH_INBOUND_ALLOC_BUFS);
+> +	unsigned int is_opened;
 > +
->  	/* Pre-allocate buffer for xfer ring */
->  	if (mhi_chan->pre_alloc) {
->  		int nr_el = get_nr_avail_ring_elements(mhi_cntrl,
-> @@ -1555,7 +1559,8 @@ void mhi_reset_chan(struct mhi_controller *mhi_cntrl, struct mhi_chan *mhi_chan)
->  }
->  
->  /* Move channel to start state */
-> -int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
-> +int mhi_prepare_for_transfer(struct mhi_device *mhi_dev,
-> +			     enum mhi_chan_flags flags)
->  {
->  	int ret, dir;
->  	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
-> @@ -1566,7 +1571,7 @@ int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
->  		if (!mhi_chan)
->  			continue;
->  
-> -		ret = mhi_prepare_channel(mhi_cntrl, mhi_chan);
-> +		ret = mhi_prepare_channel(mhi_cntrl, mhi_chan, flags);
->  		if (ret)
->  			goto error_open_chan;
->  	}
-> diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
-> index 6b5bf23..3ddfb72 100644
-> --- a/drivers/net/mhi/net.c
-> +++ b/drivers/net/mhi/net.c
-> @@ -323,7 +323,7 @@ static int mhi_net_probe(struct mhi_device *mhi_dev,
->  	u64_stats_init(&mhi_netdev->stats.tx_syncp);
->  
->  	/* Start MHI channels */
-> -	err = mhi_prepare_for_transfer(mhi_dev);
-> +	err = mhi_prepare_for_transfer(mhi_dev, 0);
->  	if (err)
->  		goto out_err;
->  
-> diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
-> index 3a44b22..84e75e4 100644
-> --- a/drivers/net/wwan/mhi_wwan_ctrl.c
-> +++ b/drivers/net/wwan/mhi_wwan_ctrl.c
-> @@ -110,7 +110,7 @@ static int mhi_wwan_ctrl_start(struct wwan_port *port)
->  	int ret;
->  
->  	/* Start mhi device's channel(s) */
-> -	ret = mhi_prepare_for_transfer(mhiwwan->mhi_dev);
-> +	ret = mhi_prepare_for_transfer(mhiwwan->mhi_dev, 0);
->  	if (ret)
->  		return ret;
->  
-> diff --git a/include/linux/mhi.h b/include/linux/mhi.h
-> index d095fba..9372acf 100644
-> --- a/include/linux/mhi.h
-> +++ b/include/linux/mhi.h
-> @@ -60,6 +60,14 @@ enum mhi_flags {
+>  	struct macb_pm_data pm_data;
+>  	const struct macb_usrio_config *usrio;
 >  };
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index 6bc7d41d519b..e079ed10ad91 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -2781,6 +2781,8 @@ static int macb_open(struct net_device *dev)
+>  	if (bp->ptp_info)
+>  		bp->ptp_info->ptp_init(dev);
 >  
->  /**
-> + * enum mhi_chan_flags - MHI channel flags
-> + * @MHI_CH_INBOUND_ALLOC_BUFS: Automatically allocate and queue inbound buffers
-> + */
-> +enum mhi_chan_flags {
-> +	MHI_CH_INBOUND_ALLOC_BUFS = BIT(0),
-> +};
+> +	bp->is_opened = 1;
 > +
-> +/**
->   * enum mhi_device_type - Device types
->   * @MHI_DEVICE_XFER: Handles data transfer
->   * @MHI_DEVICE_CONTROLLER: Control device
-> @@ -719,8 +727,10 @@ void mhi_device_put(struct mhi_device *mhi_dev);
->   *                            host and device execution environments match and
->   *                            channels are in a DISABLED state.
->   * @mhi_dev: Device associated with the channels
-> + * @flags: MHI channel flags
->   */
-> -int mhi_prepare_for_transfer(struct mhi_device *mhi_dev);
-> +int mhi_prepare_for_transfer(struct mhi_device *mhi_dev,
-> +			     enum mhi_chan_flags flags);
+>  	return 0;
 >  
->  /**
->   * mhi_unprepare_from_transfer - Reset UL and DL channels for data transfer.
-> diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-> index 2bf2b19..47afded 100644
-> --- a/net/qrtr/mhi.c
-> +++ b/net/qrtr/mhi.c
-> @@ -77,7 +77,7 @@ static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
->  	int rc;
+>  reset_hw:
+> @@ -2818,6 +2820,8 @@ static int macb_close(struct net_device *dev)
+>  	if (bp->ptp_info)
+>  		bp->ptp_info->ptp_remove(dev);
 >  
->  	/* start channels */
-> -	rc = mhi_prepare_for_transfer(mhi_dev);
-> +	rc = mhi_prepare_for_transfer(mhi_dev, MHI_CH_INBOUND_ALLOC_BUFS);
->  	if (rc)
->  		return rc;
+> +	bp->is_opened = 0;
+> +
+>  	pm_runtime_put(&bp->pdev->dev);
 >  
-> -- 
-> 2.7.4
-> 
+>  	return 0;
+> @@ -2867,6 +2871,9 @@ static struct net_device_stats *gem_get_stats(struct macb *bp)
+>  	struct gem_stats *hwstat = &bp->hw_stats.gem;
+>  	struct net_device_stats *nstat = &bp->dev->stats;
+>  
+> +	if (!bp->is_opened)
+> +		return nstat;
+
+The canonical way to do this check is to use netif_running(), and not
+open code a boolean tracking whether a network device is opened or not.
+-- 
+Florian
