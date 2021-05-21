@@ -2,320 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C96A38C118
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 09:55:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF60938C1E8
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 10:33:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234635AbhEUH4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 03:56:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44633 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232050AbhEUH4t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 03:56:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621583726;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MKLcqJa2iylzORtbJXUW2ATOuGg9/HRvaJOuq041BJQ=;
-        b=QxD/vErZUMW5lv8HROP0aw2ImhcEb8hmhNP3mjk/AReWXJMzklQ3PnDEZduMLsl9bo7Ngh
-        uH3133EKCoCcruFn+6oBiIpNoBGrXPXC5WNW/txf4I1kQTc9NiiQqrZel6OWjgliwA/g1p
-        LvGtD4tQSx+eW2CnfK2W5yMtzcK4wBY=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-546-Dqln_KPMOJavS9fTwxjsNw-1; Fri, 21 May 2021 03:55:24 -0400
-X-MC-Unique: Dqln_KPMOJavS9fTwxjsNw-1
-Received: by mail-ej1-f71.google.com with SMTP id k9-20020a17090646c9b029039d323bd239so5853735ejs.16
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 00:55:24 -0700 (PDT)
+        id S232328AbhEUIex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 04:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45744 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229581AbhEUIew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 04:34:52 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1725EC061574;
+        Fri, 21 May 2021 01:33:30 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id i17so20157147wrq.11;
+        Fri, 21 May 2021 01:33:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WaMvOvlMFartTSlXCuGI5oDB8r1cP0ShwB/1QsbOHFE=;
+        b=kEbWh2d5EFThb/znUlZNvo0e51WApWFRwJXV8ie7hfbdm+iDOY7T6sBPA3wf4G8o5h
+         mUZGUiaK4xkk4r7IhK9hyr4OGoPFHmZu5qLAyhw/raAUNu1Ku0w7f6BumGB5vp4gn6jz
+         vzxbpqRq2U1VpvP55MDSWO2j5G1l0QVAyN6wNieOQpf+cun/oyl8O0cIrAbt93KaTL3f
+         MnLz8dJE9El58tGjxYWNHh4dVpo01OSqNBaC/nkjUiBjkEIho1bS47jMul2wWZuRzUSt
+         UR+4wNAv4JXYbtV84Hosi9nUGaassmaOEL2NaTm8knTyunFjZuPo0IEwiASVpisYgNja
+         J/kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MKLcqJa2iylzORtbJXUW2ATOuGg9/HRvaJOuq041BJQ=;
-        b=UZHTd6Mtl+8id/31nH8gYUJqMW3V49PJQesVh3xIQemvEfXbc/7JGKRJ5c6OoQvAW1
-         G46k8sZS2ZOejzbS4YAFt9tWw6ZrusTprcOPyYcpgHZ7YCKAUd0flkIK3/28qUfS/+lH
-         9ZmzdzRaUjlYsKvwhkZHXFkxPwFO6KaVoAqoAmGtYiShJpXLqVNqZCwhL432SjoVVfUN
-         7LrsaBktrziFynTlL+GteWNdqX4tNn0HKhdKxp+gmBVmeYkibPQhl868fUcOu0hDISfJ
-         uQyHp4wcBnv9geALK3yEoxqQQJlZArgj8v3pal0ibndEqEtE6e1guuKiLKrVhdeoLCJo
-         4eTQ==
-X-Gm-Message-State: AOAM531cYrelkjuXQxfLyabR2F5ueZuImGZ1aEMRCKwk6MOsNHjxPpUl
-        VFjx4NTQGS8GDepbmNxNIit9IqUhUTo3TQgmk3ctvI62kaYUJk6dCsWr3z8nWF4HD0uZjnCQpze
-        O30fuPv+OnonqjPZP
-X-Received: by 2002:a17:906:3016:: with SMTP id 22mr8966360ejz.28.1621583723541;
-        Fri, 21 May 2021 00:55:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxRRc49At9H/iHMJC0Wy7jU0JjEq6nQKIZb6L7nnf1RN7gq6Nbx4+sKgpnx/hOvdQPNHey0iQ==
-X-Received: by 2002:a17:906:3016:: with SMTP id 22mr8966348ejz.28.1621583723233;
-        Fri, 21 May 2021 00:55:23 -0700 (PDT)
-Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
-        by smtp.gmail.com with ESMTPSA id k9sm3513273edv.69.2021.05.21.00.55.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 May 2021 00:55:22 -0700 (PDT)
-Date:   Fri, 21 May 2021 09:55:20 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, oxffffaa@gmail.com
-Subject: Re: [PATCH v10 00/18] virtio/vsock: introduce SOCK_SEQPACKET support
-Message-ID: <20210521075520.ghg75wpzz42zorxg@steredhat>
-References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WaMvOvlMFartTSlXCuGI5oDB8r1cP0ShwB/1QsbOHFE=;
+        b=CmMkGeOPZEtKPrZwp6xcPNYJr+o4YPlyWoso5GI0dAtatH/EQEaQYDyixSrKiQUGch
+         joGMoOCUCpydwTRlKjcvVhkBpiBDY1KWkFswjR992E279FDSJFvq4zfc4Lfagn7PybCx
+         HJsSEvmUR6wPLHJLfRnHH5G0kJYc0ANbES1H/KR7sV4V/mGFExXA+T/cXMbQ1rSgL+06
+         042tV7A6ClARbKgFXu50pFdZde/XffuEFujVAGIZ4ZnpSIFydRCCQ3Y3BdltQSx+rtqN
+         G+D+txAUmG6QZrQN/XCmuAoyVpnaNnS5vktxRrzlGwS4bPo3kAaYJ3QxWqvgR4S6fui9
+         vXEA==
+X-Gm-Message-State: AOAM530/pNHjvLZrixd2981pWICi7XIfG6MTNA7sBPHEls7HwHzClKGO
+        S4qI+T+q1OGG5sleiPV/WBY=
+X-Google-Smtp-Source: ABdhPJwHqbFY8xKHMjxiYie1AtD09LqOk6ROpGzKQ4wy3WD6T/H0NeSA7biLlETeV3ZUKrDhXkJs6Q==
+X-Received: by 2002:a5d:4c50:: with SMTP id n16mr7936264wrt.319.1621586008662;
+        Fri, 21 May 2021 01:33:28 -0700 (PDT)
+Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
+        by smtp.gmail.com with ESMTPSA id a17sm1231200wrt.53.2021.05.21.01.33.27
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 21 May 2021 01:33:28 -0700 (PDT)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com
+Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org,
+        Dan Siemon <dan@coverfire.com>
+Subject: [PATCH bpf-next] xsk: use kvcalloc to support large umems
+Date:   Fri, 21 May 2021 10:33:01 +0200
+Message-Id: <20210521083301.26921-1-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arseny,
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-On Thu, May 20, 2021 at 10:13:53PM +0300, Arseny Krasnov wrote:
->	This patchset implements support of SOCK_SEQPACKET for virtio
->transport.
+Use kvcalloc() instead of kcalloc() to support large umems with, on my
+server, one million pages or more in the umem.
 
-I'll carefully review and test this series next Monday, in the mean time 
-I think we should have at least an agreement about the changes that 
-regards virtio-spec before merge this series, to avoid any compatibility 
-issues.
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Reported-by: Dan Siemon <dan@coverfire.com>
+---
+ net/xdp/xdp_umem.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Do you plan to send a new version of the specification changes?
+diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+index 56a28a686988..f01ef6bda390 100644
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@ -27,7 +27,7 @@ static void xdp_umem_unpin_pages(struct xdp_umem *umem)
+ {
+ 	unpin_user_pages_dirty_lock(umem->pgs, umem->npgs, true);
+ 
+-	kfree(umem->pgs);
++	kvfree(umem->pgs);
+ 	umem->pgs = NULL;
+ }
+ 
+@@ -99,8 +99,7 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
+ 	long npgs;
+ 	int err;
+ 
+-	umem->pgs = kcalloc(umem->npgs, sizeof(*umem->pgs),
+-			    GFP_KERNEL | __GFP_NOWARN);
++	umem->pgs = kvcalloc(umem->npgs, sizeof(*umem->pgs), GFP_KERNEL | __GFP_NOWARN);
+ 	if (!umem->pgs)
+ 		return -ENOMEM;
+ 
+@@ -123,7 +122,7 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
+ out_pin:
+ 	xdp_umem_unpin_pages(umem);
+ out_pgs:
+-	kfree(umem->pgs);
++	kvfree(umem->pgs);
+ 	umem->pgs = NULL;
+ 	return err;
+ }
 
-Thanks,
-Stefano
-
->	As SOCK_SEQPACKET guarantees to save record boundaries, so to
->do it, new bit for field 'flags' was added: SEQ_EOR. This bit is
->set to 1 in last RW packet of message.
->	Now as  packets of one socket are not reordered neither on vsock
->nor on vhost transport layers, such bit allows to restore original
->message on receiver's side. If user's buffer is smaller than message
->length, when all out of size data is dropped.
->	Maximum length of datagram is not limited as in stream socket,
->because same credit logic is used. Difference with stream socket is
->that user is not woken up until whole record is received or error
->occurred. Implementation also supports 'MSG_TRUNC' flags.
->	Tests also implemented.
->
->	Thanks to stsp2@yandex.ru for encouragements and initial design
->recommendations.
->
-> Arseny Krasnov (18):
->  af_vsock: update functions for connectible socket
->  af_vsock: separate wait data loop
->  af_vsock: separate receive data loop
->  af_vsock: implement SEQPACKET receive loop
->  af_vsock: implement send logic for SEQPACKET
->  af_vsock: rest of SEQPACKET support
->  af_vsock: update comments for stream sockets
->  virtio/vsock: set packet's type in virtio_transport_send_pkt_info()
->  virtio/vsock: simplify credit update function API
->  virtio/vsock: defines and constants for SEQPACKET
->  virtio/vsock: dequeue callback for SOCK_SEQPACKET
->  virtio/vsock: add SEQPACKET receive logic
->  virtio/vsock: rest of SOCK_SEQPACKET support
->  virtio/vsock: enable SEQPACKET for transport
->  vhost/vsock: enable SEQPACKET for transport
->  vsock/loopback: enable SEQPACKET for transport
->  vsock_test: add SOCK_SEQPACKET tests
->  virtio/vsock: update trace event for SEQPACKET
->
-> drivers/vhost/vsock.c                        |  44 +-
-> include/linux/virtio_vsock.h                 |   9 +
-> include/net/af_vsock.h                       |   7 +
-> .../events/vsock_virtio_transport_common.h   |   5 +-
-> include/uapi/linux/virtio_vsock.h            |   9 +
-> net/vmw_vsock/af_vsock.c                     | 465 +++++++++++------
-> net/vmw_vsock/virtio_transport.c             |  25 +
-> net/vmw_vsock/virtio_transport_common.c      | 133 ++++-
-> net/vmw_vsock/vsock_loopback.c               |  11 +
-> tools/testing/vsock/util.c                   |  32 +-
-> tools/testing/vsock/util.h                   |   3 +
-> tools/testing/vsock/vsock_test.c             | 116 ++++
-> 12 files changed, 672 insertions(+), 187 deletions(-)
->
-> v9 -> v10:
-> General changelog:
-> - patch for write serialization removed from patchset
-> - commit messages rephrased
-> - RFC tag removed
->
-> Per patch changelog:
->  see every patch after '---' line.
->
-> v8 -> v9:
-> General changelog:
-> - see per patch change log.
->
-> Per patch changelog:
->  see every patch after '---' line.
->
-> v7 -> v8:
-> General changelog:
-> - whole idea is simplified: channel now considered reliable,
->   so SEQ_BEGIN, SEQ_END, 'msg_len' and 'msg_id' were removed.
->   Only thing that is used to mark end of message is bit in
->   'flags' field of packet header: VIRTIO_VSOCK_SEQ_EOR. Packet
->   with such bit set to 1 means, that this is last packet of
->   message.
->
-> - POSIX MSG_EOR support is removed, as there is no exact
->   description how it works.
->
-> - all changes to 'include/uapi/linux/virtio_vsock.h' moved
->   to dedicated patch, as these changes linked with patch to
->   spec.
->
-> - patch 'virtio/vsock: SEQPACKET feature bit support' now merged
->   to 'virtio/vsock: setup SEQPACKET ops for transport'.
->
-> - patch 'vhost/vsock: SEQPACKET feature bit support' now merged
->   to 'vhost/vsock: setup SEQPACKET ops for transport'.
->
-> Per patch changelog:
->  see every patch after '---' line.
->
-> v6 -> v7:
-> General changelog:
-> - virtio transport callback for message length now removed
->   from transport. Length of record is returned by dequeue
->   callback.
->
-> - function which tries to get message length now returns 0
->   when rx queue is empty. Also length of current message in
->   progress is set to 0, when message processed or error
->   happens.
->
-> - patches for virtio feature bit moved after patches with
->   transport ops.
->
-> Per patch changelog:
->  see every patch after '---' line.
->
-> v5 -> v6:
-> General changelog:
-> - virtio transport specific callbacks which send SEQ_BEGIN or
->   SEQ_END now hidden inside virtio transport. Only enqueue,
->   dequeue and record length callbacks are provided by transport.
->
-> - virtio feature bit for SEQPACKET socket support introduced:
->   VIRTIO_VSOCK_F_SEQPACKET.
->
-> - 'msg_cnt' field in 'struct virtio_vsock_seq_hdr' renamed to
->   'msg_id' and used as id.
->
-> Per patch changelog:
-> - 'af_vsock: separate wait data loop':
->    1) Commit message updated.
->    2) 'prepare_to_wait()' moved inside while loop(thanks to
->      Jorgen Hansen).
->    Marked 'Reviewed-by' with 1), but as 2) I removed R-b.
->
-> - 'af_vsock: separate receive data loop': commit message
->    updated.
->    Marked 'Reviewed-by' with that fix.
->
-> - 'af_vsock: implement SEQPACKET receive loop': style fixes.
->
-> - 'af_vsock: rest of SEQPACKET support':
->    1) 'module_put()' added when transport callback check failed.
->    2) Now only 'seqpacket_allow()' callback called to check
->       support of SEQPACKET by transport.
->
-> - 'af_vsock: update comments for stream sockets': commit message
->    updated.
->    Marked 'Reviewed-by' with that fix.
->
-> - 'virtio/vsock: set packet's type in send':
->    1) Commit message updated.
->    2) Parameter 'type' from 'virtio_transport_send_credit_update()'
->       also removed in this patch instead of in next.
->
-> - 'virtio/vsock: dequeue callback for SOCK_SEQPACKET': SEQPACKET
->    related state wrapped to special struct.
->
-> - 'virtio/vsock: update trace event for SEQPACKET': format strings
->    now not broken by new lines.
->
-> v4 -> v5:
-> - patches reorganized:
->   1) Setting of packet's type in 'virtio_transport_send_pkt_info()'
->      is moved to separate patch.
->   2) Simplifying of 'virtio_transport_send_credit_update()' is
->      moved to separate patch and before main virtio/vsock patches.
-> - style problem fixed
-> - in 'af_vsock: separate receive data loop' extra 'release_sock()'
->   removed
-> - added trace event fields for SEQPACKET
-> - in 'af_vsock: separate wait data loop':
->   1) 'vsock_wait_data()' removed 'goto out;'
->   2) Comment for invalid data amount is changed.
-> - in 'af_vsock: rest of SEQPACKET support', 'new_transport' pointer
->   check is moved after 'try_module_get()'
-> - in 'af_vsock: update comments for stream sockets', 'connect-oriented'
->   replaced with 'connection-oriented'
-> - in 'loopback/vsock: setup SEQPACKET ops for transport',
->   'loopback/vsock' replaced with 'vsock/loopback'
->
-> v3 -> v4:
-> - SEQPACKET specific metadata moved from packet header to payload
->   and called 'virtio_vsock_seq_hdr'
-> - record integrity check:
->   1) SEQ_END operation was added, which marks end of record.
->   2) Both SEQ_BEGIN and SEQ_END carries counter which is incremented
->      on every marker send.
-> - af_vsock.c: socket operations for STREAM and SEQPACKET call same
->   functions instead of having own "gates" differs only by names:
->   'vsock_seqpacket/stream_getsockopt()' now replaced with
->   'vsock_connectible_getsockopt()'.
-> - af_vsock.c: 'seqpacket_dequeue' callback returns error and flag that
->   record ready. There is no need to return number of copied bytes,
->   because case when record received successfully is checked at virtio
->   transport layer, when SEQ_END is processed. Also user doesn't need
->   number of copied bytes, because 'recv()' from SEQPACKET could return
->   error, length of users's buffer or length of whole record(both are
->   known in af_vsock.c).
-> - af_vsock.c: both wait loops in af_vsock.c(for data and space) moved
->   to separate functions because now both called from several places.
-> - af_vsock.c: 'vsock_assign_transport()' checks that 'new_transport'
->   pointer is not NULL and returns 'ESOCKTNOSUPPORT' instead of 'ENODEV'
->   if failed to use transport.
-> - tools/testing/vsock/vsock_test.c: rename tests
->
-> v2 -> v3:
-> - patches reorganized: split for prepare and implementation patches
-> - local variables are declared in "Reverse Christmas tree" manner
-> - virtio_transport_common.c: valid leXX_to_cpu() for vsock header
->   fields access
-> - af_vsock.c: 'vsock_connectible_*sockopt()' added as shared code
->   between stream and seqpacket sockets.
-> - af_vsock.c: loops in '__vsock_*_recvmsg()' refactored.
-> - af_vsock.c: 'vsock_wait_data()' refactored.
->
-> v1 -> v2:
-> - patches reordered: af_vsock.c related changes now before virtio vsock
-> - patches reorganized: more small patches, where +/- are not mixed
-> - tests for SOCK_SEQPACKET added
-> - all commit messages updated
-> - af_vsock.c: 'vsock_pre_recv_check()' inlined to
->   'vsock_connectible_recvmsg()'
-> - af_vsock.c: 'vsock_assign_transport()' returns ENODEV if transport
->   was not found
-> - virtio_transport_common.c: transport callback for seqpacket dequeue
-> - virtio_transport_common.c: simplified
->   'virtio_transport_recv_connected()'
-> - virtio_transport_common.c: send reset on socket and packet type
->			      mismatch.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->
->-- 
->2.25.1
->
+base-commit: a49e72b3bda73d36664a084e47da9727a31b8095
+-- 
+2.29.0
 
