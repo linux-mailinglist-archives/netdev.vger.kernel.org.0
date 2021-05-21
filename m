@@ -2,94 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 768B538C809
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 15:28:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4988E38C814
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 15:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235424AbhEUN35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 09:29:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39514 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235428AbhEUN3j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 09:29:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621603695;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qwvdXWfkvGdDNbwDsLlh0GW23kpfk2LfAOvdZQXaciI=;
-        b=Cp16oTrI855tfTrodzGTDrvOEmsKsVh6dT4McfhuQYCkM+L4knb1dHxHmbxNfpnHLpJihz
-        4iCxv4gen6pVYhps34FcX2xzGESmTBv2T315j2lle1agV2gvB5Bf8ICvPrtTcepXWnuZ0O
-        7M9HI3UR9veYmPjtDQMWDFc3vj9Q8YY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-104-F32ZlwWJM9a79KpVuHpCEA-1; Fri, 21 May 2021 09:28:14 -0400
-X-MC-Unique: F32ZlwWJM9a79KpVuHpCEA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F08B66414C;
-        Fri, 21 May 2021 13:28:12 +0000 (UTC)
-Received: from f33vm.wilsonet.com.wilsonet.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B9E91100AE43;
-        Fri, 21 May 2021 13:28:11 +0000 (UTC)
-From:   Jarod Wilson <jarod@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 4/4] bonding/balance-alb: put all slaves into promisc
-Date:   Fri, 21 May 2021 09:27:56 -0400
-Message-Id: <20210521132756.1811620-5-jarod@redhat.com>
-In-Reply-To: <20210521132756.1811620-1-jarod@redhat.com>
-References: <20210518210849.1673577-1-jarod@redhat.com>
- <20210521132756.1811620-1-jarod@redhat.com>
-MIME-Version: 1.0
+        id S235590AbhEUNax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 09:30:53 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:58940 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234235AbhEUNaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 09:30:46 -0400
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14LDMnAg129094;
+        Fri, 21 May 2021 09:29:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=qbyLSEYxo2Punq/yUmuYxrOa5tjum0XaNxmcY8b1kuE=;
+ b=JvkNwQlDVciNu1YieagyjI1rbmChdtQT/5FwACSpAhcHSBATSBxvMwvZ3kv4poyBmQIb
+ VkjB3FYCyr05i0U+M37F09hY3kafHuCPp6b8K4w0dSKrCygQQ5jPzuiiJQmX27PDUqvm
+ sZ4IuYmICKiebPme3sVcE2hEnE13lbnfgcKcS2VFaptCtdUOlVQngdv/jCSSlwhUnKuG
+ uErbbfq6GyHLDaJ+cKtFSF/h8zprg/MGcqwr5+ohQJVnq1KXRzy9O8c+Dweu+erKz8w3
+ PL8fUFJWNAxVHtTQf8nAgdVz/dKdEAhxolVZhM5onkptUPC0hz1zMq+ED9d8yNlB74Jb AQ== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 38pdpsr44b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 May 2021 09:29:19 -0400
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 14LDSkCH031653;
+        Fri, 21 May 2021 13:29:17 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03ams.nl.ibm.com with ESMTP id 38j5x7u5uh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 May 2021 13:29:17 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 14LDTEx729557180
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 May 2021 13:29:14 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 449F842047;
+        Fri, 21 May 2021 13:29:14 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F04DE4204B;
+        Fri, 21 May 2021 13:29:13 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 21 May 2021 13:29:13 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Karsten Graul <kgraul@linux.ibm.com>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] MAINTAINERS: s390/net: add netdev list
+Date:   Fri, 21 May 2021 15:28:56 +0200
+Message-Id: <20210521132856.1573533-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: XXimO-eE9j9LHoGF5cy1zlAMOpeMVLx_
+X-Proofpoint-GUID: XXimO-eE9j9LHoGF5cy1zlAMOpeMVLx_
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-21_04:2021-05-20,2021-05-21 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ lowpriorityscore=0 suspectscore=0 mlxscore=0 mlxlogscore=703 clxscore=1011
+ adultscore=0 impostorscore=0 priorityscore=1501 malwarescore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2105210077
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unlike most other modes with a primary interface, ALB mode bonding can
-receive on all slaves. That includes traffic destined for a non-local MAC
-behind a bridge on top of the bond. Such traffic gets dropped if the
-interface isn't in promiscuous mode. Therefore, it would seem to make
-sense to put all slaves into promisc.
+Discussions for network-related code should include the netdev list.
 
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Thomas Davis <tadavis@lbl.gov>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Jarod Wilson <jarod@redhat.com>
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
- drivers/net/bonding/bond_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 32785e9d0295..6d95f9e46059 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -647,9 +647,10 @@ static int bond_check_dev_link(struct bonding *bond,
- static int bond_set_promiscuity(struct bonding *bond, int inc)
- {
- 	struct list_head *iter;
--	int err = 0;
-+	int mode, err = 0;
- 
--	if (bond_uses_primary(bond)) {
-+	mode = BOND_MODE(bond);
-+	if (mode == BOND_MODE_ACTIVEBACKUP || mode == BOND_MODE_TLB) {
- 		struct slave *curr_active = rtnl_dereference(bond->curr_active_slave);
- 
- 		if (curr_active)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index c1cb2e38ae2e..88722efd94a1 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15944,6 +15944,7 @@ S390 IUCV NETWORK LAYER
+ M:	Julian Wiedmann <jwi@linux.ibm.com>
+ M:	Karsten Graul <kgraul@linux.ibm.com>
+ L:	linux-s390@vger.kernel.org
++L:	netdev@vger.kernel.org
+ S:	Supported
+ W:	http://www.ibm.com/developerworks/linux/linux390/
+ F:	drivers/s390/net/*iucv*
+@@ -15954,6 +15955,7 @@ S390 NETWORK DRIVERS
+ M:	Julian Wiedmann <jwi@linux.ibm.com>
+ M:	Karsten Graul <kgraul@linux.ibm.com>
+ L:	linux-s390@vger.kernel.org
++L:	netdev@vger.kernel.org
+ S:	Supported
+ W:	http://www.ibm.com/developerworks/linux/linux390/
+ F:	drivers/s390/net/
 -- 
-2.30.2
+2.25.1
 
