@@ -2,182 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10CFD38C62B
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 14:03:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD8338C6D2
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 14:49:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230391AbhEUMEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 08:04:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36650 "EHLO
+        id S234083AbhEUMub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 08:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbhEUMEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 08:04:31 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7C0C061574;
-        Fri, 21 May 2021 05:03:08 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1621598586;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=73BhFEnE00P9EM7W8eDaV9ldNZ5X2YG6+sa8CRY7WwM=;
-        b=L25M5Zy6NkFNkFQBlo/MBFeB3Te3ulISHeXqR86FRlFCq8g6/qWe3XZ9/pwYYjkJ12704U
-        q9oPzIRd0iGCg1nN3gY3diTI02L0JBvQSKYWgiTFFoH/ZRePhtv2PYf5UsVDswqr7r+DwQ
-        5zJSxlP4BkqdpHUn2cv5x/8f/hXJK1toxKuforc+pQ193/UextIlqjeeGgMSPvANL+vr+p
-        iIg82cUse/0NSDAEaaV0af9Jig2TmfUADkV5cd6/QqMDOfDCFqcqJJG1rZUTNJ//Gl1gZp
-        6xZSGTHaCw0eAQW50oGNbgCMYvaZatY6jV+UxSdVx1J3k1tD1GaaYLHk1Vh6Qw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1621598586;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=73BhFEnE00P9EM7W8eDaV9ldNZ5X2YG6+sa8CRY7WwM=;
-        b=HEmmL6baryu7dXT+7IwyJWArNzSXr5UDH3j4xtBPCKgdAYRJHTQFzFPDgdTW9qDXx7Dk2G
-        3SF1UU9zwPJyrCBA==
-To:     Nitesh Lal <nilal@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
-        "frederic\@kernel.org" <frederic@kernel.org>,
-        "juri.lelli\@redhat.com" <juri.lelli@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas\@google.com" <bhelgaas@google.com>,
-        "linux-pci\@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
-        "peterz\@infradead.org" <peterz@infradead.org>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "akpm\@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr\@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen\@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt\@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi\@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun\@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com,
-        Marc Zyngier <maz@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com
-Subject: [PATCH] genirq: Provide new interfaces for affinity hints
-In-Reply-To: <87zgwo9u79.ffs@nanos.tec.linutronix.de>
-References: <20210504092340.00006c61@intel.com> <87pmxpdr32.ffs@nanos.tec.linutronix.de> <CAFki+Lkjn2VCBcLSAfQZ2PEkx-TR0Ts_jPnK9b-5ne3PUX37TQ@mail.gmail.com> <87im3gewlu.ffs@nanos.tec.linutronix.de> <CAFki+L=gp10W1ygv7zdsee=BUGpx9yPAckKr7pyo=tkFJPciEg@mail.gmail.com> <CAFki+L=eQoMq+mWhw_jVT-biyuDXpxbXY5nO+F6HvCtpbG9V2w@mail.gmail.com> <CAFki+LkB1sk3mOv4dd1D-SoPWHOs28ZwN-PqL_6xBk=Qkm40Lw@mail.gmail.com> <87zgwo9u79.ffs@nanos.tec.linutronix.de>
-Date:   Fri, 21 May 2021 14:03:06 +0200
-Message-ID: <87wnrs9tvp.ffs@nanos.tec.linutronix.de>
+        with ESMTP id S230006AbhEUMua (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 08:50:30 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670A9C061763
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 05:49:07 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id 29so3039336pgu.11
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 05:49:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pGuPc/FWKOVvjhaHRN43mHg/w+5OJaPMhcuzSdmouas=;
+        b=SsyTMFiRSBaxbEGOPNJk2PsZEN+4hTeX/8abTCA5DUXF83GqcbK4L3mi2tLPQj9Ep0
+         8DJYTXH9XZC5Vp+ZWOASmVWucLMA9lLwn9jpYZhfS6LawydoUt8UUoHcpIPdXbicVgxH
+         VIXprSTWEfwWNINvuSYOPa/Zw0vOS4aGrZizqs8TZEHV2CBobhxoyif/muGrupWz2+Wo
+         HBDNKFTaRf1Gpa3WomeNKwqgwdQkpRQq5cR9bxtX4ZSRLubqhiG9zMWxCCEiCWVBeajQ
+         KqxYjAMCBCJnTTxsqPAACqw1zv4yHPqeJnPJpaXGxv9IIHS1tw/zqchHq1kYFKXsklPk
+         T/XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pGuPc/FWKOVvjhaHRN43mHg/w+5OJaPMhcuzSdmouas=;
+        b=uf5zOe/u38+YBM9zCL/mjiUltel0txzzHVGKJ09o6bX09GhoTsSFbmM+RJKhIMTs0m
+         EGoZSXc5ZXDleZ9IJEQv+hU9XGNpdAndwSUZgF6Ye1tQqh0rABAcbZ27iuqOX1/0ofne
+         55vM//R/qNL43nnYkwg604q6eO3V7gmFK3mRYaWQgi5qLc1jqLwhS6KDhi3kcYa+HxCp
+         XtYnps5pXk68GU8chNsKcleaC35YBdbcFl3u7pQvCIsNV22Gi8jNDJMaoSX1mHncH5OP
+         KjnOiqBUgOdiAQPz4EtTkRMU5kuuey7eSFmreNU7KpQWvLYJnWfgnqpWuKxcgBHHXGB6
+         yaKg==
+X-Gm-Message-State: AOAM530X0P7/INoMBjPwpwVRgSnghNKu1LHE7TYs6ihvfhTj08exFu2q
+        kjfDi0i1YNB7zPHCr5Qn2MUOug==
+X-Google-Smtp-Source: ABdhPJx4ca0fPgEFRiDgD2lJUNF0Ana9vfd7DuRLBFrZ5qcbxuD40fXoDaL43ZLv/B0Q7cEo2irrPw==
+X-Received: by 2002:a62:bd14:0:b029:2de:8bf7:2df8 with SMTP id a20-20020a62bd140000b02902de8bf72df8mr10185713pff.60.1621601346960;
+        Fri, 21 May 2021 05:49:06 -0700 (PDT)
+Received: from hsinchu02.internal.sifive.com (59-124-168-89.HINET-IP.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id d10sm4271419pfo.65.2021.05.21.05.49.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 May 2021 05:49:06 -0700 (PDT)
+From:   Zong Li <zong.li@sifive.com>
+To:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        davem@davemloft.net, kuba@kernel.org, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, schwab@linux-m68k.org, sboyd@kernel.org,
+        aou@eecs.berkeley.edu, mturquette@baylibre.com,
+        geert@linux-m68k.org, yixun.lan@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc:     Zong Li <zong.li@sifive.com>
+Subject: [PATCH] net: macb: ensure the device is available before accessing GEMGXL control registers
+Date:   Fri, 21 May 2021 20:48:59 +0800
+Message-Id: <20210521124859.101012-1-zong.li@sifive.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The discussion about removing the side effect of irq_set_affinity_hint() of
-actually applying the cpumask (if not NULL) as affinity to the interrupt,
-unearthed a few unpleasantries:
+If runtime power menagement is enabled, the gigabit ethernet PLL would
+be disabled after macb_probe(). During this period of time, the system
+would hang up if we try to access GEMGXL control registers.
 
-  1) The modular perf drivers rely on the current behaviour for the very
-     wrong reasons.
+We can't put runtime_pm_get/runtime_pm_put/ there due to the issue of
+sleep inside atomic section (7fa2955ff70ce453 ("sh_eth: Fix sleeping
+function called from invalid context"). Add the similar flag to ensure
+the device is available before accessing GEMGXL device.
 
-  2) While none of the other drivers prevents user space from changing
-     the affinity, a cursorily inspection shows that there are at least
-     expectations in some drivers.
-
-#1 needs to be cleaned up anyway, so that's not a problem
-
-#2 might result in subtle regressions especially when irqbalanced (which
-   nowadays ignores the affinity hint) is disabled.
-
-Provide new interfaces:
-
-  irq_update_affinity_hint() - Only sets the affinity hint pointer
-  irq_apply_affinity_hint()  - Set the pointer and apply the affinity to
-  			       the interrupt
-
-Make irq_set_affinity_hint() a wrapper around irq_apply_affinity_hint() and
-document it to be phased out.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20210501021832.743094-1-jesse.brandeburg@intel.com
+Signed-off-by: Zong Li <zong.li@sifive.com>
 ---
-Applies on:
-   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
----
- include/linux/interrupt.h |   41 ++++++++++++++++++++++++++++++++++++++++-
- kernel/irq/manage.c       |    8 ++++----
- 2 files changed, 44 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/cadence/macb.h      | 2 ++
+ drivers/net/ethernet/cadence/macb_main.c | 7 +++++++
+ 2 files changed, 9 insertions(+)
 
---- a/include/linux/interrupt.h
-+++ b/include/linux/interrupt.h
-@@ -328,7 +328,46 @@ extern int irq_force_affinity(unsigned i
- extern int irq_can_set_affinity(unsigned int irq);
- extern int irq_select_affinity(unsigned int irq);
+diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+index d8d87213697c..acf5242ce715 100644
+--- a/drivers/net/ethernet/cadence/macb.h
++++ b/drivers/net/ethernet/cadence/macb.h
+@@ -1309,6 +1309,8 @@ struct macb {
  
--extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
-+extern int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
-+				     bool setaffinity);
-+
-+/**
-+ * irq_update_affinity_hint - Update the affinity hint
-+ * @irq:	Interrupt to update
-+ * @cpumask:	cpumask pointer (NULL to clear the hint)
-+ *
-+ * Updates the affinity hint, but does not change the affinity of the interrupt.
-+ */
-+static inline int
-+irq_update_affinity_hint(unsigned int irq, const struct cpumask *m)
-+{
-+	return __irq_apply_affinity_hint(irq, m, true);
-+}
-+
-+/**
-+ * irq_apply_affinity_hint - Update the affinity hint and apply the provided
-+ *			     cpumask to the interrupt
-+ * @irq:	Interrupt to update
-+ * @cpumask:	cpumask pointer (NULL to clear the hint)
-+ *
-+ * Updates the affinity hint and if @cpumask is not NULL it applies it as
-+ * the affinity of that interrupt.
-+ */
-+static inline int
-+irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m)
-+{
-+	return __irq_apply_affinity_hint(irq, m, true);
-+}
-+
-+/*
-+ * Deprecated. Use irq_update_affinity_hint() or irq_apply_affinity_hint()
-+ * instead.
-+ */
-+static inline int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
-+{
-+	return irq_apply_affinity_hint(irq, cpumask);
-+}
-+
- extern int irq_update_affinity_desc(unsigned int irq,
- 				    struct irq_affinity_desc *affinity);
+ 	u32	rx_intr_mask;
  
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -487,7 +487,8 @@ int irq_force_affinity(unsigned int irq,
- }
- EXPORT_SYMBOL_GPL(irq_force_affinity);
++	unsigned int is_opened;
++
+ 	struct macb_pm_data pm_data;
+ 	const struct macb_usrio_config *usrio;
+ };
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 6bc7d41d519b..e079ed10ad91 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -2781,6 +2781,8 @@ static int macb_open(struct net_device *dev)
+ 	if (bp->ptp_info)
+ 		bp->ptp_info->ptp_init(dev);
  
--int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
-+int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
-+			      bool setaffinity)
- {
- 	unsigned long flags;
- 	struct irq_desc *desc = irq_get_desc_lock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
-@@ -496,12 +497,11 @@ int irq_set_affinity_hint(unsigned int i
- 		return -EINVAL;
- 	desc->affinity_hint = m;
- 	irq_put_desc_unlock(desc, flags);
--	/* set the initial affinity to prevent every interrupt being on CPU0 */
--	if (m)
-+	if (m && setaffinity)
- 		__irq_set_affinity(irq, m, false);
++	bp->is_opened = 1;
++
  	return 0;
- }
--EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
-+EXPORT_SYMBOL_GPL(__irq_apply_affinity_hint);
  
- static void irq_affinity_notify(struct work_struct *work)
- {
+ reset_hw:
+@@ -2818,6 +2820,8 @@ static int macb_close(struct net_device *dev)
+ 	if (bp->ptp_info)
+ 		bp->ptp_info->ptp_remove(dev);
+ 
++	bp->is_opened = 0;
++
+ 	pm_runtime_put(&bp->pdev->dev);
+ 
+ 	return 0;
+@@ -2867,6 +2871,9 @@ static struct net_device_stats *gem_get_stats(struct macb *bp)
+ 	struct gem_stats *hwstat = &bp->hw_stats.gem;
+ 	struct net_device_stats *nstat = &bp->dev->stats;
+ 
++	if (!bp->is_opened)
++		return nstat;
++
+ 	gem_update_stats(bp);
+ 
+ 	nstat->rx_errors = (hwstat->rx_frame_check_sequence_errors +
+-- 
+2.31.1
+
