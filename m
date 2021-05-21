@@ -2,103 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17E7F38BDCA
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 07:12:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B01A138BDD4
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 07:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230346AbhEUFOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 01:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbhEUFOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 01:14:01 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D36C061574;
-        Thu, 20 May 2021 22:12:37 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id b13so24478268ybk.4;
-        Thu, 20 May 2021 22:12:37 -0700 (PDT)
+        id S232224AbhEUFRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 01:17:24 -0400
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:20096 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230176AbhEUFRX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 01:17:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=G+ZE7911HfFWAUq08fRAK7qsCW/yHSCCc+PxVN2vjus=;
-        b=hdUWeImL7hmeAFOixgUCff92DmEodm7SlmTMDNLOczI7urrwLUAgN6Q3PcwUeKBXHH
-         kp5kNL/Jnwe5FAzjlYa5nFTktnBkzCl3HZS9GLaPfWICrh3pSYZ8RPa3gCbfi7J8feeP
-         6e6OIiOs3BywtkkPOUkySc8rDoIRVszQlRlc0M5cvxNfDb1QE53nbtHxvzdG6Iv8FJx/
-         UsHa6U2nmP7U4goB1AZz2+GxEIO3q0SdbhmkG7noF+LUG8HosIhSIVemAfREl3ygea9o
-         asA5oZysGNsh+EVSEfMpLkNKhLEb9NODODQc52jm6K31Kk8iOIhNq1dIGHWqYVAdXWgj
-         jPXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=G+ZE7911HfFWAUq08fRAK7qsCW/yHSCCc+PxVN2vjus=;
-        b=phP43aD7D8Xqo2v4/1oO3GBzeLTjH9z+GavqAhV1FjswlhzGvozV9dQzducSASCmsu
-         CA28NJyo31r1ZRZP90EpLpEXNC1FclKZsgynEJNXcfwJrx4D/6mj08iNPE2xl0cEniYz
-         dldv2AGjceYdHKT+g6YhKWStZPg3N4gQrfDo4kpPzsjKhM1xolg71StGe8Fsssul7SYY
-         Iw4FfnU7ujjA11lHnLmtgleIfQXLMxcGCmryD+WEkqYYyre28fuNH4BtCxGCsTKd8YVi
-         KjjIdnlKEKQgPiD3AkoSWyW1GACRr/DKoH8JAyNAx6aCMDkdEWbnwqFD4WipaFznWs9T
-         SGUQ==
-X-Gm-Message-State: AOAM531Cr4dhwN/UYOxfC7lTSLeQH89tsINK8CSwxdu7qeVOOvLm2sEm
-        XSE9qa3SV3BYfUvBU2GYYXtneraFBdgFJ/yTThrm92b8
-X-Google-Smtp-Source: ABdhPJz0omcwvM8+TAZPc0ueITZea4OyYIzUPTacPMisR6VcTEbBUE0c6Z8Myne1MdgjnlGUy/SgbA9pM0y/OTU7kDU=
-X-Received: by 2002:a5b:286:: with SMTP id x6mr13198182ybl.347.1621573956500;
- Thu, 20 May 2021 22:12:36 -0700 (PDT)
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1621574161; x=1653110161;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=HGhopqNit1CyoiAPFzXCxUVGqD+msanIlpljNJNwB4g=;
+  b=JGJYVRw0y/FPCKxENMAtlnwqSuSsVzu1tlInOdLcHS1boOHkkluBo90I
+   uFGixGs1Ihp8uEwiRZVG0ATBirXpftiNz4QatJWDOvXAa9mIxLEEtGu3h
+   NDwv9nYKkuUuphb78cNfOvveJxr7q8FpWteefcGvkz+aZ0Ty8Y4TwnU35
+   w=;
+X-IronPort-AV: E=Sophos;i="5.82,313,1613433600"; 
+   d="scan'208";a="2506590"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-1a-807d4a99.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 21 May 2021 05:15:59 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1a-807d4a99.us-east-1.amazon.com (Postfix) with ESMTPS id C64BAA2005;
+        Fri, 21 May 2021 05:15:58 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Fri, 21 May 2021 05:15:58 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.239) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Fri, 21 May 2021 05:15:53 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kafai@fb.com>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
+        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v6 bpf-next 03/11] tcp: Keep TCP_CLOSE sockets in the reuseport group.
+Date:   Fri, 21 May 2021 14:15:48 +0900
+Message-ID: <20210521051548.48515-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210521044725.acvvp3qoj5tk4xts@kafai-mbp.dhcp.thefacebook.com>
+References: <20210521044725.acvvp3qoj5tk4xts@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20210519204132.107247-1-xiyou.wangcong@gmail.com>
- <60a5896ca080d_2aaa720821@john-XPS-13-9370.notmuch> <CAM_iQpUC6ZOiH=ifUe1+cdXtTgiBMwPVLSsWB9zwBA7gWh8mgA@mail.gmail.com>
- <CAEf4Bzb7+XrSbYx6x4hqsdfieJu6C5Ub6m4ptCO5v27dwbx_dA@mail.gmail.com> <CAM_iQpVAhOOP_PRsvL37J1WwOxHKmLEnRXVBYag1nNccHN7PYw@mail.gmail.com>
-In-Reply-To: <CAM_iQpVAhOOP_PRsvL37J1WwOxHKmLEnRXVBYag1nNccHN7PYw@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 20 May 2021 22:12:25 -0700
-Message-ID: <CAEf4BzYUw8bTUXEdrkRwqFg0OGsMTNe+kwxkbdqAMV9we4xifw@mail.gmail.com>
-Subject: Re: [Patch bpf] selftests/bpf: Retry for EAGAIN in udp_redir_to_connected()
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.239]
+X-ClientProxiedBy: EX13D25UWC003.ant.amazon.com (10.43.162.129) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 1:44 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Thu, May 20, 2021 at 1:14 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > Bugs do happen though, so if you can detect some error condition
-> > instead of having an infinite loop, then do it.
->
-> You both are underestimating the problem. There are two different things
-> to consider here:
->
-> 1) Kernel bugs: This is known unknown, we certainly do not know
-> how many bugs we have, otherwise they would have been fixed
-> already. So we can not predict the consequence of the bug either,
-> assuming a bug could only cause packet drop is underestimated.
->
-> 2) Configurations: For instance, firewall rules. If the selftests are run
-> in a weird firewall setup which drops all UDP packets, there is nothing
-> we can do in the test itself. If we have to detect this, then we would
-> have to detect netem cases too where packets can be held indefinitely
-> or reordered arbitrarily. The possibilities here are too many to detect,
-> hence I argue the selftests should setup its own non-hostile environment,
-> which has nothing to do with any specific program.
->
-> This is why I ask you to draw a boundary: what we can assume and
-> what we can't. My boundary is obviously clear: we just assume the
-> environment is non-hostile and we can't predict any kernel bugs,
-> nor their consequences.
+From:   Martin KaFai Lau <kafai@fb.com>
+Date:   Thu, 20 May 2021 21:47:25 -0700
+> On Fri, May 21, 2021 at 09:26:39AM +0900, Kuniyuki Iwashima wrote:
+> > From:   Martin KaFai Lau <kafai@fb.com>
+> > Date:   Thu, 20 May 2021 16:39:06 -0700
+> > > On Fri, May 21, 2021 at 07:54:48AM +0900, Kuniyuki Iwashima wrote:
+> > > > From:   Martin KaFai Lau <kafai@fb.com>
+> > > > Date:   Thu, 20 May 2021 14:22:01 -0700
+> > > > > On Thu, May 20, 2021 at 05:51:17PM +0900, Kuniyuki Iwashima wrote:
+> > > > > > From:   Martin KaFai Lau <kafai@fb.com>
+> > > > > > Date:   Wed, 19 May 2021 23:26:48 -0700
+> > > > > > > On Mon, May 17, 2021 at 09:22:50AM +0900, Kuniyuki Iwashima wrote:
+> > > > > > > 
+> > > > > > > > +static int reuseport_resurrect(struct sock *sk, struct sock_reuseport *old_reuse,
+> > > > > > > > +			       struct sock_reuseport *reuse, bool bind_inany)
+> > > > > > > > +{
+> > > > > > > > +	if (old_reuse == reuse) {
+> > > > > > > > +		/* If sk was in the same reuseport group, just pop sk out of
+> > > > > > > > +		 * the closed section and push sk into the listening section.
+> > > > > > > > +		 */
+> > > > > > > > +		__reuseport_detach_closed_sock(sk, old_reuse);
+> > > > > > > > +		__reuseport_add_sock(sk, old_reuse);
+> > > > > > > > +		return 0;
+> > > > > > > > +	}
+> > > > > > > > +
+> > > > > > > > +	if (!reuse) {
+> > > > > > > > +		/* In bind()/listen() path, we cannot carry over the eBPF prog
+> > > > > > > > +		 * for the shutdown()ed socket. In setsockopt() path, we should
+> > > > > > > > +		 * not change the eBPF prog of listening sockets by attaching a
+> > > > > > > > +		 * prog to the shutdown()ed socket. Thus, we will allocate a new
+> > > > > > > > +		 * reuseport group and detach sk from the old group.
+> > > > > > > > +		 */
+> > > > > > > For the reuseport_attach_prog() path, I think it needs to consider
+> > > > > > > the reuse->num_closed_socks != 0 case also and that should belong
+> > > > > > > to the resurrect case.  For example, when
+> > > > > > > sk_unhashed(sk) but sk->sk_reuseport == 0.
+> > > > > > 
+> > > > > > In the path, reuseport_resurrect() is called from reuseport_alloc() only
+> > > > > > if reuse->num_closed_socks != 0.
+> > > > > > 
+> > > > > > 
+> > > > > > > @@ -92,6 +117,14 @@ int reuseport_alloc(struct sock *sk, bool bind_inany)
+> > > > > > >  	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
+> > > > > > >  					  lockdep_is_held(&reuseport_lock));
+> > > > > > >  	if (reuse) {
+> > > > > > > +		if (reuse->num_closed_socks) {
+> > > > > > 
+> > > > > > But, should this be
+> > > > > > 
+> > > > > > 	if (sk->sk_state == TCP_CLOSE && reuse->num_closed_socks)
+> > > > > > 
+> > > > > > because we need not allocate a new group when we attach a bpf prog to
+> > > > > > listeners?
+> > > > > The reuseport_alloc() is fine as is.  No need to change.
+> > > > 
+> > > > I missed sk_unhashed(sk) prevents calling reuseport_alloc()
+> > > > if sk_state == TCP_LISTEN. I'll keep it as is.
+> > > > 
+> > > > 
+> > > > > 
+> > > > > I should have copied reuseport_attach_prog() in the last reply and
+> > > > > commented there instead.
+> > > > > 
+> > > > > I meant reuseport_attach_prog() needs a change.  In reuseport_attach_prog(),
+> > > > > iiuc, currently passing the "else if (!rcu_access_pointer(sk->sk_reuseport_cb))"
+> > > > > check implies the sk was (and still is) hashed with sk_reuseport enabled
+> > > > > because the current behavior would have set sk_reuseport_cb to NULL during
+> > > > > unhash but it is no longer true now.  For example, this will break:
+> > > > > 
+> > > > > 1. shutdown(lsk); /* lsk was bound with sk_reuseport enabled */
+> > > > > 2. setsockopt(lsk, ..., SO_REUSEPORT, &zero, ...); /* disable sk_reuseport */
+> > > > > 3. setsockopt(lsk, ..., SO_ATTACH_REUSEPORT_EBPF, &prog_fd, ...);
+> > > > >    ^---- /* This will work now because sk_reuseport_cb is not NULL.
+> > > > >           * However, it shouldn't be allowed.
+> > > > > 	  */
+> > > > 
+> > > > Thank you for explanation, I understood the case.
+> > > > 
+> > > > Exactly, I've confirmed that the case succeeded in the setsockopt() and I
+> > > > could change the active listeners' prog via a shutdowned socket.
+> > > > 
+> > > > 
+> > > > > 
+> > > > > I am thinking something like this (uncompiled code):
+> > > > > 
+> > > > > int reuseport_attach_prog(struct sock *sk, struct bpf_prog *prog)
+> > > > > {
+> > > > > 	struct sock_reuseport *reuse;
+> > > > > 	struct bpf_prog *old_prog;
+> > > > > 
+> > > > > 	if (sk_unhashed(sk)) {
+> > > > > 		int err;
+> > > > > 
+> > > > > 		if (!sk->sk_reuseport)
+> > > > > 			return -EINVAL;
+> > > > > 
+> > > > > 		err = reuseport_alloc(sk, false);
+> > > > > 		if (err)
+> > > > > 			return err;
+> > > > > 	} else if (!rcu_access_pointer(sk->sk_reuseport_cb)) {
+> > > > > 		/* The socket wasn't bound with SO_REUSEPORT */
+> > > > > 		return -EINVAL;
+> > > > > 	}
+> > > > > 
+> > > > > 	/* ... */
+> > > > > }
+> > > > > 
+> > > > > WDYT?
+> > > > 
+> > > > I tested this change worked fine. I think this change should be added in
+> > > > reuseport_detach_prog() also.
+> > > > 
+> > > > ---8<---
+> > > > int reuseport_detach_prog(struct sock *sk)
+> > > > {
+> > > >         struct sock_reuseport *reuse;
+> > > >         struct bpf_prog *old_prog;
+> > > > 
+> > > >         if (!rcu_access_pointer(sk->sk_reuseport_cb))
+> > > > 		return sk->sk_reuseport ? -ENOENT : -EINVAL;
+> > > > ---8<---
+> > > Right, a quick thought is something like this for detach:
+> > > 
+> > > 	spin_lock_bh(&reuseport_lock);
+> > > 	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
+> > > 					  lockdep_is_held(&reuseport_lock));
+> > 
+> > Is this necessary because reuseport_grow() can detach sk?
+> > 
+> >         if (!reuse) {
+> >                 spin_unlock_bh(&reuseport_lock);
+> >                 return -ENOENT;
+> >         }
+> Yes, it is needed.  Please add a comment for the reuseport_grow() case also.
 
-It doesn't matter. Instead of having an endless loop, please add a
-counter and limit the number of iterations to some reasonable number.
-That's all, no one is asking you to do something impossible, just
-prevent looping forever in some unforeseen situations and just fail
-the test instead.
+I see, I'll add this change in the next spin.
+Thank you!
 
->
-> Thanks.
+---8<---
+@@ -608,13 +612,24 @@ int reuseport_detach_prog(struct sock *sk)
+        struct sock_reuseport *reuse;
+        struct bpf_prog *old_prog;
+ 
+-       if (!rcu_access_pointer(sk->sk_reuseport_cb))
+-               return sk->sk_reuseport ? -ENOENT : -EINVAL;
+-
+        old_prog = NULL;
+        spin_lock_bh(&reuseport_lock);
+        reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
+                                          lockdep_is_held(&reuseport_lock));
++
++       /* reuse must be checked after acquiring the reuseport_lock
++        * because reuseport_grow() can detach a closed sk.
++        */
++       if (!reuse) {
++               spin_unlock_bh(&reuseport_lock);
++               return sk->sk_reuseport ? -ENOENT : -EINVAL;
++       }
++
++       if (sk_unhashed(sk) && reuse->num_closed_socks) {
++               spin_unlock_bh(&reuseport_lock);
++               return -ENOENT;
++       }
++
+        old_prog = rcu_replace_pointer(reuse->prog, old_prog,
+                                       lockdep_is_held(&reuseport_lock));
+        spin_unlock_bh(&reuseport_lock);
+---8<---
+
+
+> 
+> > 
+> > Then we can remove rcu_access_pointer() check and move sk_reuseport check
+> > here.
+> Make sense.
