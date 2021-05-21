@@ -2,97 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15B5C38CEC6
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 22:18:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4FD738CEE7
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 22:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230369AbhEUUUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 16:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
+        id S231208AbhEUUVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 16:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230317AbhEUUTy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 16:19:54 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65672C06138D
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 13:18:29 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id gb17so14187942ejc.8
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 13:18:29 -0700 (PDT)
+        with ESMTP id S230239AbhEUUVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 16:21:04 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1853FC061347
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 13:19:30 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id gb17so14191189ejc.8
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 13:19:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5nlgh0TQ54JfISjNkuE+6vXCbSzvDn6Db13HObefQGo=;
-        b=VXlAiKygqHU4e+y2w1wYEVp8ltO11dQD7mS0i7xMktZsZBOh7IjbrnQlFEHrZgLBPt
-         LPPPjKQMK/I6M3Ex7YXV46hB5k15+DVlVHJufjK14ZdmI1A14k2vnsERbsWl1JamCaFB
-         BV4HyiVHXHnpCjNocTuao5uTcLbVmP7CWfFvYvYHgys3TZo6Iz/6XstxrABVGgjool74
-         2dWU/ilFlcQyXkAXGk9Ta9rB916XDVMw4jU+SiXe/EREXBkEd1W0kq6t4u62HHAJtIbO
-         CKMdGPRrSXZNDhkqDJ2Yegsc5YAn3DfPywaDJPGx2psFOqbvrlhyZjzKr66M6y7OF238
-         ZVNA==
+        bh=thIe01+lHwzzxJedNGYnXkOMlihftpqGjXXbGI6UEFA=;
+        b=W+zX4pg+qPV5VVsGwBht13DCLZB6q2mUKw3vLfil5mUEswjFv1dWGsywFmS7Uhiwaf
+         OY8nWzuFL3COW2K+KDmJo+wmSfc7iD4GUN9bLWSMnJW5xM6SlVuCtVwUvwlKmlz5T0ty
+         YksRQKsjYR1UMz/AlMlZ/sz0jauzIecYTsL1pC0us/Ya4PNrNfgoGU8mx/Un9c873cIr
+         AeM0+0cQ2RDqrcouA+tHjxWocqUH62s3o0ySgAVLMu3OIS4NG1xsIfFUUhaHAkjIfuFP
+         3AMrK51OGTsWYM2SzU0A0u1IdUtNQRpeoC++i1qe+n77FVvd36So0CZHQHQn49Ck2gQ1
+         hUTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5nlgh0TQ54JfISjNkuE+6vXCbSzvDn6Db13HObefQGo=;
-        b=JNlA3nvwQ1xADA1TROCxx7ETSY2mme3PXDoOQWMIYkfciOjkLj2FPYSqjv45VIgTJX
-         3y1DhinQeSMNKJJ0WEBDuEeTlchbqkjtfJkEpB4zvCVwCTJSTcppPClpWeyeKqB8dSF0
-         9xLuEYRuh4CdGtDKqIjp90ODuB22rYkRFels/JjPFmPJJGUxb3++FsZ+QtKf3TQIyuek
-         mvoJy7S4tD8zjNs2M0iSnYODKaUnKlaCJOUVnr73t48GluwbnyXpPMC0keWeprP1WVGP
-         ugZhVwN+i1iopndQ+3c4Rm984Yezg8Vy6fDlhQwERbokfVA714xqAydQNUy0Tx3aoqPj
-         1pvg==
-X-Gm-Message-State: AOAM530+Mqze27h+R6GsiF4zjl/sYWPV65zL80I5RVMPcqFdIk8kLVnS
-        xPeb/zXz5vRPKsVdKzE96BgGngBLYVipW6qgr2dj
-X-Google-Smtp-Source: ABdhPJyuyS2L6lmTp+jUY7WZYbtb0aAruf3WAqiCiM7sDpi5Jow+cezV/k6G8N/8ymdaUuX65MmhhvE9Q5v4Z/UQj8A=
-X-Received: by 2002:a17:906:9e21:: with SMTP id fp33mr11995874ejc.488.1621628307963;
- Fri, 21 May 2021 13:18:27 -0700 (PDT)
+        bh=thIe01+lHwzzxJedNGYnXkOMlihftpqGjXXbGI6UEFA=;
+        b=I0b/NFkRUFqvBuirN7xU4wEX9Vol+VNgRs/mj1cEKgQ87MgKDFwjafFdpTBZqiWSIX
+         6gJHvmlwmAobcDFhPKrFotTkozTCKXjYg8Udc9YcORDPqrx9ZPSSiKHGKiKDwz1M+avS
+         uqrVL4tIbfBs3NyB9+Bfb3yhyJR3LhUssANVZKTUvXCqXRr3WwttDsA0IRfAEbIknJfk
+         aIvG9ZZONh9K8+ncybH00Z2QboptB9JkJd45917a7PNiXGmm23jGnTWzDvgx468F4pyu
+         z2mu8IO2l+Mbyp6KrsyvRHvB8O6/uLnxPrxiGVwtT7FA748yIPYFyoaDCPvBYEb63HGp
+         OdbA==
+X-Gm-Message-State: AOAM533GLeSU8Sk9zZXTPfCUU7WedO5Z6mRbFGddo9oX5ntGpCKBQlGn
+        ZxG6n1sqQk6A1MOOvRxfz9HcJ939qhR2BvpO4Euc
+X-Google-Smtp-Source: ABdhPJw0PVE6pZTKuiQy3zYlqq+cxAQrxa/Xganf0agDkuOLzcXPOC4Z4cnZeLkkxqOOBbAnCmgf66QN4Q0jU9XPK1g=
+X-Received: by 2002:a17:906:840c:: with SMTP id n12mr11897181ejx.431.1621628368643;
+ Fri, 21 May 2021 13:19:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210513200807.15910-1-casey@schaufler-ca.com> <20210513200807.15910-9-casey@schaufler-ca.com>
-In-Reply-To: <20210513200807.15910-9-casey@schaufler-ca.com>
+References: <20210513200807.15910-1-casey@schaufler-ca.com> <20210513200807.15910-16-casey@schaufler-ca.com>
+In-Reply-To: <20210513200807.15910-16-casey@schaufler-ca.com>
 From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 21 May 2021 16:18:16 -0400
-Message-ID: <CAHC9VhSZDX3KVzGJQuksDo_mfsg7Qb7Vs+goqbzF9qsF7hRUcg@mail.gmail.com>
-Subject: Re: [PATCH v26 08/25] LSM: Use lsmblob in security_secid_to_secctx
+Date:   Fri, 21 May 2021 16:19:17 -0400
+Message-ID: <CAHC9VhRuUsRC4X6_zpfygUF+yWvevqbk-NYtbJbhocjiX0F6ig@mail.gmail.com>
+Subject: Re: [PATCH v26 15/25] LSM: Ensure the correct LSM context releaser
 To:     Casey Schaufler <casey@schaufler-ca.com>
 Cc:     casey.schaufler@intel.com, James Morris <jmorris@namei.org>,
         linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
         linux-audit@redhat.com, keescook@chromium.org,
         john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
         Stephen Smalley <sds@tycho.nsa.gov>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
+        linux-kernel@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, linux-nfs@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 13, 2021 at 4:17 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
+On Thu, May 13, 2021 at 4:24 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
 >
-> Change security_secid_to_secctx() to take a lsmblob as input
-> instead of a u32 secid. It will then call the LSM hooks
-> using the lsmblob element allocated for that module. The
-> callers have been updated as well. This allows for the
-> possibility that more than one module may be called upon
-> to translate a secid to a string, as can occur in the
-> audit code.
+> Add a new lsmcontext data structure to hold all the information
+> about a "security context", including the string, its size and
+> which LSM allocated the string. The allocation information is
+> necessary because LSMs have different policies regarding the
+> lifecycle of these strings. SELinux allocates and destroys
+> them on each use, whereas Smack provides a pointer to an entry
+> in a list that never goes away.
 >
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+> Reviewed-by: John Johansen <john.johansen@canonical.com>
+> Acked-by: Stephen Smalley <sds@tycho.nsa.gov>
+> Acked-by: Chuck Lever <chuck.lever@oracle.com>
 > Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+> Cc: linux-integrity@vger.kernel.org
 > Cc: netdev@vger.kernel.org
 > Cc: linux-audit@redhat.com
 > Cc: netfilter-devel@vger.kernel.org
 > To: Pablo Neira Ayuso <pablo@netfilter.org>
-> To: Paul Moore <paul@paul-moore.com>
+> Cc: linux-nfs@vger.kernel.org
 > ---
->  drivers/android/binder.c                | 12 +++++++++-
->  include/linux/security.h                |  5 +++--
->  include/net/scm.h                       |  7 +++++-
->  kernel/audit.c                          | 20 +++++++++++++++--
->  kernel/auditsc.c                        | 28 +++++++++++++++++++----
->  net/ipv4/ip_sockglue.c                  |  4 +++-
->  net/netfilter/nf_conntrack_netlink.c    | 14 ++++++++++--
->  net/netfilter/nf_conntrack_standalone.c |  4 +++-
->  net/netfilter/nfnetlink_queue.c         | 11 +++++++--
->  net/netlabel/netlabel_unlabeled.c       | 30 +++++++++++++++++++++----
->  net/netlabel/netlabel_user.c            |  6 ++---
->  security/security.c                     | 11 +++++----
->  12 files changed, 123 insertions(+), 29 deletions(-)
+>  drivers/android/binder.c                | 10 ++++---
+>  fs/ceph/xattr.c                         |  6 ++++-
+>  fs/nfs/nfs4proc.c                       |  8 ++++--
+>  fs/nfsd/nfs4xdr.c                       |  7 +++--
+>  include/linux/security.h                | 35 +++++++++++++++++++++++--
+>  include/net/scm.h                       |  5 +++-
+>  kernel/audit.c                          | 14 +++++++---
+>  kernel/auditsc.c                        | 12 ++++++---
+>  net/ipv4/ip_sockglue.c                  |  4 ++-
+>  net/netfilter/nf_conntrack_netlink.c    |  4 ++-
+>  net/netfilter/nf_conntrack_standalone.c |  4 ++-
+>  net/netfilter/nfnetlink_queue.c         | 13 ++++++---
+>  net/netlabel/netlabel_unlabeled.c       | 19 +++++++++++---
+>  net/netlabel/netlabel_user.c            |  4 ++-
+>  security/security.c                     | 11 ++++----
+>  15 files changed, 121 insertions(+), 35 deletions(-)
 
 Acked-by: Paul Moore <paul@paul-moore.com>
 
