@@ -2,111 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AB3B38CC8A
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 19:46:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA33E38CCBA
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 19:53:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238417AbhEURro (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 13:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58174 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238394AbhEURrn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 13:47:43 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A1DC061574;
-        Fri, 21 May 2021 10:46:20 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id g24so11333326pji.4;
-        Fri, 21 May 2021 10:46:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IZpMzIU7b+ESFAZpGC/CRxm8r6tykVrncuEN2XKqdDU=;
-        b=HZ5grogS6Q+gxx1sUcRO3hYq5rM07NVuL+HhMQfmOHoHWIZO0H5J6aP3INjSdU3obL
-         fxL9tiJj8epY2kUTOuTmSqVk3mrss7OUkGDmNGoRixdYHjRPosZB0EkBRBaFuCQlYavh
-         M+G9TVdxnBYJvRZoYNW/zzeBvy2ZarUQjutHMsUMnzAbs92TdDcMeWzKxphDUxk0S+qt
-         NBz78MiatnCy5FLzSzd7tyvh5eDqIAfiU7NcFeteQJM5iQKSlATSaIN6T8hftONntkUb
-         pLikiGvQNIBRdifEDCp5QnGZwprV08xDxTTNaG/xA4ZRrwC3qMP1MmEQbEby+HkIYg7Z
-         zl9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IZpMzIU7b+ESFAZpGC/CRxm8r6tykVrncuEN2XKqdDU=;
-        b=mvD/AQ3k7jVpmNKJOcZowQ/YPyLMf5s/VZrGBzcsY0KN5AEzbJA5bCOkPjfYHukaRA
-         uTQQHeJ5IF3foyjah4j9J+cE8+fDWf9Q4M09/c/5w06GaooaR4pGMuqm+7NjAA78i11h
-         2Z3Q9Z6CyA+dGTj8zHCaba79sf7N1ahQ99wzUo203eZmMAkDOAKVEoKOP65kkIPGJsxm
-         DK5Gyb6fGs9/0/6LXS4NjQab5X2lqw9V95YhCDMW3fCiWXMbT14RCCP3d21mVkdgDEPM
-         gpFB+zMl5oz8brmPKiExeJKSDbTYjmgcmB9Rm3ghzOdEBnPJJUv/dAnHMEhj8RpT+Sv4
-         lyEQ==
-X-Gm-Message-State: AOAM531t9kXnfBwxXiZrdqzUAd1VT8o1G4VX3krMvWgBnnWV3vaFDY+a
-        FYbKbbbbKD2hHhp7Ksas1YGmaMd4Snk=
-X-Google-Smtp-Source: ABdhPJx8jI5x0Oa8PEMibyvPc3nbmHUUTYfz1joB6ULVg+/lnhPtp6BFcxttDLqn1WgZWn8QoqRq6g==
-X-Received: by 2002:a17:90a:b78d:: with SMTP id m13mr12318635pjr.177.1621619179560;
-        Fri, 21 May 2021 10:46:19 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u12sm3957291pfm.2.2021.05.21.10.46.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 May 2021 10:46:18 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     zajec5@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: dsa: bcm_sf2: Fix bcm_sf2_reg_rgmii_cntrl() call for non-RGMII port
-Date:   Fri, 21 May 2021 10:46:14 -0700
-Message-Id: <20210521174614.2535824-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S233210AbhEURym (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 13:54:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53444 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231520AbhEURyl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 May 2021 13:54:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E0FB0613C8;
+        Fri, 21 May 2021 17:53:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621619598;
+        bh=Er+NXLgCY8URzy9UTDvMM1p03wWP8IRW82T7YXvfXXI=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=JYx7L0Ptk0b+NeZ5otbjUJqGAhjiVjxdhC8QTsA4u9xxbM11RGAHU1Rlu5qYsmhEK
+         PHK4jYVKSz8wZIDCxOs8ErjAaEZ+A85AU6z9+3XTXmGb4SefLYa19OOWJGWx9D15cI
+         uYKzddQT845Gmdn19h/nG8lDenrpYthzQ/jRg07cXqiICswoO8VMXs9iA+dFckHmDi
+         hFl4q0x6vyQlXOdhQIQqSNkefNXGvzob2OC43Hj3Ef4sLvCiCqdaZ8DljAkushu+pE
+         XAKZZPKRjwmugwMv3i/VXkw70NiGW5xBb2aAXKKJ4yXQ0dmBkIJGi1Sjz7VIraEUWe
+         jH7VVuXz5nPJw==
+Message-ID: <1426bc91c6c6ee3aaf3d85c4291a12968634e521.camel@kernel.org>
+Subject: Re: AF_XDP metadata/hints
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>
+Cc:     "Raczynski, Piotr" <piotr.raczynski@intel.com>,
+        "Zhang, Jessica" <jessica.zhang@intel.com>,
+        "Kubiak, Marcin" <marcin.kubiak@intel.com>,
+        "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "kurt@linutronix.de" <kurt@linutronix.de>,
+        "Maloor, Kishen" <kishen.maloor@intel.com>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Swiatkowski, Michal" <michal.swiatkowski@intel.com>,
+        "Plantykow, Marta A" <marta.a.plantykow@intel.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Desouza, Ederson" <ederson.desouza@intel.com>,
+        "Song, Yoong Siang" <yoong.siang.song@intel.com>,
+        "Czapnik, Lukasz" <lukasz.czapnik@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Date:   Fri, 21 May 2021 10:53:17 -0700
+In-Reply-To: <20210521153110.207cb231@carbon>
+References: <dc2c38cdccfa5eca925cfc9d59b0674e208c9c9d.camel@intel.com>
+         <DM6PR11MB2780A8C5410ECB3C9700EAB5CA579@DM6PR11MB2780.namprd11.prod.outlook.com>
+         <PH0PR11MB487034313697F395BB5BA3C5E4579@PH0PR11MB4870.namprd11.prod.outlook.com>
+         <DM4PR11MB5422733A87913EFF8904C17184579@DM4PR11MB5422.namprd11.prod.outlook.com>
+         <20210507131034.5a62ce56@carbon>
+         <DM4PR11MB5422FE9618B3692D48FCE4EA84549@DM4PR11MB5422.namprd11.prod.outlook.com>
+         <20210510185029.1ca6f872@carbon>
+         <DM4PR11MB54227C25DFD4E882CB03BD3884539@DM4PR11MB5422.namprd11.prod.outlook.com>
+         <20210512102546.5c098483@carbon>
+         <DM4PR11MB542273C9D8BF63505DC6E21784519@DM4PR11MB5422.namprd11.prod.outlook.com>
+         <7b347a985e590e2a422f837971b30bd83f9c7ac3.camel@nvidia.com>
+         <DM4PR11MB5422762E82C0531B92BDF09A842B9@DM4PR11MB5422.namprd11.prod.outlook.com>
+         <DM4PR11MB5422269F6113268172B9E26A842A9@DM4PR11MB5422.namprd11.prod.outlook.com>
+         <DM4PR11MB54224769926B06EE76635A6484299@DM4PR11MB5422.namprd11.prod.outlook.com>
+         <20210521153110.207cb231@carbon>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We cannot call bcm_sf2_reg_rgmii_cntrl() for a port that is not RGMII,
-yet we do that in bcm_sf2_sw_mac_link_up() irrespective of the port's
-interface. Move that read until we have properly qualified the PHY
-interface mode. This avoids triggering a warning on 7278 platforms that
-have GMII ports.
+On Fri, 2021-05-21 at 15:31 +0200, Jesper Dangaard Brouer wrote:
+> On Fri, 21 May 2021 10:53:40 +0000
+> "Lobakin, Alexandr" <alexandr.lobakin@intel.com> wrote:
+> 
+> > I've opened two discussions at https://github.com/alobakin/linux,
+> > feel free to join them and/or create new ones to share your thoughts
+> > and concerns.
+> 
+> Thanks Alexandr for keeping the thread/subject alive.
+>  
+> I guess this is a new GitHub features "Discussions".  I've never used
+> that in a project before, lets see how this goes.  The usual approach
+> is discussions over email on netdev (Cc. netdev@vger.kernel.org).
 
-Fixes: 55cfeb396965 ("net: dsa: bcm_sf2: add function finding RGMII register")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
-David, Jakub, please queue this up for stable because the offnending
-commit is already in 5.12, thanks!
+I agree we need full visibility and transparency, i actually recommend:
+bpf@vger.kernel.org
 
- drivers/net/dsa/bcm_sf2.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+so we wont spam the netdev ML.
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 9150038b60cb..3b018fcf4412 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -821,11 +821,9 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
- 	bcm_sf2_sw_mac_link_set(ds, port, interface, true);
- 
- 	if (port != core_readl(priv, CORE_IMP0_PRT_ID)) {
--		u32 reg_rgmii_ctrl;
-+		u32 reg_rgmii_ctrl = 0;
- 		u32 reg, offset;
- 
--		reg_rgmii_ctrl = bcm_sf2_reg_rgmii_cntrl(priv, port);
--
- 		if (priv->type == BCM4908_DEVICE_ID ||
- 		    priv->type == BCM7445_DEVICE_ID)
- 			offset = CORE_STS_OVERRIDE_GMIIP_PORT(port);
-@@ -836,6 +834,7 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
- 		    interface == PHY_INTERFACE_MODE_RGMII_TXID ||
- 		    interface == PHY_INTERFACE_MODE_MII ||
- 		    interface == PHY_INTERFACE_MODE_REVMII) {
-+			reg_rgmii_ctrl = bcm_sf2_reg_rgmii_cntrl(priv, port);
- 			reg = reg_readl(priv, reg_rgmii_ctrl);
- 			reg &= ~(RX_PAUSE_EN | TX_PAUSE_EN);
- 
--- 
-2.25.1
+> 
+> Lets make it a bit easier to find these discussion threads:
+>  https://github.com/alobakin/linux/discussions
+> 
+> #1: Approach for generating metadata from HW descriptors #1
+>  https://github.com/alobakin/linux/discussions/1
+> 
+> #2: The idea of obtaining BTF directly from /sys/kernel/btf #2
+>  https://github.com/alobakin/linux/discussions/2
+> 
+
+
 
