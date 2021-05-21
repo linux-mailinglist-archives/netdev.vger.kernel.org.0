@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40E0038CABC
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 18:15:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0DE838CAC0
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 18:16:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234376AbhEUQRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 12:17:01 -0400
-Received: from mail-ed1-f53.google.com ([209.85.208.53]:36782 "EHLO
+        id S236309AbhEUQRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 12:17:23 -0400
+Received: from mail-ed1-f53.google.com ([209.85.208.53]:39463 "EHLO
         mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231995AbhEUQRA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 12:17:00 -0400
-Received: by mail-ed1-f53.google.com with SMTP id df21so23938395edb.3;
-        Fri, 21 May 2021 09:15:35 -0700 (PDT)
+        with ESMTP id S231995AbhEUQRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 12:17:22 -0400
+Received: by mail-ed1-f53.google.com with SMTP id h16so23913754edr.6;
+        Fri, 21 May 2021 09:15:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kXlRaBMJoWOhAWHALOYN55NWGuEBwklQq4V7CKcJSkA=;
-        b=SfWJar+FICff2TRIXpGloL9uOmNcsBMdLJTJ3/E9eDGPn8p6za2a3HQZIEnKG7iuR5
-         xzvT/EIeaNYSRVKFh48ZfXpUie9M3bnPPcN5zXboUk2HMGlwf15VJHOnL3d4FrX6ic7j
-         OwfAcs8NTlBb8dqbL6ZKb5JEtwSKgQEDfZeZcKkZAKOHCGVduG4mfxLJlOGroZOuirvg
-         NuYIjgY21+sI2JZJNCUuV1Yc9qiLpnEG9BqPBtIPiyPckkoDFklA9N7XYDS+C0jpybRi
-         acCrjYLkRX8ScL2MGu/2Z48TETF9N4O4HUvvjnlnxWIFMKDEQhX5nEy09iRnApu6TpYT
-         FR/g==
-X-Gm-Message-State: AOAM531klu8qbyfDyn7C7FyRtmJHXgETabRdxtQOIqG4fbwQEJdm0DgS
-        jctZ2+os88a26ueMKiegRtRKZyKv2WPsJj9m
-X-Google-Smtp-Source: ABdhPJwj4cSc9QZl/beB2hgQ9AcqcPq/X5efuEiyVneN+LuPycp9x16/jNvla0FZjjMcKfQZWZYRSw==
-X-Received: by 2002:aa7:cd6b:: with SMTP id ca11mr12064239edb.115.1621613735185;
-        Fri, 21 May 2021 09:15:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DXxhNsSA0w48JzABDCQS0aHG0R3WQuhO/gqWHcWbvcI=;
+        b=T7sRSbMZgCMxZ8xMfZ4Ky+e3YYdBJ5yeY5JxS3yiC2JK86fCOr3pfui5UxCoNLMcke
+         ZyusgyR2XNw0NC3riR85L2q2FnDlANOcnbp4bItkOnlcRtHNkrv8VYYl8wopnlxSSt+J
+         WPULU5wr57UA/sdAzshGET/GhlwTnKBpBaZ3i99BNwdYr3d4TSqFYfFWhacO35TW/4rJ
+         SG5bBK3eAGbxiFlzPFQ3MBOw+DG8hB/3CGeJF7FeOi1Ku6kE/HgZAw3izRltqhmxHuY/
+         5u67CkGkDI8QMrSlXM8Ma1go161UYB1QBzXQnMibFiAaBPH5EiR64Wcz3bxOXRj+Yurz
+         eu4g==
+X-Gm-Message-State: AOAM533bM4ImnDiOMiZRRBeaCjMknSwN81+MuiLD/GU6pVNz65fluYFM
+        Vv9ItitugBgef3auiUePieoIgJa0ApZo+aps
+X-Google-Smtp-Source: ABdhPJxRc9Ga5LqRj6nwh7Mr+guSRZr+lRmCRE14vxiMJsfZdVWzw12VMBMeg/7HCeFfhIUc2orrng==
+X-Received: by 2002:a50:fd13:: with SMTP id i19mr12078450eds.386.1621613757321;
+        Fri, 21 May 2021 09:15:57 -0700 (PDT)
 Received: from msft-t490s.teknoraver.net (net-5-94-253-60.cust.vodafonedsl.it. [5.94.253.60])
-        by smtp.gmail.com with ESMTPSA id f7sm3871644ejz.95.2021.05.21.09.15.33
+        by smtp.gmail.com with ESMTPSA id f7sm3871644ejz.95.2021.05.21.09.15.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 May 2021 09:15:34 -0700 (PDT)
+        Fri, 21 May 2021 09:15:56 -0700 (PDT)
 From:   Matteo Croce <mcroce@linux.microsoft.com>
 To:     netdev@vger.kernel.org, linux-mm@kvack.org
 Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
@@ -78,10 +78,12 @@ Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
         Sven Auhagen <sven.auhagen@voleatech.de>
-Subject: [PATCH net-next v6 0/5] page_pool: recycle buffers
-Date:   Fri, 21 May 2021 18:15:22 +0200
-Message-Id: <20210521161527.34607-1-mcroce@linux.microsoft.com>
+Subject: [PATCH net-next v6 1/5] mm: add a signature in struct page
+Date:   Fri, 21 May 2021 18:15:23 +0200
+Message-Id: <20210521161527.34607-2-mcroce@linux.microsoft.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210521161527.34607-1-mcroce@linux.microsoft.com>
+References: <20210521161527.34607-1-mcroce@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -90,88 +92,139 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Matteo Croce <mcroce@microsoft.com>
 
-This is a respin of [1]
+This is needed by the page_pool to avoid recycling a page not allocated
+via page_pool.
 
-This patchset shows the plans for allowing page_pool to handle and
-maintain DMA map/unmap of the pages it serves to the driver. For this
-to work a return hook in the network core is introduced.
+The page->signature field is aliased to page->lru.next and
+page->compound_head, but it can't be set by mistake because the
+signature value is a bad pointer, and can't trigger a false positive
+in PageTail() because the last bit is 0.
 
-The overall purpose is to simplify drivers, by providing a page
-allocation API that does recycling, such that each driver doesn't have
-to reinvent its own recycling scheme. Using page_pool in a driver
-does not require implementing XDP support, but it makes it trivially
-easy to do so. Instead of allocating buffers specifically for SKBs
-we now allocate a generic buffer and either wrap it on an SKB
-(via build_skb) or create an XDP frame.
-The recycling code leverages the XDP recycle APIs.
+Co-developed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Matteo Croce <mcroce@microsoft.com>
+---
+ include/linux/mm.h       | 12 +++++++-----
+ include/linux/mm_types.h | 12 +++++++++++-
+ include/linux/poison.h   |  3 +++
+ net/core/page_pool.c     |  6 ++++++
+ 4 files changed, 27 insertions(+), 6 deletions(-)
 
-The Marvell mvpp2 and mvneta drivers are used in this patchset to
-demonstrate how to use the API, and tested on a MacchiatoBIN
-and EspressoBIN boards respectively.
-
-Please let this going in on a future -rc1 so to allow enough time
-to have wider tests.
-
-Note that this series depends on the change "mm: fix struct page layout
-on 32-bit systems"[2] which is not yet in master.
-
-v5 -> v6
-- preserve pfmemalloc bit when setting signature
-- fix typo in mvneta
-- rebase on next-next with the new cache
-- don't clear the skb->pp_recycle in pskb_expand_head()
-
-v4 -> v5:
-- move the signature so it doesn't alias with page->mapping
-- use an invalid pointer as magic
-- incorporate Matthew Wilcox's changes for pfmemalloc pages
-- move the __skb_frag_unref() changes to a preliminary patch
-- refactor some cpp directives
-- only attempt recycling if skb->head_frag
-- clear skb->pp_recycle in pskb_expand_head()
-
-v3 -> v4:
-- store a pointer to page_pool instead of xdp_mem_info
-- drop a patch which reduces xdp_mem_info size
-- do the recycling in the page_pool code instead of xdp_return
-- remove some unused headers include
-- remove some useless forward declaration
-
-v2 -> v3:
-- added missing SOBs
-- CCed the MM people
-
-v1 -> v2:
-- fix a commit message
-- avoid setting pp_recycle multiple times on mvneta
-- squash two patches to avoid breaking bisect
-
-[1] https://lore.kernel.org/netdev/154413868810.21735.572808840657728172.stgit@firesoul/
-[2] https://lore.kernel.org/linux-mm/20210510153211.1504886-1-willy@infradead.org/
-
-Ilias Apalodimas (1):
-  page_pool: Allow drivers to hint on SKB recycling
-
-Matteo Croce (4):
-  mm: add a signature in struct page
-  skbuff: add a parameter to __skb_frag_unref
-  mvpp2: recycle buffers
-  mvneta: recycle buffers
-
- drivers/net/ethernet/marvell/mvneta.c         | 11 +++---
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  2 +-
- drivers/net/ethernet/marvell/sky2.c           |  2 +-
- drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  2 +-
- include/linux/mm.h                            | 12 ++++---
- include/linux/mm_types.h                      | 12 ++++++-
- include/linux/poison.h                        |  3 ++
- include/linux/skbuff.h                        | 34 ++++++++++++++++---
- include/net/page_pool.h                       |  9 +++++
- net/core/page_pool.c                          | 29 ++++++++++++++++
- net/core/skbuff.c                             | 24 ++++++++++---
- net/tls/tls_device.c                          |  2 +-
- 12 files changed, 119 insertions(+), 23 deletions(-)
-
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 322ec61d0da7..4ecfd8472a17 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1668,10 +1668,12 @@ struct address_space *page_mapping(struct page *page);
+ static inline bool page_is_pfmemalloc(const struct page *page)
+ {
+ 	/*
+-	 * Page index cannot be this large so this must be
+-	 * a pfmemalloc page.
++	 * This is not a tail page; compound_head of a head page is unused
++	 * at return from the page allocator, and will be overwritten
++	 * by callers who do not care whether the page came from the
++	 * reserves.
+ 	 */
+-	return page->index == -1UL;
++	return page->compound_head & BIT(1);
+ }
+ 
+ /*
+@@ -1680,12 +1682,12 @@ static inline bool page_is_pfmemalloc(const struct page *page)
+  */
+ static inline void set_page_pfmemalloc(struct page *page)
+ {
+-	page->index = -1UL;
++	page->compound_head = BIT(1);
+ }
+ 
+ static inline void clear_page_pfmemalloc(struct page *page)
+ {
+-	page->index = 0;
++	page->compound_head = 0;
+ }
+ 
+ /*
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 5aacc1c10a45..09f90598ff63 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -96,6 +96,13 @@ struct page {
+ 			unsigned long private;
+ 		};
+ 		struct {	/* page_pool used by netstack */
++			/**
++			 * @pp_magic: magic value to avoid recycling non
++			 * page_pool allocated pages.
++			 */
++			unsigned long pp_magic;
++			struct page_pool *pp;
++			unsigned long _pp_mapping_pad;
+ 			/**
+ 			 * @dma_addr: might require a 64-bit value on
+ 			 * 32-bit architectures.
+@@ -130,7 +137,10 @@ struct page {
+ 			};
+ 		};
+ 		struct {	/* Tail pages of compound page */
+-			unsigned long compound_head;	/* Bit zero is set */
++			/* Bit zero is set
++			 * Bit one if pfmemalloc page
++			 */
++			unsigned long compound_head;
+ 
+ 			/* First tail page only */
+ 			unsigned char compound_dtor;
+diff --git a/include/linux/poison.h b/include/linux/poison.h
+index aff1c9250c82..d62ef5a6b4e9 100644
+--- a/include/linux/poison.h
++++ b/include/linux/poison.h
+@@ -78,4 +78,7 @@
+ /********** security/ **********/
+ #define KEY_DESTROY		0xbd
+ 
++/********** net/core/page_pool.c **********/
++#define PP_SIGNATURE		(0x40 + POISON_POINTER_DELTA)
++
+ #endif
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 3c4c4c7a0402..e1321bc9d316 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -17,6 +17,7 @@
+ #include <linux/dma-mapping.h>
+ #include <linux/page-flags.h>
+ #include <linux/mm.h> /* for __put_page() */
++#include <linux/poison.h>
+ 
+ #include <trace/events/page_pool.h>
+ 
+@@ -221,6 +222,8 @@ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+ 		return NULL;
+ 	}
+ 
++	page->pp_magic |= PP_SIGNATURE;
++
+ 	/* Track how many pages are held 'in-flight' */
+ 	pool->pages_state_hold_cnt++;
+ 	trace_page_pool_state_hold(pool, page, pool->pages_state_hold_cnt);
+@@ -263,6 +266,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+ 			put_page(page);
+ 			continue;
+ 		}
++		page->pp_magic |= PP_SIGNATURE;
+ 		pool->alloc.cache[pool->alloc.count++] = page;
+ 		/* Track how many pages are held 'in-flight' */
+ 		pool->pages_state_hold_cnt++;
+@@ -341,6 +345,8 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
+ 			     DMA_ATTR_SKIP_CPU_SYNC);
+ 	page_pool_set_dma_addr(page, 0);
+ skip_dma_unmap:
++	page->pp_magic = 0;
++
+ 	/* This may be the last page returned, releasing the pool, so
+ 	 * it is not safe to reference pool afterwards.
+ 	 */
 -- 
 2.31.1
 
