@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9FCC38BEDD
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 08:03:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C565238BEF2
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 08:03:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234218AbhEUGE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 02:04:28 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:3456 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231201AbhEUGEU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 02:04:20 -0400
-Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.60])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FmbYG4qM5zBvRW;
-        Fri, 21 May 2021 14:00:02 +0800 (CST)
+        id S235291AbhEUGEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 02:04:47 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:3640 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231334AbhEUGEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 02:04:22 -0400
+Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.58])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FmbYs4YvjzmXn5;
+        Fri, 21 May 2021 14:00:33 +0800 (CST)
 Received: from dggpeml500012.china.huawei.com (7.185.36.15) by
- dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
+ dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Fri, 21 May 2021 14:02:50 +0800
 Received: from huawei.com (10.67.165.24) by dggpeml500012.china.huawei.com
@@ -27,9 +27,9 @@ To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
         <luiz.dentz@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>,
         <netdev@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>
 CC:     <linux-kernel@vger.kernel.org>, <yekai13@huawei.com>
-Subject: [PATCH v2 01/12] net/Bluetooth/bnep - use the correct print format
-Date:   Fri, 21 May 2021 13:59:37 +0800
-Message-ID: <1621576788-48092-2-git-send-email-yekai13@huawei.com>
+Subject: [PATCH v2 02/12] net/Bluetooth/cmtp - use the correct print format
+Date:   Fri, 21 May 2021 13:59:38 +0800
+Message-ID: <1621576788-48092-3-git-send-email-yekai13@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1621576788-48092-1-git-send-email-yekai13@huawei.com>
 References: <1621576788-48092-1-git-send-email-yekai13@huawei.com>
@@ -49,42 +49,105 @@ instead of %d. Otherwise printk() might end up displaying negative numbers.
 
 Signed-off-by: Kai Ye <yekai13@huawei.com>
 ---
- net/bluetooth/bnep/core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/bluetooth/cmtp/capi.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/net/bluetooth/bnep/core.c b/net/bluetooth/bnep/core.c
-index 43c2841..72f47b3 100644
---- a/net/bluetooth/bnep/core.c
-+++ b/net/bluetooth/bnep/core.c
-@@ -126,8 +126,8 @@ static int bnep_ctrl_set_netfilter(struct bnep_session *s, __be16 *data, int len
- 			f[i].start = get_unaligned_be16(data++);
- 			f[i].end   = get_unaligned_be16(data++);
+diff --git a/net/bluetooth/cmtp/capi.c b/net/bluetooth/cmtp/capi.c
+index eb415560..f3bedc3 100644
+--- a/net/bluetooth/cmtp/capi.c
++++ b/net/bluetooth/cmtp/capi.c
+@@ -74,7 +74,7 @@ static struct cmtp_application *cmtp_application_add(struct cmtp_session *sessio
+ {
+ 	struct cmtp_application *app = kzalloc(sizeof(*app), GFP_KERNEL);
  
--			BT_DBG("proto filter start %d end %d",
--				f[i].start, f[i].end);
-+			BT_DBG("proto filter start %u end %u",
-+			       f[i].start, f[i].end);
- 		}
+-	BT_DBG("session %p application %p appl %d", session, app, appl);
++	BT_DBG("session %p application %p appl %u", session, app, appl);
  
- 		if (i < BNEP_MAX_PROTO_FILTERS)
-@@ -266,7 +266,7 @@ static int bnep_rx_extension(struct bnep_session *s, struct sk_buff *skb)
- 			break;
- 		}
+ 	if (!app)
+ 		return NULL;
+@@ -135,7 +135,7 @@ static void cmtp_send_capimsg(struct cmtp_session *session, struct sk_buff *skb)
+ {
+ 	struct cmtp_scb *scb = (void *) skb->cb;
  
--		BT_DBG("type 0x%x len %d", h->type, h->len);
-+		BT_DBG("type 0x%x len %u", h->type, h->len);
+-	BT_DBG("session %p skb %p len %d", session, skb, skb->len);
++	BT_DBG("session %p skb %p len %u", session, skb, skb->len);
  
- 		switch (h->type & BNEP_TYPE_MASK) {
- 		case BNEP_EXT_CONTROL:
-@@ -424,7 +424,7 @@ static int bnep_tx_frame(struct bnep_session *s, struct sk_buff *skb)
- 	int len = 0, il = 0;
- 	u8 type = 0;
+ 	scb->id = -1;
+ 	scb->data = (CAPIMSG_COMMAND(skb->data) == CAPI_DATA_B3);
+@@ -152,7 +152,7 @@ static void cmtp_send_interopmsg(struct cmtp_session *session,
+ 	struct sk_buff *skb;
+ 	unsigned char *s;
  
--	BT_DBG("skb %p dev %p type %d", skb, skb->dev, skb->pkt_type);
-+	BT_DBG("skb %p dev %p type %u", skb, skb->dev, skb->pkt_type);
+-	BT_DBG("session %p subcmd 0x%02x appl %d msgnum %d", session, subcmd, appl, msgnum);
++	BT_DBG("session %p subcmd 0x%02x appl %u msgnum %u", session, subcmd, appl, msgnum);
  
- 	if (!skb->dev) {
- 		/* Control frame sent by us */
+ 	skb = alloc_skb(CAPI_MSG_BASELEN + 6 + len, GFP_ATOMIC);
+ 	if (!skb) {
+@@ -188,7 +188,7 @@ static void cmtp_recv_interopmsg(struct cmtp_session *session, struct sk_buff *s
+ 	__u16 appl, msgnum, func, info;
+ 	__u32 controller;
+ 
+-	BT_DBG("session %p skb %p len %d", session, skb, skb->len);
++	BT_DBG("session %p skb %p len %u", session, skb, skb->len);
+ 
+ 	switch (CAPIMSG_SUBCOMMAND(skb->data)) {
+ 	case CAPI_CONF:
+@@ -321,7 +321,7 @@ void cmtp_recv_capimsg(struct cmtp_session *session, struct sk_buff *skb)
+ 	__u16 appl;
+ 	__u32 contr;
+ 
+-	BT_DBG("session %p skb %p len %d", session, skb, skb->len);
++	BT_DBG("session %p skb %p len %u", session, skb, skb->len);
+ 
+ 	if (skb->len < CAPI_MSG_BASELEN)
+ 		return;
+@@ -344,7 +344,7 @@ void cmtp_recv_capimsg(struct cmtp_session *session, struct sk_buff *skb)
+ 		appl = application->appl;
+ 		CAPIMSG_SETAPPID(skb->data, appl);
+ 	} else {
+-		BT_ERR("Can't find application with id %d", appl);
++		BT_ERR("Can't find application with id %u", appl);
+ 		kfree_skb(skb);
+ 		return;
+ 	}
+@@ -385,8 +385,8 @@ static void cmtp_register_appl(struct capi_ctr *ctrl, __u16 appl, capi_register_
+ 	unsigned char buf[8];
+ 	int err = 0, nconn, want = rp->level3cnt;
+ 
+-	BT_DBG("ctrl %p appl %d level3cnt %d datablkcnt %d datablklen %d",
+-		ctrl, appl, rp->level3cnt, rp->datablkcnt, rp->datablklen);
++	BT_DBG("ctrl %p appl %u level3cnt %u datablkcnt %u datablklen %u",
++	       ctrl, appl, rp->level3cnt, rp->datablkcnt, rp->datablklen);
+ 
+ 	application = cmtp_application_add(session, appl);
+ 	if (!application) {
+@@ -450,7 +450,7 @@ static void cmtp_release_appl(struct capi_ctr *ctrl, __u16 appl)
+ 	struct cmtp_session *session = ctrl->driverdata;
+ 	struct cmtp_application *application;
+ 
+-	BT_DBG("ctrl %p appl %d", ctrl, appl);
++	BT_DBG("ctrl %p appl %u", ctrl, appl);
+ 
+ 	application = cmtp_application_get(session, CMTP_APPLID, appl);
+ 	if (!application) {
+@@ -483,7 +483,7 @@ static u16 cmtp_send_message(struct capi_ctr *ctrl, struct sk_buff *skb)
+ 
+ 	application = cmtp_application_get(session, CMTP_APPLID, appl);
+ 	if ((!application) || (application->state != BT_CONNECTED)) {
+-		BT_ERR("Can't find application with id %d", appl);
++		BT_ERR("Can't find application with id %u", appl);
+ 		return CAPI_ILLAPPNR;
+ 	}
+ 
+@@ -515,7 +515,7 @@ static int cmtp_proc_show(struct seq_file *m, void *v)
+ 	seq_printf(m, "ctrl %d\n", session->num);
+ 
+ 	list_for_each_entry(app, &session->applications, list) {
+-		seq_printf(m, "appl %d -> %d\n", app->appl, app->mapping);
++		seq_printf(m, "appl %u -> %u\n", app->appl, app->mapping);
+ 	}
+ 
+ 	return 0;
 -- 
 2.8.1
 
