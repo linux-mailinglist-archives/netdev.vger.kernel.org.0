@@ -2,59 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E4E438D1B0
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 00:52:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30D9638D1C5
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 01:01:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbhEUWxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 18:53:22 -0400
-Received: from mail-wr1-f51.google.com ([209.85.221.51]:43804 "EHLO
-        mail-wr1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbhEUWxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 18:53:20 -0400
-Received: by mail-wr1-f51.google.com with SMTP id p7so18726433wru.10
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 15:51:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yvj3eMK+q0AK283Z+clTzeemzC/RTeZ4w+42UHNs4CI=;
-        b=oFwsNUmexOM1jwi1HLk9Yf0KQjJtoDwltIv+2ecMyC8BoeIk0RpfVa2fO8UhhidkoW
-         ZcVw83x6AosMdmLqK5KzFXU1njZq8iY27xX+EfAK8rIQ+6gXU7V+ctm1KD563wAcjVNx
-         65XAxjv3mwZOeP3KlHN9Xk+PWxn8m2Vdbpol63Ll10C1+rmqiZOLrMq+WsCwCz/HqeCt
-         eEN5icjPrgREpZARlwES1Un/v/ZABJEZWUi/a5Wmy6XrggJWWh3ZtWfbsyt2NPeYJ+S8
-         GxK8aAWB2H/CalQcOrXUkGyw/Bt8htZ644jMcSsZXLRdsBSXYgmxDVmxdNq4QttG7AvN
-         s8sA==
-X-Gm-Message-State: AOAM530HoPZdYqTTQuL2GYVIYOYUB8Wka+JcDpAX0NVCW1v2BMdKl7Yz
-        nyQVSUsyIWF5Mq00OK8fDxs=
-X-Google-Smtp-Source: ABdhPJwEbixDJMryHTATmZwjWT5nmeb64WIwTHo06Y4gf4GxbExH2TJom8qu3+3bdWibwW1S6CKCsg==
-X-Received: by 2002:adf:b31e:: with SMTP id j30mr11719070wrd.74.1621637514577;
-        Fri, 21 May 2021 15:51:54 -0700 (PDT)
-Received: from ?IPv6:2601:647:4802:9070:66b2:1988:438b:4253? ([2601:647:4802:9070:66b2:1988:438b:4253])
-        by smtp.gmail.com with ESMTPSA id g11sm3461416wri.59.2021.05.21.15.51.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 May 2021 15:51:54 -0700 (PDT)
-Subject: Re: [RFC PATCH v5 08/27] nvme-tcp-offload: Add Timeout and ASYNC
- Support
-To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, hch@lst.de, axboe@fb.com, kbusch@kernel.org
-Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
-        pkushwaha@marvell.com, malin1024@gmail.com
-References: <20210519111340.20613-1-smalin@marvell.com>
- <20210519111340.20613-9-smalin@marvell.com>
-From:   Sagi Grimberg <sagi@grimberg.me>
-Message-ID: <34e4a50b-4075-2364-d654-4039564f43ff@grimberg.me>
-Date:   Fri, 21 May 2021 15:51:50 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S230014AbhEUXCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 19:02:54 -0400
+Received: from terran.cs.ucr.edu ([169.235.31.181]:54450 "EHLO
+        terran.cs.ucr.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229535AbhEUXCr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 19:02:47 -0400
+X-Greylist: delayed 2043 seconds by postgrey-1.27 at vger.kernel.org; Fri, 21 May 2021 19:02:46 EDT
+Received: from hang by terran.cs.ucr.edu with local (Exim 4.82)
+        (envelope-from <hang@terran.cs.ucr.edu>)
+        id 1lkDhl-0006WH-D5; Fri, 21 May 2021 15:33:17 -0700
+From:   Hang Zhang <zh.nvgt@gmail.com>
+Cc:     Solomon Peachy <pizza@shaftnet.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hang Zhang <zh.nvgt@gmail.com>
+Subject: [PATCH] cw1200: Revert unnecessary patches that fix unreal use-after-free bugs
+Date:   Fri, 21 May 2021 15:32:38 -0700
+Message-Id: <20210521223238.25020-1-zh.nvgt@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-In-Reply-To: <20210519111340.20613-9-smalin@marvell.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This should be squashed in the I/O patch
+A previous commit 4f68ef64cd7f ("cw1200: Fix concurrency 
+use-after-free bugs in cw1200_hw_scan()") tried to fix a seemingly
+use-after-free bug between cw1200_bss_info_changed() and
+cw1200_hw_scan(), where the former frees a sk_buff pointed
+to by frame.skb, and the latter accesses the sk_buff
+pointed to by frame.skb. However, this issue should be a
+false alarm because:
+
+(1) "frame.skb" is not a shared variable between the above 
+two functions, because "frame" is a local function variable,
+each of the two functions has its own local "frame" - they
+just happen to have the same variable name.
+
+(2) the sk_buff(s) pointed to by these two "frame.skb" are
+also two different object instances, they are individually
+allocated by different dev_alloc_skb() within the two above
+functions. To free one object instance will not invalidate 
+the access of another different one.
+
+Based on these facts, the previous commit should be unnecessary.
+Moreover, it also introduced a missing unlock which was 
+addressed in a subsequent commit 51c8d24101c7 ("cw1200: fix missing 
+unlock on error in cw1200_hw_scan()"). Now that the
+original use-after-free is unreal, these two commits should
+be reverted. This patch performs the reversion.
+
+Fixes: 4f68ef64cd7f ("cw1200: Fix concurrency use-after-free bugs in cw1200_hw_scan()")
+Fixes: 51c8d24101c7 ("cw1200: fix missing unlock on error in cw1200_hw_scan()")
+Signed-off-by: Hang Zhang <zh.nvgt@gmail.com>
+---
+ drivers/net/wireless/st/cw1200/scan.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/wireless/st/cw1200/scan.c b/drivers/net/wireless/st/cw1200/scan.c
+index 988581cc134b..1f856fbbc0ea 100644
+--- a/drivers/net/wireless/st/cw1200/scan.c
++++ b/drivers/net/wireless/st/cw1200/scan.c
+@@ -75,30 +75,27 @@ int cw1200_hw_scan(struct ieee80211_hw *hw,
+ 	if (req->n_ssids > WSM_SCAN_MAX_NUM_OF_SSIDS)
+ 		return -EINVAL;
+ 
+-	/* will be unlocked in cw1200_scan_work() */
+-	down(&priv->scan.lock);
+-	mutex_lock(&priv->conf_mutex);
+-
+ 	frame.skb = ieee80211_probereq_get(hw, priv->vif->addr, NULL, 0,
+ 		req->ie_len);
+-	if (!frame.skb) {
+-		mutex_unlock(&priv->conf_mutex);
+-		up(&priv->scan.lock);
++	if (!frame.skb)
+ 		return -ENOMEM;
+-	}
+ 
+ 	if (req->ie_len)
+ 		skb_put_data(frame.skb, req->ie, req->ie_len);
+ 
++	/* will be unlocked in cw1200_scan_work() */
++	down(&priv->scan.lock);
++	mutex_lock(&priv->conf_mutex);
++
+ 	ret = wsm_set_template_frame(priv, &frame);
+ 	if (!ret) {
+ 		/* Host want to be the probe responder. */
+ 		ret = wsm_set_probe_responder(priv, true);
+ 	}
+ 	if (ret) {
+-		dev_kfree_skb(frame.skb);
+ 		mutex_unlock(&priv->conf_mutex);
+ 		up(&priv->scan.lock);
++		dev_kfree_skb(frame.skb);
+ 		return ret;
+ 	}
+ 
+@@ -120,8 +117,8 @@ int cw1200_hw_scan(struct ieee80211_hw *hw,
+ 		++priv->scan.n_ssids;
+ 	}
+ 
+-	dev_kfree_skb(frame.skb);
+ 	mutex_unlock(&priv->conf_mutex);
++	dev_kfree_skb(frame.skb);
+ 	queue_work(priv->workqueue, &priv->scan.work);
+ 	return 0;
+ }
+-- 
+2.31.1
+
