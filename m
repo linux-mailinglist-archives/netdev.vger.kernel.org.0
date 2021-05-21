@@ -2,52 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EF8038C77F
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 15:10:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E30A838C79D
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 15:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231971AbhEUNMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 09:12:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51200 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230137AbhEUNME (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 May 2021 09:12:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=A89kgDUuHxPAjn/UvIwlMnHtkkaJa6w9zzkobeXjdNg=; b=Y5CCyGaBVUB6jqiNLOYkaMS9ix
-        zsGnAoOyY1d52rFDwbrC4WJk9iLC0wnjDjRrhJNb4GlidAEVyfwN+SntT82uTr89PsNNyvU+7RRx0
-        1W5pjVyjdjziAqyMpl4xnzZwz5r5kDwpJeehdoO+Jt2xTIyTXmL93ZuOvUSIvafNc8Uw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lk4uw-005Gs5-Kv; Fri, 21 May 2021 15:10:18 +0200
-Date:   Fri, 21 May 2021 15:10:18 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: Fix inconsistent indenting
-Message-ID: <YKexOorwNpoi4VaA@lunn.ch>
-References: <1621590014-66912-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+        id S233812AbhEUNRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 09:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232709AbhEUNRn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 09:17:43 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5B1C0613CE
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 06:16:19 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id s22so30201644ejv.12
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 06:16:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pYHD+GGIC69DHLvN9ug04/OX1/8J6eayffNrxZYP2ME=;
+        b=jHrJXeGZCXYwwSyKhgKXFDKoNlrubJxc+Duq0YnBDsvHGCpDrsTEUC718PwEHO9aJs
+         mQPjy18GV1xqZNvMuP3/BU2lh6iMpve5jWQEEQK8UlfVDAmp6TySzPwmCVZaLWzyEz1l
+         Nev3azUFPjggUfpOS56ZJqfMjG8w/knbEzr3CJbtwewg0Fu8yDOmQDTQJg3vajnKZ6jW
+         eaBGpj0ONddur/qtiFqHJnanB8/sgOcPVNakvzOkPyQymnUz/QOI4E9aB92rtRHQ/M6D
+         Zfhd+reeOiGPO/k1eTFnUXYjSlDzbiNAt+gjtlnQUd/OGux+FngA61H+KZb3MVyGRNGR
+         nMBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pYHD+GGIC69DHLvN9ug04/OX1/8J6eayffNrxZYP2ME=;
+        b=MBTacrT+pVPAMMgCAbfgXSnF97DYpV9Fu02zLacL0ICGvorOaOq2AhWLAFnyS1zhbb
+         ShYH/zVIRa0Dt1EYxvOeVrz73N/da6mCUhcxytbGJrORu8mNqTckdWcghBO47qO2o3vO
+         bYBghLdqmf+sTXc1DJQePrEGzS8Uzm5f2J8X+yD5D4JuwaYR4Tq7KVXZm/xd5EZGKuJD
+         VdoM/9VS24+RTybvp9mciJINvkHwyazyXZkvOaSWLii4H7mSh6S5P3GomH0QRiCp10R1
+         q9sMxptiDDvIFHbfTlLaU4W2BuWsHQO6+FFxjgsx2sYQaguN03JW4ECBCM8XUDEjO2MF
+         HiLA==
+X-Gm-Message-State: AOAM532zkCEFd+Dgr4PQ8Qy2HIU2B7Q9L2RAIk/POPrBTbMEyuhaR27u
+        JxfMuuo7IufLRVPTGjKIKfo=
+X-Google-Smtp-Source: ABdhPJxNa4oBVBUoJ48o/k+uLEThozlnmxg+RG2BnLh7nH3gsu/eX8w2/z6ofSiLHBgmBIdf3ZJoqg==
+X-Received: by 2002:a17:906:fa0d:: with SMTP id lo13mr10526539ejb.477.1621602977660;
+        Fri, 21 May 2021 06:16:17 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id bm24sm3959310edb.45.2021.05.21.06.16.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 May 2021 06:16:16 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 0/2] Ethtool statistics counters cleanup for SJA1105 DSA driver
+Date:   Fri, 21 May 2021 16:16:06 +0300
+Message-Id: <20210521131608.4018058-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1621590014-66912-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 21, 2021 at 05:40:14PM +0800, Jiapeng Chong wrote:
-> Eliminate the follow smatch warning:
-> 
-> drivers/net/phy/phy_device.c:2886 phy_probe() warn: inconsistent
-> indenting.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This series removes some reported data from ethtool -S which were not
+counters at all, and reorganizes the code such that counters can be read
+individually and not just all at once.
 
-    Andrew
+Vladimir Oltean (2):
+  net: dsa: sja1105: stop reporting the queue levels in ethtool port
+    counters
+  net: dsa: sja1105: don't use burst SPI reads for port statistics
+
+ drivers/net/dsa/sja1105/sja1105.h         |   14 +-
+ drivers/net/dsa/sja1105/sja1105_ethtool.c | 1089 +++++++++++----------
+ drivers/net/dsa/sja1105/sja1105_spi.c     |   15 +-
+ 3 files changed, 598 insertions(+), 520 deletions(-)
+
+-- 
+2.25.1
+
