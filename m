@@ -2,116 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0A1138BB3E
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 03:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CCD738BB47
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 03:08:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236041AbhEUBFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 May 2021 21:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58060 "EHLO
+        id S236056AbhEUBJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 May 2021 21:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235984AbhEUBFl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 21:05:41 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C53C0613ED;
-        Thu, 20 May 2021 18:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=sni9ETK0HEg7xDqRTRD+07GslmzE5y7OWzA5WJKcjKU=; b=u70b07TD062bdzcBCW7Xa9uMDu
-        Zvi3dzeWq3DXDEzDH3xRDl6oaTR5xq5coFv6GaME2vz1KEbDa3zSXlvSB4J2oR+UjWoxvBfKQyBS7
-        BBTv8m0jL9zS/zbF1qxxGoIDV9mujDnXmmc8ui/vlS3tA8T/Ewp5/aXKrIk0oOYxN1uPnfKtgTC2E
-        OpLrinbzCPhKfYv/UcSNjCiHOFVaAy+K9mbZxx+RxWFwgeLV64yAOLbyjpfzjLLrQhl6jK4/xEMCk
-        D+GPPpxqsYdARBIBjmbe6cSpPIzaZEKIYPcEPTqfKVZy5YMTXt6pMsw78MMxnaYxEM3JbaltbQyIc
-        Xdde8GPQ==;
-Received: from [2601:1c0:6280:3f0::7376]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1ljtaL-00Gjxw-1l; Fri, 21 May 2021 01:04:17 +0000
-Subject: Re: mmotm 2021-05-19-23-58 uploaded
- (net/netfilter/nft_set_pipapo_avx2.c)
-To:     Stephen Rothwell <sfr@rothwell.id.au>
-Cc:     akpm@linux-foundation.org, broonie@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-next@vger.kernel.org, mhocko@suse.cz,
-        mm-commits@vger.kernel.org, sfr@canb.auug.org.au,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-References: <20210520065918.KsmugQp47%akpm@linux-foundation.org>
- <3d718861-28bd-dd51-82d4-96b040aa1ab4@infradead.org>
- <20210521090751.51afa10f@elm.ozlabs.ibm.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <6eb826b6-4279-8cf8-1c27-01aab0f83843@infradead.org>
-Date:   Thu, 20 May 2021 18:04:15 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        with ESMTP id S235398AbhEUBJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 May 2021 21:09:19 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EBCC061574;
+        Thu, 20 May 2021 18:07:57 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id h20-20020a17090aa894b029015db8f3969eso5635583pjq.3;
+        Thu, 20 May 2021 18:07:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Oa6hJMFzuFqCtQAZfwRNzxo5sbxFFXAhEkw/QR9r+Mk=;
+        b=nrwHLxEacwqdNOhGw3z0aoEN8LXPfGaDDPdwOYD34CBAJ51Nui7G7f7/mtTKRPItHc
+         YiEY9PZ8Gg8LUHp3Lp8fnE6JXtmLxQa2S0Xcn+75TwibiSjT5umNgZdkxixd1+lJWXHR
+         0Of5dGcuVdmaWniyq51beWrf2tjYTGxUGejTyKjwv5t9biCA+3URvf339fbjTDJUwSWy
+         RPSjAX7sLVK6ftnmjgofIcLbm+4F67M0eZVZWpfViY5qEHB+2eKo45h3oRQYBtAMNYkn
+         ne454b2dEjrSkq9FBd6/mZlQiBDNBNG0NDgcc+leeWqk2vumD7dzSIpBt6PXwa0GpT0l
+         LnGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Oa6hJMFzuFqCtQAZfwRNzxo5sbxFFXAhEkw/QR9r+Mk=;
+        b=Kubf6GfDEBN/60KBFGRSPwdkvKw0aCRicmWZjJZd2ABpKfV+4YADXaGio6K/GvayIy
+         9ueGmg1OdjxgEeA3liJtANbYDM6fkai4wPlTLk5PZe5SqC3YsDLUZlwdSjYiU9K2iVPI
+         /zOBe9UyoA6LUBXZayaBvR3pG47HsA5lFZZMa9wGZFUFRozVTjDgNQyCUHe8F3Suo0Uv
+         CGUy011VDn0OIeDBB4zEu64jv+XbvNlMsxm3q7lwThdjG5NXxU0omb2Ju2A9KpmmpxfX
+         ytw6v8KsaevRzytgLuqqC+pHios6lPnd2UtHgmv2LASXp/yv63aezHdxXNvFr3vL4Qdl
+         8CfQ==
+X-Gm-Message-State: AOAM530Cj98EAjGtFjoH/bt3lkoxBeUqeY24npScvngpz35GkrYTprt7
+        B5q8NtVukhGal4tT0koKP1o=
+X-Google-Smtp-Source: ABdhPJz2ZjiO+mSkoD9oLIHAWomO95cyzkEKJfFxffCO8QRn5YF8CxDewxV2E+XpDVRJ3BXgCu0Bbg==
+X-Received: by 2002:a17:902:f291:b029:f0:ba5b:5c47 with SMTP id k17-20020a170902f291b02900f0ba5b5c47mr9251659plc.41.1621559277033;
+        Thu, 20 May 2021 18:07:57 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:3fe2])
+        by smtp.gmail.com with ESMTPSA id v15sm2824411pfm.187.2021.05.20.18.07.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 May 2021 18:07:56 -0700 (PDT)
+Date:   Thu, 20 May 2021 18:07:52 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Pavel Begunkov <asml.silence@gmail.com>
+Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Horst Schirmeier <horst.schirmeier@tu-dortmund.de>,
+        "Franz-B . Tuneke" <franz-bernhard.tuneke@tu-dortmund.de>,
+        Christian Dietrich <stettberger@dokucode.de>
+Subject: Re: [PATCH 15/23] io_uring: enable BPF to submit SQEs
+Message-ID: <20210521010752.lky4pz7zipefrfr7@ast-mbp>
+References: <cover.1621424513.git.asml.silence@gmail.com>
+ <8ec8373d406d1fcb41719e641799dcc5c0455db3.1621424513.git.asml.silence@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210521090751.51afa10f@elm.ozlabs.ibm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8ec8373d406d1fcb41719e641799dcc5c0455db3.1621424513.git.asml.silence@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/20/21 4:07 PM, Stephen Rothwell wrote:
-> Hi Randy,
-> 
-> On Thu, 20 May 2021 15:40:54 -0700 Randy Dunlap <rdunlap@infradead.org> wrote:
->>
->> on x86_64:
->> (from linux-next, not mmotm)
-> 
-> Yeah, this is caused by a bad merge resolution by me.
-> 
->> ../net/netfilter/nft_set_pipapo_avx2.c: In function ‘nft_pipapo_avx2_lookup’:
->> ../net/netfilter/nft_set_pipapo_avx2.c:1135:10: error: implicit declaration of function ‘nft_pipapo_lookup’; did you mean ‘nft_pipapo_avx2_lookup’? [-Werror=implicit-function-declaration]
->>    return nft_pipapo_lookup(net, set, key, ext);
->>           ^~~~~~~~~~~~~~~~~
-> 
-> I have added this to the merge resolution today:
-> 
-> diff --git a/include/net/netfilter/nf_tables_core.h b/include/net/netfilter/nf_tables_core.h
-> index 789e9eadd76d..8652b2514e57 100644
-> --- a/include/net/netfilter/nf_tables_core.h
-> +++ b/include/net/netfilter/nf_tables_core.h
-> @@ -89,6 +89,8 @@ extern const struct nft_set_type nft_set_bitmap_type;
->  extern const struct nft_set_type nft_set_pipapo_type;
->  extern const struct nft_set_type nft_set_pipapo_avx2_type;
+On Wed, May 19, 2021 at 03:13:26PM +0100, Pavel Begunkov wrote:
 >  
-> +bool nft_pipapo_lookup(const struct net *net, const struct nft_set *set,
-> +			    const u32 *key, const struct nft_set_ext **ext);
->  #ifdef CONFIG_RETPOLINE
->  bool nft_rhash_lookup(const struct net *net, const struct nft_set *set,
->  		      const u32 *key, const struct nft_set_ext **ext);
-> @@ -101,8 +103,6 @@ bool nft_hash_lookup_fast(const struct net *net,
->  			  const u32 *key, const struct nft_set_ext **ext);
->  bool nft_hash_lookup(const struct net *net, const struct nft_set *set,
->  		     const u32 *key, const struct nft_set_ext **ext);
-> -bool nft_pipapo_lookup(const struct net *net, const struct nft_set *set,
-> -			    const u32 *key, const struct nft_set_ext **ext);
->  bool nft_set_do_lookup(const struct net *net, const struct nft_set *set,
->  		       const u32 *key, const struct nft_set_ext **ext);
->  #else
-> diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
-> index 9addc0b447f7..dce866d93fee 100644
-> --- a/net/netfilter/nft_set_pipapo.c
-> +++ b/net/netfilter/nft_set_pipapo.c
-> @@ -408,7 +408,6 @@ int pipapo_refill(unsigned long *map, int len, int rules, unsigned long *dst,
->   *
->   * Return: true on match, false otherwise.
->   */
-> -INDIRECT_CALLABLE_SCOPE
->  bool nft_pipapo_lookup(const struct net *net, const struct nft_set *set,
->  		       const u32 *key, const struct nft_set_ext **ext)
->  {
-> 
-> It should apply on top of next-20210520 if you want to test it (I
-> haven't tested it yet, but will later today).
+> +BPF_CALL_3(io_bpf_queue_sqe, struct io_bpf_ctx *,		bpf_ctx,
+> +			     const struct io_uring_sqe *,	sqe,
+> +			     u32,				sqe_len)
+> +{
+> +	struct io_ring_ctx *ctx = bpf_ctx->ctx;
+> +	struct io_kiocb *req;
+> +
+> +	if (sqe_len != sizeof(struct io_uring_sqe))
+> +		return -EINVAL;
+> +
+> +	req = io_alloc_req(ctx);
 
-Yes, that builds. Thanks.
+that is GFP_KERNEL allocation.
+It's only allowed from sleepable bpf progs and further down
+there is a correct check for it, so all good.
+But submitting sqe is a fundemntal io_uring operation,
+so what is the use case for non-sleepable?
+In other words why bother? Allow sleepable only and simplify the code?
 
--- 
-~Randy
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-https://people.kernel.org/tglx/notes-about-netiquette
+> +	if (unlikely(!req))
+> +		return -ENOMEM;
+> +	if (!percpu_ref_tryget_many(&ctx->refs, 1)) {
+> +		kmem_cache_free(req_cachep, req);
+> +		return -EAGAIN;
+> +	}
+> +	percpu_counter_add(&current->io_uring->inflight, 1);
+> +	refcount_add(1, &current->usage);
+> +
+> +	/* returns number of submitted SQEs or an error */
+> +	return !io_submit_sqe(ctx, req, sqe);
+
+A buggy bpf prog will be able to pass junk sizeof(struct io_uring_sqe)
+as 'sqe' here.
+What kind of validation io_submit_sqe() does to avoid crashing the kernel?
+
+General comments that apply to all patches:
+- commit logs are way too terse. Pls expand with details.
+- describe new bpf helpers in comments in bpf.h. Just adding them to an enum is not enough.
+- selftest/bpf are mandatory for all new bpf features.
+- consider bpf_link style of attaching bpf progs. We had enough issues with progs
+  that get stuck due to application bugs. Auto-detach saves the day more often than not.
