@@ -2,106 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4988E38C814
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 15:29:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60CF138C826
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 15:31:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235590AbhEUNax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 09:30:53 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:58940 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234235AbhEUNaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 09:30:46 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14LDMnAg129094;
-        Fri, 21 May 2021 09:29:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=qbyLSEYxo2Punq/yUmuYxrOa5tjum0XaNxmcY8b1kuE=;
- b=JvkNwQlDVciNu1YieagyjI1rbmChdtQT/5FwACSpAhcHSBATSBxvMwvZ3kv4poyBmQIb
- VkjB3FYCyr05i0U+M37F09hY3kafHuCPp6b8K4w0dSKrCygQQ5jPzuiiJQmX27PDUqvm
- sZ4IuYmICKiebPme3sVcE2hEnE13lbnfgcKcS2VFaptCtdUOlVQngdv/jCSSlwhUnKuG
- uErbbfq6GyHLDaJ+cKtFSF/h8zprg/MGcqwr5+ohQJVnq1KXRzy9O8c+Dweu+erKz8w3
- PL8fUFJWNAxVHtTQf8nAgdVz/dKdEAhxolVZhM5onkptUPC0hz1zMq+ED9d8yNlB74Jb AQ== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 38pdpsr44b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 21 May 2021 09:29:19 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 14LDSkCH031653;
-        Fri, 21 May 2021 13:29:17 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03ams.nl.ibm.com with ESMTP id 38j5x7u5uh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 21 May 2021 13:29:17 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 14LDTEx729557180
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 21 May 2021 13:29:14 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 449F842047;
-        Fri, 21 May 2021 13:29:14 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F04DE4204B;
-        Fri, 21 May 2021 13:29:13 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 21 May 2021 13:29:13 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Karsten Graul <kgraul@linux.ibm.com>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] MAINTAINERS: s390/net: add netdev list
-Date:   Fri, 21 May 2021 15:28:56 +0200
-Message-Id: <20210521132856.1573533-1-jwi@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: XXimO-eE9j9LHoGF5cy1zlAMOpeMVLx_
-X-Proofpoint-GUID: XXimO-eE9j9LHoGF5cy1zlAMOpeMVLx_
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S235424AbhEUNcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 09:32:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48406 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232172AbhEUNcq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 09:32:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621603883;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cR5IK4uYlCwIxbvJ3kOB0k2rfX+Xy625GK1RhbTRbeI=;
+        b=gnWuMLF/ENXOa+t4nI31744aju9kC70RD+9iktce7uRh8K+h01AhGebHhIXaNDZDPEcdIF
+        +0VcXqVBZhGTvcuaM6MXZAT1bIdy6QL0kF8xKM7uU6JNZB7mCOGwnH+tQOi6MvA7ByKDni
+        FNug+seZC0nBiTntc2BiIt9DzcfL7hw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-184-Umrm2pLUOfOQKPmpWSLLUw-1; Fri, 21 May 2021 09:31:20 -0400
+X-MC-Unique: Umrm2pLUOfOQKPmpWSLLUw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 99CC2108BD11;
+        Fri, 21 May 2021 13:31:17 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 32BC65C1BB;
+        Fri, 21 May 2021 13:31:12 +0000 (UTC)
+Date:   Fri, 21 May 2021 15:31:10 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Lobakin, Alexandr" <alexandr.lobakin@intel.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        "Raczynski, Piotr" <piotr.raczynski@intel.com>,
+        "Zhang, Jessica" <jessica.zhang@intel.com>,
+        "Kubiak, Marcin" <marcin.kubiak@intel.com>,
+        "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "kurt@linutronix.de" <kurt@linutronix.de>,
+        "Maloor, Kishen" <kishen.maloor@intel.com>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Swiatkowski, Michal" <michal.swiatkowski@intel.com>,
+        "Plantykow, Marta A" <marta.a.plantykow@intel.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Desouza, Ederson" <ederson.desouza@intel.com>,
+        "Song, Yoong Siang" <yoong.siang.song@intel.com>,
+        "Czapnik, Lukasz" <lukasz.czapnik@intel.com>, brouer@redhat.com,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: AF_XDP metadata/hints
+Message-ID: <20210521153110.207cb231@carbon>
+In-Reply-To: <DM4PR11MB54224769926B06EE76635A6484299@DM4PR11MB5422.namprd11.prod.outlook.com>
+References: <dc2c38cdccfa5eca925cfc9d59b0674e208c9c9d.camel@intel.com>
+        <DM6PR11MB2780A8C5410ECB3C9700EAB5CA579@DM6PR11MB2780.namprd11.prod.outlook.com>
+        <PH0PR11MB487034313697F395BB5BA3C5E4579@PH0PR11MB4870.namprd11.prod.outlook.com>
+        <DM4PR11MB5422733A87913EFF8904C17184579@DM4PR11MB5422.namprd11.prod.outlook.com>
+        <20210507131034.5a62ce56@carbon>
+        <DM4PR11MB5422FE9618B3692D48FCE4EA84549@DM4PR11MB5422.namprd11.prod.outlook.com>
+        <20210510185029.1ca6f872@carbon>
+        <DM4PR11MB54227C25DFD4E882CB03BD3884539@DM4PR11MB5422.namprd11.prod.outlook.com>
+        <20210512102546.5c098483@carbon>
+        <DM4PR11MB542273C9D8BF63505DC6E21784519@DM4PR11MB5422.namprd11.prod.outlook.com>
+        <7b347a985e590e2a422f837971b30bd83f9c7ac3.camel@nvidia.com>
+        <DM4PR11MB5422762E82C0531B92BDF09A842B9@DM4PR11MB5422.namprd11.prod.outlook.com>
+        <DM4PR11MB5422269F6113268172B9E26A842A9@DM4PR11MB5422.namprd11.prod.outlook.com>
+        <DM4PR11MB54224769926B06EE76635A6484299@DM4PR11MB5422.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-05-21_04:2021-05-20,2021-05-21 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 suspectscore=0 mlxscore=0 mlxlogscore=703 clxscore=1011
- adultscore=0 impostorscore=0 priorityscore=1501 malwarescore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2105210077
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Discussions for network-related code should include the netdev list.
+On Fri, 21 May 2021 10:53:40 +0000
+"Lobakin, Alexandr" <alexandr.lobakin@intel.com> wrote:
 
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+> I've opened two discussions at https://github.com/alobakin/linux,
+> feel free to join them and/or create new ones to share your thoughts
+> and concerns.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c1cb2e38ae2e..88722efd94a1 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15944,6 +15944,7 @@ S390 IUCV NETWORK LAYER
- M:	Julian Wiedmann <jwi@linux.ibm.com>
- M:	Karsten Graul <kgraul@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
-+L:	netdev@vger.kernel.org
- S:	Supported
- W:	http://www.ibm.com/developerworks/linux/linux390/
- F:	drivers/s390/net/*iucv*
-@@ -15954,6 +15955,7 @@ S390 NETWORK DRIVERS
- M:	Julian Wiedmann <jwi@linux.ibm.com>
- M:	Karsten Graul <kgraul@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
-+L:	netdev@vger.kernel.org
- S:	Supported
- W:	http://www.ibm.com/developerworks/linux/linux390/
- F:	drivers/s390/net/
+Thanks Alexandr for keeping the thread/subject alive.
+ 
+I guess this is a new GitHub features "Discussions".  I've never used
+that in a project before, lets see how this goes.  The usual approach
+is discussions over email on netdev (Cc. netdev@vger.kernel.org).
+
+Lets make it a bit easier to find these discussion threads:
+ https://github.com/alobakin/linux/discussions
+
+#1: Approach for generating metadata from HW descriptors #1
+ https://github.com/alobakin/linux/discussions/1
+
+#2: The idea of obtaining BTF directly from /sys/kernel/btf #2
+ https://github.com/alobakin/linux/discussions/2
+
 -- 
-2.25.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
