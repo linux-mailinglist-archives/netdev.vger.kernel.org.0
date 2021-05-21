@@ -2,207 +2,375 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B808638CC2A
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 19:29:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F8B38CC6C
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 19:42:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238192AbhEURaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 13:30:55 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:40949 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232909AbhEURax (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 13:30:53 -0400
-Received: by mail-io1-f70.google.com with SMTP id g17-20020a6b6b110000b0290458f55b8334so7906434ioc.7
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 10:29:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=0aQfBt3ao0BTqd+st7XGC1jU2R3P5r17YU2qEOvxQvQ=;
-        b=SGzIinQ8Z0ELVvCTsh99cZb875WkOfuv950H1shKdv8jjWnF1RC2YI5wkbdTTpl6G3
-         tYvwivmO9I8JDRkcSPrOzzmutRriUIN3aTL07HYfB9ghuLGdj2dFwPY5UFIqD2d820cz
-         UeXr/N49tJ/vtN5y/vrlzLFGYm9KN+SgTkaSLrWtmM+NhBEZb6sP5XkygyKShs9FQ3Gr
-         hWAafm281tnPfBUJrtSCJ8XwERSo8GbEO7MNihK4ZWH56qjR6PbNZ2YVmd+H1+vaeIK3
-         6XJK04mXthGmYo4vG/U0GQ6FoOBt9HtovtYqB2gTott1X12ychkDdy40hfk6QJ3KpBWL
-         ioTw==
-X-Gm-Message-State: AOAM533J2CfBzjxLA6o0/scCalvZPvJlVwqNA/XWl9LBzgI8Z5uUiLIf
-        nU03SRexoL+lSme2n5qQbuS1m0yUocCqdQYBEuVS9WYa91M7
-X-Google-Smtp-Source: ABdhPJygau1mI+CKQEdNyLZZFC3bGz6FndKLoRLvKhYcNFQ/BnqVE/1xeoMOlm11MpKThV74uYLO7wBvKDGcszipiZOyQKFp2Ok6
+        id S235064AbhEURnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 13:43:53 -0400
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:7512 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231508AbhEURnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 13:43:52 -0400
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14LHRMSG016412;
+        Fri, 21 May 2021 17:42:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2020-01-29;
+ bh=oztnREE1GF8hBcqD7+KzTMdkr0gOV7m3r51yhwxrvyc=;
+ b=i9SdLQd/XZBHfSONhvo/+lM0lZeKv6/T7i0q33fmjtJ7VQVxxB+urriiooC3epZml3Rb
+ Gs4v5q1d9TlmgnKZtgT6aq4BycYz8KPgnbWKscUfd58hLKvg+RQApC08acDb0/mFqMDg
+ cnW6FQCdVaQasLyBGTtgA2UZfxeS9QhOsHVqsaDSo8P6F0jgEhP/ztNMXdJLTaokzKxH
+ vwd79EEgJbjPXI3eaGNcPypudu8rF9SKRGclhm6IT9edBGxEaSeXKcgK01Gs83IeEJaj
+ o/1RKOOI1ij5BqOAuD33F+nvWvuyBk1pb//jmXiMA9A1ogt1ORKZOKBDvDxUlskGhq6Q JQ== 
+Received: from oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 38nhjfrpas-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 May 2021 17:42:18 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.podrdrct (8.16.0.36/8.16.0.36) with SMTP id 14LHdXh8072625;
+        Fri, 21 May 2021 17:42:17 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2176.outbound.protection.outlook.com [104.47.58.176])
+        by aserp3020.oracle.com with ESMTP id 38nry3dt7x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 May 2021 17:42:17 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fVLUDO6c7eiAwSdhj0WYLG/AlNzBVzXKRDeqIju+yRzGkrgh5YGz7cUBuVUVtgn28C7zXVhHOM5EsU5/BTkKvvVuJQCwPmcnm37pW6ImRDFM8Jk6i4mL+GLFrfajJBlQKq1/MkkPt0bPBdy6rgXsj/Z6sH8AcIz13+d+HYR7WNV1igogCjn108xCsgsJVYOTWWPBkq7MQSGsvEZfkKFBGRCh+ISsiMldGI5W+062oe5ByRhFRZU4MDkeAVUJVB+DNBvri4wj+wKK443mqAZmgii8r+oxTumKhzLMaalFsZ+CCpGAwOd7+9it2f7/DZr5XZKyXYmIQPUr6gOgmVcXvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oztnREE1GF8hBcqD7+KzTMdkr0gOV7m3r51yhwxrvyc=;
+ b=VP7Wy60ZIA4fKx4ylZWPKuqQwwzel992NDz5DhXF1qEj9FfkUmNGZKNu559txqX5FxQe34y8WyGTCU2fxb8C/HVrHHJwLWcomp4cPPN5gCq5gs6mKalQK77YugxSPaWzPnfqjGUJLTGEirovMR77efDSSKcnxx1uGvZ3ebUdWoKpwYYUdXh23mg0aIzgMn5YjaTYeeH0bVZ3sgkZfFGe0UI9qgHIJjeRyWLsxIV9nbr1nyqxTMlbRcR+atxm5oXTrMcRvgvWgu9hNYMiDqtNsfn91N17xw+WP96IDXbS1McWH1Xycdbm+1cvWtUoRZrrGqKmSl+XWTTT/ZHNIO/zSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oztnREE1GF8hBcqD7+KzTMdkr0gOV7m3r51yhwxrvyc=;
+ b=I1G8FEO7mnFxu16onPC1PNetq1v3JOWInPNTt1/xX9tuFFPCjOE+myvEpGXY/c6/pP1lE7cpLP7ERdN2rKu3xTs14z+MXfkxV3mTvoElfqM1QfZ02GA76eebVF7BvMfykg3P8lZJMWpGjldTT7jIRHvqHWAYbhdDhN/JUYwo11Y=
+Authentication-Results: marvell.com; dkim=none (message not signed)
+ header.d=none;marvell.com; dmarc=none action=none header.from=oracle.com;
+Received: from SN6PR10MB2943.namprd10.prod.outlook.com (2603:10b6:805:d4::19)
+ by SA2PR10MB4427.namprd10.prod.outlook.com (2603:10b6:806:114::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23; Fri, 21 May
+ 2021 17:42:15 +0000
+Received: from SN6PR10MB2943.namprd10.prod.outlook.com
+ ([fe80::168:1a9:228:46f3]) by SN6PR10MB2943.namprd10.prod.outlook.com
+ ([fe80::168:1a9:228:46f3%6]) with mapi id 15.20.4129.034; Fri, 21 May 2021
+ 17:42:15 +0000
+Subject: Re: [RFC PATCH v5 05/27] nvme-tcp-offload: Add controller level error
+ recovery implementation
+To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
+        kbusch@kernel.org
+Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
+        pkushwaha@marvell.com, malin1024@gmail.com,
+        Arie Gershberg <agershberg@marvell.com>
+References: <20210519111340.20613-1-smalin@marvell.com>
+ <20210519111340.20613-6-smalin@marvell.com>
+From:   Himanshu Madhani <himanshu.madhani@oracle.com>
+Organization: Oracle
+Message-ID: <220e96a6-de82-4082-1d4e-2d95dcec5562@oracle.com>
+Date:   Fri, 21 May 2021 12:42:13 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+In-Reply-To: <20210519111340.20613-6-smalin@marvell.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [70.114.128.235]
+X-ClientProxiedBy: SA9PR13CA0067.namprd13.prod.outlook.com
+ (2603:10b6:806:23::12) To SN6PR10MB2943.namprd10.prod.outlook.com
+ (2603:10b6:805:d4::19)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:14c4:: with SMTP id b4mr12723587iow.82.1621618169228;
- Fri, 21 May 2021 10:29:29 -0700 (PDT)
-Date:   Fri, 21 May 2021 10:29:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f034fc05c2da6617@google.com>
-Subject: [syzbot] KASAN: use-after-free Read in check_all_holdout_tasks_trace
-From:   syzbot <syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
-        axboe@kernel.dk, bpf@vger.kernel.org, christian@brauner.io,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, shakeelb@google.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.28] (70.114.128.235) by SA9PR13CA0067.namprd13.prod.outlook.com (2603:10b6:806:23::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.12 via Frontend Transport; Fri, 21 May 2021 17:42:14 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dd5783a9-32b8-4539-db87-08d91c7fc5c6
+X-MS-TrafficTypeDiagnostic: SA2PR10MB4427:
+X-Microsoft-Antispam-PRVS: <SA2PR10MB4427F3466FD718D7F3218B38E6299@SA2PR10MB4427.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fiptR+myFXb/cmrlmoIFLeOniEqHw013tmf8cP21MZj5afaJEQFxscifrRSJNEzQW57pTKEil0JNMy776dLPgZ48eabSjUqauAM7F/rrjtUTrw6/HmQKUvrE7R7TSV5GH7rL95th1Btz74L28Uz6T0hWMMOmOU9Y8TGpTPDBuJucg8AWiLSKF971QfHFeqRlajnXtwIvWQCvgpaQlAI5tY44nyrgm4Q3a62u7NRKNhgLMTZqUcqETEYZOFU1jDzUqpj8HciNn3lOu7dfq/Pwkq8TyixD2dowZ/gz4yq777hA7LWvpOZQKgGUdJODDibsOp50KscuR79OD3iXkX3vmwr1j3GSySLL0SW7x95GLlbmz0WtOkOtp8Wn+vmapn8j18jxSvzYU/aXZFK1GppJteitKuf/Ze96SWdI8AQyxoKXBA63cvgbE6ICgneKIyeeZcEabH6OQKrA45cmaMJ1jQkns1RQ3WQHlRKZNRLGADtls3LsinvBjzjDJgMk73KRNok2myyIscMns0uTeztJJzhX+gbpusxTUDrAZaFNAd/1O4YjvlSzDr/OsnAvUaQ6yDUdT1NLs7jEG6ecAQ3/IuSxHVNcgCfL7Vyz+UfREZsAexmVO507d8EeoUK/5OUqmd+y3q8Q2gHovagyo8bFSQ2DeAW5vNbyWbg5WSPu+O17Efg4E8oQYyRrgjrN7Pwj
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB2943.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(346002)(376002)(39860400002)(366004)(4326008)(478600001)(66476007)(31686004)(5660300002)(66946007)(186003)(44832011)(16576012)(7416002)(6486002)(8936002)(16526019)(2906002)(2616005)(86362001)(83380400001)(36916002)(38100700002)(36756003)(26005)(8676002)(316002)(53546011)(31696002)(956004)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?bzgzZUgxOXk1b05CRGZ4d2JSeThCNW94UzhjeUE3Rlh0elhOZXhRRkFhWW0y?=
+ =?utf-8?B?cFJhM09TK0gzSlZFdTlxUktMU0ZVUnE2MFZsaU03ejJ3MmcxSkN2UU96bTlJ?=
+ =?utf-8?B?QVdsVUM0d1ZYNEVxd3FNSXVueTZiSnM4NHhVc2swRm9zUm5rQnNJQlB4SFI2?=
+ =?utf-8?B?NzJmVlhsVlBKZXZJVC9XcGh2QjdVOUZNVlIzMm01bVpGWXVPL3J4d1UwK1lm?=
+ =?utf-8?B?dk1hUisvdytQa2ZqQzdYd3BoOXdLcVA2OEQwV2c5aDdlcE9aMlk0U3dydFRw?=
+ =?utf-8?B?cDU2L0ZjSEUvbk8rS2kvbE1ZNnJaaENOQkNIckhNVUFlemY2dTNaTU9iTzFi?=
+ =?utf-8?B?OWhWY1dlKzlOa1I2S240eFNEMWtUT1BGMnJEVjlwdU9xM3pxaVgxSDh3YW81?=
+ =?utf-8?B?czZJd1ZOWlpHSUpsRk9sTlpJVVpIWThDMDRxMkN1akd2MmFMY2J1dCtmR3Vh?=
+ =?utf-8?B?UHhRWGZFWXFGL0V0TmhKSXJGbjEvd09LYVFJR0FVTlRvQW03di8xRXkyc0lo?=
+ =?utf-8?B?dThMOWNQeXp0K0xRcThXZ1BhckNVaUJacGJNODBaV0JRS2FWaHJTS1VnbUdG?=
+ =?utf-8?B?TVk1NmE1ZG5nQmJXcWc3MHBUZnJnMXZWaGhSUnhLZGgwKytPTVVtc0FoQVNt?=
+ =?utf-8?B?U3VKODgxcVIwMzZ0R21xT1RvemNKMGpsM291cTNxa3JhYXo5dnRFY1hYdUV1?=
+ =?utf-8?B?VG9PMTlVUWRjYmJKWFNWaVRYMmJqWXJBL1ZLMEZWcTNqYVBlaDY0UXRmRkF2?=
+ =?utf-8?B?TlJ4TVBhSWNXMXpJYUw1blZxazczRzJQZUxlZFU3MmNuNS9zcFBncEZoRVVy?=
+ =?utf-8?B?QXNOU1QvbXBBUnYzMm9MaXZNRXVHRE13a0dzVEowUUdwMmJ6NUMycTgxdFY0?=
+ =?utf-8?B?SUdBNndQQk5ybnlqYXJ4akxXa2hKcHk2NXhjNTRWb2NxSGZmeG16eVlEVnZs?=
+ =?utf-8?B?VFFyNi9Tb25kdVpabmdFYk55bVNtU3Y3R3dwejVFbkwzT1RoTjFsSW00K3Ra?=
+ =?utf-8?B?bTNuVS9lbkwvWThMZ1dSQ1g1Ky8xYmRGL0FVK3J0OEt5MGlxZG9xUjNLOUFi?=
+ =?utf-8?B?enFzRGh2SkpobCtDVllON0owM09PeVJpbThndUd4NjErblUvNVJzeGtkQ2RF?=
+ =?utf-8?B?VVFSUks4dWVtL3VlQzhoYzREdHJ3WU9WODNnWDNhS2hhbGRUSHE2M3ZQY2w4?=
+ =?utf-8?B?NnB1Nlp0UFFNMkdxQU1ZTXozZGlZLzdTZFFCS1Q4MWZGK3Q1Kzl0cGRTOW5X?=
+ =?utf-8?B?ajBxWHVTNkJIWHJJTXA5VHgwWHhXRitwTGFrU2RrQTViaGlaTWd0WXVNZWhw?=
+ =?utf-8?B?NTI5T2pHTllJVVV5Y0lqL2tGS2ljTE1JRUl1RDRIUkhVWm95RmlTTXlUVUt3?=
+ =?utf-8?B?RDFXVHM1NTNIRFdmamlUMmc3d0hidjZRejc4ZVZzcmRoV0dYNE9XNlFZZ3VT?=
+ =?utf-8?B?dlpvdjFFWjhVRTU0ZXRJYm9nMHZqKytNY1ljNEdCME5vT1JwK2tpajBOdUhk?=
+ =?utf-8?B?OWtpc0NVSW4zU0JDc2h1czhzMUFOUnRpR3A1aEhqNUwvT0oxOWxucjZHYklH?=
+ =?utf-8?B?YXFieDU5OGsyTmVOSFNkVUkxcDlQT2gzbmZyTXdjaURoNld1WHNsU3dpc1c2?=
+ =?utf-8?B?RVR4MmtyalR2SWkxU1pKOENIRGp4WmhVWkVoa3plS0w1cnVrSERsdytmOUg4?=
+ =?utf-8?B?eXNlMWVmMWlBNEFLVDRKRGNUaHNwekdPR3FVb2ZPMjdGTUxDWDhMVExoNk1x?=
+ =?utf-8?Q?cbQI9GTubsArLiBYUpvFQARcgR2pDkQvaruadSj?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd5783a9-32b8-4539-db87-08d91c7fc5c6
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB2943.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2021 17:42:15.6102
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GBHR+yL4Fc/3jCINPv50H+WgIgtT5M0wYfQl90JD6r+vAji+z6m0OwGRebKi9FAGldOqGNr+ahTU3C0LRCX/8Vd3F6g3GwO3vrOIvlh9szQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4427
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9991 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0
+ malwarescore=0 mlxlogscore=999 adultscore=0 mlxscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2105210092
+X-Proofpoint-GUID: _alSkQsB-63QLPsM67J2fv8RJVrxNryW
+X-Proofpoint-ORIG-GUID: _alSkQsB-63QLPsM67J2fv8RJVrxNryW
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    f18ba26d libbpf: Add selftests for TC-BPF management API
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=17f50d1ed00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8ff54addde0afb5d
-dashboard link: https://syzkaller.appspot.com/bug?extid=7b2b13f4943374609532
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: use-after-free in check_all_holdout_tasks_trace+0x302/0x420 kernel/rcu/tasks.h:1084
-Read of size 1 at addr ffff88802767a05c by task rcu_tasks_trace/12
-
-CPU: 0 PID: 12 Comm: rcu_tasks_trace Not tainted 5.12.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:233
- __kasan_report mm/kasan/report.c:419 [inline]
- kasan_report.cold+0x7c/0xd8 mm/kasan/report.c:436
- check_all_holdout_tasks_trace+0x302/0x420 kernel/rcu/tasks.h:1084
- rcu_tasks_wait_gp+0x594/0xa60 kernel/rcu/tasks.h:358
- rcu_tasks_kthread+0x31c/0x6a0 kernel/rcu/tasks.h:224
- kthread+0x3b1/0x4a0 kernel/kthread.c:313
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-
-Allocated by task 8477:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:428 [inline]
- __kasan_slab_alloc+0x84/0xa0 mm/kasan/common.c:461
- kasan_slab_alloc include/linux/kasan.h:236 [inline]
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:2912 [inline]
- kmem_cache_alloc_node+0x269/0x3e0 mm/slub.c:2948
- alloc_task_struct_node kernel/fork.c:171 [inline]
- dup_task_struct kernel/fork.c:865 [inline]
- copy_process+0x5c8/0x7120 kernel/fork.c:1947
- kernel_clone+0xe7/0xab0 kernel/fork.c:2503
- __do_sys_clone+0xc8/0x110 kernel/fork.c:2620
- do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Freed by task 12:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:357
- ____kasan_slab_free mm/kasan/common.c:360 [inline]
- ____kasan_slab_free mm/kasan/common.c:325 [inline]
- __kasan_slab_free+0xfb/0x130 mm/kasan/common.c:368
- kasan_slab_free include/linux/kasan.h:212 [inline]
- slab_free_hook mm/slub.c:1581 [inline]
- slab_free_freelist_hook+0xdf/0x240 mm/slub.c:1606
- slab_free mm/slub.c:3166 [inline]
- kmem_cache_free+0x8a/0x740 mm/slub.c:3182
- __put_task_struct+0x26f/0x400 kernel/fork.c:747
- trc_wait_for_one_reader kernel/rcu/tasks.h:935 [inline]
- check_all_holdout_tasks_trace+0x179/0x420 kernel/rcu/tasks.h:1081
- rcu_tasks_wait_gp+0x594/0xa60 kernel/rcu/tasks.h:358
- rcu_tasks_kthread+0x31c/0x6a0 kernel/rcu/tasks.h:224
- kthread+0x3b1/0x4a0 kernel/kthread.c:313
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-
-Last potentially related work creation:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_record_aux_stack+0xe5/0x110 mm/kasan/generic.c:345
- __call_rcu kernel/rcu/tree.c:3038 [inline]
- call_rcu+0xb1/0x750 kernel/rcu/tree.c:3113
- put_task_struct_rcu_user+0x7f/0xb0 kernel/exit.c:180
- release_task+0xca1/0x1690 kernel/exit.c:226
- wait_task_zombie kernel/exit.c:1108 [inline]
- wait_consider_task+0x2fb5/0x3b40 kernel/exit.c:1335
- do_wait_thread kernel/exit.c:1398 [inline]
- do_wait+0x724/0xd40 kernel/exit.c:1515
- kernel_wait4+0x14c/0x260 kernel/exit.c:1678
- __do_sys_wait4+0x13f/0x150 kernel/exit.c:1706
- do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Second to last potentially related work creation:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_record_aux_stack+0xe5/0x110 mm/kasan/generic.c:345
- __call_rcu kernel/rcu/tree.c:3038 [inline]
- call_rcu+0xb1/0x750 kernel/rcu/tree.c:3113
- put_task_struct_rcu_user+0x7f/0xb0 kernel/exit.c:180
- context_switch kernel/sched/core.c:4342 [inline]
- __schedule+0x91e/0x23e0 kernel/sched/core.c:5147
- preempt_schedule_common+0x45/0xc0 kernel/sched/core.c:5307
- preempt_schedule_thunk+0x16/0x18 arch/x86/entry/thunk_64.S:35
- try_to_wake_up+0xa12/0x14b0 kernel/sched/core.c:3489
- wake_up_process kernel/sched/core.c:3552 [inline]
- wake_up_q+0x96/0x100 kernel/sched/core.c:597
- futex_wake+0x3e9/0x490 kernel/futex.c:1634
- do_futex+0x326/0x1780 kernel/futex.c:3738
- __do_sys_futex+0x2a2/0x470 kernel/futex.c:3796
- do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The buggy address belongs to the object at ffff888027679c40
- which belongs to the cache task_struct of size 6976
-The buggy address is located 1052 bytes inside of
- 6976-byte region [ffff888027679c40, ffff88802767b780)
-The buggy address belongs to the page:
-page:ffffea00009d9e00 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88802767b880 pfn:0x27678
-head:ffffea00009d9e00 order:3 compound_mapcount:0 compound_pincount:0
-flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000010200 ffffea000071e208 ffffea0000950808 ffff888140005140
-raw: ffff88802767b880 0000000000040003 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 243, ts 14372676818, free_ts 0
- prep_new_page mm/page_alloc.c:2358 [inline]
- get_page_from_freelist+0x1033/0x2b60 mm/page_alloc.c:3994
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5200
- alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2272
- alloc_slab_page mm/slub.c:1644 [inline]
- allocate_slab+0x2c5/0x4c0 mm/slub.c:1784
- new_slab mm/slub.c:1847 [inline]
- new_slab_objects mm/slub.c:2593 [inline]
- ___slab_alloc+0x44c/0x7a0 mm/slub.c:2756
- __slab_alloc.constprop.0+0xa7/0xf0 mm/slub.c:2796
- slab_alloc_node mm/slub.c:2878 [inline]
- kmem_cache_alloc_node+0x12f/0x3e0 mm/slub.c:2948
- alloc_task_struct_node kernel/fork.c:171 [inline]
- dup_task_struct kernel/fork.c:865 [inline]
- copy_process+0x5c8/0x7120 kernel/fork.c:1947
- kernel_clone+0xe7/0xab0 kernel/fork.c:2503
- kernel_thread+0xb5/0xf0 kernel/fork.c:2555
- call_usermodehelper_exec_work kernel/umh.c:174 [inline]
- call_usermodehelper_exec_work+0xcc/0x180 kernel/umh.c:160
- process_one_work+0x98d/0x1600 kernel/workqueue.c:2275
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
- kthread+0x3b1/0x4a0 kernel/kthread.c:313
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-page_owner free stack trace missing
-
-Memory state around the buggy address:
- ffff888027679f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff888027679f80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88802767a000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                    ^
- ffff88802767a080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88802767a100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On 5/19/21 6:13 AM, Shai Malin wrote:
+> From: Arie Gershberg <agershberg@marvell.com>
+> 
+> In this patch, we implement controller level error handling and recovery.
+> Upon an error discovered by the ULP or reset controller initiated by the
+> nvme-core (using reset_ctrl workqueue), the ULP will initiate a controller
+> recovery which includes teardown and re-connect of all queues.
+> 
+> Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Arie Gershberg <agershberg@marvell.com>
+> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Shai Malin <smalin@marvell.com>
+> Reviewed-by: Hannes Reinecke <hare@suse.de>
+> ---
+>   drivers/nvme/host/tcp-offload.c | 138 +++++++++++++++++++++++++++++++-
+>   drivers/nvme/host/tcp-offload.h |   1 +
+>   2 files changed, 137 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/nvme/host/tcp-offload.c b/drivers/nvme/host/tcp-offload.c
+> index f7e0dc79bedd..9eb4b03e0f3d 100644
+> --- a/drivers/nvme/host/tcp-offload.c
+> +++ b/drivers/nvme/host/tcp-offload.c
+> @@ -74,6 +74,23 @@ void nvme_tcp_ofld_unregister_dev(struct nvme_tcp_ofld_dev *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(nvme_tcp_ofld_unregister_dev);
+>   
+> +/**
+> + * nvme_tcp_ofld_error_recovery() - NVMeTCP Offload library error recovery.
+> + * function.
+> + * @nctrl:	NVMe controller instance to change to resetting.
+> + *
+> + * API function that change the controller state to resseting.
+> + * Part of the overall controller reset sequence.
+> + */
+> +void nvme_tcp_ofld_error_recovery(struct nvme_ctrl *nctrl)
+> +{
+> +	if (!nvme_change_ctrl_state(nctrl, NVME_CTRL_RESETTING))
+> +		return;
+> +
+> +	queue_work(nvme_reset_wq, &to_tcp_ofld_ctrl(nctrl)->err_work);
+> +}
+> +EXPORT_SYMBOL_GPL(nvme_tcp_ofld_error_recovery);
+> +
+>   /**
+>    * nvme_tcp_ofld_report_queue_err() - NVMeTCP Offload report error event
+>    * callback function. Pointed to by nvme_tcp_ofld_queue->report_err.
+> @@ -84,7 +101,8 @@ EXPORT_SYMBOL_GPL(nvme_tcp_ofld_unregister_dev);
+>    */
+>   int nvme_tcp_ofld_report_queue_err(struct nvme_tcp_ofld_queue *queue)
+>   {
+> -	/* Placeholder - invoke error recovery flow */
+> +	pr_err("nvme-tcp-offload queue error\n");
+> +	nvme_tcp_ofld_error_recovery(&queue->ctrl->nctrl);
+>   
+>   	return 0;
+>   }
+> @@ -296,6 +314,28 @@ nvme_tcp_ofld_configure_io_queues(struct nvme_ctrl *nctrl, bool new)
+>   	return rc;
+>   }
+>   
+> +static void nvme_tcp_ofld_reconnect_or_remove(struct nvme_ctrl *nctrl)
+> +{
+> +	/* If we are resetting/deleting then do nothing */
+> +	if (nctrl->state != NVME_CTRL_CONNECTING) {
+> +		WARN_ON_ONCE(nctrl->state == NVME_CTRL_NEW ||
+> +			     nctrl->state == NVME_CTRL_LIVE);
+> +
+> +		return;
+> +	}
+> +
+> +	if (nvmf_should_reconnect(nctrl)) {
+> +		dev_info(nctrl->device, "Reconnecting in %d seconds...\n",
+> +			 nctrl->opts->reconnect_delay);
+> +		queue_delayed_work(nvme_wq,
+> +				   &to_tcp_ofld_ctrl(nctrl)->connect_work,
+> +				   nctrl->opts->reconnect_delay * HZ);
+> +	} else {
+> +		dev_info(nctrl->device, "Removing controller...\n");
+> +		nvme_delete_ctrl(nctrl);
+> +	}
+> +}
+> +
+>   static int nvme_tcp_ofld_setup_ctrl(struct nvme_ctrl *nctrl, bool new)
+>   {
+>   	struct nvmf_ctrl_options *opts = nctrl->opts;
+> @@ -412,10 +452,68 @@ nvme_tcp_ofld_teardown_io_queues(struct nvme_ctrl *nctrl, bool remove)
+>   	/* Placeholder - teardown_io_queues */
+>   }
+>   
+> +static void nvme_tcp_ofld_reconnect_ctrl_work(struct work_struct *work)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl =
+> +				container_of(to_delayed_work(work),
+> +					     struct nvme_tcp_ofld_ctrl,
+> +					     connect_work);
+> +	struct nvme_ctrl *nctrl = &ctrl->nctrl;
+> +
+> +	++nctrl->nr_reconnects;
+> +
+> +	if (ctrl->dev->ops->setup_ctrl(ctrl, false))
+> +		goto requeue;
+> +
+> +	if (nvme_tcp_ofld_setup_ctrl(nctrl, false))
+> +		goto release_and_requeue;
+> +
+> +	dev_info(nctrl->device, "Successfully reconnected (%d attempt)\n",
+> +		 nctrl->nr_reconnects);
+> +
+> +	nctrl->nr_reconnects = 0;
+> +
+> +	return;
+> +
+> +release_and_requeue:
+> +	ctrl->dev->ops->release_ctrl(ctrl);
+> +requeue:
+> +	dev_info(nctrl->device, "Failed reconnect attempt %d\n",
+> +		 nctrl->nr_reconnects);
+> +	nvme_tcp_ofld_reconnect_or_remove(nctrl);
+> +}
+> +
+> +static void nvme_tcp_ofld_error_recovery_work(struct work_struct *work)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl =
+> +		container_of(work, struct nvme_tcp_ofld_ctrl, err_work);
+> +	struct nvme_ctrl *nctrl = &ctrl->nctrl;
+> +
+> +	nvme_stop_keep_alive(nctrl);
+> +	nvme_tcp_ofld_teardown_io_queues(nctrl, false);
+> +	/* unquiesce to fail fast pending requests */
+> +	nvme_start_queues(nctrl);
+> +	nvme_tcp_ofld_teardown_admin_queue(nctrl, false);
+> +	blk_mq_unquiesce_queue(nctrl->admin_q);
+> +
+> +	if (!nvme_change_ctrl_state(nctrl, NVME_CTRL_CONNECTING)) {
+> +		/* state change failure is ok if we started nctrl delete */
+> +		WARN_ON_ONCE(nctrl->state != NVME_CTRL_DELETING &&
+> +			     nctrl->state != NVME_CTRL_DELETING_NOIO);
+> +
+> +		return;
+> +	}
+> +
+> +	nvme_tcp_ofld_reconnect_or_remove(nctrl);
+> +}
+> +
+>   static void
+>   nvme_tcp_ofld_teardown_ctrl(struct nvme_ctrl *nctrl, bool shutdown)
+>   {
+> -	/* Placeholder - err_work and connect_work */
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +
+> +	cancel_work_sync(&ctrl->err_work);
+> +	cancel_delayed_work_sync(&ctrl->connect_work);
+>   	nvme_tcp_ofld_teardown_io_queues(nctrl, shutdown);
+>   	blk_mq_quiesce_queue(nctrl->admin_q);
+>   	if (shutdown)
+> @@ -430,6 +528,38 @@ static void nvme_tcp_ofld_delete_ctrl(struct nvme_ctrl *nctrl)
+>   	nvme_tcp_ofld_teardown_ctrl(nctrl, true);
+>   }
+>   
+> +static void nvme_tcp_ofld_reset_ctrl_work(struct work_struct *work)
+> +{
+> +	struct nvme_ctrl *nctrl =
+> +		container_of(work, struct nvme_ctrl, reset_work);
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +
+> +	nvme_stop_ctrl(nctrl);
+> +	nvme_tcp_ofld_teardown_ctrl(nctrl, false);
+> +
+> +	if (!nvme_change_ctrl_state(nctrl, NVME_CTRL_CONNECTING)) {
+> +		/* state change failure is ok if we started ctrl delete */
+> +		WARN_ON_ONCE(nctrl->state != NVME_CTRL_DELETING &&
+> +			     nctrl->state != NVME_CTRL_DELETING_NOIO);
+> +
+> +		return;
+> +	}
+> +
+> +	if (ctrl->dev->ops->setup_ctrl(ctrl, false))
+> +		goto out_fail;
+> +
+> +	if (nvme_tcp_ofld_setup_ctrl(nctrl, false))
+> +		goto release_ctrl;
+> +
+> +	return;
+> +
+> +release_ctrl:
+> +	ctrl->dev->ops->release_ctrl(ctrl);
+> +out_fail:
+> +	++nctrl->nr_reconnects;
+> +	nvme_tcp_ofld_reconnect_or_remove(nctrl);
+> +}
+> +
+>   static int
+>   nvme_tcp_ofld_init_request(struct blk_mq_tag_set *set,
+>   			   struct request *rq,
+> @@ -526,6 +656,10 @@ nvme_tcp_ofld_create_ctrl(struct device *ndev, struct nvmf_ctrl_options *opts)
+>   			     opts->nr_poll_queues + 1;
+>   	nctrl->sqsize = opts->queue_size - 1;
+>   	nctrl->kato = opts->kato;
+> +	INIT_DELAYED_WORK(&ctrl->connect_work,
+> +			  nvme_tcp_ofld_reconnect_ctrl_work);
+> +	INIT_WORK(&ctrl->err_work, nvme_tcp_ofld_error_recovery_work);
+> +	INIT_WORK(&nctrl->reset_work, nvme_tcp_ofld_reset_ctrl_work);
+>   	if (!(opts->mask & NVMF_OPT_TRSVCID)) {
+>   		opts->trsvcid =
+>   			kstrdup(__stringify(NVME_TCP_DISC_PORT), GFP_KERNEL);
+> diff --git a/drivers/nvme/host/tcp-offload.h b/drivers/nvme/host/tcp-offload.h
+> index 949132ce2ed4..2a931d05905d 100644
+> --- a/drivers/nvme/host/tcp-offload.h
+> +++ b/drivers/nvme/host/tcp-offload.h
+> @@ -210,3 +210,4 @@ struct nvme_tcp_ofld_ops {
+>   /* Exported functions for lower vendor specific offload drivers */
+>   int nvme_tcp_ofld_register_dev(struct nvme_tcp_ofld_dev *dev);
+>   void nvme_tcp_ofld_unregister_dev(struct nvme_tcp_ofld_dev *dev);
+> +void nvme_tcp_ofld_error_recovery(struct nvme_ctrl *nctrl);
+> 
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+
+-- 
+Himanshu Madhani                                Oracle Linux Engineering
