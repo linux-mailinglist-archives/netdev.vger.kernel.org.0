@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3243938CD45
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 20:23:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 511D738CD4A
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 20:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238881AbhEUSYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 14:24:43 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:5598 "EHLO
+        id S238867AbhEUSZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 14:25:02 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:5955 "EHLO
         smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231536AbhEUSYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 14:24:41 -0400
+        with ESMTP id S233396AbhEUSY5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 14:24:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1621621398; x=1653157398;
+  s=amazon201209; t=1621621414; x=1653157414;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SbmQWnoB54RiMHtxl1kChWOIQoRrvT43LKyeTkGfmi8=;
-  b=EHajtCak3NydUypfo247h8p+3Drccn2uWldBKxsdMg5FsE582uvdWwEH
-   m/B8R0oxqtjFvqtyRC9/Tf6gEOujMMVHnjyVUVXwig52tKYzZFQbOvdKo
-   pHwAfkXyweIso0KNbZ8Pox4/i3Dpwo4+PoyK5Q2zGMlOAwyQRUO/CBk3r
-   M=;
+  bh=lfa2hIJ+sKkn+tqtuXJtyqOekc7U5jAxQfBeh8J4oaA=;
+  b=Wd/WyiAVF0sqvBoN+Fcbxv+/FptEHRlXOPjXODJimXG3MM0hbMojP4PX
+   ZSXdC+qTVQa9c5IutYaXpZsjCLHtxaLB6orVEv32o1ZLcPPcW1cxbcJ6D
+   vGePht8OC2rn7qG4e2U5NcLUXL33B1jGLn6z7yZc4NSHRlh8vh1/vt3dW
+   k=;
 X-IronPort-AV: E=Sophos;i="5.82,319,1613433600"; 
-   d="scan'208";a="127056092"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 21 May 2021 18:23:17 +0000
+   d="scan'208";a="127056149"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-2c-cc689b93.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 21 May 2021 18:23:34 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com (Postfix) with ESMTPS id 0F20BA1CF1;
-        Fri, 21 May 2021 18:23:17 +0000 (UTC)
+        by email-inbound-relay-2c-cc689b93.us-west-2.amazon.com (Postfix) with ESMTPS id 5ABC6120075;
+        Fri, 21 May 2021 18:23:33 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Fri, 21 May 2021 18:23:16 +0000
+ id 15.0.1497.18; Fri, 21 May 2021 18:23:32 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.161.224) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Fri, 21 May 2021 18:23:12 +0000
+ id 15.0.1497.18; Fri, 21 May 2021 18:23:28 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -46,9 +46,9 @@ CC:     Benjamin Herrenschmidt <benh@amazon.com>,
         Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
         Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v7 bpf-next 07/11] tcp: Migrate TCP_NEW_SYN_RECV requests at receiving the final ACK.
-Date:   Sat, 22 May 2021 03:21:00 +0900
-Message-ID: <20210521182104.18273-8-kuniyu@amazon.co.jp>
+Subject: [PATCH v7 bpf-next 08/11] bpf: Support BPF_FUNC_get_socket_cookie() for BPF_PROG_TYPE_SK_REUSEPORT.
+Date:   Sat, 22 May 2021 03:21:01 +0900
+Message-ID: <20210521182104.18273-9-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210521182104.18273-1-kuniyu@amazon.co.jp>
 References: <20210521182104.18273-1-kuniyu@amazon.co.jp>
@@ -62,166 +62,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch also changes the code to call reuseport_migrate_sock() and
-inet_reqsk_clone(), but unlike the other cases, we do not call
-inet_reqsk_clone() right after reuseport_migrate_sock().
+We will call sock_reuseport.prog for socket migration in the next commit,
+so the eBPF program has to know which listener is closing to select a new
+listener.
 
-Currently, in the receive path for TCP_NEW_SYN_RECV sockets, its listener
-has three kinds of refcnt:
+We can currently get a unique ID of each listener in the userspace by
+calling bpf_map_lookup_elem() for BPF_MAP_TYPE_REUSEPORT_SOCKARRAY map.
 
-  (A) for listener itself
-  (B) carried by reuqest_sock
-  (C) sock_hold() in tcp_v[46]_rcv()
+This patch makes the pointer of sk available in sk_reuseport_md so that we
+can get the ID by BPF_FUNC_get_socket_cookie() in the eBPF program.
 
-While processing the req, (A) may disappear by close(listener). Also, (B)
-can disappear by accept(listener) once we put the req into the accept
-queue. So, we have to hold another refcnt (C) for the listener to prevent
-use-after-free.
-
-For socket migration, we call reuseport_migrate_sock() to select a listener
-with (A) and to increment the new listener's refcnt in tcp_v[46]_rcv().
-This refcnt corresponds to (C) and is cleaned up later in tcp_v[46]_rcv().
-Thus we have to take another refcnt (B) for the newly cloned request_sock.
-
-In inet_csk_complete_hashdance(), we hold the count (B), clone the req, and
-try to put the new req into the accept queue. By migrating req after
-winning the "own_req" race, we can avoid such a worst situation:
-
-  CPU 1 looks up req1
-  CPU 2 looks up req1, unhashes it, then CPU 1 loses the race
-  CPU 3 looks up req2, unhashes it, then CPU 2 loses the race
-  ...
-
+Link: https://lore.kernel.org/netdev/20201119001154.kapwihc2plp4f7zc@kafai-mbp.dhcp.thefacebook.com/
+Suggested-by: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 Acked-by: Martin KaFai Lau <kafai@fb.com>
 ---
- net/ipv4/inet_connection_sock.c | 34 ++++++++++++++++++++++++++++++---
- net/ipv4/tcp_ipv4.c             | 20 +++++++++++++------
- net/ipv4/tcp_minisocks.c        |  4 ++--
- net/ipv6/tcp_ipv6.c             | 14 +++++++++++---
- 4 files changed, 58 insertions(+), 14 deletions(-)
+ include/uapi/linux/bpf.h       |  1 +
+ net/core/filter.c              | 10 ++++++++++
+ tools/include/uapi/linux/bpf.h |  1 +
+ 3 files changed, 12 insertions(+)
 
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index c1f068464363..b795198f919a 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -1113,12 +1113,40 @@ struct sock *inet_csk_complete_hashdance(struct sock *sk, struct sock *child,
- 					 struct request_sock *req, bool own_req)
- {
- 	if (own_req) {
--		inet_csk_reqsk_queue_drop(sk, req);
--		reqsk_queue_removed(&inet_csk(sk)->icsk_accept_queue, req);
--		if (inet_csk_reqsk_queue_add(sk, req, child))
-+		inet_csk_reqsk_queue_drop(req->rsk_listener, req);
-+		reqsk_queue_removed(&inet_csk(req->rsk_listener)->icsk_accept_queue, req);
-+
-+		if (sk != req->rsk_listener) {
-+			/* another listening sk has been selected,
-+			 * migrate the req to it.
-+			 */
-+			struct request_sock *nreq;
-+
-+			/* hold a refcnt for the nreq->rsk_listener
-+			 * which is assigned in inet_reqsk_clone()
-+			 */
-+			sock_hold(sk);
-+			nreq = inet_reqsk_clone(req, sk);
-+			if (!nreq) {
-+				inet_child_forget(sk, req, child);
-+				goto child_put;
-+			}
-+
-+			refcount_set(&nreq->rsk_refcnt, 1);
-+			if (inet_csk_reqsk_queue_add(sk, nreq, child)) {
-+				reqsk_migrate_reset(req);
-+				reqsk_put(req);
-+				return child;
-+			}
-+
-+			reqsk_migrate_reset(nreq);
-+			__reqsk_free(nreq);
-+		} else if (inet_csk_reqsk_queue_add(sk, req, child)) {
- 			return child;
-+		}
- 	}
- 	/* Too bad, another child took ownership of the request, undo. */
-+child_put:
- 	bh_unlock_sock(child);
- 	sock_put(child);
- 	return NULL;
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 4f5b68a90be9..6cb8e269f1ab 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -2002,13 +2002,21 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 			goto csum_error;
- 		}
- 		if (unlikely(sk->sk_state != TCP_LISTEN)) {
--			inet_csk_reqsk_queue_drop_and_put(sk, req);
--			goto lookup;
-+			nsk = reuseport_migrate_sock(sk, req_to_sk(req), skb);
-+			if (!nsk) {
-+				inet_csk_reqsk_queue_drop_and_put(sk, req);
-+				goto lookup;
-+			}
-+			sk = nsk;
-+			/* reuseport_migrate_sock() has already held one sk_refcnt
-+			 * before returning.
-+			 */
-+		} else {
-+			/* We own a reference on the listener, increase it again
-+			 * as we might lose it too soon.
-+			 */
-+			sock_hold(sk);
- 		}
--		/* We own a reference on the listener, increase it again
--		 * as we might lose it too soon.
--		 */
--		sock_hold(sk);
- 		refcounted = true;
- 		nsk = NULL;
- 		if (!tcp_filter(sk, skb)) {
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 7513ba45553d..f258a4c0da71 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -775,8 +775,8 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 		goto listen_overflow;
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 418b9b813d65..2488a62482bb 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -5393,6 +5393,7 @@ struct sk_reuseport_md {
+ 	__u32 ip_protocol;	/* IP protocol. e.g. IPPROTO_TCP, IPPROTO_UDP */
+ 	__u32 bind_inany;	/* Is sock bound to an INANY address? */
+ 	__u32 hash;		/* A hash of the packet 4 tuples */
++	__bpf_md_ptr(struct bpf_sock *, sk);
+ };
  
- 	if (own_req && rsk_drop_req(req)) {
--		reqsk_queue_removed(&inet_csk(sk)->icsk_accept_queue, req);
--		inet_csk_reqsk_queue_drop_and_put(sk, req);
-+		reqsk_queue_removed(&inet_csk(req->rsk_listener)->icsk_accept_queue, req);
-+		inet_csk_reqsk_queue_drop_and_put(req->rsk_listener, req);
- 		return child;
+ #define BPF_TAG_SIZE	8
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 582ac196fd94..b7818c707f60 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -10139,6 +10139,8 @@ sk_reuseport_func_proto(enum bpf_func_id func_id,
+ 		return &sk_reuseport_load_bytes_proto;
+ 	case BPF_FUNC_skb_load_bytes_relative:
+ 		return &sk_reuseport_load_bytes_relative_proto;
++	case BPF_FUNC_get_socket_cookie:
++		return &bpf_get_socket_ptr_cookie_proto;
+ 	default:
+ 		return bpf_base_func_proto(func_id);
+ 	}
+@@ -10168,6 +10170,10 @@ sk_reuseport_is_valid_access(int off, int size,
+ 	case offsetof(struct sk_reuseport_md, hash):
+ 		return size == size_default;
+ 
++	case offsetof(struct sk_reuseport_md, sk):
++		info->reg_type = PTR_TO_SOCKET;
++		return size == sizeof(__u64);
++
+ 	/* Fields that allow narrowing */
+ 	case bpf_ctx_range(struct sk_reuseport_md, eth_protocol):
+ 		if (size < sizeof_field(struct sk_buff, protocol))
+@@ -10240,6 +10246,10 @@ static u32 sk_reuseport_convert_ctx_access(enum bpf_access_type type,
+ 	case offsetof(struct sk_reuseport_md, bind_inany):
+ 		SK_REUSEPORT_LOAD_FIELD(bind_inany);
+ 		break;
++
++	case offsetof(struct sk_reuseport_md, sk):
++		SK_REUSEPORT_LOAD_FIELD(sk);
++		break;
  	}
  
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 4435fa342e7a..4d71464094b3 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1664,10 +1664,18 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 			goto csum_error;
- 		}
- 		if (unlikely(sk->sk_state != TCP_LISTEN)) {
--			inet_csk_reqsk_queue_drop_and_put(sk, req);
--			goto lookup;
-+			nsk = reuseport_migrate_sock(sk, req_to_sk(req), skb);
-+			if (!nsk) {
-+				inet_csk_reqsk_queue_drop_and_put(sk, req);
-+				goto lookup;
-+			}
-+			sk = nsk;
-+			/* reuseport_migrate_sock() has already held one sk_refcnt
-+			 * before returning.
-+			 */
-+		} else {
-+			sock_hold(sk);
- 		}
--		sock_hold(sk);
- 		refcounted = true;
- 		nsk = NULL;
- 		if (!tcp_filter(sk, skb)) {
+ 	return insn - insn_buf;
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 418b9b813d65..2488a62482bb 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -5393,6 +5393,7 @@ struct sk_reuseport_md {
+ 	__u32 ip_protocol;	/* IP protocol. e.g. IPPROTO_TCP, IPPROTO_UDP */
+ 	__u32 bind_inany;	/* Is sock bound to an INANY address? */
+ 	__u32 hash;		/* A hash of the packet 4 tuples */
++	__bpf_md_ptr(struct bpf_sock *, sk);
+ };
+ 
+ #define BPF_TAG_SIZE	8
 -- 
 2.30.2
 
