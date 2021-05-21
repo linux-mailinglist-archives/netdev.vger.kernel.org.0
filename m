@@ -2,113 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CECF138C613
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 13:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1293338C61B
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 13:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233754AbhEUL5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 07:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35002 "EHLO
+        id S234264AbhEUL7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 07:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233431AbhEUL5f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 07:57:35 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B40EC061574;
-        Fri, 21 May 2021 04:56:12 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1621598170;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mkWCZPQm4Sq8eRx/19smgC/LUP5WutmsllFmC78x3iM=;
-        b=jrrijcDW62qctMPrxCPXE+I3Q90yWYLVqGQ/yxRh12V/HvAA4nCM4b766r4kA8aSn4+W6E
-        SnRcFBlQvE0mrX89gDciuHuQz771KRrNl1rzuPHyZ7IOQOKeKFvJjJI/wOkLb6sDJpvn9q
-        TgadlGc0X/rM2/PgucKpLTCyxxYD915Z+IIh5R86eu4bzWFOfnGAlLAdiRl+7RS8wzUa4O
-        zUy3nLU2rk9dFpcvjfjfPfe15jnqoj9aLPNzfzFFf4JT5BYRKOaHYUjUsIyJwEPstKdLu1
-        8o9h1bEaNR5IEyG46taJYm8nVwLh9LGpPGvwj9eMvzQn3aSouG7k+mhy6HNnPQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1621598170;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mkWCZPQm4Sq8eRx/19smgC/LUP5WutmsllFmC78x3iM=;
-        b=pzOgjIPEze+IzdbjPO3qovTvTCQJdEkxS1LKiSfgOooS/j3Pkf4u1ZVW+rw51h6LKK/SxF
-        /aR/hPOxq6scYiBg==
-To:     Nitesh Lal <nilal@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
-        "frederic\@kernel.org" <frederic@kernel.org>,
-        "juri.lelli\@redhat.com" <juri.lelli@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas\@google.com" <bhelgaas@google.com>,
-        "linux-pci\@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
-        "peterz\@infradead.org" <peterz@infradead.org>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "akpm\@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr\@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen\@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt\@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi\@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun\@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com,
-        Marc Zyngier <maz@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com
-Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when setting the hint
-In-Reply-To: <CAFki+LkB1sk3mOv4dd1D-SoPWHOs28ZwN-PqL_6xBk=Qkm40Lw@mail.gmail.com>
-References: <20210504092340.00006c61@intel.com> <87pmxpdr32.ffs@nanos.tec.linutronix.de> <CAFki+Lkjn2VCBcLSAfQZ2PEkx-TR0Ts_jPnK9b-5ne3PUX37TQ@mail.gmail.com> <87im3gewlu.ffs@nanos.tec.linutronix.de> <CAFki+L=gp10W1ygv7zdsee=BUGpx9yPAckKr7pyo=tkFJPciEg@mail.gmail.com> <CAFki+L=eQoMq+mWhw_jVT-biyuDXpxbXY5nO+F6HvCtpbG9V2w@mail.gmail.com> <CAFki+LkB1sk3mOv4dd1D-SoPWHOs28ZwN-PqL_6xBk=Qkm40Lw@mail.gmail.com>
-Date:   Fri, 21 May 2021 13:56:10 +0200
-Message-ID: <87zgwo9u79.ffs@nanos.tec.linutronix.de>
+        with ESMTP id S231706AbhEUL7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 07:59:03 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAF2C061574
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 04:57:39 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lk3mP-0007Wd-IE; Fri, 21 May 2021 13:57:25 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lk3mL-0001z8-Jc; Fri, 21 May 2021 13:57:21 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Robin van der Gracht <robin@protonic.nl>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Hillf Danton <hdanton@sina.com>,
+        syzbot+220c1a29987a9a490903@syzkaller.appspotmail.com,
+        syzbot+45199c1b73b4013525cf@syzkaller.appspotmail.com,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v1] can: j1939: fix Use-after-Free, hold skb ref while in use
+Date:   Fri, 21 May 2021 13:57:20 +0200
+Message-Id: <20210521115720.7533-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nitesh,
+This patch fixes a Use-after-Free found by the syzbot.
 
-On Thu, May 20 2021 at 20:03, Nitesh Lal wrote:
-> On Thu, May 20, 2021 at 5:57 PM Nitesh Lal <nilal@redhat.com> wrote:
->> I think here to ensure that we are not breaking any of the drivers we have
->> to first analyze all the existing drivers and understand how they are using
->> this API.
->> AFAIK there are three possible scenarios:
->>
->> - A driver use this API to spread the IRQs
->>   + For this case we should be safe considering the spreading is naturally
->>     done from the IRQ subsystem itself.
->
-> Forgot to mention another thing in the above case is to determine whether
-> it is true for all architectures or not as Thomas mentioned.
+The problem is that a skb is taken from the per-session skb queue,
+without incrementing the ref count. This leads to a Use-after-Free if
+the skb is taken concurrently from the session queue due to a CTS.
 
-Yes.
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Cc: Hillf Danton <hdanton@sina.com>
+Reported-by: syzbot+220c1a29987a9a490903@syzkaller.appspotmail.com
+Reported-by: syzbot+45199c1b73b4013525cf@syzkaller.appspotmail.com
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ net/can/j1939/transport.c | 54 +++++++++++++++++++++++++++++----------
+ 1 file changed, 40 insertions(+), 14 deletions(-)
 
->>
->> - A driver use this API to actually set the hint
->>   + These drivers should have no functional impact because of this revert
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index e09d087ba240..c3946c355882 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -330,6 +330,9 @@ static void j1939_session_skb_drop_old(struct j1939_session *session)
+ 
+ 	if ((do_skcb->offset + do_skb->len) < offset_start) {
+ 		__skb_unlink(do_skb, &session->skb_queue);
++		/* drop ref taken in j1939_session_skb_queue() */
++		skb_unref(do_skb);
++
+ 		kfree_skb(do_skb);
+ 	}
+ 	spin_unlock_irqrestore(&session->skb_queue.lock, flags);
+@@ -349,12 +352,13 @@ void j1939_session_skb_queue(struct j1939_session *session,
+ 
+ 	skcb->flags |= J1939_ECU_LOCAL_SRC;
+ 
++	skb_get(skb);
+ 	skb_queue_tail(&session->skb_queue, skb);
+ }
+ 
+ static struct
+-sk_buff *j1939_session_skb_find_by_offset(struct j1939_session *session,
+-					  unsigned int offset_start)
++sk_buff *j1939_session_skb_get_by_offset(struct j1939_session *session,
++					 unsigned int offset_start)
+ {
+ 	struct j1939_priv *priv = session->priv;
+ 	struct j1939_sk_buff_cb *do_skcb;
+@@ -371,6 +375,10 @@ sk_buff *j1939_session_skb_find_by_offset(struct j1939_session *session,
+ 			skb = do_skb;
+ 		}
+ 	}
++
++	if (skb)
++		skb_get(skb);
++
+ 	spin_unlock_irqrestore(&session->skb_queue.lock, flags);
+ 
+ 	if (!skb)
+@@ -381,12 +389,12 @@ sk_buff *j1939_session_skb_find_by_offset(struct j1939_session *session,
+ 	return skb;
+ }
+ 
+-static struct sk_buff *j1939_session_skb_find(struct j1939_session *session)
++static struct sk_buff *j1939_session_skb_get(struct j1939_session *session)
+ {
+ 	unsigned int offset_start;
+ 
+ 	offset_start = session->pkt.dpo * 7;
+-	return j1939_session_skb_find_by_offset(session, offset_start);
++	return j1939_session_skb_get_by_offset(session, offset_start);
+ }
+ 
+ /* see if we are receiver
+@@ -776,7 +784,7 @@ static int j1939_session_tx_dat(struct j1939_session *session)
+ 	int ret = 0;
+ 	u8 dat[8];
+ 
+-	se_skb = j1939_session_skb_find_by_offset(session, session->pkt.tx * 7);
++	se_skb = j1939_session_skb_get_by_offset(session, session->pkt.tx * 7);
+ 	if (!se_skb)
+ 		return -ENOBUFS;
+ 
+@@ -801,7 +809,8 @@ static int j1939_session_tx_dat(struct j1939_session *session)
+ 			netdev_err_once(priv->ndev,
+ 					"%s: 0x%p: requested data outside of queued buffer: offset %i, len %i, pkt.tx: %i\n",
+ 					__func__, session, skcb->offset, se_skb->len , session->pkt.tx);
+-			return -EOVERFLOW;
++			ret = -EOVERFLOW;
++			goto out_free;
+ 		}
+ 
+ 		if (!len) {
+@@ -835,6 +844,12 @@ static int j1939_session_tx_dat(struct j1939_session *session)
+ 	if (pkt_done)
+ 		j1939_tp_set_rxtimeout(session, 250);
+ 
++ out_free:
++	if (ret)
++		kfree_skb(se_skb);
++	else
++		consume_skb(se_skb);
++
+ 	return ret;
+ }
+ 
+@@ -1007,7 +1022,7 @@ static int j1939_xtp_txnext_receiver(struct j1939_session *session)
+ static int j1939_simple_txnext(struct j1939_session *session)
+ {
+ 	struct j1939_priv *priv = session->priv;
+-	struct sk_buff *se_skb = j1939_session_skb_find(session);
++	struct sk_buff *se_skb = j1939_session_skb_get(session);
+ 	struct sk_buff *skb;
+ 	int ret;
+ 
+@@ -1015,8 +1030,10 @@ static int j1939_simple_txnext(struct j1939_session *session)
+ 		return 0;
+ 
+ 	skb = skb_clone(se_skb, GFP_ATOMIC);
+-	if (!skb)
+-		return -ENOMEM;
++	if (!skb) {
++		ret = -ENOMEM;
++		goto out_free;
++	}
+ 
+ 	can_skb_set_owner(skb, se_skb->sk);
+ 
+@@ -1024,12 +1041,18 @@ static int j1939_simple_txnext(struct j1939_session *session)
+ 
+ 	ret = j1939_send_one(priv, skb);
+ 	if (ret)
+-		return ret;
++		goto out_free;
+ 
+ 	j1939_sk_errqueue(session, J1939_ERRQUEUE_SCHED);
+ 	j1939_sk_queue_activate_next(session);
+ 
+-	return 0;
++ out_free:
++	if (ret)
++		kfree_skb(se_skb);
++	else
++		consume_skb(se_skb);
++
++	return ret;
+ }
+ 
+ static bool j1939_session_deactivate_locked(struct j1939_session *session)
+@@ -1170,9 +1193,10 @@ static void j1939_session_completed(struct j1939_session *session)
+ 	struct sk_buff *skb;
+ 
+ 	if (!session->transmission) {
+-		skb = j1939_session_skb_find(session);
++		skb = j1939_session_skb_get(session);
+ 		/* distribute among j1939 receivers */
+ 		j1939_sk_recv(session->priv, skb);
++		consume_skb(skb);
+ 	}
+ 
+ 	j1939_session_deactivate_activate_next(session);
+@@ -1744,7 +1768,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+ {
+ 	struct j1939_priv *priv = session->priv;
+ 	struct j1939_sk_buff_cb *skcb;
+-	struct sk_buff *se_skb;
++	struct sk_buff *se_skb = NULL;
+ 	const u8 *dat;
+ 	u8 *tpdat;
+ 	int offset;
+@@ -1786,7 +1810,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+ 		goto out_session_cancel;
+ 	}
+ 
+-	se_skb = j1939_session_skb_find_by_offset(session, packet * 7);
++	se_skb = j1939_session_skb_get_by_offset(session, packet * 7);
+ 	if (!se_skb) {
+ 		netdev_warn(priv->ndev, "%s: 0x%p: no skb found\n", __func__,
+ 			    session);
+@@ -1848,11 +1872,13 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+ 		j1939_tp_set_rxtimeout(session, 250);
+ 	}
+ 	session->last_cmd = 0xff;
++	consume_skb(se_skb);
+ 	j1939_session_put(session);
+ 
+ 	return;
+ 
+  out_session_cancel:
++	kfree_skb(se_skb);
+ 	j1939_session_timers_cancel(session);
+ 	j1939_session_cancel(session, J1939_XTP_ABORT_FAULT);
+ 	j1939_session_put(session);
+-- 
+2.29.2
 
-Correct.
-
-
->> - Driver use this API to force a certain affinity mask
->>   + In this case we have to replace the API with the irq_force_affinity()
-
-irq_set_affinity() or irq_set_affinity_and_hint()
-
->> I can start looking into the individual drivers, however, testing them will
->> be a challenge.
-
-The only way to do that is to have the core infrastructure added and
-then send patches changing it in the way you think. The relevant
-maintainers/developers should be able to tell you when your analysis
-went south. :)
-
-Been there, done that. It's just lots of work :)
-
-Thanks,
-
-        tglx
