@@ -2,94 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9AC038D199
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 00:34:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 581B938D19A
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 00:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229548AbhEUWfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 18:35:39 -0400
-Received: from mga09.intel.com ([134.134.136.24]:57192 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229507AbhEUWfi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 May 2021 18:35:38 -0400
-IronPort-SDR: sG+MgvNCADZ84Uri2RVNwKoaQzW9VE5q7W8Vuy/GJcSu/AAjZADHtWOujozDoCyZ00Khhw2p8m
- 8YyblTb9r+wA==
-X-IronPort-AV: E=McAfee;i="6200,9189,9991"; a="201621638"
-X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
-   d="scan'208";a="201621638"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2021 15:34:14 -0700
-IronPort-SDR: My78/1cOeqAJ0j8hJjY78K+bsx3tSZpuBLbcQVpem4drTKXvtSfn5V8dBJuMG9MOi7a2XZ5p4G
- FdrBC1jFTaPQ==
-X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
-   d="scan'208";a="395503692"
-Received: from mooremel-mobl.amr.corp.intel.com (HELO localhost.localdomain) ([10.209.84.48])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2021 15:34:14 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, kuba@kernel.org
-Subject: [PATCH net-next v1] MAINTAINERS: Add entries for CBS, ETF and taprio qdiscs
-Date:   Fri, 21 May 2021 15:33:37 -0700
-Message-Id: <20210521223337.1873836-1-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.31.1
+        id S229655AbhEUWf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 18:35:59 -0400
+Received: from mail-wm1-f44.google.com ([209.85.128.44]:41645 "EHLO
+        mail-wm1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229507AbhEUWf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 18:35:58 -0400
+Received: by mail-wm1-f44.google.com with SMTP id l11-20020a05600c4f0bb029017a7cd488f5so5283124wmq.0
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 15:34:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kUMI2+VJBvrfyxF0TnZrFPg59JKRi9yHzzdOTmyJIwU=;
+        b=RGlJ1ziJ09kmU+INK1WBNOkJxS1pmj1KoaCwEMR/2V+Fl1Olzu/t3/pE6u4+r25g6/
+         bBwahR7kXawYymHhQ7JFeKNGqEZCTsuWRug0Ycm92m+sGJ2edk3P6h/k4o7KWoCQFGDG
+         UVgVLNtqtreSus9em/IJsulINX7ZjDn7peFnfbAe/3mJHh1XEDk3DSIapsNjhDjJo1Ix
+         fQWqGCrYA4bV57Cc2gdPtEfblIuEi0gVCjis1hzfd59HZ9OD/wOlgCxOBKVaEIBGPo27
+         5tsoc3rcEfo3TODI5vm9OK+/0K9I1G+I+ruNN7aRqGLqAnDawTdQLR6FpcjzrKwxt/OB
+         Nleg==
+X-Gm-Message-State: AOAM530duRF08EgM1m/u14eGC0Rcrzf2B4Hiw0pe9c/tVUOYTZRJQiWa
+        57dlbDBN9ZoRQwRPUWQtWeY=
+X-Google-Smtp-Source: ABdhPJxPwE80Mrjced/fQhx+HqdZxh/zPfQGLdEHSgAltgc+RgEotDdkl7lO2158LySvsdlmQT5rZQ==
+X-Received: by 2002:a05:600c:3510:: with SMTP id h16mr10257627wmq.38.1621636472746;
+        Fri, 21 May 2021 15:34:32 -0700 (PDT)
+Received: from ?IPv6:2601:647:4802:9070:66b2:1988:438b:4253? ([2601:647:4802:9070:66b2:1988:438b:4253])
+        by smtp.gmail.com with ESMTPSA id t7sm3323970wrs.87.2021.05.21.15.34.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 May 2021 15:34:32 -0700 (PDT)
+Subject: Re: [RFC PATCH v5 05/27] nvme-tcp-offload: Add controller level error
+ recovery implementation
+To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, hch@lst.de, axboe@fb.com, kbusch@kernel.org
+Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
+        pkushwaha@marvell.com, malin1024@gmail.com,
+        Arie Gershberg <agershberg@marvell.com>
+References: <20210519111340.20613-1-smalin@marvell.com>
+ <20210519111340.20613-6-smalin@marvell.com>
+From:   Sagi Grimberg <sagi@grimberg.me>
+Message-ID: <8343236b-91d6-a3d7-4abb-c74b993763d2@grimberg.me>
+Date:   Fri, 21 May 2021 15:34:28 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210519111340.20613-6-smalin@marvell.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Vinicius Costa Gomes as maintainer for these qdiscs.
 
-These qdiscs are all TSN (Time Sensitive Networking) related.
+> In this patch, we implement controller level error handling and recovery.
+> Upon an error discovered by the ULP or reset controller initiated by the
+> nvme-core (using reset_ctrl workqueue), the ULP will initiate a controller
+> recovery which includes teardown and re-connect of all queues.
 
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
- MAINTAINERS | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b9f329249a5a..96b44fef2a89 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4138,6 +4138,12 @@ S:	Odd Fixes
- F:	Documentation/devicetree/bindings/arm/cavium-thunder2.txt
- F:	arch/arm64/boot/dts/cavium/thunder2-99xx*
- 
-+CBS QDISC
-+M:	Vinicius Costa Gomes <vinicius.gomes@intel.com>
-+S:	Maintained
-+L:	netdev@vger.kernel.org
-+F:	net/sched/sch_cbs.c
-+
- CC2520 IEEE-802.15.4 RADIO DRIVER
- M:	Varka Bhadram <varkabhadram@gmail.com>
- L:	linux-wpan@vger.kernel.org
-@@ -6782,6 +6788,12 @@ M:	Mark Einon <mark.einon@gmail.com>
- S:	Odd Fixes
- F:	drivers/net/ethernet/agere/
- 
-+ETF QDISC
-+M:	Vinicius Costa Gomes <vinicius.gomes@intel.com>
-+S:	Maintained
-+L:	netdev@vger.kernel.org
-+F:	net/sched/sch_etf.c
-+
- ETHERNET BRIDGE
- M:	Roopa Prabhu <roopa@nvidia.com>
- M:	Nikolay Aleksandrov <nikolay@nvidia.com>
-@@ -17743,6 +17755,12 @@ F:	Documentation/filesystems/sysv-fs.rst
- F:	fs/sysv/
- F:	include/linux/sysv_fs.h
- 
-+TAPRIO QDISC
-+M:	Vinicius Costa Gomes <vinicius.gomes@intel.com>
-+S:	Maintained
-+L:	netdev@vger.kernel.org
-+F:	net/sched/sch_taprio.c
-+
- TASKSTATS STATISTICS INTERFACE
- M:	Balbir Singh <bsingharora@gmail.com>
- S:	Maintained
--- 
-2.31.1
-
+It's becoming an eye-soar how much our transports duplicate code...
