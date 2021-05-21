@@ -2,250 +2,723 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D791C38CCF3
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 20:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9714538CD15
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 20:19:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238611AbhEUSJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 14:09:42 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:43118 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238562AbhEUSJl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 14:09:41 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 14LHthe1110973
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 18:08:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : content-transfer-encoding : content-type :
- mime-version; s=corp-2020-01-29;
- bh=c9uNTmSIbhLmICLtbplONKZlHgZdfQWO9/NPe+HMGV8=;
- b=I/CSkK4CrqQy53AGCwI6HLVvGl+oWaVExlbY+YcQIazkuYy3a63R8ZCtMiuWQV8qCD8O
- d+XYjExIBEatc2S0sr3a70oTbsNuRHBRwl6lZOaiOa77GWkN/L2KiP94BERLAdH6sGwG
- +yWy2zR1TYg6i8c4FJ0wFmWXjJonQJYARr+6iafQI8kYOwRzJDmuXYO9VJJhclYYd9HL
- 2vmF6eWQZ/kyu6EDBG/9Ksczn7LHfcHe5ov8K0oCDzK5zt80wncone8vN1CHlLMyXYNf
- JuRy/OTshYzFxqEbIp6LmE4I83A3mOmmbh7SCwI+m3z/Nb3orEnRIDCjZxms4eyN36Vr 2w== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 38j6xnrbq0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 18:08:17 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 14LHtgpD010539
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 18:08:17 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2173.outbound.protection.outlook.com [104.47.57.173])
-        by userp3020.oracle.com with ESMTP id 38n4930tdq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 18:08:16 +0000
+        id S237267AbhEUSUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 14:20:22 -0400
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:55414 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231330AbhEUSUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 14:20:21 -0400
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14LIGMpM021067;
+        Fri, 21 May 2021 18:18:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2020-01-29;
+ bh=/nYnwL4rws4nbBaN6oktsc/gousDx+c/e0outMefDUY=;
+ b=krhVzenjZ6nfZhqV2+SIhtz8exBFnzfsW0kXAz31jIRFagB4KCowjjJWjBX6UPrNTaoV
+ ohhjNv7r77BOxv7Ncrto+xIy7zwDrQXDJxwudPg9FplJ8VQ0mmrlD03plGvcb++Wasjn
+ y0aCmVZfpC+/+0DAOlb0F67VepnHpufsJTaIxCWPwG/DUJix4x4MN1aG7BXfpiQfGk2r
+ REapDHBbRDRAE+a2mhWwp7mFd0CDL7E/s/dSlG2p6PsNnUlufPLmNxZLsvjpMNlJiarv
+ h1KYtzUAM6ZFLL4BZW+nKKTRhfyWaWBP/0dBUoEKcKQApTco+mb/rckUlmhFkWyD1Cyr NA== 
+Received: from oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 38nuuwgep2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 May 2021 18:18:45 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.podrdrct (8.16.0.36/8.16.0.36) with SMTP id 14LIIh07059564;
+        Fri, 21 May 2021 18:18:43 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
+        by userp3020.oracle.com with ESMTP id 38n4930ybc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 May 2021 18:18:43 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ldNLJkyP2YRfJVr74HqvzvW9orWygFcrIOMgLFzbdMr3cBFRpK9ZS76ynCbkO49dQDsLUDRMq00v1nPjkzdoL8PmOU3ubqJuiEz5vA8skXn33qfA9s6nW12m5AJCAbMJrRW89A1/Wsl5uZ2GqIxAF0sO3eG69aKY1C8Nawje32lP1GIRdPCQS0Z9TqFVzepkW9aNB7kH49W2aD/H4h7s3HMoJRKCLdtnFdYYBA6qhmIr6LC/1DQ6snMbLDMysYV6TPXGrkEd8xt2Y0JBw4E/2R/P7vDumYt/TqTVKwnTfYuhrjCyXnxF7ftsorUSRufWNv3I2dV0rYRohJ2ji0JYoA==
+ b=oIMw93rnCPtvLrQ5KFW8Vf8toZRnco+EDleW9+gTqPdpAej7TrYCLOTwewwT/vgg0SuuxfeFMbj3WnFt2rAVBuKLlSXVHnnL85dhYLvZZp3cIRTFWqdrxkPieC9IJGeDVUmpntawRSL9LYcGyMKnpRifaqcWjqQhRWLGxywAUaJlnubxxHIRtV5yZ091jw/uU2HxlieG8rz9Im0NJsDJucOUFRJ9LrMRmhKXZsjxBmKhap1W2RRGmFcAatmZpdXmKWwKlk2TApC7jxn7UV6uo03JUIcHjb5IuuT/y86U0BROV545LxqV8+DRbIWxf/uQdXl28nEDmslc4dCt25yBXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c9uNTmSIbhLmICLtbplONKZlHgZdfQWO9/NPe+HMGV8=;
- b=dFJWYYpX+zJq5PnXRBJIx1nc123blv1djM/Ps4QSZcSDtBoxq/57c9Ib1RNwXi+WC+Ko3/bdowtbjRD0m3A/Q07siACP9cC3Ife0LU9bb6VmIxFjzkHiX8qrSN7/HQt/BEfS+1uImuQJMvMCO5b6J04auJDmzpRNL9FDCjZ6X1jkkzlotuLHCq3X3WSWZ1htKmNTYwLXpOsTEgs06ZvKI9K4EKvfvke7mokg/CyGf0vl3lFAAKoGzvwsAU1y0gy/5Lvtzku9gYSMAJEGIRl3LEDDngfUohZyZeyzfKTIvPkhrz+GJ8Mkf46RhTxru+h39cNnqWPy47zY63NdrjoljA==
+ bh=/nYnwL4rws4nbBaN6oktsc/gousDx+c/e0outMefDUY=;
+ b=SufwRTx+hV877i6MIuedzAWywIAmYZm+BBK33BV7Nvq7jtF3wraMBDGEkVC0iwepoiXVcVFH9ww7AtYCcmqMBJIxO6DCSmi8G6UxrKGYO0aFMehijQpWqsVAI5YeqM2LbERlJ4IiEKsZkRKdOt8jpiB8OEFFFvua0+OIbdo5ryLM4lEMuF52rxDYT664d7uUM/v1iL4an+Z2wYt3pX4a5jU07d6aJBBg9E9ptLzR5I+PB/vAapLsqHBCOcp2uZHYqm9UpDGVUV6ldBxDFi1/7TyU49jFzWBBXzq6lmDlxz2WN1ginmM9/VQTiKD1p2eePZy1Ro5r9hZtgAgIKb6w/Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c9uNTmSIbhLmICLtbplONKZlHgZdfQWO9/NPe+HMGV8=;
- b=EgRxxfUnlKxhCgQMG5ACc0YJ8uTCcaphAe6e27H1Q2C0Qz81z9NTIVesb1aUxWDwp5aAl5zZTCt/wFTg6gcmDhw+FoBgKehlcK23PzV8o1RnXC3xa6FzflVKhDH2weATRAKtxxPhgUK4OngVI/3ezTl1+R8WsCQpHB50FnyY/S8=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=oracle.com;
-Received: from SJ0PR10MB4494.namprd10.prod.outlook.com (2603:10b6:a03:2d4::12)
- by BYAPR10MB2517.namprd10.prod.outlook.com (2603:10b6:a02:b4::26) with
+ bh=/nYnwL4rws4nbBaN6oktsc/gousDx+c/e0outMefDUY=;
+ b=MCCjxM/xpbVr+z5uHraJP+zcxEvmmtAbU2U2idJItB12W91TPWqietlCnG3wkqcBkT5bumuRvJ25LkHeiQ29EgYh7bG988LQcenXbT9ov4vUyRm+smeDoqedKadS3uIc/5mjUQGBKQU9avoWu8m9geWTGUcPol11kNKq58gACQg=
+Authentication-Results: marvell.com; dkim=none (message not signed)
+ header.d=none;marvell.com; dmarc=none action=none header.from=oracle.com;
+Received: from SN6PR10MB2943.namprd10.prod.outlook.com (2603:10b6:805:d4::19)
+ by SA2PR10MB4556.namprd10.prod.outlook.com (2603:10b6:806:119::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23; Fri, 21 May
- 2021 18:08:13 +0000
-Received: from SJ0PR10MB4494.namprd10.prod.outlook.com
- ([fe80::103c:70e1:fefe:a5b]) by SJ0PR10MB4494.namprd10.prod.outlook.com
- ([fe80::103c:70e1:fefe:a5b%7]) with mapi id 15.20.4150.026; Fri, 21 May 2021
- 18:08:13 +0000
-From:   Rao Shoaib <Rao.Shoaib@oracle.com>
-To:     netdev@vger.kernel.org
-Cc:     rao.shoaib@oracle.com
-Subject: [PATCH RDS/TCP v1 1/1] RDS tcp loopback connection can hang
-Date:   Fri, 21 May 2021 11:08:06 -0700
-Message-Id: <20210521180806.80362-1-Rao.Shoaib@oracle.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [2606:b400:8301:1010::16aa]
-X-ClientProxiedBy: SJ0PR03CA0245.namprd03.prod.outlook.com
- (2603:10b6:a03:3a0::10) To SJ0PR10MB4494.namprd10.prod.outlook.com
- (2603:10b6:a03:2d4::12)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.28; Fri, 21 May
+ 2021 18:18:41 +0000
+Received: from SN6PR10MB2943.namprd10.prod.outlook.com
+ ([fe80::168:1a9:228:46f3]) by SN6PR10MB2943.namprd10.prod.outlook.com
+ ([fe80::168:1a9:228:46f3%6]) with mapi id 15.20.4129.034; Fri, 21 May 2021
+ 18:18:41 +0000
+Subject: Re: [RFC PATCH v5 06/27] nvme-tcp-offload: Add queue level
+ implementation
+To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
+        kbusch@kernel.org
+Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
+        pkushwaha@marvell.com, malin1024@gmail.com,
+        Dean Balandin <dbalandin@marvell.com>
+References: <20210519111340.20613-1-smalin@marvell.com>
+ <20210519111340.20613-7-smalin@marvell.com>
+From:   Himanshu Madhani <himanshu.madhani@oracle.com>
+Organization: Oracle
+Message-ID: <bed25d20-47f0-3583-9de1-d93a7827b860@oracle.com>
+Date:   Fri, 21 May 2021 13:18:39 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+In-Reply-To: <20210519111340.20613-7-smalin@marvell.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [70.114.128.235]
+X-ClientProxiedBy: SN4PR0701CA0003.namprd07.prod.outlook.com
+ (2603:10b6:803:28::13) To SN6PR10MB2943.namprd10.prod.outlook.com
+ (2603:10b6:805:d4::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from shoaib-laptop.us.oracle.com (2606:b400:8301:1010::16aa) by SJ0PR03CA0245.namprd03.prod.outlook.com (2603:10b6:a03:3a0::10) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23 via Frontend Transport; Fri, 21 May 2021 18:08:12 +0000
+Received: from [192.168.1.28] (70.114.128.235) by SN4PR0701CA0003.namprd07.prod.outlook.com (2603:10b6:803:28::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23 via Frontend Transport; Fri, 21 May 2021 18:18:40 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d0853ef9-6d99-4a87-c5d6-08d91c83660b
-X-MS-TrafficTypeDiagnostic: BYAPR10MB2517:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR10MB2517430120DAC32546D370A6EF299@BYAPR10MB2517.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-MS-Office365-Filtering-Correlation-Id: a9f09795-3699-4ba6-06b5-08d91c84dc71
+X-MS-TrafficTypeDiagnostic: SA2PR10MB4556:
+X-Microsoft-Antispam-PRVS: <SA2PR10MB4556A89A4E96752B632A5FF6E6299@SA2PR10MB4556.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:119;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uhQRkGGYyQn47PkqGMtnAsEjmg/Sn3ePBhbhqAFlgfIJuUm+3B2TyoIjKcRF2rd9S7tjflwiv3lAPfldNCAZ/YZrZ7mie44OMoOGe6cU/GQqrH2sfQSZIARpkQ3hLnfkQSmcqVW7fiPSnHXfrYd198w6PM7QFxIRUwqHXIJTRVIHwJgPVxeg24ySjZbfGExNw5Imu1bkxIW/kCR3q/2R4b9RMjOkKFXePfDLlzvd+0g7Ocfy7y0GJLJ7h+peJ2cIrfoXHi+TMIAH4zg6FyYemKZasfGK7szy8ctFj43xkI8kclj+Q3+lU8gAlZLTVgCXxocxeq2E3sDsY6MjdZa8d0NpVjvCZN1QXKVLq7psayoS888Eb1v5KqWlQ8pQqO8qahCqRnzI6y30vFPSD2Uw24mdQPGi6ejVwYRDzGyBpfT99XJjfhCpG6GelEuYakWuts/AqySDY91wVqEVHmY5grNToIiGFpUjUAzlXIN8NDhLj0pL3Te4CZRv8JxmJ7KQ+5YIVl3PzOzoVWvRCh79SJtQQNvQoL8nllpFD+JS00YQDBP279JUn56U8za6BtJFKxOR5uogT2zARMgT4Zvj0meib1hFhwa9F5WpbJTRQUk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB4494.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(366004)(396003)(39860400002)(346002)(316002)(7696005)(52116002)(38100700002)(2906002)(83380400001)(6916009)(6486002)(86362001)(2616005)(107886003)(16526019)(186003)(4326008)(8676002)(1076003)(66556008)(66476007)(478600001)(66946007)(5660300002)(6666004)(36756003)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?RNtXTDodiHfg/Y6iFXEI5N+L9Wf2Mg9o6oow+3gKl863qzf7+IDuYkXtjAO5?=
- =?us-ascii?Q?jJQ3ZEp00S8tBPBEl/CO83KU/seQu0ypd/UX2+GnVbig0gHfDA0JzhNynKCn?=
- =?us-ascii?Q?W2KksmcKQFY0rROZJhWzp6mc1rnWLuaeK5242rRYUcCp5z5afTS88zDXHJs1?=
- =?us-ascii?Q?hNKOJ5FtUb1O4Fn+lwWlqg8GNDksgUU3bOee99DBvHcsWcymUb1quTTLtOTZ?=
- =?us-ascii?Q?cloyVpt31yCa5QPYcfuVROJK6DERXSFJRo32czNYMLe5TspOuqaXTcNDkKEu?=
- =?us-ascii?Q?yH6/rBitE9ofHYviXJESKLKQJzBIlKPZKvIQ3Ius+lgZ+DpQrhBAGt+DawrF?=
- =?us-ascii?Q?cqdgipScaF7w9YA5thnLlcBIpG9TECcbnvigDyoaXNqUq/TfJx++46el1qkD?=
- =?us-ascii?Q?REZwyDuMsnqCJbLVUd0IGwOAB+pplvKkKZ4vmdMvwdZEZjVhvUJ7wWLID1pA?=
- =?us-ascii?Q?7GxIqnJpWbf9hjmbAy6aPF0/ppMCAC6H9ljihup0VHvXmQy2PR7oYRcdLye5?=
- =?us-ascii?Q?hXWZgS39Eil3lW/Q1HQL9aV5sv6A1wx7GRGDvFxYGp/AOt0RCok7VA4lZtNO?=
- =?us-ascii?Q?wrGg4mAk37yqUYCudJI0XQHUSTf8nfvMw7q8ogEgbqPTLaD3ofn230P8UHBx?=
- =?us-ascii?Q?krfg4PvpHJiPobkvh/uVSIgUqsczy1LrSJXC8wJq1nBv5VI4wKn5LZXdjM37?=
- =?us-ascii?Q?xpWTQpDeD8Jru42d0pAPdGp8RWyena1SGFWiq2RebpCt6ywSVRNSTC8JC7Op?=
- =?us-ascii?Q?ENsw+pfImVFcqV9qiGQsGOoni4aK7KNqEwSj42Tk5lr9WOePpKaOSimQA0J+?=
- =?us-ascii?Q?HWNrlPMWw5XqVESHzMOH66KK4WbjkMcWEwO1v+VTI2XqjHVcU1ZmzfyY9ZWN?=
- =?us-ascii?Q?7qMG4PLDwlNyAtLrl2JY6VXWTX7yoq5M+rkzaETnox1x+19ZBsGftYP/x+SB?=
- =?us-ascii?Q?dIGRsCUcn8UVhbNVLDXDBnqtQ99e9arJhW1vrmp+fqYatuF+CzYmmpxC5ItS?=
- =?us-ascii?Q?cPpckITRWNKyw3nzvHwQcm6x7UkLwZEAUl44KLfSYQPqc4hRQwxwqbFFWxbK?=
- =?us-ascii?Q?G1pkQWD02kA4rc3wF2DGYBBWIo8XW/bMJ6/Ai9GGuqg79EZKr+cD7FiJ7WSS?=
- =?us-ascii?Q?5EBpQQ0p4buWTtsBVeg9P6T9o7kcaafvHWb2lrcbjCyS6G3FRE/k3N2IScSO?=
- =?us-ascii?Q?QilWsyY0haI7cEZRV1DA4n1Y/KPe6i39DGIdI2HCD5nCih/ubm8PgmqO1fzx?=
- =?us-ascii?Q?sVf8/ZoI8W6I7CSvVetcSVsJGjHYc7i/9RwpLCwmbNPpmwAHfKkqjT5aCfge?=
- =?us-ascii?Q?cDk2aA54rGZGmXqE8pNPGZzAGJX+FhELmZbJ39bN5gASEA=3D=3D?=
+X-Microsoft-Antispam-Message-Info: MOZxIaX3egmAeQYNVRZIvwhCsnIZ7K8+VotsDngCjBvrKDa+BVscqqfa9ny/yKCDu/ODZZh2uhh9f9QGIxXhK4z+ipWMKy30mx6/PFocgHNC33wpIwOpnvF0GD0amQSgkTk25R6lBquwyCkgVY9MNmMttldiERKf8B6zrWM2VblnQkL20o2O2mvGfWIvwIu+9MVjUUkEISQ4avfNaI0Xn541NbuPsxcYUjkT3Ri5DDdPhpLrObSmh2RDuOUWzOixXHKsaEZKQcS6dQgTgX1UWvCYgTaNEU29+nr99Qe1OK5pdRdrZ+F8NsPxDXhDRVIpMvB5//MWZtfP7fS8ykwBvUXVLirbrU7Km8OdAEbkTLldk6y5Irnyt9ECkChgKcJaXatpITeObJN4b+EeW+wTsWJcaEKVpbMu9y6bOLJTMSQ8bL5+J4dnmVkn1hSUTggPskCBvHCcdbRw7+wSOu++mFbPZg9DTZ9RpcJX4Jbj8E66sHMrAbUeLgRBbgqo00VZ0mepNQ0eiTtQJHra7pENCm0pq/H9FNtTvPeF9Jpn5T0AS+dMsMoXaHxZUlKw+aUXGy5+bmph+mMaxPnTODZZ5ICu7thwtv0eMCK4xnr3qIqbuWstkZshf9OwNYLPD4zBv64+forZlSHRB4dY8mNMFofkl+SvN7OqeYBcq56RutqbdPxkfpLdy/JzwyFFUpmD
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB2943.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(346002)(396003)(366004)(39860400002)(316002)(66556008)(66476007)(31686004)(6486002)(8676002)(83380400001)(8936002)(66946007)(2616005)(5660300002)(4326008)(16576012)(956004)(30864003)(44832011)(26005)(36916002)(7416002)(38100700002)(86362001)(53546011)(2906002)(31696002)(36756003)(16526019)(186003)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: UuzbhzeCN/nXGxl/yUvLc1wKQQPHGorgIUHv6G4oTnyn8Npe4mNTmmqDp2oe5dvw/0NTPtg6RC0G3CA5HcUcb4MzSouWl1c5I9Pe4CLXUDapMiuTwal7qSUMKK/okYQNewzcu0aBe+hIxUKULS/V1oB4IbbZidxtOE2Zf2CElv2WfPKwBnUQmcIh6r4fc4Z3IWHm5gwNKkUy8kJcaU2e35C/jmWRqEggot/ZnZc5ZVuXT8/EN2C+J1tgvCbI1lJ0Z+7FTZbccI+hjSi6fWZaRgda0hferUoPUvw2WGAJgPTy+UXu6kHs9nHTPm6IMvs6IQHLAHR3SgFtelyHcAHeriCuXQ8q8Y7n3LuDcV+YuTxIYke036Uxm1acc/ZksedAs25ZEMHeOOuDUet/C5sgBN7HmbjO+MReNp+2/FqaZvS2N2qDAzy612KeNhtKOp3kbG598xzya9pES7YVBUx/ImHRx8vI4bAE8LpDqedUfKgJ//GUGEgSjW+nn2YrGxmhDro6KeOo7Pjy8OTkaju9ImMpwk6NMrvsEYS9vAmwOUJ/r0YZ1ffAnfwufJtB/pTbw9UM12ukHZAl+1YhI3wibLwn8mcS9yQTMnP59FsJP0vRvcTmTjz027tLxtKyfUjiRvdzN8U2SxGKNytWlDqfyoZI1VvLsW7yCItr16yusnncdQifcDjY4DYvh5HyUe8ABPj+ynxKcM1fgIr8JUUG5Y40DfjnO3aK3H2t79AhUhdYlUqBOhx5lEYpt2ULJoA+
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0853ef9-6d99-4a87-c5d6-08d91c83660b
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB4494.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a9f09795-3699-4ba6-06b5-08d91c84dc71
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB2943.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2021 18:08:12.8863
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2021 18:18:41.1450
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MP3i9AI3Mm8pTqC64Cs8pwaH+ObQZcUgEFxCFNxl8h/E3XMi/k/qhlYX8fIqynIHPYC0b/Pynpnu+wM5sPkAJA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2517
+X-MS-Exchange-CrossTenant-UserPrincipalName: yWebuGTXc/fKDcq95V5bVVmAA590k94Ch/eq1l6NCHjw5/BYQja6gNAaO5ivnkdMdC3uqh0vI5GmH2HzQ+PCSo4RMDf9LZhQBVe4sFDCvuc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4556
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9991 signatures=668682
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 bulkscore=0
  suspectscore=0 mlxlogscore=999 adultscore=0 malwarescore=0 mlxscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
- definitions=main-2105210094
-X-Proofpoint-GUID: Z3Q44PFvseSoarncbKifiX4CNMoj7C2M
-X-Proofpoint-ORIG-GUID: Z3Q44PFvseSoarncbKifiX4CNMoj7C2M
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9991 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 impostorscore=0 mlxscore=0
- mlxlogscore=999 adultscore=0 malwarescore=0 priorityscore=1501
- phishscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0 clxscore=1015
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2105210094
+ definitions=main-2105210095
+X-Proofpoint-ORIG-GUID: DkatYIk9EJ6Xpzngl7A_3TSxnr9tpJUJ
+X-Proofpoint-GUID: DkatYIk9EJ6Xpzngl7A_3TSxnr9tpJUJ
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rao Shoaib <rao.shoaib@oracle.com>
 
-When TCP is used as transport and a program on the
-system connects to RDS port 16385, connection is
-accepted but denied per the rules of RDS. However,
-RDS connections object is left in the list. Next
-loopback connection will select that connection
-object as it is at the head of list. The connection
-attempt will hang as the connection object is set
-to connect over TCP which is not allowed
 
-The issue can be reproduced easily, use rds-ping
-to ping a local IP address. After that use any
-program like ncat to connect to the same IP
-address and port 16385. This will hang so ctrl-c out.
-Now try rds-ping, it will hang.
+On 5/19/21 6:13 AM, Shai Malin wrote:
+> From: Dean Balandin <dbalandin@marvell.com>
+> 
+> In this patch we implement queue level functionality.
+> The implementation is similar to the nvme-tcp module, the main
+> difference being that we call the vendor specific create_queue op which
+> creates the TCP connection, and NVMeTPC connection including
+> icreq+icresp negotiation.
+> Once create_queue returns successfully, we can move on to the fabrics
+> connect.
+> 
+> Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Dean Balandin <dbalandin@marvell.com>
+> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Shai Malin <smalin@marvell.com>
+> ---
+>   drivers/nvme/host/tcp-offload.c | 424 ++++++++++++++++++++++++++++++--
+>   drivers/nvme/host/tcp-offload.h |   1 +
+>   2 files changed, 399 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/nvme/host/tcp-offload.c b/drivers/nvme/host/tcp-offload.c
+> index 9eb4b03e0f3d..8ed7668d987a 100644
+> --- a/drivers/nvme/host/tcp-offload.c
+> +++ b/drivers/nvme/host/tcp-offload.c
+> @@ -22,6 +22,11 @@ static inline struct nvme_tcp_ofld_ctrl *to_tcp_ofld_ctrl(struct nvme_ctrl *nctr
+>   	return container_of(nctrl, struct nvme_tcp_ofld_ctrl, nctrl);
+>   }
+>   
+> +static inline int nvme_tcp_ofld_qid(struct nvme_tcp_ofld_queue *queue)
+> +{
+> +	return queue - queue->ctrl->queues;
+> +}
+> +
+>   /**
+>    * nvme_tcp_ofld_register_dev() - NVMeTCP Offload Library registration
+>    * function.
+> @@ -191,12 +196,94 @@ nvme_tcp_ofld_alloc_tagset(struct nvme_ctrl *nctrl, bool admin)
+>   	return set;
+>   }
+>   
+> +static void __nvme_tcp_ofld_stop_queue(struct nvme_tcp_ofld_queue *queue)
+> +{
+> +	queue->dev->ops->drain_queue(queue);
+> +	queue->dev->ops->destroy_queue(queue);
+> +}
+> +
+> +static void nvme_tcp_ofld_stop_queue(struct nvme_ctrl *nctrl, int qid)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvme_tcp_ofld_queue *queue = &ctrl->queues[qid];
+> +
+> +	if (!test_and_clear_bit(NVME_TCP_OFLD_Q_LIVE, &queue->flags))
+> +		return;
+> +
+> +	__nvme_tcp_ofld_stop_queue(queue);
+> +}
+> +
+> +static void nvme_tcp_ofld_stop_io_queues(struct nvme_ctrl *ctrl)
+> +{
+> +	int i;
+> +
+> +	for (i = 1; i < ctrl->queue_count; i++)
+> +		nvme_tcp_ofld_stop_queue(ctrl, i);
+> +}
+> +
+> +static void nvme_tcp_ofld_free_queue(struct nvme_ctrl *nctrl, int qid)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvme_tcp_ofld_queue *queue = &ctrl->queues[qid];
+> +
+> +	if (!test_and_clear_bit(NVME_TCP_OFLD_Q_ALLOCATED, &queue->flags))
+> +		return;
+> +
+> +	queue = &ctrl->queues[qid];
+> +	queue->ctrl = NULL;
+> +	queue->dev = NULL;
+> +	queue->report_err = NULL;
+> +}
+> +
+> +static void nvme_tcp_ofld_destroy_admin_queue(struct nvme_ctrl *nctrl, bool remove)
+> +{
+> +	nvme_tcp_ofld_stop_queue(nctrl, 0);
+> +	if (remove) {
+> +		blk_cleanup_queue(nctrl->admin_q);
+> +		blk_cleanup_queue(nctrl->fabrics_q);
+> +		blk_mq_free_tag_set(nctrl->admin_tagset);
+> +	}
+> +}
+> +
+> +static int nvme_tcp_ofld_start_queue(struct nvme_ctrl *nctrl, int qid)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvme_tcp_ofld_queue *queue = &ctrl->queues[qid];
+> +	int rc;
+> +
+> +	queue = &ctrl->queues[qid];
+> +	if (qid) {
+> +		queue->cmnd_capsule_len = nctrl->ioccsz * 16;
+> +		rc = nvmf_connect_io_queue(nctrl, qid, false);
+> +	} else {
+> +		queue->cmnd_capsule_len = sizeof(struct nvme_command) + NVME_TCP_ADMIN_CCSZ;
+> +		rc = nvmf_connect_admin_queue(nctrl);
+> +	}
+> +
+> +	if (!rc) {
+> +		set_bit(NVME_TCP_OFLD_Q_LIVE, &queue->flags);
+> +	} else {
+> +		if (test_bit(NVME_TCP_OFLD_Q_ALLOCATED, &queue->flags))
+> +			__nvme_tcp_ofld_stop_queue(queue);
+> +		dev_err(nctrl->device,
+> +			"failed to connect queue: %d ret=%d\n", qid, rc);
+> +	}
+> +
+> +	return rc;
+> +}
+> +
+>   static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
+>   					       bool new)
+>   {
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvme_tcp_ofld_queue *queue = &ctrl->queues[0];
+>   	int rc;
+>   
+> -	/* Placeholder - alloc_admin_queue */
+> +	rc = ctrl->dev->ops->create_queue(queue, 0, NVME_AQ_DEPTH);
+> +	if (rc)
+> +		return rc;
+> +
+> +	set_bit(NVME_TCP_OFLD_Q_ALLOCATED, &queue->flags);
+>   	if (new) {
+>   		nctrl->admin_tagset =
+>   				nvme_tcp_ofld_alloc_tagset(nctrl, true);
+> @@ -221,7 +308,9 @@ static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
+>   		}
+>   	}
+>   
+> -	/* Placeholder - nvme_tcp_ofld_start_queue */
+> +	rc = nvme_tcp_ofld_start_queue(nctrl, 0);
+> +	if (rc)
+> +		goto out_cleanup_queue;
+>   
+>   	rc = nvme_enable_ctrl(nctrl);
+>   	if (rc)
+> @@ -238,11 +327,12 @@ static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
+>   out_quiesce_queue:
+>   	blk_mq_quiesce_queue(nctrl->admin_q);
+>   	blk_sync_queue(nctrl->admin_q);
+> -
+>   out_stop_queue:
+> -	/* Placeholder - stop offload queue */
+> +	nvme_tcp_ofld_stop_queue(nctrl, 0);
+>   	nvme_cancel_admin_tagset(nctrl);
+> -
+> +out_cleanup_queue:
+> +	if (new)
+> +		blk_cleanup_queue(nctrl->admin_q);
+>   out_cleanup_fabrics_q:
+>   	if (new)
+>   		blk_cleanup_queue(nctrl->fabrics_q);
+> @@ -250,7 +340,136 @@ static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
+>   	if (new)
+>   		blk_mq_free_tag_set(nctrl->admin_tagset);
+>   out_free_queue:
+> -	/* Placeholder - free admin queue */
+> +	nvme_tcp_ofld_free_queue(nctrl, 0);
+> +
+> +	return rc;
+> +}
+> +
+> +static unsigned int nvme_tcp_ofld_nr_io_queues(struct nvme_ctrl *nctrl)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvme_tcp_ofld_dev *dev = ctrl->dev;
+> +	u32 hw_vectors = dev->num_hw_vectors;
+> +	u32 nr_write_queues, nr_poll_queues;
+> +	u32 nr_io_queues, nr_total_queues;
+> +
+> +	nr_io_queues = min3(nctrl->opts->nr_io_queues, num_online_cpus(),
+> +			    hw_vectors);
+> +	nr_write_queues = min3(nctrl->opts->nr_write_queues, num_online_cpus(),
+> +			       hw_vectors);
+> +	nr_poll_queues = min3(nctrl->opts->nr_poll_queues, num_online_cpus(),
+> +			      hw_vectors);
+> +
+> +	nr_total_queues = nr_io_queues + nr_write_queues + nr_poll_queues;
+> +
+> +	return nr_total_queues;
+> +}
+> +
+> +static void
+> +nvme_tcp_ofld_set_io_queues(struct nvme_ctrl *nctrl, unsigned int nr_io_queues)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvmf_ctrl_options *opts = nctrl->opts;
+> +
+> +	if (opts->nr_write_queues && opts->nr_io_queues < nr_io_queues) {
+> +		/*
+> +		 * separate read/write queues
+> +		 * hand out dedicated default queues only after we have
+> +		 * sufficient read queues.
+> +		 */
+> +		ctrl->io_queues[HCTX_TYPE_READ] = opts->nr_io_queues;
+> +		nr_io_queues -= ctrl->io_queues[HCTX_TYPE_READ];
+> +		ctrl->io_queues[HCTX_TYPE_DEFAULT] =
+> +			min(opts->nr_write_queues, nr_io_queues);
+> +		nr_io_queues -= ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +	} else {
+> +		/*
+> +		 * shared read/write queues
+> +		 * either no write queues were requested, or we don't have
+> +		 * sufficient queue count to have dedicated default queues.
+> +		 */
+> +		ctrl->io_queues[HCTX_TYPE_DEFAULT] =
+> +			min(opts->nr_io_queues, nr_io_queues);
+> +		nr_io_queues -= ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +	}
+> +
+> +	if (opts->nr_poll_queues && nr_io_queues) {
+> +		/* map dedicated poll queues only if we have queues left */
+> +		ctrl->io_queues[HCTX_TYPE_POLL] =
+> +			min(opts->nr_poll_queues, nr_io_queues);
+> +	}
+> +}
+> +
+> +static void
+> +nvme_tcp_ofld_terminate_io_queues(struct nvme_ctrl *nctrl, int start_from)
+> +{
+> +	int i;
+> +
+> +	/* Loop condition will stop before index 0 which is the admin queue */
+> +	for (i = start_from; i >= 1; i--)
+> +		nvme_tcp_ofld_stop_queue(nctrl, i);
+> +}
+> +
+> +static int nvme_tcp_ofld_create_io_queues(struct nvme_ctrl *nctrl)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	int i, rc;
+> +
+> +	for (i = 1; i < nctrl->queue_count; i++) {
+> +		rc = ctrl->dev->ops->create_queue(&ctrl->queues[i],
+> +						  i, nctrl->sqsize + 1);
+> +		if (rc)
+> +			goto out_free_queues;
+> +
+> +		set_bit(NVME_TCP_OFLD_Q_ALLOCATED, &ctrl->queues[i].flags);
+> +	}
+> +
+> +	return 0;
+> +
+> +out_free_queues:
+> +	nvme_tcp_ofld_terminate_io_queues(nctrl, --i);
+> +
+> +	return rc;
+> +}
+> +
+> +static int nvme_tcp_ofld_alloc_io_queues(struct nvme_ctrl *nctrl)
+> +{
+> +	unsigned int nr_io_queues;
+> +	int rc;
+> +
+> +	nr_io_queues = nvme_tcp_ofld_nr_io_queues(nctrl);
+> +	rc = nvme_set_queue_count(nctrl, &nr_io_queues);
+> +	if (rc)
+> +		return rc;
+> +
+> +	nctrl->queue_count = nr_io_queues + 1;
+> +	if (nctrl->queue_count < 2) {
+> +		dev_err(nctrl->device,
+> +			"unable to set any I/O queues\n");
+> +
+> +		return -ENOMEM;
+> +	}
+> +
+> +	dev_info(nctrl->device, "creating %d I/O queues.\n", nr_io_queues);
+> +	nvme_tcp_ofld_set_io_queues(nctrl, nr_io_queues);
+> +
+> +	return nvme_tcp_ofld_create_io_queues(nctrl);
+> +}
+> +
+> +static int nvme_tcp_ofld_start_io_queues(struct nvme_ctrl *nctrl)
+> +{
+> +	int i, rc = 0;
+> +
+> +	for (i = 1; i < nctrl->queue_count; i++) {
+> +		rc = nvme_tcp_ofld_start_queue(nctrl, i);
+> +		if (rc)
+> +			goto terminate_queues;
+> +	}
+> +
+> +	return 0;
+> +
+> +terminate_queues:
+> +	nvme_tcp_ofld_terminate_io_queues(nctrl, --i);
+>   
+>   	return rc;
+>   }
+> @@ -258,9 +477,10 @@ static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
+>   static int
+>   nvme_tcp_ofld_configure_io_queues(struct nvme_ctrl *nctrl, bool new)
+>   {
+> -	int rc;
+> +	int rc = nvme_tcp_ofld_alloc_io_queues(nctrl);
+>   
+> -	/* Placeholder - alloc_io_queues */
+> +	if (rc)
+> +		return rc;
+>   
+>   	if (new) {
+>   		nctrl->tagset = nvme_tcp_ofld_alloc_tagset(nctrl, false);
+> @@ -278,7 +498,9 @@ nvme_tcp_ofld_configure_io_queues(struct nvme_ctrl *nctrl, bool new)
+>   		}
+>   	}
+>   
+> -	/* Placeholder - start_io_queues */
+> +	rc = nvme_tcp_ofld_start_io_queues(nctrl);
+> +	if (rc)
+> +		goto out_cleanup_connect_q;
+>   
+>   	if (!new) {
+>   		nvme_start_queues(nctrl);
+> @@ -300,16 +522,16 @@ nvme_tcp_ofld_configure_io_queues(struct nvme_ctrl *nctrl, bool new)
+>   out_wait_freeze_timed_out:
+>   	nvme_stop_queues(nctrl);
+>   	nvme_sync_io_queues(nctrl);
+> -
+> -	/* Placeholder - Stop IO queues */
+> -
+> +	nvme_tcp_ofld_stop_io_queues(nctrl);
+> +out_cleanup_connect_q:
+> +	nvme_cancel_tagset(nctrl);
+>   	if (new)
+>   		blk_cleanup_queue(nctrl->connect_q);
+>   out_free_tag_set:
+>   	if (new)
+>   		blk_mq_free_tag_set(nctrl->tagset);
+>   out_free_io_queues:
+> -	/* Placeholder - free_io_queues */
+> +	nvme_tcp_ofld_terminate_io_queues(nctrl, nctrl->queue_count);
+>   
+>   	return rc;
+>   }
+> @@ -336,6 +558,26 @@ static void nvme_tcp_ofld_reconnect_or_remove(struct nvme_ctrl *nctrl)
+>   	}
+>   }
+>   
+> +static int
+> +nvme_tcp_ofld_init_admin_hctx(struct blk_mq_hw_ctx *hctx, void *data,
+> +			      unsigned int hctx_idx)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = data;
+> +
+> +	hctx->driver_data = &ctrl->queues[0];
+> +
+> +	return 0;
+> +}
+> +
+> +static void nvme_tcp_ofld_destroy_io_queues(struct nvme_ctrl *nctrl, bool remove)
+> +{
+> +	nvme_tcp_ofld_stop_io_queues(nctrl);
+> +	if (remove) {
+> +		blk_cleanup_queue(nctrl->connect_q);
+> +		blk_mq_free_tag_set(nctrl->tagset);
+> +	}
+> +}
+> +
+>   static int nvme_tcp_ofld_setup_ctrl(struct nvme_ctrl *nctrl, bool new)
+>   {
+>   	struct nvmf_ctrl_options *opts = nctrl->opts;
+> @@ -392,9 +634,19 @@ static int nvme_tcp_ofld_setup_ctrl(struct nvme_ctrl *nctrl, bool new)
+>   	return 0;
+>   
+>   destroy_io:
+> -	/* Placeholder - stop and destroy io queues*/
+> +	if (nctrl->queue_count > 1) {
+> +		nvme_stop_queues(nctrl);
+> +		nvme_sync_io_queues(nctrl);
+> +		nvme_tcp_ofld_stop_io_queues(nctrl);
+> +		nvme_cancel_tagset(nctrl);
+> +		nvme_tcp_ofld_destroy_io_queues(nctrl, new);
+> +	}
+>   destroy_admin:
+> -	/* Placeholder - stop and destroy admin queue*/
+> +	blk_mq_quiesce_queue(nctrl->admin_q);
+> +	blk_sync_queue(nctrl->admin_q);
+> +	nvme_tcp_ofld_stop_queue(nctrl, 0);
+> +	nvme_cancel_admin_tagset(nctrl);
+> +	nvme_tcp_ofld_destroy_admin_queue(nctrl, new);
+>   
+>   	return rc;
+>   }
+> @@ -415,6 +667,18 @@ nvme_tcp_ofld_check_dev_opts(struct nvmf_ctrl_options *opts,
+>   	return 0;
+>   }
+>   
+> +static void nvme_tcp_ofld_free_ctrl_queues(struct nvme_ctrl *nctrl)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	int i;
+> +
+> +	for (i = 0; i < nctrl->queue_count; ++i)
+> +		nvme_tcp_ofld_free_queue(nctrl, i);
+> +
+> +	kfree(ctrl->queues);
+> +	ctrl->queues = NULL;
+> +}
+> +
+>   static void nvme_tcp_ofld_free_ctrl(struct nvme_ctrl *nctrl)
+>   {
+>   	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> @@ -424,6 +688,7 @@ static void nvme_tcp_ofld_free_ctrl(struct nvme_ctrl *nctrl)
+>   		goto free_ctrl;
+>   
+>   	down_write(&nvme_tcp_ofld_ctrl_rwsem);
+> +	nvme_tcp_ofld_free_ctrl_queues(nctrl);
+>   	ctrl->dev->ops->release_ctrl(ctrl);
+>   	list_del(&ctrl->list);
+>   	up_write(&nvme_tcp_ofld_ctrl_rwsem);
+> @@ -441,15 +706,37 @@ static void nvme_tcp_ofld_submit_async_event(struct nvme_ctrl *arg)
+>   }
+>   
+>   static void
+> -nvme_tcp_ofld_teardown_admin_queue(struct nvme_ctrl *ctrl, bool remove)
+> +nvme_tcp_ofld_teardown_admin_queue(struct nvme_ctrl *nctrl, bool remove)
+>   {
+> -	/* Placeholder - teardown_admin_queue */
+> +	blk_mq_quiesce_queue(nctrl->admin_q);
+> +	blk_sync_queue(nctrl->admin_q);
+> +
+> +	nvme_tcp_ofld_stop_queue(nctrl, 0);
+> +	nvme_cancel_admin_tagset(nctrl);
+> +
+> +	if (remove)
+> +		blk_mq_unquiesce_queue(nctrl->admin_q);
+> +
+> +	nvme_tcp_ofld_destroy_admin_queue(nctrl, remove);
+>   }
+>   
+>   static void
+>   nvme_tcp_ofld_teardown_io_queues(struct nvme_ctrl *nctrl, bool remove)
+>   {
+> -	/* Placeholder - teardown_io_queues */
+> +	if (nctrl->queue_count <= 1)
+> +		return;
+> +
+> +	blk_mq_quiesce_queue(nctrl->admin_q);
+> +	nvme_start_freeze(nctrl);
+> +	nvme_stop_queues(nctrl);
+> +	nvme_sync_io_queues(nctrl);
+> +	nvme_tcp_ofld_stop_io_queues(nctrl);
+> +	nvme_cancel_tagset(nctrl);
+> +
+> +	if (remove)
+> +		nvme_start_queues(nctrl);
+> +
+> +	nvme_tcp_ofld_destroy_io_queues(nctrl, remove);
+>   }
+>   
+>   static void nvme_tcp_ofld_reconnect_ctrl_work(struct work_struct *work)
+> @@ -577,6 +864,17 @@ nvme_tcp_ofld_init_request(struct blk_mq_tag_set *set,
+>   	return 0;
+>   }
+>   
+> +inline size_t nvme_tcp_ofld_inline_data_size(struct nvme_tcp_ofld_queue *queue)
+> +{
+> +	return queue->cmnd_capsule_len - sizeof(struct nvme_command);
+> +}
+> +EXPORT_SYMBOL_GPL(nvme_tcp_ofld_inline_data_size);
+> +
+> +static void nvme_tcp_ofld_commit_rqs(struct blk_mq_hw_ctx *hctx)
+> +{
+> +	/* Call ops->commit_rqs */
+> +}
+> +
+>   static blk_status_t
+>   nvme_tcp_ofld_queue_rq(struct blk_mq_hw_ctx *hctx,
+>   		       const struct blk_mq_queue_data *bd)
+> @@ -588,22 +886,96 @@ nvme_tcp_ofld_queue_rq(struct blk_mq_hw_ctx *hctx,
+>   	return BLK_STS_OK;
+>   }
+>   
+> +static void
+> +nvme_tcp_ofld_exit_request(struct blk_mq_tag_set *set,
+> +			   struct request *rq, unsigned int hctx_idx)
+> +{
+> +	/*
+> +	 * Nothing is allocated in nvme_tcp_ofld_init_request,
+> +	 * hence empty.
+> +	 */
+> +}
+> +
+> +static int
+> +nvme_tcp_ofld_init_hctx(struct blk_mq_hw_ctx *hctx, void *data,
+> +			unsigned int hctx_idx)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = data;
+> +
+> +	hctx->driver_data = &ctrl->queues[hctx_idx + 1];
+> +
+> +	return 0;
+> +}
+> +
+> +static int nvme_tcp_ofld_map_queues(struct blk_mq_tag_set *set)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = set->driver_data;
+> +	struct nvmf_ctrl_options *opts = ctrl->nctrl.opts;
+> +
+> +	if (opts->nr_write_queues && ctrl->io_queues[HCTX_TYPE_READ]) {
+> +		/* separate read/write queues */
+> +		set->map[HCTX_TYPE_DEFAULT].nr_queues =
+> +			ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +		set->map[HCTX_TYPE_DEFAULT].queue_offset = 0;
+> +		set->map[HCTX_TYPE_READ].nr_queues =
+> +			ctrl->io_queues[HCTX_TYPE_READ];
+> +		set->map[HCTX_TYPE_READ].queue_offset =
+> +			ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +	} else {
+> +		/* shared read/write queues */
+> +		set->map[HCTX_TYPE_DEFAULT].nr_queues =
+> +			ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +		set->map[HCTX_TYPE_DEFAULT].queue_offset = 0;
+> +		set->map[HCTX_TYPE_READ].nr_queues =
+> +			ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +		set->map[HCTX_TYPE_READ].queue_offset = 0;
+> +	}
+> +	blk_mq_map_queues(&set->map[HCTX_TYPE_DEFAULT]);
+> +	blk_mq_map_queues(&set->map[HCTX_TYPE_READ]);
+> +
+> +	if (opts->nr_poll_queues && ctrl->io_queues[HCTX_TYPE_POLL]) {
+> +		/* map dedicated poll queues only if we have queues left */
+> +		set->map[HCTX_TYPE_POLL].nr_queues =
+> +				ctrl->io_queues[HCTX_TYPE_POLL];
+> +		set->map[HCTX_TYPE_POLL].queue_offset =
+> +			ctrl->io_queues[HCTX_TYPE_DEFAULT] +
+> +			ctrl->io_queues[HCTX_TYPE_READ];
+> +		blk_mq_map_queues(&set->map[HCTX_TYPE_POLL]);
+> +	}
+> +
+> +	dev_info(ctrl->nctrl.device,
+> +		 "mapped %d/%d/%d default/read/poll queues.\n",
+> +		 ctrl->io_queues[HCTX_TYPE_DEFAULT],
+> +		 ctrl->io_queues[HCTX_TYPE_READ],
+> +		 ctrl->io_queues[HCTX_TYPE_POLL]);
+> +
+> +	return 0;
+> +}
+> +
+> +static int nvme_tcp_ofld_poll(struct blk_mq_hw_ctx *hctx)
+> +{
+> +	/* Placeholder - Implement polling mechanism */
+> +
+> +	return 0;
+> +}
+> +
+>   static struct blk_mq_ops nvme_tcp_ofld_mq_ops = {
+>   	.queue_rq	= nvme_tcp_ofld_queue_rq,
+> +	.commit_rqs     = nvme_tcp_ofld_commit_rqs,
+> +	.complete	= nvme_complete_rq,
+>   	.init_request	= nvme_tcp_ofld_init_request,
+> -	/*
+> -	 * All additional ops will be also implemented and registered similar to
+> -	 * tcp.c
+> -	 */
+> +	.exit_request	= nvme_tcp_ofld_exit_request,
+> +	.init_hctx	= nvme_tcp_ofld_init_hctx,
+> +	.map_queues	= nvme_tcp_ofld_map_queues,
+> +	.poll		= nvme_tcp_ofld_poll,
+>   };
+>   
+>   static struct blk_mq_ops nvme_tcp_ofld_admin_mq_ops = {
+>   	.queue_rq	= nvme_tcp_ofld_queue_rq,
+> +	.complete	= nvme_complete_rq,
+>   	.init_request	= nvme_tcp_ofld_init_request,
+> -	/*
+> -	 * All additional ops will be also implemented and registered similar to
+> -	 * tcp.c
+> -	 */
+> +	.exit_request	= nvme_tcp_ofld_exit_request,
+> +	.init_hctx	= nvme_tcp_ofld_init_admin_hctx,
+>   };
+>   
+>   static const struct nvme_ctrl_ops nvme_tcp_ofld_ctrl_ops = {
+> diff --git a/drivers/nvme/host/tcp-offload.h b/drivers/nvme/host/tcp-offload.h
+> index 2a931d05905d..2233d855aa10 100644
+> --- a/drivers/nvme/host/tcp-offload.h
+> +++ b/drivers/nvme/host/tcp-offload.h
+> @@ -211,3 +211,4 @@ struct nvme_tcp_ofld_ops {
+>   int nvme_tcp_ofld_register_dev(struct nvme_tcp_ofld_dev *dev);
+>   void nvme_tcp_ofld_unregister_dev(struct nvme_tcp_ofld_dev *dev);
+>   void nvme_tcp_ofld_error_recovery(struct nvme_ctrl *nctrl);
+> +inline size_t nvme_tcp_ofld_inline_data_size(struct nvme_tcp_ofld_queue *queue);
+> 
 
-To fix the issue this patch adds checks to disallow
-the connection object creation and destroys the
-connection object.
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
 
-Signed-off-by: Rao Shoaib <rao.shoaib@oracle.com>
----
- net/rds/connection.c | 23 +++++++++++++++++------
- net/rds/tcp.c        |  4 ++--
- net/rds/tcp.h        |  3 ++-
- net/rds/tcp_listen.c |  6 ++++++
- 4 files changed, 27 insertions(+), 9 deletions(-)
-
-diff --git a/net/rds/connection.c b/net/rds/connection.c
-index f2fcab182095..a3bc4b54d491 100644
---- a/net/rds/connection.c
-+++ b/net/rds/connection.c
-@@ -240,12 +240,23 @@ static struct rds_connection *__rds_conn_create(struct net *net,
- 	if (loop_trans) {
- 		rds_trans_put(loop_trans);
- 		conn->c_loopback = 1;
--		if (is_outgoing && trans->t_prefer_loopback) {
--			/* "outgoing" connection - and the transport
--			 * says it wants the connection handled by the
--			 * loopback transport. This is what TCP does.
--			 */
--			trans = &rds_loop_transport;
-+		if (trans->t_prefer_loopback) {
-+			if (likely(is_outgoing)) {
-+				/* "outgoing" connection to local address.
-+				 * Protocol says it wants the connection
-+				 * handled by the loopback transport.
-+				 * This is what TCP does.
-+				 */
-+				trans = &rds_loop_transport;
-+			} else {
-+				/* No transport currently in use
-+				 * should end up here, but if it
-+				 * does, reset/destroy the connection.
-+				 */
-+				kmem_cache_free(rds_conn_slab, conn);
-+				conn = ERR_PTR(-EOPNOTSUPP);
-+				goto out;
-+			}
- 		}
- 	}
- 
-diff --git a/net/rds/tcp.c b/net/rds/tcp.c
-index 43db0eca911f..abf19c0e3ba0 100644
---- a/net/rds/tcp.c
-+++ b/net/rds/tcp.c
-@@ -313,8 +313,8 @@ static void rds6_tcp_tc_info(struct socket *sock, unsigned int len,
- }
- #endif
- 
--static int rds_tcp_laddr_check(struct net *net, const struct in6_addr *addr,
--			       __u32 scope_id)
-+int rds_tcp_laddr_check(struct net *net, const struct in6_addr *addr,
-+			__u32 scope_id)
- {
- 	struct net_device *dev = NULL;
- #if IS_ENABLED(CONFIG_IPV6)
-diff --git a/net/rds/tcp.h b/net/rds/tcp.h
-index bad9cf49d565..dc8d745d6857 100644
---- a/net/rds/tcp.h
-+++ b/net/rds/tcp.h
-@@ -59,7 +59,8 @@ u32 rds_tcp_snd_una(struct rds_tcp_connection *tc);
- u64 rds_tcp_map_seq(struct rds_tcp_connection *tc, u32 seq);
- extern struct rds_transport rds_tcp_transport;
- void rds_tcp_accept_work(struct sock *sk);
--
-+int rds_tcp_laddr_check(struct net *net, const struct in6_addr *addr,
-+			__u32 scope_id);
- /* tcp_connect.c */
- int rds_tcp_conn_path_connect(struct rds_conn_path *cp);
- void rds_tcp_conn_path_shutdown(struct rds_conn_path *conn);
-diff --git a/net/rds/tcp_listen.c b/net/rds/tcp_listen.c
-index 101cf14215a0..09cadd556d1e 100644
---- a/net/rds/tcp_listen.c
-+++ b/net/rds/tcp_listen.c
-@@ -167,6 +167,12 @@ int rds_tcp_accept_one(struct socket *sock)
- 	}
- #endif
- 
-+	if (!rds_tcp_laddr_check(sock_net(sock->sk), peer_addr, dev_if)) {
-+		/* local address connection is only allowed via loopback */
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
-+
- 	conn = rds_conn_create(sock_net(sock->sk),
- 			       my_addr, peer_addr,
- 			       &rds_tcp_transport, 0, GFP_KERNEL, dev_if);
 -- 
-2.31.1
-
+Himanshu Madhani                                Oracle Linux Engineering
