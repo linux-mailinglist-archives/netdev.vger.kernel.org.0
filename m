@@ -2,137 +2,666 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C629138D1AB
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 00:45:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6589B38D1AE
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 00:49:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbhEUWrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 18:47:13 -0400
-Received: from mail-dm6nam10on2060.outbound.protection.outlook.com ([40.107.93.60]:5952
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229512AbhEUWrM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 May 2021 18:47:12 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JPIzqzvDABQumvO5gEQDXspXd0wHpnEt3bfRJmEdE3SjXV20QK0qDV1uoFBz0T9fSZZav2zyQSmKcJlHw4Zv5DY2zGUH9PWh9Ihujk2QdA1AnksIsVXVEo+M9LzCcOo20ytChEIe+zdqGiqP32dB5/3zbJgX8Io6TfveY4H3PnfX3ft/p3V/4J6GBdT3c4MXT7qJgN0DZiWWrT+NkKQWzmdmWvlCoz4vUt//lA0JEERj9kYdNoOQsZNbrQSO6ZzmOwOC+7mbOij6C0p0NJCBJqjLHz+TtbYOpDzNdhid+CjrtCT72GRlcmtzxGJoNjDWbkUautAXAqDfHEjMV1+y6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ccajh6NL8rSyMUb4eNzQKMVxqRPfHHNwE/IP3c0Kwmw=;
- b=My8A0z5gs6PaLhqqD2KAE3pqmorH4ybrD4Lhz4sMzuFepliL7DosWUzXd9YidE5Pa1WjJ6VvcPtHLpgW08gPN7+quzcW4zNumnqSw4/YVg2kfXy+6V+m+u+yw7Kz/bXdL+Own+lSYTKlCdUMcINiroIZl+q46LEN6phE9DKb7jeaN1elC+bArBHsZmUweFog4IvtMhbQj4wq3tPtBOsEHJFXQh7/znTKc8BiIaXS5irVrAGdE4iewpSJ9HHIKtTM1sR030WqLjncsVtd/V02Xy56x734is4tj3df+Eq8qwoYEota6USERf8dBXYkA8ja2wIZDkHG6uYvK3tJT1sCMg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ccajh6NL8rSyMUb4eNzQKMVxqRPfHHNwE/IP3c0Kwmw=;
- b=sWJ2ik9F+owlY4dZMg4rWiMyXSi4FGczuY1rtu2mfN0CtE3ci/8lS74GhjppJGZlowvsAy2N8e8377ZVMHSY0+aS9iRwUMrXoV2mOJ2ZwzypRnvOlzOM+byEjWL0oY3gODYmPK/GOM8+kPC2k9d3jbOT9V+QhnoM1Da/Hcoco2XiXV9LetF2reL51VnySwJaCbo6RJdAcsIGtavkWKjBSSsFd3PUqDePctxuOJMl0Z5bGkcZvJuMAVY/VEcJLb+PJXjJZHLZTSiMWiVFID78GhsCL5dO3IGB0hFP588YrXfRmups3AcpJxdetklsb1fpn3JAj0V6AFQiBNUlB2ZUdw==
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5144.namprd12.prod.outlook.com (2603:10b6:208:316::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.25; Fri, 21 May
- 2021 22:45:47 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e%7]) with mapi id 15.20.4150.025; Fri, 21 May 2021
- 22:45:47 +0000
-Date:   Fri, 21 May 2021 19:45:44 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     anthony.l.nguyen@intel.com, kuba@kernel.org, dledford@redhat.com,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        shiraz.saleem@intel.com, david.m.ertman@intel.com
-Subject: Re: [PATCH net-next v1 0/6][pull request] iwl-next Intel Wired LAN
- Driver Updates 2021-05-21
-Message-ID: <20210521224544.GD1002214@nvidia.com>
-References: <20210521182205.3823642-1-anthony.l.nguyen@intel.com>
- <20210521.143114.1063478082804784831.davem@davemloft.net>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210521.143114.1063478082804784831.davem@davemloft.net>
-X-Originating-IP: [206.223.160.26]
-X-ClientProxiedBy: CH2PR05CA0066.namprd05.prod.outlook.com
- (2603:10b6:610:38::43) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+        id S229639AbhEUWu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 18:50:27 -0400
+Received: from mail-wr1-f52.google.com ([209.85.221.52]:38469 "EHLO
+        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229512AbhEUWu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 18:50:27 -0400
+Received: by mail-wr1-f52.google.com with SMTP id j14so20695909wrq.5
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 15:49:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VaSbSUYe7VrqdIsAKccx0OKUyAK0do3LCetQOM5Kc0E=;
+        b=twCnh7B/Qdr/iANSTZRwhkfxaxUd63Y1eq0FyKe0B2vU4xj+Rj3sCZH0B2vWmY2Fa4
+         E7ksjBkcIJnz0sKzXjR4r6h0pRLkvY+h5OHaBoWCG0r9nH/Vtc9vzXkiJMTPtMlQOHuq
+         xw6m6MoU7mSMScjHqT8LLFHb3MiRslJEiCRw1igcMGMYC3ysvr7gL2FWI6wSB+zc+EaU
+         KPjrssVb0gO2NS8MpU9KVVNz8Kb5WqTR9Y2H8Zh5laHDXsh3hu9vFRO2wxaKbUOGqAqO
+         nh75d6EUPYAIrfEXoveXLEIBUxmJCJpXIJJPbe4HIFiehKqCA2E7y7h340YOk9gyKyez
+         ZJBA==
+X-Gm-Message-State: AOAM533DQ+fyYQeDN/eBiyA/xIhtPbGNkpzFYsc8AqTnoICBtvq7hy2f
+        NGYiXj0+Mybv8zuQstVaRQw=
+X-Google-Smtp-Source: ABdhPJzE7aRFicVPfRy4lhUULA0IZsymSA4a0sB7t1FmZ1YviQEFWg2xTHucEEG53yBQEvhKDdIquw==
+X-Received: by 2002:a05:6000:43:: with SMTP id k3mr11735325wrx.222.1621637341378;
+        Fri, 21 May 2021 15:49:01 -0700 (PDT)
+Received: from ?IPv6:2601:647:4802:9070:66b2:1988:438b:4253? ([2601:647:4802:9070:66b2:1988:438b:4253])
+        by smtp.gmail.com with ESMTPSA id w12sm3307768wrt.16.2021.05.21.15.48.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 May 2021 15:49:01 -0700 (PDT)
+Subject: Re: [RFC PATCH v5 06/27] nvme-tcp-offload: Add queue level
+ implementation
+To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, hch@lst.de, axboe@fb.com, kbusch@kernel.org
+Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
+        pkushwaha@marvell.com, malin1024@gmail.com,
+        Dean Balandin <dbalandin@marvell.com>
+References: <20210519111340.20613-1-smalin@marvell.com>
+ <20210519111340.20613-7-smalin@marvell.com>
+From:   Sagi Grimberg <sagi@grimberg.me>
+Message-ID: <68b04a31-e3a1-d42b-81e8-ec455284ab12@grimberg.me>
+Date:   Fri, 21 May 2021 15:48:56 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (206.223.160.26) by CH2PR05CA0066.namprd05.prod.outlook.com (2603:10b6:610:38::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.11 via Frontend Transport; Fri, 21 May 2021 22:45:46 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lkDto-00Clkr-Or; Fri, 21 May 2021 19:45:44 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ad8cd4b9-608e-4348-14e6-08d91caa2cb9
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5144:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5144A2FA6D6A8B111B90461DC2299@BL1PR12MB5144.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: I/OwJIGF6vlVQQcot06ACMereXN5WmBzekKwYf7oYlIYOiIkNfOj9S7eCn5orAdL7AnO6xUcCD35QFSw9WHsN0yE5/0aymw3MOBk+ZHYYzQ9xEPk4KTreMIMKryEXnmYNjiEyqMYca2ZiTN1iO1PCwogxNIitLXkalX0ULK/VjBjzbW/73xCas9aMBMAHd+F0ZfRSRhdswyrAN2zV+H4sdm4khSymX5lQmN7ph8Jm3Yog/gxN6/EOjwYCgORxZy1S0DpMFoqW9r5sbdjlyqesSX10w9JNC+ybzTBoUCrvCRRcPghmzcSlc8o8dyABP/V2hg6pNhutDFSsBh5j7Mr4nI3J0tfJcpMkEgdw57cm5yHtPFWxy1lQN4hXkfxUMDdsDcZ4reoglRZOJT++2csfusmSxt9Kf9Sntw/2ludHCVSF+Jw21+ANvz//7g1qYPek8dLc3FBseDNMGuAM6gadyLKtE7jAHlfnB3gYdMCyy2bRdwDMD/A8Em/SV1mXlhldjNrbgewvPMHDXdbOstIuPyycc9e1c64507E4FRQ/2WDHQJdMVUzXHsb9LcIGlGfJ6FPpT4e3QxyW+SxXLkmXod16HenEAYF10DsKLQBxgMBU5KLbZtROIsdQcTtHBSLZC9wePYcn8E/zKnyrXq2Wz7dB7q4y4L2PzWJCzvRMuHzwqtWRjhIusci8CfSIiXduzXEro2OA4ZjDasnGNmAIA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(376002)(39860400002)(366004)(396003)(66556008)(66476007)(26005)(66946007)(86362001)(33656002)(2906002)(426003)(8936002)(2616005)(5660300002)(38100700002)(966005)(4326008)(9746002)(36756003)(6916009)(316002)(9786002)(83380400001)(8676002)(186003)(478600001)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?xyZ4QzMgLTj2DUqsXhZwjDnx7CqipTZvVHiOf1dAfWf/MrWnHNOVm7SaXSVq?=
- =?us-ascii?Q?LxXyCIUjy0KYd1q1NbMNWQwX1QB127UMbNH0Cl2dKtK7PlDztug0eGT76fMN?=
- =?us-ascii?Q?H/9vp2XtTQhtcv5aE5drtHSdupZIfOHRl1wbj84fQEYOCsecIoh3gtig9Id/?=
- =?us-ascii?Q?cZ1erWa/GQXGy3j5CRlz6PeHxdEZ2WaemHT344RBxMtzIy0T4T+Wd87912ut?=
- =?us-ascii?Q?qIUaMYwbhVZ8/+ilzs1l5zNuCewPSpNB5E0GZoYqqNcpfnQQinVz5jCIunGr?=
- =?us-ascii?Q?vuQiOrYg9JhUHFIbMUiMzAFwWHXNJdoMoyo7ierL/oYxdfBhnneK8zc8CtzQ?=
- =?us-ascii?Q?9vXx02VuHnGzqLVXmhksjh1B5SyHLqlO7YDKTp/OZVg0mFE923oAqL6Xsi20?=
- =?us-ascii?Q?96q2U7HwqSd5APuWtOKCz20f9P6u+P9Ukxzaq/foBspqjuEmCcpo+XDQ7DZf?=
- =?us-ascii?Q?rOTxp6YTZpDic6YRzRpHxwnT3UqoN1bi9vd8Hl3Y6E0kA2/zwTS2wXLMee1p?=
- =?us-ascii?Q?2392Y9LZg5PQ+eI64E2q2/9jfzxalhthiqIxvKeCr+ULnePCpOn4ZpkNfrHy?=
- =?us-ascii?Q?0nY1YdS/czYR7/cVt/+q7iASFbydNa7bUnY9d+ay8JowHh74549m/SSLRcTL?=
- =?us-ascii?Q?SxPc33hFHOGHwL2x8YN7Ct4RZpu8ng159aoHvuItnSoPISdSGenIt1K7Z3mF?=
- =?us-ascii?Q?V3lBeLzJl0xXU4rgUQo41YundheuXD/974suvx3Z8LiPhOryz4iNsnjbLn48?=
- =?us-ascii?Q?VZQ/sr3CrkqVxd55J8LXUt8ZM+7jcm+iVRl/tTS04lBJakYm1e7otWiYcxWY?=
- =?us-ascii?Q?CLQIYGnM1rvgWcTQvcBeLq2NWN8K5II0kkVtNKvTCbHBxyO7w4mdobgfza72?=
- =?us-ascii?Q?K1q5dYr9+kK5SMBiQXg2dw/TMcnYZX7KII0TXI2KJe3pw9DLbQXDnasTXFJE?=
- =?us-ascii?Q?hRjgz2GUW5bh9Uf5W0ZpAKyD5OZZGIL8CKa0FmD+juqCm8pMbJRJ9fZ+3RAe?=
- =?us-ascii?Q?E7DLJjPijEEFvsGNsTPR66kVXWg8DRCQ2tCxIUKUWadONyhYG4H0q7MEAAlJ?=
- =?us-ascii?Q?i/ssS7O1IzqYgl7S3T5TTCA+YpgqfqZO2Ggc4XiPrc/sme4kVg9o+2kzPtin?=
- =?us-ascii?Q?odBTd0J43rccK//IJLX/r71gWeD2USd11xZEfOR+/w5guhYG73858O87WPA7?=
- =?us-ascii?Q?+clD++NAGJalHC+kNCvJA86lV3uAeACpSUpSargrKVaPzFSUr872ayb1S97N?=
- =?us-ascii?Q?n5wsw7My5K7fNCj//ToFQbMDQVxvlEnKJcYh29a+tKSdMgXS9wAijNryiFaW?=
- =?us-ascii?Q?3i4+nAltWEx54bpkPz7y4MQ+?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad8cd4b9-608e-4348-14e6-08d91caa2cb9
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2021 22:45:47.2002
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8n7XFs6ArhpFdXHznYFtenRtab78SAUACND7QBVAPb4BCsA5pWCZgdc1qV9Q4DfS
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5144
+In-Reply-To: <20210519111340.20613-7-smalin@marvell.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 21, 2021 at 02:31:14PM -0700, David Miller wrote:
-> From: Tony Nguyen <anthony.l.nguyen@intel.com>
-> Date: Fri, 21 May 2021 11:21:59 -0700
-> 
-> > This pull request is targeting net-next and rdma-next branches.
-> > These patches have been reviewed by netdev and rdma mailing lists[1].
-> > 
-> > This series adds RDMA support to the ice driver for E810 devices and
-> > converts the i40e driver to use the auxiliary bus infrastructure
-> > for X722 devices. The PCI netdev drivers register auxiliary RDMA devices
-> > that will bind to auxiliary drivers registered by the new irdma module.
-> > 
-> > [1] https://lore.kernel.org/netdev/20210520143809.819-1-shiraz.saleem@intel.com/
-> > Changes from last review (v6):
-> > - Removed unnecessary checks in i40e_client_device_register() and
-> > i40e_client_device_unregister()
-> > - Simplified the i40e_client_device_register() API
-> > 
-> > The following are changes since commit 6efb943b8616ec53a5e444193dccf1af9ad627b5:
-> >   Linux 5.13-rc1
-> > and are available in the git repository at:
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/linux iwl-next
-> 
-> There is a lot of extra stuff in this pull, please clean that up.
 
-It will have to wait until you merge a 5.13 rc into net-next, I can't
-take a branch into the rdma tree that isn't based on a rc.
 
-Jason
+On 5/19/21 4:13 AM, Shai Malin wrote:
+> From: Dean Balandin <dbalandin@marvell.com>
+> 
+> In this patch we implement queue level functionality.
+> The implementation is similar to the nvme-tcp module, the main
+> difference being that we call the vendor specific create_queue op which
+> creates the TCP connection, and NVMeTPC connection including
+> icreq+icresp negotiation.
+> Once create_queue returns successfully, we can move on to the fabrics
+> connect.
+> 
+> Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Dean Balandin <dbalandin@marvell.com>
+> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Shai Malin <smalin@marvell.com>
+> ---
+>   drivers/nvme/host/tcp-offload.c | 424 ++++++++++++++++++++++++++++++--
+>   drivers/nvme/host/tcp-offload.h |   1 +
+>   2 files changed, 399 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/nvme/host/tcp-offload.c b/drivers/nvme/host/tcp-offload.c
+> index 9eb4b03e0f3d..8ed7668d987a 100644
+> --- a/drivers/nvme/host/tcp-offload.c
+> +++ b/drivers/nvme/host/tcp-offload.c
+> @@ -22,6 +22,11 @@ static inline struct nvme_tcp_ofld_ctrl *to_tcp_ofld_ctrl(struct nvme_ctrl *nctr
+>   	return container_of(nctrl, struct nvme_tcp_ofld_ctrl, nctrl);
+>   }
+>   
+> +static inline int nvme_tcp_ofld_qid(struct nvme_tcp_ofld_queue *queue)
+> +{
+> +	return queue - queue->ctrl->queues;
+> +}
+> +
+>   /**
+>    * nvme_tcp_ofld_register_dev() - NVMeTCP Offload Library registration
+>    * function.
+> @@ -191,12 +196,94 @@ nvme_tcp_ofld_alloc_tagset(struct nvme_ctrl *nctrl, bool admin)
+>   	return set;
+>   }
+>   
+> +static void __nvme_tcp_ofld_stop_queue(struct nvme_tcp_ofld_queue *queue)
+> +{
+> +	queue->dev->ops->drain_queue(queue);
+> +	queue->dev->ops->destroy_queue(queue);
+
+Stop calls drain+destroy? is that something that is specific to
+your implementation? If this is designed to effectively stop
+the queue from generating completions and accessing host memory,
+why is it called destroy?
+
+> +}
+> +
+> +static void nvme_tcp_ofld_stop_queue(struct nvme_ctrl *nctrl, int qid)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvme_tcp_ofld_queue *queue = &ctrl->queues[qid];
+> +
+> +	if (!test_and_clear_bit(NVME_TCP_OFLD_Q_LIVE, &queue->flags))
+> +		return;
+> +
+> +	__nvme_tcp_ofld_stop_queue(queue);
+> +}
+> +
+> +static void nvme_tcp_ofld_stop_io_queues(struct nvme_ctrl *ctrl)
+> +{
+> +	int i;
+> +
+> +	for (i = 1; i < ctrl->queue_count; i++)
+> +		nvme_tcp_ofld_stop_queue(ctrl, i);
+> +}
+> +
+> +static void nvme_tcp_ofld_free_queue(struct nvme_ctrl *nctrl, int qid)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvme_tcp_ofld_queue *queue = &ctrl->queues[qid];
+> +
+> +	if (!test_and_clear_bit(NVME_TCP_OFLD_Q_ALLOCATED, &queue->flags))
+> +		return;
+> +
+> +	queue = &ctrl->queues[qid];
+> +	queue->ctrl = NULL;
+> +	queue->dev = NULL;
+> +	queue->report_err = NULL;
+
+Why are these needed? In what scenario are these accessed from a non
+established queue?
+
+> +}
+> +
+> +static void nvme_tcp_ofld_destroy_admin_queue(struct nvme_ctrl *nctrl, bool remove)
+> +{
+> +	nvme_tcp_ofld_stop_queue(nctrl, 0);
+> +	if (remove) {
+> +		blk_cleanup_queue(nctrl->admin_q);
+> +		blk_cleanup_queue(nctrl->fabrics_q);
+> +		blk_mq_free_tag_set(nctrl->admin_tagset);
+> +	}
+> +}
+> +
+> +static int nvme_tcp_ofld_start_queue(struct nvme_ctrl *nctrl, int qid)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvme_tcp_ofld_queue *queue = &ctrl->queues[qid];
+> +	int rc;
+> +
+> +	queue = &ctrl->queues[qid];
+> +	if (qid) {
+> +		queue->cmnd_capsule_len = nctrl->ioccsz * 16;
+> +		rc = nvmf_connect_io_queue(nctrl, qid, false);
+> +	} else {
+> +		queue->cmnd_capsule_len = sizeof(struct nvme_command) + NVME_TCP_ADMIN_CCSZ;
+> +		rc = nvmf_connect_admin_queue(nctrl);
+> +	}
+> +
+> +	if (!rc) {
+> +		set_bit(NVME_TCP_OFLD_Q_LIVE, &queue->flags);
+> +	} else {
+> +		if (test_bit(NVME_TCP_OFLD_Q_ALLOCATED, &queue->flags))
+> +			__nvme_tcp_ofld_stop_queue(queue);
+> +		dev_err(nctrl->device,
+> +			"failed to connect queue: %d ret=%d\n", qid, rc);
+> +	}
+> +
+> +	return rc;
+> +}
+> +
+>   static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
+>   					       bool new)
+>   {
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvme_tcp_ofld_queue *queue = &ctrl->queues[0];
+>   	int rc;
+>   
+> -	/* Placeholder - alloc_admin_queue */
+> +	rc = ctrl->dev->ops->create_queue(queue, 0, NVME_AQ_DEPTH);
+> +	if (rc)
+> +		return rc;
+> +
+> +	set_bit(NVME_TCP_OFLD_Q_ALLOCATED, &queue->flags);
+>   	if (new) {
+>   		nctrl->admin_tagset =
+>   				nvme_tcp_ofld_alloc_tagset(nctrl, true);
+> @@ -221,7 +308,9 @@ static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
+>   		}
+>   	}
+>   
+> -	/* Placeholder - nvme_tcp_ofld_start_queue */
+> +	rc = nvme_tcp_ofld_start_queue(nctrl, 0);
+> +	if (rc)
+> +		goto out_cleanup_queue;
+>   
+>   	rc = nvme_enable_ctrl(nctrl);
+>   	if (rc)
+> @@ -238,11 +327,12 @@ static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
+>   out_quiesce_queue:
+>   	blk_mq_quiesce_queue(nctrl->admin_q);
+>   	blk_sync_queue(nctrl->admin_q);
+> -
+>   out_stop_queue:
+> -	/* Placeholder - stop offload queue */
+> +	nvme_tcp_ofld_stop_queue(nctrl, 0);
+>   	nvme_cancel_admin_tagset(nctrl);
+> -
+> +out_cleanup_queue:
+> +	if (new)
+> +		blk_cleanup_queue(nctrl->admin_q);
+>   out_cleanup_fabrics_q:
+>   	if (new)
+>   		blk_cleanup_queue(nctrl->fabrics_q);
+> @@ -250,7 +340,136 @@ static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
+>   	if (new)
+>   		blk_mq_free_tag_set(nctrl->admin_tagset);
+>   out_free_queue:
+> -	/* Placeholder - free admin queue */
+> +	nvme_tcp_ofld_free_queue(nctrl, 0);
+> +
+> +	return rc;
+> +}
+> +
+> +static unsigned int nvme_tcp_ofld_nr_io_queues(struct nvme_ctrl *nctrl)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvme_tcp_ofld_dev *dev = ctrl->dev;
+> +	u32 hw_vectors = dev->num_hw_vectors;
+> +	u32 nr_write_queues, nr_poll_queues;
+> +	u32 nr_io_queues, nr_total_queues;
+> +
+> +	nr_io_queues = min3(nctrl->opts->nr_io_queues, num_online_cpus(),
+> +			    hw_vectors);
+> +	nr_write_queues = min3(nctrl->opts->nr_write_queues, num_online_cpus(),
+> +			       hw_vectors);
+> +	nr_poll_queues = min3(nctrl->opts->nr_poll_queues, num_online_cpus(),
+> +			      hw_vectors);
+> +
+> +	nr_total_queues = nr_io_queues + nr_write_queues + nr_poll_queues;
+> +
+> +	return nr_total_queues;
+> +}
+> +
+> +static void
+> +nvme_tcp_ofld_set_io_queues(struct nvme_ctrl *nctrl, unsigned int nr_io_queues)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	struct nvmf_ctrl_options *opts = nctrl->opts;
+> +
+> +	if (opts->nr_write_queues && opts->nr_io_queues < nr_io_queues) {
+> +		/*
+> +		 * separate read/write queues
+> +		 * hand out dedicated default queues only after we have
+> +		 * sufficient read queues.
+> +		 */
+> +		ctrl->io_queues[HCTX_TYPE_READ] = opts->nr_io_queues;
+> +		nr_io_queues -= ctrl->io_queues[HCTX_TYPE_READ];
+> +		ctrl->io_queues[HCTX_TYPE_DEFAULT] =
+> +			min(opts->nr_write_queues, nr_io_queues);
+> +		nr_io_queues -= ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +	} else {
+> +		/*
+> +		 * shared read/write queues
+> +		 * either no write queues were requested, or we don't have
+> +		 * sufficient queue count to have dedicated default queues.
+> +		 */
+> +		ctrl->io_queues[HCTX_TYPE_DEFAULT] =
+> +			min(opts->nr_io_queues, nr_io_queues);
+> +		nr_io_queues -= ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +	}
+> +
+> +	if (opts->nr_poll_queues && nr_io_queues) {
+> +		/* map dedicated poll queues only if we have queues left */
+> +		ctrl->io_queues[HCTX_TYPE_POLL] =
+> +			min(opts->nr_poll_queues, nr_io_queues);
+> +	}
+> +}
+> +
+> +static void
+> +nvme_tcp_ofld_terminate_io_queues(struct nvme_ctrl *nctrl, int start_from)
+> +{
+> +	int i;
+> +
+> +	/* Loop condition will stop before index 0 which is the admin queue */
+> +	for (i = start_from; i >= 1; i--)
+> +		nvme_tcp_ofld_stop_queue(nctrl, i);
+> +}
+> +
+> +static int nvme_tcp_ofld_create_io_queues(struct nvme_ctrl *nctrl)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	int i, rc;
+> +
+> +	for (i = 1; i < nctrl->queue_count; i++) {
+> +		rc = ctrl->dev->ops->create_queue(&ctrl->queues[i],
+> +						  i, nctrl->sqsize + 1);
+> +		if (rc)
+> +			goto out_free_queues;
+> +
+> +		set_bit(NVME_TCP_OFLD_Q_ALLOCATED, &ctrl->queues[i].flags);
+> +	}
+> +
+> +	return 0;
+> +
+> +out_free_queues:
+> +	nvme_tcp_ofld_terminate_io_queues(nctrl, --i);
+> +
+> +	return rc;
+> +}
+> +
+> +static int nvme_tcp_ofld_alloc_io_queues(struct nvme_ctrl *nctrl)
+> +{
+> +	unsigned int nr_io_queues;
+> +	int rc;
+> +
+> +	nr_io_queues = nvme_tcp_ofld_nr_io_queues(nctrl);
+> +	rc = nvme_set_queue_count(nctrl, &nr_io_queues);
+> +	if (rc)
+> +		return rc;
+> +
+> +	nctrl->queue_count = nr_io_queues + 1;
+> +	if (nctrl->queue_count < 2) {
+> +		dev_err(nctrl->device,
+> +			"unable to set any I/O queues\n");
+> +
+> +		return -ENOMEM;
+> +	}
+> +
+> +	dev_info(nctrl->device, "creating %d I/O queues.\n", nr_io_queues);
+> +	nvme_tcp_ofld_set_io_queues(nctrl, nr_io_queues);
+> +
+> +	return nvme_tcp_ofld_create_io_queues(nctrl);
+> +}
+> +
+> +static int nvme_tcp_ofld_start_io_queues(struct nvme_ctrl *nctrl)
+> +{
+> +	int i, rc = 0;
+> +
+> +	for (i = 1; i < nctrl->queue_count; i++) {
+> +		rc = nvme_tcp_ofld_start_queue(nctrl, i);
+> +		if (rc)
+> +			goto terminate_queues;
+> +	}
+> +
+> +	return 0;
+> +
+> +terminate_queues:
+> +	nvme_tcp_ofld_terminate_io_queues(nctrl, --i);
+>   
+>   	return rc;
+>   }
+> @@ -258,9 +477,10 @@ static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
+>   static int
+>   nvme_tcp_ofld_configure_io_queues(struct nvme_ctrl *nctrl, bool new)
+>   {
+> -	int rc;
+> +	int rc = nvme_tcp_ofld_alloc_io_queues(nctrl);
+>   
+> -	/* Placeholder - alloc_io_queues */
+> +	if (rc)
+> +		return rc;
+>   
+>   	if (new) {
+>   		nctrl->tagset = nvme_tcp_ofld_alloc_tagset(nctrl, false);
+> @@ -278,7 +498,9 @@ nvme_tcp_ofld_configure_io_queues(struct nvme_ctrl *nctrl, bool new)
+>   		}
+>   	}
+>   
+> -	/* Placeholder - start_io_queues */
+> +	rc = nvme_tcp_ofld_start_io_queues(nctrl);
+> +	if (rc)
+> +		goto out_cleanup_connect_q;
+>   
+>   	if (!new) {
+>   		nvme_start_queues(nctrl);
+> @@ -300,16 +522,16 @@ nvme_tcp_ofld_configure_io_queues(struct nvme_ctrl *nctrl, bool new)
+>   out_wait_freeze_timed_out:
+>   	nvme_stop_queues(nctrl);
+>   	nvme_sync_io_queues(nctrl);
+> -
+> -	/* Placeholder - Stop IO queues */
+> -
+> +	nvme_tcp_ofld_stop_io_queues(nctrl);
+> +out_cleanup_connect_q:
+> +	nvme_cancel_tagset(nctrl);
+>   	if (new)
+>   		blk_cleanup_queue(nctrl->connect_q);
+>   out_free_tag_set:
+>   	if (new)
+>   		blk_mq_free_tag_set(nctrl->tagset);
+>   out_free_io_queues:
+> -	/* Placeholder - free_io_queues */
+> +	nvme_tcp_ofld_terminate_io_queues(nctrl, nctrl->queue_count);
+>   
+>   	return rc;
+>   }
+> @@ -336,6 +558,26 @@ static void nvme_tcp_ofld_reconnect_or_remove(struct nvme_ctrl *nctrl)
+>   	}
+>   }
+>   
+> +static int
+> +nvme_tcp_ofld_init_admin_hctx(struct blk_mq_hw_ctx *hctx, void *data,
+> +			      unsigned int hctx_idx)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = data;
+> +
+> +	hctx->driver_data = &ctrl->queues[0];
+> +
+> +	return 0;
+> +}
+> +
+> +static void nvme_tcp_ofld_destroy_io_queues(struct nvme_ctrl *nctrl, bool remove)
+> +{
+> +	nvme_tcp_ofld_stop_io_queues(nctrl);
+> +	if (remove) {
+> +		blk_cleanup_queue(nctrl->connect_q);
+> +		blk_mq_free_tag_set(nctrl->tagset);
+> +	}
+> +}
+> +
+>   static int nvme_tcp_ofld_setup_ctrl(struct nvme_ctrl *nctrl, bool new)
+>   {
+>   	struct nvmf_ctrl_options *opts = nctrl->opts;
+> @@ -392,9 +634,19 @@ static int nvme_tcp_ofld_setup_ctrl(struct nvme_ctrl *nctrl, bool new)
+>   	return 0;
+>   
+>   destroy_io:
+> -	/* Placeholder - stop and destroy io queues*/
+> +	if (nctrl->queue_count > 1) {
+> +		nvme_stop_queues(nctrl);
+> +		nvme_sync_io_queues(nctrl);
+> +		nvme_tcp_ofld_stop_io_queues(nctrl);
+> +		nvme_cancel_tagset(nctrl);
+> +		nvme_tcp_ofld_destroy_io_queues(nctrl, new);
+> +	}
+>   destroy_admin:
+> -	/* Placeholder - stop and destroy admin queue*/
+> +	blk_mq_quiesce_queue(nctrl->admin_q);
+> +	blk_sync_queue(nctrl->admin_q);
+> +	nvme_tcp_ofld_stop_queue(nctrl, 0);
+> +	nvme_cancel_admin_tagset(nctrl);
+> +	nvme_tcp_ofld_destroy_admin_queue(nctrl, new);
+>   
+>   	return rc;
+>   }
+> @@ -415,6 +667,18 @@ nvme_tcp_ofld_check_dev_opts(struct nvmf_ctrl_options *opts,
+>   	return 0;
+>   }
+>   
+> +static void nvme_tcp_ofld_free_ctrl_queues(struct nvme_ctrl *nctrl)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> +	int i;
+> +
+> +	for (i = 0; i < nctrl->queue_count; ++i)
+> +		nvme_tcp_ofld_free_queue(nctrl, i);
+> +
+> +	kfree(ctrl->queues);
+> +	ctrl->queues = NULL;
+> +}
+> +
+>   static void nvme_tcp_ofld_free_ctrl(struct nvme_ctrl *nctrl)
+>   {
+>   	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
+> @@ -424,6 +688,7 @@ static void nvme_tcp_ofld_free_ctrl(struct nvme_ctrl *nctrl)
+>   		goto free_ctrl;
+>   
+>   	down_write(&nvme_tcp_ofld_ctrl_rwsem);
+> +	nvme_tcp_ofld_free_ctrl_queues(nctrl);
+>   	ctrl->dev->ops->release_ctrl(ctrl);
+>   	list_del(&ctrl->list);
+>   	up_write(&nvme_tcp_ofld_ctrl_rwsem);
+> @@ -441,15 +706,37 @@ static void nvme_tcp_ofld_submit_async_event(struct nvme_ctrl *arg)
+>   }
+>   
+>   static void
+> -nvme_tcp_ofld_teardown_admin_queue(struct nvme_ctrl *ctrl, bool remove)
+> +nvme_tcp_ofld_teardown_admin_queue(struct nvme_ctrl *nctrl, bool remove)
+>   {
+> -	/* Placeholder - teardown_admin_queue */
+> +	blk_mq_quiesce_queue(nctrl->admin_q);
+> +	blk_sync_queue(nctrl->admin_q);
+> +
+> +	nvme_tcp_ofld_stop_queue(nctrl, 0);
+> +	nvme_cancel_admin_tagset(nctrl);
+> +
+> +	if (remove)
+> +		blk_mq_unquiesce_queue(nctrl->admin_q);
+> +
+> +	nvme_tcp_ofld_destroy_admin_queue(nctrl, remove);
+>   }
+>   
+>   static void
+>   nvme_tcp_ofld_teardown_io_queues(struct nvme_ctrl *nctrl, bool remove)
+>   {
+> -	/* Placeholder - teardown_io_queues */
+> +	if (nctrl->queue_count <= 1)
+> +		return;
+> +
+> +	blk_mq_quiesce_queue(nctrl->admin_q);
+> +	nvme_start_freeze(nctrl);
+> +	nvme_stop_queues(nctrl);
+> +	nvme_sync_io_queues(nctrl);
+> +	nvme_tcp_ofld_stop_io_queues(nctrl);
+> +	nvme_cancel_tagset(nctrl);
+> +
+> +	if (remove)
+> +		nvme_start_queues(nctrl);
+> +
+> +	nvme_tcp_ofld_destroy_io_queues(nctrl, remove);
+>   }
+>   
+>   static void nvme_tcp_ofld_reconnect_ctrl_work(struct work_struct *work)
+> @@ -577,6 +864,17 @@ nvme_tcp_ofld_init_request(struct blk_mq_tag_set *set,
+>   	return 0;
+>   }
+>   
+> +inline size_t nvme_tcp_ofld_inline_data_size(struct nvme_tcp_ofld_queue *queue)
+> +{
+> +	return queue->cmnd_capsule_len - sizeof(struct nvme_command);
+> +}
+> +EXPORT_SYMBOL_GPL(nvme_tcp_ofld_inline_data_size);
+> +
+> +static void nvme_tcp_ofld_commit_rqs(struct blk_mq_hw_ctx *hctx)
+> +{
+> +	/* Call ops->commit_rqs */
+> +}
+> +
+>   static blk_status_t
+>   nvme_tcp_ofld_queue_rq(struct blk_mq_hw_ctx *hctx,
+>   		       const struct blk_mq_queue_data *bd)
+> @@ -588,22 +886,96 @@ nvme_tcp_ofld_queue_rq(struct blk_mq_hw_ctx *hctx,
+>   	return BLK_STS_OK;
+>   }
+>   
+> +static void
+> +nvme_tcp_ofld_exit_request(struct blk_mq_tag_set *set,
+> +			   struct request *rq, unsigned int hctx_idx)
+> +{
+> +	/*
+> +	 * Nothing is allocated in nvme_tcp_ofld_init_request,
+> +	 * hence empty.
+> +	 */
+> +}
+> +
+> +static int
+> +nvme_tcp_ofld_init_hctx(struct blk_mq_hw_ctx *hctx, void *data,
+> +			unsigned int hctx_idx)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = data;
+> +
+> +	hctx->driver_data = &ctrl->queues[hctx_idx + 1];
+> +
+> +	return 0;
+> +}
+> +
+> +static int nvme_tcp_ofld_map_queues(struct blk_mq_tag_set *set)
+> +{
+> +	struct nvme_tcp_ofld_ctrl *ctrl = set->driver_data;
+> +	struct nvmf_ctrl_options *opts = ctrl->nctrl.opts;
+> +
+> +	if (opts->nr_write_queues && ctrl->io_queues[HCTX_TYPE_READ]) {
+> +		/* separate read/write queues */
+> +		set->map[HCTX_TYPE_DEFAULT].nr_queues =
+> +			ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +		set->map[HCTX_TYPE_DEFAULT].queue_offset = 0;
+> +		set->map[HCTX_TYPE_READ].nr_queues =
+> +			ctrl->io_queues[HCTX_TYPE_READ];
+> +		set->map[HCTX_TYPE_READ].queue_offset =
+> +			ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +	} else {
+> +		/* shared read/write queues */
+> +		set->map[HCTX_TYPE_DEFAULT].nr_queues =
+> +			ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +		set->map[HCTX_TYPE_DEFAULT].queue_offset = 0;
+> +		set->map[HCTX_TYPE_READ].nr_queues =
+> +			ctrl->io_queues[HCTX_TYPE_DEFAULT];
+> +		set->map[HCTX_TYPE_READ].queue_offset = 0;
+> +	}
+> +	blk_mq_map_queues(&set->map[HCTX_TYPE_DEFAULT]);
+> +	blk_mq_map_queues(&set->map[HCTX_TYPE_READ]);
+> +
+> +	if (opts->nr_poll_queues && ctrl->io_queues[HCTX_TYPE_POLL]) {
+> +		/* map dedicated poll queues only if we have queues left */
+> +		set->map[HCTX_TYPE_POLL].nr_queues =
+> +				ctrl->io_queues[HCTX_TYPE_POLL];
+> +		set->map[HCTX_TYPE_POLL].queue_offset =
+> +			ctrl->io_queues[HCTX_TYPE_DEFAULT] +
+> +			ctrl->io_queues[HCTX_TYPE_READ];
+> +		blk_mq_map_queues(&set->map[HCTX_TYPE_POLL]);
+> +	}
+> +
+> +	dev_info(ctrl->nctrl.device,
+> +		 "mapped %d/%d/%d default/read/poll queues.\n",
+> +		 ctrl->io_queues[HCTX_TYPE_DEFAULT],
+> +		 ctrl->io_queues[HCTX_TYPE_READ],
+> +		 ctrl->io_queues[HCTX_TYPE_POLL]);
+> +
+> +	return 0;
+> +}
+> +
+> +static int nvme_tcp_ofld_poll(struct blk_mq_hw_ctx *hctx)
+> +{
+> +	/* Placeholder - Implement polling mechanism */
+> +
+> +	return 0;
+> +}
+> +
+>   static struct blk_mq_ops nvme_tcp_ofld_mq_ops = {
+>   	.queue_rq	= nvme_tcp_ofld_queue_rq,
+> +	.commit_rqs     = nvme_tcp_ofld_commit_rqs,
+> +	.complete	= nvme_complete_rq,
+>   	.init_request	= nvme_tcp_ofld_init_request,
+> -	/*
+> -	 * All additional ops will be also implemented and registered similar to
+> -	 * tcp.c
+> -	 */
+> +	.exit_request	= nvme_tcp_ofld_exit_request,
+> +	.init_hctx	= nvme_tcp_ofld_init_hctx,
+> +	.map_queues	= nvme_tcp_ofld_map_queues,
+> +	.poll		= nvme_tcp_ofld_poll,
+>   };
+>   
+>   static struct blk_mq_ops nvme_tcp_ofld_admin_mq_ops = {
+>   	.queue_rq	= nvme_tcp_ofld_queue_rq,
+> +	.complete	= nvme_complete_rq,
+>   	.init_request	= nvme_tcp_ofld_init_request,
+> -	/*
+> -	 * All additional ops will be also implemented and registered similar to
+> -	 * tcp.c
+> -	 */
+> +	.exit_request	= nvme_tcp_ofld_exit_request,
+> +	.init_hctx	= nvme_tcp_ofld_init_admin_hctx,
+>   };
+>   
+>   static const struct nvme_ctrl_ops nvme_tcp_ofld_ctrl_ops = {
+> diff --git a/drivers/nvme/host/tcp-offload.h b/drivers/nvme/host/tcp-offload.h
+> index 2a931d05905d..2233d855aa10 100644
+> --- a/drivers/nvme/host/tcp-offload.h
+> +++ b/drivers/nvme/host/tcp-offload.h
+> @@ -211,3 +211,4 @@ struct nvme_tcp_ofld_ops {
+>   int nvme_tcp_ofld_register_dev(struct nvme_tcp_ofld_dev *dev);
+>   void nvme_tcp_ofld_unregister_dev(struct nvme_tcp_ofld_dev *dev);
+>   void nvme_tcp_ofld_error_recovery(struct nvme_ctrl *nctrl);
+> +inline size_t nvme_tcp_ofld_inline_data_size(struct nvme_tcp_ofld_queue *queue);
+> 
