@@ -2,209 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A5CF38D084
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 00:05:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D176138D092
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 00:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbhEUWHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 18:07:13 -0400
-Received: from sonic317-39.consmr.mail.ne1.yahoo.com ([66.163.184.50]:45096
-        "EHLO sonic317-39.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229503AbhEUWHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 18:07:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1621634746; bh=aSHcnHFaJCW0nUDhY7hbjuJXu9n+xFG+sWnFXaRVTUI=; h=Subject:To:Cc:References:From:Date:In-Reply-To:From:Subject:Reply-To; b=QFUWJ2qNKTxCqlnpPvO/j5Qu22dfrkcuPx9j0giRBAUlaSlgniWT1t3yat9wmk2tgPfHC+1XR/YndYjyd2OAYzas1/uwcF0CbnRJDxAMB+oFqJhJvYJRgUQE2wUPJ0HDxHWqlLBYhPOtO2CxvLRy3w1Vpu4LXne+9dWpwOlQGTRDt9GqUrxupd2hjiBZsrnmWpUZPMPDGhQyXmPcq8gAO9oF7CpMQFKEq6AiGE2eOsc1pMBsr0pfSncCJcqDJpq5KKMYC40eypCUlW7kIrKC1Mn4PUFO87uyWxtYvDPgNKPFUJwfRxvbja6cEtWj46rXzsa1Fmg3ZuCUE9Zx2Rlj0A==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1621634746; bh=fpG9JvrtbVx5hmtjD6nKPeaf/P8rK9gYZXjs5B0pJ7/=; h=X-Sonic-MF:Subject:To:From:Date:From:Subject; b=DzIfbILm+UBPfZQUdah7Kgx4NFkB3wVwe6ggYNwldDNaKwidQQIV7ic8Hjq7MQGzbp+duPLxnZ90KuiPRjeIp8YuNW7OKUPlrQZ0CmYcdfq8qDM0Fv5MLx6qsZl9QMBPHAgNNU8Kgf8QWNA/lECOBhro1AgDdEQpv4KGtT9Tv4lUAmqFQQ2HhVqL37PpWugucXP6qI564lv4HMteMVOlVa7mbYijhAeT4KU73LTeWLQy9CZMx85dcQb5RADEMZgTlPOeF/zPcKg4OKnPcTPImyIFEWcFLe7XxNVfFtTmuePe/VK/hSbjyGmojtbME1/QElJq3Ro/KG/10yZhXdjQfg==
-X-YMail-OSG: rh5hvEQVM1mSTO3p3a60oHROInzmobpIDH7Aijhqs3LKGs2MWp_XNLOjZcOF24Y
- 5T.gjxx6pkPro_.zYM.o6wd14LvKXcmzTXsj6r3FGe7NNmS4wL.9UlgPvjuMdJhY0swvEhw3FjRk
- grGFMpDoPUmaUFXO9CxhGZwp3ndQ5OYw8iS4r6w8dRPDZK_T8ZLPPEyRcAIIGYWrNeXAPXZ6ivo.
- ow_CHd1YoZ2vzTPyZ4uDjAN8x8aaDaQMfJjwnkybidDZ992onFf3ChbjiOdCFjFwKRpCOUBd_kxw
- 59rkVeIlFq2UzXzTsK.OVGLjsp70n2sRRDuRvUV33ZbV6rVvKAWVSCSebkiVguc7ZDZUlLlUBwvy
- EpYGAvGuX_nsFyIH8JiP5VpubYXc9WT7rHhx.QVGESkNlQyeQYNr8M4obdRRS4krFeMohPzYpZ4h
- NoCj1ayy4bRDHWoR.rtgXjuhq6YC_4Ggq6FjctYd_M1VIXnJ1ioYC4Cf6rvTGx25Tmv48fsntmRF
- wIQTw1sHVXlZMnXuN80zEFZvmfDCqBsV8PiSzJ3IFZ09dKkEJaCTcJajClZgqNfib_pgbQEwb6R6
- DEhJZRuDEfNqWATYDnrkme8Io1iV6tpFX..8q66D.xdv4ePsY6GlQpI8CsGD8omI_NtAzM4uAFBi
- 9dlrs90dlgmlnPRPEFx4JHbkTlcVacmZJ2XIev4Rr4VWacYBps4YsGsZCqRsW5tUMNyYu_uOXqTq
- WB.hlnawhkrWkw3tbxj8sTBl8NDrLY6gkLqDHuOzJr8gZeH1E767LihliIsyuogx3pi_e7j3.Ogi
- YwNmmlVdHCodedJ1EnzgAIyIYHnp0.6xo01Kh7XsjbCEdTvqsSIZNGq9cT7pgQ08WywKAut.HRfJ
- rDRhdPXVW1ILBoeWJ8whwdTT3zq3MaXpzOzBZbqKcEguCqXQ6tgoSU4UQARXfMCeEfpu9WenOwLL
- fFappJFqVR9s3zh5OH5xmDFSB5rREA_wjfGlRs2PpqXLOesidX_5mekhRqTUH5QTZArXKIpd2fcA
- WCz0j20HTgaSNPGwu8GOuZ_vZPpKCUQBTSOcN1bXITVY8OXZMSihV0GOaET7Ah3l66IYABWLSLzX
- 9Dgxto05FXDpNdzao_bQGI5F7Ro8.qfF8e4kqDcYp4.YGmSKG.yyKThNWVxch9fcDfUElGwA6QQS
- _DA5FKSPR078BB8vbcMSuY1wB_9r3LldUW9Yx9H0cF3iaVdn8R8ON1YjA3BcvvJZ.aWRXM3Z0oDo
- _SLSz.F7hp9UdWJABAruJQfV0sgtlgNJtwUzPfIPDdNOKhWb9CsP13fCknRyO_w2xGiIeSOnJgls
- AHefrg9iRpaEKy4VzCbJeLtccSedk0dlV45yVmRrFp9zruavNVC3_IqL5lU8wFfqTwAbVljb8HfU
- 5t7NjRaHEFwoejzFUvUHG84TjcJd9Kzy6ItZLkGCsIKfsDy2oW6Fo7U7o2MHhGkW.Yx51puU8r4C
- 4JwdGXubd9zMb9Xiif0b8AIiMSveGWJJSiNh3YW3HZmEqIJSdg0FnQFf4uY5MJvdFYL09CI9cilP
- KXXmnOROdFUjJaCRgPSjd4hpPVrjjq4H7.aeOoUzuVuP2t08Q6PndkDc_CqFif3Hy95pkEXBDlPR
- lqd7rp2r4rBWuSYqb9JLxAtxylxLN3cmw7PoWJMRhQ0LKq2k8Q5t7GCWTpI.WmGx2iJI_SpICpWU
- qg9AimE3qodo2Wl.ytlRSglbksPlRg6Vnh6WtHZzkwFamkGuyDUUBgDCvs1aY4bSbW6CftjSWPC2
- f_1GGCIotLO5jzhrBaochSAyYYNdfPhHYAad13_KzTRNjKs29ufO1GpFApQwP.C8Q53zTRuyXhiM
- ycEXVWNatZU4QXQAw1w_ufbLSrevAb9Pv5RqugT2972.53QTzw94QtE31dqOvO.1OIFte_XHhAjr
- zma0c53wok0IHdby4TfSNuVTQX0MXjuZehGdT35DKMlrHQuvCpbEG9avkktfUEuauWD7JqvCWJ0j
- cnWcrC9d.KtJoPXans3uWYrT3YZEwDQxgxuI3sTz3yWM1ZQJ3amgtCxbhgeX93SlQzDJ3Exf_mJq
- 53Lf_0cPG.7ulDfX4os_OjW9Q6vI3jtF4Umgb8I.Mez3f4i9wQmArCeV4q2VvIrmtVu9F9YhngIn
- GdSKNsLrcFV6qeyb3gaMBntvUS1r0PmsZsonRUmj1iWHNC7E3PagtxmSRO9sgsK2JQGA9OdFd0e2
- Qgy1UPzHbh8kGYiaFoZLGx6cxV44TIptxNi0TxNkZXYfF5FMGSEUKzm5Rjvo87mn07Sp.Pubdf7o
- vI9qc8vWaR5wRderoDT.fSkXiMWgJGFvEeHmkcY478jDBQ8rfDN1391FxelSL0Z1QcS7YyvNyxb4
- 1nEMqo.MAF5SSGbz1_hfVb8lNJgnzcWHa07.1fCo83aKtrL1iYKFETUaJaHAJbicQAnP8YykLZ8Y
- cMXHhX.Afd0GCUqdCBJav.jUwArqjw6wWT.bhTeD.2N76zYrsM8q5S8FWCc25yfgdgHR0ruqnCmC
- 3HIx0TQlMIHA6iMQwfMV8Ba3CCXtRsmWCrmcKrPDkQFu__7PEo_hZDgTH9ABMF1X1DCE1VDJdvK6
- fSD7rcXdZEw9oKd5UejAb0Xp9IkyLA.yeIM.Nd8cEkaYW1naBxVbcPd_EOnpWf4eb2am4kUI58Fy
- CtZMfE2lqD3vXPej87fVIJOluyCXNrsIefzo2ZODstV3blg5pqZwneNTS3rTqBEWAcNfrHXsrOS1
- _iaIRZ6WIWedw1ehISTwHSFs_pagRwerWt1lRKbH9wvfAaqXz_PtTaK12b7jpTvwV.4MnPzcpc_J
- BZ4eFFWGMwq8pCuslH_SE8pZMjjCmXigecxxmA0vcz.8pHJESZExi5QYM7rYQDX7MGu2WQFbPIr5
- 7FSWaQZGNxGcbXSCp7ZQkFCnP3qFZKU6_v8usXPD12RKT9_cXY5qT0Wm6vZMYg_HPpn2PMdvn1mR
- 1688L09HeiNPPNd7Y600lPVyBtUGw_UY9w9xFS8BazNwDd.s8_5ScOIdpaMeE21s0ravL4kPzMD8
- oaqnVHUDaJeZlS2qLV74X9WC7mdwbVnIMNmVr4QLjgksr1OKFhu6dtb4JbofyyMnI1Hq9jLJipjE
- 3qUw5.oRvMGgTnAE0QE8.20wXwyXovWcvAFnP7Lvv78Z9owzzDX3ptMZlI6keB7uUO4XvsV8bQip
- 1UGp1bmWMybAhH_1ypl49UiOYw4htNXM4nafHc83ngYHni4p9q5MZy9gTISrbngHiwctWO5iJ7wm
- bffIrp.tU6PnLXm64_gfpN2LtP2M3l6NrT_f8ub.SJCx2im2uP_bLv5OOtS4ele8C5W2lsATbi.E
- afMi6INmmP_S1xBf5UhmU30hKBxb3FI7NN2H37qUT1mU-
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic317.consmr.mail.ne1.yahoo.com with HTTP; Fri, 21 May 2021 22:05:46 +0000
-Received: by kubenode572.mail-prod1.omega.gq1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID e695631a07a97c834a4ba421db0199a4;
-          Fri, 21 May 2021 22:05:43 +0000 (UTC)
-Subject: Re: [PATCH v26 22/25] Audit: Add new record for multiple process LSM
- attributes
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     casey.schaufler@intel.com, James Morris <jmorris@namei.org>,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-audit@redhat.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Casey Schaufler <casey@schaufler-ca.com>
-References: <20210513200807.15910-1-casey@schaufler-ca.com>
- <20210513200807.15910-23-casey@schaufler-ca.com>
- <CAHC9VhSdFVuZvThMsqWT-L9wcHevA-0yAX+kxqXN0iMmqRc10g@mail.gmail.com>
-From:   Casey Schaufler <casey@schaufler-ca.com>
-Message-ID: <d753115f-6cbd-0886-473c-b10485cb7c52@schaufler-ca.com>
-Date:   Fri, 21 May 2021 15:05:41 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
-MIME-Version: 1.0
-In-Reply-To: <CAHC9VhSdFVuZvThMsqWT-L9wcHevA-0yAX+kxqXN0iMmqRc10g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-US
-X-Mailer: WebService/1.1.18368 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+        id S229638AbhEUWLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 18:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229472AbhEUWLH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 18:11:07 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4B6C061574;
+        Fri, 21 May 2021 15:09:42 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id e17so9099215iol.7;
+        Fri, 21 May 2021 15:09:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=bGDmmwhi54T3dfOmVp6LaAX6cHC70SI7w2h1y8q33qI=;
+        b=WAtciiIICJPGRDbUNkD9NQzWUfNUeljFRtypa+y+0CTy/p9k4GuFFZEDj8oXN9kP/d
+         N9m4YtEe8Xen+FHLlVVj2pSsxZgUMe5sLForJrHxF8SVXKkIVrdAqpI+SpkbXg0KpFAr
+         7oln+J0LnPjKLuWL4hHRByLvQfBQmsRR8EhV1PdtnVo1q1grRmyn/loh6iQEKy6LRX2K
+         C2dtAzUNHkFvwmvGF6nzmY0vK22fZ6H5IQwLt32/ddThxE6LBD/im9ExbGIuHx7PJFsU
+         dJjxW1l+xduVcnxhsFZmS4jiOIwCJ1UkhTpDtrtEE9NxrECSbyueR7w/ER5RU6Sj/AB1
+         cJmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=bGDmmwhi54T3dfOmVp6LaAX6cHC70SI7w2h1y8q33qI=;
+        b=Xj0ijBG5WqfcS2BgQ0tsomeKObG/sUj662ea2KKAKXQvS0Sl4bEBy+ZWMVL0GF/xTx
+         DXWU4pVtrVqmx1af8sUA/NbJAYeRPKABbd//Jjlt+agpsyCnSfpKrfJgrfpKc2gv2GnC
+         jnje07USeteLn+LlIHjjFDvgFTebUkKIjnasT6nxHS8VdKoUOI6kMNTyCoYAs0c+S/Zp
+         /QSEEdZDVtwEK30YuaUUOib/cBL8180vVsDh/vUdX04uJAQMV5Tap5OAi34uF/0cZ8Zy
+         9ihYV9cteXU5uqBsqHdhQmu7LqI3AjoztDlHFVsCjT5xQm/3cLHuoJ0uB3TngBXmVuOz
+         vEQw==
+X-Gm-Message-State: AOAM531AmPnhLZH5OOW1ITaAXamKyQt1JfFK0Y5zVbd8CvNmxd3eccD5
+        Fqyf0Agd2FGodzT2qw+7iww=
+X-Google-Smtp-Source: ABdhPJw6V+yvSoWBzhLYEvwQTKWsLXQPM8eQm8yNNgQ0gNrw1MDrG0SaxALyalBdsl+SF7mkSz1VVQ==
+X-Received: by 2002:a05:6638:505:: with SMTP id i5mr7007405jar.141.1621634981708;
+        Fri, 21 May 2021 15:09:41 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id o5sm1009524ilm.78.2021.05.21.15.09.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 May 2021 15:09:41 -0700 (PDT)
+Date:   Fri, 21 May 2021 15:09:32 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <60a82f9c96de2_1c22f2086e@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpWxJrXhdxyhO6O+h1d9dz=4BBk8i-EYrVG6v8ix_0gCnQ@mail.gmail.com>
+References: <20210517022322.50501-1-xiyou.wangcong@gmail.com>
+ <60a3525d188d9_18a5f208f5@john-XPS-13-9370.notmuch>
+ <CAM_iQpVCfGEA+TOfWvXYxJ1kk9z_thdbvRmZHxhWpuBMx9x2zg@mail.gmail.com>
+ <60a41be5629ab_10e7720815@john-XPS-13-9370.notmuch>
+ <CAM_iQpXkYsf=LF=g4aKLmas_9jHNqXGy-P2gi3R4eb65+ktz4A@mail.gmail.com>
+ <60a561b63598a_22c462082f@john-XPS-13-9370.notmuch>
+ <CAM_iQpV=XPW08hS3UyakLxPZrujS_HV-BB9bRbnZ1m+vWQytcQ@mail.gmail.com>
+ <60a58913d51e2_2aaa72084c@john-XPS-13-9370.notmuch>
+ <CAM_iQpU5HEB_=+ih7_4FKqdkXJ4eYuw_ej5BTOdRK8wFVa7jig@mail.gmail.com>
+ <60a69f9f1610_4ea08208a3@john-XPS-13-9370.notmuch>
+ <CAM_iQpWxJrXhdxyhO6O+h1d9dz=4BBk8i-EYrVG6v8ix_0gCnQ@mail.gmail.com>
+Subject: Re: [Patch bpf] udp: fix a memory leak in udp_read_sock()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/21/2021 1:19 PM, Paul Moore wrote:
-> On Thu, May 13, 2021 at 4:32 PM Casey Schaufler <casey@schaufler-ca.com=
-> wrote:
->> Create a new audit record type to contain the subject information
->> when there are multiple security modules that require such data.
->> This record is linked with the same timestamp and serial number
->> using the audit_alloc_local() mechanism.
-> The record is linked with the other associated records into a single
-> event, it doesn't matter if it gets the timestamp/serial from
-> audit_alloc_local() or an existing audit event, e.g. ongoing syscall.
->
->> The record is produced only in cases where there is more than one
->> security module with a process "context".
->> In cases where this record is produced the subj=3D fields of
->> other records in the audit event will be set to "subj=3D?".
->>
->> An example of the MAC_TASK_CONTEXTS (1420) record is:
->>
->>         type=3DUNKNOWN[1420]
->>         msg=3Daudit(1600880931.832:113)
->>         subj_apparmor=3D=3Dunconfined
-> It should be just a single "=3D" in the line above.
+Cong Wang wrote:
+> On Thu, May 20, 2021 at 10:43 AM John Fastabend
+> <john.fastabend@gmail.com> wrote:
+> >
+> > Cong Wang wrote:
+> > > On Wed, May 19, 2021 at 2:54 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > > >
+> > > > Cong Wang wrote:
+> > > > > On Wed, May 19, 2021 at 12:06 PM John Fastabend
+> > > > > <john.fastabend@gmail.com> wrote:
+> > > > > >
+> > > > > > Cong Wang wrote:
+> > > > > > > On Tue, May 18, 2021 at 12:56 PM John Fastabend
+> > > > > > > <john.fastabend@gmail.com> wrote:
+> > > > > > > >
+> > > > > > > > Cong Wang wrote:
+> > > > > > > > > On Mon, May 17, 2021 at 10:36 PM John Fastabend
+> > > > > > > > > <john.fastabend@gmail.com> wrote:
+> > > > > > > > > >
+> > > > > > > > > > Cong Wang wrote:
+> > > > > > > > > > > From: Cong Wang <cong.wang@bytedance.com>
+> > > > > > > > > > >
 
-AppArmor provides the 2nd "=3D" as part of the subject context.
-What's here is correct. I won't argue that it won't case confusion
-or worse.
+[...]
 
+> >
+> > "We are not dropping the packet" you'll need to be more explicit on
+> > how this path is not dropping the skb,
+> 
+> You know it is cloned, don't you? So if we clone an skb and deliver
+> the clone then free the original, what is dropped here? Absolutely
+> nothing.
+> 
+> By "drop", we clearly mean nothing is delivered. Or do you have
+> any different definition of "drop"?
 
->>         subj_smack=3D_
->>
->> There will be a subj_$LSM=3D entry for each security module
->> LSM that supports the secid_to_secctx and secctx_to_secid
->> hooks. The BPF security module implements secid/secctx
->> translation hooks, so it has to be considered to provide a
->> secctx even though it may not actually do so.
->>
->> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
->> To: paul@paul-moore.com
->> To: linux-audit@redhat.com
->> To: rgb@redhat.com
->> Cc: netdev@vger.kernel.org
->> ---
->>  drivers/android/binder.c                |  2 +-
->>  include/linux/audit.h                   | 24 ++++++++
->>  include/linux/security.h                | 16 ++++-
->>  include/net/netlabel.h                  |  3 +-
->>  include/net/scm.h                       |  2 +-
->>  include/net/xfrm.h                      | 13 +++-
->>  include/uapi/linux/audit.h              |  1 +
->>  kernel/audit.c                          | 80 ++++++++++++++++++------=
--
->>  kernel/audit.h                          |  3 +
->>  kernel/auditfilter.c                    |  6 +-
->>  kernel/auditsc.c                        | 75 ++++++++++++++++++++---
->>  net/ipv4/ip_sockglue.c                  |  2 +-
->>  net/netfilter/nf_conntrack_netlink.c    |  4 +-
->>  net/netfilter/nf_conntrack_standalone.c |  2 +-
->>  net/netfilter/nfnetlink_queue.c         |  2 +-
->>  net/netlabel/netlabel_domainhash.c      |  4 +-
->>  net/netlabel/netlabel_unlabeled.c       | 24 ++++----
->>  net/netlabel/netlabel_user.c            | 20 ++++---
->>  net/netlabel/netlabel_user.h            |  6 +-
->>  net/xfrm/xfrm_policy.c                  | 10 ++--
->>  net/xfrm/xfrm_state.c                   | 20 ++++---
->>  security/integrity/ima/ima_api.c        |  7 ++-
->>  security/integrity/integrity_audit.c    |  6 +-
->>  security/security.c                     | 46 +++++++++-----
->>  security/smack/smackfs.c                |  3 +-
->>  25 files changed, 274 insertions(+), 107 deletions(-)
-> ...
->
->> diff --git a/include/linux/audit.h b/include/linux/audit.h
->> index 97cd7471e572..229cd71fbf09 100644
->> --- a/include/linux/audit.h
->> +++ b/include/linux/audit.h
->> @@ -386,6 +395,19 @@ static inline void audit_ptrace(struct task_struc=
-t *t)
->>                 __audit_ptrace(t);
->>  }
->>
->> +static inline struct audit_context *audit_alloc_for_lsm(gfp_t gfp)
->> +{
->> +       struct audit_context *context =3D audit_context();
->> +
->> +       if (context)
->> +               return context;
->> +
->> +       if (lsm_multiple_contexts())
->> +               return audit_alloc_local(gfp);
->> +
->> +       return NULL;
->> +}
-> See my other comments, but this seems wrong at face value.  The
-> additional LSM record should happen as part of the existing audit log
-> functions.
+This is my meaning of 'drop'.
 
-I'm good with that. But if you defer calling audit_alloc_local()
-until you know you need it you may be in a place where you can't
-associate the new context with the event. I think. I will have
-another go at it.
+> 
+> >
+> >   udp_read_sock()
+> >     skb = skb_recv_udp()
+> >      __skb_recv_udp()
+> >        __skb_try_recv_from_queue()
+> >         __skb_unlink()              // skb is off the queue
+> >     used = recv_actor()
+> >       sk_psock_verdict_recv()
+> 
+> Why do you intentionally ignore the fact the skb is cloned
+> and the clone is delivered??
 
-<snip>=20
+I'm only concerned about the error case here.
 
-> I think I was distracted with the local context issue and I've lost
-> track of the details here, perhaps it's best to fix the local context
-> issue first (that should be a big change to this patch) and then we
-> can take another look.
+> 
+> >         return 0;
+> >     if (used <= 0) {
+> >       kfree(skb)         // skb is unlink'd and kfree'd
+> 
+> Why do you ignore the other kfree_skb() I added in this patch?
+> Which is clearly on the non-error path. This is why I said the
+> skb needs to be freed _regardless_ of error or not. You just
+> keep ignoring it.
 
-I really need to move forward. I'll give allocation of local contexts
-as necessary in audit_log_task_context() another shot.=20
+Agree it needs a kfree_skb in both cases I'm not ignoring it. My
+issue with this fix is it is not complete. We need some counter
+to increment the udp stats so we can learn about these drops.
+And it looks like an extra two lines will get us that.
 
->
->
-> --
-> paul moore
-> www.paul-moore.com
+> 
+> 
+> >       break;
+> >     return 0
+> >
+> > So if in the error case the skb is unlink'd from the queue and
+> > kfree'd where is it still existing, how do we get it back? It
+> > sure looks dropped to me. Yes, the kfree() is needed to not
+> > leak it, but I'm saying we don't want to drop packets silently.
+> 
+> See above, you clearly ignored the other kfree_skb() which is
+> on non-error path.
 
+Ignored in this thread because its correct and looks good to me.
+My only issue is with the error path.
+
+> 
+> > The convention in UDP space looks to be inc sk->sk_drop and inc
+> > the MIB. When we have to debug this on deployed systems and
+> > packets silently get dropped its going to cause lots of pain so
+> > lets be sure we get the counters correct.
+> 
+> Sure, let me quote what I already said:
+> " A separate patch is need to check desc->error, if really needed."
+
+Check desc->error or even just used <= 0 is sufficient here. Yes it is
+really needed I don't want to debug this in a prod environment
+without it.
+
+> 
+> This patch, as its subject tells, aims to address a memory leak, not
+> to address error counters. BTW, TCP does not increase error
+
+OK either add the counters in this patch or as a series of two
+patches so we get a complete fix in one series. Without it some
+box out there will randomly drop UDP packets, probably DNS
+packets for extra fun, and we will have no way of knowing other
+than sporadic packet loss. Unless your arguing against having the
+counters or that the counters don't make sense for some reason?
+
+> counters either, yet another reason it deserves a separate patch
+> to address both.
+
+TCP case is different if we drop packets in a TCP error case
+thats not a 'lets increment the counters' problem the drop needs
+to be fixed we can't let data fall out of a TCP stream because
+no one will retransmit it. We've learned this the hard way.
+
+> 
+> Thanks.
