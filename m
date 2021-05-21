@@ -2,201 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0B6638C2A9
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 11:08:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E88C38C338
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 11:34:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235672AbhEUJJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 05:09:52 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:50320 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235567AbhEUJJu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 05:09:50 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 14L98DFE0010562, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 14L98DFE0010562
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 21 May 2021 17:08:13 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 21 May 2021 17:08:12 +0800
-Received: from fc32.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
- (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Fri, 21 May
- 2021 17:08:01 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        Hayes Wang <hayeswang@realtek.com>,
-        <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>
-Subject: [PATCH net] r8152: check the informaton of the device
-Date:   Fri, 21 May 2021 17:07:34 +0800
-Message-ID: <1394712342-15778-363-Taiwan-albertk@realtek.com>
-X-Mailer: Microsoft Office Outlook 11
+        id S236548AbhEUJfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 05:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59510 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232906AbhEUJfY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 05:35:24 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC57AC061574;
+        Fri, 21 May 2021 02:34:00 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id d11so20348503wrw.8;
+        Fri, 21 May 2021 02:34:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=imeCbusdpJ8n4ZoOyUiUylLuf21SNxjoYsk0+9mvpX8=;
+        b=ov8OOZbvhaT7oXctO9aUDR0w6cl67+mD52rMqgqC+qkb4SpIptFivLQ9NrJ5PT5hkV
+         a9bsRKpn/f6/5h/NJMf1cEmpvVSNK6PGfqtRbba/yWf6MQAgj5EMZ7EHMSaC0xtuitiu
+         1WGDR/pg7NpTg6JcmbPxbnGnuJWX0A+4ZM9VUpaSvDOBeJBvcxXo9EimnNw3CDDwkKcu
+         WNCV53VRtIWLGzSChSbdS+xruU1qquVqdZDJOv4SFh+KZCo4mWsBJJ3jmuawf+aW6VAZ
+         M4sYMduI9WVU2PdHeDdJz/v8yUiEPq04WSPkipiSC490pREnCMcDkySmQU62O1uEw2J9
+         u4uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=imeCbusdpJ8n4ZoOyUiUylLuf21SNxjoYsk0+9mvpX8=;
+        b=qAhr2fetPRuWGpf4HHJE9HVTa0MxGRdgV1kva3z0AI7RfRwlTPuR+/XSNMf3EYxcdS
+         nPHmVpYPMrqAwcQq09b8Q2gPsa9RH8q8ovD9AXJ90Im6b7kBvMd7ZSDCEVAbbCRURv7A
+         eKjhxlPySurxS9TZ+3ndvYs/yhl5x+FKzm4S//XO2Tq7e0YFUm2tVa7xtMuEUhtYj7yx
+         UV5a0ztQOqRGKZ3HYrol5RKWvKrB00apx3Tlzi/rydbtZbEBfhbqEo3d+mpnKnqj4Q7Y
+         mtnZlsYWggZmP6nRG8D4Y/rQvdBB9cmrIBkZPAJ7yAKrYpLhksXHoF/Ly1VQAstMjPF8
+         P3Tw==
+X-Gm-Message-State: AOAM533+XzNCDOmM1Q3J4HewB2uAf2E4RGGBrJ5B+j1eBPouw73nrFmO
+        TyjNAYDGBDJJUkJrvIUnttrMy4dVl1O9gc0jnrQ=
+X-Google-Smtp-Source: ABdhPJzuO7pAw76NCPCBzlt+kNUCh9XZZ7T+7qLd29OuyC1fRjNYDvzgD2Z3dSe7CCgyQMXJhorLzw==
+X-Received: by 2002:adf:f751:: with SMTP id z17mr8525694wrp.150.1621589639610;
+        Fri, 21 May 2021 02:33:59 -0700 (PDT)
+Received: from [192.168.8.197] ([85.255.236.182])
+        by smtp.gmail.com with ESMTPSA id x13sm1448649wro.31.2021.05.21.02.33.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 May 2021 02:33:59 -0700 (PDT)
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Horst Schirmeier <horst.schirmeier@tu-dortmund.de>,
+        "Franz-B . Tuneke" <franz-bernhard.tuneke@tu-dortmund.de>,
+        Christian Dietrich <stettberger@dokucode.de>
+References: <cover.1621424513.git.asml.silence@gmail.com>
+ <8ec8373d406d1fcb41719e641799dcc5c0455db3.1621424513.git.asml.silence@gmail.com>
+ <20210521010752.lky4pz7zipefrfr7@ast-mbp>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+Subject: Re: [PATCH 15/23] io_uring: enable BPF to submit SQEs
+Message-ID: <a5cc80c8-5dea-031f-703e-cc18d6625ad6@gmail.com>
+Date:   Fri, 21 May 2021 10:33:50 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.177.102]
-X-ClientProxiedBy: RTEXMBS02.realtek.com.tw (172.21.6.95) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
-X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: trusted connection
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 05/21/2021 08:46:00
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzUvMjEgpFekyCAwMzo1MDowMA==?=
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzUvMjEgpFekyCAwNzozMTowMA==?=
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/21/2021 08:44:16
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 10
-X-KSE-AntiSpam-Info: Lua profiles 163823 [May 21 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 446 446 0309aa129ce7cd9d810f87a68320917ac2eba541
-X-KSE-AntiSpam-Info: {Headers: Prob_stat_susp_url_only, url2}
-X-KSE-AntiSpam-Info: {Tracking_one_url, url3}
-X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;syzkaller.appspot.com:7.1.1
-X-KSE-AntiSpam-Info: {Track_Chinese_Simplified, headers_charset}
-X-KSE-AntiSpam-Info: Rate: 10
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 05/21/2021 08:46:00
+In-Reply-To: <20210521010752.lky4pz7zipefrfr7@ast-mbp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Verify some fields of the USB descriptor to make sure the driver
-could be used by the device.
+On 5/21/21 2:07 AM, Alexei Starovoitov wrote:
+> On Wed, May 19, 2021 at 03:13:26PM +0100, Pavel Begunkov wrote:
+>>  
+>> +BPF_CALL_3(io_bpf_queue_sqe, struct io_bpf_ctx *,		bpf_ctx,
+>> +			     const struct io_uring_sqe *,	sqe,
+>> +			     u32,				sqe_len)
+>> +{
+>> +	struct io_ring_ctx *ctx = bpf_ctx->ctx;
+>> +	struct io_kiocb *req;
+>> +
+>> +	if (sqe_len != sizeof(struct io_uring_sqe))
+>> +		return -EINVAL;
+>> +
+>> +	req = io_alloc_req(ctx);
+> 
+> that is GFP_KERNEL allocation.
+> It's only allowed from sleepable bpf progs and further down
+> there is a correct check for it, so all good.
+> But submitting sqe is a fundemntal io_uring operation,
+> so what is the use case for non-sleepable?
+> In other words why bother? Allow sleepable only and simplify the code?
 
-BugLink: https://syzkaller.appspot.com/bug?id=912c9c373656996801b4de61f1e3cb326fe940aa
-Reported-by: syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com
-Fixes: c2198943e33b ("r8152: search the configuration of vendor mode")
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
----
- drivers/net/usb/r8152.c | 71 +++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 69 insertions(+), 2 deletions(-)
+Actual submission may be moved out of BPF, so enabling it for both, but
+the question I wonder about is what are the plans for sleepable
+programs? E.g. if it's a marginal features much limited in
+functionality, e.g. iirc as it's not allowed to use some BPF data
+types, it may not worth doing.
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 136ea06540ff..f348350f5da1 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -8107,6 +8107,69 @@ static void r8156b_init(struct r8152 *tp)
- 	tp->coalesce = 15000;	/* 15 us */
- }
+> 
+>> +	if (unlikely(!req))
+>> +		return -ENOMEM;
+>> +	if (!percpu_ref_tryget_many(&ctx->refs, 1)) {
+>> +		kmem_cache_free(req_cachep, req);
+>> +		return -EAGAIN;
+>> +	}
+>> +	percpu_counter_add(&current->io_uring->inflight, 1);
+>> +	refcount_add(1, &current->usage);
+>> +
+>> +	/* returns number of submitted SQEs or an error */
+>> +	return !io_submit_sqe(ctx, req, sqe);
+> 
+> A buggy bpf prog will be able to pass junk sizeof(struct io_uring_sqe)
+> as 'sqe' here.
+> What kind of validation io_submit_sqe() does to avoid crashing the kernel?
+
+It works on memory rw shared with userspace, so it already assumes
+the worst
  
-+static bool rtl_check_vendor_ok(struct usb_interface *intf)
-+{
-+	struct usb_host_interface *alt = intf->cur_altsetting;
-+	struct usb_host_endpoint *in = NULL, *out = NULL, *intr = NULL;
-+	unsigned int ep;
-+
-+	if (alt->desc.bNumEndpoints < 3) {
-+		dev_err(&intf->dev, "Unexpected bNumEndpoints %d\n", alt->desc.bNumEndpoints);
-+		return false;
-+	}
-+
-+	for (ep = 0; ep < alt->desc.bNumEndpoints; ep++) {
-+		struct usb_host_endpoint *e;
-+
-+		e = alt->endpoint + ep;
-+
-+		/* ignore endpoints which cannot transfer data */
-+		if (!usb_endpoint_maxp(&e->desc))
-+			continue;
-+
-+		switch (e->desc.bmAttributes) {
-+		case USB_ENDPOINT_XFER_INT:
-+			if (!usb_endpoint_dir_in(&e->desc))
-+				continue;
-+			if (!intr)
-+				intr = e;
-+			break;
-+		case USB_ENDPOINT_XFER_BULK:
-+			if (usb_endpoint_dir_in(&e->desc)) {
-+				if (!in)
-+					in = e;
-+			} else if (!out) {
-+				out = e;
-+			}
-+			break;
-+		default:
-+			continue;
-+		}
-+	}
-+
-+	if (!in || !out || !intr) {
-+		dev_err(&intf->dev, "Miss Endpoints\n");
-+		return false;
-+	}
-+
-+	if ((in->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK) != 1) {
-+		dev_err(&intf->dev, "Invalid Rx Endpoints\n");
-+		return false;
-+	}
-+
-+	if ((out->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK) != 2) {
-+		dev_err(&intf->dev, "Invalid Tx Endpoints\n");
-+		return false;
-+	}
-+
-+	if ((intr->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK) != 3) {
-+		dev_err(&intf->dev, "Invalid interrupt Endpoints\n");
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
- static bool rtl_vendor_mode(struct usb_interface *intf)
- {
- 	struct usb_host_interface *alt = intf->cur_altsetting;
-@@ -8115,12 +8178,15 @@ static bool rtl_vendor_mode(struct usb_interface *intf)
- 	int i, num_configs;
- 
- 	if (alt->desc.bInterfaceClass == USB_CLASS_VENDOR_SPEC)
--		return true;
-+		return rtl_check_vendor_ok(intf);
- 
- 	/* The vendor mode is not always config #1, so to find it out. */
- 	udev = interface_to_usbdev(intf);
- 	c = udev->config;
- 	num_configs = udev->descriptor.bNumConfigurations;
-+	if (num_configs < 2)
-+		return false;
-+
- 	for (i = 0; i < num_configs; (i++, c++)) {
- 		struct usb_interface_descriptor	*desc = NULL;
- 
-@@ -8135,7 +8201,8 @@ static bool rtl_vendor_mode(struct usb_interface *intf)
- 		}
- 	}
- 
--	WARN_ON_ONCE(i == num_configs);
-+	if (i == num_configs)
-+		dev_err(&intf->dev, "Unexpected Device\n");
- 
- 	return false;
- }
+> General comments that apply to all patches:
+> - commit logs are way too terse. Pls expand with details.
+> - describe new bpf helpers in comments in bpf.h. Just adding them to an enum is not enough.
+> - selftest/bpf are mandatory for all new bpf features.
+> - consider bpf_link style of attaching bpf progs. We had enough issues with progs
+>   that get stuck due to application bugs. Auto-detach saves the day more often than not.
+
+Thanks for taking a look! I have no idea what bpf_link is, need
+to check it out
+
 -- 
-2.26.3
-
+Pavel Begunkov
