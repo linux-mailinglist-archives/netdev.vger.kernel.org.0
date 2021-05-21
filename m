@@ -2,297 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A364938CC08
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 19:22:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B808638CC2A
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 19:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230048AbhEURYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 13:24:10 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:35736 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231865AbhEURYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 13:24:07 -0400
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14LHCghw017513;
-        Fri, 21 May 2021 17:22:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=ZTsygH6mblFDw8MoUh1s+AUBraJt9QQfeiFBgR8qFu0=;
- b=h9sthdOVBYpXX0Excaxc9IqlLbmqDKZTn7L3Y/PZWv3yWG3y7MmxNDO9Fvi5QLInR8nB
- g1gVUvJ6KU71pxvEBK9QhAv6G0YCL1sIvW2J63kQ0GFOTt7VuMZsBjJ0JYBhVuo/7VhX
- QvNIyWwtAkMxXUlrnMXLhsyn/E6pypqgjQqEknAEId4cU/Dz5JPvQJ2xmBGHzWzEJqaq
- 1KlZVkKZGK/6Mmvwvpi7bY7v8Wn5WZIs41BQ/h3AuobLk/D40nZhqaOdW05RaFQV/IaH
- BHP/SZrz4i+3XJTcTjHY/RklX3Jc00IG0UNdgeFvMKedInOi93BwOcD8p/FLXko9nQOT Hw== 
-Received: from oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 38n4u8ryxv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 21 May 2021 17:22:31 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.podrdrct (8.16.0.36/8.16.0.36) with SMTP id 14LHHTgC054541;
-        Fri, 21 May 2021 17:22:30 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2168.outbound.protection.outlook.com [104.47.57.168])
-        by aserp3030.oracle.com with ESMTP id 38meehxgcw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 21 May 2021 17:22:30 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QNTP91HyVf0vRKmmwZ03QK42tb8JJP5EWqHf0qIROi3T604LzPEk+XauNvxaqDCMxSfC98yBIOfOE78xvH+39KVX6mHpATfn1nKnwaFVJpQJeGbBxXzMQW3U5LmFwQFOwXuWpul9J6dhLjknJZrYIID0xPGYxDf2brFSsKkQU/wW1zosG6S9WFQDYNuTtItuzBlWTxK7DkddbR6fC1jWDNlxKYeYbWeL04h2p1iNesMVnpC/kiij9wWECsirf+QC/pIQJqVK5PdPWwA0JrkcUqs1i6Pks29O+jhjWNiaSjIerlhyjnFNyfyrFuzWHCkQfMjd1KdsNuXZG03gXBNqEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZTsygH6mblFDw8MoUh1s+AUBraJt9QQfeiFBgR8qFu0=;
- b=nNFMZGPnvZKQgA0tIelBs7jsb/asVkLRQpFI/x16JK2kfGNf+xPrQLCxhwEHdkQTLwJGLMu6qT+ERc0Ab/04UTvGaMUCiD56SMqw64mOx3t4QudpJhBd+ui83otJR+0Ef4CEgmaRc1912Gc2LC+agVdwlNX54hXWYFzwwzUjC6pb+HmXZh7umVcSlK3rmzKRfPiaijqjOH7CjHfR4RV7XKiGpOhEhXe16aTRLW78CsPJHtRq/oAR/UtEc0tyLqqdR2lytc/65CXfQal5Dm3WCLiQxcvEFyE0msHMni0+eYkKMz2FWFlRNE2ZWwtIsK/2LeUC0k/2EGa+IBdJaxkFVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZTsygH6mblFDw8MoUh1s+AUBraJt9QQfeiFBgR8qFu0=;
- b=UmmsYfLVKPRQY+0qKExz6SuSqs33dMHIKq8r3y9r+LkWKS4LqTLc0IprMHpiOBYvlRjZpuLNV+U8tpKP8gEJtdrgaYDpb4F9Zpw3jIwOk1eg3P1SO22W3+BUO3dKzvj3ih/i9VZ+qqt5HY7JLLhxP7HB2kayM/uMX/2X/MMUiXQ=
-Authentication-Results: marvell.com; dkim=none (message not signed)
- header.d=none;marvell.com; dmarc=none action=none header.from=oracle.com;
-Received: from SN6PR10MB2943.namprd10.prod.outlook.com (2603:10b6:805:d4::19)
- by SN6PR10MB2511.namprd10.prod.outlook.com (2603:10b6:805:41::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23; Fri, 21 May
- 2021 17:22:28 +0000
-Received: from SN6PR10MB2943.namprd10.prod.outlook.com
- ([fe80::168:1a9:228:46f3]) by SN6PR10MB2943.namprd10.prod.outlook.com
- ([fe80::168:1a9:228:46f3%6]) with mapi id 15.20.4129.034; Fri, 21 May 2021
- 17:22:28 +0000
-Subject: Re: [RFC PATCH v5 03/27] nvme-tcp-offload: Add device scan
- implementation
-To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org
-Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
-        pkushwaha@marvell.com, malin1024@gmail.com,
-        Dean Balandin <dbalandin@marvell.com>
-References: <20210519111340.20613-1-smalin@marvell.com>
- <20210519111340.20613-4-smalin@marvell.com>
-From:   Himanshu Madhani <himanshu.madhani@oracle.com>
-Organization: Oracle
-Message-ID: <3566d254-aa68-d3e2-5333-8d6b1ff367d2@oracle.com>
-Date:   Fri, 21 May 2021 12:22:26 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-In-Reply-To: <20210519111340.20613-4-smalin@marvell.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [70.114.128.235]
-X-ClientProxiedBy: SN4PR0701CA0006.namprd07.prod.outlook.com
- (2603:10b6:803:28::16) To SN6PR10MB2943.namprd10.prod.outlook.com
- (2603:10b6:805:d4::19)
+        id S238192AbhEURaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 13:30:55 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:40949 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232909AbhEURax (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 13:30:53 -0400
+Received: by mail-io1-f70.google.com with SMTP id g17-20020a6b6b110000b0290458f55b8334so7906434ioc.7
+        for <netdev@vger.kernel.org>; Fri, 21 May 2021 10:29:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=0aQfBt3ao0BTqd+st7XGC1jU2R3P5r17YU2qEOvxQvQ=;
+        b=SGzIinQ8Z0ELVvCTsh99cZb875WkOfuv950H1shKdv8jjWnF1RC2YI5wkbdTTpl6G3
+         tYvwivmO9I8JDRkcSPrOzzmutRriUIN3aTL07HYfB9ghuLGdj2dFwPY5UFIqD2d820cz
+         UeXr/N49tJ/vtN5y/vrlzLFGYm9KN+SgTkaSLrWtmM+NhBEZb6sP5XkygyKShs9FQ3Gr
+         hWAafm281tnPfBUJrtSCJ8XwERSo8GbEO7MNihK4ZWH56qjR6PbNZ2YVmd+H1+vaeIK3
+         6XJK04mXthGmYo4vG/U0GQ6FoOBt9HtovtYqB2gTott1X12ychkDdy40hfk6QJ3KpBWL
+         ioTw==
+X-Gm-Message-State: AOAM533J2CfBzjxLA6o0/scCalvZPvJlVwqNA/XWl9LBzgI8Z5uUiLIf
+        nU03SRexoL+lSme2n5qQbuS1m0yUocCqdQYBEuVS9WYa91M7
+X-Google-Smtp-Source: ABdhPJygau1mI+CKQEdNyLZZFC3bGz6FndKLoRLvKhYcNFQ/BnqVE/1xeoMOlm11MpKThV74uYLO7wBvKDGcszipiZOyQKFp2Ok6
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.28] (70.114.128.235) by SN4PR0701CA0006.namprd07.prod.outlook.com (2603:10b6:803:28::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23 via Frontend Transport; Fri, 21 May 2021 17:22:27 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: eb09dc8d-d0a7-49e6-b6d7-08d91c7d0232
-X-MS-TrafficTypeDiagnostic: SN6PR10MB2511:
-X-Microsoft-Antispam-PRVS: <SN6PR10MB25112344ECE2DF03745EF215E6299@SN6PR10MB2511.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:556;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 587GGknoNQYCa3bGyOSuY1JCLhOgnEHTP3JtMNxzrV4YVjlVBVlx/HGdk+HKUZNScuf36cT0dRljCQB/4TvLsHOitZfnjsCMoXiV6of71seT760FiqBPa+C8kne307cDPHn4/FoQloUFckDLjGHTVArzeFKb3WuabpXABqyF7S9SZr+bZ5/5mAgZubdDn8uUwS8al/pAb+DTEuV2d3mPneYvML/8st28KXXlnl1TLWQCxKticxYw7KQKtLaSf1o6qdN29JRf24pHwaHB9VxJXUkujOsFqgbcFdpHyw1C1ZxneBNRh7WsxuYt4MI3sglXComnyu4hPbcWXxO4FYdoRyVbHjqxik8gUd0ZMLSS2ScAguRqmNAp5ouM5tC4rrg1vg5YODjKLx1GpRsxBJ/5dRxTHc1RckJgQ5JkMeZ+KF4xIgEWelRVZTw/Y9OgNbDsG83kQmpH87FjvTtP7vQFqdhOrPmEZIiLQZYQ/2aKxvthDPL2bwqyYt9qs3wL+WmTG+9Zq5gNpHZdaZDmI99stIBoDiQ1Ej11c6koYoVXgFGQt3DWRH+qyziNq6C6zzS6Ymtjss3a5rBC5kf6soBy2ykqodi3w+m8zQLrGkHJHfUf10V+DXnHZ+lcBlGf9pdPvliX4TnhQEXiRBGfYdTYHA3BbDckRQkCTem6pK+jbKvf6c/Ebv2lHsI7CrVLXNcM
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB2943.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(346002)(136003)(376002)(366004)(396003)(26005)(83380400001)(2906002)(53546011)(7416002)(36916002)(2616005)(956004)(4326008)(6486002)(66476007)(16526019)(44832011)(86362001)(8676002)(478600001)(36756003)(31696002)(66556008)(316002)(8936002)(38100700002)(5660300002)(16576012)(31686004)(66946007)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?MVo0dXZQMk9NaFNpcDd5NUlZSk9vb1VnaUhVc2wyWEgvQ3lucTM1ZUc3MnRo?=
- =?utf-8?B?cm40WG1pek9xOGZHTVdRTkNHbTRBbTlsSXhyZkFtK2UrZElwQ3R4WmJBcVBn?=
- =?utf-8?B?eXRpd295aFFNTk1CejU0dmVlQllFWTdBd0JETE1SUi9ISEFIQ0J0endieUpP?=
- =?utf-8?B?MmlpNlFoZDZ5bmZaSHlyN0xsSjd3MW5mRUZuRFRwWFlxNGtOcEtlWlJHL0Fy?=
- =?utf-8?B?QThoNU5JRWhiSHFjM3F1dXlkVm9kaFZyYURYZ0lRSzRDR3VPY3hDWlhVTGx0?=
- =?utf-8?B?NGhWZmRGNXNjNFQ2WTdXamtNMWp0ZENDSFlFTnRiT3hJYnNXMkt0ejRuUWNQ?=
- =?utf-8?B?TEtSc0hwRGcvWnNPbFhGU1hubHV4d3RDSGptTjQ3dnR3dkJ3ZjFrdmVhR2hC?=
- =?utf-8?B?S3ZjNmNqSWUvc1MwWGdKTGNVaE1EMzdidEl4S1NMUFA2c0czMXFyeDM3TVor?=
- =?utf-8?B?aVlTakpHSGhRZkZlSlZnN2dWK25semNzSWlZRjh4dVVvdGQxNkVudmY0Z1lt?=
- =?utf-8?B?Q2ttbmZMSWVlSUwwazhTQ0JYeUJoWVFjN2Qya0RpTkI5N1VwMnN5MUlSdTFv?=
- =?utf-8?B?WWRNWGZCWnhhUnQwL2NmRmRJWjFLdVJoYUNXTzMza24vUG1tR2xvZHdqeTJr?=
- =?utf-8?B?QXZhU0xSdG5kQzNYMlkvQUpGUjhKcklteFp3bFRUUEFBSmtvVUJmUVpYejZI?=
- =?utf-8?B?eEw4SEMxZGVaVEhrc1FGVXpUbEkxemNxSDdwRnBlL2llUjVnd3pwUkpFNTBN?=
- =?utf-8?B?QVE2Qy9WMDI0VXhtcnZVMGxDZTJjYVkyY0l4VzAvdFlmWXEzdjVxTHZjcXR5?=
- =?utf-8?B?T2lHUE83UDQxb2dpY2NndHBGdHpvOEY0ODEvOGFJSkJaNmZaejQ5RWpwVGF3?=
- =?utf-8?B?MXRWT0xRUzVtZ05mZ3ZDUXNSdVRwMG05cXR4NHJib1JoQjZVWFVrMEhvN1dO?=
- =?utf-8?B?UVJ1V3ppTk5KRUxzS2ozZTFMNVg0K05xcWRFaDNaSVpWT2NHMllJQVp1MmxH?=
- =?utf-8?B?WlJIMHJ3Z1piWHlyS3VOZVJ6UHFiWjZIUERzcmkrZ28yUCthZTU2VTB0ZERY?=
- =?utf-8?B?cDQ2Y0xDY2JWbWd1STdHYnQ4R013di9maXU3bWd2MHl5UlZZSFZaaW5pM0Nu?=
- =?utf-8?B?SXBoYS9KcXFNYUUxdFJHZEowVmFlcDNLYjVGSDRUNVZNZUkvZDZ6a3J6b1NL?=
- =?utf-8?B?Z3NJVk9ORlcxWEdna0ZUMWp2MXR4aU9CZ3FxYytmZlhKOW5qS1dhc0FBZTdG?=
- =?utf-8?B?M3ZZNXI0aUlua2lQMkVqTnhZODh0MlVsYTZlZGQyVEtUQzZqM0xxemlMT3ZN?=
- =?utf-8?B?TUxKS1FWMXp6bHZwb1k4eHdlSWdod2tseEpxaWpLN2wyeGsxdUQ5YWkzQkJz?=
- =?utf-8?B?aExCVjBXZXM5anVwRnlkclZCUzRxV0NSa1B0Z2xaY1VPZFhLUzJQeG9ySTBX?=
- =?utf-8?B?eFpVbXRiZ2FYckMrUmxNbXo1YXorY0ZqVEZ0OWRpVVlPQUlqdkc3QVozYXJM?=
- =?utf-8?B?RE9QbDQ4TDlEWVNQSEthbFJyMVNzTmhDSkNLRWxSQ1hBY0VqSXZzeS9tekhD?=
- =?utf-8?B?bHhZaFNJZ1NmNVBqekFDRFVRU2Y0OFlWYXZoaHJtdmFYZDFoQ054QVpVOVJa?=
- =?utf-8?B?MG54Z2dlODNaRnBlS1dZd2F6SitrQkVGTzZVT1JKdkszOU4wVjFQZ2Ixcmhk?=
- =?utf-8?B?NDEvNFhlZVN1cHdIM0tPdWtjMTV1QVVqMnNsNXhJeStSVzNQSWRFRk1DanZR?=
- =?utf-8?Q?WkrXmq6teeH57ULyPcJ0yTjKMK+NKuCc0wcdJzV?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eb09dc8d-d0a7-49e6-b6d7-08d91c7d0232
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB2943.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2021 17:22:28.5382
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1UEyalLceDbTkXhEfCkaHRPGR81BPjzAWQxfVCxoCu0lLyFMEcod1Xr1daS7D6FGnSnRVGxyCNHYiGgfHGvzOj/TX2K6Eyyvy00CTj/NpLI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB2511
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9991 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 adultscore=0
- phishscore=0 malwarescore=0 bulkscore=0 spamscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
- definitions=main-2105210091
-X-Proofpoint-GUID: Ts_P3UUsySQzPbbLu3eL62fHN4QFbGWi
-X-Proofpoint-ORIG-GUID: Ts_P3UUsySQzPbbLu3eL62fHN4QFbGWi
+X-Received: by 2002:a05:6602:14c4:: with SMTP id b4mr12723587iow.82.1621618169228;
+ Fri, 21 May 2021 10:29:29 -0700 (PDT)
+Date:   Fri, 21 May 2021 10:29:29 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f034fc05c2da6617@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in check_all_holdout_tasks_trace
+From:   syzbot <syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
+        axboe@kernel.dk, bpf@vger.kernel.org, christian@brauner.io,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, shakeelb@google.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    f18ba26d libbpf: Add selftests for TC-BPF management API
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=17f50d1ed00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8ff54addde0afb5d
+dashboard link: https://syzkaller.appspot.com/bug?extid=7b2b13f4943374609532
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: use-after-free in check_all_holdout_tasks_trace+0x302/0x420 kernel/rcu/tasks.h:1084
+Read of size 1 at addr ffff88802767a05c by task rcu_tasks_trace/12
+
+CPU: 0 PID: 12 Comm: rcu_tasks_trace Not tainted 5.12.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:233
+ __kasan_report mm/kasan/report.c:419 [inline]
+ kasan_report.cold+0x7c/0xd8 mm/kasan/report.c:436
+ check_all_holdout_tasks_trace+0x302/0x420 kernel/rcu/tasks.h:1084
+ rcu_tasks_wait_gp+0x594/0xa60 kernel/rcu/tasks.h:358
+ rcu_tasks_kthread+0x31c/0x6a0 kernel/rcu/tasks.h:224
+ kthread+0x3b1/0x4a0 kernel/kthread.c:313
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+
+Allocated by task 8477:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:46 [inline]
+ set_alloc_info mm/kasan/common.c:428 [inline]
+ __kasan_slab_alloc+0x84/0xa0 mm/kasan/common.c:461
+ kasan_slab_alloc include/linux/kasan.h:236 [inline]
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:2912 [inline]
+ kmem_cache_alloc_node+0x269/0x3e0 mm/slub.c:2948
+ alloc_task_struct_node kernel/fork.c:171 [inline]
+ dup_task_struct kernel/fork.c:865 [inline]
+ copy_process+0x5c8/0x7120 kernel/fork.c:1947
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2503
+ __do_sys_clone+0xc8/0x110 kernel/fork.c:2620
+ do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Freed by task 12:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:357
+ ____kasan_slab_free mm/kasan/common.c:360 [inline]
+ ____kasan_slab_free mm/kasan/common.c:325 [inline]
+ __kasan_slab_free+0xfb/0x130 mm/kasan/common.c:368
+ kasan_slab_free include/linux/kasan.h:212 [inline]
+ slab_free_hook mm/slub.c:1581 [inline]
+ slab_free_freelist_hook+0xdf/0x240 mm/slub.c:1606
+ slab_free mm/slub.c:3166 [inline]
+ kmem_cache_free+0x8a/0x740 mm/slub.c:3182
+ __put_task_struct+0x26f/0x400 kernel/fork.c:747
+ trc_wait_for_one_reader kernel/rcu/tasks.h:935 [inline]
+ check_all_holdout_tasks_trace+0x179/0x420 kernel/rcu/tasks.h:1081
+ rcu_tasks_wait_gp+0x594/0xa60 kernel/rcu/tasks.h:358
+ rcu_tasks_kthread+0x31c/0x6a0 kernel/rcu/tasks.h:224
+ kthread+0x3b1/0x4a0 kernel/kthread.c:313
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+
+Last potentially related work creation:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_record_aux_stack+0xe5/0x110 mm/kasan/generic.c:345
+ __call_rcu kernel/rcu/tree.c:3038 [inline]
+ call_rcu+0xb1/0x750 kernel/rcu/tree.c:3113
+ put_task_struct_rcu_user+0x7f/0xb0 kernel/exit.c:180
+ release_task+0xca1/0x1690 kernel/exit.c:226
+ wait_task_zombie kernel/exit.c:1108 [inline]
+ wait_consider_task+0x2fb5/0x3b40 kernel/exit.c:1335
+ do_wait_thread kernel/exit.c:1398 [inline]
+ do_wait+0x724/0xd40 kernel/exit.c:1515
+ kernel_wait4+0x14c/0x260 kernel/exit.c:1678
+ __do_sys_wait4+0x13f/0x150 kernel/exit.c:1706
+ do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Second to last potentially related work creation:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_record_aux_stack+0xe5/0x110 mm/kasan/generic.c:345
+ __call_rcu kernel/rcu/tree.c:3038 [inline]
+ call_rcu+0xb1/0x750 kernel/rcu/tree.c:3113
+ put_task_struct_rcu_user+0x7f/0xb0 kernel/exit.c:180
+ context_switch kernel/sched/core.c:4342 [inline]
+ __schedule+0x91e/0x23e0 kernel/sched/core.c:5147
+ preempt_schedule_common+0x45/0xc0 kernel/sched/core.c:5307
+ preempt_schedule_thunk+0x16/0x18 arch/x86/entry/thunk_64.S:35
+ try_to_wake_up+0xa12/0x14b0 kernel/sched/core.c:3489
+ wake_up_process kernel/sched/core.c:3552 [inline]
+ wake_up_q+0x96/0x100 kernel/sched/core.c:597
+ futex_wake+0x3e9/0x490 kernel/futex.c:1634
+ do_futex+0x326/0x1780 kernel/futex.c:3738
+ __do_sys_futex+0x2a2/0x470 kernel/futex.c:3796
+ do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The buggy address belongs to the object at ffff888027679c40
+ which belongs to the cache task_struct of size 6976
+The buggy address is located 1052 bytes inside of
+ 6976-byte region [ffff888027679c40, ffff88802767b780)
+The buggy address belongs to the page:
+page:ffffea00009d9e00 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88802767b880 pfn:0x27678
+head:ffffea00009d9e00 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000010200 ffffea000071e208 ffffea0000950808 ffff888140005140
+raw: ffff88802767b880 0000000000040003 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 243, ts 14372676818, free_ts 0
+ prep_new_page mm/page_alloc.c:2358 [inline]
+ get_page_from_freelist+0x1033/0x2b60 mm/page_alloc.c:3994
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5200
+ alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2272
+ alloc_slab_page mm/slub.c:1644 [inline]
+ allocate_slab+0x2c5/0x4c0 mm/slub.c:1784
+ new_slab mm/slub.c:1847 [inline]
+ new_slab_objects mm/slub.c:2593 [inline]
+ ___slab_alloc+0x44c/0x7a0 mm/slub.c:2756
+ __slab_alloc.constprop.0+0xa7/0xf0 mm/slub.c:2796
+ slab_alloc_node mm/slub.c:2878 [inline]
+ kmem_cache_alloc_node+0x12f/0x3e0 mm/slub.c:2948
+ alloc_task_struct_node kernel/fork.c:171 [inline]
+ dup_task_struct kernel/fork.c:865 [inline]
+ copy_process+0x5c8/0x7120 kernel/fork.c:1947
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2503
+ kernel_thread+0xb5/0xf0 kernel/fork.c:2555
+ call_usermodehelper_exec_work kernel/umh.c:174 [inline]
+ call_usermodehelper_exec_work+0xcc/0x180 kernel/umh.c:160
+ process_one_work+0x98d/0x1600 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:313
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+page_owner free stack trace missing
+
+Memory state around the buggy address:
+ ffff888027679f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888027679f80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff88802767a000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                    ^
+ ffff88802767a080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88802767a100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
-On 5/19/21 6:13 AM, Shai Malin wrote:
-> From: Dean Balandin <dbalandin@marvell.com>
-> 
-> As part of create_ctrl(), it scans the registered devices and calls
-> the claim_dev op on each of them, to find the first devices that matches
-> the connection params. Once the correct devices is found (claim_dev
-> returns true), we raise the refcnt of that device and return that device
-> as the device to be used for ctrl currently being created.
-> 
-> Acked-by: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Dean Balandin <dbalandin@marvell.com>
-> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
-> ---
->   drivers/nvme/host/tcp-offload.c | 94 +++++++++++++++++++++++++++++++++
->   1 file changed, 94 insertions(+)
-> 
-> diff --git a/drivers/nvme/host/tcp-offload.c b/drivers/nvme/host/tcp-offload.c
-> index 711232eba339..aa7cc239abf2 100644
-> --- a/drivers/nvme/host/tcp-offload.c
-> +++ b/drivers/nvme/host/tcp-offload.c
-> @@ -13,6 +13,11 @@
->   static LIST_HEAD(nvme_tcp_ofld_devices);
->   static DECLARE_RWSEM(nvme_tcp_ofld_devices_rwsem);
->   
-> +static inline struct nvme_tcp_ofld_ctrl *to_tcp_ofld_ctrl(struct nvme_ctrl *nctrl)
-> +{
-> +	return container_of(nctrl, struct nvme_tcp_ofld_ctrl, nctrl);
-> +}
-> +
->   /**
->    * nvme_tcp_ofld_register_dev() - NVMeTCP Offload Library registration
->    * function.
-> @@ -98,6 +103,94 @@ void nvme_tcp_ofld_req_done(struct nvme_tcp_ofld_req *req,
->   	/* Placeholder - complete request with/without error */
->   }
->   
-> +struct nvme_tcp_ofld_dev *
-> +nvme_tcp_ofld_lookup_dev(struct nvme_tcp_ofld_ctrl *ctrl)
-> +{
-> +	struct nvme_tcp_ofld_dev *dev;
-> +
-> +	down_read(&nvme_tcp_ofld_devices_rwsem);
-> +	list_for_each_entry(dev, &nvme_tcp_ofld_devices, entry) {
-> +		if (dev->ops->claim_dev(dev, &ctrl->conn_params)) {
-> +			/* Increase driver refcnt */
-> +			if (!try_module_get(dev->ops->module)) {
-> +				pr_err("try_module_get failed\n");
-> +				dev = NULL;
-> +			}
-> +
-> +			goto out;
-> +		}
-> +	}
-> +
-> +	dev = NULL;
-> +out:
-> +	up_read(&nvme_tcp_ofld_devices_rwsem);
-> +
-> +	return dev;
-> +}
-> +
-> +static int nvme_tcp_ofld_setup_ctrl(struct nvme_ctrl *nctrl, bool new)
-> +{
-> +	/* Placeholder - validates inputs and creates admin and IO queues */
-> +
-> +	return 0;
-> +}
-> +
-> +static struct nvme_ctrl *
-> +nvme_tcp_ofld_create_ctrl(struct device *ndev, struct nvmf_ctrl_options *opts)
-> +{
-> +	struct nvme_tcp_ofld_ctrl *ctrl;
-> +	struct nvme_tcp_ofld_dev *dev;
-> +	struct nvme_ctrl *nctrl;
-> +	int rc = 0;
-> +
-> +	ctrl = kzalloc(sizeof(*ctrl), GFP_KERNEL);
-> +	if (!ctrl)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	nctrl = &ctrl->nctrl;
-> +
-> +	/* Init nvme_tcp_ofld_ctrl and nvme_ctrl params based on received opts */
-> +
-> +	/* Find device that can reach the dest addr */
-> +	dev = nvme_tcp_ofld_lookup_dev(ctrl);
-> +	if (!dev) {
-> +		pr_info("no device found for addr %s:%s.\n",
-> +			opts->traddr, opts->trsvcid);
-> +		rc = -EINVAL;
-> +		goto out_free_ctrl;
-> +	}
-> +
-> +	ctrl->dev = dev;
-> +
-> +	if (ctrl->dev->ops->max_hw_sectors)
-> +		nctrl->max_hw_sectors = ctrl->dev->ops->max_hw_sectors;
-> +	if (ctrl->dev->ops->max_segments)
-> +		nctrl->max_segments = ctrl->dev->ops->max_segments;
-> +
-> +	/* Init queues */
-> +
-> +	/* Call nvme_init_ctrl */
-> +
-> +	rc = ctrl->dev->ops->setup_ctrl(ctrl, true);
-> +	if (rc)
-> +		goto out_module_put;
-> +
-> +	rc = nvme_tcp_ofld_setup_ctrl(nctrl, true);
-> +	if (rc)
-> +		goto out_uninit_ctrl;
-> +
-> +	return nctrl;
-> +
-> +out_uninit_ctrl:
-> +	ctrl->dev->ops->release_ctrl(ctrl);
-> +out_module_put:
-> +	module_put(dev->ops->module);
-> +out_free_ctrl:
-> +	kfree(ctrl);
-> +
-> +	return ERR_PTR(rc);
-> +}
-> +
->   static struct nvmf_transport_ops nvme_tcp_ofld_transport = {
->   	.name		= "tcp_offload",
->   	.module		= THIS_MODULE,
-> @@ -107,6 +200,7 @@ static struct nvmf_transport_ops nvme_tcp_ofld_transport = {
->   			  NVMF_OPT_RECONNECT_DELAY | NVMF_OPT_HDR_DIGEST |
->   			  NVMF_OPT_DATA_DIGEST | NVMF_OPT_NR_POLL_QUEUES |
->   			  NVMF_OPT_TOS,
-> +	.create_ctrl	= nvme_tcp_ofld_create_ctrl,
->   };
->   
->   static int __init nvme_tcp_ofld_init_module(void)
-> 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-
--- 
-Himanshu Madhani                                Oracle Linux Engineering
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
