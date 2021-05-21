@@ -2,154 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3931138BEC1
-	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 07:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4B6C38BECB
+	for <lists+netdev@lfdr.de>; Fri, 21 May 2021 08:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231803AbhEUF6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 01:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38512 "EHLO
+        id S231145AbhEUGCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 May 2021 02:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231310AbhEUF6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 01:58:44 -0400
-Received: from mout-u-204.mailbox.org (mout-u-204.mailbox.org [IPv6:2001:67c:2050:1::465:204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CF4C061574
-        for <netdev@vger.kernel.org>; Thu, 20 May 2021 22:57:22 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-u-204.mailbox.org (Postfix) with ESMTPS id 4FmbV76hlDzQk0t;
-        Fri, 21 May 2021 07:57:19 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by hefe.heinlein-support.de (hefe.heinlein-support.de [91.198.250.172]) (amavisd-new, port 10030)
-        with ESMTP id JXTzgFJnG3Lf; Fri, 21 May 2021 07:57:16 +0200 (CEST)
-From:   Stefan Roese <sr@denx.de>
-To:     netdev@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        Reto Schneider <code@reto-schneider.ch>,
-        Reto Schneider <reto.schneider@husqvarnagroup.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH net] net: ethernet: mtk_eth_soc: Fix packet statistics support for MT7628/88
-Date:   Fri, 21 May 2021 07:57:15 +0200
-Message-Id: <20210521055715.1844707-1-sr@denx.de>
+        with ESMTP id S230383AbhEUGCO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 02:02:14 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C1AC061763
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 23:00:51 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id q10so18700226qkc.5
+        for <netdev@vger.kernel.org>; Thu, 20 May 2021 23:00:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=T+EecFcPWBZeGeXQf/VDF6kV6mLEHDKfDljs1FpMWXA=;
+        b=vRUAmyqgKX+SbOLcbP+H13RzJCytdCZEes9PMhZV+p4nRlqCPxqnEU2MCUEr9s3NPK
+         /4aZBVJMvE0dsM6UjJohgr7J7fGqhMuEDYdlYclK7ZFJDrzMH3F3qw5ZFTVNaEPERN6P
+         NEV/zA4KkZnQm5rq6nv3cDO/hpsCr2dsxBiz8e4a3AICEcB8wRjc4P1yUMyeomMX/LUu
+         7z2UB++Hy3yf/KhZfAeekiYGLVLKHZLTAFAJgOp+4NzRlvOqzks+xluWxAY9+urBOD+C
+         8dCWsyxwEZO0VZacy2hZoXY3dP4sw3fP7rbj+m0sY6LjnSk7u44HhmhZwob/Kyr3BevR
+         e5/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=T+EecFcPWBZeGeXQf/VDF6kV6mLEHDKfDljs1FpMWXA=;
+        b=RNgUlAhz2EYz0ctSSfhOA9wrvdsAZJZ+69a47nJzdBcqBS9ugCYhnPD7b5EbfY5blN
+         2cAf9gkgzW+uA0KEVGAZ3Et3dpZarSNMfeEkRhZXPde3p+TYK5NG90Lr3GOc0IS9IjpX
+         RjclHs3boxeuK0qslwmkZ9cufonofnQ68QF9xo+c6D8eSuYQk0lXTf7J7CH7VeDuJ0xt
+         5AvMY04Pl7x7Sk4cSWvKHZt+8tEHM5IVhmtmzgA7pDXOt5W4jHxcFWbFx8jSlO7cOYSa
+         QEzFrOCpoSkTJdmLwXzshz3eitJHMojm0D2/BH7w/voT6sHSYfKe8zGGkGsVsXoqwbRG
+         9qSA==
+X-Gm-Message-State: AOAM531FUre6TNmfSSWgAbZTiH90rKvH/8ZWIe+iTFPmQtH9gf3eKVIY
+        os5bwEt/n8hGjiv4DQ/8xSTeAQ==
+X-Google-Smtp-Source: ABdhPJyWGhYeTawrb2iZh9Ih4jaPrXSO/th1mCCRBsrXwf165fBDV2d5M0QFUf/rq4I6yaT1KwCJbw==
+X-Received: by 2002:a05:620a:110d:: with SMTP id o13mr10179617qkk.348.1621576849968;
+        Thu, 20 May 2021 23:00:49 -0700 (PDT)
+Received: from localhost ([154.21.15.43])
+        by smtp.gmail.com with ESMTPSA id n18sm4049165qkh.13.2021.05.20.23.00.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 May 2021 23:00:49 -0700 (PDT)
+Date:   Fri, 21 May 2021 10:00:45 +0400
+From:   Dmitrii Banshchikov <me@ubique.spb.ru>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>
+Subject: Re: [PATCH bpf-next 00/11] bpfilter
+Message-ID: <20210521060045.ldwluzdt3vyp5vfs@amnesia>
+References: <20210517225308.720677-1-me@ubique.spb.ru>
+ <7312CC5D-510B-4BFD-8099-BB754FBE9CDF@fb.com>
+ <20210520075323.ehagaokfbazlhhfj@amnesia>
+ <CAADnVQJbxTikruisH=nfsFrC1UZW5zTXr8bUrL+U0jMBSApTTw@mail.gmail.com>
+ <2D15A822-5BE1-4C4A-84B2-46FFA27AC32B@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -2.54 / 15.00 / 15.00
-X-Rspamd-Queue-Id: C91C83B
-X-Rspamd-UID: 2b9fd2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2D15A822-5BE1-4C4A-84B2-46FFA27AC32B@fb.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MT7628/88 SoC(s) have other (limited) packet counter registers than
-currently supported in the mtk_eth_soc driver. This patch adds support
-for reading these registers, so that the packet statistics are correctly
-updated.
+On Thu, May 20, 2021 at 05:56:30PM +0000, Song Liu wrote:
+> 
+> 
+> > On May 20, 2021, at 9:55 AM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> > 
+> > On Thu, May 20, 2021 at 12:53 AM Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
+> >> 
+> >> On Thu, May 20, 2021 at 04:54:45AM +0000, Song Liu wrote:
+> >>> 
+> >>> 
+> >>>> On May 17, 2021, at 3:52 PM, Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
+> >>>> 
+> >>>> The patchset is based on the patches from David S. Miller [1] and Daniel
+> >>>> Borkmann [2].
+> >>>> 
+> >>>> The main goal of the patchset is to prepare bpfilter for iptables'
+> >>>> configuration blob parsing and code generation.
+> >>>> 
+> >>>> The patchset introduces data structures and code for matches, targets, rules
+> >>>> and tables.
+> >>>> 
+> >>>> It seems inconvenient to continue to use the same blob internally in bpfilter
+> >>>> in parts other than the blob parsing. That is why a superstructure with native
+> >>>> types is introduced. It provides a more convenient way to iterate over the blob
+> >>>> and limit the crazy structs widespread in the bpfilter code.
+> >>>> 
+> >>> 
+> >>> [...]
+> >>> 
+> >>>> 
+> >>>> 
+> >>>> 1. https://lore.kernel.org/patchwork/patch/902785/
+> >>> 
+> >>> [1] used bpfilter_ prefix on struct definitions, like "struct bpfilter_target"
+> >>> I think we should do the same in this version. (Or were there discussions on
+> >>> removing the prefix?).
+> >> 
+> >> There were no discussions about it.
+> >> As those structs are private to bpfilter I assumed that it is
+> >> safe to save some characters.
+> >> I will add the prefix to all internal structs in the next
+> >> iteration.
+> > 
+> > For internal types it's ok to skip the prefix otherwise it's too verbose.
+> > In libbpf we skip 'bpf_' prefix in such cases.
+> 
+> Do we have plan to put some of this logic in a library? If that is the case, the 
+> effort now may save some pain in the future. 
 
-Signed-off-by: Stefan Roese <sr@denx.de>
-Fixes: 296c9120752b ("net: ethernet: mediatek: Add MT7628/88 SoC support")
-Cc: Felix Fietkau <nbd@nbd.name>
-Cc: John Crispin <john@phrozen.org>
-Cc: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Cc: Reto Schneider <code@reto-schneider.ch>
-Cc: Reto Schneider <reto.schneider@husqvarnagroup.com>
-Cc: David S. Miller <davem@davemloft.net>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 56 ++++++++++++---------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  7 +++
- 2 files changed, 40 insertions(+), 23 deletions(-)
+I cannot imagine a case when we need this logic in a library.
+Even if we eventually need it as these definitions are private to
+bpfilter - amount of pain should be minimal.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index d6cc06ee0caa..ba9a49186909 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -681,32 +681,42 @@ static int mtk_set_mac_address(struct net_device *dev, void *p)
- void mtk_stats_update_mac(struct mtk_mac *mac)
- {
- 	struct mtk_hw_stats *hw_stats = mac->hw_stats;
--	unsigned int base = MTK_GDM1_TX_GBCNT;
--	u64 stats;
--
--	base += hw_stats->reg_offset;
-+	struct mtk_eth *eth = mac->hw;
- 
- 	u64_stats_update_begin(&hw_stats->syncp);
- 
--	hw_stats->rx_bytes += mtk_r32(mac->hw, base);
--	stats =  mtk_r32(mac->hw, base + 0x04);
--	if (stats)
--		hw_stats->rx_bytes += (stats << 32);
--	hw_stats->rx_packets += mtk_r32(mac->hw, base + 0x08);
--	hw_stats->rx_overflow += mtk_r32(mac->hw, base + 0x10);
--	hw_stats->rx_fcs_errors += mtk_r32(mac->hw, base + 0x14);
--	hw_stats->rx_short_errors += mtk_r32(mac->hw, base + 0x18);
--	hw_stats->rx_long_errors += mtk_r32(mac->hw, base + 0x1c);
--	hw_stats->rx_checksum_errors += mtk_r32(mac->hw, base + 0x20);
--	hw_stats->rx_flow_control_packets +=
--					mtk_r32(mac->hw, base + 0x24);
--	hw_stats->tx_skip += mtk_r32(mac->hw, base + 0x28);
--	hw_stats->tx_collisions += mtk_r32(mac->hw, base + 0x2c);
--	hw_stats->tx_bytes += mtk_r32(mac->hw, base + 0x30);
--	stats =  mtk_r32(mac->hw, base + 0x34);
--	if (stats)
--		hw_stats->tx_bytes += (stats << 32);
--	hw_stats->tx_packets += mtk_r32(mac->hw, base + 0x38);
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628)) {
-+		hw_stats->tx_packets += mtk_r32(mac->hw, MT7628_SDM_TPCNT);
-+		hw_stats->tx_bytes += mtk_r32(mac->hw, MT7628_SDM_TBCNT);
-+		hw_stats->rx_packets += mtk_r32(mac->hw, MT7628_SDM_RPCNT);
-+		hw_stats->rx_bytes += mtk_r32(mac->hw, MT7628_SDM_RBCNT);
-+		hw_stats->rx_checksum_errors +=
-+			mtk_r32(mac->hw, MT7628_SDM_CS_ERR);
-+	} else {
-+		unsigned int base = MTK_GDM1_TX_GBCNT + hw_stats->reg_offset;
-+		u64 stats;
-+
-+		hw_stats->rx_bytes += mtk_r32(mac->hw, base);
-+		stats =  mtk_r32(mac->hw, base + 0x04);
-+		if (stats)
-+			hw_stats->rx_bytes += (stats << 32);
-+		hw_stats->rx_packets += mtk_r32(mac->hw, base + 0x08);
-+		hw_stats->rx_overflow += mtk_r32(mac->hw, base + 0x10);
-+		hw_stats->rx_fcs_errors += mtk_r32(mac->hw, base + 0x14);
-+		hw_stats->rx_short_errors += mtk_r32(mac->hw, base + 0x18);
-+		hw_stats->rx_long_errors += mtk_r32(mac->hw, base + 0x1c);
-+		hw_stats->rx_checksum_errors += mtk_r32(mac->hw, base + 0x20);
-+		hw_stats->rx_flow_control_packets +=
-+			mtk_r32(mac->hw, base + 0x24);
-+		hw_stats->tx_skip += mtk_r32(mac->hw, base + 0x28);
-+		hw_stats->tx_collisions += mtk_r32(mac->hw, base + 0x2c);
-+		hw_stats->tx_bytes += mtk_r32(mac->hw, base + 0x30);
-+		stats =  mtk_r32(mac->hw, base + 0x34);
-+		if (stats)
-+			hw_stats->tx_bytes += (stats << 32);
-+		hw_stats->tx_packets += mtk_r32(mac->hw, base + 0x38);
-+	}
-+
- 	u64_stats_update_end(&hw_stats->syncp);
- }
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 11331b44ba07..42968c7141da 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -502,6 +502,13 @@
- #define MT7628_SDM_MAC_ADRL	(MT7628_SDM_OFFSET + 0x0c)
- #define MT7628_SDM_MAC_ADRH	(MT7628_SDM_OFFSET + 0x10)
- 
-+/* Counter / stat register */
-+#define MT7628_SDM_TPCNT	(MT7628_SDM_OFFSET + 0x100)
-+#define MT7628_SDM_TBCNT	(MT7628_SDM_OFFSET + 0x104)
-+#define MT7628_SDM_RPCNT	(MT7628_SDM_OFFSET + 0x108)
-+#define MT7628_SDM_RBCNT	(MT7628_SDM_OFFSET + 0x10c)
-+#define MT7628_SDM_CS_ERR	(MT7628_SDM_OFFSET + 0x110)
-+
- struct mtk_rx_dma {
- 	unsigned int rxd1;
- 	unsigned int rxd2;
+> 
+> Thanks,
+> Song
+> 
+
 -- 
-2.31.1
 
+Dmitrii Banshchikov
