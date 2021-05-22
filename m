@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5939E38D729
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 21:14:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44CD338D72C
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 21:14:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231406AbhEVTP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 May 2021 15:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55706 "EHLO
+        id S231422AbhEVTQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 May 2021 15:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231345AbhEVTPy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 15:15:54 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2386C0613ED;
-        Sat, 22 May 2021 12:14:29 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id e15so6009054plh.1;
-        Sat, 22 May 2021 12:14:29 -0700 (PDT)
+        with ESMTP id S231377AbhEVTPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 15:15:55 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CF6C061574;
+        Sat, 22 May 2021 12:14:30 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id t11so12674955pjm.0;
+        Sat, 22 May 2021 12:14:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DV0T/Qr/nJx8jfvW3ukFjANC4TKgQt+cqMliLspYgy0=;
-        b=ZE1N44WA4KPSr0Vi0rHkh0It84dEXbFFoW8rskLDxjORPbjDfvUT71qtgrQcQQj+5s
-         pRNDdw2EdjqajmvFexzct+5igNBSPNQC9EUZZjvlhaqi+t9WQUDcNzXz77vJRZZCn01A
-         5fnNf6UH4TVIbzjwAhMKI3uGePVbe8uiuKfAIKIsKatEuzdU8K9zC8TK+8U7fElXriSs
-         Bi4/HOIcdmv7iPDeLVh7rCE3rhYgVbdMHrtSkc9lZox4FLHmQ4GRb3pKi5Q5lUGge43g
-         m/UQIOrl0TYHHxx9vxnfuSiB0vNw9ocYA87pJ2wN7Tv+t6b2sAV7NrdVqR1XgEyusP6x
-         O+Yg==
+        bh=lX//LiYCi9V25eCHy4xTyI2ugZeYUnZTGWUsgm/854w=;
+        b=YtKsDUBlMiq8Xu8M6BOGp2WSgVJrRDJGEjagsEAR2G1OHHUE2imDtY9gMzlNCRcV+Z
+         7X8f7pnq04BfpIjdSEGD01K5uvcRW5NBgr3mJcRVORWKrpWaJc3qQdy0UroIPHB1TRCH
+         94mdH5hPnkA3cpjExUouL4749Tu3+jVpqNskRE1eBHAvTEad3yD8ZwBUhOm1zGZG1FTi
+         dUh7spWTbjXiiwhCusKvj0bM85BxiMtfpPQeDj0NY3FA7OUrraxZvWkLRrmXP1nqIP4l
+         fgqwsyPvyjQsux2gpEU6ReWF7nRq2vc2FCNlDSGH0+e4vmYenC/cMp39Kqg/NznZoHI3
+         50sQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DV0T/Qr/nJx8jfvW3ukFjANC4TKgQt+cqMliLspYgy0=;
-        b=BjhCxSUGQ89pUgFsImxaPSM0/9+/SN16ztd0cNnULlmm3c3EF77GnX39/Uo4qED1iQ
-         rsWe1Dydyt44Dn0dSr5ja6uWxbq6nnLKKIp2VtjYZC8w7Oap6VAm2WvvUHO2Z5n2WITE
-         Sy70ExeWIR6I6WFfNlhy2ki8sw9l5+vGZyFeWs0GinBMFNojg8f2W0hmJt1wEfg0VkLq
-         XIyEMjjSueX0LqEJa3N8/6VQHDAjgvXM52U9AyMl1cTbuq5gDH4BL5pKJefXMk2x2Gcx
-         rfgkq8WDKWhN5K0i0k42UcMV3ZWy4ejmhg/ls9kUjWJAwSJY2DnxrVAPUDffVZDJFs77
-         RnEA==
-X-Gm-Message-State: AOAM531moFcb7th9+kmfhgGswZAWZrqa2czKNKV5wG0a/qn+KAw+eM9x
-        gpOy5zTsgVF9YAN0s5jUwXKyMYcT+xNq/g==
-X-Google-Smtp-Source: ABdhPJy7PKe6Msqh0+RN81iuU8fe0VxxYtUjCZz6JweSulFHGqMRrkIQPzViGZ6qJkNCYHsli2j+Tw==
-X-Received: by 2002:a17:90a:17a6:: with SMTP id q35mr17017410pja.118.1621710869228;
-        Sat, 22 May 2021 12:14:29 -0700 (PDT)
+        bh=lX//LiYCi9V25eCHy4xTyI2ugZeYUnZTGWUsgm/854w=;
+        b=byCo5yAQNsNCB9HM+Av/vziBZACTRVeC9jMHZgc41Th8G/IVM9vNnG3IEErNRa2yF2
+         ybBZgqvoiC3/tGLyrHGWRGtLeFfPwu/SLQ1pUI6c7qLgrBWhziFMY2w6Ja9JnGo+RSQu
+         +/QABiwmAldzrlLPzAiYwawoAf5stPAZtBqqm6JPpiRjAgzSbrYc752Oj4IQINhk1hIe
+         s8A9U9/YgoqOjtPaIuYMMnYWS6MQbk9AnHd9fhvQARrKoUFT9N4fDmRGC3mxsD8GpYOx
+         oDDlNF7z1NhQ6rCUwRt17qkF36FNszEtgXv0aynuafE64/ke6GvQryMPh150BNB+zyzM
+         XsOw==
+X-Gm-Message-State: AOAM530VOoSRMf78eaTXknAE1XFVjlMfPe1ZB81V3at3VKWU7VG2DL3O
+        nkwNzc0hKYKObb0YexTvXJG+o9asELKF6g==
+X-Google-Smtp-Source: ABdhPJwpv+3abu5TxI4O3VoXl9HK1yDkHp2NsdLBZMhTa8Ig7sgXK2JHGHdXbJaE7KGBeFQXx3nrgg==
+X-Received: by 2002:a17:90b:1185:: with SMTP id gk5mr16468559pjb.168.1621710870161;
+        Sat, 22 May 2021 12:14:30 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:14cd:343f:4e27:51d7])
-        by smtp.gmail.com with ESMTPSA id 5sm6677531pfe.32.2021.05.22.12.14.28
+        by smtp.gmail.com with ESMTPSA id 5sm6677531pfe.32.2021.05.22.12.14.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 May 2021 12:14:28 -0700 (PDT)
+        Sat, 22 May 2021 12:14:29 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
@@ -54,9 +54,9 @@ Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf v2 3/7] udp: fix a memory leak in udp_read_sock()
-Date:   Sat, 22 May 2021 12:14:07 -0700
-Message-Id: <20210522191411.21446-4-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf v2 4/7] skmsg: fix a memory leak in sk_psock_verdict_apply()
+Date:   Sat, 22 May 2021 12:14:08 -0700
+Message-Id: <20210522191411.21446-5-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210522191411.21446-1-xiyou.wangcong@gmail.com>
 References: <20210522191411.21446-1-xiyou.wangcong@gmail.com>
@@ -68,40 +68,38 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-sk_psock_verdict_recv() clones the skb and uses the clone
-afterward, so udp_read_sock() should free the skb after using
-it, regardless of error or not.
+If the dest psock does not set SK_PSOCK_TX_ENABLED,
+then the skb can't be queued anywhere so hould be
+dropped.
 
-This fixes a real kmemleak.
+This one is found during code review.
 
-Fixes: d7f571188ecf ("udp: Implement ->read_sock() for sockmap")
+Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
 Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- net/ipv4/udp.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/core/skmsg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 15f5504adf5b..e31d67fd5183 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1798,11 +1798,13 @@ int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 		if (used <= 0) {
- 			if (!copied)
- 				copied = used;
-+			kfree_skb(skb);
- 			break;
- 		} else if (used <= skb->len) {
- 			copied += used;
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index f9a81b314e4c..de68a3cd33f1 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -922,8 +922,11 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
+ 			if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
+ 				skb_queue_tail(&psock->ingress_skb, skb);
+ 				schedule_work(&psock->work);
++				err = 0;
+ 			}
+ 			spin_unlock_bh(&psock->ingress_lock);
++			if (err < 0)
++				goto out_free;
  		}
- 
-+		kfree_skb(skb);
- 		if (!desc->count)
- 			break;
- 	}
+ 		break;
+ 	case __SK_REDIRECT:
 -- 
 2.25.1
 
