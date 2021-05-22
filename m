@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EA5238D72F
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 21:15:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1169338D730
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 21:15:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231430AbhEVTQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 May 2021 15:16:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
+        id S231468AbhEVTQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 May 2021 15:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231402AbhEVTP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 15:15:58 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82190C06174A;
-        Sat, 22 May 2021 12:14:32 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id s4so11079212plg.12;
-        Sat, 22 May 2021 12:14:32 -0700 (PDT)
+        with ESMTP id S231345AbhEVTP7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 15:15:59 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A7FC061574;
+        Sat, 22 May 2021 12:14:33 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id q15so16947076pgg.12;
+        Sat, 22 May 2021 12:14:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DcX8fhKGj8R427RducM9Ix+CQKTH1UdCiDQd5Xwx4xg=;
-        b=D+54d9ffWQpaqYrrntfrvzAGdAd1QgOlVpkhz3uQVzK6ELaM0t6NnbQgCw+5aNan0g
-         HQHQrdAwMTrpbmTaFZ8Z2+CZ53Z+TcZROpfD4Pvth2WwPAei8h/Fd6rEZV1nfxdUZcal
-         SM5jmQwTXiIP3Bvih7uyfctv9KPYw3DafdxMt4VtcX55sFIyVTq+UniIGjgSN463XOrV
-         2DivQL7UwHbteKAiS9zbjvENM5xirncUNp6hW8x/NPmOb3R+YesikdxuV61yQvIBArkl
-         TSRENdUzYENwAMJnWE7wFPKJh5gx9TbA2uG/8at9I7anQE+izehFmRbduj+Z7SkTJxb4
-         syeA==
+        bh=0ExFCYsih7s7PdTmahlL0A+vWzuU6an/DuLev5Jw+4s=;
+        b=JHYJx1UnCo418NP9GOf2tZxcIdzrw9W+qB4UwJr1SzVChrov3WK8VPknOuxwdHMRXi
+         cBKEXhAXU/dMJIYlOZrDZGFCZZmbvlxsA995qq/QrEVc9AKsDXmIDh2Efpq6GVkPBDVV
+         rmwBBnS8+15VDwdZ3OzAZj8bJgYQ3EsLF54DzAv1FSOuFaERdMi4gvwmi3eqK35GM5EZ
+         3qq2RHrjQXPueLBb9U3RiFrkJlWNSbzClQGq/SVKbbPupZs5KykXx3Vg+T1cBF39EdFN
+         WBq+4N19rYMK4IcON1qvV0upvZTUbLl8naf1ROqvO8ou1kOQkPnm8mav7oXquvFFO0XH
+         Ov8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DcX8fhKGj8R427RducM9Ix+CQKTH1UdCiDQd5Xwx4xg=;
-        b=lbYsTe3BDkOiZsaxJy88E3Mdi+WVxm7ygZ4/MFpk+DnA5sshuo6ZM4i3yuSMX4Yx7p
-         8LRUZpgPfal3T7Y5cwQtLfpBPFloVyGmYN3md9uIUItM0/qGqt9q33ltCjFGvRP6PdYH
-         9pA6scoTcEHT5X25R9VqqdC/6559WRDD4xnDJvwaST5Q4OxzbB//AO3+XECPZDhFkJA/
-         8UxgaYXT0LKdHSCuzq+Mv1z6zXWlsYwwPkHin0OQ5rmmrbMaZQGVJrxb6hUfHX+tkzWb
-         nyowYklmNjwnBLioCRCO7SulKpxzQ3erqioH/uRECYGVdaW/PXka48zOnQ6PmliG4Irg
-         fLbw==
-X-Gm-Message-State: AOAM533CRR7iR3aaz+aMzN/ImgfrZmqBkuaycj68UomrrqyDrxRaAzQ0
-        6b8qRsGXyZzXWjbjyVED6zn9aYmrwW2qvQ==
-X-Google-Smtp-Source: ABdhPJx/EQ9Xv5OYmvfL0rfAfehaHbJm+Rf8GFBhJw92L0ENx+dYXSh2sfA3ZYrmxWwZ7CBgP8pYvg==
-X-Received: by 2002:a17:902:b609:b029:ec:e80d:7ebd with SMTP id b9-20020a170902b609b02900ece80d7ebdmr18484134pls.75.1621710872004;
+        bh=0ExFCYsih7s7PdTmahlL0A+vWzuU6an/DuLev5Jw+4s=;
+        b=X2jHqC1yBaUbrYuK4KD7GP9ifphF4mZwvPDh3emkk7KR0t6nhdlQzKS8L95WJPmJBi
+         uXL+Lk/8FwQwODjMe+otP72Vutb5r8b1acVu797FV76nhMPLthDXjYgLHjbTm3EOOTIq
+         t0BpYJQ88QdG+/fZybUiu/0uLkllH41B1Q0M6C4qyz6qNWhxFNyzjUKgPzRPifeP6oBp
+         rddkiDhrZP/hRQqP3aStglXhSYk4E+Pa8oZZV6PU5cLJireZhWd1535EimDV1h2fxYDg
+         i9DxINwYy4T/cS2LPqnqYMCjn1Cg3xTVDdhPRM9DdN6fNeGyGk8lhRWSt/7xoVzpUEPk
+         9LSw==
+X-Gm-Message-State: AOAM533n+FxoNZvfn5vNDtP1YQNrKJ9uFVv8MB10pZrCAkgYvbCKjCmU
+        HBUmzFxckLyyBx5myEXrC0OmEKUxg71EJA==
+X-Google-Smtp-Source: ABdhPJzXQN+BbgDhpFggMreFL5FXJsZeEWMse6jtHlb72dNa33jcpKkbVyEj1e00P2yGPAiajYZ2Bw==
+X-Received: by 2002:a65:50c5:: with SMTP id s5mr5429636pgp.138.1621710872920;
         Sat, 22 May 2021 12:14:32 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:14cd:343f:4e27:51d7])
-        by smtp.gmail.com with ESMTPSA id 5sm6677531pfe.32.2021.05.22.12.14.31
+        by smtp.gmail.com with ESMTPSA id 5sm6677531pfe.32.2021.05.22.12.14.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 May 2021 12:14:31 -0700 (PDT)
+        Sat, 22 May 2021 12:14:32 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
@@ -54,9 +54,9 @@ Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf v2 6/7] skmsg: pass source psock to sk_psock_skb_redirect()
-Date:   Sat, 22 May 2021 12:14:10 -0700
-Message-Id: <20210522191411.21446-7-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf v2 7/7] skmsg: increase sk->sk_drops when dropping packets
+Date:   Sat, 22 May 2021 12:14:11 -0700
+Message-Id: <20210522191411.21446-8-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210522191411.21446-1-xiyou.wangcong@gmail.com>
 References: <20210522191411.21446-1-xiyou.wangcong@gmail.com>
@@ -68,10 +68,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-sk_psock_skb_redirect() only takes skb as a parameter, we
-will need to know where this skb is from, so just pass
-the source psock to this function as a new parameter.
-This patch prepares for the next one.
+It is hard to observe packet drops without increase relevant
+drop counters, here we should increase sk->sk_drops which is
+a protocol-independent counter. Fortunately psock is always
+assocaited with a struct sock, we can just use psock->sk.
 
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
@@ -79,55 +79,105 @@ Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- net/core/skmsg.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ net/core/skmsg.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
 diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 335fc60f5d22..7b2c25038a48 100644
+index 7b2c25038a48..de3af8152d07 100644
 --- a/net/core/skmsg.c
 +++ b/net/core/skmsg.c
-@@ -824,7 +824,7 @@ int sk_psock_msg_verdict(struct sock *sk, struct sk_psock *psock,
- }
- EXPORT_SYMBOL_GPL(sk_psock_msg_verdict);
- 
--static int sk_psock_skb_redirect(struct sk_buff *skb)
-+static int sk_psock_skb_redirect(struct sk_psock *from, struct sk_buff *skb)
- {
- 	struct sk_psock *psock_other;
- 	struct sock *sk_other;
-@@ -859,11 +859,12 @@ static int sk_psock_skb_redirect(struct sk_buff *skb)
- 	return 0;
+@@ -578,6 +578,12 @@ static int sk_psock_handle_skb(struct sk_psock *psock, struct sk_buff *skb,
+ 	return sk_psock_skb_ingress(psock, skb);
  }
  
--static void sk_psock_tls_verdict_apply(struct sk_buff *skb, struct sock *sk, int verdict)
-+static void sk_psock_tls_verdict_apply(struct sk_buff *skb,
-+				       struct sk_psock *from, int verdict)
++static void sock_drop(struct sock *sk, struct sk_buff *skb)
++{
++	sk_drops_add(sk, skb);
++	kfree_skb(skb);
++}
++
+ static void sk_psock_backlog(struct work_struct *work)
  {
- 	switch (verdict) {
- 	case __SK_REDIRECT:
--		sk_psock_skb_redirect(skb);
-+		sk_psock_skb_redirect(from, skb);
- 		break;
- 	case __SK_PASS:
- 	case __SK_DROP:
-@@ -887,7 +888,7 @@ int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb)
- 		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
- 		skb->sk = NULL;
+ 	struct sk_psock *psock = container_of(work, struct sk_psock, work);
+@@ -617,7 +623,7 @@ static void sk_psock_backlog(struct work_struct *work)
+ 				/* Hard errors break pipe and stop xmit. */
+ 				sk_psock_report_error(psock, ret ? -ret : EPIPE);
+ 				sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED);
+-				kfree_skb(skb);
++				sock_drop(psock->sk, skb);
+ 				goto end;
+ 			}
+ 			off += ret;
+@@ -625,7 +631,7 @@ static void sk_psock_backlog(struct work_struct *work)
+ 		} while (len);
+ 
+ 		if (!ingress)
+-			kfree_skb(skb);
++			sock_drop(psock->sk, skb);
  	}
--	sk_psock_tls_verdict_apply(skb, psock->sk, ret);
-+	sk_psock_tls_verdict_apply(skb, psock, ret);
- 	rcu_read_unlock();
- 	return ret;
+ end:
+ 	mutex_unlock(&psock->work_mutex);
+@@ -708,7 +714,7 @@ static void __sk_psock_zap_ingress(struct sk_psock *psock)
+ 
+ 	while ((skb = skb_dequeue(&psock->ingress_skb)) != NULL) {
+ 		skb_bpf_redirect_clear(skb);
+-		kfree_skb(skb);
++		sock_drop(psock->sk, skb);
+ 	}
+ 	__sk_psock_purge_ingress_msg(psock);
  }
-@@ -932,7 +933,7 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
- 		}
- 		break;
- 	case __SK_REDIRECT:
--		err = sk_psock_skb_redirect(skb);
-+		err = sk_psock_skb_redirect(psock, skb);
- 		break;
+@@ -834,7 +840,7 @@ static int sk_psock_skb_redirect(struct sk_psock *from, struct sk_buff *skb)
+ 	 * return code, but then didn't set a redirect interface.
+ 	 */
+ 	if (unlikely(!sk_other)) {
+-		kfree_skb(skb);
++		sock_drop(from->sk, skb);
+ 		return -EIO;
+ 	}
+ 	psock_other = sk_psock(sk_other);
+@@ -843,13 +849,13 @@ static int sk_psock_skb_redirect(struct sk_psock *from, struct sk_buff *skb)
+ 	 * a socket that is in this state so we drop the skb.
+ 	 */
+ 	if (!psock_other || sock_flag(sk_other, SOCK_DEAD)) {
+-		kfree_skb(skb);
++		sock_drop(from->sk, skb);
+ 		return -EIO;
+ 	}
+ 	spin_lock_bh(&psock_other->ingress_lock);
+ 	if (!sk_psock_test_state(psock_other, SK_PSOCK_TX_ENABLED)) {
+ 		spin_unlock_bh(&psock_other->ingress_lock);
+-		kfree_skb(skb);
++		sock_drop(from->sk, skb);
+ 		return -EIO;
+ 	}
+ 
+@@ -938,7 +944,7 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
  	case __SK_DROP:
  	default:
+ out_free:
+-		kfree_skb(skb);
++		sock_drop(psock->sk, skb);
+ 	}
+ 
+ 	return err;
+@@ -973,7 +979,7 @@ static void sk_psock_strp_read(struct strparser *strp, struct sk_buff *skb)
+ 	sk = strp->sk;
+ 	psock = sk_psock(sk);
+ 	if (unlikely(!psock)) {
+-		kfree_skb(skb);
++		sock_drop(sk, skb);
+ 		goto out;
+ 	}
+ 	prog = READ_ONCE(psock->progs.stream_verdict);
+@@ -1094,7 +1100,7 @@ static int sk_psock_verdict_recv(read_descriptor_t *desc, struct sk_buff *skb,
+ 	psock = sk_psock(sk);
+ 	if (unlikely(!psock)) {
+ 		len = 0;
+-		kfree_skb(skb);
++		sock_drop(sk, skb);
+ 		goto out;
+ 	}
+ 	prog = READ_ONCE(psock->progs.stream_verdict);
 -- 
 2.25.1
 
