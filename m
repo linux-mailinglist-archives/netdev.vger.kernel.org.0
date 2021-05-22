@@ -2,196 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5329838D456
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 09:56:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB44C38D45F
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 10:09:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230028AbhEVH6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 May 2021 03:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbhEVH6B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 03:58:01 -0400
-Received: from mout-u-204.mailbox.org (mout-u-204.mailbox.org [IPv6:2001:67c:2050:1::465:204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF72FC061574
-        for <netdev@vger.kernel.org>; Sat, 22 May 2021 00:56:36 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-u-204.mailbox.org (Postfix) with ESMTPS id 4FnG5G23Q8zQjwr;
-        Sat, 22 May 2021 09:56:34 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
-        with ESMTP id cfyO5qczEmgQ; Sat, 22 May 2021 09:56:31 +0200 (CEST)
-From:   Stefan Roese <sr@denx.de>
-To:     netdev@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        Reto Schneider <code@reto-schneider.ch>,
-        Reto Schneider <reto.schneider@husqvarnagroup.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v2] net: ethernet: mtk_eth_soc: Fix packet statistics support for MT7628/88
-Date:   Sat, 22 May 2021 09:56:30 +0200
-Message-Id: <20210522075630.2414801-1-sr@denx.de>
+        id S230043AbhEVIKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 May 2021 04:10:39 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5725 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230000AbhEVIKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 04:10:39 -0400
+Received: from dggems706-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FnGHl6zvXzqVBN;
+        Sat, 22 May 2021 16:05:39 +0800 (CST)
+Received: from nkgeml708-chm.china.huawei.com (10.98.57.160) by
+ dggems706-chm.china.huawei.com (10.3.19.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Sat, 22 May 2021 16:09:07 +0800
+Received: from huawei.com (10.179.179.12) by nkgeml708-chm.china.huawei.com
+ (10.98.57.160) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Sat, 22 May
+ 2021 16:09:06 +0800
+From:   guodeqing <geffrey.guo@huawei.com>
+To:     <mst@redhat.com>
+CC:     <jasowang@redhat.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <mgurtovoy@nvidia.com>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <geffrey.guo@huawei.com>
+Subject: [PATCH] virtio-net: fix the kzalloc/kfree mismatch problem
+Date:   Sat, 22 May 2021 16:02:31 +0800
+Message-ID: <20210522080231.54760-1-geffrey.guo@huawei.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -3.63 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 4B53E180D
-X-Rspamd-UID: f73e09
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.179.179.12]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ nkgeml708-chm.china.huawei.com (10.98.57.160)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MT7628/88 SoC(s) have other (limited) packet counter registers than
-currently supported in the mtk_eth_soc driver. This patch adds support
-for reading these registers, so that the packet statistics are correctly
-updated.
+If the virtio_net device does not suppurt the ctrl queue feature,
+the vi->ctrl was not allocated, so there is no need to free it.
 
-Additionally the defines for the non-MT7628 variant packet counter
-registers are added and used in this patch instead of using hard coded
-values.
+Here I adjust the initialization sequence and the check of vi->has_cvq
+to slove this problem.
 
-Signed-off-by: Stefan Roese <sr@denx.de>
-Fixes: 296c9120752b ("net: ethernet: mediatek: Add MT7628/88 SoC support")
-Cc: Felix Fietkau <nbd@nbd.name>
-Cc: John Crispin <john@phrozen.org>
-Cc: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Cc: Reto Schneider <code@reto-schneider.ch>
-Cc: Reto Schneider <reto.schneider@husqvarnagroup.com>
-Cc: David S. Miller <davem@davemloft.net>
+Fixes: 	122b84a1267a ("virtio-net: don't allocate control_buf if not supported")
+Signed-off-by: guodeqing <geffrey.guo@huawei.com>
 ---
-v2:
-- Add and use defines for the non-MT7628 variant packet counter registers
+ drivers/net/virtio_net.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 67 ++++++++++++++-------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 24 +++++++-
- 2 files changed, 66 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index d6cc06ee0caa..64adfd24e134 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -681,32 +681,53 @@ static int mtk_set_mac_address(struct net_device *dev, void *p)
- void mtk_stats_update_mac(struct mtk_mac *mac)
- {
- 	struct mtk_hw_stats *hw_stats = mac->hw_stats;
--	unsigned int base = MTK_GDM1_TX_GBCNT;
--	u64 stats;
--
--	base += hw_stats->reg_offset;
-+	struct mtk_eth *eth = mac->hw;
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 9b6a4a875c55..894f894d3a29 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -2691,7 +2691,8 @@ static void virtnet_free_queues(struct virtnet_info *vi)
  
- 	u64_stats_update_begin(&hw_stats->syncp);
- 
--	hw_stats->rx_bytes += mtk_r32(mac->hw, base);
--	stats =  mtk_r32(mac->hw, base + 0x04);
--	if (stats)
--		hw_stats->rx_bytes += (stats << 32);
--	hw_stats->rx_packets += mtk_r32(mac->hw, base + 0x08);
--	hw_stats->rx_overflow += mtk_r32(mac->hw, base + 0x10);
--	hw_stats->rx_fcs_errors += mtk_r32(mac->hw, base + 0x14);
--	hw_stats->rx_short_errors += mtk_r32(mac->hw, base + 0x18);
--	hw_stats->rx_long_errors += mtk_r32(mac->hw, base + 0x1c);
--	hw_stats->rx_checksum_errors += mtk_r32(mac->hw, base + 0x20);
--	hw_stats->rx_flow_control_packets +=
--					mtk_r32(mac->hw, base + 0x24);
--	hw_stats->tx_skip += mtk_r32(mac->hw, base + 0x28);
--	hw_stats->tx_collisions += mtk_r32(mac->hw, base + 0x2c);
--	hw_stats->tx_bytes += mtk_r32(mac->hw, base + 0x30);
--	stats =  mtk_r32(mac->hw, base + 0x34);
--	if (stats)
--		hw_stats->tx_bytes += (stats << 32);
--	hw_stats->tx_packets += mtk_r32(mac->hw, base + 0x38);
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628)) {
-+		hw_stats->tx_packets += mtk_r32(mac->hw, MT7628_SDM_TPCNT);
-+		hw_stats->tx_bytes += mtk_r32(mac->hw, MT7628_SDM_TBCNT);
-+		hw_stats->rx_packets += mtk_r32(mac->hw, MT7628_SDM_RPCNT);
-+		hw_stats->rx_bytes += mtk_r32(mac->hw, MT7628_SDM_RBCNT);
-+		hw_stats->rx_checksum_errors +=
-+			mtk_r32(mac->hw, MT7628_SDM_CS_ERR);
-+	} else {
-+		unsigned int offs = hw_stats->reg_offset;
-+		u64 stats;
-+
-+		hw_stats->rx_bytes += mtk_r32(mac->hw,
-+					      MTK_GDM1_RX_GBCNT_L + offs);
-+		stats = mtk_r32(mac->hw, MTK_GDM1_RX_GBCNT_H + offs);
-+		if (stats)
-+			hw_stats->rx_bytes += (stats << 32);
-+		hw_stats->rx_packets +=
-+			mtk_r32(mac->hw, MTK_GDM1_RX_GPCNT + offs);
-+		hw_stats->rx_overflow +=
-+			mtk_r32(mac->hw, MTK_GDM1_RX_OERCNT + offs);
-+		hw_stats->rx_fcs_errors +=
-+			mtk_r32(mac->hw, MTK_GDM1_RX_FERCNT + offs);
-+		hw_stats->rx_short_errors +=
-+			mtk_r32(mac->hw, MTK_GDM1_RX_SERCNT + offs);
-+		hw_stats->rx_long_errors +=
-+			mtk_r32(mac->hw, MTK_GDM1_RX_LENCNT + offs);
-+		hw_stats->rx_checksum_errors +=
-+			mtk_r32(mac->hw, MTK_GDM1_RX_CERCNT + offs);
-+		hw_stats->rx_flow_control_packets +=
-+			mtk_r32(mac->hw, MTK_GDM1_RX_FCCNT + offs);
-+		hw_stats->tx_skip +=
-+			mtk_r32(mac->hw, MTK_GDM1_TX_SKIPCNT + offs);
-+		hw_stats->tx_collisions +=
-+			mtk_r32(mac->hw, MTK_GDM1_TX_COLCNT + offs);
-+		hw_stats->tx_bytes +=
-+			mtk_r32(mac->hw, MTK_GDM1_TX_GBCNT_L + offs);
-+		stats =  mtk_r32(mac->hw, MTK_GDM1_TX_GBCNT_H + offs);
-+		if (stats)
-+			hw_stats->tx_bytes += (stats << 32);
-+		hw_stats->tx_packets +=
-+			mtk_r32(mac->hw, MTK_GDM1_TX_GPCNT + offs);
-+	}
-+
- 	u64_stats_update_end(&hw_stats->syncp);
+ 	kfree(vi->rq);
+ 	kfree(vi->sq);
+-	kfree(vi->ctrl);
++	if (vi->has_cvq)
++		kfree(vi->ctrl);
  }
  
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 11331b44ba07..5ef70dd8b49c 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -278,8 +278,21 @@
- /* QDMA FQ Free Page Buffer Length Register */
- #define MTK_QDMA_FQ_BLEN	0x1B2C
+ static void _free_receive_bufs(struct virtnet_info *vi)
+@@ -2870,13 +2871,6 @@ static int virtnet_alloc_queues(struct virtnet_info *vi)
+ {
+ 	int i;
  
--/* GMA1 Received Good Byte Count Register */
--#define MTK_GDM1_TX_GBCNT	0x2400
-+/* GMA1 counter / statics register */
-+#define MTK_GDM1_RX_GBCNT_L	0x2400
-+#define MTK_GDM1_RX_GBCNT_H	0x2404
-+#define MTK_GDM1_RX_GPCNT	0x2408
-+#define MTK_GDM1_RX_OERCNT	0x2410
-+#define MTK_GDM1_RX_FERCNT	0x2414
-+#define MTK_GDM1_RX_SERCNT	0x2418
-+#define MTK_GDM1_RX_LENCNT	0x241c
-+#define MTK_GDM1_RX_CERCNT	0x2420
-+#define MTK_GDM1_RX_FCCNT	0x2424
-+#define MTK_GDM1_TX_SKIPCNT	0x2428
-+#define MTK_GDM1_TX_COLCNT	0x242c
-+#define MTK_GDM1_TX_GBCNT_L	0x2430
-+#define MTK_GDM1_TX_GBCNT_H	0x2434
-+#define MTK_GDM1_TX_GPCNT	0x2438
- #define MTK_STAT_OFFSET		0x40
+-	if (vi->has_cvq) {
+-		vi->ctrl = kzalloc(sizeof(*vi->ctrl), GFP_KERNEL);
+-		if (!vi->ctrl)
+-			goto err_ctrl;
+-	} else {
+-		vi->ctrl = NULL;
+-	}
+ 	vi->sq = kcalloc(vi->max_queue_pairs, sizeof(*vi->sq), GFP_KERNEL);
+ 	if (!vi->sq)
+ 		goto err_sq;
+@@ -2884,6 +2878,12 @@ static int virtnet_alloc_queues(struct virtnet_info *vi)
+ 	if (!vi->rq)
+ 		goto err_rq;
  
- /* QDMA descriptor txd4 */
-@@ -502,6 +515,13 @@
- #define MT7628_SDM_MAC_ADRL	(MT7628_SDM_OFFSET + 0x0c)
- #define MT7628_SDM_MAC_ADRH	(MT7628_SDM_OFFSET + 0x10)
- 
-+/* Counter / stat register */
-+#define MT7628_SDM_TPCNT	(MT7628_SDM_OFFSET + 0x100)
-+#define MT7628_SDM_TBCNT	(MT7628_SDM_OFFSET + 0x104)
-+#define MT7628_SDM_RPCNT	(MT7628_SDM_OFFSET + 0x108)
-+#define MT7628_SDM_RBCNT	(MT7628_SDM_OFFSET + 0x10c)
-+#define MT7628_SDM_CS_ERR	(MT7628_SDM_OFFSET + 0x110)
++	if (vi->has_cvq) {
++		vi->ctrl = kzalloc(sizeof(*vi->ctrl), GFP_KERNEL);
++		if (!vi->ctrl)
++			goto err_ctrl;
++	}
 +
- struct mtk_rx_dma {
- 	unsigned int rxd1;
- 	unsigned int rxd2;
+ 	INIT_DELAYED_WORK(&vi->refill, refill_work);
+ 	for (i = 0; i < vi->max_queue_pairs; i++) {
+ 		vi->rq[i].pages = NULL;
+@@ -2902,11 +2902,11 @@ static int virtnet_alloc_queues(struct virtnet_info *vi)
+ 
+ 	return 0;
+ 
++err_ctrl:
++	kfree(vi->rq);
+ err_rq:
+ 	kfree(vi->sq);
+ err_sq:
+-	kfree(vi->ctrl);
+-err_ctrl:
+ 	return -ENOMEM;
+ }
+ 
 -- 
-2.31.1
+2.28.0
 
