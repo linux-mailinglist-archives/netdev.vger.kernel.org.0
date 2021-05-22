@@ -2,191 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E45BD38D2FB
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 04:21:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CA3838D33D
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 05:14:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231135AbhEVCWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 May 2021 22:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230477AbhEVCWX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 22:22:23 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F251CC06138B
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 19:20:57 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id l1so33105632ejb.6
-        for <netdev@vger.kernel.org>; Fri, 21 May 2021 19:20:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AyDr1y/RwJoeqN22oXWBSWyEDma390VYzmRzYEs5lCg=;
-        b=Lu0qQ1XZTBH8t2J0p/fhFAVkq1MZg33JOTinmTXfMebyUQuijZLlB7BQUQZVjoVGRo
-         XNYXlp28jxndHy0kaHyUg3Vzxr5hqkCVLAKplIgebwyICZVy8ihRZvgsbGtM4IFFjSqs
-         8Y/VMARbkoFcTZGMawK9goky0n6N6Z4SuEyeTL7+siu08yC8KFIUu01+i41cSADjo4Y2
-         97pn98cLGkH6MeGG18rMtvAkBFnKsZkeOWo2RFL5F7wA7dk+fXMhsg91ZM4h7jPYzBz2
-         WAVTR7tyLovlaWKbeY0kOGKUZjieOWcesDr1wVGBmBrCfWt5GTIUvaPOwSSZcRnd3HoS
-         INYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AyDr1y/RwJoeqN22oXWBSWyEDma390VYzmRzYEs5lCg=;
-        b=OLt18YTwUUIDRADQAsb3pnJ9Ub8CtMdXoeVGV+XDY+Wq+DH2kPtzToAgniumjhdFm+
-         UwLR1n8uH1nPfBSfrkh80SD00GBL4Z/h/qzNkbCJHJyuWpEnSTHIsPaRybH7NMJUBv7c
-         zqanKusmvKi7S2BkQXgwz/GQeAbzoiUmwSoAvU+TzijNNYx3wqTkm1W/1BrgPtQNyiVI
-         dTUFa2ssmxHe5DreEi6tzJcGCqJeNPSswKgQLBY7UQHlWkldAL6FvhF+My2oHckIatC9
-         GOouuRCOwMOCgzq7MmM/bhlKYO4gj3MHk3z8dWt7dF3c8NGtRSyfqgEl8z37pQaSNl6u
-         aS/Q==
-X-Gm-Message-State: AOAM5329KaZ4M69SVM13OWyy2edbyujtLbdBPkZoBnGG9gPG4QbCuVw7
-        mnM+T2cHQajCekcNw0K7FTpMqvsULgNKZXBWRHZ4
-X-Google-Smtp-Source: ABdhPJxtWsmcVYWOokYryWNIlC9jPQ5n8GMH6qfVU5ht4UMydIgEcs4bWq07Vr1o3LSIKBusJxMLXzOZ+aChS3mtfes=
-X-Received: by 2002:a17:907:1749:: with SMTP id lf9mr13320714ejc.178.1621650055910;
- Fri, 21 May 2021 19:20:55 -0700 (PDT)
+        id S231321AbhEVDPT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 21 May 2021 23:15:19 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:51139 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231166AbhEVDPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 May 2021 23:15:18 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 14M3DfGT2011316, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 14M3DfGT2011316
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 22 May 2021 11:13:41 +0800
+Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Sat, 22 May 2021 11:13:40 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Sat, 22 May 2021 11:13:40 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74]) by
+ RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74%5]) with mapi id
+ 15.01.2106.013; Sat, 22 May 2021 11:13:40 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com" 
+        <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>
+Subject: RE: [PATCH net] r8152: check the informaton of the device
+Thread-Topic: [PATCH net] r8152: check the informaton of the device
+Thread-Index: AQHXTiDTUevScj9u/kW7OuVFBi+KHqrtKP8AgAGqvnA=
+Date:   Sat, 22 May 2021 03:13:39 +0000
+Message-ID: <73dec4e9ba05452c90af9e174cacf7f8@realtek.com>
+References: <1394712342-15778-363-Taiwan-albertk@realtek.com>
+ <YKeAonwHduV8I+NW@kroah.com>
+In-Reply-To: <YKeAonwHduV8I+NW@kroah.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/5/21_=3F=3F_10:46:00?=
+x-kse-attachment-filter-triggered-rules: Clean
+x-kse-attachment-filter-triggered-filters: Clean
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20210513200807.15910-1-casey@schaufler-ca.com>
- <20210513200807.15910-23-casey@schaufler-ca.com> <CAHC9VhSdFVuZvThMsqWT-L9wcHevA-0yAX+kxqXN0iMmqRc10g@mail.gmail.com>
- <d753115f-6cbd-0886-473c-b10485cb7c52@schaufler-ca.com>
-In-Reply-To: <d753115f-6cbd-0886-473c-b10485cb7c52@schaufler-ca.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 21 May 2021 22:20:44 -0400
-Message-ID: <CAHC9VhR9OPbNCLaKpCEt9mES8yWXpNoTBrgnKW2ER+vEkuNQwQ@mail.gmail.com>
-Subject: Re: [PATCH v26 22/25] Audit: Add new record for multiple process LSM attributes
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     casey.schaufler@intel.com, James Morris <jmorris@namei.org>,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-audit@redhat.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/22/2021 03:00:35
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163845 [May 22 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 446 446 0309aa129ce7cd9d810f87a68320917ac2eba541
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: realtek.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 05/22/2021 03:02:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 21, 2021 at 6:05 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
-> On 5/21/2021 1:19 PM, Paul Moore wrote:
-> > On Thu, May 13, 2021 at 4:32 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
-> >> Create a new audit record type to contain the subject information
-> >> when there are multiple security modules that require such data.
-> >> This record is linked with the same timestamp and serial number
-> >> using the audit_alloc_local() mechanism.
-> > The record is linked with the other associated records into a single
-> > event, it doesn't matter if it gets the timestamp/serial from
-> > audit_alloc_local() or an existing audit event, e.g. ongoing syscall.
-> >
-> >> The record is produced only in cases where there is more than one
-> >> security module with a process "context".
-> >> In cases where this record is produced the subj= fields of
-> >> other records in the audit event will be set to "subj=?".
-> >>
-> >> An example of the MAC_TASK_CONTEXTS (1420) record is:
-> >>
-> >>         type=UNKNOWN[1420]
-> >>         msg=audit(1600880931.832:113)
-> >>         subj_apparmor==unconfined
-> > It should be just a single "=" in the line above.
->
-> AppArmor provides the 2nd "=" as part of the subject context.
-> What's here is correct. I won't argue that it won't case confusion
-> or worse.
+Greg KH <gregkh@linuxfoundation.org>
+> Sent: Friday, May 21, 2021 5:43 PM
+[...]
+> We have a USB core function that does all of the above for you, why not
+> use that instead?
+> 
+> Look at usb_find_common_endpoints() and
+> usb_find_common_endpoints_reverse() and at the very least
+> usb_find_bulk_in_endpoint() and related functions.  Please don't
+> open-code this type of logic, it's easy to get things wrong.
 
-Oh, wow, okay.  That needs to change at some point but I agree it's
-out of scope for this patchset.  In the meantime I might suggest using
-something other than AppArmor as an example here.
+Fine. Thanks.
 
-> >>         subj_smack=_
-> >>
-> >> There will be a subj_$LSM= entry for each security module
-> >> LSM that supports the secid_to_secctx and secctx_to_secid
-> >> hooks. The BPF security module implements secid/secctx
-> >> translation hooks, so it has to be considered to provide a
-> >> secctx even though it may not actually do so.
-> >>
-> >> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-> >> To: paul@paul-moore.com
-> >> To: linux-audit@redhat.com
-> >> To: rgb@redhat.com
-> >> Cc: netdev@vger.kernel.org
-> >> ---
-> >>  drivers/android/binder.c                |  2 +-
-> >>  include/linux/audit.h                   | 24 ++++++++
-> >>  include/linux/security.h                | 16 ++++-
-> >>  include/net/netlabel.h                  |  3 +-
-> >>  include/net/scm.h                       |  2 +-
-> >>  include/net/xfrm.h                      | 13 +++-
-> >>  include/uapi/linux/audit.h              |  1 +
-> >>  kernel/audit.c                          | 80 ++++++++++++++++++-------
-> >>  kernel/audit.h                          |  3 +
-> >>  kernel/auditfilter.c                    |  6 +-
-> >>  kernel/auditsc.c                        | 75 ++++++++++++++++++++---
-> >>  net/ipv4/ip_sockglue.c                  |  2 +-
-> >>  net/netfilter/nf_conntrack_netlink.c    |  4 +-
-> >>  net/netfilter/nf_conntrack_standalone.c |  2 +-
-> >>  net/netfilter/nfnetlink_queue.c         |  2 +-
-> >>  net/netlabel/netlabel_domainhash.c      |  4 +-
-> >>  net/netlabel/netlabel_unlabeled.c       | 24 ++++----
-> >>  net/netlabel/netlabel_user.c            | 20 ++++---
-> >>  net/netlabel/netlabel_user.h            |  6 +-
-> >>  net/xfrm/xfrm_policy.c                  | 10 ++--
-> >>  net/xfrm/xfrm_state.c                   | 20 ++++---
-> >>  security/integrity/ima/ima_api.c        |  7 ++-
-> >>  security/integrity/integrity_audit.c    |  6 +-
-> >>  security/security.c                     | 46 +++++++++-----
-> >>  security/smack/smackfs.c                |  3 +-
-> >>  25 files changed, 274 insertions(+), 107 deletions(-)
-> > ...
-> >
-> >> diff --git a/include/linux/audit.h b/include/linux/audit.h
-> >> index 97cd7471e572..229cd71fbf09 100644
-> >> --- a/include/linux/audit.h
-> >> +++ b/include/linux/audit.h
-> >> @@ -386,6 +395,19 @@ static inline void audit_ptrace(struct task_struct *t)
-> >>                 __audit_ptrace(t);
-> >>  }
-> >>
-> >> +static inline struct audit_context *audit_alloc_for_lsm(gfp_t gfp)
-> >> +{
-> >> +       struct audit_context *context = audit_context();
-> >> +
-> >> +       if (context)
-> >> +               return context;
-> >> +
-> >> +       if (lsm_multiple_contexts())
-> >> +               return audit_alloc_local(gfp);
-> >> +
-> >> +       return NULL;
-> >> +}
-> > See my other comments, but this seems wrong at face value.  The
-> > additional LSM record should happen as part of the existing audit log
-> > functions.
->
-> I'm good with that. But if you defer calling audit_alloc_local()
-> until you know you need it you may be in a place where you can't
-> associate the new context with the event. I think. I will have
-> another go at it.
+Best Regards,
+Hayes
 
-I can't think of a case where you would ever not know if you need to
-allocate a local context at the start.  If you are unsure, get in
-touch and we can work it out.
-
-> > I think I was distracted with the local context issue and I've lost
-> > track of the details here, perhaps it's best to fix the local context
-> > issue first (that should be a big change to this patch) and then we
-> > can take another look.
->
-> I really need to move forward. I'll give allocation of local contexts
-> as necessary in audit_log_task_context() another shot.
-
-I appreciate the desire to move forward, and while I can't speak for
-everyone, I'll do my best to work with you to find a good solution.
-If you get stuck or aren't sure you know how to reach me :)
-
-As a start, I might suggest looking at some of the recent audit
-container ID patchsets from Richard; while they have had some issues,
-they should serve as a basic example of what we mean when we talk
-about "local contexts" and how they should be used.
-
--- 
-paul moore
-www.paul-moore.com
