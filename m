@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B56BE38D5F9
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 15:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E46738D5FA
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 15:15:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231151AbhEVNQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 May 2021 09:16:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48077 "EHLO
+        id S231161AbhEVNQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 May 2021 09:16:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23879 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230466AbhEVNQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 09:16:24 -0400
+        by vger.kernel.org with ESMTP id S230466AbhEVNQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 09:16:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621689299;
+        s=mimecast20190719; t=1621689326;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=iFg8QwTUxh0ja5IOJu6njrdfhu3mkA1LjZC4P7XEI8E=;
-        b=cmUIxWwvS5Uup2NhLWWSAZbhXA5eDpy/EMdoToZvRzFNT+fZVuA1RhRUzZkx8SR2img7EZ
-        Tb61xoMg1SLq+2W9613QkZs1iCes2Xq9kLq4h9RK4pWSxxACFePl/+2rm1TcyPT5Ypu0Hu
-        FyBfdE38JsoqKxPjJkUPlUIYZiqG8zc=
+        bh=JfGJ5neUdhjd8Lyr3Aa36QlcdnBlhkmn60WAUAZa0uc=;
+        b=WiG1z2V28IuGJyOj/fqZbKq3MDBqnw00GkqmarKnxGs/KE3hacy7SWe0pfKlsFirKLSuCA
+        gUkZJRiE/ADv0OSuXg/oX/+QuQU6PLSXMexBUfDmkZmWZXxC8kEU7OaqobaxnaNfnbK6LB
+        w+4HpKe2xCP2gIwb4Z7tSiroobfv1Ww=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-482-0PR9d2X0O8-kQ5EDivruDg-1; Sat, 22 May 2021 09:14:57 -0400
-X-MC-Unique: 0PR9d2X0O8-kQ5EDivruDg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+ us-mta-489-gxR0G2_yMbyhHeFSqI8kTw-1; Sat, 22 May 2021 09:15:24 -0400
+X-MC-Unique: gxR0G2_yMbyhHeFSqI8kTw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F24AD180FD62;
-        Sat, 22 May 2021 13:14:55 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7CC50501F3;
+        Sat, 22 May 2021 13:15:22 +0000 (UTC)
 Received: from dcaratti.station (unknown [10.40.194.65])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 832AB2C6FD;
-        Sat, 22 May 2021 13:14:51 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3ACFA90BE;
+        Sat, 22 May 2021 13:15:20 +0000 (UTC)
 From:   Davide Caratti <dcaratti@redhat.com>
 To:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
@@ -42,109 +42,128 @@ To:     Jamal Hadi Salim <jhs@mojatatu.com>,
         "V. Saicharan" <vsaicharan1998@gmail.com>,
         "Sachin D. Patil" <sdp.sachin@gmail.com>,
         "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
-        Mohit Bhasi <mohitbhasi1998@gmail.com>,
-        Leslie Monis <lesliemonis@gmail.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Colin Ian King <colin.king@canonical.com>
+        Mohit Bhasi <mohitbhasi1998@gmail.com>
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net 1/2] net/sched: fq_pie: re-factor fix for fq_pie endless loop
-Date:   Sat, 22 May 2021 15:14:45 +0200
-Message-Id: <d2b888e712794a7c88f3b0365c4b25635517b341.1621687869.git.dcaratti@redhat.com>
+Subject: [PATCH net 2/2] net/sched: fq_pie: fix OOB access in the traffic path
+Date:   Sat, 22 May 2021 15:15:13 +0200
+Message-Id: <879638ee7f319823c8f09c345b5a05e6c1375ae0.1621687869.git.dcaratti@redhat.com>
 In-Reply-To: <cover.1621687869.git.dcaratti@redhat.com>
 References: <cover.1621687869.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the patch that fixed an endless loop in_fq_pie_init() was not considering
-that 65535 is a valid class id. The correct bugfix for this infinite loop
-is to change 'idx' to become an u32, like Colin proposed in the past [1].
+the following script:
 
-Fix this as follows:
- - restore 65536 as maximum possible values of 'flows_cnt'
- - use u32 'idx' when iterating on 'q->flows'
- - fix the TDC selftest
+  # tc qdisc add dev eth0 handle 0x1 root fq_pie flows 2
+  # tc qdisc add dev eth0 clsact
+  # tc filter add dev eth0 egress matchall action skbedit priority 0x10002
+  # ping 192.0.2.2 -I eth0 -c2 -w1 -q
 
-This reverts commit bb2f930d6dd708469a587dc9ed1efe1ef969c0bf.
+produces the following splat:
 
-[1] https://lore.kernel.org/netdev/20210407163808.499027-1-colin.king@canonical.com/
+ BUG: KASAN: slab-out-of-bounds in fq_pie_qdisc_enqueue+0x1314/0x19d0 [sch_fq_pie]
+ Read of size 4 at addr ffff888171306924 by task ping/942
 
-CC: Colin Ian King <colin.king@canonical.com>
-CC: stable@vger.kernel.org
-Fixes: bb2f930d6dd7 ("net/sched: fix infinite loop in sch_fq_pie")
+ CPU: 3 PID: 942 Comm: ping Not tainted 5.12.0+ #441
+ Hardware name: Red Hat KVM, BIOS 1.11.1-4.module+el8.1.0+4066+0f1aadab 04/01/2014
+ Call Trace:
+  dump_stack+0x92/0xc1
+  print_address_description.constprop.7+0x1a/0x150
+  kasan_report.cold.13+0x7f/0x111
+  fq_pie_qdisc_enqueue+0x1314/0x19d0 [sch_fq_pie]
+  __dev_queue_xmit+0x1034/0x2b10
+  ip_finish_output2+0xc62/0x2120
+  __ip_finish_output+0x553/0xea0
+  ip_output+0x1ca/0x4d0
+  ip_send_skb+0x37/0xa0
+  raw_sendmsg+0x1c4b/0x2d00
+  sock_sendmsg+0xdb/0x110
+  __sys_sendto+0x1d7/0x2b0
+  __x64_sys_sendto+0xdd/0x1b0
+  do_syscall_64+0x3c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7fe69735c3eb
+ Code: 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 f3 0f 1e fa 48 8d 05 75 42 2c 00 41 89 ca 8b 00 85 c0 75 14 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 75 c3 0f 1f 40 00 41 57 4d 89 c7 41 56 41 89
+ RSP: 002b:00007fff06d7fb38 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+ RAX: ffffffffffffffda RBX: 000055e961413700 RCX: 00007fe69735c3eb
+ RDX: 0000000000000040 RSI: 000055e961413700 RDI: 0000000000000003
+ RBP: 0000000000000040 R08: 000055e961410500 R09: 0000000000000010
+ R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff06d81260
+ R13: 00007fff06d7fb40 R14: 00007fff06d7fc30 R15: 000055e96140f0a0
+
+ Allocated by task 917:
+  kasan_save_stack+0x19/0x40
+  __kasan_kmalloc+0x7f/0xa0
+  __kmalloc_node+0x139/0x280
+  fq_pie_init+0x555/0x8e8 [sch_fq_pie]
+  qdisc_create+0x407/0x11b0
+  tc_modify_qdisc+0x3c2/0x17e0
+  rtnetlink_rcv_msg+0x346/0x8e0
+  netlink_rcv_skb+0x120/0x380
+  netlink_unicast+0x439/0x630
+  netlink_sendmsg+0x719/0xbf0
+  sock_sendmsg+0xe2/0x110
+  ____sys_sendmsg+0x5ba/0x890
+  ___sys_sendmsg+0xe9/0x160
+  __sys_sendmsg+0xd3/0x170
+  do_syscall_64+0x3c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+ The buggy address belongs to the object at ffff888171306800
+  which belongs to the cache kmalloc-256 of size 256
+ The buggy address is located 36 bytes to the right of
+  256-byte region [ffff888171306800, ffff888171306900)
+ The buggy address belongs to the page:
+ page:00000000bcfb624e refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x171306
+ head:00000000bcfb624e order:1 compound_mapcount:0
+ flags: 0x17ffffc0010200(slab|head|node=0|zone=2|lastcpupid=0x1fffff)
+ raw: 0017ffffc0010200 dead000000000100 dead000000000122 ffff888100042b40
+ raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
+ page dumped because: kasan: bad access detected
+
+ Memory state around the buggy address:
+  ffff888171306800: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  ffff888171306880: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
+ >ffff888171306900: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                                ^
+  ffff888171306980: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+  ffff888171306a00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+
+fix fq_pie traffic path to avoid selecting 'q->flows + q->flows_cnt' as a
+valid flow: it's an address beyond the allocated memory.
+
 Fixes: ec97ecf1ebe4 ("net: sched: add Flow Queue PIE packet scheduler")
+CC: stable@vger.kernel.org
 Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 ---
- net/sched/sch_fq_pie.c                                 | 10 +++++-----
- .../selftests/tc-testing/tc-tests/qdiscs/fq_pie.json   |  8 ++++----
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ net/sched/sch_fq_pie.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
-index 949163fe68af..266c7c1869d9 100644
+index 266c7c1869d9..cac684952edc 100644
 --- a/net/sched/sch_fq_pie.c
 +++ b/net/sched/sch_fq_pie.c
-@@ -297,9 +297,9 @@ static int fq_pie_change(struct Qdisc *sch, struct nlattr *opt,
- 			goto flow_error;
- 		}
- 		q->flows_cnt = nla_get_u32(tb[TCA_FQ_PIE_FLOWS]);
--		if (!q->flows_cnt || q->flows_cnt >= 65536) {
-+		if (!q->flows_cnt || q->flows_cnt > 65536) {
- 			NL_SET_ERR_MSG_MOD(extack,
--					   "Number of flows must range in [1..65535]");
-+					   "Number of flows must range in [1..65536]");
- 			goto flow_error;
- 		}
- 	}
-@@ -367,7 +367,7 @@ static void fq_pie_timer(struct timer_list *t)
- 	struct fq_pie_sched_data *q = from_timer(q, t, adapt_timer);
- 	struct Qdisc *sch = q->sch;
- 	spinlock_t *root_lock; /* to lock qdisc for probability calculations */
--	u16 idx;
-+	u32 idx;
+@@ -138,8 +138,15 @@ static int fq_pie_qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
  
- 	root_lock = qdisc_lock(qdisc_root_sleeping(sch));
- 	spin_lock(root_lock);
-@@ -388,7 +388,7 @@ static int fq_pie_init(struct Qdisc *sch, struct nlattr *opt,
- {
- 	struct fq_pie_sched_data *q = qdisc_priv(sch);
- 	int err;
--	u16 idx;
-+	u32 idx;
+ 	/* Classifies packet into corresponding flow */
+ 	idx = fq_pie_classify(skb, sch, &ret);
+-	sel_flow = &q->flows[idx];
++	if (idx == 0) {
++		if (ret & __NET_XMIT_BYPASS)
++			qdisc_qstats_drop(sch);
++		__qdisc_drop(skb, to_free);
++		return ret;
++	}
++	idx--;
  
- 	pie_params_init(&q->p_params);
- 	sch->limit = 10 * 1024;
-@@ -500,7 +500,7 @@ static int fq_pie_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
- static void fq_pie_reset(struct Qdisc *sch)
- {
- 	struct fq_pie_sched_data *q = qdisc_priv(sch);
--	u16 idx;
-+	u32 idx;
- 
- 	INIT_LIST_HEAD(&q->new_flows);
- 	INIT_LIST_HEAD(&q->old_flows);
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq_pie.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq_pie.json
-index 1cda2e11b3ad..773c5027553d 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq_pie.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq_pie.json
-@@ -9,11 +9,11 @@
-         "setup": [
-             "$IP link add dev $DUMMY type dummy || /bin/true"
-         ],
--        "cmdUnderTest": "$TC qdisc add dev $DUMMY root fq_pie flows 65536",
--        "expExitCode": "2",
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq_pie flows 65536",
-+        "expExitCode": "0",
-         "verifyCmd": "$TC qdisc show dev $DUMMY",
--        "matchPattern": "qdisc",
--        "matchCount": "0",
-+        "matchPattern": "qdisc fq_pie 1: root refcnt 2 limit 10240p flows 65536",
-+        "matchCount": "1",
-         "teardown": [
-             "$IP link del dev $DUMMY"
-         ]
++	sel_flow = &q->flows[idx];
+ 	/* Checks whether adding a new packet would exceed memory limit */
+ 	get_pie_cb(skb)->mem_usage = skb->truesize;
+ 	memory_limited = q->memory_usage > q->memory_limit + skb->truesize;
 -- 
 2.31.1
 
