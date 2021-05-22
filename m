@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC35638D605
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 15:21:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E60938D608
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 15:21:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231228AbhEVNWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 May 2021 09:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
+        id S231272AbhEVNWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 May 2021 09:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230492AbhEVNWh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 09:22:37 -0400
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EC7C061574;
-        Sat, 22 May 2021 06:21:13 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
+        with ESMTP id S231215AbhEVNWs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 09:22:48 -0400
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56482C061574;
+        Sat, 22 May 2021 06:21:23 -0700 (PDT)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4FnPHq1lHPzQjTw;
-        Sat, 22 May 2021 15:21:11 +0200 (CEST)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4FnPJ14HWnzQjXk;
+        Sat, 22 May 2021 15:21:21 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
-        with ESMTP id f9bGRbHX79IB; Sat, 22 May 2021 15:21:07 +0200 (CEST)
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id tR0P-pPKcgrh; Sat, 22 May 2021 15:21:18 +0200 (CEST)
 From:   =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>
 To:     Amitkumar Karwar <amitkarwar@gmail.com>,
         Ganapathi Bhat <ganapathi017@gmail.com>,
@@ -40,141 +40,216 @@ Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Bjorn Helgaas <bhelgaas@google.com>,
         =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [RFC PATCH 1/3] mwifiex: pcie: add DMI-based quirk implementation for Surface devices
-Date:   Sat, 22 May 2021 15:18:25 +0200
-Message-Id: <20210522131827.67551-2-verdre@v0yd.nl>
+Subject: [RFC PATCH 2/3] mwifiex: pcie: add reset_d3cold quirk for Surface gen4+ devices
+Date:   Sat, 22 May 2021 15:18:26 +0200
+Message-Id: <20210522131827.67551-3-verdre@v0yd.nl>
 In-Reply-To: <20210522131827.67551-1-verdre@v0yd.nl>
 References: <20210522131827.67551-1-verdre@v0yd.nl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -0.93 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 1DC551813
-X-Rspamd-UID: eb28db
+X-Rspamd-Score: -0.96 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 67ED11806
+X-Rspamd-UID: 5d20ca
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds the ability to apply device-specific quirks to the
-mwifiex driver. It uses DMI matching similar to the quirks brcmfmac uses
-with dmi.c. We'll add identifiers to match various MS Surface devices,
-which this is primarily meant for, later.
+From: Tsuchiya Yuto <kitakar@gmail.com>
 
-This commit is a slightly modified version of a previous patch sent in
-by Tsuchiya Yuto.
+To reset mwifiex on Surface gen4+ (Pro 4 or later gen) devices, it
+seems that putting the wifi device into D3cold is required according
+to errata.inf file on Windows installation (Windows/INF/errata.inf).
 
-Co-developed-by: Tsuchiya Yuto <kitakar@gmail.com>
+This patch adds a function that performs power-cycle (put into D3cold
+then D0) and call the function at the end of reset_prepare().
+
+Note: Need to also reset the parent device (bridge) of wifi on SB1;
+it might be because the bridge of wifi always reports it's in D3hot.
+When I tried to reset only the wifi device (not touching parent), it gave
+the following error and the reset failed:
+
+    acpi device:4b: Cannot transition to power state D0 for parent in D3hot
+    mwifiex_pcie 0000:03:00.0: can't change power state from D3cold to D0 (config space inaccessible)
+
 Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
 Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
 ---
- drivers/net/wireless/marvell/mwifiex/Makefile |  1 +
- drivers/net/wireless/marvell/mwifiex/pcie.c   |  4 +++
- drivers/net/wireless/marvell/mwifiex/pcie.h   |  1 +
- .../wireless/marvell/mwifiex/pcie_quirks.c    | 32 +++++++++++++++++++
- .../wireless/marvell/mwifiex/pcie_quirks.h    |  8 +++++
- 5 files changed, 46 insertions(+)
- create mode 100644 drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
- create mode 100644 drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
+ drivers/net/wireless/marvell/mwifiex/pcie.c   |   7 +
+ .../wireless/marvell/mwifiex/pcie_quirks.c    | 123 ++++++++++++++++++
+ .../wireless/marvell/mwifiex/pcie_quirks.h    |   3 +
+ 3 files changed, 133 insertions(+)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/Makefile b/drivers/net/wireless/marvell/mwifiex/Makefile
-index 162d557b78af..2bd00f40958e 100644
---- a/drivers/net/wireless/marvell/mwifiex/Makefile
-+++ b/drivers/net/wireless/marvell/mwifiex/Makefile
-@@ -49,6 +49,7 @@ mwifiex_sdio-y += sdio.o
- obj-$(CONFIG_MWIFIEX_SDIO) += mwifiex_sdio.o
- 
- mwifiex_pcie-y += pcie.o
-+mwifiex_pcie-y += pcie_quirks.o
- obj-$(CONFIG_MWIFIEX_PCIE) += mwifiex_pcie.o
- 
- mwifiex_usb-y += usb.o
 diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
-index 94228b316df1..02fdce926de5 100644
+index 02fdce926de5..d9acfea395ad 100644
 --- a/drivers/net/wireless/marvell/mwifiex/pcie.c
 +++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
-@@ -27,6 +27,7 @@
- #include "wmm.h"
- #include "11n.h"
- #include "pcie.h"
-+#include "pcie_quirks.h"
- 
- #define PCIE_VERSION	"1.0"
- #define DRV_NAME        "Marvell mwifiex PCIe"
-@@ -410,6 +411,9 @@ static int mwifiex_pcie_probe(struct pci_dev *pdev,
- 			return ret;
- 	}
- 
-+	/* check quirks */
-+	mwifiex_initialize_quirks(card);
+@@ -528,6 +528,13 @@ static void mwifiex_pcie_reset_prepare(struct pci_dev *pdev)
+ 	mwifiex_shutdown_sw(adapter);
+ 	clear_bit(MWIFIEX_IFACE_WORK_DEVICE_DUMP, &card->work_flags);
+ 	clear_bit(MWIFIEX_IFACE_WORK_CARD_RESET, &card->work_flags);
 +
- 	if (mwifiex_add_card(card, &card->fw_done, &pcie_ops,
- 			     MWIFIEX_PCIE, &pdev->dev)) {
- 		pr_err("%s failed\n", __func__);
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.h b/drivers/net/wireless/marvell/mwifiex/pcie.h
-index 5ed613d65709..981e330c77d7 100644
---- a/drivers/net/wireless/marvell/mwifiex/pcie.h
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie.h
-@@ -244,6 +244,7 @@ struct pcie_service_card {
- 	unsigned long work_flags;
++	/* For Surface gen4+ devices, we need to put wifi into D3cold right
++	 * before performing FLR
++	 */
++	if (card->quirks & QUIRK_FW_RST_D3COLD)
++		mwifiex_pcie_reset_d3cold_quirk(pdev);
++
+ 	mwifiex_dbg(adapter, INFO, "%s, successful\n", __func__);
  
- 	bool pci_reset_ongoing;
-+	unsigned long quirks;
+ 	card->pci_reset_ongoing = true;
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
+index 4064f99b36ba..b5f214fc1212 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
+@@ -15,6 +15,72 @@
+ 
+ /* quirk table based on DMI matching */
+ static const struct dmi_system_id mwifiex_quirk_table[] = {
++	{
++		.ident = "Surface Pro 4",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 4"),
++		},
++		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
++	},
++	{
++		.ident = "Surface Pro 5",
++		.matches = {
++			/* match for SKU here due to generic product name "Surface Pro" */
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1796"),
++		},
++		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
++	},
++	{
++		.ident = "Surface Pro 5 (LTE)",
++		.matches = {
++			/* match for SKU here due to generic product name "Surface Pro" */
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1807"),
++		},
++		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
++	},
++	{
++		.ident = "Surface Pro 6",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 6"),
++		},
++		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
++	},
++	{
++		.ident = "Surface Book 1",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book"),
++		},
++		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
++	},
++	{
++		.ident = "Surface Book 2",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book 2"),
++		},
++		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
++	},
++	{
++		.ident = "Surface Laptop 1",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop"),
++		},
++		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
++	},
++	{
++		.ident = "Surface Laptop 2",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop 2"),
++		},
++		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
++	},
+ 	{}
  };
  
- static inline int
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
-new file mode 100644
-index 000000000000..4064f99b36ba
---- /dev/null
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
-@@ -0,0 +1,32 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * File for PCIe quirks.
-+ */
-+
-+/* The low-level PCI operations will be performed in this file. Therefore,
-+ * let's use dev_*() instead of mwifiex_dbg() here to avoid troubles (e.g.
-+ * to avoid using mwifiex_adapter struct before init or wifi is powered
-+ * down, or causes NULL ptr deref).
-+ */
-+
-+#include <linux/dmi.h>
-+
-+#include "pcie_quirks.h"
-+
-+/* quirk table based on DMI matching */
-+static const struct dmi_system_id mwifiex_quirk_table[] = {
-+	{}
-+};
-+
-+void mwifiex_initialize_quirks(struct pcie_service_card *card)
-+{
-+	struct pci_dev *pdev = card->dev;
-+	const struct dmi_system_id *dmi_id;
-+
-+	dmi_id = dmi_first_match(mwifiex_quirk_table);
-+	if (dmi_id)
-+		card->quirks = (uintptr_t)dmi_id->driver_data;
-+
-+	if (!card->quirks)
-+		dev_info(&pdev->dev, "no quirks enabled\n");
+@@ -29,4 +95,61 @@ void mwifiex_initialize_quirks(struct pcie_service_card *card)
+ 
+ 	if (!card->quirks)
+ 		dev_info(&pdev->dev, "no quirks enabled\n");
++	if (card->quirks & QUIRK_FW_RST_D3COLD)
++		dev_info(&pdev->dev, "quirk reset_d3cold enabled\n");
 +}
++
++static void mwifiex_pcie_set_power_d3cold(struct pci_dev *pdev)
++{
++	dev_info(&pdev->dev, "putting into D3cold...\n");
++
++	pci_save_state(pdev);
++	if (pci_is_enabled(pdev))
++		pci_disable_device(pdev);
++	pci_set_power_state(pdev, PCI_D3cold);
++}
++
++static int mwifiex_pcie_set_power_d0(struct pci_dev *pdev)
++{
++	int ret;
++
++	dev_info(&pdev->dev, "putting into D0...\n");
++
++	pci_set_power_state(pdev, PCI_D0);
++	ret = pci_enable_device(pdev);
++	if (ret) {
++		dev_err(&pdev->dev, "pci_enable_device failed\n");
++		return ret;
++	}
++	pci_restore_state(pdev);
++
++	return 0;
++}
++
++int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev)
++{
++	struct pci_dev *parent_pdev = pci_upstream_bridge(pdev);
++	int ret;
++
++	/* Power-cycle (put into D3cold then D0) */
++	dev_info(&pdev->dev, "Using reset_d3cold quirk to perform FW reset\n");
++
++	/* We need to perform power-cycle also for bridge of wifi because
++	 * on some devices (e.g. Surface Book 1), the OS for some reasons
++	 * can't know the real power state of the bridge.
++	 * When tried to power-cycle only wifi, the reset failed with the
++	 * following dmesg log:
++	 * "Cannot transition to power state D0 for parent in D3hot".
++	 */
++	mwifiex_pcie_set_power_d3cold(pdev);
++	mwifiex_pcie_set_power_d3cold(parent_pdev);
++
++	ret = mwifiex_pcie_set_power_d0(parent_pdev);
++	if (ret)
++		return ret;
++	ret = mwifiex_pcie_set_power_d0(pdev);
++	if (ret)
++		return ret;
++
++	return 0;
+ }
 diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
-new file mode 100644
-index 000000000000..7a1fe3b3a61a
---- /dev/null
+index 7a1fe3b3a61a..549093067813 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
 +++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
-@@ -0,0 +1,8 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Header file for PCIe quirks.
-+ */
+@@ -5,4 +5,7 @@
+ 
+ #include "pcie.h"
+ 
++#define QUIRK_FW_RST_D3COLD	BIT(0)
 +
-+#include "pcie.h"
-+
-+void mwifiex_initialize_quirks(struct pcie_service_card *card);
+ void mwifiex_initialize_quirks(struct pcie_service_card *card);
++int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev);
 -- 
 2.31.1
 
