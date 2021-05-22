@@ -2,139 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4521238D4B1
-	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 11:09:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A91538D4B2
+	for <lists+netdev@lfdr.de>; Sat, 22 May 2021 11:16:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbhEVJKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 May 2021 05:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36184 "EHLO
+        id S230186AbhEVJRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 May 2021 05:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbhEVJKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 05:10:21 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B55C061574
-        for <netdev@vger.kernel.org>; Sat, 22 May 2021 02:08:56 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id j6so30550052lfr.11
-        for <netdev@vger.kernel.org>; Sat, 22 May 2021 02:08:56 -0700 (PDT)
+        with ESMTP id S230114AbhEVJRo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 May 2021 05:17:44 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A9EC0613ED
+        for <netdev@vger.kernel.org>; Sat, 22 May 2021 02:16:19 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id b7so8048126plg.0
+        for <netdev@vger.kernel.org>; Sat, 22 May 2021 02:16:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Sjhn9KsqMSp1BoKveCdWGhZPcyNCbVQ54hN/N+Flmz8=;
-        b=Sp0qZmPnH8CTgJ33JEdEZblBCd762zWSPeMta+JqnDSwHTZwla5JVt+t3WoM1BWw4a
-         s9zPlv5ZbbBGPCLnFv48+SbcNwbAMU5v7QftrPcvTSRA8zH3YC8XRur+zaowkQiOIxDm
-         blfo/xTPCgGjfYTfe2tsRVTMbb6u2Evs0eiT7U9MsU87tY9TgO+8LGqf5s1nMaVANKH4
-         +9OYVp0EOS293bLowRM0pqFr1c2DDiVTQtXQoCSH37ZAcZnPDeuQRqNoP9+Nmd5mGq5F
-         6GqjUPW2qVwRvMIcZu/i3p1FfVGUI7qJUq5ejvbvsCb3lfhEcc54hXW2/xQWJ+9x8Ubc
-         WdFw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ocIAhBgbP+PNKty+shUQ/xBwv4WxwbN40wWJrHy9LDE=;
+        b=H5IPHUVwsCv4PK07LQa0MFlmT/aE4HLOuzyADGUyy0rudXcLqXzGatgEgkhTxq0iEx
+         LQwa078PXxu4cdbaepSXzxXHYI2d18vXDCC/fFTgDFbZmJM2k3Aa/Ui4Fbuo7KUbtrKB
+         hmGI+FNCtf/n2xgdADvH6F3L0QTFijkC5wzqN146mbdbdxZOyf5tmwjBgbVOcjHzL9SW
+         RPmLiBAX9pVvjxLKgmw5mnqa1mLotwFRVUYH2cXOZh4XKYYQrIx71YYDCaPBRnw+rbTu
+         VM+icmERRTAtgYOpJ+dulojlQ/ftmxJAu7JANs/fN9ZOzJnZDq9RM/lTqPWkp8s4LINA
+         b2KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Sjhn9KsqMSp1BoKveCdWGhZPcyNCbVQ54hN/N+Flmz8=;
-        b=o97rNFDiYmp1HVvrr9AO63b4WLG6WTxkq3oO1lSYteR4lZkEcGn+4Rg61rTOBFoyhv
-         S8UU+F+ojINJ0UGGRUsImXO2fU+4UMMWvuCYLRYZaGYMgM9TIL28FwTOHAJ9hUSGkkq2
-         F0HP3SLLO0c3qtMC8AtFCyqEY6PRpmupfk29nUvF6MchQ8klxj3t1brCyZqnSSxhHbRy
-         M0YrEPAG+4Tnz26QNx4s9Bw8+old8HK3AkhCUqz6N3vPmg1RVaE2G+2QDnTJgjm5cE3H
-         wSrut9M+BMCyyqOtNc3dGhZ9VGxPzDfdPff7Yr+yMtHokyWv40eELqvTMcNulU8YUMvx
-         WS/g==
-X-Gm-Message-State: AOAM531eg/rP5csDxdznQaYCTBPObdqu1RcThw6FQR1c7rIEIq+Wy3nM
-        nL0nlNt5IDs+7TqZz/kAG4nbszSLD6Q6Y86WLpbDCA==
-X-Google-Smtp-Source: ABdhPJxtrujQjxgEQxMgSJcfpFacOYFoG42OqCexmsfy+Er336j/5/HgPfJblbT/bkMk+PuNS27xV+SMGqj60TM1/Fg=
-X-Received: by 2002:ac2:5459:: with SMTP id d25mr4999478lfn.560.1621674534622;
- Sat, 22 May 2021 02:08:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210521124859.101012-1-zong.li@sifive.com> <b4088995-605e-85ca-2f07-47d2654ac2c8@gmail.com>
-In-Reply-To: <b4088995-605e-85ca-2f07-47d2654ac2c8@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ocIAhBgbP+PNKty+shUQ/xBwv4WxwbN40wWJrHy9LDE=;
+        b=L3QttTvdJlt6Lz5K7E5v6o4ySzwk2bWNK/sSE44KrSV/qNboVs5xtiskIXr8Jy19W8
+         ujOAslWFJRT9nVmjcAS93eErijOFBeeveHuEm9CgUEww+K7KeLfYri95QuIuUSx/kgZE
+         toMOwTHudxPrF/XzZbEMtST6iI5Ab9ghdw7G8rh4n7APDxmXDJ2j2GueakhiozKy9Zt3
+         B99UR6iWxGKKAvI7X6MQU0NgVmwGLvwam4LY9TYXcKJWa7rZbH0bCbwRfEfVQFCQkHLY
+         bTGnCQAqPsDIi2vn2y+V4BvEBTGHhjIJSNseJb9FdSgMH/RgRncZ2MEVwEWcKVpbGoqu
+         5ANg==
+X-Gm-Message-State: AOAM531ZpH5QRPdmEK0aLOKsR4IKW9Lc6dF0ZhzW6mEfTZho1mhHJlJO
+        TIw00bvvTEEqdeP9G6yb2CKsNA==
+X-Google-Smtp-Source: ABdhPJwBgPJcj3WjJ4rl8Aklh5GuighzrF2aOkUUN6iR5p/c0bE0+rouZom68Ho53Mip49r9lai9BQ==
+X-Received: by 2002:a17:90a:2a89:: with SMTP id j9mr5925640pjd.141.1621674977901;
+        Sat, 22 May 2021 02:16:17 -0700 (PDT)
+Received: from hsinchu02.internal.sifive.com (59-124-168-89.HINET-IP.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id pg5sm3647169pjb.28.2021.05.22.02.16.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 May 2021 02:16:17 -0700 (PDT)
 From:   Zong Li <zong.li@sifive.com>
-Date:   Sat, 22 May 2021 17:08:44 +0800
-Message-ID: <CANXhq0rQqeGO_LM233bB8Kg5XD_Q7xrtOhVrYeuCxXj29N3+Rg@mail.gmail.com>
-Subject: Re: [PATCH] net: macb: ensure the device is available before
- accessing GEMGXL control registers
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, kuba@kernel.org,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Andreas Schwab <schwab@linux-m68k.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Michael Turquette <mturquette@baylibre.com>,
-        geert@linux-m68k.org, Yixun Lan <yixun.lan@gmail.com>,
-        netdev@vger.kernel.org,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
+        palmer@dabbelt.com, paul.walmsley@sifive.com,
+        schwab@linux-m68k.org, sboyd@kernel.org, aou@eecs.berkeley.edu,
+        mturquette@baylibre.com, geert@linux-m68k.org, yixun.lan@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Cc:     Zong Li <zong.li@sifive.com>
+Subject: [PATCH v2] net: macb: ensure the device is available before accessing GEMGXL control registers
+Date:   Sat, 22 May 2021 17:16:11 +0800
+Message-Id: <20210522091611.36920-1-zong.li@sifive.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 22, 2021 at 12:51 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 5/21/2021 5:48 AM, Zong Li wrote:
-> > If runtime power menagement is enabled, the gigabit ethernet PLL would
-> > be disabled after macb_probe(). During this period of time, the system
-> > would hang up if we try to access GEMGXL control registers.
-> >
-> > We can't put runtime_pm_get/runtime_pm_put/ there due to the issue of
-> > sleep inside atomic section (7fa2955ff70ce453 ("sh_eth: Fix sleeping
-> > function called from invalid context"). Add the similar flag to ensure
-> > the device is available before accessing GEMGXL device.
-> >
-> > Signed-off-by: Zong Li <zong.li@sifive.com>
-> > ---
-> >  drivers/net/ethernet/cadence/macb.h      | 2 ++
-> >  drivers/net/ethernet/cadence/macb_main.c | 7 +++++++
-> >  2 files changed, 9 insertions(+)
-> >
-> > diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-> > index d8d87213697c..acf5242ce715 100644
-> > --- a/drivers/net/ethernet/cadence/macb.h
-> > +++ b/drivers/net/ethernet/cadence/macb.h
-> > @@ -1309,6 +1309,8 @@ struct macb {
-> >
-> >       u32     rx_intr_mask;
-> >
-> > +     unsigned int is_opened;
-> > +
-> >       struct macb_pm_data pm_data;
-> >       const struct macb_usrio_config *usrio;
-> >  };
-> > diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> > index 6bc7d41d519b..e079ed10ad91 100644
-> > --- a/drivers/net/ethernet/cadence/macb_main.c
-> > +++ b/drivers/net/ethernet/cadence/macb_main.c
-> > @@ -2781,6 +2781,8 @@ static int macb_open(struct net_device *dev)
-> >       if (bp->ptp_info)
-> >               bp->ptp_info->ptp_init(dev);
-> >
-> > +     bp->is_opened = 1;
-> > +
-> >       return 0;
-> >
-> >  reset_hw:
-> > @@ -2818,6 +2820,8 @@ static int macb_close(struct net_device *dev)
-> >       if (bp->ptp_info)
-> >               bp->ptp_info->ptp_remove(dev);
-> >
-> > +     bp->is_opened = 0;
-> > +
-> >       pm_runtime_put(&bp->pdev->dev);
-> >
-> >       return 0;
-> > @@ -2867,6 +2871,9 @@ static struct net_device_stats *gem_get_stats(struct macb *bp)
-> >       struct gem_stats *hwstat = &bp->hw_stats.gem;
-> >       struct net_device_stats *nstat = &bp->dev->stats;
-> >
-> > +     if (!bp->is_opened)
-> > +             return nstat;
->
-> The canonical way to do this check is to use netif_running(), and not
-> open code a boolean tracking whether a network device is opened or not.
+If runtime power menagement is enabled, the gigabit ethernet PLL would
+be disabled after macb_probe(). During this period of time, the system
+would hang up if we try to access GEMGXL control registers.
 
-Yes, I have tried this and it worked. Let me change it in the next version.
+We can't put runtime_pm_get/runtime_pm_put/ there due to the issue of
+sleep inside atomic section (7fa2955ff70ce453 ("sh_eth: Fix sleeping
+function called from invalid context"). Add netif_running checking to
+ensure the device is available before accessing GEMGXL device.
 
-> --
-> Florian
+Changed in v2:
+ - Use netif_running instead of its own flag
+
+Signed-off-by: Zong Li <zong.li@sifive.com>
+---
+ drivers/net/ethernet/cadence/macb_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 6bc7d41d519b..a0c7b1167dbb 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -2867,6 +2867,9 @@ static struct net_device_stats *gem_get_stats(struct macb *bp)
+ 	struct gem_stats *hwstat = &bp->hw_stats.gem;
+ 	struct net_device_stats *nstat = &bp->dev->stats;
+ 
++	if (!netif_running(bp->dev))
++		return nstat;
++
+ 	gem_update_stats(bp);
+ 
+ 	nstat->rx_errors = (hwstat->rx_frame_check_sequence_errors +
+-- 
+2.31.1
+
