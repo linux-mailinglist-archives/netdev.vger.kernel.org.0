@@ -2,116 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BA9238DB96
-	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 17:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D658238DBAF
+	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 17:54:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231841AbhEWPPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 11:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34186 "EHLO
+        id S231862AbhEWPzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 11:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231776AbhEWPPv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 11:15:51 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB503C061574;
-        Sun, 23 May 2021 08:14:23 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id p39so2408589pfw.8;
-        Sun, 23 May 2021 08:14:23 -0700 (PDT)
+        with ESMTP id S231789AbhEWPzo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 11:55:44 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4481C061574;
+        Sun, 23 May 2021 08:54:16 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id c17so18809720pfn.6;
+        Sun, 23 May 2021 08:54:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=DYAJsKGaNMXlZ5z7Y202JilMErjhQXaG67fAc2NRRFU=;
-        b=qtR5tZ4xaAqfTOMolkHMLZoO2fh7YAnIoQIzMxo6UjgYqxugMF70cfTiTARj0xoHlq
-         5/vxi7JPoEHBBJpDH5Knx56c+wwpe0KpRgf8TAThPUxE+h21/gWNq4ob2p0+ywWnu2O8
-         30qkkFRGcWmB1jVBpC/UlKcSoNOvJbBHWNWS6ldXDSjujElT6a7gOHzpAlvjeLrDfLKz
-         sIBdlLJSIx2GeH4lvN22wtOhr6i9fPQZCLRR10YP215yfQy+bsaDsMaf3okCZT57URsH
-         dHvXXFNJcKsgDzQ/9kq66FSCt7tvLIiRg0XOp66gH6MgBilkCmYfxng2ht8JK9osXpab
-         gbsg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b7Fi8Tgw3/EGwzBuNTdXnQY8qPAFscbMTJSOz3ZIkdQ=;
+        b=mpBlodu2A+CJ34Dl1pnuiszec02Kr2XM7/2zc4V8QgaljDRruj8SlC2zHaRUbPW+O1
+         hrP5IT+DQkKTpM+Eem4VVC4ie/Gwc2RVkj5XYSBCB6fseCqudiE7JjabLRQmCXYRARvv
+         3+LNMIuTCiDLVe1MySiIwMcdnOE/cnX9bDXwbn4XzvF647lADOvZXpbJU9eaulMmhuDV
+         hPF3qf4hZhZyhES/Tj+SvqljB0AQTQ1HQGMXZRqyY2pSS9EFuMx4gVNajR5UPOx9B98B
+         84S1GWVLPkYxhDLK6Fw0GD7/mD5DMJhX0VQriQ9w2hH+Xfose/oeKBPsBfvx99jR2J7W
+         TNug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=DYAJsKGaNMXlZ5z7Y202JilMErjhQXaG67fAc2NRRFU=;
-        b=RQvKpspM/Kt6l8PCCu/ffSsxlc6M5gD0ID1xEWwIrP4X0lN/yN/cIP7codUeuQaxjs
-         V34MIAjOZqfxbsNHA9cswhPYjSsLSLKNNW/3JAS56g5St1vcziXh7aa3ODG/fvGeAl3U
-         zpVU8hnEtLgG3cYsV4IM6E240WmuUYEy/RUKD9wYQ/qaip9U2z428nfvMM2tPOcNa/+7
-         nWeIM2MXtLzvmuKhTVsmlYsOcn8AtyIU3q+nv28WTn1ZL6ZDUzZT32poYf/qRM+9u3Is
-         je2kFXHrQZ8hEGWyqxOiWD1NH3ll2toJnPc3WQjbXu2D+1eiwJoVV3mfY7ErN2lEOUUB
-         YCsA==
-X-Gm-Message-State: AOAM532TPq/U+wj+H/6jYxCN+kpB2NjMUncJd5sjmYEsladwwX+nkI2T
-        92LU+9x6iBIbPMwTqoF0e0s=
-X-Google-Smtp-Source: ABdhPJxgYdsRVQ+3NZpShC24UhLHetz6ER6YC9eSr/QfIL4pfvSraMInmsI+F/aTBbSLDuJHLoqqoA==
-X-Received: by 2002:aa7:8d4a:0:b029:2e8:df53:cbd6 with SMTP id s10-20020aa78d4a0000b02902e8df53cbd6mr1537572pfe.13.1621782863096;
-        Sun, 23 May 2021 08:14:23 -0700 (PDT)
-Received: from localhost.localdomain ([2405:201:600d:a93f:c492:941f:bc2a:cc89])
-        by smtp.googlemail.com with ESMTPSA id c1sm5050383pfo.181.2021.05.23.08.14.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b7Fi8Tgw3/EGwzBuNTdXnQY8qPAFscbMTJSOz3ZIkdQ=;
+        b=Kng1fB1azas24IJRf7BixushN4QMj5tnJEmR/eglM/Mep9bjECwJAz3ydNPU0C/zep
+         VgoE52fj1za8XSXic0Bwiv1m0YjJJcfddZw/6fy8zYPenXWLpsk5crz2erVdW99Pf30n
+         d5ZAkYbVSeGAzTxq4g4bLcqnTxwCS8t2lgfj14IGl3VwlLiityNeCVckCkypDz+vai8C
+         a1MrYUZYbhFT17LfCL3AIOBp1WLCoT2DPcYjNxsooRTudoLxCb8xlmyiiQS4aT0Wl/Yw
+         Daw9g1K+pXX+EH9nw24WldckFisI+b+rF2BnfAzUbK+1SAyI3PPnsTh6/EmV7Y3E7YCn
+         GdMA==
+X-Gm-Message-State: AOAM530S9Lt9RQzHQICoN9dz5zQ8XuLPTVLNKuLAP7D+53r5iMMeZmYD
+        kUCuTbAPuLl3Jcf9WIg0cZ+bt5pGsSUl2A==
+X-Google-Smtp-Source: ABdhPJyRRWHjS9Uh27BTQbDIFvn5ooWhvQTvZAJ3fattwLnhtd3dSOP+tx0pLFMSHka+FTQLdz/4zg==
+X-Received: by 2002:a63:5a5d:: with SMTP id k29mr9029740pgm.215.1621785256147;
+        Sun, 23 May 2021 08:54:16 -0700 (PDT)
+Received: from localhost.localdomain (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id t133sm10022765pgb.0.2021.05.23.08.54.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 May 2021 08:14:22 -0700 (PDT)
-From:   Aditya Srivastava <yashsri421@gmail.com>
-To:     kafai@fb.com
-Cc:     yashsri421@gmail.com, lukas.bulwahn@gmail.com,
-        rdunlap@infradead.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-doc@vger.kernel.org, dledford@redhat.com, jgg@ziepe.ca,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH v2] samples: bpf: ix kernel-doc syntax in file header
-Date:   Sun, 23 May 2021 20:44:08 +0530
-Message-Id: <20210523151408.22280-1-yashsri421@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210523150917.21748-1-yashsri421@gmail.com>
-References: <20210523150917.21748-1-yashsri421@gmail.com>
+        Sun, 23 May 2021 08:54:15 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next 0/2] net: r6040: Non-functional changes
+Date:   Sun, 23 May 2021 08:54:09 -0700
+Message-Id: <20210523155411.11185-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The opening comment mark '/**' is used for highlighting the beginning of
-kernel-doc comments.
-The header for samples/bpf/ibumad_kern.c follows this syntax, but
-the content inside does not comply with kernel-doc.
+Hi David, Jakub,
 
-This line was probably not meant for kernel-doc parsing, but is parsed
-due to the presence of kernel-doc like comment syntax(i.e, '/**'), which
-causes unexpected warnings from kernel-doc:
-warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
- * ibumad BPF sample kernel side
+These two patches clean up the r6040 driver a little bit in preparation
+for adding additional features such as dumping MAC counters and properly
+dealing with DMA-API mapping.
 
-Provide a simple fix by replacing this occurrence with general comment
-format, i.e. '/*', to prevent kernel-doc from parsing it.
+Thanks
 
-Signed-off-by: Aditya Srivastava <yashsri421@gmail.com>
----
-Changes in v2: Include changes for both, samples/bpf/ibumad_kern.c and samples/bpf/ibumad_user.c in the same patch
+Florian Fainelli (2):
+  net: r6040: Use logical or for MDIO operations
+  net: r6040: Use ETH_FCS_LEN
 
- samples/bpf/ibumad_kern.c | 2 +-
- samples/bpf/ibumad_user.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/rdc/r6040.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/samples/bpf/ibumad_kern.c b/samples/bpf/ibumad_kern.c
-index 26dcd4dde946..9b193231024a 100644
---- a/samples/bpf/ibumad_kern.c
-+++ b/samples/bpf/ibumad_kern.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- 
--/**
-+/*
-  * ibumad BPF sample kernel side
-  *
-  * This program is free software; you can redistribute it and/or
-diff --git a/samples/bpf/ibumad_user.c b/samples/bpf/ibumad_user.c
-index d83d8102f489..0746ca516097 100644
---- a/samples/bpf/ibumad_user.c
-+++ b/samples/bpf/ibumad_user.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- 
--/**
-+/*
-  * ibumad BPF sample user side
-  *
-  * This program is free software; you can redistribute it and/or
 -- 
-2.17.1
+2.25.1
 
