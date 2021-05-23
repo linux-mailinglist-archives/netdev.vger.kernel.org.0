@@ -2,210 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 552B538D95B
-	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 08:54:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84D8D38D95E
+	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 08:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231694AbhEWG4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 02:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231604AbhEWG4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 02:56:19 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A1EC06138A
-        for <netdev@vger.kernel.org>; Sat, 22 May 2021 23:54:53 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id et19so29734067ejc.4
-        for <netdev@vger.kernel.org>; Sat, 22 May 2021 23:54:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:date:message-id:in-reply-to:references:user-agent
-         :subject:mime-version;
-        bh=mN683RJDic84XC4yWf94CI824+tAyOQKD3uivZwksLY=;
-        b=dnGBeI1x8fTpOClHenQcL7+naL9Wic4S50V1Z9oGNauwQHUgs6Fi+X0xrHSLlEFget
-         BM0LQEym1+NcJ1XDEcJ36KMu6L2ycZb9M0HrMtrDZdfIb28SqGeo3goHd0JTMkRmHYPt
-         XfJ5cAGAWPl+pZz/RyWLAlSs2EFaod9phvbsQ=
+        id S231686AbhEWHAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 03:00:50 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:33695 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231583AbhEWHAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 03:00:49 -0400
+Received: by mail-il1-f197.google.com with SMTP id y10-20020a92c74a0000b02901bcf3518959so16865512ilp.0
+        for <netdev@vger.kernel.org>; Sat, 22 May 2021 23:59:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:subject:mime-version;
-        bh=mN683RJDic84XC4yWf94CI824+tAyOQKD3uivZwksLY=;
-        b=eNmAjOTo538ZuOlGULoft9jvWr9GQDp9k3WPJH1dU9ace/sn9uSItpP7aSQKHWkedv
-         7odWe0ROXQCgwZo8TJ2RrNRobqlZ5u35GZ0Ju0Sa2yIWa6mnjyl/4k/tseOcRx6rRLM/
-         vX1oW2FG9cLLUiu8i5CvUXqNgJsvdi7yQCmS4rFZec4gr3phWoKH4EhRcFYpmoecZWqy
-         VUjg3ExBVJQErrXaV7Mq9LlViVmof1WH9Kz0CbrS5TVHUTG4puZAA3SRB+Pw9b1J+PYw
-         LtuQOadza2tButB3YZOAr5xF5p788qbHPTd8RQHwb1o/mgMAqp9PQyfiHeYErb+6mtbL
-         djhA==
-X-Gm-Message-State: AOAM53360JbU++rvwx/GrKhfb/UJFd64HWLCZwbZaGrHW0TviYfeCV1/
-        jjkrUAakt/rmDTa2nO7k7BNzfJvh+JnhrsO8RPAqkPS1kPeKdIX+bz/TACHDSymi76gXHEDqGAh
-        9d6UAds4=
-X-Google-Smtp-Source: ABdhPJw5GjMU3W9VOYLU/1HtIAJfi9rkx2KxNxIlgvpbqRVjxlhv8yooF6ljBITWfs4XBj0EOjsKQQ==
-X-Received: by 2002:a17:906:82d5:: with SMTP id a21mr17887594ejy.5.1621752891070;
-        Sat, 22 May 2021 23:54:51 -0700 (PDT)
-Received: from [192.168.178.38] (f140230.upc-f.chello.nl. [80.56.140.230])
-        by smtp.gmail.com with ESMTPSA id yw9sm6168485ejb.91.2021.05.22.23.54.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 22 May 2021 23:54:50 -0700 (PDT)
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-To:     Shawn Guo <shawn.guo@linaro.org>
-CC:     Kalle Valo <kvalo@codeaurora.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "Chi-hsien Lin" <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        "Chung-hsien Hsu" <chung-hsien.hsu@infineon.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <SHA-cyfmac-dev-list@infineon.com>
-Date:   Sun, 23 May 2021 08:54:48 +0200
-Message-ID: <17998013ac0.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
-In-Reply-To: <20210523061221.GD29015@dragon>
-References: <20210425110200.3050-1-shawn.guo@linaro.org>
- <b6c5713f-ebf0-9eaf-e871-d5690a6b7c10@broadcom.com>
- <20210428124228.GH15093@dragon>
- <20210523061221.GD29015@dragon>
-User-Agent: AquaMail/1.29.2-1810 (build: 102900008)
-Subject: Re: [PATCH] brcmfmac: use ISO3166 country code and 0 rev as fallback
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=u0Tmz6VnP41EIbBlF+WkQDt5H0ni5/whGKi6ixczT0k=;
+        b=Nci1tmb0Qs1z5kpm+40iea5oYR73Kh+fJa/tGPzrSjAivC3QkbgWRMAXFqaoSybr+I
+         zOO9UegpgytnsZ3VW7Rchkl5hYOoOIUCkhTIMgxJUg6uXxB7WYYCmCMW7GXM3Qsd4h8g
+         VXyn5CiZo/jpIocuirGkeVSFMyQZmKIGslHp8ukTSsX6e3wt7jOA9F2IFevUv6nM4GOQ
+         UMX8orskMS2rrNT5ohfgHaSRCGN83rIp0g+AJwfbCTmsWW3S1WObgIP0+fVoRn7CrUSA
+         fSMX/IJGDiS3vI9zSihOByRj4VQZ6KcPRSbgeA+OK5PTVrQBe+tXAOm5MphjZDuvT1uz
+         VNnw==
+X-Gm-Message-State: AOAM532zAkcrZgODh7b7Y1FKRPYfFW0OgNruOJgMijahqru//zsz4K47
+        H8HvjpXfN2CdpPjWJWIG+7UTkivTEPuh8Zn1zyN/C+ZQRlnt
+X-Google-Smtp-Source: ABdhPJxI+cCwj3DbfqfpLhcnRyBGZEDoX41adShLA8Od/sAr6tNC1x/1oMUFMloHvIw6/yLK3qM7suLR/eJ61UepEGQ4VMj5oi5f
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000001449f05c2f9c586"
+X-Received: by 2002:a6b:b4d8:: with SMTP id d207mr7801249iof.152.1621753163480;
+ Sat, 22 May 2021 23:59:23 -0700 (PDT)
+Date:   Sat, 22 May 2021 23:59:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000039084e05c2f9d507@google.com>
+Subject: [syzbot] riscv/fixes boot error: WARNING in vmap_small_pages_range_noflush
+From:   syzbot <syzbot+06b228c6b9c37dcd3d79@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, aou@eecs.berkeley.edu, ast@kernel.org,
+        bjorn@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        luke.r.nels@gmail.com, netdev@vger.kernel.org, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, xi.wang@gmail.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000001449f05c2f9c586
-Content-Type: text/plain; format=flowed; charset="UTF-8"
+Hello,
 
-On May 23, 2021 8:12:29 AM Shawn Guo <shawn.guo@linaro.org> wrote:
+syzbot found the following issue on:
 
-> On Wed, Apr 28, 2021 at 08:42:29PM +0800, Shawn Guo wrote:
->> On Wed, Apr 28, 2021 at 02:03:07PM +0200, Arend van Spriel wrote:
->>> On 4/25/2021 1:02 PM, Shawn Guo wrote:
->>>> Instead of aborting country code setup in firmware, use ISO3166 country
->>>> code and 0 rev as fallback, when country_codes mapping table is not
->>>> configured.  This fallback saves the country_codes table setup for recent
->>>> brcmfmac chipsets/firmwares, which just use ISO3166 code and require no
->>>> revision number.
->>>
->>> I am somewhat surprised, but with the brcm-spinoffs (cypress/infineon and
->>> synaptics) my understanding may have been surpassed by reality. Would you
->>> happen to know which chipsets/firmwares require only ISO3166 code and no
->>> rev?
->>
->> The "no rev" here actually means 'rev' field being zero.  The chipset
->> I'm running is a BCM43012 from Synaptics, I think.
->>
->> Firmware: BCM43012/2 wl0: Apr 16 2021 15:25:36 version 18.35.389.63.t2 
->> (wlan=r836194) FWID 01-a8c7bac
->
-> Arend,
->
-> Does it make sense?  Or is there actually a country code mapping table
-> I'm not aware of?
+HEAD commit:    bab0d47c riscv: kexec: Fix W=1 build warnings
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
+console output: https://syzkaller.appspot.com/x/log.txt?x=10f59535d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e610cd256ee3a8
+dashboard link: https://syzkaller.appspot.com/bug?extid=06b228c6b9c37dcd3d79
+userspace arch: riscv64
 
-I recall the firmware always include a rev 0 for each country code. I will 
-have to ask internally whether that may be used for any chipset. If so, it 
-seems reasonable to use rev 0 as fallback when no mapping table is provided.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+06b228c6b9c37dcd3d79@syzkaller.appspotmail.com
 
-Regards,
-Arend
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 2996 at mm/vmalloc.c:448 vmap_pages_pte_range mm/vmalloc.c:448 [inline]
+WARNING: CPU: 1 PID: 2996 at mm/vmalloc.c:448 vmap_pages_pmd_range mm/vmalloc.c:471 [inline]
+WARNING: CPU: 1 PID: 2996 at mm/vmalloc.c:448 vmap_pages_pud_range mm/vmalloc.c:489 [inline]
+WARNING: CPU: 1 PID: 2996 at mm/vmalloc.c:448 vmap_pages_p4d_range mm/vmalloc.c:507 [inline]
+WARNING: CPU: 1 PID: 2996 at mm/vmalloc.c:448 vmap_small_pages_range_noflush+0x2fa/0x38e mm/vmalloc.c:529
+Modules linked in:
+CPU: 1 PID: 2996 Comm: dhcpcd Not tainted 5.13.0-rc1-syzkaller-00629-gbab0d47c0ebb #0
+Hardware name: riscv-virtio,qemu (DT)
+epc : vmap_pages_pte_range mm/vmalloc.c:448 [inline]
+epc : vmap_pages_pmd_range mm/vmalloc.c:471 [inline]
+epc : vmap_pages_pud_range mm/vmalloc.c:489 [inline]
+epc : vmap_pages_p4d_range mm/vmalloc.c:507 [inline]
+epc : vmap_small_pages_range_noflush+0x2fa/0x38e mm/vmalloc.c:529
+ ra : vmap_pages_pte_range mm/vmalloc.c:448 [inline]
+ ra : vmap_pages_pmd_range mm/vmalloc.c:471 [inline]
+ ra : vmap_pages_pud_range mm/vmalloc.c:489 [inline]
+ ra : vmap_pages_p4d_range mm/vmalloc.c:507 [inline]
+ ra : vmap_small_pages_range_noflush+0x2fa/0x38e mm/vmalloc.c:529
+epc : ffffffff8036c3e4 ra : ffffffff8036c3e4 sp : ffffffe00984b900
+ gp : ffffffff845906e0 tp : ffffffe007d817c0 t0 : ffffffe008f1d000
+ t1 : ffffffc4011e39ff t2 : 0000004000010015 s0 : ffffffe00984b9b0
+ s1 : ffffffcf02244700 a0 : 0000000000000000 a1 : 00000000000f0000
+ a2 : 0000000000000002 a3 : ffffffff8036c3e4 a4 : ffffffe007d827c0
+ a5 : 0000000000000000 a6 : 0000000000f00000 a7 : f310d86cfc0c1a00
+ s2 : ffffffe005a00a28 s3 : ffffffff85b45000 s4 : ffffffff85b46000
+ s5 : 0000000000000000 s6 : 0000000000000200 s7 : ffffffe07fdfd168
+ s8 : ffffffe00e09f528 s9 : 0000003100000000 s10: ffffffe008eb8fa0
+ s11: 00000000000000c7 t3 : 0000000000000000 t4 : 0000000000000040
+ t5 : ffffffc4011e3a00 t6 : ffffffd00067e2d0
+status: 0000000000000120 badaddr: 0000000000000000 cause: 0000000000000003
+[<ffffffff8036c3e4>] vmap_pages_pte_range mm/vmalloc.c:448 [inline]
+[<ffffffff8036c3e4>] vmap_pages_pmd_range mm/vmalloc.c:471 [inline]
+[<ffffffff8036c3e4>] vmap_pages_pud_range mm/vmalloc.c:489 [inline]
+[<ffffffff8036c3e4>] vmap_pages_p4d_range mm/vmalloc.c:507 [inline]
+[<ffffffff8036c3e4>] vmap_small_pages_range_noflush+0x2fa/0x38e mm/vmalloc.c:529
+[<ffffffff80375a7a>] vmap_pages_range_noflush mm/vmalloc.c:558 [inline]
+[<ffffffff80375a7a>] vmap_pages_range mm/vmalloc.c:592 [inline]
+[<ffffffff80375a7a>] __vmalloc_area_node mm/vmalloc.c:2829 [inline]
+[<ffffffff80375a7a>] __vmalloc_node_range+0x396/0x582 mm/vmalloc.c:2915
+[<ffffffff80013c06>] bpf_jit_alloc_exec+0x46/0x52 arch/riscv/net/bpf_jit_core.c:171
+[<ffffffff801f3d2a>] bpf_jit_binary_alloc+0xac/0x172 kernel/bpf/core.c:872
+[<ffffffff80013a3a>] bpf_int_jit_compile+0x754/0x8da arch/riscv/net/bpf_jit_core.c:108
+[<ffffffff801f59e0>] bpf_prog_select_runtime+0x258/0x2e4 kernel/bpf/core.c:1867
+[<ffffffff821f9af2>] bpf_migrate_filter+0x1d6/0x23c net/core/filter.c:1294
+[<ffffffff82201854>] bpf_prepare_filter net/core/filter.c:1342 [inline]
+[<ffffffff82201854>] __get_filter+0x1d6/0x2d0 net/core/filter.c:1511
+[<ffffffff82202992>] sk_attach_filter+0x22/0x11a net/core/filter.c:1526
+[<ffffffff82154d82>] sock_setsockopt+0x18c4/0x1c2c net/core/sock.c:1068
+[<ffffffff82145172>] __sys_setsockopt+0x2de/0x33c net/socket.c:2113
+[<ffffffff8214520a>] __do_sys_setsockopt net/socket.c:2128 [inline]
+[<ffffffff8214520a>] sys_setsockopt+0x3a/0x4c net/socket.c:2125
+[<ffffffff8000562c>] ret_from_syscall+0x0/0x2
+irq event stamp: 946
+hardirqs last  enabled at (945): [<ffffffff8037e5e4>] rmqueue_pcplist mm/page_alloc.c:3506 [inline]
+hardirqs last  enabled at (945): [<ffffffff8037e5e4>] rmqueue mm/page_alloc.c:3529 [inline]
+hardirqs last  enabled at (945): [<ffffffff8037e5e4>] get_page_from_freelist+0xc50/0xf66 mm/page_alloc.c:3991
+hardirqs last disabled at (946): [<ffffffff80005570>] _save_context+0x80/0x90
+softirqs last  enabled at (942): [<ffffffff82b272a0>] softirq_handle_end kernel/softirq.c:402 [inline]
+softirqs last  enabled at (942): [<ffffffff82b272a0>] __do_softirq+0x5e0/0x8c4 kernel/softirq.c:588
+softirqs last disabled at (921): [<ffffffff80036760>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
+softirqs last disabled at (921): [<ffffffff80036760>] invoke_softirq kernel/softirq.c:440 [inline]
+softirqs last disabled at (921): [<ffffffff80036760>] __irq_exit_rcu kernel/softirq.c:637 [inline]
+softirqs last disabled at (921): [<ffffffff80036760>] irq_exit+0x1a0/0x1b6 kernel/softirq.c:661
+---[ end trace f164002e4a3f575f ]---
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 2996 at mm/vmalloc.c:305 vunmap_pte_range mm/vmalloc.c:305 [inline]
+WARNING: CPU: 1 PID: 2996 at mm/vmalloc.c:305 vunmap_pmd_range mm/vmalloc.c:329 [inline]
+WARNING: CPU: 1 PID: 2996 at mm/vmalloc.c:305 vunmap_pud_range mm/vmalloc.c:354 [inline]
+WARNING: CPU: 1 PID: 2996 at mm/vmalloc.c:305 vunmap_p4d_range mm/vmalloc.c:377 [inline]
+WARNING: CPU: 1 PID: 2996 at mm/vmalloc.c:305 vunmap_range_noflush+0x206/0x308 mm/vmalloc.c:408
+Modules linked in:
+CPU: 1 PID: 2996 Comm: dhcpcd Tainted: G        W         5.13.0-rc1-syzkaller-00629-gbab0d47c0ebb #0
+Hardware name: riscv-virtio,qemu (DT)
+epc : vunmap_pte_range mm/vmalloc.c:305 [inline]
+epc : vunmap_pmd_range mm/vmalloc.c:329 [inline]
+epc : vunmap_pud_range mm/vmalloc.c:354 [inline]
+epc : vunmap_p4d_range mm/vmalloc.c:377 [inline]
+epc : vunmap_range_noflush+0x206/0x308 mm/vmalloc.c:408
+ ra : vunmap_pte_range mm/vmalloc.c:305 [inline]
+ ra : vunmap_pmd_range mm/vmalloc.c:329 [inline]
+ ra : vunmap_pud_range mm/vmalloc.c:354 [inline]
+ ra : vunmap_p4d_range mm/vmalloc.c:377 [inline]
+ ra : vunmap_range_noflush+0x206/0x308 mm/vmalloc.c:408
+epc : ffffffff80372b18 ra : ffffffff80372b18 sp : ffffffe00984b820
+ gp : ffffffff845906e0 tp : ffffffe007d817c0 t0 : ffffffe008f1d000
+ t1 : 0000000000000001 t2 : 0000004000010015 s0 : ffffffe00984b8b0
+ s1 : ffffffe005a00a28 a0 : 0000000000000000 a1 : 00000000000f0000
+ a2 : 0000000000000002 a3 : ffffffff80372b18 a4 : ffffffe007d827c0
+ a5 : 0000000000000000 a6 : 0000000000f00000 a7 : ffffffff80374a74
+ s2 : ffffffff85b45000 s3 : ffffffff85b47000 s4 : 0000000000000000
+ s5 : ffffffe07fdfd168 s6 : 0000000000001000 s7 : ffffffff85b47000
+ s8 : ffffffff85b46fff s9 : 0000000000000000 s10: 0000000000000200
+ s11: ffffffff83858890 t3 : f310d86cfc0c1a00 t4 : 0000000000000040
+ t5 : ffffffc4011e3a00 t6 : ffffffd00067e2d0
+status: 0000000000000120 badaddr: 0000000000000000 cause: 0000000000000003
+[<ffffffff80372b18>] vunmap_pte_range mm/vmalloc.c:305 [inline]
+[<ffffffff80372b18>] vunmap_pmd_range mm/vmalloc.c:329 [inline]
+[<ffffffff80372b18>] vunmap_pud_range mm/vmalloc.c:354 [inline]
+[<ffffffff80372b18>] vunmap_p4d_range mm/vmalloc.c:377 [inline]
+[<ffffffff80372b18>] vunmap_range_noflush+0x206/0x308 mm/vmalloc.c:408
+[<ffffffff80372c4a>] free_unmap_vmap_area+0x30/0x68 mm/vmalloc.c:1722
+[<ffffffff80374b82>] remove_vm_area+0x150/0x152 mm/vmalloc.c:2462
+[<ffffffff80374dce>] vm_remove_mappings mm/vmalloc.c:2491 [inline]
+[<ffffffff80374dce>] __vunmap+0x24a/0x616 mm/vmalloc.c:2556
+[<ffffffff8037525a>] __vfree+0x70/0xf8 mm/vmalloc.c:2613
+[<ffffffff80375b9c>] __vmalloc_area_node mm/vmalloc.c:2840 [inline]
+[<ffffffff80375b9c>] __vmalloc_node_range+0x4b8/0x582 mm/vmalloc.c:2915
+[<ffffffff80013c06>] bpf_jit_alloc_exec+0x46/0x52 arch/riscv/net/bpf_jit_core.c:171
+[<ffffffff801f3d2a>] bpf_jit_binary_alloc+0xac/0x172 kernel/bpf/core.c:872
+[<ffffffff80013a3a>] bpf_int_jit_compile+0x754/0x8da arch/riscv/net/bpf_jit_core.c:108
+[<ffffffff801f59e0>] bpf_prog_select_runtime+0x258/0x2e4 kernel/bpf/core.c:1867
+[<ffffffff821f9af2>] bpf_migrate_filter+0x1d6/0x23c net/core/filter.c:1294
+[<ffffffff82201854>] bpf_prepare_filter net/core/filter.c:1342 [inline]
+[<ffffffff82201854>] __get_filter+0x1d6/0x2d0 net/core/filter.c:1511
+[<ffffffff82202992>] sk_attach_filter+0x22/0x11a net/core/filter.c:1526
+[<ffffffff82154d82>] sock_setsockopt+0x18c4/0x1c2c net/core/sock.c:1068
+[<ffffffff82145172>] __sys_setsockopt+0x2de/0x33c net/socket.c:2113
+[<ffffffff8214520a>] __do_sys_setsockopt net/socket.c:2128 [inline]
+[<ffffffff8214520a>] sys_setsockopt+0x3a/0x4c net/socket.c:2125
+[<ffffffff8000562c>] ret_from_syscall+0x0/0x2
+irq event stamp: 964
+hardirqs last  enabled at (963): [<ffffffff82b264ac>] __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:160 [inline]
+hardirqs last  enabled at (963): [<ffffffff82b264ac>] _raw_spin_unlock_irqrestore+0x68/0x98 kernel/locking/spinlock.c:191
+hardirqs last disabled at (964): [<ffffffff80005570>] _save_context+0x80/0x90
+softirqs last  enabled at (956): [<ffffffff82b272a0>] softirq_handle_end kernel/softirq.c:402 [inline]
+softirqs last  enabled at (956): [<ffffffff82b272a0>] __do_softirq+0x5e0/0x8c4 kernel/softirq.c:588
+softirqs last disabled at (949): [<ffffffff80036760>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
+softirqs last disabled at (949): [<ffffffff80036760>] invoke_softirq kernel/softirq.c:440 [inline]
+softirqs last disabled at (949): [<ffffffff80036760>] __irq_exit_rcu kernel/softirq.c:637 [inline]
+softirqs last disabled at (949): [<ffffffff80036760>] irq_exit+0x1a0/0x1b6 kernel/softirq.c:661
+---[ end trace f164002e4a3f5760 ]---
 
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-
--- 
-This electronic communication and the information and any files transmitted 
-with it, or attached to it, are confidential and are intended solely for 
-the use of the individual or entity to whom it is addressed and may contain 
-information that is confidential, legally privileged, protected by privacy 
-laws, or otherwise restricted from disclosure to anyone else. If you are 
-not the intended recipient or the person responsible for delivering the 
-e-mail to the intended recipient, you are hereby notified that any use, 
-copying, distributing, dissemination, forwarding, printing, or copying of 
-this e-mail is strictly prohibited. If you received this e-mail in error, 
-please return the e-mail to the sender, delete it from your computer, and 
-destroy any printed copy of it.
-
---00000000000001449f05c2f9c586
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIIQdwYJKoZIhvcNAQcCoIIQaDCCEGQCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-gg3OMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
-MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
-vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
-rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
-aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
-e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
-cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
-MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
-KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
-/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
-TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
-YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
-b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
-c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
-CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
-BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
-jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
-9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
-/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
-jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
-AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
-dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
-MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
-IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
-SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
-XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
-J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
-nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVYwggQ+oAMCAQICDDEp2IfSf0SOoLB27jANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzQ0MjBaFw0yMjA5MDUwNzU0MjJaMIGV
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEFyZW5kIFZhbiBTcHJpZWwxKzApBgkqhkiG
-9w0BCQEWHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IB
-DwAwggEKAoIBAQCk4MT79XIz7iNEpTGuhXGSqyRQpztUN1sWBVx/wStC1VrFGgbpD1o8BotGl4zf
-9f8V8oZn4DA0tTWOOJdhPNtxa/h3XyRV5fWCDDhHAXK4fYeh1hJZcystQwfXnjtLkQB13yCEyaNl
-7yYlPUsbagt6XI40W6K5Rc3zcTQYXq+G88K2n1C9ha7dwK04XbIbhPq8XNopPTt8IM9+BIDlfC/i
-XSlOP9s1dqWlRRnnNxV7BVC87lkKKy0+1M2DOF6qRYQlnW4EfOyCToYLAG5zeV+AjepMoX6J9bUz
-yj4BlDtwH4HFjaRIlPPbdLshUA54/tV84x8woATuLGBq+hTZEpkZAgMBAAGjggHdMIIB2TAOBgNV
-HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
-Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
-KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
-Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
-dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
-OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
-MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
-BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKb+3b9pz8zo
-0QsCHGb/p0UrBlU+MA0GCSqGSIb3DQEBCwUAA4IBAQCHisuRNqP0NfYfG3U3XF+bocf//aGLOCGj
-NvbnSbaUDT/ZkRFb9dQfDRVnZUJ7eDZWHfC+kukEzFwiSK1irDPZQAG9diwy4p9dM0xw5RXSAC1w
-FzQ0ClJvhK8PsjXF2yzITFmZsEhYEToTn2owD613HvBNijAnDDLV8D0K5gtDnVqkVB9TUAGjHsmo
-aAwIDFKdqL0O19Kui0WI1qNsu1tE2wAZk0XE9FG0OKyY2a2oFwJ85c5IO0q53U7+YePIwv4/J5aP
-OGM6lFPJCVnfKc3H76g/FyPyaE4AL/hfdNP8ObvCB6N/BVCccjNdglRsL2ewttAG3GM06LkvrLhv
-UCvjMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
-YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMMSnY
-h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCAYlGQGboJuh+3YOUZB
-4X4uZL78dBMtXhYk8JE0lBM3CjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0yMTA1MjMwNjU0NTFaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
-AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
-BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAct1E3ef/h3RGzyHgfD/6M3Tifg3wNHpNF5Zv
-kntafYN2e+oynSuLODBzWobOecZMMSSrft2u9AQikfCsTR7KGPFVIJouXiCe4ezB36PEREWqHli5
-J7uHjKTFsYoX6RP5lny4MpFdgrAu3h4W2Sg9IY0dKE0TG9cjqzKK5a+dWokERijEPo3COwFnYO0V
-+9pIktl1xwivoZHVbELStScqnW+1IVI/5vo9K4spWNsVFvfNAXI4FwGa1M+JaifuMy0BRhqoHDEm
-/udqtRFLprd5nBhgMxOFDP+5PSmExPjG8lKE+jiqlgZgo4dRo6CF3NVODthzPCIru4mwMFKznm1b
-Rg==
---00000000000001449f05c2f9c586--
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
