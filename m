@@ -2,149 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7358138DD0B
-	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 23:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E682E38DD43
+	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 23:24:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231982AbhEWVKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 17:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55116 "EHLO
+        id S231975AbhEWVZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 17:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231956AbhEWVKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 17:10:48 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C007C061574;
-        Sun, 23 May 2021 14:09:21 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id f22so10813992pfn.0;
-        Sun, 23 May 2021 14:09:21 -0700 (PDT)
+        with ESMTP id S231956AbhEWVZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 17:25:50 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F09C061574
+        for <netdev@vger.kernel.org>; Sun, 23 May 2021 14:24:22 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id q25so1150300pfn.1
+        for <netdev@vger.kernel.org>; Sun, 23 May 2021 14:24:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=IB9O/onuOCJfiGo3cCn1xQC6qADxQorwK+ixiVlG76Q=;
-        b=lRIrsodFwZZAENLZ5mkS+tGezVajr5a5iNeVhU7v0QZta/bQKCxso0vPWl+R3Jobir
-         bTIy/+nulorVCQIVWgNhIKzOGMW1D/9Z9gCG+LYk/NOiGLBCJ025jlEUXfuIJAjhoWMJ
-         jSzTZ09frJfemTn5wKY3ZeqWQSqqC2vLGkqzZ2ZYr3tZuADTaIJIQAbszytaA4KpBdxS
-         gcyVlUK/9pcZXI04a6G1RnVbJHryPwkqv4By6fVQHGjKEcIRe5rZLlicibiDuLfJA/lh
-         dstSQyn2kodjqlCjLdvXHgnmwb712qb6CWXjTuEu/0tw6iS0xZp+GW+7wd7Us1pdKEKo
-         HDaQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=fOhsE2MewqDZthsCUeR7m8W/hRB1VhwxZlF2yZXoOr0=;
+        b=uWfY0m75BVDo1wcqbVkwQ0r0Lkn6ISXU8JNqU2748+2iXxI0r3eR4yHpUkE7RcjkkA
+         6YyOKXZ22GVnfe4wa6yRWDu/DM2wZwsVMr7I0xxv6LHrw+h+H4zn7IBDilmQ2jD7liTn
+         EH0VouR9VY4u02McJjZv+n3lQgHptMNk+MpozQb7YM1DInLJ03qNey/o+nOGALxDdk1t
+         mqPovpz37nkzhw0/RpF1jBeY5UeYMpSc4kiga+XNyKBJy+JJu30IZCOxiKCaH1H3wvux
+         x4yO+b8tcxFpFbYbOxbVL2oToSgauZ3wLg5BZ21yH9bRl1VBlQODQzUzLgE/kz/Jaq8l
+         Vmew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=IB9O/onuOCJfiGo3cCn1xQC6qADxQorwK+ixiVlG76Q=;
-        b=hSLcyR5jBE2GLfsOK5dma+SAGFrxYHGExWSo0cgwxppGh3kzRUAmUKLhDyvS1klfRF
-         kgmdYDHYle3hkjIfTC9Y1uVbpQjpgJR0WDf08SAUXfpwqTxqR1msfkPRpk9Nd6wnuMcE
-         R16vLpo3AOR4AcnOHDwzGTWu1ADEIeOiDqnG8Aqx0MtxAOqinhWOqwm5Xl4nn/84GJlb
-         DEk6HqY5RU0TizrkxIzD+Y7E9GBXE8D/BNyNupZW9MAe19Ik0L2PJFXJXnxwPBmrMu+1
-         rpZL5NHT4R1KnPJExXL27gh8Zpt2tPNP81A+xzTWtxvyJzcpc+/Ui7lLpsknfS11oROB
-         91Ww==
-X-Gm-Message-State: AOAM5334RbyR2oXJ9NfgDZ1MsGPuEgNOSuJXofXHZ+ITBdb+opj0wF9u
-        8HgOsjlQ3++Exvb5kWrR96Q=
-X-Google-Smtp-Source: ABdhPJy7ij8n3XWFurV3WYaYbh1UADV8mZC5Io4JLFY9Tx7UiOM/EArFULzv1ijxNEu+28Jmo/eqAQ==
-X-Received: by 2002:a63:34cc:: with SMTP id b195mr10033021pga.449.1621804159685;
-        Sun, 23 May 2021 14:09:19 -0700 (PDT)
-Received: from localhost.localdomain ([2405:201:600d:a93f:c492:941f:bc2a:cc89])
-        by smtp.googlemail.com with ESMTPSA id n6sm10034854pgm.79.2021.05.23.14.09.15
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=fOhsE2MewqDZthsCUeR7m8W/hRB1VhwxZlF2yZXoOr0=;
+        b=E3wr5AVS9CgzDWVK2P8WcAPXLITQFVy9z4vBS6lQK6gaP43TEJr6amDRcWmwT4D5ti
+         MBhweCdsr7vPdEk0lsawQfZi+1PuZobueNmckT/VNvp1xbmRjtQ2L5jAncfTrxExNSzb
+         e7MhaL0DGa+WA43G+tsqmf3CYT95UGuCBYrd8Uh+DIx87TxOPB+I02NValZPgnfg3zIp
+         6fe7zXkRQBOLDL6saFy7poJfLYC+dhFbPI+A2HJuHFr5r8T05x4/A53tDxCuzB3A63Aq
+         HpuQgezbYw2GBxx30BFJSGBXl9HnPB/TWoleNmM9Y4ebvkk8iIJaAMdjdxrBe+WvZVUO
+         DWOw==
+X-Gm-Message-State: AOAM533hyNjB9ejZylXQVrlysZwy5zKYJ23p/btk6qS9WWBFzbeAIpx5
+        +LD+UBfqE5CdFYsSVw3ETrL3JI7pYR8=
+X-Google-Smtp-Source: ABdhPJxAjIBYzKtmRELH/lCwWsK26M16LoaaYlxngFNNTbM7FymiaHuwyuDym1ffdofeFbj4ezqOVA==
+X-Received: by 2002:a62:8184:0:b029:2df:ef25:358 with SMTP id t126-20020a6281840000b02902dfef250358mr21204592pfd.5.1621805061321;
+        Sun, 23 May 2021 14:24:21 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id f9sm8819364pfc.42.2021.05.23.14.24.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 May 2021 14:09:19 -0700 (PDT)
-From:   Aditya Srivastava <yashsri421@gmail.com>
-To:     krzysztof.kozlowski@canonical.com
-Cc:     yashsri421@gmail.com, lukas.bulwahn@gmail.com,
-        rdunlap@infradead.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-doc@vger.kernel.org, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] NFC: nfcmrvl: fix kernel-doc syntax in file headers
-Date:   Mon, 24 May 2021 02:39:09 +0530
-Message-Id: <20210523210909.5359-1-yashsri421@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Sun, 23 May 2021 14:24:20 -0700 (PDT)
+Date:   Sun, 23 May 2021 14:24:18 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Yangbo Lu <yangbo.lu@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [net-next, v2, 1/7] ptp: add ptp virtual clock driver framework
+Message-ID: <20210523212418.GG29980@hoboy.vegasvil.org>
+References: <20210521043619.44694-1-yangbo.lu@nxp.com>
+ <20210521043619.44694-2-yangbo.lu@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210521043619.44694-2-yangbo.lu@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The opening comment mark '/**' is used for highlighting the beginning of
-kernel-doc comments.
-The header for drivers/nfc/nfcmrvl follows this syntax, but the content
-inside does not comply with kernel-doc.
+On Fri, May 21, 2021 at 12:36:13PM +0800, Yangbo Lu wrote:
+> This patch is to add ptp virtual clock driver framework
+> which just exports essential APIs.
+> 
+> A new member is added for ptp_clock_info structure. Device driver
+> can provide initial cyclecounter info for ptp virtual clock via
+> this member, before normally registering ptp clock.
 
-This line was probably not meant for kernel-doc parsing, but is parsed
-due to the presence of kernel-doc like comment syntax(i.e, '/**'), which
-causes unexpected warnings from kernel-doc.
-For e.g., running scripts/kernel-doc -none on drivers/nfc/nfcmrvl/spi.c
-causes warning:
-warning: expecting prototype for Marvell NFC(). Prototype was for SPI_WAIT_HANDSHAKE() instead
+Why not provide this in the PHC class layer, and make it work for
+every driver without alteration?
 
-Provide a simple fix by replacing such occurrences with general comment
-format, i.e. '/*', to prevent kernel-doc from parsing it.
+> +/**
+> + * struct ptp_vclock_cc - ptp virtual clock cycle counter info
+> + *
+> + * @cc:               cyclecounter structure
+> + * @refresh_interval: time interval to refresh time counter, to avoid 64-bit
+> + *                    overflow during delta conversion. For example, with
+> + *                    cc.mult value 2^28,  there are 36 bits left of cycle
+> + *                    counter. With 1 ns counter resolution, the overflow time
+> + *                    is 2^36 ns which is 68.7 s. The refresh_interval may be
+> + *                    (60 * HZ) less than 68.7 s.
+> + * @mult_factor:      parameter for cc.mult adjustment calculation, see below
+> + * @div_factor:       parameter for cc.mult adjustment calculation, see below
 
-Signed-off-by: Aditya Srivastava <yashsri421@gmail.com>
----
- drivers/nfc/nfcmrvl/fw_dnld.h | 2 +-
- drivers/nfc/nfcmrvl/i2c.c     | 2 +-
- drivers/nfc/nfcmrvl/nfcmrvl.h | 2 +-
- drivers/nfc/nfcmrvl/spi.c     | 2 +-
- drivers/nfc/nfcmrvl/uart.c    | 2 +-
- drivers/nfc/nfcmrvl/usb.c     | 2 +-
- 6 files changed, 6 insertions(+), 6 deletions(-)
+Just use  mult = 2147483648 = 0x80000000 and div = 31.
 
-diff --git a/drivers/nfc/nfcmrvl/fw_dnld.h b/drivers/nfc/nfcmrvl/fw_dnld.h
-index ee4a339c05fd..058ce77b3cbc 100644
---- a/drivers/nfc/nfcmrvl/fw_dnld.h
-+++ b/drivers/nfc/nfcmrvl/fw_dnld.h
-@@ -1,4 +1,4 @@
--/**
-+/*
-  * Marvell NFC driver: Firmware downloader
-  *
-  * Copyright (C) 2015, Marvell International Ltd.
-diff --git a/drivers/nfc/nfcmrvl/i2c.c b/drivers/nfc/nfcmrvl/i2c.c
-index 18cd96284b77..c5420616b7bc 100644
---- a/drivers/nfc/nfcmrvl/i2c.c
-+++ b/drivers/nfc/nfcmrvl/i2c.c
-@@ -1,4 +1,4 @@
--/**
-+/*
-  * Marvell NFC-over-I2C driver: I2C interface related functions
-  *
-  * Copyright (C) 2015, Marvell International Ltd.
-diff --git a/drivers/nfc/nfcmrvl/nfcmrvl.h b/drivers/nfc/nfcmrvl/nfcmrvl.h
-index de68ff45e49a..e84ee18c73ae 100644
---- a/drivers/nfc/nfcmrvl/nfcmrvl.h
-+++ b/drivers/nfc/nfcmrvl/nfcmrvl.h
-@@ -1,4 +1,4 @@
--/**
-+/*
-  * Marvell NFC driver
-  *
-  * Copyright (C) 2014-2015, Marvell International Ltd.
-diff --git a/drivers/nfc/nfcmrvl/spi.c b/drivers/nfc/nfcmrvl/spi.c
-index 8e0ddb434770..dec0d3eb3648 100644
---- a/drivers/nfc/nfcmrvl/spi.c
-+++ b/drivers/nfc/nfcmrvl/spi.c
-@@ -1,4 +1,4 @@
--/**
-+/*
-  * Marvell NFC-over-SPI driver: SPI interface related functions
-  *
-  * Copyright (C) 2015, Marvell International Ltd.
-diff --git a/drivers/nfc/nfcmrvl/uart.c b/drivers/nfc/nfcmrvl/uart.c
-index e5a622ce4b95..7194dd7ef0f1 100644
---- a/drivers/nfc/nfcmrvl/uart.c
-+++ b/drivers/nfc/nfcmrvl/uart.c
-@@ -1,4 +1,4 @@
--/**
-+/*
-  * Marvell NFC-over-UART driver
-  *
-  * Copyright (C) 2015, Marvell International Ltd.
-diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
-index 888e298f610b..bcd563cb556c 100644
---- a/drivers/nfc/nfcmrvl/usb.c
-+++ b/drivers/nfc/nfcmrvl/usb.c
-@@ -1,4 +1,4 @@
--/**
-+/*
-  * Marvell NFC-over-USB driver: USB interface related functions
-  *
-  * Copyright (C) 2014, Marvell International Ltd.
--- 
-2.17.1
+Read the real PHC using .gettime() and then mask off the high 32 bits.
+
+Arrange a kthread to read once every 4 (better 2) seconds to keep the
+time value correct.
+
+See?
+
+Thanks,
+Richard
 
