@@ -2,57 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C6F738D921
-	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 07:27:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66DD538D929
+	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 07:47:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231624AbhEWF3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 01:29:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59940 "EHLO mail.kernel.org"
+        id S231599AbhEWFtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 01:49:00 -0400
+Received: from mga01.intel.com ([192.55.52.88]:10302 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229895AbhEWF3O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 May 2021 01:29:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A95EF61152;
-        Sun, 23 May 2021 05:27:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621747669;
-        bh=Rag6KRidlmF0WNk5FT8kTB/POMH9pZAxL8RY/wp8sG4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ihZ22aRisqKvm+viZJ2XWTTcRY6mRMVH7yASB4lZfaG/IPQZ4UY0nAoehfDVL5UdV
-         xtZWlz35NjjG9vl/C0r6CmyyqvjW467HfjxUvfZi1M+3MR0wxQBKwrqYeFtPjlydbc
-         YBjvjH1Xr4HS+zReUCeVyIQqdUtXKMXCf8DDx7hbY0rxwZXkcOjcMLfEm9GHFyq8ZR
-         WpXGa4dnkI6Y8hAB1643be9IkXcyojdix4PLaCRuwIQJHV28t1phzKNTyf13Ubt7go
-         AfNxBq6y0Y3n5lKRXNjM9m9oL1WbD6Mi36UJcI01crE1Yka4G3Aj9EyYzzyAK/4ou9
-         eQL/aWL/bmP6A==
-Date:   Sun, 23 May 2021 13:27:43 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/5] ARM: dts: imx53-ard: Correct Ethernet node name
-Message-ID: <20210523052743.GY8194@dragon>
-References: <cover.1621518686.git.geert+renesas@glider.be>
- <daf2394440a8e6aae015b561f560e443aaa246bf.1621518686.git.geert+renesas@glider.be>
+        id S231386AbhEWFtA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 May 2021 01:49:00 -0400
+IronPort-SDR: GFTovgJJH//BQ9PN30soE1sziNg98j/GadNBT6vtTB3aAM7memuoIaAUH6IeJHGxLeiZX5aHmE
+ pf/JiogmxW2Q==
+X-IronPort-AV: E=McAfee;i="6200,9189,9992"; a="222871171"
+X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
+   d="scan'208";a="222871171"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2021 22:47:34 -0700
+IronPort-SDR: GC0ZpBmkqFP7xLRiZ1xXyEnpSGojc1KmPElF1Gpipdi4uaeMHrYJwfP5aZAhzlhT8JpsZjWunz
+ hOVmrcSu7lEw==
+X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
+   d="scan'208";a="475298038"
+Received: from sneftin-mobl.ger.corp.intel.com (HELO [10.214.192.226]) ([10.214.192.226])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2021 22:47:30 -0700
+Subject: Re: [PATCH] igc: change default return of igc_read_phy_reg()
+To:     trix@redhat.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Neftin, Sasha" <sasha.neftin@intel.com>,
+        "Fuxbrumer, DvoraX" <dvorax.fuxbrumer@intel.com>
+References: <20210521195019.2078661-1-trix@redhat.com>
+From:   "Neftin, Sasha" <sasha.neftin@intel.com>
+Message-ID: <85d1b413-3ab3-6cee-4197-785b0c099340@intel.com>
+Date:   Sun, 23 May 2021 08:47:27 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <daf2394440a8e6aae015b561f560e443aaa246bf.1621518686.git.geert+renesas@glider.be>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20210521195019.2078661-1-trix@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 03:58:36PM +0200, Geert Uytterhoeven wrote:
-> make dtbs_check:
+On 5/21/2021 22:50, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
 > 
->     lan9220@f4000000: $nodename:0: 'lan9220@f4000000' does not match '^ethernet(@.*)?$'
+> Static analysis reports this problem
 > 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Applied, thanks.
+> igc_main.c:4944:20: warning: The left operand of '&'
+>    is a garbage value
+>      if (!(phy_data & SR_1000T_REMOTE_RX_STATUS) &&
+>            ~~~~~~~~ ^
+Tom, thanks for this patch. I believe the same static analysis problem 
+should be with the 'igb_read_phy_reg' method:
+https://elixir.bootlin.com/linux/v5.13-rc1/source/drivers/net/ethernet/intel/igb/igb.h#L769
+> 
+> pyy_data is set by the call to igc_read_phy_reg() only if
+%s/pyy_data/phy_data/gc (typo)
+> there is a read_reg() op, else it is unset and a 0 is
+> returned.  Change the return to -EOPNOTSUPP.
+> 
+> Fixes: 208983f099d9 ("igc: Add watchdog")
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>   drivers/net/ethernet/intel/igc/igc.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
+> index b6d3277c6f520..71100ee7afbee 100644
+> --- a/drivers/net/ethernet/intel/igc/igc.h
+> +++ b/drivers/net/ethernet/intel/igc/igc.h
+> @@ -577,7 +577,7 @@ static inline s32 igc_read_phy_reg(struct igc_hw *hw, u32 offset, u16 *data)
+>   	if (hw->phy.ops.read_reg)
+>   		return hw->phy.ops.read_reg(hw, offset, data);
+>   
+> -	return 0;
+> +	return -EOPNOTSUPP;
+>   }
+>   
+>   void igc_reinit_locked(struct igc_adapter *);
+> 
+Thanks,
+Sasha
