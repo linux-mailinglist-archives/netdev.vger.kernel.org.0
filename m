@@ -2,117 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E3F038DB7E
-	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 16:52:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D90B38DB8D
+	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 17:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231808AbhEWOxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 10:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57546 "EHLO
+        id S231851AbhEWPLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 11:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231771AbhEWOx3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 10:53:29 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43771C061574;
-        Sun, 23 May 2021 07:52:03 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id h20-20020a17090aa894b029015db8f3969eso9074997pjq.3;
-        Sun, 23 May 2021 07:52:03 -0700 (PDT)
+        with ESMTP id S231776AbhEWPLA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 11:11:00 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4458C061574;
+        Sun, 23 May 2021 08:09:31 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id k5so13419411pjj.1;
+        Sun, 23 May 2021 08:09:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cMgWw8H94zaKjk8GXFY761R3LLW2Itjl1Ts+vcO3J8Y=;
-        b=IuJ7jSdTq9izzIC9GytSEI1vhjnoseiJ1X38y/N3ptq0Pchy0Y77p/4F7Mf42Z+cIz
-         uLbeJg3V0kSX8rt5ERZ5f3XbjxWac635QGosDiV7ykdscs+9dVXduTvaSf+vPHqc8+Bw
-         LHSh2M1wlfFGoTVF5JFFWiOKD/7K58X+3BStiOFs+KkcUobp7/3DhyPVFXERwTKbPg/8
-         yMr46uD/GX8q2PdyxiVoFVB4XcTOEnFaGZdoftrlscsyNzNgVWW1PuFnIOI7U5LGi4kb
-         cpQ6L9TeEi56YtKXPPqZT5gsz1nzhndS0gIVVtH6fWz4I1C+u9RoxxoawGtyAXXKWyTQ
-         OtVA==
+        h=from:to:cc:subject:date:message-id;
+        bh=Mc7yOhrqVtGGsvyRmdX2MsPwB1LLZVrbl9jBESxilQ0=;
+        b=CfJwiQppds25Ljl+i2BlgRJ9Iv7M4b50bCacM4p/aCYP+cxywS3w3MH7W6T1IkZkAK
+         /lDgQhaMsJx/64Nk+T7KmQUdrDHkYkn05loST+KkOcmKLqxiXaUy7KNCzCRMF2GFKkEq
+         FpJ0AR1Ui6ElHupyFweYu39lIF+LfsobvzAJon1Sr9biqBHh377QlAhATtQmGCf5G+qZ
+         nTOFsgZOzfyqOtiOShMLmFDJnViBHRW+R6AYhS/eKMusM7HPnT56IKv86ap1KwfJ35M8
+         DYHpf7zPh1ghFjr0QeVsJjifkGT7Nd7JDBVCTOj2gs7Ag1oVH9tyFXb46eMsSLN70qGa
+         AY0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cMgWw8H94zaKjk8GXFY761R3LLW2Itjl1Ts+vcO3J8Y=;
-        b=pJ598gG1lwV3GzX9zEh34rJvxawQePy6f2RtaA2x4lxZKeOrcDEetDk36nZs48LSES
-         0OjORgvErACkPpSJYK+CEOQclRqQI85S7B2xv3T4qirCiOym7rZf8KSjNJe3Nokly4hF
-         J6AwPfL5XhRznwr9+MDH+cICrDydYAPtit82xU+/fnj/hpzQfy5VeLbzFxMeAxIDkmzx
-         qtS57DQnCsi42ZSuJG8RmJS7IoYtGo9VJUXzmiVHO1xcLjkchhexJbP/NFor662rZNUH
-         wsiFWDLF6vR+ixh1J8UcXAn7ms0UpjWoS9ABowMWEWyGUK0qXkzJuxumTydY6xKdYOAb
-         XEJw==
-X-Gm-Message-State: AOAM531jP5esvOZ7IhD4/cKBDFr81J8KrROAyq9vrk4IIRlUW+1t/nIA
-        myy/X+AhzHSzNdsudsj1cMk=
-X-Google-Smtp-Source: ABdhPJybLP1mV9+33vVAgjPQUIQlLl7AtQ0vGUrCqm+RWoO5g8Zhu7DYAoz+kmbO/MQUiYVtBmCx3g==
-X-Received: by 2002:a17:90a:a604:: with SMTP id c4mr20766432pjq.81.1621781522684;
-        Sun, 23 May 2021 07:52:02 -0700 (PDT)
-Received: from localhost.localdomain ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id o10sm9237271pgv.28.2021.05.23.07.51.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Mc7yOhrqVtGGsvyRmdX2MsPwB1LLZVrbl9jBESxilQ0=;
+        b=FCodAgdN/WN3xxX5arShZCW/Q9yQBjLWdABw1DtgQmQqCM41ViTEQPbmxRtV3KtFu/
+         HFXrXsVzm3gsvMn5g+o8LRWgkR00I3URDQ2475niZIuo9hRjaPh3WAd0gpkNFV7NUpXC
+         7oB4QSdyd2ly9rV7RB5rxsUpFjL+dvu5AMWuNyizqDFc2scObUEOhRf4XDzq5nmxu/cy
+         SI1bzjDKGZLza6nwkth1tKzigNRnKEndJ9jLuDDKZIL2/ib2nP9KSuA5a3N+LUbIjHe8
+         mIJCUE6EZfG2Hwhjbf5fP2Fonc0e9LJOjbzQycZwwXyEvrt1iwawiio9mpMu0BYxFJ6V
+         jRyw==
+X-Gm-Message-State: AOAM533WUtjg5EasIB2o851NUUqXMNVXSQxnZX/5dVWMp7Lb159U4Qu+
+        uxxVbXHjWqlDZ/tNVF1xScseWgXFga5ws6ju
+X-Google-Smtp-Source: ABdhPJzZimt3u5Tj6ZV1xI7hQaedlcZpkQ7FtdkSvjwe8Jf+vozgbKLkQpIafNKt037IFMgKbcpIVw==
+X-Received: by 2002:a17:90a:4493:: with SMTP id t19mr20118821pjg.217.1621782571290;
+        Sun, 23 May 2021 08:09:31 -0700 (PDT)
+Received: from localhost.localdomain ([2405:201:600d:a93f:c492:941f:bc2a:cc89])
+        by smtp.googlemail.com with ESMTPSA id ch24sm13191072pjb.18.2021.05.23.08.09.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 May 2021 07:52:02 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>
-Subject: [PATCH net v2] net: dsa: mt7530: fix VLAN traffic leaks
-Date:   Sun, 23 May 2021 22:51:54 +0800
-Message-Id: <20210523145154.655325-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210523144809.655056-1-dqfext@gmail.com>
-References: <20210523144809.655056-1-dqfext@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sun, 23 May 2021 08:09:30 -0700 (PDT)
+From:   Aditya Srivastava <yashsri421@gmail.com>
+To:     kafai@fb.com
+Cc:     yashsri421@gmail.com, lukas.bulwahn@gmail.com,
+        rdunlap@infradead.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-doc@vger.kernel.org, dledford@redhat.com, jgg@ziepe.ca,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH] samples: bpf: ix kernel-doc syntax in file header
+Date:   Sun, 23 May 2021 20:39:17 +0530
+Message-Id: <20210523150917.21748-1-yashsri421@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PCR_MATRIX field was set to all 1's when VLAN filtering is enabled, but
-was not reset when it is disabled, which may cause traffic leaks:
+The opening comment mark '/**' is used for highlighting the beginning of
+kernel-doc comments.
+The header for samples/bpf/ibumad_kern.c follows this syntax, but
+the content inside does not comply with kernel-doc.
 
-	ip link add br0 type bridge vlan_filtering 1
-	ip link add br1 type bridge vlan_filtering 1
-	ip link set swp0 master br0
-	ip link set swp1 master br1
-	ip link set br0 type bridge vlan_filtering 0
-	ip link set br1 type bridge vlan_filtering 0
-	# traffic in br0 and br1 will start leaking to each other
+This line was probably not meant for kernel-doc parsing, but is parsed
+due to the presence of kernel-doc like comment syntax(i.e, '/**'), which
+causes unexpected warnings from kernel-doc:
+warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+ * ibumad BPF sample kernel side
 
-As port_bridge_{add,del} have set up PCR_MATRIX properly, remove the
-PCR_MATRIX write from mt7530_port_set_vlan_aware.
+Provide a simple fix by replacing this occurrence with general comment
+format, i.e. '/*', to prevent kernel-doc from parsing it.
 
-Fixes: 83163f7dca56 ("net: dsa: mediatek: add VLAN support for MT7530")
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+Signed-off-by: Aditya Srivastava <yashsri421@gmail.com>
 ---
-v1 -> v2: Fix typo in commit message
+ samples/bpf/ibumad_kern.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/net/dsa/mt7530.c | 8 --------
- 1 file changed, 8 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index db838343fb05..93136f7e69f5 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1273,14 +1273,6 @@ mt7530_port_set_vlan_aware(struct dsa_switch *ds, int port)
- {
- 	struct mt7530_priv *priv = ds->priv;
+diff --git a/samples/bpf/ibumad_kern.c b/samples/bpf/ibumad_kern.c
+index 26dcd4dde946..9b193231024a 100644
+--- a/samples/bpf/ibumad_kern.c
++++ b/samples/bpf/ibumad_kern.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
  
--	/* The real fabric path would be decided on the membership in the
--	 * entry of VLAN table. PCR_MATRIX set up here with ALL_MEMBERS
--	 * means potential VLAN can be consisting of certain subset of all
--	 * ports.
--	 */
--	mt7530_rmw(priv, MT7530_PCR_P(port),
--		   PCR_MATRIX_MASK, PCR_MATRIX(MT7530_ALL_MEMBERS));
--
- 	/* Trapped into security mode allows packet forwarding through VLAN
- 	 * table lookup. CPU port is set to fallback mode to let untagged
- 	 * frames pass through.
+-/**
++/*
+  * ibumad BPF sample kernel side
+  *
+  * This program is free software; you can redistribute it and/or
 -- 
-2.25.1
+2.17.1
 
