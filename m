@@ -2,71 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FDB238DA7D
-	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 10:26:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E966238DAC7
+	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 11:50:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbhEWI1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 04:27:36 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:5522 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231706AbhEWI1e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 04:27:34 -0400
-Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fntdd06mWzkY6B;
-        Sun, 23 May 2021 16:23:17 +0800 (CST)
-Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
- dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Sun, 23 May 2021 16:26:06 +0800
-Received: from localhost (10.174.179.215) by dggema769-chm.china.huawei.com
- (10.1.198.211) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sun, 23
- May 2021 16:26:05 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <luciano.coelho@intel.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <gregory.greenman@intel.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] iwlwifi: mvm: rfi: Use kmemdup() in iwl_rfi_get_freq_table()
-Date:   Sun, 23 May 2021 16:25:44 +0800
-Message-ID: <20210523082544.44068-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S231715AbhEWJvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 05:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231701AbhEWJv3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 05:51:29 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32653C061574
+        for <netdev@vger.kernel.org>; Sun, 23 May 2021 02:50:03 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id w33so28318533lfu.7
+        for <netdev@vger.kernel.org>; Sun, 23 May 2021 02:50:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=MhaWH0xm/odULRUgpRN30Lg5qdDn6Ee/GPJGPBWoxIc=;
+        b=fUQrSMwjqTY/37JFR2eyteP+y5beeD6ArC7Dbq0+ZjnWhyrBUbGvzavJPz8mF0OuiI
+         XNZfsZBIAcTU4liWVebvsEKDt89S12EUM6YaJjBAG0VJsRk2zgZqKfKoy+ppjjgQD+SE
+         r+FUjDQcc2xjqLSfge8eoVarZPH7J1IYxRyTRCJvmEfdG72Z0Kk1/gJ2q5Dht0AEWp+z
+         BsN4qp6H1dgyegDhSNkverrAMbip3Aq6jYsljVwUrvEPakgv6wa6URBKBf5/yc2Y7tUR
+         LQPFCNKSqstIruhwCqtGuzbwoNmkNKYXjLIVLbiJOXBLxlt7+gitCqRN/3+wTvjUj8FW
+         Li1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=MhaWH0xm/odULRUgpRN30Lg5qdDn6Ee/GPJGPBWoxIc=;
+        b=gAJyEsMLXZVBRGU6GjHtp7wgA+RgprRhXnq2rtCO8H+CP1+1LUe3BwlqKSjJ3uFZCS
+         X3U7P5GVzxZ2ZuSdXclF5iq51Jze9bnPkSu6oK73Yu8Bn1WLlwNT+69yUxjs7ngiIY3b
+         onIpOHX6tig0cq6hiq0w3waqxaD4+csEikjku5TOiqWmkXfwciTHL+ERINq+IDmuVavD
+         RyA6jTrWcfN58dDRu8fdeEQQvBDgIp6KljI6I/o0WuENSLeo4ok0gLXT/gY9MUs1nxzH
+         zVeQQIREZLItdY94e/5X2k/ip9PEzoHmp/Z6+at6+IytRGagyn5J21z9ouWqgbPqnaYQ
+         HtOw==
+X-Gm-Message-State: AOAM530ZxwPSYe+hu9kPf9/MGV00kXmSsxk6X4i0sICy3O49BhJ1iFwh
+        Qt7ST2m5MAaeHduKybt8wkk4DeAt4AetthmpSUk=
+X-Google-Smtp-Source: ABdhPJwcQ3eGNaPNxxCWJK+vpGS/G8yp9ShGhraDGNJ76i7M+fGzpCwLvVz6LygJEaAmCkOPFZ7LU1Enz4iJqsLBmGo=
+X-Received: by 2002:ac2:4e91:: with SMTP id o17mr7432505lfr.417.1621763401482;
+ Sun, 23 May 2021 02:50:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggema769-chm.china.huawei.com (10.1.198.211)
-X-CFilter-Loop: Reflected
+Received: by 2002:ac2:5fa9:0:0:0:0:0 with HTTP; Sun, 23 May 2021 02:50:01
+ -0700 (PDT)
+Reply-To: isabella.ferreira@yandex.com
+From:   "Isabella.Ferreira" <maryfury204@gmail.com>
+Date:   Sun, 23 May 2021 03:50:01 -0600
+Message-ID: <CAKLzTuAvsw-KjVr7TRO3pwhku1whsPHOYuADutkZHkb9OA74-A@mail.gmail.com>
+Subject: Greetings,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Issue identified with Coccinelle.
+Greetings,
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/wireless/intel/iwlwifi/mvm/rfi.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+I wonder why you continue neglecting my emails. Please, acknowledge
+the receipt of this message in reference to the subject above as I
+intend to send to you the details of the mail. Sometimes, try to check
+your spam box because most of these correspondences fall out sometimes
+in SPAM folder.
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c b/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
-index 0b818067067c..2225c4f5b71e 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
-@@ -107,12 +107,10 @@ struct iwl_rfi_freq_table_resp_cmd *iwl_rfi_get_freq_table(struct iwl_mvm *mvm)
- 	if (WARN_ON_ONCE(iwl_rx_packet_payload_len(cmd.resp_pkt) != resp_size))
- 		return ERR_PTR(-EIO);
- 
--	resp = kzalloc(resp_size, GFP_KERNEL);
-+	resp = kmemdup(cmd.resp_pkt->data, resp_size, GFP_KERNEL);
- 	if (!resp)
- 		return ERR_PTR(-ENOMEM);
- 
--	memcpy(resp, cmd.resp_pkt->data, resp_size);
--
- 	iwl_free_resp(&cmd);
- 	return resp;
- }
--- 
-2.17.1
-
+Best regards,
+Isabella
