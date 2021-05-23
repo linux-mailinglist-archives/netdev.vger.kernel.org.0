@@ -2,87 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66DD538D929
-	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 07:47:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 108F138D936
+	for <lists+netdev@lfdr.de>; Sun, 23 May 2021 08:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231599AbhEWFtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 01:49:00 -0400
-Received: from mga01.intel.com ([192.55.52.88]:10302 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231386AbhEWFtA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 May 2021 01:49:00 -0400
-IronPort-SDR: GFTovgJJH//BQ9PN30soE1sziNg98j/GadNBT6vtTB3aAM7memuoIaAUH6IeJHGxLeiZX5aHmE
- pf/JiogmxW2Q==
-X-IronPort-AV: E=McAfee;i="6200,9189,9992"; a="222871171"
-X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
-   d="scan'208";a="222871171"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2021 22:47:34 -0700
-IronPort-SDR: GC0ZpBmkqFP7xLRiZ1xXyEnpSGojc1KmPElF1Gpipdi4uaeMHrYJwfP5aZAhzlhT8JpsZjWunz
- hOVmrcSu7lEw==
-X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
-   d="scan'208";a="475298038"
-Received: from sneftin-mobl.ger.corp.intel.com (HELO [10.214.192.226]) ([10.214.192.226])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2021 22:47:30 -0700
-Subject: Re: [PATCH] igc: change default return of igc_read_phy_reg()
-To:     trix@redhat.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Neftin, Sasha" <sasha.neftin@intel.com>,
-        "Fuxbrumer, DvoraX" <dvorax.fuxbrumer@intel.com>
-References: <20210521195019.2078661-1-trix@redhat.com>
-From:   "Neftin, Sasha" <sasha.neftin@intel.com>
-Message-ID: <85d1b413-3ab3-6cee-4197-785b0c099340@intel.com>
-Date:   Sun, 23 May 2021 08:47:27 +0300
+        id S231620AbhEWGCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 02:02:41 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5668 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231549AbhEWGCk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 02:02:40 -0400
+Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.60])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FnqQQ3SnHz1BPmh;
+        Sun, 23 May 2021 13:58:22 +0800 (CST)
+Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
+ dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Sun, 23 May 2021 14:01:11 +0800
+Received: from [10.174.179.215] (10.174.179.215) by
+ dggema769-chm.china.huawei.com (10.1.198.211) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Sun, 23 May 2021 14:01:10 +0800
+Subject: Re: [PATCH net-next] ehea: Use DEVICE_ATTR_*() macro
+To:     kernel test robot <lkp@intel.com>, <dougmill@linux.ibm.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <kbuild-all@lists.01.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20210523031504.11732-1-yuehaibing@huawei.com>
+ <202105231357.TeRSEcVH-lkp@intel.com>
+From:   YueHaibing <yuehaibing@huawei.com>
+Message-ID: <4ba60312-b6ee-23db-bd1b-585dc5e83ae4@huawei.com>
+Date:   Sun, 23 May 2021 14:01:10 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <20210521195019.2078661-1-trix@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <202105231357.TeRSEcVH-lkp@intel.com>
+Content-Type: text/plain; charset="windows-1252"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggema769-chm.china.huawei.com (10.1.198.211)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/21/2021 22:50, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
+On 2021/5/23 13:14, kernel test robot wrote:
+> Hi YueHaibing,
 > 
-> Static analysis reports this problem
+> Thank you for the patch! Yet something to improve:
 > 
-> igc_main.c:4944:20: warning: The left operand of '&'
->    is a garbage value
->      if (!(phy_data & SR_1000T_REMOTE_RX_STATUS) &&
->            ~~~~~~~~ ^
-Tom, thanks for this patch. I believe the same static analysis problem 
-should be with the 'igb_read_phy_reg' method:
-https://elixir.bootlin.com/linux/v5.13-rc1/source/drivers/net/ethernet/intel/igb/igb.h#L769
+> [auto build test ERROR on net-next/master]
 > 
-> pyy_data is set by the call to igc_read_phy_reg() only if
-%s/pyy_data/phy_data/gc (typo)
-> there is a read_reg() op, else it is unset and a 0 is
-> returned.  Change the return to -EOPNOTSUPP.
+> url:    https://github.com/0day-ci/linux/commits/YueHaibing/ehea-Use-DEVICE_ATTR_-macro/20210523-111702
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git f5120f5998803a973b1d432ed2aa7e592527aa46
+> config: powerpc-allmodconfig (attached as .config)
+> compiler: powerpc64-linux-gcc (GCC) 9.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/0day-ci/linux/commit/7402089765bd60dcd72cad433fd318058e06d514
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review YueHaibing/ehea-Use-DEVICE_ATTR_-macro/20210523-111702
+>         git checkout 7402089765bd60dcd72cad433fd318058e06d514
+>         # save the attached .config to linux build tree
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=powerpc 
 > 
-> Fixes: 208983f099d9 ("igc: Add watchdog")
-> Signed-off-by: Tom Rix <trix@redhat.com>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    In file included from include/linux/kobject.h:20,
+>                     from include/linux/energy_model.h:7,
+>                     from include/linux/device.h:16,
+>                     from drivers/net/ethernet/ibm/ehea/ehea_main.c:17:
+>>> drivers/net/ethernet/ibm/ehea/ehea_main.c:3206:23: error: 'probe_port_store' undeclared here (not in a function); did you mean 'probe_port_show'?
+
+Sorry, this is the wrong version.
+
+>     3206 | static DEVICE_ATTR_WO(probe_port);
+>          |                       ^~~~~~~~~~
+>    include/linux/sysfs.h:135:11: note: in definition of macro '__ATTR_WO'
+>      135 |  .store = _name##_store,     \
+>          |           ^~~~~
+>    drivers/net/ethernet/ibm/ehea/ehea_main.c:3206:8: note: in expansion of macro 'DEVICE_ATTR_WO'
+>     3206 | static DEVICE_ATTR_WO(probe_port);
+>          |        ^~~~~~~~~~~~~~
+>    drivers/net/ethernet/ibm/ehea/ehea_main.c:3116:16: warning: 'probe_port_show' defined but not used [-Wunused-function]
+>     3116 | static ssize_t probe_port_show(struct device *dev,
+>          |                ^~~~~~~~~~~~~~~
+> 
+> 
+> vim +3206 drivers/net/ethernet/ibm/ehea/ehea_main.c
+> 
+>   3205	
+>> 3206	static DEVICE_ATTR_WO(probe_port);
+>   3207	static DEVICE_ATTR_WO(remove_port);
+>   3208	
+> 
 > ---
->   drivers/net/ethernet/intel/igc/igc.h | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 > 
-> diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-> index b6d3277c6f520..71100ee7afbee 100644
-> --- a/drivers/net/ethernet/intel/igc/igc.h
-> +++ b/drivers/net/ethernet/intel/igc/igc.h
-> @@ -577,7 +577,7 @@ static inline s32 igc_read_phy_reg(struct igc_hw *hw, u32 offset, u16 *data)
->   	if (hw->phy.ops.read_reg)
->   		return hw->phy.ops.read_reg(hw, offset, data);
->   
-> -	return 0;
-> +	return -EOPNOTSUPP;
->   }
->   
->   void igc_reinit_locked(struct igc_adapter *);
-> 
-Thanks,
-Sasha
