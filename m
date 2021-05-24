@@ -2,88 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F37738E3A0
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 12:02:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5307438E3AC
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 12:05:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232466AbhEXKDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 06:03:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232422AbhEXKDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 06:03:37 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE0DC061756
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 03:02:03 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1ll7Oz-00042T-HV; Mon, 24 May 2021 12:01:37 +0200
-Date:   Mon, 24 May 2021 12:01:37 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
-        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        saeedm@mellanox.com, fw@strlen.de, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: zero-initialize skb extensions on allocation
-Message-ID: <20210524100137.GA3194@breakpoint.cc>
-References: <20210524061959.2349342-1-vladbu@nvidia.com>
+        id S232577AbhEXKHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 06:07:10 -0400
+Received: from mga02.intel.com ([134.134.136.20]:52174 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232599AbhEXKHF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 06:07:05 -0400
+IronPort-SDR: 5/iuTGq+9JTkjqkzVSL3g/j3XcfWDK4YmIsnEI9VdedlPERz1tPfTbJA4ePZO5pUfZ9ov1oGLg
+ J2dE3F8dPrbg==
+X-IronPort-AV: E=McAfee;i="6200,9189,9993"; a="189021501"
+X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
+   d="scan'208";a="189021501"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2021 03:05:36 -0700
+IronPort-SDR: 35wEytosB0lthWneSatwK8hRCOxP32WnWaTA9s5Bl3WTO87ivIfVYsWcbEyaKoD3E+OfmcjTNT
+ kQL/S1lVepwg==
+X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; 
+   d="scan'208";a="475790095"
+Received: from dfuxbrux-desk.ger.corp.intel.com (HELO [10.12.48.255]) ([10.12.48.255])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2021 03:05:34 -0700
+Subject: Re: [Intel-wired-lan] [PATCH intel-net v2 6/6] igc: add correct
+ exception tracing for XDP
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        magnus.karlsson@intel.com, intel-wired-lan@lists.osuosl.org,
+        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com
+Cc:     netdev@vger.kernel.org, brouer@redhat.com
+References: <20210510093854.31652-1-magnus.karlsson@gmail.com>
+ <20210510093854.31652-7-magnus.karlsson@gmail.com>
+From:   Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Message-ID: <4761eca6-5007-9898-3cab-f974af68d956@linux.intel.com>
+Date:   Mon, 24 May 2021 13:05:31 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210524061959.2349342-1-vladbu@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210510093854.31652-7-magnus.karlsson@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vlad Buslov <vladbu@nvidia.com> wrote:
-> Function skb_ext_add() doesn't initialize created skb extension with any
-> value and leaves it up to the user.
-
-That was intentional.
-
-Its unlikely that all extensions are active at the same time on same skb.
-
-This is also the reason why the extension struct uses offset addressing
-to get the extension data rather than the simpler
-
-skb_ext {
-	struct sec_path sp;
-	struct nf_bridge_info nfbr;
-	...
-}
-
-So adding e.g. mptcp extension will only touch 1 cacheline instead of 3
-(or more if more extensions get added in the future).
-
-IOW, i would prefer if tc would add tc_skb_add_ext() or similar and
-zero whats needed there.
-
-> Fix the issue by changing __skb_ext_alloc() function to request
-> zero-initialized memory from kmem cache. Note that skb extension allocation
-> in skb_ext_maybe_cow() is not changed because newly allocated memory is
-> immediately overwritten with content of old skb extension so there is no
-> need to pre-initialize it.
->
-> Multiple users of skb extension API have already been manually setting
-> newly allocated skb extension memory to zero. Remove such code and rely on
-> skb extension API instead.
-
-Are you sure its safe?
-
->  static inline struct nf_bridge_info *nf_bridge_alloc(struct sk_buff *skb)
->  {
->  #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
-> -	struct nf_bridge_info *b = skb_ext_add(skb, SKB_EXT_BRIDGE_NF);
-> -
-> -	if (b)
-> -		memset(b, 0, sizeof(*b));
-> -
-> -	return b;
-> +	return skb_ext_add(skb, SKB_EXT_BRIDGE_NF);
-
-So in the (unlikely) case where skb_ext_add did not allocate a new
-extension, the memory is no longer cleared.
-
-If the skb had an nf_bridge_info extension previously that got
-discarded earlier via skb_ext_del() this now leaks the old content.
+On 10/05/2021 12:38, Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Add missing exception tracing to XDP when a number of different
+> errors can occur. The support was only partial. Several errors
+> where not logged which would confuse the user quite a lot not
+> knowing where and why the packets disappeared.
+> 
+> Fixes: 73f1071c1d29 ("igc: Add support for XDP_TX action")
+> Fixes: 4ff320361092 ("igc: Add support for XDP_REDIRECT action")
+> Reported-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
+>   drivers/net/ethernet/intel/igc/igc_main.c | 11 +++++------
+>   1 file changed, 5 insertions(+), 6 deletions(-)
+> Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
