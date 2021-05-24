@@ -2,155 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A16C38ECF8
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 17:29:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D937338ECBD
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 17:21:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233238AbhEXPbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 11:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233642AbhEXP3Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 11:29:25 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9602C06138B;
-        Mon, 24 May 2021 07:56:21 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id f12so33988230ljp.2;
-        Mon, 24 May 2021 07:56:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qRk6AqLkz1cLg+MPPtjVo9TuUA/8FO+AIctkgMZCtvY=;
-        b=JojCDPHSJR2G3TJGhyoTK8Akdo3XxsXrLNhkecZmcbUh337Yyzz02lrsW0GQVYMpp5
-         t6R2ZV5gmSS5nIqww4fFDtg2gYtR6kFOuRgizKFSU7nWjyfnFg++OftUE7LlSGW/vx00
-         pty5VkI3fqsCUrHonJl1O7zhWibr9RnX6bm0XTe7bna0UyIWDHZr7Fr6QG/jxp6AqNSU
-         1+tyq2zSQgGDc/ku3ZeKOemulFev2+RWNQ7ug+fSiV1xcDwWDYdGovGw+5iZo9dtoXfy
-         zGMIHA3WHqmeWXDHlTRqG/6otkGyEHy6p8PArN1OYG18ZSTrF+wTTw+IQeR6QIN6pP/l
-         JI0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qRk6AqLkz1cLg+MPPtjVo9TuUA/8FO+AIctkgMZCtvY=;
-        b=IgdzTDLgRkDI5hrH5EltpTlnDTSKVCuXwswD9eBYVaBlMB7UFCITFFm//LlrI38tn4
-         AxdjLo9xDtSToagVq2YbFf8OtQJhktQmpK/m/GNubFVyCKgJOqj014q7dIOCcSSrMjhN
-         v1nJfDwrADav23GTnehQl/uSAUgsXzPaiS5obCXdTL/WPZe6+jdNNtXLJJgo+iPlMYSO
-         G4p8rhLxV4uyVb6bIKz6Of30LsHJI7+Iqi7eSvM+B0bkGhAjO+WkCvRBs/yjMl/Ov/Ph
-         opMwa86CZguLTn0WDWthg6kAxs08lE0kMME1zCki/JrXwtVsjXNdvv6K8hyGCv+YT8ZV
-         sWhg==
-X-Gm-Message-State: AOAM530jy7fS4FCMm3Tg+mbJI0kz6XBu8W5rVqCbWksjBi30SbnJMMji
-        XxPm4MVqNY4W9kPZ1DmBx3WKIDUluNvFgUOCNXA=
-X-Google-Smtp-Source: ABdhPJx/Lk5O8yir1fik+p/q8G2VZh5wx5CBLrIjRh6uHFDQo0yiluxTN2Yq1uI9d03caztC9oPuIQVLsvjuiRWBWGU=
-X-Received: by 2002:a2e:b610:: with SMTP id r16mr16812675ljn.486.1621868180328;
- Mon, 24 May 2021 07:56:20 -0700 (PDT)
+        id S234297AbhEXPWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 11:22:44 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:42283 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232746AbhEXPPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 11:15:04 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id D17B04476;
+        Mon, 24 May 2021 11:13:32 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Mon, 24 May 2021 11:13:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm2; bh=BGa72Vj6zhdzVJ4MQX7Q91APrP9
+        Unrjyy5c4SX8SOrc=; b=mWpDg5tBjU9621uQ54CKDVyw+Gv2TiI7f4GuNwXz1W3
+        kXLLs4castuRfycfbqcuTHhumHK7HDqLFpKW8iOEQs+5O9LSKEYThwfdo5avZJgL
+        fQ4BuowLt8t2P/+Cs/DiDlhnETvgH6Fc7sMwachowHcitst/Gy3BWxtr49vEILPn
+        k8Xi5VFN5V4OTprAOrbYejPt6KkGvVlQbw7RS4OGwUXZ7XKQGnb975OmQRcupGpj
+        EXzo3SknZvxfym9Sin4gzBUfWSdk2uQQjU8OrowDefsDc2TOVAbsy1XCw+4qXnhX
+        u4r3vkhJ9N5mHrFfFSGiQkAVmKjClvuzRxYmcWmfYxQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=BGa72V
+        j6zhdzVJ4MQX7Q91APrP9Unrjyy5c4SX8SOrc=; b=oJ3fWltJeZ+rjCRSXb30hz
+        a1hWCac2qaRfPjbFIt8HtpCrYvdOnhgai9lZGyKGiASWteZIyLLQx3CySjYY2c9+
+        i3kEt5DLNAk6NIyGNwT4Pf4LIE3PM+qSSIs2NxjluRw1UNJQdtoriOMuE5UhFe4i
+        r7FD+Iblp1uHmzZu1CPuAySf/CHqmWmzxB4MLpjlUmN7css8ujLA4hPf3W8JIu1w
+        kIKPoVYZgJdjkmkPS7W5dpFoqWCs+44FqAqrJ004J3x3rFh7EOnkgInSccn+13qG
+        PRtP+om51wiicwnVC8O6llEDPusO3DZAK4VXZWLzSnRj8B/VPKhzhNYytZHKGBpg
+        ==
+X-ME-Sender: <xms:nMKrYAeDrLPsbckCZlfYi8A3JXhMYiXesiQWu5J57G7Shc-LSrhMgA>
+    <xme:nMKrYCMwlqKesaxpCLvlHKhU2ofb0JUU1_2ZzebXE1Jl_KWI2XsqgGPOJ4pdP3o3j
+    uD4nYie7xYtn04avQA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdejledgkeekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
+    gedunecukfhppeeltddrkeelrdeikedrjeeinecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:nMKrYBhJ1tpQmpXUYX6dQCBQgcjM4kKLZlLtE3Rlws5PCoL2GlUCKw>
+    <xmx:nMKrYF8b7Cn0DEXJH0_-bdo7plvPfex_2lvq8nDqG-01aV2vqPwzbg>
+    <xmx:nMKrYMvF9tN30CuUlWSkf9Z_9MEwi-5SdT213s88qxUBVEzSXKJjDw>
+    <xmx:nMKrYIIy6EsRpwSp7yJS8oCOfb1sE7ue1Tc_AFvG7eylBTvIZdy1Ew>
+Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
+        by mail.messagingengine.com (Postfix) with ESMTPA;
+        Mon, 24 May 2021 11:13:31 -0400 (EDT)
+Date:   Mon, 24 May 2021 17:13:29 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Doug Berger <opendmb@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>
+Subject: Re: Kernel Panic in skb_release_data using genet
+Message-ID: <20210524151329.5ummh4dfui6syme3@gilmour>
+References: <20210524130147.7xv6ih2e3apu2zvu@gilmour>
+ <a53f6192-3520-d5f8-df4b-786b3e4e8707@gmail.com>
 MIME-Version: 1.0
-References: <20210520185550.13688-1-alexei.starovoitov@gmail.com> <CACAyw9-7dPx1vLNQeYP9Zqx=OwNcd2t1VK3XGD_aUZZG-twrOg@mail.gmail.com>
-In-Reply-To: <CACAyw9-7dPx1vLNQeYP9Zqx=OwNcd2t1VK3XGD_aUZZG-twrOg@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 24 May 2021 07:56:09 -0700
-Message-ID: <CAADnVQLqa6skQKsUK=LO5JDZr8xM_rwZPOgA1F39UQRim1P8vw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="wgtnyrrd22offedx"
+Content-Disposition: inline
+In-Reply-To: <a53f6192-3520-d5f8-df4b-786b3e4e8707@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 4:50 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
->
-> On Thu, 20 May 2021 at 19:55, Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > From: Alexei Starovoitov <ast@kernel.org>
-> >
-> > Introduce 'struct bpf_timer' that can be embedded in most BPF map types
-> > and helpers to operate on it:
-> > long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
-> > long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
-> > long bpf_timer_del(struct bpf_timer *timer)
->
-> I like invoking the callback with a pointer to the map element it was
-> defined in, since it solves lifetime of the context and user space
-> introspection of the same. I'm not so sure about being able to put it
-> into all different kinds of maps, is that really going to be used?
 
-Certainly. At least in array and hash maps.
-The global data is an array.
-A single global timer is a simple and easy to use pattern.
+--wgtnyrrd22offedx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->
-> It would be useful if Cong Wang could describe their use case, it's
-> kind of hard to tell what the end goal is. Should user space be able
-> to create and arm timers? Or just BPF? In the other thread it seems
-> like a primitive for waiting on a timer is proposed. Why? It also begs
-> the question how we would wait on multiple timers.
+Hi Florian,
 
-In the proposed api the same callback can be invoked for multiple timers.
-The user space can create/destroy timers via prog_run cmd.
-It will also destroy timers by map_delete_elem cmd.
+On Mon, May 24, 2021 at 07:49:25AM -0700, Florian Fainelli wrote:
+> Hi Maxime,
+>=20
+> On 5/24/2021 6:01 AM, Maxime Ripard wrote:
+> > Hi Doug, Florian,
+> >=20
+> > I've been running a RaspberryPi4 with a mainline kernel for a while,
+> > booting from NFS. Every once in a while (I'd say ~20-30% of all boots),
+> > I'm getting a kernel panic around the time init is started.
+> >=20
+> > I was debugging a kernel based on drm-misc-next-2021-05-17 today with
+> > KASAN enabled and got this, which looks related:
+>=20
+> Is there a known good version that could be used for bisection or you
+> just started to do this test and you have no reference point?
 
-> > + *
-> > + * long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
->
-> In your selftest the callback has a type (int)(*callback)(struct
-> bpf_map *map, int *key, struct map_elem *val).
+I've had this issue for over a year and never (I think?) got a good
+version, so while it might be a regression, it's not a recent one.
 
-Correct. I'll update the comment.
+> How stable in terms of clocking is the configuration that you are using?
+> I could try to fire up a similar test on a Pi4 at home, or use one of
+> our 72112 systems which is the closest we have to a Pi4 and see if that
+> happens there as well.
 
-> > + *     Description
-> > + *             Initialize the timer to call given static function.
-> > + *     Return
-> > + *             zero
-> > + *
-> > + * long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
-> > + *     Description
-> > + *             Set the timer expiration N msecs from the current time.
-> > + *     Return
-> > + *             zero
-> > + *
-> > + * long bpf_timer_del(struct bpf_timer *timer)
-> > + *     Description
-> > + *             Deactivate the timer.
-> > + *     Return
-> > + *             zero
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)          \
-> >         FN(unspec),                     \
-> > @@ -4932,6 +4950,9 @@ union bpf_attr {
-> >         FN(sys_bpf),                    \
-> >         FN(btf_find_by_name_kind),      \
-> >         FN(sys_close),                  \
-> > +       FN(timer_init),                 \
-> > +       FN(timer_mod),                  \
-> > +       FN(timer_del),                  \
-> >         /* */
->
-> How can user space force stopping of timers (required IMO)?
+I'm not really sure about the clocking. Is there any clock you want to
+look at in particular?
 
-We can add new commands, of course, but I don't think it's
-necessary, since test_run can be used to achieve the same
-and map_delete_elem will stop them too.
+My setup is fairly simple: the firmware and kernel are loaded over TFTP
+and the rootfs is mounted over NFS, and the crash always occur around
+init start, so I guess when it actually starts to transmit a decent
+amount of data?
 
-> >
-> >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> > @@ -6038,6 +6059,10 @@ struct bpf_spin_lock {
-> >         __u32   val;
-> >  };
-> >
-> > +struct bpf_timer {
-> > +       __u64 opaque;
-> > +};
-> > +
->
-> This might be clear already, but we won't be able to modify the size
-> of bpf_timer later since it would break uapi, right?
+Maxime
 
-Correct. The internal implementation can change. The 'opaque'
-is just the pointer to the internal struct.
-When do you think we'd need to change this uapi struct?
+--wgtnyrrd22offedx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYKvCmQAKCRDj7w1vZxhR
+xdujAQD/0Kymwp3S8g4TKdrzdqH41ouOvUVLq7pZGVM7OdEHDAD9ERamwnRIoYUx
+mKWf46HXJAlF1yqaZ97ea5MrcHmbowo=
+=r7lJ
+-----END PGP SIGNATURE-----
+
+--wgtnyrrd22offedx--
