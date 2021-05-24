@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2576238EB16
+	by mail.lfdr.de (Postfix) with ESMTP id E5CD038EB18
 	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 17:00:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233212AbhEXPAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 11:00:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34006 "EHLO mail.kernel.org"
+        id S234119AbhEXPAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 11:00:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34040 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234110AbhEXO5o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 10:57:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C343361453;
-        Mon, 24 May 2021 14:49:21 +0000 (UTC)
+        id S233405AbhEXO6J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 10:58:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 020D461456;
+        Mon, 24 May 2021 14:49:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621867762;
-        bh=SqjKvzL/9wcAch+fn06ik3D6/zS8+xJL9bETZFokctA=;
+        s=k20201202; t=1621867763;
+        bh=yKmHGYlo9dLU4grjc3FlxN0rPL/SRMFjd9gHx/aD5cU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p4xjy7kh44uIt2tKB8LF0SYyPefpVnwkG7KIUvpgn2L89508s+VKZHMSPT2xKNpZI
-         W/4tZ0NZV7hjiVNORRqo2niKCnxCIeRY2YBbmR4VzVN7zLlxDsGWLkg6MCN2t+B3In
-         /qMhvKCLQIrrX6o8vFzRxEAAbxBLhAA9Bpf4XP3i+y4kbiVixrtcaYBCD+Ew5oRAxQ
-         hEaJe81v5H+/lTuMwtrQ0ss4d0AWk2xjy0C4MFGhXE6QGwSVy5ODKjGLAGy3i/4WaP
-         HcMO7t9a55QFczsoA2prpdToJp5sMIBZY2EPbEQzNfF8H5u7FbtJP41BN3inlYPwKi
-         LFjOoHohTI2BQ==
+        b=T/TR/iGa88AzseL0hVdC+Rb2p+DwLtdzU6zDodcynrra1HCaPa/zphO9S2QCvcoso
+         vl1JeZwPpZfqILVgfJ7hDYL9BjxwRKdccPh8rwmpjNs/124fhKhqY6s8Dgf/WjRHKH
+         BgmyPVCNKdwj7uJFetOFMR452A88XLrXwp3Y8f9f+OdHluL/97MyZbx0NfSnGPbhqz
+         N0EkUyBx3ydVlhrsFd+0ezurkWYGo1ogWRRjcaj/0/w4Rarp3BWq6yipErRmm6W/62
+         RajiqMoujayGPq7BS90JI5Ij28yxIxWgs0BANTJdj3Msz3meOBUGPmmRn6ohd27fhq
+         SfHHyYJWZ5gTQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kangjie Lu <kjlu@umn.edu>,
+Cc:     Phillip Potter <phil@philpotter.co.uk>,
         "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 16/52] Revert "isdn: mISDNinfineon: fix potential NULL pointer dereference"
-Date:   Mon, 24 May 2021 10:48:26 -0400
-Message-Id: <20210524144903.2498518-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 17/52] isdn: mISDNinfineon: check/cleanup ioremap failure correctly in setup_io
+Date:   Mon, 24 May 2021 10:48:27 -0400
+Message-Id: <20210524144903.2498518-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210524144903.2498518-1-sashal@kernel.org>
 References: <20210524144903.2498518-1-sashal@kernel.org>
@@ -43,53 +43,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Phillip Potter <phil@philpotter.co.uk>
 
-[ Upstream commit abd7bca23bd4247124265152d00ffd4b2b0d6877 ]
+[ Upstream commit c446f0d4702d316e1c6bf621f70e79678d28830a ]
 
-This reverts commit d721fe99f6ada070ae8fc0ec3e01ce5a42def0d9.
+Move hw->cfg.mode and hw->addr.mode assignments from hw->ci->cfg_mode
+and hw->ci->addr_mode respectively, to be before the subsequent checks
+for memory IO mode (and possible ioremap calls in this case).
 
-Because of recent interactions with developers from @umn.edu, all
-commits from them have been recently re-reviewed to ensure if they were
-correct or not.
+Also introduce ioremap error checks at both locations. This allows
+resources to be properly freed on ioremap failure, as when the caller
+of setup_io then subsequently calls release_io via its error path,
+release_io can now correctly determine the mode as it has been set
+before the ioremap call.
 
-Upon review, this commit was found to be incorrect for the reasons
-below, so it must be reverted.  It will be fixed up "correctly" in a
-later kernel change.
+Finally, refactor release_io function so that it will call
+release_mem_region in the memory IO case, regardless of whether or not
+hw->cfg.p/hw->addr.p are NULL. This means resources are then properly
+released on failure.
 
-The original commit was incorrect, it should have never have used
-"unlikely()" and if it ever does trigger, resources are left grabbed.
+This properly implements the original reverted commit (d721fe99f6ad)
+from the University of Minnesota, whilst also implementing the ioremap
+check for the hw->ci->cfg_mode if block as well.
 
-Given there are no users for this code around, I'll just revert this and
-leave it "as is" as the odds that ioremap() will ever fail here is
-horrendiously low.
-
-Cc: Kangjie Lu <kjlu@umn.edu>
 Cc: David S. Miller <davem@davemloft.net>
-Link: https://lore.kernel.org/r/20210503115736.2104747-41-gregkh@linuxfoundation.org
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Link: https://lore.kernel.org/r/20210503115736.2104747-42-gregkh@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/hardware/mISDN/mISDNinfineon.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/isdn/hardware/mISDN/mISDNinfineon.c | 24 ++++++++++++++-------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/isdn/hardware/mISDN/mISDNinfineon.c b/drivers/isdn/hardware/mISDN/mISDNinfineon.c
-index f4cb29766888..d62006bab9c6 100644
+index d62006bab9c6..3cf0c6f5a1dc 100644
 --- a/drivers/isdn/hardware/mISDN/mISDNinfineon.c
 +++ b/drivers/isdn/hardware/mISDN/mISDNinfineon.c
-@@ -697,11 +697,8 @@ setup_io(struct inf_hw *hw)
+@@ -630,17 +630,19 @@ static void
+ release_io(struct inf_hw *hw)
+ {
+ 	if (hw->cfg.mode) {
+-		if (hw->cfg.p) {
++		if (hw->cfg.mode == AM_MEMIO) {
+ 			release_mem_region(hw->cfg.start, hw->cfg.size);
+-			iounmap(hw->cfg.p);
++			if (hw->cfg.p)
++				iounmap(hw->cfg.p);
+ 		} else
+ 			release_region(hw->cfg.start, hw->cfg.size);
+ 		hw->cfg.mode = AM_NONE;
+ 	}
+ 	if (hw->addr.mode) {
+-		if (hw->addr.p) {
++		if (hw->addr.mode == AM_MEMIO) {
+ 			release_mem_region(hw->addr.start, hw->addr.size);
+-			iounmap(hw->addr.p);
++			if (hw->addr.p)
++				iounmap(hw->addr.p);
+ 		} else
+ 			release_region(hw->addr.start, hw->addr.size);
+ 		hw->addr.mode = AM_NONE;
+@@ -670,9 +672,12 @@ setup_io(struct inf_hw *hw)
+ 				(ulong)hw->cfg.start, (ulong)hw->cfg.size);
+ 			return err;
+ 		}
+-		if (hw->ci->cfg_mode == AM_MEMIO)
+-			hw->cfg.p = ioremap(hw->cfg.start, hw->cfg.size);
+ 		hw->cfg.mode = hw->ci->cfg_mode;
++		if (hw->ci->cfg_mode == AM_MEMIO) {
++			hw->cfg.p = ioremap(hw->cfg.start, hw->cfg.size);
++			if (!hw->cfg.p)
++				return -ENOMEM;
++		}
+ 		if (debug & DEBUG_HW)
+ 			pr_notice("%s: IO cfg %lx (%lu bytes) mode%d\n",
+ 				  hw->name, (ulong)hw->cfg.start,
+@@ -697,9 +702,12 @@ setup_io(struct inf_hw *hw)
  				(ulong)hw->addr.start, (ulong)hw->addr.size);
  			return err;
  		}
--		if (hw->ci->addr_mode == AM_MEMIO) {
-+		if (hw->ci->addr_mode == AM_MEMIO)
- 			hw->addr.p = ioremap(hw->addr.start, hw->addr.size);
--			if (unlikely(!hw->addr.p))
--				return -ENOMEM;
--		}
+-		if (hw->ci->addr_mode == AM_MEMIO)
+-			hw->addr.p = ioremap(hw->addr.start, hw->addr.size);
  		hw->addr.mode = hw->ci->addr_mode;
++		if (hw->ci->addr_mode == AM_MEMIO) {
++			hw->addr.p = ioremap(hw->addr.start, hw->addr.size);
++			if (!hw->addr.p)
++				return -ENOMEM;
++		}
  		if (debug & DEBUG_HW)
  			pr_notice("%s: IO addr %lx (%lu bytes) mode%d\n",
+ 				  hw->name, (ulong)hw->addr.start,
 -- 
 2.30.2
 
