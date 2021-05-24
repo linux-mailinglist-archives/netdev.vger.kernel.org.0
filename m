@@ -2,78 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D53B238E316
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 11:13:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDED438E343
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 11:25:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232499AbhEXJPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 05:15:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58170 "EHLO mail.kernel.org"
+        id S232533AbhEXJ1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 05:27:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33542 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232397AbhEXJPM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 05:15:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2EBD360FE7;
-        Mon, 24 May 2021 09:13:45 +0000 (UTC)
+        id S232545AbhEXJ1U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 05:27:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 89A05610A5;
+        Mon, 24 May 2021 09:25:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621847625;
-        bh=gLEwh/xrg3/6bm6NA/iMItM0ghz5DNK9xGjeSvn1l0Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jCz4XGleLi33u/pN2fdy9FOgw4762PwQyV1uy5ts71SHEhBV1PUiHX+bpNL9zTC5K
-         t1ToJwrok0w9FpaUUrMvvGDrylo8UFldtX/pCgyuGdyKPqKgggkhFEjwvJaNmwsnZH
-         3PuHcHE81+RKO4ni7JN8Kds2sn1+InbaXKvDtu1NobJbxrnl7kMC9Q76lsny6P9azX
-         K14gCvIPArji73xKw6WwhaaInAMADD84Tr0OkMbr152Lj1UifsQIk0dw5y66juwHZB
-         V/xJJ4F0LycpbFJyn1YblUy+pq4lRx4fEPgwCglX0vVtCo8MQ5mc3buar0mBN175JN
-         X/6a2q/+v+zSg==
+        s=k20201202; t=1621848352;
+        bh=RSHJgBS3LNUrrKLwv3RtAYVq8H74gynoFF6n2my1Voo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Hz2VroHhV7WJSJoUYvaBLvlC/Q621K0jANyT3JzjK1yADyqFshc8DC6K7/5rVn1GO
+         6pzLdw5X0GktvBNNeFKFFOYn/SuuslJjOJsYFaQOZoRnnxEoW46TfeU61ORRIWyjSP
+         Z6sbraJwFPVkNiq2SMsgTwcDsfIfye4HAyik7VszYOG2r7b7LX+rVd7ZzqGzq7YODs
+         A5oo6sQMK7/rlhz3F9GljzVyZITGd3CzdImZ0eVtysAM+un+BQ//QL5Gdbo7+4juim
+         M2ogpB9WZZ/E/G8DqLNNmt4bgmu4/smKIEfNtQtULPrgVQ4ZMZL2nJRbS8VZQAcejb
+         Ty9HO7PdwlNXQ==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1ll6ec-00014d-R3; Mon, 24 May 2021 11:13:42 +0200
-Date:   Mon, 24 May 2021 11:13:42 +0200
+        id 1ll6qM-0001ED-5N; Mon, 24 May 2021 11:25:50 +0200
 From:   Johan Hovold <johan@kernel.org>
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com" 
-        <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>
-Subject: Re: [PATCH net v3] r8152: check the informaton of the device
-Message-ID: <YKtuRmp6mC34kf2k@hovoldconsulting.com>
-References: <1394712342-15778-363-Taiwan-albertk@realtek.com>
- <1394712342-15778-365-Taiwan-albertk@realtek.com>
- <YKtdJnvZTxE1yqEK@hovoldconsulting.com>
- <1e7e1d4039724eb4bcdd5884a748d880@realtek.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>, stable@vger.kernel.org
+Subject: [PATCH net] net: hso: fix control-request directions
+Date:   Mon, 24 May 2021 11:25:11 +0200
+Message-Id: <20210524092511.4657-1-johan@kernel.org>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1e7e1d4039724eb4bcdd5884a748d880@realtek.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 08:54:50AM +0000, Hayes Wang wrote:
-> Johan Hovold <johan@kernel.org>
-> > Sent: Monday, May 24, 2021 4:01 PM
-> [...]
-> > >  	/* The vendor mode is not always config #1, so to find it out. */
-> > >  	udev = interface_to_usbdev(intf);
-> > >  	c = udev->config;
-> > >  	num_configs = udev->descriptor.bNumConfigurations;
-> > > +	if (num_configs < 2)
-> > > +		return false;
-> > > +
-> > 
-> > Nit: This check looks unnecessary also as the driver can handle a single
-> > configuration just fine, and by removing it you'd be logging "Unexpected
-> > Device\n" below also in the single config case.
-> 
-> I just want to distinguish the devices.
-> It is acceptable if the device contains only one configuration.
-> A mistake occurs if the device has more configurations and
-> there is no expected one.
-> I would remove it if you think it is better.
+The direction of the pipe argument must match the request-type direction
+bit or control requests may fail depending on the host-controller-driver
+implementation.
 
-I'm fine with keeping the check too (e.g. as an optimisation of sort),
-it's just a bit inconsistent to not log an error in that one error path.
+Fix the tiocmset and rfkill requests which erroneously used
+usb_rcvctrlpipe().
 
-Johan
+Fixes: 72dc1c096c70 ("HSO: add option hso driver")
+Cc: stable@vger.kernel.org      # 2.6.27
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/net/usb/hso.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index 3ef4b2841402..ba366e9347f7 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -1689,7 +1689,7 @@ static int hso_serial_tiocmset(struct tty_struct *tty,
+ 	spin_unlock_irqrestore(&serial->serial_lock, flags);
+ 
+ 	return usb_control_msg(serial->parent->usb,
+-			       usb_rcvctrlpipe(serial->parent->usb, 0), 0x22,
++			       usb_sndctrlpipe(serial->parent->usb, 0), 0x22,
+ 			       0x21, val, if_num, NULL, 0,
+ 			       USB_CTRL_SET_TIMEOUT);
+ }
+@@ -2436,7 +2436,7 @@ static int hso_rfkill_set_block(void *data, bool blocked)
+ 	if (hso_dev->usb_gone)
+ 		rv = 0;
+ 	else
+-		rv = usb_control_msg(hso_dev->usb, usb_rcvctrlpipe(hso_dev->usb, 0),
++		rv = usb_control_msg(hso_dev->usb, usb_sndctrlpipe(hso_dev->usb, 0),
+ 				       enabled ? 0x82 : 0x81, 0x40, 0, 0, NULL, 0,
+ 				       USB_CTRL_SET_TIMEOUT);
+ 	mutex_unlock(&hso_dev->mutex);
+-- 
+2.26.3
+
