@@ -2,87 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EE6638F468
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 22:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A88838F465
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 22:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233559AbhEXUb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 16:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233529AbhEXUbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 16:31:55 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764FBC061574;
-        Mon, 24 May 2021 13:30:25 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id b25so28281622oic.0;
-        Mon, 24 May 2021 13:30:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=GqUcUpb2Ej5ByHB7iSH1hiStjrC0tu1eCOwjuG9fVMA=;
-        b=LdosPC1Hy1iNWhY5aFHn37/tLbrTirZ/a+cthsRf+IOORtG/CqJRvdeJ0gjHhrBDN0
-         KMyfM0N9b+ESX3si6WmvNsCtleq2vQeFJqZn3XsaOWO7KTBFvMhqqNoLUSTpdlTycah3
-         vC9+JdiRKwMd4KSQpuB471rxlah/dUFOXHSMQerMeXtGXGHP00d8elf9OOSJC8MeqfOF
-         aypRq5jWEO2RLOcw0LfuU+zWGSOPdZzWaxb9Lz55lUvPLnFr4hMYCl7Fz4Wux2NiR/kp
-         iilSw3AxL9V+a6wsdktXHIHnNoyN4DeZHBMKFA4iEPDXSBQrvWS+SbBBokfVhk9EDLO3
-         IKSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=GqUcUpb2Ej5ByHB7iSH1hiStjrC0tu1eCOwjuG9fVMA=;
-        b=YFLyB0KyeLfR1hJ7srsc3HUCw837a69rFlfVFH8A9gzGYUnZ4zaqHJUlE03LINgbSL
-         GUY5xK+dF0yPYiy0U4dubcDCn4MC6QYVxJz3KX9D9iXSMRW9KTJ7+dKyiTI9yONoo2nb
-         A9wP+CrUPGDffomk0gQEnVc+0SLP7TKxXaBbAXNY8Flrj4c37rVuLsMv/pM8H/dcQia1
-         yCM6V/JrsbuxHEDSaJgnUhiPZSy5qhDVFqcQ1mkQranVp612URcVCwV4BwtavkKe4gK/
-         3j81cZOg8y+HiXOio6LFbiAMTue7pLhIW1WK0CJrbrulshBxJBp31f9JyrWCMFy9UJ8L
-         VBiA==
-X-Gm-Message-State: AOAM533lBcTmwQtDZfbPNDMUjyvplEmhkbw4RnYNQ3xURmzrJNK/dPe7
-        WACjmhdYFsbsb1Aeh0EdT4YT3MdLieEI
-X-Google-Smtp-Source: ABdhPJwcvYPe1008UJs7WtpgbMmUIvPjfrMw4RU6xipJ9exupeYXtQpkotdHQK6mIs1iAWF6te0tkg==
-X-Received: by 2002:a05:6808:2003:: with SMTP id q3mr527111oiw.171.1621888224287;
-        Mon, 24 May 2021 13:30:24 -0700 (PDT)
-Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id q1sm361548oos.32.2021.05.24.13.30.22
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 May 2021 13:30:23 -0700 (PDT)
-From:   George McCollister <george.mccollister@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH net] net: dsa: microchip: enable phy errata workaround on 9567
-Date:   Mon, 24 May 2021 15:29:53 -0500
-Message-Id: <20210524202953.70379-1-george.mccollister@gmail.com>
-X-Mailer: git-send-email 2.11.0
+        id S233512AbhEXUbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 16:31:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51732 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232676AbhEXUbi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 16:31:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3E19B6140E;
+        Mon, 24 May 2021 20:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621888210;
+        bh=sGDoJTSLdMdSFrsyXpub/XY9JJN4423rmBMnzSh+BHM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=sFEtMatV/cWOgUyaF7XQ40ax9dWs8n1wW4lDstuViMMu1YI1KUiT4Wug07a3YzXk9
+         LRbVrF5xupvzWNEvnYGyB5TSLt13uWicbZbfbBuZn/q8RcrnCqLeaIYD2r5XtA5Py8
+         gCH+5YVT4OlnbgBOny6TU2RRdhSyfadcL8KfCFw/c5R1nbS0H0P3iBwz2UBbUv4rN8
+         Q0u3FMoBbjgX+CB/G1MjZqVlYbZAldmvJkHqM0LroqfS8kVNKJmdTT8d49ZuA/o/kv
+         DnoUW6hUbvMLOhFYM9Z9iZYMzhV/ZlSBpyr4LcJOnEpSGU6OdS9nH1qPVa18+5Zjuz
+         evWzjb6rUwGoA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2F4A460A0B;
+        Mon, 24 May 2021 20:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/6] Fixes for SJA1105 DSA driver
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162188821018.23443.13579915003852297105.git-patchwork-notify@kernel.org>
+Date:   Mon, 24 May 2021 20:30:10 +0000
+References: <20210524092527.874479-1-olteanv@gmail.com>
+In-Reply-To: <20210524092527.874479-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Also enable phy errata workaround on 9567 since has the same errata as
-the 9477 according to the manufacture's documentation.
+Hello:
 
-Signed-off-by: George McCollister <george.mccollister@gmail.com>
----
- drivers/net/dsa/microchip/ksz9477.c | 1 +
- 1 file changed, 1 insertion(+)
+This series was applied to netdev/net.git (refs/heads/master):
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index b99e453b0a56..4dae07da1b53 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1639,6 +1639,7 @@ static const struct ksz_chip_data ksz9477_switch_chips[] = {
- 		.num_statics = 16,
- 		.cpu_ports = 0x7F,	/* can be configured as cpu port */
- 		.port_cnt = 7,		/* total physical port count */
-+		.phy_errata_9477 = true,
- 	},
- };
- 
--- 
-2.11.0
+On Mon, 24 May 2021 12:25:21 +0300 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> This series contains some minor fixes in the sja1105 driver:
+> - improved error handling in the probe path
+> - rejecting an invalid phy-mode specified in the device tree
+> - register access fix for SJA1105P/Q/R/S for the virtual links through
+>   the dynamic reconfiguration interface
+> - handling 2 bridge VLANs where the second is supposed to overwrite the
+>   first
+> - making sure that the lack of a pvid results in the actual dropping of
+>   untagged traffic
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/6] net: dsa: sja1105: fix VL lookup command packing for P/Q/R/S
+    https://git.kernel.org/netdev/net/c/ba61cf167cb7
+  - [net,2/6] net: dsa: sja1105: call dsa_unregister_switch when allocating memory fails
+    https://git.kernel.org/netdev/net/c/dc596e3fe63f
+  - [net,3/6] net: dsa: sja1105: add error handling in sja1105_setup()
+    https://git.kernel.org/netdev/net/c/cec279a898a3
+  - [net,4/6] net: dsa: sja1105: error out on unsupported PHY mode
+    https://git.kernel.org/netdev/net/c/6729188d2646
+  - [net,5/6] net: dsa: sja1105: use 4095 as the private VLAN for untagged traffic
+    https://git.kernel.org/netdev/net/c/ed040abca4c1
+  - [net,6/6] net: dsa: sja1105: update existing VLANs from the bridge VLAN list
+    https://git.kernel.org/netdev/net/c/b38e659de966
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
