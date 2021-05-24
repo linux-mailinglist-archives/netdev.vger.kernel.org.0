@@ -2,204 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 950EC38E2F9
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 11:10:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D02F38E302
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 11:11:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232401AbhEXJLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 05:11:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29025 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232318AbhEXJLg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 05:11:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621847407;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L3wSqyBZrZuWAaUg/+zzbLh1KHxQeq+UhWJvXbU1jvM=;
-        b=AOc6yA9d8CWnbpaEMDEQ65RUpvAvvixHXf5nSo1ELU6DGwCZ4qz7YFZwGE1U/PVgLLamC7
-        UpP7VRuiL3XrzyipRyRCnmMY8fS33ga/X4oHi0LdfHbeOQNmreAkoelfaiqMpruGGkAwN2
-        faNkxaqP0BrmUWpTs5Hdrjp5kz24+8o=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-344-KFXFuErONWe7PWvbwCdRog-1; Mon, 24 May 2021 05:10:05 -0400
-X-MC-Unique: KFXFuErONWe7PWvbwCdRog-1
-Received: by mail-wr1-f70.google.com with SMTP id g3-20020adfd1e30000b02901122a4b850aso4782798wrd.20
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 02:10:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=L3wSqyBZrZuWAaUg/+zzbLh1KHxQeq+UhWJvXbU1jvM=;
-        b=YXxIWJF4NIfgSz3aSQqAqMTzHVXAokTkaNKcpw7btsF8br75+IrrUzXGycxBC8TFHl
-         NAHaTR3gToSXM38dhgJU+39tVlJa2kpI7YqKKXxMooNc2m8WNMr1mOvAcRFKr3zEo/DP
-         To7CyYGnHQoo/HdcI10emLmmoy44xLcLTY04otyi1cwmVA5QQ1MSe39QWI5tKto/TsWA
-         9XBv8mXJg1HGgb2o3rhLet/Rq6oEbk9ZA8OVW3gK9d1BA2YWU2RgRLtBg1Df07JV0DKE
-         hrd03afTiytRxZfF/r/JKgpIxJ3xnlXN9HphcNBacFUoiY8vvncw4DcMzzCzOlb7k0qO
-         WJZg==
-X-Gm-Message-State: AOAM5331W5r20GyufqyrWdjIusbWsvzgdBuYqewjQmF5mhXQCxtb8p4L
-        e6ZuUDroOGa0SYS1hk3IJfSONf46OzrvN4WEVyKxPfkLRBZrYjiEkIbhb6RAkaVovnM4f1C63AB
-        z2Acoulg8wIdEkbZw
-X-Received: by 2002:adf:f04f:: with SMTP id t15mr20315409wro.377.1621847403769;
-        Mon, 24 May 2021 02:10:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJytbecMYMOBl3tQdN/Kb27iSiGCSiu57Cvca61WWGiciWSVF/D85dYw2RXxPRqM5ZPPEiFVYQ==
-X-Received: by 2002:adf:f04f:: with SMTP id t15mr20315393wro.377.1621847403598;
-        Mon, 24 May 2021 02:10:03 -0700 (PDT)
-Received: from redhat.com ([2a10:8006:fcda:0:90d:c7e7:9e26:b297])
-        by smtp.gmail.com with ESMTPSA id w25sm7397924wmk.25.2021.05.24.02.10.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 May 2021 02:10:02 -0700 (PDT)
-Date:   Mon, 24 May 2021 05:10:00 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Dave Taht <dave.taht@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        bloat <bloat@lists.bufferbloat.net>
-Subject: Re: virtio_net: BQL?
-Message-ID: <20210524050840-mutt-send-email-mst@kernel.org>
-References: <56270996-33a6-d71b-d935-452dad121df7@linux.alibaba.com>
- <CAA93jw6LUAnWZj0b5FvefpDKUyd6cajCNLoJ6OKrwbu-V_ffrA@mail.gmail.com>
- <CA+FuTSf0Af2RXEG=rCthNNEb5mwKTG37gpEBBZU16qKkvmF=qw@mail.gmail.com>
- <CAA93jw7Vr_pFMsPCrPadqaLGu0BdC-wtCmW2iyHFkHERkaiyWQ@mail.gmail.com>
- <a3a9b036-14d1-2f4f-52e6-f0aa1b187003@redhat.com>
+        id S232486AbhEXJNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 05:13:23 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:3973 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232313AbhEXJNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 05:13:21 -0400
+Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.58])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FpWcX1h2szmZH5;
+        Mon, 24 May 2021 17:09:32 +0800 (CST)
+Received: from dggema722-chm.china.huawei.com (10.3.20.86) by
+ dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Mon, 24 May 2021 17:11:51 +0800
+Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
+ dggema722-chm.china.huawei.com (10.3.20.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Mon, 24 May 2021 17:11:50 +0800
+Received: from dggema772-chm.china.huawei.com ([10.9.128.138]) by
+ dggema772-chm.china.huawei.com ([10.9.128.138]) with mapi id 15.01.2176.012;
+ Mon, 24 May 2021 17:11:50 +0800
+From:   "liujian (CE)" <liujian56@huawei.com>
+To:     Quentin Monnet <quentin@isovalent.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "sdf@google.com" <sdf@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: RE: [PATCH v2] bpftool: Add sock_release help info for cgroup attach
+ command
+Thread-Topic: [PATCH v2] bpftool: Add sock_release help info for cgroup attach
+ command
+Thread-Index: AQHXUHL4/LJJkV64sUiBcYkLggyEearxxRWAgACJx4A=
+Date:   Mon, 24 May 2021 09:11:50 +0000
+Message-ID: <962a5d78efcb4c82a53b25c81f22433f@huawei.com>
+References: <20210524080313.326151-1-liujian56@huawei.com>
+ <f8b76c9d-9d92-4b46-eaa3-ba2ba546f91f@isovalent.com>
+In-Reply-To: <f8b76c9d-9d92-4b46-eaa3-ba2ba546f91f@isovalent.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.176.93]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a3a9b036-14d1-2f4f-52e6-f0aa1b187003@redhat.com>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 10:53:08AM +0800, Jason Wang wrote:
-> 
-> 在 2021/5/18 上午5:48, Dave Taht 写道:
-> > On Mon, May 17, 2021 at 1:23 PM Willem de Bruijn
-> > <willemdebruijn.kernel@gmail.com> wrote:
-> > > On Mon, May 17, 2021 at 2:44 PM Dave Taht <dave.taht@gmail.com> wrote:
-> > > > Not really related to this patch, but is there some reason why virtio
-> > > > has no support for BQL?
-> > > There have been a few attempts to add it over the years.
-> > > 
-> > > Most recently, https://lore.kernel.org/lkml/20181205225323.12555-2-mst@redhat.com/
-> > > 
-> > > That thread has a long discussion. I think the key open issue remains
-> > > 
-> > > "The tricky part is the mode switching between napi and no napi."
-> > Oy, vey.
-> > 
-> > I didn't pay any attention to that discussion, sadly enough.
-> > 
-> > It's been about that long (2018) since I paid any attention to
-> > bufferbloat in the cloud and my cloudy provider (linode) switched to
-> > using virtio when I wasn't looking. For over a year now, I'd been
-> > getting reports saying that comcast's pie rollout wasn't working as
-> > well as expected, that evenroute's implementation of sch_cake and sqm
-> > on inbound wasn't working right, nor pf_sense's and numerous other
-> > issues at Internet scale.
-> > 
-> > Last week I ran a string of benchmarks against starlink's new services
-> > and was really aghast at what I found there, too. but the problem
-> > seemed deeper than in just the dishy...
-> > 
-> > Without BQL, there's no backpressure for fq_codel to do its thing.
-> > None. My measurement servers aren't FQ-codeling
-> > no matter how much load I put on them. Since that qdisc is the default
-> > now in most linux distributions, I imagine that the bulk of the cloud
-> > is now behaving as erratically as linux was in 2011 with enormous
-> > swings in throughput and latency from GSO/TSO hitting overlarge rx/tx
-> > rings, [1], breaking various rate estimators in codel, pie and the tcp
-> > stack itself.
-> > 
-> > See:
-> > 
-> > http://fremont.starlink.taht.net/~d/virtio_nobql/rrul_-_evenroute_v3_server_fq_codel.png
-> > 
-> > See the swings in latency there? that's symptomatic of tx/rx rings
-> > filling and emptying.
-> > 
-> > it wasn't until I switched my measurement server temporarily over to
-> > sch_fq that I got a rrul result that was close to the results we used
-> > to get from the virtualized e1000e drivers we were using in 2014.
-> > 
-> > http://fremont.starlink.taht.net/~d/virtio_nobql/rrul_-_evenroute_v3_server_fq.png
-> > 
-> > While I have long supported the use of sch_fq for tcp-heavy workloads,
-> > it still behaves better with bql in place, and fq_codel is better for
-> > generic workloads... but needs bql based backpressure to kick in.
-> > 
-> > [1] I really hope I'm overreacting but, um, er, could someone(s) spin
-> > up a new patch that does bql in some way even half right for this
-> > driver and help test it? I haven't built a kernel in a while.
-> 
-> 
-> I think it's time to obsolete skb_orphan() for virtio-net to get rid of a
-> brunch of tricky codes in the current virtio-net driver.
-> 
-> Then we can do BQL on top.
-> 
-> I will prepare some patches to do this (probably with Michael's BQL patch).
-> 
-> Thanks
-
-First step would be to fix up and test the BQL part.
-IIRC it didn't seem to help performance in our benchmarking,
-and Eric seems to say that's expected ...
-
-
-> 
-> > 
-> > 
-> > > > On Mon, May 17, 2021 at 11:41 AM Xianting Tian
-> > > > <xianting.tian@linux.alibaba.com> wrote:
-> > > > > BUG_ON() uses unlikely in if(), which can be optimized at compile time.
-> > > > > 
-> > > > > Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-> > > > > ---
-> > > > >    drivers/net/virtio_net.c | 5 ++---
-> > > > >    1 file changed, 2 insertions(+), 3 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > > index c921ebf3ae82..212d52204884 100644
-> > > > > --- a/drivers/net/virtio_net.c
-> > > > > +++ b/drivers/net/virtio_net.c
-> > > > > @@ -1646,10 +1646,9 @@ static int xmit_skb(struct send_queue *sq, struct
-> > > > > sk_buff *skb)
-> > > > >          else
-> > > > >                  hdr = skb_vnet_hdr(skb);
-> > > > > 
-> > > > > -       if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
-> > > > > +       BUG_ON(virtio_net_hdr_from_skb(skb, &hdr->hdr,
-> > > > >                                      virtio_is_little_endian(vi->vdev), false,
-> > > > > -                                   0))
-> > > > > -               BUG();
-> > > > > +                                   0));
-> > > > > 
-> > > > >          if (vi->mergeable_rx_bufs)
-> > > > >                  hdr->num_buffers = 0;
-> > > > > --
-> > > > > 2.17.1
-> > > > > 
-> > > > 
-> > > > --
-> > > > Latest Podcast:
-> > > > https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
-> > > > 
-> > > > Dave Täht CTO, TekLibre, LLC
-> > 
-> > 
-> > --
-> > Latest Podcast:
-> > https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
-> > 
-> > Dave Täht CTO, TekLibre, LLC
-> > 
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUXVlbnRpbiBNb25uZXQg
+W21haWx0bzpxdWVudGluQGlzb3ZhbGVudC5jb21dDQo+IFNlbnQ6IE1vbmRheSwgTWF5IDI0LCAy
+MDIxIDQ6MjMgUE0NCj4gVG86IGxpdWppYW4gKENFKSA8bGl1amlhbjU2QGh1YXdlaS5jb20+OyBh
+c3RAa2VybmVsLm9yZzsNCj4gZGFuaWVsQGlvZ2VhcmJveC5uZXQ7IGFuZHJpaUBrZXJuZWwub3Jn
+OyBrYWZhaUBmYi5jb207DQo+IHNvbmdsaXVicmF2aW5nQGZiLmNvbTsgeWhzQGZiLmNvbTsgam9o
+bi5mYXN0YWJlbmRAZ21haWwuY29tOw0KPiBrcHNpbmdoQGtlcm5lbC5vcmc7IHNkZkBnb29nbGUu
+Y29tOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOw0KPiBicGZAdmdlci5rZXJuZWwub3JnDQo+IFN1
+YmplY3Q6IFJlOiBbUEFUQ0ggdjJdIGJwZnRvb2w6IEFkZCBzb2NrX3JlbGVhc2UgaGVscCBpbmZv
+IGZvciBjZ3JvdXANCj4gYXR0YWNoIGNvbW1hbmQNCj4gDQo+IDIwMjEtMDUtMjQgMTY6MDMgVVRD
+KzA4MDAgfiBMaXUgSmlhbiA8bGl1amlhbjU2QGh1YXdlaS5jb20+DQo+ID4gVGhlIGhlbHAgaW5m
+b3JtYXRpb24gaXMgbm90IGFkZGVkIHdoZW4gdGhlIGZ1bmN0aW9uIGlzIGFkZGVkLg0KPiA+IEFk
+ZCB0aGUgbWlzc2luZyBoZWxwIGluZm9ybWF0aW9uLg0KPiA+DQo+ID4gRml4ZXM6IGRiOTRjYzBi
+NDgwNSAoImJwZnRvb2w6IEFkZCBzdXBwb3J0IGZvcg0KPiA+IEJQRl9DR1JPVVBfSU5FVF9TT0NL
+X1JFTEVBU0UiKQ0KPiA+IFNpZ25lZC1vZmYtYnk6IExpdSBKaWFuIDxsaXVqaWFuNTZAaHVhd2Vp
+LmNvbT4NCj4gPiAtLS0NCj4gPiB2MSAtPiB2MjoNCj4gPiAgICAgQWRkIGNoYW5nZWxvZyB0ZXh0
+Lg0KPiA+DQo+ID4gIHRvb2xzL2JwZi9icGZ0b29sL2Nncm91cC5jIHwgMyArKy0NCj4gPiAgMSBm
+aWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiA+DQo+ID4gZGlm
+ZiAtLWdpdCBhL3Rvb2xzL2JwZi9icGZ0b29sL2Nncm91cC5jIGIvdG9vbHMvYnBmL2JwZnRvb2wv
+Y2dyb3VwLmMNCj4gPiBpbmRleCBkOTAxY2MxYjkwNGEuLjZlNTNiMWQzOTNmNCAxMDA2NDQNCj4g
+PiAtLS0gYS90b29scy9icGYvYnBmdG9vbC9jZ3JvdXAuYw0KPiA+ICsrKyBiL3Rvb2xzL2JwZi9i
+cGZ0b29sL2Nncm91cC5jDQo+ID4gQEAgLTI4LDcgKzI4LDggQEANCj4gPiAgCSIgICAgICAgICAg
+ICAgICAgICAgICAgICBjb25uZWN0NiB8IGdldHBlZXJuYW1lNCB8IGdldHBlZXJuYW1lNiB8XG4i
+ICAgXA0KPiA+ICAJIiAgICAgICAgICAgICAgICAgICAgICAgIGdldHNvY2tuYW1lNCB8IGdldHNv
+Y2tuYW1lNiB8IHNlbmRtc2c0IHxcbiIgICBcDQo+ID4gIAkiICAgICAgICAgICAgICAgICAgICAg
+ICAgc2VuZG1zZzYgfCByZWN2bXNnNCB8IHJlY3Ztc2c2IHxcbiIgICAgICAgICAgIFwNCj4gPiAt
+CSIgICAgICAgICAgICAgICAgICAgICAgICBzeXNjdGwgfCBnZXRzb2Nrb3B0IHwgc2V0c29ja29w
+dCB9Ig0KPiA+ICsJIiAgICAgICAgICAgICAgICAgICAgICAgIHN5c2N0bCB8IGdldHNvY2tvcHQg
+fCBzZXRzb2Nrb3B0IHxcbiIJICAgICAgIFwNCj4gPiArCSIgICAgICAgICAgICAgICAgICAgICAg
+ICBzb2NrX3JlbGVhc2UgfSINCj4gPg0KPiA+ICBzdGF0aWMgdW5zaWduZWQgaW50IHF1ZXJ5X2Zs
+YWdzOw0KPiA+DQo+ID4NCj4gDQo+IFRoYW5rcyBhIGxvdCENCj4gDQo+IE5vdGUgdGhhdCB0aGVy
+ZSBhcmUgYSBmZXcgb3RoZXIgcGxhY2VzIGluIGJwZnRvb2wgd2hlcmUgdGhlIGF0dGFjaCBwb2lu
+dA0KPiBzaG91bGQgYmUgYWRkZWQsIHdvdWxkIHlvdSBtaW5kIHVwZGF0aW5nIHRoZW0gdG9vPyBU
+aGF0IHdvdWxkIGJlOiB0aGUNCj4gZG9jdW1lbnRhdGlvbiBwYWdlIGZvciBicGZ0b29sLWNncm91
+cCwgdGhlIG9uZSBmb3IgYnBmdG9vbC1wcm9nLCB0aGUgaGVscA0KPiBtZXNzYWdlIGluIHByb2cu
+YywgYW5kIHRoZSBiYXNoIGNvbXBsZXRpb24uIEl0IHNob3VsZCBhbGwgYmUgc3RyYWlnaHRmb3J3
+YXJkLg0KPiBZb3UgY2FuIHRyeSBzb21ldGhpbmcgbGlrZSAiZ3JlcCByZWN2bXNnNCB0b29scy9i
+cGYvYnBmdG9vbCIgdG8gZmluZCB0aGUNCj4gcmVsZXZhbnQgbG9jYXRpb25zLg0KDQpPSywgSSds
+bCBjaGFuZ2UgaXQgdG9nZXRoZXIuIFRoYW5rcyBmb3IgeW91ciByZXZpZXcuDQoNCj4gQmVzdCBy
+ZWdhcmRzLA0KPiBRdWVudGluDQo=
