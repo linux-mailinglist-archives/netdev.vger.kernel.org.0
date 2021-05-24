@@ -2,601 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AE9638F635
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 01:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2A7F38F675
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 01:46:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229986AbhEXXY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 19:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40420 "EHLO
+        id S229826AbhEXXrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 19:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbhEXXYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 19:24:12 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE98C06134D
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 16:22:41 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id p24so43051108ejb.1
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 16:22:41 -0700 (PDT)
+        with ESMTP id S229539AbhEXXrl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 19:47:41 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722F1C061574;
+        Mon, 24 May 2021 16:46:12 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id i4so40462351ybe.2;
+        Mon, 24 May 2021 16:46:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=P++kPDBbASlBm9PQ4qIA20xYt1hzFoWznezLzuVRG6M=;
-        b=dbJy8ho5TfboScVdc0piA+bg5lOnP2gdKE9dG2XgPkpYRfO/RIPnRQu0VDiguYSTlo
-         DLe21vsEOakEmhI2M7UHku8hRzbL56GnuVoiZnbnv5YRmlUNFmhxgWKgRfsufoCDjfXQ
-         XuQ11Nb+NBRyz5MB0/pu8ExC6bGiGk4ATl1q04NKAQxKrVGlFO6kLttx5xRFhcw2lVPt
-         KtvSd9xMl+XbaPynX6O8fLIjUrDEfdQjOe0S7Fp8SsmsCnL+OrERp/7m7r77B2sq0gE1
-         XJ1/q7TL0yi/IFasx366HJbwx5xPkOljam7cZc6ojcq7T2TkypIdhitxZQ0aUJzhZ7N/
-         YjWw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=6iczEggOtiy2FN7AYegw0B3aUi5aVpE5nDr01zddwxQ=;
+        b=VOiyCupb1CJ6+Ni3mL9sB+N93oglb/TsQMDHnT2/aAIRkd0xfmVZMJ+siqdp4T6q9M
+         wsw1OhkYDzVs4tiI5Az6RgSzRXETvQRAgJ+at9mIoTD+UIzQR+sJpijpkZPNibHKaxpz
+         7/Ef8ZogOpgEBImU2v2pUbeuftAT7jvKIWrgIvKF1Ai0S7dw0awAuQxEIBhnfHZSjzUB
+         pF05KjX7MxQk1Df+fD4VrORz8E680A3r7Q2H1u01sQg5vPnlbyeMHl+1jd7XtkbM4jSu
+         7LooS0WXmT71zBPJ4nDyba0uAtYWKtE5qklPfmetFIbPZ0Kqy1Tl0qQI10PT7EMGrqDA
+         FBTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=P++kPDBbASlBm9PQ4qIA20xYt1hzFoWznezLzuVRG6M=;
-        b=YoySLj7ZSFA4VCHuBkKFhkWn6KX5/RurFiObLPjzYrQ+jKBvzDASJMZeEuWc/MCa2p
-         /Hvl4xy38CSr4NAP8UyaPQs8NNzZCE7Cw/xlULXvh8cHWPjojxNDyQtHVkx6fisu++Lh
-         ObzFoGLJvmpp6zERTcRTxiZ9iRXjtf/1JwvWgzs9RxdKdJzf/6os/XGxm6y9aUAW9iWj
-         km1QPq1/ip8osRyltOEZEAD4WA0QNy+qIQgWV4c3utnhm6hhz6dQPoUTpgw9KHIM3cSi
-         0bKtpQcyXx1bkqn3f/sH0zLTwME8wQdhlJP875/Snpo0jHzFzJc00dERuhZgx8ygOdYU
-         67hw==
-X-Gm-Message-State: AOAM533JWA+/VJEULzai5ijZvTnEz/qzdb9jmhWLcq+W2uaUjoOeFiID
-        DFIGqObqRdshfq+QauxL2LbKaYvVXTI=
-X-Google-Smtp-Source: ABdhPJxK6VUIIYdHrZ8TG5PkPK1fBjM4KMxeFs9jLmf2/lUZoyKcn4NlXPiizaWt9Te6EcDwQlq29w==
-X-Received: by 2002:a17:906:26cb:: with SMTP id u11mr26189873ejc.385.1621898559675;
-        Mon, 24 May 2021 16:22:39 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id di7sm9922746edb.34.2021.05.24.16.22.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 May 2021 16:22:39 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH net-next 13/13] net: dsa: sja1105: add support for the SJA1110 SGMII/2500base-x PCS
-Date:   Tue, 25 May 2021 02:22:14 +0300
-Message-Id: <20210524232214.1378937-14-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210524232214.1378937-1-olteanv@gmail.com>
-References: <20210524232214.1378937-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6iczEggOtiy2FN7AYegw0B3aUi5aVpE5nDr01zddwxQ=;
+        b=hdRCURNleIIoC78pm3Y81p2o6zkLAVinsK6JmAec62/4qtPH1tI1OrcfH3CY7Lkcqt
+         lh9QUYe4iW1qrZfF3KVkc9oz8tmz5sFu+wr0ZjbKYvTnqVmcDnNjmk1nOZK/6nMDaqj6
+         4i28JhxdwgOHKe7Rh7TDEWJIcOprWdWmGcDeU01sp54LTQSxWe8QzVa2TB9M9HhkxHIP
+         Q/67BNxXe6rH8hAn37Lwepk+0bSQ8GhRiQz2bPWvRT80JfyK1qqctu/mdKwPCfYu9x/5
+         xOl9yG0kyfj2zYcDGrXm55T4urjAUwWnqf/pR3Tdj/EMKenJyX1WBLlzRhnCUbRcuAW3
+         UYxA==
+X-Gm-Message-State: AOAM530S+SMcxQKINzEetXf0ZRp8JlGcmdsWA04yMDgeNLP4Q426xIsc
+        Q1elFsALascgZ+zSQhm6ufnzaCw/3lkjoWHEzLGxaCnPQvQ=
+X-Google-Smtp-Source: ABdhPJy9NppsxSVMgzNiwBF7EJy2Hn9kL3HJEFrj8uT2sCTyD5DFA+/dTO2ajeySsy+VtJ4KwD43XMaOoxBYn2Md2Rs=
+X-Received: by 2002:a25:7507:: with SMTP id q7mr37158860ybc.27.1621899971663;
+ Mon, 24 May 2021 16:46:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210519141936.GV8544@kitsune.suse.cz> <CAEf4BzZuU2TYMapSy7s3=D8iYtVw_N+=hh2ZMGG9w6N0G1HvbA@mail.gmail.com>
+ <CAEf4BzZ0-sihSL-UAm21JcaCCY92CqfNxycHRZYXcoj8OYb=wA@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ0-sihSL-UAm21JcaCCY92CqfNxycHRZYXcoj8OYb=wA@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 24 May 2021 16:46:00 -0700
+Message-ID: <CAEf4BzZ9=aLVD7ytgCcSxcbOLqFNK-p1mj14Rv_TGnOyL3aO_g@mail.gmail.com>
+Subject: Re: BPF: failed module verification on linux-next
+To:     =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>,
+        Mel Gorman <mgorman@techsingularity.net>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Hritik Vijay <hritikxx8@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, May 24, 2021 at 3:58 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, May 20, 2021 at 10:31 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Wed, May 19, 2021 at 7:19 AM Michal Such=C3=A1nek <msuchanek@suse.de=
+> wrote:
+> > >
+> > > Hello,
+> > >
+> > > linux-next fails to boot for me:
+> > >
+> > > [    0.000000] Linux version 5.13.0-rc2-next-20210519-1.g3455ff8-vani=
+lla (geeko@buildhost) (gcc (SUSE Linux) 10.3.0, GNU ld (GNU Binutils;
+> > > openSUSE Tumbleweed) 2.36.1.20210326-3) #1 SMP Wed May 19 10:05:10 UT=
+C 2021 (3455ff8)
+> > > [    0.000000] Command line: BOOT_IMAGE=3D/boot/vmlinuz-5.13.0-rc2-ne=
+xt-20210519-1.g3455ff8-vanilla root=3DUUID=3Dec42c33e-a2c2-4c61-afcc-93e952=
+7
+> > > 8f687 plymouth.enable=3D0 resume=3D/dev/disk/by-uuid/f1fe4560-a801-4f=
+af-a638-834c407027c7 mitigations=3Dauto earlyprintk initcall_debug nomodese=
+t
+> > >  earlycon ignore_loglevel console=3DttyS0,115200
+> > > ...
+> > > [   26.093364] calling  tracing_set_default_clock+0x0/0x62 @ 1
+> > > [   26.098937] initcall tracing_set_default_clock+0x0/0x62 returned 0=
+ after 0 usecs
+> > > [   26.106330] calling  acpi_gpio_handle_deferred_request_irqs+0x0/0x=
+7c @ 1
+> > > [   26.113033] initcall acpi_gpio_handle_deferred_request_irqs+0x0/0x=
+7c returned 0 after 3 usecs
+> > > [   26.121559] calling  clk_disable_unused+0x0/0x102 @ 1
+> > > [   26.126620] initcall clk_disable_unused+0x0/0x102 returned 0 after=
+ 0 usecs
+> > > [   26.133491] calling  regulator_init_complete+0x0/0x25 @ 1
+> > > [   26.138890] initcall regulator_init_complete+0x0/0x25 returned 0 a=
+fter 0 usecs
+> > > [   26.147816] Freeing unused decrypted memory: 2036K
+> > > [   26.153682] Freeing unused kernel image (initmem) memory: 2308K
+> > > [   26.165776] Write protecting the kernel read-only data: 26624k
+> > > [   26.173067] Freeing unused kernel image (text/rodata gap) memory: =
+2036K
+> > > [   26.180416] Freeing unused kernel image (rodata/data gap) memory: =
+1184K
+> > > [   26.187031] Run /init as init process
+> > > [   26.190693]   with arguments:
+> > > [   26.193661]     /init
+> > > [   26.195933]   with environment:
+> > > [   26.199079]     HOME=3D/
+> > > [   26.201444]     TERM=3Dlinux
+> > > [   26.204152]     BOOT_IMAGE=3D/boot/vmlinuz-5.13.0-rc2-next-2021051=
+9-1.g3455ff8-vanilla
+> > > [   26.254154] BPF:      type_id=3D35503 offset=3D178440 size=3D4
+> > > [   26.259125] BPF:
+> > > [   26.261054] BPF:Invalid offset
+> > > [   26.264119] BPF:
+> >
+> > It took me a while to reliably bisect this, but it clearly points to
+> > this commit:
+> >
+> > e481fac7d80b ("mm/page_alloc: convert per-cpu list protection to local_=
+lock")
+> >
+> > One commit before it, 676535512684 ("mm/page_alloc: split per cpu page
+> > lists and zone stats -fix"), works just fine.
+> >
+> > I'll have to spend more time debugging what exactly is happening, but
+> > the immediate problem is two different definitions of numa_node
+> > per-cpu variable. They both are at the same offset within
+> > .data..percpu ELF section, they both have the same name, but one of
+> > them is marked as static and another as global. And one is int
+> > variable, while another is struct pagesets. I'll look some more
+> > tomorrow, but adding Jiri and Arnaldo for visibility.
+> >
+> > [110907] DATASEC '.data..percpu' size=3D178904 vlen=3D303
+> > ...
+> >         type_id=3D27753 offset=3D163976 size=3D4 (VAR 'numa_node')
+> >         type_id=3D27754 offset=3D163976 size=3D4 (VAR 'numa_node')
+> >
+> > [27753] VAR 'numa_node' type_id=3D27556, linkage=3Dstatic
+> > [27754] VAR 'numa_node' type_id=3D20, linkage=3Dglobal
+> >
+> > [20] INT 'int' size=3D4 bits_offset=3D0 nr_bits=3D32 encoding=3DSIGNED
+> >
+> > [27556] STRUCT 'pagesets' size=3D0 vlen=3D1
+> >         'lock' type_id=3D507 bits_offset=3D0
+> >
+> > [506] STRUCT '(anon)' size=3D0 vlen=3D0
+> > [507] TYPEDEF 'local_lock_t' type_id=3D506
+> >
+> > So also something weird about those zero-sized struct pagesets and
+> > local_lock_t inside it.
+>
+> Ok, so nothing weird about them. local_lock_t is designed to be
+> zero-sized unless CONFIG_DEBUG_LOCK_ALLOC is defined.
+>
+> But such zero-sized per-CPU variables are confusing pahole during BTF
+> generation, as now two different variables "occupy" the same address.
 
-Configure the Synopsys PCS for 10/100/1000 SGMII in autoneg on/off
-modes, or for fixed 2500base-x.
+FWIW, here's the pahole fix (it tried to filter zero-sized per-CPU
+vars, but not quite completely).
 
-The portion of PCS configuration that forces the speed is common, but
-the portion that initializes the PCS and enables/disables autoneg is
-different, so a new .pcs_config() method was introduced in struct
-sja1105_info to hide away the differences.
+  [0] https://lore.kernel.org/bpf/20210524234222.278676-1-andrii@kernel.org=
+/T/#u
 
-For the xMII Mode Parameters Table to be properly configured for SGMII
-mode on SJA1110, we need to set the "special" bit, since SGMII is
-officially bitwise coded as 0b0011 in SJA1105 (decimal 3, equal to
-XMII_MODE_SGMII), and as 0b1011 in SJA1110 (decimal 11).
-
-Cc: Russell King <linux@armlinux.org.uk>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/sja1105/sja1105.h       |   9 +
- drivers/net/dsa/sja1105/sja1105_main.c  | 224 ++++++++++++++++++++++--
- drivers/net/dsa/sja1105/sja1105_mdio.c  |   3 +-
- drivers/net/dsa/sja1105/sja1105_sgmii.h |  61 +++++++
- drivers/net/dsa/sja1105/sja1105_spi.c   |   8 +
- 5 files changed, 293 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index be788ddb7259..617d139a627f 100644
---- a/drivers/net/dsa/sja1105/sja1105.h
-+++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -132,6 +132,9 @@ struct sja1105_info {
- 	int (*clocking_setup)(struct sja1105_private *priv);
- 	int (*pcs_mdio_read)(struct mii_bus *bus, int phy, int reg);
- 	int (*pcs_mdio_write)(struct mii_bus *bus, int phy, int reg, u16 val);
-+	void (*pcs_config)(struct sja1105_private *priv, int port,
-+			   bool an_enabled, bool an_master,
-+			   phy_interface_t interface);
- 	const char *name;
- 	bool supports_mii[SJA1105_MAX_NUM_PORTS];
- 	bool supports_rmii[SJA1105_MAX_NUM_PORTS];
-@@ -304,6 +307,12 @@ int sja1110_pcs_mdio_write(struct mii_bus *bus, int phy, int reg, u16 val);
- int sja1105_pcs_read(struct sja1105_private *priv, int port, int mmd, int reg);
- int sja1105_pcs_write(struct sja1105_private *priv, int port, int mmd, int reg,
- 		      u16 val);
-+void sja1105_pcs_config(struct sja1105_private *priv, int port,
-+			bool an_enabled, bool an_master,
-+			phy_interface_t interface);
-+void sja1110_pcs_config(struct sja1105_private *priv, int port,
-+			bool an_enabled, bool an_master,
-+			phy_interface_t interface);
- 
- /* From sja1105_devlink.c */
- int sja1105_devlink_setup(struct dsa_switch *ds);
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index d0938daacbae..2ef23c8f725b 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -210,12 +210,14 @@ static int sja1105_init_mii_settings(struct sja1105_private *priv,
- 				goto unsupported;
- 
- 			mii->xmii_mode[i] = XMII_MODE_SGMII;
-+			mii->special[i] = true;
- 			break;
- 		case PHY_INTERFACE_MODE_2500BASEX:
- 			if (!priv->info->supports_2500basex[i])
- 				goto unsupported;
- 
- 			mii->xmii_mode[i] = XMII_MODE_SGMII;
-+			mii->special[i] = true;
- 			break;
- unsupported:
- 		default:
-@@ -234,6 +236,7 @@ static int sja1105_init_mii_settings(struct sja1105_private *priv,
- 		 * but unconditionally put the port in the MAC role.
- 		 */
- 		if (ports[i].phy_mode == PHY_INTERFACE_MODE_SGMII ||
-+		    ports[i].phy_mode == PHY_INTERFACE_MODE_2500BASEX ||
- 		    phy_interface_mode_is_rgmii(ports[i].phy_mode))
- 			mii->phy_mac[i] = XMII_MAC;
- 		else
-@@ -962,8 +965,9 @@ static int sja1105_parse_dt(struct sja1105_private *priv,
- 	return rc;
- }
- 
--static void sja1105_sgmii_pcs_config(struct sja1105_private *priv, int port,
--				     bool an_enabled, bool an_master)
-+void sja1105_pcs_config(struct sja1105_private *priv, int port,
-+			bool an_enabled, bool an_master,
-+			phy_interface_t interface)
- {
- 	u16 ac = SJA1105_AC_AUTONEG_MODE_SGMII;
- 	int rc;
-@@ -1012,6 +1016,188 @@ static void sja1105_sgmii_pcs_config(struct sja1105_private *priv, int port,
- 		ERR_PTR(rc));
- }
- 
-+void sja1110_pcs_config(struct sja1105_private *priv, int port,
-+			bool an_enabled, bool an_master,
-+			phy_interface_t interface)
-+{
-+	const int timeout_us = 1000;
-+	u16 val;
-+	int rc;
-+
-+	/* Soft-reset the PCS */
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2, MDIO_CTRL1,
-+			       MDIO_CTRL1_RESET);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	rc = read_poll_timeout(sja1105_pcs_read, val,
-+			       !(val & MDIO_CTRL1_RESET),
-+			       0, timeout_us, false,
-+			       priv, port, MDIO_MMD_VEND2, MDIO_CTRL1);
-+	if (rc || val < 0) {
-+		dev_err(priv->ds->dev, "port %d PCS reset failed: %pe\n",
-+			port, ERR_PTR(rc));
-+		return;
-+	}
-+
-+	val = SJA1105_DC1_EN_VSMMD1;
-+	if (interface == PHY_INTERFACE_MODE_2500BASEX)
-+		val |= SJA1105_DC1_ENA_2500_MODE;
-+	if (an_master)
-+		val |= SJA1105_DC1_MAC_AUTO_SW;
-+
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2, SJA1105_DC1, val);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	/* Program TX PLL feedback divider and reference divider settings for
-+	 * correct oscillation frequency.
-+	 */
-+	if (interface == PHY_INTERFACE_MODE_2500BASEX)
-+		val = SJA1105_TXPLL_FBDIV(0x7d);
-+	else
-+		val = SJA1105_TXPLL_FBDIV(0x19);
-+
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2, SJA1105_TXPLL_CTRL0,
-+			       val);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	if (interface == PHY_INTERFACE_MODE_2500BASEX)
-+		val = SJA1105_TXPLL_REFDIV(0x2);
-+	else
-+		val = SJA1105_TXPLL_REFDIV(0x1);
-+
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2, SJA1105_TXPLL_CTRL1,
-+			       val);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	/* Program transmitter amplitude and disable amplitude trimming */
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2,
-+			       SJA1105_LANE_DRIVER1_0,
-+			       SJA1105_TXDRV(0x5));
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	val = SJA1105_TXDRVTRIM_LSB(0xffffffull);
-+
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2,
-+			       SJA1105_LANE_DRIVER2_0, val);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	val = SJA1105_TXDRVTRIM_MSB(0xffffffull) | SJA1105_LANE_DRIVER2_1_RSV;
-+
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2,
-+			       SJA1105_LANE_DRIVER2_1, val);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	/* Enable input and output resistor terminations for low BER. */
-+	val = SJA1105_ACCOUPLE_RXVCM_EN | SJA1105_CDR_GAIN |
-+	      SJA1105_RXRTRIM(4) | SJA1105_RXTEN | SJA1105_TXPLL_BWSEL |
-+	      SJA1105_TXRTRIM(3) | SJA1105_TXTEN;
-+
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2, SJA1105_LANE_TRIM,
-+			       val);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	/* Select PCS as transmitter data source. */
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2,
-+			       SJA1105_LANE_DATAPATH_1, 0);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	/* Program RX PLL feedback divider and reference divider for correct
-+	 * oscillation frequency.
-+	 */
-+	if (interface == PHY_INTERFACE_MODE_2500BASEX)
-+		val = SJA1105_RXPLL_FBDIV(0x7d);
-+	else
-+		val = SJA1105_RXPLL_FBDIV(0x19);
-+
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2, SJA1105_RXPLL_CTRL0,
-+			       val);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	if (interface == PHY_INTERFACE_MODE_2500BASEX)
-+		val = SJA1105_RXPLL_REFDIV(0x2);
-+	else
-+		val = SJA1105_RXPLL_REFDIV(0x1);
-+
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2, SJA1105_RXPLL_CTRL1,
-+			       val);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	/* Program threshold for receiver signal detector.
-+	 * Enable control of RXPLL by receiver signal detector to disable RXPLL
-+	 * when an input signal is not present.
-+	 */
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2,
-+			       SJA1105_RX_DATA_DETECT, 0x0005);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	/* Enable TX and RX PLLs and circuits.
-+	 * Release reset of PMA to enable data flow to/from PCS.
-+	 */
-+	val = sja1105_pcs_read(priv, port, MDIO_MMD_VEND2,
-+			       SJA1105_POWERDOWN_ENABLE);
-+	if (val < 0) {
-+		dev_err(priv->ds->dev, "failed to read PCS: %pe\n",
-+			ERR_PTR(val));
-+		return;
-+	}
-+
-+	val &= ~(SJA1105_TXPLL_PD | SJA1105_TXPD | SJA1105_RXCH_PD |
-+		 SJA1105_RXBIAS_PD | SJA1105_RESET_SER_EN |
-+		 SJA1105_RESET_SER | SJA1105_RESET_DES);
-+	val |= SJA1105_RXPKDETEN | SJA1105_RCVEN;
-+
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2,
-+			       SJA1105_POWERDOWN_ENABLE, val);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	/* Program continuous-time linear equalizer (CTLE) settings. */
-+	if (interface == PHY_INTERFACE_MODE_2500BASEX)
-+		val = 0x732a;
-+	else
-+		val = 0x212a;
-+
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2, SJA1105_RX_CDR_CTLE,
-+			       val);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	/* AUTONEG_CONTROL: Use SGMII autoneg in MAC mode */
-+	rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2, SJA1105_AC,
-+			       SJA1105_AC_AUTONEG_MODE_SGMII);
-+	if (rc < 0)
-+		goto out_write_failed;
-+
-+	/* BASIC_CONTROL: enable in-band AN now, if requested. Otherwise,
-+	 * sja1105_sgmii_pcs_force_speed must be called later for the link
-+	 * to become operational.
-+	 */
-+	if (an_enabled) {
-+		rc = sja1105_pcs_write(priv, port, MDIO_MMD_VEND2, MDIO_CTRL1,
-+				       BMCR_ANENABLE | BMCR_ANRESTART);
-+		if (rc < 0)
-+			goto out_write_failed;
-+	}
-+
-+	return;
-+
-+out_write_failed:
-+	dev_err(priv->ds->dev, "Failed to write to PCS: %pe\n",
-+		ERR_PTR(rc));
-+}
-+
- static void sja1105_sgmii_pcs_force_speed(struct sja1105_private *priv,
- 					  int port, int speed)
- {
-@@ -1019,6 +1205,7 @@ static void sja1105_sgmii_pcs_force_speed(struct sja1105_private *priv,
- 	int rc;
- 
- 	switch (speed) {
-+	case SPEED_2500:
- 	case SPEED_1000:
- 		pcs_speed = BMCR_SPEED1000;
- 		break;
-@@ -1092,6 +1279,9 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
- 	case SPEED_1000:
- 		speed = priv->info->port_speed[SJA1105_SPEED_1000MBPS];
- 		break;
-+	case SPEED_2500:
-+		speed = priv->info->port_speed[SJA1105_SPEED_2500MBPS];
-+		break;
- 	default:
- 		dev_err(dev, "Invalid speed %iMbps\n", speed_mbps);
- 		return -EINVAL;
-@@ -1106,6 +1296,8 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
- 	 */
- 	if (priv->phy_mode[port] == PHY_INTERFACE_MODE_SGMII)
- 		mac[port].speed = priv->info->port_speed[SJA1105_SPEED_1000MBPS];
-+	else if (priv->phy_mode[port] == PHY_INTERFACE_MODE_2500BASEX)
-+		mac[port].speed = priv->info->port_speed[SJA1105_SPEED_2500MBPS];
- 	else
- 		mac[port].speed = speed;
- 
-@@ -1162,10 +1354,10 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
- 		return;
- 	}
- 
--	if (is_sgmii)
--		sja1105_sgmii_pcs_config(priv, port,
--					 phylink_autoneg_inband(mode),
--					 false);
-+	if (state->interface == PHY_INTERFACE_MODE_SGMII ||
-+	    state->interface == PHY_INTERFACE_MODE_2500BASEX)
-+		priv->info->pcs_config(priv, port, phylink_autoneg_inband(mode),
-+				       false, state->interface);
- }
- 
- static void sja1105_mac_link_down(struct dsa_switch *ds, int port,
-@@ -1186,7 +1378,8 @@ static void sja1105_mac_link_up(struct dsa_switch *ds, int port,
- 
- 	sja1105_adjust_port_config(priv, port, speed);
- 
--	if (priv->phy_mode[port] == PHY_INTERFACE_MODE_SGMII &&
-+	if ((priv->phy_mode[port] == PHY_INTERFACE_MODE_SGMII ||
-+	     priv->phy_mode[port] == PHY_INTERFACE_MODE_2500BASEX) &&
- 	    !phylink_autoneg_inband(mode))
- 		sja1105_sgmii_pcs_force_speed(priv, port, speed);
- 
-@@ -1228,6 +1421,10 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
- 	if (mii->xmii_mode[port] == XMII_MODE_RGMII ||
- 	    mii->xmii_mode[port] == XMII_MODE_SGMII)
- 		phylink_set(mask, 1000baseT_Full);
-+	if (priv->info->supports_2500basex[port]) {
-+		phylink_set(mask, 2500baseT_Full);
-+		phylink_set(mask, 2500baseX_Full);
-+	}
- 
- 	bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
- 	bitmap_and(state->advertising, state->advertising, mask,
-@@ -1945,7 +2142,8 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 							      mac[i].speed);
- 		mac[i].speed = priv->info->port_speed[SJA1105_SPEED_AUTO];
- 
--		if (priv->phy_mode[i] == PHY_INTERFACE_MODE_SGMII)
-+		if (priv->phy_mode[i] == PHY_INTERFACE_MODE_SGMII ||
-+		    priv->phy_mode[i] == PHY_INTERFACE_MODE_2500BASEX)
- 			bmcr[i] = sja1105_pcs_read(priv, i,
- 						   MDIO_MMD_VEND2,
- 						   MDIO_CTRL1);
-@@ -2002,17 +2200,21 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 		if (rc < 0)
- 			goto out;
- 
--		if (priv->phy_mode[i] != PHY_INTERFACE_MODE_SGMII)
-+		if (priv->phy_mode[i] != PHY_INTERFACE_MODE_SGMII &&
-+		    priv->phy_mode[i] != PHY_INTERFACE_MODE_2500BASEX)
- 			continue;
- 
- 		an_enabled = !!(bmcr[i] & BMCR_ANENABLE);
- 
--		sja1105_sgmii_pcs_config(priv, i, an_enabled, false);
-+		priv->info->pcs_config(priv, i, an_enabled, false,
-+				       priv->phy_mode[i]);
- 
- 		if (!an_enabled) {
- 			int speed = SPEED_UNKNOWN;
- 
--			if (bmcr[i] & BMCR_SPEED1000)
-+			if (priv->phy_mode[i] == PHY_INTERFACE_MODE_2500BASEX)
-+				speed = SPEED_2500;
-+			else if (bmcr[i] & BMCR_SPEED1000)
- 				speed = SPEED_1000;
- 			else if (bmcr[i] & BMCR_SPEED100)
- 				speed = SPEED_100;
-diff --git a/drivers/net/dsa/sja1105/sja1105_mdio.c b/drivers/net/dsa/sja1105/sja1105_mdio.c
-index 7e83dd0f4f16..722d50665fde 100644
---- a/drivers/net/dsa/sja1105/sja1105_mdio.c
-+++ b/drivers/net/dsa/sja1105/sja1105_mdio.c
-@@ -424,7 +424,8 @@ static int sja1105_mdiobus_pcs_register(struct sja1105_private *priv)
- 		if (dsa_is_unused_port(ds, port))
- 			continue;
- 
--		if (!priv->info->supports_sgmii[port])
-+		if (!priv->info->supports_sgmii[port] &&
-+		    !priv->info->supports_2500basex[port])
- 			continue;
- 
- 		mdiodev = mdio_device_create(bus, port);
-diff --git a/drivers/net/dsa/sja1105/sja1105_sgmii.h b/drivers/net/dsa/sja1105/sja1105_sgmii.h
-index dc067b876758..b2d117f68417 100644
---- a/drivers/net/dsa/sja1105/sja1105_sgmii.h
-+++ b/drivers/net/dsa/sja1105/sja1105_sgmii.h
-@@ -15,6 +15,7 @@
- #define SJA1105_DC1_INIT		BIT(8)
- #define SJA1105_DC1_TX_DISABLE		BIT(4)
- #define SJA1105_DC1_AUTONEG_TIMER_OVRR	BIT(3)
-+#define SJA1105_DC1_ENA_2500_MODE	BIT(2)
- #define SJA1105_DC1_BYP_POWERUP		BIT(1)
- #define SJA1105_DC1_PHY_MODE_CONTROL	BIT(0)
- 
-@@ -48,4 +49,64 @@
- #define SJA1105_DC_SUPPRESS_LOS		BIT(4)
- #define SJA1105_DC_RESTART_SYNC		BIT(0)
- 
-+/* LANE_DRIVER1_0 register (address 0x1f8038) */
-+#define SJA1105_LANE_DRIVER1_0		0x8038
-+#define SJA1105_TXDRV(x)		(((x) << 12) & GENMASK(14, 12))
-+
-+/* LANE_DRIVER2_0 register (address 0x1f803a) */
-+#define SJA1105_LANE_DRIVER2_0		0x803a
-+#define SJA1105_TXDRVTRIM_LSB(x)	((x) & GENMASK_ULL(15, 0))
-+
-+/* LANE_DRIVER2_1 register (address 0x1f803b) */
-+#define SJA1105_LANE_DRIVER2_1		0x803b
-+#define SJA1105_LANE_DRIVER2_1_RSV	BIT(9)
-+#define SJA1105_TXDRVTRIM_MSB(x)	(((x) & GENMASK_ULL(23, 16)) >> 16)
-+
-+/* LANE_TRIM register (address 0x1f8040) */
-+#define SJA1105_LANE_TRIM		0x8040
-+#define SJA1105_TXTEN			BIT(11)
-+#define SJA1105_TXRTRIM(x)		(((x) << 8) & GENMASK(10, 8))
-+#define SJA1105_TXPLL_BWSEL		BIT(7)
-+#define SJA1105_RXTEN			BIT(6)
-+#define SJA1105_RXRTRIM(x)		(((x) << 3) & GENMASK(5, 3))
-+#define SJA1105_CDR_GAIN		BIT(2)
-+#define SJA1105_ACCOUPLE_RXVCM_EN	BIT(0)
-+
-+/* LANE_DATAPATH_1 register (address 0x1f8037) */
-+#define SJA1105_LANE_DATAPATH_1		0x8037
-+
-+/* POWERDOWN_ENABLE register (address 0x1f8041) */
-+#define SJA1105_POWERDOWN_ENABLE	0x8041
-+#define SJA1105_TXPLL_PD		BIT(12)
-+#define SJA1105_TXPD			BIT(11)
-+#define SJA1105_RXPKDETEN		BIT(10)
-+#define SJA1105_RXCH_PD			BIT(9)
-+#define SJA1105_RXBIAS_PD		BIT(8)
-+#define SJA1105_RESET_SER_EN		BIT(7)
-+#define SJA1105_RESET_SER		BIT(6)
-+#define SJA1105_RESET_DES		BIT(5)
-+#define SJA1105_RCVEN			BIT(4)
-+
-+/* RXPLL_CTRL0 register (address 0x1f8065) */
-+#define SJA1105_RXPLL_CTRL0		0x8065
-+#define SJA1105_RXPLL_FBDIV(x)		(((x) << 2) & GENMASK(9, 2))
-+
-+/* RXPLL_CTRL1 register (address 0x1f8066) */
-+#define SJA1105_RXPLL_CTRL1		0x8066
-+#define SJA1105_RXPLL_REFDIV(x)		((x) & GENMASK(4, 0))
-+
-+/* TXPLL_CTRL0 register (address 0x1f806d) */
-+#define SJA1105_TXPLL_CTRL0		0x806d
-+#define SJA1105_TXPLL_FBDIV(x)		((x) & GENMASK(11, 0))
-+
-+/* TXPLL_CTRL1 register (address 0x1f806e) */
-+#define SJA1105_TXPLL_CTRL1		0x806e
-+#define SJA1105_TXPLL_REFDIV(x)		((x) & GENMASK(5, 0))
-+
-+/* RX_DATA_DETECT register (address 0x1f8045) */
-+#define SJA1105_RX_DATA_DETECT		0x8045
-+
-+/* RX_CDR_CTLE register (address 0x1f8042) */
-+#define SJA1105_RX_CDR_CTLE		0x8042
-+
- #endif
-diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index e6c2cb68fcc4..c776a08e5e77 100644
---- a/drivers/net/dsa/sja1105/sja1105_spi.c
-+++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -712,6 +712,7 @@ const struct sja1105_info sja1105r_info = {
- 	.clocking_setup		= sja1105_clocking_setup,
- 	.pcs_mdio_read		= sja1105_pcs_mdio_read,
- 	.pcs_mdio_write		= sja1105_pcs_mdio_write,
-+	.pcs_config		= sja1105_pcs_config,
- 	.regs			= &sja1105pqrs_regs,
- 	.port_speed		= {
- 		[SJA1105_SPEED_AUTO] = 0,
-@@ -748,6 +749,7 @@ const struct sja1105_info sja1105s_info = {
- 	.clocking_setup		= sja1105_clocking_setup,
- 	.pcs_mdio_read		= sja1105_pcs_mdio_read,
- 	.pcs_mdio_write		= sja1105_pcs_mdio_write,
-+	.pcs_config		= sja1105_pcs_config,
- 	.port_speed		= {
- 		[SJA1105_SPEED_AUTO] = 0,
- 		[SJA1105_SPEED_10MBPS] = 3,
-@@ -783,6 +785,7 @@ const struct sja1105_info sja1110a_info = {
- 	.clocking_setup		= sja1110_clocking_setup,
- 	.pcs_mdio_read		= sja1110_pcs_mdio_read,
- 	.pcs_mdio_write		= sja1110_pcs_mdio_write,
-+	.pcs_config		= sja1110_pcs_config,
- 	.port_speed		= {
- 		[SJA1105_SPEED_AUTO] = 0,
- 		[SJA1105_SPEED_10MBPS] = 4,
-@@ -830,6 +833,7 @@ const struct sja1105_info sja1110b_info = {
- 	.clocking_setup		= sja1110_clocking_setup,
- 	.pcs_mdio_read		= sja1110_pcs_mdio_read,
- 	.pcs_mdio_write		= sja1110_pcs_mdio_write,
-+	.pcs_config		= sja1110_pcs_config,
- 	.port_speed		= {
- 		[SJA1105_SPEED_AUTO] = 0,
- 		[SJA1105_SPEED_10MBPS] = 4,
-@@ -877,6 +881,7 @@ const struct sja1105_info sja1110c_info = {
- 	.clocking_setup		= sja1110_clocking_setup,
- 	.pcs_mdio_read		= sja1110_pcs_mdio_read,
- 	.pcs_mdio_write		= sja1110_pcs_mdio_write,
-+	.pcs_config		= sja1110_pcs_config,
- 	.port_speed		= {
- 		[SJA1105_SPEED_AUTO] = 0,
- 		[SJA1105_SPEED_10MBPS] = 4,
-@@ -924,6 +929,7 @@ const struct sja1105_info sja1110d_info = {
- 	.clocking_setup		= sja1110_clocking_setup,
- 	.pcs_mdio_read		= sja1110_pcs_mdio_read,
- 	.pcs_mdio_write		= sja1110_pcs_mdio_write,
-+	.pcs_config		= sja1110_pcs_config,
- 	.port_speed		= {
- 		[SJA1105_SPEED_AUTO] = 0,
- 		[SJA1105_SPEED_10MBPS] = 4,
-@@ -939,6 +945,8 @@ const struct sja1105_info sja1110d_info = {
- 				   false, false, false, false, false, false},
- 	.supports_sgmii		= {false, true, true, true, true,
- 				   false, false, false, false, false, false},
-+	.supports_2500basex	= {false, false, false, true, true,
-+				   false, false, false, false, false, false},
- 	.internal_phy		= {SJA1105_NO_PHY, SJA1105_NO_PHY,
- 				   SJA1105_NO_PHY, SJA1105_NO_PHY,
- 				   SJA1105_NO_PHY, SJA1105_PHY_BASE_T1,
--- 
-2.25.1
-
+>
+> Given this seems to be the first zero-sized per-CPU variable, I wonder
+> if it would be ok to make sure it's never zero-sized, while pahole
+> gets fixed and it's latest version gets widely packaged and
+> distributed.
+>
+> Mel, what do you think about something like below? Or maybe you can
+> advise some better solution?
+>
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 41b87d6f840c..6a1d7511cae9 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -124,6 +124,13 @@ static DEFINE_MUTEX(pcp_batch_high_lock);
+>
+>  struct pagesets {
+>      local_lock_t lock;
+> +#if defined(CONFIG_DEBUG_INFO_BTF) && !defined(CONFIG_DEBUG_LOCK_ALLOC)
+> +    /* pahole 1.21 and earlier gets confused by zero-sized per-CPU
+> +     * variables and produces invalid BTF. So to accommodate earlier
+> +     * versions of pahole, ensure that sizeof(struct pagesets) is never =
+0.
+> +     */
+> +    char __filler;
+> +#endif
+>  };
+>  static DEFINE_PER_CPU(struct pagesets, pagesets) =3D {
+>      .lock =3D INIT_LOCAL_LOCK(lock),
+>
+> >
+> > > [   26.264119]
+> > > [   26.267437] failed to validate module [efivarfs] BTF: -22
+> > > [   26.316724] systemd[1]: systemd 246.13+suse.105.g14581e0120 runnin=
+g in system mode. (+PAM +AUDIT +SELINUX -IMA +APPARMOR -SMACK +SYSVINI
+> > > T +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +ZSTD +SECCOMP +=
+BLKID +ELFUTILS +KMOD +IDN2 -IDN +PCRE2 default-hierarchy=3Dunified)
+> > > [   26.357990] systemd[1]: Detected architecture x86-64.
+> > > [   26.363068] systemd[1]: Running in initial RAM disk.
+> > >
+> >
+> > [...]
