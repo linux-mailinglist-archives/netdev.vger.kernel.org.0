@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8060038EA38
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 16:53:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8013938EA3D
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 16:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233648AbhEXOxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 10:53:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55200 "EHLO mail.kernel.org"
+        id S233285AbhEXOxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 10:53:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55284 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233646AbhEXOvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 10:51:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7EA4C61132;
-        Mon, 24 May 2021 14:47:57 +0000 (UTC)
+        id S233404AbhEXOvS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 10:51:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D72F8613EA;
+        Mon, 24 May 2021 14:47:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621867678;
-        bh=pGVpLtSMWaOVVz49mJPWWGTE8xs1/cMgTS/V3efAK3E=;
+        s=k20201202; t=1621867679;
+        bh=7QYHg/G0vqSBhvu7nR1ZgYEMhMPQcwZuTaOunGLXAVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=acWkxI/tEb1hTcC24xRTo2tJ2qPuzdW0srvJqBUzw5YtEXwi2w+bc4n6cJZ13ER5E
-         ht2U5hAWsFsXczp9vj/WS7aKreSEzgT9k3T3Qh02izKua7O/rRgXyJqz6PZsm/DWmE
-         DCSTm7J/Vn5Ikkw2ztoN8tAlPWAYJm8AGhZdD0mbX/Afp3vBrnM43EcYAgrYg6Lchi
-         GHeusMTvpbhXqSYbKJjsB+UQFg0CVoUtrzUzg4QPdrcKFbJP+p9L2ekU9A2NaN5MaZ
-         xkx8VkSbQFUpIoffl7YUuw8kPglEZQUgc7tyPm2RQSzFy3GoBiHYVo/USYQ5fUoQen
-         wKePhAPxj8/uA==
+        b=ocyRVZ0rUn04jDWwoqkFXF+xGfUrVqj9w/qG4e0LDMTawO15YnIaDcBcEGXMmtnvS
+         pqKvjVD1yLjzE8j93JJSqjxE8PykFxTZvo8MA5suzKbLfYTnDHsrPnrPrgQhQv+shj
+         P1aOZ+VwF5xTWAJj66vXa//ckG6nX0FuZ8wmYlFw0sCyHwUqECaJ1be4oHNZqHBA7y
+         OOIkLs9pLh/fbXFP9K+xVP3eDbjhw6cLWycU90utsuMMAZ4QoEjDiA1QVrB25hzpuz
+         /Hlmuq60bMTRcF+cR9e1RqjNIuh/QXsCtVOuvqs6DpUdR3YpSdU13/unKkNdo1a2HL
+         Ej9ILYI4GFM2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anirudh Rayabharam <mail@anirudhrb.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Aditya Pakki <pakki001@umn.edu>,
         "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 11/62] net/smc: properly handle workqueue allocation failure
-Date:   Mon, 24 May 2021 10:46:52 -0400
-Message-Id: <20210524144744.2497894-11-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 12/62] Revert "net: caif: replace BUG_ON with recovery code"
+Date:   Mon, 24 May 2021 10:46:53 -0400
+Message-Id: <20210524144744.2497894-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210524144744.2497894-1-sashal@kernel.org>
 References: <20210524144744.2497894-1-sashal@kernel.org>
@@ -45,53 +43,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anirudh Rayabharam <mail@anirudhrb.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit bbeb18f27a44ce6adb00d2316968bc59dc640b9b ]
+[ Upstream commit 4df07045fcfd684379a394d0f2aa0cc4067bda2a ]
 
-In smcd_alloc_dev(), if alloc_ordered_workqueue() fails, properly catch
-it, clean up and return NULL to let the caller know there was a failure.
-Move the call to alloc_ordered_workqueue higher in the function in order
-to abort earlier without needing to unwind the call to device_initialize().
+This reverts commit c5dea815834c7d2e9fc633785455bc428b7a1956.
 
-Cc: Ursula Braun <ubraun@linux.ibm.com>
+Because of recent interactions with developers from @umn.edu, all
+commits from them have been recently re-reviewed to ensure if they were
+correct or not.
+
+Upon review, this commit was found to be incorrect for the reasons
+below, so it must be reverted.  It will be fixed up "correctly" in a
+later kernel change.
+
+The original change here was pointless as dev can never be NULL in this
+function so the claim in the changelog that this "fixes" anything is
+incorrect (also the developer forgot about panic_on_warn).  A follow-up
+change will resolve this issue properly.
+
+Cc: Aditya Pakki <pakki001@umn.edu>
 Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
-Link: https://lore.kernel.org/r/20210503115736.2104747-18-gregkh@linuxfoundation.org
+Link: https://lore.kernel.org/r/20210503115736.2104747-19-gregkh@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_ism.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/caif/caif_serial.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/net/smc/smc_ism.c b/net/smc/smc_ism.c
-index b4a9fe452470..024ca21392f7 100644
---- a/net/smc/smc_ism.c
-+++ b/net/smc/smc_ism.c
-@@ -304,6 +304,14 @@ struct smcd_dev *smcd_alloc_dev(struct device *parent, const char *name,
- 		return NULL;
- 	}
+diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
+index bcc14c5875bf..4cc0d91d9c87 100644
+--- a/drivers/net/caif/caif_serial.c
++++ b/drivers/net/caif/caif_serial.c
+@@ -270,9 +270,7 @@ static netdev_tx_t caif_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct ser_device *ser;
  
-+	smcd->event_wq = alloc_ordered_workqueue("ism_evt_wq-%s)",
-+						 WQ_MEM_RECLAIM, name);
-+	if (!smcd->event_wq) {
-+		kfree(smcd->conn);
-+		kfree(smcd);
-+		return NULL;
-+	}
-+
- 	smcd->dev.parent = parent;
- 	smcd->dev.release = smcd_release;
- 	device_initialize(&smcd->dev);
-@@ -317,8 +325,6 @@ struct smcd_dev *smcd_alloc_dev(struct device *parent, const char *name,
- 	INIT_LIST_HEAD(&smcd->vlan);
- 	INIT_LIST_HEAD(&smcd->lgr_list);
- 	init_waitqueue_head(&smcd->lgrs_deleted);
--	smcd->event_wq = alloc_ordered_workqueue("ism_evt_wq-%s)",
--						 WQ_MEM_RECLAIM, name);
- 	return smcd;
- }
- EXPORT_SYMBOL_GPL(smcd_alloc_dev);
+-	if (WARN_ON(!dev))
+-		return -EINVAL;
+-
++	BUG_ON(dev == NULL);
+ 	ser = netdev_priv(dev);
+ 
+ 	/* Send flow off once, on high water mark */
 -- 
 2.30.2
 
