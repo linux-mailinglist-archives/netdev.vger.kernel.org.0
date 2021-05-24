@@ -2,105 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A56B38F55B
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 00:06:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3974838F58C
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 00:20:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233933AbhEXWIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 18:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232911AbhEXWIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 18:08:12 -0400
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5E9C061574;
-        Mon, 24 May 2021 15:06:44 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4FprsF2yQyzQjmW;
-        Tue, 25 May 2021 00:06:41 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
-        content-transfer-encoding:mime-version:message-id:date:date
-        :subject:subject:from:from:received; s=mail20150812; t=
-        1621894000; bh=gmaCOau1u9jtoZTGkqghvCruMPooaEIFzqnYgI00D20=; b=u
-        LXDWSeRTrAI7T8/sF+RFbr1+24qLBWqgoF9HdZuihtf9289BhIwZwCdqg/+0bQ1d
-        0Ah4cfUHLppN5SWFFLM5I0RxNMDeXSGcArj9/KuXcv+3KUK5OglWNZXpMuQG8bY2
-        9psu0BQrf9zBpr4lYijRsgBgQD6MpOE3hg2dfbAPTpR8LCDFCY/DxpKJ5NcCedLO
-        okL+bcHw8e7tvsdq95oA9BrMfCJsWhJxMzUtoHc99ok0UzH9fCpR/DvIyq41g02n
-        jxpBTGS+47vgsa6a3rheuxx9fk52vd6ehYJdOonurXDLwX95cPtAvxOZGWpUPrko
-        kzRSyWaYBO/Muc2MSIbtA==
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter05.heinlein-hosting.de (spamfilter05.heinlein-hosting.de [80.241.56.123]) (amavisd-new, port 10030)
-        with ESMTP id fECnRS3Nnkec; Tue, 25 May 2021 00:06:40 +0200 (CEST)
-From:   Markus Boehme <markubo@amazon.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Emil Tantilov <emil.s.tantilov@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Markus Boehme <markubo@amazon.com>,
-        stable@vger.kernel.org
-Subject: [PATCH net] ixgbe: Fix packet corruption due to missing DMA sync
-Date:   Tue, 25 May 2021 00:05:31 +0200
-Message-Id: <20210524220531.64640-1-markubo@amazon.com>
+        id S230084AbhEXWVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 18:21:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58177 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230008AbhEXWVc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 18:21:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621894803;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FfD6zZEHWPiEUO4rFdOhgqC1vo03POxorC+jg1EsxHQ=;
+        b=MHEW/7oatwSysmnd/eVTOTMHZpSdHvA4e6uKVi6JQOmG/Rh5A9x6u8ynnN6cBvoNcZSBd+
+        8KykWsFcfLG4V58h1Ydj6KYx0ONvbsvpduIM4NIJczERMxQEgz6u1LS+odESphgYzh9WCg
+        UNhgvDAnh7GELPcPC+VMbWQ9IEVclCM=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-588-1cNzAxP9P0-8mfjSj1ugAg-1; Mon, 24 May 2021 18:19:59 -0400
+X-MC-Unique: 1cNzAxP9P0-8mfjSj1ugAg-1
+Received: by mail-ed1-f69.google.com with SMTP id q18-20020a50cc920000b029038cf491864cso16244964edi.14
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 15:19:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=FfD6zZEHWPiEUO4rFdOhgqC1vo03POxorC+jg1EsxHQ=;
+        b=V4zQjJA3RU5wxOoF5mrQqGEKyDLgf4bUmYWZStwKwysqKEpYaaHJ2eRqhjAnz3SL9Y
+         gW2CeeQCiQsoQC2H4verCDfyAiP6H9gv+Tbspto0ilATEfXcx1DQq32Sji1YKQlhG0mK
+         nO0iyxvghlDt8uVR0T23SMLRC0FU7UdO0gFXw/JI8++0gn1YPKUmpc1qwmcYVRKJwMlQ
+         IC+1v0F9w7YkdTMlaAu5who089voYI06HN2ZhxSK9yUgIH/J14JpkUHa1WSkW02TRov0
+         Y9IVYt2nQUIMC9Fza8i4DFxjF42ueOsITI0YKGrpagMiHSaxorG2D0C86MIfyppMjfya
+         Gkxw==
+X-Gm-Message-State: AOAM531ggRG9/NBqxRf+EtEOfvj4z10no5A4m+8FOTefCoL9qG4Fo8Nt
+        ZZZVlLp3u5KkUvEmfz8aYvqL2lK+njHVX98WLpfLf6Qgum1gogPLmhkqrYvp7saXWadb8dEluhu
+        753P0MDSjRA1zvo3J
+X-Received: by 2002:a17:906:aac8:: with SMTP id kt8mr24828636ejb.402.1621894798086;
+        Mon, 24 May 2021 15:19:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxpK/3GwW8AYnSjPU1AGAReRiJ/qf1K1sCGlCfqe5J2OhdsIeBbGcDIMk5AJ6UswZfAxyNjJg==
+X-Received: by 2002:a17:906:aac8:: with SMTP id kt8mr24828595ejb.402.1621894797409;
+        Mon, 24 May 2021 15:19:57 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id a22sm9204800edu.39.2021.05.24.15.19.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 May 2021 15:19:56 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 82523180275; Tue, 25 May 2021 00:19:49 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 0/5] libbpf: error reporting changes for v1.0
+In-Reply-To: <CAEf4Bzb9qRhW0uwxzPpL15zgRk-YTghGw6OtgQMF0+59Xdv5xQ@mail.gmail.com>
+References: <20210521234203.1283033-1-andrii@kernel.org>
+ <60ab496e3e211_2a2cf208d2@john-XPS-13-9370.notmuch>
+ <CAEf4BzY0=J1KP4txDSVJdS93YVLxO8LLQTn0UCJ0RKDL_XzpYw@mail.gmail.com>
+ <87a6ojzwdi.fsf@toke.dk>
+ <CAEf4BzadPCOboLov7dbVAQAcQtNj+x4CP7pKutXxo90q7oUuLQ@mail.gmail.com>
+ <87y2c3yfxm.fsf@toke.dk>
+ <CAEf4Bzb9qRhW0uwxzPpL15zgRk-YTghGw6OtgQMF0+59Xdv5xQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 25 May 2021 00:19:49 +0200
+Message-ID: <87sg2bydtm.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: ****
-X-Rspamd-Score: 4.86 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 0D0EA15F8
-X-Rspamd-UID: 723dc2
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When receiving a packet with multiple fragments, hardware may still
-touch the first fragment until the entire packet has been received. The
-driver therefore keeps the first fragment mapped for DMA until end of
-packet has been asserted, and delays its dma_sync call until then.
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-The driver tries to fit multiple receive buffers on one page. When using
-3K receive buffers (e.g. using Jumbo frames and legacy-rx is turned
-off/build_skb is being used) on an architecture with 4K pages, the
-driver allocates an order 1 compound page and uses one page per receive
-buffer. To determine the correct offset for a delayed DMA sync of the
-first fragment of a multi-fragment packet, the driver then cannot just
-use PAGE_MASK on the DMA address but has to construct a mask based on
-the actual size of the backing page.
+> On Mon, May 24, 2021 at 2:34 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> > On Mon, May 24, 2021 at 1:53 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
+@redhat.com> wrote:
+>> >>
+>> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>> >>
+>> >> > On Sun, May 23, 2021 at 11:36 PM John Fastabend
+>> >> > <john.fastabend@gmail.com> wrote:
+>> >> >>
+>> >> >> Andrii Nakryiko wrote:
+>> >> >> > Implement error reporting changes discussed in "Libbpf: the road=
+ to v1.0"
+>> >> >> > ([0]) document.
+>> >> >> >
+>> >> >> > Libbpf gets a new API, libbpf_set_strict_mode() which accepts a =
+set of flags
+>> >> >> > that turn on a set of libbpf 1.0 changes, that might be potentia=
+lly breaking.
+>> >> >> > It's possible to opt-in into all current and future 1.0 features=
+ by specifying
+>> >> >> > LIBBPF_STRICT_ALL flag.
+>> >> >> >
+>> >> >> > When some of the 1.0 "features" are requested, libbpf APIs might=
+ behave
+>> >> >> > differently. In this patch set a first set of changes are implem=
+ented, all
+>> >> >> > related to the way libbpf returns errors. See individual patches=
+ for details.
+>> >> >> >
+>> >> >> > Patch #1 adds a no-op libbpf_set_strict_mode() functionality to =
+enable
+>> >> >> > updating selftests.
+>> >> >> >
+>> >> >> > Patch #2 gets rid of all the bad code patterns that will break i=
+n libbpf 1.0
+>> >> >> > (exact -1 comparison for low-level APIs, direct IS_ERR() macro u=
+sage to check
+>> >> >> > pointer-returning APIs for error, etc). These changes make selft=
+est work in
+>> >> >> > both legacy and 1.0 libbpf modes. Selftests also opt-in into 100=
+% libbpf 1.0
+>> >> >> > mode to automatically gain all the subsequent changes, which wil=
+l come in
+>> >> >> > follow up patches.
+>> >> >> >
+>> >> >> > Patch #3 streamlines error reporting for low-level APIs wrapping=
+ bpf() syscall.
+>> >> >> >
+>> >> >> > Patch #4 streamlines errors for all the rest APIs.
+>> >> >> >
+>> >> >> > Patch #5 ensures that BPF skeletons propagate errors properly as=
+ well, as
+>> >> >> > currently on error some APIs will return NULL with no way of che=
+cking exact
+>> >> >> > error code.
+>> >> >> >
+>> >> >> >   [0] https://docs.google.com/document/d/1UyjTZuPFWiPFyKk1tV5an1=
+1_iaRuec6U-ZESZ54nNTY
+>> >> >> >
+>> >> >> > Andrii Nakryiko (5):
+>> >> >> >   libbpf: add libbpf_set_strict_mode() API to turn on libbpf 1.0
+>> >> >> >     behaviors
+>> >> >> >   selftests/bpf: turn on libbpf 1.0 mode and fix all IS_ERR chec=
+ks
+>> >> >> >   libbpf: streamline error reporting for low-level APIs
+>> >> >> >   libbpf: streamline error reporting for high-level APIs
+>> >> >> >   bpftool: set errno on skeleton failures and propagate errors
+>> >> >> >
+>> >> >>
+>> >> >> LGTM for the series,
+>> >> >>
+>> >> >> Acked-by: John Fastabend <john.fastabend@gmail.com>
+>> >> >
+>> >> > Thanks, John!
+>> >> >
+>> >> > Toke, Stanislav, you cared about these aspects of libbpf 1.0 (by
+>> >> > commenting on the doc itself), do you mind also taking a brief look
+>> >> > and letting me know if this works for your use cases? Thanks!
+>> >>
+>> >> Changes LGTM:
+>> >>
+>> >> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> >>
+>> >> As a side note, the series seems to have been chopped up into individ=
+ual
+>> >> emails with no threading; was a bit weird that I had to go hunting for
+>> >> the individual patches in my mailbox...
+>> >>
+>> >
+>> > That's my bad, I messed up and sent them individually and probably
+>> > that's why they weren't threaded properly.
+>>
+>> Right, OK, I'll stop looking for bugs on my end, then :)
+>>
+>> BTW, one more thing that just came to mind: since that gdoc is not
+>> likely to be around forever, would it be useful to make the reference in
+>> the commit message(s) point to something more stable? IDK what that
+>> shoul be, really. Maybe just pasting (an abbreviated outline of?) the
+>> text in the document into the cover letter / merge commit could work?
+>
+> I was hoping Google won't deprecate Google Docs any time soon and I
+> had no intention to remove that document. But I was also thinking to
+> start wiki page at github.com/libbpf/libbpf with migration
+> instructions, so once that is up and running I can link that from
+> libbpf_set_strict_mode() doc comment.
 
-Using PAGE_MASK in the 3K RX buffer/4K page architecture configuration
-will always sync the first page of a compound page. With the SWIOTLB
-enabled this can lead to corrupted packets (zeroed out first fragment,
-re-used garbage from another packet) and various consequences, such as
-slow/stalling data transfers and connection resets. For example, testing
-on a link with MTU exceeding 3058 bytes on a host with SWIOTLB enabled
-(e.g. "iommu=soft swiotlb=262144,force") TCP transfers quickly fizzle
-out without this patch.
+Right, that sounds reasonable :)
 
-Cc: stable@vger.kernel.org
-Fixes: 0c5661ecc5dd7 ("ixgbe: fix crash in build_skb Rx code path")
-Signed-off-by: Markus Boehme <markubo@amazon.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> But I'd like to avoid blocking on that.
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index c5ec17d19c59..507ef3471301 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -1825,7 +1825,8 @@ static void ixgbe_dma_sync_frag(struct ixgbe_ring *rx_ring,
- 				struct sk_buff *skb)
- {
- 	if (ring_uses_build_skb(rx_ring)) {
--		unsigned long offset = (unsigned long)(skb->data) & ~PAGE_MASK;
-+		unsigned long mask = (unsigned long)ixgbe_rx_pg_size(rx_ring) - 1;
-+		unsigned long offset = (unsigned long)(skb->data) & mask;
- 
- 		dma_sync_single_range_for_cpu(rx_ring->dev,
- 					      IXGBE_CB(skb)->dma,
--- 
-2.25.1
+Understandable; but just pasting an outline into the commit message (and
+keeping the link) could work in the meantime?
+
+-Toke
 
