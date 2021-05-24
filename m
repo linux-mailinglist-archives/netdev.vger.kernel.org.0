@@ -2,75 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ECE138DE8D
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 03:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD7F38DEC6
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 03:07:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232136AbhEXBBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 21:01:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42388 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232050AbhEXBBg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 May 2021 21:01:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9792F611CC;
-        Mon, 24 May 2021 01:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621818009;
-        bh=IJCBZy0bLfcVnY1Igy7njpQmormYRMAMJFq6XLkGtdI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=a7wB2czDoCf5Obt5PsguKxQ04dRSQciM8em+pDQ0xXV7eiTUitgw2ER45oXHd8wqE
-         HsLT0q5VsCUxi44UdHz+qbHfHgIM9x7noc78NqlFwGDGJliMA2bAFXcuR2oWyuhj/t
-         TpQZp20ObSfXUdrk6qTRE6XfzNXCNCVLOFxsMT15SL1pzEdCepW/8vCdJ8HOflTzdk
-         A0NuuWTjHQaGG6z5s/Vz6qdPcraqraUjTGmg8GqsMrSPAplVBlhYJfPem+hLelKUCY
-         uPBDTdwtFEs3xjQ8ifEnp34ExfHzfekp+UX6k2lhhMoEQa5Zkp7Yplg/cpSrOY/lLN
-         qvvwbxRzVEIUg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8BBC9609ED;
-        Mon, 24 May 2021 01:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232161AbhEXBJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 21:09:15 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:3917 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232141AbhEXBJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 21:09:14 -0400
+Received: from dggems706-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FpJsM4r9RzBts8;
+        Mon, 24 May 2021 09:04:55 +0800 (CST)
+Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
+ dggems706-chm.china.huawei.com (10.3.19.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Mon, 24 May 2021 09:07:46 +0800
+Received: from localhost (10.174.179.215) by dggema769-chm.china.huawei.com
+ (10.1.198.211) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 24
+ May 2021 09:07:45 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <leoyang.li@nxp.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <rasmus.villemoes@prevas.dk>, <andrew@lunn.ch>,
+        <christophe.leroy@csgroup.eu>
+CC:     <netdev@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH v2 net-next] ethernet: ucc_geth: Use kmemdup() rather than kmalloc+memcpy
+Date:   Mon, 24 May 2021 09:07:01 +0800
+Message-ID: <20210524010701.24596-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] NFC: nfcmrvl: fix kernel-doc syntax in file headers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162181800956.10357.9521863900425218837.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 May 2021 01:00:09 +0000
-References: <20210523210909.5359-1-yashsri421@gmail.com>
-In-Reply-To: <20210523210909.5359-1-yashsri421@gmail.com>
-To:     Aditya Srivastava <yashsri421@gmail.com>
-Cc:     krzysztof.kozlowski@canonical.com, lukas.bulwahn@gmail.com,
-        rdunlap@infradead.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-doc@vger.kernel.org, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggema769-chm.china.huawei.com (10.1.198.211)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Issue identified with Coccinelle.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+v2: keep kmemdup oneline
 
-On Mon, 24 May 2021 02:39:09 +0530 you wrote:
-> The opening comment mark '/**' is used for highlighting the beginning of
-> kernel-doc comments.
-> The header for drivers/nfc/nfcmrvl follows this syntax, but the content
-> inside does not comply with kernel-doc.
-> 
-> This line was probably not meant for kernel-doc parsing, but is parsed
-> due to the presence of kernel-doc like comment syntax(i.e, '/**'), which
-> causes unexpected warnings from kernel-doc.
-> For e.g., running scripts/kernel-doc -none on drivers/nfc/nfcmrvl/spi.c
-> causes warning:
-> warning: expecting prototype for Marvell NFC(). Prototype was for SPI_WAIT_HANDSHAKE() instead
-> 
-> [...]
+ drivers/net/ethernet/freescale/ucc_geth.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Here is the summary with links:
-  - NFC: nfcmrvl: fix kernel-doc syntax in file headers
-    https://git.kernel.org/netdev/net/c/4dd649d130c6
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
+index e0936510fa34..0acfafb73db1 100644
+--- a/drivers/net/ethernet/freescale/ucc_geth.c
++++ b/drivers/net/ethernet/freescale/ucc_geth.c
+@@ -3590,10 +3590,9 @@ static int ucc_geth_probe(struct platform_device* ofdev)
+ 	if ((ucc_num < 0) || (ucc_num > 7))
+ 		return -ENODEV;
+ 
+-	ug_info = kmalloc(sizeof(*ug_info), GFP_KERNEL);
++	ug_info = kmemdup(&ugeth_primary_info, sizeof(*ug_info), GFP_KERNEL);
+ 	if (ug_info == NULL)
+ 		return -ENOMEM;
+-	memcpy(ug_info, &ugeth_primary_info, sizeof(*ug_info));
+ 
+ 	ug_info->uf_info.ucc_num = ucc_num;
+ 
+-- 
+2.17.1
 
