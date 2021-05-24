@@ -2,67 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E10938E074
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 06:44:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37B4A38E0AC
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 07:35:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232266AbhEXEpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 00:45:52 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:55314 "EHLO 1wt.eu"
+        id S232266AbhEXFhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 01:37:16 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:49076 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229908AbhEXEpv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 00:45:51 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 14O4h4Vn030287;
-        Mon, 24 May 2021 06:43:04 +0200
-Date:   Mon, 24 May 2021 06:43:04 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     dzp <dzp1001167@gmail.com>
-Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: remove unnecessary brackets
-Message-ID: <20210524044303.GA30283@1wt.eu>
-References: <CAKtZ4UP8pnSOtRRFsfDJQjT9SnsXcHpxiqEHXpCrjPBuPo443Q@mail.gmail.com>
+        id S231605AbhEXFhP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 01:37:15 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1621834548; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=aCeZloNWIr+9qJLmE8MblU3PgPnuO3Zl8vpP89RVOa0=;
+ b=D2vEU/mlqXn53nmS54azXbgSgwL0dBOPhhNvJe1fLNxw/znVK50rbri2KEb+TapxVXUmQmPA
+ ClFS5qL8yZFzFpsGyY57YXMoQ6242fwyA9ChjjDSRsQX744+G4Ppzi3xZqeF48vVtNmkKgdk
+ 8Any8kjtNcyeYZkHazxt1bu19LA=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
+ 60ab3b335f788b52a5a3f3e5 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 24 May 2021 05:35:47
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 69DFAC43460; Mon, 24 May 2021 05:35:47 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id AE14DC433D3;
+        Mon, 24 May 2021 05:35:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AE14DC433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKtZ4UP8pnSOtRRFsfDJQjT9SnsXcHpxiqEHXpCrjPBuPo443Q@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath10k/ath11k: fix spelling mistake "requed" ->
+ "requeued"
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210423134133.339751-1-colin.king@canonical.com>
+References: <20210423134133.339751-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        ath11k@lists.infradead.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210524053547.69DFAC43460@smtp.codeaurora.org>
+Date:   Mon, 24 May 2021 05:35:47 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 11:58:43AM +0800, dzp wrote:
-> hi list,
->     this patch remove unnecessary brackets for ipv4/tcp_output.c
-> 
-> best regards
-> 
-> 
-> From d736a5e4a966bbffed90a0647719dde750b29d06 Mon Sep 17 00:00:00 2001
-> From: Zhiping du <zhipingdu@tencent.com>
-> Date: Mon, 24 May 2021 03:37:36 +0800
-> Subject: [PATCH] ipv4:tcp_output:remove unnecessary brackets
-> 
-> There are too many brackets. Maybe only one bracket is enough.
-> 
-> Signed-off-by: Zhiping Du <zhipingdu@tencent.com>
-> 
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index bde781f..5455de3 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -2620,7 +2620,7 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
->  	}
->  
->  	max_segs = tcp_tso_segs(sk, mss_now);
-> -	while ((skb = tcp_send_head(sk))) {
-> +	while (skb = tcp_send_head(sk)) {
+Colin King <colin.king@canonical.com> wrote:
 
-Please do not do this. They're here to avoid a compiler warning which
-will suggest that it might be a "==" instead of "=", or will ask to add
-extra parenthesis.
+> There are multiple occurrances of the misspelling of requeued in
+> the drivers with symbol names and debug text. Fix these.
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-You've probably seen it when you compiled your patched code.
+Patch applied to ath-next branch of ath.git, thanks.
 
-Willy
+17818dfa8f2e ath10k/ath11k: fix spelling mistake "requed" -> "requeued"
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210423134133.339751-1-colin.king@canonical.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
