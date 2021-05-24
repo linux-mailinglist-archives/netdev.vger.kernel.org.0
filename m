@@ -2,238 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD36F38EB63
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 17:01:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0F3938EBA5
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 17:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234439AbhEXPCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 11:02:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37280 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234513AbhEXPAA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 11:00:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F273761445;
-        Mon, 24 May 2021 14:49:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621867791;
-        bh=dutP2hyGs4F8Z4v+JyMkt+banxkxYy0tH1KYmtDZQTo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aj7NgbMIIYHZS+rOaaXgHktE1VVn33zW/Bf4TiRdecTRb35+xCIlDFtBbJ6Adr1Bp
-         yE7L+bGG5wROaNZpW2MQYE0c4GVpaHfzU/5p1UoCCjv2kqPGroBd92U9dkeed35NcA
-         ZdcvsY/wRjpK9XneQMQOrlvaAQrWF9DgkCh6EEct7eMgi2JEBunUaCRLIC0Ip3EH/H
-         oPO94rt1Q6i+fQ2g5DlAT5caWdZYS1xBmRhmShZGdSTzxOFgjbh5C/aI/Lrj718N15
-         agAvfBCfiaaVehI2Pc/PcDMuvXR6e42JUVnsEBSdFp24J6ZbLNXf5DDn61HJbPZzQE
-         mYGREl92geHQw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 39/52] brcmfmac: properly check for bus register errors
-Date:   Mon, 24 May 2021 10:48:49 -0400
-Message-Id: <20210524144903.2498518-39-sashal@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210524144903.2498518-1-sashal@kernel.org>
-References: <20210524144903.2498518-1-sashal@kernel.org>
+        id S233191AbhEXPGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 11:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233148AbhEXPDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 11:03:41 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04294C0611F1;
+        Mon, 24 May 2021 07:49:35 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id v13-20020a17090abb8db029015f9f7d7290so104340pjr.0;
+        Mon, 24 May 2021 07:49:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=j0T9+OTfExKxH2gTQcxDRtmicO6CgHWG7T+BXk5/68g=;
+        b=g7zELFK5iR+0vttPpgTAMsA4ykn4ssQD38M9KYpba96exE3Ryh2CrbiSodCL5q85v2
+         ntpWSNm7/cI9tzZM0LqqtkHVKpLScFNqdW1h3+ZDqXkRuP0xGXgWz7PSLZ4nARt5FgEp
+         8s6Cpxu15Kr8rLwh7V9coDXNqUWdaE4Nom9bEtkc2ZnedTECUnACEPR2zu4+N06VnWgu
+         2OcMw7BzAfBr9HsvzPuSuPW24wIeSTuVWW3c5zUc/b9EwjHKhvI3x4cgGHwIGuSx4qU5
+         MN1XQwjGjaj4JNZlrM9HCZ6TjcX+rPKSFNDkY4HhKyz6WRgqgg/9jPHOuJLB1FYfEEeH
+         crjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=j0T9+OTfExKxH2gTQcxDRtmicO6CgHWG7T+BXk5/68g=;
+        b=Sj5SbiccUcOtXXlmb+lb7aLrwRgQtZWBsz2YGCHlnvbM4xP+TI5Qo1GD8538fuPLU9
+         mtYqNg9EMCQrTNA6VFygvhs5DGdVQywUVYHxquXc3LcfdOm8afud9oKW2R9slrtgJTxH
+         cM7weiuwBZZf+l7IDNrF2PcAV55qdr7CRA3o8ebuR87nYTSzJXbBMSUIdElVVqkUZ+Wo
+         HpWjHhyy+tlExCAgafewo31iDsjDHOPBH3JbBES289iUq9N8l1+KSU9no/wXZUfeHKHL
+         1AJN1Ul5wJR3tX9C1M91ZUm+NLz4fyxcSuCD5iXs7W877XOFoCD1i7EXbNJRU+KS/Vll
+         L87Q==
+X-Gm-Message-State: AOAM533OWMZAvYw2GkhdEZTXfc+hrgKllLtl/pKqjRIq6b3Sy0UKFrKB
+        UV4wcw5jHBLOpuh7lKp+RNFxYQJNw9Y=
+X-Google-Smtp-Source: ABdhPJyC/BkKqu5DStRfqFuYh9SIslYwTKoZ6UhSEDpl30F/LOUeDQOLNNC7dgTQskeEYEZZ/bV+Eg==
+X-Received: by 2002:a17:90a:b38d:: with SMTP id e13mr24838828pjr.222.1621867774712;
+        Mon, 24 May 2021 07:49:34 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b23sm10462466pjo.26.2021.05.24.07.49.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 May 2021 07:49:34 -0700 (PDT)
+Subject: Re: Kernel Panic in skb_release_data using genet
+To:     Maxime Ripard <maxime@cerno.tech>, Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>
+References: <20210524130147.7xv6ih2e3apu2zvu@gilmour>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <a53f6192-3520-d5f8-df4b-786b3e4e8707@gmail.com>
+Date:   Mon, 24 May 2021 07:49:25 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210524130147.7xv6ih2e3apu2zvu@gilmour>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Hi Maxime,
 
-[ Upstream commit 419b4a142a7ece36cebcd434f8ce2af59ef94b85 ]
+On 5/24/2021 6:01 AM, Maxime Ripard wrote:
+> Hi Doug, Florian,
+> 
+> I've been running a RaspberryPi4 with a mainline kernel for a while,
+> booting from NFS. Every once in a while (I'd say ~20-30% of all boots),
+> I'm getting a kernel panic around the time init is started.
+> 
+> I was debugging a kernel based on drm-misc-next-2021-05-17 today with
+> KASAN enabled and got this, which looks related:
 
-The brcmfmac driver ignores any errors on initialization with the
-different busses by deferring the initialization to a workqueue and
-ignoring all possible errors that might happen.  Fix up all of this by
-only allowing the module to load if all bus registering worked properly.
+Is there a known good version that could be used for bisection or you
+just started to do this test and you have no reference point?
 
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210503115736.2104747-70-gregkh@linuxfoundation.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../broadcom/brcm80211/brcmfmac/bcmsdh.c      |  8 +---
- .../broadcom/brcm80211/brcmfmac/bus.h         | 19 ++++++++-
- .../broadcom/brcm80211/brcmfmac/core.c        | 42 ++++++++-----------
- .../broadcom/brcm80211/brcmfmac/pcie.c        |  9 +---
- .../broadcom/brcm80211/brcmfmac/pcie.h        |  5 ---
- .../broadcom/brcm80211/brcmfmac/usb.c         |  4 +-
- 6 files changed, 41 insertions(+), 46 deletions(-)
+How stable in terms of clocking is the configuration that you are using?
+I could try to fire up a similar test on a Pi4 at home, or use one of
+our 72112 systems which is the closest we have to a Pi4 and see if that
+happens there as well.
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-index fc12598b2dd3..c492d2d2db1d 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-@@ -1168,13 +1168,9 @@ static struct sdio_driver brcmf_sdmmc_driver = {
- 	},
- };
- 
--void brcmf_sdio_register(void)
-+int brcmf_sdio_register(void)
- {
--	int ret;
--
--	ret = sdio_register_driver(&brcmf_sdmmc_driver);
--	if (ret)
--		brcmf_err("sdio_register_driver failed: %d\n", ret);
-+	return sdio_register_driver(&brcmf_sdmmc_driver);
- }
- 
- void brcmf_sdio_exit(void)
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
-index 623c0168da79..8b27494a5d3d 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
-@@ -274,11 +274,26 @@ void brcmf_bus_add_txhdrlen(struct device *dev, uint len);
- 
- #ifdef CONFIG_BRCMFMAC_SDIO
- void brcmf_sdio_exit(void);
--void brcmf_sdio_register(void);
-+int brcmf_sdio_register(void);
-+#else
-+static inline void brcmf_sdio_exit(void) { }
-+static inline int brcmf_sdio_register(void) { return 0; }
- #endif
-+
- #ifdef CONFIG_BRCMFMAC_USB
- void brcmf_usb_exit(void);
--void brcmf_usb_register(void);
-+int brcmf_usb_register(void);
-+#else
-+static inline void brcmf_usb_exit(void) { }
-+static inline int brcmf_usb_register(void) { return 0; }
-+#endif
-+
-+#ifdef CONFIG_BRCMFMAC_PCIE
-+void brcmf_pcie_exit(void);
-+int brcmf_pcie_register(void);
-+#else
-+static inline void brcmf_pcie_exit(void) { }
-+static inline int brcmf_pcie_register(void) { return 0; }
- #endif
- 
- #endif /* BRCMFMAC_BUS_H */
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-index e9bb8dbdc9aa..edb79e9665dc 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-@@ -1438,40 +1438,34 @@ void brcmf_bus_change_state(struct brcmf_bus *bus, enum brcmf_bus_state state)
- 	}
- }
- 
--static void brcmf_driver_register(struct work_struct *work)
--{
--#ifdef CONFIG_BRCMFMAC_SDIO
--	brcmf_sdio_register();
--#endif
--#ifdef CONFIG_BRCMFMAC_USB
--	brcmf_usb_register();
--#endif
--#ifdef CONFIG_BRCMFMAC_PCIE
--	brcmf_pcie_register();
--#endif
--}
--static DECLARE_WORK(brcmf_driver_work, brcmf_driver_register);
--
- int __init brcmf_core_init(void)
- {
--	if (!schedule_work(&brcmf_driver_work))
--		return -EBUSY;
-+	int err;
-+
-+	err = brcmf_sdio_register();
-+	if (err)
-+		return err;
-+
-+	err = brcmf_usb_register();
-+	if (err)
-+		goto error_usb_register;
- 
-+	err = brcmf_pcie_register();
-+	if (err)
-+		goto error_pcie_register;
- 	return 0;
-+
-+error_pcie_register:
-+	brcmf_usb_exit();
-+error_usb_register:
-+	brcmf_sdio_exit();
-+	return err;
- }
- 
- void __exit brcmf_core_exit(void)
- {
--	cancel_work_sync(&brcmf_driver_work);
--
--#ifdef CONFIG_BRCMFMAC_SDIO
- 	brcmf_sdio_exit();
--#endif
--#ifdef CONFIG_BRCMFMAC_USB
- 	brcmf_usb_exit();
--#endif
--#ifdef CONFIG_BRCMFMAC_PCIE
- 	brcmf_pcie_exit();
--#endif
- }
- 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index cb68f54a9c56..bda042138e96 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -2137,15 +2137,10 @@ static struct pci_driver brcmf_pciedrvr = {
- };
- 
- 
--void brcmf_pcie_register(void)
-+int brcmf_pcie_register(void)
- {
--	int err;
--
- 	brcmf_dbg(PCIE, "Enter\n");
--	err = pci_register_driver(&brcmf_pciedrvr);
--	if (err)
--		brcmf_err(NULL, "PCIE driver registration failed, err=%d\n",
--			  err);
-+	return pci_register_driver(&brcmf_pciedrvr);
- }
- 
- 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.h
-index d026401d2001..8e6c227e8315 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.h
-@@ -11,9 +11,4 @@ struct brcmf_pciedev {
- 	struct brcmf_pciedev_info *devinfo;
- };
- 
--
--void brcmf_pcie_exit(void);
--void brcmf_pcie_register(void);
--
--
- #endif /* BRCMFMAC_PCIE_H */
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-index 6f41d28930e4..3b897f040371 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-@@ -1558,8 +1558,8 @@ void brcmf_usb_exit(void)
- 	usb_deregister(&brcmf_usbdrvr);
- }
- 
--void brcmf_usb_register(void)
-+int brcmf_usb_register(void)
- {
- 	brcmf_dbg(USB, "Enter\n");
--	usb_register(&brcmf_usbdrvr);
-+	return usb_register(&brcmf_usbdrvr);
- }
+> 
+> [    6.109454] mmc0: SDHCI controller on fe300000.sdhci [fe300000.sdhci] using PIO
+> [    6.124819] bcmgenet fd580000.ethernet: configuring instance for external RGMII (RX delay)
+> [    6.133391] ==================================================================
+> [    6.140736] BUG: KASAN: user-memory-access in skb_release_data+0x14c/0x1fc
+> [    6.147748] Read of size 4 at addr 1c8befdc by task swapper/0/0
+> [    6.153776] 
+> [    6.155300] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.13.0-rc1-v7l #165
+> [    6.162214] Hardware name: BCM2711
+> [    6.165679] Backtrace: 
+> [    6.168183] [<c110f5a8>] (dump_backtrace) from [<c110f930>] (show_stack+0x20/0x24)
+> [    6.175931]  r7:c1e00000 r6:00000193 r5:00000000 r4:c837f8e0
+> [    6.181683] [<c110f910>] (show_stack) from [<c11156c0>] (dump_stack+0xb8/0xdc)
+> [    6.189051] [<c1115608>] (dump_stack) from [<c0514b30>] (kasan_report+0x11c/0x1c0)
+> [    6.196789]  r9:cc97ff02 r8:cc57e400 r7:c0ea3628 r6:00000000 r5:00000000 r4:1c8befdc
+> [    6.204655] [<c0514a14>] (kasan_report) from [<c05154d4>] (__asan_load4+0x74/0x90)
+> [    6.212393]  r7:cc97ff00 r6:00000000 r5:cc97ff28 r4:1c8befd4
+> [    6.218144] [<c0515460>] (__asan_load4) from [<c0ea3628>] (skb_release_data+0x14c/0x1fc)
+> [    6.226395] [<c0ea34dc>] (skb_release_data) from [<c0ea9d2c>] (consume_skb+0x60/0x134)
+> [    6.234479]  r10:0000a8d8 r9:cc560000 r8:00000000 r7:cc560580 r6:00000001 r5:cc57e4ac
+> [    6.242438]  r4:cc57e400 r3:cc97f680
+> [    6.246074] [<c0ea9ccc>] (consume_skb) from [<c0ec0d74>] (__dev_kfree_skb_any+0x60/0x64)
+> [    6.254337]  r9:cc560000 r8:00000000 r7:cc560580 r6:00000001 r5:cc57e400 r4:c1e00000
+> [    6.262203] [<c0ec0d14>] (__dev_kfree_skb_any) from [<c0c814d4>] (bcmgenet_rx_poll+0x578/0x770)
+> [    6.271081]  r7:cc560580 r6:a8d81759 r5:cc57e400 r4:cc563ed8
+> [    6.276831] [<c0c80f5c>] (bcmgenet_rx_poll) from [<c0ed3f0c>] (__napi_poll+0x60/0x2b8)
+> [    6.284925]  r10:c1e03d20 r9:c1e05d00 r8:cc563ee0 r7:c1e03d10 r6:00000040 r5:00000001
+> [    6.292881]  r4:cc563ed8
+> [    6.295460] [<c0ed3eac>] (__napi_poll) from [<c0ed4a14>] (net_rx_action+0x580/0x620)
+> [    6.303377]  r10:c1e03d20 r9:c1e05d00 r8:0000012c r7:cc563edc r6:cc560000 r5:cc563ed8
+> [    6.311333]  r4:c1e03d80
+> [    6.313911] [<c0ed4494>] (net_rx_action) from [<c02012e8>] (__do_softirq+0x1f0/0x69c)
+> [    6.321916]  r10:c1e00000 r9:00000008 r8:16b2f000 r7:00000003 r6:00000004 r5:c18b9360
+> [    6.329872]  r4:c1e0508c
+> [    6.332449] [<c02010f8>] (__do_softirq) from [<c02367a4>] (irq_exit+0x188/0x1b0)
+> [    6.340012]  r10:16b2f000 r9:c1e03ec0 r8:16b2f000 r7:c1e03e28 r6:ffffc000 r5:c1cc0940
+> [    6.347969]  r4:c1e06ea4
+> [    6.350546] [<c023661c>] (irq_exit) from [<c02c75fc>] (__handle_domain_irq+0xc4/0x128)
+> [    6.353302] bcmgenet fd580000.ethernet eth0: Link is Down
+> [    6.358635]  r9:c1e03ec0 r8:00000001 r7:00000000 r6:c1e00000 r5:00000000 r4:c1cbfe80
+> [    6.371956] [<c02c7538>] (__handle_domain_irq) from [<c09ef2b4>] (gic_handle_irq+0x9c/0xb4)
+> [    6.380496]  r10:f080200c r9:f0802000 r8:c1e03ec0 r7:c1e07878 r6:c1cbfe8c r5:000000bd
+> [    6.388452]  r4:000000bd
+> [    6.391030] [<c09ef218>] (gic_handle_irq) from [<c0200abc>] (__irq_svc+0x5c/0x80)
+> [    6.398666] Exception stack(0xc1e03ec0 to 0xc1e03f08)
+> [    6.403821] 3ec0: c175a018 d87f0614 00000000 c0222bc0 c1e00000 c1e06e1c 00000000 c1e06e6c
+> [    6.412145] 3ee0: c84ff712 c121e120 30c5387d c1e03f1c c175a018 c1e03f10 c020a204 c020a208
+> [    6.420459] 3f00: 60000013 ffffffff
+> [    6.424026]  r10:30c5387d r9:c1e00000 r8:c84ff712 r7:c1e03ef4 r6:ffffffff r5:60000013
+> [    6.431983]  r4:c020a208
+> [    6.434561] [<c020a1b8>] (arch_cpu_idle) from [<c112af34>] (default_idle_call+0x48/0x188)
+> [    6.442906] [<c112aeec>] (default_idle_call) from [<c0287578>] (do_idle+0x11c/0x180)
+> [    6.450816]  r9:c121e120 r8:c84ff712 r7:c1e06e6c r6:00000000 r5:c1e06e1c r4:c1e00000
+> [    6.458681] [<c028745c>] (do_idle) from [<c0287a00>] (cpu_startup_entry+0x28/0x2c)
+> [    6.466416]  r9:410fd083 r8:c187df68 r7:c1e00000 r6:ca9d6000 r5:c85201e0 r4:000000e1
+> [    6.474283] [<c02879d8>] (cpu_startup_entry) from [<c111d7b8>] (rest_init+0x148/0x150)
+> [    6.482358] [<c111d670>] (rest_init) from [<c1801534>] (arch_call_rest_init+0x18/0x1c)
+> [    6.490450]  r7:c1e06dc0 r6:c1e00000 r5:c1e00000 r4:c851d5c0
+> [    6.496202] [<c180151c>] (arch_call_rest_init) from [<c1801990>] (start_kernel+0x3e0/0x424)
+> [    6.504723] [<c18015b0>] (start_kernel) from [<00000000>] (0x0)
+> [    6.510776]  r8:2eff9400 r7:00000c42 r6:30c0387d r5:00000000 r4:c1800334
+> [    6.517584] ==================================================================
+> [    6.524921] Disabling lock debugging due to kernel taint
+> [    6.530467] 8<--- cut here ---
+> [    6.533628] Unable to handle kernel paging request at virtual address 1c8befdc
+> [    6.541025] pgd = (ptrval)
+> [    6.543837] [1c8befdc] *pgd=80000000004003, *pmd=00000000
+> [    6.549431] Internal error: Oops: 206 [#1] SMP ARM
+> [    6.554311] Modules linked in:
+> [    6.557433] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G    B             5.13.0-rc1-v7l #165
+> [    6.565755] Hardware name: BCM2711
+> [    6.569217] PC is at skb_release_data+0x14c/0x1fc
+> [    6.574015] LR is at end_report+0x6c/0xf0
+> [    6.578109] pc : [<c0ea3628>]    lr : [<c05148ac>]    psr: 60000113
+> [    6.584484] sp : c1e03ac8  ip : c1e03a60  fp : c1e03af4
+> [    6.589801] r10: cc57e462  r9 : cc97ff02  r8 : cc57e400
+> [    6.595116] r7 : cc97ff00  r6 : 00000000  r5 : cc97ff28  r4 : 1c8befd4
+> [    6.601755] r3 : 00000000  r2 : c1e0ccc0  r1 : c0514884  r0 : 00000001
+> [    6.608393] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
+> [    6.615657] Control: 30c5383d  Table: 00003000  DAC: fffffffd
+> [    6.621497] Register r0 information: non-paged memory
+> [    6.626651] Register r1 information: non-slab/vmalloc memory
+> [    6.632418] Register r2 information: non-slab/vmalloc memory
+> [    6.638185] Register r3 information: NULL pointer
+> [    6.642981] Register r4 information: non-paged memory
+> [    6.648129] Register r5 information: non-slab/vmalloc memory
+> [    6.653895] Register r6 information: NULL pointer
+> [    6.658690] Register r7 information: non-slab/vmalloc memory
+> [    6.664455] Register r8 information: slab skbuff_head_cache start cc57e400 pointer offset 0 size 48
+> [    6.673715] Register r9 information: non-slab/vmalloc memory
+> [    6.679481] Register r10 information: slab skbuff_head_cache start cc57e400 pointer offset 98 size 48
+> [    6.688914] Register r11 information: non-slab/vmalloc memory
+> [    6.694768] Register r12 information: non-slab/vmalloc memory
+> [    6.700621] Process swapper/0 (pid: 0, stack limit = 0x(ptrval))
+> [    6.706730] Stack: (0xc1e03ac8 to 0xc1e04000)
+> [    6.711177] 3ac0:                   cc97f680 cc57e400 cc57e4ac 00000001 cc560580 00000000
+> [    6.719502] 3ae0: cc560000 0000a8d8 c1e03b1c c1e03af8 c0ea9d2c c0ea34e8 c1e00000 cc57e400
+> [    6.727825] 3b00: 00000001 cc560580 00000000 cc560000 c1e03b3c c1e03b20 c0ec0d74 c0ea9cd8
+> [    6.736149] 3b20: cc563ed8 cc57e400 a8d81759 cc560580 c1e03c54 c1e03b40 c0c814d4 c0ec0d20
+> [    6.744473] 3b40: c0210414 c05154fc c02103d8 ffffc000 c1e03b84 c1e03be0 c1e03c20 b73c0778
+> [    6.752795] 3b60: 00000040 cc5640e8 cc560588 cc560088 cc561944 cc563fe0 cc561580 cc563fd8
+> [    6.761118] 3b80: ca5c3c00 cc563fc8 cc563fd4 cc564078 0000000c 00000000 c1e03be4 00000000
+> [    6.769441] 3ba0: 00000000 cc563580 c0210430 00000000 00000000 cc920374 c1e03be4 c1e03c88
+> [    6.777764] 3bc0: 41b58ab3 c1730000 c0c80f5c cc920374 cc920340 00000001 c1e03d04 c1e03be8
+> [    6.786084] 3be0: 00000000 00000000 00000000 00000000 00000000 00000000 c1e03c24 c1e03c08
+> [    6.794406] 3c00: 41b58ab3 c16ca308 c02a73bc d87efd80 cab4d000 d87f0318 c1e03c4c 0147adf0
+> [    6.802729] 3c20: c175a5d0 b5ed3f2f c02012e8 cc563ed8 00000001 00000040 c1e03d10 cc563ee0
+> [    6.811052] 3c40: c1e05d00 c1e03d20 c1e03c94 c1e03c58 c0ed3f0c c0c80f68 c03a9ed0 c05154fc
+> [    6.819376] 3c60: c03aa120 cc563ed8 60000113 c1e03d80 cc563ed8 cc560000 cc563edc 0000012c
+> [    6.827700] 3c80: c1e05d00 c1e03d20 c1e03db4 c1e03c98 c0ed4a14 c0ed3eb8 d87f0740 b73c079c
+> [    6.836023] 3ca0: c02104fc c1e00000 c1e00010 c1e00000 c1e03d40 16b2f000 c1cc1740 c1e05d00
+> [    6.844347] 3cc0: ffff8d38 c1e03d20 c0210430 0000004c c1e03d04 c1e03ce0 c0c7e6e4 c051546c
+> [    6.852670] 3ce0: 41b58ab3 c17447f0 c0ed4494 cb17fc00 c1e03da0 0000004c c1e03d54 c1e03d08
+> [    6.860994] 3d00: c1e03e4c c1e03e28 c03a9eb0 c02367a4 c02cdd00 c051546c d87efdc0 cb17fc44
+> [    6.869316] 3d20: c1e03d20 c1e03d20 d87efdf0 cb17fc00 c1e03d54 c1e03d40 c112b730 c051546c
+> [    6.877640] 3d40: c1e03d40 c1e03d40 c02367a4 c0201240 c02c8548 c1e00000 c1cbec50 c02367a4
+> [    6.885965] 3d60: c0201240 c1e00004 16b2f000 c1e00000 c1e03db4 c1e03d80 c03a9ed0 c05154fc
+> [    6.894287] 3d80: 41b58ab3 b5ed3f2f c1e03db4 c1e0508c c18b9360 00000004 00000003 16b2f000
+> [    6.902610] 3da0: 00000008 c1e00000 c1e03e24 c1e03db8 c02012e8 c0ed44a0 c1e03de4 c1e03dc8
+> [    6.910932] 3dc0: 00000001 00200002 c1213840 c1e05d00 ffff8d37 c18b92d4 0000000a c1cc0940
+> [    6.919256] 3de0: c09eed7c c18b9350 c1e05080 c1e03db8 00000101 c1e06e1c c1e03e24 c1e06ea4
+> [    6.927580] 3e00: c1cc0940 ffffc000 c1e03e28 16b2f000 c1e03ec0 16b2f000 c1e03e4c c1e03e28
+> [    6.935901] 3e20: c02367a4 c0201104 c1cbfe80 00000000 c1e00000 00000000 00000001 c1e03ec0
+> [    6.944224] 3e40: c1e03e84 c1e03e50 c02c75fc c0236628 c112af34 ca91f000 c1e03ebc 000000bd
+> [    6.952547] 3e60: 000000bd c1cbfe8c c1e07878 c1e03ec0 f0802000 f080200c c1e03ebc c1e03e88
+> [    6.960872] 3e80: c09ef2b4 c02c7544 c03aa120 c021043c c020a204 c020a208 60000013 ffffffff
+> [    6.969195] 3ea0: c1e03ef4 c84ff712 c1e00000 30c5387d c1e03f1c c1e03ec0 c0200abc c09ef224
+> [    6.977516] 3ec0: c175a018 d87f0614 00000000 c0222bc0 c1e00000 c1e06e1c 00000000 c1e06e6c
+> [    6.985840] 3ee0: c84ff712 c121e120 30c5387d c1e03f1c c175a018 c1e03f10 c020a204 c020a208
+> [    6.994163] 3f00: 60000013 ffffffff c020a1f4 00000000 c1e03f44 c1e03f20 c112af34 c020a1c4
+> [    7.002486] 3f20: c1e00000 c1e06e1c 00000000 c1e06e6c c84ff712 c121e120 c1e03f6c c1e03f48
+> [    7.010810] 3f40: c0287578 c112aef8 000000e1 c85201e0 ca9d6000 c1e00000 c187df68 410fd083
+> [    7.019134] 3f60: c1e03f7c c1e03f70 c0287a00 c0287468 c1e03f9c c1e03f80 c111d7b8 c02879e4
+> [    7.027458] 3f80: c851d5c0 c1e00000 c1e00000 c1e06dc0 c1e03fac c1e03fa0 c1801534 c111d67c
+> [    7.035781] 3fa0: c1e03ff4 c1e03fb0 c1801990 c1801528 ffffffff ffffffff 00000000 c18006b8
+> [    7.044103] 3fc0: 00000000 c187df68 b5e8322f 00000000 410fd083 c1800334 00000000 30c0387d
+> [    7.052425] 3fe0: 00000c42 2eff9400 00000000 c1e03ff8 00000000 c18015bc 00000000 00000000
+> [    7.060734] Backtrace: 
+> [    7.063237] [<c0ea34dc>] (skb_release_data) from [<c0ea9d2c>] (consume_skb+0x60/0x134)
+> [    7.071327]  r10:0000a8d8 r9:cc560000 r8:00000000 r7:cc560580 r6:00000001 r5:cc57e4ac
+> [    7.079286]  r4:cc57e400 r3:cc97f680
+> [    7.082923] [<c0ea9ccc>] (consume_skb) from [<c0ec0d74>] (__dev_kfree_skb_any+0x60/0x64)
+> [    7.091187]  r9:cc560000 r8:00000000 r7:cc560580 r6:00000001 r5:cc57e400 r4:c1e00000
+> [    7.099054] [<c0ec0d14>] (__dev_kfree_skb_any) from [<c0c814d4>] (bcmgenet_rx_poll+0x578/0x770)
+> [    7.107934]  r7:cc560580 r6:a8d81759 r5:cc57e400 r4:cc563ed8
+> [    7.113686] [<c0c80f5c>] (bcmgenet_rx_poll) from [<c0ed3f0c>] (__napi_poll+0x60/0x2b8)
+> [    7.121778]  r10:c1e03d20 r9:c1e05d00 r8:cc563ee0 r7:c1e03d10 r6:00000040 r5:00000001
+> [    7.129735]  r4:cc563ed8
+> [    7.132313] [<c0ed3eac>] (__napi_poll) from [<c0ed4a14>] (net_rx_action+0x580/0x620)
+> [    7.140233]  r10:c1e03d20 r9:c1e05d00 r8:0000012c r7:cc563edc r6:cc560000 r5:cc563ed8
+> [    7.148189]  r4:c1e03d80
+> [    7.150767] [<c0ed4494>] (net_rx_action) from [<c02012e8>] (__do_softirq+0x1f0/0x69c)
+> [    7.158772]  r10:c1e00000 r9:00000008 r8:16b2f000 r7:00000003 r6:00000004 r5:c18b9360
+> [    7.166728]  r4:c1e0508c
+> [    7.169306] [<c02010f8>] (__do_softirq) from [<c02367a4>] (irq_exit+0x188/0x1b0)
+> [    7.176870]  r10:16b2f000 r9:c1e03ec0 r8:16b2f000 r7:c1e03e28 r6:ffffc000 r5:c1cc0940
+> [    7.184827]  r4:c1e06ea4
+> [    7.187405] [<c023661c>] (irq_exit) from [<c02c75fc>] (__handle_domain_irq+0xc4/0x128)
+> [    7.195497]  r9:c1e03ec0 r8:00000001 r7:00000000 r6:c1e00000 r5:00000000 r4:c1cbfe80
+> [    7.203363] [<c02c7538>] (__handle_domain_irq) from [<c09ef2b4>] (gic_handle_irq+0x9c/0xb4)
+> [    7.211902]  r10:f080200c r9:f0802000 r8:c1e03ec0 r7:c1e07878 r6:c1cbfe8c r5:000000bd
+> [    7.219858]  r4:000000bd
+> [    7.222436] [<c09ef218>] (gic_handle_irq) from [<c0200abc>] (__irq_svc+0x5c/0x80)
+> [    7.230074] Exception stack(0xc1e03ec0 to 0xc1e03f08)
+> [    7.235228] 3ec0: c175a018 d87f0614 00000000 c0222bc0 c1e00000 c1e06e1c 00000000 c1e06e6c
+> [    7.243552] 3ee0: c84ff712 c121e120 30c5387d c1e03f1c c175a018 c1e03f10 c020a204 c020a208
+> [    7.251865] 3f00: 60000013 ffffffff
+> [    7.255432]  r10:30c5387d r9:c1e00000 r8:c84ff712 r7:c1e03ef4 r6:ffffffff r5:60000013
+> [    7.263389]  r4:c020a208
+> [    7.265967] [<c020a1b8>] (arch_cpu_idle) from [<c112af34>] (default_idle_call+0x48/0x188)
+> [    7.274309] [<c112aeec>] (default_idle_call) from [<c0287578>] (do_idle+0x11c/0x180)
+> [    7.282219]  r9:c121e120 r8:c84ff712 r7:c1e06e6c r6:00000000 r5:c1e06e1c r4:c1e00000
+> [    7.290085] [<c028745c>] (do_idle) from [<c0287a00>] (cpu_startup_entry+0x28/0x2c)
+> [    7.297821]  r9:410fd083 r8:c187df68 r7:c1e00000 r6:ca9d6000 r5:c85201e0 r4:000000e1
+> [    7.305687] [<c02879d8>] (cpu_startup_entry) from [<c111d7b8>] (rest_init+0x148/0x150)
+> [    7.313764] [<c111d670>] (rest_init) from [<c1801534>] (arch_call_rest_init+0x18/0x1c)
+> [    7.321855]  r7:c1e06dc0 r6:c1e00000 r5:c1e00000 r4:c851d5c0
+> [    7.327606] [<c180151c>] (arch_call_rest_init) from [<c1801990>] (start_kernel+0x3e0/0x424)
+> [    7.336126] [<c18015b0>] (start_kernel) from [<00000000>] (0x0)
+> [    7.342179]  r8:2eff9400 r7:00000c42 r6:30c0387d r5:00000000 r4:c1800334
+> [    7.349000] Code: ebd9c790 e5954000 e2840008 ebd9c78d (e5943008) 
+> [    7.355247] ---[ end trace 38b3df6838c109c3 ]---
+> 
+> Let me know if you need any other information, thanks!
+> Maxime
+> 
+
 -- 
-2.30.2
-
+Florian
