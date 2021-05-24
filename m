@@ -2,88 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56BD938E1D1
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 09:34:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35DED38E1E5
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 09:44:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232373AbhEXHgJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 24 May 2021 03:36:09 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5745 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232276AbhEXHgJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 03:36:09 -0400
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FpTQw6HGNzmkS6;
-        Mon, 24 May 2021 15:31:04 +0800 (CST)
-Received: from dggema724-chm.china.huawei.com (10.3.20.88) by
- dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 15:34:39 +0800
-Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
- dggema724-chm.china.huawei.com (10.3.20.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Mon, 24 May 2021 15:34:39 +0800
-Received: from dggema772-chm.china.huawei.com ([10.9.128.138]) by
- dggema772-chm.china.huawei.com ([10.9.128.138]) with mapi id 15.01.2176.012;
- Mon, 24 May 2021 15:34:39 +0800
-From:   "liujian (CE)" <liujian56@huawei.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "quentin@isovalent.com" <quentin@isovalent.com>,
-        "sdf@google.com" <sdf@google.com>,
+        id S232327AbhEXHqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 03:46:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40106 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232254AbhEXHqB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 03:46:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 17C1D610A5;
+        Mon, 24 May 2021 07:44:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621842274;
+        bh=z1C+QyseZ45GbVWwYhu5yBGWudxghE44niAVgptWqf4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EEptFrgYnoVewuNRXXBInrpG2Hc9P5zKBh/cdyYLgkVvJR06iivgB9otwT4wdXJ4h
+         3wytJWF7qQ9m/llsbpZrM18cufHG5c2Uh8NdzhxLeBbMZheDqnCmH4paXgNPQVD+K6
+         YcIwsq29No2qXT+5Bn6CJ+SSkFjZ6Wn9WwHt1jKWKmfN5Bu5GgUl/NizneqYe3QIw3
+         fo5krE+3IcmyhQu8XX5cjpKxgAaK9kaJm9DbdSezfsOkpaGnoItrJBeCX2hQ0eDudI
+         fGWJK6GycievUMv7eW2ieyAweY6JloW0Myje8hAVVDOOwQv5usivK+lU3MACMFBxrT
+         /v6SzM7+xn68w==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1ll5GI-0003yK-2U; Mon, 24 May 2021 09:44:31 +0200
+Date:   Mon, 24 May 2021 09:44:30 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Hayes Wang <hayeswang@realtek.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: RE: [PATCH] bpftool: Add sock_release help info for cgroup attach
- command
-Thread-Topic: [PATCH] bpftool: Add sock_release help info for cgroup attach
- command
-Thread-Index: AQHXUGxZWDgEH59s4U2IxO0jYOh6Qqrxs7+AgACG/cA=
-Date:   Mon, 24 May 2021 07:34:39 +0000
-Message-ID: <de161c23b4154616ae24fc51bfc16fa2@huawei.com>
-References: <20210524071548.115138-1-liujian56@huawei.com>
- <YKtT337G53rMDiAH@kroah.com>
-In-Reply-To: <YKtT337G53rMDiAH@kroah.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.176.93]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com" 
+        <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>
+Subject: Re: [PATCH net v2] r8152: check the informaton of the device
+Message-ID: <YKtZXsmkNaMJgNYe@hovoldconsulting.com>
+References: <1394712342-15778-363-Taiwan-albertk@realtek.com>
+ <1394712342-15778-364-Taiwan-albertk@realtek.com>
+ <YKizqoNIVFo+weI9@kroah.com>
+ <YKi7qEWobOLRyoU8@hovoldconsulting.com>
+ <d27f9a1848a546b99e2ab84cb15be06f@realtek.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d27f9a1848a546b99e2ab84cb15be06f@realtek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Greg KH [mailto:gregkh@linuxfoundation.org]
-> Sent: Monday, May 24, 2021 3:21 PM
-> To: liujian (CE) <liujian56@huawei.com>
-> Cc: ast@kernel.org; daniel@iogearbox.net; andrii@kernel.org; kafai@fb.com;
-> songliubraving@fb.com; yhs@fb.com; john.fastabend@gmail.com;
-> kpsingh@kernel.org; quentin@isovalent.com; sdf@google.com;
-> netdev@vger.kernel.org; bpf@vger.kernel.org
-> Subject: Re: [PATCH] bpftool: Add sock_release help info for cgroup attach
-> command
+On Mon, May 24, 2021 at 01:49:33AM +0000, Hayes Wang wrote:
+> Johan Hovold <johan@kernel.org>
+> > Sent: Saturday, May 22, 2021 4:07 PM
+> [...]
+> > > > +	if (usb_endpoint_num(in) != 1) {
+> > > > +		dev_err(&intf->dev, "Invalid Rx Endpoint\n");
+> > >
+> > > "Invalid number of Rx endpoints"
+> > 
+> > Here it is the endpoint number (address) that is being checked so
+> > "number of" would be wrong.
+> > 
+> > That said, perhaps none of these checks are even needed a bit depending
+> > on how the driver is implemented. That is, if it hardcodes the endpoint
+> > addresses or uses the result from usb_find_common_endpoints() above
+> > (which I realise now that it does not so these checks are probably still
+> > needed).
 > 
-> On Mon, May 24, 2021 at 03:15:48PM +0800, Liu Jian wrote:
-> > Fixes: db94cc0b4805 ("bpftool: Add support for
-> > BPF_CGROUP_INET_SOCK_RELEASE")
-> > Signed-off-by: Liu Jian <liujian56@huawei.com>
-> > ---
-> >  tools/bpf/bpftool/cgroup.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> I know I do not take patches without any changelog text, maybe other
-> maintainers are more leniant...
+> The purpose of the checks is to find out the fake devices. That is, even
+> the device supports in, out, and interrupt endpoints, it is treated as
+> fake or malicious device, if the addresses of these endpoints are wrong.
+> Therefore, I would keep the checks.
 
-Sorry, I will send v2 for the bad habits.  Thank you ~
+Strictly, you need to check for bad input which could cause your driver
+to crash or malfunction. Generally you don't need to verify endpoint
+addresses unless the driver is hardcoding those. But since that is
+precisely what this particular driver is doing, these checks indeed need
+to stay.
+
+Johan
