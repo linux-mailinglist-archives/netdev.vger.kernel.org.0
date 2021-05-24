@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3679738E962
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 16:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E7D38E96B
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 16:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233299AbhEXOsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 10:48:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54448 "EHLO mail.kernel.org"
+        id S233585AbhEXOtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 10:49:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54514 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233260AbhEXOsU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 10:48:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 31438613B0;
-        Mon, 24 May 2021 14:46:51 +0000 (UTC)
+        id S233303AbhEXOsY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 10:48:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6BBEC61376;
+        Mon, 24 May 2021 14:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621867612;
-        bh=v6OOnt1SXHiN/AItB/mVsWX4OlFRu1mfmCztys9CYok=;
+        s=k20201202; t=1621867616;
+        bh=oDyXkmvx+gQobzupFPp7+JRAht8mlIefsNOkh3GbdPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IaCG0fTIBOgnWEA0QCnPVUOs1OhPOiuGf11rnHnADSHLFEBr8lLnJFyTacQZyu6d6
-         vTOmEkHIfeL2/s5/oYlXV8gn9jZm8V5UIPAH7xOj2VyF4pZKLe0ean9CjAiUoWKZno
-         b5pcbQujx+jMhTba77PjwTze5QhRfluYmVKDVVug8F/YaUJRQGhM7+ijDYUtUVvwvm
-         SwVu//EZdVPg+jQZ+n9dlKzmf1X8GWhDB/Ro+Y0HnrH2y/x5+PrCGE/be4E7pW+GPr
-         LdKd/+9N60AXAcWmRHpiJKUdqa588kq/M1cKYThk8yjd7FyGfR38NOUq10E+YdFPhB
-         Ebf/Z92r5fs6Q==
+        b=c+u/FrYiPBMQJOcDMjzIMiUQHGxY3y0I0gM/u3CUYolhVlvMgprw382d5Fd1R5o+1
+         7ku1Vm6QoD+rM/lErp4nET+NNi4a+cN9s8WC92vlyogOQ3/hq/ailPgOI/u8FcuXZn
+         1U2zwcSv8X4eIEqg5h3MgFHsRm1ZytROB2YImpOecbPJExh5F5FfEKYyjlYzvnywu8
+         axIlHOrnABzxCYbyUOVkjpubTk1yTecjA4Afw3qZvv4M2rdLeHrWfR0EB9fl9PGpbS
+         gb1wpoDGrHywWrGCa6+kjlNwntBUGAmivrIaUltfpEkcgeZN9c159U1g9M5PA6Mm4G
+         9abqdH6n1bJUQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Phillip Potter <phil@philpotter.co.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 24/63] isdn: mISDN: correctly handle ph_info allocation failure in hfcsusb_ph_info
-Date:   Mon, 24 May 2021 10:45:41 -0400
-Message-Id: <20210524144620.2497249-24-sashal@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kangjie Lu <kjlu@umn.edu>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 27/63] Revert "libertas: add checks for the return value of sysfs_create_group"
+Date:   Mon, 24 May 2021 10:45:44 -0400
+Message-Id: <20210524144620.2497249-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210524144620.2497249-1-sashal@kernel.org>
 References: <20210524144620.2497249-1-sashal@kernel.org>
@@ -43,101 +44,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Phillip Potter <phil@philpotter.co.uk>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit 5265db2ccc735e2783b790d6c19fb5cee8c025ed ]
+[ Upstream commit 46651077765c80a0d6f87f3469129a72e49ce91b ]
 
-Modify return type of hfcusb_ph_info to int, so that we can pass error
-value up the call stack when allocation of ph_info fails. Also change
-three of four call sites to actually account for the memory failure.
-The fourth, in ph_state_nt, is infeasible to change as it is in turn
-called by ph_state which is used as a function pointer argument to
-mISDN_initdchannel, which would necessitate changing its signature
-and updating all the places where it is used (too many).
+This reverts commit 434256833d8eb988cb7f3b8a41699e2fe48d9332.
 
-Fixes original flawed commit (38d22659803a) from the University of
-Minnesota.
+Because of recent interactions with developers from @umn.edu, all
+commits from them have been recently re-reviewed to ensure if they were
+correct or not.
 
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
-Link: https://lore.kernel.org/r/20210503115736.2104747-48-gregkh@linuxfoundation.org
+Upon review, this commit was found to be incorrect for the reasons
+below, so it must be reverted.  It will be fixed up "correctly" in a
+later kernel change.
+
+The original commit was incorrect, the error needs to be propagated back
+to the caller AND if the second group call fails, the first needs to be
+removed.  There are much better ways to solve this, the driver should
+NOT be calling sysfs_create_group() on its own as it is racing userspace
+and loosing.
+
+Cc: Kangjie Lu <kjlu@umn.edu>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210503115736.2104747-53-gregkh@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/hardware/mISDN/hfcsusb.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/net/wireless/marvell/libertas/mesh.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardware/mISDN/hfcsusb.c
-index 4bb470d3963d..cd5642cef01f 100644
---- a/drivers/isdn/hardware/mISDN/hfcsusb.c
-+++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
-@@ -46,7 +46,7 @@ static void hfcsusb_start_endpoint(struct hfcsusb *hw, int channel);
- static void hfcsusb_stop_endpoint(struct hfcsusb *hw, int channel);
- static int  hfcsusb_setup_bch(struct bchannel *bch, int protocol);
- static void deactivate_bchannel(struct bchannel *bch);
--static void hfcsusb_ph_info(struct hfcsusb *hw);
-+static int  hfcsusb_ph_info(struct hfcsusb *hw);
- 
- /* start next background transfer for control channel */
- static void
-@@ -241,7 +241,7 @@ hfcusb_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
-  * send full D/B channel status information
-  * as MPH_INFORMATION_IND
-  */
--static void
-+static int
- hfcsusb_ph_info(struct hfcsusb *hw)
+diff --git a/drivers/net/wireless/marvell/libertas/mesh.c b/drivers/net/wireless/marvell/libertas/mesh.c
+index f5b78257d551..c611e6668b21 100644
+--- a/drivers/net/wireless/marvell/libertas/mesh.c
++++ b/drivers/net/wireless/marvell/libertas/mesh.c
+@@ -805,12 +805,7 @@ static void lbs_persist_config_init(struct net_device *dev)
  {
- 	struct ph_info *phi;
-@@ -249,6 +249,9 @@ hfcsusb_ph_info(struct hfcsusb *hw)
- 	int i;
- 
- 	phi = kzalloc(struct_size(phi, bch, dch->dev.nrbchan), GFP_ATOMIC);
-+	if (!phi)
-+		return -ENOMEM;
-+
- 	phi->dch.ch.protocol = hw->protocol;
- 	phi->dch.ch.Flags = dch->Flags;
- 	phi->dch.state = dch->state;
-@@ -260,6 +263,8 @@ hfcsusb_ph_info(struct hfcsusb *hw)
- 	_queue_data(&dch->dev.D, MPH_INFORMATION_IND, MISDN_ID_ANY,
- 		    struct_size(phi, bch, dch->dev.nrbchan), phi, GFP_ATOMIC);
- 	kfree(phi);
-+
-+	return 0;
+ 	int ret;
+ 	ret = sysfs_create_group(&(dev->dev.kobj), &boot_opts_group);
+-	if (ret)
+-		pr_err("failed to create boot_opts_group.\n");
+-
+ 	ret = sysfs_create_group(&(dev->dev.kobj), &mesh_ie_group);
+-	if (ret)
+-		pr_err("failed to create mesh_ie_group.\n");
  }
  
- /*
-@@ -344,8 +349,7 @@ hfcusb_l2l1D(struct mISDNchannel *ch, struct sk_buff *skb)
- 			ret = l1_event(dch->l1, hh->prim);
- 		break;
- 	case MPH_INFORMATION_REQ:
--		hfcsusb_ph_info(hw);
--		ret = 0;
-+		ret = hfcsusb_ph_info(hw);
- 		break;
- 	}
- 
-@@ -400,8 +404,7 @@ hfc_l1callback(struct dchannel *dch, u_int cmd)
- 			       hw->name, __func__, cmd);
- 		return -1;
- 	}
--	hfcsusb_ph_info(hw);
--	return 0;
-+	return hfcsusb_ph_info(hw);
- }
- 
- static int
-@@ -743,8 +746,7 @@ hfcsusb_setup_bch(struct bchannel *bch, int protocol)
- 			handle_led(hw, (bch->nr == 1) ? LED_B1_OFF :
- 				   LED_B2_OFF);
- 	}
--	hfcsusb_ph_info(hw);
--	return 0;
-+	return hfcsusb_ph_info(hw);
- }
- 
- static void
+ static void lbs_persist_config_remove(struct net_device *dev)
 -- 
 2.30.2
 
