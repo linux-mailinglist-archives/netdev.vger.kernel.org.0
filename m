@@ -2,86 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0846F38E280
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 10:45:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67A1938E2CB
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 10:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232463AbhEXIq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 04:46:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232464AbhEXIqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 04:46:54 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBACC06138B
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 01:45:26 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id e11so32491036ljn.13
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 01:45:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V7Eot4reizRuUqmf0K/rkTFVGo7P8pVMLjLh6jyCFRA=;
-        b=jInJomWEJ28bqvyt64gfUqIqCzsBLfPEp0SuWcOA9hPgIacmJdJNeky6DMbwP8Wz+q
-         HDm6wLRis4iIKKkKF3NbsWrHYo2VBydUGn7Y2LAWpNbaA+Gc/NvqbfGoYIGcNOfV/cHA
-         M11srfGLNcSGaAlz//XUQdiuQPC77HjtAAUlE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V7Eot4reizRuUqmf0K/rkTFVGo7P8pVMLjLh6jyCFRA=;
-        b=n2njF4sWC+rEuJ0WFhmHuRDD6YW35l/Q7qSh0xoN0ZD7vyZKURA2KOOdGR6v9yaVyH
-         zrlji7NJy7bO32NJotGUgJTt8e5Np0YB6girnWVO3AQrRW2YfT3fgiEQC5RVJ+tXEdtE
-         m6SOG+4q3VGP42mih9VBce4JUGZ1zponrh2v5iY7Cmb4KL6+tno7WPUJwLPWU8Ct6KIK
-         6+yNn+kzOo1/OiePSajvYvnmba2fyFXmDepXX6ZfUXLckt9hvxGakB4U+ztIDGjJSuaA
-         jRnNDYkbxzvgaRAfNmLeUN00qcUGlEGxBh7nllXKTf14BpTxI7e2CVnf2bahA/iP8IVT
-         hbkg==
-X-Gm-Message-State: AOAM531VEZvuQSS/u6j1h6H9x+660bzEZYTAjqPhR/kPcnzw57r1/KXP
-        O0ouzj9OoWtflAZCXKLHOUCWjnNptbdQP9ZaFHeUBQ==
-X-Google-Smtp-Source: ABdhPJwA1x8pZHLOORWFrbzbiN4gz/ORPklgCSKn6iOCER1OtA5BndR6oypOHyH9f+eeYntk7OSUjehV0lu0suev7dE=
-X-Received: by 2002:a05:651c:38d:: with SMTP id e13mr16419494ljp.226.1621845924323;
- Mon, 24 May 2021 01:45:24 -0700 (PDT)
+        id S232462AbhEXI4e convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 24 May 2021 04:56:34 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:34518 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232362AbhEXI4d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 04:56:33 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 14O8srRZ3017081, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 14O8srRZ3017081
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 24 May 2021 16:54:53 +0800
+Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 24 May 2021 16:54:52 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 24 May 2021 16:54:51 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74]) by
+ RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74%5]) with mapi id
+ 15.01.2106.013; Mon, 24 May 2021 16:54:51 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Johan Hovold <johan@kernel.org>
+CC:     "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com" 
+        <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>
+Subject: RE: [PATCH net v3] r8152: check the informaton of the device
+Thread-Topic: [PATCH net v3] r8152: check the informaton of the device
+Thread-Index: AQHXUGkJnqSJIsklPU2X0etxrhPKsqrxvtUAgACMwfA=
+Date:   Mon, 24 May 2021 08:54:50 +0000
+Message-ID: <1e7e1d4039724eb4bcdd5884a748d880@realtek.com>
+References: <1394712342-15778-363-Taiwan-albertk@realtek.com>
+ <1394712342-15778-365-Taiwan-albertk@realtek.com>
+ <YKtdJnvZTxE1yqEK@hovoldconsulting.com>
+In-Reply-To: <YKtdJnvZTxE1yqEK@hovoldconsulting.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/5/24_=3F=3F_06:00:00?=
+x-kse-attachment-filter-triggered-rules: Clean
+x-kse-attachment-filter-triggered-filters: Clean
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
- <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com> <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
-In-Reply-To: <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Mon, 24 May 2021 09:45:13 +0100
-Message-ID: <CACAyw9-aCgu5aApK4QKEJ-rdRTAEda5f8jdJDvmbnNod-RxP-Q@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/24/2021 08:33:42
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163866 [May 24 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 446 446 0309aa129ce7cd9d810f87a68320917ac2eba541
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 05/24/2021 08:36:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 23 May 2021 at 17:01, Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, May 21, 2021 at 2:37 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > Hi, Alexei
-> >
-> > Why do you intentionally keep people in the original discussion
-> > out of your CC? Remember you are the one who objected the
-> > idea by questioning its usefulness no matter how I hard I tried
-> > to explain? I am glad you changed your mind, but it does not
-> > mean you should forget to credit other people.
->
-> I didn't change my mind and I still object to your stated
-> _reasons_ for timers.
+Johan Hovold <johan@kernel.org>
+> Sent: Monday, May 24, 2021 4:01 PM
+[...]
+> >  	/* The vendor mode is not always config #1, so to find it out. */
+> >  	udev = interface_to_usbdev(intf);
+> >  	c = udev->config;
+> >  	num_configs = udev->descriptor.bNumConfigurations;
+> > +	if (num_configs < 2)
+> > +		return false;
+> > +
+> 
+> Nit: This check looks unnecessary also as the driver can handle a single
+> configuration just fine, and by removing it you'd be logging "Unexpected
+> Device\n" below also in the single config case.
 
-For others reading along, here is the original thread
-https://lore.kernel.org/bpf/CAM_iQpXJ4MWUhk-j+mC4ScsX12afcuUHT-64CpVj97QdQaNZZg@mail.gmail.com/
+I just want to distinguish the devices.
+It is acceptable if the device contains only one configuration.
+A mistake occurs if the device has more configurations and
+there is no expected one.
+I would remove it if you think it is better.
 
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+Best Regards,
+Hayes
 
-www.cloudflare.com
