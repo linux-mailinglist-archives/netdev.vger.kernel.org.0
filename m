@@ -2,127 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81A6C38E360
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 11:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F37738E3A0
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 12:02:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232503AbhEXJce (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 05:32:34 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:3974 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232426AbhEXJca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 05:32:30 -0400
-Received: from dggems706-chm.china.huawei.com (unknown [172.30.72.60])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FpX2d5XrBzmZfk;
-        Mon, 24 May 2021 17:28:41 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggems706-chm.china.huawei.com (10.3.19.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 17:31:01 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 17:31:00 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@huawei.com>, Jian Shen <shenjian15@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 2/2] net: hns3: use HCLGE_VPORT_STATE_PROMISC_CHANGE to replace HCLGE_STATE_PROMISC_CHANGED
-Date:   Mon, 24 May 2021 17:30:43 +0800
-Message-ID: <1621848643-18567-3-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1621848643-18567-1-git-send-email-tanhuazhong@huawei.com>
-References: <1621848643-18567-1-git-send-email-tanhuazhong@huawei.com>
+        id S232466AbhEXKDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 06:03:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232422AbhEXKDh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 06:03:37 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE0DC061756
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 03:02:03 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1ll7Oz-00042T-HV; Mon, 24 May 2021 12:01:37 +0200
+Date:   Mon, 24 May 2021 12:01:37 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        saeedm@mellanox.com, fw@strlen.de, netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: zero-initialize skb extensions on allocation
+Message-ID: <20210524100137.GA3194@breakpoint.cc>
+References: <20210524061959.2349342-1-vladbu@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210524061959.2349342-1-vladbu@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+Vlad Buslov <vladbu@nvidia.com> wrote:
+> Function skb_ext_add() doesn't initialize created skb extension with any
+> value and leaves it up to the user.
 
-Currently, PF is using HCLGE_STATE_PROMISC_CHANGED to indicate
-need synchronize the promisc mode for itself, and using flag
-HCLGE_VPORT_STATE_PROMISC_CHANGE for its VF. To keep consistent,
-remove flag HCLGE_STATE_PROMISC_CHANGED, and use flag
-HCLGE_VPORT_STATE_PROMISC_CHANGE instead.
+That was intentional.
 
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 12 ++++++------
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h |  1 -
- 2 files changed, 6 insertions(+), 7 deletions(-)
+Its unlikely that all extensions are active at the same time on same skb.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index d37767d..6addeb2 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -5183,9 +5183,8 @@ static int hclge_set_promisc_mode(struct hnae3_handle *handle, bool en_uc_pmc,
- static void hclge_request_update_promisc_mode(struct hnae3_handle *handle)
- {
- 	struct hclge_vport *vport = hclge_get_vport(handle);
--	struct hclge_dev *hdev = vport->back;
- 
--	set_bit(HCLGE_STATE_PROMISC_CHANGED, &hdev->state);
-+	set_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE, &vport->state);
- }
- 
- static void hclge_sync_fd_state(struct hclge_dev *hdev)
-@@ -8050,6 +8049,7 @@ int hclge_vport_start(struct hclge_vport *vport)
- 	struct hclge_dev *hdev = vport->back;
- 
- 	set_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state);
-+	set_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE, &vport->state);
- 	vport->last_active_jiffies = jiffies;
- 
- 	if (test_bit(vport->vport_id, hdev->vport_config_block)) {
-@@ -10048,7 +10048,6 @@ static void hclge_restore_hw_table(struct hclge_dev *hdev)
- 
- 	hclge_restore_mac_table_common(vport);
- 	hclge_restore_vport_vlan_table(vport);
--	set_bit(HCLGE_STATE_PROMISC_CHANGED, &hdev->state);
- 	set_bit(HCLGE_STATE_FD_USER_DEF_CHANGED, &hdev->state);
- 	hclge_restore_fd_entries(handle);
- }
-@@ -12408,16 +12407,17 @@ static void hclge_sync_promisc_mode(struct hclge_dev *hdev)
- 	u16 i;
- 
- 	if (vport->last_promisc_flags != vport->overflow_promisc_flags) {
--		set_bit(HCLGE_STATE_PROMISC_CHANGED, &hdev->state);
-+		set_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE, &vport->state);
- 		vport->last_promisc_flags = vport->overflow_promisc_flags;
- 	}
- 
--	if (test_bit(HCLGE_STATE_PROMISC_CHANGED, &hdev->state)) {
-+	if (test_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE, &vport->state)) {
- 		tmp_flags = handle->netdev_flags | vport->last_promisc_flags;
- 		ret = hclge_set_promisc_mode(handle, tmp_flags & HNAE3_UPE,
- 					     tmp_flags & HNAE3_MPE);
- 		if (!ret) {
--			clear_bit(HCLGE_STATE_PROMISC_CHANGED, &hdev->state);
-+			clear_bit(HCLGE_VPORT_STATE_PROMISC_CHANGE,
-+				  &vport->state);
- 			hclge_enable_vlan_filter(handle,
- 						 tmp_flags & HNAE3_VLAN_FLTR);
- 		}
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 8425dae..9e4d02d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -224,7 +224,6 @@ enum HCLGE_DEV_STATE {
- 	HCLGE_STATE_STATISTICS_UPDATING,
- 	HCLGE_STATE_CMD_DISABLE,
- 	HCLGE_STATE_LINK_UPDATING,
--	HCLGE_STATE_PROMISC_CHANGED,
- 	HCLGE_STATE_RST_FAIL,
- 	HCLGE_STATE_FD_TBL_CHANGED,
- 	HCLGE_STATE_FD_CLEAR_ALL,
--- 
-2.7.4
+This is also the reason why the extension struct uses offset addressing
+to get the extension data rather than the simpler
 
+skb_ext {
+	struct sec_path sp;
+	struct nf_bridge_info nfbr;
+	...
+}
+
+So adding e.g. mptcp extension will only touch 1 cacheline instead of 3
+(or more if more extensions get added in the future).
+
+IOW, i would prefer if tc would add tc_skb_add_ext() or similar and
+zero whats needed there.
+
+> Fix the issue by changing __skb_ext_alloc() function to request
+> zero-initialized memory from kmem cache. Note that skb extension allocation
+> in skb_ext_maybe_cow() is not changed because newly allocated memory is
+> immediately overwritten with content of old skb extension so there is no
+> need to pre-initialize it.
+>
+> Multiple users of skb extension API have already been manually setting
+> newly allocated skb extension memory to zero. Remove such code and rely on
+> skb extension API instead.
+
+Are you sure its safe?
+
+>  static inline struct nf_bridge_info *nf_bridge_alloc(struct sk_buff *skb)
+>  {
+>  #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+> -	struct nf_bridge_info *b = skb_ext_add(skb, SKB_EXT_BRIDGE_NF);
+> -
+> -	if (b)
+> -		memset(b, 0, sizeof(*b));
+> -
+> -	return b;
+> +	return skb_ext_add(skb, SKB_EXT_BRIDGE_NF);
+
+So in the (unlikely) case where skb_ext_add did not allocate a new
+extension, the memory is no longer cleared.
+
+If the skb had an nf_bridge_info extension previously that got
+discarded earlier via skb_ext_del() this now leaks the old content.
