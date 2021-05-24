@@ -2,93 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A07A38F4C4
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 23:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D935538F4D2
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 23:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233822AbhEXVLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 17:11:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32866 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233770AbhEXVLp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 17:11:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D6F9961414;
-        Mon, 24 May 2021 21:10:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621890616;
-        bh=GKPmJ2ZJ/61stphdwxIXyW9qdl7QVO7uYTAKCN3hreQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=L+bMHU5ps9QoyhV2YoCV0Re46/r9FpkTMPoVyPOv44f6KCguqQRDbE3CWPj7aMiUX
-         UQv2E5vSmYW1ND1PJJuxAXHYfJv29NSkNGprKZArZ4JZtw7Aimp8U0hhH8evEuxmwp
-         XTGokHiWqT7Pd+Mv4oSC6iySIN2YkqfcfMZ6uAJZflAZf/ZdTamSuXQNvWIOYxUIab
-         b6VwiM/NaHaiwFjx8xzguq3jkAkbhYRlbcg/pLdr8Tzh/zZ6/svHWNq9gZ5d1Kblhs
-         WclaMnObtgYoNNCJaBOqzRDteOHFPXt5RROkz1HSCi0ZuEwP6kY/FMHXsJD8e3FVox
-         gb085IRkhszsQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CFC13609ED;
-        Mon, 24 May 2021 21:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/9] SJA1105 DSA driver preparation for new switch
- introduction (SJA1110)
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162189061684.7619.14779165415576141402.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 May 2021 21:10:16 +0000
-References: <20210524131421.1030789-1-olteanv@gmail.com>
-In-Reply-To: <20210524131421.1030789-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, vladimir.oltean@nxp.com
+        id S233813AbhEXVZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 17:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41844 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229480AbhEXVZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 17:25:51 -0400
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A04C061574;
+        Mon, 24 May 2021 14:24:22 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 528524D2C9938;
+        Mon, 24 May 2021 14:24:20 -0700 (PDT)
+Date:   Mon, 24 May 2021 14:24:16 -0700 (PDT)
+Message-Id: <20210524.142416.2165023047022388991.davem@davemloft.net>
+To:     gatis@mikrotik.com
+Cc:     chris.snook@gmail.com, kuba@kernel.org, hkallweit1@gmail.com,
+        jesse.brandeburg@intel.com, dchickles@marvell.com,
+        tully@mikrotik.com, eric.dumazet@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] atl1c: add 4 RX/TX queue support for Mikrotik
+ 10/25G NIC
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210524191115.2760178-1-gatis@mikrotik.com>
+References: <20210524191115.2760178-1-gatis@mikrotik.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 24 May 2021 14:24:20 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Gatis Peisenieks <gatis@mikrotik.com>
+Date: Mon, 24 May 2021 22:11:15 +0300
 
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Mon, 24 May 2021 16:14:12 +0300 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> More RX/TX queues on a network card help spread the CPU load among
+> cores and achieve higher overall networking performance. The new
+> Mikrotik 10/25G NIC supports 4 RX and 4 TX queues. TX queues are
+> treated with equal priority. RX queue balancing is fixed based on
+> L2/L3/L4 hash.
 > 
-> This series contains refactoring patches which are necessary before the
-> support for the new NXP SJA1110 switch can be introduced in this driver.
+> This adds support for 4 RX/TX queues while maintaining backwards
+> compatibility with older hardware.
 > 
-> As far as this series is concerned, here is the list of major changes
-> introduced with the SJA1110:
-> - 11 ports vs 5
-> - port 0 goes to the internal microcontroller, so it is unused as far as
->   DSA is concerned
-> - the Clock Generation Unit does not need any configuration for
->   setting up the PLLs for MII/RMII/RGMII
-> - the L2 Policing Table contains multicast policers too, not just
->   broadcast and per-traffic class. These must be minimally initialized.
-> - more frame buffers
+> Simultaneous TX + RX performance on AMD Threadripper 3960X
+> with Mikrotik 10/25G NIC improved from 1.6Mpps to 3.2Mpps per port.
 > 
-> [...]
+> Backwards compatiblitiy was verified with AR8151 and AR8131 based
+> NICs.
+> 
+> Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
 
-Here is the summary with links:
-  - [net-next,1/9] net: dsa: sja1105: parameterize the number of ports
-    https://git.kernel.org/netdev/net-next/c/542043e91df4
-  - [net-next,2/9] net: dsa: sja1105: avoid some work for unused ports
-    https://git.kernel.org/netdev/net-next/c/f238fef1b3de
-  - [net-next,3/9] net: dsa: sja1105: dimension the data structures for a larger port count
-    https://git.kernel.org/netdev/net-next/c/82760d7f2ea6
-  - [net-next,4/9] net: dsa: sja1105: don't assign the host port using dsa_upstream_port()
-    https://git.kernel.org/netdev/net-next/c/df2a81a35ebb
-  - [net-next,5/9] net: dsa: sja1105: skip CGU configuration if it's unnecessary
-    https://git.kernel.org/netdev/net-next/c/c50376783f23
-  - [net-next,6/9] net: dsa: sja1105: dynamically choose the number of static config table entries
-    https://git.kernel.org/netdev/net-next/c/fd6f2c257b0b
-  - [net-next,7/9] net: dsa: sja1105: use sja1105_xfer_u32 for the reset procedure
-    https://git.kernel.org/netdev/net-next/c/f78a2517cf73
-  - [net-next,8/9] net: dsa: sja1105: configure the multicast policers, if present
-    https://git.kernel.org/netdev/net-next/c/38fbe91f2287
-  - [net-next,9/9] net: dsa: sja1105: allow the frame buffer size to be customized
-    https://git.kernel.org/netdev/net-next/c/1bf658eefe38
+This does not apply cleanly to net-next, please respin.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thank you.
