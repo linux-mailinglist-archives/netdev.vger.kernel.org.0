@@ -2,86 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF6E038DEC4
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 03:07:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 214FA38DED7
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 03:21:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232128AbhEXBJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 21:09:12 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:3916 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232060AbhEXBJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 21:09:11 -0400
-Received: from dggems705-chm.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FpJsH0VrrzBtrf;
-        Mon, 24 May 2021 09:04:51 +0800 (CST)
-Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
- dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 09:07:41 +0800
-Received: from [10.174.179.215] (10.174.179.215) by
- dggema769-chm.china.huawei.com (10.1.198.211) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Mon, 24 May 2021 09:07:40 +0800
-Subject: Re: [PATCH net-next] ethernet: ucc_geth: Use kmemdup() rather than
- kmalloc+memcpy
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-CC:     <linux-kernel@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
-        <netdev@vger.kernel.org>, <rasmus.villemoes@prevas.dk>,
-        <kuba@kernel.org>, <davem@davemloft.net>, <leoyang.li@nxp.com>
-References: <20210523075616.14792-1-yuehaibing@huawei.com>
- <20210523152937.Horde.5kC0kzvaP3No5BC63LlZ_A7@messagerie.c-s.fr>
- <YKpmKln1Z/UvZgZQ@lunn.ch>
-From:   YueHaibing <yuehaibing@huawei.com>
-Message-ID: <cb42d735-e540-2ea4-2cd2-fc3e1bccd526@huawei.com>
-Date:   Mon, 24 May 2021 09:07:40 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S232132AbhEXBWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 21:22:46 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53510 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232067AbhEXBWp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 May 2021 21:22:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=El+XZLB92OFWSNNtDA3CExs5QoARTgqBFwrJ+abZcbI=; b=wVz1tZsk4uVfYWfxhScxy8WxbG
+        uDf3vohtq+lri3NoaDwd5mfH4kGPGjjg+OaxxHb2QmJRwp/5+UcIVPUu/t+lt0X8vwL8WeAuQ9TXY
+        heDO2rAhc+03Hn/W0nnuP56sWvom59PH/uzByo5FzyKCkowVZqvdXRZOptdxbF3xCyO8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lkzH9-005tzT-LY; Mon, 24 May 2021 03:20:59 +0200
+Date:   Mon, 24 May 2021 03:20:59 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     leoyang.li@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        rasmus.villemoes@prevas.dk, christophe.leroy@csgroup.eu,
+        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net-next] ethernet: ucc_geth: Use kmemdup() rather
+ than kmalloc+memcpy
+Message-ID: <YKr/e4H0fPEyK8px@lunn.ch>
+References: <20210524010701.24596-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <YKpmKln1Z/UvZgZQ@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggema769-chm.china.huawei.com (10.1.198.211)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210524010701.24596-1-yuehaibing@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/5/23 22:26, Andrew Lunn wrote:
-> On Sun, May 23, 2021 at 03:29:37PM +0200, Christophe Leroy wrote:
->> YueHaibing <yuehaibing@huawei.com> a écrit :
->>
->>> Issue identified with Coccinelle.
->>>
->>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->>> ---
->>>  drivers/net/ethernet/freescale/ucc_geth.c | 4 ++--
->>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/freescale/ucc_geth.c
->>> b/drivers/net/ethernet/freescale/ucc_geth.c
->>> index e0936510fa34..51206272cc25 100644
->>> --- a/drivers/net/ethernet/freescale/ucc_geth.c
->>> +++ b/drivers/net/ethernet/freescale/ucc_geth.c
->>> @@ -3590,10 +3590,10 @@ static int ucc_geth_probe(struct
->>> platform_device* ofdev)
->>>  	if ((ucc_num < 0) || (ucc_num > 7))
->>>  		return -ENODEV;
->>>
->>> -	ug_info = kmalloc(sizeof(*ug_info), GFP_KERNEL);
->>> +	ug_info = kmemdup(&ugeth_primary_info, sizeof(*ug_info),
->>> +			  GFP_KERNEL);
->>
->> Can you keep that as a single line ? The tolerance is 100 chars per line now.
+On Mon, May 24, 2021 at 09:07:01AM +0800, YueHaibing wrote:
+> Issue identified with Coccinelle.
 > 
-> Networking prefers 80. If it fits a single 80 char line, please use a single line.
-> Otherwise please leave it as it is.
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Ok, will send v2.
-> 
-> 	   Andrew
-> .
-> 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
