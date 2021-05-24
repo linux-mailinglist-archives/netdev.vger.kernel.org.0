@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA5A138F424
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 22:18:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D4A238F43D
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 22:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232829AbhEXUTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 16:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232900AbhEXUTl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 16:19:41 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757BAC061574
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 13:18:11 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id i7so25862295ejc.5
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 13:18:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZW8cCiAzHyHOwo3G4SSuR3ks7aYQun1vtH9zKbGIGuk=;
-        b=vIJLXNbc9yDAo6QEQH9QWf4Z22/sQx5haK6JrsiBGwopXQSb3KEBU/qP+MV95muAuo
-         xMqVZCuMgOodmvj4wt9A3oLssA/4E+rdJxpYOiZVaSJnO9MiXHquG13cwhiH0eokTufD
-         noU1KIP0963N6ljBb4QXwWVpTmTqJLplxYpZIL3mBFr/BJahwerOUUrcdvNe7wi6YLcf
-         hr6hpEpeld53rKuVINqmQscvIygKxNSrgzbsqs/LQu7uCJ6K6oG7VTN3bZgAVurry29m
-         ZxosufL0sqFZnO5Fa6R61sM+6hTH04wTm2twzvsB0+9xIL5tyKSwm5NP3TqPqTAZOmYi
-         MNbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZW8cCiAzHyHOwo3G4SSuR3ks7aYQun1vtH9zKbGIGuk=;
-        b=e7C3QWxTy+kvjVfyAye4J5ZinZG2i9+hhIOzPqHO7WolQVEvabK56p08wfZKBSJMEg
-         tpSPJ/lbllrCgumORoBytxW6amApUqJBqbubaXLCKUYpNSIGtWBzQ2pXSjJkoPrhKUDl
-         HL71jWujkd/zzD6dYmCh6CHKhIJCcRQInS/ujq8VbWH9z7zpp1WjHMtPTDNYkE6JXkqL
-         LbXvC9Ad5dzDeZHYVxMKjdlllJgnapAIbL87nl+IFXBSCNHeEat6RRroHXNgWO12UB3D
-         QmGCjnVcRm6QM6O3LMhtG5SxOB2SCzsikYRs4vZz/nrJ0tHhfcqsJFOU540nxAoEZSLT
-         8PFA==
-X-Gm-Message-State: AOAM532pFSOQhjGR2UpZOPsAN0HFWLFN4V3V5unrWZGxzMekPWiAb6Hy
-        dnP5sKmrmdYtx4a0vWMCEFRVvLsk9MGq1P5lpKo=
-X-Google-Smtp-Source: ABdhPJxO4DbvD/i19lelK40wBRTpdS5grbN28GfxNDNeB7glg+/HsGKu90dDD4CnW9jQyw71c2ZcPKo4Mz6CcOBXAV0=
-X-Received: by 2002:a17:907:76e8:: with SMTP id kg8mr23522257ejc.130.1621887490023;
- Mon, 24 May 2021 13:18:10 -0700 (PDT)
+        id S233764AbhEXUVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 16:21:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47756 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233079AbhEXUVi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 16:21:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1047D6141A;
+        Mon, 24 May 2021 20:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621887610;
+        bh=E8TX+IzIzGjUSD9qVd+RzLohf3ZOA7PPDZRYaimXkY0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GuKsXZy6NHg7xyybAI8KX5OyeRiu0s8QAcBZjUoxyRMdghXKFu0knrErphNq/qjJb
+         uuhGPBEqr1PD5G4WxsnN1RaWuL7llEJ29JAOs1+cTeyc0HST4lF7VDEcgbzNbpLAXy
+         wuviShCVcdoaube8yQi4Gywm2cH+Iq7di5AKNZ8Ft2s6zH0LlupnSM+VhJBb5xIGS5
+         lx5/qpUNbtCcopApLIFE3t+ysVuPUg6EdKb6FtuXIn542mQNp7yYNemEhxgAu2IbJb
+         Kgq8OMeP7kExNU4Cru9HsO9g5aXSSdBgzhtmGSOIwX5/ttIlabaIE9Ag0t/pRHADzA
+         HF1TIZkJTWHGw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 00BAF60CD4;
+        Mon, 24 May 2021 20:20:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210519111340.20613-1-smalin@marvell.com> <20210519111340.20613-9-smalin@marvell.com>
- <34e4a50b-4075-2364-d654-4039564f43ff@grimberg.me>
-In-Reply-To: <34e4a50b-4075-2364-d654-4039564f43ff@grimberg.me>
-From:   Shai Malin <malin1024@gmail.com>
-Date:   Mon, 24 May 2021 23:17:58 +0300
-Message-ID: <CAKKgK4yyf=o4S1c3svRzFoR-mhc9MUP2QGyu6aB3e-8nmW5k6Q@mail.gmail.com>
-Subject: Re: [RFC PATCH v5 08/27] nvme-tcp-offload: Add Timeout and ASYNC Support
-To:     Sagi Grimberg <sagi@grimberg.me>
-Cc:     netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
-        davem@davemloft.net, kuba@kernel.org, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org, Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>, okulkarni@marvell.com,
-        pkushwaha@marvell.com, Shai Malin <smalin@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: hso: fix control-request directions
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162188760999.19394.15297874086454377579.git-patchwork-notify@kernel.org>
+Date:   Mon, 24 May 2021 20:20:09 +0000
+References: <20210524092511.4657-1-johan@kernel.org>
+In-Reply-To: <20210524092511.4657-1-johan@kernel.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/22/21 1:51 AM, Sagi Grimberg wrote:
-> This should be squashed in the I/O patch
+Hello:
 
-Sure.
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Mon, 24 May 2021 11:25:11 +0200 you wrote:
+> The direction of the pipe argument must match the request-type direction
+> bit or control requests may fail depending on the host-controller-driver
+> implementation.
+> 
+> Fix the tiocmset and rfkill requests which erroneously used
+> usb_rcvctrlpipe().
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net: hso: fix control-request directions
+    https://git.kernel.org/netdev/net/c/1a6e9a9c68c1
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
