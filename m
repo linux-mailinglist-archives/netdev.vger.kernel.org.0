@@ -2,102 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A775E38E7CC
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 15:39:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A2F938E88D
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 16:20:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232907AbhEXNk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 09:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232456AbhEXNk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 09:40:26 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80962C061574;
-        Mon, 24 May 2021 06:38:57 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id ml1-20020a17090b3601b029015f9b1ebce0so1938972pjb.5;
-        Mon, 24 May 2021 06:38:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=24xHs/c9+Vn16SJ80N4lzJM1aJdYpt55ltlqUdwqHiM=;
-        b=scqmS67QUgt1Fyf/4fpwGS4WutaGVaj/jxJ1L4w5FuFY7hJKD5d7EZkBeNXeRt8TNR
-         /OsZH4Ysney0WPC+TzEY9OBZaICZleyn/+cVjoI4q5tEn6qrTObNva62hgyt+C54ciOg
-         jYS1wF1OpPS5JpTaKv2oFGZ9KDXsXkJgISQWVVA2XxMWHO++HNQ9gMLv3oj1nPOisjFo
-         +Qcd8dvIt+cpo/ENgeXWjBIhLB2u0CvQKVb8W4tVqxShH7I90TGWq+8ARd1GmqIVvkOq
-         hHzDasNcOicrESHXuzbThmIY3sOZFM+4oqBMjGGtRkaCj+0XJqY8vCixHnEte6cB+mTg
-         ko6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=24xHs/c9+Vn16SJ80N4lzJM1aJdYpt55ltlqUdwqHiM=;
-        b=dBre84uIXDoOVVb9y8As/O0jGZ2lnxMU7bg+4IC61wJuwfit5TSwiPVUrFrXu/qDDG
-         8Q9tukqFeTp/UnlWbnepbDAn1bldiDKzT/M5Tuq6+JftnDoMI+wnRiY0utgXsGMAMA7t
-         B4FYmCgKE/G2hrbnDxgUnQ8u+L83IoOedvCeA5T5IehyPFmfdIfYdH1jJ1i7GMlbEQG2
-         cFu+2qB4vO7+qmOom59cDXyyUDMcF69KPAI9syn1ojfQqsX93r0P5We+R2nuZbP5U1Dw
-         vGxcJTQooy7QPVGJ8m5Po5dYuXvmkHqdEwzsi9IfSFWXmZHJZTm2lL9HaRsotUjloYQv
-         3/1Q==
-X-Gm-Message-State: AOAM530jMgUeYtyuuX4q+NaZUz6sE4ivSch2uZjK6Vie82cMx27cknWV
-        wDAIr39fX7h/+o2NMdSlMlq/4nzhSz9Zd5pG
-X-Google-Smtp-Source: ABdhPJydfIwNrfnLYpzRXfkHv1vSE7Dm7d9+TjuXhyGEKX4kxaKS44Tuor1padPABacZRVuMCVduYg==
-X-Received: by 2002:a17:90a:e291:: with SMTP id d17mr25040930pjz.42.1621863536924;
-        Mon, 24 May 2021 06:38:56 -0700 (PDT)
-Received: from vessel.. ([103.242.196.149])
-        by smtp.gmail.com with ESMTPSA id n69sm4876274pfd.132.2021.05.24.06.38.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 May 2021 06:38:56 -0700 (PDT)
-From:   Saubhik Mukherjee <saubhik.mukherjee@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, gustavoars@kernel.org,
-        wanghai38@huawei.com
-Cc:     Saubhik Mukherjee <saubhik.mukherjee@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ldv-project@linuxtesting.org
-Subject: [PATCH] net: appletalk: cops: Fix data race in cops_probe1
-Date:   Mon, 24 May 2021 19:07:12 +0530
-Message-Id: <20210524133712.15720-1-saubhik.mukherjee@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        id S232921AbhEXOV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 10:21:26 -0400
+Received: from mail-dm6nam10on2076.outbound.protection.outlook.com ([40.107.93.76]:28344
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232486AbhEXOVZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 10:21:25 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d6AiOBZ1PFclfkKc+Qu47b0HvSsLqgiR7aMHXYKBL7x82RpsY5UQ/coRd1m/5vIPLyhqxCUbdESjCmRUNhZBdhKdZ7Xe8O1Q5GyeogPgcR8aTMFGuBqwA2M9UTIXNmXa0Qkfue9WAr4mxJeN0GtvC6NPZV+6VcC47sZQJxAJqF5a/RSWVICBDBjgX3b+f6xrCfhhIu5Nla8l99kHCtbCnTgg541z1mtR3rvauTc44fPAakbvnypTvkoHELVnkQ1pSzHLD4mLQi8fNRiUhNPeOLfBVDXxlbXkCwD9d4WkEOaOFWIKtGmcTO72tkzV3iql78AZ5u+HrXOPop+++kv/Sg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yHNtu+ymwLNRPH0yuvpSKxkrHoMRwZwDYFGvuLLWkUw=;
+ b=GUtbASxwnWNLnMFottYPJB3PZmXNpVLUIwkQi//0PEfrmQuEZUOd2vbZPlXyClDCdmTeKRzVEa6ZA4f6rPTHFeGHc395m/Vk9EPMa21+p5T4uDIUh9gY0Jmbmh56YUvgyHreCAxbGDj6DxHpgxu1PuhdcOH7Cu0zPvG5oGhXDHq3AtBNmvoNySD8JoZzNE8ltv1XQwpom4X0OfIxgMPLU8JyU7Ize4k2j3BT1cxrsea805vUa2Gn/MKXp8R6G0vOJwF6b/KYAkhGwq+XGb7Vj/zbhq1MV9ahZS1vRD6fs2wYib0vmzMZIOBZdum0CrnEWUeJ7u16QWzxNi1FkC231w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=thebollingers.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yHNtu+ymwLNRPH0yuvpSKxkrHoMRwZwDYFGvuLLWkUw=;
+ b=TDRxbFNRSzNK8mo2EZhRzWy+uY+3Di9efxUSaNvGYvpDCoi7XPXINZj1kZqJ6PSpfSFpoMK2J3TbT9qma0S84yVtOL9AidpoS3vQ7PXMN0MZ3HwON8RPAGrfSE3I0n2nCa473AF8SS7QohdK1Xy0hO0oQRMzfRnD+Z/zii1Hqo8/mOSfGHGetNZJA1bb9u2gD4iVM5m27gyPP+YIG3segH8Bq3YsUK64U6aXNEFVtpDruaPb3PV/sPeeefZToNY9p7RRQ3oRvDsQ2viEmy/U2WRsDBvdgqPFijfFGDXMAKrn9mx5dFAV0EjxLmpJGt8vHW9wD0JbA4r4Xq6DIHpiRQ==
+Received: from BN0PR04CA0155.namprd04.prod.outlook.com (2603:10b6:408:eb::10)
+ by CH2PR12MB3957.namprd12.prod.outlook.com (2603:10b6:610:2c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23; Mon, 24 May
+ 2021 14:19:56 +0000
+Received: from BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:eb:cafe::1a) by BN0PR04CA0155.outlook.office365.com
+ (2603:10b6:408:eb::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23 via Frontend
+ Transport; Mon, 24 May 2021 14:19:56 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; thebollingers.org; dkim=none (message not signed)
+ header.d=none;thebollingers.org; dmarc=pass action=none
+ header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT059.mail.protection.outlook.com (10.13.177.120) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4129.25 via Frontend Transport; Mon, 24 May 2021 14:19:56 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 24 May
+ 2021 14:19:55 +0000
+Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 24 May 2021 14:19:53 +0000
+From:   Moshe Shemesh <moshe@nvidia.com>
+To:     Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Don Bollinger <don@thebollingers.org>, <netdev@vger.kernel.org>
+CC:     Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>
+Subject: [PATCH ethtool v2 0/4] Extend module EEPROM API
+Date:   Mon, 24 May 2021 17:18:56 +0300
+Message-ID: <1621865940-287332-1-git-send-email-moshe@nvidia.com>
+X-Mailer: git-send-email 1.8.4.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ef0e943d-4789-44b0-8888-08d91ebf01c9
+X-MS-TrafficTypeDiagnostic: CH2PR12MB3957:
+X-Microsoft-Antispam-PRVS: <CH2PR12MB3957126963321BA6500BAF07D4269@CH2PR12MB3957.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: htcQjGWd2EUJQEUzVNUtFvvrSE5GsMNETLCU5sEoEJsPmVU52pTJbDt+Ztnwt7J552UhAZXaMFrUWE0RG+QhkzmFbZez4PKLe2eoXaNdtLLKZFp9emZUjP/9MAndXN/MAKtrpLjLEfgMje/uXWUMGO6DJCNpEL2CQKgwT+fPUiCrpZRluYyuE6JUYnU+d+HmU1m+EFIzPADyhPtbgHyzRzIj+NZarWmnLF7BWjCXKhxHx4zj7d75673m05PE4yiOFDo5rEYBpEotq9Xvp6jWM6S/4vwSj5bPBingO73olR95Rcg3KaoBfsF8l/OVt6k5mtS9MJogt/BlCZCBf7c5MqIxvwv7oieVd9GMYT3Js3obDiqUO+VzTgKawUtXr8l+QQF8M8Uk3Vu9SNKnck6LIu+lDhpxRKx+CwHLcIHZCbKRRo2esbpouQQSo2/Gp9dYxMqm8gSbsdiinU1vs8CuOfmgYUND0C3LJMmLa4CDdKLijbkwMJyPcBEmacH7hH/tcCobJvEcuBEujECYeVl2MrZzDusWQFY5IM1zsQn28nBoeh7cRhFiyLhihqZhTnFsvFQd4CIejNnhL5cI1bSHDME049zMCnCR2iaX+2FsIRdU3nzAJgwhKQ/SdDDZQ/DDz7Ue6MtWdc/MZ6xZxVNZfI6PnsKd71pv8A5DA4RCaYU=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(376002)(39860400002)(396003)(136003)(46966006)(36840700001)(83380400001)(336012)(86362001)(82310400003)(2906002)(7696005)(2616005)(426003)(8936002)(47076005)(82740400003)(70586007)(356005)(70206006)(107886003)(478600001)(316002)(5660300002)(8676002)(110136005)(186003)(4326008)(7636003)(36756003)(36860700001)(36906005)(54906003)(26005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2021 14:19:56.5268
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ef0e943d-4789-44b0-8888-08d91ebf01c9
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3957
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In cops_probe1(), there is a write to dev->base_addr after requesting an
-interrupt line and registering the interrupt handler cops_interrupt().
-The handler might be called in parallel to handle an interrupt.
-cops_interrupt() tries to read dev->base_addr leading to a potential
-data race. So write to dev->base_addr before calling request_irq().
+Ethtool supports module EEPROM dumps via the `ethtool -m <dev>` command.
+But in current state its functionality is limited - offset and length
+parameters, which are used to specify a linear desired region of EEPROM
+data to dump, is not enough, considering emergence of complex module
+EEPROM layouts such as CMIS 4.0.
 
-Found by Linux Driver Verification project (linuxtesting.org).
+Moreover, CMIS 4.0 extends the amount of pages that may be accessible by
+introducing another parameter for page addressing - banks. Besides,
+currently module EEPROM is represented as a chunk of concatenated pages,
+where lower 128 bytes of all pages, except page 00h, are omitted. Offset
+and length are used to address parts of this fake linear memory. But in
+practice drivers, which implement get_module_info() and
+get_module_eeprom() ethtool ops still calculate page number and set I2C
+address on their own.
 
-Signed-off-by: Saubhik Mukherjee <saubhik.mukherjee@gmail.com>
----
- drivers/net/appletalk/cops.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This series adds support in `ethtool -m` of dumping an arbitrary page
+specified by page number, bank number and I2C address. Implement netlink
+handler for `ethtool -m` in order to make such requests to the kernel
+and extend CLI by adding corresponding parameters.
+New command line format:
+ ethtool -m <dev> [hex on|off] [raw on|off] [offset N] [length N] [page N] [bank N] [i2c N]
 
-diff --git a/drivers/net/appletalk/cops.c b/drivers/net/appletalk/cops.c
-index ba8e70a8e312..6b12ce822e51 100644
---- a/drivers/net/appletalk/cops.c
-+++ b/drivers/net/appletalk/cops.c
-@@ -327,6 +327,8 @@ static int __init cops_probe1(struct net_device *dev, int ioaddr)
- 			break;
- 	}
- 
-+	dev->base_addr = ioaddr;
-+
- 	/* Reserve any actual interrupt. */
- 	if (dev->irq) {
- 		retval = request_irq(dev->irq, cops_interrupt, 0, dev->name, dev);
-@@ -334,8 +336,6 @@ static int __init cops_probe1(struct net_device *dev, int ioaddr)
- 			goto err_out;
- 	}
- 
--	dev->base_addr = ioaddr;
--
-         lp = netdev_priv(dev);
-         spin_lock_init(&lp->lock);
- 
+Netlink infrastructure works on per-page basis and allows dumps of a
+single page at once. But in case user requests human-readable output,
+which currently may require more than one page, userspace can make such
+additional calls to kernel on demand and place pages in a linked list.
+It allows to get pages from cache on demand and pass them to refactored
+SFF decoders.
+
+Change Log:
+v1 -> v2:
+- Changed offset defines to specification values.
+- Added default offset value (128) if page number is specified.
+- Fixed return values.
+- Removed page_available()
+
+Vladyslav Tarasiuk (4):
+  ethtool: Add netlink handler for getmodule (-m)
+  ethtool: Refactor human-readable module EEPROM output for new API
+  ethtool: Rename QSFP-DD identifiers to use CMIS 4.0
+  ethtool: Update manpages to reflect changes to getmodule (-m) command
+
+ Makefile.am             |   3 +-
+ qsfp-dd.c => cmis4.c    | 220 +++++++++++----------
+ cmis4.h                 | 128 +++++++++++++
+ ethtool.8.in            |  14 ++
+ ethtool.c               |   4 +
+ internal.h              |  12 ++
+ list.h                  |  34 ++++
+ netlink/desc-ethtool.c  |  13 ++
+ netlink/extapi.h        |   2 +
+ netlink/module-eeprom.c | 416 ++++++++++++++++++++++++++++++++++++++++
+ qsfp-dd.h               |  29 +--
+ qsfp.c                  | 130 +++++++------
+ qsfp.h                  |  51 ++---
+ sff-common.c            |   3 +
+ sff-common.h            |   3 +-
+ 15 files changed, 870 insertions(+), 192 deletions(-)
+ rename qsfp-dd.c => cmis4.c (55%)
+ create mode 100644 cmis4.h
+ create mode 100644 list.h
+ create mode 100644 netlink/module-eeprom.c
+
 -- 
-2.30.2
+2.18.2
 
