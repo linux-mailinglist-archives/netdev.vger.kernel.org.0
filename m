@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C32A38E738
+	by mail.lfdr.de (Postfix) with ESMTP id C7B6F38E739
 	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 15:15:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232896AbhEXNQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 09:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43938 "EHLO
+        id S232486AbhEXNQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 09:16:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232774AbhEXNQS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 09:16:18 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984B0C06138E
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 06:14:49 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id w12so24140994edx.1
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 06:14:49 -0700 (PDT)
+        with ESMTP id S232785AbhEXNQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 09:16:19 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327DEC061756
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 06:14:50 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id a25so31890266edr.12
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 06:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xpBw2l1wZ2xtqrU1NJ1TQLOODlywWltqb+XI3hZmzDg=;
-        b=gpTdnHCobebyqDgFXviNiVkZWejrlK8tPFnrbrkeSFnVKDOw6btLNUWjIr4zjWusyC
-         Htr3O+va6i4wLNXlsBZakWkrZoY8udXUOEIqN6dYJIKFP//DkQMhkBjOECyiDwZ51OP8
-         mN+eXKQLERNR8g3/Sw7WL4izfacD2goq0dAoFh0waZ+9rqJNXEj0w1MRLaW7cNbR7OWc
-         8YZOOyk3OqQzkaXyy8K5xbsJPECLErcCd9n936Y0hwD2DT9ez4WsfINYoH7WVXNZmi8F
-         SaADg7ayJ+2zTEM+DbOeVc9D8Kt5YwiMJ6aG54qcsJ93ET/hJSyDEwQKKn7RlcUjxdMl
-         QIVg==
+        bh=MUTbtxOtQ/6z77dwQCG2+h1G+nVZENByOptkDcJd1rA=;
+        b=lYrCWXbWHF4cW9LtgpxJx9cI0SsrYtXIHdou6AXnliJPzBM83yTRcSuKS5mHIOFxFV
+         1Z6RxFdGG5aUaEJ61lDgSnurzVTUWnuYu9oRFmBvyS6L4+i/PLiZWOrgrzw5YVpHtlAZ
+         jcoO7YRHvZm5LVqqcVq0PQt2FLzWGZl5DQ0WqS0QAtlnkvqzl2eA0P5emxqnJ1RXqM+/
+         pXv5eCxjTHS6WBro7nh2fG/zmSN3kuae+jsGUD/dPPez65X2lcewp4gIRj2afIz63hF3
+         fpxvEcmkr+eci8kxy8pQK91PMJDfdkmgr0vwfm89/8HFSzT7eoEqwgzj8Zf+MzjFZU/c
+         c4dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xpBw2l1wZ2xtqrU1NJ1TQLOODlywWltqb+XI3hZmzDg=;
-        b=WRwvwPm9f2eWwxqp4OLiJtK7iGsyRYbv+UWRyLaAzMGAtgRn1jihkTtoSMGAAvXpPG
-         NjZG7Vly2ACz8YbAv8nPY7EK1UcoF/Y9aQDlz9EogqmvVcegGjf1qHNzrbQnBpuDNWwN
-         F06P/aH0oziXP1vIVXKyyGBHpCSLibzt8kb4HuADtwG7N0PooPxuSTk35X6QRZHxmK80
-         YJZprxmjqDLngl9hfNkHA/EPmNNwy2TrH7HvvLXOMUvISw8N8ugosEy6GvxDQodxGPl5
-         CPOFHB7+wEoeVOURxPs6QrnklIw3et4dLqkmycC0IJt/o3NS/P+tEYg1PxbMzMWTcTye
-         vHow==
-X-Gm-Message-State: AOAM531PnRLPacF05ZE/Z3Z4gebnSzbladyVtiLhWGmV1Nw0wYs8t1D8
-        5h7Av0kGsxKnoLehGRPQfDY=
-X-Google-Smtp-Source: ABdhPJz3nK4DcQnm1jh0FnrVeM9L5Stawv3ubTQrEdj8MTAotUHctOT7HDvtkwOjT9Am564PoBYybg==
-X-Received: by 2002:aa7:c24d:: with SMTP id y13mr25426444edo.155.1621862088177;
+        bh=MUTbtxOtQ/6z77dwQCG2+h1G+nVZENByOptkDcJd1rA=;
+        b=C8NwHrqJjMKrhBqpMNVBeYpp//FPCMYOV4VeyGJarZ2xKeakw4A2+zZZECh87UtWVr
+         l0ijelTtmWq6yuK6gzZGuM9W15zkyLC+6GOlVP+QOUtBeGlh5TS1s/5+FOa81e9VvTpz
+         oFBDd7Rz7aRRlj9bspKgrL+el6wbFP0ApuZZhzzJNkQHhkrzcQNh4TSyi1rDV6X788sb
+         KsLbZbMWbrlim8ekWN0+Ffsxs8hvUYb2jXBRSwAM4SD5wrizdQ9KPVw4b1Z+Dv6ondVG
+         c9oL2/fD9rISXlLXfWmYDCfAZva6LGOvRk5CXde34jSJZ0m/kmUPzKLF7A6TMZFtQrUK
+         ROHQ==
+X-Gm-Message-State: AOAM532D9aTnSzUDNTodUJVWn6uB7+opqxbsEMW6gg1D2T2qqJdi4ZKt
+        pCWcCvIyiXok+7dL1ZlNgoU=
+X-Google-Smtp-Source: ABdhPJxuV2ChrHg24j2XlmSj2/tZPTIatVYHFyGpuQnUmUHDPI+Whui4/0NY+OPz87orLLtwkP752Q==
+X-Received: by 2002:aa7:d550:: with SMTP id u16mr23821211edr.72.1621862088862;
         Mon, 24 May 2021 06:14:48 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id g13sm8009139ejz.24.2021.05.24.06.14.47
+        by smtp.gmail.com with ESMTPSA id g13sm8009139ejz.24.2021.05.24.06.14.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 May 2021 06:14:47 -0700 (PDT)
+        Mon, 24 May 2021 06:14:48 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 7/9] net: dsa: sja1105: use sja1105_xfer_u32 for the reset procedure
-Date:   Mon, 24 May 2021 16:14:19 +0300
-Message-Id: <20210524131421.1030789-8-olteanv@gmail.com>
+Subject: [PATCH net-next 8/9] net: dsa: sja1105: configure the multicast policers, if present
+Date:   Mon, 24 May 2021 16:14:20 +0300
+Message-Id: <20210524131421.1030789-9-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210524131421.1030789-1-olteanv@gmail.com>
 References: <20210524131421.1030789-1-olteanv@gmail.com>
@@ -67,62 +67,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Using sja1105_xfer_buf results in a higher overhead and is harder to
-read.
+The SJA1110 policer array is similar in layout with SJA1105, except it
+contains one multicast policer per port at the end.
+
+Detect the presence of multicast policers based on the maximum number of
+supported L2 Policing Table entries, and make those policers have a
+shared index equal to the port's default policer. Letting the user
+configure these policers is not supported at the moment.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_spi.c | 22 ++++++----------------
- 1 file changed, 6 insertions(+), 16 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index c08aa6fbd85d..79ba86096a4b 100644
---- a/drivers/net/dsa/sja1105/sja1105_spi.c
-+++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -7,8 +7,6 @@
- #include <linux/packing.h>
- #include "sja1105.h"
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 937cbdb89686..6850f03be1f3 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -719,12 +719,16 @@ static int sja1105_init_l2_policing(struct sja1105_private *priv)
  
--#define SJA1105_SIZE_RESET_CMD		4
--
- struct sja1105_chunk {
- 	u8	*buf;
- 	size_t	len;
-@@ -179,28 +177,20 @@ static int sja1105et_reset_cmd(struct dsa_switch *ds)
- {
- 	struct sja1105_private *priv = ds->priv;
- 	const struct sja1105_regs *regs = priv->info->regs;
--	u8 packed_buf[SJA1105_SIZE_RESET_CMD] = {0};
--	const int size = SJA1105_SIZE_RESET_CMD;
--	u64 cold_rst = 1;
--
--	sja1105_pack(packed_buf, &cold_rst, 3, 3, size);
-+	u32 cold_reset = BIT(3);
+ 	/* Setup shared indices for the matchall policers */
+ 	for (port = 0; port < ds->num_ports; port++) {
++		int mcast = (ds->num_ports * (SJA1105_NUM_TC + 1)) + port;
+ 		int bcast = (ds->num_ports * SJA1105_NUM_TC) + port;
  
--	return sja1105_xfer_buf(priv, SPI_WRITE, regs->rgu, packed_buf,
--				SJA1105_SIZE_RESET_CMD);
-+	/* Cold reset */
-+	return sja1105_xfer_u32(priv, SPI_WRITE, regs->rgu, &cold_reset, NULL);
- }
+ 		for (tc = 0; tc < SJA1105_NUM_TC; tc++)
+ 			policing[port * SJA1105_NUM_TC + tc].sharindx = port;
  
- static int sja1105pqrs_reset_cmd(struct dsa_switch *ds)
- {
- 	struct sja1105_private *priv = ds->priv;
- 	const struct sja1105_regs *regs = priv->info->regs;
--	u8 packed_buf[SJA1105_SIZE_RESET_CMD] = {0};
--	const int size = SJA1105_SIZE_RESET_CMD;
--	u64 cold_rst = 1;
--
--	sja1105_pack(packed_buf, &cold_rst, 2, 2, size);
-+	u32 cold_reset = BIT(2);
+ 		policing[bcast].sharindx = port;
++		/* Only SJA1110 has multicast policers */
++		if (mcast <= table->ops->max_entry_count)
++			policing[mcast].sharindx = port;
+ 	}
  
--	return sja1105_xfer_buf(priv, SPI_WRITE, regs->rgu, packed_buf,
--				SJA1105_SIZE_RESET_CMD);
-+	/* Cold reset */
-+	return sja1105_xfer_u32(priv, SPI_WRITE, regs->rgu, &cold_reset, NULL);
- }
- 
- int sja1105_inhibit_tx(const struct sja1105_private *priv,
+ 	/* Setup the matchall policer parameters */
 -- 
 2.25.1
 
