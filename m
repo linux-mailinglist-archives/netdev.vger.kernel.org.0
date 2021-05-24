@@ -2,84 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35DED38E1E5
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 09:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE75038E215
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 10:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232327AbhEXHqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 03:46:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40106 "EHLO mail.kernel.org"
+        id S232390AbhEXICK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 04:02:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43064 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232254AbhEXHqB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 03:46:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 17C1D610A5;
-        Mon, 24 May 2021 07:44:34 +0000 (UTC)
+        id S232099AbhEXICJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 04:02:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AF857610CB;
+        Mon, 24 May 2021 08:00:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621842274;
-        bh=z1C+QyseZ45GbVWwYhu5yBGWudxghE44niAVgptWqf4=;
+        s=k20201202; t=1621843241;
+        bh=52KsqdGcL2hpzhP2uHKfCo1RQ1DyXlefkr5za28RcXE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EEptFrgYnoVewuNRXXBInrpG2Hc9P5zKBh/cdyYLgkVvJR06iivgB9otwT4wdXJ4h
-         3wytJWF7qQ9m/llsbpZrM18cufHG5c2Uh8NdzhxLeBbMZheDqnCmH4paXgNPQVD+K6
-         YcIwsq29No2qXT+5Bn6CJ+SSkFjZ6Wn9WwHt1jKWKmfN5Bu5GgUl/NizneqYe3QIw3
-         fo5krE+3IcmyhQu8XX5cjpKxgAaK9kaJm9DbdSezfsOkpaGnoItrJBeCX2hQ0eDudI
-         fGWJK6GycievUMv7eW2ieyAweY6JloW0Myje8hAVVDOOwQv5usivK+lU3MACMFBxrT
-         /v6SzM7+xn68w==
+        b=iSMgCeWjzCBZekKyZtae/NbX1FqQ/8UPzOYjm637Q+XzaVuhRTv88G3EY53YgbO8s
+         C0xD0bf7P4D+9gYjWCEO1i6HqMa5zsPKLMgfCeDSBi2ukzdnvcTK00005TxYOJnJQI
+         BZk/wD4A6imNccxqY1t3L7ZPXS+XtZK7fey//UqdM3QOT+HLnBiMTsQqA05fuz7Nou
+         m5Yl+uiXogxq1Tv7D356HfHBs23TFccj9Spub+SovWY/KFCju5A12QvqHfeWr03GGN
+         KEHMJkZjgjly1fN1AgFw4U6EOhpvcyF0UMxyUOx4dHq8f5PB44ACBPbLwNMStK+jYw
+         OYu2Bv7lFQZIQ==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1ll5GI-0003yK-2U; Mon, 24 May 2021 09:44:31 +0200
-Date:   Mon, 24 May 2021 09:44:30 +0200
+        id 1ll5Vu-00043B-GA; Mon, 24 May 2021 10:00:39 +0200
+Date:   Mon, 24 May 2021 10:00:38 +0200
 From:   Johan Hovold <johan@kernel.org>
 To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com" 
-        <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>
-Subject: Re: [PATCH net v2] r8152: check the informaton of the device
-Message-ID: <YKtZXsmkNaMJgNYe@hovoldconsulting.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        nic_swsd@realtek.com, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com
+Subject: Re: [PATCH net v3] r8152: check the informaton of the device
+Message-ID: <YKtdJnvZTxE1yqEK@hovoldconsulting.com>
 References: <1394712342-15778-363-Taiwan-albertk@realtek.com>
- <1394712342-15778-364-Taiwan-albertk@realtek.com>
- <YKizqoNIVFo+weI9@kroah.com>
- <YKi7qEWobOLRyoU8@hovoldconsulting.com>
- <d27f9a1848a546b99e2ab84cb15be06f@realtek.com>
+ <1394712342-15778-365-Taiwan-albertk@realtek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d27f9a1848a546b99e2ab84cb15be06f@realtek.com>
+In-Reply-To: <1394712342-15778-365-Taiwan-albertk@realtek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 01:49:33AM +0000, Hayes Wang wrote:
-> Johan Hovold <johan@kernel.org>
-> > Sent: Saturday, May 22, 2021 4:07 PM
-> [...]
-> > > > +	if (usb_endpoint_num(in) != 1) {
-> > > > +		dev_err(&intf->dev, "Invalid Rx Endpoint\n");
-> > >
-> > > "Invalid number of Rx endpoints"
-> > 
-> > Here it is the endpoint number (address) that is being checked so
-> > "number of" would be wrong.
-> > 
-> > That said, perhaps none of these checks are even needed a bit depending
-> > on how the driver is implemented. That is, if it hardcodes the endpoint
-> > addresses or uses the result from usb_find_common_endpoints() above
-> > (which I realise now that it does not so these checks are probably still
-> > needed).
+On Mon, May 24, 2021 at 02:49:42PM +0800, Hayes Wang wrote:
+> Verify some fields of the USB descriptor to make sure the driver
+> could be used by the device.
 > 
-> The purpose of the checks is to find out the fake devices. That is, even
-> the device supports in, out, and interrupt endpoints, it is treated as
-> fake or malicious device, if the addresses of these endpoints are wrong.
-> Therefore, I would keep the checks.
+> Besides, remove the check of endpoint number in rtl8152_probe().
+> usb_find_common_endpoints() includes it.
+> 
+> BugLink: https://syzkaller.appspot.com/bug?id=912c9c373656996801b4de61f1e3cb326fe940aa
+> Reported-by: syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com
+> Fixes: c2198943e33b ("r8152: search the configuration of vendor mode")
+> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+> ---
+> v3:
+> Remove the check of endpoint number in rtl_check_vendor_ok().
+> 
+> Adjust the error message and ccommit message.
+> 
+> v2:
+> Use usb_find_common_endpoints() and usb_endpoint_num() to replace original
+> code.
+> 
+> remove the check of endpoint number in rtl8152_probe(). It has been done
+> in rtl_check_vendor_ok().
+> 
+>  drivers/net/usb/r8152.c | 42 ++++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 37 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index 136ea06540ff..f6abb2fbf972 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -8107,6 +8107,37 @@ static void r8156b_init(struct r8152 *tp)
+>  	tp->coalesce = 15000;	/* 15 us */
+>  }
+>  
+> +static bool rtl_check_vendor_ok(struct usb_interface *intf)
+> +{
+> +	struct usb_host_interface *alt = intf->cur_altsetting;
+> +	struct usb_endpoint_descriptor *in, *out, *intr;
+> +
+> +	if (usb_find_common_endpoints(alt, &in, &out, &intr, NULL) < 0) {
+> +		dev_err(&intf->dev, "Expected endpoints are not found\n");
+> +		return false;
+> +	}
+> +
+> +	/* Check Rx endpoint address */
+> +	if (usb_endpoint_num(in) != 1) {
+> +		dev_err(&intf->dev, "Invalid Rx endpoint address\n");
+> +		return false;
+> +	}
+> +
+> +	/* Check Tx endpoint address */
+> +	if (usb_endpoint_num(out) != 2) {
+> +		dev_err(&intf->dev, "Invalid Tx endpoint address\n");
+> +		return false;
+> +	}
+> +
+> +	/* Check interrupt endpoint address */
+> +	if (usb_endpoint_num(intr) != 3) {
+> +		dev_err(&intf->dev, "Invalid interrupt endpoint address\n");
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+>  static bool rtl_vendor_mode(struct usb_interface *intf)
+>  {
+>  	struct usb_host_interface *alt = intf->cur_altsetting;
+> @@ -8115,12 +8146,15 @@ static bool rtl_vendor_mode(struct usb_interface *intf)
+>  	int i, num_configs;
+>  
+>  	if (alt->desc.bInterfaceClass == USB_CLASS_VENDOR_SPEC)
+> -		return true;
+> +		return rtl_check_vendor_ok(intf);
+>  
+>  	/* The vendor mode is not always config #1, so to find it out. */
+>  	udev = interface_to_usbdev(intf);
+>  	c = udev->config;
+>  	num_configs = udev->descriptor.bNumConfigurations;
+> +	if (num_configs < 2)
+> +		return false;
+> +
 
-Strictly, you need to check for bad input which could cause your driver
-to crash or malfunction. Generally you don't need to verify endpoint
-addresses unless the driver is hardcoding those. But since that is
-precisely what this particular driver is doing, these checks indeed need
-to stay.
+Nit: This check looks unnecessary also as the driver can handle a single
+configuration just fine, and by removing it you'd be logging "Unexpected
+Device\n" below also in the single config case.
+
+>  	for (i = 0; i < num_configs; (i++, c++)) {
+>  		struct usb_interface_descriptor	*desc = NULL;
+>  
+> @@ -8135,7 +8169,8 @@ static bool rtl_vendor_mode(struct usb_interface *intf)
+>  		}
+>  	}
+>  
+> -	WARN_ON_ONCE(i == num_configs);
+> +	if (i == num_configs)
+> +		dev_err(&intf->dev, "Unexpected Device\n");
+>  
+>  	return false;
+>  }
+> @@ -9381,9 +9416,6 @@ static int rtl8152_probe(struct usb_interface *intf,
+>  	if (!rtl_vendor_mode(intf))
+>  		return -ENODEV;
+>  
+> -	if (intf->cur_altsetting->desc.bNumEndpoints < 3)
+> -		return -ENODEV;
+> -
+>  	usb_reset_device(udev);
+>  	netdev = alloc_etherdev(sizeof(struct r8152));
+>  	if (!netdev) {
+
+Other than that, looks good to me now.
+
+Reviewed-by: Johan Hovold <johan@kernel.org>
 
 Johan
