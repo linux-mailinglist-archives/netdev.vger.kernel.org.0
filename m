@@ -2,68 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D950238F4EB
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 23:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EEF938F4F9
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 23:33:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233931AbhEXVbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 17:31:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42548 "EHLO mail.kernel.org"
+        id S233893AbhEXVfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 17:35:09 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54588 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232911AbhEXVbi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 17:31:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2C7D5610CB;
-        Mon, 24 May 2021 21:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621891810;
-        bh=lo6EILUQ1i18nWASD97hUQMB+qwDzeRWIWWlJTKTwMc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fn1HTy2g+AEVk1I+5as2OVYci8j/r8vauY+0u/dQUbqCp+Qpe/R0/6jmqDBF+31H1
-         esohNzr9biTCZtmRe/VXnrRkq+u+JvwJZjmozud0G/+GFoTJgA5F/UnBX7aK6iIU5N
-         OmQU6Jitx3G3BFm/k32on4D3HG3KvkwpNIEgp+1SmeCKmH1zSzwC6AVDx2oYiTdRwZ
-         MwGoMeLvvgbgnQ/XfVY9OIdGBFsVsZ5sJUI5OUZmXOTiQMwwMVulBmFxcaX+gsjyDM
-         a+z5fymmitOELxotwsmATyeB9LG9FzO39lRGHTediG1M6p/tmdM0++6C6znhL+NGz5
-         7aF3S1YTTHf7A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 20F6560A0B;
-        Mon, 24 May 2021 21:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232911AbhEXVfI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 17:35:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-Id:
+        Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:
+        MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=efWXcnq5anHnfT1JPCb1/jYwJMtq45xulzILdCVokYw=; b=Bz140WgXNSIK1i3ZKVlAfVj4mp
+        xeE/NV6ps9Xbtl21mIlh+5K166gaMKwDAegWepj3+7Yb2r8jhIEbMHH5cyihuNbfaJu8aa5aRkCtM
+        AjC7oj5zVKNY4VBrhS/bVzl1qU6hf7bTsdg0N+KYcmJAEcVPHvhQeXdT9kFRHC2dmWxI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1llICb-00624s-Do; Mon, 24 May 2021 23:33:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>, cao88yu@gmail.com,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net 0/3] MTU fixes for mv88e6xxx
+Date:   Mon, 24 May 2021 23:33:10 +0200
+Message-Id: <20210524213313.1437891-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: microchip: enable phy errata workaround on 9567
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162189181013.16512.8256926089205340399.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 May 2021 21:30:10 +0000
-References: <20210524202953.70379-1-george.mccollister@gmail.com>
-In-Reply-To: <20210524202953.70379-1-george.mccollister@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     netdev@vger.kernel.org, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Adding support for jumbo packets broke MTU change for a couple of
+mv88e6xxx family members. The wrong way of configuring the MTU was
+used for 6161, and a mixup between MTU and frame size broke other
+devices. Additionally, when changing the MTU on the CPU port, the DSA
+overhead needs to be taken into account.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Thanks to 曹煜 for reporting and helping debugging these problems.
 
-On Mon, 24 May 2021 15:29:53 -0500 you wrote:
-> Also enable phy errata workaround on 9567 since has the same errata as
-> the 9477 according to the manufacture's documentation.
-> 
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> ---
->  drivers/net/dsa/microchip/ksz9477.c | 1 +
->  1 file changed, 1 insertion(+)
+Andrew Lunn (3):
+  dsa: mv88e6xxx: 6161: Use chip wide MAX MTU
+  dsa: mv88e6xxx: Fix MTU definition
+  net: dsa: Include tagger overhead when setting MTU for DSA and CPU
+    ports
 
-Here is the summary with links:
-  - [net] net: dsa: microchip: enable phy errata workaround on 9567
-    https://git.kernel.org/netdev/net/c/8c42a49738f1
+ drivers/net/dsa/mv88e6xxx/chip.c | 14 +++++++-------
+ drivers/net/dsa/mv88e6xxx/port.c |  2 ++
+ net/dsa/switch.c                 | 16 ++++++++++++++--
+ 3 files changed, 23 insertions(+), 9 deletions(-)
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+-- 
+2.31.1
 
