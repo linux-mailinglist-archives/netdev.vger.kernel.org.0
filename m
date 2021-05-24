@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36CED38E33B
+	by mail.lfdr.de (Postfix) with ESMTP id ADED638E33C
 	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 11:25:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232491AbhEXJ1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 05:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48152 "EHLO
+        id S232500AbhEXJ1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 05:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232397AbhEXJ1E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 05:27:04 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676DDC061756
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 02:25:36 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id f18so10556705ejq.10
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 02:25:36 -0700 (PDT)
+        with ESMTP id S232471AbhEXJ1F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 05:27:05 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291D1C06138A
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 02:25:37 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id r11so31048948edt.13
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 02:25:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gsjOsAbLjC1aLaqOCkLQq0Rt/VoD2lZoL8JXtd1CnAE=;
-        b=AKFe5GxU4uUGKfB/O8+7cPTjlHa/9jQbwgP0m+hq4zNkTsRe/TuneNnMBG7FEwv8rF
-         q1rdu9hUkD+ig1fvhk2yMnxUMTJa/mOYmr+eYhsl4gEJmr+8VcHMWDLyV0NJ2AS6WRwj
-         HufmGE/3P8tGaeJKSpjl6mNcc02D/MjyWz7CrSif7Py2vBUy44HfCT5ZlSNUQgHwyPvc
-         Aw3opAKcXafFETWBIgoTr31MXOIYpnUacgi7B2tIieX6EXX8rZxFnB037mV8ZlUEf2KK
-         7pQ0S0FNCBdrABT0lGXg2JTJk8Bb24xG4dYdmJte8enyalMZBlNbqc9W3nLTIe2pn9yG
-         Fi0A==
+        bh=rR70am4AsqwLDccH8qea+nzFbDBLYY7dCPQZwgCCRog=;
+        b=sGZAdbyHGB9VNwTHW8rZTswNfkIq/6R3lWabD1lJiEmJNSB6SfjjKKjQK083gHIGvO
+         sAcTjwZSlMtNb2qmms2AVmmoXveSvSlsiENnVY7tnDot5jI6iff2siu4T041GuAtluHX
+         A5tj9sV5bGN+xT+pFMsJXFe9p0u07DvPbLIRsqk87sIO99Fjase24Tzd0dpy07i5bdKX
+         pfXzDCwIpaUMjPWmPOVFkK7LKSBVrobBRE+iDPqqZ+LGEx6iiq5xyJFSp30xwOto1ezM
+         zLGDkT5fYppFPZtqnXv1Kke0Ovz7s+RUqhy8azOR0HpPQZIbuDlKcnR/DIGsGvruOsfa
+         g5uA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gsjOsAbLjC1aLaqOCkLQq0Rt/VoD2lZoL8JXtd1CnAE=;
-        b=MKd08bLj/He/fK49AgT1J6X56JOG2+GY8zuDQE4qGyVwflz5OuxzSAgnQG/sITblPb
-         bIqOIBvbjBrvRepdDly6DS6IpsuPL+8JUquV3sV5ZYpou4LqFDDabT49l2dj19qoDMn8
-         A2NwYlVpqY9E2bCxVVTMpOJxmu/AhvQ9Ij6ansf/vI7qolujt6T9/zBY5tu7xx4VrOAa
-         FRsFSTDCAIi+02l+Yubts7IUA/5LH7qdnZHj8B3Rzq3Ec3KK8JSRtw2FqV1KigTwvjcQ
-         7Oy0zWq5PsbTUb8KFKlHCRrcvOiSqBuTzBxZQ8XEnq+hmo82iLuz0Yi8mNN0CKCK0xfl
-         65+g==
-X-Gm-Message-State: AOAM533ZiIDT7jpk1e7Ay8ctQuarlpRlto3XmnGC8GhDxlr5dqAMpqnX
-        zzsilWnKW60ujbIQZgrlNWA=
-X-Google-Smtp-Source: ABdhPJyAohoTi/mGveqqmTaweC4jVUWS4TJoEWSbEFYutkoxxNuw2FTI0v7qhcRtrI9kiL6EDnaLgw==
-X-Received: by 2002:a17:906:4ece:: with SMTP id i14mr21713601ejv.249.1621848334941;
-        Mon, 24 May 2021 02:25:34 -0700 (PDT)
+        bh=rR70am4AsqwLDccH8qea+nzFbDBLYY7dCPQZwgCCRog=;
+        b=NTuoPDHqDcIl86EkE5r9GEseccoSY+Ob0mTFVT7cm2nZe34GRWLmgi/1Y9gUKXr7WK
+         PREUXCOj2+OhyGHEz2p6eUWHCyRvDsF2wHkiv+mm91Qtr/HqErxUubHF96HSS7vbnwT4
+         EFy5PVQs4BbC953N6fxq5WKLmUZKb0FksljULfKT7cFo1Dtk7SS2ad6bgWg0cLWwS6j1
+         ito083oCrdSssXECLuEFuhp4xDzdYqbJeK1hLtiTKU0NQeujSLzXj3T/hVDX39IIJeDo
+         Ftb89ehxT4RDPsfiJfH1MufCIgjXD1E2HRUv1H6FMPZkstOGXf8+opWbS3UmJgU92JVZ
+         oASw==
+X-Gm-Message-State: AOAM5326WjrCppqFt9bYbg4ZWbiFf6f3JD+vfuqLMOSfGqUZjM8jGy9R
+        BWR4DePGO7o2tRt8BOXml34=
+X-Google-Smtp-Source: ABdhPJwEeVcj0yJz5NFAbLcqFMQndKekz2CtYGlOCO7N9K8k1M17K98cRGKTybnzCVUBspZ+MdLX5A==
+X-Received: by 2002:aa7:db48:: with SMTP id n8mr24744817edt.11.1621848335730;
+        Mon, 24 May 2021 02:25:35 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id yw9sm7553007ejb.91.2021.05.24.02.25.34
+        by smtp.gmail.com with ESMTPSA id yw9sm7553007ejb.91.2021.05.24.02.25.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 May 2021 02:25:34 -0700 (PDT)
+        Mon, 24 May 2021 02:25:35 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -54,9 +54,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net 1/6] net: dsa: sja1105: fix VL lookup command packing for P/Q/R/S
-Date:   Mon, 24 May 2021 12:25:22 +0300
-Message-Id: <20210524092527.874479-2-olteanv@gmail.com>
+Subject: [PATCH net 2/6] net: dsa: sja1105: call dsa_unregister_switch when allocating memory fails
+Date:   Mon, 24 May 2021 12:25:23 +0300
+Message-Id: <20210524092527.874479-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210524092527.874479-1-olteanv@gmail.com>
 References: <20210524092527.874479-1-olteanv@gmail.com>
@@ -68,90 +68,65 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-At the beginning of the sja1105_dynamic_config.c file there is a diagram
-of the dynamic config interface layout:
+Unlike other drivers which pretty much end their .probe() execution with
+dsa_register_switch(), the sja1105 does some extra stuff. When that
+fails with -ENOMEM, the driver is quick to return that, forgetting to
+call dsa_unregister_switch(). Not critical, but a bug nonetheless.
 
- packed_buf
-
- |
- V
- +-----------------------------------------+------------------+
- |              ENTRY BUFFER               |  COMMAND BUFFER  |
- +-----------------------------------------+------------------+
-
- <----------------------- packed_size ------------------------>
-
-So in order to pack/unpack the command bits into the buffer,
-sja1105_vl_lookup_cmd_packing must first advance the buffer pointer by
-the length of the entry. This is similar to what the other *cmd_packing
-functions do.
-
-This bug exists because the command packing function for P/Q/R/S was
-copied from the E/T generation, and on E/T, the command was actually
-embedded within the entry buffer itself.
-
-Fixes: 94f94d4acfb2 ("net: dsa: sja1105: add static tables for virtual links")
+Fixes: 4d7525085a9b ("net: dsa: sja1105: offload the Credit-Based Shaper qdisc")
+Fixes: a68578c20a96 ("net: dsa: Make deferred_xmit private to sja1105")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../net/dsa/sja1105/sja1105_dynamic_config.c  | 23 +++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-index b777d3f37573..12cd04b56803 100644
---- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-@@ -167,9 +167,10 @@ enum sja1105_hostcmd {
- 	SJA1105_HOSTCMD_INVALIDATE = 4,
- };
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 405024b637d6..2248152b4836 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -3646,8 +3646,10 @@ static int sja1105_probe(struct spi_device *spi)
+ 		priv->cbs = devm_kcalloc(dev, priv->info->num_cbs_shapers,
+ 					 sizeof(struct sja1105_cbs_entry),
+ 					 GFP_KERNEL);
+-		if (!priv->cbs)
+-			return -ENOMEM;
++		if (!priv->cbs) {
++			rc = -ENOMEM;
++			goto out_unregister_switch;
++		}
+ 	}
  
-+/* Command and entry overlap */
- static void
--sja1105_vl_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
--			      enum packing_op op)
-+sja1105et_vl_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
-+				enum packing_op op)
- {
- 	const int size = SJA1105_SIZE_DYN_CMD;
+ 	/* Connections between dsa_port and sja1105_port */
+@@ -3672,7 +3674,7 @@ static int sja1105_probe(struct spi_device *spi)
+ 			dev_err(ds->dev,
+ 				"failed to create deferred xmit thread: %d\n",
+ 				rc);
+-			goto out;
++			goto out_destroy_workers;
+ 		}
+ 		skb_queue_head_init(&sp->xmit_queue);
+ 		sp->xmit_tpid = ETH_P_SJA1105;
+@@ -3682,7 +3684,8 @@ static int sja1105_probe(struct spi_device *spi)
+ 	}
  
-@@ -179,6 +180,20 @@ sja1105_vl_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
- 	sja1105_packing(buf, &cmd->index,    9,  0, size, op);
+ 	return 0;
+-out:
++
++out_destroy_workers:
+ 	while (port-- > 0) {
+ 		struct sja1105_port *sp = &priv->ports[port];
+ 
+@@ -3691,6 +3694,10 @@ static int sja1105_probe(struct spi_device *spi)
+ 
+ 		kthread_destroy_worker(sp->xmit_worker);
+ 	}
++
++out_unregister_switch:
++	dsa_unregister_switch(ds);
++
+ 	return rc;
  }
  
-+/* Command and entry are separate */
-+static void
-+sja1105pqrs_vl_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
-+				  enum packing_op op)
-+{
-+	u8 *p = buf + SJA1105_SIZE_VL_LOOKUP_ENTRY;
-+	const int size = SJA1105_SIZE_DYN_CMD;
-+
-+	sja1105_packing(p, &cmd->valid,   31, 31, size, op);
-+	sja1105_packing(p, &cmd->errors,  30, 30, size, op);
-+	sja1105_packing(p, &cmd->rdwrset, 29, 29, size, op);
-+	sja1105_packing(p, &cmd->index,    9,  0, size, op);
-+}
-+
- static size_t sja1105et_vl_lookup_entry_packing(void *buf, void *entry_ptr,
- 						enum packing_op op)
- {
-@@ -641,7 +656,7 @@ static size_t sja1105pqrs_cbs_entry_packing(void *buf, void *entry_ptr,
- const struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
- 	[BLK_IDX_VL_LOOKUP] = {
- 		.entry_packing = sja1105et_vl_lookup_entry_packing,
--		.cmd_packing = sja1105_vl_lookup_cmd_packing,
-+		.cmd_packing = sja1105et_vl_lookup_cmd_packing,
- 		.access = OP_WRITE,
- 		.max_entry_count = SJA1105_MAX_VL_LOOKUP_COUNT,
- 		.packed_size = SJA1105ET_SIZE_VL_LOOKUP_DYN_CMD,
-@@ -725,7 +740,7 @@ const struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
- const struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
- 	[BLK_IDX_VL_LOOKUP] = {
- 		.entry_packing = sja1105_vl_lookup_entry_packing,
--		.cmd_packing = sja1105_vl_lookup_cmd_packing,
-+		.cmd_packing = sja1105pqrs_vl_lookup_cmd_packing,
- 		.access = (OP_READ | OP_WRITE),
- 		.max_entry_count = SJA1105_MAX_VL_LOOKUP_COUNT,
- 		.packed_size = SJA1105PQRS_SIZE_VL_LOOKUP_DYN_CMD,
 -- 
 2.25.1
 
