@@ -2,205 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFFA038F5F9
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 00:58:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 130C938F62A
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 01:22:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229813AbhEXXAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 19:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34976 "EHLO
+        id S229750AbhEXXYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 19:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbhEXXAK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 19:00:10 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A00C061574;
-        Mon, 24 May 2021 15:58:41 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id i4so40336467ybe.2;
-        Mon, 24 May 2021 15:58:41 -0700 (PDT)
+        with ESMTP id S229503AbhEXXYA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 19:24:00 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A730C061574
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 16:22:30 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id r11so33823503edt.13
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 16:22:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=aeA6ZzJ9wtLKU0spfXFvzN/vxEYBOrxPH2HZTAIR6G4=;
-        b=BlN/F3DALifeeVLcQMifYUL1JTB7D90uTeUf49tlCUgw7ST0wvnsN+yYX629qZHlcI
-         ggd5JIQr0QsP0hgqaUNvQzhfty9eAzRA05zi97R3mDUwmKeVWdtUzvPmWn/jeQW3UCmz
-         xo5xt4pMAnqxtxzOm1183OXeVq60wH57wG4vUtQRoJzhbrPCotgRHwyLRrposZ4OnXxT
-         uLlCdgHvKGQPQnCNT50bIT9kLIITr+XDmAECdGMQa8PXwc5Cp6EIFgS3Dn1gdHDYblLa
-         KS+0kjkPiZQTDDrI8vjT2XlbSzDw6VJxsd8tJOLmBBiC89kROo9IX/OoPRt/9HUpmk1/
-         0I9Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PTysxuplQu8slwbE2fcnC5fUrUD5x5Gs7UipxMmgmdk=;
+        b=POPs1jFyYESRH4zvAi0iwhqlq4os+dhCNFtB2OP1CfR7VUG4NROXnsj97xKokHa+VY
+         V/aJhryKNc80ROVGOYWZCeFTXcfFauzEJHbJFNs4NmA9Z71e/tsPzGklu3XosWzmvGam
+         Hf1YnU0V8BYL/nQkUa6hMY6e5syKUzD+DcsZnyh+D8WIy9OYbkQWKtG+oXNwV+hidtk9
+         Vui+QyS8Zf36KYrLm0VNwmXFxfdCMjGgvm1vsaecKpXeaVDxuZKpgLiVT6ynTRU10buX
+         n2O/1lSfYxrMHLFrK8QClY+pWUIP6h1+rnx5No9myoITouqIs0yL6PaRMrMKWauhSQ+o
+         3BSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aeA6ZzJ9wtLKU0spfXFvzN/vxEYBOrxPH2HZTAIR6G4=;
-        b=IAb1/LyjU82Zta5PtGRir/GzpVgN42p+nb2x8vHTNXonbPv7FYLQBlnAL1yO/m/NEB
-         cPfQy4qh/tvcElgcstjcn9F1KXktkLgD92qvVrcAZzWWlkw6J5LdBv/VnA/+RB9C5EiN
-         3TLOw2QR2sQeh9C99p6NPPZzFtlc+ewjEoOt5Z8tMDZaIAf6aUH/ABWaXDGMJylPpHx5
-         afdrojORVnfJoPWd3gCHcwynAwuuewmtKUpC4JAaxywSLtiyGR3074LMoYG9fTstSLw9
-         fEJeEuSzmdroZsrzA7tCqFSjSx1eUJovUPtmx2i1I2f66/0jt/CXw9HWNYlScQdz8pOK
-         5+Sw==
-X-Gm-Message-State: AOAM532zgXEuvzHH2bQ+296hPXt+vk2cQXuDR6qsnSpyZxtjTNpEO08A
-        0ppzpCC47q69p+ul4EBkHtMCfJEQG9uDZzsu6Qg=
-X-Google-Smtp-Source: ABdhPJwCD58vucK7G7O5g1HdcPSR435C+4XpCO00AfQnWJG7NAMraj9RQJBJ/g/36D2p6ru8HmfULYTulkIULklsKRM=
-X-Received: by 2002:a25:3357:: with SMTP id z84mr38084998ybz.260.1621897120617;
- Mon, 24 May 2021 15:58:40 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PTysxuplQu8slwbE2fcnC5fUrUD5x5Gs7UipxMmgmdk=;
+        b=q3gpYjxu122qQ0lM9fI6b67MtNsO6oxzlBIaUWm73xcL4cUbqF9Lrz18/j3KKoUNAa
+         sc1cwg2Y2QGUSKi561VHVNLH6VD8Q9NLlNaAKbuQe2h4DAuXtzN5SDsZJcthqNKSf446
+         aNgNpmq2hEM16tl5JEMUQoJKa9kyo7pO4C/DJoMDxFwJY1uWbMiDyZppkJbiT+z3Hywy
+         MlgJJdh1aQUk5BSGCGMtZn6s0wb2gOIFUE9ys31Ywi25lIoxXqRlZh7I8kKUUxycyYSb
+         JFqZBcfkCEYYj0sJl1hG7SmDMzib7m1TVaKwthbWOneo4Ead0NlzzBBPD5hkuIQfoAzY
+         xE2A==
+X-Gm-Message-State: AOAM533szV++21CZUcR6wuJ3Wt0vRW1tqu7fXdgrEZBmthQ14/eAkXk6
+        XGX6Ru9GhgpiNdgSqqBtbVw=
+X-Google-Smtp-Source: ABdhPJx9woHuFmQTSID4xwE50pO50nxU+CkvPR8OvRUCaRbYatEiXCV0zI0VRTARgmANRCqZ05h8ow==
+X-Received: by 2002:aa7:df96:: with SMTP id b22mr28265605edy.95.1621898548818;
+        Mon, 24 May 2021 16:22:28 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id di7sm9922746edb.34.2021.05.24.16.22.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 May 2021 16:22:28 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH net-next 00/13] Add NXP SJA1110 support to the sja1105 DSA driver
+Date:   Tue, 25 May 2021 02:22:01 +0300
+Message-Id: <20210524232214.1378937-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210519141936.GV8544@kitsune.suse.cz> <CAEf4BzZuU2TYMapSy7s3=D8iYtVw_N+=hh2ZMGG9w6N0G1HvbA@mail.gmail.com>
-In-Reply-To: <CAEf4BzZuU2TYMapSy7s3=D8iYtVw_N+=hh2ZMGG9w6N0G1HvbA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 24 May 2021 15:58:29 -0700
-Message-ID: <CAEf4BzZ0-sihSL-UAm21JcaCCY92CqfNxycHRZYXcoj8OYb=wA@mail.gmail.com>
-Subject: Re: BPF: failed module verification on linux-next
-To:     =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>,
-        Mel Gorman <mgorman@techsingularity.net>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Hritik Vijay <hritikxx8@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 10:31 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Wed, May 19, 2021 at 7:19 AM Michal Such=C3=A1nek <msuchanek@suse.de> =
-wrote:
-> >
-> > Hello,
-> >
-> > linux-next fails to boot for me:
-> >
-> > [    0.000000] Linux version 5.13.0-rc2-next-20210519-1.g3455ff8-vanill=
-a (geeko@buildhost) (gcc (SUSE Linux) 10.3.0, GNU ld (GNU Binutils;
-> > openSUSE Tumbleweed) 2.36.1.20210326-3) #1 SMP Wed May 19 10:05:10 UTC =
-2021 (3455ff8)
-> > [    0.000000] Command line: BOOT_IMAGE=3D/boot/vmlinuz-5.13.0-rc2-next=
--20210519-1.g3455ff8-vanilla root=3DUUID=3Dec42c33e-a2c2-4c61-afcc-93e9527
-> > 8f687 plymouth.enable=3D0 resume=3D/dev/disk/by-uuid/f1fe4560-a801-4faf=
--a638-834c407027c7 mitigations=3Dauto earlyprintk initcall_debug nomodeset
-> >  earlycon ignore_loglevel console=3DttyS0,115200
-> > ...
-> > [   26.093364] calling  tracing_set_default_clock+0x0/0x62 @ 1
-> > [   26.098937] initcall tracing_set_default_clock+0x0/0x62 returned 0 a=
-fter 0 usecs
-> > [   26.106330] calling  acpi_gpio_handle_deferred_request_irqs+0x0/0x7c=
- @ 1
-> > [   26.113033] initcall acpi_gpio_handle_deferred_request_irqs+0x0/0x7c=
- returned 0 after 3 usecs
-> > [   26.121559] calling  clk_disable_unused+0x0/0x102 @ 1
-> > [   26.126620] initcall clk_disable_unused+0x0/0x102 returned 0 after 0=
- usecs
-> > [   26.133491] calling  regulator_init_complete+0x0/0x25 @ 1
-> > [   26.138890] initcall regulator_init_complete+0x0/0x25 returned 0 aft=
-er 0 usecs
-> > [   26.147816] Freeing unused decrypted memory: 2036K
-> > [   26.153682] Freeing unused kernel image (initmem) memory: 2308K
-> > [   26.165776] Write protecting the kernel read-only data: 26624k
-> > [   26.173067] Freeing unused kernel image (text/rodata gap) memory: 20=
-36K
-> > [   26.180416] Freeing unused kernel image (rodata/data gap) memory: 11=
-84K
-> > [   26.187031] Run /init as init process
-> > [   26.190693]   with arguments:
-> > [   26.193661]     /init
-> > [   26.195933]   with environment:
-> > [   26.199079]     HOME=3D/
-> > [   26.201444]     TERM=3Dlinux
-> > [   26.204152]     BOOT_IMAGE=3D/boot/vmlinuz-5.13.0-rc2-next-20210519-=
-1.g3455ff8-vanilla
-> > [   26.254154] BPF:      type_id=3D35503 offset=3D178440 size=3D4
-> > [   26.259125] BPF:
-> > [   26.261054] BPF:Invalid offset
-> > [   26.264119] BPF:
->
-> It took me a while to reliably bisect this, but it clearly points to
-> this commit:
->
-> e481fac7d80b ("mm/page_alloc: convert per-cpu list protection to local_lo=
-ck")
->
-> One commit before it, 676535512684 ("mm/page_alloc: split per cpu page
-> lists and zone stats -fix"), works just fine.
->
-> I'll have to spend more time debugging what exactly is happening, but
-> the immediate problem is two different definitions of numa_node
-> per-cpu variable. They both are at the same offset within
-> .data..percpu ELF section, they both have the same name, but one of
-> them is marked as static and another as global. And one is int
-> variable, while another is struct pagesets. I'll look some more
-> tomorrow, but adding Jiri and Arnaldo for visibility.
->
-> [110907] DATASEC '.data..percpu' size=3D178904 vlen=3D303
-> ...
->         type_id=3D27753 offset=3D163976 size=3D4 (VAR 'numa_node')
->         type_id=3D27754 offset=3D163976 size=3D4 (VAR 'numa_node')
->
-> [27753] VAR 'numa_node' type_id=3D27556, linkage=3Dstatic
-> [27754] VAR 'numa_node' type_id=3D20, linkage=3Dglobal
->
-> [20] INT 'int' size=3D4 bits_offset=3D0 nr_bits=3D32 encoding=3DSIGNED
->
-> [27556] STRUCT 'pagesets' size=3D0 vlen=3D1
->         'lock' type_id=3D507 bits_offset=3D0
->
-> [506] STRUCT '(anon)' size=3D0 vlen=3D0
-> [507] TYPEDEF 'local_lock_t' type_id=3D506
->
-> So also something weird about those zero-sized struct pagesets and
-> local_lock_t inside it.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Ok, so nothing weird about them. local_lock_t is designed to be
-zero-sized unless CONFIG_DEBUG_LOCK_ALLOC is defined.
+The NXP SJA1110 is an automotive Ethernet switch with an embedded Arm
+Cortex-M7 microcontroller. The switch has 11 ports (10 external + one
+for the DSA-style connection to the microcontroller).
+The microcontroller can be disabled and the switch can be controlled
+over SPI, a la SJA1105 - this is how this driver handles things.
 
-But such zero-sized per-CPU variables are confusing pahole during BTF
-generation, as now two different variables "occupy" the same address.
+There are some integrated NXP PHYs (100base-T1 and 100base-TX). Their
+initialization is handled by their own PHY drivers, the switch is only
+concerned with enabling register accesses to them, by registering two
+MDIO buses.
 
-Given this seems to be the first zero-sized per-CPU variable, I wonder
-if it would be ok to make sure it's never zero-sized, while pahole
-gets fixed and it's latest version gets widely packaged and
-distributed.
+PHY interrupts might be possible, however I believe that the board I am
+working on does not have them wired, which makes things a bit more
+difficult to test.
 
-Mel, what do you think about something like below? Or maybe you can
-advise some better solution?
+Cc: Russell King <linux@armlinux.org.uk>
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 41b87d6f840c..6a1d7511cae9 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -124,6 +124,13 @@ static DEFINE_MUTEX(pcp_batch_high_lock);
+Vladimir Oltean (13):
+  net: dsa: sja1105: be compatible with "ethernet-ports" OF node name
+  net: dsa: sja1105: allow SGMII PCS configuration to be per port
+  net: dsa: sja1105: the 0x1F0000 SGMII "base address" is actually
+    MDIO_MMD_VEND2
+  net: dsa: sja1105: cache the phy-mode port property
+  net: dsa: sja1105: add a PHY interface type compatibility matrix
+  net: dsa: sja1105: add a translation table for port speeds
+  net: dsa: sja1105: always keep RGMII ports in the MAC role
+  net: dsa: sja1105: some table entries are always present when read
+    dynamically
+  dt-bindings: net: dsa: sja1105: add compatible strings for SJA1110
+  net: dsa: sja1105: add support for the SJA1110 switch family
+  net: dsa: sja1105: register the MDIO buses for 100base-T1 and
+    100base-TX
+  net: dsa: sja1105: expose the SGMII PCS as an mdio_device
+  net: dsa: sja1105: add support for the SJA1110 SGMII/2500base-x PCS
 
- struct pagesets {
-     local_lock_t lock;
-+#if defined(CONFIG_DEBUG_INFO_BTF) && !defined(CONFIG_DEBUG_LOCK_ALLOC)
-+    /* pahole 1.21 and earlier gets confused by zero-sized per-CPU
-+     * variables and produces invalid BTF. So to accommodate earlier
-+     * versions of pahole, ensure that sizeof(struct pagesets) is never 0.
-+     */
-+    char __filler;
-+#endif
- };
- static DEFINE_PER_CPU(struct pagesets, pagesets) =3D {
-     .lock =3D INIT_LOCAL_LOCK(lock),
+ .../devicetree/bindings/net/dsa/sja1105.txt   |   4 +
+ drivers/net/dsa/sja1105/Makefile              |   1 +
+ drivers/net/dsa/sja1105/sja1105.h             |  88 ++-
+ drivers/net/dsa/sja1105/sja1105_clocking.c    | 120 +++-
+ .../net/dsa/sja1105/sja1105_dynamic_config.c  | 336 ++++++++++-
+ .../net/dsa/sja1105/sja1105_dynamic_config.h  |   1 +
+ drivers/net/dsa/sja1105/sja1105_main.c        | 518 +++++++++++++----
+ drivers/net/dsa/sja1105/sja1105_mdio.c        | 530 ++++++++++++++++++
+ drivers/net/dsa/sja1105/sja1105_sgmii.h       |  63 ++-
+ drivers/net/dsa/sja1105/sja1105_spi.c         | 368 +++++++++++-
+ .../net/dsa/sja1105/sja1105_static_config.c   | 483 ++++++++++++++++
+ .../net/dsa/sja1105/sja1105_static_config.h   |  98 +++-
+ 12 files changed, 2442 insertions(+), 168 deletions(-)
+ create mode 100644 drivers/net/dsa/sja1105/sja1105_mdio.c
 
->
-> > [   26.264119]
-> > [   26.267437] failed to validate module [efivarfs] BTF: -22
-> > [   26.316724] systemd[1]: systemd 246.13+suse.105.g14581e0120 running =
-in system mode. (+PAM +AUDIT +SELINUX -IMA +APPARMOR -SMACK +SYSVINI
-> > T +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +ZSTD +SECCOMP +BL=
-KID +ELFUTILS +KMOD +IDN2 -IDN +PCRE2 default-hierarchy=3Dunified)
-> > [   26.357990] systemd[1]: Detected architecture x86-64.
-> > [   26.363068] systemd[1]: Running in initial RAM disk.
-> >
->
-> [...]
+-- 
+2.25.1
+
