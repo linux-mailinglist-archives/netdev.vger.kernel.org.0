@@ -2,71 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C85738E26B
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 10:39:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1211D38E273
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 10:43:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232371AbhEXIkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 04:40:40 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:3920 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232306AbhEXIkh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 04:40:37 -0400
-Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FpVt90WyVzCwqx;
-        Mon, 24 May 2021 16:36:17 +0800 (CST)
-Received: from dggpeml500023.china.huawei.com (7.185.36.114) by
- dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 16:39:07 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 16:39:07 +0800
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-To:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>
-CC:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] ice: Remove the repeated declaration
-Date:   Mon, 24 May 2021 16:39:01 +0800
-Message-ID: <1621845541-41556-1-git-send-email-zhangshaokun@hisilicon.com>
-X-Mailer: git-send-email 2.7.4
+        id S232424AbhEXIo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 04:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232318AbhEXIoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 04:44:24 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4959EC061756
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 01:42:56 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id i9so39558344lfe.13
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 01:42:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=M2MagAsqzQek4RfZIbzihBJ/AzdlKDWN0pczixUAk4k=;
+        b=tuIFNpzC9jLms5dbs5QZzBpxUDBVkTZeQznojy2iUxzHuA/VqdRvv8KlAVBamdXkyQ
+         Uzp7DTSR7Wd5NV5vs0zpAQpJ6Ao2K84Jn5zYdm6bGxV+4OiN9GK2MTia5PNFcX6y7WkY
+         Tpo+YifiOcjlXZgnnn6M9I+GClyx8ljOcogjk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=M2MagAsqzQek4RfZIbzihBJ/AzdlKDWN0pczixUAk4k=;
+        b=VmyUubzoSQuny5Xxvk72a7ru4MNcOAjMjAhzMg2kHSxDb3+JwXgJY1ElZS2pR4al/0
+         5Z9NNiGc4REOea8UdCTdDgo89TXCJns2PAXvrpP3vYQ5420r7gekL9Gllq9XgfuxNoRr
+         Xm0yHInLArNonI6mo6c51KrrOg2/pgx8YgpfYJTgIQhB/J8HHJop6OPObLwRIf4R3GyK
+         XeMECQtA7tYaWZ6hE220iJrFREaIAlWCTar00Ux2eJHVoptDqNWXydFBfvTGS2mqDhLc
+         dDOvtUXaGKCFTuvlrByezdg1kD92oyCiJoDnvW1lfQaoKrVgzhAdxs1I8SWzUSrFrcnk
+         V5oA==
+X-Gm-Message-State: AOAM531Ip4TtkFfkJeC7q+vOUnO1gQG7PrgHhppNCBgvpPb5Zrco0Y2G
+        suFfyNXePvKS3Gz9OX0BdNKI7gwx7XJmKMWttsl84Q==
+X-Google-Smtp-Source: ABdhPJwDAJhJQ/AhvOx9lYi+OPMvHK3iBM6jwUMxjxkbO6Ny09AsZUdSaXH2I1z/XzdfkApRy31G4ouZTtt4UKdCYAE=
+X-Received: by 2002:a19:7416:: with SMTP id v22mr9995140lfe.13.1621845774673;
+ Mon, 24 May 2021 01:42:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
+ <87o8d1zn59.fsf@toke.dk> <CAADnVQL9xKcdCyR+-8irH07Ws7iKHjrE4XNb4OA7BkpBrkkEuA@mail.gmail.com>
+In-Reply-To: <CAADnVQL9xKcdCyR+-8irH07Ws7iKHjrE4XNb4OA7BkpBrkkEuA@mail.gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Mon, 24 May 2021 09:42:43 +0100
+Message-ID: <CACAyw9_Vq6f7neqrgw6AjJBw7ELa+s7u12Vnt5Ueh49gaE2PQg@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function 'ice_is_vsi_valid' is declared twice, remove the
-repeated declaration.
+On Sun, 23 May 2021 at 16:58, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 
-Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
----
- drivers/net/ethernet/intel/ice/ice_switch.h | 1 -
- 1 file changed, 1 deletion(-)
+...
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
-index 8b4f9d35c860..8fab89f146f9 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.h
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.h
-@@ -243,7 +243,6 @@ ice_set_vlan_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
- 
- enum ice_status ice_init_def_sw_recp(struct ice_hw *hw);
- u16 ice_get_hw_vsi_num(struct ice_hw *hw, u16 vsi_handle);
--bool ice_is_vsi_valid(struct ice_hw *hw, u16 vsi_handle);
- 
- enum ice_status ice_replay_vsi_all_fltr(struct ice_hw *hw, u16 vsi_handle);
- void ice_rm_all_sw_replay_rule_info(struct ice_hw *hw);
+>
+> msecs are used to avoid exposing jiffies to bpf prog, since msec_to_jiffies
+> isn't trivial to do in the bpf prog unlike the kernel.
+
+Isn't that already the case with bpf_jiffies64?
+
 -- 
-2.7.4
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
+www.cloudflare.com
