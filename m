@@ -2,108 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E5738DEF6
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 03:50:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B7BA38DEF9
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 03:50:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231833AbhEXBuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 21:50:23 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5741 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbhEXBuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 21:50:23 -0400
-Received: from dggems703-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FpKlz2czszncRq;
-        Mon, 24 May 2021 09:45:19 +0800 (CST)
-Received: from nkgeml706-chm.china.huawei.com (10.98.57.153) by
- dggems703-chm.china.huawei.com (10.3.19.180) with Microsoft SMTP Server
+        id S232125AbhEXBvR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 23 May 2021 21:51:17 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:51627 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231744AbhEXBvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 May 2021 21:51:16 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 14O1nZ9X1019586, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 14O1nZ9X1019586
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 24 May 2021 09:49:35 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 09:48:53 +0800
-Received: from nkgeml708-chm.china.huawei.com (10.98.57.160) by
- nkgeml706-chm.china.huawei.com (10.98.57.153) with Microsoft SMTP Server
+ 15.1.2106.2; Mon, 24 May 2021 09:49:34 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 09:48:53 +0800
-Received: from nkgeml708-chm.china.huawei.com ([10.98.57.160]) by
- nkgeml708-chm.china.huawei.com ([10.98.57.160]) with mapi id 15.01.2176.012;
- Mon, 24 May 2021 09:48:53 +0800
-From:   "Guodeqing (A)" <geffrey.guo@huawei.com>
-To:     Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "mst@redhat.com" <mst@redhat.com>
-CC:     "jasowang@redhat.com" <jasowang@redhat.com>,
+ 15.1.2106.2; Mon, 24 May 2021 09:49:34 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74]) by
+ RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74%5]) with mapi id
+ 15.01.2106.013; Mon, 24 May 2021 09:49:34 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Johan Hovold <johan@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>
+CC:     "kuba@kernel.org" <kuba@kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] virtio-net: fix the kzalloc/kfree mismatch problem
-Thread-Topic: [PATCH] virtio-net: fix the kzalloc/kfree mismatch problem
-Thread-Index: AQHXTuG8V0ZK8eJ5BEC9fbKUzqGeOarwJXsAgAG2WPA=
-Date:   Mon, 24 May 2021 01:48:53 +0000
-Message-ID: <9e95be43a1c14065b9f339ee39cecd3c@huawei.com>
-References: <20210522080231.54760-1-geffrey.guo@huawei.com>
- <6f7b729d-38df-9bf8-f023-bc1986da9a9e@nvidia.com>
-In-Reply-To: <6f7b729d-38df-9bf8-f023-bc1986da9a9e@nvidia.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com" 
+        <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>
+Subject: RE: [PATCH net v2] r8152: check the informaton of the device
+Thread-Topic: [PATCH net v2] r8152: check the informaton of the device
+Thread-Index: AQHXTsrXYjDdPDZZaEG920DohLECearula0AgAAJhwCAAz0LwA==
+Date:   Mon, 24 May 2021 01:49:33 +0000
+Message-ID: <d27f9a1848a546b99e2ab84cb15be06f@realtek.com>
+References: <1394712342-15778-363-Taiwan-albertk@realtek.com>
+ <1394712342-15778-364-Taiwan-albertk@realtek.com>
+ <YKizqoNIVFo+weI9@kroah.com> <YKi7qEWobOLRyoU8@hovoldconsulting.com>
+In-Reply-To: <YKi7qEWobOLRyoU8@hovoldconsulting.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [10.136.115.169]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/5/23_=3F=3F_11:44:00?=
+x-kse-attachment-filter-triggered-rules: Clean
+x-kse-attachment-filter-triggered-filters: Clean
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/24/2021 01:26:01
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163865 [May 23 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 446 446 0309aa129ce7cd9d810f87a68320917ac2eba541
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 05/24/2021 01:28:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWF4IEd1cnRvdm95IFtt
-YWlsdG86bWd1cnRvdm95QG52aWRpYS5jb21dDQo+IFNlbnQ6IFN1bmRheSwgTWF5IDIzLCAyMDIx
-IDE1OjI1DQo+IFRvOiBHdW9kZXFpbmcgKEEpIDxnZWZmcmV5Lmd1b0BodWF3ZWkuY29tPjsgbXN0
-QHJlZGhhdC5jb20NCj4gQ2M6IGphc293YW5nQHJlZGhhdC5jb207IGRhdmVtQGRhdmVtbG9mdC5u
-ZXQ7IGt1YmFAa2VybmVsLm9yZzsNCj4gdmlydHVhbGl6YXRpb25AbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRDSF0g
-dmlydGlvLW5ldDogZml4IHRoZSBremFsbG9jL2tmcmVlIG1pc21hdGNoIHByb2JsZW0NCj4gDQo+
-IA0KPiBPbiA1LzIyLzIwMjEgMTE6MDIgQU0sIGd1b2RlcWluZyB3cm90ZToNCj4gPiBJZiB0aGUg
-dmlydGlvX25ldCBkZXZpY2UgZG9lcyBub3Qgc3VwcHVydCB0aGUgY3RybCBxdWV1ZSBmZWF0dXJl
-LCB0aGUNCj4gPiB2aS0+Y3RybCB3YXMgbm90IGFsbG9jYXRlZCwgc28gdGhlcmUgaXMgbm8gbmVl
-ZCB0byBmcmVlIGl0Lg0KPiANCj4geW91IGRvbid0IG5lZWQgdGhpcyBjaGVjay4NCj4gDQo+IGZy
-b20ga2ZyZWUgZG9jOg0KPiANCj4gIklmIEBvYmpwIGlzIE5VTEwsIG5vIG9wZXJhdGlvbiBpcyBw
-ZXJmb3JtZWQuIg0KPiANCj4gVGhpcyBpcyBub3QgYSBidWcuIEkndmUgc2V0IHZpLT5jdHJsIHRv
-IGJlIE5VTEwgaW4gY2FzZSAhdmktPmhhc19jdnEuDQo+IA0KPiANCiAgeWVzLCAgdGhpcyBpcyBu
-b3QgYSBidWcsIHRoZSBwYXRjaCBpcyBqdXN0IGEgb3B0aW1pemF0aW9uLCBiZWNhdXNlIHRoZSB2
-aS0+Y3RybCBtYXliZSANCiAgYmUgZnJlZWQgd2hpY2ggIHdhcyBub3QgYWxsb2NhdGVkLCB0aGlz
-IG1heSBnaXZlIHBlb3BsZSBhIG1pc3VuZGVyc3RhbmRpbmcuIA0KICBUaGFua3MuDQo+ID4NCj4g
-PiBIZXJlIEkgYWRqdXN0IHRoZSBpbml0aWFsaXphdGlvbiBzZXF1ZW5jZSBhbmQgdGhlIGNoZWNr
-IG9mIHZpLT5oYXNfY3ZxDQo+ID4gdG8gc2xvdmUgdGhpcyBwcm9ibGVtLg0KPiA+DQo+ID4gRml4
-ZXM6IAkxMjJiODRhMTI2N2EgKCJ2aXJ0aW8tbmV0OiBkb24ndCBhbGxvY2F0ZSBjb250cm9sX2J1
-ZiBpZiBub3QNCj4gc3VwcG9ydGVkIikNCj4gPiBTaWduZWQtb2ZmLWJ5OiBndW9kZXFpbmcgPGdl
-ZmZyZXkuZ3VvQGh1YXdlaS5jb20+DQo+ID4gLS0tDQo+ID4gICBkcml2ZXJzL25ldC92aXJ0aW9f
-bmV0LmMgfCAyMCArKysrKysrKysrLS0tLS0tLS0tLQ0KPiA+ICAgMSBmaWxlIGNoYW5nZWQsIDEw
-IGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvbmV0L3ZpcnRpb19uZXQuYyBiL2RyaXZlcnMvbmV0L3ZpcnRpb19uZXQuYyBpbmRleA0K
-PiA+IDliNmE0YTg3NWM1NS4uODk0Zjg5NGQzYTI5IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMv
-bmV0L3ZpcnRpb19uZXQuYw0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L3ZpcnRpb19uZXQuYw0KPiA+
-IEBAIC0yNjkxLDcgKzI2OTEsOCBAQCBzdGF0aWMgdm9pZCB2aXJ0bmV0X2ZyZWVfcXVldWVzKHN0
-cnVjdA0KPiA+IHZpcnRuZXRfaW5mbyAqdmkpDQo+ID4NCj4gPiAgIAlrZnJlZSh2aS0+cnEpOw0K
-PiA+ICAgCWtmcmVlKHZpLT5zcSk7DQo+ID4gLQlrZnJlZSh2aS0+Y3RybCk7DQo+ID4gKwlpZiAo
-dmktPmhhc19jdnEpDQo+ID4gKwkJa2ZyZWUodmktPmN0cmwpOw0KPiA+ICAgfQ0KPiA+DQo+ID4g
-ICBzdGF0aWMgdm9pZCBfZnJlZV9yZWNlaXZlX2J1ZnMoc3RydWN0IHZpcnRuZXRfaW5mbyAqdmkp
-IEBAIC0yODcwLDEzDQo+ID4gKzI4NzEsNiBAQCBzdGF0aWMgaW50IHZpcnRuZXRfYWxsb2NfcXVl
-dWVzKHN0cnVjdCB2aXJ0bmV0X2luZm8gKnZpKQ0KPiA+ICAgew0KPiA+ICAgCWludCBpOw0KPiA+
-DQo+ID4gLQlpZiAodmktPmhhc19jdnEpIHsNCj4gPiAtCQl2aS0+Y3RybCA9IGt6YWxsb2Moc2l6
-ZW9mKCp2aS0+Y3RybCksIEdGUF9LRVJORUwpOw0KPiA+IC0JCWlmICghdmktPmN0cmwpDQo+ID4g
-LQkJCWdvdG8gZXJyX2N0cmw7DQo+ID4gLQl9IGVsc2Ugew0KPiA+IC0JCXZpLT5jdHJsID0gTlVM
-TDsNCj4gPiAtCX0NCj4gPiAgIAl2aS0+c3EgPSBrY2FsbG9jKHZpLT5tYXhfcXVldWVfcGFpcnMs
-IHNpemVvZigqdmktPnNxKSwgR0ZQX0tFUk5FTCk7DQo+ID4gICAJaWYgKCF2aS0+c3EpDQo+ID4g
-ICAJCWdvdG8gZXJyX3NxOw0KPiA+IEBAIC0yODg0LDYgKzI4NzgsMTIgQEAgc3RhdGljIGludCB2
-aXJ0bmV0X2FsbG9jX3F1ZXVlcyhzdHJ1Y3QNCj4gdmlydG5ldF9pbmZvICp2aSkNCj4gPiAgIAlp
-ZiAoIXZpLT5ycSkNCj4gPiAgIAkJZ290byBlcnJfcnE7DQo+ID4NCj4gPiArCWlmICh2aS0+aGFz
-X2N2cSkgew0KPiA+ICsJCXZpLT5jdHJsID0ga3phbGxvYyhzaXplb2YoKnZpLT5jdHJsKSwgR0ZQ
-X0tFUk5FTCk7DQo+ID4gKwkJaWYgKCF2aS0+Y3RybCkNCj4gPiArCQkJZ290byBlcnJfY3RybDsN
-Cj4gPiArCX0NCj4gPiArDQo+ID4gICAJSU5JVF9ERUxBWUVEX1dPUksoJnZpLT5yZWZpbGwsIHJl
-ZmlsbF93b3JrKTsNCj4gPiAgIAlmb3IgKGkgPSAwOyBpIDwgdmktPm1heF9xdWV1ZV9wYWlyczsg
-aSsrKSB7DQo+ID4gICAJCXZpLT5ycVtpXS5wYWdlcyA9IE5VTEw7DQo+ID4gQEAgLTI5MDIsMTEg
-KzI5MDIsMTEgQEAgc3RhdGljIGludCB2aXJ0bmV0X2FsbG9jX3F1ZXVlcyhzdHJ1Y3QNCj4gPiB2
-aXJ0bmV0X2luZm8gKnZpKQ0KPiA+DQo+ID4gICAJcmV0dXJuIDA7DQo+ID4NCj4gPiArZXJyX2N0
-cmw6DQo+ID4gKwlrZnJlZSh2aS0+cnEpOw0KPiA+ICAgZXJyX3JxOg0KPiA+ICAgCWtmcmVlKHZp
-LT5zcSk7DQo+ID4gICBlcnJfc3E6DQo+ID4gLQlrZnJlZSh2aS0+Y3RybCk7DQo+ID4gLWVycl9j
-dHJsOg0KPiA+ICAgCXJldHVybiAtRU5PTUVNOw0KPiA+ICAgfQ0KPiA+DQo=
+Johan Hovold <johan@kernel.org>
+> Sent: Saturday, May 22, 2021 4:07 PM
+[...]
+> > > +	if (usb_endpoint_num(in) != 1) {
+> > > +		dev_err(&intf->dev, "Invalid Rx Endpoint\n");
+> >
+> > "Invalid number of Rx endpoints"
+> 
+> Here it is the endpoint number (address) that is being checked so
+> "number of" would be wrong.
+> 
+> That said, perhaps none of these checks are even needed a bit depending
+> on how the driver is implemented. That is, if it hardcodes the endpoint
+> addresses or uses the result from usb_find_common_endpoints() above
+> (which I realise now that it does not so these checks are probably still
+> needed).
+
+The purpose of the checks is to find out the fake devices. That is, even
+the device supports in, out, and interrupt endpoints, it is treated as
+fake or malicious device, if the addresses of these endpoints are wrong.
+Therefore, I would keep the checks.
+
+Best Regards,
+Hayes
+
