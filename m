@@ -2,46 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D0AC38F4EC
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 23:30:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D950238F4EB
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 23:30:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233950AbhEXVbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 17:31:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42560 "EHLO mail.kernel.org"
+        id S233931AbhEXVbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 17:31:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42548 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233850AbhEXVbi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232911AbhEXVbi (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 24 May 2021 17:31:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3B7156140F;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2C7D5610CB;
         Mon, 24 May 2021 21:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1621891810;
-        bh=oD4MVe7khTGPFN86fkPnHSZaQ7GZI5DiZWY8xvo+h88=;
+        bh=lo6EILUQ1i18nWASD97hUQMB+qwDzeRWIWWlJTKTwMc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=C9HMmFixx51lCt8bDfOKBLij4NTKZqi40JXtrNT0J4Tr5C7BEldbMs84sQ8GEiZjo
-         uYy1KA/qvC7MOYwGP7u8M9i1FyWPTucnmIw1GRVQPPsuGKGaSOiLP2/GhJJPWakd43
-         E7U0oL3PR0GoPDEhoH1N4HJuCnDkHhidtWlmx3XqWcb9xhX5L3WOyA5Mb/N1ba6Rbu
-         VaD7rXdm1GfqZjeE3wfOvbF4FUo/e2W8rFIyIKND3Tdbnx7SWDyYP3MW80A2xy6x5D
-         UYcRKfZVimi+xTSKxEOIO+rcG3FsPjx/pBLcxB6GDXofNKhQ68szuNeVZoMFSOBw9c
-         FAsSWhSBFaJSw==
+        b=fn1HTy2g+AEVk1I+5as2OVYci8j/r8vauY+0u/dQUbqCp+Qpe/R0/6jmqDBF+31H1
+         esohNzr9biTCZtmRe/VXnrRkq+u+JvwJZjmozud0G/+GFoTJgA5F/UnBX7aK6iIU5N
+         OmQU6Jitx3G3BFm/k32on4D3HG3KvkwpNIEgp+1SmeCKmH1zSzwC6AVDx2oYiTdRwZ
+         MwGoMeLvvgbgnQ/XfVY9OIdGBFsVsZ5sJUI5OUZmXOTiQMwwMVulBmFxcaX+gsjyDM
+         a+z5fymmitOELxotwsmATyeB9LG9FzO39lRGHTediG1M6p/tmdM0++6C6znhL+NGz5
+         7aF3S1YTTHf7A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2BC5B60CD0;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 20F6560A0B;
         Mon, 24 May 2021 21:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: hsr: fix mac_len checks
+Subject: Re: [PATCH net] net: dsa: microchip: enable phy errata workaround on 9567
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162189181017.16512.13935059871261299091.git-patchwork-notify@kernel.org>
+Message-Id: <162189181013.16512.8256926089205340399.git-patchwork-notify@kernel.org>
 Date:   Mon, 24 May 2021 21:30:10 +0000
-References: <20210524185054.65642-1-george.mccollister@gmail.com>
-In-Reply-To: <20210524185054.65642-1-george.mccollister@gmail.com>
+References: <20210524202953.70379-1-george.mccollister@gmail.com>
+In-Reply-To: <20210524202953.70379-1-george.mccollister@gmail.com>
 To:     George McCollister <george.mccollister@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        m-karicheri2@ti.com, ap420073@gmail.com, olteanv@gmail.com,
-        kurt@linutronix.de, luc.vanoostenryck@gmail.com,
-        wanghai38@huawei.com, phil@philpotter.co.uk,
-        andreas.oetken@siemens.com, marco.wenzel@a-eberle.de,
-        linux-kernel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -50,21 +48,18 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Mon, 24 May 2021 13:50:54 -0500 you wrote:
-> Commit 2e9f60932a2c ("net: hsr: check skb can contain struct hsr_ethhdr
-> in fill_frame_info") added the following which resulted in -EINVAL
-> always being returned:
-> 	if (skb->mac_len < sizeof(struct hsr_ethhdr))
-> 		return -EINVAL;
+On Mon, 24 May 2021 15:29:53 -0500 you wrote:
+> Also enable phy errata workaround on 9567 since has the same errata as
+> the 9477 according to the manufacture's documentation.
 > 
-> mac_len was not being set correctly so this check completely broke
-> HSR/PRP since it was always 14, not 20.
-> 
-> [...]
+> Signed-off-by: George McCollister <george.mccollister@gmail.com>
+> ---
+>  drivers/net/dsa/microchip/ksz9477.c | 1 +
+>  1 file changed, 1 insertion(+)
 
 Here is the summary with links:
-  - [net] net: hsr: fix mac_len checks
-    https://git.kernel.org/netdev/net/c/48b491a5cc74
+  - [net] net: dsa: microchip: enable phy errata workaround on 9567
+    https://git.kernel.org/netdev/net/c/8c42a49738f1
 
 You are awesome, thank you!
 --
