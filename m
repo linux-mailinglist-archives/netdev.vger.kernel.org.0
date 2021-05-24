@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F21738EAFB
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 16:58:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2576238EB16
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 17:00:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233993AbhEXO7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 10:59:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34166 "EHLO mail.kernel.org"
+        id S233212AbhEXPAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 11:00:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34006 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234194AbhEXO46 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 10:56:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1F8D66144B;
-        Mon, 24 May 2021 14:49:15 +0000 (UTC)
+        id S234110AbhEXO5o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 10:57:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C343361453;
+        Mon, 24 May 2021 14:49:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621867755;
-        bh=xT4oh+Kl9yrAfIuii1ZRMFpk90BZcWnx60uANb60MVg=;
+        s=k20201202; t=1621867762;
+        bh=SqjKvzL/9wcAch+fn06ik3D6/zS8+xJL9bETZFokctA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fWkBjIpiI1kfwbkofQnRqtEdxtnlDNrTpGhLQx4vCvte+oCZYh/brrUt4isv6Q7SM
-         ybmYsH45mZ3/xQfEJTryibK3QSd6/EyYm1/Rd+o102K60LOFkgfQP3ayY2VoyXNIYM
-         N0oEI+SZmkBO8szm5TRC6a3eN++bo/tBwaEdy5TdokIqisJKHdJpk5M+buOxSIA/+2
-         keuhs5gkiJlwTPjpGMZp6Gtz25g3RyDjjJa9rFUnMpbbEJRv0R6ADmswo6UFgN1U9Z
-         uOwi+EhRl1Py/OG6Lv0vVihVp1sdxT/0E8VqGD0t45Utx2DZMf9acNrhOVdcxFB78O
-         M2yF8YnXL8aTg==
+        b=p4xjy7kh44uIt2tKB8LF0SYyPefpVnwkG7KIUvpgn2L89508s+VKZHMSPT2xKNpZI
+         W/4tZ0NZV7hjiVNORRqo2niKCnxCIeRY2YBbmR4VzVN7zLlxDsGWLkg6MCN2t+B3In
+         /qMhvKCLQIrrX6o8vFzRxEAAbxBLhAA9Bpf4XP3i+y4kbiVixrtcaYBCD+Ew5oRAxQ
+         hEaJe81v5H+/lTuMwtrQ0ss4d0AWk2xjy0C4MFGhXE6QGwSVy5ODKjGLAGy3i/4WaP
+         HcMO7t9a55QFczsoA2prpdToJp5sMIBZY2EPbEQzNfF8H5u7FbtJP41BN3inlYPwKi
+         LFjOoHohTI2BQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Du Cheng <ducheng2@gmail.com>,
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kangjie Lu <kjlu@umn.edu>,
         "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 10/52] net: caif: remove BUG_ON(dev == NULL) in caif_xmit
-Date:   Mon, 24 May 2021 10:48:20 -0400
-Message-Id: <20210524144903.2498518-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 16/52] Revert "isdn: mISDNinfineon: fix potential NULL pointer dereference"
+Date:   Mon, 24 May 2021 10:48:26 -0400
+Message-Id: <20210524144903.2498518-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210524144903.2498518-1-sashal@kernel.org>
 References: <20210524144903.2498518-1-sashal@kernel.org>
@@ -43,78 +43,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Du Cheng <ducheng2@gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit 65a67792e3416f7c5d7daa47d99334cbb19a7449 ]
+[ Upstream commit abd7bca23bd4247124265152d00ffd4b2b0d6877 ]
 
-The condition of dev == NULL is impossible in caif_xmit(), hence it is
-for the removal.
+This reverts commit d721fe99f6ada070ae8fc0ec3e01ce5a42def0d9.
 
-Explanation:
-The static caif_xmit() is only called upon via a function pointer
-`ndo_start_xmit` defined in include/linux/netdevice.h:
-```
-struct net_device_ops {
-    ...
-    netdev_tx_t     (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev);
-    ...
-}
-```
+Because of recent interactions with developers from @umn.edu, all
+commits from them have been recently re-reviewed to ensure if they were
+correct or not.
 
-The exhausive list of call points are:
-```
-drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c
-    dev->netdev_ops->ndo_start_xmit(skb, dev);
-    ^                                    ^
+Upon review, this commit was found to be incorrect for the reasons
+below, so it must be reverted.  It will be fixed up "correctly" in a
+later kernel change.
 
-drivers/infiniband/ulp/opa_vnic/opa_vnic_netdev.c
-    struct opa_vnic_adapter *adapter = opa_vnic_priv(netdev);
-			     ^                       ^
-    return adapter->rn_ops->ndo_start_xmit(skb, netdev); // adapter would crash first
-	   ^                                    ^
+The original commit was incorrect, it should have never have used
+"unlikely()" and if it ever does trigger, resources are left grabbed.
 
-drivers/usb/gadget/function/f_ncm.c
-    ncm->netdev->netdev_ops->ndo_start_xmit(NULL, ncm->netdev);
-	      ^                                   ^
+Given there are no users for this code around, I'll just revert this and
+leave it "as is" as the odds that ioremap() will ever fail here is
+horrendiously low.
 
-include/linux/netdevice.h
-static inline netdev_tx_t __netdev_start_xmit(...
-{
-    return ops->ndo_start_xmit(skb, dev);
-				    ^
-}
-
-    const struct net_device_ops *ops = dev->netdev_ops;
-				       ^
-    rc = __netdev_start_xmit(ops, skb, dev, more);
-				       ^
-```
-
-In each of the enumerated scenarios, it is impossible for the NULL-valued dev to
-reach the caif_xmit() without crashing the kernel earlier, therefore `BUG_ON(dev ==
-NULL)` is rather useless, hence the removal.
-
+Cc: Kangjie Lu <kjlu@umn.edu>
 Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Du Cheng <ducheng2@gmail.com>
-Link: https://lore.kernel.org/r/20210503115736.2104747-20-gregkh@linuxfoundation.org
+Link: https://lore.kernel.org/r/20210503115736.2104747-41-gregkh@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/caif/caif_serial.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/isdn/hardware/mISDN/mISDNinfineon.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
-index 40b079162804..0f2bee59a82b 100644
---- a/drivers/net/caif/caif_serial.c
-+++ b/drivers/net/caif/caif_serial.c
-@@ -270,7 +270,6 @@ static int caif_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct ser_device *ser;
- 
--	BUG_ON(dev == NULL);
- 	ser = netdev_priv(dev);
- 
- 	/* Send flow off once, on high water mark */
+diff --git a/drivers/isdn/hardware/mISDN/mISDNinfineon.c b/drivers/isdn/hardware/mISDN/mISDNinfineon.c
+index f4cb29766888..d62006bab9c6 100644
+--- a/drivers/isdn/hardware/mISDN/mISDNinfineon.c
++++ b/drivers/isdn/hardware/mISDN/mISDNinfineon.c
+@@ -697,11 +697,8 @@ setup_io(struct inf_hw *hw)
+ 				(ulong)hw->addr.start, (ulong)hw->addr.size);
+ 			return err;
+ 		}
+-		if (hw->ci->addr_mode == AM_MEMIO) {
++		if (hw->ci->addr_mode == AM_MEMIO)
+ 			hw->addr.p = ioremap(hw->addr.start, hw->addr.size);
+-			if (unlikely(!hw->addr.p))
+-				return -ENOMEM;
+-		}
+ 		hw->addr.mode = hw->ci->addr_mode;
+ 		if (debug & DEBUG_HW)
+ 			pr_notice("%s: IO addr %lx (%lu bytes) mode%d\n",
 -- 
 2.30.2
 
