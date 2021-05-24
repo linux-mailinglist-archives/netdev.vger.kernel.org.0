@@ -2,113 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67A1938E2CB
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 10:55:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 950EC38E2F9
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 11:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbhEXI4e convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 24 May 2021 04:56:34 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:34518 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232362AbhEXI4d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 04:56:33 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 14O8srRZ3017081, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 14O8srRZ3017081
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 24 May 2021 16:54:53 +0800
-Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 24 May 2021 16:54:52 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 24 May 2021 16:54:51 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74]) by
- RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74%5]) with mapi id
- 15.01.2106.013; Mon, 24 May 2021 16:54:51 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Johan Hovold <johan@kernel.org>
-CC:     "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com" 
-        <syzbot+95afd23673f5dd295c57@syzkaller.appspotmail.com>
-Subject: RE: [PATCH net v3] r8152: check the informaton of the device
-Thread-Topic: [PATCH net v3] r8152: check the informaton of the device
-Thread-Index: AQHXUGkJnqSJIsklPU2X0etxrhPKsqrxvtUAgACMwfA=
-Date:   Mon, 24 May 2021 08:54:50 +0000
-Message-ID: <1e7e1d4039724eb4bcdd5884a748d880@realtek.com>
-References: <1394712342-15778-363-Taiwan-albertk@realtek.com>
- <1394712342-15778-365-Taiwan-albertk@realtek.com>
- <YKtdJnvZTxE1yqEK@hovoldconsulting.com>
-In-Reply-To: <YKtdJnvZTxE1yqEK@hovoldconsulting.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.203]
-x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/5/24_=3F=3F_06:00:00?=
-x-kse-attachment-filter-triggered-rules: Clean
-x-kse-attachment-filter-triggered-filters: Clean
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S232401AbhEXJLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 05:11:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29025 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232318AbhEXJLg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 05:11:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621847407;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=L3wSqyBZrZuWAaUg/+zzbLh1KHxQeq+UhWJvXbU1jvM=;
+        b=AOc6yA9d8CWnbpaEMDEQ65RUpvAvvixHXf5nSo1ELU6DGwCZ4qz7YFZwGE1U/PVgLLamC7
+        UpP7VRuiL3XrzyipRyRCnmMY8fS33ga/X4oHi0LdfHbeOQNmreAkoelfaiqMpruGGkAwN2
+        faNkxaqP0BrmUWpTs5Hdrjp5kz24+8o=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-344-KFXFuErONWe7PWvbwCdRog-1; Mon, 24 May 2021 05:10:05 -0400
+X-MC-Unique: KFXFuErONWe7PWvbwCdRog-1
+Received: by mail-wr1-f70.google.com with SMTP id g3-20020adfd1e30000b02901122a4b850aso4782798wrd.20
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 02:10:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=L3wSqyBZrZuWAaUg/+zzbLh1KHxQeq+UhWJvXbU1jvM=;
+        b=YXxIWJF4NIfgSz3aSQqAqMTzHVXAokTkaNKcpw7btsF8br75+IrrUzXGycxBC8TFHl
+         NAHaTR3gToSXM38dhgJU+39tVlJa2kpI7YqKKXxMooNc2m8WNMr1mOvAcRFKr3zEo/DP
+         To7CyYGnHQoo/HdcI10emLmmoy44xLcLTY04otyi1cwmVA5QQ1MSe39QWI5tKto/TsWA
+         9XBv8mXJg1HGgb2o3rhLet/Rq6oEbk9ZA8OVW3gK9d1BA2YWU2RgRLtBg1Df07JV0DKE
+         hrd03afTiytRxZfF/r/JKgpIxJ3xnlXN9HphcNBacFUoiY8vvncw4DcMzzCzOlb7k0qO
+         WJZg==
+X-Gm-Message-State: AOAM5331W5r20GyufqyrWdjIusbWsvzgdBuYqewjQmF5mhXQCxtb8p4L
+        e6ZuUDroOGa0SYS1hk3IJfSONf46OzrvN4WEVyKxPfkLRBZrYjiEkIbhb6RAkaVovnM4f1C63AB
+        z2Acoulg8wIdEkbZw
+X-Received: by 2002:adf:f04f:: with SMTP id t15mr20315409wro.377.1621847403769;
+        Mon, 24 May 2021 02:10:03 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJytbecMYMOBl3tQdN/Kb27iSiGCSiu57Cvca61WWGiciWSVF/D85dYw2RXxPRqM5ZPPEiFVYQ==
+X-Received: by 2002:adf:f04f:: with SMTP id t15mr20315393wro.377.1621847403598;
+        Mon, 24 May 2021 02:10:03 -0700 (PDT)
+Received: from redhat.com ([2a10:8006:fcda:0:90d:c7e7:9e26:b297])
+        by smtp.gmail.com with ESMTPSA id w25sm7397924wmk.25.2021.05.24.02.10.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 May 2021 02:10:02 -0700 (PDT)
+Date:   Mon, 24 May 2021 05:10:00 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Dave Taht <dave.taht@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        bloat <bloat@lists.bufferbloat.net>
+Subject: Re: virtio_net: BQL?
+Message-ID: <20210524050840-mutt-send-email-mst@kernel.org>
+References: <56270996-33a6-d71b-d935-452dad121df7@linux.alibaba.com>
+ <CAA93jw6LUAnWZj0b5FvefpDKUyd6cajCNLoJ6OKrwbu-V_ffrA@mail.gmail.com>
+ <CA+FuTSf0Af2RXEG=rCthNNEb5mwKTG37gpEBBZU16qKkvmF=qw@mail.gmail.com>
+ <CAA93jw7Vr_pFMsPCrPadqaLGu0BdC-wtCmW2iyHFkHERkaiyWQ@mail.gmail.com>
+ <a3a9b036-14d1-2f4f-52e6-f0aa1b187003@redhat.com>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/24/2021 08:33:42
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163866 [May 24 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 446 446 0309aa129ce7cd9d810f87a68320917ac2eba541
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 05/24/2021 08:36:00
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a3a9b036-14d1-2f4f-52e6-f0aa1b187003@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Johan Hovold <johan@kernel.org>
-> Sent: Monday, May 24, 2021 4:01 PM
-[...]
-> >  	/* The vendor mode is not always config #1, so to find it out. */
-> >  	udev = interface_to_usbdev(intf);
-> >  	c = udev->config;
-> >  	num_configs = udev->descriptor.bNumConfigurations;
-> > +	if (num_configs < 2)
-> > +		return false;
-> > +
+On Mon, May 24, 2021 at 10:53:08AM +0800, Jason Wang wrote:
 > 
-> Nit: This check looks unnecessary also as the driver can handle a single
-> configuration just fine, and by removing it you'd be logging "Unexpected
-> Device\n" below also in the single config case.
+> 在 2021/5/18 上午5:48, Dave Taht 写道:
+> > On Mon, May 17, 2021 at 1:23 PM Willem de Bruijn
+> > <willemdebruijn.kernel@gmail.com> wrote:
+> > > On Mon, May 17, 2021 at 2:44 PM Dave Taht <dave.taht@gmail.com> wrote:
+> > > > Not really related to this patch, but is there some reason why virtio
+> > > > has no support for BQL?
+> > > There have been a few attempts to add it over the years.
+> > > 
+> > > Most recently, https://lore.kernel.org/lkml/20181205225323.12555-2-mst@redhat.com/
+> > > 
+> > > That thread has a long discussion. I think the key open issue remains
+> > > 
+> > > "The tricky part is the mode switching between napi and no napi."
+> > Oy, vey.
+> > 
+> > I didn't pay any attention to that discussion, sadly enough.
+> > 
+> > It's been about that long (2018) since I paid any attention to
+> > bufferbloat in the cloud and my cloudy provider (linode) switched to
+> > using virtio when I wasn't looking. For over a year now, I'd been
+> > getting reports saying that comcast's pie rollout wasn't working as
+> > well as expected, that evenroute's implementation of sch_cake and sqm
+> > on inbound wasn't working right, nor pf_sense's and numerous other
+> > issues at Internet scale.
+> > 
+> > Last week I ran a string of benchmarks against starlink's new services
+> > and was really aghast at what I found there, too. but the problem
+> > seemed deeper than in just the dishy...
+> > 
+> > Without BQL, there's no backpressure for fq_codel to do its thing.
+> > None. My measurement servers aren't FQ-codeling
+> > no matter how much load I put on them. Since that qdisc is the default
+> > now in most linux distributions, I imagine that the bulk of the cloud
+> > is now behaving as erratically as linux was in 2011 with enormous
+> > swings in throughput and latency from GSO/TSO hitting overlarge rx/tx
+> > rings, [1], breaking various rate estimators in codel, pie and the tcp
+> > stack itself.
+> > 
+> > See:
+> > 
+> > http://fremont.starlink.taht.net/~d/virtio_nobql/rrul_-_evenroute_v3_server_fq_codel.png
+> > 
+> > See the swings in latency there? that's symptomatic of tx/rx rings
+> > filling and emptying.
+> > 
+> > it wasn't until I switched my measurement server temporarily over to
+> > sch_fq that I got a rrul result that was close to the results we used
+> > to get from the virtualized e1000e drivers we were using in 2014.
+> > 
+> > http://fremont.starlink.taht.net/~d/virtio_nobql/rrul_-_evenroute_v3_server_fq.png
+> > 
+> > While I have long supported the use of sch_fq for tcp-heavy workloads,
+> > it still behaves better with bql in place, and fq_codel is better for
+> > generic workloads... but needs bql based backpressure to kick in.
+> > 
+> > [1] I really hope I'm overreacting but, um, er, could someone(s) spin
+> > up a new patch that does bql in some way even half right for this
+> > driver and help test it? I haven't built a kernel in a while.
+> 
+> 
+> I think it's time to obsolete skb_orphan() for virtio-net to get rid of a
+> brunch of tricky codes in the current virtio-net driver.
+> 
+> Then we can do BQL on top.
+> 
+> I will prepare some patches to do this (probably with Michael's BQL patch).
+> 
+> Thanks
 
-I just want to distinguish the devices.
-It is acceptable if the device contains only one configuration.
-A mistake occurs if the device has more configurations and
-there is no expected one.
-I would remove it if you think it is better.
+First step would be to fix up and test the BQL part.
+IIRC it didn't seem to help performance in our benchmarking,
+and Eric seems to say that's expected ...
 
-Best Regards,
-Hayes
+
+> 
+> > 
+> > 
+> > > > On Mon, May 17, 2021 at 11:41 AM Xianting Tian
+> > > > <xianting.tian@linux.alibaba.com> wrote:
+> > > > > BUG_ON() uses unlikely in if(), which can be optimized at compile time.
+> > > > > 
+> > > > > Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+> > > > > ---
+> > > > >    drivers/net/virtio_net.c | 5 ++---
+> > > > >    1 file changed, 2 insertions(+), 3 deletions(-)
+> > > > > 
+> > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > > index c921ebf3ae82..212d52204884 100644
+> > > > > --- a/drivers/net/virtio_net.c
+> > > > > +++ b/drivers/net/virtio_net.c
+> > > > > @@ -1646,10 +1646,9 @@ static int xmit_skb(struct send_queue *sq, struct
+> > > > > sk_buff *skb)
+> > > > >          else
+> > > > >                  hdr = skb_vnet_hdr(skb);
+> > > > > 
+> > > > > -       if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
+> > > > > +       BUG_ON(virtio_net_hdr_from_skb(skb, &hdr->hdr,
+> > > > >                                      virtio_is_little_endian(vi->vdev), false,
+> > > > > -                                   0))
+> > > > > -               BUG();
+> > > > > +                                   0));
+> > > > > 
+> > > > >          if (vi->mergeable_rx_bufs)
+> > > > >                  hdr->num_buffers = 0;
+> > > > > --
+> > > > > 2.17.1
+> > > > > 
+> > > > 
+> > > > --
+> > > > Latest Podcast:
+> > > > https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
+> > > > 
+> > > > Dave Täht CTO, TekLibre, LLC
+> > 
+> > 
+> > --
+> > Latest Podcast:
+> > https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
+> > 
+> > Dave Täht CTO, TekLibre, LLC
+> > 
 
