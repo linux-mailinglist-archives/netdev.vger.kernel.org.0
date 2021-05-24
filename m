@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A461D38EA7B
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 16:54:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83FB838EA83
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 16:55:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234056AbhEXOzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 10:55:44 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3654 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233975AbhEXOvy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 10:51:54 -0400
-Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fpg5b39TtzNypV;
-        Mon, 24 May 2021 22:46:43 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 22:50:18 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Mon, 24 May 2021 22:50:18 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
-        <ms@dev.tdt.de>, <willemb@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <tanhuazhong@huawei.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 10/10] net: wan: add braces {} to all arms of the statement
-Date:   Mon, 24 May 2021 22:47:17 +0800
-Message-ID: <1621867637-2680-11-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1621867637-2680-1-git-send-email-huangguangbin2@huawei.com>
-References: <1621867637-2680-1-git-send-email-huangguangbin2@huawei.com>
+        id S233725AbhEXO4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 10:56:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34040 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234003AbhEXOyK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 10:54:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8789661428;
+        Mon, 24 May 2021 14:48:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621867712;
+        bh=IoHREpO8T5t2jYw8sNsJ9hikV2tRTqlyPUYv5iO8hbQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OQKLiiimKyjLrhK0aKSskYAJVPuAY5oHnHBJWJBFEy3rhiYoiRyAxoGGkYsavuTiS
+         0o0PQT86UKnRBengDUJsxBj6atpA6UyFKdzbOZc24y30KjUDy2nBG+Jx2Z4YsnaXqs
+         eaw7VPJ1i2VcjKYy/Rq1k9T4QMUL7doByprY72U1HJUfY0Zb0vCrIojyuP7juC3vkj
+         zrkFEeg+9XthfOCisc+QotHfCED+5prbN1K/mQb54uxC49NffL1JcmqnWyO7JDgtMU
+         RjkhzXhP46w/FEqW1SrT4sJ7/BlGVuKHSJmCNj6FKN1LDmcjIelU2H5E70PEk3+Upk
+         kDsEkh1l9QFZQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kangjie Lu <kjlu@umn.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 39/62] Revert "net: liquidio: fix a NULL pointer dereference"
+Date:   Mon, 24 May 2021 10:47:20 -0400
+Message-Id: <20210524144744.2497894-39-sashal@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210524144744.2497894-1-sashal@kernel.org>
+References: <20210524144744.2497894-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Braces {} should be used on all arms of this statement.
+[ Upstream commit 4fd798a5a89114c1892574c50f2aebd49bc5b4f5 ]
 
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+This reverts commit fe543b2f174f34a7a751aa08b334fe6b105c4569.
+
+Because of recent interactions with developers from @umn.edu, all
+commits from them have been recently re-reviewed to ensure if they were
+correct or not.
+
+Upon review, this commit was found to be incorrect for the reasons
+below, so it must be reverted.  It will be fixed up "correctly" in a
+later kernel change.
+
+While the original commit does keep the immediate "NULL dereference"
+from happening, it does not properly propagate the error back to the
+callers, AND it does not fix this same identical issue in the
+drivers/net/ethernet/cavium/liquidio/lio_vf_main.c for some reason.
+
+Cc: Kangjie Lu <kjlu@umn.edu>
+Cc: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20210503115736.2104747-65-gregkh@linuxfoundation.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wan/wanxl.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/cavium/liquidio/lio_main.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/wan/wanxl.c b/drivers/net/wan/wanxl.c
-index 18de5f1bb0ed..f22e48415e6f 100644
---- a/drivers/net/wan/wanxl.c
-+++ b/drivers/net/wan/wanxl.c
-@@ -210,18 +210,18 @@ static inline void wanxl_rx_intr(struct card *card)
+diff --git a/drivers/net/ethernet/cavium/liquidio/lio_main.c b/drivers/net/ethernet/cavium/liquidio/lio_main.c
+index 7d00d3a8ded4..e4c220f30040 100644
+--- a/drivers/net/ethernet/cavium/liquidio/lio_main.c
++++ b/drivers/net/ethernet/cavium/liquidio/lio_main.c
+@@ -1166,11 +1166,6 @@ static void send_rx_ctrl_cmd(struct lio *lio, int start_stop)
+ 	sc = (struct octeon_soft_command *)
+ 		octeon_alloc_soft_command(oct, OCTNET_CMD_SIZE,
+ 					  16, 0);
+-	if (!sc) {
+-		netif_info(lio, rx_err, lio->netdev,
+-			   "Failed to allocate octeon_soft_command\n");
+-		return;
+-	}
  
- 	while (desc = &card->status->rx_descs[card->rx_in],
- 	       desc->stat != PACKET_EMPTY) {
--		if ((desc->stat & PACKET_PORT_MASK) > card->n_ports)
-+		if ((desc->stat & PACKET_PORT_MASK) > card->n_ports) {
- 			pr_crit("%s: received packet for nonexistent port\n",
- 				pci_name(card->pdev));
--		else {
-+		} else {
- 			struct sk_buff *skb = card->rx_skbs[card->rx_in];
- 			struct port *port = &card->ports[desc->stat &
- 						    PACKET_PORT_MASK];
- 			struct net_device *dev = port->dev;
+ 	ncmd = (union octnet_cmd *)sc->virtdptr;
  
--			if (!skb)
-+			if (!skb) {
- 				dev->stats.rx_dropped++;
--			else {
-+			} else {
- 				dma_unmap_single(&card->pdev->dev,
- 						 desc->address, BUFFER_LENGTH,
- 						 DMA_FROM_DEVICE);
 -- 
-2.8.1
+2.30.2
 
