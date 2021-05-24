@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0190438F62D
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 01:22:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC3FD38F62C
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 01:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbhEXXYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 19:24:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40350 "EHLO
+        id S229896AbhEXXYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 19:24:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbhEXXYC (ORCPT
+        with ESMTP id S229643AbhEXXYC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 19:24:02 -0400
 Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18EEC061574
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 16:22:32 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id i7so26456730ejc.5
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 16:22:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBB8C061756
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 16:22:33 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id l1so44289594ejb.6
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 16:22:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JVCqEUjVazF1IKwMITcNDAYvDTu9khNkDACk0ywuDFU=;
-        b=YTm0vyZ+oJ8dYlZDLiZtdakioNjdctKQ6Tqre+oSLdMJ3kfNsUrnR84MUsI3Iqfyny
-         +7983GYm3ixjBP/I6h8cftCXQIgBVzM9HbiekjHnkdv62HCu2ItwCRAEMS+VLDGsZYd9
-         I5M/07PueMEqXOZzY3edUN1DM4eYc1PCSD0iSUwMJcjF+S8ohv+wRBlsx3b9WWWA/Ccw
-         G8sqmNv1NfzYbG6TKIxmvIO0/ALW55UOTdJw2fXJboBXzYJaGVUqxtFMwZughvc+7zQR
-         sobnxCEslwH/myMjHjMDJ/T7mKSYStdirP0dn++pNOjaRntTK9vdxbp4Pw9ORAlBp+id
-         LrBA==
+        bh=/pbiDkMc1xiTTnzJey7JYsMk+HBUbuh5IEY8IdZSCR4=;
+        b=C7seXepgq2gAHzZMJw1pQHL1RbPnq4IS0GQb/R1qIP8cShystNI5BJw/UmgbFboeS1
+         q6xU2oGqwN7lCnfAvCjQW5tlxfvAyN/pPr8VFUMj7vsYZKCyGMRRyxeWnwYFA4bZmFlD
+         ekOUBlf96CNNZyKbKF/ddBBfhnCmckuGjuPZ9FMorR35OuuFZkayABQVlKST8sW0l03Z
+         LpbqQfjKT8j5dyv+TZd9EBD8BP5r7d4X4k2QEVNcfqb9IRb0Ns1wT91osXqVAfA1/9Sw
+         HcOibdwdCY2KTzQN39j93Oh9IccPSwcGus1MTNXndWXvH5msrDo7uy0OQV7xx7P471Gi
+         /87w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JVCqEUjVazF1IKwMITcNDAYvDTu9khNkDACk0ywuDFU=;
-        b=liNveBTxyCOY8F+WboeI1zH63tMuDK0pPwch8s5YXgDP4bBp94/4nAMcg3pN4havFo
-         bg3zUezYdmpQmsyQwzHqG7+gU3CuZdY9drVHVnQyeT7mvfYCqt+b/Xhk3A2QJW4CjnOT
-         KOL1zzcKt1/m6rX8tRhVSsDvh0Prcryh8JXNJ5nDy99B68oOcQeP0iEQoINNR53BnhMA
-         n/of9eEsMDGHLTozib1k9aDKjXoFWc00mY/22OQfCDtQS8Lxu35C3Pc4VfCEYWl4k8tP
-         zyxqx2WJQyvi1rGUPIvwaF6727sWdUfj5Yfdd3Qm5NqZqaK0cnN0HsxhbekaC8DW1RLO
-         Anaw==
-X-Gm-Message-State: AOAM530/henQA2aWw2ZSZh4C2SGgw4ZoEiNWsoVXZFWHEVQ3bPpVecjr
-        dXXV4fs61RlxTBdIpfGux4bfweiTrJQ=
-X-Google-Smtp-Source: ABdhPJxaxi7WijUIC0DegqUvX3/4e9T0jEWymLiI6xy2F1rarMVmVgOGRBy+Db+e/qBBo866oGU41g==
-X-Received: by 2002:a17:907:75e9:: with SMTP id jz9mr25224416ejc.314.1621898551218;
-        Mon, 24 May 2021 16:22:31 -0700 (PDT)
+        bh=/pbiDkMc1xiTTnzJey7JYsMk+HBUbuh5IEY8IdZSCR4=;
+        b=aDKdq7dLpm/C9xNi7+YYI3OpQMsQ7yorRixcoYtKukDtQsZx2Add9gyOs2TbmXVuCb
+         UFhrNOwk24fseqUgFCID9A+Cent8zM8dKkIZg0oztVanqaEeLSlUCxysfgwyYxu0mVuw
+         GmQstqhY3o762hHxsCcY2gBjiAA3FfbqL4CUlMKBz/Lvyeexeqbo9fyNx2ZYoQ0PFA7g
+         89QFbTg3b+NxZmOIgljRKQcofcymppHYRZWfkFA60Tib+rOkP5uZLqvbkdqp3zjMSYkV
+         S05EQK5RU1fV313XywsrKfTPwLzahlP06bGAloiMQfCI3viTP+1iH7Nm3cDXW1AUTHwD
+         TWtw==
+X-Gm-Message-State: AOAM533LgExfB7VDdgv0974+soXA6/7mQF8tUa7NQMCgjpZp7hpaDEUX
+        7SIs/hDrOBaSjdTs4/i4pJNjim4BQ6s=
+X-Google-Smtp-Source: ABdhPJx3P3l5TOCRNBaaiKfmqHDvv6Je/JAY1o7O6MfJXzx6R0KiDj58QrsxVlBEe5/8LyY46JBknw==
+X-Received: by 2002:a17:907:b09:: with SMTP id h9mr24798382ejl.430.1621898552162;
+        Mon, 24 May 2021 16:22:32 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id di7sm9922746edb.34.2021.05.24.16.22.30
+        by smtp.gmail.com with ESMTPSA id di7sm9922746edb.34.2021.05.24.16.22.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 24 May 2021 16:22:31 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
@@ -54,9 +54,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 03/13] net: dsa: sja1105: the 0x1F0000 SGMII "base address" is actually MDIO_MMD_VEND2
-Date:   Tue, 25 May 2021 02:22:04 +0300
-Message-Id: <20210524232214.1378937-4-olteanv@gmail.com>
+Subject: [PATCH net-next 04/13] net: dsa: sja1105: cache the phy-mode port property
+Date:   Tue, 25 May 2021 02:22:05 +0300
+Message-Id: <20210524232214.1378937-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210524232214.1378937-1-olteanv@gmail.com>
 References: <20210524232214.1378937-1-olteanv@gmail.com>
@@ -68,160 +68,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Looking at the SGMII PCS from SJA1110, which is accessed indirectly
-through a different base address as can be seen in the next patch, it
-appears odd that the address accessed through indirection still
-references the base address from the SJA1105S register map (first MDIO
-register is at 0x1f0000), when it could index the SGMII registers
-starting from zero.
+So far we've succeeded in operating without keeping a copy of the
+phy-mode in the driver, since we already have the static config and we
+can look at the xMII Mode Parameters Table which already holds that
+information.
 
-Except that the 0x1f0000 is not a base address at all, it seems. It is
-0x1f << 16 | 0x0000, and 0x1f is coding for the vendor-specific MMD2.
-So, it turns out, the Synopsys PCS implements all its registers inside
-the vendor-specific MMDs 1 and 2 (0x1e and 0x1f). This explains why the
-PCS has no overlaps (for the other MMDs) with other register regions of
-the switch (because no other MMDs are implemented).
-
-Change the code to remove the SGMII "base address" and explicitly encode
-the MMD for reads/writes. This will become necessary for SJA1110 support.
+But with the SJA1110, we cannot make the distinction between sgmii and
+2500base-x, because to the hardware's static config, it's all SGMII.
+So add a phy_mode property per port inside struct sja1105_private.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105.h      |  1 -
- drivers/net/dsa/sja1105/sja1105_main.c | 31 +++++++++++++-------------
- drivers/net/dsa/sja1105/sja1105_spi.c  |  1 -
- 3 files changed, 16 insertions(+), 17 deletions(-)
+ drivers/net/dsa/sja1105/sja1105.h      |  1 +
+ drivers/net/dsa/sja1105/sja1105_main.c | 24 +++---------------------
+ 2 files changed, 4 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index 2ec03917feb3..830ea5ca359f 100644
+index 830ea5ca359f..d5c0217b1f65 100644
 --- a/drivers/net/dsa/sja1105/sja1105.h
 +++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -48,7 +48,6 @@ struct sja1105_regs {
- 	u64 rgu;
- 	u64 vl_status;
- 	u64 config;
--	u64 sgmii;
- 	u64 rmii_pll1;
- 	u64 ptppinst;
- 	u64 ptppindur;
+@@ -210,6 +210,7 @@ struct sja1105_private {
+ 	struct sja1105_static_config static_config;
+ 	bool rgmii_rx_delay[SJA1105_MAX_NUM_PORTS];
+ 	bool rgmii_tx_delay[SJA1105_MAX_NUM_PORTS];
++	phy_interface_t phy_mode[SJA1105_MAX_NUM_PORTS];
+ 	bool best_effort_vlan_filtering;
+ 	unsigned long learn_ena;
+ 	unsigned long ucast_egress_floods;
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 1a49cfce9611..292490a2ea0e 100644
+index 292490a2ea0e..f33c23074bb5 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -898,36 +898,34 @@ static int sja1105_parse_dt(struct sja1105_private *priv,
- 	return rc;
- }
- 
--static int sja1105_sgmii_read(struct sja1105_private *priv, int port,
-+static int sja1105_sgmii_read(struct sja1105_private *priv, int port, int mmd,
- 			      int pcs_reg)
- {
--	const struct sja1105_regs *regs = priv->info->regs;
-+	u64 addr = (mmd << 16) | pcs_reg;
- 	u32 val;
- 	int rc;
- 
- 	if (port != SJA1105_SGMII_PORT)
- 		return -ENODEV;
- 
--	rc = sja1105_xfer_u32(priv, SPI_READ, regs->sgmii + pcs_reg,
--			      &val, NULL);
-+	rc = sja1105_xfer_u32(priv, SPI_READ, addr, &val, NULL);
- 	if (rc < 0)
- 		return rc;
- 
- 	return val;
- }
- 
--static int sja1105_sgmii_write(struct sja1105_private *priv, int port,
-+static int sja1105_sgmii_write(struct sja1105_private *priv, int port, int mmd,
- 			       int pcs_reg, u16 pcs_val)
- {
--	const struct sja1105_regs *regs = priv->info->regs;
-+	u64 addr = (mmd << 16) | pcs_reg;
- 	u32 val = pcs_val;
- 	int rc;
- 
- 	if (port != SJA1105_SGMII_PORT)
- 		return -ENODEV;
- 
--	rc = sja1105_xfer_u32(priv, SPI_WRITE, regs->sgmii + pcs_reg,
--			      &val, NULL);
-+	rc = sja1105_xfer_u32(priv, SPI_WRITE, addr, &val, NULL);
- 	if (rc < 0)
- 		return rc;
- 
-@@ -943,24 +941,24 @@ static void sja1105_sgmii_pcs_config(struct sja1105_private *priv, int port,
- 	 * stop the clock during LPI mode, make the MAC reconfigure
- 	 * autonomously after PCS autoneg is done, flush the internal FIFOs.
- 	 */
--	sja1105_sgmii_write(priv, port, SJA1105_DC1,
-+	sja1105_sgmii_write(priv, port, MDIO_MMD_VEND2, SJA1105_DC1,
- 			    SJA1105_DC1_EN_VSMMD1 |
- 			    SJA1105_DC1_CLOCK_STOP_EN |
- 			    SJA1105_DC1_MAC_AUTO_SW |
- 			    SJA1105_DC1_INIT);
- 	/* DIGITAL_CONTROL_2: No polarity inversion for TX and RX lanes */
--	sja1105_sgmii_write(priv, port, SJA1105_DC2,
-+	sja1105_sgmii_write(priv, port, MDIO_MMD_VEND2, SJA1105_DC2,
- 			    SJA1105_DC2_TX_POL_INV_DISABLE);
- 	/* AUTONEG_CONTROL: Use SGMII autoneg */
- 	if (an_master)
- 		ac |= SJA1105_AC_PHY_MODE | SJA1105_AC_SGMII_LINK;
--	sja1105_sgmii_write(priv, port, SJA1105_AC, ac);
-+	sja1105_sgmii_write(priv, port, MDIO_MMD_VEND2, SJA1105_AC, ac);
- 	/* BASIC_CONTROL: enable in-band AN now, if requested. Otherwise,
- 	 * sja1105_sgmii_pcs_force_speed must be called later for the link
- 	 * to become operational.
- 	 */
- 	if (an_enabled)
--		sja1105_sgmii_write(priv, port, MII_BMCR,
-+		sja1105_sgmii_write(priv, port, MDIO_MMD_VEND2, MDIO_CTRL1,
- 				    BMCR_ANENABLE | BMCR_ANRESTART);
- }
- 
-@@ -983,7 +981,8 @@ static void sja1105_sgmii_pcs_force_speed(struct sja1105_private *priv,
- 		dev_err(priv->ds->dev, "Invalid speed %d\n", speed);
- 		return;
- 	}
--	sja1105_sgmii_write(priv, port, MII_BMCR, pcs_speed | BMCR_FULLDPLX);
-+	sja1105_sgmii_write(priv, port, MDIO_MMD_VEND2, MDIO_CTRL1,
-+			    pcs_speed | BMCR_FULLDPLX);
- }
- 
- /* Convert link speed from SJA1105 to ethtool encoding */
-@@ -1201,7 +1200,7 @@ static int sja1105_mac_pcs_get_state(struct dsa_switch *ds, int port,
- 	int ais;
- 
- 	/* Read the vendor-specific AUTONEG_INTR_STATUS register */
--	ais = sja1105_sgmii_read(priv, port, SJA1105_AIS);
-+	ais = sja1105_sgmii_read(priv, port, MDIO_MMD_VEND2, SJA1105_AIS);
- 	if (ais < 0)
- 		return ais;
- 
-@@ -1905,7 +1904,9 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 		mac[i].speed = SJA1105_SPEED_AUTO;
- 
- 		if (sja1105_supports_sgmii(priv, i))
--			bmcr[i] = sja1105_sgmii_read(priv, i, MII_BMCR);
-+			bmcr[i] = sja1105_sgmii_read(priv, i,
-+						     MDIO_MMD_VEND2,
-+						     MDIO_CTRL1);
+@@ -871,6 +871,8 @@ static int sja1105_parse_ports_node(struct sja1105_private *priv,
+ 			ports[index].role = XMII_MAC;
+ 		else if (of_property_read_bool(child, "sja1105,role-phy"))
+ 			ports[index].role = XMII_PHY;
++
++		priv->phy_mode[index] = phy_mode;
  	}
  
- 	/* No PTP operations can run right now */
-diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index d0bc6cf90bfd..615e0906b1fa 100644
---- a/drivers/net/dsa/sja1105/sja1105_spi.c
-+++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -440,7 +440,6 @@ static struct sja1105_regs sja1105pqrs_regs = {
- 	.pad_mii_tx = {0x100800, 0x100802, 0x100804, 0x100806, 0x100808},
- 	.pad_mii_rx = {0x100801, 0x100803, 0x100805, 0x100807, 0x100809},
- 	.pad_mii_id = {0x100810, 0x100811, 0x100812, 0x100813, 0x100814},
--	.sgmii = 0x1F0000,
- 	.rmii_pll1 = 0x10000A,
- 	.cgu_idiv = {0x10000B, 0x10000C, 0x10000D, 0x10000E, 0x10000F},
- 	.stats[MAC] = {0x200, 0x202, 0x204, 0x206, 0x208},
+ 	return 0;
+@@ -1081,27 +1083,7 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
+ static bool sja1105_phy_mode_mismatch(struct sja1105_private *priv, int port,
+ 				      phy_interface_t interface)
+ {
+-	struct sja1105_xmii_params_entry *mii;
+-	sja1105_phy_interface_t phy_mode;
+-
+-	mii = priv->static_config.tables[BLK_IDX_XMII_PARAMS].entries;
+-	phy_mode = mii->xmii_mode[port];
+-
+-	switch (interface) {
+-	case PHY_INTERFACE_MODE_MII:
+-		return (phy_mode != XMII_MODE_MII);
+-	case PHY_INTERFACE_MODE_RMII:
+-		return (phy_mode != XMII_MODE_RMII);
+-	case PHY_INTERFACE_MODE_RGMII:
+-	case PHY_INTERFACE_MODE_RGMII_ID:
+-	case PHY_INTERFACE_MODE_RGMII_RXID:
+-	case PHY_INTERFACE_MODE_RGMII_TXID:
+-		return (phy_mode != XMII_MODE_RGMII);
+-	case PHY_INTERFACE_MODE_SGMII:
+-		return (phy_mode != XMII_MODE_SGMII);
+-	default:
+-		return true;
+-	}
++	return priv->phy_mode[port] != interface;
+ }
+ 
+ static void sja1105_mac_config(struct dsa_switch *ds, int port,
 -- 
 2.25.1
 
