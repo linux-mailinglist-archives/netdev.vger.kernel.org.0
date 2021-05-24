@@ -2,71 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0188C38F466
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 22:30:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4763E38F473
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 22:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233519AbhEXUbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 16:31:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51758 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233353AbhEXUbj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 16:31:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A9EF361414;
-        Mon, 24 May 2021 20:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621888210;
-        bh=5NcMnjflQ0AJJ4gf5dtltNcb3I8P7HnCelMTkPXay4I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=s6A5g1w5L7IhL4NZA+i3vpImiQIdvzENM3rqo0SIBOrZzVr7lswrEAKh+Yf3b9ZWy
-         rW4VA6ignAAflaGsmVBvfuV4CuPHPYyA0vEbd9Rb5c4r2boKd+wTjGSlPy2gfSDXrH
-         5FUJyrGytQRNVsIlDSP+SAFkh8d2NAHBhVDHbPy06d2HzEHFCIgh6GKCDWw8D0EKp2
-         HqIijOmTKvoTEheCo4euMCSPb67DBE4XcQ5Ppri8klC3IgBZvOJrNuprCC13WWEkWP
-         F1RiqtJqEVj1gBpaldag9wTYPpFb5mLQEtqPzczarFdh49xOG1CkqNGz/Dl2h48Wcn
-         LsxM0OARWp7Rw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A4C0A60A56;
-        Mon, 24 May 2021 20:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233471AbhEXUgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 16:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59116 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232829AbhEXUgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 16:36:04 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BA1C061574;
+        Mon, 24 May 2021 13:34:35 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id q6so15547620pjj.2;
+        Mon, 24 May 2021 13:34:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jaMXsgpZYs5Tjh+LVgZv457q1Xd6EWX5UO6dq/AJ44U=;
+        b=CTIh/QZkBwD0Uqx2Si7DuPLzezlDpflIzYh+fJFBVUQ54UtjBkh/n7yL1qZAUNIAed
+         LO7Y8IDM0QnhKIlJYk7RtczHDHSMHWgDF0l7TCuyjMM2UeHiubRhpVqNYolo2fJrWZFM
+         yn40reCd29nCBIxdGkXek1z0MMjVCEQBlYG6lzAJNab1Q/zKtfOImpgNk96xjBaOWdkm
+         87iK29fYEb2NoTG70Mhut4HdCR9Z4oEPhApImBJZSLodqiCva+EHUGUPbT7n3fSHsluE
+         5EUOGgiGVEv2y6QQZXwWKjeqohQHyobmNyP8tj+/J2d5/DNRTlHFG1DGORXyjXj4TAPW
+         wT8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jaMXsgpZYs5Tjh+LVgZv457q1Xd6EWX5UO6dq/AJ44U=;
+        b=LILXx1FoBarrUJ8kxlAFYvbPoEQ/8JJ1L+kA7ZorK+2UOmuOT/znXea6gcaT6xXzWG
+         EltWUK85NG+IQQJn2iQGPqMpXlJSNArBIhJXuUajEl3H6Ic/+3F1+nfap9owkkFLSYlj
+         kbX09e4fGXYgyNdxkSLyDxKAT/jNCMd24yy3sI7kHRa89/nElmvHR5XhuCzm/coomfk2
+         49Cr40OWT01Ik2eJo2elfWqq2GWkC6+CQEZqz/42u0byFZM5Gqt2BSlZEwRu2Rf8IwQP
+         M5QuqwOr65pfI7kwoZcEDbFTKtEQQXwh+oHVMTZJeMal4au4Jmr1JcdOGzXTHXVV4ji7
+         tHXw==
+X-Gm-Message-State: AOAM5331GKyDFDpWefGiEgvFgfe1Lwls18GN/OBFIXf+93GjTRFvdEHb
+        +6vtPrwFCAEBiIxhccYvxdRZg6tnPCg=
+X-Google-Smtp-Source: ABdhPJyY87JFvP+0rYq+J+eFZOWfZLOvPFXuHN8FD1+WYzuPJqsdM0PO5I4u4zUNF4aRi1ggX0bq3A==
+X-Received: by 2002:a17:90b:14d7:: with SMTP id jz23mr27377456pjb.105.1621888474317;
+        Mon, 24 May 2021 13:34:34 -0700 (PDT)
+Received: from [10.67.49.104] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id h24sm12034227pfn.180.2021.05.24.13.34.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 May 2021 13:34:33 -0700 (PDT)
+Subject: Re: [PATCH net] net: dsa: microchip: enable phy errata workaround on
+ 9567
+To:     George McCollister <george.mccollister@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+References: <20210524202953.70379-1-george.mccollister@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <256512cf-24e5-ec8c-d128-25df90e6c6e6@gmail.com>
+Date:   Mon, 24 May 2021 13:34:29 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] net: hns3: add two promisc mode updates
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162188821067.23443.13861638200984980870.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 May 2021 20:30:10 +0000
-References: <1621848643-18567-1-git-send-email-tanhuazhong@huawei.com>
-In-Reply-To: <1621848643-18567-1-git-send-email-tanhuazhong@huawei.com>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
-        huangdaode@huawei.com, linuxarm@huawei.com
+In-Reply-To: <20210524202953.70379-1-george.mccollister@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Mon, 24 May 2021 17:30:41 +0800 you wrote:
-> This series includes two updates related to promisc mode for the HNS3
-> ethernet driver.
+On 5/24/21 1:29 PM, George McCollister wrote:
+> Also enable phy errata workaround on 9567 since has the same errata as
+> the 9477 according to the manufacture's documentation.
 > 
-> Jian Shen (2):
->   net: hns3: configure promisc mode for VF asynchronously
->   net: hns3: use HCLGE_VPORT_STATE_PROMISC_CHANGE to replace
->     HCLGE_STATE_PROMISC_CHANGED
-> 
-> [...]
+> Signed-off-by: George McCollister <george.mccollister@gmail.com>
 
-Here is the summary with links:
-  - [net-next,1/2] net: hns3: configure promisc mode for VF asynchronously
-    https://git.kernel.org/netdev/net-next/c/1e6e76101fd9
-  - [net-next,2/2] net: hns3: use HCLGE_VPORT_STATE_PROMISC_CHANGE to replace HCLGE_STATE_PROMISC_CHANGED
-    https://git.kernel.org/netdev/net-next/c/4e2471f7b6ef
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
