@@ -2,71 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E98638DE5B
+	by mail.lfdr.de (Postfix) with ESMTP id B2E2538DE5D
 	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 02:30:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232093AbhEXAbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 20:31:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34376 "EHLO mail.kernel.org"
+        id S232133AbhEXAbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 20:31:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34438 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232050AbhEXAbh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 May 2021 20:31:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1BA8161168;
-        Mon, 24 May 2021 00:30:10 +0000 (UTC)
+        id S232118AbhEXAbi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 May 2021 20:31:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 55E9861261;
+        Mon, 24 May 2021 00:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621816210;
-        bh=q6mTJKyox5cRnqe1I41aBw/eygE+kXX2ctglQtQyLIs=;
+        s=k20201202; t=1621816211;
+        bh=E7tnaemu0GzBxIfKbRL9F0Yny0DeG2d4Q2JCnRY0nKg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DfWsUb6vK7U9MO0Nl9vg4IRwkaImfJa8q3uGwdaqv3TafpmZCI9T4QLZM8jJJ0n9a
-         CPc+UQG1Td230uQ8Ruv2BCGIZ6vuRcZsghSJrlYzyzU41AWiHVw7NcKdwzsTUSBhoZ
-         RPaaTqMSlR/UebdubXzt1qLefKfDlmh0f2ciRQSiC2Rr0GxKnoU3s346mh0Mfmbn+u
-         AuA28KpUWIaXwIY+fMMQbwNOY7Bj9cRUD+TfOew74y5A5jrQY3/DqcUGWMwgWDvT2V
-         ITSLbghJlTkKY+JkDuqRcVoiFXEiQRiAc2cdBC/Q3HxKM0zK+nRWo+vdnM7bE5JaVL
-         59OwiDoYebF2w==
+        b=BQu1wm62RiFoBBf4VJT0MY1fblIJ048zTESo+P/J0wc6bYuCG2E5Q3yqgtsYeD36Y
+         1N5tihl5obTPkQFyn3W2qk1/zyUneyqI486ZMc8ZJeB2zu6wKwojrEA+kmmG20KM83
+         ipMmE8f1a0peEAicfYKlExY8wyCwdFsz8PEYm9Dmd5G/cGjNkzwBr/8h5MqZ6Y20nI
+         o0yV7VQf7tE/j+cwtumHx84o72whUbgn4GRpPotkYSP/T10nU3nYz8FZ6IJjrBq4BF
+         YbyAwP0SKlur17BRCSzREOPVslNrjQhUiv+ZdAF30HYID6RC2pPYzv4XMUinbtEHYv
+         6GpWG6ZbMjCZw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0E81160BD8;
-        Mon, 24 May 2021 00:30:10 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4A32E60CE2;
+        Mon, 24 May 2021 00:30:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net: dsa: mt7530: fix VLAN traffic leaks
+Subject: Re: [PATCH net-next] sfc: use DEVICE_ATTR_*() macro
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162181621005.30453.18294739015052454506.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 May 2021 00:30:10 +0000
-References: <20210523145154.655325-1-dqfext@gmail.com>
-In-Reply-To: <20210523145154.655325-1-dqfext@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     sean.wang@mediatek.com, Landen.Chao@mediatek.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        frank-w@public-files.de
+Message-Id: <162181621130.30453.15592805092018753382.git-patchwork-notify@kernel.org>
+Date:   Mon, 24 May 2021 00:30:11 +0000
+References: <20210523032030.42052-1-yuehaibing@huawei.com>
+In-Reply-To: <20210523032030.42052-1-yuehaibing@huawei.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sun, 23 May 2021 22:51:54 +0800 you wrote:
-> PCR_MATRIX field was set to all 1's when VLAN filtering is enabled, but
-> was not reset when it is disabled, which may cause traffic leaks:
+On Sun, 23 May 2021 11:20:30 +0800 you wrote:
+> Use DEVICE_ATTR_*() helper instead of plain DEVICE_ATTR,
+> which makes the code a bit shorter and easier to read.
 > 
-> 	ip link add br0 type bridge vlan_filtering 1
-> 	ip link add br1 type bridge vlan_filtering 1
-> 	ip link set swp0 master br0
-> 	ip link set swp1 master br1
-> 	ip link set br0 type bridge vlan_filtering 0
-> 	ip link set br1 type bridge vlan_filtering 0
-> 	# traffic in br0 and br1 will start leaking to each other
-> 
-> [...]
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  drivers/net/ethernet/sfc/ef10.c       | 17 ++++++++---------
+>  drivers/net/ethernet/sfc/efx.c        |  6 +++---
+>  drivers/net/ethernet/sfc/efx_common.c | 12 +++++++-----
+>  3 files changed, 18 insertions(+), 17 deletions(-)
 
 Here is the summary with links:
-  - [net,v2] net: dsa: mt7530: fix VLAN traffic leaks
-    https://git.kernel.org/netdev/net/c/474a2ddaa192
+  - [net-next] sfc: use DEVICE_ATTR_*() macro
+    https://git.kernel.org/netdev/net-next/c/3880fc37beba
 
 You are awesome, thank you!
 --
