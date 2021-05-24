@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E39938EC40
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 17:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F55138EC44
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 17:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233653AbhEXPNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 11:13:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40698 "EHLO mail.kernel.org"
+        id S234695AbhEXPNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 11:13:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40856 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234114AbhEXPGn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 11:06:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B5868616E8;
-        Mon, 24 May 2021 14:51:14 +0000 (UTC)
+        id S234145AbhEXPGw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 11:06:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ED146613FC;
+        Mon, 24 May 2021 14:51:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621867875;
-        bh=d31Yhnkyy17E4yy6rXixvQwo0TFmxk7sTDaVwYUlXLg=;
+        s=k20201202; t=1621867876;
+        bh=4/uWajjC0vh9jAota1bEsO+e7M9CkHYVTlEjRTCkp5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uQp6MF7c94XNTI8xj/1v2h/B3AOEE1aQlPBOTH2MAtPJtfDxdfCDwCaocz++WhLvW
-         zLM+pokqyWuY22sO1dkujfx3a1ue3qBMVsfqZPfnORMp1AitF/Ylyf2HP2x9dToFBl
-         SKETv8fNvfwMU7Y12W9Bs0Yav28kL0oLE02Ss8lq5/P3DbMg+adCTKq/wXTOxsiryE
-         C4kEz/d0f6d9kT5Z/MTxgsqRPXukz8tlaD1x2WBeeuL32F1EGZosevVwmeze2XHq6s
-         CLtsawMwdnyMdMDzPMsFejxGy0RpgEy1FJkm3juLCNwnuKUTrIYUmPFc9VgOKqvEmA
-         XQeRlOAejSFfw==
+        b=NunWdg07aAMpQ5lkTpOvQwBnRdwWQECfAra4xhBuz7NzkOanCA0iUhflldNHvUr5C
+         Ty4TlVYnrff5mscTRjegj+FPXL89FJ7T80L8B2yP4K1SIk0tS8GEF6UypnREcnv20r
+         Pib7EEAJn1CJENrJs+i0iPZFhRjCGM+xB/mF4C1jF5hhMHehE0o7BWaERg/0NZWCBJ
+         eciWxj0elQ9+xKbWWjbcdlgf6wKCkM+9Ou5EepmtkzbioaNW67kVW4A3rJO7LymLly
+         u/IiipIN539q4euvLfJYE/MFrbzez4iejGE0K8MwDG2MMVJJhIG4A1Y/IKzi8WYlDY
+         Hot20isVtAIhA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Phillip Potter <phil@philpotter.co.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 07/19] isdn: mISDNinfineon: check/cleanup ioremap failure correctly in setup_io
-Date:   Mon, 24 May 2021 10:50:54 -0400
-Message-Id: <20210524145106.2499571-7-sashal@kernel.org>
+Cc:     Anirudh Rayabharam <mail@anirudhrb.com>, Kangjie Lu <kjlu@umn.edu>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 08/19] ath6kl: return error code in ath6kl_wmi_set_roam_lrssi_cmd()
+Date:   Mon, 24 May 2021 10:50:55 -0400
+Message-Id: <20210524145106.2499571-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210524145106.2499571-1-sashal@kernel.org>
 References: <20210524145106.2499571-1-sashal@kernel.org>
@@ -43,96 +43,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Phillip Potter <phil@philpotter.co.uk>
+From: Anirudh Rayabharam <mail@anirudhrb.com>
 
-[ Upstream commit c446f0d4702d316e1c6bf621f70e79678d28830a ]
+[ Upstream commit fc6a6521556c8250e356ddc6a3f2391aa62dc976 ]
 
-Move hw->cfg.mode and hw->addr.mode assignments from hw->ci->cfg_mode
-and hw->ci->addr_mode respectively, to be before the subsequent checks
-for memory IO mode (and possible ioremap calls in this case).
+ath6kl_wmi_cmd_send could fail, so let's return its error code upstream.
 
-Also introduce ioremap error checks at both locations. This allows
-resources to be properly freed on ioremap failure, as when the caller
-of setup_io then subsequently calls release_io via its error path,
-release_io can now correctly determine the mode as it has been set
-before the ioremap call.
-
-Finally, refactor release_io function so that it will call
-release_mem_region in the memory IO case, regardless of whether or not
-hw->cfg.p/hw->addr.p are NULL. This means resources are then properly
-released on failure.
-
-This properly implements the original reverted commit (d721fe99f6ad)
-from the University of Minnesota, whilst also implementing the ioremap
-check for the hw->ci->cfg_mode if block as well.
-
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
-Link: https://lore.kernel.org/r/20210503115736.2104747-42-gregkh@linuxfoundation.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Kangjie Lu <kjlu@umn.edu>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/hardware/mISDN/mISDNinfineon.c | 24 ++++++++++++++-------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ drivers/net/wireless/ath/ath6kl/debug.c | 5 ++++-
+ drivers/net/wireless/ath/ath6kl/wmi.c   | 4 +---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/mISDNinfineon.c b/drivers/isdn/hardware/mISDN/mISDNinfineon.c
-index d5bdbaf93a1a..d0b6377b9834 100644
---- a/drivers/isdn/hardware/mISDN/mISDNinfineon.c
-+++ b/drivers/isdn/hardware/mISDN/mISDNinfineon.c
-@@ -645,17 +645,19 @@ static void
- release_io(struct inf_hw *hw)
+diff --git a/drivers/net/wireless/ath/ath6kl/debug.c b/drivers/net/wireless/ath/ath6kl/debug.c
+index e2b7809d7886..f3a786af7ece 100644
+--- a/drivers/net/wireless/ath/ath6kl/debug.c
++++ b/drivers/net/wireless/ath/ath6kl/debug.c
+@@ -1027,14 +1027,17 @@ static ssize_t ath6kl_lrssi_roam_write(struct file *file,
  {
- 	if (hw->cfg.mode) {
--		if (hw->cfg.p) {
-+		if (hw->cfg.mode == AM_MEMIO) {
- 			release_mem_region(hw->cfg.start, hw->cfg.size);
--			iounmap(hw->cfg.p);
-+			if (hw->cfg.p)
-+				iounmap(hw->cfg.p);
- 		} else
- 			release_region(hw->cfg.start, hw->cfg.size);
- 		hw->cfg.mode = AM_NONE;
- 	}
- 	if (hw->addr.mode) {
--		if (hw->addr.p) {
-+		if (hw->addr.mode == AM_MEMIO) {
- 			release_mem_region(hw->addr.start, hw->addr.size);
--			iounmap(hw->addr.p);
-+			if (hw->addr.p)
-+				iounmap(hw->addr.p);
- 		} else
- 			release_region(hw->addr.start, hw->addr.size);
- 		hw->addr.mode = AM_NONE;
-@@ -685,9 +687,12 @@ setup_io(struct inf_hw *hw)
- 				(ulong)hw->cfg.start, (ulong)hw->cfg.size);
- 			return err;
- 		}
--		if (hw->ci->cfg_mode == AM_MEMIO)
--			hw->cfg.p = ioremap(hw->cfg.start, hw->cfg.size);
- 		hw->cfg.mode = hw->ci->cfg_mode;
-+		if (hw->ci->cfg_mode == AM_MEMIO) {
-+			hw->cfg.p = ioremap(hw->cfg.start, hw->cfg.size);
-+			if (!hw->cfg.p)
-+				return -ENOMEM;
-+		}
- 		if (debug & DEBUG_HW)
- 			pr_notice("%s: IO cfg %lx (%lu bytes) mode%d\n",
- 				  hw->name, (ulong)hw->cfg.start,
-@@ -712,9 +717,12 @@ setup_io(struct inf_hw *hw)
- 				(ulong)hw->addr.start, (ulong)hw->addr.size);
- 			return err;
- 		}
--		if (hw->ci->addr_mode == AM_MEMIO)
--			hw->addr.p = ioremap(hw->addr.start, hw->addr.size);
- 		hw->addr.mode = hw->ci->addr_mode;
-+		if (hw->ci->addr_mode == AM_MEMIO) {
-+			hw->addr.p = ioremap(hw->addr.start, hw->addr.size);
-+			if (!hw->addr.p)
-+				return -ENOMEM;
-+		}
- 		if (debug & DEBUG_HW)
- 			pr_notice("%s: IO addr %lx (%lu bytes) mode%d\n",
- 				  hw->name, (ulong)hw->addr.start,
+ 	struct ath6kl *ar = file->private_data;
+ 	unsigned long lrssi_roam_threshold;
++	int ret;
+ 
+ 	if (kstrtoul_from_user(user_buf, count, 0, &lrssi_roam_threshold))
+ 		return -EINVAL;
+ 
+ 	ar->lrssi_roam_threshold = lrssi_roam_threshold;
+ 
+-	ath6kl_wmi_set_roam_lrssi_cmd(ar->wmi, ar->lrssi_roam_threshold);
++	ret = ath6kl_wmi_set_roam_lrssi_cmd(ar->wmi, ar->lrssi_roam_threshold);
+ 
++	if (ret)
++		return ret;
+ 	return count;
+ }
+ 
+diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
+index 73eab12cb3bd..1d6726744949 100644
+--- a/drivers/net/wireless/ath/ath6kl/wmi.c
++++ b/drivers/net/wireless/ath/ath6kl/wmi.c
+@@ -776,10 +776,8 @@ int ath6kl_wmi_set_roam_lrssi_cmd(struct wmi *wmi, u8 lrssi)
+ 	cmd->info.params.roam_rssi_floor = DEF_LRSSI_ROAM_FLOOR;
+ 	cmd->roam_ctrl = WMI_SET_LRSSI_SCAN_PARAMS;
+ 
+-	ath6kl_wmi_cmd_send(wmi, 0, skb, WMI_SET_ROAM_CTRL_CMDID,
++	return ath6kl_wmi_cmd_send(wmi, 0, skb, WMI_SET_ROAM_CTRL_CMDID,
+ 			    NO_SYNC_WMIFLAG);
+-
+-	return 0;
+ }
+ 
+ int ath6kl_wmi_force_roam_cmd(struct wmi *wmi, const u8 *bssid)
 -- 
 2.30.2
 
