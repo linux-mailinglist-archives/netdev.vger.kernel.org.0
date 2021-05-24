@@ -2,70 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13BF138DF0B
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 04:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E675538DF1B
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 04:12:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbhEXCBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 May 2021 22:01:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49652 "EHLO mail.kernel.org"
+        id S232208AbhEXCOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 May 2021 22:14:07 -0400
+Received: from m12-12.163.com ([220.181.12.12]:54451 "EHLO m12-12.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231744AbhEXCBi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 May 2021 22:01:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 541CC610FA;
-        Mon, 24 May 2021 02:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621821609;
-        bh=uge5Dg7VE4PLgrFz8mpzqnYhf/xY4NpY9/Haz6SYHXU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=o98bkmHFnp8vkfLmG+8ieQe8E5XVlqa7XXetAUqyKxSruztv45QV0I6AGbBuyB+rO
-         Jtu6Fab2cr3ypPbhgPpctwOEusCVYO5/iX7WlW+bdS5J2qA1ARXOXvbrUhLfREjXF0
-         JZwtNCgBX0sFZCOao7kXyiC1Vg00O2NUThy/rgx9D7L/DdGw7hgZ79vLnNdNAcKwoJ
-         So6WpV3gTFyoRpzqCOc9YyDSOkmCztt5E/LX8w5ey8n2uGVvyIJDNg/HjWO8TE4T5H
-         c0Ly+tCTTfWbf/2PuiI70Jngug446YFcyq/I1f7n1vljq1x8SgWsEwdXPkekuPWkHN
-         hE2JfgPYjKZiA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 48B8660BD8;
-        Mon, 24 May 2021 02:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next] ethernet: ucc_geth: Use kmemdup() rather than
- kmalloc+memcpy
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162182160929.2555.6400143269658856505.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 May 2021 02:00:09 +0000
-References: <20210524010701.24596-1-yuehaibing@huawei.com>
-In-Reply-To: <20210524010701.24596-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     leoyang.li@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        rasmus.villemoes@prevas.dk, andrew@lunn.ch,
-        christophe.leroy@csgroup.eu, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+        id S231765AbhEXCOF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 May 2021 22:14:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=33HhlmsO4TUy4vpKzC
+        VRugwD5ZbCqQaS+7CjzK1u9p8=; b=cHnh6mpAfoe/S0Pw+bhhi8M7NfBpHgwhcO
+        D/xKxLR2RXgKX/12O0gob48/l+22d8PiGhDyXvMGhRwL7NfxaMAf/xNOZnhhlKjB
+        WjovmT91H6XUi+ztqJskl4P2I1ZUvmuUvXmkjKbjYRKcregEHiQL9hj2H9/62o17
+        rMX0YA11A=
+Received: from wengjianfeng.ccdomain.com (unknown [218.17.89.92])
+        by smtp8 (Coremail) with SMTP id DMCowAAXJVJOC6tgXIx2Fw--.11368S2;
+        Mon, 24 May 2021 10:11:28 +0800 (CST)
+From:   samirweng1979 <samirweng1979@163.com>
+To:     krzysztof.kozlowski@canonical.com, davem@davemloft.net,
+        alex.dewar90@gmail.com
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: [PATCH] nfc: st-nci: remove unnecessary assignment and label
+Date:   Mon, 24 May 2021 10:11:23 +0800
+Message-Id: <20210524021123.8860-1-samirweng1979@163.com>
+X-Mailer: git-send-email 2.15.0.windows.1
+X-CM-TRANSID: DMCowAAXJVJOC6tgXIx2Fw--.11368S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtrW3Xw4xZFWfArW8KFy7GFg_yoWktrbE9r
+        WSvr9xCr48JwnYyr1UKrsxZr929rs8ur18uFn8tr9xKF9rJ39Ikwn7urn3X3s8W34rAF9r
+        ur1vkryFyw1DZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUeK2NtUUUUU==
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: wengjianfeng <wengjianfeng@yulong.com>
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+In function st_nci_hci_network_init, the variable r is assigned then
+goto exit label, which just return r, so we use return to replace it.
+and exit label only used once at here, so we remove exit label.
 
-On Mon, 24 May 2021 09:07:01 +0800 you wrote:
-> Issue identified with Coccinelle.
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
-> v2: keep kmemdup oneline
-> 
->  drivers/net/ethernet/freescale/ucc_geth.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+---
+ drivers/nfc/st-nci/se.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-Here is the summary with links:
-  - [v2,net-next] ethernet: ucc_geth: Use kmemdup() rather than kmalloc+memcpy
-    https://git.kernel.org/netdev/net-next/c/ec7d6dd870d4
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+diff --git a/drivers/nfc/st-nci/se.c b/drivers/nfc/st-nci/se.c
+index 1cba8f6..8657e02 100644
+--- a/drivers/nfc/st-nci/se.c
++++ b/drivers/nfc/st-nci/se.c
+@@ -534,10 +534,8 @@ static int st_nci_hci_network_init(struct nci_dev *ndev)
+ 	dest_params =
+ 		kzalloc(sizeof(struct core_conn_create_dest_spec_params) +
+ 			sizeof(struct dest_spec_params), GFP_KERNEL);
+-	if (dest_params == NULL) {
+-		r = -ENOMEM;
+-		goto exit;
+-	}
++	if (dest_params == NULL)
++		return -ENOMEM;
+ 
+ 	dest_params->type = NCI_DESTINATION_SPECIFIC_PARAM_NFCEE_TYPE;
+ 	dest_params->length = sizeof(struct dest_spec_params);
+@@ -594,8 +592,6 @@ static int st_nci_hci_network_init(struct nci_dev *ndev)
+ 
+ free_dest_params:
+ 	kfree(dest_params);
+-
+-exit:
+ 	return r;
+ }
+ 
+-- 
+1.9.1
 
 
