@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADED638E33C
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 11:25:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 265DF38E33D
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 11:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232500AbhEXJ1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 05:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
+        id S232512AbhEXJ1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 05:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232471AbhEXJ1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 05:27:05 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291D1C06138A
+        with ESMTP id S232318AbhEXJ1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 05:27:06 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8FCC061574
         for <netdev@vger.kernel.org>; Mon, 24 May 2021 02:25:37 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id r11so31048948edt.13
+Received: by mail-ej1-x631.google.com with SMTP id et19so33691186ejc.4
         for <netdev@vger.kernel.org>; Mon, 24 May 2021 02:25:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rR70am4AsqwLDccH8qea+nzFbDBLYY7dCPQZwgCCRog=;
-        b=sGZAdbyHGB9VNwTHW8rZTswNfkIq/6R3lWabD1lJiEmJNSB6SfjjKKjQK083gHIGvO
-         sAcTjwZSlMtNb2qmms2AVmmoXveSvSlsiENnVY7tnDot5jI6iff2siu4T041GuAtluHX
-         A5tj9sV5bGN+xT+pFMsJXFe9p0u07DvPbLIRsqk87sIO99Fjase24Tzd0dpy07i5bdKX
-         pfXzDCwIpaUMjPWmPOVFkK7LKSBVrobBRE+iDPqqZ+LGEx6iiq5xyJFSp30xwOto1ezM
-         zLGDkT5fYppFPZtqnXv1Kke0Ovz7s+RUqhy8azOR0HpPQZIbuDlKcnR/DIGsGvruOsfa
-         g5uA==
+        bh=dXdt+KKKz9LU9KAG5nwot0k8iUG/uKRaRkjTzG5fIyM=;
+        b=n++zvDNw0imYM5zA/E0v+hJfiP2gs64UQMAjm763xmO+HgOjn73w0L0kJwZJGA1L10
+         a5zxyKpxGbcePR5qc8spNoNQsgU8qqj7mG4bPGab9y0JVv23tA/Obf6+tSSJvCQDAMhz
+         caUekjNXa09FCUXdbteG9iqzoqMvf6ZFB4Ujy+wQV4Pl8mNEuzcvdSAnYPyQUdbl9I2s
+         qoRlrcXtsDLhcTnvh9GbDS+cUz4p571H8a52r9dFUV3RLOttlnygTmUOVQgWlWpAjh9S
+         USL/NqwpWrmIGKpVRD40CfuCl9ogLXK2F5Oz8+3uKUxiOzWlpE4i5UQn8ibGU8oenS9/
+         uvEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rR70am4AsqwLDccH8qea+nzFbDBLYY7dCPQZwgCCRog=;
-        b=NTuoPDHqDcIl86EkE5r9GEseccoSY+Ob0mTFVT7cm2nZe34GRWLmgi/1Y9gUKXr7WK
-         PREUXCOj2+OhyGHEz2p6eUWHCyRvDsF2wHkiv+mm91Qtr/HqErxUubHF96HSS7vbnwT4
-         EFy5PVQs4BbC953N6fxq5WKLmUZKb0FksljULfKT7cFo1Dtk7SS2ad6bgWg0cLWwS6j1
-         ito083oCrdSssXECLuEFuhp4xDzdYqbJeK1hLtiTKU0NQeujSLzXj3T/hVDX39IIJeDo
-         Ftb89ehxT4RDPsfiJfH1MufCIgjXD1E2HRUv1H6FMPZkstOGXf8+opWbS3UmJgU92JVZ
-         oASw==
-X-Gm-Message-State: AOAM5326WjrCppqFt9bYbg4ZWbiFf6f3JD+vfuqLMOSfGqUZjM8jGy9R
-        BWR4DePGO7o2tRt8BOXml34=
-X-Google-Smtp-Source: ABdhPJwEeVcj0yJz5NFAbLcqFMQndKekz2CtYGlOCO7N9K8k1M17K98cRGKTybnzCVUBspZ+MdLX5A==
-X-Received: by 2002:aa7:db48:: with SMTP id n8mr24744817edt.11.1621848335730;
-        Mon, 24 May 2021 02:25:35 -0700 (PDT)
+        bh=dXdt+KKKz9LU9KAG5nwot0k8iUG/uKRaRkjTzG5fIyM=;
+        b=tlnUNxIt0v8Vs8Mk0/PMs0ZlenVehB8xKuxlg7jG+xKxuzySjoiexPL5fPte/csqQN
+         WNVm6q3GuzqcTdtN0NCGYhKU/5kQH2GaGyz9eh5fIKLVgRtWFQhneVdCgISprdvKZGUY
+         g7TPWeJqH0F48xwdzHD69AfNQmUk0Nki+ptd66iK1YyOkKh8bJ71n/T8Jx3Fefgjf+k4
+         PX/tH8QPzifbkomCy8GrSLExOkOelX4z0duxj9dc4iof1qzd7SR6ZwCd9QQx/q3Dl41U
+         J30TyvRapROkMVkL7NL6v4y8vOPaQCniru7dkEvyXy9n7qWv4XejXK8POczQYQDbnYic
+         qnUg==
+X-Gm-Message-State: AOAM533OBXO0Oy73g5DREDiGMRvB/8xomhUZ33hK0nCKbnSxOlSoUXUf
+        DFrvUwN1hdt/gEQsMUZJ8qM118P+JSk=
+X-Google-Smtp-Source: ABdhPJwahzpBW5Cdas4VuQByTnyF27xcqAZQPT6m6uhjQf1ng5+6vI6iuF9WjJYLUZ8rI4/kNw9cNw==
+X-Received: by 2002:a17:906:c1d2:: with SMTP id bw18mr22281800ejb.123.1621848336547;
+        Mon, 24 May 2021 02:25:36 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
         by smtp.gmail.com with ESMTPSA id yw9sm7553007ejb.91.2021.05.24.02.25.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 May 2021 02:25:35 -0700 (PDT)
+        Mon, 24 May 2021 02:25:36 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -54,9 +54,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net 2/6] net: dsa: sja1105: call dsa_unregister_switch when allocating memory fails
-Date:   Mon, 24 May 2021 12:25:23 +0300
-Message-Id: <20210524092527.874479-3-olteanv@gmail.com>
+Subject: [PATCH net 3/6] net: dsa: sja1105: add error handling in sja1105_setup()
+Date:   Mon, 24 May 2021 12:25:24 +0300
+Message-Id: <20210524092527.874479-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210524092527.874479-1-olteanv@gmail.com>
 References: <20210524092527.874479-1-olteanv@gmail.com>
@@ -68,65 +68,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Unlike other drivers which pretty much end their .probe() execution with
-dsa_register_switch(), the sja1105 does some extra stuff. When that
-fails with -ENOMEM, the driver is quick to return that, forgetting to
-call dsa_unregister_switch(). Not critical, but a bug nonetheless.
+If any of sja1105_static_config_load(), sja1105_clocking_setup() or
+sja1105_devlink_setup() fails, we can't just return in the middle of
+sja1105_setup() or memory will leak. Add a cleanup path.
 
-Fixes: 4d7525085a9b ("net: dsa: sja1105: offload the Credit-Based Shaper qdisc")
-Fixes: a68578c20a96 ("net: dsa: Make deferred_xmit private to sja1105")
+Fixes: 0a7bdbc23d8a ("net: dsa: sja1105: move devlink param code to sja1105_devlink.c")
+Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 405024b637d6..2248152b4836 100644
+index 2248152b4836..c7a1be8bbddf 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -3646,8 +3646,10 @@ static int sja1105_probe(struct spi_device *spi)
- 		priv->cbs = devm_kcalloc(dev, priv->info->num_cbs_shapers,
- 					 sizeof(struct sja1105_cbs_entry),
- 					 GFP_KERNEL);
--		if (!priv->cbs)
--			return -ENOMEM;
-+		if (!priv->cbs) {
-+			rc = -ENOMEM;
-+			goto out_unregister_switch;
-+		}
+@@ -2976,13 +2976,13 @@ static int sja1105_setup(struct dsa_switch *ds)
+ 	rc = sja1105_static_config_load(priv, ports);
+ 	if (rc < 0) {
+ 		dev_err(ds->dev, "Failed to load static config: %d\n", rc);
+-		return rc;
++		goto out_ptp_clock_unregister;
  	}
- 
- 	/* Connections between dsa_port and sja1105_port */
-@@ -3672,7 +3674,7 @@ static int sja1105_probe(struct spi_device *spi)
- 			dev_err(ds->dev,
- 				"failed to create deferred xmit thread: %d\n",
- 				rc);
--			goto out;
-+			goto out_destroy_workers;
- 		}
- 		skb_queue_head_init(&sp->xmit_queue);
- 		sp->xmit_tpid = ETH_P_SJA1105;
-@@ -3682,7 +3684,8 @@ static int sja1105_probe(struct spi_device *spi)
+ 	/* Configure the CGU (PHY link modes and speeds) */
+ 	rc = sja1105_clocking_setup(priv);
+ 	if (rc < 0) {
+ 		dev_err(ds->dev, "Failed to configure MII clocking: %d\n", rc);
+-		return rc;
++		goto out_static_config_free;
  	}
+ 	/* On SJA1105, VLAN filtering per se is always enabled in hardware.
+ 	 * The only thing we can do to disable it is lie about what the 802.1Q
+@@ -3003,7 +3003,7 @@ static int sja1105_setup(struct dsa_switch *ds)
  
- 	return 0;
--out:
-+
-+out_destroy_workers:
- 	while (port-- > 0) {
- 		struct sja1105_port *sp = &priv->ports[port];
+ 	rc = sja1105_devlink_setup(ds);
+ 	if (rc < 0)
+-		return rc;
++		goto out_static_config_free;
  
-@@ -3691,6 +3694,10 @@ static int sja1105_probe(struct spi_device *spi)
+ 	/* The DSA/switchdev model brings up switch ports in standalone mode by
+ 	 * default, and that means vlan_filtering is 0 since they're not under
+@@ -3012,6 +3012,17 @@ static int sja1105_setup(struct dsa_switch *ds)
+ 	rtnl_lock();
+ 	rc = sja1105_setup_8021q_tagging(ds, true);
+ 	rtnl_unlock();
++	if (rc)
++		goto out_devlink_teardown;
++
++	return 0;
++
++out_devlink_teardown:
++	sja1105_devlink_teardown(ds);
++out_ptp_clock_unregister:
++	sja1105_ptp_clock_unregister(ds);
++out_static_config_free:
++	sja1105_static_config_free(&priv->static_config);
  
- 		kthread_destroy_worker(sp->xmit_worker);
- 	}
-+
-+out_unregister_switch:
-+	dsa_unregister_switch(ds);
-+
  	return rc;
  }
- 
 -- 
 2.25.1
 
