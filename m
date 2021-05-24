@@ -2,175 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2E1E38E5D3
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 13:50:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76A6A38E65D
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 14:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232706AbhEXLve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 07:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232553AbhEXLve (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 07:51:34 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FE3C061574
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 04:50:05 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id j6so37577382lfr.11
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 04:50:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xASC3O84pM9r2GeKmJvJYHHRsZGixKYhGJW0hMFnD0A=;
-        b=YMkU8KfQ50kctCel48OBKvWjBjwv4GPHNaR1Rktfpkr0NYMCRviwdewn5iWz4UPGnF
-         2o0dWKpaOV2rvBV51SkmUzUXYqK7soxzMQEIhZiE1p0L9br2UBhELNAbMlp+wkZGisKd
-         AP6/9uzeKucep/D72B4zShBlCNR3c5LfvCe4s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xASC3O84pM9r2GeKmJvJYHHRsZGixKYhGJW0hMFnD0A=;
-        b=SqmjgU6JQL6A1Qj2GOK6xy8er8qL21Kbr0S0kknKpIokUMSd0L9eTjlx6r/+xGllCp
-         x53c0GQad2ZHLwEcWdJKhh4lfKOVOO4ZH8H1EkNaDrjTj2S11Fwdoj2xn2cJSGPq54Im
-         A3M9/xzf5ThuZtgQZtLOheUA4SVL9Rdvi8hkrFEsaKCHojDksG7+/rwBzUzGBWa7uHc1
-         e4Osvj/hEzeequnlbdXsvxfYnuSbYCf8GUdrOSEZ3BxS5mDUsJ5wzXaYMI/PsP+vCT+4
-         uZkWeuR9r2VxFWv2eEerwJApNeKrKVKF8UTCWYlEpRV/Xqx81rnss0BWgNL4Xe7siDEY
-         LpnQ==
-X-Gm-Message-State: AOAM531MHGKFwGkCG+Z+K9NDtxk74WLFUoweOJdzwd799v5W8RAuO1Jq
-        w2hicmugqhV5Wz4UU1+ci6g8AlK+zoESzWa8GQy2NIVTNiswMQ==
-X-Google-Smtp-Source: ABdhPJy/cWm/XKkLHqYL8qqSaAZwlmKlgwzMPNN5TqERYBBVpzxZlJYCzg/ieXcm9JsKoYQUJEhjw6dBtqMvCFGiMDY=
-X-Received: by 2002:a05:6512:10c8:: with SMTP id k8mr10716229lfg.325.1621857003840;
- Mon, 24 May 2021 04:50:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
-In-Reply-To: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Mon, 24 May 2021 12:49:52 +0100
-Message-ID: <CACAyw9-7dPx1vLNQeYP9Zqx=OwNcd2t1VK3XGD_aUZZG-twrOg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        id S232785AbhEXMN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 08:13:59 -0400
+Received: from mail-dm3nam07on2043.outbound.protection.outlook.com ([40.107.95.43]:47328
+        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232665AbhEXMN6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 08:13:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=akatcHfIeR5esUfuYxpiiKQhetiz0F5YdtMOpQdTyKl0IBD/Q9yNJsZilKsUD0BUFOocwhwZP5pF07/URxcHHwmhoedWKugVa27TUaPsxUTCEIqJi7B9V7xhftyZQ7ChDjJOUFHqBf7Vog36HIp/rUq9l7z+I8nqTJwO2KhCmFK5/dhZx9vl65VdJdpsWWy+Ad/erYmwKuA8U4/s3M0YRyfx8afNbvSz+lEdSrEsv1fHYIhnfLuXisM1nN8eYx1foJwKmc1ZA7kuAwlYQ8phdfneX672oJBNAWrcZRjZdZzDWOTkdgnfTh7m+cifAfvb8ywZ5/wtJSkYXa1aZzU8bQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F2CiiBoKGQ4dp4BshMHGmQTNMgPDQ8lU5lM2WNQYUaA=;
+ b=ROOed92EncbSA9O18n5DyAyJvbMQKexmRcZ0IQP2g70DYe17tYihmBqg2tQZsUoXfius0cPu9O28W1KCO3FrXk9EuWoA2Z0JdOmj/FgopbDPw/26+8gDBGMqOTlktRJLVifQAIJ3LZ9EMQ1LF7iJ35CxQE/P5apfKjnBEHbLrv0C/1TQpdHR/gq4E057NQxA61jRsNYYwXY9Rdv343LaN4PozsDvA0J7OH4t1qJvVQaMasKMwnNpLlA8O2hTNdE24mwAPRhL0aF3S4LE47S7hgZFTIdvJV8YQyGLsc8FuVl4X4HFNQ9czuRtQCwcFvwfq9N27uHbZfwAbpJfvQHvUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F2CiiBoKGQ4dp4BshMHGmQTNMgPDQ8lU5lM2WNQYUaA=;
+ b=ak3bCWh1s77BP2jb2EJuBNgx4eW2EAuqLz6Z0A2NG1+nVI19/S5v1qt01AuvxM8jHCYxcVVk93NpZ0ZHiJ+EcuGTVaQf9Gnd6QavdNfNVAplQyhAr22tW2mYjTgwGjb99Q3KHwDJxGBzTV6TKjmU/O/y1gQZRqQx1VarNt4o6x0HLc5bl4Ri8hv3nAKObt1omAQi/aWBU+JaMKjOfHj4NjqB32kk81BrCYkQpL/owH09fNDVEgZ/inLdfaoQMKpVjK42NkJKz4Blq0gfSAZtrljWJLqbr1oBOteBqxdi/r6AHoPnsrshQrHQdCQ1vB56DBjjgsz/pd3m3PfwU8A3jg==
+Received: from MWHPR1601CA0018.namprd16.prod.outlook.com
+ (2603:10b6:300:da::28) by DM6PR12MB3019.namprd12.prod.outlook.com
+ (2603:10b6:5:3d::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.25; Mon, 24 May
+ 2021 12:12:29 +0000
+Received: from CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:da:cafe::75) by MWHPR1601CA0018.outlook.office365.com
+ (2603:10b6:300:da::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23 via Frontend
+ Transport; Mon, 24 May 2021 12:12:29 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT018.mail.protection.outlook.com (10.13.175.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4129.25 via Frontend Transport; Mon, 24 May 2021 12:12:28 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 24 May
+ 2021 12:12:28 +0000
+Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 24 May 2021 12:12:25 +0000
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+To:     Boris Pismenny <borisp@nvidia.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Aviad Yehezkel" <aviadye@nvidia.com>
+CC:     Tariq Toukan <tariqt@nvidia.com>, <netdev@vger.kernel.org>,
+        "Maxim Mikityanskiy" <maximmi@nvidia.com>
+Subject: [PATCH net 0/2] Fix use-after-free after the TLS device goes down and up
+Date:   Mon, 24 May 2021 15:12:18 +0300
+Message-ID: <20210524121220.1577321-1-maximmi@nvidia.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 65a6fa80-6a09-4088-20a6-08d91ead3358
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3019:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB30192FE5957DD04EBBE01492DC269@DM6PR12MB3019.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: d26eK0BlBSogHZuTxve2iao5BMrksbJstGhHnbi/TXfAGWlagJG3i1/ILwpFnMa4K4k21R6CrX9gQ0wKgWfhRCG6+F4qEebmfLlKsMVLFdytLnB+ZnVIbuJGmPf27p1hbQvKKqvGqidVCshmmOE7cK/xyG64FxMo26bde+LyQg5nzL1o2m8fIFucZBV6fz4Hhj8rwLoG7jnjvxg/YxHHpCSBedsT7G5+kEIwEIAqti4D4L8kO1ZQ8E7R8EJJ2/1fXdxoYOG7RmqLzsCb1QKHaIs5QPQq0D4sTZn03Sn3D9KnYSfdzF8lMn91zJDqLPN1edLEajEMrvlOsvYGVe2BCiaLtPeOwjc1VSve29a/954uIA9R2b2Ch2mdCaCFSy6BK3CdL7wapYAEMFXbRUpOt+caLojpnYErlOyezOROCbiS7VAF1GfRxT3IxCT+ScnPWzLYFtmQC6c6ekvnlsdeaYVWJsArSq4Fe/uKWYr0sHeVMZ8ZKXgOuktU6y7tqi+QPNECVlkZIGAjuqyKgDXQT/z4EJSpa6a9Hr8cId1sfNiCMmHLlhmFAM3f1f4B+2OIgP5SxwqLolL8ALyeLM03M8p4nRH2PhTtxFmW+5CS5odwnS/MvjtJO8MsHfovACt4PQpDsFfuA+rt43VxqMww/1sFrfNO3x/mnr0RNF2AkrM=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(136003)(346002)(376002)(396003)(36840700001)(46966006)(82740400003)(7636003)(110136005)(54906003)(4326008)(26005)(36906005)(316002)(4744005)(36860700001)(83380400001)(8936002)(356005)(107886003)(186003)(2906002)(2616005)(426003)(336012)(5660300002)(82310400003)(70586007)(6636002)(7696005)(1076003)(36756003)(478600001)(70206006)(6666004)(8676002)(86362001)(47076005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2021 12:12:28.8125
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65a6fa80-6a09-4088-20a6-08d91ead3358
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3019
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 May 2021 at 19:55, Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> From: Alexei Starovoitov <ast@kernel.org>
->
-> Introduce 'struct bpf_timer' that can be embedded in most BPF map types
-> and helpers to operate on it:
-> long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
-> long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
-> long bpf_timer_del(struct bpf_timer *timer)
+This small series fixes a use-after-free bug in the TLS offload code.
+The first patch is a preparation for the second one, and the second is
+the fix itself.
 
-I like invoking the callback with a pointer to the map element it was
-defined in, since it solves lifetime of the context and user space
-introspection of the same. I'm not so sure about being able to put it
-into all different kinds of maps, is that really going to be used?
+Maxim Mikityanskiy (2):
+  net/tls: Replace TLS_RX_SYNC_RUNNING with RCU
+  net/tls: Fix use-after-free after the TLS device goes down and up
 
-It would be useful if Cong Wang could describe their use case, it's
-kind of hard to tell what the end goal is. Should user space be able
-to create and arm timers? Or just BPF? In the other thread it seems
-like a primitive for waiting on a timer is proposed. Why? It also begs
-the question how we would wait on multiple timers.
-
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
-> This is work in progress, but gives an idea on how API will look.
-> ---
->  include/linux/bpf.h                           |   1 +
->  include/uapi/linux/bpf.h                      |  25 ++++
->  kernel/bpf/helpers.c                          | 106 +++++++++++++++++
->  kernel/bpf/verifier.c                         | 110 ++++++++++++++++++
->  kernel/trace/bpf_trace.c                      |   2 +-
->  scripts/bpf_doc.py                            |   2 +
->  tools/include/uapi/linux/bpf.h                |  25 ++++
->  .../testing/selftests/bpf/prog_tests/timer.c  |  42 +++++++
->  tools/testing/selftests/bpf/progs/timer.c     |  53 +++++++++
->  9 files changed, 365 insertions(+), 1 deletion(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/timer.c
->  create mode 100644 tools/testing/selftests/bpf/progs/timer.c
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 9dc44ba97584..18e09cc0c410 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -312,6 +312,7 @@ enum bpf_arg_type {
->         ARG_PTR_TO_FUNC,        /* pointer to a bpf program function */
->         ARG_PTR_TO_STACK_OR_NULL,       /* pointer to stack or NULL */
->         ARG_PTR_TO_CONST_STR,   /* pointer to a null terminated read-only string */
-> +       ARG_PTR_TO_TIMER,       /* pointer to bpf_timer */
->         __BPF_ARG_TYPE_MAX,
->  };
->
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 418b9b813d65..c95d7854d9fb 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -4761,6 +4761,24 @@ union bpf_attr {
->   *             Execute close syscall for given FD.
->   *     Return
->   *             A syscall result.
-> + *
-> + * long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
-
-In your selftest the callback has a type (int)(*callback)(struct
-bpf_map *map, int *key, struct map_elem *val).
-
-> + *     Description
-> + *             Initialize the timer to call given static function.
-> + *     Return
-> + *             zero
-> + *
-> + * long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
-> + *     Description
-> + *             Set the timer expiration N msecs from the current time.
-> + *     Return
-> + *             zero
-> + *
-> + * long bpf_timer_del(struct bpf_timer *timer)
-> + *     Description
-> + *             Deactivate the timer.
-> + *     Return
-> + *             zero
->   */
->  #define __BPF_FUNC_MAPPER(FN)          \
->         FN(unspec),                     \
-> @@ -4932,6 +4950,9 @@ union bpf_attr {
->         FN(sys_bpf),                    \
->         FN(btf_find_by_name_kind),      \
->         FN(sys_close),                  \
-> +       FN(timer_init),                 \
-> +       FN(timer_mod),                  \
-> +       FN(timer_del),                  \
->         /* */
-
-How can user space force stopping of timers (required IMO)?
-
->
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> @@ -6038,6 +6059,10 @@ struct bpf_spin_lock {
->         __u32   val;
->  };
->
-> +struct bpf_timer {
-> +       __u64 opaque;
-> +};
-> +
-
-This might be clear already, but we won't be able to modify the size
-of bpf_timer later since it would break uapi, right?
+ include/net/tls.h             | 10 +++++-
+ net/tls/tls_device.c          | 60 ++++++++++++++++++++++++++++-------
+ net/tls/tls_device_fallback.c |  8 +++++
+ net/tls/tls_main.c            |  1 +
+ 4 files changed, 67 insertions(+), 12 deletions(-)
 
 -- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+2.25.1
 
-www.cloudflare.com
