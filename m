@@ -2,269 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 504DD38EA4A
-	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 16:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D04E38EA72
+	for <lists+netdev@lfdr.de>; Mon, 24 May 2021 16:54:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233954AbhEXOx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 10:53:56 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:3987 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233969AbhEXOvy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 10:51:54 -0400
-Received: from dggems706-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Fpg716HZJzmZsH;
-        Mon, 24 May 2021 22:47:57 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggems706-chm.china.huawei.com (10.3.19.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 22:50:17 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Mon, 24 May 2021 22:50:17 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
-        <ms@dev.tdt.de>, <willemb@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <tanhuazhong@huawei.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 01/10] net: wan: remove redundant blank lines
-Date:   Mon, 24 May 2021 22:47:08 +0800
-Message-ID: <1621867637-2680-2-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1621867637-2680-1-git-send-email-huangguangbin2@huawei.com>
-References: <1621867637-2680-1-git-send-email-huangguangbin2@huawei.com>
+        id S234290AbhEXOzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 10:55:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33398 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233193AbhEXOxK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 10:53:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6BAB06141D;
+        Mon, 24 May 2021 14:48:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621867699;
+        bh=eneXgJadla0FXNynniX2GwEnmQwZmwoZoySbbR2JdRk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aKxnCLCxuYsYDxmyl86EjuR4ai2A0ht1yvtEzymfYEOhGZSl2tnirmk+STPgjVoYQ
+         qtyTEeyFriFmJSvbNsV7fu2UsWAv7jn2H1twnat6AQTMryEElF1T+B7ODSP5wCHDxc
+         M8SE/ZgGCx88P/4RQm8e0ZTsALJA6DY5PMy3CtGc8+QN4i40wZJ+Sc+9OoewYeTE6O
+         28VPzACq23M6uGxmlv8nomnU9SjF98K2oaj7EWhSPMhkz1ddL2elWtkikLezp0OWVv
+         VDJqFyZmhHoeemEn9ldhLq862dOX3BTb4siWSyMopr6+IywjCt8RrP9URd7Ab1buXa
+         tXyHdWD+qj0Yg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 28/62] libertas: register sysfs groups properly
+Date:   Mon, 24 May 2021 10:47:09 -0400
+Message-Id: <20210524144744.2497894-28-sashal@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210524144744.2497894-1-sashal@kernel.org>
+References: <20210524144744.2497894-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-This patch removes some redundant blank lines.
+[ Upstream commit 7e79b38fe9a403b065ac5915465f620a8fb3de84 ]
 
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+The libertas driver was trying to register sysfs groups "by hand" which
+causes them to be created _after_ the device is initialized and
+announced to userspace, which causes races and can prevent userspace
+tools from seeing the sysfs files correctly.
+
+Fix this up by using the built-in sysfs_groups pointers in struct
+net_device which were created for this very reason, fixing the race
+condition, and properly allowing for any error that might have occured
+to be handled properly.
+
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210503115736.2104747-54-gregkh@linuxfoundation.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wan/wanxl.c | 38 --------------------------------------
- 1 file changed, 38 deletions(-)
+ drivers/net/wireless/marvell/libertas/mesh.c | 28 +++-----------------
+ 1 file changed, 4 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/wan/wanxl.c b/drivers/net/wan/wanxl.c
-index f393684f203a..676dd813d36d 100644
---- a/drivers/net/wan/wanxl.c
-+++ b/drivers/net/wan/wanxl.c
-@@ -50,7 +50,6 @@ static const char* version = "wanXL serial card driver version: 0.48";
- /* MAILBOX #2 - DRAM SIZE */
- #define MBX2_MEMSZ_MASK 0xFFFF0000 /* PUTS Memory Size Register mask */
- 
--
- struct port {
- 	struct net_device *dev;
- 	struct card *card;
-@@ -61,13 +60,11 @@ struct port {
- 	struct sk_buff *tx_skbs[TX_BUFFERS];
+diff --git a/drivers/net/wireless/marvell/libertas/mesh.c b/drivers/net/wireless/marvell/libertas/mesh.c
+index c611e6668b21..c68814841583 100644
+--- a/drivers/net/wireless/marvell/libertas/mesh.c
++++ b/drivers/net/wireless/marvell/libertas/mesh.c
+@@ -801,19 +801,6 @@ static const struct attribute_group mesh_ie_group = {
+ 	.attrs = mesh_ie_attrs,
  };
  
+-static void lbs_persist_config_init(struct net_device *dev)
+-{
+-	int ret;
+-	ret = sysfs_create_group(&(dev->dev.kobj), &boot_opts_group);
+-	ret = sysfs_create_group(&(dev->dev.kobj), &mesh_ie_group);
+-}
 -
- struct card_status {
- 	desc_t rx_descs[RX_QUEUE_LENGTH];
- 	port_status_t port_status[4];
- };
+-static void lbs_persist_config_remove(struct net_device *dev)
+-{
+-	sysfs_remove_group(&(dev->dev.kobj), &boot_opts_group);
+-	sysfs_remove_group(&(dev->dev.kobj), &mesh_ie_group);
+-}
+-
  
--
- struct card {
- 	int n_ports;		/* 1, 2 or 4 ports */
- 	u8 irq;
-@@ -81,20 +78,16 @@ struct card {
- 	struct port ports[];	/* 1 - 4 port structures follow */
- };
+ /***************************************************************************
+  * Initializing and starting, stopping mesh
+@@ -1009,6 +996,10 @@ static int lbs_add_mesh(struct lbs_private *priv)
+ 	SET_NETDEV_DEV(priv->mesh_dev, priv->dev->dev.parent);
  
--
--
- static inline struct port *dev_to_port(struct net_device *dev)
- {
- 	return (struct port *)dev_to_hdlc(dev)->priv;
- }
- 
--
- static inline port_status_t *get_status(struct port *port)
- {
- 	return &port->card->status->port_status[port->node];
- }
- 
--
- #ifdef DEBUG_PCI
- static inline dma_addr_t pci_map_single_debug(struct pci_dev *pdev, void *ptr,
- 					      size_t size, int direction)
-@@ -110,7 +103,6 @@ static inline dma_addr_t pci_map_single_debug(struct pci_dev *pdev, void *ptr,
- #define pci_map_single pci_map_single_debug
- #endif
- 
--
- /* Cable and/or personality module change interrupt service */
- static inline void wanxl_cable_intr(struct port *port)
- {
-@@ -154,8 +146,6 @@ static inline void wanxl_cable_intr(struct port *port)
- 		netif_carrier_off(port->dev);
- }
- 
--
--
- /* Transmit complete interrupt service */
- static inline void wanxl_tx_intr(struct port *port)
- {
-@@ -187,8 +177,6 @@ static inline void wanxl_tx_intr(struct port *port)
-         }
- }
- 
--
--
- /* Receive complete interrupt service */
- static inline void wanxl_rx_intr(struct card *card)
- {
-@@ -239,8 +227,6 @@ static inline void wanxl_rx_intr(struct card *card)
+ 	mesh_dev->flags |= IFF_BROADCAST | IFF_MULTICAST;
++	mesh_dev->sysfs_groups[0] = &lbs_mesh_attr_group;
++	mesh_dev->sysfs_groups[1] = &boot_opts_group;
++	mesh_dev->sysfs_groups[2] = &mesh_ie_group;
++
+ 	/* Register virtual mesh interface */
+ 	ret = register_netdev(mesh_dev);
+ 	if (ret) {
+@@ -1016,19 +1007,10 @@ static int lbs_add_mesh(struct lbs_private *priv)
+ 		goto err_free_netdev;
  	}
- }
  
+-	ret = sysfs_create_group(&(mesh_dev->dev.kobj), &lbs_mesh_attr_group);
+-	if (ret)
+-		goto err_unregister;
 -
+-	lbs_persist_config_init(mesh_dev);
 -
- static irqreturn_t wanxl_intr(int irq, void* dev_id)
- {
- 	struct card *card = dev_id;
-@@ -248,7 +234,6 @@ static irqreturn_t wanxl_intr(int irq, void* dev_id)
-         u32 stat;
-         int handled = 0;
+ 	/* Everything successful */
+ 	ret = 0;
+ 	goto done;
  
+-err_unregister:
+-	unregister_netdev(mesh_dev);
 -
-         while((stat = readl(card->plx + PLX_DOORBELL_FROM_CARD)) != 0) {
-                 handled = 1;
- 		writel(stat, card->plx + PLX_DOORBELL_FROM_CARD);
-@@ -266,8 +251,6 @@ static irqreturn_t wanxl_intr(int irq, void* dev_id)
-         return IRQ_RETVAL(handled);
- }
+ err_free_netdev:
+ 	free_netdev(mesh_dev);
  
--
--
- static netdev_tx_t wanxl_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct port *port = dev_to_port(dev);
-@@ -312,8 +295,6 @@ static netdev_tx_t wanxl_xmit(struct sk_buff *skb, struct net_device *dev)
- 	return NETDEV_TX_OK;
- }
+@@ -1049,8 +1031,6 @@ void lbs_remove_mesh(struct lbs_private *priv)
  
--
--
- static int wanxl_attach(struct net_device *dev, unsigned short encoding,
- 			unsigned short parity)
- {
-@@ -335,8 +316,6 @@ static int wanxl_attach(struct net_device *dev, unsigned short encoding,
- 	return 0;
- }
- 
--
--
- static int wanxl_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- {
- 	const size_t size = sizeof(sync_serial_settings);
-@@ -387,8 +366,6 @@ static int wanxl_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-         }
- }
- 
--
--
- static int wanxl_open(struct net_device *dev)
- {
- 	struct port *port = dev_to_port(dev);
-@@ -423,8 +400,6 @@ static int wanxl_open(struct net_device *dev)
- 	return -EFAULT;
- }
- 
--
--
- static int wanxl_close(struct net_device *dev)
- {
- 	struct port *port = dev_to_port(dev);
-@@ -461,8 +436,6 @@ static int wanxl_close(struct net_device *dev)
- 	return 0;
- }
- 
--
--
- static struct net_device_stats *wanxl_get_stats(struct net_device *dev)
- {
- 	struct port *port = dev_to_port(dev);
-@@ -474,8 +447,6 @@ static struct net_device_stats *wanxl_get_stats(struct net_device *dev)
- 	return &dev->stats;
- }
- 
--
--
- static int wanxl_puts_command(struct card *card, u32 cmd)
- {
- 	unsigned long timeout = jiffies + 5 * HZ;
-@@ -491,8 +462,6 @@ static int wanxl_puts_command(struct card *card, u32 cmd)
- 	return -1;
- }
- 
--
--
- static void wanxl_reset(struct card *card)
- {
- 	u32 old_value = readl(card->plx + PLX_CONTROL) & ~PLX_CTL_RESET;
-@@ -505,8 +474,6 @@ static void wanxl_reset(struct card *card)
- 	readl(card->plx + PLX_CONTROL); /* wait for posted write */
- }
- 
--
--
- static void wanxl_pci_remove_one(struct pci_dev *pdev)
- {
- 	struct card *card = pci_get_drvdata(pdev);
-@@ -543,7 +510,6 @@ static void wanxl_pci_remove_one(struct pci_dev *pdev)
- 	kfree(card);
- }
- 
--
- #include "wanxlfw.inc"
- 
- static const struct net_device_ops wanxl_ops = {
-@@ -677,7 +643,6 @@ static int wanxl_pci_init_one(struct pci_dev *pdev,
- 	/* set up on-board RAM mapping */
- 	mem_phy = pci_resource_start(pdev, 2);
- 
--
- 	/* sanity check the board's reported memory size */
- 	if (ramsize < BUFFERS_ADDR +
- 	    (TX_BUFFERS + RX_BUFFERS) * BUFFER_LENGTH * ports) {
-@@ -813,7 +778,6 @@ static const struct pci_device_id wanxl_pci_tbl[] = {
- 	{ 0, }
- };
- 
--
- static struct pci_driver wanxl_pci_driver = {
- 	.name		= "wanXL",
- 	.id_table	= wanxl_pci_tbl,
-@@ -821,7 +785,6 @@ static struct pci_driver wanxl_pci_driver = {
- 	.remove		= wanxl_pci_remove_one,
- };
- 
--
- static int __init wanxl_init_module(void)
- {
- #ifdef MODULE
-@@ -835,7 +798,6 @@ static void __exit wanxl_cleanup_module(void)
- 	pci_unregister_driver(&wanxl_pci_driver);
- }
- 
--
- MODULE_AUTHOR("Krzysztof Halasa <khc@pm.waw.pl>");
- MODULE_DESCRIPTION("SBE Inc. wanXL serial port driver");
- MODULE_LICENSE("GPL v2");
+ 	netif_stop_queue(mesh_dev);
+ 	netif_carrier_off(mesh_dev);
+-	sysfs_remove_group(&(mesh_dev->dev.kobj), &lbs_mesh_attr_group);
+-	lbs_persist_config_remove(mesh_dev);
+ 	unregister_netdev(mesh_dev);
+ 	priv->mesh_dev = NULL;
+ 	kfree(mesh_dev->ieee80211_ptr);
 -- 
-2.8.1
+2.30.2
 
