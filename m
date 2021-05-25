@@ -2,100 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C4F43903BE
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 16:17:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8723F3903C7
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 16:20:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233856AbhEYOS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 10:18:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38578 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233719AbhEYOSo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 10:18:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621952234;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qs8EjzEOCz++s3CVPlPwuFgTHOtbAQXpJzzRW8nZD74=;
-        b=NdPVrTJY7DpjEPizKjOvkYXoqbFCWTG5VnDBayKAmQcI3jPDBH5+HBbMV6iZV9J9gBLswP
-        OuIgMh/Z8PiZJfAWbnVVJiW/zouaB6H0jt2HEU3FNcK28YC9W5FDKpfPN6Z2I7SMBvTV/g
-        5Utaljakc3AHLWzFe2XH6KGN+/Okv5Q=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-352-WxpTTDzvMiSMFygZc2lW2Q-1; Tue, 25 May 2021 10:17:12 -0400
-X-MC-Unique: WxpTTDzvMiSMFygZc2lW2Q-1
-Received: by mail-ej1-f71.google.com with SMTP id p5-20020a17090653c5b02903db1cfa514dso5639017ejo.13
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 07:17:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qs8EjzEOCz++s3CVPlPwuFgTHOtbAQXpJzzRW8nZD74=;
-        b=mVIfP4x0AZy1bzqYrPZWNzu/+dLYSccKEdyx+8QmhsgzZoAQ5OOVFfV9c2YJblM2rA
-         80tdt3V4terMlOy3yaq9IkFqYpmE/6M5eiWgv/qHtfaUcvdN/iFG8RsFIdxeWahChrHV
-         I8/xW6lUvd+r84Rp6/GpyF9mOt9yCxu9uyjWxH9IKHppfMv36nXqIce+GwzKvj62dAug
-         c6uPG9wKS4cJ1w2pDwKd9///jkfGB4HgcHbJ5x+BGGlOkC+66vVkw61wIgqiH8nSQfPt
-         sQrp33vk7fIYoAg/WUPGCMhG/81K2pt3aO3GdBomtnMGd4TCf10YgVYjO9IE0E/mng7Z
-         jinw==
-X-Gm-Message-State: AOAM532u4mEPTUCE4wtiDilRZOrSQCdLOyLC90Sx99nY4zDuZPOyuTEm
-        s7EGY+0ThDwX/bvYQDd0mDKcUHLXTmTRwvBLFUx8rpFw+pZox//bcAzgl3LpGq2lGn/k2wUleUQ
-        plZL0T8SQrDbqQsJZ
-X-Received: by 2002:a05:6402:190e:: with SMTP id e14mr32337351edz.146.1621952231504;
-        Tue, 25 May 2021 07:17:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzFKL2as0znk9EfRE37BQywDQJb+X3ks+d5tVQoRqTJJqOiRkyF4ZCUMGJz3wAnrUijDO8n7A==
-X-Received: by 2002:a05:6402:190e:: with SMTP id e14mr32337320edz.146.1621952231368;
-        Tue, 25 May 2021 07:17:11 -0700 (PDT)
-Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
-        by smtp.gmail.com with ESMTPSA id bv17sm9143813ejb.37.2021.05.25.07.17.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 May 2021 07:17:10 -0700 (PDT)
-Date:   Tue, 25 May 2021 16:17:08 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, oxffffaa@gmail.com
-Subject: Re: [PATCH v10 06/18] af_vsock: rest of SEQPACKET support
-Message-ID: <20210525141708.nklo776yq2nnhju7@steredhat>
-References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
- <20210520191639.1271423-1-arseny.krasnov@kaspersky.com>
+        id S233736AbhEYOVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 10:21:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42518 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233401AbhEYOVj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 May 2021 10:21:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 02CEB6142B;
+        Tue, 25 May 2021 14:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621952410;
+        bh=uMnHa6ZOLtNxDi9gA1MQfUF6Bopn37EoixFRmu3Za54=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ktzuFqAwit63Hm/7sTyJr0S3+1+dkgjhVYBAawgMbJuoIfy8DpQX/+MaTZ3KmLfTP
+         Bg6iPsbLy7rzBgjA5tcEzonkwhQ/664Z8BByJNPYL++vcPPtE1HWyvoONdCkFaZUGZ
+         ZM/G6Ew13gBHGJkMmR3ZLbtgoLKIgO6K3SmNxsCv9jo8hVzwI6WcdW1exoZ3U6o5Dp
+         m8xP04EEC/h/i8P5kw6uj1thp2lZt9MNBHYtjLKNsHqnP0yXov/VnJTWF/ZQ9NCnzf
+         /bxIyveqSCnaOeJBJ/fLJriYi5VMv2LNWNUNeI0vwATLYxMVwxccwbUBcqSRnkKW59
+         m0JDQAZzmLHPg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E9B5260CD8;
+        Tue, 25 May 2021 14:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210520191639.1271423-1-arseny.krasnov@kaspersky.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] bpftool: Add sock_release help info for cgroup attach/prog
+ load command
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162195240995.24888.15893741035233070045.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 May 2021 14:20:09 +0000
+References: <20210525014139.323859-1-liujian56@huawei.com>
+In-Reply-To: <20210525014139.323859-1-liujian56@huawei.com>
+To:     Liu Jian <liujian56@huawei.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        quentin@isovalent.com, sdf@google.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 10:16:36PM +0300, Arseny Krasnov wrote:
->To make SEQPACKET socket functional, socket ops was added
->for SEQPACKET type and such type of socket was allowed
->to create.
+Hello:
 
-If you need to resend, I think is better to use the present in the 
-commit message.
+This patch was applied to bpf/bpf.git (refs/heads/master):
 
-Maybe you can rephrase something like this:
-"Add socket ops for SEQPACKET type and .seqpacket_allow() callback
-to query transports if they support SEQPACKET"
+On Tue, 25 May 2021 09:41:39 +0800 you wrote:
+> The help information is not added when the function is added.
+> Here add the missing information to its cli, documentation and bash completion.
+> 
+> Fixes: db94cc0b4805 ("bpftool: Add support for BPF_CGROUP_INET_SOCK_RELEASE")
+> Signed-off-by: Liu Jian <liujian56@huawei.com>
+> ---
+> v1 -> v2:
+>      Add changelog text.
+> v2 -> v3:
+>      Also change prog cli help info, documentation and bash completion mentioned by Quentin.
+>      So the subject was also changed.
+> 
+> [...]
 
+Here is the summary with links:
+  - [v3] bpftool: Add sock_release help info for cgroup attach/prog load command
+    https://git.kernel.org/bpf/bpf/c/a8deba8547e3
 
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> include/net/af_vsock.h   |  1 +
-> net/vmw_vsock/af_vsock.c | 36 +++++++++++++++++++++++++++++++++++-
-> 2 files changed, 36 insertions(+), 1 deletion(-)
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-The patch LGTM:
-
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
