@@ -2,144 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1957F38F766
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 03:12:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB01438F79E
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 03:40:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbhEYBOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 21:14:20 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5691 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbhEYBOT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 21:14:19 -0400
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Fpwwk36lkz1BR9L;
-        Tue, 25 May 2021 09:09:58 +0800 (CST)
-Received: from nkgeml705-chm.china.huawei.com (10.98.57.154) by
+        id S229652AbhEYBlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 21:41:40 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3655 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229550AbhEYBlj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 21:41:39 -0400
+Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FpxWN3CbZzNxF3;
+        Tue, 25 May 2021 09:36:32 +0800 (CST)
+Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
  dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 25 May 2021 09:12:47 +0800
-Received: from nkgeml708-chm.china.huawei.com (10.98.57.160) by
- nkgeml705-chm.china.huawei.com (10.98.57.154) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 25 May 2021 09:12:47 +0800
-Received: from nkgeml708-chm.china.huawei.com ([10.98.57.160]) by
- nkgeml708-chm.china.huawei.com ([10.98.57.160]) with mapi id 15.01.2176.012;
- Tue, 25 May 2021 09:12:47 +0800
-From:   "Guodeqing (A)" <geffrey.guo@huawei.com>
-To:     Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mst@redhat.com" <mst@redhat.com>
-Subject: RE: [PATCH] virtio-net: fix the kzalloc/kfree mismatch problem
-Thread-Topic: [PATCH] virtio-net: fix the kzalloc/kfree mismatch problem
-Thread-Index: AQHXUEW/bATxnnR10EK/YGW72hUTH6rxyLEAgAGcq1A=
-Date:   Tue, 25 May 2021 01:12:47 +0000
-Message-ID: <372caa22030e4d5d90e2bada303d8f77@huawei.com>
-References: <1621821978.04102-1-xuanzhuo@linux.alibaba.com>
- <36d1b92c-7dc5-f84e-ef86-980b15c39965@redhat.com>
- <1f23afa3-645e-81b6-76da-94c7806ef6ed@nvidia.com>
-In-Reply-To: <1f23afa3-645e-81b6-76da-94c7806ef6ed@nvidia.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.136.115.169]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Tue, 25 May 2021 09:40:08 +0800
+Received: from huawei.com (10.175.101.6) by dggema772-chm.china.huawei.com
+ (10.1.198.214) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 25
+ May 2021 09:40:07 +0800
+From:   Liu Jian <liujian56@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <quentin@isovalent.com>, <liujian56@huawei.com>, <sdf@google.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+Subject: [PATCH v3] bpftool: Add sock_release help info for cgroup attach/prog load command
+Date:   Tue, 25 May 2021 09:41:39 +0800
+Message-ID: <20210525014139.323859-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggema772-chm.china.huawei.com (10.1.198.214)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWF4IEd1cnRvdm95IFtt
-YWlsdG86bWd1cnRvdm95QG52aWRpYS5jb21dDQo+IFNlbnQ6IE1vbmRheSwgTWF5IDI0LCAyMDIx
-IDE2OjM1DQo+IFRvOiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPjsgWHVhbiBaaHVv
-DQo+IDx4dWFuemh1b0BsaW51eC5hbGliYWJhLmNvbT47IEd1b2RlcWluZyAoQSkgPGdlZmZyZXku
-Z3VvQGh1YXdlaS5jb20+DQo+IENjOiBkYXZlbUBkYXZlbWxvZnQubmV0OyBrdWJhQGtlcm5lbC5v
-cmc7IHZpcnR1YWxpemF0aW9uQGxpc3RzLmxpbnV4LQ0KPiBmb3VuZGF0aW9uLm9yZzsgbmV0ZGV2
-QHZnZXIua2VybmVsLm9yZzsgbXN0QHJlZGhhdC5jb20NCj4gU3ViamVjdDogUmU6IFtQQVRDSF0g
-dmlydGlvLW5ldDogZml4IHRoZSBremFsbG9jL2tmcmVlIG1pc21hdGNoIHByb2JsZW0NCj4gDQo+
-IA0KPiBPbiA1LzI0LzIwMjEgNTozNyBBTSwgSmFzb24gV2FuZyB3cm90ZToNCj4gPg0KPiA+IOWc
-qCAyMDIxLzUvMjQg5LiK5Y2IMTA6MDYsIFh1YW4gWmh1byDlhpnpgZM6DQo+ID4+IE9uIE1vbiwg
-MjQgTWF5IDIwMjEgMDE6NDg6NTMgKzAwMDAsIEd1b2RlcWluZyAoQSkNCj4gPj4gPGdlZmZyZXku
-Z3VvQGh1YXdlaS5jb20+IHdyb3RlOg0KPiA+Pj4NCj4gPj4+PiAtLS0tLU9yaWdpbmFsIE1lc3Nh
-Z2UtLS0tLQ0KPiA+Pj4+IEZyb206IE1heCBHdXJ0b3ZveSBbbWFpbHRvOm1ndXJ0b3ZveUBudmlk
-aWEuY29tXQ0KPiA+Pj4+IFNlbnQ6IFN1bmRheSwgTWF5IDIzLCAyMDIxIDE1OjI1DQo+ID4+Pj4g
-VG86IEd1b2RlcWluZyAoQSkgPGdlZmZyZXkuZ3VvQGh1YXdlaS5jb20+OyBtc3RAcmVkaGF0LmNv
-bQ0KPiA+Pj4+IENjOiBqYXNvd2FuZ0ByZWRoYXQuY29tOyBkYXZlbUBkYXZlbWxvZnQubmV0OyBr
-dWJhQGtlcm5lbC5vcmc7DQo+ID4+Pj4gdmlydHVhbGl6YXRpb25AbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gPj4+PiBTdWJqZWN0OiBSZTogW1BB
-VENIXSB2aXJ0aW8tbmV0OiBmaXggdGhlIGt6YWxsb2Mva2ZyZWUgbWlzbWF0Y2gNCj4gPj4+PiBw
-cm9ibGVtDQo+ID4+Pj4NCj4gPj4+Pg0KPiA+Pj4+IE9uIDUvMjIvMjAyMSAxMTowMiBBTSwgZ3Vv
-ZGVxaW5nIHdyb3RlOg0KPiA+Pj4+PiBJZiB0aGUgdmlydGlvX25ldCBkZXZpY2UgZG9lcyBub3Qg
-c3VwcHVydCB0aGUgY3RybCBxdWV1ZSBmZWF0dXJlLA0KPiA+Pj4+PiB0aGUNCj4gPj4+Pj4gdmkt
-PmN0cmwgd2FzIG5vdCBhbGxvY2F0ZWQsIHNvIHRoZXJlIGlzIG5vIG5lZWQgdG8gZnJlZSBpdC4N
-Cj4gPj4+PiB5b3UgZG9uJ3QgbmVlZCB0aGlzIGNoZWNrLg0KPiA+Pj4+DQo+ID4+Pj4gZnJvbSBr
-ZnJlZSBkb2M6DQo+ID4+Pj4NCj4gPj4+PiAiSWYgQG9ianAgaXMgTlVMTCwgbm8gb3BlcmF0aW9u
-IGlzIHBlcmZvcm1lZC4iDQo+ID4+Pj4NCj4gPj4+PiBUaGlzIGlzIG5vdCBhIGJ1Zy4gSSd2ZSBz
-ZXQgdmktPmN0cmwgdG8gYmUgTlVMTCBpbiBjYXNlICF2aS0+aGFzX2N2cS4NCj4gPj4+Pg0KPiA+
-Pj4+DQo+ID4+PiDCoMKgIHllcyzCoCB0aGlzIGlzIG5vdCBhIGJ1ZywgdGhlIHBhdGNoIGlzIGp1
-c3QgYSBvcHRpbWl6YXRpb24sDQo+ID4+PiBiZWNhdXNlIHRoZSB2aS0+Y3RybCBtYXliZQ0KPiA+
-Pj4gwqDCoCBiZSBmcmVlZCB3aGljaMKgIHdhcyBub3QgYWxsb2NhdGVkLCB0aGlzIG1heSBnaXZl
-IHBlb3BsZSBhDQo+ID4+PiBtaXN1bmRlcnN0YW5kaW5nLg0KPiA+Pj4gwqDCoCBUaGFua3MuDQo+
-ID4+DQo+ID4+IEkgdGhpbmsgaXQgbWF5IGJlIGVub3VnaCB0byBhZGQgYSBjb21tZW50LCBhbmQg
-dGhlIGNvZGUgZG9lcyBub3QgbmVlZA0KPiA+PiB0byBiZSBtb2RpZmllZC4NCj4gPj4NCj4gPj4g
-VGhhbmtzLg0KPiA+DQo+ID4NCj4gPiBPciBldmVuIGp1c3QgbGVhdmUgdGhlIGN1cnJlbnQgY29k
-ZSBhcyBpcy4gQSBsb3Qgb2Yga2VybmVsIGNvZGVzIHdhcw0KPiA+IHdyb3RlIHVuZGVyIHRoZSBh
-c3N1bXB0aW9uIHRoYXQga2ZyZWUoKSBzaG91bGQgZGVhbCB3aXRoIE5VTEwuDQo+ID4NCj4gPiBU
-aGFua3MNCj4gPg0KPiA+DQo+IGV4YWN0bHkuDQo+IA0KPiANCj4gPj4NCj4gPj4+Pj4gSGVyZSBJ
-IGFkanVzdCB0aGUgaW5pdGlhbGl6YXRpb24gc2VxdWVuY2UgYW5kIHRoZSBjaGVjayBvZg0KPiA+
-Pj4+PiB2aS0+aGFzX2N2cQ0KPiA+Pj4+PiB0byBzbG92ZSB0aGlzIHByb2JsZW0uDQo+ID4+Pj4+
-DQo+ID4+Pj4+IEZpeGVzOsKgwqDCoMKgIDEyMmI4NGExMjY3YSAoInZpcnRpby1uZXQ6IGRvbid0
-IGFsbG9jYXRlIGNvbnRyb2xfYnVmDQo+ID4+Pj4+IGlmIG5vdA0KPiA+Pj4+IHN1cHBvcnRlZCIp
-DQo+IA0KPiANCj4gIkZpeGVzIiBsaW5lIHNob3VsZCBiZSBhZGRlZCBvbmx5IGlmIHlvdSBmaXgg
-c29tZSBidWcuDQo+IA0KICAgIE9rLCBJIHNlZS4NCiAgICBUaGFua3MuDQo+IA0KPiA+Pj4+PiBT
-aWduZWQtb2ZmLWJ5OiBndW9kZXFpbmcgPGdlZmZyZXkuZ3VvQGh1YXdlaS5jb20+DQo+ID4+Pj4+
-IC0tLQ0KPiA+Pj4+PiDCoMKgIGRyaXZlcnMvbmV0L3ZpcnRpb19uZXQuYyB8IDIwICsrKysrKysr
-KystLS0tLS0tLS0tDQo+ID4+Pj4+IMKgwqAgMSBmaWxlIGNoYW5nZWQsIDEwIGluc2VydGlvbnMo
-KyksIDEwIGRlbGV0aW9ucygtKQ0KPiA+Pj4+Pg0KPiA+Pj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy9uZXQvdmlydGlvX25ldC5jIGIvZHJpdmVycy9uZXQvdmlydGlvX25ldC5jDQo+ID4+Pj4+IGlu
-ZGV4DQo+ID4+Pj4+IDliNmE0YTg3NWM1NS4uODk0Zjg5NGQzYTI5IDEwMDY0NA0KPiA+Pj4+PiAt
-LS0gYS9kcml2ZXJzL25ldC92aXJ0aW9fbmV0LmMNCj4gPj4+Pj4gKysrIGIvZHJpdmVycy9uZXQv
-dmlydGlvX25ldC5jDQo+ID4+Pj4+IEBAIC0yNjkxLDcgKzI2OTEsOCBAQCBzdGF0aWMgdm9pZCB2
-aXJ0bmV0X2ZyZWVfcXVldWVzKHN0cnVjdA0KPiA+Pj4+PiB2aXJ0bmV0X2luZm8gKnZpKQ0KPiA+
-Pj4+Pg0KPiA+Pj4+PiDCoMKgwqDCoMKgwqAga2ZyZWUodmktPnJxKTsNCj4gPj4+Pj4gwqDCoMKg
-wqDCoMKgIGtmcmVlKHZpLT5zcSk7DQo+ID4+Pj4+IC3CoMKgwqAga2ZyZWUodmktPmN0cmwpOw0K
-PiA+Pj4+PiArwqDCoMKgIGlmICh2aS0+aGFzX2N2cSkNCj4gPj4+Pj4gK8KgwqDCoMKgwqDCoMKg
-IGtmcmVlKHZpLT5jdHJsKTsNCj4gPj4+Pj4gwqDCoCB9DQo+ID4+Pj4+DQo+ID4+Pj4+IMKgwqAg
-c3RhdGljIHZvaWQgX2ZyZWVfcmVjZWl2ZV9idWZzKHN0cnVjdCB2aXJ0bmV0X2luZm8gKnZpKSBA
-QA0KPiA+Pj4+PiAtMjg3MCwxMw0KPiA+Pj4+PiArMjg3MSw2IEBAIHN0YXRpYyBpbnQgdmlydG5l
-dF9hbGxvY19xdWV1ZXMoc3RydWN0IHZpcnRuZXRfaW5mbw0KPiA+Pj4+PiArKnZpKQ0KPiA+Pj4+
-PiDCoMKgIHsNCj4gPj4+Pj4gwqDCoMKgwqDCoMKgIGludCBpOw0KPiA+Pj4+Pg0KPiA+Pj4+PiAt
-wqDCoMKgIGlmICh2aS0+aGFzX2N2cSkgew0KPiA+Pj4+PiAtwqDCoMKgwqDCoMKgwqAgdmktPmN0
-cmwgPSBremFsbG9jKHNpemVvZigqdmktPmN0cmwpLCBHRlBfS0VSTkVMKTsNCj4gPj4+Pj4gLcKg
-wqDCoMKgwqDCoMKgIGlmICghdmktPmN0cmwpDQo+ID4+Pj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIGdvdG8gZXJyX2N0cmw7DQo+ID4+Pj4+IC3CoMKgwqAgfSBlbHNlIHsNCj4gPj4+Pj4gLcKg
-wqDCoMKgwqDCoMKgIHZpLT5jdHJsID0gTlVMTDsNCj4gPj4+Pj4gLcKgwqDCoCB9DQo+ID4+Pj4+
-IMKgwqDCoMKgwqDCoCB2aS0+c3EgPSBrY2FsbG9jKHZpLT5tYXhfcXVldWVfcGFpcnMsIHNpemVv
-ZigqdmktPnNxKSwNCj4gPj4+Pj4gR0ZQX0tFUk5FTCk7DQo+ID4+Pj4+IMKgwqDCoMKgwqDCoCBp
-ZiAoIXZpLT5zcSkNCj4gPj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBlcnJfc3E7DQo+
-ID4+Pj4+IEBAIC0yODg0LDYgKzI4NzgsMTIgQEAgc3RhdGljIGludCB2aXJ0bmV0X2FsbG9jX3F1
-ZXVlcyhzdHJ1Y3QNCj4gPj4+PiB2aXJ0bmV0X2luZm8gKnZpKQ0KPiA+Pj4+PiDCoMKgwqDCoMKg
-wqAgaWYgKCF2aS0+cnEpDQo+ID4+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgIGdvdG8gZXJyX3Jx
-Ow0KPiA+Pj4+Pg0KPiA+Pj4+PiArwqDCoMKgIGlmICh2aS0+aGFzX2N2cSkgew0KPiA+Pj4+PiAr
-wqDCoMKgwqDCoMKgwqAgdmktPmN0cmwgPSBremFsbG9jKHNpemVvZigqdmktPmN0cmwpLCBHRlBf
-S0VSTkVMKTsNCj4gPj4+Pj4gK8KgwqDCoMKgwqDCoMKgIGlmICghdmktPmN0cmwpDQo+ID4+Pj4+
-ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGdvdG8gZXJyX2N0cmw7DQo+ID4+Pj4+ICvCoMKgwqAg
-fQ0KPiA+Pj4+PiArDQo+ID4+Pj4+IMKgwqDCoMKgwqDCoCBJTklUX0RFTEFZRURfV09SSygmdmkt
-PnJlZmlsbCwgcmVmaWxsX3dvcmspOw0KPiA+Pj4+PiDCoMKgwqDCoMKgwqAgZm9yIChpID0gMDsg
-aSA8IHZpLT5tYXhfcXVldWVfcGFpcnM7IGkrKykgew0KPiA+Pj4+PiDCoMKgwqDCoMKgwqDCoMKg
-wqDCoCB2aS0+cnFbaV0ucGFnZXMgPSBOVUxMOyBAQCAtMjkwMiwxMSArMjkwMiwxMSBAQCBzdGF0
-aWMNCj4gPj4+Pj4gaW50IHZpcnRuZXRfYWxsb2NfcXVldWVzKHN0cnVjdCB2aXJ0bmV0X2luZm8g
-KnZpKQ0KPiA+Pj4+Pg0KPiA+Pj4+PiDCoMKgwqDCoMKgwqAgcmV0dXJuIDA7DQo+ID4+Pj4+DQo+
-ID4+Pj4+ICtlcnJfY3RybDoNCj4gPj4+Pj4gK8KgwqDCoCBrZnJlZSh2aS0+cnEpOw0KPiA+Pj4+
-PiDCoMKgIGVycl9ycToNCj4gPj4+Pj4gwqDCoMKgwqDCoMKgIGtmcmVlKHZpLT5zcSk7DQo+ID4+
-Pj4+IMKgwqAgZXJyX3NxOg0KPiA+Pj4+PiAtwqDCoMKgIGtmcmVlKHZpLT5jdHJsKTsNCj4gPj4+
-Pj4gLWVycl9jdHJsOg0KPiA+Pj4+PiDCoMKgwqDCoMKgwqAgcmV0dXJuIC1FTk9NRU07DQo+ID4+
-Pj4+IMKgwqAgfQ0KPiA+Pj4+Pg0KPiA+DQo=
+The help information is not added when the function is added.
+Here add the missing information to its cli, documentation and bash completion.
+
+Fixes: db94cc0b4805 ("bpftool: Add support for BPF_CGROUP_INET_SOCK_RELEASE")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+---
+v1 -> v2:
+     Add changelog text.
+v2 -> v3:
+     Also change prog cli help info, documentation and bash completion mentioned by Quentin.
+     So the subject was also changed.
+
+ tools/bpf/bpftool/Documentation/bpftool-cgroup.rst | 4 +++-
+ tools/bpf/bpftool/Documentation/bpftool-prog.rst   | 2 +-
+ tools/bpf/bpftool/bash-completion/bpftool          | 6 +++---
+ tools/bpf/bpftool/cgroup.c                         | 3 ++-
+ tools/bpf/bpftool/prog.c                           | 2 +-
+ 5 files changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
+index 790944c35602..baee8591ac76 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
+@@ -30,7 +30,8 @@ CGROUP COMMANDS
+ |	*ATTACH_TYPE* := { **ingress** | **egress** | **sock_create** | **sock_ops** | **device** |
+ |		**bind4** | **bind6** | **post_bind4** | **post_bind6** | **connect4** | **connect6** |
+ |               **getpeername4** | **getpeername6** | **getsockname4** | **getsockname6** | **sendmsg4** |
+-|               **sendmsg6** | **recvmsg4** | **recvmsg6** | **sysctl** | **getsockopt** | **setsockopt** }
++|               **sendmsg6** | **recvmsg4** | **recvmsg6** | **sysctl** | **getsockopt** | **setsockopt** |
++|               **sock_release** }
+ |	*ATTACH_FLAGS* := { **multi** | **override** }
+ 
+ DESCRIPTION
+@@ -106,6 +107,7 @@ DESCRIPTION
+ 		  **getpeername6** call to getpeername(2) for an inet6 socket (since 5.8);
+ 		  **getsockname4** call to getsockname(2) for an inet4 socket (since 5.8);
+ 		  **getsockname6** call to getsockname(2) for an inet6 socket (since 5.8).
++		  **sock_release** closing an userspace inet socket (since 5.9).
+ 
+ 	**bpftool cgroup detach** *CGROUP* *ATTACH_TYPE* *PROG*
+ 		  Detach *PROG* from the cgroup *CGROUP* and attach type
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+index 358c7309d419..fe1b38e7e887 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+@@ -44,7 +44,7 @@ PROG COMMANDS
+ |		**cgroup/connect4** | **cgroup/connect6** | **cgroup/getpeername4** | **cgroup/getpeername6** |
+ |               **cgroup/getsockname4** | **cgroup/getsockname6** | **cgroup/sendmsg4** | **cgroup/sendmsg6** |
+ |		**cgroup/recvmsg4** | **cgroup/recvmsg6** | **cgroup/sysctl** |
+-|		**cgroup/getsockopt** | **cgroup/setsockopt** |
++|		**cgroup/getsockopt** | **cgroup/setsockopt** | **cgroup/sock_release** |
+ |		**struct_ops** | **fentry** | **fexit** | **freplace** | **sk_lookup**
+ |	}
+ |       *ATTACH_TYPE* := {
+diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+index d67518bcbd44..cc33c5824a2f 100644
+--- a/tools/bpf/bpftool/bash-completion/bpftool
++++ b/tools/bpf/bpftool/bash-completion/bpftool
+@@ -478,7 +478,7 @@ _bpftool()
+                                 cgroup/recvmsg4 cgroup/recvmsg6 \
+                                 cgroup/post_bind4 cgroup/post_bind6 \
+                                 cgroup/sysctl cgroup/getsockopt \
+-                                cgroup/setsockopt struct_ops \
++                                cgroup/setsockopt cgroup/sock_release struct_ops \
+                                 fentry fexit freplace sk_lookup" -- \
+                                                    "$cur" ) )
+                             return 0
+@@ -1021,7 +1021,7 @@ _bpftool()
+                         device bind4 bind6 post_bind4 post_bind6 connect4 connect6 \
+                         getpeername4 getpeername6 getsockname4 getsockname6 \
+                         sendmsg4 sendmsg6 recvmsg4 recvmsg6 sysctl getsockopt \
+-                        setsockopt'
++                        setsockopt sock_release'
+                     local ATTACH_FLAGS='multi override'
+                     local PROG_TYPE='id pinned tag name'
+                     case $prev in
+@@ -1032,7 +1032,7 @@ _bpftool()
+                         ingress|egress|sock_create|sock_ops|device|bind4|bind6|\
+                         post_bind4|post_bind6|connect4|connect6|getpeername4|\
+                         getpeername6|getsockname4|getsockname6|sendmsg4|sendmsg6|\
+-                        recvmsg4|recvmsg6|sysctl|getsockopt|setsockopt)
++                        recvmsg4|recvmsg6|sysctl|getsockopt|setsockopt|sock_release)
+                             COMPREPLY=( $( compgen -W "$PROG_TYPE" -- \
+                                 "$cur" ) )
+                             return 0
+diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
+index d901cc1b904a..6e53b1d393f4 100644
+--- a/tools/bpf/bpftool/cgroup.c
++++ b/tools/bpf/bpftool/cgroup.c
+@@ -28,7 +28,8 @@
+ 	"                        connect6 | getpeername4 | getpeername6 |\n"   \
+ 	"                        getsockname4 | getsockname6 | sendmsg4 |\n"   \
+ 	"                        sendmsg6 | recvmsg4 | recvmsg6 |\n"           \
+-	"                        sysctl | getsockopt | setsockopt }"
++	"                        sysctl | getsockopt | setsockopt |\n"	       \
++	"                        sock_release }"
+ 
+ static unsigned int query_flags;
+ 
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index 3f067d2d7584..da4846c9856a 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -2138,7 +2138,7 @@ static int do_help(int argc, char **argv)
+ 		"                 cgroup/getpeername4 | cgroup/getpeername6 |\n"
+ 		"                 cgroup/getsockname4 | cgroup/getsockname6 | cgroup/sendmsg4 |\n"
+ 		"                 cgroup/sendmsg6 | cgroup/recvmsg4 | cgroup/recvmsg6 |\n"
+-		"                 cgroup/getsockopt | cgroup/setsockopt |\n"
++		"                 cgroup/getsockopt | cgroup/setsockopt | cgroup/sock_release |\n"
+ 		"                 struct_ops | fentry | fexit | freplace | sk_lookup }\n"
+ 		"       ATTACH_TYPE := { msg_verdict | stream_verdict | stream_parser |\n"
+ 		"                        flow_dissector }\n"
+-- 
+2.17.1
+
