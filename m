@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6984938FF21
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 12:30:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE51538FF27
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 12:31:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232054AbhEYKcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 06:32:11 -0400
+        id S231905AbhEYKcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 06:32:36 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231865AbhEYKbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 06:31:34 -0400
+        with ESMTP id S231842AbhEYKcI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 06:32:08 -0400
 Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0B0C06138B
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 03:30:04 -0700 (PDT)
-Received: by mail-qv1-xf49.google.com with SMTP id w4-20020a0c8e440000b02901f0640ffdafso25189509qvb.13
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 03:30:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2384BC06134B
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 03:30:08 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id l19-20020a0ce5130000b02901b6795e3304so30048231qvm.2
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 03:30:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=wWp/nYm1O9GCySLh9sjRTVHjweM2mmdgbNbDdbIRZUU=;
-        b=J+KIF9KMrB2aiSad9al7yVc1tXTCu2x9xwcjY9tVaDhG1BBGY7O3LzF9vm2CiX09f/
-         EfBqvUSL+UIl+vYtqqDDQGpXYy1mBk0FI3AMd/sjHuv9Z40jHK8vJxrN+lhPVr/YGLxm
-         omYzvogS8MDiNVSIvFf+KXYcX7wG9SXrw6HKt1ioicvN4zMzoBU9sFp3dCLnKtDMwTSy
-         IEH9uvweKkR2Adkr6ov2I2g4vXnmGolGWCSSIEbDgozNP2IP0aYSU6O8brkmvafsHv9Y
-         2CAeyz1vkok5r/TkYNkLayFgOBHRVEfhYCVdrUOCPv/1jFKLYerT9Bq4eAVuE7NSO4yS
-         fWGg==
+        bh=JQK1EHK4aOakeCprBWj7aKMHOh08lvflh7jGMcWacII=;
+        b=dJgZMfAMc/NW7C1vk8k5bgZAfmX4Ja/MgezxZhsFsc2vGRBBtuwdh5YRMaYbxBb5Ze
+         ohNxUIOK3XGyg3xDonu05+hbskjIrB7ww+0dG2aUnFB2NhAsMlohmxFR/8ZI6MVlIQQJ
+         OSrPiszHyZ0mOIqrbdxZuv9SSNooosasWOIJCdVEHKJk6VV7YTSqUzMEYfsIzbzfwCfY
+         AegO3cSNEWH7jCjS/7Yg8Yi/GwNd4ib/Mg7Miht2mmed54yD0FrtBStoYRsRvseUjcIp
+         HlLuTYlhKkv2V7LnfiJ6ib/kh1bLxxRgflid3ruqklnQPxC+jlFNadBDWzVXuCFMn5QE
+         wM3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=wWp/nYm1O9GCySLh9sjRTVHjweM2mmdgbNbDdbIRZUU=;
-        b=S0htQPsJOQX8PRTuPd+c7NpZjBc4zfSEq5gswvWYoD58ca1kHdelKuwr7g8lma2Xf0
-         yoZ0kFE+vAJJJT8fYhQeu0/zAAnJNNdVFtYGkKsbmRJiyt7ffFoj1RZVj31ySRMcwfpe
-         dGsgw+deqKjdp/BqplSrPkFHcJxViPzIAqq1IsgGmdF38k5Clhjm1v0BNc2OT+61IvLF
-         Bn+uk2FH0l720uwdLXHMgVWVE3G2Fw/ZjzuC/78GpEg75iuo7HykIkiNRq/sAPdd0zm/
-         rH+27FkcXk0wyvTk/aaoN1Xx7vxBEVlHa4MtORyo2j9d9KL6MugY6kidd9nVKQEF5DYe
-         nbcQ==
-X-Gm-Message-State: AOAM533TlBcabhWviJKJ2p+fUScyo6dfvCB3mIFYAkcw0Lkc+cZonnpZ
-        5korCh4Wr8GJHTdHE8OlqVw682Pp68JA
-X-Google-Smtp-Source: ABdhPJw1BeTG0QMP7d5/tolqIPmM+Cf+ZGftbZUwhZIWGzrsNnXQUr7bIEf99EP5MztG3WhgAs0ZQYBXw0sx
+        bh=JQK1EHK4aOakeCprBWj7aKMHOh08lvflh7jGMcWacII=;
+        b=aXZpJJr60uHwKdE6QuA0DBQEro/Tz4cu6NIi3m73ya4VTVNHr3PQ/fJryuyDGe0kfC
+         AtyqUkgsaFD+uCPEz2lT0dWIu7oXorHTSTJ0tPVOHESFKbckqnSusS4prk7lBNc/V8Mp
+         nuTkJOg2whxa4I9uO2JCG9SkAgrR/PlgxX3l5dmdzjT71jJONfbSlM1gwuvvlbj1ctG1
+         fnFQFu/NWtzZbk8r6+B0weAmWHPsCotANx2ouVnz15+Nf2mDv1bhzAEqYDdldXRM8z4k
+         LG/p6f/5YfvLBBbiHgh928LvVPDdcvzZZcfL+KqmHdqbxQEBSHyLTXTisB6KNo81p06V
+         2alA==
+X-Gm-Message-State: AOAM532rljgSsfhPrIQFZdOotq+5HyrBA/raAoTBHAWECQd2UqW0r7fZ
+        ynKm40KGRezx6Ur1mhmPmcL3hncqUre9
+X-Google-Smtp-Source: ABdhPJwNpUGygtLBgz6MEnsU96mYHVIJWIP0Wk1azb58WqTF+GZ5rpkpB/PFe3h+lfupzWd76OYB13UFw8A7
 X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:b:8806:6b98:8ae6:8824])
- (user=apusaka job=sendgmr) by 2002:a05:6214:902:: with SMTP id
- dj2mr36100058qvb.11.1621938603791; Tue, 25 May 2021 03:30:03 -0700 (PDT)
-Date:   Tue, 25 May 2021 18:29:32 +0800
+ (user=apusaka job=sendgmr) by 2002:ad4:4c45:: with SMTP id
+ cs5mr36050943qvb.6.1621938607208; Tue, 25 May 2021 03:30:07 -0700 (PDT)
+Date:   Tue, 25 May 2021 18:29:33 +0800
 In-Reply-To: <20210525102941.3958649-1-apusaka@google.com>
-Message-Id: <20210525182900.3.Icd1fee7b40dcfec866286803065a3d19dd9ca7ed@changeid>
+Message-Id: <20210525182900.4.I12d95340363056b05f656880e3dad40322eab39f@changeid>
 Mime-Version: 1.0
 References: <20210525102941.3958649-1-apusaka@google.com>
 X-Mailer: git-send-email 2.31.1.818.g46aad6cb9e-goog
-Subject: [PATCH 03/12] Bluetooth: use inclusive language to describe CPB
+Subject: [PATCH 04/12] Bluetooth: use inclusive language in HCI LE features
 From:   Archie Pusaka <apusaka@google.com>
 To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
         Marcel Holtmann <marcel@holtmann.org>
@@ -69,154 +69,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Archie Pusaka <apusaka@chromium.org>
 
-Use "central" and "peripheral" to describe the Connectionless
-Peripheral Broadcast feature.
+Use "central" and "peripheral".
 
 Signed-off-by: Archie Pusaka <apusaka@chromium.org>
 Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
 
 ---
 
- include/net/bluetooth/hci.h      | 26 +++++++++++++-------------
- include/net/bluetooth/hci_core.h |  4 ++--
- net/bluetooth/hci_conn.c         |  2 +-
- net/bluetooth/hci_core.c         | 16 ++++++++--------
- 4 files changed, 24 insertions(+), 24 deletions(-)
+ include/net/bluetooth/hci.h |  6 +++---
+ net/bluetooth/hci_event.c   | 14 +++++++-------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index c3efef266d6d..a7cf5a2d87c5 100644
+index a7cf5a2d87c5..441125f6b616 100644
 --- a/include/net/bluetooth/hci.h
 +++ b/include/net/bluetooth/hci.h
-@@ -36,7 +36,7 @@
+@@ -489,7 +489,7 @@ enum {
+ /* LE features */
+ #define HCI_LE_ENCRYPTION		0x01
+ #define HCI_LE_CONN_PARAM_REQ_PROC	0x02
+-#define HCI_LE_SLAVE_FEATURES		0x08
++#define HCI_LE_PERIPHERAL_FEATURES	0x08
+ #define HCI_LE_PING			0x10
+ #define HCI_LE_DATA_LEN_EXT		0x20
+ #define HCI_LE_LL_PRIVACY		0x40
+@@ -498,8 +498,8 @@ enum {
+ #define HCI_LE_PHY_CODED		0x08
+ #define HCI_LE_EXT_ADV			0x10
+ #define HCI_LE_CHAN_SEL_ALG2		0x40
+-#define HCI_LE_CIS_MASTER		0x10
+-#define HCI_LE_CIS_SLAVE		0x20
++#define HCI_LE_CIS_CENTRAL		0x10
++#define HCI_LE_CIS_PERIPHERAL		0x20
  
- #define HCI_MAX_AMP_ASSOC_SIZE	672
+ /* Connection modes */
+ #define HCI_CM_ACTIVE	0x0000
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index e5f3840abd1a..a809e90326d7 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5243,17 +5243,17 @@ static void le_conn_complete_evt(struct hci_dev *hdev, u8 status,
+ 	hci_debugfs_create_conn(conn);
+ 	hci_conn_add_sysfs(conn);
  
--#define HCI_MAX_CSB_DATA_SIZE	252
-+#define HCI_MAX_CPB_DATA_SIZE	252
- 
- /* HCI dev events */
- #define HCI_DEV_REG			1
-@@ -472,10 +472,10 @@ enum {
- #define LMP_EXTFEATURES	0x80
- 
- /* Extended LMP features */
--#define LMP_CSB_MASTER	0x01
--#define LMP_CSB_SLAVE	0x02
--#define LMP_SYNC_TRAIN	0x04
--#define LMP_SYNC_SCAN	0x08
-+#define LMP_CPB_CENTRAL		0x01
-+#define LMP_CPB_PERIPHERAL	0x02
-+#define LMP_SYNC_TRAIN		0x04
-+#define LMP_SYNC_SCAN		0x08
- 
- #define LMP_SC		0x01
- #define LMP_PING	0x02
-@@ -877,17 +877,17 @@ struct hci_rp_logical_link_cancel {
- 	__u8     flow_spec_id;
- } __packed;
- 
--#define HCI_OP_SET_CSB			0x0441
--struct hci_cp_set_csb {
-+#define HCI_OP_SET_CPB			0x0441
-+struct hci_cp_set_cpb {
- 	__u8	enable;
- 	__u8	lt_addr;
- 	__u8	lpo_allowed;
- 	__le16	packet_type;
- 	__le16	interval_min;
- 	__le16	interval_max;
--	__le16	csb_sv_tout;
-+	__le16	cpb_sv_tout;
- } __packed;
--struct hci_rp_set_csb {
-+struct hci_rp_set_cpb {
- 	__u8	status;
- 	__u8	lt_addr;
- 	__le16	interval;
-@@ -1184,14 +1184,14 @@ struct hci_rp_delete_reserved_lt_addr {
- 	__u8	lt_addr;
- } __packed;
- 
--#define HCI_OP_SET_CSB_DATA		0x0c76
--struct hci_cp_set_csb_data {
-+#define HCI_OP_SET_CPB_DATA		0x0c76
-+struct hci_cp_set_cpb_data {
- 	__u8	lt_addr;
- 	__u8	fragment;
- 	__u8	data_length;
--	__u8	data[HCI_MAX_CSB_DATA_SIZE];
-+	__u8	data[HCI_MAX_CPB_DATA_SIZE];
- } __packed;
--struct hci_rp_set_csb_data {
-+struct hci_rp_set_cpb_data {
- 	__u8	status;
- 	__u8	lt_addr;
- } __packed;
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 368e16fdf441..929768f6ed93 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -1394,8 +1394,8 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
- #define lmp_edr_5slot_capable(dev) ((dev)->features[0][5] & LMP_EDR_5SLOT)
- 
- /* ----- Extended LMP capabilities ----- */
--#define lmp_csb_master_capable(dev) ((dev)->features[2][0] & LMP_CSB_MASTER)
--#define lmp_csb_slave_capable(dev)  ((dev)->features[2][0] & LMP_CSB_SLAVE)
-+#define lmp_cpb_central_capable(dev) ((dev)->features[2][0] & LMP_CPB_CENTRAL)
-+#define lmp_cpb_peripheral_capable(dev) ((dev)->features[2][0] & LMP_CPB_PERIPHERAL)
- #define lmp_sync_train_capable(dev) ((dev)->features[2][0] & LMP_SYNC_TRAIN)
- #define lmp_sync_scan_capable(dev)  ((dev)->features[2][0] & LMP_SYNC_SCAN)
- #define lmp_sc_capable(dev)         ((dev)->features[2][1] & LMP_SC)
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 703470b6b924..7b8784d4da96 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -1842,7 +1842,7 @@ u32 hci_conn_get_phy(struct hci_conn *conn)
- 
- 	/* BLUETOOTH CORE SPECIFICATION Version 5.2 | Vol 2, Part B page 471:
- 	 * Table 6.2: Packets defined for synchronous, asynchronous, and
--	 * CSB logical transport types.
-+	 * CPB logical transport types.
+-	/* The remote features procedure is defined for master
++	/* The remote features procedure is defined for central
+ 	 * role only. So only in case of an initiated connection
+ 	 * request the remote features.
+ 	 *
+-	 * If the local controller supports slave-initiated features
+-	 * exchange, then requesting the remote features in slave
++	 * If the local controller supports peripheral-initiated features
++	 * exchange, then requesting the remote features in peripheral
+ 	 * role is possible. Otherwise just transition into the
+ 	 * connected state without requesting the remote features.
  	 */
- 	switch (conn->type) {
- 	case SCO_LINK:
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 4ac6022f7085..b9ebad0f8fb9 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -545,24 +545,24 @@ static void hci_set_event_mask_page_2(struct hci_request *req)
- 	u8 events[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
- 	bool changed = false;
+ 	if (conn->out ||
+-	    (hdev->le_features[0] & HCI_LE_SLAVE_FEATURES)) {
++	    (hdev->le_features[0] & HCI_LE_PERIPHERAL_FEATURES)) {
+ 		struct hci_cp_le_read_remote_features cp;
  
--	/* If Connectionless Slave Broadcast master role is supported
-+	/* If Connectionless Peripheral Broadcast central role is supported
- 	 * enable all necessary events for it.
- 	 */
--	if (lmp_csb_master_capable(hdev)) {
-+	if (lmp_cpb_central_capable(hdev)) {
- 		events[1] |= 0x40;	/* Triggered Clock Capture */
- 		events[1] |= 0x80;	/* Synchronization Train Complete */
--		events[2] |= 0x10;	/* Slave Page Response Timeout */
--		events[2] |= 0x20;	/* CSB Channel Map Change */
-+		events[2] |= 0x10;	/* Peripheral Page Response Timeout */
-+		events[2] |= 0x20;	/* CPB Channel Map Change */
- 		changed = true;
- 	}
+ 		cp.handle = __cpu_to_le16(conn->handle);
+@@ -5774,7 +5774,7 @@ static void hci_le_remote_feat_complete_evt(struct hci_dev *hdev,
+ 		if (conn->state == BT_CONFIG) {
+ 			__u8 status;
  
--	/* If Connectionless Slave Broadcast slave role is supported
-+	/* If Connectionless Peripheral Broadcast peripheral role is supported
- 	 * enable all necessary events for it.
- 	 */
--	if (lmp_csb_slave_capable(hdev)) {
-+	if (lmp_cpb_peripheral_capable(hdev)) {
- 		events[2] |= 0x01;	/* Synchronization Train Received */
--		events[2] |= 0x02;	/* CSB Receive */
--		events[2] |= 0x04;	/* CSB Timeout */
-+		events[2] |= 0x02;	/* CPB Receive */
-+		events[2] |= 0x04;	/* CPB Timeout */
- 		events[2] |= 0x08;	/* Truncated Page Complete */
- 		changed = true;
- 	}
+-			/* If the local controller supports slave-initiated
++			/* If the local controller supports peripheral-initiated
+ 			 * features exchange, but the remote controller does
+ 			 * not, then it is possible that the error code 0x1a
+ 			 * for unsupported remote feature gets returned.
+@@ -5783,8 +5783,8 @@ static void hci_le_remote_feat_complete_evt(struct hci_dev *hdev,
+ 			 * transition into connected state and mark it as
+ 			 * successful.
+ 			 */
+-			if ((hdev->le_features[0] & HCI_LE_SLAVE_FEATURES) &&
+-			    !conn->out && ev->status == 0x1a)
++			if (!conn->out && ev->status == 0x1a &&
++			    (hdev->le_features[0] & HCI_LE_PERIPHERAL_FEATURES))
+ 				status = 0x00;
+ 			else
+ 				status = ev->status;
 -- 
 2.31.1.818.g46aad6cb9e-goog
 
