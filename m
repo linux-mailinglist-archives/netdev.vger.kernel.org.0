@@ -2,148 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF24438F926
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 06:00:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86F0438F933
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 06:06:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230426AbhEYEBi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 25 May 2021 00:01:38 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:21482 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230424AbhEYEB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 00:01:29 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14P3jQrp008069
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 21:00:00 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 38rh3sk3ge-8
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 21:00:00 -0700
-Received: from intmgw006.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 20:59:53 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 3680A2EDBE05; Mon, 24 May 2021 20:59:49 -0700 (PDT)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH v2 bpf-next 5/5] bpftool: set errno on skeleton failures and propagate errors
-Date:   Mon, 24 May 2021 20:59:35 -0700
-Message-ID: <20210525035935.1461796-6-andrii@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210525035935.1461796-1-andrii@kernel.org>
-References: <20210525035935.1461796-1-andrii@kernel.org>
+        id S230240AbhEYEHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 00:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229488AbhEYEHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 00:07:30 -0400
+Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8977BC061574;
+        Mon, 24 May 2021 21:06:01 -0700 (PDT)
+Received: by mail-ua1-x92b.google.com with SMTP id 105so10055760uak.8;
+        Mon, 24 May 2021 21:06:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=ZiDan9dXVGzljGcSZKPfVX7WRo0V+2AqnJOcfMOnQww=;
+        b=D5n2ETATta69U/pKGykggX+cHanHnfSc4MGuc/zzkdsYy0gS2VnxMtN1jTzfC2Xi9b
+         EFP4ml6Jn6LiTajZfcR07sevsMrBTcEdKnczR4wW6T9uNy4GGV+jXmwPjOsUNMsKTl26
+         WoHtHm8NzgE2hQSefNie/YnfJV49fsXeFOa/mDJ/rX9CS9jEtGJ/BYfkB09Ae0brt83G
+         fRFx+tLyEs/6NwTZoVm0mgEeW9QGfz9gt+qId6FIpNpqho98MZxeXNSWRir3f9qQjhE0
+         0KYaqCSpp6uJsAAsFiMBCQdww+sjp+3/mm9suTWZViFs2SaOTZWotbks4mUavRRhimFS
+         dMpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=ZiDan9dXVGzljGcSZKPfVX7WRo0V+2AqnJOcfMOnQww=;
+        b=YOZsgZFr9x8elghWtJl+wwSDHNs3ACusaCsEs1Ig8eJLdYnxrdww3HB72Jx/q3gH0X
+         ZN0Fo/icEQpOLDAyXv+ahccANgByFhXdkz5Jss5tGU99azAfi9OlqrtVa0lu1KxY3tpO
+         AezAB9QSJ9tRI1mUE4vAtOdJex35HG2TpJiYM8AMvYKW+GLd7vlGb5bH73i+1sn+6Nwm
+         1/imo4rhm8e9PipQRMM3YzyMl23pC/HYMKUd+vh9WlsWwzKxOSEqudLzxv6TAoMHwb/o
+         eBghxsq6gooXvFFKybKyOdF6qwqI1eepO/hCuJif+/0xfTWYlNyNGsH6D3iUssvT+J3z
+         1VDw==
+X-Gm-Message-State: AOAM531ZyqdgHr58LO4Wk9m4YN0gH5bKsrWxdjlUwvUDtA44ukv6hm1z
+        oc22w+f9tGF0wKzPSHv9EJhWjbmni5tXpaKQ
+X-Google-Smtp-Source: ABdhPJwFqkNf60V+7GW8tjF1W7eozuZ4lQ0psHNdtj6/sAvFyNl0pQUyYOdFzN7XhjNyoab/aIv01w==
+X-Received: by 2002:ab0:4385:: with SMTP id l5mr24758938ual.76.1621915560802;
+        Mon, 24 May 2021 21:06:00 -0700 (PDT)
+Received: from fedora ([187.252.202.191])
+        by smtp.gmail.com with ESMTPSA id 34sm1336421vkn.53.2021.05.24.21.05.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 May 2021 21:06:00 -0700 (PDT)
+Date:   Mon, 24 May 2021 23:05:58 -0500
+From:   Nigel Christian <nigel.l.christian@gmail.com>
+To:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH] net: bridge: remove redundant assignment
+Message-ID: <YKx3ptXPNbd3Bdiq@fedora>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-X-Proofpoint-GUID: hw74_pnUYeQEKJX4bM19zQmaO1B0jDrv
-X-Proofpoint-ORIG-GUID: hw74_pnUYeQEKJX4bM19zQmaO1B0jDrv
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-05-25_02:2021-05-24,2021-05-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- priorityscore=1501 malwarescore=0 mlxlogscore=999 adultscore=0 bulkscore=0
- impostorscore=0 lowpriorityscore=0 phishscore=0 suspectscore=0 mlxscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2105250024
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Follow libbpf's error handling conventions and pass through errors and errno
-properly. Skeleton code always returned NULL on errors (not ERR_PTR(err)), so
-there are no backwards compatibility concerns. But now we also set errno
-properly, so it's possible to distinguish different reasons for failure, if
-necessary.
+The variable br is assigned a value that is not being read after
+exiting case IFLA_STATS_LINK_XSTATS_SLAVE. The assignment is
+redundant and can be removed.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Addresses-Coverity ("Unused value")
+Signed-off-by: Nigel Christian <nigel.l.christian@gmail.com>
 ---
- tools/bpf/bpftool/gen.c | 27 ++++++++++++++++++---------
- 1 file changed, 18 insertions(+), 9 deletions(-)
+ net/bridge/br_netlink.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-index 13b0aa789178..1d71ff8c52fa 100644
---- a/tools/bpf/bpftool/gen.c
-+++ b/tools/bpf/bpftool/gen.c
-@@ -713,6 +713,7 @@ static int do_skeleton(int argc, char **argv)
- 		#ifndef %2$s						    \n\
- 		#define %2$s						    \n\
- 									    \n\
-+		#include <errno.h>					    \n\
- 		#include <stdlib.h>					    \n\
- 		#include <bpf/libbpf.h>					    \n\
- 									    \n\
-@@ -793,18 +794,23 @@ static int do_skeleton(int argc, char **argv)
- 		%1$s__open_opts(const struct bpf_object_open_opts *opts)    \n\
- 		{							    \n\
- 			struct %1$s *obj;				    \n\
-+			int err;					    \n\
- 									    \n\
- 			obj = (struct %1$s *)calloc(1, sizeof(*obj));	    \n\
--			if (!obj)					    \n\
-+			if (!obj) {					    \n\
-+				errno = ENOMEM;				    \n\
- 				return NULL;				    \n\
--			if (%1$s__create_skeleton(obj))			    \n\
--				goto err;				    \n\
--			if (bpf_object__open_skeleton(obj->skeleton, opts)) \n\
--				goto err;				    \n\
-+			}						    \n\
-+									    \n\
-+			err = %1$s__create_skeleton(obj);		    \n\
-+			err = err ?: bpf_object__open_skeleton(obj->skeleton, opts);\n\
-+			if (err)					    \n\
-+				goto err_out;				    \n\
- 									    \n\
- 			return obj;					    \n\
--		err:							    \n\
-+		err_out:						    \n\
- 			%1$s__destroy(obj);				    \n\
-+			errno = -err;					    \n\
- 			return NULL;					    \n\
- 		}							    \n\
- 									    \n\
-@@ -824,12 +830,15 @@ static int do_skeleton(int argc, char **argv)
- 		%1$s__open_and_load(void)				    \n\
- 		{							    \n\
- 			struct %1$s *obj;				    \n\
-+			int err;					    \n\
- 									    \n\
- 			obj = %1$s__open();				    \n\
- 			if (!obj)					    \n\
- 				return NULL;				    \n\
--			if (%1$s__load(obj)) {				    \n\
-+			err = %1$s__load(obj);				    \n\
-+			if (err) {					    \n\
- 				%1$s__destroy(obj);			    \n\
-+				errno = -err;				    \n\
- 				return NULL;				    \n\
- 			}						    \n\
- 			return obj;					    \n\
-@@ -860,7 +869,7 @@ static int do_skeleton(int argc, char **argv)
- 									    \n\
- 			s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));\n\
- 			if (!s)						    \n\
--				return -1;				    \n\
-+				goto err;				    \n\
- 			obj->skeleton = s;				    \n\
- 									    \n\
- 			s->sz = sizeof(*s);				    \n\
-@@ -949,7 +958,7 @@ static int do_skeleton(int argc, char **argv)
- 			return 0;					    \n\
- 		err:							    \n\
- 			bpf_object__destroy_skeleton(s);		    \n\
--			return -1;					    \n\
-+			return -ENOMEM;					    \n\
- 		}							    \n\
- 									    \n\
- 		#endif /* %s */						    \n\
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index e4e6e991313e..8642e56059fb 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -1644,7 +1644,6 @@ static size_t br_get_linkxstats_size(const struct net_device *dev, int attr)
+ 		p = br_port_get_rtnl(dev);
+ 		if (!p)
+ 			return 0;
+-		br = p->br;
+ 		vg = nbp_vlan_group(p);
+ 		break;
+ 	default:
 -- 
-2.30.2
+2.31.1
 
