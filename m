@@ -2,89 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86F0438F933
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 06:06:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B69C838F93A
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 06:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230240AbhEYEHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 00:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbhEYEHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 00:07:30 -0400
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8977BC061574;
-        Mon, 24 May 2021 21:06:01 -0700 (PDT)
-Received: by mail-ua1-x92b.google.com with SMTP id 105so10055760uak.8;
-        Mon, 24 May 2021 21:06:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=ZiDan9dXVGzljGcSZKPfVX7WRo0V+2AqnJOcfMOnQww=;
-        b=D5n2ETATta69U/pKGykggX+cHanHnfSc4MGuc/zzkdsYy0gS2VnxMtN1jTzfC2Xi9b
-         EFP4ml6Jn6LiTajZfcR07sevsMrBTcEdKnczR4wW6T9uNy4GGV+jXmwPjOsUNMsKTl26
-         WoHtHm8NzgE2hQSefNie/YnfJV49fsXeFOa/mDJ/rX9CS9jEtGJ/BYfkB09Ae0brt83G
-         fRFx+tLyEs/6NwTZoVm0mgEeW9QGfz9gt+qId6FIpNpqho98MZxeXNSWRir3f9qQjhE0
-         0KYaqCSpp6uJsAAsFiMBCQdww+sjp+3/mm9suTWZViFs2SaOTZWotbks4mUavRRhimFS
-         dMpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=ZiDan9dXVGzljGcSZKPfVX7WRo0V+2AqnJOcfMOnQww=;
-        b=YOZsgZFr9x8elghWtJl+wwSDHNs3ACusaCsEs1Ig8eJLdYnxrdww3HB72Jx/q3gH0X
-         ZN0Fo/icEQpOLDAyXv+ahccANgByFhXdkz5Jss5tGU99azAfi9OlqrtVa0lu1KxY3tpO
-         AezAB9QSJ9tRI1mUE4vAtOdJex35HG2TpJiYM8AMvYKW+GLd7vlGb5bH73i+1sn+6Nwm
-         1/imo4rhm8e9PipQRMM3YzyMl23pC/HYMKUd+vh9WlsWwzKxOSEqudLzxv6TAoMHwb/o
-         eBghxsq6gooXvFFKybKyOdF6qwqI1eepO/hCuJif+/0xfTWYlNyNGsH6D3iUssvT+J3z
-         1VDw==
-X-Gm-Message-State: AOAM531ZyqdgHr58LO4Wk9m4YN0gH5bKsrWxdjlUwvUDtA44ukv6hm1z
-        oc22w+f9tGF0wKzPSHv9EJhWjbmni5tXpaKQ
-X-Google-Smtp-Source: ABdhPJwFqkNf60V+7GW8tjF1W7eozuZ4lQ0psHNdtj6/sAvFyNl0pQUyYOdFzN7XhjNyoab/aIv01w==
-X-Received: by 2002:ab0:4385:: with SMTP id l5mr24758938ual.76.1621915560802;
-        Mon, 24 May 2021 21:06:00 -0700 (PDT)
-Received: from fedora ([187.252.202.191])
-        by smtp.gmail.com with ESMTPSA id 34sm1336421vkn.53.2021.05.24.21.05.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 May 2021 21:06:00 -0700 (PDT)
-Date:   Mon, 24 May 2021 23:05:58 -0500
-From:   Nigel Christian <nigel.l.christian@gmail.com>
-To:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH] net: bridge: remove redundant assignment
-Message-ID: <YKx3ptXPNbd3Bdiq@fedora>
+        id S230196AbhEYELj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 00:11:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60076 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229446AbhEYELi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 May 2021 00:11:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 8638060FDA;
+        Tue, 25 May 2021 04:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621915809;
+        bh=F1vsYbd/GlvINyjwQQmr6wnTcRu7kV0sEFCqs1mHRmI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jMvxF+OfdXRZC4tIjdTKj1219nBM+LkpYFZ2p8j6X2iI/KHfJBcW4kwHtl1AxUdNu
+         CEaJjcv0N7hJVb/MljzzNh9zYx/71/J2yc/vFtMWmQw5RsaRNJPvtH0GfUwZMQpD2N
+         8SzSWIIzOQXkLcx5YjvRuOfcVs5L7nQm5PUxWcY6KflrfgLuFFTwKhI6rvD27gXoEx
+         OVEkD/Yg6f8+50xKhfZvofRiPKtOfyqb7LSP3PqGiPiHgBowpkZT4Ric0YJr2NP20Q
+         QCUWElFEIhNxmXIyMl1/zc1a8uX88GaLPN+GZLNWM2LWMivJr0KC8YEMisvrdkTUBX
+         K2G75QeRg/J8A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 781FF60967;
+        Tue, 25 May 2021 04:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] samples: bpf: ix kernel-doc syntax in file header
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162191580948.24013.704618312560321536.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 May 2021 04:10:09 +0000
+References: <20210523151408.22280-1-yashsri421@gmail.com>
+In-Reply-To: <20210523151408.22280-1-yashsri421@gmail.com>
+To:     Aditya Srivastava <yashsri421@gmail.com>
+Cc:     kafai@fb.com, lukas.bulwahn@gmail.com, rdunlap@infradead.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-doc@vger.kernel.org, dledford@redhat.com, jgg@ziepe.ca,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The variable br is assigned a value that is not being read after
-exiting case IFLA_STATS_LINK_XSTATS_SLAVE. The assignment is
-redundant and can be removed.
+Hello:
 
-Addresses-Coverity ("Unused value")
-Signed-off-by: Nigel Christian <nigel.l.christian@gmail.com>
----
- net/bridge/br_netlink.c | 1 -
- 1 file changed, 1 deletion(-)
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
 
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index e4e6e991313e..8642e56059fb 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -1644,7 +1644,6 @@ static size_t br_get_linkxstats_size(const struct net_device *dev, int attr)
- 		p = br_port_get_rtnl(dev);
- 		if (!p)
- 			return 0;
--		br = p->br;
- 		vg = nbp_vlan_group(p);
- 		break;
- 	default:
--- 
-2.31.1
+On Sun, 23 May 2021 20:44:08 +0530 you wrote:
+> The opening comment mark '/**' is used for highlighting the beginning of
+> kernel-doc comments.
+> The header for samples/bpf/ibumad_kern.c follows this syntax, but
+> the content inside does not comply with kernel-doc.
+> 
+> This line was probably not meant for kernel-doc parsing, but is parsed
+> due to the presence of kernel-doc like comment syntax(i.e, '/**'), which
+> causes unexpected warnings from kernel-doc:
+> warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>  * ibumad BPF sample kernel side
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] samples: bpf: ix kernel-doc syntax in file header
+    https://git.kernel.org/bpf/bpf-next/c/4ce7d68beb9e
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
