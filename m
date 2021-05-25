@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A053939059B
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 17:38:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9561839059C
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 17:38:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234215AbhEYPjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 11:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34882 "EHLO
+        id S234239AbhEYPjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 11:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234191AbhEYPja (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 11:39:30 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C4DC061574
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 08:38:01 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id v13so16530592ple.9
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 08:38:01 -0700 (PDT)
+        with ESMTP id S232078AbhEYPjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 11:39:41 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A728C061574
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 08:38:11 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id 22so23514594pfv.11
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 08:38:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=iyubgVIgN9mWbrfZmCC6Zed9u6EAzHTKdSZRiTzxPbo=;
-        b=JDbgGHMaR9As27G2QvnjBTOqKaxUWxn/zRncvZ89Cd6W09eE3Sr79a/QRuKuln/cF1
-         CnLYW04DdCm7gEEiFP5w9nXfKU8oHT1paycq3P8ivyTxg0p2lr90FUBYrzMYTntGdsnS
-         8r0JRkXwXJ4vkHsc7cEJLQwWCnQP1j+eBA3QY=
+        bh=ogsn444GQIucWh30gOBxNOOapMKLZy9nSGJLZxW0+Sk=;
+        b=egaFYLiPTPXLuhx/+ef6YEifISRTpDR/hASJppy70kk1fQOhpGAAPUTy86CwaE8XHg
+         xWUctMrgBHmXjQo012iDZPoH/CQ+RKVyVvougpWKfrdqdmnBeH80xeFXPMmjqdDmKvyS
+         Cx79BrCkVwThXmBxAw193Iw8j+m0mqfPdosoU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=iyubgVIgN9mWbrfZmCC6Zed9u6EAzHTKdSZRiTzxPbo=;
-        b=hUDeTZu+q6ov5QEXzZxdzNu4FKK0kZ52rBebesCCN4oOuIHDdWyt1Zu9pu9OtDBVjA
-         yxsb1UrkiL93kpC8PEDmgMoZ2Cpja+fFFghzT+3QjjkEVmsxdTYBQ5dDnH2N04HqwQo5
-         KBl3dKhC+UJoRPxbOCUOx3AodA4XXMztSbRWKE0yiIaAFfmhntZdTuKyUaaHsWwKPhNU
-         JwgODtB6oeLgJ+S9BPgpsbJKHicn3PgP6HgL8rUZKWJ0+ywVJYd3rd4t6rD6TZ3Y4QYt
-         lQk4Ab+ZcufUyXSoU3Pj2n33YM8y2QhZjYwUiFST7MH64adrJjC3NYqu9zXLSEEe5krG
-         qWtw==
-X-Gm-Message-State: AOAM533C0KvShrVcpI4ydYmSWOjDosdhMoVyqtCk06PU05Og8bcXUx6b
-        X0MGdu+CWA4+Kq+TpzDoGzuMP5Lj4UQvphGG/Cj6F0qbm/pgJApuVB5Wm5MP33mjA9EHE/W8239
-        yWoTHADboGqDCymC7qiPRLZQYMeV8BN/0XD7NuvdUq7dZyGxmiREGkashjmlW0lMieGUU2bEmuW
-        dHcyB1R/Q=
-X-Google-Smtp-Source: ABdhPJxh2cJm3QoDtEpNRfxf6s1wi6sPm4crKmAlQAZw4IoSVMUJ3dm6ZVKJ0gp4rtqlaK7FzK/NrA==
-X-Received: by 2002:a17:903:1c3:b029:f1:ecf4:f971 with SMTP id e3-20020a17090301c3b02900f1ecf4f971mr31180578plh.6.1621957080062;
-        Tue, 25 May 2021 08:38:00 -0700 (PDT)
+        bh=ogsn444GQIucWh30gOBxNOOapMKLZy9nSGJLZxW0+Sk=;
+        b=tWVkxlfsuSo9N7sMFcZ+7gNNqaM77ub0HKEO/d/YloBvuOscxK708NTzJsxCe/tGih
+         vMsst3rZqD7dd4xKXIWnBo2eU2hiILUXf3cXN0wSjOshhfFCzTV7F3ZZ/p7A+3/GZYPJ
+         o6aQEE/+OYhWepOTd64jtbZsjt/b2z/Hmv1x8yLJHeGK8xml9jg2zNQZfF6RSwVfXpS+
+         hqtrRaN0oPmqXFH+y0KapRhMNFwBbt+zbynvTY2sTFnB1s2/iy1K+TuWcBJd2tD/+c82
+         m728jsspD2BebEuQdcTHR4DtoUByS50us5GX1YEBI4Z0B6wk61RorVRfdlKb3NWT7Rw6
+         ahxQ==
+X-Gm-Message-State: AOAM530xKDxKCsbM1X3UT9bgfH0sDi8EDdy+EyhTWHTqjeNxci4PsFrs
+        c4q61d0Ct23h22OwFUOR6K+YCcMpY+dQyjYJiB+xJjJKd7HdIg+qinTxlxWtIcwCNTmQQAQaoFU
+        nA+V6jBjhYGLYmMrkTYaJ+KbgxdkYf8VpGFUEQgcuoZhoGrFf35+G62MOTqxQDXxzYV+AR80WhO
+        d/sOJt+FU=
+X-Google-Smtp-Source: ABdhPJyIZlm+bV4Z0Tb8MvthgcxEf1eB5Q1Y34Dxkni0d4SUXk5BRl96m97JODQXnKemy3GX4K23eQ==
+X-Received: by 2002:a63:d245:: with SMTP id t5mr19462103pgi.172.1621957090623;
+        Tue, 25 May 2021 08:38:10 -0700 (PDT)
 Received: from localhost.localdomain ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id f14sm13388369pjq.50.2021.05.25.08.37.56
+        by smtp.gmail.com with ESMTPSA id f14sm13388369pjq.50.2021.05.25.08.38.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 May 2021 08:37:59 -0700 (PDT)
+        Tue, 25 May 2021 08:38:10 -0700 (PDT)
 From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
 To:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
         Jiri Pirko <jiri@resnulli.us>,
@@ -55,108 +55,137 @@ Cc:     Ilya Lifshits <ilya.lifshits@broadcom.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Davide Caratti <dcaratti@redhat.com>,
         Boris Sukholitko <boris.sukholitko@broadcom.com>
-Subject: [PATCH net-next v2 1/3] net/sched: act_vlan: Fix modify to allow 0
-Date:   Tue, 25 May 2021 18:35:59 +0300
-Message-Id: <20210525153601.6705-2-boris.sukholitko@broadcom.com>
+Subject: [PATCH net-next v2 2/3] net/sched: act_vlan: No dump for unset priority
+Date:   Tue, 25 May 2021 18:36:00 +0300
+Message-Id: <20210525153601.6705-3-boris.sukholitko@broadcom.com>
 X-Mailer: git-send-email 2.29.3
 In-Reply-To: <20210525153601.6705-1-boris.sukholitko@broadcom.com>
 References: <20210525153601.6705-1-boris.sukholitko@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a22fa505c3294f95"
+        boundary="0000000000003fe34105c32950ef"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a22fa505c3294f95
+--0000000000003fe34105c32950ef
 Content-Transfer-Encoding: 8bit
 
-Currently vlan modification action checks existence of vlan priority by
-comparing it to 0. Therefore it is impossible to modify existing vlan
-tag to have priority 0.
+Dump vlan priority only if it has been previously set.
 
-For example, the following tc command will change the vlan id but will
-not affect vlan priority:
+Fix the tests accordingly.
 
-tc filter add dev eth1 ingress matchall action vlan modify id 300 \
-        priority 0 pipe mirred egress redirect dev eth2
-
-The incoming packet on eth1:
-
-ethertype 802.1Q (0x8100), vlan 200, p 4, ethertype IPv4
-
-will be changed to:
-
-ethertype 802.1Q (0x8100), vlan 300, p 4, ethertype IPv4
-
-although the user has intended to have p == 0.
-
-The fix is to add tcfv_push_prio_exists flag to struct tcf_vlan_params
-and rely on it when deciding to set the priority.
-
-Fixes: 45a497f2d149a4a8061c (net/sched: act_vlan: Introduce TCA_VLAN_ACT_MODIFY vlan action)
 Signed-off-by: Boris Sukholitko <boris.sukholitko@broadcom.com>
 ---
- include/net/tc_act/tc_vlan.h | 1 +
- net/sched/act_vlan.c         | 7 +++++--
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ net/sched/act_vlan.c                           |  4 ++--
+ .../tc-testing/tc-tests/actions/vlan.json      | 18 +++++++++---------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/include/net/tc_act/tc_vlan.h b/include/net/tc_act/tc_vlan.h
-index f051046ba034..f94b8bc26f9e 100644
---- a/include/net/tc_act/tc_vlan.h
-+++ b/include/net/tc_act/tc_vlan.h
-@@ -16,6 +16,7 @@ struct tcf_vlan_params {
- 	u16               tcfv_push_vid;
- 	__be16            tcfv_push_proto;
- 	u8                tcfv_push_prio;
-+	bool              tcfv_push_prio_exists;
- 	struct rcu_head   rcu;
- };
- 
 diff --git a/net/sched/act_vlan.c b/net/sched/act_vlan.c
-index 1cac3c6fbb49..cca10b5e99c9 100644
+index cca10b5e99c9..6765096b99b3 100644
 --- a/net/sched/act_vlan.c
 +++ b/net/sched/act_vlan.c
-@@ -70,7 +70,7 @@ static int tcf_vlan_act(struct sk_buff *skb, const struct tc_action *a,
- 		/* replace the vid */
- 		tci = (tci & ~VLAN_VID_MASK) | p->tcfv_push_vid;
- 		/* replace prio bits, if tcfv_push_prio specified */
--		if (p->tcfv_push_prio) {
-+		if (p->tcfv_push_prio_exists) {
- 			tci &= ~VLAN_PRIO_MASK;
- 			tci |= p->tcfv_push_prio << VLAN_PRIO_SHIFT;
- 		}
-@@ -121,6 +121,7 @@ static int tcf_vlan_init(struct net *net, struct nlattr *nla,
- 	struct tc_action_net *tn = net_generic(net, vlan_net_id);
- 	struct nlattr *tb[TCA_VLAN_MAX + 1];
- 	struct tcf_chain *goto_ch = NULL;
-+	bool push_prio_exists = false;
- 	struct tcf_vlan_params *p;
- 	struct tc_vlan *parm;
- 	struct tcf_vlan *v;
-@@ -189,7 +190,8 @@ static int tcf_vlan_init(struct net *net, struct nlattr *nla,
- 			push_proto = htons(ETH_P_8021Q);
- 		}
+@@ -307,8 +307,8 @@ static int tcf_vlan_dump(struct sk_buff *skb, struct tc_action *a,
+ 	    (nla_put_u16(skb, TCA_VLAN_PUSH_VLAN_ID, p->tcfv_push_vid) ||
+ 	     nla_put_be16(skb, TCA_VLAN_PUSH_VLAN_PROTOCOL,
+ 			  p->tcfv_push_proto) ||
+-	     (nla_put_u8(skb, TCA_VLAN_PUSH_VLAN_PRIORITY,
+-					      p->tcfv_push_prio))))
++	     (p->tcfv_push_prio_exists &&
++	      nla_put_u8(skb, TCA_VLAN_PUSH_VLAN_PRIORITY, p->tcfv_push_prio))))
+ 		goto nla_put_failure;
  
--		if (tb[TCA_VLAN_PUSH_VLAN_PRIORITY])
-+		push_prio_exists = !!tb[TCA_VLAN_PUSH_VLAN_PRIORITY];
-+		if (push_prio_exists)
- 			push_prio = nla_get_u8(tb[TCA_VLAN_PUSH_VLAN_PRIORITY]);
- 		break;
- 	case TCA_VLAN_ACT_POP_ETH:
-@@ -241,6 +243,7 @@ static int tcf_vlan_init(struct net *net, struct nlattr *nla,
- 	p->tcfv_action = action;
- 	p->tcfv_push_vid = push_vid;
- 	p->tcfv_push_prio = push_prio;
-+	p->tcfv_push_prio_exists = push_prio_exists;
- 	p->tcfv_push_proto = push_proto;
- 
- 	if (action == TCA_VLAN_ACT_PUSH_ETH) {
+ 	if (p->tcfv_action == TCA_VLAN_ACT_PUSH_ETH) {
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/vlan.json b/tools/testing/selftests/tc-testing/tc-tests/actions/vlan.json
+index 41d783254b08..4675f1c04d17 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/actions/vlan.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/vlan.json
+@@ -297,7 +297,7 @@
+         "cmdUnderTest": "$TC actions add action vlan push id 123 index 18",
+         "expExitCode": "0",
+         "verifyCmd": "$TC actions get action vlan index 18",
+-        "matchPattern": "action order [0-9]+: vlan.*push id 123 protocol 802.1Q priority 0 pipe.*index 18 ref",
++        "matchPattern": "action order [0-9]+: vlan.*push id 123 protocol 802.1Q pipe.*index 18 ref",
+         "matchCount": "1",
+         "teardown": [
+             "$TC actions flush action vlan"
+@@ -345,7 +345,7 @@
+         "cmdUnderTest": "$TC actions add action vlan push id 1024 protocol 802.1AD pass index 10000",
+         "expExitCode": "0",
+         "verifyCmd": "$TC actions get action vlan index 10000",
+-        "matchPattern": "action order [0-9]+: vlan.*push id 1024 protocol 802.1ad priority 0 pass.*index 10000 ref",
++        "matchPattern": "action order [0-9]+: vlan.*push id 1024 protocol 802.1ad pass.*index 10000 ref",
+         "matchCount": "1",
+         "teardown": [
+             "$TC actions flush action vlan"
+@@ -369,7 +369,7 @@
+         "cmdUnderTest": "$TC actions add action vlan push id 4094 index 1",
+         "expExitCode": "0",
+         "verifyCmd": "$TC actions get action vlan index 1",
+-        "matchPattern": "action order [0-9]+: vlan.*push id 4094.*protocol 802.1Q.*priority 0.*index 1 ref",
++        "matchPattern": "action order [0-9]+: vlan.*push id 4094.*protocol 802.1Q.*index 1 ref",
+         "matchCount": "1",
+         "teardown": [
+             "$TC actions flush action vlan"
+@@ -463,7 +463,7 @@
+         "cmdUnderTest": "$TC actions add action vlan modify protocol 802.1Q id 5 index 100",
+         "expExitCode": "0",
+         "verifyCmd": "$TC actions get action vlan index 100",
+-        "matchPattern": "action order [0-9]+: vlan.*modify id 100 protocol 802.1Q priority 0 pipe.*index 100 ref",
++        "matchPattern": "action order [0-9]+: vlan.*modify id 100 protocol 802.1Q pipe.*index 100 ref",
+         "matchCount": "0",
+         "teardown": [
+             "$TC actions flush action vlan"
+@@ -487,7 +487,7 @@
+         "cmdUnderTest": "$TC actions add action vlan modify protocol 802.1ad id 500 reclassify index 12",
+         "expExitCode": "0",
+         "verifyCmd": "$TC actions get action vlan index 12",
+-        "matchPattern": "action order [0-9]+: vlan.*modify id 500 protocol 802.1ad priority 0 reclassify.*index 12 ref",
++        "matchPattern": "action order [0-9]+: vlan.*modify id 500 protocol 802.1ad reclassify.*index 12 ref",
+         "matchCount": "1",
+         "teardown": [
+             "$TC actions flush action vlan"
+@@ -512,7 +512,7 @@
+         "cmdUnderTest": "$TC actions replace action vlan push id 700 pipe index 12",
+         "expExitCode": "0",
+         "verifyCmd": "$TC actions get action vlan index 12",
+-        "matchPattern": "action order [0-9]+: vlan.*push id 700 protocol 802.1Q priority 0 pipe.*index 12 ref",
++        "matchPattern": "action order [0-9]+: vlan.*push id 700 protocol 802.1Q pipe.*index 12 ref",
+         "matchCount": "1",
+         "teardown": [
+             "$TC actions flush action vlan"
+@@ -537,7 +537,7 @@
+         "cmdUnderTest": "$TC actions replace action vlan push id 1 protocol 802.1ad pipe index 1",
+         "expExitCode": "0",
+         "verifyCmd": "$TC actions get action vlan index 1",
+-        "matchPattern": "action order [0-9]+: vlan.*push id 1 protocol 802.1ad priority 0 pipe.*index 1 ref",
++        "matchPattern": "action order [0-9]+: vlan.*push id 1 protocol 802.1ad pipe.*index 1 ref",
+         "matchCount": "1",
+         "teardown": [
+             "$TC actions flush action vlan"
+@@ -635,7 +635,7 @@
+         "cmdUnderTest": "$TC actions del action vlan index 999",
+         "expExitCode": "0",
+         "verifyCmd": "$TC actions list action vlan",
+-        "matchPattern": "action order [0-9]+: vlan.*push id 4094 protocol 802.1Q priority 0 pipe.*index 999 ref",
++        "matchPattern": "action order [0-9]+: vlan.*push id 4094 protocol 802.1Q pipe.*index 999 ref",
+         "matchCount": "0",
+         "teardown": []
+     },
+@@ -708,7 +708,7 @@
+         "cmdUnderTest": "$TC actions replace action vlan push id 500 goto chain 42 index 90 cookie c1a0c1a0",
+         "expExitCode": "255",
+         "verifyCmd": "$TC actions get action vlan index 90",
+-        "matchPattern": "action order [0-9]+: vlan.*push id 500 protocol 802.1Q priority 0 pass.*index 90 ref",
++        "matchPattern": "action order [0-9]+: vlan.*push id 500 protocol 802.1Q pass.*index 90 ref",
+         "matchCount": "1",
+         "teardown": [
+             "$TC actions flush action vlan"
 -- 
 2.29.3
 
 
---000000000000a22fa505c3294f95
+--0000000000003fe34105c32950ef
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -227,14 +256,14 @@ bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
 ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
 ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPVbv9jN8ID/zghB
-qNWy74MMfs1n2IPoOGPWfd7AGuhPMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIxMDUyNTE1MzgwMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMJ/uLx3DTJvsftX
+0L+1LaUEGpKbIJ6Yyy0MLTthAjSOMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIxMDUyNTE1MzgxMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCRd3e/JrDK9QRDUhj0Hq6Hx2VT38ds8l+E
-cu8uc3O6Z51aCRPT6AV56B/0Sm1HujZSNvwbq/dXJepan5iSVkK1G3G1mmux6kCQImRCmEDD766M
-4Y1PxvB8nzHLnGZ2umLlxhtqEauz32CoREXLLTpcwc3WQgcE1v5ZngTg6fDaH4WNosGhPs5JCtbr
-U34VVAB3DCDZEsqV8v/T8hObLQ5nQVWlmXtVgSVSKGiAxIz2WpXb4Ljq6LB7R+70aD7cJs/fSchl
-cD/3uH3xCbZcqdxRi+Y8v7/hWcxSY2S4KgQJ8ScpBgHFcKVO8OAQ9yBLkHun0R/UHmjjt+R74Cja
-7PYE
---000000000000a22fa505c3294f95--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCWsBZ9uKq+DPgV797xwb1jeYFNiJLQC+Dt
+9wfJzuGOPexOHTq3+XPU5s0DJ4060Xe6Z4OdDGazCZzD0miIbU5Rs9+h6xkNJ1Ht9k/e816srMM/
+JjkowBUpxqpIVRBaGZZFDsLyWFVHwxxArA9qKAXis8VXIU0O4SJlWXsgYgEUIWU9IDKNXFlTf9Qz
+Qi85bpYldmlGmoLZ6iQ9mSB/bFIiEyBzKLfBjlXwIl7ocAbDA9NYAYKpqPAnCM5yCHMmVTm526I3
+FNPCPbAcIJQOuRntw6nmcd30u+WN4HODgCjShaMvVUetWXuwKMxFjXLxzLhKg06rBqKe0m0W+U/J
+MBdn
+--0000000000003fe34105c32950ef--
