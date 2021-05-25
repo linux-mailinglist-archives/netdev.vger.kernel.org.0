@@ -2,177 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC8B2390450
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 16:51:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A95B4390518
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 17:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234181AbhEYOxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 10:53:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52570 "EHLO
+        id S234264AbhEYPUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 11:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232939AbhEYOxI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 10:53:08 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD04C061574
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 07:51:39 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id v12so16463910plo.10
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 07:51:39 -0700 (PDT)
+        with ESMTP id S232885AbhEYPTX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 11:19:23 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B0CEC061354;
+        Tue, 25 May 2021 08:17:28 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id v22so30627102oic.2;
+        Tue, 25 May 2021 08:17:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=RSZEkKJrV/LHI7BU/ePLGbBAxE3IeWqvLd7t1iFYGAQ=;
-        b=kl7lwTlvg/r5aaF9+vylxPo7KmxKd0GB+6zAlVvNeZKja7WaFDPDQW/597ulcusmFS
-         xWnk+QF2EIsScu/m0teVPdXTHLhitK7pXUwBWVoYoWDPTa6/K2Bf9Vw4z/3guDqSwIM/
-         F75IpZHg9aL26p3c4f/SRBcvNet6ZeqMywqrVvrgGLL2AI5L6eHHDCkgLRo05nT6llkn
-         +5rzVoAUn9FOgZIF89yA5+gWAfQmljJ5BlMUxS7h5iAqmbV/EiVuCVJUAp5mcHzFYFUT
-         zeBSUJipC9RYEeTfhd2LlVTJvxPXqlsq4zAZ60vi5YV3IFd0BXeLuEXwQpLg7PI0sckq
-         CYGw==
+        bh=CbYbEQtGlD84EODNZdKsXfFlWgmm2XeE09xpe/o0hk8=;
+        b=YKceKAf5IOkI8WPqiq+8cvKV8CrlaKXN5hkYJFg8IyjoG+xoid/qHuBziKHezN7QDH
+         WaQyk/CUTTUzZ5JKJTrE4nBEZv19mmjbkJmWJvQSadv+g+qg1gehZYl4nYmh82/M0dlS
+         d8AjKqbgXKdGCtnsRJzbZ44fAEimGeooIzm+Pc5i/Eh133d2QG2BcwasdQ7aKi8piYxE
+         CdY9C57Hln6QP3nnX/FLumvjdYN3ugVv6V+Rbr9EwP+geVGW1YKaYj1a6VwT3DxRx+2X
+         8zIx9iB34cDO7ZYLASGihMLyAeUAMksdB5wmJwohLBXINLsisp0h4PD/uRAaT2Nj6Kjw
+         9eTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=RSZEkKJrV/LHI7BU/ePLGbBAxE3IeWqvLd7t1iFYGAQ=;
-        b=fHjO9n4qI2fdGQbrGbFifJJix/LNxyioY+sbE4XmLhTH0pTSZUpYy+yMiznFg9FEW1
-         FhkPraQU/KLbQRW/tSH3j7Rp0CzLtdiPG/blendSxGVPgc3OTk/Rd19/d2RBWB9Kt/tG
-         kcAAOmH2Ij9ST+NCMET2LbAq4VukPotRuHnlZkCzeigUpGbp3M0g8IL76xaKMcKr4A23
-         W/3x4ZjawTQEhcmfKDQw43fFyF8zggeco4XSCXpC5XQmo8GYnz31a2ERo7KdMT584ZXd
-         zOqYIfSm+9RAlvDEFsAP5PwOQnJY9veFIbLA7NE5ijh2o0rcv/Mk+VidFttIuO0DmmCx
-         XS7w==
-X-Gm-Message-State: AOAM531jFefrClqddtMi0/d0Xm4l0b9KiQfI+Q4wPQswZGRjhk8lb53h
-        pr4cmtJTOw7q54G1aXCgzTFDXBcFqyDBhSJqWGrIPg==
-X-Google-Smtp-Source: ABdhPJyy9YTHDJiXCElhm3T8qxVioyDQq/zsQCwYlKCOnHRAIUBH8eZ72XmvNEVTCARXULpJdkqqh/X719t7g43kaa0=
-X-Received: by 2002:a17:90a:17ce:: with SMTP id q72mr31465073pja.18.1621954298700;
- Tue, 25 May 2021 07:51:38 -0700 (PDT)
+        bh=CbYbEQtGlD84EODNZdKsXfFlWgmm2XeE09xpe/o0hk8=;
+        b=I6HbBmmkixjWhDtb11tHvHtG1mkFoxLj1lcDGTa/sIB/rz0vv665+R6F67VRN8WC34
+         xZlS+lefVNt3t1tnrKB/JJVvrGDf0O9DE8YjfWnArbAH1wvzqfFkCgUG+Zrs2eNAyhG/
+         CIw2g7/F0vUvKeblY8624xdF+KxAyhw6TFz4lnydm+exBb+zq9Mzmsv+YQqq4n+fWMA9
+         dAuamqRwxEU8roFLTXYtyMeDYHc8PZXTLliO/iMvG7KJb9QrONhuWBbQi0uELOt5Gqgf
+         567qRs0lvlwcyRSIChGnl6aRUeKQVwgvZCOOcMppUyws4RFfDAcsnZGnXNvDjmByZfcY
+         9WlQ==
+X-Gm-Message-State: AOAM532/3hTEiUrIJ7uyCgZdJYr7pBq66i5fPTatWn4qbdbvQcknZWXG
+        9aUsz2twQHVQMR8fGEeLbNu184wrOlw+CbEeUDc=
+X-Google-Smtp-Source: ABdhPJxoPpWBhbgamtW7bCNvhDENQMPFELUvEdXA4vCD7K0lhP24RUKLVN7oaGrDYHC2TxdczIKOh7QYusMliK3IfTA=
+X-Received: by 2002:aca:2102:: with SMTP id 2mr3196288oiz.70.1621955847593;
+ Tue, 25 May 2021 08:17:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210520140158.10132-1-m.chetan.kumar@intel.com>
- <20210520140158.10132-16-m.chetan.kumar@intel.com> <CAMZdPi-Xs00vMq-im_wHnNE5XkhXU1-mOgrNbGnExPbHYAL-rw@mail.gmail.com>
- <90f93c17164a4d8299d17a02b1f15bfa@intel.com> <CAMZdPi_VbLcbVA34Bb3uBGDsDCkN0GjP4HmHUbX95PF9skwe2Q@mail.gmail.com>
- <c7d2dd39e82ada5aa4e4d6741865ecb1198959fe.camel@sipsolutions.net>
-In-Reply-To: <c7d2dd39e82ada5aa4e4d6741865ecb1198959fe.camel@sipsolutions.net>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 25 May 2021 16:59:56 +0200
-Message-ID: <CAMZdPi99Un=AQeUMZUWzudubr2kR6=YciefdaXxYbhebSy+yVQ@mail.gmail.com>
-Subject: Re: [PATCH V3 15/16] net: iosm: net driver
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     "Kumar, M Chetan" <m.chetan.kumar@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
-        linuxwwan <linuxwwan@intel.com>, Dan Williams <dcbw@redhat.com>,
-        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Jakub Kicinski <kuba@kernel.org>
+References: <20210525102941.3958649-1-apusaka@google.com> <CAO1O6sehBfi+Tn6EEC8XgoORrD=JF9zO9tDCbJBgL=JpaBdL2w@mail.gmail.com>
+ <CAJQfnxG1Q=6n4H_kTbFA-=b0Rbs6v7WE8mKKonqvw-nXhLnLMA@mail.gmail.com>
+In-Reply-To: <CAJQfnxG1Q=6n4H_kTbFA-=b0Rbs6v7WE8mKKonqvw-nXhLnLMA@mail.gmail.com>
+From:   Emil Lenngren <emil.lenngren@gmail.com>
+Date:   Tue, 25 May 2021 17:17:17 +0200
+Message-ID: <CAO1O6sdcWY8xt4LHWjSfuunJ3G68rgZ0_hN13iJoA3AA6tksJg@mail.gmail.com>
+Subject: Re: [PATCH 00/12] Bluetooth: use inclusive language
+To:     Archie Pusaka <apusaka@google.com>
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        =?UTF-8?B?T2xlIEJqw7hybiBNaWR0YsO4?= <omidtbo@cisco.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Johannes,
+Hi Archie,
 
-On Tue, 25 May 2021 at 14:55, Johannes Berg <johannes@sipsolutions.net> wrote:
+Den tis 25 maj 2021 kl 16:34 skrev Archie Pusaka <apusaka@google.com>:
 >
-> On Tue, 2021-05-25 at 10:24 +0200, Loic Poulain wrote:
+> Hi Emil,
+>
+> On Tue, 25 May 2021 at 20:19, Emil Lenngren <emil.lenngren@gmail.com> wrote:
+> >
+> > Hi Archie,
+> >
+> > Den tis 25 maj 2021 kl 12:46 skrev Archie Pusaka <apusaka@google.com>:
 > > >
->
-> > > Can you please share us more details on wwan_core changes(if any)/how we should
-> > > use /sys/class/wwan0 for link creation ?
+> > > From: Archie Pusaka <apusaka@chromium.org>
+> > >
+> > > Hi linux-bluetooth maintainers,
+> > >
+> > > This series contains inclusive language patches, to promote usage of
+> > > central, peripheral, reject list, and accept list. I tried to divide
+> > > the change to several smaller patches to ease downstreamers to make
+> > > gradual change.
+> > >
+> > > There are still three occurences in debugfs (patch 09/12) in which the
+> > > original less inclusive terms is still left as-is since it is a
+> > > file name, and I afraid replacing them will cause instability to
+> > > other systems depending on that file name.
+> > >
+> > >
+> > > Archie Pusaka (12):
+> > >   Bluetooth: use inclusive language in HCI role
+> > >   Bluetooth: use inclusive language in hci_core.h
+> > >   Bluetooth: use inclusive language to describe CPB
+> > >   Bluetooth: use inclusive language in HCI LE features
+> > >   Bluetooth: use inclusive language in L2CAP
+> > >   Bluetooth: use inclusive language in RFCOMM
+> > >   Bluetooth: use inclusive language when tracking connections
+> > >   Bluetooth: use inclusive language in SMP
+> > >   Bluetooth: use inclusive language in debugfs
+> > >   Bluetooth: use inclusive language when filtering devices out
+> > >   Bluetooth: use inclusive language when filtering devices in
+> > >   Bluetooth: use inclusive language in comments
+> > >
+> > >  include/net/bluetooth/hci.h      |  98 +++++++++++++-------------
+> > >  include/net/bluetooth/hci_core.h |  22 +++---
+> > >  include/net/bluetooth/l2cap.h    |   2 +-
+> > >  include/net/bluetooth/mgmt.h     |   2 +-
+> > >  include/net/bluetooth/rfcomm.h   |   2 +-
+> > >  net/bluetooth/amp.c              |   2 +-
+> > >  net/bluetooth/hci_conn.c         |  32 ++++-----
+> > >  net/bluetooth/hci_core.c         |  46 ++++++-------
+> > >  net/bluetooth/hci_debugfs.c      |  20 +++---
+> > >  net/bluetooth/hci_event.c        | 114 +++++++++++++++----------------
+> > >  net/bluetooth/hci_request.c      | 106 ++++++++++++++--------------
+> > >  net/bluetooth/hci_sock.c         |  12 ++--
+> > >  net/bluetooth/hidp/core.c        |   2 +-
+> > >  net/bluetooth/l2cap_core.c       |  16 ++---
+> > >  net/bluetooth/l2cap_sock.c       |   4 +-
+> > >  net/bluetooth/mgmt.c             |  36 +++++-----
+> > >  net/bluetooth/rfcomm/sock.c      |   4 +-
+> > >  net/bluetooth/smp.c              |  86 +++++++++++------------
+> > >  net/bluetooth/smp.h              |   6 +-
+> > >  19 files changed, 309 insertions(+), 303 deletions(-)
+> > >
+> > > --
+> > > 2.31.1.818.g46aad6cb9e-goog
+> > >
 > >
-> > Well, move rtnetlink ops to wwan_core (or wwan_rtnetlink), and parse
-> > netlink parameters into the wwan core. Add support for registering
-> > `wwan_ops`, something like:
-> > wwan_register_ops(wwan_ops *ops, struct device *wwan_root_device)
+> > Interesting move and good initiative!
 > >
-> > The ops could be basically:
-> > struct wwan_ops {
-> >     int (*add_intf)(struct device *wwan_root_device, const char *name,
-> > struct wwan_intf_params *params);
-> >     int (*del_intf) ...
-> > }
-> >
-> > Then you could implement your own ops in iosm, with ios_add_intf()
-> > allocating and registering the netdev as you already do.
-> > struct wwan_intf_params would contain parameters of the interface,
-> > like the session_id (and possibly extended later with others, like
-> > checksum offload, etc...).
-> >
-> > What do you think?
+> > In my opinion however, shouldn't we wait until Bluetooth SIG changes
+> > the naming in the specification itself first (or rather push them to
+> > make the changes in the first place)? If they are about to change
+> > names, it would be good to make sure we end up with the same word
+> > choices so that we don't call one thing "le peripheral initiated
+> > feature exchange" while the standard calls it "le follower initiated
+> > feature exchange" or similar. Using different terminology than what's
+> > specified by the standard could easily end up in confusion I guess,
+> > and even more if different stacks invented their own alternative
+> > terminology.
 >
-> Note that I kind of tried this in my version back when:
+> So far the Bluetooth SIG has only published an "Appropriate Language
+> Mapping Table" (https://specificationrefs.bluetooth.com/language-mapping/Appropriate_Language_Mapping_Table.pdf).
+> It doesn't look like it's finalized, but it's enough to get started.
+> Hopefully someone in the community can help to push the changes to the
+> spec?
 >
-> https://lore.kernel.org/netdev/20200225105149.59963c95aa29.Id0e40565452d0d5bb9ce5cc00b8755ec96db8559@changeid/#Z30include:net:wwan.h
+> > In any case, I'm for example not sure if central/peripheral are the
+> > best words to use, since those are tied to a specific higher level
+> > profile (Generic Access Profile) and those words are not mentioned at
+> > all in the spec outside that context. The SMP chapter for example uses
+> > the terminology "initiator" and "responder", so maybe those are better
+> > word choices, at least in SMP.
 >
-> See struct wwan_component_device_ops.
+> Thanks, you are correct about that. I didn't read the spec thoroughly
+> and just did a simple replacement. I shall incorporate your suggestion
+> if this set of patches is greenlighted.
 >
-> I had a different *generic* netlink family rather than rtnetlink ops,
-> but that's mostly an implementation detail. I tend to like genetlink
-> better, but having rtnetlink makes it easier in iproute2 (though it has
-> some generic netlink code too, of course.)
->
-> Nobody really seemed all that interested back then.
->
-> And frankly, I'm really annoyed that while all of this played out we let
-> QMI enter the tree with their home-grown stuff (and dummy netdevs,
-> FWIW), *then* said the IOSM driver has to go to rtnetlink ops like them,
-> instead of what older drivers are doing, and *now* are shifting
-> goalposts again towards something like the framework I started writing
-> early on for the IOSM driver, while the QMI driver was happening, and
-> nobody cared ...
 
-Yes, I guess it's all about timings... At least, I care now...
-I've recently worked on the mhi_net driver, which is basically the
-netdev driver for Qualcomm PCIe modems. MHI being similar to IOSM
-(exposing logical channels over PCI). Like QCOM USB variants, data can
-be transferred in QMAP format (I guess what you call QMI), via the
-`rmnet` link type (setup via iproute2).
+Yeah that document really seems to be "in progress". As you can see,
+they have replaced Srand (slave random, used in SMP) by LP_RAND_R
+(legacy pairing, responder random number) so it seems they thought in
+the same way as I did, at least for SMP. And indeed, as in your patch
+they seem to prefer "central" and "peripheral", even outside GAP.
 
->
-> Yeah, life's not fair and all that, but it does kind of feel like
-> arbitrary shifting of the goal posts, while QMI is already in tree. Of
-> course it's not like we have a competition with them here, but having
-> some help from there would've been nice. Oh well.
->
-> Not that I disagree with any of this, it does technically make sense.
->
-> However, I think at this point it'd be good to see some comments here
-> from DaveM/Jakub that they're going to force Qualcomm to also go down
-> this route, because they're now *heavily* invested in their own APIs,
-> and inventing a framework just for the IOSM driver is fairly pointless.
+So my guess is that we could rename at least the terms that are in
+that list right now, but probably wait with terms not yet present in
+the list. Or patch everything at once when Bluetooth SIG has finished
+the naming. (Note that I'm not a maintainer so someone else will need
+to decide)
 
-This a legitimate point, but it's not too late to do the 'right'
-thing, + It should not be too much change in the IOSM driver.
-
-Regarding Qualcomm, I think it should be possible to fit QCOM Modem
-drivers into that solution. It would consist of creating a simple
-wrapper in QMAP/rmnet so that the rmnet link can (also) be created
-from the kernel side (e.g. from mhi_net driver):
-wwan_new_link() => wwan->add_intf_cb() => mhi_net_add_intf() => rmnet_newlink()
-
-That way mhi_net driver would comply with the new hw agnostic wwan link
-API, without breaking backward compatibility if someone wants to
-explicitly create a rmnet link. Moreover, it could also be applicable
-to USB modems based on MBIM and their VLAN link types.
-
-That's my guess, but maybe I do not have the whole picture and miss
-something... Anyway, I'll not blame the IOSM driver for not doing
-this. But If you decide to go with the wwan link type, I'll do my best
-to adapt that to QCOM mhi_net as well.
-
-> > I also plan to submit a change to add a wwan_register_netdevice()
-> > function (similarly to WiFi cfg80211_register_netdevice), that could
-> > be used instead of register_netdevice(), basically factorizing wwan
-> > netdev registration (add "wwan" dev_type, add sysfs link to the 'wwan'
-> > device...).
->
-> Be careful with that, I tend to think we made some mistakes in this
-> area, look at the recent locking things there. We used to do stuff from
-> a netdev notifier, and that has caused all kinds of pain recently when I
-> reworked the locking to not be so overly dependent on the RTNL all the
-> time (which really has become the new BKL, at least for desktop work,
-> sometimes I can't even type in the UI when the RTNL is blocked). So
-> wwan_register_netdevice() is probably fine, doing netdev notifier I'd
-> now recommend against.
-> But in any case, that's just a side thread.
-
-Sure, thanks for pointing this.
-
-Regards,
-Loic
+/Emil
