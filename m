@@ -2,69 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 063D938F85A
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:53:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1D4138F862
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:57:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbhEYCzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 22:55:13 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55260 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229551AbhEYCzM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 22:55:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=ZfzeKlCyxCpPnbiMw9/yG/htYiywWc4/PMK80zEUDpw=; b=q9
-        v2z1m+zPhaNXS+I5t29W+Dj5hxlSMedTc/AVLCUQlsz8vAzsTQiA5D1/QWIIBPMhDyPa+FJOGtcC9
-        0WgBbpBVvBOOtAQUGr9yQYBu0pgOcM1gXZJqBl2+Vlswh+i8tlXwO5SwHwg+0o24Pi4sArne9ILMF
-        w4tTEJp2EaR8gnM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1llNCN-0064nq-Q0; Tue, 25 May 2021 04:53:39 +0200
-Date:   Tue, 25 May 2021 04:53:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     David Miller <davem@davemloft.net>,
+        id S229975AbhEYC6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 22:58:45 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5767 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229598AbhEYC6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:58:43 -0400
+Received: from dggems702-chm.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FpzDJ6CHHzlXsP;
+        Tue, 25 May 2021 10:53:36 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 25 May 2021 10:57:12 +0800
+Received: from thunder-town.china.huawei.com (10.174.177.72) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 25 May 2021 10:57:11 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "cao88yu@gmail.com" <cao88yu@gmail.com>
-Subject: Re: [PATCH net 3/3] net: dsa: Include tagger overhead when setting
- MTU for DSA and CPU ports
-Message-ID: <YKxms7kAc4sJMU/i@lunn.ch>
-References: <20210524213313.1437891-1-andrew@lunn.ch>
- <20210524213313.1437891-4-andrew@lunn.ch>
- <20210524220400.gwqdwqrju7uzxtqi@skbuf>
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH 0/1] bpf: fix spelling mistakes
+Date:   Tue, 25 May 2021 10:56:58 +0800
+Message-ID: <20210525025659.8898-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.26.0.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210524220400.gwqdwqrju7uzxtqi@skbuf>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.177.72]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 10:04:01PM +0000, Vladimir Oltean wrote:
-> On Mon, May 24, 2021 at 11:33:13PM +0200, Andrew Lunn wrote:
-> > Same members of the Marvell Ethernet switches impose MTU restrictions
-> > on ports used for connecting to the CPU or DSA. If the MTU is set too
-> > low, tagged frames will be discarded. Ensure the tagger overhead is
-> > included in setting the MTU for DSA and CPU ports.
-> > 
-> > Fixes: 1baf0fac10fb ("net: dsa: mv88e6xxx: Use chip-wide max frame size for MTU")
-> > Reported by: 曹煜 <cao88yu@gmail.com>
-> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> > ---
-> 
-> Some switches account for the DSA tag automatically in hardware. So far
-> it has been the convention that if a switch doesn't do that, the driver
-> should, not DSA.
+The files being checked:
+kernel/bpf/
+include/linux/bpf*.h
 
-O.K.
 
-This is going to be a little bit interesting with Tobias's support for
-changing the tag protocol. I need to look at the ordering.
+Zhen Lei (1):
+  bpf: fix spelling mistakes
 
-	 Andrew
+ include/linux/bpf_local_storage.h |  2 +-
+ kernel/bpf/bpf_inode_storage.c    |  2 +-
+ kernel/bpf/btf.c                  |  6 +++---
+ kernel/bpf/devmap.c               |  4 ++--
+ kernel/bpf/hashtab.c              |  4 ++--
+ kernel/bpf/reuseport_array.c      |  2 +-
+ kernel/bpf/trampoline.c           |  2 +-
+ kernel/bpf/verifier.c             | 12 ++++++------
+ 8 files changed, 17 insertions(+), 17 deletions(-)
+
+-- 
+2.25.1
+
+
