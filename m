@@ -2,97 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49D02390BCB
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 23:49:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36079390BEF
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 00:08:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233517AbhEYVul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 17:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34106 "EHLO
+        id S231784AbhEYWJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 18:09:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbhEYVuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 17:50:37 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF08C061574
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 14:49:07 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id v12so17059228plo.10
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 14:49:07 -0700 (PDT)
+        with ESMTP id S231259AbhEYWJt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 18:09:49 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFF4C061574;
+        Tue, 25 May 2021 15:08:17 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id a4so25368078ljd.5;
+        Tue, 25 May 2021 15:08:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6svW/oDWDLT98MDexEuspJdEoNNdZul4DrRipuY5RVQ=;
-        b=atSYYtWL0AUCDt/27/JfGmlkbqLnUdSUO5IF0zy8iRkxpZtupXcBGE4Nq7UxCfCz9W
-         m2chTy5lm9j4Sqtk1UDQt5D5xw3hWmtIbg0b2i7p4LwBPCrg5HYT0Mm5bn6D1IFip/61
-         hGLbR+NSchDeWb268LedSnYoQ+g/5HHPOXTdyhURrbkPUwS0uZFCUDJ9qeYvV9M6ozpe
-         h7lCtufR28Et5wesDt1SPcxgeUrBt3zm4W+G8nfEbCaJlVNTFG4NgJnWPuuqt64bmJfR
-         6YggqK+5FZn7u52qW+cyjswlkrXmPzzq0S4SVlBRufTnqgi8obBKvufKRhdu6UKf0XMc
-         wKtg==
+        bh=NFQ49N6qTWmXXrGPw3/fc7Xbi2xYT9elSH2AHt3mXAw=;
+        b=H+cp/bw/YxtakzZMG6Ghq9Ktkx83KHZBHBHLvdBv3AQTWf5ykBRurlCtp9XSsaXXy8
+         7Op2zkWjK5nz5/ndtQZW02C+9H2ljPxpOTNaUYjMyIObRmHKfCoKT1MUhmoLRNpqgBd/
+         W1MVaN++7gY1fjly7sE3LRCkYHMcEWiGkg367xtMGg3a1X70yezLBnyiw2NfaQ9cd0cx
+         gfr7DmX/stTvlHjA/VPRmzsnfvav0tEfpzZK1g7lMHRzhwOTU9sCIAVdZZ4pf2yaulzb
+         rFS0zokDQMmhtceJjCPmrC7+rYaSTZURKPYt94XcaN6HMNop8CkCInj3t28X1NIWjh3C
+         wkZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6svW/oDWDLT98MDexEuspJdEoNNdZul4DrRipuY5RVQ=;
-        b=iXbWvlyuWkgdSSNsEaIgP8HAb9BvOFSP43mI49n2lUBmCocCUGyK8CFn3w8W6Grpni
-         hSQWuDFKvS7DwZa5rfQHYaJ8mquCZHWAPoU4eLV205gdtZ/wYhTodbWMFyhhCXQkYGqC
-         ZWYK/rVP/6k6pczAUO7HIqai8ixwyOcjchCJu71HiqnhjgQC/mWJEeGEFhdaHE7nn+Wp
-         kzsAt6tju1R/IMWlFdBee8OIGzz/XU6K6HfxSxTZrYgy7wNJJtIMQtHyB8YLrOk3CBHA
-         /4QyxfV5Bha1Mexko0C9JqWl9P4/a/aRg52EKy8jRRuDjGdvSvFzjm5MH5bo/a+p6htS
-         igEg==
-X-Gm-Message-State: AOAM5329C1bmfEab/qaFdcmMKR85kzBy1RPUABHWed8A30gEqpSEb6dq
-        chdiMBVjCPvPjXKwZsPRJ0+cbrQY8tE2/GKSZOCbq4Uixr0/RQ==
-X-Google-Smtp-Source: ABdhPJyOPqPO+N91L9xZk5aue8Z3SjnR7AFuwI34gLOl65u5EdLCUP/FZWIZkNy9F1oftDZeFzewpcddpKzjmc9pbEo=
-X-Received: by 2002:a17:902:a60a:b029:f0:ad94:70bf with SMTP id
- u10-20020a170902a60ab02900f0ad9470bfmr32612502plq.31.1621979346580; Tue, 25
- May 2021 14:49:06 -0700 (PDT)
+        bh=NFQ49N6qTWmXXrGPw3/fc7Xbi2xYT9elSH2AHt3mXAw=;
+        b=Rqn51tMjBppuoypqggChrVKNTO1h8Mm6ypox/NUlNG5+6DGtscewXrBInqsFZ/4iGB
+         L3/lv4dUU+JbOXJzJJ846jhtYhEKHrRJiVvKwVBcaQ1MRG75quYMBw7he/TP77TJJg+0
+         djVsB38KS7dwuVBTmFqCRpO4liZ4VfSMm1QAy/isjfNYYOSj4YIAg51l5tXB3+6bqt7s
+         Mna5japrV5dWf/e9zHxlP1+MOWzmgfcK7rLCSuWv4dKoJ5TgTjTLQfNjay7rzQVXFNkL
+         IgvhK9Cae0rBtFftmtrwPUnosuwQWJ8DoSmx9Ed4/J81ViNpUe11StGmE1iI64xQsmGU
+         pISA==
+X-Gm-Message-State: AOAM531XiZh8yQZD8GwJD9VqWky6MKbcHjyymbFBwxmD5mAHD5ZZq7OU
+        lKODsCFmGjDS9C/JVdsXsi+/MMlPDB1NLyLxonI=
+X-Google-Smtp-Source: ABdhPJycoM/bsQGaHQtbch9Vg1YSBr4FtbzK4fbCSBnD/XBUHiKCq+xf69aTxLh4A/pxBe9kb5z7pwOkrNhX82nOLP8=
+X-Received: by 2002:a2e:b610:: with SMTP id r16mr21718411ljn.486.1621980496071;
+ Tue, 25 May 2021 15:08:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210525132152.2589420-1-vladbu@nvidia.com>
-In-Reply-To: <20210525132152.2589420-1-vladbu@nvidia.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 25 May 2021 14:48:55 -0700
-Message-ID: <CAM_iQpUtGw5MO0DAWkVuHP7PU-iSkmEsBWa+SkCqiZtB3eeSoQ@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: zero-initialize tc skb extension on allocation
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Florian Westphal <fw@strlen.de>, wenxu <wenxu@ucloud.cn>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
+ <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
+ <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
+ <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
+ <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
+ <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
+ <bcbf76c3-34d4-d550-1648-02eda587ccd7@mojatatu.com> <CAADnVQLWj-=B2TfJp7HEsiUY3rqmd6-YMDAGdyL6RgZ=_b2CXg@mail.gmail.com>
+ <27dae780-b66b-4ee9-cff1-a3257e42070e@mojatatu.com>
+In-Reply-To: <27dae780-b66b-4ee9-cff1-a3257e42070e@mojatatu.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 25 May 2021 15:08:04 -0700
+Message-ID: <CAADnVQJq37Xi2bHBG5L+DmMq6dJvFUCE3tt+uC-oAKX3WxcCQg@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
+        Pedro Tammela <pctammela@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 25, 2021 at 6:22 AM Vlad Buslov <vladbu@nvidia.com> wrote:
+On Tue, May 25, 2021 at 2:09 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 >
-> Function skb_ext_add() doesn't initialize created skb extension with any
-> value and leaves it up to the user. However, since extension of type
-> TC_SKB_EXT originally contained only single value tc_skb_ext->chain its
-> users used to just assign the chain value without setting whole extension
-> memory to zero first. This assumption changed when TC_SKB_EXT extension was
-> extended with additional fields but not all users were updated to
-> initialize the new fields which leads to use of uninitialized memory
-> afterwards. UBSAN log:
-
-Hm, I thought the memset() in __skb_ext_alloc() does the job, clearly
-I was wrong.
-
-[...]
+> On 2021-05-25 3:57 p.m., Alexei Starovoitov wrote:
+> > On Tue, May 25, 2021 at 12:35 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 >
-> Fix the issue by providing new function tc_skb_ext_alloc() that allocates
-> tc skb extension and initializes its memory to 0 before returning it to the
-> caller. Change all existing users to use new API instead of calling
-> skb_ext_add() directly.
-
-Just a note: struct tc_skb_ext is currently only 8-byte long, so memset()
-it should not be a problem for performance.
-
+> [..]
+> > The outcome of the last bpf office hours was a general agreement
+> > that we need new hooks in map update/delete operations
+> > (including auto-delete by LRU) that will trigger a bpf subprog.
 >
-> Fixes: 038ebb1a713d ("net/sched: act_ct: fix miss set mru for ovs after defrag in act_ct")
-> Fixes: d29334c15d33 ("net/sched: act_api: fix miss set post_ct for ovs after do conntrack in act_ct")
-> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+> This is certainly a useful feature (for other reasons as well).
+> Does this include create/update/delete issued from user space?
 
-Acked-by: Cong Wang <cong.wang@bytedance.com>
+Right. Any kind of update/delete and create is a subset of update.
+The lookup is not included (yet or may be ever) since it doesn't
+have deterministic start/end points.
+The prog can do a lookup and update values in place while
+holding on the element until prog execution ends.
 
-Thanks.
+While update/delete have precise points in hash/lru/lpm maps.
+Array is a different story.
+
+> > It might look very similar to the timer callback that is part of this patch,
+> > but instead of being called by the timer the LRU logic will call it.
+> > This way the subprog can transfer the data stored in the
+> > about-to-be-deleted map element into some other map or pass
+> > to user space via ringbuf or do any other logic.
+> >
+>
+> The challenge we have in this case is LRU makes the decision
+> which entry to victimize. We do have some entries we want to
+> keep longer - even if they are not seeing a lot of activity.
+
+Right. That's certainly an argument to make LRU eviction
+logic programmable.
+John/Joe/Daniel proposed it as a concept long ago.
+Design ideas are in demand to make further progress here :)
+
+> You could just notify user space to re-add the entry but then
+> you have sync challenges.
+> The timers do provide us a way to implement custom GC.
+
+My point is that time is always going to be a heuristic that will
+break under certain traffic conditions.
+I recommend to focus development effort on creating
+building blocks that are truly great instead of reimplementing
+old ideas in bpf with all of their shortcomings.
+
+> So a question (which may have already been discussed),
+> assuming the following setup:
+> - 2 programs a) Ingress b) egress
+> - sharing a conntrack map which and said map pinned.
+> - a timer prog (with a map with just timers;
+>     even a single timer would be enough in some cases).
+>
+> ingress and egress do std stuff like create/update
+> timer prog does the deletes. For simplicity sake assume
+> we just have one timer that does a foreach and iterates
+> all entries.
+>
+> What happens when both ingress and egress are ejected?
+
+What is 'ejected'? Like a CD? ;)
+I think you mean 'detached' ?
+and then, I assume, the user space doesn't hold to prog FD?
+The kernel can choose to do different things with the timer here.
+One option is to cancel the outstanding timers and unload
+.text where the timer callback lives.
+Another option is to let the timer stay armed and auto unload
+.text of bpf function when it finishes executing.
+If timer callback decides to re-arm itself it can continue
+executing indefinitely.
+This patch is doing the latter.
+There could be a combination of both options.
+All options have their pros/cons.
