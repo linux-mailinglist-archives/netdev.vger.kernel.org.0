@@ -2,61 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9054038FF7F
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 12:46:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0887038FF8D
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 12:52:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230514AbhEYKrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 06:47:53 -0400
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:44398 "EHLO
+        id S231474AbhEYKyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 06:54:22 -0400
+Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:54024 "EHLO
         out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229968AbhEYKrw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 06:47:52 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R551e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Ua4PKOY_1621939578;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0Ua4PKOY_1621939578)
+        by vger.kernel.org with ESMTP id S229541AbhEYKyU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 06:54:20 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Ua4WxO9_1621939968;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0Ua4WxO9_1621939968)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 25 May 2021 18:46:20 +0800
+          Tue, 25 May 2021 18:52:49 +0800
 From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, kvalo@codeaurora.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
-Subject: [PATCH] ath10k: Fix an error code in ath10k_add_interface()
-Date:   Tue, 25 May 2021 18:46:17 +0800
-Message-Id: <1621939577-62218-1-git-send-email-yang.lee@linux.alibaba.com>
+To:     yisen.zhuang@huawei.com
+Cc:     salil.mehta@huawei.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yang Li <yang.lee@linux.alibaba.com>
+Subject: [PATCH] net: hns: Fix kernel-doc
+Date:   Tue, 25 May 2021 18:52:47 +0800
+Message-Id: <1621939967-67560-1-git-send-email-yang.lee@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the code execute this if statement, the value of ret is 0. 
-However, we can see from the ath10k_warn() log that the value of 
-ret should be -EINVAL.
+Fix function name in hns_ethtool.c kernel-doc comment
+to remove these warnings found by clang_w1.
 
-Clean up smatch warning:
-
-drivers/net/wireless/ath/ath10k/mac.c:5596 ath10k_add_interface() warn:
-missing error code 'ret'
+drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:202: warning: expecting
+prototype for hns_nic_set_link_settings(). Prototype was for
+hns_nic_set_link_ksettings() instead.
+drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:837: warning: expecting
+prototype for get_ethtool_stats(). Prototype was for
+hns_get_ethtool_stats() instead.
+drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:894: warning:
+expecting prototype for get_strings(). Prototype was for
+hns_get_strings() instead.
 
 Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Fixes: 'commit ccec9038c721 ("ath10k: enable raw encap mode and software
-crypto engine")'
+Fixes: 'commit 262b38cdb3e4 ("net: ethernet: hisilicon: hns: use phydev
+from struct net_device")'
 Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/hisilicon/hns/hns_ethtool.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 5ce4f8d..c272b29 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -5592,6 +5592,7 @@ static int ath10k_add_interface(struct ieee80211_hw *hw,
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c b/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
+index da48c05..7e62dcf 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
+@@ -192,7 +192,7 @@ static int hns_nic_get_link_ksettings(struct net_device *net_dev,
+ }
  
- 	if (arvif->nohwcrypt &&
- 	    !test_bit(ATH10K_FLAG_RAW_MODE, &ar->dev_flags)) {
-+		ret = -EINVAL;
- 		ath10k_warn(ar, "cryptmode module param needed for sw crypto\n");
- 		goto err;
- 	}
+ /**
+- *hns_nic_set_link_settings - implement ethtool set link ksettings
++ *hns_nic_set_link_ksettings - implement ethtool set link ksettings
+  *@net_dev: net_device
+  *@cmd: ethtool_link_ksettings
+  *retuen 0 - success , negative --fail
+@@ -827,7 +827,7 @@ static int hns_set_coalesce(struct net_device *net_dev,
+ }
+ 
+ /**
+- * get_ethtool_stats - get detail statistics.
++ * hns_get_ethtool_stats - get detail statistics.
+  * @netdev: net device
+  * @stats: statistics info.
+  * @data: statistics data.
+@@ -885,7 +885,7 @@ static void hns_get_ethtool_stats(struct net_device *netdev,
+ }
+ 
+ /**
+- * get_strings: Return a set of strings that describe the requested objects
++ * hns_get_strings: Return a set of strings that describe the requested objects
+  * @netdev: net device
+  * @stringset: string set ID.
+  * @data: objects data.
 -- 
 1.8.3.1
 
