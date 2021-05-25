@@ -2,77 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CC9C3907BA
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 19:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 347663907F3
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 19:39:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233672AbhEYRcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 13:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230141AbhEYRcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 13:32:14 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2440EC061574;
-        Tue, 25 May 2021 10:30:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=cGt+P5ew3IFNE7E+SH0yQkvgOG7FPUZVJvyaJoyaAFs=; b=MyuOh7i+BatRFVc1QmN8obYn30
-        1vvZFrsrousSwI5KS2xXibVoOlgK33GOlPMTV0Tl/H+L0uoBWkrQPz2FuZOmQfPNJxHVSBs5PIVSv
-        fNH329+jvQZVivZWKCN8k55VP+ikPi9kWdTVDIHcF87tjKTyGPqtodhgm+Hg+pIpMfqroSnjFGnMY
-        UIL4yOG20Wbj3TQ1VzNc6psDbVF6b4/lh5mVfMjdquZFDuLZLvTp6Oq+VN+9+VehyNQ1IcEwAzziP
-        G1TJwDd+oWZKOYPvPplIgckm0Q83lGiXK5prPy8asIyOOYfaC/ixYOX1FizHY7uKiUQmjAkOroSqc
-        cVDK4o2w==;
-Received: from [2601:1c0:6280:3f0::7376]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1llat8-006tJy-Qe; Tue, 25 May 2021 17:30:42 +0000
-Subject: Re: linux-next: Tree for May 18 (kernel/bpf/bpf_lsm.o)
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        id S229976AbhEYRkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 13:40:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60460 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229952AbhEYRkq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 May 2021 13:40:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4F5F361378;
+        Tue, 25 May 2021 17:39:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1621964356;
+        bh=6txZc6xzIfFSafm6MIKLC+Nq7ol4S6KvT6xgzKMFftA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K+dS7sPyyWRjaKFU9qEwnL1/3XQ5sSMYWSUQCP+A7HFrQh+Vzwj4hc8qxlc3nVbXd
+         h8cTs6HLz14hI6AKxRfVYmnH/0dLRgq2C2rXA1AgEETfJY2XhmKBJNEebnkDvhGEpf
+         rNGp40XEU7Rp3qPf6UuPdUdBv22xMxJesEWVdQEonN0yxeel/yBKgOPG2yWqYS1Kun
+         yZyFmwvFKbq+j++cFi4hh5cG60FsIicaa5HaNZgcdTgRcFrIcTaqxZCiv/xziAkS75
+         Xqz7f2zC2cvfD+epEJMF07QJM//LY0wMojIo5bb28Ej787AqFi//fNv4VfqveQxSoI
+         +H9rEjkMDNzew==
+Date:   Tue, 25 May 2021 10:39:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-References: <20210518192729.3131eab0@canb.auug.org.au>
- <f816246b-1136-cf00-ff47-554d40ecfb38@infradead.org>
-Message-ID: <7955d9e2-a584-1693-749a-5983187e0306@infradead.org>
-Date:   Tue, 25 May 2021 10:30:41 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        "David S. Miller" <davem@davemloft.net>,
+        "Aviad Yehezkel" <aviadye@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net 2/2] net/tls: Fix use-after-free after the TLS
+ device goes down and up
+Message-ID: <20210525103915.05264e8c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210524121220.1577321-3-maximmi@nvidia.com>
+References: <20210524121220.1577321-1-maximmi@nvidia.com>
+        <20210524121220.1577321-3-maximmi@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <f816246b-1136-cf00-ff47-554d40ecfb38@infradead.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/18/21 10:02 AM, Randy Dunlap wrote:
-> On 5/18/21 2:27 AM, Stephen Rothwell wrote:
->> Hi all,
->>
->> Changes since 20210514:
->>
+On Mon, 24 May 2021 15:12:20 +0300 Maxim Mikityanskiy wrote:
+> When a netdev with active TLS offload goes down, tls_device_down is
+> called to stop the offload and tear down the TLS context. However, the
+> socket stays alive, and it still points to the TLS context, which is now
+> deallocated. If a netdev goes up, while the connection is still active,
+> and the data flow resumes after a number of TCP retransmissions, it will
+> lead to a use-after-free of the TLS context.
 > 
-> on i386:
-> # CONFIG_NET is not set
+> This commit addresses this bug by keeping the context alive until its
+> normal destruction, and implements the necessary fallbacks, so that the
+> connection can resume in software (non-offloaded) kTLS mode.
 > 
-> ld: kernel/bpf/bpf_lsm.o: in function `bpf_lsm_func_proto':
-> bpf_lsm.c:(.text+0x1a0): undefined reference to `bpf_sk_storage_get_proto'
-> ld: bpf_lsm.c:(.text+0x1b8): undefined reference to `bpf_sk_storage_delete_proto'
+> On the TX side tls_sw_fallback is used to encrypt all packets. The RX
+> side already has all the necessary fallbacks, because receiving
+> non-decrypted packets is supported. The thing needed on the RX side is
+> to block resync requests, which are normally produced after receiving
+> non-decrypted packets.
 > 
+> The necessary synchronization is implemented for a graceful teardown:
+> first the fallbacks are deployed, then the driver resources are released
+> (it used to be possible to have a tls_dev_resync after tls_dev_del).
 > 
-> Full randconfig file is attached.
+> A new flag called TLS_RX_DEV_DEGRADED is added to indicate the fallback
+> mode. It's used to skip the RX resync logic completely, as it becomes
+> useless, and some objects may be released (for example, resync_async,
+> which is allocated and freed by the driver).
 > 
+> Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
+> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 
-Hi,
-I am still seeing this build error in linux-next-20210525.
+> @@ -961,6 +964,17 @@ int tls_device_decrypted(struct sock *sk, struct tls_context *tls_ctx,
+>  
+>  	ctx->sw.decrypted |= is_decrypted;
+>  
+> +	if (unlikely(test_bit(TLS_RX_DEV_DEGRADED, &tls_ctx->flags))) {
 
--- 
-~Randy
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Why not put the check in tls_device_core_ctrl_rx_resync()?
+Would be less code, right?
+
+> +		if (likely(is_encrypted || is_decrypted))
+> +			return 0;
+> +
+> +		/* After tls_device_down disables the offload, the next SKB will
+> +		 * likely have initial fragments decrypted, and final ones not
+> +		 * decrypted. We need to reencrypt that single SKB.
+> +		 */
+> +		return tls_device_reencrypt(sk, skb);
+> +	}
+> +
+>  	/* Return immediately if the record is either entirely plaintext or
+>  	 * entirely ciphertext. Otherwise handle reencrypt partially decrypted
+>  	 * record.
+
 
