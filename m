@@ -2,94 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F92A390BC3
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 23:46:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49D02390BCB
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 23:49:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233492AbhEYVsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 17:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33536 "EHLO
+        id S233517AbhEYVul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 17:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbhEYVsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 17:48:06 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3419C061574;
-        Tue, 25 May 2021 14:46:34 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id c196so23505096oib.9;
-        Tue, 25 May 2021 14:46:34 -0700 (PDT)
+        with ESMTP id S229610AbhEYVuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 17:50:37 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF08C061574
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 14:49:07 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id v12so17059228plo.10
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 14:49:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=WrsMci1wux9x4oI1lZdnvMAiZAs7nx/+sDW4BJc2oWA=;
-        b=Si4cDta1BaFLKWOnZTfednW3oPeIYwPrAYErfx/uBNx8GOYakG4Rdi62QgD2+KXZD6
-         WTmG0nmBb3Ali1rDDWc4iuNpvDoUJR4K+P11tAEG3GYah+CmkTQ+ssA1L3Bk7EAvb/ba
-         UnK9IGRnhRLL1xXh8R4+N7CxFLYD79BDD5zlNJZJtov6JoJXfxJoQDSCYSG2iyCDJty8
-         kQF0v5CE4Aj+S5vYZs0X1KnHyfoLq6tWQpzRFcQpI83hJTq53MyddUxpDprQke1jhet1
-         +yIOElA0LcutYsh7XSW5Oe8R4Jlm7Pf0ibc8wP6+OYNPkehesVaURecbs3nlBViVRBwt
-         DeUQ==
+        bh=6svW/oDWDLT98MDexEuspJdEoNNdZul4DrRipuY5RVQ=;
+        b=atSYYtWL0AUCDt/27/JfGmlkbqLnUdSUO5IF0zy8iRkxpZtupXcBGE4Nq7UxCfCz9W
+         m2chTy5lm9j4Sqtk1UDQt5D5xw3hWmtIbg0b2i7p4LwBPCrg5HYT0Mm5bn6D1IFip/61
+         hGLbR+NSchDeWb268LedSnYoQ+g/5HHPOXTdyhURrbkPUwS0uZFCUDJ9qeYvV9M6ozpe
+         h7lCtufR28Et5wesDt1SPcxgeUrBt3zm4W+G8nfEbCaJlVNTFG4NgJnWPuuqt64bmJfR
+         6YggqK+5FZn7u52qW+cyjswlkrXmPzzq0S4SVlBRufTnqgi8obBKvufKRhdu6UKf0XMc
+         wKtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=WrsMci1wux9x4oI1lZdnvMAiZAs7nx/+sDW4BJc2oWA=;
-        b=UblDXCvPKo83cLxn+o7fOTKuh4oZWIHSA4dR1Ncq/GKpzyWj4o+3CTepM7OADiS4go
-         MuBa0Lsr6KAnLwCcMp2tnwXkRRWqpMlUoL7XRFjICPKhVkprXXV7Tn24LuMccZ2HnHMO
-         lwIOd1WGei9lxEy8RWAW/iu29GcvoL+j0oOsl6pE/2dSp4m8LtND5KKsG9aDeTvPnGq7
-         NHyxIyiNxZCNF/tOpe6bfo/o8Qes7lZd1s9BpkDcx5VJs8zVcP12IzYz+jpiCemSbdO4
-         y2lIADORs8XvsagfZFP67krcOC2hQKBvb99b61IoqZyRfZf3okRO3x9lwvEqABTh2Q1Q
-         CoNA==
-X-Gm-Message-State: AOAM531h3PRh84BOkKu2LgCiHNkgcfNZ3uoNn2H86qetOzltOb1vBpxU
-        CA00NAQPhg5afq/PCRSsdCGf8usNbTZ/z9L20g==
-X-Google-Smtp-Source: ABdhPJwzgwxYjBhqS5YwSnAJ/sHKdFDNptG9yHFTv/SWSJot2ik/Yal85ta+ttp0YNkw5zt5zoGuFDr207NC7mEm2o4=
-X-Received: by 2002:aca:1015:: with SMTP id 21mr15505843oiq.92.1621979194196;
- Tue, 25 May 2021 14:46:34 -0700 (PDT)
+        bh=6svW/oDWDLT98MDexEuspJdEoNNdZul4DrRipuY5RVQ=;
+        b=iXbWvlyuWkgdSSNsEaIgP8HAb9BvOFSP43mI49n2lUBmCocCUGyK8CFn3w8W6Grpni
+         hSQWuDFKvS7DwZa5rfQHYaJ8mquCZHWAPoU4eLV205gdtZ/wYhTodbWMFyhhCXQkYGqC
+         ZWYK/rVP/6k6pczAUO7HIqai8ixwyOcjchCJu71HiqnhjgQC/mWJEeGEFhdaHE7nn+Wp
+         kzsAt6tju1R/IMWlFdBee8OIGzz/XU6K6HfxSxTZrYgy7wNJJtIMQtHyB8YLrOk3CBHA
+         /4QyxfV5Bha1Mexko0C9JqWl9P4/a/aRg52EKy8jRRuDjGdvSvFzjm5MH5bo/a+p6htS
+         igEg==
+X-Gm-Message-State: AOAM5329C1bmfEab/qaFdcmMKR85kzBy1RPUABHWed8A30gEqpSEb6dq
+        chdiMBVjCPvPjXKwZsPRJ0+cbrQY8tE2/GKSZOCbq4Uixr0/RQ==
+X-Google-Smtp-Source: ABdhPJyOPqPO+N91L9xZk5aue8Z3SjnR7AFuwI34gLOl65u5EdLCUP/FZWIZkNy9F1oftDZeFzewpcddpKzjmc9pbEo=
+X-Received: by 2002:a17:902:a60a:b029:f0:ad94:70bf with SMTP id
+ u10-20020a170902a60ab02900f0ad9470bfmr32612502plq.31.1621979346580; Tue, 25
+ May 2021 14:49:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210524185054.65642-1-george.mccollister@gmail.com> <20210524212938.jaepbj5qdl3esd4i@skbuf>
-In-Reply-To: <20210524212938.jaepbj5qdl3esd4i@skbuf>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Tue, 25 May 2021 16:46:21 -0500
-Message-ID: <CAFSKS=Mdvsqo0KUqTMdRgJMQ1SSa45wYJ_YM=rqnFEFJBoxZHw@mail.gmail.com>
-Subject: Re: [PATCH net] net: hsr: fix mac_len checks
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+References: <20210525132152.2589420-1-vladbu@nvidia.com>
+In-Reply-To: <20210525132152.2589420-1-vladbu@nvidia.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 25 May 2021 14:48:55 -0700
+Message-ID: <CAM_iQpUtGw5MO0DAWkVuHP7PU-iSkmEsBWa+SkCqiZtB3eeSoQ@mail.gmail.com>
+Subject: Re: [PATCH net v2] net: zero-initialize tc skb extension on allocation
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Andreas Oetken <andreas.oetken@siemens.com>,
-        Marco Wenzel <marco.wenzel@a-eberle.de>,
-        open list <linux-kernel@vger.kernel.org>
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Florian Westphal <fw@strlen.de>, wenxu <wenxu@ucloud.cn>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 4:29 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-[snip]
-> > +     ret = hsr->proto_ops->fill_frame_info(proto, skb, frame);
+On Tue, May 25, 2021 at 6:22 AM Vlad Buslov <vladbu@nvidia.com> wrote:
 >
-> Nitpick: hsr uses "res", not "ret".
+> Function skb_ext_add() doesn't initialize created skb extension with any
+> value and leaves it up to the user. However, since extension of type
+> TC_SKB_EXT originally contained only single value tc_skb_ext->chain its
+> users used to just assign the chain value without setting whole extension
+> memory to zero first. This assumption changed when TC_SKB_EXT extension was
+> extended with additional fields but not all users were updated to
+> initialize the new fields which leads to use of uninitialized memory
+> afterwards. UBSAN log:
+
+Hm, I thought the memset() in __skb_ext_alloc() does the job, clearly
+I was wrong.
+
+[...]
 >
+> Fix the issue by providing new function tc_skb_ext_alloc() that allocates
+> tc skb extension and initializes its memory to 0 before returning it to the
+> caller. Change all existing users to use new API instead of calling
+> skb_ext_add() directly.
 
-Oops. I'll try to pay more attention to what is used in the existing
-code next time.
+Just a note: struct tc_skb_ext is currently only 8-byte long, so memset()
+it should not be a problem for performance.
 
-[snip]
 >
-> I admit that I went through both patches and I still don't understand
-> what is the code path that the original commit 2e9f60932a2c ("net: hsr:
-> check skb can contain struct hsr_ethhdr in fill_frame_info") is
-> protecting against. I ran the C reproducer linked by syzbot too and I
-> did not reproduce it (I did not compile with the linked clang though).
+> Fixes: 038ebb1a713d ("net/sched: act_ct: fix miss set mru for ovs after defrag in act_ct")
+> Fixes: d29334c15d33 ("net/sched: act_api: fix miss set post_ct for ovs after do conntrack in act_ct")
+> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 
-I think it's complaining if you access more than mac_len bytes from
-the pointer returned by skb_mac_header() but I'm not familiar with
-this bot.
+Acked-by: Cong Wang <cong.wang@bytedance.com>
 
-Thanks for testing the patch.
-
--George
+Thanks.
