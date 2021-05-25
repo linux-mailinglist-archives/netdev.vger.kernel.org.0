@@ -2,70 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61114390C39
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 00:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60279390C42
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 00:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232861AbhEYWbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 18:31:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58254 "EHLO mail.kernel.org"
+        id S232985AbhEYWbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 18:31:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58306 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230222AbhEYWbk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 May 2021 18:31:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 80F90613F5;
-        Tue, 25 May 2021 22:30:10 +0000 (UTC)
+        id S232782AbhEYWbl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 May 2021 18:31:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3B1716142B;
+        Tue, 25 May 2021 22:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621981810;
-        bh=ofNWTv6lLJ0tjyNLsLHZ5kdgltGQWV8/cSd4BWAnRjs=;
+        s=k20201202; t=1621981811;
+        bh=OP+2crvbUdflDGJs+DZrs5Hsm5swebZhY7rgc9PlKBE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JOWFUBwsHZkQZJq4/Fb1a/p0sRVya5AzzgKNzGZwVw4bnSYBiM3L4TEJnKDB8MImT
-         hG6nHC1GePxQQ7zEUCp+8kcl2/dCnfjsfU85R2Hl0c+z2c99xhBqYCTLesjrxSgbxB
-         OGCvruKyP5bNpyX5XkPo3x2oQqw1ewzwHFHXtXv0N0Vl+RaRLt6D56ltOoj35JKiOk
-         q2KP9tgb6VhjS/e47PaoknyjJ4uFGhn5MAAyzqWWwYWyED1F1wk5eGWgSbbZ1eIifS
-         V4Ubn9+rl90xPIHpu4S7/ZKKWY6p7OYMU1vt8kNiQEneEEV6QTNdyophk5IRtuRJsm
-         sr6CRrVbDQHjQ==
+        b=uM2XgOdHN/pg7sxi8fpJGFYmT7i4nOO8OI0B+IOeEo/J3jta35kTJNQ+aYnQKhP33
+         +bXK0zKDrUnUBQOf7ITanU3cLPn1VWEnzHCqeIg+hYjrqNQmTI9gH2bqtcb2GL55Nt
+         NAZe58AvHWKBGjxvS6TMpBGAt8IrtZb5TCwCI2gfnQLO+ARQ9HkLTTqI+mBN3XsZ66
+         Ls270nYNwvJypzlrjKxy9hzQcDUs+afHRw6X3iSlW6XzmRxv1pqsc5Z6BxjRmDb2zy
+         Wb5xUWflAsmVWZQfqNJmJaNUYnBRo/q5+153pwcWghxH85vLxvVmL/CeZu/miDfMWY
+         jyqwiJnbL0KzQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 72E7B60BE2;
-        Tue, 25 May 2021 22:30:10 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 305D360BE2;
+        Tue, 25 May 2021 22:30:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: hns: Fix kernel-doc
+Subject: Re: [PATCH] net: bridge: remove redundant assignment
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162198181046.18500.8133647510456206495.git-patchwork-notify@kernel.org>
-Date:   Tue, 25 May 2021 22:30:10 +0000
-References: <1621939967-67560-1-git-send-email-yang.lee@linux.alibaba.com>
-In-Reply-To: <1621939967-67560-1-git-send-email-yang.lee@linux.alibaba.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <162198181119.18500.5211226351903654537.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 May 2021 22:30:11 +0000
+References: <YKx3ptXPNbd3Bdiq@fedora>
+In-Reply-To: <YKx3ptXPNbd3Bdiq@fedora>
+To:     Nigel Christian <nigel.l.christian@gmail.com>
+Cc:     roopa@nvidia.com, nikolay@nvidia.com, davem@davemloft.net,
+        kuba@kernel.org, bridge@lists.linux-foundation.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 25 May 2021 18:52:47 +0800 you wrote:
-> Fix function name in hns_ethtool.c kernel-doc comment
-> to remove these warnings found by clang_w1.
+On Mon, 24 May 2021 23:05:58 -0500 you wrote:
+> The variable br is assigned a value that is not being read after
+> exiting case IFLA_STATS_LINK_XSTATS_SLAVE. The assignment is
+> redundant and can be removed.
 > 
-> drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:202: warning: expecting
-> prototype for hns_nic_set_link_settings(). Prototype was for
-> hns_nic_set_link_ksettings() instead.
-> drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:837: warning: expecting
-> prototype for get_ethtool_stats(). Prototype was for
-> hns_get_ethtool_stats() instead.
-> drivers/net/ethernet/hisilicon/hns/hns_ethtool.c:894: warning:
-> expecting prototype for get_strings(). Prototype was for
-> hns_get_strings() instead.
+> Addresses-Coverity ("Unused value")
+> Signed-off-by: Nigel Christian <nigel.l.christian@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - net: hns: Fix kernel-doc
-    https://git.kernel.org/netdev/net/c/c1cf1afd8b0f
+  - net: bridge: remove redundant assignment
+    https://git.kernel.org/netdev/net-next/c/ccc882f0d838
 
 You are awesome, thank you!
 --
