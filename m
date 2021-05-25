@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DB4438F804
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:19:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3560E38F805
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbhEYCUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 22:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51678 "EHLO
+        id S230122AbhEYCU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 22:20:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230026AbhEYCUs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:20:48 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F31C061574
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:19:18 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id t9so7140618ply.6
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:19:18 -0700 (PDT)
+        with ESMTP id S230115AbhEYCUz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:20:55 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BB9C061574
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:19:25 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id a7so6890726plh.3
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:19:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LyZvXdkJ1LGn6sfTVDxEr7XFvPPDsXy1W23lh8R1WLg=;
-        b=d26Wb82FSjRsN9kkyjhhnSQC3FIMVBNgZoT5H+BVzkOCGSK1mhHBR0OO8M6vCQIXd0
-         jXctnlTInqF01/SR7sMPokOu9A3Y28/Pmf8dsvWwsAJYK8GKyUnbZv6SPv86qsADDyLP
-         wBh3D9oxQHbg7o99x8cXBAS4qFcizSN8wXLvInl2w8ETNncweKki7lojKmQd69CgZ979
-         ykTzKnzYn26V4/CLapP/NCu9SeCS9kHpR5dNmrTxGM/jNkyPRXSFyRKC1AlhC3O5fjU/
-         Ahfs9ncCxGZMC3sjCJf0s4rFPDts8B4I4eae4n9n8asy03q8dbkvg37GSmFw4YPmknLu
-         4xFA==
+        bh=PtMKv8H8fr0/cGUPfPuqk5XV9KgBYgm65hebSFoOV3s=;
+        b=YqbqjeuWsUB5kt3eTTsLdf73fha29fSbbR8U0dPfLee+CaM0lwoqrEq+kGspYq9hTp
+         8DZq9ErV3zLOTLkSjYid9FVWsftnR+bKRNXXP1Lx929SEeXz+SbzW9ctaLAENRXhGoYp
+         6zMlpsTd3qQix/78VyX6mFDM64AkNFAE1msfTCwpo24/RXN6YrD5CPJuRzYOnz66LSr5
+         f9anP+9Uns2cUvTKXUfdS44Cx/cFS6RC7N4hnsyQt9CJTaD79R3pNId9TCHZH0WIhM/s
+         qhnq63EAqmGuJF7x4TTkez15Zhhe3cVFZ0MpVbUK9RLzOCckgNkZU2UI3glRwCV1eSOL
+         HwHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=LyZvXdkJ1LGn6sfTVDxEr7XFvPPDsXy1W23lh8R1WLg=;
-        b=PD+UEhQxKWF4TfEHABBi3iGNvzopYpzecDMTR91eCX9QvUbGp2d76bgSBYjLGaZkbF
-         RGftXHQCJSh0MuzsV2rHBSYV+g++W8WHyyRMVSxzhORBAYPPkT08v5vnfkC7OKOrYSQo
-         6Yx0Ox144qWVuIHZP0CEH3JnwVA4oQfpWGuuax1pZXwOJTrbq4QLORrH8/lhMIttxnAl
-         l2gP5RbPJuHi4mpDJrNPv0D59b+uacq4nVaaJG3pUz98P7YtRvnGdcvPt/ETA1Jf1FB8
-         RH0y+7tlIqrqjyq2zQM22YQTUw3Jjl9Y58bKQSTciiJ2+67NhXQwB60vZt4h6lSLsWlV
-         rhhQ==
-X-Gm-Message-State: AOAM533trn4Ed72lE2NEyc+Md0VdivtHgzz7Gc8cokucf7Cek7W8Ewze
-        RwXD198iUBAZFP+VURdC6fc=
-X-Google-Smtp-Source: ABdhPJzNxglFRQVxh7h0yyLUv7jo5WkQ7OMsaig/yxhshsiidU1ItInc/hnBBmE3du36f51957DF6A==
-X-Received: by 2002:a17:90a:aa94:: with SMTP id l20mr2298484pjq.125.1621909157749;
-        Mon, 24 May 2021 19:19:17 -0700 (PDT)
+        bh=PtMKv8H8fr0/cGUPfPuqk5XV9KgBYgm65hebSFoOV3s=;
+        b=ki47HLn56BJu6faGZpS/OxdHLIHQZPOCkxBWYTDAvHemRojtohsdzTfPtrctk2x3Iy
+         ODVyiOFM1BloTyCDxc8yJhaniTjFOkpp3SZUEAjsHSvh+lImtFby3jKwZ3WvUvkSf8Cb
+         IiKPgxpEofJRywhODDTS5Ox8OwOH6pjTrG8de5WZsPK2VorQMOr/E2H4yKlpBznjM0hc
+         CfPKB/ZHCF/fy1TkfCf3wBNX0iQ4o8lTD5IMugRSOOWpaVmciNAGbIomnuKW+BuYBwLa
+         lJpihsJtv80FCIRYr3GLAxDp8ZnpMP5uy3pGQfVO1CFHAhzVCDPDdyHplWY3ym73r/wY
+         5r6w==
+X-Gm-Message-State: AOAM533m8VLgHzPlm8DpOSfWw9BhMTWSxYEtb3yH/8098m26ep+cWROs
+        U0M9B/95jY69ACaG14Df2es=
+X-Google-Smtp-Source: ABdhPJww4k2paLPRiHAxnjlbHHeGUZSES6TNWsXllyLTXa7kYh+zH5kBy+ILMMLrZk5uALlfS5iOyA==
+X-Received: by 2002:a17:902:ce90:b029:f7:72be:b420 with SMTP id f16-20020a170902ce90b02900f772beb420mr18662583plg.67.1621909165423;
+        Mon, 24 May 2021 19:19:25 -0700 (PDT)
 Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f9sm11517237pfc.42.2021.05.24.19.19.13
+        by smtp.gmail.com with ESMTPSA id e22sm5640744pfl.188.2021.05.24.19.19.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 May 2021 19:19:17 -0700 (PDT)
-Subject: Re: [PATCH net-next 04/13] net: dsa: sja1105: cache the phy-mode port
- property
+        Mon, 24 May 2021 19:19:24 -0700 (PDT)
+Subject: Re: [PATCH net-next 03/13] net: dsa: sja1105: the 0x1F0000 SGMII
+ "base address" is actually MDIO_MMD_VEND2
 To:     Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -57,14 +57,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20210524232214.1378937-1-olteanv@gmail.com>
- <20210524232214.1378937-5-olteanv@gmail.com>
+ <20210524232214.1378937-4-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e328757c-c59c-9594-3b5a-e26ed2ea479c@gmail.com>
-Date:   Mon, 24 May 2021 19:19:10 -0700
+Message-ID: <65e73b63-2c9b-b847-9221-91f23d2511d3@gmail.com>
+Date:   Mon, 24 May 2021 19:19:17 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210524232214.1378937-5-olteanv@gmail.com>
+In-Reply-To: <20210524232214.1378937-4-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,17 +77,37 @@ X-Mailing-List: netdev@vger.kernel.org
 On 5/24/2021 4:22 PM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> So far we've succeeded in operating without keeping a copy of the
-> phy-mode in the driver, since we already have the static config and we
-> can look at the xMII Mode Parameters Table which already holds that
-> information.
+> Looking at the SGMII PCS from SJA1110, which is accessed indirectly
+> through a different base address as can be seen in the next patch, it
+> appears odd that the address accessed through indirection still
+> references the base address from the SJA1105S register map (first MDIO
+> register is at 0x1f0000), when it could index the SGMII registers
+> starting from zero.
 > 
-> But with the SJA1110, we cannot make the distinction between sgmii and
-> 2500base-x, because to the hardware's static config, it's all SGMII.
-> So add a phy_mode property per port inside struct sja1105_private.
+> Except that the 0x1f0000 is not a base address at all, it seems. It is
+> 0x1f << 16 | 0x0000, and 0x1f is coding for the vendor-specific MMD2.
+> So, it turns out, the Synopsys PCS implements all its registers inside
+> the vendor-specific MMDs 1 and 2 (0x1e and 0x1f). This explains why the
+> PCS has no overlaps (for the other MMDs) with other register regions of
+> the switch (because no other MMDs are implemented).
+> 
+> Change the code to remove the SGMII "base address" and explicitly encode
+> the MMD for reads/writes. This will become necessary for SJA1110 support.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+[snip]
+>  
+> @@ -1905,7 +1904,9 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+>  		mac[i].speed = SJA1105_SPEED_AUTO;
+>  
+>  		if (sja1105_supports_sgmii(priv, i))
+> -			bmcr[i] = sja1105_sgmii_read(priv, i, MII_BMCR);
+> +			bmcr[i] = sja1105_sgmii_read(priv, i,
+> +						     MDIO_MMD_VEND2,
+> +						     MDIO_CTRL1);
+
+This appears different from what you had before?
 -- 
 Florian
