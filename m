@@ -2,149 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD11E390B95
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 23:37:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F92A390BC3
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 23:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233443AbhEYViw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 17:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59678 "EHLO
+        id S233492AbhEYVsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 17:48:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231210AbhEYViv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 17:38:51 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70C4C061574
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 14:37:21 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id v14so21083248pgi.6
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 14:37:21 -0700 (PDT)
+        with ESMTP id S229610AbhEYVsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 17:48:06 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3419C061574;
+        Tue, 25 May 2021 14:46:34 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id c196so23505096oib.9;
+        Tue, 25 May 2021 14:46:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rRmvTeU//SmQEOsbkq8wsTrrFA+E1bsgoIT7Qra9P8Y=;
-        b=oC7cjVNfiP5aGFmDPP8lu5UWSsUlL9/s9dXGaE2TSoKLK6ujDbxy1EVCl/9WH0ihkG
-         f708V0UBvegKCl6IGv3EqVxQ7k+/WUrVq1CRxDnTXAOdKBeGD5go9cFEmprL/Gpzzmp4
-         G9mmmMRi545au8/U1K2lvMPwZKgtxQSV2GiYIWADNnEybfM1gscOus4QhBiHWoUQ7DKn
-         pFV9JgLkuo3QvZ6pS6uOvDej0WgeT44OyKJKGPOrF+WmqNi1gD1PHPUQHBcsarZErYPi
-         bBbV8jZzbNKDBPcCifvyAMrD2bFE/myo83QK76d3nSkqMO1T78EAICE9SfQ0niBCjoob
-         Qp6Q==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WrsMci1wux9x4oI1lZdnvMAiZAs7nx/+sDW4BJc2oWA=;
+        b=Si4cDta1BaFLKWOnZTfednW3oPeIYwPrAYErfx/uBNx8GOYakG4Rdi62QgD2+KXZD6
+         WTmG0nmBb3Ali1rDDWc4iuNpvDoUJR4K+P11tAEG3GYah+CmkTQ+ssA1L3Bk7EAvb/ba
+         UnK9IGRnhRLL1xXh8R4+N7CxFLYD79BDD5zlNJZJtov6JoJXfxJoQDSCYSG2iyCDJty8
+         kQF0v5CE4Aj+S5vYZs0X1KnHyfoLq6tWQpzRFcQpI83hJTq53MyddUxpDprQke1jhet1
+         +yIOElA0LcutYsh7XSW5Oe8R4Jlm7Pf0ibc8wP6+OYNPkehesVaURecbs3nlBViVRBwt
+         DeUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rRmvTeU//SmQEOsbkq8wsTrrFA+E1bsgoIT7Qra9P8Y=;
-        b=QByPo0adDK6cRJNAoxa0+H1uTfOafzxs4w5peL/tIIiOVJF76juPL2KohVzFMjgQri
-         Om/QINFyxwh5Ud01wJQTZlqOYOi8jWA7zAeHUvLc5SpRLBWYKRIAAPDGf7fSMzBQezRI
-         NCbzN8w7hWVH6yTyCNvy/5WmnUEnlI3ti1YmU3J7Zxk50OQqzxUgzOj3d2H9LHIcGMpi
-         mFa4Iy6IpPpuBF5xdxYPsUNz3+RPjKfKGcwFEWU4uRsZ3l4OiBT/MHfMJQSH8fRZwBTQ
-         FxfEX8SXT3gTrG4PVC+d2NeLzu6comDwAjJJu5eennHnEEBZyPIk1KjQC/q3fingRe2s
-         9gmQ==
-X-Gm-Message-State: AOAM533wSRvILI8EqeafLItZ8xP03lXQebRj+IsujmCe6mUifmCWRf2O
-        AgWBB3qQuTG/9yMxoKoXoHrXNYR3/PyZVQ==
-X-Google-Smtp-Source: ABdhPJyztiGSU5uCrqOCyhcPE3GOsy/8nulEMAXltngQMoTmnQKdSTS3QNzoIDUHBLYvBLRMKcHUUQ==
-X-Received: by 2002:a63:4607:: with SMTP id t7mr20792637pga.269.1621978641128;
-        Tue, 25 May 2021 14:37:21 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id s12sm2763426pji.5.2021.05.25.14.37.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 May 2021 14:37:20 -0700 (PDT)
-Date:   Tue, 25 May 2021 14:37:12 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: Crosscompiling iproute2
-Message-ID: <20210525142331.39594c34@hermes.local>
-In-Reply-To: <trinity-3a2b0fba-68a6-47d1-8ed1-6f3fc0cf8200-1621966719535@3c-app-gmx-bs13>
-References: <trinity-a96735e9-a95a-45be-9386-6e0aa9955a86-1621176719037@3c-app-gmx-bap46>
-        <20210516141745.009403b7@hermes.local>
-        <trinity-00d9e9f2-6c60-48b7-ad84-64fd50043001-1621237461808@3c-app-gmx-bap57>
-        <20210517123628.13624eeb@hermes.local>
-        <D24044ED-FAC6-4587-B157-A2082A502476@public-files.de>
-        <20210524143620.465dd25d@hermes.local>
-        <AACFD746-4047-49D5-81B2-C0CD5D037FAB@public-files.de>
-        <20210525090846.513dddb1@hermes.local>
-        <trinity-3a2b0fba-68a6-47d1-8ed1-6f3fc0cf8200-1621966719535@3c-app-gmx-bs13>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WrsMci1wux9x4oI1lZdnvMAiZAs7nx/+sDW4BJc2oWA=;
+        b=UblDXCvPKo83cLxn+o7fOTKuh4oZWIHSA4dR1Ncq/GKpzyWj4o+3CTepM7OADiS4go
+         MuBa0Lsr6KAnLwCcMp2tnwXkRRWqpMlUoL7XRFjICPKhVkprXXV7Tn24LuMccZ2HnHMO
+         lwIOd1WGei9lxEy8RWAW/iu29GcvoL+j0oOsl6pE/2dSp4m8LtND5KKsG9aDeTvPnGq7
+         NHyxIyiNxZCNF/tOpe6bfo/o8Qes7lZd1s9BpkDcx5VJs8zVcP12IzYz+jpiCemSbdO4
+         y2lIADORs8XvsagfZFP67krcOC2hQKBvb99b61IoqZyRfZf3okRO3x9lwvEqABTh2Q1Q
+         CoNA==
+X-Gm-Message-State: AOAM531h3PRh84BOkKu2LgCiHNkgcfNZ3uoNn2H86qetOzltOb1vBpxU
+        CA00NAQPhg5afq/PCRSsdCGf8usNbTZ/z9L20g==
+X-Google-Smtp-Source: ABdhPJwzgwxYjBhqS5YwSnAJ/sHKdFDNptG9yHFTv/SWSJot2ik/Yal85ta+ttp0YNkw5zt5zoGuFDr207NC7mEm2o4=
+X-Received: by 2002:aca:1015:: with SMTP id 21mr15505843oiq.92.1621979194196;
+ Tue, 25 May 2021 14:46:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210524185054.65642-1-george.mccollister@gmail.com> <20210524212938.jaepbj5qdl3esd4i@skbuf>
+In-Reply-To: <20210524212938.jaepbj5qdl3esd4i@skbuf>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Tue, 25 May 2021 16:46:21 -0500
+Message-ID: <CAFSKS=Mdvsqo0KUqTMdRgJMQ1SSa45wYJ_YM=rqnFEFJBoxZHw@mail.gmail.com>
+Subject: Re: [PATCH net] net: hsr: fix mac_len checks
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Andreas Oetken <andreas.oetken@siemens.com>,
+        Marco Wenzel <marco.wenzel@a-eberle.de>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 May 2021 20:18:39 +0200
-Frank Wunderlich <frank-w@public-files.de> wrote:
+On Mon, May 24, 2021 at 4:29 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+[snip]
+> > +     ret = hsr->proto_ops->fill_frame_info(proto, skb, frame);
+>
+> Nitpick: hsr uses "res", not "ret".
+>
 
-> > Gesendet: Dienstag, 25. Mai 2021 um 18:08 Uhr
-> > Von: "Stephen Hemminger" <stephen@networkplumber.org>
-> > An: "Frank Wunderlich" <frank-w@public-files.de>
-> > Cc: netdev@vger.kernel.org
-> > Betreff: Re: Crosscompiling iproute2
-> >
-> > On Tue, 25 May 2021 17:56:09 +0200
-> > Frank Wunderlich <frank-w@public-files.de> wrote:
-> >  
-> > > Am 24. Mai 2021 23:36:20 MESZ schrieb Stephen Hemminger <stephen@networkplumber.org>:  
-> > > >On Mon, 24 May 2021 21:06:02 +0200
-> > > >Frank Wunderlich <frank-w@public-files.de> wrote:
-> > > >  
-> > > >> Am 17. Mai 2021 21:36:28 MESZ schrieb Stephen Hemminger  
-> > > ><stephen@networkplumber.org>:  
-> > > >> >On Mon, 17 May 2021 09:44:21 +0200
-> > > >> >This works for me:
-> > > >> >
-> > > >> >make CC="$CC" LD="$LD" HOSTCC=gcc  
-> > > >>
-> > > >> Hi,
-> > > >>
-> > > >> Currently have an issue i guess from install. After compile i install  
-> > > >into local directory,pack it and unpack on target system
-> > > >(/usr/local/sbin).tried  
-> > > >>
-> > > >> https://github.com/frank-w/iproute2/blob/main/crosscompile.sh#L17  
-> > > >  
-> > > >>
-> > > >> Basic ip commands work,but if i try e.g. this
-> > > >>
-> > > >> ip link add name lanbr0 type bridge vlan_filtering 1  
-> > > >vlan_default_pvid 500  
-> > > >>
-> > > >> I get this:
-> > > >>
-> > > >> Garbage instead of arguments "vlan_filtering ...". Try "ip link  
-> > > >help".  
-> > > >>
-> > > >> I guess ip tries to call bridge binary from wrong path (tried  
-> > > >$PRFX/usr/local/bin).  
-> > > >>
-> > > >> regards Frank  
-> > > >
-> > > >No ip command does not call bridge.
-> > > >
-> > > >More likely either your kernel is out of date with the ip command (ie
-> > > >new ip command is asking for
-> > > >something kernel doesn't understand);  
-> > > I use 5.13-rc2 and can use the same command with debians ip command
-> > >  
-> > > >or the iplink_bridge.c was not
-> > > >compiled as part of your compile;
-> > > >or simple PATH issue
-> > > >or your system is not handling dlopen(NULL) correctly.  
-> > >
-> > > Which lib does ip load when using the vlanfiltering option?  
-> > It is doing dlopen of itself, no other library
-> >  
-> > >  
-> > > >What happens is that the "type" field in ip link triggers the code
-> > > >to use dlopen as form of introspection (see get_link_kind)  
-> 
-> this seems to be the problem:
-> 
-> openat(AT_FDCWD, "/usr/lib/ip/link_bridge.so", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = -1 ENOENT (No such file or directory)
-> write(2, "Garbage instead of arguments \"vl"..., 71Garbage instead of arguments "vlan_filtering ...". Try "ip link help".
-> 
-> i have no /usr/lib/ip directory, my package contains only lib-folder for tc (with dist files only because i use static linking). also there is no *.so in my building-directory
+Oops. I'll try to pay more attention to what is used in the existing
+code next time.
 
-That only gets called if you haven't got the bridge part in the original ip command.
-The shared library stuff is for other non-static libraries to extend iproute2.
-This is unused by most distro's and you shouldn't need it.
+[snip]
+>
+> I admit that I went through both patches and I still don't understand
+> what is the code path that the original commit 2e9f60932a2c ("net: hsr:
+> check skb can contain struct hsr_ethhdr in fill_frame_info") is
+> protecting against. I ran the C reproducer linked by syzbot too and I
+> did not reproduce it (I did not compile with the linked clang though).
 
-I think the bridge part was just not built in your version.
+I think it's complaining if you access more than mac_len bytes from
+the pointer returned by skb_mac_header() but I'm not familiar with
+this bot.
+
+Thanks for testing the patch.
+
+-George
