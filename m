@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CD4C38F812
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:24:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E42C438F830
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:27:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230149AbhEYC0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 22:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
+        id S230140AbhEYC3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 22:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230026AbhEYC0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:26:10 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71273C061574
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:24:40 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id v13-20020a17090abb8db029015f9f7d7290so983490pjr.0
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:24:40 -0700 (PDT)
+        with ESMTP id S230026AbhEYC3B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:29:01 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248C8C061574
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:27:32 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id j6-20020a17090adc86b02900cbfe6f2c96so12283368pjv.1
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:27:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lEeBlWyDHIBGk/ZxhkpWCvVghvX21E0ZALaGZBppJ/0=;
-        b=rqLXd5Q+n9J09dkqlflD3ME0kdzoNX1jrpcDpMAHoBWWc7Pf65hmShPlSkhJNkZXsM
-         J49jwkxykFLlAMqtM7zjQrTKq0ZvR1Z5Jk8VisSHWUjI/I4n8js5LFDjf5n4/Uju0X/9
-         K+2Tn7/VHuUIbnGnBJVFykc7Jv9ViNvIMNW8dMTfsbBwVTSELQTWM0g6JfNIAR9bKZ3V
-         DBOn5ljwFpQ1miYHltklV8QigFZ/Dov4IUSOYU0cJv/T+H9NvDijdNZAkH2kZIU1+ZN4
-         ywLHk0SyDx4VvNddH7v0ztk4Bvu1qygQEa842Bhhlu5yV4mh31fSKOPIcHm8/yY+vOoJ
-         /sOQ==
+        bh=mbg8TjI4QV05sjqs5gnZ8QRHKPttv4dB3FqapsBYtAQ=;
+        b=cm5stgqSdld2pSUbB6Fscf5Swjzg4IyZMLB4Aw5EghWRle7kwEwY5/NnKbP5xmcxm9
+         A1HgC68tR0sS6ACi8U/+JYHJSbHuJhEWBW0iArbcbhklnrB3NhoyHirUoYMqxNYEQFyI
+         Mue3HYbA3HgJ/4hRqLbOhknSUp2FXkxE0nh8HtC+I3AybjYYyi23oym1dDOJOKwJ8WaZ
+         Gg10fkNCgSb/hL9XXKMh76TWGsWoyNQaKP2+xEHIMAW18ft/0AVyHwg7jVyBV2XbtKHN
+         Ze4HSVeaP2W5jpWJIbdotQR3y/VrJTw3i3b5tHOVl8PDhCYGdWywETrpKlXfzLZwFLJQ
+         0p4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=lEeBlWyDHIBGk/ZxhkpWCvVghvX21E0ZALaGZBppJ/0=;
-        b=dOs+Dq3mb9ftoQDxDQ7OqpeasmhbJ7QtP3KCTyx5RvrLNpsEQeE9HrSSL+uzTh5bbQ
-         CnsIYo/pksPJ9SMw/Ibu/xLuIgTESb7SCry0tFaEOfJRaPPMnyM4c5clFZlbWUFqCg3+
-         P9Nug9uq7DhNIH6rjTAKkDenaY/o9y7AYWDoBc7pqGyiChI3s0KaCWSMDx/feuhDeUlF
-         0FJSjFNV91TcgIsSYNr2o4q+a89UP132S/Uhk+5pcT540PQD/aPD2KcmV5R61mGL1d22
-         ErkG1QQJZwFkPx7i85JV/RL8AAB6ND1MdgCvJPWeGa0f6swPKCnQIGrpNaMnn0e8A0d2
-         haOw==
-X-Gm-Message-State: AOAM530y2vjM2oY3lzuOb6eYtFoA69gGLDCopCxKZPAQ418e1jmVswCx
-        oW9BdegIwz+b4jWiaqgcdrU=
-X-Google-Smtp-Source: ABdhPJzgZ5d5fXDkuPP2DBwuLiXGC62Unlqtym/5yHCkiFoGTqAnrYAvBS/kVPgKFnbgHjxMUAllFA==
-X-Received: by 2002:a17:902:b412:b029:ef:1737:ed with SMTP id x18-20020a170902b412b02900ef173700edmr28835609plr.43.1621909480035;
-        Mon, 24 May 2021 19:24:40 -0700 (PDT)
+        bh=mbg8TjI4QV05sjqs5gnZ8QRHKPttv4dB3FqapsBYtAQ=;
+        b=N9L0VGcpYlqlfWb9cgFWmpAMATk+a+/QvHQw6XrSrHpveXZvtaAxWlpRSp/ihgPXB4
+         iOrWPLlEPBl1IWul0oxzLhHU3uWCHNLvCJXyqTnblf2dZ5zz5fun63cc7ac7I4ySqZn7
+         1w+jlov9V9ws/rxIZhjMdIvsE9DdAtHUmaVVMVTXRcajc2lxNrtM/ABOE3WsGfAv5BjE
+         d4GdyKlqvvR0JUD0Nqb1IsDIf8cMJlPEm78VEYtInj+E8Ndj+93BLtOZriMy0EaFlyVZ
+         gEL434Q42niomT0nrjYDCPdYNmQD4XxBwrRkSJla0gnVo8j3weP8+ALU77TN6nmnPNDB
+         77UA==
+X-Gm-Message-State: AOAM533RWfwwyQJyrXcAnx6vvDHZjj9MXz9GlVGjhoGrapNW9JsjwYRq
+        c2yqLUbAM1Iy4ahXpUlcrfU=
+X-Google-Smtp-Source: ABdhPJwM4oSBo+Wi/o3ipAuhWociZe/3/HfysnYcXHoTFr9qhSVFNmLIU7obh/dIR7/qVYn9l6DjLw==
+X-Received: by 2002:a17:90a:728f:: with SMTP id e15mr2290579pjg.137.1621909651719;
+        Mon, 24 May 2021 19:27:31 -0700 (PDT)
 Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t14sm11378251pfg.168.2021.05.24.19.24.38
+        by smtp.gmail.com with ESMTPSA id 25sm11928367pfh.39.2021.05.24.19.27.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 May 2021 19:24:39 -0700 (PDT)
-Subject: Re: [PATCH net-next 09/13] dt-bindings: net: dsa: sja1105: add
- compatible strings for SJA1110
+        Mon, 24 May 2021 19:27:31 -0700 (PDT)
+Subject: Re: [PATCH net-next 11/13] net: dsa: sja1105: register the MDIO buses
+ for 100base-T1 and 100base-TX
 To:     Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Russell King <linux@armlinux.org.uk>
 References: <20210524232214.1378937-1-olteanv@gmail.com>
- <20210524232214.1378937-10-olteanv@gmail.com>
+ <20210524232214.1378937-12-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <4e6cd92d-b2f3-9eb5-9a6f-e169dbd41537@gmail.com>
-Date:   Mon, 24 May 2021 19:24:36 -0700
+Message-ID: <c29b87f0-a6f6-10cc-624d-b9c4779675c5@gmail.com>
+Date:   Mon, 24 May 2021 19:27:28 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210524232214.1378937-10-olteanv@gmail.com>
+In-Reply-To: <20210524232214.1378937-12-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,13 +78,18 @@ X-Mailing-List: netdev@vger.kernel.org
 On 5/24/2021 4:22 PM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> There are 4 variations of the SJA1110 switch which have a different set
-> of MII protocols supported per port. Document the compatible strings.
+> The SJA1110 contains two types of integrated PHYs: one 100base-TX PHY
+> and multiple 100base-T1 PHYs.
 > 
+> The access procedure for the 100base-T1 PHYs is also different than it
+> is for the 100base-TX one. So we register 2 MDIO buses, one for the
+> base-TX and the other for the base-T1. Each bus has an OF node which is
+> a child of the "mdio" subnode of the switch, and they are recognized by
+> compatible string.
+> 
+> Cc: Russell King <linux@armlinux.org.uk>
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
-Time to YAMLify that binding?
 -- 
 Florian
