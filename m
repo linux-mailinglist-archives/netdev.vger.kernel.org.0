@@ -2,129 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E02D3905F4
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 17:56:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AC6E390627
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 18:05:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232409AbhEYP5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 11:57:47 -0400
-Received: from mout.gmx.net ([212.227.17.21]:44905 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232071AbhEYP5q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 May 2021 11:57:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1621958174;
-        bh=OJghyn0yWmat2efuRvDd25gN+6XyEwD6LEv2OY1Xasw=;
-        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
-         CC:From;
-        b=j3kmWypOqWwUihRVVMF3NC8Do8IA0ARPTwF6Doi7Wdd+gkmuCrALEyI5Ouc0FtFck
-         NI/fa9enXPOZex/dwHhFcST+omqyVlSMfN2U1OoDiEago9OJQGVmNup7ELkj4dBu0k
-         yWLMnw4ALorbXJdFepM2yZFsKZJjg4DaF9ldvqcM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from frank-s9 ([157.180.224.228]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MHXFx-1lguid19jl-00Dalr; Tue, 25
- May 2021 17:56:14 +0200
-Date:   Tue, 25 May 2021 17:56:09 +0200
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20210524143620.465dd25d@hermes.local>
-References: <trinity-a96735e9-a95a-45be-9386-6e0aa9955a86-1621176719037@3c-app-gmx-bap46> <20210516141745.009403b7@hermes.local> <trinity-00d9e9f2-6c60-48b7-ad84-64fd50043001-1621237461808@3c-app-gmx-bap57> <20210517123628.13624eeb@hermes.local> <D24044ED-FAC6-4587-B157-A2082A502476@public-files.de> <20210524143620.465dd25d@hermes.local>
+        id S232844AbhEYQGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 12:06:50 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:58280 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230422AbhEYQGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 12:06:41 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14PG0s89019506;
+        Tue, 25 May 2021 09:04:52 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=DGHll5mQSSb6B5JJsJVJhXgotbT3M2ufRWY0rxNnHhg=;
+ b=RflbZgIlvP4V1iEoPSJU1mXXoZ+68/HBqNGeZAMHQ0X35CbIGSglNbTePNIwmqdnYHek
+ ti1vSYMllgp0V40oVUwYfOnflEGkxHkn/eBDFycldOCKxrj0zmncZWn4a8kV2M6+hXd1
+ wBi2IBb0+FlCjJkq4hBrLfmVquXyROb3T3MUyiSj7nKLptJjLeZemjLSiEjfS+TTA9bA
+ s/XnnwjXUdX+T0V3rXPLYmswJ22mquB6Fe5EjVjquiGk53QSddo5wU4bJZ6jZO6vz5ql
+ OkOCz9vY/efVReLrcauQ2aTtcenY/xMrmPPZ4sZPwRJ/jlZKavrbs1F/+iIeeOSHrfYR Fg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 38s0fes35u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 25 May 2021 09:04:52 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 25 May
+ 2021 09:04:51 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 25 May 2021 09:04:51 -0700
+Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id 6EFC43F703F;
+        Tue, 25 May 2021 09:04:48 -0700 (PDT)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH net] net: mvpp2: add buffer header handling in RX
+Date:   Tue, 25 May 2021 19:04:41 +0300
+Message-ID: <1621958681-7890-1-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: Crosscompiling iproute2
-Reply-to: frank-w@public-files.de
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     netdev@vger.kernel.org
-From:   Frank Wunderlich <frank-w@public-files.de>
-Message-ID: <AACFD746-4047-49D5-81B2-C0CD5D037FAB@public-files.de>
-X-Provags-ID: V03:K1:2J/mlB8A8cYtryIdw7yzS0+J0e20aOaNoatB4d8rhGP+912ynwH
- x3KI75hLiZnClFQbegdD6KeTP7/tlI55H+JKwVlo5TbbHwkzY5oNNkDkHBXxO2J99qOl4TD
- vUQ+pn3+4cK1QEmcbElL53x0IWoLIQSKE7Zj3G9uldANT4ZIOSAEADWhCw3J4AzcEr1haQk
- 93OrD1HT0bEbdQFqB6TiQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:KsQYv+cd/7Y=:tFccyAQPJkc+Nw3E0bb4rv
- T2SlSsyyrpgWpcALGKYJlUdbT5oXRlpA8Yx931/NGL90lmWsI77utWG722gsMnCJep89iwZeJ
- KlaUC/S0u4sM/t9HKB0ugUgI03sEphQTzzpntTq+tzVsoon22DJe4uQnMIdhu2VRzGgNrd8YP
- qgSCIiJEZJvVZcmSo0ymaUhMMtujjZgppmeKDUad1WHmkFLsSdu/08Cg9cbrfIfRH7LXI+9a0
- ycqdGGPWj92jqwvfkLu//PUqIXvM008tQ9piqc4k01Wje3Rkoqz1tWFdRLJOurvL0lv1U0sV0
- SCKKWHAMrBqbBh90nngkIw79IPPoTMzkkbkmXU0hyis0WK4FifV7EeSPCvM9jCwrT3G9pMwUn
- 9jzRcoibTbjYzy2O2mdh6aH6b2oTeNlt/hP31wQWHWY92hHCjLkiQymYVzBGmrgc1Ncci6/Le
- fJvf7rvULsLDMNumR5IlJXj9HUbEf8l8mfFGss2GjzY095qYn9XTHd8J+DjGf6++MdXiDfZm/
- nAH5PE0bzWmj3RZfwI0s+t346+USl+a+6Bqx6XxjDYlS6B7eEUbem1DTwJcXwqKe4Oqlcw3mU
- nwsRDlZLD9BEKg/K/5K8h1LHVq22nIHDxWv+x6kO+VkPLVDXC52I0MSKGw4D0oNaPcnPOBrn3
- PbnKgrXApQ+/rPP+kWhnikR/NNijCp7RbxDTY6nGQkMFhyrXsyT4RMq+/5czlOJB8XIYrkD2R
- mOPpDK7Eaofm7FUcTr9BRPiOBGARViz0qunDrO5+WgHCBgUMINH/agQD4kqAnkKSkuAt1QMM8
- I2Vkl1aBKgq+yl6NWr+6m3yUCp/pCxRoqWofbdab3Dh+3UGjv2waAUwonQS5sOnhr7ZJEktQ8
- 9IPQewD1SeF+iXBCzUsH4lczge9sabwFnna8O44wzjXQ317r+9KXGvxheEE0BzqK5mlKH8FhO
- VGSTM9ew7yNnlBHPxQAeqLC7HXgjdkzTSijbhh0ycwGds0lG279IqYVTcTm4YREsKZcpgi7WG
- 1OfS/bsIvWbBFMlLXEVj0CFnFm5nuL3WvicAaqfE4IA2HM/jP9xJTpa6pCB2bdukg+4CA4Hz5
- lhL2IHwh7eKBj3rjBci7kEg6lNIeOhEHc/tAT7jEHYxAgCkN1ejkKWtQXTThY2w2uWTvmG0bY
- t7sWbdAd0PmJ1VhqeTCsU8wcy4jsn0R+o4drwp6MWC5rrPP/zfgjXyPMKVJ56sfvVW6KvByyh
- I52UHwUVKXEEoFq0m
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: JIcBrC6vp_bn4iblFcFW9D8DKK2LokXu
+X-Proofpoint-GUID: JIcBrC6vp_bn4iblFcFW9D8DKK2LokXu
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-25_07:2021-05-25,2021-05-25 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 24=2E Mai 2021 23:36:20 MESZ schrieb Stephen Hemminger <stephen@networkp=
-lumber=2Eorg>:
->On Mon, 24 May 2021 21:06:02 +0200
->Frank Wunderlich <frank-w@public-files=2Ede> wrote:
->
->> Am 17=2E Mai 2021 21:36:28 MESZ schrieb Stephen Hemminger
-><stephen@networkplumber=2Eorg>:
->> >On Mon, 17 May 2021 09:44:21 +0200
->> >This works for me:
->> >
->> >make CC=3D"$CC" LD=3D"$LD" HOSTCC=3Dgcc =20
->>=20
->> Hi,
->>=20
->> Currently have an issue i guess from install=2E After compile i install
->into local directory,pack it and unpack on target system
->(/usr/local/sbin)=2Etried
->>=20
->> https://github=2Ecom/frank-w/iproute2/blob/main/crosscompile=2Esh#L17
->
->>=20
->> Basic ip commands work,but if i try e=2Eg=2E this
->>=20
->> ip link add name lanbr0 type bridge vlan_filtering 1
->vlan_default_pvid 500
->>=20
->> I get this:
->>=20
->> Garbage instead of arguments "vlan_filtering =2E=2E=2E"=2E Try "ip link
->help"=2E
->>=20
->> I guess ip tries to call bridge binary from wrong path (tried
->$PRFX/usr/local/bin)=2E
->>=20
->> regards Frank
->
->No ip command does not call bridge=2E
->
->More likely either your kernel is out of date with the ip command (ie
->new ip command is asking for
->something kernel doesn't understand);
-I use 5=2E13-rc2 and can use the same command with debians ip command
+From: Stefan Chulski <stefanc@marvell.com>
 
->or the iplink_bridge=2Ec was not
->compiled as part of your compile;
->or simple PATH issue
->or your system is not handling dlopen(NULL) correctly=2E
+If Link Partner sends frames larger than RX buffer size, MAC mark it
+as oversize but still would pass it to the Packet Processor.
+In this scenario, Packet Processor scatter frame between multiple buffers,
+but only a single buffer would be returned to the Buffer Manager pool and
+it would not refill the poll.
 
-Which lib does ip load when using the vlanfiltering option?
+Patch add handling of oversize error with buffer header handling, so all
+buffers would be returned to the Buffer Manager pool.
 
->What happens is that the "type" field in ip link triggers the code
->to use dlopen as form of introspection (see get_link_kind)
+Fixes: 3f518509dedc ("ethernet: Add new driver for Marvell Armada 375 network unit")
+Reported-by: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 22 ++++++++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 54 ++++++++++++++++----
+ 2 files changed, 67 insertions(+), 9 deletions(-)
 
-I can use the command without vlan_filtering option (including type bridge=
-)=2E
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index 8edba5e..4a61c90 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -993,6 +993,14 @@ enum mvpp22_ptp_packet_format {
+ 
+ #define MVPP2_DESC_DMA_MASK	DMA_BIT_MASK(40)
+ 
++/* Buffer header info bits */
++#define MVPP2_B_HDR_INFO_MC_ID_MASK	0xfff
++#define MVPP2_B_HDR_INFO_MC_ID(info)	((info) & MVPP2_B_HDR_INFO_MC_ID_MASK)
++#define MVPP2_B_HDR_INFO_LAST_OFFS	12
++#define MVPP2_B_HDR_INFO_LAST_MASK	BIT(12)
++#define MVPP2_B_HDR_INFO_IS_LAST(info) \
++	   (((info) & MVPP2_B_HDR_INFO_LAST_MASK) >> MVPP2_B_HDR_INFO_LAST_OFFS)
++
+ struct mvpp2_tai;
+ 
+ /* Definitions */
+@@ -1002,6 +1010,20 @@ struct mvpp2_rss_table {
+ 	u32 indir[MVPP22_RSS_TABLE_ENTRIES];
+ };
+ 
++struct mvpp2_buff_hdr {
++	__le32 next_phys_addr;
++	__le32 next_dma_addr;
++	__le16 byte_count;
++	__le16 info;
++	__le16 reserved1;	/* bm_qset (for future use, BM) */
++	u8 next_phys_addr_high;
++	u8 next_dma_addr_high;
++	__le16 reserved2;
++	__le16 reserved3;
++	__le16 reserved4;
++	__le16 reserved5;
++};
++
+ /* Shared Packet Processor resources */
+ struct mvpp2 {
+ 	/* Shared registers' base addresses */
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index d415447..f774dcf 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -3840,6 +3840,35 @@ static void mvpp2_xdp_finish_tx(struct mvpp2_port *port, u16 txq_id, int nxmit,
+ 	return ret;
+ }
+ 
++static void mvpp2_buff_hdr_pool_put(struct mvpp2_port *port, struct mvpp2_rx_desc *rx_desc,
++				    int pool, u32 rx_status)
++{
++	phys_addr_t phys_addr, phys_addr_next;
++	dma_addr_t dma_addr, dma_addr_next;
++	struct mvpp2_buff_hdr *buff_hdr;
++
++	phys_addr = mvpp2_rxdesc_dma_addr_get(port, rx_desc);
++	dma_addr = mvpp2_rxdesc_cookie_get(port, rx_desc);
++
++	do {
++		buff_hdr = (struct mvpp2_buff_hdr *)phys_to_virt(phys_addr);
++
++		phys_addr_next = le32_to_cpu(buff_hdr->next_phys_addr);
++		dma_addr_next = le32_to_cpu(buff_hdr->next_dma_addr);
++
++		if (port->priv->hw_version >= MVPP22) {
++			phys_addr_next |= ((u64)buff_hdr->next_phys_addr_high << 32);
++			dma_addr_next |= ((u64)buff_hdr->next_dma_addr_high << 32);
++		}
++
++		mvpp2_bm_pool_put(port, pool, dma_addr, phys_addr);
++
++		phys_addr = phys_addr_next;
++		dma_addr = dma_addr_next;
++
++	} while (!MVPP2_B_HDR_INFO_IS_LAST(le16_to_cpu(buff_hdr->info)));
++}
++
+ /* Main rx processing */
+ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 		    int rx_todo, struct mvpp2_rx_queue *rxq)
+@@ -3886,14 +3915,6 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 			MVPP2_RXD_BM_POOL_ID_OFFS;
+ 		bm_pool = &port->priv->bm_pools[pool];
+ 
+-		/* In case of an error, release the requested buffer pointer
+-		 * to the Buffer Manager. This request process is controlled
+-		 * by the hardware, and the information about the buffer is
+-		 * comprised by the RX descriptor.
+-		 */
+-		if (rx_status & MVPP2_RXD_ERR_SUMMARY)
+-			goto err_drop_frame;
+-
+ 		if (port->priv->percpu_pools) {
+ 			pp = port->priv->page_pool[pool];
+ 			dma_dir = page_pool_get_dma_dir(pp);
+@@ -3905,6 +3926,18 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 					rx_bytes + MVPP2_MH_SIZE,
+ 					dma_dir);
+ 
++		/* Buffer header not supported */
++		if (rx_status & MVPP2_RXD_BUF_HDR)
++			goto err_drop_frame;
++
++		/* In case of an error, release the requested buffer pointer
++		 * to the Buffer Manager. This request process is controlled
++		 * by the hardware, and the information about the buffer is
++		 * comprised by the RX descriptor.
++		 */
++		if (rx_status & MVPP2_RXD_ERR_SUMMARY)
++			goto err_drop_frame;
++
+ 		/* Prefetch header */
+ 		prefetch(data);
+ 
+@@ -3986,7 +4019,10 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 		dev->stats.rx_errors++;
+ 		mvpp2_rx_error(port, rx_desc);
+ 		/* Return the buffer to the pool */
+-		mvpp2_bm_pool_put(port, pool, dma_addr, phys_addr);
++		if (rx_status & MVPP2_RXD_BUF_HDR)
++			mvpp2_buff_hdr_pool_put(port, rx_desc, pool, rx_status);
++		else
++			mvpp2_bm_pool_put(port, pool, dma_addr, phys_addr);
+ 	}
+ 
+ 	rcu_read_unlock();
+-- 
+1.9.1
 
-Maybe missing libnml while compile can cause this? had disabled in config=
-=2Emk and was not reset by make clean,manual delete causes build error,see =
-my last mail
-
-You can crosscompile only with CC,LD and HOSTCC set?
-
-regards Frank
