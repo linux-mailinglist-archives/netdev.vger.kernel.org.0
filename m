@@ -2,96 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28E6C3909B4
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 21:35:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 629AF3909DD
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 21:47:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230272AbhEYThC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 15:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
+        id S232103AbhEYTtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 15:49:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbhEYThC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 15:37:02 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1105C061574
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 12:35:31 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id u33so16632995qvf.9
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 12:35:31 -0700 (PDT)
+        with ESMTP id S230240AbhEYTtL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 15:49:11 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B580AC061574;
+        Tue, 25 May 2021 12:47:40 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id o18so7040245ybc.8;
+        Tue, 25 May 2021 12:47:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gSsCLDJJZUmBzGQdFGlj6TWUswdWupQSF2qzwB+7rvE=;
-        b=gk8/zRDkAvonTnslqlEVJsOYbm2rGBaIF8/kNSgA+4hqYMBhe1zyxBK3MA3LH5MY30
-         9adDbV84t6bYBeb6Ml+boBLPd+GhRJs/lVjYnyz+Av2YrZ2FedfOnt83wdyJe32kLsKS
-         B/G7a2UzCAsjsQo8sr8X1BkrsCTbUGEAcZydkAG42r+wP0a4Ti9m09SDZSw8x2+it3qj
-         noDMtQS9HPe6D0wvaVXbs2H7tVgwwW25UkWt1+ufAtZswsA+z1KbS0rlxWClUX3lGpMJ
-         nAPnR/C65auwiSUquzF6xI5sSAVThTDHdyqng441Z/5BF+oe9h0KXM1h5s7J/zf+MOgB
-         /fmg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sTYN+8SqG2RGBqoSV7w+w17JB1NhOulyR0vbBWb1CRc=;
+        b=hgoOnq2JUlX3uaO7fVG+ppb4uuFJzdtV1eWWJWP6MEkF5BZl5/saOSO10dkjPUH3dX
+         bAaNEigiDAEdgNONOyoe2YEhVIR+vfR8oSOQYGq2rKHfT2SnrFOLoK9hq/Ff8gKuT1Oz
+         C/B1SuI8wz2c85+oV0D4g8JqIHuGYChBXQ7ZtMNf8U4LFZjEq8Idb97eGMSmGi3f3WWo
+         H7MtR/+F8ESCFWwCERPP78bUWOdhSCdkvK0gjHEyN1qnw5/kQD7yotBbm8uSHl/4Ha6w
+         rHQAmTZFIodjG6o9uLR256Io27UnT9wz4OBD88m+uPj4+Y9Qlw4VNWxjBPCIMXZzsSlV
+         05QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gSsCLDJJZUmBzGQdFGlj6TWUswdWupQSF2qzwB+7rvE=;
-        b=R4RsRfw3ijL1C7V2XGXtLrkyB/VkGOy86hxoMObl3AKDsb7Khsj1Ta0DQp9hFgjyWB
-         zqsk/9IRAEA/OIFEh0DrRdYd06pnKHnQAcWIggmzpLnh74vtW5DNinRAz8Q38SRfUR7t
-         vP/2/M0VJq8g829KO1tcG+8um2l7Wrk0LM0x82gCtb4DnzGuxgOrlLCQOAgn0mg8bbJh
-         rbbJM2WjoURR0yZ36FXAHdOv8lUzUMaBi5f7xgTbTzPZPyYtAiWyprgI+PT1Td3Bauta
-         RGRweJcOgqc/85dIrfaQIP2QmQiiDXces4sX+ttfRO/89VJJAG9qXmnfbyy9bUlLkBOM
-         u/fg==
-X-Gm-Message-State: AOAM532vlHs6odeo8/tiPklZ3cfwtxuOW0RRKX2smOUPDdzLJcFBCyMd
-        tRGcsN039Yu8J/9O9XcyIdt/XA==
-X-Google-Smtp-Source: ABdhPJwLuLVTRFoNUscNyLkGhi5cZfQo7AQgtGXDnzSRxYCsqP+uNP7gL+BVxz4ENvZZsPPs2n0xgg==
-X-Received: by 2002:ad4:5343:: with SMTP id v3mr39071570qvs.45.1621971331234;
-        Tue, 25 May 2021 12:35:31 -0700 (PDT)
-Received: from [192.168.1.79] (bras-base-kntaon1617w-grc-28-184-148-47-211.dsl.bell.ca. [184.148.47.211])
-        by smtp.googlemail.com with ESMTPSA id p11sm72483qtl.82.2021.05.25.12.35.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 May 2021 12:35:30 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sTYN+8SqG2RGBqoSV7w+w17JB1NhOulyR0vbBWb1CRc=;
+        b=dKiF+H549beS4RgiE4+bSLf3iWPKEQUAvWlPB2d3VNs3r0pS+s9xSDctN22yi0TjTO
+         ro4lkuDHjH97xPBwH82LI1CcYSt4Ph3zCrNtyRWiOYMs2ft2WJKaChr8PzUnlZTVqEij
+         GxclQAZR0sXnxtGZ0ky7WEe4CjN+b0pRG6u9qcmP5lAC4d41fKDQxJkHNOV3r9aDV54+
+         kAXIdk5/Dj+P3Qtvd09NtsjiYKR9o3S2VqEDHvXwexJP1SljKpc4gBnVq9wgblDUeX3o
+         0j094YDKqLiaVxoemHrY5hilFlfbErRKUtBxK0S7jgk5SCQodhvSPDvz9DV5JT6QSCO9
+         vaOw==
+X-Gm-Message-State: AOAM530RK1BVb6ecHhx5rNaOxmRMh1NQlbkmTOTR9O5Natkt3L+JHd+M
+        ochBDHuL0zctMtNDyACpLrjBoyq9dnSK5C3oNRX5iGt7
+X-Google-Smtp-Source: ABdhPJxcrG+ChvQY54LAI1DHSAUkuvWwz8netKiWYKqTKpP1S5rtjOYLNmuPvbivoqM9CEgkSKCEPVEm/U2xBoO66Aw=
+X-Received: by 2002:a25:7246:: with SMTP id n67mr44782688ybc.510.1621972059940;
+ Tue, 25 May 2021 12:47:39 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
+ <CACAyw9-7dPx1vLNQeYP9Zqx=OwNcd2t1VK3XGD_aUZZG-twrOg@mail.gmail.com>
+ <CAADnVQLqa6skQKsUK=LO5JDZr8xM_rwZPOgA1F39UQRim1P8vw@mail.gmail.com>
+ <CAEf4Bza2cupmVZZRx4yWOQBQ7fnaw5pwCQJx9j1HWp=0eUiA1A@mail.gmail.com> <CAM_iQpXn8KyLtApiJOkjKfrhadeG-j0Z+QOBS6SFJjs1as0ZQg@mail.gmail.com>
+In-Reply-To: <CAM_iQpXn8KyLtApiJOkjKfrhadeG-j0Z+QOBS6SFJjs1as0ZQg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 25 May 2021 12:47:28 -0700
+Message-ID: <CAEf4BzbzviuM2xXAc_v8vf=KO1F1q1iy3Jmzrb8ZdF_3Vo22QA@mail.gmail.com>
 Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
-References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
- <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
- <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
- <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
- <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
- <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <bcbf76c3-34d4-d550-1648-02eda587ccd7@mojatatu.com>
-Date:   Tue, 25 May 2021 15:35:29 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
-MIME-Version: 1.0
-In-Reply-To: <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-05-25 2:21 p.m., Alexei Starovoitov wrote:
-> On Mon, May 24, 2021 at 9:59 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Mon, May 24, 2021 at 10:22 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Mon, May 24, 2021 at 12:13 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > I second the use of BPF_PROG_TEST_RUN (a.k.a. BPF_PROG_RUN now) to
+> > "mirror" such APIs to user-space. We have so much BPF-side
+>
+> Except the expiration time is stored in user-space too if you just
+> use user-space timers to trigger BPF_PROG_TEST_RUN.
+> Modifying expiration based on its current value in timer callbacks
+> is very common. For example in conntrack use case, we want the
+> GC timer to run sooner in the next run if we get certain amount of
+> expired items in current run.
 
+I'm not entirely sure what all this means, sorry. My general point is
+that instead of doing bpf() syscall with a new custom command (e.g.,
+BPF_TIMER_UPDATE), you can just fire your custom BPF program with
+BPF_TEST_RUN. You can pass custom timeouts or any other
+user-space-provided settings either through global variables, custom
+maps, or directly as a context. So you have full control over what
+should be set when and why, we just avoid adding tons of custom bpf()
+syscall commands for every single feature.
 
-[..]
-> In general the garbage collection in any form doesn't scale.
-> The conntrack logic doesn't need it. The cillium conntrack is a great
-> example of how to implement a conntrack without GC.
+>
+>
+> > functionality and APIs that reflecting all of that with special
+> > user-space-facing BPF commands is becoming quite impractical. E.g., a
+> > long time ago there was a proposal to add commands to push data to BPF
+> > ringbuf from user-space for all kinds of testing scenarios. We never
+> > did that because no one bothered enough, but now I'd advocate that a
+> > small custom BPF program that is single-shot through BPF_PROG_RUN is a
+> > better way to do this. Similarly for timers and whatever other
+> > functionality. By doing everything from BPF program we also side-step
+> > potential subtle differences in semantics between BPF-side and
+> > user-space-side.
+>
+> I am confused about what you are saying, because we can already
+> trigger BPF_PROG_RUN with a user-space timer for a single shot,
+> with the current kernel, without any modification. So this sounds like
+> you are against adding any timer on the eBPF side, but on the other
+> hand, you are secoding to Alexei's patch... I am completely lost.
 
-For our use case, we need to collect info on all the flows
-for various reasons (one of which is accounting of every byte and
-packet).
-So as a consequence - built-in GC (such as imposed by LRU)
-cant interfere without our consent.
+I'm arguing against adding more custom commands to bpf() syscall. And
+I was talking about triggering BPF program directly from user-space
+with BPF_PROG_TEST_RUN/BPF_PROG_RUN command, not through some timers.
 
-cheers,
-jamal
+>
+> Very clearly, whatever you described as "single shot" is not what we
+> want from any perspective.
+
+I'm not sure we are even talking about the same things, so I doubt
+"clearly" in this case.
+
+>
+> Thanks.
