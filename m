@@ -2,98 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CDA8390288
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 15:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D39839029B
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 15:34:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233195AbhEYNbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 09:31:49 -0400
-Received: from mout.gmx.net ([212.227.17.21]:56809 "EHLO mout.gmx.net"
+        id S233327AbhEYNgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 09:36:08 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56228 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233170AbhEYNbs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 May 2021 09:31:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1621949414;
-        bh=+36ql1hrXHfVbSpn957tc+hYURQHqApsVIjIVg/O0P8=;
-        h=X-UI-Sender-Class:From:To:Subject:Date:In-Reply-To:References;
-        b=GPZC8hhxL8+UzcX06goYZ3KX+O244amJjOxt0Of/5rff4nJCb8gpZyphUQ3QwZLab
-         z8N0WTtlujZtpONbyxuudZ2T/PhGutzCK/17Q/0N/oMkDHlnph+/L0uaGlgapqGAm8
-         +NtrRZqE8HwdsA1JAddz6PFudsPINQEi4DPXR/rk=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [157.180.224.228] ([157.180.224.228]) by web-mail.gmx.net
- (3c-app-gmx-bs13.server.lan [172.19.170.65]) (via HTTP); Tue, 25 May 2021
- 15:30:14 +0200
+        id S233314AbhEYNgH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 May 2021 09:36:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=QVfCIaJRZFdqpoQnaoHLSToEK5uzlriQqJf3wkiuazc=; b=5R9PKruX3AeXuSgBIK5hbOv6m+
+        y83vfrQcHBqM9gxRwfUDfCXViccGgbQaYYxnThE+jTEmg0PlZq+RSHuEI2x1i+IwQon8hHTiQHXWm
+        ZFhV7NXIVHludp9V4D2izp33zklOGKmv09hgudoXqb31Pm64byQOP+2ULCxi4kU57xfQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1llXCc-006B0y-8r; Tue, 25 May 2021 15:34:34 +0200
+Date:   Tue, 25 May 2021 15:34:34 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC net-next 0/2] Introduce MDIO probe order C45 over C22
+Message-ID: <YKz86iMwoP3VT4uh@lunn.ch>
+References: <20210525055803.22116-1-vee.khee.wong@linux.intel.com>
 MIME-Version: 1.0
-Message-ID: <trinity-0fb4d69c-cf47-46fb-8a4d-522aee2627dd-1621949414214@3c-app-gmx-bs13>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Subject: Aw: Re: Crosscompiling iproute2
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 25 May 2021 15:30:14 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <D24044ED-FAC6-4587-B157-A2082A502476@public-files.de>
-References: <trinity-a96735e9-a95a-45be-9386-6e0aa9955a86-1621176719037@3c-app-gmx-bap46>
- <20210516141745.009403b7@hermes.local>
- <trinity-00d9e9f2-6c60-48b7-ad84-64fd50043001-1621237461808@3c-app-gmx-bap57>
- <20210517123628.13624eeb@hermes.local>
- <D24044ED-FAC6-4587-B157-A2082A502476@public-files.de>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:4L5ktGzJQpe6WiYB0eiPMmPlYefzxAFIL8O4VzQ5RB5giKg1jj93iBNSB5FCUBqpS3kAb
- CzoiTL2B79qUFqw1Xv2WJ0x2x9pSw7Debilezujn4EVd69jS2iaYIgxOJZD7GPzZOhf3SgzCBMhG
- ZZ2PzOO7UwWSNVTybso7NiU9+ZL/WGK35EGkFQFs+N0l03ibal+HgSBIn6kLvsFb5OBy4KqSnZbx
- 9DKzjyy6JqM+KhOx9kp2hnsZAwqp2CarTEKh7Zaen4UDho0G1qJLiuLys1oRj2/3zZ8A9gWPtXBz
- iY=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:5dro349tO4k=:7xfSXwP9EyvHutF45Hk5nS
- AnPLj2ULnlJjGMT8JPs8iGNuH769vuV3Kb3gUjM2UxS0tGDY6MP0jFxStza2f8hn1VZYpjZRb
- Kna+tAzIHcJFDdSzFwuKOtOGvYjhsj5yKXNjkXSbRBctP2aFwsgTbUgIZVb+08OxWsv9CScET
- wlGi8coEIc1NGl06I+BSJLZ8h27e+KLN14srH6sw+mmD2NFJ4kpU9Vu9FhKhLNXImNbc67PaN
- ufmRMiHZcCObLgmVuVPRzu1P21ss40zIRgzkv6ZT0TqIiHzVrvXGdJGWmpAeQ2gDMBK3SXE/I
- ImV4+sKAkItgdEuEMpKd+p+BzOXVYHDNEXA94tW83BemNwFABBJC5WFJBFAqzuHQJLrHsWw1e
- cvcbobKbl93BTDrLh+MCd0E2wZSfl3G5ps0kLLahBdzoRuDGj7LhDDH3qM4xMzDjfqqo+V2Uc
- SgOCZZLbJtzSEH0613uuDYeOjlbdvqs7VWdPOh5iFf+3ZtFNlMBefI4fGpseoPtGVDgKcVWxw
- uFsfAg9/T2ARI0DJDjhRW/++/UNOe8MFsJ9Ey1SInNYpXkhpx0X5B06in7BI9Tgl9ZRbJsFFn
- SHk/4f+4UVkafzsc1p7f3FJPpiBMgR7AzZF62TmNq/gpqj8gWtTtH17lvpAw3biRQuYQAzlwe
- 27FQeryIGjE23RV+sR7AJlQS6dMdDWTZfBlb1+sZDSjAGHwr9B+rJiUReCjpkunI9as1AsDQQ
- zZi52zxv9BFMoUc75t8Z5UTvPjlblysWTuHlGt+exLUdGJeSvPr6Sqbpdw7zjxlmTC+jPNDxR
- JA7U3iN7FmNLBjGTYoI4Twf6iSYkMf+1dG/t533uTzCxTgHU/M2uZbHDNKJYMQk2rp482PkOE
- 5fhigAg+4v20aZy1jEUolm1jH/USb3ozp+RXhijxFW/EWf42iARc5OzaJM3V6XomeIfSN1gAk
- 96bO/gqWVqA==
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210525055803.22116-1-vee.khee.wong@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Currently have an issue i guess from install. After compile i install in=
-to local directory,pack it and unpack on target system (/usr/local/sbin).t=
-ried
->
-> https://github.com/frank-w/iproute2/blob/main/crosscompile.sh#L17
->
-> Basic ip commands work,but if i try e.g. this
->
-> ip link add name lanbr0 type bridge vlan_filtering 1 vlan_default_pvid 5=
-00
->
-> I get this:
->
-> Garbage instead of arguments "vlan_filtering ...". Try "ip link help".
->
-> I guess ip tries to call bridge binary from wrong path (tried $PRFX/usr/=
-local/bin).
+On Tue, May 25, 2021 at 01:58:03PM +0800, Wong Vee Khee wrote:
+> Synopsys MAC controller is capable of pairing with external PHY devices
+> that accessible via Clause-22 and Clause-45.
+> 
+> There is a problem when it is paired with Marvell 88E2110 which returns
+> PHY ID of 0 using get_phy_c22_id(). We can add this check in that
+> function, but this will break swphy, as swphy_reg_reg() return 0. [1]
 
-based on Makefile i tried this install line after building
+Is it possible to identify it is a Marvell PHY? Do any of the other
+C22 registers return anything unique? I'm wondering if adding
+.match_phy_device to genphy would work to identify it is a Marvell PHY
+and not bind to it. Or we can turn it around, make the
+.match_phy_device specifically look for the fixed-link device by
+putting a magic number in one of the vendor registers.
 
-make DESTDIR=3D$PRFX PREFIX=3D/usr/local SBINDIR=3D/usr/local/sbin ARPDDIR=
-=3D/var/lib/arpd CONFDIR=3D/etc/iproute2 install
-
-it installs to the local folder instead of system-directories, but error o=
-n target is still the same :(
-
-same line with binaries from debian working, so i'm sure the command is ri=
-ght (and have depencies in linux kernel available), except there was any c=
-hange in code causing this
-
-any idea?
+    Andrew
