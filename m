@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D485C390A21
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 21:58:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8149A390A85
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 22:33:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233036AbhEYT7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 15:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
+        id S233279AbhEYUet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 16:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbhEYT73 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 15:59:29 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB98C061574;
-        Tue, 25 May 2021 12:57:57 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id e2so33448135ljk.4;
-        Tue, 25 May 2021 12:57:57 -0700 (PDT)
+        with ESMTP id S229643AbhEYUes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 16:34:48 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D43C061574;
+        Tue, 25 May 2021 13:33:18 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id j184so9752194qkd.6;
+        Tue, 25 May 2021 13:33:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4s7vCGqH0XmF+l5T0ZZ65rm+cCf196bb9Q/4DckFJcg=;
-        b=cAXVMGYah5V9RlRZ3EBNnOceo2itK3w+IW+xPAMqU2D6u4YGXBqerZni5pcuJB+NxV
-         7rzC9482okTVr+e+0jqx8t12+aX91S5oT7hlD3fTWi9RSoF540Qti865/8QHLNLVjgE3
-         qMbhjuM7HChXgxfwLYlrPHVeOF5Mf8x60+tiGHN0fmyhTIHSRGnEhl1fdVo7/yL5zyp2
-         9pP7juyMcC5sD1V/oqVjfT0pMtPj1Cihv5U85a02M62ktAvOmETMLArADanADmwU6xdE
-         SwtB6I8jayKXQ3/8Ns91GK0jS9DIvgscpG1XjRx/qugGZiQbKIVXvhog2LawbWt5R/39
-         KnNQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9qilWmNlzfl6fvjkh4Q/jQnzzgBrCqLLxE6DcLSuqOc=;
+        b=L1KClaDKIohLYlR385K9XGa5vtqsqHPx+lPVLdwyuv0lsNdRrtqj4ItwdhoEFsztst
+         tYYYK7EiBTd0GP4ZXbQxL09h/deNlDP2l88PouUlvLpZiw7gk9A4xXuRIPQ4JjYKvo4T
+         Y+9YGiyQ73k9oz+i7CabMC6/+aHk9nLvFAUwP7eN8kjFV1yaYhd6cwpUK0gSBqyCKHnC
+         9ogWTf1icOdV0b6/ktfBnDwpbJy/936ACvZjku962tCMRxv1mAQP2JG0Ekd7a9MJSlQp
+         D1OSrfrtu42kDVnEMZBobf2ddYjjgXi3CfSN1ZINbyOIS4yFoGM9ge3D4s4vGoIkOfbC
+         vBTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4s7vCGqH0XmF+l5T0ZZ65rm+cCf196bb9Q/4DckFJcg=;
-        b=XnY04Wo9j0g6azwHXWMytiG91y6uzBYOU12asRAoNiNzEIj6Z5PJiClEEXM+BT4Xox
-         Z78NjCrc4l8bfgiS+hWEx1dgQS3qAkrcBeaZA1/YyYlDXKpxkjs3sJEvM0o12Bhue+cv
-         ermF8/rLDFY6qWOBreZpjrwNh2QTsYAsutpHj19b2CMhz5LZz4/UfKFXjkQGD6T3MSqZ
-         n0hCBRYBcMTWDFHfyH1SWojUv4VSQ/6W/aAuR+qSfjIWwmnTiZ6y6HM8U00hHuS2GDon
-         4jZlM4IzFR6XD/ytyrF5tTjmWzlbWtQTJSqrAaKG6Ql8rZTPyBGWc3A5aNSok7oR1xY7
-         I2iA==
-X-Gm-Message-State: AOAM530jImx7qyT6PFIFTaw1lUTab6XPM0jhwoVcRcXngg3V0IBeVD63
-        yZnxNbd4i74MwzEVh8Lz7iqhPir/FMrKvJBigqq6WmaQ
-X-Google-Smtp-Source: ABdhPJwfnnuCdxpZ2xllj1yM84DF3TTXPxxxfJDxAdKeBGjipAsgTG83zCIv82LwvnK1Es0Klq+o/bMYZnfgEjV2LTk=
-X-Received: by 2002:a2e:a489:: with SMTP id h9mr22497417lji.21.1621972676337;
- Tue, 25 May 2021 12:57:56 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9qilWmNlzfl6fvjkh4Q/jQnzzgBrCqLLxE6DcLSuqOc=;
+        b=HEzI04prn2CB4R2MM9QZerprYKGklGEljLIF7Kd/Z3gyMLDjWpbZ7h9Bj6icf2GvVh
+         2cOhTYMSSRD0JxtGA6sH/0Hc4t5nktiPdjef3m1MnuOzBzSeMxiTC6Z1uT2Ui1WZPvce
+         MSzKhviNceqZVzeYV4ZVyMFEM0aox0GyTb3A3p3b3RuvBQOPEUUucVASTSbegmtYExat
+         8ydz/DEMHKU5PwAKmkFjulQ727BI0xXFcYoZ5FG506t/wWmCp2AtHwrFDkShrLhaqg54
+         YSvfb2WaDXTtWtInqCOF8N5GVolWsj8AJB4cjG+Tn9omzWC94zsMGNmW3gQUtEZFJUiD
+         EQGA==
+X-Gm-Message-State: AOAM530pL9Ktwd/VXeLZIwhF+wHOj7RrzGMt7B2nHB/yifLmH9YcAF9Y
+        XeiHIHXIUek+G85wNU4zvSc=
+X-Google-Smtp-Source: ABdhPJxb99gzSWh5vAWsadbIhK88O71Uer9ZaNKpD93/HteHpjUwRD2ng4gnN377OcMehun4zvVXNw==
+X-Received: by 2002:a37:c4d:: with SMTP id 74mr37056735qkm.264.1621974797856;
+        Tue, 25 May 2021 13:33:17 -0700 (PDT)
+Received: from master-laptop.sparksnet ([2601:153:980:85b1:a465:c799:7794:b233])
+        by smtp.gmail.com with ESMTPSA id g4sm159312qtg.86.2021.05.25.13.33.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 May 2021 13:33:17 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Peter Geis <pgwipeout@gmail.com>
+Subject: [PATCH v2 0/2] fixes for yt8511 phy driver
+Date:   Tue, 25 May 2021 16:33:12 -0400
+Message-Id: <20210525203314.14681-1-pgwipeout@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
- <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
- <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
- <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
- <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
- <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com> <bcbf76c3-34d4-d550-1648-02eda587ccd7@mojatatu.com>
-In-Reply-To: <bcbf76c3-34d4-d550-1648-02eda587ccd7@mojatatu.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 25 May 2021 12:57:45 -0700
-Message-ID: <CAADnVQLWj-=B2TfJp7HEsiUY3rqmd6-YMDAGdyL6RgZ=_b2CXg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 25, 2021 at 12:35 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
->
-> On 2021-05-25 2:21 p.m., Alexei Starovoitov wrote:
-> > On Mon, May 24, 2021 at 9:59 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
->
-> [..]
-> > In general the garbage collection in any form doesn't scale.
-> > The conntrack logic doesn't need it. The cillium conntrack is a great
-> > example of how to implement a conntrack without GC.
->
-> For our use case, we need to collect info on all the flows
-> for various reasons (one of which is accounting of every byte and
-> packet).
-> So as a consequence - built-in GC (such as imposed by LRU)
-> cant interfere without our consent.
+The Intel clang bot caught a few uninitialized variables in the new
+Motorcomm driver. While investigating the issue, it was found that the
+driver would have unintended effects when used in an unsupported mode.
 
-The outcome of the last bpf office hours was a general agreement
-that we need new hooks in map update/delete operations
-(including auto-delete by LRU) that will trigger a bpf subprog.
-It might look very similar to the timer callback that is part of this patch,
-but instead of being called by the timer the LRU logic will call it.
-This way the subprog can transfer the data stored in the
-about-to-be-deleted map element into some other map or pass
-to user space via ringbuf or do any other logic.
+Fixed the uninitialized ret variable and abort loading the driver in
+unsupported modes.
+
+Thank you to the Intel clang bot for catching these.
+
+Changelog:
+V2:
+- fix variable order
+- add Andrew Lunn's reviewed-by tags
+
+Peter Geis (2):
+  net: phy: fix yt8511 clang uninitialized variable warning
+  net: phy: abort loading yt8511 driver in unsupported modes
+
+ drivers/net/phy/motorcomm.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+-- 
+2.25.1
+
