@@ -2,165 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A6993908B3
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 20:18:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B21F83908D5
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 20:21:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231992AbhEYSUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 14:20:17 -0400
-Received: from mout.gmx.net ([212.227.17.21]:55135 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231663AbhEYSUL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 May 2021 14:20:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1621966719;
-        bh=/op4fcM9HVqmDEsdC29j710Me60EemTF9DQAeaZWDow=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=UK0hk/VOzky/KbKfWp/ixJOfPIAHbcmyNksZsXNH+6LtZByBr1XUXBN4hGgC90hJ5
-         CFzDvk/nUeOlPo8B0WkBBb4mnNgxJS7Ca3ok1Usnv9j55waAGRtDCNf4zU0ehwIwvL
-         U0/mXLM5IGBHk0J+2hWYxfIfC/Bx2fFhNWr4DBrw=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [157.180.224.228] ([157.180.224.228]) by web-mail.gmx.net
- (3c-app-gmx-bs13.server.lan [172.19.170.65]) (via HTTP); Tue, 25 May 2021
- 20:18:39 +0200
+        id S232206AbhEYSX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 14:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231707AbhEYSXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 14:23:25 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B145C061574;
+        Tue, 25 May 2021 11:21:55 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id a4so24601769ljd.5;
+        Tue, 25 May 2021 11:21:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eiMXbPyZeBG/jx13ONZ4/fh0f8muodUmcHj/milF8iQ=;
+        b=Ou6LgZu4cXNTamAmRMe45RHSWi5Qa9R6Bs8jinJtVM8zBz7fIZ75ozXemeTg+hb77f
+         URI/+chK+9XJNdbxWWe2qMDppXxNbo3o6E2f+DxWcBtKg1nH68I7MIU8cm03pByqzLEX
+         Yqp+gf3IcjqQajPWilxdK9rMt0/w2rP8T88iYbxdWO8SJz+16XKRnyOdOBEwlDmbcP90
+         LP7wmbO4oXqkfaPOOsu6gCh3da2mIBuMesYGNIr+L9Y9ZrE+xztVFFiPE3e55cziNqs9
+         X/CmVTUPtkC3zWzJr4H2vGFa4jGunEWOVdTUYfJcCU+FM7PSlDeHun1a6KP1T2WQTOe9
+         ynVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eiMXbPyZeBG/jx13ONZ4/fh0f8muodUmcHj/milF8iQ=;
+        b=aJUIRoCelUVCxhm/MN0ckpiJHWE7eT6GW0OgwrqPYCga4PJdX/CMoiOx8hGd/1m6z/
+         gZMVue7YabrPZH/d70GH4SXH0CZY5pe2rRi0Yb2culH+Vr8hFZY5Q2rrq0oY0MoHA504
+         +zQ2oVIR7DYm90YdgE2cRNlg0P90VHuvDExoCg8jynq8YBiFsF2SMtaFTMYMB2KruyQZ
+         OAK0BoGMAjvWT0YGhab4HP++VeFnLQ3f7KrrYASkFSC5z3Sdr7rwsWnpHs0rjPQKVc6z
+         uWGJvgJDAhFx2JEz166hC6AmyuvHCon4fvKckRnaLwz8pHf+EP3KOb46XEg9HSs7og69
+         8wsg==
+X-Gm-Message-State: AOAM533LElUfR6H9kYygckybWPWzFl4QHM2Co1c/LWErDa10x2gcTi25
+        fJQ2TuF4SJsdzidd9pnECr3mJFGOHAkTK0agA80BkFBu
+X-Google-Smtp-Source: ABdhPJwLJnFWv64jHhseXf48OpIzHl1VRV2iVtp16ZOgTdMBFymqeNDt8EeT23LyLYZyGjTabpQOgc2Y/9ZuDSbYUBM=
+X-Received: by 2002:a05:651c:145:: with SMTP id c5mr20789488ljd.204.1621966913252;
+ Tue, 25 May 2021 11:21:53 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <trinity-3a2b0fba-68a6-47d1-8ed1-6f3fc0cf8200-1621966719535@3c-app-gmx-bs13>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Subject: Aw: Re: Crosscompiling iproute2
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 25 May 2021 20:18:39 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20210525090846.513dddb1@hermes.local>
-References: <trinity-a96735e9-a95a-45be-9386-6e0aa9955a86-1621176719037@3c-app-gmx-bap46>
- <20210516141745.009403b7@hermes.local>
- <trinity-00d9e9f2-6c60-48b7-ad84-64fd50043001-1621237461808@3c-app-gmx-bap57>
- <20210517123628.13624eeb@hermes.local>
- <D24044ED-FAC6-4587-B157-A2082A502476@public-files.de>
- <20210524143620.465dd25d@hermes.local>
- <AACFD746-4047-49D5-81B2-C0CD5D037FAB@public-files.de>
- <20210525090846.513dddb1@hermes.local>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:R21n4AiY2iA8cz2l+0tGKIqpnFIXxIjO65QAL2k8fbDlByuaR4qPj8k9U9vy/cgHqGFwl
- tCR7ZAIMZaxY/7uQGiVwqUKJxl5ok43nfVBmYgiSyWBNuV/UcwpUiUv+yNXpxvOy3Etn8UH5NG5G
- HDMkHQxnhHU6OzGQYgxV1QEjB5Jd5VqEwbeIbTn3u995DOB8pb9dkbpAKXFfg21M3L7HISOI+0fJ
- 6CL2HXsbvpwl/9KTfIk2lZXiDfbk1BNyomzWlYD8GZsjXzrrvsv4jetMwzm9Fg7cc8dj1UpRAX/U
- no=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2KLhtAS/R44=:D6QFrVMESya49wwj+NfmHc
- 5J9m9VL61PSNN4B+RltyaYO2lzkpWvHHd/L46S0tERyzt2mhPW5a+e1y/08/rKronJw6oNo1q
- Yf2oQh4BRKPXA1fpemgqu3eFlCZoQAxzua9bWx44raJnJdrC5ZSbWp+U48gDtqKc5JZOqG7Lb
- 6n4rGMdEQzeLJcBlilTp3rxMTdkr9iyisfrLzb9o5NUwtTv2bWms+pDufOS2L5Cu8S31Hn00D
- 2tnx0wAW1FFeh1GcEv+RzyfT64rycl9NOd+fsKWO9zzYTy+Sc0tFawXlUCiaMZJc1t1tu/rqC
- vL8tHTR44Z/0ZKjbbYuIw5faSEbOowMhBRnl9axAoa6LEJKA2i0SSKqBpsQgxonOZNCgV/4xL
- eRNVce2jKWcfJum7wMxrmMaN5InzhO/njubgnZSeKVB+X96wNKx2d+MIVUNUS0IzBCWUyW2dQ
- GQKKTQVtBPj5W2k6JMeDwllPRdRyzEd1jaUcvTwPsA1aBKjEP6LjNWC5He2mx+sw2zQOdP0k4
- lfTEb//zAosKel9leSB7sXUtdtRXn2/7Y6cM9JfnUjrELedM8HxG8lNcJU8N5lGJr1+aMXIlA
- tH4fyKBTCSaiMK7qweLhqqjYvBheB1wLyHRoZaMcrtX9iXTofTjtPmO2JfipBv9mPN2jk65PK
- RaYwVZztYJLu47y0U9G3kPr1X/EX+HnExPWrZpX/6em/2G+nk+dpWSenAxItfggEqF6wGONb3
- sVEHloiMZXpPeYZ90KDVW6praX1Pr2rZCrCNdXcPjprAyvAsxQqTiTTffqlVK5aJxOI0bAdGW
- hyWXLaKJtYdbtj1cwEvClKsz6Ssm/utzzCBU2Vcm5wsySPbhg39tdM1LrOoIE8t+K24wUVJ8T
- WY3mBROdjTWpoAz579QcmJscH9VXW+ZqthM/ML1x03d2kGGkevyj+ORpbxvjRh5OQBZcRHpCV
- 6CmTcqt0Y/A==
-Content-Transfer-Encoding: quoted-printable
+References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
+ <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
+ <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
+ <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com> <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
+In-Reply-To: <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 25 May 2021 11:21:41 -0700
+Message-ID: <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Gesendet: Dienstag, 25. Mai 2021 um 18:08 Uhr
-> Von: "Stephen Hemminger" <stephen@networkplumber.org>
-> An: "Frank Wunderlich" <frank-w@public-files.de>
-> Cc: netdev@vger.kernel.org
-> Betreff: Re: Crosscompiling iproute2
+On Mon, May 24, 2021 at 9:59 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
-> On Tue, 25 May 2021 17:56:09 +0200
-> Frank Wunderlich <frank-w@public-files.de> wrote:
+> On Mon, May 24, 2021 at 8:16 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > On Sun, May 23, 2021 at 9:01 AM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Fri, May 21, 2021 at 2:37 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > >
+> > > > Hi, Alexei
+> > > >
+> > > > On Thu, May 20, 2021 at 11:52 PM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > Introduce 'struct bpf_timer' that can be embedded in most BPF map types
+> > > > > and helpers to operate on it:
+> > > > > long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
+> > > > > long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
+> > > > > long bpf_timer_del(struct bpf_timer *timer)
+> > > >
+> > > > Like we discussed, this approach would make the timer harder
+> > > > to be independent of other eBPF programs, which is a must-have
+> > > > for both of our use cases (mine and Jamal's). Like you explained,
+> > > > this requires at least another program array, a tail call, a mandatory
+> > > > prog pinning to work.
+> > >
+> > > That is simply not true.
+> >
+> > Which part is not true? The above is what I got from your explanation.
 >
-> > Am 24. Mai 2021 23:36:20 MESZ schrieb Stephen Hemminger <stephen@netwo=
-rkplumber.org>:
-> > >On Mon, 24 May 2021 21:06:02 +0200
-> > >Frank Wunderlich <frank-w@public-files.de> wrote:
-> > >
-> > >> Am 17. Mai 2021 21:36:28 MESZ schrieb Stephen Hemminger
-> > ><stephen@networkplumber.org>:
-> > >> >On Mon, 17 May 2021 09:44:21 +0200
-> > >> >This works for me:
-> > >> >
-> > >> >make CC=3D"$CC" LD=3D"$LD" HOSTCC=3Dgcc
-> > >>
-> > >> Hi,
-> > >>
-> > >> Currently have an issue i guess from install. After compile i insta=
-ll
-> > >into local directory,pack it and unpack on target system
-> > >(/usr/local/sbin).tried
-> > >>
-> > >> https://github.com/frank-w/iproute2/blob/main/crosscompile.sh#L17
-> > >
-> > >>
-> > >> Basic ip commands work,but if i try e.g. this
-> > >>
-> > >> ip link add name lanbr0 type bridge vlan_filtering 1
-> > >vlan_default_pvid 500
-> > >>
-> > >> I get this:
-> > >>
-> > >> Garbage instead of arguments "vlan_filtering ...". Try "ip link
-> > >help".
-> > >>
-> > >> I guess ip tries to call bridge binary from wrong path (tried
-> > >$PRFX/usr/local/bin).
-> > >>
-> > >> regards Frank
-> > >
-> > >No ip command does not call bridge.
-> > >
-> > >More likely either your kernel is out of date with the ip command (ie
-> > >new ip command is asking for
-> > >something kernel doesn't understand);
-> > I use 5.13-rc2 and can use the same command with debians ip command
-> >
-> > >or the iplink_bridge.c was not
-> > >compiled as part of your compile;
-> > >or simple PATH issue
-> > >or your system is not handling dlopen(NULL) correctly.
-> >
-> > Which lib does ip load when using the vlanfiltering option?
-> It is doing dlopen of itself, no other library
+> I tried to write some code sketches to use your timer to implement
+> our conntrack logic, below shows how difficult it is to use,
+
+Was it difficult because you've used tail_call and over complicated
+the progs for no good reason?
+
+> SEC("ingress")
+> void ingress(struct __sk_buff *skb)
+> {
+>         struct tuple tuple;
+>         // extract tuple from skb
 >
-> >
-> > >What happens is that the "type" field in ip link triggers the code
-> > >to use dlopen as form of introspection (see get_link_kind)
-
-this seems to be the problem:
-
-openat(AT_FDCWD, "/usr/lib/ip/link_bridge.so", O_RDONLY|O_LARGEFILE|O_CLOE=
-XEC) =3D -1 ENOENT (No such file or directory)
-write(2, "Garbage instead of arguments \"vl"..., 71Garbage instead of argu=
-ments "vlan_filtering ...". Try "ip link help".
-
-i have no /usr/lib/ip directory, my package contains only lib-folder for t=
-c (with dist files only because i use static linking). also there is no *.=
-so in my building-directory
-
-how should this built?
-
-> > I can use the command without vlan_filtering option (including type br=
-idge).
-> >
-> > Maybe missing libnml while compile can cause this? had disabled in con=
-fig.mk and was not reset by make clean,manual delete causes build error,se=
-e my last mail
-> >
-> > You can crosscompile only with CC,LD and HOSTCC set?
+>         if (bpf_map_lookup_elem(&timers, &key) == NULL)
+>                 bpf_tail_call(NULL, &jmp_table, 0);
+>                 // here is not reachable unless failure
+>         val = bpf_map_lookup_elem(&conntrack, &tuple);
+>         if (val && val->expires < now) {
+>                 bpf_tail_call(NULL, &jmp_table, 1);
+>                 // here is not reachable unless failure
+>         }
+> }
 >
-> libmnl is needed to get the error handling and a few other features.
+> SEC("egress")
+> void egress(struct __sk_buff *skb)
+> {
+>         struct tuple tuple;
+>         // extract tuple from skb
+>
+>         if (bpf_map_lookup_elem(&timers, &key) == NULL)
+>                 bpf_tail_call(NULL, &jmp_table, 0);
+>                 // here is not reachable unless failure
+>         val = bpf_map_lookup_elem(&conntrack, &tuple);
+>         if (val && val->expires < now) {
+>                 bpf_tail_call(NULL, &jmp_table, 1);
+>                 // here is not reachable unless failure
 
-so not needed for compilation, right? on target-system i have it
+tail_calls are unnecessary. Just call the funcs directly.
+All lookups and maps are unnecessary as well.
+Looks like a single global timer will be enough for this use case.
 
-/usr/local/lib/aarch64-linux-gnu:
-        libmnl.so.0 -> libmnl.so.0.2.0
-
-regards Frank
+In general the garbage collection in any form doesn't scale.
+The conntrack logic doesn't need it. The cillium conntrack is a great
+example of how to implement a conntrack without GC.
