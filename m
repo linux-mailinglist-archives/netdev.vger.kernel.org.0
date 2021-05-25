@@ -2,97 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10602390C51
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 00:34:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2ABC390C57
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 00:39:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231922AbhEYWfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 18:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44116 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbhEYWfc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 18:35:32 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB910C061574;
-        Tue, 25 May 2021 15:34:01 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FqTQF06jxz9s1l;
-        Wed, 26 May 2021 08:33:56 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1621982037;
-        bh=0sGkGFbwpUtcrWDso4ctGrH/KPXkkK5ySCMK66Rai9s=;
-        h=Date:From:To:Cc:Subject:From;
-        b=O73NK1RxuWsGblcF4liKa29I2KF8lp1JSv7xKRGLlWq9hsjHWnCYckQ45e5YeuT6q
-         +ZHWy5zfmO1RUEMVxoAKHFJtNX3kgRAQbQgIe/y77WJsg2u19mb1yY2gdytixnmWi3
-         iC+Ita0nWM1ug75bsURdodRHZTluaB4KMdkkAV7BL/4VCnqeFB2xnfq+03u2V4xFGk
-         a7+UHP828VFJVJO05aizSMK+sbEW6o7lSOeMxiUmql9yB4SuYc0lDvkLr7CzkoGm6B
-         lTdT5LCNLTTdoZaaK5V1AJd9H0x+UjkaJzh0fIZd7UGZcvSGEfK+cT1Btjc0VS2xAR
-         cPxjHK8gT7IGQ==
-Date:   Wed, 26 May 2021 08:33:56 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Yang Li <yang.lee@linux.alibaba.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the net tree
-Message-ID: <20210526083356.62941b94@canb.auug.org.au>
+        id S230269AbhEYWlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 18:41:13 -0400
+Received: from www62.your-server.de ([213.133.104.62]:50492 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229952AbhEYWlN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 18:41:13 -0400
+Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1llfi7-0004lJ-Q7; Wed, 26 May 2021 00:39:39 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: pull-request: bpf 2021-05-26
+Date:   Wed, 26 May 2021 00:39:39 +0200
+Message-Id: <20210525223939.3537-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/L+q0+y9//Kh87usM00+iBvE";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26181/Tue May 25 13:17:38 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/L+q0+y9//Kh87usM00+iBvE
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi David, hi Jakub,
 
-Hi all,
+The following pull-request contains BPF updates for your *net* tree.
 
-In commit
+We've added 14 non-merge commits during the last 14 day(s) which contain
+a total of 17 files changed, 513 insertions(+), 231 deletions(-).
 
-  c1cf1afd8b0f ("net: hns: Fix kernel-doc")
+The main changes are:
 
-Fixes tag
+1) Fix bpf_skb_change_head() helper to reset mac_len, from Jussi Maki.
 
-  Fixes: 'commit 262b38cdb3e4 ("net: ethernet: hisilicon: hns: use phydev
+2) Fix masking direction swap upon off-reg sign change, from Daniel Borkmann.
 
-has these problem(s):
+3) Fix BPF offloads in verifier by reordering driver callback, from Yinjun Zhang.
 
-  - No SHA1 recognised
+4) BPF selftest for ringbuf mmap ro/rw restrictions, from Andrii Nakryiko.
 
-Please just use
+5) Follow-up fixes to nested bprintf per-cpu buffers, from Florent Revest.
 
-git log -1 --format=3D'Fixes: %h ("%s")' <commit>
+6) Fix bpftool sock_release attach point help info, from Liu Jian.
 
-and dont split FIxes tags over more than one line.
+Please consider pulling these changes from:
 
-So
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
 
-Fixes: 262b38cdb3e4 ("net: ethernet: hisilicon: hns: use phydev from struct=
- net_device")
+Thanks a lot!
 
---=20
-Cheers,
-Stephen Rothwell
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
 
---Sig_/L+q0+y9//Kh87usM00+iBvE
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Alexei Starovoitov, kernel test robot, Piotr Krysiuk, Quentin Monnet, 
+Randy Dunlap, Song Liu
 
------BEGIN PGP SIGNATURE-----
+----------------------------------------------------------------
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmCte1QACgkQAVBC80lX
-0GwNlAf/QcfLpTzyeawP2GTG+1wcu95ksvnZ4RHqE8pBajRQ9KNYznv7aDO8D20B
-NrqYyeNLkopS25viXbo33S+XyyeLNNj9nhFC23O8fk8dSRX2Ayg9nSJ62Il2vJgD
-vKJEyREMXWL1wOmhQGqkhkh8Vzc08Rpof20n2cPDwh6P0jQr4553m6CDxJnHQMk/
-RZ8SPzopmoM5uDmDiD4tRlqctFwPd7osLpXdLnGdRCVN7vOSlMS0ldIU942WWZOh
-gPTcmwuqnJnCZpCY6EBdHKonCOSyFA+vFbS035EbcC43T3Ba6eJgCZpLRZPTJGiM
-d2zuhHE2VpQqyR3rmSiNUD+kGISVXA==
-=5Zpi
------END PGP SIGNATURE-----
+The following changes since commit 440c3247cba3d9433ac435d371dd7927d68772a7:
 
---Sig_/L+q0+y9//Kh87usM00+iBvE--
+  net: ipa: memory region array is variable size (2021-05-11 16:22:37 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 1bad6fd52be4ce12d207e2820ceb0f29ab31fc53:
+
+  bpf, selftests: Adjust few selftest result_unpriv outcomes (2021-05-25 22:08:53 +0200)
+
+----------------------------------------------------------------
+Andrii Nakryiko (1):
+      selftests/bpf: Test ringbuf mmap read-only and read-write restrictions
+
+Daniel Borkmann (6):
+      bpf: Fix BPF_JIT kconfig symbol dependency
+      bpf: Fix BPF_LSM kconfig symbol dependency
+      bpf: Wrap aux data inside bpf_sanitize_info container
+      bpf: Fix mask direction swap upon off reg sign change
+      bpf: No need to simulate speculative domain for immediates
+      bpf, selftests: Adjust few selftest result_unpriv outcomes
+
+Florent Revest (2):
+      bpf: Clarify a bpf_bprintf_prepare macro
+      bpf: Avoid using ARRAY_SIZE on an uninitialized pointer
+
+Jussi Maki (2):
+      bpf: Set mac_len in bpf_skb_change_head
+      selftests/bpf: Add test for l3 use of bpf_redirect_peer
+
+Liu Jian (1):
+      bpftool: Add sock_release help info for cgroup attach/prog load command
+
+Stanislav Fomichev (1):
+      selftests/bpf: Convert static to global in tc_redirect progs
+
+Yinjun Zhang (1):
+      bpf, offload: Reorder offload callback 'prepare' in verifier
+
+ arch/arm64/Kbuild                                  |   3 +-
+ kernel/bpf/Kconfig                                 |   1 +
+ kernel/bpf/bpf_lsm.c                               |   2 +
+ kernel/bpf/helpers.c                               |  12 +-
+ kernel/bpf/verifier.c                              |  58 ++-
+ net/core/filter.c                                  |   1 +
+ tools/bpf/bpftool/Documentation/bpftool-cgroup.rst |   4 +-
+ tools/bpf/bpftool/Documentation/bpftool-prog.rst   |   2 +-
+ tools/bpf/bpftool/bash-completion/bpftool          |   6 +-
+ tools/bpf/bpftool/cgroup.c                         |   3 +-
+ tools/bpf/bpftool/prog.c                           |   2 +-
+ tools/testing/selftests/bpf/prog_tests/ringbuf.c   |  49 +-
+ .../testing/selftests/bpf/prog_tests/tc_redirect.c | 552 ++++++++++++++-------
+ tools/testing/selftests/bpf/progs/test_tc_neigh.c  |   4 +-
+ tools/testing/selftests/bpf/progs/test_tc_peer.c   |  35 +-
+ tools/testing/selftests/bpf/verifier/stack_ptr.c   |   2 -
+ .../selftests/bpf/verifier/value_ptr_arith.c       |   8 -
+ 17 files changed, 513 insertions(+), 231 deletions(-)
