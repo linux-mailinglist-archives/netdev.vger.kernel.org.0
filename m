@@ -2,514 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD42538FAC1
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 08:17:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F30638FAC4
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 08:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230495AbhEYGTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 02:19:21 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:41294 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230335AbhEYGTU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 02:19:20 -0400
-Received: from mail-pl1-f199.google.com ([209.85.214.199])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <po-hsu.lin@canonical.com>)
-        id 1llQNx-0001L5-Ag
-        for netdev@vger.kernel.org; Tue, 25 May 2021 06:17:49 +0000
-Received: by mail-pl1-f199.google.com with SMTP id y20-20020a1709030114b02900f79b309b48so4367606plc.8
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 23:17:49 -0700 (PDT)
+        id S230463AbhEYGUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 02:20:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44606 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230224AbhEYGUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 02:20:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621923554;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rP1fweoyRJtr6Mi6XlE6lVpYI+0VMhwzNpbtJBa3S1E=;
+        b=CI25JyNrQixwpKwXEYmEusbXSjmDWoFQmGMCBgFNsRzBlhsb/MfQAksDfr5+2miJa/8V/N
+        VKk1G9iz8anJpitdL3KL2RaoupF/EXs7rcFFIfR6r2DIXadG+GU8pzLA39uf6qcB+wb7Yl
+        NepbRBXYTR8XrS5xfmBag/D6P1JkTVk=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-46-VcsM7LN2PcGM-nFEXb5_sg-1; Tue, 25 May 2021 02:19:12 -0400
+X-MC-Unique: VcsM7LN2PcGM-nFEXb5_sg-1
+Received: by mail-pl1-f197.google.com with SMTP id t13-20020a170902dccdb02900f0bc643e1fso14081407pll.2
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 23:19:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qw1SLvXATN0sxLuhrI4LR2ginWQAKnsg7wk+RJmDqfg=;
-        b=mx0S0CqZAX3kUAFVPr3vS9JFfvKQVRNsErjMjyWD1HOK3izRO3igVPHRHZzJVN5Vc1
-         0gKgpnGzQ0CaQVzpPivVrM8QQ9azK4MoGAmxfPBvnPYjj5xkc+8fmOZzhmvCcoEuaRf2
-         2oU2EBDZa5Y+roWCnN86BpYC5CUfwaDippCt27arLcj/poM4ufhgEdsed2Ewa43whZ72
-         aT9aIipVn9/8WtuzToXsf5ZybpGVl/I5WmMnFcrediaI9wID8J3rQ7nrNPNNY/pBPKhx
-         N43ude2D33AJu7GaUr7mM3Ir+6siADnezkikWEE9Kn8SNh1xnP88bqsQEgX+M2yn7fuJ
-         9CuQ==
-X-Gm-Message-State: AOAM530iuHpK0VR4n7R113vDfyL5DrsO7r7uzLu9avBqHUBDR8Lp5S1M
-        j2Bm9Qrhhs8gAVQjt6vdchLWo8d/06JaJCIs9LFz+8HmQxxDVsJ+w1jwtI6qtiStZ39uA2fZMBF
-        1QPF3q7/CIPIhEJbLGYr/M6CkW4JhwQti
-X-Received: by 2002:a63:9d43:: with SMTP id i64mr17095635pgd.205.1621923467753;
-        Mon, 24 May 2021 23:17:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx/CCQzYh2BvPdc/hYR/n5nmn/7xpaclxqR3cHMFGrfVxlj2aTtONTss0SV2Yb8YrdlZVRyCQ==
-X-Received: by 2002:a63:9d43:: with SMTP id i64mr17095588pgd.205.1621923467374;
-        Mon, 24 May 2021 23:17:47 -0700 (PDT)
-Received: from localhost.localdomain (223-136-150-121.emome-ip.hinet.net. [223.136.150.121])
-        by smtp.gmail.com with ESMTPSA id a16sm12825183pfa.95.2021.05.24.23.17.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 May 2021 23:17:46 -0700 (PDT)
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-To:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     po-hsu.lin@canonical.com, shuah@kernel.org,
-        skhan@linuxfoundation.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, nikolay@nvidia.com,
-        gnault@redhat.com, vladimir.oltean@nxp.com, idosch@nvidia.com,
-        baowen.zheng@corigine.com, danieller@nvidia.com, petrm@nvidia.com
-Subject: [PATCH] selftests: Use kselftest skip code for skipped tests
-Date:   Tue, 25 May 2021 14:17:24 +0800
-Message-Id: <20210525061724.13526-1-po-hsu.lin@canonical.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=rP1fweoyRJtr6Mi6XlE6lVpYI+0VMhwzNpbtJBa3S1E=;
+        b=OejJ4CWZiADVNqofUEttpF9gOg+SFrFLqwn7lOfdrVbpwY5NQt2tX83Ul1CCPkCAXk
+         wf4Ie1cYOQtxH1VSSR8EzfXhNxh6ixvUQRUgjbV1d+z+6Nkb5OP9K4hV3O3+vljR97BT
+         06u4DdDePd7plvRyuU5s2AdvGfAgVQe7oL1au+GOquS4WQmstGJUNikPxsE5r0vcBpOo
+         w5PpOxRK7umwsAklmXSjEk1qalrG77+wsBOTAwXw1zgoSaisMc8Ahshhgp3REqyPE0bh
+         8rvnizmXph54OJT4Cit1ZSJkLg8ZPSkMZy48V8BbVYGFySYw3JqBIwbu+bBy58bR3a+B
+         hIRw==
+X-Gm-Message-State: AOAM533MilrjGzxLvvm8Oz7LGwaLpeUA2nNdAlInhxqIBD1JNV1mkVCD
+        mweIlS83Jce5OEfHZWFlPRclj81wk+RLQNxIjHwjChjjaYL0bqvN/UeU5MlYnRAysjk6hLZG5P/
+        dSDU3TsMSKl2+XiwD
+X-Received: by 2002:a17:90a:3988:: with SMTP id z8mr29530496pjb.175.1621923551449;
+        Mon, 24 May 2021 23:19:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzHuSGZNZRBpr7BFjN2z2DGgUtoW4OBh5VlH3j5+cXLDOpjFD+S6KAYt8UK28l5a4+wF9lImw==
+X-Received: by 2002:a17:90a:3988:: with SMTP id z8mr29530464pjb.175.1621923551060;
+        Mon, 24 May 2021 23:19:11 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id r13sm12449973pfl.191.2021.05.24.23.19.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 May 2021 23:19:10 -0700 (PDT)
+Subject: Re: [PATCH] virtio_net: Remove BUG() to aviod machine dead
+To:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <a351fbe1-0233-8515-2927-adc826a7fb94@linux.alibaba.com>
+ <20210518055336-mutt-send-email-mst@kernel.org>
+ <4aaf5125-ce75-c72a-4b4a-11c91cb85a72@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <72f284c6-b2f5-a395-a68f-afe801eb81be@redhat.com>
+Date:   Tue, 25 May 2021 14:19:03 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.2
 MIME-Version: 1.0
+In-Reply-To: <4aaf5125-ce75-c72a-4b4a-11c91cb85a72@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are several test cases still using exit 0 when they need to be
-skipped. Use kselftest framework skip code instead so it can help us
-to distinguish the proper return status.
 
-Criterion to filter out what should be fixed in selftests directory:
-  grep -r "exit 0" -B1 | grep -i skip
+在 2021/5/19 下午10:18, Xianting Tian 写道:
+> thanks, I submit the patch as commented by Andrew 
+> https://lkml.org/lkml/2021/5/18/256
+>
+> Actually, if xmit_skb() returns error, below code will give a warning 
+> with error code.
+>
+>     /* Try to transmit */
+>     err = xmit_skb(sq, skb);
+>
+>     /* This should not happen! */
+>     if (unlikely(err)) {
+>         dev->stats.tx_fifo_errors++;
+>         if (net_ratelimit())
+>             dev_warn(&dev->dev,
+>                  "Unexpected TXQ (%d) queue failure: %d\n",
+>                  qnum, err);
+>         dev->stats.tx_dropped++;
+>         dev_kfree_skb_any(skb);
+>         return NETDEV_TX_OK;
+>     }
+>
+>
+>
+>
+>
+> 在 2021/5/18 下午5:54, Michael S. Tsirkin 写道:
+>> typo in subject
+>>
+>> On Tue, May 18, 2021 at 05:46:56PM +0800, Xianting Tian wrote:
+>>> When met error, we output a print to avoid a BUG().
 
-This change might cause some false-positives if people are running
-these test scripts directly and only checking their return codes,
-which will change from 0 to 4. However I think the impact should be
-small as most of our scripts here are already using this skip code.
-And there will be no such issue if running them with the kselftest
-framework.
 
-Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
----
- tools/testing/selftests/bpf/test_bpftool_build.sh             | 5 ++++-
- tools/testing/selftests/bpf/test_xdp_meta.sh                  | 5 ++++-
- tools/testing/selftests/bpf/test_xdp_vlan.sh                  | 7 +++++--
- tools/testing/selftests/net/fcnal-test.sh                     | 5 ++++-
- tools/testing/selftests/net/fib_rule_tests.sh                 | 7 +++++--
- tools/testing/selftests/net/forwarding/lib.sh                 | 5 ++++-
- tools/testing/selftests/net/forwarding/router_mpath_nh.sh     | 5 ++++-
- tools/testing/selftests/net/forwarding/router_mpath_nh_res.sh | 5 ++++-
- tools/testing/selftests/net/run_afpackettests                 | 5 ++++-
- tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh        | 9 ++++++---
- tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh        | 9 ++++++---
- tools/testing/selftests/net/unicast_extensions.sh             | 5 ++++-
- tools/testing/selftests/net/vrf_strict_mode_test.sh           | 9 ++++++---
- tools/testing/selftests/ptp/phc.sh                            | 7 +++++--
- tools/testing/selftests/vm/charge_reserved_hugetlb.sh         | 5 ++++-
- tools/testing/selftests/vm/hugetlb_reparenting_test.sh        | 5 ++++-
- 16 files changed, 73 insertions(+), 25 deletions(-)
+So you don't explain why you need to remove BUG(). I think it deserve a 
+BUG().
 
-diff --git a/tools/testing/selftests/bpf/test_bpftool_build.sh b/tools/testing/selftests/bpf/test_bpftool_build.sh
-index ac349a5..b6fab1e 100755
---- a/tools/testing/selftests/bpf/test_bpftool_build.sh
-+++ b/tools/testing/selftests/bpf/test_bpftool_build.sh
-@@ -1,6 +1,9 @@
- #!/bin/bash
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- case $1 in
- 	-h|--help)
- 		echo -e "$0 [-j <n>]"
-@@ -22,7 +25,7 @@ KDIR_ROOT_DIR=$(realpath $PWD/$SCRIPT_REL_DIR/../../../../)
- cd $KDIR_ROOT_DIR
- if [ ! -e tools/bpf/bpftool/Makefile ]; then
- 	echo -e "skip:    bpftool files not found!\n"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- ERROR=0
-diff --git a/tools/testing/selftests/bpf/test_xdp_meta.sh b/tools/testing/selftests/bpf/test_xdp_meta.sh
-index 637fcf4..fd3f218 100755
---- a/tools/testing/selftests/bpf/test_xdp_meta.sh
-+++ b/tools/testing/selftests/bpf/test_xdp_meta.sh
-@@ -1,5 +1,8 @@
- #!/bin/sh
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- cleanup()
- {
- 	if [ "$?" = "0" ]; then
-@@ -17,7 +20,7 @@ cleanup()
- ip link set dev lo xdp off 2>/dev/null > /dev/null
- if [ $? -ne 0 ];then
- 	echo "selftests: [SKIP] Could not run test without the ip xdp support"
--	exit 0
-+	exit $ksft_skip
- fi
- set -e
- 
-diff --git a/tools/testing/selftests/bpf/test_xdp_vlan.sh b/tools/testing/selftests/bpf/test_xdp_vlan.sh
-index bb8b0da..1aa7404 100755
---- a/tools/testing/selftests/bpf/test_xdp_vlan.sh
-+++ b/tools/testing/selftests/bpf/test_xdp_vlan.sh
-@@ -2,6 +2,9 @@
- # SPDX-License-Identifier: GPL-2.0
- # Author: Jesper Dangaard Brouer <hawk@kernel.org>
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- # Allow wrapper scripts to name test
- if [ -z "$TESTNAME" ]; then
-     TESTNAME=xdp_vlan
-@@ -94,7 +97,7 @@ while true; do
- 	    -h | --help )
- 		usage;
- 		echo "selftests: $TESTNAME [SKIP] usage help info requested"
--		exit 0
-+		exit $ksft_skip
- 		;;
- 	    * )
- 		shift
-@@ -117,7 +120,7 @@ fi
- ip link set dev lo xdpgeneric off 2>/dev/null > /dev/null
- if [ $? -ne 0 ]; then
- 	echo "selftests: $TESTNAME [SKIP] need ip xdp support"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- # Interactive mode likely require us to cleanup netns
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index a8ad928..9074e25 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -37,6 +37,9 @@
- #
- # server / client nomenclature relative to ns-A
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- VERBOSE=0
- 
- NSA_DEV=eth1
-@@ -3946,7 +3949,7 @@ fi
- which nettest >/dev/null
- if [ $? -ne 0 ]; then
- 	echo "'nettest' command not found; skipping tests"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- declare -i nfail=0
-diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
-index a93e6b6..43ea840 100755
---- a/tools/testing/selftests/net/fib_rule_tests.sh
-+++ b/tools/testing/selftests/net/fib_rule_tests.sh
-@@ -3,6 +3,9 @@
- 
- # This test is for checking IPv4 and IPv6 FIB rules API
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- ret=0
- 
- PAUSE_ON_FAIL=${PAUSE_ON_FAIL:=no}
-@@ -238,12 +241,12 @@ run_fibrule_tests()
- 
- if [ "$(id -u)" -ne 0 ];then
- 	echo "SKIP: Need root privileges"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- if [ ! -x "$(command -v ip)" ]; then
- 	echo "SKIP: Could not run test without ip tool"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- # start clean
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 42e28c9..eed9f08 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -4,6 +4,9 @@
- ##############################################################################
- # Defines
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- # Can be overridden by the configuration file.
- PING=${PING:=ping}
- PING6=${PING6:=ping6}
-@@ -121,7 +124,7 @@ check_ethtool_lanes_support()
- 
- if [[ "$(id -u)" -ne 0 ]]; then
- 	echo "SKIP: need root privileges"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- if [[ "$CHECK_TC" = "yes" ]]; then
-diff --git a/tools/testing/selftests/net/forwarding/router_mpath_nh.sh b/tools/testing/selftests/net/forwarding/router_mpath_nh.sh
-index 76efb1f..bb7dc6d 100755
---- a/tools/testing/selftests/net/forwarding/router_mpath_nh.sh
-+++ b/tools/testing/selftests/net/forwarding/router_mpath_nh.sh
-@@ -1,6 +1,9 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- ALL_TESTS="
- 	ping_ipv4
- 	ping_ipv6
-@@ -411,7 +414,7 @@ ping_ipv6()
- ip nexthop ls >/dev/null 2>&1
- if [ $? -ne 0 ]; then
- 	echo "Nexthop objects not supported; skipping tests"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- trap cleanup EXIT
-diff --git a/tools/testing/selftests/net/forwarding/router_mpath_nh_res.sh b/tools/testing/selftests/net/forwarding/router_mpath_nh_res.sh
-index 4898dd4..e7bb976 100755
---- a/tools/testing/selftests/net/forwarding/router_mpath_nh_res.sh
-+++ b/tools/testing/selftests/net/forwarding/router_mpath_nh_res.sh
-@@ -1,6 +1,9 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- ALL_TESTS="
- 	ping_ipv4
- 	ping_ipv6
-@@ -386,7 +389,7 @@ ping_ipv6()
- ip nexthop ls >/dev/null 2>&1
- if [ $? -ne 0 ]; then
- 	echo "Nexthop objects not supported; skipping tests"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- trap cleanup EXIT
-diff --git a/tools/testing/selftests/net/run_afpackettests b/tools/testing/selftests/net/run_afpackettests
-index 8b42e8b..a59cb6a 100755
---- a/tools/testing/selftests/net/run_afpackettests
-+++ b/tools/testing/selftests/net/run_afpackettests
-@@ -1,9 +1,12 @@
- #!/bin/sh
- # SPDX-License-Identifier: GPL-2.0
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- if [ $(id -u) != 0 ]; then
- 	echo $msg must be run as root >&2
--	exit 0
-+	exit $ksft_skip
- fi
- 
- ret=0
-diff --git a/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh b/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
-index ad7a9fc..1003119 100755
---- a/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
-+++ b/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
-@@ -163,6 +163,9 @@
- # +---------------------------------------------------+
- #
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- readonly LOCALSID_TABLE_ID=90
- readonly IPv6_RT_NETWORK=fd00
- readonly IPv4_HS_NETWORK=10.0.0
-@@ -464,18 +467,18 @@ host_vpn_isolation_tests()
- 
- if [ "$(id -u)" -ne 0 ];then
- 	echo "SKIP: Need root privileges"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- if [ ! -x "$(command -v ip)" ]; then
- 	echo "SKIP: Could not run test without ip tool"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- modprobe vrf &>/dev/null
- if [ ! -e /proc/sys/net/vrf/strict_mode ]; then
-         echo "SKIP: vrf sysctl does not exist"
--        exit 0
-+        exit $ksft_skip
- fi
- 
- cleanup &>/dev/null
-diff --git a/tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh b/tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh
-index 68708f5..b9b06ef 100755
---- a/tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh
-+++ b/tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh
-@@ -164,6 +164,9 @@
- # +---------------------------------------------------+
- #
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- readonly LOCALSID_TABLE_ID=90
- readonly IPv6_RT_NETWORK=fd00
- readonly IPv6_HS_NETWORK=cafe
-@@ -472,18 +475,18 @@ host_vpn_isolation_tests()
- 
- if [ "$(id -u)" -ne 0 ];then
- 	echo "SKIP: Need root privileges"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- if [ ! -x "$(command -v ip)" ]; then
- 	echo "SKIP: Could not run test without ip tool"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- modprobe vrf &>/dev/null
- if [ ! -e /proc/sys/net/vrf/strict_mode ]; then
-         echo "SKIP: vrf sysctl does not exist"
--        exit 0
-+        exit $ksft_skip
- fi
- 
- cleanup &>/dev/null
-diff --git a/tools/testing/selftests/net/unicast_extensions.sh b/tools/testing/selftests/net/unicast_extensions.sh
-index dbf0421..728e4d5 100755
---- a/tools/testing/selftests/net/unicast_extensions.sh
-+++ b/tools/testing/selftests/net/unicast_extensions.sh
-@@ -28,12 +28,15 @@
- # These tests provide an easy way to flip the expected result of any
- # of these behaviors for testing kernel patches that change them.
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- # nettest can be run from PATH or from same directory as this selftest
- if ! which nettest >/dev/null; then
- 	PATH=$PWD:$PATH
- 	if ! which nettest >/dev/null; then
- 		echo "'nettest' command not found; skipping tests"
--		exit 0
-+		exit $ksft_skip
- 	fi
- fi
- 
-diff --git a/tools/testing/selftests/net/vrf_strict_mode_test.sh b/tools/testing/selftests/net/vrf_strict_mode_test.sh
-index 18b982d..865d53c 100755
---- a/tools/testing/selftests/net/vrf_strict_mode_test.sh
-+++ b/tools/testing/selftests/net/vrf_strict_mode_test.sh
-@@ -3,6 +3,9 @@
- 
- # This test is designed for testing the new VRF strict_mode functionality.
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- ret=0
- 
- # identifies the "init" network namespace which is often called root network
-@@ -371,18 +374,18 @@ vrf_strict_mode_check_support()
- 
- if [ "$(id -u)" -ne 0 ];then
- 	echo "SKIP: Need root privileges"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- if [ ! -x "$(command -v ip)" ]; then
- 	echo "SKIP: Could not run test without ip tool"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- modprobe vrf &>/dev/null
- if [ ! -e /proc/sys/net/vrf/strict_mode ]; then
- 	echo "SKIP: vrf sysctl does not exist"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- cleanup &> /dev/null
-diff --git a/tools/testing/selftests/ptp/phc.sh b/tools/testing/selftests/ptp/phc.sh
-index ac6e5a6..ca3c844c 100755
---- a/tools/testing/selftests/ptp/phc.sh
-+++ b/tools/testing/selftests/ptp/phc.sh
-@@ -1,6 +1,9 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- ALL_TESTS="
- 	settime
- 	adjtime
-@@ -13,12 +16,12 @@ DEV=$1
- 
- if [[ "$(id -u)" -ne 0 ]]; then
- 	echo "SKIP: need root privileges"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- if [[ "$DEV" == "" ]]; then
- 	echo "SKIP: PTP device not provided"
--	exit 0
-+	exit $ksft_skip
- fi
- 
- require_command()
-diff --git a/tools/testing/selftests/vm/charge_reserved_hugetlb.sh b/tools/testing/selftests/vm/charge_reserved_hugetlb.sh
-index 18d3368..fe8fcfb 100644
---- a/tools/testing/selftests/vm/charge_reserved_hugetlb.sh
-+++ b/tools/testing/selftests/vm/charge_reserved_hugetlb.sh
-@@ -1,11 +1,14 @@
- #!/bin/sh
- # SPDX-License-Identifier: GPL-2.0
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- set -e
- 
- if [[ $(id -u) -ne 0 ]]; then
-   echo "This test must be run as root. Skipping..."
--  exit 0
-+  exit $ksft_skip
- fi
- 
- fault_limit_file=limit_in_bytes
-diff --git a/tools/testing/selftests/vm/hugetlb_reparenting_test.sh b/tools/testing/selftests/vm/hugetlb_reparenting_test.sh
-index d11d1fe..4a9a3af 100644
---- a/tools/testing/selftests/vm/hugetlb_reparenting_test.sh
-+++ b/tools/testing/selftests/vm/hugetlb_reparenting_test.sh
-@@ -1,11 +1,14 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
- set -e
- 
- if [[ $(id -u) -ne 0 ]]; then
-   echo "This test must be run as root. Skipping..."
--  exit 0
-+  exit $ksft_skip
- fi
- 
- usage_file=usage_in_bytes
--- 
-2.7.4
+
+>>>
+>>> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+>>> ---
+>>>   drivers/net/virtio_net.c | 5 ++---
+>>>   1 file changed, 2 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>> index c921ebf3ae82..a66174d13e81 100644
+>>> --- a/drivers/net/virtio_net.c
+>>> +++ b/drivers/net/virtio_net.c
+>>> @@ -1647,9 +1647,8 @@ static int xmit_skb(struct send_queue *sq, struct
+>>> sk_buff *skb)
+>>>           hdr = skb_vnet_hdr(skb);
+>>>
+>>>       if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
+>>> -                    virtio_is_little_endian(vi->vdev), false,
+>>> -                    0))
+>>> -        BUG();
+>>> +                virtio_is_little_endian(vi->vdev), false, 0))
+>>> +        return -EPROTO;
+>>>
+>>
+>> why EPROTO? can you add some comments to explain what is going on pls?
+>>
+>> is this related to a malicious hypervisor thing?
+
+
+I think not if I was not wrong.
+
+Each sources (either userspace or device), the skb should be built 
+through virtio_net_hdr_to_skb() which means the validation has already 
+been done.
+
+If we it fails here, it's a real bug.
+
+Thanks
+
+
+>>
+>> don't we want at least a WARN_ON? Or _ONCE?
+>>
+>>>       if (vi->mergeable_rx_bufs)
+>>>           hdr->num_buffers = 0;
+>>> -- 
+>>> 2.17.1
+>
 
