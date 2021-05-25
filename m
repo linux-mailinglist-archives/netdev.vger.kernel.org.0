@@ -2,205 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EA9C38F6CD
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 02:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EA2F38F6E7
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 02:15:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229891AbhEYAI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 20:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50448 "EHLO
+        id S229926AbhEYAQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 20:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbhEYAIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 20:08:25 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041AAC06138A;
-        Mon, 24 May 2021 17:06:57 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id f9so40481814ybo.6;
-        Mon, 24 May 2021 17:06:56 -0700 (PDT)
+        with ESMTP id S229932AbhEYAQn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 20:16:43 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B58C061574;
+        Mon, 24 May 2021 17:15:13 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id g38so40452865ybi.12;
+        Mon, 24 May 2021 17:15:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=d0moJC/8/qaPe2PK1YriLklpUaJTGwXpd1ofwvdx6i4=;
-        b=fJVajftULsQt1C5PaKASi/CF7k903oyFxFFltDohbEqONRTtiLa8fM+6VRIpsNE+1Z
-         0x1JfMf9nQJ7opAeX6KNgY0z5dV77wfE0y7jR5HVTTqQYiTT5Wts7/+UzpIyX04VaSCN
-         ysZbqEDonUYF5Cm4IxSMT9FRzeMKHwa491hIsjtMO9L8b44V+vjvM5IGWGn8myv//t2/
-         nPW6T86F5vt4wYcvjAgfpKzHb89m6rH9XZyrtfqoTUH7OxJuzxKV1acCZaUX7tQwARsV
-         XRnnK2V2IUTGN2wOeC8ThRLdHSy4dn7T9ora2CTv6hckJttoex7KH6BV3UPKlZSCCvdd
-         g4yQ==
+         :cc;
+        bh=tt2aCdeG1Qv4Av8IpO8EzxU0Ot8vSguISRVAzIEmy3c=;
+        b=bPdJGQFEk57nEGbD0hgdIlYJfgBUa8/woXSJt+g3KgrL2A1QwLu6WOWVLN8M6+OS9M
+         KCl4WG7N2FcSqBwSFRN+Lu8EjcSOF2s4StsziYH/u/vudm4UFY2hjOc0tgHmAk0n0Drl
+         ZIXrh8yiZgdyImfbwc96SnF/RqJsGiXp+ygSbkv/6+Y3541p9+EDTS6zm8utorP3t/TI
+         OkAIlhY6HmKcOc4iO8V1S3EeZ1uusumgxgJ75gdaK/1tdPKZ5x7z5DXe/8Kej4Y7yIH3
+         D9yKjdOTO+N3v6mFdPUDXgEwNO6KDlWG4C+O4aZ/AykW+vWLGFv48iO+1Qai8rNEhjsb
+         rckA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=d0moJC/8/qaPe2PK1YriLklpUaJTGwXpd1ofwvdx6i4=;
-        b=XeO1ongMDDuaHhsnvmqTXpDM1Mk7DQQ2+PujfZx2E68jvzKVc75OkgoErkBFyJ2EZU
-         KPBIpl/W8x6nUnlRXDSBlmvOY4cWuZnhISBsXoFLGlcOsHlpL+It9au8+2ikL0g+gq3V
-         SWRLRVRRMnHp4rL7Yp7VsVyPkr+5pp7AIff8r/ppHvipCPnvdQetpw+UqbsvWsTrgnK8
-         Le0K04IGyhb9SqHbP4lcoiU0ecPIq8NkDv06EWpD0XfJsV8e6PhY3BmcpuMBN2oyT2ub
-         0A5Isud1fOhl5dS6YAE16x0DfX7VumLRZtofeJt2XLvha2G5TZeMd8hAZ8TP+37jF6dn
-         HXJw==
-X-Gm-Message-State: AOAM532NRrg1qtGNZ4sQIhEwUWw7RJFqhIJ3doafc6ZbbFtaeyJFZPIO
-        2pqCxWnlKXJ7yeJjms2aN6itLn4m4AArvNvKqK0=
-X-Google-Smtp-Source: ABdhPJzTcLMOBOoUXeYJIKWRZwCbWkwGWCC9Z+CA4qXEs1t6H8JbEbvvjG3iO87lb1/4uXzP4OXLRl5POvBW2Sm/jOk=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr36815561ybg.459.1621901216270;
- Mon, 24 May 2021 17:06:56 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=tt2aCdeG1Qv4Av8IpO8EzxU0Ot8vSguISRVAzIEmy3c=;
+        b=N4fWOohW8rqGP0dbx2zxM4RopOYcGDH5Kq0hPGn4kL322BT6fPVKemPcV2wUiTEucj
+         t5GTn9CgCpTFzU1bf9MVW3Tqn7GotFRqUrvjYOp9djpxKC5UjOiNLZ23ImjVPZ6OUelH
+         EybCjkShBiR2cXaxYBq6cNlGM7t63CfrVCAFlw9Q548sRIO8WWyRg87b/zLu/qYeeaKA
+         /dlE2qIG3jykXJnzzqvAk1B7z4G3k45tSN8ervNBhrJTwRsrM28tUrh8ULh8p4APvygA
+         DnBZcXA8auEH1GQ/wj0HBh9yfxBjihsz71m1WdkFOWUunsQsH0+m0oxsBuXixT0U/c3C
+         66YQ==
+X-Gm-Message-State: AOAM5322ZQ1x7UrGhOizqAHTmCd8CyOMz2AeRd8CI2rNdCHGQvBeMAle
+        kAdyxGJHpdtn++4E109sUAgJHJrjnlIxULhAGkU=
+X-Google-Smtp-Source: ABdhPJwU+an/8UWQ2Ts+SUkarp/G/GKMcd2SFsmxFPKesvi1mZEbSaSm/aF4QU5c6aFyiQTiDIUKvw2MOC/lWqTAURU=
+X-Received: by 2002:a25:9942:: with SMTP id n2mr39907529ybo.230.1621901713044;
+ Mon, 24 May 2021 17:15:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210521234203.1283033-1-andrii@kernel.org> <60ab496e3e211_2a2cf208d2@john-XPS-13-9370.notmuch>
- <CAEf4BzY0=J1KP4txDSVJdS93YVLxO8LLQTn0UCJ0RKDL_XzpYw@mail.gmail.com>
- <87a6ojzwdi.fsf@toke.dk> <CAEf4BzadPCOboLov7dbVAQAcQtNj+x4CP7pKutXxo90q7oUuLQ@mail.gmail.com>
- <87y2c3yfxm.fsf@toke.dk> <CAEf4Bzb9qRhW0uwxzPpL15zgRk-YTghGw6OtgQMF0+59Xdv5xQ@mail.gmail.com>
- <87sg2bydtm.fsf@toke.dk>
-In-Reply-To: <87sg2bydtm.fsf@toke.dk>
+References: <20210521234258.1289307-1-andrii@kernel.org> <20210524234905.n6ycfsmgqhn5ai3p@ast-mbp>
+In-Reply-To: <20210524234905.n6ycfsmgqhn5ai3p@ast-mbp>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 24 May 2021 17:06:45 -0700
-Message-ID: <CAEf4BzaaTPbdUSCobSBL68Y7n7v49P0GmUAn_rvU4cENpZ6yvg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/5] libbpf: error reporting changes for v1.0
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+Date:   Mon, 24 May 2021 17:15:02 -0700
+Message-ID: <CAEf4BzYQc+ijF78vX14CXi9My7hJ_+XNpnh1ZcMjpcdT1czHmA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/5] libbpf: streamline error reporting for
+ high-level APIs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 3:20 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+On Mon, May 24, 2021 at 4:49 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->
-> > On Mon, May 24, 2021 at 2:34 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
-redhat.com> wrote:
-> >>
-> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-> >>
-> >> > On Mon, May 24, 2021 at 1:53 PM Toke H=C3=B8iland-J=C3=B8rgensen <to=
-ke@redhat.com> wrote:
-> >> >>
-> >> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-> >> >>
-> >> >> > On Sun, May 23, 2021 at 11:36 PM John Fastabend
-> >> >> > <john.fastabend@gmail.com> wrote:
-> >> >> >>
-> >> >> >> Andrii Nakryiko wrote:
-> >> >> >> > Implement error reporting changes discussed in "Libbpf: the ro=
-ad to v1.0"
-> >> >> >> > ([0]) document.
-> >> >> >> >
-> >> >> >> > Libbpf gets a new API, libbpf_set_strict_mode() which accepts =
-a set of flags
-> >> >> >> > that turn on a set of libbpf 1.0 changes, that might be potent=
-ially breaking.
-> >> >> >> > It's possible to opt-in into all current and future 1.0 featur=
-es by specifying
-> >> >> >> > LIBBPF_STRICT_ALL flag.
-> >> >> >> >
-> >> >> >> > When some of the 1.0 "features" are requested, libbpf APIs mig=
-ht behave
-> >> >> >> > differently. In this patch set a first set of changes are impl=
-emented, all
-> >> >> >> > related to the way libbpf returns errors. See individual patch=
-es for details.
-> >> >> >> >
-> >> >> >> > Patch #1 adds a no-op libbpf_set_strict_mode() functionality t=
-o enable
-> >> >> >> > updating selftests.
-> >> >> >> >
-> >> >> >> > Patch #2 gets rid of all the bad code patterns that will break=
- in libbpf 1.0
-> >> >> >> > (exact -1 comparison for low-level APIs, direct IS_ERR() macro=
- usage to check
-> >> >> >> > pointer-returning APIs for error, etc). These changes make sel=
-ftest work in
-> >> >> >> > both legacy and 1.0 libbpf modes. Selftests also opt-in into 1=
-00% libbpf 1.0
-> >> >> >> > mode to automatically gain all the subsequent changes, which w=
-ill come in
-> >> >> >> > follow up patches.
-> >> >> >> >
-> >> >> >> > Patch #3 streamlines error reporting for low-level APIs wrappi=
-ng bpf() syscall.
-> >> >> >> >
-> >> >> >> > Patch #4 streamlines errors for all the rest APIs.
-> >> >> >> >
-> >> >> >> > Patch #5 ensures that BPF skeletons propagate errors properly =
-as well, as
-> >> >> >> > currently on error some APIs will return NULL with no way of c=
-hecking exact
-> >> >> >> > error code.
-> >> >> >> >
-> >> >> >> >   [0] https://docs.google.com/document/d/1UyjTZuPFWiPFyKk1tV5a=
-n11_iaRuec6U-ZESZ54nNTY
-> >> >> >> >
-> >> >> >> > Andrii Nakryiko (5):
-> >> >> >> >   libbpf: add libbpf_set_strict_mode() API to turn on libbpf 1=
-.0
-> >> >> >> >     behaviors
-> >> >> >> >   selftests/bpf: turn on libbpf 1.0 mode and fix all IS_ERR ch=
-ecks
-> >> >> >> >   libbpf: streamline error reporting for low-level APIs
-> >> >> >> >   libbpf: streamline error reporting for high-level APIs
-> >> >> >> >   bpftool: set errno on skeleton failures and propagate errors
-> >> >> >> >
-> >> >> >>
-> >> >> >> LGTM for the series,
-> >> >> >>
-> >> >> >> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> >> >> >
-> >> >> > Thanks, John!
-> >> >> >
-> >> >> > Toke, Stanislav, you cared about these aspects of libbpf 1.0 (by
-> >> >> > commenting on the doc itself), do you mind also taking a brief lo=
-ok
-> >> >> > and letting me know if this works for your use cases? Thanks!
-> >> >>
-> >> >> Changes LGTM:
-> >> >>
-> >> >> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> >>
-> >> >> As a side note, the series seems to have been chopped up into indiv=
-idual
-> >> >> emails with no threading; was a bit weird that I had to go hunting =
-for
-> >> >> the individual patches in my mailbox...
-> >> >>
-> >> >
-> >> > That's my bad, I messed up and sent them individually and probably
-> >> > that's why they weren't threaded properly.
-> >>
-> >> Right, OK, I'll stop looking for bugs on my end, then :)
-> >>
-> >> BTW, one more thing that just came to mind: since that gdoc is not
-> >> likely to be around forever, would it be useful to make the reference =
-in
-> >> the commit message(s) point to something more stable? IDK what that
-> >> shoul be, really. Maybe just pasting (an abbreviated outline of?) the
-> >> text in the document into the cover letter / merge commit could work?
+> On Fri, May 21, 2021 at 04:42:58PM -0700, Andrii Nakryiko wrote:
 > >
-> > I was hoping Google won't deprecate Google Docs any time soon and I
-> > had no intention to remove that document. But I was also thinking to
-> > start wiki page at github.com/libbpf/libbpf with migration
-> > instructions, so once that is up and running I can link that from
-> > libbpf_set_strict_mode() doc comment.
+> > +/* this goes away in libbpf 1.0 */
+> > +enum libbpf_strict_mode libbpf_mode = LIBBPF_STRICT_NONE;
+> > +
+> > +int libbpf_set_strict_mode(enum libbpf_strict_mode mode)
+> > +{
+> > +     /* __LIBBPF_STRICT_LAST is the last power-of-2 value used + 1, so to
+> > +      * get all possible values we compensate last +1, and then (2*x - 1)
+> > +      * to get the bit mask
+> > +      */
+> > +     if (mode != LIBBPF_STRICT_ALL
+> > +         && mode & ~((__LIBBPF_STRICT_LAST - 1) * 2 - 1))
+> > +             return libbpf_err(-EINVAL);
+> > +
+> > +     libbpf_mode = mode;
+> > +     return 0;
+> > +}
 >
-> Right, that sounds reasonable :)
->
-> > But I'd like to avoid blocking on that.
->
-> Understandable; but just pasting an outline into the commit message (and
-> keeping the link) could work in the meantime?
+> This hunk should be in patch 1, right?
+> Otherwise bisection will be broken.
 
-I'm not sure what are we trying to achieve by copy/pasting parts of
-that doc here. Each patch succinctly explains how each feature
-behaves, so it's completely self-describing. I put the link to the
-document for anyone that wants to read the entire discussion or leave
-some more comments, but it's not mandatory to understand this patch
-set.
-
->
-> -Toke
->
+Yeah, I screwed up splitting those changes into patches :( Thanks for
+noticing, I'll send fixed v2 a bit later tonight.
