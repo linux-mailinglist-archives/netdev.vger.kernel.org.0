@@ -2,158 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB01438F79E
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 03:40:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0928F38F7D8
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:03:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbhEYBlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 21:41:40 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3655 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbhEYBlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 21:41:39 -0400
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.59])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FpxWN3CbZzNxF3;
-        Tue, 25 May 2021 09:36:32 +0800 (CST)
-Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
- dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Tue, 25 May 2021 09:40:08 +0800
-Received: from huawei.com (10.175.101.6) by dggema772-chm.china.huawei.com
- (10.1.198.214) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 25
- May 2021 09:40:07 +0800
-From:   Liu Jian <liujian56@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <quentin@isovalent.com>, <liujian56@huawei.com>, <sdf@google.com>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-Subject: [PATCH v3] bpftool: Add sock_release help info for cgroup attach/prog load command
-Date:   Tue, 25 May 2021 09:41:39 +0800
-Message-ID: <20210525014139.323859-1-liujian56@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S230051AbhEYCFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 22:05:24 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55084 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230022AbhEYCFX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 22:05:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=g8xlnZg8Jx1EpR1gdv4PlknglCwEvlw9U1PHrDmqOwM=; b=k+mE3gv6OzMdVv5ETedr4SNnxD
+        rRAOJ4vfdymggeiI6ZB/5Ju0mOJieEH3s1PLNf1h+SmhRSXzsq+QNAESWG8J1kIeEenhjPdiGwicK
+        r9b46LvJSNeohxTpX10Hz11LRUxvZq9lh7pAzafhoZidNWsXR6T9A3UtfrcV7au7cSjU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1llMQ8-0064KR-05; Tue, 25 May 2021 04:03:48 +0200
+Date:   Tue, 25 May 2021 04:03:47 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 00/13] Add NXP SJA1110 support to the sja1105
+ DSA driver
+Message-ID: <YKxbA86Ci0Ll7RjE@lunn.ch>
+References: <20210524232214.1378937-1-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggema772-chm.china.huawei.com (10.1.198.214)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210524232214.1378937-1-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The help information is not added when the function is added.
-Here add the missing information to its cli, documentation and bash completion.
+> There are some integrated NXP PHYs (100base-T1 and 100base-TX). Their
+> initialization is handled by their own PHY drivers, the switch is only
+> concerned with enabling register accesses to them, by registering two
+> MDIO buses.
+> 
+> PHY interrupts might be possible, however I believe that the board I am
+> working on does not have them wired, which makes things a bit more
+> difficult to test.
 
-Fixes: db94cc0b4805 ("bpftool: Add support for BPF_CGROUP_INET_SOCK_RELEASE")
-Signed-off-by: Liu Jian <liujian56@huawei.com>
----
-v1 -> v2:
-     Add changelog text.
-v2 -> v3:
-     Also change prog cli help info, documentation and bash completion mentioned by Quentin.
-     So the subject was also changed.
+In general, internal PHYs have an internal interrupt controller, often
+in the switch register space. There then might be one interrupt from
+the switch to the host. It could be this one interrupt is missing on
+your board. But this is also quite common with mv88e6xxx boards. So i
+added code to poll the interrupt bit, i think 10 times per
+second. Polling one bit 10 times a second is more efficient than
+having phylib poll each PHY every second when it needs to read a
+number of registers. And the latency is better.
 
- tools/bpf/bpftool/Documentation/bpftool-cgroup.rst | 4 +++-
- tools/bpf/bpftool/Documentation/bpftool-prog.rst   | 2 +-
- tools/bpf/bpftool/bash-completion/bpftool          | 6 +++---
- tools/bpf/bpftool/cgroup.c                         | 3 ++-
- tools/bpf/bpftool/prog.c                           | 2 +-
- 5 files changed, 10 insertions(+), 7 deletions(-)
-
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-index 790944c35602..baee8591ac76 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-@@ -30,7 +30,8 @@ CGROUP COMMANDS
- |	*ATTACH_TYPE* := { **ingress** | **egress** | **sock_create** | **sock_ops** | **device** |
- |		**bind4** | **bind6** | **post_bind4** | **post_bind6** | **connect4** | **connect6** |
- |               **getpeername4** | **getpeername6** | **getsockname4** | **getsockname6** | **sendmsg4** |
--|               **sendmsg6** | **recvmsg4** | **recvmsg6** | **sysctl** | **getsockopt** | **setsockopt** }
-+|               **sendmsg6** | **recvmsg4** | **recvmsg6** | **sysctl** | **getsockopt** | **setsockopt** |
-+|               **sock_release** }
- |	*ATTACH_FLAGS* := { **multi** | **override** }
- 
- DESCRIPTION
-@@ -106,6 +107,7 @@ DESCRIPTION
- 		  **getpeername6** call to getpeername(2) for an inet6 socket (since 5.8);
- 		  **getsockname4** call to getsockname(2) for an inet4 socket (since 5.8);
- 		  **getsockname6** call to getsockname(2) for an inet6 socket (since 5.8).
-+		  **sock_release** closing an userspace inet socket (since 5.9).
- 
- 	**bpftool cgroup detach** *CGROUP* *ATTACH_TYPE* *PROG*
- 		  Detach *PROG* from the cgroup *CGROUP* and attach type
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-index 358c7309d419..fe1b38e7e887 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-@@ -44,7 +44,7 @@ PROG COMMANDS
- |		**cgroup/connect4** | **cgroup/connect6** | **cgroup/getpeername4** | **cgroup/getpeername6** |
- |               **cgroup/getsockname4** | **cgroup/getsockname6** | **cgroup/sendmsg4** | **cgroup/sendmsg6** |
- |		**cgroup/recvmsg4** | **cgroup/recvmsg6** | **cgroup/sysctl** |
--|		**cgroup/getsockopt** | **cgroup/setsockopt** |
-+|		**cgroup/getsockopt** | **cgroup/setsockopt** | **cgroup/sock_release** |
- |		**struct_ops** | **fentry** | **fexit** | **freplace** | **sk_lookup**
- |	}
- |       *ATTACH_TYPE* := {
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index d67518bcbd44..cc33c5824a2f 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -478,7 +478,7 @@ _bpftool()
-                                 cgroup/recvmsg4 cgroup/recvmsg6 \
-                                 cgroup/post_bind4 cgroup/post_bind6 \
-                                 cgroup/sysctl cgroup/getsockopt \
--                                cgroup/setsockopt struct_ops \
-+                                cgroup/setsockopt cgroup/sock_release struct_ops \
-                                 fentry fexit freplace sk_lookup" -- \
-                                                    "$cur" ) )
-                             return 0
-@@ -1021,7 +1021,7 @@ _bpftool()
-                         device bind4 bind6 post_bind4 post_bind6 connect4 connect6 \
-                         getpeername4 getpeername6 getsockname4 getsockname6 \
-                         sendmsg4 sendmsg6 recvmsg4 recvmsg6 sysctl getsockopt \
--                        setsockopt'
-+                        setsockopt sock_release'
-                     local ATTACH_FLAGS='multi override'
-                     local PROG_TYPE='id pinned tag name'
-                     case $prev in
-@@ -1032,7 +1032,7 @@ _bpftool()
-                         ingress|egress|sock_create|sock_ops|device|bind4|bind6|\
-                         post_bind4|post_bind6|connect4|connect6|getpeername4|\
-                         getpeername6|getsockname4|getsockname6|sendmsg4|sendmsg6|\
--                        recvmsg4|recvmsg6|sysctl|getsockopt|setsockopt)
-+                        recvmsg4|recvmsg6|sysctl|getsockopt|setsockopt|sock_release)
-                             COMPREPLY=( $( compgen -W "$PROG_TYPE" -- \
-                                 "$cur" ) )
-                             return 0
-diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
-index d901cc1b904a..6e53b1d393f4 100644
---- a/tools/bpf/bpftool/cgroup.c
-+++ b/tools/bpf/bpftool/cgroup.c
-@@ -28,7 +28,8 @@
- 	"                        connect6 | getpeername4 | getpeername6 |\n"   \
- 	"                        getsockname4 | getsockname6 | sendmsg4 |\n"   \
- 	"                        sendmsg6 | recvmsg4 | recvmsg6 |\n"           \
--	"                        sysctl | getsockopt | setsockopt }"
-+	"                        sysctl | getsockopt | setsockopt |\n"	       \
-+	"                        sock_release }"
- 
- static unsigned int query_flags;
- 
-diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-index 3f067d2d7584..da4846c9856a 100644
---- a/tools/bpf/bpftool/prog.c
-+++ b/tools/bpf/bpftool/prog.c
-@@ -2138,7 +2138,7 @@ static int do_help(int argc, char **argv)
- 		"                 cgroup/getpeername4 | cgroup/getpeername6 |\n"
- 		"                 cgroup/getsockname4 | cgroup/getsockname6 | cgroup/sendmsg4 |\n"
- 		"                 cgroup/sendmsg6 | cgroup/recvmsg4 | cgroup/recvmsg6 |\n"
--		"                 cgroup/getsockopt | cgroup/setsockopt |\n"
-+		"                 cgroup/getsockopt | cgroup/setsockopt | cgroup/sock_release |\n"
- 		"                 struct_ops | fentry | fexit | freplace | sk_lookup }\n"
- 		"       ATTACH_TYPE := { msg_verdict | stream_verdict | stream_parser |\n"
- 		"                        flow_dissector }\n"
--- 
-2.17.1
-
+       Andrew
