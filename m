@@ -2,102 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A66B38F7FD
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDA2138F802
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:18:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230103AbhEYCRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 22:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230026AbhEYCRy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:17:54 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D319C061574
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:16:24 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id x18so18088982pfi.9
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:16:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VbQyeD2rfzrDjeYxWSiaTv3+Ipqor8eVxJIRKw45D/0=;
-        b=HpYgPlXLGYWiP/ve1L/XtWIhkdcVFpYQocrhrqwyJDwqHd74/Ld+gB7M0zzTSAVAcX
-         6KT4Q+sA6LoLHkoNGnVvcE2IQLteSH2HOGPmWPQ6y+gM4nnX4SUY1Fy3GONnjaIo9QhC
-         hKeG0hZixrFiry7FsAbmiwFJh2I8CAw1RWVaUrqN6v541GlmB4b+Rd0JfjXB0cz5qCL6
-         Po5Jf/4kK4OV5iXaYw4Z8VtGyFhjdqgY6Z8CiFUUwx4QZYxk8Bec0CaAVejrVb5NswUg
-         vn+ZvcsYU4CAiDYfMkfT8iMJkD8hNDgM1yM3VzE39pbJTu2+nSj4s0RbLXFDcJqNSYuw
-         x7gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=VbQyeD2rfzrDjeYxWSiaTv3+Ipqor8eVxJIRKw45D/0=;
-        b=g8EQS3YyQZJnI/oKqPZhlQJv+1mbWl7Ak1kTOGJtaqLqQgdER7mBO4Huv11K+tR/tW
-         6fYOH6XV2JisGL/f3CjH6COuNPLW9a/FFMJtOqwZbRLJMFNL0yCcGOqTibv/XDnVGo7R
-         t9ayV10/FjEHA2Jvhzzfh1mHlyGVGiu/Cwh1vYhq3mYYmInc1qOsh6Yt0i3+6iwv3J78
-         GtK6b1I2bgxrqnDXK/6OL2qFHoRsyRxjh57mnj1U5mDdr5Aug3h5VRrzWawQKbWYi55d
-         kKvnT8eT+Kq1Hp8Cqa+RquXKCCbkPu48Ra6V2r/qwm0ff8DRIvwgdOisqbj3bWLCSl7/
-         h7DQ==
-X-Gm-Message-State: AOAM532DZLo4Pm2mTra7iH3mwMqw3ZIf/GP7Bsj4ypXkm3mufEvJmY0E
-        QsO0nrxDbBUW+y7F/Gl6Vy8=
-X-Google-Smtp-Source: ABdhPJxnl78CJdyjh4DcnAG9aGRLAHCQuLielVb+eJrEJapc1xWJ8VQB07WKmA76XvVjnROC8pNhpA==
-X-Received: by 2002:a63:d218:: with SMTP id a24mr16481896pgg.345.1621908983878;
-        Mon, 24 May 2021 19:16:23 -0700 (PDT)
-Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id bb18sm572050pjb.44.2021.05.24.19.16.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 May 2021 19:16:23 -0700 (PDT)
-Subject: Re: [PATCH net-next 02/13] net: dsa: sja1105: allow SGMII PCS
- configuration to be per port
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        id S230062AbhEYCT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 22:19:58 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55124 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230026AbhEYCT5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 May 2021 22:19:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=fcQs3evLbAI6fpikoPfcmobHPT+8O59iV7kLBO0fw/w=; b=m0BqXEeuczxwm0uYoQWlSf2FYj
+        AT7cSXd0dQ8RCqv7xahV64gHKbb5OY9ok7EDqqC5rjSa3FaJa0Sl+v7tZ6dc/0Etp2HF23BHANXWl
+        cwwz//0nWjzSnOV0lIvpnNm2QpROlWQTXYuCfgYrxnaVrny/aQLNXuMmxD9f9epJ94b0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1llMeG-0064SA-VX; Tue, 25 May 2021 04:18:24 +0200
+Date:   Tue, 25 May 2021 04:18:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 11/13] net: dsa: sja1105: register the MDIO
+ buses for 100base-T1 and 100base-TX
+Message-ID: <YKxecB8aDJ4m5x7R@lunn.ch>
 References: <20210524232214.1378937-1-olteanv@gmail.com>
- <20210524232214.1378937-3-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <c2364571-dff9-2654-5160-a37d9f48ba9b@gmail.com>
-Date:   Mon, 24 May 2021 19:16:20 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.10.2
+ <20210524232214.1378937-12-olteanv@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210524232214.1378937-3-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210524232214.1378937-12-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/24/2021 4:22 PM, Vladimir Oltean wrote:
+On Tue, May 25, 2021 at 02:22:12AM +0300, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> The SJA1105 R and S switches have 1 SGMII port (port 4). Because there
-> is only one such port, there is no "port" parameter in the configuration
-> code for the SGMII PCS.
+> The SJA1110 contains two types of integrated PHYs: one 100base-TX PHY
+> and multiple 100base-T1 PHYs.
 > 
-> However, the SJA1110 can have up to 4 SGMII ports, each with its own
-> SGMII register map. So we need to generalize the logic.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-[snip]
->  
-> -	if (sja1105_supports_sgmii(priv, SJA1105_SGMII_PORT)) {
-> -		bool an_enabled = !!(bmcr & BMCR_ANENABLE);
-> +		if (!sja1105_supports_sgmii(priv, i))
-> +			continue;
-> +
-> +		an_enabled = !!(bmcr[i] & BMCR_ANENABLE);
+> The access procedure for the 100base-T1 PHYs is also different than it
+> is for the 100base-TX one. So we register 2 MDIO buses, one for the
+> base-TX and the other for the base-T1. Each bus has an OF node which is
+> a child of the "mdio" subnode of the switch, and they are recognized by
+> compatible string.
 
-Nit you could have a temporary bmcr variable here in the loop which
-aliases bmcr[i] just for the sake of reducing the diff to review.
+The mv88e6xxx also can have two MDIO busses. It is however an internal
+bus for the internal PHYs and an external bus. The code however
+evolved, since earlier devices only had one MDIO i ended up with a
+binding like this:
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+       mdio {
+                #address-cells = <1>;
+                #size-cells = <0>;
+                interrupt-parent = <&gpio0>;
+                interrupts = <27 IRQ_TYPE_LEVEL_LOW>;
+                interrupt-controller;
+                #interrupt-cells = <2>;
+
+                switch0: switch@0 {
+                        compatible = "marvell,mv88e6390";
+                        reg = <0>;
+                        reset-gpios = <&gpio5 1 GPIO_ACTIVE_LOW>;
+
+                        mdio {
+                                #address-cells = <1>;
+                                #size-cells = <0>;
+                                switch1phy0: switch1phy0@0 {
+                                        reg = <0>;
+                                        interrupt-parent = <&switch0>;
+                                        interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
+                                };
+                        };
+
+                        mdio1 {
+                                compatible = "marvell,mv88e6xxx-mdio-external";
+                                #address-cells = <1>;
+                                #size-cells = <0>;
+                                switch1phy9: switch1phy0@9 {
+                                        reg = <9>;
+                                };
+                        };
+                };
+        };
+
+It however sounds like you have the two busses one level deeper?
+
+It would be good if you document this as part of the binding.
+
+   Andrew
