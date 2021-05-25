@@ -2,76 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DD2638F83A
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:33:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A871338F83D
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:35:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbhEYCfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 22:35:06 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55188 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229551AbhEYCfF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 22:35:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=qC5mEnkCJi4aHOhkG/zqZvPxdIzajQ431K50lneCqpo=; b=hJ3bMmk2ehTTy8kZNLfIf4wKdT
-        6JLmiJ+cy62edN1oCqkkYsGw8laBIxfZpZQTQEEShYp6KnG4/P0gdOXq03BEPiaW79pZLUbJIcIa9
-        +i1EPkK15yea45FTeR5z8agwfBE71VqUphSNxUInLZgtVMxYJNG/sHAdmaxRKSXd3c8Y=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1llMsv-0064bz-7Z; Tue, 25 May 2021 04:33:33 +0200
-Date:   Tue, 25 May 2021 04:33:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S229785AbhEYChI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 22:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229551AbhEYChH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:37:07 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DA2C061574
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:35:38 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id i5so21575514pgm.0
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:35:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MPtMdNslJQXFqhEewp8iNBf+OizIJhjUdYwFEDl/8Lc=;
+        b=FE1SqbZIlLBVVkhH3vsc4zqKqAVEgHA9Eh8u5AQoHWkU5ZihixQssstGWLPB/1cO6H
+         9kZMd16jVVfnviTYadXgUWKUR2qx+aE347SHmaF+brxlRv3iZRxNz/yl8CKlJB+/CeLC
+         KYULjnelqs043ibv4DyMzm0D32KqkKI7daGhYpI5GwcZVt3JaNxQTjhJfi0B2Mp60E4o
+         vN/rBjmhLbwYhFF2zxBRn+6koXlBG1Duj3MYSTQ/ZpmRNVjB6mCEzBlt2JA9D5T7YGHr
+         zGYau1WVBEwZ/CIPgklnVWSL0xbfsCtCmT9BaijriOlVp3YvjqpRAlte9nlv13iJTvCn
+         Eukg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MPtMdNslJQXFqhEewp8iNBf+OizIJhjUdYwFEDl/8Lc=;
+        b=c4eRHRiiYnO4AlpxmnDVGFaBOsQu5+7YO+/zEjE0A0MfJw/EPUna2AYxn03NfNPSZy
+         GvEd6s2oGl8k/NuKTcNPVIrTQN4BIEcfi/f9kipXGGekjOW2GHWddKF1Ckmo3wC0v7Hn
+         I5zEdIgbvrz3/CigbEbLytgDdyFPltlNPEfdVc8441zTOVAbBYIdXG45HoR7jfveK0uU
+         1ahrFuUSj7+kymUBfKD/4pzVbszzAS0aDceEcaGJV2sDt36mat4fqYJQv2U/Mw0iS80S
+         lG0Uq4LL4/mjZ5Fhkad5dw/lkja4FHlu7EhHKczSBckCHxX3P+yP/BjTuM5URw+JgNyS
+         SbZg==
+X-Gm-Message-State: AOAM533ZQD3ThE7VLHUIiUIufIGH5l7mGmF7Wi6c43W7H+b4N3dsOgoC
+        aGr+pN3/Q2DhoJciUNziaA0=
+X-Google-Smtp-Source: ABdhPJwpq99kbKzfg+sjpXCDjpRSw49QcqjQMjgY5K88onafQ4Fwi/cCjQWU/8Q2omV8LXPU9KcMvA==
+X-Received: by 2002:a62:3782:0:b029:2de:903d:8640 with SMTP id e124-20020a6237820000b02902de903d8640mr28262279pfa.40.1621910137312;
+        Mon, 24 May 2021 19:35:37 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id a26sm12010227pff.149.2021.05.24.19.35.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 May 2021 19:35:36 -0700 (PDT)
+Subject: Re: [PATCH net-next 12/13] net: dsa: sja1105: expose the SGMII PCS as
+ an mdio_device
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next 12/13] net: dsa: sja1105: expose the SGMII PCS
- as an mdio_device
-Message-ID: <YKxh/d2/SXfxVmr7@lunn.ch>
 References: <20210524232214.1378937-1-olteanv@gmail.com>
  <20210524232214.1378937-13-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <5c287794-1f47-ad79-0a60-2eeec8469a5f@gmail.com>
+Date:   Mon, 24 May 2021 19:35:29 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 In-Reply-To: <20210524232214.1378937-13-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int sja1105_mdiobus_pcs_register(struct sja1105_private *priv)
+
+
+On 5/24/2021 4:22 PM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> The SJA1110 has up to 4 PCSes for SGMII/2500base-x, and they have a
+> different access procedure compared to the SJA1105. Since both have a
+> register layout reminiscent of clause 45, the chosen abstraction to hide
+> this difference away was to implement an internal MDIO bus for the PCS,
+> and to use a high-level set of procedures called sja1105_pcs_read and
+> sja1105_pcs_write.
+> 
+> Since we touch all PCS accessors again, now it is a good time to check
+> for error codes from the hardware access as well. We can't propagate the
+> errors very far due to phylink returning void for mac_config and
+> mac_link_up, but at least we print them to the console.
+> 
+> The SGMII PCS of the SJA1110 is not functional at this point, it needs a
+> different initialization sequence compared to SJA1105. That will be done
+> by the next patch.
+> 
+> Cc: Russell King <linux@armlinux.org.uk>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+
+[snip]
+
+> +
+> +int sja1110_pcs_mdio_read(struct mii_bus *bus, int phy, int reg)
 > +{
-> +	struct sja1105_mdio_private *mdio_priv;
-> +	struct dsa_switch *ds = priv->ds;
-> +	struct mii_bus *bus;
-> +	int rc = 0;
-> +	int port;
+> +	struct sja1105_mdio_private *mdio_priv = bus->priv;
+> +	struct sja1105_private *priv = mdio_priv->priv;
+> +	const struct sja1105_regs *regs = priv->info->regs;
+> +	int offset, bank;
+> +	u64 addr;
+> +	u32 tmp;
+> +	u16 mmd;
+> +	int rc;
 > +
-> +	if (!priv->info->pcs_mdio_read || !priv->info->pcs_mdio_write)
-> +		return 0;
+> +	if (!(reg & MII_ADDR_C45))
+> +		return -EINVAL;
 > +
-> +	bus = mdiobus_alloc_size(sizeof(*mdio_priv));
-> +	if (!bus)
-> +		return -ENOMEM;
-> +
-> +	bus->name = "SJA1105 PCS MDIO bus";
-> +	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-pcs",
-> +		 dev_name(ds->dev));
-> +	bus->read = priv->info->pcs_mdio_read;
-> +	bus->write = priv->info->pcs_mdio_write;
-> +	bus->parent = ds->dev;
-> +	mdio_priv = bus->priv;
-> +	mdio_priv->priv = priv;
-> +
-> +	/* We don't register this MDIO bus because there is no PHY on it */
+> +	/* This addressing scheme reserves register 0xff for the bank address
+> +	 * register, so that can never be addressed.
+> +	 */
+> +	if (WARN_ON(offset == 0xff))
+> +		return -ENODEV;
 
-Interesting. If you don't register it, you miss out on the stats in
-/sysfs. I wonder if it makes more sense to set phy_mask to stop it
-probing for PHYs and register it?
-
-	Andrew
+offset is not initialized here, did you mean to do this after it gets
+initialized? And likewise in sja1110_pcs_mdio_write()?
+-- 
+Florian
