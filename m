@@ -2,93 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD61839011B
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 14:39:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8C7E390151
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 14:48:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232230AbhEYMkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 08:40:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40224 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232627AbhEYMkf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 May 2021 08:40:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 89B276140E;
-        Tue, 25 May 2021 12:39:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1621946346;
-        bh=/vZdsDJghPOhaskyihnVquOx0gtCUPIcL1HHuW88hFw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=gNLVIVutCdom27ITDvkbnAvDdHFCcWeovKJxvbAx8OuZ50fbUPimBfRsfZU39D/18
-         IARkHgE25Kuvh+Q3irzMlVJaAfJURHqC7yYIMHQz6yVVg1R0bEksfBJqzlxUYV0v/B
-         B2AiyTddBVSVzTIH2N1pF0ijGpZ0wBVyLHXtiflk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     linma <linma@zju.edu.cn>, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hao Xiong <mart1n@zju.edu.cn>,
-        stable <stable@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH v2] Bluetooth: fix the erroneous flush_work() order
-Date:   Tue, 25 May 2021 14:39:02 +0200
-Message-Id: <20210525123902.189012-1-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.31.1
+        id S232870AbhEYMuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 08:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52526 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232696AbhEYMuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 08:50:22 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12584C061574
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 05:48:52 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id lx17-20020a17090b4b11b029015f3b32b8dbso11397056pjb.0
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 05:48:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=fl69MKpw50sBn4p4bXdbF1N2VaniDbW3PbbALk2V8Tc=;
+        b=nb2IWL2twSXRTc5cG+MW4MOsyTMOtQLq9wTcjq5fnndf4Hwhqkr7OVsCbkjCPTl9LJ
+         ScqwKqWSOGa3nILmKa6uNS1QwtRDPNWeuXkzdbjiouroklO/PHblJ51jMaEW/yYMoG3V
+         9LC059dNymclbzrB4urzEFJA1g10iJm0qCgyIl4fkewr79TGsAKg5FDCTnSOcZfoixfo
+         SjNaezhojgZVAUHA/KnxVBJdoXyG2R7ZHXFUjjwvSntDBLubQPoqmBVw1s+QYUHTajJB
+         CCcsyUqxXLF7/8Fb2Ev0GLMkTHxANrjV1vDWFTcBdv/+0utYiOkk27kUoJSFmsgjOlbF
+         NO0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=fl69MKpw50sBn4p4bXdbF1N2VaniDbW3PbbALk2V8Tc=;
+        b=AruZHhKCHhteY79qwt+TYHvFOjI4vR8zOb03NZNt0QWYLsj5JYBL+6nv15KlVtQj19
+         KLxlCQoT7RcIxdpYC6Tf4R5fTtXM/AUsulrTjiwAWx/b+4d6hefawiiWdb+UNdQXR/e+
+         hACZ87omeJ6GlImZb3axOnVal/MxmpTp9W9z6DqRrQCDU7mlf6axOiwskvIGUxcNtNCa
+         6Zzk7QsHMV5ZVDyafu3q3PKPwXlXbEz9tluf07qtGHni+vBN7ia/xlToN9Lx3rswppEB
+         gDtxfEEnsyPOzv/wqHPX2ilvJI5QeCvjmxWPtc46b58RMDGE6IJy4cJ8tBNr25eWMqkH
+         TWQA==
+X-Gm-Message-State: AOAM533N31OCBfAWwV0rpR+zxugowWW2Gk4B+ehOENoSnasjLWjtdl02
+        +CMOwTnJT/XQtji0na05vJE=
+X-Google-Smtp-Source: ABdhPJxuzB4H7abTIod2Kcd+tusKOA4oPE0O97C++ky3PxP+Ud39m+GNby5qBJvUQEKWA448zc1SKw==
+X-Received: by 2002:a17:90a:1c02:: with SMTP id s2mr30064968pjs.172.1621946931637;
+        Tue, 25 May 2021 05:48:51 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id i29sm14629410pgn.72.2021.05.25.05.48.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 May 2021 05:48:51 -0700 (PDT)
+Date:   Tue, 25 May 2021 05:48:48 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Yangbo Lu <yangbo.lu@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [net-next, v2, 7/7] enetc: support PTP domain timestamp
+ conversion
+Message-ID: <20210525124848.GC27498@hoboy.vegasvil.org>
+References: <20210521043619.44694-1-yangbo.lu@nxp.com>
+ <20210521043619.44694-8-yangbo.lu@nxp.com>
+ <20210525123711.GB27498@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210525123711.GB27498@hoboy.vegasvil.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: linma <linma@zju.edu.cn>
+On Tue, May 25, 2021 at 05:37:11AM -0700, Richard Cochran wrote:
+> Instead, the conversion from raw time stamp to vclock time stamp
+> should happen in the core infrastructure.  That way, no driver hacks
+> will be needed, and it will "just work" everywhere.
 
-In the cleanup routine for failed initialization of HCI device,
-the flush_work(&hdev->rx_work) need to be finished before the
-flush_work(&hdev->cmd_work). Otherwise, the hci_rx_work() can
-possibly invoke new cmd_work and cause a bug, like double free,
-in late processings.
+For transmit time stamps, we have skb_complete_tx_timestamp().
 
-This was assigned CVE-2021-3564.
+For receive, most drivers use the following cliche:
 
-This patch reorder the flush_work() to fix this bug.
+	shwt = skb_hwtstamps(skb);
+	memset(shwt, 0, sizeof(*shwt));
+	shwt->hwtstamp = ns_to_ktime(ns);
 
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
-Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-bluetooth@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: Hao Xiong <mart1n@zju.edu.cn>
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/bluetooth/hci_core.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+So the first step will be to introduce a helper function for that, and
+then re-factor the drivers to use the helper.
 
-v2: use "network comment style" for block comment.
+Thanks,
+Richard
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index fd12f1652bdf..7d71d104fdfd 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -1610,8 +1610,13 @@ static int hci_dev_do_open(struct hci_dev *hdev)
- 	} else {
- 		/* Init failed, cleanup */
- 		flush_work(&hdev->tx_work);
--		flush_work(&hdev->cmd_work);
-+
-+		/* Since hci_rx_work() is possible to awake new cmd_work
-+		 * it should be flushed first to avoid unexpected call of
-+		 * hci_cmd_work()
-+		 */
- 		flush_work(&hdev->rx_work);
-+		flush_work(&hdev->cmd_work);
  
- 		skb_queue_purge(&hdev->cmd_q);
- 		skb_queue_purge(&hdev->rx_q);
--- 
-2.31.1
-
