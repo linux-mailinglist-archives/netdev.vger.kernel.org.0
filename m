@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE1B738F80B
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:23:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A4E38F810
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:24:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbhEYCYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 22:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52568 "EHLO
+        id S230141AbhEYCZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 22:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230026AbhEYCYs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:24:48 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAB7C061574
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:23:18 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id g18so20742976pfr.2
-        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:23:18 -0700 (PDT)
+        with ESMTP id S230026AbhEYCZo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:25:44 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7447CC061574
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:24:14 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id q6so15950892pjj.2
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 19:24:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YNwxStsD+A4s3Y5YPD+y/yzjouBFbGraopsBtlg56ZE=;
-        b=NSy9fOXI9c1ltnW1iqS2aDY0CjYdTLrxZPmU5nUiplUVxvp8/CCRd8pH5tgxLeGA2n
-         fGQK1gUpwE7feIrfwJvsXmzw7hQPLoKhjHUKIUoKjs+dWqpZN/uZOXQx8ei4h7KYnlZH
-         /NUsTT1vXhXgKjRUY1e84kaYRMHUfj9QS9fxU+noUadFygmlT0Nx5PClsJA76m8dRC9x
-         yUVzD0nuHRx2NhHhc3gGaLH1PNzeG0y4z51VF78pbQNnremwBdbPLLWopXWQ/9uaUXzF
-         PHwfx+ugwmKO76SCUtCBMcIqiXay+7aHYE8KLFG9V+qHnz8AexPfUIC7nNcHFLPMA37B
-         E42w==
+        bh=IV+Sz2tjVOzCFe61QwTfgjusgAx0TK6saE4nl1082EU=;
+        b=BChqujL2OzTnSQp9PH0t+DHvJr+acHyxYeArtyJwLewNMSK06bboiDHQ0hfozc8nGk
+         2r0+s9c7wH0i2olt7X876Wg1gtAEG+6uv8YqJJopa6vYwNZjhriRR1o++QgkKEIri8yR
+         jKsu7NluUm6sFXc59nSpPHTx5QxdhpCQakjYwuCT6R5GTwnupOXhV0WLZ4sLZ9j5h9zX
+         tn9QFxI9EIfw+0m8vD5NoROAFpjl8+X/EpJTF2NvaKtF3eiQvaRfgDV7m7mYjBSobu3F
+         YKy26gRAKoprlAsBat/UYKRwSQE6+aWyhJ+AqlAw0zbqvVr9uqcLOOmnlwp5QFO1jYY+
+         k5GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=YNwxStsD+A4s3Y5YPD+y/yzjouBFbGraopsBtlg56ZE=;
-        b=QuUrfbI2J63ZrWwey5Ykg1qII47OiR00EHTC4krqGwRiCdpM8RZto9EcwEVOUn+jv2
-         sL8bytQZJYqGIO3H6mlMCrkPseZ0LcwyshMvlC9LPlWv73rHW0tb/jgD6UdMBTxgCitD
-         gJAi+DbsV+pJAaVEVi4c2HOfydBMtzU181KxhnIAXj5QFvQq8Hsypi/BPf2h3tN/Gk8x
-         XkBjtblDdyHh0eLSqdAe8r4SyNB5A4WPd+3nRY88I0PcC6a7qek85iJ2/AOAu4nTcIyU
-         hWCGOBaWK1fV4PhEx99gE1cHcv5bn+967g8X1uCQcklleiLDwAIFY0t8GPtrBl5rgj6j
-         QilA==
-X-Gm-Message-State: AOAM530hlAveC2rdCDBNOu7o7wnazUQV2JLeqhddBSnBjr3M75FhM+M9
-        IMbqx9xFkhBmbdqEjiGEF4Q=
-X-Google-Smtp-Source: ABdhPJxutDzBIztARiDViD2PivV74OGN4LmkZBwB9mzuMYFcVz0btZdVhm6MRm9uNxRNna7bnvKFrw==
-X-Received: by 2002:a63:1d42:: with SMTP id d2mr16401998pgm.21.1621909397578;
-        Mon, 24 May 2021 19:23:17 -0700 (PDT)
+        bh=IV+Sz2tjVOzCFe61QwTfgjusgAx0TK6saE4nl1082EU=;
+        b=VtvJJ8I5kn1CTOAm7DU72QG83CbgConY1opVXPHuIlaDqnux7Iw2chEpDbQ633R9B/
+         5Oj27P+zM6Ac/L/23jj4mUTEpfVAlTf+jTJ+QGz/8QRPj+qG+QCRexJfL50yWwaosnn6
+         MZbEGH4N2acaW6k8p76bZSHABAVY7VE4GH8AOinXVvz3k9rLicawaOTcpkjyQfMTE28m
+         E1hetbnJWNFMofTuDf72e5c0xmbHJedZOIO3pQVht9zRrqS1XK0VwmYCywNNshuvvDN1
+         B2jq5+fLYfce0/2AydBARzPOSJAyfQfowX16aTxRfhLI2DF1MdQ7tWLF4iY351KgYXF7
+         f52Q==
+X-Gm-Message-State: AOAM533GA9SUrojpHrZVj/Ri//5EwEV3wMnwznUcFGjCpCsT7dVR/6C5
+        1Iuze7qm9X7IKxK93ji7kco=
+X-Google-Smtp-Source: ABdhPJzdjw5134RBGUCGf3/gbz9aOu0m/tbOcPj4zFhoB8MCS29+kfLfmHtxbDv0vlGw7Vopx39TJA==
+X-Received: by 2002:a17:90b:3b86:: with SMTP id pc6mr28664631pjb.162.1621909454016;
+        Mon, 24 May 2021 19:24:14 -0700 (PDT)
 Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id mt24sm11071808pjb.18.2021.05.24.19.23.13
+        by smtp.gmail.com with ESMTPSA id 68sm11998235pfu.7.2021.05.24.19.24.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 May 2021 19:23:17 -0700 (PDT)
-Subject: Re: [PATCH net-next 05/13] net: dsa: sja1105: add a PHY interface
- type compatibility matrix
+        Mon, 24 May 2021 19:24:13 -0700 (PDT)
+Subject: Re: [PATCH net-next 07/13] net: dsa: sja1105: always keep RGMII ports
+ in the MAC role
 To:     Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -57,14 +57,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20210524232214.1378937-1-olteanv@gmail.com>
- <20210524232214.1378937-6-olteanv@gmail.com>
+ <20210524232214.1378937-8-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e1d8f74a-6cb7-75bc-551c-5214998a2521@gmail.com>
-Date:   Mon, 24 May 2021 19:23:09 -0700
+Message-ID: <eb3e9ba6-718b-8dda-dc97-da86ca52d9e3@gmail.com>
+Date:   Mon, 24 May 2021 19:24:10 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210524232214.1378937-6-olteanv@gmail.com>
+In-Reply-To: <20210524232214.1378937-8-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,54 +77,34 @@ X-Mailing-List: netdev@vger.kernel.org
 On 5/24/2021 4:22 PM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> On the SJA1105, all ports support the parallel "xMII" protocols (MII,
-> RMII, RGMII) except for port 4 on SJA1105R/S which supports only SGMII.
-> This was relatively easy to model, by special-casing the SGMII port.
+> In SJA1105, the xMII Mode Parameters Table field called PHY_MAC denotes
+> the 'role' of the port, be it a PHY or a MAC. This makes a difference in
+> the MII and RMII protocols, but RGMII is symmetric, so either PHY or MAC
+> settings result in the same hardware behavior.
 > 
-> On the SJA1110, certain ports can be pinmuxed between SGMII and xMII, or
-> between SGMII and an internal 100base-TX PHY. This creates problems,
-> because the driver's assumption so far was that if a port supports
-> SGMII, it uses SGMII.
+> The SJA1110 is different, and the RGMII ports only work when configured
+> in MAC mode, so keep the port roles in MAC mode unconditionally.
 > 
-> We allow the device tree to tell us how the port pinmuxing is done, and
-> check that against a PHY interface type compatibility matrix for
-> plausibility.
+> Why we had an RGMII port in the PHY role in the first place was because
+> we wanted to have a way in the driver to denote whether RGMII delays
+> should be applied based on the phy-mode property or not. This is already
+> done in sja1105_parse_rgmii_delays() based on an intermediary
+> struct sja1105_dt_port (which contains the port role). So it is a
+> logical fallacy to use the hardware configuration as a scratchpad for
+> driver data, it isn't necessary.
 > 
-> The other big change is that instead of doing SGMII configuration based
-> on what the port supports, we do it based on what is the configured
-> phy_mode of the port.
-> 
-> The 2500base-x support added in this patch is not complete.
+> We can also remove the gating condition for applying RGMII delays only
+> for ports in the PHY role. The .setup_rgmii_delay() method looks at
+> the priv->rgmii_rx_delay[port] and priv->rgmii_tx_delay[port] properties
+> which are already populated properly (in the case of a port in the MAC
+> role they are false). Removing this condition generates a few more SPI
+> writes for these ports (clearing the RGMII delays) which are perhaps
+> useless for SJA1105P/Q/R/S, where we know that the delays are disabled
+> by default. But for SJA1110, the firmware on the embedded microcontroller
+> might have done something funny, so it's always a good idea to clear the
+> RGMII delays if that's what Linux expects.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/dsa/sja1105/sja1105.h      |  5 +++
->  drivers/net/dsa/sja1105/sja1105_main.c | 59 +++++++++++++-------------
->  drivers/net/dsa/sja1105/sja1105_spi.c  | 20 +++++++++
->  3 files changed, 55 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-> index d5c0217b1f65..a27841642693 100644
-> --- a/drivers/net/dsa/sja1105/sja1105.h
-> +++ b/drivers/net/dsa/sja1105/sja1105.h
-> @@ -111,6 +111,11 @@ struct sja1105_info {
->  				enum packing_op op);
->  	int (*clocking_setup)(struct sja1105_private *priv);
->  	const char *name;
-> +	bool supports_mii[SJA1105_MAX_NUM_PORTS];
-> +	bool supports_rmii[SJA1105_MAX_NUM_PORTS];
-> +	bool supports_rgmii[SJA1105_MAX_NUM_PORTS];
-> +	bool supports_sgmii[SJA1105_MAX_NUM_PORTS];
-> +	bool supports_2500basex[SJA1105_MAX_NUM_PORTS];
-
-If you used a bitmap you may be able to play some nice tricks with
-ordering them in PHY_INTERFACE_MODE_* order and just increment a pointer
-to the bitmap.
-
-Since it looks like all of the chips support MII, RMII, and RGMII on all
-ports, maybe you can specify only those that don't?
-
-Still:
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
