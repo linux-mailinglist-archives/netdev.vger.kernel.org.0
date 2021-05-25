@@ -2,124 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 629AF3909DD
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 21:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D485C390A21
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 21:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232103AbhEYTtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 15:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34924 "EHLO
+        id S233036AbhEYT7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 15:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230240AbhEYTtL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 15:49:11 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B580AC061574;
-        Tue, 25 May 2021 12:47:40 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id o18so7040245ybc.8;
-        Tue, 25 May 2021 12:47:40 -0700 (PDT)
+        with ESMTP id S230343AbhEYT73 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 15:59:29 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB98C061574;
+        Tue, 25 May 2021 12:57:57 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id e2so33448135ljk.4;
+        Tue, 25 May 2021 12:57:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sTYN+8SqG2RGBqoSV7w+w17JB1NhOulyR0vbBWb1CRc=;
-        b=hgoOnq2JUlX3uaO7fVG+ppb4uuFJzdtV1eWWJWP6MEkF5BZl5/saOSO10dkjPUH3dX
-         bAaNEigiDAEdgNONOyoe2YEhVIR+vfR8oSOQYGq2rKHfT2SnrFOLoK9hq/Ff8gKuT1Oz
-         C/B1SuI8wz2c85+oV0D4g8JqIHuGYChBXQ7ZtMNf8U4LFZjEq8Idb97eGMSmGi3f3WWo
-         H7MtR/+F8ESCFWwCERPP78bUWOdhSCdkvK0gjHEyN1qnw5/kQD7yotBbm8uSHl/4Ha6w
-         rHQAmTZFIodjG6o9uLR256Io27UnT9wz4OBD88m+uPj4+Y9Qlw4VNWxjBPCIMXZzsSlV
-         05QQ==
+        bh=4s7vCGqH0XmF+l5T0ZZ65rm+cCf196bb9Q/4DckFJcg=;
+        b=cAXVMGYah5V9RlRZ3EBNnOceo2itK3w+IW+xPAMqU2D6u4YGXBqerZni5pcuJB+NxV
+         7rzC9482okTVr+e+0jqx8t12+aX91S5oT7hlD3fTWi9RSoF540Qti865/8QHLNLVjgE3
+         qMbhjuM7HChXgxfwLYlrPHVeOF5Mf8x60+tiGHN0fmyhTIHSRGnEhl1fdVo7/yL5zyp2
+         9pP7juyMcC5sD1V/oqVjfT0pMtPj1Cihv5U85a02M62ktAvOmETMLArADanADmwU6xdE
+         SwtB6I8jayKXQ3/8Ns91GK0jS9DIvgscpG1XjRx/qugGZiQbKIVXvhog2LawbWt5R/39
+         KnNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sTYN+8SqG2RGBqoSV7w+w17JB1NhOulyR0vbBWb1CRc=;
-        b=dKiF+H549beS4RgiE4+bSLf3iWPKEQUAvWlPB2d3VNs3r0pS+s9xSDctN22yi0TjTO
-         ro4lkuDHjH97xPBwH82LI1CcYSt4Ph3zCrNtyRWiOYMs2ft2WJKaChr8PzUnlZTVqEij
-         GxclQAZR0sXnxtGZ0ky7WEe4CjN+b0pRG6u9qcmP5lAC4d41fKDQxJkHNOV3r9aDV54+
-         kAXIdk5/Dj+P3Qtvd09NtsjiYKR9o3S2VqEDHvXwexJP1SljKpc4gBnVq9wgblDUeX3o
-         0j094YDKqLiaVxoemHrY5hilFlfbErRKUtBxK0S7jgk5SCQodhvSPDvz9DV5JT6QSCO9
-         vaOw==
-X-Gm-Message-State: AOAM530RK1BVb6ecHhx5rNaOxmRMh1NQlbkmTOTR9O5Natkt3L+JHd+M
-        ochBDHuL0zctMtNDyACpLrjBoyq9dnSK5C3oNRX5iGt7
-X-Google-Smtp-Source: ABdhPJxcrG+ChvQY54LAI1DHSAUkuvWwz8netKiWYKqTKpP1S5rtjOYLNmuPvbivoqM9CEgkSKCEPVEm/U2xBoO66Aw=
-X-Received: by 2002:a25:7246:: with SMTP id n67mr44782688ybc.510.1621972059940;
- Tue, 25 May 2021 12:47:39 -0700 (PDT)
+        bh=4s7vCGqH0XmF+l5T0ZZ65rm+cCf196bb9Q/4DckFJcg=;
+        b=XnY04Wo9j0g6azwHXWMytiG91y6uzBYOU12asRAoNiNzEIj6Z5PJiClEEXM+BT4Xox
+         Z78NjCrc4l8bfgiS+hWEx1dgQS3qAkrcBeaZA1/YyYlDXKpxkjs3sJEvM0o12Bhue+cv
+         ermF8/rLDFY6qWOBreZpjrwNh2QTsYAsutpHj19b2CMhz5LZz4/UfKFXjkQGD6T3MSqZ
+         n0hCBRYBcMTWDFHfyH1SWojUv4VSQ/6W/aAuR+qSfjIWwmnTiZ6y6HM8U00hHuS2GDon
+         4jZlM4IzFR6XD/ytyrF5tTjmWzlbWtQTJSqrAaKG6Ql8rZTPyBGWc3A5aNSok7oR1xY7
+         I2iA==
+X-Gm-Message-State: AOAM530jImx7qyT6PFIFTaw1lUTab6XPM0jhwoVcRcXngg3V0IBeVD63
+        yZnxNbd4i74MwzEVh8Lz7iqhPir/FMrKvJBigqq6WmaQ
+X-Google-Smtp-Source: ABdhPJwfnnuCdxpZ2xllj1yM84DF3TTXPxxxfJDxAdKeBGjipAsgTG83zCIv82LwvnK1Es0Klq+o/bMYZnfgEjV2LTk=
+X-Received: by 2002:a2e:a489:: with SMTP id h9mr22497417lji.21.1621972676337;
+ Tue, 25 May 2021 12:57:56 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
- <CACAyw9-7dPx1vLNQeYP9Zqx=OwNcd2t1VK3XGD_aUZZG-twrOg@mail.gmail.com>
- <CAADnVQLqa6skQKsUK=LO5JDZr8xM_rwZPOgA1F39UQRim1P8vw@mail.gmail.com>
- <CAEf4Bza2cupmVZZRx4yWOQBQ7fnaw5pwCQJx9j1HWp=0eUiA1A@mail.gmail.com> <CAM_iQpXn8KyLtApiJOkjKfrhadeG-j0Z+QOBS6SFJjs1as0ZQg@mail.gmail.com>
-In-Reply-To: <CAM_iQpXn8KyLtApiJOkjKfrhadeG-j0Z+QOBS6SFJjs1as0ZQg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 25 May 2021 12:47:28 -0700
-Message-ID: <CAEf4BzbzviuM2xXAc_v8vf=KO1F1q1iy3Jmzrb8ZdF_3Vo22QA@mail.gmail.com>
+ <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
+ <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
+ <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
+ <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
+ <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com> <bcbf76c3-34d4-d550-1648-02eda587ccd7@mojatatu.com>
+In-Reply-To: <bcbf76c3-34d4-d550-1648-02eda587ccd7@mojatatu.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 25 May 2021 12:57:45 -0700
+Message-ID: <CAADnVQLWj-=B2TfJp7HEsiUY3rqmd6-YMDAGdyL6RgZ=_b2CXg@mail.gmail.com>
 Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        "David S . Miller" <davem@davemloft.net>,
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        David Miller <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 10:22 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Tue, May 25, 2021 at 12:35 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 >
-> On Mon, May 24, 2021 at 12:13 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > I second the use of BPF_PROG_TEST_RUN (a.k.a. BPF_PROG_RUN now) to
-> > "mirror" such APIs to user-space. We have so much BPF-side
+> On 2021-05-25 2:21 p.m., Alexei Starovoitov wrote:
+> > On Mon, May 24, 2021 at 9:59 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
-> Except the expiration time is stored in user-space too if you just
-> use user-space timers to trigger BPF_PROG_TEST_RUN.
-> Modifying expiration based on its current value in timer callbacks
-> is very common. For example in conntrack use case, we want the
-> GC timer to run sooner in the next run if we get certain amount of
-> expired items in current run.
+>
+> [..]
+> > In general the garbage collection in any form doesn't scale.
+> > The conntrack logic doesn't need it. The cillium conntrack is a great
+> > example of how to implement a conntrack without GC.
+>
+> For our use case, we need to collect info on all the flows
+> for various reasons (one of which is accounting of every byte and
+> packet).
+> So as a consequence - built-in GC (such as imposed by LRU)
+> cant interfere without our consent.
 
-I'm not entirely sure what all this means, sorry. My general point is
-that instead of doing bpf() syscall with a new custom command (e.g.,
-BPF_TIMER_UPDATE), you can just fire your custom BPF program with
-BPF_TEST_RUN. You can pass custom timeouts or any other
-user-space-provided settings either through global variables, custom
-maps, or directly as a context. So you have full control over what
-should be set when and why, we just avoid adding tons of custom bpf()
-syscall commands for every single feature.
-
->
->
-> > functionality and APIs that reflecting all of that with special
-> > user-space-facing BPF commands is becoming quite impractical. E.g., a
-> > long time ago there was a proposal to add commands to push data to BPF
-> > ringbuf from user-space for all kinds of testing scenarios. We never
-> > did that because no one bothered enough, but now I'd advocate that a
-> > small custom BPF program that is single-shot through BPF_PROG_RUN is a
-> > better way to do this. Similarly for timers and whatever other
-> > functionality. By doing everything from BPF program we also side-step
-> > potential subtle differences in semantics between BPF-side and
-> > user-space-side.
->
-> I am confused about what you are saying, because we can already
-> trigger BPF_PROG_RUN with a user-space timer for a single shot,
-> with the current kernel, without any modification. So this sounds like
-> you are against adding any timer on the eBPF side, but on the other
-> hand, you are secoding to Alexei's patch... I am completely lost.
-
-I'm arguing against adding more custom commands to bpf() syscall. And
-I was talking about triggering BPF program directly from user-space
-with BPF_PROG_TEST_RUN/BPF_PROG_RUN command, not through some timers.
-
->
-> Very clearly, whatever you described as "single shot" is not what we
-> want from any perspective.
-
-I'm not sure we are even talking about the same things, so I doubt
-"clearly" in this case.
-
->
-> Thanks.
+The outcome of the last bpf office hours was a general agreement
+that we need new hooks in map update/delete operations
+(including auto-delete by LRU) that will trigger a bpf subprog.
+It might look very similar to the timer callback that is part of this patch,
+but instead of being called by the timer the LRU logic will call it.
+This way the subprog can transfer the data stored in the
+about-to-be-deleted map element into some other map or pass
+to user space via ringbuf or do any other logic.
