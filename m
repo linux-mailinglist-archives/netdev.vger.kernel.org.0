@@ -2,140 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B21F83908D5
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 20:21:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B1D13908F0
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 20:26:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232206AbhEYSX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 14:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231707AbhEYSXZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 14:23:25 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B145C061574;
-        Tue, 25 May 2021 11:21:55 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id a4so24601769ljd.5;
-        Tue, 25 May 2021 11:21:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eiMXbPyZeBG/jx13ONZ4/fh0f8muodUmcHj/milF8iQ=;
-        b=Ou6LgZu4cXNTamAmRMe45RHSWi5Qa9R6Bs8jinJtVM8zBz7fIZ75ozXemeTg+hb77f
-         URI/+chK+9XJNdbxWWe2qMDppXxNbo3o6E2f+DxWcBtKg1nH68I7MIU8cm03pByqzLEX
-         Yqp+gf3IcjqQajPWilxdK9rMt0/w2rP8T88iYbxdWO8SJz+16XKRnyOdOBEwlDmbcP90
-         LP7wmbO4oXqkfaPOOsu6gCh3da2mIBuMesYGNIr+L9Y9ZrE+xztVFFiPE3e55cziNqs9
-         X/CmVTUPtkC3zWzJr4H2vGFa4jGunEWOVdTUYfJcCU+FM7PSlDeHun1a6KP1T2WQTOe9
-         ynVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eiMXbPyZeBG/jx13ONZ4/fh0f8muodUmcHj/milF8iQ=;
-        b=aJUIRoCelUVCxhm/MN0ckpiJHWE7eT6GW0OgwrqPYCga4PJdX/CMoiOx8hGd/1m6z/
-         gZMVue7YabrPZH/d70GH4SXH0CZY5pe2rRi0Yb2culH+Vr8hFZY5Q2rrq0oY0MoHA504
-         +zQ2oVIR7DYm90YdgE2cRNlg0P90VHuvDExoCg8jynq8YBiFsF2SMtaFTMYMB2KruyQZ
-         OAK0BoGMAjvWT0YGhab4HP++VeFnLQ3f7KrrYASkFSC5z3Sdr7rwsWnpHs0rjPQKVc6z
-         uWGJvgJDAhFx2JEz166hC6AmyuvHCon4fvKckRnaLwz8pHf+EP3KOb46XEg9HSs7og69
-         8wsg==
-X-Gm-Message-State: AOAM533LElUfR6H9kYygckybWPWzFl4QHM2Co1c/LWErDa10x2gcTi25
-        fJQ2TuF4SJsdzidd9pnECr3mJFGOHAkTK0agA80BkFBu
-X-Google-Smtp-Source: ABdhPJwLJnFWv64jHhseXf48OpIzHl1VRV2iVtp16ZOgTdMBFymqeNDt8EeT23LyLYZyGjTabpQOgc2Y/9ZuDSbYUBM=
-X-Received: by 2002:a05:651c:145:: with SMTP id c5mr20789488ljd.204.1621966913252;
- Tue, 25 May 2021 11:21:53 -0700 (PDT)
+        id S232127AbhEYS2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 14:28:07 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49416 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230029AbhEYS2G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 14:28:06 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1llbl1-000G16-El; Tue, 25 May 2021 20:26:23 +0200
+Received: from [85.7.101.30] (helo=linux-2.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1llbl1-000VIA-8z; Tue, 25 May 2021 20:26:23 +0200
+Subject: Re: linux-next: Tree for May 18 (kernel/bpf/bpf_lsm.o)
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+References: <20210518192729.3131eab0@canb.auug.org.au>
+ <f816246b-1136-cf00-ff47-554d40ecfb38@infradead.org>
+ <7955d9e2-a584-1693-749a-5983187e0306@infradead.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <166d8da3-1f1f-c245-cc46-c40e12fb71ab@iogearbox.net>
+Date:   Tue, 25 May 2021 20:26:22 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
- <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
- <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
- <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com> <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
-In-Reply-To: <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 25 May 2021 11:21:41 -0700
-Message-ID: <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <7955d9e2-a584-1693-749a-5983187e0306@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26181/Tue May 25 13:17:38 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 9:59 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Mon, May 24, 2021 at 8:16 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Sun, May 23, 2021 at 9:01 AM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Fri, May 21, 2021 at 2:37 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > >
-> > > > Hi, Alexei
-> > > >
-> > > > On Thu, May 20, 2021 at 11:52 PM Alexei Starovoitov
-> > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > >
-> > > > > Introduce 'struct bpf_timer' that can be embedded in most BPF map types
-> > > > > and helpers to operate on it:
-> > > > > long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
-> > > > > long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
-> > > > > long bpf_timer_del(struct bpf_timer *timer)
-> > > >
-> > > > Like we discussed, this approach would make the timer harder
-> > > > to be independent of other eBPF programs, which is a must-have
-> > > > for both of our use cases (mine and Jamal's). Like you explained,
-> > > > this requires at least another program array, a tail call, a mandatory
-> > > > prog pinning to work.
-> > >
-> > > That is simply not true.
-> >
-> > Which part is not true? The above is what I got from your explanation.
->
-> I tried to write some code sketches to use your timer to implement
-> our conntrack logic, below shows how difficult it is to use,
+On 5/25/21 7:30 PM, Randy Dunlap wrote:
+> On 5/18/21 10:02 AM, Randy Dunlap wrote:
+>> On 5/18/21 2:27 AM, Stephen Rothwell wrote:
+>>> Hi all,
+>>>
+>>> Changes since 20210514:
+>>>
+>>
+>> on i386:
+>> # CONFIG_NET is not set
+>>
+>> ld: kernel/bpf/bpf_lsm.o: in function `bpf_lsm_func_proto':
+>> bpf_lsm.c:(.text+0x1a0): undefined reference to `bpf_sk_storage_get_proto'
+>> ld: bpf_lsm.c:(.text+0x1b8): undefined reference to `bpf_sk_storage_delete_proto'
+>>
+>>
+>> Full randconfig file is attached.
+>>
+> 
+> Hi,
+> I am still seeing this build error in linux-next-20210525.
 
-Was it difficult because you've used tail_call and over complicated
-the progs for no good reason?
-
-> SEC("ingress")
-> void ingress(struct __sk_buff *skb)
-> {
->         struct tuple tuple;
->         // extract tuple from skb
->
->         if (bpf_map_lookup_elem(&timers, &key) == NULL)
->                 bpf_tail_call(NULL, &jmp_table, 0);
->                 // here is not reachable unless failure
->         val = bpf_map_lookup_elem(&conntrack, &tuple);
->         if (val && val->expires < now) {
->                 bpf_tail_call(NULL, &jmp_table, 1);
->                 // here is not reachable unless failure
->         }
-> }
->
-> SEC("egress")
-> void egress(struct __sk_buff *skb)
-> {
->         struct tuple tuple;
->         // extract tuple from skb
->
->         if (bpf_map_lookup_elem(&timers, &key) == NULL)
->                 bpf_tail_call(NULL, &jmp_table, 0);
->                 // here is not reachable unless failure
->         val = bpf_map_lookup_elem(&conntrack, &tuple);
->         if (val && val->expires < now) {
->                 bpf_tail_call(NULL, &jmp_table, 1);
->                 // here is not reachable unless failure
-
-tail_calls are unnecessary. Just call the funcs directly.
-All lookups and maps are unnecessary as well.
-Looks like a single global timer will be enough for this use case.
-
-In general the garbage collection in any form doesn't scale.
-The conntrack logic doesn't need it. The cillium conntrack is a great
-example of how to implement a conntrack without GC.
+Will take a look and get back.
