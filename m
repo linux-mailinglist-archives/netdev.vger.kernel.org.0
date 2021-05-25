@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28D6038F856
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:49:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC56238F858
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 04:49:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbhEYCu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 22:50:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58376 "EHLO
+        id S230143AbhEYCvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 May 2021 22:51:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbhEYCu5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:50:57 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D154FC061574;
-        Mon, 24 May 2021 19:49:26 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id a7so10985088qvf.11;
-        Mon, 24 May 2021 19:49:26 -0700 (PDT)
+        with ESMTP id S229583AbhEYCvN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 May 2021 22:51:13 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA67C061574;
+        Mon, 24 May 2021 19:49:44 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id v4so22183317qtp.1;
+        Mon, 24 May 2021 19:49:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Yp9ChnDXX/a3Eqfo821VCr0TE1yp4/AXDeNsmgE7SOU=;
-        b=QWHa1P4+BVNkITZzO1c/XYMv8PQmZ8/751QDrpw52IdzdZ4pXP8uAVGxZkD6lSqgwn
-         YxBWOWegkTtJBx/dK7zX7JO8cG226I+kuYn7fTfJ5AjVO162KJdzAVRw6G82RnxFNCvE
-         MDYudEdiEC5GbsScb43WMcctQyNmK+/QnNDIve+cvm2ENqm3w/OPIdAvXDBMZh9sqr0O
-         Zp0kCWcssU1IxyfqbzgePXaR8JrmEw7Ft+8bR3IrXJiK+4Kwc3e0axX8HdmndKdvkP7G
-         SHZgWfN712+u5cr7BCQsgsW+KHhNhvVf2Gvnq8uSIUtv63o1At2UbCw4B5yFGGwpQK9F
-         lVXA==
+        bh=2qtQy/kNpaoEXZ266z5GW30433TABBm8NnJcGKp1Nbc=;
+        b=XBDALySmTOrcyzBBXXEhFeWsiejRDZdGIJsG7BqgjkDqJkkqODwNbioSYe8C/MowFg
+         hg7v6T2V/644/4uIOWoUQQ8+v9/iDcOKfSROcPuze/Ok/ziQHiMPqPmdmV0B9Z3+qgZM
+         y1e2Vyv8JxiEi9Y8Okvd15UtclXF43QuXPLbsW9jkfhmSsaGzd7gLiIpLw4IuC8EpIHE
+         KLWZNKk7r4yMnsvHaKyZ7QMUIhDCtDPOXXSOHaCBX7snV16hLLegGV3a5uaoayDaYV9z
+         ALPGaDSg5fEuNR5XrtusTICa9ZRychSbAQ61mQt4yboTmJe+oJb86lk6gwAVYYTw/pjF
+         L6SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Yp9ChnDXX/a3Eqfo821VCr0TE1yp4/AXDeNsmgE7SOU=;
-        b=Y+7N3vbANCuNlCTJ2uAS5naXjS0zdtxBjkaC1ZMHHTC033gfKFKN8wjJ1WaE1VTOuW
-         YoxwQX7aV25j/WEB0lc3riwv+7SLO8QKr+w7J05rVoHYva469ve13RsrJU4bad+iFNYy
-         M1EjUIuwsE5bvAqTji5Mrzfk2ouQ0IIUGUHAIGdlB9x8lUunK+T9xtCOkjEFRxLKaIn1
-         291k3UJ67PIzxUQ2bYEl/LI9gPka+lYjFmgUHQFY1KEC6HrAO5PEpqLspGtnT3/oMz5E
-         MtbXHA0oDCQQZ05zTTMtkbNMwlUXJ1/C5POWV0adDNMS1m6+TjDgwda1MxmBU+UYwyU0
-         FAOQ==
-X-Gm-Message-State: AOAM532nkMKa34ZQC9nYzXgQTHtzGhnYgFLeZx4w1PmlQdWMv7eOfc+n
-        njWAbwfNRmZnMmq8BhGY72wT3Y5SWuw=
-X-Google-Smtp-Source: ABdhPJxVc57QylPVJLN8cHbXrV4CLYIEQFn1ywNWkVpyueV0ZgZsABgPorXLZdisw8azLxrM9jgBDg==
-X-Received: by 2002:a05:6214:4d:: with SMTP id c13mr33044449qvr.15.1621910965926;
-        Mon, 24 May 2021 19:49:25 -0700 (PDT)
+        bh=2qtQy/kNpaoEXZ266z5GW30433TABBm8NnJcGKp1Nbc=;
+        b=QDeR5Knmy9lKcqICLDIWiPcdX4DqxNEhHgmaQbR00fw/8P94q9FevyQNoXnH8i7KSZ
+         n9Aqdq0ylDRRwntOd+lqmafWt1KmcSbesXBzF+tsXu3mNAGD/tnYx/Lx3RPlpsCO+TFG
+         faNwQAFWZ+o2Wtpua+WZPW2G/5CYtCdt0txP6PbLOx0hYFZ1PoyEdLmIzUQJa4CCGJ6m
+         xAvSgXOGMi6y2867QyMcljbAHVMBSQsMigPh+zzGnuQJmjajuV4mK1QIheNQF/0+0K3p
+         f9VEW+wMzwPUBt3FL9G8dtn090fnXC8slpMCASWLcyRESxAGXzKh8N925xNgCpqppW52
+         G/qQ==
+X-Gm-Message-State: AOAM531TZRDZtwj8HT8oqubAOWb+ELnNIaPpjMRSQ4rmfrlST7XaUo/g
+        iICdzMX7rZ4SG+ODPQEpDiPo1sF8VoimygmQ
+X-Google-Smtp-Source: ABdhPJwfcer0eOF2NfDGv3U1UwT+vkiwn8yRuSnOpnB0KjMZwH2UoNsFTsLSsTNIo0ogC9T5ZH11uA==
+X-Received: by 2002:a05:622a:1044:: with SMTP id f4mr30520217qte.181.1621910983019;
+        Mon, 24 May 2021 19:49:43 -0700 (PDT)
 Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id d24sm11878366qtm.70.2021.05.24.19.49.25
+        by smtp.gmail.com with ESMTPSA id e5sm11478246qtg.96.2021.05.24.19.49.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 May 2021 19:49:25 -0700 (PDT)
+        Mon, 24 May 2021 19:49:42 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
         kuba@kernel.org, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCH net] sctp: add the missing setting for asoc encap_port
-Date:   Mon, 24 May 2021 22:49:24 -0400
-Message-Id: <6bd2663c371f783d4668de217d0fbf3b0e85cca8.1621910964.git.lucien.xin@gmail.com>
+Subject: [PATCH net] sctp: fix the proc_handler for sysctl encap_port
+Date:   Mon, 24 May 2021 22:49:42 -0400
+Message-Id: <deeba1bfa2edb3f83fd1b8ad3bf6b6f5bce264dd.1621910982.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -61,26 +61,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to add the missing setting back for asoc encap_port.
+proc_dointvec() cannot do min and max check for setting a value
+when extra1/extra2 is set, so change it to proc_dointvec_minmax()
+for sysctl encap_port.
 
-Fixes: 8dba29603b5c ("sctp: add SCTP_REMOTE_UDP_ENCAPS_PORT sockopt")
+Fixes: e8a3001c2120 ("sctp: add encap_port for netns sock asoc and transport")
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/sctp/socket.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/sctp/sysctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 40f9f6c4a0a1..a79d193ff872 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -4473,6 +4473,7 @@ static int sctp_setsockopt_encap_port(struct sock *sk,
- 				    transports)
- 			t->encap_port = encap_port;
- 
-+		asoc->encap_port = encap_port;
- 		return 0;
- 	}
- 
+diff --git a/net/sctp/sysctl.c b/net/sctp/sysctl.c
+index e92df779af73..55871b277f47 100644
+--- a/net/sctp/sysctl.c
++++ b/net/sctp/sysctl.c
+@@ -307,7 +307,7 @@ static struct ctl_table sctp_net_table[] = {
+ 		.data		= &init_net.sctp.encap_port,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
++		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= &udp_port_max,
+ 	},
 -- 
 2.27.0
 
