@@ -2,144 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3BDA390334
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 15:57:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84B80390331
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 15:57:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233418AbhEYN6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 09:58:46 -0400
-Received: from outbound-smtp50.blacknight.com ([46.22.136.234]:38859 "EHLO
-        outbound-smtp50.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233373AbhEYN6q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 09:58:46 -0400
-X-Greylist: delayed 371 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 May 2021 09:58:45 EDT
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp50.blacknight.com (Postfix) with ESMTPS id D6D9EFAC38
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 14:51:02 +0100 (IST)
-Received: (qmail 3215 invoked from network); 25 May 2021 13:51:02 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.23.168])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 25 May 2021 13:51:02 -0000
-Date:   Tue, 25 May 2021 14:51:01 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Michal Such?nek <msuchanek@suse.de>, bpf <bpf@vger.kernel.org>,
+        id S233406AbhEYN6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 09:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233373AbhEYN6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 09:58:25 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FF1C06138A
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 06:56:54 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id h16so36296405edr.6
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 06:56:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WGPyF9cLnTz2QZ4yWAoBXLvmWhnOB2cEFuUlKJPyncE=;
+        b=RiFgZo3qUq9fklWiwHZyfsLfVJtuLmU14pHsogMjVV26Ww02bWIHblvr4b9vSMeNjW
+         0Hc9yHVVAMVnUhYn4LRBh6dC61eeKUPbPvk5XM00SvQJgyZ+e6bnu5epyzAh55EP4fZ2
+         ntpJizTq7iKKadc9OtbXDV64guNh9/6aaOpDoZyLrte96zSaVWeeqacLWTpyGmCS/DKa
+         amMSCT20XSbqgLWoRlz3cQnVBsbRGi9WSnHykFdmqjUgVEQCGAjbtNV1A0iKvkY6rE/d
+         gXGsN45x6VA6T0xY3A37rC6lBzOalYog2z8SyWV2jIe+JHG1zkeK/Z7e/3SJHBa1h5pu
+         Dxfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WGPyF9cLnTz2QZ4yWAoBXLvmWhnOB2cEFuUlKJPyncE=;
+        b=UnBACj+q6FWju+qE29mEU7ac5RgE1pPhdPWudzTOVN/UCYYcEo6AHqo1/TOd97+Cjn
+         fI4ILHomOhXC10ujWElSEpJBOhR8wQ1uaDVHd1yFdftcbxJet6cGJv0P7T6ndu2T/7ev
+         766HN0IcxeehTaWAmmb3zf/QJ4Jj7b6CodNM1mnh2GAsgzF+y2/EX+itVCCOI81y734h
+         Fh19hOAKz8ITZtdBrDAzw7RNOW4sdcLgUmcPNm7S1mo2BpASFLn+H2+bGXzMPlScDelc
+         Yh+RnXTwY8Zk2oPYQQrzAAJKMlXHY60Q7uyfb91sOCG+oYnmVuyNWzekLjtAEKCA6IZh
+         tj7Q==
+X-Gm-Message-State: AOAM532KYD5Xa9d6DzprWb/L2LwIS8jHAlhKwxjVfLIkCzY+wpRXrufa
+        VIA5Y8kH2sTwwcnH7Zm8JVOR0SDEtdmVqg==
+X-Google-Smtp-Source: ABdhPJyE4aqQUETU432hXPLmEKrZ+EA35vTXX4smREQkdS697uXAmaBJg39SM9csQyvAROXi8h4/KA==
+X-Received: by 2002:a50:9b06:: with SMTP id o6mr8821009edi.284.1621951012189;
+        Tue, 25 May 2021 06:56:52 -0700 (PDT)
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
+        by smtp.gmail.com with ESMTPSA id d25sm9071828ejd.59.2021.05.25.06.56.50
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 May 2021 06:56:50 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id z17so32355545wrq.7
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 06:56:50 -0700 (PDT)
+X-Received: by 2002:adf:fa42:: with SMTP id y2mr27555296wrr.12.1621951009929;
+ Tue, 25 May 2021 06:56:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210525061724.13526-1-po-hsu.lin@canonical.com>
+In-Reply-To: <20210525061724.13526-1-po-hsu.lin@canonical.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 25 May 2021 09:56:12 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSc19dDYaRyJZV5qqwz7rFy+5KXHzX_0OkwAFFyJH6aU6Q@mail.gmail.com>
+Message-ID: <CA+FuTSc19dDYaRyJZV5qqwz7rFy+5KXHzX_0OkwAFFyJH6aU6Q@mail.gmail.com>
+Subject: Re: [PATCH] selftests: Use kselftest skip code for skipped tests
+To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
+Cc:     "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>, skhan@linuxfoundation.org,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Hritik Vijay <hritikxx8@gmail.com>
-Subject: Re: BPF: failed module verification on linux-next
-Message-ID: <20210525135101.GT30378@techsingularity.net>
-References: <20210519141936.GV8544@kitsune.suse.cz>
- <CAEf4BzZuU2TYMapSy7s3=D8iYtVw_N+=hh2ZMGG9w6N0G1HvbA@mail.gmail.com>
- <CAEf4BzZ0-sihSL-UAm21JcaCCY92CqfNxycHRZYXcoj8OYb=wA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZ0-sihSL-UAm21JcaCCY92CqfNxycHRZYXcoj8OYb=wA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>, nikolay@nvidia.com,
+        Guillaume Nault <gnault@redhat.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>, idosch@nvidia.com,
+        baowen.zheng@corigine.com, danieller@nvidia.com, petrm@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 03:58:29PM -0700, Andrii Nakryiko wrote:
-> > It took me a while to reliably bisect this, but it clearly points to
-> > this commit:
-> >
-> > e481fac7d80b ("mm/page_alloc: convert per-cpu list protection to local_lock")
-> >
-> > One commit before it, 676535512684 ("mm/page_alloc: split per cpu page
-> > lists and zone stats -fix"), works just fine.
-> >
-> > I'll have to spend more time debugging what exactly is happening, but
-> > the immediate problem is two different definitions of numa_node
-> > per-cpu variable. They both are at the same offset within
-> > .data..percpu ELF section, they both have the same name, but one of
-> > them is marked as static and another as global. And one is int
-> > variable, while another is struct pagesets. I'll look some more
-> > tomorrow, but adding Jiri and Arnaldo for visibility.
-> >
-> > [110907] DATASEC '.data..percpu' size=178904 vlen=303
-> > ...
-> >         type_id=27753 offset=163976 size=4 (VAR 'numa_node')
-> >         type_id=27754 offset=163976 size=4 (VAR 'numa_node')
-> >
-> > [27753] VAR 'numa_node' type_id=27556, linkage=static
-> > [27754] VAR 'numa_node' type_id=20, linkage=global
-> >
-> > [20] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED
-> >
-> > [27556] STRUCT 'pagesets' size=0 vlen=1
-> >         'lock' type_id=507 bits_offset=0
-> >
-> > [506] STRUCT '(anon)' size=0 vlen=0
-> > [507] TYPEDEF 'local_lock_t' type_id=506
-> >
-> > So also something weird about those zero-sized struct pagesets and
-> > local_lock_t inside it.
-> 
-> Ok, so nothing weird about them. local_lock_t is designed to be
-> zero-sized unless CONFIG_DEBUG_LOCK_ALLOC is defined.
-> 
-> But such zero-sized per-CPU variables are confusing pahole during BTF
-> generation, as now two different variables "occupy" the same address.
-> 
-> Given this seems to be the first zero-sized per-CPU variable, I wonder
-> if it would be ok to make sure it's never zero-sized, while pahole
-> gets fixed and it's latest version gets widely packaged and
-> distributed.
-> 
-> Mel, what do you think about something like below? Or maybe you can
-> advise some better solution?
-> 
+On Tue, May 25, 2021 at 2:17 AM Po-Hsu Lin <po-hsu.lin@canonical.com> wrote:
+>
+> There are several test cases still using exit 0 when they need to be
+> skipped. Use kselftest framework skip code instead so it can help us
+> to distinguish the proper return status.
+>
+> Criterion to filter out what should be fixed in selftests directory:
+>   grep -r "exit 0" -B1 | grep -i skip
+>
+> This change might cause some false-positives if people are running
+> these test scripts directly and only checking their return codes,
+> which will change from 0 to 4. However I think the impact should be
+> small as most of our scripts here are already using this skip code.
+> And there will be no such issue if running them with the kselftest
+> framework.
+>
+> Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
 
-Ouch, something like that may never go away. How about just this?
+Perhaps it's a good time to mention this patch to add a kselftest
+helper library for shell tests again:
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 58426acf5983..dce2df33d823 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -338,6 +338,9 @@ config DEBUG_INFO_BTF
- config PAHOLE_HAS_SPLIT_BTF
- 	def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'` -ge "119")
- 
-+config PAHOLE_HAS_ZEROSIZE_PERCPU_SUPPORT
-+	def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'` -ge "122")
-+
- config DEBUG_INFO_BTF_MODULES
- 	def_bool y
- 	depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 1599985e0ee1..cb1f84848c99 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -124,6 +124,17 @@ static DEFINE_MUTEX(pcp_batch_high_lock);
- 
- struct pagesets {
- 	local_lock_t lock;
-+#if defined(CONFIG_DEBUG_INFO_BTF) &&			\
-+    !defined(CONFIG_DEBUG_LOCK_ALLOC) &&		\
-+    !defined(CONFIG_PAHOLE_HAS_ZEROSIZE_PERCPU_SUPPORT)
-+	/*
-+	 * pahole 1.21 and earlier gets confused by zero-sized per-CPU
-+	 * variables and produces invalid BTF. Ensure that
-+	 * sizeof(struct pagesets) != 0 for older versions of pahole.
-+	 */
-+	char __pahole_hack;
-+	#warning "pahole too old to support zero-sized struct pagesets"
-+#endif
- };
- static DEFINE_PER_CPU(struct pagesets, pagesets) = {
- 	.lock = INIT_LOCAL_LOCK(lock),
-diff --git a/scripts/rust-version.sh b/scripts/rust-version.sh
-old mode 100644
-new mode 100755
--- 
-Mel Gorman
-SUSE Labs
+[PATCH] tools/testing: add kselftest shell helper library
+https://lore.kernel.org/linux-kselftest/20201123162508.585279-1-willemdebruijn.kernel@gmail.com/
+
+That can avoid redefining this constant in every file.
