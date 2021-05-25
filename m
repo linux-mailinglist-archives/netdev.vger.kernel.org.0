@@ -2,105 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D15390113
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 14:37:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD61839011B
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 14:39:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232353AbhEYMio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 08:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232230AbhEYMio (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 08:38:44 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901BAC061574
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 05:37:14 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id 27so21327011pgy.3
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 05:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+njOJtR5X5krJ34+Gr/skiTyOmkhMZwvZJqGsqTmADc=;
-        b=L4gv1dukbQnSKmADZwToS30kkKKtY/hM16hvVVQhXerlXlo57erCdcxbUiEJHuCgOY
-         bb4UsrKQRlAnAaBsdp5Vvddr/7WqaBdtCGuPOEHBh2TXwy920q2bjs2/6tQGngyLn4B9
-         /Upymy6+CJnWnnzdHFkOglvA8vzkhjs+4PMiNJ/xxc7G6L0dPyFQ/M94eBbKLyiI2zBu
-         00z/w5ngGOh937xqYSpRiE8VJuyiK3jCtpMy0k5npMT5VN4tN7yEPMp8fgz43FO51kGp
-         feFMMCgJkKSh8zYTO6ibI90ktzQ+hJo7bGyQALC9PrZ9OReU8XqIHStNbMUW8T/KgDAa
-         1gbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+njOJtR5X5krJ34+Gr/skiTyOmkhMZwvZJqGsqTmADc=;
-        b=pU/8JXDGgViuoyIrVZK9vTVP9z/EC358SnuI+CutBMjWwEjFX7c1PNicRLdphBiXvf
-         aKeZr5fNlLUAsw4v2Z17a405Xbe9xc/DD19gSqr9GUnpqZV825Mu/gyCzfKnGGxNW0mU
-         +dlotA4fDJUsX1QzwZx3jwz6Po4pH5Tm9VbcwVjtJS+r7U/WPVwBr9pUN4/e9UBx3vVg
-         iL3AXAu5zAeZQq7LZbP4+NY6/SNz8pZbInbvMa3S5qxxKVdDb/aD98wtnlx4PIufRz1i
-         OISaJPM0tuYL4lPWJVj1QP7w9zcFRTyBTnaVuYPyFP2Xydb+PxHyi2AlIx2UjKhtTEir
-         ZbDQ==
-X-Gm-Message-State: AOAM532gJDR018ycciUVpUekj0V7bs6+qgc8e6R0kJaoGrnJcVKiDtEa
-        vdOFi0B9/Zke3HSQ23wYCH4=
-X-Google-Smtp-Source: ABdhPJzkXh5AN/zbsi+pBHkz1TnERixVZn/GuZtbx5NWaIcCYJ/3rB2e9ileW9D37+BGE9A2FGG/YA==
-X-Received: by 2002:a05:6a00:2ad:b029:2dc:900f:1c28 with SMTP id q13-20020a056a0002adb02902dc900f1c28mr29412534pfs.67.1621946234134;
-        Tue, 25 May 2021 05:37:14 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id g19sm13135392pfj.138.2021.05.25.05.37.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 May 2021 05:37:13 -0700 (PDT)
-Date:   Tue, 25 May 2021 05:37:11 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next, v2, 7/7] enetc: support PTP domain timestamp
- conversion
-Message-ID: <20210525123711.GB27498@hoboy.vegasvil.org>
-References: <20210521043619.44694-1-yangbo.lu@nxp.com>
- <20210521043619.44694-8-yangbo.lu@nxp.com>
+        id S232230AbhEYMkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 08:40:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40224 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232627AbhEYMkf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 May 2021 08:40:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 89B276140E;
+        Tue, 25 May 2021 12:39:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1621946346;
+        bh=/vZdsDJghPOhaskyihnVquOx0gtCUPIcL1HHuW88hFw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gNLVIVutCdom27ITDvkbnAvDdHFCcWeovKJxvbAx8OuZ50fbUPimBfRsfZU39D/18
+         IARkHgE25Kuvh+Q3irzMlVJaAfJURHqC7yYIMHQz6yVVg1R0bEksfBJqzlxUYV0v/B
+         B2AiyTddBVSVzTIH2N1pF0ijGpZ0wBVyLHXtiflk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     linma <linma@zju.edu.cn>, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hao Xiong <mart1n@zju.edu.cn>,
+        stable <stable@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH v2] Bluetooth: fix the erroneous flush_work() order
+Date:   Tue, 25 May 2021 14:39:02 +0200
+Message-Id: <20210525123902.189012-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210521043619.44694-8-yangbo.lu@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 21, 2021 at 12:36:19PM +0800, Yangbo Lu wrote:
+From: linma <linma@zju.edu.cn>
 
-> @@ -472,13 +473,36 @@ static void enetc_get_tx_tstamp(struct enetc_hw *hw, union enetc_tx_bd *txbd,
->  	*tstamp = (u64)hi << 32 | tstamp_lo;
->  }
->  
-> -static void enetc_tstamp_tx(struct sk_buff *skb, u64 tstamp)
-> +static int enetc_ptp_parse_domain(struct sk_buff *skb, u8 *domain)
-> +{
-> +	unsigned int ptp_class;
-> +	struct ptp_header *hdr;
-> +
-> +	ptp_class = ptp_classify_raw(skb);
-> +	if (ptp_class == PTP_CLASS_NONE)
-> +		return -EINVAL;
-> +
-> +	hdr = ptp_parse_header(skb, ptp_class);
-> +	if (!hdr)
-> +		return -EINVAL;
-> +
-> +	*domain = hdr->domain_number;
+In the cleanup routine for failed initialization of HCI device,
+the flush_work(&hdev->rx_work) need to be finished before the
+flush_work(&hdev->cmd_work). Otherwise, the hci_rx_work() can
+possibly invoke new cmd_work and cause a bug, like double free,
+in late processings.
 
-This is really clunky.  We do NOT want to have drivers starting to
-handle the PTP.  That is the job of the user space stack.
+This was assigned CVE-2021-3564.
 
-Instead, the conversion from raw time stamp to vclock time stamp
-should happen in the core infrastructure.  That way, no driver hacks
-will be needed, and it will "just work" everywhere.
+This patch reorder the flush_work() to fix this bug.
 
-We need a way to associate a given socket with a particular vclock.
-Perhaps we can extend the SO_TIMESTAMPING API to allow that.
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hedberg <johan.hedberg@gmail.com>
+Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-bluetooth@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: Hao Xiong <mart1n@zju.edu.cn>
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/bluetooth/hci_core.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-> +	return 0;
-> +}
+v2: use "network comment style" for block comment.
 
-Thanks,
-Richard
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index fd12f1652bdf..7d71d104fdfd 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -1610,8 +1610,13 @@ static int hci_dev_do_open(struct hci_dev *hdev)
+ 	} else {
+ 		/* Init failed, cleanup */
+ 		flush_work(&hdev->tx_work);
+-		flush_work(&hdev->cmd_work);
++
++		/* Since hci_rx_work() is possible to awake new cmd_work
++		 * it should be flushed first to avoid unexpected call of
++		 * hci_cmd_work()
++		 */
+ 		flush_work(&hdev->rx_work);
++		flush_work(&hdev->cmd_work);
+ 
+ 		skb_queue_purge(&hdev->cmd_q);
+ 		skb_queue_purge(&hdev->rx_q);
+-- 
+2.31.1
+
