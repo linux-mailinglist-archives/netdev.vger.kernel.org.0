@@ -2,184 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A95B4390518
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 17:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C915D39059A
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 17:37:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234264AbhEYPUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 11:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
+        id S234181AbhEYPjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 11:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232885AbhEYPTX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 11:19:23 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B0CEC061354;
-        Tue, 25 May 2021 08:17:28 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id v22so30627102oic.2;
-        Tue, 25 May 2021 08:17:28 -0700 (PDT)
+        with ESMTP id S232078AbhEYPjU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 11:39:20 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E13C061574
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 08:37:51 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id u7so7975474plq.4
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 08:37:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CbYbEQtGlD84EODNZdKsXfFlWgmm2XeE09xpe/o0hk8=;
-        b=YKceKAf5IOkI8WPqiq+8cvKV8CrlaKXN5hkYJFg8IyjoG+xoid/qHuBziKHezN7QDH
-         WaQyk/CUTTUzZ5JKJTrE4nBEZv19mmjbkJmWJvQSadv+g+qg1gehZYl4nYmh82/M0dlS
-         d8AjKqbgXKdGCtnsRJzbZ44fAEimGeooIzm+Pc5i/Eh133d2QG2BcwasdQ7aKi8piYxE
-         CdY9C57Hln6QP3nnX/FLumvjdYN3ugVv6V+Rbr9EwP+geVGW1YKaYj1a6VwT3DxRx+2X
-         8zIx9iB34cDO7ZYLASGihMLyAeUAMksdB5wmJwohLBXINLsisp0h4PD/uRAaT2Nj6Kjw
-         9eTA==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version;
+        bh=8/8oWcAQ8WZAgDoNDxoPvPqw92sRS1HARKUVudT3Dwk=;
+        b=CmtCDXpEVUTudB/zpvaCtOpKTqHx+oQnboFNSsDhvn8Mp7Yefxaf/RjJRy/HnDJaZc
+         1e745b9n8If3he49uFyh72zBXkxLO7CswN0S/5KZJ0Dd4m+2y23t1ZpElBP9U/QmTgSv
+         1EihrNDdVDHueBEbQ44/jpJoRByVssZl/v2m0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CbYbEQtGlD84EODNZdKsXfFlWgmm2XeE09xpe/o0hk8=;
-        b=I6HbBmmkixjWhDtb11tHvHtG1mkFoxLj1lcDGTa/sIB/rz0vv665+R6F67VRN8WC34
-         xZlS+lefVNt3t1tnrKB/JJVvrGDf0O9DE8YjfWnArbAH1wvzqfFkCgUG+Zrs2eNAyhG/
-         CIw2g7/F0vUvKeblY8624xdF+KxAyhw6TFz4lnydm+exBb+zq9Mzmsv+YQqq4n+fWMA9
-         dAuamqRwxEU8roFLTXYtyMeDYHc8PZXTLliO/iMvG7KJb9QrONhuWBbQi0uELOt5Gqgf
-         567qRs0lvlwcyRSIChGnl6aRUeKQVwgvZCOOcMppUyws4RFfDAcsnZGnXNvDjmByZfcY
-         9WlQ==
-X-Gm-Message-State: AOAM532/3hTEiUrIJ7uyCgZdJYr7pBq66i5fPTatWn4qbdbvQcknZWXG
-        9aUsz2twQHVQMR8fGEeLbNu184wrOlw+CbEeUDc=
-X-Google-Smtp-Source: ABdhPJxoPpWBhbgamtW7bCNvhDENQMPFELUvEdXA4vCD7K0lhP24RUKLVN7oaGrDYHC2TxdczIKOh7QYusMliK3IfTA=
-X-Received: by 2002:aca:2102:: with SMTP id 2mr3196288oiz.70.1621955847593;
- Tue, 25 May 2021 08:17:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210525102941.3958649-1-apusaka@google.com> <CAO1O6sehBfi+Tn6EEC8XgoORrD=JF9zO9tDCbJBgL=JpaBdL2w@mail.gmail.com>
- <CAJQfnxG1Q=6n4H_kTbFA-=b0Rbs6v7WE8mKKonqvw-nXhLnLMA@mail.gmail.com>
-In-Reply-To: <CAJQfnxG1Q=6n4H_kTbFA-=b0Rbs6v7WE8mKKonqvw-nXhLnLMA@mail.gmail.com>
-From:   Emil Lenngren <emil.lenngren@gmail.com>
-Date:   Tue, 25 May 2021 17:17:17 +0200
-Message-ID: <CAO1O6sdcWY8xt4LHWjSfuunJ3G68rgZ0_hN13iJoA3AA6tksJg@mail.gmail.com>
-Subject: Re: [PATCH 00/12] Bluetooth: use inclusive language
-To:     Archie Pusaka <apusaka@google.com>
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
+        bh=8/8oWcAQ8WZAgDoNDxoPvPqw92sRS1HARKUVudT3Dwk=;
+        b=iY/crnZYVZTGvvm/G5c/bzAn0KGqvAjzdRKQkNABeyfZLocGhJMoDtHDHDSTrigUYY
+         8uhvn6us8TMF0cSWLSq/uTF3Vvf1LXs/1G8GYX8+ifm4t1jKAcTkPFun/VvqOKSaDfRl
+         jMQJCA4jjWec6HC15tXdJsfoKACmJxzckKoqoFv55qr5X9y7hgx6Hf71/Q6JxhcLzBzc
+         uDWTqy88D6UCNN/G5d3nB7eS2ft+lClH5M8QJ40dnWLQMMKrYFHW8BXITMkwlSGZfLAh
+         Gz98H3ZijiwlejUBf0dxMl2iYlctJciNbfWxTAhyJrZT8D3CXLItKQ2UlKroMDy7A6lw
+         qNWA==
+X-Gm-Message-State: AOAM530Rq0SzRP6veDnfsHH0IiuoP78+W/Qh00Vlzvm0Q94Vdk2SETrM
+        V5Pg6tGNXZ+yl5wqJkFyU3FAFnXLzpTIvsAyve51e5ufJqCWDQ2l+xZgbp7AqJPhW1p9hn49wmX
+        iQpIvLH7TKIVrG4Dh+0R+WKcBfGGy/luZ2IE7VKtptNpy2jwOW0vFp15Eq5o1zHSegQxiBirMHQ
+        5d42iRWuY=
+X-Google-Smtp-Source: ABdhPJxCRuiTEMZp+oSXCinGTN9yp9GD3i5bZg7M93Hz1P3WGKeHrCo5RrPx2XiQFl0mtW12q8KjmQ==
+X-Received: by 2002:a17:902:650f:b029:ef:905f:e82f with SMTP id b15-20020a170902650fb02900ef905fe82fmr30871915plk.78.1621957069980;
+        Tue, 25 May 2021 08:37:49 -0700 (PDT)
+Received: from localhost.localdomain ([192.19.250.250])
+        by smtp.gmail.com with ESMTPSA id f14sm13388369pjq.50.2021.05.25.08.37.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 May 2021 08:37:49 -0700 (PDT)
+From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
+To:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Ilya Lifshits <ilya.lifshits@broadcom.com>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        =?UTF-8?B?T2xlIEJqw7hybiBNaWR0YsO4?= <omidtbo@cisco.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Davide Caratti <dcaratti@redhat.com>,
+        Boris Sukholitko <boris.sukholitko@broadcom.com>
+Subject: [PATCH net-next v2 0/3] net/sched: act_vlan: Fix modify to allow 0
+Date:   Tue, 25 May 2021 18:35:58 +0300
+Message-Id: <20210525153601.6705-1-boris.sukholitko@broadcom.com>
+X-Mailer: git-send-email 2.29.3
+MIME-Version: 1.0
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000000748c205c3294fe6"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Archie,
+--0000000000000748c205c3294fe6
+Content-Transfer-Encoding: 8bit
 
-Den tis 25 maj 2021 kl 16:34 skrev Archie Pusaka <apusaka@google.com>:
->
-> Hi Emil,
->
-> On Tue, 25 May 2021 at 20:19, Emil Lenngren <emil.lenngren@gmail.com> wrote:
-> >
-> > Hi Archie,
-> >
-> > Den tis 25 maj 2021 kl 12:46 skrev Archie Pusaka <apusaka@google.com>:
-> > >
-> > > From: Archie Pusaka <apusaka@chromium.org>
-> > >
-> > > Hi linux-bluetooth maintainers,
-> > >
-> > > This series contains inclusive language patches, to promote usage of
-> > > central, peripheral, reject list, and accept list. I tried to divide
-> > > the change to several smaller patches to ease downstreamers to make
-> > > gradual change.
-> > >
-> > > There are still three occurences in debugfs (patch 09/12) in which the
-> > > original less inclusive terms is still left as-is since it is a
-> > > file name, and I afraid replacing them will cause instability to
-> > > other systems depending on that file name.
-> > >
-> > >
-> > > Archie Pusaka (12):
-> > >   Bluetooth: use inclusive language in HCI role
-> > >   Bluetooth: use inclusive language in hci_core.h
-> > >   Bluetooth: use inclusive language to describe CPB
-> > >   Bluetooth: use inclusive language in HCI LE features
-> > >   Bluetooth: use inclusive language in L2CAP
-> > >   Bluetooth: use inclusive language in RFCOMM
-> > >   Bluetooth: use inclusive language when tracking connections
-> > >   Bluetooth: use inclusive language in SMP
-> > >   Bluetooth: use inclusive language in debugfs
-> > >   Bluetooth: use inclusive language when filtering devices out
-> > >   Bluetooth: use inclusive language when filtering devices in
-> > >   Bluetooth: use inclusive language in comments
-> > >
-> > >  include/net/bluetooth/hci.h      |  98 +++++++++++++-------------
-> > >  include/net/bluetooth/hci_core.h |  22 +++---
-> > >  include/net/bluetooth/l2cap.h    |   2 +-
-> > >  include/net/bluetooth/mgmt.h     |   2 +-
-> > >  include/net/bluetooth/rfcomm.h   |   2 +-
-> > >  net/bluetooth/amp.c              |   2 +-
-> > >  net/bluetooth/hci_conn.c         |  32 ++++-----
-> > >  net/bluetooth/hci_core.c         |  46 ++++++-------
-> > >  net/bluetooth/hci_debugfs.c      |  20 +++---
-> > >  net/bluetooth/hci_event.c        | 114 +++++++++++++++----------------
-> > >  net/bluetooth/hci_request.c      | 106 ++++++++++++++--------------
-> > >  net/bluetooth/hci_sock.c         |  12 ++--
-> > >  net/bluetooth/hidp/core.c        |   2 +-
-> > >  net/bluetooth/l2cap_core.c       |  16 ++---
-> > >  net/bluetooth/l2cap_sock.c       |   4 +-
-> > >  net/bluetooth/mgmt.c             |  36 +++++-----
-> > >  net/bluetooth/rfcomm/sock.c      |   4 +-
-> > >  net/bluetooth/smp.c              |  86 +++++++++++------------
-> > >  net/bluetooth/smp.h              |   6 +-
-> > >  19 files changed, 309 insertions(+), 303 deletions(-)
-> > >
-> > > --
-> > > 2.31.1.818.g46aad6cb9e-goog
-> > >
-> >
-> > Interesting move and good initiative!
-> >
-> > In my opinion however, shouldn't we wait until Bluetooth SIG changes
-> > the naming in the specification itself first (or rather push them to
-> > make the changes in the first place)? If they are about to change
-> > names, it would be good to make sure we end up with the same word
-> > choices so that we don't call one thing "le peripheral initiated
-> > feature exchange" while the standard calls it "le follower initiated
-> > feature exchange" or similar. Using different terminology than what's
-> > specified by the standard could easily end up in confusion I guess,
-> > and even more if different stacks invented their own alternative
-> > terminology.
->
-> So far the Bluetooth SIG has only published an "Appropriate Language
-> Mapping Table" (https://specificationrefs.bluetooth.com/language-mapping/Appropriate_Language_Mapping_Table.pdf).
-> It doesn't look like it's finalized, but it's enough to get started.
-> Hopefully someone in the community can help to push the changes to the
-> spec?
->
-> > In any case, I'm for example not sure if central/peripheral are the
-> > best words to use, since those are tied to a specific higher level
-> > profile (Generic Access Profile) and those words are not mentioned at
-> > all in the spec outside that context. The SMP chapter for example uses
-> > the terminology "initiator" and "responder", so maybe those are better
-> > word choices, at least in SMP.
->
-> Thanks, you are correct about that. I didn't read the spec thoroughly
-> and just did a simple replacement. I shall incorporate your suggestion
-> if this set of patches is greenlighted.
->
+Currently vlan modification action checks existence of vlan priority by
+comparing it to 0. Therefore it is impossible to modify existing vlan
+tag to have priority 0.
 
-Yeah that document really seems to be "in progress". As you can see,
-they have replaced Srand (slave random, used in SMP) by LP_RAND_R
-(legacy pairing, responder random number) so it seems they thought in
-the same way as I did, at least for SMP. And indeed, as in your patch
-they seem to prefer "central" and "peripheral", even outside GAP.
+For example, the following tc command will change the vlan id but will
+not affect vlan priority:
 
-So my guess is that we could rename at least the terms that are in
-that list right now, but probably wait with terms not yet present in
-the list. Or patch everything at once when Bluetooth SIG has finished
-the naming. (Note that I'm not a maintainer so someone else will need
-to decide)
+tc filter add dev eth1 ingress matchall action vlan modify id 300 \
+        priority 0 pipe mirred egress redirect dev eth2
 
-/Emil
+The incoming packet on eth1:
+
+ethertype 802.1Q (0x8100), vlan 200, p 4, ethertype IPv4
+
+will be changed to:
+
+ethertype 802.1Q (0x8100), vlan 300, p 4, ethertype IPv4
+
+although the user has intended to have p == 0.
+
+The fix is to add tcfv_push_prio_exists flag to struct tcf_vlan_params
+and rely on it when deciding to set the priority.
+
+The same flag is used to avoid dumping unset vlan priority.
+
+Change Log:
+v1 -> v2:
+- Do not dump unset priority and fix tests accordingly
+- Test for priority 0 modification
+
+Boris Sukholitko (3):
+  net/sched: act_vlan: Fix modify to allow 0
+  net/sched: act_vlan: No dump for unset priority
+  net/sched: act_vlan: Test priority 0 modification
+
+ include/net/tc_act/tc_vlan.h                  |  1 +
+ net/sched/act_vlan.c                          | 11 +++--
+ .../tc-testing/tc-tests/actions/vlan.json     | 42 +++++++++++++++----
+ 3 files changed, 41 insertions(+), 13 deletions(-)
+
+-- 
+2.29.3
+
+
+--0000000000000748c205c3294fe6
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
+9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
+7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
+9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
+52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
+rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
+t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
+CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
+979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
+bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
+ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
+ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
+s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIGKRdDldCF8VE++B
+z4psC3mWGYL8DrZPDyNC69Toqn4wMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIxMDUyNTE1Mzc1MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBmMvNbeEzLS+Xbn+Yi0eVavgA6WAk22VHk
+p1eyw83UZaeJv0PUhQ5QNfMzf4xeaPxA2ZHKLBzxIqciv8/Cvtc9jgq+KBp8eqy6kgYkufUR1sBF
+QGS3VskQFyt36YSYjqpxQmvxckzELHqAAsbEQMPQ7Bm/cB6pxPE0a8BGspXINzJV24zQSfPmfb1Y
+9sRhzf/bIMccGzWK/7sCiI0S+O2v372JdmPh9mkFURuZQzkRzwSP2VEZNHjcKJTmUZ9vA8ROevO8
+eIBbBzNOslM9M2ufRqU5IysOPR3w5MLUte5Cem12we1pTO+wjeAokj0JBdrXYm6i4ouIhOq88Li6
+uurX
+--0000000000000748c205c3294fe6--
