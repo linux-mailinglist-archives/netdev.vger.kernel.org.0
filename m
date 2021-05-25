@@ -2,78 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC4E4390C74
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 00:50:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E25C6390C96
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 01:00:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232143AbhEYWvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 18:51:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60230 "EHLO mail.kernel.org"
+        id S232488AbhEYXB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 19:01:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230288AbhEYWvk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 May 2021 18:51:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 83552613D6;
-        Tue, 25 May 2021 22:50:10 +0000 (UTC)
+        id S232076AbhEYXBl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 May 2021 19:01:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9265E61430;
+        Tue, 25 May 2021 23:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621983010;
-        bh=uMpouXgcFp6eBIEYRYa+pOiSx819V0p/cQvL+3veD6Y=;
+        s=k20201202; t=1621983611;
+        bh=EfjmciQOaPVxn7WEEw15t5asfesfiStyX/8amqjGBUk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FwA1vWmgflh5hoT7JEHHGEpWXxxrAR0vrfJD7yrT5sklqxUCZOR3VIPfMqUz6ep16
-         8O5Zz9gjUNcftnPSDonzKSk0EgL4+QFKZbBSPXjwSSsEZYjCzPo8Zu1j+r9yx6RCUr
-         EjwC1fbldP/6UYH3D2S8CD6Igt/s/9hvYEKIXeLtQDOmaKvOCeeJD6bnfVP80d+Bs3
-         xSOGZ2lB1n1sGnCgezoonkBRHJbVP1qJsJmjnbZ3dGnEXKOeKTTMxGqG+4o05WWsgN
-         SyAkgjzG7jd2/rw89iv+bn08+1zBm86mWPr/6sbT5fY+iqOeLxT+Wj47ppFGd9HLUs
-         s+izbedw/ZP0Q==
+        b=hBulXFKvP5+p7gdLidb4yZkuiS3QWZj2Jpg23ctLIhC/1V/a/G+BO0jU54XM4Jfh5
+         uVAcYpxFp/B8d/lx++ohwgVDRfHzgCU/bWciq8DSQN1cyggtB0zN0di7wyB2yAwnX+
+         EPHtA5cJwyZlogKa92IdWKIV2fxHsM/4nZu7uq9g+3iJdw7stxk11ZANb/jg7mW4Jq
+         6dbdF9b6IgAUs7Nn3ctsOTih0iJoSfFHfiqEUNUebuze9Iv/3+luKr5KVZhTXTFz03
+         aUSWS5gropltVRDjukHrjf0/kV85tt+TDW8f3arU/UdeU05DuoTpivDAj/V1rIge/h
+         OEI3AKmY5RExw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7631E608B8;
-        Tue, 25 May 2021 22:50:10 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8DDAB60A56;
+        Tue, 25 May 2021 23:00:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/6] net: wan: clean up some code style issues
+Subject: Re: [PATCH net-next] net: wwan: core: Add WWAN device index sysfs
+ attribute
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162198301047.27957.15429921368540128951.git-patchwork-notify@kernel.org>
-Date:   Tue, 25 May 2021 22:50:10 +0000
-References: <1621951678-23466-1-git-send-email-huangguangbin2@huawei.com>
-In-Reply-To: <1621951678-23466-1-git-send-email-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, xie.he.0141@gmail.com,
-        ms@dev.tdt.de, willemb@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
-        tanhuazhong@huawei.com
+Message-Id: <162198361157.32227.17891474898547972980.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 May 2021 23:00:11 +0000
+References: <1621960278-7924-1-git-send-email-loic.poulain@linaro.org>
+In-Reply-To: <1621960278-7924-1-git-send-email-loic.poulain@linaro.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        m.chetan.kumar@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 25 May 2021 22:07:52 +0800 you wrote:
-> This patchset clean up some code style issues.
+On Tue, 25 May 2021 18:31:18 +0200 you wrote:
+> Add index sysfs attribute for WWAN devices. This index is used to
+> uniquely indentify and reference a WWAN device. 'index' is the
+> attribute name that other device classes use (wireless, v4l2-dev,
+> rfkill, etc...).
 > 
-> Peng Li (6):
->   net: wan: remove redundant blank lines
->   net: wan: add blank line after declarations
->   net: wan: fix an code style issue about "foo* bar
->   net: wan: add some required spaces
->   net: wan: replace comparison to NULL with "!card"
->   net: wan: add spaces required around that ':' and '+'
+> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/6] net: wan: remove redundant blank lines
-    https://git.kernel.org/netdev/net-next/c/98d728232c98
-  - [net-next,2/6] net: wan: add blank line after declarations
-    https://git.kernel.org/netdev/net-next/c/9e7ee10f169f
-  - [net-next,3/6] net: wan: fix an code style issue about "foo* bar
-    https://git.kernel.org/netdev/net-next/c/c4fdef99d17b
-  - [net-next,4/6] net: wan: add some required spaces
-    https://git.kernel.org/netdev/net-next/c/69542276e2b1
-  - [net-next,5/6] net: wan: replace comparison to NULL with "!card"
-    https://git.kernel.org/netdev/net-next/c/2aea27bae89b
-  - [net-next,6/6] net: wan: add spaces required around that ':' and '+'
-    https://git.kernel.org/netdev/net-next/c/30cbb0107e98
+  - [net-next] net: wwan: core: Add WWAN device index sysfs attribute
+    https://git.kernel.org/netdev/net-next/c/e4e92ee78702
 
 You are awesome, thank you!
 --
