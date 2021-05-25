@@ -2,125 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B683390162
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 14:55:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF38B390191
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 15:02:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232823AbhEYM4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 May 2021 08:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231847AbhEYM4n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 08:56:43 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DA3C061574;
-        Tue, 25 May 2021 05:55:13 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94.2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1llWaU-00EOe9-9l; Tue, 25 May 2021 14:55:10 +0200
-Message-ID: <c7d2dd39e82ada5aa4e4d6741865ecb1198959fe.camel@sipsolutions.net>
-Subject: Re: [PATCH V3 15/16] net: iosm: net driver
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Loic Poulain <loic.poulain@linaro.org>,
-        "Kumar, M Chetan" <m.chetan.kumar@intel.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
-        linuxwwan <linuxwwan@intel.com>, Dan Williams <dcbw@redhat.com>,
-        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Tue, 25 May 2021 14:55:09 +0200
-In-Reply-To: <CAMZdPi_VbLcbVA34Bb3uBGDsDCkN0GjP4HmHUbX95PF9skwe2Q@mail.gmail.com> (sfid-20210525_101545_116148_0A5A9BB6)
-References: <20210520140158.10132-1-m.chetan.kumar@intel.com>
-         <20210520140158.10132-16-m.chetan.kumar@intel.com>
-         <CAMZdPi-Xs00vMq-im_wHnNE5XkhXU1-mOgrNbGnExPbHYAL-rw@mail.gmail.com>
-         <90f93c17164a4d8299d17a02b1f15bfa@intel.com>
-         <CAMZdPi_VbLcbVA34Bb3uBGDsDCkN0GjP4HmHUbX95PF9skwe2Q@mail.gmail.com>
-         (sfid-20210525_101545_116148_0A5A9BB6)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S233038AbhEYNDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 May 2021 09:03:39 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56128 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232993AbhEYNDi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 May 2021 09:03:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Bgwi0ddPG4y3izYFh7owVZ/gyl0+tfy9P5xD+jXP9VA=; b=jOxQo9c5qPbinxOWRWOHamtxp5
+        u5pmNdJHl9QROZUhmfJzL4jdZiLYjyTvXAdP9co5CFhoG+asjB+xoBYtFggEW5kHpSJxWwgpUpbDc
+        ZnljNr+VCj66E4JC+vKRq76sCCBJU3ERxloaH+b3pjnIGGgxfrF8j9MVUric4xk/NLIs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1llWh5-006AgT-CM; Tue, 25 May 2021 15:01:59 +0200
+Date:   Tue, 25 May 2021 15:01:59 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH 1/2] net: phy: fix yt8511 clang uninitialized variable
+ warning
+Message-ID: <YKz1R2+ivmRsjAoL@lunn.ch>
+References: <20210525122615.3972574-1-pgwipeout@gmail.com>
+ <20210525122615.3972574-2-pgwipeout@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210525122615.3972574-2-pgwipeout@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-05-25 at 10:24 +0200, Loic Poulain wrote:
-> > 
-
-> > Can you please share us more details on wwan_core changes(if any)/how we should
-> > use /sys/class/wwan0 for link creation ?
+On Tue, May 25, 2021 at 08:26:14AM -0400, Peter Geis wrote:
+> clang doesn't preinitialize variables. If phy_select_page failed and
+> returned an error, phy_restore_page would be called with `ret` being
+> uninitialized.
+> Even though phy_restore_page won't use `ret` in this scenario,
+> initialize `ret` to silence the warning.
 > 
-> Well, move rtnetlink ops to wwan_core (or wwan_rtnetlink), and parse
-> netlink parameters into the wwan core. Add support for registering
-> `wwan_ops`, something like:
-> wwan_register_ops(wwan_ops *ops, struct device *wwan_root_device)
+> Fixes: b1b41c047f73 ("net: phy: add driver for Motorcomm yt8511 phy")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> ---
+>  drivers/net/phy/motorcomm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> The ops could be basically:
-> struct wwan_ops {
->     int (*add_intf)(struct device *wwan_root_device, const char *name,
-> struct wwan_intf_params *params);
->     int (*del_intf) ...
-> }
-> 
-> Then you could implement your own ops in iosm, with ios_add_intf()
-> allocating and registering the netdev as you already do.
-> struct wwan_intf_params would contain parameters of the interface,
-> like the session_id (and possibly extended later with others, like
-> checksum offload, etc...).
-> 
-> What do you think?
+> diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
+> index 796b68f4b499..5795f446c528 100644
+> --- a/drivers/net/phy/motorcomm.c
+> +++ b/drivers/net/phy/motorcomm.c
+> @@ -51,7 +51,7 @@ static int yt8511_write_page(struct phy_device *phydev, int page)
+>  static int yt8511_config_init(struct phy_device *phydev)
+>  {
+>  	unsigned int ge, fe;
+> -	int ret, oldpage;
+> +	int oldpage, ret = 0;
 
-Note that I kind of tried this in my version back when:
+Please keep to reverse Christmas tree.
 
-https://lore.kernel.org/netdev/20200225105149.59963c95aa29.Id0e40565452d0d5bb9ce5cc00b8755ec96db8559@changeid/#Z30include:net:wwan.h
+With that fixed:
 
-See struct wwan_component_device_ops.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-I had a different *generic* netlink family rather than rtnetlink ops,
-but that's mostly an implementation detail. I tend to like genetlink
-better, but having rtnetlink makes it easier in iproute2 (though it has
-some generic netlink code too, of course.)
-
-Nobody really seemed all that interested back then.
-
-And frankly, I'm really annoyed that while all of this played out we let
-QMI enter the tree with their home-grown stuff (and dummy netdevs,
-FWIW), *then* said the IOSM driver has to go to rtnetlink ops like them,
-instead of what older drivers are doing, and *now* are shifting
-goalposts again towards something like the framework I started writing
-early on for the IOSM driver, while the QMI driver was happening, and
-nobody cared ...
-
-Yeah, life's not fair and all that, but it does kind of feel like
-arbitrary shifting of the goal posts, while QMI is already in tree. Of
-course it's not like we have a competition with them here, but having
-some help from there would've been nice. Oh well.
-
-Not that I disagree with any of this, it does technically make sense.
-
-However, I think at this point it'd be good to see some comments here
-from DaveM/Jakub that they're going to force Qualcomm to also go down
-this route, because they're now *heavily* invested in their own APIs,
-and inventing a framework just for the IOSM driver is fairly pointless.
-
-
-> I also plan to submit a change to add a wwan_register_netdevice()
-> function (similarly to WiFi cfg80211_register_netdevice), that could
-> be used instead of register_netdevice(), basically factorizing wwan
-> netdev registration (add "wwan" dev_type, add sysfs link to the 'wwan'
-> device...).
-
-Be careful with that, I tend to think we made some mistakes in this
-area, look at the recent locking things there. We used to do stuff from
-a netdev notifier, and that has caused all kinds of pain recently when I
-reworked the locking to not be so overly dependent on the RTNL all the
-time (which really has become the new BKL, at least for desktop work,
-sometimes I can't even type in the UI when the RTNL is blocked). So
-wwan_register_netdevice() is probably fine, doing netdev notifier I'd
-now recommend against.
-But in any case, that's just a side thread.
-
-johannes
-
+    Andrew
