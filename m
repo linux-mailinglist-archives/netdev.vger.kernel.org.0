@@ -2,181 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62AB038F8DF
-	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 05:34:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0333438F91C
+	for <lists+netdev@lfdr.de>; Tue, 25 May 2021 05:59:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbhEYDf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 May 2021 23:35:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55776 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229598AbhEYDfZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 May 2021 23:35:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 129A9613D8;
-        Tue, 25 May 2021 03:33:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621913636;
-        bh=jbjn/vKUEDevK4XHR8qG+RAbg5jKnkEBVFZyUjV4JgA=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=sBzbYmQGgUhb/ULTiPf716X/9EUYtWjtFuK/K2nPHIw9CrhvLFMRWHHoalJTpin7U
-         asRgxEOx9OZr6Q98N1IW6pjX9JXgdhLuU6paa8ZT5XOOjXFbdnbMpgDlIkJobehxIo
-         5BkfGRh4RaCX51evCYHCn3Pd6W11WaN+4MDkQuZZijBaOMBGghqRHTwxXoAbOPxHGU
-         Id32mxHzwOD0/QWTCVbwHDqMl0z3CqsEpHhVLEBIc9pnhGR4o72hTVkIc8aHtJyIgM
-         j+l5PUthQQa/GVgP2/0KBvaNZcHDysi+btc4j4Au5OuG6+oUbw631rAY2w6y4yW5k0
-         fNZ8Hi2qyduwg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id D34D45C039E; Mon, 24 May 2021 20:33:55 -0700 (PDT)
-Date:   Mon, 24 May 2021 20:33:55 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "Xu, Yanfei" <yanfei.xu@windriver.com>
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com>,
-        rcu@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, bpf <bpf@vger.kernel.org>,
-        Christian Brauner <christian@brauner.io>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in
- check_all_holdout_tasks_trace
-Message-ID: <20210525033355.GN4441@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <000000000000f034fc05c2da6617@google.com>
- <CACT4Y+ZGkye_MnNr92qQameXVEHNc1QkpmNrG3W8Yd1Xg_hfhw@mail.gmail.com>
- <20210524041350.GJ4441@paulmck-ThinkPad-P17-Gen-1>
- <20210524224602.GA1963972@paulmck-ThinkPad-P17-Gen-1>
- <24f352fc-c01e-daa8-5138-1f89f75c7c16@windriver.com>
+        id S229912AbhEYEBN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 May 2021 00:01:13 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:34144 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229621AbhEYEBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 May 2021 00:01:12 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14P3kPKD011599
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 20:59:43 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 38rn349f7a-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 24 May 2021 20:59:43 -0700
+Received: from intmgw001.37.frc1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 24 May 2021 20:59:41 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id D0CC42EDBE05; Mon, 24 May 2021 20:59:38 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH v2 bpf-next 0/5] libbpf: error reporting changes for v1.0
+Date:   Mon, 24 May 2021 20:59:30 -0700
+Message-ID: <20210525035935.1461796-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
+Content-Type: text/plain; charset="UTF-8"
+X-FB-Internal: Safe
+X-Proofpoint-ORIG-GUID: ULzHA50j9aVqwRj4lWF8WVf81nTXQugX
+X-Proofpoint-GUID: ULzHA50j9aVqwRj4lWF8WVf81nTXQugX
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <24f352fc-c01e-daa8-5138-1f89f75c7c16@windriver.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-25_02:2021-05-24,2021-05-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ impostorscore=0 adultscore=0 bulkscore=0 suspectscore=0 priorityscore=1501
+ mlxlogscore=804 lowpriorityscore=0 mlxscore=0 malwarescore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2105250024
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 25, 2021 at 10:31:55AM +0800, Xu, Yanfei wrote:
-> 
-> 
-> On 5/25/21 6:46 AM, Paul E. McKenney wrote:
-> > [Please note: This e-mail is from an EXTERNAL e-mail address]
-> > 
-> > On Sun, May 23, 2021 at 09:13:50PM -0700, Paul E. McKenney wrote:
-> > > On Sun, May 23, 2021 at 08:51:56AM +0200, Dmitry Vyukov wrote:
-> > > > On Fri, May 21, 2021 at 7:29 PM syzbot
-> > > > <syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com> wrote:
-> > > > > 
-> > > > > Hello,
-> > > > > 
-> > > > > syzbot found the following issue on:
-> > > > > 
-> > > > > HEAD commit:    f18ba26d libbpf: Add selftests for TC-BPF management API
-> > > > > git tree:       bpf-next
-> > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=17f50d1ed00000
-> > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=8ff54addde0afb5d
-> > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=7b2b13f4943374609532
-> > > > > 
-> > > > > Unfortunately, I don't have any reproducer for this issue yet.
-> > > > > 
-> > > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > > > Reported-by: syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com
-> > > > 
-> > > > This looks rcu-related. +rcu mailing list
-> > > 
-> > > I think I see a possible cause for this, and will say more after some
-> > > testing and after becoming more awake Monday morning, Pacific time.
-> > 
-> > No joy.  From what I can see, within RCU Tasks Trace, the calls to
-> > get_task_struct() are properly protected (either by RCU or by an earlier
-> > get_task_struct()), and the calls to put_task_struct() are balanced by
-> > those to get_task_struct().
-> > 
-> > I could of course have missed something, but at this point I am suspecting
-> > an unbalanced put_task_struct() has been added elsewhere.
-> > 
-> > As always, extra eyes on this code would be a good thing.
-> > 
-> > If it were reproducible, I would of course suggest bisection.  :-/
-> > 
-> >                                                          Thanx, Paul
-> > 
-> Hi Paul,
-> 
-> Could it be?
-> 
->        CPU1                                        CPU2
-> trc_add_holdout(t, bhp)
-> //t->usage==2
->                                       release_task
->                                         put_task_struct_rcu_user
->                                           delayed_put_task_struct
->                                             ......
->                                             put_task_struct(t)
->                                             //t->usage==1
-> 
-> check_all_holdout_tasks_trace
->   ->trc_wait_for_one_reader
->     ->trc_del_holdout
->       ->put_task_struct(t)
->       //t->usage==0 and task_struct freed
->   READ_ONCE(t->trc_reader_checked)
->   //ops， t had been freed.
-> 
-> So, after excuting trc_wait_for_one_reader（）, task might had been removed
-> from holdout list and the corresponding task_struct was freed.
-> And we shouldn't do READ_ONCE(t->trc_reader_checked).
+Implement error reporting changes discussed in "Libbpf: the road to v1.0"
+([0]) document.
 
-I was suspicious of that call to trc_del_holdout() from within
-trc_wait_for_one_reader(), but the only time it executes is in the
-context of the current running task, which means that CPU 2 had better
-not be invoking release_task() on it just yet.
+Libbpf gets a new API, libbpf_set_strict_mode() which accepts a set of flags
+that turn on a set of libbpf 1.0 changes, that might be potentially breaking.
+It's possible to opt-in into all current and future 1.0 features by specifying
+LIBBPF_STRICT_ALL flag.
 
-Or am I missing your point?
+When some of the 1.0 "features" are requested, libbpf APIs might behave
+differently. In this patch set a first set of changes are implemented, all
+related to the way libbpf returns errors. See individual patches for details.
 
-Of course, if you can reproduce it, the following patch might be
-an interesting thing to try, my doubts notwithstanding.  But more
-important, please check the patch to make sure that we are both
-talking about the same call to trc_del_holdout()!
+Patch #1 adds a no-op libbpf_set_strict_mode() functionality to enable
+updating selftests.
 
-If we are talking about the same call to trc_del_holdout(), are you
-actually seeing that code execute except when rcu_tasks_trace_pertask()
-calls trc_wait_for_one_reader()?
+Patch #2 gets rid of all the bad code patterns that will break in libbpf 1.0
+(exact -1 comparison for low-level APIs, direct IS_ERR() macro usage to check
+pointer-returning APIs for error, etc). These changes make selftest work in
+both legacy and 1.0 libbpf modes. Selftests also opt-in into 100% libbpf 1.0
+mode to automatically gain all the subsequent changes, which will come in
+follow up patches.
 
-> I investigate the trc_wait_for_one_reader（） and found before we excute
-> trc_del_holdout, there is always set t->trc_reader_checked=true. How about
-> we just set the checked flag and unified excute trc_del_holdout()
-> in check_all_holdout_tasks_trace with checking the flag?
+Patch #3 streamlines error reporting for low-level APIs wrapping bpf() syscall.
 
-The problem is that we cannot execute trc_del_holdout() except in
-the context of the RCU Tasks Trace grace-period kthread.  So it is
-necessary to manipulate ->trc_reader_checked separately from the list
-in order to safely synchronize with IPIs and with the exit code path
-for any reader tasks, see for example trc_read_check_handler() and
-exit_tasks_rcu_finish_trace().
+Patch #4 streamlines errors for all the rest APIs.
 
-Or are you thinking of some other approach?
+Patch #5 ensures that BPF skeletons propagate errors properly as well, as
+currently on error some APIs will return NULL with no way of checking exact
+error code.
 
-							Thanx, Paul
+  [0] https://docs.google.com/document/d/1UyjTZuPFWiPFyKk1tV5an11_iaRuec6U-ZESZ54nNTY
 
-------------------------------------------------------------------------
+v1->v2:
+  - move libbpf_set_strict_mode() implementation to patch #1, where it belongs
+    (Alexei);
+  - add acks, slight rewording of commit messages.
 
-diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
-index efb8127f3a36..2a0d4bdd619a 100644
---- a/kernel/rcu/tasks.h
-+++ b/kernel/rcu/tasks.h
-@@ -987,7 +987,6 @@ static void trc_wait_for_one_reader(struct task_struct *t,
- 	// The current task had better be in a quiescent state.
- 	if (t == current) {
- 		t->trc_reader_checked = true;
--		trc_del_holdout(t);
- 		WARN_ON_ONCE(READ_ONCE(t->trc_reader_nesting));
- 		return;
- 	}
+Andrii Nakryiko (5):
+  libbpf: add libbpf_set_strict_mode() API to turn on libbpf 1.0
+    behaviors
+  selftests/bpf: turn on libbpf 1.0 mode and fix all IS_ERR checks
+  libbpf: streamline error reporting for low-level APIs
+  libbpf: streamline error reporting for high-level APIs
+  bpftool: set errno on skeleton failures and propagate errors
+
+ tools/bpf/bpftool/gen.c                       |  27 +-
+ tools/lib/bpf/Makefile                        |   1 +
+ tools/lib/bpf/bpf.c                           | 168 ++++--
+ tools/lib/bpf/bpf_prog_linfo.c                |  18 +-
+ tools/lib/bpf/btf.c                           | 302 +++++-----
+ tools/lib/bpf/btf_dump.c                      |  14 +-
+ tools/lib/bpf/libbpf.c                        | 519 ++++++++++--------
+ tools/lib/bpf/libbpf.h                        |   1 +
+ tools/lib/bpf/libbpf.map                      |   5 +
+ tools/lib/bpf/libbpf_errno.c                  |   7 +-
+ tools/lib/bpf/libbpf_internal.h               |  53 ++
+ tools/lib/bpf/libbpf_legacy.h                 |  59 ++
+ tools/lib/bpf/linker.c                        |  22 +-
+ tools/lib/bpf/netlink.c                       |  81 +--
+ tools/lib/bpf/ringbuf.c                       |  26 +-
+ tools/testing/selftests/bpf/bench.c           |   1 +
+ .../selftests/bpf/benchs/bench_rename.c       |   2 +-
+ .../selftests/bpf/benchs/bench_ringbufs.c     |   6 +-
+ .../selftests/bpf/benchs/bench_trigger.c      |   2 +-
+ .../selftests/bpf/prog_tests/attach_probe.c   |  12 +-
+ .../selftests/bpf/prog_tests/bpf_iter.c       |  31 +-
+ .../selftests/bpf/prog_tests/bpf_tcp_ca.c     |   8 +-
+ tools/testing/selftests/bpf/prog_tests/btf.c  |  93 ++--
+ .../selftests/bpf/prog_tests/btf_dump.c       |   8 +-
+ .../selftests/bpf/prog_tests/btf_write.c      |   4 +-
+ .../bpf/prog_tests/cg_storage_multi.c         |  84 +--
+ .../bpf/prog_tests/cgroup_attach_multi.c      |   2 +-
+ .../selftests/bpf/prog_tests/cgroup_link.c    |  14 +-
+ .../bpf/prog_tests/cgroup_skb_sk_lookup.c     |   2 +-
+ .../selftests/bpf/prog_tests/check_mtu.c      |   2 +-
+ .../selftests/bpf/prog_tests/core_reloc.c     |  15 +-
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |  25 +-
+ .../selftests/bpf/prog_tests/flow_dissector.c |   2 +-
+ .../bpf/prog_tests/flow_dissector_reattach.c  |  10 +-
+ .../bpf/prog_tests/get_stack_raw_tp.c         |  10 +-
+ .../prog_tests/get_stackid_cannot_attach.c    |   9 +-
+ .../selftests/bpf/prog_tests/hashmap.c        |   9 +-
+ .../selftests/bpf/prog_tests/kfree_skb.c      |  19 +-
+ .../selftests/bpf/prog_tests/ksyms_btf.c      |   3 +-
+ .../selftests/bpf/prog_tests/link_pinning.c   |   7 +-
+ .../selftests/bpf/prog_tests/obj_name.c       |   8 +-
+ .../selftests/bpf/prog_tests/perf_branches.c  |   4 +-
+ .../selftests/bpf/prog_tests/perf_buffer.c    |   2 +-
+ .../bpf/prog_tests/perf_event_stackmap.c      |   3 +-
+ .../selftests/bpf/prog_tests/probe_user.c     |   7 +-
+ .../selftests/bpf/prog_tests/prog_run_xattr.c |   4 +-
+ .../bpf/prog_tests/raw_tp_test_run.c          |   4 +-
+ .../selftests/bpf/prog_tests/rdonly_maps.c    |   7 +-
+ .../bpf/prog_tests/reference_tracking.c       |   2 +-
+ .../selftests/bpf/prog_tests/resolve_btfids.c |   2 +-
+ .../selftests/bpf/prog_tests/ringbuf_multi.c  |   2 +-
+ .../bpf/prog_tests/select_reuseport.c         |  53 +-
+ .../selftests/bpf/prog_tests/send_signal.c    |   3 +-
+ .../selftests/bpf/prog_tests/sk_lookup.c      |   2 +-
+ .../selftests/bpf/prog_tests/sock_fields.c    |  14 +-
+ .../selftests/bpf/prog_tests/sockmap_basic.c  |   8 +-
+ .../selftests/bpf/prog_tests/sockmap_ktls.c   |   2 +-
+ .../selftests/bpf/prog_tests/sockmap_listen.c |  10 +-
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c  |   3 +-
+ .../selftests/bpf/prog_tests/stacktrace_map.c |   2 +-
+ .../bpf/prog_tests/stacktrace_map_raw_tp.c    |   5 +-
+ .../bpf/prog_tests/tcp_hdr_options.c          |  15 +-
+ .../selftests/bpf/prog_tests/test_overhead.c  |  12 +-
+ .../bpf/prog_tests/trampoline_count.c         |  14 +-
+ .../selftests/bpf/prog_tests/udp_limit.c      |   7 +-
+ .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    |   2 +-
+ .../selftests/bpf/prog_tests/xdp_link.c       |   8 +-
+ tools/testing/selftests/bpf/test_maps.c       | 168 +++---
+ tools/testing/selftests/bpf/test_progs.c      |   3 +
+ tools/testing/selftests/bpf/test_progs.h      |   9 +-
+ .../selftests/bpf/test_tcpnotify_user.c       |   7 +-
+ 71 files changed, 1123 insertions(+), 952 deletions(-)
+ create mode 100644 tools/lib/bpf/libbpf_legacy.h
+
+-- 
+2.30.2
+
