@@ -2,97 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D4C63921A3
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 22:49:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3C4E3921EB
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 23:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233497AbhEZUuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 16:50:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56056 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231924AbhEZUuk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 16:50:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6A903613CD;
-        Wed, 26 May 2021 20:49:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622062148;
-        bh=ejFNmjSi9ibYACMAzim4cZPpwocEEDkRp46nEKBos9M=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YINTXAjU/mmdIfkzoy+KOH8EC0vB1pYbQ6MNTIJZP73CJOyEjZciVcsPbZ/U7hi9a
-         TN284dLhFq0EdUkWW5AjJa8pskS/ADRLXqL5upvQbVB6H050+L2yccJwhmI4RCd7yP
-         LFgbrMKY8YLMH3ejfp6aseKajcMxWkDbVgvliXekjWfuMUgABZIiPDhwiMt0Uf5n7e
-         GOdNvfn2aeLn7zfaHc5/GN7PFcqLaSm5adkyHQLsKfq78KBhovB6G3pQ6gAsQiIBQS
-         RElqdpbpLlbCioPVku+DpeB6n+uY4FHs0L1e+TjHckeIs9LlGt6V1z0IhACshH2aEZ
-         x2eq8Xv8RqWdw==
-Received: by mail-ej1-f43.google.com with SMTP id lg14so4554494ejb.9;
-        Wed, 26 May 2021 13:49:08 -0700 (PDT)
-X-Gm-Message-State: AOAM533El6ikzfb95WGtW0BvpH71mW7IsvXNzT+fb4bCDPWk/sR8dj7V
-        L6CzJpr6TdNz3hxZnnE/ONZ85z6cQxC8aFXFTA==
-X-Google-Smtp-Source: ABdhPJyVW5S9lIV0HGy+AT6y9ZzoBvbFJyJOKAzPU5/iGZr61pJqhizywvEM2Yn9hO/iBlG12ZAA+GOP608uDZTocsY=
-X-Received: by 2002:a17:907:724b:: with SMTP id ds11mr201691ejc.108.1622062147010;
- Wed, 26 May 2021 13:49:07 -0700 (PDT)
+        id S234024AbhEZVY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 17:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233897AbhEZVYX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 17:24:23 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8AF6C06175F
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 14:22:50 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id g7so3236779edm.4
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 14:22:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7bWUzz3mXf4ng9N21e9bEjKKU0Rq54acZv1GkQ/xcY0=;
+        b=QfikG8wrkmC0m3tXTYmZxodBn7Xg0IuuRN5Yz3uWBPt5XyG519/kEF/cjtKsVu/DFb
+         742PzlhLYjmMM/bR+ePUG+ZTOFghKJ6xJ0RwXste9wLuIVJwVI3mhrv/z8q8e3sjkBji
+         rJV76aXN2p6COObuBp/p54lbINi2h51pKqhPZBRdDMMFtSP1GKYMgwWFuyVBMaAFdt4c
+         5wZpGepxAhDtKDr2DvOanz0U9WZ47xdlGyxAbvOlmY43TzDCEcl8CaGYf4DU32f54T4h
+         l6vEZbyLAkOqiAu2AmXR/oaQ5x7lbtCuNFF0sZ9e8xvMHo5lmvUiDOumNNLZor0DU78J
+         SfCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7bWUzz3mXf4ng9N21e9bEjKKU0Rq54acZv1GkQ/xcY0=;
+        b=gcKvPufEu3QcDjZFM+Q+fbQcFo8MtRsvMJR396ATk1H9Fqs24LDitTNhZ3EQww+mnw
+         CuERqMRWG7BNXOyfMXlVsum4jLqZbFc7elptaSH+00PCJ8AyRBCfYKIznSDdhWtQoAth
+         lGYMC0i+0OMsMZtlcyplnpzao5fqJBCAdpssFf2TChASnahzWr7CHVZPGDmYbBMxycNc
+         jWrHf0OEH3ytlmb/K6DGO+HZJcPd59KaW+OR4ZlvncvoteT/gSRsr5ksUgRgJqaVZPOD
+         60HcMPrhjBEBMHfH1Og4QRYroeuVhx1Fm6SqccremliLU4aT+XSA8Os4dm45Ntf01CWY
+         2AnA==
+X-Gm-Message-State: AOAM533ieWsaPfocP9S77bEyQe9GyfcD5wroPKObH8fbAjSh1PeLJNCa
+        zTay+HkUS3z0pzDWaa4virR3ZXeEZYiLOg==
+X-Google-Smtp-Source: ABdhPJwjNKeZ3+feeoQ+JoR5E8zR3rkw2x27vj4+q9EKpcj3To+f8Pha9jcIgb1UZmWzr3fuGAp1tA==
+X-Received: by 2002:a05:6402:4301:: with SMTP id m1mr240631edc.182.1622064168643;
+        Wed, 26 May 2021 14:22:48 -0700 (PDT)
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
+        by smtp.gmail.com with ESMTPSA id cd8sm119082ejb.46.2021.05.26.14.22.47
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 May 2021 14:22:47 -0700 (PDT)
+Received: by mail-wm1-f48.google.com with SMTP id z137-20020a1c7e8f0000b02901774f2a7dc4so4068656wmc.0
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 14:22:47 -0700 (PDT)
+X-Received: by 2002:a05:600c:2209:: with SMTP id z9mr337264wml.120.1622064166487;
+ Wed, 26 May 2021 14:22:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210526181411.2888516-1-robh@kernel.org> <YK6YljEYXprM/8iD@lunn.ch>
-In-Reply-To: <YK6YljEYXprM/8iD@lunn.ch>
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 26 May 2021 15:48:54 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKGZaCF-g6sAkpGoyFXSTd_Yue4_3=iFGamoOTdQ2=W_g@mail.gmail.com>
-Message-ID: <CAL_JsqKGZaCF-g6sAkpGoyFXSTd_Yue4_3=iFGamoOTdQ2=W_g@mail.gmail.com>
-Subject: Re: [PATCH v2] dt-bindings: net: Convert MDIO mux bindings to DT schema
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+References: <20210526082423.47837-1-mst@redhat.com> <20210526082423.47837-5-mst@redhat.com>
+ <18b47c22-8c8a-7699-ffaf-ccfdcbf39d37@gmail.com>
+In-Reply-To: <18b47c22-8c8a-7699-ffaf-ccfdcbf39d37@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 26 May 2021 17:22:08 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSetvnwCzyuFkypkXgYycsMe1B3brW93upmg+KjGsgD-gA@mail.gmail.com>
+Message-ID: <CA+FuTSetvnwCzyuFkypkXgYycsMe1B3brW93upmg+KjGsgD-gA@mail.gmail.com>
+Subject: Re: [PATCH v3 4/4] virtio_net: disable cb aggressively
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, Wei Wang <weiwan@google.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Jason Wang <jasowang@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 1:51 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On Wed, May 26, 2021 at 11:15 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
-> On Wed, May 26, 2021 at 01:14:11PM -0500, Rob Herring wrote:
-> > Convert the common MDIO mux bindings to DT schema.
-> >
-> > Drop the example from mdio-mux.yaml as mdio-mux-gpio.yaml has the same one.
-> >
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Ray Jui <rjui@broadcom.com>
-> > Cc: Scott Branden <sbranden@broadcom.com>
-> > Cc: bcm-kernel-feedback-list@broadcom.com
-> > Cc: Andrew Lunn <andrew@lunn.ch>
-> > Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> > Cc: Russell King <linux@armlinux.org.uk>
-> > Cc: netdev@vger.kernel.org
-> > Cc: linux-arm-kernel@lists.infradead.org
-> > Signed-off-by: Rob Herring <robh@kernel.org>
 >
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 >
-> > +        mdio@2 {  // Slot 2 XAUI (FM1)
-> > +            reg = <2>;
-> > +            #address-cells = <1>;
-> > +            #size-cells = <0>;
-> > +
-> > +            ethernet-phy@4 {
-> > +                compatible = "ethernet-phy-ieee802.3-c45";
-> > +                reg = <0>;
+> On 5/26/21 10:24 AM, Michael S. Tsirkin wrote:
+> > There are currently two cases where we poll TX vq not in response to a
+> > callback: start xmit and rx napi.  We currently do this with callbacks
+> > enabled which can cause extra interrupts from the card.  Used not to be
+> > a big issue as we run with interrupts disabled but that is no longer the
+> > case, and in some cases the rate of spurious interrupts is so high
+> > linux detects this and actually kills the interrupt.
+
+Temporarily disabling interrupts during free_old_xmit_skbs in
+virtnet_poll_cleantx might reduce the spurious interrupt rate by
+avoiding an additional Tx interrupt from being scheduled during
+virtnet_poll_cleantx.
+
+It probably does not address all spurious interrupts, as
+virtnet_poll_cleantx might also run in between the scheduling of the
+Tx interrupt and the call to virtnet_poll_tx, right? The Tx and Rx
+interrupts racing.
+
+If I can reproduce the report, I can also test how much this helps in practice.
+
+> > Fix up by disabling the callbacks before polling the tx vq.
 >
-> reg should really be 4 here. The same error existed in the .txt
+>
+> It is not clear why we want to poll TX completions from ndo_start_xmit() in napi mode ?
 
-Will fixup.
-
-> version. I guess the examples are never actually verified using the
-> yaml?
-
-They are verified in general, but for this specific check it is dtc
-that does it and only for bus types that it knows about. MDIO isn't
-one of them.
-
-Rob
+Yes, we can simply exclude that. The original napi-tx patch did not
+make that change, but not for any strong reason.
