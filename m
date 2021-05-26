@@ -2,175 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01565391732
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:16:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 619DC391745
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233826AbhEZMRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 08:17:44 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:46260 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232546AbhEZMRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 08:17:42 -0400
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 1635677034;
-        Wed, 26 May 2021 15:16:09 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1622031369;
-        bh=sUAg7c0OJaDV8893akfTQUnFA9//98ey29nrJI7rLlk=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=bXc+5kW4ZAA5MnQRMLVFqfJU/asSbIkOyQ/WQ9lUS+FAsFLzMBT33L+JJ9fEulXrK
-         niYQfTvwUZ3Fcjr6XG9eLM86//TZaeOiMTgd2K8z/twUlZm9hpCctJUsU3vSEIhpEo
-         aNP2m2JMwfgMNVoJ6Dp33co8q1smJO//pdDD0AAnZRD4fFp8Y6EXpVqrGtasrCUFTb
-         Jpl28Fce2vKtXzJjlYsmXqKCDHSFlQFk1T4MBO/9lPA9QMngbXnc4e56+JUfcHMxD7
-         yEf178axo514r1vCZ8HalGs8l3z/nmveKcfpcXQtIeZaZ+2t9sFxtevK5+BqVFOE8Q
-         sSatzWMzf4SRQ==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 451607704D;
-        Wed, 26 May 2021 15:16:08 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Wed, 26
- May 2021 15:16:07 +0300
-Subject: Re: [PATCH v10 00/18] virtio/vsock: introduce SOCK_SEQPACKET support
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
- <20210521075520.ghg75wpzz42zorxg@steredhat>
- <108b0bba-5909-cdde-97ee-321b3f5351ca@kaspersky.com>
- <b8dd3b55-0e2c-935a-d9bb-b13b7adc4458@kaspersky.com>
- <20210525145220.amzme5mqqv4npirt@steredhat>
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <becbd621-3773-be9e-b314-5fd0c589110e@kaspersky.com>
-Date:   Wed, 26 May 2021 15:16:07 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S233304AbhEZMXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 08:23:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233168AbhEZMXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 08:23:50 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B919C061574;
+        Wed, 26 May 2021 05:22:15 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id f12so1379284ljp.2;
+        Wed, 26 May 2021 05:22:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zhDNs1OvrLLRHp01VJsRDHjv3DfbHGL4iLUwl466cC0=;
+        b=rHZZ3w3PlqpSbLALcERtloPxfgr52ZeAz39H4XufVjhhBR7VnmNmMbt5pAlOZPn+B8
+         jvBNG1pDTLG0A1b82u/0gZzSvy7o9MBie11WLmWImJ290NUcdWiJfVO1hMD2g67b2e4P
+         DWNTpMfy42TFLtFWjKeKOTBHNEYNCgV/4qXtO9k6oJC3GVWczmxxDMYNBXL8ieCY7iRy
+         O1PSfmCVBdkQrAcAtRNumkSyP/KAafWYGWVRyXY9AR6OGTALVtqIjKnaaJUlnsTua/hC
+         cPe0gg9Hcr1HZVsQwavlhYtAtm4KKOdldO/NC4AEleDsePXNIifUzWOk4yyy41vJyKSW
+         uHzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zhDNs1OvrLLRHp01VJsRDHjv3DfbHGL4iLUwl466cC0=;
+        b=dNtKjGz61pqPAuEW2FiPCUZtb8zB/wY5HlbRbVX0QO6ZbfQXi9gsKJD24wpMn+bNE6
+         Yg0uBGj9r8/YrOExo4wyNjm3pgOV73nkDrLqW5zSnTmjKGLdeIpMWRwmJUzVCwXGyNYX
+         UH6yUzOWNA2Ef/1Oh+Kep0eaYeJgzSNvh8cCdkKeCSnAIty950A0ucY9SRJjknZj0oZT
+         snrmYgRMV2bSZuxWcoIg9EagrI4NYUXPvMUO81LyY+0cPW8l+Z6xODWw0i17Fk4/mB+7
+         a7xn4t4wd/JyI0n2+DUUKK5YbiNVB1Odz7YgCS2ztCYvvMcnvUOS64iNfnD/wyA5W13o
+         w2/w==
+X-Gm-Message-State: AOAM5326geFrR+aj2Lxg+ubJdbgLByy6TldKUriB1M04D3s422i1HGN8
+        DwB76xhqvkbuqL9/fV49rVu0PgcoeqPGsd10Vx8=
+X-Google-Smtp-Source: ABdhPJz+UwFaB+HIhfZwYF/YvCY0Fi2m8Tsoyq2FE1GmkwajoauUMxc5/eG5xLmWDagdy1BsVAieXaQwTiR6ivWyG78=
+X-Received: by 2002:a2e:240e:: with SMTP id k14mr2032686ljk.423.1622031733666;
+ Wed, 26 May 2021 05:22:13 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210525145220.amzme5mqqv4npirt@steredhat>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/26/2021 12:06:35
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163941 [May 26 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
-X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: patchwork.kernel.org:7.1.1;kaspersky.com:7.1.1;127.0.0.199:7.1.2;lists.oasis-open.org:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 05/26/2021 12:08:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 26.05.2021 10:27:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/05/26 10:29:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/05/26 08:53:00 #16657861
-X-KLMS-AntiVirus-Status: Clean, skipped
+References: <20210309151834.58675-1-dong.menglong@zte.com.cn> <6d59bf25-2e1e-5bd7-07f1-dff2e73c7a7e@linaro.org>
+In-Reply-To: <6d59bf25-2e1e-5bd7-07f1-dff2e73c7a7e@linaro.org>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 26 May 2021 20:22:02 +0800
+Message-ID: <CADxym3Ycq=H74N7MLak-kub_qWeFCJLhZFgnjKKPPARXktJO2w@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: netlink: remove netlink_broadcast_filtered
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>, mkubecek@suse.cz,
+        dsahern@kernel.org, zhudi21@huawei.com, johannes.berg@intel.com,
+        marcelo.leitner@gmail.com,
+        Menglong Dong <dong.menglong@zte.com.cn>, ast@kernel.org,
+        yhs@fb.com, rdunlap@infradead.org, yangyingliang@huawei.com,
+        0x7f454c46@gmail.com, LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, May 26, 2021 at 5:28 PM Daniel Lezcano
+<daniel.lezcano@linaro.org> wrote:
+>
+[...]
+>
+> I was trying to figure out if the function could be useful to filter out
+> some netlink messages when sending them to userspace.
+>
+> Still looking for examples :/
+>
+> On the other side, this function was put there as part of the network
+> namespace infrastructure. Even there is no user, it may be needed.
+>
 
-On 25.05.2021 17:52, Stefano Garzarella wrote:
-> On Tue, May 25, 2021 at 11:22:09AM +0300, Arseny Krasnov wrote:
->> On 23.05.2021 15:14, Arseny Krasnov wrote:
->>> On 21.05.2021 10:55, Stefano Garzarella wrote:
->>>> Hi Arseny,
->>>>
->>>> On Thu, May 20, 2021 at 10:13:53PM +0300, Arseny Krasnov wrote:
->>>>> 	This patchset implements support of SOCK_SEQPACKET for virtio
->>>>> transport.
->>>> I'll carefully review and test this series next Monday, in the mean time
->>>> I think we should have at least an agreement about the changes that
->>>> regards virtio-spec before merge this series, to avoid any compatibility
->>>> issues.
->>>>
->>>> Do you plan to send a new version of the specification changes?
->>>>
->>>> Thanks,
->>>> Stefano
->>> Hello, sorry for long answer. I'm on vacation now, but i plan to send
->>>
->>> it in next several days, because with current implementation it is short
->>>
->>>
->>> Thank You
->> Hello, here is spec patch:
->>
->> https://lists.oasis-open.org/archives/virtio-comment/202105/msg00017.html
->>
->> Let's discuss it
-> Yep, sure.
->
-> About this series I think is better to split in two series since it 
-> became very long. Patchwork [1] also complains here [2].
->
-> You can send a first series with patches from 1 to 7. These patches are 
-> reviewed by me and can go regardless of the discussion of the VIRTIO 
-> specifications.
-Ok, i'll send it on next week.
-> Maybe you can also add the patch with the test to this first series.
->
-> Please specify in the cover letter that the implementation for virtio 
-> devices is under development and will be sent later.
->
->
-> When it will be merged in the net-next tree, you can post the second 
-> part with the rest of the series that implements SEQPACKET for virtio 
-> devices, possibly after we received an agreement for the specifications.
->
-> Please use the "net-next" tag and take a look at 
-> Documentation/networking/netdev-FAQ.rst about netdev development.
-Ok
->
->
-> Anyway, in the next days (hopefully tomorrow) I'll review the rest of 
-> the series related to virtio devices and spec.
->
-> Thanks,
-> Stefano
->
-> [1] 
-> https://patchwork.kernel.org/project/netdevbpf/list/?series=486011&state=*
->
-> [2] 
-> https://patchwork.kernel.org/project/netdevbpf/patch/20210520191449.1270723-1-arseny.krasnov@kaspersky.com/
->
->
+I noticed that the function has not been used since it was added over
+ten years ago, and thought that it may not be used in the future.
+
+If you think it may be needed, let's just keep it!
+
+Thanks!
+Menglong Dong
