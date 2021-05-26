@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 776D1390F91
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 06:31:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88BBF390F8C
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 06:31:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232541AbhEZEck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 00:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
+        id S232430AbhEZEcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 00:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232023AbhEZEcY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 00:32:24 -0400
+        with ESMTP id S231982AbhEZEcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 00:32:23 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64022C06138C
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33FC7C061761
         for <netdev@vger.kernel.org>; Tue, 25 May 2021 21:30:52 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lllBo-0001Ou-Ba; Wed, 26 May 2021 06:30:40 +0200
+        id 1lllBo-0001Ov-Bj; Wed, 26 May 2021 06:30:40 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lllBm-0002cO-K8; Wed, 26 May 2021 06:30:38 +0200
+        id 1lllBm-0002cX-L9; Wed, 26 May 2021 06:30:38 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -34,9 +34,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Russell King <linux@armlinux.org.uk>,
         Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [PATCH net-next v3 4/9] net: phy: micrel: apply resume errata workaround for ksz8873 and ksz8863
-Date:   Wed, 26 May 2021 06:30:32 +0200
-Message-Id: <20210526043037.9830-5-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v3 5/9] net: phy/dsa micrel/ksz886x add MDI-X support
+Date:   Wed, 26 May 2021 06:30:33 +0200
+Message-Id: <20210526043037.9830-6-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210526043037.9830-1-o.rempel@pengutronix.de>
 References: <20210526043037.9830-1-o.rempel@pengutronix.de>
@@ -50,97 +50,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ksz8873 and ksz8863 switches are affected by following errata:
-
-| "Receiver error in 100BASE-TX mode following Soft Power Down"
-|
-| Some KSZ8873 devices may exhibit receiver errors after transitioning
-| from Soft Power Down mode to Normal mode, as controlled by register 195
-| (0xC3) bits [1:0]. When exiting Soft Power Down mode, the receiver
-| blocks may not start up properly, causing the PHY to miss data and
-| exhibit erratic behavior. The problem may appear on either port 1 or
-| port 2, or both ports. The problem occurs only for 100BASE-TX, not
-| 10BASE-T.
-|
-| END USER IMPLICATIONS
-| When the failure occurs, the following symptoms are seen on the affected
-| port(s):
-| - The port is able to link
-| - LED0 blinks, even when there is no traffic
-| - The MIB counters indicate receive errors (Rx Fragments, Rx Symbol
-|   Errors, Rx CRC Errors, Rx Alignment Errors)
-| - Only a small fraction of packets is correctly received and forwarded
-|   through the switch. Most packets are dropped due to receive errors.
-|
-| The failing condition cannot be corrected by the following:
-| - Removing and reconnecting the cable
-| - Hardware reset
-| - Software Reset and PCS Reset bits in register 67 (0x43)
-|
-| Work around:
-| The problem can be corrected by setting and then clearing the Port Power
-| Down bits (registers 29 (0x1D) and 45 (0x2D), bit 3). This must be done
-| separately for each affected port after returning from Soft Power Down
-| Mode to Normal Mode. The following procedure will ensure no further
-| issues due to this erratum. To enter Soft Power Down Mode, set register
-| 195 (0xC3), bits [1:0] = 10.
-|
-| To exit Soft Power Down Mode, follow these steps:
-| 1. Set register 195 (0xC3), bits [1:0] = 00 // Exit soft power down mode
-| 2. Wait 1ms minimum
-| 3. Set register 29 (0x1D), bit [3] = 1 // Enter PHY port 1 power down mode
-| 4. Set register 29 (0x1D), bit [3] = 0 // Exit PHY port 1 power down mode
-| 5. Set register 45 (0x2D), bit [3] = 1 // Enter PHY port 2 power down mode
-| 6. Set register 45 (0x2D), bit [3] = 0 // Exit PHY port 2 power down mode
-
-This patch implements steps 2...6 of the suggested workaround. The first
-step needs to be implemented in the switch driver.
+Add support for MDI-X status and configuration
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/phy/micrel.c | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ drivers/net/dsa/microchip/ksz8795.c |  5 ++
+ drivers/net/phy/micrel.c            | 88 +++++++++++++++++++++++++++++
+ include/linux/micrel_phy.h          |  2 +
+ 3 files changed, 95 insertions(+)
 
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index cf81ae87544d..55da8ec175da 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -816,6 +816,11 @@ static void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ 		if (data & ~LPA_SLCT)
+ 			data |= LPA_LPACK;
+ 		break;
++	case PHY_REG_PHY_CTRL:
++		ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
++		if (link & PORT_MDIX_STATUS)
++			data |= KSZ886X_CTRL_MDIX_STAT;
++		break;
+ 	default:
+ 		processed = false;
+ 		break;
 diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 227d88db7d27..f03188ed953a 100644
+index f03188ed953a..ac56e8159712 100644
 --- a/drivers/net/phy/micrel.c
 +++ b/drivers/net/phy/micrel.c
-@@ -1048,6 +1048,26 @@ static int ksz8873mll_config_aneg(struct phy_device *phydev)
+@@ -1048,6 +1048,92 @@ static int ksz8873mll_config_aneg(struct phy_device *phydev)
  	return 0;
  }
  
-+static int ksz886x_resume(struct phy_device *phydev)
++static int ksz886x_config_mdix(struct phy_device *phydev, u8 ctrl)
++{
++	u16 val;
++
++	switch (ctrl) {
++	case ETH_TP_MDI:
++		val = KSZ886X_BMCR_DISABLE_AUTO_MDIX;
++		break;
++	case ETH_TP_MDI_X:
++		/* Note: The naming of the bit KSZ886X_BMCR_FORCE_MDI is bit
++		 * counter intuitive, the "-X" in "1 = Force MDI" in the data
++		 * sheet seems to be missing:
++		 * 1 = Force MDI (sic!) (transmit on RX+/RX- pins)
++		 * 0 = Normal operation (transmit on TX+/TX- pins)
++		 */
++		val = KSZ886X_BMCR_DISABLE_AUTO_MDIX | KSZ886X_BMCR_FORCE_MDI;
++		break;
++	case ETH_TP_MDI_AUTO:
++		val = 0;
++		break;
++	default:
++		return 0;
++	}
++
++	return phy_modify(phydev, MII_BMCR,
++			  KSZ886X_BMCR_HP_MDIX | KSZ886X_BMCR_FORCE_MDI |
++			  KSZ886X_BMCR_DISABLE_AUTO_MDIX,
++			  KSZ886X_BMCR_HP_MDIX | val);
++}
++
++static int ksz886x_config_aneg(struct phy_device *phydev)
 +{
 +	int ret;
 +
-+	/* Apply errata workaround for KSZ8863 and KSZ8873:
-+	 * Receiver error in 100BASE-TX mode following Soft Power Down
-+	 *
-+	 * When exiting Soft Power Down mode, the receiver blocks may not start
-+	 * up properly, causing the PHY to miss data and exhibit erratic
-+	 * behavior.
-+	 */
-+	usleep_range(1000, 2000);
-+
-+	ret = phy_set_bits(phydev, MII_BMCR, BMCR_PDOWN);
++	ret = genphy_config_aneg(phydev);
 +	if (ret)
 +		return ret;
 +
-+	return phy_clear_bits(phydev, MII_BMCR, BMCR_PDOWN);
++	/* The MDI-X configuration is automatically changed by the PHY after
++	 * switching from autoneg off to on. So, take MDI-X configuration under
++	 * own control and set it after autoneg configuration was done.
++	 */
++	return ksz886x_config_mdix(phydev, phydev->mdix_ctrl);
 +}
 +
- static int kszphy_get_sset_count(struct phy_device *phydev)
++static int ksz886x_mdix_update(struct phy_device *phydev)
++{
++	int ret;
++
++	ret = phy_read(phydev, MII_BMCR);
++	if (ret < 0)
++		return ret;
++
++	if (ret & KSZ886X_BMCR_DISABLE_AUTO_MDIX) {
++		if (ret & KSZ886X_BMCR_FORCE_MDI)
++			phydev->mdix_ctrl = ETH_TP_MDI_X;
++		else
++			phydev->mdix_ctrl = ETH_TP_MDI;
++	} else {
++		phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
++	}
++
++	ret = phy_read(phydev, MII_KSZPHY_CTRL);
++	if (ret < 0)
++		return ret;
++
++	/* Same reverse logic as KSZ886X_BMCR_FORCE_MDI */
++	if (ret & KSZ886X_CTRL_MDIX_STAT)
++		phydev->mdix = ETH_TP_MDI_X;
++	else
++		phydev->mdix = ETH_TP_MDI;
++
++	return 0;
++}
++
++static int ksz886x_read_status(struct phy_device *phydev)
++{
++	int ret;
++
++	ret = ksz886x_mdix_update(phydev);
++	if (ret < 0)
++		return ret;
++
++	return genphy_read_status(phydev);
++}
++
+ static int ksz886x_resume(struct phy_device *phydev)
  {
- 	return ARRAY_SIZE(kszphy_hw_stats);
-@@ -1401,7 +1421,7 @@ static struct phy_driver ksphy_driver[] = {
+ 	int ret;
+@@ -1420,6 +1506,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.name		= "Micrel KSZ8851 Ethernet MAC or KSZ886X Switch",
  	/* PHY_BASIC_FEATURES */
  	.config_init	= kszphy_config_init,
++	.config_aneg	= ksz886x_config_aneg,
++	.read_status	= ksz886x_read_status,
  	.suspend	= genphy_suspend,
--	.resume		= genphy_resume,
-+	.resume		= ksz886x_resume,
+ 	.resume		= ksz886x_resume,
  }, {
- 	.name		= "Micrel KSZ87XX Switch",
- 	/* PHY_BASIC_FEATURES */
+diff --git a/include/linux/micrel_phy.h b/include/linux/micrel_phy.h
+index b03e2afcb53f..58370abd9f4f 100644
+--- a/include/linux/micrel_phy.h
++++ b/include/linux/micrel_phy.h
+@@ -58,4 +58,6 @@
+ #define KSZ886X_BMCR_DISABLE_TRANSMIT		BIT(1)
+ #define KSZ886X_BMCR_DISABLE_LED		BIT(0)
+ 
++#define KSZ886X_CTRL_MDIX_STAT			BIT(4)
++
+ #endif /* _MICREL_PHY_H */
 -- 
 2.29.2
 
