@@ -2,357 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD15C390F8B
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 06:31:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B57B390FAF
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 06:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231922AbhEZEc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 00:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231938AbhEZEcX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 00:32:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2ACFC06175F
-        for <netdev@vger.kernel.org>; Tue, 25 May 2021 21:30:51 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lllBo-0001Oz-Be; Wed, 26 May 2021 06:30:40 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lllBm-0002d9-PK; Wed, 26 May 2021 06:30:38 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [PATCH net-next v3 9/9] net: phy: micrel: ksz886x/ksz8081: add cabletest support
-Date:   Wed, 26 May 2021 06:30:37 +0200
-Message-Id: <20210526043037.9830-10-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210526043037.9830-1-o.rempel@pengutronix.de>
-References: <20210526043037.9830-1-o.rempel@pengutronix.de>
+        id S229789AbhEZEmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 00:42:47 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:9330 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229481AbhEZEmn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 00:42:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1622004074; x=1653540074;
+  h=date:from:to:cc:message-id:references:mime-version:
+   in-reply-to:subject;
+  bh=IdCtA2fDzgAuC9RDi6qBLpDtVfX4igt+SD3WtXyHdbQ=;
+  b=NFJkTKF0QYrUDv+L1pnabJ4P7YhWnr/daLSfQURvHaSceSWNXovyDFN2
+   iweKxocvTPPqTqNnYoEOQ6Zr+brn5YrPcypXbfOgAR5D3GkV6XwwTZ049
+   HFsU2C4sEk4bpAA62KdaOomaTNFTO1xJFNbtJCx9ycBqrf3UpTRWNyr4V
+   I=;
+X-IronPort-AV: E=Sophos;i="5.82,330,1613433600"; 
+   d="scan'208";a="114662918"
+Subject: Re: [PATCH v3 01/11] xen/manage: keep track of the on-going suspend mode
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-e69428c4.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 26 May 2021 04:41:12 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1d-e69428c4.us-east-1.amazon.com (Postfix) with ESMTPS id 81C19C5C00;
+        Wed, 26 May 2021 04:41:05 +0000 (UTC)
+Received: from EX13D07UWA002.ant.amazon.com (10.43.160.77) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Wed, 26 May 2021 04:40:39 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
+ EX13D07UWA002.ant.amazon.com (10.43.160.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Wed, 26 May 2021 04:40:38 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP
+ Server id 15.0.1497.18 via Frontend Transport; Wed, 26 May 2021 04:40:38
+ +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id B2A7240153; Wed, 26 May 2021 04:40:38 +0000 (UTC)
+Date:   Wed, 26 May 2021 04:40:38 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>
+CC:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "roger.pau@citrix.com" <roger.pau@citrix.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        <Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
+        David <dwmw@amazon.co.uk>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        <Shah@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
+        Amit <aams@amazon.de>,
+        <Agarwal@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
+        Anchal <anchalag@amazon.com>
+Message-ID: <20210526044038.GA16226@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <e3e447e5-2f7a-82a2-31c8-10c2ffcbfb2c@oracle.com>
+ <20200922231736.GA24215@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200925190423.GA31885@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <274ddc57-5c98-5003-c850-411eed1aea4c@oracle.com>
+ <20200925222826.GA11755@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <cc738014-6a79-a5ae-cb2a-a02ff15b4582@oracle.com>
+ <20200930212944.GA3138@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <8cd59d9c-36b1-21cf-e59f-40c5c20c65f8@oracle.com>
+ <20210521052650.GA19056@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <0b1f0772-d1b1-0e59-8e99-368e54d40fbf@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <0b1f0772-d1b1-0e59-8e99-368e54d40fbf@oracle.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch support for cable test for the ksz886x switches and the
-ksz8081 PHY.
+On Tue, May 25, 2021 at 06:23:35PM -0400, Boris Ostrovsky wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> 
+> 
+> 
+> On 5/21/21 1:26 AM, Anchal Agarwal wrote:
+> >>> What I meant there wrt VCPU info was that VCPU info is not unregistered during hibernation,
+> >>> so Xen still remembers the old physical addresses for the VCPU information, created by the
+> >>> booting kernel. But since the hibernation kernel may have different physical
+> >>> addresses for VCPU info and if mismatch happens, it may cause issues with resume.
+> >>> During hibernation, the VCPU info register hypercall is not invoked again.
+> >>
+> >> I still don't think that's the cause but it's certainly worth having a look.
+> >>
+> > Hi Boris,
+> > Apologies for picking this up after last year.
+> > I did some dive deep on the above statement and that is indeed the case that's happening.
+> > I did some debugging around KASLR and hibernation using reboot mode.
+> > I observed in my debug prints that whenever vcpu_info* address for secondary vcpu assigned
+> > in xen_vcpu_setup at boot is different than what is in the image, resume gets stuck for that vcpu
+> > in bringup_cpu(). That means we have different addresses for &per_cpu(xen_vcpu_info, cpu) at boot and after
+> > control jumps into the image.
+> >
+> > I failed to get any prints after it got stuck in bringup_cpu() and
+> > I do not have an option to send a sysrq signal to the guest or rather get a kdump.
+> 
+> 
+> xenctx and xen-hvmctx might be helpful.
+> 
+> 
+> > This change is not observed in every hibernate-resume cycle. I am not sure if this is a bug or an
+> > expected behavior.
+> > Also, I am contemplating the idea that it may be a bug in xen code getting triggered only when
+> > KASLR is enabled but I do not have substantial data to prove that.
+> > Is this a coincidence that this always happens for 1st vcpu?
+> > Moreover, since hypervisor is not aware that guest is hibernated and it looks like a regular shutdown to dom0 during reboot mode,
+> > will re-registering vcpu_info for secondary vcpu's even plausible?
+> 
+> 
+> I think I am missing how this is supposed to work (maybe we've talked about this but it's been many months since then). You hibernate the guest and it writes the state to swap. The guest is then shut down? And what's next? How do you wake it up?
+> 
+> 
+> -boris
+> 
+To resume a guest, guest boots up as the fresh guest and then software_resume()
+is called which if finds a stored hibernation image, quiesces the devices and loads 
+the memory contents from the image. The control then transfers to the targeted kernel.
+This further disables non boot cpus,sycore_suspend/resume callbacks are invoked which sets up
+the shared_info, pvclock, grant tables etc. Since the vcpu_info pointer for each
+non-boot cpu is already registered, the hypercall does not happen again when
+bringing up the non boot cpus. This leads to inconsistencies as pointed
+out earlier when KASLR is enabled.
 
-The patch was tested on a KSZ8873RLL switch with following results:
-
-- port 1:
-  - provides invalid values, thus return -ENOTSUPP
-    (Errata: DS80000830A: "LinkMD does not work on Port 1",
-     http://ww1.microchip.com/downloads/en/DeviceDoc/KSZ8873-Errata-DS80000830A.pdf)
-
-- port 2:
-  - can detect distance
-  - can detect open on each wire of pair A (wire 1 and 2)
-  - can detect open only on one wire of pair B (only wire 3)
-  - can detect short between wires of a pair (wires 1 + 2 or 3 + 6)
-  - short between pairs is detected as open.
-    For example short between wires 2 + 3 is detected as open.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-
----
-
-- added PHY_POLL_CABLE_TEST to make it work in interrupt mode
----
- drivers/net/dsa/microchip/ksz8795.c |  13 ++
- drivers/net/phy/micrel.c            | 180 ++++++++++++++++++++++++++++
- include/linux/micrel_phy.h          |   1 +
- 3 files changed, 194 insertions(+)
-
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index ae5fe9c829da..1881adb19c85 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -970,6 +970,18 @@ static enum dsa_tag_protocol ksz8_get_tag_protocol(struct dsa_switch *ds,
- 		DSA_TAG_PROTO_KSZ9893 : DSA_TAG_PROTO_KSZ8795;
- }
- 
-+static u32 ksz8_sw_get_phy_flags(struct dsa_switch *ds, int port)
-+{
-+	/* Silicon Errata Sheet (DS80000830A):
-+	 * Port 1 does not work with LinkMD Cable-Testing.
-+	 * Port 1 does not respond to received PAUSE control frames.
-+	 */
-+	if (!port)
-+		return MICREL_KSZ8_P1_ERRATA;
-+
-+	return 0;
-+}
-+
- static void ksz8_get_strings(struct dsa_switch *ds, int port,
- 			     u32 stringset, uint8_t *buf)
- {
-@@ -1507,6 +1519,7 @@ static void ksz8_validate(struct dsa_switch *ds, int port,
- 
- static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.get_tag_protocol	= ksz8_get_tag_protocol,
-+	.get_phy_flags		= ksz8_sw_get_phy_flags,
- 	.setup			= ksz8_setup,
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index b6ce7bd66738..6b744e68ce97 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -20,6 +20,7 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/ethtool_netlink.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/phy.h>
-@@ -53,6 +54,18 @@
- #define	KSZPHY_INTCS_STATUS			(KSZPHY_INTCS_LINK_DOWN_STATUS |\
- 						 KSZPHY_INTCS_LINK_UP_STATUS)
- 
-+/* LinkMD Control/Status */
-+#define KSZ8081_LMD				0x1d
-+#define KSZ8081_LMD_ENABLE_TEST			BIT(15)
-+#define KSZ8081_LMD_STAT_NORMAL			0
-+#define KSZ8081_LMD_STAT_OPEN			1
-+#define KSZ8081_LMD_STAT_SHORT			2
-+#define KSZ8081_LMD_STAT_FAIL			3
-+#define KSZ8081_LMD_STAT_MASK			GENMASK(14, 13)
-+/* Short cable (<10 meter) has been detected by LinkMD */
-+#define KSZ8081_LMD_SHORT_INDICATOR		BIT(12)
-+#define KSZ8081_LMD_DELTA_TIME_MASK		GENMASK(8, 0)
-+
- /* PHY Control 1 */
- #define MII_KSZPHY_CTRL_1			0x1e
- #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
-@@ -1386,6 +1399,167 @@ static int kszphy_probe(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int ksz886x_cable_test_start(struct phy_device *phydev)
-+{
-+	if (phydev->dev_flags & MICREL_KSZ8_P1_ERRATA)
-+		return -ENOTSUPP;
-+
-+	/* If autoneg is enabled, we won't be able to test cross pair
-+	 * short. In this case, the PHY will "detect" a link and
-+	 * confuse the internal state machine - disable auto neg here.
-+	 * If autoneg is disabled, we should set the speed to 10mbit.
-+	 */
-+	return phy_clear_bits(phydev, MII_BMCR, BMCR_ANENABLE | BMCR_SPEED100);
-+}
-+
-+static int ksz886x_cable_test_result_trans(u16 status)
-+{
-+	switch (FIELD_GET(KSZ8081_LMD_STAT_MASK, status)) {
-+	case KSZ8081_LMD_STAT_NORMAL:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
-+	case KSZ8081_LMD_STAT_SHORT:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
-+	case KSZ8081_LMD_STAT_OPEN:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
-+	case KSZ8081_LMD_STAT_FAIL:
-+		/* fall through */
-+	default:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
-+	}
-+}
-+
-+static bool ksz886x_cable_test_failed(u16 status)
-+{
-+	return FIELD_GET(KSZ8081_LMD_STAT_MASK, status) ==
-+		KSZ8081_LMD_STAT_FAIL;
-+}
-+
-+static bool ksz886x_cable_test_fault_length_valid(u16 status)
-+{
-+	switch (FIELD_GET(KSZ8081_LMD_STAT_MASK, status)) {
-+	case KSZ8081_LMD_STAT_OPEN:
-+		/* fall through */
-+	case KSZ8081_LMD_STAT_SHORT:
-+		return true;
-+	}
-+	return false;
-+}
-+
-+static int ksz886x_cable_test_fault_length(u16 status)
-+{
-+	int dt;
-+
-+	/* According to the data sheet the distance to the fault is
-+	 * DELTA_TIME * 0.4 meters.
-+	 */
-+	dt = FIELD_GET(KSZ8081_LMD_DELTA_TIME_MASK, status);
-+
-+	return (dt * 400) / 10;
-+}
-+
-+static int ksz886x_cable_test_wait_for_completion(struct phy_device *phydev)
-+{
-+	int val, ret;
-+
-+	ret = phy_read_poll_timeout(phydev, KSZ8081_LMD, val,
-+				    !(val & KSZ8081_LMD_ENABLE_TEST),
-+				    30000, 100000, true);
-+
-+	return ret < 0 ? ret : 0;
-+}
-+
-+static int ksz886x_cable_test_one_pair(struct phy_device *phydev, int pair)
-+{
-+	static const int ethtool_pair[] = {
-+		ETHTOOL_A_CABLE_PAIR_A,
-+		ETHTOOL_A_CABLE_PAIR_B,
-+	};
-+	int ret, val, mdix;
-+
-+	/* There is no way to choice the pair, like we do one ksz9031.
-+	 * We can workaround this limitation by using the MDI-X functionality.
-+	 */
-+	if (pair == 0)
-+		mdix = ETH_TP_MDI;
-+	else
-+		mdix = ETH_TP_MDI_X;
-+
-+	switch (phydev->phy_id & MICREL_PHY_ID_MASK) {
-+	case PHY_ID_KSZ8081:
-+		ret = ksz8081_config_mdix(phydev, mdix);
-+		break;
-+	case PHY_ID_KSZ886X:
-+		ret = ksz886x_config_mdix(phydev, mdix);
-+		break;
-+	default:
-+		ret = -ENODEV;
-+	}
-+
-+	if (ret)
-+		return ret;
-+
-+	/* Now we are ready to fire. This command will send a 100ns pulse
-+	 * to the pair.
-+	 */
-+	ret = phy_write(phydev, KSZ8081_LMD, KSZ8081_LMD_ENABLE_TEST);
-+	if (ret)
-+		return ret;
-+
-+	ret = ksz886x_cable_test_wait_for_completion(phydev);
-+	if (ret)
-+		return ret;
-+
-+	val = phy_read(phydev, KSZ8081_LMD);
-+	if (val < 0)
-+		return val;
-+
-+	if (ksz886x_cable_test_failed(val))
-+		return -EAGAIN;
-+
-+	ret = ethnl_cable_test_result(phydev, ethtool_pair[pair],
-+				      ksz886x_cable_test_result_trans(val));
-+	if (ret)
-+		return ret;
-+
-+	if (!ksz886x_cable_test_fault_length_valid(val))
-+		return 0;
-+
-+	return ethnl_cable_test_fault_length(phydev, ethtool_pair[pair],
-+					     ksz886x_cable_test_fault_length(val));
-+}
-+
-+static int ksz886x_cable_test_get_status(struct phy_device *phydev,
-+					 bool *finished)
-+{
-+	unsigned long pair_mask = 0x3;
-+	int retries = 20;
-+	int pair, ret;
-+
-+	*finished = false;
-+
-+	/* Try harder if link partner is active */
-+	while (pair_mask && retries--) {
-+		for_each_set_bit(pair, &pair_mask, 4) {
-+			ret = ksz886x_cable_test_one_pair(phydev, pair);
-+			if (ret == -EAGAIN)
-+				continue;
-+			if (ret < 0)
-+				return ret;
-+			clear_bit(pair, &pair_mask);
-+		}
-+		/* If link partner is in autonegotiation mode it will send 2ms
-+		 * of FLPs with at least 6ms of silence.
-+		 * Add 2ms sleep to have better chances to hit this silence.
-+		 */
-+		if (pair_mask)
-+			msleep(2);
-+	}
-+
-+	*finished = true;
-+
-+	return 0;
-+}
-+
- static struct phy_driver ksphy_driver[] = {
- {
- 	.phy_id		= PHY_ID_KS8737,
-@@ -1492,6 +1666,7 @@ static struct phy_driver ksphy_driver[] = {
- 	.phy_id		= PHY_ID_KSZ8081,
- 	.name		= "Micrel KSZ8081 or KSZ8091",
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
-+	.flags		= PHY_POLL_CABLE_TEST,
- 	/* PHY_BASIC_FEATURES */
- 	.driver_data	= &ksz8081_type,
- 	.probe		= kszphy_probe,
-@@ -1506,6 +1681,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.get_stats	= kszphy_get_stats,
- 	.suspend	= kszphy_suspend,
- 	.resume		= kszphy_resume,
-+	.cable_test_start	= ksz886x_cable_test_start,
-+	.cable_test_get_status	= ksz886x_cable_test_get_status,
- }, {
- 	.phy_id		= PHY_ID_KSZ8061,
- 	.name		= "Micrel KSZ8061",
-@@ -1594,11 +1771,14 @@ static struct phy_driver ksphy_driver[] = {
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
- 	.name		= "Micrel KSZ8851 Ethernet MAC or KSZ886X Switch",
- 	/* PHY_BASIC_FEATURES */
-+	.flags		= PHY_POLL_CABLE_TEST,
- 	.config_init	= kszphy_config_init,
- 	.config_aneg	= ksz886x_config_aneg,
- 	.read_status	= ksz886x_read_status,
- 	.suspend	= genphy_suspend,
- 	.resume		= ksz886x_resume,
-+	.cable_test_start	= ksz886x_cable_test_start,
-+	.cable_test_get_status	= ksz886x_cable_test_get_status,
- }, {
- 	.name		= "Micrel KSZ87XX Switch",
- 	/* PHY_BASIC_FEATURES */
-diff --git a/include/linux/micrel_phy.h b/include/linux/micrel_phy.h
-index 58370abd9f4f..3d43c60b49fa 100644
---- a/include/linux/micrel_phy.h
-+++ b/include/linux/micrel_phy.h
-@@ -39,6 +39,7 @@
- /* struct phy_device dev_flags definitions */
- #define MICREL_PHY_50MHZ_CLK	0x00000001
- #define MICREL_PHY_FXEN		0x00000002
-+#define MICREL_KSZ8_P1_ERRATA	0x00000003
- 
- #define MICREL_KSZ9021_EXTREG_CTRL	0xB
- #define MICREL_KSZ9021_EXTREG_DATA_WRITE	0xC
--- 
-2.29.2
-
+Thanks,
+Anchal
+> 
+> 
+> >  I could definitely use some advice to debug this further.
+> >
+> >
+> > Some printk's from my debugging:
+> >
+> > At Boot:
+> >
+> > xen_vcpu_setup: xen_have_vcpu_info_placement=1 cpu=1, vcpup=0xffff9e548fa560e0, info.mfn=3996246 info.offset=224,
+> >
+> > Image Loads:
+> > It ends up in the condition:
+> >  xen_vcpu_setup()
+> >  {
+> >  ...
+> >  if (xen_hvm_domain()) {
+> >         if (per_cpu(xen_vcpu, cpu) == &per_cpu(xen_vcpu_info, cpu))
+> >                 return 0;
+> >  }
+> >  ...
+> >  }
+> >
+> > xen_vcpu_setup: checking mfn on resume cpu=1, info.mfn=3934806 info.offset=224, &per_cpu(xen_vcpu_info, cpu)=0xffff9d7240a560e0
+> >
+> > This is tested on c4.2xlarge [8vcpu 15GB mem] instance with 5.10 kernel running
+> > in the guest.
+> >
+> > Thanks,
+> > Anchal.
+> >> -boris
+> >>
+> >>
