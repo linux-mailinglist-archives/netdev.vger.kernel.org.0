@@ -2,81 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B5F0391955
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 15:57:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60DDC3919E4
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 16:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234697AbhEZN61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 09:58:27 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:58862 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234740AbhEZN55 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 09:57:57 -0400
-Received: from mail-ua1-f70.google.com ([209.85.222.70])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1llu1J-000675-J7
-        for netdev@vger.kernel.org; Wed, 26 May 2021 13:56:25 +0000
-Received: by mail-ua1-f70.google.com with SMTP id c27-20020ab0079b0000b0290217cf59726cso801637uaf.10
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 06:56:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wk3UlUCfkCL6QN9YaFyZimOXVt4iG+84u/Humu+3uZw=;
-        b=hX/o74r4jlJ1mgoswPvO/Hkk14MdHczQ9upPMvGn+zP7uQ6cmYijuyHb4VL5BGSTNZ
-         NQGBDw/t8zMISE9fSiGdNxh+KpF1kRew2fsBfgFCOrgwXiwZjGMTsG4L61D8GgsPTDnc
-         uJTzLyrOof+An7pfgaEadNZDnL0fePFn9mg+vnI7UPa5X+mgUqxXKl07MyQdfKrBq/XL
-         6hCL5tFImNSW5qD/Ss2u0FLSYp8uhfP+SVadxbnyRVS5GIOrFfNy/sVEvMJhJqtxnezp
-         IQ5X1rQOYvPiI55DrpNoZ1nlQdPvSqKArtzrinCxh2f7mVihN3eoT9qgPWAh9CM5w6/N
-         jsZw==
-X-Gm-Message-State: AOAM5329yoqdtdkTjyqE0ns/mkR7/9OLFwXI+kRuaj/Vu63boKHZHS3F
-        isDreQwxllKEX5x76Ml1R/skBWAhiMYcs3FI/S8O9pvrcQfw+BEXpAdIUVNh+lteFrKs1dBFBpl
-        gr/N7q7TLMB+iUobuzKRvk42fvoABzeh48w==
-X-Received: by 2002:a67:b919:: with SMTP id q25mr31366093vsn.17.1622037384735;
-        Wed, 26 May 2021 06:56:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxinuLNMn5s0odgmLxRBXmJbtLvoYFepINUvv6jG+v4e1LdZ3aCTN15rHZ6f5RTZ6en80fFWA==
-X-Received: by 2002:a67:b919:: with SMTP id q25mr31366076vsn.17.1622037384616;
-        Wed, 26 May 2021 06:56:24 -0700 (PDT)
-Received: from [192.168.1.4] ([45.237.48.6])
-        by smtp.gmail.com with ESMTPSA id b26sm2113090vsh.23.2021.05.26.06.56.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 May 2021 06:56:24 -0700 (PDT)
-Subject: Re: [PATCH v2] nfc: st-nci: remove unnecessary labels
-To:     samirweng1979 <samirweng1979@163.com>, davem@davemloft.net
-Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-References: <20210526011624.11204-1-samirweng1979@163.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <dcb14fe3-4907-43f6-d79f-27599f1be249@canonical.com>
-Date:   Wed, 26 May 2021 09:56:22 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S234607AbhEZOVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 10:21:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48136 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233656AbhEZOVe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 10:21:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4527D613D7
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 14:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622038803;
+        bh=hDglKVObgOcSEVb1KrOuahhVfm4jLoy+K7i3uJw+v10=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=WMw48H5pOwYAZwjal0JYKIMylJfeePx8fWeAwGEN1B87VzgVPbFHEsKWaZ8IXnhir
+         Tydbb+n2oGLvLv4kbJcDuZkPPAmr0Pn1nrrQZan78uxtfYUK2Rk6853pdzXDBjLIui
+         9pc/JkRDPo/InsylXTafDSBn3oT/XoEgHvtM68CRlpRyc0NkHzpCCkkNixXBhKkgcc
+         SFaE0xRuUx5h70WFii7/obapqrBzXXJoN9en4mlCYxlhW/phze3R9QYBQsgos2WYNj
+         3Ol3kZrm46zpColZc/YorHqS3honLA2RfhWUredHo8b6++m9pMz+pqCJNjnGKcnYhS
+         yhSSEsgDo3OAA==
+Received: by mail-ed1-f53.google.com with SMTP id j10so1719247edw.8
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 07:20:03 -0700 (PDT)
+X-Gm-Message-State: AOAM5337TrbZBDP5c+v3zm77m74hjlCA/KFUnKi8pnea9RG2IoBQYzGv
+        OcDvPg1h433dp504XAqgXDjIRenvFBY77UCV9A==
+X-Google-Smtp-Source: ABdhPJxEEwNKOmU5hRySNaiX0+Awa/6kFx2hyOVtiJ/2nhF1bbH+tw+x+GDzicgkMiQHqhAxaBiMZ5gYnWZeeSVimEI=
+X-Received: by 2002:aa7:cd83:: with SMTP id x3mr37311416edv.373.1622038801924;
+ Wed, 26 May 2021 07:20:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210526011624.11204-1-samirweng1979@163.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210526135535.2515123-1-vladimir.oltean@nxp.com> <20210526135535.2515123-11-vladimir.oltean@nxp.com>
+In-Reply-To: <20210526135535.2515123-11-vladimir.oltean@nxp.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Wed, 26 May 2021 09:19:49 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJA1cjozmKVA2jW_n5AKrWnGsbtMRfxj9eh+xUZZrNZQw@mail.gmail.com>
+Message-ID: <CAL_JsqJA1cjozmKVA2jW_n5AKrWnGsbtMRfxj9eh+xUZZrNZQw@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 linux-next 10/14] dt-bindings: net: dsa: sja1105:
+ add SJA1110 bindings
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/05/2021 21:16, samirweng1979 wrote:
-> From: wengjianfeng <wengjianfeng@yulong.com>
-> 
-> Some labels are only used once, so we delete them and use the
-> return statement instead of the goto statement.
-> 
-> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+On Wed, May 26, 2021 at 8:56 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> There are 4 variations of the SJA1110 switch which have a different set
+> of MII protocols supported per port. Document the compatible strings.
+>
+> Also, the SJA1110 optionally supports 2 internal MDIO buses for 2
+> different types of Ethernet PHYs. Document a container node called
+> "mdios" which has 2 subnodes "mdio@0" and "mdio@1", identifiable via
+> compatible string, under which the driver finds the internal PHYs.
+>
+> Cc: Rob Herring <robh@kernel.org>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > ---
->  drivers/nfc/st-nci/vendor_cmds.c | 15 +++++----------
->  1 file changed, 5 insertions(+), 10 deletions(-)
-> 
+> Changes in v2:
+> Patch is new.
+>
+>  .../bindings/net/dsa/nxp,sja1105.yaml         | 43 +++++++++++++++++++
+>  1 file changed, 43 insertions(+)
+
+Please use get_maintainers.pl and resend to the right lists.
+Specifically, the DT list in this case.
+
+> diff --git a/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml b/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+> index c1f18849a54a..640da65b0f59 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+> @@ -28,10 +28,53 @@ properties:
+>            - nxp,sja1105q
+>            - nxp,sja1105r
+>            - nxp,sja1105s
+> +          - nxp,sja1110a
+> +          - nxp,sja1110b
+> +          - nxp,sja1110c
+> +          - nxp,sja1110d
+>
+>    reg:
+>      maxItems: 1
+>
+> +  # Optional container node for the 2 internal MDIO buses of the SJA1110
+> +  # (one for the internal 100base-T1 PHYs and the other for the single
+> +  # 100base-TX PHY). The "reg" property does not have physical significance.
+> +  # The PHY addresses to port correspondence is as follows: for 100base-T1,
+> +  # port 5 has PHY 1, port 6 has PHY 2 etc, while for 100base-TX, port 1 has
+> +  # PHY 1.
+> +  mdios:
+> +    type: object
+> +
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^mdio@[0-1]$":
+> +        type: object
+> +
+> +        allOf:
+> +          - $ref: "http://devicetree.org/schemas/net/mdio.yaml#"
+> +
+> +        properties:
+> +          compatible:
+> +            oneOf:
+> +              - enum:
+
+Don't need oneOf when there is only 1 entry.
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-
-Best regards,
-Krzysztof
+> +                  - nxp,sja1110-base-t1-mdio
+> +                  - nxp,sja1110-base-tx-mdio
+> +
+> +          reg:
+> +            oneOf:
+> +              - enum:
+> +                - 0
+> +                - 1
+> +
+> +        required:
+> +          - compatible
+> +          - reg
+> +
+>  patternProperties:
+>    "^(ethernet-)?ports$":
+>      type: object
+> --
+> 2.25.1
+>
