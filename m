@@ -2,104 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16149391C53
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 17:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0F35391C6B
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 17:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235445AbhEZPsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 11:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235436AbhEZPsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 11:48:15 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026C7C061574
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 08:46:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=FQ3+qLJeDs/yhLVDx0p9Cm5eCT5k0xUV+GC0JxJ+LPo=; b=TwdKnwRPn1DH7N8z4rBBLB8VK
-        cSCFInNRrgQFGHGbA/7z9lmF8umljbE17g3UQ81aQLvm0fvCPDyNTXo2726sZunQu5dW5XUTBY2g1
-        HCD7hnRD3QoA7BlxdVOzjFtX/I5XzMuFFr+YNNX/2gJE4HRCqTNMDObmvJ9nYnCo9sowfQdpuJByf
-        7SkdI4bRqX+6WRk9+oh+2E1nUEcLWGVunkm3F5fN+3rB5aPqrUwRO32bNsixsMl/zvkWp6uNMyAX+
-        eUJXceUfc4m7vvdv9MMXRLz67uMxtfIyWmmXh0YLvPd5Es/WVe4QnnnUXL68iHgh/gNEU0j4qKK0V
-        jTD8CJ8/w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44384)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1llvk1-0005sw-Qh; Wed, 26 May 2021 16:46:41 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1llvk1-0002wa-J5; Wed, 26 May 2021 16:46:41 +0100
-Date:   Wed, 26 May 2021 16:46:41 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC PATCH v2 linux-next 13/14] net: dsa: sja1105: expose the
- SGMII PCS as an mdio_device
-Message-ID: <20210526154641.GJ30436@shell.armlinux.org.uk>
-References: <20210526135535.2515123-1-vladimir.oltean@nxp.com>
- <20210526135535.2515123-14-vladimir.oltean@nxp.com>
- <20210526152911.GH30436@shell.armlinux.org.uk>
- <20210526154102.dlp2clwqncadna2v@skbuf>
+        id S235453AbhEZPvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 11:51:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36496 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235370AbhEZPvU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 11:51:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BF93161184;
+        Wed, 26 May 2021 15:49:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1622044178;
+        bh=uyJM6RmL4VFOIpdrgSUrinaAJ058EDjZ1XMhpJ0RipY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dUE8zMqAXEPdRvMBVtCaDDomtwIkS8UIos2Vn2ggDOzI/gUAhah5INMyy7aya8QqM
+         HCbdOp6JRcQKBvw1x4BnScLAESoZEsHBW5n3VBfgBneBehi14KtfrEBo1clXAhCt7C
+         CpvUh1hf2Lz1Xfu2tKbSZwg0+L96lQxa14FY+up8=
+Date:   Wed, 26 May 2021 17:49:35 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linma <linma@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hao Xiong <mart1n@zju.edu.cn>,
+        stable <stable@vger.kernel.org>
+Subject: Re: [PATCH] Bluetooth: fix the erroneous flush_work() order
+Message-ID: <YK5uD/z8oQqyle3w@kroah.com>
+References: <20210525114215.141988-1-gregkh@linuxfoundation.org>
+ <87CD8C35-C7D2-4CF7-B9F9-266B3498DB94@holtmann.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210526154102.dlp2clwqncadna2v@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <87CD8C35-C7D2-4CF7-B9F9-266B3498DB94@holtmann.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 06:41:02PM +0300, Vladimir Oltean wrote:
-> On Wed, May 26, 2021 at 04:29:11PM +0100, Russell King (Oracle) wrote:
-> > On Wed, May 26, 2021 at 04:55:34PM +0300, Vladimir Oltean wrote:
-> > > Since we touch all PCS accessors again, now it is a good time to check
-> > > for error codes from the hardware access as well. We can't propagate the
-> > > errors very far due to phylink returning void for mac_config and
-> > > mac_link_up, but at least we print them to the console.
+On Wed, May 26, 2021 at 05:05:50PM +0200, Marcel Holtmann wrote:
+> Hi Greg,
+> 
+> > From: linma <linma@zju.edu.cn>
+> 
+> this needs a real name, but I could fix that on git am as well.
+
+"Lin Ma"
+
+> > In the cleanup routine for failed initialization of HCI device,
+> > the flush_work(&hdev->rx_work) need to be finished before the
+> > flush_work(&hdev->cmd_work). Otherwise, the hci_rx_work() can
+> > possibly invoke new cmd_work and cause a bug, like double free,
+> > in late processings.
 > > 
-> > phylink doesn't have much option on what it could do if we error out at
-> > those points - I suppose we could print a non-specific error and then
-> > lock-out the interface in a similar way that phylib does, but to me that
-> > seems really unfriendly if you're remotely accessing a box and the error
-> > is intermittent.
+> > This was assigned CVE-2021-3564.
+> > 
+> > This patch reorder the flush_work() to fix this bug.
+> > 
+> > Cc: Marcel Holtmann <marcel@holtmann.org>
+> > Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> > Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: linux-bluetooth@vger.kernel.org
+> > Cc: netdev@vger.kernel.org
+> > Cc: linux-kernel@vger.kernel.org
+> > Signed-off-by: Lin Ma <linma@zju.edu.cn>
+> > Signed-off-by: Hao Xiong <mart1n@zju.edu.cn>
+> > Cc: stable <stable@vger.kernel.org>
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > ---
+> > net/bluetooth/hci_core.c | 7 ++++++-
+> > 1 file changed, 6 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> > index fd12f1652bdf..88aa32f44e68 100644
+> > --- a/net/bluetooth/hci_core.c
+> > +++ b/net/bluetooth/hci_core.c
+> > @@ -1610,8 +1610,13 @@ static int hci_dev_do_open(struct hci_dev *hdev)
+> > 	} else {
+> > 		/* Init failed, cleanup */
+> > 		flush_work(&hdev->tx_work);
+> > -		flush_work(&hdev->cmd_work);
+> > +		/*
+> > +		 * Since hci_rx_work() is possible to awake new cmd_work
+> > +		 * it should be flushed first to avoid unexpected call of
+> > +		 * hci_cmd_work()
+> > +		 */
 > 
-> I would like to have intermittent errors at this level logged, because
-> to me they would be quite unexpected and I would like to have some rope
-> to pull while debugging - an error code, something.
-> 
-> If there's an error of any sort, the interface won't be fully
-> initialized anyway, so not functional.
-> 
-> The reason why I added error checking in this patch is because I was
-> working on the MDIO bus accessors and I wanted to make sure that the
-> errors returned there are propagated somewhere.
+> So everything in net/ uses the comment coding style enforced with --strict.
 
-Yes, makes sense there, but doesn't make sense if one is using the MMIO
-accessors and have no errors to check...
+See v2 please.
 
-My argument is - if you print an error at the lower levels, you can be
-more specific about what failed. If you do it in phylink, you can only
-say "oh, the blah_config() call failed" - which isn't particularly
-useful.
+thanks,
 
-Yes, we do this for some of the newly introduced methods, e.g. the
-pcs_config() method - and there all we can say is:
-
-                if (err < 0)
-                        phylink_err(pl, "pcs_config failed: %pe\n",
-                                    ERR_PTR(err));
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+greg k-h
