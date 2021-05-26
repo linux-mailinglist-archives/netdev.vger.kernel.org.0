@@ -2,68 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8B1439217F
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 22:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D4C63921A3
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 22:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233477AbhEZUbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 16:31:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48516 "EHLO mail.kernel.org"
+        id S233497AbhEZUuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 16:50:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56056 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232133AbhEZUbm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 16:31:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C60D9613CA;
-        Wed, 26 May 2021 20:30:10 +0000 (UTC)
+        id S231924AbhEZUuk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 16:50:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6A903613CD;
+        Wed, 26 May 2021 20:49:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622061010;
-        bh=nN00/yFHXBNMQgtkZ3C3rRit1UOv3raHwCdgBXMZ0Jw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=G76CEo+LTtXCUb5xd0oCmS3PXKxhaIRlr9RumF1O1j92qhZRi4OEW1ZR7RYhIsOcE
-         nmDvdSJf/iOOMy3S9+SHHEKoK5XetGg5fvT3ykBrp9YsNSjv1uBVXIP5U8Fn4dewSU
-         GUmsSAOmw+pfQkx/WQRy84FWL04illYpt+mlbTfuRmg7w3CFkjRyyPhWhGvcfbwNRz
-         QfloFmQ5aNH89IH2s8SFAVs2MvLsRPKRucibxhg+RzLSKkbvi/VVfCCzfjnMZrYig7
-         qrVNa2ZZH++vuncyfY0SHksKSXem1PZbxAJazvZ3W0afcjDjXpsNMHx+mViD+IVkxS
-         sQruLNuQuyKxQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B47D160BCF;
-        Wed, 26 May 2021 20:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1622062148;
+        bh=ejFNmjSi9ibYACMAzim4cZPpwocEEDkRp46nEKBos9M=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=YINTXAjU/mmdIfkzoy+KOH8EC0vB1pYbQ6MNTIJZP73CJOyEjZciVcsPbZ/U7hi9a
+         TN284dLhFq0EdUkWW5AjJa8pskS/ADRLXqL5upvQbVB6H050+L2yccJwhmI4RCd7yP
+         LFgbrMKY8YLMH3ejfp6aseKajcMxWkDbVgvliXekjWfuMUgABZIiPDhwiMt0Uf5n7e
+         GOdNvfn2aeLn7zfaHc5/GN7PFcqLaSm5adkyHQLsKfq78KBhovB6G3pQ6gAsQiIBQS
+         RElqdpbpLlbCioPVku+DpeB6n+uY4FHs0L1e+TjHckeIs9LlGt6V1z0IhACshH2aEZ
+         x2eq8Xv8RqWdw==
+Received: by mail-ej1-f43.google.com with SMTP id lg14so4554494ejb.9;
+        Wed, 26 May 2021 13:49:08 -0700 (PDT)
+X-Gm-Message-State: AOAM533El6ikzfb95WGtW0BvpH71mW7IsvXNzT+fb4bCDPWk/sR8dj7V
+        L6CzJpr6TdNz3hxZnnE/ONZ85z6cQxC8aFXFTA==
+X-Google-Smtp-Source: ABdhPJyVW5S9lIV0HGy+AT6y9ZzoBvbFJyJOKAzPU5/iGZr61pJqhizywvEM2Yn9hO/iBlG12ZAA+GOP608uDZTocsY=
+X-Received: by 2002:a17:907:724b:: with SMTP id ds11mr201691ejc.108.1622062147010;
+ Wed, 26 May 2021 13:49:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: phy: Document phydev::dev_flags bits allocation
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162206101073.6955.4244083455923658120.git-patchwork-notify@kernel.org>
-Date:   Wed, 26 May 2021 20:30:10 +0000
-References: <20210526184617.3105012-1-f.fainelli@gmail.com>
-In-Reply-To: <20210526184617.3105012-1-f.fainelli@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, olteanv@gmail.com, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        linux-kernel@vger.kernel.org
+References: <20210526181411.2888516-1-robh@kernel.org> <YK6YljEYXprM/8iD@lunn.ch>
+In-Reply-To: <YK6YljEYXprM/8iD@lunn.ch>
+From:   Rob Herring <robh@kernel.org>
+Date:   Wed, 26 May 2021 15:48:54 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKGZaCF-g6sAkpGoyFXSTd_Yue4_3=iFGamoOTdQ2=W_g@mail.gmail.com>
+Message-ID: <CAL_JsqKGZaCF-g6sAkpGoyFXSTd_Yue4_3=iFGamoOTdQ2=W_g@mail.gmail.com>
+Subject: Re: [PATCH v2] dt-bindings: net: Convert MDIO mux bindings to DT schema
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     devicetree@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        netdev <netdev@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, May 26, 2021 at 1:51 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Wed, May 26, 2021 at 01:14:11PM -0500, Rob Herring wrote:
+> > Convert the common MDIO mux bindings to DT schema.
+> >
+> > Drop the example from mdio-mux.yaml as mdio-mux-gpio.yaml has the same one.
+> >
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Ray Jui <rjui@broadcom.com>
+> > Cc: Scott Branden <sbranden@broadcom.com>
+> > Cc: bcm-kernel-feedback-list@broadcom.com
+> > Cc: Andrew Lunn <andrew@lunn.ch>
+> > Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> > Cc: Russell King <linux@armlinux.org.uk>
+> > Cc: netdev@vger.kernel.org
+> > Cc: linux-arm-kernel@lists.infradead.org
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+>
+> > +        mdio@2 {  // Slot 2 XAUI (FM1)
+> > +            reg = <2>;
+> > +            #address-cells = <1>;
+> > +            #size-cells = <0>;
+> > +
+> > +            ethernet-phy@4 {
+> > +                compatible = "ethernet-phy-ieee802.3-c45";
+> > +                reg = <0>;
+>
+> reg should really be 4 here. The same error existed in the .txt
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Will fixup.
 
-On Wed, 26 May 2021 11:46:17 -0700 you wrote:
-> Document the phydev::dev_flags bit allocation to allow bits 15:0 to
-> define PHY driver specific behavior, bits 23:16 to be reserved for now,
-> and bits 31:24 to hold generic PHY driver flags.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  include/linux/phy.h | 5 +++++
->  1 file changed, 5 insertions(+)
+> version. I guess the examples are never actually verified using the
+> yaml?
 
-Here is the summary with links:
-  - [net] net: phy: Document phydev::dev_flags bits allocation
-    https://git.kernel.org/netdev/net/c/62f3415db237
+They are verified in general, but for this specific check it is dtc
+that does it and only for bus types that it knows about. MDIO isn't
+one of them.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Rob
