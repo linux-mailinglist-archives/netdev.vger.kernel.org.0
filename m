@@ -2,233 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60CBB391D72
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 19:00:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C1FF391D76
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 19:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233771AbhEZRCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 13:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231223AbhEZRCS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 13:02:18 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14B4C061574;
-        Wed, 26 May 2021 10:00:46 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id w1so3034756ybt.1;
-        Wed, 26 May 2021 10:00:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vU8HCfAU1zDQh9haIdDJWaUxp2b1UKacwZtI5/JtTMM=;
-        b=iCe5zZlLY8TNdnL+i1nIqT5nrnLM+EdrYzgfjkeSLD4MaH9wp3UkW5VMkzCLpYiMFf
-         ZlS2518KTOTGWkBnCIb9Nfa4JwLMnRYMGDePJOTMf2yl8NrgJgMCOkF3Mhf/4IgRuMjx
-         EMToDKgACE6PR9bjIPP7bDkJzQfeKmiVa+hfjf2DUTNc9WvEVnVGwN8k/ro4+AoC9HhM
-         uKjhcZR8Yn5zz3007JHvDQRcEGyARp0DryLWd+IveBEv/Rhii+zsaVfpk+uiUrh/GW6h
-         YqPnnzZ6epiGm89MuwRn/qri4zPM7YICrkf1OUMv/kZH2AyeFLkiNwhs013FOZWKd3VS
-         gmvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vU8HCfAU1zDQh9haIdDJWaUxp2b1UKacwZtI5/JtTMM=;
-        b=H/fzWAyQ+wsMuz0AOST7Lb91igqyPC18nA4sxGWG7DthZXly4kplIPlcoW1QoP+Dyg
-         SvDOwXMLNr68skWNDV26sOaMXEufuIl3D6jmN3l+u1vmmrb1w7IHsbVxswWED5XqZBhI
-         Y+rxKfw7euoVpDf5K7CDaT+3WJKSgbXi+yJKa23a5t4xeyyuumFvx2MdYPW1zZoXm8ZD
-         RPVJhhn+/UYGL3u2Aehaa1QgJrkGD6Wrx7B32MHWvEMELG5wFGLOND1ILJqnRb+KsnBf
-         v+o6GYD06/xpwUJT2BWs3QZhUNg/k8L6ubQGS6jYc25c9sk8nPiOoxFxDthyWTne3uZU
-         qbKw==
-X-Gm-Message-State: AOAM531MCvejNQBPrjAJbS/dgRiHd7FpasBoE3mvFe+s5+uD6Lqb8lB2
-        jvtmSvbRLgrH9UeIIHJ0G4Y1RmCYap3or9aGBWI=
-X-Google-Smtp-Source: ABdhPJzaq80hq8KVk4ila3PFehhtYyhoVLRMKxhed0Ikxq5o3hfhPIwuLf2lzasTbzinbs0o6hFZsvxfCLvJ38336FU=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr49776676ybg.459.1622048445748;
- Wed, 26 May 2021 10:00:45 -0700 (PDT)
+        id S233824AbhEZRDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 13:03:11 -0400
+Received: from mail-dm3nam07on2045.outbound.protection.outlook.com ([40.107.95.45]:31407
+        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233676AbhEZRDK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 13:03:10 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oelGHGqR88MCPubB4/6QzQ+9rLEBa7l8Si2y2p8wWMGRRfeQFrBXorMCQG/3WWI2v4I16NsDHcZTCXrVd0KFSJlcNCXM9ufJwtWQWtEpbitRJksHY3gaTcLAo45CLcVV0pnKi7is2VClWEpsAQgk25swwq9pTHQD7iJ7KF+s3XfEuVYY1mWvtrAG9RiIbpk+3a89PaQPqPEQ+Oy7YreavV0aCdyYyKXVQikofdPUekoemyG9fQYzBbuTZxLs48IR9StAN6NzVAo9BSV+ABhCejluhrJ0FNNdV5bNb0u5jkhs9Grv1nWqKVQDpT3wb8rfDwnEBWRIQvwVp/cFnfWwHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=U6YWkcz5ETQZOYZqI6yR8dGwyMqKBJZs/WOmjsHyOio=;
+ b=b7C2s7JPONNgO7KtmwhVja7PXVay/JWO2ABYrozMgakzMKaOa++utzYRuGCLLzyu68UKmjpE5vVSk636B8GCOoh1P3eDWFSvnMx5cIgGvk+uJsI2+yb+HXWwbOnbtp+KSqWA2Z6sHBW6qTHFsSeluatoE/QcPcp0l517ct9Z/4WLc/08aJgFNxMr+bMQGIksnOQUQS/mMz8bJv0ES7i+dfJY45idcR6Vqnpsgd7iY5UT6eKUprkPtEIsufT3vh4sgNgzashh6I+pD+lKaNUjXGxaW2/zogNFoXZQ2k0vcleihwAkmwugayBes1Lr02mbX+Z3jvTN0V2Q12MIhcYKGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.32) smtp.rcpttodomain=resnulli.us smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=U6YWkcz5ETQZOYZqI6yR8dGwyMqKBJZs/WOmjsHyOio=;
+ b=o3biiz2+BiftHIhpD4QGgb5H89146s8Scu87f4G4LEHA1iyOZ3UUkGmlE8Usy0g9ZHQPyXS8LSdqnQU5NN4IFcQPH6Aj6A3fqXJvqYYiosqnmPhczCb5qRPTvP3fR4om7O7R3JOF13yxsenCjpjd7uHxKjn9cSWD40kgAZEBOLmQ5w9ORe1d0bqNclDEAfkd7OuTnz3oi/Pf1XRWjF1iAMB97ZXAJAYFBtVOFv4SCGE3RpMGqH2Y3eSAw33P89dDYHO1DAPZgIOcdcLw88DMOjGTL1eCqbvLmXm5UUygtnMs2ovFYMsc9JBYq1j2hQVu1SdG82M87x3HbgD607sxSg==
+Received: from BN9PR03CA0061.namprd03.prod.outlook.com (2603:10b6:408:fc::6)
+ by PH0PR12MB5402.namprd12.prod.outlook.com (2603:10b6:510:ef::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Wed, 26 May
+ 2021 17:01:37 +0000
+Received: from BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:fc:cafe::4d) by BN9PR03CA0061.outlook.office365.com
+ (2603:10b6:408:fc::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21 via Frontend
+ Transport; Wed, 26 May 2021 17:01:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
+ smtp.mailfrom=nvidia.com; resnulli.us; dkim=none (message not signed)
+ header.d=none;resnulli.us; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.32; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.32) by
+ BN8NAM11FT059.mail.protection.outlook.com (10.13.177.120) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 17:01:36 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
+ 2021 10:01:35 -0700
+Received: from gen-l-vrt-029.mtl.labs.mlnx (172.20.145.6) by mail.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 26 May 2021 17:01:34 +0000
+From:   Ariel Levkovich <lariel@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     <marcelo.leitner@gmail.com>, <paulb@nvidia.com>,
+        <jiri@resnulli.us>, "Ariel Levkovich" <lariel@nvidia.com>
+Subject: [PATCH net] net/sched: act_ct: Fix ct template allocation for zone 0
+Date:   Wed, 26 May 2021 20:01:10 +0300
+Message-ID: <20210526170110.54864-1-lariel@nvidia.com>
+X-Mailer: git-send-email 2.25.2
 MIME-Version: 1.0
-References: <20210526080741.GW30378@techsingularity.net> <20210526083342.GY8544@kitsune.suse.cz>
-In-Reply-To: <20210526083342.GY8544@kitsune.suse.cz>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 26 May 2021 10:00:34 -0700
-Message-ID: <CAEf4BzZBW5bNF61p3+n7akUs1qztNJ4FwY4yAYRdjmP4ShFQKQ@mail.gmail.com>
-Subject: Re: (BTF) [PATCH] mm/page_alloc: Work around a pahole limitation with
- zero-sized struct pagesets
-To:     =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>
-Cc:     Mel Gorman <mgorman@techsingularity.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Hritik Vijay <hritikxx8@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d06ca670-d8a3-4ae4-bad8-08d92067ec48
+X-MS-TrafficTypeDiagnostic: PH0PR12MB5402:
+X-Microsoft-Antispam-PRVS: <PH0PR12MB54024E642FBDD75377E6ED3FB7249@PH0PR12MB5402.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1388;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: R6VtpjqJGI0kE94bcLxlX4WqEQ/QfjjYeXs5fZ3QgyC+92C1m9Q5LvjrNw6uuPmmVFJu2eEGdtQ6cUXlLD4Ef3Ti3h0af4zMFRy+eM2z5BZv4bABtC7NL1NfkO4/Rb2+vmLOyKX11fifS7lsRGiHKjGSQTqyUeQFLP6GU/AnC7Wqqow+42OtMm9+sIEube09U4sQawVi0oMXDOIj3GwXpGoLTKCuwYEhwukg28NH7VRy1gBeyOFV/0JyWlkpug9rzRXAgj49AXetkv20nLtuwduw0Conj4SYfFt6xfGQMJC2zpk4otmWOKn1SWzgwQjdyx3ninJLyPujbXbdeEwInnN+Dgk66pQuBUCpt/JQhf9yx2HyONMmw2FRNvZxm3qEOwXOvbDC0XxdTuk1tq4Sc1EvgtB/o9sqLIIUpZ7NxJ645b2FM4M7c5uvbeBFrPWY4/uQVQe4GyDykJR2RbX4C6KNp8l43NboXXCmZ2pbFTnEk0Z8xSrNuiMbTmwRPQLBUmrIm3RMHNx6C6BW8x4uH9u2uu6X4gS6zoQhnYdHrLLkL3zXbvhCwKRF+7PopcQU1N+vmUTP/0lQpU59GrAfsSa5dsNQ1jtihBrGHTuDhFwDIfHmvLM+4tK6G2l2PyOQ5Y7P4c3gRrFQ3tT7dBvY947DvaCkMwxTSAFeucASUus=
+X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(136003)(376002)(396003)(346002)(36840700001)(46966006)(82740400003)(7636003)(356005)(83380400001)(86362001)(54906003)(1076003)(82310400003)(2906002)(36756003)(47076005)(6916009)(8676002)(36860700001)(2616005)(8936002)(4326008)(316002)(478600001)(70586007)(426003)(336012)(107886003)(6666004)(70206006)(5660300002)(186003)(26005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 17:01:36.5756
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d06ca670-d8a3-4ae4-bad8-08d92067ec48
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5402
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 1:33 AM Michal Such=C3=A1nek <msuchanek@suse.de> wr=
-ote:
->
-> On Wed, May 26, 2021 at 09:07:41AM +0100, Mel Gorman wrote:
-> > Michal Suchanek reported the following problem with linux-next
-> >
-> >   [    0.000000] Linux version 5.13.0-rc2-next-20210519-1.g3455ff8-vani=
-lla (geeko@buildhost) (gcc (SUSE Linux) 10.3.0, GNU ld (GNU Binutils; openS=
-USE Tumbleweed) 2.36.1.20210326-3) #1 SMP Wed May 19 10:05:10 UTC 2021 (345=
-5ff8)
-> >   [    0.000000] Command line: BOOT_IMAGE=3D/boot/vmlinuz-5.13.0-rc2-ne=
-xt-20210519-1.g3455ff8-vanilla root=3DUUID=3Dec42c33e-a2c2-4c61-afcc-93e952=
-7 8f687 plymouth.enable=3D0 resume=3D/dev/disk/by-uuid/f1fe4560-a801-4faf-a=
-638-834c407027c7 mitigations=3Dauto earlyprintk initcall_debug nomodeset ea=
-rlycon ignore_loglevel console=3DttyS0,115200
-> > ...
-> >   [   26.093364] calling  tracing_set_default_clock+0x0/0x62 @ 1
-> >   [   26.098937] initcall tracing_set_default_clock+0x0/0x62 returned 0=
- after 0 usecs
-> >   [   26.106330] calling  acpi_gpio_handle_deferred_request_irqs+0x0/0x=
-7c @ 1
-> >   [   26.113033] initcall acpi_gpio_handle_deferred_request_irqs+0x0/0x=
-7c returned 0 after 3 usecs
-> >   [   26.121559] calling  clk_disable_unused+0x0/0x102 @ 1
-> >   [   26.126620] initcall clk_disable_unused+0x0/0x102 returned 0 after=
- 0 usecs
-> >   [   26.133491] calling  regulator_init_complete+0x0/0x25 @ 1
-> >   [   26.138890] initcall regulator_init_complete+0x0/0x25 returned 0 a=
-fter 0 usecs
-> >   [   26.147816] Freeing unused decrypted memory: 2036K
-> >   [   26.153682] Freeing unused kernel image (initmem) memory: 2308K
-> >   [   26.165776] Write protecting the kernel read-only data: 26624k
-> >   [   26.173067] Freeing unused kernel image (text/rodata gap) memory: =
-2036K
-> >   [   26.180416] Freeing unused kernel image (rodata/data gap) memory: =
-1184K
-> >   [   26.187031] Run /init as init process
-> >   [   26.190693]   with arguments:
-> >   [   26.193661]     /init
-> >   [   26.195933]   with environment:
-> >   [   26.199079]     HOME=3D/
-> >   [   26.201444]     TERM=3Dlinux
-> >   [   26.204152]     BOOT_IMAGE=3D/boot/vmlinuz-5.13.0-rc2-next-2021051=
-9-1.g3455ff8-vanilla
-> >   [   26.254154] BPF:      type_id=3D35503 offset=3D178440 size=3D4
-> >   [   26.259125] BPF:
-> >   [   26.261054] BPF:Invalid offset
-> >   [   26.264119] BPF:
-> >   [   26.264119]
-> >   [   26.267437] failed to validate module [efivarfs] BTF: -22
-> >
-> > Andrii Nakryiko bisected the problem to the commit "mm/page_alloc: conv=
-ert
-> > per-cpu list protection to local_lock" currently staged in mmotm. In hi=
-s
-> > own words
-> >
-> >   The immediate problem is two different definitions of numa_node per-c=
-pu
-> >   variable. They both are at the same offset within .data..percpu ELF
-> >   section, they both have the same name, but one of them is marked as
-> >   static and another as global. And one is int variable, while another
-> >   is struct pagesets. I'll look some more tomorrow, but adding Jiri and
-> >   Arnaldo for visibility.
-> >
-> >   [110907] DATASEC '.data..percpu' size=3D178904 vlen=3D303
-> >   ...
-> >         type_id=3D27753 offset=3D163976 size=3D4 (VAR 'numa_node')
-> >         type_id=3D27754 offset=3D163976 size=3D4 (VAR 'numa_node')
-> >
-> >   [27753] VAR 'numa_node' type_id=3D27556, linkage=3Dstatic
-> >   [27754] VAR 'numa_node' type_id=3D20, linkage=3Dglobal
-> >
-> >   [20] INT 'int' size=3D4 bits_offset=3D0 nr_bits=3D32 encoding=3DSIGNE=
-D
-> >
-> >   [27556] STRUCT 'pagesets' size=3D0 vlen=3D1
-> >         'lock' type_id=3D507 bits_offset=3D0
-> >
-> >   [506] STRUCT '(anon)' size=3D0 vlen=3D0
-> >   [507] TYPEDEF 'local_lock_t' type_id=3D506
-> >
-> > The patch in question introduces a zero-sized per-cpu struct and while
-> > this is not wrong, versions of pahole prior to 1.22 (unreleased) get
-> > confused during BTF generation with two separate variables occupying th=
-e
-> > same address.
-> >
-> > This patch checks for older versions of pahole and forces struct pagese=
-ts
-> > to be non-zero sized as a workaround when CONFIG_DEBUG_INFO_BTF is set.=
- A
-> > warning is omitted so that distributions can update pahole when 1.22
-> > is released.
-> >
-> > Reported-by: Michal Suchanek <msuchanek@suse.de>
-> > Reported-by: Hritik Vijay <hritikxx8@gmail.com>
-> > Debugged-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> > Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-> > ---
-> >  lib/Kconfig.debug |  3 +++
-> >  mm/page_alloc.c   | 11 +++++++++++
-> >  2 files changed, 14 insertions(+)
-> >
-> > diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> > index 678c13967580..f88a155b80a9 100644
-> > --- a/lib/Kconfig.debug
-> > +++ b/lib/Kconfig.debug
-> > @@ -313,6 +313,9 @@ config DEBUG_INFO_BTF
-> >  config PAHOLE_HAS_SPLIT_BTF
-> >       def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]=
-+)\.([0-9]+)/\1\2/'` -ge "119")
-> >
-> > +config PAHOLE_HAS_ZEROSIZE_PERCPU_SUPPORT
-> > +     def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]=
-+)\.([0-9]+)/\1\2/'` -ge "122")
-> > +
->
-> This does not seem workable with dummy-tools.
->
-> Do we even have dummy pahole?
->
+Fix current behavior of skipping template allocation in case the
+ct action is in zone 0.
 
-I don't know what dummy-tools is, so probably no. But if you don't
-have pahole on the build host, you can't have DEBUG_INFO_BTF=3Dy
-anyways. As in, your build will fail because it will be impossible to
-generate BTF information. So you'll have to disable DEBUG_INFO_BTF if
-you can't get pahole onto your build host for some reason.
+Skipping the allocation may cause the datapath ct code to ignore the
+entire ct action with all its attributes (commit, nat) in case the ct
+action in zone 0 was preceded by a ct clear action.
 
-> Thanks
->
-> Michal
->
-> >  config DEBUG_INFO_BTF_MODULES
-> >       def_bool y
-> >       depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF
-> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> > index ff8f706839ea..1d56d3de8e08 100644
-> > --- a/mm/page_alloc.c
-> > +++ b/mm/page_alloc.c
-> > @@ -124,6 +124,17 @@ static DEFINE_MUTEX(pcp_batch_high_lock);
-> >
-> >  struct pagesets {
-> >       local_lock_t lock;
-> > +#if defined(CONFIG_DEBUG_INFO_BTF) &&                        \
-> > +    !defined(CONFIG_DEBUG_LOCK_ALLOC) &&             \
-> > +    !defined(CONFIG_PAHOLE_HAS_ZEROSIZE_PERCPU_SUPPORT)
-> > +     /*
-> > +      * pahole 1.21 and earlier gets confused by zero-sized per-CPU
-> > +      * variables and produces invalid BTF. Ensure that
-> > +      * sizeof(struct pagesets) !=3D 0 for older versions of pahole.
-> > +      */
-> > +     char __pahole_hack;
-> > +     #warning "pahole too old to support zero-sized struct pagesets"
-> > +#endif
-> >  };
-> >  static DEFINE_PER_CPU(struct pagesets, pagesets) =3D {
-> >       .lock =3D INIT_LOCAL_LOCK(lock),
+The ct clear action sets the ct_state to untracked and resets the
+skb->_nfct pointer. Under these conditions and without an allocated
+ct template, the skb->_nfct pointer will remain NULL which will
+cause the tc ct action handler to exit without handling commit and nat
+actions, if such exist.
+
+For example, the following rule in OVS dp:
+recirc_id(0x2),ct_state(+new-est-rel-rpl+trk),ct_label(0/0x1), \
+in_port(eth0),actions:ct_clear,ct(commit,nat(src=10.11.0.12)), \
+recirc(0x37a)
+
+Will result in act_ct skipping the commit and nat actions in zone 0.
+
+The change removes the skipping of template allocation for zone 0 and
+treats it the same as any other zone.
+
+Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
+Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
+---
+ net/sched/act_ct.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index ec7a1c438df9..dfdfb677e6a9 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -1202,9 +1202,6 @@ static int tcf_ct_fill_params(struct net *net,
+ 				   sizeof(p->zone));
+ 	}
+ 
+-	if (p->zone == NF_CT_DEFAULT_ZONE_ID)
+-		return 0;
+-
+ 	nf_ct_zone_init(&zone, p->zone, NF_CT_DEFAULT_ZONE_DIR, 0);
+ 	tmpl = nf_ct_tmpl_alloc(net, &zone, GFP_KERNEL);
+ 	if (!tmpl) {
+-- 
+2.25.2
+
