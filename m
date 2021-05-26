@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01EA7391700
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:03:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C98AA391703
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:03:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233349AbhEZMEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 08:04:33 -0400
-Received: from mail-mw2nam12on2083.outbound.protection.outlook.com ([40.107.244.83]:51777
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        id S234696AbhEZMEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 08:04:47 -0400
+Received: from mail-mw2nam10on2069.outbound.protection.outlook.com ([40.107.94.69]:62208
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234152AbhEZMDg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 08:03:36 -0400
+        id S234692AbhEZMDr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 08:03:47 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZcWwx8R1ml8gaPIsiYMPviieG5zP8R7WrTfaDdpA4ibQqfmljcm/EXvvRjoBeFPwvW4u/lCx5fq2AlJWcMYz3t3XLALkS4IitLBWxIrKtLrBpQMkDRaeN8lwP0Kfk6bfmdUEEoKLSFFc0UKP1nMmAeHuiiXBrR7nzTRGUk2BwYMCwZZSsqnPEU9PgYzSD5Ab4B4gFuPlWr44iWtYTnlZCf8/eXHOLZV+G0wGy3UWAZq42RhOflEMLj9/YxhXU1o9j1xndcvgsx9i7NMozRMeRZQ6VXDmBh3137Th3T9Nf+ZKNG5D5LVG83Gk5oHhtvmXR3J7lMwrUO4AVFhJe01ErQ==
+ b=mICKzpCIWkMciHcahnUzp5R+jEtmNItUCQFv3sQrHhTA27yWaAtfeDNmIHr8Nn9eQ71t2BzWf6aFL2mx5hGME5gkufOTN7T1k/D2A9fbHAMhA4X09i41iidZd3htgkFH0pDPDEMocJz0SBCYIH/AO9E6TK+sC2VZt43XMjv2wNsGfU31a+iGYAZokme6JbI6OB9tF82DoEGigmdkYnPisvzV0ZkjdVLJl2egnourCiLvgAMh8TYm3eTa5cSXjKy2wHBP7o/sc8vfS2+DJKlc/EOjC317lCvwvWaSWc3S5eno4wbnCz/Ls1J96IiXm9BTBAKzRhqGT8jizf1bTohoVQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A2LzdaZnx3savQDZ5ujq1YZvvNiCMxv3ZqPMRzXpoCs=;
- b=CPpapTX3L8cC107Ilue69/40+4de5DqFBtgCR1thQhRZV1xcE0hn7oYjBew+5BuKJkaJ/9g7jl2hCQQ2mqVb/2syQkvq+yOFYxL9A8u0RD3KPf+munNhRJbKpRdFb62ttLZKlcTWnBPtOyQVUZLY1IAi7YR2N9MV6GDvgkJFwhU9IOAev2Nsxd0IyGyM+J6M2j8aCPxgCBqyZzUVVdxUj38Utx7pqXGPlUmPaO5LHwmAggeV9PzMwJRPt/eeh54mE2pp5mqtNeJGkJbHKSDkENkdPQt78TCAdbR7Ul5l2PanWvxgJ8YX5hvZAx7NSXRPEM1jqTJiOZQz+Kk/3/xkDQ==
+ bh=tBPq8br7bzVSLj7j04iZjzzzb1UwrpqmKDdAubcS680=;
+ b=lqxIljcUtGQdybRy4CvilWn6fvkBdXGlqSPtwBNBxRkUvpjnDxHBe/boFSjlcgZ8q7uph9srzOOIv7g+5sSRqzcvp1yonAVL4kmcXDr1IqvBLLHS1RmaS5VW8+xaZSHTtK3DbhkKeV993xjcC5jDNX76bIKv1TY+3LJ0KP/s8hxqIl5gMBHzfhkWhtYmhAay80mvqzT4eHSet3mxmIFrKNGT8bMjoegSlHv/Q2i30JF2No5pgUdG4hRkbomLcsyTllLzfDNGHVNw0c7qYTp21JpAXzBPbI0OJhk55Xj3uGVtwwoyuM19Am1rFRlcWQYnOE+7RIag2mdiPIl4HfxveA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=networkplumber.org
+ 216.228.112.34) smtp.rcpttodomain=networkplumber.org
  smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
  header.from=nvidia.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A2LzdaZnx3savQDZ5ujq1YZvvNiCMxv3ZqPMRzXpoCs=;
- b=pnDracNj1vgA7yua33jSHNJGo6kpceGqA9ZsNCv0Gt1FPp8lrSmqpmRdsfYroPmdXxB16rfabAK1HHTDZAgi2b4Bkv89zPD2hldQos/EBInGTe+mIYGwGssHg8YZuQ2/KTDt68bB2PfQjcZNhoqtYMinOnDKj/JnpYQYM99ylZRr503LcLV79aIxFIIJV4R0jtawK792MSg7bM31lPKQKCEkf/mXFflJ2vwQAflg8p27y9obEjpHLwNzq5ih+VuCIFU/1OWPGRpWDGAU6Z61WeDE00vmbw65KjUxpfLrHpFBkQLOon25RzefA5ek9iLWEB2dJuNwCZ6m2pNfwZxbzA==
-Received: from DS7PR05CA0008.namprd05.prod.outlook.com (2603:10b6:5:3b9::13)
- by CY4PR12MB1190.namprd12.prod.outlook.com (2603:10b6:903:39::9) with
+ bh=tBPq8br7bzVSLj7j04iZjzzzb1UwrpqmKDdAubcS680=;
+ b=t5VcREDvkdBLbDg0LHuGwdlKDBn6FCAxcsk9RAIcaGO3EHQuLOp1rxPEJqowioK9YMJ2TrH8w1dfgWulEqWnVnLM+ys5lEXbfEKf45V6Tkt6qe/VcJxdHBwlIXnhF5+iPXf45HSwq0UpS3GcFce/I3qcJ8a/fztkd0hUaMPFJbbuffrmX1MIY/RL/p3Y3eXQUJLuDfwb7PF66bWG5YWHRVaJ+X93o76z6cIUH65yAfPsKZE2bM7Zoa28qPEboy96wFfd6ffzNXdONQwQNe6qa/RrdO9kvtjw9EBU7g5n8+OpEcH49qdsG8l8RtQj28LS3uyHek+QSY0ngpEIrQSuTA==
+Received: from DM6PR13CA0066.namprd13.prod.outlook.com (2603:10b6:5:134::43)
+ by CH0PR12MB5314.namprd12.prod.outlook.com (2603:10b6:610:d5::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.27; Wed, 26 May
- 2021 12:02:04 +0000
-Received: from DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b9:cafe::7b) by DS7PR05CA0008.outlook.office365.com
- (2603:10b6:5:3b9::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.12 via Frontend
- Transport; Wed, 26 May 2021 12:02:04 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Wed, 26 May
+ 2021 12:02:14 +0000
+Received: from DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:134:cafe::73) by DM6PR13CA0066.outlook.office365.com
+ (2603:10b6:5:134::43) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.9 via Frontend
+ Transport; Wed, 26 May 2021 12:02:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
  header.d=none;networkplumber.org; dmarc=pass action=none
  header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- DM6NAM11FT047.mail.protection.outlook.com (10.13.172.139) with Microsoft SMTP
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT048.mail.protection.outlook.com (10.13.173.114) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 12:02:04 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
- 2021 12:02:03 +0000
+ 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 12:02:14 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
+ 2021 12:02:06 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 26 May 2021 12:02:01 +0000
+ Transport; Wed, 26 May 2021 12:02:03 +0000
 From:   <dlinkin@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>,
         <stephen@networkplumber.org>, <dsahern@gmail.com>,
         <vladbu@nvidia.com>, <parav@nvidia.com>, <huyn@nvidia.com>,
         Dmytro Linkin <dlinkin@nvidia.com>
-Subject: [PATCH RFC net-next v3 17/18] selftest: netdevsim: Add devlink rate grouping test
-Date:   Wed, 26 May 2021 15:01:09 +0300
-Message-ID: <1622030470-21434-18-git-send-email-dlinkin@nvidia.com>
+Subject: [PATCH RFC net-next v3 18/18] Documentation: devlink rate objects
+Date:   Wed, 26 May 2021 15:01:10 +0300
+Message-ID: <1622030470-21434-19-git-send-email-dlinkin@nvidia.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1622030470-21434-1-git-send-email-dlinkin@nvidia.com>
 References: <1622030470-21434-1-git-send-email-dlinkin@nvidia.com>
@@ -71,100 +71,122 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 409888eb-1af7-4b9a-64eb-08d9203e13e4
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1190:
-X-Microsoft-Antispam-PRVS: <CY4PR12MB119097227F7865F13708BA88CB249@CY4PR12MB1190.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1013;
+X-MS-Office365-Filtering-Correlation-Id: 1636a64e-0e5b-4de6-329a-08d9203e19da
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5314:
+X-Microsoft-Antispam-PRVS: <CH0PR12MB5314F05543796EA11BD86A41CB249@CH0PR12MB5314.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HQt5/wXW6nAhVKF0NyVCa85n6NL8mNoHnDW/igjqYpq092Y+xBacTDMbD74nbtB0cwPUU5RxDyrstOq/lU38SLymmFUWgplNrpTZ7MpbY52PMdLNSpQVMYZCgUnKobRKxBvGyqiy0XxPQzQIWxk+W6v4SXb9CYy4ECqxzRFovJ08vP16kxlspAxyZ1TpOgxvX3NE7SK3VIWSYCoBw+EW0MkrXm46MInx/PEQlD7L/VJ+5AtToCMwahwXHPGnZfKscBJIW/lWrJvqEeF3Z7zL0rCXOlg3uuPIbW+KK4EFrVRYgXqIQqOh9c2Od0JY86nm7C82f8nOioggEKBuUgIay/iEZEpl1ovoc9tFeAYgYWuQCSsvLDU63w8OK0q8mzTZMbHZ6DWTjAT/60PdX79vD/6YtRjknAwoYV2fhMr1V19YwZ1j6eUl5dtWiOfjalaN4hugsHpdrpOUVjfAFeDIAKVUs6XftO0Ui/1hvBuxe9cQFbLbxT7f5ajdNnvUHi0rs27zBXPckiMosvUR0dxv4P+7AhqvQTnkUqsmXQmljSiSm9tuttvWLYVe16K3TSwCD14RCr4JQ/1qtUmRL5evma2zPRlUdZJSdQ3DiIzOLOoUT6Rk5SZVlPVB0VZaPrS7elczwSS+ZfSpSb6LHahRkQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid04.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(346002)(396003)(376002)(136003)(46966006)(36840700001)(5660300002)(8936002)(54906003)(82310400003)(478600001)(4326008)(26005)(2616005)(2876002)(2906002)(6916009)(426003)(36906005)(107886003)(86362001)(336012)(316002)(36756003)(47076005)(83380400001)(7696005)(186003)(70586007)(70206006)(36860700001)(8676002)(356005)(82740400003)(7636003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: s7XCcEDwT0kcJ5TvqeBSvf4dYaMLhsX/obstSXThXNvA3ColmcYXGnOKO3rCWph2L+EfhS9yuIdz6iTrykXsvJZZa7ncJCJGFmiXaLDyoPg1buAQFCpy6Ogwnzm5bwGc9mnGyXuFClGAK3gMKVhRnWQfRHwxadMSklalNPjmeJbMZGCxeU8E92gOMo5VlVE+I3UpeXoWrCknWMMfVvVhSMrabwAku5wfOiB1LlRd9GKcUWcFEqJMVIMK/2te/LzOwL9B78MXFQoCZ7bKjoq6YpbaCHLxLq/diD3LHigZUEEZVNdizk0fMsCEL0WH04GYJc9jwBHX408EfkStba5E84iO13iIFRewLHKWYmIRBSWpSd83UqTo1u2e4HWNbMNEylzNMrhta6RlZ3LYsq8WpvjnCkZJBUc/ic7KB2FsXxsn3Kqyca+tspDT/tq9R0E17aGCmYPkMfzKv3RO2/xEIzK2CI78RYxbgzWU+J4um4cx4rWaiKo8dPPi7+yciAC431g6waeDEfa2rWuUG+drzRdZrbDPKGdRqLxb0zZYTo1+bs/xMVqS1uyEiWc7u+jgqxGNfmB6QT63H9YiurMllaJekW4QOOd/m9QwNIBFKyvgEosCNjGWvFVLxw+rtc3uadWEHEUx4AMPVfhdI3Co1s/Y3iCLBwwkX8LTecUEsvQ=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(376002)(396003)(136003)(346002)(36840700001)(46966006)(86362001)(82310400003)(6666004)(2876002)(107886003)(47076005)(36756003)(7636003)(83380400001)(356005)(6916009)(478600001)(26005)(8936002)(336012)(70206006)(186003)(36906005)(54906003)(316002)(2616005)(70586007)(5660300002)(8676002)(36860700001)(7696005)(426003)(2906002)(4326008)(82740400003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 12:02:04.2192
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 12:02:14.2267
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 409888eb-1af7-4b9a-64eb-08d9203e13e4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1636a64e-0e5b-4de6-329a-08d9203e19da
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1190
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5314
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmytro Linkin <dlinkin@nvidia.com>
 
-Test verifies that netdevsim correctly implements devlink ops callbacks
-that set node as a parent of devlink leaf or node rate object.
+Add devlink rate objects section at devlink port documentation.
+Add devlink rate support info at netdevsim devlink documentation.
 
-Co-developed-by: Vlad Buslov <vladbu@nvidia.com>
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../selftests/drivers/net/netdevsim/devlink.sh     | 42 ++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ Documentation/networking/devlink/devlink-port.rst | 35 +++++++++++++++++++++++
+ Documentation/networking/devlink/netdevsim.rst    | 26 +++++++++++++++++
+ 2 files changed, 61 insertions(+)
 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-index 301d920..9de1d12 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-@@ -563,6 +563,26 @@ rate_attr_tx_rate_check()
- 	check_err $? "Unexpected $name attr value $api_value != $rate"
- }
+diff --git a/Documentation/networking/devlink/devlink-port.rst b/Documentation/networking/devlink/devlink-port.rst
+index ab790e7..7627b1d 100644
+--- a/Documentation/networking/devlink/devlink-port.rst
++++ b/Documentation/networking/devlink/devlink-port.rst
+@@ -164,6 +164,41 @@ device to instantiate the subfunction device on particular PCI function.
+ A subfunction device is created on the :ref:`Documentation/driver-api/auxiliary_bus.rst <auxiliary_bus>`.
+ At this point a matching subfunction driver binds to the subfunction's auxiliary device.
  
-+rate_attr_parent_check()
-+{
-+	local handle=$1
-+	local parent=$2
-+	local debug_file=$3
++Rate object management
++======================
 +
-+	rate_attr_set $handle parent $parent
-+	check_err $? "Failed to set parent"
++Devlink provides API to manage tx rates of single devlink port or a group.
++This is done through rate objects, which can be one of the two types:
 +
-+	debug_value=$(cat $debug_file)
-+	check_err $? "Failed to get parent debugfs value"
-+	[ "$debug_value" == "$parent" ]
-+	check_err $? "Unexpected parent debug value $debug_value != $parent"
++``leaf``
++  Represents a single devlink port; created/destroyed by the driver. Since leaf
++  have 1to1 mapping to its devlink port, in user space it is referred as
++  ``pci/<bus_addr>/<port_index>``;
 +
-+	api_value=$(rate_attr_get $r_obj parent)
-+	check_err $? "Failed to get parent attr value"
-+	[ "$api_value" == "$parent" ]
-+	check_err $? "Unexpected parent attr value $api_value != $parent"
-+}
++``node``
++  Represents a group of rate objects (leafs and/or nodes); created/deleted by
++  request from the userspace; initially empty (no rate objects added). In
++  userspace it is referred as ``pci/<bus_addr>/<node_name>``, where
++  ``node_name`` can be any identifier, except decimal number, to avoid
++  collisions with leafs.
 +
- rate_node_add()
- {
- 	local handle=$1
-@@ -627,6 +647,28 @@ rate_test()
- 	[ $num_nodes == 0 ]
- 	check_err $? "Expected 0 rate node but got $num_nodes"
++API allows to configure following rate object's parameters:
++
++``tx_share``
++  Minimum TX rate value shared among all other rate objects, or rate objects
++  that parts of the parent group, if it is a part of the same group.
++
++``tx_max``
++  Maximum TX rate value.
++
++``parent``
++  Parent node name. Parent node rate limits are considered as additional limits
++  to all node children limits. ``tx_max`` is an upper limit for children.
++  ``tx_share`` is a total bandwidth distributed among children.
++
++Driver implementations are allowed to support both or either rate object types
++and setting methods of their parameters.
++
+ Terms and Definitions
+ =====================
  
-+	local node1_name='group1'
-+	local node1="$DL_HANDLE/$node1_name"
-+	rate_node_add "$node1"
-+	check_err $? "Failed to add node $node1"
+diff --git a/Documentation/networking/devlink/netdevsim.rst b/Documentation/networking/devlink/netdevsim.rst
+index 02c2d20..8a292fb 100644
+--- a/Documentation/networking/devlink/netdevsim.rst
++++ b/Documentation/networking/devlink/netdevsim.rst
+@@ -57,6 +57,32 @@ entries, FIB rule entries and nexthops that the driver will allow.
+     $ devlink resource set netdevsim/netdevsim0 path /nexthops size 16
+     $ devlink dev reload netdevsim/netdevsim0
+ 
++Rate objects
++============
 +
-+	rate_attr_parent_check $r_obj $node1_name \
-+		$DEBUGFS_DIR/ports/${r_obj##*/}/rate_parent
++The ``netdevsim`` driver supports rate objects management, which includes:
 +
-+	local node2_name='group2'
-+	local node2="$DL_HANDLE/$node2_name"
-+	rate_node_add "$node2"
-+	check_err $? "Failed to add node $node2"
++- registerging/unregistering leaf rate objects per VF devlink port;
++- creation/deletion node rate objects;
++- setting tx_share and tx_max rate values for any rate object type;
++- setting parent node for any rate object type.
 +
-+	rate_attr_parent_check $node2 $node1_name \
-+		$DEBUGFS_DIR/rate_nodes/$node2_name/rate_parent
-+	rate_node_del "$node2"
-+	check_err $? "Failed to delete node $node2"
-+	rate_attr_set "$r_obj" noparent
-+	check_err $? "Failed to unset $r_obj parent node"
-+	rate_node_del "$node1"
-+	check_err $? "Failed to delete node $node1"
++Rate nodes and it's parameters are exposed in ``netdevsim`` debugfs in RO mode.
++For example created rate node with name ``some_group``:
 +
- 	log_test "rate test"
- }
++.. code:: shell
++
++    $ ls /sys/kernel/debug/netdevsim/netdevsim0/rate_groups/some_group
++    rate_parent  tx_max  tx_share
++
++Same parameters are exposed for leaf objects in corresponding ports directories.
++For ex.:
++
++.. code:: shell
++
++    $ ls /sys/kernel/debug/netdevsim/netdevsim0/ports/1
++    dev  ethtool  rate_parent  tx_max  tx_share
++
+ Driver-specific Traps
+ =====================
  
 -- 
 1.8.3.1
