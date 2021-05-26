@@ -2,192 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D273392223
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 23:34:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D761392275
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 00:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233550AbhEZVgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 17:36:04 -0400
-Received: from gateway33.websitewelcome.com ([192.185.145.33]:19268 "EHLO
-        gateway33.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233477AbhEZVgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 17:36:03 -0400
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id 921F713CFB9
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 16:34:27 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id m1AYlZNd9AEP6m1AZl6Ft8; Wed, 26 May 2021 16:34:27 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=AVftKSHQScIRK8be+dU0JJK0i8MExIzulGIQ7Lt68hQ=; b=hXXj4RoQgzHnVE78yp975cleDa
-        HrxSn9+oN9PI8XKXdFnJ3DoO4tePmCGV/jcjaCOvVOYnbbnUhnBL+NUNpo3Q6QFGObmNDdfjexIK8
-        7LJtxOzqIlq1UlZgn/YVpbSf1gJYJTyy26aWjZNDDi4Mh9y1tAMy5FOSPlg4O57uGjfHJOZG/ifCc
-        STvK0PHs3PcUQDE2ZgL31kpHRveisbF6w0iq2ri1Jbr2/2VLqBpQJZiaa8QOpNWjrJNWxkJG9Fm98
-        8AFk+KailfXWtTWPyOg8G7fCp/OV/dMIH1qkxqIVKiNOsLFxUAuHRVb+WJC/b1ht4kWvKhc99ptca
-        FvGIcXwA==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:46830 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1lm1AT-003fxT-AA; Wed, 26 May 2021 16:34:21 -0500
-Subject: Re: [Intel-wired-lan] [PATCH][next] i40e: Replace one-element array
- with flexible-array member
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "Latif, Faisal" <faisal.latif@intel.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        id S234281AbhEZWDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 18:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233344AbhEZWDJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 18:03:09 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05457C061574;
+        Wed, 26 May 2021 15:01:36 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id c20so4837893ejm.3;
+        Wed, 26 May 2021 15:01:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Fd0E4dpZJC0IhjIKKgvDeaxi/o35axbNnti6ekz+C3g=;
+        b=ggjM5PVipqpMgL+/+0B8/jAS6xD9+Jo8+BXE5iS3VVKpEPHtIKB3S8h5uoSB8Mf3jk
+         YBgdazJa7xGt8LFm919m3TcKEq08uqCiETnT9kshQ3FrzYLO/sCw0jHBZZVuWC/wWuuW
+         Uat3xDB0XVoxZ/tWLnuRsFqblfYqNNsUXzmDXFhra7KxLEwAayB78YiOabvJwk21N7oz
+         v3B1365/fvO9gD+PQvrwUh2qdBNPLl1Sqk5+gS+TZ/iSSrhrPz1vYQMECbZx5nHc8ofS
+         KHbC2doHGMjpxTEOOWpJVC+fJWMY5OURw7zJEBG2cHlMKo3J3VhyEpkOvKu2vfgA53KH
+         pijg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Fd0E4dpZJC0IhjIKKgvDeaxi/o35axbNnti6ekz+C3g=;
+        b=UFIKn9b8Fy5ZSllxMSH+uYsqGUlgGqcCd38c0vhDfpnqukBMMSUw+lEN+GUEdaVemv
+         1d/4NIdyxDYY2gg9nZVV+JWjG9wzj9CtW8dcZP/kgtkqK+c8EAC4sUbRW+jE+i5rqZ3a
+         S9QgcJ8fBJkckEQD8NGl5hCurhF7f9jJNP+sBUrKXLLwQ9uUdQrVz5hFAyloWTWmmbRV
+         mTP1exPtm6k0usWmVhBHm+PkzhVAAXRHhybgZUFZ9SPRkSqV2CMiyywPTp+iFoACE02p
+         EIp/Qcw3IKbVZbW/+/pb2BmY99PmvzorTEDn0RNKbaNwHNnEZgYq27TgV1KAS7NNHPqQ
+         bvUw==
+X-Gm-Message-State: AOAM530O6y/7Dv/LYalaUQ9tLsxmgqAcBEyVocCvYNopJn7+PqST9vgB
+        JvPGFAFC9KP/pBGicmjGcaA=
+X-Google-Smtp-Source: ABdhPJzsymHXOL28OkabAVbsgzsYcnE8LKwP/mDsGZUGfc4uOpA+BNynyCF6EHP4zR9Gjgw+5MqdBw==
+X-Received: by 2002:a17:906:6009:: with SMTP id o9mr399705ejj.204.1622066494626;
+        Wed, 26 May 2021 15:01:34 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id s26sm70783eds.73.2021.05.26.15.01.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 May 2021 15:01:34 -0700 (PDT)
+Date:   Thu, 27 May 2021 01:01:32 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
-References: <20210525230038.GA175516@embeddedor>
- <bf46b428deef4e9e89b0ea1704b1f0e5@intel.com>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <79c3c00d-c364-9db1-b8de-7ed0686ca8dc@embeddedor.com>
-Date:   Wed, 26 May 2021 16:35:14 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next v3 1/9] net: phy: micrel: move phy reg offsets
+ to common header
+Message-ID: <20210526220132.stfahc4mrwfiu6yn@skbuf>
+References: <20210526043037.9830-1-o.rempel@pengutronix.de>
+ <20210526043037.9830-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <bf46b428deef4e9e89b0ea1704b1f0e5@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1lm1AT-003fxT-AA
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:46830
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 12
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210526043037.9830-2-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/26/21 16:29, Saleem, Shiraz wrote:
->> Subject: [PATCH][next] i40e: Replace one-element array with flexible-array member
->>
->> There is a regular need in the kernel to provide a way to declare having a
->> dynamically sized set of trailing elements in a structure. Kernel code should always
->> use “flexible array members”[1] for these cases. The older style of one-element or
->> zero-length arrays should no longer be used[2].
->>
->> Refactor the code according to the use of a flexible-array member in struct
->> i40e_qvlist_info instead of one-element array, and use the struct_size() helper.
->>
->> [1] https://en.wikipedia.org/wiki/Flexible_array_member
->> [2] https://www.kernel.org/doc/html/v5.10/process/deprecated.html#zero-length-
->> and-one-element-arrays
->>
->> Link: https://github.com/KSPP/linux/issues/79
->> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+On Wed, May 26, 2021 at 06:30:29AM +0200, Oleksij Rempel wrote:
+> From: Michael Grzeschik <m.grzeschik@pengutronix.de>
 > 
-> This looks ok to me.
-> Acked-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> Some micrel devices share the same PHY register defines. This patch
+> moves them to one common header so other drivers can reuse them.
+> And reuse generic MII_* defines where possible.
 > 
-> It seems we should add this to the new irdma driver submission as well which replaces i40iw.
-> I will fold it into v7 of the rdma portion of the series
-> https://lore.kernel.org/linux-rdma/20210520200326.GX1096940@ziepe.ca/
+> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/dsa/microchip/ksz8795.c     | 119 ++++++++++++------------
+>  drivers/net/dsa/microchip/ksz8795_reg.h |  62 ------------
+>  drivers/net/ethernet/micrel/ksz884x.c   | 105 +++------------------
+>  include/linux/micrel_phy.h              |  13 +++
+>  4 files changed, 88 insertions(+), 211 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+> index ad509a57a945..ba065003623f 100644
+> --- a/drivers/net/dsa/microchip/ksz8795.c
+> +++ b/drivers/net/dsa/microchip/ksz8795.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/phy.h>
+>  #include <linux/etherdevice.h>
+>  #include <linux/if_bridge.h>
+> +#include <linux/micrel_phy.h>
+>  #include <net/dsa.h>
+>  #include <net/switchdev.h>
+>  
+> @@ -731,88 +732,88 @@ static void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+>  	u8 p = phy;
+>  
+>  	switch (reg) {
+> -	case PHY_REG_CTRL:
+> +	case MII_BMCR:
+>  		ksz_pread8(dev, p, regs[P_NEG_RESTART_CTRL], &restart);
+>  		ksz_pread8(dev, p, regs[P_SPEED_STATUS], &speed);
+>  		ksz_pread8(dev, p, regs[P_FORCE_CTRL], &ctrl);
+>  		if (restart & PORT_PHY_LOOPBACK)
+> -			data |= PHY_LOOPBACK;
+> +			data |= BMCR_LOOPBACK;
+>  		if (ctrl & PORT_FORCE_100_MBIT)
+> -			data |= PHY_SPEED_100MBIT;
+> +			data |= BMCR_SPEED100;
+>  		if (ksz_is_ksz88x3(dev)) {
+>  			if ((ctrl & PORT_AUTO_NEG_ENABLE))
+> -				data |= PHY_AUTO_NEG_ENABLE;
+> +				data |= BMCR_ANENABLE;
+>  		} else {
+>  			if (!(ctrl & PORT_AUTO_NEG_DISABLE))
+> -				data |= PHY_AUTO_NEG_ENABLE;
+> +				data |= BMCR_ANENABLE;
+>  		}
+>  		if (restart & PORT_POWER_DOWN)
+> -			data |= PHY_POWER_DOWN;
+> +			data |= BMCR_PDOWN;
+>  		if (restart & PORT_AUTO_NEG_RESTART)
+> -			data |= PHY_AUTO_NEG_RESTART;
+> +			data |= BMCR_ANRESTART;
+>  		if (ctrl & PORT_FORCE_FULL_DUPLEX)
+> -			data |= PHY_FULL_DUPLEX;
+> +			data |= BMCR_FULLDPLX;
+>  		if (speed & PORT_HP_MDIX)
+> -			data |= PHY_HP_MDIX;
+> +			data |= KSZ886X_BMCR_HP_MDIX;
+>  		if (restart & PORT_FORCE_MDIX)
+> -			data |= PHY_FORCE_MDIX;
+> +			data |= KSZ886X_BMCR_FORCE_MDI;
+>  		if (restart & PORT_AUTO_MDIX_DISABLE)
+> -			data |= PHY_AUTO_MDIX_DISABLE;
+> +			data |= KSZ886X_BMCR_DISABLE_AUTO_MDIX;
+>  		if (restart & PORT_TX_DISABLE)
+> -			data |= PHY_TRANSMIT_DISABLE;
+> +			data |= KSZ886X_BMCR_DISABLE_TRANSMIT;
+>  		if (restart & PORT_LED_OFF)
+> -			data |= PHY_LED_DISABLE;
+> +			data |= KSZ886X_BMCR_DISABLE_LED;
+>  		break;
 
-OK. Just please, when you fold it, add my Signed-off-by tag like this:
+I am deeply confused as to what this function is doing. It is reading
+the 8-bit port registers P_NEG_RESTART_CTRL, P_SPEED_STATUS and
+P_FORCE_CTRL and stitching them into a 16-bit "MII_BMCR"?
 
-[flexible array transformation]
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+What layout does this control register even have? Seeing as this is the
+implementation of ksz_phy_read16(), I expect that MII_BMCR has the
+layout specified in clause 22.2.4.1?
 
-Thanks
---
-Gustavo
+But clause 22 says register 0.5 is "Unidirectional enable", not
+"PHY_HP_MDIX" (whatever that might be), and bits 0.4:0 are reserved and
+must be written as zero and ignored on read.
 
-> Additionally we will add this patch when we resend this PR on iwl-next.
-> https://lore.kernel.org/linux-rdma/62555c6de641e10cb4169653731389a51d086345.camel@intel.com/
-> 
-> 
->> ---
->>  drivers/infiniband/hw/i40iw/i40iw_main.c      | 5 ++---
->>  drivers/net/ethernet/intel/i40e/i40e_client.c | 2 +-
->>  include/linux/net/intel/i40e_client.h         | 2 +-
->>  3 files changed, 4 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/infiniband/hw/i40iw/i40iw_main.c
->> b/drivers/infiniband/hw/i40iw/i40iw_main.c
->> index b496f30ce066..364f69cd620f 100644
->> --- a/drivers/infiniband/hw/i40iw/i40iw_main.c
->> +++ b/drivers/infiniband/hw/i40iw/i40iw_main.c
->> @@ -1423,7 +1423,7 @@ static enum i40iw_status_code
->> i40iw_save_msix_info(struct i40iw_device *iwdev,
->>  	struct i40e_qv_info *iw_qvinfo;
->>  	u32 ceq_idx;
->>  	u32 i;
->> -	u32 size;
->> +	size_t size;
->>
->>  	if (!ldev->msix_count) {
->>  		i40iw_pr_err("No MSI-X vectors\n");
->> @@ -1433,8 +1433,7 @@ static enum i40iw_status_code
->> i40iw_save_msix_info(struct i40iw_device *iwdev,
->>  	iwdev->msix_count = ldev->msix_count;
->>
->>  	size = sizeof(struct i40iw_msix_vector) * iwdev->msix_count;
->> -	size += sizeof(struct i40e_qvlist_info);
->> -	size +=  sizeof(struct i40e_qv_info) * iwdev->msix_count - 1;
->> +	size += struct_size(iw_qvlist, qv_info, iwdev->msix_count);
->>  	iwdev->iw_msixtbl = kzalloc(size, GFP_KERNEL);
->>
->>  	if (!iwdev->iw_msixtbl)
->> diff --git a/drivers/net/ethernet/intel/i40e/i40e_client.c
->> b/drivers/net/ethernet/intel/i40e/i40e_client.c
->> index 32f3facbed1a..63eab14a26df 100644
->> --- a/drivers/net/ethernet/intel/i40e/i40e_client.c
->> +++ b/drivers/net/ethernet/intel/i40e/i40e_client.c
->> @@ -579,7 +579,7 @@ static int i40e_client_setup_qvlist(struct i40e_info *ldev,
->>  	u32 v_idx, i, reg_idx, reg;
->>
->>  	ldev->qvlist_info = kzalloc(struct_size(ldev->qvlist_info, qv_info,
->> -				    qvlist_info->num_vectors - 1), GFP_KERNEL);
->> +				    qvlist_info->num_vectors), GFP_KERNEL);
->>  	if (!ldev->qvlist_info)
->>  		return -ENOMEM;
->>  	ldev->qvlist_info->num_vectors = qvlist_info->num_vectors; diff --git
->> a/include/linux/net/intel/i40e_client.h b/include/linux/net/intel/i40e_client.h
->> index f41387a8969f..fd7bc860a241 100644
->> --- a/include/linux/net/intel/i40e_client.h
->> +++ b/include/linux/net/intel/i40e_client.h
->> @@ -48,7 +48,7 @@ struct i40e_qv_info {
->>
->>  struct i40e_qvlist_info {
->>  	u32 num_vectors;
->> -	struct i40e_qv_info qv_info[1];
->> +	struct i40e_qv_info qv_info[];
->>  };
->>
->>
->> --
->> 2.27.0
-> 
-> _______________________________________________
-> Intel-wired-lan mailing list
-> Intel-wired-lan@osuosl.org
-> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
-> 
+> -	case PHY_REG_STATUS:
+> +	case MII_BMSR:
+>  		ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
+> -		data = PHY_100BTX_FD_CAPABLE |
+> -		       PHY_100BTX_CAPABLE |
+> -		       PHY_10BT_FD_CAPABLE |
+> -		       PHY_10BT_CAPABLE |
+> -		       PHY_AUTO_NEG_CAPABLE;
+> +		data = BMSR_100FULL |
+> +		       BMSR_100HALF |
+> +		       BMSR_10FULL |
+> +		       BMSR_10HALF |
+> +		       BMSR_ANEGCAPABLE;
+>  		if (link & PORT_AUTO_NEG_COMPLETE)
+> -			data |= PHY_AUTO_NEG_ACKNOWLEDGE;
+> +			data |= BMSR_ANEGCOMPLETE;
+>  		if (link & PORT_STAT_LINK_GOOD)
+> -			data |= PHY_LINK_STATUS;
+> +			data |= BMSR_LSTATUS;
+>  		break;
+> -	case PHY_REG_ID_1:
+> +	case MII_PHYSID1:
+>  		data = KSZ8795_ID_HI;
+>  		break;
+> -	case PHY_REG_ID_2:
+> +	case MII_PHYSID2:
+>  		if (ksz_is_ksz88x3(dev))
+>  			data = KSZ8863_ID_LO;
+>  		else
+>  			data = KSZ8795_ID_LO;
+>  		break;
+> -	case PHY_REG_AUTO_NEGOTIATION:
+> +	case MII_ADVERTISE:
+>  		ksz_pread8(dev, p, regs[P_LOCAL_CTRL], &ctrl);
+> -		data = PHY_AUTO_NEG_802_3;
+> +		data = ADVERTISE_CSMA;
+>  		if (ctrl & PORT_AUTO_NEG_SYM_PAUSE)
+> -			data |= PHY_AUTO_NEG_SYM_PAUSE;
+> +			data |= ADVERTISE_PAUSE_CAP;
+>  		if (ctrl & PORT_AUTO_NEG_100BTX_FD)
+> -			data |= PHY_AUTO_NEG_100BTX_FD;
+> +			data |= ADVERTISE_100FULL;
+>  		if (ctrl & PORT_AUTO_NEG_100BTX)
+> -			data |= PHY_AUTO_NEG_100BTX;
+> +			data |= ADVERTISE_100HALF;
+>  		if (ctrl & PORT_AUTO_NEG_10BT_FD)
+> -			data |= PHY_AUTO_NEG_10BT_FD;
+> +			data |= ADVERTISE_10FULL;
+>  		if (ctrl & PORT_AUTO_NEG_10BT)
+> -			data |= PHY_AUTO_NEG_10BT;
+> +			data |= ADVERTISE_10HALF;
+>  		break;
+> -	case PHY_REG_REMOTE_CAPABILITY:
+> +	case MII_LPA:
+>  		ksz_pread8(dev, p, regs[P_REMOTE_STATUS], &link);
+> -		data = PHY_AUTO_NEG_802_3;
+> +		data = LPA_SLCT;
+>  		if (link & PORT_REMOTE_SYM_PAUSE)
+> -			data |= PHY_AUTO_NEG_SYM_PAUSE;
+> +			data |= LPA_PAUSE_CAP;
+>  		if (link & PORT_REMOTE_100BTX_FD)
+> -			data |= PHY_AUTO_NEG_100BTX_FD;
+> +			data |= LPA_100FULL;
+>  		if (link & PORT_REMOTE_100BTX)
+> -			data |= PHY_AUTO_NEG_100BTX;
+> +			data |= LPA_100HALF;
+>  		if (link & PORT_REMOTE_10BT_FD)
+> -			data |= PHY_AUTO_NEG_10BT_FD;
+> +			data |= LPA_10FULL;
+>  		if (link & PORT_REMOTE_10BT)
+> -			data |= PHY_AUTO_NEG_10BT;
+> -		if (data & ~PHY_AUTO_NEG_802_3)
+> -			data |= PHY_REMOTE_ACKNOWLEDGE_NOT;
+> +			data |= LPA_10HALF;
+> +		if (data & ~LPA_SLCT)
+> +			data |= LPA_LPACK;
+>  		break;
+>  	default:
+>  		processed = false;
