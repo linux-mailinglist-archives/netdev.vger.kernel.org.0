@@ -2,166 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4AE339118B
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 09:52:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C015639118F
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 09:53:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232129AbhEZHyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 03:54:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52172 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232166AbhEZHx7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 03:53:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622015548;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dVw3shBSRM9cCjmRdNWLJQgAvu0wuJKkFQWrzs4FqGI=;
-        b=PPH9fImOcx+rnQUqw2sz6VqZ4OGPC+A+mFFt/hK3d7+Q5zZhIPNNBGLzBdanWG4NONQUTj
-        Y3IoQ4ri9cGEk3ZEmAhxunxvPisrpHfv+044QpGfkyoqJHwNFFdaOuMI/fO2FK1eZBqRM4
-        tFzf/+J8/fvIptNDTd81c1WauU01iSM=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-254-7KdI9Wl8PmWEAJXRDArtwQ-1; Wed, 26 May 2021 03:52:26 -0400
-X-MC-Unique: 7KdI9Wl8PmWEAJXRDArtwQ-1
-Received: by mail-pj1-f70.google.com with SMTP id f8-20020a17090a9b08b0290153366612f7so413135pjp.1
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 00:52:26 -0700 (PDT)
+        id S232911AbhEZHya (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 03:54:30 -0400
+Received: from mail-ua1-f52.google.com ([209.85.222.52]:34546 "EHLO
+        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229500AbhEZHyZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 03:54:25 -0400
+Received: by mail-ua1-f52.google.com with SMTP id x1so287942uau.1;
+        Wed, 26 May 2021 00:52:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=dVw3shBSRM9cCjmRdNWLJQgAvu0wuJKkFQWrzs4FqGI=;
-        b=lIfdeZ9b3fNPUVN06oRt51CpaG00R+ghVcXRuoffwxTLeTUzArYqgiIfWAicLi7eZT
-         W/0zAxI517lrLCglly/yUzT65mBt9Wba0JU2y8a0pXy6elYDPttmMi1fdYtgAN2A0+R/
-         F24roJvWY0bScFoq80DFUEtz4YF5KBY4qbM+G9aYS5Kp0mozBBUDygat3KpJiRmTl7dU
-         q5BExRefOAt9lk4lpMFbc/Z7yBI/gGnVrV+ePdwkWQfWCe+yaf62DVAm3fky5pYpZbdV
-         401GPjtPpFa+XZD2QFj2msJiOPH2ideWr3+Ylc9p6q+Lf3KMOH6e1j/rdxnDp7j5iYFQ
-         WdcQ==
-X-Gm-Message-State: AOAM532eNISFyjzjo7PHLS1awpYXalPh/EA6bpLpwjSzVfnWDvq0tGx8
-        kW+RwMnx+tK7cP+JswMTBjTBAUjxLfcZzKUarxsex/AA5eXchyXxBr74uYRHwSw6b0GhQvHo/bD
-        txXL5MdE0IK601Z5m
-X-Received: by 2002:a17:90a:ac04:: with SMTP id o4mr34169880pjq.114.1622015545210;
-        Wed, 26 May 2021 00:52:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzlZ4+ufAUqXTa/BSHAz2PdlAOim2N8MhD4LPOb3cUXLInNAVYMiHTUODnYlzBp1l/jEmNg5A==
-X-Received: by 2002:a17:90a:ac04:: with SMTP id o4mr34169864pjq.114.1622015544950;
-        Wed, 26 May 2021 00:52:24 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y129sm1697041pfy.123.2021.05.26.00.52.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 May 2021 00:52:24 -0700 (PDT)
-Subject: Re: [PATCH] virtio-net: Add validation for used length
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
-References: <20210525045838.1137-1-xieyongji@bytedance.com>
- <75e26cf1-6ee8-108c-ff48-8a23345b3ccc@redhat.com>
- <CACycT3s1VkvG7zr7hPciBx8KhwgtNF+CM5GeSJs2tp-2VTsWRw@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <efb7d2e0-39b0-129d-084b-122820c93138@redhat.com>
-Date:   Wed, 26 May 2021 15:52:03 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DF4Qym5vi5urmQVozT7x89feYVqRBLX860c1iUhsLiU=;
+        b=YzPVqcY1EPZbaSCvOFGIgiiu8fiZbg23q0itrX0saQgR0RC2NdOe5weYcHR2TC1WUJ
+         tj/RqrjAY0a6KwH5mM0ge2ust62kc9dqk6VTt7lgY7WJdBRcjzTnqV1FpkzvSnZ9eqiD
+         Emgt/9b+ss1NCdhhnD4ZjNJ09d5pa7uuCZVOoLJziJMUBkwxW63KoYD+u3O5LosX/NaK
+         Pwo1oh4Lm9Rj+GJ2GvWtWJWE8NXaQHF6ffRl5VaEzohtx0VOqXHh7KSt6pAgauYvdJSH
+         tJlRD/4seN1HvODGVKrCm5zU6PTZmEVdfa3OxlwlTKtRwkddsrmAemtmeTaF1yGP0bf5
+         eK5A==
+X-Gm-Message-State: AOAM5324tQN9FLCLU9Z5CHomQvW2a/TzMdG8DOkLdnQCaYFN/khIz3tK
+        veEJqwooJkfHglTTPgcH3tSUYvWrl7LzytuVDMk=
+X-Google-Smtp-Source: ABdhPJxZSU7OcT6+Xw6agQLX8qT6DqdHwFEcdKKd93N3mCPT/ubOM0JdG4oGvbsyUb2+YK1Dc2xb1IMQ8nAWxqjy1SU=
+X-Received: by 2002:a1f:9505:: with SMTP id x5mr26222492vkd.6.1622015574205;
+ Wed, 26 May 2021 00:52:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CACycT3s1VkvG7zr7hPciBx8KhwgtNF+CM5GeSJs2tp-2VTsWRw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20210330145430.996981-1-maz@kernel.org> <20210330145430.996981-8-maz@kernel.org>
+ <CAMuHMdWd5261ti-zKsroFLvWs0abaWa7G4DKefgPwFb3rEjnNw@mail.gmail.com> <6c522f8116f54fa6f23a2d217d966c5a@kernel.org>
+In-Reply-To: <6c522f8116f54fa6f23a2d217d966c5a@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 26 May 2021 09:52:42 +0200
+Message-ID: <CAMuHMdWzBqLVOVn_z8S2H-x-kL+DfOsM5mDb_D8OKsyRJtKpdA@mail.gmail.com>
+Subject: Re: [PATCH v19 7/7] ptp: arm/arm64: Enable ptp_kvm for arm/arm64
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     jianyong.wu@arm.com, netdev <netdev@vger.kernel.org>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Paolo Bonzini <pbonzini@redhat.com>, seanjc@google.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Mark Rutland <Mark.Rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Andre Przywara <Andre.Przywara@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        kvmarm@lists.cs.columbia.edu, KVM list <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>, justin.he@arm.com,
+        Android Kernel Team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Marc,
 
-在 2021/5/25 下午4:45, Yongji Xie 写道:
-> On Tue, May 25, 2021 at 2:30 PM Jason Wang <jasowang@redhat.com> wrote:
->>
->> 在 2021/5/25 下午12:58, Xie Yongji 写道:
->>> This adds validation for used length (might come
->>> from an untrusted device) to avoid data corruption
->>> or loss.
->>>
->>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
->>> ---
->>>    drivers/net/virtio_net.c | 22 ++++++++++++++++++++++
->>>    1 file changed, 22 insertions(+)
->>>
->>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>> index c4711e23af88..2dcdc1a3c7e8 100644
->>> --- a/drivers/net/virtio_net.c
->>> +++ b/drivers/net/virtio_net.c
->>> @@ -668,6 +668,13 @@ static struct sk_buff *receive_small(struct net_device *dev,
->>>                void *orig_data;
->>>                u32 act;
->>>
->>> +             if (unlikely(len > GOOD_PACKET_LEN)) {
->>> +                     pr_debug("%s: rx error: len %u exceeds max size %lu\n",
->>> +                              dev->name, len, GOOD_PACKET_LEN);
->>> +                     dev->stats.rx_length_errors++;
->>> +                     goto err_xdp;
->>> +             }
->>
->> Need to count vi->hdr_len here?
->>
-> We did len -= vi->hdr_len before.
-
-
-Right.
-
-
+On Tue, May 11, 2021 at 11:13 AM Marc Zyngier <maz@kernel.org> wrote:
+> On 2021-05-11 10:07, Geert Uytterhoeven wrote:
+> > On Tue, Mar 30, 2021 at 4:56 PM Marc Zyngier <maz@kernel.org> wrote:
+> >> From: Jianyong Wu <jianyong.wu@arm.com>
+> >>
+> >> Currently, there is no mechanism to keep time sync between guest and
+> >> host
+> >> in arm/arm64 virtualization environment. Time in guest will drift
+> >> compared
+> >> with host after boot up as they may both use third party time sources
+> >> to correct their time respectively. The time deviation will be in
+> >> order
+> >> of milliseconds. But in some scenarios,like in cloud environment, we
+> >> ask
+> >> for higher time precision.
+> >>
+> >> kvm ptp clock, which chooses the host clock source as a reference
+> >> clock to sync time between guest and host, has been adopted by x86
+> >> which takes the time sync order from milliseconds to nanoseconds.
+> >>
+> >> This patch enables kvm ptp clock for arm/arm64 and improves clock sync
+> >> precision
+> >> significantly.
+> >
+> >> --- a/drivers/ptp/Kconfig
+> >> +++ b/drivers/ptp/Kconfig
+> >> @@ -108,7 +108,7 @@ config PTP_1588_CLOCK_PCH
+> >>  config PTP_1588_CLOCK_KVM
+> >>         tristate "KVM virtual PTP clock"
+> >>         depends on PTP_1588_CLOCK
+> >> -       depends on KVM_GUEST && X86
+> >> +       depends on (KVM_GUEST && X86) || (HAVE_ARM_SMCCC_DISCOVERY &&
+> >> ARM_ARCH_TIMER)
+> >
+> > Why does this not depend on KVM_GUEST on ARM?
+> > I.e. shouldn't the dependency be:
+> >
+> >     KVM_GUEST && (X86 || (HAVE_ARM_SMCCC_DISCOVERY && ARM_ARCH_TIMER))
+> >
+> > ?
 >
->>> +
->>>                if (unlikely(hdr->hdr.gso_type))
->>>                        goto err_xdp;
->>>
->>> @@ -739,6 +746,14 @@ static struct sk_buff *receive_small(struct net_device *dev,
->>>        }
->>>        rcu_read_unlock();
->>>
->>> +     if (unlikely(len > GOOD_PACKET_LEN)) {
->>> +             pr_debug("%s: rx error: len %u exceeds max size %lu\n",
->>> +                      dev->name, len, GOOD_PACKET_LEN);
->>> +             dev->stats.rx_length_errors++;
->>> +             put_page(page);
->>> +             return NULL;
->>> +     }
->>> +
->>>        skb = build_skb(buf, buflen);
->>>        if (!skb) {
->>>                put_page(page);
->>> @@ -822,6 +837,13 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->>>                void *data;
->>>                u32 act;
->>>
->>> +             if (unlikely(len > truesize)) {
->>> +                     pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
->>> +                              dev->name, len, (unsigned long)ctx);
->>> +                     dev->stats.rx_length_errors++;
->>> +                     goto err_xdp;
->>> +             }
->>
->> There's a similar check after the XDP, let's simply move it here?
-> Do we still need that in non-XDP cases?
+> arm/arm64 do not select KVM_GUEST. Any kernel can be used for a guest,
+> and KVM/arm64 doesn't know about this configuration symbol.
 
+OK.
 
-I meant we check once for both XDP and non-XDP if we do it before if 
-(xdp_prog)
+Does PTP_1588_CLOCK_KVM need to default to yes?
+Perhaps only on X86, to maintain the status quo?
 
+Gr{oetje,eeting}s,
 
->
->> And do we need similar check in receive_big()?
->>
-> It seems that the check in page_to_skb() can do similar things.
+                        Geert
 
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Right.
-
-Thanks
-
-
->
-> Thanks,
-> Yongji
->
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
