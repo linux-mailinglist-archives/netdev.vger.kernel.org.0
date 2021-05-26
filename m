@@ -2,101 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0F35391C6B
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 17:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 193F8391C84
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 17:57:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235453AbhEZPvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 11:51:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36496 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235370AbhEZPvU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 11:51:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BF93161184;
-        Wed, 26 May 2021 15:49:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1622044178;
-        bh=uyJM6RmL4VFOIpdrgSUrinaAJ058EDjZ1XMhpJ0RipY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dUE8zMqAXEPdRvMBVtCaDDomtwIkS8UIos2Vn2ggDOzI/gUAhah5INMyy7aya8QqM
-         HCbdOp6JRcQKBvw1x4BnScLAESoZEsHBW5n3VBfgBneBehi14KtfrEBo1clXAhCt7C
-         CpvUh1hf2Lz1Xfu2tKbSZwg0+L96lQxa14FY+up8=
-Date:   Wed, 26 May 2021 17:49:35 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linma <linma@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hao Xiong <mart1n@zju.edu.cn>,
-        stable <stable@vger.kernel.org>
-Subject: Re: [PATCH] Bluetooth: fix the erroneous flush_work() order
-Message-ID: <YK5uD/z8oQqyle3w@kroah.com>
-References: <20210525114215.141988-1-gregkh@linuxfoundation.org>
- <87CD8C35-C7D2-4CF7-B9F9-266B3498DB94@holtmann.org>
+        id S234798AbhEZP6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 11:58:36 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:3228 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232769AbhEZP6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 11:58:34 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14QFtBft003202;
+        Wed, 26 May 2021 08:57:01 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=xvMoATson/9/jL9/umbFzvjnn+hxMohCdguAo0Q4hiU=;
+ b=KW1jMgoN3tXk2FjyqwtopoyJ3Hdzgl5oonJH+hoMbXXJNe9POIDXn7hTo3eO0dgfQ2GY
+ q1Kmq1vmpvYPJihiO2DG53jQSy5e6dzL4n+I7IgA/5C2/R+aIhu8uL7KEzR73qM+96Z4
+ webzgcX1+moVJ3oXSLb8FAuLvAdr3JFB2L6VlWeQbBmLspGub+sPSOkLOUTTqKCjpwqC
+ laOWrHmWw1Kvu0dUhSNDxmk7gV+OZ5saRVAYp/5rqP/E94Z0BOlJUQCZlFAjVn4F05KE
+ P/93b/RD8i/QcmBHoFZlfcpQrwwujnU850uSAThLu8kWHVNj50HJ3t5+PO79bVjIjlVi iA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 38spf38tn2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 26 May 2021 08:57:01 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
+ 2021 08:57:00 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 26 May 2021 08:57:00 -0700
+Received: from hyd1584.marvell.com (unknown [10.29.37.82])
+        by maili.marvell.com (Postfix) with ESMTP id 181F83F703F;
+        Wed, 26 May 2021 08:56:57 -0700 (PDT)
+From:   George Cherian <george.cherian@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <gcherian@marvell.com>,
+        <sgoutham@marvell.com>
+Subject: [net-next PATCH 0/5] NPC KPU updates
+Date:   Wed, 26 May 2021 21:26:51 +0530
+Message-ID: <20210526155656.2689892-1-george.cherian@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87CD8C35-C7D2-4CF7-B9F9-266B3498DB94@holtmann.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: 0wr2iZMWhx8iCeoNS6lPOahr_75k2snA
+X-Proofpoint-ORIG-GUID: 0wr2iZMWhx8iCeoNS6lPOahr_75k2snA
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-26_10:2021-05-26,2021-05-26 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 05:05:50PM +0200, Marcel Holtmann wrote:
-> Hi Greg,
-> 
-> > From: linma <linma@zju.edu.cn>
-> 
-> this needs a real name, but I could fix that on git am as well.
+Add support for
+ - Loading Custom KPU profile entries
+ - Add NPC profile Load from System Firmware DB
+ - Add Support fo Coalescing KPU profiles
+ - General Updates/Fixes to default KPU profile
 
-"Lin Ma"
+George Cherian (1):
+  octeontx2-af: Update the default KPU profile and fixes
 
-> > In the cleanup routine for failed initialization of HCI device,
-> > the flush_work(&hdev->rx_work) need to be finished before the
-> > flush_work(&hdev->cmd_work). Otherwise, the hci_rx_work() can
-> > possibly invoke new cmd_work and cause a bug, like double free,
-> > in late processings.
-> > 
-> > This was assigned CVE-2021-3564.
-> > 
-> > This patch reorder the flush_work() to fix this bug.
-> > 
-> > Cc: Marcel Holtmann <marcel@holtmann.org>
-> > Cc: Johan Hedberg <johan.hedberg@gmail.com>
-> > Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: linux-bluetooth@vger.kernel.org
-> > Cc: netdev@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Signed-off-by: Lin Ma <linma@zju.edu.cn>
-> > Signed-off-by: Hao Xiong <mart1n@zju.edu.cn>
-> > Cc: stable <stable@vger.kernel.org>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> > net/bluetooth/hci_core.c | 7 ++++++-
-> > 1 file changed, 6 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> > index fd12f1652bdf..88aa32f44e68 100644
-> > --- a/net/bluetooth/hci_core.c
-> > +++ b/net/bluetooth/hci_core.c
-> > @@ -1610,8 +1610,13 @@ static int hci_dev_do_open(struct hci_dev *hdev)
-> > 	} else {
-> > 		/* Init failed, cleanup */
-> > 		flush_work(&hdev->tx_work);
-> > -		flush_work(&hdev->cmd_work);
-> > +		/*
-> > +		 * Since hci_rx_work() is possible to awake new cmd_work
-> > +		 * it should be flushed first to avoid unexpected call of
-> > +		 * hci_cmd_work()
-> > +		 */
-> 
-> So everything in net/ uses the comment coding style enforced with --strict.
+Harman Kalra (3):
+  octeontx2-af: load NPC profile via firmware database
+  octeontx2-af: adding new lt def registers support
+  octeontx2-af: support for coalescing KPU profiles
 
-See v2 please.
+Stanislaw Kardach (1):
+  octeontx2-af: add support for custom KPU entries
 
-thanks,
+ .../net/ethernet/marvell/octeontx2/af/npc.h   |  104 +-
+ .../marvell/octeontx2/af/npc_profile.h        | 8513 +++++++++++------
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |    6 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |    5 +
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |   34 +
+ .../ethernet/marvell/octeontx2/af/rvu_npc.c   |  294 +-
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |    4 +-
+ 7 files changed, 5760 insertions(+), 3200 deletions(-)
 
-greg k-h
+-- 
+2.25.1
+
