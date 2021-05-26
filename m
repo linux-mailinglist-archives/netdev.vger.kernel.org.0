@@ -2,74 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB3F63920E8
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 21:32:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26A233920EA
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 21:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233536AbhEZTdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 15:33:53 -0400
-Received: from mga01.intel.com ([192.55.52.88]:58465 "EHLO mga01.intel.com"
+        id S234194AbhEZTeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 15:34:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231449AbhEZTdu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 15:33:50 -0400
-IronPort-SDR: 08Iss5CDVh2XNMQpamHIvLkM0qVZzEkT/ikcPgrk/aPvP0ulk5VpunOXN2MaidJ7hyhB79PbZS
- rKJLHg5oVD5w==
-X-IronPort-AV: E=McAfee;i="6200,9189,9996"; a="223746441"
-X-IronPort-AV: E=Sophos;i="5.82,331,1613462400"; 
-   d="scan'208";a="223746441"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2021 12:32:13 -0700
-IronPort-SDR: 7lVBb8F0/kEdc31JNLmG5hOeV50t2w7whsgGB05tUzKK8LM/Cae57uggs1vmb6QYk2C6gezhQO
- klKAKNrcclrg==
-X-IronPort-AV: E=Sophos;i="5.82,331,1613462400"; 
-   d="scan'208";a="397922936"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2021 12:32:11 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1llzGC-00EsQn-Cy; Wed, 26 May 2021 22:32:08 +0300
-Date:   Wed, 26 May 2021 22:32:08 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v1 1/1] can: mcp251xfd: Fix header block to clarify
- independence from OF
-Message-ID: <YK6iOB/u9wJZy8cG@smile.fi.intel.com>
-References: <20210526191801.70012-1-andriy.shevchenko@linux.intel.com>
- <20210526192214.ksgyjescrtnhg5yq@pengutronix.de>
+        id S231449AbhEZTeV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 15:34:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1AD6F613CD;
+        Wed, 26 May 2021 19:32:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622057569;
+        bh=/QroVxf25iUsZmhleTWdOV1Mlxy+CftdDWEVZ1/8Hac=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kW6CTZWr/lzfyoHDJU28ofpO2M8u9/beae7uY7NfzdWHRGYR+6PMHi+FHgwACEC7O
+         poyNv78TqI6/7Mzo9Ce8bOLh3ijLHz7JkgyrCrxp8CLQ7K2j1zs517zoGIW/ZkkDcf
+         o8+75rGTvl/IXqSK/sPU1YZDS7oDzIb0a6FGtAa/TqcjO+OrWL6bJ2sPcyiCn5b8mc
+         86dOvr4cVycmxZiXbJp6wcrHYcmjDM3csWxfj+sHIk2p2nUjMkGnNID6LanNtsd5ow
+         8ExgMd1nhQnsV597sS8sExEzTNpNvSchB8dkCn8Uw7Zwt6LnIzrzBwwGUPnevym2nX
+         XXVtFlURFn5yA==
+Date:   Wed, 26 May 2021 12:32:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
+Subject: Re: [PATCH net-next v3 9/9] net: phy: micrel: ksz886x/ksz8081: add
+ cabletest support
+Message-ID: <20210526123248.1edf9f94@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210526043037.9830-10-o.rempel@pengutronix.de>
+References: <20210526043037.9830-1-o.rempel@pengutronix.de>
+        <20210526043037.9830-10-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210526192214.ksgyjescrtnhg5yq@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 09:22:14PM +0200, Marc Kleine-Budde wrote:
-> On 26.05.2021 22:18:01, Andy Shevchenko wrote:
-> > The driver is neither dependent on OF, nor it requires any OF headers.
-> > Fix header block to clarify independence from OF.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Does it already work on ACPI?
+On Wed, 26 May 2021 06:30:37 +0200 Oleksij Rempel wrote:
+> +	if (phydev->dev_flags & MICREL_KSZ8_P1_ERRATA)
+> +		return -ENOTSUPP;
 
-Nope.
-
-> Applied to linux-can-next/testing.
-
-Please, scratch this (because of above).
-
-I'll send out a v2 shortly.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+EOPNOTSUPP
