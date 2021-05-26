@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4562D391519
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 12:38:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D91839151C
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 12:39:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234031AbhEZKkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 06:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
+        id S234083AbhEZKkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 06:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233991AbhEZKkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 06:40:18 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC78C061574;
-        Wed, 26 May 2021 03:38:46 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id n17-20020a7bc5d10000b0290169edfadac9so200912wmk.1;
-        Wed, 26 May 2021 03:38:46 -0700 (PDT)
+        with ESMTP id S234037AbhEZKkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 06:40:20 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB67C061756;
+        Wed, 26 May 2021 03:38:47 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id u4-20020a05600c00c4b02901774b80945cso186394wmm.3;
+        Wed, 26 May 2021 03:38:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=MmEilk3WIXxDtJNZv7A7PlxIlYLkb/rN6qjZv1UZnpw=;
-        b=nMsMJ6iLPPi3vpLnTReqnIWdcFuM2FxpXksKTgpoOuGvjqyZJgxkLDlu5xCz6Pv8RC
-         H+Bmdv48ZatSu6pGmpBb6gBL6bV2a/MRSHyND7gK/IgD7cZJoq4hWnQuFKLYfT412pAB
-         zeX5DTTrMUpLFStxH4zu0+HWRpM31uLQA8mp+VJ9vavhCWnuAwzHPHScDOpVSw2mFTG7
-         ZTtSIVOVIanaKk6VBVUTeU4teS+c8dNJ9WkJ6P5xq5/XP57w0cN+i1eTZsW5DhYXHauu
-         gN5n5QlSWe6VL6QWbBDioZ4LXhvsXK2xPlw5ApbxwSGK1G1618RLfSo0ommgp5UdtiB9
-         wnIA==
+        bh=YZpXkJ34CAHAUHDFaJtbjNc7wnXsmsycKj1vjs1tXaA=;
+        b=ZJvAd//IGF0ZmqI6h1gV53q0j8hcDvw5C6XiwXM6tez/g5DjDV9h8zl1pd5y6pNMR5
+         CeIlziAGprCe0TqVZfDSsKdA77PC8Gj0Hp/25evMlah8XdQJSmzIDH0P1pB9GPAgI5fA
+         Pi0AirJLi9RUdSBvn2RJL6XL7duZLJZ7j4tGEH6UET3v7Bn08/T0PhF6OJ1cz+/lz4yv
+         yZa1bVefYVdvP9Mzx1F76es/bNshrB/H0WtUlskfYJu3WjU7A9czGsvsqIpSlDTcK0wP
+         st6MtEXZD7zyhXjTtU28zIt4xzPZrwJx3hqsHniGhyLmtnYDWX062ZJdariKyxEAEYih
+         DNCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=MmEilk3WIXxDtJNZv7A7PlxIlYLkb/rN6qjZv1UZnpw=;
-        b=YU80Jap/cYChW3mYnSOVqPuv98g4T0NDYzsxenUTQO9YPE1zVbQ6rj9nayK3OjQ7GI
-         MeiYi6o/k8bGyzADFVZh0S+SRE93swEySKR7mPFL4OmMt3BqAhLaIyEHFda0hZQRs0YV
-         9VlWWqB4zsBuKL3Ybbx0nlgdK/EK10DukzwS8yJFdB/Q+oNWL+91UypeHMpn6X86fC9m
-         E49AH9W9IJwf8GYOXeNQDws39DVZFAFeBTFjWxvwTPtuJj8fxh5Zo+oqT2CGONsTqB1H
-         MD3NNVYm5UGxTNRBfbnU/+Xhz/ymipOlv713g6ldzPY0W/R2Tj0DGZqPbVdC4uzDDH1s
-         SHZw==
-X-Gm-Message-State: AOAM532u8XN2gIm8E19NilbSDCBsJtebQfLw90WGK08Q+qxVBYE3VXnc
-        lJR+gO5Cusd6UTjUUa5DdJw=
-X-Google-Smtp-Source: ABdhPJwHm3JNSqqbGdMbwWDdLvYvvggbeaP4q1MvIBoSdXHvbac6ExQTJSTo1GMFM21+WAF4lNVtrw==
-X-Received: by 2002:a1c:a5c3:: with SMTP id o186mr28203150wme.6.1622025524778;
-        Wed, 26 May 2021 03:38:44 -0700 (PDT)
+        bh=YZpXkJ34CAHAUHDFaJtbjNc7wnXsmsycKj1vjs1tXaA=;
+        b=CISapkqylFEDNwvIocUfDcAMX5SCtmynRwkpIisRFKUVdee54txsePkK3JuXeRyO7k
+         h0bNh6W8ougui3b4j5DN/VYFtVYPUQA3PDLVLtOrF4lenDoNnZliDr6APHBY1i+VeinW
+         n0QZKJh98bvwCx8olSa2pymO5ZXkZlj9ihEpecD2H832WCiLK9WsX5p+iuWnKUEnPosr
+         71evIjctUqlSaZQFUWr7sFoRJHsmtH/4G7dZOFMhRyjK/QEnfCCCBK2z8T97SBCjMXUu
+         OwQEWLG3eB1oNqzNIi39/PcUUm26VMecb1ytbj7dbuEo9yzLWuL/bL8VH8Qu2FxB1Abi
+         J1Hg==
+X-Gm-Message-State: AOAM532LLuHkePMc2wugcpiB1HQq3uUJi5VrMoYZDmt3vEl7URwiWpdJ
+        hkIseAAHDXlUThnT9Ehl7SqHMbsRzHVq2ySY
+X-Google-Smtp-Source: ABdhPJzu1fgpKvmseTngQUlnpqfOD9CWRtbTz49hvvVXQVOTI2Wd0Jb0M4b7pGEmLQJRt21FjuvRvQ==
+X-Received: by 2002:a05:600c:350a:: with SMTP id h10mr2750709wmq.154.1622025526266;
+        Wed, 26 May 2021 03:38:46 -0700 (PDT)
 Received: from localhost.localdomain ([2a04:241e:502:1d80:a50a:8c74:4a8f:62b3])
-        by smtp.gmail.com with ESMTPSA id j101sm15364927wrj.66.2021.05.26.03.38.43
+        by smtp.gmail.com with ESMTPSA id j101sm15364927wrj.66.2021.05.26.03.38.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 May 2021 03:38:44 -0700 (PDT)
+        Wed, 26 May 2021 03:38:45 -0700 (PDT)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     Neal Cardwell <ncardwell@google.com>,
         Matt Mathis <mattmathis@google.com>,
@@ -61,9 +61,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Soheil Hassas Yeganeh <soheil@google.com>,
         Roopa Prabhu <roopa@cumulusnetworks.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFCv2 2/3] tcp: Adjust congestion window handling for mtu probe
-Date:   Wed, 26 May 2021 13:38:26 +0300
-Message-Id: <ceaab407cbd802545151df0e517fb527e674a012.1622025457.git.cdleonard@gmail.com>
+Subject: [RFCv2 3/3] tcp: Wait for sufficient data in tcp_mtu_probe
+Date:   Wed, 26 May 2021 13:38:27 +0300
+Message-Id: <e6dac4f513fa2ca96ccb4dcc5b11f96b3f9ddc40.1622025457.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1622025457.git.cdleonard@gmail.com>
 References: <cover.1622025457.git.cdleonard@gmail.com>
@@ -73,131 +73,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On very fast links after successive succesful MTU probes the cwnd (measured in
-packets) shrinks and does not grow again because tcp_is_cwnd_limited returns
-false unless at least half the window is being used. If snd_cwnd falls below 11
-then no more probes are sent despite the link being otherwise idle.
+According to RFC4821 Section 7.4 "Protocols MAY delay sending non-probes
+in order to accumulate enough data" but linux almost never does that.
 
-When preparing an mtu probe linux checks for snd_cwnd >= 11 and for 2 more
-packets to fit alongside what is currently in flight. The reasoning behind
-these constants is unclear. Replace this with checks based on the required
-probe size:
+Implement this by returning 0 from tcp_mtu_probe if not enough data is
+queued locally but some packets are still in flight. This makes mtu
+probing more likely to happen for applications that do small writes.
 
-* Skip probing if congestion window is too small to ever fit a probe.
-* Wait for the congestion window to drain if too many packets are
-already in flight.
+Only doing this if packets are in flight should ensure that writing will
+be attempted again later. This is similar to how tcp_mtu_probe already
+returns zero if the probe doesn't fit inside the receiver window or the
+congestion window.
 
-This is very similar to snd_wnd logic except packets are counted instead of
-bytes. This patch also adds more documentation regarding how "return 0"
-works in tcp_mtu_probe because I found it difficult to understand.
-
-This patch allows mtu probing at smaller cwnd values and does not contradict
-any standard. Since "0" is only returned if packets are in flight no stalls
-should happen expect when many acks are lost.
-
-Removing the snd_cwnd >= 11 check also allows probing to happen for
-bursty traffic where the cwnd is reset to 10 after a few hundred ms of
-idling.
-
-It does not completely solve the problem of very small cwnds on fast links.
+Control this with a sysctl because this implies a latency tradeoff but
+only up to one RTT.
 
 Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 ---
- net/ipv4/tcp_output.c | 30 +++++++++++++++++++++---------
- 1 file changed, 21 insertions(+), 9 deletions(-)
+ Documentation/networking/ip-sysctl.rst |  5 +++++
+ include/net/netns/ipv4.h               |  1 +
+ net/ipv4/sysctl_net_ipv4.c             |  7 +++++++
+ net/ipv4/tcp_ipv4.c                    |  1 +
+ net/ipv4/tcp_output.c                  | 18 ++++++++++++++----
+ 5 files changed, 28 insertions(+), 4 deletions(-)
 
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 7ab52a105a5d..967b7fac35b1 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -349,10 +349,15 @@ tcp_mtu_probe_floor - INTEGER
+ 	If MTU probing is enabled this caps the minimum MSS used for search_low
+ 	for the connection.
+ 
+ 	Default : 48
+ 
++tcp_mtu_probe_waitdata - BOOLEAN
++	Wait for enough data for an mtu probe to accumulate on the sender.
++
++	Default: 1
++
+ tcp_mtu_probe_rack - BOOLEAN
+ 	Try to use shorter probes if RACK is also enabled
+ 
+ 	Default: 1
+ 
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index b4ff12f25a7f..366e7b325778 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -112,10 +112,11 @@ struct netns_ipv4 {
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	u8 sysctl_tcp_l3mdev_accept;
+ #endif
+ 	u8 sysctl_tcp_mtu_probing;
+ 	int sysctl_tcp_mtu_probe_floor;
++	int sysctl_tcp_mtu_probe_waitdata;
+ 	int sysctl_tcp_mtu_probe_rack;
+ 	int sysctl_tcp_base_mss;
+ 	int sysctl_tcp_min_snd_mss;
+ 	int sysctl_tcp_probe_threshold;
+ 	u32 sysctl_tcp_probe_interval;
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 275c91fb9cf8..53868b812958 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -847,10 +847,17 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= &tcp_min_snd_mss_min,
+ 		.extra2		= &tcp_min_snd_mss_max,
+ 	},
++	{
++		.procname	= "tcp_mtu_probe_waitdata",
++		.data		= &init_net.ipv4.sysctl_tcp_mtu_probe_waitdata,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
+ 	{
+ 		.procname	= "tcp_mtu_probe_rack",
+ 		.data		= &init_net.ipv4.sysctl_tcp_mtu_probe_rack,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index ed8af4a7325b..940df2ae4636 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2892,10 +2892,11 @@ static int __net_init tcp_sk_init(struct net *net)
+ 	net->ipv4.sysctl_tcp_base_mss = TCP_BASE_MSS;
+ 	net->ipv4.sysctl_tcp_min_snd_mss = TCP_MIN_SND_MSS;
+ 	net->ipv4.sysctl_tcp_probe_threshold = TCP_PROBE_THRESHOLD;
+ 	net->ipv4.sysctl_tcp_probe_interval = TCP_PROBE_INTERVAL;
+ 	net->ipv4.sysctl_tcp_mtu_probe_floor = TCP_MIN_SND_MSS;
++	net->ipv4.sysctl_tcp_mtu_probe_waitdata = 1;
+ 	net->ipv4.sysctl_tcp_mtu_probe_rack = 1;
+ 
+ 	net->ipv4.sysctl_tcp_keepalive_time = TCP_KEEPALIVE_TIME;
+ 	net->ipv4.sysctl_tcp_keepalive_probes = TCP_KEEPALIVE_PROBES;
+ 	net->ipv4.sysctl_tcp_keepalive_intvl = TCP_KEEPALIVE_INTVL;
 diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 9691f435477b..362f97cfb09e 100644
+index 362f97cfb09e..268e1bac001f 100644
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -2328,32 +2328,35 @@ static int tcp_mtu_probe_is_rack(const struct sock *sk)
-  * changes resulting in larger path MTUs.
-  *
-  * Returns 0 if we should wait to probe (no cwnd available),
-  *         1 if a probe was sent,
-  *         -1 otherwise
-+ *
-+ * Caller won't queue future write attempts if this returns 0. Zero is only
-+ * returned if acks are pending from packets in flight which will trigger
-+ * tcp_write_xmit again later.
-  */
- static int tcp_mtu_probe(struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct sk_buff *skb, *nskb, *next;
- 	struct net *net = sock_net(sk);
- 	int probe_size;
- 	int size_needed;
-+	int packets_needed;
- 	int copy, len;
- 	int mss_now;
- 	int interval;
- 
- 	/* Not currently probing/verifying,
- 	 * not in recovery,
--	 * have enough cwnd, and
- 	 * not SACKing (the variable headers throw things off)
- 	 */
- 	if (likely(!icsk->icsk_mtup.enabled ||
- 		   icsk->icsk_mtup.probe_size ||
- 		   inet_csk(sk)->icsk_ca_state != TCP_CA_Open ||
--		   tp->snd_cwnd < 11 ||
- 		   tp->rx_opt.num_sacks || tp->rx_opt.dsack))
- 		return -1;
- 
- 	/* Use binary search for probe_size between tcp_mss_base,
- 	 * and current mss_clamp. if (search_high - search_low)
-@@ -2375,10 +2378,11 @@ static int tcp_mtu_probe(struct sock *sk)
- 		/* Without RACK send enough extra packets to trigger fast retransmit
- 		 * This is dynamic DupThresh + 1
+@@ -2394,14 +2394,10 @@ static int tcp_mtu_probe(struct sock *sk)
  		 */
- 		size_needed = probe_size + (tp->reordering + 1) * tp->mss_cache;
+ 		tcp_mtu_check_reprobe(sk);
+ 		return -1;
  	}
-+	packets_needed = DIV_ROUND_UP(size_needed, tp->mss_cache);
  
- 	interval = icsk->icsk_mtup.search_high - icsk->icsk_mtup.search_low;
- 	/* When misfortune happens, we are reprobing actively,
- 	 * and then reprobe timer has expired. We stick with current
- 	 * probing process by not resetting search range to its orignal.
-@@ -2394,22 +2398,30 @@ static int tcp_mtu_probe(struct sock *sk)
- 
- 	/* Have enough data in the send queue to probe? */
- 	if (tp->write_seq - tp->snd_nxt < size_needed)
+-	/* Have enough data in the send queue to probe? */
+-	if (tp->write_seq - tp->snd_nxt < size_needed)
+-		return -1;
+-
+ 	/* Can probe fit inside congestion window? */
+ 	if (packets_needed > tp->snd_cwnd)
  		return -1;
  
-+	/* Can probe fit inside congestion window? */
-+	if (packets_needed > tp->snd_cwnd)
-+		return -1;
-+
-+	/* Can probe fit inside receiver window? If not then skip probing.
-+	 * The receiver might increase the window as data is processed but
-+	 * don't assume that.
-+	 * If some data is inflight (between snd_una and snd_nxt) we wait for it to
-+	 * clear below.
-+	 */
+ 	/* Can probe fit inside receiver window? If not then skip probing.
+@@ -2411,10 +2407,24 @@ static int tcp_mtu_probe(struct sock *sk)
+ 	 * clear below.
+ 	 */
  	if (tp->snd_wnd < size_needed)
  		return -1;
+ 
++	/* Have enough data in the send queue to probe? */
++	if (tp->write_seq - tp->snd_nxt < size_needed) {
++		/* If packets are already in flight it's safe to wait for more data to
++		 * accumulate on the sender because writing will be triggered as ACKs
++		 * arrive.
++		 * If no packets are in flight returning zero can stall.
++		 */
++		if (net->ipv4.sysctl_tcp_mtu_probe_waitdata &&
++		    tcp_packets_in_flight(tp))
++			return 0;
++		else
++			return -1;
++	}
 +
-+	/* Do we need for more acks to clear the receive window? */
+ 	/* Do we need for more acks to clear the receive window? */
  	if (after(tp->snd_nxt + size_needed, tcp_wnd_end(tp)))
  		return 0;
  
--	/* Do we need to wait to drain cwnd? With none in flight, don't stall */
--	if (tcp_packets_in_flight(tp) + 2 > tp->snd_cwnd) {
--		if (!tcp_packets_in_flight(tp))
--			return -1;
--		else
--			return 0;
--	}
-+	/* Do we need the congestion window to clear? */
-+	if (tcp_packets_in_flight(tp) + packets_needed > tp->snd_cwnd)
-+		return 0;
- 
- 	if (!tcp_can_coalesce_send_queue_head(sk, probe_size))
- 		return -1;
- 
- 	/* We're allowed to probe.  Build it now. */
+ 	/* Do we need the congestion window to clear? */
 -- 
 2.25.1
 
