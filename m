@@ -2,124 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9B7B3910D3
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 08:42:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE55D391166
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 09:28:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232620AbhEZGnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 02:43:53 -0400
-Received: from www62.your-server.de ([213.133.104.62]:44712 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232336AbhEZGnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 02:43:52 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1llnF7-00074V-5W; Wed, 26 May 2021 08:42:13 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1llnF6-000Rf8-SY; Wed, 26 May 2021 08:42:12 +0200
-Subject: Re: [PATCH v7 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-Cc:     Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ncardwell@google.com, ycheng@google.com
-References: <20210521182104.18273-1-kuniyu@amazon.co.jp>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c423bd7b-03ab-91f2-60af-25c6dfa28b71@iogearbox.net>
-Date:   Wed, 26 May 2021 08:42:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S232978AbhEZHaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 03:30:13 -0400
+Received: from mout.gmx.net ([212.227.17.20]:46551 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232844AbhEZHaM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 03:30:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1622014119;
+        bh=JzrZEUM2EhJCgC1oh9NUCnWDnd8zhdH5ziS5JuD4xcg=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=dR7IeTEKwuvDmeUB7aCoYwSh1lkFiVvcG+CCBIFUzQCnZcbm7Ke7P6CjLMLxN1wEK
+         5/EvUU/LjaJyDFJzxpQI/h0/uIOCU7kf+hHFgP/Mr06rTU6u3rDf52O6QqCVtKRseB
+         PR1PdmPpUOuWs6oAQvR0d2M1c25rffvTEgr+PV+Y=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.78.60] ([80.245.78.60]) by web-mail.gmx.net
+ (3c-app-gmx-bs33.server.lan [172.19.170.85]) (via HTTP); Wed, 26 May 2021
+ 09:28:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210521182104.18273-1-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26181/Tue May 25 13:17:38 2021)
+Message-ID: <trinity-5186a317-8934-483e-834c-a0f320a8c287-1622014119710@3c-app-gmx-bs33>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Aw: Re: Crosscompiling iproute2
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 26 May 2021 09:28:39 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20210525142331.39594c34@hermes.local>
+References: <trinity-a96735e9-a95a-45be-9386-6e0aa9955a86-1621176719037@3c-app-gmx-bap46>
+ <20210516141745.009403b7@hermes.local>
+ <trinity-00d9e9f2-6c60-48b7-ad84-64fd50043001-1621237461808@3c-app-gmx-bap57>
+ <20210517123628.13624eeb@hermes.local>
+ <D24044ED-FAC6-4587-B157-A2082A502476@public-files.de>
+ <20210524143620.465dd25d@hermes.local>
+ <AACFD746-4047-49D5-81B2-C0CD5D037FAB@public-files.de>
+ <20210525090846.513dddb1@hermes.local>
+ <trinity-3a2b0fba-68a6-47d1-8ed1-6f3fc0cf8200-1621966719535@3c-app-gmx-bs13>
+ <20210525142331.39594c34@hermes.local>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:wYewgMFePQ5gpk0JOl4gdPNONqD/BMKln78HfYRr87Kd6MA1ImHdCbcES/tOZJGUCcDbV
+ Zk+qhSNb4/wZzxZj+k2JB+45LYlDfcixMnqLiBIT/sHnSgMJ+wJ+NehJA2dbHbRwoDfyyTiVk48s
+ VpaZcxxdbozGH14iYNLplpL+L3FO7/bYL96E3B+kxdm+ZOXPm3HgUHBLIwaucidScEwYjRZPo0F0
+ +bacydioyRwEvBeRmeJQa6I8nzs5TvC3fxig3FTiKfTq+p/DTjm5Os74y3T0ogLijbG/3PPJgEeV
+ V0=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:a7Yykor0+4o=:Z9HdXdIpQ8HdnXYsUolmd1
+ eRrjtmNAX0RFdqKe4ulzwxC9R0/3DIoa42B5I3Su8hYjFPaXcjlu1odM4N8Gtovg0+SFiWeyh
+ NfYZVhaUDafr1Kd58yaVeTteDXRxEMJyvE5jSThxjyxxpnidoVs8gIw6458yaJSiChLSUYl4J
+ 7DM97BF4EjcusURML6hIwG6QFJkZ/vaZrRc/kY8S1IVOYT6Ki1XN18ALfiHWh82PA0S+P8kZt
+ SyEpcYppczWKZ+vW1bcax8Smt92CQcNuFwaY1g4DUlJKTS4f6nVzyQIazb6v1/0UCZmoPT5Vj
+ y9svFPO3aHLZgTxU8XoKViQu1ys7gAzseM/N9q/4XlE4sylrC6kUly0Pcb/9M5/IBo9FF0UcJ
+ pirLkp64RSUz4ZdNmI+jYQ0oH3COyUqwedNCI37NNQoq/Ce7uQPCx4hgO6q3ZPpMxq0JO+Bzh
+ AXR3hZUiBoIhinVJwFB8C4NDgFYMB5i6w7KsTWHOV1dOLfXvgo/iw4dwML+gDh6z9A9xe4gXr
+ /taEKUTKBNjy6YdhbRR8OcPS8eOyxT/9e0kNjUvs4F8+qWqAl2MupWioX4ZWmFg8XFEUg6l8E
+ M0dkySRWn/CkzLGxCwHCD5vKjU3pX2hLEB/J7MeZpuliovIWEkJ7ygRGT7nZLUbHgt68N3cwZ
+ kshfTpvWZ1wCA88LU4qaMlP1mQ8muyP+CkaaXelFKFKAh565dt8PH+tIhR0nLtsvtXmAEi/XZ
+ pfC4X8bp3YUMWwLzncJDreNF93MFEJiNEk6nGYAobvj5HANfFI0TGa5064nmiUF8eZ6kJRINw
+ puyFSWRMqxQ4oF0R6FtdYJ+JunTFe2JL3ho2XtrCSATZcuwqNw=
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/21/21 8:20 PM, Kuniyuki Iwashima wrote:
-> The SO_REUSEPORT option allows sockets to listen on the same port and to
-> accept connections evenly. However, there is a defect in the current
-> implementation [1]. When a SYN packet is received, the connection is tied
-> to a listening socket. Accordingly, when the listener is closed, in-flight
-> requests during the three-way handshake and child sockets in the accept
-> queue are dropped even if other listeners on the same port could accept
-> such connections.
-> 
-> This situation can happen when various server management tools restart
-> server (such as nginx) processes. For instance, when we change nginx
-> configurations and restart it, it spins up new workers that respect the new
-> configuration and closes all listeners on the old workers, resulting in the
-> in-flight ACK of 3WHS is responded by RST.
-> 
-> To avoid such a situation, users have to know deeply how the kernel handles
-> SYN packets and implement connection draining by eBPF [2]:
-> 
->    1. Stop routing SYN packets to the listener by eBPF.
->    2. Wait for all timers to expire to complete requests
->    3. Accept connections until EAGAIN, then close the listener.
-> 
->    or
-> 
->    1. Start counting SYN packets and accept syscalls using the eBPF map.
->    2. Stop routing SYN packets.
->    3. Accept connections up to the count, then close the listener.
-> 
-> In either way, we cannot close a listener immediately. However, ideally,
-> the application need not drain the not yet accepted sockets because 3WHS
-> and tying a connection to a listener are just the kernel behaviour. The
-> root cause is within the kernel, so the issue should be addressed in kernel
-> space and should not be visible to user space. This patchset fixes it so
-> that users need not take care of kernel implementation and connection
-> draining. With this patchset, the kernel redistributes requests and
-> connections from a listener to the others in the same reuseport group
-> at/after close or shutdown syscalls.
-> 
-> Although some software does connection draining, there are still merits in
-> migration. For some security reasons, such as replacing TLS certificates,
-> we may want to apply new settings as soon as possible and/or we may not be
-> able to wait for connection draining. The sockets in the accept queue have
-> not started application sessions yet. So, if we do not drain such sockets,
-> they can be handled by the newer listeners and could have a longer
-> lifetime. It is difficult to drain all connections in every case, but we
-> can decrease such aborted connections by migration. In that sense,
-> migration is always better than draining.
-> 
-> Moreover, auto-migration simplifies user space logic and also works well in
-> a case where we cannot modify and build a server program to implement the
-> workaround.
-> 
-> Note that the source and destination listeners MUST have the same settings
-> at the socket API level; otherwise, applications may face inconsistency and
-> cause errors. In such a case, we have to use the eBPF program to select a
-> specific listener or to cancel migration.
-> 
-> Special thanks to Martin KaFai Lau for bouncing ideas and exchanging code
-> snippets along the way.
-> 
-> 
-> Link:
->   [1] The SO_REUSEPORT socket option
->   https://lwn.net/Articles/542629/
-> 
->   [2] Re: [PATCH 1/1] net: Add SO_REUSEPORT_LISTEN_OFF socket option as drain mode
->   https://lore.kernel.org/netdev/1458828813.10868.65.camel@edumazet-glaptop3.roam.corp.google.com/
+Hi,
+> Gesendet: Dienstag, 25. Mai 2021 um 23:37 Uhr
+> Von: "Stephen Hemminger" <stephen@networkplumber.org>
 
-This series needs review/ACKs from TCP maintainers. Eric/Neal/Yuchung please take
-a look again.
+> That only gets called if you haven't got the bridge part in the original=
+ ip command.
+> The shared library stuff is for other non-static libraries to extend ipr=
+oute2.
+> This is unused by most distro's and you shouldn't need it.
+>
+> I think the bridge part was just not built in your version.
 
-Thanks,
-Daniel
+i see the compilation of iplink_bridge.o before linking ip, so i guess it =
+should be compiled in
+
+    CC       iplink_bridge.o
+    CC       iplink_bridge_slave.o
+
+i wonder why it tries to use a lib which was not compiled....
+
+but i still need to disable mnl and selinux after creating config.mk to av=
+oid linking errors (now i see only warning about error reporting).
+
+i updated the compile-script, so you can see what i'm doing
+
+https://github.com/frank-w/iproute2/blob/main/crosscompile.sh
+
+regards Frank
