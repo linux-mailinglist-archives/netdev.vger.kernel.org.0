@@ -2,186 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8059F3922DD
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 00:43:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0ACA392316
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 01:13:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234442AbhEZWpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 18:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60778 "EHLO
+        id S234733AbhEZXPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 19:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234099AbhEZWpG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 18:45:06 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D21C061574;
-        Wed, 26 May 2021 15:43:33 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id gb17so4945758ejc.8;
-        Wed, 26 May 2021 15:43:33 -0700 (PDT)
+        with ESMTP id S234250AbhEZXPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 19:15:17 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDF1C061574
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 16:13:45 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id t17so2193404qta.11
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 16:13:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MwRPB/VM+frBaYFa1eJH/kFwAVj7WGK7DRXENl2xvIE=;
-        b=k1UakxAGnblNS+0o4x/+AeiuAV3jTtNAAESXkueto3MTUvKuQLS/SxpzSz3SJmUfHs
-         70k70XDJtpWhRKDD/2ya36ygOLW3Cy9HZkGumI5xDLQ/VYOLgGGA40IXPz+JcgVvQnVh
-         HMPutfnT0EKFIKQisJGmNDnni/KfNokrY/8rH2OWYuHlS54bdibFHzJO3vWfQ+dtwzhz
-         5b3pRD4lxPPTJtIemuutfGIz4oQ9jcwAnG26KHCk3CE2KuP0bw7CNzEYlyiXsDLtPJ0I
-         ui4lX4U1Ecy/NtsqUP5ZQ6wIPYmAt2ZD9ltm+TFGTcQ15aC/CqBLd5jG3j2IPndKOjoG
-         SQQA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IN8PIUqSzpO6z5vpAPZC09XNuOFx1aJQshg+9VF/IRg=;
+        b=JAziqJ9BZKbGGpIZGH9Scc31E5FUlOKALHesLu2CsyoPb928UhLdhaWBHtaeOG150p
+         YGpFwRMLVA92hVz1rfkd0niHgwlNVjJKhg7RoM3Az7M1Qq3JVNG9L6psoIXkqU4FG41B
+         O1qUfc9x3MYAuJ2NGLQRePAztCpFiXNND7xr+d1L+gjSFzWohfKzVmHbv/Zw1s3dlHDI
+         2bzxE+znR9t3egRP1L4NTK5IyyyTTT+6/VHvFALRDMa2qUmW0Vj2o1KNLde8YmeO+wXH
+         vqBJJztAYeFss/i4AfsDOTTpIMV70ngLC5Gu4rlTmbpdeDTDtdcGZkIuZ/wt6MOGDujK
+         jdVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MwRPB/VM+frBaYFa1eJH/kFwAVj7WGK7DRXENl2xvIE=;
-        b=GtnV53rmjMgek+B/FBfs67aaQ+nfyl1AcnLskYntVrnDNpn8pvrwyY7bU9FqBeibSM
-         zkT/p2JAnJXZceI56Nc/FIu4ZE447iB7oCGIWXsN1JJZiGp8k2cn+Qu+a2aTeqOqjaax
-         2Q2s6D7QiCWAlGSArB3eYr624EmX+5DWkyf2wrruvSqz7KEDGBCmBk4eWlPqFGsSXQfV
-         XBY4rCUxhLYaqgl3EydMUshUjGwEGI3dVtfUVnjtbC5fwYka8Q7RRLX/lk0RvelAF8U9
-         qNP3QOazEsDn5Yp5SFYiS6cNpxMMNzjfT/9ufqNECApcURWTvxMlGJrHBpIeIE4nugCd
-         sq5A==
-X-Gm-Message-State: AOAM5305VrIuGSEG701M7rdfXXAees3R+ZwoSIRdR3Y8+ApcoU8kh3rn
-        bYfVA7vN9VBdhWWCG9hy7gk=
-X-Google-Smtp-Source: ABdhPJzfgv17rFF09ImjZ0+lmzhc7paYRwXS6NnsKDS736b1JPomOCCCIu8n6tCJ4jg5FAcOfKDjsw==
-X-Received: by 2002:a17:907:961e:: with SMTP id gb30mr608278ejc.58.1622069010835;
-        Wed, 26 May 2021 15:43:30 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id u6sm171511ejr.55.2021.05.26.15.43.29
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IN8PIUqSzpO6z5vpAPZC09XNuOFx1aJQshg+9VF/IRg=;
+        b=WyFAnLbQ4ZurPHdPovcUxbKFcq3hXIvz5v8y63UuC4ZSldSVBr82UmqM6pl4yzRhlh
+         GrZ5jj6YC6HEw0cW3A2T61C+YCgJ2eQyf5QsPh+dUdGZqrUGcoZeSWLBrPue2qtkdHmv
+         Kw3sder+Y5klbXtKk3oiaCEyBXfSx9Wp4VOHpZSt24uYSW7uNlyrGD0JsrUWPq+IMaZ7
+         Cd5S7iGGDDIKoLOvb16/erl2v7eeCx8bECNo17Qqll4CG/EysBBGFRn0KZaOZ/cI3iow
+         Y/whfF7Uaj9Xp/mZmPXomYwjAf0O4PyBlio4SOQ/p/j3D3Ha7tn3m+E4AR7NI1Ft7V5q
+         NmtQ==
+X-Gm-Message-State: AOAM530bRtbgO0Sm8iIHGFOOjFep3TV+qLqjA9Voke6ZrerQ0bOc23aL
+        XT+Tz8WOyrggWaRVN1tygYoAsuvpPt0=
+X-Google-Smtp-Source: ABdhPJwwnFJaRrUrWLOYBL+4bOo0kyoNv2a/2g4ppaSnqyBVOxLvTFch8rsHSgeL4pDVhaLZSyXWNQ==
+X-Received: by 2002:a05:622a:344:: with SMTP id r4mr539846qtw.386.1622070823471;
+        Wed, 26 May 2021 16:13:43 -0700 (PDT)
+Received: from tannerlove.nyc.corp.google.com ([2620:0:1003:316:557d:8eb6:c0af:d526])
+        by smtp.gmail.com with ESMTPSA id k24sm290476qtq.49.2021.05.26.16.13.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 May 2021 15:43:30 -0700 (PDT)
-Date:   Thu, 27 May 2021 01:43:29 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: Re: [PATCH net-next v3 4/9] net: phy: micrel: apply resume errata
- workaround for ksz8873 and ksz8863
-Message-ID: <20210526224329.raaxr6b2s2uid4dw@skbuf>
-References: <20210526043037.9830-1-o.rempel@pengutronix.de>
- <20210526043037.9830-5-o.rempel@pengutronix.de>
+        Wed, 26 May 2021 16:13:43 -0700 (PDT)
+From:   Tanner Love <tannerlove.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, Tanner Love <tannerlove@google.com>
+Subject: [PATCH net-next,v2,0/2] net: update netdev_rx_csum_fault() print dump only once
+Date:   Wed, 26 May 2021 19:13:34 -0400
+Message-Id: <20210526231336.2772011-1-tannerlove.kernel@gmail.com>
+X-Mailer: git-send-email 2.32.0.rc0.204.g9fa02ecfa5-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210526043037.9830-5-o.rempel@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 06:30:32AM +0200, Oleksij Rempel wrote:
-> The ksz8873 and ksz8863 switches are affected by following errata:
-> 
-> | "Receiver error in 100BASE-TX mode following Soft Power Down"
-> |
-> | Some KSZ8873 devices may exhibit receiver errors after transitioning
-> | from Soft Power Down mode to Normal mode, as controlled by register 195
-> | (0xC3) bits [1:0]. When exiting Soft Power Down mode, the receiver
-> | blocks may not start up properly, causing the PHY to miss data and
-> | exhibit erratic behavior. The problem may appear on either port 1 or
-> | port 2, or both ports. The problem occurs only for 100BASE-TX, not
-> | 10BASE-T.
-> |
-> | END USER IMPLICATIONS
-> | When the failure occurs, the following symptoms are seen on the affected
-> | port(s):
-> | - The port is able to link
-> | - LED0 blinks, even when there is no traffic
-> | - The MIB counters indicate receive errors (Rx Fragments, Rx Symbol
-> |   Errors, Rx CRC Errors, Rx Alignment Errors)
-> | - Only a small fraction of packets is correctly received and forwarded
-> |   through the switch. Most packets are dropped due to receive errors.
-> |
-> | The failing condition cannot be corrected by the following:
-> | - Removing and reconnecting the cable
-> | - Hardware reset
-> | - Software Reset and PCS Reset bits in register 67 (0x43)
-> |
-> | Work around:
-> | The problem can be corrected by setting and then clearing the Port Power
-> | Down bits (registers 29 (0x1D) and 45 (0x2D), bit 3). This must be done
-> | separately for each affected port after returning from Soft Power Down
-> | Mode to Normal Mode. The following procedure will ensure no further
-> | issues due to this erratum. To enter Soft Power Down Mode, set register
-> | 195 (0xC3), bits [1:0] = 10.
-> |
-> | To exit Soft Power Down Mode, follow these steps:
-> | 1. Set register 195 (0xC3), bits [1:0] = 00 // Exit soft power down mode
-> | 2. Wait 1ms minimum
-> | 3. Set register 29 (0x1D), bit [3] = 1 // Enter PHY port 1 power down mode
-> | 4. Set register 29 (0x1D), bit [3] = 0 // Exit PHY port 1 power down mode
-> | 5. Set register 45 (0x2D), bit [3] = 1 // Enter PHY port 2 power down mode
-> | 6. Set register 45 (0x2D), bit [3] = 0 // Exit PHY port 2 power down mode
-> 
-> This patch implements steps 2...6 of the suggested workaround. The first
-> step needs to be implemented in the switch driver.
+From: Tanner Love <tannerlove@google.com>
 
-Am I right in understanding that register 195 (0xc3) is not a port register?
+First patch implements DO_ONCE_LITE to abstract uses of the ".data.once"
+trick. It is defined in its own, new header file  -- rather than
+alongside the existing DO_ONCE in include/linux/once.h -- because
+include/linux/once.h includes include/linux/jump_label.h, and this
+causes the build to break for some architectures if
+include/linux/once.h is included in include/linux/printk.h or
+include/asm-generic/bug.h.
 
-To hit the erratum, you have to enter Soft Power Down in the first place,
-presumably by writing register 0xc3 from somewhere, right?
+Second patch uses DO_ONCE_LITE in netdev_rx_csum_fault to print dump
+only once.
 
-Where does Linux write this register from?
+This is a v2 of https://patchwork.kernel.org/project/netdevbpf/patch/20210422194738.2175542-2-tannerlove.kernel@gmail.com/
 
-Once we find that place that enters/exits Soft Power Down mode, can't we
-just toggle the Port Power Down bits for each port, exactly like the ERR
-workaround says, instead of fooling around with a PHY driver?
+Tanner Love (2):
+  once: implement DO_ONCE_LITE for non-fast-path "do once" functionality
+  net: update netdev_rx_csum_fault() print dump only once
 
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  drivers/net/phy/micrel.c | 22 +++++++++++++++++++++-
->  1 file changed, 21 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-> index 227d88db7d27..f03188ed953a 100644
-> --- a/drivers/net/phy/micrel.c
-> +++ b/drivers/net/phy/micrel.c
-> @@ -1048,6 +1048,26 @@ static int ksz8873mll_config_aneg(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +static int ksz886x_resume(struct phy_device *phydev)
-> +{
-> +	int ret;
-> +
-> +	/* Apply errata workaround for KSZ8863 and KSZ8873:
-> +	 * Receiver error in 100BASE-TX mode following Soft Power Down
-> +	 *
-> +	 * When exiting Soft Power Down mode, the receiver blocks may not start
-> +	 * up properly, causing the PHY to miss data and exhibit erratic
-> +	 * behavior.
-> +	 */
-> +	usleep_range(1000, 2000);
-> +
-> +	ret = phy_set_bits(phydev, MII_BMCR, BMCR_PDOWN);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return phy_clear_bits(phydev, MII_BMCR, BMCR_PDOWN);
-> +}
-> +
->  static int kszphy_get_sset_count(struct phy_device *phydev)
->  {
->  	return ARRAY_SIZE(kszphy_hw_stats);
-> @@ -1401,7 +1421,7 @@ static struct phy_driver ksphy_driver[] = {
->  	/* PHY_BASIC_FEATURES */
->  	.config_init	= kszphy_config_init,
->  	.suspend	= genphy_suspend,
-> -	.resume		= genphy_resume,
-> +	.resume		= ksz886x_resume,
+ fs/xfs/xfs_message.h      | 13 +++----------
+ include/asm-generic/bug.h | 37 +++++++------------------------------
+ include/linux/once_lite.h | 24 ++++++++++++++++++++++++
+ include/linux/printk.h    | 23 +++--------------------
+ kernel/trace/trace.h      | 13 +++----------
+ net/core/dev.c            | 14 +++++++++-----
+ 6 files changed, 49 insertions(+), 75 deletions(-)
+ create mode 100644 include/linux/once_lite.h
 
-Are you able to explain the relation between the call paths of
-phy_resume() and the lifetime of the Soft Power Down setting of the
-switch? How do we know that the PHYs are resumed after the switch has
-exited Soft Power Down mode?
+-- 
+2.32.0.rc0.204.g9fa02ecfa5-goog
 
->  }, {
->  	.name		= "Micrel KSZ87XX Switch",
->  	/* PHY_BASIC_FEATURES */
-> -- 
-> 2.29.2
-> 
