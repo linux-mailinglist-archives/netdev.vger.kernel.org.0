@@ -2,157 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E6153913A4
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 11:28:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 346653913A7
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 11:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233538AbhEZJ3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 05:29:37 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3975 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233325AbhEZJ31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 05:29:27 -0400
-Received: from dggems706-chm.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Fqlrd4V6HzQsSm;
-        Wed, 26 May 2021 17:24:17 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggems706-chm.china.huawei.com (10.3.19.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 26 May 2021 17:27:54 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 26 May 2021 17:27:54 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@huawei.com>, <dledford@redhat.com>, <jgg@ziepe.ca>,
-        <netanel@amazon.com>, <akiyano@amazon.com>,
-        <thomas.lendacky@amd.com>, <irusskikh@marvell.com>,
-        <michael.chan@broadcom.com>, <edwin.peer@broadcom.com>,
-        <rohitm@chelsio.com>, <jesse.brandeburg@intel.com>,
-        <jacob.e.keller@intel.com>, <ioana.ciornei@nxp.com>,
-        <vladimir.oltean@nxp.com>, <sgoutham@marvell.com>,
-        <sbhatta@marvell.com>, <saeedm@nvidia.com>,
-        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
-        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
-        <linux-wireless@vger.kernel.org>
-Subject: [RFC net-next 4/4] net: hns3: add ethtool support for CQE/EQE mode configuration
-Date:   Wed, 26 May 2021 17:27:42 +0800
-Message-ID: <1622021262-8881-5-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1622021262-8881-1-git-send-email-tanhuazhong@huawei.com>
-References: <1622021262-8881-1-git-send-email-tanhuazhong@huawei.com>
+        id S233627AbhEZJ35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 05:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233605AbhEZJ3o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 05:29:44 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB50BC06138C
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 02:28:12 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id n2so404967wrm.0
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 02:28:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=T46Fkh/snm79TPYjxPV8Q6sUOb7bSN2nDklHppfuD7U=;
+        b=V8miUGcHmom+hPFSXg2JT9324Btql1cDk/LZdt3ZeMOdEaYMqO/SMWswXju19B41AT
+         fxX05hIGeh97cg/sGFINIK6xmFT8wXOTvA1drnWEk2v5Wjp+g7cQzcvuZls94cOxmznx
+         +egRciq1M5t7PTpWLabtLAo2qdKTktdOcjDIdZgumzEVsydki8Ps8qVKbGjTCxUaQt7j
+         CGwCP+qAms3tkFEmZkH+sbyO1Gt8OKr1xqkMOTfCNg7lZt9e6oNUYAiWrxliEAjG8fvn
+         Q85cresezfzGmBQw1aXgfyKskPQIJwtw10XjBQIuDyD9LtzpR6rmX57ORrJ79wFhulME
+         YoEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=T46Fkh/snm79TPYjxPV8Q6sUOb7bSN2nDklHppfuD7U=;
+        b=BKI9NtyO4UF/9zMV0FXzJrSEZpaoIqBcFCSya8FwufRecCp658+wu9Z/7aUOXnQfwG
+         mnBU1ENBLDXb9Ed9FPJccnodbz+YcTZ7CNrZWN+/tOg9NGwdg5YXXcy5vOEy1Da2ytri
+         l1dx8LCE0cdIVoPZMCHSkAZWvMoeE1COKqBXRb6y4N1afnzIvEZ3jB40bmOCpOz1h8AA
+         sGgd56YjKdZ6tSADGMYDjgC8XV+hflr7uMfyEjZz41leZDU8tQNt0D5O7tIPIUf8znPM
+         Azi5wLoIPf6XbGbKXjIR9F5p5VGouHAIpiBwsI9o3Dk6nEQBw84A2pWJsOcLQwAwzcmq
+         iWZQ==
+X-Gm-Message-State: AOAM532ttwow4kCWl4uh9wrZ/bD3O15PSX8+p/ZkMXb3DQp0PWYAwLwz
+        qeRJwYzrj0W0SECokTX0T7u07k6FJ1Q4UA==
+X-Google-Smtp-Source: ABdhPJxxLJkJoZDV7NzE/k/mdcXKtSU5x9j+Kv/YTwFDabvnODHS0PBLpvnXAzH6NU46+0ffYnwRVg==
+X-Received: by 2002:a5d:64eb:: with SMTP id g11mr32425591wri.260.1622021291219;
+        Wed, 26 May 2021 02:28:11 -0700 (PDT)
+Received: from ?IPv6:2a01:e34:ed2f:f020:84b:9126:550a:94fc? ([2a01:e34:ed2f:f020:84b:9126:550a:94fc])
+        by smtp.googlemail.com with ESMTPSA id k205sm14086604wmf.13.2021.05.26.02.28.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 May 2021 02:28:10 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: netlink: remove netlink_broadcast_filtered
+To:     menglong8.dong@gmail.com, kuba@kernel.org
+Cc:     davem@davemloft.net, mkubecek@suse.cz, dsahern@kernel.org,
+        zhudi21@huawei.com, johannes.berg@intel.com,
+        marcelo.leitner@gmail.com, dong.menglong@zte.com.cn,
+        ast@kernel.org, yhs@fb.com, rdunlap@infradead.org,
+        yangyingliang@huawei.com, 0x7f454c46@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20210309151834.58675-1-dong.menglong@zte.com.cn>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <6d59bf25-2e1e-5bd7-07f1-dff2e73c7a7e@linaro.org>
+Date:   Wed, 26 May 2021 11:28:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20210309151834.58675-1-dong.menglong@zte.com.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support in ethtool for switching EQE/CQE mode.
+On 09/03/2021 16:18, menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <dong.menglong@zte.com.cn>
+> 
+> It seems that 'netlink_broadcast_filtered()' is not used anywhere
+> besides 'netlink_broadcast()'. In order to reduce function calls,
+> just remove it.
+> 
+> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
 
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  6 +++---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  3 +++
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 16 +++++++++++++++-
- include/linux/ethtool.h                            |  2 ++
- 4 files changed, 23 insertions(+), 4 deletions(-)
+I was trying to figure out if the function could be useful to filter out
+some netlink messages when sending them to userspace.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 3399f26..2096f22 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -4553,9 +4553,9 @@ static void hns3_set_cq_period_mode(struct hns3_nic_priv *priv,
- 	}
- }
- 
--static void hns3_cq_period_mode_init(struct hns3_nic_priv *priv,
--				     enum dim_cq_period_mode tx_mode,
--				     enum dim_cq_period_mode rx_mode)
-+void hns3_cq_period_mode_init(struct hns3_nic_priv *priv,
-+			      enum dim_cq_period_mode tx_mode,
-+			      enum dim_cq_period_mode rx_mode)
- {
- 	hns3_set_cq_period_mode(priv, tx_mode, true);
- 	hns3_set_cq_period_mode(priv, rx_mode, false);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 8445596..b031fd0 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -666,4 +666,7 @@ void hns3_dbg_register_debugfs(const char *debugfs_dir_name);
- void hns3_dbg_unregister_debugfs(void);
- void hns3_shinfo_pack(struct skb_shared_info *shinfo, __u32 *size);
- u16 hns3_get_max_available_channels(struct hnae3_handle *h);
-+void hns3_cq_period_mode_init(struct hns3_nic_priv *priv,
-+			      enum dim_cq_period_mode tx_mode,
-+			      enum dim_cq_period_mode rx_mode);
- #endif
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 0042be0..b1fcd3e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1159,6 +1159,11 @@ static int hns3_get_coalesce(struct net_device *netdev,
- 	coal_base->tx_max_coalesced_frames = tx_coal->int_ql;
- 	coal_base->rx_max_coalesced_frames = rx_coal->int_ql;
- 
-+	cmd->use_cqe_mode_tx = (priv->tx_cqe_mode ==
-+				DIM_CQ_PERIOD_MODE_START_FROM_CQE);
-+	cmd->use_cqe_mode_rx = (priv->rx_cqe_mode ==
-+				DIM_CQ_PERIOD_MODE_START_FROM_CQE);
-+
- 	return 0;
- }
- 
-@@ -1328,6 +1333,8 @@ static int hns3_set_coalesce(struct net_device *netdev,
- 	struct hns3_enet_coalesce *tx_coal = &priv->tx_coal;
- 	struct hns3_enet_coalesce *rx_coal = &priv->rx_coal;
- 	u16 queue_num = h->kinfo.num_tqps;
-+	enum dim_cq_period_mode tx_mode;
-+	enum dim_cq_period_mode rx_mode;
- 	int ret;
- 	int i;
- 
-@@ -1353,6 +1360,12 @@ static int hns3_set_coalesce(struct net_device *netdev,
- 	for (i = 0; i < queue_num; i++)
- 		hns3_set_coalesce_per_queue(netdev, coal_base, i);
- 
-+	tx_mode = cmd->use_cqe_mode_tx ? DIM_CQ_PERIOD_MODE_START_FROM_CQE :
-+		  DIM_CQ_PERIOD_MODE_START_FROM_EQE;
-+	rx_mode = cmd->use_cqe_mode_rx ? DIM_CQ_PERIOD_MODE_START_FROM_CQE :
-+		  DIM_CQ_PERIOD_MODE_START_FROM_EQE;
-+	hns3_cq_period_mode_init(priv, tx_mode, rx_mode);
-+
- 	return 0;
- }
- 
-@@ -1604,7 +1617,8 @@ static int hns3_set_priv_flags(struct net_device *netdev, u32 pflags)
- 				 ETHTOOL_COALESCE_USE_ADAPTIVE |	\
- 				 ETHTOOL_COALESCE_RX_USECS_HIGH |	\
- 				 ETHTOOL_COALESCE_TX_USECS_HIGH |	\
--				 ETHTOOL_COALESCE_MAX_FRAMES)
-+				 ETHTOOL_COALESCE_MAX_FRAMES	|	\
-+				 ETHTOOL_COALESCE_USE_CQE)
- 
- static const struct ethtool_ops hns3vf_ethtool_ops = {
- 	.supported_coalesce_params = HNS3_ETHTOOL_COALESCE,
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 9d0a386..4867008 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -250,6 +250,8 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
- 	 ETHTOOL_COALESCE_RX_USECS_LOW | ETHTOOL_COALESCE_RX_USECS_HIGH | \
- 	 ETHTOOL_COALESCE_PKT_RATE_LOW | ETHTOOL_COALESCE_PKT_RATE_HIGH | \
- 	 ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL)
-+#define ETHTOOL_COALESCE_USE_CQE					\
-+	(ETHTOOL_COALESCE_USE_CQE_RX | ETHTOOL_COALESCE_USE_CQE_TX)
- 
- #define ETHTOOL_STAT_NOT_SET	(~0ULL)
- 
+Still looking for examples :/
+
+On the other side, this function was put there as part of the network
+namespace infrastructure. Even there is no user, it may be needed.
+
+> ---
+>  include/linux/netlink.h  |  4 ----
+>  net/netlink/af_netlink.c | 22 ++--------------------
+>  2 files changed, 2 insertions(+), 24 deletions(-)
+> 
+> diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+> index 0bcf98098c5a..277f33e64bb3 100644
+> --- a/include/linux/netlink.h
+> +++ b/include/linux/netlink.h
+> @@ -160,10 +160,6 @@ bool netlink_strict_get_check(struct sk_buff *skb);
+>  int netlink_unicast(struct sock *ssk, struct sk_buff *skb, __u32 portid, int nonblock);
+>  int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, __u32 portid,
+>  		      __u32 group, gfp_t allocation);
+> -int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb,
+> -			       __u32 portid, __u32 group, gfp_t allocation,
+> -			       int (*filter)(struct sock *dsk, struct sk_buff *skb, void *data),
+> -			       void *filter_data);
+>  int netlink_set_err(struct sock *ssk, __u32 portid, __u32 group, int code);
+>  int netlink_register_notifier(struct notifier_block *nb);
+>  int netlink_unregister_notifier(struct notifier_block *nb);
+> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+> index dd488938447f..b462fdc87e9b 100644
+> --- a/net/netlink/af_netlink.c
+> +++ b/net/netlink/af_netlink.c
+> @@ -1405,8 +1405,6 @@ struct netlink_broadcast_data {
+>  	int delivered;
+>  	gfp_t allocation;
+>  	struct sk_buff *skb, *skb2;
+> -	int (*tx_filter)(struct sock *dsk, struct sk_buff *skb, void *data);
+> -	void *tx_data;
+>  };
+>  
+>  static void do_one_broadcast(struct sock *sk,
+> @@ -1460,11 +1458,6 @@ static void do_one_broadcast(struct sock *sk,
+>  			p->delivery_failure = 1;
+>  		goto out;
+>  	}
+> -	if (p->tx_filter && p->tx_filter(sk, p->skb2, p->tx_data)) {
+> -		kfree_skb(p->skb2);
+> -		p->skb2 = NULL;
+> -		goto out;
+> -	}
+>  	if (sk_filter(sk, p->skb2)) {
+>  		kfree_skb(p->skb2);
+>  		p->skb2 = NULL;
+> @@ -1487,10 +1480,8 @@ static void do_one_broadcast(struct sock *sk,
+>  	sock_put(sk);
+>  }
+>  
+> -int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid,
+> -	u32 group, gfp_t allocation,
+> -	int (*filter)(struct sock *dsk, struct sk_buff *skb, void *data),
+> -	void *filter_data)
+> +int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
+> +		      u32 group, gfp_t allocation)
+>  {
+>  	struct net *net = sock_net(ssk);
+>  	struct netlink_broadcast_data info;
+> @@ -1509,8 +1500,6 @@ int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid
+>  	info.allocation = allocation;
+>  	info.skb = skb;
+>  	info.skb2 = NULL;
+> -	info.tx_filter = filter;
+> -	info.tx_data = filter_data;
+>  
+>  	/* While we sleep in clone, do not allow to change socket list */
+>  
+> @@ -1536,14 +1525,7 @@ int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid
+>  	}
+>  	return -ESRCH;
+>  }
+> -EXPORT_SYMBOL(netlink_broadcast_filtered);
+>  
+> -int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
+> -		      u32 group, gfp_t allocation)
+> -{
+> -	return netlink_broadcast_filtered(ssk, skb, portid, group, allocation,
+> -		NULL, NULL);
+> -}
+>  EXPORT_SYMBOL(netlink_broadcast);
+>  
+>  struct netlink_set_err_data {
+> 
+
+
 -- 
-2.7.4
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
