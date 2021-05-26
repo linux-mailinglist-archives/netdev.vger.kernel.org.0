@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C105D3916F4
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:02:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8F03916F7
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:02:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234581AbhEZMD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 08:03:26 -0400
-Received: from mail-mw2nam12on2042.outbound.protection.outlook.com ([40.107.244.42]:37697
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        id S234562AbhEZMDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 08:03:44 -0400
+Received: from mail-bn7nam10on2071.outbound.protection.outlook.com ([40.107.92.71]:57761
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233298AbhEZMDP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 08:03:15 -0400
+        id S234382AbhEZMDX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 08:03:23 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XWrcuKQN0AhQjZ6Gw0IiPHJ5WX6UXcDRJ1GcjwNlS9CTlR1heLvFkWQNGhBoBF204eLWAzWmmGM/+YzuNMHr7OIyDyrAInEJ0MQhuxooGEV34Oxy2xCszkyGifZvhFtu7aqzpSP6Pm992n1jLVrltEny+2s02/lRSWfGr6MUfRyn7WUpCOXZWQdVRUjqJnS+PIqRLy6jewT1I3KiROfJOHVkjjvBedPLw2fw+JTV04/vz1DrcP0yYlu95EXjAnWt0fC1EQSrTBul/LDicfLDGNEy2d7inZJ5HHVbyxUDfohfm+9xZjuLRNFqCHNv/X2PbrB48hLG+bw1kLVGi4o35A==
+ b=PhoJBfmm567XsqnMqU/hMupKeKzpd4mZGRMJypqyFakBp4vVWFtv5qjdt6CbQ6jp0tOOddoVZpnb9fEc4MWF9A5PDtuYR+GaNnTI18ucK1NPBOl3Sid6q7XJA/qnOwjWv3/bLyDZniAbDqJq+tMNYR23TY2rIh9AHOudUkIGE+oive9b8y6v+URjge0cA+IJ/4pfsU8JFxqNWxfgg4lKqpAHRivoms88YJvegDXT2XxZsCb90S69dJJv7EDnqkeX4cFUPdhPo1hRQP+WHUvfSGzsSpajgHwtfbnXShmRpwM7Qdu9CYkYNh7dCIqPX+Kjgla5h4HqNbtyEoJxJ+TaXA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CQMyxiukSmLRp5rqH5Ch0q79KCPOdOg1wb4fhUALKf0=;
- b=hJjFSutTcKwobHPqtvu2mpQKA3nt2+6Z0cTrypWUFx3qCaHVhcI8WM6x7RWucvEkPirIy0Yr3ipsqzDQakygiseY9b2dG6aKWMVVbn703UaLxI1Z08hImY3thuBq3VpzyGqhEPvB5suCAUDxFcrM/+mfURKSaYNVqO0RH3TCDX0f80/oROSwWCzIHIOVZ/WnNO5SQPZzwjasa8RfaVxLN/pnE/YpD0d5amDrL4BFc0zjmxn0uyQ/WVMdnFJ5kZuuk5hKQPfsTi+rXbEqi8yE8KnhRBcmGIiyl/LqWzBa1eHoJHDXYgWyQfNkJkoVBjBN+t4KcWY3fMFJN2aY8SaoCQ==
+ bh=oI/vudcgjl4J/ikbfGkzBBKY6/Q7PLea29EEp5GMGVc=;
+ b=E52YJyTuo5TSN5uH6HPwurESgwb8NUvrPFzmVZOGXF5H9HBhtdcxNzdcIifkiUukeo6aUD9R7Bpe0c6BcMcy+8zcYCEWi5d6qKVh19AKQhTGdPcH/CBhXWabzrksLaj7T7wwINGeejv3T6TY4Ti7pN2Fxr6YFz938ut29BRyI15KEtdDzg1+ViDp5Ulgew2adyQvUE1jQ61RI6WnOT5QFtz+Bbs6wkjR5Eva2RG+5ksh30P06+edgj1F4fXHCdjEbvyaXRRR3SDkMOHtOjR8smQZoEME1BEAC9NXYsqY+cfp29l2bV0ke6S18etiWNCeTlLkJOCV2uzA5gSsDstcvA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=networkplumber.org
  smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CQMyxiukSmLRp5rqH5Ch0q79KCPOdOg1wb4fhUALKf0=;
- b=S288AIiaNcnJ6b6YZqKDLEBDH2snjmoOu/rgPi23p4TkFXf35N1bXS5OXTFexzp+LvGXL/dHNzMz54YzSHw4RiKY5yGA5loMoNk8AtEJZ8Qf2lDJRrXp1IT08jz/dsETAhPAECrRYjnHCFfset4/4PlWauLLH7pC07vcuZItat/j1PYZfuHnD1CUzWW50oixvCIgvngCOP3QFUHS//UYsq3i6DkWImrb98SLY/cEAebMzBhqCltzCZ4xuF3hxTn9oeDOiqXcbQS7Ej+qqNpHFApk71yO1lU4Rb4byZXnvrM97V/3ueNHkz8wM9ifhel0NcESc2+ZuvFeSobzhCkV7w==
-Received: from DM6PR02CA0165.namprd02.prod.outlook.com (2603:10b6:5:332::32)
- by CY4PR12MB1190.namprd12.prod.outlook.com (2603:10b6:903:39::9) with
+ bh=oI/vudcgjl4J/ikbfGkzBBKY6/Q7PLea29EEp5GMGVc=;
+ b=j4ItjnPQB4srolrtF41JgKgm07kb3bPp0MfeEs5WF3dIDdIAsYQI7NT9LrxkAb+84PE5PS0n/V5m3bTyGNPCs8OfVNbamuAy0NboYNeIt3rTQa3u6fphjFWCAPyZ1/GEjuevBxyo8C7/NSf8Bxfu8+YhU5iyBaH6d0gLveX/xEkdteJQuwYA++qteHrAShZ2sgUoqqlvFD4+v2MUo9oWYCQjWPIcrayzUF89ReRLyjDyqHclsoonZ9exn9d4gxgmfvKjJsH7gPitz0TTi66tnAJu9azH2SL6rGXq7sseG/BMPmeqW+sxvNN4Tp77jErSRaZjzXNNrAVR6R/gvbni3A==
+Received: from DM6PR05CA0062.namprd05.prod.outlook.com (2603:10b6:5:335::31)
+ by BY5PR12MB4306.namprd12.prod.outlook.com (2603:10b6:a03:206::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.27; Wed, 26 May
- 2021 12:01:42 +0000
-Received: from DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:332:cafe::69) by DM6PR02CA0165.outlook.office365.com
- (2603:10b6:5:332::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend
- Transport; Wed, 26 May 2021 12:01:42 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.26; Wed, 26 May
+ 2021 12:01:50 +0000
+Received: from DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:335:cafe::ed) by DM6PR05CA0062.outlook.office365.com
+ (2603:10b6:5:335::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.11 via Frontend
+ Transport; Wed, 26 May 2021 12:01:50 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
  header.d=none;networkplumber.org; dmarc=pass action=none
@@ -46,24 +46,24 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.34 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.34; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT040.mail.protection.outlook.com (10.13.173.133) with Microsoft SMTP
+ DM6NAM11FT010.mail.protection.outlook.com (10.13.172.222) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 12:01:42 +0000
+ 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 12:01:50 +0000
 Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
- 2021 12:01:29 +0000
+ 2021 12:01:32 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 26 May 2021 12:01:26 +0000
+ Transport; Wed, 26 May 2021 12:01:29 +0000
 From:   <dlinkin@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>,
         <stephen@networkplumber.org>, <dsahern@gmail.com>,
         <vladbu@nvidia.com>, <parav@nvidia.com>, <huyn@nvidia.com>,
         Dmytro Linkin <dlinkin@nvidia.com>
-Subject: [PATCH RFC net-next v3 05/18] netdevsim: Implement legacy/switchdev mode for VFs
-Date:   Wed, 26 May 2021 15:00:57 +0300
-Message-ID: <1622030470-21434-6-git-send-email-dlinkin@nvidia.com>
+Subject: [PATCH RFC net-next v3 06/18] devlink: Introduce rate object
+Date:   Wed, 26 May 2021 15:00:58 +0300
+Message-ID: <1622030470-21434-7-git-send-email-dlinkin@nvidia.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1622030470-21434-1-git-send-email-dlinkin@nvidia.com>
 References: <1622030470-21434-1-git-send-email-dlinkin@nvidia.com>
@@ -71,226 +71,455 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a5baaa01-387c-4a9f-dd0b-08d9203e0705
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1190:
-X-Microsoft-Antispam-PRVS: <CY4PR12MB1190B60B4CE26EBA69D0D676CB249@CY4PR12MB1190.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1824;
+X-MS-Office365-Filtering-Correlation-Id: d82f7c31-2e8d-444b-03b0-08d9203e0bbe
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4306:
+X-Microsoft-Antispam-PRVS: <BY5PR12MB430609A64DAF3A780815FA50CB249@BY5PR12MB4306.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:127;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0GMXxjlpCZCd8B2d8oIQT2QzcbpN2czScQKaTfEvE8/fpovORtHzATkZOdF7PQQ2vm0XUA8IrQKvcOxoSCP58fh/fTwxIfYMB/XX9diIA7yzubUhNZMpog6vB6K4B0WIgrJpavv+RxmdJL8zyjPodXDxXHfyhFqPliziyw2bHh8u4W7UDobeZ/ETbFJSeZC/aG6IcQSVLCImJ3KiesrGOHej3PSJE/Us0XE1VTze1iy8aVWX6wn3CmNI7FJca5zCqPh9nnMKoYhNlGaempqAvLk9ZB3OMPsssICuqvu8pRDd5CVxoGSD7vvawCCt0s8z3T67ZVjsQ7bsIyuC+IcNf49aOLubuJF/K+x3aeCrts3vMnpZiKjoK8O1JfE5DKr8FIQjtFiaGwQLrNJXEYuWK5v6/mGIoINYVrD/IVya9tL472hSjL4jCwZRn0u7hqv/krdB14E0xqXMFAkG3VZ9VMmp6syb8EkTFzd0j/tk+Lo7sVwUbrT1c+RBi7XmRKOZ2lDz+cv6f5vtSiIf1m8FXL3KOOIoAXs7xzBbmYc814OOXuJZeuWOF9ybcPTvvN5uRzLf+DoGXwAqwD8ZDL7qTP+aiVzotxDJiOUzG9z27xKQg2ladGiSgMKUNpT1LPe9AoglV6A5ExSdBuUhqVFhiOZ2k/FNJfEDZjDp7KNmUkg=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(47076005)(83380400001)(7696005)(36756003)(336012)(70206006)(36860700001)(8676002)(70586007)(7636003)(356005)(186003)(82310400003)(498600001)(8936002)(54906003)(26005)(4326008)(5660300002)(426003)(36906005)(6666004)(107886003)(86362001)(2876002)(2906002)(2616005)(6916009);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: pAfaX4r3BalAfURq3q2P8fo+LZZK0KoD7YjUHL4ObgkiYAcbsxTxy+8p0ql7ed/yh3HeyrTws1wZN6uX9k00ZbJ5Czym965Rsy9Q0/Rb1ZkYwBURx/7k3JBBbeYzyKE7Yk10SbeT1NVooiPPskMQzJAUxd+61Dg9kz/p8xWvB1xWN73b6k2x+Xg8CtTK/oO4nEGzX/KkFgLLPo984mc4KP85rwm5Az0nQI0b2Hu2U8Msg+OQXY59vyk+UgCw0vN73s+PwwIpVdEMKjmrTpkRkUXSOTUhNq7GdTHFxTbpCHh1kBqaSoiD94zzl1WFN6FneFAWlQjDJRP7lwAit6pB5OCE6xUSm6o4L72ps43ZgCFbQkg3hW1PjazlFE8TaAHjQ5zWPtu7HpkNvq5nkZWS5MxbVdTucVbkLBbCGmMHGXQ+fpVE7apI2YegxTDI7dMKRmk2o4qWPdoqO+fZvL0ECD/rD3HEZ2Yb0s57mK0kya+Zc+VLEXxtGVwOlcMKHyAb7MfvFuRCgxSyK4xtAYIA68dTJj3zLPtRLFI+LmMMoub4gJmMyI9SKIE4oHPxfk60Zxe9xui+h47I+6qoB17TFmKXaIWT12J6fQiA+EqnrS+jtmHl6Ftd6rnUphAweSQ7WpgobMbH30RS/o94AQasNdcx4UoHa9/5suCzjfFhEuW3lT8GphaDxMCm2LdAWhTO
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(376002)(396003)(346002)(136003)(46966006)(36840700001)(478600001)(8936002)(2906002)(356005)(336012)(8676002)(7636003)(26005)(70586007)(2616005)(36860700001)(82310400003)(2876002)(54906003)(5660300002)(107886003)(70206006)(6916009)(186003)(316002)(7696005)(426003)(36906005)(82740400003)(30864003)(86362001)(4326008)(83380400001)(6666004)(36756003)(47076005)(461764006);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 12:01:42.6352
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 12:01:50.5559
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5baaa01-387c-4a9f-dd0b-08d9203e0705
+X-MS-Exchange-CrossTenant-Network-Message-Id: d82f7c31-2e8d-444b-03b0-08d9203e0bbe
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1190
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4306
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmytro Linkin <dlinkin@nvidia.com>
 
-Implement callbacks to set/get eswitch mode value. Add helpers to check
-current mode.
+Allow registering rate object for devlink ports with dedicated
+devlink_rate_leaf_{create|destroy}() API. Implement new netlink
+DEVLINK_CMD_RATE_GET command that is used to retrieve rate object info.
+Add new DEVLINK_CMD_RATE_{NEW|DEL} commands that are used for
+notifications when creating/deleting leaf rate object.
 
-Instantiate VFs' net devices and devlink ports on switchdev enabling and
-remove them on legacy enabling. Changing number of VFs while in
-switchdev mode triggers VFs creation/deletion.
+Rate API is intended to be used for rate limiting of individual
+devlink ports (leafs) and their aggregates (nodes).
 
-Also disable NDO API callback to set VF rate, since it's legacy API.
-Switchdev API to set VF rate will be implemented in one of the next
-patches.
+Example:
 
+$ devlink port show
+pci/0000:03:00.0/0
+pci/0000:03:00.0/1
+
+$ devlink port function rate show
+pci/0000:03:00.0/0: type leaf
+pci/0000:03:00.0/1: type leaf
+
+Co-developed-by: Vlad Buslov <vladbu@nvidia.com>
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/netdevsim/bus.c       | 17 +++++++++-
- drivers/net/netdevsim/dev.c       | 69 +++++++++++++++++++++++++++++++++++++++
- drivers/net/netdevsim/netdev.c    |  5 +++
- drivers/net/netdevsim/netdevsim.h | 14 ++++++++
- 4 files changed, 104 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
-index e29146d..b56003d 100644
---- a/drivers/net/netdevsim/bus.c
-+++ b/drivers/net/netdevsim/bus.c
-@@ -27,6 +27,9 @@ static struct nsim_bus_dev *to_nsim_bus_dev(struct device *dev)
- static int nsim_bus_dev_vfs_enable(struct nsim_bus_dev *nsim_bus_dev,
- 				   unsigned int num_vfs)
- {
-+	struct nsim_dev *nsim_dev;
-+	int err = 0;
-+
- 	if (nsim_bus_dev->max_vfs < num_vfs)
- 		return -ENOMEM;
- 
-@@ -34,12 +37,24 @@ static int nsim_bus_dev_vfs_enable(struct nsim_bus_dev *nsim_bus_dev,
- 		return -ENOMEM;
- 	nsim_bus_dev->num_vfs = num_vfs;
- 
--	return 0;
-+	nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
-+	if (nsim_esw_mode_is_switchdev(nsim_dev)) {
-+		err = nsim_esw_switchdev_enable(nsim_dev, NULL);
-+		if (err)
-+			nsim_bus_dev->num_vfs = 0;
-+	}
-+
-+	return err;
- }
- 
- void nsim_bus_dev_vfs_disable(struct nsim_bus_dev *nsim_bus_dev)
- {
-+	struct nsim_dev *nsim_dev;
-+
- 	nsim_bus_dev->num_vfs = 0;
-+	nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
-+	if (nsim_esw_mode_is_switchdev(nsim_dev))
-+		nsim_esw_legacy_enable(nsim_dev, NULL);
- }
- 
- static ssize_t
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 8bd7654..ed9ce08 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -439,6 +439,72 @@ static void nsim_dev_dummy_region_exit(struct nsim_dev *nsim_dev)
- 	devlink_region_destroy(nsim_dev->dummy_region);
- }
- 
-+static void __nsim_dev_port_del(struct nsim_dev_port *nsim_dev_port);
-+int nsim_esw_legacy_enable(struct nsim_dev *nsim_dev, struct netlink_ext_ack *extack)
-+{
-+	struct nsim_dev_port *nsim_dev_port, *tmp;
-+
-+	mutex_lock(&nsim_dev->port_list_lock);
-+	list_for_each_entry_safe(nsim_dev_port, tmp, &nsim_dev->port_list, list)
-+		if (nsim_dev_port_is_vf(nsim_dev_port))
-+			__nsim_dev_port_del(nsim_dev_port);
-+	mutex_unlock(&nsim_dev->port_list_lock);
-+	nsim_dev->esw_mode = DEVLINK_ESWITCH_MODE_LEGACY;
-+	return 0;
-+}
-+
-+int nsim_esw_switchdev_enable(struct nsim_dev *nsim_dev, struct netlink_ext_ack *extack)
-+{
-+	struct nsim_bus_dev *nsim_bus_dev = nsim_dev->nsim_bus_dev;
-+	int i, err;
-+
-+	for (i = 0; i < nsim_bus_dev->num_vfs; i++) {
-+		err = nsim_dev_port_add(nsim_bus_dev, NSIM_DEV_PORT_TYPE_VF, i);
-+		if (err) {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to initialize VFs' netdevsim ports");
-+			pr_err("Failed to initialize VF id=%d. %d.\n", i, err);
-+			goto err_port_add_vfs;
-+		}
-+	}
-+	nsim_dev->esw_mode = DEVLINK_ESWITCH_MODE_SWITCHDEV;
-+	return 0;
-+
-+err_port_add_vfs:
-+	for (i--; i >= 0; i--)
-+		nsim_dev_port_del(nsim_bus_dev, NSIM_DEV_PORT_TYPE_VF, i);
-+	return err;
-+}
-+
-+static int nsim_devlink_eswitch_mode_set(struct devlink *devlink, u16 mode,
-+					 struct netlink_ext_ack *extack)
-+{
-+	struct nsim_dev *nsim_dev = devlink_priv(devlink);
-+	int err = 0;
-+
-+	mutex_lock(&nsim_dev->nsim_bus_dev->vfs_lock);
-+	if (mode == nsim_dev->esw_mode)
-+		goto unlock;
-+
-+	if (mode == DEVLINK_ESWITCH_MODE_LEGACY)
-+		err = nsim_esw_legacy_enable(nsim_dev, extack);
-+	else if (mode == DEVLINK_ESWITCH_MODE_SWITCHDEV)
-+		err = nsim_esw_switchdev_enable(nsim_dev, extack);
-+	else
-+		err = -EINVAL;
-+
-+unlock:
-+	mutex_unlock(&nsim_dev->nsim_bus_dev->vfs_lock);
-+	return err;
-+}
-+
-+static int nsim_devlink_eswitch_mode_get(struct devlink *devlink, u16 *mode)
-+{
-+	struct nsim_dev *nsim_dev = devlink_priv(devlink);
-+
-+	*mode = nsim_dev->esw_mode;
-+	return 0;
-+}
-+
- struct nsim_trap_item {
- 	void *trap_ctx;
- 	enum devlink_trap_action action;
-@@ -925,6 +991,8 @@ static int nsim_dev_devlink_trap_init(struct devlink *devlink,
- }
- 
- static const struct devlink_ops nsim_dev_devlink_ops = {
-+	.eswitch_mode_set = nsim_devlink_eswitch_mode_set,
-+	.eswitch_mode_get = nsim_devlink_eswitch_mode_get,
- 	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT |
- 					 DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
- 	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
-@@ -1177,6 +1245,7 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
- 
- 	devlink_params_publish(devlink);
- 	devlink_reload_enable(devlink);
-+	nsim_dev->esw_mode = DEVLINK_ESWITCH_MODE_LEGACY;
- 	return 0;
- 
- err_psample_exit:
-diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
-index 9352e18..c3aeb15 100644
---- a/drivers/net/netdevsim/netdev.c
-+++ b/drivers/net/netdevsim/netdev.c
-@@ -113,6 +113,11 @@ static int nsim_set_vf_rate(struct net_device *dev, int vf, int min, int max)
- 	struct netdevsim *ns = netdev_priv(dev);
- 	struct nsim_bus_dev *nsim_bus_dev = ns->nsim_bus_dev;
- 
-+	if (nsim_esw_mode_is_switchdev(ns->nsim_dev)) {
-+		pr_err("Not supported in switchdev mode. Please use devlink API.\n");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	if (vf >= nsim_bus_dev->num_vfs)
- 		return -EINVAL;
- 
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index e025c1b..13a0042 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -257,8 +257,22 @@ struct nsim_dev {
- 		u32 sleep;
- 	} udp_ports;
- 	struct nsim_dev_psample *psample;
-+	u16 esw_mode;
+Notes:
+    v1->v2:
+    - s/func/function/ in commit message
+    - fixes kernel-doc for devlink_rate_leaf_{create|destroy}()
+
+ include/net/devlink.h        |  14 +++
+ include/uapi/linux/devlink.h |  11 +++
+ net/core/devlink.c           | 229 ++++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 253 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 7c984ca..2f5954d 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -34,6 +34,7 @@ struct devlink_dev_stats {
+ struct devlink {
+ 	struct list_head list;
+ 	struct list_head port_list;
++	struct list_head rate_list;
+ 	struct list_head sb_list;
+ 	struct list_head dpipe_table_list;
+ 	struct list_head resource_list;
+@@ -133,6 +134,15 @@ struct devlink_port_attrs {
+ 	};
  };
  
-+int nsim_esw_legacy_enable(struct nsim_dev *nsim_dev, struct netlink_ext_ack *extack);
-+int nsim_esw_switchdev_enable(struct nsim_dev *nsim_dev, struct netlink_ext_ack *extack);
++struct devlink_rate {
++	struct list_head list;
++	enum devlink_rate_type type;
++	struct devlink *devlink;
++	void *priv;
 +
-+static inline bool nsim_esw_mode_is_legacy(struct nsim_dev *nsim_dev)
++	struct devlink_port *devlink_port;
++};
++
+ struct devlink_port {
+ 	struct list_head list;
+ 	struct list_head param_list;
+@@ -152,6 +162,8 @@ struct devlink_port {
+ 	struct delayed_work type_warn_dw;
+ 	struct list_head reporter_list;
+ 	struct mutex reporters_lock; /* Protects reporter_list */
++
++	struct devlink_rate *devlink_rate;
+ };
+ 
+ struct devlink_port_new_attrs {
+@@ -1512,6 +1524,8 @@ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 contro
+ void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port,
+ 				   u32 controller, u16 pf, u32 sf,
+ 				   bool external);
++int devlink_rate_leaf_create(struct devlink_port *port, void *priv);
++void devlink_rate_leaf_destroy(struct devlink_port *devlink_port);
+ int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
+ 			u32 size, u16 ingress_pools_count,
+ 			u16 egress_pools_count, u16 ingress_tc_count,
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index f6008b2..0c27b45 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -126,6 +126,11 @@ enum devlink_command {
+ 
+ 	DEVLINK_CMD_HEALTH_REPORTER_TEST,
+ 
++	DEVLINK_CMD_RATE_GET,		/* can dump */
++	DEVLINK_CMD_RATE_SET,
++	DEVLINK_CMD_RATE_NEW,
++	DEVLINK_CMD_RATE_DEL,
++
+ 	/* add new commands above here */
+ 	__DEVLINK_CMD_MAX,
+ 	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
+@@ -206,6 +211,10 @@ enum devlink_port_flavour {
+ 				      */
+ };
+ 
++enum devlink_rate_type {
++	DEVLINK_RATE_TYPE_LEAF,
++};
++
+ enum devlink_param_cmode {
+ 	DEVLINK_PARAM_CMODE_RUNTIME,
+ 	DEVLINK_PARAM_CMODE_DRIVERINIT,
+@@ -534,6 +543,8 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
+ 
+ 	DEVLINK_ATTR_PORT_PCI_SF_NUMBER,	/* u32 */
++
++	DEVLINK_ATTR_RATE_TYPE,			/* u16 */
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 4eb9695..28b2490 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -190,6 +190,25 @@ static struct devlink_port *devlink_port_get_from_info(struct devlink *devlink,
+ 	return devlink_port_get_from_attrs(devlink, info->attrs);
+ }
+ 
++static inline bool
++devlink_rate_is_leaf(struct devlink_rate *devlink_rate)
 +{
-+	return nsim_dev->esw_mode == DEVLINK_ESWITCH_MODE_LEGACY;
++	return devlink_rate->type == DEVLINK_RATE_TYPE_LEAF;
 +}
 +
-+static inline bool nsim_esw_mode_is_switchdev(struct nsim_dev *nsim_dev)
++static struct devlink_rate *
++devlink_rate_leaf_get_from_info(struct devlink *devlink, struct genl_info *info)
 +{
-+	return nsim_dev->esw_mode == DEVLINK_ESWITCH_MODE_SWITCHDEV;
++	struct devlink_rate *devlink_rate;
++	struct devlink_port *devlink_port;
++
++	devlink_port = devlink_port_get_from_attrs(devlink, info->attrs);
++	if (IS_ERR(devlink_port))
++		return ERR_CAST(devlink_port);
++	devlink_rate = devlink_port->devlink_rate;
++	return devlink_rate ?: ERR_PTR(-ENODEV);
 +}
 +
- static inline struct net *nsim_dev_net(struct nsim_dev *nsim_dev)
+ struct devlink_sb {
+ 	struct list_head list;
+ 	unsigned int index;
+@@ -408,12 +427,13 @@ struct devlink_snapshot {
+ 
+ #define DEVLINK_NL_FLAG_NEED_PORT		BIT(0)
+ #define DEVLINK_NL_FLAG_NEED_DEVLINK_OR_PORT	BIT(1)
++#define DEVLINK_NL_FLAG_NEED_RATE		BIT(2)
+ 
+ /* The per devlink instance lock is taken by default in the pre-doit
+  * operation, yet several commands do not require this. The global
+  * devlink lock is taken and protects from disruption by user-calls.
+  */
+-#define DEVLINK_NL_FLAG_NO_LOCK			BIT(2)
++#define DEVLINK_NL_FLAG_NO_LOCK			BIT(3)
+ 
+ static int devlink_nl_pre_doit(const struct genl_ops *ops,
+ 			       struct sk_buff *skb, struct genl_info *info)
+@@ -442,6 +462,15 @@ static int devlink_nl_pre_doit(const struct genl_ops *ops,
+ 		devlink_port = devlink_port_get_from_info(devlink, info);
+ 		if (!IS_ERR(devlink_port))
+ 			info->user_ptr[1] = devlink_port;
++	} else if (ops->internal_flags & DEVLINK_NL_FLAG_NEED_RATE) {
++		struct devlink_rate *devlink_rate;
++
++		devlink_rate = devlink_rate_leaf_get_from_info(devlink, info);
++		if (IS_ERR(devlink_rate)) {
++			err = PTR_ERR(devlink_rate);
++			goto unlock;
++		}
++		info->user_ptr[1] = devlink_rate;
+ 	}
+ 	return 0;
+ 
+@@ -749,6 +778,39 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
+ 	return 0;
+ }
+ 
++static int devlink_nl_rate_fill(struct sk_buff *msg,
++				struct devlink *devlink,
++				struct devlink_rate *devlink_rate,
++				enum devlink_command cmd, u32 portid,
++				u32 seq, int flags,
++				struct netlink_ext_ack *extack)
++{
++	void *hdr;
++
++	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
++	if (!hdr)
++		return -EMSGSIZE;
++
++	if (devlink_nl_put_handle(msg, devlink))
++		goto nla_put_failure;
++
++	if (nla_put_u16(msg, DEVLINK_ATTR_RATE_TYPE, devlink_rate->type))
++		goto nla_put_failure;
++
++	if (devlink_rate_is_leaf(devlink_rate)) {
++		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_INDEX,
++				devlink_rate->devlink_port->index))
++			goto nla_put_failure;
++	}
++
++	genlmsg_end(msg, hdr);
++	return 0;
++
++nla_put_failure:
++	genlmsg_cancel(msg, hdr);
++	return -EMSGSIZE;
++}
++
+ static bool
+ devlink_port_fn_state_valid(enum devlink_port_fn_state state)
  {
- 	return devlink_net(priv_to_devlink(nsim_dev));
+@@ -920,6 +982,99 @@ static void devlink_port_notify(struct devlink_port *devlink_port,
+ 				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
+ }
+ 
++static void devlink_rate_notify(struct devlink_rate *devlink_rate,
++				enum devlink_command cmd)
++{
++	struct devlink *devlink = devlink_rate->devlink;
++	struct sk_buff *msg;
++	int err;
++
++	WARN_ON(cmd != DEVLINK_CMD_RATE_NEW &&
++		cmd != DEVLINK_CMD_RATE_DEL);
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return;
++
++	err = devlink_nl_rate_fill(msg, devlink, devlink_rate,
++				   cmd, 0, 0, 0, NULL);
++	if (err) {
++		nlmsg_free(msg);
++		return;
++	}
++
++	genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink),
++				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
++}
++
++static int devlink_nl_cmd_rate_get_dumpit(struct sk_buff *msg,
++					  struct netlink_callback *cb)
++{
++	struct devlink_rate *devlink_rate;
++	struct devlink *devlink;
++	int start = cb->args[0];
++	int idx = 0;
++	int err = 0;
++
++	mutex_lock(&devlink_mutex);
++	list_for_each_entry(devlink, &devlink_list, list) {
++		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
++			continue;
++		mutex_lock(&devlink->lock);
++		list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
++			enum devlink_command cmd = DEVLINK_CMD_RATE_NEW;
++			u32 id = NETLINK_CB(cb->skb).portid;
++
++			if (idx < start) {
++				idx++;
++				continue;
++			}
++			err = devlink_nl_rate_fill(msg, devlink,
++						   devlink_rate,
++						   cmd, id,
++						   cb->nlh->nlmsg_seq,
++						   NLM_F_MULTI, NULL);
++			if (err) {
++				mutex_unlock(&devlink->lock);
++				goto out;
++			}
++			idx++;
++		}
++		mutex_unlock(&devlink->lock);
++	}
++out:
++	mutex_unlock(&devlink_mutex);
++	if (err != -EMSGSIZE)
++		return err;
++
++	cb->args[0] = idx;
++	return msg->len;
++}
++
++static int devlink_nl_cmd_rate_get_doit(struct sk_buff *skb,
++					struct genl_info *info)
++{
++	struct devlink_rate *devlink_rate = info->user_ptr[1];
++	struct devlink *devlink = devlink_rate->devlink;
++	struct sk_buff *msg;
++	int err;
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	err = devlink_nl_rate_fill(msg, devlink, devlink_rate,
++				   DEVLINK_CMD_RATE_NEW,
++				   info->snd_portid, info->snd_seq, 0,
++				   info->extack);
++	if (err) {
++		nlmsg_free(msg);
++		return err;
++	}
++
++	return genlmsg_reply(msg, info);
++}
++
+ static int devlink_nl_cmd_get_doit(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct devlink *devlink = info->user_ptr[0];
+@@ -7802,6 +7957,7 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+ 	[DEVLINK_ATTR_PORT_PCI_PF_NUMBER] = { .type = NLA_U16 },
+ 	[DEVLINK_ATTR_PORT_PCI_SF_NUMBER] = { .type = NLA_U32 },
+ 	[DEVLINK_ATTR_PORT_CONTROLLER_NUMBER] = { .type = NLA_U32 },
++	[DEVLINK_ATTR_RATE_TYPE] = { .type = NLA_U16 },
+ };
+ 
+ static const struct genl_small_ops devlink_nl_ops[] = {
+@@ -7828,6 +7984,13 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+ 		.internal_flags = DEVLINK_NL_FLAG_NEED_PORT,
+ 	},
+ 	{
++		.cmd = DEVLINK_CMD_RATE_GET,
++		.doit = devlink_nl_cmd_rate_get_doit,
++		.dumpit = devlink_nl_cmd_rate_get_dumpit,
++		.internal_flags = DEVLINK_NL_FLAG_NEED_RATE,
++		/* can be retrieved by unprivileged users */
++	},
++	{
+ 		.cmd = DEVLINK_CMD_PORT_SPLIT,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = devlink_nl_cmd_port_split_doit,
+@@ -8202,6 +8365,7 @@ struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size)
+ 	xa_init_flags(&devlink->snapshot_ids, XA_FLAGS_ALLOC);
+ 	__devlink_net_set(devlink, &init_net);
+ 	INIT_LIST_HEAD(&devlink->port_list);
++	INIT_LIST_HEAD(&devlink->rate_list);
+ 	INIT_LIST_HEAD(&devlink->sb_list);
+ 	INIT_LIST_HEAD_RCU(&devlink->dpipe_table_list);
+ 	INIT_LIST_HEAD(&devlink->resource_list);
+@@ -8304,6 +8468,7 @@ void devlink_free(struct devlink *devlink)
+ 	WARN_ON(!list_empty(&devlink->resource_list));
+ 	WARN_ON(!list_empty(&devlink->dpipe_table_list));
+ 	WARN_ON(!list_empty(&devlink->sb_list));
++	WARN_ON(!list_empty(&devlink->rate_list));
+ 	WARN_ON(!list_empty(&devlink->port_list));
+ 
+ 	xa_destroy(&devlink->snapshot_ids);
+@@ -8620,6 +8785,68 @@ void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port, u32 contro
+ }
+ EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_sf_set);
+ 
++/**
++ * devlink_rate_leaf_create - create devlink rate leaf
++ *
++ * @devlink_port: devlink port object to create rate object on
++ * @priv: driver private data
++ *
++ * Create devlink rate object of type leaf on provided @devlink_port.
++ * Throws call trace if @devlink_port already has a devlink rate object.
++ *
++ * Context: Takes and release devlink->lock <mutex>.
++ *
++ * Return: -ENOMEM if failed to allocate rate object, 0 otherwise.
++ */
++int
++devlink_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
++{
++	struct devlink *devlink = devlink_port->devlink;
++	struct devlink_rate *devlink_rate;
++
++	devlink_rate = kzalloc(sizeof(*devlink_rate), GFP_KERNEL);
++	if (!devlink_rate)
++		return -ENOMEM;
++
++	mutex_lock(&devlink->lock);
++	WARN_ON(devlink_port->devlink_rate);
++	devlink_rate->type = DEVLINK_RATE_TYPE_LEAF;
++	devlink_rate->devlink = devlink;
++	devlink_rate->devlink_port = devlink_port;
++	devlink_rate->priv = priv;
++	list_add_tail(&devlink_rate->list, &devlink->rate_list);
++	devlink_port->devlink_rate = devlink_rate;
++	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_NEW);
++	mutex_unlock(&devlink->lock);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(devlink_rate_leaf_create);
++
++/**
++ * devlink_rate_leaf_destroy - destroy devlink rate leaf
++ *
++ * @devlink_port: devlink port linked to the rate object
++ *
++ * Context: Takes and release devlink->lock <mutex>.
++ */
++void devlink_rate_leaf_destroy(struct devlink_port *devlink_port)
++{
++	struct devlink_rate *devlink_rate = devlink_port->devlink_rate;
++	struct devlink *devlink = devlink_port->devlink;
++
++	if (!devlink_rate)
++		return;
++
++	mutex_lock(&devlink->lock);
++	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_DEL);
++	list_del(&devlink_rate->list);
++	devlink_port->devlink_rate = NULL;
++	mutex_unlock(&devlink->lock);
++	kfree(devlink_rate);
++}
++EXPORT_SYMBOL_GPL(devlink_rate_leaf_destroy);
++
+ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
+ 					     char *name, size_t len)
+ {
 -- 
 1.8.3.1
 
