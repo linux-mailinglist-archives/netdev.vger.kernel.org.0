@@ -2,192 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C98AA391703
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:03:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49C8E391716
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:11:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234696AbhEZMEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 08:04:47 -0400
-Received: from mail-mw2nam10on2069.outbound.protection.outlook.com ([40.107.94.69]:62208
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234692AbhEZMDr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 08:03:47 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mICKzpCIWkMciHcahnUzp5R+jEtmNItUCQFv3sQrHhTA27yWaAtfeDNmIHr8Nn9eQ71t2BzWf6aFL2mx5hGME5gkufOTN7T1k/D2A9fbHAMhA4X09i41iidZd3htgkFH0pDPDEMocJz0SBCYIH/AO9E6TK+sC2VZt43XMjv2wNsGfU31a+iGYAZokme6JbI6OB9tF82DoEGigmdkYnPisvzV0ZkjdVLJl2egnourCiLvgAMh8TYm3eTa5cSXjKy2wHBP7o/sc8vfS2+DJKlc/EOjC317lCvwvWaSWc3S5eno4wbnCz/Ls1J96IiXm9BTBAKzRhqGT8jizf1bTohoVQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tBPq8br7bzVSLj7j04iZjzzzb1UwrpqmKDdAubcS680=;
- b=lqxIljcUtGQdybRy4CvilWn6fvkBdXGlqSPtwBNBxRkUvpjnDxHBe/boFSjlcgZ8q7uph9srzOOIv7g+5sSRqzcvp1yonAVL4kmcXDr1IqvBLLHS1RmaS5VW8+xaZSHTtK3DbhkKeV993xjcC5jDNX76bIKv1TY+3LJ0KP/s8hxqIl5gMBHzfhkWhtYmhAay80mvqzT4eHSet3mxmIFrKNGT8bMjoegSlHv/Q2i30JF2No5pgUdG4hRkbomLcsyTllLzfDNGHVNw0c7qYTp21JpAXzBPbI0OJhk55Xj3uGVtwwoyuM19Am1rFRlcWQYnOE+7RIag2mdiPIl4HfxveA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=networkplumber.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tBPq8br7bzVSLj7j04iZjzzzb1UwrpqmKDdAubcS680=;
- b=t5VcREDvkdBLbDg0LHuGwdlKDBn6FCAxcsk9RAIcaGO3EHQuLOp1rxPEJqowioK9YMJ2TrH8w1dfgWulEqWnVnLM+ys5lEXbfEKf45V6Tkt6qe/VcJxdHBwlIXnhF5+iPXf45HSwq0UpS3GcFce/I3qcJ8a/fztkd0hUaMPFJbbuffrmX1MIY/RL/p3Y3eXQUJLuDfwb7PF66bWG5YWHRVaJ+X93o76z6cIUH65yAfPsKZE2bM7Zoa28qPEboy96wFfd6ffzNXdONQwQNe6qa/RrdO9kvtjw9EBU7g5n8+OpEcH49qdsG8l8RtQj28LS3uyHek+QSY0ngpEIrQSuTA==
-Received: from DM6PR13CA0066.namprd13.prod.outlook.com (2603:10b6:5:134::43)
- by CH0PR12MB5314.namprd12.prod.outlook.com (2603:10b6:610:d5::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Wed, 26 May
- 2021 12:02:14 +0000
-Received: from DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:134:cafe::73) by DM6PR13CA0066.outlook.office365.com
- (2603:10b6:5:134::43) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.9 via Frontend
- Transport; Wed, 26 May 2021 12:02:14 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
- header.d=none;networkplumber.org; dmarc=pass action=none
- header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT048.mail.protection.outlook.com (10.13.173.114) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 12:02:14 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
- 2021 12:02:06 +0000
-Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 26 May 2021 12:02:03 +0000
-From:   <dlinkin@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>,
-        <stephen@networkplumber.org>, <dsahern@gmail.com>,
-        <vladbu@nvidia.com>, <parav@nvidia.com>, <huyn@nvidia.com>,
-        Dmytro Linkin <dlinkin@nvidia.com>
-Subject: [PATCH RFC net-next v3 18/18] Documentation: devlink rate objects
-Date:   Wed, 26 May 2021 15:01:10 +0300
-Message-ID: <1622030470-21434-19-git-send-email-dlinkin@nvidia.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1622030470-21434-1-git-send-email-dlinkin@nvidia.com>
-References: <1622030470-21434-1-git-send-email-dlinkin@nvidia.com>
+        id S234665AbhEZMNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 08:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57998 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234624AbhEZMNH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 08:13:07 -0400
+Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60151C061574
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 05:11:35 -0700 (PDT)
+Received: by mail-ua1-x936.google.com with SMTP id d14so630993ual.5
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 05:11:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wUrqUb+kQg/Cy2UpM0h/vb3YRuG2NknvwTkQpjDYiFE=;
+        b=T75LtX9Ha4dUohpGT6QW/p+sIlKUltSigBHVaV9Y6z8OpanQ7PeoIN7kwbh8nNtDj4
+         RylFW4YBVRIKh5Tn+cnmBrz7NFncGEwLLEAHu6YBvIZdwftBODAKeBGau9rKLFdJvaCf
+         o32WXcNI+TNb7/QTh3RM4J6uSxTpCt4+VKUjT18cw8gYMAUuYidQz2H/ln/2aDQbeYrK
+         bxOWkJzlZFIbE+BYZHqxA2vngVs7BQzP0j32J9fqsa2rROZndeMR8+6PbCRXR3d0xbOX
+         nCArosdAVzNuO1RUqjDjupELYpLt0xQMmACD0ELKgtDxnR1T3EkSixT+2VLqmiu/zZEu
+         M0YA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wUrqUb+kQg/Cy2UpM0h/vb3YRuG2NknvwTkQpjDYiFE=;
+        b=ZViQ7vx8muXm2JT51EkG0LJpf/NVuxwrEmNpDs+nij2Xig9nz+XERjPI7notA7CMKy
+         dtfnwLpjKCAgB3mK4z1Q+gQhLx1QunJntzLVYYaoCnhdbjfzsgvQjfrJoUT8xf34xtAW
+         EFqrMxy4O4QZRFkutQy4Q56IbIQ4HmWcCmlGlejDrtQpZA8zaeBoDP8Z2+dU/2Wp6FTZ
+         GA6/dq2GJO3sSONFhyuqXAAwPP6RvMeV+TFg2LccU8U3ss8/Uc2wWyZIPuK0XvZx3GxY
+         mpvaTxJDbyrVLR05GIevrwEroEV+GyHrJ25vToYaS2gaZEEi6PCRG+1AXxR9bkKXvZ9c
+         ydmQ==
+X-Gm-Message-State: AOAM532Bz4bzof6VJR2bOrAJ38INKuXaD0Oh3Y+RrQ2bU0c65+AlL/LK
+        xal2RUpgANbNEcrVoEvwwpHl8J4Zh53G8F9gd5YgIw==
+X-Google-Smtp-Source: ABdhPJydoB/kck2wwRkxwdIl52sarGpJ+jtKrbgItW2PI1YMDBkkWfNXsZe0zB/i4T1hICv4GLkTRQwa5+YLRJhMqHQ=
+X-Received: by 2002:a9f:382c:: with SMTP id p41mr31641886uad.65.1622031094259;
+ Wed, 26 May 2021 05:11:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1636a64e-0e5b-4de6-329a-08d9203e19da
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5314:
-X-Microsoft-Antispam-PRVS: <CH0PR12MB5314F05543796EA11BD86A41CB249@CH0PR12MB5314.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: s7XCcEDwT0kcJ5TvqeBSvf4dYaMLhsX/obstSXThXNvA3ColmcYXGnOKO3rCWph2L+EfhS9yuIdz6iTrykXsvJZZa7ncJCJGFmiXaLDyoPg1buAQFCpy6Ogwnzm5bwGc9mnGyXuFClGAK3gMKVhRnWQfRHwxadMSklalNPjmeJbMZGCxeU8E92gOMo5VlVE+I3UpeXoWrCknWMMfVvVhSMrabwAku5wfOiB1LlRd9GKcUWcFEqJMVIMK/2te/LzOwL9B78MXFQoCZ7bKjoq6YpbaCHLxLq/diD3LHigZUEEZVNdizk0fMsCEL0WH04GYJc9jwBHX408EfkStba5E84iO13iIFRewLHKWYmIRBSWpSd83UqTo1u2e4HWNbMNEylzNMrhta6RlZ3LYsq8WpvjnCkZJBUc/ic7KB2FsXxsn3Kqyca+tspDT/tq9R0E17aGCmYPkMfzKv3RO2/xEIzK2CI78RYxbgzWU+J4um4cx4rWaiKo8dPPi7+yciAC431g6waeDEfa2rWuUG+drzRdZrbDPKGdRqLxb0zZYTo1+bs/xMVqS1uyEiWc7u+jgqxGNfmB6QT63H9YiurMllaJekW4QOOd/m9QwNIBFKyvgEosCNjGWvFVLxw+rtc3uadWEHEUx4AMPVfhdI3Co1s/Y3iCLBwwkX8LTecUEsvQ=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(376002)(396003)(136003)(346002)(36840700001)(46966006)(86362001)(82310400003)(6666004)(2876002)(107886003)(47076005)(36756003)(7636003)(83380400001)(356005)(6916009)(478600001)(26005)(8936002)(336012)(70206006)(186003)(36906005)(54906003)(316002)(2616005)(70586007)(5660300002)(8676002)(36860700001)(7696005)(426003)(2906002)(4326008)(82740400003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 12:02:14.2267
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1636a64e-0e5b-4de6-329a-08d9203e19da
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5314
+References: <cover.1622025457.git.cdleonard@gmail.com> <750563aba3687119818dac09fc987c27c7152324.1622025457.git.cdleonard@gmail.com>
+In-Reply-To: <750563aba3687119818dac09fc987c27c7152324.1622025457.git.cdleonard@gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 26 May 2021 08:11:17 -0400
+Message-ID: <CADVnQynoD=NF2hG6Bs44A0jrnKG=3f97OywS-tq-p-KQAsf5Fg@mail.gmail.com>
+Subject: Re: [RFCv2 1/3] tcp: Use smaller mtu probes if RACK is enabled
+To:     Leonard Crestez <cdleonard@gmail.com>
+Cc:     Matt Mathis <mattmathis@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        John Heffner <johnwheffner@gmail.com>,
+        Leonard Crestez <lcrestez@drivenets.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmytro Linkin <dlinkin@nvidia.com>
+On Wed, May 26, 2021 at 6:38 AM Leonard Crestez <cdleonard@gmail.com> wrote:
+>
+> RACK allows detecting a loss in rtt + min_rtt / 4 based on just one
+> extra packet. If enabled use this instead of relying of fast retransmit.
 
-Add devlink rate objects section at devlink port documentation.
-Add devlink rate support info at netdevsim devlink documentation.
+IMHO it would be worth adding some more text to motivate the change,
+to justify the added complexity and risk from the change. The
+substance of the change seems to be decreasing the requirement for
+PMTU probing from needing roughly 5 packets worth of data to needing
+roughly 3 packets worth of data. It's not clear to me as a reader of
+this patch by itself that there are lots of applications that very
+often only have 3-4 packets worth of data to send and yet can benefit
+greatly from PMTU discovery.
 
-Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- Documentation/networking/devlink/devlink-port.rst | 35 +++++++++++++++++++++++
- Documentation/networking/devlink/netdevsim.rst    | 26 +++++++++++++++++
- 2 files changed, 61 insertions(+)
+> Suggested-by: Neal Cardwell <ncardwell@google.com>
+> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+> ---
+>  Documentation/networking/ip-sysctl.rst |  5 +++++
+>  include/net/netns/ipv4.h               |  1 +
+>  net/ipv4/sysctl_net_ipv4.c             |  7 +++++++
+>  net/ipv4/tcp_ipv4.c                    |  1 +
+>  net/ipv4/tcp_output.c                  | 26 +++++++++++++++++++++++++-
+>  5 files changed, 39 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> index a5c250044500..7ab52a105a5d 100644
+> --- a/Documentation/networking/ip-sysctl.rst
+> +++ b/Documentation/networking/ip-sysctl.rst
+> @@ -349,10 +349,15 @@ tcp_mtu_probe_floor - INTEGER
+>         If MTU probing is enabled this caps the minimum MSS used for search_low
+>         for the connection.
+>
+>         Default : 48
+>
+> +tcp_mtu_probe_rack - BOOLEAN
+> +       Try to use shorter probes if RACK is also enabled
+> +
+> +       Default: 1
 
-diff --git a/Documentation/networking/devlink/devlink-port.rst b/Documentation/networking/devlink/devlink-port.rst
-index ab790e7..7627b1d 100644
---- a/Documentation/networking/devlink/devlink-port.rst
-+++ b/Documentation/networking/devlink/devlink-port.rst
-@@ -164,6 +164,41 @@ device to instantiate the subfunction device on particular PCI function.
- A subfunction device is created on the :ref:`Documentation/driver-api/auxiliary_bus.rst <auxiliary_bus>`.
- At this point a matching subfunction driver binds to the subfunction's auxiliary device.
- 
-+Rate object management
-+======================
-+
-+Devlink provides API to manage tx rates of single devlink port or a group.
-+This is done through rate objects, which can be one of the two types:
-+
-+``leaf``
-+  Represents a single devlink port; created/destroyed by the driver. Since leaf
-+  have 1to1 mapping to its devlink port, in user space it is referred as
-+  ``pci/<bus_addr>/<port_index>``;
-+
-+``node``
-+  Represents a group of rate objects (leafs and/or nodes); created/deleted by
-+  request from the userspace; initially empty (no rate objects added). In
-+  userspace it is referred as ``pci/<bus_addr>/<node_name>``, where
-+  ``node_name`` can be any identifier, except decimal number, to avoid
-+  collisions with leafs.
-+
-+API allows to configure following rate object's parameters:
-+
-+``tx_share``
-+  Minimum TX rate value shared among all other rate objects, or rate objects
-+  that parts of the parent group, if it is a part of the same group.
-+
-+``tx_max``
-+  Maximum TX rate value.
-+
-+``parent``
-+  Parent node name. Parent node rate limits are considered as additional limits
-+  to all node children limits. ``tx_max`` is an upper limit for children.
-+  ``tx_share`` is a total bandwidth distributed among children.
-+
-+Driver implementations are allowed to support both or either rate object types
-+and setting methods of their parameters.
-+
- Terms and Definitions
- =====================
- 
-diff --git a/Documentation/networking/devlink/netdevsim.rst b/Documentation/networking/devlink/netdevsim.rst
-index 02c2d20..8a292fb 100644
---- a/Documentation/networking/devlink/netdevsim.rst
-+++ b/Documentation/networking/devlink/netdevsim.rst
-@@ -57,6 +57,32 @@ entries, FIB rule entries and nexthops that the driver will allow.
-     $ devlink resource set netdevsim/netdevsim0 path /nexthops size 16
-     $ devlink dev reload netdevsim/netdevsim0
- 
-+Rate objects
-+============
-+
-+The ``netdevsim`` driver supports rate objects management, which includes:
-+
-+- registerging/unregistering leaf rate objects per VF devlink port;
-+- creation/deletion node rate objects;
-+- setting tx_share and tx_max rate values for any rate object type;
-+- setting parent node for any rate object type.
-+
-+Rate nodes and it's parameters are exposed in ``netdevsim`` debugfs in RO mode.
-+For example created rate node with name ``some_group``:
-+
-+.. code:: shell
-+
-+    $ ls /sys/kernel/debug/netdevsim/netdevsim0/rate_groups/some_group
-+    rate_parent  tx_max  tx_share
-+
-+Same parameters are exposed for leaf objects in corresponding ports directories.
-+For ex.:
-+
-+.. code:: shell
-+
-+    $ ls /sys/kernel/debug/netdevsim/netdevsim0/ports/1
-+    dev  ethtool  rate_parent  tx_max  tx_share
-+
- Driver-specific Traps
- =====================
- 
--- 
-1.8.3.1
+I  would vote to not have a sysctl for this. If we think it's a good
+idea to allow MTU probing with a smaller amount of data if RACK is
+enabled (which seems true to me), then this is a low-risk enough
+change that we should just change the behavior.
 
+>  tcp_min_snd_mss - INTEGER
+>         TCP SYN and SYNACK messages usually advertise an ADVMSS option,
+>         as described in RFC 1122 and RFC 6691.
+>
+>         If this ADVMSS option is smaller than tcp_min_snd_mss,
+> diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+> index 746c80cd4257..b4ff12f25a7f 100644
+> --- a/include/net/netns/ipv4.h
+> +++ b/include/net/netns/ipv4.h
+> @@ -112,10 +112,11 @@ struct netns_ipv4 {
+>  #ifdef CONFIG_NET_L3_MASTER_DEV
+>         u8 sysctl_tcp_l3mdev_accept;
+>  #endif
+>         u8 sysctl_tcp_mtu_probing;
+>         int sysctl_tcp_mtu_probe_floor;
+> +       int sysctl_tcp_mtu_probe_rack;
+>         int sysctl_tcp_base_mss;
+>         int sysctl_tcp_min_snd_mss;
+>         int sysctl_tcp_probe_threshold;
+>         u32 sysctl_tcp_probe_interval;
+>
+> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+> index 4fa77f182dcb..275c91fb9cf8 100644
+> --- a/net/ipv4/sysctl_net_ipv4.c
+> +++ b/net/ipv4/sysctl_net_ipv4.c
+> @@ -847,10 +847,17 @@ static struct ctl_table ipv4_net_table[] = {
+>                 .mode           = 0644,
+>                 .proc_handler   = proc_dointvec_minmax,
+>                 .extra1         = &tcp_min_snd_mss_min,
+>                 .extra2         = &tcp_min_snd_mss_max,
+>         },
+> +       {
+> +               .procname       = "tcp_mtu_probe_rack",
+> +               .data           = &init_net.ipv4.sysctl_tcp_mtu_probe_rack,
+> +               .maxlen         = sizeof(int),
+> +               .mode           = 0644,
+> +               .proc_handler   = proc_dointvec,
+> +       },
+>         {
+>                 .procname       = "tcp_probe_threshold",
+>                 .data           = &init_net.ipv4.sysctl_tcp_probe_threshold,
+>                 .maxlen         = sizeof(int),
+>                 .mode           = 0644,
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index 4f5b68a90be9..ed8af4a7325b 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -2892,10 +2892,11 @@ static int __net_init tcp_sk_init(struct net *net)
+>         net->ipv4.sysctl_tcp_base_mss = TCP_BASE_MSS;
+>         net->ipv4.sysctl_tcp_min_snd_mss = TCP_MIN_SND_MSS;
+>         net->ipv4.sysctl_tcp_probe_threshold = TCP_PROBE_THRESHOLD;
+>         net->ipv4.sysctl_tcp_probe_interval = TCP_PROBE_INTERVAL;
+>         net->ipv4.sysctl_tcp_mtu_probe_floor = TCP_MIN_SND_MSS;
+> +       net->ipv4.sysctl_tcp_mtu_probe_rack = 1;
+>
+>         net->ipv4.sysctl_tcp_keepalive_time = TCP_KEEPALIVE_TIME;
+>         net->ipv4.sysctl_tcp_keepalive_probes = TCP_KEEPALIVE_PROBES;
+>         net->ipv4.sysctl_tcp_keepalive_intvl = TCP_KEEPALIVE_INTVL;
+>
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index bde781f46b41..9691f435477b 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -2311,10 +2311,19 @@ static bool tcp_can_coalesce_send_queue_head(struct sock *sk, int len)
+>         }
+>
+>         return true;
+>  }
+>
+> +/* Check if rack is supported for current connection */
+> +static int tcp_mtu_probe_is_rack(const struct sock *sk)
+> +{
+> +       struct net *net = sock_net(sk);
+> +
+> +       return (net->ipv4.sysctl_tcp_recovery & TCP_RACK_LOSS_DETECTION &&
+> +                       net->ipv4.sysctl_tcp_mtu_probe_rack);
+> +}
+
+You may want to use the existing helper, tcp_is_rack(), by moving it
+to include/net/tcp.h
+
+thanks,
+neal
