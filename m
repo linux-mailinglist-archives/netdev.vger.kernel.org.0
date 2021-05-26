@@ -2,136 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C1FF391D76
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 19:01:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F252391E00
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 19:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233824AbhEZRDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 13:03:11 -0400
-Received: from mail-dm3nam07on2045.outbound.protection.outlook.com ([40.107.95.45]:31407
-        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233676AbhEZRDK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 13:03:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oelGHGqR88MCPubB4/6QzQ+9rLEBa7l8Si2y2p8wWMGRRfeQFrBXorMCQG/3WWI2v4I16NsDHcZTCXrVd0KFSJlcNCXM9ufJwtWQWtEpbitRJksHY3gaTcLAo45CLcVV0pnKi7is2VClWEpsAQgk25swwq9pTHQD7iJ7KF+s3XfEuVYY1mWvtrAG9RiIbpk+3a89PaQPqPEQ+Oy7YreavV0aCdyYyKXVQikofdPUekoemyG9fQYzBbuTZxLs48IR9StAN6NzVAo9BSV+ABhCejluhrJ0FNNdV5bNb0u5jkhs9Grv1nWqKVQDpT3wb8rfDwnEBWRIQvwVp/cFnfWwHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U6YWkcz5ETQZOYZqI6yR8dGwyMqKBJZs/WOmjsHyOio=;
- b=b7C2s7JPONNgO7KtmwhVja7PXVay/JWO2ABYrozMgakzMKaOa++utzYRuGCLLzyu68UKmjpE5vVSk636B8GCOoh1P3eDWFSvnMx5cIgGvk+uJsI2+yb+HXWwbOnbtp+KSqWA2Z6sHBW6qTHFsSeluatoE/QcPcp0l517ct9Z/4WLc/08aJgFNxMr+bMQGIksnOQUQS/mMz8bJv0ES7i+dfJY45idcR6Vqnpsgd7iY5UT6eKUprkPtEIsufT3vh4sgNgzashh6I+pD+lKaNUjXGxaW2/zogNFoXZQ2k0vcleihwAkmwugayBes1Lr02mbX+Z3jvTN0V2Q12MIhcYKGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=resnulli.us smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U6YWkcz5ETQZOYZqI6yR8dGwyMqKBJZs/WOmjsHyOio=;
- b=o3biiz2+BiftHIhpD4QGgb5H89146s8Scu87f4G4LEHA1iyOZ3UUkGmlE8Usy0g9ZHQPyXS8LSdqnQU5NN4IFcQPH6Aj6A3fqXJvqYYiosqnmPhczCb5qRPTvP3fR4om7O7R3JOF13yxsenCjpjd7uHxKjn9cSWD40kgAZEBOLmQ5w9ORe1d0bqNclDEAfkd7OuTnz3oi/Pf1XRWjF1iAMB97ZXAJAYFBtVOFv4SCGE3RpMGqH2Y3eSAw33P89dDYHO1DAPZgIOcdcLw88DMOjGTL1eCqbvLmXm5UUygtnMs2ovFYMsc9JBYq1j2hQVu1SdG82M87x3HbgD607sxSg==
-Received: from BN9PR03CA0061.namprd03.prod.outlook.com (2603:10b6:408:fc::6)
- by PH0PR12MB5402.namprd12.prod.outlook.com (2603:10b6:510:ef::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Wed, 26 May
- 2021 17:01:37 +0000
-Received: from BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fc:cafe::4d) by BN9PR03CA0061.outlook.office365.com
- (2603:10b6:408:fc::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21 via Frontend
- Transport; Wed, 26 May 2021 17:01:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
- smtp.mailfrom=nvidia.com; resnulli.us; dkim=none (message not signed)
- header.d=none;resnulli.us; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- BN8NAM11FT059.mail.protection.outlook.com (10.13.177.120) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 17:01:36 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
- 2021 10:01:35 -0700
-Received: from gen-l-vrt-029.mtl.labs.mlnx (172.20.145.6) by mail.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 26 May 2021 17:01:34 +0000
-From:   Ariel Levkovich <lariel@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <marcelo.leitner@gmail.com>, <paulb@nvidia.com>,
-        <jiri@resnulli.us>, "Ariel Levkovich" <lariel@nvidia.com>
-Subject: [PATCH net] net/sched: act_ct: Fix ct template allocation for zone 0
-Date:   Wed, 26 May 2021 20:01:10 +0300
-Message-ID: <20210526170110.54864-1-lariel@nvidia.com>
-X-Mailer: git-send-email 2.25.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d06ca670-d8a3-4ae4-bad8-08d92067ec48
-X-MS-TrafficTypeDiagnostic: PH0PR12MB5402:
-X-Microsoft-Antispam-PRVS: <PH0PR12MB54024E642FBDD75377E6ED3FB7249@PH0PR12MB5402.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1388;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: R6VtpjqJGI0kE94bcLxlX4WqEQ/QfjjYeXs5fZ3QgyC+92C1m9Q5LvjrNw6uuPmmVFJu2eEGdtQ6cUXlLD4Ef3Ti3h0af4zMFRy+eM2z5BZv4bABtC7NL1NfkO4/Rb2+vmLOyKX11fifS7lsRGiHKjGSQTqyUeQFLP6GU/AnC7Wqqow+42OtMm9+sIEube09U4sQawVi0oMXDOIj3GwXpGoLTKCuwYEhwukg28NH7VRy1gBeyOFV/0JyWlkpug9rzRXAgj49AXetkv20nLtuwduw0Conj4SYfFt6xfGQMJC2zpk4otmWOKn1SWzgwQjdyx3ninJLyPujbXbdeEwInnN+Dgk66pQuBUCpt/JQhf9yx2HyONMmw2FRNvZxm3qEOwXOvbDC0XxdTuk1tq4Sc1EvgtB/o9sqLIIUpZ7NxJ645b2FM4M7c5uvbeBFrPWY4/uQVQe4GyDykJR2RbX4C6KNp8l43NboXXCmZ2pbFTnEk0Z8xSrNuiMbTmwRPQLBUmrIm3RMHNx6C6BW8x4uH9u2uu6X4gS6zoQhnYdHrLLkL3zXbvhCwKRF+7PopcQU1N+vmUTP/0lQpU59GrAfsSa5dsNQ1jtihBrGHTuDhFwDIfHmvLM+4tK6G2l2PyOQ5Y7P4c3gRrFQ3tT7dBvY947DvaCkMwxTSAFeucASUus=
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(136003)(376002)(396003)(346002)(36840700001)(46966006)(82740400003)(7636003)(356005)(83380400001)(86362001)(54906003)(1076003)(82310400003)(2906002)(36756003)(47076005)(6916009)(8676002)(36860700001)(2616005)(8936002)(4326008)(316002)(478600001)(70586007)(426003)(336012)(107886003)(6666004)(70206006)(5660300002)(186003)(26005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 17:01:36.5756
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d06ca670-d8a3-4ae4-bad8-08d92067ec48
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5402
+        id S234491AbhEZRYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 13:24:12 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:46129 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234538AbhEZRX5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 13:23:57 -0400
+X-Greylist: delayed 309 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 May 2021 13:23:57 EDT
+Received: from ubuntu18.home (135.19-200-80.adsl-dyn.isp.belgacom.be [80.200.19.135])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 9DAE6200DF90;
+        Wed, 26 May 2021 19:17:10 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 9DAE6200DF90
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1622049430;
+        bh=2JBbIA3oCQxrq0p77GOel4OnTnDurY1U/OeBLL3Jw28=;
+        h=From:To:Cc:Subject:Date:From;
+        b=FQkCYRFmKfrpgsi6SaOoRDQFZauPD8sXY1sIZJLt5Gn/X2Ese1WZ+6PKCE/TSI2F9
+         ZnQUqa40DVCLeGb2D3wXjmsXl7Yr7TqRSftpk0PIpFBxtv4VBxIBFzDK77yq4tfoqB
+         8J4CioAaeJJAnUKwT0eHgXjfwZjwE0+HzirCmPWdBeHgWnp1EAdlm5OxIfmEWBhqi2
+         iAJCemb68Dc2lRdh+7bEa5Syje2xHbMUW4CxRIxeJjAesWDO+dRhuzh+zegTNJGO4f
+         1zhQCuB7PbzkQj3jW1tWw1ot1YA4KcA+oGvv6hxNsNp7gZUY/DJBGQ3CGYsYwt/fVc
+         hnGKwpnqcorZg==
+From:   Justin Iurman <justin.iurman@uliege.be>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, tom@herbertland.com,
+        justin.iurman@uliege.be
+Subject: [RESEND PATCH net-next v3 0/5] Support for the IOAM Pre-allocated Trace with IPv6
+Date:   Wed, 26 May 2021 19:16:35 +0200
+Message-Id: <20210526171640.9722-1-justin.iurman@uliege.be>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix current behavior of skipping template allocation in case the
-ct action is in zone 0.
+v3:
+ - Fix warning "unused label 'out_unregister_genl'" by adding conditional macro
+ - Fix lwtunnel output redirect bug: dst cache useless in this case, use
+   orig_output instead
 
-Skipping the allocation may cause the datapath ct code to ignore the
-entire ct action with all its attributes (commit, nat) in case the ct
-action in zone 0 was preceded by a ct clear action.
+v2:
+ - Fix warning with static for __ioam6_fill_trace_data
+ - Fix sparse warning with __force when casting __be64 to __be32
+ - Fix unchecked dereference when removing IOAM namespaces or schemas
+ - exthdrs.c: Don't drop by default (now: ignore) to match the act bits "00"
+ - Add control plane support for the inline insertion (lwtunnel)
+ - Provide uapi structures
+ - Use __net_timestamp if skb->tstamp is empty
+ - Add note about the temporary IANA allocation
+ - Remove support for "removable" TLVs
+ - Remove support for virtual/anonymous tunnel decapsulation
 
-The ct clear action sets the ct_state to untracked and resets the
-skb->_nfct pointer. Under these conditions and without an allocated
-ct template, the skb->_nfct pointer will remain NULL which will
-cause the tc ct action handler to exit without handling commit and nat
-actions, if such exist.
+In-situ Operations, Administration, and Maintenance (IOAM) records
+operational and telemetry information in a packet while it traverses
+a path between two points in an IOAM domain. It is defined in
+draft-ietf-ippm-ioam-data [1]. IOAM data fields can be encapsulated
+into a variety of protocols. The IPv6 encapsulation is defined in
+draft-ietf-ippm-ioam-ipv6-options [2], via extension headers. IOAM
+can be used to complement OAM mechanisms based on e.g. ICMP or other
+types of probe packets.
 
-For example, the following rule in OVS dp:
-recirc_id(0x2),ct_state(+new-est-rel-rpl+trk),ct_label(0/0x1), \
-in_port(eth0),actions:ct_clear,ct(commit,nat(src=10.11.0.12)), \
-recirc(0x37a)
+This patchset implements support for the Pre-allocated Trace, carried
+by a Hop-by-Hop. Therefore, a new IPv6 Hop-by-Hop TLV option is
+introduced, see IANA [3]. The three other IOAM options are not included
+in this patchset (Incremental Trace, Proof-of-Transit and Edge-to-Edge).
+The main idea behind the IOAM Pre-allocated Trace is that a node
+pre-allocates some room in packets for IOAM data. Then, each IOAM node
+on the path will insert its data. There exist several interesting use-
+cases, e.g. Fast failure detection/isolation or Smart service selection.
+Another killer use-case is what we have called Cross-Layer Telemetry,
+see the demo video on its repository [4], that aims to make the entire
+stack (L2/L3 -> L7) visible for distributed tracing tools (e.g. Jaeger),
+instead of the current L5 -> L7 limited view. So, basically, this is a
+nice feature for the Linux Kernel.
 
-Will result in act_ct skipping the commit and nat actions in zone 0.
+This patchset also provides support for the control plane part, but only for the
+inline insertion (host-to-host use case), through lightweight tunnels. Indeed,
+for in-transit traffic, the solution is to have an IPv6-in-IPv6 encapsulation,
+which brings some difficulties and still requires a little bit of work and
+discussion (ie anonymous tunnel decapsulation and multi egress resolution).
 
-The change removes the skipping of template allocation for zone 0 and
-treats it the same as any other zone.
+- Patch 1: IPv6 IOAM headers definition
+- Patch 2: Data plane support for Pre-allocated Trace
+- Patch 3: IOAM Generic Netlink API
+- Patch 4: Support for IOAM injection with lwtunnels
+- Patch 5: Documentation for new IOAM sysctls
 
-Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
----
- net/sched/act_ct.c | 3 ---
- 1 file changed, 3 deletions(-)
+  [1] https://tools.ietf.org/html/draft-ietf-ippm-ioam-data
+  [2] https://tools.ietf.org/html/draft-ietf-ippm-ioam-ipv6-options
+  [3] https://www.iana.org/assignments/ipv6-parameters/ipv6-parameters.xhtml#ipv6-parameters-2
+  [4] https://github.com/iurmanj/cross-layer-telemetry
 
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index ec7a1c438df9..dfdfb677e6a9 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -1202,9 +1202,6 @@ static int tcf_ct_fill_params(struct net *net,
- 				   sizeof(p->zone));
- 	}
- 
--	if (p->zone == NF_CT_DEFAULT_ZONE_ID)
--		return 0;
--
- 	nf_ct_zone_init(&zone, p->zone, NF_CT_DEFAULT_ZONE_DIR, 0);
- 	tmpl = nf_ct_tmpl_alloc(net, &zone, GFP_KERNEL);
- 	if (!tmpl) {
+Justin Iurman (5):
+  uapi: IPv6 IOAM headers definition
+  ipv6: ioam: Data plane support for Pre-allocated Trace
+  ipv6: ioam: IOAM Generic Netlink API
+  ipv6: ioam: Support for IOAM injection with lwtunnels
+  ipv6: ioam: Documentation for new IOAM sysctls
+
+ Documentation/networking/ioam6-sysctl.rst |  20 +
+ Documentation/networking/ip-sysctl.rst    |   5 +
+ include/linux/ioam6.h                     |  13 +
+ include/linux/ioam6_genl.h                |  13 +
+ include/linux/ioam6_iptunnel.h            |  13 +
+ include/linux/ipv6.h                      |   2 +
+ include/net/ioam6.h                       |  65 ++
+ include/net/netns/ipv6.h                  |   2 +
+ include/uapi/linux/in6.h                  |   1 +
+ include/uapi/linux/ioam6.h                | 124 +++
+ include/uapi/linux/ioam6_genl.h           |  49 ++
+ include/uapi/linux/ioam6_iptunnel.h       |  19 +
+ include/uapi/linux/ipv6.h                 |   2 +
+ include/uapi/linux/lwtunnel.h             |   1 +
+ net/core/lwtunnel.c                       |   2 +
+ net/ipv6/Kconfig                          |  11 +
+ net/ipv6/Makefile                         |   3 +-
+ net/ipv6/addrconf.c                       |  20 +
+ net/ipv6/af_inet6.c                       |   7 +
+ net/ipv6/exthdrs.c                        |  51 ++
+ net/ipv6/ioam6.c                          | 872 ++++++++++++++++++++++
+ net/ipv6/ioam6_iptunnel.c                 | 273 +++++++
+ net/ipv6/sysctl_net_ipv6.c                |   7 +
+ 23 files changed, 1574 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/networking/ioam6-sysctl.rst
+ create mode 100644 include/linux/ioam6.h
+ create mode 100644 include/linux/ioam6_genl.h
+ create mode 100644 include/linux/ioam6_iptunnel.h
+ create mode 100644 include/net/ioam6.h
+ create mode 100644 include/uapi/linux/ioam6.h
+ create mode 100644 include/uapi/linux/ioam6_genl.h
+ create mode 100644 include/uapi/linux/ioam6_iptunnel.h
+ create mode 100644 net/ipv6/ioam6.c
+ create mode 100644 net/ipv6/ioam6_iptunnel.c
+
 -- 
-2.25.2
+2.17.1
 
