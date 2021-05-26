@@ -2,150 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D645B391303
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 10:51:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99507391318
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 10:54:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233250AbhEZIwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 04:52:31 -0400
-Received: from mail-ua1-f42.google.com ([209.85.222.42]:46894 "EHLO
-        mail-ua1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232617AbhEZIwa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 04:52:30 -0400
-Received: by mail-ua1-f42.google.com with SMTP id h26so340746uab.13;
-        Wed, 26 May 2021 01:50:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ftj/o/FDlLZjvveU5gflHCydxVxy9/duOHSuWLsKuds=;
-        b=gzUBebI1WuB/5fkUx1y0oflbKBO2nJRvgKevQ/1JqUA1aPixRsQ6XgY/E+PGl8YFDb
-         v6YXbmpQFoXXfjX9RnX1PIAnnXPOlmmuqsSJMQ0/QwRjW0m6/lo/b5eEQKpLzDa+3K+G
-         CpmFqw8dQUzeJORNcWefueRBdAD6znRBePDhcBH3aECy5Qdsoyzsncmz8AsvqDGnS/AT
-         cexFtZLcaUFwLO/Fzu9ZkDc8UajoqK4yRvUiuv7XzGoalsHpBhiOTkV1rN6NxTTQcjBY
-         PvOSA7EnnucGnAY+FjyX1LD+YuYYZF2+NL0gIIOeJa6W/n6S9MBy40PCx6KAIhnLaZxq
-         mqrQ==
-X-Gm-Message-State: AOAM530/mpYKMt+3kw+JWnyAo4LXGfKlrxCVsg8sQoHi4cOYqB6jTpKD
-        jQXOFBTcNNnAT46FiffZkFUL5RaZbFHpP6bwrfU3LpM8
-X-Google-Smtp-Source: ABdhPJywUZ6Xwv+zij4MSQ000T5eibp+TpLy3YyyGoFqj+kf4ejbTke4WZLjWrCgAdHGlnISxwMlbpFtCE1QmEgp5j8=
-X-Received: by 2002:ab0:2a8b:: with SMTP id h11mr31904723uar.4.1622019058834;
- Wed, 26 May 2021 01:50:58 -0700 (PDT)
+        id S233400AbhEZIzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 04:55:35 -0400
+Received: from mail-dm6nam10on2087.outbound.protection.outlook.com ([40.107.93.87]:60161
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233150AbhEZIzd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 04:55:33 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ICuWi+LSiQRLXFjY54U7riwJUWRQUEewCbTlYIzx00mH9k2pER4uskaDdBsCEs5IcMGpyZQVgaPErjRMRC4+0JnbIj8/dHabNU+OObw1K2duec/WdTDw+/gfI/IrZ3im1ixjP0cygv52utMsTVMK/3J3tGVj4mLjqz3Z2JFLVUw6cQGoBiQHz5+KNK5WYca6o3z+l1myU0KARgeSg6QI/kQluq1j211xiblSZWHnTfCkIVLMy+ygSAcQOyfg/Ol3I+gBVVDkVA1WbzAdSKGQPvxM7wtqJmte8xu8g22W9WmuBVa/1Wel64nOHbT8HpSSVxShofIc3L4fKDW6XKnHew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+Gp9MqEnuDzjwz35GyzdcLIDndnVpcUkmgYHnpD5N7s=;
+ b=JRJGpCWVP9ZWOpwxuXjzVy4nVwHJBzx1jk8iw08stpXmCtXKwiExLTe4tacaoJMyiFGduUnDhPvNcKooM4gjZyCsH3R1bl3pjnegk06s9NCQzzFRbAUm2dhW500QgVVrJPOTeTeoy+XeUsu5xT+CZdCj78IrSPF4OwjBKas5dATUkmoOWjRBIpA1w1Pr/7NC4vhMz8A1crtBS2w8f4+rqsAUggOzwtgcmlNHr4M7tUgoGlz+5HvFN2KL2CPiLQ3nKQxek+5CMXoNEkrxm4YkkI96iTsoD24S/nmQvT0nUWR+tkbcSXhK0XfzZeqe/c2wNTyf++YLhw+BrLcIMW8VBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+Gp9MqEnuDzjwz35GyzdcLIDndnVpcUkmgYHnpD5N7s=;
+ b=Mgb8yHYNH0sf/QJKNDktu4L6PpiFBs34mQ7YEbdx7B/Hk1UR9ZlUVRuumy7G1Wm7ntmKjEKAcm3xHREY+BpAjOmK+cnxqk6HFZFO3NRE+b3AcADNhNqYEnQO5leGoima/aU+20UyfxrWJqAmZ+fRFTkp3aGTwFGWgei3xXONeuDdJEPmCzxPXp5Yno0CWqcwzwqEoin6+1xFlkMiJcBbsyj4CR4h/tlnyx0chXE96wfaWqTwyjgkFpD1YsBjaXSS3Dc8YK5PIG9xsp/dHv5I5Toq1EWWAmLZ6xefnlCkAh6FlGR9DYRPli5VmJUJCZPj94TZOEbT0+vomsefqvD4fw==
+Received: from MW4P223CA0008.NAMP223.PROD.OUTLOOK.COM (2603:10b6:303:80::13)
+ by CH2PR12MB4859.namprd12.prod.outlook.com (2603:10b6:610:62::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.25; Wed, 26 May
+ 2021 08:54:01 +0000
+Received: from CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:80:cafe::1a) by MW4P223CA0008.outlook.office365.com
+ (2603:10b6:303:80::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22 via Frontend
+ Transport; Wed, 26 May 2021 08:54:01 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT022.mail.protection.outlook.com (10.13.175.199) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 08:54:01 +0000
+Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May 2021 08:53:54
+ +0000
+References: <20210525113316.25416-1-po-hsu.lin@canonical.com>
+User-agent: mu4e 1.4.10; emacs 27.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
+CC:     <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <shuah@kernel.org>, <skhan@linuxfoundation.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
+        <kpsingh@kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <hawk@kernel.org>, <nikolay@nvidia.com>, <gnault@redhat.com>,
+        <vladimir.oltean@nxp.com>, <idosch@nvidia.com>,
+        <baowen.zheng@corigine.com>, <danieller@nvidia.com>,
+        <petrm@nvidia.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCHv2] selftests: Use kselftest skip code for skipped tests
+In-Reply-To: <20210525113316.25416-1-po-hsu.lin@canonical.com>
+Date:   Wed, 26 May 2021 10:53:52 +0200
+Message-ID: <87y2c1swnz.fsf@nvidia.com>
 MIME-Version: 1.0
-References: <20210330145430.996981-1-maz@kernel.org> <20210330145430.996981-8-maz@kernel.org>
- <CAMuHMdWd5261ti-zKsroFLvWs0abaWa7G4DKefgPwFb3rEjnNw@mail.gmail.com>
- <6c522f8116f54fa6f23a2d217d966c5a@kernel.org> <CAMuHMdWzBqLVOVn_z8S2H-x-kL+DfOsM5mDb_D8OKsyRJtKpdA@mail.gmail.com>
- <8735u9x6sb.wl-maz@kernel.org> <CAMuHMdUBwcB-v0ugCPB3D6dbttiSbqQeHgNrr+r331ntRrfiAw@mail.gmail.com>
- <871r9tx5dq.wl-maz@kernel.org>
-In-Reply-To: <871r9tx5dq.wl-maz@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 26 May 2021 10:50:47 +0200
-Message-ID: <CAMuHMdVFE=RB5wPUi9PH5WeQPSYfcg+ugKigB4nAo9yotO+WYg@mail.gmail.com>
-Subject: Re: [PATCH v19 7/7] ptp: arm/arm64: Enable ptp_kvm for arm/arm64
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     jianyong.wu@arm.com, netdev <netdev@vger.kernel.org>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paolo Bonzini <pbonzini@redhat.com>, seanjc@google.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Andre Przywara <Andre.Przywara@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        kvmarm@lists.cs.columbia.edu, KVM list <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>, justin.he@arm.com,
-        Android Kernel Team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0176b126-049f-4e81-d595-08d92023cea1
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4859:
+X-Microsoft-Antispam-PRVS: <CH2PR12MB4859036419BA5F7985DEEFA4D6249@CH2PR12MB4859.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bVtH75vtpxOgmNkFSU5cG+z37Po7Gx/0HONJzsyIQKzIZ/eqcRH+Gf+4nc+Ne7U3NE7ZF977NSI5uobwSYaq8QgV6CPDSVPqJbhLUwGK5SNZbpyYvprzvwzcym+jdvey1eGx7ZF5j9XREuIv82CMxM+XPtD79VBcn1BHLjcpLWCF69srRR8IZ1QaaiI40QOsqfGUn6NkIOZXN1cIIglJy1tV4S1uLDtUnLZ+W3jzhsivJknnpRA7zGa6cwvCqXfcGttnxuIVCgarkXTOXxukaJ6+yihqY7p6l7xDl0jbZENIOcFThDJ9krvZu4eFOT4LLgegjAbC5aDsrGqQGN8f38keioCdfJFQW/o1BrxWiBLHs7UnxRtvsUU11H6mzq1p396UbH+x+lnv+qK1sGMVpKghmY3gGbZKPVdJWzQiunVxr0sHXKN0BIb4u6QPIR0BqDoyev2zPbN6/frmaqY/r6ctItpst4fRnDtN1Kwme/ZVpeETVegxQrCAhYYo7NqVMqsGArg4QAWWX0JJDUYa/kwRAAc5ZbAZRFKr7hfdIoi8O9ZZDEwAVd8S3bUmUzE4Cd8eNGx76C+Twy3azVyKbiDFg4VKlYNdFbOnid1WkFVFWLzLYvJCo7jo4mKDb0/AtCGvtef9Ok8IOz4qjBplsphjFAtMObNIxWxfNUXTs9c=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(136003)(376002)(346002)(39860400002)(36840700001)(46966006)(7636003)(356005)(426003)(336012)(54906003)(82740400003)(47076005)(316002)(8936002)(8676002)(36860700001)(70206006)(70586007)(82310400003)(478600001)(66574015)(5660300002)(2616005)(36756003)(186003)(4326008)(6916009)(26005)(36906005)(2906002)(86362001)(7416002)(16526019);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 08:54:01.1113
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0176b126-049f-4e81-d595-08d92023cea1
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4859
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
 
-On Wed, May 26, 2021 at 10:32 AM Marc Zyngier <maz@kernel.org> wrote:
-> On Wed, 26 May 2021 09:18:27 +0100,
-> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Wed, May 26, 2021 at 10:01 AM Marc Zyngier <maz@kernel.org> wrote:
-> > > On Wed, 26 May 2021 08:52:42 +0100,
-> > > Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > > > On Tue, May 11, 2021 at 11:13 AM Marc Zyngier <maz@kernel.org> wrote:
-> > > > > On 2021-05-11 10:07, Geert Uytterhoeven wrote:
-> > > > > > On Tue, Mar 30, 2021 at 4:56 PM Marc Zyngier <maz@kernel.org> wrote:
-> > > > > >> From: Jianyong Wu <jianyong.wu@arm.com>
-> > > > > >
-> > > > > >> --- a/drivers/ptp/Kconfig
-> > > > > >> +++ b/drivers/ptp/Kconfig
-> > > > > >> @@ -108,7 +108,7 @@ config PTP_1588_CLOCK_PCH
-> > > > > >>  config PTP_1588_CLOCK_KVM
-> > > > > >>         tristate "KVM virtual PTP clock"
-> > > > > >>         depends on PTP_1588_CLOCK
-> > > > > >> -       depends on KVM_GUEST && X86
-> > > > > >> +       depends on (KVM_GUEST && X86) || (HAVE_ARM_SMCCC_DISCOVERY &&
-> > > > > >> ARM_ARCH_TIMER)
-> > > > > >
-> > > > > > Why does this not depend on KVM_GUEST on ARM?
-> > > > > > I.e. shouldn't the dependency be:
-> > > > > >
-> > > > > >     KVM_GUEST && (X86 || (HAVE_ARM_SMCCC_DISCOVERY && ARM_ARCH_TIMER))
-> > > > > >
-> > > > > > ?
-> > > > >
-> > > > > arm/arm64 do not select KVM_GUEST. Any kernel can be used for a guest,
-> > > > > and KVM/arm64 doesn't know about this configuration symbol.
-> > > >
-> > > > OK.
-> > > >
-> > > > Does PTP_1588_CLOCK_KVM need to default to yes?
-> > > > Perhaps only on X86, to maintain the status quo?
-> > >
-> > > I think I don't really understand the problem you are trying to
-> > > solve. Is it that 'make oldconfig' now asks you about this new driver?
-> > > Why is that an issue?
-> >
-> > My first "problem" was that it asked about this new driver on
-> > arm/arm64, while I assumed there were some missing dependencies
-> > (configuring a kernel should not ask useless questions).  That turned
-> > out to be a wrong assumption, so there is no such problem here.
-> >
-> > The second problem is "default y": code that is not critical should
-> > not be enabled by default.  Hence my last question.
+Po-Hsu Lin <po-hsu.lin@canonical.com> writes:
+
+> There are several test cases still using exit 0 when they need to be
+> skipped. Use kselftest framework skip code instead so it can help us
+> to distinguish the proper return status.
 >
-> I think consistency between architectures is important. Certainly,
-> distributions depend on that, and we otherwise end-up with distro
-> kernels missing functionalities.
+> Criterion to filter out what should be fixed in selftests directory:
+>   grep -r "exit 0" -B1 | grep -i skip
 >
-> The notion of "critical" is also pretty relative. defconfig contains a
+> This change might cause some false-positives if people are running
+> these test scripts directly and only checking their return codes,
+> which will change from 0 to 4. However I think the impact should be
+> small as most of our scripts here are already using this skip code.
+> And there will be no such issue if running them with the kselftest
+> framework.
+>
+> V2: router_mpath_nh.sh and outer_mpath_nh_res.sh sources lib.sh,
+> there is no need to assign ksft_skip value in these two.
+>
+> Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
 
-I'm not talking about defconfig, but about "default y" in defconfig.
+I want to note that defining ksft_skip=4 in every test separately is the
+current practice. I agree with Willem (in a parallel thread) that this
+stuff should live in a library of its own, but there is none currently.
+When there is, it looks like the conversion would be mechanical.
 
-> gazillion of things that are not critical to most people, for example,
-> and yet misses a bunch of things that are needed to boot on some of my
-> systems.
+Which is to say, IMHO this patch makes sense on its own as an
+incremental improvement.
 
-Perhaps those should be added, so those systems can be tested using
-defconfig?  At least for arm64, I think that's aligned with the
-arm64 defconfig policy.
-
-> That's just to say that I find it difficult to make that choice from
-> the PoV of a kernel hacker. I'm personally more inclined to leave
-> things enabled and let people *disable* things if they want to reduce
-> the footprint of their kernel.
-
-The standard question to respond to w.r.t. "default y" is: "Why is
-your feature so special that it needs to be enabled by default?",
-which implies "default y" is the exception, not the rule.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Reviewed-by: Petr Machata <petrm@nvidia.com>
