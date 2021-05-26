@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1EC3916ED
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:01:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 098243916F0
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:01:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233074AbhEZMC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 08:02:58 -0400
-Received: from mail-bn7nam10on2076.outbound.protection.outlook.com ([40.107.92.76]:9537
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S233201AbhEZMDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 08:03:19 -0400
+Received: from mail-dm6nam11on2059.outbound.protection.outlook.com ([40.107.223.59]:36058
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232976AbhEZMC4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 08:02:56 -0400
+        id S233111AbhEZMDL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 08:03:11 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UJL8Nw19c56lNWd8fIPvKYiy97qhg4s4xJKnQIUyI+N9GmOCyyhOe4cWijIdUFyEb6kn6ijYnh8q5YCtAGm/EfaLRT2eFKyQCFkNteiCtjV6HbrSAIscJpkQOTSmf1A/al1RnBMkiMPiObHHqhg0hZJ8VFqClC7VB8yusgjg/GhcAk6q6IcKifaHIluHXeoZOoaK3v+2rOe05Ksypz7AVyVYVBJwYDOiTdDqeuPETFWUYAUcoHOQ2VhDd3Z9vm60C56Pk+qQD+3Uj4xmJexubQ4zKCqkXNmOIn9tE9mySCLur/FTg7JTGMvLwoipZJBSgxvA6mgWkkJxDwU6E3cyrw==
+ b=MmGVO8egJfBeRPuuf1vJ0IDqo8htx05K10BwuXXtHYPtCnq3g18J76IMDphaKQZNJlVfBF5hNz7XPAW/8udi9oDf4xr7/LeBFZml3nu5ppz3I8Ny4nVEjbLROm93zK1YtZrPeVFneCZKALleQlDE/HPCqRts/vPCkycChmfCbzqvlvQbBV+T4h+iHtt5naXetLP3WyZNWRdrifGnm1hGAV9RtvForK50oeXTZBtm3sDFDGlQf32od2SnuOe3VTL6sWyDRLPtFEi5hH2yQn2NXnK4HA7r00i7Zvmh6L4yE37z2kKOe10nXJpa1uTck2nLB5xu5f4jafp7/L3IXaj57g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gl+52mnQcZq3/J+bkNVDr5hRXD9Y1kPYC2Z/Z0abwI0=;
- b=D7qPF2wUK249GsKj+O4kWI7eQhjYEFCCWTqByNjv/hpCiWMe0wC9vSvStmjKdQl8Drm2A9D75nyNOQoXrWFlnPCh6t16RNpqaY80Ww7VNsVThJJvv2fsVow06svNx1Fm2WCUPkSjTmR+3rHVlsT6VCyRKeJez7/2ZRHSsKSgPMDloNFcO3eL05EWD1GHhGoAYUdW62pZimiDC5Zd4DqZQRcSryybbc2iPS8xs16qsYZKH4OujRjLafm5Se+0MlebnGc2cP+lFSw+P6u+sG+5fCIvfHXArYzIC28H8352IHNJiyXd1npXKS4siOpTv0ni9grGVl/1l39sIBtTSO3HcQ==
+ bh=Pb5rOyXCWA4y7OrW2JBMT1Cbso6REtZqTl3fzfq51BM=;
+ b=LbrkX7D+bdQ5N6AGrLtC0pEZ6I8Vx6uuICWQtMafZYrbs8gTJW83O0FdRrH+BCfCGaFGOnZ4mu+6hxkTu+/8ADmHPQqH1fDkgZFPlCK+XG2AwP2ZV/+Xdz8HQGItDdSvQXThMHcmc7hytN1R56G/0oe+vUMn2RJNGZH6PiNYIynI2uzJRRM3z8dO2ooTcjN70EO3SUfWvBrFPyWuQFmw91wzH5vYOESRbHeur/qE8InLSJxTpU1qyydDrJi0S1V5TYzmEqEDnJFUo2OuwxAcT31rLZ9pzPAyULye8HeAOjR4xxG3Zev1jN/cVFtQkgeJSC1bb+ik05p28VnMK23blQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=networkplumber.org
+ 216.228.112.34) smtp.rcpttodomain=networkplumber.org
  smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
  header.from=nvidia.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gl+52mnQcZq3/J+bkNVDr5hRXD9Y1kPYC2Z/Z0abwI0=;
- b=sfp0h9xaoul4SZd1eYjlvO0EVw4DLmDT4lERcfYgRHS4C5cXXqAnZB0wMa+aPwT+q7KafTfFckA7RbY/WOlVX4Gr8nSx+EMCZhibtk6U3cIQRg3wnpMm5es8xYq7u/FzkbTF2x+NgitnFRruJXYQ1dhskGIaAGxvDg/fJTPCnaiNxEyrrO8/A9tsWOkJRmniSU25evXgf2RuVPWSzekkw9fKWjsKnbuw51P1/EDPLFXfciK5w2WTKcMRtVk7Bo60x8LXdp1x7R0LrcYx/s0h6FCyuSoC+bq6dGVRwmfbb799MBteKiM2pCQR4cvTGWm2phYinfTCGmV8sWrNL6+QRw==
-Received: from MW4PR03CA0043.namprd03.prod.outlook.com (2603:10b6:303:8e::18)
- by MN2PR12MB3005.namprd12.prod.outlook.com (2603:10b6:208:c5::24) with
+ bh=Pb5rOyXCWA4y7OrW2JBMT1Cbso6REtZqTl3fzfq51BM=;
+ b=pH8Uz9li5Kbd1OIXZStGTJvyvPJIqL00/TGRIqZuPEtYZI3gsRnqLeeArT6qShVtRuaep0bRNCdRCDWMhHYtND2Tu/FQyfWjVEaFuWoKXnzLWiGUPPvTp0nsZfnbw6xTyfKj+ILn8zfriYAp5QXNJRzbF+ZhLGmZJ8I2uQJB8+tTwEge6pBxREYZzgL41gx314d0ni4l1AucjMWGrhgtnSkJTRfK1Ugkw3oo0FBDEtPbp2/p52CcQ9HySLwlLIdjO9Mm0X4ZipuI0HKOTmNTaSqUFKxmWtRAYmm0mvwXAmSRVo1VDW77JlxOEWOvjbqzai4Wsq2DV15ZdWqvn9l+1Q==
+Received: from DM6PR02CA0154.namprd02.prod.outlook.com (2603:10b6:5:332::21)
+ by BY5PR12MB5509.namprd12.prod.outlook.com (2603:10b6:a03:1d7::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.25; Wed, 26 May
- 2021 12:01:24 +0000
-Received: from CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8e:cafe::4b) by MW4PR03CA0043.outlook.office365.com
- (2603:10b6:303:8e::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.26; Wed, 26 May
+ 2021 12:01:38 +0000
+Received: from DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:332:cafe::d3) by DM6PR02CA0154.outlook.office365.com
+ (2603:10b6:5:332::21) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend
- Transport; Wed, 26 May 2021 12:01:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
+ Transport; Wed, 26 May 2021 12:01:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
  header.d=none;networkplumber.org; dmarc=pass action=none
  header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- CO1NAM11FT017.mail.protection.outlook.com (10.13.175.108) with Microsoft SMTP
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT040.mail.protection.outlook.com (10.13.173.133) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 12:01:23 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
- 2021 05:01:23 -0700
+ 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 12:01:37 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
+ 2021 12:01:26 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 26 May 2021 12:01:20 +0000
+ Transport; Wed, 26 May 2021 12:01:23 +0000
 From:   <dlinkin@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>,
         <stephen@networkplumber.org>, <dsahern@gmail.com>,
         <vladbu@nvidia.com>, <parav@nvidia.com>, <huyn@nvidia.com>,
         Dmytro Linkin <dlinkin@nvidia.com>
-Subject: [PATCH RFC net-next v3 03/18] netdevsim: Implement port types and indexing
-Date:   Wed, 26 May 2021 15:00:55 +0300
-Message-ID: <1622030470-21434-4-git-send-email-dlinkin@nvidia.com>
+Subject: [PATCH RFC net-next v3 04/18] netdevsim: Implement VFs
+Date:   Wed, 26 May 2021 15:00:56 +0300
+Message-ID: <1622030470-21434-5-git-send-email-dlinkin@nvidia.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1622030470-21434-1-git-send-email-dlinkin@nvidia.com>
 References: <1622030470-21434-1-git-send-email-dlinkin@nvidia.com>
@@ -71,252 +71,210 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fbca99e1-6f41-4cf5-e4ca-08d9203dfbbb
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3005:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB3005A6E945AA3001D94C4306CB249@MN2PR12MB3005.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
+X-MS-Office365-Filtering-Correlation-Id: 89f957f3-e8a7-4ede-c111-08d9203e042e
+X-MS-TrafficTypeDiagnostic: BY5PR12MB5509:
+X-Microsoft-Antispam-PRVS: <BY5PR12MB55094B925B156D34E5DA6D24CB249@BY5PR12MB5509.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2512;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EhhAqFQkLaZ7/2n/dEeLvd2uPBLmM835eGfekTD9iSz5Ly/h+1FnFPWbMP4HjJbD0lBgkZ7PbOza57jGNGP6YkLrY9t1AB3gc1xxZOTqHBfhMlLBjb9OZqoJvoNv6TqZx2TxpfKAvY4inHyVbsUXN7v5vBEQa4nraEOWLsFRzZ91CuVIg/er6vUwFW6Em1F+q9KeF9ZtLZBOM8rYopGYAFDa+cDd/5UHItFlIEuhlaTMWxzbODFlUeaoBSfBxYYMVkh3lqxxZEFvNIXKji1uFCS3dCKrjR/bwAWxgZZPwfk/+bK2nUw8prZaxGPPaGVyoRVgXgcvTGvsKAbzQE4s8LI5omjtD7yIpLM9dh+mSfZ7y/DV3XRt1IxTZP/+HT+Jht4S8XxlHWFgK06ZMJL+hUDR7qGKpqPflQzpEjWbIsfKQmiYjJPQ3ILeQiAbvt5nDrsK+/RpXWZQol/TZ84eF59YU8UOPG42k6Z2tzl37PTvgGsRloRoJzXprWR5bbRwneFgHSXg0vW4bxRxMMGHxpnoskIehQZSYDN6oFSlRqm5ML+SGI6FFrUABCbWKkOglFDjUcebAgfhozP6InVwyqXbNSY4dOmaP8FKodaK3CLOPkXxaKBZ/U5KPYCL/U1bp1XaGWaQTjPJ87tvhh/AHQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(376002)(396003)(346002)(39860400002)(46966006)(36840700001)(2906002)(426003)(2616005)(36860700001)(2876002)(54906003)(4326008)(26005)(47076005)(6916009)(336012)(5660300002)(86362001)(6666004)(82310400003)(82740400003)(107886003)(83380400001)(316002)(8676002)(186003)(7696005)(7636003)(8936002)(356005)(70206006)(70586007)(36756003)(478600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: hFpM4Wjlv/VNzNXRBMyI5roSpc4e8lhG7yRPc9XCkE16+/umwFJYIZKlvFGiI3btuw2a8/gTSy5/k8zWYJd23aT1dHzhKUK490MphJU1svhdXcEceLMixhPxI3Qfot7BOobZT+ZnNb3SmTmhtZY1cO5UQAsGwQDPNEnRQkhyySueTx6+LP3PeTGximx3qpHkRUnAAG+foi1MuTolglXvy83sNydp/raQKOLkY24YXCJOeXf79OUWlvBKr+X/4Q5fMgB2/op0KE1CIkR/Eo1RAORmhXSV8GYnA6wepzJHQZiQFmwjZLVxtWtRokkCJFVbtnHUhYqstcrZPHOM/Mh600R/5cluUdPtuzP1qGAjkMdJn9zjhe829l03rwXSR8IYjgivY7T2TFfbIAfyUu6cTyjl+dM5WqrxXXmzUci5VAXpiDToUtSUXUIfZFZ/ik2zkBVMbw9u1ETVpldsBhJtjy7fdTE5R/Fer7irl/7Be7WyvgAONk8MdlUU0ZQfAEs2eGZKZxGtHBrSbeUsGPK49p6zmf/uQbTxb9q32fRcfLB8ISdRyX38NFoZiYlBNt1GY8A/NVZPd8p9qxlHEfxZXBr69YpnH9lbAWMUdBphvbv2o30HgDSthMh5ifvpAQqDFiS6QcWgEBc9kU/3AdUO3w==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(136003)(39850400004)(376002)(346002)(36840700001)(46966006)(316002)(7696005)(186003)(47076005)(6666004)(6916009)(36860700001)(82740400003)(36756003)(426003)(36906005)(86362001)(4326008)(83380400001)(478600001)(70586007)(336012)(8676002)(2906002)(26005)(82310400003)(5660300002)(107886003)(8936002)(70206006)(356005)(7636003)(54906003)(2876002)(2616005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 12:01:23.7125
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 12:01:37.8630
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fbca99e1-6f41-4cf5-e4ca-08d9203dfbbb
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89f957f3-e8a7-4ede-c111-08d9203e042e
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3005
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB5509
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmytro Linkin <dlinkin@nvidia.com>
 
-Define type of ports, which netdevsim driver currently operates with as
-PF. Define new port type - VF, which will be implemented in following
-patches. Add helper functions to distinguish them. Add helper function
-to get VF index from port index.
+Allow creation of netdevsim ports for VFs along with allocations of
+corresponding net devices and devlink ports.
+Add enums and helpers to distinguish PFs' ports from VFs' ports.
 
-Add port indexing logic where PFs' indexes starts from 0, VFs' - from
-NSIM_DEV_VF_PORT_INDEX_BASE.
-All ports uses same index pool, which means that PF port may be created
-with index from VFs' indexes range.
-Maximum number of VFs, which the driver can allocate, is limited by
-UINT_MAX - BASE.
+Ports creation/deletion debugfs API intended to be used with physical
+ports only.
+VFs instantiation will be done in one of the next patches.
 
 Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/netdevsim/bus.c       | 10 ++++++++--
- drivers/net/netdevsim/dev.c       | 42 +++++++++++++++++++++++++++++----------
- drivers/net/netdevsim/netdevsim.h | 20 +++++++++++++++++++
- 3 files changed, 60 insertions(+), 12 deletions(-)
+ drivers/net/netdevsim/dev.c    | 14 ++++++-
+ drivers/net/netdevsim/netdev.c | 90 ++++++++++++++++++++++++++++++------------
+ 2 files changed, 77 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
-index d5c547c..e29146d 100644
---- a/drivers/net/netdevsim/bus.c
-+++ b/drivers/net/netdevsim/bus.c
-@@ -141,6 +141,12 @@ ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
- 		goto unlock;
- 	}
- 
-+	/* max_vfs limited by the maximum number of provided port indexes */
-+	if (val > NSIM_DEV_VF_PORT_INDEX_MAX - NSIM_DEV_VF_PORT_INDEX_BASE) {
-+		ret = -ERANGE;
-+		goto unlock;
-+	}
-+
- 	vfconfigs = kcalloc(val, sizeof(struct nsim_vf_config), GFP_KERNEL | __GFP_NOWARN);
- 	if (!vfconfigs) {
- 		ret = -ENOMEM;
-@@ -178,7 +184,7 @@ ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
- 
- 	mutex_lock(&nsim_bus_dev->nsim_bus_reload_lock);
- 	devlink_reload_disable(devlink);
--	ret = nsim_dev_port_add(nsim_bus_dev, port_index);
-+	ret = nsim_dev_port_add(nsim_bus_dev, NSIM_DEV_PORT_TYPE_PF, port_index);
- 	devlink_reload_enable(devlink);
- 	mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
- 	return ret ? ret : count;
-@@ -207,7 +213,7 @@ ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
- 
- 	mutex_lock(&nsim_bus_dev->nsim_bus_reload_lock);
- 	devlink_reload_disable(devlink);
--	ret = nsim_dev_port_del(nsim_bus_dev, port_index);
-+	ret = nsim_dev_port_del(nsim_bus_dev, NSIM_DEV_PORT_TYPE_PF, port_index);
- 	devlink_reload_enable(devlink);
- 	mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
- 	return ret ? ret : count;
 diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index cd50c05..93d6f3d 100644
+index 93d6f3d..8bd7654 100644
 --- a/drivers/net/netdevsim/dev.c
 +++ b/drivers/net/netdevsim/dev.c
-@@ -35,6 +35,25 @@
- 
- #include "netdevsim.h"
- 
-+static unsigned int
-+nsim_dev_port_index(enum nsim_dev_port_type type, unsigned int port_index)
-+{
-+	switch (type) {
-+	case NSIM_DEV_PORT_TYPE_VF:
-+		port_index = NSIM_DEV_VF_PORT_INDEX_BASE + port_index;
-+		break;
-+	case NSIM_DEV_PORT_TYPE_PF:
-+		break;
-+	}
-+
-+	return port_index;
-+}
-+
-+static inline unsigned int nsim_dev_port_index_to_vf_index(unsigned int port_index)
-+{
-+	return port_index - NSIM_DEV_VF_PORT_INDEX_BASE;
-+}
-+
- static struct dentry *nsim_dev_ddir;
- 
- #define NSIM_DEV_DUMMY_REGION_SIZE (1024 * 32)
-@@ -923,7 +942,7 @@ static int nsim_dev_devlink_trap_init(struct devlink *devlink,
- #define NSIM_DEV_MAX_MACS_DEFAULT 32
- #define NSIM_DEV_TEST1_DEFAULT true
- 
--static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
-+static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+@@ -945,11 +945,15 @@ static int nsim_dev_devlink_trap_init(struct devlink *devlink,
+ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
  			       unsigned int port_index)
  {
++	struct nsim_bus_dev *nsim_bus_dev = nsim_dev->nsim_bus_dev;
  	struct devlink_port_attrs attrs = {};
-@@ -934,7 +953,8 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
+ 	struct nsim_dev_port *nsim_dev_port;
+ 	struct devlink_port *devlink_port;
+ 	int err;
+ 
++	if (type == NSIM_DEV_PORT_TYPE_VF && !nsim_bus_dev->num_vfs)
++		return -EINVAL;
++
  	nsim_dev_port = kzalloc(sizeof(*nsim_dev_port), GFP_KERNEL);
  	if (!nsim_dev_port)
  		return -ENOMEM;
--	nsim_dev_port->port_index = port_index;
-+	nsim_dev_port->port_index = nsim_dev_port_index(type, port_index);
-+	nsim_dev_port->port_type = type;
+@@ -957,8 +961,14 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_typ
+ 	nsim_dev_port->port_type = type;
  
  	devlink_port = &nsim_dev_port->devlink_port;
- 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
-@@ -943,7 +963,7 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
+-	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+-	attrs.phys.port_number = port_index + 1;
++	if (nsim_dev_port_is_pf(nsim_dev_port)) {
++		attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
++		attrs.phys.port_number = port_index + 1;
++	} else {
++		attrs.flavour = DEVLINK_PORT_FLAVOUR_PCI_VF;
++		attrs.pci_vf.pf = 0;
++		attrs.pci_vf.vf = port_index;
++	}
+ 	memcpy(attrs.switch_id.id, nsim_dev->switch_id.id, nsim_dev->switch_id.id_len);
  	attrs.switch_id.id_len = nsim_dev->switch_id.id_len;
  	devlink_port_attrs_set(devlink_port, &attrs);
- 	err = devlink_port_register(priv_to_devlink(nsim_dev), devlink_port,
--				    port_index);
-+				    nsim_dev_port->port_index);
- 	if (err)
- 		goto err_port_free;
+diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
+index 659d3dc..9352e18 100644
+--- a/drivers/net/netdevsim/netdev.c
++++ b/drivers/net/netdevsim/netdev.c
+@@ -261,6 +261,18 @@ static struct devlink_port *nsim_get_devlink_port(struct net_device *dev)
+ 	.ndo_get_devlink_port	= nsim_get_devlink_port,
+ };
  
-@@ -1000,7 +1020,7 @@ static int nsim_dev_port_add_all(struct nsim_dev *nsim_dev,
- 	int i, err;
- 
- 	for (i = 0; i < port_count; i++) {
--		err = __nsim_dev_port_add(nsim_dev, i);
-+		err = __nsim_dev_port_add(nsim_dev, NSIM_DEV_PORT_TYPE_PF, i);
- 		if (err)
- 			goto err_port_del_all;
- 	}
-@@ -1216,32 +1236,34 @@ void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev)
- }
- 
- static struct nsim_dev_port *
--__nsim_dev_port_lookup(struct nsim_dev *nsim_dev, unsigned int port_index)
-+__nsim_dev_port_lookup(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-+		       unsigned int port_index)
- {
- 	struct nsim_dev_port *nsim_dev_port;
- 
-+	port_index = nsim_dev_port_index(type, port_index);
- 	list_for_each_entry(nsim_dev_port, &nsim_dev->port_list, list)
- 		if (nsim_dev_port->port_index == port_index)
- 			return nsim_dev_port;
- 	return NULL;
- }
- 
--int nsim_dev_port_add(struct nsim_bus_dev *nsim_bus_dev,
-+int nsim_dev_port_add(struct nsim_bus_dev *nsim_bus_dev, enum nsim_dev_port_type type,
- 		      unsigned int port_index)
- {
- 	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
- 	int err;
- 
- 	mutex_lock(&nsim_dev->port_list_lock);
--	if (__nsim_dev_port_lookup(nsim_dev, port_index))
-+	if (__nsim_dev_port_lookup(nsim_dev, type, port_index))
- 		err = -EEXIST;
- 	else
--		err = __nsim_dev_port_add(nsim_dev, port_index);
-+		err = __nsim_dev_port_add(nsim_dev, type, port_index);
- 	mutex_unlock(&nsim_dev->port_list_lock);
- 	return err;
- }
- 
--int nsim_dev_port_del(struct nsim_bus_dev *nsim_bus_dev,
-+int nsim_dev_port_del(struct nsim_bus_dev *nsim_bus_dev, enum nsim_dev_port_type type,
- 		      unsigned int port_index)
- {
- 	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
-@@ -1249,7 +1271,7 @@ int nsim_dev_port_del(struct nsim_bus_dev *nsim_bus_dev,
- 	int err = 0;
- 
- 	mutex_lock(&nsim_dev->port_list_lock);
--	nsim_dev_port = __nsim_dev_port_lookup(nsim_dev, port_index);
-+	nsim_dev_port = __nsim_dev_port_lookup(nsim_dev, type, port_index);
- 	if (!nsim_dev_port)
- 		err = -ENOENT;
- 	else
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index a1b49c8..e025c1b 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -197,10 +197,19 @@ static inline void nsim_dev_psample_exit(struct nsim_dev *nsim_dev)
- }
- #endif
- 
-+enum nsim_dev_port_type {
-+	NSIM_DEV_PORT_TYPE_PF,
-+	NSIM_DEV_PORT_TYPE_VF,
++static const struct net_device_ops nsim_vf_netdev_ops = {
++	.ndo_start_xmit		= nsim_start_xmit,
++	.ndo_set_rx_mode	= nsim_set_rx_mode,
++	.ndo_set_mac_address	= eth_mac_addr,
++	.ndo_validate_addr	= eth_validate_addr,
++	.ndo_change_mtu		= nsim_change_mtu,
++	.ndo_get_stats64	= nsim_get_stats64,
++	.ndo_setup_tc		= nsim_setup_tc,
++	.ndo_set_features	= nsim_set_features,
++	.ndo_get_devlink_port	= nsim_get_devlink_port,
 +};
 +
-+#define NSIM_DEV_VF_PORT_INDEX_BASE 128
-+#define NSIM_DEV_VF_PORT_INDEX_MAX UINT_MAX
-+
- struct nsim_dev_port {
- 	struct list_head list;
- 	struct devlink_port devlink_port;
- 	unsigned int port_index;
-+	enum nsim_dev_port_type port_type;
- 	struct dentry *ddir;
- 	struct netdevsim *ns;
- };
-@@ -260,8 +269,10 @@ static inline struct net *nsim_dev_net(struct nsim_dev *nsim_dev)
- int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev);
- void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev);
- int nsim_dev_port_add(struct nsim_bus_dev *nsim_bus_dev,
-+		      enum nsim_dev_port_type type,
- 		      unsigned int port_index);
- int nsim_dev_port_del(struct nsim_bus_dev *nsim_bus_dev,
-+		      enum nsim_dev_port_type type,
- 		      unsigned int port_index);
+ static void nsim_setup(struct net_device *dev)
+ {
+ 	ether_setup(dev);
+@@ -280,6 +292,49 @@ static void nsim_setup(struct net_device *dev)
+ 	dev->max_mtu = ETH_MAX_MTU;
+ }
  
- struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
-@@ -278,6 +289,15 @@ ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
- 				   size_t count, loff_t *ppos);
- void nsim_bus_dev_vfs_disable(struct nsim_bus_dev *nsim_bus_dev);
- 
-+static inline bool nsim_dev_port_is_pf(struct nsim_dev_port *nsim_dev_port)
++static int nsim_init_netdevsim(struct netdevsim *ns)
 +{
-+	return nsim_dev_port->port_type == NSIM_DEV_PORT_TYPE_PF;
++	int err;
++
++	ns->netdev->netdev_ops = &nsim_netdev_ops;
++
++	err = nsim_udp_tunnels_info_create(ns->nsim_dev, ns->netdev);
++	if (err)
++		return err;
++
++	rtnl_lock();
++	err = nsim_bpf_init(ns);
++	if (err)
++		goto err_utn_destroy;
++
++	nsim_ipsec_init(ns);
++
++	err = register_netdevice(ns->netdev);
++	if (err)
++		goto err_ipsec_teardown;
++	rtnl_unlock();
++	return 0;
++
++err_ipsec_teardown:
++	nsim_ipsec_teardown(ns);
++	nsim_bpf_uninit(ns);
++err_utn_destroy:
++	rtnl_unlock();
++	nsim_udp_tunnels_info_destroy(ns->netdev);
++	return err;
 +}
 +
-+static inline bool nsim_dev_port_is_vf(struct nsim_dev_port *nsim_dev_port)
++static int nsim_init_netdevsim_vf(struct netdevsim *ns)
 +{
-+	return nsim_dev_port->port_type == NSIM_DEV_PORT_TYPE_VF;
++	int err;
++
++	ns->netdev->netdev_ops = &nsim_vf_netdev_ops;
++	rtnl_lock();
++	err = register_netdevice(ns->netdev);
++	rtnl_unlock();
++	return err;
 +}
- #if IS_ENABLED(CONFIG_XFRM_OFFLOAD)
- void nsim_ipsec_init(struct netdevsim *ns);
- void nsim_ipsec_teardown(struct netdevsim *ns);
++
+ struct netdevsim *
+ nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port)
+ {
+@@ -299,33 +354,15 @@ struct netdevsim *
+ 	ns->nsim_dev_port = nsim_dev_port;
+ 	ns->nsim_bus_dev = nsim_dev->nsim_bus_dev;
+ 	SET_NETDEV_DEV(dev, &ns->nsim_bus_dev->dev);
+-	dev->netdev_ops = &nsim_netdev_ops;
+ 	nsim_ethtool_init(ns);
+-
+-	err = nsim_udp_tunnels_info_create(nsim_dev, dev);
++	if (nsim_dev_port_is_pf(nsim_dev_port))
++		err = nsim_init_netdevsim(ns);
++	else
++		err = nsim_init_netdevsim_vf(ns);
+ 	if (err)
+ 		goto err_free_netdev;
+-
+-	rtnl_lock();
+-	err = nsim_bpf_init(ns);
+-	if (err)
+-		goto err_utn_destroy;
+-
+-	nsim_ipsec_init(ns);
+-
+-	err = register_netdevice(dev);
+-	if (err)
+-		goto err_ipsec_teardown;
+-	rtnl_unlock();
+-
+ 	return ns;
+ 
+-err_ipsec_teardown:
+-	nsim_ipsec_teardown(ns);
+-	nsim_bpf_uninit(ns);
+-err_utn_destroy:
+-	rtnl_unlock();
+-	nsim_udp_tunnels_info_destroy(dev);
+ err_free_netdev:
+ 	free_netdev(dev);
+ 	return ERR_PTR(err);
+@@ -337,10 +374,13 @@ void nsim_destroy(struct netdevsim *ns)
+ 
+ 	rtnl_lock();
+ 	unregister_netdevice(dev);
+-	nsim_ipsec_teardown(ns);
+-	nsim_bpf_uninit(ns);
++	if (nsim_dev_port_is_pf(ns->nsim_dev_port)) {
++		nsim_ipsec_teardown(ns);
++		nsim_bpf_uninit(ns);
++	}
+ 	rtnl_unlock();
+-	nsim_udp_tunnels_info_destroy(dev);
++	if (nsim_dev_port_is_pf(ns->nsim_dev_port))
++		nsim_udp_tunnels_info_destroy(dev);
+ 	free_netdev(dev);
+ }
+ 
 -- 
 1.8.3.1
 
