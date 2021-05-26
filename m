@@ -2,133 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66AE3391781
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:37:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0B7439178F
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:40:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233869AbhEZMjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 08:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35528 "EHLO
+        id S234617AbhEZMl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 08:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233524AbhEZMiv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 08:38:51 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8848FC061574
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 05:37:18 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id jt22so2185515ejb.7
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 05:37:18 -0700 (PDT)
+        with ESMTP id S234585AbhEZMlR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 08:41:17 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00101C061574
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 05:39:45 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id j10so1260696edw.8
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 05:39:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QiYfnkTPIW9j7k9MfXG+3MGtW/S0q+cZ/4l0IdLDbig=;
-        b=S6FAB2iG1/lrNf/1jl+6OwyfT7Tb0Z7DHXWggl+S7/p9qVZ8SlRdDR3WBxptYZsB+G
-         mltWPq0niceYQZKq/SZW8aqTiPPSqWzur2Dg8I4Y5iV9lHBxS2u2S7fULGtUlwYe/M9U
-         CAOoCnqaEL1h3wZiYznb1ZFW1MlaLJWLFr+U3e5d/7u8nWefK6WciBChuGfFxfoqUNly
-         gcOQDnmW+Sqn2siF8LFWOeBCGXUOBSPHPN3Kbi9eYVgVqEi0rMxDUi9SPdq79fDdR003
-         tzvP6kgTq/8+IIgPJZxpiu7OblzJsI7kJVKaQRWx+dyw7YRX7KiNPJPKP/kWiSHS0WGF
-         zF+g==
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=JxMjjfVMw+oBaLrmrUE0qkwXmyYluhhXJ7AcWez4o4A=;
+        b=ENMDhHIaE4hE/AaMhDi6fdMXB6yMQyWxjuz7U8g+j9b8/Pa3hbECUMP0PRxDuFnpvD
+         zFAK6JDYgYejy50KvImiNIG/ML+ICi/g3ouaPSey7S8S3imEEKQIPITkrAr5PD9KGGQn
+         WFgM5RRaowXrsIUN9DhNRZYtBE3FOBE9LjWoXjMbjfBfVvIre/KLxWZTQj5X9TRiD7fY
+         PZ0MlU28wsSlzazXRqXY74NVWcAP3TYI3kogdJv3ZD9qBran6U+A+JC+huGMlLMLjvea
+         bhEjxd1Pj+utTHL4EsuC+lGEprekysWJuGfpWSTA9lryBkaYyKWWMr1UWP2msXkYfbAe
+         jT1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QiYfnkTPIW9j7k9MfXG+3MGtW/S0q+cZ/4l0IdLDbig=;
-        b=ujalIXQOV6CMW6QFRgk0QLe7eQSryqckj6ukp3uGb53Jxgm8p8JaOKHf96d67q6IbV
-         2DPDkishu3E+6HsnOocbKcMLyGYX1x7K9yVHKkd5Y5JB0ZQYaLvYHQ7UUF7xSZ1qoGEY
-         hwngGFf9WYhtzOHZh0l7fpgs2kSxXxUH37kXAEMwaMwcyHKMIOqmQSvl89jZMG/25Q3p
-         66+k3fvqECdVnk+JRRn3HZx0n3fwn243ptCK0hX3nt7coiDi4C6WCFBW/hv6W91dlqpO
-         L5xVpF58Z91DrPePVKCPp2/3gxNRe3zy/q/n8tTLF4uan1BAOVFqKSJemqJRV6uv+6rG
-         x73Q==
-X-Gm-Message-State: AOAM533IOT3yiGyVDOgustaNxtNtRSM5Y9H0xGDKWCbSKOLam5WD/9yM
-        bWIF2wH0rpQk7Q8d63ivwH8=
-X-Google-Smtp-Source: ABdhPJw8rokKi5L7mHxrKwheEyjBAGjAR6iatWFdceeB5x6B7A1TDga2UBAeg+IulBKPoqsINxHNiA==
-X-Received: by 2002:a17:907:1b11:: with SMTP id mp17mr33880173ejc.1.1622032637127;
-        Wed, 26 May 2021 05:37:17 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id j17sm640527ejv.60.2021.05.26.05.37.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 May 2021 05:37:16 -0700 (PDT)
-Date:   Wed, 26 May 2021 15:37:15 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 05/13] net: dsa: sja1105: add a PHY interface
- type compatibility matrix
-Message-ID: <20210526123715.dsfdsftwhqh6hhzk@skbuf>
-References: <20210524232214.1378937-1-olteanv@gmail.com>
- <20210524232214.1378937-6-olteanv@gmail.com>
- <e1d8f74a-6cb7-75bc-551c-5214998a2521@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JxMjjfVMw+oBaLrmrUE0qkwXmyYluhhXJ7AcWez4o4A=;
+        b=PgLxiIfDnWIWGSQxO+qsgx37YMFMRENrCXYVNCoLhqmUfuZRF0hxchy0YCLDM0qD87
+         o6p4D7koz+IF7UxRpqAGM5eJ2CgRbeomGJCiX80IN4dmGPlOqOFD4OPnZAYebizdHPn+
+         FdQAoZgrs8CsUhYnQf03BhWh4YF8YvDqda9+yRIpH7fiocO4jAPouH1akYoNu3/3FX0O
+         Zf6e+NA/myHS9h/27oO1xqzBGWKkqNtC05Cfg3FkTqhUdN2MYhnOJ2CksjLelUkwEmFj
+         blq3Z/8e80yaqPcLVGUg22e6xbQU27GykmBJ2LcfhVFJJCFQVpj3qgbB3nZyUwMoYk1F
+         hjug==
+X-Gm-Message-State: AOAM533TmM+2tr+FYxGC7Vbz/h8X3ZvcXDfwVFJZDdtMsDZwyJqm+mL9
+        IpT7y1bU8sK+yw0mee3FVvHKBAhrbj5T8yD31ZVD
+X-Google-Smtp-Source: ABdhPJw4xaHMmxGiMlFlCfC8aGJjoE+FBWVp2YhwOZSbCcEmdu/V9jAOmHoT4oKUP6XD0OCcTvejB4aXtrqi6Zp4EgE=
+X-Received: by 2002:aa7:cd55:: with SMTP id v21mr38264279edw.344.1622032784595;
+ Wed, 26 May 2021 05:39:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e1d8f74a-6cb7-75bc-551c-5214998a2521@gmail.com>
+References: <20210525045838.1137-1-xieyongji@bytedance.com>
+ <75e26cf1-6ee8-108c-ff48-8a23345b3ccc@redhat.com> <CACycT3s1VkvG7zr7hPciBx8KhwgtNF+CM5GeSJs2tp-2VTsWRw@mail.gmail.com>
+ <efb7d2e0-39b0-129d-084b-122820c93138@redhat.com>
+In-Reply-To: <efb7d2e0-39b0-129d-084b-122820c93138@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Wed, 26 May 2021 20:39:33 +0800
+Message-ID: <CACycT3txvyLP=ZBn-wo6_ZCz+h4-cuJ6Y1F9nJ+C9a5BYPZ47g@mail.gmail.com>
+Subject: Re: Re: [PATCH] virtio-net: Add validation for used length
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 07:23:09PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 5/24/2021 4:22 PM, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > On the SJA1105, all ports support the parallel "xMII" protocols (MII,
-> > RMII, RGMII) except for port 4 on SJA1105R/S which supports only SGMII.
-> > This was relatively easy to model, by special-casing the SGMII port.
-> > 
-> > On the SJA1110, certain ports can be pinmuxed between SGMII and xMII, or
-> > between SGMII and an internal 100base-TX PHY. This creates problems,
-> > because the driver's assumption so far was that if a port supports
-> > SGMII, it uses SGMII.
-> > 
-> > We allow the device tree to tell us how the port pinmuxing is done, and
-> > check that against a PHY interface type compatibility matrix for
-> > plausibility.
-> > 
-> > The other big change is that instead of doing SGMII configuration based
-> > on what the port supports, we do it based on what is the configured
-> > phy_mode of the port.
-> > 
-> > The 2500base-x support added in this patch is not complete.
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
-> >  drivers/net/dsa/sja1105/sja1105.h      |  5 +++
-> >  drivers/net/dsa/sja1105/sja1105_main.c | 59 +++++++++++++-------------
-> >  drivers/net/dsa/sja1105/sja1105_spi.c  | 20 +++++++++
-> >  3 files changed, 55 insertions(+), 29 deletions(-)
-> > 
-> > diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-> > index d5c0217b1f65..a27841642693 100644
-> > --- a/drivers/net/dsa/sja1105/sja1105.h
-> > +++ b/drivers/net/dsa/sja1105/sja1105.h
-> > @@ -111,6 +111,11 @@ struct sja1105_info {
-> >  				enum packing_op op);
-> >  	int (*clocking_setup)(struct sja1105_private *priv);
-> >  	const char *name;
-> > +	bool supports_mii[SJA1105_MAX_NUM_PORTS];
-> > +	bool supports_rmii[SJA1105_MAX_NUM_PORTS];
-> > +	bool supports_rgmii[SJA1105_MAX_NUM_PORTS];
-> > +	bool supports_sgmii[SJA1105_MAX_NUM_PORTS];
-> > +	bool supports_2500basex[SJA1105_MAX_NUM_PORTS];
-> 
-> If you used a bitmap you may be able to play some nice tricks with
-> ordering them in PHY_INTERFACE_MODE_* order and just increment a pointer
-> to the bitmap.
-> 
-> Since it looks like all of the chips support MII, RMII, and RGMII on all
-> ports, maybe you can specify only those that don't?
-> 
-> Still:
-> 
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+On Wed, May 26, 2021 at 3:52 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/5/25 =E4=B8=8B=E5=8D=884:45, Yongji Xie =E5=86=99=E9=81=93=
+:
+> > On Tue, May 25, 2021 at 2:30 PM Jason Wang <jasowang@redhat.com> wrote:
+> >>
+> >> =E5=9C=A8 2021/5/25 =E4=B8=8B=E5=8D=8812:58, Xie Yongji =E5=86=99=E9=
+=81=93:
+> >>> This adds validation for used length (might come
+> >>> from an untrusted device) to avoid data corruption
+> >>> or loss.
+> >>>
+> >>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> >>> ---
+> >>>    drivers/net/virtio_net.c | 22 ++++++++++++++++++++++
+> >>>    1 file changed, 22 insertions(+)
+> >>>
+> >>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> >>> index c4711e23af88..2dcdc1a3c7e8 100644
+> >>> --- a/drivers/net/virtio_net.c
+> >>> +++ b/drivers/net/virtio_net.c
+> >>> @@ -668,6 +668,13 @@ static struct sk_buff *receive_small(struct net_=
+device *dev,
+> >>>                void *orig_data;
+> >>>                u32 act;
+> >>>
+> >>> +             if (unlikely(len > GOOD_PACKET_LEN)) {
+> >>> +                     pr_debug("%s: rx error: len %u exceeds max size=
+ %lu\n",
+> >>> +                              dev->name, len, GOOD_PACKET_LEN);
+> >>> +                     dev->stats.rx_length_errors++;
+> >>> +                     goto err_xdp;
+> >>> +             }
+> >>
+> >> Need to count vi->hdr_len here?
+> >>
+> > We did len -=3D vi->hdr_len before.
+>
+>
+> Right.
+>
+>
+> >
+> >>> +
+> >>>                if (unlikely(hdr->hdr.gso_type))
+> >>>                        goto err_xdp;
+> >>>
+> >>> @@ -739,6 +746,14 @@ static struct sk_buff *receive_small(struct net_=
+device *dev,
+> >>>        }
+> >>>        rcu_read_unlock();
+> >>>
+> >>> +     if (unlikely(len > GOOD_PACKET_LEN)) {
+> >>> +             pr_debug("%s: rx error: len %u exceeds max size %lu\n",
+> >>> +                      dev->name, len, GOOD_PACKET_LEN);
+> >>> +             dev->stats.rx_length_errors++;
+> >>> +             put_page(page);
+> >>> +             return NULL;
+> >>> +     }
+> >>> +
+> >>>        skb =3D build_skb(buf, buflen);
+> >>>        if (!skb) {
+> >>>                put_page(page);
+> >>> @@ -822,6 +837,13 @@ static struct sk_buff *receive_mergeable(struct =
+net_device *dev,
+> >>>                void *data;
+> >>>                u32 act;
+> >>>
+> >>> +             if (unlikely(len > truesize)) {
+> >>> +                     pr_debug("%s: rx error: len %u exceeds truesize=
+ %lu\n",
+> >>> +                              dev->name, len, (unsigned long)ctx);
+> >>> +                     dev->stats.rx_length_errors++;
+> >>> +                     goto err_xdp;
+> >>> +             }
+> >>
+> >> There's a similar check after the XDP, let's simply move it here?
+> > Do we still need that in non-XDP cases?
+>
+>
+> I meant we check once for both XDP and non-XDP if we do it before if
+> (xdp_prog)
+>
 
-Because the SJA1110 doesn't have public documentation, I am making a bit
-of a compromise for SJA1105 in order to be very clear about which SJA1110
-port supports which PHY interface type. With pointers to the beginning
-and end of a phy_interface_t array for each switch type and port number,
-it wouldn't be quite as clear, in fact it might end up quite a bit
-messy.
+Will do it in v2.
+
+Thanks,
+Yongji
