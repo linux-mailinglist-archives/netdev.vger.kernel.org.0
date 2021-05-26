@@ -2,180 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 346653913A7
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 11:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62A8B391437
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 11:58:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233627AbhEZJ35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 05:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233605AbhEZJ3o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 05:29:44 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB50BC06138C
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 02:28:12 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id n2so404967wrm.0
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 02:28:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=T46Fkh/snm79TPYjxPV8Q6sUOb7bSN2nDklHppfuD7U=;
-        b=V8miUGcHmom+hPFSXg2JT9324Btql1cDk/LZdt3ZeMOdEaYMqO/SMWswXju19B41AT
-         fxX05hIGeh97cg/sGFINIK6xmFT8wXOTvA1drnWEk2v5Wjp+g7cQzcvuZls94cOxmznx
-         +egRciq1M5t7PTpWLabtLAo2qdKTktdOcjDIdZgumzEVsydki8Ps8qVKbGjTCxUaQt7j
-         CGwCP+qAms3tkFEmZkH+sbyO1Gt8OKr1xqkMOTfCNg7lZt9e6oNUYAiWrxliEAjG8fvn
-         Q85cresezfzGmBQw1aXgfyKskPQIJwtw10XjBQIuDyD9LtzpR6rmX57ORrJ79wFhulME
-         YoEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=T46Fkh/snm79TPYjxPV8Q6sUOb7bSN2nDklHppfuD7U=;
-        b=BKI9NtyO4UF/9zMV0FXzJrSEZpaoIqBcFCSya8FwufRecCp658+wu9Z/7aUOXnQfwG
-         mnBU1ENBLDXb9Ed9FPJccnodbz+YcTZ7CNrZWN+/tOg9NGwdg5YXXcy5vOEy1Da2ytri
-         l1dx8LCE0cdIVoPZMCHSkAZWvMoeE1COKqBXRb6y4N1afnzIvEZ3jB40bmOCpOz1h8AA
-         sGgd56YjKdZ6tSADGMYDjgC8XV+hflr7uMfyEjZz41leZDU8tQNt0D5O7tIPIUf8znPM
-         Azi5wLoIPf6XbGbKXjIR9F5p5VGouHAIpiBwsI9o3Dk6nEQBw84A2pWJsOcLQwAwzcmq
-         iWZQ==
-X-Gm-Message-State: AOAM532ttwow4kCWl4uh9wrZ/bD3O15PSX8+p/ZkMXb3DQp0PWYAwLwz
-        qeRJwYzrj0W0SECokTX0T7u07k6FJ1Q4UA==
-X-Google-Smtp-Source: ABdhPJxxLJkJoZDV7NzE/k/mdcXKtSU5x9j+Kv/YTwFDabvnODHS0PBLpvnXAzH6NU46+0ffYnwRVg==
-X-Received: by 2002:a5d:64eb:: with SMTP id g11mr32425591wri.260.1622021291219;
-        Wed, 26 May 2021 02:28:11 -0700 (PDT)
-Received: from ?IPv6:2a01:e34:ed2f:f020:84b:9126:550a:94fc? ([2a01:e34:ed2f:f020:84b:9126:550a:94fc])
-        by smtp.googlemail.com with ESMTPSA id k205sm14086604wmf.13.2021.05.26.02.28.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 May 2021 02:28:10 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: netlink: remove netlink_broadcast_filtered
-To:     menglong8.dong@gmail.com, kuba@kernel.org
-Cc:     davem@davemloft.net, mkubecek@suse.cz, dsahern@kernel.org,
-        zhudi21@huawei.com, johannes.berg@intel.com,
-        marcelo.leitner@gmail.com, dong.menglong@zte.com.cn,
-        ast@kernel.org, yhs@fb.com, rdunlap@infradead.org,
-        yangyingliang@huawei.com, 0x7f454c46@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20210309151834.58675-1-dong.menglong@zte.com.cn>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <6d59bf25-2e1e-5bd7-07f1-dff2e73c7a7e@linaro.org>
-Date:   Wed, 26 May 2021 11:28:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S233732AbhEZJ7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 05:59:42 -0400
+Received: from mail-mw2nam10on2047.outbound.protection.outlook.com ([40.107.94.47]:49825
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233264AbhEZJ7l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 05:59:41 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UXtkEn0VU/exEhfAmpCOTtS1728PF7Y73rKni7KsnWn7v+6tWXCA39q4DTHttqWEyLaJvz9QDsnJ5yqdp01sGdMtWVe6Ci77ou009j0ilAwn1rVsZDhKQamcLdFdJHWGkNgsDQm0IfZIycIBahEa+JksTr4USoVDNoCtw9NQWtGlzvSgfSC/Kkt0J9Tz3o8Lf2pViT2jp4Az9CNndwTIKNtZOMByxb3Ufa4KOEfTEgncCs7lk5qANqjxLYNwjUHaKL51t1YelH5JS2fclarBo5kg142EHOWtcCjYgIvTcFAfE7GVCDpKIdDiXmc5+7SZgJDbFdS9nkFy3MUj3IwMMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HAuNS5Fxdim4pWI+tb4q24YkJZG2PId+crCga4/qHCE=;
+ b=Sh9jtIryRuplhEN40K5rZybi+cgRJorihMo0fmkQCPl/r82R5PxYI9g7lTC1DM6nbO+Rfg7z/jeTVwM8fRm3RAMb56w6kMbxF0xGgfmU4AQ9X7QvCcly60YpMv45rRTFNH2MOOCV251zmAM6KciucfwjdWYqaMAixa/yJGQCGZ4Od2IpX/duoWtjdmeMpVKGuGrYY7Bn1jStunzS5sp6P+smO+zxQ9r+MamKOmzYp0lPe1Z9boumIVqbaMh+FeJDfRQ3QG++M8VJcnx/qLuZABHf2tosDqAU7DBLU3q+zCsL8OHB4Rc2iwec5QEvKUGS7VR41AchztCMgCwsVMxjWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.36) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HAuNS5Fxdim4pWI+tb4q24YkJZG2PId+crCga4/qHCE=;
+ b=j/UuUhIomm/hmvnitA4MdEozf4hlVgpPvzYyve4xh3qw8u2Ox0F1a3QeYUx2zDI8TAzB6iUMoJVEGOfhCUgO4JbIh91W+k19cSimJfCFzP7ExRU3IC85/itr6iu+TaiNUhTtT+OVdGTzpbQO0LytGnnSsjgNgb3x6vkkZ/+TFYSnwziHyD+M42bxSHi9jU+j1F09JNv+M1RtkbqrR36V9uaCE/Joj3PrHx6HN2OcfBQuIW8+A3mNPLTuE0p2tegNBRXo7UCuL0r0jAiHGoiROuIACinGrTzrCYLo/YluEzMKIs4BQ3JL3kiOQ21c5Fm3iJMmUu10PVMZVY+7RmsbOQ==
+Received: from BN8PR04CA0027.namprd04.prod.outlook.com (2603:10b6:408:70::40)
+ by MWHPR1201MB0269.namprd12.prod.outlook.com (2603:10b6:301:5b::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.23; Wed, 26 May
+ 2021 09:58:09 +0000
+Received: from BN8NAM11FT031.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:70:cafe::b4) by BN8PR04CA0027.outlook.office365.com
+ (2603:10b6:408:70::40) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend
+ Transport; Wed, 26 May 2021 09:58:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.36; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.36) by
+ BN8NAM11FT031.mail.protection.outlook.com (10.13.177.25) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4129.25 via Frontend Transport; Wed, 26 May 2021 09:58:09 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
+ 2021 09:58:08 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 26 May
+ 2021 09:58:07 +0000
+Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 26 May 2021 09:58:05 +0000
+From:   Tariq Toukan <tariqt@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, Moshe Shemesh <moshe@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [RFC PATCH 0/6] BOND TLS flags fixes
+Date:   Wed, 26 May 2021 12:57:41 +0300
+Message-ID: <20210526095747.22446-1-tariqt@nvidia.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20210309151834.58675-1-dong.menglong@zte.com.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 915fe5ec-4102-498b-2ed0-08d9202cc45f
+X-MS-TrafficTypeDiagnostic: MWHPR1201MB0269:
+X-Microsoft-Antispam-PRVS: <MWHPR1201MB026979838DEEB7BC4DDD51A9A3249@MWHPR1201MB0269.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YWdPm/aylXVDnur3LNFdQH3Eee0QhKqOniEN8EbJ4ZLGUOy1F0fspt7B6qLJghpcgk3g8YTXdizLCCmPdAwfaFcw/0zGUFx2Vlqp84EFt+mWWCAsOuNEhUFxXOHUm3nAvOS179RDqv1WvvRAQ3KYeDprQHAX+jKXyUQBEBzDBaLenoMnluaRz68jjYfGo6UV0efKuqB4mVxOCOz70czCoOe+I3hish6pcAIbWIO160N9R28AbGVHpBckORmHlaqoM6RK+MMuQ00IGJz3wWAREb8wq0d4XpdZ9YBxxO3XUm/a1A6/0sLt8gD+JvWN4w8nX4ivAVdd2/LO37XP9bB1dd3wotY4yIh/XbS0CW7bJU63+Gbd2tHOmSPUtD/YgTqg83k/BEnb41ukGx3xRlAEWy5lct5PXVC7p165RE1QruQ1iXzW2CxmLKjr5TIbu90d77H6lkzFS4v1RP7T+hrrb/6rTg3UdCV2JdwyFgiHgefkUHoEpRgr8kI6YdqE16cwOcL1nxnNmLBCroYUvhoeXq7arx01s80QnE0pUSDRr3mnkzreVcOENzgFE+y7RlG/8IjzZNnqDN9iywqnqwDoEphVeGf/lU9CndvlZISaIShXRDxRTlDHXIM+uQPs+IzI1rCYiPAiaKmWP4Lrsnd3U5Dc+k/TzSCRijaAWO1rJoI=
+X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(376002)(346002)(136003)(39860400002)(46966006)(36840700001)(6666004)(7636003)(54906003)(356005)(82310400003)(36860700001)(110136005)(316002)(47076005)(86362001)(107886003)(8936002)(8676002)(70206006)(70586007)(2906002)(82740400003)(5660300002)(2616005)(7696005)(36756003)(186003)(83380400001)(4326008)(26005)(336012)(478600001)(36906005)(426003)(1076003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2021 09:58:09.3078
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 915fe5ec-4102-498b-2ed0-08d9202cc45f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT031.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0269
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/03/2021 16:18, menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <dong.menglong@zte.com.cn>
-> 
-> It seems that 'netlink_broadcast_filtered()' is not used anywhere
-> besides 'netlink_broadcast()'. In order to reduce function calls,
-> just remove it.
-> 
-> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+Hi,
 
-I was trying to figure out if the function could be useful to filter out
-some netlink messages when sending them to userspace.
+This RFC series suggests a solution for the following problem:
 
-Still looking for examples :/
+Bond interface and lower interface are both up with TLS RX/TX offloads on.
+TX/RX csum offload is turned off for the upper, hence RX/TX TLS is turned off
+for it as well.
+Yet, although it indicates that feature is disabled, new connections are still
+offloaded by the lower, as Bond has no way to impact that:
+Return value of bond_sk_get_lower_dev() is agnostic to this change.
 
-On the other side, this function was put there as part of the network
-namespace infrastructure. Even there is no user, it may be needed.
+One way to solve this issue, is to bring back the Bond TLS operations callbacks,
+i.e. provide implementation for struct tlsdev_ops in Bond.
+This gives full control for the Bond over its features, making it aware of every
+new TLS connection offload request.
+This direction was proposed in the original Bond TLS implementation, but dropped
+during ML review. Probably it's right to re-consider now.
 
-> ---
->  include/linux/netlink.h  |  4 ----
->  net/netlink/af_netlink.c | 22 ++--------------------
->  2 files changed, 2 insertions(+), 24 deletions(-)
-> 
-> diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-> index 0bcf98098c5a..277f33e64bb3 100644
-> --- a/include/linux/netlink.h
-> +++ b/include/linux/netlink.h
-> @@ -160,10 +160,6 @@ bool netlink_strict_get_check(struct sk_buff *skb);
->  int netlink_unicast(struct sock *ssk, struct sk_buff *skb, __u32 portid, int nonblock);
->  int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, __u32 portid,
->  		      __u32 group, gfp_t allocation);
-> -int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb,
-> -			       __u32 portid, __u32 group, gfp_t allocation,
-> -			       int (*filter)(struct sock *dsk, struct sk_buff *skb, void *data),
-> -			       void *filter_data);
->  int netlink_set_err(struct sock *ssk, __u32 portid, __u32 group, int code);
->  int netlink_register_notifier(struct notifier_block *nb);
->  int netlink_unregister_notifier(struct notifier_block *nb);
-> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-> index dd488938447f..b462fdc87e9b 100644
-> --- a/net/netlink/af_netlink.c
-> +++ b/net/netlink/af_netlink.c
-> @@ -1405,8 +1405,6 @@ struct netlink_broadcast_data {
->  	int delivered;
->  	gfp_t allocation;
->  	struct sk_buff *skb, *skb2;
-> -	int (*tx_filter)(struct sock *dsk, struct sk_buff *skb, void *data);
-> -	void *tx_data;
->  };
->  
->  static void do_one_broadcast(struct sock *sk,
-> @@ -1460,11 +1458,6 @@ static void do_one_broadcast(struct sock *sk,
->  			p->delivery_failure = 1;
->  		goto out;
->  	}
-> -	if (p->tx_filter && p->tx_filter(sk, p->skb2, p->tx_data)) {
-> -		kfree_skb(p->skb2);
-> -		p->skb2 = NULL;
-> -		goto out;
-> -	}
->  	if (sk_filter(sk, p->skb2)) {
->  		kfree_skb(p->skb2);
->  		p->skb2 = NULL;
-> @@ -1487,10 +1480,8 @@ static void do_one_broadcast(struct sock *sk,
->  	sock_put(sk);
->  }
->  
-> -int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid,
-> -	u32 group, gfp_t allocation,
-> -	int (*filter)(struct sock *dsk, struct sk_buff *skb, void *data),
-> -	void *filter_data)
-> +int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
-> +		      u32 group, gfp_t allocation)
->  {
->  	struct net *net = sock_net(ssk);
->  	struct netlink_broadcast_data info;
-> @@ -1509,8 +1500,6 @@ int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid
->  	info.allocation = allocation;
->  	info.skb = skb;
->  	info.skb2 = NULL;
-> -	info.tx_filter = filter;
-> -	info.tx_data = filter_data;
->  
->  	/* While we sleep in clone, do not allow to change socket list */
->  
-> @@ -1536,14 +1525,7 @@ int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid
->  	}
->  	return -ESRCH;
->  }
-> -EXPORT_SYMBOL(netlink_broadcast_filtered);
->  
-> -int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
-> -		      u32 group, gfp_t allocation)
-> -{
-> -	return netlink_broadcast_filtered(ssk, skb, portid, group, allocation,
-> -		NULL, NULL);
-> -}
->  EXPORT_SYMBOL(netlink_broadcast);
->  
->  struct netlink_set_err_data {
-> 
+Here I suggest another solution, which requires generic changes out of the bond
+driver.
 
+Fixes in patches 1 and 4 are needed anyway, independently to which solution
+we choose. I'll probably submit them separately soon.
+
+Regards,
+Tariq
+
+Tariq Toukan (6):
+  net: Fix features skip in for_each_netdev_feature()
+  net: Disable TX TLS device offload on lower devices if disabled on the
+    upper
+  net: Disable RX TLS device offload on lower devices if disabled on the
+    upper
+  net/bond: Enable RXCSUM feature for bond
+  net/bond: Allow explicit control of the TLS device offload features
+  net/bond: Do not turn on TLS features in bond_fix_features()
+
+ drivers/net/bonding/bond_main.c | 6 +++---
+ include/linux/netdev_features.h | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+2.21.0
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
