@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34EBD391516
+	by mail.lfdr.de (Postfix) with ESMTP id 87521391517
 	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 12:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233953AbhEZKkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 06:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
+        id S234036AbhEZKkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 06:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233653AbhEZKkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 06:40:15 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A4CC061574;
-        Wed, 26 May 2021 03:38:43 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id z17so573421wrq.7;
-        Wed, 26 May 2021 03:38:43 -0700 (PDT)
+        with ESMTP id S233653AbhEZKkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 06:40:17 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2ED2C061756;
+        Wed, 26 May 2021 03:38:44 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id r10so547208wrj.11;
+        Wed, 26 May 2021 03:38:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eEJBvAJNdQ3TWhc6UQ3SG7E4z1X44qBsRXW0KJTjH1o=;
-        b=mk/VqvDz9f3oamLa6yPoeg1mnQupQXus5xIeeJLLan/2JVEKMiInbMvjAT8INq0dvX
-         liwFn2RR6OLGan56VQg/uK2CmxJLy3FK41cmXoWc1K6Hz/J6eeJ3aN1AfP4x3wMq0/Df
-         SL7KKaLpSRSAnnIJqChz1a+65q4scLJLHRgVnfCxDgcSAOW2DJTnifVLapMg5o8nGeFt
-         /uX6uibj3c1IunGjfYzo3aJJh7RPWzd0fHGgSkgLRfk/EkPggaXv2n/v5aw/XINW6w24
-         iL2A4KEKXNEmNfDvX97Gvh3O9Tsc8LpFVkItOW6RLjPifnFY0CjsKprQtelyk/77t7cJ
-         jNCg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wkQYCEaVCPImpDNQXApDXqkhMOXth/QVgA22IjicNCE=;
+        b=kxrmMXPTgj8Rg96huyyVsmvRDD+vQ50+xp5vx4cOLvOHfDyA0nt1uCgjoahFsQ9udJ
+         em/dRiB29wGUtZhJ0+5ML0f3v0JRSHkPArkpBGMyCcQ6oWEuHvZzEbvBmxj2GOW9x62E
+         zXgkrprVOigTpYaQLboFm48pM0b5QAvWPGUqb/yiK0ADD07q0JkzvtPS/xPLOOegfoHh
+         xbCdv0mckb3fIh3xxgA5hwRobeWXSAECq6gfIlnsKClWalcsdrwYY4W1ka/DpofupBQa
+         28rShX4GNLZYjozAQDi0scOnJbzvK7qI2/X9fHnGIdkkWx+uYm5q2G1kpiwwcXUvHZQr
+         bg5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eEJBvAJNdQ3TWhc6UQ3SG7E4z1X44qBsRXW0KJTjH1o=;
-        b=nwFjcdjJ4hZ9VPmij7hLLBGYxTUaEy9XSdYfHcrC72W7fjwUrlhRZrqfUt+gmb4tb3
-         cCADWAsIr54j2uuL9dNoHuGRzsOVqTODKBxPZzmkJPN0dIF7C/oKi/zr5tfRNKbv0A2y
-         EJ2SfGYuPT5Wpy9WtflL7Zq3ORU5MYq8Ui43/tF3cniwNUxnPdV7N2E4+zNpFyTiUkU0
-         cDpaFRHyQ2ryYkIUar7FoaVerwbxr7VkmfZSepKpxhV3ALF9GhoKuqkV7kLBSM95VfWP
-         IzUZBebjwB1pfa3Nq8/nHdgdiDSYxrS4ua7vXmhAom2CFN+Ki6wZ2SCQ+qEoiX2qEfEd
-         o5pQ==
-X-Gm-Message-State: AOAM530IlDxUrIx+SCq5Y5Aoh746le4kUcWaTNvq74YT4BrYc6eMrKx/
-        KiVQ/kpwXxK8ZQQnM6YnBM0=
-X-Google-Smtp-Source: ABdhPJyv681klVAeoQUcyBDU5ZgW2xtXgYmlCQ3xhAt3qu7f3vVdElrRTJ38SOgnrTSD/+JyfdqnLA==
-X-Received: by 2002:a5d:4fd0:: with SMTP id h16mr2818584wrw.335.1622025521800;
-        Wed, 26 May 2021 03:38:41 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wkQYCEaVCPImpDNQXApDXqkhMOXth/QVgA22IjicNCE=;
+        b=tzFWoD3pVfaAzhEkRJ51fP0ysNUfivFBkH/y41KJJokE4O1xUTjO1i0D0roXiIDGjq
+         53oPZWQb8DyuqAQa1qjzVrYNk2gyRXivY66VRs6qAhtY0wiyy+W8gq+9eY3HVKTMjgzT
+         QhX7T5YsryVZ7LWyMVjrOg/18M7e/DKxks494vUFCn+puoznPavBh6n0HmjElCFhYd+w
+         N2GUNxkOWwxc4MgM8C+NkAoIk74bDoR4ncvrSo5iTkoYywqLRRMUF1NXF2hrlinDu5M3
+         6anpmkVJFgD7bZcG+LQ5W/ZRvFKDIoSGk0827LlffdmN/BaF/YRuL/OQfyczg3TAKpj4
+         5qvQ==
+X-Gm-Message-State: AOAM530w4HraRH1hKpoiT5stFqaJbXmRJO/musdJLWb+gW/Q6Z+3Zfjp
+        Y01B6ojXqBJggsdULlG7JAM=
+X-Google-Smtp-Source: ABdhPJzssKk98FzRygK+8LF/Rw5iY/xRZeT+GSZNlzXKDKxpPwrJxp7vQAkIwly0OLep+uPdL51xtw==
+X-Received: by 2002:a5d:4ccc:: with SMTP id c12mr32300476wrt.137.1622025523220;
+        Wed, 26 May 2021 03:38:43 -0700 (PDT)
 Received: from localhost.localdomain ([2a04:241e:502:1d80:a50a:8c74:4a8f:62b3])
-        by smtp.gmail.com with ESMTPSA id j101sm15364927wrj.66.2021.05.26.03.38.40
+        by smtp.gmail.com with ESMTPSA id j101sm15364927wrj.66.2021.05.26.03.38.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 May 2021 03:38:41 -0700 (PDT)
+        Wed, 26 May 2021 03:38:42 -0700 (PDT)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     Neal Cardwell <ncardwell@google.com>,
         Matt Mathis <mattmathis@google.com>,
@@ -61,67 +61,157 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Soheil Hassas Yeganeh <soheil@google.com>,
         Roopa Prabhu <roopa@cumulusnetworks.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFCv2 0/3] tcp: Improve mtu probe preconditions
-Date:   Wed, 26 May 2021 13:38:24 +0300
-Message-Id: <cover.1622025457.git.cdleonard@gmail.com>
+Subject: [RFCv2 1/3] tcp: Use smaller mtu probes if RACK is enabled
+Date:   Wed, 26 May 2021 13:38:25 +0300
+Message-Id: <750563aba3687119818dac09fc987c27c7152324.1622025457.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1622025457.git.cdleonard@gmail.com>
+References: <cover.1622025457.git.cdleonard@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to RFC4821 Section 7.4 "Protocols MAY delay sending non-probes
-in order to accumulate enough data" but in practice linux only sends
-probes when a lot of data accumulates on the send side.
+RACK allows detecting a loss in rtt + min_rtt / 4 based on just one
+extra packet. If enabled use this instead of relying of fast retransmit.
 
-Another improvement is to rely on TCP RACK performing timely loss detection
-with fewer outstanding packets. If this is enabled the size required for a
-probe can be shrunk.
-
-Successive successful mtu probes will result in reducing the cwnd since
-it's measured in packets and we send bigger packets. The cwnd value can get
-stuck below 11 on low-latency links and this prevents further probing. The
-cwnd logic in tcp_mtu_probe can be reworked to be based on the the number of
-packets that we actually need to send instead of arbitrary constants.
-
-It is difficult to improve this behavior without introducing unreasonable
-delays or even stalls. Looking at the current behavior of tcp_mtu_probe it
-already waits in some scenarios: when there is not enough room inside cwnd
-or when there is a gap of unacklowledged data between snd_una and snd_nxt.
-It appears that it is safe to wait if packets_in_flight() != 0.
-
+Suggested-by: Neal Cardwell <ncardwell@google.com>
 Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
-
 ---
+ Documentation/networking/ip-sysctl.rst |  5 +++++
+ include/net/netns/ipv4.h               |  1 +
+ net/ipv4/sysctl_net_ipv4.c             |  7 +++++++
+ net/ipv4/tcp_ipv4.c                    |  1 +
+ net/ipv4/tcp_output.c                  | 26 +++++++++++++++++++++++++-
+ 5 files changed, 39 insertions(+), 1 deletion(-)
 
-Previous RFC: https://lore.kernel.org/netdev/cover.1620733594.git.cdleonard@gmail.com/
-
-This series seems to be "correct" this time, I would appreciate any feedback.
-It possible my understanding of when it is safe to return 0 from tcp_mtu_probe
-is incorrect. It's possible that even current code would interact poorly with
-delayed acks in some circumstances?
-
-The tcp_xmit_size_goal changes were dropped. It's still possible to see strange
-interactions between tcp_push_one and mtu probing: If the receiver window is
-small (60k) the sender will do a "push_one" when half a window is accumulated
-(30k) and that would prevent mtu probing even if the sender is writing more
-than enough data in a single syscall.
-
-Leonard Crestez (3):
-  tcp: Use smaller mtu probes if RACK is enabled
-  tcp: Adjust congestion window handling for mtu probe
-  tcp: Wait for sufficient data in tcp_mtu_probe
-
- Documentation/networking/ip-sysctl.rst | 10 ++++
- include/net/netns/ipv4.h               |  2 +
- net/ipv4/sysctl_net_ipv4.c             | 14 ++++++
- net/ipv4/tcp_ipv4.c                    |  2 +
- net/ipv4/tcp_output.c                  | 70 +++++++++++++++++++++-----
- 5 files changed, 86 insertions(+), 12 deletions(-)
-
-
-base-commit: e4e92ee78702b13ad55118d8b66f06e1aef62586
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index a5c250044500..7ab52a105a5d 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -349,10 +349,15 @@ tcp_mtu_probe_floor - INTEGER
+ 	If MTU probing is enabled this caps the minimum MSS used for search_low
+ 	for the connection.
+ 
+ 	Default : 48
+ 
++tcp_mtu_probe_rack - BOOLEAN
++	Try to use shorter probes if RACK is also enabled
++
++	Default: 1
++
+ tcp_min_snd_mss - INTEGER
+ 	TCP SYN and SYNACK messages usually advertise an ADVMSS option,
+ 	as described in RFC 1122 and RFC 6691.
+ 
+ 	If this ADVMSS option is smaller than tcp_min_snd_mss,
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index 746c80cd4257..b4ff12f25a7f 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -112,10 +112,11 @@ struct netns_ipv4 {
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	u8 sysctl_tcp_l3mdev_accept;
+ #endif
+ 	u8 sysctl_tcp_mtu_probing;
+ 	int sysctl_tcp_mtu_probe_floor;
++	int sysctl_tcp_mtu_probe_rack;
+ 	int sysctl_tcp_base_mss;
+ 	int sysctl_tcp_min_snd_mss;
+ 	int sysctl_tcp_probe_threshold;
+ 	u32 sysctl_tcp_probe_interval;
+ 
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 4fa77f182dcb..275c91fb9cf8 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -847,10 +847,17 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= &tcp_min_snd_mss_min,
+ 		.extra2		= &tcp_min_snd_mss_max,
+ 	},
++	{
++		.procname	= "tcp_mtu_probe_rack",
++		.data		= &init_net.ipv4.sysctl_tcp_mtu_probe_rack,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
+ 	{
+ 		.procname	= "tcp_probe_threshold",
+ 		.data		= &init_net.ipv4.sysctl_tcp_probe_threshold,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 4f5b68a90be9..ed8af4a7325b 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2892,10 +2892,11 @@ static int __net_init tcp_sk_init(struct net *net)
+ 	net->ipv4.sysctl_tcp_base_mss = TCP_BASE_MSS;
+ 	net->ipv4.sysctl_tcp_min_snd_mss = TCP_MIN_SND_MSS;
+ 	net->ipv4.sysctl_tcp_probe_threshold = TCP_PROBE_THRESHOLD;
+ 	net->ipv4.sysctl_tcp_probe_interval = TCP_PROBE_INTERVAL;
+ 	net->ipv4.sysctl_tcp_mtu_probe_floor = TCP_MIN_SND_MSS;
++	net->ipv4.sysctl_tcp_mtu_probe_rack = 1;
+ 
+ 	net->ipv4.sysctl_tcp_keepalive_time = TCP_KEEPALIVE_TIME;
+ 	net->ipv4.sysctl_tcp_keepalive_probes = TCP_KEEPALIVE_PROBES;
+ 	net->ipv4.sysctl_tcp_keepalive_intvl = TCP_KEEPALIVE_INTVL;
+ 
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index bde781f46b41..9691f435477b 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2311,10 +2311,19 @@ static bool tcp_can_coalesce_send_queue_head(struct sock *sk, int len)
+ 	}
+ 
+ 	return true;
+ }
+ 
++/* Check if rack is supported for current connection */
++static int tcp_mtu_probe_is_rack(const struct sock *sk)
++{
++	struct net *net = sock_net(sk);
++
++	return (net->ipv4.sysctl_tcp_recovery & TCP_RACK_LOSS_DETECTION &&
++			net->ipv4.sysctl_tcp_mtu_probe_rack);
++}
++
+ /* Create a new MTU probe if we are ready.
+  * MTU probe is regularly attempting to increase the path MTU by
+  * deliberately sending larger packets.  This discovers routing
+  * changes resulting in larger path MTUs.
+  *
+@@ -2351,11 +2360,26 @@ static int tcp_mtu_probe(struct sock *sk)
+ 	 * smaller than a threshold, backoff from probing.
+ 	 */
+ 	mss_now = tcp_current_mss(sk);
+ 	probe_size = tcp_mtu_to_mss(sk, (icsk->icsk_mtup.search_high +
+ 				    icsk->icsk_mtup.search_low) >> 1);
+-	size_needed = probe_size + (tp->reordering + 1) * tp->mss_cache;
++	/* Probing the MTU requires one packet which is larger that current MSS as well
++	 * as enough following mtu-sized packets to ensure that a probe loss can be
++	 * detected without a full Retransmit Time Out.
++	 */
++	if (tcp_mtu_probe_is_rack(sk)) {
++		/* RACK allows recovering in min_rtt / 4 based on just one extra packet
++		 * Use two to account for unrelated losses
++		 */
++		size_needed = probe_size + 2 * tp->mss_cache;
++	} else {
++		/* Without RACK send enough extra packets to trigger fast retransmit
++		 * This is dynamic DupThresh + 1
++		 */
++		size_needed = probe_size + (tp->reordering + 1) * tp->mss_cache;
++	}
++
+ 	interval = icsk->icsk_mtup.search_high - icsk->icsk_mtup.search_low;
+ 	/* When misfortune happens, we are reprobing actively,
+ 	 * and then reprobe timer has expired. We stick with current
+ 	 * probing process by not resetting search range to its orignal.
+ 	 */
 -- 
 2.25.1
 
