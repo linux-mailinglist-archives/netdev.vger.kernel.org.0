@@ -2,108 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8CA390F4F
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 06:22:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61F63390F87
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 06:30:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231465AbhEZEYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 00:24:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36434 "EHLO
+        id S232155AbhEZEcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 00:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbhEZEYS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 00:24:18 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395DAC061574;
-        Tue, 25 May 2021 21:22:48 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id h15so27404638ilr.2;
-        Tue, 25 May 2021 21:22:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=lYjEjq2CeERrjfTH2MU7B9d6sbjc0bVXhNKk7CXEuuM=;
-        b=S40drgnAc5PJjkSjV7OpeZ9qKI2aBZr/Xwm948kcAfKEu6JrpyoLlO+uhB6E0WbRHI
-         ilggkvHZfRLmFQf4cH3OE2BATTIo6fvP8d0zo3idL4Yfc+UKvUAy/fA+Jp1QjJw8g/7q
-         rt4nFw7BIdMCtKyCw1s1d7vyMaqAO2eWSJDsOIsxJDk+F2kEO8PWgYGE5ISMsakPN9Wz
-         EWEng7NRn2PLVsVxSwGEDd6dbKwI/rO75aJWN/Ex+QLjaozd8OyW2RuirQIm0O//aHoh
-         jdXX/oZ1/35MbzLjZm1hd9SqAADOTlc23aHdNcSfeaF18EZfrO0z9GQtYBZ1JqEJm6jM
-         mEXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=lYjEjq2CeERrjfTH2MU7B9d6sbjc0bVXhNKk7CXEuuM=;
-        b=r5N2L5aYo0Ss66Hmdi/I1OfFPvJ3RyIdcxlj24tpVADXRZVgDh9cygst5eZ4H4erWI
-         KE3ZpBM4lRJa1MZGlIB2hicfuapbYj8Lcvb4dc4D3gpGtyYvAr1V5sETZUSIsQM8FTNn
-         W1AO36lXxlkXrYV6jTLDWAIv8D7iEeGaRSDG3YIp2o5H+JUSKdiYz7Vkokyvug2S64Ma
-         XdlowH9AHHbz04sKX+pXk8d+QlzYr40wJKDJOfS4qDkuDtglhE3ZxcA0dsE1N9wn26He
-         WFSbV90w8vPbogziPyW6G+XJgBjkIAcidTs3sdCP1KAfDiFheoUUToJlM4MHuGoEqrN0
-         e4rA==
-X-Gm-Message-State: AOAM532eCXR2PkGx/T0mXU2AlDKud/x0acvkL6LUiPx5knbbRufHcLX6
-        jqn/aXBXwd+BozxAkE6tAqg=
-X-Google-Smtp-Source: ABdhPJwukZ4u5y0BjeQYQaL1LNT8LqZn1WGbZn6FYj/IPQnuUEDFe3tQ3pWal+MEjyX4Lz1kee7RNw==
-X-Received: by 2002:a05:6e02:1204:: with SMTP id a4mr28264414ilq.158.1622002967434;
-        Tue, 25 May 2021 21:22:47 -0700 (PDT)
-Received: from localhost ([172.242.244.146])
-        by smtp.gmail.com with ESMTPSA id p10sm13168893ios.2.2021.05.25.21.22.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 May 2021 21:22:46 -0700 (PDT)
-Date:   Tue, 25 May 2021 21:22:38 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <60adcd0ec9aa_3b75f208f0@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210522191411.21446-8-xiyou.wangcong@gmail.com>
-References: <20210522191411.21446-1-xiyou.wangcong@gmail.com>
- <20210522191411.21446-8-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf v2 7/7] skmsg: increase sk->sk_drops when dropping
- packets
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S231936AbhEZEcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 00:32:23 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56C3C061756
+        for <netdev@vger.kernel.org>; Tue, 25 May 2021 21:30:51 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lllBo-0001Op-Bk; Wed, 26 May 2021 06:30:40 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lllBm-0002bL-G5; Wed, 26 May 2021 06:30:38 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
+Subject: [PATCH net-next v3 0/9] provide cable test support for the ksz886x switch
+Date:   Wed, 26 May 2021 06:30:28 +0200
+Message-Id: <20210526043037.9830-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> It is hard to observe packet drops without increase relevant
-> drop counters, here we should increase sk->sk_drops which is
-> a protocol-independent counter. Fortunately psock is always
-> assocaited with a struct sock, we can just use psock->sk.
-> 
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Since we already have 5.13-rc3, I assume http://vger.kernel.org/~davem/net-next.html
+is out of date.
 
-[...]
+changes v3:
+- remove RFC tag
 
->  static void sk_psock_backlog(struct work_struct *work)
->  {
->  	struct sk_psock *psock = container_of(work, struct sk_psock, work);
-> @@ -617,7 +623,7 @@ static void sk_psock_backlog(struct work_struct *work)
->  				/* Hard errors break pipe and stop xmit. */
->  				sk_psock_report_error(psock, ret ? -ret : EPIPE);
->  				sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED);
-> -				kfree_skb(skb);
-> +				sock_drop(psock->sk, skb);
->  				goto end;
->  			}
->  			off += ret;
-> @@ -625,7 +631,7 @@ static void sk_psock_backlog(struct work_struct *work)
->  		} while (len);
->  
->  		if (!ingress)
-> -			kfree_skb(skb);
-> +			sock_drop(psock->sk, skb);
+changes v2:
+- use generic MII_* defines where possible
+- rework phylink validate
+- remove phylink get state function
+- reorder cabletest patches to make PHY flag patch in the right order
+- fix MDI-X detection
 
-This is not a dropped skb this was sent via skb_send_sock().
+This patches provide support for cable testing on the ksz886x switches.
+Since it has one special port, we needed to add phylink with validation
+and extra quirk for the PHY to signal, that one port will not provide
+valid cable testing reports.
 
-The rest LGTM thanks.
+Michael Grzeschik (2):
+  net: phy: micrel: move phy reg offsets to common header
+  net: dsa: microchip: ksz8795: add phylink support
+
+Oleksij Rempel (7):
+  net: phy: micrel: use consistent indention after define
+  net: phy: micrel: apply resume errata workaround for ksz8873 and
+    ksz8863
+  net: phy/dsa micrel/ksz886x add MDI-X support
+  net: phy: micrel: ksz8081 add MDI-X support
+  net: dsa: microchip: ksz8795: add LINK_MD register support
+  net: dsa: dsa_slave_phy_connect(): extend phy's flags with port
+    specific phy flags
+  net: phy: micrel: ksz886x/ksz8081: add cabletest support
+
+ drivers/net/dsa/microchip/ksz8795.c     | 218 +++++++++----
+ drivers/net/dsa/microchip/ksz8795_reg.h |  67 +---
+ drivers/net/ethernet/micrel/ksz884x.c   | 105 +-----
+ drivers/net/phy/micrel.c                | 403 +++++++++++++++++++++++-
+ drivers/net/phy/phylink.c               |   2 +-
+ include/linux/micrel_phy.h              |  16 +
+ net/dsa/slave.c                         |   4 +
+ 7 files changed, 588 insertions(+), 227 deletions(-)
+
+-- 
+2.29.2
+
