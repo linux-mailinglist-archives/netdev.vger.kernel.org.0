@@ -2,197 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49C8E391716
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:11:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01565391732
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 14:16:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234665AbhEZMNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 08:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234624AbhEZMNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 08:13:07 -0400
-Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60151C061574
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 05:11:35 -0700 (PDT)
-Received: by mail-ua1-x936.google.com with SMTP id d14so630993ual.5
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 05:11:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wUrqUb+kQg/Cy2UpM0h/vb3YRuG2NknvwTkQpjDYiFE=;
-        b=T75LtX9Ha4dUohpGT6QW/p+sIlKUltSigBHVaV9Y6z8OpanQ7PeoIN7kwbh8nNtDj4
-         RylFW4YBVRIKh5Tn+cnmBrz7NFncGEwLLEAHu6YBvIZdwftBODAKeBGau9rKLFdJvaCf
-         o32WXcNI+TNb7/QTh3RM4J6uSxTpCt4+VKUjT18cw8gYMAUuYidQz2H/ln/2aDQbeYrK
-         bxOWkJzlZFIbE+BYZHqxA2vngVs7BQzP0j32J9fqsa2rROZndeMR8+6PbCRXR3d0xbOX
-         nCArosdAVzNuO1RUqjDjupELYpLt0xQMmACD0ELKgtDxnR1T3EkSixT+2VLqmiu/zZEu
-         M0YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wUrqUb+kQg/Cy2UpM0h/vb3YRuG2NknvwTkQpjDYiFE=;
-        b=ZViQ7vx8muXm2JT51EkG0LJpf/NVuxwrEmNpDs+nij2Xig9nz+XERjPI7notA7CMKy
-         dtfnwLpjKCAgB3mK4z1Q+gQhLx1QunJntzLVYYaoCnhdbjfzsgvQjfrJoUT8xf34xtAW
-         EFqrMxy4O4QZRFkutQy4Q56IbIQ4HmWcCmlGlejDrtQpZA8zaeBoDP8Z2+dU/2Wp6FTZ
-         GA6/dq2GJO3sSONFhyuqXAAwPP6RvMeV+TFg2LccU8U3ss8/Uc2wWyZIPuK0XvZx3GxY
-         mpvaTxJDbyrVLR05GIevrwEroEV+GyHrJ25vToYaS2gaZEEi6PCRG+1AXxR9bkKXvZ9c
-         ydmQ==
-X-Gm-Message-State: AOAM532Bz4bzof6VJR2bOrAJ38INKuXaD0Oh3Y+RrQ2bU0c65+AlL/LK
-        xal2RUpgANbNEcrVoEvwwpHl8J4Zh53G8F9gd5YgIw==
-X-Google-Smtp-Source: ABdhPJydoB/kck2wwRkxwdIl52sarGpJ+jtKrbgItW2PI1YMDBkkWfNXsZe0zB/i4T1hICv4GLkTRQwa5+YLRJhMqHQ=
-X-Received: by 2002:a9f:382c:: with SMTP id p41mr31641886uad.65.1622031094259;
- Wed, 26 May 2021 05:11:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1622025457.git.cdleonard@gmail.com> <750563aba3687119818dac09fc987c27c7152324.1622025457.git.cdleonard@gmail.com>
-In-Reply-To: <750563aba3687119818dac09fc987c27c7152324.1622025457.git.cdleonard@gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Wed, 26 May 2021 08:11:17 -0400
-Message-ID: <CADVnQynoD=NF2hG6Bs44A0jrnKG=3f97OywS-tq-p-KQAsf5Fg@mail.gmail.com>
-Subject: Re: [RFCv2 1/3] tcp: Use smaller mtu probes if RACK is enabled
-To:     Leonard Crestez <cdleonard@gmail.com>
-Cc:     Matt Mathis <mattmathis@google.com>,
-        Eric Dumazet <edumazet@google.com>,
+        id S233826AbhEZMRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 08:17:44 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:46260 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232546AbhEZMRm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 08:17:42 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 1635677034;
+        Wed, 26 May 2021 15:16:09 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1622031369;
+        bh=sUAg7c0OJaDV8893akfTQUnFA9//98ey29nrJI7rLlk=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=bXc+5kW4ZAA5MnQRMLVFqfJU/asSbIkOyQ/WQ9lUS+FAsFLzMBT33L+JJ9fEulXrK
+         niYQfTvwUZ3Fcjr6XG9eLM86//TZaeOiMTgd2K8z/twUlZm9hpCctJUsU3vSEIhpEo
+         aNP2m2JMwfgMNVoJ6Dp33co8q1smJO//pdDD0AAnZRD4fFp8Y6EXpVqrGtasrCUFTb
+         Jpl28Fce2vKtXzJjlYsmXqKCDHSFlQFk1T4MBO/9lPA9QMngbXnc4e56+JUfcHMxD7
+         yEf178axo514r1vCZ8HalGs8l3z/nmveKcfpcXQtIeZaZ+2t9sFxtevK5+BqVFOE8Q
+         sSatzWMzf4SRQ==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 451607704D;
+        Wed, 26 May 2021 15:16:08 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Wed, 26
+ May 2021 15:16:07 +0300
+Subject: Re: [PATCH v10 00/18] virtio/vsock: introduce SOCK_SEQPACKET support
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        John Heffner <johnwheffner@gmail.com>,
-        Leonard Crestez <lcrestez@drivenets.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
+ <20210521075520.ghg75wpzz42zorxg@steredhat>
+ <108b0bba-5909-cdde-97ee-321b3f5351ca@kaspersky.com>
+ <b8dd3b55-0e2c-935a-d9bb-b13b7adc4458@kaspersky.com>
+ <20210525145220.amzme5mqqv4npirt@steredhat>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <becbd621-3773-be9e-b314-5fd0c589110e@kaspersky.com>
+Date:   Wed, 26 May 2021 15:16:07 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20210525145220.amzme5mqqv4npirt@steredhat>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/26/2021 12:06:35
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163941 [May 26 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
+X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: patchwork.kernel.org:7.1.1;kaspersky.com:7.1.1;127.0.0.199:7.1.2;lists.oasis-open.org:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 05/26/2021 12:08:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 26.05.2021 10:27:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/05/26 10:29:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/05/26 08:53:00 #16657861
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 6:38 AM Leonard Crestez <cdleonard@gmail.com> wrote:
->
-> RACK allows detecting a loss in rtt + min_rtt / 4 based on just one
-> extra packet. If enabled use this instead of relying of fast retransmit.
 
-IMHO it would be worth adding some more text to motivate the change,
-to justify the added complexity and risk from the change. The
-substance of the change seems to be decreasing the requirement for
-PMTU probing from needing roughly 5 packets worth of data to needing
-roughly 3 packets worth of data. It's not clear to me as a reader of
-this patch by itself that there are lots of applications that very
-often only have 3-4 packets worth of data to send and yet can benefit
-greatly from PMTU discovery.
-
-> Suggested-by: Neal Cardwell <ncardwell@google.com>
-> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
-> ---
->  Documentation/networking/ip-sysctl.rst |  5 +++++
->  include/net/netns/ipv4.h               |  1 +
->  net/ipv4/sysctl_net_ipv4.c             |  7 +++++++
->  net/ipv4/tcp_ipv4.c                    |  1 +
->  net/ipv4/tcp_output.c                  | 26 +++++++++++++++++++++++++-
->  5 files changed, 39 insertions(+), 1 deletion(-)
+On 25.05.2021 17:52, Stefano Garzarella wrote:
+> On Tue, May 25, 2021 at 11:22:09AM +0300, Arseny Krasnov wrote:
+>> On 23.05.2021 15:14, Arseny Krasnov wrote:
+>>> On 21.05.2021 10:55, Stefano Garzarella wrote:
+>>>> Hi Arseny,
+>>>>
+>>>> On Thu, May 20, 2021 at 10:13:53PM +0300, Arseny Krasnov wrote:
+>>>>> 	This patchset implements support of SOCK_SEQPACKET for virtio
+>>>>> transport.
+>>>> I'll carefully review and test this series next Monday, in the mean time
+>>>> I think we should have at least an agreement about the changes that
+>>>> regards virtio-spec before merge this series, to avoid any compatibility
+>>>> issues.
+>>>>
+>>>> Do you plan to send a new version of the specification changes?
+>>>>
+>>>> Thanks,
+>>>> Stefano
+>>> Hello, sorry for long answer. I'm on vacation now, but i plan to send
+>>>
+>>> it in next several days, because with current implementation it is short
+>>>
+>>>
+>>> Thank You
+>> Hello, here is spec patch:
+>>
+>> https://lists.oasis-open.org/archives/virtio-comment/202105/msg00017.html
+>>
+>> Let's discuss it
+> Yep, sure.
 >
-> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-> index a5c250044500..7ab52a105a5d 100644
-> --- a/Documentation/networking/ip-sysctl.rst
-> +++ b/Documentation/networking/ip-sysctl.rst
-> @@ -349,10 +349,15 @@ tcp_mtu_probe_floor - INTEGER
->         If MTU probing is enabled this caps the minimum MSS used for search_low
->         for the connection.
+> About this series I think is better to split in two series since it 
+> became very long. Patchwork [1] also complains here [2].
 >
->         Default : 48
+> You can send a first series with patches from 1 to 7. These patches are 
+> reviewed by me and can go regardless of the discussion of the VIRTIO 
+> specifications.
+Ok, i'll send it on next week.
+> Maybe you can also add the patch with the test to this first series.
 >
-> +tcp_mtu_probe_rack - BOOLEAN
-> +       Try to use shorter probes if RACK is also enabled
-> +
-> +       Default: 1
-
-I  would vote to not have a sysctl for this. If we think it's a good
-idea to allow MTU probing with a smaller amount of data if RACK is
-enabled (which seems true to me), then this is a low-risk enough
-change that we should just change the behavior.
-
->  tcp_min_snd_mss - INTEGER
->         TCP SYN and SYNACK messages usually advertise an ADVMSS option,
->         as described in RFC 1122 and RFC 6691.
+> Please specify in the cover letter that the implementation for virtio 
+> devices is under development and will be sent later.
 >
->         If this ADVMSS option is smaller than tcp_min_snd_mss,
-> diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-> index 746c80cd4257..b4ff12f25a7f 100644
-> --- a/include/net/netns/ipv4.h
-> +++ b/include/net/netns/ipv4.h
-> @@ -112,10 +112,11 @@ struct netns_ipv4 {
->  #ifdef CONFIG_NET_L3_MASTER_DEV
->         u8 sysctl_tcp_l3mdev_accept;
->  #endif
->         u8 sysctl_tcp_mtu_probing;
->         int sysctl_tcp_mtu_probe_floor;
-> +       int sysctl_tcp_mtu_probe_rack;
->         int sysctl_tcp_base_mss;
->         int sysctl_tcp_min_snd_mss;
->         int sysctl_tcp_probe_threshold;
->         u32 sysctl_tcp_probe_interval;
 >
-> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-> index 4fa77f182dcb..275c91fb9cf8 100644
-> --- a/net/ipv4/sysctl_net_ipv4.c
-> +++ b/net/ipv4/sysctl_net_ipv4.c
-> @@ -847,10 +847,17 @@ static struct ctl_table ipv4_net_table[] = {
->                 .mode           = 0644,
->                 .proc_handler   = proc_dointvec_minmax,
->                 .extra1         = &tcp_min_snd_mss_min,
->                 .extra2         = &tcp_min_snd_mss_max,
->         },
-> +       {
-> +               .procname       = "tcp_mtu_probe_rack",
-> +               .data           = &init_net.ipv4.sysctl_tcp_mtu_probe_rack,
-> +               .maxlen         = sizeof(int),
-> +               .mode           = 0644,
-> +               .proc_handler   = proc_dointvec,
-> +       },
->         {
->                 .procname       = "tcp_probe_threshold",
->                 .data           = &init_net.ipv4.sysctl_tcp_probe_threshold,
->                 .maxlen         = sizeof(int),
->                 .mode           = 0644,
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index 4f5b68a90be9..ed8af4a7325b 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -2892,10 +2892,11 @@ static int __net_init tcp_sk_init(struct net *net)
->         net->ipv4.sysctl_tcp_base_mss = TCP_BASE_MSS;
->         net->ipv4.sysctl_tcp_min_snd_mss = TCP_MIN_SND_MSS;
->         net->ipv4.sysctl_tcp_probe_threshold = TCP_PROBE_THRESHOLD;
->         net->ipv4.sysctl_tcp_probe_interval = TCP_PROBE_INTERVAL;
->         net->ipv4.sysctl_tcp_mtu_probe_floor = TCP_MIN_SND_MSS;
-> +       net->ipv4.sysctl_tcp_mtu_probe_rack = 1;
+> When it will be merged in the net-next tree, you can post the second 
+> part with the rest of the series that implements SEQPACKET for virtio 
+> devices, possibly after we received an agreement for the specifications.
 >
->         net->ipv4.sysctl_tcp_keepalive_time = TCP_KEEPALIVE_TIME;
->         net->ipv4.sysctl_tcp_keepalive_probes = TCP_KEEPALIVE_PROBES;
->         net->ipv4.sysctl_tcp_keepalive_intvl = TCP_KEEPALIVE_INTVL;
+> Please use the "net-next" tag and take a look at 
+> Documentation/networking/netdev-FAQ.rst about netdev development.
+Ok
 >
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index bde781f46b41..9691f435477b 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -2311,10 +2311,19 @@ static bool tcp_can_coalesce_send_queue_head(struct sock *sk, int len)
->         }
 >
->         return true;
->  }
+> Anyway, in the next days (hopefully tomorrow) I'll review the rest of 
+> the series related to virtio devices and spec.
 >
-> +/* Check if rack is supported for current connection */
-> +static int tcp_mtu_probe_is_rack(const struct sock *sk)
-> +{
-> +       struct net *net = sock_net(sk);
-> +
-> +       return (net->ipv4.sysctl_tcp_recovery & TCP_RACK_LOSS_DETECTION &&
-> +                       net->ipv4.sysctl_tcp_mtu_probe_rack);
-> +}
-
-You may want to use the existing helper, tcp_is_rack(), by moving it
-to include/net/tcp.h
-
-thanks,
-neal
+> Thanks,
+> Stefano
+>
+> [1] 
+> https://patchwork.kernel.org/project/netdevbpf/list/?series=486011&state=*
+>
+> [2] 
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210520191449.1270723-1-arseny.krasnov@kaspersky.com/
+>
+>
