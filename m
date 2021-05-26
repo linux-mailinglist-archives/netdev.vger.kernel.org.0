@@ -2,176 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7509A391D6C
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 18:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60CBB391D72
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 19:00:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233731AbhEZRAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 13:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39366 "EHLO
+        id S233771AbhEZRCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 13:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233648AbhEZRAY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 13:00:24 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97DDDC061574;
-        Wed, 26 May 2021 09:58:52 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id m124so1439140pgm.13;
-        Wed, 26 May 2021 09:58:52 -0700 (PDT)
+        with ESMTP id S231223AbhEZRCS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 13:02:18 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14B4C061574;
+        Wed, 26 May 2021 10:00:46 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id w1so3034756ybt.1;
+        Wed, 26 May 2021 10:00:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=d5rp5SOuLl+5dILz1M7zNvluf2P8aTjhSkLOoouqQXQ=;
-        b=ogTScCN4fcplu2773rGdeflhiWqZihKuTJEqvZjA/EUORJuNUYhSEZVCmkLDx26BBe
-         QhgkwciduAl1l4bNWYLogs31CQ+emHQP/UHuK0Ivz8YtI/RkvL3vyRlWf6qISa6WFx/j
-         EG5LU9nQrxpUZW7ii4mMKjuYTrvbFt2+PYovcNtpGx3F5hED66tVE9JEsmefrL4S8bG0
-         splkOrqKcAgpsqSUInlXP+K/81OKXIqG+b8ojO1Fh57CgsQHc8Nz4Wr3qAaL7X39kkO6
-         nzKO9esKI9yoZhAHjphNjbfcEWEGSrdWknTGH91h3PCg28nfcfJ9RixBJSBP82i68lvR
-         cAUg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=vU8HCfAU1zDQh9haIdDJWaUxp2b1UKacwZtI5/JtTMM=;
+        b=iCe5zZlLY8TNdnL+i1nIqT5nrnLM+EdrYzgfjkeSLD4MaH9wp3UkW5VMkzCLpYiMFf
+         ZlS2518KTOTGWkBnCIb9Nfa4JwLMnRYMGDePJOTMf2yl8NrgJgMCOkF3Mhf/4IgRuMjx
+         EMToDKgACE6PR9bjIPP7bDkJzQfeKmiVa+hfjf2DUTNc9WvEVnVGwN8k/ro4+AoC9HhM
+         uKjhcZR8Yn5zz3007JHvDQRcEGyARp0DryLWd+IveBEv/Rhii+zsaVfpk+uiUrh/GW6h
+         YqPnnzZ6epiGm89MuwRn/qri4zPM7YICrkf1OUMv/kZH2AyeFLkiNwhs013FOZWKd3VS
+         gmvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=d5rp5SOuLl+5dILz1M7zNvluf2P8aTjhSkLOoouqQXQ=;
-        b=MtrZp9VjxjEfQvJ8QknoXvekkL63dkOPz1wmvAwQfJ4oKCdTjoV8MNWjBepWZzuDTJ
-         uNwIirh0VNvlsdo9uKu/91HRWhlju9oLRkzqpheUetbLLo2fbdIwGj9KBVLAM7ybJWWo
-         s2lfhEkWw7YJpBF3fJCcgAVkAWDQgtlR8wki4aLu6wCYmRl7W4SPAPFEJlPpV9DTcjeH
-         ve1393Frv6ezhe2AzarrXQHnZgnRfdRudc9c8mIJDID21c3Pr49h+WW3QipbT63Jl60I
-         tFQ759z/xr9gh9PtyfZMzACd92EnIxqVQ1CwXPI8qhbhcvjOBoXweeA9VWTfM2gB3I6W
-         rkBw==
-X-Gm-Message-State: AOAM533mFSLP6KNPI+qh9j7DG0QbfkWsTORlZetnpJUtx4oLoy7B5cb4
-        pIQ4SMgfJHYXa47yuzXzlBk9zrYA2J0=
-X-Google-Smtp-Source: ABdhPJyLDgGiTholRvJ1jWb5WYgLHXkDPBXQDNSej2uG+bcJf0ASJZH3f2d/8xUARFoiKq97zQytaA==
-X-Received: by 2002:a05:6a00:1742:b029:2cc:b1b0:731c with SMTP id j2-20020a056a001742b02902ccb1b0731cmr36232581pfc.15.1622048332025;
-        Wed, 26 May 2021 09:58:52 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:fc12])
-        by smtp.gmail.com with ESMTPSA id f16sm7598906pju.12.2021.05.26.09.58.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 May 2021 09:58:51 -0700 (PDT)
-Date:   Wed, 26 May 2021 09:58:47 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Pedro Tammela <pctammela@gmail.com>
-Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-Message-ID: <20210526165847.g4z5anq6ync47z4t@ast-mbp.dhcp.thefacebook.com>
-References: <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
- <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
- <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
- <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
- <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
- <bcbf76c3-34d4-d550-1648-02eda587ccd7@mojatatu.com>
- <CAADnVQLWj-=B2TfJp7HEsiUY3rqmd6-YMDAGdyL6RgZ=_b2CXg@mail.gmail.com>
- <27dae780-b66b-4ee9-cff1-a3257e42070e@mojatatu.com>
- <CAADnVQJq37Xi2bHBG5L+DmMq6dJvFUCE3tt+uC-oAKX3WxcCQg@mail.gmail.com>
- <2dfc5180-40df-ae4c-7146-d64130be9ad4@mojatatu.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vU8HCfAU1zDQh9haIdDJWaUxp2b1UKacwZtI5/JtTMM=;
+        b=H/fzWAyQ+wsMuz0AOST7Lb91igqyPC18nA4sxGWG7DthZXly4kplIPlcoW1QoP+Dyg
+         SvDOwXMLNr68skWNDV26sOaMXEufuIl3D6jmN3l+u1vmmrb1w7IHsbVxswWED5XqZBhI
+         Y+rxKfw7euoVpDf5K7CDaT+3WJKSgbXi+yJKa23a5t4xeyyuumFvx2MdYPW1zZoXm8ZD
+         RPVJhhn+/UYGL3u2Aehaa1QgJrkGD6Wrx7B32MHWvEMELG5wFGLOND1ILJqnRb+KsnBf
+         v+o6GYD06/xpwUJT2BWs3QZhUNg/k8L6ubQGS6jYc25c9sk8nPiOoxFxDthyWTne3uZU
+         qbKw==
+X-Gm-Message-State: AOAM531MCvejNQBPrjAJbS/dgRiHd7FpasBoE3mvFe+s5+uD6Lqb8lB2
+        jvtmSvbRLgrH9UeIIHJ0G4Y1RmCYap3or9aGBWI=
+X-Google-Smtp-Source: ABdhPJzaq80hq8KVk4ila3PFehhtYyhoVLRMKxhed0Ikxq5o3hfhPIwuLf2lzasTbzinbs0o6hFZsvxfCLvJ38336FU=
+X-Received: by 2002:a25:ba06:: with SMTP id t6mr49776676ybg.459.1622048445748;
+ Wed, 26 May 2021 10:00:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2dfc5180-40df-ae4c-7146-d64130be9ad4@mojatatu.com>
+References: <20210526080741.GW30378@techsingularity.net> <20210526083342.GY8544@kitsune.suse.cz>
+In-Reply-To: <20210526083342.GY8544@kitsune.suse.cz>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 26 May 2021 10:00:34 -0700
+Message-ID: <CAEf4BzZBW5bNF61p3+n7akUs1qztNJ4FwY4yAYRdjmP4ShFQKQ@mail.gmail.com>
+Subject: Re: (BTF) [PATCH] mm/page_alloc: Work around a pahole limitation with
+ zero-sized struct pagesets
+To:     =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>
+Cc:     Mel Gorman <mgorman@techsingularity.net>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Hritik Vijay <hritikxx8@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 11:34:04AM -0400, Jamal Hadi Salim wrote:
-> On 2021-05-25 6:08 p.m., Alexei Starovoitov wrote:
-> > On Tue, May 25, 2021 at 2:09 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> > > 
-> 
-> > > This is certainly a useful feature (for other reasons as well).
-> > > Does this include create/update/delete issued from user space?
-> > 
-> > Right. Any kind of update/delete and create is a subset of update.
-> > The lookup is not included (yet or may be ever) since it doesn't
-> > have deterministic start/end points.
-> > The prog can do a lookup and update values in place while
-> > holding on the element until prog execution ends.
-> > 
-> > While update/delete have precise points in hash/lru/lpm maps.
-> > Array is a different story.
-> > 
-> 
-> Didnt follow why this wouldnt work in the same way for Array?
-
-array doesn't have delete.
-
-> One interesting concept i see come out of this is emulating
-> netlink-like event generation towards user space i.e a user
-> space app listening to changes to a map.
-
-Folks do it already via ringbuf events. No need for update/delete
-callback to implement such notifications.
-
-> > > 
-> > > The challenge we have in this case is LRU makes the decision
-> > > which entry to victimize. We do have some entries we want to
-> > > keep longer - even if they are not seeing a lot of activity.
-> > 
-> > Right. That's certainly an argument to make LRU eviction
-> > logic programmable.
-> > John/Joe/Daniel proposed it as a concept long ago.
-> > Design ideas are in demand to make further progress here :)
-> > 
-> 
-> would like to hear what the proposed ideas are.
-> I see this as a tricky problem to solve - you can make LRU
-> programmable to allow the variety of LRU replacement algos out
-> there but not all encompansing for custom or other types of algos.
-> The problem remains that LRU is very specific to evicting
-> entries that are least used. I can imagine that if i wanted to
-> do a LIFO aging for example then it can be done with some acrobatics
-> as an overlay on top of LRU with all sorts of tweaking.
-> It is sort of fitting a square peg into a round hole - you can do
-> it, but why the torture when you have a flexible architecture.
-
-Using GC to solve 'hash table is running out of memory' problem is
-exactly the square peg.
-Timers is absolutely wrong way to address memory pressure.
-
-> We need to provide the mechanisms (I dont see a disagreement on
-> need for timers at least).
-
-It's an explicit non-goal for timer api to be used as GC for conntrack.
-You'll be able to use it as such, but when it fails to scale
-(as it's going to happen with any timer implementation) don't blame
-infrastructure for that.
-
-> > > 
-> > > What happens when both ingress and egress are ejected?
-> > 
-> > What is 'ejected'? Like a CD? ;)
-> 
-> I was going to use other verbs to describe this; but
-> may have sounded obscene ;->
-
-Please use standard terminology. The topic is difficult enough
-to understand without inventing new words.
-
-> > The kernel can choose to do different things with the timer here.
-> > One option is to cancel the outstanding timers and unload
-> > .text where the timer callback lives
+On Wed, May 26, 2021 at 1:33 AM Michal Such=C3=A1nek <msuchanek@suse.de> wr=
+ote:
+>
+> On Wed, May 26, 2021 at 09:07:41AM +0100, Mel Gorman wrote:
+> > Michal Suchanek reported the following problem with linux-next
 > >
-> > Another option is to let the timer stay armed and auto unload
-> > .text of bpf function when it finishes executing.
+> >   [    0.000000] Linux version 5.13.0-rc2-next-20210519-1.g3455ff8-vani=
+lla (geeko@buildhost) (gcc (SUSE Linux) 10.3.0, GNU ld (GNU Binutils; openS=
+USE Tumbleweed) 2.36.1.20210326-3) #1 SMP Wed May 19 10:05:10 UTC 2021 (345=
+5ff8)
+> >   [    0.000000] Command line: BOOT_IMAGE=3D/boot/vmlinuz-5.13.0-rc2-ne=
+xt-20210519-1.g3455ff8-vanilla root=3DUUID=3Dec42c33e-a2c2-4c61-afcc-93e952=
+7 8f687 plymouth.enable=3D0 resume=3D/dev/disk/by-uuid/f1fe4560-a801-4faf-a=
+638-834c407027c7 mitigations=3Dauto earlyprintk initcall_debug nomodeset ea=
+rlycon ignore_loglevel console=3DttyS0,115200
+> > ...
+> >   [   26.093364] calling  tracing_set_default_clock+0x0/0x62 @ 1
+> >   [   26.098937] initcall tracing_set_default_clock+0x0/0x62 returned 0=
+ after 0 usecs
+> >   [   26.106330] calling  acpi_gpio_handle_deferred_request_irqs+0x0/0x=
+7c @ 1
+> >   [   26.113033] initcall acpi_gpio_handle_deferred_request_irqs+0x0/0x=
+7c returned 0 after 3 usecs
+> >   [   26.121559] calling  clk_disable_unused+0x0/0x102 @ 1
+> >   [   26.126620] initcall clk_disable_unused+0x0/0x102 returned 0 after=
+ 0 usecs
+> >   [   26.133491] calling  regulator_init_complete+0x0/0x25 @ 1
+> >   [   26.138890] initcall regulator_init_complete+0x0/0x25 returned 0 a=
+fter 0 usecs
+> >   [   26.147816] Freeing unused decrypted memory: 2036K
+> >   [   26.153682] Freeing unused kernel image (initmem) memory: 2308K
+> >   [   26.165776] Write protecting the kernel read-only data: 26624k
+> >   [   26.173067] Freeing unused kernel image (text/rodata gap) memory: =
+2036K
+> >   [   26.180416] Freeing unused kernel image (rodata/data gap) memory: =
+1184K
+> >   [   26.187031] Run /init as init process
+> >   [   26.190693]   with arguments:
+> >   [   26.193661]     /init
+> >   [   26.195933]   with environment:
+> >   [   26.199079]     HOME=3D/
+> >   [   26.201444]     TERM=3Dlinux
+> >   [   26.204152]     BOOT_IMAGE=3D/boot/vmlinuz-5.13.0-rc2-next-2021051=
+9-1.g3455ff8-vanilla
+> >   [   26.254154] BPF:      type_id=3D35503 offset=3D178440 size=3D4
+> >   [   26.259125] BPF:
+> >   [   26.261054] BPF:Invalid offset
+> >   [   26.264119] BPF:
+> >   [   26.264119]
+> >   [   26.267437] failed to validate module [efivarfs] BTF: -22
 > >
-> > If timer callback decides to re-arm itself it can continue
-> > executing indefinitely.
-> > This patch is doing the latter.
-> > There could be a combination of both options.
-> > All options have their pros/cons.
-> 
-> A reasonable approach is to let the policy be defined
-> from user space. I may want the timer to keep polling
-> a map that is not being updated until the next program
-> restarts and starts updating it.
-> I thought Cong's approach with timerids/maps was a good
-> way to achieve control.
+> > Andrii Nakryiko bisected the problem to the commit "mm/page_alloc: conv=
+ert
+> > per-cpu list protection to local_lock" currently staged in mmotm. In hi=
+s
+> > own words
+> >
+> >   The immediate problem is two different definitions of numa_node per-c=
+pu
+> >   variable. They both are at the same offset within .data..percpu ELF
+> >   section, they both have the same name, but one of them is marked as
+> >   static and another as global. And one is int variable, while another
+> >   is struct pagesets. I'll look some more tomorrow, but adding Jiri and
+> >   Arnaldo for visibility.
+> >
+> >   [110907] DATASEC '.data..percpu' size=3D178904 vlen=3D303
+> >   ...
+> >         type_id=3D27753 offset=3D163976 size=3D4 (VAR 'numa_node')
+> >         type_id=3D27754 offset=3D163976 size=3D4 (VAR 'numa_node')
+> >
+> >   [27753] VAR 'numa_node' type_id=3D27556, linkage=3Dstatic
+> >   [27754] VAR 'numa_node' type_id=3D20, linkage=3Dglobal
+> >
+> >   [20] INT 'int' size=3D4 bits_offset=3D0 nr_bits=3D32 encoding=3DSIGNE=
+D
+> >
+> >   [27556] STRUCT 'pagesets' size=3D0 vlen=3D1
+> >         'lock' type_id=3D507 bits_offset=3D0
+> >
+> >   [506] STRUCT '(anon)' size=3D0 vlen=3D0
+> >   [507] TYPEDEF 'local_lock_t' type_id=3D506
+> >
+> > The patch in question introduces a zero-sized per-cpu struct and while
+> > this is not wrong, versions of pahole prior to 1.22 (unreleased) get
+> > confused during BTF generation with two separate variables occupying th=
+e
+> > same address.
+> >
+> > This patch checks for older versions of pahole and forces struct pagese=
+ts
+> > to be non-zero sized as a workaround when CONFIG_DEBUG_INFO_BTF is set.=
+ A
+> > warning is omitted so that distributions can update pahole when 1.22
+> > is released.
+> >
+> > Reported-by: Michal Suchanek <msuchanek@suse.de>
+> > Reported-by: Hritik Vijay <hritikxx8@gmail.com>
+> > Debugged-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+> > ---
+> >  lib/Kconfig.debug |  3 +++
+> >  mm/page_alloc.c   | 11 +++++++++++
+> >  2 files changed, 14 insertions(+)
+> >
+> > diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+> > index 678c13967580..f88a155b80a9 100644
+> > --- a/lib/Kconfig.debug
+> > +++ b/lib/Kconfig.debug
+> > @@ -313,6 +313,9 @@ config DEBUG_INFO_BTF
+> >  config PAHOLE_HAS_SPLIT_BTF
+> >       def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]=
++)\.([0-9]+)/\1\2/'` -ge "119")
+> >
+> > +config PAHOLE_HAS_ZEROSIZE_PERCPU_SUPPORT
+> > +     def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]=
++)\.([0-9]+)/\1\2/'` -ge "122")
+> > +
+>
+> This does not seem workable with dummy-tools.
+>
+> Do we even have dummy pahole?
+>
 
-No, it's not a policy, and no, it doesn't belong to user space,
-and no, Cong's approach has nothing to do with this design choice.
+I don't know what dummy-tools is, so probably no. But if you don't
+have pahole on the build host, you can't have DEBUG_INFO_BTF=3Dy
+anyways. As in, your build will fail because it will be impossible to
+generate BTF information. So you'll have to disable DEBUG_INFO_BTF if
+you can't get pahole onto your build host for some reason.
+
+> Thanks
+>
+> Michal
+>
+> >  config DEBUG_INFO_BTF_MODULES
+> >       def_bool y
+> >       depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF
+> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> > index ff8f706839ea..1d56d3de8e08 100644
+> > --- a/mm/page_alloc.c
+> > +++ b/mm/page_alloc.c
+> > @@ -124,6 +124,17 @@ static DEFINE_MUTEX(pcp_batch_high_lock);
+> >
+> >  struct pagesets {
+> >       local_lock_t lock;
+> > +#if defined(CONFIG_DEBUG_INFO_BTF) &&                        \
+> > +    !defined(CONFIG_DEBUG_LOCK_ALLOC) &&             \
+> > +    !defined(CONFIG_PAHOLE_HAS_ZEROSIZE_PERCPU_SUPPORT)
+> > +     /*
+> > +      * pahole 1.21 and earlier gets confused by zero-sized per-CPU
+> > +      * variables and produces invalid BTF. Ensure that
+> > +      * sizeof(struct pagesets) !=3D 0 for older versions of pahole.
+> > +      */
+> > +     char __pahole_hack;
+> > +     #warning "pahole too old to support zero-sized struct pagesets"
+> > +#endif
+> >  };
+> >  static DEFINE_PER_CPU(struct pagesets, pagesets) =3D {
+> >       .lock =3D INIT_LOCAL_LOCK(lock),
