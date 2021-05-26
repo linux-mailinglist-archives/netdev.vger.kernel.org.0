@@ -2,123 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0510D391229
-	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 10:18:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5749D391234
+	for <lists+netdev@lfdr.de>; Wed, 26 May 2021 10:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232348AbhEZIUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 04:20:12 -0400
-Received: from mail-vs1-f53.google.com ([209.85.217.53]:44981 "EHLO
-        mail-vs1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231871AbhEZIUL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 04:20:11 -0400
-Received: by mail-vs1-f53.google.com with SMTP id i29so269451vsr.11;
-        Wed, 26 May 2021 01:18:39 -0700 (PDT)
+        id S232322AbhEZI0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 04:26:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27783 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230384AbhEZI0L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 04:26:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622017479;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=h/IiZdevU24C6iPRKe1yVzH4pkUf/4vRqKB2RZ+6Gak=;
+        b=hFfQ8on5SziwOgjapf0WZoT7Hc65Zlkz/OlQavC9X+mTXgKu3nqQjoz75wK9oQrEbAAj3+
+        yn8rnIUsKGtyZWyc0IeAI1coDTULr98FC8ehcgWkXDq1+jEyXgyvwRERE5aZdOylROzx+u
+        u5/O+0EKV+VPBaPcVrPSJE/eTQflmHI=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-480-W6ARPQVtPEa8mYZ_f_jSpQ-1; Wed, 26 May 2021 04:24:36 -0400
+X-MC-Unique: W6ARPQVtPEa8mYZ_f_jSpQ-1
+Received: by mail-wr1-f72.google.com with SMTP id c13-20020a5d6ccd0000b029010ec741b84bso17452wrc.23
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 01:24:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cwJrjJPn4XdJtdaNHc/uwJ41Erytueup9SA7gWbLwLc=;
-        b=TknXp62Tjdb47E3sod/c1NOiYYHO++PTLTTWUJX+idsZnBM6TlK+rPjtrMshFThGOM
-         abPpAvRNdbOyIaX2o+bUmETZIhzLzePKfK9DHMgihVnqHE/Bb5hJUCmkde6ssKEX1pBA
-         Cj8ex/3+TI9m5p7nUHTN6calnOWMoJJfMTdIIyLjwKKsohApGRgi8KFk3t75/A6wzLZ3
-         tIa8KT5xjnC8XZrAjX9B1EHC6Gy5qJMvpz/hD5ak9zLqiRG6QC/d2KSrA04/ipMh4VPa
-         Qbcbw2bmk+1cgUAQKE+rzWa0tFGoeMNF5qJK8lQwwgUetVMvZYa/3/EnR/S1+xFaht26
-         tZRw==
-X-Gm-Message-State: AOAM5327cB3tMOp6D02b/MAH/9MGXjv6b2095JOT+5UBgxfpuesmEYZX
-        OjidG/3HDJqhAh+HBX/96JqEtI1gNaHpR4HjQvI=
-X-Google-Smtp-Source: ABdhPJyBP43fy0z/xLr24CBnaFxqMibw4+PtPqA/CPHen7oIzefuWsMGVqm5mGd8u6JPJ0dQP9MmoI2MjgM94cpGp3U=
-X-Received: by 2002:a67:3c2:: with SMTP id 185mr30138437vsd.42.1622017119229;
- Wed, 26 May 2021 01:18:39 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=h/IiZdevU24C6iPRKe1yVzH4pkUf/4vRqKB2RZ+6Gak=;
+        b=K8JThhUTiFOfSdS0Lw1X8Ib3hoM7tsh4/dTYwTLhd4+D0m3UUzBa3FoUenJtiBnK6d
+         gJw771ztUWmjGyoWS2YL449TuVs7bSduTBFDOGG+roRfPG4PL6qnI+KeSbPG/C6melQ7
+         t0QMGlX/WCPINIW0K5KtMP0wx+tf87TtilirgWSpNp5xtR0p8MEMFN5PF5wo+YOAsdE3
+         YSSPun4iVb4pK4UXId5TlXEMceWWPNwlv5N8c/KuMlI0zAYRVhaal1ReaWuc/+NvFidI
+         /oqlut6UiG4rin795zLVpCrZuv3XiChexTlq5Uf4xspkwUKJ7ucsV3DZ1UM/HBBkIl4R
+         VH+g==
+X-Gm-Message-State: AOAM532w6R/jBxXcMyGxuRctvZHTH1VxDO1oh9d/PM3r8PCHMypAbw1Z
+        NCHZBu3A+IlbjEO2qNtB2LSGuMaNAiViOUJcDh55qR05TAKuGHkJyANcQoORYMhBwSvCydupN4Q
+        tTiaYTkdiusrEuZPA
+X-Received: by 2002:a05:6000:22f:: with SMTP id l15mr31043315wrz.316.1622017474987;
+        Wed, 26 May 2021 01:24:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyCiZwAZaoPLnVZeYjw1jGMxvTHDr/fij7cEsvVkrjAJeTC0ZTaZikGLvMscL1b2PuHa1A7HA==
+X-Received: by 2002:a05:6000:22f:: with SMTP id l15mr31043301wrz.316.1622017474846;
+        Wed, 26 May 2021 01:24:34 -0700 (PDT)
+Received: from redhat.com ([2a10:8006:fcda:0:90d:c7e7:9e26:b297])
+        by smtp.gmail.com with ESMTPSA id n2sm17372318wmb.32.2021.05.26.01.24.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 May 2021 01:24:34 -0700 (PDT)
+Date:   Wed, 26 May 2021 04:24:31 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>, Wei Wang <weiwan@google.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH v3 0/4] virtio net: spurious interrupt related fixes
+Message-ID: <20210526082423.47837-1-mst@redhat.com>
 MIME-Version: 1.0
-References: <20210330145430.996981-1-maz@kernel.org> <20210330145430.996981-8-maz@kernel.org>
- <CAMuHMdWd5261ti-zKsroFLvWs0abaWa7G4DKefgPwFb3rEjnNw@mail.gmail.com>
- <6c522f8116f54fa6f23a2d217d966c5a@kernel.org> <CAMuHMdWzBqLVOVn_z8S2H-x-kL+DfOsM5mDb_D8OKsyRJtKpdA@mail.gmail.com>
- <8735u9x6sb.wl-maz@kernel.org>
-In-Reply-To: <8735u9x6sb.wl-maz@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 26 May 2021 10:18:27 +0200
-Message-ID: <CAMuHMdUBwcB-v0ugCPB3D6dbttiSbqQeHgNrr+r331ntRrfiAw@mail.gmail.com>
-Subject: Re: [PATCH v19 7/7] ptp: arm/arm64: Enable ptp_kvm for arm/arm64
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     jianyong.wu@arm.com, netdev <netdev@vger.kernel.org>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paolo Bonzini <pbonzini@redhat.com>, seanjc@google.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Andre Przywara <Andre.Przywara@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        kvmarm@lists.cs.columbia.edu, KVM list <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>, justin.he@arm.com,
-        Android Kernel Team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
 
-On Wed, May 26, 2021 at 10:01 AM Marc Zyngier <maz@kernel.org> wrote:
-> On Wed, 26 May 2021 08:52:42 +0100,
-> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Tue, May 11, 2021 at 11:13 AM Marc Zyngier <maz@kernel.org> wrote:
-> > > On 2021-05-11 10:07, Geert Uytterhoeven wrote:
-> > > > On Tue, Mar 30, 2021 at 4:56 PM Marc Zyngier <maz@kernel.org> wrote:
-> > > >> From: Jianyong Wu <jianyong.wu@arm.com>
-> > > >
-> > > >> --- a/drivers/ptp/Kconfig
-> > > >> +++ b/drivers/ptp/Kconfig
-> > > >> @@ -108,7 +108,7 @@ config PTP_1588_CLOCK_PCH
-> > > >>  config PTP_1588_CLOCK_KVM
-> > > >>         tristate "KVM virtual PTP clock"
-> > > >>         depends on PTP_1588_CLOCK
-> > > >> -       depends on KVM_GUEST && X86
-> > > >> +       depends on (KVM_GUEST && X86) || (HAVE_ARM_SMCCC_DISCOVERY &&
-> > > >> ARM_ARCH_TIMER)
-> > > >
-> > > > Why does this not depend on KVM_GUEST on ARM?
-> > > > I.e. shouldn't the dependency be:
-> > > >
-> > > >     KVM_GUEST && (X86 || (HAVE_ARM_SMCCC_DISCOVERY && ARM_ARCH_TIMER))
-> > > >
-> > > > ?
-> > >
-> > > arm/arm64 do not select KVM_GUEST. Any kernel can be used for a guest,
-> > > and KVM/arm64 doesn't know about this configuration symbol.
-> >
-> > OK.
-> >
-> > Does PTP_1588_CLOCK_KVM need to default to yes?
-> > Perhaps only on X86, to maintain the status quo?
->
-> I think I don't really understand the problem you are trying to
-> solve. Is it that 'make oldconfig' now asks you about this new driver?
-> Why is that an issue?
+With the implementation of napi-tx in virtio driver, we clean tx
+descriptors from rx napi handler, for the purpose of reducing tx
+complete interrupts. But this introduces a race where tx complete
+interrupt has been raised, but the handler finds there is no work to do
+because we have done the work in the previous rx interrupt handler.
+A similar issue exists with polling from start_xmit, it is however
+less common because of the delayed cb optimization of the split ring -
+but will likely affect the packed ring once that is more common.
 
-My first "problem" was that it asked about this new driver on
-arm/arm64, while I assumed there were some missing dependencies
-(configuring a kernel should not ask useless questions).  That turned
-out to be a wrong assumption, so there is no such problem here.
+In particular, this was reported to lead to the following warning msg:
+[ 3588.010778] irq 38: nobody cared (try booting with the
+"irqpoll" option)
+[ 3588.017938] CPU: 4 PID: 0 Comm: swapper/4 Not tainted
+5.3.0-19-generic #20~18.04.2-Ubuntu
+[ 3588.017940] Call Trace:
+[ 3588.017942]  <IRQ>
+[ 3588.017951]  dump_stack+0x63/0x85
+[ 3588.017953]  __report_bad_irq+0x35/0xc0
+[ 3588.017955]  note_interrupt+0x24b/0x2a0
+[ 3588.017956]  handle_irq_event_percpu+0x54/0x80
+[ 3588.017957]  handle_irq_event+0x3b/0x60
+[ 3588.017958]  handle_edge_irq+0x83/0x1a0
+[ 3588.017961]  handle_irq+0x20/0x30
+[ 3588.017964]  do_IRQ+0x50/0xe0
+[ 3588.017966]  common_interrupt+0xf/0xf
+[ 3588.017966]  </IRQ>
+[ 3588.017989] handlers:
+[ 3588.020374] [<000000001b9f1da8>] vring_interrupt
+[ 3588.025099] Disabling IRQ #38
 
-The second problem is "default y": code that is not critical should
-not be enabled by default.  Hence my last question.
+This patchset attempts to fix this by cleaning up a bunch of races
+related to the handling of sq callbacks (aka tx interrupts).
+Somewhat tested but I couldn't reproduce the original issues
+reported, sending out for help with testing.
+
+Wei, does this address the spurious interrupt issue you are
+observing? Could you confirm please?
 
 Thanks!
 
-Gr{oetje,eeting}s,
+changes from v2:
+	Fixed a race condition in start_xmit: enable_cb_delayed was
+	done as an optimization (to push out event index for
+	split ring) so we did not have to care about it
+	returning false (recheck). Now that we actually disable the cb
+	we have to do test the return value and do the actual recheck.
 
-                        Geert
+
+Michael S. Tsirkin (4):
+  virtio_net: move tx vq operation under tx queue lock
+  virtio_net: move txq wakeups under tx q lock
+  virtio: fix up virtio_disable_cb
+  virtio_net: disable cb aggressively
+
+ drivers/net/virtio_net.c     | 49 ++++++++++++++++++++++++++++--------
+ drivers/virtio/virtio_ring.c | 26 ++++++++++++++++++-
+ 2 files changed, 64 insertions(+), 11 deletions(-)
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+MST
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
