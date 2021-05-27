@@ -2,44 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0DFB3929D6
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 10:48:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5CD4392A00
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 10:49:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235518AbhE0Itq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 04:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
+        id S235780AbhE0Iuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 04:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235324AbhE0Itq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 04:49:46 -0400
+        with ESMTP id S235694AbhE0IuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 04:50:11 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FB5C061574
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 01:48:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4FCC061345
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 01:48:27 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1lmBgZ-0001v2-Nc
-        for netdev@vger.kernel.org; Thu, 27 May 2021 10:48:11 +0200
+        id 1lmBgn-0002It-Oj
+        for netdev@vger.kernel.org; Thu, 27 May 2021 10:48:25 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 11C9062D3F2
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 08:45:35 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id CD61F62D401
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 08:45:36 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 64E7C62D3D8;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 7D2C662D3D9;
         Thu, 27 May 2021 08:45:34 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 4ac409e1;
-        Thu, 27 May 2021 08:45:33 +0000 (UTC)
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 70331d84;
+        Thu, 27 May 2021 08:45:34 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: pull-request: can-next 2021-05-27
-Date:   Thu, 27 May 2021 10:45:11 +0200
-Message-Id: <20210527084532.1384031-1-mkl@pengutronix.de>
+        kernel@pengutronix.de,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [net-next 01/21] dt-bindings: can: rcar_can: Convert to json-schema
+Date:   Thu, 27 May 2021 10:45:12 +0200
+Message-Id: <20210527084532.1384031-2-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210527084532.1384031-1-mkl@pengutronix.de>
+References: <20210527084532.1384031-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
@@ -50,125 +55,259 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, hello David,
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-this is a pull request of 21 patches for net-next/master. I hope
-that's OK, as http://vger.kernel.org/~davem/net-next.html still says
-closed.
+Convert the Renesas R-Car CAN Controller Device Tree binding
+documentation to json-schema.
 
-The first 2 patches are by Geert Uytterhoeven and convert the rcan_can
-and rcan_canfd device tree bindings to yaml.
+Document missing properties.
+Update the example to match reality.
 
-The next 2 patches are by Oliver Hartkopp and me and update the CAN
-uapi headers.
-
-zuoqilin's patch removes an unnecessary variable from the CAN proc
-code.
-
-Patrick Menschel contributes 3 patches for CAN ISOTP to enhance the
-error messages.
-
-Jiapeng Chong's patch removes two dead stores from the softing driver.
-
-The next 4 patches are by me and silence several warnings found by
-clang compiler.
-
-Jimmy Assarsson's patches for the kvaser_usb driver add support for
-the Kvaser hydra devices.
-
-Dario Binacchi provides 2 patches for the c_can driver, first removing
-an unused variable, then adding basic ethtool support to query driver
-and ring parameter info.
-
-The last 4 patches are by Torin Cooper-Bennun and clean up the m_can
-driver.
-
-regards,
-Marc
-
+Link: https://lore.kernel.org/r/561c35648e22a3c1e3b5477ae27fd1a50da7fe98.1620323639.git.geert+renesas@glider.be
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
-
-The following changes since commit 59c56342459a483d5e563ed8b5fdb77ab7622a73:
-
-  Merge branch '1GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue (2021-05-26 18:33:01 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.14-20210527
-
-for you to fetch changes up to 50fe7547b637b3cf51876ce9ec829e79d76e5de0:
-
-  can: m_can: fix whitespace in a few comments (2021-05-27 09:42:24 +0200)
-
-----------------------------------------------------------------
-linux-can-next-for-5.14-20210527
-
-----------------------------------------------------------------
-Dario Binacchi (2):
-      can: c_can: remove unused variable struct c_can_priv::rxmasked
-      can: c_can: add ethtool support
-
-Geert Uytterhoeven (2):
-      dt-bindings: can: rcar_can: Convert to json-schema
-      dt-bindings: can: rcar_canfd: Convert to json-schema
-
-Jiapeng Chong (1):
-      can: softing: Remove redundant variable ptr
-
-Jimmy Assarsson (2):
-      can: kvaser_usb: Rename define USB_HYBRID_{,PRO_}CANLIN_PRODUCT_ID
-      can: kvaser_usb: Add new Kvaser hydra devices
-
-Marc Kleine-Budde (5):
-      can: uapi: update CAN-FD frame description
-      can: hi311x: hi3110_can_probe(): silence clang warning
-      can: mcp251x: mcp251x_can_probe(): silence clang warning
-      can: mcp251xfd: silence clang warning
-      can: at91_can: silence clang warning
-
-Oliver Hartkopp (1):
-      can: uapi: introduce CANFD_FDF flag for mixed content in struct canfd_frame
-
-Patrick Menschel (3):
-      can: isotp: change error format from decimal to symbolic error names
-      can: isotp: add symbolic error message to isotp_module_init()
-      can: isotp: Add error message if txqueuelen is too small
-
-Torin Cooper-Bennun (4):
-      can: m_can: use bits.h macros for all regmasks
-      can: m_can: clean up CCCR reg defs, order by revs
-      can: m_can: make TXESC, RXESC config more explicit
-      can: m_can: fix whitespace in a few comments
-
-zuoqilin (1):
-      can: proc: remove unnecessary variables
-
- .../devicetree/bindings/net/can/rcar_can.txt       |  80 -------
- .../devicetree/bindings/net/can/rcar_canfd.txt     | 107 ---------
- .../bindings/net/can/renesas,rcar-can.yaml         | 139 ++++++++++++
- .../bindings/net/can/renesas,rcar-canfd.yaml       | 122 +++++++++++
- drivers/net/can/at91_can.c                         |   2 +-
- drivers/net/can/c_can/Makefile                     |   5 +
- drivers/net/can/c_can/c_can.h                      |   3 +-
- drivers/net/can/c_can/c_can_ethtool.c              |  43 ++++
- drivers/net/can/c_can/{c_can.c => c_can_main.c}    |   2 +-
- drivers/net/can/m_can/m_can.c                      | 244 ++++++++++-----------
- drivers/net/can/softing/softing_main.c             |   2 -
- drivers/net/can/spi/hi311x.c                       |   2 +-
- drivers/net/can/spi/mcp251x.c                      |   2 +-
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c     |   2 +-
- drivers/net/can/usb/Kconfig                        |   2 +
- drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c   |  14 +-
- include/uapi/linux/can.h                           |  13 +-
- net/can/isotp.c                                    |  20 +-
- net/can/proc.c                                     |   6 +-
- 19 files changed, 463 insertions(+), 347 deletions(-)
+ .../devicetree/bindings/net/can/rcar_can.txt  |  80 ----------
+ .../bindings/net/can/renesas,rcar-can.yaml    | 139 ++++++++++++++++++
+ 2 files changed, 139 insertions(+), 80 deletions(-)
  delete mode 100644 Documentation/devicetree/bindings/net/can/rcar_can.txt
- delete mode 100644 Documentation/devicetree/bindings/net/can/rcar_canfd.txt
  create mode 100644 Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml
- create mode 100644 Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
- create mode 100644 drivers/net/can/c_can/c_can_ethtool.c
- rename drivers/net/can/c_can/{c_can.c => c_can_main.c} (99%)
 
+diff --git a/Documentation/devicetree/bindings/net/can/rcar_can.txt b/Documentation/devicetree/bindings/net/can/rcar_can.txt
+deleted file mode 100644
+index 90ac4fef23f5..000000000000
+--- a/Documentation/devicetree/bindings/net/can/rcar_can.txt
++++ /dev/null
+@@ -1,80 +0,0 @@
+-Renesas R-Car CAN controller Device Tree Bindings
+--------------------------------------------------
+-
+-Required properties:
+-- compatible: "renesas,can-r8a7742" if CAN controller is a part of R8A7742 SoC.
+-	      "renesas,can-r8a7743" if CAN controller is a part of R8A7743 SoC.
+-	      "renesas,can-r8a7744" if CAN controller is a part of R8A7744 SoC.
+-	      "renesas,can-r8a7745" if CAN controller is a part of R8A7745 SoC.
+-	      "renesas,can-r8a77470" if CAN controller is a part of R8A77470 SoC.
+-	      "renesas,can-r8a774a1" if CAN controller is a part of R8A774A1 SoC.
+-	      "renesas,can-r8a774b1" if CAN controller is a part of R8A774B1 SoC.
+-	      "renesas,can-r8a774c0" if CAN controller is a part of R8A774C0 SoC.
+-	      "renesas,can-r8a774e1" if CAN controller is a part of R8A774E1 SoC.
+-	      "renesas,can-r8a7778" if CAN controller is a part of R8A7778 SoC.
+-	      "renesas,can-r8a7779" if CAN controller is a part of R8A7779 SoC.
+-	      "renesas,can-r8a7790" if CAN controller is a part of R8A7790 SoC.
+-	      "renesas,can-r8a7791" if CAN controller is a part of R8A7791 SoC.
+-	      "renesas,can-r8a7792" if CAN controller is a part of R8A7792 SoC.
+-	      "renesas,can-r8a7793" if CAN controller is a part of R8A7793 SoC.
+-	      "renesas,can-r8a7794" if CAN controller is a part of R8A7794 SoC.
+-	      "renesas,can-r8a7795" if CAN controller is a part of R8A7795 SoC.
+-	      "renesas,can-r8a7796" if CAN controller is a part of R8A77960 SoC.
+-	      "renesas,can-r8a77961" if CAN controller is a part of R8A77961 SoC.
+-	      "renesas,can-r8a77965" if CAN controller is a part of R8A77965 SoC.
+-	      "renesas,can-r8a77990" if CAN controller is a part of R8A77990 SoC.
+-	      "renesas,can-r8a77995" if CAN controller is a part of R8A77995 SoC.
+-	      "renesas,rcar-gen1-can" for a generic R-Car Gen1 compatible device.
+-	      "renesas,rcar-gen2-can" for a generic R-Car Gen2 or RZ/G1
+-	      compatible device.
+-	      "renesas,rcar-gen3-can" for a generic R-Car Gen3 or RZ/G2
+-	      compatible device.
+-	      When compatible with the generic version, nodes must list the
+-	      SoC-specific version corresponding to the platform first
+-	      followed by the generic version.
+-
+-- reg: physical base address and size of the R-Car CAN register map.
+-- interrupts: interrupt specifier for the sole interrupt.
+-- clocks: phandles and clock specifiers for 3 CAN clock inputs.
+-- clock-names: 3 clock input name strings: "clkp1", "clkp2", and "can_clk".
+-- pinctrl-0: pin control group to be used for this controller.
+-- pinctrl-names: must be "default".
+-
+-Required properties for R8A774A1, R8A774B1, R8A774C0, R8A774E1, R8A7795,
+-R8A77960, R8A77961, R8A77965, R8A77990, and R8A77995:
+-For the denoted SoCs, "clkp2" can be CANFD clock. This is a div6 clock and can
+-be used by both CAN and CAN FD controller at the same time. It needs to be
+-scaled to maximum frequency if any of these controllers use it. This is done
+-using the below properties:
+-
+-- assigned-clocks: phandle of clkp2(CANFD) clock.
+-- assigned-clock-rates: maximum frequency of this clock.
+-
+-Optional properties:
+-- renesas,can-clock-select: R-Car CAN Clock Source Select. Valid values are:
+-			    <0x0> (default) : Peripheral clock (clkp1)
+-			    <0x1> : Peripheral clock (clkp2)
+-			    <0x3> : External input clock
+-
+-Example
+--------
+-
+-SoC common .dtsi file:
+-
+-	can0: can@e6e80000 {
+-		compatible = "renesas,can-r8a7791", "renesas,rcar-gen2-can";
+-		reg = <0 0xe6e80000 0 0x1000>;
+-		interrupts = <0 186 IRQ_TYPE_LEVEL_HIGH>;
+-		clocks = <&mstp9_clks R8A7791_CLK_RCAN0>,
+-			 <&cpg_clocks R8A7791_CLK_RCAN>, <&can_clk>;
+-		clock-names = "clkp1", "clkp2", "can_clk";
+-		status = "disabled";
+-	};
+-
+-Board specific .dts file:
+-
+-&can0 {
+-	pinctrl-0 = <&can0_pins>;
+-	pinctrl-names = "default";
+-	status = "okay";
+-};
+diff --git a/Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml b/Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml
+new file mode 100644
+index 000000000000..fadc871fd6b0
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml
+@@ -0,0 +1,139 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/can/renesas,rcar-can.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Renesas R-Car CAN Controller
++
++maintainers:
++  - Sergei Shtylyov <sergei.shtylyov@gmail.com>
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - renesas,can-r8a7778      # R-Car M1-A
++              - renesas,can-r8a7779      # R-Car H1
++          - const: renesas,rcar-gen1-can # R-Car Gen1
++
++      - items:
++          - enum:
++              - renesas,can-r8a7742      # RZ/G1H
++              - renesas,can-r8a7743      # RZ/G1M
++              - renesas,can-r8a7744      # RZ/G1N
++              - renesas,can-r8a7745      # RZ/G1E
++              - renesas,can-r8a77470     # RZ/G1C
++              - renesas,can-r8a7790      # R-Car H2
++              - renesas,can-r8a7791      # R-Car M2-W
++              - renesas,can-r8a7792      # R-Car V2H
++              - renesas,can-r8a7793      # R-Car M2-N
++              - renesas,can-r8a7794      # R-Car E2
++          - const: renesas,rcar-gen2-can # R-Car Gen2 and RZ/G1
++
++      - items:
++          - enum:
++              - renesas,can-r8a774a1     # RZ/G2M
++              - renesas,can-r8a774b1     # RZ/G2N
++              - renesas,can-r8a774c0     # RZ/G2E
++              - renesas,can-r8a774e1     # RZ/G2H
++              - renesas,can-r8a7795      # R-Car H3
++              - renesas,can-r8a7796      # R-Car M3-W
++              - renesas,can-r8a77961     # R-Car M3-W+
++              - renesas,can-r8a77965     # R-Car M3-N
++              - renesas,can-r8a77990     # R-Car E3
++              - renesas,can-r8a77995     # R-Car D3
++          - const: renesas,rcar-gen3-can # R-Car Gen3 and RZ/G2
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 3
++
++  clock-names:
++    items:
++      - const: clkp1
++      - const: clkp2
++      - const: can_clk
++
++  power-domains:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  renesas,can-clock-select:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [ 0, 1, 3 ]
++    default: 0
++    description: |
++      R-Car CAN Clock Source Select.  Valid values are:
++        <0x0> (default) : Peripheral clock (clkp1)
++        <0x1> : Peripheral clock (clkp2)
++        <0x3> : External input clock
++
++  assigned-clocks:
++    description:
++      Reference to the clkp2 (CANFD) clock.
++      On R-Car Gen3 and RZ/G2 SoCs, "clkp2" is the CANFD clock.  This is a div6
++      clock and can be used by both CAN and CAN FD controllers at the same
++      time.  It needs to be scaled to maximum frequency if any of these
++      controllers use it.
++
++  assigned-clock-rates:
++    description: Maximum frequency of the CANFD clock.
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - power-domains
++
++allOf:
++  - $ref: can-controller.yaml#
++
++  - if:
++      not:
++        properties:
++          compatible:
++            contains:
++              const: renesas,rcar-gen1-can
++    then:
++      required:
++        - resets
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: renesas,rcar-gen3-can
++    then:
++      required:
++        - assigned-clocks
++        - assigned-clock-rates
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/r8a7791-cpg-mssr.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/power/r8a7791-sysc.h>
++
++    can0: can@e6e80000 {
++            compatible = "renesas,can-r8a7791", "renesas,rcar-gen2-can";
++            reg = <0xe6e80000 0x1000>;
++            interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
++            clocks = <&cpg CPG_MOD 916>,
++                     <&cpg CPG_CORE R8A7791_CLK_RCAN>, <&can_clk>;
++            clock-names = "clkp1", "clkp2", "can_clk";
++            power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
++            resets = <&cpg 916>;
++    };
+
+base-commit: 59c56342459a483d5e563ed8b5fdb77ab7622a73
+-- 
+2.30.2
 
 
