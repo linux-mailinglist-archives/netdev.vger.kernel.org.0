@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DDA5392678
+	by mail.lfdr.de (Postfix) with ESMTP id AD84A392679
 	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 06:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234411AbhE0EiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 00:38:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40468 "EHLO mail.kernel.org"
+        id S234725AbhE0EiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 00:38:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40478 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229579AbhE0EiG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 May 2021 00:38:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 67DA4610A5;
+        id S229899AbhE0EiH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 May 2021 00:38:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D49E5613CC;
         Thu, 27 May 2021 04:36:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622090193;
-        bh=t1Bf3tDvMMU1AYVSiyXGmWEiDHEdNN8DGK6ek+PW/20=;
+        s=k20201202; t=1622090194;
+        bh=47XmjZ9lIAGJGFHkUS4jO8otskT8KMwjqhqghWzDZSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BH0xdjSh8DOzimqA3Ehs0y2Hj9XEUpEZuhb8KPcedXAz1WcwmygRf1bVG/GYuT1qV
-         zXEvE7N/b3cWLQ5Uhgh5sdyot4wcu3gzY6a8oD0ekNECPn9fEiVfa8TKWzb6/cIHYK
-         hxX3F2Fjdo/pV/bdaAXiTJRRvyv2K1PR67ggjgXv9JWxMWW7QV+ntx5KekOqRxbEXQ
-         NodfqJpdLalKG3/tHRrMMuPMLPUmh6OpE1oIlFAdPkRgYwKXzyZ6HYmyiPuxYqgEFQ
-         Qxg5dd3QG5VKTh8RITxtSZCJQf01QH+C4Ump6x8OkB3Q01sekYn0jtAFxiubEQYz/W
-         uAiS06ECQ1WeA==
+        b=duOEW47C3Pk9zuPDT3a4jSWgzvh/P1q7xWgnzV8pozKoRQLut63+qI04kVpGF1gsP
+         UBTz0NhvcV3c3wkmuCs+Gkg0yDBc96ddQJXMmAXcG+ILnxUc4cyXfOdvkShH3SchqC
+         Xdan2180A9wpBAkTzseCAsXR8YkWRasjSQeaGwttyC3t5U8f9+xynr86mt0j2cazEQ
+         q9erFZThf0DWV3Co/vgJv7XvUZzCoDA5RLhecO6dPoM9CYpxn7GEr5yreTTs6cB0Jm
+         uwW7Tbo2/wBObzPGlSJ9QMw9jf55N0l3qaODu/DyuG/1HftRlO0mOwVSa9SgbK6/Pd
+         uHEKKJopWUpqQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Huy Nguyen <huyn@nvidia.com>, Raed Salem <raeds@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 05/17] net/mlx5e: IPsec/rep_tc: Fix rep_tc_update_skb drops IPsec packet
-Date:   Wed, 26 May 2021 21:35:57 -0700
-Message-Id: <20210527043609.654854-6-saeed@kernel.org>
+Subject: [net-next 06/17] net/mlx5e: RX, Remove unnecessary check in RX CQE compression handling
+Date:   Wed, 26 May 2021 21:35:58 -0700
+Message-Id: <20210527043609.654854-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210527043609.654854-1-saeed@kernel.org>
 References: <20210527043609.654854-1-saeed@kernel.org>
@@ -41,46 +40,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huy Nguyen <huyn@nvidia.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-rep_tc copy REG_C1 to REG_B. IPsec crypto utilizes the whole REG_B
-register with BIT31 as IPsec marker. rep_tc_update_skb drops
-IPsec because it thought REG_B contains bad value.
+There are two reasons for exiting mlx5e_decompress_cqes_cont():
+1. The compression session is completed (cqd.left == 0).
+2. The budget is exhausted (work_done == budget).
 
-In previous patch, BIT 31 of REG_C1 is reserved for IPsec.
-Skip the rep_tc_update_skb if BIT31 of REG_B is set.
+If after calling mlx5e_decompress_cqes_cont() we have cqd.left > 0,
+it necessarily implies that budget is exhausted.
 
-Signed-off-by: Huy Nguyen <huyn@nvidia.com>
-Signed-off-by: Raed Salem <raeds@nvidia.com>
+The first part of the complex condition is covered by the second,
+hence we remove it here.
+
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index f90894eea9e0..5346271974f5 100644
+index 5346271974f5..e88429356018 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1310,7 +1310,8 @@ static void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
- 	if (rep->vlan && skb_vlan_tag_present(skb))
- 		skb_vlan_pop(skb);
+@@ -1560,7 +1560,7 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
  
--	if (!mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv)) {
-+	if (unlikely(!mlx5_ipsec_is_rx_flow(cqe) &&
-+		     !mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv))) {
- 		dev_kfree_skb_any(skb);
- 		goto free_wqe;
+ 	if (rq->cqd.left) {
+ 		work_done += mlx5e_decompress_cqes_cont(rq, cqwq, 0, budget);
+-		if (rq->cqd.left || work_done >= budget)
++		if (work_done >= budget)
+ 			goto out;
  	}
-@@ -1367,7 +1368,8 @@ static void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq, struct mlx5_cqe64
  
- 	mlx5e_complete_rx_cqe(rq, cqe, cqe_bcnt, skb);
- 
--	if (!mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv)) {
-+	if (unlikely(!mlx5_ipsec_is_rx_flow(cqe) &&
-+		     !mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv))) {
- 		dev_kfree_skb_any(skb);
- 		goto mpwrq_cqe_out;
- 	}
 -- 
 2.31.1
 
