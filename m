@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7859F392C1F
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 12:48:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 636F6392C2E
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 12:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236248AbhE0Kt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 06:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
+        id S236283AbhE0K4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 06:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236228AbhE0Kt5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 06:49:57 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7504C061574
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 03:48:22 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id z17so4248163wrq.7
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 03:48:22 -0700 (PDT)
+        with ESMTP id S236248AbhE0K4x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 06:56:53 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63365C061574
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 03:55:18 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id u4-20020a05600c00c4b02901774b80945cso2314393wmm.3
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 03:55:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=ohvBACWV5LDam32O5DXli6hP49rS6nusm5l3Pi9Ge5k=;
-        b=ccjm1qUN09GfpTnvIQ6ZeE5OPcqJj6wuDRJUTPf1DgkZU1Oe35QHpbPP3ArOaUhB19
-         vBXoRpdkGhlDp+JjoE6sCqr+39OJuQV70CyYXQCOVxM8GmoHASeTZuaEJdDRQ2wOBVKG
-         0vqJ7ymHmIx+iyWpAWZp3m0hFyWzywObKRSlv4Q3mp+ubJn/s5l8FmjpDtsiT7ZGvz0R
-         azM+oRC390+HOy3JPL84V6agiRWyLgn3BuqMNdWD6W+5TTWRdJcXwdFxP7oZNnlYB7QL
-         stPwa9AmC6NpCBHOK43Fne+U0/V4ceVm+HaztZ/0utgWku1RNb3Z3YcJMfFuSYszqvhD
-         v7aA==
+        bh=JVsrlE+MEh311GaOsnSdNfIQf5DAGvZBRabeMifH74M=;
+        b=Zpi2bFQtp/ZWlM4B/P9BfckI9cDAcjGM5GNR+tmUFX37x5OUL2I9557ycTarEj6qRG
+         bTAzDdd/1HcCfVv9nzwr700Kr3L+c2Ngz9JIg2AaTN8v6DVEzKAIXlkrLZQkfgSs2f7C
+         3Vq6Ng2TCxuHvX4JnN+1syUpsi+U3cylLgvQeY4rnXOmmS2CZXtzdCN+RqKGxIS6chNJ
+         mH5cNAM6RuGfokNu8J1W8n7dz/DjEu27GkgDFjRrlQ0tGxsH8zRtkUhWIb79D2FdQeAP
+         8YSU5iHGPtRNKlJDp+i9y1PFjsycwU97VwNkXEtljnqTa0QKSnd1WtVoNXqDB8NK9zDt
+         we/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=ohvBACWV5LDam32O5DXli6hP49rS6nusm5l3Pi9Ge5k=;
-        b=EzmlYwQHR4eJzpkqf7zmXqFDlslXgPycIXPv9ivVbCHwt3kkfswft1jdV8MST1fE3U
-         2jHRqzYoIpVEl4HrNCuDW1ePDJDQLoT0F3p9r0Jj4as80DJhgVBkemuDqrC0d1bdMYQa
-         SM22Kc+JkqUb6NsvZTtIxT2bsRb40f++UoaG8XJv6EaiywggbRfLZNsgDRK9LmrJ0/Ao
-         XOnSb/vEob3BQ1wKlXXfl4xarV7uOy3g3XgdbH3fNc2xnwfcyD/yvQKU1yiDt/rXCQgo
-         c8ePPclRziXT71X18nWsYmDQs1fj8Xhow47mUFHhTF7N5OEODvcKlmHAF+2/u0TpX2ss
-         nTfw==
-X-Gm-Message-State: AOAM532uh2HKm2gK3piQ2CK5JOzrs8j6d/24nb/RJ33Le/faqD3pjgr5
-        aWL7N10MgFGk4CJfrDiw/aN84q9CxDVhcCQe
-X-Google-Smtp-Source: ABdhPJx8mQdjfp9YVnA0/X+3D89XuLfaIMBRvP78gn2WhWGZEKjbRYgkYGDc/TgYf3xGRdIY5nqjjA==
-X-Received: by 2002:adf:ce0b:: with SMTP id p11mr2076487wrn.335.1622112501414;
-        Thu, 27 May 2021 03:48:21 -0700 (PDT)
+        bh=JVsrlE+MEh311GaOsnSdNfIQf5DAGvZBRabeMifH74M=;
+        b=F93Y+xrsMBGwQWUpqAMXnXpEwSs8hKohAdjmrB71G11dD1ALyD/V87BYx+nh73jUsg
+         ZXVQWMv5gc3fM9K5JMmqP2NU3ChtDjCtgrJHx2IKgWeFo4mOGqLc44rtCMySxy4sD2S7
+         8/dmJFv7JUEa/jDBbXmkYh6i0HTF4RSi6l0u+A3qLglR8tdMCGlyv+qSrO5k/6INRETm
+         Kly1VYxGVjSD6rYaXxgqqLC9WnEAqQ/KTUdP6yRmHWTu/FAYt3B8acWoYg+ZSbIgA8Rt
+         RCUIhgQa9eEuFxGXc1gbd6qAv7iIucpJQRjCksM6QrIKB/s0o4yx0wgZOVk//VT/XT8I
+         KF5g==
+X-Gm-Message-State: AOAM5337nVJ4eAz1rsFRf//WIwUTiBsyPU5oLnPW7uhfwJKssxjU60V2
+        fXi0DR6YFdjnHZETzbz4CbENc5XUtmhU6vQ+
+X-Google-Smtp-Source: ABdhPJyRxynpKkS3j4+Lo/jg+fVhN5kEYNg8wSXeys9QDeul4Pv10nNo0OxGxaaf1gKc5JZ3Z6kBdg==
+X-Received: by 2002:a05:600c:2209:: with SMTP id z9mr2814380wml.120.1622112917022;
+        Thu, 27 May 2021 03:55:17 -0700 (PDT)
 Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id u14sm9955257wmc.41.2021.05.27.03.48.20
+        by smtp.gmail.com with ESMTPSA id n13sm2923822wrg.75.2021.05.27.03.55.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 May 2021 03:48:20 -0700 (PDT)
+        Thu, 27 May 2021 03:55:16 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, mlxsw@nvidia.com
-Subject: [patch net-next v2] devlink: append split port number to the port name
-Date:   Thu, 27 May 2021 12:48:19 +0200
-Message-Id: <20210527104819.789840-1-jiri@resnulli.us>
+Subject: [patch net-next] selftests: devlink_lib: add check for devlink device existence
+Date:   Thu, 27 May 2021 12:55:15 +0200
+Message-Id: <20210527105515.790330-1-jiri@resnulli.us>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -62,38 +62,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Instead of doing sprintf twice in case the port is split or not, append
-the split port suffix in case the port is split.
+If user passes devlink handle over DEVLINK_DEV variable, check if the
+device exists.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
-v1->v2:
-- added check for buffer overflow
----
- net/core/devlink.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ tools/testing/selftests/net/forwarding/devlink_lib.sh | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 06b2b1941dce..8f9a5de44117 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -8632,12 +8632,10 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
- 	switch (attrs->flavour) {
- 	case DEVLINK_PORT_FLAVOUR_PHYSICAL:
- 	case DEVLINK_PORT_FLAVOUR_VIRTUAL:
--		if (!attrs->split)
--			n = snprintf(name, len, "p%u", attrs->phys.port_number);
--		else
--			n = snprintf(name, len, "p%us%u",
--				     attrs->phys.port_number,
--				     attrs->phys.split_subport_number);
-+		n = snprintf(name, len, "p%u", attrs->phys.port_number);
-+		if (n < len && attrs->split)
-+			n += snprintf(name + n, len - n, "s%u",
-+				      attrs->phys.split_subport_number);
- 		break;
- 	case DEVLINK_PORT_FLAVOUR_CPU:
- 	case DEVLINK_PORT_FLAVOUR_DSA:
+diff --git a/tools/testing/selftests/net/forwarding/devlink_lib.sh b/tools/testing/selftests/net/forwarding/devlink_lib.sh
+index 9c12c4fd3afc..c19e001f138b 100644
+--- a/tools/testing/selftests/net/forwarding/devlink_lib.sh
++++ b/tools/testing/selftests/net/forwarding/devlink_lib.sh
+@@ -18,6 +18,12 @@ if [[ ! -v DEVLINK_DEV ]]; then
+ 
+ 	DEVLINK_VIDDID=$(lspci -s $(echo $DEVLINK_DEV | cut -d"/" -f2) \
+ 			 -n | cut -d" " -f3)
++else
++	devlink dev show $DEVLINK_DEV &> /dev/null
++	if [ $? -ne 0 ]; then
++		echo "SKIP: devlink device \"$DEVLINK_DEV\" not found"
++		exit 1
++	fi
+ fi
+ 
+ ##############################################################################
 -- 
 2.31.1
 
