@@ -2,49 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DEAF39353F
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 20:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9556393549
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 20:12:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235287AbhE0SJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 14:09:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34212 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231226AbhE0SJF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 May 2021 14:09:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 815F460FF2;
-        Thu, 27 May 2021 18:07:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622138851;
-        bh=iadBsht2ofCApk6Ndf7ZgoNDIxy9VU8M+44A3KxQQF4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mUyUQMM9Z6h/wQ+P56CN7Gg7klZTICdzT78KG8dpC7WNjgpuBWgTs+3E9lDbjhOnu
-         CO3Jhw5HUvq9XvdWTFkCM9N2wGE8C4EtoCUn1XRFAwCd7jnrBmLdXw4yOPz6z1Tpb8
-         S4Y9QrqUxxDsQNKR8IrIxjYPGS7hQ0+yF6feaf7om+OIFSya9uO6/qyTF33r367RCt
-         lHMMVpRUWROQ7pv6cNM2equjAJFLRqe0qLBPLNVhZ9UxuefYV/p3JZnKtB22MEb5Xh
-         18/K3+QmDyy9I7ntcAzcy+BRE5XzwiG+p5eW5GStoTbtVtncoO7QQIwN/8a89ZAueu
-         BM8RI+v3/VIqw==
-Date:   Thu, 27 May 2021 11:07:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xie Yongji <xieyongji@bytedance.com>
-Cc:     mst@redhat.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] virtio-net: Add validation for used length
-Message-ID: <20210527110730.7a5cc468@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20210527073643.123-1-xieyongji@bytedance.com>
-References: <20210527073643.123-1-xieyongji@bytedance.com>
+        id S235553AbhE0SNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 14:13:46 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:38140 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231226AbhE0SNp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 14:13:45 -0400
+Received: from netfilter.org (unknown [90.77.255.23])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 2C00864502;
+        Thu, 27 May 2021 20:11:09 +0200 (CEST)
+Date:   Thu, 27 May 2021 20:12:08 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
+        kuba@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH] netfilter: Remove redundant assignment to ret
+Message-ID: <20210527181208.GA8886@salvia>
+References: <1619774710-119962-1-git-send-email-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1619774710-119962-1-git-send-email-yang.lee@linux.alibaba.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 May 2021 15:36:43 +0800 Xie Yongji wrote:
-> This adds validation for used length (might come
-> from an untrusted device) to avoid data corruption
-> or loss.
+On Fri, Apr 30, 2021 at 05:25:10PM +0800, Yang Li wrote:
+> Variable 'ret' is set to zero but this value is never read as it is
+> overwritten with a new value later on, hence it is a redundant
+> assignment and can be removed
 > 
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> Clean up the following clang-analyzer warning:
+> 
+> net/netfilter/xt_CT.c:175:2: warning: Value stored to 'ret' is never
+> read [clang-analyzer-deadcode.DeadStores]
 
-This does not apply to net nor net-next.
+I overlook this small patch, now applied to nf-next. Thanks.
