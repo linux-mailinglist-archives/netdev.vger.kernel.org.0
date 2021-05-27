@@ -2,116 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DFD33934DC
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 19:32:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CADBB3934E7
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 19:37:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235348AbhE0Rdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 13:33:43 -0400
-Received: from mga01.intel.com ([192.55.52.88]:2483 "EHLO mga01.intel.com"
+        id S234786AbhE0RjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 13:39:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32856 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234529AbhE0Rdm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 May 2021 13:33:42 -0400
-IronPort-SDR: j1REXI6KAWaBI1Y3lbNVoXEoD+z6uvSog2d0vUSRenyV95ZT2NZHVDWth0nHEtHJYz10EZ13UN
- eVGqgYKCAtUw==
-X-IronPort-AV: E=McAfee;i="6200,9189,9997"; a="224002846"
-X-IronPort-AV: E=Sophos;i="5.83,228,1616482800"; 
-   d="scan'208";a="224002846"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2021 10:32:02 -0700
-IronPort-SDR: gA2Yxs4X0N8AQ2mToCFF++Q+ERZXOTt1e6vcTFWsEVF8rLpG6fv1GdSi96UxXKvPIuayhUrkX4
- Tr29eC4ev6GA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,228,1616482800"; 
-   d="scan'208";a="547704438"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga004.jf.intel.com with ESMTP; 27 May 2021 10:32:01 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com, Kees Cook <keescook@chromium.org>,
-        Dave Switzer <david.switzer@intel.com>
-Subject: [PATCH net-next 1/1] ixgbe: Fix out-bounds warning in ixgbe_host_interface_command()
-Date:   Thu, 27 May 2021 10:34:24 -0700
-Message-Id: <20210527173424.362456-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
+        id S234594AbhE0RjU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 May 2021 13:39:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6456B613BE;
+        Thu, 27 May 2021 17:37:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622137067;
+        bh=Irw+MU3BjYuP1C6dvrSGvPjgSbyAD0Zx9yR6o9g4Pho=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KnAd4Ie6fWQ2YKj7k4WKNckCSIOEsVUF80j8tCFzCv4JCsfDOJKPJBNvTr+CCIImE
+         aIjZu7VHhyYviBlz+saqf/xdgb1nJZS1oh7p1SvCfXk85cG3Qhb6VydDWEEQHWTAEs
+         muRCRlnHgCyb1Tqcu6/Gp55x4DJl8t3+vt1jY5BJeM2v3LlIVQ2qW/XdULhVpC/FPH
+         F5xhBL3b5aUCJqfMEQI9C0kH1nN4ePO65UTz4rG6h9jz4PAAL3yGG3A6C+78cpc5ii
+         8zw/azz0np4S5cMfP9f9Z0xd/AvbAApnH+9vu/law2y//MFB5Ilq2BhLrhZX/6Wyj/
+         nT/zG14UsWv3g==
+Date:   Thu, 27 May 2021 10:37:45 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@huawei.com>,
+        <dledford@redhat.com>, <jgg@ziepe.ca>, <netanel@amazon.com>,
+        <akiyano@amazon.com>, <thomas.lendacky@amd.com>,
+        <irusskikh@marvell.com>, <michael.chan@broadcom.com>,
+        <edwin.peer@broadcom.com>, <rohitm@chelsio.com>,
+        <jesse.brandeburg@intel.com>, <jacob.e.keller@intel.com>,
+        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
+        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
+        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
+        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
+        <linux-wireless@vger.kernel.org>
+Subject: Re: [RFC net-next 2/4] ethtool: extend coalesce setting uAPI with
+ CQE mode
+Message-ID: <20210527103745.5005b5df@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <b29f05f8-3c57-ec6a-78bb-3a22f743f7f1@huawei.com>
+References: <1622021262-8881-1-git-send-email-tanhuazhong@huawei.com>
+        <1622021262-8881-3-git-send-email-tanhuazhong@huawei.com>
+        <20210526170033.62c8e6eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <b29f05f8-3c57-ec6a-78bb-3a22f743f7f1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+On Thu, 27 May 2021 10:00:44 +0800 Huazhong Tan wrote:
+> >> @@ -179,6 +179,8 @@ __ethtool_get_link_ksettings(struct net_device *dev,
+> >>   
+> >>   struct kernel_ethtool_coalesce {
+> >>   	struct ethtool_coalesce	base;
+> >> +	__u32	use_cqe_mode_tx;
+> >> +	__u32	use_cqe_mode_rx;  
+> > No __ in front, this is not a user space structure.
+> > Why not bool or a bitfield?  
+> 
+> bool is enough, __u32 is used here to be consistent with
+> 
+> fields in struct ethtool_coalesce.
+> 
+> This seems unnecessary?
 
-Replace union with a couple of pointers in order to fix the following
-out-of-bounds warning:
-
-  CC [M]  drivers/net/ethernet/intel/ixgbe/ixgbe_common.o
-drivers/net/ethernet/intel/ixgbe/ixgbe_common.c: In function ‘ixgbe_host_interface_command’:
-drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:3729:13: warning: array subscript 1 is above array bounds of ‘u32[1]’ {aka ‘unsigned int[1]’} [-Warray-bounds]
- 3729 |   bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
-      |   ~~~~~~~~~~^~~~
-drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:3682:7: note: while referencing ‘u32arr’
- 3682 |   u32 u32arr[1];
-      |       ^~~~~~
-
-This helps with the ongoing efforts to globally enable -Warray-bounds.
-
-Link: https://github.com/KSPP/linux/issues/109
-Co-developed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Tested-by: Dave Switzer <david.switzer@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_common.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-index 03ccbe6b66d2..e90b5047e695 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-@@ -3678,10 +3678,8 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
- 				 bool return_data)
- {
- 	u32 hdr_size = sizeof(struct ixgbe_hic_hdr);
--	union {
--		struct ixgbe_hic_hdr hdr;
--		u32 u32arr[1];
--	} *bp = buffer;
-+	struct ixgbe_hic_hdr *hdr = buffer;
-+	u32 *u32arr = buffer;
- 	u16 buf_len, dword_len;
- 	s32 status;
- 	u32 bi;
-@@ -3707,12 +3705,12 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
- 
- 	/* first pull in the header so we know the buffer length */
- 	for (bi = 0; bi < dword_len; bi++) {
--		bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
--		le32_to_cpus(&bp->u32arr[bi]);
-+		u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
-+		le32_to_cpus(&u32arr[bi]);
- 	}
- 
- 	/* If there is any thing in data position pull it in */
--	buf_len = bp->hdr.buf_len;
-+	buf_len = hdr->buf_len;
- 	if (!buf_len)
- 		goto rel_out;
- 
-@@ -3727,8 +3725,8 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
- 
- 	/* Pull in the rest of the buffer (bi is where we left off) */
- 	for (; bi <= dword_len; bi++) {
--		bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
--		le32_to_cpus(&bp->u32arr[bi]);
-+		u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
-+		le32_to_cpus(&u32arr[bi]);
- 	}
- 
- rel_out:
--- 
-2.26.2
-
+Yup, I think the IOCTL made everything a __u32 for uniformity 
+of the uAPI and to avoid holes and paddings. This is an internal 
+kernel structure so natural types like bool are better.
