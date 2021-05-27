@@ -2,84 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E5D0393117
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 16:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D162393125
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 16:41:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234169AbhE0Om1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 10:42:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51456 "EHLO
+        id S229822AbhE0On0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 10:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbhE0Om1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 10:42:27 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525BAC061574
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 07:40:53 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id d25-20020a0568300459b02902f886f7dd43so410336otc.6
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 07:40:53 -0700 (PDT)
+        with ESMTP id S229769AbhE0OnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 10:43:24 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE5AC061574;
+        Thu, 27 May 2021 07:41:49 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id b13so1009902ybk.4;
+        Thu, 27 May 2021 07:41:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=NbpVTvw84vL7rxPFnv7XoTAcWTh4nvFWoa5LmSY/P/Q=;
-        b=u7ghFQGxJLiXV6BlXXIRO4c4tPWxKmuoeW/7CR6x4bAEQQBiC0DG5egH8G8MEKU3Kq
-         KB6ObOvfzMNtuvlt8CDEWeZALBdsa/QjbxxCOZA/XBvXYFMBwQMZx1fIFc9rojcnt4WI
-         gXAyXQNXdkWHGHOucFlQ47B5Tp8UvBO/U75uwC3rH4jpOgOEM7x/6ThlPAmwpI3SADXZ
-         6/NnbLYmSVxb10x7xIJD8onRyDVfUKOCNsDDmBh+2/9fuR/E8N8XEpTQtuDQb0RO7fHW
-         goR8bIpqbYyXr9IVLGKGaUUWUvRZMyN9EXkkesNfYz3XN+SAz0z9KAW/M5EJiPTBEh0z
-         T7XA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b/Mn6m+0szuABGuNz4gdUEHH56ZKs2OQ3Dg8rDpxUzE=;
+        b=XSW/W9WafmbrRZlc24lBgVOfwJ3pmFDiHzO44/xGvx7QKma/0OZXuepoaClYwEoYQL
+         SUAr+kcAGGWYZ0fwQPpeTk358Rq/QVRXArqaLfrfbsG7rDfwAjtOCsQiwht90BVTbgGw
+         CmhIq5/fs0DkSoIGxAmaLQy/EGSjgSXbQkpC0sAkBanhFAtwwDG6qkCmzIc26Udl5raY
+         otShNCca77NEr/SI1VVhSU/+TKHLMlqrwbwd5zlesBlM34uqh5JpWhzZkNtCSRiYDsZE
+         k2LBbSttOkkJuPJESN2+guVZTdIGm9cezRKbXnbvdn+CCZWZatV9dRDqeWa9mx2F0Ut+
+         cDRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NbpVTvw84vL7rxPFnv7XoTAcWTh4nvFWoa5LmSY/P/Q=;
-        b=N+f0KOG2KQ8SU7ki5Q6QQ/3/EyFZ8zDGT4L+/FmiUj6wtQIIkmkIc9J/zHfChrRmzQ
-         feQ2gfAt+iKsXToVyNbvyNOgqwbQAzuDplH/iSw47isIHiLfRITjCv3nCSE5WLUbSnae
-         OQWHAJN4l8104ObmVOtOBnRbr5Um/QYpsKgkX0vcH/uTH1vF1t+sA5vee49QzsPBLKJ3
-         +MTVgMCbdv2gB+J3WuAEsDxfxkxIIB7pn4KCgJTjLYA/ejfujQpIeCTcH65T8I3vQHRB
-         Zbtbj/QFf7JgatGch0gy20hcTLWcpEtH6q6tKkSiCggwK0J+0HMY9iqPWx6PznAALg9M
-         zcHQ==
-X-Gm-Message-State: AOAM533cBxEsBrxtGIXti9QfaQNFXZ51uWUJLtvftiuBTyG8qQW+4QFY
-        +GokcBHcyBX3EgHikAF3EYn4eV8UZ/UMhw==
-X-Google-Smtp-Source: ABdhPJz53OH1QKIFM7g2SX7yu6hWuDGmyW1BzMeT1aiuiRYXmSMXnPXbUKQkgC/TQVFi/WGwT4JE+g==
-X-Received: by 2002:a05:6830:13c4:: with SMTP id e4mr2908233otq.315.1622126452599;
-        Thu, 27 May 2021 07:40:52 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id x8sm488950oiv.51.2021.05.27.07.40.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 May 2021 07:40:52 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 0/2] tc: Add missing ct_state flags
-To:     Ariel Levkovich <lariel@nvidia.com>, netdev@vger.kernel.org
-References: <20210521170707.704274-1-lariel@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7bc12f25-aae0-67b8-3742-03114a502d20@gmail.com>
-Date:   Thu, 27 May 2021 08:40:50 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b/Mn6m+0szuABGuNz4gdUEHH56ZKs2OQ3Dg8rDpxUzE=;
+        b=ettNYMPOrKPJ7LCKGbnEyD9bePESWSbFx6fQ2E7+w6GQsxjQP3YUsdINTMzTMpj0i5
+         ay7DmE9bDYOxiko2uxjOQ75unhq4pkRfz9IJRqsAstfYH5rUwXx/umobDxBngqtNPx16
+         73TEDCxSGZeXYNv64aoI/KBBXvJnzZWWpjvSqHM0o8kBpD8CouK2OHDXOSUDgbY0Gh7K
+         G9Ox4aguqzh1g0Z3tINDeJMOOF70z0XVChG4rxVGlGoRsdbLUZhHNSKzQb4ThILEFbM7
+         FeUibajWzFRbj2bRPtP3x+coAL6TOgBdFaSnU3ZNBvZqgXkDlx1LyUR60CFcNL+jsCMV
+         V7ng==
+X-Gm-Message-State: AOAM533NusCSsrC9ZWoGLBNC1tFESVOfKuqmE3gftJtZASv5gHs9ueZj
+        ngBpu5Nsg1ujE6koqa6kzFJx6MJYQkvKkxNyxGo=
+X-Google-Smtp-Source: ABdhPJxzJi1mIJCB7dkcmXbe4qDmLn1jrkqvUTD5Pi1mP9hJzrJ8ltrWO/v6eOsEXIj4lRFJpqjsZt/HSHtfTfFtyqE=
+X-Received: by 2002:a25:1455:: with SMTP id 82mr5241773ybu.403.1622126508714;
+ Thu, 27 May 2021 07:41:48 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210521170707.704274-1-lariel@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210526080741.GW30378@techsingularity.net> <YK9SiLX1E1KAZORb@infradead.org>
+ <20210527090422.GA30378@techsingularity.net> <YK9j3YeMTZ+0I8NA@infradead.org> <CAEf4BzZLy0s+t+Nj9QgUNM66Ma6HN=VkS+ocgT5h9UwanxHaZQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzZLy0s+t+Nj9QgUNM66Ma6HN=VkS+ocgT5h9UwanxHaZQ@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 27 May 2021 07:41:37 -0700
+Message-ID: <CAEf4BzbzPK-3cyLFM8QKE5-o_dL7=UCcvRF+rEqyUcHhyY+FJg@mail.gmail.com>
+Subject: Re: [PATCH] mm/page_alloc: Work around a pahole limitation with
+ zero-sized struct pagesets
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Hritik Vijay <hritikxx8@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/21/21 11:07 AM, Ariel Levkovich wrote:
-> This short series is:
-> 
-> 1. Adding support for matching on ct_state flag rel in tc flower
-> classifier.
-> 
-> 2. Adding some missing description of ct_state flags rpl and inv.
-> 
-> Ariel Levkovich (2):
->   tc: f_flower: Add option to match on related ct state
->   tc: f_flower: Add missing ct_state flags to usage description
-> 
->  man/man8/tc-flower.8 | 2 ++
->  tc/f_flower.c        | 3 ++-
->  2 files changed, 4 insertions(+), 1 deletion(-)
-> 
+On Thu, May 27, 2021 at 7:37 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, May 27, 2021 at 2:19 AM Christoph Hellwig <hch@infradead.org> wrote:
+> >
+> > On Thu, May 27, 2021 at 10:04:22AM +0100, Mel Gorman wrote:
+> > > What do you suggest as an alternative?
+> > >
+> > > I added Arnaldo to the cc as he tagged the last released version of
+> > > pahole (1.21) and may be able to tag a 1.22 with Andrii's fix for pahole
+> > > included.
+> > >
+> > > The most obvious alternative fix for this issue is to require pahole
+> > > 1.22 to set CONFIG_DEBUG_INFO_BTF but obviously a version 1.22 that works
+> > > needs to exist first and right now it does not. I'd be ok with this but
+> > > users of DEBUG_INFO_BTF may object given that it'll be impossible to set
+> > > the option until there is a release.
+> >
+> > Yes, disable BTF.  Empty structs are a very useful feature that we use
+> > in various places in the kernel.  We can't just keep piling hacks over
+> > hacks to make that work with a recent fringe feature.
 
-applied both to iproute-next.
+Sorry, I accidentally send out empty response.
+
+CONFIG_DEBUG_INFO_BTF is a crucial piece of modern BPF ecosystem. It
+is enabled by default by most popular Linux distros. So it's hardly a
+fringe feature and is something that many people and applications
+depend on.
+
+I agree that empty structs are useful, but here we are talking about
+per-CPU variables only, which is the first use case so far, as far as
+I can see. If we had pahole 1.22 released and widely packaged it could
+have been a viable option to force it on everyone. But right now
+that's not the case. So while ugly, making sure pagesets is
+non-zero-sized is going to avoid a lot of pain for a lot of people. By
+the time we need another zero-sized per-CPU var, we might be able to
+force pahole to 1.22.
