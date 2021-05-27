@@ -2,51 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CADBB3934E7
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 19:37:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E462F39352E
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 19:56:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234786AbhE0RjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 13:39:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32856 "EHLO mail.kernel.org"
+        id S234948AbhE0R6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 13:58:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234594AbhE0RjU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 May 2021 13:39:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6456B613BE;
-        Thu, 27 May 2021 17:37:46 +0000 (UTC)
+        id S233395AbhE0R6E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 May 2021 13:58:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0CFF36105A;
+        Thu, 27 May 2021 17:56:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622137067;
-        bh=Irw+MU3BjYuP1C6dvrSGvPjgSbyAD0Zx9yR6o9g4Pho=;
+        s=k20201202; t=1622138191;
+        bh=x0DPf6Hvbw2AKD0tbSsqMCMs01y3VeB2L2mC6CORJg4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KnAd4Ie6fWQ2YKj7k4WKNckCSIOEsVUF80j8tCFzCv4JCsfDOJKPJBNvTr+CCIImE
-         aIjZu7VHhyYviBlz+saqf/xdgb1nJZS1oh7p1SvCfXk85cG3Qhb6VydDWEEQHWTAEs
-         muRCRlnHgCyb1Tqcu6/Gp55x4DJl8t3+vt1jY5BJeM2v3LlIVQ2qW/XdULhVpC/FPH
-         F5xhBL3b5aUCJqfMEQI9C0kH1nN4ePO65UTz4rG6h9jz4PAAL3yGG3A6C+78cpc5ii
-         8zw/azz0np4S5cMfP9f9Z0xd/AvbAApnH+9vu/law2y//MFB5Ilq2BhLrhZX/6Wyj/
-         nT/zG14UsWv3g==
-Date:   Thu, 27 May 2021 10:37:45 -0700
+        b=Bws/oC0zULBV0xs3Z86y2QQkMROF1Jpac2KnGPu/uusrONN0bWNvQlYoDf0Bmgcrm
+         qyntZhd3QfvEWZoWKpS1YpNDrOOuFnI4zgSiEVu7oq3m371c3Ojz5fraFdAsb8JX2G
+         n4WLmge4CJkyR4Ih1nqXZ2+h8zdgMFKlOoREIK9/3jXEy4JtkB/TZUskWWX2dWjhB0
+         KtPOO/SLUQewKfrYnU5NYxDLNBrmT7pctBVdmiRTT8qFdNDnZNFD7KN0fof8MU4kTr
+         Exscs1urdMVHRdD4Tt05iB7+3zjh/p3TWzTV9BzocZGbM3q7Gldh6NHbGQm+k9h0Np
+         wHCNcl/JSmUnA==
+Date:   Thu, 27 May 2021 10:56:30 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <huangdaode@huawei.com>, <linuxarm@huawei.com>,
-        <dledford@redhat.com>, <jgg@ziepe.ca>, <netanel@amazon.com>,
-        <akiyano@amazon.com>, <thomas.lendacky@amd.com>,
-        <irusskikh@marvell.com>, <michael.chan@broadcom.com>,
-        <edwin.peer@broadcom.com>, <rohitm@chelsio.com>,
-        <jesse.brandeburg@intel.com>, <jacob.e.keller@intel.com>,
-        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
-        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
-        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
-        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
-        <linux-wireless@vger.kernel.org>
-Subject: Re: [RFC net-next 2/4] ethtool: extend coalesce setting uAPI with
- CQE mode
-Message-ID: <20210527103745.5005b5df@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <b29f05f8-3c57-ec6a-78bb-3a22f743f7f1@huawei.com>
-References: <1622021262-8881-1-git-send-email-tanhuazhong@huawei.com>
-        <1622021262-8881-3-git-send-email-tanhuazhong@huawei.com>
-        <20210526170033.62c8e6eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <b29f05f8-3c57-ec6a-78bb-3a22f743f7f1@huawei.com>
+To:     Tariq Toukan <ttoukan.linux@gmail.com>
+Cc:     Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: Re: [RFC PATCH 0/6] BOND TLS flags fixes
+Message-ID: <20210527105034.5e11ebef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <8182c05b-03ab-1052-79b8-3cdf7ab467b5@gmail.com>
+References: <20210526095747.22446-1-tariqt@nvidia.com>
+        <20210526174714.1328af13@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <8182c05b-03ab-1052-79b8-3cdf7ab467b5@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,22 +45,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 May 2021 10:00:44 +0800 Huazhong Tan wrote:
-> >> @@ -179,6 +179,8 @@ __ethtool_get_link_ksettings(struct net_device *dev,
-> >>   
-> >>   struct kernel_ethtool_coalesce {
-> >>   	struct ethtool_coalesce	base;
-> >> +	__u32	use_cqe_mode_tx;
-> >> +	__u32	use_cqe_mode_rx;  
-> > No __ in front, this is not a user space structure.
-> > Why not bool or a bitfield?  
+On Thu, 27 May 2021 17:07:06 +0300 Tariq Toukan wrote:
+> On 5/27/2021 3:47 AM, Jakub Kicinski wrote:
+> > On Wed, 26 May 2021 12:57:41 +0300 Tariq Toukan wrote:  
+> >> This RFC series suggests a solution for the following problem:
+> >>
+> >> Bond interface and lower interface are both up with TLS RX/TX offloads on.
+> >> TX/RX csum offload is turned off for the upper, hence RX/TX TLS is turned off
+> >> for it as well.
+> >> Yet, although it indicates that feature is disabled, new connections are still
+> >> offloaded by the lower, as Bond has no way to impact that:
+> >> Return value of bond_sk_get_lower_dev() is agnostic to this change.
+> >>
+> >> One way to solve this issue, is to bring back the Bond TLS operations callbacks,
+> >> i.e. provide implementation for struct tlsdev_ops in Bond.
+> >> This gives full control for the Bond over its features, making it aware of every
+> >> new TLS connection offload request.
+> >> This direction was proposed in the original Bond TLS implementation, but dropped
+> >> during ML review. Probably it's right to re-consider now.
+> >>
+> >> Here I suggest another solution, which requires generic changes out of the bond
+> >> driver.
+> >>
+> >> Fixes in patches 1 and 4 are needed anyway, independently to which solution
+> >> we choose. I'll probably submit them separately soon.  
+> > 
+> > No opinions here, semantics of bond features were always clear
+> > as mud to me. What does it mean that bond survived 20 years without
+> > rx-csum? And it so why would TLS offload be different from what one
+> > may presume the semantics of rx-csum are today?
 > 
-> bool is enough, __u32 is used here to be consistent with
+> Advanced device offloads have basic logical dependencies, that are 
+> applied for all kind of netdevs, agnostic to internal details of each 
+> netdev.
 > 
-> fields in struct ethtool_coalesce.
-> 
-> This seems unnecessary?
+> Nothing special with TLS really.
+> TLS device offload behaves similarly to TSO (needs HW_CSUM), and GRO_HW 
+> (needs RXCSUM).
+> [...]
 
-Yup, I think the IOCTL made everything a __u32 for uniformity 
-of the uAPI and to avoid holes and paddings. This is an internal 
-kernel structure so natural types like bool are better.
+Right, the inter-dependency between features is obvious enough. 
+What makes a feature be part of UPPER_DISABLES though?
