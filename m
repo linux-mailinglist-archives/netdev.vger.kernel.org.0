@@ -2,197 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4125C392B8E
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 12:14:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBECD392BA7
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 12:22:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236129AbhE0KQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 06:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236105AbhE0KQQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 06:16:16 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BCBC061574
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 03:14:41 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id y7so230567eda.2
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 03:14:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=o38M2BO4ULC4BwKVVDJHYXw+IueHUfFLXYDhWYbT5Ig=;
-        b=bk97lq21A/Gg9EU/Cabtt5Dqiuz3zBqg0ZUgn7vHbNo202Sf8zs+esbsZi1472wnDw
-         S7tg6T6IbhEKaYeIj4ycsX234NuYYQ0O03FJH5OuiLMpN12/IGb9B/GLV656R4LkrXT7
-         zQXhfkYtCReY5f9nCUn7YrhTXkoz5KTPkbYMp2eVWnOvCvOgMk7Ao4RZ5Kt3v2UB38LU
-         FgaCGvVGlM5kjH6PanAP74M5XXJO0vEBEDZcBdVLoVPKz7aiDJuuycVw1/jPmGZ/Y2Zw
-         NVvS36r16Wba8DeiGMEViGPX9yGp3JsaaE96mEEaPQwksZ0ldz0nzt72uYtVn0AqNCTd
-         81Rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=o38M2BO4ULC4BwKVVDJHYXw+IueHUfFLXYDhWYbT5Ig=;
-        b=eAxZOd/XDdy96QzmUiADJWyzw5ITJM5hhKsPXdlXAPrQRQR4II/TP3Mtjcg3fbmXCO
-         sQtslEJGIwd5/Eqa8MVAPAkizqeNADs8gza3SNtdVl8gKaPRzKjD8Oyvim4IjcQcgOTF
-         //ATOEkSoW7g54l3m1ly3cfBABTNfPbrkOetRX2q5nVigMTgJR7H5+IFNNpJkgYiRq8F
-         H7T97NtWXnTSn0OdRlZaLXrJCk+Lxp9LHlOlAs+x1Ch8+DTntT3RO2UWfauYtp2EGh/K
-         wZmu06KaZqhYFiCcjK3poOmwb/sxdGwUHL5hSJJetGnR5/n8vjtNZeNmcAzn+D0ESCKf
-         Y9rg==
-X-Gm-Message-State: AOAM532fG2Q+RxXcFtyZqImfGHWLZ7SvnVLaoIAQa5AZs+IiKcjoVME/
-        i8BgObUd3tZLNXEYdpq8AH4DCeQ0g1bIPUib8tsD
-X-Google-Smtp-Source: ABdhPJxWXHvU/O2LATe1oBP0kHpNNov+YKoz7byZgiRDTGMJZExbTJNux7H0l7VRJaIaAseiGKHKWtgXJ2fM2OTaKZE=
-X-Received: by 2002:a05:6402:4252:: with SMTP id g18mr3221715edb.195.1622110479663;
- Thu, 27 May 2021 03:14:39 -0700 (PDT)
+        id S236067AbhE0KX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 06:23:56 -0400
+Received: from de-smtp-delivery-102.mimecast.com ([62.140.7.102]:55150 "EHLO
+        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236081AbhE0KXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 06:23:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1622110937;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dDJT6X4zSDczVsL85ePLb2edlKxANz9DzYCuH+VrkBU=;
+        b=Bea2V7SgcH15q7HGNTvJD0Al4JF+EyCkN17dq+BkRllStwM/Ll8GMGFXb0APahRrZ4P/DL
+        pU1n37y6OgdmmWIm7Sh3I6mQVj+r8Rez1RhpDjV7VDAHOWVFBge+u73ITLx6Nxxzh9GiQc
+        gnjyVkHYaCjDAXVbzJNrr8O1qN5hgNA=
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com
+ (mail-he1eur02lp2050.outbound.protection.outlook.com [104.47.5.50]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ de-mta-40-WzIlkBHxPHKuom-AeqfSXg-1; Thu, 27 May 2021 12:22:16 +0200
+X-MC-Unique: WzIlkBHxPHKuom-AeqfSXg-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OEFAL7/fLHGpH/Hj+UsjkOZtSk3nyW6G7d9Wsb90r3laD585mCdpaP46GFzLJS0SDADb+H/Z08K465lz9mMtFfc2KC3Gbyz1dvyKP+Q/vrQTM4XIX86yTyCzODK8TywrrK8hjAbgY01A96JB6HHGB0yvlwEONJW78qhf/70ZJGMtWp1KlB+lv1HyLG95ADvoCGjET9o1HpHuQUyeamv9IxoIR+C5GDGtJnRP1tRCnBr0SjC09heGu+sHne/nNvZMicVQSZyek7eiYEisCemBovJbnbADtKEZlK3dCDchD+Cn0i5AE8XaD1LqSpAnhjPNP0XgwF7e109TgtjQjyuGLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dDJT6X4zSDczVsL85ePLb2edlKxANz9DzYCuH+VrkBU=;
+ b=bxYG9rLeOTkwBH/ZAVktqdtPtxgEF/r6y11gGV8k1DvmMg0TVnz6Y+A7LaisonbW7p+DS2VOFx9dKb2cafuhxQVjui2zEAxIuMpBQ9NUyBMSYtrsrIKPUifwKxG1UCBAv1mXmoTw+b5u8xJfadLDt988hcpVEjf0orpuLIxVAkQ9VcPNfiO2LmkhbaZ5VO0x1tPAJVTYvyjOzv2buezBK8k8dMiXKIO/h3r2zR9plcD9Jp1OPrT3xZyVLhNLvetw0VUnUDghcU1AECLJCRmOvF/S10lV0RqtrJdnPXmcG/aubcPcQ7wAkfjBB1zQlD36FOiqZslpzk01LYNw+yqAAQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+Authentication-Results: linutronix.de; dkim=none (message not signed)
+ header.d=none;linutronix.de; dmarc=none action=none header.from=suse.com;
+Received: from DB7PR04MB5177.eurprd04.prod.outlook.com (2603:10a6:10:20::21)
+ by DBBPR04MB8059.eurprd04.prod.outlook.com (2603:10a6:10:1e9::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4150.25; Thu, 27 May
+ 2021 10:22:12 +0000
+Received: from DB7PR04MB5177.eurprd04.prod.outlook.com
+ ([fe80::790f:c865:4660:1565]) by DB7PR04MB5177.eurprd04.prod.outlook.com
+ ([fe80::790f:c865:4660:1565%7]) with mapi id 15.20.4173.021; Thu, 27 May 2021
+ 10:22:12 +0000
+Date:   Thu, 27 May 2021 18:21:57 +0800
+From:   Shung-Hsi Yu <shung-hsi.yu@suse.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Nitesh Lal <nilal@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Marc Zyngier <maz@kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com
+Subject: Re: [PATCH] genirq: Provide new interfaces for affinity hints
+Message-ID: <YK9yxQoBPeUfQG05@syu-laptop>
+References: <20210504092340.00006c61@intel.com>
+ <87pmxpdr32.ffs@nanos.tec.linutronix.de>
+ <CAFki+Lkjn2VCBcLSAfQZ2PEkx-TR0Ts_jPnK9b-5ne3PUX37TQ@mail.gmail.com>
+ <87im3gewlu.ffs@nanos.tec.linutronix.de>
+ <CAFki+L=gp10W1ygv7zdsee=BUGpx9yPAckKr7pyo=tkFJPciEg@mail.gmail.com>
+ <CAFki+L=eQoMq+mWhw_jVT-biyuDXpxbXY5nO+F6HvCtpbG9V2w@mail.gmail.com>
+ <CAFki+LkB1sk3mOv4dd1D-SoPWHOs28ZwN-PqL_6xBk=Qkm40Lw@mail.gmail.com>
+ <87zgwo9u79.ffs@nanos.tec.linutronix.de>
+ <87wnrs9tvp.ffs@nanos.tec.linutronix.de>
+ <YK9ucRrjq+eck/G7@syu-laptop>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YK9ucRrjq+eck/G7@syu-laptop>
+X-Originating-IP: [27.242.200.212]
+X-ClientProxiedBy: PR3P189CA0040.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:102:53::15) To DB7PR04MB5177.eurprd04.prod.outlook.com
+ (2603:10a6:10:20::21)
 MIME-Version: 1.0
-References: <20210517095513.850-1-xieyongji@bytedance.com> <20210517095513.850-12-xieyongji@bytedance.com>
- <3740c7eb-e457-07f3-5048-917c8606275d@redhat.com> <CACycT3uAqa6azso_8MGreh+quj-JXO1piuGnrV8k2kTfc34N2g@mail.gmail.com>
- <5a68bb7c-fd05-ce02-cd61-8a601055c604@redhat.com> <CACycT3ve7YvKF+F+AnTQoJZMPua+jDvGMs_ox8GQe_=SGdeCMA@mail.gmail.com>
- <ee00efca-b26d-c1be-68d2-f9e34a735515@redhat.com> <CACycT3ufok97cKpk47NjUBTc0QAyfauFUyuFvhWKmuqCGJ7zZw@mail.gmail.com>
- <00ded99f-91b6-ba92-5d92-2366b163f129@redhat.com> <3cc7407d-9637-227e-9afa-402b6894d8ac@redhat.com>
-In-Reply-To: <3cc7407d-9637-227e-9afa-402b6894d8ac@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 27 May 2021 18:14:27 +0800
-Message-ID: <CACycT3s6SkER09KL_Ns9d03quYSKOuZwd3=HJ_s1SL7eH7y5gA@mail.gmail.com>
-Subject: Re: Re: [PATCH v7 11/12] vduse: Introduce VDUSE - vDPA Device in Userspace
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from syu-laptop (27.242.200.212) by PR3P189CA0040.EURP189.PROD.OUTLOOK.COM (2603:10a6:102:53::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Thu, 27 May 2021 10:22:03 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 69c3169f-7bc4-4362-6cd7-08d920f94a39
+X-MS-TrafficTypeDiagnostic: DBBPR04MB8059:
+X-Microsoft-Antispam-PRVS: <DBBPR04MB8059E3B7D3E61BD47316F47EBF239@DBBPR04MB8059.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HB4GEiW1mioq+juFay0vOhwywXNlI/ZLEvuPDqzkhZ61XuOkaez90uwtCEOIEgr3+EW/EoY7DZgl9o3P/yLbWT0bflgllxMQeum3t254WpXjxTNMh1QGSJ3EzT4CZqqAf/25zX/hcTEUhfhtK7dTwHqIAq8Dk/tq5/E+qsyFknyYEJqAP+Wnfdzv2UcmiXSZy0vvYQr3tBsKZnIzvAk/nXtzAsEiCW/k250PUyWREwP/oZmFoHKIgK3lOqYEUe1o4X3npYm0xiAPjQTydj6cXbATL/EGhkFpy7ROOvI040Xj6oPEE4pM65FSBQYlXkj2u3v93w7O6e8HNXSR7fUAyPyv8O8VX06pLdTxR9g16xFNRniM2b04bHQwrf0pfiOuywROgbrLRhKczmsy9zPnpnsNBMuTtYpKZhHeqDWhdwodw1WX/NfamvKqSELNK8kM5hqBxnZAU8aUMa8BYN16WvqmbNbfIn6DU5ajLTgjVMoCLsAsu7FSfZaxdL7FZq9qkJ1aMYybJJnNMujtb/T7BKnF1DRcSE3CtfxKHOzopiIzGtZT0pUnioeOeQM5KppXa8rerM7bsRxrCWpL+ojzHaQBsLV1724vPxl3C+G+8+lBJ3Q3edYzP9Wm5Hs3Ct6Y1rzRhmduHp56B1FKZVO2iHgXpCMNDRK5mKB+t5HBoeEEuKLIXGEqp9ybgELd+KayIYQCHPna+PwKTdmRvl+l8vRW/kcvzArgfhvFBQtosBY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5177.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(4326008)(9686003)(8676002)(6496006)(66476007)(966005)(66946007)(55016002)(54906003)(66556008)(38100700002)(33716001)(5660300002)(6666004)(2906002)(498600001)(6916009)(186003)(26005)(16526019)(83380400001)(8936002)(86362001)(956004)(7416002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?dWNNc3JjdnBNZ3N3bVplMWRIWjM1S0F1MGpUWW1TSzBxRW4yTHg5NWpCUTdz?=
+ =?utf-8?B?RS9VdkJNaXNxWWV2YkZVbmIyNG5PTmw0dVZTQ0RIbjVWVllYMm5YTTJqaWpr?=
+ =?utf-8?B?d3YzenBOLzVaN0NOQThEbmxwalduZ3hpSzJUKzI4RnBjZTVYc0lGNkJNQWpP?=
+ =?utf-8?B?MnBlR0xiQWYwSWVKS3lkcU1rN2FkU3VDclhHNGFJZld0OVhiazB6d0ZnWVhv?=
+ =?utf-8?B?OVc5Y3ZOWVRYSVg0QW1DeHhkOUdTN0t4RW1BNit4UWdnWmJVVnc2NzRvR0RR?=
+ =?utf-8?B?bS91cTNyYWxJdnY5TWdSano0NHNQUW5sUjlEYzF2T1VzMTZCVkZVVXVLSUFB?=
+ =?utf-8?B?VGlnaVdkQ2QvNmJnekg5ZU9zY1BraFdOY0hEeEhISWdOOG5rQnhVdFA0TGlG?=
+ =?utf-8?B?TGdpYzNCZDBTL1Z4eGdDRGNJZEFSb3IzSWNhM1dZakRpbmdPejVXd3RjT2Zz?=
+ =?utf-8?B?OVM3bEd5UG9rRkFzS24zUkkwajlreTVKbVZ0enp4aVZKWFB5T3hBSXpqTkpT?=
+ =?utf-8?B?dktGdENzOU5Sb2taWFBXaGJrTDk4eTZTMk1YRkpwWDI3VXhlaGhFUHREOHNj?=
+ =?utf-8?B?VnplWEtPQ3dvRURXYkg2bExxUnB0NXp3MHhFaVZlLytrZDI1Z0V3Wm5aU2d5?=
+ =?utf-8?B?Ui9rcEwxRkVOSG4rRlVaVlZVYzgxdExYdmhCQ2hQZStMSEV1akd0K21tRFB2?=
+ =?utf-8?B?bGo5a3Z2djZyVmo3VTIxejB5ZUM0MW1RdzJSSkd0Y1h3YlpEY1A5OWIrQjd1?=
+ =?utf-8?B?Zkh0YUk4ZERacm1ONVR4RGdKaWdyb0V3UzByQ3l5aGQ1YVE4SWFicTVvckpD?=
+ =?utf-8?B?aDF4QVJPS0UwYUo3YlRENTYrVjErZWpZMEFIRzFJRDV2d1grZ0xyL0tnSmow?=
+ =?utf-8?B?TG90ZzFKb0lrdFhwaW91TUI2SUtMSG5qaGliUndhdkpZaG1wYm1rWllaaFdz?=
+ =?utf-8?B?ZElhUnhpa1h6R0FpUXNDRjZBbXptN2tyMjlPb01YTk1zazZvSzV2ZTY0OHZ3?=
+ =?utf-8?B?S0hPYVQ5RUIxL1k2a2kwNlp0TjBHOFZTYlVmSFQrclUwOWpNRGFLMkRFY1dF?=
+ =?utf-8?B?dlp6K2VNWTFNYm1oZjNRdk84MW1EOFl1c3Q3U3lmR0FKUWRRaWxuZXR2QW42?=
+ =?utf-8?B?Rkx1Skl0dzZrNVdzWC9VMG9EaGhtQ0pTMWNPQVMvdDFyUTcybDQyejFCSU5u?=
+ =?utf-8?B?SXh3TlR5L0x3bDhCT25KTWZFTlNPUFZJbW9OTSttQk5zdTJ4Z0Zyc2pncXhE?=
+ =?utf-8?B?VytNTjNTLzFXOGhmNWFJaUdDYWxIS01YMzB1eEtWZVpBTWwvaUFXa2dvbmdN?=
+ =?utf-8?B?REF5eEZLYzNOZVVQY1RIZ0c0SXhraCtRaFNnZjRRNGJyRmlTcGNUSTdma25x?=
+ =?utf-8?B?ZU9HQWpaNjZudnBxeGtiZnFrVkpkL1VZTEpVTXppRmZrZWIxZWpXTHZETHlO?=
+ =?utf-8?B?Ty9tV2VCZFZFTlVlUDdWa3ltMFBVMHVYb0xILzZuZXgwWUluNkdhZFZ5c1Q0?=
+ =?utf-8?B?TVNxTTVuMGp1TGJtUlFDU04vcnZPR2EwRTUzSFc3Sno1blk4MExFWGNMTEo4?=
+ =?utf-8?B?R1BGbVRlOUhJMExaR1B5alFPK2pPTUlPMXVOZkw5T2pTWEZpSGIydldRVitx?=
+ =?utf-8?B?cjVZdDQzdTdhbS9NcHRHVkRLblByMWV4WWJpV1ptSzNHeTJwQU1vdDRjM3pk?=
+ =?utf-8?B?V1dxMktxQndMbmlpc3lyV0RzRUx1VVBmU3ZqWGlxYjJaRDhoM1dVNjcxbjNG?=
+ =?utf-8?Q?zabl/bgvFYILwcdvzh2u5PJAkouZK5w3JJYtw11?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 69c3169f-7bc4-4362-6cd7-08d920f94a39
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5177.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2021 10:22:11.7546
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GAGPz0YnXXcLvFRKt0ziasUuCImVFmSSvommnGC1opvsUFo+aV8JZaMXd+HQjWp/lN9ex7Z4zkESty7iAU/MZg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB8059
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 27, 2021 at 4:43 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=884:41, Jason Wang =E5=86=99=E9=81=93=
-:
-> >
-> > =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=883:34, Yongji Xie =E5=86=99=E9=81=
-=93:
-> >> On Thu, May 27, 2021 at 1:40 PM Jason Wang <jasowang@redhat.com> wrote=
-:
-> >>>
-> >>> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=881:08, Yongji Xie =E5=86=99=E9=
-=81=93:
-> >>>> On Thu, May 27, 2021 at 1:00 PM Jason Wang <jasowang@redhat.com>
-> >>>> wrote:
-> >>>>> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=8812:57, Yongji Xie =E5=86=99=
-=E9=81=93:
-> >>>>>> On Thu, May 27, 2021 at 12:13 PM Jason Wang <jasowang@redhat.com>
-> >>>>>> wrote:
-> >>>>>>> =E5=9C=A8 2021/5/17 =E4=B8=8B=E5=8D=885:55, Xie Yongji =E5=86=99=
-=E9=81=93:
-> >>>>>>>> +
-> >>>>>>>> +static int vduse_dev_msg_sync(struct vduse_dev *dev,
-> >>>>>>>> +                           struct vduse_dev_msg *msg)
-> >>>>>>>> +{
-> >>>>>>>> +     init_waitqueue_head(&msg->waitq);
-> >>>>>>>> +     spin_lock(&dev->msg_lock);
-> >>>>>>>> +     vduse_enqueue_msg(&dev->send_list, msg);
-> >>>>>>>> +     wake_up(&dev->waitq);
-> >>>>>>>> +     spin_unlock(&dev->msg_lock);
-> >>>>>>>> +     wait_event_killable(msg->waitq, msg->completed);
-> >>>>>>> What happens if the userspace(malicous) doesn't give a response
-> >>>>>>> forever?
-> >>>>>>>
-> >>>>>>> It looks like a DOS. If yes, we need to consider a way to fix tha=
-t.
-> >>>>>>>
-> >>>>>> How about using wait_event_killable_timeout() instead?
-> >>>>> Probably, and then we need choose a suitable timeout and more
-> >>>>> important,
-> >>>>> need to report the failure to virtio.
-> >>>>>
-> >>>> Makes sense to me. But it looks like some
-> >>>> vdpa_config_ops/virtio_config_ops such as set_status() didn't have a
-> >>>> return value.  Now I add a WARN_ON() for the failure. Do you mean we
-> >>>> need to add some change for virtio core to handle the failure?
-> >>>
-> >>> Maybe, but I'm not sure how hard we can do that.
-> >>>
-> >> We need to change all virtio device drivers in this way.
-> >
-> >
-> > Probably.
-> >
-> >
-> >>
-> >>> We had NEEDS_RESET but it looks we don't implement it.
-> >>>
-> >> Could it handle the failure of get_feature() and get/set_config()?
-> >
-> >
-> > Looks not:
-> >
-> > "
-> >
-> > The device SHOULD set DEVICE_NEEDS_RESET when it enters an error state
-> > that a reset is needed. If DRIVER_OK is set, after it sets
-> > DEVICE_NEEDS_RESET, the device MUST send a device configuration change
-> > notification to the driver.
-> >
-> > "
-> >
-> > This looks implies that NEEDS_RESET may only work after device is
-> > probed. But in the current design, even the reset() is not reliable.
-> >
-> >
-> >>
-> >>> Or a rough idea is that maybe need some relaxing to be coupled loosel=
-y
-> >>> with userspace. E.g the device (control path) is implemented in the
-> >>> kernel but the datapath is implemented in the userspace like TUN/TAP.
-> >>>
-> >> I think it can work for most cases. One problem is that the set_config
-> >> might change the behavior of the data path at runtime, e.g.
-> >> virtnet_set_mac_address() in the virtio-net driver and
-> >> cache_type_store() in the virtio-blk driver. Not sure if this path is
-> >> able to return before the datapath is aware of this change.
-> >
-> >
-> > Good point.
-> >
-> > But set_config() should be rare:
-> >
-> > E.g in the case of virtio-net with VERSION_1, config space is read
-> > only, and it was set via control vq.
-> >
-> > For block, we can
-> >
-> > 1) start from without WCE or
-> > 2) we add a config change notification to userspace or
-> > 3) extend the spec to use vq instead of config space
-> >
-> > Thanks
->
->
-> Another thing if we want to go this way:
->
-> We need find a way to terminate the data path from the kernel side, to
-> implement to reset semantic.
->
+On Thu, May 27, 2021 at 06:03:29PM +0800, Shung-Hsi Yu wrote:
+> Hi,
+> 
+> On Fri, May 21, 2021 at 02:03:06PM +0200, Thomas Gleixner wrote:
+> > The discussion about removing the side effect of irq_set_affinity_hint() of
+> > actually applying the cpumask (if not NULL) as affinity to the interrupt,
+> > unearthed a few unpleasantries:
+> > 
+> >   1) The modular perf drivers rely on the current behaviour for the very
+> >      wrong reasons.
+> > 
+> >   2) While none of the other drivers prevents user space from changing
+> >      the affinity, a cursorily inspection shows that there are at least
+> >      expectations in some drivers.
+> > 
+> > #1 needs to be cleaned up anyway, so that's not a problem
+> > 
+> > #2 might result in subtle regressions especially when irqbalanced (which
+> >    nowadays ignores the affinity hint) is disabled.
+> > 
+> > Provide new interfaces:
+> > 
+> >   irq_update_affinity_hint() - Only sets the affinity hint pointer
+> >   irq_apply_affinity_hint()  - Set the pointer and apply the affinity to
+> >   			       the interrupt
+> > 
+> > Make irq_set_affinity_hint() a wrapper around irq_apply_affinity_hint() and
+> > document it to be phased out.
+> 
+> Is there recommended way to retrieve the CPU number that the interrupt has
+> affinity?
+> 
+> Previously a driver (I'm looking at drivers/net/ethernet/amazon/ena) that
+> uses irq_set_affinity_hint() to spread out IRQ knows the corresponding CPU
+> number since they're using their own spreading scheme. Now, phasing out
+> irq_set_affinity_hint(), and thus relying on request_irq() to spread the
+> load instead, there don't seem to be a easy way to get the CPU number.
 
-Do you mean terminate the data path in vdpa_reset(). Is it ok to just
-notify userspace to stop data path asynchronously? Userspace should
-not be able to do any I/O at that time because the iotlb mapping is
-already removed.
+I should add that the main use-case for retrieving CPU number seems to be
+ensuring memory is allocated on the same NUMA node that serves the interrupt
+(again, looking at ena driver only, haven't check others yet).
 
-Thanks,
-Yongji
+    int cpu = i % num_online_cpu();
+    cpumask_set_cpu(cpu, &affinity_hint_mask);
+    request_irq(irq, ...);
+    irq_set_affinity_hint(irq, &affinity_hint_mask);
+    int node = cpu_to_node(cpu);
+    buffer = vzalloc(node);
+
+> In theory the following could work, but including irq.h does not look like a
+> good idea given that the comment in its explicitly ask not to be included in
+> generic code.
+> 
+>     #include <linux/irq.h>
+>     int irq = request_irq(...);
+>     struct irq_data *data = irq_get_irq_data(irq);
+>     struct cpumask *mask = irq_data_get_effective_affinity_mask(data);
+>     int cpu = cpumask_first(mask);
+> 
+> Any suggestions?
+> 
+> 
+> Thanks,
+> Shung-Hsi
+> 
+> > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> > Link: https://lore.kernel.org/r/20210501021832.743094-1-jesse.brandeburg@intel.com
+> > ---
+> > Applies on:
+> >    git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
+> > ---
+> >  include/linux/interrupt.h |   41 ++++++++++++++++++++++++++++++++++++++++-
+> >  kernel/irq/manage.c       |    8 ++++----
+> >  2 files changed, 44 insertions(+), 5 deletions(-)
+> > 
+> > --- a/include/linux/interrupt.h
+> > +++ b/include/linux/interrupt.h
+> > @@ -328,7 +328,46 @@ extern int irq_force_affinity(unsigned i
+> >  extern int irq_can_set_affinity(unsigned int irq);
+> >  extern int irq_select_affinity(unsigned int irq);
+> >  
+> > -extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
+> > +extern int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
+> > +				     bool setaffinity);
+> > +
+> > +/**
+> > + * irq_update_affinity_hint - Update the affinity hint
+> > + * @irq:	Interrupt to update
+> > + * @cpumask:	cpumask pointer (NULL to clear the hint)
+> > + *
+> > + * Updates the affinity hint, but does not change the affinity of the interrupt.
+> > + */
+> > +static inline int
+> > +irq_update_affinity_hint(unsigned int irq, const struct cpumask *m)
+> > +{
+> > +	return __irq_apply_affinity_hint(irq, m, true);
+> > +}
+> > +
+> > +/**
+> > + * irq_apply_affinity_hint - Update the affinity hint and apply the provided
+> > + *			     cpumask to the interrupt
+> > + * @irq:	Interrupt to update
+> > + * @cpumask:	cpumask pointer (NULL to clear the hint)
+> > + *
+> > + * Updates the affinity hint and if @cpumask is not NULL it applies it as
+> > + * the affinity of that interrupt.
+> > + */
+> > +static inline int
+> > +irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m)
+> > +{
+> > +	return __irq_apply_affinity_hint(irq, m, true);
+> > +}
+> > +
+> > +/*
+> > + * Deprecated. Use irq_update_affinity_hint() or irq_apply_affinity_hint()
+> > + * instead.
+> > + */
+> > +static inline int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
+> > +{
+> > +	return irq_apply_affinity_hint(irq, cpumask);
+> > +}
+> > +
+> >  extern int irq_update_affinity_desc(unsigned int irq,
+> >  				    struct irq_affinity_desc *affinity);
+> >  
+> > --- a/kernel/irq/manage.c
+> > +++ b/kernel/irq/manage.c
+> > @@ -487,7 +487,8 @@ int irq_force_affinity(unsigned int irq,
+> >  }
+> >  EXPORT_SYMBOL_GPL(irq_force_affinity);
+> >  
+> > -int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
+> > +int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
+> > +			      bool setaffinity)
+> >  {
+> >  	unsigned long flags;
+> >  	struct irq_desc *desc = irq_get_desc_lock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
+> > @@ -496,12 +497,11 @@ int irq_set_affinity_hint(unsigned int i
+> >  		return -EINVAL;
+> >  	desc->affinity_hint = m;
+> >  	irq_put_desc_unlock(desc, flags);
+> > -	/* set the initial affinity to prevent every interrupt being on CPU0 */
+> > -	if (m)
+> > +	if (m && setaffinity)
+> >  		__irq_set_affinity(irq, m, false);
+> >  	return 0;
+> >  }
+> > -EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
+> > +EXPORT_SYMBOL_GPL(__irq_apply_affinity_hint);
+> >  
+> >  static void irq_affinity_notify(struct work_struct *work)
+> >  {
+
