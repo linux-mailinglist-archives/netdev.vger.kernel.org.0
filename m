@@ -2,83 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 907DD393019
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 15:49:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F4739306B
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 16:06:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236624AbhE0NvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 09:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236531AbhE0NvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 09:51:06 -0400
-Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A031C061574;
-        Thu, 27 May 2021 06:49:33 -0700 (PDT)
-Received: from localhost ([127.0.0.1] helo=bute.mt.lv)
-        by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <gatis@mikrotik.com>)
-        id 1lmGO2-0000FE-Vn; Thu, 27 May 2021 16:49:23 +0300
+        id S235885AbhE0OHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 10:07:41 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60178 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234837AbhE0OHl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 May 2021 10:07:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=EI+5jWsOjg0K5HJyDtR89/JI64J4p+NAgrB0Sar1CXA=; b=2vXDbHxBrLtc47ZKwxRS3hg2vj
+        ADzAFJiVrlWKTQUo8wJxT7Iy0UlnoG1Rl58RpyvNWAKjciZv6bpsAuz2eSMe0RTWlQd9Z7/04Z0J2
+        RtNcF6W7yZrNhUV+upCYyV2tCQ+hmfXv7zXP+0ssFnAawmBaembkH8xGpNO7LIzZ2QGY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lmGe6-006Xfx-RC; Thu, 27 May 2021 16:05:58 +0200
+Date:   Thu, 27 May 2021 16:05:58 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "frieder.schrempf@kontron.de" <frieder.schrempf@kontron.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH V1 net-next 0/2] net: fec: fix TX bandwidth fluctuations
+Message-ID: <YK+nRkzOhQHn9LDO@lunn.ch>
+References: <20210527120722.16965-1-qiangqing.zhang@nxp.com>
+ <DB8PR04MB679585D9D94C0D5D90003ED2E6239@DB8PR04MB6795.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Date:   Thu, 27 May 2021 16:49:22 +0300
-From:   Gatis Peisenieks <gatis@mikrotik.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     chris.snook@gmail.com, davem@davemloft.net, hkallweit1@gmail.com,
-        jesse.brandeburg@intel.com, dchickles@marvell.com,
-        tully@mikrotik.com, eric.dumazet@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3] atl1c: add 4 RX/TX queue support for Mikrotik
- 10/25G NIC
-In-Reply-To: <20210526181609.1416c4eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210526075830.2959145-1-gatis@mikrotik.com>
- <20210526181609.1416c4eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <d2651c5f20d072f99e66f9e1df3956f0@mikrotik.com>
-X-Sender: gatis@mikrotik.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DB8PR04MB679585D9D94C0D5D90003ED2E6239@DB8PR04MB6795.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2021-05-27 04:16, Jakub Kicinski wrote:
->> +/**
->> + * atl1c_clean_rx - NAPI Rx polling callback
->> + * @napi: napi info
->> + * @budget: limit of packets to clean
->> + */
->> +static int atl1c_clean_rx(struct napi_struct *napi, int budget)
->>  {
->> +	struct atl1c_rrd_ring *rrd_ring =
->> +		container_of(napi, struct atl1c_rrd_ring, napi);
->> +	struct atl1c_adapter *adapter = rrd_ring->adapter;
->> +	int work_done = 0;
->> +	unsigned long flags;
->>  	u16 rfd_num, rfd_index;
->> -	u16 count = 0;
->>  	u16 length;
->>  	struct pci_dev *pdev = adapter->pdev;
->>  	struct net_device *netdev  = adapter->netdev;
->> -	struct atl1c_rfd_ring *rfd_ring = &adapter->rfd_ring;
->> -	struct atl1c_rrd_ring *rrd_ring = &adapter->rrd_ring;
->> +	struct atl1c_rfd_ring *rfd_ring = &adapter->rfd_ring[rrd_ring->num];
->>  	struct sk_buff *skb;
->>  	struct atl1c_recv_ret_status *rrs;
->>  	struct atl1c_buffer *buffer_info;
->> 
->> +	/* Keep link state information with original netdev */
->> +	if (!netif_carrier_ok(adapter->netdev))
->> +		goto quit_polling;
+On Thu, May 27, 2021 at 12:10:47PM +0000, Joakim Zhang wrote:
 > 
-> Interesting, I see you only move this code, but why does this driver
-> stop reading packets when link goes down? Surely there may be packets
-> already on the ring which Linux should process?
+> Hi Frieder,
+> 
+> As we talked before, could you please help test the patches when you are free? Thanks.
 
-Jakub, I do not know what possible HW quirks this check might be
-covering up, so I left it there. If you feel it is safe to remove
-I can do a separate patch for that. I think it is fine for the
-HW I work with, but that is far from everything this driver supports.
+Hi Frieder
 
-Thank you for reviewing this!
+If you can, could you also test it with traffic with a mixture of VLAN
+priorities. You might want to force the link to 10Full, so you can
+overload it. Then see what traffic actually makes it through.
+
+	 Andrew
