@@ -2,213 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14FDD3925C3
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 06:01:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B58DF3925CA
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 06:03:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbhE0EC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 00:02:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59760 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229617AbhE0EC5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 00:02:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622088084;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YFTuqobSNbOR8Wq6p+a7ao2//KKDypGgE4erIL0zlEM=;
-        b=b1s5HhanVptRawpD407ioiyNwHcd5++t0lF8jgqWEmxayipEJjoHhsy36R0HY+/puxVFzd
-        c/RUmeVVbvVdCqvqwHpaP+r+KbAs/SoAtwP/ep0CfxsFyqWyKREoMzXzNckyKS7h7PiRVQ
-        THosOtz/0IL3wOlMYc+6MpeJvz1XP7E=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-484-1Ep15G1IMC60vWhtN_h2bw-1; Thu, 27 May 2021 00:01:22 -0400
-X-MC-Unique: 1Ep15G1IMC60vWhtN_h2bw-1
-Received: by mail-pf1-f198.google.com with SMTP id o16-20020a056a0015d0b02902e11ab01eb7so2032295pfu.14
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 21:01:22 -0700 (PDT)
+        id S229699AbhE0EEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 00:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229453AbhE0EEh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 00:04:37 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986FDC061574;
+        Wed, 26 May 2021 21:03:03 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id g24so1982363pji.4;
+        Wed, 26 May 2021 21:03:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=rSjes+WUshzFVP8BXxctVak3NmznjnlLIiBOe82k2nI=;
+        b=MxTvkuMw/kTcPDgv9scID7o/5svIgq6JxupREmtgt5sf4ePPKOf7mTyR/ErYMtBVdb
+         bcISQNXs7KUt7AI8HeE9APSdULtfAjBqYJub16rkqU/DFf+fehKZcjKjtAUoGCt2cJRC
+         Z+/rkjMYVZ/KvM3ZlYtyeDlLyS0KuAoLK9XqL3sWKcfNl2KxF+GYK7dCbMNyzecQ3STA
+         +prDZH/phZQiPRDn/sni2pnt9hlH/RvzvX1vvEe/twgBwwMGtsmIzNfcGnd1JK3WGAmB
+         kaF9ULOeBD0Dbpc259vJ24ZISiqhHS1JYzoAMP3gbqNDq0Plosloyks/GTn9Qnm8Ofnn
+         TDYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=YFTuqobSNbOR8Wq6p+a7ao2//KKDypGgE4erIL0zlEM=;
-        b=XURpyg/2+Md8nVUMtd541i10kTwqfSR3i3xqY1dYvTFMWPAZJsIwBjHhDXCTcm88ER
-         SkUyND1g3WlS0NVilWh0l+M99hDc2b0ut0snvklWYd9lNPkL2fLN7XUqHmUA5Wt4i/mx
-         DrYugsGR9QnEp32rSxdmuRDXj1ZC653teyKDC8k6hFLjS9CZmmsDyKvE7R7oTOFITayQ
-         r7rZEX92FGhcXOujfGLVv0ZahbIDsIUmT1Fi09Sw/mUawtbz1AlQeZddmB38aWVrBQ+1
-         1SY6J/G3DHFMyK66B32ticEXqN7uvo9blFXVW0d8PCr7UlZXUhKIMUmQeyddZEEiEbKY
-         x5dA==
-X-Gm-Message-State: AOAM530nJHQnf/1t6uuas7bhBPeUWg7Ps5Qqo1B6SROaLbHaH43gnOmG
-        oFbLD6YQyBYOjqx9jBKTk3Y8VL0A2O1m+GgtjCn5RIVkj5PAdah0KzmPYDFHihrfQcXlNmbb6qO
-        INfRge9UR3VcvNFcP
-X-Received: by 2002:a05:6a00:1705:b029:2e7:60df:7413 with SMTP id h5-20020a056a001705b02902e760df7413mr1764227pfc.48.1622088081688;
-        Wed, 26 May 2021 21:01:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzT94njfKbzIhMIA4Q1yN5K+12taVUkR5i/koVkhVbs5xSnZwAsySH3w+t2YxLpWBdJTfGJuQ==
-X-Received: by 2002:a05:6a00:1705:b029:2e7:60df:7413 with SMTP id h5-20020a056a001705b02902e760df7413mr1764191pfc.48.1622088081275;
-        Wed, 26 May 2021 21:01:21 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p14sm529443pgb.2.2021.05.26.21.01.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 May 2021 21:01:20 -0700 (PDT)
-Subject: Re: [PATCH v3 3/4] virtio: fix up virtio_disable_cb
-To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, Wei Wang <weiwan@google.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>,
-        virtualization@lists.linux-foundation.org
-References: <20210526082423.47837-1-mst@redhat.com>
- <20210526082423.47837-4-mst@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c5dbc2b4-7b14-ea5a-27cf-ed88810f9b37@redhat.com>
-Date:   Thu, 27 May 2021 12:01:16 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
-MIME-Version: 1.0
-In-Reply-To: <20210526082423.47837-4-mst@redhat.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=rSjes+WUshzFVP8BXxctVak3NmznjnlLIiBOe82k2nI=;
+        b=p1HVN/aw4YfvMKSwdSYlUkxTBqVr6Jf5QX6zhiWwP/88mciwP1RMeYd9MAMzoSDBH1
+         HzuIBuvloOZYOG1CIM3fccKqZ4sLryp7JspJ5WB0hOEt7CirXFEAG/DaUlhLzUuq3CfO
+         486Whcy5VxEI+i1nqa112KPJ+z4tqKRtuDrK/Pce7SE6vZZw4fpuL8CrRo9szu6ZFR//
+         8M3zeBlLKmQvuHYQgvFnKoEVeE9fKkNpJVcXF8jrwGTEWzC2DV03WTuoBXY9boxBicE3
+         YHLJMM5Drb/KYWp8AcfXDXLii5xp+RDWcAr856hWGOv3/jpeozeLE0Mdo/FBa8/RGu+1
+         AQnw==
+X-Gm-Message-State: AOAM531pTgoh9kJhnevrVdjF6d2kN6BIrn0crTPrFj26pnizmQ1VkfjE
+        prCNE/WVnoB46UQ/IMc7Wek=
+X-Google-Smtp-Source: ABdhPJyv4HqzPjYI67+l+39qs/N+GoexJnJqJ96Jf3HhSB+wtUrXD4d78QQIuEUB7w4St/iXhQkuHA==
+X-Received: by 2002:a17:90b:3709:: with SMTP id mg9mr7096759pjb.149.1622088183101;
+        Wed, 26 May 2021 21:03:03 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([2620:10d:c090:400::5:6b23])
+        by smtp.gmail.com with ESMTPSA id j22sm568281pfd.215.2021.05.26.21.03.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 26 May 2021 21:03:02 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH bpf-next 0/3] bpf: Introduce BPF timers.
+Date:   Wed, 26 May 2021 21:02:56 -0700
+Message-Id: <20210527040259.77823-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Alexei Starovoitov <ast@kernel.org>
 
-ÔÚ 2021/5/26 ÏÂÎç4:24, Michael S. Tsirkin Ð´µÀ:
-> virtio_disable_cb is currently a nop for split ring with event index.
-> This is because it used to be always called from a callback when we know
-> device won't trigger more events until we update the index.  However,
-> now that we run with interrupts enabled a lot we also poll without a
-> callback so that is different: disabling callbacks will help reduce the
-> number of spurious interrupts.
-> Further, if using event index with a packed ring, and if being called
-> from a callback, we actually do disable interrupts which is unnecessary.
->
-> Fix both issues by tracking whenever we get a callback. If that is
-> the case disabling interrupts with event index can be a nop.
+The 1st patch implements interaction between bpf programs and bpf core.
+The 2nd patch implements necessary safety checks.
+The 3rd patch is the test.
+The patchset it's not ready to land, since it needs a lot more tests,
+but it's in functionally solid shape. Please review.
 
+Alexei Starovoitov (3):
+  bpf: Introduce bpf_timer
+  bpf: Add verifier checks for bpf_timer.
+  selftests/bpf: Add bpf_timer test.
 
-This seems unnecessary:
+ include/linux/bpf.h                           |  37 +++-
+ include/linux/btf.h                           |   1 +
+ include/uapi/linux/bpf.h                      |  26 +++
+ kernel/bpf/arraymap.c                         |   7 +
+ kernel/bpf/btf.c                              |  77 +++++++--
+ kernel/bpf/hashtab.c                          |  53 ++++--
+ kernel/bpf/helpers.c                          | 160 ++++++++++++++++++
+ kernel/bpf/local_storage.c                    |   4 +-
+ kernel/bpf/syscall.c                          |  23 ++-
+ kernel/bpf/verifier.c                         | 134 +++++++++++++++
+ kernel/trace/bpf_trace.c                      |   2 +-
+ scripts/bpf_doc.py                            |   2 +
+ tools/include/uapi/linux/bpf.h                |  26 +++
+ .../testing/selftests/bpf/prog_tests/timer.c  |  47 +++++
+ tools/testing/selftests/bpf/progs/timer.c     |  85 ++++++++++
+ 15 files changed, 644 insertions(+), 40 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/timer.c
+ create mode 100644 tools/testing/selftests/bpf/progs/timer.c
 
-1) we check avail_flags_shadow before touching touching the index
-2) The nop is not good at least for split, if we choose a suitable event 
-index, it can help to reduce the chance of 1/N interrupt, (see below).
-
-
-> If not the case disable interrupts. Note: with a split ring
-> there's no explicit "no interrupts" value. For now we write
-> a fixed value so our chance of triggering an interupt
-> is 1/ring size.
-
-
-1/65535 actually? If yes, do we still need this trick?
-
-
->   It's probably better to write something
-> related to the last used index there to reduce the chance
-> even further. For now I'm keeping it simple.
->
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->   drivers/virtio/virtio_ring.c | 26 +++++++++++++++++++++++++-
->   1 file changed, 25 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index 71e16b53e9c1..88f0b16b11b8 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -113,6 +113,9 @@ struct vring_virtqueue {
->   	/* Last used index we've seen. */
->   	u16 last_used_idx;
->   
-> +	/* Hint for event idx: already triggered no need to disable. */
-> +	bool event_triggered;
-> +
->   	union {
->   		/* Available for split ring */
->   		struct {
-> @@ -739,7 +742,10 @@ static void virtqueue_disable_cb_split(struct virtqueue *_vq)
->   
->   	if (!(vq->split.avail_flags_shadow & VRING_AVAIL_F_NO_INTERRUPT)) {
->   		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
-> -		if (!vq->event)
-> +		if (vq->event)
-> +			/* TODO: this is a hack. Figure out a cleaner value to write. */
-> +			vring_used_event(&vq->split.vring) = 0x0;
-
-
-used_idx or last_used_idx seems better here.
-
-
-> +		else
->   			vq->split.vring.avail->flags =
->   				cpu_to_virtio16(_vq->vdev,
->   						vq->split.avail_flags_shadow);
-> @@ -1605,6 +1611,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
->   	vq->weak_barriers = weak_barriers;
->   	vq->broken = false;
->   	vq->last_used_idx = 0;
-> +	vq->event_triggered = false;
->   	vq->num_added = 0;
->   	vq->packed_ring = true;
->   	vq->use_dma_api = vring_use_dma_api(vdev);
-> @@ -1919,6 +1926,12 @@ void virtqueue_disable_cb(struct virtqueue *_vq)
->   {
->   	struct vring_virtqueue *vq = to_vvq(_vq);
->   
-> +	/* If device triggered an event already it won't trigger one again:
-> +	 * no need to disable.
-> +	 */
-> +	if (vq->event_triggered)
-> +		return;
-> +
->   	if (vq->packed_ring)
->   		virtqueue_disable_cb_packed(_vq);
->   	else
-> @@ -1942,6 +1955,9 @@ unsigned virtqueue_enable_cb_prepare(struct virtqueue *_vq)
->   {
->   	struct vring_virtqueue *vq = to_vvq(_vq);
->   
-> +	if (vq->event_triggered)
-> +		vq->event_triggered = false;
-> +
->   	return vq->packed_ring ? virtqueue_enable_cb_prepare_packed(_vq) :
->   				 virtqueue_enable_cb_prepare_split(_vq);
->   }
-> @@ -2005,6 +2021,9 @@ bool virtqueue_enable_cb_delayed(struct virtqueue *_vq)
->   {
->   	struct vring_virtqueue *vq = to_vvq(_vq);
->   
-> +	if (vq->event_triggered)
-> +		vq->event_triggered = false;
-> +
->   	return vq->packed_ring ? virtqueue_enable_cb_delayed_packed(_vq) :
->   				 virtqueue_enable_cb_delayed_split(_vq);
->   }
-
-
-Miss the case of virtqueue_enable_cb()?
-
-Thanks
-
-
-> @@ -2044,6 +2063,10 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
->   	if (unlikely(vq->broken))
->   		return IRQ_HANDLED;
->   
-> +	/* Just a hint for performance: so it's ok that this can be racy! */
-> +	if (vq->event)
-> +		vq->event_triggered = true;
-> +
->   	pr_debug("virtqueue callback for %p (%p)\n", vq, vq->vq.callback);
->   	if (vq->vq.callback)
->   		vq->vq.callback(&vq->vq);
-> @@ -2083,6 +2106,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
->   	vq->weak_barriers = weak_barriers;
->   	vq->broken = false;
->   	vq->last_used_idx = 0;
-> +	vq->event_triggered = false;
->   	vq->num_added = 0;
->   	vq->use_dma_api = vring_use_dma_api(vdev);
->   #ifdef DEBUG
+-- 
+2.30.2
 
