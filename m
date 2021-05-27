@@ -2,76 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04F8139390E
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 01:20:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22C68393941
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 01:27:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236565AbhE0XVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 19:21:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36310 "EHLO mail.kernel.org"
+        id S235068AbhE0X2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 19:28:45 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:32810 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234964AbhE0XVh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 May 2021 19:21:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A9DC9613D1;
-        Thu, 27 May 2021 23:20:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622157603;
-        bh=ry+JQMwBmkgtydIGEi9PPgFj+6BA75npvy1znXP09x8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iQGR+XRbHwUuFWjc7vCTxLBQE+8C4I84kcpIFfp/gBabzbo2CLm7OhSZapv8xP7zE
-         SoQ6wSQYNz+laoLYoWwWiVef69vMuvJU2HZJ/AK6fYvk+Ri60kFZ/EAIbSd9Urh0g4
-         7BHR0Z09lAXudxqHYcc3xeslWPH1v/sGBsSaO+KGeMzxoJoNRs5CIfZ0IuVzZx+Hh3
-         aq53cCBLbiZr0vbvtBatusoa5QoLMmBxSoV9hY38zl/yDySJ6cQbWx+RbbJX6b3EYk
-         /pRDmpBJLe8DACWaPtSDaKImNSZK4j4Ijqc735DZmDo5Dt7rv+Mszyl16BFoh2eqgr
-         gggxPoF814xZA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9DCBA60BE2;
-        Thu, 27 May 2021 23:20:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233038AbhE0X2m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 May 2021 19:28:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=V4zv3tSkdbMop+5uGd/UYZ83LvN67WaQLJjf/Sfs61c=; b=wfg5R/awrSnPY8Z3K82p/HpQWQ
+        xBCMpn9ez3I0ku46o+cZcHLYuTdsqW5LRQxNw7axDWNcBaYkKH8kxFmyEo2QFJxmee576Yy3magKK
+        gTmPjvjNh5S4dDSI/kEfoa4TwI5x3VZNSax1/jXMI83knJ1YlI86T/Rsw6OzyAy/3UUg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lmPOg-006eAY-7v; Fri, 28 May 2021 01:26:38 +0200
+Date:   Fri, 28 May 2021 01:26:38 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+Cc:     Jose.Abreu@synopsys.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, kuba@kernel.org, netdev@vger.kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        davem@davemloft.net, mcoquelin.stm32@gmail.com,
+        weifeng.voon@intel.com, boon.leong.ong@intel.com,
+        tee.min.tan@intel.com, vee.khee.wong@linux.intel.com,
+        vee.khee.wong@intel.com, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 2/3] net: pcs: add 2500BASEX support for
+ Intel mGbE controller
+Message-ID: <YLAqrte9qwQ/64BI@lunn.ch>
+References: <20210527092415.25205-1-michael.wei.hong.sit@intel.com>
+ <20210527092415.25205-3-michael.wei.hong.sit@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/1] ixgbe: Fix out-bounds warning in
- ixgbe_host_interface_command()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162215760364.28406.5788806806240071330.git-patchwork-notify@kernel.org>
-Date:   Thu, 27 May 2021 23:20:03 +0000
-References: <20210527173424.362456-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210527173424.362456-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, gustavoars@kernel.org,
-        netdev@vger.kernel.org, sassmann@redhat.com, keescook@chromium.org,
-        david.switzer@intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210527092415.25205-3-michael.wei.hong.sit@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+> +static int xpcs_config_2500basex(struct mdio_xpcs_args *xpcs)
+> +{
+> +	int ret;
+> +
+> +		ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1);
+> +		if (ret < 0)
+> +			return ret;
+> +		ret |= DW_VR_MII_DIG_CTRL1_2G5_EN;
+> +		ret &= ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
+> +		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
+> +		if (ret < 0)
+> +			return ret;
+> +		ret &= ~AN_CL37_EN;
+> +		ret |= SGMII_SPEED_SS6;
+> +		ret &= ~SGMII_SPEED_SS13;
+> +		return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL, ret);
+> +
+> +	return 0;
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Indentation is messed up here? Or a rebase gone wrong removing an if
+statement?
 
-On Thu, 27 May 2021 10:34:24 -0700 you wrote:
-> From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-> 
-> Replace union with a couple of pointers in order to fix the following
-> out-of-bounds warning:
-> 
->   CC [M]  drivers/net/ethernet/intel/ixgbe/ixgbe_common.o
-> drivers/net/ethernet/intel/ixgbe/ixgbe_common.c: In function ‘ixgbe_host_interface_command’:
-> drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:3729:13: warning: array subscript 1 is above array bounds of ‘u32[1]’ {aka ‘unsigned int[1]’} [-Warray-bounds]
->  3729 |   bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
->       |   ~~~~~~~~~~^~~~
-> drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:3682:7: note: while referencing ‘u32arr’
->  3682 |   u32 u32arr[1];
->       |       ^~~~~~
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/1] ixgbe: Fix out-bounds warning in ixgbe_host_interface_command()
-    https://git.kernel.org/netdev/net-next/c/eefa5311c3f7
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+	    Andrew
