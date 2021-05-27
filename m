@@ -2,116 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03FD8393431
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 18:40:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 983A339343D
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 18:43:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236618AbhE0Qlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 12:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236559AbhE0Qly (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 12:41:54 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C16C061574
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 09:40:20 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id e8so411946qvp.7
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 09:40:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=NSOnF1ZkKeHv4axFJknBqEdlVFSN3kUHTbKyaHG9iDE=;
-        b=fAe0iKFodHZdUXmptRlj+vhJTfFnMObedlgJKji0s5dbbvaNPcxcpOGXVXYHPlcEKx
-         X/1eDHjcttzpvvrz29nBL5OG+bSC1Smp4HBWQSJy+yKZ0OPpiKRp3Cj60YibaETbbw84
-         c07xwk4yLQjcWUrKDS3A97g/s/j/onEEu6+wtMZg14FGBvWvBzHRv0UrXrD7mACe030Q
-         ERjYKFQ3bLz9sXuDvUhjJ2nQur7VtLZDcXC6wAbSTvUn/ImihZ0mV+GEu9zXL7k3wH1Y
-         7HpiJ4enHQJLHfln3CEcVbrCea3GvD0/Jcx2MolihTHNG6U/CXicQjCcBaUnaxxDjCIN
-         XFNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=NSOnF1ZkKeHv4axFJknBqEdlVFSN3kUHTbKyaHG9iDE=;
-        b=TTSLNLYPAa5kRTLHBE7YGZX4W4pSEoEz2oLGotHPkHvA7eJ5jA5WteYNc/NtpMwo/8
-         FSzSndW7KLAXCsaqd4IngzbAhB2/4db/2aMTCAyEZnQkUUFwUewxXCgeyu7KlZcYQbvi
-         5pa2MNc1wm6R2l8WJX2XWyck7Ews9ZDfyL/HHS3Hwknn6cqVIbNy7wrdWIMjq2W997Vf
-         i6uQZg/B6DZzXdDwJW7ZXYMQIYWNyPidixnrvF7EKSeJwfrHLmBoUTO8F3T6ON2RUfwY
-         SCmL/sZYWwi6Y15oVn+7hSV7y+DtsC5pYTgZU8zuhRM2NVG07JWdRakUsuTchlhhgQIQ
-         qrvQ==
-X-Gm-Message-State: AOAM530j+kP5xrfwQrVkZJR4ZcsR7GRADNy2skpQDIP9BFA1S7cE0PeO
-        dhrLWSGDTAeGjKeImdj4KYJ4kXL2vuz5yA==
-X-Google-Smtp-Source: ABdhPJwOfLB1Qq2A79qh9HZ/Qapx6Ptsyu8l19Vqpm2LxhkWXJXmBuR1W6ZjwxAD8azVXsdRLy6moA==
-X-Received: by 2002:ad4:5be5:: with SMTP id k5mr2116869qvc.55.1622133619786;
-        Thu, 27 May 2021 09:40:19 -0700 (PDT)
-Received: from horizon.localdomain ([177.220.174.185])
-        by smtp.gmail.com with ESMTPSA id g6sm1659802qkm.120.2021.05.27.09.40.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 May 2021 09:40:19 -0700 (PDT)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id 96FA7C169D; Thu, 27 May 2021 13:40:16 -0300 (-03)
-Date:   Thu, 27 May 2021 13:40:16 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Ariel Levkovich <lariel@nvidia.com>
-Cc:     netdev@vger.kernel.org, paulb@nvidia.com, jiri@resnulli.us
-Subject: Re: [PATCH net] net/sched: act_ct: Fix ct template allocation for
- zone 0
-Message-ID: <YK/LcLVMhFDe/7KF@horizon.localdomain>
-References: <20210526170110.54864-1-lariel@nvidia.com>
- <YK76nZpfTBO904lU@horizon.localdomain>
- <021dab3f-9ca3-ffeb-b18a-24c9207a7000@nvidia.com>
- <YK+/zn0R+M4lYfC+@horizon.localdomain>
- <5db2e2b3-c768-661a-dc05-fa850c8d066a@nvidia.com>
+        id S236501AbhE0Qoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 12:44:38 -0400
+Received: from saphodev.broadcom.com ([192.19.11.229]:47316 "EHLO
+        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236445AbhE0Qog (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 12:44:36 -0400
+Received: from bld-lvn-bcawlan-34.lvn.broadcom.net (bld-lvn-bcawlan-34.lvn.broadcom.net [10.75.138.137])
+        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 0873D24ABA;
+        Thu, 27 May 2021 09:43:01 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 0873D24ABA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+        s=dkimrelay; t=1622133781;
+        bh=zwSQoO5qSKdN8KAQgCIpi4nQbbv84zH7r+/B108Z4MM=;
+        h=From:Subject:To:Cc:References:Date:In-Reply-To:From;
+        b=sPy6YxOY0AzXm1nq8t0Bi/qL/iibDi3Xd7TrDhzA1FeqzJUSWWSiCBPYi3fRUQUc8
+         5zkZxIInxBnuir4ri632jPnc++MmtvYQHJkzVjA2ulmU9q3er7EDACYUpwrZa9aQQW
+         I37Sgt4E2IcGt+iuje13qibaEnKPd+EYjgmNkSq0=
+Received: from [10.230.32.233] (unknown [10.230.32.233])
+        by bld-lvn-bcawlan-34.lvn.broadcom.net (Postfix) with ESMTPSA id BC3071874BE;
+        Thu, 27 May 2021 09:42:58 -0700 (PDT)
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+Subject: Re: [BUG] brcmfmac: brcmf_sdio_bus_rxctl: resumed on timeout (WiFi
+ dies)
+To:     Dmitry Osipenko <digetx@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "brcm80211-dev-list@cypress.com" <brcm80211-dev-list@cypress.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <fcf95129-cba7-817d-4bfd-8efaf92f957f@gmail.com>
+Message-ID: <cc328771-0c1d-93e7-cec6-3f4fb7f64d02@broadcom.com>
+Date:   Thu, 27 May 2021 18:42:56 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5db2e2b3-c768-661a-dc05-fa850c8d066a@nvidia.com>
+In-Reply-To: <fcf95129-cba7-817d-4bfd-8efaf92f957f@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 27, 2021 at 12:14:21PM -0400, Ariel Levkovich wrote:
-...
-> I meant if there's no ct_clear action.
+On 5/26/2021 5:10 PM, Dmitry Osipenko wrote:
+> Hello,
 > 
-> Assume we already when through zone X in some previous action.
+> After updating to Ubuntu 21.04 I found two problems related to the BRCMF_C_GET_ASSOCLIST using an older BCM4329 SDIO WiFi.
 > 
-> In such case skb->_nfct has that zone's id.
+> 1. The kernel is spammed with:
 > 
-> Now, if we go to zone=0, we skip this entirely, since p->tmpl is NULL :
+>   ieee80211 phy0: brcmf_cfg80211_dump_station: BRCMF_C_GET_ASSOCLIST unsupported, err=-52
+>   ieee80211 phy0: brcmf_cfg80211_dump_station: BRCMF_C_GET_ASSOCLIST unsupported, err=-52
+>   ieee80211 phy0: brcmf_cfg80211_dump_station: BRCMF_C_GET_ASSOCLIST unsupported, err=-52
 > 
-> /* Associate skb with specified zone. */
->                 if (tmpl) {
->                         nf_conntrack_put(skb_nfct(skb));
-> nf_conntrack_get(&tmpl->ct_general);
->                         nf_ct_set(skb, tmpl, IP_CT_NEW);
->                 }
+> Which happens apparently due to a newer NetworkManager version that pokes dump_station() periodically. I sent [1] that fixes this noise.
 > 
-> 
-> And then in nf_conntrack_in it continues with the previous zone:
-> 
-> err = nf_conntrack_in(skb, &state)
-> 
->    calling ->   ret = resolve_normal_ct(tmpl, skb, dataoff,
->                                   protonum, state);
-> 
->            calling -> zone = nf_ct_zone_tmpl(tmpl, skb, &tmp);
-> 
-> 
-> I encountered it by accident while running one of our test which was buggy
-> 
-> but due to the zone=0 bug the bug in the test was hidden and test passed.
-> 
-> Once I enabled my fix to alloc templated for zone=0 it was exposed.
-> 
-> The test doesn't use ct_clear between zones.
+> [1] https://patchwork.kernel.org/project/linux-wireless/list/?series=480715
 
-I see now, thanks. When you had said without ct_clear, I thought only
-about the first run through ct. Didn't think there would be this
-implicit ct_clear expectation. It could also erase _nfct if zone==0,
-but agree, too much especial handling for zone 0.
+Right. I noticed this one and did not have anything to add to the 
+review/suggestion.
 
-Seems it needs both fixes then, while this patch is good as is.
+> 2. The other much worse problem is that WiFi eventually dies now with these errors:
+> 
+> ...
+>   ieee80211 phy0: brcmf_cfg80211_dump_station: BRCMF_C_GET_ASSOCLIST unsupported, err=-52
+>   brcmfmac: brcmf_sdio_bus_rxctl: resumed on timeout
+>   ieee80211 phy0: brcmf_cfg80211_dump_station: BRCMF_C_GET_ASSOCLIST unsupported, err=-110
+>   ieee80211 phy0: brcmf_proto_bcdc_query_dcmd: brcmf_proto_bcdc_msg failed w/status -110
+> 
+>  From this point all firmware calls start to fail with err=-110 and WiFi doesn't work anymore. This problem is reproducible with 5.13-rc and current -next, I haven't checked older kernel versions. Somehow it's worse using a recent -next, WiFi dies quicker.
+> 
+> What's interesting is that I see that there is always a pending signal in brcmf_sdio_dcmd_resp_wait() when timeout happens. It looks like the timeout happens when there is access to a swap partition, which stalls system for a second or two, but this is not 100%. Increasing DCMD_RESP_TIMEOUT doesn't help.
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+The timeout error (-110) can have two root causes that I am aware off. 
+Either the firmware died or the SDIO layer has gone haywire. Not sure if 
+that swap partition is on eMMC device, but if so it could be related. 
+You could try generating device coredump. If that also gives -110 errors 
+we know it is the SDIO layer.
+
+> Please let me know if you have any ideas of how to fix this trouble properly or if you need need any more info.
+> 
+> Removing BRCMF_C_GET_ASSOCLIST firmware call entirely from the driver fixes the problem.
+
+My guess is that reducing interaction with firmware is what is avoiding 
+the issue and not so much this specific firmware command. As always it 
+is good to know the conditions in which the issue occurs. What is the 
+hardware platform you are running Ubuntu on? Stuff like that.
+
+Regards,
+Arend
