@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E62B392A0C
+	by mail.lfdr.de (Postfix) with ESMTP id 86A46392A0D
 	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 10:49:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235824AbhE0IvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 04:51:20 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:48271 "EHLO m43-7.mailgun.net"
+        id S235831AbhE0IvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 04:51:21 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:51502 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235724AbhE0Iuw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 May 2021 04:50:52 -0400
+        id S235748AbhE0Iux (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 May 2021 04:50:53 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1622105359; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=Clw2/s+iDnPmn5bfkKOP5moMbRkF8z7t48xn9DXyOWE=; b=RcXSq40kmHE0Ly0sMNhAnbUmUH72N+tj6rlXsrw7YQkttgK99ugTMtPXlTTr/YNs0lDmpasS
- ZTwRD+atKW7Irwr+cnEp8cfTtjzPnHRKctChd+jPcCIJ2Mg2htVA6hFD9TXb1kjgamGF5Vxt
- kjuCtED5xJELzcMqytyKrDyQNdA=
+ s=smtp; t=1622105361; h=References: In-Reply-To: Message-Id: Date:
+ Subject: Cc: To: From: Sender;
+ bh=P3GpVn3JVfMxDzrwZHRnbaDau1jXLxyfxJ/Pq0LMuzc=; b=mWQ7p+nTy8sxupXE/UiY2vJne97z1NGi1qEqqgMt1EkBtszjlummzKA5tzsOATgPhMhdOQwd
+ JrvuGaV/I/OwxyCxUGPNPKa/3+8YgcvnImBVmpFG2C2xzESkwCitYX7ZFRYDGi914S4T0Ic2
+ lG998k6cYCAyn9KVpDMAsoIR9wM=
 X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 60af5cf78dd30e785f8fd59d (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 27 May 2021 08:48:55
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 60af5cfcd1aee7698d2277b3 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 27 May 2021 08:49:00
  GMT
 Sender: sharathv=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4611BC43217; Thu, 27 May 2021 08:48:54 +0000 (UTC)
+        id 5C813C43460; Thu, 27 May 2021 08:48:59 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from svurukal-linux.qualcomm.com (unknown [202.46.22.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: sharathv)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A2E76C43460;
-        Thu, 27 May 2021 08:48:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A2E76C43460
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 98CC2C4338A;
+        Thu, 27 May 2021 08:48:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 98CC2C4338A
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=sharathv@codeaurora.org
 From:   Sharath Chandra Vurukala <sharathv@codeaurora.org>
@@ -46,60 +47,185 @@ To:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
         cpratapa@codeaurora.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Sharath Chandra Vurukala <sharathv@codeaurora.org>
-Subject: [PATCH net-next v7 0/3] net: qualcomm: rmnet: Enable Mapv5
-Date:   Thu, 27 May 2021 14:18:39 +0530
-Message-Id: <1622105322-2975-1-git-send-email-sharathv@codeaurora.org>
+Subject: [PATCH net-next v7 1/3] docs: networking: Add documentation for MAPv5
+Date:   Thu, 27 May 2021 14:18:40 +0530
+Message-Id: <1622105322-2975-2-git-send-email-sharathv@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1622105322-2975-1-git-send-email-sharathv@codeaurora.org>
+References: <1622105322-2975-1-git-send-email-sharathv@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series introduces the MAPv5 packet format.
+Adding documentation explaining the new MAPv4/v5 packet formats
+and the corresponding checksum offload headers.
 
-   Patch 0 documents the MAPv4/v5.
-   Patch 1 introduces the MAPv5 and the Inline checksum offload for RX/Ingress.
-   Patch 2 introduces the MAPv5 and the Inline checksum offload for TX/Egress.
+Signed-off-by: Sharath Chandra Vurukala <sharathv@codeaurora.org>
+---
+ .../device_drivers/cellular/qualcomm/rmnet.rst     | 126 +++++++++++++++++++--
+ 1 file changed, 114 insertions(+), 12 deletions(-)
 
-   A new checksum header format is used as part of MAPv5.For RX checksum offload,
-   the checksum is verified by the HW and the validity is marked in the checksum
-   header of MAPv5. For TX, the required metadata is filled up so hardware can
-   compute the checksum.
-
-   v1->v2:
-   - Fixed the compilation errors, warnings reported by kernel test robot.
-   - Checksum header definition is expanded to support big, little endian
-           formats as mentioned by Jakub.
-
-   v2->v3:
-   - Fixed compilation errors reported by kernel bot for big endian flavor.
-
-   v3->v4:
-   - Made changes to use masks instead of C bit-fields as suggested by Jakub/Alex.
-
-   v4->v5:
-   - Corrected checkpatch errors and warnings reported by patchwork.
-
-   v5->v6:
-   - Corrected the bug identified by Alex and incorporated all his comments.
-
-   v6->v7:
-   - Removed duplicate inclusion of linux/bitfield.h in rmnet_map_data.c
-
-Sharath Chandra Vurukala (3):
-  docs: networking: Add documentation for MAPv5
-  net: ethernet: rmnet: Support for ingress MAPv5 checksum offload
-  net: ethernet: rmnet: Add support for MAPv5 egress packets
-
- .../device_drivers/cellular/qualcomm/rmnet.rst     | 126 +++++++++++++++--
- drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h |   4 +-
- .../net/ethernet/qualcomm/rmnet/rmnet_handlers.c   |  34 +++--
- drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h    |  11 +-
- .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c   | 151 +++++++++++++++++++--
- drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c    |   3 +-
- include/linux/if_rmnet.h                           |  26 +++-
- include/uapi/linux/if_link.h                       |   2 +
- 8 files changed, 320 insertions(+), 37 deletions(-)
-
+diff --git a/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst b/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
+index 70643b5..4118384 100644
+--- a/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
++++ b/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
+@@ -27,34 +27,136 @@ these MAP frames and send them to appropriate PDN's.
+ 2. Packet format
+ ================
+ 
+-a. MAP packet (data / control)
++a. MAP packet v1 (data / control)
+ 
+-MAP header has the same endianness of the IP packet.
++MAP header fields are in big endian format.
+ 
+ Packet format::
+ 
+-  Bit             0             1           2-7      8 - 15           16 - 31
++  Bit             0             1           2-7      8-15           16-31
+   Function   Command / Data   Reserved     Pad   Multiplexer ID    Payload length
+-  Bit            32 - x
+-  Function     Raw  Bytes
++
++  Bit            32-x
++  Function      Raw bytes
+ 
+ Command (1)/ Data (0) bit value is to indicate if the packet is a MAP command
+-or data packet. Control packet is used for transport level flow control. Data
++or data packet. Command packet is used for transport level flow control. Data
+ packets are standard IP packets.
+ 
+-Reserved bits are usually zeroed out and to be ignored by receiver.
++Reserved bits must be zero when sent and ignored when received.
+ 
+-Padding is number of bytes to be added for 4 byte alignment if required by
+-hardware.
++Padding is the number of bytes to be appended to the payload to
++ensure 4 byte alignment.
+ 
+ Multiplexer ID is to indicate the PDN on which data has to be sent.
+ 
+ Payload length includes the padding length but does not include MAP header
+ length.
+ 
+-b. MAP packet (command specific)::
++b. Map packet v4 (data / control)
++
++MAP header fields are in big endian format.
++
++Packet format::
++
++  Bit             0             1           2-7      8-15           16-31
++  Function   Command / Data   Reserved     Pad   Multiplexer ID    Payload length
++
++  Bit            32-(x-33)      (x-32)-x
++  Function      Raw bytes      Checksum offload header
++
++Command (1)/ Data (0) bit value is to indicate if the packet is a MAP command
++or data packet. Command packet is used for transport level flow control. Data
++packets are standard IP packets.
++
++Reserved bits must be zero when sent and ignored when received.
++
++Padding is the number of bytes to be appended to the payload to
++ensure 4 byte alignment.
++
++Multiplexer ID is to indicate the PDN on which data has to be sent.
++
++Payload length includes the padding length but does not include MAP header
++length.
++
++Checksum offload header, has the information about the checksum processing done
++by the hardware.Checksum offload header fields are in big endian format.
++
++Packet format::
++
++  Bit             0-14        15              16-31
++  Function      Reserved   Valid     Checksum start offset
++
++  Bit                31-47                    48-64
++  Function      Checksum length           Checksum value
++
++Reserved bits must be zero when sent and ignored when received.
++
++Valid bit indicates whether the partial checksum is calculated and is valid.
++Set to 1, if its is valid. Set to 0 otherwise.
++
++Padding is the number of bytes to be appended to the payload to
++ensure 4 byte alignment.
++
++Checksum start offset, Indicates the offset in bytes from the beginning of the
++IP header, from which modem computed checksum.
++
++Checksum length is the Length in bytes starting from CKSUM_START_OFFSET,
++over which checksum is computed.
++
++Checksum value, indicates the checksum computed.
++
++c. MAP packet v5 (data / control)
++
++MAP header fields are in big endian format.
++
++Packet format::
++
++  Bit             0             1         2-7      8-15           16-31
++  Function   Command / Data  Next header  Pad   Multiplexer ID   Payload length
++
++  Bit            32-x
++  Function      Raw bytes
++
++Command (1)/ Data (0) bit value is to indicate if the packet is a MAP command
++or data packet. Command packet is used for transport level flow control. Data
++packets are standard IP packets.
++
++Next header is used to indicate the presence of another header, currently is
++limited to checksum header.
++
++Padding is the number of bytes to be appended to the payload to
++ensure 4 byte alignment.
++
++Multiplexer ID is to indicate the PDN on which data has to be sent.
++
++Payload length includes the padding length but does not include MAP header
++length.
++
++d. Checksum offload header v5
++
++Checksum offload header fields are in big endian format.
++
++  Bit            0 - 6          7               8-15              16-31
++  Function     Header Type    Next Header     Checksum Valid    Reserved
++
++Header Type is to indicate the type of header, this usually is set to CHECKSUM
++
++Header types
++= ==========================================
++0 Reserved
++1 Reserved
++2 checksum header
++
++Checksum Valid is to indicate whether the header checksum is valid. Value of 1
++implies that checksum is calculated on this packet and is valid, value of 0
++indicates that the calculated packet checksum is invalid.
++
++Reserved bits must be zero when sent and ignored when received.
++
++e. MAP packet v1/v5 (command specific)::
+ 
+-    Bit             0             1           2-7      8 - 15           16 - 31
++    Bit             0             1         2-7      8 - 15           16 - 31
+     Function   Command         Reserved     Pad   Multiplexer ID    Payload length
+     Bit          32 - 39        40 - 45    46 - 47       48 - 63
+     Function   Command name    Reserved   Command Type   Reserved
+@@ -74,7 +176,7 @@ Command types
+ 3 is for error during processing of commands
+ = ==========================================
+ 
+-c. Aggregation
++f. Aggregation
+ 
+ Aggregation is multiple MAP packets (can be data or command) delivered to
+ rmnet in a single linear skb. rmnet will process the individual
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
