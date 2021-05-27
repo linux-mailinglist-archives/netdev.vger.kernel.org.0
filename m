@@ -2,99 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C732392685
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 06:37:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2DCA3926A7
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 06:57:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234848AbhE0Eim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 00:38:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40594 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234405AbhE0EiO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 May 2021 00:38:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2DBB2613D4;
-        Thu, 27 May 2021 04:36:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622090202;
-        bh=2rd1W00vHy8UjgvFM2FUE1tslDVmc0vnnWiXkQB9i+c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BZC/bZEM0rDFBQPzQmwRi/FYf3ts4R3SIBd+1Vnptyv9wOYQiOEa9IIluuLXlEGx7
-         sOUoLOmdsp8LmYL34mlJTesEXn60bZ+WBMNLpUvNSvoK5ZDYTQTRj8502jkCxslhvU
-         2ySJ3TI6TaAHbWDBZF4ZPQeWBqw6Od4pxE8FKnmJi6Yntk7E37T1tJJ+UHllma1EzH
-         yhyScueFZLNn+P0lrglCg45TJE1J5eRQpnspJu4R/uTz8pCvLJtsEaROsMTCPhyt5/
-         kk26QG8J62SmPvrj5NKhQnla9w3mkYcqUy5fMiQQ3jqiEeAhdHs9OsKcRDjaRH+dIM
-         TdMVTbqDTkaCQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Eli Cohen <elic@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 17/17] net/mlx5: Improve performance in SF allocation
-Date:   Wed, 26 May 2021 21:36:09 -0700
-Message-Id: <20210527043609.654854-18-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210527043609.654854-1-saeed@kernel.org>
-References: <20210527043609.654854-1-saeed@kernel.org>
+        id S234847AbhE0E6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 00:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234649AbhE0E6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 00:58:53 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855C5C061763
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 21:57:20 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id s6so4146466edu.10
+        for <netdev@vger.kernel.org>; Wed, 26 May 2021 21:57:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=YJ0dWA2LN7YqfF1ySTSNQvt81ovDnTZhfscP6j/isLs=;
+        b=gKB8fvK0cCWN4lEkm4wDH6rz4Sa0FsxRwsg5F16JeFZeSk5+GIGcIQz76DqI7jCKna
+         1n5SBDwT2tPkv3xz9FZpqyHuntur92hGyhaJqhPLvrxOpxjMAwWwnzEI+ond1RyDNj2M
+         hSKTWiLfyXawwcHjtm/qvhYeQS3O4ky+w5QeGyceqwSLyP/TheaH2Ne18IVUbd8qIt3/
+         KCdb3Z51nRn7l+3Pmv10fGurtavWFZ1jh73TQbyQtJqZwO5c78iH8kmQAAcbOJ6mGvgX
+         3uDqtsAOrG8BYjKnqsMxPZMs+PQNCK4Ce6nPSunMJjOob1tFMqZxwaa9xuHBoDSMyEVR
+         hSNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YJ0dWA2LN7YqfF1ySTSNQvt81ovDnTZhfscP6j/isLs=;
+        b=LdeNO4frtFhCOl/YzsWcw76Knd5WRS962SFw+iAbcoGSxLxzLcOouIZA4e4IDaiKOl
+         t7q0Ro/ofgqu4l3hR5kEWKybqLbV75wH/feNQnvXKWc6TfSZGx9HO/8/+0RG9wb5JiHX
+         tOX3/tMJVKd6/wOJpKihX1uZTD1cFzSDwuSyZsP+iJnd97gh1pKmVCCpDKE81LM2+q09
+         MCo/bHfFcin2Fqg2DVu6APM6REq8RqJSJsH0WFJbLIAfWXVa/4KlxB2zMMnf04TQqFtY
+         5azGjoU7UF3O4/7+6nWTSeNDRjDA3JWn9eUDgL3JzkvfqAWvAcESY8p5ts5I7YR4Sp9x
+         KFxg==
+X-Gm-Message-State: AOAM533s49gkbuj9a4mOpXJLUA8Wtr0iVepUzjP7zUzZ2hAxsnvBoCsz
+        Y5ivwLX8BqXadImk9tLrAFO/P0gEswkJh3cCTIoW
+X-Google-Smtp-Source: ABdhPJz7HIu5MQLRpH/FbPdTqRTue+3JMybVC+vY85i/I/de3bl/zvWYSVdjNKEUlXy6fDXCcVP8dUSaDhAFYIw47Ng=
+X-Received: by 2002:a05:6402:4252:: with SMTP id g18mr1953908edb.195.1622091439123;
+ Wed, 26 May 2021 21:57:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210517095513.850-1-xieyongji@bytedance.com> <20210517095513.850-12-xieyongji@bytedance.com>
+ <3740c7eb-e457-07f3-5048-917c8606275d@redhat.com>
+In-Reply-To: <3740c7eb-e457-07f3-5048-917c8606275d@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 27 May 2021 12:57:08 +0800
+Message-ID: <CACycT3uAqa6azso_8MGreh+quj-JXO1piuGnrV8k2kTfc34N2g@mail.gmail.com>
+Subject: Re: Re: [PATCH v7 11/12] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+On Thu, May 27, 2021 at 12:13 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/5/17 =E4=B8=8B=E5=8D=885:55, Xie Yongji =E5=86=99=E9=81=93=
+:
+> > +
+> > +static int vduse_dev_msg_sync(struct vduse_dev *dev,
+> > +                           struct vduse_dev_msg *msg)
+> > +{
+> > +     init_waitqueue_head(&msg->waitq);
+> > +     spin_lock(&dev->msg_lock);
+> > +     vduse_enqueue_msg(&dev->send_list, msg);
+> > +     wake_up(&dev->waitq);
+> > +     spin_unlock(&dev->msg_lock);
+> > +     wait_event_killable(msg->waitq, msg->completed);
+>
+>
+> What happens if the userspace(malicous) doesn't give a response forever?
+>
+> It looks like a DOS. If yes, we need to consider a way to fix that.
+>
 
-Avoid second traversal on the SF table by recording the first free entry
-and using it in case the looked up entry was not found in the table.
+How about using wait_event_killable_timeout() instead?
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../ethernet/mellanox/mlx5/core/sf/hw_table.c | 23 +++++++++++--------
- 1 file changed, 13 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-index ef5f892aafad..0c1fbf711fe6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-@@ -74,26 +74,29 @@ static int mlx5_sf_hw_table_id_alloc(struct mlx5_sf_hw_table *table, u32 control
- 				     u32 usr_sfnum)
- {
- 	struct mlx5_sf_hwc_table *hwc;
-+	int free_idx = -1;
- 	int i;
- 
- 	hwc = mlx5_sf_controller_to_hwc(table->dev, controller);
- 	if (!hwc->sfs)
- 		return -ENOSPC;
- 
--	/* Check if sf with same sfnum already exists or not. */
--	for (i = 0; i < hwc->max_fn; i++) {
--		if (hwc->sfs[i].allocated && hwc->sfs[i].usr_sfnum == usr_sfnum)
--			return -EEXIST;
--	}
--	/* Find the free entry and allocate the entry from the array */
- 	for (i = 0; i < hwc->max_fn; i++) {
- 		if (!hwc->sfs[i].allocated) {
--			hwc->sfs[i].usr_sfnum = usr_sfnum;
--			hwc->sfs[i].allocated = true;
--			return i;
-+			free_idx = free_idx == -1 ? i : -1;
-+			continue;
- 		}
-+
-+		if (hwc->sfs[i].usr_sfnum == usr_sfnum)
-+			return -EEXIST;
- 	}
--	return -ENOSPC;
-+
-+	if (free_idx == -1)
-+		return -ENOSPC;
-+
-+	hwc->sfs[free_idx].usr_sfnum = usr_sfnum;
-+	hwc->sfs[free_idx].allocated = true;
-+	return 0;
- }
- 
- static void mlx5_sf_hw_table_id_free(struct mlx5_sf_hw_table *table, u32 controller, int id)
--- 
-2.31.1
-
+Thanks,
+Yongji
