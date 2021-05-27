@@ -2,25 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AAC9392A38
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 11:04:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A5C0392A99
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 11:19:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235648AbhE0JGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 05:06:00 -0400
-Received: from outbound-smtp53.blacknight.com ([46.22.136.237]:48987 "EHLO
-        outbound-smtp53.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235588AbhE0JF6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 05:05:58 -0400
-Received: from mail.blacknight.com (pemlinmail03.blacknight.ie [81.17.254.16])
-        by outbound-smtp53.blacknight.com (Postfix) with ESMTPS id 91C96FB01E
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 10:04:24 +0100 (IST)
-Received: (qmail 2356 invoked from network); 27 May 2021 09:04:24 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.23.168])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 27 May 2021 09:04:24 -0000
-Date:   Thu, 27 May 2021 10:04:22 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        id S235675AbhE0JVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 05:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235608AbhE0JVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 05:21:13 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1BEC061574;
+        Thu, 27 May 2021 02:19:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=iRsknJTfFiEDd9n74h43kOIWLR9thmAzm1ZrB74a5Xk=; b=Mt+PC76TyiEwy+b6L48ycifDAR
+        XKE8hldzILOrEh24nLs1DSsELIQas2IMv96tixj0ygC3f1Lv3VEvRBeKiKDdtAWb19AjM5LU/k5h/
+        x3XDVHdV417fF1H3Ioq5EQ/NwRnCfBr+Fc1RIrEBzMubdx7Ex60adikqLp3aVUdx7YpCkeCFVn2k6
+        gyVeE5GIlQjhhQX6EMJnfTUpNzx1SHu06QnzDFpnSeKq7kiP0aebbIVgqScJDxi7FexSCpNSXgBHN
+        1vL261F7MmvNoS69Ac4LUN+xB6UnMqaSfWnV3cPlTxon563qfBxvhw3p6iNh2RBqXL5IZxp9HvQB8
+        7v4DbJ5Q==;
+Received: from hch by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lmC9l-005NI5-1e; Thu, 27 May 2021 09:18:41 +0000
+Date:   Thu, 27 May 2021 10:18:21 +0100
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Arnaldo Carvalho de Melo <acme@redhat.com>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Michal Suchanek <msuchanek@suse.de>,
@@ -36,57 +46,32 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Linux-Net <netdev@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
 Subject: Re: [PATCH] mm/page_alloc: Work around a pahole limitation with
  zero-sized struct pagesets
-Message-ID: <20210527090422.GA30378@techsingularity.net>
+Message-ID: <YK9j3YeMTZ+0I8NA@infradead.org>
 References: <20210526080741.GW30378@techsingularity.net>
  <YK9SiLX1E1KAZORb@infradead.org>
+ <20210527090422.GA30378@techsingularity.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YK9SiLX1E1KAZORb@infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210527090422.GA30378@techsingularity.net>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 27, 2021 at 09:04:24AM +0100, Christoph Hellwig wrote:
-> On Wed, May 26, 2021 at 09:07:41AM +0100, Mel Gorman wrote:
-> > +    !defined(CONFIG_DEBUG_LOCK_ALLOC) &&		\
-> > +    !defined(CONFIG_PAHOLE_HAS_ZEROSIZE_PERCPU_SUPPORT)
-> > +	/*
-> > +	 * pahole 1.21 and earlier gets confused by zero-sized per-CPU
-> > +	 * variables and produces invalid BTF. Ensure that
-> > +	 * sizeof(struct pagesets) != 0 for older versions of pahole.
-> > +	 */
-> > +	char __pahole_hack;
-> > +	#warning "pahole too old to support zero-sized struct pagesets"
-> > +#endif
+On Thu, May 27, 2021 at 10:04:22AM +0100, Mel Gorman wrote:
+> What do you suggest as an alternative?
 > 
-> Err, hell no.  We should not mess up the kernel for broken tools that
-> are not relevant to the kernel build itself ever.
+> I added Arnaldo to the cc as he tagged the last released version of
+> pahole (1.21) and may be able to tag a 1.22 with Andrii's fix for pahole
+> included.
+> 
+> The most obvious alternative fix for this issue is to require pahole
+> 1.22 to set CONFIG_DEBUG_INFO_BTF but obviously a version 1.22 that works
+> needs to exist first and right now it does not. I'd be ok with this but
+> users of DEBUG_INFO_BTF may object given that it'll be impossible to set
+> the option until there is a release.
 
-What do you suggest as an alternative?
-
-I added Arnaldo to the cc as he tagged the last released version of
-pahole (1.21) and may be able to tag a 1.22 with Andrii's fix for pahole
-included.
-
-The most obvious alternative fix for this issue is to require pahole
-1.22 to set CONFIG_DEBUG_INFO_BTF but obviously a version 1.22 that works
-needs to exist first and right now it does not. I'd be ok with this but
-users of DEBUG_INFO_BTF may object given that it'll be impossible to set
-the option until there is a release.
-
-The second alternative fix is to embed the local_lock
-within struct per_cpu_pages. It was shown this was possible in
-https://lore.kernel.org/linux-rt-users/20210419141341.26047-1-mgorman@techsingularity.net/T/#md1001d7af52ac0d6d214b95e98fe051f9399de64
-but I dropped it because it makes the locking protocol complex e.g.
-config-specific lock-switchin in free_unref_page_list.
-
-The last one is wrapping local_lock behind #defines and only defining the
-per-cpu structures when local_lock_t is a non-zero size. That is simply
-too ugly for words, the locking patterns should always be the same.
-
-
--- 
-Mel Gorman
-SUSE Labs
+Yes, disable BTF.  Empty structs are a very useful feature that we use
+in various places in the kernel.  We can't just keep piling hacks over
+hacks to make that work with a recent fringe feature.
