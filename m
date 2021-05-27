@@ -2,93 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B90F3935BA
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 20:57:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6D2F3935CF
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 21:01:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237058AbhE0S6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 14:58:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60118 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236115AbhE0S6P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 May 2021 14:58:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8197F611C9;
-        Thu, 27 May 2021 18:56:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622141801;
-        bh=7BsEfHyC8454XzpOVzpjPhIIGS6Lzi6AC9Yy8bVJ6MQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YsnuJAMRSDhuRRUN6Y3h76cR6eZurI0OI5cxy7uGpnotrkUBwdCnkL/7xmDBcMP5X
-         /xC3V0VkCbmcoGW3qirZ8g/eIO5Nn9yrwCj+nLd1reiiHqZ1IqZlQiJvnOdVkW3mk3
-         z+SbhDYZNt4QgOxPOinE4MXKpTuvgTOjdL2I/hjWuMYvKMxH3+94Cvf5fPZCdHdgpG
-         NDHtZREtJBIeqOTWjIM1Idi0ZY1IkjCw+cYaMEqqZ2EgZ0X9SpH2Ma0lOd3vvj6eFw
-         kqqFxyDOKKCYel3zB6UogZHmqqhYdO+tkPnnXGXryUIn+oMMVEUa51OXbwHaahPNZv
-         6hNY+H42lPblw==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Eli Cohen <elic@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V2 15/15] net/mlx5: Fix lag port remapping logic
-Date:   Thu, 27 May 2021 11:56:24 -0700
-Message-Id: <20210527185624.694304-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210527185624.694304-1-saeed@kernel.org>
-References: <20210527185624.694304-1-saeed@kernel.org>
+        id S236107AbhE0TC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 15:02:56 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:38812 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232896AbhE0TCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 15:02:54 -0400
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 70BC364502;
+        Thu, 27 May 2021 21:00:17 +0200 (CEST)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 0/5] Netfilter/IPVS fixes for net
+Date:   Thu, 27 May 2021 21:01:10 +0200
+Message-Id: <20210527190115.98503-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+Hi,
 
-Fix the logic so that if both ports netdevices are enabled or disabled,
-use the trivial mapping without swapping.
+The following patchset contains Netfilter/IPVS fixes for net:
 
-If only one of the netdevice's tx is enabled, use it to remap traffic to
-that port.
+1) Fix incorrect sockopts unregistration from error path,
+   from Florian Westphal.
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/lag.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+2) A few patches to provide better error reporting when missing kernel
+   netfilter options are missing in .config.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-index e52e2144ab12..1fb70524d067 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-@@ -118,17 +118,24 @@ static bool __mlx5_lag_is_sriov(struct mlx5_lag *ldev)
- static void mlx5_infer_tx_affinity_mapping(struct lag_tracker *tracker,
- 					   u8 *port1, u8 *port2)
- {
-+	bool p1en;
-+	bool p2en;
-+
-+	p1en = tracker->netdev_state[MLX5_LAG_P1].tx_enabled &&
-+	       tracker->netdev_state[MLX5_LAG_P1].link_up;
-+
-+	p2en = tracker->netdev_state[MLX5_LAG_P2].tx_enabled &&
-+	       tracker->netdev_state[MLX5_LAG_P2].link_up;
-+
- 	*port1 = 1;
- 	*port2 = 2;
--	if (!tracker->netdev_state[MLX5_LAG_P1].tx_enabled ||
--	    !tracker->netdev_state[MLX5_LAG_P1].link_up) {
--		*port1 = 2;
-+	if ((!p1en && !p2en) || (p1en && p2en))
- 		return;
--	}
- 
--	if (!tracker->netdev_state[MLX5_LAG_P2].tx_enabled ||
--	    !tracker->netdev_state[MLX5_LAG_P2].link_up)
-+	if (p1en)
- 		*port2 = 1;
-+	else
-+		*port1 = 2;
- }
- 
- void mlx5_modify_lag(struct mlx5_lag *ldev,
--- 
-2.31.1
+3) Fix dormant table flag updates.
 
+4) Memleak in IPVS  when adding service with IP_VS_SVC_F_HASHED flag.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks!
+
+----------------------------------------------------------------
+
+The following changes since commit 04c26faa51d1e2fe71cf13c45791f5174c37f986:
+
+  tipc: wait and exit until all work queues are done (2021-05-17 14:07:48 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 56e4ee82e850026d71223262c07df7d6af3bd872:
+
+  ipvs: ignore IP_VS_SVC_F_HASHED flag when adding service (2021-05-27 13:06:48 +0200)
+
+----------------------------------------------------------------
+Florian Westphal (1):
+      netfilter: conntrack: unregister ipv4 sockopts on error unwind
+
+Julian Anastasov (1):
+      ipvs: ignore IP_VS_SVC_F_HASHED flag when adding service
+
+Pablo Neira Ayuso (3):
+      netfilter: nf_tables: missing error reporting for not selected expressions
+      netfilter: nf_tables: extended netlink error reporting for chain type
+      netfilter: nf_tables: fix table flag updates
+
+ include/net/netfilter/nf_tables.h  |  6 ---
+ net/netfilter/ipvs/ip_vs_ctl.c     |  2 +-
+ net/netfilter/nf_conntrack_proto.c |  2 +-
+ net/netfilter/nf_tables_api.c      | 84 ++++++++++++++++++++++++++------------
+ 4 files changed, 59 insertions(+), 35 deletions(-)
