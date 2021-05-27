@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D692392674
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 06:36:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67F8C392677
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 06:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233081AbhE0EiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 00:38:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40442 "EHLO mail.kernel.org"
+        id S233657AbhE0EiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 00:38:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40458 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229831AbhE0EiF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229843AbhE0EiF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 27 May 2021 00:38:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 789F7613DA;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DF448613DC;
         Thu, 27 May 2021 04:36:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622090192;
-        bh=5kmzNoRGcUFU3OxAJV7o22SZAGG+4zXHBkBKCTZuFDc=;
+        s=k20201202; t=1622090193;
+        bh=prmKBcqe1I8xbX8RHXCkZwLSWtFeXvvyAArBwg9Z96I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h1Zcai+dhQv8arg9TABn5kFkFD2J14HdZdgXCJfKLvs865SEvxFQ/esy256t2Fpmo
-         PpqQOaN2uaNT03DlSe+y4CERDkAl6cAp+Xyks0DoIGrglD4/3iHK1hLmffIVIubrNL
-         AHRnZRWW5ymlKhZz/NXNnXktteGUKmVqRwoi06RtR4QC41N99n7Hdery/GtM9UX77k
-         yc8OpBkJuEEHnF49XJgA5e+NsnY70vUbrt6q8uK+cnR82JXqr/VWKpjfCGDqka8ekX
-         cKoYaHsQsk8kxbZF3x8TrBs3T37PhANwhIartai90/85POD1wE0WSAwY4wotBMsODE
-         dXjpAvEchqoNA==
+        b=pO9WdtKCBQZ3OCcaGdo7Dpbrrxo1yS6QKcKSZ0d090l5WtcJlw/pUgzjxeliepwUi
+         CgJVQnOr971xspYrnZrY/W/OJwYi9Dj5WD29COIv3U75eJgsn9UlPPBL+fCUqLYR9C
+         14zbW6wHwSkfZ1cx/GbInxdI8J43VnkGJl10GJb6xgZssGdZLrBnWr0zkmfM0cBRYR
+         RWZbrx/x6pEJ1wrULP4Wdl40x5gcv4mlq0irgqoO9aI8lVxeah3slK+NOeoz/tFEuU
+         WOpbEu4lHbjjZo+Wg3xARyGPDy/QZLX2d1ZcFUfto3dU76txsj9bBJXnPuftP+DI8K
+         Y41R+8wF/VlqQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>,
+        Huy Nguyen <huyn@nvidia.com>, Raed Salem <raeds@nvidia.com>,
+        Paul Blakey <paulb@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 03/17] net/mlx5e: TC: Use bit counts for register mapping
-Date:   Wed, 26 May 2021 21:35:55 -0700
-Message-Id: <20210527043609.654854-4-saeed@kernel.org>
+Subject: [net-next 04/17] net/mlx5e: TC: Reserved bit 31 of REG_C1 for IPsec offload
+Date:   Wed, 26 May 2021 21:35:56 -0700
+Message-Id: <20210527043609.654854-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210527043609.654854-1-saeed@kernel.org>
 References: <20210527043609.654854-1-saeed@kernel.org>
@@ -41,331 +42,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Blakey <paulb@nvidia.com>
+From: Huy Nguyen <huyn@nvidia.com>
 
-To prepare for next patch where we will use a non-byte
-aligned mapping, change all byte counts in register
-mapping to bits.
+Currently ASAP features fully utilize all the bits of the CQE's flow tag
+and ft_metadata field. The flow tag field cannot be used because the
+flow table tagging in FTE does not allow partial write.
 
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
+We agree to reserve bit 31 of CQE's ft_metadata for IPsec to avoid
+ASAP CT from dropping IPsec offloaded packet
+
+Here is the new bit layout of REG_C1. Tunnel option id is reduced to
+11 bits:
+< IPSEC MARKER (1) | ESW_TUN_ID(12) | ESW_TUN_OPTS(11) | ESW_ZONE_ID(8) >
+
+Signed-off-by: Huy Nguyen <huyn@nvidia.com>
+Signed-off-by: Raed Salem <raeds@nvidia.com>
+Reviewed-by: Paul Blakey <paulb@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    |  6 +-
- .../ethernet/mellanox/mlx5/core/en/tc_ct.h    | 23 +++--
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 86 ++++++++++++-------
- .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  6 +-
- .../mellanox/mlx5/core/lib/fs_chains.c        |  5 +-
- 5 files changed, 77 insertions(+), 49 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h |  2 +-
+ include/linux/mlx5/eswitch.h                    | 17 ++++++++++-------
+ 3 files changed, 12 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index e3b0fd78184e..91e7a01e32be 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -23,7 +23,7 @@
- #include "en_tc.h"
- #include "en_rep.h"
- 
--#define MLX5_CT_ZONE_BITS (mlx5e_tc_attr_to_reg_mappings[ZONE_TO_REG].mlen * 8)
-+#define MLX5_CT_ZONE_BITS (mlx5e_tc_attr_to_reg_mappings[ZONE_TO_REG].mlen)
- #define MLX5_CT_ZONE_MASK GENMASK(MLX5_CT_ZONE_BITS - 1, 0)
- #define MLX5_CT_STATE_ESTABLISHED_BIT BIT(1)
- #define MLX5_CT_STATE_TRK_BIT BIT(2)
-@@ -32,11 +32,11 @@
- #define MLX5_CT_STATE_RELATED_BIT BIT(5)
- #define MLX5_CT_STATE_INVALID_BIT BIT(6)
- 
--#define MLX5_FTE_ID_BITS (mlx5e_tc_attr_to_reg_mappings[FTEID_TO_REG].mlen * 8)
-+#define MLX5_FTE_ID_BITS (mlx5e_tc_attr_to_reg_mappings[FTEID_TO_REG].mlen)
- #define MLX5_FTE_ID_MAX GENMASK(MLX5_FTE_ID_BITS - 1, 0)
- #define MLX5_FTE_ID_MASK MLX5_FTE_ID_MAX
- 
--#define MLX5_CT_LABELS_BITS (mlx5e_tc_attr_to_reg_mappings[LABELS_TO_REG].mlen * 8)
-+#define MLX5_CT_LABELS_BITS (mlx5e_tc_attr_to_reg_mappings[LABELS_TO_REG].mlen)
- #define MLX5_CT_LABELS_MASK GENMASK(MLX5_CT_LABELS_BITS - 1, 0)
- 
- #define ct_dbg(fmt, args...)\
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-index 69e618d17071..644cf1641cde 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-@@ -33,15 +33,15 @@ struct mlx5_ct_attr {
- #define zone_to_reg_ct {\
- 	.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_2,\
- 	.moffset = 0,\
--	.mlen = 2,\
-+	.mlen = 16,\
- 	.soffset = MLX5_BYTE_OFF(fte_match_param,\
--				 misc_parameters_2.metadata_reg_c_2) + 2,\
-+				 misc_parameters_2.metadata_reg_c_2),\
- }
- 
- #define ctstate_to_reg_ct {\
- 	.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_2,\
--	.moffset = 2,\
--	.mlen = 2,\
-+	.moffset = 16,\
-+	.mlen = 16,\
- 	.soffset = MLX5_BYTE_OFF(fte_match_param,\
- 				 misc_parameters_2.metadata_reg_c_2),\
- }
-@@ -49,7 +49,7 @@ struct mlx5_ct_attr {
- #define mark_to_reg_ct {\
- 	.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_3,\
- 	.moffset = 0,\
--	.mlen = 4,\
-+	.mlen = 32,\
- 	.soffset = MLX5_BYTE_OFF(fte_match_param,\
- 				 misc_parameters_2.metadata_reg_c_3),\
- }
-@@ -57,7 +57,7 @@ struct mlx5_ct_attr {
- #define labels_to_reg_ct {\
- 	.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_4,\
- 	.moffset = 0,\
--	.mlen = 4,\
-+	.mlen = 32,\
- 	.soffset = MLX5_BYTE_OFF(fte_match_param,\
- 				 misc_parameters_2.metadata_reg_c_4),\
- }
-@@ -65,7 +65,7 @@ struct mlx5_ct_attr {
- #define fteid_to_reg_ct {\
- 	.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_5,\
- 	.moffset = 0,\
--	.mlen = 4,\
-+	.mlen = 32,\
- 	.soffset = MLX5_BYTE_OFF(fte_match_param,\
- 				 misc_parameters_2.metadata_reg_c_5),\
- }
-@@ -73,20 +73,19 @@ struct mlx5_ct_attr {
- #define zone_restore_to_reg_ct {\
- 	.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_1,\
- 	.moffset = 0,\
--	.mlen = (ESW_ZONE_ID_BITS / 8),\
-+	.mlen = ESW_ZONE_ID_BITS,\
- 	.soffset = MLX5_BYTE_OFF(fte_match_param,\
--				 misc_parameters_2.metadata_reg_c_1) + 3,\
-+				 misc_parameters_2.metadata_reg_c_1),\
- }
- 
- #define nic_zone_restore_to_reg_ct {\
- 	.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_B,\
--	.moffset = 2,\
--	.mlen = (ESW_ZONE_ID_BITS / 8),\
-+	.moffset = 16,\
-+	.mlen = ESW_ZONE_ID_BITS,\
- }
- 
- #define REG_MAPPING_MLEN(reg) (mlx5e_tc_attr_to_reg_mappings[reg].mlen)
- #define REG_MAPPING_MOFFSET(reg) (mlx5e_tc_attr_to_reg_mappings[reg].moffset)
--#define REG_MAPPING_SHIFT(reg) (REG_MAPPING_MOFFSET(reg) * 8)
- 
- #if IS_ENABLED(CONFIG_MLX5_TC_CT)
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 47a9c49b25fd..7d5c9b69ea37 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -83,17 +83,17 @@ struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[] = {
- 	[CHAIN_TO_REG] = {
- 		.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_0,
- 		.moffset = 0,
--		.mlen = 2,
-+		.mlen = 16,
- 	},
- 	[VPORT_TO_REG] = {
- 		.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_0,
--		.moffset = 2,
--		.mlen = 2,
-+		.moffset = 16,
-+		.mlen = 16,
- 	},
- 	[TUNNEL_TO_REG] = {
- 		.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_1,
--		.moffset = 1,
--		.mlen = ((ESW_TUN_OPTS_BITS + ESW_TUN_ID_BITS) / 8),
-+		.moffset = 8,
-+		.mlen = ESW_TUN_OPTS_BITS + ESW_TUN_ID_BITS,
- 		.soffset = MLX5_BYTE_OFF(fte_match_param,
- 					 misc_parameters_2.metadata_reg_c_1),
- 	},
-@@ -110,7 +110,7 @@ struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[] = {
- 	[NIC_CHAIN_TO_REG] = {
- 		.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_B,
- 		.moffset = 0,
--		.mlen = 2,
-+		.mlen = 16,
- 	},
- 	[NIC_ZONE_RESTORE_TO_REG] = nic_zone_restore_to_reg_ct,
- };
-@@ -128,23 +128,46 @@ static void mlx5e_put_flow_tunnel_id(struct mlx5e_tc_flow *flow);
- void
- mlx5e_tc_match_to_reg_match(struct mlx5_flow_spec *spec,
- 			    enum mlx5e_tc_attr_to_reg type,
--			    u32 data,
-+			    u32 val,
- 			    u32 mask)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+index 6cdc52d50a48..8cef4e7cfa4b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+@@ -617,7 +617,7 @@ static bool mlx5e_restore_skb(struct sk_buff *skb, u32 chain, u32 reg_c1,
+ 			      struct mlx5e_tc_update_priv *tc_priv)
  {
-+	void *headers_c = spec->match_criteria, *headers_v = spec->match_value, *fmask, *fval;
- 	int soffset = mlx5e_tc_attr_to_reg_mappings[type].soffset;
-+	int moffset = mlx5e_tc_attr_to_reg_mappings[type].moffset;
- 	int match_len = mlx5e_tc_attr_to_reg_mappings[type].mlen;
--	void *headers_c = spec->match_criteria;
--	void *headers_v = spec->match_value;
--	void *fmask, *fval;
-+	u32 max_mask = GENMASK(match_len - 1, 0);
-+	__be32 curr_mask_be, curr_val_be;
-+	u32 curr_mask, curr_val;
+ 	struct mlx5e_priv *priv = netdev_priv(skb->dev);
+-	u32 tunnel_id = reg_c1 >> ESW_TUN_OFFSET;
++	u32 tunnel_id = (reg_c1 >> ESW_TUN_OFFSET) & TUNNEL_ID_MASK;
  
- 	fmask = headers_c + soffset;
- 	fval = headers_v + soffset;
- 
--	mask = (__force u32)(cpu_to_be32(mask)) >> (32 - (match_len * 8));
--	data = (__force u32)(cpu_to_be32(data)) >> (32 - (match_len * 8));
-+	memcpy(&curr_mask_be, fmask, 4);
-+	memcpy(&curr_val_be, fval, 4);
-+
-+	curr_mask = be32_to_cpu(curr_mask_be);
-+	curr_val = be32_to_cpu(curr_val_be);
-+
-+	//move to correct offset
-+	WARN_ON(mask > max_mask);
-+	mask <<= moffset;
-+	val <<= moffset;
-+	max_mask <<= moffset;
-+
-+	//zero val and mask
-+	curr_mask &= ~max_mask;
-+	curr_val &= ~max_mask;
- 
--	memcpy(fmask, &mask, match_len);
--	memcpy(fval, &data, match_len);
-+	//add current to mask
-+	curr_mask |= mask;
-+	curr_val |= val;
-+
-+	//back to be32 and write
-+	curr_mask_be = cpu_to_be32(curr_mask);
-+	curr_val_be = cpu_to_be32(curr_val);
-+
-+	memcpy(fmask, &curr_mask_be, 4);
-+	memcpy(fval, &curr_val_be, 4);
- 
- 	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_2;
- }
-@@ -152,23 +175,28 @@ mlx5e_tc_match_to_reg_match(struct mlx5_flow_spec *spec,
- void
- mlx5e_tc_match_to_reg_get_match(struct mlx5_flow_spec *spec,
- 				enum mlx5e_tc_attr_to_reg type,
--				u32 *data,
-+				u32 *val,
- 				u32 *mask)
- {
-+	void *headers_c = spec->match_criteria, *headers_v = spec->match_value, *fmask, *fval;
- 	int soffset = mlx5e_tc_attr_to_reg_mappings[type].soffset;
-+	int moffset = mlx5e_tc_attr_to_reg_mappings[type].moffset;
- 	int match_len = mlx5e_tc_attr_to_reg_mappings[type].mlen;
--	void *headers_c = spec->match_criteria;
--	void *headers_v = spec->match_value;
--	void *fmask, *fval;
-+	u32 max_mask = GENMASK(match_len - 1, 0);
-+	__be32 curr_mask_be, curr_val_be;
-+	u32 curr_mask, curr_val;
- 
- 	fmask = headers_c + soffset;
- 	fval = headers_v + soffset;
- 
--	memcpy(mask, fmask, match_len);
--	memcpy(data, fval, match_len);
-+	memcpy(&curr_mask_be, fmask, 4);
-+	memcpy(&curr_val_be, fval, 4);
-+
-+	curr_mask = be32_to_cpu(curr_mask_be);
-+	curr_val = be32_to_cpu(curr_val_be);
- 
--	*mask = be32_to_cpu((__force __be32)(*mask << (32 - (match_len * 8))));
--	*data = be32_to_cpu((__force __be32)(*data << (32 - (match_len * 8))));
-+	*mask = (curr_mask >> moffset) & max_mask;
-+	*val = (curr_val >> moffset) & max_mask;
- }
- 
- int
-@@ -192,13 +220,13 @@ mlx5e_tc_match_to_reg_set_and_get_id(struct mlx5_core_dev *mdev,
- 		 (mod_hdr_acts->num_actions * MLX5_MH_ACT_SZ);
- 
- 	/* Firmware has 5bit length field and 0 means 32bits */
--	if (mlen == 4)
-+	if (mlen == 32)
- 		mlen = 0;
- 
- 	MLX5_SET(set_action_in, modact, action_type, MLX5_ACTION_TYPE_SET);
- 	MLX5_SET(set_action_in, modact, field, mfield);
--	MLX5_SET(set_action_in, modact, offset, moffset * 8);
--	MLX5_SET(set_action_in, modact, length, mlen * 8);
-+	MLX5_SET(set_action_in, modact, offset, moffset);
-+	MLX5_SET(set_action_in, modact, length, mlen);
- 	MLX5_SET(set_action_in, modact, data, data);
- 	err = mod_hdr_acts->num_actions;
- 	mod_hdr_acts->num_actions++;
-@@ -296,13 +324,13 @@ void mlx5e_tc_match_to_reg_mod_hdr_change(struct mlx5_core_dev *mdev,
- 	modact = mod_hdr_acts->actions + (act_id * MLX5_MH_ACT_SZ);
- 
- 	/* Firmware has 5bit length field and 0 means 32bits */
--	if (mlen == 4)
-+	if (mlen == 32)
- 		mlen = 0;
- 
- 	MLX5_SET(set_action_in, modact, action_type, MLX5_ACTION_TYPE_SET);
- 	MLX5_SET(set_action_in, modact, field, mfield);
--	MLX5_SET(set_action_in, modact, offset, moffset * 8);
--	MLX5_SET(set_action_in, modact, length, mlen * 8);
-+	MLX5_SET(set_action_in, modact, offset, moffset);
-+	MLX5_SET(set_action_in, modact, length, mlen);
- 	MLX5_SET(set_action_in, modact, data, data);
- }
- 
-@@ -5080,7 +5108,7 @@ bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe,
- 
- 		tc_skb_ext->chain = chain;
- 
--		zone_restore_id = (reg_b >> REG_MAPPING_SHIFT(NIC_ZONE_RESTORE_TO_REG)) &
-+		zone_restore_id = (reg_b >> REG_MAPPING_MOFFSET(NIC_ZONE_RESTORE_TO_REG)) &
- 			ESW_ZONE_ID_MASK;
- 
- 		if (!mlx5e_tc_ct_restore_flow(tc->ct, skb,
+ 	if (chain) {
+ 		struct mlx5_rep_uplink_priv *uplink_priv;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 25c091795bcd..3534d14d7d5c 100644
+index 3534d14d7d5c..721093b55acc 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -198,10 +198,10 @@ enum mlx5e_tc_attr_to_reg {
+@@ -129,7 +129,7 @@ struct tunnel_match_enc_opts {
+  */
+ #define TUNNEL_INFO_BITS 12
+ #define TUNNEL_INFO_BITS_MASK GENMASK(TUNNEL_INFO_BITS - 1, 0)
+-#define ENC_OPTS_BITS 12
++#define ENC_OPTS_BITS 11
+ #define ENC_OPTS_BITS_MASK GENMASK(ENC_OPTS_BITS - 1, 0)
+ #define TUNNEL_ID_BITS (TUNNEL_INFO_BITS + ENC_OPTS_BITS)
+ #define TUNNEL_ID_MASK GENMASK(TUNNEL_ID_BITS - 1, 0)
+diff --git a/include/linux/mlx5/eswitch.h b/include/linux/mlx5/eswitch.h
+index 17109b65c1ac..bc7db2e059eb 100644
+--- a/include/linux/mlx5/eswitch.h
++++ b/include/linux/mlx5/eswitch.h
+@@ -98,10 +98,11 @@ u32 mlx5_eswitch_get_vport_metadata_for_set(struct mlx5_eswitch *esw,
+ 					    u16 vport_num);
  
- struct mlx5e_tc_attr_to_reg_mapping {
- 	int mfield; /* rewrite field */
--	int moffset; /* offset of mfield */
--	int mlen; /* bytes to rewrite/match */
-+	int moffset; /* bit offset of mfield */
-+	int mlen; /* bits to rewrite/match */
- 
--	int soffset; /* offset of spec for match */
-+	int soffset; /* byte offset of spec for match */
- };
- 
- extern struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[];
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-index 00ef10a1a9f8..4c60c540bf9d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-@@ -336,9 +336,10 @@ create_chain_restore(struct fs_chain *chain)
- 	MLX5_SET(set_action_in, modact, field,
- 		 mlx5e_tc_attr_to_reg_mappings[chain_to_reg].mfield);
- 	MLX5_SET(set_action_in, modact, offset,
--		 mlx5e_tc_attr_to_reg_mappings[chain_to_reg].moffset * 8);
-+		 mlx5e_tc_attr_to_reg_mappings[chain_to_reg].moffset);
- 	MLX5_SET(set_action_in, modact, length,
--		 mlx5e_tc_attr_to_reg_mappings[chain_to_reg].mlen * 8);
-+		 mlx5e_tc_attr_to_reg_mappings[chain_to_reg].mlen == 32 ?
-+		 0 : mlx5e_tc_attr_to_reg_mappings[chain_to_reg].mlen);
- 	MLX5_SET(set_action_in, modact, data, chain->id);
- 	mod_hdr = mlx5_modify_header_alloc(chains->dev, chains->ns,
- 					   1, modact);
+ /* Reg C1 usage:
+- * Reg C1 = < ESW_TUN_ID(12) | ESW_TUN_OPTS(12) | ESW_ZONE_ID(8) >
++ * Reg C1 = < Reserved(1) | ESW_TUN_ID(12) | ESW_TUN_OPTS(11) | ESW_ZONE_ID(8) >
+  *
+- * Highest 12 bits of reg c1 is the encapsulation tunnel id, next 12 bits is
+- * encapsulation tunnel options, and the lowest 8 bits are used for zone id.
++ * Highest bit is reserved for other offloads as marker bit, next 12 bits of reg c1
++ * is the encapsulation tunnel id, next 11 bits is encapsulation tunnel options,
++ * and the lowest 8 bits are used for zone id.
+  *
+  * Zone id is used to restore CT flow when packet misses on chain.
+  *
+@@ -109,16 +110,18 @@ u32 mlx5_eswitch_get_vport_metadata_for_set(struct mlx5_eswitch *esw,
+  * on miss and to support inner header rewrite by means of implicit chain 0
+  * flows.
+  */
++#define ESW_RESERVED_BITS 1
+ #define ESW_ZONE_ID_BITS 8
+-#define ESW_TUN_OPTS_BITS 12
++#define ESW_TUN_OPTS_BITS 11
+ #define ESW_TUN_ID_BITS 12
+ #define ESW_TUN_OPTS_OFFSET ESW_ZONE_ID_BITS
+ #define ESW_TUN_OFFSET ESW_TUN_OPTS_OFFSET
+ #define ESW_ZONE_ID_MASK GENMASK(ESW_ZONE_ID_BITS - 1, 0)
+-#define ESW_TUN_OPTS_MASK GENMASK(32 - ESW_TUN_ID_BITS - 1, ESW_TUN_OPTS_OFFSET)
+-#define ESW_TUN_MASK GENMASK(31, ESW_TUN_OFFSET)
++#define ESW_TUN_OPTS_MASK GENMASK(31 - ESW_TUN_ID_BITS - ESW_RESERVED_BITS, ESW_TUN_OPTS_OFFSET)
++#define ESW_TUN_MASK GENMASK(31 - ESW_RESERVED_BITS, ESW_TUN_OFFSET)
+ #define ESW_TUN_ID_SLOW_TABLE_GOTO_VPORT 0 /* 0 is not a valid tunnel id */
+-#define ESW_TUN_OPTS_SLOW_TABLE_GOTO_VPORT 0xFFF /* 0xFFF is a reserved mapping */
++/* 0x7FF is a reserved mapping */
++#define ESW_TUN_OPTS_SLOW_TABLE_GOTO_VPORT GENMASK(ESW_TUN_OPTS_BITS - 1, 0)
+ #define ESW_TUN_SLOW_TABLE_GOTO_VPORT ((ESW_TUN_ID_SLOW_TABLE_GOTO_VPORT << ESW_TUN_OPTS_BITS) | \
+ 				       ESW_TUN_OPTS_SLOW_TABLE_GOTO_VPORT)
+ #define ESW_TUN_SLOW_TABLE_GOTO_VPORT_MARK ESW_TUN_OPTS_MASK
 -- 
 2.31.1
 
