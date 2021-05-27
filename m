@@ -2,66 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0878839252F
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 05:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5824F392536
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 05:06:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234382AbhE0DFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 23:05:37 -0400
-Received: from mga02.intel.com ([134.134.136.20]:30125 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234331AbhE0DFg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 23:05:36 -0400
-IronPort-SDR: bpQ0fqdqT4svueDYJAMzFCeu4H5UlMXwS9O4tY1rNZuDYArE/Efj3iKwnvbEu+X0tDhJ8ndkGl
- zkQUxQr+gxVA==
-X-IronPort-AV: E=McAfee;i="6200,9189,9996"; a="189757136"
-X-IronPort-AV: E=Sophos;i="5.82,333,1613462400"; 
-   d="scan'208";a="189757136"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2021 20:04:03 -0700
-IronPort-SDR: niUnAoue1Budx2zcM2vTPb51gut3JgFuSsjVVKQoJMA2/xEURPYLd4/ujAbW3yEGajVeVRQDPK
- vfnSYgr/iftA==
-X-IronPort-AV: E=Sophos;i="5.82,333,1613462400"; 
-   d="scan'208";a="443355413"
-Received: from shao2-debian.sh.intel.com (HELO localhost) ([10.239.13.11])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2021 20:04:01 -0700
-Date:   Thu, 27 May 2021 11:02:46 +0800
-From:   kernel test robot <rong.a.chen@intel.com>
-To:     Sharath Chandra Vurukala <sharathv@codeaurora.org>,
-        davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
-        cpratapa@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org,
-        Sharath Chandra Vurukala <sharathv@codeaurora.org>
-Subject: [RFC PATCH] net: ethernet: rmnet: fix duplicated inclusion
-Message-ID: <20210527030246.GV2687475@shao2-debian>
+        id S234382AbhE0DIC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 May 2021 23:08:02 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:2310 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232725AbhE0DIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 23:08:01 -0400
+Received: from dggeme709-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FrCJw4FxQz19V3l;
+        Thu, 27 May 2021 11:01:52 +0800 (CST)
+Received: from dggpemm500008.china.huawei.com (7.185.36.136) by
+ dggeme709-chm.china.huawei.com (10.1.199.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Thu, 27 May 2021 11:06:26 +0800
+Received: from dggpemm500008.china.huawei.com ([7.185.36.136]) by
+ dggpemm500008.china.huawei.com ([7.185.36.136]) with mapi id 15.01.2176.012;
+ Thu, 27 May 2021 11:06:26 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        dingxiaoxiong <dingxiaoxiong@huawei.com>
+Subject: RE: [PATCH net-next] virtio_net: set link state down when virtqueue
+ is broken
+Thread-Topic: [PATCH net-next] virtio_net: set link state down when virtqueue
+ is broken
+Thread-Index: AQHXUiPuxqZ0kftZNUuaGRJYw289Yar18/EAgACvT/A=
+Date:   Thu, 27 May 2021 03:06:26 +0000
+Message-ID: <3540ce31bb974d89bc5d2a612c2675a4@huawei.com>
+References: <79907bf6c835572b4af92f16d9a3ff2822b1c7ea.1622028946.git.wangyunjian@huawei.com>
+ <20210526172808.485ff268@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210526172808.485ff268@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.243.60]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210527030141.GU2687475@shao2-debian>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c: linux/bitfield.h is included more than once.
+> -----Original Message-----
+> From: Jakub Kicinski [mailto:kuba@kernel.org]
+> Sent: Thursday, May 27, 2021 8:28 AM
+> To: wangyunjian <wangyunjian@huawei.com>
+> Cc: netdev@vger.kernel.org; davem@davemloft.net; mst@redhat.com;
+> jasowang@redhat.com; virtualization@lists.linux-foundation.org;
+> dingxiaoxiong <dingxiaoxiong@huawei.com>
+> Subject: Re: [PATCH net-next] virtio_net: set link state down when virtqueue is
+> broken
+> 
+> On Wed, 26 May 2021 19:39:51 +0800 wangyunjian wrote:
+> > +	for (i = 0; i < vi->max_queue_pairs; i++) {
+> > +		if (virtqueue_is_broken(vi->rq[i].vq) ||
+> virtqueue_is_broken(vi->sq[i].vq)) {
+> > +			netif_carrier_off(netdev);
+> > +			netif_tx_stop_all_queues(netdev);
+> > +			vi->broken = true;
+> 
+> Can't comment on the virtio specifics but the lack of locking between this and
+> the code in virtnet_config_changed_work() seems surprising.
 
-Generated by: scripts/checkincludes.pl
+Thanks for your suggestion, will fix it in next version.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
- rmnet_map_data.c |    1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index 9e6efcde3d4f1..70cdc32bebd35 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -8,7 +8,6 @@
- #include <linux/ip.h>
- #include <linux/ipv6.h>
- #include <net/ip6_checksum.h>
--#include <linux/bitfield.h>
- #include "rmnet_config.h"
- #include "rmnet_map.h"
- #include "rmnet_private.h"
+Yunjian
