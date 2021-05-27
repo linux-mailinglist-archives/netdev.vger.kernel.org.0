@@ -2,177 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B00039248C
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 03:49:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E84A3924A9
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 04:00:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233761AbhE0Buz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 21:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233044AbhE0Buy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 21:50:54 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DD3C061574
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 18:49:22 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id ee9so1837060qvb.8
-        for <netdev@vger.kernel.org>; Wed, 26 May 2021 18:49:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nZWJ4KtmWre0H886xS86T1Rlq9eoppffftmkC5fCuOk=;
-        b=fD2Ru/+tK++imWBvESIvOLEulkb9mAYjr19bTfvl31Qa+J1rQ99MlRQeC/ffEUI4JH
-         FmyGDyxmYd9mcVRwVGvCUYNWisXAij/YyGq7X3sua/lJsSHqjVa7EyZmxa40/vGNKNfE
-         ybVjxQoHvMowW7+LL024Nl/E5DRrnekbE1pRmBjt1Gl7D3Y6KdoLFI4mw1aaOFy4YvwY
-         PoMDlgsqfdBCLpwh7jaclKImSkTvkhiHFQs31aYZsi172dLLLNggnSNGv6IfcvcS7xmA
-         oQnrP0x/BAF2oFZne5azlG46Bu1B9E3cVUX4VBXqyGGO7/tGtFLQmpsUZM4TFd/5FH0d
-         7zMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nZWJ4KtmWre0H886xS86T1Rlq9eoppffftmkC5fCuOk=;
-        b=tpbgZ7bNFilKH/CxY/j/iqxfWn6LR9ttfNEDbyA86hNmmX80Fy0JUEy4OHKQRJD8sg
-         NGPC9O/CKz/SzlLaG8ryr2Mws+f0Sp4SG2PajKHRjf79l5X+cYzEAd7pukArJbKJIPlM
-         Cx1fjKL22BWdQTUZ7YCpTc/Y8jylI/ZStYsnEs/W912I8HFGr5cPcEqSDe7vXBPHuRW8
-         9MID+3bFxAwyfT44LVPp/GdzEoIt8f/Yx81I0dx1T1wM8qAvOwgTVJ60v+sm4dlgJ3vj
-         ijD7leyBvPQV7fV+qaX5zp4+8pBZBv7XciqiTMJuiPrQWRgCdqyZq51ABewy8z6BZZ8a
-         aq9w==
-X-Gm-Message-State: AOAM531HjODOWqarRwR0K4sY7yAieopyncwi5DyrJ0vkYJTnIo5Jhg/0
-        w3Dnpii+K94KkGBEG24n+yI=
-X-Google-Smtp-Source: ABdhPJz8T8BQrhuLw1VrhA7fTJMiEKJ5JQiTTovO5w30LhO0JljbNQPpRzbQgpdiZpSRtKirKblDtw==
-X-Received: by 2002:a0c:99db:: with SMTP id y27mr975853qve.19.1622080161575;
-        Wed, 26 May 2021 18:49:21 -0700 (PDT)
-Received: from horizon.localdomain ([2001:1284:f013:c858:4e88:b1d7:83be:b613])
-        by smtp.gmail.com with ESMTPSA id g3sm497045qth.19.2021.05.26.18.49.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 May 2021 18:49:21 -0700 (PDT)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id 0775EC169D; Wed, 26 May 2021 22:49:18 -0300 (-03)
-Date:   Wed, 26 May 2021 22:49:17 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Ariel Levkovich <lariel@nvidia.com>
-Cc:     netdev@vger.kernel.org, paulb@nvidia.com, jiri@resnulli.us
-Subject: Re: [PATCH net] net/sched: act_ct: Fix ct template allocation for
- zone 0
-Message-ID: <YK76nZpfTBO904lU@horizon.localdomain>
-References: <20210526170110.54864-1-lariel@nvidia.com>
+        id S234189AbhE0CC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 22:02:26 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:6644 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233825AbhE0CCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 22:02:20 -0400
+Received: from dggems705-chm.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Fr9v52czhz1CF0C;
+        Thu, 27 May 2021 09:57:53 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 27 May 2021 10:00:45 +0800
+Received: from [127.0.0.1] (10.69.26.252) by dggpemm500006.china.huawei.com
+ (7.185.36.236) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Thu, 27 May
+ 2021 10:00:45 +0800
+Subject: Re: [RFC net-next 2/4] ethtool: extend coalesce setting uAPI with CQE
+ mode
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@huawei.com>,
+        <dledford@redhat.com>, <jgg@ziepe.ca>, <netanel@amazon.com>,
+        <akiyano@amazon.com>, <thomas.lendacky@amd.com>,
+        <irusskikh@marvell.com>, <michael.chan@broadcom.com>,
+        <edwin.peer@broadcom.com>, <rohitm@chelsio.com>,
+        <jesse.brandeburg@intel.com>, <jacob.e.keller@intel.com>,
+        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
+        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
+        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
+        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
+        <linux-wireless@vger.kernel.org>
+References: <1622021262-8881-1-git-send-email-tanhuazhong@huawei.com>
+ <1622021262-8881-3-git-send-email-tanhuazhong@huawei.com>
+ <20210526170033.62c8e6eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+Message-ID: <b29f05f8-3c57-ec6a-78bb-3a22f743f7f1@huawei.com>
+Date:   Thu, 27 May 2021 10:00:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210526170110.54864-1-lariel@nvidia.com>
+In-Reply-To: <20210526170033.62c8e6eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.69.26.252]
+X-ClientProxiedBy: dggeme709-chm.china.huawei.com (10.1.199.105) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 08:01:10PM +0300, Ariel Levkovich wrote:
-> Fix current behavior of skipping template allocation in case the
-> ct action is in zone 0.
-> 
-> Skipping the allocation may cause the datapath ct code to ignore the
-> entire ct action with all its attributes (commit, nat) in case the ct
-> action in zone 0 was preceded by a ct clear action.
-> 
-> The ct clear action sets the ct_state to untracked and resets the
-> skb->_nfct pointer. Under these conditions and without an allocated
-> ct template, the skb->_nfct pointer will remain NULL which will
-> cause the tc ct action handler to exit without handling commit and nat
-> actions, if such exist.
-> 
-> For example, the following rule in OVS dp:
-> recirc_id(0x2),ct_state(+new-est-rel-rpl+trk),ct_label(0/0x1), \
-> in_port(eth0),actions:ct_clear,ct(commit,nat(src=10.11.0.12)), \
-> recirc(0x37a)
-> 
-> Will result in act_ct skipping the commit and nat actions in zone 0.
-> 
-> The change removes the skipping of template allocation for zone 0 and
-> treats it the same as any other zone.
-> 
-> Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-> Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
-> ---
->  net/sched/act_ct.c | 3 ---
 
-Hah! I guess I had looked only at netfilter code regarding
-NF_CT_DEFAULT_ZONE_ID.
+On 2021/5/27 8:00, Jakub Kicinski wrote:
+> On Wed, 26 May 2021 17:27:40 +0800 Huazhong Tan wrote:
+>> Currently, there many drivers who support CQE mode configuration,
+>> some configure it as a fixed when initialized, some provide an
+>> interface to change it by ethtool private flags. In order make it
+>> more generic, add 'ETHTOOL_A_COALESCE_USE_CQE_TX' and
+>> 'ETHTOOL_A_COALESCE_USE_CQE_RX' attribute and expand struct
+>> kernel_ethtool_coalesce with use_cqe_mode_tx and use_cqe_mode_rx,
+>> then these parameters can be accessed by ethtool netlink coalesce
+>> uAPI.
+>>
+>> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+>> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+>> index 25131df..975394e 100644
+>> --- a/Documentation/networking/ethtool-netlink.rst
+>> +++ b/Documentation/networking/ethtool-netlink.rst
+>> @@ -937,6 +937,8 @@ Kernel response contents:
+>>     ``ETHTOOL_A_COALESCE_TX_USECS_HIGH``         u32     delay (us), high Tx
+>>     ``ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH``    u32     max packets, high Tx
+>>     ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
+>> +  ``ETHTOOL_A_COALESCE_USE_CQE_TX``	       bool    Tx CQE mode
+>> +  ``ETHTOOL_A_COALESCE_USE_CQE_RX``	       bool    Rx CQE mode
+>>     ===========================================  ======  =======================
+>>   
+>>   Attributes are only included in reply if their value is not zero or the
+>> @@ -975,6 +977,8 @@ Request contents:
+>>     ``ETHTOOL_A_COALESCE_TX_USECS_HIGH``         u32     delay (us), high Tx
+>>     ``ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH``    u32     max packets, high Tx
+>>     ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
+>> +  ``ETHTOOL_A_COALESCE_USE_CQE_TX``	       bool    Tx CQE mode
+>> +  ``ETHTOOL_A_COALESCE_USE_CQE_RX``	       bool    Rx CQE mode
+>>     ===========================================  ======  =======================
+>>   
+>>   Request is rejected if it attributes declared as unsupported by driver (i.e.
+> You need to thoroughly document the semantics. Can you point us to
+> which drivers/devices implement similar modes of operation (if they
+> exist we need to make sure semantics match)?
 
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> index ec7a1c438df9..dfdfb677e6a9 100644
-> --- a/net/sched/act_ct.c
-> +++ b/net/sched/act_ct.c
-> @@ -1202,9 +1202,6 @@ static int tcf_ct_fill_params(struct net *net,
->  				   sizeof(p->zone));
->  	}
->  
-> -	if (p->zone == NF_CT_DEFAULT_ZONE_ID)
-> -		return 0;
-> -
 
-This patch makes act_ct behave like ovs kernel datapath, but I'm not
-sure ovs kernel is doing the right thing. :-) (jump to last paragraph
-for my suggestion, might ease the reading)
+Ok, will complement the semantics.
 
-As you described:
-"The ct clear action sets the ct_state to untracked and resets the
-skb->_nfct pointer." I think the problem lies on the first part, on
-setting it to untracked.
 
-That was introduced in ovs kernel on commit b8226962b1c4
-("openvswitch: add ct_clear action") and AFAICT the idea there was to
-"reset it to original state" [A].
+Currently, only mlx5 provides a interface to update
+this mode through ethtool priv-flag. other drivers like
+broadcom and ice just use a fixed EQE and do not have
+update interface.
 
-Then ovs userspace has commit 0cdfddddb664 ("datapath: add ct_clear
-action") as well, a mirror of the one above. There, it is noted:
-"   - if IP_CT_UNTRACKED is not available use 0 as other nf_ct_set()
-     calls do. Since we're setting ct to NULL this is okay."
 
-Thing is, IP_CT_ESTABLISHED is the first member of enum
-ip_conntrack_info and evalutes 0, while IP_CT_UNTRACKED is actually:
-include/uapi/linux/netfilter/nf_conntrack_common.h:
-        /* only for userspace compatibility */
-#ifndef __KERNEL__
-        IP_CT_NEW_REPLY = IP_CT_NUMBER,
-#else
-        IP_CT_UNTRACKED = 7,
-#endif
 
-In the commits above, none of them mention that the packet should be
-set to Untracked. That's a different thing than "undoing CT"..
-That setting untrack here is the equivalent of:
-  # iptables -A ... -j CT --notrack
+>> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+>> index 1030540..9d0a386 100644
+>> --- a/include/linux/ethtool.h
+>> +++ b/include/linux/ethtool.h
+>> @@ -179,6 +179,8 @@ __ethtool_get_link_ksettings(struct net_device *dev,
+>>   
+>>   struct kernel_ethtool_coalesce {
+>>   	struct ethtool_coalesce	base;
+>> +	__u32	use_cqe_mode_tx;
+>> +	__u32	use_cqe_mode_rx;
+> No __ in front, this is not a user space structure.
+> Why not bool or a bitfield?
 
-Then, when it finally reaches nf_conntrack_in:
-          tmpl = nf_ct_get(skb, &ctinfo);
-	      vvvv--- NULL if from act_ct and zone 0, !NULL if from ovs
-          if (tmpl || ctinfo == IP_CT_UNTRACKED) {
-	                     ^^-- always true after ct_clear
-                  /* Previously seen (loopback or untracked)?  Ignore. */
-                  if ((tmpl && !nf_ct_is_template(tmpl)) ||
-                       ctinfo == IP_CT_UNTRACKED)
-		              ^^--- always true..
-                          return NF_ACCEPT;
-			  ^^ returns her
-                  skb->_nfct = 0;
-          }
 
-If ct_clear (act_ct and ovs) instead set it 0 (which, well, it's odd
-but maps to IP_CT_ESTABLISHED), it wouldn't match on the conditions
-above, and would do CT normally.
+bool is enough, __u32 is used here to be consistent with
 
-With all that, what about keeping the check here, as it avoids an
-allocation that AFAICT is superfluous when not setting a zone != 0 and
-atomics for _get/_put, and changing ct_clear instead (act_ct and ovs),
-to NOT set the packet as IP_CT_UNTRACKED?
+fields in struct ethtool_coalesce.
 
-Thanks,
-Marcelo
+This seems unnecessary?
 
->  	nf_ct_zone_init(&zone, p->zone, NF_CT_DEFAULT_ZONE_DIR, 0);
->  	tmpl = nf_ct_tmpl_alloc(net, &zone, GFP_KERNEL);
->  	if (!tmpl) {
-> -- 
-> 2.25.2
-> 
+
+>>   };
+>>   
+>>   /**
+>> @@ -216,6 +223,8 @@ const struct nla_policy ethnl_coalesce_set_policy[] = {
+>>   	[ETHTOOL_A_COALESCE_TX_USECS_HIGH]	= { .type = NLA_U32 },
+>>   	[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH]	= { .type = NLA_U32 },
+>>   	[ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL] = { .type = NLA_U32 },
+>> +	[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX]	= { .type = NLA_U8 },
+>> +	[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX]	= { .type = NLA_U8 },
+> This needs a policy to make sure values are <= 1.
+>
+> .
+
