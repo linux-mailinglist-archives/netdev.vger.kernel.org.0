@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD84A392679
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 06:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 315BC39267A
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 06:36:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234725AbhE0EiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 00:38:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40478 "EHLO mail.kernel.org"
+        id S234832AbhE0EiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 00:38:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40514 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229899AbhE0EiH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229905AbhE0EiH (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 27 May 2021 00:38:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D49E5613CC;
-        Thu, 27 May 2021 04:36:33 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D06C4613D1;
+        Thu, 27 May 2021 04:36:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622090194;
-        bh=47XmjZ9lIAGJGFHkUS4jO8otskT8KMwjqhqghWzDZSA=;
+        s=k20201202; t=1622090195;
+        bh=hmNE4lUnxAlpZHoGjycoEXYBq4sZyFLqbjgBuCeCmrY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=duOEW47C3Pk9zuPDT3a4jSWgzvh/P1q7xWgnzV8pozKoRQLut63+qI04kVpGF1gsP
-         UBTz0NhvcV3c3wkmuCs+Gkg0yDBc96ddQJXMmAXcG+ILnxUc4cyXfOdvkShH3SchqC
-         Xdan2180A9wpBAkTzseCAsXR8YkWRasjSQeaGwttyC3t5U8f9+xynr86mt0j2cazEQ
-         q9erFZThf0DWV3Co/vgJv7XvUZzCoDA5RLhecO6dPoM9CYpxn7GEr5yreTTs6cB0Jm
-         uwW7Tbo2/wBObzPGlSJ9QMw9jf55N0l3qaODu/DyuG/1HftRlO0mOwVSa9SgbK6/Pd
-         uHEKKJopWUpqQ==
+        b=f3OqJ6dzC5n8sTFv4Pg3B7V95SQoiKi3K/ZSuM2vqgl2Mu5+aOj0PF8bzEEkO34B2
+         v9fMt2p8CyAjNQCxdqglZf9MQoqmxr4/wJWjKVsIxyuXrzlw/rT/OAxclF4yiBzaaU
+         aZyNK6c+MYCulpbgPtnEavEiMQ9WHQoeprPKs2CB+h8ZbU2EWhNFEqqQJC8B9t3dcv
+         q6CvZ+X8NdI0KWk20daTKjXPGwHJ0nreUe3ZvpCX+rtVyZKXtZd030q68GXNVJsNmf
+         TtFZJlnGAKKoIRGflm7n/VQjKB0wfy5nClTw9TjQxqp0TgchTv+oyYhkyckg/nSSwL
+         PBUUfALKwDLTA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 06/17] net/mlx5e: RX, Remove unnecessary check in RX CQE compression handling
-Date:   Wed, 26 May 2021 21:35:58 -0700
-Message-Id: <20210527043609.654854-7-saeed@kernel.org>
+Subject: [net-next 07/17] net/mlx5: DR, Remove unused field of send_ring struct
+Date:   Wed, 26 May 2021 21:35:59 -0700
+Message-Id: <20210527043609.654854-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210527043609.654854-1-saeed@kernel.org>
 References: <20210527043609.654854-1-saeed@kernel.org>
@@ -40,37 +41,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-There are two reasons for exiting mlx5e_decompress_cqes_cont():
-1. The compression session is completed (cqd.left == 0).
-2. The budget is exhausted (work_done == budget).
+Remove unused field of struct mlx5dr_send_ring
 
-If after calling mlx5e_decompress_cqes_cont() we have cqd.left > 0,
-it necessarily implies that budget is exhausted.
-
-The first part of the complex condition is covered by the second,
-hence we remove it here.
-
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 5346271974f5..e88429356018 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1560,7 +1560,7 @@ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget)
- 
- 	if (rq->cqd.left) {
- 		work_done += mlx5e_decompress_cqes_cont(rq, cqwq, 0, budget);
--		if (rq->cqd.left || work_done >= budget)
-+		if (work_done >= budget)
- 			goto out;
- 	}
- 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+index 67460c42a99b..7600004d79a8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+@@ -1252,7 +1252,6 @@ struct mlx5dr_send_ring {
+ 	u32 tx_head;
+ 	void *buf;
+ 	u32 buf_size;
+-	struct ib_wc wc[MAX_SEND_CQE];
+ 	u8 sync_buff[MIN_READ_SYNC];
+ 	struct mlx5dr_mr *sync_mr;
+ 	spinlock_t lock; /* Protect the data path of the send ring */
 -- 
 2.31.1
 
