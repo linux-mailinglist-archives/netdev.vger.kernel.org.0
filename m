@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DF88392390
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 02:07:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E40F392392
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 02:07:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234978AbhE0AIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 May 2021 20:08:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41268 "EHLO mail.kernel.org"
+        id S234997AbhE0AIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 May 2021 20:08:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41314 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234764AbhE0AIZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 May 2021 20:08:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E78776109E;
-        Thu, 27 May 2021 00:05:57 +0000 (UTC)
+        id S234961AbhE0AIa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 May 2021 20:08:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CB4EA613BE;
+        Thu, 27 May 2021 00:06:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622073958;
-        bh=UxD7gWGIQ0bdUuRoFV0swefHZfutmaB4wZBdJZ9oo8U=;
+        s=k20201202; t=1622073991;
+        bh=8NhwXlSg8UPnsQu77o9LoXYEgrvPG79K+CwgTqUQ7C0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rh33W4LrVIcjKRW/Std95AQrmx9Q1IRbTkiH33erP/LuFJ6MCLkFXyLLt8MTkifSX
-         BXpQ0cDkalfZXXxorbTgkVzv96hdUtcSUl2w/baVVrnICM93EcqwKLD4ktFdsrFLtI
-         AD/c1I/roe+t9jKtYXZxeuFryShcT41gGDFI5Wt/kuXoIWYCtrzu7N4pU6xGB45c3y
-         prKqOuP/dPkd7y3VhgWNsQFRlb/uv0F8Lh95aLIaUnIRJd3Y1yOR3pujkk4jLzh9VU
-         lRLJsBWjgBU/PiUxggJkRaTJYsRy+WL0BHvFjY7JP5QtAGTP5MmSlLNrDYZsMGGLOH
-         wH/4U/9zEAGEA==
-Date:   Wed, 26 May 2021 17:05:56 -0700
+        b=fWMno5OAx2Kn5nTNTJ9ud27nOEn5EGkqCi45QLgl1WRRLVaylyFA/ui1jf48TUHRX
+         ZxzT/N/DSvxIpBoj5Cn+sfiR2GftgSyrWyHwbtiLz58nWcqU0baMW1QHIKvGiCz+sK
+         Unse8p7MrW7iA/jCB62pfdIRrwu0siXaVuhIX935IwxczeNYRj4FPK49LJ32PQDS5h
+         EwG9v7PJSvrsvcOKQz9mWL5Ili4QLpdQz3Yr6Nqx/c5pd7/IBJOnB3NJjcHCZwWM1z
+         sfqFAq80WghpyblVX29acG4K1PpuVlSojJMRYDfoG9aOEbKgRuuVP/OWi0t2i1e4xb
+         YF5+7Wf5Y2qQA==
+Date:   Wed, 26 May 2021 17:06:30 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@nvidia.com
-Subject: Re: [patch net-next] devlink: append split port number to the port
- name
-Message-ID: <20210526170556.31336a06@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210526103508.760849-1-jiri@resnulli.us>
-References: <20210526103508.760849-1-jiri@resnulli.us>
+To:     George Cherian <george.cherian@marvell.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <gcherian@marvell.com>,
+        <sgoutham@marvell.com>
+Subject: Re: [net-next PATCH 1/5] octeontx2-af: add support for custom KPU
+ entries
+Message-ID: <20210526170630.1732c4b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210526155656.2689892-2-george.cherian@marvell.com>
+References: <20210526155656.2689892-1-george.cherian@marvell.com>
+        <20210526155656.2689892-2-george.cherian@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,37 +42,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 May 2021 12:35:08 +0200 Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
+On Wed, 26 May 2021 21:26:52 +0530 George Cherian wrote:
+> From: Stanislaw Kardach <skardach@marvell.com>
 > 
-> Instead of doing sprintf twice in case the port is split or not, append
-> the split port suffix in case the port is split.
+> Add ability to load a set of custom KPU entries. This
+> allows for flexible support for custom protocol parsing.
 > 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> AF driver will attempt to load the profile and verify if it can fit
+> hardware capabilities. If not, it will revert to the built-in profile.
+> 
+> Next it will replace the first KPU_MAX_CST_LT (2) entries in each KPU
+> in default profile with entries read from the profile image.
+> The built-in profile should always contain KPU_MAX_CSR_LT first no-match
+> entries and AF driver will disable those in the KPU unless custom
+> profile is loaded.
+> 
+> Profile file contains also a list of default protocol overrides to
+> allow for custom protocols to be used there.
+> 
+> Signed-off-by: Stanislaw Kardach <skardach@marvell.com>
+> Signed-off-by: George Cherian <george.cherian@marvell.com>
 
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index 06b2b1941dce..c7754c293010 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -8632,12 +8632,10 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
->  	switch (attrs->flavour) {
->  	case DEVLINK_PORT_FLAVOUR_PHYSICAL:
->  	case DEVLINK_PORT_FLAVOUR_VIRTUAL:
-> -		if (!attrs->split)
-> -			n = snprintf(name, len, "p%u", attrs->phys.port_number);
-> -		else
-> -			n = snprintf(name, len, "p%us%u",
-> -				     attrs->phys.port_number,
-> -				     attrs->phys.split_subport_number);
-> +		n = snprintf(name, len, "p%u", attrs->phys.port_number);
-
-snprintf() can return n > len, you need to check for this before
-passing len - n as an unsigned argument below.
-
-> +		if (attrs->split)
-> +			n += snprintf(name + n, len - n, "s%u",
-> +				      attrs->phys.split_subport_number);
->  		break;
->  	case DEVLINK_PORT_FLAVOUR_CPU:
->  	case DEVLINK_PORT_FLAVOUR_DSA:
-
+This one does not build.
