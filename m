@@ -2,180 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1E82392CBF
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 13:30:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D6C392D7C
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 14:03:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233477AbhE0Lc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 07:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbhE0Lc1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 07:32:27 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA6AC061574
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 04:30:53 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id q6so265308pjj.2
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 04:30:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MlS0xmdn5B4d696+cBc2Ff0rtw7TtyTBgee8RyjE/Wo=;
-        b=sRvivJZeJr1e9K10JQ2nra9RQgGVMYk+f2aRl5FfFgzWHmEf3mK+jiEeweODT2Dal+
-         DambZ57j9v+D1kApQB4+eGQwY9Cjx0CG4u7+dtZuKYjpUmR5ZYtp2VYDWKzs3aRPo5Le
-         uKZP12jNAkctmjB0j5Ic7GjikUgiMomy74tDahdcxBuaYPp0dltBqOgMAMJx0ln5iPvP
-         cD7t5CNpI5w16NHIBggx7s2rSv7a3F7YnV8gEHufGYjvI7ggRJoM7m+Ibmz9b0EztTi1
-         FS5OxBMRrwV7ZARdyLZvsjcStODYAgf2u07s4uzqKZTf9QUgYoLaIU5IV6CZmsDjr7z7
-         fnZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MlS0xmdn5B4d696+cBc2Ff0rtw7TtyTBgee8RyjE/Wo=;
-        b=cC5jdDYZkIuStwye2STflqiHgA5XsbYlUaj4r6RxYbr0w208u/WPlBN916ojhALAsC
-         bQ02uTdmQlC86kNJ0GoicRwWUrxwsMPGL9dY7YdrMoqUM65MRjhk1oc9MEtXy4rLN9hx
-         FvWu/v2ionvXyBOk7B95ibgKWb5lnRy7fwkE2EORDNtv/BOjAwht1Nc1bbWE+bdToNB3
-         mDNV9P7qWvqBt0D2UnauDcOnQl87b0uAFaTyAGWhtGJpaMA2DQk93KReN68LJANoiu7v
-         hXyxGUc/96d3zFfyo3+8Mz7aBJj3CSZLTmPNkM6trKbvDxabs0PI02n92Hm6Hbr7VcG3
-         0s5w==
-X-Gm-Message-State: AOAM533nHnHJ6sFDtr9ZuZzWSQXR55pDOLmzOpTJfSNqVMjNO73g9JYs
-        SgVohIuwKqXdcCI01U/7o4L7rgyiI5PxSY9zVlDrNQ==
-X-Google-Smtp-Source: ABdhPJytqfGNci7XZJDHtajiqlx61hSssQZwDs9hGcFmeZ3WD+smspd9MTVEU3+iJ+bG2oC6MFEP5l4AzMBMrGAduOs=
-X-Received: by 2002:a17:90b:1b04:: with SMTP id nu4mr3375909pjb.18.1622115053067;
- Thu, 27 May 2021 04:30:53 -0700 (PDT)
+        id S234753AbhE0MEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 08:04:30 -0400
+Received: from outbound-smtp48.blacknight.com ([46.22.136.219]:52889 "EHLO
+        outbound-smtp48.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234724AbhE0ME2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 08:04:28 -0400
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp48.blacknight.com (Postfix) with ESMTPS id D3E77FB1F3
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 13:02:52 +0100 (IST)
+Received: (qmail 32327 invoked from network); 27 May 2021 12:02:52 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.23.168])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 27 May 2021 12:02:52 -0000
+Date:   Thu, 27 May 2021 13:02:51 +0100
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Hritik Vijay <hritikxx8@gmail.com>,
+        Linux-BPF <bpf@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+Subject: [PATCH v2] mm/page_alloc: Work around a pahole limitation with
+ zero-sized struct pagesets
+Message-ID: <20210527120251.GC30378@techsingularity.net>
 MIME-Version: 1.0
-References: <20210520140158.10132-1-m.chetan.kumar@intel.com>
- <20210520140158.10132-16-m.chetan.kumar@intel.com> <CAMZdPi-Xs00vMq-im_wHnNE5XkhXU1-mOgrNbGnExPbHYAL-rw@mail.gmail.com>
- <90f93c17164a4d8299d17a02b1f15bfa@intel.com> <CAMZdPi_VbLcbVA34Bb3uBGDsDCkN0GjP4HmHUbX95PF9skwe2Q@mail.gmail.com>
- <c7d2dd39e82ada5aa4e4d6741865ecb1198959fe.camel@sipsolutions.net>
- <CAMZdPi99Un=AQeUMZUWzudubr2kR6=YciefdaXxYbhebSy+yVQ@mail.gmail.com> <c7b149f5f3014e02a0b94b11d957cfc73d675ad7.camel@sipsolutions.net>
-In-Reply-To: <c7b149f5f3014e02a0b94b11d957cfc73d675ad7.camel@sipsolutions.net>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Thu, 27 May 2021 13:39:09 +0200
-Message-ID: <CAMZdPi9Tmz1oD3rcpg3RfrvjwWo8RuiinpmURJF6WpETyumAGg@mail.gmail.com>
-Subject: Re: [PATCH V3 15/16] net: iosm: net driver
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     "Kumar, M Chetan" <m.chetan.kumar@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
-        linuxwwan <linuxwwan@intel.com>, Dan Williams <dcbw@redhat.com>,
-        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Johannes,
+This patch replaces
+mm-page_alloc-convert-per-cpu-list-protection-to-local_lock-fix.patch in
+Andrew's tree.
 
-On Thu, 27 May 2021 at 11:40, Johannes Berg <johannes@sipsolutions.net> wrote:
->
-> Hi Loic,
->
-> > Yes, I guess it's all about timings... At least, I care now...
->
-> :)
->
-> > I've recently worked on the mhi_net driver, which is basically the
-> > netdev driver for Qualcomm PCIe modems. MHI being similar to IOSM
-> > (exposing logical channels over PCI). Like QCOM USB variants, data can
-> > be transferred in QMAP format (I guess what you call QMI), via the
-> > `rmnet` link type (setup via iproute2).
->
-> Right.
->
-> (I know nothing about the formats, so if I said anything about 'QMI'
-> just ignore and think 'qualcomm stuff')
->
-> >
-> > This a legitimate point, but it's not too late to do the 'right'
-> > thing, + It should not be too much change in the IOSM driver.
->
-> Agree. Though I looked at it now in the last couple of hours, and it's
-> actually not easy to do.
->
-> I came up with these patches for now:
-> https://p.sipsolutions.net/d8d8897c3f43cb85.txt
->
-> (on top of 5.13-rc3 + the patchset we're discussing here)
+Michal Suchanek reported the following problem with linux-next
 
-Great, that looks exactly what we need.
+  [    0.000000] Linux version 5.13.0-rc2-next-20210519-1.g3455ff8-vanilla (geeko@buildhost) (gcc (SUSE Linux) 10.3.0, GNU ld (GNU Binutils; openSUSE Tumbleweed) 2.36.1.20210326-3) #1 SMP Wed May 19 10:05:10 UTC 2021 (3455ff8)
+  [    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-5.13.0-rc2-next-20210519-1.g3455ff8-vanilla root=UUID=ec42c33e-a2c2-4c61-afcc-93e9527 8f687 plymouth.enable=0 resume=/dev/disk/by-uuid/f1fe4560-a801-4faf-a638-834c407027c7 mitigations=auto earlyprintk initcall_debug nomodeset earlycon ignore_loglevel console=ttyS0,115200
+...
+  [   26.093364] calling  tracing_set_default_clock+0x0/0x62 @ 1
+  [   26.098937] initcall tracing_set_default_clock+0x0/0x62 returned 0 after 0 usecs
+  [   26.106330] calling  acpi_gpio_handle_deferred_request_irqs+0x0/0x7c @ 1
+  [   26.113033] initcall acpi_gpio_handle_deferred_request_irqs+0x0/0x7c returned 0 after 3 usecs
+  [   26.121559] calling  clk_disable_unused+0x0/0x102 @ 1
+  [   26.126620] initcall clk_disable_unused+0x0/0x102 returned 0 after 0 usecs
+  [   26.133491] calling  regulator_init_complete+0x0/0x25 @ 1
+  [   26.138890] initcall regulator_init_complete+0x0/0x25 returned 0 after 0 usecs
+  [   26.147816] Freeing unused decrypted memory: 2036K
+  [   26.153682] Freeing unused kernel image (initmem) memory: 2308K
+  [   26.165776] Write protecting the kernel read-only data: 26624k
+  [   26.173067] Freeing unused kernel image (text/rodata gap) memory: 2036K
+  [   26.180416] Freeing unused kernel image (rodata/data gap) memory: 1184K
+  [   26.187031] Run /init as init process
+  [   26.190693]   with arguments:
+  [   26.193661]     /init
+  [   26.195933]   with environment:
+  [   26.199079]     HOME=/
+  [   26.201444]     TERM=linux
+  [   26.204152]     BOOT_IMAGE=/boot/vmlinuz-5.13.0-rc2-next-20210519-1.g3455ff8-vanilla
+  [   26.254154] BPF:      type_id=35503 offset=178440 size=4
+  [   26.259125] BPF:
+  [   26.261054] BPF:Invalid offset
+  [   26.264119] BPF:
+  [   26.264119]
+  [   26.267437] failed to validate module [efivarfs] BTF: -22
 
->
-> The key problem is that rtnetlink ops are meant to be for a single
-> device family, and don't really generalize well. For example:
->
-> +static void wwan_rtnl_setup(struct net_device *dev)
-> +{
-> +       /* FIXME - how do we implement this? we dont have any data
-> +        * at this point ..., i.e. we can't look up the context yet?
-> +        * We'd need data[IFLA_WWAN_DEV_NAME], see wwan_rtnl_newlink().
-> +        */
-> +}
+Andrii Nakryiko bisected the problem to the commit "mm/page_alloc: convert
+per-cpu list protection to local_lock" currently staged in mmotm. In his
+own words
 
-Argh, yes I've overlooked that issue. But, do we even need to do
-something here? What if we do nothing here and call wwan->ops->setup()
-early in wwan_rtnl_newlink(). AFAIU, we don't really use data setup
-info until we actually register the netdev, except maybe for the
-netdev->txqueue_len. Though it's probably not a robust solution...
+  The immediate problem is two different definitions of numa_node per-cpu
+  variable. They both are at the same offset within .data..percpu ELF
+  section, they both have the same name, but one of them is marked as
+  static and another as global. And one is int variable, while another
+  is struct pagesets. I'll look some more tomorrow, but adding Jiri and
+  Arnaldo for visibility.
 
->
-> or
->
-> +static struct rtnl_link_ops wwan_rtnl_link_ops __read_mostly = {
-> [...]
-> +       .priv_size = WWAN_MAX_NETDEV_PRIV,
->
-> are both rather annoying.
->
-> Making this more generic should of course be possible, but would require
-> fairly large changes all over the kernel - passing the tb/data to all
-> the handlers involved here, etc. That seems awkward?
+  [110907] DATASEC '.data..percpu' size=178904 vlen=303
+  ...
+        type_id=27753 offset=163976 size=4 (VAR 'numa_node')
+        type_id=27754 offset=163976 size=4 (VAR 'numa_node')
 
-Yes, or alternatively add an optional alloc_netdev() rtnl ops, e.g. in
-rtnl_create_link:
+  [27753] VAR 'numa_node' type_id=27556, linkage=static
+  [27754] VAR 'numa_node' type_id=20, linkage=global
 
--       dev = alloc_netdev_mqs(ops->priv_size, ifname, name_assign_type,
--                              ops->setup, num_tx_queues, num_rx_queues);
-+       if (ops->alloc_netdev) {
-+               dev = ops->alloc_netdev(ifname, name_assign_type, num_tx_queues,
-+                                       num_rx_queues, tb);
-+       } else {
-+               dev = alloc_netdev_mqs(ops->priv_size, ifname, name_assign_type,
-+                                      ops->setup, num_tx_queues,
-num_rx_queues);
-+       }
+  [20] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED
 
-That would solve both the issues (setup, priv_size), without entire
-kernel refactoring.
+  [27556] STRUCT 'pagesets' size=0 vlen=1
+        'lock' type_id=507 bits_offset=0
 
->
-> What do you think?
->
-> The alternative I could see is doing what wifi did and create a
-> completely new (generic) netlink family, but that's also awkward to some
-> extend and requires writing more code to handle stuff that rtnetlink
-> already does ...
+  [506] STRUCT '(anon)' size=0 vlen=0
+  [507] TYPEDEF 'local_lock_t' type_id=506
 
-That would work indeed, but I would prefer avoiding such 'complexity',
-mainly because link management is all we need. Indeed, except if we
-want to abstract and handle control protocols (MBIM, QMI, AT) in the
-kernel, we should not have to expose additional high-level operations
-as in nl80211/cfg80211.
+The patch in question introduces a zero-sized per-cpu struct and while
+this is not wrong, versions of pahole prior to 1.22 (unreleased) get
+confused during BTF generation with two separate variables occupying the
+same address.
 
->
->
-> Please take a look. I suppose we could change rtnetlink to make it
-> possible to have this behind it ... but that might even be tricky,
-> because setup() is called in the context of alloc_netdev_mqs(), and that
-> also has no private data to pass through. So would we have to extend
-> rtnetlink ops with a "get_setup()" method that actually *returns* a
-> pointer to the setup method, so that it can be per-user (such as IOSM)?
-> Tricky stuff.
+This patch checks for older versions of pahole and only allows
+DEBUG_INFO_BTF_MODULES if pahole supports zero-sized per-cpu structures.
+DEBUG_INFO_BTF is still allowed as a KVM boot test passed with pahole
+v1.19.  While pahole 1.22 does not exist yet, it is assumed that Hritik's
+fix that allows DEBUG_INFO_BTF_MODULES to work will be included in that
+release.
 
-What do you think about this alloc_netdev() ops? we should be able to
-retrieve all we need from that.
+Reported-by: Michal Suchanek <msuchanek@suse.de>
+Reported-by: Hritik Vijay <hritikxx8@gmail.com>
+Debugged-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+---
+ lib/Kconfig.debug | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Regards,
-Loic
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 678c13967580..51b355cbe6d7 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -313,9 +313,12 @@ config DEBUG_INFO_BTF
+ config PAHOLE_HAS_SPLIT_BTF
+ 	def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'` -ge "119")
+ 
++config PAHOLE_HAS_ZEROSIZE_PERCPU_SUPPORT
++	def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'` -ge "122")
++
+ config DEBUG_INFO_BTF_MODULES
+ 	def_bool y
+-	depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF
++	depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF && PAHOLE_HAS_ZEROSIZE_PERCPU_SUPPORT
+ 	help
+ 	  Generate compact split BTF type information for kernel modules.
+ 
