@@ -2,123 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0966639286A
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 09:21:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 835EB3928A0
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 09:34:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234476AbhE0HWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 03:22:50 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2497 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233918AbhE0HWq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 03:22:46 -0400
-Received: from dggeml710-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FrK133nRNzYnSb;
-        Thu, 27 May 2021 15:18:31 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggeml710-chm.china.huawei.com (10.3.17.140) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 27 May 2021 15:21:11 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Thu, 27 May
- 2021 15:21:11 +0800
-Subject: Re: [PATCH net-next] ptr_ring: make __ptr_ring_empty() checking more
- reliable
-To:     Jason Wang <jasowang@redhat.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <will@kernel.org>, <peterz@infradead.org>, <paulmck@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <mst@redhat.com>, <brouer@redhat.com>
-References: <1622032173-11883-1-git-send-email-linyunsheng@huawei.com>
- <d2287691-1ef9-d2c4-13f6-2baf7b80d905@redhat.com>
- <25a6b73d-06ec-fe07-b34c-10fea709e055@huawei.com>
- <51bc1c38-da20-1090-e3ef-1972f28adfee@redhat.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <938bdb23-4335-845d-129e-db8af2484c27@huawei.com>
-Date:   Thu, 27 May 2021 15:21:10 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S234897AbhE0HgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 03:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233284AbhE0Hfy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 03:35:54 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB94C061574
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 00:34:21 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id s22so6455988ejv.12
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 00:34:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=JpPCkjOAGobfSNtpJxvUsntsk9lsRgQ1IR3+Mq27bcI=;
+        b=uMfYoJuLhl1KdRjAz6yEq3nbDEYIPQGLPOZo1dzv2U1WiTHQwyTUwYCbEPLT8+euBR
+         88x6YAEk2hBave7+d7G+vz7hvjmmWMj7KtUuw++18w7mDwPL4FmzZsGHehLYCV/JxvWB
+         0hXKY78gxyqW23n0ICW56b92UcN6Emj4izFb+TMFEGsfxuWSVVmCM7ddoNKpxI/zUDlC
+         kYi91qI7d/gPDmflc8jbzkRfQvBe8r0E9Rl9fmnhOl3WM+9wsfv/3a3WUQk+YAipuc0y
+         sU4BmfNzMxrrzrFXEaeHWUakPY+IGpQWpVBiWhRBKWSdEIGn1O73/meTmJtMab333NDZ
+         4luA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JpPCkjOAGobfSNtpJxvUsntsk9lsRgQ1IR3+Mq27bcI=;
+        b=qZjLZCvLNjtO+BX5LnsEgVnV0iJ22bY348EJTgB/Lv4QyyUJPXkM7lgpGSt5wmCssJ
+         9OGXBTZrBfkj+tCIUA6wE/aQYxZBIQFIDyKvVNdwvuTN0ra8Tg14jFWgyXjhHo4khpaJ
+         MbfupzFzFyXUM6UH2oQ7DpE9+yDrLpuKo6BZbYS6YpXlaPvcEeFL0gCQW5Ufc0iVfLPZ
+         hEkse6btQbUOQeo4Hz9uRSC2sdg3C/NwgDrTm0kB2KvDHB8MwjQS+6ZiODZEkRIQFFs1
+         s0S/e3oJNgh93pxliuQ/aOU759iwodrwpIqKUPWwcUfGU1uJiavt8RHL8gvA4TGnGLHz
+         TZ/w==
+X-Gm-Message-State: AOAM530NPRK01I6bnNJb3/hTyYcukAXVBw2TVhUJl/rTJB9ei4TnuGVa
+        bzxsA4sd+66YGG5OskYRDfmT62sUicoB1EUdu3Rb
+X-Google-Smtp-Source: ABdhPJx+nv79LV9LGHH2XXyBW6TJ1VbhAhSRhvc0U1UpO3biGSUk5ekbz3VHC3tbBnZ/C+qT8NXNA6kYjMYh4+evHdM=
+X-Received: by 2002:a17:907:7684:: with SMTP id jv4mr2315095ejc.427.1622100860243;
+ Thu, 27 May 2021 00:34:20 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <51bc1c38-da20-1090-e3ef-1972f28adfee@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme715-chm.china.huawei.com (10.1.199.111) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+References: <20210517095513.850-1-xieyongji@bytedance.com> <20210517095513.850-12-xieyongji@bytedance.com>
+ <3740c7eb-e457-07f3-5048-917c8606275d@redhat.com> <CACycT3uAqa6azso_8MGreh+quj-JXO1piuGnrV8k2kTfc34N2g@mail.gmail.com>
+ <5a68bb7c-fd05-ce02-cd61-8a601055c604@redhat.com> <CACycT3ve7YvKF+F+AnTQoJZMPua+jDvGMs_ox8GQe_=SGdeCMA@mail.gmail.com>
+ <ee00efca-b26d-c1be-68d2-f9e34a735515@redhat.com>
+In-Reply-To: <ee00efca-b26d-c1be-68d2-f9e34a735515@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 27 May 2021 15:34:09 +0800
+Message-ID: <CACycT3ufok97cKpk47NjUBTc0QAyfauFUyuFvhWKmuqCGJ7zZw@mail.gmail.com>
+Subject: Re: Re: [PATCH v7 11/12] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/5/27 14:53, Jason Wang wrote:
-> 
-> 在 2021/5/27 下午2:07, Yunsheng Lin 写道:
->> On 2021/5/27 12:57, Jason Wang wrote:
->>> 在 2021/5/26 下午8:29, Yunsheng Lin 写道:
->>>> Currently r->queue[] is cleared after r->consumer_head is moved
->>>> forward, which makes the __ptr_ring_empty() checking called in
->>>> page_pool_refill_alloc_cache() unreliable if the checking is done
->>>> after the r->queue clearing and before the consumer_head moving
->>>> forward.
->>>>
->>>> Move the r->queue[] clearing after consumer_head moving forward
->>>> to make __ptr_ring_empty() checking more reliable.
->>>
->>> If I understand this correctly, this can only happens if you run __ptr_ring_empty() in parallel with ptr_ring_discard_one().
->> Yes.
->>
->>> I think those two needs to be serialized. Or did I miss anything?
->> As the below comment in __ptr_ring_discard_one, if the above is true, I
->> do not think we need to keep consumer_head valid at all times, right?
->>
->>
->>     /* Note: we must keep consumer_head valid at all times for __ptr_ring_empty
->>      * to work correctly.
->>      */
-> 
-> 
-> I'm not sure I understand. But my point is that you need to synchronize the __ptr_ring_discard_one() and __ptr_empty() as explained in the comment above __ptr_ring_empty():
+On Thu, May 27, 2021 at 1:40 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=881:08, Yongji Xie =E5=86=99=E9=81=93=
+:
+> > On Thu, May 27, 2021 at 1:00 PM Jason Wang <jasowang@redhat.com> wrote:
+> >>
+> >> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=8812:57, Yongji Xie =E5=86=99=E9=
+=81=93:
+> >>> On Thu, May 27, 2021 at 12:13 PM Jason Wang <jasowang@redhat.com> wro=
+te:
+> >>>> =E5=9C=A8 2021/5/17 =E4=B8=8B=E5=8D=885:55, Xie Yongji =E5=86=99=E9=
+=81=93:
+> >>>>> +
+> >>>>> +static int vduse_dev_msg_sync(struct vduse_dev *dev,
+> >>>>> +                           struct vduse_dev_msg *msg)
+> >>>>> +{
+> >>>>> +     init_waitqueue_head(&msg->waitq);
+> >>>>> +     spin_lock(&dev->msg_lock);
+> >>>>> +     vduse_enqueue_msg(&dev->send_list, msg);
+> >>>>> +     wake_up(&dev->waitq);
+> >>>>> +     spin_unlock(&dev->msg_lock);
+> >>>>> +     wait_event_killable(msg->waitq, msg->completed);
+> >>>> What happens if the userspace(malicous) doesn't give a response fore=
+ver?
+> >>>>
+> >>>> It looks like a DOS. If yes, we need to consider a way to fix that.
+> >>>>
+> >>> How about using wait_event_killable_timeout() instead?
+> >>
+> >> Probably, and then we need choose a suitable timeout and more importan=
+t,
+> >> need to report the failure to virtio.
+> >>
+> > Makes sense to me. But it looks like some
+> > vdpa_config_ops/virtio_config_ops such as set_status() didn't have a
+> > return value.  Now I add a WARN_ON() for the failure. Do you mean we
+> > need to add some change for virtio core to handle the failure?
+>
+>
+> Maybe, but I'm not sure how hard we can do that.
+>
 
-I am saying if __ptr_ring_empty() and __ptr_ring_discard_one() is
-always serialized, then it seems that the below commit is unnecessary?
+We need to change all virtio device drivers in this way.
 
-406de7555424 ("ptr_ring: keep consumer_head valid at all times")
+> We had NEEDS_RESET but it looks we don't implement it.
+>
 
-> 
-> /*
->  * Test ring empty status without taking any locks.
->  *
->  * NB: This is only safe to call if ring is never resized.
->  *
->  * However, if some other CPU consumes ring entries at the same time, the value
->  * returned is not guaranteed to be correct.
->  *
->  * In this case - to avoid incorrectly detecting the ring
->  * as empty - the CPU consuming the ring entries is responsible
->  * for either consuming all ring entries until the ring is empty,
->  * or synchronizing with some other CPU and causing it to
->  * re-test __ptr_ring_empty and/or consume the ring enteries
->  * after the synchronization point.
+Could it handle the failure of get_feature() and get/set_config()?
 
-I am not sure I understand "incorrectly detecting the ring as empty"
-means, is it because of the data race described in the commit log?
-Or other data race? I can not think of other data race if consuming
-and __ptr_ring_empty() is serialized:)
+> Or a rough idea is that maybe need some relaxing to be coupled loosely
+> with userspace. E.g the device (control path) is implemented in the
+> kernel but the datapath is implemented in the userspace like TUN/TAP.
+>
 
-I am agreed that __ptr_ring_empty() checking is not totally reliable
-without taking r->consumer_lock, that is why I use "more reliable"
-in the title:)
+I think it can work for most cases. One problem is that the set_config
+might change the behavior of the data path at runtime, e.g.
+virtnet_set_mac_address() in the virtio-net driver and
+cache_type_store() in the virtio-blk driver. Not sure if this path is
+able to return before the datapath is aware of this change.
 
-
-
->  *
->  * Note: callers invoking this in a loop must use a compiler barrier,
->  * for example cpu_relax().
->  */
-> 
-> Thanks
-> 
-> 
-> 
-
+Thanks,
+Yongji
