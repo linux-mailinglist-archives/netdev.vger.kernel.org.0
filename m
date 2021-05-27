@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9066C393747
+	by mail.lfdr.de (Postfix) with ESMTP id DF8C8393748
 	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 22:45:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235859AbhE0UrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 16:47:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49368 "EHLO
+        id S235875AbhE0UrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 16:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235625AbhE0UrQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 16:47:16 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD2AC061574
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 13:45:41 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id s6so2328493edu.10
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 13:45:41 -0700 (PDT)
+        with ESMTP id S235792AbhE0UrS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 16:47:18 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1142BC061761
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 13:45:43 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id g7so2368626edm.4
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 13:45:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=53SMu8LKhmQZUryoy0jqx48MjLxIQReIM88wTX3mV8w=;
-        b=swUc2jcnP4SChGY6LffqmpBufM725eWWzmx77Qqyu9AHgvULykuwAiBPS+aVMoamPt
-         mT9jkJiBubRrT5NKMQR/bnFBy/IXsmuJk1z7dIq0/HC4W8WOcQnpsXWE7D8ci68igc0H
-         dkMYB9ItFyBRDEw0hvcv4RKd9KNZ6rpM8gpsPFHlN1XGI9ZHN0dl0gpobVo9HFY0xitA
-         oNivt9BtMLCBKT4HerXelpAOPf2ufd+Shtc1ER8Q0fpaMgK39rMZ1pGaHcwbQiM1Bbc4
-         zYTberBxjYvv37g1/gifa+Xtr8bSytasEjmSqKLh10sJMGaPwdFcS10/dedNoy2Kwh8+
-         G12Q==
+        bh=f3LXLy0RxWR9HBLo60bQO4krGpz/yZL++bJpVi6moh0=;
+        b=KiLH/RjHXRiudeeWLmGLxFfwwNxpuUr5Xg+9fX+b6oAuvBFQJUob5llvDqNsO8F2Up
+         WDo/E9PUS3HR6u7lWfj/jzJGy2K0k2JjAoAoN5PqADtksUgo8vPS23fqMYDqp5JVzT0P
+         IdWPee2Hu1bQGj2kOmsh2XQKqjw1RrzgggMoSnIrnRKLmJdYyOb0KeMqjslFArrtwfoB
+         /fYvIedoR7M1qw7Ig8NAA34bK0HxLktMZUvQlBYUxF95eqZNJ+WgOVhU/Nt8ZAmEsQxY
+         BywgYgnS3ESkETO2UeWLb1qjE0D6LIBNDNPskNXIDL70APf7WXs8XArqztUX4izP/20G
+         ctaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=53SMu8LKhmQZUryoy0jqx48MjLxIQReIM88wTX3mV8w=;
-        b=uCkOfe2m+UEgbmri5cWHJRhj6aUZJx8g1KXfmxcqZcZrdinZ9v0oMlp+EhQ1YslHGs
-         EmxC84S18Ym7zyLgABts4eOW+zCFWv1BcDRO62xoo0KlKo1RdFo3sel1kx3UWGKkit3s
-         hQZ0/U6LkSiXSkGvitvGW0aR9GfEXkyN+OqN3owYSg0mD0IzRaCgxthkIZZsBZQlGuFw
-         0Zdca2gMtwBZ3TmfbRE2qf78C5zuoaLTKDElyRUowacuu3bJNSPyp5aKb23Xw0AoUtSG
-         7h5utehF5oJQ/t1rw2nejddNwoH1h91vJi0nmqoZum8rd7FL/uSGMeRrnYTuuf210mly
-         VyuA==
-X-Gm-Message-State: AOAM532BIQENU0JKbKj6HyfKPiz0iVcUoneoOraQiSg0q/zW0de/FBbJ
-        Yvz7lBOc/f7rJzbUDR8qOp4=
-X-Google-Smtp-Source: ABdhPJwBALV+ExtGz6uqliAjFXfKqzUxCKuQJImnmTpAt/P7fptpgcbToRDg9mfcRG/W1vj51sJnvw==
-X-Received: by 2002:aa7:d598:: with SMTP id r24mr6407675edq.250.1622148340500;
-        Thu, 27 May 2021 13:45:40 -0700 (PDT)
+        bh=f3LXLy0RxWR9HBLo60bQO4krGpz/yZL++bJpVi6moh0=;
+        b=mwU6SaC6/8GK5IqeUx8nUl0zLHd97wukKS7VrjD5uCojhnOpsk/aDj5OVckoGxbmn8
+         STP4MQVYjs33sGVgeidoHCppGNArD/eESIBhBQ+38apeeeRK15sV0X04VnrvZcsfiKGg
+         Oye+TvTZw4MAiw4q7QZNo95HWiVPgsV9Ue0idp/WHZjKZjradm/WTlaGYRfM1BtRT2wQ
+         gcAmX1gQKoWinrEi6aT4mPE7OXZQkwJn7cG354eYEdsSmD7mb0wz0DkFUjTjYf2avhik
+         iyaEQuI8/aZimt/JyPx1RM4hbj3dFa3yxFslDiSfWgHlI4F1lpdRkmYyds8e1KGphCZD
+         DCtA==
+X-Gm-Message-State: AOAM532RXH4/qCdHJm7jfN0cSyTQF8lB47Z/VCm1eeCGKQdxbcyzpLIs
+        W7AsPdQgvot3oWZAZ7277/4=
+X-Google-Smtp-Source: ABdhPJyIXKzYSMGSj4uJEl5i4yOI3WEVbysDrGcHEearUs0F0rTLxkFbpHTqTRnICFLMpmTQEkRtdw==
+X-Received: by 2002:a05:6402:5174:: with SMTP id d20mr6443295ede.248.1622148341586;
+        Thu, 27 May 2021 13:45:41 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id g11sm1654145edt.85.2021.05.27.13.45.39
+        by smtp.gmail.com with ESMTPSA id g11sm1654145edt.85.2021.05.27.13.45.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 May 2021 13:45:40 -0700 (PDT)
+        Thu, 27 May 2021 13:45:41 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -61,9 +61,9 @@ Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Ong Boon Leong <boon.leong.ong@intel.com>,
         Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH net-next 2/8] net: pcs: xpcs: check for supported PHY interface modes in phylink_validate
-Date:   Thu, 27 May 2021 23:45:22 +0300
-Message-Id: <20210527204528.3490126-3-olteanv@gmail.com>
+Subject: [RFC PATCH net-next 3/8] net: pcs: xpcs: export xpcs_validate
+Date:   Thu, 27 May 2021 23:45:23 +0300
+Message-Id: <20210527204528.3490126-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210527204528.3490126-1-olteanv@gmail.com>
 References: <20210527204528.3490126-1-olteanv@gmail.com>
@@ -75,168 +75,110 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The supported PHY interface types are currently deduced by reading the
-PHY ID registers of the PCS, to determine whether it is an USXGMII,
-10G-KR, XLGMII, SGMII PCS or whatever.
+Calling a function pointer with a single implementation through
+struct mdio_xpcs_ops is clunky, and the stmmac_do_callback system forces
+this to return int, even though it always returns zero.
 
-Checking whether the PCS operates in a PHY interface mode compatible
-with the hardware capability is done only once: in xpcs_check_features,
-called from xpcs_probe - the deduced PHY interface mode is compared to
-what is specified in the device tree.
-
-But nothing prevents phylink from changing the state->interface as a
-result of plugging an SFP module with a different operating PHY
-interface type.
-
-This change deletes xpcs_check_features, removes the phy_interface_t
-argument from xpcs_probe, and moves the PHY interface type check inside
-the validate function, similar to what other drivers do.
+Simply remove the "validate" function pointer from struct mdio_xpcs_ops
+and replace it with an exported xpcs_validate symbol which is called
+directly by stmmac.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_mdio.c |  5 +-
- drivers/net/pcs/pcs-xpcs.c                    | 63 ++++++++++---------
- include/linux/pcs/pcs-xpcs.h                  |  5 +-
- 3 files changed, 41 insertions(+), 32 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/hwif.h        |  2 --
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  2 +-
+ drivers/net/pcs/pcs-xpcs.c                        | 10 ++++------
+ include/linux/pcs/pcs-xpcs.h                      |  5 ++---
+ 4 files changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index e293bf1ce9f3..d12dfa60b8ea 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -512,7 +512,8 @@ int stmmac_mdio_register(struct net_device *ndev)
- 	/* Try to probe the XPCS by scanning all addresses. */
- 	if (priv->hw->xpcs) {
- 		struct mdio_xpcs_args *xpcs = &priv->hw->xpcs_args;
--		int ret, mode = priv->plat->phy_interface;
-+		int ret;
-+
- 		max_addr = PHY_MAX_ADDR;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+index 75a8b90c202a..a86b358feae9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
++++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+@@ -613,8 +613,6 @@ struct stmmac_mmc_ops {
+ 	stmmac_do_void_callback(__priv, mmc, read, __args)
  
- 		xpcs->bus = new_bus;
-@@ -521,7 +522,7 @@ int stmmac_mdio_register(struct net_device *ndev)
- 		for (addr = 0; addr < max_addr; addr++) {
- 			xpcs->addr = addr;
+ /* XPCS callbacks */
+-#define stmmac_xpcs_validate(__priv, __args...) \
+-	stmmac_do_callback(__priv, xpcs, validate, __args)
+ #define stmmac_xpcs_config(__priv, __args...) \
+ 	stmmac_do_callback(__priv, xpcs, config, __args)
+ #define stmmac_xpcs_get_state(__priv, __args...) \
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index bf9fe25fed69..d3d85d36e177 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -996,7 +996,7 @@ static void stmmac_validate(struct phylink_config *config,
+ 	linkmode_andnot(state->advertising, state->advertising, mask);
  
--			ret = stmmac_xpcs_probe(priv, xpcs, mode);
-+			ret = stmmac_xpcs_probe(priv, xpcs);
- 			if (!ret) {
- 				found = 1;
- 				break;
-diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index aa985a5aae8d..71efd5ef69e5 100644
---- a/drivers/net/pcs/pcs-xpcs.c
-+++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -662,6 +662,30 @@ static int xpcs_validate(struct mdio_xpcs_args *xpcs,
- 			 unsigned long *supported,
- 			 struct phylink_link_state *state)
- {
-+	bool valid_interface;
-+
-+	if (state->interface == PHY_INTERFACE_MODE_NA) {
-+		valid_interface = true;
-+	} else {
-+		struct xpcs_id *id = xpcs->id;
-+		int i;
-+
-+		valid_interface = false;
-+
-+		for (i = 0; id->interface[i] != PHY_INTERFACE_MODE_MAX; i++) {
-+			if (id->interface[i] != state->interface)
-+				continue;
-+
-+			valid_interface = true;
-+			break;
-+		}
-+	}
-+
-+	if (!valid_interface) {
-+		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+		return 0;
-+	}
-+
- 	linkmode_and(supported, supported, xpcs->supported);
- 	linkmode_and(state->advertising, state->advertising, xpcs->supported);
- 	return 0;
-@@ -910,43 +934,24 @@ static u32 xpcs_get_id(struct mdio_xpcs_args *xpcs)
- 	return 0xffffffff;
+ 	/* If PCS is supported, check which modes it supports. */
+-	stmmac_xpcs_validate(priv, &priv->hw->xpcs_args, supported, state);
++	xpcs_validate(&priv->hw->xpcs_args, supported, state);
  }
  
--static bool xpcs_check_features(struct mdio_xpcs_args *xpcs,
--				struct xpcs_id *match,
--				phy_interface_t interface)
--{
--	int i;
--
--	for (i = 0; match->interface[i] != PHY_INTERFACE_MODE_MAX; i++) {
--		if (match->interface[i] == interface)
--			break;
--	}
--
--	if (match->interface[i] == PHY_INTERFACE_MODE_MAX)
--		return false;
--
--	for (i = 0; match->supported[i] != __ETHTOOL_LINK_MODE_MASK_NBITS; i++)
--		set_bit(match->supported[i], xpcs->supported);
--
--	xpcs->an_mode = match->an_mode;
--
--	return true;
--}
--
--static int xpcs_probe(struct mdio_xpcs_args *xpcs, phy_interface_t interface)
-+static int xpcs_probe(struct mdio_xpcs_args *xpcs)
+ static void stmmac_mac_pcs_get_state(struct phylink_config *config,
+diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+index 71efd5ef69e5..4c0093473470 100644
+--- a/drivers/net/pcs/pcs-xpcs.c
++++ b/drivers/net/pcs/pcs-xpcs.c
+@@ -658,9 +658,8 @@ static void xpcs_resolve_pma(struct mdio_xpcs_args *xpcs,
+ 	}
+ }
+ 
+-static int xpcs_validate(struct mdio_xpcs_args *xpcs,
+-			 unsigned long *supported,
+-			 struct phylink_link_state *state)
++void xpcs_validate(struct mdio_xpcs_args *xpcs, unsigned long *supported,
++		   struct phylink_link_state *state)
  {
- 	u32 xpcs_id = xpcs_get_id(xpcs);
--	struct xpcs_id *match = NULL;
- 	int i;
+ 	bool valid_interface;
  
- 	for (i = 0; i < ARRAY_SIZE(xpcs_id_list); i++) {
- 		struct xpcs_id *entry = &xpcs_id_list[i];
+@@ -683,13 +682,13 @@ static int xpcs_validate(struct mdio_xpcs_args *xpcs,
  
--		if ((xpcs_id & entry->mask) == entry->id) {
--			match = entry;
-+		if ((xpcs_id & entry->mask) != entry->id)
-+			continue;
- 
--			if (xpcs_check_features(xpcs, match, interface))
--				return xpcs_soft_reset(xpcs);
--		}
-+		for (i = 0; entry->supported[i] != __ETHTOOL_LINK_MODE_MASK_NBITS; i++)
-+			set_bit(entry->supported[i], xpcs->supported);
-+
-+		xpcs->id = entry;
-+		xpcs->an_mode = entry->an_mode;
-+
-+		return xpcs_soft_reset(xpcs);
+ 	if (!valid_interface) {
+ 		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+-		return 0;
++		return;
  	}
  
- 	return -ENODEV;
+ 	linkmode_and(supported, supported, xpcs->supported);
+ 	linkmode_and(state->advertising, state->advertising, xpcs->supported);
+-	return 0;
+ }
++EXPORT_SYMBOL_GPL(xpcs_validate);
+ 
+ static int xpcs_config_eee(struct mdio_xpcs_args *xpcs, int mult_fact_100ns,
+ 			   int enable)
+@@ -958,7 +957,6 @@ static int xpcs_probe(struct mdio_xpcs_args *xpcs)
+ }
+ 
+ static struct mdio_xpcs_ops xpcs_ops = {
+-	.validate = xpcs_validate,
+ 	.config = xpcs_config,
+ 	.get_state = xpcs_get_state,
+ 	.link_up = xpcs_link_up,
 diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
-index c4d0a2c469c7..e48636a1a078 100644
+index e48636a1a078..56755b7895a0 100644
 --- a/include/linux/pcs/pcs-xpcs.h
 +++ b/include/linux/pcs/pcs-xpcs.h
-@@ -14,9 +14,12 @@
- #define DW_AN_C73			1
- #define DW_AN_C37_SGMII			2
+@@ -25,9 +25,6 @@ struct mdio_xpcs_args {
+ };
  
-+struct xpcs_id;
-+
- struct mdio_xpcs_args {
- 	__ETHTOOL_DECLARE_LINK_MODE_MASK(supported);
- 	struct mii_bus *bus;
-+	struct xpcs_id *id;
- 	int addr;
- 	int an_mode;
+ struct mdio_xpcs_ops {
+-	int (*validate)(struct mdio_xpcs_args *xpcs,
+-			unsigned long *supported,
+-			struct phylink_link_state *state);
+ 	int (*config)(struct mdio_xpcs_args *xpcs,
+ 		      const struct phylink_link_state *state);
+ 	int (*get_state)(struct mdio_xpcs_args *xpcs,
+@@ -40,5 +37,7 @@ struct mdio_xpcs_ops {
  };
-@@ -31,7 +34,7 @@ struct mdio_xpcs_ops {
- 			 struct phylink_link_state *state);
- 	int (*link_up)(struct mdio_xpcs_args *xpcs, int speed,
- 		       phy_interface_t interface);
--	int (*probe)(struct mdio_xpcs_args *xpcs, phy_interface_t interface);
-+	int (*probe)(struct mdio_xpcs_args *xpcs);
- 	int (*config_eee)(struct mdio_xpcs_args *xpcs, int mult_fact_100ns,
- 			  int enable);
- };
+ 
+ struct mdio_xpcs_ops *mdio_xpcs_get_ops(void);
++void xpcs_validate(struct mdio_xpcs_args *xpcs, unsigned long *supported,
++		   struct phylink_link_state *state);
+ 
+ #endif /* __LINUX_PCS_XPCS_H */
 -- 
 2.25.1
 
