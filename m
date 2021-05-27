@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A26A393249
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 17:18:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CF4D39324C
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 17:18:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235535AbhE0PT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 11:19:27 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:37543 "EHLO
+        id S235696AbhE0PTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 11:19:46 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:37585 "EHLO
         serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235392AbhE0PTY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 11:19:24 -0400
+        with ESMTP id S235466AbhE0PT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 11:19:27 -0400
 Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 6A876200EEDC;
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 96E11200EEDD;
         Thu, 27 May 2021 17:17:29 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 6A876200EEDC
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 96E11200EEDD
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
         s=ulg20190529; t=1622128649;
-        bh=a++KQnGa96Lzy77UTWF8hoEgI40zyjSeV/k0gZNpQyc=;
+        bh=ii4SLSbpT9CZ0dU9Nx7vvFLYxOrx1q09Gt9o0V6koaU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MKJuepM8ESbinNt9wAGBWstHbmxlpXgH7DtULZYLfE1G6DjkuMtA9SK9Ji77c626l
-         i5Flbm7OYKiDHl2L5g+x4hrKS8Ko3q0tPieomp/MpIIqlx8nmE6GIZuHwCaXyu3jQx
-         VyLxqy6ltCs2lhWfM1vDPps2/JcjHcqb4IzgoCq7JsEz0RdlrNSHy9ZzgvU5zoEuYD
-         yE2SmLD33O7U6rUtugSjCjllwm+8ntFv2sAhJJQfNbchf7rFqZAD0e796YZXfUO+bi
-         HXmbnfNIIUEtYzhWIOce3hcL6D+Ql02Nro8WQahBJKV/+CBw532lCoA41lxk0xsKW6
-         2Vm8x+7IYCmcQ==
+        b=fGQsLdxOiZ91fUr67f2qYWUw6EFS7ROlbMjO1YqhCUQFTVLaRG7peVzdKul28hnCB
+         8vFEzc7NWWcCn/LBh6TEarbIIVb8j18gVLkDEOdkdGhWd/B48IA0+e+iugtMs7+LRl
+         rfH7JpRgFc6oysBCL68YwsSpdSbpp4mgX10TLjf6gOBp/W1G9DC0c4VBxZYzfz5YXH
+         x1LjVf/G4FRcBNQBzozMCwZUoiApx/EjwgSwsJjSKOTu1n8hxLGhsfTIvIK8jfBsF7
+         ziGGcF+rZNb66ZeZJB+s7N8leXk5+ZLuM3XdNgiWPgJvRFqTBMLqqZjFD69o7ysDlO
+         8LRuz8RKS/Azg==
 From:   Justin Iurman <justin.iurman@uliege.be>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, tom@herbertland.com,
         justin.iurman@uliege.be
-Subject: [PATCH net-next v4 4/5] ipv6: ioam: Support for IOAM injection with lwtunnels
-Date:   Thu, 27 May 2021 17:16:51 +0200
-Message-Id: <20210527151652.16074-5-justin.iurman@uliege.be>
+Subject: [PATCH net-next v4 5/5] ipv6: ioam: Documentation for new IOAM sysctls
+Date:   Thu, 27 May 2021 17:16:52 +0200
+Message-Id: <20210527151652.16074-6-justin.iurman@uliege.be>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210527151652.16074-1-justin.iurman@uliege.be>
 References: <20210527151652.16074-1-justin.iurman@uliege.be>
@@ -41,495 +41,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the IOAM inline insertion (only for the host-to-host use case)
-which is per-route configured with lightweight tunnels. The target is iproute2
-and the patch is ready. It will be posted as soon as this patchset is merged.
-Here is an overview:
+Add documentation for new IOAM sysctls:
+ - ioam6_id: a namespace sysctl
+ - ioam6_enabled and ioam6_id: two per-interface sysctls
 
-$ ip -6 ro ad fc00::1/128 encap ioam6 trace type 0x800000 ns 1 size 12 dev eth0
+Example of IOAM configuration based on the following simple topology:
 
-This example configures an IOAM Pre-allocated Trace option attached to the
-fc00::1/128 prefix. The IOAM namespace (ns) is 1, the size of the pre-allocated
-trace data block is 12 octets (size) and only the first IOAM data (bit 0:
-hop_limit + node id) is included in the trace (type) represented as a bitfield.
+ _____              _____              _____
+|     | eth0  eth0 |     | eth1  eth0 |     |
+|  A  |.----------.|  B  |.----------.|  C  |
+|_____|            |_____|            |_____|
 
-The reason why the in-transit (IPv6-in-IPv6 encapsulation) use case is not
-implemented is explained on the patchset cover.
+1) Node and interface IDs can be configured for IOAM:
+
+  # IOAM ID of A = 1, IOAM ID of A.eth0 = 11
+  (A) sysctl -w net.ipv6.ioam6_id=1
+  (A) sysctl -w net.ipv6.conf.eth0.ioam6_id=11
+
+  # IOAM ID of B = 2, IOAM ID of B.eth0 = 21, IOAM ID of B.eth1 = 22
+  (B) sysctl -w net.ipv6.ioam6_id=2
+  (B) sysctl -w net.ipv6.conf.eth0.ioam6_id=21
+  (B) sysctl -w net.ipv6.conf.eth1.ioam6_id=22
+
+  # IOAM ID of C = 3, IOAM ID of C.eth0 = 31
+  (C) sysctl -w net.ipv6.ioam6_id=3
+  (C) sysctl -w net.ipv6.conf.eth0.ioam6_id=31
+
+2) Each node can be configured to form an IOAM domain. For instance,
+   we allow IOAM from A to C, i.e. enable IOAM on ingress for B.eth0
+   and C.eth0:
+
+  (B) sysctl -w net.ipv6.conf.eth0.ioam6_enabled=1
+  (C) sysctl -w net.ipv6.conf.eth0.ioam6_enabled=1
+
+3) An IOAM domain (e.g. ID=123) is defined and made known to each node:
+
+  (A) ip ioam namespace add 123
+  (B) ip ioam namespace add 123
+  (C) ip ioam namespace add 123
+
+4) Finally, an IOAM Pre-allocated Trace can be inserted in traffic sent
+   by A when C (e.g. db02::2) is the destination:
+
+  (A) ip -6 route add db02::2/128 encap ioam6 trace type 0x800000 ns 123
+      size 12 dev eth0
 
 Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
 ---
- include/linux/ioam6_iptunnel.h      |  13 ++
- include/net/ioam6.h                 |   3 +
- include/uapi/linux/ioam6.h          |   1 +
- include/uapi/linux/ioam6_iptunnel.h |  20 ++
- include/uapi/linux/lwtunnel.h       |   1 +
- net/core/lwtunnel.c                 |   2 +
- net/ipv6/Kconfig                    |  11 ++
- net/ipv6/Makefile                   |   1 +
- net/ipv6/ioam6.c                    |  17 +-
- net/ipv6/ioam6_iptunnel.c           | 272 ++++++++++++++++++++++++++++
- 10 files changed, 339 insertions(+), 2 deletions(-)
- create mode 100644 include/linux/ioam6_iptunnel.h
- create mode 100644 include/uapi/linux/ioam6_iptunnel.h
- create mode 100644 net/ipv6/ioam6_iptunnel.c
+ Documentation/networking/ioam6-sysctl.rst | 20 ++++++++++++++++++++
+ Documentation/networking/ip-sysctl.rst    |  5 +++++
+ 2 files changed, 25 insertions(+)
+ create mode 100644 Documentation/networking/ioam6-sysctl.rst
 
-diff --git a/include/linux/ioam6_iptunnel.h b/include/linux/ioam6_iptunnel.h
+diff --git a/Documentation/networking/ioam6-sysctl.rst b/Documentation/networking/ioam6-sysctl.rst
 new file mode 100644
-index 000000000000..07d9dfedd29d
+index 000000000000..37a9b4e731a0
 --- /dev/null
-+++ b/include/linux/ioam6_iptunnel.h
-@@ -0,0 +1,13 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ *  IPv6 IOAM Lightweight Tunnel API
-+ *
-+ *  Author:
-+ *  Justin Iurman <justin.iurman@uliege.be>
-+ */
-+#ifndef _LINUX_IOAM6_IPTUNNEL_H
-+#define _LINUX_IOAM6_IPTUNNEL_H
-+
-+#include <uapi/linux/ioam6_iptunnel.h>
-+
-+#endif /* _LINUX_IOAM6_IPTUNNEL_H */
-diff --git a/include/net/ioam6.h b/include/net/ioam6.h
-index 828b83c70721..9eab3817e90b 100644
---- a/include/net/ioam6.h
-+++ b/include/net/ioam6.h
-@@ -59,4 +59,7 @@ extern void ioam6_fill_trace_data(struct sk_buff *skb,
- extern int ioam6_init(void);
- extern void ioam6_exit(void);
- 
-+extern int ioam6_iptunnel_init(void);
-+extern void ioam6_iptunnel_exit(void);
-+
- #endif /* _NET_IOAM6_H */
-diff --git a/include/uapi/linux/ioam6.h b/include/uapi/linux/ioam6.h
-index 9fe951999b09..593e4bebb2f6 100644
---- a/include/uapi/linux/ioam6.h
-+++ b/include/uapi/linux/ioam6.h
-@@ -117,6 +117,7 @@ struct ioam6_trace_hdr {
- #error "Please fix <asm/byteorder.h>"
- #endif
- 
-+#define IOAM6_TRACE_DATA_SIZE_MAX 244
- 	__u8	data[0];
- } __packed;
- 
-diff --git a/include/uapi/linux/ioam6_iptunnel.h b/include/uapi/linux/ioam6_iptunnel.h
-new file mode 100644
-index 000000000000..bae14636a8c8
---- /dev/null
-+++ b/include/uapi/linux/ioam6_iptunnel.h
++++ b/Documentation/networking/ioam6-sysctl.rst
 @@ -0,0 +1,20 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+/*
-+ *  IPv6 IOAM Lightweight Tunnel API
-+ *
-+ *  Author:
-+ *  Justin Iurman <justin.iurman@uliege.be>
-+ */
++.. SPDX-License-Identifier: GPL-2.0
 +
-+#ifndef _UAPI_LINUX_IOAM6_IPTUNNEL_H
-+#define _UAPI_LINUX_IOAM6_IPTUNNEL_H
++=====================
++IOAM6 Sysfs variables
++=====================
 +
-+enum {
-+	IOAM6_IPTUNNEL_UNSPEC,
-+	IOAM6_IPTUNNEL_TRACE,		/* struct ioam6_trace_hdr */
-+	__IOAM6_IPTUNNEL_MAX,
-+};
 +
-+#define IOAM6_IPTUNNEL_MAX (__IOAM6_IPTUNNEL_MAX - 1)
++/proc/sys/net/conf/<iface>/ioam6_* variables:
++=============================================
 +
-+#endif /* _UAPI_LINUX_IOAM6_IPTUNNEL_H */
-diff --git a/include/uapi/linux/lwtunnel.h b/include/uapi/linux/lwtunnel.h
-index 568a4303ccce..2e206919125c 100644
---- a/include/uapi/linux/lwtunnel.h
-+++ b/include/uapi/linux/lwtunnel.h
-@@ -14,6 +14,7 @@ enum lwtunnel_encap_types {
- 	LWTUNNEL_ENCAP_BPF,
- 	LWTUNNEL_ENCAP_SEG6_LOCAL,
- 	LWTUNNEL_ENCAP_RPL,
-+	LWTUNNEL_ENCAP_IOAM6,
- 	__LWTUNNEL_ENCAP_MAX,
- };
++ioam6_enabled - BOOL
++	Accept or ignore IPv6 IOAM options for ingress on this interface.
++
++	* 0 - disabled (default)
++	* not 0 - enabled
++
++ioam6_id - INTEGER
++	Define the IOAM id of this interface.
++
++	Default is 0.
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index a5c250044500..d472c4f0972e 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1901,6 +1901,11 @@ fib_notify_on_flag_change - INTEGER
+         - 1 - Emit notifications.
+         - 2 - Emit notifications only for RTM_F_OFFLOAD_FAILED flag change.
  
-diff --git a/net/core/lwtunnel.c b/net/core/lwtunnel.c
-index 8ec7d13d2860..d0ae987d2de9 100644
---- a/net/core/lwtunnel.c
-+++ b/net/core/lwtunnel.c
-@@ -43,6 +43,8 @@ static const char *lwtunnel_encap_str(enum lwtunnel_encap_types encap_type)
- 		return "SEG6LOCAL";
- 	case LWTUNNEL_ENCAP_RPL:
- 		return "RPL";
-+	case LWTUNNEL_ENCAP_IOAM6:
-+		return "IOAM6";
- 	case LWTUNNEL_ENCAP_IP6:
- 	case LWTUNNEL_ENCAP_IP:
- 	case LWTUNNEL_ENCAP_NONE:
-diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
-index 747f56e0c636..e504204bca92 100644
---- a/net/ipv6/Kconfig
-+++ b/net/ipv6/Kconfig
-@@ -328,4 +328,15 @@ config IPV6_RPL_LWTUNNEL
++ioam6_id - INTEGER
++	Define the IOAM id of this node.
++
++	Default: 0
++
+ IPv6 Fragmentation:
  
- 	  If unsure, say N.
- 
-+config IPV6_IOAM6_LWTUNNEL
-+	bool "IPv6: IOAM Pre-allocated Trace insertion support"
-+	depends on IPV6
-+	select LWTUNNEL
-+	help
-+	  Support for the inline insertion of IOAM Pre-allocated
-+	  Trace Header (only on locally generated packets), using
-+	  the lightweight tunnels mechanism.
-+
-+	  If unsure, say N.
-+
- endif # IPV6
-diff --git a/net/ipv6/Makefile b/net/ipv6/Makefile
-index b7ef10d417d6..1bc7e143217b 100644
---- a/net/ipv6/Makefile
-+++ b/net/ipv6/Makefile
-@@ -27,6 +27,7 @@ ipv6-$(CONFIG_NETLABEL) += calipso.o
- ipv6-$(CONFIG_IPV6_SEG6_LWTUNNEL) += seg6_iptunnel.o seg6_local.o
- ipv6-$(CONFIG_IPV6_SEG6_HMAC) += seg6_hmac.o
- ipv6-$(CONFIG_IPV6_RPL_LWTUNNEL) += rpl_iptunnel.o
-+ipv6-$(CONFIG_IPV6_IOAM6_LWTUNNEL) += ioam6_iptunnel.o
- 
- ipv6-objs += $(ipv6-y)
- 
-diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
-index 641f69eae351..fa25f535f658 100644
---- a/net/ipv6/ioam6.c
-+++ b/net/ipv6/ioam6.c
-@@ -600,7 +600,7 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
- 		if (skb->dev)
- 			byte--;
- 
--		raw32 = dev_net(skb->dev)->ipv6.sysctl.ioam6_id;
-+		raw32 = dev_net(skb_dst(skb)->dev)->ipv6.sysctl.ioam6_id;
- 		if (!raw32)
- 			raw32 = IOAM6_EMPTY_u24;
- 		else
-@@ -688,7 +688,7 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
- 		if (skb->dev)
- 			byte--;
- 
--		raw64 = dev_net(skb->dev)->ipv6.sysctl.ioam6_id;
-+		raw64 = dev_net(skb_dst(skb)->dev)->ipv6.sysctl.ioam6_id;
- 		if (!raw64)
- 			raw64 = IOAM6_EMPTY_u56;
- 		else
-@@ -843,10 +843,20 @@ int __init ioam6_init(void)
- 	if (err)
- 		goto out_unregister_pernet_subsys;
- 
-+#ifdef CONFIG_IPV6_IOAM6_LWTUNNEL
-+	err = ioam6_iptunnel_init();
-+	if (err)
-+		goto out_unregister_genl;
-+#endif
-+
- 	pr_info("In-situ OAM (IOAM) with IPv6\n");
- 
- out:
- 	return err;
-+#ifdef CONFIG_IPV6_IOAM6_LWTUNNEL
-+out_unregister_genl:
-+	genl_unregister_family(&ioam6_genl_family);
-+#endif
- out_unregister_pernet_subsys:
- 	unregister_pernet_subsys(&ioam6_net_ops);
- 	goto out;
-@@ -854,6 +864,9 @@ int __init ioam6_init(void)
- 
- void ioam6_exit(void)
- {
-+#ifdef CONFIG_IPV6_IOAM6_LWTUNNEL
-+	ioam6_iptunnel_exit();
-+#endif
- 	genl_unregister_family(&ioam6_genl_family);
- 	unregister_pernet_subsys(&ioam6_net_ops);
- }
-diff --git a/net/ipv6/ioam6_iptunnel.c b/net/ipv6/ioam6_iptunnel.c
-new file mode 100644
-index 000000000000..9e69ea385a82
---- /dev/null
-+++ b/net/ipv6/ioam6_iptunnel.c
-@@ -0,0 +1,272 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ *  IPv6 IOAM Lightweight Tunnel implementation
-+ *
-+ *  Author:
-+ *  Justin Iurman <justin.iurman@uliege.be>
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/skbuff.h>
-+#include <linux/net.h>
-+#include <linux/netlink.h>
-+#include <linux/in6.h>
-+#include <linux/ioam6.h>
-+#include <linux/ioam6_iptunnel.h>
-+#include <net/dst.h>
-+#include <net/sock.h>
-+#include <net/lwtunnel.h>
-+#include <net/ioam6.h>
-+
-+#define IOAM6_MASK_SHORT_FIELDS 0xff100000
-+#define IOAM6_MASK_WIDE_FIELDS 0xe00000
-+
-+struct ioam6_lwt_encap {
-+	struct ipv6_hopopt_hdr	eh;
-+	u8			pad[2];	/* 2-octet padding for 4n-alignment */
-+	struct ioam6_hdr	ioamh;
-+	struct ioam6_trace_hdr	traceh;
-+} __packed;
-+
-+struct ioam6_lwt {
-+	struct ioam6_lwt_encap	tuninfo;
-+};
-+
-+static struct ioam6_lwt *ioam6_lwt_state(struct lwtunnel_state *lwt)
-+{
-+	return (struct ioam6_lwt *)lwt->data;
-+}
-+
-+static struct ioam6_lwt_encap *ioam6_lwt_info(struct lwtunnel_state *lwt)
-+{
-+	return &ioam6_lwt_state(lwt)->tuninfo;
-+}
-+
-+static struct ioam6_trace_hdr *ioam6_trace(struct lwtunnel_state *lwt)
-+{
-+	return &(ioam6_lwt_state(lwt)->tuninfo.traceh);
-+}
-+
-+static const struct nla_policy ioam6_iptunnel_policy[IOAM6_IPTUNNEL_MAX + 1] = {
-+	[IOAM6_IPTUNNEL_TRACE]	= { .type = NLA_BINARY },
-+};
-+
-+static int nla_put_ioam6_trace(struct sk_buff *skb, int attrtype,
-+			       struct ioam6_trace_hdr *trace)
-+{
-+	struct ioam6_trace_hdr *data;
-+	struct nlattr *nla;
-+	int len;
-+
-+	len = sizeof(*trace);
-+
-+	nla = nla_reserve(skb, attrtype, len);
-+	if (!nla)
-+		return -EMSGSIZE;
-+
-+	data = nla_data(nla);
-+	memcpy(data, trace, len);
-+
-+	return 0;
-+}
-+
-+static bool ioam6_validate_trace_hdr(struct ioam6_trace_hdr *trace)
-+{
-+	u32 fields;
-+
-+	if (!trace->type_be32 || !trace->remlen ||
-+	    trace->remlen > IOAM6_TRACE_DATA_SIZE_MAX / 4)
-+		return false;
-+
-+	trace->nodelen = 0;
-+	fields = be32_to_cpu(trace->type_be32);
-+
-+	trace->nodelen += hweight32(fields & IOAM6_MASK_SHORT_FIELDS)
-+				* (sizeof(__be32) / 4);
-+	trace->nodelen += hweight32(fields & IOAM6_MASK_WIDE_FIELDS)
-+				* (sizeof(__be64) / 4);
-+
-+	return true;
-+}
-+
-+static int ioam6_build_state(struct net *net, struct nlattr *nla,
-+			     unsigned int family, const void *cfg,
-+			     struct lwtunnel_state **ts,
-+			     struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IOAM6_IPTUNNEL_MAX + 1];
-+	struct ioam6_lwt_encap *tuninfo;
-+	struct ioam6_trace_hdr *trace;
-+	struct lwtunnel_state *s;
-+	int len_aligned;
-+	int len, err;
-+
-+	if (family != AF_INET6)
-+		return -EINVAL;
-+
-+	err = nla_parse_nested(tb, IOAM6_IPTUNNEL_MAX, nla,
-+			       ioam6_iptunnel_policy, extack);
-+	if (err < 0)
-+		return err;
-+
-+	if (!tb[IOAM6_IPTUNNEL_TRACE])
-+		return -EINVAL;
-+
-+	trace = nla_data(tb[IOAM6_IPTUNNEL_TRACE]);
-+	if (nla_len(tb[IOAM6_IPTUNNEL_TRACE]) != sizeof(*trace))
-+		return -EINVAL;
-+
-+	if (!ioam6_validate_trace_hdr(trace))
-+		return -EINVAL;
-+
-+	len = sizeof(*tuninfo) + trace->remlen * 4;
-+	len_aligned = ALIGN(len, 8);
-+
-+	s = lwtunnel_state_alloc(len_aligned);
-+	if (!s)
-+		return -ENOMEM;
-+
-+	tuninfo = ioam6_lwt_info(s);
-+	tuninfo->eh.hdrlen = (len_aligned >> 3) - 1;
-+	tuninfo->pad[0] = IPV6_TLV_PADN;
-+	tuninfo->ioamh.type = IOAM6_TYPE_PREALLOC;
-+	tuninfo->ioamh.opt_type = IPV6_TLV_IOAM;
-+	tuninfo->ioamh.opt_len = sizeof(tuninfo->ioamh) - 2 + sizeof(*trace)
-+					+ trace->remlen * 4;
-+
-+	memcpy(&tuninfo->traceh, trace, sizeof(*trace));
-+
-+	len = len_aligned - len;
-+	if (len == 1) {
-+		tuninfo->traceh.data[trace->remlen * 4] = IPV6_TLV_PAD1;
-+	} else if (len > 0) {
-+		tuninfo->traceh.data[trace->remlen * 4] = IPV6_TLV_PADN;
-+		tuninfo->traceh.data[trace->remlen * 4 + 1] = len - 2;
-+	}
-+
-+	s->type = LWTUNNEL_ENCAP_IOAM6;
-+	s->flags |= LWTUNNEL_STATE_OUTPUT_REDIRECT;
-+
-+	*ts = s;
-+
-+	return 0;
-+}
-+
-+static int ioam6_do_inline(struct sk_buff *skb, struct ioam6_lwt_encap *tuninfo)
-+{
-+	struct ioam6_trace_hdr *trace;
-+	struct ipv6hdr *oldhdr, *hdr;
-+	struct ioam6_namespace *ns;
-+	int hdrlen, err;
-+
-+	hdrlen = (tuninfo->eh.hdrlen + 1) << 3;
-+
-+	err = skb_cow_head(skb, hdrlen + skb->mac_len);
-+	if (unlikely(err))
-+		return err;
-+
-+	oldhdr = ipv6_hdr(skb);
-+	skb_pull(skb, sizeof(*oldhdr));
-+	skb_postpull_rcsum(skb, skb_network_header(skb), sizeof(*oldhdr));
-+
-+	skb_push(skb, sizeof(*oldhdr) + hdrlen);
-+	skb_reset_network_header(skb);
-+	skb_mac_header_rebuild(skb);
-+
-+	hdr = ipv6_hdr(skb);
-+	memmove(hdr, oldhdr, sizeof(*oldhdr));
-+	tuninfo->eh.nexthdr = hdr->nexthdr;
-+
-+	skb_set_transport_header(skb, sizeof(*hdr));
-+	skb_postpush_rcsum(skb, hdr, sizeof(*hdr) + hdrlen);
-+
-+	memcpy(skb_transport_header(skb), (u8 *)tuninfo, hdrlen);
-+
-+	hdr->nexthdr = NEXTHDR_HOP;
-+	hdr->payload_len = cpu_to_be16(skb->len - sizeof(*hdr));
-+
-+	trace = (struct ioam6_trace_hdr *)(skb_transport_header(skb)
-+					   + sizeof(struct ipv6_hopopt_hdr) + 2
-+					   + sizeof(struct ioam6_hdr));
-+
-+	ns = ioam6_namespace(dev_net(skb_dst(skb)->dev), trace->namespace_id);
-+	if (ns)
-+		ioam6_fill_trace_data(skb, ns, trace);
-+
-+	return 0;
-+}
-+
-+static int ioam6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
-+{
-+	struct lwtunnel_state *lwt = skb_dst(skb)->lwtstate;
-+	int err = -EINVAL;
-+
-+	if (skb->protocol != htons(ETH_P_IPV6))
-+		goto drop;
-+
-+	/* Only for packets we send and
-+	 * that do not contain a Hop-by-Hop yet
-+	 */
-+	if (skb->dev || ipv6_hdr(skb)->nexthdr == NEXTHDR_HOP)
-+		goto out;
-+
-+	err = ioam6_do_inline(skb, ioam6_lwt_info(lwt));
-+	if (unlikely(err))
-+		goto drop;
-+
-+	err = skb_cow_head(skb, LL_RESERVED_SPACE(skb_dst(skb)->dev));
-+	if (unlikely(err))
-+		goto drop;
-+
-+out:
-+	return lwt->orig_output(net, sk, skb);
-+
-+drop:
-+	kfree_skb(skb);
-+	return err;
-+}
-+
-+static int ioam6_fill_encap_info(struct sk_buff *skb,
-+				 struct lwtunnel_state *lwtstate)
-+{
-+	struct ioam6_trace_hdr *trace = ioam6_trace(lwtstate);
-+
-+	if (nla_put_ioam6_trace(skb, IOAM6_IPTUNNEL_TRACE, trace))
-+		return -EMSGSIZE;
-+
-+	return 0;
-+}
-+
-+static int ioam6_encap_nlsize(struct lwtunnel_state *lwtstate)
-+{
-+	struct ioam6_trace_hdr *trace = ioam6_trace(lwtstate);
-+
-+	return nla_total_size(sizeof(*trace));
-+}
-+
-+static int ioam6_encap_cmp(struct lwtunnel_state *a, struct lwtunnel_state *b)
-+{
-+	struct ioam6_trace_hdr *a_hdr = ioam6_trace(a);
-+	struct ioam6_trace_hdr *b_hdr = ioam6_trace(b);
-+
-+	return (a_hdr->namespace_id != b_hdr->namespace_id);
-+}
-+
-+static const struct lwtunnel_encap_ops ioam6_iptun_ops = {
-+	.build_state	= ioam6_build_state,
-+	.output		= ioam6_output,
-+	.fill_encap	= ioam6_fill_encap_info,
-+	.get_encap_size	= ioam6_encap_nlsize,
-+	.cmp_encap	= ioam6_encap_cmp,
-+	.owner		= THIS_MODULE,
-+};
-+
-+int __init ioam6_iptunnel_init(void)
-+{
-+	return lwtunnel_encap_add_ops(&ioam6_iptun_ops, LWTUNNEL_ENCAP_IOAM6);
-+}
-+
-+void ioam6_iptunnel_exit(void)
-+{
-+	lwtunnel_encap_del_ops(&ioam6_iptun_ops, LWTUNNEL_ENCAP_IOAM6);
-+}
+ ip6frag_high_thresh - INTEGER
 -- 
 2.17.1
 
