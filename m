@@ -2,103 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5688D392B85
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 12:12:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4125C392B8E
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 12:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236061AbhE0KOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 06:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        id S236129AbhE0KQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 06:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235950AbhE0KOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 06:14:18 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05D7C061574
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 03:12:44 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id f6-20020a1c1f060000b0290175ca89f698so2232282wmf.5
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 03:12:44 -0700 (PDT)
+        with ESMTP id S236105AbhE0KQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 06:16:16 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BCBC061574
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 03:14:41 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id y7so230567eda.2
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 03:14:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IcRcMzC0Z0Mv+9TuXapugfGv6UnvJdn7GFcyk9ZJVuc=;
-        b=PI1j4LaoqJLnq9mjgu6DNOFmuuAbCL0zMCBotDp8+s+8ksS7uUulMET+gBshQHRW12
-         8balFGCrg4K2GVpqnsT23j6OxZATacXk+jfhd4tWtQ18UgIXsf7mpUpLs/vbMcTgBy+q
-         ki2szND1QGQOm06Xc5RF08iezrb4Xs525GoQgzbm+BqTJWya6AN2ceF/XTk3gx6/rLrQ
-         kh4DB0riF73KRWUSmLa8Re6tFJLHcqIBYWTSySgWKPPZpRTOcUj1SGNvUdjpo5nW6S/z
-         5/qq2BYD8iyBYmIQ0+FrAQWxP+zf0YWcUo+xnFhT1OY0xiRCWwEgp7c4q6GFtErXbLn4
-         cp2g==
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=o38M2BO4ULC4BwKVVDJHYXw+IueHUfFLXYDhWYbT5Ig=;
+        b=bk97lq21A/Gg9EU/Cabtt5Dqiuz3zBqg0ZUgn7vHbNo202Sf8zs+esbsZi1472wnDw
+         S7tg6T6IbhEKaYeIj4ycsX234NuYYQ0O03FJH5OuiLMpN12/IGb9B/GLV656R4LkrXT7
+         zQXhfkYtCReY5f9nCUn7YrhTXkoz5KTPkbYMp2eVWnOvCvOgMk7Ao4RZ5Kt3v2UB38LU
+         FgaCGvVGlM5kjH6PanAP74M5XXJO0vEBEDZcBdVLoVPKz7aiDJuuycVw1/jPmGZ/Y2Zw
+         NVvS36r16Wba8DeiGMEViGPX9yGp3JsaaE96mEEaPQwksZ0ldz0nzt72uYtVn0AqNCTd
+         81Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IcRcMzC0Z0Mv+9TuXapugfGv6UnvJdn7GFcyk9ZJVuc=;
-        b=IlwA98zqHBftbxPoZUwS5EOOpEtwBE5ANHDeJK0dtsWe5lZfP1OzKgIDw/ZWIpWO08
-         CWANsDq4QiTKvoBCrWPTUooYktjvQCwQLgiOlR1SyTTDu/IvJ8rCz98+IlFCJeFj3TG0
-         8jCy9NhQjWBOgl5ko5gzNlz+IgBJGgIGocda7MlHwG4OAIfCA5eA5qAw6J4MkYhi5KT1
-         KgDaI+Cy7pxfyqQq90aVp99BjopwJOLLFhuacLXWZki1IfDPniT8JrQoBxgfM2Ai1ChM
-         hyGQunr1l+59iu03aDnXcAY7K4Tow9I5EUiI7SPCWM92IzILhwosR5XslhWn5W5w4dnv
-         nsRQ==
-X-Gm-Message-State: AOAM5327db5WGzLKZa0nTlDt6WmcfIsz/y5OQ7KYHhNzG/13lGn+KNZ+
-        Ipei/oBEMy8zfAO7a294x16jdQ==
-X-Google-Smtp-Source: ABdhPJzfg1hdO9zVVAiCTKiKa/xo+T8FkHfmLYWsl3PCfS39wKlRTKwH4j0ZR6NVn7XJyEjOSkKPRQ==
-X-Received: by 2002:a1c:32c6:: with SMTP id y189mr1294591wmy.54.1622110363409;
-        Thu, 27 May 2021 03:12:43 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id i1sm2454282wrp.51.2021.05.27.03.12.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 May 2021 03:12:42 -0700 (PDT)
-Date:   Thu, 27 May 2021 12:12:40 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@nvidia.com
-Subject: Re: [patch net-next] devlink: append split port number to the port
- name
-Message-ID: <YK9wmLUT22Gbc87V@nanopsycho>
-References: <20210526103508.760849-1-jiri@resnulli.us>
- <20210526170556.31336a06@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=o38M2BO4ULC4BwKVVDJHYXw+IueHUfFLXYDhWYbT5Ig=;
+        b=eAxZOd/XDdy96QzmUiADJWyzw5ITJM5hhKsPXdlXAPrQRQR4II/TP3Mtjcg3fbmXCO
+         sQtslEJGIwd5/Eqa8MVAPAkizqeNADs8gza3SNtdVl8gKaPRzKjD8Oyvim4IjcQcgOTF
+         //ATOEkSoW7g54l3m1ly3cfBABTNfPbrkOetRX2q5nVigMTgJR7H5+IFNNpJkgYiRq8F
+         H7T97NtWXnTSn0OdRlZaLXrJCk+Lxp9LHlOlAs+x1Ch8+DTntT3RO2UWfauYtp2EGh/K
+         wZmu06KaZqhYFiCcjK3poOmwb/sxdGwUHL5hSJJetGnR5/n8vjtNZeNmcAzn+D0ESCKf
+         Y9rg==
+X-Gm-Message-State: AOAM532fG2Q+RxXcFtyZqImfGHWLZ7SvnVLaoIAQa5AZs+IiKcjoVME/
+        i8BgObUd3tZLNXEYdpq8AH4DCeQ0g1bIPUib8tsD
+X-Google-Smtp-Source: ABdhPJxWXHvU/O2LATe1oBP0kHpNNov+YKoz7byZgiRDTGMJZExbTJNux7H0l7VRJaIaAseiGKHKWtgXJ2fM2OTaKZE=
+X-Received: by 2002:a05:6402:4252:: with SMTP id g18mr3221715edb.195.1622110479663;
+ Thu, 27 May 2021 03:14:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210526170556.31336a06@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210517095513.850-1-xieyongji@bytedance.com> <20210517095513.850-12-xieyongji@bytedance.com>
+ <3740c7eb-e457-07f3-5048-917c8606275d@redhat.com> <CACycT3uAqa6azso_8MGreh+quj-JXO1piuGnrV8k2kTfc34N2g@mail.gmail.com>
+ <5a68bb7c-fd05-ce02-cd61-8a601055c604@redhat.com> <CACycT3ve7YvKF+F+AnTQoJZMPua+jDvGMs_ox8GQe_=SGdeCMA@mail.gmail.com>
+ <ee00efca-b26d-c1be-68d2-f9e34a735515@redhat.com> <CACycT3ufok97cKpk47NjUBTc0QAyfauFUyuFvhWKmuqCGJ7zZw@mail.gmail.com>
+ <00ded99f-91b6-ba92-5d92-2366b163f129@redhat.com> <3cc7407d-9637-227e-9afa-402b6894d8ac@redhat.com>
+In-Reply-To: <3cc7407d-9637-227e-9afa-402b6894d8ac@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 27 May 2021 18:14:27 +0800
+Message-ID: <CACycT3s6SkER09KL_Ns9d03quYSKOuZwd3=HJ_s1SL7eH7y5gA@mail.gmail.com>
+Subject: Re: Re: [PATCH v7 11/12] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, May 27, 2021 at 02:05:56AM CEST, kuba@kernel.org wrote:
->On Wed, 26 May 2021 12:35:08 +0200 Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@nvidia.com>
->> 
->> Instead of doing sprintf twice in case the port is split or not, append
->> the split port suffix in case the port is split.
->> 
->> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+On Thu, May 27, 2021 at 4:43 PM Jason Wang <jasowang@redhat.com> wrote:
 >
->> diff --git a/net/core/devlink.c b/net/core/devlink.c
->> index 06b2b1941dce..c7754c293010 100644
->> --- a/net/core/devlink.c
->> +++ b/net/core/devlink.c
->> @@ -8632,12 +8632,10 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
->>  	switch (attrs->flavour) {
->>  	case DEVLINK_PORT_FLAVOUR_PHYSICAL:
->>  	case DEVLINK_PORT_FLAVOUR_VIRTUAL:
->> -		if (!attrs->split)
->> -			n = snprintf(name, len, "p%u", attrs->phys.port_number);
->> -		else
->> -			n = snprintf(name, len, "p%us%u",
->> -				     attrs->phys.port_number,
->> -				     attrs->phys.split_subport_number);
->> +		n = snprintf(name, len, "p%u", attrs->phys.port_number);
 >
->snprintf() can return n > len, you need to check for this before
->passing len - n as an unsigned argument below.
+> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=884:41, Jason Wang =E5=86=99=E9=81=93=
+:
+> >
+> > =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=883:34, Yongji Xie =E5=86=99=E9=81=
+=93:
+> >> On Thu, May 27, 2021 at 1:40 PM Jason Wang <jasowang@redhat.com> wrote=
+:
+> >>>
+> >>> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=881:08, Yongji Xie =E5=86=99=E9=
+=81=93:
+> >>>> On Thu, May 27, 2021 at 1:00 PM Jason Wang <jasowang@redhat.com>
+> >>>> wrote:
+> >>>>> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=8812:57, Yongji Xie =E5=86=99=
+=E9=81=93:
+> >>>>>> On Thu, May 27, 2021 at 12:13 PM Jason Wang <jasowang@redhat.com>
+> >>>>>> wrote:
+> >>>>>>> =E5=9C=A8 2021/5/17 =E4=B8=8B=E5=8D=885:55, Xie Yongji =E5=86=99=
+=E9=81=93:
+> >>>>>>>> +
+> >>>>>>>> +static int vduse_dev_msg_sync(struct vduse_dev *dev,
+> >>>>>>>> +                           struct vduse_dev_msg *msg)
+> >>>>>>>> +{
+> >>>>>>>> +     init_waitqueue_head(&msg->waitq);
+> >>>>>>>> +     spin_lock(&dev->msg_lock);
+> >>>>>>>> +     vduse_enqueue_msg(&dev->send_list, msg);
+> >>>>>>>> +     wake_up(&dev->waitq);
+> >>>>>>>> +     spin_unlock(&dev->msg_lock);
+> >>>>>>>> +     wait_event_killable(msg->waitq, msg->completed);
+> >>>>>>> What happens if the userspace(malicous) doesn't give a response
+> >>>>>>> forever?
+> >>>>>>>
+> >>>>>>> It looks like a DOS. If yes, we need to consider a way to fix tha=
+t.
+> >>>>>>>
+> >>>>>> How about using wait_event_killable_timeout() instead?
+> >>>>> Probably, and then we need choose a suitable timeout and more
+> >>>>> important,
+> >>>>> need to report the failure to virtio.
+> >>>>>
+> >>>> Makes sense to me. But it looks like some
+> >>>> vdpa_config_ops/virtio_config_ops such as set_status() didn't have a
+> >>>> return value.  Now I add a WARN_ON() for the failure. Do you mean we
+> >>>> need to add some change for virtio core to handle the failure?
+> >>>
+> >>> Maybe, but I'm not sure how hard we can do that.
+> >>>
+> >> We need to change all virtio device drivers in this way.
+> >
+> >
+> > Probably.
+> >
+> >
+> >>
+> >>> We had NEEDS_RESET but it looks we don't implement it.
+> >>>
+> >> Could it handle the failure of get_feature() and get/set_config()?
+> >
+> >
+> > Looks not:
+> >
+> > "
+> >
+> > The device SHOULD set DEVICE_NEEDS_RESET when it enters an error state
+> > that a reset is needed. If DRIVER_OK is set, after it sets
+> > DEVICE_NEEDS_RESET, the device MUST send a device configuration change
+> > notification to the driver.
+> >
+> > "
+> >
+> > This looks implies that NEEDS_RESET may only work after device is
+> > probed. But in the current design, even the reset() is not reliable.
+> >
+> >
+> >>
+> >>> Or a rough idea is that maybe need some relaxing to be coupled loosel=
+y
+> >>> with userspace. E.g the device (control path) is implemented in the
+> >>> kernel but the datapath is implemented in the userspace like TUN/TAP.
+> >>>
+> >> I think it can work for most cases. One problem is that the set_config
+> >> might change the behavior of the data path at runtime, e.g.
+> >> virtnet_set_mac_address() in the virtio-net driver and
+> >> cache_type_store() in the virtio-blk driver. Not sure if this path is
+> >> able to return before the datapath is aware of this change.
+> >
+> >
+> > Good point.
+> >
+> > But set_config() should be rare:
+> >
+> > E.g in the case of virtio-net with VERSION_1, config space is read
+> > only, and it was set via control vq.
+> >
+> > For block, we can
+> >
+> > 1) start from without WCE or
+> > 2) we add a config change notification to userspace or
+> > 3) extend the spec to use vq instead of config space
+> >
+> > Thanks
+>
+>
+> Another thing if we want to go this way:
+>
+> We need find a way to terminate the data path from the kernel side, to
+> implement to reset semantic.
+>
 
-Correct, will send v2. Thanks!
+Do you mean terminate the data path in vdpa_reset(). Is it ok to just
+notify userspace to stop data path asynchronously? Userspace should
+not be able to do any I/O at that time because the iotlb mapping is
+already removed.
 
->
->> +		if (attrs->split)
->> +			n += snprintf(name + n, len - n, "s%u",
->> +				      attrs->phys.split_subport_number);
->>  		break;
->>  	case DEVLINK_PORT_FLAVOUR_CPU:
->>  	case DEVLINK_PORT_FLAVOUR_DSA:
->
+Thanks,
+Yongji
