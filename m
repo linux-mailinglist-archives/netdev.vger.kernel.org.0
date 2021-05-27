@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5CD4392A00
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 10:49:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 896AE3929F2
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 10:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235780AbhE0Iuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 04:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54914 "EHLO
+        id S235722AbhE0IuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 04:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235694AbhE0IuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 04:50:11 -0400
+        with ESMTP id S235620AbhE0Itx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 04:49:53 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4FCC061345
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 01:48:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580AAC06138B
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 01:48:20 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1lmBgn-0002It-Oj
-        for netdev@vger.kernel.org; Thu, 27 May 2021 10:48:25 +0200
+        id 1lmBgg-00022N-Jy
+        for netdev@vger.kernel.org; Thu, 27 May 2021 10:48:18 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id CD61F62D401
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 08:45:36 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 78BA962D418
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 08:45:37 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 7D2C662D3D9;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id A0D9A62D3DB;
         Thu, 27 May 2021 08:45:34 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 70331d84;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c820ab38;
         Thu, 27 May 2021 08:45:34 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
@@ -39,9 +39,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Ulrich Hecht <uli+renesas@fpond.eu>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net-next 01/21] dt-bindings: can: rcar_can: Convert to json-schema
-Date:   Thu, 27 May 2021 10:45:12 +0200
-Message-Id: <20210527084532.1384031-2-mkl@pengutronix.de>
+Subject: [net-next 02/21] dt-bindings: can: rcar_canfd: Convert to json-schema
+Date:   Thu, 27 May 2021 10:45:13 +0200
+Message-Id: <20210527084532.1384031-3-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210527084532.1384031-1-mkl@pengutronix.de>
 References: <20210527084532.1384031-1-mkl@pengutronix.de>
@@ -57,176 +57,191 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Convert the Renesas R-Car CAN Controller Device Tree binding
+Convert the Renesas R-Car CAN FD Controller Device Tree binding
 documentation to json-schema.
 
 Document missing properties.
+The CANFD clock needs to be configured for the maximum frequency on
+R-Car V3M and V3H, too.
 Update the example to match reality.
 
-Link: https://lore.kernel.org/r/561c35648e22a3c1e3b5477ae27fd1a50da7fe98.1620323639.git.geert+renesas@glider.be
+Link: https://lore.kernel.org/r/905134c87f72e2d8e37c309e0ce28ecd7d4f3992.1620323639.git.geert+renesas@glider.be
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- .../devicetree/bindings/net/can/rcar_can.txt  |  80 ----------
- .../bindings/net/can/renesas,rcar-can.yaml    | 139 ++++++++++++++++++
- 2 files changed, 139 insertions(+), 80 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/can/rcar_can.txt
- create mode 100644 Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml
+ .../bindings/net/can/rcar_canfd.txt           | 107 ---------------
+ .../bindings/net/can/renesas,rcar-canfd.yaml  | 122 ++++++++++++++++++
+ 2 files changed, 122 insertions(+), 107 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/can/rcar_canfd.txt
+ create mode 100644 Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
 
-diff --git a/Documentation/devicetree/bindings/net/can/rcar_can.txt b/Documentation/devicetree/bindings/net/can/rcar_can.txt
+diff --git a/Documentation/devicetree/bindings/net/can/rcar_canfd.txt b/Documentation/devicetree/bindings/net/can/rcar_canfd.txt
 deleted file mode 100644
-index 90ac4fef23f5..000000000000
---- a/Documentation/devicetree/bindings/net/can/rcar_can.txt
+index 248c4ed97a0a..000000000000
+--- a/Documentation/devicetree/bindings/net/can/rcar_canfd.txt
 +++ /dev/null
-@@ -1,80 +0,0 @@
--Renesas R-Car CAN controller Device Tree Bindings
---------------------------------------------------
+@@ -1,107 +0,0 @@
+-Renesas R-Car CAN FD controller Device Tree Bindings
+-----------------------------------------------------
 -
 -Required properties:
--- compatible: "renesas,can-r8a7742" if CAN controller is a part of R8A7742 SoC.
--	      "renesas,can-r8a7743" if CAN controller is a part of R8A7743 SoC.
--	      "renesas,can-r8a7744" if CAN controller is a part of R8A7744 SoC.
--	      "renesas,can-r8a7745" if CAN controller is a part of R8A7745 SoC.
--	      "renesas,can-r8a77470" if CAN controller is a part of R8A77470 SoC.
--	      "renesas,can-r8a774a1" if CAN controller is a part of R8A774A1 SoC.
--	      "renesas,can-r8a774b1" if CAN controller is a part of R8A774B1 SoC.
--	      "renesas,can-r8a774c0" if CAN controller is a part of R8A774C0 SoC.
--	      "renesas,can-r8a774e1" if CAN controller is a part of R8A774E1 SoC.
--	      "renesas,can-r8a7778" if CAN controller is a part of R8A7778 SoC.
--	      "renesas,can-r8a7779" if CAN controller is a part of R8A7779 SoC.
--	      "renesas,can-r8a7790" if CAN controller is a part of R8A7790 SoC.
--	      "renesas,can-r8a7791" if CAN controller is a part of R8A7791 SoC.
--	      "renesas,can-r8a7792" if CAN controller is a part of R8A7792 SoC.
--	      "renesas,can-r8a7793" if CAN controller is a part of R8A7793 SoC.
--	      "renesas,can-r8a7794" if CAN controller is a part of R8A7794 SoC.
--	      "renesas,can-r8a7795" if CAN controller is a part of R8A7795 SoC.
--	      "renesas,can-r8a7796" if CAN controller is a part of R8A77960 SoC.
--	      "renesas,can-r8a77961" if CAN controller is a part of R8A77961 SoC.
--	      "renesas,can-r8a77965" if CAN controller is a part of R8A77965 SoC.
--	      "renesas,can-r8a77990" if CAN controller is a part of R8A77990 SoC.
--	      "renesas,can-r8a77995" if CAN controller is a part of R8A77995 SoC.
--	      "renesas,rcar-gen1-can" for a generic R-Car Gen1 compatible device.
--	      "renesas,rcar-gen2-can" for a generic R-Car Gen2 or RZ/G1
--	      compatible device.
--	      "renesas,rcar-gen3-can" for a generic R-Car Gen3 or RZ/G2
--	      compatible device.
--	      When compatible with the generic version, nodes must list the
--	      SoC-specific version corresponding to the platform first
--	      followed by the generic version.
+-- compatible: Must contain one or more of the following:
+-  - "renesas,rcar-gen3-canfd" for R-Car Gen3 and RZ/G2 compatible controllers.
+-  - "renesas,r8a774a1-canfd" for R8A774A1 (RZ/G2M) compatible controller.
+-  - "renesas,r8a774b1-canfd" for R8A774B1 (RZ/G2N) compatible controller.
+-  - "renesas,r8a774c0-canfd" for R8A774C0 (RZ/G2E) compatible controller.
+-  - "renesas,r8a774e1-canfd" for R8A774E1 (RZ/G2H) compatible controller.
+-  - "renesas,r8a7795-canfd" for R8A7795 (R-Car H3) compatible controller.
+-  - "renesas,r8a7796-canfd" for R8A7796 (R-Car M3-W) compatible controller.
+-  - "renesas,r8a77965-canfd" for R8A77965 (R-Car M3-N) compatible controller.
+-  - "renesas,r8a77970-canfd" for R8A77970 (R-Car V3M) compatible controller.
+-  - "renesas,r8a77980-canfd" for R8A77980 (R-Car V3H) compatible controller.
+-  - "renesas,r8a77990-canfd" for R8A77990 (R-Car E3) compatible controller.
+-  - "renesas,r8a77995-canfd" for R8A77995 (R-Car D3) compatible controller.
 -
--- reg: physical base address and size of the R-Car CAN register map.
--- interrupts: interrupt specifier for the sole interrupt.
--- clocks: phandles and clock specifiers for 3 CAN clock inputs.
--- clock-names: 3 clock input name strings: "clkp1", "clkp2", and "can_clk".
+-  When compatible with the generic version, nodes must list the
+-  SoC-specific version corresponding to the platform first, followed by the
+-  family-specific and/or generic versions.
+-
+-- reg: physical base address and size of the R-Car CAN FD register map.
+-- interrupts: interrupt specifiers for the Channel & Global interrupts
+-- clocks: phandles and clock specifiers for 3 clock inputs.
+-- clock-names: 3 clock input name strings: "fck", "canfd", "can_clk".
 -- pinctrl-0: pin control group to be used for this controller.
 -- pinctrl-names: must be "default".
 -
--Required properties for R8A774A1, R8A774B1, R8A774C0, R8A774E1, R8A7795,
--R8A77960, R8A77961, R8A77965, R8A77990, and R8A77995:
--For the denoted SoCs, "clkp2" can be CANFD clock. This is a div6 clock and can
--be used by both CAN and CAN FD controller at the same time. It needs to be
--scaled to maximum frequency if any of these controllers use it. This is done
--using the below properties:
+-Required child nodes:
+-The controller supports two channels and each is represented as a child node.
+-The name of the child nodes are "channel0" and "channel1" respectively. Each
+-child node supports the "status" property only, which is used to
+-enable/disable the respective channel.
 -
--- assigned-clocks: phandle of clkp2(CANFD) clock.
+-Required properties for R8A774A1, R8A774B1, R8A774C0, R8A774E1, R8A7795,
+-R8A7796, R8A77965, R8A77990, and R8A77995:
+-In the denoted SoCs, canfd clock is a div6 clock and can be used by both CAN
+-and CAN FD controller at the same time. It needs to be scaled to maximum
+-frequency if any of these controllers use it. This is done using the below
+-properties:
+-
+-- assigned-clocks: phandle of canfd clock.
 -- assigned-clock-rates: maximum frequency of this clock.
 -
--Optional properties:
--- renesas,can-clock-select: R-Car CAN Clock Source Select. Valid values are:
--			    <0x0> (default) : Peripheral clock (clkp1)
--			    <0x1> : Peripheral clock (clkp2)
--			    <0x3> : External input clock
+-Optional property:
+-The controller can operate in either CAN FD only mode (default) or
+-Classical CAN only mode. The mode is global to both the channels. In order to
+-enable the later, define the following optional property.
+- - renesas,no-can-fd: puts the controller in Classical CAN only mode.
 -
 -Example
 --------
 -
 -SoC common .dtsi file:
 -
--	can0: can@e6e80000 {
--		compatible = "renesas,can-r8a7791", "renesas,rcar-gen2-can";
--		reg = <0 0xe6e80000 0 0x1000>;
--		interrupts = <0 186 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&mstp9_clks R8A7791_CLK_RCAN0>,
--			 <&cpg_clocks R8A7791_CLK_RCAN>, <&can_clk>;
--		clock-names = "clkp1", "clkp2", "can_clk";
--		status = "disabled";
--	};
+-		canfd: can@e66c0000 {
+-			compatible = "renesas,r8a7795-canfd",
+-				     "renesas,rcar-gen3-canfd";
+-			reg = <0 0xe66c0000 0 0x8000>;
+-			interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>,
+-				   <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&cpg CPG_MOD 914>,
+-			       <&cpg CPG_CORE R8A7795_CLK_CANFD>,
+-			       <&can_clk>;
+-			clock-names = "fck", "canfd", "can_clk";
+-			assigned-clocks = <&cpg CPG_CORE R8A7795_CLK_CANFD>;
+-			assigned-clock-rates = <40000000>;
+-			power-domains = <&cpg>;
+-			status = "disabled";
+-
+-			channel0 {
+-				status = "disabled";
+-			};
+-
+-			channel1 {
+-				status = "disabled";
+-			};
+-		};
 -
 -Board specific .dts file:
 -
--&can0 {
--	pinctrl-0 = <&can0_pins>;
+-E.g. below enables Channel 1 alone in the board in Classical CAN only mode.
+-
+-&canfd {
+-	pinctrl-0 = <&canfd1_pins>;
+-	pinctrl-names = "default";
+-	renesas,no-can-fd;
+-	status = "okay";
+-
+-	channel1 {
+-		status = "okay";
+-	};
+-};
+-
+-E.g. below enables Channel 0 alone in the board using External clock
+-as fCAN clock.
+-
+-&canfd {
+-	pinctrl-0 = <&canfd0_pins>, <&can_clk_pins>;
 -	pinctrl-names = "default";
 -	status = "okay";
+-
+-	channel0 {
+-		status = "okay";
+-	};
 -};
-diff --git a/Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml b/Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml
+diff --git a/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml b/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
 new file mode 100644
-index 000000000000..fadc871fd6b0
+index 000000000000..0b33ba9ccb47
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml
-@@ -0,0 +1,139 @@
++++ b/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
+@@ -0,0 +1,122 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/net/can/renesas,rcar-can.yaml#
++$id: http://devicetree.org/schemas/net/can/renesas,rcar-canfd.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Renesas R-Car CAN Controller
++title: Renesas R-Car CAN FD Controller
 +
 +maintainers:
-+  - Sergei Shtylyov <sergei.shtylyov@gmail.com>
++  - Fabrizio Castro <fabrizio.castro.jz@renesas.com>
++
++allOf:
++  - $ref: can-controller.yaml#
 +
 +properties:
 +  compatible:
 +    oneOf:
 +      - items:
 +          - enum:
-+              - renesas,can-r8a7778      # R-Car M1-A
-+              - renesas,can-r8a7779      # R-Car H1
-+          - const: renesas,rcar-gen1-can # R-Car Gen1
-+
-+      - items:
-+          - enum:
-+              - renesas,can-r8a7742      # RZ/G1H
-+              - renesas,can-r8a7743      # RZ/G1M
-+              - renesas,can-r8a7744      # RZ/G1N
-+              - renesas,can-r8a7745      # RZ/G1E
-+              - renesas,can-r8a77470     # RZ/G1C
-+              - renesas,can-r8a7790      # R-Car H2
-+              - renesas,can-r8a7791      # R-Car M2-W
-+              - renesas,can-r8a7792      # R-Car V2H
-+              - renesas,can-r8a7793      # R-Car M2-N
-+              - renesas,can-r8a7794      # R-Car E2
-+          - const: renesas,rcar-gen2-can # R-Car Gen2 and RZ/G1
-+
-+      - items:
-+          - enum:
-+              - renesas,can-r8a774a1     # RZ/G2M
-+              - renesas,can-r8a774b1     # RZ/G2N
-+              - renesas,can-r8a774c0     # RZ/G2E
-+              - renesas,can-r8a774e1     # RZ/G2H
-+              - renesas,can-r8a7795      # R-Car H3
-+              - renesas,can-r8a7796      # R-Car M3-W
-+              - renesas,can-r8a77961     # R-Car M3-W+
-+              - renesas,can-r8a77965     # R-Car M3-N
-+              - renesas,can-r8a77990     # R-Car E3
-+              - renesas,can-r8a77995     # R-Car D3
-+          - const: renesas,rcar-gen3-can # R-Car Gen3 and RZ/G2
++              - renesas,r8a774a1-canfd     # RZ/G2M
++              - renesas,r8a774b1-canfd     # RZ/G2N
++              - renesas,r8a774c0-canfd     # RZ/G2E
++              - renesas,r8a774e1-canfd     # RZ/G2H
++              - renesas,r8a7795-canfd      # R-Car H3
++              - renesas,r8a7796-canfd      # R-Car M3-W
++              - renesas,r8a77965-canfd     # R-Car M3-N
++              - renesas,r8a77970-canfd     # R-Car V3M
++              - renesas,r8a77980-canfd     # R-Car V3H
++              - renesas,r8a77990-canfd     # R-Car E3
++              - renesas,r8a77995-canfd     # R-Car D3
++          - const: renesas,rcar-gen3-canfd # R-Car Gen3 and RZ/G2
 +
 +  reg:
 +    maxItems: 1
 +
 +  interrupts:
-+    maxItems: 1
++    items:
++      - description: Channel interrupt
++      - description: Global interrupt
 +
 +  clocks:
 +    maxItems: 3
 +
 +  clock-names:
 +    items:
-+      - const: clkp1
-+      - const: clkp2
++      - const: fck
++      - const: canfd
 +      - const: can_clk
 +
 +  power-domains:
@@ -235,26 +250,30 @@ index 000000000000..fadc871fd6b0
 +  resets:
 +    maxItems: 1
 +
-+  renesas,can-clock-select:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [ 0, 1, 3 ]
-+    default: 0
-+    description: |
-+      R-Car CAN Clock Source Select.  Valid values are:
-+        <0x0> (default) : Peripheral clock (clkp1)
-+        <0x1> : Peripheral clock (clkp2)
-+        <0x3> : External input clock
++  renesas,no-can-fd:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description:
++      The controller can operate in either CAN FD only mode (default) or
++      Classical CAN only mode.  The mode is global to both the channels.
++      Specify this property to put the controller in Classical CAN only mode.
 +
 +  assigned-clocks:
 +    description:
-+      Reference to the clkp2 (CANFD) clock.
-+      On R-Car Gen3 and RZ/G2 SoCs, "clkp2" is the CANFD clock.  This is a div6
-+      clock and can be used by both CAN and CAN FD controllers at the same
-+      time.  It needs to be scaled to maximum frequency if any of these
-+      controllers use it.
++      Reference to the CANFD clock.  The CANFD clock is a div6 clock and can be
++      used by both CAN (if present) and CAN FD controllers at the same time.
++      It needs to be scaled to maximum frequency if any of these controllers
++      use it.
 +
 +  assigned-clock-rates:
 +    description: Maximum frequency of the CANFD clock.
++
++patternProperties:
++  "^channel[01]$":
++    type: object
++    description:
++      The controller supports two channels and each is represented as a child
++      node.  Each child node supports the "status" property only, which
++      is used to enable/disable the respective channel.
 +
 +required:
 +  - compatible
@@ -263,50 +282,41 @@ index 000000000000..fadc871fd6b0
 +  - clocks
 +  - clock-names
 +  - power-domains
-+
-+allOf:
-+  - $ref: can-controller.yaml#
-+
-+  - if:
-+      not:
-+        properties:
-+          compatible:
-+            contains:
-+              const: renesas,rcar-gen1-can
-+    then:
-+      required:
-+        - resets
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: renesas,rcar-gen3-can
-+    then:
-+      required:
-+        - assigned-clocks
-+        - assigned-clock-rates
++  - resets
++  - assigned-clocks
++  - assigned-clock-rates
++  - channel0
++  - channel1
 +
 +unevaluatedProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/clock/r8a7791-cpg-mssr.h>
++    #include <dt-bindings/clock/r8a7795-cpg-mssr.h>
 +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/power/r8a7791-sysc.h>
++    #include <dt-bindings/power/r8a7795-sysc.h>
 +
-+    can0: can@e6e80000 {
-+            compatible = "renesas,can-r8a7791", "renesas,rcar-gen2-can";
-+            reg = <0xe6e80000 0x1000>;
-+            interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&cpg CPG_MOD 916>,
-+                     <&cpg CPG_CORE R8A7791_CLK_RCAN>, <&can_clk>;
-+            clock-names = "clkp1", "clkp2", "can_clk";
-+            power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
-+            resets = <&cpg 916>;
++    canfd: can@e66c0000 {
++            compatible = "renesas,r8a7795-canfd",
++                         "renesas,rcar-gen3-canfd";
++            reg = <0xe66c0000 0x8000>;
++            interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>,
++                         <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
++            clocks = <&cpg CPG_MOD 914>,
++                     <&cpg CPG_CORE R8A7795_CLK_CANFD>,
++                     <&can_clk>;
++            clock-names = "fck", "canfd", "can_clk";
++            assigned-clocks = <&cpg CPG_CORE R8A7795_CLK_CANFD>;
++            assigned-clock-rates = <40000000>;
++            power-domains = <&sysc R8A7795_PD_ALWAYS_ON>;
++            resets = <&cpg 914>;
++
++            channel0 {
++            };
++
++            channel1 {
++            };
 +    };
-
-base-commit: 59c56342459a483d5e563ed8b5fdb77ab7622a73
 -- 
 2.30.2
 
