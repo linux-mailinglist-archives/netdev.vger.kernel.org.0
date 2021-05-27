@@ -2,114 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0894D39363F
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 21:29:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 999813936C8
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 22:01:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234688AbhE0TbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 15:31:18 -0400
-Received: from mail-mw2nam10on2042.outbound.protection.outlook.com ([40.107.94.42]:3072
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229764AbhE0TbS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 May 2021 15:31:18 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HEzisr2qU0gV1aCePobPB+liWpmqPRX4ZjBO8Egv97dEodioKmmt4TE6dx5l0q1Vs4Y2lB9Nvdf4Op82+jIf0sMvsm7JM5D2XzxbnGLWW+83PHy4gt816wj9R5lljar8a42dRpTw8XeT/uE86dFS0JT7e7y7ToYMGqjlyqrApBZHN+D7ugaZf5ZFuLEi+TLsYYfU3KOTJ6PbdN9PVmv1voWpi8j+gNnrUsxazzEZnXEcD39ScasC5QC8ijusrFx/EDUC20gAHRJf4HQiDQ7ZtUTfWreiwcQZV7cy6v7cX50BYBfi8wvF/sghBDEDpZiLVRJbTe4op5vG3HuLmhgiVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+HNSO+UoOMSDNiT0XsDTaRSTt8ojhzp4ONzqtGbE/Gw=;
- b=AV5g5mqdraWdBW1mPBQg89nBvFLageJ4qacTtRQLZoRCsIGb1vr+mrNVgbsNve65vb28Zh3zwts0/uROLBx/foHSNbYHiEVl5bhGF+dJrcplY5aCh8niv2oPyH/AAVxWL5Di+Ula3ZMqV/nfZAWZAyaKYGTLuuP2u0wQ81EW7L0GEzWbJ7JdiIqn0JdBGPdgxgBrHWhcDNKW1C8oLBHNmdJlc6vlz5ujwcS5GbZZ3OR1HbigM2V2axvNkftiolCOMGFZDWQhY9dl2ZYJ9cNo8z2RjwKEWkT2FGOUkNoRHbAR9VLksl3lY/zlFTOokAEqnu238+llWySJRUSkQZzUNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=infinera.com; dmarc=pass action=none header.from=infinera.com;
- dkim=pass header.d=infinera.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infinera.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+HNSO+UoOMSDNiT0XsDTaRSTt8ojhzp4ONzqtGbE/Gw=;
- b=D956my2nh8N22ZWR2kiWAGbh6ntRURk+glF2e2DmME8XAyJ0qzdZK1hqu3PqYfH1Kv9ti8wG0KH2Etvo/YQFmKHc2QE8uuyWHmWWAUvUB7B3nUwOmqIfFLwu57ENK7gLU+yFzYxSroyKLBx9wlP87jmYO7ZSUf2eAoVMseK7T3Y=
-Received: from PH0PR10MB4615.namprd10.prod.outlook.com (2603:10b6:510:36::24)
- by PH0PR10MB4567.namprd10.prod.outlook.com (2603:10b6:510:33::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Thu, 27 May
- 2021 19:29:43 +0000
-Received: from PH0PR10MB4615.namprd10.prod.outlook.com
- ([fe80::5021:f762:e76f:d567]) by PH0PR10MB4615.namprd10.prod.outlook.com
- ([fe80::5021:f762:e76f:d567%7]) with mapi id 15.20.4173.021; Thu, 27 May 2021
- 19:29:43 +0000
-From:   Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
-To:     Luca Coelho <luciano.coelho@intel.com>
-CC:     Netdev <netdev@vger.kernel.org>
-Subject: iwlwifi/cfg/22000.c: kernel 5.10.x LTS only have
- IWL_22000_UCODE_API_MAX 59 
-Thread-Topic: iwlwifi/cfg/22000.c: kernel 5.10.x LTS only have
- IWL_22000_UCODE_API_MAX 59 
-Thread-Index: AQHXUy5AQawm5aX1GEG2TCkCm2KCTA==
-Date:   Thu, 27 May 2021 19:29:43 +0000
-Message-ID: <PH0PR10MB4615DF38563E6512A0841162F4239@PH0PR10MB4615.namprd10.prod.outlook.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=infinera.com;
-x-originating-ip: [178.174.231.82]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 81bac0d9-a36e-4973-29ec-08d92145c7cb
-x-ms-traffictypediagnostic: PH0PR10MB4567:
-x-microsoft-antispam-prvs: <PH0PR10MB4567AD3B2D90D46B210C2C38F4239@PH0PR10MB4567.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2512;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: wbfUfYCHOtvAOPv4jos1bHkGhn2zhUxZpHWMEeVJlSMV9L32qLGVDmk4hfJPAfPguT3IxUX7l8T3CBA9Mm0qnKiSwFLYtfn/43VPZuCnCmqEUQQqLTWivAW6setjHKyKC2Ra5vsHw7WbUxuwpUsGkjoJ5ikAvGTn39gJ+RdzECDGC3t3eTmTwAomeTrih9TR0CvyBFPMPUCxc86OjK0MpIC/Av5lY0xlckwC/nU2daR0+eEU0gSQmhgQsTMr1AraerKU46hFpms6X0F/hBSWNX25rEzFVGPncCz2LbbEpYUDLf0gqZDh8ltYrQ3qcUMld5EiShcr+w0hvSpbZUFxjdT4/gszV4cEugM3oCjC6XSI8o54pK0la3f2ulP/cPiRjjSjGvfJwrvkUQZYs73jfpmKpM1TgH6IdavojwBSjnOu2w2an2r0eBOJeDEliXid+U8GdtChC5Ef3eRFF6HFBSU0RZbbKyZhq8Men9v1/m/qQclPQw/22FSq0Hl403iYFT7EJoWM2tkU1asrbvrKZHAAMEKpNrg/ibss7ZwVyzq1q/G6e/Lz3NFFnzcIFHdYtTfpVSgQT2Uge8XCXFm1Yg4YHHOtYB0kDJ9/GXKhu68=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4615.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(55016002)(6916009)(122000001)(66476007)(38100700002)(6506007)(64756008)(66446008)(558084003)(66556008)(71200400001)(186003)(86362001)(498600001)(8936002)(8676002)(4326008)(26005)(9686003)(5660300002)(66946007)(76116006)(7696005)(4743002)(33656002)(91956017)(2906002)(52536014);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?iso-8859-1?Q?BBLOjvv1rB6IA+VrIPmcvP2nEGCj0IM9QdVWGXbN1pOT71U8WglLHz58MJ?=
- =?iso-8859-1?Q?dp7FdafXyHsBCim6+mW3lxiXQtrNQH0ICQW5ljzYK9LCUkYjMjN2JgMoTd?=
- =?iso-8859-1?Q?eqSGEsBopW2wYOHx/57aUTL/CY0HfJGynrf4m9i9cHGvaN26tGqOAzFVRZ?=
- =?iso-8859-1?Q?/KcaR+Tp4nEsr2rNK01p3WGqRkdQ3zOVx1N0kAB3slkKDr042DLVVTX1sg?=
- =?iso-8859-1?Q?bzuzw9fOquri4moOZw23/3VRJKNY/bhZnbANMi3tp8abAMddaK99t1lBpv?=
- =?iso-8859-1?Q?b8TC1vtrHZV0I1B4h+0FQuN33U5bShg9MoK53HJl/QbSP69EAQwQYoXta/?=
- =?iso-8859-1?Q?T/ssi28PnSHvYMdfP/SD+ov21fVFq1N5A1kCDiuRV0qBT7p+LnTiwahbeF?=
- =?iso-8859-1?Q?RSYJ+A2gwjnCGmb8UrhAgrmLUDKcS/hci4khyv/5rW0F6XZqpJ0USmpZZh?=
- =?iso-8859-1?Q?hULbPLz90iKPO3kRxQqaPRvHRC3cLwr1GiR5KhmrO+jWjrrHHuHE/ZZft9?=
- =?iso-8859-1?Q?qoEnUya+SSZQzsm4bIC0KFkQP1uEh9kA/K6K53zB3FCduDoyKODmZtLO+1?=
- =?iso-8859-1?Q?99OHdfTRnU+ahuvvGNiVE8HLqp0xxgDNyen3Q0be3SPJ0eqbNEHf9mk+aG?=
- =?iso-8859-1?Q?/SucHPd52hpLfrjg5D5M9Gkd5ZWaxgP2CwKSuyK5ggL/us7qFQt7wPTTW0?=
- =?iso-8859-1?Q?E0NGcqURU321/82hvYP8EZM3gjR1BlM8arsVkvLE1v1/rHYfbOLwWF9WtY?=
- =?iso-8859-1?Q?RwNXAyyv7pOXX/QTvdOL3n57LMDS6FBq+pCgOow+e6mT3sc+2l3fVdQQ3r?=
- =?iso-8859-1?Q?fQVFmtqjj3h8ZVF40qiMTwW/IzRwpx/St20duxM1E3KSvuPoW/yPxt4pOb?=
- =?iso-8859-1?Q?kIcFHN6qSx5nEXNB8qDG85uEgt83HhrAB8l/sFcFJRLg+cbpwYrs4/zXMl?=
- =?iso-8859-1?Q?GRTAkoAFyL/xQO597W5Zi3DYqNBLPupHBQcqeSGmeBBVTSE/qKbxWVESMf?=
- =?iso-8859-1?Q?vlV3yBrS62mIcnJ/9DBNJ+DfQpndUtNoUzcHWXdzApYB9jpdbzZHWUlFQ0?=
- =?iso-8859-1?Q?xH3iCTnaivTOqGsiMsj2WquMwYGMvi3RpInyc4SUQ3KwwRL9egJKqPDX3c?=
- =?iso-8859-1?Q?NgeuDVTFRrd7OZ2+WeF222LfIoECBhmQIVn1elaSB8Nrmsg4Hd1iEOvm0A?=
- =?iso-8859-1?Q?sGN8OtotRd6PJGAU3+Uh5IbOWkGX9W0/bIHwP2Jc06NJaYTrtQXz2zN0X/?=
- =?iso-8859-1?Q?C+1GpA93jk8uHXJNhpVDhvB3LASiFv6pIHrrlRxtLPEX3U8q59r/HI8/pd?=
- =?iso-8859-1?Q?TUNGSk2BKXWQxX6ym7or4MUNcTz5i5nvhuxzmWk75lxtTMK/4Gw5YKLYii?=
- =?iso-8859-1?Q?2+QKnOWyXO?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S235766AbhE0UC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 16:02:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58996 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235731AbhE0UC4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 16:02:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622145682;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V7kmrEOi3vKiBTLRRc2qjUiUKBH4FrNwPa4IMjt29q4=;
+        b=ACcuJaKHR1nxp/ZoHOF3RFl4DhCwA75UYDGTvCclrF5gHbj3Ax8UcvfdCXvwfap3oGsmDS
+        3slaBM5PExf4YVnmiE5NmTLoBujdvbY0wpKqoLsUQH5PDEiCv2rcD4T9wVxBJ5vy3fzTT4
+        iX5548JApnswd7bBLifkGEY+gpjLv/4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-536-brqSNILNMhOz_ShKSs6k9g-1; Thu, 27 May 2021 16:01:11 -0400
+X-MC-Unique: brqSNILNMhOz_ShKSs6k9g-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C9D42803621;
+        Thu, 27 May 2021 20:01:09 +0000 (UTC)
+Received: from f33vm.wilsonet.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 49C475C290;
+        Thu, 27 May 2021 20:01:08 +0000 (UTC)
+From:   Jarod Wilson <jarod@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jarod Wilson <jarod@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v3 1/2] bonding: add pure source-mac-based tx hashing option
+Date:   Thu, 27 May 2021 16:00:50 -0400
+Message-Id: <20210527200051.1871092-2-jarod@redhat.com>
+In-Reply-To: <20210527200051.1871092-1-jarod@redhat.com>
+References: <20210527200051.1871092-1-jarod@redhat.com>
 MIME-Version: 1.0
-X-OriginatorOrg: infinera.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4615.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81bac0d9-a36e-4973-29ec-08d92145c7cb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2021 19:29:43.6891
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 285643de-5f5b-4b03-a153-0ae2dc8aaf77
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: DjMM/sG21EXUILvE6EwiUwX0v0Y9MSOyXc7IpcfHFMYWqvUhPHeQ8RU3M2dd+6TmiBlTZGZkZ2ElfnWzMBWPpg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB4567
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I think this is why my device:=0A=
-9:00.0 Network controller: Intel Corporation Device 2725 (rev 1a)=0A=
-	Subsystem: Intel Corporation Device 0020=0A=
-	Kernel driver in use: iwlwifi=0A=
-	Kernel modules: iwlwifi=0A=
-=0A=
-isn't working? =0A=
-=0A=
+As it turns out, a pure source-mac only tx hash has a place for some VM
+setups. The previously added vlan+srcmac hash doesn't work as well for a
+VM with a single MAC and multiple vlans -- these types of setups path
+traffic more efficiently if the load is split by source mac alone. Enable
+this by way of an extra module parameter, rather than adding yet another
+hashing method in the tx fast path.
+
+Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+Cc: Veaceslav Falico <vfalico@gmail.com>
+Cc: Andy Gospodarek <andy@greyhouse.net>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Thomas Davis <tadavis@lbl.gov>
+Cc: Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
+---
+ Documentation/networking/bonding.rst | 13 +++++++++++++
+ drivers/net/bonding/bond_main.c      | 18 ++++++++++++------
+ 2 files changed, 25 insertions(+), 6 deletions(-)
+
+diff --git a/Documentation/networking/bonding.rst b/Documentation/networking/bonding.rst
+index 62f2aab8eaec..767dbb49018b 100644
+--- a/Documentation/networking/bonding.rst
++++ b/Documentation/networking/bonding.rst
+@@ -707,6 +707,13 @@ mode
+ 		swapped with the new curr_active_slave that was
+ 		chosen.
+ 
++novlan_srcmac
++
++	When using the vlan+srcmac xmit_hash_policy, there may be cases where
++	omitting the vlan from the hash is beneficial. This can be done with
++	an extra module parameter here. The default value is 0 to include
++	vlan ID in the transmit hash.
++
+ num_grat_arp,
+ num_unsol_na
+ 
+@@ -964,6 +971,12 @@ xmit_hash_policy
+ 
+ 		hash = (vlan ID) XOR (source MAC vendor) XOR (source MAC dev)
+ 
++		Optionally, if the module parameter novlan_srcmac=1 is set,
++		the vlan ID is omitted from the hash and only the source MAC
++		address is used, reducing the hash to
++
++		hash = (source MAC vendor) XOR (source MAC dev)
++
+ 	The default value is layer2.  This option was added in bonding
+ 	version 2.6.3.  In earlier versions of bonding, this parameter
+ 	does not exist, and the layer2 policy is the only policy.  The
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 7e469c203ca5..666051f91d70 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -107,6 +107,7 @@ static char *lacp_rate;
+ static int min_links;
+ static char *ad_select;
+ static char *xmit_hash_policy;
++static int novlan_srcmac;
+ static int arp_interval;
+ static char *arp_ip_target[BOND_MAX_ARP_TARGETS];
+ static char *arp_validate;
+@@ -168,6 +169,9 @@ MODULE_PARM_DESC(xmit_hash_policy, "balance-alb, balance-tlb, balance-xor, 802.3
+ 				   "0 for layer 2 (default), 1 for layer 3+4, "
+ 				   "2 for layer 2+3, 3 for encap layer 2+3, "
+ 				   "4 for encap layer 3+4, 5 for vlan+srcmac");
++module_param(novlan_srcmac, int, 0);
++MODULE_PARM_DESC(novlan_srcmac, "include vlan ID in vlan+srcmac xmit_hash_policy or not; "
++			      "0 to include it (default), 1 to exclude it");
+ module_param(arp_interval, int, 0);
+ MODULE_PARM_DESC(arp_interval, "arp interval in milliseconds");
+ module_param_array(arp_ip_target, charp, NULL, 0);
+@@ -3523,9 +3527,9 @@ static bool bond_flow_ip(struct sk_buff *skb, struct flow_keys *fk,
+ 
+ static u32 bond_vlan_srcmac_hash(struct sk_buff *skb)
+ {
+-	struct ethhdr *mac_hdr = (struct ethhdr *)skb_mac_header(skb);
++	struct ethhdr *mac_hdr = eth_hdr(skb);
+ 	u32 srcmac_vendor = 0, srcmac_dev = 0;
+-	u16 vlan;
++	u32 hash;
+ 	int i;
+ 
+ 	for (i = 0; i < 3; i++)
+@@ -3534,12 +3538,14 @@ static u32 bond_vlan_srcmac_hash(struct sk_buff *skb)
+ 	for (i = 3; i < ETH_ALEN; i++)
+ 		srcmac_dev = (srcmac_dev << 8) | mac_hdr->h_source[i];
+ 
+-	if (!skb_vlan_tag_present(skb))
+-		return srcmac_vendor ^ srcmac_dev;
++	hash = srcmac_vendor ^ srcmac_dev;
++
++	if (novlan_srcmac || !skb_vlan_tag_present(skb))
++		return hash;
+ 
+-	vlan = skb_vlan_tag_get(skb);
++	hash ^= skb_vlan_tag_get(skb);
+ 
+-	return vlan ^ srcmac_vendor ^ srcmac_dev;
++	return hash;
+ }
+ 
+ /* Extract the appropriate headers based on bond's xmit policy */
+-- 
+2.30.2
+
