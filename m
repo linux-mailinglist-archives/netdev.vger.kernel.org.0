@@ -2,78 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5824F392536
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 05:06:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC85B39253E
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 05:11:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234382AbhE0DIC convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 May 2021 23:08:02 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:2310 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232725AbhE0DIB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 23:08:01 -0400
-Received: from dggeme709-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FrCJw4FxQz19V3l;
-        Thu, 27 May 2021 11:01:52 +0800 (CST)
-Received: from dggpemm500008.china.huawei.com (7.185.36.136) by
- dggeme709-chm.china.huawei.com (10.1.199.105) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 27 May 2021 11:06:26 +0800
-Received: from dggpemm500008.china.huawei.com ([7.185.36.136]) by
- dggpemm500008.china.huawei.com ([7.185.36.136]) with mapi id 15.01.2176.012;
- Thu, 27 May 2021 11:06:26 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mst@redhat.com" <mst@redhat.com>,
-        "jasowang@redhat.com" <jasowang@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        dingxiaoxiong <dingxiaoxiong@huawei.com>
-Subject: RE: [PATCH net-next] virtio_net: set link state down when virtqueue
- is broken
-Thread-Topic: [PATCH net-next] virtio_net: set link state down when virtqueue
- is broken
-Thread-Index: AQHXUiPuxqZ0kftZNUuaGRJYw289Yar18/EAgACvT/A=
-Date:   Thu, 27 May 2021 03:06:26 +0000
-Message-ID: <3540ce31bb974d89bc5d2a612c2675a4@huawei.com>
-References: <79907bf6c835572b4af92f16d9a3ff2822b1c7ea.1622028946.git.wangyunjian@huawei.com>
- <20210526172808.485ff268@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210526172808.485ff268@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.243.60]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S234421AbhE0DND convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 May 2021 23:13:03 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:27910 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232725AbhE0DNC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 May 2021 23:13:02 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-268-gHPaEQ38Pxqjp6QldB-D_A-1; Wed, 26 May 2021 23:11:23 -0400
+X-MC-Unique: gHPaEQ38Pxqjp6QldB-D_A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9EAE8107ACC7;
+        Thu, 27 May 2021 03:11:22 +0000 (UTC)
+Received: from Leo-laptop-t470s (unknown [10.64.242.200])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id EC65F61156;
+        Thu, 27 May 2021 03:11:20 +0000 (UTC)
+Date:   Thu, 27 May 2021 11:11:15 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] selftests/wireguard: make sure rp_filter disabled on
+ vethc
+Message-ID: <YK8N0+2Zvn0PME/y@Leo-laptop-t470s>
+References: <20210525121507.6602-1-liuhangbin@gmail.com>
+ <CAHmME9qHbTWB=V3Yw6FNLa1ZgP2gxb29Pt=Nw3=+QADDXArQuA@mail.gmail.com>
+ <CAPwn2JTkdXRkT=azv+hPSUvcb-Gq51T11Z2MBFBsNCRG_8=Gsg@mail.gmail.com>
+ <CAHmME9q+_9TBv0kS4_B9WihtadT+6uDZ8Pn1yJBgrvj8c-nzzg@mail.gmail.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+In-Reply-To: <CAHmME9q+_9TBv0kS4_B9WihtadT+6uDZ8Pn1yJBgrvj8c-nzzg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: gmail.com
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski [mailto:kuba@kernel.org]
-> Sent: Thursday, May 27, 2021 8:28 AM
-> To: wangyunjian <wangyunjian@huawei.com>
-> Cc: netdev@vger.kernel.org; davem@davemloft.net; mst@redhat.com;
-> jasowang@redhat.com; virtualization@lists.linux-foundation.org;
-> dingxiaoxiong <dingxiaoxiong@huawei.com>
-> Subject: Re: [PATCH net-next] virtio_net: set link state down when virtqueue is
-> broken
+On Wed, May 26, 2021 at 04:38:09PM +0200, Jason A. Donenfeld wrote:
+> Hi Hangbin,
 > 
-> On Wed, 26 May 2021 19:39:51 +0800 wangyunjian wrote:
-> > +	for (i = 0; i < vi->max_queue_pairs; i++) {
-> > +		if (virtqueue_is_broken(vi->rq[i].vq) ||
-> virtqueue_is_broken(vi->sq[i].vq)) {
-> > +			netif_carrier_off(netdev);
-> > +			netif_tx_stop_all_queues(netdev);
-> > +			vi->broken = true;
-> 
-> Can't comment on the virtio specifics but the lack of locking between this and
-> the code in virtnet_config_changed_work() seems surprising.
+> fc00::1 lives inside of fc00::9/96.
 
-Thanks for your suggestion, will fix it in next version.
+Yes, I know fc00::1 belongs to fc00::9/96 subnet. I just don't understand
+why we need to add a default v6 route for vethc, while the default route
+address fc00::1 is not configured on any device.
 
-Yunjian
+This step looks useless for me.
+
+Thanks
+Hangbin
+
