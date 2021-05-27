@@ -2,110 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D162393125
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 16:41:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6408E393138
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 16:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229822AbhE0On0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 10:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51684 "EHLO
+        id S236564AbhE0OqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 10:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbhE0OnY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 10:43:24 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE5AC061574;
-        Thu, 27 May 2021 07:41:49 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id b13so1009902ybk.4;
-        Thu, 27 May 2021 07:41:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b/Mn6m+0szuABGuNz4gdUEHH56ZKs2OQ3Dg8rDpxUzE=;
-        b=XSW/W9WafmbrRZlc24lBgVOfwJ3pmFDiHzO44/xGvx7QKma/0OZXuepoaClYwEoYQL
-         SUAr+kcAGGWYZ0fwQPpeTk358Rq/QVRXArqaLfrfbsG7rDfwAjtOCsQiwht90BVTbgGw
-         CmhIq5/fs0DkSoIGxAmaLQy/EGSjgSXbQkpC0sAkBanhFAtwwDG6qkCmzIc26Udl5raY
-         otShNCca77NEr/SI1VVhSU/+TKHLMlqrwbwd5zlesBlM34uqh5JpWhzZkNtCSRiYDsZE
-         k2LBbSttOkkJuPJESN2+guVZTdIGm9cezRKbXnbvdn+CCZWZatV9dRDqeWa9mx2F0Ut+
-         cDRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b/Mn6m+0szuABGuNz4gdUEHH56ZKs2OQ3Dg8rDpxUzE=;
-        b=ettNYMPOrKPJ7LCKGbnEyD9bePESWSbFx6fQ2E7+w6GQsxjQP3YUsdINTMzTMpj0i5
-         ay7DmE9bDYOxiko2uxjOQ75unhq4pkRfz9IJRqsAstfYH5rUwXx/umobDxBngqtNPx16
-         73TEDCxSGZeXYNv64aoI/KBBXvJnzZWWpjvSqHM0o8kBpD8CouK2OHDXOSUDgbY0Gh7K
-         G9Ox4aguqzh1g0Z3tINDeJMOOF70z0XVChG4rxVGlGoRsdbLUZhHNSKzQb4ThILEFbM7
-         FeUibajWzFRbj2bRPtP3x+coAL6TOgBdFaSnU3ZNBvZqgXkDlx1LyUR60CFcNL+jsCMV
-         V7ng==
-X-Gm-Message-State: AOAM533NusCSsrC9ZWoGLBNC1tFESVOfKuqmE3gftJtZASv5gHs9ueZj
-        ngBpu5Nsg1ujE6koqa6kzFJx6MJYQkvKkxNyxGo=
-X-Google-Smtp-Source: ABdhPJxzJi1mIJCB7dkcmXbe4qDmLn1jrkqvUTD5Pi1mP9hJzrJ8ltrWO/v6eOsEXIj4lRFJpqjsZt/HSHtfTfFtyqE=
-X-Received: by 2002:a25:1455:: with SMTP id 82mr5241773ybu.403.1622126508714;
- Thu, 27 May 2021 07:41:48 -0700 (PDT)
+        with ESMTP id S236574AbhE0OqH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 10:46:07 -0400
+Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02424C061763;
+        Thu, 27 May 2021 07:44:33 -0700 (PDT)
+Received: from [2a02:610:7501:feff:1ccf:41ff:fe50:18b9] (helo=localhost.localdomain)
+        by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <gatis@mikrotik.com>)
+        id 1lmHFM-0002jz-2V; Thu, 27 May 2021 17:44:28 +0300
+From:   Gatis Peisenieks <gatis@mikrotik.com>
+To:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        hkallweit1@gmail.com, jesse.brandeburg@intel.com,
+        dchickles@marvell.com, tully@mikrotik.com, eric.dumazet@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gatis Peisenieks <gatis@mikrotik.com>
+Subject: [PATCH net-next v4 0/4] add 4 RX/TX queue support for Mikrotik 10/25G NIC
+Date:   Thu, 27 May 2021 17:44:19 +0300
+Message-Id: <20210527144423.3395719-1-gatis@mikrotik.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210526080741.GW30378@techsingularity.net> <YK9SiLX1E1KAZORb@infradead.org>
- <20210527090422.GA30378@techsingularity.net> <YK9j3YeMTZ+0I8NA@infradead.org> <CAEf4BzZLy0s+t+Nj9QgUNM66Ma6HN=VkS+ocgT5h9UwanxHaZQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzZLy0s+t+Nj9QgUNM66Ma6HN=VkS+ocgT5h9UwanxHaZQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 27 May 2021 07:41:37 -0700
-Message-ID: <CAEf4BzbzPK-3cyLFM8QKE5-o_dL7=UCcvRF+rEqyUcHhyY+FJg@mail.gmail.com>
-Subject: Re: [PATCH] mm/page_alloc: Work around a pahole limitation with
- zero-sized struct pagesets
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Hritik Vijay <hritikxx8@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 27, 2021 at 7:37 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Thu, May 27, 2021 at 2:19 AM Christoph Hellwig <hch@infradead.org> wrote:
-> >
-> > On Thu, May 27, 2021 at 10:04:22AM +0100, Mel Gorman wrote:
-> > > What do you suggest as an alternative?
-> > >
-> > > I added Arnaldo to the cc as he tagged the last released version of
-> > > pahole (1.21) and may be able to tag a 1.22 with Andrii's fix for pahole
-> > > included.
-> > >
-> > > The most obvious alternative fix for this issue is to require pahole
-> > > 1.22 to set CONFIG_DEBUG_INFO_BTF but obviously a version 1.22 that works
-> > > needs to exist first and right now it does not. I'd be ok with this but
-> > > users of DEBUG_INFO_BTF may object given that it'll be impossible to set
-> > > the option until there is a release.
-> >
-> > Yes, disable BTF.  Empty structs are a very useful feature that we use
-> > in various places in the kernel.  We can't just keep piling hacks over
-> > hacks to make that work with a recent fringe feature.
+More RX/TX queues on a network card help spread the CPU load among
+cores and achieve higher overall networking performance.
+This patch set adds support for 4 RX/TX queues available on
+Mikrotik 10/25G NIC.
 
-Sorry, I accidentally send out empty response.
+v4:
+    - addressed comments from Jakub Kicinski:
+      - split up the change in more manageable chunks
+      - changed member order in structs for tighter packing
+      - fixed style issues
+    - reverted to calling napi_alloc_skb only from within poll
+      as before
+v3:
+    - fix kernel-doc complaints on comments as pointed out by
+      David Miller
+v2:
+    - rebase on net-next master as requested by David Miller
 
-CONFIG_DEBUG_INFO_BTF is a crucial piece of modern BPF ecosystem. It
-is enabled by default by most popular Linux distros. So it's hardly a
-fringe feature and is something that many people and applications
-depend on.
+Gatis Peisenieks (4):
+  atl1c: detect NIC type early
+  atl1c: move tx napi into tpd_ring
+  atl1c: prepare for multiple rx queues
+  atl1c: add 4 RX/TX queue support for Mikrotik 10/25G NIC
 
-I agree that empty structs are useful, but here we are talking about
-per-CPU variables only, which is the first use case so far, as far as
-I can see. If we had pahole 1.22 released and widely packaged it could
-have been a viable option to force it on everyone. But right now
-that's not the case. So while ugly, making sure pagesets is
-non-zero-sized is going to avoid a lot of pain for a lot of people. By
-the time we need another zero-sized per-CPU var, we might be able to
-force pahole to 1.22.
+ drivers/net/ethernet/atheros/atl1c/atl1c.h    |  25 +-
+ drivers/net/ethernet/atheros/atl1c/atl1c_hw.h |  34 +-
+ .../net/ethernet/atheros/atl1c/atl1c_main.c   | 546 +++++++++++-------
+ 3 files changed, 368 insertions(+), 237 deletions(-)
+
+-- 
+2.31.1
+
