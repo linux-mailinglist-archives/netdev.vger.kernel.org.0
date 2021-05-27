@@ -2,84 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71DFE392B00
-	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 11:44:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A185392B02
+	for <lists+netdev@lfdr.de>; Thu, 27 May 2021 11:44:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235864AbhE0JqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 05:46:13 -0400
-Received: from mail-ua1-f45.google.com ([209.85.222.45]:41570 "EHLO
-        mail-ua1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235675AbhE0JqL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 05:46:11 -0400
-Received: by mail-ua1-f45.google.com with SMTP id g34so832210uah.8;
-        Thu, 27 May 2021 02:44:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xyO91WwRYqo2wMXqgZeeHTqV+3eSTnV/ZWWMMo01lKE=;
-        b=ZrNnBYATMgUyUZPJ/kijSLyvp8j4jJE4H2GpG1+0QHySWSAg+Qiy6orVjRExt+DRtF
-         2xLxsd0oyT8bf8fFHHORm0kMnisJawQRKfZSjCpWO0s2uA0tpWWxZDuIh/Z0SqX3bP1b
-         XvmE/woTMa+uQSgSd0cIRFqNrKfCiUiuQZ1tLZrFccLP6dv6BEpQvGXLdLo3PjaTuSQu
-         XlHWVAWmBsJNNLktE1oTjOgggxnanzHyUnS7+VTXfcngImgxfaljYP/yOGM5QXIhsM2Q
-         +nbodyM6uiDce+ZomhVDNm/X1dltCzqRl/KriRGQ3prtlhxKxyaWApdekP9gdzuw2ESF
-         lLTA==
-X-Gm-Message-State: AOAM530j42ej/cFHHZj2iJ5HAd50Pz5qdCJSLfZZMwC+jsKB7JK71oUs
-        QTi5AGQ6nAjOSSFoP6diodcVeWZGuVSqVq9FnmGqQ+0M
-X-Google-Smtp-Source: ABdhPJxm04ulbfNwcj1J1dC242uqkUkgB3I1fmf2xJPxaK+VsPn+SlpCJ5YiUalQQXQPXVe94B31n4eYZnyyCgmzn+Q=
-X-Received: by 2002:a1f:a388:: with SMTP id m130mr1257979vke.1.1622108678468;
- Thu, 27 May 2021 02:44:38 -0700 (PDT)
+        id S235921AbhE0JqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 05:46:21 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:42360 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S235891AbhE0JqT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 05:46:19 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14R9f0pw001512;
+        Thu, 27 May 2021 02:44:44 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=9PXqhRKYZ4uZ3n+M1Dk5X6DIHyKjvPjStZOLPOOvYR0=;
+ b=UdLwM0rWIIlyIFkqSfi/1cVZKibl/nO5eBlZdoSmxQGIzMlwpiWt1sP6FLzeQFbNLe4D
+ TKTmYn/9aFNaWt2trf7ucgwTrNkBs8CpSXA4WVnyC2zzN3j3WLDhKFKmqyOhwqoQe+X7
+ 1GYw9SveS8SKANk3wi77OHZjO+WWIAdKBlOJ9U+Ofbx0fZm/IwNaF0BroWs2CbvKcpWw
+ fcWISOTMXe9+sCg9deLHlhrFINAWGx475Qmigs/yfhwjGgHqJnY5W7M+DU2kAV2z7tKF
+ mkP9b1WNjgl1WarJIg9zuOxpb/b2dZZfUXTDrIXyW4iLBPtBE0viCd2dAPevp5Tlay71 Dg== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 38spf3c9fu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 27 May 2021 02:44:43 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 27 May
+ 2021 02:44:42 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 27 May 2021 02:44:42 -0700
+Received: from hyd1584.marvell.com (unknown [10.29.37.82])
+        by maili.marvell.com (Postfix) with ESMTP id B04623F7040;
+        Thu, 27 May 2021 02:44:40 -0700 (PDT)
+From:   George Cherian <george.cherian@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <gcherian@marvell.com>,
+        <sgoutham@marvell.com>
+Subject: [net-next PATCHv3 0/5] NPC KPU updates
+Date:   Thu, 27 May 2021 15:14:34 +0530
+Message-ID: <20210527094439.1910013-1-george.cherian@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <cover.1621518686.git.geert+renesas@glider.be> <b708fdb009912cf247ef257dce519c52889688d8.1621518686.git.geert+renesas@glider.be>
- <20210520150742.GB22843@alpha.franken.de>
-In-Reply-To: <20210520150742.GB22843@alpha.franken.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 27 May 2021 11:44:27 +0200
-Message-ID: <CAMuHMdXtn9e9mvRP63GYXuGG7Gfwxoc8bmGrBwfV2UOPizD6Qw@mail.gmail.com>
-Subject: Re: [PATCH 4/5] MIPS: SEAD3: Correct Ethernet node name
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: uRkld3esgkR--QoaUt87VfuKXcMBDktb
+X-Proofpoint-ORIG-GUID: uRkld3esgkR--QoaUt87VfuKXcMBDktb
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-27_04:2021-05-26,2021-05-27 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Thomas,
+Add support for
+ - Loading Custom KPU profile entries
+ - Add NPC profile Load from System Firmware DB
+ - Add Support fo Coalescing KPU profiles
+ - General Updates/Fixes to default KPU profile
 
-On Thu, May 20, 2021 at 5:08 PM Thomas Bogendoerfer
-<tsbogend@alpha.franken.de> wrote:
-> On Thu, May 20, 2021 at 03:58:38PM +0200, Geert Uytterhoeven wrote:
-> > make dtbs_check:
-> >
-> >     eth@1f010000: $nodename:0: 'eth@1f010000' does not match '^ethernet(@.*)?$'
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > ---
-> >  arch/mips/boot/dts/mti/sead3.dts | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Changelog:
+ v2->v3
+ 	Fix compilation warnings.
 
-Can you please take this through the MIPS tree?
-Thanks!
+George Cherian (1):
+  octeontx2-af: Update the default KPU profile and fixes
 
-Gr{oetje,eeting}s,
+Harman Kalra (3):
+  octeontx2-af: load NPC profile via firmware database
+  octeontx2-af: adding new lt def registers support
+  octeontx2-af: support for coalescing KPU profiles
 
-                        Geert
+Stanislaw Kardach (1):
+  octeontx2-af: add support for custom KPU entries
+
+ .../net/ethernet/marvell/octeontx2/af/npc.h   |  104 +-
+ .../marvell/octeontx2/af/npc_profile.h        | 8673 ++++++++++-------
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |    6 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |    5 +
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |   34 +
+ .../ethernet/marvell/octeontx2/af/rvu_npc.c   |  298 +-
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |    4 +-
+ 7 files changed, 5842 insertions(+), 3282 deletions(-)
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.25.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
