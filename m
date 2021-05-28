@@ -2,190 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66AF4393B70
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 04:31:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ACC7393B8D
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 04:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235334AbhE1Ccv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 22:32:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37038 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234828AbhE1Cct (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 22:32:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622169075;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9EGKgkb8o4xv2IZRZTEVrb1Y1+m/UXhkrrjmtsfSqmQ=;
-        b=Hz95BV651frnPXZOALuhPsxHBich0Nvlch1pg5n9727Mabc9E8vWv72uhY2ogPmWe8R1+W
-        stC8kFw8Cz7aNNiEs8LrVvTp3tjgT2JBtfgz2CI10oe7U77iFHAfD2+jmo0uB7w4nmKdJ+
-        AVO+3xyYGoFo4TqvBON7x0Q3rm70KVE=
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
- [209.85.214.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-61-_ZB0nxu_OgSaPnTnhxQMmw-1; Thu, 27 May 2021 22:31:12 -0400
-X-MC-Unique: _ZB0nxu_OgSaPnTnhxQMmw-1
-Received: by mail-pl1-f200.google.com with SMTP id m12-20020a170902db0cb02900eede9a042cso650678plx.20
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 19:31:12 -0700 (PDT)
+        id S235874AbhE1CsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 22:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45362 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229940AbhE1CsM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 22:48:12 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FAAC061574;
+        Thu, 27 May 2021 19:46:38 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id c20so2821728qkm.3;
+        Thu, 27 May 2021 19:46:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=63x/uDQdlSiWdgfjl3Ict0S+sheF4xMnvJJh/SQ9eeM=;
+        b=YkA70FdjJt6hKIfJed9dsDJ3HyVm+emcF1E75Nmo56r70jCEjfJgDoFDLsrpoXG2Yr
+         gn59e+SYW/qk/LjxWoMw9lqtrACoaQx1PJysPza1DaFXA0UHoAiBPTATmhxyp5s/e/mV
+         3umwvn1lRrnV6fyyZk1Bms6Talt5xwBLYblEr+gj9D2FCZF2aQ3Xp5vtvX4QbcOlWRuz
+         BYAzQZbfUMGZfFdjoN7gGYNzYW/Y6Pu7hkqG4Vl6nQtoxZHuqp03TyChgyKmlJW8n6ml
+         wneRaHEoJ02bJfik+MvzrR+B00yDmlGaptwx+g/waaU4Cx5X6iHU22Wke+HivSaurkRM
+         CdpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=9EGKgkb8o4xv2IZRZTEVrb1Y1+m/UXhkrrjmtsfSqmQ=;
-        b=GD1aFfGprP7pbOuw6rw3e58cxvXHYnuP44StB+nDZI8Kh46xmMENHUIaO9ySTIPWc7
-         o2XeBbsRfAJQJtdjrw6/2k2PPJjVkZ3+qs9b1L7TGQw5lGsM4oXKAwICsjlWU8/hRq1B
-         fMZ8fgNejNYcDA2drRZQ5kRmCnrJjOCRZP2CR620wyfoeon3tNIkvg7Mqv1wWfkYovpe
-         ZsZpvDJ8SWwAhovC1UzvR55H/Gk51z00BwQ+Twz6laglgJlZS2f6uLZRAqHRhuvf5VGc
-         s0xPY3YUsckC5MQTNoFXIz+3UYsggHlqbwrON2GFeChKCU4rz8DRahhlmt2P55iMTLKo
-         8P4Q==
-X-Gm-Message-State: AOAM531hkEo4UfbTl5J3PcQFSClUJ2YVhNvaOPOSqpYLq9mZtgrfmhPf
-        ozX1e2+oM7B+teuQph9o21+xXR2+5FPV+y9ZyftMO/nKQKel9+HsvzTuIhC/x/+WbclXHj0Yu85
-        z/0fZDS1l/EyJmWYl
-X-Received: by 2002:a17:903:1d0:b029:fd:b754:5b8d with SMTP id e16-20020a17090301d0b02900fdb7545b8dmr6051979plh.76.1622169071548;
-        Thu, 27 May 2021 19:31:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy3iJPxs/zsjpLpOcecD0zg+TsVkVvFwUGn6NU1wfATInhZz+P2BUuHZdQCGRFkKA1lSiT38Q==
-X-Received: by 2002:a17:903:1d0:b029:fd:b754:5b8d with SMTP id e16-20020a17090301d0b02900fdb7545b8dmr6051955plh.76.1622169071233;
-        Thu, 27 May 2021 19:31:11 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id t14sm2733839pfg.168.2021.05.27.19.31.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 May 2021 19:31:10 -0700 (PDT)
-Subject: Re: [PATCH v7 11/12] vduse: Introduce VDUSE - vDPA Device in
- Userspace
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20210517095513.850-1-xieyongji@bytedance.com>
- <20210517095513.850-12-xieyongji@bytedance.com>
- <3740c7eb-e457-07f3-5048-917c8606275d@redhat.com>
- <CACycT3uAqa6azso_8MGreh+quj-JXO1piuGnrV8k2kTfc34N2g@mail.gmail.com>
- <5a68bb7c-fd05-ce02-cd61-8a601055c604@redhat.com>
- <CACycT3ve7YvKF+F+AnTQoJZMPua+jDvGMs_ox8GQe_=SGdeCMA@mail.gmail.com>
- <ee00efca-b26d-c1be-68d2-f9e34a735515@redhat.com>
- <CACycT3ufok97cKpk47NjUBTc0QAyfauFUyuFvhWKmuqCGJ7zZw@mail.gmail.com>
- <00ded99f-91b6-ba92-5d92-2366b163f129@redhat.com>
- <CACycT3uK_Fuade-b8FVYkGCKZnne_UGGbYRFwv7WOH2oKCsXSg@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f20edd55-20cb-c016-b347-dd71c5406ed8@redhat.com>
-Date:   Fri, 28 May 2021 10:31:02 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
-MIME-Version: 1.0
-In-Reply-To: <CACycT3uK_Fuade-b8FVYkGCKZnne_UGGbYRFwv7WOH2oKCsXSg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=63x/uDQdlSiWdgfjl3Ict0S+sheF4xMnvJJh/SQ9eeM=;
+        b=q4SJJwMx2TnHlNZ4E1b28pnEbGfYsjNPo9SUy2zVeh26xG6wgI6tNC9JjtiWTaz5U6
+         +FwZwERCUtss0VQut1yJ+aL0VLf76Jl1qpfnw0DR3WCXiTGWndE/+M6mJECeLA2wMv6N
+         e9DXnm2sM/ZsxfM9nPiB4jFY9YrhYwmabWKmXNWVrYHuQGN+1RorJPWJ5euY1nWcQmMh
+         3C49GK4dQkbxD+chsv31IdITS5TZxX+EeQ6BS9gCqBmBQXixfUy+EfhbTGsToDvc0toQ
+         zbTt1GTnbdCtmfqNiGyKVFyYktEmD+F0mcLvfTb1y/Psk69AhEcsTwTE+gNcoyM0721D
+         SZGQ==
+X-Gm-Message-State: AOAM532UG6BlbRaxl0cevCQQH2l5Q7VjUMBd18xfB/p/47QwqHOFgQUv
+        QsjxMRwZID2ilB0/ktHW6RQNJqZrKXzFaQ==
+X-Google-Smtp-Source: ABdhPJw8nbDd2icp+LhNJJOM7IWzYJcvRY8qR9/E6Abb7n9Wm5iO6tLWiikMChnmW3qZnsygIuGHfg==
+X-Received: by 2002:a37:e205:: with SMTP id g5mr1722928qki.449.1622169997878;
+        Thu, 27 May 2021 19:46:37 -0700 (PDT)
+Received: from wsfd-netdev-buildsys.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id j15sm2497542qtv.11.2021.05.27.19.46.37
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 May 2021 19:46:37 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH bpf-next] bpf/devmap: remove drops variable from bq_xmit_all()
+Date:   Thu, 27 May 2021 22:43:56 -0400
+Message-Id: <20210528024356.24333-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+As Colin pointed out, the first drops assignment after declaration will
+be overwritten by the second drops assignment before using, which makes
+it useless.
 
-在 2021/5/27 下午9:17, Yongji Xie 写道:
-> On Thu, May 27, 2021 at 4:41 PM Jason Wang <jasowang@redhat.com> wrote:
->>
->> 在 2021/5/27 下午3:34, Yongji Xie 写道:
->>> On Thu, May 27, 2021 at 1:40 PM Jason Wang <jasowang@redhat.com> wrote:
->>>> 在 2021/5/27 下午1:08, Yongji Xie 写道:
->>>>> On Thu, May 27, 2021 at 1:00 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>> 在 2021/5/27 下午12:57, Yongji Xie 写道:
->>>>>>> On Thu, May 27, 2021 at 12:13 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>>> 在 2021/5/17 下午5:55, Xie Yongji 写道:
->>>>>>>>> +
->>>>>>>>> +static int vduse_dev_msg_sync(struct vduse_dev *dev,
->>>>>>>>> +                           struct vduse_dev_msg *msg)
->>>>>>>>> +{
->>>>>>>>> +     init_waitqueue_head(&msg->waitq);
->>>>>>>>> +     spin_lock(&dev->msg_lock);
->>>>>>>>> +     vduse_enqueue_msg(&dev->send_list, msg);
->>>>>>>>> +     wake_up(&dev->waitq);
->>>>>>>>> +     spin_unlock(&dev->msg_lock);
->>>>>>>>> +     wait_event_killable(msg->waitq, msg->completed);
->>>>>>>> What happens if the userspace(malicous) doesn't give a response forever?
->>>>>>>>
->>>>>>>> It looks like a DOS. If yes, we need to consider a way to fix that.
->>>>>>>>
->>>>>>> How about using wait_event_killable_timeout() instead?
->>>>>> Probably, and then we need choose a suitable timeout and more important,
->>>>>> need to report the failure to virtio.
->>>>>>
->>>>> Makes sense to me. But it looks like some
->>>>> vdpa_config_ops/virtio_config_ops such as set_status() didn't have a
->>>>> return value.  Now I add a WARN_ON() for the failure. Do you mean we
->>>>> need to add some change for virtio core to handle the failure?
->>>> Maybe, but I'm not sure how hard we can do that.
->>>>
->>> We need to change all virtio device drivers in this way.
->>
->> Probably.
->>
->>
->>>> We had NEEDS_RESET but it looks we don't implement it.
->>>>
->>> Could it handle the failure of get_feature() and get/set_config()?
->>
->> Looks not:
->>
->> "
->>
->> The device SHOULD set DEVICE_NEEDS_RESET when it enters an error state
->> that a reset is needed. If DRIVER_OK is set, after it sets
->> DEVICE_NEEDS_RESET, the device MUST send a device configuration change
->> notification to the driver.
->>
->> "
->>
->> This looks implies that NEEDS_RESET may only work after device is
->> probed. But in the current design, even the reset() is not reliable.
->>
->>
->>>> Or a rough idea is that maybe need some relaxing to be coupled loosely
->>>> with userspace. E.g the device (control path) is implemented in the
->>>> kernel but the datapath is implemented in the userspace like TUN/TAP.
->>>>
->>> I think it can work for most cases. One problem is that the set_config
->>> might change the behavior of the data path at runtime, e.g.
->>> virtnet_set_mac_address() in the virtio-net driver and
->>> cache_type_store() in the virtio-blk driver. Not sure if this path is
->>> able to return before the datapath is aware of this change.
->>
->> Good point.
->>
->> But set_config() should be rare:
->>
->> E.g in the case of virtio-net with VERSION_1, config space is read only,
->> and it was set via control vq.
->>
->> For block, we can
->>
->> 1) start from without WCE or
->> 2) we add a config change notification to userspace or
-> I prefer this way. And I think we also need to do similar things for
-> set/get_vq_state().
+Since the drops variable will be used only once. Just remove it and
+use "cnt - sent" in trace_xdp_devmap_xmit()
 
+Reported-by: Colin Ian King <colin.king@canonical.com>
+Fixes: cb261b594b41 ("bpf: Run devmap xdp_prog on flush instead of bulk enqueue")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ kernel/bpf/devmap.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-Yes, I agree.
-
-Thanks
-
-
->
-> Thanks,
-> Yongji
->
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index f9148daab0e3..2a75e6c2d27d 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -370,8 +370,8 @@ static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
+ static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+ {
+ 	struct net_device *dev = bq->dev;
+-	int sent = 0, drops = 0, err = 0;
+ 	unsigned int cnt = bq->count;
++	int sent = 0, err = 0;
+ 	int to_send = cnt;
+ 	int i;
+ 
+@@ -388,8 +388,6 @@ static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+ 		to_send = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
+ 		if (!to_send)
+ 			goto out;
+-
+-		drops = cnt - to_send;
+ 	}
+ 
+ 	sent = dev->netdev_ops->ndo_xdp_xmit(dev, to_send, bq->q, flags);
+@@ -408,9 +406,8 @@ static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+ 		xdp_return_frame_rx_napi(bq->q[i]);
+ 
+ out:
+-	drops = cnt - sent;
+ 	bq->count = 0;
+-	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
++	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, cnt - sent, err);
+ }
+ 
+ /* __dev_flush is called from xdp_do_flush() which _must_ be signaled
+-- 
+2.26.3
 
