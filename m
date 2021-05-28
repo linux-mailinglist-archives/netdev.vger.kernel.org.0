@@ -2,163 +2,600 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68877394326
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 15:02:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B369B394334
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 15:07:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235301AbhE1NDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 09:03:51 -0400
-Received: from mail-mw2nam12on2084.outbound.protection.outlook.com ([40.107.244.84]:18304
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234853AbhE1NDu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 May 2021 09:03:50 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AgVHDKG1ErDt4rFjtOpYKxlTg0p1kE8Umi9sfWEDQCVJounDH/gOWzl2dBCMdujEJsiSkqYeG5j+5xHgkiZVHzUyVTGGiSTCyoB4LLoWNHmvTmGFhqsKpuxPxLdUl1II682dsqA8xU0/fSH3Fg9GIYmS87UNRFPnGp3YissmjL4cBNjN8LhygFGUXqGOfRuGU5ODiCMdmVRAYobXTv8Ct9tZzcz9jal1z5EkYYNmGpwuOxOXQ05hyq3DWtzuK7hy0G5BEsV4G1abbKUMvIGLPdxCPNn22TXEn/l9d9oj5JyMch2baD1NpkmxfJAopRmH/NCrId44i/ImBDkqiSjt6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vzB3jQRRkoEVhoWlXiRyMTJGVdF2RyypfwWFei4DlSk=;
- b=WQGVW0v572lB0Q++Br+eXfRuLEN7uwgF7joS7rQUkdgeLgSfyUQx+lPPHyiLLwCX8oePrVAX73Lz2M7SzYCLykBNJ3DZ1f0DO/p9R/OaQvHlvoT31Q5UrBS6RwtIA3Q3Z6QeHGGHVCRROXxkVxv2CJYP48PZydx85c3T6FkOeTFdA0DXTCb9mLfOqMD13LuSAnc7HPbXfCFCuFrCIpvZtZeCrz2ebkLmhOSYjj2gqjtM86E0Cj7FMpsSF+GoJSP/S/3NkzMRWNTPgLsxHBMN1GVUh3y0VzIN2r+8J8xxeBIeUAmyD5Ca9Maa/277Cn4cItZQSR4wf41E6mXI1X6UAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vzB3jQRRkoEVhoWlXiRyMTJGVdF2RyypfwWFei4DlSk=;
- b=fJJRROhdXVyfpu0xMNW3wDrkIpUPv8VYuZ2fmraS/raMSSjaQHIkyLNWeN0mkStc1R+W6qBriLSAoWr2KYFrukbZfjL07sI7tVmRE1XRRJsAoZ8Qw4EdIYIoaIDgV7nFS6BhHRnADrSRlA2XvM9OaB9jyzGMQWL1zRdMW8+Vnb4p9wk0dxBlSrjU8LQSaxyjV6c1E8Ke41VF9RVg6qn7Cm/EekotJG7lJnxgxzYXUUUZ8jU6dy2Mu72WUGc6eFUHT7UF48mdB7FrGz78l1rt/zzQ5Qpvry4qUarvSFwQ/NP4dfXuVF+zTEP5awRH1pzJQo4nNuGyUjyhQXnW5+mP7w==
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5304.namprd12.prod.outlook.com (2603:10b6:208:314::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Fri, 28 May
- 2021 13:02:14 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e%7]) with mapi id 15.20.4173.023; Fri, 28 May 2021
- 13:02:14 +0000
-Date:   Fri, 28 May 2021 10:02:12 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, dledford@redhat.com,
-        linux-rdma@vger.kernel.org, leonro@nvidia.com, davem@davemloft.net,
-        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        shiraz.saleem@intel.com
-Subject: Re: [PATCH net-next v2 4/7] ice: Implement iidc operations
-Message-ID: <20210528130212.GL1002214@nvidia.com>
-References: <20210527173014.362216-1-anthony.l.nguyen@intel.com>
- <20210527173014.362216-5-anthony.l.nguyen@intel.com>
- <20210527171241.3b886692@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210527171241.3b886692@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: BL1PR13CA0245.namprd13.prod.outlook.com
- (2603:10b6:208:2ba::10) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+        id S235956AbhE1NIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 09:08:18 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:41662 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235997AbhE1NIG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 09:08:06 -0400
+Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
+        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 1EA1E1FD2E;
+        Fri, 28 May 2021 13:06:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1622207191; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mfD/Wtn69D6DQd1egWW72bgpiNtu+2xE7Ukv5GeIM8Q=;
+        b=FiiFfCPAINq379Y0uIZ2bgZjdnq07k+Za1fx9lY/pT6TlnLJa29i5j9VBgJvheSpP0zdE7
+        InkSxdj5mpvBU+CbruhZ7qbtHASJqUtaDQMd5dXqJOkqP7goMl7HfV6EtyLjQ1pZsjd2bm
+        X0fIdWTATnv3eclbOPWzYGXYB11d/aY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1622207191;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mfD/Wtn69D6DQd1egWW72bgpiNtu+2xE7Ukv5GeIM8Q=;
+        b=9pZogi491V222Pz6Bf5E5CXJKhMAeRKxWxCFnILTW68DeLixYeKPJSFnvWAk0L4TV9oE2k
+        ukzN5YNXT3PbK3DA==
+Received: from imap3-int (imap-alt.suse-dmz.suse.de [192.168.254.47])
+        by imap.suse.de (Postfix) with ESMTP id CAE7C11A98;
+        Fri, 28 May 2021 13:06:30 +0000 (UTC)
+Received: from director2.suse.de ([192.168.254.72])
+        by imap3-int with ESMTPSA
+        id c1vcMNbqsGBXPQAALh3uQQ
+        (envelope-from <hare@suse.de>); Fri, 28 May 2021 13:06:30 +0000
+To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
+        kbusch@kernel.org
+Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
+        pkushwaha@marvell.com, malin1024@gmail.com
+References: <20210527235902.2185-1-smalin@marvell.com>
+ <20210527235902.2185-24-smalin@marvell.com>
+From:   Hannes Reinecke <hare@suse.de>
+Organization: SUSE Linux GmbH
+Subject: Re: [RFC PATCH v6 23/27] qedn: Add support of Task and SGL
+Message-ID: <1dd192c4-de2a-c95d-6798-9a02895227b2@suse.de>
+Date:   Fri, 28 May 2021 15:06:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (47.55.113.94) by BL1PR13CA0245.namprd13.prod.outlook.com (2603:10b6:208:2ba::10) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.10 via Frontend Transport; Fri, 28 May 2021 13:02:13 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lmc7w-00FwoE-Ss; Fri, 28 May 2021 10:02:12 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 55b9d26a-3d18-4a44-c0d2-08d921d8d032
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5304:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5304D656AEEE85E3C5209098C2229@BL1PR12MB5304.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: u+kn+gRxRiJalqr/zB5XYe9M85QqQmCFfdBt1HSUh2CE7lXrnhcjgYNNEiqELbuDrhWnferB5JX695nnUbCiuPoYVuCm5AyEpIM04TzKnBH51pHlVc7ehViUCe8TQie+JtQz+zJnL3LxAMG1+MRCDt0wYByaxBD4moHifzqSVDngiSqsr59xme3JhP54Lh0WVRX/3CGM52P/CahKzoI6yKwC6TproUjR8DZyWjtz5tQOaG57y3J4akSItm7r4j+PRJwIgs+4U28tyEtGXFbD8lIV5eGuELx5FhYjz90lS8xbY6Ce1WCAxZzsdreMHJeD4OQGVu/1n/YkY7fR+g3D+U4yl7AKWUFc2bflZh31fvS9GC4qiZhj6QvNxqOepe6yAjxMNsm8DQgghn9pdMqbdptXPgpMpBFdAybjLGoVKCJK5qR+MwUup0WUAPkZl7n4mOl5Hf9oEyUncPKHoN6rYh9wCeV/kSNGcFVYcKxY+Nm4Spv+0ax6knafN4MC6VXmqKe94w+WV9jQGyyMCL+2c0LYKIxtf4CkbCPxBXpaX9PIttlAragi2LDkWi194gqZ225NOWlwLUZNx2QjNAtJQkzlxZIVYAXmF3lbg695kEk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(39860400002)(396003)(346002)(136003)(2906002)(9786002)(9746002)(66556008)(6916009)(26005)(86362001)(2616005)(54906003)(66946007)(36756003)(4326008)(66476007)(5660300002)(8676002)(478600001)(8936002)(1076003)(38100700002)(426003)(186003)(316002)(33656002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?uwJhKU8cvg65+DD8Nm2ymFET34Nn7dcXzDcQ/aJpFWmww9GzVjjJpcqr+iIz?=
- =?us-ascii?Q?5Ke8Kn0yGL+tPCvUwMwihvINal/DAhLqh55zCr3uEQbP0Hy2WHdadM/nn53A?=
- =?us-ascii?Q?YDTfxCrMX30tqW+0t2RNCApRFJJ4VHGLwjHjn5sGXWMEZBADEKZ08LTcKoYr?=
- =?us-ascii?Q?lr8c1UzvEpwP5vmR6RiZdNWP4rxyx8foPudyCgL0uX/yKQJ7XkJ4Ul+AnY9n?=
- =?us-ascii?Q?XVTR6N7xrJRqPj+p/TFbYNsCBRX402Wa6+RWNuN0tljFSM6OcVeunmGTBpzL?=
- =?us-ascii?Q?Vw8F/blZiOkZ8d7RtHELSqlUPU0IG3hriBCmmTQYCflcCILw9IxfSSDHxSzB?=
- =?us-ascii?Q?3jc61pUDQPTCG+rJiLEKUrpYe/ExasAkZXlRiP6LkoVJDb76NqPTY+WIMYgq?=
- =?us-ascii?Q?djEvVRfOy1G2uKcsOGJCpudNe9US27gfl7q/lP27zSbIHVKsH1DvwfsB0IFl?=
- =?us-ascii?Q?e8adHC9VqgMxEQr+J+uImDbBiZ6IumIOIxs1MRr7+MPIrDAB1ya3spxma9mx?=
- =?us-ascii?Q?zGFK5iH47XqXXtNPEJm72godoM1Vru0v927A57UJP+bz7iVTCHHQ1N0Za/vB?=
- =?us-ascii?Q?rfdr7t4rbC1uePqXcTU01yzcbShuHj79jbXBeMj6hDw30F7lgkOMRi1Q675i?=
- =?us-ascii?Q?zj6m7S+wPRpDvqlmt0NqASxwe6ABwXEYRrnyDCxm09T2aiSy5JbX9ink4YYe?=
- =?us-ascii?Q?zOIoO7X5TUIWk5X/8WM/0lEEJddQFDz8qOnIQ12sRa4m8uQuqYH3jiC+IeWB?=
- =?us-ascii?Q?xOK4toicVaJlyYzVKc0s9KMgmnL5XOWv/OsVICjnfM23z/3+xPhjf8xW0C0t?=
- =?us-ascii?Q?0KiTkuL2B9Ed0vQH/6W911+uyr0hHf+Kh483J4Tv6/m1OmS/9lwaUDi+JQGl?=
- =?us-ascii?Q?HS06M4mxc6x1zdRpQXjQ/8J14oTxh2B7rvE0lknSAKSlKtvb/64nnyPdQGIK?=
- =?us-ascii?Q?ochapdiNwp0Ehodm4NUqZow/9GGNt7Y5S1FQ2miLZFHIHE8CZgWE351xxXS2?=
- =?us-ascii?Q?P0sNQ2Af6NU73+3MbenbFvjBqjKIbyAPf+4gXui6kpTRx1NOQ+Yc7slcRLnL?=
- =?us-ascii?Q?9XQbCeI13T2yVA08/1BVC33Lvrcto6I4vS6nRGY4gMqE0NzLA1Oqnq2Vd+tY?=
- =?us-ascii?Q?aupBf7yC+D5lSYieQWeb1U/nRc0uT0ZpPIzCxHbMnBEnXc5UcmUmQMm/WBEE?=
- =?us-ascii?Q?mg0efIHU/E2jetklQfQyQGVeHA/qfif0MirR2uM8DJhbv7JRMpwU+9FjBDs3?=
- =?us-ascii?Q?+QmfJaa9k+721pyg/8ZO8/j7nvbK6VbKvkLk4+V5DIj7LJKHnxfLEIM664zY?=
- =?us-ascii?Q?8SgDRWhV1C27XvUyKwlXvn/p?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55b9d26a-3d18-4a44-c0d2-08d921d8d032
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2021 13:02:14.0709
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: v0K1LqrHDnDCyB2n2RmUAAvkT5u874r2r4xQFjsKEK63e81K3nSzuk0VtoNJpV6H
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5304
+In-Reply-To: <20210527235902.2185-24-smalin@marvell.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 27, 2021 at 05:12:41PM -0700, Jakub Kicinski wrote:
-> On Thu, 27 May 2021 10:30:11 -0700 Tony Nguyen wrote:
-> > +static enum ice_status
-> > +ice_aq_add_rdma_qsets(struct ice_hw *hw, u8 num_qset_grps,
-> > +		      struct ice_aqc_add_rdma_qset_data *qset_list,
-> > +		      u16 buf_size, struct ice_sq_cd *cd)
-> > +{
-> > +	struct ice_aqc_add_rdma_qset_data *list;
-> > +	struct ice_aqc_add_rdma_qset *cmd;
-> > +	struct ice_aq_desc desc;
-> > +	u16 i, sum_size = 0;
-> > +
-> > +	cmd = &desc.params.add_rdma_qset;
-> > +
-> > +	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_add_rdma_qset);
-> > +
-> > +	if (!qset_list)
+On 5/28/21 1:58 AM, Shai Malin wrote:
+> From: Prabhakar Kushwaha <pkushwaha@marvell.com>
 > 
-> defensive programming
+> This patch will add support of Task and SGL which is used
+> for slowpath and fast path IO. here Task is IO granule used
+> by firmware to perform tasks
 > 
-> > +		return ICE_ERR_PARAM;
+> The internal implementation:
+> - Create task/sgl resources used by all connection
+> - Provide APIs to allocate and free task.
+> - Add task support during connection establishment i.e. slowpath
 > 
-> RDMA folks, are you okay with drivers inventing their own error
-> codes?
+> Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Shai Malin <smalin@marvell.com>
+> ---
+>  drivers/nvme/hw/qedn/qedn.h      |  65 +++++++
+>  drivers/nvme/hw/qedn/qedn_conn.c |  44 ++++-
+>  drivers/nvme/hw/qedn/qedn_main.c |  34 +++-
+>  drivers/nvme/hw/qedn/qedn_task.c | 320 +++++++++++++++++++++++++++++++
+>  4 files changed, 459 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/nvme/hw/qedn/qedn.h b/drivers/nvme/hw/qedn/qedn.h
+> index d56184f58840..cfb5e1b0fbaa 100644
+> --- a/drivers/nvme/hw/qedn/qedn.h
+> +++ b/drivers/nvme/hw/qedn/qedn.h
+> @@ -40,6 +40,20 @@
+>  
+>  #define QEDN_FW_CQ_FP_WQ_WORKQUEUE "qedn_fw_cq_fp_wq"
+>  
+> +/* Protocol defines */
+> +#define QEDN_MAX_IO_SIZE QED_NVMETCP_MAX_IO_SIZE
+> +
+> +#define QEDN_SGE_BUFF_SIZE 4096
 
-Not really, I was ignoring it because it looks like big part of their
-netdev driver layer.
+Just one 4k page per SGE?
+What about architectures with larger page sizes?
 
-> Having had to make tree-wide changes and deal with this cruft in 
-> the past I've developed a strong dislike for it. But if you're okay
-> I guess it can stay, these are RDMA functions after all.
+> +#define QEDN_MAX_SGES_PER_TASK DIV_ROUND_UP(QEDN_MAX_IO_SIZE, QEDN_SGE_BUFF_SIZE)
+> +#define QEDN_FW_SGE_SIZE sizeof(struct nvmetcp_sge)
+> +#define QEDN_MAX_FW_SGL_SIZE ((QEDN_MAX_SGES_PER_TASK) * QEDN_FW_SGE_SIZE)
+> +#define QEDN_FW_SLOW_IO_MIN_SGE_LIMIT (9700 / 6)
+> +
+> +#define QEDN_MAX_HW_SECTORS (QEDN_MAX_IO_SIZE / 512)
+> +#define QEDN_MAX_SEGMENTS QEDN_MAX_SGES_PER_TASK
+> +
+> +#define QEDN_INVALID_ITID 0xFFFF
+> +
+>  /*
+>   * TCP offload stack default configurations and defines.
+>   * Future enhancements will allow controlling the configurable
+> @@ -84,6 +98,15 @@ enum qedn_state {
+>  	QEDN_STATE_MODULE_REMOVE_ONGOING,
+>  };
+>  
+> +struct qedn_io_resources {
+> +	/* Lock for IO resources */
+> +	spinlock_t resources_lock;
+> +	struct list_head task_free_list;
+> +	u32 num_alloc_tasks;
+> +	u32 num_free_tasks;
+> +	u32 no_avail_resrc_cnt;
+> +};
+> +
+>  /* Per CPU core params */
+>  struct qedn_fp_queue {
+>  	struct qed_chain cq_chain;
+> @@ -93,6 +116,10 @@ struct qedn_fp_queue {
+>  	struct qed_sb_info *sb_info;
+>  	unsigned int cpu;
+>  	struct work_struct fw_cq_fp_wq_entry;
+> +
+> +	/* IO related resources for host */
+> +	struct qedn_io_resources host_resrc;
+> +
+>  	u16 sb_id;
+>  	char irqname[QEDN_IRQ_NAME_LEN];
+>  };
+> @@ -116,12 +143,35 @@ struct qedn_ctx {
+>  	/* Connections */
+>  	DECLARE_HASHTABLE(conn_ctx_hash, 16);
+>  
+> +	u32 num_tasks_per_pool;
+> +
+>  	/* Fast path queues */
+>  	u8 num_fw_cqs;
+>  	struct qedn_fp_queue *fp_q_arr;
+>  	struct nvmetcp_glbl_queue_entry *fw_cq_array_virt;
+>  	dma_addr_t fw_cq_array_phy; /* Physical address of fw_cq_array_virt */
+>  	struct workqueue_struct *fw_cq_fp_wq;
+> +
+> +	/* Fast Path Tasks */
+> +	struct qed_nvmetcp_tid	tasks;
+> +};
+> +
+> +struct qedn_task_ctx {
+> +	struct qedn_conn_ctx *qedn_conn;
+> +	struct qedn_ctx *qedn;
+> +	void *fw_task_ctx;
+> +	struct qedn_fp_queue *fp_q;
+> +	struct scatterlist *nvme_sg;
+> +	struct nvme_tcp_ofld_req *req; /* currently proccessed request */
+> +	struct list_head entry;
+> +	spinlock_t lock; /* To protect task resources */
+> +	bool valid;
+> +	unsigned long flags; /* Used by qedn_task_flags */
+> +	u32 task_size;
+> +	u16 itid;
+> +	u16 cccid;
+> +	int req_direction;
+> +	struct storage_sgl_task_params sgl_task_params;
+>  };
+>  
+>  struct qedn_endpoint {
+> @@ -220,6 +270,7 @@ struct qedn_conn_ctx {
+>  	struct nvme_tcp_ofld_ctrl *ctrl;
+>  	u32 conn_handle;
+>  	u32 fw_cid;
+> +	u8 default_cq;
+>  
+>  	atomic_t est_conn_indicator;
+>  	atomic_t destroy_conn_indicator;
+> @@ -237,6 +288,11 @@ struct qedn_conn_ctx {
+>  	dma_addr_t host_cccid_itid_phy_addr;
+>  	struct qedn_endpoint ep;
+>  	int abrt_flag;
+> +	/* Spinlock for accessing active_task_list */
+> +	spinlock_t task_list_lock;
+> +	struct list_head active_task_list;
+> +	atomic_t num_active_tasks;
+> +	atomic_t num_active_fw_tasks;
+>  
+>  	/* Connection resources - turned on to indicate what resource was
+>  	 * allocated, to that it can later be released.
+> @@ -256,6 +312,7 @@ struct qedn_conn_ctx {
+>  enum qedn_conn_resources_state {
+>  	QEDN_CONN_RESRC_FW_SQ,
+>  	QEDN_CONN_RESRC_ACQUIRE_CONN,
+> +	QEDN_CONN_RESRC_TASKS,
+>  	QEDN_CONN_RESRC_CCCID_ITID_MAP,
+>  	QEDN_CONN_RESRC_TCP_PORT,
+>  	QEDN_CONN_RESRC_DB_ADD,
+> @@ -278,5 +335,13 @@ inline int qedn_validate_cccid_in_range(struct qedn_conn_ctx *conn_ctx, u16 ccci
+>  int qedn_queue_request(struct qedn_conn_ctx *qedn_conn, struct nvme_tcp_ofld_req *req);
+>  void qedn_nvme_req_fp_wq_handler(struct work_struct *work);
+>  void qedn_io_work_cq(struct qedn_ctx *qedn, struct nvmetcp_fw_cqe *cqe);
+> +int qedn_alloc_tasks(struct qedn_conn_ctx *conn_ctx);
+> +inline int qedn_qid(struct nvme_tcp_ofld_queue *queue);
+> +void qedn_common_clear_fw_sgl(struct storage_sgl_task_params *sgl_task_params);
+> +void qedn_return_active_tasks(struct qedn_conn_ctx *conn_ctx);
+> +struct qedn_task_ctx *
+> +qedn_get_free_task_from_pool(struct qedn_conn_ctx *conn_ctx, u16 cccid);
+> +void qedn_destroy_free_tasks(struct qedn_fp_queue *fp_q,
+> +			     struct qedn_io_resources *io_resrc);
+>  
+>  #endif /* _QEDN_H_ */
+> diff --git a/drivers/nvme/hw/qedn/qedn_conn.c b/drivers/nvme/hw/qedn/qedn_conn.c
+> index 049db20b69e8..7e38edccbb56 100644
+> --- a/drivers/nvme/hw/qedn/qedn_conn.c
+> +++ b/drivers/nvme/hw/qedn/qedn_conn.c
+> @@ -29,6 +29,11 @@ static const char * const qedn_conn_state_str[] = {
+>  	NULL
+>  };
+>  
+> +inline int qedn_qid(struct nvme_tcp_ofld_queue *queue)
+> +{
+> +	return queue - queue->ctrl->queues;
+> +}
+> +
+>  int qedn_set_con_state(struct qedn_conn_ctx *conn_ctx, enum qedn_conn_state new_state)
+>  {
+>  	spin_lock_bh(&conn_ctx->conn_state_lock);
+> @@ -159,6 +164,11 @@ static void qedn_release_conn_ctx(struct qedn_conn_ctx *conn_ctx)
+>  		clear_bit(QEDN_CONN_RESRC_ACQUIRE_CONN, &conn_ctx->resrc_state);
+>  	}
+>  
+> +	if (test_bit(QEDN_CONN_RESRC_TASKS, &conn_ctx->resrc_state)) {
+> +		clear_bit(QEDN_CONN_RESRC_TASKS, &conn_ctx->resrc_state);
+> +			qedn_return_active_tasks(conn_ctx);
+> +	}
+> +
+>  	if (test_bit(QEDN_CONN_RESRC_CCCID_ITID_MAP, &conn_ctx->resrc_state)) {
+>  		dma_free_coherent(&qedn->pdev->dev,
+>  				  conn_ctx->sq_depth *
+> @@ -261,6 +271,7 @@ static int qedn_nvmetcp_offload_conn(struct qedn_conn_ctx *conn_ctx)
+>  	offld_prms.max_rt_time = QEDN_TCP_MAX_RT_TIME;
+>  	offld_prms.sq_pbl_addr =
+>  		(u64)qed_chain_get_pbl_phys(&qedn_ep->fw_sq_chain);
+> +	offld_prms.default_cq = conn_ctx->default_cq;
+>  
+>  	rc = qed_ops->offload_conn(qedn->cdev,
+>  				   conn_ctx->conn_handle,
+> @@ -398,6 +409,9 @@ void qedn_prep_db_data(struct qedn_conn_ctx *conn_ctx)
+>  static int qedn_prep_and_offload_queue(struct qedn_conn_ctx *conn_ctx)
+>  {
+>  	struct qedn_ctx *qedn = conn_ctx->qedn;
+> +	struct qedn_io_resources *io_resrc;
+> +	struct qedn_fp_queue *fp_q;
+> +	u8 default_cq_idx, qid;
+>  	size_t dma_size;
+>  	int rc;
+>  
+> @@ -409,6 +423,9 @@ static int qedn_prep_and_offload_queue(struct qedn_conn_ctx *conn_ctx)
+>  
+>  	set_bit(QEDN_CONN_RESRC_FW_SQ, &conn_ctx->resrc_state);
+>  
+> +	atomic_set(&conn_ctx->num_active_tasks, 0);
+> +	atomic_set(&conn_ctx->num_active_fw_tasks, 0);
+> +
+>  	rc = qed_ops->acquire_conn(qedn->cdev,
+>  				   &conn_ctx->conn_handle,
+>  				   &conn_ctx->fw_cid,
+> @@ -422,7 +439,32 @@ static int qedn_prep_and_offload_queue(struct qedn_conn_ctx *conn_ctx)
+>  		 conn_ctx->conn_handle);
+>  	set_bit(QEDN_CONN_RESRC_ACQUIRE_CONN, &conn_ctx->resrc_state);
+>  
+> -	/* Placeholder - Allocate task resources and initialize fields */
+> +	qid = qedn_qid(conn_ctx->queue);
+> +	default_cq_idx = qid ? qid - 1 : 0; /* Offset adminq */
+> +
+> +	conn_ctx->default_cq = (default_cq_idx % qedn->num_fw_cqs);
+> +	fp_q = &qedn->fp_q_arr[conn_ctx->default_cq];
+> +	conn_ctx->fp_q = fp_q;
+> +	io_resrc = &fp_q->host_resrc;
+> +
+> +	/* The first connection on each fp_q will fill task
+> +	 * resources
+> +	 */
+> +	spin_lock(&io_resrc->resources_lock);
+> +	if (io_resrc->num_alloc_tasks == 0) {
+> +		rc = qedn_alloc_tasks(conn_ctx);
+> +		if (rc) {
+> +			pr_err("Failed allocating tasks: CID=0x%x\n",
+> +			       conn_ctx->fw_cid);
+> +			spin_unlock(&io_resrc->resources_lock);
+> +			goto rel_conn;
+> +		}
+> +	}
+> +	spin_unlock(&io_resrc->resources_lock);
+> +
+> +	spin_lock_init(&conn_ctx->task_list_lock);
+> +	INIT_LIST_HEAD(&conn_ctx->active_task_list);
+> +	set_bit(QEDN_CONN_RESRC_TASKS, &conn_ctx->resrc_state);
+>  
+>  	rc = qedn_fetch_tcp_port(conn_ctx);
+>  	if (rc)
+> diff --git a/drivers/nvme/hw/qedn/qedn_main.c b/drivers/nvme/hw/qedn/qedn_main.c
+> index db8c27dd8876..444db6d58a0a 100644
+> --- a/drivers/nvme/hw/qedn/qedn_main.c
+> +++ b/drivers/nvme/hw/qedn/qedn_main.c
+> @@ -29,6 +29,12 @@ __be16 qedn_get_in_port(struct sockaddr_storage *sa)
+>  		: ((struct sockaddr_in6 *)sa)->sin6_port;
+>  }
+>  
+> +static void qedn_init_io_resc(struct qedn_io_resources *io_resrc)
+> +{
+> +	spin_lock_init(&io_resrc->resources_lock);
+> +	INIT_LIST_HEAD(&io_resrc->task_free_list);
+> +}
+> +
+>  struct qedn_llh_filter *qedn_add_llh_filter(struct qedn_ctx *qedn, u16 tcp_port)
+>  {
+>  	struct qedn_llh_filter *llh_filter = NULL;
+> @@ -437,6 +443,8 @@ static struct nvme_tcp_ofld_ops qedn_ofld_ops = {
+>  		 *	NVMF_OPT_HDR_DIGEST | NVMF_OPT_DATA_DIGEST |
+>  		 *	NVMF_OPT_NR_POLL_QUEUES | NVMF_OPT_TOS
+>  		 */
+> +	.max_hw_sectors = QEDN_MAX_HW_SECTORS,
+> +	.max_segments = QEDN_MAX_SEGMENTS,
+>  	.claim_dev = qedn_claim_dev,
+>  	.setup_ctrl = qedn_setup_ctrl,
+>  	.release_ctrl = qedn_release_ctrl,
+> @@ -642,8 +650,24 @@ static inline int qedn_core_probe(struct qedn_ctx *qedn)
+>  	return rc;
+>  }
+>  
+> +static void qedn_call_destroy_free_tasks(struct qedn_fp_queue *fp_q,
+> +					 struct qedn_io_resources *io_resrc)
+> +{
+> +	if (list_empty(&io_resrc->task_free_list))
+> +		return;
+> +
+> +	if (io_resrc->num_alloc_tasks != io_resrc->num_free_tasks)
+> +		pr_err("Task Pool:Not all returned allocated=0x%x, free=0x%x\n",
+> +		       io_resrc->num_alloc_tasks, io_resrc->num_free_tasks);
+> +
+> +	qedn_destroy_free_tasks(fp_q, io_resrc);
+> +	if (io_resrc->num_free_tasks)
+> +		pr_err("Expected num_free_tasks to be 0\n");
+> +}
+> +
+>  static void qedn_free_function_queues(struct qedn_ctx *qedn)
+>  {
+> +	struct qedn_io_resources *host_resrc;
+>  	struct qed_sb_info *sb_info = NULL;
+>  	struct qedn_fp_queue *fp_q;
+>  	int i;
+> @@ -655,6 +679,9 @@ static void qedn_free_function_queues(struct qedn_ctx *qedn)
+>  	/* Free the fast path queues*/
+>  	for (i = 0; i < qedn->num_fw_cqs; i++) {
+>  		fp_q = &qedn->fp_q_arr[i];
+> +		host_resrc = &fp_q->host_resrc;
+> +
+> +		qedn_call_destroy_free_tasks(fp_q, host_resrc);
+>  
+>  		/* Free SB */
+>  		sb_info = fp_q->sb_info;
+> @@ -742,7 +769,8 @@ static int qedn_alloc_function_queues(struct qedn_ctx *qedn)
+>  		goto mem_alloc_failure;
+>  	}
+>  
+> -	/* placeholder - create task pools */
+> +	qedn->num_tasks_per_pool =
+> +		qedn->pf_params.nvmetcp_pf_params.num_tasks / qedn->num_fw_cqs;
+>  
+>  	for (i = 0; i < qedn->num_fw_cqs; i++) {
+>  		fp_q = &qedn->fp_q_arr[i];
+> @@ -784,7 +812,7 @@ static int qedn_alloc_function_queues(struct qedn_ctx *qedn)
+>  		fp_q->qedn = qedn;
+>  		INIT_WORK(&fp_q->fw_cq_fp_wq_entry, qedn_fw_cq_fq_wq_handler);
+>  
+> -		/* Placeholder - Init IO-path resources */
+> +		qedn_init_io_resc(&fp_q->host_resrc);
+>  	}
+>  
+>  	return 0;
+> @@ -966,7 +994,7 @@ static int __qedn_probe(struct pci_dev *pdev)
+>  
+>  	/* NVMeTCP start HW PF */
+>  	rc = qed_ops->start(qedn->cdev,
+> -			    NULL /* Placeholder for FW IO-path resources */,
+> +			    &qedn->tasks,
+>  			    qedn,
+>  			    qedn_event_cb);
+>  	if (rc) {
+> diff --git a/drivers/nvme/hw/qedn/qedn_task.c b/drivers/nvme/hw/qedn/qedn_task.c
+> index ea6745b94817..35cb5e8e4e61 100644
+> --- a/drivers/nvme/hw/qedn/qedn_task.c
+> +++ b/drivers/nvme/hw/qedn/qedn_task.c
+> @@ -11,6 +11,198 @@
+>  /* Driver includes */
+>  #include "qedn.h"
+>  
+> +static void qedn_free_nvme_sg(struct qedn_task_ctx *qedn_task)
+> +{
+> +	kfree(qedn_task->nvme_sg);
+> +	qedn_task->nvme_sg = NULL;
+> +}
+> +
+> +static void qedn_free_fw_sgl(struct qedn_task_ctx *qedn_task)
+> +{
+> +	struct qedn_ctx *qedn = qedn_task->qedn;
+> +	dma_addr_t sgl_pa;
+> +
+> +	sgl_pa = HILO_DMA_REGPAIR(qedn_task->sgl_task_params.sgl_phys_addr);
+> +	dma_free_coherent(&qedn->pdev->dev,
+> +			  QEDN_MAX_FW_SGL_SIZE,
+> +			  qedn_task->sgl_task_params.sgl,
+> +			  sgl_pa);
+> +	qedn_task->sgl_task_params.sgl = NULL;
+> +}
+> +
+> +static void qedn_destroy_single_task(struct qedn_task_ctx *qedn_task)
+> +{
+> +	u16 itid;
+> +
+> +	itid = qedn_task->itid;
+> +	list_del(&qedn_task->entry);
+> +	qedn_free_nvme_sg(qedn_task);
+> +	qedn_free_fw_sgl(qedn_task);
+> +	kfree(qedn_task);
+> +	qedn_task = NULL;
+> +}
+> +
+> +void qedn_destroy_free_tasks(struct qedn_fp_queue *fp_q,
+> +			     struct qedn_io_resources *io_resrc)
+> +{
+> +	struct qedn_task_ctx *qedn_task, *task_tmp;
+> +
+> +	/* Destroy tasks from the free task list */
+> +	list_for_each_entry_safe(qedn_task, task_tmp,
+> +				 &io_resrc->task_free_list, entry) {
+> +		qedn_destroy_single_task(qedn_task);
+> +		io_resrc->num_free_tasks -= 1;
+> +	}
+> +}
+> +
+> +static int qedn_alloc_nvme_sg(struct qedn_task_ctx *qedn_task)
+> +{
+> +	int rc;
+> +
+> +	qedn_task->nvme_sg = kcalloc(QEDN_MAX_SGES_PER_TASK,
+> +				     sizeof(*qedn_task->nvme_sg), GFP_KERNEL);
+> +	if (!qedn_task->nvme_sg) {
+> +		rc = -ENOMEM;
+> +
+> +		return rc;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int qedn_alloc_fw_sgl(struct qedn_task_ctx *qedn_task)
+> +{
+> +	struct qedn_ctx *qedn = qedn_task->qedn_conn->qedn;
+> +	dma_addr_t fw_sgl_phys;
+> +
+> +	qedn_task->sgl_task_params.sgl =
+> +		dma_alloc_coherent(&qedn->pdev->dev, QEDN_MAX_FW_SGL_SIZE,
+> +				   &fw_sgl_phys, GFP_KERNEL);
+> +	if (!qedn_task->sgl_task_params.sgl) {
+> +		pr_err("Couldn't allocate FW sgl\n");
+> +
+> +		return -ENOMEM;
+> +	}
+> +
+> +	DMA_REGPAIR_LE(qedn_task->sgl_task_params.sgl_phys_addr, fw_sgl_phys);
+> +
+> +	return 0;
+> +}
+> +
+> +static inline void *qedn_get_fw_task(struct qed_nvmetcp_tid *info, u16 itid)
+> +{
+> +	return (void *)(info->blocks[itid / info->num_tids_per_block] +
+> +			(itid % info->num_tids_per_block) * info->size);
+> +}
+> +
+> +static struct qedn_task_ctx *qedn_alloc_task(struct qedn_conn_ctx *conn_ctx, u16 itid)
+> +{
+> +	struct qedn_ctx *qedn = conn_ctx->qedn;
+> +	struct qedn_task_ctx *qedn_task;
+> +	void *fw_task_ctx;
+> +	int rc = 0;
+> +
+> +	qedn_task = kzalloc(sizeof(*qedn_task), GFP_KERNEL);
+> +	if (!qedn_task)
+> +		return NULL;
+> +
+> +	spin_lock_init(&qedn_task->lock);
+> +	fw_task_ctx = qedn_get_fw_task(&qedn->tasks, itid);
+> +	if (!fw_task_ctx) {
+> +		pr_err("iTID: 0x%x; Failed getting fw_task_ctx memory\n", itid);
+> +		goto release_task;
+> +	}
+> +
+> +	/* No need to memset fw_task_ctx - its done in the HSI func */
+> +	qedn_task->qedn_conn = conn_ctx;
+> +	qedn_task->qedn = qedn;
+> +	qedn_task->fw_task_ctx = fw_task_ctx;
+> +	qedn_task->valid = 0;
+> +	qedn_task->flags = 0;
+> +	qedn_task->itid = itid;
+> +	rc = qedn_alloc_fw_sgl(qedn_task);
+> +	if (rc) {
+> +		pr_err("iTID: 0x%x; Failed allocating FW sgl\n", itid);
+> +		goto release_task;
+> +	}
+> +
+> +	rc = qedn_alloc_nvme_sg(qedn_task);
+> +	if (rc) {
+> +		pr_err("iTID: 0x%x; Failed allocating FW sgl\n", itid);
+> +		goto release_fw_sgl;
+> +	}
+> +
+> +	return qedn_task;
+> +
+> +release_fw_sgl:
+> +	qedn_free_fw_sgl(qedn_task);
+> +release_task:
+> +	kfree(qedn_task);
+> +
+> +	return NULL;
+> +}
+> +
+> +int qedn_alloc_tasks(struct qedn_conn_ctx *conn_ctx)
+> +{
+> +	struct qedn_ctx *qedn = conn_ctx->qedn;
+> +	struct qedn_task_ctx *qedn_task = NULL;
+> +	struct qedn_io_resources *io_resrc;
+> +	u16 itid, start_itid, offset;
+> +	struct qedn_fp_queue *fp_q;
+> +	int i, rc;
+> +
+> +	fp_q = conn_ctx->fp_q;
+> +
+> +	offset = fp_q->sb_id;
+> +	io_resrc = &fp_q->host_resrc;
+> +
+> +	start_itid = qedn->num_tasks_per_pool * offset;
+> +	for (i = 0; i < qedn->num_tasks_per_pool; ++i) {
+> +		itid = start_itid + i;
+> +		qedn_task = qedn_alloc_task(conn_ctx, itid);
+> +		if (!qedn_task) {
+> +			pr_err("Failed allocating task\n");
+> +			rc = -ENOMEM;
+> +			goto release_tasks;
+> +		}
+> +
+> +		qedn_task->fp_q = fp_q;
+> +		io_resrc->num_free_tasks += 1;
+> +		list_add_tail(&qedn_task->entry, &io_resrc->task_free_list);
+> +	}
+> +
+> +	io_resrc->num_alloc_tasks = io_resrc->num_free_tasks;
+> +
+> +	return 0;
+> +
+> +release_tasks:
+> +	qedn_destroy_free_tasks(fp_q, io_resrc);
+> +
+> +	return rc;
+> +}
+> +
 
-I don't think it is a "RDMA" issue:
+Well ... this is less than optimal.
+In effect you are splitting the available hardware tasks between pools.
+And the way I see it you allocate one pool per connection.
+Is that correct?
 
-$ git grep ICE_ERR_PARAM | wc -l
-168
-$ git grep -l ICE_ERR_PARAM
-drivers/net/ethernet/intel/ice/ice_common.c
-drivers/net/ethernet/intel/ice/ice_controlq.c
-drivers/net/ethernet/intel/ice/ice_dcb.c
-drivers/net/ethernet/intel/ice/ice_fdir.c
-drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-drivers/net/ethernet/intel/ice/ice_flow.c
-drivers/net/ethernet/intel/ice/ice_lib.c
-drivers/net/ethernet/intel/ice/ice_main.c
-drivers/net/ethernet/intel/ice/ice_nvm.c
-drivers/net/ethernet/intel/ice/ice_sched.c
-drivers/net/ethernet/intel/ice/ice_sriov.c
-drivers/net/ethernet/intel/ice/ice_status.h
-drivers/net/ethernet/intel/ice/ice_switch.c
-drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+So what about the scaling here?
+How many hardware tasks do you have in total?
+And what happens if you add more and more connections?
 
-Jason
+Cheers,
+
+Hannes
+-- 
+Dr. Hannes Reinecke		        Kernel Storage Architect
+hare@suse.de			               +49 911 74053 688
+SUSE Software Solutions Germany GmbH, 90409 Nürnberg
+GF: F. Imendörffer, HRB 36809 (AG Nürnberg)
