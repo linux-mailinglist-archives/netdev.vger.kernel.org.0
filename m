@@ -2,113 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C55339404E
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 11:49:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB26D394052
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 11:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236061AbhE1JvK convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 28 May 2021 05:51:10 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:38065 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235299AbhE1JvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 05:51:08 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-275-yccOMhXpN7i8SNWlKAUUQw-1; Fri, 28 May 2021 10:49:31 +0100
-X-MC-Unique: yccOMhXpN7i8SNWlKAUUQw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Fri, 28 May 2021 10:49:29 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.015; Fri, 28 May 2021 10:49:29 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Mel Gorman' <mgorman@techsingularity.net>
-CC:     'Andrii Nakryiko' <andrii.nakryiko@gmail.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Arnaldo Carvalho de Melo" <acme@redhat.com>,
-        Michal Suchanek <msuchanek@suse.de>,
+        id S235793AbhE1JwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 05:52:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37337 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234926AbhE1JwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 05:52:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622195435;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D0G8oPu18pmYZ7LxFvhbJ/xm7MVeifSSkI767EQWIis=;
+        b=RQJNvbbmiW/UjLmUcBcNoV8kvOeZ6VRKomZ6bPa0vYwR5irF3QSMquXbQ60gzX6tSbZv8W
+        0DVe/of8XcheTaUkdMfclMaFN/X9luw37RAQtTfQ2tLGQwwb+xt6hwdWbDdAm0w8nj438i
+        T9Aawnrq+Da3cr1X+MW8/yI0eMdnyVA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-474-PBmWRZf7OKOIWUecTbXRxA-1; Fri, 28 May 2021 05:50:31 -0400
+X-MC-Unique: PBmWRZf7OKOIWUecTbXRxA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B321CFC98;
+        Fri, 28 May 2021 09:50:28 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9142B6F125;
+        Fri, 28 May 2021 09:50:04 +0000 (UTC)
+Date:   Fri, 28 May 2021 11:50:03 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     brouer@redhat.com,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         KP Singh <kpsingh@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Hritik Vijay <hritikxx8@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-Subject: RE: [PATCH] mm/page_alloc: Work around a pahole limitation with
- zero-sized struct pagesets
-Thread-Topic: [PATCH] mm/page_alloc: Work around a pahole limitation with
- zero-sized struct pagesets
-Thread-Index: AQHXUwZwxICJrzVIrECdOMP8p5MLKKr4istw////SYCAABppAA==
-Date:   Fri, 28 May 2021 09:49:28 +0000
-Message-ID: <2755b39d723146168e875f3b4a851a0d@AcuMS.aculab.com>
-References: <20210526080741.GW30378@techsingularity.net>
- <YK9SiLX1E1KAZORb@infradead.org> <20210527090422.GA30378@techsingularity.net>
- <YK9j3YeMTZ+0I8NA@infradead.org>
- <CAEf4BzZLy0s+t+Nj9QgUNM66Ma6HN=VkS+ocgT5h9UwanxHaZQ@mail.gmail.com>
- <CAEf4BzbzPK-3cyLFM8QKE5-o_dL7=UCcvRF+rEqyUcHhyY+FJg@mail.gmail.com>
- <8fe547e9e87f40aebce82021d76a2d08@AcuMS.aculab.com>
- <20210528090421.GK30378@techsingularity.net>
-In-Reply-To: <20210528090421.GK30378@techsingularity.net>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Willem de Bruijn <willemb@google.com>,
+        Xie He <xie.he.0141@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Wang Hai <wanghai38@huawei.com>,
+        Tanner Love <tannerlove@google.com>,
+        Eyal Birger <eyal.birger@gmail.com>,
+        Menglong Dong <dong.menglong@zte.com.cn>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next] xsk: support AF_PACKET
+Message-ID: <20210528115003.37840424@carbon>
+In-Reply-To: <1622192521.5931044-1-xuanzhuo@linux.alibaba.com>
+References: <87im33grtt.fsf@toke.dk>
+        <1622192521.5931044-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mel Gorman
-> Sent: 28 May 2021 10:04
-> 
-> On Fri, May 28, 2021 at 08:09:39AM +0000, David Laight wrote:
-> > From: Andrii Nakryiko
-> > > Sent: 27 May 2021 15:42
-> > ...
-> > > I agree that empty structs are useful, but here we are talking about
-> > > per-CPU variables only, which is the first use case so far, as far as
-> > > I can see. If we had pahole 1.22 released and widely packaged it could
-> > > have been a viable option to force it on everyone.
-> > ...
+On Fri, 28 May 2021 17:02:01 +0800
+Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+
+> On Fri, 28 May 2021 10:55:58 +0200, Toke H=C3=B8iland-J=C3=B8rgensen <tok=
+e@redhat.com> wrote:
+> > Xuan Zhuo <xuanzhuo@linux.alibaba.com> writes:
+> > =20
+> > > In xsk mode, users cannot use AF_PACKET(tcpdump) to observe the curre=
+nt
+> > > rx/tx data packets. This feature is very important in many cases. So
+> > > this patch allows AF_PACKET to obtain xsk packages. =20
 > >
-> > Would it be feasible to put the sources for pahole into the
-> > kernel repository and build it at the same time as objtool?
-> 
-> We don't store other build dependencies like compilers, binutils etc in
-> the kernel repository even though minimum versions are mandated.
-> Obviously tools/ exists but for the most part, they are tools that do
-> not exist in other repositories and are kernel-specific. I don't know if
-> pahole would be accepted and it introduces the possibility that upstream
-> pahole and the kernel fork of it would diverge.
+> > You can use xdpdump to dump the packets from the XDP program before it
+> > gets redirected into the XSK:
+> > https://github.com/xdp-project/xdp-tools/tree/master/xdp-dump =20
+>=20
+> Wow, this is a good idea.
 
-The other side of the coin is that is you want reproducible builds
-the smaller the number of variables that need to match the better.
+Yes, it is rather cool (credit to Eelco).  Notice the extra info you
+can capture from 'exit', like XDP return codes, if_index, rx_queue.
 
-I can see there might be similar issues with the version of libelf-devel
-(needed by objtool).
-If I compile anything with gcc 10 (I'm doing build-root builds)
-I get object files that the hosts 2.30 binutils complain about.
-I can easily see that updating gcc and binutils might leave a
-broken objtool unless the required updated libelf-devel package
-can be found.
-Statically linking the required parts of libelf into objtool
-would save any such problems.
+The tool uses the perf ring-buffer to send/copy data to userspace.
+This is actually surprisingly fast, but I still think AF_XDP will be
+faster (but it usually 'steals' the packet).
 
-	David
+Another (crazy?) idea is to extend this (and xdpdump), is to leverage
+Hangbin's recent XDP_REDIRECT extension e624d4ed4aa8 ("xdp: Extend
+xdp_redirect_map with broadcast support").  We now have a
+xdp_redirect_map flag BPF_F_BROADCAST, what if we create a
+BPF_F_CLONE_PASS flag?
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+The semantic meaning of BPF_F_CLONE_PASS flag is to copy/clone the
+packet for the specified map target index (e.g AF_XDP map), but
+afterwards it does like veth/cpumap and creates an SKB from the
+xdp_frame (see __xdp_build_skb_from_frame()) and send to netstack.
+(Feel free to kick me if this doesn't make any sense)
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
