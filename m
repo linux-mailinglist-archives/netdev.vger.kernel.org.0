@@ -2,78 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0000B394830
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 23:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29DFE39481A
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 23:00:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbhE1VPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 17:15:21 -0400
-Received: from www62.your-server.de ([213.133.104.62]:41710 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbhE1VPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 17:15:20 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lmjNA-0000UR-78; Fri, 28 May 2021 22:46:24 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lmjNA-000JT2-0a; Fri, 28 May 2021 22:46:24 +0200
-Subject: Re: [PATCH] selftests/bpf: Fix return value check in attach_bpf()
-To:     Yu Kuai <yukuai3@huawei.com>, shuah@kernel.org, ast@kernel.org,
-        andrii@kernel.org
-Cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-References: <20210528090758.1108464-1-yukuai3@huawei.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c5a37d91-dd20-55e3-a78b-272a00b940d5@iogearbox.net>
-Date:   Fri, 28 May 2021 22:46:23 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S229500AbhE1VBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 17:01:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49376 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229481AbhE1VBl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 May 2021 17:01:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2E6B061358;
+        Fri, 28 May 2021 21:00:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622235606;
+        bh=y5rknKuoZBP19E7vSNsLf2ZiR2KHEQ7V/mgVmxR799c=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=X54+TCG+qb1SNfK0VQf+wWwMq9NAjlYqxDsGJkCvGIbVoFHF+XIrIiCcelLo3Fh2f
+         PzpqWxn+iNxb4IMZd/4SDpzFXE3XzU+tPsWKHtWQB5fmkNTvu+Lt26sM3mkATvEYRF
+         asOTd13urFyqHaptytO0EbL5xmbZGKtSCZsZ72RaGT6JVimznuCDMgVh4YB+P/VnNB
+         bgoNZQKCj4qAhMA0ZJYT9qgl5Pw9Ll3F4o6yWjJEWj4IPRo6uTtEYGPG9Ra30erMBB
+         2LT7R0HQVhnaLFUPuLwK0/kgUVlqXsDIB3p1hTXhuB6Vtd1FjwWrsHHRtYhZ/FaELn
+         ZAI8+UJqbcG0g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1EE8E60A39;
+        Fri, 28 May 2021 21:00:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210528090758.1108464-1-yukuai3@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26184/Fri May 28 13:05:50 2021)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/4] mptcp: Fixes for 5.13
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162223560612.19696.18047564340306818571.git-patchwork-notify@kernel.org>
+Date:   Fri, 28 May 2021 21:00:06 +0000
+References: <20210527233140.182728-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20210527233140.182728-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/21 11:07 AM, Yu Kuai wrote:
-> use libbpf_get_error() to check the return value of
-> bpf_program__attach().
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> ---
->   tools/testing/selftests/bpf/benchs/bench_rename.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/benchs/bench_rename.c b/tools/testing/selftests/bpf/benchs/bench_rename.c
-> index c7ec114eca56..b7d4a1d74fca 100644
-> --- a/tools/testing/selftests/bpf/benchs/bench_rename.c
-> +++ b/tools/testing/selftests/bpf/benchs/bench_rename.c
-> @@ -65,7 +65,7 @@ static void attach_bpf(struct bpf_program *prog)
->   	struct bpf_link *link;
->   
->   	link = bpf_program__attach(prog);
-> -	if (!link) {
-> +	if (libbpf_get_error(link)) {
->   		fprintf(stderr, "failed to attach program!\n");
->   		exit(1);
->   	}
+Hello:
 
-Could you explain the rationale of this patch? bad2e478af3b ("selftests/bpf: Turn
-on libbpf 1.0 mode and fix all IS_ERR checks") explains: 'Fix all the explicit
-IS_ERR checks that now will be broken because libbpf returns NULL on error (and
-sets errno).' So the !link check looks totally reasonable to me. Converting to
-libbpf_get_error() is not wrong in itself, but given you don't make any use of
-the err code, there is also no point in this diff here.
+This series was applied to netdev/net.git (refs/heads/master):
 
-Thanks,
-Daniel
+On Thu, 27 May 2021 16:31:36 -0700 you wrote:
+> These patches address two issues in MPTCP.
+> 
+> Patch 1 fixes a locking issue affecting MPTCP-level retransmissions.
+> 
+> Patches 2-4 improve handling of out-of-order packet arrival early in a
+> connection, so it falls back to TCP rather than forcing a
+> reset. Includes a selftest.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/4] mptcp: fix sk_forward_memory corruption on retransmission
+    https://git.kernel.org/netdev/net/c/b5941f066b4c
+  - [net,2/4] mptcp: always parse mptcp options for MPC reqsk
+    https://git.kernel.org/netdev/net/c/06f9a435b3aa
+  - [net,3/4] mptcp: do not reset MP_CAPABLE subflow on mapping errors
+    https://git.kernel.org/netdev/net/c/dea2b1ea9c70
+  - [net,4/4] mptcp: update selftest for fallback due to OoO
+    https://git.kernel.org/netdev/net/c/69ca3d29a755
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
