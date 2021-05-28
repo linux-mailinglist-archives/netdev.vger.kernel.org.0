@@ -2,113 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A39394485
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 16:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 560F339448D
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 16:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236112AbhE1OzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 10:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235415AbhE1OzI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 10:55:08 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C92C061574;
-        Fri, 28 May 2021 07:53:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=eYPDj+LfIhrv+LaA3M9K/3pjJ6DaX5CeFYMC/mFkVBE=; b=gQ1U2K3Xo+QlISz1KdFvyYrZPb
-        2mqImu2CRR6ObYKJPMvmMOg/7qtwA9DlvVtyqKYsUFY+L3x3eJ4NpTZG66ztCfFhlim23uBIxdXDZ
-        VoxIcoucNkIsQLnwbk8AHiOx4l0MGYhHcjgyhFR6tXvkoO2mPqN1pSeIIyvDT9EfOibSwfoyEhuC5
-        MISE/nlH1O+MJaoECgujjrTSwn14YwX3+mzTqtXMu3j3Iq1YPbeMdYizz12fUbsh/NiH4TqEMw8SS
-        lfQzgxngIwHJmBqY4CA+Lcd/WAsbCFNn4A1An8SH2nrtg+P24dR+b303UHZOr8EG5ggdyScucqrDQ
-        6AmUmNYA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lmdqz-006iup-0i; Fri, 28 May 2021 14:52:49 +0000
-Date:   Fri, 28 May 2021 15:52:48 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Justin He <Justin.He@arm.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S236404AbhE1O4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 10:56:03 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:47069 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235683AbhE1Oz5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 10:55:57 -0400
+Received: from mail-ua1-f72.google.com ([209.85.222.72])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1lmdsT-0003zq-Fp
+        for netdev@vger.kernel.org; Fri, 28 May 2021 14:54:21 +0000
+Received: by mail-ua1-f72.google.com with SMTP id t19-20020ab021530000b029020bc458f62fso1991437ual.20
+        for <netdev@vger.kernel.org>; Fri, 28 May 2021 07:54:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XhZpqiw5yroQ5T5SjmtgyekQkcqwTSamV1tsKU5zvv4=;
+        b=sobsDPLGl6T/+rQKvKdhkWu0+0Hij6PPbcJ4rRGcrlLB63+HQM4FmMbYEV6zfwI5a0
+         wbGARqF/ZbJgXmG7o/s1h1+ltcsEaF04V5dNoxxZSa7BsOrU44O4lcM57qE8gnBAZpEz
+         5cXAGcynsJB7SgO6hiWUXkopfqsqXMMa2+S1Jmkx01+uP9FrB6OUyuoPebgM+7LiEyNG
+         0Chs5rI56Sj9OQTKZRnDY7Qt6KcZm2PaIycsoslDexYR/w90zakbq59V6Q/+9SKab4uU
+         V0TvEL1ovppV2EpgAjYk1y3spEA4JBqk673P8AS8LW+Zp23xt3MUVEUwpXp0Pusw7vr+
+         OdYA==
+X-Gm-Message-State: AOAM533U2BbRKHe59paScor8GfPdF8MAZVV4ohBWHPO3thDnUZq+yPZS
+        4+6OcAArETsLJlQHaMAy0H4dgYzSWZ+JuM/4Zd5kBgzsAHCdynN3WlaAKvUlqQ//dxhtVow19oe
+        UXkMvWoSNssjjb8cP4aJe/O2naoYdeRfDnA==
+X-Received: by 2002:a05:6102:b06:: with SMTP id b6mr7491293vst.21.1622213660573;
+        Fri, 28 May 2021 07:54:20 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwPMQ3xY66/5n4l/VQaIPoHo7DEPcLTbN8UNm7Bn5EXdgUbFqs6QFW7LZSH6KTqPyxb7SwHGw==
+X-Received: by 2002:a05:6102:b06:: with SMTP id b6mr7491279vst.21.1622213660390;
+        Fri, 28 May 2021 07:54:20 -0700 (PDT)
+Received: from localhost.localdomain ([45.237.48.3])
+        by smtp.gmail.com with ESMTPSA id v132sm737783vkd.1.2021.05.28.07.54.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 May 2021 07:54:19 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>
-Subject: Re: [PATCH RFCv2 2/3] lib/vsprintf.c: make %pD print full path for
- file
-Message-ID: <YLEDwFCPcFx+qeul@casper.infradead.org>
-References: <20210528113951.6225-1-justin.he@arm.com>
- <20210528113951.6225-3-justin.he@arm.com>
- <YLDpSnV9XBUJq5RU@casper.infradead.org>
- <AM6PR08MB437691E7314C6B774EFED4BDF7229@AM6PR08MB4376.eurprd08.prod.outlook.com>
+        Randy Dunlap <rdunlap@infradead.org>,
+        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 01/11] nfc: fdp: drop ftrace-like debugging messages
+Date:   Fri, 28 May 2021 10:53:20 -0400
+Message-Id: <20210528145330.125055-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM6PR08MB437691E7314C6B774EFED4BDF7229@AM6PR08MB4376.eurprd08.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 28, 2021 at 02:22:01PM +0000, Justin He wrote:
-> > On Fri, May 28, 2021 at 07:39:50PM +0800, Jia He wrote:
-> > > We have '%pD' for printing a filename. It may not be perfect (by
-> > > default it only prints one component.)
-> > >
-> > > As suggested by Linus at [1]:
-> > > A dentry has a parent, but at the same time, a dentry really does
-> > > inherently have "one name" (and given just the dentry pointers, you
-> > > can't show mount-related parenthood, so in many ways the "show just
-> > > one name" makes sense for "%pd" in ways it doesn't necessarily for
-> > > "%pD"). But while a dentry arguably has that "one primary component",
-> > > a _file_ is certainly not exclusively about that last component.
-> > >
-> > > Hence "file_dentry_name()" simply shouldn't use "dentry_name()" at all.
-> > > Despite that shared code origin, and despite that similar letter
-> > > choice (lower-vs-upper case), a dentry and a file really are very
-> > > different from a name standpoint.
-> > >
-> > > Here stack space is preferred for file_d_path_name() because it is
-> > > much safer. The stack size 256 is a compromise between stack overflow
-> > > and too short full path.
-> >
-> > How is it "safer"?  You already have a buffer passed from the caller.
-> > Are you saying that d_path_fast() might overrun a really small buffer
-> > but won't overrun a 256 byte buffer?
-> No, it won't overrun a 256 byte buf. When the full path size is larger than 256, the p->len is < 0 in prepend_name, and this overrun will be
-> dectected in extract_string() with "-ENAMETOOLONG".
-> 
-> Each printk contains 2 vsnprintf. vsnprintf() returns the required size after formatting the string.
-> 1. vprintk_store() will invoke 1st vsnprintf() will 8 bytes space to get the reserve_size. In this case, the _buf_ could be less than _end_ by design.
-> 2. Then it invokes 2nd printk_sprint()->vscnprintf()->vsnprintf() to really fill the space.
+Now that the kernel has ftrace, any debugging calls that just do "made
+it to this function!" and "leaving this function!" can be removed.
+Better to use standard debugging tools.
 
-I think you need to explain _that_ in the commit log, not make some
-nebulous claim of "safer".
+This allows also to remove several local variables and entire
+fdp_nci_recv_frame() function (whose purpose was only to log).
 
-> If we choose the stack space, it can meet above 2 cases.
-> 
-> If we pass the parameter like:
-> p = d_path_fast(path, buf, end - buf);
-> We need to handle the complicated logic in prepend_name()
-> I have tried this way in local test, the code logic is very complicated
-> and not so graceful.
-> e.g. I need to firstly go through the loop and get the full path size of
-> that file. And then return reserved_size for that 1st vsnprintf
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ drivers/nfc/fdp/fdp.c | 31 -------------------------------
+ drivers/nfc/fdp/fdp.h |  1 -
+ drivers/nfc/fdp/i2c.c | 12 +-----------
+ 3 files changed, 1 insertion(+), 43 deletions(-)
 
-I'm not sure why it's so complicated.  p->len records how many bytes
-are needed for the entire path; can't you just return -p->len ?
+diff --git a/drivers/nfc/fdp/fdp.c b/drivers/nfc/fdp/fdp.c
+index 125d71c27b8b..7863b2536999 100644
+--- a/drivers/nfc/fdp/fdp.c
++++ b/drivers/nfc/fdp/fdp.c
+@@ -237,28 +237,18 @@ static int fdp_nci_send_patch(struct nci_dev *ndev, u8 conn_id, u8 type)
+ static int fdp_nci_open(struct nci_dev *ndev)
+ {
+ 	struct fdp_nci_info *info = nci_get_drvdata(ndev);
+-	struct device *dev = &info->phy->i2c_dev->dev;
+-
+-	dev_dbg(dev, "%s\n", __func__);
+ 
+ 	return info->phy_ops->enable(info->phy);
+ }
+ 
+ static int fdp_nci_close(struct nci_dev *ndev)
+ {
+-	struct fdp_nci_info *info = nci_get_drvdata(ndev);
+-	struct device *dev = &info->phy->i2c_dev->dev;
+-
+-	dev_dbg(dev, "%s\n", __func__);
+ 	return 0;
+ }
+ 
+ static int fdp_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
+ {
+ 	struct fdp_nci_info *info = nci_get_drvdata(ndev);
+-	struct device *dev = &info->phy->i2c_dev->dev;
+-
+-	dev_dbg(dev, "%s\n", __func__);
+ 
+ 	if (atomic_dec_and_test(&info->data_pkt_counter))
+ 		info->data_pkt_counter_cb(ndev);
+@@ -266,16 +256,6 @@ static int fdp_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
+ 	return info->phy_ops->write(info->phy, skb);
+ }
+ 
+-int fdp_nci_recv_frame(struct nci_dev *ndev, struct sk_buff *skb)
+-{
+-	struct fdp_nci_info *info = nci_get_drvdata(ndev);
+-	struct device *dev = &info->phy->i2c_dev->dev;
+-
+-	dev_dbg(dev, "%s\n", __func__);
+-	return nci_recv_frame(ndev, skb);
+-}
+-EXPORT_SYMBOL(fdp_nci_recv_frame);
+-
+ static int fdp_nci_request_firmware(struct nci_dev *ndev)
+ {
+ 	struct fdp_nci_info *info = nci_get_drvdata(ndev);
+@@ -476,8 +456,6 @@ static int fdp_nci_setup(struct nci_dev *ndev)
+ 	int r;
+ 	u8 patched = 0;
+ 
+-	dev_dbg(dev, "%s\n", __func__);
+-
+ 	r = nci_core_init(ndev);
+ 	if (r)
+ 		goto error;
+@@ -585,9 +563,7 @@ static int fdp_nci_core_reset_ntf_packet(struct nci_dev *ndev,
+ 					  struct sk_buff *skb)
+ {
+ 	struct fdp_nci_info *info = nci_get_drvdata(ndev);
+-	struct device *dev = &info->phy->i2c_dev->dev;
+ 
+-	dev_dbg(dev, "%s\n", __func__);
+ 	info->setup_reset_ntf = 1;
+ 	wake_up(&info->setup_wq);
+ 
+@@ -598,9 +574,7 @@ static int fdp_nci_prop_patch_ntf_packet(struct nci_dev *ndev,
+ 					  struct sk_buff *skb)
+ {
+ 	struct fdp_nci_info *info = nci_get_drvdata(ndev);
+-	struct device *dev = &info->phy->i2c_dev->dev;
+ 
+-	dev_dbg(dev, "%s\n", __func__);
+ 	info->setup_patch_ntf = 1;
+ 	info->setup_patch_status = skb->data[0];
+ 	wake_up(&info->setup_wq);
+@@ -773,11 +747,6 @@ EXPORT_SYMBOL(fdp_nci_probe);
+ 
+ void fdp_nci_remove(struct nci_dev *ndev)
+ {
+-	struct fdp_nci_info *info = nci_get_drvdata(ndev);
+-	struct device *dev = &info->phy->i2c_dev->dev;
+-
+-	dev_dbg(dev, "%s\n", __func__);
+-
+ 	nci_unregister_device(ndev);
+ 	nci_free_device(ndev);
+ }
+diff --git a/drivers/nfc/fdp/fdp.h b/drivers/nfc/fdp/fdp.h
+index 9bd1f3f23e2d..ead3b21ccae6 100644
+--- a/drivers/nfc/fdp/fdp.h
++++ b/drivers/nfc/fdp/fdp.h
+@@ -25,6 +25,5 @@ int fdp_nci_probe(struct fdp_i2c_phy *phy, struct nfc_phy_ops *phy_ops,
+ 		  struct nci_dev **ndev, int tx_headroom, int tx_tailroom,
+ 		  u8 clock_type, u32 clock_freq, u8 *fw_vsc_cfg);
+ void fdp_nci_remove(struct nci_dev *ndev);
+-int fdp_nci_recv_frame(struct nci_dev *ndev, struct sk_buff *skb);
+ 
+ #endif /* __LOCAL_FDP_H_ */
+diff --git a/drivers/nfc/fdp/i2c.c b/drivers/nfc/fdp/i2c.c
+index 997e0806821a..c5596e514648 100644
+--- a/drivers/nfc/fdp/i2c.c
++++ b/drivers/nfc/fdp/i2c.c
+@@ -49,7 +49,6 @@ static int fdp_nci_i2c_enable(void *phy_id)
+ {
+ 	struct fdp_i2c_phy *phy = phy_id;
+ 
+-	dev_dbg(&phy->i2c_dev->dev, "%s\n", __func__);
+ 	fdp_nci_i2c_reset(phy);
+ 
+ 	return 0;
+@@ -59,7 +58,6 @@ static void fdp_nci_i2c_disable(void *phy_id)
+ {
+ 	struct fdp_i2c_phy *phy = phy_id;
+ 
+-	dev_dbg(&phy->i2c_dev->dev, "%s\n", __func__);
+ 	fdp_nci_i2c_reset(phy);
+ }
+ 
+@@ -197,7 +195,6 @@ static int fdp_nci_i2c_read(struct fdp_i2c_phy *phy, struct sk_buff **skb)
+ static irqreturn_t fdp_nci_i2c_irq_thread_fn(int irq, void *phy_id)
+ {
+ 	struct fdp_i2c_phy *phy = phy_id;
+-	struct i2c_client *client;
+ 	struct sk_buff *skb;
+ 	int r;
+ 
+@@ -206,9 +203,6 @@ static irqreturn_t fdp_nci_i2c_irq_thread_fn(int irq, void *phy_id)
+ 		return IRQ_NONE;
+ 	}
+ 
+-	client = phy->i2c_dev;
+-	dev_dbg(&client->dev, "%s\n", __func__);
+-
+ 	r = fdp_nci_i2c_read(phy, &skb);
+ 
+ 	if (r == -EREMOTEIO)
+@@ -217,7 +211,7 @@ static irqreturn_t fdp_nci_i2c_irq_thread_fn(int irq, void *phy_id)
+ 		return IRQ_HANDLED;
+ 
+ 	if (skb != NULL)
+-		fdp_nci_recv_frame(phy->ndev, skb);
++		nci_recv_frame(phy->ndev, skb);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -288,8 +282,6 @@ static int fdp_nci_i2c_probe(struct i2c_client *client)
+ 	u32 clock_freq;
+ 	int r = 0;
+ 
+-	dev_dbg(dev, "%s\n", __func__);
+-
+ 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
+ 		nfc_err(dev, "No I2C_FUNC_I2C support\n");
+ 		return -ENODEV;
+@@ -351,8 +343,6 @@ static int fdp_nci_i2c_remove(struct i2c_client *client)
+ {
+ 	struct fdp_i2c_phy *phy = i2c_get_clientdata(client);
+ 
+-	dev_dbg(&client->dev, "%s\n", __func__);
+-
+ 	fdp_nci_remove(phy->ndev);
+ 	fdp_nci_i2c_disable(phy);
+ 
+-- 
+2.27.0
+
