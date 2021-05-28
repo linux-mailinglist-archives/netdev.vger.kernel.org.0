@@ -2,51 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 892C9394896
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 00:14:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7399E39489D
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 00:20:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbhE1WQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 18:16:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45544 "EHLO mail.kernel.org"
+        id S229650AbhE1WVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 18:21:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47198 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229494AbhE1WQT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 May 2021 18:16:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 926B56128B;
-        Fri, 28 May 2021 22:14:43 +0000 (UTC)
+        id S229575AbhE1WVk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 May 2021 18:21:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id F254A6135C;
+        Fri, 28 May 2021 22:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622240083;
-        bh=ztCPRvU6NRK6l5jviH/lJT3uF5HAhXuqCFmqIzpnNB0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KwTitbSEl9rnsD3ZTcQ1bOUBN0wXNvAOibO6bR56gYUOU3fRETFgkpXOm6xV0KZzz
-         1VnH/ug4TL7KNOE/8MbcjyLxYqDcUFcYBs9G6iQyxE3ejAN1VUxXIHPhvyX1ZBIsdR
-         uW3KHGKCk4RXkw6UmN0vb6BNdfPYi8cp3wTKshA2a8RFejih5AFdj3N+T0GQF4QPEe
-         fDcsFu+O3H4lywkV31V9HhLdz/uKx5cV/RZpXCDMA7utvFSEG+G5mKo72FhyyMeN0d
-         TQt2fx4ocy3lZ0ga0DlleKeOmo2Dt6SFO2FvUhdKl3YPolmALJ3HnwsYW8CurBKTTH
-         KQkoZzXk11gRw==
-Date:   Fri, 28 May 2021 15:14:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Thompson <davthompson@nvidia.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <limings@nvidia.com>, Asmaa Mnebhi <asmaa@nvidia.com>
-Subject: Re: [PATCH net-next v5] Add Mellanox BlueField Gigabit Ethernet
- driver
-Message-ID: <20210528151442.470bbca7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20210528193719.6132-1-davthompson@nvidia.com>
-References: <20210528193719.6132-1-davthompson@nvidia.com>
+        s=k20201202; t=1622240405;
+        bh=zAvNqNKd+HmueNXzQhflCrLEld4y1TB20N5Z13TFwNo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ajjPzdnD6zwLsplkDNm2ebIATCEud+G/wcH1JcPHwuGrUBjH8Ndd8JNERBKpL5EjQ
+         HrVRGClV9ati1Lnku1bkWU0ER6Je46Ju/Qt4N/sWYWOtdj1KFC3J4mljzFtMF/dUUW
+         dFCC83iqwFoD75DjoaN1j/REqZpDkD+Uo/Q/aIVDYDOjOM3yeC+68dW516B1n+75xg
+         b3Wjp7o+11VFvlvoRyzN8u8/eiDlCfa/tuVX8cTrTPPSjJOBcbGu4tKurFU2y+v4wk
+         gTPB/Inx+iTDRUJiaz+XCueNRvC0tPdaUkOEEZlfs1+ufmUmqvQ0Klw+FeKsk4VZxE
+         HjhCaUpxnrduA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E70B160A39;
+        Fri, 28 May 2021 22:20:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 01/12] nfc: fdp: correct kerneldoc for structure
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162224040494.21156.3377097979911349255.git-patchwork-notify@kernel.org>
+Date:   Fri, 28 May 2021 22:20:04 +0000
+References: <20210528124200.79655-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20210528124200.79655-1-krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 May 2021 15:37:19 -0400 David Thompson wrote:
-> This patch adds build and driver logic for the "mlxbf_gige"
-> Ethernet driver from Mellanox Technologies. The second
-> generation BlueField SoC from Mellanox supports an
-> out-of-band GigaBit Ethernet management port to the Arm
-> subsystem.  This driver supports TCP/IP network connectivity
-> for that port, and provides back-end routines to handle
-> basic ethtool requests.
+Hello:
 
-Please address the 32 bit build warnings.
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Fri, 28 May 2021 08:41:49 -0400 you wrote:
+> Since structure comments are not kerneldoc, remove the double ** to fix
+> W=1 warnings:
+> 
+>     warning: This comment starts with '/**', but isn't a kernel-doc comment.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [01/12] nfc: fdp: correct kerneldoc for structure
+    https://git.kernel.org/netdev/net-next/c/cd4375d621aa
+  - [02/12] nfc: fdp: drop ACPI_PTR from device ID table
+    https://git.kernel.org/netdev/net-next/c/466e1c889c71
+  - [03/12] nfc: port100: correct kerneldoc for structure
+    https://git.kernel.org/netdev/net-next/c/a548bee9ffe8
+  - [04/12] nfc: pn533: drop of_match_ptr from device ID table
+    https://git.kernel.org/netdev/net-next/c/a70bbbe387d0
+  - [05/12] nfc: mrvl: mark OF device ID tables as maybe unused
+    https://git.kernel.org/netdev/net-next/c/26f20ff5e207
+  - [06/12] nfc: mrvl: skip impossible NCI_MAX_PAYLOAD_SIZE check
+    https://git.kernel.org/netdev/net-next/c/41a6bf50ee04
+  - [07/12] nfc: pn533: mark OF device ID tables as maybe unused
+    https://git.kernel.org/netdev/net-next/c/b3a790d43749
+  - [08/12] nfc: s3fwrn5: mark OF device ID tables as maybe unused
+    https://git.kernel.org/netdev/net-next/c/5edc94265e19
+  - [09/12] nfc: pn544: mark ACPI and OF device ID tables as maybe unused
+    https://git.kernel.org/netdev/net-next/c/aa1405772fe1
+  - [10/12] nfc: st-nci: mark ACPI and OF device ID tables as maybe unused
+    https://git.kernel.org/netdev/net-next/c/255fcc7b7166
+  - [11/12] nfc: st21nfca: mark ACPI and OF device ID tables as maybe unused
+    https://git.kernel.org/netdev/net-next/c/806278023492
+  - [12/12] nfc: st95hf: mark ACPI and OF device ID tables as maybe unused
+    https://git.kernel.org/netdev/net-next/c/1ab4fe09977e
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
