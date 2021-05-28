@@ -2,326 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00EBC393A1D
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 02:16:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 885F1393A17
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 02:12:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235018AbhE1ARe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 20:17:34 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2440 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbhE1AR1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 20:17:27 -0400
-Received: from dggeml760-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FrlWZ3NcSz6726;
-        Fri, 28 May 2021 08:12:58 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggeml760-chm.china.huawei.com (10.1.199.160) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Fri, 28 May 2021 08:15:51 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Fri, 28 May 2021 08:15:51 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
-        <ms@dev.tdt.de>, <willemb@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <tanhuazhong@huawei.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH V2 net-next 01/10] net: hdlc_fr: remove redundant blank lines
-Date:   Fri, 28 May 2021 08:12:40 +0800
-Message-ID: <1622160769-6678-2-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1622160769-6678-1-git-send-email-huangguangbin2@huawei.com>
-References: <1622160769-6678-1-git-send-email-huangguangbin2@huawei.com>
+        id S229672AbhE1AOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 20:14:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48394 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234617AbhE1AOQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 May 2021 20:14:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 87D0D613B4;
+        Fri, 28 May 2021 00:12:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622160763;
+        bh=WUBHUPxD4MIKAP8w5uv1HpMhuP351bJqyU3oA1erBZU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nAk5AhyTXJ1Oi1XuY9qT3BQIJ/Xmk2/Xz6OrVSzyI53wDOJLhJPgbWKPkYs+4wwUV
+         wwgXFEBYKH3rGgjwolUEmgS5SooDLPxeIzQZjdZWPQakiUrm86bYvTwelED1BKtsJF
+         uQIthITw9SUSu5h2/2n1Sdc0RWkQZHo8pemr6hP05c7DO4dq22Pi93YcZ+QVjkCBrT
+         Sr7bazRKISbuVUHngmnOviIP2Fk1H2Cq/f8jCfhBVyJ1yNs7t79BRpAW/LnYOrje4v
+         HpaLebnRQGlGIe3wizIBIm4mJpZsu6UlS3e7zE38Cpu6TVZwDArOfiSfgfYH2b/2pa
+         GveSEHUmK7Zcg==
+Date:   Thu, 27 May 2021 17:12:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>, dledford@redhat.com,
+        jgg@nvidia.com, linux-rdma@vger.kernel.org, leonro@nvidia.com
+Cc:     davem@davemloft.net, Dave Ertman <david.m.ertman@intel.com>,
+        netdev@vger.kernel.org, shiraz.saleem@intel.com
+Subject: Re: [PATCH net-next v2 4/7] ice: Implement iidc operations
+Message-ID: <20210527171241.3b886692@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20210527173014.362216-5-anthony.l.nguyen@intel.com>
+References: <20210527173014.362216-1-anthony.l.nguyen@intel.com>
+        <20210527173014.362216-5-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+On Thu, 27 May 2021 10:30:11 -0700 Tony Nguyen wrote:
+> +static enum ice_status
+> +ice_aq_add_rdma_qsets(struct ice_hw *hw, u8 num_qset_grps,
+> +		      struct ice_aqc_add_rdma_qset_data *qset_list,
+> +		      u16 buf_size, struct ice_sq_cd *cd)
+> +{
+> +	struct ice_aqc_add_rdma_qset_data *list;
+> +	struct ice_aqc_add_rdma_qset *cmd;
+> +	struct ice_aq_desc desc;
+> +	u16 i, sum_size = 0;
+> +
+> +	cmd = &desc.params.add_rdma_qset;
+> +
+> +	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_add_rdma_qset);
+> +
+> +	if (!qset_list)
 
-This patch removes some redundant blank lines.
+defensive programming
 
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/wan/hdlc_fr.c | 42 ------------------------------------------
- 1 file changed, 42 deletions(-)
+> +		return ICE_ERR_PARAM;
 
-diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
-index 0720f5f..0b6e133 100644
---- a/drivers/net/wan/hdlc_fr.c
-+++ b/drivers/net/wan/hdlc_fr.c
-@@ -60,7 +60,6 @@
- #define NLPID_CCITT_ANSI_LMI	0x08
- #define NLPID_CISCO_LMI		0x09
- 
--
- #define LMI_CCITT_ANSI_DLCI	   0 /* LMI DLCI */
- #define LMI_CISCO_DLCI		1023
- 
-@@ -86,7 +85,6 @@
- #define LMI_CCITT_CISCO_LENGTH	  13 /* LMI frame lengths */
- #define LMI_ANSI_LENGTH		  14
- 
--
- struct fr_hdr {
- #if defined(__LITTLE_ENDIAN_BITFIELD)
- 	unsigned ea1:	1;
-@@ -111,7 +109,6 @@ struct fr_hdr {
- #endif
- } __packed;
- 
--
- struct pvc_device {
- 	struct net_device *frad;
- 	struct net_device *main;
-@@ -149,29 +146,24 @@ struct frad_state {
- 	u8 rxseq; /* RX sequence number */
- };
- 
--
- static int fr_ioctl(struct net_device *dev, struct ifreq *ifr);
- 
--
- static inline u16 q922_to_dlci(u8 *hdr)
- {
- 	return ((hdr[0] & 0xFC) << 2) | ((hdr[1] & 0xF0) >> 4);
- }
- 
--
- static inline void dlci_to_q922(u8 *hdr, u16 dlci)
- {
- 	hdr[0] = (dlci >> 2) & 0xFC;
- 	hdr[1] = ((dlci << 4) & 0xF0) | 0x01;
- }
- 
--
- static inline struct frad_state* state(hdlc_device *hdlc)
- {
- 	return(struct frad_state *)(hdlc->state);
- }
- 
--
- static inline struct pvc_device *find_pvc(hdlc_device *hdlc, u16 dlci)
- {
- 	struct pvc_device *pvc = state(hdlc)->first_pvc;
-@@ -187,7 +179,6 @@ static inline struct pvc_device *find_pvc(hdlc_device *hdlc, u16 dlci)
- 	return NULL;
- }
- 
--
- static struct pvc_device *add_pvc(struct net_device *dev, u16 dlci)
- {
- 	hdlc_device *hdlc = dev_to_hdlc(dev);
-@@ -215,13 +206,11 @@ static struct pvc_device *add_pvc(struct net_device *dev, u16 dlci)
- 	return pvc;
- }
- 
--
- static inline int pvc_is_used(struct pvc_device *pvc)
- {
- 	return pvc->main || pvc->ether;
- }
- 
--
- static inline void pvc_carrier(int on, struct pvc_device *pvc)
- {
- 	if (on) {
-@@ -241,7 +230,6 @@ static inline void pvc_carrier(int on, struct pvc_device *pvc)
- 	}
- }
- 
--
- static inline void delete_unused_pvcs(hdlc_device *hdlc)
- {
- 	struct pvc_device **pvc_p = &state(hdlc)->first_pvc;
-@@ -260,7 +248,6 @@ static inline void delete_unused_pvcs(hdlc_device *hdlc)
- 	}
- }
- 
--
- static inline struct net_device **get_dev_p(struct pvc_device *pvc,
- 					    int type)
- {
-@@ -270,7 +257,6 @@ static inline struct net_device **get_dev_p(struct pvc_device *pvc,
- 		return &pvc->main;
- }
- 
--
- static int fr_hard_header(struct sk_buff *skb, u16 dlci)
- {
- 	if (!skb->dev) { /* Control packets */
-@@ -334,8 +320,6 @@ static int fr_hard_header(struct sk_buff *skb, u16 dlci)
- 	return 0;
- }
- 
--
--
- static int pvc_open(struct net_device *dev)
- {
- 	struct pvc_device *pvc = dev->ml_priv;
-@@ -354,8 +338,6 @@ static int pvc_open(struct net_device *dev)
- 	return 0;
- }
- 
--
--
- static int pvc_close(struct net_device *dev)
- {
- 	struct pvc_device *pvc = dev->ml_priv;
-@@ -373,8 +355,6 @@ static int pvc_close(struct net_device *dev)
- 	return 0;
- }
- 
--
--
- static int pvc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- {
- 	struct pvc_device *pvc = dev->ml_priv;
-@@ -465,15 +445,12 @@ static inline void fr_log_dlci_active(struct pvc_device *pvc)
- 		    pvc->state.active ? "active" : "inactive");
- }
- 
--
--
- static inline u8 fr_lmi_nextseq(u8 x)
- {
- 	x++;
- 	return x ? x : 1;
- }
- 
--
- static void fr_lmi_send(struct net_device *dev, int fullrep)
- {
- 	hdlc_device *hdlc = dev_to_hdlc(dev);
-@@ -569,8 +546,6 @@ static void fr_lmi_send(struct net_device *dev, int fullrep)
- 	dev_queue_xmit(skb);
- }
- 
--
--
- static void fr_set_link_state(int reliable, struct net_device *dev)
- {
- 	hdlc_device *hdlc = dev_to_hdlc(dev);
-@@ -603,7 +578,6 @@ static void fr_set_link_state(int reliable, struct net_device *dev)
- 	}
- }
- 
--
- static void fr_timer(struct timer_list *t)
- {
- 	struct frad_state *st = from_timer(st, t, timer);
-@@ -655,7 +629,6 @@ static void fr_timer(struct timer_list *t)
- 	add_timer(&state(hdlc)->timer);
- }
- 
--
- static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
- {
- 	hdlc_device *hdlc = dev_to_hdlc(dev);
-@@ -962,7 +935,6 @@ static int fr_rx(struct sk_buff *skb)
- 		pvc->state.becn ^= 1;
- 	}
- 
--
- 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL) {
- 		frad->stats.rx_dropped++;
- 		return NET_RX_DROP;
-@@ -1018,8 +990,6 @@ static int fr_rx(struct sk_buff *skb)
- 	return NET_RX_DROP;
- }
- 
--
--
- static void fr_start(struct net_device *dev)
- {
- 	hdlc_device *hdlc = dev_to_hdlc(dev);
-@@ -1044,7 +1014,6 @@ static void fr_start(struct net_device *dev)
- 		fr_set_link_state(1, dev);
- }
- 
--
- static void fr_stop(struct net_device *dev)
- {
- 	hdlc_device *hdlc = dev_to_hdlc(dev);
-@@ -1056,7 +1025,6 @@ static void fr_stop(struct net_device *dev)
- 	fr_set_link_state(0, dev);
- }
- 
--
- static void fr_close(struct net_device *dev)
- {
- 	hdlc_device *hdlc = dev_to_hdlc(dev);
-@@ -1071,7 +1039,6 @@ static void fr_close(struct net_device *dev)
- 	}
- }
- 
--
- static void pvc_setup(struct net_device *dev)
- {
- 	dev->type = ARPHRD_DLCI;
-@@ -1147,8 +1114,6 @@ static int fr_add_pvc(struct net_device *frad, unsigned int dlci, int type)
- 	return 0;
- }
- 
--
--
- static int fr_del_pvc(hdlc_device *hdlc, unsigned int dlci, int type)
- {
- 	struct pvc_device *pvc;
-@@ -1174,8 +1139,6 @@ static int fr_del_pvc(hdlc_device *hdlc, unsigned int dlci, int type)
- 	return 0;
- }
- 
--
--
- static void fr_destroy(struct net_device *frad)
- {
- 	hdlc_device *hdlc = dev_to_hdlc(frad);
-@@ -1198,7 +1161,6 @@ static void fr_destroy(struct net_device *frad)
- 	}
- }
- 
--
- static struct hdlc_proto proto = {
- 	.close		= fr_close,
- 	.start		= fr_start,
-@@ -1209,7 +1171,6 @@ static struct hdlc_proto proto = {
- 	.module		= THIS_MODULE,
- };
- 
--
- static int fr_ioctl(struct net_device *dev, struct ifreq *ifr)
- {
- 	fr_proto __user *fr_s = ifr->ifr_settings.ifs_ifsu.fr;
-@@ -1309,20 +1270,17 @@ static int fr_ioctl(struct net_device *dev, struct ifreq *ifr)
- 	return -EINVAL;
- }
- 
--
- static int __init mod_init(void)
- {
- 	register_hdlc_protocol(&proto);
- 	return 0;
- }
- 
--
- static void __exit mod_exit(void)
- {
- 	unregister_hdlc_protocol(&proto);
- }
- 
--
- module_init(mod_init);
- module_exit(mod_exit);
- 
--- 
-2.8.1
+RDMA folks, are you okay with drivers inventing their own error codes?
+Having had to make tree-wide changes and deal with this cruft in 
+the past I've developed a strong dislike for it. But if you're okay
+I guess it can stay, these are RDMA functions after all.
+
+> +	if (num_qset_grps > ICE_LAN_TXQ_MAX_QGRPS)
+> +		return ICE_ERR_PARAM;
+> +
+> +	for (i = 0, list = qset_list; i < num_qset_grps; i++) {
+> +		u16 num_qsets = le16_to_cpu(list->num_qsets);
+> +
+> +		sum_size += struct_size(list, rdma_qsets, num_qsets);
+> +		list = (struct ice_aqc_add_rdma_qset_data *)(list->rdma_qsets +
+> +							     num_qsets);
+> +	}
+> +
+> +	if (buf_size != sum_size)
+> +		return ICE_ERR_PARAM;
+> +
+> +	desc.flags |= cpu_to_le16(ICE_AQ_FLAG_RD);
+> +
+> +	cmd->num_qset_grps = num_qset_grps;
+> +
+> +	return ice_aq_send_cmd(hw, &desc, qset_list, buf_size, cd);
+> +}
 
