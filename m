@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B8D0394338
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 15:08:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4668039433C
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 15:09:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235588AbhE1NJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 09:09:22 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:33604 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234961AbhE1NJU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 09:09:20 -0400
-Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 2982D218B3;
-        Fri, 28 May 2021 13:07:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1622207265; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ERRtxFJvp5L1bfUoMh6rT6SEqUZr++CR0IsW9hus3JQ=;
-        b=ko9X3K9IjL4c/gboFx0SUj0+HIFiamVCOv8SIj9fKUbsQ4WrZw/232H4VH8kZ95iAf4fRi
-        PQ2OVUbxDw8Sw/pLFUPOQxMVQnRg3NOkqTinxuuTqDhYEuGKeK1o6/BszuTO6C/GjfnFXX
-        a6r+M9lVVFqAV1+XqbkwMupQ2hrFiG8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1622207265;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ERRtxFJvp5L1bfUoMh6rT6SEqUZr++CR0IsW9hus3JQ=;
-        b=cbai/uYTpRu5BtW9Q6vXuMQWzwqN0LkKnrC9K3wNq09s42g57Tn3z/FJBVqNZr3Hrs5LYl
-        +MLDxUdVaV1LloAA==
-Received: from imap3-int (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        by imap.suse.de (Postfix) with ESMTP id EB65511A98;
-        Fri, 28 May 2021 13:07:44 +0000 (UTC)
-Received: from director2.suse.de ([192.168.254.72])
-        by imap3-int with ESMTPSA
-        id YnjFOCDrsGDoPQAALh3uQQ
-        (envelope-from <hare@suse.de>); Fri, 28 May 2021 13:07:44 +0000
-Subject: Re: [RFC PATCH v6 24/27] qedn: Add support of NVME ICReq & ICResp
-To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org
-Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
-        pkushwaha@marvell.com, malin1024@gmail.com
-References: <20210527235902.2185-1-smalin@marvell.com>
- <20210527235902.2185-25-smalin@marvell.com>
-From:   Hannes Reinecke <hare@suse.de>
-Organization: SUSE Linux GmbH
-Message-ID: <3718cc2f-2d4b-97bf-bead-99021f138acf@suse.de>
-Date:   Fri, 28 May 2021 15:07:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S235908AbhE1NL1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 28 May 2021 09:11:27 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:50814 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234259AbhE1NLX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 09:11:23 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-94-3k4EBtglPISPPGh0Tot5Ig-1; Fri, 28 May 2021 14:09:45 +0100
+X-MC-Unique: 3k4EBtglPISPPGh0Tot5Ig-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.2; Fri, 28 May 2021 14:09:43 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.015; Fri, 28 May 2021 14:09:43 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     =?iso-8859-1?Q?=27Michal_Such=E1nek=27?= <msuchanek@suse.de>
+CC:     'Mel Gorman' <mgorman@techsingularity.net>,
+        'Andrii Nakryiko' <andrii.nakryiko@gmail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Hritik Vijay <hritikxx8@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+Subject: RE: [PATCH] mm/page_alloc: Work around a pahole limitation with
+ zero-sized struct pagesets
+Thread-Topic: [PATCH] mm/page_alloc: Work around a pahole limitation with
+ zero-sized struct pagesets
+Thread-Index: AQHXUwZwxICJrzVIrECdOMP8p5MLKKr4istw////SYCAABppAP//9DIAgABEOWA=
+Date:   Fri, 28 May 2021 13:09:43 +0000
+Message-ID: <5517a591606042d7aeae3c15b8c91d30@AcuMS.aculab.com>
+References: <20210526080741.GW30378@techsingularity.net>
+ <YK9SiLX1E1KAZORb@infradead.org> <20210527090422.GA30378@techsingularity.net>
+ <YK9j3YeMTZ+0I8NA@infradead.org>
+ <CAEf4BzZLy0s+t+Nj9QgUNM66Ma6HN=VkS+ocgT5h9UwanxHaZQ@mail.gmail.com>
+ <CAEf4BzbzPK-3cyLFM8QKE5-o_dL7=UCcvRF+rEqyUcHhyY+FJg@mail.gmail.com>
+ <8fe547e9e87f40aebce82021d76a2d08@AcuMS.aculab.com>
+ <20210528090421.GK30378@techsingularity.net>
+ <2755b39d723146168e875f3b4a851a0d@AcuMS.aculab.com>
+ <20210528095637.GO8544@kitsune.suse.cz>
+In-Reply-To: <20210528095637.GO8544@kitsune.suse.cz>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20210527235902.2185-25-smalin@marvell.com>
-Content-Type: text/plain; charset=utf-8
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/21 1:58 AM, Shai Malin wrote:
-> From: Prabhakar Kushwaha <pkushwaha@marvell.com>
+From: Michal Suchánek
+> Sent: 28 May 2021 10:57
 > 
-> Once a TCP connection established, the host sends an Initialize
-> Connection Request (ICReq) PDU to the controller.
-> Further Initialize Connection Response (ICResp) PDU received from
-> controller is processed by host to establish a connection and
-> exchange connection configuration parameters.
+> On Fri, May 28, 2021 at 09:49:28AM +0000, David Laight wrote:
+...
+> > I can see there might be similar issues with the version of libelf-devel
+> > (needed by objtool).
+> > If I compile anything with gcc 10 (I'm doing build-root builds)
+> > I get object files that the hosts 2.30 binutils complain about.
+> > I can easily see that updating gcc and binutils might leave a
+> > broken objtool unless the required updated libelf-devel package
+> > can be found.
+> > Statically linking the required parts of libelf into objtool
+> > would save any such problems.
 > 
-> This patch present support of generation of ICReq and processing of
-> ICResp. It also update host configuration based on exchanged parameters.
-> 
-> Acked-by: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
-> ---
->  drivers/nvme/hw/qedn/qedn.h      |  37 ++++
->  drivers/nvme/hw/qedn/qedn_conn.c | 323 ++++++++++++++++++++++++++++++-
->  drivers/nvme/hw/qedn/qedn_main.c |  14 ++
->  drivers/nvme/hw/qedn/qedn_task.c |   8 +-
->  4 files changed, 378 insertions(+), 4 deletions(-)
-> Reviewed-by: Hannes Reinecke <hare@suse.de>
+> Static libraries are not always available. Especially for core toolchain
+> libraries the developers often have some ideas about which of the static
+> and dynamic libraris is the 'correct' one that they like to enforce.
 
-Cheers,
+The issue is that you want a version of libelf that works with objtool
+and the versions of binutils/gcc/clang that the kernel build supports.
+If libelf was part of the binutils package this might be ok.
+But it isn't and it may end up with people scrambling around to find
+a working version to build a kernel (or out of tree module).
 
-Hannes
--- 
-Dr. Hannes Reinecke		        Kernel Storage Architect
-hare@suse.de			               +49 911 74053 688
-SUSE Software Solutions Germany GmbH, 90409 Nürnberg
-GF: F. Imendörffer, HRB 36809 (AG Nürnberg)
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
