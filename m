@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19E7E39495D
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 01:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3622394960
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 01:54:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbhE1X4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 19:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45570 "EHLO
+        id S229814AbhE1X4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 19:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229744AbhE1Xz6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 19:55:58 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F200C061574;
-        Fri, 28 May 2021 16:54:22 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id m190so3722592pga.2;
-        Fri, 28 May 2021 16:54:22 -0700 (PDT)
+        with ESMTP id S229775AbhE1X4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 19:56:05 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C7FC0613ED;
+        Fri, 28 May 2021 16:54:25 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id v14so3705755pgi.6;
+        Fri, 28 May 2021 16:54:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Lh4cjVXDCTKkenmqi16kX1wwtaby01C381mbKiAGCaw=;
-        b=AHURk11A7mBZ2uA3w3VSsysAccDU/6Jpr5PJVMxIA3nWDGqBM5jVYKbRIar95YGtk+
-         cOa2x/cGzhIN+klgKIH0T+/wNx1D1WHYfMyulpDa8OSwNISClh08gBUM4Equf5R81G2K
-         PwWMHLADlLaU1Xj0myk4j1GWRHtj5PH5+fg2KbzNMwt4WEGrme9Fp29QEU5KHLWiwmXA
-         JbPKxgQ8zlNjk0QHBitosCrpiJsiImMUmiRjd5LfefHgn2INJ7Wz1+/DUPULANRtmXNv
-         O9knbWAlvX1zw+bfLs70R16yItxXcK7H9ZH+PUV9cwzvFapsKOkFgX52rrNLJR3I9Rjh
-         rnRw==
+        bh=0QZLbqkCIH0r+P47KlUh/Z70XeLVxWHCUDIgLe1Pyr8=;
+        b=cReB7qvr21/+jI88eUmp1kJUJEg+p1stl+YvjIFuDHvPK3/SeCXOJS9kxNrXh/6PBn
+         xbmcMG1kwVHTeE6IGm2eAxcN6e1jUTBz5UXqpkY3d3y8s6SEcVJDCGxuGUaes4mIRxoz
+         W9AHgTMSXmmVD4wZhwJ0Tpws2HgU9QS0agmOA/yfOG/mlI1gtxzMn6P1j97p5oCj+bhk
+         I8+jFHI62tkdRvhazYXuYl/0D74ifRy4PRvbUOhWQjtYS9WGYBl3WpwhOvJ4Gvygf7UD
+         D+ybCObWZ/ZbWbfQrgbU6t/8KwzQs3n9X9sOvz5bEHWn6K6lNxovarYZyfV0BtGdNStW
+         BZaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Lh4cjVXDCTKkenmqi16kX1wwtaby01C381mbKiAGCaw=;
-        b=nyMDAfnvq0M5dROhgz2tuZ/RxN9CqDA8M3/4/6HI8Sh30plAur35XJCY7y6rR8dpkq
-         Sg1y+Tx0emdvvnFLO9TplBg1XnIgGpR1j4mHM5kpcyFhD6d+Hh235wScviWSEIsCDt8k
-         UkjEyjXFjYi89jKgcMDTt8HiYTMOKrsJqrt7AAuIZLECUWXtNBlTLYJOKFsMZWaH1C7f
-         2STDALL9eLivER6FNvo0i5/FfTRAjgFUR14jcBgybm+cmCKZxXTREUXcnGHpckDuzy+l
-         teTg9nVKqGzQN4Kmqfhfg6rqhAKFgz3D/xn+xV+NzHsR3759drrnlSHm1f3Usc0Qweva
-         q22A==
-X-Gm-Message-State: AOAM530fX+iUg686LqxXr9s1ZENo+LRyIEhVcRg0HlAJ8ZdE0VSCwmxU
-        jtQwmthSlrS5Po9lRxXC00DQKK/34PE=
-X-Google-Smtp-Source: ABdhPJxb1UpMs4d1IKn5D8X3U6f3p76MOn7UEzZVxvZsBY0TjmzzZUuRz16mxPQnYDqX1ZipQ834pA==
-X-Received: by 2002:a63:fc11:: with SMTP id j17mr11207453pgi.355.1622246061765;
-        Fri, 28 May 2021 16:54:21 -0700 (PDT)
+        bh=0QZLbqkCIH0r+P47KlUh/Z70XeLVxWHCUDIgLe1Pyr8=;
+        b=FaJAaDXiAWW4CWY5IkTlgxL5iBNHBem4TZFkeX6fpHCJEHlxUeiXYea2RqYG78JXGM
+         zMS8KT2U7EQTbKxX6GzmLB8gn19QgG04fVk8hfYbWlzV7AMjK1LvIVDS11Kkhn8BaAEb
+         Sap/Zg5PRd8tWKWv5dk+yE32k40sJr2cUTGIgAAMg3EN1nvVNvE8pWT8xFYxvRwTXLDV
+         I9Jw4ULXU0XK9HgK+CsfDbr9g5B7o78U4zwPzDYn3evF+/b7dazIqbmo187gXefSLSGd
+         BcDuRZimJoEME+jazWJvZ9+JHyw26D4cqkz0si9PP/4k65FUnOKgclhrasTOxg+zXLK+
+         YXIw==
+X-Gm-Message-State: AOAM53220WPOYx6ixObvk6jPlBYg6yl8s2oFEMxhjPNtpaXv2+K60jWk
+        yYxw6VZGBH3Lhkx3J7Rif0PQl2mBBms=
+X-Google-Smtp-Source: ABdhPJxMwGLKEYq27r5EBvsW31BOlHVK+fEDzonZGYEILp9YQZSFHc8rKQ3ZXi0L1oMu1n4l+ZwJOA==
+X-Received: by 2002:a63:fd44:: with SMTP id m4mr11712379pgj.396.1622246065161;
+        Fri, 28 May 2021 16:54:25 -0700 (PDT)
 Received: from localhost ([2402:3a80:11db:3aa9:ad24:a4a2:844f:6a0a])
-        by smtp.gmail.com with ESMTPSA id o6sm5305091pfb.126.2021.05.28.16.54.20
+        by smtp.gmail.com with ESMTPSA id 141sm402521pgf.20.2021.05.28.16.54.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 May 2021 16:54:21 -0700 (PDT)
+        Fri, 28 May 2021 16:54:24 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -62,9 +62,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH RFC bpf-next 13/15] samples: bpf: add new options for xdp samples
-Date:   Sat, 29 May 2021 05:22:48 +0530
-Message-Id: <20210528235250.2635167-14-memxor@gmail.com>
+Subject: [PATCH RFC bpf-next 14/15] samples: bpf: add documentation
+Date:   Sat, 29 May 2021 05:22:49 +0530
+Message-Id: <20210528235250.2635167-15-memxor@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210528235250.2635167-1-memxor@gmail.com>
 References: <20210528235250.2635167-1-memxor@gmail.com>
@@ -74,319 +74,191 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These are -i for polling interval and -v for verbose output by default.
-Some of these tools already supported -s, but we now use that to enable
-performance impacting success case reporting tracepoint. This is
-disabled by default, but can be enabled explicitly by user.
-
-Use separators (-z) is also dropped.
+This prints some help text meant to explain the output.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- samples/bpf/xdp_monitor_user.c      | 16 ++++---
- samples/bpf/xdp_redirect_cpu_user.c | 41 ++++++++++++-----
- samples/bpf/xdp_redirect_map_user.c | 71 +++++++++++++++++++++++------
- 3 files changed, 96 insertions(+), 32 deletions(-)
+ samples/bpf/xdp_monitor_user.c      | 10 ++++--
+ samples/bpf/xdp_redirect_cpu_user.c |  8 +++--
+ samples/bpf/xdp_redirect_map_user.c |  6 ++--
+ samples/bpf/xdp_sample_user.c       | 52 +++++++++++++++++++++++++++++
+ samples/bpf/xdp_sample_user.h       |  1 +
+ 5 files changed, 69 insertions(+), 8 deletions(-)
 
 diff --git a/samples/bpf/xdp_monitor_user.c b/samples/bpf/xdp_monitor_user.c
-index 73d6d35f0c65..b37d8f7379ec 100644
+index b37d8f7379ec..71d59e714bae 100644
 --- a/samples/bpf/xdp_monitor_user.c
 +++ b/samples/bpf/xdp_monitor_user.c
-@@ -38,9 +38,10 @@ struct bpf_object *obj;
+@@ -35,6 +35,10 @@ static const char *__doc_err_only__=
+ static bool debug = false;
+ struct bpf_object *obj;
+ 
++static int mask = SAMPLE_REDIRECT_ERR_CNT | SAMPLE_CPUMAP_ENQUEUE_CNT |
++		  SAMPLE_CPUMAP_KTHREAD_CNT | SAMPLE_EXCEPTION_CNT |
++		  SAMPLE_DEVMAP_XMIT_CNT;
++
  static const struct option long_options[] = {
  	{"help",	no_argument,		NULL, 'h' },
  	{"debug",	no_argument,		NULL, 'D' },
--	{"stats",	no_argument,		NULL, 'S' },
--	{"sec", 	required_argument,	NULL, 's' },
--	{0, 0, NULL,  0 }
-+	{"stats",	no_argument,		NULL, 's' },
-+	{"interval",	required_argument,	NULL, 'i' },
-+	{"verbose",	no_argument,		NULL, 'v' },
-+	{}
- };
+@@ -56,6 +60,9 @@ static void int_exit(int sig)
+ static void usage(char *argv[])
+ {
+ 	int i;
++
++	sample_print_help(mask);
++
+ 	printf("\nDOCUMENTATION:\n%s\n", __doc__);
+ 	printf("\n");
+ 	printf(" Usage: %s (options-see-below)\n",
+@@ -110,9 +117,6 @@ static void print_bpf_prog_info(void)
  
- static void int_exit(int sig)
-@@ -121,18 +122,21 @@ int main(int argc, char **argv)
- 	int interval = 2;
- 
- 	/* Parse commands line args */
--	while ((opt = getopt_long(argc, argv, "hDSs:",
-+	while ((opt = getopt_long(argc, argv, "hDi:vs",
- 				  long_options, &longindex)) != -1) {
- 		switch (opt) {
- 		case 'D':
- 			debug = true;
- 			break;
--		case 'S':
-+		case 's':
- 			errors_only = false;
- 			break;
--		case 's':
-+		case 'i':
- 			interval = atoi(optarg);
- 			break;
-+		case 'v':
-+			sample_log_level ^= LL_DEBUG - 1;
-+			break;
- 		case 'h':
- 		default:
- 			usage(argv);
+ int main(int argc, char **argv)
+ {
+-	int mask = SAMPLE_REDIRECT_ERR_CNT | SAMPLE_CPUMAP_ENQUEUE_CNT |
+-		   SAMPLE_CPUMAP_KTHREAD_CNT | SAMPLE_EXCEPTION_CNT |
+-		   SAMPLE_DEVMAP_XMIT_CNT;
+ 	int longindex = 0, opt;
+ 	int ret = EXIT_FAILURE;
+ 	char filename[256];
 diff --git a/samples/bpf/xdp_redirect_cpu_user.c b/samples/bpf/xdp_redirect_cpu_user.c
-index 103ac5c24163..d56b89254cd1 100644
+index d56b89254cd1..9233b8a2bf2d 100644
 --- a/samples/bpf/xdp_redirect_cpu_user.c
 +++ b/samples/bpf/xdp_redirect_cpu_user.c
-@@ -42,19 +42,20 @@ static const struct option long_options[] = {
+@@ -37,6 +37,9 @@ static int avail_fd;
+ static int count_fd;
+ 
+ static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
++static int mask = SAMPLE_RX_CNT | SAMPLE_REDIRECT_ERR_CNT |
++		  SAMPLE_CPUMAP_ENQUEUE_CNT | SAMPLE_CPUMAP_KTHREAD_CNT |
++		  SAMPLE_EXCEPTION_CNT;
+ 
+ static const struct option long_options[] = {
  	{"help",	no_argument,		NULL, 'h' },
- 	{"dev",		required_argument,	NULL, 'd' },
- 	{"skb-mode",	no_argument,		NULL, 'S' },
--	{"sec",		required_argument,	NULL, 's' },
- 	{"progname",	required_argument,	NULL, 'p' },
- 	{"qsize",	required_argument,	NULL, 'q' },
- 	{"cpu",		required_argument,	NULL, 'c' },
- 	{"stress-mode", no_argument,		NULL, 'x' },
--	{"no-separators", no_argument,		NULL, 'z' },
- 	{"force",	no_argument,		NULL, 'F' },
- 	{"mprog-disable", no_argument,		NULL, 'n' },
- 	{"mprog-name",	required_argument,	NULL, 'e' },
- 	{"mprog-filename", required_argument,	NULL, 'f' },
- 	{"redirect-device", required_argument,	NULL, 'r' },
- 	{"redirect-map", required_argument,	NULL, 'm' },
--	{0, 0, NULL,  0 }
-+	{"interval", required_argument,		NULL, 'i' },
-+	{"verbose", no_argument,		NULL, 'v' },
-+	{"stats", no_argument,			NULL, 's' },
-+	{}
- };
+@@ -96,6 +99,8 @@ static void usage(char *argv[], struct bpf_object *obj)
+ {
+ 	int i;
  
- static void int_exit(int sig)
-@@ -196,7 +197,7 @@ static void stress_cpumap(struct bpf_cpumap_val *value)
- 	create_cpu_entry(1, value, 0, false);
- }
- 
--static void __stats_poll(int interval, bool use_separators, char *prog_name,
-+static void __stats_poll(int interval, bool redir_suc, char *prog_name,
++	sample_print_help(mask);
++
+ 	printf("\nDOCUMENTATION:\n%s\n", __doc__);
+ 	printf("\n");
+ 	printf(" Usage: %s (options-see-below)\n", argv[0]);
+@@ -201,9 +206,6 @@ static void __stats_poll(int interval, bool redir_suc, char *prog_name,
  			 char *mprog_name, struct bpf_cpumap_val *value,
  			 bool stress_mode)
  {
-@@ -210,8 +211,10 @@ static void __stats_poll(int interval, bool use_separators, char *prog_name,
- 	sample_stats_collect(mask, record);
+-	int mask = SAMPLE_RX_CNT | SAMPLE_REDIRECT_ERR_CNT |
+-		   SAMPLE_CPUMAP_ENQUEUE_CNT | SAMPLE_CPUMAP_KTHREAD_CNT |
+-		   SAMPLE_EXCEPTION_CNT;
+ 	struct stats_record *record, *prev;
  
- 	/* Trick to pretty printf with thousands separators use %' */
--	if (use_separators)
--		setlocale(LC_NUMERIC, "en_US");
-+	setlocale(LC_NUMERIC, "en_US");
-+
-+	if (redir_suc)
-+		mask |= SAMPLE_REDIRECT_CNT;
- 
- 	for (;;) {
- 		struct timespec ots, nts;
-@@ -298,12 +301,12 @@ int main(int argc, char **argv)
- 	struct bpf_prog_info info = {};
- 	__u32 info_len = sizeof(info);
- 	struct bpf_cpumap_val value;
--	bool use_separators = true;
- 	bool stress_mode = false;
- 	struct bpf_program *prog;
- 	struct bpf_object *obj;
- 	int err = EXIT_FAIL;
- 	char filename[256];
-+	bool redir = false;
- 	int added_cpus = 0;
- 	int longindex = 0;
- 	int interval = 2;
-@@ -356,7 +359,7 @@ int main(int argc, char **argv)
- 	memset(cpu, 0, n_cpus * sizeof(int));
- 
- 	/* Parse commands line args */
--	while ((opt = getopt_long(argc, argv, "hSd:s:p:q:c:xzFf:e:r:m:",
-+	while ((opt = getopt_long(argc, argv, "hSd:sp:q:c:xi:vFf:e:r:m:",
- 				  long_options, &longindex)) != -1) {
- 		switch (opt) {
- 		case 'd':
-@@ -375,6 +378,9 @@ int main(int argc, char **argv)
- 			}
- 			break;
- 		case 's':
-+			redir = true;
-+			break;
-+		case 'i':
- 			interval = atoi(optarg);
- 			break;
- 		case 'S':
-@@ -383,9 +389,6 @@ int main(int argc, char **argv)
- 		case 'x':
- 			stress_mode = true;
- 			break;
--		case 'z':
--			use_separators = false;
--			break;
- 		case 'p':
- 			/* Selecting eBPF prog to load */
- 			prog_name = optarg;
-@@ -422,6 +425,9 @@ int main(int argc, char **argv)
- 		case 'F':
- 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
- 			break;
-+		case 'v':
-+			sample_log_level ^= LL_DEBUG - 1;
-+			break;
- 		case 'h':
- 		error:
- 		default:
-@@ -492,7 +498,18 @@ int main(int argc, char **argv)
- 	}
- 	prog_id = info.id;
- 
--	__stats_poll(interval, use_separators, prog_name, mprog_name,
-+	if (!redir) {
-+		/* The bpf_link[i] depend on the order of
-+		 * the functions was defined in _kern.c
-+		 */
-+		bpf_link__destroy(tp_links[2]);	/* tracepoint/xdp/xdp_redirect */
-+		tp_links[2] = NULL;
-+
-+		bpf_link__destroy(tp_links[3]);	/* tracepoint/xdp/xdp_redirect_map */
-+		tp_links[3] = NULL;
-+	}
-+
-+	__stats_poll(interval, redir, prog_name, mprog_name,
- 		     &value, stress_mode);
- 
- 	err = EXIT_OK;
+ 	record = alloc_stats_record();
 diff --git a/samples/bpf/xdp_redirect_map_user.c b/samples/bpf/xdp_redirect_map_user.c
-index ed53dd2cd93a..eb4013fa58cb 100644
+index eb4013fa58cb..f4bdefa83709 100644
 --- a/samples/bpf/xdp_redirect_map_user.c
 +++ b/samples/bpf/xdp_redirect_map_user.c
-@@ -13,6 +13,7 @@
- #include <net/if.h>
- #include <unistd.h>
- #include <libgen.h>
-+#include <getopt.h>
- 
- #include "bpf_util.h"
- #include <bpf/bpf.h>
-@@ -28,6 +29,18 @@ static __u32 dummy_prog_id;
+@@ -28,6 +28,8 @@ static __u32 prog_id;
+ static __u32 dummy_prog_id;
  
  static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
++static int mask = SAMPLE_RX_CNT | SAMPLE_REDIRECT_ERR_MAP_CNT |
++		  SAMPLE_EXCEPTION_CNT | SAMPLE_DEVMAP_XMIT_CNT;
  
-+static const struct option long_options[] = {
-+	{"help",	no_argument,		NULL, 'h' },
-+	{"skb-mode",	no_argument,		NULL, 'S' },
-+	{"native-mode", no_argument,		NULL, 'N' },
-+	{"force",	no_argument,		NULL, 'F' },
-+	{"load-egress", no_argument,		NULL, 'X' },
-+	{"stats",	no_argument,		NULL, 's' },
-+	{"interval",	required_argument,	NULL, 'i' },
-+	{"verbose",	no_argument,		NULL, 'v' },
-+	{}
-+};
-+
- static void int_exit(int sig)
+ static const struct option long_options[] = {
+ 	{"help",	no_argument,		NULL, 'h' },
+@@ -78,6 +80,8 @@ static void usage(char *argv[])
  {
- 	__u32 curr_prog_id = 0;
-@@ -61,16 +74,25 @@ static void int_exit(int sig)
- 	sample_exit(EXIT_OK);
- }
+ 	int i;
  
--static void usage(const char *prog)
-+static void usage(char *argv[])
- {
--	fprintf(stderr,
--		"usage: %s [OPTS] <IFNAME|IFINDEX>_IN <IFNAME|IFINDEX>_OUT\n\n"
--		"OPTS:\n"
--		"    -S    use skb-mode\n"
--		"    -N    enforce native mode\n"
--		"    -F    force loading prog\n"
--		"    -X    load xdp program on egress\n",
--		prog);
-+	int i;
++	sample_print_help(mask);
 +
-+	printf("\n");
-+	printf(" Usage: %s (options-see-below)\n",
-+	       argv[0]);
-+	printf(" Listing options:\n");
-+	for (i = 0; long_options[i].name != 0; i++) {
-+		printf(" --%-15s", long_options[i].name);
-+		if (long_options[i].flag != NULL)
-+			printf(" flag (internal value:%d)",
-+			       *long_options[i].flag);
-+		else
-+			printf("short-option: -%c",
-+			       long_options[i].val);
-+		printf("\n");
-+	}
-+	printf("\n");
- }
+ 	printf("\n");
+ 	printf(" Usage: %s (options-see-below)\n",
+ 	       argv[0]);
+@@ -97,8 +101,6 @@ static void usage(char *argv[])
  
  int main(int argc, char **argv)
-@@ -88,13 +110,14 @@ int main(int argc, char **argv)
- 	char str[2 * IF_NAMESIZE + 1];
- 	__u32 info_len = sizeof(info);
- 	char ifname_out[IF_NAMESIZE];
--	const char *optstr = "FSNX";
- 	char ifname_in[IF_NAMESIZE];
- 	struct bpf_object *obj;
- 	int ret, opt, key = 0;
- 	char filename[256];
-+	int interval = 2;
+ {
+-	int mask = SAMPLE_RX_CNT | SAMPLE_REDIRECT_ERR_MAP_CNT |
+-		   SAMPLE_EXCEPTION_CNT | SAMPLE_DEVMAP_XMIT_CNT;
+ 	struct bpf_prog_load_attr prog_load_attr = {
+ 		.prog_type	= BPF_PROG_TYPE_UNSPEC,
+ 	};
+diff --git a/samples/bpf/xdp_sample_user.c b/samples/bpf/xdp_sample_user.c
+index 96d36c708ee3..aa02d9bbea6c 100644
+--- a/samples/bpf/xdp_sample_user.c
++++ b/samples/bpf/xdp_sample_user.c
+@@ -77,6 +77,58 @@ static bool err_exp;
+ #define PASS(pass) pass, "pass/s"
+ #define REDIR(redir) redir, "redir/s"
  
--	while ((opt = getopt(argc, argv, optstr)) != -1) {
-+	while ((opt = getopt_long(argc, argv, "FSNXi:vs",
-+				  long_options, NULL)) != -1) {
- 		switch (opt) {
- 		case 'S':
- 			xdp_flags |= XDP_FLAGS_SKB_MODE;
-@@ -108,8 +131,17 @@ int main(int argc, char **argv)
- 		case 'X':
- 			xdp_devmap_attached = true;
- 			break;
-+		case 'i':
-+			interval = atoi(optarg);
-+			break;
-+		case 'v':
-+			sample_log_level ^= LL_DEBUG - 1;
-+			break;
-+		case 's':
-+			mask |= SAMPLE_REDIRECT_MAP_CNT;
-+			break;
- 		default:
--			usage(basename(argv[0]));
-+			usage(argv);
- 			return 1;
- 		}
- 	}
-@@ -122,7 +154,7 @@ int main(int argc, char **argv)
- 	}
- 
- 	if (argc <= optind + 1) {
--		usage(basename(argv[0]));
-+		usage(argv);
- 		return 1;
- 	}
- 
-@@ -252,9 +284,20 @@ int main(int argc, char **argv)
- 	       ifname_in, ifindex_in, str, ifname_out, ifindex_out,
- 	       get_driver_name(ifindex_out) ?: "(err)");
- 
-+	if ((mask & SAMPLE_REDIRECT_CNT) == 0) {
-+		/* The bpf_link[i] depend on the order of
-+		 * the functions was defined in _kern.c
-+		 */
-+		bpf_link__destroy(tp_links[2]);	/* tracepoint/xdp/xdp_redirect */
-+		tp_links[2] = NULL;
-+
-+		bpf_link__destroy(tp_links[3]);	/* tracepoint/xdp/xdp_redirect_map */
-+		tp_links[3] = NULL;
++void sample_print_help(int mask)
++{
++	printf("Output format description\n\n"
++	       "By default, redirect success statistics are disabled, use -s to enable.\n"
++	       "The terse output mode is default, verbose mode can be activated using -v\n"
++	       "Use SIGQUIT (Ctrl + \\) to switch the mode dynamically at runtime\n\n"
++	       "Terse mode displays at most the following fields:\n"
++	       "  rx/s     Number of packets received per second\n"
++	       "  redir/s  Number of packets successfully redirected per second\n"
++	       "  error/s  Aggregated count of errors per second (including dropped packets)\n"
++	       "  xmit/s   Number of packets transmitted on the output device per second\n\n"
++	       "Output description for verbose mode:\n"
++	       "  FIELD         DESCRIPTION\n");
++	if (mask & SAMPLE_RX_CNT) {
++		printf("  receive\tDisplays the number of packets received & errors encountered\n"
++		       " \t\tWhenever an error or packet drop occurs, details of per CPU error\n"
++		       " \t\tand drop statistics will be expanded inline in terse mode.\n"
++		       " \t\t\tpkt/s     - Packets received per second\n"
++		       " \t\t\tdrop/s    - Packets dropped per second\n"
++		       " \t\t\terror/s   - Errors encountered per second\n\n");
++	}
++	if (mask & (SAMPLE_REDIRECT_CNT|SAMPLE_REDIRECT_ERR_CNT)) {
++		printf("  redirect\tDisplays the number of packets successfully redirected\n"
++		       "  \t\tErrors encountered are expanded under redirect_err field\n"
++		       "  \t\tNote that passing -s to enable it has a per packet overhead\n"
++		       "  \t\t\tredir/s   - Packets redirected successfully per second\n\n"
++		       "  redirect_err\tDisplays the number of packets that failed redirection\n"
++		       "  \t\tThe errno is expanded under this field with per CPU count\n"
++		       "  \t\tThe recognized errors are EOPNOTSUPP, EINVAL, ENETDOWN and EMSGSIZE\n"
++		       "  \t\t\terror/s   - Packets that failed redirection per second\n\n");
 +	}
 +
- 	snprintf(str, sizeof(str), "%s->%s", ifname_in, ifname_out);
++	if (mask & SAMPLE_EXCEPTION_CNT) {
++		printf("  xdp_exception\tDisplays xdp_exception tracepoint events\n"
++		       "  \t\tThis can occur due to internal driver errors, unrecognized\n"
++		       "  \t\tXDP actions and due to explicit user trigger by use of XDP_ABORTED\n"
++		       "  \t\tEach action is expanded below this field with its count\n"
++		       "  \t\t\thit/s     - Number of times the tracepoint was hit per second\n\n");
++	}
++
++	if (mask & SAMPLE_DEVMAP_XMIT_CNT) {
++		printf("  devmap_xmit\tDisplays devmap_xmit tracepoint events\n"
++		       "  \t\tThis tracepoint is invoked for successful transmissions on output\n"
++		       "  \t\tdevice but these statistics are not available for generic XDP mode,\n"
++		       "  \t\thence they will be omitted from the output when using SKB mode\n"
++		       "  \t\t\txmit/s    - Number of packets that were transmitted per second\n"
++		       "  \t\t\tdrop/s    - Number of packets that failed transmissions per second\n"
++		       "  \t\t\tdrv_err/s - Number of internal driver errors per second\n"
++		       "  \t\t\tbulk_avg  - Average number of packets processed for each event\n\n");
++	}
++}
++
+ static const char *elixir_search[NUM_TP] = {
+ 	[TP_REDIRECT_CNT] = "_trace_xdp_redirect",
+ 	[TP_REDIRECT_MAP_CNT] = "_trace_xdp_redirect_map",
+diff --git a/samples/bpf/xdp_sample_user.h b/samples/bpf/xdp_sample_user.h
+index 588bd2f15352..41be57d7b663 100644
+--- a/samples/bpf/xdp_sample_user.h
++++ b/samples/bpf/xdp_sample_user.h
+@@ -169,6 +169,7 @@ void sample_stats_print_cpumap_remote(struct stats_record *stats_rec,
+ 				      struct stats_record *stats_prev,
+ 				      unsigned int nr_cpus, char *mprog_name);
+ void sample_reset_mode(void);
++void sample_print_help(int mask);
  
--	sample_stats_poll(1, mask, str, true);
-+	sample_stats_poll(interval, mask, str, true);
- 
- 	return 0;
- 
+ const char *get_driver_name(int ifindex);
+ int get_mac_addr(int ifindex, void *mac_addr);
 -- 
 2.31.1
 
