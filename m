@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41BB13946A1
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 19:44:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8507F3946A3
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 19:44:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229543AbhE1Rpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 13:45:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46386 "EHLO mail.kernel.org"
+        id S229549AbhE1Rpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 13:45:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46428 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229488AbhE1Rpn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 May 2021 13:45:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E6B7B61175;
-        Fri, 28 May 2021 17:44:05 +0000 (UTC)
+        id S229488AbhE1Rpq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 May 2021 13:45:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 62D4E613B5;
+        Fri, 28 May 2021 17:44:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622223848;
-        bh=X+iwczk3Ns0D1hfvBYSxHmdVFdtGvagusy5ToYnndXE=;
+        s=k20201202; t=1622223851;
+        bh=vpPbdfyPwSKrlEO/cazA/OQmRGsWg3i09s50a/Ckt6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fOYhQ11gfcT6BONtbowIRR9ebwGuVIoX1XMAas/2ci3lDtdmd+siBeBfj7Lm3hgDg
-         aIyjtYvRUImt0lGZvHwl25GwkFL3pZBsRplzD+zDhoVAh/jM3YvRj6KBFVlqVjDlwH
-         Gq0DOGuN2yuAOC2DKbPRJ8W++ZXkXXcR+gAZS4isAsqgKlCHYcOUxEXvOw9Qk4rG2P
-         +xU8KSd23rRBtrzD1UNIXYs4Drt42eNbMbf3cM4DGyFtDva1k1fdLWRLBP/vtYSXMV
-         KjWTYoCupqCEEPDEQjy67MYUm/c059Kel6kopA7KfRUXo9eSm/7ihqY9euj3sP/UdO
-         Hj51VTue0HQjA==
+        b=Aci4mmdJOg2dAy1/JIhMQaxp8p6nPeZDJBDrp990uDMNu2bFzPLnBS5FzSEgzHjki
+         eM6R+U8qMPugwxDqRC16GmWSMCk0hZDrlgCW0Cs/B32eR4XdEbWjmo+T09aUXQWQ38
+         iWdJK1uOPCx2hcgIZ8AYiQVoBrXFYNBSPqhpL3JRxG+/xhGN5mSarA7FuCoOW0lv4S
+         ABMCTYF66ixBFGyu/EerkaJxjofVh3Z9urMOkeNDgxT9EZXLxmWi1NFh9DZMNiPba6
+         wRpASag++YVrAFbhFP0BCGLOvxbrDGYt339sO3B7ht6kDrn3ZqjLu1dAQXsvTaI6fO
+         JzbFmIBu/qjKA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         dsahern@gmail.com, magnus.karlsson@intel.com, toke@redhat.com,
         brouer@redhat.com, bjorn@kernel.org, maciej.fijalkowski@intel.com,
         john.fastabend@gmail.com
-Subject: [RFC bpf-next 1/4] net: xdp: introduce flags field in xdp_buff and xdp_frame
-Date:   Fri, 28 May 2021 19:43:41 +0200
-Message-Id: <b5b2f560006cf5f56d67d61d5837569a0949d0aa.1622222367.git.lorenzo@kernel.org>
+Subject: [RFC bpf-next 2/4] mvneta: return csum computation result from mvneta_rx_csum
+Date:   Fri, 28 May 2021 19:43:42 +0200
+Message-Id: <3d89a6af46b4b381256e050f2a02f87db06ceabb.1622222367.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1622222367.git.lorenzo@kernel.org>
 References: <cover.1622222367.git.lorenzo@kernel.org>
@@ -42,110 +42,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce flag field in xdp_buff and xdp_frame data structure in order
-to report xdp_buffer metadata. For the moment just hw checksum hints
-are defined but flags field will be reused for xdp multi-buffer
-For the moment just CHECKSUM_UNNECESSARY is supported.
-CHECKSUM_COMPLETE will need to set csum value in metada space.
+This is a preliminary patch to add hw csum hint support to mvneta xdp
+implementation
 
-Co-developed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David Ahern <dsahern@kernel.org>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- include/net/xdp.h | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ drivers/net/ethernet/marvell/mvneta.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 5533f0ab2afc..e81ac505752b 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -66,6 +66,13 @@ struct xdp_txq_info {
- 	struct net_device *dev;
- };
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 7d5cd9bc6c99..4a7c153a2666 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -1805,18 +1805,14 @@ static void mvneta_rx_error(struct mvneta_port *pp,
+ }
  
-+/* xdp metadata bitmask */
-+#define XDP_CSUM_MASK		GENMASK(1, 0)
-+enum xdp_flags {
-+	XDP_CSUM_UNNECESSARY	= BIT(0),
-+	XDP_CSUM_COMPLETE	= BIT(1),
-+};
-+
- struct xdp_buff {
- 	void *data;
- 	void *data_end;
-@@ -74,6 +81,7 @@ struct xdp_buff {
- 	struct xdp_rxq_info *rxq;
- 	struct xdp_txq_info *txq;
- 	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
-+	u16 flags; /* xdp_flags */
- };
- 
- static __always_inline void
-@@ -81,6 +89,7 @@ xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
+ /* Handle RX checksum offload based on the descriptor's status */
+-static void mvneta_rx_csum(struct mvneta_port *pp, u32 status,
+-			   struct sk_buff *skb)
++static int mvneta_rx_csum(struct mvneta_port *pp, u32 status)
  {
- 	xdp->frame_sz = frame_sz;
- 	xdp->rxq = rxq;
-+	xdp->flags = 0;
+ 	if ((pp->dev->features & NETIF_F_RXCSUM) &&
+ 	    (status & MVNETA_RXD_L3_IP4) &&
+-	    (status & MVNETA_RXD_L4_CSUM_OK)) {
+-		skb->csum = 0;
+-		skb->ip_summed = CHECKSUM_UNNECESSARY;
+-		return;
+-	}
++	    (status & MVNETA_RXD_L4_CSUM_OK))
++		return CHECKSUM_UNNECESSARY;
+ 
+-	skb->ip_summed = CHECKSUM_NONE;
++	return CHECKSUM_NONE;
  }
  
- static __always_inline void
-@@ -95,6 +104,18 @@ xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
- 	xdp->data_meta = meta_valid ? data : data + 1;
- }
+ /* Return tx queue pointer (find last set bit) according to <cause> returned
+@@ -2335,7 +2331,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
  
-+static __always_inline void
-+xdp_buff_get_csum(struct xdp_buff *xdp, struct sk_buff *skb)
-+{
-+	switch (xdp->flags & XDP_CSUM_MASK) {
-+	case XDP_CSUM_UNNECESSARY:
-+		skb->ip_summed = CHECKSUM_UNNECESSARY;
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- /* Reserve memory area at end-of data area.
-  *
-  * This macro reserves tailroom in the XDP buffer by limiting the
-@@ -122,8 +143,21 @@ struct xdp_frame {
- 	 */
- 	struct xdp_mem_info mem;
- 	struct net_device *dev_rx; /* used by cpumap */
-+	u16 flags; /* xdp_flags */
- };
+ 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	skb_put(skb, xdp->data_end - xdp->data);
+-	mvneta_rx_csum(pp, desc_status, skb);
++	skb->ip_summed = mvneta_rx_csum(pp, desc_status);
  
-+static __always_inline void
-+xdp_frame_get_csum(struct xdp_frame *xdpf, struct sk_buff *skb)
-+{
-+	switch (xdpf->flags & XDP_CSUM_MASK) {
-+	case XDP_CSUM_UNNECESSARY:
-+		skb->ip_summed = CHECKSUM_UNNECESSARY;
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- #define XDP_BULK_QUEUE_SIZE	16
- struct xdp_frame_bulk {
- 	int count;
-@@ -180,6 +214,7 @@ void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
- 	xdp->data_end = frame->data + frame->len;
- 	xdp->data_meta = frame->data - frame->metasize;
- 	xdp->frame_sz = frame->frame_sz;
-+	xdp->flags = frame->flags;
- }
+ 	for (i = 0; i < num_frags; i++) {
+ 		skb_frag_t *frag = &sinfo->frags[i];
+@@ -2532,7 +2528,7 @@ static int mvneta_rx_hwbm(struct napi_struct *napi,
+ 				     rx_bytes);
  
- static inline
-@@ -206,6 +241,7 @@ int xdp_update_frame_from_buff(struct xdp_buff *xdp,
- 	xdp_frame->headroom = headroom - sizeof(*xdp_frame);
- 	xdp_frame->metasize = metasize;
- 	xdp_frame->frame_sz = xdp->frame_sz;
-+	xdp_frame->flags = xdp->flags;
+ 			skb->protocol = eth_type_trans(skb, dev);
+-			mvneta_rx_csum(pp, rx_status, skb);
++			skb->ip_summed = mvneta_rx_csum(pp, rx_status);
+ 			napi_gro_receive(napi, skb);
  
- 	return 0;
- }
+ 			rcvd_pkts++;
+@@ -2581,8 +2577,7 @@ static int mvneta_rx_hwbm(struct napi_struct *napi,
+ 		skb_put(skb, rx_bytes);
+ 
+ 		skb->protocol = eth_type_trans(skb, dev);
+-
+-		mvneta_rx_csum(pp, rx_status, skb);
++		skb->ip_summed = mvneta_rx_csum(pp, rx_status);
+ 
+ 		napi_gro_receive(napi, skb);
+ 	}
 -- 
 2.31.1
 
