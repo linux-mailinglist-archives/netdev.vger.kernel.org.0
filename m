@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FDAB3947A7
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 22:01:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2653947A9
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 22:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229657AbhE1UCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 16:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
+        id S229666AbhE1UCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 16:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbhE1UCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 16:02:34 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C553C061574;
-        Fri, 28 May 2021 13:00:59 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id l70so3360094pga.1;
-        Fri, 28 May 2021 13:00:59 -0700 (PDT)
+        with ESMTP id S229603AbhE1UCi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 16:02:38 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F8B4C06174A;
+        Fri, 28 May 2021 13:01:03 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id 27so3344010pgy.3;
+        Fri, 28 May 2021 13:01:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nGlypxOO+I1T40Cpmd9aYpx3V+NTRClR+bxP+K/W9Io=;
-        b=Eg2JefObN9WovxGVIUL2oEnOCrdUWhB8oasqZ1MVqjoK1KEuFfZbez/gPUTF80rgoj
-         oeAu8iFg4lxLTnzZqQh+/j+zJBcXx5jUsSHE4J6luZMNVU6Gx3Oufx8cg91TVNnEfqO/
-         rEV93A/t3T73hCi3pWQxa07fpTchYjNpsATsX9IISMjRLN02xUwBlJM4aN/NVPKo4jv2
-         BHF72ExTDnay1ZEJz21McucApDaRCstVZjzM/LRklAJHzsZeFwp2uHoTLCeIPocpa+fm
-         mM7xRIHMCTAJPgqL+bwj12xV/t64batQxExq4fo/BdS2ncg1aFZIULSI9raWJ2hLgJnS
-         U4Yw==
+        bh=BP/oVZsi8h1dbwVfNCDdeQd8r9+Vki9+KUAn75F4pkk=;
+        b=SIsBmdnNfFq74qZpyZC8txLOehqBkeqSM4VImPX9Fb2PcZVNKasR9MQONjvN7k7PqZ
+         ni5EGPoePswz56oK9QjhwxyPsLwbV6V3+9ABzhug4+0fQESqyLPgahppqQ7noi2dPVIl
+         hLzqTeZjRXi2h8yqk+NmuDmqtOf6C6RzQIWpHLceN29420aunZz5Hn3oWotp6o3sEX4p
+         FQeb48ir4hYZ9BfdwdXD+Y8VoEB0ggls2aQfwsuR94qWkWRIpxzqMP29LFzNByIsWVLw
+         /Zoy7c0ECgDrIUS3cyhThYPwM9bntofi/PlwNnmEXz+XkWkRhNgg8h5QAJxouup/X8+r
+         n8uA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nGlypxOO+I1T40Cpmd9aYpx3V+NTRClR+bxP+K/W9Io=;
-        b=jNY6EyKQfu+kfR9/mz58LGiPSv76XhdGbfj6vfgTSqDD7K7HZjTwY+iyZxascc30fd
-         zmqqEwo3X/G0R3LaDlW4FS5Q0KsR+6hSdcgNT03uQ5GmbKBSdIuoKN2AmufTU7y55n3x
-         F56+BcMMdwptmkHC9CTRuSIwUgB1953l6j8G7W9F0y3R2vPIRRb6ZA4XmCY1k4MGU2W1
-         ArqJ1q5RpUxtm/tYGNf99wZXW3IVVRLcjWIlseoR/grA6MJ7ynKm6co5zRj/EuqlXNeF
-         3yEnTJoE3kFvzKA/4/6CLW2F4bRVi2fKu8tGSm3uZrApQm7bTnDYHCx8CPl7pPmOR+bm
-         laPw==
-X-Gm-Message-State: AOAM530GlNF2BbVBgjs3R6CYYOTpG6sEvouQx4m3Cr26MYNPGzlNHFAy
-        FW7/XGMza/3PpAVxT6FAUKi3smO6MTU=
-X-Google-Smtp-Source: ABdhPJzj2vCCkJaWr8yTKkQtKrEKmFs/5e4X59Oc3R8EB5YqEqSYltBbZR5AWK7vi7LVOC1mgE/Z4g==
-X-Received: by 2002:a65:4042:: with SMTP id h2mr10559997pgp.380.1622232058730;
-        Fri, 28 May 2021 13:00:58 -0700 (PDT)
+        bh=BP/oVZsi8h1dbwVfNCDdeQd8r9+Vki9+KUAn75F4pkk=;
+        b=ClGDeHTwRXDP7fuqdN8PRNLVbBz4LsLa7386a7N0RRrYrYUL4j/Xm0RHbLHLKoB58d
+         P0FgJjuce4VN4rwJKxPq8BnbbsV8sLkc7UWGTflKUIpSbHJPp0CmwYmjdoVr5d3nTQlM
+         +kaLS/t8MhrPJbCO7pj8ajhTD/5VKwUpDSEoLENBFx230wXh8e0/HatBBRi52+wEtVXP
+         3Ac9kWF2PBoQlgDqyIG+FhNl2YzH0+H1F+R+c+Gvs2kT1tMIxeTvi7VVChsip6RuLiZk
+         brJAN/GUDdhdQgmUXtAlzD+BO07zZPaagg0ROp26ZFDpVmew7uAv/9uUoJMpEvM3viX2
+         Rjhg==
+X-Gm-Message-State: AOAM531b6ni0/0pZnG1nYodAEYnfvl3Buu3IKbf7JXtxycYKlBDrckqM
+        U4z7Jig/d7yI8GeQp0J6o1bqIEuPlhE=
+X-Google-Smtp-Source: ABdhPJw6d5/evMbmlyVx0Nh0XRzo6T44YEzbVw1OOiYRaqW0xiNnj2Cx/eFzzVzg0qHEac1L2Hmzcw==
+X-Received: by 2002:a05:6a00:24d4:b029:2da:8e01:f07f with SMTP id d20-20020a056a0024d4b02902da8e01f07fmr5524659pfv.44.1622232062304;
+        Fri, 28 May 2021 13:01:02 -0700 (PDT)
 Received: from localhost ([2402:3a80:11db:3aa9:ad24:a4a2:844f:6a0a])
-        by smtp.gmail.com with ESMTPSA id a9sm5119518pfr.9.2021.05.28.13.00.57
+        by smtp.gmail.com with ESMTPSA id ft19sm5040987pjb.48.2021.05.28.13.01.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 May 2021 13:00:58 -0700 (PDT)
+        Fri, 28 May 2021 13:01:02 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -67,9 +67,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH RFC bpf-next 5/7] tools: bpf.h: sync with kernel sources
-Date:   Sat, 29 May 2021 01:29:44 +0530
-Message-Id: <20210528195946.2375109-6-memxor@gmail.com>
+Subject: [PATCH RFC bpf-next 6/7] libbpf: add bpf_link based TC-BPF management API
+Date:   Sat, 29 May 2021 01:29:45 +0530
+Message-Id: <20210528195946.2375109-7-memxor@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210528195946.2375109-1-memxor@gmail.com>
 References: <20210528195946.2375109-1-memxor@gmail.com>
@@ -79,60 +79,230 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This will be used to expose bpf_link based libbpf API to users.
+This adds userspace TC-BPF management API based on bpf_link.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- tools/include/uapi/linux/bpf.h | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ tools/lib/bpf/bpf.c      |  5 ++++
+ tools/lib/bpf/bpf.h      |  8 +++++-
+ tools/lib/bpf/libbpf.c   | 59 ++++++++++++++++++++++++++++++++++++++--
+ tools/lib/bpf/libbpf.h   | 17 ++++++++++++
+ tools/lib/bpf/libbpf.map |  1 +
+ tools/lib/bpf/netlink.c  |  5 ++--
+ tools/lib/bpf/netlink.h  |  8 ++++++
+ 7 files changed, 98 insertions(+), 5 deletions(-)
+ create mode 100644 tools/lib/bpf/netlink.h
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 2c1ba70abbf1..a3488463d145 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -994,6 +994,7 @@ enum bpf_attach_type {
- 	BPF_SK_LOOKUP,
- 	BPF_XDP,
- 	BPF_SK_SKB_VERDICT,
-+	BPF_TC,
- 	__MAX_BPF_ATTACH_TYPE
+diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+index 86dcac44f32f..ab2e2e9ccc5e 100644
+--- a/tools/lib/bpf/bpf.c
++++ b/tools/lib/bpf/bpf.c
+@@ -28,6 +28,7 @@
+ #include <asm/unistd.h>
+ #include <errno.h>
+ #include <linux/bpf.h>
++#include <arpa/inet.h>
+ #include "bpf.h"
+ #include "libbpf.h"
+ #include "libbpf_internal.h"
+@@ -692,6 +693,10 @@ int bpf_link_create(int prog_fd, int target_fd,
+ 	attr.link_create.target_fd = target_fd;
+ 	attr.link_create.attach_type = attach_type;
+ 	attr.link_create.flags = OPTS_GET(opts, flags, 0);
++	attr.link_create.tc.parent = OPTS_GET(opts, tc.parent, 0);
++	attr.link_create.tc.handle = OPTS_GET(opts, tc.handle, 0);
++	attr.link_create.tc.priority = OPTS_GET(opts, tc.priority, 0);
++	attr.link_create.tc.gen_flags = OPTS_GET(opts, tc.gen_flags, 0);
+ 
+ 	if (iter_info_len) {
+ 		attr.link_create.iter_info =
+diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+index 4f758f8f50cd..f2178309e9ea 100644
+--- a/tools/lib/bpf/bpf.h
++++ b/tools/lib/bpf/bpf.h
+@@ -177,8 +177,14 @@ struct bpf_link_create_opts {
+ 	union bpf_iter_link_info *iter_info;
+ 	__u32 iter_info_len;
+ 	__u32 target_btf_id;
++	struct {
++		__u32 parent;
++		__u32 handle;
++		__u32 priority;
++		__u32 gen_flags;
++	} tc;
  };
+-#define bpf_link_create_opts__last_field target_btf_id
++#define bpf_link_create_opts__last_field tc.gen_flags
  
-@@ -1007,6 +1008,7 @@ enum bpf_link_type {
- 	BPF_LINK_TYPE_ITER = 4,
- 	BPF_LINK_TYPE_NETNS = 5,
- 	BPF_LINK_TYPE_XDP = 6,
-+	BPF_LINK_TYPE_TC = 7,
+ LIBBPF_API int bpf_link_create(int prog_fd, int target_fd,
+ 			       enum bpf_attach_type attach_type,
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 1c4e20e75237..7809536980b1 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -55,6 +55,7 @@
+ #include "libbpf_internal.h"
+ #include "hashmap.h"
+ #include "bpf_gen_internal.h"
++#include "netlink.h"
  
- 	MAX_BPF_LINK_TYPE,
- };
-@@ -1447,6 +1449,12 @@ union bpf_attr {
- 				__aligned_u64	iter_info;	/* extra bpf_iter_link_info */
- 				__u32		iter_info_len;	/* iter_info length */
- 			};
-+			struct { /* used by BPF_TC */
-+				__u32 parent;
-+				__u32 handle;
-+				__u32 gen_flags;
-+				__u16 priority;
-+			} tc;
- 		};
- 	} link_create;
+ #ifndef BPF_FS_MAGIC
+ #define BPF_FS_MAGIC		0xcafe4a11
+@@ -7185,7 +7186,7 @@ static int bpf_object__collect_relos(struct bpf_object *obj)
  
-@@ -5519,6 +5527,13 @@ struct bpf_link_info {
- 		struct {
- 			__u32 ifindex;
- 		} xdp;
-+		struct {
-+			__u32 ifindex;
-+			__u32 parent;
-+			__u32 handle;
-+			__u32 gen_flags;
-+			__u16 priority;
-+		} tc;
- 	};
- } __attribute__((aligned(8)));
+ 	for (i = 0; i < obj->nr_programs; i++) {
+ 		struct bpf_program *p = &obj->programs[i];
+-		
++
+ 		if (!p->nr_reloc)
+ 			continue;
  
+@@ -10005,7 +10006,7 @@ struct bpf_link {
+ int bpf_link__update_program(struct bpf_link *link, struct bpf_program *prog)
+ {
+ 	int ret;
+-	
++
+ 	ret = bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog), NULL);
+ 	return libbpf_err_errno(ret);
+ }
+@@ -10613,6 +10614,60 @@ struct bpf_link *bpf_program__attach_xdp(struct bpf_program *prog, int ifindex)
+ 	return bpf_program__attach_fd(prog, ifindex, 0, "xdp");
+ }
+ 
++struct bpf_link *bpf_program__attach_tc(struct bpf_program *prog,
++					const struct bpf_tc_hook *hook,
++					const struct bpf_tc_link_opts *opts)
++{
++	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, lopts, 0);
++	char errmsg[STRERR_BUFSIZE];
++	int prog_fd, link_fd, ret;
++	struct bpf_link *link;
++	__u32 parent;
++
++	if (!hook || !OPTS_VALID(hook, bpf_tc_hook) ||
++	    !OPTS_VALID(opts, bpf_tc_link_opts))
++		return ERR_PTR(-EINVAL);
++
++	if (OPTS_GET(hook, ifindex, 0) <= 0 ||
++	    OPTS_GET(opts, priority, 0) > UINT16_MAX)
++		return ERR_PTR(-EINVAL);
++
++	parent = OPTS_GET(hook, parent, 0);
++
++	ret = tc_get_tcm_parent(OPTS_GET(hook, attach_point, 0),
++				&parent);
++	if (ret < 0)
++		return ERR_PTR(ret);
++
++	lopts.tc.parent = parent;
++	lopts.tc.handle = OPTS_GET(opts, handle, 0);
++	lopts.tc.priority = OPTS_GET(opts, priority, 0);
++	lopts.tc.gen_flags = OPTS_GET(opts, gen_flags, 0);
++
++	prog_fd = bpf_program__fd(prog);
++	if (prog_fd < 0) {
++		pr_warn("prog '%s': can't attach before loaded\n", prog->name);
++		return ERR_PTR(-EINVAL);
++	}
++
++	link = calloc(1, sizeof(*link));
++	if (!link)
++		return ERR_PTR(-ENOMEM);
++	link->detach = &bpf_link__detach_fd;
++
++	link_fd = bpf_link_create(prog_fd, OPTS_GET(hook, ifindex, 0), BPF_TC, &lopts);
++	if (link_fd < 0) {
++		link_fd = -errno;
++		free(link);
++		pr_warn("prog '%s': failed to attach tc filter: %s\n",
++			prog->name, libbpf_strerror_r(link_fd, errmsg, sizeof(errmsg)));
++		return ERR_PTR(link_fd);
++	}
++	link->fd = link_fd;
++
++	return link;
++}
++
+ struct bpf_link *bpf_program__attach_freplace(struct bpf_program *prog,
+ 					      int target_fd,
+ 					      const char *attach_func_name)
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 6e61342ba56c..284a446c6513 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -282,6 +282,23 @@ LIBBPF_API struct bpf_link *
+ bpf_program__attach_iter(struct bpf_program *prog,
+ 			 const struct bpf_iter_attach_opts *opts);
+ 
++/* TC bpf_link related API */
++struct bpf_tc_hook;
++
++struct bpf_tc_link_opts {
++	size_t sz;
++	__u32 handle;
++	__u32 priority;
++	__u32 gen_flags;
++	size_t :0;
++};
++#define bpf_tc_link_opts__last_field gen_flags
++
++LIBBPF_API struct bpf_link *
++bpf_program__attach_tc(struct bpf_program *prog,
++		       const struct bpf_tc_hook *hook,
++		       const struct bpf_tc_link_opts *opts);
++
+ struct bpf_insn;
+ 
+ /*
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index bbe99b1db1a9..ef570a840aca 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -373,5 +373,6 @@ LIBBPF_0.4.0 {
+ 
+ LIBBPF_0.5.0 {
+ 	global:
++		bpf_program__attach_tc;
+ 		libbpf_set_strict_mode;
+ } LIBBPF_0.4.0;
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index d743c8721aa7..b7ac36fc9c1a 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -17,6 +17,7 @@
+ #include "libbpf.h"
+ #include "libbpf_internal.h"
+ #include "nlattr.h"
++#include "netlink.h"
+ 
+ #ifndef SOL_NETLINK
+ #define SOL_NETLINK 270
+@@ -405,8 +406,8 @@ static int attach_point_to_config(struct bpf_tc_hook *hook,
+ 	}
+ }
+ 
+-static int tc_get_tcm_parent(enum bpf_tc_attach_point attach_point,
+-			     __u32 *parent)
++int tc_get_tcm_parent(enum bpf_tc_attach_point attach_point,
++		      __u32 *parent)
+ {
+ 	switch (attach_point) {
+ 	case BPF_TC_INGRESS:
+diff --git a/tools/lib/bpf/netlink.h b/tools/lib/bpf/netlink.h
+new file mode 100644
+index 000000000000..c89133d56eb4
+--- /dev/null
++++ b/tools/lib/bpf/netlink.h
+@@ -0,0 +1,8 @@
++// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
++#pragma once
++
++#include <linux/types.h>
++#include "libbpf.h"
++
++int tc_get_tcm_parent(enum bpf_tc_attach_point attach_point,
++		      __u32 *parent);
 -- 
 2.31.1
 
