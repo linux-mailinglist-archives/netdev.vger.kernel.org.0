@@ -2,892 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2961A393B60
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 04:28:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B78D8393B69
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 04:29:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234123AbhE1C34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 22:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41364 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236098AbhE1C3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 22:29:50 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D05C061763
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 19:28:14 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id i12so1742224qtr.7
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 19:28:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HjWmN6kUqQ5YCwC7JwQIh1tbtRwZbilq583FvBtayno=;
-        b=Fni95fnuiEVx3icuKlMUgA9oMRsfMUAGf7Jl572VQTGR6GLa2l0IV+2ofl693ntuTd
-         SpDmhAGPoczG/RNbM7kXH69iuNqlFdOzR0aa62HEeYL5ZIswTORm5VW1RBYe0DW8e+Yd
-         wEc3RicFEgSLCvrkSxRgwkRVySWw79IQGHUEhAbJF+qM4d4UsfLL1sbfBBddPlMaxLoV
-         tnia3AgWCJrOXcs6Forov+ixKMCoffCG3hoSHWU0aL9RVjX6lNp1JWAJit7ipBTS4mjr
-         TomtUggrQUxHL1IfjMPr/ZLE7c3qi69YL1Hp6n4mcQ2m3HVl2ptGo0QRp33NvrU8A8EB
-         g6cA==
+        id S234019AbhE1CbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 22:31:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26041 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229706AbhE1CbK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 22:31:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622168975;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CMuJ8q06mrCYv6hzahz85RH+Fvr8gwcswBsN2UNSWLU=;
+        b=I/5XCGrdMWxU3OfxaC58z5cnL8NsC2aXKWqg6P69B4QKUVABaXgXJd25q//Zkw4cNxXqM3
+        U0ZR4dLFM97g/R2c0Inw21yMeunivuzkaoVt9SOZobDXYlNpeBPsXVimojKwcclqcyLGyG
+        fVsoncAyN0QlTNEf/UKNfHtNaF38kjc=
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
+ [209.85.210.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-404-FVR6ISX3M7ufCxgMZKBLjg-1; Thu, 27 May 2021 22:29:34 -0400
+X-MC-Unique: FVR6ISX3M7ufCxgMZKBLjg-1
+Received: by mail-pf1-f197.google.com with SMTP id 64-20020a6215430000b02902df2a3e11caso1567761pfv.3
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 19:29:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HjWmN6kUqQ5YCwC7JwQIh1tbtRwZbilq583FvBtayno=;
-        b=jpm3knzFk8YTOh3Ibi957JJ3gCrHZa3QRYEixVO/CuDorDRar36qb/6jF+A26jY5Iv
-         ZCcP/sEao0PZ1Jd3DqzU/M930N7rIv2+k1eyP6lTO40JRBOYtAiY3sv38Rl6U0aTFHw5
-         lljMsKOKJsTl81IheiqXlpvF+iINOp4jGHwtqOhZOfo5umAQHXJmLIMB3zf2macEn1CL
-         viuK7sI8CR356STwamy+B7nPQQgboSeG9Bdccj97Rs2l5VGLC7L/dMAFQsYTt44+U7sh
-         5m9O7yKXjKVmUSpismfqMhOOIxkoWmPPgl8hr5ikF/uoUqbpI4t8fzlIOExYMQqVSb2M
-         CekA==
-X-Gm-Message-State: AOAM531VzSUCSBoU8opdjuNw9qv4+53TlK4i5idqpCZ+cti3VRV9TB1c
-        LxSKVUrfId+lgS/uxAFq//IVfk03NoQ=
-X-Google-Smtp-Source: ABdhPJyxWAzZ5b2bS8yC2Scjs6GHchjE4LwURhOdg857hIuRLSBnFpEZNkItwH0uJSBOba29nEgxDg==
-X-Received: by 2002:ac8:5e4a:: with SMTP id i10mr1526503qtx.118.1622168893487;
-        Thu, 27 May 2021 19:28:13 -0700 (PDT)
-Received: from tannerlove.nyc.corp.google.com ([2620:0:1003:316:2437:9aae:c493:2542])
-        by smtp.gmail.com with ESMTPSA id a14sm2488071qtj.57.2021.05.27.19.28.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 May 2021 19:28:13 -0700 (PDT)
-From:   Tanner Love <tannerlove.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Tanner Love <tannerlove@google.com>
-Subject: [PATCH net-next v2 3/3] selftests/net: amend bpf flow dissector prog to do vnet hdr validation
-Date:   Thu, 27 May 2021 22:28:03 -0400
-Message-Id: <20210528022803.778578-4-tannerlove.kernel@gmail.com>
-X-Mailer: git-send-email 2.32.0.rc0.204.g9fa02ecfa5-goog
-In-Reply-To: <20210528022803.778578-1-tannerlove.kernel@gmail.com>
-References: <20210528022803.778578-1-tannerlove.kernel@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=CMuJ8q06mrCYv6hzahz85RH+Fvr8gwcswBsN2UNSWLU=;
+        b=PnUG8p+/A9IQVhJndqiM5nxCr4JTJd6EhlFr3uSogQYb3Km3pL0OFELmj6lv7xdG6R
+         xHfIqPz4j4t94UAXqTozJ+2Cz/K2c6HYEE7SfvdF90QqWfcwxxsS6qUFG3TM3dO6b3BR
+         mEw/XMIV4VdGDq+7qc8a6sRnKBF7Ew7eqcMtT/gwXxeEtKrfkla46wg/XfXH+8XZ2jLl
+         u40vzu5qkmmMUYOdQydiI3xqyNFuSLeo61q7x/tyJoFv7KQDMJdK5lRkCN+J+SWQmRQ7
+         Wv6zadEAqODgMqYTER7NuCjT/sLLqU9kTa6FCsM7tWy9wtoShx+8CkqwsunazJCN3N92
+         BkGA==
+X-Gm-Message-State: AOAM5337hwMy3cN3ns+KS9WAoUTlpGeC+fAUBR3HMrPp4ZYtIxwv6B+b
+        3Yxz3yohchPt+MkH86DGvMihXBao7U9IjB3/Ipp4N9HtiGrbxYBjQpfvEnp/ZjkrbiHNg9rtXZB
+        dqayL1J2nK+RTYftw
+X-Received: by 2002:a62:3001:0:b029:2e9:39d0:46cd with SMTP id w1-20020a6230010000b02902e939d046cdmr1414648pfw.47.1622168973289;
+        Thu, 27 May 2021 19:29:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwG2LjhtAswj+zJgSFglJ8KxPQ4Xu38oPG3FkiTkdAMFUpdSo9/0J5Ld9zwyid4Tj8MMUqy9A==
+X-Received: by 2002:a62:3001:0:b029:2e9:39d0:46cd with SMTP id w1-20020a6230010000b02902e939d046cdmr1414629pfw.47.1622168972968;
+        Thu, 27 May 2021 19:29:32 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id w11sm2907612pfc.79.2021.05.27.19.29.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 May 2021 19:29:32 -0700 (PDT)
+Subject: Re: [PATCH net-next] ptr_ring: make __ptr_ring_empty() checking more
+ reliable
+To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     will@kernel.org, peterz@infradead.org, paulmck@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        mst@redhat.com, brouer@redhat.com
+References: <1622032173-11883-1-git-send-email-linyunsheng@huawei.com>
+ <d2287691-1ef9-d2c4-13f6-2baf7b80d905@redhat.com>
+ <25a6b73d-06ec-fe07-b34c-10fea709e055@huawei.com>
+ <51bc1c38-da20-1090-e3ef-1972f28adfee@redhat.com>
+ <938bdb23-4335-845d-129e-db8af2484c27@huawei.com>
+ <0b64f53d-e120-f90d-bf59-bb89cceea83e@redhat.com>
+ <758d89e8-3be1-25ae-9a42-cc8703ac097b@huawei.com>
+ <b2eb7c0b-f3e8-bc89-1644-0d9b533af749@redhat.com>
+ <a366ee9b-e3d1-0004-1fae-7f44b5708bdc@huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <97021854-739a-682c-f2b6-d609dfcfa971@redhat.com>
+Date:   Fri, 28 May 2021 10:29:27 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.2
 MIME-Version: 1.0
+In-Reply-To: <a366ee9b-e3d1-0004-1fae-7f44b5708bdc@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tanner Love <tannerlove@google.com>
 
-Change the BPF flow dissector program to perform various checks on the
-virtio_net_hdr fields after doing flow dissection.
+在 2021/5/28 上午10:26, Yunsheng Lin 写道:
+> On 2021/5/28 9:31, Jason Wang wrote:
+>> 在 2021/5/27 下午5:03, Yunsheng Lin 写道:
+>>> On 2021/5/27 16:05, Jason Wang wrote:
+>>>> 在 2021/5/27 下午3:21, Yunsheng Lin 写道:
+>>>>> On 2021/5/27 14:53, Jason Wang wrote:
+>>>>>> 在 2021/5/27 下午2:07, Yunsheng Lin 写道:
+>>>>>>> On 2021/5/27 12:57, Jason Wang wrote:
+>>>>>>>> 在 2021/5/26 下午8:29, Yunsheng Lin 写道:
+>>>>>>>>> Currently r->queue[] is cleared after r->consumer_head is moved
+>>>>>>>>> forward, which makes the __ptr_ring_empty() checking called in
+>>>>>>>>> page_pool_refill_alloc_cache() unreliable if the checking is done
+>>>>>>>>> after the r->queue clearing and before the consumer_head moving
+>>>>>>>>> forward.
+>>>>>>>>>
+>>>>>>>>> Move the r->queue[] clearing after consumer_head moving forward
+>>>>>>>>> to make __ptr_ring_empty() checking more reliable.
+>>>>>>>> If I understand this correctly, this can only happens if you run __ptr_ring_empty() in parallel with ptr_ring_discard_one().
+>>>>>>> Yes.
+>>>>>>>
+>>>>>>>> I think those two needs to be serialized. Or did I miss anything?
+>>>>>>> As the below comment in __ptr_ring_discard_one, if the above is true, I
+>>>>>>> do not think we need to keep consumer_head valid at all times, right?
+>>>>>>>
+>>>>>>>
+>>>>>>>        /* Note: we must keep consumer_head valid at all times for __ptr_ring_empty
+>>>>>>>         * to work correctly.
+>>>>>>>         */
+>>>>>> I'm not sure I understand. But my point is that you need to synchronize the __ptr_ring_discard_one() and __ptr_empty() as explained in the comment above __ptr_ring_empty():
+>>>>> I am saying if __ptr_ring_empty() and __ptr_ring_discard_one() is
+>>>>> always serialized, then it seems that the below commit is unnecessary?
+>>>> Just to make sure we are at the same page. What I really meant is "synchronized" not "serialized". So they can be called at the same time but need synchronization.
+>>>>
+>>>>
+>>>>> 406de7555424 ("ptr_ring: keep consumer_head valid at all times")
+>>>> This still needed in this case.
+>>>>
+>>>>
+>>>>>> /*
+>>>>>>     * Test ring empty status without taking any locks.
+>>>>>>     *
+>>>>>>     * NB: This is only safe to call if ring is never resized.
+>>>>>>     *
+>>>>>>     * However, if some other CPU consumes ring entries at the same time, the value
+>>>>>>     * returned is not guaranteed to be correct.
+>>>>>>     *
+>>>>>>     * In this case - to avoid incorrectly detecting the ring
+>>>>>>     * as empty - the CPU consuming the ring entries is responsible
+>>>>>>     * for either consuming all ring entries until the ring is empty,
+>>>>>>     * or synchronizing with some other CPU and causing it to
+>>>>>>     * re-test __ptr_ring_empty and/or consume the ring enteries
+>>>>>>     * after the synchronization point.
+>>>>> I am not sure I understand "incorrectly detecting the ring as empty"
+>>>>> means, is it because of the data race described in the commit log?
+>>>> It means "the ring might be empty but __ptr_ring_empty() returns false".
+>>> But the ring might be non-empty but __ptr_ring_empty() returns true
+>>> for the data race described in the commit log:)
+>>
+>> Which commit log?
+> this commit log.
+> If the data race described in this commit log happens, the ring might be
+> non-empty, but __ptr_ring_empty() returns true.
+>
+>
+>>
+>>>>> Or other data race? I can not think of other data race if consuming
+>>>>> and __ptr_ring_empty() is serialized:)
+>>>>>
+>>>>> I am agreed that __ptr_ring_empty() checking is not totally reliable
+>>>>> without taking r->consumer_lock, that is why I use "more reliable"
+>>>>> in the title:)
+>>>> Is __ptr_ring_empty() synchronized with the consumer in your case? If yes, have you done some benchmark to see the difference?
+>>>>
+>>>> Have a look at page pool, this only helps when multiple refill request happens in parallel which can make some of the refill return early if the ring has been consumed.
+>>>>
+>>>> This is the slow-path and I'm not sure we see any difference. If one the request runs faster then the following request will go through the fast path.
+>>> Yes, I am agreed there may not be any difference.
+>>> But it is better to make it more reliable, right?
+>>
+>> No, any performance optimization must be benchmark to show obvious difference to be accepted.
+>>
+>> ptr_ring has been used by various subsystems so we should not risk our self-eves to accept theoretical optimizations.
+> As a matter of fact, I am not treating it as a performance optimization for this patch.
+> I treated it as improvement for the checking of __ptr_ring_empty().
+> But you are right that we need to ensure there is not performance regression when improving
+> it.
+>
+> Any existing and easy-to-setup testcase to benchmark the ptr_ring performance?
 
-Amend test_flow_dissector.(c|sh) to add test cases that inject packets
-with reasonable or unreasonable virtio-net headers and assert that bad
-packets are dropped and good packets are not. Do this via packet
-socket; the kernel executes tpacket_snd, which enters
-virtio_net_hdr_to_skb, where flow dissection / vnet header validation
-occurs.
 
-Signed-off-by: Tanner Love <tannerlove@google.com>
-Reviewed-by: Willem de Bruijn <willemb@google.com>
----
- tools/testing/selftests/bpf/progs/bpf_flow.c  | 188 +++++++++++++-----
- .../selftests/bpf/test_flow_dissector.c       | 181 +++++++++++++++--
- .../selftests/bpf/test_flow_dissector.sh      |  19 ++
- 3 files changed, 321 insertions(+), 67 deletions(-)
+You probably can start with a simple test in:
 
-diff --git a/tools/testing/selftests/bpf/progs/bpf_flow.c b/tools/testing/selftests/bpf/progs/bpf_flow.c
-index 95a5a0778ed7..681cfbdba1d7 100644
---- a/tools/testing/selftests/bpf/progs/bpf_flow.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_flow.c
-@@ -13,6 +13,7 @@
- #include <linux/tcp.h>
- #include <linux/udp.h>
- #include <linux/if_packet.h>
-+#include <linux/virtio_net.h>
- #include <sys/socket.h>
- #include <linux/if_tunnel.h>
- #include <linux/mpls.h>
-@@ -71,15 +72,119 @@ struct {
- 	__type(value, struct bpf_flow_keys);
- } last_dissection SEC(".maps");
- 
--static __always_inline int export_flow_keys(struct bpf_flow_keys *keys,
--					    int ret)
-+/* Drops invalid virtio-net headers */
-+static __always_inline int validate_virtio_net_hdr(const struct __sk_buff *skb)
- {
-+	const struct bpf_flow_keys *keys = skb->flow_keys;
-+
-+	/* Check gso */
-+	if (skb->vhdr_gso_type != VIRTIO_NET_HDR_GSO_NONE) {
-+		if (!(skb->vhdr_flags & VIRTIO_NET_HDR_F_NEEDS_CSUM))
-+			return BPF_DROP;
-+
-+		if (keys->is_encap)
-+			return BPF_DROP;
-+
-+		switch (skb->vhdr_gso_type & ~VIRTIO_NET_HDR_GSO_ECN) {
-+		case VIRTIO_NET_HDR_GSO_TCPV4:
-+			if (keys->addr_proto != ETH_P_IP ||
-+			    keys->ip_proto != IPPROTO_TCP)
-+				return BPF_DROP;
-+
-+			if (skb->vhdr_gso_size >= skb->len - keys->thoff -
-+					sizeof(struct tcphdr))
-+				return BPF_DROP;
-+
-+			break;
-+		case VIRTIO_NET_HDR_GSO_TCPV6:
-+			if (keys->addr_proto != ETH_P_IPV6 ||
-+			    keys->ip_proto != IPPROTO_TCP)
-+				return BPF_DROP;
-+
-+			if (skb->vhdr_gso_size >= skb->len - keys->thoff -
-+					sizeof(struct tcphdr))
-+				return BPF_DROP;
-+
-+			break;
-+		case VIRTIO_NET_HDR_GSO_UDP:
-+			if (keys->ip_proto != IPPROTO_UDP)
-+				return BPF_DROP;
-+
-+			if (skb->vhdr_gso_size >= skb->len - keys->thoff -
-+					sizeof(struct udphdr))
-+				return BPF_DROP;
-+
-+			break;
-+		default:
-+			return BPF_DROP;
-+		}
-+	}
-+
-+	/* Check hdr_len */
-+	if (skb->vhdr_hdr_len) {
-+		switch (keys->ip_proto) {
-+		case IPPROTO_TCP:
-+			if (skb->vhdr_hdr_len != skb->flow_keys->thoff +
-+					sizeof(struct tcphdr))
-+				return BPF_DROP;
-+
-+			break;
-+		case IPPROTO_UDP:
-+			if (skb->vhdr_hdr_len != keys->thoff +
-+					sizeof(struct udphdr))
-+				return BPF_DROP;
-+
-+			break;
-+		}
-+	}
-+
-+	/* Check csum */
-+	if (skb->vhdr_flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) {
-+		if (keys->addr_proto != ETH_P_IP &&
-+		    keys->addr_proto != ETH_P_IPV6)
-+			return BPF_DROP;
-+
-+		if (skb->vhdr_csum_start != keys->thoff)
-+			return BPF_DROP;
-+
-+		switch (keys->ip_proto) {
-+		case IPPROTO_TCP:
-+			if (skb->vhdr_csum_offset !=
-+					offsetof(struct tcphdr, check))
-+				return BPF_DROP;
-+
-+			break;
-+		case IPPROTO_UDP:
-+			if (skb->vhdr_csum_offset !=
-+					offsetof(struct udphdr, check))
-+				return BPF_DROP;
-+
-+			break;
-+		default:
-+			return BPF_DROP;
-+		}
-+	}
-+
-+	return BPF_OK;
-+}
-+
-+/* Common steps to perform regardless of where protocol parsing finishes:
-+ * 1. store flow keys in map
-+ * 2. if parse result is BPF_OK, parse the vnet hdr if present
-+ * 3. return the parse result
-+ */
-+static __always_inline int parse_epilogue(struct __sk_buff *skb, int ret)
-+{
-+	const struct bpf_flow_keys *keys = skb->flow_keys;
- 	__u32 key = (__u32)(keys->sport) << 16 | keys->dport;
- 	struct bpf_flow_keys val;
- 
- 	memcpy(&val, keys, sizeof(val));
- 	bpf_map_update_elem(&last_dissection, &key, &val, BPF_ANY);
--	return ret;
-+
-+	if (ret != BPF_OK)
-+		return ret;
-+	return validate_virtio_net_hdr(skb);
- }
- 
- #define IPV6_FLOWLABEL_MASK		__bpf_constant_htonl(0x000FFFFF)
-@@ -114,8 +219,6 @@ static __always_inline void *bpf_flow_dissect_get_header(struct __sk_buff *skb,
- /* Dispatches on ETHERTYPE */
- static __always_inline int parse_eth_proto(struct __sk_buff *skb, __be16 proto)
- {
--	struct bpf_flow_keys *keys = skb->flow_keys;
--
- 	switch (proto) {
- 	case bpf_htons(ETH_P_IP):
- 		bpf_tail_call_static(skb, &jmp_table, IP);
-@@ -131,12 +234,10 @@ static __always_inline int parse_eth_proto(struct __sk_buff *skb, __be16 proto)
- 	case bpf_htons(ETH_P_8021AD):
- 		bpf_tail_call_static(skb, &jmp_table, VLAN);
- 		break;
--	default:
--		/* Protocol not supported */
--		return export_flow_keys(keys, BPF_DROP);
- 	}
- 
--	return export_flow_keys(keys, BPF_DROP);
-+	/* Protocol not supported */
-+	return parse_epilogue(skb, BPF_DROP);
- }
- 
- SEC("flow_dissector")
-@@ -162,28 +263,28 @@ static __always_inline int parse_ip_proto(struct __sk_buff *skb, __u8 proto)
- 	case IPPROTO_ICMP:
- 		icmp = bpf_flow_dissect_get_header(skb, sizeof(*icmp), &_icmp);
- 		if (!icmp)
--			return export_flow_keys(keys, BPF_DROP);
--		return export_flow_keys(keys, BPF_OK);
-+			return parse_epilogue(skb, BPF_DROP);
-+		return parse_epilogue(skb, BPF_OK);
- 	case IPPROTO_IPIP:
- 		keys->is_encap = true;
- 		if (keys->flags & BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP)
--			return export_flow_keys(keys, BPF_OK);
-+			return parse_epilogue(skb, BPF_OK);
- 
- 		return parse_eth_proto(skb, bpf_htons(ETH_P_IP));
- 	case IPPROTO_IPV6:
- 		keys->is_encap = true;
- 		if (keys->flags & BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP)
--			return export_flow_keys(keys, BPF_OK);
-+			return parse_epilogue(skb, BPF_OK);
- 
- 		return parse_eth_proto(skb, bpf_htons(ETH_P_IPV6));
- 	case IPPROTO_GRE:
- 		gre = bpf_flow_dissect_get_header(skb, sizeof(*gre), &_gre);
- 		if (!gre)
--			return export_flow_keys(keys, BPF_DROP);
-+			return parse_epilogue(skb, BPF_DROP);
- 
- 		if (bpf_htons(gre->flags & GRE_VERSION))
- 			/* Only inspect standard GRE packets with version 0 */
--			return export_flow_keys(keys, BPF_OK);
-+			return parse_epilogue(skb, BPF_OK);
- 
- 		keys->thoff += sizeof(*gre); /* Step over GRE Flags and Proto */
- 		if (GRE_IS_CSUM(gre->flags))
-@@ -195,13 +296,13 @@ static __always_inline int parse_ip_proto(struct __sk_buff *skb, __u8 proto)
- 
- 		keys->is_encap = true;
- 		if (keys->flags & BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP)
--			return export_flow_keys(keys, BPF_OK);
-+			return parse_epilogue(skb, BPF_OK);
- 
- 		if (gre->proto == bpf_htons(ETH_P_TEB)) {
- 			eth = bpf_flow_dissect_get_header(skb, sizeof(*eth),
- 							  &_eth);
- 			if (!eth)
--				return export_flow_keys(keys, BPF_DROP);
-+				return parse_epilogue(skb, BPF_DROP);
- 
- 			keys->thoff += sizeof(*eth);
- 
-@@ -212,37 +313,35 @@ static __always_inline int parse_ip_proto(struct __sk_buff *skb, __u8 proto)
- 	case IPPROTO_TCP:
- 		tcp = bpf_flow_dissect_get_header(skb, sizeof(*tcp), &_tcp);
- 		if (!tcp)
--			return export_flow_keys(keys, BPF_DROP);
-+			return parse_epilogue(skb, BPF_DROP);
- 
- 		if (tcp->doff < 5)
--			return export_flow_keys(keys, BPF_DROP);
-+			return parse_epilogue(skb, BPF_DROP);
- 
- 		if ((__u8 *)tcp + (tcp->doff << 2) > data_end)
--			return export_flow_keys(keys, BPF_DROP);
-+			return parse_epilogue(skb, BPF_DROP);
- 
- 		keys->sport = tcp->source;
- 		keys->dport = tcp->dest;
--		return export_flow_keys(keys, BPF_OK);
-+		return parse_epilogue(skb, BPF_OK);
- 	case IPPROTO_UDP:
- 	case IPPROTO_UDPLITE:
- 		udp = bpf_flow_dissect_get_header(skb, sizeof(*udp), &_udp);
- 		if (!udp)
--			return export_flow_keys(keys, BPF_DROP);
-+			return parse_epilogue(skb, BPF_DROP);
- 
- 		keys->sport = udp->source;
- 		keys->dport = udp->dest;
--		return export_flow_keys(keys, BPF_OK);
-+		return parse_epilogue(skb, BPF_OK);
- 	default:
--		return export_flow_keys(keys, BPF_DROP);
-+		return parse_epilogue(skb, BPF_DROP);
- 	}
- 
--	return export_flow_keys(keys, BPF_DROP);
-+	return parse_epilogue(skb, BPF_DROP);
- }
- 
- static __always_inline int parse_ipv6_proto(struct __sk_buff *skb, __u8 nexthdr)
- {
--	struct bpf_flow_keys *keys = skb->flow_keys;
--
- 	switch (nexthdr) {
- 	case IPPROTO_HOPOPTS:
- 	case IPPROTO_DSTOPTS:
-@@ -255,7 +354,7 @@ static __always_inline int parse_ipv6_proto(struct __sk_buff *skb, __u8 nexthdr)
- 		return parse_ip_proto(skb, nexthdr);
- 	}
- 
--	return export_flow_keys(keys, BPF_DROP);
-+	return parse_epilogue(skb, BPF_DROP);
- }
- 
- PROG(IP)(struct __sk_buff *skb)
-@@ -268,11 +367,11 @@ PROG(IP)(struct __sk_buff *skb)
- 
- 	iph = bpf_flow_dissect_get_header(skb, sizeof(*iph), &_iph);
- 	if (!iph)
--		return export_flow_keys(keys, BPF_DROP);
-+		return parse_epilogue(skb, BPF_DROP);
- 
- 	/* IP header cannot be smaller than 20 bytes */
- 	if (iph->ihl < 5)
--		return export_flow_keys(keys, BPF_DROP);
-+		return parse_epilogue(skb, BPF_DROP);
- 
- 	keys->addr_proto = ETH_P_IP;
- 	keys->ipv4_src = iph->saddr;
-@@ -281,7 +380,7 @@ PROG(IP)(struct __sk_buff *skb)
- 
- 	keys->thoff += iph->ihl << 2;
- 	if (data + keys->thoff > data_end)
--		return export_flow_keys(keys, BPF_DROP);
-+		return parse_epilogue(skb, BPF_DROP);
- 
- 	if (iph->frag_off & bpf_htons(IP_MF | IP_OFFSET)) {
- 		keys->is_frag = true;
-@@ -302,7 +401,7 @@ PROG(IP)(struct __sk_buff *skb)
- 	}
- 
- 	if (done)
--		return export_flow_keys(keys, BPF_OK);
-+		return parse_epilogue(skb, BPF_OK);
- 
- 	return parse_ip_proto(skb, iph->protocol);
- }
-@@ -314,7 +413,7 @@ PROG(IPV6)(struct __sk_buff *skb)
- 
- 	ip6h = bpf_flow_dissect_get_header(skb, sizeof(*ip6h), &_ip6h);
- 	if (!ip6h)
--		return export_flow_keys(keys, BPF_DROP);
-+		return parse_epilogue(skb, BPF_DROP);
- 
- 	keys->addr_proto = ETH_P_IPV6;
- 	memcpy(&keys->ipv6_src, &ip6h->saddr, 2*sizeof(ip6h->saddr));
-@@ -324,7 +423,7 @@ PROG(IPV6)(struct __sk_buff *skb)
- 	keys->flow_label = ip6_flowlabel(ip6h);
- 
- 	if (keys->flags & BPF_FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL)
--		return export_flow_keys(keys, BPF_OK);
-+		return parse_epilogue(skb, BPF_OK);
- 
- 	return parse_ipv6_proto(skb, ip6h->nexthdr);
- }
-@@ -336,7 +435,7 @@ PROG(IPV6OP)(struct __sk_buff *skb)
- 
- 	ip6h = bpf_flow_dissect_get_header(skb, sizeof(*ip6h), &_ip6h);
- 	if (!ip6h)
--		return export_flow_keys(keys, BPF_DROP);
-+		return parse_epilogue(skb, BPF_DROP);
- 
- 	/* hlen is in 8-octets and does not include the first 8 bytes
- 	 * of the header
-@@ -354,7 +453,7 @@ PROG(IPV6FR)(struct __sk_buff *skb)
- 
- 	fragh = bpf_flow_dissect_get_header(skb, sizeof(*fragh), &_fragh);
- 	if (!fragh)
--		return export_flow_keys(keys, BPF_DROP);
-+		return parse_epilogue(skb, BPF_DROP);
- 
- 	keys->thoff += sizeof(*fragh);
- 	keys->is_frag = true;
-@@ -367,9 +466,9 @@ PROG(IPV6FR)(struct __sk_buff *skb)
- 		 * explicitly asked for.
- 		 */
- 		if (!(keys->flags & BPF_FLOW_DISSECTOR_F_PARSE_1ST_FRAG))
--			return export_flow_keys(keys, BPF_OK);
-+			return parse_epilogue(skb, BPF_OK);
- 	} else {
--		return export_flow_keys(keys, BPF_OK);
-+		return parse_epilogue(skb, BPF_OK);
- 	}
- 
- 	return parse_ipv6_proto(skb, fragh->nexthdr);
-@@ -377,14 +476,13 @@ PROG(IPV6FR)(struct __sk_buff *skb)
- 
- PROG(MPLS)(struct __sk_buff *skb)
- {
--	struct bpf_flow_keys *keys = skb->flow_keys;
- 	struct mpls_label *mpls, _mpls;
- 
- 	mpls = bpf_flow_dissect_get_header(skb, sizeof(*mpls), &_mpls);
- 	if (!mpls)
--		return export_flow_keys(keys, BPF_DROP);
-+		return parse_epilogue(skb, BPF_DROP);
- 
--	return export_flow_keys(keys, BPF_OK);
-+	return parse_epilogue(skb, BPF_OK);
- }
- 
- PROG(VLAN)(struct __sk_buff *skb)
-@@ -396,10 +494,10 @@ PROG(VLAN)(struct __sk_buff *skb)
- 	if (keys->n_proto == bpf_htons(ETH_P_8021AD)) {
- 		vlan = bpf_flow_dissect_get_header(skb, sizeof(*vlan), &_vlan);
- 		if (!vlan)
--			return export_flow_keys(keys, BPF_DROP);
-+			return parse_epilogue(skb, BPF_DROP);
- 
- 		if (vlan->h_vlan_encapsulated_proto != bpf_htons(ETH_P_8021Q))
--			return export_flow_keys(keys, BPF_DROP);
-+			return parse_epilogue(skb, BPF_DROP);
- 
- 		keys->nhoff += sizeof(*vlan);
- 		keys->thoff += sizeof(*vlan);
-@@ -407,14 +505,14 @@ PROG(VLAN)(struct __sk_buff *skb)
- 
- 	vlan = bpf_flow_dissect_get_header(skb, sizeof(*vlan), &_vlan);
- 	if (!vlan)
--		return export_flow_keys(keys, BPF_DROP);
-+		return parse_epilogue(skb, BPF_DROP);
- 
- 	keys->nhoff += sizeof(*vlan);
- 	keys->thoff += sizeof(*vlan);
- 	/* Only allow 8021AD + 8021Q double tagging and no triple tagging.*/
- 	if (vlan->h_vlan_encapsulated_proto == bpf_htons(ETH_P_8021AD) ||
- 	    vlan->h_vlan_encapsulated_proto == bpf_htons(ETH_P_8021Q))
--		return export_flow_keys(keys, BPF_DROP);
-+		return parse_epilogue(skb, BPF_DROP);
- 
- 	keys->n_proto = vlan->h_vlan_encapsulated_proto;
- 	return parse_eth_proto(skb, vlan->h_vlan_encapsulated_proto);
-diff --git a/tools/testing/selftests/bpf/test_flow_dissector.c b/tools/testing/selftests/bpf/test_flow_dissector.c
-index 571cc076dd7d..583c13f75ead 100644
---- a/tools/testing/selftests/bpf/test_flow_dissector.c
-+++ b/tools/testing/selftests/bpf/test_flow_dissector.c
-@@ -17,6 +17,8 @@
- #include <linux/if_packet.h>
- #include <linux/if_ether.h>
- #include <linux/ipv6.h>
-+#include <linux/virtio_net.h>
-+#include <net/if.h>
- #include <netinet/ip.h>
- #include <netinet/in.h>
- #include <netinet/udp.h>
-@@ -65,7 +67,8 @@ struct guehdr {
- static uint8_t	cfg_dsfield_inner;
- static uint8_t	cfg_dsfield_outer;
- static uint8_t	cfg_encap_proto;
--static bool	cfg_expect_failure = false;
-+static bool	cfg_expect_norx;
-+static bool	cfg_expect_snd_failure;
- static int	cfg_l3_extra = AF_UNSPEC;	/* optional SIT prefix */
- static int	cfg_l3_inner = AF_UNSPEC;
- static int	cfg_l3_outer = AF_UNSPEC;
-@@ -77,8 +80,14 @@ static int	cfg_port_gue = 6080;
- static bool	cfg_only_rx;
- static bool	cfg_only_tx;
- static int	cfg_src_port = 9;
-+static bool	cfg_tx_pf_packet;
-+static bool	cfg_use_vnet;
-+static bool	cfg_vnet_use_hdr_len_bad;
-+static bool	cfg_vnet_use_gso;
-+static bool	cfg_vnet_use_csum_off;
-+static bool	cfg_partial_udp_hdr;
- 
--static char	buf[ETH_DATA_LEN];
-+static char	buf[ETH_MAX_MTU];
- 
- #define INIT_ADDR4(name, addr4, port)				\
- 	static struct sockaddr_in name = {			\
-@@ -273,8 +282,48 @@ static int l3_length(int family)
- 		return sizeof(struct ipv6hdr);
- }
- 
-+static int build_vnet_header(void *header, int il3_len)
-+{
-+	struct virtio_net_hdr *vh = header;
-+
-+	vh->hdr_len = ETH_HLEN + il3_len + sizeof(struct udphdr);
-+
-+	if (cfg_partial_udp_hdr) {
-+		vh->hdr_len -= (sizeof(struct udphdr) >> 1);
-+		return sizeof(*vh);
-+	}
-+
-+	/* Alteration must increase hdr_len; if not, kernel overwrites it */
-+	if (cfg_vnet_use_hdr_len_bad)
-+		vh->hdr_len++;
-+
-+	if (cfg_vnet_use_csum_off) {
-+		vh->flags |= VIRTIO_NET_HDR_F_NEEDS_CSUM;
-+		vh->csum_start = ETH_HLEN + il3_len;
-+		vh->csum_offset = __builtin_offsetof(struct udphdr, check);
-+	}
-+
-+	if (cfg_vnet_use_gso) {
-+		vh->gso_type = VIRTIO_NET_HDR_GSO_UDP;
-+		vh->gso_size = ETH_DATA_LEN - il3_len;
-+	}
-+
-+	return sizeof(*vh);
-+}
-+
-+static int build_eth_header(void *header)
-+{
-+	struct ethhdr *eth = header;
-+	uint16_t proto = cfg_l3_inner == PF_INET ? ETH_P_IP : ETH_P_IPV6;
-+
-+	eth->h_proto = htons(proto);
-+
-+	return ETH_HLEN;
-+}
-+
- static int build_packet(void)
- {
-+	int l2_len = 0;
- 	int ol3_len = 0, ol4_len = 0, il3_len = 0, il4_len = 0;
- 	int el3_len = 0;
- 
-@@ -294,23 +343,29 @@ static int build_packet(void)
- 	il3_len = l3_length(cfg_l3_inner);
- 	il4_len = sizeof(struct udphdr);
- 
--	if (el3_len + ol3_len + ol4_len + il3_len + il4_len + cfg_payload_len >=
--	    sizeof(buf))
-+	if (cfg_use_vnet)
-+		l2_len += build_vnet_header(buf, il3_len);
-+	if (cfg_tx_pf_packet)
-+		l2_len += build_eth_header(buf + l2_len);
-+
-+	if (l2_len + el3_len + ol3_len + ol4_len + il3_len + il4_len +
-+	    cfg_payload_len >= sizeof(buf))
- 		error(1, 0, "packet too large\n");
- 
- 	/*
- 	 * Fill packet from inside out, to calculate correct checksums.
- 	 * But create ip before udp headers, as udp uses ip for pseudo-sum.
- 	 */
--	memset(buf + el3_len + ol3_len + ol4_len + il3_len + il4_len,
-+	memset(buf + l2_len + el3_len + ol3_len + ol4_len + il3_len + il4_len,
- 	       cfg_payload_char, cfg_payload_len);
- 
- 	/* add zero byte for udp csum padding */
--	buf[el3_len + ol3_len + ol4_len + il3_len + il4_len + cfg_payload_len] = 0;
-+	buf[l2_len + el3_len + ol3_len + ol4_len + il3_len + il4_len +
-+	    cfg_payload_len] = 0;
- 
- 	switch (cfg_l3_inner) {
- 	case PF_INET:
--		build_ipv4_header(buf + el3_len + ol3_len + ol4_len,
-+		build_ipv4_header(buf + l2_len + el3_len + ol3_len + ol4_len,
- 				  IPPROTO_UDP,
- 				  in_saddr4.sin_addr.s_addr,
- 				  in_daddr4.sin_addr.s_addr,
-@@ -318,7 +373,7 @@ static int build_packet(void)
- 				  cfg_dsfield_inner);
- 		break;
- 	case PF_INET6:
--		build_ipv6_header(buf + el3_len + ol3_len + ol4_len,
-+		build_ipv6_header(buf + l2_len + el3_len + ol3_len + ol4_len,
- 				  IPPROTO_UDP,
- 				  &in_saddr6, &in_daddr6,
- 				  il4_len + cfg_payload_len,
-@@ -326,22 +381,25 @@ static int build_packet(void)
- 		break;
- 	}
- 
--	build_udp_header(buf + el3_len + ol3_len + ol4_len + il3_len,
-+	build_udp_header(buf + l2_len + el3_len + ol3_len + ol4_len + il3_len,
- 			 cfg_payload_len, CFG_PORT_INNER, cfg_l3_inner);
- 
-+	if (cfg_partial_udp_hdr)
-+		return l2_len + il3_len + (il4_len >> 1);
-+
- 	if (!cfg_encap_proto)
--		return il3_len + il4_len + cfg_payload_len;
-+		return l2_len + il3_len + il4_len + cfg_payload_len;
- 
- 	switch (cfg_l3_outer) {
- 	case PF_INET:
--		build_ipv4_header(buf + el3_len, cfg_encap_proto,
-+		build_ipv4_header(buf + l2_len + el3_len, cfg_encap_proto,
- 				  out_saddr4.sin_addr.s_addr,
- 				  out_daddr4.sin_addr.s_addr,
- 				  ol4_len + il3_len + il4_len + cfg_payload_len,
- 				  cfg_dsfield_outer);
- 		break;
- 	case PF_INET6:
--		build_ipv6_header(buf + el3_len, cfg_encap_proto,
-+		build_ipv6_header(buf + l2_len + el3_len, cfg_encap_proto,
- 				  &out_saddr6, &out_daddr6,
- 				  ol4_len + il3_len + il4_len + cfg_payload_len,
- 				  cfg_dsfield_outer);
-@@ -350,17 +408,17 @@ static int build_packet(void)
- 
- 	switch (cfg_encap_proto) {
- 	case IPPROTO_UDP:
--		build_gue_header(buf + el3_len + ol3_len + ol4_len -
-+		build_gue_header(buf + l2_len + el3_len + ol3_len + ol4_len -
- 				 sizeof(struct guehdr),
- 				 cfg_l3_inner == PF_INET ? IPPROTO_IPIP
- 							 : IPPROTO_IPV6);
--		build_udp_header(buf + el3_len + ol3_len,
-+		build_udp_header(buf + l2_len + el3_len + ol3_len,
- 				 sizeof(struct guehdr) + il3_len + il4_len +
- 				 cfg_payload_len,
- 				 cfg_port_gue, cfg_l3_outer);
- 		break;
- 	case IPPROTO_GRE:
--		build_gre_header(buf + el3_len + ol3_len,
-+		build_gre_header(buf + l2_len + el3_len + ol3_len,
- 				 cfg_l3_inner == PF_INET ? ETH_P_IP
- 							 : ETH_P_IPV6);
- 		break;
-@@ -368,7 +426,7 @@ static int build_packet(void)
- 
- 	switch (cfg_l3_extra) {
- 	case PF_INET:
--		build_ipv4_header(buf,
-+		build_ipv4_header(buf + l2_len,
- 				  cfg_l3_outer == PF_INET ? IPPROTO_IPIP
- 							  : IPPROTO_IPV6,
- 				  extra_saddr4.sin_addr.s_addr,
-@@ -377,7 +435,7 @@ static int build_packet(void)
- 				  cfg_payload_len, 0);
- 		break;
- 	case PF_INET6:
--		build_ipv6_header(buf,
-+		build_ipv6_header(buf + l2_len,
- 				  cfg_l3_outer == PF_INET ? IPPROTO_IPIP
- 							  : IPPROTO_IPV6,
- 				  &extra_saddr6, &extra_daddr6,
-@@ -386,15 +444,46 @@ static int build_packet(void)
- 		break;
- 	}
- 
--	return el3_len + ol3_len + ol4_len + il3_len + il4_len +
-+	return l2_len + el3_len + ol3_len + ol4_len + il3_len + il4_len +
- 	       cfg_payload_len;
- }
- 
-+static int setup_tx_pfpacket(void)
-+{
-+	struct sockaddr_ll laddr = {0};
-+	const int one = 1;
-+	uint16_t proto;
-+	int fd;
-+
-+	fd = socket(PF_PACKET, SOCK_RAW, 0);
-+	if (fd == -1)
-+		error(1, errno, "socket tx");
-+
-+	if (cfg_use_vnet &&
-+	    setsockopt(fd, SOL_PACKET, PACKET_VNET_HDR, &one, sizeof(one)))
-+		error(1, errno, "setsockopt vnet");
-+
-+	proto = cfg_l3_inner == PF_INET ? ETH_P_IP : ETH_P_IPV6;
-+	laddr.sll_family = AF_PACKET;
-+	laddr.sll_protocol = htons(proto);
-+	laddr.sll_ifindex = if_nametoindex("lo");
-+	if (!laddr.sll_ifindex)
-+		error(1, errno, "if_nametoindex");
-+
-+	if (bind(fd, (void *)&laddr, sizeof(laddr)))
-+		error(1, errno, "bind");
-+
-+	return fd;
-+}
-+
- /* sender transmits encapsulated over RAW or unencap'd over UDP */
- static int setup_tx(void)
- {
- 	int family, fd, ret;
- 
-+	if (cfg_tx_pf_packet)
-+		return setup_tx_pfpacket();
-+
- 	if (cfg_l3_extra)
- 		family = cfg_l3_extra;
- 	else if (cfg_l3_outer)
-@@ -464,6 +553,13 @@ static int do_tx(int fd, const char *pkt, int len)
- 	int ret;
- 
- 	ret = write(fd, pkt, len);
-+
-+	if (cfg_expect_snd_failure) {
-+		if (ret == -1)
-+			return 0;
-+		error(1, 0, "expected tx to fail but it did not");
-+	}
-+
- 	if (ret == -1)
- 		error(1, errno, "send");
- 	if (ret != len)
-@@ -571,7 +667,7 @@ static int do_main(void)
- 	 * success (== 0) only if received all packets
- 	 * unless failure is expected, in which case none must arrive.
- 	 */
--	if (cfg_expect_failure)
-+	if (cfg_expect_norx || cfg_expect_snd_failure)
- 		return rx != 0;
- 	else
- 		return rx != tx;
-@@ -623,8 +719,12 @@ static void parse_opts(int argc, char **argv)
- {
- 	int c;
- 
--	while ((c = getopt(argc, argv, "d:D:e:f:Fhi:l:n:o:O:Rs:S:t:Tx:X:")) != -1) {
-+	while ((c = getopt(argc, argv,
-+			   "cd:D:e:Ef:FGghi:l:Ln:o:O:pRs:S:t:TUvx:X:")) != -1) {
- 		switch (c) {
-+		case 'c':
-+			cfg_vnet_use_csum_off = true;
-+			break;
- 		case 'd':
- 			if (cfg_l3_outer == AF_UNSPEC)
- 				error(1, 0, "-d must be preceded by -o");
-@@ -653,11 +753,17 @@ static void parse_opts(int argc, char **argv)
- 			else
- 				usage(argv[0]);
- 			break;
-+		case 'E':
-+			cfg_expect_snd_failure = true;
-+			break;
- 		case 'f':
- 			cfg_src_port = strtol(optarg, NULL, 0);
- 			break;
- 		case 'F':
--			cfg_expect_failure = true;
-+			cfg_expect_norx = true;
-+			break;
-+		case 'g':
-+			cfg_vnet_use_gso = true;
- 			break;
- 		case 'h':
- 			usage(argv[0]);
-@@ -673,6 +779,9 @@ static void parse_opts(int argc, char **argv)
- 		case 'l':
- 			cfg_payload_len = strtol(optarg, NULL, 0);
- 			break;
-+		case 'L':
-+			cfg_vnet_use_hdr_len_bad = true;
-+			break;
- 		case 'n':
- 			cfg_num_pkt = strtol(optarg, NULL, 0);
- 			break;
-@@ -682,6 +791,9 @@ static void parse_opts(int argc, char **argv)
- 		case 'O':
- 			cfg_l3_extra = parse_protocol_family(argv[0], optarg);
- 			break;
-+		case 'p':
-+			cfg_tx_pf_packet = true;
-+			break;
- 		case 'R':
- 			cfg_only_rx = true;
- 			break;
-@@ -703,6 +815,12 @@ static void parse_opts(int argc, char **argv)
- 		case 'T':
- 			cfg_only_tx = true;
- 			break;
-+		case 'U':
-+			cfg_partial_udp_hdr = true;
-+			break;
-+		case 'v':
-+			cfg_use_vnet = true;
-+			break;
- 		case 'x':
- 			cfg_dsfield_outer = strtol(optarg, NULL, 0);
- 			break;
-@@ -733,7 +851,26 @@ static void parse_opts(int argc, char **argv)
- 	 */
- 	if (((cfg_dsfield_outer & 0x3) == 0x3) &&
- 	    ((cfg_dsfield_inner & 0x3) == 0x0))
--		cfg_expect_failure = true;
-+		cfg_expect_norx = true;
-+
-+	/* Don't wait around for packets that we expect to fail to send */
-+	if (cfg_expect_snd_failure && !cfg_num_secs)
-+		cfg_num_secs = 3;
-+
-+	if (cfg_partial_udp_hdr && cfg_encap_proto)
-+		error(1, 0,
-+		      "ops: can't specify partial UDP hdr (-U) and encap (-e)");
-+
-+	if (cfg_use_vnet && cfg_encap_proto)
-+		error(1, 0, "options: can't specify encap (-e) with vnet (-v)");
-+	if (cfg_use_vnet && !cfg_tx_pf_packet)
-+		error(1, 0, "options: vnet (-v) requires psock for tx (-p)");
-+	if (cfg_vnet_use_gso && !cfg_use_vnet)
-+		error(1, 0, "options: gso (-g) requires vnet (-v)");
-+	if (cfg_vnet_use_csum_off && !cfg_use_vnet)
-+		error(1, 0, "options: vnet csum (-c) requires vnet (-v)");
-+	if (cfg_vnet_use_hdr_len_bad && !cfg_use_vnet)
-+		error(1, 0, "options: bad vnet hdrlen (-L) requires vnet (-v)");
- }
- 
- static void print_opts(void)
-diff --git a/tools/testing/selftests/bpf/test_flow_dissector.sh b/tools/testing/selftests/bpf/test_flow_dissector.sh
-index 174b72a64a4c..5852cf815eeb 100755
---- a/tools/testing/selftests/bpf/test_flow_dissector.sh
-+++ b/tools/testing/selftests/bpf/test_flow_dissector.sh
-@@ -51,6 +51,9 @@ if [[ -z $(ip netns identify $$) ]]; then
- 		echo "Skipping root flow dissector test, bpftool not found" >&2
- 	fi
- 
-+	orig_flow_dissect_sysctl=$(</proc/sys/net/core/flow_dissect_vnet_hdr)
-+	sysctl net.core.flow_dissect_vnet_hdr=1
-+
- 	# Run the rest of the tests in a net namespace.
- 	../net/in_netns.sh "$0" "$@"
- 	err=$(( $err + $? ))
-@@ -61,6 +64,7 @@ if [[ -z $(ip netns identify $$) ]]; then
- 		echo "selftests: $TESTNAME [FAILED]";
- 	fi
- 
-+	sysctl net.core.flow_dissect_vnet_hdr=$orig_flow_dissect_sysctl
- 	exit $err
- fi
- 
-@@ -165,4 +169,19 @@ tc filter add dev lo parent ffff: protocol ipv6 pref 1337 flower ip_proto \
- # Send 10 IPv6/UDP packets from port 10. Filter should not drop any.
- ./test_flow_dissector -i 6 -f 10
- 
-+
-+echo "Testing virtio-net header validation..."
-+echo "Testing valid vnet headers. Should *not* be dropped."
-+./with_addr.sh ./test_flow_dissector -i 4 -D 192.168.0.1 -S 1.1.1.1 -p -v
-+echo "Testing partial transport header. Should be dropped."
-+./with_addr.sh ./test_flow_dissector -i 4 -D 192.168.0.1 -S 1.1.1.1 -p -v -U -E
-+echo "Testing valid vnet gso spec. Should *not* be dropped."
-+./with_addr.sh ./test_flow_dissector -i 4 -D 192.168.0.1 -S 1.1.1.1 -p -v -g -c -l 8000
-+echo "Testing invalid vnet gso size. Should be dropped."
-+./with_addr.sh ./test_flow_dissector -i 4 -D 192.168.0.1 -S 1.1.1.1 -p -v -g -c -l 100 -E
-+echo "Testing invalid vnet header len. Should be dropped."
-+./with_addr.sh ./test_flow_dissector -i 4 -D 192.168.0.1 -S 1.1.1.1 -p -v -L -E
-+echo "Testing vnet gso without csum. Should be dropped."
-+./with_addr.sh ./test_flow_dissector -i 4 -D 192.168.0.1 -S 1.1.1.1 -p -v -g -l 8000 -E
-+
- exit 0
--- 
-2.32.0.rc0.204.g9fa02ecfa5-goog
+tools/virtio/ringtest/ptr_ring.c
+
+Thanks
+
+
+>
+>>
+>>>> If it really helps, can we do it more simpler by:
+>>>>
+>
 
