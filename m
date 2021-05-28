@@ -2,47 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AC5A3942A4
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 14:37:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D50C3942A9
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 14:37:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236790AbhE1MiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 08:38:14 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:37982 "EHLO
+        id S235980AbhE1Mij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 08:38:39 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:58320 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236795AbhE1Mgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 08:36:38 -0400
+        with ESMTP id S236806AbhE1Mgm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 08:36:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1622205304; x=1653741304;
+  t=1622205307; x=1653741307;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=PRcr7JhBmLKkVksYC67hr6b6D4DocdJUJ1uHLlr22cU=;
-  b=wZy720EcBJFK4rnJyro8p5dp01hhPFa2ciUISeK2g2UPWxg2ceQhU2nx
-   ZDVRdy4NvRL4xiG/Rp/wyhuTvgzZoAeaq97h17WulQ4H5YAiiAFjewAYq
-   QwKrjMYAN12JoXJvZITAORuvRliUv/Bu7eJ7Z20wj3RLCPeDYYVmV0TcO
-   gRRgURaUtM9cKuyALLOnYQs0KSQ+lW4tzIoVOxOOd3TxOevtwIBKeZRTx
-   0fl8tWnRjWBxhmA6DSnOyuGztsyAsKnNBVLV+oGdfipRH9Vc7SBw0zz8k
-   NoxNXK2Ak98Pw3bFLmf7h2FryFSxrPdwRhcMoLh7dpmOuM2WHetX4WXQA
-   Q==;
-IronPort-SDR: BuLkRabeCm8tsHFAQQaeKjeGPK7cRKBKxDajjlY6yufKT90W1fRgbVlIQZzKCiTjme4vNKri6+
- ESqbyKSgowv5CvDc1NooJj3Nyfcn8Wo2HpTCGbL4SIaBLliIzbTWSb4WOFAtdlnGgDXz2d8t0J
- nioxFxFAw+jLoJwNI+PIYNgm8zHdHH0SqUMjs5iqpZY7cZszBIb/uIhgahMrX3LqF+jscqB/8F
- aRjQXByo/rJu919ropIPjDcQzmKCOHRy80uj+BbfJA+gztPDThh4ltZhXuULPJBfPJJUkY2Ncl
- LfQ=
+  bh=aEEwtfodrz5bzhfIs4mvW0BdiFiEGdjXW3yQ1lVvae4=;
+  b=njQC8JYcJZC4ZXEdHjFcIc+LZqtthhrPA8rei4XatCFr95+0iicmCrSd
+   NCBmKDyLY7TxfMnRS4ICri6I4+oj0UOoSUoDc+NMmuQMJWir+NOEy/o3j
+   LWW/xJTTuusm5s9x9cz+SFiJoaXvMkg/Ivl/i2tMzMJtDYGhiID2MMwmz
+   s+7kUT1zPdhmQNwq0tmbd8EI4q3YfV9FCNekfBhWnTcLOrvX7IQKaXBuE
+   eWs/D1yha9wc/oJUS76a4DmtiI27ICr/5Sog8xLq0WAeplcjqzIzdSHgS
+   N7+nhWsIwePwMiNbJK4HMRQaBeVo7RE+yZJgyuJOmoK6Z3AA4vCzUyidh
+   g==;
+IronPort-SDR: w9+nGUSWqg/3vw/SXglfnQRdYov3hXmfST6/1javKn54P6AlDmhlVnlMckgkEtJ8fpN/V7Gx96
+ W9MHr2AEuCKJP4R2sn2ph87ral9Gwnsl+Lr9UD+IWI68pqC9kvf0CqKrLD9H5Am8gecB7++ZFf
+ DTNZvCt8V6R+ed9KVF7EOUP61WKnVBgOOlD+Cs2yASixDtKxwFyorBJY1PtTiBKfxZ/U0j6rIV
+ SET3aluZXe8+1hQ63Z8T3tYWWzL9txG0pZo4nvagoTw1lpv8whbDSS6io0UzjhQdMmTSWCNsxr
+ sFo=
 X-IronPort-AV: E=Sophos;i="5.83,229,1616482800"; 
-   d="scan'208";a="119505090"
+   d="scan'208";a="129870087"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 May 2021 05:35:03 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 May 2021 05:35:07 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 28 May 2021 05:35:02 -0700
+ 15.1.2176.2; Fri, 28 May 2021 05:35:06 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Fri, 28 May 2021 05:34:58 -0700
+ 15.1.2176.2 via Frontend Transport; Fri, 28 May 2021 05:35:02 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Device Tree List <devicetree@vger.kernel.org>
 CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>,
@@ -56,11 +58,11 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         "Simon Horman" <simon.horman@netronome.com>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v2 09/10] net: sparx5: add ethtool configuration and statistics support
-Date:   Fri, 28 May 2021 14:34:18 +0200
-Message-ID: <20210528123419.1142290-10-steen.hegelund@microchip.com>
+        "Lars Povlsen" <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>
+Subject: [PATCH net-next v2 10/10] arm64: dts: sparx5: Add the Sparx5 switch node
+Date:   Fri, 28 May 2021 14:34:19 +0200
+Message-ID: <20210528123419.1142290-11-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210528123419.1142290-1-steen.hegelund@microchip.com>
 References: <20210528123419.1142290-1-steen.hegelund@microchip.com>
@@ -71,1341 +73,1459 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds statistic counters for the network interfaces provided
-by the driver.  It also adds CPU port counters (which are not
-exposed by ethtool).
-This also adds support for configuring the network interface
-parameters via ethtool: speed, duplex, aneg etc.
+This provides the configuration for the currently available evaluation
+boards PCB134 and PCB135.
+
+The series depends on the following series currently on its way
+into the kernel:
+
+- Sparx5 Reset Driver
+  Link: https://lore.kernel.org/r/20210416084054.2922327-1-steen.hegelund@microchip.com/
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
 Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
+Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
 ---
- .../net/ethernet/microchip/sparx5/Makefile    |    2 +-
- .../microchip/sparx5/sparx5_ethtool.c         | 1227 +++++++++++++++++
- .../ethernet/microchip/sparx5/sparx5_main.c   |    4 +
- .../ethernet/microchip/sparx5/sparx5_main.h   |   14 +
- .../ethernet/microchip/sparx5/sparx5_netdev.c |    2 +
- 5 files changed, 1248 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
+ arch/arm64/boot/dts/microchip/sparx5.dtsi     |  94 ++-
+ .../dts/microchip/sparx5_pcb134_board.dtsi    | 481 ++++++++++++--
+ .../dts/microchip/sparx5_pcb135_board.dtsi    | 621 +++++++++++++++++-
+ 3 files changed, 1112 insertions(+), 84 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/Makefile b/drivers/net/ethernet/microchip/sparx5/Makefile
-index e7dea25eb479..5df99f9a12e9 100644
---- a/drivers/net/ethernet/microchip/sparx5/Makefile
-+++ b/drivers/net/ethernet/microchip/sparx5/Makefile
-@@ -7,4 +7,4 @@ obj-$(CONFIG_SPARX5_SWITCH) += sparx5-switch.o
+diff --git a/arch/arm64/boot/dts/microchip/sparx5.dtsi b/arch/arm64/boot/dts/microchip/sparx5.dtsi
+index d64621d1213b..ad07fff40544 100644
+--- a/arch/arm64/boot/dts/microchip/sparx5.dtsi
++++ b/arch/arm64/boot/dts/microchip/sparx5.dtsi
+@@ -135,9 +135,12 @@ mux: mux-controller {
+ 			};
+ 		};
  
- sparx5-switch-objs  := sparx5_main.o sparx5_packet.o \
-  sparx5_netdev.o sparx5_port.o sparx5_phylink.o sparx5_mactable.o sparx5_vlan.o \
-- sparx5_switchdev.o sparx5_calendar.o
-+ sparx5_switchdev.o sparx5_calendar.o sparx5_ethtool.o
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-new file mode 100644
-index 000000000000..e537c358fb07
---- /dev/null
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-@@ -0,0 +1,1227 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/* Microchip Sparx5 Switch driver
-+ *
-+ * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
-+ */
-+
-+#include <linux/ethtool.h>
-+
-+#include "sparx5_main_regs.h"
-+#include "sparx5_main.h"
-+#include "sparx5_port.h"
-+
-+/* Index of ANA_AC port counters */
-+#define SPX5_PORT_POLICER_DROPS 0
-+
-+/* Add a potentially wrapping 32 bit value to a 64 bit counter */
-+static void sparx5_update_counter(u64 *cnt, u32 val)
-+{
-+	if (val < (*cnt & U32_MAX))
-+		*cnt += (u64)1 << 32; /* value has wrapped */
-+	*cnt = (*cnt & ~(u64)U32_MAX) + val;
-+}
-+
-+enum sparx5_stats_entry {
-+	spx5_stats_rx_symbol_err_cnt = 0,
-+	spx5_stats_pmac_rx_symbol_err_cnt = 1,
-+	spx5_stats_tx_uc_cnt = 2,
-+	spx5_stats_pmac_tx_uc_cnt = 3,
-+	spx5_stats_tx_mc_cnt = 4,
-+	spx5_stats_tx_bc_cnt = 5,
-+	spx5_stats_tx_backoff1_cnt = 6,
-+	spx5_stats_tx_multi_coll_cnt = 7,
-+	spx5_stats_rx_uc_cnt = 8,
-+	spx5_stats_pmac_rx_uc_cnt = 9,
-+	spx5_stats_rx_mc_cnt = 10,
-+	spx5_stats_rx_bc_cnt = 11,
-+	spx5_stats_rx_crc_err_cnt = 12,
-+	spx5_stats_pmac_rx_crc_err_cnt = 13,
-+	spx5_stats_rx_alignment_lost_cnt = 14,
-+	spx5_stats_pmac_rx_alignment_lost_cnt = 15,
-+	spx5_stats_tx_ok_bytes_cnt = 16,
-+	spx5_stats_pmac_tx_ok_bytes_cnt = 17,
-+	spx5_stats_tx_defer_cnt = 18,
-+	spx5_stats_tx_late_coll_cnt = 19,
-+	spx5_stats_tx_xcoll_cnt = 20,
-+	spx5_stats_tx_csense_cnt = 21,
-+	spx5_stats_rx_ok_bytes_cnt = 22,
-+	spx5_stats_pmac_rx_ok_bytes_cnt = 23,
-+	spx5_stats_pmac_tx_mc_cnt = 24,
-+	spx5_stats_pmac_tx_bc_cnt = 25,
-+	spx5_stats_tx_xdefer_cnt = 26,
-+	spx5_stats_pmac_rx_mc_cnt = 27,
-+	spx5_stats_pmac_rx_bc_cnt = 28,
-+	spx5_stats_rx_in_range_len_err_cnt = 29,
-+	spx5_stats_pmac_rx_in_range_len_err_cnt = 30,
-+	spx5_stats_rx_out_of_range_len_err_cnt = 31,
-+	spx5_stats_pmac_rx_out_of_range_len_err_cnt = 32,
-+	spx5_stats_rx_oversize_cnt = 33,
-+	spx5_stats_pmac_rx_oversize_cnt = 34,
-+	spx5_stats_tx_pause_cnt = 35,
-+	spx5_stats_pmac_tx_pause_cnt = 36,
-+	spx5_stats_rx_pause_cnt = 37,
-+	spx5_stats_pmac_rx_pause_cnt = 38,
-+	spx5_stats_rx_unsup_opcode_cnt = 39,
-+	spx5_stats_pmac_rx_unsup_opcode_cnt = 40,
-+	spx5_stats_rx_undersize_cnt = 41,
-+	spx5_stats_pmac_rx_undersize_cnt = 42,
-+	spx5_stats_rx_fragments_cnt = 43,
-+	spx5_stats_pmac_rx_fragments_cnt = 44,
-+	spx5_stats_rx_jabbers_cnt = 45,
-+	spx5_stats_pmac_rx_jabbers_cnt = 46,
-+	spx5_stats_rx_size64_cnt = 47,
-+	spx5_stats_pmac_rx_size64_cnt = 48,
-+	spx5_stats_rx_size65to127_cnt = 49,
-+	spx5_stats_pmac_rx_size65to127_cnt = 50,
-+	spx5_stats_rx_size128to255_cnt = 51,
-+	spx5_stats_pmac_rx_size128to255_cnt = 52,
-+	spx5_stats_rx_size256to511_cnt = 53,
-+	spx5_stats_pmac_rx_size256to511_cnt = 54,
-+	spx5_stats_rx_size512to1023_cnt = 55,
-+	spx5_stats_pmac_rx_size512to1023_cnt = 56,
-+	spx5_stats_rx_size1024to1518_cnt = 57,
-+	spx5_stats_pmac_rx_size1024to1518_cnt = 58,
-+	spx5_stats_rx_size1519tomax_cnt = 59,
-+	spx5_stats_pmac_rx_size1519tomax_cnt = 60,
-+	spx5_stats_tx_size64_cnt = 61,
-+	spx5_stats_pmac_tx_size64_cnt = 62,
-+	spx5_stats_tx_size65to127_cnt = 63,
-+	spx5_stats_pmac_tx_size65to127_cnt = 64,
-+	spx5_stats_tx_size128to255_cnt = 65,
-+	spx5_stats_pmac_tx_size128to255_cnt = 66,
-+	spx5_stats_tx_size256to511_cnt = 67,
-+	spx5_stats_pmac_tx_size256to511_cnt = 68,
-+	spx5_stats_tx_size512to1023_cnt = 69,
-+	spx5_stats_pmac_tx_size512to1023_cnt = 70,
-+	spx5_stats_tx_size1024to1518_cnt = 71,
-+	spx5_stats_pmac_tx_size1024to1518_cnt = 72,
-+	spx5_stats_tx_size1519tomax_cnt = 73,
-+	spx5_stats_pmac_tx_size1519tomax_cnt = 74,
-+	spx5_stats_mm_rx_assembly_err_cnt = 75,
-+	spx5_stats_mm_rx_assembly_ok_cnt = 76,
-+	spx5_stats_mm_rx_merge_frag_cnt = 77,
-+	spx5_stats_mm_rx_smd_err_cnt = 78,
-+	spx5_stats_mm_tx_pfragment_cnt = 79,
-+	spx5_stats_rx_bad_bytes_cnt = 80,
-+	spx5_stats_pmac_rx_bad_bytes_cnt = 81,
-+	spx5_stats_rx_in_bytes_cnt = 82,
-+	spx5_stats_rx_ipg_shrink_cnt = 83,
-+	spx5_stats_rx_sync_lost_err_cnt = 84,
-+	spx5_stats_rx_tagged_frms_cnt = 85,
-+	spx5_stats_rx_untagged_frms_cnt = 86,
-+	spx5_stats_tx_out_bytes_cnt = 87,
-+	spx5_stats_tx_tagged_frms_cnt = 88,
-+	spx5_stats_tx_untagged_frms_cnt = 89,
-+	spx5_stats_rx_hih_cksm_err_cnt = 90,
-+	spx5_stats_pmac_rx_hih_cksm_err_cnt = 91,
-+	spx5_stats_rx_xgmii_prot_err_cnt = 92,
-+	spx5_stats_pmac_rx_xgmii_prot_err_cnt = 93,
-+	spx5_stats_ana_ac_port_stat_lsb_cnt = 94,
-+	spx5_stats_green_p0_rx_fwd = 95,
-+	spx5_stats_green_p0_rx_port_drop = 111,
-+	spx5_stats_green_p0_tx_port = 127,
-+	spx5_stats_rx_local_drop = 143,
-+	spx5_stats_tx_local_drop = 144,
-+	spx5_stats_count = 145,
-+};
-+
-+static const char *const sparx5_stats_layout[] = {
-+	"mm_rx_assembly_err_cnt",
-+	"mm_rx_assembly_ok_cnt",
-+	"mm_rx_merge_frag_cnt",
-+	"mm_rx_smd_err_cnt",
-+	"mm_tx_pfragment_cnt",
-+	"rx_bad_bytes_cnt",
-+	"pmac_rx_bad_bytes_cnt",
-+	"rx_in_bytes_cnt",
-+	"rx_ipg_shrink_cnt",
-+	"rx_sync_lost_err_cnt",
-+	"rx_tagged_frms_cnt",
-+	"rx_untagged_frms_cnt",
-+	"tx_out_bytes_cnt",
-+	"tx_tagged_frms_cnt",
-+	"tx_untagged_frms_cnt",
-+	"rx_hih_cksm_err_cnt",
-+	"pmac_rx_hih_cksm_err_cnt",
-+	"rx_xgmii_prot_err_cnt",
-+	"pmac_rx_xgmii_prot_err_cnt",
-+	"rx_port_policer_drop",
-+	"rx_fwd_green_p0",
-+	"rx_fwd_green_p1",
-+	"rx_fwd_green_p2",
-+	"rx_fwd_green_p3",
-+	"rx_fwd_green_p4",
-+	"rx_fwd_green_p5",
-+	"rx_fwd_green_p6",
-+	"rx_fwd_green_p7",
-+	"rx_fwd_yellow_p0",
-+	"rx_fwd_yellow_p1",
-+	"rx_fwd_yellow_p2",
-+	"rx_fwd_yellow_p3",
-+	"rx_fwd_yellow_p4",
-+	"rx_fwd_yellow_p5",
-+	"rx_fwd_yellow_p6",
-+	"rx_fwd_yellow_p7",
-+	"rx_port_drop_green_p0",
-+	"rx_port_drop_green_p1",
-+	"rx_port_drop_green_p2",
-+	"rx_port_drop_green_p3",
-+	"rx_port_drop_green_p4",
-+	"rx_port_drop_green_p5",
-+	"rx_port_drop_green_p6",
-+	"rx_port_drop_green_p7",
-+	"rx_port_drop_yellow_p0",
-+	"rx_port_drop_yellow_p1",
-+	"rx_port_drop_yellow_p2",
-+	"rx_port_drop_yellow_p3",
-+	"rx_port_drop_yellow_p4",
-+	"rx_port_drop_yellow_p5",
-+	"rx_port_drop_yellow_p6",
-+	"rx_port_drop_yellow_p7",
-+	"tx_port_green_p0",
-+	"tx_port_green_p1",
-+	"tx_port_green_p2",
-+	"tx_port_green_p3",
-+	"tx_port_green_p4",
-+	"tx_port_green_p5",
-+	"tx_port_green_p6",
-+	"tx_port_green_p7",
-+	"tx_port_yellow_p0",
-+	"tx_port_yellow_p1",
-+	"tx_port_yellow_p2",
-+	"tx_port_yellow_p3",
-+	"tx_port_yellow_p4",
-+	"tx_port_yellow_p5",
-+	"tx_port_yellow_p6",
-+	"tx_port_yellow_p7",
-+	"rx_local_drop",
-+	"tx_local_drop",
-+};
-+
-+static void sparx5_get_queue_sys_stats(struct sparx5 *sparx5, int portno)
-+{
-+	u64 *portstats;
-+	u64 *stats;
-+	u32 addr;
-+	int idx;
-+
-+	portstats = &sparx5->stats[portno * sparx5->num_stats];
-+	mutex_lock(&sparx5->queue_stats_lock);
-+	spx5_wr(XQS_STAT_CFG_STAT_VIEW_SET(portno), sparx5, XQS_STAT_CFG);
-+	addr = 0;
-+	stats = &portstats[spx5_stats_green_p0_rx_fwd];
-+	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx, ++addr, ++stats)
-+		sparx5_update_counter(stats, spx5_rd(sparx5, XQS_CNT(addr)));
-+	addr = 16;
-+	stats = &portstats[spx5_stats_green_p0_rx_port_drop];
-+	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx, ++addr, ++stats)
-+		sparx5_update_counter(stats, spx5_rd(sparx5, XQS_CNT(addr)));
-+	addr = 256;
-+	stats = &portstats[spx5_stats_green_p0_tx_port];
-+	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx, ++addr, ++stats)
-+		sparx5_update_counter(stats, spx5_rd(sparx5, XQS_CNT(addr)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_local_drop],
-+			      spx5_rd(sparx5, XQS_CNT(32)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_local_drop],
-+			      spx5_rd(sparx5, XQS_CNT(272)));
-+	mutex_unlock(&sparx5->queue_stats_lock);
-+}
-+
-+static void sparx5_get_ana_ac_stats_stats(struct sparx5 *sparx5, int portno)
-+{
-+	u64 *portstats = &sparx5->stats[portno * sparx5->num_stats];
-+
-+	sparx5_update_counter(&portstats[spx5_stats_ana_ac_port_stat_lsb_cnt],
-+			      spx5_rd(sparx5, ANA_AC_PORT_STAT_LSB_CNT(portno,
-+								       SPX5_PORT_POLICER_DROPS)));
-+}
-+
-+static void sparx5_get_dev_phy_stats(u64 *portstats, void __iomem *inst, u32
-+				     tinst)
-+{
-+	sparx5_update_counter(&portstats[spx5_stats_rx_symbol_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_SYMBOL_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_symbol_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_SYMBOL_ERR_CNT(tinst)));
-+}
-+
-+static void sparx5_get_dev_mac_stats(u64 *portstats, void __iomem *inst, u32
-+				     tinst)
-+{
-+	sparx5_update_counter(&portstats[spx5_stats_tx_uc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_TX_UC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_uc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_PMAC_TX_UC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_mc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_TX_MC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_bc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_TX_BC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_uc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_UC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_uc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_PMAC_RX_UC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_mc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_MC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_bc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_BC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_crc_err_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_CRC_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_crc_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_CRC_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_alignment_lost_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_ALIGNMENT_LOST_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_alignment_lost_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_ALIGNMENT_LOST_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_ok_bytes_cnt],
-+			      spx5_inst_rd(inst, DEV5G_TX_OK_BYTES_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_ok_bytes_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_TX_OK_BYTES_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_ok_bytes_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_OK_BYTES_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_ok_bytes_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_OK_BYTES_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_mc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_PMAC_TX_MC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_bc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_PMAC_TX_BC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_mc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_PMAC_RX_MC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_bc_cnt],
-+			      spx5_inst_rd(inst, DEV5G_PMAC_RX_BC_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_in_range_len_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_IN_RANGE_LEN_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_in_range_len_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_IN_RANGE_LEN_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_out_of_range_len_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_OUT_OF_RANGE_LEN_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_out_of_range_len_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_OUT_OF_RANGE_LEN_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_oversize_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_OVERSIZE_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_oversize_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_OVERSIZE_CNT(tinst)));
-+}
-+
-+static void sparx5_get_dev_mac_ctrl_stats(u64 *portstats, void __iomem *inst,
-+					  u32 tinst)
-+{
-+	sparx5_update_counter(&portstats[spx5_stats_tx_pause_cnt],
-+			      spx5_inst_rd(inst, DEV5G_TX_PAUSE_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_pause_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_TX_PAUSE_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_pause_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_PAUSE_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_pause_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_PAUSE_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_unsup_opcode_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_UNSUP_OPCODE_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_unsup_opcode_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_UNSUP_OPCODE_CNT(tinst)));
-+}
-+
-+static void sparx5_get_dev_rmon_stats(u64 *portstats, void __iomem *inst, u32
-+				      tinst)
-+{
-+	sparx5_update_counter(&portstats[spx5_stats_rx_undersize_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_UNDERSIZE_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_undersize_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_UNDERSIZE_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_oversize_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_OVERSIZE_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_oversize_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_OVERSIZE_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_fragments_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_FRAGMENTS_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_fragments_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_FRAGMENTS_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_jabbers_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_JABBERS_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_jabbers_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_JABBERS_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size64_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_SIZE64_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size64_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_SIZE64_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size65to127_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_SIZE65TO127_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size65to127_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_SIZE65TO127_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size128to255_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_SIZE128TO255_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size128to255_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_SIZE128TO255_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size256to511_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_SIZE256TO511_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size256to511_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_SIZE256TO511_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size512to1023_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_SIZE512TO1023_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size512to1023_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_SIZE512TO1023_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size1024to1518_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_SIZE1024TO1518_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size1024to1518_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_SIZE1024TO1518_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size1519tomax_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_SIZE1519TOMAX_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size1519tomax_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_SIZE1519TOMAX_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size64_cnt],
-+			      spx5_inst_rd(inst, DEV5G_TX_SIZE64_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size64_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_TX_SIZE64_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size65to127_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_TX_SIZE65TO127_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size65to127_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_TX_SIZE65TO127_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size128to255_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_TX_SIZE128TO255_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size128to255_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_TX_SIZE128TO255_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size256to511_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_TX_SIZE256TO511_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size256to511_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_TX_SIZE256TO511_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size512to1023_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_TX_SIZE512TO1023_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size512to1023_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_TX_SIZE512TO1023_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size1024to1518_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_TX_SIZE1024TO1518_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size1024to1518_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_TX_SIZE1024TO1518_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size1519tomax_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_TX_SIZE1519TOMAX_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size1519tomax_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_TX_SIZE1519TOMAX_CNT(tinst)));
-+}
-+
-+static void sparx5_get_dev_misc_stats(u64 *portstats, void __iomem *inst, u32
-+				      tinst)
-+{
-+	sparx5_update_counter(&portstats[spx5_stats_mm_rx_assembly_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_MM_RX_ASSEMBLY_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_mm_rx_assembly_ok_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_MM_RX_ASSEMBLY_OK_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_mm_rx_merge_frag_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_MM_RX_MERGE_FRAG_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_mm_rx_smd_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_MM_RX_SMD_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_mm_tx_pfragment_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_MM_TX_PFRAGMENT_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_bad_bytes_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_BAD_BYTES_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_bad_bytes_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_BAD_BYTES_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_in_bytes_cnt],
-+			      spx5_inst_rd(inst, DEV5G_RX_IN_BYTES_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_ipg_shrink_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_IPG_SHRINK_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_tagged_frms_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_TAGGED_FRMS_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_untagged_frms_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_UNTAGGED_FRMS_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_out_bytes_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_TX_OUT_BYTES_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_tagged_frms_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_TX_TAGGED_FRMS_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_untagged_frms_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_TX_UNTAGGED_FRMS_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_hih_cksm_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_HIH_CKSM_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_hih_cksm_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_HIH_CKSM_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_xgmii_prot_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_RX_XGMII_PROT_ERR_CNT(tinst)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_xgmii_prot_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   DEV5G_PMAC_RX_XGMII_PROT_ERR_CNT(tinst)));
-+}
-+
-+static void sparx5_get_device_stats(struct sparx5 *sparx5, int portno)
-+{
-+	u64 *portstats = &sparx5->stats[portno * sparx5->num_stats];
-+	u32 tinst = sparx5_port_dev_index(portno);
-+	u32 dev = sparx5_to_high_dev(portno);
-+	void __iomem *inst;
-+
-+	inst = spx5_inst_get(sparx5, dev, tinst);
-+	sparx5_get_dev_phy_stats(portstats, inst, tinst);
-+	sparx5_get_dev_mac_stats(portstats, inst, tinst);
-+	sparx5_get_dev_mac_ctrl_stats(portstats, inst, tinst);
-+	sparx5_get_dev_rmon_stats(portstats, inst, tinst);
-+	sparx5_get_dev_misc_stats(portstats, inst, tinst);
-+}
-+
-+static void sparx5_get_asm_phy_stats(u64 *portstats, void __iomem *inst, int
-+				     portno)
-+{
-+	sparx5_update_counter(&portstats[spx5_stats_rx_symbol_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_SYMBOL_ERR_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_symbol_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_SYMBOL_ERR_CNT(portno)));
-+}
-+
-+static void sparx5_get_asm_mac_stats(u64 *portstats, void __iomem *inst, int
-+				     portno)
-+{
-+	sparx5_update_counter(&portstats[spx5_stats_tx_uc_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_UC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_uc_cnt],
-+			      spx5_inst_rd(inst, ASM_PMAC_TX_UC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_mc_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_MC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_bc_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_BC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_backoff1_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_BACKOFF1_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_multi_coll_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_TX_MULTI_COLL_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_uc_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_UC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_uc_cnt],
-+			      spx5_inst_rd(inst, ASM_PMAC_RX_UC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_mc_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_MC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_bc_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_BC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_crc_err_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_CRC_ERR_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_crc_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_CRC_ERR_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_alignment_lost_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_ALIGNMENT_LOST_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_alignment_lost_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_ALIGNMENT_LOST_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_ok_bytes_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_OK_BYTES_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_ok_bytes_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_TX_OK_BYTES_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_defer_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_DEFER_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_late_coll_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_LATE_COLL_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_xcoll_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_XCOLL_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_csense_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_CSENSE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_ok_bytes_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_OK_BYTES_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_ok_bytes_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_OK_BYTES_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_mc_cnt],
-+			      spx5_inst_rd(inst, ASM_PMAC_TX_MC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_bc_cnt],
-+			      spx5_inst_rd(inst, ASM_PMAC_TX_BC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_xdefer_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_XDEFER_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_mc_cnt],
-+			      spx5_inst_rd(inst, ASM_PMAC_RX_MC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_bc_cnt],
-+			      spx5_inst_rd(inst, ASM_PMAC_RX_BC_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_in_range_len_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_IN_RANGE_LEN_ERR_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_in_range_len_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_IN_RANGE_LEN_ERR_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_out_of_range_len_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_OUT_OF_RANGE_LEN_ERR_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_out_of_range_len_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_OUT_OF_RANGE_LEN_ERR_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_oversize_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_OVERSIZE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_oversize_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_OVERSIZE_CNT(portno)));
-+}
-+
-+static void sparx5_get_asm_mac_ctrl_stats(u64 *portstats, void __iomem *inst,
-+					  int portno)
-+{
-+	sparx5_update_counter(&portstats[spx5_stats_tx_pause_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_PAUSE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_pause_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_TX_PAUSE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_pause_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_PAUSE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_pause_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_PAUSE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_unsup_opcode_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_UNSUP_OPCODE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_unsup_opcode_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_UNSUP_OPCODE_CNT(portno)));
-+}
-+
-+static void sparx5_get_asm_rmon_stats(u64 *portstats, void __iomem *inst, int
-+				      portno)
-+{
-+	sparx5_update_counter(&portstats[spx5_stats_rx_undersize_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_UNDERSIZE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_undersize_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_UNDERSIZE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_oversize_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_OVERSIZE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_oversize_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_OVERSIZE_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_fragments_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_FRAGMENTS_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_fragments_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_FRAGMENTS_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_jabbers_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_JABBERS_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_jabbers_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_JABBERS_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size64_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_SIZE64_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size64_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_SIZE64_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size65to127_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_SIZE65TO127_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size65to127_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_SIZE65TO127_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size128to255_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_SIZE128TO255_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size128to255_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_SIZE128TO255_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size256to511_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_SIZE256TO511_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size256to511_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_SIZE256TO511_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size512to1023_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_SIZE512TO1023_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size512to1023_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_SIZE512TO1023_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size1024to1518_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_SIZE1024TO1518_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size1024to1518_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_SIZE1024TO1518_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_size1519tomax_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_SIZE1519TOMAX_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size1519tomax_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_SIZE1519TOMAX_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size64_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_SIZE64_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size64_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_TX_SIZE64_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size65to127_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_TX_SIZE65TO127_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size65to127_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_TX_SIZE65TO127_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size128to255_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_TX_SIZE128TO255_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size128to255_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_TX_SIZE128TO255_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size256to511_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_TX_SIZE256TO511_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size256to511_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_TX_SIZE256TO511_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size512to1023_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_TX_SIZE512TO1023_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size512to1023_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_TX_SIZE512TO1023_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size1024to1518_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_TX_SIZE1024TO1518_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size1024to1518_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_TX_SIZE1024TO1518_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_size1519tomax_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_TX_SIZE1519TOMAX_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size1519tomax_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_TX_SIZE1519TOMAX_CNT(portno)));
-+}
-+
-+static void sparx5_get_asm_misc_stats(u64 *portstats, void __iomem *inst, int
-+				      portno)
-+{
-+	sparx5_update_counter(&portstats[spx5_stats_mm_rx_assembly_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_MM_RX_ASSEMBLY_ERR_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_mm_rx_assembly_ok_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_MM_RX_ASSEMBLY_OK_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_mm_rx_merge_frag_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_MM_RX_MERGE_FRAG_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_mm_rx_smd_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_MM_RX_SMD_ERR_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_mm_tx_pfragment_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_MM_TX_PFRAGMENT_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_bad_bytes_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_BAD_BYTES_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_bad_bytes_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_PMAC_RX_BAD_BYTES_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_in_bytes_cnt],
-+			      spx5_inst_rd(inst, ASM_RX_IN_BYTES_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_ipg_shrink_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_IPG_SHRINK_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_sync_lost_err_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_SYNC_LOST_ERR_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_tagged_frms_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_TAGGED_FRMS_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_rx_untagged_frms_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_RX_UNTAGGED_FRMS_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_out_bytes_cnt],
-+			      spx5_inst_rd(inst, ASM_TX_OUT_BYTES_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_tagged_frms_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_TX_TAGGED_FRMS_CNT(portno)));
-+	sparx5_update_counter(&portstats[spx5_stats_tx_untagged_frms_cnt],
-+			      spx5_inst_rd(inst,
-+					   ASM_TX_UNTAGGED_FRMS_CNT(portno)));
-+}
-+
-+static void sparx5_get_asm_stats(struct sparx5 *sparx5, int portno)
-+{
-+	u64 *portstats = &sparx5->stats[portno * sparx5->num_stats];
-+	void __iomem *inst = spx5_inst_get(sparx5, TARGET_ASM, 0);
-+
-+	sparx5_get_asm_phy_stats(portstats, inst, portno);
-+	sparx5_get_asm_mac_stats(portstats, inst, portno);
-+	sparx5_get_asm_mac_ctrl_stats(portstats, inst, portno);
-+	sparx5_get_asm_rmon_stats(portstats, inst, portno);
-+	sparx5_get_asm_misc_stats(portstats, inst, portno);
-+}
-+
-+static const struct ethtool_rmon_hist_range sparx5_rmon_ranges[] = {
-+	{    0,    64 },
-+	{   65,   127 },
-+	{  128,   255 },
-+	{  256,   511 },
-+	{  512,  1023 },
-+	{ 1024,  1518 },
-+	{ 1519, 10239 },
-+	{}
-+};
-+
-+static void sparx5_get_eth_phy_stats(struct net_device *ndev,
-+				     struct ethtool_eth_phy_stats *phy_stats)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+	struct sparx5 *sparx5 = port->sparx5;
-+	int portno = port->portno;
-+	void __iomem *inst;
-+	u64 *portstats;
-+
-+	portstats = &sparx5->stats[portno * sparx5->num_stats];
-+	if (sparx5_is_high_speed_device(&port->conf)) {
-+		u32 tinst = sparx5_port_dev_index(portno);
-+		u32 dev = sparx5_to_high_dev(portno);
-+
-+		inst = spx5_inst_get(sparx5, dev, tinst);
-+		sparx5_get_dev_phy_stats(portstats, inst, tinst);
-+	} else {
-+		inst = spx5_inst_get(sparx5, TARGET_ASM, 0);
-+		sparx5_get_asm_phy_stats(portstats, inst, portno);
-+	}
-+	phy_stats->SymbolErrorDuringCarrier =
-+		portstats[spx5_stats_rx_symbol_err_cnt] +
-+		portstats[spx5_stats_pmac_rx_symbol_err_cnt];
-+}
-+
-+static void sparx5_get_eth_mac_stats(struct net_device *ndev,
-+				     struct ethtool_eth_mac_stats *mac_stats)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+	struct sparx5 *sparx5 = port->sparx5;
-+	int portno = port->portno;
-+	void __iomem *inst;
-+	u64 *portstats;
-+
-+	portstats = &sparx5->stats[portno * sparx5->num_stats];
-+	if (sparx5_is_high_speed_device(&port->conf)) {
-+		u32 tinst = sparx5_port_dev_index(portno);
-+		u32 dev = sparx5_to_high_dev(portno);
-+
-+		inst = spx5_inst_get(sparx5, dev, tinst);
-+		sparx5_get_dev_mac_stats(portstats, inst, tinst);
-+	} else {
-+		inst = spx5_inst_get(sparx5, TARGET_ASM, 0);
-+		sparx5_get_asm_mac_stats(portstats, inst, portno);
-+	}
-+	mac_stats->FramesTransmittedOK = portstats[spx5_stats_tx_uc_cnt] +
-+		portstats[spx5_stats_pmac_tx_uc_cnt] +
-+		portstats[spx5_stats_tx_mc_cnt] +
-+		portstats[spx5_stats_tx_bc_cnt];
-+	mac_stats->SingleCollisionFrames =
-+		portstats[spx5_stats_tx_backoff1_cnt];
-+	mac_stats->MultipleCollisionFrames =
-+		portstats[spx5_stats_tx_multi_coll_cnt];
-+	mac_stats->FramesReceivedOK = portstats[spx5_stats_rx_uc_cnt] +
-+		portstats[spx5_stats_pmac_rx_uc_cnt] +
-+		portstats[spx5_stats_rx_mc_cnt] +
-+		portstats[spx5_stats_rx_bc_cnt];
-+	mac_stats->FrameCheckSequenceErrors =
-+		portstats[spx5_stats_rx_crc_err_cnt] +
-+		portstats[spx5_stats_pmac_rx_crc_err_cnt];
-+	mac_stats->AlignmentErrors = portstats[spx5_stats_rx_alignment_lost_cnt]
-+		+ portstats[spx5_stats_pmac_rx_alignment_lost_cnt];
-+	mac_stats->OctetsTransmittedOK = portstats[spx5_stats_tx_ok_bytes_cnt] +
-+		portstats[spx5_stats_pmac_tx_ok_bytes_cnt];
-+	mac_stats->FramesWithDeferredXmissions =
-+		portstats[spx5_stats_tx_defer_cnt];
-+	mac_stats->LateCollisions =
-+		portstats[spx5_stats_tx_late_coll_cnt];
-+	mac_stats->FramesAbortedDueToXSColls =
-+		portstats[spx5_stats_tx_xcoll_cnt];
-+	mac_stats->CarrierSenseErrors = portstats[spx5_stats_tx_csense_cnt];
-+	mac_stats->OctetsReceivedOK = portstats[spx5_stats_rx_ok_bytes_cnt] +
-+		portstats[spx5_stats_pmac_rx_ok_bytes_cnt];
-+	mac_stats->MulticastFramesXmittedOK = portstats[spx5_stats_tx_mc_cnt] +
-+		portstats[spx5_stats_pmac_tx_mc_cnt];
-+	mac_stats->BroadcastFramesXmittedOK = portstats[spx5_stats_tx_bc_cnt] +
-+		portstats[spx5_stats_pmac_tx_bc_cnt];
-+	mac_stats->FramesWithExcessiveDeferral =
-+		portstats[spx5_stats_tx_xdefer_cnt];
-+	mac_stats->MulticastFramesReceivedOK = portstats[spx5_stats_rx_mc_cnt] +
-+		portstats[spx5_stats_pmac_rx_mc_cnt];
-+	mac_stats->BroadcastFramesReceivedOK = portstats[spx5_stats_rx_bc_cnt] +
-+		portstats[spx5_stats_pmac_rx_bc_cnt];
-+	mac_stats->InRangeLengthErrors =
-+		portstats[spx5_stats_rx_in_range_len_err_cnt] +
-+		portstats[spx5_stats_pmac_rx_in_range_len_err_cnt];
-+	mac_stats->OutOfRangeLengthField =
-+		portstats[spx5_stats_rx_out_of_range_len_err_cnt] +
-+		portstats[spx5_stats_pmac_rx_out_of_range_len_err_cnt];
-+	mac_stats->FrameTooLongErrors = portstats[spx5_stats_rx_oversize_cnt] +
-+		portstats[spx5_stats_pmac_rx_oversize_cnt];
-+}
-+
-+static void sparx5_get_eth_mac_ctrl_stats(struct net_device *ndev,
-+					  struct ethtool_eth_ctrl_stats *mac_ctrl_stats)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+	struct sparx5 *sparx5 = port->sparx5;
-+	int portno = port->portno;
-+	void __iomem *inst;
-+	u64 *portstats;
-+
-+	portstats = &sparx5->stats[portno * sparx5->num_stats];
-+	if (sparx5_is_high_speed_device(&port->conf)) {
-+		u32 tinst = sparx5_port_dev_index(portno);
-+		u32 dev = sparx5_to_high_dev(portno);
-+
-+		inst = spx5_inst_get(sparx5, dev, tinst);
-+		sparx5_get_dev_mac_ctrl_stats(portstats, inst, tinst);
-+	} else {
-+		inst = spx5_inst_get(sparx5, TARGET_ASM, 0);
-+		sparx5_get_asm_mac_ctrl_stats(portstats, inst, portno);
-+	}
-+	mac_ctrl_stats->MACControlFramesTransmitted =
-+		portstats[spx5_stats_tx_pause_cnt] +
-+		portstats[spx5_stats_pmac_tx_pause_cnt];
-+	mac_ctrl_stats->MACControlFramesReceived =
-+		portstats[spx5_stats_rx_pause_cnt] +
-+		portstats[spx5_stats_pmac_rx_pause_cnt];
-+	mac_ctrl_stats->UnsupportedOpcodesReceived =
-+		portstats[spx5_stats_rx_unsup_opcode_cnt] +
-+		portstats[spx5_stats_pmac_rx_unsup_opcode_cnt];
-+}
-+
-+static void sparx5_get_eth_rmon_stats(struct net_device *ndev,
-+				      struct ethtool_rmon_stats *rmon_stats,
-+				      const struct ethtool_rmon_hist_range **ranges)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+	struct sparx5 *sparx5 = port->sparx5;
-+	int portno = port->portno;
-+	void __iomem *inst;
-+	u64 *portstats;
-+
-+	portstats = &sparx5->stats[portno * sparx5->num_stats];
-+	if (sparx5_is_high_speed_device(&port->conf)) {
-+		u32 tinst = sparx5_port_dev_index(portno);
-+		u32 dev = sparx5_to_high_dev(portno);
-+
-+		inst = spx5_inst_get(sparx5, dev, tinst);
-+		sparx5_get_dev_rmon_stats(portstats, inst, tinst);
-+	} else {
-+		inst = spx5_inst_get(sparx5, TARGET_ASM, 0);
-+		sparx5_get_asm_rmon_stats(portstats, inst, portno);
-+	}
-+	rmon_stats->undersize_pkts = portstats[spx5_stats_rx_undersize_cnt] +
-+		portstats[spx5_stats_pmac_rx_undersize_cnt];
-+	rmon_stats->oversize_pkts = portstats[spx5_stats_rx_oversize_cnt] +
-+		portstats[spx5_stats_pmac_rx_oversize_cnt];
-+	rmon_stats->fragments = portstats[spx5_stats_rx_fragments_cnt] +
-+		portstats[spx5_stats_pmac_rx_fragments_cnt];
-+	rmon_stats->jabbers = portstats[spx5_stats_rx_jabbers_cnt] +
-+		portstats[spx5_stats_pmac_rx_jabbers_cnt];
-+	rmon_stats->hist[0] = portstats[spx5_stats_rx_size64_cnt] +
-+		portstats[spx5_stats_pmac_rx_size64_cnt];
-+	rmon_stats->hist[1] = portstats[spx5_stats_rx_size65to127_cnt] +
-+		portstats[spx5_stats_pmac_rx_size65to127_cnt];
-+	rmon_stats->hist[2] = portstats[spx5_stats_rx_size128to255_cnt] +
-+		portstats[spx5_stats_pmac_rx_size128to255_cnt];
-+	rmon_stats->hist[3] = portstats[spx5_stats_rx_size256to511_cnt] +
-+		portstats[spx5_stats_pmac_rx_size256to511_cnt];
-+	rmon_stats->hist[4] = portstats[spx5_stats_rx_size512to1023_cnt] +
-+		portstats[spx5_stats_pmac_rx_size512to1023_cnt];
-+	rmon_stats->hist[5] = portstats[spx5_stats_rx_size1024to1518_cnt] +
-+		portstats[spx5_stats_pmac_rx_size1024to1518_cnt];
-+	rmon_stats->hist[6] = portstats[spx5_stats_rx_size1519tomax_cnt] +
-+		portstats[spx5_stats_pmac_rx_size1519tomax_cnt];
-+	rmon_stats->hist_tx[0] = portstats[spx5_stats_tx_size64_cnt] +
-+		portstats[spx5_stats_pmac_tx_size64_cnt];
-+	rmon_stats->hist_tx[1] = portstats[spx5_stats_tx_size65to127_cnt] +
-+		portstats[spx5_stats_pmac_tx_size65to127_cnt];
-+	rmon_stats->hist_tx[2] = portstats[spx5_stats_tx_size128to255_cnt] +
-+		portstats[spx5_stats_pmac_tx_size128to255_cnt];
-+	rmon_stats->hist_tx[3] = portstats[spx5_stats_tx_size256to511_cnt] +
-+		portstats[spx5_stats_pmac_tx_size256to511_cnt];
-+	rmon_stats->hist_tx[4] = portstats[spx5_stats_tx_size512to1023_cnt] +
-+		portstats[spx5_stats_pmac_tx_size512to1023_cnt];
-+	rmon_stats->hist_tx[5] = portstats[spx5_stats_tx_size1024to1518_cnt] +
-+		portstats[spx5_stats_pmac_tx_size1024to1518_cnt];
-+	rmon_stats->hist_tx[6] = portstats[spx5_stats_tx_size1519tomax_cnt] +
-+		portstats[spx5_stats_pmac_tx_size1519tomax_cnt];
-+	*ranges = sparx5_rmon_ranges;
-+}
-+
-+static int sparx5_get_sset_count(struct net_device *ndev, int sset)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+	struct sparx5  *sparx5 = port->sparx5;
-+
-+	if (sset != ETH_SS_STATS)
-+		return -EOPNOTSUPP;
-+	return sparx5->num_ethtool_stats;
-+}
-+
-+static void sparx5_get_sset_strings(struct net_device *ndev, u32 sset, u8 *data)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+	struct sparx5  *sparx5 = port->sparx5;
-+	int idx;
-+
-+	if (sset != ETH_SS_STATS)
-+		return;
-+
-+	for (idx = 0; idx < sparx5->num_ethtool_stats; idx++)
-+		strncpy(data + idx * ETH_GSTRING_LEN,
-+			sparx5->stats_layout[idx], ETH_GSTRING_LEN);
-+}
-+
-+static void sparx5_get_sset_data(struct net_device *ndev,
-+				 struct ethtool_stats *stats, u64 *data)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+	struct sparx5 *sparx5 = port->sparx5;
-+	int portno = port->portno;
-+	void __iomem *inst;
-+	u64 *portstats;
-+	int idx;
-+
-+	portstats = &sparx5->stats[portno * sparx5->num_stats];
-+	if (sparx5_is_high_speed_device(&port->conf)) {
-+		u32 tinst = sparx5_port_dev_index(portno);
-+		u32 dev = sparx5_to_high_dev(portno);
-+
-+		inst = spx5_inst_get(sparx5, dev, tinst);
-+		sparx5_get_dev_misc_stats(portstats, inst, tinst);
-+	} else {
-+		inst = spx5_inst_get(sparx5, TARGET_ASM, 0);
-+		sparx5_get_asm_misc_stats(portstats, inst, portno);
-+	}
-+	sparx5_get_ana_ac_stats_stats(sparx5, portno);
-+	sparx5_get_queue_sys_stats(sparx5, portno);
-+	/* Copy port counters to the ethtool buffer */
-+	for (idx = spx5_stats_mm_rx_assembly_err_cnt;
-+	     idx < spx5_stats_mm_rx_assembly_err_cnt +
-+	     sparx5->num_ethtool_stats; idx++)
-+		*data++ = portstats[idx];
-+}
-+
-+void sparx5_get_stats64(struct net_device *ndev,
-+			struct rtnl_link_stats64 *stats)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+	struct sparx5 *sparx5 = port->sparx5;
-+	u64 *portstats;
-+	int idx;
-+
-+	if (!sparx5->stats)
-+		return; /* Not initialized yet */
-+
-+	portstats = &sparx5->stats[port->portno * sparx5->num_stats];
-+
-+	stats->rx_packets = portstats[spx5_stats_rx_uc_cnt] +
-+		portstats[spx5_stats_pmac_rx_uc_cnt] +
-+		portstats[spx5_stats_rx_mc_cnt] +
-+		portstats[spx5_stats_rx_bc_cnt];
-+	stats->tx_packets = portstats[spx5_stats_tx_uc_cnt] +
-+		portstats[spx5_stats_pmac_tx_uc_cnt] +
-+		portstats[spx5_stats_tx_mc_cnt] +
-+		portstats[spx5_stats_tx_bc_cnt];
-+	stats->rx_bytes = portstats[spx5_stats_rx_ok_bytes_cnt] +
-+		portstats[spx5_stats_pmac_rx_ok_bytes_cnt];
-+	stats->tx_bytes = portstats[spx5_stats_tx_ok_bytes_cnt] +
-+		portstats[spx5_stats_pmac_tx_ok_bytes_cnt];
-+	stats->rx_errors = portstats[spx5_stats_rx_in_range_len_err_cnt] +
-+		portstats[spx5_stats_pmac_rx_in_range_len_err_cnt] +
-+		portstats[spx5_stats_rx_out_of_range_len_err_cnt] +
-+		portstats[spx5_stats_pmac_rx_out_of_range_len_err_cnt] +
-+		portstats[spx5_stats_rx_oversize_cnt] +
-+		portstats[spx5_stats_pmac_rx_oversize_cnt] +
-+		portstats[spx5_stats_rx_crc_err_cnt] +
-+		portstats[spx5_stats_pmac_rx_crc_err_cnt] +
-+		portstats[spx5_stats_rx_alignment_lost_cnt] +
-+		portstats[spx5_stats_pmac_rx_alignment_lost_cnt];
-+	stats->tx_errors = portstats[spx5_stats_tx_xcoll_cnt] +
-+		portstats[spx5_stats_tx_csense_cnt] +
-+		portstats[spx5_stats_tx_late_coll_cnt];
-+	stats->multicast = portstats[spx5_stats_rx_mc_cnt] +
-+		portstats[spx5_stats_pmac_rx_mc_cnt];
-+	stats->collisions = portstats[spx5_stats_tx_late_coll_cnt] +
-+		portstats[spx5_stats_tx_xcoll_cnt] +
-+		portstats[spx5_stats_tx_backoff1_cnt];
-+	stats->rx_length_errors = portstats[spx5_stats_rx_in_range_len_err_cnt] +
-+		portstats[spx5_stats_pmac_rx_in_range_len_err_cnt] +
-+		portstats[spx5_stats_rx_out_of_range_len_err_cnt] +
-+		portstats[spx5_stats_pmac_rx_out_of_range_len_err_cnt] +
-+		portstats[spx5_stats_rx_oversize_cnt] +
-+		portstats[spx5_stats_pmac_rx_oversize_cnt];
-+	stats->rx_crc_errors = portstats[spx5_stats_rx_crc_err_cnt] +
-+		portstats[spx5_stats_pmac_rx_crc_err_cnt];
-+	stats->rx_frame_errors = portstats[spx5_stats_rx_alignment_lost_cnt] +
-+		portstats[spx5_stats_pmac_rx_alignment_lost_cnt];
-+	stats->tx_aborted_errors = portstats[spx5_stats_tx_xcoll_cnt];
-+	stats->tx_carrier_errors = portstats[spx5_stats_tx_csense_cnt];
-+	stats->tx_window_errors = portstats[spx5_stats_tx_late_coll_cnt];
-+	stats->rx_dropped = portstats[spx5_stats_ana_ac_port_stat_lsb_cnt];
-+	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx, ++stats)
-+		stats->rx_dropped += portstats[spx5_stats_green_p0_rx_port_drop
-+					       + idx];
-+	stats->tx_dropped = portstats[spx5_stats_tx_local_drop];
-+}
-+
-+static void sparx5_update_port_stats(struct sparx5 *sparx5, int portno)
-+{
-+	if (sparx5_is_high_speed_device(&sparx5->ports[portno]->conf))
-+		sparx5_get_device_stats(sparx5, portno);
-+	else
-+		sparx5_get_asm_stats(sparx5, portno);
-+	sparx5_get_ana_ac_stats_stats(sparx5, portno);
-+	sparx5_get_queue_sys_stats(sparx5, portno);
-+}
-+
-+static void sparx5_update_stats(struct sparx5 *sparx5)
-+{
-+	int idx;
-+
-+	for (idx = 0; idx < SPX5_PORTS; idx++)
-+		if (sparx5->ports[idx])
-+			sparx5_update_port_stats(sparx5, idx);
-+}
-+
-+static void sparx5_check_stats_work(struct work_struct *work)
-+{
-+	struct delayed_work *dwork = to_delayed_work(work);
-+	struct sparx5 *sparx5 = container_of(dwork,
-+					     struct sparx5,
-+					     stats_work);
-+
-+	sparx5_update_stats(sparx5);
-+
-+	queue_delayed_work(sparx5->stats_queue, &sparx5->stats_work,
-+			   SPX5_STATS_CHECK_DELAY);
-+}
-+
-+static int sparx5_get_link_settings(struct net_device *ndev,
-+				    struct ethtool_link_ksettings *cmd)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+
-+	return phylink_ethtool_ksettings_get(port->phylink, cmd);
-+}
-+
-+static int sparx5_set_link_settings(struct net_device *ndev,
-+				    const struct ethtool_link_ksettings *cmd)
-+{
-+	struct sparx5_port *port = netdev_priv(ndev);
-+
-+	return phylink_ethtool_ksettings_set(port->phylink, cmd);
-+}
-+
-+static void sparx5_config_stats(struct sparx5 *sparx5)
-+{
-+	/* Enable global events for port policer drops */
-+	spx5_rmw(ANA_AC_PORT_SGE_CFG_MASK_SET(0xf0f0),
-+		 ANA_AC_PORT_SGE_CFG_MASK,
-+		 sparx5,
-+		 ANA_AC_PORT_SGE_CFG(SPX5_PORT_POLICER_DROPS));
-+}
-+
-+static void sparx5_config_port_stats(struct sparx5 *sparx5, int portno)
-+{
-+	/* Clear Queue System counters */
-+	spx5_wr(XQS_STAT_CFG_STAT_VIEW_SET(portno) |
-+		XQS_STAT_CFG_STAT_CLEAR_SHOT_SET(3), sparx5,
-+		XQS_STAT_CFG);
-+
-+	/* Use counter for port policer drop count */
-+	spx5_rmw(ANA_AC_PORT_STAT_CFG_CFG_CNT_FRM_TYPE_SET(1) |
-+		 ANA_AC_PORT_STAT_CFG_CFG_CNT_BYTE_SET(0) |
-+		 ANA_AC_PORT_STAT_CFG_CFG_PRIO_MASK_SET(0xff),
-+		 ANA_AC_PORT_STAT_CFG_CFG_CNT_FRM_TYPE |
-+		 ANA_AC_PORT_STAT_CFG_CFG_CNT_BYTE |
-+		 ANA_AC_PORT_STAT_CFG_CFG_PRIO_MASK,
-+		 sparx5, ANA_AC_PORT_STAT_CFG(portno, SPX5_PORT_POLICER_DROPS));
-+}
-+
-+const struct ethtool_ops sparx5_ethtool_ops = {
-+	.get_sset_count         = sparx5_get_sset_count,
-+	.get_strings            = sparx5_get_sset_strings,
-+	.get_ethtool_stats      = sparx5_get_sset_data,
-+	.get_link_ksettings	= sparx5_get_link_settings,
-+	.set_link_ksettings	= sparx5_set_link_settings,
-+	.get_link               = ethtool_op_get_link,
-+	.get_eth_phy_stats      = sparx5_get_eth_phy_stats,
-+	.get_eth_mac_stats      = sparx5_get_eth_mac_stats,
-+	.get_eth_ctrl_stats     = sparx5_get_eth_mac_ctrl_stats,
-+	.get_rmon_stats         = sparx5_get_eth_rmon_stats,
-+};
-+
-+int sparx_stats_init(struct sparx5 *sparx5)
-+{
-+	char queue_name[32];
-+	int portno;
-+
-+	sparx5->stats_layout = sparx5_stats_layout;
-+	sparx5->num_stats = spx5_stats_count;
-+	sparx5->num_ethtool_stats = ARRAY_SIZE(sparx5_stats_layout);
-+	sparx5->stats = devm_kcalloc(sparx5->dev,
-+				     SPX5_PORTS_ALL * sparx5->num_stats,
-+				     sizeof(u64), GFP_KERNEL);
-+	if (!sparx5->stats)
-+		return -ENOMEM;
-+
-+	mutex_init(&sparx5->queue_stats_lock);
-+	sparx5_config_stats(sparx5);
-+	for (portno = 0; portno < SPX5_PORTS; portno++)
-+		if (sparx5->ports[portno])
-+			sparx5_config_port_stats(sparx5, portno);
-+
-+	snprintf(queue_name, sizeof(queue_name), "%s-stats",
-+		 dev_name(sparx5->dev));
-+	sparx5->stats_queue = create_singlethread_workqueue(queue_name);
-+	INIT_DELAYED_WORK(&sparx5->stats_work, sparx5_check_stats_work);
-+	queue_delayed_work(sparx5->stats_queue, &sparx5->stats_work,
-+			   SPX5_STATS_CHECK_DELAY);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-index 7c101afc7322..7ffd4b61dd33 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-@@ -624,6 +624,10 @@ static int sparx5_start(struct sparx5 *sparx5)
- 	if (err)
- 		return err;
+-		reset@611010008 {
+-			compatible = "microchip,sparx5-chip-reset";
++		reset: reset-controller@611010008 {
++			compatible = "microchip,sparx5-switch-reset";
+ 			reg = <0x6 0x11010008 0x4>;
++			reg-names = "gcb";
++			#reset-cells = <1>;
++			cpu-syscon = <&cpu_ctrl>;
+ 		};
  
-+	/* Init stats */
-+	err = sparx_stats_init(sparx5);
-+	if (err)
-+		return err;
- 
- 	/* Init mact_sw struct */
- 	mutex_init(&sparx5->mact_lock);
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-index e9c48915842d..714bdfdd11ba 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-@@ -133,6 +133,15 @@ struct sparx5 {
- 	/* port structures are in net device */
- 	struct sparx5_port *ports[SPX5_PORTS];
- 	enum sparx5_core_clockfreq coreclock;
-+	/* Statistics */
-+	u32 num_stats;
-+	u32 num_ethtool_stats;
-+	const char * const *stats_layout;
-+	u64 *stats;
-+	/* Workqueue for reading stats */
-+	struct mutex queue_stats_lock;
-+	struct delayed_work stats_work;
-+	struct workqueue_struct *stats_queue;
- 	/* Notifiers */
- 	struct notifier_block netdevice_nb;
- 	struct notifier_block switchdev_nb;
-@@ -200,6 +209,10 @@ void sparx5_vlan_port_apply(struct sparx5 *sparx5, struct sparx5_port *port);
- int sparx5_config_auto_calendar(struct sparx5 *sparx5);
- int sparx5_config_dsm_calendar(struct sparx5 *sparx5);
- 
-+/* sparx5_ethtool.c */
-+void sparx5_get_stats64(struct net_device *ndev, struct rtnl_link_stats64 *stats);
-+int sparx_stats_init(struct sparx5 *sparx5);
+ 		uart0: serial@600100000 {
+@@ -275,6 +278,21 @@ emmc_pins: emmc-pins {
+ 					"GPIO_46", "GPIO_47";
+ 				function = "emmc";
+ 			};
 +
- /* sparx5_netdev.c */
- bool sparx5_netdevice_check(const struct net_device *dev);
- struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno);
-@@ -221,6 +234,7 @@ static inline u32 sparx5_clk_period(enum sparx5_core_clockfreq cclock)
- }
++			miim1_pins: miim1-pins {
++				pins = "GPIO_56", "GPIO_57";
++				function = "miim";
++			};
++
++			miim2_pins: miim2-pins {
++				pins = "GPIO_58", "GPIO_59";
++				function = "miim";
++			};
++
++			miim3_pins: miim3-pins {
++				pins = "GPIO_52", "GPIO_53";
++				function = "miim";
++			};
+ 		};
  
- extern const struct phylink_mac_ops sparx5_phylink_mac_ops;
-+extern const struct ethtool_ops sparx5_ethtool_ops;
+ 		sgpio0: gpio@61101036c {
+@@ -285,6 +303,8 @@ sgpio0: gpio@61101036c {
+ 			clocks = <&sys_clk>;
+ 			pinctrl-0 = <&sgpio0_pins>;
+ 			pinctrl-names = "default";
++			resets = <&reset 0>;
++			reset-names = "switch";
+ 			reg = <0x6 0x1101036c 0x100>;
+ 			sgpio_in0: gpio@0 {
+ 				compatible = "microchip,sparx5-sgpio-bank";
+@@ -292,6 +312,9 @@ sgpio_in0: gpio@0 {
+ 				gpio-controller;
+ 				#gpio-cells = <3>;
+ 				ngpios = <96>;
++				interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
++				interrupt-controller;
++				#interrupt-cells = <3>;
+ 			};
+ 			sgpio_out0: gpio@1 {
+ 				compatible = "microchip,sparx5-sgpio-bank";
+@@ -310,6 +333,8 @@ sgpio1: gpio@611010484 {
+ 			clocks = <&sys_clk>;
+ 			pinctrl-0 = <&sgpio1_pins>;
+ 			pinctrl-names = "default";
++			resets = <&reset 0>;
++			reset-names = "switch";
+ 			reg = <0x6 0x11010484 0x100>;
+ 			sgpio_in1: gpio@0 {
+ 				compatible = "microchip,sparx5-sgpio-bank";
+@@ -317,6 +342,9 @@ sgpio_in1: gpio@0 {
+ 				gpio-controller;
+ 				#gpio-cells = <3>;
+ 				ngpios = <96>;
++				interrupts = <GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>;
++				interrupt-controller;
++				#interrupt-cells = <3>;
+ 			};
+ 			sgpio_out1: gpio@1 {
+ 				compatible = "microchip,sparx5-sgpio-bank";
+@@ -335,6 +363,8 @@ sgpio2: gpio@61101059c {
+ 			clocks = <&sys_clk>;
+ 			pinctrl-0 = <&sgpio2_pins>;
+ 			pinctrl-names = "default";
++			resets = <&reset 0>;
++			reset-names = "switch";
+ 			reg = <0x6 0x1101059c 0x100>;
+ 			sgpio_in2: gpio@0 {
+ 				reg = <0>;
+@@ -342,6 +372,9 @@ sgpio_in2: gpio@0 {
+ 				gpio-controller;
+ 				#gpio-cells = <3>;
+ 				ngpios = <96>;
++				interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
++				interrupt-controller;
++				#interrupt-cells = <3>;
+ 			};
+ 			sgpio_out2: gpio@1 {
+ 				compatible = "microchip,sparx5-sgpio-bank";
+@@ -386,5 +419,62 @@ tmon0: tmon@610508110 {
+ 			#thermal-sensor-cells = <0>;
+ 			clocks = <&ahb_clk>;
+ 		};
++
++		mdio0: mdio@6110102b0 {
++			compatible = "mscc,ocelot-miim";
++			status = "disabled";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x6 0x110102b0 0x24>;
++		};
++
++		mdio1: mdio@6110102d4 {
++			compatible = "mscc,ocelot-miim";
++			status = "disabled";
++			pinctrl-0 = <&miim1_pins>;
++			pinctrl-names = "default";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x6 0x110102d4 0x24>;
++		};
++
++		mdio2: mdio@6110102f8 {
++			compatible = "mscc,ocelot-miim";
++			status = "disabled";
++			pinctrl-0 = <&miim2_pins>;
++			pinctrl-names = "default";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x6 0x110102d4 0x24>;
++		};
++
++		mdio3: mdio@61101031c {
++			compatible = "mscc,ocelot-miim";
++			status = "disabled";
++			pinctrl-0 = <&miim3_pins>;
++			pinctrl-names = "default";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x6 0x1101031c 0x24>;
++		};
++
++		serdes: serdes@10808000 {
++			compatible = "microchip,sparx5-serdes";
++			#phy-cells = <1>;
++			clocks = <&sys_clk>;
++			reg = <0x6 0x10808000 0x5d0000>;
++		};
++
++		switch: switch@0x600000000 {
++			compatible = "microchip,sparx5-switch";
++			reg =	<0x6 0 0x401000>,
++				<0x6 0x10004000 0x7fc000>,
++				<0x6 0x11010000 0xaf0000>;
++			reg-names = "cpu", "dev", "gcb";
++			interrupt-names = "xtr";
++			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
++			resets = <&reset 0>;
++			reset-names = "switch";
++		};
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi b/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
+index f0c915160990..33faf1f3264f 100644
+--- a/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
++++ b/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
+@@ -7,30 +7,6 @@
+ #include "sparx5_pcb_common.dtsi"
  
- /* Calculate raw offset */
- static inline __pure int spx5_offset(int id, int tinst, int tcnt,
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-index 145f65dfde96..415755cd7a51 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-@@ -180,6 +180,7 @@ static const struct net_device_ops sparx5_port_netdev_ops = {
- 	.ndo_get_phys_port_name = sparx5_port_get_phys_port_name,
- 	.ndo_set_mac_address    = sparx5_set_mac_address,
- 	.ndo_validate_addr      = eth_validate_addr,
-+	.ndo_get_stats64        = sparx5_get_stats64,
- 	.ndo_get_port_parent_id = sparx5_get_port_parent_id,
+ /{
+-	aliases {
+-	    i2c0   = &i2c0;
+-	    i2c100 = &i2c100;
+-	    i2c101 = &i2c101;
+-	    i2c102 = &i2c102;
+-	    i2c103 = &i2c103;
+-	    i2c104 = &i2c104;
+-	    i2c105 = &i2c105;
+-	    i2c106 = &i2c106;
+-	    i2c107 = &i2c107;
+-	    i2c108 = &i2c108;
+-	    i2c109 = &i2c109;
+-	    i2c110 = &i2c110;
+-	    i2c111 = &i2c111;
+-	    i2c112 = &i2c112;
+-	    i2c113 = &i2c113;
+-	    i2c114 = &i2c114;
+-	    i2c115 = &i2c115;
+-	    i2c116 = &i2c116;
+-	    i2c117 = &i2c117;
+-	    i2c118 = &i2c118;
+-	    i2c119 = &i2c119;
+-	};
+-
+ 	gpio-restart {
+ 		compatible = "gpio-restart";
+ 		gpios = <&gpio 37 GPIO_ACTIVE_LOW>;
+@@ -298,17 +274,10 @@ gpio@1 {
+ 
+ &spi0 {
+ 	status = "okay";
+-	spi@0 {
+-		compatible = "spi-mux";
+-		mux-controls = <&mux>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		reg = <0>;	/* CS0 */
+-		spi-flash@9 {
+-			compatible = "jedec,spi-nor";
+-			spi-max-frequency = <8000000>;
+-			reg = <0x9>;	/* SPI */
+-		};
++	spi-flash@0 {
++		compatible = "jedec,spi-nor";
++		spi-max-frequency = <8000000>;
++		reg = <0>;
+ 	};
  };
  
-@@ -206,6 +207,7 @@ struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno)
- 	sparx5_set_port_ifh(spx5_port->ifh, portno);
+@@ -328,6 +297,33 @@ spi-flash@9 {
+ 	};
+ };
  
- 	ndev->netdev_ops = &sparx5_port_netdev_ops;
-+	ndev->ethtool_ops = &sparx5_ethtool_ops;
- 	ndev->features |= NETIF_F_LLTX; /* software tx */
++&sgpio0 {
++	status = "okay";
++	microchip,sgpio-port-ranges = <8 15>;
++	gpio@0 {
++		ngpios = <64>;
++	};
++	gpio@1 {
++		ngpios = <64>;
++	};
++};
++
++&sgpio1 {
++	status = "okay";
++	microchip,sgpio-port-ranges = <24 31>;
++	gpio@0 {
++		ngpios = <64>;
++	};
++	gpio@1 {
++		ngpios = <64>;
++	};
++};
++
++&sgpio2 {
++	status = "okay";
++	microchip,sgpio-port-ranges = <0 0>, <11 31>;
++};
++
+ &gpio {
+ 	i2cmux_pins_i: i2cmux-pins-i {
+ 	       pins = "GPIO_16", "GPIO_17", "GPIO_18", "GPIO_19",
+@@ -415,9 +411,9 @@ i2c0_emux: i2c0-emux@0 {
  
- 	val = ether_addr_to_u64(sparx5->base_mac) + portno + 1;
+ &i2c0_imux {
+ 	pinctrl-names =
+-		"i2c100", "i2c101", "i2c102", "i2c103",
+-		"i2c104", "i2c105", "i2c106", "i2c107",
+-		"i2c108", "i2c109", "i2c110", "i2c111", "idle";
++		"i2c_sfp1", "i2c_sfp2", "i2c_sfp3", "i2c_sfp4",
++		"i2c_sfp5", "i2c_sfp6", "i2c_sfp7", "i2c_sfp8",
++		"i2c_sfp9", "i2c_sfp10", "i2c_sfp11", "i2c_sfp12", "idle";
+ 	pinctrl-0 = <&i2cmux_0>;
+ 	pinctrl-1 = <&i2cmux_1>;
+ 	pinctrl-2 = <&i2cmux_2>;
+@@ -431,62 +427,62 @@ &i2c0_imux {
+ 	pinctrl-10 = <&i2cmux_10>;
+ 	pinctrl-11 = <&i2cmux_11>;
+ 	pinctrl-12 = <&i2cmux_pins_i>;
+-	i2c100: i2c_sfp1 {
++	i2c_sfp1: i2c_sfp1 {
+ 		reg = <0x0>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c101: i2c_sfp2 {
++	i2c_sfp2: i2c_sfp2 {
+ 		reg = <0x1>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c102: i2c_sfp3 {
++	i2c_sfp3: i2c_sfp3 {
+ 		reg = <0x2>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c103: i2c_sfp4 {
++	i2c_sfp4: i2c_sfp4 {
+ 		reg = <0x3>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c104: i2c_sfp5 {
++	i2c_sfp5: i2c_sfp5 {
+ 		reg = <0x4>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c105: i2c_sfp6 {
++	i2c_sfp6: i2c_sfp6 {
+ 		reg = <0x5>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c106: i2c_sfp7 {
++	i2c_sfp7: i2c_sfp7 {
+ 		reg = <0x6>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c107: i2c_sfp8 {
++	i2c_sfp8: i2c_sfp8 {
+ 		reg = <0x7>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c108: i2c_sfp9 {
++	i2c_sfp9: i2c_sfp9 {
+ 		reg = <0x8>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c109: i2c_sfp10 {
++	i2c_sfp10: i2c_sfp10 {
+ 		reg = <0x9>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c110: i2c_sfp11 {
++	i2c_sfp11: i2c_sfp11 {
+ 		reg = <0xa>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c111: i2c_sfp12 {
++	i2c_sfp12: i2c_sfp12 {
+ 		reg = <0xb>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+@@ -499,44 +495,413 @@ &gpio 60 GPIO_ACTIVE_HIGH
+ 		     &gpio 61 GPIO_ACTIVE_HIGH
+ 		     &gpio 54 GPIO_ACTIVE_HIGH>;
+ 	idle-state = <0x8>;
+-	i2c112: i2c_sfp13 {
++	i2c_sfp13: i2c_sfp13 {
+ 		reg = <0x0>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c113: i2c_sfp14 {
++	i2c_sfp14: i2c_sfp14 {
+ 		reg = <0x1>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c114: i2c_sfp15 {
++	i2c_sfp15: i2c_sfp15 {
+ 		reg = <0x2>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c115: i2c_sfp16 {
++	i2c_sfp16: i2c_sfp16 {
+ 		reg = <0x3>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c116: i2c_sfp17 {
++	i2c_sfp17: i2c_sfp17 {
+ 		reg = <0x4>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c117: i2c_sfp18 {
++	i2c_sfp18: i2c_sfp18 {
+ 		reg = <0x5>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c118: i2c_sfp19 {
++	i2c_sfp19: i2c_sfp19 {
+ 		reg = <0x6>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c119: i2c_sfp20 {
++	i2c_sfp20: i2c_sfp20 {
+ 		reg = <0x7>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+ };
++
++&mdio3 {
++	status = "ok";
++	phy64: ethernet-phy@64 {
++		reg = <28>;
++	};
++};
++
++&axi {
++	sfp_eth12: sfp-eth12 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp1>;
++		tx-disable-gpios = <&sgpio_out2 11 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 11 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 11 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 12 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth13: sfp-eth13 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp2>;
++		tx-disable-gpios = <&sgpio_out2 12 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 12 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 12 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 13 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth14: sfp-eth14 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp3>;
++		tx-disable-gpios = <&sgpio_out2 13 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 13 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 13 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 14 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth15: sfp-eth15 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp4>;
++		tx-disable-gpios = <&sgpio_out2 14 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 14 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 14 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 15 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth48: sfp-eth48 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp5>;
++		tx-disable-gpios = <&sgpio_out2 15 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 15 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 15 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 16 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth49: sfp-eth49 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp6>;
++		tx-disable-gpios = <&sgpio_out2 16 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 16 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 16 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 17 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth50: sfp-eth50 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp7>;
++		tx-disable-gpios = <&sgpio_out2 17 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 17 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 17 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 18 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth51: sfp-eth51 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp8>;
++		tx-disable-gpios = <&sgpio_out2 18 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 18 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 18 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 19 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth52: sfp-eth52 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp9>;
++		tx-disable-gpios = <&sgpio_out2 19 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 19 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 19 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 20 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth53: sfp-eth53 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp10>;
++		tx-disable-gpios = <&sgpio_out2 20 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 20 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 20 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 21 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth54: sfp-eth54 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp11>;
++		tx-disable-gpios = <&sgpio_out2 21 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 21 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 21 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 22 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth55: sfp-eth55 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp12>;
++		tx-disable-gpios = <&sgpio_out2 22 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 22 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 22 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 23 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth56: sfp-eth56 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp13>;
++		tx-disable-gpios = <&sgpio_out2 23 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 23 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 23 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 24 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth57: sfp-eth57 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp14>;
++		tx-disable-gpios = <&sgpio_out2 24 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 24 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 24 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 25 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth58: sfp-eth58 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp15>;
++		tx-disable-gpios = <&sgpio_out2 25 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 25 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 25 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 26 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth59: sfp-eth59 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp16>;
++		tx-disable-gpios = <&sgpio_out2 26 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 26 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 26 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 27 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth60: sfp-eth60 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp17>;
++		tx-disable-gpios = <&sgpio_out2 27 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 27 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 27 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 28 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth61: sfp-eth61 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp18>;
++		tx-disable-gpios = <&sgpio_out2 28 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 28 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 28 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 29 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth62: sfp-eth62 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp19>;
++		tx-disable-gpios = <&sgpio_out2 29 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 29 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 29 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 30 0 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth63: sfp-eth63 {
++		compatible       = "sff,sfp";
++		i2c-bus          = <&i2c_sfp20>;
++		tx-disable-gpios = <&sgpio_out2 30 1 GPIO_ACTIVE_LOW>;
++		los-gpios        = <&sgpio_in2 30 1 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios   = <&sgpio_in2 30 2 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios   = <&sgpio_in2 31 0 GPIO_ACTIVE_HIGH>;
++	};
++};
++
++&switch {
++	ethernet-ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* 10G SFPs */
++		port12: port@12 {
++			reg = <12>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 13>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth12>;
++			microchip,sd-sgpio = <301>;
++			managed = "in-band-status";
++		};
++		port13: port@13 {
++			reg = <13>;
++			/* Example: CU SFP, 1G speed */
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 14>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth13>;
++			microchip,sd-sgpio = <305>;
++			managed = "in-band-status";
++		};
++		port14: port@14 {
++			reg = <14>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 15>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth14>;
++			microchip,sd-sgpio = <309>;
++			managed = "in-band-status";
++		};
++		port15: port@15 {
++			reg = <15>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 16>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth15>;
++			microchip,sd-sgpio = <313>;
++			managed = "in-band-status";
++		};
++		port48: port@48 {
++			reg = <48>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 17>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth48>;
++			microchip,sd-sgpio = <317>;
++			managed = "in-band-status";
++		};
++		port49: port@49 {
++			reg = <49>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 18>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth49>;
++			microchip,sd-sgpio = <321>;
++			managed = "in-band-status";
++		};
++		port50: port@50 {
++			reg = <50>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 19>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth50>;
++			microchip,sd-sgpio = <325>;
++			managed = "in-band-status";
++		};
++		port51: port@51 {
++			reg = <51>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 20>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth51>;
++			microchip,sd-sgpio = <329>;
++			managed = "in-band-status";
++		};
++		port52: port@52 {
++			reg = <52>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 21>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth52>;
++			microchip,sd-sgpio = <333>;
++			managed = "in-band-status";
++		};
++		port53: port@53 {
++			reg = <53>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 22>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth53>;
++			microchip,sd-sgpio = <337>;
++			managed = "in-band-status";
++		};
++		port54: port@54 {
++			reg = <54>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 23>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth54>;
++			microchip,sd-sgpio = <341>;
++			managed = "in-band-status";
++		};
++		port55: port@55 {
++			reg = <55>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 24>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth55>;
++			microchip,sd-sgpio = <345>;
++			managed = "in-band-status";
++		};
++		/* 25G SFPs */
++		port56: port@56 {
++			reg = <56>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 25>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth56>;
++			microchip,sd-sgpio = <349>;
++			managed = "in-band-status";
++		};
++		port57: port@57 {
++			reg = <57>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 26>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth57>;
++			microchip,sd-sgpio = <353>;
++			managed = "in-band-status";
++		};
++		port58: port@58 {
++			reg = <58>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 27>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth58>;
++			microchip,sd-sgpio = <357>;
++			managed = "in-band-status";
++		};
++		port59: port@59 {
++			reg = <59>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 28>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth59>;
++			microchip,sd-sgpio = <361>;
++			managed = "in-band-status";
++		};
++		port60: port@60 {
++			reg = <60>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 29>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth60>;
++			microchip,sd-sgpio = <365>;
++			managed = "in-band-status";
++		};
++		port61: port@61 {
++			reg = <61>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 30>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth61>;
++			microchip,sd-sgpio = <369>;
++			managed = "in-band-status";
++		};
++		port62: port@62 {
++			reg = <62>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 31>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth62>;
++			microchip,sd-sgpio = <373>;
++			managed = "in-band-status";
++		};
++		port63: port@63 {
++			reg = <63>;
++			microchip,bandwidth = <10000>;
++			phys = <&serdes 32>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth63>;
++			microchip,sd-sgpio = <377>;
++			managed = "in-band-status";
++		};
++		/* Finally the Management interface */
++		port64: port@64 {
++			reg = <64>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 0>;
++			phy-handle = <&phy64>;
++			phy-mode = "sgmii";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi b/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
+index e28c6dd16377..ef96e6d8c6b3 100644
+--- a/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
++++ b/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
+@@ -7,14 +7,6 @@
+ #include "sparx5_pcb_common.dtsi"
+ 
+ /{
+-	aliases {
+-	    i2c0   = &i2c0;
+-	    i2c152 = &i2c152;
+-	    i2c153 = &i2c153;
+-	    i2c154 = &i2c154;
+-	    i2c155 = &i2c155;
+-	};
+-
+ 	gpio-restart {
+ 		compatible = "gpio-restart";
+ 		gpios = <&gpio 37 GPIO_ACTIVE_LOW>;
+@@ -97,17 +89,10 @@ i2cmux_s32: i2cmux-3 {
+ 
+ &spi0 {
+ 	status = "okay";
+-	spi@0 {
+-		compatible = "spi-mux";
+-		mux-controls = <&mux>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		reg = <0>; /* CS0 */
+-		spi-flash@9 {
+-			compatible = "jedec,spi-nor";
+-			spi-max-frequency = <8000000>;
+-			reg = <0x9>; /* SPI */
+-		};
++	spi-flash@0 {
++		compatible = "jedec,spi-nor";
++		spi-max-frequency = <8000000>;
++		reg = <0>;
+ 	};
+ };
+ 
+@@ -138,6 +123,11 @@ gpio@1 {
+ 	};
+ };
+ 
++&sgpio2 {
++	status = "okay";
++	microchip,sgpio-port-ranges = <0 0>, <16 18>, <28 31>;
++};
++
+ &axi {
+ 	i2c0_imux: i2c0-imux@0 {
+ 		compatible = "i2c-mux-pinctrl";
+@@ -149,31 +139,614 @@ i2c0_imux: i2c0-imux@0 {
+ 
+ &i2c0_imux {
+ 	pinctrl-names =
+-		"i2c152", "i2c153", "i2c154", "i2c155",
++		"i2c_sfp1", "i2c_sfp2", "i2c_sfp3", "i2c_sfp4",
+ 		"idle";
+ 	pinctrl-0 = <&i2cmux_s29>;
+ 	pinctrl-1 = <&i2cmux_s30>;
+ 	pinctrl-2 = <&i2cmux_s31>;
+ 	pinctrl-3 = <&i2cmux_s32>;
+ 	pinctrl-4 = <&i2cmux_pins_i>;
+-	i2c152: i2c_sfp1 {
++	i2c_sfp1: i2c_sfp1 {
+ 		reg = <0x0>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c153: i2c_sfp2 {
++	i2c_sfp2: i2c_sfp2 {
+ 		reg = <0x1>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c154: i2c_sfp3 {
++	i2c_sfp3: i2c_sfp3 {
+ 		reg = <0x2>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+-	i2c155: i2c_sfp4 {
++	i2c_sfp4: i2c_sfp4 {
+ 		reg = <0x3>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 	};
+ };
++
++&axi {
++	sfp_eth60: sfp-eth60 {
++		compatible	   = "sff,sfp";
++		i2c-bus            = <&i2c_sfp1>;
++		tx-disable-gpios   = <&sgpio_out2 28 0 GPIO_ACTIVE_LOW>;
++		rate-select0-gpios = <&sgpio_out2 28 1 GPIO_ACTIVE_HIGH>;
++		los-gpios          = <&sgpio_in2 28 0 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios     = <&sgpio_in2 28 1 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios     = <&sgpio_in2 28 2 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth61: sfp-eth61 {
++		compatible         = "sff,sfp";
++		i2c-bus            = <&i2c_sfp2>;
++		tx-disable-gpios   = <&sgpio_out2 29 0 GPIO_ACTIVE_LOW>;
++		rate-select0-gpios = <&sgpio_out2 29 1 GPIO_ACTIVE_HIGH>;
++		los-gpios          = <&sgpio_in2 29 0 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios     = <&sgpio_in2 29 1 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios     = <&sgpio_in2 29 2 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth62: sfp-eth62 {
++		compatible         = "sff,sfp";
++		i2c-bus            = <&i2c_sfp3>;
++		tx-disable-gpios   = <&sgpio_out2 30 0 GPIO_ACTIVE_LOW>;
++		rate-select0-gpios = <&sgpio_out2 30 1 GPIO_ACTIVE_HIGH>;
++		los-gpios          = <&sgpio_in2 30 0 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios     = <&sgpio_in2 30 1 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios     = <&sgpio_in2 30 2 GPIO_ACTIVE_HIGH>;
++	};
++	sfp_eth63: sfp-eth63 {
++		compatible         = "sff,sfp";
++		i2c-bus            = <&i2c_sfp4>;
++		tx-disable-gpios   = <&sgpio_out2 31 0 GPIO_ACTIVE_LOW>;
++		rate-select0-gpios = <&sgpio_out2 31 1 GPIO_ACTIVE_HIGH>;
++		los-gpios          = <&sgpio_in2 31 0 GPIO_ACTIVE_HIGH>;
++		mod-def0-gpios     = <&sgpio_in2 31 1 GPIO_ACTIVE_LOW>;
++		tx-fault-gpios     = <&sgpio_in2 31 2 GPIO_ACTIVE_HIGH>;
++	};
++};
++
++&mdio0 {
++	status = "ok";
++	phy0: ethernet-phy@0 {
++		reg = <0>;
++	};
++	phy1: ethernet-phy@1 {
++		reg = <1>;
++	};
++	phy2: ethernet-phy@2 {
++		reg = <2>;
++	};
++	phy3: ethernet-phy@3 {
++		reg = <3>;
++	};
++	phy4: ethernet-phy@4 {
++		reg = <4>;
++	};
++	phy5: ethernet-phy@5 {
++		reg = <5>;
++	};
++	phy6: ethernet-phy@6 {
++		reg = <6>;
++	};
++	phy7: ethernet-phy@7 {
++		reg = <7>;
++	};
++	phy8: ethernet-phy@8 {
++		reg = <8>;
++	};
++	phy9: ethernet-phy@9 {
++		reg = <9>;
++	};
++	phy10: ethernet-phy@10 {
++		reg = <10>;
++	};
++	phy11: ethernet-phy@11 {
++		reg = <11>;
++	};
++	phy12: ethernet-phy@12 {
++		reg = <12>;
++	};
++	phy13: ethernet-phy@13 {
++		reg = <13>;
++	};
++	phy14: ethernet-phy@14 {
++		reg = <14>;
++	};
++	phy15: ethernet-phy@15 {
++		reg = <15>;
++	};
++	phy16: ethernet-phy@16 {
++		reg = <16>;
++	};
++	phy17: ethernet-phy@17 {
++		reg = <17>;
++	};
++	phy18: ethernet-phy@18 {
++		reg = <18>;
++	};
++	phy19: ethernet-phy@19 {
++		reg = <19>;
++	};
++	phy20: ethernet-phy@20 {
++		reg = <20>;
++	};
++	phy21: ethernet-phy@21 {
++		reg = <21>;
++	};
++	phy22: ethernet-phy@22 {
++		reg = <22>;
++	};
++	phy23: ethernet-phy@23 {
++		reg = <23>;
++	};
++};
++
++&mdio1 {
++	status = "ok";
++	phy24: ethernet-phy@24 {
++		reg = <0>;
++	};
++	phy25: ethernet-phy@25 {
++		reg = <1>;
++	};
++	phy26: ethernet-phy@26 {
++		reg = <2>;
++	};
++	phy27: ethernet-phy@27 {
++		reg = <3>;
++	};
++	phy28: ethernet-phy@28 {
++		reg = <4>;
++	};
++	phy29: ethernet-phy@29 {
++		reg = <5>;
++	};
++	phy30: ethernet-phy@30 {
++		reg = <6>;
++	};
++	phy31: ethernet-phy@31 {
++		reg = <7>;
++	};
++	phy32: ethernet-phy@32 {
++		reg = <8>;
++	};
++	phy33: ethernet-phy@33 {
++		reg = <9>;
++	};
++	phy34: ethernet-phy@34 {
++		reg = <10>;
++	};
++	phy35: ethernet-phy@35 {
++		reg = <11>;
++	};
++	phy36: ethernet-phy@36 {
++		reg = <12>;
++	};
++	phy37: ethernet-phy@37 {
++		reg = <13>;
++	};
++	phy38: ethernet-phy@38 {
++		reg = <14>;
++	};
++	phy39: ethernet-phy@39 {
++		reg = <15>;
++	};
++	phy40: ethernet-phy@40 {
++		reg = <16>;
++	};
++	phy41: ethernet-phy@41 {
++		reg = <17>;
++	};
++	phy42: ethernet-phy@42 {
++		reg = <18>;
++	};
++	phy43: ethernet-phy@43 {
++		reg = <19>;
++	};
++	phy44: ethernet-phy@44 {
++		reg = <20>;
++	};
++	phy45: ethernet-phy@45 {
++		reg = <21>;
++	};
++	phy46: ethernet-phy@46 {
++		reg = <22>;
++	};
++	phy47: ethernet-phy@47 {
++		reg = <23>;
++	};
++};
++
++&mdio3 {
++	status = "ok";
++	phy64: ethernet-phy@64 {
++		reg = <28>;
++	};
++};
++
++&switch {
++	ethernet-ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port0: port@0 {
++			reg = <0>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 13>;
++			phy-handle = <&phy0>;
++			phy-mode = "qsgmii";
++		};
++		port1: port@1 {
++			reg = <1>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 13>;
++			phy-handle = <&phy1>;
++			phy-mode = "qsgmii";
++		};
++		port2: port@2 {
++			reg = <2>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 13>;
++			phy-handle = <&phy2>;
++			phy-mode = "qsgmii";
++		};
++		port3: port@3 {
++			reg = <3>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 13>;
++			phy-handle = <&phy3>;
++			phy-mode = "qsgmii";
++		};
++		port4: port@4 {
++			reg = <4>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 14>;
++			phy-handle = <&phy4>;
++			phy-mode = "qsgmii";
++		};
++		port5: port@5 {
++			reg = <5>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 14>;
++			phy-handle = <&phy5>;
++			phy-mode = "qsgmii";
++		};
++		port6: port@6 {
++			reg = <6>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 14>;
++			phy-handle = <&phy6>;
++			phy-mode = "qsgmii";
++		};
++		port7: port@7 {
++			reg = <7>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 14>;
++			phy-handle = <&phy7>;
++			phy-mode = "qsgmii";
++		};
++		port8: port@8 {
++			reg = <8>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 15>;
++			phy-handle = <&phy8>;
++			phy-mode = "qsgmii";
++		};
++		port9: port@9 {
++			reg = <9>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 15>;
++			phy-handle = <&phy9>;
++			phy-mode = "qsgmii";
++		};
++		port10: port@10 {
++			reg = <10>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 15>;
++			phy-handle = <&phy10>;
++			phy-mode = "qsgmii";
++		};
++		port11: port@11 {
++			reg = <11>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 15>;
++			phy-handle = <&phy11>;
++			phy-mode = "qsgmii";
++		};
++		port12: port@12 {
++			reg = <12>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 16>;
++			phy-handle = <&phy12>;
++			phy-mode = "qsgmii";
++		};
++		port13: port@13 {
++			reg = <13>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 16>;
++			phy-handle = <&phy13>;
++			phy-mode = "qsgmii";
++		};
++		port14: port@14 {
++			reg = <14>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 16>;
++			phy-handle = <&phy14>;
++			phy-mode = "qsgmii";
++		};
++		port15: port@15 {
++			reg = <15>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 16>;
++			phy-handle = <&phy15>;
++			phy-mode = "qsgmii";
++		};
++		port16: port@16 {
++			reg = <16>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 17>;
++			phy-handle = <&phy16>;
++			phy-mode = "qsgmii";
++		};
++		port17: port@17 {
++			reg = <17>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 17>;
++			phy-handle = <&phy17>;
++			phy-mode = "qsgmii";
++		};
++		port18: port@18 {
++			reg = <18>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 17>;
++			phy-handle = <&phy18>;
++			phy-mode = "qsgmii";
++		};
++		port19: port@19 {
++			reg = <19>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 17>;
++			phy-handle = <&phy19>;
++			phy-mode = "qsgmii";
++		};
++		port20: port@20 {
++			reg = <20>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 18>;
++			phy-handle = <&phy20>;
++			phy-mode = "qsgmii";
++		};
++		port21: port@21 {
++			reg = <21>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 18>;
++			phy-handle = <&phy21>;
++			phy-mode = "qsgmii";
++		};
++		port22: port@22 {
++			reg = <22>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 18>;
++			phy-handle = <&phy22>;
++			phy-mode = "qsgmii";
++		};
++		port23: port@23 {
++			reg = <23>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 18>;
++			phy-handle = <&phy23>;
++			phy-mode = "qsgmii";
++		};
++		port24: port@24 {
++			reg = <24>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 19>;
++			phy-handle = <&phy24>;
++			phy-mode = "qsgmii";
++		};
++		port25: port@25 {
++			reg = <25>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 19>;
++			phy-handle = <&phy25>;
++			phy-mode = "qsgmii";
++		};
++		port26: port@26 {
++			reg = <26>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 19>;
++			phy-handle = <&phy26>;
++			phy-mode = "qsgmii";
++		};
++		port27: port@27 {
++			reg = <27>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 19>;
++			phy-handle = <&phy27>;
++			phy-mode = "qsgmii";
++		};
++		port28: port@28 {
++			reg = <28>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 20>;
++			phy-handle = <&phy28>;
++			phy-mode = "qsgmii";
++		};
++		port29: port@29 {
++			reg = <29>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 20>;
++			phy-handle = <&phy29>;
++			phy-mode = "qsgmii";
++		};
++		port30: port@30 {
++			reg = <30>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 20>;
++			phy-handle = <&phy30>;
++			phy-mode = "qsgmii";
++		};
++		port31: port@31 {
++			reg = <31>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 20>;
++			phy-handle = <&phy31>;
++			phy-mode = "qsgmii";
++		};
++		port32: port@32 {
++			reg = <32>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 21>;
++			phy-handle = <&phy32>;
++			phy-mode = "qsgmii";
++		};
++		port33: port@33 {
++			reg = <33>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 21>;
++			phy-handle = <&phy33>;
++			phy-mode = "qsgmii";
++		};
++		port34: port@34 {
++			reg = <34>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 21>;
++			phy-handle = <&phy34>;
++			phy-mode = "qsgmii";
++		};
++		port35: port@35 {
++			reg = <35>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 21>;
++			phy-handle = <&phy35>;
++			phy-mode = "qsgmii";
++		};
++		port36: port@36 {
++			reg = <36>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 22>;
++			phy-handle = <&phy36>;
++			phy-mode = "qsgmii";
++		};
++		port37: port@37 {
++			reg = <37>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 22>;
++			phy-handle = <&phy37>;
++			phy-mode = "qsgmii";
++		};
++		port38: port@38 {
++			reg = <38>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 22>;
++			phy-handle = <&phy38>;
++			phy-mode = "qsgmii";
++		};
++		port39: port@39 {
++			reg = <39>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 22>;
++			phy-handle = <&phy39>;
++			phy-mode = "qsgmii";
++		};
++		port40: port@40 {
++			reg = <40>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 23>;
++			phy-handle = <&phy40>;
++			phy-mode = "qsgmii";
++		};
++		port41: port@41 {
++			reg = <41>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 23>;
++			phy-handle = <&phy41>;
++			phy-mode = "qsgmii";
++		};
++		port42: port@42 {
++			reg = <42>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 23>;
++			phy-handle = <&phy42>;
++			phy-mode = "qsgmii";
++		};
++		port43: port@43 {
++			reg = <43>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 23>;
++			phy-handle = <&phy43>;
++			phy-mode = "qsgmii";
++		};
++		port44: port@44 {
++			reg = <44>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 24>;
++			phy-handle = <&phy44>;
++			phy-mode = "qsgmii";
++		};
++		port45: port@45 {
++			reg = <45>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 24>;
++			phy-handle = <&phy45>;
++			phy-mode = "qsgmii";
++		};
++		port46: port@46 {
++			reg = <46>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 24>;
++			phy-handle = <&phy46>;
++			phy-mode = "qsgmii";
++		};
++		port47: port@47 {
++			reg = <47>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 24>;
++			phy-handle = <&phy47>;
++			phy-mode = "qsgmii";
++		};
++		/* Then the 25G interfaces */
++		port60: port@60 {
++			reg = <60>;
++			microchip,bandwidth = <25000>;
++			phys = <&serdes 29>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth60>;
++			managed = "in-band-status";
++		};
++		port61: port@61 {
++			reg = <61>;
++			microchip,bandwidth = <25000>;
++			phys = <&serdes 30>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth61>;
++			managed = "in-band-status";
++		};
++		port62: port@62 {
++			reg = <62>;
++			microchip,bandwidth = <25000>;
++			phys = <&serdes 31>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth62>;
++			managed = "in-band-status";
++		};
++		port63: port@63 {
++			reg = <63>;
++			microchip,bandwidth = <25000>;
++			phys = <&serdes 32>;
++			phy-mode = "10gbase-r";
++			sfp = <&sfp_eth63>;
++			managed = "in-band-status";
++		};
++		/* Finally the Management interface */
++		port64: port@64 {
++			reg = <64>;
++			microchip,bandwidth = <1000>;
++			phys = <&serdes 0>;
++			phy-handle = <&phy64>;
++			phy-mode = "sgmii";
++		};
++	};
++};
 -- 
 2.31.1
 
