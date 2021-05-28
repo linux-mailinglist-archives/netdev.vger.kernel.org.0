@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3790E39479F
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 22:00:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3503A3947A1
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 22:00:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbhE1UCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 16:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50694 "EHLO
+        id S229481AbhE1UCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 16:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbhE1UCS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 16:02:18 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68214C061574;
-        Fri, 28 May 2021 13:00:43 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id t193so3342985pgb.4;
-        Fri, 28 May 2021 13:00:43 -0700 (PDT)
+        with ESMTP id S229635AbhE1UCW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 16:02:22 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE40C061760;
+        Fri, 28 May 2021 13:00:47 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id ep16-20020a17090ae650b029015d00f578a8so3142787pjb.2;
+        Fri, 28 May 2021 13:00:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tW2pKZu6OAKzS1unOPMj76xv7HXmN99D9Eqz8ZuKdvM=;
-        b=XoUeNM/R9yAWFtBTLw4GcmAS9YORmfDrtiy8WaWLui0t8uJkTYDxK3D4MvJhF94NdQ
-         vPKiHqqv4Jt6v8uy2YLWz5V2hD/+0qQgULvclupcfHHgKuf20sOBHHxJAPyh5MJ8NjbM
-         eFztE1SrCK3KbpKz1RxrlWJcYnwXFmuuDZivuKA/6VCb2Dlc+lYAKXtP79+jbvSQ0u4K
-         By6tvcc8FJqr0EHjylK9/ySKfUtHhL1rTaifAorTgT/LFuq+uVsBAyZjFWgkDWE2avTz
-         VjKx+RLXa5WkALiZ+QyOIRR7uhNoFFQ9M+SJTH50Sqrmp7UEqqAwE9uN7t50GD804ml4
-         nekw==
+        bh=8W3zm3RiRStrXJZJXTCOkCwj1KgZnGiw4eoiXvnO8gE=;
+        b=E/eJs2sjoCRMwpIwp7Y40g3yLi4E71b+EHcYTXkD2fIEV+BTu5qyhVYjZBPThTh4ct
+         49YxbOlIKAcNjh/udv7PtzMX35DJd7Qb+HbtOACL7MBzZu+9/Tm+MlZGd+YucAC6Nk0d
+         bITrp7ki8EsnhIq0Rb9UhR6LIMAFxjgKs2BFBBl19VTfexQ1aoAuK/766E6YuWKMBx2K
+         1bATCEr10CD6p6bQBbYLJvekhmwlz5UfcxYYHhcyW7n1CevzE8JqOQgVnQkuhqNblb/v
+         pDBjRgXZwJXeQiLcOPtdgrdvOtvBGK9YNLL0JN/QouIirpo2Nie4j+ZpHBV0frFXfnOF
+         O6Sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tW2pKZu6OAKzS1unOPMj76xv7HXmN99D9Eqz8ZuKdvM=;
-        b=U7+s+wwtO7BnPRmrLj/QCeqtYnlFCpAXWRWnshV6g+EKl3AAFSQy2NYLhDqblBHgtX
-         sHUkTfwW9G4CKglKhv1MjVdXiKeT2cj2VA2XI3TJveral+kZ3ecXPDcYLot/FQMGSZew
-         4iEm/vsQRX8ZbAISEwteaL8mjOP8EeKHOKnv4xY0rhNoCBU14UEY4fFsS+MM1Mu8uIbJ
-         khfQkVhM3ai5X14yF4zbqkQzp6k+gE4B+gVe/Zn9g2/Yxykd/5+jrWxL+xm3Nn9ICFkN
-         pGI2MOzMS6Axgv16HaZDw/Ywagag2qE52nNrjK5yWRf+oZ7I+ql3EM0I31P8H5ZdXVo5
-         7Hjw==
-X-Gm-Message-State: AOAM533nqkdQzqDYtPuRdTIXXx0wEP1PYzXhHX3wxzlC42PC+38yWnPn
-        i7l3/VbdJcqRNAjerXxWbA8fCpngbJQ=
-X-Google-Smtp-Source: ABdhPJyQWmwzcpk88COU4sS01z3SCdhdZ7+LbgJ8OyH5PD1yq3nbgrJQ98GT6jN/4dIYFmR2a8A8OQ==
-X-Received: by 2002:a63:f755:: with SMTP id f21mr10592373pgk.129.1622232042679;
-        Fri, 28 May 2021 13:00:42 -0700 (PDT)
+        bh=8W3zm3RiRStrXJZJXTCOkCwj1KgZnGiw4eoiXvnO8gE=;
+        b=RHa9bPffIaDowxMi3PepeXXhZ22tLTU8uMpWd5tKCOjN3Rq42qvzmuJlvNlWkMSDBP
+         9L6QhAA0ngHgauoPqcvwkBWsqP6mJY5EYiFwgK5P0GmFVkdw4OUqoqbN1wLb9sLqOpTg
+         YRFjFRN4D9sFR0rIJsg/8PmCDFtco74aNhpOuQrDyEa7m5mDn6rQ0YLxmrMeBXuGOfAR
+         K+6p04iDlnmIvdcxCDluEo29qLYTzxy9Ox36gYGZbRiICn1iVA5SmRwYeDBDjS9xBJWC
+         xEaTb+ItrP3R1awbiimWuBgDs+hrKZRFeJ3i8vElmEdxZ7AWux0wy1nKA4+UzzmhkenG
+         Tpvw==
+X-Gm-Message-State: AOAM530qgYKUXHPMF6xm1hbwVcAAmUhVEYAy3xTEHDDgF79QGpcNmvg4
+        d67krhG5YWiJBq6gKYJ1oXlCiAC2wYE=
+X-Google-Smtp-Source: ABdhPJwQukKAQv7GjTb7n9L5Q7wnBH+1CUDoMqdtL1YKYzdy9A1XI8kA+vqESQ2HUSMg2880jj5WnA==
+X-Received: by 2002:a17:902:ecc5:b029:ff:82eb:2fb2 with SMTP id a5-20020a170902ecc5b02900ff82eb2fb2mr7162244plh.50.1622232046549;
+        Fri, 28 May 2021 13:00:46 -0700 (PDT)
 Received: from localhost ([2402:3a80:11db:3aa9:ad24:a4a2:844f:6a0a])
-        by smtp.gmail.com with ESMTPSA id p30sm5059042pfq.218.2021.05.28.13.00.41
+        by smtp.gmail.com with ESMTPSA id w197sm4997277pfc.5.2021.05.28.13.00.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 May 2021 13:00:42 -0700 (PDT)
+        Fri, 28 May 2021 13:00:46 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -67,9 +67,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH RFC bpf-next 1/7] net: sched: refactor cls_bpf creation code
-Date:   Sat, 29 May 2021 01:29:40 +0530
-Message-Id: <20210528195946.2375109-2-memxor@gmail.com>
+Subject: [PATCH RFC bpf-next 2/7] bpf: export bpf_link functions for modules
+Date:   Sat, 29 May 2021 01:29:41 +0530
+Message-Id: <20210528195946.2375109-3-memxor@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210528195946.2375109-1-memxor@gmail.com>
 References: <20210528195946.2375109-1-memxor@gmail.com>
@@ -79,128 +79,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move parts of the code that are independent and need to be reused into
-their own helpers. These will be needed for adding a bpf_link creation
-path in a subsequent patch.
+These are required in a subsequent patch to implement the bpf_link
+command for cls_bpf. Since the bpf_link object is tied to the
+cls_bpf_prog object, it has to be initialized and managed from inside
+the module.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- net/sched/cls_bpf.c | 84 ++++++++++++++++++++++++++++-----------------
- 1 file changed, 53 insertions(+), 31 deletions(-)
+ kernel/bpf/syscall.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-index 6e3e63db0e01..360b97ab8646 100644
---- a/net/sched/cls_bpf.c
-+++ b/net/sched/cls_bpf.c
-@@ -455,6 +455,57 @@ static int cls_bpf_set_parms(struct net *net, struct tcf_proto *tp,
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 50457019da27..e5934b748ced 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2338,6 +2338,7 @@ void bpf_link_init(struct bpf_link *link, enum bpf_link_type type,
+ 	link->ops = ops;
+ 	link->prog = prog;
+ }
++EXPORT_SYMBOL_GPL(bpf_link_init);
+ 
+ static void bpf_link_free_id(int id)
+ {
+@@ -2363,6 +2364,7 @@ void bpf_link_cleanup(struct bpf_link_primer *primer)
+ 	fput(primer->file);
+ 	put_unused_fd(primer->fd);
+ }
++EXPORT_SYMBOL_GPL(bpf_link_cleanup);
+ 
+ void bpf_link_inc(struct bpf_link *link)
+ {
+@@ -2510,6 +2512,7 @@ int bpf_link_prime(struct bpf_link *link, struct bpf_link_primer *primer)
+ 	primer->id = id;
  	return 0;
  }
++EXPORT_SYMBOL_GPL(bpf_link_prime);
  
-+static int __cls_bpf_alloc_idr(struct cls_bpf_head *head, u32 handle,
-+			       struct cls_bpf_prog *prog,
-+			       struct cls_bpf_prog *oldprog)
-+{
-+	int ret = 0;
-+
-+	if (oldprog) {
-+		if (handle && oldprog->handle != handle)
-+			return -EINVAL;
-+	}
-+
-+	if (handle == 0) {
-+		handle = 1;
-+		ret = idr_alloc_u32(&head->handle_idr, prog, &handle, INT_MAX,
-+				    GFP_KERNEL);
-+	} else if (!oldprog) {
-+		ret = idr_alloc_u32(&head->handle_idr, prog, &handle, handle,
-+				    GFP_KERNEL);
-+	}
-+
-+	prog->handle = handle;
-+	return ret;
-+}
-+
-+static int __cls_bpf_change(struct cls_bpf_head *head, struct tcf_proto *tp,
-+			    struct cls_bpf_prog *prog,
-+			    struct cls_bpf_prog *oldprog,
-+			    struct netlink_ext_ack *extack)
-+{
-+	int ret;
-+
-+	ret = cls_bpf_offload(tp, prog, oldprog, extack);
-+	if (ret)
-+		return ret;
-+
-+	if (!tc_in_hw(prog->gen_flags))
-+		prog->gen_flags |= TCA_CLS_FLAGS_NOT_IN_HW;
-+
-+	if (oldprog) {
-+		idr_replace(&head->handle_idr, prog, prog->handle);
-+		list_replace_rcu(&oldprog->link, &prog->link);
-+		tcf_unbind_filter(tp, &oldprog->res);
-+		tcf_exts_get_net(&oldprog->exts);
-+		tcf_queue_work(&oldprog->rwork, cls_bpf_delete_prog_work);
-+	} else {
-+		list_add_rcu(&prog->link, &head->plist);
-+	}
-+
-+	return 0;
-+}
-+
- static int cls_bpf_change(struct net *net, struct sk_buff *in_skb,
- 			  struct tcf_proto *tp, unsigned long base,
- 			  u32 handle, struct nlattr **tca,
-@@ -483,48 +534,19 @@ static int cls_bpf_change(struct net *net, struct sk_buff *in_skb,
- 	if (ret < 0)
- 		goto errout;
+ int bpf_link_settle(struct bpf_link_primer *primer)
+ {
+@@ -2522,6 +2525,7 @@ int bpf_link_settle(struct bpf_link_primer *primer)
+ 	/* pass through installed FD */
+ 	return primer->fd;
+ }
++EXPORT_SYMBOL_GPL(bpf_link_settle);
  
--	if (oldprog) {
--		if (handle && oldprog->handle != handle) {
--			ret = -EINVAL;
--			goto errout;
--		}
--	}
--
--	if (handle == 0) {
--		handle = 1;
--		ret = idr_alloc_u32(&head->handle_idr, prog, &handle,
--				    INT_MAX, GFP_KERNEL);
--	} else if (!oldprog) {
--		ret = idr_alloc_u32(&head->handle_idr, prog, &handle,
--				    handle, GFP_KERNEL);
--	}
--
-+	ret = __cls_bpf_alloc_idr(head, handle, prog, oldprog);
- 	if (ret)
- 		goto errout;
--	prog->handle = handle;
- 
- 	ret = cls_bpf_set_parms(net, tp, prog, base, tb, tca[TCA_RATE], ovr,
- 				extack);
- 	if (ret < 0)
- 		goto errout_idr;
- 
--	ret = cls_bpf_offload(tp, prog, oldprog, extack);
-+	ret = __cls_bpf_change(head, tp, prog, oldprog, extack);
- 	if (ret)
- 		goto errout_parms;
- 
--	if (!tc_in_hw(prog->gen_flags))
--		prog->gen_flags |= TCA_CLS_FLAGS_NOT_IN_HW;
--
--	if (oldprog) {
--		idr_replace(&head->handle_idr, prog, handle);
--		list_replace_rcu(&oldprog->link, &prog->link);
--		tcf_unbind_filter(tp, &oldprog->res);
--		tcf_exts_get_net(&oldprog->exts);
--		tcf_queue_work(&oldprog->rwork, cls_bpf_delete_prog_work);
--	} else {
--		list_add_rcu(&prog->link, &head->plist);
--	}
--
- 	*arg = prog;
- 	return 0;
- 
+ int bpf_link_new_fd(struct bpf_link *link)
+ {
 -- 
 2.31.1
 
