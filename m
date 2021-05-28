@@ -2,96 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C01623942CA
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 14:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D4AB3942CE
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 14:43:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236161AbhE1Mny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 08:43:54 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:42500 "EHLO
+        id S235974AbhE1MoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 08:44:02 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:42506 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235491AbhE1Mns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 08:43:48 -0400
-Received: from mail-ua1-f71.google.com ([209.85.222.71])
+        with ESMTP id S235955AbhE1Mnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 08:43:51 -0400
+Received: from mail-ua1-f72.google.com ([209.85.222.72])
         by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
         (Exim 4.93)
         (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lmbob-0007xn-4D
-        for netdev@vger.kernel.org; Fri, 28 May 2021 12:42:13 +0000
-Received: by mail-ua1-f71.google.com with SMTP id c27-20020ab0079b0000b0290217cf59726cso1849418uaf.10
-        for <netdev@vger.kernel.org>; Fri, 28 May 2021 05:42:13 -0700 (PDT)
+        id 1lmbod-0007yL-HD
+        for netdev@vger.kernel.org; Fri, 28 May 2021 12:42:15 +0000
+Received: by mail-ua1-f72.google.com with SMTP id 78-20020a9f26540000b02902426fc5ddd3so571297uag.16
+        for <netdev@vger.kernel.org>; Fri, 28 May 2021 05:42:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5rn4epAcNH1Mik4gARYYfuC/XhUWwqVwYBKCtmf4Gqs=;
-        b=N+V9Wwq9+HFBJJ0VU+HbmDwkGSz/B6GEKKSE2/Vqww5qF7ELkZdpM7quVycAHCwb8f
-         erjaotoV43M+2Ip2fthFOblv8cpxVcLP40lIcu8+PWSTAdkabejQ/M3LFvBOTcGq8M52
-         wbp286XSMkCgmbAkG8nqRVvqg9tdhf+Kp2jgNdhm6+wHzel/lb7DTi1pblF6vSg3Ugo+
-         c0V2LouIgKTKaqXtCHxw6Mudt8dKfPYeHuyycT4m3FuQJNLqYObZB4GVYAYaJWZ5JPen
-         ULc5Pf7ir9k+lutaAjUS3/gAbVrI9bOUz6v/HSh4JKkZY/V9vRB1wTt8Ay5bcdzv4wGy
-         xJrA==
-X-Gm-Message-State: AOAM5303plJCWjWcSNhS7UUXccNSEZQkW9F4AjchHsB5RrMymk6TH1gL
-        5JrlkCJP7Q0VhhBsVA5FiitkMTBfwYtUapfOm6bUM0Ys2U9zErFjnzUL25DOcCOWhAZrzX4m4AU
-        3IjjZ+q2V0ML0mGZiwT/Jr8q6dPEKal2nZw==
-X-Received: by 2002:a67:f489:: with SMTP id o9mr6659008vsn.47.1622205731738;
-        Fri, 28 May 2021 05:42:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx7U4c+zsR2eMX8uGtXZTl5loFQdOdjHKdIFeosX2oE3JmTuGdnSEfaAP46EceGx8B3kXxW1A==
-X-Received: by 2002:a67:f489:: with SMTP id o9mr6658995vsn.47.1622205731595;
-        Fri, 28 May 2021 05:42:11 -0700 (PDT)
+        bh=jAqSfj4V8Ljuoku0z/gnZf+7DpK+uMQ7YFx87xd1taE=;
+        b=K/ntocmxWVxeT48+pq1C3hh0aAi1wdTkbz8KbaiTr9ijQQM4cvtw8itl++85q1QCRv
+         7mxfnJ1s4mIsnHw5aq8pCsy+JAFcjaEn4QZRCrzNR+OIzd9uOexG7Ml9igg01uJ/oT/6
+         vpQvU69IcVbPF908EKFrLAaP3uJBABdhvgPK8r0se7f3me2dN4nk51ot+9U9FY83H5mY
+         6SlWKCE5Iyj4faqwbf5C3PfNe4FHI62IJCMxwjCC31wUu9jhZf7tVzyy2pfU20rfBClM
+         RAxSB7+e3LholyZA8Y1atHWhta6jVsdBzY9oGQeL0ArSCYVlAnIAobRiuWTR/bYeBg8t
+         ZJhg==
+X-Gm-Message-State: AOAM532ix8HdQVqgRTucXhzTd9uawtI6kvLAu98uOvbz4mk07I2jOQAM
+        BLRjYjZ1lIWxR7rho15V0p4uC7yca7mKfpRuHR8XY/e2XvKTLHXBAAOTy8AMHEoXNsmmZmTBqll
+        72TCQm93u6WJrYh257A5CH+KSlrPr+63umA==
+X-Received: by 2002:a1f:2850:: with SMTP id o77mr5533751vko.23.1622205734688;
+        Fri, 28 May 2021 05:42:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwP8YHtx6Nm7Vih9OSRSik8WCc8W76wXEqvpaj46Qq9kY3UA3420v5Vf1Pwn5+9Osz0Gz33sA==
+X-Received: by 2002:a1f:2850:: with SMTP id o77mr5533616vko.23.1622205733050;
+        Fri, 28 May 2021 05:42:13 -0700 (PDT)
 Received: from localhost.localdomain ([45.237.48.6])
-        by smtp.gmail.com with ESMTPSA id b35sm782328uae.20.2021.05.28.05.42.10
+        by smtp.gmail.com with ESMTPSA id b35sm782328uae.20.2021.05.28.05.42.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 May 2021 05:42:11 -0700 (PDT)
+        Fri, 28 May 2021 05:42:12 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 03/12] nfc: port100: correct kerneldoc for structure
-Date:   Fri, 28 May 2021 08:41:51 -0400
-Message-Id: <20210528124200.79655-3-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 04/12] nfc: pn533: drop of_match_ptr from device ID table
+Date:   Fri, 28 May 2021 08:41:52 -0400
+Message-Id: <20210528124200.79655-4-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210528124200.79655-1-krzysztof.kozlowski@canonical.com>
 References: <20210528124200.79655-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The port100_in_rf_setting structure does not contain valid kerneldoc
-docummentation, unlike the port100_tg_rf_setting structure.  Correct the
-kerneldoc to fix W=1 warnings:
+The driver can match only via the DT table so the table should be always
+used and the of_match_ptr does not have any sense (this also allows ACPI
+matching via PRP0001, even though it might be not relevant here).  This
+fixes compile warning (!CONFIG_OF):
 
-    warning: This comment starts with '/**', but isn't a kernel-doc comment.
+    drivers/nfc/pn533/i2c.c:252:34: warning:
+      ‘of_pn533_i2c_match’ defined but not used [-Wunused-const-variable=]
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- drivers/nfc/port100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/nfc/pn533/uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nfc/port100.c b/drivers/nfc/port100.c
-index 8e4d355dc3ae..4df926cc37d0 100644
---- a/drivers/nfc/port100.c
-+++ b/drivers/nfc/port100.c
-@@ -94,7 +94,7 @@ struct port100;
- typedef void (*port100_send_async_complete_t)(struct port100 *dev, void *arg,
- 					      struct sk_buff *resp);
- 
--/**
-+/*
-  * Setting sets structure for in_set_rf command
-  *
-  * @in_*_set_number: Represent the entry indexes in the port-100 RF Base Table.
-@@ -145,7 +145,7 @@ static const struct port100_in_rf_setting in_rf_settings[] = {
+diff --git a/drivers/nfc/pn533/uart.c b/drivers/nfc/pn533/uart.c
+index a0665d8ea85b..7bdaf8263070 100644
+--- a/drivers/nfc/pn533/uart.c
++++ b/drivers/nfc/pn533/uart.c
+@@ -319,7 +319,7 @@ static struct serdev_device_driver pn532_uart_driver = {
+ 	.remove = pn532_uart_remove,
+ 	.driver = {
+ 		.name = "pn532_uart",
+-		.of_match_table = of_match_ptr(pn532_uart_of_match),
++		.of_match_table = pn532_uart_of_match,
+ 	},
  };
  
- /**
-- * Setting sets structure for tg_set_rf command
-+ * struct port100_tg_rf_setting - Setting sets structure for tg_set_rf command
-  *
-  * @tg_set_number: Represents the entry index in the port-100 RF Base Table.
-  *                 This table contains multiple RF setting sets required for RF
 -- 
 2.27.0
 
