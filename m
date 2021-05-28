@@ -2,140 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30577393C00
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 05:43:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFEB6393C1B
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 05:55:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235737AbhE1Doi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 23:44:38 -0400
-Received: from mail-bn8nam11on2054.outbound.protection.outlook.com ([40.107.236.54]:51668
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229883AbhE1Dof (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 May 2021 23:44:35 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Cc5ohqf+v34x5DhG7su4cH74BxsKyZadhfUKaSovvmRrthWCz9JmdXN7zo9a6OfOrywpFsNPPJtfKGq/OxY7opuBmoG8ThiDltJqplhvvfT4YXRRPZkT4mr80p23anuhjjlfnoNHMWSAlHem81WFnTuPqM/kO1xIWvSdIetXpHfdVYYS8XNHxSSdjn4l00WTrJVyaSxbpOCucODhf6jPFOxmqbgdehsS63W1FfUpx5vpf/lBIWVk8kvUSQtxOw1oOPeLQtKqYrItq6IS4FslPbXDGGEKh7J9d+Ci39NrKmRaRB3O8IRQXE7Jr03wzNy8D06AkbOahTG4rcWi8mVLYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XoLWI4u0R0e1kQmJCe0RbwLRfqNsQPCAdSqLVem4Os4=;
- b=VsIiQHY/3m/yRQzWznvqUtzJfrhW/ajiFKJOzui8mp7pkdCX/5KLnalK9i6DJWmDBqlvL2X1YM3h6FZbWOopMepqG+Gblf93cZuRKQQbNeEOfHeWmjynaf3zd0UbHj+m4Rx6lb842eAbdBXiWzx7qqv5bsf5UDUvAQIGpDf4CqpsCyRImTYIwQdbgIhsBOBo9XAeWd6nHMBlsDr8xemBbGCkWArrF4tM3H21b4kfK3VHGTRB9N1GyEy8/DzIqPAKJdkp50+hLeI4kdIc6zziqLgxuV9Lx7GyAbWe4CGtAQvU4KCRSNeyNwS7B/dviZsCJJEZWtF0grlF5efHorl4Xw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XoLWI4u0R0e1kQmJCe0RbwLRfqNsQPCAdSqLVem4Os4=;
- b=n7bjTQ5ZFMYvB/DGvVZWMML5vDUgqDITWQCZyLttxVdnPKQ2gOWORVmshpznKjamCd00WVL6SW0vWONxWwCGjT0yum92EJaBK/T1MFcIKid7NiCCkTisIVb4wS4W1Fox/AGUsQuz/T4X7ao9qIBe9semBHSBfjU/uFB0myn/znWOvcwVWSWqNIBA489fHcwW7gYKwVj9KFC6ZVpYRnUk2TyjqVjjrdU7lk2Z+/r8zh16UejKxnQefrFMFEGlUC7K3aYS3/m9Ku0QS7unYX2B7qFbhViDeKiXB6AawV7STaxpgaNJ4Wr5oh9aGoGjPWOMVx+NHgSYlCimL2TpOOp4Bw==
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
- by PH0PR12MB5500.namprd12.prod.outlook.com (2603:10b6:510:ef::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Fri, 28 May
- 2021 03:43:00 +0000
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::b0d9:bff5:2fbf:b344]) by PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::b0d9:bff5:2fbf:b344%6]) with mapi id 15.20.4173.022; Fri, 28 May 2021
- 03:43:00 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>, Eli Cohen <elic@nvidia.com>
-Subject: RE: [net-next 17/17] net/mlx5: Improve performance in SF allocation
-Thread-Topic: [net-next 17/17] net/mlx5: Improve performance in SF allocation
-Thread-Index: AQHXUrH3qlFIS2GAPUCc7sjt4jqkRar2w/wwgADpegCAAJN3wA==
-Date:   Fri, 28 May 2021 03:42:57 +0000
-Message-ID: <PH0PR12MB5481A6D78F0304C5BDED25C8DC229@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20210527043609.654854-1-saeed@kernel.org>
-         <20210527043609.654854-18-saeed@kernel.org>
-         <DM6PR12MB4330F30E51E9D86F2AA212A7DC239@DM6PR12MB4330.namprd12.prod.outlook.com>
- <9763798a76af3b392bf324af6fe3347b46fbd40c.camel@kernel.org>
-In-Reply-To: <9763798a76af3b392bf324af6fe3347b46fbd40c.camel@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [49.207.221.85]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2c28c58e-9d66-4afb-2820-08d9218ab0d5
-x-ms-traffictypediagnostic: PH0PR12MB5500:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PH0PR12MB5500D4D7B6D177E887B60C1ADC229@PH0PR12MB5500.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: GvDG1n4BIFwn4/Ohp/BkGJOvQzoGSAenWqDycIKFibV1Q2S6CKvBhKxExvfaEMmR40Ixg8bck+glPTfeuqbHhCY9PDS6X5yoPHAFpWgpz9/RgoSFtym3OLco2X+3qpiC5sw6KriHkF23Uz1X4rEEnqFF5LkTKGP0qmzADwZsJgBHMFMZ8c0jsYqwWRwlqr+KX5kloZmGvlw21qNM9OPLBmsAoYHjCQpoU/LmgjEjiHtQwOBECrfuPgjjfoDhPvI+mh0ym4Agg9gmP07ZB2rY9Km5GWHVjiaD13Iv2aH0Tn9BHEbitudxcqwXMrBbfrv2bT63ErRuPWHOCWWYIYkNkiivEL1u1OcSe+SFXQ3e8GrMOgWiL9NxucmPkEhBpAYyWn38fWCzd8yokUWMARMZvnl/6wb8i4x4r/joT3jdhISsCR0wqFGu4+DpMbtm8f/HwRHRn3tUL8DPUZ1Mg7MQx+zE0t722jfAr+mqfoEx1Rx9u9K1CNn9jTf3w+A+zF/ShOeXYyWWSHoThsuvYcJnhJf3dKaEf884QixBLNUBRbsPvmLuypp2b5vQtqYqMewFFAJX2lbuZ5YPBW6xJOAFR8wgIr5tt66ePOKRUJsom+s=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(366004)(346002)(396003)(39860400002)(4326008)(107886003)(4744005)(8676002)(6666004)(76116006)(66476007)(66556008)(64756008)(66446008)(71200400001)(33656002)(66946007)(86362001)(478600001)(122000001)(5660300002)(38100700002)(186003)(26005)(2906002)(6506007)(55236004)(110136005)(55016002)(54906003)(52536014)(8936002)(316002)(7696005)(9686003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?a3NIRFNzaG9raWVXSG9pQVBvc3pGVUVBQkZLUkF3Z2ZUcS8rcmFhUlV4UEcy?=
- =?utf-8?B?SlAzZDVPWUxuYUVObXQrZFAwc0RaYURDaHFZOHdmcklLWjVvQk8rb1plSTVR?=
- =?utf-8?B?bmdaSFozNm1kYSs2WkdQK3NXbktXZHo4T01FdjZtQVFkVUlPenpoMDZQUmVs?=
- =?utf-8?B?bmtjdkttNjVWYk5pdlNUaXREZ3ZicWRnTkZwKytWaktCdExyTDdReEZXWDJN?=
- =?utf-8?B?UTViVGhNWk5ZWVRDRXJ5MDlTaXF6NytlNWdRcTNscHk1QU1aTzY4WnFDcU5h?=
- =?utf-8?B?UGI1UG1aWHV3NThRcUQ4T2lpL25WaWpwNXpFQzRWVnkyYkliMnlVNE5QajEx?=
- =?utf-8?B?WEc1b0FQNEZrTmxmWHA5WXRIT1N1UlVHUEo3Y0ppb1A4aUpaaXJ4dFBNNUxH?=
- =?utf-8?B?YXN0MlZLRFFxWEpvbGVMa2tTQkZ6OHhueEtyY09PTU5oVFMyNVNyT29kU0ho?=
- =?utf-8?B?OWNLalVtOHh1MWoxV3lMdFJ3OFdET0E5MEFpRm94RVFXWFNXM0VBRW9lSmlC?=
- =?utf-8?B?OGNQdTNYaUVRUGRoTGxqTldHZmlraWRBMFdqdjlucm9yc0lRS29TamEzWjBW?=
- =?utf-8?B?MjNxdkhScFRhQzFsUU4raEU4dEpQZFBTeHluQis3K2xxR28vUzVPK3YrcFh1?=
- =?utf-8?B?Q1V6RFhLR3RZRDBGdnEycGJhQkJnQ1BMSkh4WjNVdWlYaGswSEl4LzR6Y3FK?=
- =?utf-8?B?RkNDYS9IY2ZxOTdZVFJJSExvUUwxTmRjSktFTWwxNjdNRlpXVzMvSFBCQW5H?=
- =?utf-8?B?S0l6OHFsRE9aK0Fuck4valBvaEZIUk9zUSt3NTkyelR3RGtmcHdMVWpjS1lQ?=
- =?utf-8?B?SlFSb1g5SHZzRVBsMksyckRWeU84WTdHSmowRWJFc3BoblJOdEpaS0ZqNnRa?=
- =?utf-8?B?aUhZNWVibGFmMkFGaXFKbFM3ZVoycys0cXNlZG1Qa05SWkh4aGszVldveHYv?=
- =?utf-8?B?dkxuRTNzbmVYSFFWTHhZUVYwaUI3cTcrNktaNC8zNXBJeDlyaU9jTG5iQ1Iw?=
- =?utf-8?B?ekZsb28rYmpHbklTTFdjaVBENWZ3K016V0ExVUFscmtNNm5CMVMxMys0aSt5?=
- =?utf-8?B?dXVMWTBuVk12OVBKa3c1S1FJa2ZsY3E0K2laZURvOTdsSkR1VkpDOExmSXpI?=
- =?utf-8?B?dHNwL0dTY1ErTHMzaWdRc3FvWHg2Zlk1dldSeXYxTnlpRW4weUNuQWdQejdr?=
- =?utf-8?B?c3lmYU1EVUQvTElVOTBzRkMxNkg2RzllQ1N5eXVET1VrWitmc3pXK2U5TjJY?=
- =?utf-8?B?NXJCd2ZEeXJaSFQvcjFvU24xdTh6R1NMN2xJenF0YnEzc2pGaUgraSt5K00x?=
- =?utf-8?B?Y1RnTDlqV2FPdVNUZnRSdVp2b0dwYThaQllQZ29KazJ1V25Sakl6VGl0NHZv?=
- =?utf-8?B?WVBpYzRkMHJ4b1owaFlvN0ZPL2NtUXBFZGh6OWdLM01pdFdyUXR1NzYrS0hD?=
- =?utf-8?B?eGZmYXpaaERwTHEvOFUveW41NnlQWlc4aWFlYkVSSVE0Ly9zN0ZpZnlSSjNM?=
- =?utf-8?B?RlQxU0tITTRCcDF0OFFQc244bGdMRjBGQXYrVTN0UzNaTjYxWFR1aWM1aHho?=
- =?utf-8?B?U3BqcnY1Y0ZDdGU3TnY1TEtNcUdWSG1SaGY1eHZBRTMyZkRZV3ZJOXd4VzhF?=
- =?utf-8?B?WGFCUXlKaHZpYnRYT0g4RU12QVNGL0xUTDRsaDRGdnY4Rmh5WWRJSDYyOEls?=
- =?utf-8?B?VE45OXFKc2ZYOU01Q0thM2RibVg2S2c0OUN4cXMrS0g2TCt4SmhmTjAxWG12?=
- =?utf-8?Q?3hiL9wBXSKcnPa1HLfpZewq/7bGDqeD612qiLyn?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S236380AbhE1D4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 23:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60476 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236354AbhE1D43 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 23:56:29 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058EEC061760
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 20:54:54 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id gb17so3263625ejc.8
+        for <netdev@vger.kernel.org>; Thu, 27 May 2021 20:54:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=2ZLRemtbPVIGxGdr14fJ4jpBPRhMcvlWcSDK9Lq8+cA=;
+        b=UFv0CeSDqvB7H4mkMIIZWvzf4ZRd39QgluC5dBflrM0VjpNZjb4IxVcqKSaFjQwfoU
+         rWgDGpgWI0xme5OQoPqmq8AD4Bg47GUZ3YvvnYsyOqUgiOAVd+/QgHxhOseSV4531t1Y
+         q98vrZOP0RiW2TNaGpGtHw15oZuuCxpO73Asd1j4SQ6gy0lkm58WXtdB/hN4BqYh6FU9
+         yEPJgHuNA8Ks60yGNmeOlV3X8KsoFvpP05Rqnp8tYwo8GUgycM88TNuz9mDhgbSWS0TP
+         NxrAo+V30nyDjMdF8BGfXOf5ZfkePuBez8giFvm6iDMPI8AxgjdRKhgpEh9WCjnfb+4Q
+         JHEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2ZLRemtbPVIGxGdr14fJ4jpBPRhMcvlWcSDK9Lq8+cA=;
+        b=fqUxeGGe6tjARMBlyOmQ3bltzzJfosfNEeYcyAWCfOtkOn6j6xv8g5sEtkv/M2sU1c
+         CCQsjsaAs94I77MZm0CYqJT6/RWJE3VWEb8a6iKQKQyqo+EyJ0jXanubs0q885KNUeyW
+         srnj5h94B8QqNklpTR4B8hiqUYmx6iVSX0WW+BJQ6//01s+QVciCDZipZLSk1lRo8Uvu
+         kL/a6oxUERNenn80qqhdg0JIjQDC/UVrzUujQ5k21kJsc5rGoRM+FGZKaXIUeV3aIfdX
+         Ac3WRSK0/V0krza05HQJsZV5BjHA5C4NNyUmoLNCHpqqzfhGlBxAduRE0THKx4BlGd59
+         yQ7g==
+X-Gm-Message-State: AOAM530V2LgoS+PkHGQGSB7xA0dFeOe5/IxDrKmdXt2Pc9dvfgy0bdzC
+        XDuYz/d8D0RDtPe2oKcQBgl5u8ksAxpC5Yob5LgX
+X-Google-Smtp-Source: ABdhPJxDXENlmXrhp9PJ7iDubTy3e2MiMZjJiP/T1ExNiyEHROjd2EqD6OIxlhrl7NlegeNQLvRVHcx+LTeAeQsIVcE=
+X-Received: by 2002:a17:906:edaf:: with SMTP id sa15mr7021823ejb.174.1622174093482;
+ Thu, 27 May 2021 20:54:53 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c28c58e-9d66-4afb-2820-08d9218ab0d5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 May 2021 03:43:00.4493
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: brtjf4wAI8vQ5aLs5Nhfq7GBMvz8k5L8UNBLoxObmm16PQtP11c3PB6FFZpUmmrJMpXwWzyzzaMaK0i50m6SLA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5500
+References: <20210517095513.850-1-xieyongji@bytedance.com> <20210517095513.850-12-xieyongji@bytedance.com>
+ <3740c7eb-e457-07f3-5048-917c8606275d@redhat.com> <CACycT3uAqa6azso_8MGreh+quj-JXO1piuGnrV8k2kTfc34N2g@mail.gmail.com>
+ <5a68bb7c-fd05-ce02-cd61-8a601055c604@redhat.com> <CACycT3ve7YvKF+F+AnTQoJZMPua+jDvGMs_ox8GQe_=SGdeCMA@mail.gmail.com>
+ <ee00efca-b26d-c1be-68d2-f9e34a735515@redhat.com> <CACycT3ufok97cKpk47NjUBTc0QAyfauFUyuFvhWKmuqCGJ7zZw@mail.gmail.com>
+ <00ded99f-91b6-ba92-5d92-2366b163f129@redhat.com> <3cc7407d-9637-227e-9afa-402b6894d8ac@redhat.com>
+ <CACycT3s6SkER09KL_Ns9d03quYSKOuZwd3=HJ_s1SL7eH7y5gA@mail.gmail.com> <baf0016a-7930-2ae2-399f-c28259f415c1@redhat.com>
+In-Reply-To: <baf0016a-7930-2ae2-399f-c28259f415c1@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Fri, 28 May 2021 11:54:42 +0800
+Message-ID: <CACycT3vKZ3y0gga8PrSVtssZfNV0Y-A8=iYZSi9sbpHRNkVf-A@mail.gmail.com>
+Subject: Re: Re: [PATCH v7 11/12] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gRnJvbTogU2FlZWQgTWFoYW1lZWQgPHNhZWVkQGtlcm5lbC5vcmc+DQo+IFNlbnQ6IEZy
-aWRheSwgTWF5IDI4LCAyMDIxIDEyOjIyIEFNDQo+IA0KPiBPbiBUaHUsIDIwMjEtMDUtMjcgYXQg
-MDU6MzYgKzAwMDAsIFBhcmF2IFBhbmRpdCB3cm90ZToNCj4gPg0KPiA+ID4gRnJvbTogU2FlZWQg
-TWFoYW1lZWQgPHNhZWVkQGtlcm5lbC5vcmc+DQo+ID4gPiBTZW50OiBUaHVyc2RheSwgTWF5IDI3
-LCAyMDIxIDEwOjA2IEFNDQo+ID4gPiBGcm9tOiBFbGkgQ29oZW4gPGVsaWNAbnZpZGlhLmNvbT4N
-Cj4gPiA+DQo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoGNvbnRpbnVlOw0KPiA+ID4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9DQo+
-ID4gPiArDQo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKGh3Yy0+c2Zz
-W2ldLnVzcl9zZm51bSA9PSB1c3Jfc2ZudW0pDQo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVybiAtRUVYSVNUOw0KPiA+ID4gwqDCoMKgwqDC
-oMKgwqDCoH0NCj4gPiA+IC3CoMKgwqDCoMKgwqDCoHJldHVybiAtRU5PU1BDOw0KPiA+ID4gKw0K
-PiA+ID4gK8KgwqDCoMKgwqDCoMKgaWYgKGZyZWVfaWR4ID09IC0xKQ0KPiA+ID4gK8KgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVybiAtRU5PU1BDOw0KPiA+ID4gKw0KPiA+ID4gK8Kg
-wqDCoMKgwqDCoMKgaHdjLT5zZnNbZnJlZV9pZHhdLnVzcl9zZm51bSA9IHVzcl9zZm51bTsNCj4g
-PiA+ICvCoMKgwqDCoMKgwqDCoGh3Yy0+c2ZzW2ZyZWVfaWR4XS5hbGxvY2F0ZWQgPSB0cnVlOw0K
-PiA+ID4gK8KgwqDCoMKgwqDCoMKgcmV0dXJuIDA7DQo+ID4gVGhpcyBpcyBpbmNvcnJlY3QuIEl0
-IG11c3QgcmV0dXJuIHRoZSBmcmVlX2luZGV4IGFuZCBub3QgemVyby4NCj4gDQo+IFRoYW5rcyBQ
-YXJhdiwgSSB3aWxsIGRyb3AgdGhlIHBhdGNoZXMsDQo+IFBsZWFzZSBwb3N0IHRob3NlIGNvbW1l
-bnRzIGludGVybmFsbHkgc28gRWxpIHdpbGwgaGFuZGxlLCBJIHdhaXRlZCBmb3IgeW91cg0KPiBj
-b21tZW50cyBpbnRlcm5hbGx5IGZvciB3ZWVrcy4NCk15IGJhZC4NCldoZW4gcmVncmVzc2lvbiB0
-ZXN0cyBzdGFydGVkIGZhaWxpbmcgaXQgY2F1Z2h0IG15IGF0dGVudGlvbiBhbmQgdHJpZ2dlcmVk
-IHRoZSByZXZpZXcuDQpJIHdpbGwgcmV2aWV3IHRoZW0gdGltZWx5IGdvaW5nIGZvcndhcmQuDQo=
+On Fri, May 28, 2021 at 9:33 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=886:14, Yongji Xie =E5=86=99=E9=81=93=
+:
+> > On Thu, May 27, 2021 at 4:43 PM Jason Wang <jasowang@redhat.com> wrote:
+> >>
+> >> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=884:41, Jason Wang =E5=86=99=E9=81=
+=93:
+> >>> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=883:34, Yongji Xie =E5=86=99=E9=
+=81=93:
+> >>>> On Thu, May 27, 2021 at 1:40 PM Jason Wang <jasowang@redhat.com> wro=
+te:
+> >>>>> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=881:08, Yongji Xie =E5=86=99=E9=
+=81=93:
+> >>>>>> On Thu, May 27, 2021 at 1:00 PM Jason Wang <jasowang@redhat.com>
+> >>>>>> wrote:
+> >>>>>>> =E5=9C=A8 2021/5/27 =E4=B8=8B=E5=8D=8812:57, Yongji Xie =E5=86=99=
+=E9=81=93:
+> >>>>>>>> On Thu, May 27, 2021 at 12:13 PM Jason Wang <jasowang@redhat.com=
+>
+> >>>>>>>> wrote:
+> >>>>>>>>> =E5=9C=A8 2021/5/17 =E4=B8=8B=E5=8D=885:55, Xie Yongji =E5=86=
+=99=E9=81=93:
+> >>>>>>>>>> +
+> >>>>>>>>>> +static int vduse_dev_msg_sync(struct vduse_dev *dev,
+> >>>>>>>>>> +                           struct vduse_dev_msg *msg)
+> >>>>>>>>>> +{
+> >>>>>>>>>> +     init_waitqueue_head(&msg->waitq);
+> >>>>>>>>>> +     spin_lock(&dev->msg_lock);
+> >>>>>>>>>> +     vduse_enqueue_msg(&dev->send_list, msg);
+> >>>>>>>>>> +     wake_up(&dev->waitq);
+> >>>>>>>>>> +     spin_unlock(&dev->msg_lock);
+> >>>>>>>>>> +     wait_event_killable(msg->waitq, msg->completed);
+> >>>>>>>>> What happens if the userspace(malicous) doesn't give a response
+> >>>>>>>>> forever?
+> >>>>>>>>>
+> >>>>>>>>> It looks like a DOS. If yes, we need to consider a way to fix t=
+hat.
+> >>>>>>>>>
+> >>>>>>>> How about using wait_event_killable_timeout() instead?
+> >>>>>>> Probably, and then we need choose a suitable timeout and more
+> >>>>>>> important,
+> >>>>>>> need to report the failure to virtio.
+> >>>>>>>
+> >>>>>> Makes sense to me. But it looks like some
+> >>>>>> vdpa_config_ops/virtio_config_ops such as set_status() didn't have=
+ a
+> >>>>>> return value.  Now I add a WARN_ON() for the failure. Do you mean =
+we
+> >>>>>> need to add some change for virtio core to handle the failure?
+> >>>>> Maybe, but I'm not sure how hard we can do that.
+> >>>>>
+> >>>> We need to change all virtio device drivers in this way.
+> >>>
+> >>> Probably.
+> >>>
+> >>>
+> >>>>> We had NEEDS_RESET but it looks we don't implement it.
+> >>>>>
+> >>>> Could it handle the failure of get_feature() and get/set_config()?
+> >>>
+> >>> Looks not:
+> >>>
+> >>> "
+> >>>
+> >>> The device SHOULD set DEVICE_NEEDS_RESET when it enters an error stat=
+e
+> >>> that a reset is needed. If DRIVER_OK is set, after it sets
+> >>> DEVICE_NEEDS_RESET, the device MUST send a device configuration chang=
+e
+> >>> notification to the driver.
+> >>>
+> >>> "
+> >>>
+> >>> This looks implies that NEEDS_RESET may only work after device is
+> >>> probed. But in the current design, even the reset() is not reliable.
+> >>>
+> >>>
+> >>>>> Or a rough idea is that maybe need some relaxing to be coupled loos=
+ely
+> >>>>> with userspace. E.g the device (control path) is implemented in the
+> >>>>> kernel but the datapath is implemented in the userspace like TUN/TA=
+P.
+> >>>>>
+> >>>> I think it can work for most cases. One problem is that the set_conf=
+ig
+> >>>> might change the behavior of the data path at runtime, e.g.
+> >>>> virtnet_set_mac_address() in the virtio-net driver and
+> >>>> cache_type_store() in the virtio-blk driver. Not sure if this path i=
+s
+> >>>> able to return before the datapath is aware of this change.
+> >>>
+> >>> Good point.
+> >>>
+> >>> But set_config() should be rare:
+> >>>
+> >>> E.g in the case of virtio-net with VERSION_1, config space is read
+> >>> only, and it was set via control vq.
+> >>>
+> >>> For block, we can
+> >>>
+> >>> 1) start from without WCE or
+> >>> 2) we add a config change notification to userspace or
+> >>> 3) extend the spec to use vq instead of config space
+> >>>
+> >>> Thanks
+> >>
+> >> Another thing if we want to go this way:
+> >>
+> >> We need find a way to terminate the data path from the kernel side, to
+> >> implement to reset semantic.
+> >>
+> > Do you mean terminate the data path in vdpa_reset().
+>
+>
+> Yes.
+>
+>
+> >   Is it ok to just
+> > notify userspace to stop data path asynchronously?
+>
+>
+> For well-behaved userspace, yes but no for buggy or malicious ones.
+>
+
+But the buggy or malicious daemons can't do anything if my
+understanding is correct.
+
+> I had an idea, how about terminate IOTLB in this case? Then we're in
+> fact turn datapath off.
+>
+
+Sorry, I didn't get your point here. What do you mean by terminating
+IOTLB? Remove iotlb mapping? But userspace can still access the mapped
+region.
+
+Thanks,
+Yongji
