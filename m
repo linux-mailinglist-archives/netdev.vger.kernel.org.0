@@ -2,205 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C8BE393B14
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 03:37:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63AF8393B3C
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 03:58:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235285AbhE1BjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 21:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58542 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232006AbhE1BjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 21:39:20 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328FBC0613CE
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 18:37:46 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id lg14so2927235ejb.9
-        for <netdev@vger.kernel.org>; Thu, 27 May 2021 18:37:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OCl/OoNf08gbSAkv21GdMjWI/U5EK/VtpzFkOjaRXDc=;
-        b=POerS0Ux4ct2bWMhkrOhHCReDGmKwGq49OtylDhjF9lBGQePK0TFjOCijyW8C1Kp/o
-         Xh/madiE0TnJlXbz8A9quFOg+/RI5jAUOif+6JsRURl3t/ze4YQnI44921ViT1tdrrM4
-         HjuPpQdlOCOYZPPbHCLCzTx/HQU+AEBcGTknBjcNeZrWDZ8YoRD7/wVOL3h3fMalQU3w
-         RHKDeBAQIYl6E/bgA3OnVAijXoVpCgmqz+qBj1zfhN7HjvWBWklw9U4UDflAOFogdwNn
-         LQdislTgKFgkdjsNn26pf+B5s1Ifqow6EwLkeFnrksRVYEWkqLWG9JczSwAXar565r2c
-         BXqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OCl/OoNf08gbSAkv21GdMjWI/U5EK/VtpzFkOjaRXDc=;
-        b=A4uTaZhcBby3oag8WRnJtXvXjzGcGZRYW85GD5jQK6xNlXZGY3QCLYZv4XkZ0e3TTb
-         lOo/y3UY/ZgWAOl7n6aBBtTzzoPSPOWm72lOTilyI3xq8iz1sryFyjxzg/V5cMOP6su6
-         X99cog1/LT7HNn0Ly6uS3oWKGylxDwkLOYYkOTQC22h0K94rq0xqxX46Tkkuq2dy6LBK
-         L2Q213CeaRRJx/0CjiVZUKUDVKj3gdKpzATZ3VtASK+hZorMc/jDy4hcAbJFXKhYiKsD
-         Yh5R7nIqKqxCvPAMaxDR9xW7HxQUfhWTZT0Omcyk6ETMRbrFP3xFafdjJIwmbOaVUcmf
-         En0g==
-X-Gm-Message-State: AOAM531rTskkrtJS5/OzEHlLJX23lUjFb0/pav82sCczYWJZUB074+n3
-        UptZkic3hHUIBG3e0LURF5HRTz+U7fYNQkhW9x8P
-X-Google-Smtp-Source: ABdhPJxLOItL9vdGc/YxGb4zM3gCgphGyyxSx8AHRjJ/9K0sjs3QF6XIJzfJvXSrGS6ej4rkXclv/bfnao0YEc+kFow=
-X-Received: by 2002:a17:906:b2ce:: with SMTP id cf14mr6910759ejb.178.1622165863989;
- Thu, 27 May 2021 18:37:43 -0700 (PDT)
+        id S235568AbhE1B7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 21:59:36 -0400
+Received: from mga07.intel.com ([134.134.136.100]:24250 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235016AbhE1B7e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 May 2021 21:59:34 -0400
+IronPort-SDR: aFT3JlZ4bjtqdG55oC/98GcoSOfNIzEpRlP17tiD35JF1j7qGB19OKPB/z/vtGChtNRb0XzbkV
+ ttTNkAfFGJ6w==
+X-IronPort-AV: E=McAfee;i="6200,9189,9997"; a="266761280"
+X-IronPort-AV: E=Sophos;i="5.83,228,1616482800"; 
+   d="scan'208";a="266761280"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2021 18:58:00 -0700
+IronPort-SDR: MblKSxH4I63PESAU8edTFcuMI0p6O8V9CeamdfyW+jMBnHRCBdkrRhP7abn0FdNjCZ4W1BLFTT
+ N8wvNrVpj4uA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,228,1616482800"; 
+   d="scan'208";a="477736591"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga001.jf.intel.com with ESMTP; 27 May 2021 18:58:00 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Thu, 27 May 2021 18:57:59 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
+ via Frontend Transport; Thu, 27 May 2021 18:57:59 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.175)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.4; Thu, 27 May 2021 18:57:59 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VUjOBoXJ/wA2nweKc2AqleewXOFevax9xEDjzIjK76yZ2BC7o7YwYxx76fM2hcSyWBh/JDwdlOhvzWDyqt1BQZiHi/g32t729D24PKRDnONrbAKuG70mOYfBMcFQz4hFqBps1BozjMil+YaFqOOBKg/uPdm9imWDliVOH1qB5vQpu86PHsW18imG40YrsdCvZCo6+57xZNRXtKNqlplIOWq19grKVrMwvAd2svy00WZn3dtqy4+Sf/EzrnJL3xk3SqtlyW9PQ2gAm9xawa++qGg4lJCQmyuX2ncvzS77EgwJtfujoNdw+9C5j+vWa2TMeJnAwvuK1OMDGi+mFkICKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UwtGNn4wUpy5C3srOfhepVUj4O28wrlTBIGe/uWT+vk=;
+ b=X+/5Px7IjlBRb9B+/6Am4BSUqrUpC6CqYNnwK38NjCRmX49mAJ2GjEvAWOtwRdHpEvyS1D9TwZiiH1+Foujk43o6VkVVwcnUsqq+zd5t+ArZjRPDCpwPcYGYpq+Y4myUcl9GI9ZBQVYZ1k6tvLeen+cux78tkm4ClgnYajzN2XOgE6WJE5uJryqOeq+eA2clhYEFEorQ/uEft6wYetMLTOzQWbmsO59HBfQ6XlXktJ3gc8l+QOjOwUeU1YGrHEoKCZHJMbnlkKZiqSNu7H089tvIL0N9bwNvhRxrJmxuiGgp3gXCmx26+HujjVC9KPc2fxjMY+pUradGOKFMbUYHsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UwtGNn4wUpy5C3srOfhepVUj4O28wrlTBIGe/uWT+vk=;
+ b=l5mZs1u2BU3OWjYLLXLnHtmkc10n48uRuofD8UUFSrG9d9cO+gr0VmF6VuszOG0smc1SLgsaS6n6yeNNiO2WCyupsbqa7gojz0L0dXgBvsqnj2crp5CNjwGaqOB2RrKBiUaSc01dEOWmvmp9Gsc+lpb5Wq4Q0ge2lJD9eEvclcM=
+Received: from CO1PR11MB5044.namprd11.prod.outlook.com (2603:10b6:303:92::5)
+ by MWHPR11MB1405.namprd11.prod.outlook.com (2603:10b6:300:21::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Fri, 28 May
+ 2021 01:57:58 +0000
+Received: from CO1PR11MB5044.namprd11.prod.outlook.com
+ ([fe80::fccf:6de6:458a:9ded]) by CO1PR11MB5044.namprd11.prod.outlook.com
+ ([fe80::fccf:6de6:458a:9ded%3]) with mapi id 15.20.4173.021; Fri, 28 May 2021
+ 01:57:58 +0000
+From:   "Sit, Michael Wei Hong" <michael.wei.hong.sit@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Tan, Tee Min" <tee.min.tan@intel.com>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next v3 2/3] net: pcs: add 2500BASEX support for Intel
+ mGbE controller
+Thread-Topic: [PATCH net-next v3 2/3] net: pcs: add 2500BASEX support for
+ Intel mGbE controller
+Thread-Index: AQHXUtrnBn8MrqotsUKAotjUoAsS7Kr3+cUAgAAqCZA=
+Date:   Fri, 28 May 2021 01:57:58 +0000
+Message-ID: <CO1PR11MB5044DDF8E9080BDB9701B3339D229@CO1PR11MB5044.namprd11.prod.outlook.com>
+References: <20210527092415.25205-1-michael.wei.hong.sit@intel.com>
+ <20210527092415.25205-3-michael.wei.hong.sit@intel.com>
+ <YLAqrte9qwQ/64BI@lunn.ch>
+In-Reply-To: <YLAqrte9qwQ/64BI@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [58.71.211.99]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7c9360b7-352b-444f-e21e-08d9217c04c1
+x-ms-traffictypediagnostic: MWHPR11MB1405:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR11MB14059364E8DECBDFA4F5BF8F9D229@MWHPR11MB1405.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1227;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BBnIoHkHbPQ1QHA1KVrDETduUND0SkrPfB9Bj0Z41nYctK2IIMZFE+o+QIvfkyWu0OYTQH9SdttNQJUOEGxpJ9VZKWs/O1e+ZbROi7/PlyLwtJPFEFp3xBFDj7K25o4SpcRWkKHMBq2w8ffVOZEL9RO38jRbyMBVz/FB6J1L4oWfj2WfKLvWBEzEKYvj4l+usZQOoZPfGBuxcSvN2cGnIJ46VMlgUmy6v8IBy4M1xkKz07DqJufDvZc1VqBr5QnkAZep3z0DrpMZPa2ifuKaMrQN3sYuKfMhWUMSYC8jahfF6dfrzcLwEQYdN5xXDzDSrKtwPRlzG2Dy7VWdt0Jj9NKYH4fziQCgtIGMZyjRQeKAgfsieP5zgjnQKPy8IBzr6eaTPMEYkt8DKsDylMJnbEuiXgPdUjgz9wWMsDCnPcihYwotWnSjOsOenbNKYmuwIa16O6eAsXVt9hXv6B9NQUmxEq11KpX6SIZa1SOcd52bLWearwTmMKiUcjTMDaXLHfX93jca3AQoWpTbXcc+par7FN1VRtKgjHRDUinhfwdmcfZFtFnwC6309CfFbMCtEbe5A8NyAHHM/IyX9NqXEI44Vjl08SJb4CUpZsRMmxXKXK0dHclN3YfSplJGjR0SSTo1d2Tn8Dqcy3IZPCv4I62u4waLwMwexpOtXJI68GU=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5044.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(6029001)(366004)(39860400002)(346002)(136003)(376002)(396003)(5660300002)(316002)(83380400001)(6506007)(478600001)(186003)(66946007)(8676002)(4326008)(8936002)(76116006)(54906003)(66476007)(64756008)(66446008)(66556008)(26005)(71200400001)(7696005)(38100700002)(122000001)(7416002)(2906002)(9686003)(6916009)(86362001)(52536014)(33656002)(53546011)(55016002)(164013002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?xfr8YRgafMMHXDZHV8/uqdNshrBs5vC1o2lbZ7DG6KWdo6PMEIflSNSyfHR9?=
+ =?us-ascii?Q?VXWnutMKtUplaMMe9jswyfhrfLb67BHiOCyYKsTnPEi+PsUwX1ybL92enLGb?=
+ =?us-ascii?Q?daRJ3vlAgcVmciZpOkxMrIySvgqKcBgCSZ+SIqUmOv015HvsoNq0OfwJfit9?=
+ =?us-ascii?Q?o1gShsNbT3lAiwDiCGgXCBCZDPUSm2pP4NZQf10R2///LNlzE5rd0GgBGS5d?=
+ =?us-ascii?Q?+KW39S8gAO/0TT8F048xuYNbshIcmeuzlmqi1YJ823o03+tsWv4JWY+ZfsnH?=
+ =?us-ascii?Q?Rlj9DRWVdYEBXKu1W6VwUyWAcs3bEMt9qVkTaoT6/OKQYKCycuUS9CVik6Yl?=
+ =?us-ascii?Q?0GkLFtY4aaWVoYtTUlViAY073Fw5YnnY4keSZvfx+pWdZx0R1H4h+dmMxkWi?=
+ =?us-ascii?Q?y9/DVVvL0MCIDAzDLvcFmCBhjMQ4IsFOqF87GKtkxGD/yK6gEl+D7qYhVfr4?=
+ =?us-ascii?Q?9VCGNjiYbCUQVHJVLtZRkSYZO5MHe6+z1OGh1qJ3O2m3pDRrVpSiodQDQs5c?=
+ =?us-ascii?Q?Bywv+Udv/ouReoxdafv2rQ3mNUbuzMwfUPE0QLkUQkTw4r9UfcrwdLh4uRus?=
+ =?us-ascii?Q?GJgRaFul0MhL3MyJPumUWlV2T651XqQxgoGPtVj9JVpNCZMf/+EtcXFRHOHF?=
+ =?us-ascii?Q?d7snfkCyoSEIzjhhlq5z0hzcWsnar+ziCTYmmfo08vbAnqQB2qQgajKDNRrO?=
+ =?us-ascii?Q?yvul01jmBURPs73FIYOdNe7VTiDXIaQ5Rr4RRIMHlQmY4anQCa3YYmHpH8ou?=
+ =?us-ascii?Q?IaxbjouPma4HquDiFP/Tjc9Mr2rFdsAF4u0HtjBnJDb8CCQmFRn8qy1dLzAn?=
+ =?us-ascii?Q?YRqNPEMhGWGKHsxpa5ZMA0N9cilCCAIeffX+Q1GsF8tz7C6tuMLPQak3DlxP?=
+ =?us-ascii?Q?/Opx34BvSPE2rKhXRubLVebmWtBndmNpJR0tTzi+CQxVo4kqO79g7to6h49v?=
+ =?us-ascii?Q?TDYpVO8+bDTgHIgIbI6yBflUDpqfPDK0F4TJxVllzIh0OUN1OxbFxrjjLadN?=
+ =?us-ascii?Q?iTCvoZ+Ap/2lLoJOKKfVGFbSVSqwOJtOyM8S7ambrqclrEnMRKibjZaKeWRz?=
+ =?us-ascii?Q?qPRmXyoptUmRshNqvO82rowZZme7cjb8XawJcndDRp/Gl7Zu8KWBIIeUO1XT?=
+ =?us-ascii?Q?0F0AU91liTQ2bmwojeQq9ZmXRrw2EvF0vxwcQUxtOyRXoc5XMwEAWlq3obXx?=
+ =?us-ascii?Q?LYxq+lbiBsrEqPnDzfptgZnhamGIFzLx8/McJOkHIQJKQQ37RqjsoBSm7r9u?=
+ =?us-ascii?Q?sZAd51vwQlkyAggZf6LnMaDPkdmdXf1d54emiYknUUpMXSuUi2BZUwj3r7N6?=
+ =?us-ascii?Q?wsk=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20210517092006.803332-1-omosnace@redhat.com>
-In-Reply-To: <20210517092006.803332-1-omosnace@redhat.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 27 May 2021 21:37:33 -0400
-Message-ID: <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
-Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
- permission checks
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     linux-security-module@vger.kernel.org,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Casey Schaufler <casey@schaufler-ca.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5044.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c9360b7-352b-444f-e21e-08d9217c04c1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 May 2021 01:57:58.7917
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 11qr4mZnf5aQbCi0ENz9Nw77UJ29K1TA2yHXV07opTtLdC1O+9wmtIQY8jy9Quufxx9Mw1sXVv3GSLtOjwbjo5C6ohGmGWLsEP75J/DtqHg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1405
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 17, 2021 at 5:22 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
->
-> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
-> lockdown") added an implementation of the locked_down LSM hook to
-> SELinux, with the aim to restrict which domains are allowed to perform
-> operations that would breach lockdown.
->
-> However, in several places the security_locked_down() hook is called in
-> situations where the current task isn't doing any action that would
-> directly breach lockdown, leading to SELinux checks that are basically
-> bogus.
->
-> Since in most of these situations converting the callers such that
-> security_locked_down() is called in a context where the current task
-> would be meaningful for SELinux is impossible or very non-trivial (and
-> could lead to TOCTOU issues for the classic Lockdown LSM
-> implementation), fix this by modifying the hook to accept a struct cred
-> pointer as argument, where NULL will be interpreted as a request for a
-> "global", task-independent lockdown decision only. Then modify SELinux
-> to ignore calls with cred == NULL.
 
-I'm not overly excited about skipping the access check when cred is
-NULL.  Based on the description and the little bit that I've dug into
-thus far it looks like using SECINITSID_KERNEL as the subject would be
-much more appropriate.  *Something* (the kernel in most of the
-relevant cases it looks like) is requesting that a potentially
-sensitive disclosure be made, and ignoring it seems like the wrong
-thing to do.  Leaving the access control intact also provides a nice
-avenue to audit these requests should users want to do that.
 
-Those users that generally don't care can grant kernel_t all the
-necessary permissions without much policy.
-
-> Since most callers will just want to pass current_cred() as the cred
-> parameter, rename the hook to security_cred_locked_down() and provide
-> the original security_locked_down() function as a simple wrapper around
-> the new hook.
-
-I know you and Casey went back and forth on this in v1, but I agree
-with Casey that having two LSM hooks here is a mistake.  I know it
-makes backports hard, but spoiler alert: maintaining complex software
-over any non-trivial period of time is hard, reeeeally hard sometimes
-;)
-
-> The callers migrated to the new hook, passing NULL as cred:
-> 1. arch/powerpc/xmon/xmon.c
->      Here the hook seems to be called from non-task context and is only
->      used for redacting some sensitive values from output sent to
->      userspace.
-
-This definitely sounds like kernel_t based on the description above.
-
-> 2. fs/tracefs/inode.c:tracefs_create_file()
->      Here the call is used to prevent creating new tracefs entries when
->      the kernel is locked down. Assumes that locking down is one-way -
->      i.e. if the hook returns non-zero once, it will never return zero
->      again, thus no point in creating these files.
-
-More kernel_t.
-
-> 3. kernel/trace/bpf_trace.c:bpf_probe_read_kernel{,_str}_common()
->      Called when a BPF program calls a helper that could leak kernel
->      memory. The task context is not relevant here, since the program
->      may very well be run in the context of a different task than the
->      consumer of the data.
->      See: https://bugzilla.redhat.com/show_bug.cgi?id=1955585
-
-The access control check isn't so much who is consuming the data, but
-who is requesting a potential violation of a "lockdown", yes?  For
-example, the SELinux policy rule for the current lockdown check looks
-something like this:
-
-  allow <who> <who> : lockdown { <reason> };
-
-It seems to me that the task context is relevant here and performing
-the access control check based on the task's domain is correct.  If we
-are also concerned about who has access to this sensitive information
-once it has been determined that the task can cause it to be sent, we
-should have another check point for that, assuming the access isn't
-already covered by another check/hook.
-
-> 4. net/xfrm/xfrm_user.c:copy_to_user_*()
->      Here a cryptographic secret is redacted based on the value returned
->      from the hook. There are two possible actions that may lead here:
->      a) A netlink message XFRM_MSG_GETSA with NLM_F_DUMP set - here the
->         task context is relevant, since the dumped data is sent back to
->         the current task.
-
-If the task context is relevant we should use it.
-
->      b) When deleting an SA via XFRM_MSG_DELSA, the dumped SAs are
->         broadcasted to tasks subscribed to XFRM events - here the
->         SELinux check is not meningful as the current task's creds do
->         not represent the tasks that could potentially see the secret.
-
-This looks very similar to the BPF hook discussed above, I believe my
-comments above apply here as well.
-
->      It really doesn't seem worth it to try to preserve the check in the
->      a) case ...
-
-After you've read all of the above I hope you can understand why I
-disagree with this.
-
->      ... since the eventual leak can be circumvented anyway via b)
-
-I don't follow the statement above ... ?  However I'm not sure it
-matters much considering my other concerns.
-
->      plus there is no way for the task to indicate that it doesn't care
->      about the actual key value, so the check could generate a lot of
->      noise.
->
-> Improvements-suggested-by: Casey Schaufler <casey@schaufler-ca.com>
-> Fixes: 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
-> Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-> ---
->
-> v2:
-> - change to a single hook based on suggestions by Casey Schaufler
->
-> v1: https://lore.kernel.org/lkml/20210507114048.138933-1-omosnace@redhat.com/
->
->  arch/powerpc/xmon/xmon.c      |  4 ++--
->  fs/tracefs/inode.c            |  2 +-
->  include/linux/lsm_hook_defs.h |  3 ++-
->  include/linux/lsm_hooks.h     |  3 ++-
->  include/linux/security.h      | 11 ++++++++---
->  kernel/trace/bpf_trace.c      |  4 ++--
->  net/xfrm/xfrm_user.c          |  2 +-
->  security/lockdown/lockdown.c  |  5 +++--
->  security/security.c           |  6 +++---
->  security/selinux/hooks.c      | 12 +++++++++---
->  10 files changed, 33 insertions(+), 19 deletions(-)
-
--- 
-paul moore
-www.paul-moore.com
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Friday, 28 May, 2021 7:27 AM
+> To: Sit, Michael Wei Hong <michael.wei.hong.sit@intel.com>
+> Cc: Jose.Abreu@synopsys.com; hkallweit1@gmail.com;
+> linux@armlinux.org.uk; kuba@kernel.org;
+> netdev@vger.kernel.org; peppe.cavallaro@st.com;
+> alexandre.torgue@foss.st.com; davem@davemloft.net;
+> mcoquelin.stm32@gmail.com; Voon, Weifeng
+> <weifeng.voon@intel.com>; Ong, Boon Leong
+> <boon.leong.ong@intel.com>; Tan, Tee Min
+> <tee.min.tan@intel.com>; vee.khee.wong@linux.intel.com;
+> Wong, Vee Khee <vee.khee.wong@intel.com>; linux-stm32@st-
+> md-mailman.stormreply.com; linux-arm-
+> kernel@lists.infradead.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH net-next v3 2/3] net: pcs: add 2500BASEX
+> support for Intel mGbE controller
+>=20
+> > +static int xpcs_config_2500basex(struct mdio_xpcs_args *xpcs)
+> {
+> > +	int ret;
+> > +
+> > +		ret =3D xpcs_read(xpcs, MDIO_MMD_VEND2,
+> DW_VR_MII_DIG_CTRL1);
+> > +		if (ret < 0)
+> > +			return ret;
+> > +		ret |=3D DW_VR_MII_DIG_CTRL1_2G5_EN;
+> > +		ret &=3D
+> ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
+> > +		ret =3D xpcs_write(xpcs, MDIO_MMD_VEND2,
+> DW_VR_MII_DIG_CTRL1, ret);
+> > +		if (ret < 0)
+> > +			return ret;
+> > +
+> > +		ret =3D xpcs_read(xpcs, MDIO_MMD_VEND2,
+> DW_VR_MII_MMD_CTRL);
+> > +		if (ret < 0)
+> > +			return ret;
+> > +		ret &=3D ~AN_CL37_EN;
+> > +		ret |=3D SGMII_SPEED_SS6;
+> > +		ret &=3D ~SGMII_SPEED_SS13;
+> > +		return xpcs_write(xpcs, MDIO_MMD_VEND2,
+> DW_VR_MII_MMD_CTRL, ret);
+> > +
+> > +	return 0;
+>=20
+> Indentation is messed up here? Or a rebase gone wrong
+> removing an if statement?
+>=20
+Thanks Andrew! Good catch, missed this indentation error,
+will fix in next revision
+> 	    Andrew
