@@ -2,141 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8291D394087
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 12:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDCA23940A9
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 12:09:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236321AbhE1KCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 06:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
+        id S236417AbhE1KKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 06:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236356AbhE1KBw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 06:01:52 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA50EC061761;
-        Fri, 28 May 2021 03:00:16 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id g18so2859071pfr.2;
-        Fri, 28 May 2021 03:00:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XkhajJbVENw05gdm0/64f1bFmGYssSVOr17T3Gt0/TA=;
-        b=OGyzp5KG7AHufFdzzq7prRUBmxGSWx5buDkbnOOI6Upr/hoTqaCW/YmXcoyWHFODK8
-         Qi5xl8fYevu5ZJ+AOL5VNsxnkKzOMsCPxKz4iJ/QtYhzruIilsr9f4Abc8n5r/S2Vwzn
-         rCGB0m80A8TH9VRD+DVB+fi/MleJ1qKTMvE7tkRPaM5H2JHBPDGdqlAsfhcgwjEbMoj8
-         NwaZpuy8mDWIpisgf5yuxVIdTLBjKP8rEpUWTR2WyT13iUzZVN9EMQ0sskhLM1IadNkb
-         +geO8JBC5s00S5TGVNudqVMsaAegJYgRrPWa33LhH3biQpBff9ooRuEp01lz/LoliRSe
-         H6pA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XkhajJbVENw05gdm0/64f1bFmGYssSVOr17T3Gt0/TA=;
-        b=da4Sb+IMH3T0LpLQrYYPExR48wOOmIzdD3NoJyTdM+T0rrrK0CkMGPDFhDQxvscUMd
-         /YDFJakvfTrOUuc8JfXUtmldBh5UclaF0o92TbY3qMFgCeeyyVPqPMqI9pPMOWZKKq0W
-         vjta9cPi2ekrQ9CU/9yBAv6rf1d7BoUnYFXKwkfyESUdBLNFbJuu+2CP5kUOlBZ//uf0
-         RVTN8SzcjSXt5NbG6DyYMT4GgNZ4dCiTe49W96r5hURQcuquQZCIK1EQ2s6kU/SYl+Qm
-         TDNJ83mKF5ivezeoNTjFFFvjRF7VYCqqWpUgeDFi2jZwzNvE4UTLeldRjwZYWS6Pd3/O
-         5QHA==
-X-Gm-Message-State: AOAM530ajyKIxio7xo5S63MpoXlXab1zI7557x1fGAVae0k6zH0f0pLC
-        yG9/EsGhapU+bV1zBSTs4QeDiZR6xJxq5mqr6J8=
-X-Google-Smtp-Source: ABdhPJzpHzych1ZR/lCf/I1GJFWkEX3bq9CrKC/JOR6cXsfHlRhWYM5vyYGtS7dzZujHidAOb/oBtymZ56fJZnqgl9E=
-X-Received: by 2002:a63:7056:: with SMTP id a22mr8258180pgn.292.1622196016295;
- Fri, 28 May 2021 03:00:16 -0700 (PDT)
+        with ESMTP id S235361AbhE1KKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 06:10:54 -0400
+X-Greylist: delayed 507 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 28 May 2021 03:09:20 PDT
+Received: from dvalin.narfation.org (dvalin.narfation.org [IPv6:2a00:17d8:100::8b1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CB5C061574
+        for <netdev@vger.kernel.org>; Fri, 28 May 2021 03:09:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1622196048;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OmS3Xtoeak6MRLd+5GYFy0/qSh91YuShKZQkQq6q3tc=;
+        b=BC4HaLgk117+A05W0eex0XQnSrfDPYaM/eij1TE1dXG98iHLqI8vHjpsXVsc4W9RILSXNX
+        vYXu4OFwtNobXCMEfJHLI7Rql6r/ZjByHVUnpVRzJlhpVLKGZ+fzDc9dw8BbdTPRZRcL04
+        Zi6y0D5HPms5ZLvvuySVka6+m/AOrLc=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
+        Shaokun Zhang <zhangshaokun@hisilicon.com>
+Cc:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>
+Subject: Re: [PATCH] batman-adv: Remove the repeated declaration
+Date:   Fri, 28 May 2021 12:00:44 +0200
+Message-ID: <56516093.ber78CngbM@ripper>
+In-Reply-To: <1622195785-55920-1-git-send-email-zhangshaokun@hisilicon.com>
+References: <1622195785-55920-1-git-send-email-zhangshaokun@hisilicon.com>
 MIME-Version: 1.0
-References: <87im33grtt.fsf@toke.dk> <1622192521.5931044-1-xuanzhuo@linux.alibaba.com>
- <20210528115003.37840424@carbon>
-In-Reply-To: <20210528115003.37840424@carbon>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 28 May 2021 12:00:05 +0200
-Message-ID: <CAJ8uoz2bhfsk4XX--cNB-gKczx0jZENB5kdthoWkuyxcOHQfjg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] xsk: support AF_PACKET
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Xie He <xie.he.0141@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Wang Hai <wanghai38@huawei.com>,
-        Tanner Love <tannerlove@google.com>,
-        Eyal Birger <eyal.birger@gmail.com>,
-        Menglong Dong <dong.menglong@zte.com.cn>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; boundary="nextPart13351496.OZpsN2k5gf"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 28, 2021 at 11:52 AM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> On Fri, 28 May 2021 17:02:01 +0800
-> Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->
-> > On Fri, 28 May 2021 10:55:58 +0200, Toke H=C3=B8iland-J=C3=B8rgensen <t=
-oke@redhat.com> wrote:
-> > > Xuan Zhuo <xuanzhuo@linux.alibaba.com> writes:
-> > >
-> > > > In xsk mode, users cannot use AF_PACKET(tcpdump) to observe the cur=
-rent
-> > > > rx/tx data packets. This feature is very important in many cases. S=
-o
-> > > > this patch allows AF_PACKET to obtain xsk packages.
-> > >
-> > > You can use xdpdump to dump the packets from the XDP program before i=
-t
-> > > gets redirected into the XSK:
-> > > https://github.com/xdp-project/xdp-tools/tree/master/xdp-dump
-> >
-> > Wow, this is a good idea.
->
-> Yes, it is rather cool (credit to Eelco).  Notice the extra info you
-> can capture from 'exit', like XDP return codes, if_index, rx_queue.
->
-> The tool uses the perf ring-buffer to send/copy data to userspace.
-> This is actually surprisingly fast, but I still think AF_XDP will be
-> faster (but it usually 'steals' the packet).
->
-> Another (crazy?) idea is to extend this (and xdpdump), is to leverage
-> Hangbin's recent XDP_REDIRECT extension e624d4ed4aa8 ("xdp: Extend
-> xdp_redirect_map with broadcast support").  We now have a
-> xdp_redirect_map flag BPF_F_BROADCAST, what if we create a
-> BPF_F_CLONE_PASS flag?
->
-> The semantic meaning of BPF_F_CLONE_PASS flag is to copy/clone the
-> packet for the specified map target index (e.g AF_XDP map), but
-> afterwards it does like veth/cpumap and creates an SKB from the
-> xdp_frame (see __xdp_build_skb_from_frame()) and send to netstack.
-> (Feel free to kick me if this doesn't make any sense)
+--nextPart13351496.OZpsN2k5gf
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Sven Eckelmann <sven@narfation.org>
+To: b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org, Shaokun Zhang <zhangshaokun@hisilicon.com>
+Cc: Shaokun Zhang <zhangshaokun@hisilicon.com>, Marek Lindner <mareklindner@neomailbox.ch>, Simon Wunderlich <sw@simonwunderlich.de>, Antonio Quartulli <a@unstable.cc>
+Subject: Re: [PATCH] batman-adv: Remove the repeated declaration
+Date: Fri, 28 May 2021 12:00:44 +0200
+Message-ID: <56516093.ber78CngbM@ripper>
+In-Reply-To: <1622195785-55920-1-git-send-email-zhangshaokun@hisilicon.com>
+References: <1622195785-55920-1-git-send-email-zhangshaokun@hisilicon.com>
 
-This would be a smooth way to implement clone support for AF_XDP. If
-we had this and someone added AF_XDP support to libpcap, we could both
-capture AF_XDP traffic with tcpdump (using this clone functionality in
-the XDP program) and speed up tcpdump for dumping traffic destined for
-regular sockets. Would that solve your use case Xuan? Note that I have
-not looked into the BPF_F_CLONE_PASS code, so do not know at this
-point what it would take to support this for XSKMAPs.
+On Friday, 28 May 2021 11:56:25 CEST Shaokun Zhang wrote:
+> Function 'batadv_bla_claim_dump' is declared twice, so remove the
+> repeated declaration.
+> 
+> Cc: Marek Lindner <mareklindner@neomailbox.ch>
+> Cc: Simon Wunderlich <sw@simonwunderlich.de>
+> Cc: Antonio Quartulli <a@unstable.cc>
+> Cc: Sven Eckelmann <sven@narfation.org>
+> Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+> ---
+>  net/batman-adv/bridge_loop_avoidance.h | 1 -
+>  1 file changed, 1 deletion(-)
 
-> --
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->
+Applied
+
+Thanks,
+	Sven
+--nextPart13351496.OZpsN2k5gf
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmCwv00ACgkQXYcKB8Em
+e0bgmQ/7Bfub8mMSSR8Q3Rp9lJk0s7uHkLHB+M5TxDZTCKTpxCPvWANddLrD4cPy
+FmrjUMXKIyIE9KSGiX+C/XLB7cMNpH5gyuiZ1xuVOtw5zqyNqliTqOvx8ODOUQ27
+NvsFKDvBl3TwhqCfDHwp7xWssLDCx5Yisc0SSlGC/Ev+0g55PMHL7IiMaALFrjnZ
+2WWatv2D7GoSeDSNgRi9rHQUeUXpo6nKDSy99DDQHPt2iHsAErZvN65lSt0wzkGC
+M1TcsZmE9+QTwnHKdbwwsoEZ1IFU59ovxfoQ8KCBw+0t/UAoTvMN7hSB8Ph7Ar8a
+UrsMBL4T/NpOmNFYiaLjHfIjd6AKHUhv4kFTWtY7e9MkhF2LMyi9oNqjiX1LwlIO
+RxI7jyyiUW5z4Jz+ioxOG60UD5Q9GEgJ1/5Ecb4U43HYBBUy3DaCLHXIxXhjoQgG
+z9uARVB0xfGuvegJElr59eNRGoAN9EbL6AlJQRb4kuF78fHRP8gYD1u3OswTkSHt
+om6WIlsFqXTRuz5W1dT72TQ4LLTpHziCV0B9ZWiYrL7mrjwi03RcnwbAIe7bS/us
+wGqIbdpny63hiOD+wpjqr7lt653p9KOlDn/10JIip2W4tkRjBzRriKU+qLxFjMf5
+7M6+0uKaRa6vfRZ4N9jW0dAO+EEzFBsOOs5OMbssO/Ij6d1+UEI=
+=36As
+-----END PGP SIGNATURE-----
+
+--nextPart13351496.OZpsN2k5gf--
+
+
+
