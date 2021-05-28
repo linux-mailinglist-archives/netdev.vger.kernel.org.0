@@ -2,87 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF6E93944B1
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 16:57:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17B3F3944E2
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 17:13:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236845AbhE1O7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 10:59:08 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:47225 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236892AbhE1O6n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 10:58:43 -0400
-Received: from mail-ua1-f72.google.com ([209.85.222.72])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lmdv9-0004Kb-E7
-        for netdev@vger.kernel.org; Fri, 28 May 2021 14:57:07 +0000
-Received: by mail-ua1-f72.google.com with SMTP id j23-20020ab01d170000b029023ea6f67624so1828107uak.14
-        for <netdev@vger.kernel.org>; Fri, 28 May 2021 07:57:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=edJlbbhDO28RmalfYtPxF+agVQnBc9uKOzw55MZRkiU=;
-        b=dh63pFZ0+eKpVYnM7ey/RWVyG/DQj+sxDhTeWLOQ1Eb2XMtcRjXzyYllyrZqIsKJGT
-         6HwMR2Lf1ctdArH5k5dG2AmPvqf8DJBfbyQH9PVeTl5NUiMLzagZxoZJQQeiIii66POD
-         LoRcfTAOUHUQKxA2lu6AnVo6fk6tKMJTBCU2XMKbN6TUhfbJ2mGroLLVKpcxvgGBVKHi
-         VGGPvlZLDm2XiD0QN6/E3QZoSD9XnUbtKi38EdVkQ4GVTp0upbSDjduHrgCKvI1jxSxL
-         eVkxoW36R3K4af01mZ/RN/Svkx5Uq/mWUzTd0qK6HHplpsKvduwVvtwzRE9jGj5ttrcZ
-         bGOg==
-X-Gm-Message-State: AOAM53286AR3wBCu1NcUJYlrPrMA1kkKBKVhmACZwmBxwph0ILLFPmoS
-        Uqh0QQpu8OR2Gb2f39lsTOxcrjmc5lY+VONEWl7+3ff3+3+IF9bI5pEAYo8mt5Kx15TvxAUTCpB
-        Vl1kWKWzFHGVhRUYEVPKgY7MqXyQO/ev+Ug==
-X-Received: by 2002:ab0:3482:: with SMTP id c2mr3488390uar.122.1622213826610;
-        Fri, 28 May 2021 07:57:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJylmdPw48e3WnJvVm8n1XmFKbfo4OOP5M8lb+ZI/nv+T5y9BFhzf21srOlHkwLrsW2LDgEx3w==
-X-Received: by 2002:ab0:3482:: with SMTP id c2mr3488375uar.122.1622213826492;
-        Fri, 28 May 2021 07:57:06 -0700 (PDT)
-Received: from localhost.localdomain ([45.237.48.3])
-        by smtp.gmail.com with ESMTPSA id 64sm330505uay.11.2021.05.28.07.57.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 May 2021 07:57:06 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 11/11] nfc: st95hf: fix indentation to tabs
-Date:   Fri, 28 May 2021 10:56:51 -0400
-Message-Id: <20210528145651.125648-1-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210528145330.125055-1-krzysztof.kozlowski@canonical.com>
-References: <20210528145330.125055-1-krzysztof.kozlowski@canonical.com>
+        id S235643AbhE1PPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 11:15:16 -0400
+Received: from www62.your-server.de ([213.133.104.62]:46260 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229684AbhE1PPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 11:15:15 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lmdw3-0008I6-7V; Fri, 28 May 2021 16:58:03 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lmdw3-000XUh-3O; Fri, 28 May 2021 16:58:03 +0200
+Subject: Re: XDP-hints working group mailing list is active
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        BPF-dev-list <bpf@vger.kernel.org>
+Cc:     XDP-hints working-group <xdp-hints@xdp-project.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20210528161917.0810d5ca@carbon>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e9132d87-9de7-a9af-6e2f-91201993124b@iogearbox.net>
+Date:   Fri, 28 May 2021 16:58:02 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210528161917.0810d5ca@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26184/Fri May 28 13:05:50 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use tabs to indent instead of spaces. No functional change.
+On 5/28/21 4:19 PM, Jesper Dangaard Brouer wrote:
+> Hi BPF-community,
+> 
+> We have created a mailing list for the XDP-hints working group (Cc'ed).
+> Some of you have already been subscribed. If you want to subscribe or
+> unsubscribe please visit the link[0] below:
+> 
+>   [0] https://lists.xdp-project.net/postorius/lists/xdp-hints.xdp-project.net/
+> 
+> Remember we prefer to keep the upstream discussion on bpf@vger.kernel.org.
+> This list should be Cc'ed for topics related to XDP-hints.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/nfc/st95hf/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I'm not sure why exactly you need an extra topic mailing list ?? Just keep
+the existing discussions upstream with netdev + bpf + cc'ed folks in the loop
+to avoid divergence and reiterating over topics yet again (given discussed
+in one place but not the other, for example).. much simpler.
 
-diff --git a/drivers/nfc/st95hf/core.c b/drivers/nfc/st95hf/core.c
-index 0d99181b6ce3..2dc788c363fd 100644
---- a/drivers/nfc/st95hf/core.c
-+++ b/drivers/nfc/st95hf/core.c
-@@ -1057,8 +1057,8 @@ static const struct spi_device_id st95hf_id[] = {
- MODULE_DEVICE_TABLE(spi, st95hf_id);
- 
- static const struct of_device_id st95hf_spi_of_match[] __maybe_unused = {
--        { .compatible = "st,st95hf" },
--        { },
-+	{ .compatible = "st,st95hf" },
-+	{},
- };
- MODULE_DEVICE_TABLE(of, st95hf_spi_of_match);
- 
--- 
-2.27.0
-
+Thanks,
+Daniel
