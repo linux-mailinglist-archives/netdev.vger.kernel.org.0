@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3622394960
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 01:54:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80D33394961
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 01:54:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbhE1X4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 19:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45612 "EHLO
+        id S229778AbhE1X4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 19:56:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbhE1X4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 19:56:05 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C7FC0613ED;
-        Fri, 28 May 2021 16:54:25 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id v14so3705755pgi.6;
-        Fri, 28 May 2021 16:54:25 -0700 (PDT)
+        with ESMTP id S229783AbhE1X4G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 19:56:06 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5B9C06138A;
+        Fri, 28 May 2021 16:54:29 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id lx17-20020a17090b4b11b029015f3b32b8dbso5477487pjb.0;
+        Fri, 28 May 2021 16:54:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0QZLbqkCIH0r+P47KlUh/Z70XeLVxWHCUDIgLe1Pyr8=;
-        b=cReB7qvr21/+jI88eUmp1kJUJEg+p1stl+YvjIFuDHvPK3/SeCXOJS9kxNrXh/6PBn
-         xbmcMG1kwVHTeE6IGm2eAxcN6e1jUTBz5UXqpkY3d3y8s6SEcVJDCGxuGUaes4mIRxoz
-         W9AHgTMSXmmVD4wZhwJ0Tpws2HgU9QS0agmOA/yfOG/mlI1gtxzMn6P1j97p5oCj+bhk
-         I8+jFHI62tkdRvhazYXuYl/0D74ifRy4PRvbUOhWQjtYS9WGYBl3WpwhOvJ4Gvygf7UD
-         D+ybCObWZ/ZbWbfQrgbU6t/8KwzQs3n9X9sOvz5bEHWn6K6lNxovarYZyfV0BtGdNStW
-         BZaw==
+        bh=mQVWnl5kD4VZJGsvupF6sFLlOwXDd/uH9jRxPkLWhRE=;
+        b=DCKCEUaXO3M7SuyK3CFkRo4p0+FRQ8EOSfNdca7pm87L4NPtZaF3AjrdIXTmAhD7aR
+         cqQFfxT5QlETKevwgEcueirhu5sjGFhGV7PXHqP5ITCoEYYr3oUoqmmKKjtc3iwnJvMc
+         6IndgMeFw3+0VQhr0xqajANXhONBbIYqPumRRgwRy5wHJ/nEJINn2a5tUM5QaGB0AZvt
+         k8tXjEJuEF/qXrq6YmwPjyrxwddu0jCur2UTo3KZ1IhDGuEEpxOOUQgoiD2dFxPxVxPN
+         K+QCSJJyngS31TFALN2jBeb6+B5bT4MIrIMQ6zAVqf5HshlTZT4ps7xx2GfyP1aAfFKf
+         6zig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0QZLbqkCIH0r+P47KlUh/Z70XeLVxWHCUDIgLe1Pyr8=;
-        b=FaJAaDXiAWW4CWY5IkTlgxL5iBNHBem4TZFkeX6fpHCJEHlxUeiXYea2RqYG78JXGM
-         zMS8KT2U7EQTbKxX6GzmLB8gn19QgG04fVk8hfYbWlzV7AMjK1LvIVDS11Kkhn8BaAEb
-         Sap/Zg5PRd8tWKWv5dk+yE32k40sJr2cUTGIgAAMg3EN1nvVNvE8pWT8xFYxvRwTXLDV
-         I9Jw4ULXU0XK9HgK+CsfDbr9g5B7o78U4zwPzDYn3evF+/b7dazIqbmo187gXefSLSGd
-         BcDuRZimJoEME+jazWJvZ9+JHyw26D4cqkz0si9PP/4k65FUnOKgclhrasTOxg+zXLK+
-         YXIw==
-X-Gm-Message-State: AOAM53220WPOYx6ixObvk6jPlBYg6yl8s2oFEMxhjPNtpaXv2+K60jWk
-        yYxw6VZGBH3Lhkx3J7Rif0PQl2mBBms=
-X-Google-Smtp-Source: ABdhPJxMwGLKEYq27r5EBvsW31BOlHVK+fEDzonZGYEILp9YQZSFHc8rKQ3ZXi0L1oMu1n4l+ZwJOA==
-X-Received: by 2002:a63:fd44:: with SMTP id m4mr11712379pgj.396.1622246065161;
-        Fri, 28 May 2021 16:54:25 -0700 (PDT)
+        bh=mQVWnl5kD4VZJGsvupF6sFLlOwXDd/uH9jRxPkLWhRE=;
+        b=VX/K18Qh1PV0HUKnysnqpMkwQ2xjXuX6LtG6OWUPFMr8qgKL5nwuhB+/aZT6bXgk0c
+         4J3AsZs4sv//GIzwWsLz9aTZzkM+mr03HYemCF9pmCRnTKJDyTsFWG19VdYeLeVZiwiJ
+         0FyuwLoKJgcWR2nLKi1Lp8JmTwr/3vmcjeQDgYjfZ3wVTioeT3Q/z+2ViFpgiwAFkIT4
+         f9hLWu8y4xpiwtuUQlaZrOskAJpPIz++lptHYfFoYvXxRslMT36YmbG2+br3sZExn/9P
+         AX+1XZW8fmWsHAP7ND4UKsh4qIYHDVESNPxMcoJCU/DrzZKiNju5yeUja3lHgsrzmzLj
+         dFrg==
+X-Gm-Message-State: AOAM532qFLeEmLoUTtnSFgATb4SYwbPq5Y8iviMVI/bQihlLWAUwjIv/
+        LSPFZUPLVKa0fMixbBkjrNCQcgzbAuY=
+X-Google-Smtp-Source: ABdhPJz4Pa7mqTfr3xzapFUEmmX1JtoVd4K49xhXmYURDfEzACYU80QgQhSwpzYwqjfpHj9a2khXHQ==
+X-Received: by 2002:a17:903:228a:b029:f7:9f7e:aa2c with SMTP id b10-20020a170903228ab02900f79f7eaa2cmr10167345plh.71.1622246068663;
+        Fri, 28 May 2021 16:54:28 -0700 (PDT)
 Received: from localhost ([2402:3a80:11db:3aa9:ad24:a4a2:844f:6a0a])
-        by smtp.gmail.com with ESMTPSA id 141sm402521pgf.20.2021.05.28.16.54.24
+        by smtp.gmail.com with ESMTPSA id f186sm5382410pfb.36.2021.05.28.16.54.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 May 2021 16:54:24 -0700 (PDT)
+        Fri, 28 May 2021 16:54:28 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -62,9 +62,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH RFC bpf-next 14/15] samples: bpf: add documentation
-Date:   Sat, 29 May 2021 05:22:49 +0530
-Message-Id: <20210528235250.2635167-15-memxor@gmail.com>
+Subject: [PATCH RFC bpf-next 15/15] samples: bpf: convert xdp_samples to use raw_tracepoints
+Date:   Sat, 29 May 2021 05:22:50 +0530
+Message-Id: <20210528235250.2635167-16-memxor@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210528235250.2635167-1-memxor@gmail.com>
 References: <20210528235250.2635167-1-memxor@gmail.com>
@@ -74,191 +74,280 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This prints some help text meant to explain the output.
+These are faster, and hence speeds up cases where user passes --stats to
+enable success case redirect accounting. We can extend this to all other
+tracepoints as well, so make that part of this change.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- samples/bpf/xdp_monitor_user.c      | 10 ++++--
- samples/bpf/xdp_redirect_cpu_user.c |  8 +++--
- samples/bpf/xdp_redirect_map_user.c |  6 ++--
- samples/bpf/xdp_sample_user.c       | 52 +++++++++++++++++++++++++++++
- samples/bpf/xdp_sample_user.h       |  1 +
- 5 files changed, 69 insertions(+), 8 deletions(-)
+ samples/bpf/xdp_sample_kern.h | 145 +++++++++++-----------------------
+ samples/bpf/xdp_sample_user.c |   2 +-
+ 2 files changed, 45 insertions(+), 102 deletions(-)
 
-diff --git a/samples/bpf/xdp_monitor_user.c b/samples/bpf/xdp_monitor_user.c
-index b37d8f7379ec..71d59e714bae 100644
---- a/samples/bpf/xdp_monitor_user.c
-+++ b/samples/bpf/xdp_monitor_user.c
-@@ -35,6 +35,10 @@ static const char *__doc_err_only__=
- static bool debug = false;
- struct bpf_object *obj;
+diff --git a/samples/bpf/xdp_sample_kern.h b/samples/bpf/xdp_sample_kern.h
+index dd7f7ea63166..08fbc55df3fd 100644
+--- a/samples/bpf/xdp_sample_kern.h
++++ b/samples/bpf/xdp_sample_kern.h
+@@ -3,6 +3,9 @@
+ #pragma once
  
-+static int mask = SAMPLE_REDIRECT_ERR_CNT | SAMPLE_CPUMAP_ENQUEUE_CNT |
-+		  SAMPLE_CPUMAP_KTHREAD_CNT | SAMPLE_EXCEPTION_CNT |
-+		  SAMPLE_DEVMAP_XMIT_CNT;
+ #include <uapi/linux/bpf.h>
++#include <net/xdp.h>
++#include <bpf/bpf_core_read.h>
++#include <bpf/bpf_tracing.h>
+ #include <bpf/bpf_helpers.h>
+ 
+ #ifndef NR_CPUS
+@@ -85,20 +88,6 @@ struct {
+ 
+ /*** Trace point code ***/
+ 
+-/* Tracepoint format: /sys/kernel/debug/tracing/events/xdp/xdp_redirect/format
+- * Code in:                kernel/include/trace/events/xdp.h
+- */
+-struct xdp_redirect_ctx {
+-	u64 __pad;	// First 8 bytes are not accessible by bpf code
+-	int prog_id;	//	offset:8;  size:4; signed:1;
+-	u32 act;	//	offset:12  size:4; signed:0;
+-	int ifindex;	//	offset:16  size:4; signed:1;
+-	int err;	//	offset:20  size:4; signed:1;
+-	int to_ifindex;	//	offset:24  size:4; signed:1;
+-	u32 map_id;	//	offset:28  size:4; signed:0;
+-	int map_index;	//	offset:32  size:4; signed:1;
+-};			//	offset:36
+-
+ enum {
+ 	XDP_REDIRECT_SUCCESS = 0,
+ 	XDP_REDIRECT_ERROR = 1
+@@ -124,11 +113,11 @@ __u32 xdp_get_err_key(int err)
+ }
+ 
+ static __always_inline
+-int xdp_redirect_collect_stat(struct xdp_redirect_ctx *ctx)
++int xdp_redirect_collect_stat(struct bpf_raw_tracepoint_args *ctx)
+ {
+ 	u32 key = XDP_REDIRECT_ERROR;
++	int err = ctx->args[3];
+ 	struct datarec *rec;
+-	int err = ctx->err;
+ 
+ 	key = xdp_get_err_key(err);
+ 
+@@ -149,47 +138,35 @@ int xdp_redirect_collect_stat(struct xdp_redirect_ctx *ctx)
+ 	 */
+ }
+ 
+-SEC("tracepoint/xdp/xdp_redirect_err")
+-int trace_xdp_redirect_err(struct xdp_redirect_ctx *ctx)
++SEC("raw_tracepoint/xdp_redirect_err")
++int trace_xdp_redirect_err(struct bpf_raw_tracepoint_args *ctx)
+ {
+ 	return xdp_redirect_collect_stat(ctx);
+ }
+ 
+-SEC("tracepoint/xdp/xdp_redirect_map_err")
+-int trace_xdp_redirect_map_err(struct xdp_redirect_ctx *ctx)
++SEC("raw_tracepoint/xdp_redirect_map_err")
++int trace_xdp_redirect_map_err(struct bpf_raw_tracepoint_args *ctx)
+ {
+ 	return xdp_redirect_collect_stat(ctx);
+ }
+ 
+-/* Likely unloaded when prog starts */
+-SEC("tracepoint/xdp/xdp_redirect")
+-int trace_xdp_redirect(struct xdp_redirect_ctx *ctx)
++SEC("raw_tracepoint/xdp_redirect")
++int trace_xdp_redirect(struct bpf_raw_tracepoint_args *ctx)
+ {
+ 	return xdp_redirect_collect_stat(ctx);
+ }
+ 
+-/* Likely unloaded when prog starts */
+-SEC("tracepoint/xdp/xdp_redirect_map")
+-int trace_xdp_redirect_map(struct xdp_redirect_ctx *ctx)
++SEC("raw_tracepoint/xdp_redirect_map")
++int trace_xdp_redirect_map(struct bpf_raw_tracepoint_args *ctx)
+ {
+ 	return xdp_redirect_collect_stat(ctx);
+ }
+ 
+-/* Tracepoint format: /sys/kernel/debug/tracing/events/xdp/xdp_exception/format
+- * Code in:                kernel/include/trace/events/xdp.h
+- */
+-struct xdp_exception_ctx {
+-	u64 __pad;	// First 8 bytes are not accessible by bpf code
+-	int prog_id;	//	offset:8;  size:4; signed:1;
+-	u32 act;	//	offset:12; size:4; signed:0;
+-	int ifindex;	//	offset:16; size:4; signed:1;
+-};
+-
+-SEC("tracepoint/xdp/xdp_exception")
+-int trace_xdp_exception(struct xdp_exception_ctx *ctx)
++SEC("raw_tracepoint/xdp_exception")
++int trace_xdp_exception(struct bpf_raw_tracepoint_args *ctx)
+ {
++	u32 key = ctx->args[2];
+ 	struct datarec *rec;
+-	u32 key = ctx->act;
+ 
+ 	if (key > XDP_REDIRECT)
+ 		key = XDP_UNKNOWN;
+@@ -202,23 +179,10 @@ int trace_xdp_exception(struct xdp_exception_ctx *ctx)
+ 	return 0;
+ }
+ 
+-/* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_cpumap_enqueue/format
+- * Code in:         kernel/include/trace/events/xdp.h
+- */
+-struct cpumap_enqueue_ctx {
+-	u64 __pad;		// First 8 bytes are not accessible by bpf code
+-	int map_id;		//	offset:8;  size:4; signed:1;
+-	u32 act;		//	offset:12; size:4; signed:0;
+-	int cpu;		//	offset:16; size:4; signed:1;
+-	unsigned int drops;	//	offset:20; size:4; signed:0;
+-	unsigned int processed;	//	offset:24; size:4; signed:0;
+-	int to_cpu;		//	offset:28; size:4; signed:1;
+-};
+-
+-SEC("tracepoint/xdp/xdp_cpumap_enqueue")
+-int trace_xdp_cpumap_enqueue(struct cpumap_enqueue_ctx *ctx)
++SEC("raw_tracepoint/xdp_cpumap_enqueue")
++int trace_xdp_cpumap_enqueue(struct bpf_raw_tracepoint_args *ctx)
+ {
+-	u32 to_cpu = ctx->to_cpu;
++	u32 to_cpu = ctx->args[3];
+ 	struct datarec *rec;
+ 
+ 	if (to_cpu >= MAX_CPUS)
+@@ -227,11 +191,11 @@ int trace_xdp_cpumap_enqueue(struct cpumap_enqueue_ctx *ctx)
+ 	rec = bpf_map_lookup_elem(&cpumap_enqueue_cnt, &to_cpu);
+ 	if (!rec)
+ 		return 0;
+-	rec->processed += ctx->processed;
+-	rec->dropped   += ctx->drops;
++	rec->processed += ctx->args[1];
++	rec->dropped   += ctx->args[2];
+ 
+ 	/* Record bulk events, then userspace can calc average bulk size */
+-	if (ctx->processed > 0)
++	if (ctx->args[1] > 0)
+ 		rec->issue += 1;
+ 
+ 	/* Inception: It's possible to detect overload situations, via
+@@ -242,78 +206,57 @@ int trace_xdp_cpumap_enqueue(struct cpumap_enqueue_ctx *ctx)
+ 	return 0;
+ }
+ 
+-/* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_cpumap_kthread/format
+- * Code in:         kernel/include/trace/events/xdp.h
+- */
+-struct cpumap_kthread_ctx {
+-	u64 __pad;			// First 8 bytes are not accessible
+-	int map_id;			//	offset:8;  size:4; signed:1;
+-	u32 act;			//	offset:12; size:4; signed:0;
+-	int cpu;			//	offset:16; size:4; signed:1;
+-	unsigned int drops;		//	offset:20; size:4; signed:0;
+-	unsigned int processed;		//	offset:24; size:4; signed:0;
+-	int sched;			//	offset:28; size:4; signed:1;
+-	unsigned int xdp_pass;		//	offset:32; size:4; signed:0;
+-	unsigned int xdp_drop;		//	offset:36; size:4; signed:0;
+-	unsigned int xdp_redirect;	//	offset:40; size:4; signed:0;
+-};
+-
+-SEC("tracepoint/xdp/xdp_cpumap_kthread")
+-int trace_xdp_cpumap_kthread(struct cpumap_kthread_ctx *ctx)
++SEC("raw_tracepoint/xdp_cpumap_kthread")
++int trace_xdp_cpumap_kthread(struct bpf_raw_tracepoint_args *ctx)
+ {
++	struct xdp_cpumap_stats *stats;
+ 	struct datarec *rec;
+ 	u32 key = 0;
+ 
++	stats = (struct xdp_cpumap_stats *) ctx->args[4];
++	if (!stats)
++		return 0;
 +
- static const struct option long_options[] = {
- 	{"help",	no_argument,		NULL, 'h' },
- 	{"debug",	no_argument,		NULL, 'D' },
-@@ -56,6 +60,9 @@ static void int_exit(int sig)
- static void usage(char *argv[])
- {
- 	int i;
+ 	rec = bpf_map_lookup_elem(&cpumap_kthread_cnt, &key);
+ 	if (!rec)
+ 		return 0;
+-	rec->processed += ctx->processed;
+-	rec->dropped   += ctx->drops;
+-	rec->xdp_pass  += ctx->xdp_pass;
+-	rec->xdp_drop  += ctx->xdp_drop;
+-	rec->xdp_redirect  += ctx->xdp_redirect;
++	rec->processed += ctx->args[1];
++	rec->dropped   += ctx->args[2];
 +
-+	sample_print_help(mask);
-+
- 	printf("\nDOCUMENTATION:\n%s\n", __doc__);
- 	printf("\n");
- 	printf(" Usage: %s (options-see-below)\n",
-@@ -110,9 +117,6 @@ static void print_bpf_prog_info(void)
++	rec->xdp_pass  += BPF_CORE_READ(stats, pass);
++	rec->xdp_drop  += BPF_CORE_READ(stats, drop);
++	rec->xdp_redirect  += BPF_CORE_READ(stats, redirect);
  
- int main(int argc, char **argv)
+ 	/* Count times kthread yielded CPU via schedule call */
+-	if (ctx->sched)
++	if (ctx->args[3])
+ 		rec->issue++;
+ 
+ 	return 0;
+ }
+ 
+-/* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_devmap_xmit/format
+- * Code in:         kernel/include/trace/events/xdp.h
+- */
+-struct devmap_xmit_ctx {
+-	u64 __pad;		// First 8 bytes are not accessible by bpf code
+-	int from_ifindex;	//	offset:8;  size:4; signed:1;
+-	u32 act;		//	offset:12; size:4; signed:0;
+-	int to_ifindex;		//	offset:16; size:4; signed:1;
+-	int drops;		//	offset:20; size:4; signed:1;
+-	int sent;		//	offset:24; size:4; signed:1;
+-	int err;		//	offset:28; size:4; signed:1;
+-};
+-
+-SEC("tracepoint/xdp/xdp_devmap_xmit")
+-int trace_xdp_devmap_xmit(struct devmap_xmit_ctx *ctx)
++SEC("raw_tracepoint/xdp_devmap_xmit")
++int trace_xdp_devmap_xmit(struct bpf_raw_tracepoint_args *ctx)
  {
--	int mask = SAMPLE_REDIRECT_ERR_CNT | SAMPLE_CPUMAP_ENQUEUE_CNT |
--		   SAMPLE_CPUMAP_KTHREAD_CNT | SAMPLE_EXCEPTION_CNT |
--		   SAMPLE_DEVMAP_XMIT_CNT;
- 	int longindex = 0, opt;
- 	int ret = EXIT_FAILURE;
- 	char filename[256];
-diff --git a/samples/bpf/xdp_redirect_cpu_user.c b/samples/bpf/xdp_redirect_cpu_user.c
-index d56b89254cd1..9233b8a2bf2d 100644
---- a/samples/bpf/xdp_redirect_cpu_user.c
-+++ b/samples/bpf/xdp_redirect_cpu_user.c
-@@ -37,6 +37,9 @@ static int avail_fd;
- static int count_fd;
+ 	struct datarec *rec;
+ 	u32 key = 0;
++	int drops;
  
- static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-+static int mask = SAMPLE_RX_CNT | SAMPLE_REDIRECT_ERR_CNT |
-+		  SAMPLE_CPUMAP_ENQUEUE_CNT | SAMPLE_CPUMAP_KTHREAD_CNT |
-+		  SAMPLE_EXCEPTION_CNT;
+ 	rec = bpf_map_lookup_elem(&devmap_xmit_cnt, &key);
+ 	if (!rec)
+ 		return 0;
+-	rec->processed += ctx->sent;
+-	rec->dropped   += ctx->drops;
++	rec->processed += ctx->args[2];
++	rec->dropped   += ctx->args[3];
  
- static const struct option long_options[] = {
- 	{"help",	no_argument,		NULL, 'h' },
-@@ -96,6 +99,8 @@ static void usage(char *argv[], struct bpf_object *obj)
- {
- 	int i;
+ 	/* Record bulk events, then userspace can calc average bulk size */
+ 	rec->info += 1;
  
-+	sample_print_help(mask);
-+
- 	printf("\nDOCUMENTATION:\n%s\n", __doc__);
- 	printf("\n");
- 	printf(" Usage: %s (options-see-below)\n", argv[0]);
-@@ -201,9 +206,6 @@ static void __stats_poll(int interval, bool redir_suc, char *prog_name,
- 			 char *mprog_name, struct bpf_cpumap_val *value,
- 			 bool stress_mode)
- {
--	int mask = SAMPLE_RX_CNT | SAMPLE_REDIRECT_ERR_CNT |
--		   SAMPLE_CPUMAP_ENQUEUE_CNT | SAMPLE_CPUMAP_KTHREAD_CNT |
--		   SAMPLE_EXCEPTION_CNT;
- 	struct stats_record *record, *prev;
+ 	/* Record error cases, where no frame were sent */
+-	if (ctx->err)
++	if (ctx->args[4])
+ 		rec->issue++;
  
- 	record = alloc_stats_record();
-diff --git a/samples/bpf/xdp_redirect_map_user.c b/samples/bpf/xdp_redirect_map_user.c
-index eb4013fa58cb..f4bdefa83709 100644
---- a/samples/bpf/xdp_redirect_map_user.c
-+++ b/samples/bpf/xdp_redirect_map_user.c
-@@ -28,6 +28,8 @@ static __u32 prog_id;
- static __u32 dummy_prog_id;
++	drops = ctx->args[3];
+ 	/* Catch API error of drv ndo_xdp_xmit sent more than count */
+-	if (ctx->drops < 0)
++	if (drops < 0)
+ 		rec->issue++;
  
- static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-+static int mask = SAMPLE_RX_CNT | SAMPLE_REDIRECT_ERR_MAP_CNT |
-+		  SAMPLE_EXCEPTION_CNT | SAMPLE_DEVMAP_XMIT_CNT;
- 
- static const struct option long_options[] = {
- 	{"help",	no_argument,		NULL, 'h' },
-@@ -78,6 +80,8 @@ static void usage(char *argv[])
- {
- 	int i;
- 
-+	sample_print_help(mask);
-+
- 	printf("\n");
- 	printf(" Usage: %s (options-see-below)\n",
- 	       argv[0]);
-@@ -97,8 +101,6 @@ static void usage(char *argv[])
- 
- int main(int argc, char **argv)
- {
--	int mask = SAMPLE_RX_CNT | SAMPLE_REDIRECT_ERR_MAP_CNT |
--		   SAMPLE_EXCEPTION_CNT | SAMPLE_DEVMAP_XMIT_CNT;
- 	struct bpf_prog_load_attr prog_load_attr = {
- 		.prog_type	= BPF_PROG_TYPE_UNSPEC,
- 	};
+ 	return 1;
 diff --git a/samples/bpf/xdp_sample_user.c b/samples/bpf/xdp_sample_user.c
-index 96d36c708ee3..aa02d9bbea6c 100644
+index aa02d9bbea6c..539c0c78fcb0 100644
 --- a/samples/bpf/xdp_sample_user.c
 +++ b/samples/bpf/xdp_sample_user.c
-@@ -77,6 +77,58 @@ static bool err_exp;
- #define PASS(pass) pass, "pass/s"
- #define REDIR(redir) redir, "redir/s"
+@@ -805,7 +805,7 @@ static int init_tracepoints(struct bpf_object *obj)
+ 	struct bpf_program *prog;
  
-+void sample_print_help(int mask)
-+{
-+	printf("Output format description\n\n"
-+	       "By default, redirect success statistics are disabled, use -s to enable.\n"
-+	       "The terse output mode is default, verbose mode can be activated using -v\n"
-+	       "Use SIGQUIT (Ctrl + \\) to switch the mode dynamically at runtime\n\n"
-+	       "Terse mode displays at most the following fields:\n"
-+	       "  rx/s     Number of packets received per second\n"
-+	       "  redir/s  Number of packets successfully redirected per second\n"
-+	       "  error/s  Aggregated count of errors per second (including dropped packets)\n"
-+	       "  xmit/s   Number of packets transmitted on the output device per second\n\n"
-+	       "Output description for verbose mode:\n"
-+	       "  FIELD         DESCRIPTION\n");
-+	if (mask & SAMPLE_RX_CNT) {
-+		printf("  receive\tDisplays the number of packets received & errors encountered\n"
-+		       " \t\tWhenever an error or packet drop occurs, details of per CPU error\n"
-+		       " \t\tand drop statistics will be expanded inline in terse mode.\n"
-+		       " \t\t\tpkt/s     - Packets received per second\n"
-+		       " \t\t\tdrop/s    - Packets dropped per second\n"
-+		       " \t\t\terror/s   - Errors encountered per second\n\n");
-+	}
-+	if (mask & (SAMPLE_REDIRECT_CNT|SAMPLE_REDIRECT_ERR_CNT)) {
-+		printf("  redirect\tDisplays the number of packets successfully redirected\n"
-+		       "  \t\tErrors encountered are expanded under redirect_err field\n"
-+		       "  \t\tNote that passing -s to enable it has a per packet overhead\n"
-+		       "  \t\t\tredir/s   - Packets redirected successfully per second\n\n"
-+		       "  redirect_err\tDisplays the number of packets that failed redirection\n"
-+		       "  \t\tThe errno is expanded under this field with per CPU count\n"
-+		       "  \t\tThe recognized errors are EOPNOTSUPP, EINVAL, ENETDOWN and EMSGSIZE\n"
-+		       "  \t\t\terror/s   - Packets that failed redirection per second\n\n");
-+	}
-+
-+	if (mask & SAMPLE_EXCEPTION_CNT) {
-+		printf("  xdp_exception\tDisplays xdp_exception tracepoint events\n"
-+		       "  \t\tThis can occur due to internal driver errors, unrecognized\n"
-+		       "  \t\tXDP actions and due to explicit user trigger by use of XDP_ABORTED\n"
-+		       "  \t\tEach action is expanded below this field with its count\n"
-+		       "  \t\t\thit/s     - Number of times the tracepoint was hit per second\n\n");
-+	}
-+
-+	if (mask & SAMPLE_DEVMAP_XMIT_CNT) {
-+		printf("  devmap_xmit\tDisplays devmap_xmit tracepoint events\n"
-+		       "  \t\tThis tracepoint is invoked for successful transmissions on output\n"
-+		       "  \t\tdevice but these statistics are not available for generic XDP mode,\n"
-+		       "  \t\thence they will be omitted from the output when using SKB mode\n"
-+		       "  \t\t\txmit/s    - Number of packets that were transmitted per second\n"
-+		       "  \t\t\tdrop/s    - Number of packets that failed transmissions per second\n"
-+		       "  \t\t\tdrv_err/s - Number of internal driver errors per second\n"
-+		       "  \t\t\tbulk_avg  - Average number of packets processed for each event\n\n");
-+	}
-+}
-+
- static const char *elixir_search[NUM_TP] = {
- 	[TP_REDIRECT_CNT] = "_trace_xdp_redirect",
- 	[TP_REDIRECT_MAP_CNT] = "_trace_xdp_redirect_map",
-diff --git a/samples/bpf/xdp_sample_user.h b/samples/bpf/xdp_sample_user.h
-index 588bd2f15352..41be57d7b663 100644
---- a/samples/bpf/xdp_sample_user.h
-+++ b/samples/bpf/xdp_sample_user.h
-@@ -169,6 +169,7 @@ void sample_stats_print_cpumap_remote(struct stats_record *stats_rec,
- 				      struct stats_record *stats_prev,
- 				      unsigned int nr_cpus, char *mprog_name);
- void sample_reset_mode(void);
-+void sample_print_help(int mask);
+ 	bpf_object__for_each_program(prog, obj) {
+-		if (bpf_program__is_tracepoint(prog) != true)
++		if (!bpf_program__is_raw_tracepoint(prog))
+ 			continue;
  
- const char *get_driver_name(int ifindex);
- int get_mac_addr(int ifindex, void *mac_addr);
+ 		tp_links[tp_cnt] = bpf_program__attach(prog);
 -- 
 2.31.1
 
