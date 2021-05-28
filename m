@@ -2,193 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5435393D7C
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 09:10:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4937393D8B
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 09:13:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234805AbhE1HLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 03:11:39 -0400
-Received: from www62.your-server.de ([213.133.104.62]:43568 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbhE1HLh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 03:11:37 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lmWd4-0004Br-Bp; Fri, 28 May 2021 09:09:58 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lmWd4-000WOo-1p; Fri, 28 May 2021 09:09:58 +0200
-Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
- permission checks
-To:     Paul Moore <paul@paul-moore.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     linux-security-module@vger.kernel.org,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Casey Schaufler <casey@schaufler-ca.com>, jolsa@redhat.com
-References: <20210517092006.803332-1-omosnace@redhat.com>
- <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net>
-Date:   Fri, 28 May 2021 09:09:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26183/Thu May 27 13:07:49 2021)
+        id S235378AbhE1HOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 03:14:53 -0400
+Received: from mailout1.samsung.com ([203.254.224.24]:58844 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235157AbhE1HOw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 03:14:52 -0400
+Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20210528071313epoutp0133fdc12bad012121da3bd0ebad2e603a~DKZD9COVr3145631456epoutp01l
+        for <netdev@vger.kernel.org>; Fri, 28 May 2021 07:13:13 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20210528071313epoutp0133fdc12bad012121da3bd0ebad2e603a~DKZD9COVr3145631456epoutp01l
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1622185993;
+        bh=eJa+86OcRqxCiA1C3LtXZu46pnrxbtquoVaayjkhGUk=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=MM6kUCHD4FWSyHb2SDJtWpRshIvCtfDOQYwK8IXvAhAJm0nk6idqrKIezp9SPwIUA
+         asvahuPtZgg6nyMqRVKD7z+eW8MmL7sfvICWQP/fOtm1kbzRVOehEOMcrzok4UP3K9
+         e/5rmTDYt+8457J8Wj49CUFIXuNLRRg4SskQshMU=
+Received: from epsmges5p1new.samsung.com (unknown [182.195.42.73]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
+        20210528071312epcas5p333529873e7afadd6ead90c5d140759a0~DKZC0Frof3167531675epcas5p3p;
+        Fri, 28 May 2021 07:13:12 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        2B.7C.09606.80890B06; Fri, 28 May 2021 16:13:12 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20210528070406epcas5p3807d9c8f8a68c0c4a75af9951476c1b7~DKRGNq-MF1153011530epcas5p32;
+        Fri, 28 May 2021 07:04:06 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20210528070406epsmtrp23ef512f910c472cc7ecaef0a01f54681~DKRGMkguS0043300433epsmtrp2r;
+        Fri, 28 May 2021 07:04:06 +0000 (GMT)
+X-AuditID: b6c32a49-bf1ff70000002586-1b-60b09808d953
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        4D.8E.08637.5E590B06; Fri, 28 May 2021 16:04:05 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20210528070404epsmtip2682ad48727f0db82da0771ac585345b2~DKRETSEFj3081430814epsmtip2d;
+        Fri, 28 May 2021 07:04:03 +0000 (GMT)
+From:   Sriranjani P <sriranjani.p@samsung.com>
+To:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, linux@armlinux.org.uk,
+        boon.leong.ong@intel.com, Sriranjani P <sriranjani.p@samsung.com>,
+        Pankaj Dubey <pankaj.dubey@samsung.com>
+Subject: [PATCH] net: stmmac: fix kernel panic due to NULL pointer
+ dereference of mdio_bus_data
+Date:   Fri, 28 May 2021 12:40:56 +0530
+Message-Id: <20210528071056.35252-1-sriranjani.p@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA0WSWUwTURiFvbO0Q01xLFqvLC64EIyCGNBJ1KpxyShRfFDTEJQ2MoJCoZmK
+        Cw+KsSbSRKpRqtZKsHWBYgUqIIsNUAW34JISEESwSGNU3KigyCbt1Pj2nf+ce8+fm0ugovN4
+        ILE//SDDpsvTQnkCrPJBeNgS4lKpbOlQB04NfdQBqrfEyKMML9QY1WX8ilMvK3Nxyvq+Facc
+        NQYeZc+zASp/1IJTTQViyljxk0+Nf64A1Ju+O/haIe1ofYXS5UXtCO3SVvDpav1bPm26/xGh
+        reYcHn33+nE6t9wMaNdv20Sszg1ot3XW9snxglVJTNr+QwwbKZEJUr435+JKLXmk4p6Llw20
+        /hrgR0AyGrY0OngaICBEZC2ABUM/cU70A+gqOgE4MQjgxUqPwx0ZceWinGED0OYy8DmhRuCP
+        /DLEk+KRS+CpVreXp5EyeLpnFPGEUFKPwGJ7o9cIIOVwuOwRz8MYuQB+a/rjrRCSq+HvF/UY
+        VzcbFpfWe+sgmUPAh6YvfM7YAIvc73wcAD89KvdxIHR/tU1cSkxwBnzpSOXGR2Bzv9oXWQPr
+        WwyYJ4KS4bCkJpIbh8C8p3e8q6GkPzwz3ItwcyGsyv/HC6GpJ8fHwdDS0+97FRresIyhHhaR
+        u2FndRV2FoTo/zcUAGAGMxmlSpHMqGKUUenM4QiVXKHKTE+O2JuhsALvv1m0uQq8ffc9wg4Q
+        AtgBJNDQacKGkxaZSJgkP5rFsBmJbGYao7KDIAILnSEsdJ6Xichk+UEmlWGUDPvPRQi/wGxk
+        fax6d1Ng+Dpj28CB94tfr3o+LhX0Va90Fmviy2KTIDVgmiPt/tUbg0n35Bn84sTmkAOpK9BX
+        7Mj4Fn1JgyJYp0afK0LqdKPzTJI1BWz2qcQpZknw9L211Vn5hf1nx04HjSv0fRLngk7Trn0b
+        /QdBB8q2Hps/NamzpXFy4rVBxZcnUTu3Fn+Qjj1p0XRr50Y4N82PC0vY/nR5Xe2GjsxwcePq
+        rLbuM86gdr+AWUwz31JzNfJyzOxtw5UgcgBMquoGjq5oS6xUP1LKT+kavC1R3pQWao/durBM
+        J9bUzA16bH9wOM64Y5NjpS76nPrK5RH2zzPr1qaGuLABs/hcwrNQTJUij1qEsir5X3ZrQyim
+        AwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrBLMWRmVeSWpSXmKPExsWy7bCSvO6zqRsSDCY6WPx8OY3R4sn6RWwW
+        c863sFjcW/SO1eLCtj5Wi02Pr7FaXN41h83i0NS9jBbz/q5ltTi2QMxi0dYv7Bb/X29ltLj9
+        Zh2rA6/H5WsXmT22rLzJ5PG0fyu7x85Zd9k9Fu95yeSxaVUnm8fmJfUefVtWMXo8/bEXqGz/
+        Z0aPz5vkArijuGxSUnMyy1KL9O0SuDI+nO1jLegXqNi6/SlbA2M/XxcjJ4eEgInEn6d9zF2M
+        XBxCArsZJe6tuc8OkZCROPlgCTOELSyx8t9zdoiiJiaJOWvvMIIk2AR0JVqvfWbqYuTgEBFI
+        kji3vgykhllgCZPElvuXwAYJC8RL/Hy3gRXEZhFQlXh/7BeYzStgK/Hj/AEWiAXyEqs3HGCe
+        wMizgJFhFaNkakFxbnpusWGBYV5quV5xYm5xaV66XnJ+7iZGcOBqae5g3L7qg94hRiYOxkOM
+        EhzMSiK8B5vXJgjxpiRWVqUW5ccXleakFh9ilOZgURLnvdB1Ml5IID2xJDU7NbUgtQgmy8TB
+        KdXAtHldesBrnaL3WvKHGfyb2Wd+KI9+/FtWdsGZnPUPw48o6mcdlynPutGud+jU8Rcvz8nP
+        DVXhlKlkEIwKvMX4f+9E+Tv/xVdUcgUveK5i5GU6M7lj65qZvFvW5Vyc8nBX8P4IL4cDb1u+
+        vdjzvbHM37BQQGXW/Heyjf+21Z9keOXtZlD6yuzSY68K1pS9nQbB/2TWV8e/4l8zcct8thNr
+        d4dZxLDPzS1fPWXlb7/lZnHis22tFl69uWSe8qEda2KdOyqN169pMnzC4PJCrXvajrRfc4V3
+        3Fq4RyV90Tl+5v1rPM3+9zksXho7MfulzpXrCU4La93u7d07TfOkSr5SkwD/5qfaVl4NaX/u
+        q4veKVNiKc5INNRiLipOBACQhUq6ywIAAA==
+X-CMS-MailID: 20210528070406epcas5p3807d9c8f8a68c0c4a75af9951476c1b7
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20210528070406epcas5p3807d9c8f8a68c0c4a75af9951476c1b7
+References: <CGME20210528070406epcas5p3807d9c8f8a68c0c4a75af9951476c1b7@epcas5p3.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/21 3:37 AM, Paul Moore wrote:
-> On Mon, May 17, 2021 at 5:22 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
->>
->> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
->> lockdown") added an implementation of the locked_down LSM hook to
->> SELinux, with the aim to restrict which domains are allowed to perform
->> operations that would breach lockdown.
->>
->> However, in several places the security_locked_down() hook is called in
->> situations where the current task isn't doing any action that would
->> directly breach lockdown, leading to SELinux checks that are basically
->> bogus.
->>
->> Since in most of these situations converting the callers such that
->> security_locked_down() is called in a context where the current task
->> would be meaningful for SELinux is impossible or very non-trivial (and
->> could lead to TOCTOU issues for the classic Lockdown LSM
->> implementation), fix this by modifying the hook to accept a struct cred
->> pointer as argument, where NULL will be interpreted as a request for a
->> "global", task-independent lockdown decision only. Then modify SELinux
->> to ignore calls with cred == NULL.
-> 
-> I'm not overly excited about skipping the access check when cred is
-> NULL.  Based on the description and the little bit that I've dug into
-> thus far it looks like using SECINITSID_KERNEL as the subject would be
-> much more appropriate.  *Something* (the kernel in most of the
-> relevant cases it looks like) is requesting that a potentially
-> sensitive disclosure be made, and ignoring it seems like the wrong
-> thing to do.  Leaving the access control intact also provides a nice
-> avenue to audit these requests should users want to do that.
+Fixed link does not need mdio bus and in that case mdio_bus_data will
+not be allocated. Before using mdio_bus_data we should check for NULL.
 
-I think the rationale/workaround for ignoring calls with cred == NULL (or the previous
-patch with the unimplemented hook) from Ondrej was two-fold, at least speaking for his
-seen tracing cases:
+This patch fix the kernel panic due to NULL pointer dereference of
+mdio_bus_data when it is not allocated.
 
-   i) The audit events that are triggered due to calls to security_locked_down()
-      can OOM kill a machine, see below details [0].
+Without this patch we do see following kernel crash caused due to kernel
+NULL pointer dereference.
 
-  ii) It seems to be causing a deadlock via slow_avc_audit() -> audit_log_end()
-      when presumingly trying to wake up kauditd [1].
+Call trace:
+stmmac_dvr_probe+0x3c/0x10b0
+dwc_eth_dwmac_probe+0x224/0x378
+platform_probe+0x68/0xe0
+really_probe+0x130/0x3d8
+driver_probe_device+0x68/0xd0
+device_driver_attach+0x74/0x80
+__driver_attach+0x58/0xf8
+bus_for_each_dev+0x7c/0xd8
+driver_attach+0x24/0x30
+bus_add_driver+0x148/0x1f0
+driver_register+0x64/0x120
+__platform_driver_register+0x28/0x38
+dwc_eth_dwmac_driver_init+0x1c/0x28
+do_one_initcall+0x78/0x158
+kernel_init_freeable+0x1f0/0x244
+kernel_init+0x14/0x118
+ret_from_fork+0x10/0x30
+Code: f9002bfb 9113e2d9 910e6273 aa0003f7 (f9405c78)
+---[ end trace 32d9d41562ddc081 ]---
 
-How would your suggestion above solve both i) and ii)?
+Fixes: e5e5b771f684 ("net: stmmac: make in-band AN mode parsing is supported for non-DT")
+Signed-off-by: Sriranjani P <sriranjani.p@samsung.com>
+Signed-off-by: Pankaj Dubey <pankaj.dubey@samsung.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-[0] https://bugzilla.redhat.com/show_bug.cgi?id=1955585 :
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 5d956a553434..5d7688d02255 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1240,8 +1240,10 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
+ 	priv->phylink_config.dev = &priv->dev->dev;
+ 	priv->phylink_config.type = PHYLINK_NETDEV;
+ 	priv->phylink_config.pcs_poll = true;
+-	priv->phylink_config.ovr_an_inband =
+-		priv->plat->mdio_bus_data->xpcs_an_inband;
++	if (priv->plat->mdio_bus_data) {
++		priv->phylink_config.ovr_an_inband =
++			priv->plat->mdio_bus_data->xpcs_an_inband;
++	}
+ 
+ 	if (!fwnode)
+ 		fwnode = dev_fwnode(priv->device);
+-- 
+2.17.1
 
-   I starting seeing this with F-34. When I run a container that is traced with eBPF
-   to record the syscalls it is doing, auditd is flooded with messages like:
-
-   type=AVC msg=audit(1619784520.593:282387): avc:  denied  { confidentiality } for
-    pid=476 comm="auditd" lockdown_reason="use of bpf to read kernel RAM"
-     scontext=system_u:system_r:auditd_t:s0 tcontext=system_u:system_r:auditd_t:s0 tclass=lockdown permissive=0
-
-   This seems to be leading to auditd running out of space in the backlog buffer and
-   eventually OOMs the machine.
-
-   auditd running at 99% CPU presumably processing all the messages, eventually I get:
-   Apr 30 12:20:42 fedora kernel: audit: backlog limit exceeded
-   Apr 30 12:20:42 fedora kernel: audit: backlog limit exceeded
-   Apr 30 12:20:42 fedora kernel: audit: audit_backlog=2152579 > audit_backlog_limit=64
-   Apr 30 12:20:42 fedora kernel: audit: audit_backlog=2152626 > audit_backlog_limit=64
-   Apr 30 12:20:42 fedora kernel: audit: audit_backlog=2152694 > audit_backlog_limit=64
-   Apr 30 12:20:42 fedora kernel: audit: audit_lost=6878426 audit_rate_limit=0 audit_backlog_limit=64
-   Apr 30 12:20:45 fedora kernel: oci-seccomp-bpf invoked oom-killer: gfp_mask=0x100cca(GFP_HIGHUSER_MOVABLE), order=0, oom_score_adj=-1000
-   Apr 30 12:20:45 fedora kernel: CPU: 0 PID: 13284 Comm: oci-seccomp-bpf Not tainted 5.11.12-300.fc34.x86_64 #1
-   Apr 30 12:20:45 fedora kernel: Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-2.fc32 04/01/2014
-
-[1] https://lore.kernel.org/linux-audit/CANYvDQN7H5tVp47fbYcRasv4XF07eUbsDwT_eDCHXJUj43J7jQ@mail.gmail.com/ :
-
-   Upstream kernel 5.11.0-rc7 and later was found to deadlock during a bpf_probe_read_compat()
-   call within a sched_switch tracepoint. The problem is reproducible with the reg_alloc3
-   testcase from SystemTap's BPF backend testsuite on x86_64 as well as the runqlat,runqslower
-   tools from bcc on ppc64le. Example stack trace from [1]:
-
-   [  730.868702] stack backtrace:
-   [  730.869590] CPU: 1 PID: 701 Comm: in:imjournal Not tainted, 5.12.0-0.rc2.20210309git144c79ef3353.166.fc35.x86_64 #1
-   [  730.871605] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-2.fc32 04/01/2014
-   [  730.873278] Call Trace:
-   [  730.873770]  dump_stack+0x7f/0xa1
-   [  730.874433]  check_noncircular+0xdf/0x100
-   [  730.875232]  __lock_acquire+0x1202/0x1e10
-   [  730.876031]  ? __lock_acquire+0xfc0/0x1e10
-   [  730.876844]  lock_acquire+0xc2/0x3a0
-   [  730.877551]  ? __wake_up_common_lock+0x52/0x90
-   [  730.878434]  ? lock_acquire+0xc2/0x3a0
-   [  730.879186]  ? lock_is_held_type+0xa7/0x120
-   [  730.880044]  ? skb_queue_tail+0x1b/0x50
-   [  730.880800]  _raw_spin_lock_irqsave+0x4d/0x90
-   [  730.881656]  ? __wake_up_common_lock+0x52/0x90
-   [  730.882532]  __wake_up_common_lock+0x52/0x90
-   [  730.883375]  audit_log_end+0x5b/0x100
-   [  730.884104]  slow_avc_audit+0x69/0x90
-   [  730.884836]  avc_has_perm+0x8b/0xb0
-   [  730.885532]  selinux_lockdown+0xa5/0xd0
-   [  730.886297]  security_locked_down+0x20/0x40
-   [  730.887133]  bpf_probe_read_compat+0x66/0xd0
-   [  730.887983]  bpf_prog_250599c5469ac7b5+0x10f/0x820
-   [  730.888917]  trace_call_bpf+0xe9/0x240
-   [  730.889672]  perf_trace_run_bpf_submit+0x4d/0xc0
-   [  730.890579]  perf_trace_sched_switch+0x142/0x180
-   [  730.891485]  ? __schedule+0x6d8/0xb20
-   [  730.892209]  __schedule+0x6d8/0xb20
-   [  730.892899]  schedule+0x5b/0xc0
-   [  730.893522]  exit_to_user_mode_prepare+0x11d/0x240
-   [  730.894457]  syscall_exit_to_user_mode+0x27/0x70
-   [  730.895361]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
->> Since most callers will just want to pass current_cred() as the cred
->> parameter, rename the hook to security_cred_locked_down() and provide
->> the original security_locked_down() function as a simple wrapper around
->> the new hook.
-[...]
-> 
->> 3. kernel/trace/bpf_trace.c:bpf_probe_read_kernel{,_str}_common()
->>       Called when a BPF program calls a helper that could leak kernel
->>       memory. The task context is not relevant here, since the program
->>       may very well be run in the context of a different task than the
->>       consumer of the data.
->>       See: https://bugzilla.redhat.com/show_bug.cgi?id=1955585
-> 
-> The access control check isn't so much who is consuming the data, but
-> who is requesting a potential violation of a "lockdown", yes?  For
-> example, the SELinux policy rule for the current lockdown check looks
-> something like this:
-> 
->    allow <who> <who> : lockdown { <reason> };
-> 
-> It seems to me that the task context is relevant here and performing
-> the access control check based on the task's domain is correct.
-This doesn't make much sense to me, it's /not/ the task 'requesting a potential
-violation of a "lockdown"', but rather the running tracing program which is e.g.
-inspecting kernel data structures around the triggered event. If I understood
-you correctly, having an 'allow' check on, say, httpd would be rather odd since
-things like perf/bcc/bpftrace/systemtap/etc is installing the tracing probe instead.
-
-Meaning, if we would /not/ trace such events (like in the prior mentioned syscall
-example), then there is also no call to the security_locked_down() from that same/
-unmodified application.
-
-Thanks,
-Daniel
