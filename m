@@ -2,71 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8104939406D
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 11:56:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC7D394070
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 11:56:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236260AbhE1J6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 05:58:15 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:2395 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236185AbhE1J6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 05:58:14 -0400
-Received: from dggeml751-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Fs0Nq2lZTz65Yq;
-        Fri, 28 May 2021 17:52:59 +0800 (CST)
-Received: from dggpeml500023.china.huawei.com (7.185.36.114) by
- dggeml751-chm.china.huawei.com (10.1.199.150) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Fri, 28 May 2021 17:56:38 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 28 May 2021 17:56:38 +0800
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-To:     <b.a.t.m.a.n@lists.open-mesh.org>, <netdev@vger.kernel.org>
-CC:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        Sven Eckelmann <sven@narfation.org>
-Subject: [PATCH] batman-adv: Remove the repeated declaration
-Date:   Fri, 28 May 2021 17:56:25 +0800
-Message-ID: <1622195785-55920-1-git-send-email-zhangshaokun@hisilicon.com>
-X-Mailer: git-send-email 2.7.4
+        id S236294AbhE1J6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 05:58:17 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:60344 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236229AbhE1J6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 05:58:15 -0400
+Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
+        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 5C5EF218B3;
+        Fri, 28 May 2021 09:56:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1622195799; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dhdQKKFKjVq0AOYJ94M8zTULaqoglwzD51M65ba4TkU=;
+        b=bcrRKaP1GJLre/Zq5cnkwbRfyp/acLxsQqxEV73LpzpcavYCf/E8uconIrVnhvXWjSrGpA
+        IXKbl4+vgZiyCuNaQC4FSOiZUKQOZCq7DX+pYRuwf2bxUKC5fT4SmZZDssutyySovncCL/
+        yQ4pPvBsRVbg59hkE7UX+cBN/nBeF00=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1622195799;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dhdQKKFKjVq0AOYJ94M8zTULaqoglwzD51M65ba4TkU=;
+        b=2zyj6nHCR2O/JVjQiRV+RYfa3ndqrFN05rtEekrLqwYZQJ63TvusgWLRpPDQF4leVK7sU7
+        i8w6V+mes0b0otBw==
+Received: from director2.suse.de (director2.suse-dmz.suse.de [192.168.254.72])
+        by imap.suse.de (Postfix) with ESMTPSA id 3542C11A98;
+        Fri, 28 May 2021 09:56:39 +0000 (UTC)
+Date:   Fri, 28 May 2021 11:56:38 +0200
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Mel Gorman' <mgorman@techsingularity.net>,
+        'Andrii Nakryiko' <andrii.nakryiko@gmail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Hritik Vijay <hritikxx8@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+Subject: Re: [PATCH] mm/page_alloc: Work around a pahole limitation with
+ zero-sized struct pagesets
+Message-ID: <20210528095637.GO8544@kitsune.suse.cz>
+References: <20210526080741.GW30378@techsingularity.net>
+ <YK9SiLX1E1KAZORb@infradead.org>
+ <20210527090422.GA30378@techsingularity.net>
+ <YK9j3YeMTZ+0I8NA@infradead.org>
+ <CAEf4BzZLy0s+t+Nj9QgUNM66Ma6HN=VkS+ocgT5h9UwanxHaZQ@mail.gmail.com>
+ <CAEf4BzbzPK-3cyLFM8QKE5-o_dL7=UCcvRF+rEqyUcHhyY+FJg@mail.gmail.com>
+ <8fe547e9e87f40aebce82021d76a2d08@AcuMS.aculab.com>
+ <20210528090421.GK30378@techsingularity.net>
+ <2755b39d723146168e875f3b4a851a0d@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2755b39d723146168e875f3b4a851a0d@AcuMS.aculab.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function 'batadv_bla_claim_dump' is declared twice, so remove the
-repeated declaration.
+On Fri, May 28, 2021 at 09:49:28AM +0000, David Laight wrote:
+> From: Mel Gorman
+> > Sent: 28 May 2021 10:04
+> > 
+> > On Fri, May 28, 2021 at 08:09:39AM +0000, David Laight wrote:
+> > > From: Andrii Nakryiko
+> > > > Sent: 27 May 2021 15:42
+> > > ...
+> > > > I agree that empty structs are useful, but here we are talking about
+> > > > per-CPU variables only, which is the first use case so far, as far as
+> > > > I can see. If we had pahole 1.22 released and widely packaged it could
+> > > > have been a viable option to force it on everyone.
+> > > ...
+> > >
+> > > Would it be feasible to put the sources for pahole into the
+> > > kernel repository and build it at the same time as objtool?
+> > 
+> > We don't store other build dependencies like compilers, binutils etc in
+> > the kernel repository even though minimum versions are mandated.
+> > Obviously tools/ exists but for the most part, they are tools that do
+> > not exist in other repositories and are kernel-specific. I don't know if
+> > pahole would be accepted and it introduces the possibility that upstream
+> > pahole and the kernel fork of it would diverge.
+> 
+> The other side of the coin is that is you want reproducible builds
+> the smaller the number of variables that need to match the better.
+> 
+> I can see there might be similar issues with the version of libelf-devel
+> (needed by objtool).
+> If I compile anything with gcc 10 (I'm doing build-root builds)
+> I get object files that the hosts 2.30 binutils complain about.
+> I can easily see that updating gcc and binutils might leave a
+> broken objtool unless the required updated libelf-devel package
+> can be found.
+> Statically linking the required parts of libelf into objtool
+> would save any such problems.
 
-Cc: Marek Lindner <mareklindner@neomailbox.ch>
-Cc: Simon Wunderlich <sw@simonwunderlich.de>
-Cc: Antonio Quartulli <a@unstable.cc>
-Cc: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
----
- net/batman-adv/bridge_loop_avoidance.h | 1 -
- 1 file changed, 1 deletion(-)
+Static libraries are not always available. Especially for core toolchain
+libraries the developers often have some ideas about which of the static
+and dynamic libraris is the 'correct' one that they like to enforce.
 
-diff --git a/net/batman-adv/bridge_loop_avoidance.h b/net/batman-adv/bridge_loop_avoidance.h
-index 5c22955bb9d5..8673a265995f 100644
---- a/net/batman-adv/bridge_loop_avoidance.h
-+++ b/net/batman-adv/bridge_loop_avoidance.h
-@@ -52,7 +52,6 @@ void batadv_bla_update_orig_address(struct batadv_priv *bat_priv,
- void batadv_bla_status_update(struct net_device *net_dev);
- int batadv_bla_init(struct batadv_priv *bat_priv);
- void batadv_bla_free(struct batadv_priv *bat_priv);
--int batadv_bla_claim_dump(struct sk_buff *msg, struct netlink_callback *cb);
- #ifdef CONFIG_BATMAN_ADV_DAT
- bool batadv_bla_check_claim(struct batadv_priv *bat_priv, u8 *addr,
- 			    unsigned short vid);
--- 
-2.7.4
+Thanks
 
+Michal
