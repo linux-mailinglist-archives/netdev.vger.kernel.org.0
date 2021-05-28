@@ -2,113 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ACC7393B8D
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 04:46:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB0C2393BA1
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 04:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235874AbhE1CsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 22:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45362 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbhE1CsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 22:48:12 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FAAC061574;
-        Thu, 27 May 2021 19:46:38 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id c20so2821728qkm.3;
-        Thu, 27 May 2021 19:46:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=63x/uDQdlSiWdgfjl3Ict0S+sheF4xMnvJJh/SQ9eeM=;
-        b=YkA70FdjJt6hKIfJed9dsDJ3HyVm+emcF1E75Nmo56r70jCEjfJgDoFDLsrpoXG2Yr
-         gn59e+SYW/qk/LjxWoMw9lqtrACoaQx1PJysPza1DaFXA0UHoAiBPTATmhxyp5s/e/mV
-         3umwvn1lRrnV6fyyZk1Bms6Talt5xwBLYblEr+gj9D2FCZF2aQ3Xp5vtvX4QbcOlWRuz
-         BYAzQZbfUMGZfFdjoN7gGYNzYW/Y6Pu7hkqG4Vl6nQtoxZHuqp03TyChgyKmlJW8n6ml
-         wneRaHEoJ02bJfik+MvzrR+B00yDmlGaptwx+g/waaU4Cx5X6iHU22Wke+HivSaurkRM
-         CdpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=63x/uDQdlSiWdgfjl3Ict0S+sheF4xMnvJJh/SQ9eeM=;
-        b=q4SJJwMx2TnHlNZ4E1b28pnEbGfYsjNPo9SUy2zVeh26xG6wgI6tNC9JjtiWTaz5U6
-         +FwZwERCUtss0VQut1yJ+aL0VLf76Jl1qpfnw0DR3WCXiTGWndE/+M6mJECeLA2wMv6N
-         e9DXnm2sM/ZsxfM9nPiB4jFY9YrhYwmabWKmXNWVrYHuQGN+1RorJPWJ5euY1nWcQmMh
-         3C49GK4dQkbxD+chsv31IdITS5TZxX+EeQ6BS9gCqBmBQXixfUy+EfhbTGsToDvc0toQ
-         zbTt1GTnbdCtmfqNiGyKVFyYktEmD+F0mcLvfTb1y/Psk69AhEcsTwTE+gNcoyM0721D
-         SZGQ==
-X-Gm-Message-State: AOAM532UG6BlbRaxl0cevCQQH2l5Q7VjUMBd18xfB/p/47QwqHOFgQUv
-        QsjxMRwZID2ilB0/ktHW6RQNJqZrKXzFaQ==
-X-Google-Smtp-Source: ABdhPJw8nbDd2icp+LhNJJOM7IWzYJcvRY8qR9/E6Abb7n9Wm5iO6tLWiikMChnmW3qZnsygIuGHfg==
-X-Received: by 2002:a37:e205:: with SMTP id g5mr1722928qki.449.1622169997878;
-        Thu, 27 May 2021 19:46:37 -0700 (PDT)
-Received: from wsfd-netdev-buildsys.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id j15sm2497542qtv.11.2021.05.27.19.46.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 May 2021 19:46:37 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH bpf-next] bpf/devmap: remove drops variable from bq_xmit_all()
-Date:   Thu, 27 May 2021 22:43:56 -0400
-Message-Id: <20210528024356.24333-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.18.1
+        id S236173AbhE1Cvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 22:51:47 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:5124 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234485AbhE1Cvm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 22:51:42 -0400
+Received: from dggeml714-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Frpxn2YTRzYnp2;
+        Fri, 28 May 2021 10:47:25 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggeml714-chm.china.huawei.com (10.3.17.125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Fri, 28 May 2021 10:50:05 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 28 May 2021 10:50:05 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
+        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
+        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
+        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
+        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
+        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
+        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
+        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
+        <alobakin@pm.me>
+Subject: [PATCH net-next 0/3] Some optimization for lockless qdisc
+Date:   Fri, 28 May 2021 10:49:54 +0800
+Message-ID: <1622170197-27370-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As Colin pointed out, the first drops assignment after declaration will
-be overwritten by the second drops assignment before using, which makes
-it useless.
+Patch 1: remove unnecessary seqcount operation.
+Patch 2: implement TCQ_F_CAN_BYPASS.
+Patch 3: remove qdisc->empty.
 
-Since the drops variable will be used only once. Just remove it and
-use "cnt - sent" in trace_xdp_devmap_xmit()
+Performance data for pktgen in queue_xmit mode + dummy netdev
+with pfifo_fast:
 
-Reported-by: Colin Ian King <colin.king@canonical.com>
-Fixes: cb261b594b41 ("bpf: Run devmap xdp_prog on flush instead of bulk enqueue")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- kernel/bpf/devmap.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ threads    unpatched           patched             delta
+    1       2.60Mpps            3.21Mpps             +23%
+    2       3.84Mpps            5.56Mpps             +44%
+    4       5.52Mpps            5.58Mpps             +1%
+    8       2.77Mpps            2.76Mpps             -0.3%
+   16       2.24Mpps            2.23Mpps             +0.4%
 
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index f9148daab0e3..2a75e6c2d27d 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -370,8 +370,8 @@ static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
- static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
- {
- 	struct net_device *dev = bq->dev;
--	int sent = 0, drops = 0, err = 0;
- 	unsigned int cnt = bq->count;
-+	int sent = 0, err = 0;
- 	int to_send = cnt;
- 	int i;
- 
-@@ -388,8 +388,6 @@ static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
- 		to_send = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
- 		if (!to_send)
- 			goto out;
--
--		drops = cnt - to_send;
- 	}
- 
- 	sent = dev->netdev_ops->ndo_xdp_xmit(dev, to_send, bq->q, flags);
-@@ -408,9 +406,8 @@ static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
- 		xdp_return_frame_rx_napi(bq->q[i]);
- 
- out:
--	drops = cnt - sent;
- 	bq->count = 0;
--	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
-+	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, cnt - sent, err);
- }
- 
- /* __dev_flush is called from xdp_do_flush() which _must_ be signaled
+Performance for IP forward testing: 1.05Mpps increases to
+1.16Mpps, about 10% improvement.
+
+V1: Drop RFC tag, Add nolock_qdisc_is_empty() and do the qdisc
+    empty checking without the protection of qdisc->seqlock to
+    aviod doing unnecessary spin_trylock() for contention case.
+RFC v4: Use STATE_MISSED and STATE_DRAINING to indicate non-empty
+        qdisc, and add patch 1 and 3.
+
+Yunsheng Lin (3):
+  net: sched: avoid unnecessary seqcount operation for lockless qdisc
+  net: sched: implement TCQ_F_CAN_BYPASS for lockless qdisc
+  net: sched: remove qdisc->empty for lockless qdisc
+
+ include/net/sch_generic.h | 31 ++++++++++++++++++-------------
+ net/core/dev.c            | 26 ++++++++++++++++++++++++--
+ net/sched/sch_generic.c   | 23 ++++++++++++++++-------
+ 3 files changed, 58 insertions(+), 22 deletions(-)
+
 -- 
-2.26.3
+2.7.4
 
