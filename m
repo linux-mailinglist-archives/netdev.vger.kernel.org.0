@@ -2,59 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64824393FE2
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 11:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E460394042
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 11:45:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbhE1J1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 05:27:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37233 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235361AbhE1J1h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 05:27:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622193962;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rCZj0KeRsRDbORMk4xZQhbpJRGIsjZXeaT4F9o2C3zo=;
-        b=iJyRRJ8VCFkl7m8wlCkQTjri9SOjUSJ1bQ7kKvucD1pxS1itGI2sW4RW6yPpWowxAm8IqD
-        vuTWh8QDO+sTvc2M7AlPhwQqKd4H3RboyfZmW3paowBtHKZr7PSb0xxDx/gZ5Zgu3BfVyn
-        QWTn40QUroAjn+LjtJbdctvAY5Yvies=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-520-yNUO_I5uONKAXCwRhRh7kg-1; Fri, 28 May 2021 05:25:59 -0400
-X-MC-Unique: yNUO_I5uONKAXCwRhRh7kg-1
-Received: by mail-ej1-f69.google.com with SMTP id rs12-20020a170907036cb02903e0c5dcb92dso913665ejb.15
-        for <netdev@vger.kernel.org>; Fri, 28 May 2021 02:25:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=rCZj0KeRsRDbORMk4xZQhbpJRGIsjZXeaT4F9o2C3zo=;
-        b=O8uEgwgucF4wMUjIb5SjJDbkIKtc2kF1f5/9CCLCfeVrZUqrdNmdv/uUbvN30jcbY3
-         +N/aOTCB5KtpAqHSdTSJfCjSrnXhCCKqpamDKWwXznAix5z/RBHDKq8awM2ju3Bqtwdc
-         fPHGhMByPuATPEJvHR/Q9M6g/nEQmsUZuUQJXuub1sliCTjHnQDJkOQJIsjbZBoWXEOH
-         WypUQAJdCPYqH0Fp0goOgdZzy+3+GMu+ruzX/AZVtF64QW8byOhG3SPd7y/jztSrkiTX
-         Nb1Ki6DmnqRtLj4kJLkQI0MSoUGsUFnlCsrDHyENP68cUD3HWTvRml3KBH8DaFWwxZX4
-         nECw==
-X-Gm-Message-State: AOAM532fzYX8L3tyAKzD+6hV0dvChZWC3V2RJ2okdcCdz1iIrvKVBNkP
-        MfVngyUmpIbdgHLTlo0qsF/rEJaMnQ+F4sMpZyv9Gw3cqJCV0wY6DyocsF/sMYwPebeXm0fds76
-        vVGyOrKu4mDArWKJp
-X-Received: by 2002:a17:906:6bd8:: with SMTP id t24mr716796ejs.501.1622193957958;
-        Fri, 28 May 2021 02:25:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwx1sRUoS9OH67HNclJ1NGntV7/GyBB2KWpub9RFUNqrM9RaNvZml+xjZQ5Ek7wAoqte+MmTw==
-X-Received: by 2002:a17:906:6bd8:: with SMTP id t24mr716773ejs.501.1622193957772;
-        Fri, 28 May 2021 02:25:57 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id u4sm2131950eje.81.2021.05.28.02.25.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 May 2021 02:25:57 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 8E34718071B; Fri, 28 May 2021 11:25:56 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        id S235361AbhE1Jqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 05:46:55 -0400
+Received: from mga03.intel.com ([134.134.136.65]:64277 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233627AbhE1Jqw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 May 2021 05:46:52 -0400
+IronPort-SDR: HBTuBQHQ/0t2y5zunYjqNRqYSXRHMjW8OMNMOz5trSJD+HwtWPZtcO45HZutHdik0DUfvipjVR
+ gQhhFs8IoWHA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9997"; a="202964727"
+X-IronPort-AV: E=Sophos;i="5.83,229,1616482800"; 
+   d="scan'208";a="202964727"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2021 02:45:18 -0700
+IronPort-SDR: WE4PVVAbBZlVB5NlbLi6QHRXSH3Smvo5TU3dhnTl/PW347qWoMt8wZdrrO3tRKMmWUJtV+y6wq
+ ttRWH4xJpHfA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,229,1616482800"; 
+   d="scan'208";a="548533848"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga001.fm.intel.com with ESMTP; 28 May 2021 02:45:13 -0700
+Date:   Fri, 28 May 2021 11:32:13 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -77,54 +52,58 @@ Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
         Menglong Dong <dong.menglong@zte.com.cn>,
         netdev@vger.kernel.org, bpf@vger.kernel.org
 Subject: Re: [PATCH bpf-next] xsk: support AF_PACKET
-In-Reply-To: <1622192521.5931044-1-xuanzhuo@linux.alibaba.com>
+Message-ID: <20210528093213.GB46923@ranger.igk.intel.com>
 References: <1622192521.5931044-1-xuanzhuo@linux.alibaba.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 28 May 2021 11:25:56 +0200
-Message-ID: <87cztbgqfv.fsf@toke.dk>
+ <87cztbgqfv.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87cztbgqfv.fsf@toke.dk>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xuan Zhuo <xuanzhuo@linux.alibaba.com> writes:
+On Fri, May 28, 2021 at 11:25:56AM +0200, Toke Høiland-Jørgensen wrote:
+> Xuan Zhuo <xuanzhuo@linux.alibaba.com> writes:
+> 
+> > On Fri, 28 May 2021 10:55:58 +0200, Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> >> Xuan Zhuo <xuanzhuo@linux.alibaba.com> writes:
+> >>
+> >> > In xsk mode, users cannot use AF_PACKET(tcpdump) to observe the current
+> >> > rx/tx data packets. This feature is very important in many cases. So
+> >> > this patch allows AF_PACKET to obtain xsk packages.
+> >>
+> >> You can use xdpdump to dump the packets from the XDP program before it
+> >> gets redirected into the XSK:
+> >> https://github.com/xdp-project/xdp-tools/tree/master/xdp-dump
+> >
+> > Wow, this is a good idea.
+> >
+> >>
+> >> Doens't currently work on egress, but if/when we get a proper TX hook
+> >> that should be doable as well.
+> >>
+> >> Wiring up XSK to AF_PACKET sounds a bit nonsensical: XSK is already a
+> >> transport to userspace, why would you need a second one?
+> >
+> > I have some different ideas. In my opinion, just like AF_PACKET can monitor
+> > tcp/udp packets, AF_PACKET monitors xsk packets is the same.
+> 
+> But you're adding code in the fast path to do this, in a code path where
+> others have been working quite hard to squeeze out every drop of
+> performance (literally chasing single nanoseconds). So I'm sorry, but
+> this approach is just not going to fly.
 
-> On Fri, 28 May 2021 10:55:58 +0200, Toke H=C3=B8iland-J=C3=B8rgensen <tok=
-e@redhat.com> wrote:
->> Xuan Zhuo <xuanzhuo@linux.alibaba.com> writes:
->>
->> > In xsk mode, users cannot use AF_PACKET(tcpdump) to observe the current
->> > rx/tx data packets. This feature is very important in many cases. So
->> > this patch allows AF_PACKET to obtain xsk packages.
->>
->> You can use xdpdump to dump the packets from the XDP program before it
->> gets redirected into the XSK:
->> https://github.com/xdp-project/xdp-tools/tree/master/xdp-dump
->
-> Wow, this is a good idea.
->
->>
->> Doens't currently work on egress, but if/when we get a proper TX hook
->> that should be doable as well.
->>
->> Wiring up XSK to AF_PACKET sounds a bit nonsensical: XSK is already a
->> transport to userspace, why would you need a second one?
->
-> I have some different ideas. In my opinion, just like AF_PACKET can monit=
-or
-> tcp/udp packets, AF_PACKET monitors xsk packets is the same.
++1. Probably would be better for everyone if Xuan started a thread on list
+what is his need.
 
-But you're adding code in the fast path to do this, in a code path where
-others have been working quite hard to squeeze out every drop of
-performance (literally chasing single nanoseconds). So I'm sorry, but
-this approach is just not going to fly.
-
-What is your use case anyway? Yes, being able to run tcpdump and see the
-packets is nice and convenient, but what do you actually want to use
-this for? Just for debugging your application? System monitoring?
-Something else?
-
--Toke
-
+> 
+> What is your use case anyway? Yes, being able to run tcpdump and see the
+> packets is nice and convenient, but what do you actually want to use
+> this for? Just for debugging your application? System monitoring?
+> Something else?
+> 
+> -Toke
+> 
