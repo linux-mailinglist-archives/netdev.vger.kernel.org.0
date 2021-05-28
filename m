@@ -2,92 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E343942B8
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 14:41:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1FB53942BE
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 14:42:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235301AbhE1MnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 08:43:21 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:33326 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235038AbhE1MnT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 08:43:19 -0400
-Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id D2CFC218B0;
-        Fri, 28 May 2021 12:41:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1622205703; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=psICT56KcHw2VZjNUFvNu+cUaaBZPwU0GchRi03lC/k=;
-        b=ByQlowES0N0uVLrXiOthXGwdqBaVNdRRH3olzbCYKb3puJ1lwx4drdLARCgWg7F9UlE0gC
-        iHbDR8HZChiifKW8fzM+3i/pJ3sc+dn6xAfs4EhVgHTn0l+fWY+kDm5k6BvH8d45jHHAxl
-        HSR3QUCIKlUDmjHcdNmAKHZVpUht1IU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1622205703;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=psICT56KcHw2VZjNUFvNu+cUaaBZPwU0GchRi03lC/k=;
-        b=koRsLBSKI9oQ7xfgXP/4OoYjP7O8YmooJF2Y1fLNmZ+40O2KxverL/DLzorSM4IBDp3HFu
-        mThKx+V7C+PeeFDg==
-Received: from imap3-int (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        by imap.suse.de (Postfix) with ESMTP id A168711A98;
-        Fri, 28 May 2021 12:41:43 +0000 (UTC)
-Received: from director2.suse.de ([192.168.254.72])
-        by imap3-int with ESMTPSA
-        id SfS6JgflsGCoLwAALh3uQQ
-        (envelope-from <hare@suse.de>); Fri, 28 May 2021 12:41:43 +0000
-Subject: Re: [RFC PATCH v6 13/27] qed: Add NVMeTCP Offload IO Level FW and HW
- HSI
-To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org
-Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
-        pkushwaha@marvell.com, malin1024@gmail.com
-References: <20210527235902.2185-1-smalin@marvell.com>
- <20210527235902.2185-14-smalin@marvell.com>
-From:   Hannes Reinecke <hare@suse.de>
-Organization: SUSE Linux GmbH
-Message-ID: <02fd8ffa-db79-1b19-7faf-e3d2f153c510@suse.de>
-Date:   Fri, 28 May 2021 14:41:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S235548AbhE1Mnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 08:43:47 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:42485 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230311AbhE1Mnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 08:43:45 -0400
+Received: from mail-vs1-f72.google.com ([209.85.217.72])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1lmboY-0007wh-18
+        for netdev@vger.kernel.org; Fri, 28 May 2021 12:42:10 +0000
+Received: by mail-vs1-f72.google.com with SMTP id b24-20020a67d3980000b029022a610fc6f2so951153vsj.22
+        for <netdev@vger.kernel.org>; Fri, 28 May 2021 05:42:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rFH/OkxJX+1bf3RA1MwdAa7s8lhCFQ3NsGd/fHMtrBU=;
+        b=BOufQhyayIbkix7XHyyg8enzkYL8B7a4rtCjA1PfdulJLv6FJL8pXO4WIv6yDeN6pc
+         ZROpeXnY8M15JyA8uGjS5N+b1HL6UzY4jp/akf/oR+nezdxeDKku8ZdRbHhd3h20qnXM
+         N5rUpL5S9HqlsppuSzAE3PLlWdNCU/7CnFsmGQ3SvwWyxE7xPBNDJW8H2pBByas+4EpG
+         R08RpCBRqd2WoBFCuQS5WyE7DOlP8PCby4ei5JSpefPpLd6MP4PrHfFwpR6+g69fbmqg
+         GTNClDFM5hhq4mhw9A3APUf6UQJmRBhY030nfyEsXrM17yp8ot5Vn16G8bBb178ZoRSi
+         F7Dg==
+X-Gm-Message-State: AOAM530RoY3r8y/gUKEm5ywuOavN/OP/IyvP+T5lxUWPjPPUEn6BPR+3
+        0fK2We9M1iljM+c3HSjNvGI16kMXAgF1vjaKCxfwv+QfBohmooSO+eTHf9FbGBdQidVV+vbDNSx
+        t/EbFR05vwY1DEwF6tjNULReEs6945RR9Pw==
+X-Received: by 2002:a05:6102:5d0:: with SMTP id v16mr7076731vsf.31.1622205728639;
+        Fri, 28 May 2021 05:42:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxEVlZcqgPeeaF4dSVhZblaqkKUAk6rrB1qIKVtSVM+CD1gahWuLY4xUCoT2Axwd6Dn2W6LIg==
+X-Received: by 2002:a05:6102:5d0:: with SMTP id v16mr7076718vsf.31.1622205728478;
+        Fri, 28 May 2021 05:42:08 -0700 (PDT)
+Received: from localhost.localdomain ([45.237.48.6])
+        by smtp.gmail.com with ESMTPSA id b35sm782328uae.20.2021.05.28.05.42.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 May 2021 05:42:07 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 01/12] nfc: fdp: correct kerneldoc for structure
+Date:   Fri, 28 May 2021 08:41:49 -0400
+Message-Id: <20210528124200.79655-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20210527235902.2185-14-smalin@marvell.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/21 1:58 AM, Shai Malin wrote:
-> This patch introduces the NVMeTCP Offload FW and HW  HSI in order
-> to initialize the IO level configuration into a per IO HW
-> resource ("task") as part of the IO path flow.
-> 
-> Acked-by: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
-> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> ---
->  include/linux/qed/nvmetcp_common.h | 335 ++++++++++++++++++++++++++++-
->  include/linux/qed/qed_nvmetcp_if.h |  31 +++
->  2 files changed, 365 insertions(+), 1 deletion(-)
-> Reviewed-by: Hannes Reinecke <hare@suse.de>
+Since structure comments are not kerneldoc, remove the double ** to fix
+W=1 warnings:
 
-Cheers,
+    warning: This comment starts with '/**', but isn't a kernel-doc comment.
 
-Hannes
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ drivers/nfc/fdp/fdp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/nfc/fdp/fdp.c b/drivers/nfc/fdp/fdp.c
+index fe0719ed81a0..125d71c27b8b 100644
+--- a/drivers/nfc/fdp/fdp.c
++++ b/drivers/nfc/fdp/fdp.c
+@@ -149,7 +149,7 @@ static void fdp_nci_send_patch_cb(struct nci_dev *ndev)
+ 	wake_up(&info->setup_wq);
+ }
+ 
+-/**
++/*
+  * Register a packet sent counter and a callback
+  *
+  * We have no other way of knowing when all firmware packets were sent out
+@@ -167,7 +167,7 @@ static void fdp_nci_set_data_pkt_counter(struct nci_dev *ndev,
+ 	info->data_pkt_counter_cb = cb;
+ }
+ 
+-/**
++/*
+  * The device is expecting a stream of packets. All packets need to
+  * have the PBF flag set to 0x0 (last packet) even if the firmware
+  * file is segmented and there are multiple packets. If we give the
 -- 
-Dr. Hannes Reinecke		        Kernel Storage Architect
-hare@suse.de			               +49 911 74053 688
-SUSE Software Solutions Germany GmbH, 90409 Nürnberg
-GF: F. Imendörffer, HRB 36809 (AG Nürnberg)
+2.27.0
+
