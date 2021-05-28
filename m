@@ -2,119 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EC7D394070
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 11:56:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8291D394087
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 12:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236294AbhE1J6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 05:58:17 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:60344 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236229AbhE1J6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 05:58:15 -0400
-Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 5C5EF218B3;
-        Fri, 28 May 2021 09:56:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1622195799; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dhdQKKFKjVq0AOYJ94M8zTULaqoglwzD51M65ba4TkU=;
-        b=bcrRKaP1GJLre/Zq5cnkwbRfyp/acLxsQqxEV73LpzpcavYCf/E8uconIrVnhvXWjSrGpA
-        IXKbl4+vgZiyCuNaQC4FSOiZUKQOZCq7DX+pYRuwf2bxUKC5fT4SmZZDssutyySovncCL/
-        yQ4pPvBsRVbg59hkE7UX+cBN/nBeF00=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1622195799;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dhdQKKFKjVq0AOYJ94M8zTULaqoglwzD51M65ba4TkU=;
-        b=2zyj6nHCR2O/JVjQiRV+RYfa3ndqrFN05rtEekrLqwYZQJ63TvusgWLRpPDQF4leVK7sU7
-        i8w6V+mes0b0otBw==
-Received: from director2.suse.de (director2.suse-dmz.suse.de [192.168.254.72])
-        by imap.suse.de (Postfix) with ESMTPSA id 3542C11A98;
-        Fri, 28 May 2021 09:56:39 +0000 (UTC)
-Date:   Fri, 28 May 2021 11:56:38 +0200
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Mel Gorman' <mgorman@techsingularity.net>,
-        'Andrii Nakryiko' <andrii.nakryiko@gmail.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        id S236321AbhE1KCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 06:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236356AbhE1KBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 06:01:52 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA50EC061761;
+        Fri, 28 May 2021 03:00:16 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id g18so2859071pfr.2;
+        Fri, 28 May 2021 03:00:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=XkhajJbVENw05gdm0/64f1bFmGYssSVOr17T3Gt0/TA=;
+        b=OGyzp5KG7AHufFdzzq7prRUBmxGSWx5buDkbnOOI6Upr/hoTqaCW/YmXcoyWHFODK8
+         Qi5xl8fYevu5ZJ+AOL5VNsxnkKzOMsCPxKz4iJ/QtYhzruIilsr9f4Abc8n5r/S2Vwzn
+         rCGB0m80A8TH9VRD+DVB+fi/MleJ1qKTMvE7tkRPaM5H2JHBPDGdqlAsfhcgwjEbMoj8
+         NwaZpuy8mDWIpisgf5yuxVIdTLBjKP8rEpUWTR2WyT13iUzZVN9EMQ0sskhLM1IadNkb
+         +geO8JBC5s00S5TGVNudqVMsaAegJYgRrPWa33LhH3biQpBff9ooRuEp01lz/LoliRSe
+         H6pA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=XkhajJbVENw05gdm0/64f1bFmGYssSVOr17T3Gt0/TA=;
+        b=da4Sb+IMH3T0LpLQrYYPExR48wOOmIzdD3NoJyTdM+T0rrrK0CkMGPDFhDQxvscUMd
+         /YDFJakvfTrOUuc8JfXUtmldBh5UclaF0o92TbY3qMFgCeeyyVPqPMqI9pPMOWZKKq0W
+         vjta9cPi2ekrQ9CU/9yBAv6rf1d7BoUnYFXKwkfyESUdBLNFbJuu+2CP5kUOlBZ//uf0
+         RVTN8SzcjSXt5NbG6DyYMT4GgNZ4dCiTe49W96r5hURQcuquQZCIK1EQ2s6kU/SYl+Qm
+         TDNJ83mKF5ivezeoNTjFFFvjRF7VYCqqWpUgeDFi2jZwzNvE4UTLeldRjwZYWS6Pd3/O
+         5QHA==
+X-Gm-Message-State: AOAM530ajyKIxio7xo5S63MpoXlXab1zI7557x1fGAVae0k6zH0f0pLC
+        yG9/EsGhapU+bV1zBSTs4QeDiZR6xJxq5mqr6J8=
+X-Google-Smtp-Source: ABdhPJzpHzych1ZR/lCf/I1GJFWkEX3bq9CrKC/JOR6cXsfHlRhWYM5vyYGtS7dzZujHidAOb/oBtymZ56fJZnqgl9E=
+X-Received: by 2002:a63:7056:: with SMTP id a22mr8258180pgn.292.1622196016295;
+ Fri, 28 May 2021 03:00:16 -0700 (PDT)
+MIME-Version: 1.0
+References: <87im33grtt.fsf@toke.dk> <1622192521.5931044-1-xuanzhuo@linux.alibaba.com>
+ <20210528115003.37840424@carbon>
+In-Reply-To: <20210528115003.37840424@carbon>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 28 May 2021 12:00:05 +0200
+Message-ID: <CAJ8uoz2bhfsk4XX--cNB-gKczx0jZENB5kdthoWkuyxcOHQfjg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] xsk: support AF_PACKET
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Hritik Vijay <hritikxx8@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-Subject: Re: [PATCH] mm/page_alloc: Work around a pahole limitation with
- zero-sized struct pagesets
-Message-ID: <20210528095637.GO8544@kitsune.suse.cz>
-References: <20210526080741.GW30378@techsingularity.net>
- <YK9SiLX1E1KAZORb@infradead.org>
- <20210527090422.GA30378@techsingularity.net>
- <YK9j3YeMTZ+0I8NA@infradead.org>
- <CAEf4BzZLy0s+t+Nj9QgUNM66Ma6HN=VkS+ocgT5h9UwanxHaZQ@mail.gmail.com>
- <CAEf4BzbzPK-3cyLFM8QKE5-o_dL7=UCcvRF+rEqyUcHhyY+FJg@mail.gmail.com>
- <8fe547e9e87f40aebce82021d76a2d08@AcuMS.aculab.com>
- <20210528090421.GK30378@techsingularity.net>
- <2755b39d723146168e875f3b4a851a0d@AcuMS.aculab.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2755b39d723146168e875f3b4a851a0d@AcuMS.aculab.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Willem de Bruijn <willemb@google.com>,
+        Xie He <xie.he.0141@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Wang Hai <wanghai38@huawei.com>,
+        Tanner Love <tannerlove@google.com>,
+        Eyal Birger <eyal.birger@gmail.com>,
+        Menglong Dong <dong.menglong@zte.com.cn>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 28, 2021 at 09:49:28AM +0000, David Laight wrote:
-> From: Mel Gorman
-> > Sent: 28 May 2021 10:04
-> > 
-> > On Fri, May 28, 2021 at 08:09:39AM +0000, David Laight wrote:
-> > > From: Andrii Nakryiko
-> > > > Sent: 27 May 2021 15:42
-> > > ...
-> > > > I agree that empty structs are useful, but here we are talking about
-> > > > per-CPU variables only, which is the first use case so far, as far as
-> > > > I can see. If we had pahole 1.22 released and widely packaged it could
-> > > > have been a viable option to force it on everyone.
-> > > ...
+On Fri, May 28, 2021 at 11:52 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> On Fri, 28 May 2021 17:02:01 +0800
+> Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>
+> > On Fri, 28 May 2021 10:55:58 +0200, Toke H=C3=B8iland-J=C3=B8rgensen <t=
+oke@redhat.com> wrote:
+> > > Xuan Zhuo <xuanzhuo@linux.alibaba.com> writes:
 > > >
-> > > Would it be feasible to put the sources for pahole into the
-> > > kernel repository and build it at the same time as objtool?
-> > 
-> > We don't store other build dependencies like compilers, binutils etc in
-> > the kernel repository even though minimum versions are mandated.
-> > Obviously tools/ exists but for the most part, they are tools that do
-> > not exist in other repositories and are kernel-specific. I don't know if
-> > pahole would be accepted and it introduces the possibility that upstream
-> > pahole and the kernel fork of it would diverge.
-> 
-> The other side of the coin is that is you want reproducible builds
-> the smaller the number of variables that need to match the better.
-> 
-> I can see there might be similar issues with the version of libelf-devel
-> (needed by objtool).
-> If I compile anything with gcc 10 (I'm doing build-root builds)
-> I get object files that the hosts 2.30 binutils complain about.
-> I can easily see that updating gcc and binutils might leave a
-> broken objtool unless the required updated libelf-devel package
-> can be found.
-> Statically linking the required parts of libelf into objtool
-> would save any such problems.
+> > > > In xsk mode, users cannot use AF_PACKET(tcpdump) to observe the cur=
+rent
+> > > > rx/tx data packets. This feature is very important in many cases. S=
+o
+> > > > this patch allows AF_PACKET to obtain xsk packages.
+> > >
+> > > You can use xdpdump to dump the packets from the XDP program before i=
+t
+> > > gets redirected into the XSK:
+> > > https://github.com/xdp-project/xdp-tools/tree/master/xdp-dump
+> >
+> > Wow, this is a good idea.
+>
+> Yes, it is rather cool (credit to Eelco).  Notice the extra info you
+> can capture from 'exit', like XDP return codes, if_index, rx_queue.
+>
+> The tool uses the perf ring-buffer to send/copy data to userspace.
+> This is actually surprisingly fast, but I still think AF_XDP will be
+> faster (but it usually 'steals' the packet).
+>
+> Another (crazy?) idea is to extend this (and xdpdump), is to leverage
+> Hangbin's recent XDP_REDIRECT extension e624d4ed4aa8 ("xdp: Extend
+> xdp_redirect_map with broadcast support").  We now have a
+> xdp_redirect_map flag BPF_F_BROADCAST, what if we create a
+> BPF_F_CLONE_PASS flag?
+>
+> The semantic meaning of BPF_F_CLONE_PASS flag is to copy/clone the
+> packet for the specified map target index (e.g AF_XDP map), but
+> afterwards it does like veth/cpumap and creates an SKB from the
+> xdp_frame (see __xdp_build_skb_from_frame()) and send to netstack.
+> (Feel free to kick me if this doesn't make any sense)
 
-Static libraries are not always available. Especially for core toolchain
-libraries the developers often have some ideas about which of the static
-and dynamic libraris is the 'correct' one that they like to enforce.
+This would be a smooth way to implement clone support for AF_XDP. If
+we had this and someone added AF_XDP support to libpcap, we could both
+capture AF_XDP traffic with tcpdump (using this clone functionality in
+the XDP program) and speed up tcpdump for dumping traffic destined for
+regular sockets. Would that solve your use case Xuan? Note that I have
+not looked into the BPF_F_CLONE_PASS code, so do not know at this
+point what it would take to support this for XSKMAPs.
 
-Thanks
-
-Michal
+> --
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>
