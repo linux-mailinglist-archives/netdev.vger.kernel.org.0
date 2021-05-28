@@ -2,103 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AF4039438F
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 15:50:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 285E63943A7
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 15:57:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235379AbhE1Nvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 09:51:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33930 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230127AbhE1Nvq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 May 2021 09:51:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=Enj7fzG2s3mxlNczWZOqN/yxsGH0zcgsb4CsKkOLdU8=; b=P3
-        aaifHT9vpk8jlC0Hi1TO3dl68JJqnoiPnIdRRDE3CTB6h53KzLXkqNGNRIZL7ko0kohb1GsSE2sb3
-        t8vUCzhZBD0RVnOzAzM3Twa9JH+PNpxk84Ygxv4yiyQXDYtux5r63k7vFb4TsYGLW/o/WWMiAEMET
-        s/ZDBMAmUPDtmmE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lmcsK-006kNF-S8; Fri, 28 May 2021 15:50:08 +0200
-Date:   Fri, 28 May 2021 15:50:08 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        id S236161AbhE1N7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 09:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235379AbhE1N7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 09:59:22 -0400
+Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A86FC061574;
+        Fri, 28 May 2021 06:57:47 -0700 (PDT)
+Received: from dellmb (unknown [IPv6:2001:1488:fffe:6:be02:5020:4be2:aff5])
+        by mail.nic.cz (Postfix) with ESMTPSA id 95FDD13FEDF;
+        Fri, 28 May 2021 15:57:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1622210264; bh=L2FRXixBLrTSjAd1ej19FFbRqmd2SpyVByQqODr4n1M=;
+        h=Date:From:To;
+        b=ExhtO9m0hYb9kEBgPhNQfGJ1WqAXR4CM6218iQxsgjgMlD/Fl/r5f5/J8VwxRXS6n
+         GFmC2ItsMh44dKRNgtV6o1w9puc2yvqb+8Vp1x58m5A79JC/KHiwdMs9zg5RcB4pY/
+         FvJB/cWDwNE8AiXevYDLMKCWpT7/95QADpMViIY0=
+Date:   Fri, 28 May 2021 15:57:44 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>,
         linux-leds@vger.kernel.org, netdev@vger.kernel.org,
         Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
         Russell King <linux@armlinux.org.uk>,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         Jacek Anaszewski <jacek.anaszewski@gmail.com>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: Re: [PATCH leds v1 4/5] leds: trigger: netdev: support HW offloading
-Message-ID: <YLD1ELr5csaat6Uk@lunn.ch>
+Subject: Re: [PATCH leds v1 4/5] leds: trigger: netdev: support HW
+ offloading
+Message-ID: <20210528155744.6a555f6e@dellmb>
+In-Reply-To: <YLD1ELr5csaat6Uk@lunn.ch>
 References: <20210526180020.13557-1-kabel@kernel.org>
- <20210526180020.13557-5-kabel@kernel.org>
- <YK/PbY/a0plxvzh+@lunn.ch>
- <20210528084556.69bbba1a@dellmb>
+        <20210526180020.13557-5-kabel@kernel.org>
+        <YK/PbY/a0plxvzh+@lunn.ch>
+        <20210528084556.69bbba1a@dellmb>
+        <YLD1ELr5csaat6Uk@lunn.ch>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210528084556.69bbba1a@dellmb>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 28, 2021 at 08:45:56AM +0200, Marek Behún wrote:
-> On Thu, 27 May 2021 18:57:17 +0200
-> Andrew Lunn <andrew@lunn.ch> wrote:
-> 
-> > On Wed, May 26, 2021 at 08:00:19PM +0200, Marek Behún wrote:
-> > > Add support for HW offloading of the netdev trigger.
-> > > 
-> > > We need to export the netdev_led_trigger variable so that drivers
-> > > may check whether the LED is set to this trigger.  
-> > 
-> > Without seeing the driver side, it is not obvious to me why this is
-> > needed. Please add the driver changes to this patchset, so we can
-> > fully see how the API works.
-> 
-> OK, I will send an implementation for leds-turris-omnia with v2.
-> 
-> The idea is that the trigger_offload() method should check which
-> trigger it should offload. A potential LED controller may be configured
-> to link the LED on net activity, or on SATA activity. So the method
-> should do something like this:
-> 
->   static int my_trigger_offload(struct led_classdev *cdev, bool enable)
->   {
->     if (!enable)
->       return my_disable_hw_triggering(cdev);
-> 	
->     if (cdev->trigger == &netdev_led_trigger)
->       return my_offload_netdev_triggering(cdev);
->     else if (cdev->trigger == &blkdev_led_trigger)
->       return my_offload_blkdev_triggering(cdev);
->     else
->       return -EOPNOTSUPP;
->   }
+On Fri, 28 May 2021 15:50:08 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-So the hardware driver does not need the contents of the trigger? It
-never manipulates the trigger. Maybe to keep the abstraction cleaner,
-an enum can be added to the trigger to identify it. The code then
-becomes:
+> On Fri, May 28, 2021 at 08:45:56AM +0200, Marek Beh=C3=BAn wrote:
+> > On Thu, 27 May 2021 18:57:17 +0200
+> > Andrew Lunn <andrew@lunn.ch> wrote:
+> >  =20
+> > > On Wed, May 26, 2021 at 08:00:19PM +0200, Marek Beh=C3=BAn wrote: =20
+> > > > Add support for HW offloading of the netdev trigger.
+> > > >=20
+> > > > We need to export the netdev_led_trigger variable so that
+> > > > drivers may check whether the LED is set to this trigger.   =20
+> > >=20
+> > > Without seeing the driver side, it is not obvious to me why this
+> > > is needed. Please add the driver changes to this patchset, so we
+> > > can fully see how the API works. =20
+> >=20
+> > OK, I will send an implementation for leds-turris-omnia with v2.
+> >=20
+> > The idea is that the trigger_offload() method should check which
+> > trigger it should offload. A potential LED controller may be
+> > configured to link the LED on net activity, or on SATA activity. So
+> > the method should do something like this:
+> >=20
+> >   static int my_trigger_offload(struct led_classdev *cdev, bool
+> > enable) {
+> >     if (!enable)
+> >       return my_disable_hw_triggering(cdev);
+> > =09
+> >     if (cdev->trigger =3D=3D &netdev_led_trigger)
+> >       return my_offload_netdev_triggering(cdev);
+> >     else if (cdev->trigger =3D=3D &blkdev_led_trigger)
+> >       return my_offload_blkdev_triggering(cdev);
+> >     else
+> >       return -EOPNOTSUPP;
+> >   } =20
+>=20
+> So the hardware driver does not need the contents of the trigger? It
+> never manipulates the trigger. Maybe to keep the abstraction cleaner,
+> an enum can be added to the trigger to identify it. The code then
+> becomes:
+>=20
+> static int my_trigger_offload(struct led_classdev *cdev, bool enable)
+> {
+> 	if (!enable)
+>         	return my_disable_hw_triggering(cdev);
+>  =09
+> 	switch(cdev->trigger->trigger) {
+> 	case TRIGGER_NETDEV:
+> 	       return my_offload_netdev_triggering(cdev);
+> 	case TRIGGER_BLKDEV:
+> 	       return my_offload_blkdev_triggering(cdev);
+> 	default:
+> 	       return -EOPNOTSUPP;
+> }=09
 
-static int my_trigger_offload(struct led_classdev *cdev, bool enable)
-{
-	if (!enable)
-        	return my_disable_hw_triggering(cdev);
- 	
-	switch(cdev->trigger->trigger) {
-	case TRIGGER_NETDEV:
-	       return my_offload_netdev_triggering(cdev);
-	case TRIGGER_BLKDEV:
-	       return my_offload_blkdev_triggering(cdev);
-	default:
-	       return -EOPNOTSUPP;
-}	
-
-	Andrew
+If we want to avoid exporting the symbol I would rather compare
+  !strcmp(cdev->trigger->name, "netdev")
+What do you think?
