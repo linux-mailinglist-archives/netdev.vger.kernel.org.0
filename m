@@ -2,123 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C91FD3948F3
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 00:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 998033948FB
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 00:58:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbhE1WyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 18:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbhE1WyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 18:54:23 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28EFC0613CE
-        for <netdev@vger.kernel.org>; Fri, 28 May 2021 15:52:47 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id lg14so7534481ejb.9
-        for <netdev@vger.kernel.org>; Fri, 28 May 2021 15:52:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hYw5L9uovAkFsfHnHeXQzSMU5L4IRTMjhY6/K5rzT9U=;
-        b=yuNgeXWN+6xWyHkZN3hopiuhLwOwLkMW4jfx/Ke9qnP+4D2F8F70wSggXfODvDfJTi
-         ILz10rk+8ClZi8HbQdGtQbcSvgtB1sGOONGOZStOBth62K6Hz5gg9CX1vrt+j4VA5tlX
-         Ix+Nfa7RDnmnOhfUmMbJi+8cg+u3ye37cM6IYBcAIMHhRDDaEBkVCskOi0kOs7gnKSdI
-         mXKdCDDvyo3dLsxWV8KBORTR/cOBJBOknrc9qVd3Bzm0TtTxq1bM5m5gMw8Uhs9lgJXG
-         aX1MQzG+pMBsWwu0lszw5ECGLix/RDqMzdlR8Bx+v92dGBI1vhRO3aOIv5eom6bntiJ4
-         /j8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hYw5L9uovAkFsfHnHeXQzSMU5L4IRTMjhY6/K5rzT9U=;
-        b=A7V6yPYwdut7DlRnvocQ+RPHKuC/ttzn7vqSC14yHg1iN6IdTlq5HOQXX1QF2O822l
-         I3yZqD3gowWJL2BWsgBhBsLaTFH/7TjFN/Uqo3z6ImccvI3m0Jc6tYcad5qNeUIYZV/K
-         gwcIiKUvS4IjIpPriRlrqBYzc7a8VN3EYR4NIbR7YcdLEjc1LjZFJN0gqBeDhEJQoJAk
-         w3QkbMTi6nIzf/GtXj/c3DoMRYWBqCaZXk39lcYl+5cOu3dpzZhTcuVpZoVJ4jUhhWE/
-         4/emBZlV5yis+PlOpdvGFtX2eddoLXHFG9Lb1nSdeuN/jSM63JA9IcD1chHq+ei6cgi2
-         7Z2w==
-X-Gm-Message-State: AOAM531MuZFPBfNYXVQXlREw8yyNvBTay6OL4I2tmLokQYkXSGWmbU+3
-        CzzCwwLd6c920WG8PJlUEPGyy5iVaRuVF4IbE26E
-X-Google-Smtp-Source: ABdhPJyM59D/3ndTZ2tM5xKxQiqHabnQvuoHlfDxd+J5YttV0ukxr9SsE/gZ/BunSIgaPf5x9SH6g251CYE//WbdFbc=
-X-Received: by 2002:a17:906:4111:: with SMTP id j17mr1665351ejk.488.1622242365987;
- Fri, 28 May 2021 15:52:45 -0700 (PDT)
+        id S229585AbhE1W7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 18:59:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55058 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229500AbhE1W7g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 May 2021 18:59:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4D5566117A;
+        Fri, 28 May 2021 22:58:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622242681;
+        bh=JlEG/zQxxHilWYdiU0HA8CidwHpZOTrzJ+D1BxnKB7o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DaGrbtzot67fkFJv/4c9ggQVEMv/SWen+LHxrBCBjGPtAvXwgyB/ZzqkS+p7wwD4Q
+         3Ok+tKPqQesy2VPB4IVYVMuNWwWzksONGzLOJbycybs9gcdekU/seQ364dAczmBI4k
+         NZ+3ky3fK+P4qHgsF+AzB4cOKekgPnsHR8CAs2eWdXheaMUyaK5m9jS3u+PiZMviPO
+         AEVnd2mkczKS7tc7BOVAKvW4XAIjDLuJIrcBq3DmJ4KJVabwUlyklAZoH+5/v0UEt1
+         v6UG0S+ejjXZSLGVwHnQQg/JHzOLt3l7OLZt+grE4fgGy6jz1UJJfdV0vXPSqsCZUd
+         uLTq7Wry4mapQ==
+Date:   Fri, 28 May 2021 15:58:00 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sharath Chandra Vurukala <sharathv@codeaurora.org>
+Cc:     davem@davemloft.net, elder@kernel.org, cpratapa@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v7 2/3] net: ethernet: rmnet: Support for
+ ingress MAPv5 checksum offload
+Message-ID: <20210528155800.0514d249@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <1622105322-2975-3-git-send-email-sharathv@codeaurora.org>
+References: <1622105322-2975-1-git-send-email-sharathv@codeaurora.org>
+        <1622105322-2975-3-git-send-email-sharathv@codeaurora.org>
 MIME-Version: 1.0
-References: <20210517092006.803332-1-omosnace@redhat.com> <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
- <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net> <CAHC9VhR-kYmMA8gsqkiL5=poN9FoL-uCyx1YOLCoG2hRiUBYug@mail.gmail.com>
- <c7c2d7e1-e253-dce0-d35c-392192e4926e@iogearbox.net>
-In-Reply-To: <c7c2d7e1-e253-dce0-d35c-392192e4926e@iogearbox.net>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 28 May 2021 18:52:34 -0400
-Message-ID: <CAHC9VhRkz48MLv_QNfnRWFPvFxEV7oJH5eNHGUtvWdjG4M1YFA@mail.gmail.com>
-Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
- permission checks
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
-        linux-security-module@vger.kernel.org,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Casey Schaufler <casey@schaufler-ca.com>, jolsa@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 28, 2021 at 2:28 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> On 5/28/21 5:47 PM, Paul Moore wrote:
-> > Let's reset.
->
-> Sure, yep, lets shortly take one step back. :)
->
-> > What task_struct is running the BPF tracing program which is calling
-> > into security_locked_down()?  My current feeling is that it is this
-> > context/domain/cred that should be used for the access control check;
-> > in the cases where it is a kernel thread, I think passing NULL is
-> > reasonable, but I think the proper thing for SELinux is to interpret
-> > NULL as kernel_t.
->
-> If this was a typical LSM hook and, say, your app calls into bind(2) where
-> we then invoke security_socket_bind() and check 'current' task, then I'm all
-> with you, because this was _explicitly initiated_ by the httpd app, so that
-> allow/deny policy belongs in the context of httpd.
->
-> In the case of tracing, it's different. You install small programs that are
-> triggered when certain events fire. Random example from bpftrace's README [0],
-> you want to generate a histogram of syscall counts by program. One-liner is:
->
->    bpftrace -e 'tracepoint:raw_syscalls:sys_enter { @[comm] = count(); }'
->
-> bpftrace then goes and generates a BPF prog from this internally. One way of
-> doing it could be to call bpf_get_current_task() helper and then access
-> current->comm via one of bpf_probe_read_kernel{,_str}() helpers. So the
-> program itself has nothing to do with httpd or any other random app doing
-> a syscall here. The BPF prog _explicitly initiated_ the lockdown check.
-> The allow/deny policy belongs in the context of bpftrace: meaning, you want
-> to grant bpftrace access to use these helpers, but other tracers on the
-> systems like my_random_tracer not. While this works for prior mentioned
-> cases of security_locked_down() with open_kcore() for /proc/kcore access
-> or the module_sig_check(), it is broken for tracing as-is, and the patch
-> I sent earlier fixes this.
+On Thu, 27 May 2021 14:18:41 +0530 Sharath Chandra Vurukala wrote:
+> Adding support for processing of MAPv5 downlink packets.
+> It involves parsing the Mapv5 packet and checking the csum header
+> to know whether the hardware has validated the checksum and is
+> valid or not.
+> 
+> Based on the checksum valid bit the corresponding stats are
+> incremented and skb->ip_summed is marked either CHECKSUM_UNNECESSARY
+> or left as CHEKSUM_NONE to let network stack revalidate the checksum
+> and update the respective snmp stats.
+> 
+> Current MAPV1 header has been modified, the reserved field in the
+> Mapv1 header is now used for next header indication.
+> 
+> Signed-off-by: Sharath Chandra Vurukala <sharathv@codeaurora.org>
 
-Sigh.
+> @@ -300,8 +301,11 @@ struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
+>  struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
+>  				      struct rmnet_port *port)
+>  {
+> +	struct rmnet_map_v5_csum_header *next_hdr = NULL;
+> +	void *data = skb->data;
+>  	struct rmnet_map_header *maph;
 
-Generally it's helpful when someone asks a question if you answer it
-directly before going off and answering your own questions.  Listen, I
-get it, you wrote a patch and it fixes your problem (you've mentioned
-that already) and it's wonderful and all that, but the rest of us
-(maybe just me) need to sort this out too and talking past questions
-isn't a great way to help us get there (once again, maybe just me).  I
-think I can infer an answer from you, but you've made me grumpy now so
-I'm not ACK'ing or NACK'ing anything right now; I clearly need to go
-spend some time reading through BPF code.  Woo.
+Please maintain reverse xmas tree ordering
 
->    [0] https://github.com/iovisor/bpftrace
+>  	struct sk_buff *skbn;
+> +	u8 nexthdr_type;
+>  	u32 packet_len;
+>  
+>  	if (skb->len == 0)
+> @@ -310,8 +314,18 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
+>  	maph = (struct rmnet_map_header *)skb->data;
+>  	packet_len = ntohs(maph->pkt_len) + sizeof(*maph);
+>  
+> -	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
+> +	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4) {
+>  		packet_len += sizeof(struct rmnet_map_dl_csum_trailer);
+> +	} else if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV5) {
+> +		if (!(maph->flags & MAP_CMD_FLAG)) {
+> +			packet_len += sizeof(*next_hdr);
+> +			if (maph->flags & MAP_NEXT_HEADER_FLAG)
+> +				next_hdr = (data + sizeof(*maph));
 
--- 
-paul moore
-www.paul-moore.com
+brackets unnecessary
+
+> +			else
+> +				/* Mapv5 data pkt without csum hdr is invalid */
+> +				return NULL;
+> +		}
+> +	}
+>  
+>  	if (((int)skb->len - (int)packet_len) < 0)
+>  		return NULL;
+> @@ -320,6 +334,13 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
+>  	if (!maph->pkt_len)
+>  		return NULL;
+>  
+> +	if (next_hdr) {
+> +		nexthdr_type = u8_get_bits(next_hdr->header_info,
+> +					   MAPV5_HDRINFO_HDR_TYPE_FMASK);
+> +		if (nexthdr_type != RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD)
+> +			return NULL;
+> +	}
+> +
+>  	skbn = alloc_skb(packet_len + RMNET_MAP_DEAGGR_SPACING, GFP_ATOMIC);
+>  	if (!skbn)
+>  		return NULL;
+> @@ -414,3 +435,37 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
+>  
+>  	priv->stats.csum_sw++;
+>  }
+> +
+> +/* Process a MAPv5 packet header */
+> +int rmnet_map_process_next_hdr_packet(struct sk_buff *skb,
+> +				      u16 len)
+> +{
+> +	struct rmnet_priv *priv = netdev_priv(skb->dev);
+> +	struct rmnet_map_v5_csum_header *next_hdr;
+> +	u8 nexthdr_type;
+> +	int rc = 0;
+
+rc is not meaningfully used
+
+> +	next_hdr = (struct rmnet_map_v5_csum_header *)(skb->data +
+> +			sizeof(struct rmnet_map_header));
+> +
+> +	nexthdr_type = u8_get_bits(next_hdr->header_info,
+> +				   MAPV5_HDRINFO_HDR_TYPE_FMASK);
+> +
+> +	if (nexthdr_type == RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD) {
+> +		if (unlikely(!(skb->dev->features & NETIF_F_RXCSUM))) {
+> +			priv->stats.csum_sw++;
+> +		} else if (next_hdr->csum_info & MAPV5_CSUMINFO_VALID_FLAG) {
+> +			priv->stats.csum_ok++;
+> +			skb->ip_summed = CHECKSUM_UNNECESSARY;
+> +		} else {
+> +			priv->stats.csum_valid_unset++;
+> +		}
+> +
+> +		/* Pull csum v5 header */
+> +		skb_pull(skb, sizeof(*next_hdr));
+> +	} else {
+> +		return -EINVAL;
+
+flip condition, return early
+
+> +	}
+> +
+> +	return rc;
+> +}
+> diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
+> index 4efb537..8502ccc 100644
+> --- a/include/linux/if_rmnet.h
+> +++ b/include/linux/if_rmnet.h
+> @@ -1,5 +1,5 @@
+>  /* SPDX-License-Identifier: GPL-2.0-only
+> - * Copyright (c) 2013-2019, The Linux Foundation. All rights reserved.
+> + * Copyright (c) 2013-2019, 2021 The Linux Foundation. All rights reserved.
+>   */
+>  
+>  #ifndef _LINUX_IF_RMNET_H_
+> @@ -14,8 +14,10 @@ struct rmnet_map_header {
+>  /* rmnet_map_header flags field:
+>   *  PAD_LEN:	number of pad bytes following packet data
+>   *  CMD:	1 = packet contains a MAP command; 0 = packet contains data
+> + *  NEXT_HEADER	1 = packet contains V5 CSUM header 0 = no V5 CSUM header
+
+Colon missing?
+
+>   */
+>  #define MAP_PAD_LEN_MASK		GENMASK(5, 0)
+> +#define MAP_NEXT_HEADER_FLAG		BIT(6)
+>  #define MAP_CMD_FLAG			BIT(7)
+>  
+>  struct rmnet_map_dl_csum_trailer {
+> @@ -45,4 +47,26 @@ struct rmnet_map_ul_csum_header {
+>  #define MAP_CSUM_UL_UDP_FLAG		BIT(14)
+>  #define MAP_CSUM_UL_ENABLED_FLAG	BIT(15)
+>  
+> +/* MAP CSUM headers */
+> +struct rmnet_map_v5_csum_header {
+> +	u8 header_info;
+> +	u8 csum_info;
+> +	__be16 reserved;
+> +} __aligned(1);
+
+__aligned() seems rather pointless here but ok.
+
+> +/* v5 header_info field
+> + * NEXT_HEADER:  Represents whether there is any other header
+
+double space
+
+> + * HEADER TYPE: represents the type of this header
+
+On previous line you used _ for a space, and started from capital
+letter. Please be consistent.
+
+> + *
+> + * csum_info field
+> + * CSUM_VALID_OR_REQ:
+> + * 1 = for UL, checksum computation is requested.
+> + * 1 = for DL, validated the checksum and has found it valid
+> + */
+> +
+> +#define MAPV5_HDRINFO_NXT_HDR_FLAG	BIT(0)
+> +#define MAPV5_HDRINFO_HDR_TYPE_FMASK	GENMASK(7, 1)
+> +#define MAPV5_CSUMINFO_VALID_FLAG	BIT(7)
+> +
+> +#define RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD 2
+>  #endif /* !(_LINUX_IF_RMNET_H_) */
