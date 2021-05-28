@@ -2,100 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E60B239455B
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 17:44:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 391BB394565
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 17:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236769AbhE1PqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 11:46:01 -0400
-Received: from bedivere.hansenpartnership.com ([96.44.175.130]:33708 "EHLO
-        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235056AbhE1Pp7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 11:45:59 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by bedivere.hansenpartnership.com (Postfix) with ESMTP id AE0D71280235;
-        Fri, 28 May 2021 08:44:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1622216664;
-        bh=r7DAWioy6q80kr0AnI5AjcAcd7Z86u6UuomPqBtqu9c=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=RJq81pLRXPiTe+M3Ono4U6rhZy/oPRas8tcF4mSaIXNbLtrdAF6L3JhTfm1rCsN5m
-         W7AuerCMcJXDqGIi+U6HEcrkT1aj5totMt9I9KINRy8fUbJYdVrvUVSsGmX1e3alOy
-         4imhbUpCEDpnOEcdmrTjpX4C2eJSj9oqcJ78E3yo=
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
-        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id naO3ZSCI_eNm; Fri, 28 May 2021 08:44:24 -0700 (PDT)
-Received: from jarvis.int.hansenpartnership.com (unknown [IPv6:2601:600:8280:66d1::527])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id E942E1280200;
-        Fri, 28 May 2021 08:44:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1622216664;
-        bh=r7DAWioy6q80kr0AnI5AjcAcd7Z86u6UuomPqBtqu9c=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=RJq81pLRXPiTe+M3Ono4U6rhZy/oPRas8tcF4mSaIXNbLtrdAF6L3JhTfm1rCsN5m
-         W7AuerCMcJXDqGIi+U6HEcrkT1aj5totMt9I9KINRy8fUbJYdVrvUVSsGmX1e3alOy
-         4imhbUpCEDpnOEcdmrTjpX4C2eJSj9oqcJ78E3yo=
-Message-ID: <15419fa8e5c0047327395387b28c09d775b35a55.camel@HansenPartnership.com>
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-From:   James Bottomley <James.Bottomley@HansenPartnership.com>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Matthew Wilcox <willy@infradead.org>, Greg KH <greg@kroah.com>,
-        Christoph Lameter <cl@gentwo.de>,
-        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
-Date:   Fri, 28 May 2021 08:44:23 -0700
-In-Reply-To: <YLEM2WE0ezdrfMPt@pendragon.ideasonboard.com>
-References: <YH2hs6EsPTpDAqXc@mit.edu>
-         <nycvar.YFH.7.76.2104281228350.18270@cbobk.fhfr.pm>
-         <YIx7R6tmcRRCl/az@mit.edu>
-         <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
-         <YK+esqGjKaPb+b/Q@kroah.com>
-         <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
-         <YLEIKk7IuWu6W4Sy@casper.infradead.org>
-         <a8bbc5dab99a4af6e89a9521a5eb4cb4747d2afe.camel@HansenPartnership.com>
-         <YLEM2WE0ezdrfMPt@pendragon.ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        id S235710AbhE1Ptc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 11:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236528AbhE1Pt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 11:49:29 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF37C061574
+        for <netdev@vger.kernel.org>; Fri, 28 May 2021 08:47:53 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id h24so2091334ejy.2
+        for <netdev@vger.kernel.org>; Fri, 28 May 2021 08:47:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cedQ3gdQGSeryyIBkgL2iEXtO51+6C0BVmoVaS+PlM8=;
+        b=cV3BLzZEFVqzScfaH+W2YK1IING9yBQLn3zs/n4gZ/1QFQkDsq4/sT+Oz99jSji5OB
+         zMnYo8T2L2JzSDnjz3XCqMFWyADusnMnQUIYhGMPTz7q4lfwQiaODHEtfNCa3vdf1sUN
+         qiVX84dZNOsQWGTudOMSBi3ad6uuqnawwLDXa8x2HKDGZ5kHWAcQUYPTvufJzA8W0211
+         2H79PEPxxkqVJMjWi2CozKYpkBJGsoo491sHWLofkgqkGyNujdcBqMelLZi4dmYHCj8b
+         pOKX1NVawxYnhgJQJAJRofEZRnqYwlQwS4zBKPV3A/knri21lHjUHOk4+i++RwAMO6gZ
+         ra4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cedQ3gdQGSeryyIBkgL2iEXtO51+6C0BVmoVaS+PlM8=;
+        b=Yi1msfFdoHF6sjjkwmZKlBKxDQlBC5VE0iEBZvV9h6Yp3fOam6vBERho/gGdA3jhEa
+         DVH1LKMQgtW9aP2hHtjF9hV0PdoU4fZ4YWllU20JrynfBEqtz2YkJ6UlzflOXB/7QE0l
+         2eqAJB6ALxRaaLcCS8UITdS5ALK8kp0YntrI66QMXFXst8kxSDEivsBwyxe6eQ5y1mAt
+         lEEVsRB/Pj5qIDNSMDPRske55jng2IOir9kU2Fl5KyDibKfffk28eEJSuFr55Q4/LuT5
+         9QFeRqYC/ZfQhCeQLl8rfjddAs3qSkGHPAa+VlixYsgCizQXMAkOck4eQLFfHAZ1JV96
+         DFdA==
+X-Gm-Message-State: AOAM533NS8uXJQVXw4hdULMk981L469N17xpBWhtYuk8rrBNL5V+EIDF
+        K+HEbTgCMWOmHECh13LD+ufY7o7a6AVJckrsomHF
+X-Google-Smtp-Source: ABdhPJy5zGrumOsF35e9/C8VOmP4TnS6oe5zK2otc0QgHld1PJrO+rbOMzZA/egUo9LAH2Kzd15DYfSROZYt4coiLJ8=
+X-Received: by 2002:a17:906:840c:: with SMTP id n12mr9552143ejx.431.1622216871579;
+ Fri, 28 May 2021 08:47:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20210517092006.803332-1-omosnace@redhat.com> <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
+ <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net>
+In-Reply-To: <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 28 May 2021 11:47:40 -0400
+Message-ID: <CAHC9VhR-kYmMA8gsqkiL5=poN9FoL-uCyx1YOLCoG2hRiUBYug@mail.gmail.com>
+Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
+ permission checks
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
+        linux-security-module@vger.kernel.org,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Casey Schaufler <casey@schaufler-ca.com>, jolsa@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-05-28 at 18:31 +0300, Laurent Pinchart wrote:
-> On Fri, May 28, 2021 at 08:27:44AM -0700, James Bottomley wrote:
-[...]
-> > Well, I'm not going to get into a debate over the effectiveness of
-> > the current vaccines.  I will say that all conferences have to now
-> > recognize that a sizeable proportion of former attendees will have
-> > fears about travelling and therefore remote components are going to
-> > be a fixture of conferences going forward.
-> > 
-> > However, while we should accommodate them, we can't let these fears
-> > override people willing to take the risk and meet in person.
-> 
-> The interesting question is how we'll make sure that those people
-> will not be de facto excluded from the community, or end up as
-> second-class citizens.
+On Fri, May 28, 2021 at 3:10 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> On 5/28/21 3:37 AM, Paul Moore wrote:
+> > On Mon, May 17, 2021 at 5:22 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
+> >>
+> >> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
+> >> lockdown") added an implementation of the locked_down LSM hook to
+> >> SELinux, with the aim to restrict which domains are allowed to perform
+> >> operations that would breach lockdown.
+> >>
+> >> However, in several places the security_locked_down() hook is called in
+> >> situations where the current task isn't doing any action that would
+> >> directly breach lockdown, leading to SELinux checks that are basically
+> >> bogus.
+> >>
+> >> Since in most of these situations converting the callers such that
+> >> security_locked_down() is called in a context where the current task
+> >> would be meaningful for SELinux is impossible or very non-trivial (and
+> >> could lead to TOCTOU issues for the classic Lockdown LSM
+> >> implementation), fix this by modifying the hook to accept a struct cred
+> >> pointer as argument, where NULL will be interpreted as a request for a
+> >> "global", task-independent lockdown decision only. Then modify SELinux
+> >> to ignore calls with cred == NULL.
+> >
+> > I'm not overly excited about skipping the access check when cred is
+> > NULL.  Based on the description and the little bit that I've dug into
+> > thus far it looks like using SECINITSID_KERNEL as the subject would be
+> > much more appropriate.  *Something* (the kernel in most of the
+> > relevant cases it looks like) is requesting that a potentially
+> > sensitive disclosure be made, and ignoring it seems like the wrong
+> > thing to do.  Leaving the access control intact also provides a nice
+> > avenue to audit these requests should users want to do that.
+>
+> I think the rationale/workaround for ignoring calls with cred == NULL (or the previous
+> patch with the unimplemented hook) from Ondrej was two-fold, at least speaking for his
+> seen tracing cases:
+>
+>    i) The audit events that are triggered due to calls to security_locked_down()
+>       can OOM kill a machine, see below details [0].
+>
+>   ii) It seems to be causing a deadlock via slow_avc_audit() -> audit_log_end()
+>       when presumingly trying to wake up kauditd [1].
+>
+> How would your suggestion above solve both i) and ii)?
 
-Before the pandemic, there was a small contingent who refused to fly
-for various reasons.  We did sort of accommodate that by rotating the
-conference to Europe where more people could come in by train (like
-they did in Lisbon) but we didn't govern the whole conference by trying
-to make aerophobes first class citizens.
+First off, a bit of general commentary - I'm not sure if Ondrej was
+aware of this, but info like that is good to have in the commit
+description.  Perhaps it was in the linked RHBZ but I try not to look
+at those when reviewing patches; the commit descriptions must be
+self-sufficient since we can't rely on the accessibility or the
+lifetime of external references.  It's fine if people want to include
+external links in their commits, I would actually even encourage it in
+some cases, but the links shouldn't replace a proper description of
+the problem and why the proposed solution is The Best Solution.
 
-The bottom line is that as long as enough people are willing to meet in
-person and in-person delivers more value that remote (even though we'll
-try to make remote as valuable as possible) we should do it.   We
-should not handicap the desires of the one group by the fears of the
-other because that's a false equality ... it's reducing everyone to the
-level of the lowest common denominator rather than trying to elevate
-people.
+With that out of the way, it sounds like your issue isn't so much the
+access check, but rather the frequency of the access denials and the
+resulting audit records in your particular use case.  My initial
+reaction is that you might want to understand why you are getting so
+many SELinux access denials, your loaded security policy clearly does
+not match with your intended use :)  Beyond that, if you want to
+basically leave things as-is but quiet the high frequency audit
+records that result from these SELinux denials you might want to look
+into the SELinux "dontaudit" policy rule, it was created for things
+like this.  Some info can be found in The SELinux Notebook, relevant
+link below:
 
-James
+* https://github.com/SELinuxProject/selinux-notebook/blob/main/src/avc_rules.md#dontaudit
 
+The deadlock issue that was previously reported remains an open case
+as far as I'm concerned; I'm presently occupied trying to sort out a
+rather serious issue with respect to io_uring and LSM/audit (plus
+general stuff at $DAYJOB) so I haven't had time to investigate this
+any further.  Of course anyone else is welcome to dive into it (I
+always want to encourage this, especially from "performance people"
+who just want to shut it all off), however if the answer is basically
+"disable LSM and/or audit checks" you have to know that it is going to
+result in a high degree of skepticism from me, so heavy documentation
+on why it is The Best Solution would be a very good thing :)  Beyond
+that, I think the suggestions above of "why do you have so many policy
+denials?" and "have you looked into dontaudit?" are solid places to
+look for a solution in your particular case.
 
+> >> Since most callers will just want to pass current_cred() as the cred
+> >> parameter, rename the hook to security_cred_locked_down() and provide
+> >> the original security_locked_down() function as a simple wrapper around
+> >> the new hook.
+>
+> [...]
+> >
+> >> 3. kernel/trace/bpf_trace.c:bpf_probe_read_kernel{,_str}_common()
+> >>       Called when a BPF program calls a helper that could leak kernel
+> >>       memory. The task context is not relevant here, since the program
+> >>       may very well be run in the context of a different task than the
+> >>       consumer of the data.
+> >>       See: https://bugzilla.redhat.com/show_bug.cgi?id=1955585
+> >
+> > The access control check isn't so much who is consuming the data, but
+> > who is requesting a potential violation of a "lockdown", yes?  For
+> > example, the SELinux policy rule for the current lockdown check looks
+> > something like this:
+> >
+> >    allow <who> <who> : lockdown { <reason> };
+> >
+> > It seems to me that the task context is relevant here and performing
+> > the access control check based on the task's domain is correct.
+>
+> This doesn't make much sense to me, it's /not/ the task 'requesting a potential
+> violation of a "lockdown"', but rather the running tracing program which is e.g.
+> inspecting kernel data structures around the triggered event. If I understood
+> you correctly, having an 'allow' check on, say, httpd would be rather odd since
+> things like perf/bcc/bpftrace/systemtap/etc is installing the tracing probe instead.
+>
+> Meaning, if we would /not/ trace such events (like in the prior mentioned syscall
+> example), then there is also no call to the security_locked_down() from that same/
+> unmodified application.
+
+My turn to say that you don't make much sense to me :)
+
+Let's reset.
+
+What task_struct is running the BPF tracing program which is calling
+into security_locked_down()?  My current feeling is that it is this
+context/domain/cred that should be used for the access control check;
+in the cases where it is a kernel thread, I think passing NULL is
+reasonable, but I think the proper thing for SELinux is to interpret
+NULL as kernel_t.
+
+-- 
+paul moore
+www.paul-moore.com
