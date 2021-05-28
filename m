@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D115394458
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 16:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AF6A39445A
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 16:43:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236119AbhE1Oos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 10:44:48 -0400
+        id S235763AbhE1Ooy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 10:44:54 -0400
 Received: from mail-dm6nam10on2097.outbound.protection.outlook.com ([40.107.93.97]:62452
         "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235271AbhE1Ook (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 May 2021 10:44:40 -0400
+        id S235340AbhE1Ool (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 May 2021 10:44:41 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LBAZtYOX9ekrVFPoZ1+ggwjk/bWUo/yBXK6OhI1pm+fLekFHvN64KrAV6wS2jGFlPElvLqQ6/uXLxLj5y4EI4fmGgbOXRMAESARbKOub2Yirop0rZRq/WGFXwwwxytlse+XjNd80eJXAVRnSddelKXBUqDq2zyBThfZXTTCjY6qJUSebecix4cnaHmix67ZTD9EJ6JR4JVyuEpnn7AExbFVOB7sJKCwU52tj/Z+abqX8TOjyjN1ympKE6boinD/QhwhKQ1YDZviwUHpPkEquCSxWyesVUwWCPhc3jgpJBws0O0Zg24Jds1nZZKP+0tdTfNOwO+cVt0DYJ+0fTm6dmg==
+ b=kZxXgJsus9DOV9+sVBtp+1EFGGZhWQor33i62zxFhmqvIaZcVsK33wAlwudGBQdVhRClWpO4t7iJDPcKym7Ci2rTngAAF5Ewra3Ih4rsi2kN2O5WTeLT84U0qyPmo/ZDl3IZ/2dV/VQmL2WJ9JbeSZa/APkJCzyiPp1Slr+cWw9/hphtazII/5pYijRSXhCy0eqGJygWCgZ7QWgg5y1UmAeBruFdqgr/PYmkLV/UW+iXB4MNjHtAgp9FvzDRw5fHLtFNeIWzXGzKbCCG0KC2HoJD0rTh89sQ4ZM31LDUH5lFIo/VL+7+X0EMvjKuOVgBVQLoph1CFLRQi1f5VXXiHQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2Cd/T3tgvy/Mkz4LJjfaKbDo3ToX4TqVnxVAQ3oq2AE=;
- b=G7U+tj6IA4BqY5/y6+EKXKY8jhrTTgFTVa96llzdnj+8n1vBFwe137Wrw6OD/kTuWGJCstoWsXwJ1JX2e6wEEGH95hQgmYkmGi/3L99QMBgASKAfrMdoIMaV0iC12aS6E3nP7A9GXf6K1tpy5EKVi5F3ovOUVDTKpNUovMPnqPYkZ6NAqNToaXmtI49xE5RbpBFz+TUqTQs2qrXR9+scc6M/EJywSXaWNj20VySbb8NoCEg5ylKoHesVVxZCl8ooBm80OBbcS839TFCPxrnizd60PYksTIhlPO4qs6B0DB2q5dQVl4/195un573rd7jPfZRiu8gfGUZu/7mupe6THw==
+ bh=fUdTq9FBXKwTS7l3d4sPKuYg+RYOV36KsxCj/4g/hWQ=;
+ b=mlKgTjkfoXSI45pFWZQgLt7bH3+1mrHE/cscXlqv4E7teZSB7xm3S6Cn32rQk097wYR3pYzircCcTEG7hDjqtj2+6vUN0zBKIFyxZSujiqWjajybUNVCWZMqzTcM4MojIoircn25etf4qQVyI52QWZh8lVOeziDTOwz6WtHBNseSu8KekTJ6pMLd51+jS9GAT9Ma0eeX3TF7V211rzW6kA8AG7HDsM5U7UtUCEOlRzwoe4eqxBS8u0+jz1lALQAGGZNnc0nzFiy6SybI9aZyLQexrJDxaI1TjECgHlvg0Fi1jDy4l/kdRI9I38RF2JzaNoNrANC/P2XPcOJ8tB7AyA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2Cd/T3tgvy/Mkz4LJjfaKbDo3ToX4TqVnxVAQ3oq2AE=;
- b=JZYMQGogHBklmsYuBzGAY1ASPNFoE2YR4TJKzm7++ZiC+SYExFUI76S8EVEYlBV0Uj/hJ+r+grfAMehFtkirhcXGhY8IT5PFpnIv3MUvMxvlN7aVJiZIZXwxoNqyeFdt8bppTanOcHYeCtHzcpSDLCaRqJVN0d5AgOuurvo6goU=
+ bh=fUdTq9FBXKwTS7l3d4sPKuYg+RYOV36KsxCj/4g/hWQ=;
+ b=kzt7cK2q+MIAjIEUHt+6v48BF2Pucrb1yjfq/E8yaIRoJOdS4m8jGfYKh4vyej4+UOjw5VB5D9CPKC0UYMal5Mxze5Brw77PMWQ7wCNOusYSZFzYF02TIidMMEjq421dcOc3qfnxp/pZK3YHTKeh9sqyKFaGBzJ8DN3XKPMNux4=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH0PR13MB5033.namprd13.prod.outlook.com (2603:10b6:510:90::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.11; Fri, 28 May
- 2021 14:43:04 +0000
+ 2021 14:43:05 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a%9]) with mapi id 15.20.4173.020; Fri, 28 May 2021
- 14:43:04 +0000
+ 14:43:05 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -45,9 +45,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Louis Peens <louis.peens@corigine.com>,
         Yinjun Zhang <yinjun.zhang@corigine.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next 2/8] nfp: flower-ct: add pre and post ct checks
-Date:   Fri, 28 May 2021 16:42:40 +0200
-Message-Id: <20210528144246.11669-3-simon.horman@corigine.com>
+Subject: [PATCH net-next 3/8] nfp: flower-ct: add ct zone table
+Date:   Fri, 28 May 2021 16:42:41 +0200
+Message-Id: <20210528144246.11669-4-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210528144246.11669-1-simon.horman@corigine.com>
 References: <20210528144246.11669-1-simon.horman@corigine.com>
@@ -59,51 +59,51 @@ X-ClientProxiedBy: AM0PR01CA0164.eurprd01.prod.exchangelabs.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from madeliefje.horms.nl (2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a) by AM0PR01CA0164.eurprd01.prod.exchangelabs.com (2603:10a6:208:aa::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Fri, 28 May 2021 14:43:02 +0000
+Received: from madeliefje.horms.nl (2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a) by AM0PR01CA0164.eurprd01.prod.exchangelabs.com (2603:10a6:208:aa::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Fri, 28 May 2021 14:43:04 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 54eb6f0a-f0af-464a-de87-08d921e6e634
+X-MS-Office365-Filtering-Correlation-Id: 712bdb4e-a706-452e-3f6b-08d921e6e734
 X-MS-TrafficTypeDiagnostic: PH0PR13MB5033:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB50337AEF9E96397E92A78280E8229@PH0PR13MB5033.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <PH0PR13MB5033BA69FBEDD011A8A88E5DE8229@PH0PR13MB5033.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: byq5SHiIuoWRKVDk3IEo1PDn0+frFBL0xH78B8jp2JkG4dYBHwmCfOI01pKp4fk51/B8kMfVdbf/bNs6JvI4Zrm1HUVdppnyxAkaFSmWgVOxeOwwbbDEBMcszQWrEEtRr1DT7gEmNqD9fk2EU6z2L5Pp6DE0d7MJP+jEjCvv5BlxEAlfYiuSHzytBRIV+tqlXF34YMrehIOCzVdaZBDHbWwG+Apl3KvLSchqt+3GgEDa3uaADlMGWB8RpfwrB71OnaVLdqzo1CLQrprSNfcFN8g0gpxRJYWrRBoBSC3BxF+MGqDfYwOq2whrm4Knrmpej3B5H7+Io8PVLwY7TPgZ0lhJTXQCJuLjOWHKoN2DlBd9gdnpUPjLU/1ZmphM3agQdSf56nJrsF0oJKj4ccKMtI53DpVnhqAjDImbeREJBOBZYIU7A7+h+0GqsGEtjUSo/4MYPWCfNn4+MKGQ7An0ptIQyZ0zcKP1ZtXwr1xLqXbQOfCSaSeF2zKraZb+s62yK5IuvG3Sc9cEIgFy2aQYRiSBm2noJ9WqBifjHIfVz2rEvRk2LWNMKDHQCJGNpyPvMh+4nDwdU/+1uTdFrJQI6jfvyAgDf8x41MzuvrTdo9A=
+X-Microsoft-Antispam-Message-Info: JiBcG8g1zAqIfzvFpBn+lDBhMDF/B/iH7bI6lgWGjC9NW1lfgpvyn6vm53avEIUzwHv/fsR0TGIor3havA+PrFr91tJQecu+PSriL5La0ULILAvYUqY7aBt7Ac2Ogv3FLRo8gI7AbeUlZqmMDaIItoEn+wuOf/iQnJipAVQwFCmBGpAqSN9TztIyYA/gqI5qSuQWyFr4HbqlkNPYIhwvuPLqmWp1imlnWje6wtVX8roIje5EZ3XszlcC4BWQF69H7RzfQESGT3FkLIrClWepha6isz6uU502SuspUHaD2puPbjZe3YwDPFsyA7vkaQFIENtPt1OqD+/RQefThSqYUcGTaHscRvjPqY4ak5K281ue15B2u2tjROLc6y3yKclSCzW8ieW4nslQejDaMb3HWbZtth5/iQCSmlJ8wCxROE+H6cXyQX2UhKcdLz0mzzHOwteJGTmlmqV1nliY3UdITNz/d9Kdu42WUF9XQCtdoCh2OX4JtAlD9B9dZcmknejG1kDOKTdXszVPP6uURY+hocmP5deqZ9ppzi0NM9ykVAW3vTSGJaUblUsQS2S8Og9m8xbc/GZyeXhImr9s6XwJ7FbURYtCzL1ACBkHVdem40c=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(396003)(366004)(376002)(136003)(39830400003)(16526019)(44832011)(186003)(5660300002)(6666004)(8936002)(6506007)(86362001)(36756003)(4326008)(107886003)(6512007)(8676002)(66476007)(83380400001)(66556008)(2616005)(316002)(54906003)(110136005)(52116002)(478600001)(6486002)(2906002)(66946007)(38100700002)(1076003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?AK0hFTODbX30gxtszMkaNC7HYsVoJsxr+3kcrB7+XvyAT/ZzLqPa7DbsmToO?=
- =?us-ascii?Q?d7iJXisdWdO4XEc5ZikHyJjOiWtWSoU69CYhPshKZsx4hpf2bup94AWxuBK6?=
- =?us-ascii?Q?OWdlTVQBvLx6hk/xNZEexqxfwDcieAcCgU0b0JPU8ssa3Q+NkovBSbXjsGFX?=
- =?us-ascii?Q?OfjzJvRmTIYGnlwZoy6Neo9lVesOG+Ay4l6kgI1l56zewHxIGaZ6jXm9XBCl?=
- =?us-ascii?Q?Rv6eXiZA7RYokOP9mAgpHNMFjwJGMr/0m2dG+uZ7Slypft5+bK4/4iRBV3KX?=
- =?us-ascii?Q?s1d4y2dlu1bP1W3P027wpOaufQXI9YMRfteIAIXaMYMazuTLuYJY0sR+a1g0?=
- =?us-ascii?Q?J0TxUXmtQRoJXyDtIBAJvByq++z2NSYNJV1QHnNGMV65GZLr5R5m7UlknAUt?=
- =?us-ascii?Q?3n9SycRBU7+2Z4IdAgT8EOZcpffqjVDePhzE8QsAHkyAVnxApSec9226qpzX?=
- =?us-ascii?Q?xPiXookDXvyZAtr3JpNMnhH5E5DvNYWll+h4sygT9jkYjgOmsTdTxne1q2uD?=
- =?us-ascii?Q?3NvDRdvBFjTSUCuBVDBec+0Ena8FcsKdoxskNUji1OG3CyJd/ZgTFDKQsaof?=
- =?us-ascii?Q?6p4LUUjBCo0zEd4b3LclEb/y6VY2pB72vneVfCGiSc0at+4upAEI3SCqu1vH?=
- =?us-ascii?Q?g+Er0KzgesSSYv7cMqB6gg2ks3t1MDuTGL2Knc0leGkqbXyHIlzlv4ZrUfr7?=
- =?us-ascii?Q?8Cy0d2Hm4Yw3tHSap4TLS21TD2+Q1VWsQ4/xv4QdnJJOIrnxvNi0VGvgpbFP?=
- =?us-ascii?Q?BypSGILVlSWzgyF7g8GVMhZcPopmQFhESphGvm4z4kCaJA4GFXV+pu1NyE2U?=
- =?us-ascii?Q?MzjiuS9es1jMQRYDnTyaIZd8sOjwGvY5AjDGlRJWRcj8aEBCvBXdQQqEl5Eb?=
- =?us-ascii?Q?BKxpmY2MCWPjDBQgARTnidPi+E3CewDyc6X3OpNB2jnar7l+xrlFui1VyDBQ?=
- =?us-ascii?Q?Nk5aT/v7kq54hsuBy5Un5IX2gruIY9BnMs+GlBmAThGjRN2Jo/AoN+9UN+2r?=
- =?us-ascii?Q?M/Y9b4SYxn6mqDZnD7YHPxeTnRtmf+Ye2yjIsYVpgHztiiuDRUdHbgYEpDLb?=
- =?us-ascii?Q?qLol8BWI7RrtwaZOIFLciDnM16HiVAp4aVvz5J8cyu3yiMH1S6h8aIiSnyYe?=
- =?us-ascii?Q?d/RcHCMmPkEjB7kQV+FSo1ze5nbYZnJcXQNOSFyd8Y4MTCt7EWb/SkZIQiyH?=
- =?us-ascii?Q?naN/w3FjgnbfujgKAMwlDusKr0MUNz5DN/NnGQa64ElstrpjwI6WEAA6Sd3n?=
- =?us-ascii?Q?IKGdHMQnYRtsYXIKse8uGLnPEGdgmIY5gexj6+sSIi+9f/E+nThVFen8JV2s?=
- =?us-ascii?Q?StdUjSuU6hcKPLl+jHTQR3vBWzd6S2cA1TQ94ALtNoHRqz7Pff0Fdtq2UweG?=
- =?us-ascii?Q?+H3m7Zf10T/s96X4abfhiRDavwGL?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?H6edoq04xtPkMbiZPHABINvsapX43q411/xE7SRZjBdFBqk3k0hp2hmBkp+I?=
+ =?us-ascii?Q?3SZjIzic3SQotSEGb29OSWeu1o5/zrrttw+wmfnMBK/DBO7AmtOB2m5xIMAY?=
+ =?us-ascii?Q?O56h4/AVlO/Wq1DVmIb5D87kpxQurdS+t79BcWb/o8oAdS5qF+6+jBuPsnka?=
+ =?us-ascii?Q?GUlFxPaZaBdz87UKRS3hHjKZzkCe2l4UeLD6aB0xcLezJV3hDaOYniKWqh2D?=
+ =?us-ascii?Q?oE0C+EQWi+Ap5XFVEET6Nk6e4GZ47o86geCzbfBnbMB7ObOS7NYWKLs4rpCg?=
+ =?us-ascii?Q?K8fMRvetTk3eapD3QLDQIECS/wHYX4Yp5UVkT4nLQ34FuyIURy3MA5d5JrAq?=
+ =?us-ascii?Q?gid47EmstiLKPYDBdkoHUhmERUT92PEA+EG6QKCtt349HRyxT4l8NsGadBRy?=
+ =?us-ascii?Q?tbxkVzR/uKInYmEW7atgqwYNKKyBT2KDAzTdQbtS9Z6usUoA+6neF0yzxaNu?=
+ =?us-ascii?Q?5djNrEON3sbxA/gW9A5fk62CRiELB2tCQoEXmKr5h7bb8579/dssJOL9Rmnc?=
+ =?us-ascii?Q?+xBfVF28n2Eq6pxyMbOELoXCVSS2rxY1vPOv0mjuttZWs3JZps2i73yjl++i?=
+ =?us-ascii?Q?RGeedjJAlfhKVVkAIx2AjWytdyZAEGc1l/YBxDEgif8z92CP+01jIG84NFBG?=
+ =?us-ascii?Q?/Mex2qwD85PUczdnDNHjC3PJ2v2P8Z0yrSsd0B3XwaXgeEL2HXVavV8utq4x?=
+ =?us-ascii?Q?nGNrZQWyIiLQqlU0EEVzqXa28GS4EDuv//RtGCjzv/vypHPjD2frLDxLk+Vh?=
+ =?us-ascii?Q?QYeOHUOecCJHOzUPho5i3Eus0JDVuWPA4xjXzGbXD9tlEiGDkD+SBaOImSTJ?=
+ =?us-ascii?Q?O4kEFamuwMZWkDH/Rf5wrmSWU+3/vvHS6Nr19AgtVCHrCbZn16XjraJ9w/KG?=
+ =?us-ascii?Q?ry+lfB0XOb6BsOFYJHjHzfjtfexVW7sh7crJwHbgH0kPqUE4LTdmu53+KJuA?=
+ =?us-ascii?Q?CAe58tKkixmONj4VSNqjej8V05gRWDPSkeq6m6lXmzko9CQoz8IMcFszVc6t?=
+ =?us-ascii?Q?5j3oMGPhWj49Nhc8GV+SvDkzvkb+rO/PolAq8XSU8Owq27e9nIizrPBmbzD7?=
+ =?us-ascii?Q?VT/at8nybf/d5g1RIyvIYCrZyUxr3rLr6XzN9R7iCFIs2aBpJa/ua83t++bJ?=
+ =?us-ascii?Q?FfU2ttGT7k3HS/SqeKnrEf5J5zMhHw5UV7PqP4HT+I6On1OY9p3OZqQ242tG?=
+ =?us-ascii?Q?bwDizKPs4pMIDF0jw+4yBR8J3nPXspcEMzAEJD8Y/BovFrhMX8fI/h1iKKxO?=
+ =?us-ascii?Q?mQ2m4k66IzHUodBDx7V71yd1qnEEO3jg1N2/bun7nhbRllTz5NWCl3pfgJW2?=
+ =?us-ascii?Q?jONf/c8lSX/vYACdhj1WsIZhUCKGwjx3XCGeWgDcmFz8pZSTOYdzP+OXgGsh?=
+ =?us-ascii?Q?U447A8uGOV49l+6eiSf9jyHU55G1?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54eb6f0a-f0af-464a-de87-08d921e6e634
+X-MS-Exchange-CrossTenant-Network-Message-Id: 712bdb4e-a706-452e-3f6b-08d921e6e734
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2021 14:43:03.9249
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2021 14:43:05.6115
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BnUcwLMtSSVfy6/a9bLmjPrXo60N/MPOMqBcMMFy87T/8pB1GJ1s+lEFrpyvfoqq7k2i0KZLrCQsN4BOHfhZ6kVwdKXBdUY6LnHG61stVcU=
+X-MS-Exchange-CrossTenant-UserPrincipalName: hRbZDq6ijA4d+FA4tlrkofA78BZLPlo7ypzvNSczqOjs/Nj6H9fyMvWTXMKSozfm20iP1p/2+lu1x3MS5Hwq1DArug5IfXVO0Jy3T3Eu0SM=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5033
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -111,165 +111,142 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Louis Peens <louis.peens@corigine.com>
 
-Add checks to see if a flow is a conntrack flow we can potentially
-handle. Just stub out the handling the different conntrack flows.
+Add initial zone table to nfp_flower_priv. This table will be used
+to store all the information required to offload conntrack.
 
 Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- drivers/net/ethernet/netronome/nfp/Makefile   |  3 +-
- .../ethernet/netronome/nfp/flower/conntrack.c | 48 +++++++++++++++++++
- .../ethernet/netronome/nfp/flower/conntrack.h | 45 +++++++++++++++++
- .../ethernet/netronome/nfp/flower/offload.c   |  7 +++
- 4 files changed, 102 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/netronome/nfp/flower/conntrack.c
- create mode 100644 drivers/net/ethernet/netronome/nfp/flower/conntrack.h
+ .../ethernet/netronome/nfp/flower/conntrack.h | 17 ++++++++++++++
+ .../net/ethernet/netronome/nfp/flower/main.h  |  2 ++
+ .../ethernet/netronome/nfp/flower/metadata.c  | 23 ++++++++++++++++++-
+ 3 files changed, 41 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/Makefile b/drivers/net/ethernet/netronome/nfp/Makefile
-index d31772ae511d..9cff3d48acbc 100644
---- a/drivers/net/ethernet/netronome/nfp/Makefile
-+++ b/drivers/net/ethernet/netronome/nfp/Makefile
-@@ -51,7 +51,8 @@ nfp-objs += \
- 	    flower/metadata.o \
- 	    flower/offload.o \
- 	    flower/tunnel_conf.o \
--	    flower/qos_conf.o
-+	    flower/qos_conf.o \
-+	    flower/conntrack.o
- endif
- 
- ifeq ($(CONFIG_BPF_SYSCALL),y)
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-new file mode 100644
-index 000000000000..aeea37a0135e
---- /dev/null
-+++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-@@ -0,0 +1,48 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+/* Copyright (C) 2021 Corigine, Inc. */
-+
-+#include "conntrack.h"
-+
-+bool is_pre_ct_flow(struct flow_cls_offload *flow)
-+{
-+	struct flow_action_entry *act;
-+	int i;
-+
-+	flow_action_for_each(i, act, &flow->rule->action) {
-+		if (act->id == FLOW_ACTION_CT && !act->ct.action)
-+			return true;
-+	}
-+	return false;
-+}
-+
-+bool is_post_ct_flow(struct flow_cls_offload *flow)
-+{
-+	struct flow_rule *rule = flow_cls_offload_flow_rule(flow);
-+	struct flow_dissector *dissector = rule->match.dissector;
-+	struct flow_match_ct ct;
-+
-+	if (dissector->used_keys & BIT(FLOW_DISSECTOR_KEY_CT)) {
-+		flow_rule_match_ct(rule, &ct);
-+		if (ct.key->ct_state & TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED)
-+			return true;
-+	}
-+	return false;
-+}
-+
-+int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
-+			    struct net_device *netdev,
-+			    struct flow_cls_offload *flow,
-+			    struct netlink_ext_ack *extack)
-+{
-+	NL_SET_ERR_MSG_MOD(extack, "unsupported offload: Conntrack action not supported");
-+	return -EOPNOTSUPP;
-+}
-+
-+int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
-+			     struct net_device *netdev,
-+			     struct flow_cls_offload *flow,
-+			     struct netlink_ext_ack *extack)
-+{
-+	NL_SET_ERR_MSG_MOD(extack, "unsupported offload: Conntrack match not supported");
-+	return -EOPNOTSUPP;
-+}
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.h b/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
-new file mode 100644
-index 000000000000..e8d034bb9807
---- /dev/null
+index e8d034bb9807..5f1f54ccc5a1 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
 +++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
-@@ -0,0 +1,45 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-+/* Copyright (C) 2021 Corigine, Inc. */
-+
-+#ifndef __NFP_FLOWER_CONNTRACK_H__
-+#define __NFP_FLOWER_CONNTRACK_H__ 1
-+
-+#include "main.h"
-+
-+bool is_pre_ct_flow(struct flow_cls_offload *flow);
-+bool is_post_ct_flow(struct flow_cls_offload *flow);
+@@ -6,6 +6,23 @@
+ 
+ #include "main.h"
+ 
++extern const struct rhashtable_params nfp_zone_table_params;
 +
 +/**
-+ * nfp_fl_ct_handle_pre_ct() - Handles -trk conntrack rules
-+ * @priv:	Pointer to app priv
-+ * @netdev:	netdev structure.
-+ * @flow:	TC flower classifier offload structure.
-+ * @extack:	Extack pointer for errors
-+ *
-+ * Adds a new entry to the relevant zone table and tries to
-+ * merge with other +trk+est entries and offload if possible.
-+ *
-+ * Return: negative value on error, 0 if configured successfully.
++ * struct nfp_fl_ct_zone_entry - Zone entry containing conntrack flow information
++ * @zone:	The zone number, used as lookup key in hashtable
++ * @hash_node:	Used by the hashtable
++ * @priv:	Pointer to nfp_flower_priv data
++ * @nft:	Pointer to nf_flowtable for this zone
 + */
-+int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
-+			    struct net_device *netdev,
-+			    struct flow_cls_offload *flow,
-+			    struct netlink_ext_ack *extack);
-+/**
-+ * nfp_fl_ct_handle_post_ct() - Handles +trk+est conntrack rules
-+ * @priv:	Pointer to app priv
-+ * @netdev:	netdev structure.
-+ * @flow:	TC flower classifier offload structure.
-+ * @extack:	Extack pointer for errors
-+ *
-+ * Adds a new entry to the relevant zone table and tries to
-+ * merge with other -trk entries and offload if possible.
-+ *
-+ * Return: negative value on error, 0 if configured successfully.
-+ */
-+int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
-+			     struct net_device *netdev,
-+			     struct flow_cls_offload *flow,
-+			     struct netlink_ext_ack *extack);
++struct nfp_fl_ct_zone_entry {
++	u16 zone;
++	struct rhash_head hash_node;
 +
-+#endif
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 16ef960a150d..7e4ad5d58859 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -7,6 +7,7 @@
++	struct nfp_flower_priv *priv;
++	struct nf_flowtable *nft;
++};
++
+ bool is_pre_ct_flow(struct flow_cls_offload *flow);
+ bool is_post_ct_flow(struct flow_cls_offload *flow);
+ 
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
+index 31377923ea3d..b9de3d70f958 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
+@@ -193,6 +193,7 @@ struct nfp_fl_internal_ports {
+  * @qos_stats_lock:	Lock on qos stats updates
+  * @pre_tun_rule_cnt:	Number of pre-tunnel rules offloaded
+  * @merge_table:	Hash table to store merged flows
++ * @ct_zone_table	Hash table used to store the different zones
+  */
+ struct nfp_flower_priv {
+ 	struct nfp_app *app;
+@@ -227,6 +228,7 @@ struct nfp_flower_priv {
+ 	spinlock_t qos_stats_lock; /* Protect the qos stats */
+ 	int pre_tun_rule_cnt;
+ 	struct rhashtable merge_table;
++	struct rhashtable ct_zone_table;
+ };
+ 
+ /**
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/metadata.c b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
+index 327bb56b3ef5..74c0dd508f55 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/metadata.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
+@@ -9,6 +9,7 @@
+ #include <net/pkt_cls.h>
  
  #include "cmsg.h"
- #include "main.h"
 +#include "conntrack.h"
- #include "../nfpcore/nfp_cpp.h"
- #include "../nfpcore/nfp_nsp.h"
+ #include "main.h"
  #include "../nfp_app.h"
-@@ -1316,6 +1317,12 @@ nfp_flower_add_offload(struct nfp_app *app, struct net_device *netdev,
- 	if (nfp_netdev_is_nfp_repr(netdev))
- 		port = nfp_port_from_netdev(netdev);
  
-+	if (is_pre_ct_flow(flow))
-+		return nfp_fl_ct_handle_pre_ct(priv, netdev, flow, extack);
-+
-+	if (is_post_ct_flow(flow))
-+		return nfp_fl_ct_handle_post_ct(priv, netdev, flow, extack);
-+
- 	if (!offload_pre_check(flow))
- 		return -EOPNOTSUPP;
+@@ -496,6 +497,13 @@ const struct rhashtable_params merge_table_params = {
+ 	.key_len	= sizeof(u64),
+ };
  
++const struct rhashtable_params nfp_zone_table_params = {
++	.head_offset		= offsetof(struct nfp_fl_ct_zone_entry, hash_node),
++	.key_len		= sizeof(u16),
++	.key_offset		= offsetof(struct nfp_fl_ct_zone_entry, zone),
++	.automatic_shrinking	= false,
++};
++
+ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 			     unsigned int host_num_mems)
+ {
+@@ -516,6 +524,10 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 	if (err)
+ 		goto err_free_stats_ctx_table;
+ 
++	err = rhashtable_init(&priv->ct_zone_table, &nfp_zone_table_params);
++	if (err)
++		goto err_free_merge_table;
++
+ 	get_random_bytes(&priv->mask_id_seed, sizeof(priv->mask_id_seed));
+ 
+ 	/* Init ring buffer and unallocated mask_ids. */
+@@ -523,7 +535,7 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 		kmalloc_array(NFP_FLOWER_MASK_ENTRY_RS,
+ 			      NFP_FLOWER_MASK_ELEMENT_RS, GFP_KERNEL);
+ 	if (!priv->mask_ids.mask_id_free_list.buf)
+-		goto err_free_merge_table;
++		goto err_free_ct_zone_table;
+ 
+ 	priv->mask_ids.init_unallocated = NFP_FLOWER_MASK_ENTRY_RS - 1;
+ 
+@@ -560,6 +572,8 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 	kfree(priv->mask_ids.last_used);
+ err_free_mask_id:
+ 	kfree(priv->mask_ids.mask_id_free_list.buf);
++err_free_ct_zone_table:
++	rhashtable_destroy(&priv->ct_zone_table);
+ err_free_merge_table:
+ 	rhashtable_destroy(&priv->merge_table);
+ err_free_stats_ctx_table:
+@@ -569,6 +583,11 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 	return -ENOMEM;
+ }
+ 
++static void nfp_free_zone_table_entry(void *ptr, void *arg)
++{
++	struct nfp_fl_ct_zone_entry *zt = ptr;
++}
++
+ void nfp_flower_metadata_cleanup(struct nfp_app *app)
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+@@ -582,6 +601,8 @@ void nfp_flower_metadata_cleanup(struct nfp_app *app)
+ 				    nfp_check_rhashtable_empty, NULL);
+ 	rhashtable_free_and_destroy(&priv->merge_table,
+ 				    nfp_check_rhashtable_empty, NULL);
++	rhashtable_free_and_destroy(&priv->ct_zone_table,
++				    nfp_free_zone_table_entry, NULL);
+ 	kvfree(priv->stats);
+ 	kfree(priv->mask_ids.mask_id_free_list.buf);
+ 	kfree(priv->mask_ids.last_used);
 -- 
 2.20.1
 
