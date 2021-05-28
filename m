@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 640013947A5
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 22:00:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FDAB3947A7
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 22:01:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbhE1UCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 16:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50756 "EHLO
+        id S229657AbhE1UCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 16:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbhE1UC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 16:02:29 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78850C061761;
-        Fri, 28 May 2021 13:00:54 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id y15so92216pfl.4;
-        Fri, 28 May 2021 13:00:54 -0700 (PDT)
+        with ESMTP id S229603AbhE1UCe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 16:02:34 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C553C061574;
+        Fri, 28 May 2021 13:00:59 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id l70so3360094pga.1;
+        Fri, 28 May 2021 13:00:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vgj4iJjcx0a8O07oEEtY4GsTppAnUSLJjQ5LrQ/8SmM=;
-        b=CA441Lqw686NSV5Uk3mo396ERANWMVViaCv6DzmEJdzfaJuQI9sbI6++cBSMsVgF6T
-         LiszpWARDffePC68aK54ZTazQ1/d4R/vIlGOJLt8z0/cJlp93g6uc3MHTmRnppRsfkZG
-         FVRTDV3VY4E2CxtnEv4jGIJXn42zuJGYGi1vvHHWjeSzDy3yMp/BnVWrQMYGcE3TkYYb
-         pd/ewE2Dep8t5rs5/Fx9RcVXbTUMxQDZ2lA/1hl8GuU9ALTUbp6L1ARcyOejtULvS/JH
-         uHoUcUiUZxwTFBbv0mts4vJyvyIbR5/3aEgh8T3h+T+E1Ll5P22smzVad0sXVv6aD9sm
-         9qWw==
+        bh=nGlypxOO+I1T40Cpmd9aYpx3V+NTRClR+bxP+K/W9Io=;
+        b=Eg2JefObN9WovxGVIUL2oEnOCrdUWhB8oasqZ1MVqjoK1KEuFfZbez/gPUTF80rgoj
+         oeAu8iFg4lxLTnzZqQh+/j+zJBcXx5jUsSHE4J6luZMNVU6Gx3Oufx8cg91TVNnEfqO/
+         rEV93A/t3T73hCi3pWQxa07fpTchYjNpsATsX9IISMjRLN02xUwBlJM4aN/NVPKo4jv2
+         BHF72ExTDnay1ZEJz21McucApDaRCstVZjzM/LRklAJHzsZeFwp2uHoTLCeIPocpa+fm
+         mM7xRIHMCTAJPgqL+bwj12xV/t64batQxExq4fo/BdS2ncg1aFZIULSI9raWJ2hLgJnS
+         U4Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vgj4iJjcx0a8O07oEEtY4GsTppAnUSLJjQ5LrQ/8SmM=;
-        b=fbPoRvI3DbH1jZ2nNRRzytp4Pwt+S55b6PQw3kfGYAeJDJsInPaAPDfh4M/9cI2tXe
-         8Rm+twrex9Xx5EmJOmZGpXg+nPXL4pP3ojAZzm2o6tE11WZkFpSr+esB+1dtGNP4rngI
-         hwNQUf+SGwweTYxBq8is0ceCfwhpplgpslYYhK4upTZaY+SFmg+lDZepFPqDin05o8Cc
-         kOTmQlJegM5qUmH8vPUDSAgPVJmlVwg87n9dQNVviYBdOXz8HJ/XAe8826FUvYekL/6j
-         4kb+C6hrhTySCaXzUQh82T/xWSq5mxTPcYvUWuHQDNZ17qM3gykQoPbq+N41gZVZyh+J
-         PhcA==
-X-Gm-Message-State: AOAM533t/KYikPowmiJ7dN+NfH5C6tKuAq4ukcOWPXSWleKnM6SrwrJJ
-        XRyoxqifJzKQMVtf66WP3xp0XuNv8+U=
-X-Google-Smtp-Source: ABdhPJxPPNfJuNE4+HkPX2/4E5HNmUBPafZ4R1ndFXbdnLLLcswW5tsaaXXlWk1mdbv4j1drVgLfNQ==
-X-Received: by 2002:a05:6a00:1c6b:b029:2e2:caff:13fa with SMTP id s43-20020a056a001c6bb02902e2caff13famr5355937pfw.59.1622232053780;
-        Fri, 28 May 2021 13:00:53 -0700 (PDT)
+        bh=nGlypxOO+I1T40Cpmd9aYpx3V+NTRClR+bxP+K/W9Io=;
+        b=jNY6EyKQfu+kfR9/mz58LGiPSv76XhdGbfj6vfgTSqDD7K7HZjTwY+iyZxascc30fd
+         zmqqEwo3X/G0R3LaDlW4FS5Q0KsR+6hSdcgNT03uQ5GmbKBSdIuoKN2AmufTU7y55n3x
+         F56+BcMMdwptmkHC9CTRuSIwUgB1953l6j8G7W9F0y3R2vPIRRb6ZA4XmCY1k4MGU2W1
+         ArqJ1q5RpUxtm/tYGNf99wZXW3IVVRLcjWIlseoR/grA6MJ7ynKm6co5zRj/EuqlXNeF
+         3yEnTJoE3kFvzKA/4/6CLW2F4bRVi2fKu8tGSm3uZrApQm7bTnDYHCx8CPl7pPmOR+bm
+         laPw==
+X-Gm-Message-State: AOAM530GlNF2BbVBgjs3R6CYYOTpG6sEvouQx4m3Cr26MYNPGzlNHFAy
+        FW7/XGMza/3PpAVxT6FAUKi3smO6MTU=
+X-Google-Smtp-Source: ABdhPJzj2vCCkJaWr8yTKkQtKrEKmFs/5e4X59Oc3R8EB5YqEqSYltBbZR5AWK7vi7LVOC1mgE/Z4g==
+X-Received: by 2002:a65:4042:: with SMTP id h2mr10559997pgp.380.1622232058730;
+        Fri, 28 May 2021 13:00:58 -0700 (PDT)
 Received: from localhost ([2402:3a80:11db:3aa9:ad24:a4a2:844f:6a0a])
-        by smtp.gmail.com with ESMTPSA id 126sm5078463pfv.82.2021.05.28.13.00.52
+        by smtp.gmail.com with ESMTPSA id a9sm5119518pfr.9.2021.05.28.13.00.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 May 2021 13:00:53 -0700 (PDT)
+        Fri, 28 May 2021 13:00:58 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -67,9 +67,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH RFC bpf-next 4/7] net: sched: add lightweight update path for cls_bpf
-Date:   Sat, 29 May 2021 01:29:43 +0530
-Message-Id: <20210528195946.2375109-5-memxor@gmail.com>
+Subject: [PATCH RFC bpf-next 5/7] tools: bpf.h: sync with kernel sources
+Date:   Sat, 29 May 2021 01:29:44 +0530
+Message-Id: <20210528195946.2375109-6-memxor@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210528195946.2375109-1-memxor@gmail.com>
 References: <20210528195946.2375109-1-memxor@gmail.com>
@@ -79,117 +79,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is used by BPF_LINK_UPDATE to replace the attach SCHED_CLS bpf prog
-effectively changing the classifier implementation for a given filter
-owned by a bpf_link.
-
-Note that READ_ONCE suffices in this case as the ordering for loads from
-the filter are implicitly provided by the data dependency on BPF prog
-pointer.
-
-On the writer side we can just use a relaxed WRITE_ONCE store to make
-sure one or the other value is visible to a reader in cls_bpf_classify.
-Lifetime is managed using RCU so bpf_prog_put path should wait until
-readers are done for old_prog.
-
-All other parties accessing the BPF prog are under RTNL protection, so
-need no changes.
+This will be used to expose bpf_link based libbpf API to users.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- net/sched/cls_bpf.c | 55 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 53 insertions(+), 2 deletions(-)
+ tools/include/uapi/linux/bpf.h | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-index 57d6dedb389a..459a139bcfbe 100644
---- a/net/sched/cls_bpf.c
-+++ b/net/sched/cls_bpf.c
-@@ -9,6 +9,7 @@
-  * (C) 2013 Daniel Borkmann <dborkman@redhat.com>
-  */
- 
-+#include <linux/atomic.h>
- #include <linux/module.h>
- #include <linux/types.h>
- #include <linux/skbuff.h>
-@@ -104,11 +105,11 @@ static int cls_bpf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 			/* It is safe to push/pull even if skb_shared() */
- 			__skb_push(skb, skb->mac_len);
- 			bpf_compute_data_pointers(skb);
--			filter_res = BPF_PROG_RUN(prog->filter, skb);
-+			filter_res = BPF_PROG_RUN(READ_ONCE(prog->filter), skb);
- 			__skb_pull(skb, skb->mac_len);
- 		} else {
- 			bpf_compute_data_pointers(skb);
--			filter_res = BPF_PROG_RUN(prog->filter, skb);
-+			filter_res = BPF_PROG_RUN(READ_ONCE(prog->filter), skb);
- 		}
- 
- 		if (prog->exts_integrated) {
-@@ -775,6 +776,55 @@ static int cls_bpf_link_detach(struct bpf_link *link)
- 	return 0;
- }
- 
-+static int cls_bpf_link_update(struct bpf_link *link, struct bpf_prog *new_prog,
-+			       struct bpf_prog *old_prog)
-+{
-+	struct cls_bpf_link *cls_link;
-+	struct cls_bpf_prog cls_prog;
-+	struct cls_bpf_prog *prog;
-+	int ret;
-+
-+	rtnl_lock();
-+
-+	cls_link = container_of(link, struct cls_bpf_link, link);
-+	if (!cls_link->prog) {
-+		ret = -ENOLINK;
-+		goto out;
-+	}
-+
-+	prog = cls_link->prog;
-+
-+	/* BPF_F_REPLACEing? */
-+	if (old_prog && prog->filter != old_prog) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	old_prog = prog->filter;
-+
-+	if (new_prog == old_prog) {
-+		ret = 0;
-+		goto out;
-+	}
-+
-+	cls_prog = *prog;
-+	cls_prog.filter = new_prog;
-+
-+	ret = cls_bpf_offload(prog->tp, &cls_prog, prog, NULL);
-+	if (ret < 0)
-+		goto out;
-+
-+	WRITE_ONCE(prog->filter, new_prog);
-+
-+	bpf_prog_inc(new_prog);
-+	/* release our reference */
-+	bpf_prog_put(old_prog);
-+
-+out:
-+	rtnl_unlock();
-+	return ret;
-+}
-+
- static void __bpf_fill_link_info(struct cls_bpf_link *link,
- 				 struct bpf_link_info *info)
- {
-@@ -859,6 +909,7 @@ static const struct bpf_link_ops cls_bpf_link_ops = {
- 	.show_fdinfo = cls_bpf_link_show_fdinfo,
- #endif
- 	.fill_link_info = cls_bpf_link_fill_link_info,
-+	.update_prog = cls_bpf_link_update,
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 2c1ba70abbf1..a3488463d145 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -994,6 +994,7 @@ enum bpf_attach_type {
+ 	BPF_SK_LOOKUP,
+ 	BPF_XDP,
+ 	BPF_SK_SKB_VERDICT,
++	BPF_TC,
+ 	__MAX_BPF_ATTACH_TYPE
  };
  
- static inline char *cls_bpf_link_name(u32 prog_id, const char *name)
+@@ -1007,6 +1008,7 @@ enum bpf_link_type {
+ 	BPF_LINK_TYPE_ITER = 4,
+ 	BPF_LINK_TYPE_NETNS = 5,
+ 	BPF_LINK_TYPE_XDP = 6,
++	BPF_LINK_TYPE_TC = 7,
+ 
+ 	MAX_BPF_LINK_TYPE,
+ };
+@@ -1447,6 +1449,12 @@ union bpf_attr {
+ 				__aligned_u64	iter_info;	/* extra bpf_iter_link_info */
+ 				__u32		iter_info_len;	/* iter_info length */
+ 			};
++			struct { /* used by BPF_TC */
++				__u32 parent;
++				__u32 handle;
++				__u32 gen_flags;
++				__u16 priority;
++			} tc;
+ 		};
+ 	} link_create;
+ 
+@@ -5519,6 +5527,13 @@ struct bpf_link_info {
+ 		struct {
+ 			__u32 ifindex;
+ 		} xdp;
++		struct {
++			__u32 ifindex;
++			__u32 parent;
++			__u32 handle;
++			__u32 gen_flags;
++			__u16 priority;
++		} tc;
+ 	};
+ } __attribute__((aligned(8)));
+ 
 -- 
 2.31.1
 
