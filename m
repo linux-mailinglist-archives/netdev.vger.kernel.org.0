@@ -2,203 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6917F3942AC
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 14:37:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E0D73942B0
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 14:38:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236813AbhE1Mi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 08:38:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55694 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236824AbhE1MhE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 08:37:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622205330;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OR486GXdMFkK0x/NJNP7fu6e0GPOm2z2tDOoXyVsl+E=;
-        b=VMgxOVQSZVp139RKQPccSqBz8uFYsot9hGOA1B4Ad8eL/g+HdOcLtjTiFIXXFVe5WLXNmm
-        JsJ2gwtTIVtgBewm93iDNsVEyT58ud3fueuy42hzdZqTO2G/G8Jvq6lFQ9++UQck9mp5KO
-        XOifTI0NUnfzBAVe2WmmjuTOfQfuMeU=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-549-QrwIqdIMNpmXgG7ZrQG6Xg-1; Fri, 28 May 2021 08:35:28 -0400
-X-MC-Unique: QrwIqdIMNpmXgG7ZrQG6Xg-1
-Received: by mail-ed1-f69.google.com with SMTP id u6-20020aa7d0c60000b029038d7337e633so2078797edo.4
-        for <netdev@vger.kernel.org>; Fri, 28 May 2021 05:35:28 -0700 (PDT)
+        id S236429AbhE1MjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 08:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236939AbhE1Mhs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 08:37:48 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A413DC06134B
+        for <netdev@vger.kernel.org>; Fri, 28 May 2021 05:35:59 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id z19-20020a7bc7d30000b029017521c1fb75so4500760wmk.0
+        for <netdev@vger.kernel.org>; Fri, 28 May 2021 05:35:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=CAJJ5ylE6DY1LEIvtkhT4WtykTW0tludDFTq303oux4=;
+        b=TIozvvJQPkXu4CDZis28mzSB0BsmPt8pL9vaufk0dUutEqrhpHh149Eh4msMIbh6oH
+         70TBMs4xNBKU38kNg2iV2Wmsmg1lj2fJsFTYHrxszRwMmyMP0AcSbNZGfTittXVJlzkj
+         b8IuzRTY7b4gXF/VyEaZED9Wuz6cpeEcZzaq4bZXtkRfIkejsOMI5gmzeqwC726hnl5y
+         5WnHaFvUcXxzzS1MgP5jagPqz8OCh9Pg8OzOrUgmPbXJwUhk+nJ6U+FSKyV44M+R26Uo
+         WILaB4/pbIbYSV653afrXUSsEF3vBFE3MV2Mj+96/eS3stEFFgPX3gQMEkJ+l+GS2xiB
+         Jj9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=OR486GXdMFkK0x/NJNP7fu6e0GPOm2z2tDOoXyVsl+E=;
-        b=gc31c1UNPYk3alnTsszpYecQi/kCrNGKkkXXzJwfZgQucs7Is1bqhsI0Ble24oB6b+
-         Ww3ePtPmWntR8xuVZzzBwqJjSRRITJvyMWQTsjzXEPFvhnOos8V9NlsZEvhmxy7sWqaM
-         Gs9BHi1uPS9kHAO+pXPsobBYXa3V0mYD1kd+LzYUNFZVXVXdOxTCZM/NMVC9gAkmO9l0
-         UMHVPQjMhs+a91l1JttZI4uASk3P6JTI+gvkww6S6KI+XJhjipXauyx+ViBTzp5kTDnd
-         AIlyWs6o1lbhWDwTmRvDYuyroGzobFJZGTUDkOwnFWEyZLvPmGLbSYMB24E6ZKfrgNVJ
-         lCpw==
-X-Gm-Message-State: AOAM533cm3lt3B/AkNJyUNY0SQT4dK2PXN75rnYHHk/UtwdyvXNh9TIf
-        STZAf4mLAltpMp33gQrxD0aDTrbwq79ZuXWll838+LhcZHsCRjB0+B91x92WDTghSKJzuMd4SZW
-        H5nINtRlhNdYYxIjP
-X-Received: by 2002:aa7:ca49:: with SMTP id j9mr7196982edt.294.1622205327156;
-        Fri, 28 May 2021 05:35:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzSVyoeKzjEkP+9tp7a5qWGGJJHZzh4b7BE4RWUW+BBN6FD9u+a6KS/hUJHaUDCF2OPzuqt+A==
-X-Received: by 2002:aa7:ca49:: with SMTP id j9mr7196942edt.294.1622205326882;
-        Fri, 28 May 2021 05:35:26 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id a6sm2312421ejv.4.2021.05.28.05.35.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 May 2021 05:35:26 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 9B75A18071B; Fri, 28 May 2021 14:35:25 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Xie He <xie.he.0141@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Wang Hai <wanghai38@huawei.com>,
-        Tanner Love <tannerlove@google.com>,
-        Eyal Birger <eyal.birger@gmail.com>,
-        Menglong Dong <dong.menglong@zte.com.cn>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] xsk: support AF_PACKET
-In-Reply-To: <066a0c0a-ad48-517a-4bd0-8920bdbf0dd8@iogearbox.net>
-References: <87im33grtt.fsf@toke.dk>
- <1622192521.5931044-1-xuanzhuo@linux.alibaba.com>
- <20210528115003.37840424@carbon>
- <CAJ8uoz2bhfsk4XX--cNB-gKczx0jZENB5kdthoWkuyxcOHQfjg@mail.gmail.com>
- <f90b1066-a962-ba38-a5b5-ac59a13d4dd1@iogearbox.net>
- <87a6ofgmbq.fsf@toke.dk>
- <066a0c0a-ad48-517a-4bd0-8920bdbf0dd8@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 28 May 2021 14:35:25 +0200
-Message-ID: <8735u7gho2.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=CAJJ5ylE6DY1LEIvtkhT4WtykTW0tludDFTq303oux4=;
+        b=gjCvksYOfyDHx3GHs8lXTbQIJBMm7OCBA0WU/9JOrAowJrTuBjgY2Sy+IjyOrn0l7G
+         tcDjCtzKpO4mVGpWihFjxS34ImpJaTr5vC5oX8VixVhk1wZJYwyAl5jGq/0H/APUGkrG
+         4lDp9tZF83p90XuMZmI2RjzkLnNblELjDJONFbS5pv6QenFnoTytcU/jSy2LcfJhEDhU
+         Sga2hleAOcpSDuYhOgYif9Y8zjF38SSt9S/NILN9f2UGqnpoXowY0ZPHFBViGcq+88GJ
+         43/CERlAq4yudG9Het8d1mM67huIW4lX/8u72uFCS8VSjMaU9O9XbllnYojT5c0/XHcw
+         5/Nw==
+X-Gm-Message-State: AOAM531E9nhh3nmqIp8KCGuM9Y1a5BcXhyeFN9LgfrQ74q7Mw0imAvau
+        I0Fgz82Ur0oxR5ba6OFx+XDMw/oyQHlZh4Xt
+X-Google-Smtp-Source: ABdhPJw8cMgGTksLR+xZtQGlN63wWp8cPEbNaz8t7M7JwJDM/gJGGXB4FJYoh9RwoxL98+c0ZGkVLw==
+X-Received: by 2002:a05:600c:2cd2:: with SMTP id l18mr8275963wmc.142.1622205357884;
+        Fri, 28 May 2021 05:35:57 -0700 (PDT)
+Received: from wsfd-netdev-buildsys.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id l8sm3980580wrf.0.2021.05.28.05.35.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 28 May 2021 05:35:57 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Hangbin Liu <haliu@redhat.com>
+Subject: [Draft iproute2-next PATCH] configure: add options ability
+Date:   Fri, 28 May 2021 08:35:43 -0400
+Message-Id: <20210528123543.3836-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+From: Hangbin Liu <haliu@redhat.com>
 
-> On 5/28/21 12:54 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Daniel Borkmann <daniel@iogearbox.net> writes:
->>> On 5/28/21 12:00 PM, Magnus Karlsson wrote:
->>>> On Fri, May 28, 2021 at 11:52 AM Jesper Dangaard Brouer
->>>> <brouer@redhat.com> wrote:
->>>>> On Fri, 28 May 2021 17:02:01 +0800
->>>>> Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->>>>>> On Fri, 28 May 2021 10:55:58 +0200, Toke H=C3=B8iland-J=C3=B8rgensen=
- <toke@redhat.com> wrote:
->>>>>>> Xuan Zhuo <xuanzhuo@linux.alibaba.com> writes:
->>>>>>>
->>>>>>>> In xsk mode, users cannot use AF_PACKET(tcpdump) to observe the cu=
-rrent
->>>>>>>> rx/tx data packets. This feature is very important in many cases. =
-So
->>>>>>>> this patch allows AF_PACKET to obtain xsk packages.
->>>>>>>
->>>>>>> You can use xdpdump to dump the packets from the XDP program before=
- it
->>>>>>> gets redirected into the XSK:
->>>>>>> https://github.com/xdp-project/xdp-tools/tree/master/xdp-dump
->>>>>>
->>>>>> Wow, this is a good idea.
->>>>>
->>>>> Yes, it is rather cool (credit to Eelco).  Notice the extra info you
->>>>> can capture from 'exit', like XDP return codes, if_index, rx_queue.
->>>>>
->>>>> The tool uses the perf ring-buffer to send/copy data to userspace.
->>>>> This is actually surprisingly fast, but I still think AF_XDP will be
->>>>> faster (but it usually 'steals' the packet).
->>>>>
->>>>> Another (crazy?) idea is to extend this (and xdpdump), is to leverage
->>>>> Hangbin's recent XDP_REDIRECT extension e624d4ed4aa8 ("xdp: Extend
->>>>> xdp_redirect_map with broadcast support").  We now have a
->>>>> xdp_redirect_map flag BPF_F_BROADCAST, what if we create a
->>>>> BPF_F_CLONE_PASS flag?
->>>>>
->>>>> The semantic meaning of BPF_F_CLONE_PASS flag is to copy/clone the
->>>>> packet for the specified map target index (e.g AF_XDP map), but
->>>>> afterwards it does like veth/cpumap and creates an SKB from the
->>>>> xdp_frame (see __xdp_build_skb_from_frame()) and send to netstack.
->>>>> (Feel free to kick me if this doesn't make any sense)
->>>>
->>>> This would be a smooth way to implement clone support for AF_XDP. If
->>>> we had this and someone added AF_XDP support to libpcap, we could both
->>>> capture AF_XDP traffic with tcpdump (using this clone functionality in
->>>> the XDP program) and speed up tcpdump for dumping traffic destined for
->>>> regular sockets. Would that solve your use case Xuan? Note that I have
->>>> not looked into the BPF_F_CLONE_PASS code, so do not know at this
->>>> point what it would take to support this for XSKMAPs.
->>>
->>> Recently also ended up with something similar for our XDP LB to record =
-pcaps [0] ;)
->>> My question is.. tcpdump doesn't really care where the packet data come=
-s from,
->>> so why not extending libpcap's Linux-related internals to either captur=
-e from
->>> perf RB or BPF ringbuf rather than AF_PACKET sockets? Cloning is slow, =
-and if
->>> you need to end up creating an skb which is then cloned once again insi=
-de AF_PACKET
->>> it's even worse. Just relying and reading out, say, perf RB you don't n=
-eed any
->>> clones at all.
->>=20
->> We discussed this when creating xdpdump and decided to keep it as a
->> separate tool for the time being. I forget the details of the
->> discussion, maybe Eelco remembers.
->>=20
->> Anyway, xdpdump does have a "pipe pcap to stdout" feature so you can do
->> `xdpdump | tcpdump` and get the interactive output; and it will also
->> save pcap information to disk, of course (using pcap-ng so it can also
->> save metadata like XDP program name and return code).
->
-> Right, and this should yield a significantly better performance compared =
-to
-> cloning & pushing traffic into AF_PACKET. I presume not many folks are aw=
-are
-> of xdpdump (yet) which is probably why such patch was created here..
+Hi David,
 
-What, are you implying we haven't achieved world domination yet?
-Inconceivable! ;)
+As we talked in my previous libbpf support patchset. You'd like to make
+configure with option settings. Here is a draft patch. Not sure if this
+is what you want.
 
-> a native libpcap implementation could solve that aspect fwiw and
-> additionally hook at the same points as AF_PACKET via BPF but without
-> the hassle/overhead of things like dev_queue_xmit_nit() in fast path.
-> (Maybe another option could be to have a drop-in replacement
-> libpcap.so for tcpdump using it transparently.)
+There are also a lot variables that I not sure if we should add options
+for them. e.g. PKG_CONFIG, CC, IPTC, IPT_LIB_DIR, etc. Do you have any
+suggestions?
 
-I do believe that Michael was open to adding something like this to
-tcpdump/libpcap when I last talked to him about it; and I'm certainly
-not opposed to it either! Hooking up tcpdump like this may be a bit of a
-firehose, though, so it would be nice to be able to carry over the
-kernel-side filtering as well. I suppose it should be possible to write
-an eBPF bytecode generator that does a bit of setup and then just
-translates the cBPF packet filtering ops, no? This would be cool to have
-in any case; IIRC Cloudflare did something like that but took a detour
-through C code generation?
+---
+As there are more and more global environment variables in configures.
+it would be more clear with options for users. Add related options for
+variables. Keep using the same name so the old way (set global env) is
+still working.
 
--Toke
+Signed-off-by: Hangbin Liu <haliu@redhat.com>
+---
+ configure | 45 +++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 39 insertions(+), 6 deletions(-)
+
+diff --git a/configure b/configure
+index 179eae08..aae324c9 100755
+--- a/configure
++++ b/configure
+@@ -1,13 +1,8 @@
+ #!/bin/sh
+ # SPDX-License-Identifier: GPL-2.0
+ # This is not an autoconf generated configure
+-#
+-# Influential LIBBPF environment variables:
+-#   LIBBPF_FORCE={on,off}   on: require link against libbpf;
+-#                           off: disable libbpf probing
+-#   LIBBPF_DIR              Path to libbpf DESTDIR to use
+ 
+-INCLUDE=${1:-"$PWD/include"}
++INCLUDE="$PWD/include"
+ 
+ # Output file which is input to Makefile
+ CONFIG=config.mk
+@@ -486,6 +481,44 @@ endif
+ EOF
+ }
+ 
++usage()
++{
++        cat <<EOF
++Usage: $0 [OPTIONS]
++  --libbpf_force                enable/disable libbpf by force.
++                                on: require link against libbpf, quite config if no libbpf support
++                                off: disable libbpf probing
++  --libbpf_dir                  Path to libbpf DESTDIR to use
++  --include_dir                 Path to iproute2 include dir
++  -h | --help                   Show this usage info
++EOF
++        exit $1
++}
++
++while true; do
++	case "$1" in
++		--libbpf_force)
++			if [ "$2" != 'on' ] && [ "$2" != 'off' ]; then
++				usage 1
++			fi
++			LIBBPF_FORCE=$2
++			shift 2 ;;
++                --libbpf_dir)
++			LIBBPF_DIR="$2"
++                        shift 2 ;;
++                --include_dir)
++			# How to deal with the old INCLUDE usage?
++			INCLUDE=$2
++                        shift 2 ;;
++                -h | --help)
++                        usage 0 ;;
++                "")
++                        break ;;
++                *)
++                        usage 1 ;;
++        esac
++done
++
+ echo "# Generated config based on" $INCLUDE >$CONFIG
+ quiet_config >> $CONFIG
+ 
+-- 
+2.26.3
 
