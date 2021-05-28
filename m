@@ -2,74 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29DFE39481A
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 23:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46BA9394820
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 23:07:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229500AbhE1VBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 17:01:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49376 "EHLO mail.kernel.org"
+        id S229615AbhE1VI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 17:08:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229481AbhE1VBl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 May 2021 17:01:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2E6B061358;
-        Fri, 28 May 2021 21:00:06 +0000 (UTC)
+        id S229563AbhE1VIz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 May 2021 17:08:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D5C2161378;
+        Fri, 28 May 2021 21:07:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622235606;
-        bh=y5rknKuoZBP19E7vSNsLf2ZiR2KHEQ7V/mgVmxR799c=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=X54+TCG+qb1SNfK0VQf+wWwMq9NAjlYqxDsGJkCvGIbVoFHF+XIrIiCcelLo3Fh2f
-         PzpqWxn+iNxb4IMZd/4SDpzFXE3XzU+tPsWKHtWQB5fmkNTvu+Lt26sM3mkATvEYRF
-         asOTd13urFyqHaptytO0EbL5xmbZGKtSCZsZ72RaGT6JVimznuCDMgVh4YB+P/VnNB
-         bgoNZQKCj4qAhMA0ZJYT9qgl5Pw9Ll3F4o6yWjJEWj4IPRo6uTtEYGPG9Ra30erMBB
-         2LT7R0HQVhnaLFUPuLwK0/kgUVlqXsDIB3p1hTXhuB6Vtd1FjwWrsHHRtYhZ/FaELn
-         ZAI8+UJqbcG0g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1EE8E60A39;
-        Fri, 28 May 2021 21:00:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4] mptcp: Fixes for 5.13
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162223560612.19696.18047564340306818571.git-patchwork-notify@kernel.org>
-Date:   Fri, 28 May 2021 21:00:06 +0000
-References: <20210527233140.182728-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20210527233140.182728-1-mathew.j.martineau@linux.intel.com>
+        s=k20201202; t=1622236040;
+        bh=Fev0AQ+jWktf8MDkh6yOAVN3mpPxLd0V3Ssi05045aI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eXy1nWbOnTE+LFeAptX66USCR3WqkCDyx85VtPoeP0nIXrhQbB4Xzctdnfff9Nv5u
+         mAqBAXeq1qkyF5KCVdfzYCpAIiOCA7AFo9/R3BxRsjT5mdSQ6gR0pr1OYfmSHIytOB
+         P9WA/bStOnLRY18ExG4iiUycnQL/mSgP5HKWhco9OLZzS9tX4hgAlA6L2U4kxh+fW5
+         BoWEsDZxpSTHn6VYqroZdqNwoLG8hWiJz1omKaF5DKpjrl83jiL8UQ2qUhYfSQE2UN
+         QBMMClH4YlC0LDfkvxAnyJLyaJIq1iDYlMpIPE5PrdaSVwSRExN6/HhMuvWTf6AVcU
+         yOp0R+1Z9D1JA==
+Date:   Fri, 28 May 2021 14:07:19 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
         matthieu.baerts@tessares.net, mptcp@lists.linux.dev
+Subject: Re: [PATCH net-next 0/7] mptcp: Miscellaneous cleanup
+Message-ID: <20210528140719.0e18900f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20210527235430.183465-1-mathew.j.martineau@linux.intel.com>
+References: <20210527235430.183465-1-mathew.j.martineau@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Thu, 27 May 2021 16:31:36 -0700 you wrote:
-> These patches address two issues in MPTCP.
+On Thu, 27 May 2021 16:54:23 -0700 Mat Martineau wrote:
+> Here are some cleanup patches we've collected in the MPTCP tree.
 > 
-> Patch 1 fixes a locking issue affecting MPTCP-level retransmissions.
+> Patches 1-4 do some general tidying.
 > 
-> Patches 2-4 improve handling of out-of-order packet arrival early in a
-> connection, so it falls back to TCP rather than forcing a
-> reset. Includes a selftest.
+> Patch 5 adds an explicit check at netlink command parsing time to
+> require a port number when the 'signal' flag is set, to catch the error
+> earlier.
 > 
-> [...]
+> Patches 6 & 7 fix up the MPTCP 'enabled' sysctl, enforcing it as a
+> boolean value, and ensuring that the !CONFIG_SYSCTL build still works
+> after the boolean change.
 
-Here is the summary with links:
-  - [net,1/4] mptcp: fix sk_forward_memory corruption on retransmission
-    https://git.kernel.org/netdev/net/c/b5941f066b4c
-  - [net,2/4] mptcp: always parse mptcp options for MPC reqsk
-    https://git.kernel.org/netdev/net/c/06f9a435b3aa
-  - [net,3/4] mptcp: do not reset MP_CAPABLE subflow on mapping errors
-    https://git.kernel.org/netdev/net/c/dea2b1ea9c70
-  - [net,4/4] mptcp: update selftest for fallback due to OoO
-    https://git.kernel.org/netdev/net/c/69ca3d29a755
+Pulled, thanks!
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Would you mind making sure that all maintainers and authors of commits
+pointed to by Fixes tags are always CCed? I assume that those folks
+usually see the patches on mptcp@ ML before they hit netdev but I'd
+rather not have to assume..
