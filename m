@@ -2,105 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2436F3940C6
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 12:16:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C87B3940CB
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 12:18:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236484AbhE1KR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 06:17:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25018 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236286AbhE1KR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 06:17:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622196981;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/MeyHq86FYDiQmED7OBAcxclfCXwOV7n7cri6A9SGbY=;
-        b=X7BA7+z8QgdxdzcGc9AhmE6QzTJU/EN+quHxOYpPYwDucX8aTlNWrjQjGzmP+T+3IPtFw5
-        9oIRDIJLy41acRa7crFdl6pAoIGuFLOywesapKU6HHM+gVRXam5hcL9haUndNHEmPrl4C0
-        yPGSjI50jSQjzHEn+y2wgwBYrkluDU0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-539-jVuwpz2AP6aXM8xrP8ldEQ-1; Fri, 28 May 2021 06:16:19 -0400
-X-MC-Unique: jVuwpz2AP6aXM8xrP8ldEQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S236200AbhE1KUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 06:20:02 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:60552 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235361AbhE1KT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 06:19:59 -0400
+Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
+        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 72687801817;
-        Fri, 28 May 2021 10:16:17 +0000 (UTC)
-Received: from krava (unknown [10.40.192.177])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 9709250450;
-        Fri, 28 May 2021 10:16:12 +0000 (UTC)
-Date:   Fri, 28 May 2021 12:16:11 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        linux-security-module@vger.kernel.org,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        andrii.nakryiko@gmail.com
-Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
- permission checks
-Message-ID: <YLDC6zQUtoITdX4s@krava>
-References: <20210517092006.803332-1-omosnace@redhat.com>
- <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
- <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net>
- <4fee8c12-194f-3f85-e28b-f7f24ab03c91@iogearbox.net>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3A043218B3;
+        Fri, 28 May 2021 10:18:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1622197104; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/xwzxPsqkRs33JFbxt2zkP1hnKW16XUAwJ7jZ33Dcx0=;
+        b=n4cgimD+8eAxXX+9t7cHQRlox6GheamXBsS6fKXLEWMvvdGdp4n4fRT3qzZCFmG7Hz1cVP
+        SXhJHUY9FjZ/TDKextxTosQ75U2V4tKhsHzqysBHME5t+6ZxS1+BcwCFX51lAjrBhVYbRq
+        wW6TK6l7OQUsXt4IcxuANaHMnTx5wzA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1622197104;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/xwzxPsqkRs33JFbxt2zkP1hnKW16XUAwJ7jZ33Dcx0=;
+        b=G86OMUJ6ggBLRJl3meZkVluLc/THDuA1OyKH5AKI31Mrh/vF8pth6EfdaTDW7mla5Tc9D0
+        L+GMv7jjgThdASCg==
+Received: from director2.suse.de (director2.suse-dmz.suse.de [192.168.254.72])
+        by imap.suse.de (Postfix) with ESMTPSA id EDE0211A98;
+        Fri, 28 May 2021 10:18:23 +0000 (UTC)
+Subject: Re: [RFC PATCH v6 02/27] nvme-fabrics: Move NVMF_ALLOWED_OPTS and
+ NVMF_REQUIRED_OPTS definitions
+To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
+        kbusch@kernel.org
+Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
+        pkushwaha@marvell.com, malin1024@gmail.com,
+        Arie Gershberg <agershberg@marvell.com>
+References: <20210527235902.2185-1-smalin@marvell.com>
+ <20210527235902.2185-3-smalin@marvell.com>
+From:   Hannes Reinecke <hare@suse.de>
+Organization: SUSE Linux GmbH
+Message-ID: <e0a36dc7-f5f2-e7b6-7368-323769c54caa@suse.de>
+Date:   Fri, 28 May 2021 12:18:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4fee8c12-194f-3f85-e28b-f7f24ab03c91@iogearbox.net>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+In-Reply-To: <20210527235902.2185-3-smalin@marvell.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 28, 2021 at 11:56:02AM +0200, Daniel Borkmann wrote:
-
-SNIP
-
+On 5/28/21 1:58 AM, Shai Malin wrote:
+> From: Arie Gershberg <agershberg@marvell.com>
 > 
-> Ondrej / Paul / Jiri: at least for the BPF tracing case specifically (I haven't looked
-> at the rest but it's also kind of independent), the attached fix should address both
-> reported issues, please take a look & test.
+> Move NVMF_ALLOWED_OPTS and NVMF_REQUIRED_OPTS definitions
+> to header file, so it can be used by the different HW devices.
 > 
-> Thanks a lot,
-> Daniel
+> NVMeTCP offload devices might have different limitations of the
+> allowed options, for example, a device that does not support all the
+> queue types. With tcp and rdma, only the nvme-tcp and nvme-rdma layers
+> handle those attributes and the HW devices do not create any limitations
+> for the allowed options.
+> 
+> An alternative design could be to add separate fields in nvme_tcp_ofld_ops
+> such as max_hw_sectors and max_segments that we already have in this
+> series.
+> 
+> Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Arie Gershberg <agershberg@marvell.com>
+> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Shai Malin <smalin@marvell.com>
+> Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+> Acked-by: Sagi Grimberg <sagi@grimberg.me>
+> ---
+>  drivers/nvme/host/fabrics.c | 7 -------
+>  drivers/nvme/host/fabrics.h | 7 +++++++
+>  2 files changed, 7 insertions(+), 7 deletions(-)
+> Reviewed-by: Hannes Reinecke <hare@suse.de>
 
-> From 5893ad528dc0a0a68933b8f2a81b18d3f539660d Mon Sep 17 00:00:00 2001
-> From: Daniel Borkmann <daniel@iogearbox.net>
-> Date: Fri, 28 May 2021 09:16:31 +0000
-> Subject: [PATCH bpf] bpf, audit, lockdown: Fix bogus SELinux lockdown permission checks
-> 
-> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
-> added an implementation of the locked_down LSM hook to SELinux, with the aim
-> to restrict which domains are allowed to perform operations that would breach
-> lockdown. This is indirectly also getting audit subsystem involved to report
-> events. The latter is problematic, as reported by Ondrej and Serhei, since it
-> can bring down the whole system via audit:
-> 
->   i) The audit events that are triggered due to calls to security_locked_down()
->      can OOM kill a machine, see below details [0].
-> 
->  ii) It seems to be causing a deadlock via slow_avc_audit() -> audit_log_end()
->      when presumingly trying to wake up kauditd [1].
-> 
-> Fix both at the same time by taking a completely different approach, that is,
-> move the check into the program verification phase where we actually retrieve
-> the func proto. This also reliably gets the task (current) that is trying to
-> install the tracing program, e.g. bpftrace/bcc/perf/systemtap/etc, and it also
-> fixes the OOM since we're moving this out of the BPF helpers which can be called
-> millions of times per second.
+Cheers,
 
-nice idea.. I'll try to reproduce and test
-
-jirka
-
+Hannes
+-- 
+Dr. Hannes Reinecke		        Kernel Storage Architect
+hare@suse.de			               +49 911 74053 688
+SUSE Software Solutions Germany GmbH, 90409 Nürnberg
+GF: F. Imendörffer, HRB 36809 (AG Nürnberg)
