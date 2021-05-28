@@ -2,103 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 704B0393A6E
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 02:45:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97645393AE2
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 03:06:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234303AbhE1ArF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 May 2021 20:47:05 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:58910 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229864AbhE1ArE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 20:47:04 -0400
-Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 232C220B8013;
-        Thu, 27 May 2021 17:45:30 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 232C220B8013
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1622162730;
-        bh=gJOAEM/qWgeTmQ+5OlWHexIiLlQlSznhjnMwrDLR26A=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tGsEGQoVWWobYMCevWyihyRyeYtDAZu/0V28GqhPsbLxGO/cV2GevSslRSpHyMJ/w
-         UG92R2PxJmtsFh5kpnlvJ/lt446e5YXrf+EO+rsp7mQJ2u1jjDnLPXnn9qtDFZZ+3C
-         Gp9FPe7kdURhI/IZg8W8CjLuGzL0TWNf1qhcP3AI=
-Received: by mail-pg1-f173.google.com with SMTP id e22so1251772pgv.10;
-        Thu, 27 May 2021 17:45:30 -0700 (PDT)
-X-Gm-Message-State: AOAM5326mQ8sMbCfB9N2tQtL7H3uTXdN3RmY1dHcpgOhgKZ7bwgDNQu/
-        7C8YuZzIhJGzb8jYEQy3h6Z5UXsWjZEHXR4NYAI=
-X-Google-Smtp-Source: ABdhPJySR+SvD3TYa0wBijrGzLqj+wD1cE2OL/bszWdPJ3fAW5tlnPRlsMvwC9B9adpY8jt1rCKgFWG3XC/3Lvt1eDw=
-X-Received: by 2002:a63:6f8e:: with SMTP id k136mr6409565pgc.326.1622162729506;
- Thu, 27 May 2021 17:45:29 -0700 (PDT)
+        id S234892AbhE1BI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 May 2021 21:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229760AbhE1BIY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 May 2021 21:08:24 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3230C061574;
+        Thu, 27 May 2021 18:06:50 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Frmjf74GPz9sRN;
+        Fri, 28 May 2021 11:06:46 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1622164007;
+        bh=Ed/rZ1jwf8yCrTKrfseKLMV1OF8kQau1a1rDVJvFiEk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=fjouGaYsB5c82ISvtbXDmSzVqqM2RIY4gxxBDX5rxR5K+HzAZPhsd/jad2NfRY2lw
+         vwRQ9SJ7CoyqEUaT9gGcpNJmoRmYdHd8+rWnATJvsUQXjhH5ZTOBg7AR0lb4IDMuB4
+         JH8LaJVQuHA/UXS5LFq4wJAL43nYabCcSQDmR26vZHG/jxjLLW5Day3Jc8FbOf342k
+         rFDIWMQmUQOBnDQLg+fy3aEOSULY7HrfiOYoe3R44A1OUwubWNDH6ObEagMDNl0+qu
+         fFQJBVdcEpWIh0mhKovwMFzb3bHb7JlOxqyrDzotyuIo87BELJ6zWFrfHl6ABUAMWe
+         auCaCcXKkhJDQ==
+Date:   Fri, 28 May 2021 11:06:44 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Parav Pandit <parav@nvidia.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20210528110644.79e015b3@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20210521161527.34607-1-mcroce@linux.microsoft.com>
-In-Reply-To: <20210521161527.34607-1-mcroce@linux.microsoft.com>
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-Date:   Fri, 28 May 2021 02:44:53 +0200
-X-Gmail-Original-Message-ID: <CAFnufp1Xv5V_6Rb_wpA43sfcSr+giqygGmUjr92RRi=fncKtTw@mail.gmail.com>
-Message-ID: <CAFnufp1Xv5V_6Rb_wpA43sfcSr+giqygGmUjr92RRi=fncKtTw@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 0/5] page_pool: recycle buffers
-To:     netdev@vger.kernel.org, linux-mm@kvack.org
-Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/jr_C=BEezEUZkwZHolw/O3V";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 21, 2021 at 6:15 PM Matteo Croce <mcroce@linux.microsoft.com> wrote:
-> Note that this series depends on the change "mm: fix struct page layout
-> on 32-bit systems"[2] which is not yet in master.
->
+--Sig_/jr_C=BEezEUZkwZHolw/O3V
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I see that it just entered net-next:
+Hi all,
 
-commit 9ddb3c14afba8bc5950ed297f02d4ae05ff35cd1
-Author: Matthew Wilcox (Oracle) <willy@infradead.org>
-Date:   Fri May 14 17:27:24 2021 -0700
+Today's linux-next merge of the net-next tree got a conflict in:
 
-   mm: fix struct page layout on 32-bit systems
+  net/core/devlink.c
 
-Regards,
--- 
-per aspera ad upstream
+between commit:
+
+  b28d8f0c25a9 ("devlink: Correct VIRTUAL port to not have phys_port attrib=
+utes")
+
+from the net tree and commit:
+
+  f285f37cb1e6 ("devlink: append split port number to the port name")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/core/devlink.c
+index 051432ea4f69,69681f19388e..000000000000
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@@ -8630,12 -8631,11 +8630,10 @@@ static int __devlink_port_phys_port_nam
+ =20
+  	switch (attrs->flavour) {
+  	case DEVLINK_PORT_FLAVOUR_PHYSICAL:
+- 		if (!attrs->split)
+- 			n =3D snprintf(name, len, "p%u", attrs->phys.port_number);
+- 		else
+- 			n =3D snprintf(name, len, "p%us%u",
+- 				     attrs->phys.port_number,
+- 				     attrs->phys.split_subport_number);
+ -	case DEVLINK_PORT_FLAVOUR_VIRTUAL:
++ 		n =3D snprintf(name, len, "p%u", attrs->phys.port_number);
++ 		if (n < len && attrs->split)
++ 			n +=3D snprintf(name + n, len - n, "s%u",
++ 				      attrs->phys.split_subport_number);
+  		break;
+  	case DEVLINK_PORT_FLAVOUR_CPU:
+  	case DEVLINK_PORT_FLAVOUR_DSA:
+
+--Sig_/jr_C=BEezEUZkwZHolw/O3V
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmCwQiUACgkQAVBC80lX
+0GzvpAf/SJpFUw6ZLSDurRIiAfcT7d75zM3rb13w4qw4w3c6DwyiS8leC5SBxFDG
+/yS/DeT6Su0n/b9PG27pMIaetJPaF8VWrTlJYx6zcYzxYQL28CpSarxdiRVDFJv5
+Ldi3MeYnPETvjt7lVKtlcFafa/RlIyYxHmD7anyZ/irS2tOfIrmMQtz5Ld4EhLFk
+XIDQvbghUgcohtPZBtZvM5H/zs1JWDanObnKh2AcLC1261Lvq2FcZPNt//fO3EXs
+/PET9I6QoPZKs4yv/D103FIf2XMwYxhujMZ0Ram3V8BecZLZnRBFUb19PfudD5lG
+cgNwSW28wX5+c2zQJoERIMhWhZcn9g==
+=SWrg
+-----END PGP SIGNATURE-----
+
+--Sig_/jr_C=BEezEUZkwZHolw/O3V--
