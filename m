@@ -2,664 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED7833941B5
-	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 13:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7EBC3941B9
+	for <lists+netdev@lfdr.de>; Fri, 28 May 2021 13:22:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232480AbhE1LWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 07:22:55 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:32812 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbhE1LWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 07:22:53 -0400
-Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 0EAE4218B0;
-        Fri, 28 May 2021 11:21:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1622200877; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VQVfxzYFYIFEteENLUnLqa2iQLLGUZCoghlYcwo+hsU=;
-        b=EfboGM8hL/mayLMjNoIdAMEWwlLBf855c4mQsA5r6uaxbI3fAZo+nHMW0NedS97IugjnD/
-        G2klkwHClNPiSFNBlf2PiK796ua7kefSNRDrTWSE/2PXZk1T/03P4fqIwPjKnQt6BahyXE
-        ROzU2M9L4/D7ktzaQw0aXNt5PhLJVSs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1622200877;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VQVfxzYFYIFEteENLUnLqa2iQLLGUZCoghlYcwo+hsU=;
-        b=4zwv4FyMpcy3aT8voW+f0r8Q0ZKecYsvieZBYrbAIEFumlJ13zwLZ6QiRwKxj84G5lOu2T
-        BhFUk48HxsO8odAg==
-Received: from director2.suse.de (director2.suse-dmz.suse.de [192.168.254.72])
-        by imap.suse.de (Postfix) with ESMTPSA id C5EDC11A98;
-        Fri, 28 May 2021 11:21:16 +0000 (UTC)
-To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org
-Cc:     aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
-        pkushwaha@marvell.com, malin1024@gmail.com,
-        Arie Gershberg <agershberg@marvell.com>
-References: <20210527235902.2185-1-smalin@marvell.com>
- <20210527235902.2185-6-smalin@marvell.com>
-From:   Hannes Reinecke <hare@suse.de>
-Organization: SUSE Linux GmbH
-Subject: Re: [RFC PATCH v6 05/27] nvme-tcp-offload: Add controller level
- implementation
-Message-ID: <0fa12e28-63e3-2404-2ede-2b2647786ccf@suse.de>
-Date:   Fri, 28 May 2021 13:21:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S234187AbhE1LYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 07:24:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52040 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233262AbhE1LYM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 May 2021 07:24:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4176B613D1;
+        Fri, 28 May 2021 11:22:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622200958;
+        bh=s/AdSxLbKJZj18cMMBK2EERA63t8fLfRowkDBWy3kfM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ezZnvxRp5JhCMx/cMSoBBYezMaqeiZXbd3ZWh+x+0x1pEugBigrO9fqeSfq+Im71X
+         Ow2gtNmpZ2uPLuVcPHAz52RPt+pk2yH4ctVs3wLqn63fpJkMoQ7bv1XSbiSy5QHKl8
+         IuePX0wLNNA39EzfUPksebYQw9cRvagE6nUvTmzBOcOa6c3REpF89snTku0/fMIb2X
+         F+2kTPfT+3PFBP2QppK6FykYx1paIsQqKmu2bGUy1lVTlyj8098NzKApjIN6pGQ6xq
+         3ENjX3dcifdEdFFWMCdbLwIiQAAUqcNqXgVj0/hRtLcVCw1+ZSrOVALQo61l5P9Ihk
+         CuVjEn275fmAQ==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, brouer@redhat.com
+Subject: [PATCH net-next] samples: pktgen: add UDP tx checksum support
+Date:   Fri, 28 May 2021 13:22:21 +0200
+Message-Id: <d8476fd6ca67441dde0f2bf2618401ef91de2867.1622200776.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20210527235902.2185-6-smalin@marvell.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/21 1:58 AM, Shai Malin wrote:
-> From: Arie Gershberg <agershberg@marvell.com>
-> 
-> In this patch we implement controller level functionality including:
-> - create_ctrl.
-> - delete_ctrl.
-> - free_ctrl.
-> 
-> The implementation is similar to other nvme fabrics modules, the main
-> difference being that the nvme-tcp-offload ULP calls the vendor specific
-> claim_dev() op with the given TCP/IP parameters to determine which device
-> will be used for this controller.
-> Once found, the vendor specific device and controller will be paired and
-> kept in a controller list managed by the ULP.
-> 
-> Acked-by: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Arie Gershberg <agershberg@marvell.com>
-> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
-> Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-> ---
->  drivers/nvme/host/tcp-offload.c | 481 +++++++++++++++++++++++++++++++-
->  1 file changed, 476 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/nvme/host/tcp-offload.c b/drivers/nvme/host/tcp-offload.c
-> index e602801d43d3..9b2ae54a2679 100644
-> --- a/drivers/nvme/host/tcp-offload.c
-> +++ b/drivers/nvme/host/tcp-offload.c
-> @@ -12,6 +12,10 @@
->  
->  static LIST_HEAD(nvme_tcp_ofld_devices);
->  static DEFINE_MUTEX(nvme_tcp_ofld_devices_mutex);
-> +static LIST_HEAD(nvme_tcp_ofld_ctrl_list);
-> +static DEFINE_MUTEX(nvme_tcp_ofld_ctrl_mutex);
-> +static struct blk_mq_ops nvme_tcp_ofld_admin_mq_ops;
-> +static struct blk_mq_ops nvme_tcp_ofld_mq_ops;
->  
->  static inline struct nvme_tcp_ofld_ctrl *to_tcp_ofld_ctrl(struct nvme_ctrl *nctrl)
->  {
-> @@ -119,21 +123,439 @@ nvme_tcp_ofld_lookup_dev(struct nvme_tcp_ofld_ctrl *ctrl)
->  	return dev;
->  }
->  
-> +static struct blk_mq_tag_set *
-> +nvme_tcp_ofld_alloc_tagset(struct nvme_ctrl *nctrl, bool admin)
-> +{
-> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
-> +	struct blk_mq_tag_set *set;
-> +	int rc;
-> +
-> +	if (admin) {
-> +		set = &ctrl->admin_tag_set;
-> +		memset(set, 0, sizeof(*set));
-> +		set->ops = &nvme_tcp_ofld_admin_mq_ops;
-> +		set->queue_depth = NVME_AQ_MQ_TAG_DEPTH;
-> +		set->reserved_tags = NVMF_RESERVED_TAGS;
-> +		set->numa_node = nctrl->numa_node;
-> +		set->flags = BLK_MQ_F_BLOCKING;
-> +		set->cmd_size = sizeof(struct nvme_tcp_ofld_req);
-> +		set->driver_data = ctrl;
-> +		set->nr_hw_queues = 1;
-> +		set->timeout = NVME_ADMIN_TIMEOUT;
-> +	} else {
-> +		set = &ctrl->tag_set;
-> +		memset(set, 0, sizeof(*set));
-> +		set->ops = &nvme_tcp_ofld_mq_ops;
-> +		set->queue_depth = nctrl->sqsize + 1;
-> +		set->reserved_tags = NVMF_RESERVED_TAGS;
-> +		set->numa_node = nctrl->numa_node;
-> +		set->flags = BLK_MQ_F_SHOULD_MERGE;
-> +		set->cmd_size = sizeof(struct nvme_tcp_ofld_req);
-> +		set->driver_data = ctrl;
-> +		set->nr_hw_queues = nctrl->queue_count - 1;
-> +		set->timeout = NVME_IO_TIMEOUT;
-> +		set->nr_maps = nctrl->opts->nr_poll_queues ? HCTX_MAX_TYPES : 2;
-> +	}
-> +
-> +	rc = blk_mq_alloc_tag_set(set);
-> +	if (rc)
-> +		return ERR_PTR(rc);
-> +
-> +	return set;
-> +}
-> +
-> +static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl,
-> +					       bool new)
-> +{
-> +	int rc;
-> +
-> +	/* Placeholder - alloc_admin_queue */
-> +	if (new) {
-> +		nctrl->admin_tagset =
-> +				nvme_tcp_ofld_alloc_tagset(nctrl, true);
-> +		if (IS_ERR(nctrl->admin_tagset)) {
-> +			rc = PTR_ERR(nctrl->admin_tagset);
-> +			nctrl->admin_tagset = NULL;
-> +			goto out_destroy_queue;
-> +		}
-> +
-> +		nctrl->fabrics_q = blk_mq_init_queue(nctrl->admin_tagset);
-> +		if (IS_ERR(nctrl->fabrics_q)) {
-> +			rc = PTR_ERR(nctrl->fabrics_q);
-> +			nctrl->fabrics_q = NULL;
-> +			goto out_free_tagset;
-> +		}
-> +
-> +		nctrl->admin_q = blk_mq_init_queue(nctrl->admin_tagset);
-> +		if (IS_ERR(nctrl->admin_q)) {
-> +			rc = PTR_ERR(nctrl->admin_q);
-> +			nctrl->admin_q = NULL;
-> +			goto out_cleanup_fabrics_q;
-> +		}
-> +	}
-> +
-> +	/* Placeholder - nvme_tcp_ofld_start_queue */
-> +
-> +	rc = nvme_enable_ctrl(nctrl);
-> +	if (rc)
-> +		goto out_stop_queue;
-> +
-> +	blk_mq_unquiesce_queue(nctrl->admin_q);
-> +
-> +	rc = nvme_init_ctrl_finish(nctrl);
-> +	if (rc)
-> +		goto out_quiesce_queue;
-> +
-> +	return 0;
-> +
-> +out_quiesce_queue:
-> +	blk_mq_quiesce_queue(nctrl->admin_q);
-> +	blk_sync_queue(nctrl->admin_q);
-> +
-> +out_stop_queue:
-> +	/* Placeholder - stop offload queue */
-> +	nvme_cancel_admin_tagset(nctrl);
-> +
-> +out_cleanup_fabrics_q:
-> +	if (new)
-> +		blk_cleanup_queue(nctrl->fabrics_q);
-> +out_free_tagset:
-> +	if (new)
-> +		blk_mq_free_tag_set(nctrl->admin_tagset);
-> +out_destroy_queue:
-> +	/* Placeholder - free admin queue */
-> +
-> +	return rc;
-> +}
-> +
-> +static int
-> +nvme_tcp_ofld_configure_io_queues(struct nvme_ctrl *nctrl, bool new)
-> +{
-> +	int rc;
-> +
-> +	/* Placeholder - alloc_io_queues */
-> +
-> +	if (new) {
-> +		nctrl->tagset = nvme_tcp_ofld_alloc_tagset(nctrl, false);
-> +		if (IS_ERR(nctrl->tagset)) {
-> +			rc = PTR_ERR(nctrl->tagset);
-> +			nctrl->tagset = NULL;
-> +			goto out_free_io_queues;
-> +		}
-> +
-> +		nctrl->connect_q = blk_mq_init_queue(nctrl->tagset);
-> +		if (IS_ERR(nctrl->connect_q)) {
-> +			rc = PTR_ERR(nctrl->connect_q);
-> +			nctrl->connect_q = NULL;
-> +			goto out_free_tag_set;
-> +		}
-> +	}
-> +
-> +	/* Placeholder - start_io_queues */
-> +
-> +	if (!new) {
-> +		nvme_start_queues(nctrl);
-> +		if (!nvme_wait_freeze_timeout(nctrl, NVME_IO_TIMEOUT)) {
-> +			/*
-> +			 * If we timed out waiting for freeze we are likely to
-> +			 * be stuck.  Fail the controller initialization just
-> +			 * to be safe.
-> +			 */
-> +			rc = -ENODEV;
-> +			goto out_wait_freeze_timed_out;
-> +		}
-> +		blk_mq_update_nr_hw_queues(nctrl->tagset, nctrl->queue_count - 1);
-> +		nvme_unfreeze(nctrl);
-> +	}
-> +
-> +	return 0;
-> +
-> +out_wait_freeze_timed_out:
-> +	nvme_stop_queues(nctrl);
-> +	nvme_sync_io_queues(nctrl);
-> +
-> +	/* Placeholder - Stop IO queues */
-> +
-> +	if (new)
-> +		blk_cleanup_queue(nctrl->connect_q);
-> +out_free_tag_set:
-> +	if (new)
-> +		blk_mq_free_tag_set(nctrl->tagset);
-> +out_free_io_queues:
-> +	/* Placeholder - free_io_queues */
-> +
-> +	return rc;
-> +}
-> +
-> +static int nvme_tcp_ofld_setup_ctrl(struct nvme_ctrl *nctrl, bool new)
-> +{
-> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
-> +	struct nvmf_ctrl_options *opts = nctrl->opts;
-> +	int rc = 0;
-> +
-> +	rc = ctrl->dev->ops->setup_ctrl(ctrl);
-> +	if (rc)
-> +		return rc;
-> +
-> +	rc = nvme_tcp_ofld_configure_admin_queue(nctrl, new);
-> +	if (rc)
-> +		goto out_release_ctrl;
-> +
-> +	if (nctrl->icdoff) {
-> +		dev_err(nctrl->device, "icdoff is not supported!\n");
-> +		rc = -EINVAL;
-> +		goto destroy_admin;
-> +	}
-> +
-> +	if (!(nctrl->sgls & ((1 << 0) | (1 << 1)))) {
-> +		dev_err(nctrl->device, "Mandatory sgls are not supported!\n");
-> +		goto destroy_admin;
-> +	}
-> +
-> +	if (opts->queue_size > nctrl->sqsize + 1)
-> +		dev_warn(nctrl->device,
-> +			 "queue_size %zu > ctrl sqsize %u, clamping down\n",
-> +			 opts->queue_size, nctrl->sqsize + 1);
-> +
-> +	if (nctrl->sqsize + 1 > nctrl->maxcmd) {
-> +		dev_warn(nctrl->device,
-> +			 "sqsize %u > ctrl maxcmd %u, clamping down\n",
-> +			 nctrl->sqsize + 1, nctrl->maxcmd);
-> +		nctrl->sqsize = nctrl->maxcmd - 1;
-> +	}
-> +
-> +	if (nctrl->queue_count > 1) {
-> +		rc = nvme_tcp_ofld_configure_io_queues(nctrl, new);
-> +		if (rc)
-> +			goto destroy_admin;
-> +	}
-> +
-> +	if (!nvme_change_ctrl_state(nctrl, NVME_CTRL_LIVE)) {
-> +		/*
-> +		 * state change failure is ok if we started ctrl delete,
-> +		 * unless we're during creation of a new controller to
-> +		 * avoid races with teardown flow.
-> +		 */
-> +		WARN_ON_ONCE(nctrl->state != NVME_CTRL_DELETING &&
-> +			     nctrl->state != NVME_CTRL_DELETING_NOIO);
-> +		WARN_ON_ONCE(new);
-> +		rc = -EINVAL;
-> +		goto destroy_io;
-> +	}
-> +
-> +	nvme_start_ctrl(nctrl);
-> +
-> +	return 0;
-> +
-> +destroy_io:
-> +	/* Placeholder - stop and destroy io queues*/
-> +destroy_admin:
-> +	/* Placeholder - stop and destroy admin queue*/
-> +out_release_ctrl:
-> +	ctrl->dev->ops->release_ctrl(ctrl);
-> +
-> +	return rc;
-> +}
-> +
-> +static int
-> +nvme_tcp_ofld_check_dev_opts(struct nvmf_ctrl_options *opts,
-> +			     struct nvme_tcp_ofld_ops *ofld_ops)
-> +{
-> +	unsigned int nvme_tcp_ofld_opt_mask = NVMF_ALLOWED_OPTS |
-> +			ofld_ops->allowed_opts | ofld_ops->required_opts;
-> +	struct nvmf_ctrl_options dev_opts_mask;
-> +
-> +	if (opts->mask & ~nvme_tcp_ofld_opt_mask) {
-> +		pr_warn("One or more nvmf options missing from ofld drvr %s.\n",
-> +			ofld_ops->name);
-> +
-> +		dev_opts_mask.mask = nvme_tcp_ofld_opt_mask;
-> +
-> +		return nvmf_check_required_opts(&dev_opts_mask, opts->mask);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void nvme_tcp_ofld_free_ctrl(struct nvme_ctrl *nctrl)
-> +{
-> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(nctrl);
-> +	struct nvme_tcp_ofld_dev *dev = ctrl->dev;
-> +
-> +	if (list_empty(&ctrl->list))
-> +		goto free_ctrl;
-> +
-> +	ctrl->dev->ops->release_ctrl(ctrl);
-> +
-> +	mutex_lock(&nvme_tcp_ofld_ctrl_mutex);
-> +	list_del(&ctrl->list);
-> +	mutex_unlock(&nvme_tcp_ofld_ctrl_mutex);
-> +
-> +	nvmf_free_options(nctrl->opts);
-> +free_ctrl:
-> +	module_put(dev->ops->module);
-> +	kfree(ctrl->queues);
-> +	kfree(ctrl);
-> +}
-> +
-> +static void
-> +nvme_tcp_ofld_teardown_admin_queue(struct nvme_ctrl *ctrl, bool remove)
-> +{
-> +	/* Placeholder - teardown_admin_queue */
-> +}
-> +
-> +static void
-> +nvme_tcp_ofld_teardown_io_queues(struct nvme_ctrl *nctrl, bool remove)
-> +{
-> +	/* Placeholder - teardown_io_queues */
-> +}
-> +
-> +static void
-> +nvme_tcp_ofld_teardown_ctrl(struct nvme_ctrl *nctrl, bool shutdown)
-> +{
-> +	/* Placeholder - err_work and connect_work */
-> +	nvme_tcp_ofld_teardown_io_queues(nctrl, shutdown);
-> +	blk_mq_quiesce_queue(nctrl->admin_q);
-> +	if (shutdown)
-> +		nvme_shutdown_ctrl(nctrl);
-> +	else
-> +		nvme_disable_ctrl(nctrl);
-> +	nvme_tcp_ofld_teardown_admin_queue(nctrl, shutdown);
-> +}
-> +
-> +static void nvme_tcp_ofld_delete_ctrl(struct nvme_ctrl *nctrl)
-> +{
-> +	nvme_tcp_ofld_teardown_ctrl(nctrl, true);
-> +}
-> +
-> +static int
-> +nvme_tcp_ofld_init_request(struct blk_mq_tag_set *set,
-> +			   struct request *rq,
-> +			   unsigned int hctx_idx,
-> +			   unsigned int numa_node)
-> +{
-> +	struct nvme_tcp_ofld_req *req = blk_mq_rq_to_pdu(rq);
-> +
-> +	/* Placeholder - init request */
-> +
-> +	req->done = nvme_tcp_ofld_req_done;
-> +
-> +	return 0;
-> +}
-> +
-> +static blk_status_t
-> +nvme_tcp_ofld_queue_rq(struct blk_mq_hw_ctx *hctx,
-> +		       const struct blk_mq_queue_data *bd)
-> +{
-> +	/* Call nvme_setup_cmd(...) */
-> +
-> +	/* Call ops->send_req(...) */
-> +
-> +	return BLK_STS_OK;
-> +}
-> +
-> +static struct blk_mq_ops nvme_tcp_ofld_mq_ops = {
-> +	.queue_rq	= nvme_tcp_ofld_queue_rq,
-> +	.init_request	= nvme_tcp_ofld_init_request,
-> +	/*
-> +	 * All additional ops will be also implemented and registered similar to
-> +	 * tcp.c
-> +	 */
-> +};
-> +
-> +static struct blk_mq_ops nvme_tcp_ofld_admin_mq_ops = {
-> +	.queue_rq	= nvme_tcp_ofld_queue_rq,
-> +	.init_request	= nvme_tcp_ofld_init_request,
-> +	/*
-> +	 * All additional ops will be also implemented and registered similar to
-> +	 * tcp.c
-> +	 */
-> +};
-> +
-> +static const struct nvme_ctrl_ops nvme_tcp_ofld_ctrl_ops = {
-> +	.name			= "tcp_offload",
-> +	.module			= THIS_MODULE,
-> +	.flags			= NVME_F_FABRICS,
-> +	.reg_read32		= nvmf_reg_read32,
-> +	.reg_read64		= nvmf_reg_read64,
-> +	.reg_write32		= nvmf_reg_write32,
-> +	.free_ctrl		= nvme_tcp_ofld_free_ctrl,
-> +	.delete_ctrl		= nvme_tcp_ofld_delete_ctrl,
-> +	.get_address		= nvmf_get_address,
-> +};
-> +
-> +static bool
-> +nvme_tcp_ofld_existing_controller(struct nvmf_ctrl_options *opts)
-> +{
-> +	struct nvme_tcp_ofld_ctrl *ctrl;
-> +	bool found = false;
-> +
-> +	mutex_lock(&nvme_tcp_ofld_ctrl_mutex);
-> +	list_for_each_entry(ctrl, &nvme_tcp_ofld_ctrl_list, list) {
-> +		found = nvmf_ip_options_match(&ctrl->nctrl, opts);
+Introduce k parameter in pktgen samples in order to toggle UDP tx
+checksum
 
-Well; meanwhile we've earned yet another flags (hostiface) which allows
-us to specify a network interface.
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ samples/pktgen/parameters.sh                               | 7 ++++++-
+ samples/pktgen/pktgen_sample01_simple.sh                   | 2 ++
+ samples/pktgen/pktgen_sample02_multiqueue.sh               | 2 ++
+ samples/pktgen/pktgen_sample03_burst_single_flow.sh        | 2 ++
+ samples/pktgen/pktgen_sample04_many_flows.sh               | 2 ++
+ samples/pktgen/pktgen_sample05_flow_per_thread.sh          | 2 ++
+ .../pktgen_sample06_numa_awared_queue_irq_affinity.sh      | 2 ++
+ 7 files changed, 18 insertions(+), 1 deletion(-)
 
-Originally intended to bind the network flow to a specific interface,
-but question is how it would apply here.
-Do you even _have_ a network interface?
-(I guess you would for the network side, not necessarily for the offload
-part, though).
-What would be the appropriate action here if the user specifies the
-network interface of the network part?
-Still enable the offload?
-Technically that would against the spirit of that flag; so it would be
-feasible to have that flag controller software vs offload behaviour.
-IE one could envision that _using_ this flag to specify the network
-interface would disable the offload engine.
-Mind you, would be slightly counter-intuitive, as we probably don't have
-a corresponding offload interface which we could select.
-But really not sure what would be the best approach here.
-
-We should, however, figure out what to do with that flag.
-
-> +		if (found)
-> +			break;
-> +	}
-> +	mutex_unlock(&nvme_tcp_ofld_ctrl_mutex);
-> +
-> +	return found;
-> +}
-> +
->  static struct nvme_ctrl *
->  nvme_tcp_ofld_create_ctrl(struct device *ndev, struct nvmf_ctrl_options *opts)
->  {
-> +	struct nvme_tcp_ofld_queue *queue;
->  	struct nvme_tcp_ofld_ctrl *ctrl;
->  	struct nvme_tcp_ofld_dev *dev;
->  	struct nvme_ctrl *nctrl;
-> -	int rc = 0;
-> +	int i, rc = 0;
->  
->  	ctrl = kzalloc(sizeof(*ctrl), GFP_KERNEL);
->  	if (!ctrl)
->  		return ERR_PTR(-ENOMEM);
->  
-> +	INIT_LIST_HEAD(&ctrl->list);
->  	nctrl = &ctrl->nctrl;
-> +	nctrl->opts = opts;
-> +	nctrl->queue_count = opts->nr_io_queues + opts->nr_write_queues +
-> +			     opts->nr_poll_queues + 1;
-> +	nctrl->sqsize = opts->queue_size - 1;
-> +	nctrl->kato = opts->kato;
-> +	if (!(opts->mask & NVMF_OPT_TRSVCID)) {
-> +		opts->trsvcid =
-> +			kstrdup(__stringify(NVME_TCP_DISC_PORT), GFP_KERNEL);
-> +		if (!opts->trsvcid) {
-> +			rc = -ENOMEM;
-> +			goto out_free_ctrl;
-> +		}
-> +		opts->mask |= NVMF_OPT_TRSVCID;
-> +	}
-> +
-> +	rc = inet_pton_with_scope(&init_net, AF_UNSPEC, opts->traddr,
-> +				  opts->trsvcid,
-> +				  &ctrl->conn_params.remote_ip_addr);
-> +	if (rc) {
-> +		pr_err("malformed address passed: %s:%s\n",
-> +		       opts->traddr, opts->trsvcid);
-> +		goto out_free_ctrl;
-> +	}
-> +
-> +	if (opts->mask & NVMF_OPT_HOST_TRADDR) {
-> +		rc = inet_pton_with_scope(&init_net, AF_UNSPEC,
-> +					  opts->host_traddr, NULL,
-> +					  &ctrl->conn_params.local_ip_addr);
-> +		if (rc) {
-> +			pr_err("malformed src address passed: %s\n",
-> +			       opts->host_traddr);
-> +			goto out_free_ctrl;
-> +		}
-> +	}
->  
-
--> And here we would need to check for the interface ...
-
-> -	/* Init nvme_tcp_ofld_ctrl and nvme_ctrl params based on received opts */
-> +	if (!opts->duplicate_connect &&
-> +	    nvme_tcp_ofld_existing_controller(opts)) {
-> +		rc = -EALREADY;
-> +		goto out_free_ctrl;
-> +	}
->  
->  	/* Find device that can reach the dest addr */
->  	dev = nvme_tcp_ofld_lookup_dev(ctrl);
-> @@ -151,6 +573,10 @@ nvme_tcp_ofld_create_ctrl(struct device *ndev, struct nvmf_ctrl_options *opts)
->  		goto out_free_ctrl;
->  	}
->  
-> +	rc = nvme_tcp_ofld_check_dev_opts(opts, dev->ops);
-> +	if (rc)
-> +		goto out_module_put;
-> +
->  	ctrl->dev = dev;
->  
->  	if (ctrl->dev->ops->max_hw_sectors)
-> @@ -158,14 +584,51 @@ nvme_tcp_ofld_create_ctrl(struct device *ndev, struct nvmf_ctrl_options *opts)
->  	if (ctrl->dev->ops->max_segments)
->  		nctrl->max_segments = ctrl->dev->ops->max_segments;
->  
-> -	/* Init queues */
-> +	ctrl->queues = kcalloc(nctrl->queue_count,
-> +			       sizeof(struct nvme_tcp_ofld_queue),
-> +			       GFP_KERNEL);
-> +	if (!ctrl->queues) {
-> +		rc = -ENOMEM;
-> +		goto out_module_put;
-> +	}
-> +
-> +	for (i = 0; i < nctrl->queue_count; ++i) {
-> +		queue = &ctrl->queues[i];
-> +		queue->ctrl = ctrl;
-> +		queue->dev = dev;
-> +		queue->report_err = nvme_tcp_ofld_report_queue_err;
-> +	}
-> +
-> +	rc = nvme_init_ctrl(nctrl, ndev, &nvme_tcp_ofld_ctrl_ops, 0);
-> +	if (rc)
-> +		goto out_free_queues;
-> +
-> +	if (!nvme_change_ctrl_state(nctrl, NVME_CTRL_CONNECTING)) {
-> +		WARN_ON_ONCE(1);
-> +		rc = -EINTR;
-> +		goto out_uninit_ctrl;
-> +	}
->  
-> -	/* Call nvme_init_ctrl */
-> +	rc = nvme_tcp_ofld_setup_ctrl(nctrl, true);
-> +	if (rc)
-> +		goto out_uninit_ctrl;
->  
-> -	/* Setup ctrl */
-> +	dev_info(nctrl->device, "new ctrl: NQN \"%s\", addr %pISp\n",
-> +		 opts->subsysnqn, &ctrl->conn_params.remote_ip_addr);
-> +
-> +	mutex_lock(&nvme_tcp_ofld_ctrl_mutex);
-> +	list_add_tail(&ctrl->list, &nvme_tcp_ofld_ctrl_list);
-> +	mutex_unlock(&nvme_tcp_ofld_ctrl_mutex);
->  
->  	return nctrl;
->  
-> +out_uninit_ctrl:
-> +	nvme_uninit_ctrl(nctrl);
-> +	nvme_put_ctrl(nctrl);
-> +out_free_queues:
-> +	kfree(ctrl->queues);
-> +out_module_put:
-> +	module_put(dev->ops->module);
->  out_free_ctrl:
->  	kfree(ctrl);
->  
-> @@ -193,7 +656,15 @@ static int __init nvme_tcp_ofld_init_module(void)
->  
->  static void __exit nvme_tcp_ofld_cleanup_module(void)
->  {
-> +	struct nvme_tcp_ofld_ctrl *ctrl;
-> +
->  	nvmf_unregister_transport(&nvme_tcp_ofld_transport);
-> +
-> +	mutex_lock(&nvme_tcp_ofld_ctrl_mutex);
-> +	list_for_each_entry(ctrl, &nvme_tcp_ofld_ctrl_list, list)
-> +		nvme_delete_ctrl(&ctrl->nctrl);
-> +	mutex_unlock(&nvme_tcp_ofld_ctrl_mutex);
-> +	flush_workqueue(nvme_delete_wq);
->  }
->  
->  module_init(nvme_tcp_ofld_init_module);
-> 
-Cheers,
-
-Hannes
+diff --git a/samples/pktgen/parameters.sh b/samples/pktgen/parameters.sh
+index b4c1b371e4b8..7a425fc260ee 100644
+--- a/samples/pktgen/parameters.sh
++++ b/samples/pktgen/parameters.sh
+@@ -11,6 +11,7 @@ function usage() {
+     echo "  -d : (\$DEST_IP)   destination IP. CIDR (e.g. 198.18.0.0/15) is also allowed"
+     echo "  -m : (\$DST_MAC)   destination MAC-addr"
+     echo "  -p : (\$DST_PORT)  destination PORT range (e.g. 433-444) is also allowed"
++    echo "  -k : (\$UDP_CSUM)  enable UDP tx checksum"
+     echo "  -t : (\$THREADS)   threads to start"
+     echo "  -f : (\$F_THREAD)  index of first thread (zero indexed CPU number)"
+     echo "  -c : (\$SKB_CLONE) SKB clones send before alloc new SKB"
+@@ -26,7 +27,7 @@ function usage() {
+ 
+ ##  --- Parse command line arguments / parameters ---
+ ## echo "Commandline options:"
+-while getopts "s:i:d:m:p:f:t:c:n:b:w:vxh6a" option; do
++while getopts "s:i:d:m:p:f:t:c:n:b:w:vxh6ak" option; do
+     case $option in
+         i) # interface
+           export DEV=$OPTARG
+@@ -88,6 +89,10 @@ while getopts "s:i:d:m:p:f:t:c:n:b:w:vxh6a" option; do
+           export APPEND=yes
+           info "Append mode: APPEND=$APPEND"
+           ;;
++	k)
++	  export UDP_CSUM=yes
++          info "UDP tx checksum: UDP_CSUM=$UDP_CSUM"
++	  ;;
+         h|?|*)
+           usage;
+           err 2 "[ERROR] Unknown parameters!!!"
+diff --git a/samples/pktgen/pktgen_sample01_simple.sh b/samples/pktgen/pktgen_sample01_simple.sh
+index a09f3422fbcc..246cfe02bb82 100755
+--- a/samples/pktgen/pktgen_sample01_simple.sh
++++ b/samples/pktgen/pktgen_sample01_simple.sh
+@@ -72,6 +72,8 @@ if [ -n "$DST_PORT" ]; then
+     pg_set $DEV "udp_dst_max $UDP_DST_MAX"
+ fi
+ 
++[ ! -z "$UDP_CSUM" ] && pg_set $dev "flag UDPCSUM"
++
+ # Setup random UDP port src range
+ pg_set $DEV "flag UDPSRC_RND"
+ pg_set $DEV "udp_src_min $UDP_SRC_MIN"
+diff --git a/samples/pktgen/pktgen_sample02_multiqueue.sh b/samples/pktgen/pktgen_sample02_multiqueue.sh
+index acae8ede0d6c..c6af3d9d5171 100755
+--- a/samples/pktgen/pktgen_sample02_multiqueue.sh
++++ b/samples/pktgen/pktgen_sample02_multiqueue.sh
+@@ -75,6 +75,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+ 	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
++    [ ! -z "$UDP_CSUM" ] && pg_set $dev "flag UDPCSUM"
++
+     # Setup random UDP port src range
+     pg_set $dev "flag UDPSRC_RND"
+     pg_set $dev "udp_src_min $UDP_SRC_MIN"
+diff --git a/samples/pktgen/pktgen_sample03_burst_single_flow.sh b/samples/pktgen/pktgen_sample03_burst_single_flow.sh
+index 5adcf954de73..ab87de440277 100755
+--- a/samples/pktgen/pktgen_sample03_burst_single_flow.sh
++++ b/samples/pktgen/pktgen_sample03_burst_single_flow.sh
+@@ -73,6 +73,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+ 	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
++    [ ! -z "$UDP_CSUM" ] && pg_set $dev "flag UDPCSUM"
++
+     # Setup burst, for easy testing -b 0 disable bursting
+     # (internally in pktgen default and minimum burst=1)
+     if [[ ${BURST} -ne 0 ]]; then
+diff --git a/samples/pktgen/pktgen_sample04_many_flows.sh b/samples/pktgen/pktgen_sample04_many_flows.sh
+index ddce876635aa..56c5f5af350f 100755
+--- a/samples/pktgen/pktgen_sample04_many_flows.sh
++++ b/samples/pktgen/pktgen_sample04_many_flows.sh
+@@ -72,6 +72,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+ 	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
++    [ ! -z "$UDP_CSUM" ] && pg_set $dev "flag UDPCSUM"
++
+     # Randomize source IP-addresses
+     pg_set $dev "flag IPSRC_RND"
+     pg_set $dev "src_min $SRC_MIN"
+diff --git a/samples/pktgen/pktgen_sample05_flow_per_thread.sh b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
+index 4a65fe2fcee9..6e0effabca59 100755
+--- a/samples/pktgen/pktgen_sample05_flow_per_thread.sh
++++ b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
+@@ -62,6 +62,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+ 	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
++    [ ! -z "$UDP_CSUM" ] && pg_set $dev "flag UDPCSUM"
++
+     # Setup source IP-addresses based on thread number
+     pg_set $dev "src_min 198.18.$((thread+1)).1"
+     pg_set $dev "src_max 198.18.$((thread+1)).1"
+diff --git a/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh b/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
+index 10f1da571f40..7c27923083a6 100755
+--- a/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
++++ b/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
+@@ -92,6 +92,8 @@ for ((i = 0; i < $THREADS; i++)); do
+ 	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
++    [ ! -z "$UDP_CSUM" ] && pg_set $dev "flag UDPCSUM"
++
+     # Setup random UDP port src range
+     pg_set $dev "flag UDPSRC_RND"
+     pg_set $dev "udp_src_min $UDP_SRC_MIN"
 -- 
-Dr. Hannes Reinecke		        Kernel Storage Architect
-hare@suse.de			               +49 911 74053 688
-SUSE Software Solutions Germany GmbH, 90409 Nürnberg
-GF: F. Imendörffer, HRB 36809 (AG Nürnberg)
+2.31.1
+
