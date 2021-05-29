@@ -2,132 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3012394DC5
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 20:49:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95292394DD2
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 21:15:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbhE2Su7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 14:50:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41882 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229762AbhE2Su6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 May 2021 14:50:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A0420601FC;
-        Sat, 29 May 2021 18:49:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622314161;
-        bh=UO9f9X1zD1LdxDjt5bxqXA/KKesiTsKKlLQIX0Nd88g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p4euv65Erksx0Dcx7ynJzUssdAk3q2Z9iDq9yv74gmL7j1JZjqWqFYoPvOK79kA82
-         qdOmHtBSLQwAKIcy6zZRWhIE0K3v+oiqsDie2Ig4uYP3mfKp6fXRNERE46f8apwWZP
-         jTQdr4uec8HPEQITs+sAdoP4TNbGwc61tTqi4IiI/kztEaQA8UbRsautovFIS4cPiY
-         w29ewfj0FO0AlN1JaD9Hr2ExPc8EE/0FBTh9Ce+QzqhCkBtilX+lxa7od9ZCJivmGE
-         +sMf7YGtIJMNJvXQo7zV9H3ALbdhUmzon4LeNq7Dm/NAjrcJUM30JPumvt1pPbcBem
-         DbaP09V5HAB5Q==
-Date:   Sat, 29 May 2021 11:49:19 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     <davem@davemloft.net>, <olteanv@gmail.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andriin@fb.com>, <edumazet@google.com>,
-        <weiwan@google.com>, <cong.wang@bytedance.com>,
-        <ap420073@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <mkl@pengutronix.de>, <linux-can@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
-        <alobakin@pm.me>
-Subject: Re: [PATCH net-next 2/3] net: sched: implement TCQ_F_CAN_BYPASS for
- lockless qdisc
-Message-ID: <20210529114919.4f8b1980@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <ee1a62da-9758-70db-abd3-c5ca2e8e0ce0@huawei.com>
-References: <1622170197-27370-1-git-send-email-linyunsheng@huawei.com>
-        <1622170197-27370-3-git-send-email-linyunsheng@huawei.com>
-        <20210528180012.676797d6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <a6a965ee-7368-d37b-9c70-bba50c67eec9@huawei.com>
-        <20210528213218.2b90864c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <ee1a62da-9758-70db-abd3-c5ca2e8e0ce0@huawei.com>
+        id S229800AbhE2TQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 15:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229718AbhE2TQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 15:16:46 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775C4C061574;
+        Sat, 29 May 2021 12:15:08 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id e7so1138061plj.7;
+        Sat, 29 May 2021 12:15:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4JV2W29y26pepLG4gekNYXoV2EP+6kk949X/NrDMyWs=;
+        b=JKM1zRuRupca+dp8XU2VFl9BlSLzntOr8wWJXSKnJ7SEsz6L1y449tyXvkd3DPM8fh
+         U2N0aw1FuVz/4bmhhwI8X8OczdScQVWANE2H2CVUN/XFxIXzvpRIMEarGAgWNLxOlUZc
+         YWup5xUXUqp/Y/DYP8FtmQUf5QJOMCmP3DJ3zwo9VqWDIXSgnJimp9LcPjQsZ8AdeETm
+         5yaktuR6h4bkQ/srUPVXZXxkkfE/vznIvlrAJ9FNjhimyvF6Lzv2PqRmKVG97tN+ZSYR
+         sCuBoxG9RInyMdHy1zAt7pXr6I+mRHILoeXiSVyqlgavuBItyhiURNJLpt0p8D5sKNdo
+         LGfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4JV2W29y26pepLG4gekNYXoV2EP+6kk949X/NrDMyWs=;
+        b=S3b/118uPfim1djAeLtbC7/OhvCZ3igU82fMHGgoD1yRDt6QJgqqyzdEvxeR7XNEU0
+         ypdEsrCPd2WiIarv86We3/t6+plC7q2U2xQmAs/9D7CVxbjaoIbDojv5cOMwm1k0LlBq
+         f4QYBH9U5bkQ5H7g0GxznoFi7l8A10rJyW4rmPeShp3pqqEwfCs1QbxqWo3FCQSQqz0V
+         Y3fL3Ipe8HUeiQ/4K/HKDX1ayI+dBqo9Dr2AoPe0MePASNpKPvuuzLylwr5JTjCZBGa1
+         dJ5mqQyL77BuMYTr5Q3X8nDc6btYzMmo9yDH6QH3n6U5p5/cZPrOeAOvRHdKAdkD9PsK
+         B80w==
+X-Gm-Message-State: AOAM531puBUZtDN0Vgnn8yg1+KOEoijRi1C/0wxGU3EfZhBjhhXfB+Qx
+        gndZ88w9/i3Af1Xy7JGKq338hEudKC+xPWdA0xA=
+X-Google-Smtp-Source: ABdhPJzuKeaiPjj6k1A6fPPa/Rxqnjv0guMS59rNdf5owM9nzddwR3th00IWeJyI6huQfyQgIi/nGmPcuRrisUFtmGY=
+X-Received: by 2002:a17:90a:1141:: with SMTP id d1mr10987300pje.56.1622315707909;
+ Sat, 29 May 2021 12:15:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210529060526.422987-1-changbin.du@gmail.com>
+In-Reply-To: <20210529060526.422987-1-changbin.du@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 29 May 2021 12:14:57 -0700
+Message-ID: <CAM_iQpWwApLVg39rUkyXxnhsiP0SZf=0ft6vsq=VxFtJ2SumAQ@mail.gmail.com>
+Subject: Re: [PATCH] net: fix oops in socket ioctl cmd SIOCGSKNS when NET_NS
+ is disabled
+To:     Changbin Du <changbin.du@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kici nski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 29 May 2021 15:03:09 +0800 Yunsheng Lin wrote:
-> On 2021/5/29 12:32, Jakub Kicinski wrote:
-> > On Sat, 29 May 2021 09:44:57 +0800 Yunsheng Lin wrote:  
-> >> MISSED is only set when there is lock contention, which means it
-> >> is better not to do the qdisc bypass to avoid out of order packet
-> >> problem,   
-> > 
-> > Avoid as in make less likely? Nothing guarantees other thread is not
-> > interrupted after ->enqueue and before qdisc_run_begin().
-> > 
-> > TBH I'm not sure what out-of-order situation you're referring to,
-> > there is no ordering guarantee between separate threads trying to
-> > transmit AFAIU.  
-> A thread need to do the bypass checking before doing enqueuing, so
-> it means MISSED is set or the trylock fails for the bypass transmiting(
-> which will set the MISSED after the first trylock), so the MISSED will
-> always be set before a thread doing a enqueuing, and we ensure MISSED
-> only be cleared during the protection of q->seqlock, after clearing
-> MISSED, we do anther round of dequeuing within the protection of
-> q->seqlock.
-
-The fact that MISSED is only cleared under q->seqlock does not matter,
-because setting it and ->enqueue() are not under any lock. If the thread
-gets interrupted between:
-
-	if (q->flags & TCQ_F_CAN_BYPASS && nolock_qdisc_is_empty(q) &&
-	    qdisc_run_begin(q)) {
-
-and ->enqueue() we can't guarantee that something else won't come in,
-take q->seqlock and clear MISSED.
-
-thread1                thread2             thread3
-# holds seqlock
-                       qdisc_run_begin(q)
-                       set(MISSED)
-pfifo_fast_dequeue
-  clear(MISSED)
-  # recheck the queue
-qdisc_run_end()
-                       ->enqueue()
-                                            q->flags & TCQ_F_CAN_BYPASS..
-                                            qdisc_run_begin() # true
-                                            sch_direct_xmit()
-                       qdisc_run_begin()
-                       set(MISSED)
-
-Or am I missing something?
-
-Re-checking nolock_qdisc_is_empty() may or may not help.
-But it doesn't really matter because there is no ordering
-requirement between thread2 and thread3 here.
-
-> So if a thread has taken the q->seqlock and the MISSED is not set yet,
-> it is allowed to send the packet directly without going through the
-> qdisc enqueuing and dequeuing process.
-> 
-> > IOW this check is not required for correctness, right?  
-> 
-> if a thread has taken the q->seqlock and the MISSED is not set, it means
-> other thread has not set MISSED after the first trylock and before the
-> second trylock, which means the enqueuing is not done yet.
-> So I assume the this check is required for correctness if I understand
-> your question correctly.
+On Fri, May 28, 2021 at 11:08 PM Changbin Du <changbin.du@gmail.com> wrote:
+> diff --git a/net/socket.c b/net/socket.c
+> index 27e3e7d53f8e..644b46112d35 100644
+> --- a/net/socket.c
+> +++ b/net/socket.c
+> @@ -1149,11 +1149,15 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
+>                         mutex_unlock(&vlan_ioctl_mutex);
+>                         break;
+>                 case SIOCGSKNS:
+> +#ifdef CONFIG_NET_NS
+>                         err = -EPERM;
+>                         if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
+>                                 break;
 >
-> >> another good thing is that we could also do the batch
-> >> dequeuing and transmiting of packets when there is lock contention.  
-> > 
-> > No doubt, but did you see the flag get set significantly often here 
-> > to warrant the double-checking?  
-> 
-> No, that is just my guess:)
+>                         err = open_related_ns(&net->ns, get_net_ns);
+> +#else
+> +                       err = -ENOTSUPP;
+> +#endif
 
+I wonder if it is easier if we just reject ns->ops==NULL case
+in open_related_ns(). For 1) we can save an ugly #ifdef here;
+2) drivers/net/tun.c has the same bugs.
+
+Something like this:
+
+diff --git a/fs/nsfs.c b/fs/nsfs.c
+index 800c1d0eb0d0..d63414604e99 100644
+--- a/fs/nsfs.c
++++ b/fs/nsfs.c
+@@ -152,6 +152,9 @@ int open_related_ns(struct ns_common *ns,
+        int err;
+        int fd;
+
++       if (!ns->ops)
++               return -EOPNOTSUPP;
++
+        fd = get_unused_fd_flags(O_CLOEXEC);
+        if (fd < 0)
+                return fd;
