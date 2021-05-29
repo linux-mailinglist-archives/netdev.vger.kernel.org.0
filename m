@@ -2,100 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E355394DB4
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 20:43:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7DBE394DBF
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 20:48:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbhE2SoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 14:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
+        id S229875AbhE2SuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 14:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbhE2SoX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 14:44:23 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BE4C061574
-        for <netdev@vger.kernel.org>; Sat, 29 May 2021 11:42:46 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id qq22so1934653ejb.9
-        for <netdev@vger.kernel.org>; Sat, 29 May 2021 11:42:46 -0700 (PDT)
+        with ESMTP id S229762AbhE2SuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 14:50:22 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF7FC061760
+        for <netdev@vger.kernel.org>; Sat, 29 May 2021 11:48:45 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id b17so8689863ede.0
+        for <netdev@vger.kernel.org>; Sat, 29 May 2021 11:48:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:references:from:subject:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=YZoUx9cevNVY9B/GlNhUbyd5QxdXNNymTwSVMDdV/S4=;
-        b=MxMnVlLdDpAVD0NNBejMDoxnNGA8swAkvIcWlzyLfZneuF0dWzmrxWasRSKt0vXxgE
-         COfmHLjASHr0cBOVQUMl9Dgc/w9pyz7sIK2w1jt6GDllHRxJkgtbSnG/xr4a1zIcK30D
-         Bp3ruquz10dzQ52o1cf7I70YRm6MTknH/Zy9jhkptZW7AqFAlDCdEdsMcIoVj9GObtg3
-         9LvxEMr6oU7mT9349QdPa3DlryeoDUgKjvjmsIJAqrtWu8rja1Jt3eF3fHVK8c9buFTg
-         tygPxZ3vKZZb9dpRtKEWGvWKV+wBa+vgiRlCMIEkKS/9dFBYCxNumaC5/yDl8dF3nMIB
-         4DPw==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PxkN5674Gdo7C/DvFwdmRlPrHnz0qD2VW7zEeao9HA0=;
+        b=egZtDVPv+pEmzpQcYmGqbrNNZyRf7Aqgebz64H8qjXLqaTKcUwlR3bcfeOXQVoQ0/I
+         7zwI+0FvRjoKaxZUkV7/qMK527UOii8JwIHXsmWt3289bVTzi9jLS7DrylJywuRK85RH
+         XBY1R3AHPL69XeC7SFpUqb6jYFOv1/r8nNtp8fKORkkIuxQaK7l7pwk6KrKXFhlZQCGE
+         EcOZJePRxsnnGa9NxCm+Hg9bBxdVgKUxA06srzViIJ8xJs6i38G7NVkfnqvzrPg5uWam
+         tPUgQZGd1V/osaT50MNDtOL3E3SbY3nnfIen9INxBSbFY2ZNJ5UWnlfEyLDqOf4fSzeX
+         BIxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YZoUx9cevNVY9B/GlNhUbyd5QxdXNNymTwSVMDdV/S4=;
-        b=FIqaiKHqUUzVpqYYf+FkH+JElL+aWeiejS8C9eFx9WA9jlNr4v/ui1RvLq7LMJGUDt
-         Sg1GL4UYWVUzNsln8XNOl0/uv+b/SFPDD67C6rNumIVNjBqW0V5/jMXIDJ2iSO+jKFu3
-         yuPgcvd2Pf3FRbKbelMI463KbepzgrmOdP6NMpEhDGydjSR7uQu+VRUpkOVHpz9gCuH7
-         BSmjULUk8FZaGm5WzXXQSpwAJMe10QhWLgIqGuCGS5qOuCCw+QkcLQDOneHHwRqiblV3
-         Ye8ialxA8+mrgnL2rt4Z6Eih51TQnYJkP6YpFwpYWwXauonBIBSX5qx+4z2CBhEefADv
-         Vsow==
-X-Gm-Message-State: AOAM532iXnV2gSon3vZDcE4lPLPl76bgHi56/oO0lKuAXTDrB8Hq6oxf
-        aE/+OpDpF3OXmH2I0WEFRCrFjppfRSg=
-X-Google-Smtp-Source: ABdhPJyFApHxKsuU5lnZG3m3g9PEg9oRuq4K97f1KvCFKr1xMHbW9ZRD0AnZ+iT7VhPzEESbyOnuOg==
-X-Received: by 2002:a17:906:7842:: with SMTP id p2mr14640283ejm.487.1622313764933;
-        Sat, 29 May 2021 11:42:44 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f38:4600:24f0:58ef:1226:c09c? (p200300ea8f38460024f058ef1226c09c.dip0.t-ipconnect.de. [2003:ea:8f38:4600:24f0:58ef:1226:c09c])
-        by smtp.googlemail.com with ESMTPSA id o64sm3399986eda.83.2021.05.29.11.42.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 29 May 2021 11:42:44 -0700 (PDT)
-To:     Nikolai Zhubr <zhubr.2@gmail.com>, netdev@vger.kernel.org,
-        Jeff Garzik <jgarzik@pobox.com>
-References: <60B24AC2.9050505@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: Realtek 8139 problem on 486.
-Message-ID: <ca333156-f839-9850-6e3d-696d7b725b09@gmail.com>
-Date:   Sat, 29 May 2021 20:42:37 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PxkN5674Gdo7C/DvFwdmRlPrHnz0qD2VW7zEeao9HA0=;
+        b=OhDNYLIJFFSDv6qe0dF6LWzL7InLxn05ekLefm+8eZNjfFP+0YP3IdQxFZoWfdM0wR
+         MdFHjmcR1MhNkqyN/2UkQ0bLjREoL/LpppAvT55jy+zeHxWLvL9ZNDXALJcXmEqhJ2v5
+         Cy5GS6iS4qT+lPC6+4brQznd8be7LyUcD6N90cLHwhbiEfk5nyEjTI+pV93TwoTpoG/3
+         4Wpn8CVCCh1LMRFwljpR6jOds6QWKuKW3hnlMDyXwXiijI5lNPXPHXUPybafVRhIIJOR
+         aTYNu2KTgbJcBm5FIlLe32Pbu99V1jE5d70NJHYnLF5cppE0EAawsLjWNyWbfmlfee9v
+         PopA==
+X-Gm-Message-State: AOAM533iu7HrEx93R9KtEcbx1h+VDu6CVnKvYm2aVksARXRzSJE4+QNY
+        P/UFUgXDlOx2D/3BN6IxZ0RK+9to7wGY1heJ9tIU
+X-Google-Smtp-Source: ABdhPJyUKpixSoshzQJyPJqEx0bgxxFA8s58ydUH/2LXx1S03FTwjdX+rXFI9WK5gl/+d4oHpjX3EfrlNm+PVmnhJgQ=
+X-Received: by 2002:a05:6402:430b:: with SMTP id m11mr16690557edc.31.1622314124071;
+ Sat, 29 May 2021 11:48:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <60B24AC2.9050505@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210517092006.803332-1-omosnace@redhat.com> <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
+ <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net> <CAHC9VhR-kYmMA8gsqkiL5=poN9FoL-uCyx1YOLCoG2hRiUBYug@mail.gmail.com>
+ <c7c2d7e1-e253-dce0-d35c-392192e4926e@iogearbox.net>
+In-Reply-To: <c7c2d7e1-e253-dce0-d35c-392192e4926e@iogearbox.net>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Sat, 29 May 2021 14:48:33 -0400
+Message-ID: <CAHC9VhS1XRZjKcTFgH1+n5uA-CeT+9BeSP5jvT2+RE5ougLpUg@mail.gmail.com>
+Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
+ permission checks
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
+        linux-security-module@vger.kernel.org,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Casey Schaufler <casey@schaufler-ca.com>, jolsa@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29.05.2021 16:08, Nikolai Zhubr wrote:
-> Hello all,
-> 
-> I'm observing a problem with Realtek 8139 cards on a couple of 486 boxes. The respective driver is 8139too. It starts operation successfully, obtains an ip address via dhcp, replies to pings steadily, but some subsequent communication fails apparently. At least, nfsroot is unusable (it gets stuck in "... not responding, still trying" forever), and also iperf3 -c xxx when run against a neighbour box on a lan prints 2-3 lines with some reasonable 7Mbit/s rate, then just prints 0s and subsequently throws a panic about output queue full or some such.
-> 
-> My kernel is 4.14.221 at the moment, but I can compile another if necessary.
-> I've already tried the "#define RTL8139_DEBUG 3" and "8139TOO_PIO=y" and "#define RX_DMA_BURST 4" and "#define TX_DMA_BURST 4" (in case there is a PCI burst issue, as mentioned somewhere) and nothing changed whatsoever.
-> 
-> Some additional notes:
-> - the problem is 100% reproducable;
-> - replacing this 8139 card with some entirely different 8139-based card changes nothing;
-> - if I replace this 8139 with a (just random) intel Pro/1000 card, everything seem to work fine;
-> - if I insert this 8139 into some other 486 motherboard (with a different chipset), everything seem to work fine again;
-> - etherboot and pxelinux work fine.
-> 
-> I'm willing to do some debugging but unfortunately I'm not anywhere familiar with this driver and network controllers in general, therefore I'm asking for some hints/advice first.
-> 
-This driver hasn't seen functional changes for ages. Any previous kernel
-version that works fine so that you could bisect? It will be hard to
-find any developer who has test hw, especially as your issue seems to be
-system-dependent.
-Please provide a full dmesg log, maybe it provides a hint.
+On Fri, May 28, 2021 at 2:28 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> In the case of tracing, it's different. You install small programs that are
+> triggered when certain events fire. Random example from bpftrace's README [0],
+> you want to generate a histogram of syscall counts by program. One-liner is:
+>
+>    bpftrace -e 'tracepoint:raw_syscalls:sys_enter { @[comm] = count(); }'
+>
+> bpftrace then goes and generates a BPF prog from this internally. One way of
+> doing it could be to call bpf_get_current_task() helper and then access
+> current->comm via one of bpf_probe_read_kernel{,_str}() helpers ...
 
-You write: "reasonable 7Mbit/s rate"
-So you operate the systems with a 10Mbit hub? Or any other reason why
-you consider 7Mbps reasonable?
+I think we can all agree that the BPF tracing is a bit chaotic in the
+sense that the tracing programs can be executed in various
+places/contexts and that presents some challenges with respect to
+access control and auditing.  If you are following the io_uring stuff
+that is going on now you can see a little of what is required to make
+audit work properly in the various io_uring contexts and that is
+relatively small compared to what is possible with BPF tracing.  Of
+course this assumes I've managed to understand bpf tracing properly
+this morning, and I very well may still be missing points and/or
+confused about some of the important details.  Corrections are
+welcome.
 
-> 
-> Thank you,
-> 
-> Regards,
-> Nikolai
-Heiner
+Daniel's patch side steps that worry by just doing the lockdown
+permission check when the BPF program is loaded, but that isn't a
+great solution if the policy changes afterward.  I was hoping there
+might be some way to perform the permission check as needed, but the
+more I look the more that appears to be difficult, if not impossible
+(once again, corrections are welcome).
+
+I'm now wondering if the right solution here is to make use of the LSM
+notifier mechanism.  I'm not yet entirely sure if this would work from
+a BPF perspective, but I could envision the BPF subsystem registering
+a LSM notification callback via register_blocking_lsm_notifier(), see
+if Infiniband code as an example, and then when the LSM(s) policy
+changes the BPF subsystem would get a notification and it could
+revalidate the existing BPF programs and take block/remove/whatever
+the offending BPF programs.  This obviously requires a few things
+which I'm not sure are easily done, or even possible:
+
+1. Somehow the BPF programs would need to be "marked" at
+load/verification time with respect to their lockdown requirements so
+that decisions can be made later.  Perhaps a flag in bpf_prog_aux?
+
+2. While it looks like it should be possible to iterate over all of
+the loaded BPF programs in the LSM notifier callback via
+idr_for_each(prog_idr, ...), it is not clear to me if it is possible
+to safely remove, or somehow disable, BPF programs once they have been
+loaded.  Hopefully the BPF folks can help answer that question.
+
+3. Disabling of BPF programs might be preferable to removing them
+entirely on LSM policy changes as it would be possible to make the
+lockdown state less restrictive at a future point in time, allowing
+for the BPF program to be executed again.  Once again, not sure if
+this is even possible.
+
+Related, the lockdown LSM should probably also grow LSM notifier
+support similar to selinux_lsm_notifier_avc_callback(), for example
+either lock_kernel_down() or lockdown_write() might want to do a
+call_blocking_lsm_notifier(LSM_POLICY_CHANGE, NULL) call.
+
+-- 
+paul moore
+www.paul-moore.com
