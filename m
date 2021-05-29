@@ -2,61 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D38A639497B
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 02:22:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 082393949B5
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 02:53:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229656AbhE2AXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 May 2021 20:23:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34786 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229528AbhE2AXu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 May 2021 20:23:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=AGrOMjrB8PkVi7aeI+ZHwE/D7dNsrdCe0Y1qW9/Xf7Q=; b=JAwkfKa4b+R4z95o8Ts4NGypQO
-        AvwczwZLoGwthlbDygq5400ysjb2ALDcpHJasO047RoPE67Ke4AGE2LpMIiEn7qCTBYYotxb+0Xzg
-        Q8tc1kkgZpFm28ymvZ2nvdYt8F0XSIPeJzdCW1WKbx/61iNRh/d0qTAKFuBaj3Gb9aoo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lmmju-006ouE-Cx; Sat, 29 May 2021 02:22:06 +0200
-Date:   Sat, 29 May 2021 02:22:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Thompson <davthompson@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        limings@nvidia.com, Asmaa Mnebhi <asmaa@nvidia.com>
-Subject: Re: [PATCH net-next v5] Add Mellanox BlueField Gigabit Ethernet
- driver
-Message-ID: <YLGJLv7y0NLPFR28@lunn.ch>
-References: <20210528193719.6132-1-davthompson@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210528193719.6132-1-davthompson@nvidia.com>
+        id S229653AbhE2Ay7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 May 2021 20:54:59 -0400
+Received: from saphodev.broadcom.com ([192.19.11.229]:39864 "EHLO
+        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229541AbhE2Ay6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 May 2021 20:54:58 -0400
+Received: from localhost.swdvt.lab.broadcom.net (dhcp-10-13-253-90.swdvt.lab.broadcom.net [10.13.253.90])
+        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 02BADE9;
+        Fri, 28 May 2021 17:53:21 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 02BADE9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+        s=dkimrelay; t=1622249602;
+        bh=Z0dNLpSXIAf/ilF6xfHhdvrCqOed8SvAMadYhv+zSSI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Hmli4786L7dtDTj+YATYOO2zN2u5noZVmAXrcJlOK03UKzHdK1XpW7JdkYTJHZaE+
+         Zl8h8mtauIyJLKRQL0AYZKc2TirhNysJZ/VRm1KklEiQQQ0EjHzLOXR1yT2o4YSgpm
+         7d/Zj9MGh3NfxyXGoFuGbpH093ytCEtfyHFGRgo4=
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        richardcochran@gmail.com, pavan.chebbi@broadcom.com,
+        edwin.peer@broadcom.com
+Subject: [PATCH net-next 0/7] bnxt_en: Add hardware PTP timestamping support on 575XX devices.
+Date:   Fri, 28 May 2021 20:53:14 -0400
+Message-Id: <1622249601-7106-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static void mlxbf_gige_adjust_link(struct net_device *netdev)
-> +{
-> +	struct mlxbf_gige *priv = netdev_priv(netdev);
-> +	struct phy_device *phydev = netdev->phydev;
-> +
-> +	if (phydev->link) {
-> +		priv->rx_pause = phydev->pause;
-> +		priv->tx_pause = phydev->pause;
-> +	}
+Add PTP RX and TX hardware timestamp support on 575XX devices.  These
+devices use the two-step method to implement the IEEE-1588 timestamping
+support.
 
-...
+Michael Chan (4):
+  bnxt_en: Update firmware interface to 1.10.2.34.
+  bnxt_en: Get PTP hardware capability from firmware.
+  bnxt_en: Add PTP clock APIs, ioctls, and ethtool methods.
+  bnxt_en: Enable hardware PTP support.
 
-> +	/* MAC supports symmetric flow control */
-> +	phy_support_sym_pause(phydev);
+Pavan Chebbi (3):
+  bnxt_en: Get the full 48-bit hardware timestamp periodically.
+  bnxt_en: Get the RX packet timestamp.
+  bnxt_en: Transmit and retrieve packet timestamps.
 
-What i don't see anywhere is you acting on the results of the pause
-negotiation. It could be, mlxbf_gige_adjust_link() tells you the peer
-does not support pause, and you need to disable it in this MAC as
-well. It is a negotiation, after all.
+ drivers/net/ethernet/broadcom/Kconfig         |   1 +
+ drivers/net/ethernet/broadcom/bnxt/Makefile   |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 125 ++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   8 +-
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  34 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h | 434 +++++++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 406 ++++++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |  62 +++
+ 8 files changed, 1046 insertions(+), 26 deletions(-)
+ create mode 100644 drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+ create mode 100644 drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
 
-	Andrew
+-- 
+2.18.1
+
