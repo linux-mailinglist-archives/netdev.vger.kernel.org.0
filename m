@@ -2,109 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71CD8394C56
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 15:37:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E4E394C63
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 15:58:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbhE2NjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 09:39:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55950 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229614AbhE2NjK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 May 2021 09:39:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5544261205;
-        Sat, 29 May 2021 13:37:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622295453;
-        bh=OGCLamFQwUKrua5lO2n1AwkC03xHV4Wn4zKoYU3nWic=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RPXERx5SoivDOxC2KGYgdmL3M1mNgHUxBnCQAxesZggzKF7yDrkx28MjZj0+xWlYt
-         fGVBepFx8c47/0eBf5MxIrT1EX+513kkPqhxuHbZKZLeCrGoxfXavqo4RnNGFyaSDu
-         bv5+go1vdhZ0LJfan8V2DZhbI1Ppr8RLBrQqR2rIgmDYp1fmnryS/zgqAdu8aaqld8
-         LRDazMPub4OGz6QFWW7rMxPk50eKVbe1RW1C0FR7A1nFh2Uf7+ipzp1ZezEOT0DJhf
-         o1hjaYzl+t6Z67O1+XCzEnjC6H04B1JsnJyWBoIuE3yAjqWxbUKB52Wk7Xs8Ce6KUN
-         b5yG5GXLaFj+w==
-Date:   Sat, 29 May 2021 15:37:28 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Tom Herbert <tom@herbertland.com>, bpf@vger.kernel.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        David Ahern <dsahern@gmail.com>, magnus.karlsson@intel.com,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>, bjorn@kernel.org,
-        Maciej =?utf-8?Q?Fija=C5=82kowski_=28Intel=29?= 
-        <maciej.fijalkowski@intel.com>,
-        john fastabend <john.fastabend@gmail.com>
-Subject: Re: [RFC bpf-next 1/4] net: xdp: introduce flags field in xdp_buff
- and xdp_frame
-Message-ID: <YLJDmP0Z5Fa8OVlJ@lore-desk>
-References: <cover.1622222367.git.lorenzo@kernel.org>
- <b5b2f560006cf5f56d67d61d5837569a0949d0aa.1622222367.git.lorenzo@kernel.org>
- <CALx6S34cmsFX6QwUq0sRpHok1j6ecBBJ7WC2BwjEmxok+CHjqg@mail.gmail.com>
- <20210528215654.31619c97@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        id S229709AbhE2N7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 09:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229642AbhE2N7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 09:59:30 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADE1C061574
+        for <netdev@vger.kernel.org>; Sat, 29 May 2021 06:57:52 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id q1so9606470lfo.3
+        for <netdev@vger.kernel.org>; Sat, 29 May 2021 06:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:date:from:user-agent:mime-version:to:subject
+         :content-transfer-encoding;
+        bh=wzKE3SH1xJB5wz3mDSTXZWWcaszaleN1bEF5rSCPtfM=;
+        b=a2gHlFvRP2L+1OWim1Lu2BGWRRRsn7VX9bZUpZPBlBD4Z++3CqKc+MTBDJ/yuL9sr0
+         t1ADWKyYQCR1E4QCa5+lqmFqVHPXIqlk7cTKvjLXcbuGm88EtkodCMcmbPKA1uBvt11R
+         PgBg57lT5LpROoqfCACuNfwnuK/ty11OGrUU/ecP3yyhQVdQClMIdPFj6xBrFyl3JAfZ
+         qaZaO1dTmRxsCS4FTlOHw1YIGTKvH6F/biosA/zdfFn6iaiRzse9jC8ZZe/n0BooZmjy
+         F6ap0zLu5i/aPWm7FGkTLxPAATb4KdJrcm/OydkwVHApf4rksw6Lavnwbo9OqItACSuU
+         SOOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
+         :subject:content-transfer-encoding;
+        bh=wzKE3SH1xJB5wz3mDSTXZWWcaszaleN1bEF5rSCPtfM=;
+        b=E2KM4tseCYrIUUbuYehwNHjCU05UcoNeuTs4cNR6BW5EYesDf+dlLyNPZKEhwahe/S
+         l/xt4HFgeBD9eaJhPojh1K/B8GMt94Rjn4HTanGgwfu0vEdbLKeypXUjmP4WwCS5pOjj
+         dSqqtGxufKuFxQODUgNG1sYxyaKD7rtjovU22FJ3ueFrKf/9rhzYPwiePnWEAqkQ6pMk
+         ow9S9DetdTp1rpSgwuZ3EMatRSYgKVm80+IpldAILn5W2gRQpf0rwLy5RwBxWMza8cKu
+         2VR1BujMCBI3h8tgtt6G9OnWSkodt4sRNqjWHmmDGLLcaQJ2jgKQjR42QidrotiwN4zV
+         MRyA==
+X-Gm-Message-State: AOAM5325p05FApgGwesVYMwF3kBsL9SO4WqG3+akBbKaaterImHwAHxo
+        0q3XILJX0ffDDZRClAALjx0KFmwGiOmgnQ==
+X-Google-Smtp-Source: ABdhPJyMSjqWUYAP0raFj2/v8CivZefvff9OEnHYwJEgQ8u64ntAyl29ougcF9PfwMkqBD5EMBcIlA==
+X-Received: by 2002:a05:6512:3da0:: with SMTP id k32mr9250143lfv.1.1622296668949;
+        Sat, 29 May 2021 06:57:48 -0700 (PDT)
+Received: from [192.168.0.91] ([188.242.181.97])
+        by smtp.googlemail.com with ESMTPSA id t9sm865782ljk.114.2021.05.29.06.57.48
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Sat, 29 May 2021 06:57:48 -0700 (PDT)
+Message-ID: <60B24AC2.9050505@gmail.com>
+Date:   Sat, 29 May 2021 17:08:02 +0300
+From:   Nikolai Zhubr <zhubr.2@gmail.com>
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.2.4) Gecko/20100608 Thunderbird/3.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="tpZcavsnymHtin+e"
-Content-Disposition: inline
-In-Reply-To: <20210528215654.31619c97@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+To:     netdev@vger.kernel.org, Jeff Garzik <jgarzik@pobox.com>
+Subject: Realtek 8139 problem on 486.
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello all,
 
---tpZcavsnymHtin+e
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'm observing a problem with Realtek 8139 cards on a couple of 486 
+boxes. The respective driver is 8139too. It starts operation 
+successfully, obtains an ip address via dhcp, replies to pings steadily, 
+but some subsequent communication fails apparently. At least, nfsroot is 
+unusable (it gets stuck in "... not responding, still trying" forever), 
+and also iperf3 -c xxx when run against a neighbour box on a lan prints 
+2-3 lines with some reasonable 7Mbit/s rate, then just prints 0s and 
+subsequently throws a panic about output queue full or some such.
 
-> On Fri, 28 May 2021 14:18:33 -0700 Tom Herbert wrote:
-> > On Fri, May 28, 2021 at 10:44 AM Lorenzo Bianconi <lorenzo@kernel.org> =
-wrote:
-> > > Introduce flag field in xdp_buff and xdp_frame data structure in order
-> > > to report xdp_buffer metadata. For the moment just hw checksum hints
-> > > are defined but flags field will be reused for xdp multi-buffer
-> > > For the moment just CHECKSUM_UNNECESSARY is supported.
-> > > CHECKSUM_COMPLETE will need to set csum value in metada space.
-> > > =20
-> > Lorenzo,
-> >=20
-> > This isn't sufficient for the checksum-unnecessary interface, we'd
-> > also need ability to set csum_level for cases the device validated
-> > more than one checksum.
-> >=20
-> > IMO, we shouldn't support CHECKSUM_UNNECESSARY for new uses like this.
-> > For years now, the Linux community has been pleading with vendors to
-> > provide CHECKSUM_COMPLETE which is far more useful and robust than
-> > CHECSUM_UNNECESSARY, and yet some still haven't got with the program
-> > even though we see more and more instances where CHECKSUM_UNNECESSARY
-> > doesn't even work at all (e.g. cases with SRv6, new encaps device
-> > doesn't understand). I believe it's time to take a stand! :-)
->=20
-> I must agree. Not supporting CHECKSUM_COMPLETE seems like a step back.
+My kernel is 4.14.221 at the moment, but I can compile another if 
+necessary.
+I've already tried the "#define RTL8139_DEBUG 3" and "8139TOO_PIO=y" and 
+"#define RX_DMA_BURST 4" and "#define TX_DMA_BURST 4" (in case there is 
+a PCI burst issue, as mentioned somewhere) and nothing changed whatsoever.
 
-I completely agree on it and I want add support for CHECKSUM_COMPLETE as so=
-on
-as we decide what is the best way to store csum value (xdp_metadata?). At t=
-he
-same time this preliminary series wants to add support just for
-CHECSUM_UNNECESSARY. Moreover the flags field in xdp_buff/xdp_frame will be
-reused for xdp multi-buff work.
+Some additional notes:
+- the problem is 100% reproducable;
+- replacing this 8139 card with some entirely different 8139-based card 
+changes nothing;
+- if I replace this 8139 with a (just random) intel Pro/1000 card, 
+everything seem to work fine;
+- if I insert this 8139 into some other 486 motherboard (with a 
+different chipset), everything seem to work fine again;
+- etherboot and pxelinux work fine.
+
+I'm willing to do some debugging but unfortunately I'm not anywhere 
+familiar with this driver and network controllers in general, therefore 
+I'm asking for some hints/advice first.
+
+
+Thank you,
 
 Regards,
-Lorenzo
-
---tpZcavsnymHtin+e
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYLJDlAAKCRA6cBh0uS2t
-rAHXAP9xAi/Afp79ZGNtVfDfdaj3qvLWl5yKp0aUxrHmLAeLTwD/RTrcqF/Aksat
-XGYa6WytemnCTM60o6EBEkYig//7qgM=
-=6bqi
------END PGP SIGNATURE-----
-
---tpZcavsnymHtin+e--
+Nikolai
