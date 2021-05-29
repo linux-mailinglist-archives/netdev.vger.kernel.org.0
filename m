@@ -2,97 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58E4E394C63
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 15:58:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBA8E394CA3
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 17:14:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbhE2N7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 09:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57408 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229642AbhE2N7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 09:59:30 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADE1C061574
-        for <netdev@vger.kernel.org>; Sat, 29 May 2021 06:57:52 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id q1so9606470lfo.3
-        for <netdev@vger.kernel.org>; Sat, 29 May 2021 06:57:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:date:from:user-agent:mime-version:to:subject
-         :content-transfer-encoding;
-        bh=wzKE3SH1xJB5wz3mDSTXZWWcaszaleN1bEF5rSCPtfM=;
-        b=a2gHlFvRP2L+1OWim1Lu2BGWRRRsn7VX9bZUpZPBlBD4Z++3CqKc+MTBDJ/yuL9sr0
-         t1ADWKyYQCR1E4QCa5+lqmFqVHPXIqlk7cTKvjLXcbuGm88EtkodCMcmbPKA1uBvt11R
-         PgBg57lT5LpROoqfCACuNfwnuK/ty11OGrUU/ecP3yyhQVdQClMIdPFj6xBrFyl3JAfZ
-         qaZaO1dTmRxsCS4FTlOHw1YIGTKvH6F/biosA/zdfFn6iaiRzse9jC8ZZe/n0BooZmjy
-         F6ap0zLu5i/aPWm7FGkTLxPAATb4KdJrcm/OydkwVHApf4rksw6Lavnwbo9OqItACSuU
-         SOOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
-         :subject:content-transfer-encoding;
-        bh=wzKE3SH1xJB5wz3mDSTXZWWcaszaleN1bEF5rSCPtfM=;
-        b=E2KM4tseCYrIUUbuYehwNHjCU05UcoNeuTs4cNR6BW5EYesDf+dlLyNPZKEhwahe/S
-         l/xt4HFgeBD9eaJhPojh1K/B8GMt94Rjn4HTanGgwfu0vEdbLKeypXUjmP4WwCS5pOjj
-         dSqqtGxufKuFxQODUgNG1sYxyaKD7rtjovU22FJ3ueFrKf/9rhzYPwiePnWEAqkQ6pMk
-         ow9S9DetdTp1rpSgwuZ3EMatRSYgKVm80+IpldAILn5W2gRQpf0rwLy5RwBxWMza8cKu
-         2VR1BujMCBI3h8tgtt6G9OnWSkodt4sRNqjWHmmDGLLcaQJ2jgKQjR42QidrotiwN4zV
-         MRyA==
-X-Gm-Message-State: AOAM5325p05FApgGwesVYMwF3kBsL9SO4WqG3+akBbKaaterImHwAHxo
-        0q3XILJX0ffDDZRClAALjx0KFmwGiOmgnQ==
-X-Google-Smtp-Source: ABdhPJyMSjqWUYAP0raFj2/v8CivZefvff9OEnHYwJEgQ8u64ntAyl29ougcF9PfwMkqBD5EMBcIlA==
-X-Received: by 2002:a05:6512:3da0:: with SMTP id k32mr9250143lfv.1.1622296668949;
-        Sat, 29 May 2021 06:57:48 -0700 (PDT)
-Received: from [192.168.0.91] ([188.242.181.97])
-        by smtp.googlemail.com with ESMTPSA id t9sm865782ljk.114.2021.05.29.06.57.48
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Sat, 29 May 2021 06:57:48 -0700 (PDT)
-Message-ID: <60B24AC2.9050505@gmail.com>
-Date:   Sat, 29 May 2021 17:08:02 +0300
-From:   Nikolai Zhubr <zhubr.2@gmail.com>
-User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.2.4) Gecko/20100608 Thunderbird/3.1
+        id S229789AbhE2PPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 11:15:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23294 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229693AbhE2PPn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 11:15:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622301246;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6MGGzLTDe9gFpsIj0b73RWsIuNVF4M6OHm824oEKtZA=;
+        b=hEhlG9g5Lsc4e3BAbITyufTh76Ax85Uw4s+iMfgnZgVateqJAZHZZj8H79En3PrCH80piz
+        4/ywpqVMEG9TgaCB8NUnASoUfAxUbpn8UlroXHAF2b6V7dryz4HWvvwnyVgdj8iJZ2MMlT
+        QfSd43TnleKpfc7PELVZuM2WC/5VRps=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-391-yc_9f2ezP8OwycRWAv71ug-1; Sat, 29 May 2021 11:14:03 -0400
+X-MC-Unique: yc_9f2ezP8OwycRWAv71ug-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0C630501E0;
+        Sat, 29 May 2021 15:14:02 +0000 (UTC)
+Received: from ymir.virt.lab.eng.bos.redhat.com (virtlab420.virt.lab.eng.bos.redhat.com [10.19.152.148])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 68B68E151;
+        Sat, 29 May 2021 15:14:00 +0000 (UTC)
+From:   jmaloy@redhat.com
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     tipc-discussion@lists.sourceforge.net,
+        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
+        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
+        xinl@redhat.com, ying.xue@windriver.com,
+        parthasarathy.bhuvaragan@gmail.com
+Subject: [net-next 0/3] tipc: some small cleanups
+Date:   Sat, 29 May 2021 11:13:57 -0400
+Message-Id: <20210529151400.781539-1-jmaloy@redhat.com>
 MIME-Version: 1.0
-To:     netdev@vger.kernel.org, Jeff Garzik <jgarzik@pobox.com>
-Subject: Realtek 8139 problem on 486.
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello all,
+From: Jon Maloy <jmaloy@redhat.com>
 
-I'm observing a problem with Realtek 8139 cards on a couple of 486 
-boxes. The respective driver is 8139too. It starts operation 
-successfully, obtains an ip address via dhcp, replies to pings steadily, 
-but some subsequent communication fails apparently. At least, nfsroot is 
-unusable (it gets stuck in "... not responding, still trying" forever), 
-and also iperf3 -c xxx when run against a neighbour box on a lan prints 
-2-3 lines with some reasonable 7Mbit/s rate, then just prints 0s and 
-subsequently throws a panic about output queue full or some such.
+We make some minor code cleanups and improvements.
 
-My kernel is 4.14.221 at the moment, but I can compile another if 
-necessary.
-I've already tried the "#define RTL8139_DEBUG 3" and "8139TOO_PIO=y" and 
-"#define RX_DMA_BURST 4" and "#define TX_DMA_BURST 4" (in case there is 
-a PCI burst issue, as mentioned somewhere) and nothing changed whatsoever.
+Jon Maloy (3):
+  tipc: eliminate redundant fields in struct tipc_sock
+  tipc: refactor function tipc_sk_anc_data_recv()
+  tipc: simplify handling of lookup scope during multicast message
+    reception
 
-Some additional notes:
-- the problem is 100% reproducable;
-- replacing this 8139 card with some entirely different 8139-based card 
-changes nothing;
-- if I replace this 8139 with a (just random) intel Pro/1000 card, 
-everything seem to work fine;
-- if I insert this 8139 into some other 486 motherboard (with a 
-different chipset), everything seem to work fine again;
-- etherboot and pxelinux work fine.
+ net/tipc/name_table.c |   6 +-
+ net/tipc/name_table.h |   4 +-
+ net/tipc/socket.c     | 156 +++++++++++++++++++-----------------------
+ 3 files changed, 77 insertions(+), 89 deletions(-)
 
-I'm willing to do some debugging but unfortunately I'm not anywhere 
-familiar with this driver and network controllers in general, therefore 
-I'm asking for some hints/advice first.
+-- 
+2.31.1
 
-
-Thank you,
-
-Regards,
-Nikolai
