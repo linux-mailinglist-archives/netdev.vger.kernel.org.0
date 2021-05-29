@@ -2,87 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A264F394E44
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 23:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BA09394E4A
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 23:30:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbhE2VZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 17:25:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44616 "EHLO mail.kernel.org"
+        id S229563AbhE2Vbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 17:31:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47264 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229718AbhE2VZd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 May 2021 17:25:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E95B961077;
-        Sat, 29 May 2021 21:23:55 +0000 (UTC)
+        id S229476AbhE2Vbk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 May 2021 17:31:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id E7BA16112F;
+        Sat, 29 May 2021 21:30:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622323436;
-        bh=ZcsrZEQSb8PwDIOS5JuhSvyiJM4u5+htoSWW3OGSH/o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KArg4rzCCQGgsflRi43Kaf1h+92mBK8kI9ItbTpYf0JGrYql0j+AR4Tdm/XRIiy9t
-         uL/WmI4NXeA0842Vxg9nfINlHIr0+Hfg7TrtqWM5dHS/cEQfdAqH6nhfGGilI31C3z
-         arnzUhYZ6Gs48QAmJe7Se5Cpo7qtQGiKSarryAtlCNbtQ123E+ONMJ4eKqizv6wgHF
-         rMH9NHftt3emR8yMlpSjww1rl8OaqYljUhO1rCXioTOa8g15EaZum0HKENYoBA9KPj
-         zN2YrCQxGUvni+gAfBJ1upOV687dDX4tLsyOd66/qSxuMn2hdY0RcGU4+Ck4qKt/No
-         GTAxFhFUEuV1g==
-Date:   Sat, 29 May 2021 14:23:55 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <huangdaode@huawei.com>, <linuxarm@huawei.com>,
-        <dledford@redhat.com>, <jgg@ziepe.ca>, <netanel@amazon.com>,
-        <akiyano@amazon.com>, <thomas.lendacky@amd.com>,
-        <irusskikh@marvell.com>, <michael.chan@broadcom.com>,
-        <edwin.peer@broadcom.com>, <rohitm@chelsio.com>,
-        <jesse.brandeburg@intel.com>, <jacob.e.keller@intel.com>,
-        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
-        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
-        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
-        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
-        <linux-wireless@vger.kernel.org>
-Subject: Re: [RFC V2 net-next 1/3] ethtool: extend coalesce setting uAPI
- with CQE mode
-Message-ID: <20210529142355.17fb609d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <1622258536-55776-2-git-send-email-tanhuazhong@huawei.com>
-References: <1622258536-55776-1-git-send-email-tanhuazhong@huawei.com>
-        <1622258536-55776-2-git-send-email-tanhuazhong@huawei.com>
+        s=k20201202; t=1622323803;
+        bh=aAK71qrGwVBqqbDiYf/mmlzUjQxhfFD9zImgOgXNoYQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cIHmSwlyZIkPZ94Fn9NrwOssze+1UzvZznhBBBq+se36B5Ih1sLS25/rnGTmUmKlP
+         olZngE/SOqMuYI6BeOfvr3kJjZkwssr6RLHYsyLQuL/p/rTmLnJeyBuCZLA1+hehaI
+         /Byhde97f2lVrOPV1yGE3ZgY2lBYZcbdMxqwFdkOCrT6sNs9twG76DlPYET9XnHYwf
+         aoCQX4ON14OdP/wq2RsuHxNQLUpzOuuBbViCg++5ul+loJJ/VLKK/NmraZF5OekzDe
+         ZFpJeXVAvOrIbWen1l2iLGLXZUA3I/vAUa/bvw+XlTHYK3pJsvR+zlq3GObiBFsJvg
+         jmDN/TpHcfPVw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DB4A9609EA;
+        Sat, 29 May 2021 21:30:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next PATCHv3 0/5] NPC KPU updates
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162232380389.20597.3426693408177564545.git-patchwork-notify@kernel.org>
+Date:   Sat, 29 May 2021 21:30:03 +0000
+References: <20210527094439.1910013-1-george.cherian@marvell.com>
+In-Reply-To: <20210527094439.1910013-1-george.cherian@marvell.com>
+To:     George Cherian <george.cherian@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, gcherian@marvell.com,
+        sgoutham@marvell.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 29 May 2021 11:22:14 +0800 Huazhong Tan wrote:
-> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-> index 25131df..8e8c6b3 100644
-> --- a/Documentation/networking/ethtool-netlink.rst
-> +++ b/Documentation/networking/ethtool-netlink.rst
-> @@ -937,6 +937,8 @@ Kernel response contents:
->    ``ETHTOOL_A_COALESCE_TX_USECS_HIGH``         u32     delay (us), high Tx
->    ``ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH``    u32     max packets, high Tx
->    ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
-> +  ``ETHTOOL_A_COALESCE_USE_CQE_TX``	       bool    timer reset in CQE, Tx
-> +  ``ETHTOOL_A_COALESCE_USE_CQE_RX``	       bool    timer reset in CQE, Rx
->    ===========================================  ======  =======================
->  
->  Attributes are only included in reply if their value is not zero or the
-> @@ -975,6 +977,8 @@ Request contents:
->    ``ETHTOOL_A_COALESCE_TX_USECS_HIGH``         u32     delay (us), high Tx
->    ``ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH``    u32     max packets, high Tx
->    ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
-> +  ``ETHTOOL_A_COALESCE_USE_CQE_TX``	       bool    timer reset in CQE, Tx
-> +  ``ETHTOOL_A_COALESCE_USE_CQE_RX``	       bool    timer reset in CQE, Rx
->    ===========================================  ======  =======================
->  
->  Request is rejected if it attributes declared as unsupported by driver (i.e.
+Hello:
 
-Did you provide the theory of operation for CQE vs EQE mode somewhere,
-as I requested?
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-> +	[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX]	= { .type = NLA_U8 },
-> +	[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX]	= { .type = NLA_U8 },
+On Thu, 27 May 2021 15:14:34 +0530 you wrote:
+> Add support for
+>  - Loading Custom KPU profile entries
+>  - Add NPC profile Load from System Firmware DB
+>  - Add Support fo Coalescing KPU profiles
+>  - General Updates/Fixes to default KPU profile
+> 
+> Changelog:
+>  v2->v3
+>  	Fix compilation warnings.
+> 
+> [...]
 
-Why not NLA_POLICY_MAX(NLA_U8, 1) ?
+Here is the summary with links:
+  - [net-next,PATCHv3,1/5] octeontx2-af: add support for custom KPU entries
+    https://git.kernel.org/netdev/net-next/c/3a7244152f9c
+  - [net-next,PATCHv3,2/5] octeontx2-af: load NPC profile via firmware database
+    https://git.kernel.org/netdev/net-next/c/5d16250b6059
+  - [net-next,PATCHv3,3/5] octeontx2-af: adding new lt def registers support
+    https://git.kernel.org/netdev/net-next/c/c87e6b139579
+  - [net-next,PATCHv3,4/5] octeontx2-af: support for coalescing KPU profiles
+    https://git.kernel.org/netdev/net-next/c/11c730bfbf5b
+  - [net-next,PATCHv3,5/5] octeontx2-af: Update the default KPU profile and fixes
+    https://git.kernel.org/netdev/net-next/c/f9c49be90c05
 
-Any chance you could split the patch into adding the new parameter 
-to the callback and adding new attributes?
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
