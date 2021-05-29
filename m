@@ -2,80 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D133394B2F
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 11:10:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BCE7394BE1
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 13:06:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbhE2JMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 05:12:17 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:2404 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbhE2JMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 05:12:15 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FsbKD48Gmz65XN;
-        Sat, 29 May 2021 17:06:56 +0800 (CST)
-Received: from dggema762-chm.china.huawei.com (10.1.198.204) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Sat, 29 May 2021 17:10:36 +0800
-Received: from [10.174.179.129] (10.174.179.129) by
- dggema762-chm.china.huawei.com (10.1.198.204) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Sat, 29 May 2021 17:10:35 +0800
-Subject: Re: [PATCH] perf stat: Fix error return code in bperf__load()
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>
-CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <yi.zhang@huawei.com>
-References: <20210517081254.1561564-1-yukuai3@huawei.com>
-From:   "yukuai (C)" <yukuai3@huawei.com>
-Message-ID: <2b377d87-1356-7422-326d-4d1b4132e75c@huawei.com>
-Date:   Sat, 29 May 2021 17:10:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S229768AbhE2LHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 07:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229602AbhE2LHk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 07:07:40 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A538C061574;
+        Sat, 29 May 2021 04:06:04 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id c20so6700743qkm.3;
+        Sat, 29 May 2021 04:06:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xdgywVTLMJ5d2mbdhxOjTBylWvVS/FWAM6bDew1xCYg=;
+        b=qnSpDmVR07sbgRbINSJVZJCvQOvQI6Pr23o0zW1NivsgRTdfm72tZW5j/iBfNItWKh
+         eGLY4C5L7vO0WCAxSFGV1HocVP2tHjYS6/ikLzdgBP3WDKNsvPCbVwSRTaL42qWcHNdV
+         zJnL/uHJ7/4QjWNk9lLhQ9+pQ07USpezASGj+zwO6M+hmPwQxRA4EJRJtnlAPuhW1xIl
+         /Qz1OckilvIzWpo5C0bKHEAJTywhf0eDiPKbGfaM4B/1ZGdDyqI7kx0se24G9WH7NJbe
+         DNMJVTJ6QS6xYWvEAeLbyKrWsUUTzWySeNIJmCHOFVqwIYQI9zyhA8tdmjGgyAVSh0Zy
+         39rQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xdgywVTLMJ5d2mbdhxOjTBylWvVS/FWAM6bDew1xCYg=;
+        b=h91UoFxdsIPNaMBDlj8DjNMt9bhLO5j1qFZMCoIJ2AcBWYjqhvSwspAKo9jnj8EwiC
+         X9qB9PsPxOHOOVDD6wAcUtcc5yBQ0PN+7l6sbiypZkEYHyZJtVW3PN7XUEgXHrH4giV2
+         lYrLBpfoFpn3tcEouAzDNRyCDktNJVcXNFF5SQ3S483WDBSRm3TSXOwtdUxQkJXn26ER
+         Dboy1i88irzQxI1rowpmT7ZwSNkIWlSGq5zmAc9yxZoHCwydG8lVrhlYHhiafJD0L/S/
+         uTkPnGdAcMvDO+SaCKemu7guZdv2PgGbBUQGxJsiuwG0u26zdlRQwayUMeHRNH2TszPl
+         ODAw==
+X-Gm-Message-State: AOAM532KdZBxN9TqyT2O0+7vTaMgCvtHYOjtAFhfaMQ6xlGL2+uCu8Eq
+        Mz5GxYgXr3AUDnTnFwi+uy4=
+X-Google-Smtp-Source: ABdhPJz/BQO046kHgBlulaGt/bcphn1/4/KdCIKGFd2NNqx0FuToqYtLQ+YPPHkoJ1h27hrRE6idtg==
+X-Received: by 2002:a37:2e05:: with SMTP id u5mr8022450qkh.139.1622286363400;
+        Sat, 29 May 2021 04:06:03 -0700 (PDT)
+Received: from master-laptop.sparksnet ([2601:153:980:85b1:5af:2aab:d2d5:7c9a])
+        by smtp.gmail.com with ESMTPSA id t137sm5328991qke.50.2021.05.29.04.06.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 May 2021 04:06:03 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Peter Geis <pgwipeout@gmail.com>
+Subject: [PATCH v3 0/2] fixes for yt8511 phy driver
+Date:   Sat, 29 May 2021 07:05:54 -0400
+Message-Id: <20210529110556.202531-1-pgwipeout@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210517081254.1561564-1-yukuai3@huawei.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.129]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggema762-chm.china.huawei.com (10.1.198.204)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ping ...
+The Intel clang bot caught a few uninitialized variables in the new
+Motorcomm driver. While investigating the issue, it was found that the
+driver would have unintended effects when used in an unsupported mode.
 
-On 2021/05/17 16:12, Yu Kuai wrote:
-> Fix to return a negative error code from the error handling
-> case instead of 0, as done elsewhere in this function.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> ---
->   tools/perf/util/bpf_counter.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_counter.c
-> index ddb52f748c8e..843b20aa6688 100644
-> --- a/tools/perf/util/bpf_counter.c
-> +++ b/tools/perf/util/bpf_counter.c
-> @@ -522,6 +522,7 @@ static int bperf__load(struct evsel *evsel, struct target *target)
->   	evsel->bperf_leader_link_fd = bpf_link_get_fd_by_id(entry.link_id);
->   	if (evsel->bperf_leader_link_fd < 0 &&
->   	    bperf_reload_leader_program(evsel, attr_map_fd, &entry))
-> +		err = -1;
->   		goto out;
->   
->   	/*
-> @@ -550,6 +551,7 @@ static int bperf__load(struct evsel *evsel, struct target *target)
->   	/* Step 2: load the follower skeleton */
->   	evsel->follower_skel = bperf_follower_bpf__open();
->   	if (!evsel->follower_skel) {
-> +		err = -1;
->   		pr_err("Failed to open follower skeleton\n");
->   		goto out;
->   	}
-> 
+Fixed the uninitialized ret variable and abort loading the driver in
+unsupported modes.
+
+Thank you to the Intel clang bot for catching these.
+
+Changelog:
+V3:
+- fix fixes tag hash
+
+V2:
+- fix variable order
+- add Andrew Lunn's reviewed-by tags
+
+Peter Geis (2):
+  net: phy: fix yt8511 clang uninitialized variable warning
+  net: phy: abort loading yt8511 driver in unsupported modes
+
+ drivers/net/phy/motorcomm.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+-- 
+2.25.1
+
