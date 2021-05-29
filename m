@@ -2,102 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95292394DD2
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 21:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03E9B394DEF
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 21:29:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbhE2TQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 15:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
+        id S229778AbhE2Taz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 15:30:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbhE2TQq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 15:16:46 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775C4C061574;
-        Sat, 29 May 2021 12:15:08 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id e7so1138061plj.7;
-        Sat, 29 May 2021 12:15:08 -0700 (PDT)
+        with ESMTP id S229718AbhE2Tay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 15:30:54 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF00CC061574;
+        Sat, 29 May 2021 12:29:16 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id p39so5856119pfw.8;
+        Sat, 29 May 2021 12:29:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4JV2W29y26pepLG4gekNYXoV2EP+6kk949X/NrDMyWs=;
-        b=JKM1zRuRupca+dp8XU2VFl9BlSLzntOr8wWJXSKnJ7SEsz6L1y449tyXvkd3DPM8fh
-         U2N0aw1FuVz/4bmhhwI8X8OczdScQVWANE2H2CVUN/XFxIXzvpRIMEarGAgWNLxOlUZc
-         YWup5xUXUqp/Y/DYP8FtmQUf5QJOMCmP3DJ3zwo9VqWDIXSgnJimp9LcPjQsZ8AdeETm
-         5yaktuR6h4bkQ/srUPVXZXxkkfE/vznIvlrAJ9FNjhimyvF6Lzv2PqRmKVG97tN+ZSYR
-         sCuBoxG9RInyMdHy1zAt7pXr6I+mRHILoeXiSVyqlgavuBItyhiURNJLpt0p8D5sKNdo
-         LGfg==
+        bh=G46zYfujT4zH04/0cQEfJ1A0ViI5Iwfsu6ecTXtSdCo=;
+        b=bFxRvq3tvmwy81Yfwj89IRa7IGHupYpQZlSGeD4L6D8SKb8eyPrKH8mHnUPemGNCcd
+         JesWXoZARtAthklPXTrfMN1vF08KbC0/oCIhSu9TuoiRpzA8Nj7XZujBxOxwmmxRp2t3
+         1n1iLoSpuz8JIplgWNTvn9HxomvChWLbGb7Jshh0q4n5LBDelbL/DTpplSuZJBcTknBJ
+         v/gVosWZew1DRWTag2m2reBWCPzrdDRpOiQTAtL760g1o/S52aOJ9KFG8OexGwvr994t
+         0q2dYyEHlyTUhUoF1oYyYQoXW3SZuiYqCDhaQYVvuitLT8w1AXDc3sWTUWIN3qCi1xFV
+         wIXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4JV2W29y26pepLG4gekNYXoV2EP+6kk949X/NrDMyWs=;
-        b=S3b/118uPfim1djAeLtbC7/OhvCZ3igU82fMHGgoD1yRDt6QJgqqyzdEvxeR7XNEU0
-         ypdEsrCPd2WiIarv86We3/t6+plC7q2U2xQmAs/9D7CVxbjaoIbDojv5cOMwm1k0LlBq
-         f4QYBH9U5bkQ5H7g0GxznoFi7l8A10rJyW4rmPeShp3pqqEwfCs1QbxqWo3FCQSQqz0V
-         Y3fL3Ipe8HUeiQ/4K/HKDX1ayI+dBqo9Dr2AoPe0MePASNpKPvuuzLylwr5JTjCZBGa1
-         dJ5mqQyL77BuMYTr5Q3X8nDc6btYzMmo9yDH6QH3n6U5p5/cZPrOeAOvRHdKAdkD9PsK
-         B80w==
-X-Gm-Message-State: AOAM531puBUZtDN0Vgnn8yg1+KOEoijRi1C/0wxGU3EfZhBjhhXfB+Qx
-        gndZ88w9/i3Af1Xy7JGKq338hEudKC+xPWdA0xA=
-X-Google-Smtp-Source: ABdhPJzuKeaiPjj6k1A6fPPa/Rxqnjv0guMS59rNdf5owM9nzddwR3th00IWeJyI6huQfyQgIi/nGmPcuRrisUFtmGY=
-X-Received: by 2002:a17:90a:1141:: with SMTP id d1mr10987300pje.56.1622315707909;
- Sat, 29 May 2021 12:15:07 -0700 (PDT)
+        bh=G46zYfujT4zH04/0cQEfJ1A0ViI5Iwfsu6ecTXtSdCo=;
+        b=L9HEwy/MQ4bmgqWYOT7CftoUbQ03zfcUjmool5/6HU95uy4PhWTtaQdFRPvveWyStG
+         GRZP0mGgXeYWyrsfeJbXI5cKQiJvlf2izyJWpeK5OPXPr9NWRAiJ076MmL13k/tgYek4
+         sD2titpckO6/6ovoobhzcjGT58hP7EU/MVDWGqekMGc2tlBrbCp+6TOEGxXGfuNZUs1/
+         I1ZAMyd0xSpor0ihMY4lwKgBZ3dtjLJIyh9/9wmAMjvp+03R0q/ZfsN8hxuDgOEKkwWZ
+         4GHcJLnJDf1M2+YlYfHeWGmyTMC2jkTrwmqOlgu3f1/I06OQeTQDOubwTQAfsFyeVdlp
+         EMlw==
+X-Gm-Message-State: AOAM533BTmYDm9Z4LVUEbru4vQ+OZY8h+gp2mpRW0hmBME6O5pxSium9
+        SnKlj7quGnEtNx82pBoskobX8W5JUoSOtyUWiLY=
+X-Google-Smtp-Source: ABdhPJzhu75o9eNKgOpv5NFFTDClS9vE7XceJcioj7CP/6AGcYu3no9n8Be9KedyIoCUZDwm0umeFzQ8vGVTcPZInQU=
+X-Received: by 2002:aa7:8f37:0:b029:2db:551f:ed8e with SMTP id
+ y23-20020aa78f370000b02902db551fed8emr9815884pfr.43.1622316556333; Sat, 29
+ May 2021 12:29:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210529060526.422987-1-changbin.du@gmail.com>
-In-Reply-To: <20210529060526.422987-1-changbin.du@gmail.com>
+References: <20210527011155.10097-1-xiyou.wangcong@gmail.com>
+ <20210527011155.10097-9-xiyou.wangcong@gmail.com> <60b07f49377b6_1cf82088d@john-XPS-13-9370.notmuch>
+In-Reply-To: <60b07f49377b6_1cf82088d@john-XPS-13-9370.notmuch>
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat, 29 May 2021 12:14:57 -0700
-Message-ID: <CAM_iQpWwApLVg39rUkyXxnhsiP0SZf=0ft6vsq=VxFtJ2SumAQ@mail.gmail.com>
-Subject: Re: [PATCH] net: fix oops in socket ioctl cmd SIOCGSKNS when NET_NS
- is disabled
-To:     Changbin Du <changbin.du@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kici nski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>
+Date:   Sat, 29 May 2021 12:29:05 -0700
+Message-ID: <CAM_iQpU0evVG6_M33ZAgirRsTAJzZcMMN-cYfxqHepbC0UN0iQ@mail.gmail.com>
+Subject: Re: [Patch bpf v3 8/8] skmsg: increase sk->sk_drops when dropping packets
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 28, 2021 at 11:08 PM Changbin Du <changbin.du@gmail.com> wrote:
-> diff --git a/net/socket.c b/net/socket.c
-> index 27e3e7d53f8e..644b46112d35 100644
-> --- a/net/socket.c
-> +++ b/net/socket.c
-> @@ -1149,11 +1149,15 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
->                         mutex_unlock(&vlan_ioctl_mutex);
->                         break;
->                 case SIOCGSKNS:
-> +#ifdef CONFIG_NET_NS
->                         err = -EPERM;
->                         if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
->                                 break;
+On Thu, May 27, 2021 at 10:27 PM John Fastabend
+<john.fastabend@gmail.com> wrote:
 >
->                         err = open_related_ns(&net->ns, get_net_ns);
-> +#else
-> +                       err = -ENOTSUPP;
-> +#endif
+> Cong Wang wrote:
+> > From: Cong Wang <cong.wang@bytedance.com>
+> >
+> > It is hard to observe packet drops without increasing relevant
+> > drop counters, here we should increase sk->sk_drops which is
+> > a protocol-independent counter. Fortunately psock is always
+> > associated with a struct sock, we can just use psock->sk.
+> >
+> > Suggested-by: John Fastabend <john.fastabend@gmail.com>
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > Cc: Lorenz Bauer <lmb@cloudflare.com>
+> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > ---
+> >  net/core/skmsg.c | 22 ++++++++++++++--------
+> >  1 file changed, 14 insertions(+), 8 deletions(-)
+> >
+>
+> [...]
+>
+> > @@ -942,7 +948,7 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
+> >       case __SK_DROP:
+> >       default:
+> >  out_free:
+> > -             kfree_skb(skb);
+> > +             sock_drop(psock->sk, skb);
+>
+> I must have missed this on first review.
+>
+> Why should we mark a packet we intentionally drop as sk_drops? I think
+> we should leave it as just kfree_skb() this way sk_drops is just
+> the error cases and if users want this counter they can always add
+> it to the bpf prog itself.
 
-I wonder if it is easier if we just reject ns->ops==NULL case
-in open_related_ns(). For 1) we can save an ugly #ifdef here;
-2) drivers/net/tun.c has the same bugs.
+This is actually a mixed case of error and non-error drops,
+because bpf_sk_redirect_map() could return SK_DROP
+in error cases. And of course users could want to drop packets
+in whatever cases.
 
-Something like this:
+But if you look at packet filter cases, for example UDP one,
+it increases drop counters too when user-defined rules drop
+them:
 
-diff --git a/fs/nsfs.c b/fs/nsfs.c
-index 800c1d0eb0d0..d63414604e99 100644
---- a/fs/nsfs.c
-+++ b/fs/nsfs.c
-@@ -152,6 +152,9 @@ int open_related_ns(struct ns_common *ns,
-        int err;
-        int fd;
+2182         if (sk_filter_trim_cap(sk, skb, sizeof(struct udphdr)))
+2183                 goto drop;
+2184
+...
+2192 drop:
+2193         __UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
+2194         atomic_inc(&sk->sk_drops);
+2195         kfree_skb(skb);
+2196         return -1;
 
-+       if (!ns->ops)
-+               return -EOPNOTSUPP;
-+
-        fd = get_unused_fd_flags(O_CLOEXEC);
-        if (fd < 0)
-                return fd;
+
+Thanks.
