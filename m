@@ -2,136 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E87E394BE6
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 13:06:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81CE6394BE9
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 13:08:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbhE2LHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 07:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbhE2LHn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 07:07:43 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965A3C06174A;
-        Sat, 29 May 2021 04:06:05 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id j189so6698592qkf.2;
-        Sat, 29 May 2021 04:06:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qK+54IGHwuQkuGGrspkW6kXX3D+Ib9Q7t9lsF0kQMyQ=;
-        b=N5ZoH3ULZijvt18nW7ax/7Ymz5v/qI0st36qfH12OkhQO8znRG6J44m9CwaA7PK5Oz
-         bTDkvEWYCbqGoNu6PTqwBGdad7eD/nt+/dYew5SGsiqD3K5vLdUlpqzbQdlpTJNGJ9zO
-         p7XnkPkCPygxM7egcSM9vOE2a3SR5CGA8M8uu0/Gq1UaW7xEDOEYa35QU1gVrpZEFInC
-         ieI8RqCf2/V9pvJ4dYW4cEMmfQTl769hBePBj+ST22vOTjLMe+uQiet05gPRRXLccm/4
-         QVfCxl72mhE8Ilpl7hZAkhWc+6MbdvWg9yrUoF6KoaVD6oYk23OLicod848RxmbjUedz
-         ZUEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qK+54IGHwuQkuGGrspkW6kXX3D+Ib9Q7t9lsF0kQMyQ=;
-        b=cMWhthKI6UJ1h2nkJ1W9wPJgiQhGyGhpjvq7ZEkHzRJhauZVqtXWkBWKHrDRqWhH7a
-         MTQQljEDUERqTZj4MqREoTxjVGnnty2zMvO8W8pPxenyJbO9Svt6pFgK+1CFuFx77ibd
-         7dzGC6TU5wHeak7cj0hL5sd3irtAplXBgcaAMJkvsjRXFJRLHQMABiwbCyM94Z73tJSd
-         qVxbaYh4JLvEIxEqx/0ehAMAF/FDm5yPdAMb1oV2WCtW0LT0VDzJfG+3p17aVyfMVnNj
-         AzCdY51hUixKfBpprTV632LAhfzLFzpf2JiaSe4hEYzDEOifZbRE9z3sD8qNH+bL4zkY
-         t+hA==
-X-Gm-Message-State: AOAM530HfIa2oLssocg1pLgWftrhUJ3ky5YJv3TpmrziV1nO3X1kdEjo
-        BGBjrJ9Ek3ZMvvM/2JV/m0s=
-X-Google-Smtp-Source: ABdhPJxgYZDIbmcWTRHBDPQ7pKykzh9RKix8mwhJ6k8mPoqMlxKt5zEJNy8Rlti04jgVT/kC0HAi6Q==
-X-Received: by 2002:a37:5d46:: with SMTP id r67mr7738243qkb.72.1622286364728;
-        Sat, 29 May 2021 04:06:04 -0700 (PDT)
-Received: from master-laptop.sparksnet ([2601:153:980:85b1:5af:2aab:d2d5:7c9a])
-        by smtp.gmail.com with ESMTPSA id t137sm5328991qke.50.2021.05.29.04.06.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 May 2021 04:06:04 -0700 (PDT)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S229699AbhE2LKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 07:10:24 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:55420 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229614AbhE2LKU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 May 2021 07:10:20 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 14TB8017006838;
+        Sat, 29 May 2021 13:08:00 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Peter Geis <pgwipeout@gmail.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v3 2/2] net: phy: abort loading yt8511 driver in unsupported modes
-Date:   Sat, 29 May 2021 07:05:56 -0400
-Message-Id: <20210529110556.202531-3-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210529110556.202531-1-pgwipeout@gmail.com>
-References: <20210529110556.202531-1-pgwipeout@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Amit Klein <aksecurity@gmail.com>, Willy Tarreau <w@1wt.eu>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net-next] ipv6: use prandom_u32() for ID generation
+Date:   Sat, 29 May 2021 13:07:46 +0200
+Message-Id: <20210529110746.6796-1-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While investigating the clang `ge` uninitialized variable report, it was
-discovered the default switch would have unintended consequences. Due to
-the switch to __phy_modify, the driver would modify the ID values in the
-default scenario.
+This is a complement to commit aa6dd211e4b1 ("inet: use bigger hash
+table for IP ID generation"), but focusing on some specific aspects
+of IPv6.
 
-Fix this by promoting the interface mode switch and aborting when the
-mode is not a supported RGMII mode.
+Contary to IPv4, IPv6 only uses packet IDs with fragments, and with a
+minimum MTU of 1280, it's much less easy to force a remote peer to
+produce many fragments to explore its ID sequence. In addition packet
+IDs are 32-bit in IPv6, which further complicates their analysis. On
+the other hand, it is often easier to choose among plenty of possible
+source addresses and partially work around the bigger hash table the
+commit above permits, which leaves IPv6 partially exposed to some
+possibilities of remote analysis at the risk of weakening some
+protocols like DNS if some IDs can be predicted with a good enough
+probability.
 
-This prevents the `ge` and `fe` variables from ever being used
-uninitialized.
+Given the wide range of permitted IDs, the risk of collision is extremely
+low so there's no need to rely on the positive increment algorithm that
+is shared with the IPv4 code via ip_idents_reserve(). We have a fast
+PRNG, so let's simply call prandom_u32() and be done with it.
 
-Fixes: 48e8c6f1612b ("net: phy: add driver for Motorcomm yt8511 phy")
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Performance measurements at 10 Gbps couldn't show any difference with
+the previous code, even when using a single core, because due to the
+large fragments, we're limited to only ~930 kpps at 10 Gbps and the cost
+of the random generation is completely offset by other operations and by
+the network transfer time. In addition, this change removes the need to
+update a shared entry in the idents table so it may even end up being
+slightly faster on large scale systems where this matters.
+
+The risk of at least one collision here is about 1/80 million among
+10 IDs, 1/850k among 100 IDs, and still only 1/8.5k among 1000 IDs,
+which remains very low compared to IPv4 where all IDs are reused
+every 4 to 80ms on a 10 Gbps flow depending on packet sizes.
+
+Reported-by: Amit Klein <aksecurity@gmail.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- drivers/net/phy/motorcomm.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ net/ipv6/output_core.c | 28 +++++-----------------------
+ 1 file changed, 5 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-index 68cd19540c67..7e6ac2c5e27e 100644
---- a/drivers/net/phy/motorcomm.c
-+++ b/drivers/net/phy/motorcomm.c
-@@ -53,15 +53,10 @@ static int yt8511_config_init(struct phy_device *phydev)
- 	int oldpage, ret = 0;
- 	unsigned int ge, fe;
- 
--	/* set clock mode to 125mhz */
- 	oldpage = phy_select_page(phydev, YT8511_EXT_CLK_GATE);
- 	if (oldpage < 0)
- 		goto err_restore_page;
- 
--	ret = __phy_modify(phydev, YT8511_PAGE, 0, YT8511_CLK_125M);
--	if (ret < 0)
--		goto err_restore_page;
+diff --git a/net/ipv6/output_core.c b/net/ipv6/output_core.c
+index af36acc1a644..2880dc7d9a49 100644
+--- a/net/ipv6/output_core.c
++++ b/net/ipv6/output_core.c
+@@ -15,29 +15,11 @@ static u32 __ipv6_select_ident(struct net *net,
+ 			       const struct in6_addr *dst,
+ 			       const struct in6_addr *src)
+ {
+-	const struct {
+-		struct in6_addr dst;
+-		struct in6_addr src;
+-	} __aligned(SIPHASH_ALIGNMENT) combined = {
+-		.dst = *dst,
+-		.src = *src,
+-	};
+-	u32 hash, id;
 -
- 	/* set rgmii delay mode */
- 	switch (phydev->interface) {
- 	case PHY_INTERFACE_MODE_RGMII:
-@@ -80,14 +75,20 @@ static int yt8511_config_init(struct phy_device *phydev)
- 		ge = YT8511_DELAY_RX | YT8511_DELAY_GE_TX_EN;
- 		fe = YT8511_DELAY_FE_TX_EN;
- 		break;
--	default: /* leave everything alone in other modes */
--		break;
-+	default: /* do not support other modes */
-+		ret = -EOPNOTSUPP;
-+		goto err_restore_page;
- 	}
- 
- 	ret = __phy_modify(phydev, YT8511_PAGE, (YT8511_DELAY_RX | YT8511_DELAY_GE_TX_EN), ge);
- 	if (ret < 0)
- 		goto err_restore_page;
- 
-+	/* set clock mode to 125mhz */
-+	ret = __phy_modify(phydev, YT8511_PAGE, 0, YT8511_CLK_125M);
-+	if (ret < 0)
-+		goto err_restore_page;
+-	/* Note the following code is not safe, but this is okay. */
+-	if (unlikely(siphash_key_is_zero(&net->ipv4.ip_id_key)))
+-		get_random_bytes(&net->ipv4.ip_id_key,
+-				 sizeof(net->ipv4.ip_id_key));
+-
+-	hash = siphash(&combined, sizeof(combined), &net->ipv4.ip_id_key);
+-
+-	/* Treat id of 0 as unset and if we get 0 back from ip_idents_reserve,
+-	 * set the hight order instead thus minimizing possible future
+-	 * collisions.
+-	 */
+-	id = ip_idents_reserve(hash, 1);
+-	if (unlikely(!id))
+-		id = 1 << 31;
++	u32 id;
 +
- 	/* fast ethernet delay is in a separate page */
- 	ret = __phy_write(phydev, YT8511_PAGE_SELECT, YT8511_EXT_DELAY_DRIVE);
- 	if (ret < 0)
++	do {
++		id = prandom_u32();
++	} while (!id);
+ 
+ 	return id;
+ }
 -- 
-2.25.1
+2.17.5
 
