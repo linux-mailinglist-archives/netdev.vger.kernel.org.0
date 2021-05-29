@@ -2,36 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47843394E39
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 23:16:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A264F394E44
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 23:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbhE2VLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 17:11:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36310 "EHLO mail.kernel.org"
+        id S229795AbhE2VZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 17:25:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44616 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229838AbhE2VLy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 May 2021 17:11:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3334160E0C;
-        Sat, 29 May 2021 21:10:17 +0000 (UTC)
+        id S229718AbhE2VZd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 May 2021 17:25:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E95B961077;
+        Sat, 29 May 2021 21:23:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622322617;
-        bh=kPOCKx/zTn/NmFc1kL+PgSDyUFkW/Vq68SbDb16b5Lg=;
+        s=k20201202; t=1622323436;
+        bh=ZcsrZEQSb8PwDIOS5JuhSvyiJM4u5+htoSWW3OGSH/o=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FSpsU1Ne2F1/FQpxdAyBVutgMoWjgKS5ECjra2lGB0egIKp4tXlnn/Nj4/zYB+dcu
-         96ysM/MsMfk8ZywwNQiExxk0JrAghS1P9MdINAPcBX1aL8E4mmaDSFp0AVPa6HOJ9y
-         m/QAwjBqoGjCnnkY7CtQlb1dGedAsTKKNhVRCn8RDZWqkGkK0RwcIXAZPXrsKohhBd
-         uzLYUVuOmuEJ4N6Q2rwvUeCit+fGMfEGSRxNh1drwmY5YKGSt6vZMMX4XdKUDIfcT5
-         fSIDkNZ92e66LaJEFyyrSd2Nsk8qIRTauRv54I5TKPUJsLLJmtQ9Dz7HtcxMah4Z6S
-         4dcD1xeBDvioQ==
-Date:   Sat, 29 May 2021 14:10:16 -0700
+        b=KArg4rzCCQGgsflRi43Kaf1h+92mBK8kI9ItbTpYf0JGrYql0j+AR4Tdm/XRIiy9t
+         uL/WmI4NXeA0842Vxg9nfINlHIr0+Hfg7TrtqWM5dHS/cEQfdAqH6nhfGGilI31C3z
+         arnzUhYZ6Gs48QAmJe7Se5Cpo7qtQGiKSarryAtlCNbtQ123E+ONMJ4eKqizv6wgHF
+         rMH9NHftt3emR8yMlpSjww1rl8OaqYljUhO1rCXioTOa8g15EaZum0HKENYoBA9KPj
+         zN2YrCQxGUvni+gAfBJ1upOV687dDX4tLsyOd66/qSxuMn2hdY0RcGU4+Ck4qKt/No
+         GTAxFhFUEuV1g==
+Date:   Sat, 29 May 2021 14:23:55 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, tom@herbertland.com
-Subject: Re: [PATCH net-next v4 0/5] Support for the IOAM Pre-allocated
- Trace with IPv6
-Message-ID: <20210529141016.4015a396@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20210527151652.16074-1-justin.iurman@uliege.be>
-References: <20210527151652.16074-1-justin.iurman@uliege.be>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@huawei.com>,
+        <dledford@redhat.com>, <jgg@ziepe.ca>, <netanel@amazon.com>,
+        <akiyano@amazon.com>, <thomas.lendacky@amd.com>,
+        <irusskikh@marvell.com>, <michael.chan@broadcom.com>,
+        <edwin.peer@broadcom.com>, <rohitm@chelsio.com>,
+        <jesse.brandeburg@intel.com>, <jacob.e.keller@intel.com>,
+        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
+        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
+        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
+        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
+        <linux-wireless@vger.kernel.org>
+Subject: Re: [RFC V2 net-next 1/3] ethtool: extend coalesce setting uAPI
+ with CQE mode
+Message-ID: <20210529142355.17fb609d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <1622258536-55776-2-git-send-email-tanhuazhong@huawei.com>
+References: <1622258536-55776-1-git-send-email-tanhuazhong@huawei.com>
+        <1622258536-55776-2-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,30 +52,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 May 2021 17:16:47 +0200 Justin Iurman wrote:
-> In-situ Operations, Administration, and Maintenance (IOAM) records
-> operational and telemetry information in a packet while it traverses
-> a path between two points in an IOAM domain. It is defined in
-> draft-ietf-ippm-ioam-data [1]. IOAM data fields can be encapsulated
-> into a variety of protocols. The IPv6 encapsulation is defined in
-> draft-ietf-ippm-ioam-ipv6-options [2], via extension headers. IOAM
-> can be used to complement OAM mechanisms based on e.g. ICMP or other
-> types of probe packets.
-> 
-> This patchset implements support for the Pre-allocated Trace, carried
-> by a Hop-by-Hop. Therefore, a new IPv6 Hop-by-Hop TLV option is
-> introduced, see IANA [3]. The three other IOAM options are not included
-> in this patchset (Incremental Trace, Proof-of-Transit and Edge-to-Edge).
-> The main idea behind the IOAM Pre-allocated Trace is that a node
-> pre-allocates some room in packets for IOAM data. Then, each IOAM node
-> on the path will insert its data. There exist several interesting use-
-> cases, e.g. Fast failure detection/isolation or Smart service selection.
-> Another killer use-case is what we have called Cross-Layer Telemetry,
-> see the demo video on its repository [4], that aims to make the entire
-> stack (L2/L3 -> L7) visible for distributed tracing tools (e.g. Jaeger),
-> instead of the current L5 -> L7 limited view. So, basically, this is a
-> nice feature for the Linux Kernel.
+On Sat, 29 May 2021 11:22:14 +0800 Huazhong Tan wrote:
+> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+> index 25131df..8e8c6b3 100644
+> --- a/Documentation/networking/ethtool-netlink.rst
+> +++ b/Documentation/networking/ethtool-netlink.rst
+> @@ -937,6 +937,8 @@ Kernel response contents:
+>    ``ETHTOOL_A_COALESCE_TX_USECS_HIGH``         u32     delay (us), high Tx
+>    ``ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH``    u32     max packets, high Tx
+>    ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
+> +  ``ETHTOOL_A_COALESCE_USE_CQE_TX``	       bool    timer reset in CQE, Tx
+> +  ``ETHTOOL_A_COALESCE_USE_CQE_RX``	       bool    timer reset in CQE, Rx
+>    ===========================================  ======  =======================
+>  
+>  Attributes are only included in reply if their value is not zero or the
+> @@ -975,6 +977,8 @@ Request contents:
+>    ``ETHTOOL_A_COALESCE_TX_USECS_HIGH``         u32     delay (us), high Tx
+>    ``ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH``    u32     max packets, high Tx
+>    ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
+> +  ``ETHTOOL_A_COALESCE_USE_CQE_TX``	       bool    timer reset in CQE, Tx
+> +  ``ETHTOOL_A_COALESCE_USE_CQE_RX``	       bool    timer reset in CQE, Rx
+>    ===========================================  ======  =======================
+>  
+>  Request is rejected if it attributes declared as unsupported by driver (i.e.
 
-Some coding comments from me. Please continue the discussion with David
-re: maturity of the RFC and make sure to CC him and Yoshifuji on next
-versions.
+Did you provide the theory of operation for CQE vs EQE mode somewhere,
+as I requested?
+
+> +	[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX]	= { .type = NLA_U8 },
+> +	[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX]	= { .type = NLA_U8 },
+
+Why not NLA_POLICY_MAX(NLA_U8, 1) ?
+
+Any chance you could split the patch into adding the new parameter 
+to the callback and adding new attributes?
