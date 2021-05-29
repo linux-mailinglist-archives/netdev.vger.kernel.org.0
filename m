@@ -2,113 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81CE6394BE9
-	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 13:08:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F2E394C0D
+	for <lists+netdev@lfdr.de>; Sat, 29 May 2021 13:45:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229699AbhE2LKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 07:10:24 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:55420 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229614AbhE2LKU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 May 2021 07:10:20 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 14TB8017006838;
-        Sat, 29 May 2021 13:08:00 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Amit Klein <aksecurity@gmail.com>, Willy Tarreau <w@1wt.eu>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net-next] ipv6: use prandom_u32() for ID generation
-Date:   Sat, 29 May 2021 13:07:46 +0200
-Message-Id: <20210529110746.6796-1-w@1wt.eu>
-X-Mailer: git-send-email 2.17.5
+        id S229718AbhE2Lqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 07:46:31 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:2469 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229614AbhE2Lq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 07:46:29 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fsfm43Bv4z681J;
+        Sat, 29 May 2021 19:41:56 +0800 (CST)
+Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Sat, 29 May 2021 19:44:51 +0800
+Received: from localhost (10.174.179.215) by dggema769-chm.china.huawei.com
+ (10.1.198.211) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sat, 29
+ May 2021 19:44:50 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] net: hso: Use BIT(x) macro
+Date:   Sat, 29 May 2021 19:44:21 +0800
+Message-ID: <20210529114421.25480-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggema769-chm.china.huawei.com (10.1.198.211)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a complement to commit aa6dd211e4b1 ("inet: use bigger hash
-table for IP ID generation"), but focusing on some specific aspects
-of IPv6.
+BIT(x) improves readability and safety with respect to shifts.
 
-Contary to IPv4, IPv6 only uses packet IDs with fragments, and with a
-minimum MTU of 1280, it's much less easy to force a remote peer to
-produce many fragments to explore its ID sequence. In addition packet
-IDs are 32-bit in IPv6, which further complicates their analysis. On
-the other hand, it is often easier to choose among plenty of possible
-source addresses and partially work around the bigger hash table the
-commit above permits, which leaves IPv6 partially exposed to some
-possibilities of remote analysis at the risk of weakening some
-protocols like DNS if some IDs can be predicted with a good enough
-probability.
-
-Given the wide range of permitted IDs, the risk of collision is extremely
-low so there's no need to rely on the positive increment algorithm that
-is shared with the IPv4 code via ip_idents_reserve(). We have a fast
-PRNG, so let's simply call prandom_u32() and be done with it.
-
-Performance measurements at 10 Gbps couldn't show any difference with
-the previous code, even when using a single core, because due to the
-large fragments, we're limited to only ~930 kpps at 10 Gbps and the cost
-of the random generation is completely offset by other operations and by
-the network transfer time. In addition, this change removes the need to
-update a shared entry in the idents table so it may even end up being
-slightly faster on large scale systems where this matters.
-
-The risk of at least one collision here is about 1/80 million among
-10 IDs, 1/850k among 100 IDs, and still only 1/8.5k among 1000 IDs,
-which remains very low compared to IPv4 where all IDs are reused
-every 4 to 80ms on a 10 Gbps flow depending on packet sizes.
-
-Reported-by: Amit Klein <aksecurity@gmail.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- net/ipv6/output_core.c | 28 +++++-----------------------
- 1 file changed, 5 insertions(+), 23 deletions(-)
+ drivers/net/usb/hso.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/net/ipv6/output_core.c b/net/ipv6/output_core.c
-index af36acc1a644..2880dc7d9a49 100644
---- a/net/ipv6/output_core.c
-+++ b/net/ipv6/output_core.c
-@@ -15,29 +15,11 @@ static u32 __ipv6_select_ident(struct net *net,
- 			       const struct in6_addr *dst,
- 			       const struct in6_addr *src)
- {
--	const struct {
--		struct in6_addr dst;
--		struct in6_addr src;
--	} __aligned(SIPHASH_ALIGNMENT) combined = {
--		.dst = *dst,
--		.src = *src,
--	};
--	u32 hash, id;
--
--	/* Note the following code is not safe, but this is okay. */
--	if (unlikely(siphash_key_is_zero(&net->ipv4.ip_id_key)))
--		get_random_bytes(&net->ipv4.ip_id_key,
--				 sizeof(net->ipv4.ip_id_key));
--
--	hash = siphash(&combined, sizeof(combined), &net->ipv4.ip_id_key);
--
--	/* Treat id of 0 as unset and if we get 0 back from ip_idents_reserve,
--	 * set the hight order instead thus minimizing possible future
--	 * collisions.
--	 */
--	id = ip_idents_reserve(hash, 1);
--	if (unlikely(!id))
--		id = 1 << 31;
-+	u32 id;
-+
-+	do {
-+		id = prandom_u32();
-+	} while (!id);
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index 63006838bdcc..2587f8f52226 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -163,13 +163,13 @@ enum rx_ctrl_state{
+ #define W_VALUE         (0x0)
+ #define W_LENGTH        (0x2)
  
- 	return id;
- }
+-#define B_OVERRUN       (0x1<<6)
+-#define B_PARITY        (0x1<<5)
+-#define B_FRAMING       (0x1<<4)
+-#define B_RING_SIGNAL   (0x1<<3)
+-#define B_BREAK         (0x1<<2)
+-#define B_TX_CARRIER    (0x1<<1)
+-#define B_RX_CARRIER    (0x1<<0)
++#define B_OVERRUN       BIT(6)
++#define B_PARITY        BIT(5)
++#define B_FRAMING       BIT(4)
++#define B_RING_SIGNAL   BIT(3)
++#define B_BREAK         BIT(2)
++#define B_TX_CARRIER    BIT(1)
++#define B_RX_CARRIER    BIT(0)
+ 
+ struct hso_serial_state_notification {
+ 	u8 bmRequestType;
 -- 
-2.17.5
+2.17.1
 
