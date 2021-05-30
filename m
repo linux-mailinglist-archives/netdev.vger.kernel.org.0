@@ -2,124 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 908843950B3
-	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 13:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51DA73950B5
+	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 13:47:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229820AbhE3Lng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 07:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57904 "EHLO
+        id S229800AbhE3LtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 07:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbhE3Lng (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 07:43:36 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D996C061574
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 04:41:58 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id e15so3816080plh.1
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 04:41:58 -0700 (PDT)
+        with ESMTP id S229683AbhE3LtF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 07:49:05 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463CEC061574
+        for <netdev@vger.kernel.org>; Sun, 30 May 2021 04:47:27 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id 22so6849563pfv.11
+        for <netdev@vger.kernel.org>; Sun, 30 May 2021 04:47:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=C5vET+AXYEW91TYn85g/M8EW40hhV4DYIJr4nbEVFi8=;
-        b=dvlyt70qfMRvOtGnqM8CtnFhtOA5R5czRmCoGvzaluzXC3TtmfgGrxxkHFTGJfQHyu
-         ETiWxFLNX1LN8R44WanfzWhMEA8VTDPFUeYg2YdepcV4HL8tjwVVsjDC7y2MRCpCxQ13
-         Viz6osRokGisasn90zVBdJq5OosA4zEGoz1f8=
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :in-reply-to;
+        bh=SniJQg+bpsIPc9yH9gfClVcbGYVcf1AhAaSif/PBOAA=;
+        b=XIzwfoXjvyptstz3hE0KjXoVd4fs9MLYvF+qaydfJXZo7zgVVX9oWZWmd1pJcNEYfq
+         5SZqG+F1CgqHzkq37iUxjFs0vffeLpX8P/tXo2GflXLZGiIFx/RBWQQAPnj8kIFI7q6x
+         bmMTv6ipQw8G8WJ4CwLnp1sofvTN77a33IfFA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=C5vET+AXYEW91TYn85g/M8EW40hhV4DYIJr4nbEVFi8=;
-        b=gR7mRBY2MXpxVwBAQ7mlRRLIenR/RX8jWw20pMDcjOlEksiHT/OiBGLYueiyz1fD39
-         pdMy6CEcXyf5EozuW5P4b//cYgxP866NWqYfXgH2YaqDxbk+32V7hJ6wzk+FRIw+UAOr
-         VKYYmrhCxZRxh4AZj7LnAbqme7bJObsHHcfaN7w1cF3l2FyFqFwoHG5r6QCLBIs64A0F
-         zxiC81CCGzvU+g9ut6mU+9n3BKFuy0l5jL7Qubw0TKFEsxbWjeH88O8k+PMKkH1VKHvs
-         UM+JrDFbeIrHvYWPlZ6QsZxa5nZHGYQw8SBtx3gIxnUcmNAXISBpeecpsE74EVHsNf1M
-         lWRA==
-X-Gm-Message-State: AOAM533XuiGMsgYmeJ4L1D93gVP9CDf7o6fWvTH4hG/Arm3MEwOPPA4p
-        ieKET3sVdSM4LUTV/0D0IYLDk1CF0F6FT1HLN1n1GdIxmgEPyScbzpRlw2+ZPyBiCX3/6AkSBOB
-        10sVNSM2J5tzpfJ5M1xFpdlF8utQpiB+dzFP6+9kZyEIDj4dQycuHI1a3hsFQugQWDfaUg1ioQI
-        xMQKaAO2c=
-X-Google-Smtp-Source: ABdhPJx4xTut+yHm4h8qMCmSFgLyw60mUtmmpsUZ0a6cjaIwlAv2M3yqw6LlQvVf/0OI6e8HEOsOXA==
-X-Received: by 2002:a17:90a:d313:: with SMTP id p19mr14232222pju.175.1622374917665;
-        Sun, 30 May 2021 04:41:57 -0700 (PDT)
-Received: from localhost.localdomain ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id o17sm8126093pjp.33.2021.05.30.04.41.50
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:in-reply-to;
+        bh=SniJQg+bpsIPc9yH9gfClVcbGYVcf1AhAaSif/PBOAA=;
+        b=drti9u7un98SeoaSCmvy+nIO2CO7N8TSOqbdPZiyPLx631UYd+diZV4Ig+meRxaeIt
+         Dnmn5dGIc7F3wcoWdgYNktATG6sFLF13lSQ+K34i+t8jpNOS5YF9jGyvYZFF4y8akam4
+         8Lb+TW1pPdhIVAHM0TwTnqGyN7WI7Hn42lawLprj1cUAHlUmPKrsVjMzNrzSLwhq+U7P
+         C6yNMiX3yDWed8r7PAVgsUxJNwZGvPhK3e9/zn6bNaLc2clCMLW3IDGIX7fXRyLpNmI9
+         o9xyB8gT/NDSFgfXrf83QrDXbtQj8ywUaPaGtajxZcnp+NyQBUYsMOKtktHZIRbpbJXW
+         RAqw==
+X-Gm-Message-State: AOAM533nZqiXnswAS22VBAbmeVu1zTq0rgYH6yomUUG90nuCpa7c4r/N
+        ZmJ53QrMgubfFzwKywT/da1u0H3L/fD88Ij+
+X-Google-Smtp-Source: ABdhPJwHIjC3FS1KRzHK49WsDiSeUNd+WQhXJM5BfcTEQpm2Jy4OAwaxYoHFXV+9+TbtCfEPfUWv3w==
+X-Received: by 2002:aa7:938f:0:b029:2de:2cf2:6a27 with SMTP id t15-20020aa7938f0000b02902de2cf26a27mr12134187pfe.47.1622375246677;
+        Sun, 30 May 2021 04:47:26 -0700 (PDT)
+Received: from builder ([192.19.250.250])
+        by smtp.gmail.com with ESMTPSA id f18sm8248198pjh.55.2021.05.30.04.47.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 May 2021 04:41:57 -0700 (PDT)
+        Sun, 30 May 2021 04:47:26 -0700 (PDT)
+Date:   Sun, 30 May 2021 14:47:16 +0300
 From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
-To:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
         Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     linux-kselftest@vger.kernel.org, shuah@kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
         Ilya Lifshits <ilya.lifshits@broadcom.com>,
         Shmulik Ladkani <shmulik.ladkani@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Boris Sukholitko <boris.sukholitko@broadcom.com>
-Subject: [PATCH net-next v3 3/3] net/sched: act_vlan: Test priority 0 modification
-Date:   Sun, 30 May 2021 14:40:52 +0300
-Message-Id: <20210530114052.16483-4-boris.sukholitko@broadcom.com>
-X-Mailer: git-send-email 2.29.3
-In-Reply-To: <20210530114052.16483-1-boris.sukholitko@broadcom.com>
-References: <20210530114052.16483-1-boris.sukholitko@broadcom.com>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v2 1/3] net/sched: act_vlan: Fix modify to allow
+ 0
+Message-ID: <20210530114716.GA16534@builder>
+References: <20210525153601.6705-1-boris.sukholitko@broadcom.com>
+ <20210525153601.6705-2-boris.sukholitko@broadcom.com>
+ <YK1fpkmyiITfaVpr@dcaratti.users.ipa.redhat.com>
+ <20210526114553.GA31019@builder>
+ <YK/QRFAcMMcXBvw9@dcaratti.users.ipa.redhat.com>
 MIME-Version: 1.0
+In-Reply-To: <YK/QRFAcMMcXBvw9@dcaratti.users.ipa.redhat.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000aeceb005c38a9889"
+        boundary="0000000000004b10c605c38aacad"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000aeceb005c38a9889
-Content-Transfer-Encoding: 8bit
+--0000000000004b10c605c38aacad
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Because explicitly being set, the priority 0 should appear
-in the output.
+On Thu, May 27, 2021 at 07:00:52PM +0200, Davide Caratti wrote:
+[...]
+> 
+> My suggestion was just to simplify the end-user dump experience, so
+> that the value of 'p->tcfv_push_prio' is dumped always in case of
+> TCA_VLAN_ACT_PUSH. In this way, rules with equal "behavior" in the
+> traffic path are always dumped in the same way. IOW,
+> 
+> # tc action add action vlan push id 42 prio 0 index 1
+> 
+> and
+> 
+> # tc action add action vlan push id 42 index 1
+> 
+> do exactly the same thing in the traffic path, so there is no need to
+> dump them differently. On the contrary, these 2 rules:
+> 
+> # tc action add action vlan modify id 42 prio 0 index 1
+> 
+> and
+> 
+> # tc action add action vlan modify id 42 index 1
+> 
+> don't do the same thing, because packet hitting the first rule will have
+> their priority identically set to 0, while the second one will leave the
+> VLAN priority unmodified. So, I think it makes sense to have different
+> dumps here (that was my comment to your v1).
 
-Signed-off-by: Boris Sukholitko <boris.sukholitko@broadcom.com>
----
- .../tc-testing/tc-tests/actions/vlan.json     | 24 +++++++++++++++++++
- 1 file changed, 24 insertions(+)
+I am convinced. I've done this in v3.
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/vlan.json b/tools/testing/selftests/tc-testing/tc-tests/actions/vlan.json
-index 1d9d261aa0b3..7467021b31ca 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/vlan.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/vlan.json
-@@ -445,6 +445,30 @@
-         "matchCount": "0",
-         "teardown": []
-     },
-+    {
-+        "id": "ba5b",
-+        "name": "Add vlan modify action for protocol 802.1Q setting priority 0",
-+        "category": [
-+            "actions",
-+            "vlan"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action vlan",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action vlan modify protocol 802.1Q id 5 priority 0 index 100",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions get action vlan index 100",
-+        "matchPattern": "action order [0-9]+: vlan.*modify id 100 priority 0 protocol 802.1Q pipe.*index 100 ref",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$TC actions flush action vlan"
-+        ]
-+    },
-     {
-         "id": "6812",
-         "name": "Add vlan modify action for protocol 802.1Q",
--- 
-2.29.3
+> 
+> Another small nit - forgive me, I didn't spot it in the first review:
+> 
+> not 100% sure, but I think that in tcf_vlan_get_fill_size() we need
+> to avoid accounting for TCA_VLAN_PUSH_VLAN_PRIORITY in case the rule
+> has 'push_prio_exists' equal to false. Otherwise we allocate an
+> extra u8 netlink attribute in case of batch dump. Correct?
 
+Also done in v3.
 
---000000000000aeceb005c38a9889
+Thanks,
+Boris.
+
+> 
+> thanks!
+> -- 
+> davide
+> 
+> 
+> 
+
+--0000000000004b10c605c38aacad
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -190,14 +195,14 @@ bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
 ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
 ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIE1YW/WVgPms6h1y
-nCGA4eeGzGOJZkqpqjyrSRNboW2GMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIxMDUzMDExNDE1OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIL/YIX/1mo/FADxc
+0z5Po5XTEUDQrU4kift7+1GGI3ZuMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIxMDUzMDExNDcyN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCmDbpctzk96GFt+xPAF+irIecJ9PLNC8rO
-rH/iB8yFAljlMZs5au8WhMzqx/BZAOHIjc71KDgv6ud5DJ5ZAp6M32JTrxKhSIWq2WadpycNEZHt
-NzN+AuNlz1uwcf3CIVBf1Ce3LjqygFHsfwAtkYPRaDlLLuZFImAK5hSNhEURqG5tQcvRYBj5ef9h
-8XCCboPTMFnAcVJJAyS+a03MIOOdQfrY19KEJqvSYapW4RmKL8jGEcZWeBpx+4Z4alCd1TDwWvDC
-we/j7JdlZTXi6ZB6U63q3z0xMDuLrnpb1yJExCIbCvzFC6+4tbXnDm0AHlDi6SHvJVHx4MxWDyF7
-X/5S
---000000000000aeceb005c38a9889--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCt9Zx9MePtVwQidTRKn8D9cy3G/7b59zkm
+kYqqfJrdqoLeem2Hm7G54ppofH0mALTkT0H64x79ghNzhAvS74QjuPOL/xTL5d+NSzZmerB6mk9C
+Vtv2q0rcaye0N/iSSEEt6g+YEXtbisEM0eKgdMOM+9REtxNVyICbhVz7wFRSfCNJC38yThdA5oPM
+F75TcIO4laoqBd3i7RzpCZsb8+imdBw6bc9/hxlB4/LUMuWu7i6+2WWtb5e9o25ipbJuQbgx9HSy
+KOYU8RFSstJ7MlhcMOAgPzHam6oeK6srlHw4C2kNCkgacBlwf125fcNQieUKDtdjGAPp5JyMfXvW
+dVHl
+--0000000000004b10c605c38aacad--
