@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6956F39530C
-	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 23:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35ECB39530E
+	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 23:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbhE3Vbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 17:31:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44090 "EHLO mail.kernel.org"
+        id S229969AbhE3Vbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 17:31:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44108 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229816AbhE3Vbm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229842AbhE3Vbm (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 30 May 2021 17:31:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E00BF611AB;
+Received: by mail.kernel.org (Postfix) with ESMTPS id E794161001;
         Sun, 30 May 2021 21:30:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1622410203;
-        bh=PPA1TClYLp6Td3JHzTOFhz5tR2jg4jbhaICIxDjfVAo=;
+        bh=mG/a8YcEyGR5ugo72A3JJe/+yK+RG2AfZlPnchqxRso=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qXopatiAKzmzNdFXsJt0UxnkRzKby4eP/hInUdMEac+YORuI26MBMavtaX/K+XRV8
-         a/YcHd4xMIRhlX1s5BSZIKNTHlCnoPtJ8/mbw53Vl9c9paSWd4rj/Oj9y8B5Z4vXDn
-         Udb2pstLSRNv0ZqfE4pepL9LVXl8t0y28oisV9rLLH6rJu1qsgal03WsJplN7cFvJ9
-         4NmMlIi2yUVbgNQdJ6UZC26PYLrvyFSGIZZO2F2EQTLS2qYOUViwbOM2gBB5AutNcH
-         +3jRnFrmgC00detV3k8FFDQtxpdY0USdTkJ9fJcFExoONJXl8UkscDQTCVzRIUsnIO
-         6u8m9J/ZTgTEA==
+        b=hUCZ2r8pAJeXYjbyPYJAGsrYPNvapwNH6hbLP2O7sO75/ei4N85EA9cmPtaghpkbR
+         HRQOCnmXobX1V5NPLLQUJr//m9SD0OnEk6ukrieTwpVAL+m9kxdZzwMnh4JLhzV+nT
+         JTKOTjjyYXCHk16b0nEuPys8MP1j9xkUXMzuF0SqYSdGoxkPSebBfDtT/2yzuyUhBT
+         lz0rJ0qEz6lXlItTOHnOmWrU8eCIcpp5bw1JTFrVw2MMUmK12Sc0j83rBzhWugUmMn
+         4JgFDzkyEz28Eo0v7dZjqeyGj1JkGrDpyDeA5zNebQMguRGTYRLuzBHUTb4S/Set+E
+         1JJXCFAZhCglw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D350E609EA;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DBE6260C28;
         Sun, 30 May 2021 21:30:03 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 0/2] fixes for yt8511 phy driver
+Subject: Re: [PATCH -next 0/2] net: dsa: qca8k: check return value of read
+  functions correctly
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162241020386.28062.1219688691635725746.git-patchwork-notify@kernel.org>
+Message-Id: <162241020389.28062.11780687438412526586.git-patchwork-notify@kernel.org>
 Date:   Sun, 30 May 2021 21:30:03 +0000
-References: <20210529110556.202531-1-pgwipeout@gmail.com>
-In-Reply-To: <20210529110556.202531-1-pgwipeout@gmail.com>
-To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
+References: <20210529030439.1723306-1-yangyingliang@huawei.com>
+In-Reply-To: <20210529030439.1723306-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
+        kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,21 +48,22 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Sat, 29 May 2021 07:05:54 -0400 you wrote:
-> The Intel clang bot caught a few uninitialized variables in the new
-> Motorcomm driver. While investigating the issue, it was found that the
-> driver would have unintended effects when used in an unsupported mode.
+On Sat, 29 May 2021 11:04:37 +0800 you wrote:
+> patch #1 - Change return type and add output parameter to make check
+> return value of read  functions correctly.
 > 
-> Fixed the uninitialized ret variable and abort loading the driver in
-> unsupported modes.
+> patch #2 - Add missing check return value in qca8k_phylink_mac_config().
+> 
+> v2:
+>   move 'int ret' to patch #2.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v3,1/2] net: phy: fix yt8511 clang uninitialized variable warning
-    https://git.kernel.org/netdev/net-next/c/546d6bad18c0
-  - [v3,2/2] net: phy: abort loading yt8511 driver in unsupported modes
-    https://git.kernel.org/netdev/net-next/c/0cc8bddb5b06
+  - [net-next,v2,1/2] net: dsa: qca8k: check return value of read functions correctly
+    https://git.kernel.org/netdev/net-next/c/7c9896e37807
+  - [net-next,v2,2/2] net: dsa: qca8k: add missing check return value in qca8k_phylink_mac_config()
+    https://git.kernel.org/netdev/net-next/c/9fe99de01440
 
 You are awesome, thank you!
 --
