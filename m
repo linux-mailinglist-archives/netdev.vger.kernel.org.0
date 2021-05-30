@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBDE439534F
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5BB39534E
 	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 01:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229988AbhE3XBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 19:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35562 "EHLO
+        id S229995AbhE3XBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 19:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbhE3XBa (ORCPT
+        with ESMTP id S229988AbhE3XBa (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 19:01:30 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2FEC06174A
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 15:59:50 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id b11so4545936edy.4
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 15:59:50 -0700 (PDT)
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2E7C061760
+        for <netdev@vger.kernel.org>; Sun, 30 May 2021 15:59:51 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id ci15so10432960ejc.10
+        for <netdev@vger.kernel.org>; Sun, 30 May 2021 15:59:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=SdS22aYbHQ3OEwk90g2szFYzKzQ9ixoar1urYFeE5rM=;
-        b=KGQKWGXOtgE27zjKwRuni/AhGNbvc5TwFi92YjbNrtb9ZMa7lIDYwObSzmNvHEPFOf
-         OgMg+n73dZW0MVqtCrBEuYqiQ6tkMEAHVpOAbK7CvKExDkv3CAumrIP7NwkwVuTKu7f3
-         Bqno6NnANyv4RzeV1Ef57RsuIhDuUVR4O9z04QnzE1b5+HWaOl/564xD34hoOHrgYtMn
-         C7Jhv9hP1mfJ5Ud/OnO8z8HG76lpqpbixtgqA84wC0Q/+GwdHsyFuOUTUGSVjyMhDc9f
-         /57qNsHUyZhOXKcRAZjkTssrY7K9Dgz0GB5/glw9tpq55BTkCXXzeV7kO+u/N7Z+aROS
-         rEeQ==
+        bh=0PXNA5LN9cB0QKG13+WIW8R4asjo2F5+1GEfCwkP918=;
+        b=sNsAbc3qxXDGWwhIz6jXa+cPNuvA9tw2ZSAOzvBSzdUHbUXSd2OcDhY3dydq7noksd
+         y/NGwmmKOjz0SiFTaftqQCSZbZrqSRICFpfOkdjbD7KEwuLXZQxLW54cfHJY7CbLaNsj
+         7ICvIzO4Wo+dBycGyWGaiI7bEarILv8aiXCd9eFNsD0LxCXl0vd/twI2pXU34zhgi0+3
+         FpwW1FZaPYeHftRkxy+lImvZgeA/9+2J4Q9TmCOh2uskSQ3VyJSmzV2ojNNe9zSetrkH
+         nHEk3GiUUKDWj9q7e0FOBYL87jDQF9DYzyRd5e+DObLUTgWsm35r7kHJr6IWR8itpQDP
+         +KXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=SdS22aYbHQ3OEwk90g2szFYzKzQ9ixoar1urYFeE5rM=;
-        b=biVtgikYxTgVgvjxWZ6hZhBYX844pIJu0dLn8WgJOQOI5IotuZThho4bGhdHONuUa8
-         07QSRAVuAR7evi6Jk+dxR/ahkt3qu4S4KC6LeDMwo/Bj+bcA8A1AUWK/XW84ECq3GNIR
-         D9cqhRdlaqnt0XTFx74WYm8KCnPQhy4gWGiv48C4RnKv9cQk4I3C1UoBDxAkZz5uPdAc
-         DaF9iOOgX6rZLq7h27ii6VakU7i285t6lIsdM2Cj8jd5wvju9rHHkqalXjz0s0FT+RB7
-         3D5E7gREe4BRDGLUD16OsTulp8RxBqNp7e64ux6OcoeBHmJ8pZ3bn4GmcdklGevU4MaA
-         CsBw==
-X-Gm-Message-State: AOAM531rgNVXVYKWyB6Ambz4xP/Hy9i7fU116Ftgfdq2dq5ct9JHEld4
-        pE05cHc2WkyUVWHFVA8KFjg=
-X-Google-Smtp-Source: ABdhPJwMT4IUJ3X45NwRxqZN5KADCGT6vqfvh/FtqwTyno2fYgJAVTQ0+9c7/5jkMJqHifhW13AUfA==
-X-Received: by 2002:aa7:c44b:: with SMTP id n11mr9404106edr.4.1622415589067;
+        bh=0PXNA5LN9cB0QKG13+WIW8R4asjo2F5+1GEfCwkP918=;
+        b=NVhb/r7YekNi4ZQjIWJealt/+/sYY2bkFPaQaZcEkRFeE7WCKUGJiH6xg24kqGAKCa
+         6tMIltk83W67dOOQ9jDYUybMI5SFzejf0YgOf1kkSvfrR4YHu1e0QU14fpKDDyblOLIx
+         MHt/qERw61DvEhSX1GewBmMHqMmqeob3DL6r6TdSAZ7sIHK6RyL7NLGjr7nmoCDX/kMj
+         NcvbU+YTK8Uj5VkhpMQT6n+wKiwsuTbXwNqFAQiYdu/BkMeAPRtwXArJB5mvyyV5uyZU
+         jAYZU6KKTPmPttWiuecJ81h6IYKUqyzUjJD3kP1N8n/GJwfdiXwebNzCvQ8JMsK0ATGE
+         lYNQ==
+X-Gm-Message-State: AOAM531mAs29FdrCDY/NTctjwtvWHEiF2rwav0vX5n6d7iqKEZ/2wB5v
+        Lq2ldUqKVl6jazruyqQUDRM=
+X-Google-Smtp-Source: ABdhPJwZcN84NLiXfGqjGlklM4KuC997ud1OwwN8I3t7lVciHg0DklmDNHxpy9ru77JO8zB7AwGo5Q==
+X-Received: by 2002:a17:906:1689:: with SMTP id s9mr11075494ejd.252.1622415589910;
         Sun, 30 May 2021 15:59:49 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id c6sm5135120eje.9.2021.05.30.15.59.48
+        by smtp.gmail.com with ESMTPSA id c6sm5135120eje.9.2021.05.30.15.59.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 May 2021 15:59:48 -0700 (PDT)
+        Sun, 30 May 2021 15:59:49 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -54,9 +54,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 1/8] net: dsa: sja1105: be compatible with "ethernet-ports" OF node name
-Date:   Mon, 31 May 2021 01:59:32 +0300
-Message-Id: <20210530225939.772553-2-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 2/8] net: dsa: sja1105: allow SGMII PCS configuration to be per port
+Date:   Mon, 31 May 2021 01:59:33 +0300
+Message-Id: <20210530225939.772553-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210530225939.772553-1-olteanv@gmail.com>
 References: <20210530225939.772553-1-olteanv@gmail.com>
@@ -68,12 +68,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Since commit f2f3e09396be ("net: dsa: sja1105: be compatible with
-"ethernet-ports" OF node name"), DSA supports the "ethernet-ports" name
-for the container node of the ports, but the sja1105 driver doesn't,
-because it handles some device tree parsing of its own.
+The SJA1105 R and S switches have 1 SGMII port (port 4). Because there
+is only one such port, there is no "port" parameter in the configuration
+code for the SGMII PCS.
 
-Add the second node name as a fallback.
+However, the SJA1110 can have up to 4 SGMII ports, each with its own
+SGMII register map. So we need to generalize the logic.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
@@ -84,22 +84,205 @@ None.
 Changes in v2:
 None.
 
- drivers/net/dsa/sja1105/sja1105_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/dsa/sja1105/sja1105_main.c | 75 +++++++++++++++-----------
+ 1 file changed, 44 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 2080f36ff25b..4c776bd7ce25 100644
+index 4c776bd7ce25..1e4e05d429af 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -885,6 +885,8 @@ static int sja1105_parse_dt(struct sja1105_private *priv,
+@@ -898,36 +898,43 @@ static int sja1105_parse_dt(struct sja1105_private *priv,
+ 	return rc;
+ }
+ 
+-static int sja1105_sgmii_read(struct sja1105_private *priv, int pcs_reg)
++static int sja1105_sgmii_read(struct sja1105_private *priv, int port,
++			      int pcs_reg)
+ {
+ 	const struct sja1105_regs *regs = priv->info->regs;
+ 	u32 val;
  	int rc;
  
- 	ports_node = of_get_child_by_name(switch_node, "ports");
-+	if (!ports_node)
-+		ports_node = of_get_child_by_name(switch_node, "ethernet-ports");
- 	if (!ports_node) {
- 		dev_err(dev, "Incorrect bindings: absent \"ports\" node\n");
- 		return -ENODEV;
+-	rc = sja1105_xfer_u32(priv, SPI_READ, regs->sgmii + pcs_reg, &val,
+-			      NULL);
++	if (port != SJA1105_SGMII_PORT)
++		return -ENODEV;
++
++	rc = sja1105_xfer_u32(priv, SPI_READ, regs->sgmii + pcs_reg,
++			      &val, NULL);
+ 	if (rc < 0)
+ 		return rc;
+ 
+ 	return val;
+ }
+ 
+-static int sja1105_sgmii_write(struct sja1105_private *priv, int pcs_reg,
+-			       u16 pcs_val)
++static int sja1105_sgmii_write(struct sja1105_private *priv, int port,
++			       int pcs_reg, u16 pcs_val)
+ {
+ 	const struct sja1105_regs *regs = priv->info->regs;
+ 	u32 val = pcs_val;
+ 	int rc;
+ 
+-	rc = sja1105_xfer_u32(priv, SPI_WRITE, regs->sgmii + pcs_reg, &val,
+-			      NULL);
++	if (port != SJA1105_SGMII_PORT)
++		return -ENODEV;
++
++	rc = sja1105_xfer_u32(priv, SPI_WRITE, regs->sgmii + pcs_reg,
++			      &val, NULL);
+ 	if (rc < 0)
+ 		return rc;
+ 
+ 	return val;
+ }
+ 
+-static void sja1105_sgmii_pcs_config(struct sja1105_private *priv,
++static void sja1105_sgmii_pcs_config(struct sja1105_private *priv, int port,
+ 				     bool an_enabled, bool an_master)
+ {
+ 	u16 ac = SJA1105_AC_AUTONEG_MODE_SGMII;
+@@ -936,27 +943,29 @@ static void sja1105_sgmii_pcs_config(struct sja1105_private *priv,
+ 	 * stop the clock during LPI mode, make the MAC reconfigure
+ 	 * autonomously after PCS autoneg is done, flush the internal FIFOs.
+ 	 */
+-	sja1105_sgmii_write(priv, SJA1105_DC1, SJA1105_DC1_EN_VSMMD1 |
+-					       SJA1105_DC1_CLOCK_STOP_EN |
+-					       SJA1105_DC1_MAC_AUTO_SW |
+-					       SJA1105_DC1_INIT);
++	sja1105_sgmii_write(priv, port, SJA1105_DC1,
++			    SJA1105_DC1_EN_VSMMD1 |
++			    SJA1105_DC1_CLOCK_STOP_EN |
++			    SJA1105_DC1_MAC_AUTO_SW |
++			    SJA1105_DC1_INIT);
+ 	/* DIGITAL_CONTROL_2: No polarity inversion for TX and RX lanes */
+-	sja1105_sgmii_write(priv, SJA1105_DC2, SJA1105_DC2_TX_POL_INV_DISABLE);
++	sja1105_sgmii_write(priv, port, SJA1105_DC2,
++			    SJA1105_DC2_TX_POL_INV_DISABLE);
+ 	/* AUTONEG_CONTROL: Use SGMII autoneg */
+ 	if (an_master)
+ 		ac |= SJA1105_AC_PHY_MODE | SJA1105_AC_SGMII_LINK;
+-	sja1105_sgmii_write(priv, SJA1105_AC, ac);
++	sja1105_sgmii_write(priv, port, SJA1105_AC, ac);
+ 	/* BASIC_CONTROL: enable in-band AN now, if requested. Otherwise,
+ 	 * sja1105_sgmii_pcs_force_speed must be called later for the link
+ 	 * to become operational.
+ 	 */
+ 	if (an_enabled)
+-		sja1105_sgmii_write(priv, MII_BMCR,
++		sja1105_sgmii_write(priv, port, MII_BMCR,
+ 				    BMCR_ANENABLE | BMCR_ANRESTART);
+ }
+ 
+ static void sja1105_sgmii_pcs_force_speed(struct sja1105_private *priv,
+-					  int speed)
++					  int port, int speed)
+ {
+ 	int pcs_speed;
+ 
+@@ -974,7 +983,7 @@ static void sja1105_sgmii_pcs_force_speed(struct sja1105_private *priv,
+ 		dev_err(priv->ds->dev, "Invalid speed %d\n", speed);
+ 		return;
+ 	}
+-	sja1105_sgmii_write(priv, MII_BMCR, pcs_speed | BMCR_FULLDPLX);
++	sja1105_sgmii_write(priv, port, MII_BMCR, pcs_speed | BMCR_FULLDPLX);
+ }
+ 
+ /* Convert link speed from SJA1105 to ethtool encoding */
+@@ -1115,7 +1124,8 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
+ 	}
+ 
+ 	if (is_sgmii)
+-		sja1105_sgmii_pcs_config(priv, phylink_autoneg_inband(mode),
++		sja1105_sgmii_pcs_config(priv, port,
++					 phylink_autoneg_inband(mode),
+ 					 false);
+ }
+ 
+@@ -1138,7 +1148,7 @@ static void sja1105_mac_link_up(struct dsa_switch *ds, int port,
+ 	sja1105_adjust_port_config(priv, port, speed);
+ 
+ 	if (sja1105_supports_sgmii(priv, port) && !phylink_autoneg_inband(mode))
+-		sja1105_sgmii_pcs_force_speed(priv, speed);
++		sja1105_sgmii_pcs_force_speed(priv, port, speed);
+ 
+ 	sja1105_inhibit_tx(priv, BIT(port), false);
+ }
+@@ -1191,7 +1201,7 @@ static int sja1105_mac_pcs_get_state(struct dsa_switch *ds, int port,
+ 	int ais;
+ 
+ 	/* Read the vendor-specific AUTONEG_INTR_STATUS register */
+-	ais = sja1105_sgmii_read(priv, SJA1105_AIS);
++	ais = sja1105_sgmii_read(priv, port, SJA1105_AIS);
+ 	if (ais < 0)
+ 		return ais;
+ 
+@@ -1873,11 +1883,11 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 	struct ptp_system_timestamp ptp_sts_before;
+ 	struct ptp_system_timestamp ptp_sts_after;
+ 	int speed_mbps[SJA1105_MAX_NUM_PORTS];
++	u16 bmcr[SJA1105_MAX_NUM_PORTS] = {0};
+ 	struct sja1105_mac_config_entry *mac;
+ 	struct dsa_switch *ds = priv->ds;
+ 	s64 t1, t2, t3, t4;
+ 	s64 t12, t34;
+-	u16 bmcr = 0;
+ 	int rc, i;
+ 	s64 now;
+ 
+@@ -1893,10 +1903,10 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 	for (i = 0; i < ds->num_ports; i++) {
+ 		speed_mbps[i] = sja1105_speed[mac[i].speed];
+ 		mac[i].speed = SJA1105_SPEED_AUTO;
+-	}
+ 
+-	if (sja1105_supports_sgmii(priv, SJA1105_SGMII_PORT))
+-		bmcr = sja1105_sgmii_read(priv, MII_BMCR);
++		if (sja1105_supports_sgmii(priv, i))
++			bmcr[i] = sja1105_sgmii_read(priv, i, MII_BMCR);
++	}
+ 
+ 	/* No PTP operations can run right now */
+ 	mutex_lock(&priv->ptp_data.lock);
+@@ -1943,27 +1953,30 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 		goto out;
+ 
+ 	for (i = 0; i < ds->num_ports; i++) {
++		bool an_enabled;
++
+ 		rc = sja1105_adjust_port_config(priv, i, speed_mbps[i]);
+ 		if (rc < 0)
+ 			goto out;
+-	}
+ 
+-	if (sja1105_supports_sgmii(priv, SJA1105_SGMII_PORT)) {
+-		bool an_enabled = !!(bmcr & BMCR_ANENABLE);
++		if (!sja1105_supports_sgmii(priv, i))
++			continue;
++
++		an_enabled = !!(bmcr[i] & BMCR_ANENABLE);
+ 
+-		sja1105_sgmii_pcs_config(priv, an_enabled, false);
++		sja1105_sgmii_pcs_config(priv, i, an_enabled, false);
+ 
+ 		if (!an_enabled) {
+ 			int speed = SPEED_UNKNOWN;
+ 
+-			if (bmcr & BMCR_SPEED1000)
++			if (bmcr[i] & BMCR_SPEED1000)
+ 				speed = SPEED_1000;
+-			else if (bmcr & BMCR_SPEED100)
++			else if (bmcr[i] & BMCR_SPEED100)
+ 				speed = SPEED_100;
+ 			else
+ 				speed = SPEED_10;
+ 
+-			sja1105_sgmii_pcs_force_speed(priv, speed);
++			sja1105_sgmii_pcs_force_speed(priv, i, speed);
+ 		}
+ 	}
+ 
 -- 
 2.25.1
 
