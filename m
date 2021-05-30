@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A54FF3952EB
-	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 22:59:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 984743952F7
+	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 23:15:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbhE3VBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 17:01:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41636 "EHLO mail.kernel.org"
+        id S229933AbhE3VQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 17:16:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42812 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229805AbhE3VA7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 30 May 2021 17:00:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 97137601FD;
-        Sun, 30 May 2021 20:59:20 +0000 (UTC)
+        id S229827AbhE3VQm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 30 May 2021 17:16:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5A06C610FA;
+        Sun, 30 May 2021 21:15:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622408361;
-        bh=tROU3KEbNt3YW6dQhPldNgPXNj4MPRrhK8hA1bwsCC0=;
+        s=k20201202; t=1622409303;
+        bh=/4nE5Mt+cfTfeZSZdxXWBw5wZ0ulN9IfEM3mqR1qOfI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=imHcyB7DP4FVKnHJt2PToNlYKLsrt2NTrriG9+5cteOElTbUN+ib7qiU309JnSHcb
-         e6HN7HYhMxLiQgnqEw7ZumMIEDEWRupqFNo+HYUI1BCX2sssXwxslfF7aIq9t2NZ6L
-         F+f1p4fLY5krkDc/O2hG5M74hmn0xaXRwTHm/E+8XMutDVVcQKZRqCm3l8bGc89Ru+
-         4KjVhBXs2hlUpFAI5tp20qN1ntooeZyuNylF96ojBGRIRGuwsXOPq5bvbhJ3zN1iiq
-         W0dUb0C5S8fARlaK8NbAMonqV2Htx+4ZFticUqXW0W+oLpeKJS9HP1g1IkjyTV07bu
-         cdDwyO8a71FGA==
-Date:   Sun, 30 May 2021 13:59:19 -0700
+        b=eNvLdq2IvSglYTbg65bgPPSsWD0UGlfuyOM0Tnf9E7hmCXl5bDbVQLXEhrwVs0YZx
+         HTAmiNSsY730McgbJnuwP0AIhqgVUh4+Pbq5YTEH/oZieR/LLGAEJlCmeumma/IcmF
+         TznXMoGf6n+kh3msVM3N5Ttbfi6x3oDBmyI9sb22i2CikuSr4cb/uYmvLMRrbbDm0T
+         QXP9XwwLXjR2/j43QdHGWvGhfp6lfHtLqBGnc1xIrF+REv/ONKNEpxoo/9YhtRBWJC
+         mVMcf5cns3H6Y4YWN0ce5N5/wDK1SPvBTJBZqgPYnhGpRHzV9MLKLMMMTHHO3ctuRG
+         u9SLPJKDbqKSQ==
+Date:   Sun, 30 May 2021 14:15:02 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Steen Hegelund <steen.hegelund@microchip.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -41,12 +41,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         <linux-arm-kernel@lists.infradead.org>,
         Bjarni Jonasson <bjarni.jonasson@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>
-Subject: Re: [PATCH net-next v2 02/10] net: sparx5: add the basic sparx5
- driver
-Message-ID: <20210530135919.3f64cf33@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20210528123419.1142290-3-steen.hegelund@microchip.com>
+Subject: Re: [PATCH net-next v2 03/10] net: sparx5: add hostmode with
+ phylink support
+Message-ID: <20210530141502.561920a7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20210528123419.1142290-4-steen.hegelund@microchip.com>
 References: <20210528123419.1142290-1-steen.hegelund@microchip.com>
-        <20210528123419.1142290-3-steen.hegelund@microchip.com>
+        <20210528123419.1142290-4-steen.hegelund@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,218 +54,224 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 May 2021 14:34:11 +0200 Steen Hegelund wrote:
-> This adds the Sparx5 basic SwitchDev driver framework with IO range
-> mapping, switch device detection and core clock configuration.
+On Fri, 28 May 2021 14:34:12 +0200 Steen Hegelund wrote:
+> This patch adds netdevs and phylink support for the ports in the switch.
+> It also adds register based injection and extraction for these ports.
 > 
-> Support for ports, phylink, netdev, mactable etc. are in the following
-> patches.
+> Frame DMA support for injection and extraction will be added in a later
+> series.
 
-> +	for (idx = 0; idx < 3; idx++) {
-> +		spx5_rmw(GCB_SIO_CLOCK_SYS_CLK_PERIOD_SET(clk_period / 100),
-> +			 GCB_SIO_CLOCK_SYS_CLK_PERIOD,
-> +			 sparx5,
-> +			 GCB_SIO_CLOCK(idx));
-> +	}
+> +struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno)
+> +{
+> +	struct sparx5_port *spx5_port;
+> +	struct net_device *ndev;
+> +	u64 val;
+> +
+> +	ndev = devm_alloc_etherdev(sparx5->dev, sizeof(struct sparx5_port));
+> +	if (!ndev)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	SET_NETDEV_DEV(ndev, sparx5->dev);
+> +	spx5_port = netdev_priv(ndev);
+> +	spx5_port->ndev = ndev;
+> +	spx5_port->sparx5 = sparx5;
+> +	spx5_port->portno = portno;
+> +	sparx5_set_port_ifh(spx5_port->ifh, portno);
+> +
+> +	ndev->netdev_ops = &sparx5_port_netdev_ops;
+> +	ndev->features |= NETIF_F_LLTX; /* software tx */
 
-braces unnecessary, please fix everywhere.
+Is your transmission method really lockless? How does
+simultaneous Tx from two CPUs work?
 
+> +	val = ether_addr_to_u64(sparx5->base_mac) + portno + 1;
+> +	u64_to_ether_addr(val, ndev->dev_addr);
 > +
-> +	spx5_rmw(HSCH_TAS_STATEMACHINE_CFG_REVISIT_DLY_SET
-> +		 ((256 * 1000) / clk_period),
-> +		 HSCH_TAS_STATEMACHINE_CFG_REVISIT_DLY,
-> +		 sparx5,
-> +		 HSCH_TAS_STATEMACHINE_CFG);
-> +
-> +	spx5_rmw(ANA_AC_POL_POL_UPD_INT_CFG_POL_UPD_INT_SET(pol_upd_int),
-> +		 ANA_AC_POL_POL_UPD_INT_CFG_POL_UPD_INT,
-> +		 sparx5,
-> +		 ANA_AC_POL_POL_UPD_INT_CFG);
-> +
-> +	return 0;
+> +	return ndev;
 > +}
 
-> +	/* Default values, some from DT */
-> +	sparx5->coreclock = SPX5_CORE_CLOCK_DEFAULT;
+> +static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
+> +{
+> +	bool eof_flag = false, pruned_flag = false, abort_flag = false;
+> +	struct net_device *netdev;
+> +	struct sparx5_port *port;
+> +	struct frame_info fi;
+> +	int i, byte_cnt = 0;
+> +	struct sk_buff *skb;
+> +	u32 ifh[IFH_LEN];
+> +	u32 *rxbuf;
 > +
-> +	ports = of_get_child_by_name(np, "ethernet-ports");
+> +	/* Get IFH */
+> +	for (i = 0; i < IFH_LEN; i++)
+> +		ifh[i] = spx5_rd(sparx5, QS_XTR_RD(grp));
+> +
+> +	/* Decode IFH (whats needed) */
+> +	sparx5_ifh_parse(ifh, &fi);
+> +
+> +	/* Map to port netdev */
+> +	port = fi.src_port < SPX5_PORTS ?
+> +		sparx5->ports[fi.src_port] : NULL;
+> +	if (!port || !port->ndev) {
+> +		dev_err(sparx5->dev, "Data on inactive port %d\n", fi.src_port);
+> +		sparx5_xtr_flush(sparx5, grp);
+> +		return;
 
-Don't you need to release the reference you got on @ports?
-
-> +	if (!ports) {
-> +		dev_err(sparx5->dev, "no ethernet-ports child node found\n");
-> +		return -ENODEV;
-> +	}
-> +	sparx5->port_count = of_get_child_count(ports);
-> +
-> +	configs = kcalloc(sparx5->port_count,
-> +			  sizeof(struct initial_port_config), GFP_KERNEL);
-> +	if (!configs)
-> +		return -ENOMEM;
-> +
-> +	for_each_available_child_of_node(ports, portnp) {
-> +		struct sparx5_port_config *conf;
-> +		struct phy *serdes;
-> +		u32 portno;
-> +
-> +		err = of_property_read_u32(portnp, "reg", &portno);
-> +		if (err) {
-> +			dev_err(sparx5->dev, "port reg property error\n");
-> +			continue;
-> +		}
-> +		config = &configs[idx];
-> +		conf = &config->conf;
-> +		err = of_get_phy_mode(portnp, &conf->phy_mode);
-> +		if (err) {
-> +			dev_err(sparx5->dev, "port %u: missing phy-mode\n",
-> +				portno);
-> +			continue;
-> +		}
-> +		err = of_property_read_u32(portnp, "microchip,bandwidth",
-> +					   &conf->bandwidth);
-> +		if (err) {
-> +			dev_err(sparx5->dev, "port %u: missing bandwidth\n",
-> +				portno);
-> +			continue;
-> +		}
-> +		err = of_property_read_u32(portnp, "microchip,sd-sgpio", &conf->sd_sgpio);
-> +		if (err)
-> +			conf->sd_sgpio = ~0;
-> +		else
-> +			sparx5->sd_sgpio_remapping = true;
-> +		serdes = devm_of_phy_get(sparx5->dev, portnp, NULL);
-> +		if (IS_ERR(serdes)) {
-> +			err = PTR_ERR(serdes);
-> +			if (err != -EPROBE_DEFER)
-> +				dev_err(sparx5->dev,
-> +					"port %u: missing serdes\n",
-> +					portno);
-
-dev_err_probe()
-
-> +			goto cleanup_config;
-> +		}
-> +		config->portno = portno;
-> +		config->node = portnp;
-> +		config->serdes = serdes;
-> +
-> +		conf->media = PHY_MEDIA_DAC;
-> +		conf->serdes_reset = true;
-> +		conf->portmode = conf->phy_mode;
-> +		if (of_find_property(portnp, "sfp", NULL)) {
-> +			conf->has_sfp = true;
-> +			conf->power_down = true;
-> +		}
-> +		idx++;
-> +	}
-> +
-> +	err = sparx5_create_targets(sparx5);
-> +	if (err)
-> +		goto cleanup_config;
-> +
-> +	if (of_get_mac_address(np, mac_addr)) {
-> +		dev_info(sparx5->dev, "MAC addr was not set, use random MAC\n");
-> +		eth_random_addr(sparx5->base_mac);
-> +		sparx5->base_mac[5] = 0;
-> +	} else {
-> +		ether_addr_copy(sparx5->base_mac, mac_addr);
-> +	}
-> +
-> +	/* Inj/Xtr IRQ support to be added in later patches */
-> +	/* Read chip ID to check CPU interface */
-> +	sparx5->chip_id = spx5_rd(sparx5, GCB_CHIP_ID);
-> +
-> +	sparx5->target_ct = (enum spx5_target_chiptype)
-> +		GCB_CHIP_ID_PART_ID_GET(sparx5->chip_id);
-> +
-> +	/* Initialize Switchcore and internal RAMs */
-> +	if (sparx5_init_switchcore(sparx5)) {
-> +		dev_err(sparx5->dev, "Switchcore initialization error\n");
-> +		goto cleanup_config;
-
-Should @err be set?
+You should probably increment appropriate counter for each error
+condition.
 
 > +	}
 > +
-> +	/* Initialize the LC-PLL (core clock) and set affected registers */
-> +	if (sparx5_init_coreclock(sparx5)) {
-> +		dev_err(sparx5->dev, "LC-PLL initialization error\n");
-> +		goto cleanup_config;
+> +	/* Have netdev, get skb */
+> +	netdev = port->ndev;
+> +	skb = netdev_alloc_skb(netdev, netdev->mtu + ETH_HLEN);
+> +	if (!skb) {
+> +		sparx5_xtr_flush(sparx5, grp);
+> +		dev_err(sparx5->dev, "No skb allocated\n");
+> +		return;
+> +	}
+> +	rxbuf = (u32 *)skb->data;
+> +
+> +	/* Now, pull frame data */
+> +	while (!eof_flag) {
+> +		u32 val = spx5_rd(sparx5, QS_XTR_RD(grp));
+> +		u32 cmp = val;
+> +
+> +		if (byte_swap)
+> +			cmp = ntohl((__force __be32)val);
+> +
+> +		switch (cmp) {
+> +		case XTR_NOT_READY:
+> +			break;
+> +		case XTR_ABORT:
+> +			/* No accompanying data */
+> +			abort_flag = true;
+> +			eof_flag = true;
+> +			break;
+> +		case XTR_EOF_0:
+> +		case XTR_EOF_1:
+> +		case XTR_EOF_2:
+> +		case XTR_EOF_3:
+> +			/* This assumes STATUS_WORD_POS == 1, Status
+> +			 * just after last data
+> +			 */
+> +			byte_cnt -= (4 - XTR_VALID_BYTES(val));
+> +			eof_flag = true;
+> +			break;
+> +		case XTR_PRUNED:
+> +			/* But get the last 4 bytes as well */
+> +			eof_flag = true;
+> +			pruned_flag = true;
+> +			fallthrough;
+> +		case XTR_ESCAPE:
+> +			*rxbuf = spx5_rd(sparx5, QS_XTR_RD(grp));
+> +			byte_cnt += 4;
+> +			rxbuf++;
+> +			break;
+> +		default:
+> +			*rxbuf = val;
+> +			byte_cnt += 4;
+> +			rxbuf++;
+> +		}
+> +	}
+> +
+> +	if (abort_flag || pruned_flag || !eof_flag) {
+> +		netdev_err(netdev, "Discarded frame: abort:%d pruned:%d eof:%d\n",
+> +			   abort_flag, pruned_flag, eof_flag);
+> +		kfree_skb(skb);
+> +		return;
+> +	}
+> +
+> +#if defined(CONFIG_DEBUG_KERNEL) /* TODO: Remove before upstreaming */
+> +	if (!netif_oper_up(netdev)) {
+> +		netdev_err(netdev, "Discarded frame: Interface not up\n");
+> +		kfree_skb(skb);
+> +		return;
+> +	}
+> +#endif
+> +
+> +	/* Finish up skb */
+> +	skb_put(skb, byte_cnt - ETH_FCS_LEN);
+> +	eth_skb_pad(skb);
+> +	skb->protocol = eth_type_trans(skb, netdev);
+> +	netif_rx(skb);
+> +	netdev->stats.rx_bytes += skb->len;
+> +	netdev->stats.rx_packets++;
+
+Does the Rx really need to happen in an interrupt context?
+Did you consider using NAPI or a tasklet?
+
+> +}
+> +
+> +static int sparx5_inject(struct sparx5 *sparx5,
+> +			 u32 *ifh,
+> +			 struct sk_buff *skb)
+> +{
+> +	int grp = INJ_QUEUE;
+> +	u32 val, w, count;
+> +	u8 *buf;
+> +
+> +	val = spx5_rd(sparx5, QS_INJ_STATUS);
+> +	if (!(QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp))) {
+> +		pr_err("Injection: Queue not ready: 0x%lx\n",
+> +		       QS_INJ_STATUS_FIFO_RDY_GET(val));
+
+non-rate-limited errors on the datapath are a bad idea
+
+> +		return -EBUSY;
+
+What do you expect to happen at this point? Kernel can retry sending
+for ever, is there a way for the driver to find out that the fifo is
+no longer busy to stop/start the software queuing appropriately?
+
+> +	}
+> +
+> +	if (QS_INJ_STATUS_WMARK_REACHED_GET(val) & BIT(grp)) {
+> +		pr_err("Injection: Watermark reached: 0x%lx\n",
+> +		       QS_INJ_STATUS_WMARK_REACHED_GET(val));
+> +		return -EBUSY;
 
 ditto
 
 > +	}
 > +
-> +	for (idx = 0; idx < sparx5->port_count; ++idx) {
-> +		config = &configs[idx];
-> +		if (!config->node)
-> +			continue;
+> +	/* Indicate SOF */
+> +	spx5_wr(QS_INJ_CTRL_SOF_SET(1) |
+> +		QS_INJ_CTRL_GAP_SIZE_SET(1),
+> +		sparx5, QS_INJ_CTRL(grp));
 > +
-> +		err = sparx5_create_port(sparx5, config);
-> +		if (err) {
-> +			dev_err(sparx5->dev, "port create error\n");
-> +			goto cleanup_ports;
-> +		}
+> +	// Write the IFH to the chip.
+
+Why the mix of comment styles?
+
+> +	for (w = 0; w < IFH_LEN; w++)
+> +		spx5_wr(ifh[w], sparx5, QS_INJ_WR(grp));
+> +
+> +	/* Write words, round up */
+> +	count = ((skb->len + 3) / 4);
+
+DIV_ROUND_UP()
+
+> +	buf = skb->data;
+> +	for (w = 0; w < count; w++, buf += 4) {
+> +		val = get_unaligned((const u32 *)buf);
+> +		spx5_wr(val, sparx5, QS_INJ_WR(grp));
 > +	}
 > +
-> +	if (sparx5_start(sparx5)) {
-> +		dev_err(sparx5->dev, "Start failed\n");
-> +		goto cleanup_ports;
-
-and here
-
+> +	/* Add padding */
+> +	while (w < (60 / 4)) {
+> +		spx5_wr(0, sparx5, QS_INJ_WR(grp));
+> +		w++;
 > +	}
 > +
-> +	kfree(configs);
-> +	return err;
+> +	/* Indicate EOF and valid bytes in last word */
+> +	spx5_wr(QS_INJ_CTRL_GAP_SIZE_SET(1) |
+> +		QS_INJ_CTRL_VLD_BYTES_SET(skb->len < 60 ? 0 : skb->len % 4) |
+> +		QS_INJ_CTRL_EOF_SET(1),
+> +		sparx5, QS_INJ_CTRL(grp));
 > +
-> +cleanup_ports:
-> +	/* Port cleanup to be added in later patches */
-> +cleanup_config:
-> +	kfree(configs);
-> +	return err;
-> +}
-
-> +struct sparx5_port_config      {
-
-Spurious tab before {?
-
-> +	phy_interface_t portmode;
-> +	bool has_sfp;
-> +	u32 bandwidth;
-> +	int speed;
-> +	int duplex;
-> +	enum phy_media media;
-> +	bool power_down;
-> +	bool autoneg;
-> +	u32 pause;
-> +	bool serdes_reset;
-
-Group all 4 bools together for better packing?
-
-> +	phy_interface_t phy_mode;
-> +	u32 sd_sgpio;
-> +};
-
-> +static inline void spx5_rmw(u32 val, u32 mask, struct sparx5 *sparx5,
-> +			    int id, int tinst, int tcnt,
-> +			    int gbase, int ginst, int gcnt, int gwidth,
-> +			    int raddr, int rinst, int rcnt, int rwidth)
-> +{
-> +	u32 nval;
-> +	void __iomem *addr =
-> +		spx5_addr(sparx5->regs, id, tinst, tcnt,
-
-Why try to initialize inline when it results in weird looking code and
-no saved lines?
-
-> +			  gbase, ginst, gcnt, gwidth,
-> +			  raddr, rinst, rcnt, rwidth);
-
-Not to mention that you end up with no new line after variable
-declaration.
-
-> +	nval = readl(addr);
-> +	nval = (nval & ~mask) | (val & mask);
-> +	writel(nval, addr);
+> +	/* Add dummy CRC */
+> +	spx5_wr(0, sparx5, QS_INJ_WR(grp));
+> +	w++;
+> +
+> +	return NETDEV_TX_OK;
 > +}
