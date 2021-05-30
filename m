@@ -2,168 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC8D4394FDC
-	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 08:36:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E38F439502E
+	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 11:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229594AbhE3GiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 02:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbhE3GiU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 02:38:20 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15824C061574;
-        Sat, 29 May 2021 23:36:20 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id ot16so4834674pjb.3;
-        Sat, 29 May 2021 23:36:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NNL+qDCrDIa0joZ0DYEBARugQVtjVC8kImQPhRJdgbI=;
-        b=HaN9suZnSjU8hSNClvCEjrrEvAk/otnDVjSyly67lUuRlxX0VAh0ZnubzbO1LBNBj3
-         KuT1lvamatl2uqzpwuz0CeEU+PHi81C4/4cCunvFigmhC9ahsWlONQJz4NVuzcQJpxdS
-         g43DGxZ8jC9eixBPmA7nL5NlnxXB1A7Pq8ZfwzVCxNqwmOeLv0dobfnquSpZsZPhdLs8
-         D6tR1XU4DWCiPxieEF01FLO/wBvyHB5JuCX/nGRlPJwZfNjPtbAVd5P0/pA/hRyznVqO
-         hXhzA+A3zz1GDDa5RQ0RfKa5tPLN4rBNFSUS8YkiyUY3AFTNYt25ea1wS3l4UGXpL0Kl
-         45pA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NNL+qDCrDIa0joZ0DYEBARugQVtjVC8kImQPhRJdgbI=;
-        b=MFOpK6RC8mZmVJL2l2QeIlx0ynCjK7PDhT7zzDo5VD1+kCWp9EDjZBeIQyIP9EuVn0
-         JVZp43AvBs8kBDX6TrRpJXZJ4+Q69ESCs38KIjJ1YXOLpcvIkTIcc8cl6bQHiu9rET5L
-         6KpAYUrVNv/RpnJusfYNsxwTMbOuC/t7e93SizxV2kOs0aQ+gqSBN44eFL1w3b2DYVnO
-         oD+4SLQXZD4+RFJPlh0oJHce//+gbpZBNOrhXouQStPCxMZ6UVza8vxwTbuoJdemU8ml
-         10nwSNkay+FV82eXmDe3QFD8QfOnqv100l/e9wb+6ULrQUkb9cZ6G/+SeqJFNa/ODYIq
-         AXbg==
-X-Gm-Message-State: AOAM5314QUfvAYGi5bB6ewqQuqWVvbVAP0n6dER5stWhQ3FWD+7/bkes
-        qnUkBoXzzEUmkqL0L+3SEndvXVBJjunf/G4yRSg=
-X-Google-Smtp-Source: ABdhPJykxIw04QZzjECK6roH4Maji5aF2IBev6tmhiUr7sjs8xPdbsVYg+ZxFSf1Diz1jk+9DS/8tBItoXhqkyijRJU=
-X-Received: by 2002:a17:90b:190a:: with SMTP id mp10mr10395885pjb.145.1622356579541;
- Sat, 29 May 2021 23:36:19 -0700 (PDT)
+        id S229780AbhE3JCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 05:02:46 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:51596 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229585AbhE3JCo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 30 May 2021 05:02:44 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1622365266; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=m6gbfF2M8WEGMtZm9Ch5HQfluH/QE2I8j/C41+TlWbM=; b=ZIythUawtpBDSbsYQx+SIFGdGymdXK+1WI6b9N/o4N4h/LSIhfamIYulW/t/eUQf1H94lt6w
+ OmWo8G9oxIpc8j0C8uD6c5a2GEYTPg4l5D0o85r6j5BaznQn96xolaOqqMAfcTcuuH3ZU5Vv
+ MSDEIAQQ/Z8dTVTvV5m5bMw+pGs=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 60b3544b51f29e6bae4b4ea4 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 30 May 2021 09:00:59
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 600C2C433F1; Sun, 30 May 2021 09:00:58 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7DB0FC433D3;
+        Sun, 30 May 2021 09:00:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7DB0FC433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Phillip Potter <phil@philpotter.co.uk>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ath9k-devel@qca.qualcomm.com,
+        fw@strlen.de
+Subject: Re: [PATCH v2] ath9k: ath9k_htc_rx_msg: return when sk_buff is too small
+References: <20210502212611.1818-1-phil@philpotter.co.uk>
+Date:   Sun, 30 May 2021 12:00:53 +0300
+In-Reply-To: <20210502212611.1818-1-phil@philpotter.co.uk> (Phillip Potter's
+        message of "Sun, 2 May 2021 22:26:11 +0100")
+Message-ID: <87fsy4ppdm.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
- <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
- <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
- <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
- <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com> <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
-In-Reply-To: <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat, 29 May 2021 23:36:08 -0700
-Message-ID: <CAM_iQpXUBuOirztj3kifdFpvygKb-aoqwuXKkLdG9VFte5nynA@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 25, 2021 at 11:21 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+Phillip Potter <phil@philpotter.co.uk> writes:
+
+> At the start of ath9k_htc_rx_msg, we check to see if the skb pointer is
+> valid, but what we don't do is check if it is large enough to contain a
+> valid struct htc_frame_hdr. We should check for this and return if not,
+> as the buffer is invalid in this case. Fixes a KMSAN-found uninit-value bug
+> reported by syzbot at:
+> https://syzkaller.appspot.com/bug?id=7dccb7d9ad4251df1c49f370607a49e1f09644ee
 >
-> On Mon, May 24, 2021 at 9:59 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Mon, May 24, 2021 at 8:16 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > >
-> > > On Sun, May 23, 2021 at 9:01 AM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > >
-> > > > On Fri, May 21, 2021 at 2:37 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > > >
-> > > > > Hi, Alexei
-> > > > >
-> > > > > On Thu, May 20, 2021 at 11:52 PM Alexei Starovoitov
-> > > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > > >
-> > > > > > Introduce 'struct bpf_timer' that can be embedded in most BPF map types
-> > > > > > and helpers to operate on it:
-> > > > > > long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
-> > > > > > long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
-> > > > > > long bpf_timer_del(struct bpf_timer *timer)
-> > > > >
-> > > > > Like we discussed, this approach would make the timer harder
-> > > > > to be independent of other eBPF programs, which is a must-have
-> > > > > for both of our use cases (mine and Jamal's). Like you explained,
-> > > > > this requires at least another program array, a tail call, a mandatory
-> > > > > prog pinning to work.
-> > > >
-> > > > That is simply not true.
-> > >
-> > > Which part is not true? The above is what I got from your explanation.
-> >
-> > I tried to write some code sketches to use your timer to implement
-> > our conntrack logic, below shows how difficult it is to use,
+> Reported-by: syzbot+e4534e8c1c382508312c@syzkaller.appspotmail.com
+> Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+> ---
 >
-> Was it difficult because you've used tail_call and over complicated
-> the progs for no good reason?
-
-Using tail call is what I got from you, here is the quote:
-
-"Sure. That's trivially achieved with pinning.
-One can have an ingress prog that tailcalls into another prog
-that arms the timer with one of its subprogs.
-Egress prog can tailcall into the same prog as well.
-The ingress and egress progs can be replaced one by one
-or removed both together and middle prog can stay alive
-if it's pinned in bpffs or held alive by FD."
-
-Here is the link:
-https://lore.kernel.org/bpf/CAADnVQK9BgguVorziWgpMktLHuPCgEaKa4fz-KCfhcZtT46teQ@mail.gmail.com/
-
-
+> V2:
+> * Free skb properly when this problem is detected, as pointed out by
+>   Florian Westphal.
 >
-> > SEC("ingress")
-> > void ingress(struct __sk_buff *skb)
-> > {
-> >         struct tuple tuple;
-> >         // extract tuple from skb
-> >
-> >         if (bpf_map_lookup_elem(&timers, &key) == NULL)
-> >                 bpf_tail_call(NULL, &jmp_table, 0);
-> >                 // here is not reachable unless failure
-> >         val = bpf_map_lookup_elem(&conntrack, &tuple);
-> >         if (val && val->expires < now) {
-> >                 bpf_tail_call(NULL, &jmp_table, 1);
-> >                 // here is not reachable unless failure
-> >         }
-> > }
-> >
-> > SEC("egress")
-> > void egress(struct __sk_buff *skb)
-> > {
-> >         struct tuple tuple;
-> >         // extract tuple from skb
-> >
-> >         if (bpf_map_lookup_elem(&timers, &key) == NULL)
-> >                 bpf_tail_call(NULL, &jmp_table, 0);
-> >                 // here is not reachable unless failure
-> >         val = bpf_map_lookup_elem(&conntrack, &tuple);
-> >         if (val && val->expires < now) {
-> >                 bpf_tail_call(NULL, &jmp_table, 1);
-> >                 // here is not reachable unless failure
+> ---
+>  drivers/net/wireless/ath/ath9k/htc_hst.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 >
-> tail_calls are unnecessary. Just call the funcs directly.
-> All lookups and maps are unnecessary as well.
-> Looks like a single global timer will be enough for this use case.
+> diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+> index 510e61e97dbc..1fe89b068ac4 100644
+> --- a/drivers/net/wireless/ath/ath9k/htc_hst.c
+> +++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+> @@ -406,6 +406,11 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+>  	if (!htc_handle || !skb)
+>  		return;
+>  
+> +	if (!pskb_may_pull(skb, sizeof(struct htc_frame_hdr))) {
+> +		kfree_skb(skb);
+> +		return;
+> +	}
 
-Hmm? With your design, a timer has to be embedded into a map
-value, you said this is to mimic bpf spinlock.
+This does not look complete to me, I think the function is missing
+proper length checks. For example, with ENDPOINT0 it reads two byte
+msg_id after the htc header and it's not verified that skb really has
+that. I did not check if ep_callbacks.rx handlers have proper length
+handling, I recommend verifying that also while fixing this.
 
->
-> In general the garbage collection in any form doesn't scale.
-> The conntrack logic doesn't need it. The cillium conntrack is a great
-> example of how to implement a conntrack without GC.
+Also I want to point out that the skb is freed differently based on
+endpoint, I did not check why and don't know if it causes:
 
-That is simply not a conntrack. We expire connections based on
-its time, not based on the size of the map where it residents.
+	if (epid < 0 || epid >= ENDPOINT_MAX) {
+		if (pipe_id != USB_REG_IN_PIPE)
+			dev_kfree_skb_any(skb);
+		else
+			kfree_skb(skb);
+		return;
+	}
 
-Thanks.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
