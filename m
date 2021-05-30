@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C912D395354
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 01:00:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E8C9395355
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 01:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230105AbhE3XBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 19:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35596 "EHLO
+        id S230044AbhE3XBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 19:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbhE3XBf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 19:01:35 -0400
+        with ESMTP id S230031AbhE3XBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 19:01:36 -0400
 Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBBADC06174A
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 15:59:55 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id r23so11379291edw.1
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 15:59:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8042BC0613CE
+        for <netdev@vger.kernel.org>; Sun, 30 May 2021 15:59:56 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id t3so11335338edc.7
+        for <netdev@vger.kernel.org>; Sun, 30 May 2021 15:59:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jkmsADSejieZ+7jwy+cH2F5yph3lP260Y2ixi8T39o4=;
-        b=mtDXhYKaXxxN945pOnyQpDM3uzQZgFBa9K1DS7aCgdaNaQMTTDukPqLyRMJ5fSiR+Q
-         yYGEX2tP7VLyY8c/8iMswm1JG6+PJJPCu0FcwoAP05DqEfBpbf9IyVjzTSRqyH9zwtBf
-         X2IziRq41PTlJWAhmu7SHdadRYr0RKRJM0xcxaxCnbfI71d4JvWs42YyznnmeckYReva
-         TB7gCFEB2J8KW/5b1wd0R35RRoT8wiN52LrmTaMEJ2kMjmLpeOZpvE03vAEFlljqVqkL
-         8Cwpucx2kK5qlsjSQhcUW1aQsvFkQpgYSeFMC5LSmgQlP7NG9nTgM6LZtUrzh6nMN56z
-         QYaA==
+        bh=kSYwMOa+R+P9hkLHoNO8iJqgLdOBCCpod7zfQ51svfM=;
+        b=XlH2mvJpdld3li616eVe8z03SIExHAExk2uKFK/zwh1wNIwLw4zBVnphyE7t1ZNxNq
+         JI4+I8EN+VyecBD0z4vP6e/TkrGjQ7oG+ORsgPwuz7OTzObVDOEVB7lW62Y3Dzg2T7bZ
+         SIjdcyAevSIbs/Ne8AVp8nxWL7PDjBdgo2tTRNP4WgrEsCS1fpExO7pHyKEqK1bStiSo
+         pfhSNNRNRs6y2CjqRHo32UHGTw6TSiLETsACB9uU2VLRgInO/r4E1fwetnijUf2BGsgJ
+         hsiFATDDTBQZFiboedTKEtmnoHBSl060qSoWFU1lKgrfC0XDIhldZ5OaapYcfVwYo6xv
+         pbGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jkmsADSejieZ+7jwy+cH2F5yph3lP260Y2ixi8T39o4=;
-        b=OCQtVHFunabQKCe5mi7tecRKdzWHeDceVbnvOiOCCG916FpoDAo8JMrVDwQvamKlBC
-         hWIkWiUvRkHsmfSeXJ8VAtYYutcBS2x1aDeoNtNzIoyC3eX0nYTjX/wJcf/cNRAm2rbK
-         xVz/G31RJEOZvEiCWFtnLtlCuT65904otAqS4xnaaYGkyDzCVRRAf7boQPzAwHI92b85
-         PffRNaq75IK1nuXEktqO/MaR2x6/3tObGqC24BVSnQMlOu2SRb2iyUnzOxN+Cu+FgoUF
-         lTiFIpBQFMkURNN9EJh+EUcDIGhbADJoGfc+2iIUqWxYRHxRj725qa8v8yIqEm9plJPK
-         9cQA==
-X-Gm-Message-State: AOAM532C7L1cClq0N6R328bSe4AZXuIrlBwkXC4lnviZTRtG11BxZZRN
-        dac9XLWXj88pBKEyK3WqMak=
-X-Google-Smtp-Source: ABdhPJxqTg06bFDq3e/V8ywz5rhdCT8nBRcxNUKG5xJgMCl4irkPjvFkMsS+E0LTAFqysGN0zzCUMA==
-X-Received: by 2002:a05:6402:12d8:: with SMTP id k24mr12003997edx.47.1622415594312;
-        Sun, 30 May 2021 15:59:54 -0700 (PDT)
+        bh=kSYwMOa+R+P9hkLHoNO8iJqgLdOBCCpod7zfQ51svfM=;
+        b=XICACXO57IZsKvehj6PgnwcHJ0Jp3h8AzR9q3y2dSzx/AWYmYuFd7X1mjgGS7MCvdr
+         CSybqIv9PaE0FbwZx6xff/1RvV7Ub1UL6AKV176EGUJwnIEvCojs+2/O192w60QnFtc7
+         eUm9tNAyFjmwSL4mEvATjQ3dmxIrkG0P1thg878nmqXWmKfRAmDgmqnixY7we1dB4PKV
+         4lzyB0qw3tKLKeyaSIdzlkj2VMYOLzFb7rIGS3caPwgHn3kosEeaSpCKP+Hu80r+6oRJ
+         TX6JN2EoY4FxxlRrKXRBBoR+M6i6GpJddfnhc9bCJLRB+4OMQwK9oD0728B6Vz3NOZPS
+         u4Pw==
+X-Gm-Message-State: AOAM530KYikrcGOKmD5V3NBedFuVbMmuJn6ZgB+KY6eG7A/EzOd6ls6m
+        1RrMP8OsO83aqymmR0tyty4=
+X-Google-Smtp-Source: ABdhPJwsmQpPGsbRxhoDKUq0BuVgJozCKvjgdIHX//J7B9swk0gs/pskTrfudCmA5Dm6mWgtlkq1kQ==
+X-Received: by 2002:aa7:d84e:: with SMTP id f14mr9029111eds.12.1622415595129;
+        Sun, 30 May 2021 15:59:55 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id c6sm5135120eje.9.2021.05.30.15.59.53
+        by smtp.gmail.com with ESMTPSA id c6sm5135120eje.9.2021.05.30.15.59.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sun, 30 May 2021 15:59:54 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
@@ -54,9 +54,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 7/8] net: dsa: sja1105: always keep RGMII ports in the MAC role
-Date:   Mon, 31 May 2021 01:59:38 +0300
-Message-Id: <20210530225939.772553-8-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 8/8] net: dsa: sja1105: some table entries are always present when read dynamically
+Date:   Mon, 31 May 2021 01:59:39 +0300
+Message-Id: <20210530225939.772553-9-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210530225939.772553-1-olteanv@gmail.com>
 References: <20210530225939.772553-1-olteanv@gmail.com>
@@ -68,35 +68,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-In SJA1105, the xMII Mode Parameters Table field called PHY_MAC denotes
-the 'role' of the port, be it a PHY or a MAC. This makes a difference in
-the MII and RMII protocols, but RGMII is symmetric, so either PHY or MAC
-settings result in the same hardware behavior.
+The SJA1105 has a static configuration comprised of a number of tables
+with entries. Some of these can be read and modified at runtime as well,
+through the dynamic configuration interface.
 
-The SJA1110 is different, and the RGMII ports only work when configured
-in MAC mode, so keep the port roles in MAC mode unconditionally.
+As a careful reader can notice from the comments in this file, the
+software interface for accessing a table entry through the dynamic
+reconfiguration is a bit of a no man's land, and varies wildly across
+switch generations and even from one kind of table to another.
 
-Why we had an RGMII port in the PHY role in the first place was because
-we wanted to have a way in the driver to denote whether RGMII delays
-should be applied based on the phy-mode property or not. This is already
-done in sja1105_parse_rgmii_delays() based on an intermediary
-struct sja1105_dt_port (which contains the port role). So it is a
-logical fallacy to use the hardware configuration as a scratchpad for
-driver data, it isn't necessary.
+I have tried my best to come up with a software representation of a
+'common denominator' SPI command to access a table entry through the
+dynamic configuration interface:
 
-We can also remove the gating condition for applying RGMII delays only
-for ports in the PHY role. The .setup_rgmii_delay() method looks at
-the priv->rgmii_rx_delay[port] and priv->rgmii_tx_delay[port] properties
-which are already populated properly (in the case of a port in the MAC
-role they are false). Removing this condition generates a few more SPI
-writes for these ports (clearing the RGMII delays) which are perhaps
-useless for SJA1105P/Q/R/S, where we know that the delays are disabled
-by default. But for SJA1110, the firmware on the embedded microcontroller
-might have done something funny, so it's always a good idea to clear the
-RGMII delays if that's what Linux expects.
+struct sja1105_dyn_cmd {
+	bool search;
+	u64 valid; /* must be set to 1 */
+	u64 rdwrset; /* 0 to read, 1 to write */
+	u64 errors;
+	u64 valident; /* 0 if entry is invalid, 1 if valid */
+	u64 index;
+};
+
+Relevant to this patch is the VALIDENT bit, which for READ commands is
+populated by the switch and lets us know if we're looking at junk or at
+a real table entry.
+
+In SJA1105, the dynamic reconfiguration interface for management routes
+has notably not implemented the VALIDENT bit, leading to a workaround to
+ignore this field in sja1105_dynamic_config_read(), as it will be set to
+zero, but the data is valid nonetheless.
+
+In SJA1110, this pattern has sadly been abused to death, and while there
+are many more tables which can be read back over the dynamic config
+interface compared to SJA1105, their handling isn't in any way more
+uniform. Generally speaking, if there is a single possible entry in a
+given table, and loading that table in the static config is mandatory as
+per the documentation, then the VALIDENT bit is deemed as redundant and
+more than likely not implemented.
+
+So it is time to make the workaround more official, and add a bit to the
+flags implemented by dynamic config tables. It will be used by more
+tables when SJA1110 support arrives.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v3:
 None.
@@ -104,50 +119,63 @@ None.
 Changes in v2:
 None.
 
- drivers/net/dsa/sja1105/sja1105_clocking.c | 7 +------
- drivers/net/dsa/sja1105/sja1105_main.c     | 8 +++++++-
- 2 files changed, 8 insertions(+), 7 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_dynamic_config.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_clocking.c b/drivers/net/dsa/sja1105/sja1105_clocking.c
-index 03173397d950..ae297648611f 100644
---- a/drivers/net/dsa/sja1105/sja1105_clocking.c
-+++ b/drivers/net/dsa/sja1105/sja1105_clocking.c
-@@ -566,14 +566,9 @@ static int sja1105_rgmii_clocking_setup(struct sja1105_private *priv, int port,
- 		dev_err(dev, "Failed to configure Tx pad registers\n");
- 		return rc;
- 	}
-+
- 	if (!priv->info->setup_rgmii_delay)
- 		return 0;
--	/* The role has no hardware effect for RGMII. However we use it as
--	 * a proxy for this interface being a MAC-to-MAC connection, with
--	 * the RGMII internal delays needing to be applied by us.
--	 */
--	if (role == XMII_MAC)
--		return 0;
+diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+index 12cd04b56803..ff2742f53de3 100644
+--- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
++++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+@@ -78,6 +78,9 @@
+  *		   on its ENTRY portion, as a result of a SPI write command.
+  *		   Only the TCAM-based FDB table on SJA1105 P/Q/R/S supports
+  *		   this.
++ *	OP_VALID_ANYWAY: Reading some tables through the dynamic config
++ *			 interface is possible even if the VALIDENT bit is not
++ *			 set in the writeback. So don't error out in that case.
+  * - .max_entry_count: The number of entries, counting from zero, that can be
+  *		       reconfigured through the dynamic interface. If a static
+  *		       table can be reconfigured at all dynamically, this
+@@ -651,6 +654,7 @@ static size_t sja1105pqrs_cbs_entry_packing(void *buf, void *entry_ptr,
+ #define OP_WRITE	BIT(1)
+ #define OP_DEL		BIT(2)
+ #define OP_SEARCH	BIT(3)
++#define OP_VALID_ANYWAY	BIT(4)
  
- 	return priv->info->setup_rgmii_delay(priv, port);
- }
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 5beafe003268..84edd054781b 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -218,8 +218,14 @@ static int sja1105_init_mii_settings(struct sja1105_private *priv,
- 		/* Even though the SerDes port is able to drive SGMII autoneg
- 		 * like a PHY would, from the perspective of the XMII tables,
- 		 * the SGMII port should always be put in MAC mode.
-+		 * Similarly, RGMII is a symmetric protocol electrically
-+		 * speaking, and the 'RGMII PHY' role does not mean anything to
-+		 * hardware. Just keep the 'PHY role' notation relevant to the
-+		 * driver to mean 'the switch port should apply RGMII delays',
-+		 * but unconditionally put the port in the MAC role.
- 		 */
--		if (ports[i].phy_mode == PHY_INTERFACE_MODE_SGMII)
-+		if (ports[i].phy_mode == PHY_INTERFACE_MODE_SGMII ||
-+		    phy_interface_mode_is_rgmii(ports[i].phy_mode))
- 			mii->phy_mac[i] = XMII_MAC;
- 		else
- 			mii->phy_mac[i] = ports[i].role;
+ /* SJA1105E/T: First generation */
+ const struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
+@@ -673,7 +677,7 @@ const struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
+ 	[BLK_IDX_MGMT_ROUTE] = {
+ 		.entry_packing = sja1105et_mgmt_route_entry_packing,
+ 		.cmd_packing = sja1105et_mgmt_route_cmd_packing,
+-		.access = (OP_READ | OP_WRITE),
++		.access = (OP_READ | OP_WRITE | OP_VALID_ANYWAY),
+ 		.max_entry_count = SJA1105_NUM_PORTS,
+ 		.packed_size = SJA1105ET_SIZE_L2_LOOKUP_DYN_CMD,
+ 		.addr = 0x20,
+@@ -757,7 +761,7 @@ const struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
+ 	[BLK_IDX_MGMT_ROUTE] = {
+ 		.entry_packing = sja1105pqrs_mgmt_route_entry_packing,
+ 		.cmd_packing = sja1105pqrs_mgmt_route_cmd_packing,
+-		.access = (OP_READ | OP_WRITE | OP_DEL | OP_SEARCH),
++		.access = (OP_READ | OP_WRITE | OP_DEL | OP_SEARCH | OP_VALID_ANYWAY),
+ 		.max_entry_count = SJA1105_NUM_PORTS,
+ 		.packed_size = SJA1105PQRS_SIZE_L2_LOOKUP_DYN_CMD,
+ 		.addr = 0x24,
+@@ -911,11 +915,8 @@ int sja1105_dynamic_config_read(struct sja1105_private *priv,
+ 
+ 		cmd = (struct sja1105_dyn_cmd) {0};
+ 		ops->cmd_packing(packed_buf, &cmd, UNPACK);
+-		/* UM10944: [valident] will always be found cleared
+-		 * during a read access with MGMTROUTE set.
+-		 * So don't error out in that case.
+-		 */
+-		if (!cmd.valident && blk_idx != BLK_IDX_MGMT_ROUTE)
++
++		if (!cmd.valident && !(ops->access & OP_VALID_ANYWAY))
+ 			return -ENOENT;
+ 		cpu_relax();
+ 	} while (cmd.valid && --retries);
 -- 
 2.25.1
 
