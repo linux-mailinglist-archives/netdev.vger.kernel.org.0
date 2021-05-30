@@ -2,207 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51DA73950B5
-	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 13:47:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB16A395158
+	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 16:50:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbhE3LtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 07:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbhE3LtF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 07:49:05 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463CEC061574
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 04:47:27 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id 22so6849563pfv.11
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 04:47:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :in-reply-to;
-        bh=SniJQg+bpsIPc9yH9gfClVcbGYVcf1AhAaSif/PBOAA=;
-        b=XIzwfoXjvyptstz3hE0KjXoVd4fs9MLYvF+qaydfJXZo7zgVVX9oWZWmd1pJcNEYfq
-         5SZqG+F1CgqHzkq37iUxjFs0vffeLpX8P/tXo2GflXLZGiIFx/RBWQQAPnj8kIFI7q6x
-         bmMTv6ipQw8G8WJ4CwLnp1sofvTN77a33IfFA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:in-reply-to;
-        bh=SniJQg+bpsIPc9yH9gfClVcbGYVcf1AhAaSif/PBOAA=;
-        b=drti9u7un98SeoaSCmvy+nIO2CO7N8TSOqbdPZiyPLx631UYd+diZV4Ig+meRxaeIt
-         Dnmn5dGIc7F3wcoWdgYNktATG6sFLF13lSQ+K34i+t8jpNOS5YF9jGyvYZFF4y8akam4
-         8Lb+TW1pPdhIVAHM0TwTnqGyN7WI7Hn42lawLprj1cUAHlUmPKrsVjMzNrzSLwhq+U7P
-         C6yNMiX3yDWed8r7PAVgsUxJNwZGvPhK3e9/zn6bNaLc2clCMLW3IDGIX7fXRyLpNmI9
-         o9xyB8gT/NDSFgfXrf83QrDXbtQj8ywUaPaGtajxZcnp+NyQBUYsMOKtktHZIRbpbJXW
-         RAqw==
-X-Gm-Message-State: AOAM533nZqiXnswAS22VBAbmeVu1zTq0rgYH6yomUUG90nuCpa7c4r/N
-        ZmJ53QrMgubfFzwKywT/da1u0H3L/fD88Ij+
-X-Google-Smtp-Source: ABdhPJwHIjC3FS1KRzHK49WsDiSeUNd+WQhXJM5BfcTEQpm2Jy4OAwaxYoHFXV+9+TbtCfEPfUWv3w==
-X-Received: by 2002:aa7:938f:0:b029:2de:2cf2:6a27 with SMTP id t15-20020aa7938f0000b02902de2cf26a27mr12134187pfe.47.1622375246677;
-        Sun, 30 May 2021 04:47:26 -0700 (PDT)
-Received: from builder ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id f18sm8248198pjh.55.2021.05.30.04.47.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 May 2021 04:47:26 -0700 (PDT)
-Date:   Sun, 30 May 2021 14:47:16 +0300
-From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next v2 1/3] net/sched: act_vlan: Fix modify to allow
- 0
-Message-ID: <20210530114716.GA16534@builder>
-References: <20210525153601.6705-1-boris.sukholitko@broadcom.com>
- <20210525153601.6705-2-boris.sukholitko@broadcom.com>
- <YK1fpkmyiITfaVpr@dcaratti.users.ipa.redhat.com>
- <20210526114553.GA31019@builder>
- <YK/QRFAcMMcXBvw9@dcaratti.users.ipa.redhat.com>
+        id S229682AbhE3OwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 10:52:12 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:60276 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229580AbhE3OwL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 10:52:11 -0400
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id 84D7F200EEBB;
+        Sun, 30 May 2021 16:50:31 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 84D7F200EEBB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1622386231;
+        bh=t7S6OzyTfswqtF+Kv7MT0p/q3dEZMNshyO4Y8ZrCgD4=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=iwPd3e6418PLh7yDIVX1lcQKajXfcZx7GPqhQ5QSefAxD4O33OyBsAAwM2vU3VIBh
+         YKPXPgW9Np0xz1rAdyVHPAXB9qVryFIOKJmKr3p4tKT4gPtvGzOtfqn+LF5Cq3fXI3
+         e+ej/7r6v1RAcWu2kG7hUuiW9JBlSrPwOLNSL/uI/bsuc+QhDA3GKMK/oH1U0Wv2GC
+         txENuMeifstLkzoCb8ylAH5EKXxMkWVFlfe3wQk7CtpNG8vEKBorEut6K+DVt+JLzv
+         Dyo0oZl0+XLMG8TCFzHWgxLJuj5rnU+EcO4P+/xdyPkbyom4IX74wH5lR3t731neQm
+         pM72uPZwhOJUw==
+Received: from localhost (localhost [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 795DE6008D47D;
+        Sun, 30 May 2021 16:50:31 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id rrx8Tfpi907b; Sun, 30 May 2021 16:50:31 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 6228F6008D47B;
+        Sun, 30 May 2021 16:50:31 +0200 (CEST)
+Date:   Sun, 30 May 2021 16:50:31 +0200 (CEST)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, tom@herbertland.com
+Message-ID: <1616887215.34203636.1622386231363.JavaMail.zimbra@uliege.be>
+In-Reply-To: <1678535209.34108899.1622370998279.JavaMail.zimbra@uliege.be>
+References: <20210527151652.16074-1-justin.iurman@uliege.be> <20210527151652.16074-3-justin.iurman@uliege.be> <20210529140555.3536909f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net> <1678535209.34108899.1622370998279.JavaMail.zimbra@uliege.be>
+Subject: Re: [PATCH net-next v4 2/5] ipv6: ioam: Data plane support for
+ Pre-allocated Trace
 MIME-Version: 1.0
-In-Reply-To: <YK/QRFAcMMcXBvw9@dcaratti.users.ipa.redhat.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000004b10c605c38aacad"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [81.240.24.148]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF88 (Linux)/8.8.15_GA_4026)
+Thread-Topic: ipv6: ioam: Data plane support for Pre-allocated Trace
+Thread-Index: KMu3rfy/JgmAcDHjEzGJ/hX/Qek2UpsQVY0y
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000004b10c605c38aacad
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+>>> A per-interface sysctl ioam6_enabled is provided to process/ignore IOAM
+>>> headers. Default is ignore (= disabled). Another per-interface sysctl
+>>> ioam6_id is provided to define the IOAM (unique) identifier of the
+>>> interface. Default is 0. A per-namespace sysctl ioam6_id is provided to
+>>> define the IOAM (unique) identifier of the node. Default is 0.
+>> 
+>> Last two sentences are repeated.
+> 
+> One describes net.ipv6.conf.XXX.ioam6_id (per interface) and the other describes
+> net.ipv6.ioam6_id (per namespace). It allows for defining an IOAM id to an
+> interface and, also, the node in general.
+> 
+>> Is 0 a valid interface ID? If not why not use id != 0 instead of
+>> having a separate enabled field?
+> 
+> Mainly for semantic reasons. Indeed, I'd prefer to keep a specific "enable" flag
+> per interface as it sounds more intuitive. But, also because 0 could very well
+> be a "valid" interface id (more like a default value).
 
-On Thu, May 27, 2021 at 07:00:52PM +0200, Davide Caratti wrote:
-[...]
-> 
-> My suggestion was just to simplify the end-user dump experience, so
-> that the value of 'p->tcfv_push_prio' is dumped always in case of
-> TCA_VLAN_ACT_PUSH. In this way, rules with equal "behavior" in the
-> traffic path are always dumped in the same way. IOW,
-> 
-> # tc action add action vlan push id 42 prio 0 index 1
-> 
-> and
-> 
-> # tc action add action vlan push id 42 index 1
-> 
-> do exactly the same thing in the traffic path, so there is no need to
-> dump them differently. On the contrary, these 2 rules:
-> 
-> # tc action add action vlan modify id 42 prio 0 index 1
-> 
-> and
-> 
-> # tc action add action vlan modify id 42 index 1
-> 
-> don't do the same thing, because packet hitting the first rule will have
-> their priority identically set to 0, while the second one will leave the
-> VLAN priority unmodified. So, I think it makes sense to have different
-> dumps here (that was my comment to your v1).
+Actually, it's more than for semantic reasons. Take the following topology:
 
-I am convinced. I've done this in v3.
+ _____              _____              _____
+|     | eth0  eth0 |     | eth1  eth0 |     |
+|  A  |.----------.|  B  |.----------.|  C  |
+|_____|            |_____|            |_____|
 
-> 
-> Another small nit - forgive me, I didn't spot it in the first review:
-> 
-> not 100% sure, but I think that in tcf_vlan_get_fill_size() we need
-> to avoid accounting for TCA_VLAN_PUSH_VLAN_PRIORITY in case the rule
-> has 'push_prio_exists' equal to false. Otherwise we allocate an
-> extra u8 netlink attribute in case of batch dump. Correct?
+If I only want IOAM to be deployed from A to C but not from C to A, then I would need the following on B (let's just focus on B):
 
-Also done in v3.
+B.eth0.ioam6_enabled = 1 // enable IOAM *on input* for B.eth0
+B.eth0.ioam6_id = B1
+B.eth1.ioam6_id = B2
 
-Thanks,
-Boris.
+Back to your suggestion, if I only had one field (i.e., ioam6_id != 0 to enable IOAM), I would end up with:
 
-> 
-> thanks!
-> -- 
-> davide
-> 
-> 
-> 
+B.eth0.ioam6_id = B1 // (!= 0)
+B.eth1.ioam6_id = B2 // (!= 0)
 
---0000000000004b10c605c38aacad
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
-9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
-7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
-9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
-52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
-rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
-t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
-CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
-979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
-bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
-ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
-ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIL/YIX/1mo/FADxc
-0z5Po5XTEUDQrU4kift7+1GGI3ZuMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIxMDUzMDExNDcyN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCt9Zx9MePtVwQidTRKn8D9cy3G/7b59zkm
-kYqqfJrdqoLeem2Hm7G54ppofH0mALTkT0H64x79ghNzhAvS74QjuPOL/xTL5d+NSzZmerB6mk9C
-Vtv2q0rcaye0N/iSSEEt6g+YEXtbisEM0eKgdMOM+9REtxNVyICbhVz7wFRSfCNJC38yThdA5oPM
-F75TcIO4laoqBd3i7RzpCZsb8+imdBw6bc9/hxlB4/LUMuWu7i6+2WWtb5e9o25ipbJuQbgx9HSy
-KOYU8RFSstJ7MlhcMOAgPzHam6oeK6srlHw4C2kNCkgacBlwf125fcNQieUKDtdjGAPp5JyMfXvW
-dVHl
---0000000000004b10c605c38aacad--
+Which means in this case that IOAM would also be enabled on B for the reverse path. So we definitely need two fields to distinguish both the status (enabled/disabled) and the IOAM ID of an interface.
