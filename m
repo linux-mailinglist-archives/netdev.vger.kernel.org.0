@@ -2,198 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7907F394F0D
-	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 05:22:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77440394EFE
+	for <lists+netdev@lfdr.de>; Sun, 30 May 2021 05:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229643AbhE3DXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 May 2021 23:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
+        id S229668AbhE3DHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 May 2021 23:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbhE3DXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 23:23:36 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C8EC061574;
-        Sat, 29 May 2021 20:21:59 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id h11so6939502ili.9;
-        Sat, 29 May 2021 20:21:59 -0700 (PDT)
+        with ESMTP id S229581AbhE3DH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 May 2021 23:07:29 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3327DC061574;
+        Sat, 29 May 2021 20:05:51 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id e10so11418410ybb.7;
+        Sat, 29 May 2021 20:05:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9AEjPwmoanhxhl/4ZSEBznbLBkCR/LXMU3xQfCQv0BM=;
-        b=WpU7DU6vYzkH/Oc5oaix4Wn3/z8Icwol6KjkUB/qogxd57gK19KzULE9PoAi8LmiJ6
-         WauSelVJGVsSddCluLyzcBS83MOZ7ZHndDahIuGAYbwB7oqYjtu3CrXf/g49H6NZx1Jq
-         pb1Rs6cAyI9S6Tz9XFaQmy592rv8AeWdQPF0Kips2yDjhZQLhjMFDlSQUiD9t5GjOqsU
-         TbzQMcgmChfhJUK56OuPuxBKz/alr3QPf9vtwyGpd+i7FB3/KAQ7PZEaEFvASie1nV8w
-         DrGt3M016oE8Nzc3w5PM3vNE+9is+X6kbXVfrf6UIzCshr16fu87ZtbWWWaXMVX8zz5i
-         rqPA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y1JaZFg5C1hpX0ZtLyonp+cqWwoqumNX2a4Bqds0knk=;
+        b=scYZ94cg/jW+8x9NyEoCeKi59xI6YVxjWroUJeHAgiLJ1uitKx2+gE1p2zZmjmnwqE
+         GLP08lTzW9O+vz6tL56RXC3YPUBRBJaV74aXgvROLhUN/edp17AWKQlTAXVQTbHNGSDh
+         Exme0UEUzRcqv8h0GBifMmUO2QeG3JUXBvZY4VtQe1ND1/ysXjSfDWyWaOD3U1HtThEg
+         RoZbz6KdCvBgrkCn67/YQQ6Cllh5npeZ5AHXOEurvg2v6ds3m8qhCBMK6Ik4AZ21WXOU
+         M/26lf/Id75CeRBSV6TgHAqUkjedoahyhLpQ7rxJzn7v6M0gqltaOOOsFR2ipJOSalW1
+         x8WQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9AEjPwmoanhxhl/4ZSEBznbLBkCR/LXMU3xQfCQv0BM=;
-        b=FoGYiJEJuFVnyVR7e8EBaNHTR6LkKX6Ouc/j+ej7dbWeVNnBrEFWISQpBfQ7jf4Ps1
-         f9SR/Xs18vhnmhILnEoPhjWRGv906b1KEt9wyKKQSUcKUzR/jJhzaaov6YJS+yUVl1M0
-         CF+H3vDRE7hTjQgoztIYETUcOv79KYoTeMqBDJCOpjsU9wPC4hI35Hm368xMnIYCIwu1
-         QWPAZ8iqSN64aGum3xjCdmH8ZDRBbWqvsQ72EWAF1yc0A1R17jXY0EiJIbUcuTSc2g7j
-         vYb48UBv4pc2zhKWYiR7ev1qtT9oNsjGI9nPMcuzGPWL3OFO2rYXO3/5hkHnZ/x8t1JD
-         DWow==
-X-Gm-Message-State: AOAM532AQYbJpbP+LFhXTXtfbQhC6cSBfcUBnvVzckBXNjYV1L56O/un
-        QYNW4AX0jfFazhIJCaNIzwDe3ywAgw+Lh2rLMko=
-X-Google-Smtp-Source: ABdhPJwcQuaDcE2zy4B/pEdJ2JsfOmiUFawznd72jKAbDd3GYSIM3y3FTCzNvtbd3/SEolbWD7XHMQ==
-X-Received: by 2002:a63:1d61:: with SMTP id d33mr15973946pgm.331.1622338643906;
-        Sat, 29 May 2021 18:37:23 -0700 (PDT)
-Received: from [192.168.1.16] ([120.229.69.188])
-        by smtp.gmail.com with ESMTPSA id x15sm211010pfp.79.2021.05.29.18.37.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 29 May 2021 18:37:23 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/3] net: sched: implement TCQ_F_CAN_BYPASS for
- lockless qdisc
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, olteanv@gmail.com, ast@kernel.org,
-        daniel@iogearbox.net, andriin@fb.com, edumazet@google.com,
-        weiwan@google.com, cong.wang@bytedance.com, ap420073@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@openeuler.org, mkl@pengutronix.de,
-        linux-can@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, bpf@vger.kernel.org,
-        jonas.bonn@netrounds.com, pabeni@redhat.com, mzhivich@akamai.com,
-        johunt@akamai.com, albcamus@gmail.com, kehuan.feng@gmail.com,
-        a.fatoum@pengutronix.de, atenart@kernel.org,
-        alexander.duyck@gmail.com, hdanton@sina.com, jgross@suse.com,
-        JKosina@suse.com, mkubecek@suse.cz, bjorn@kernel.org,
-        alobakin@pm.me
-References: <1622170197-27370-1-git-send-email-linyunsheng@huawei.com>
- <1622170197-27370-3-git-send-email-linyunsheng@huawei.com>
- <20210528180012.676797d6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <a6a965ee-7368-d37b-9c70-bba50c67eec9@huawei.com>
- <20210528213218.2b90864c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <ee1a62da-9758-70db-abd3-c5ca2e8e0ce0@huawei.com>
- <20210529114919.4f8b1980@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Yunsheng Lin <yunshenglin0825@gmail.com>
-Message-ID: <9cc9f513-7655-07df-3c74-5abe07ae8321@gmail.com>
-Date:   Sun, 30 May 2021 09:37:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y1JaZFg5C1hpX0ZtLyonp+cqWwoqumNX2a4Bqds0knk=;
+        b=ceK+uJCMiVq5FxOH2KL5tpqkJ6IqAFeSy8xy/3g1j6Kn+CjPnHo7sIU0DPLLCU23dF
+         h2W5ABZKTO5lb8xrBVQi+sKWf5uW9wEsVz66RYy/cfEs19flUvNlaXoJ1S7wcDiYDXII
+         jYe0ExLI8mgACKvBRWd6ECi8V6RZU29ZASkrPEV9esm7g0kpGLwbtYhpl+OEVDH6sA7U
+         vWHBKfddG5bu4qVcehVr8yW08DnxnifNKWhRsCQ7ZG94C/8A40DTnaHhIGDs2KipAEbT
+         XfSxh3YfwhA+U0OFyAi89HPvkvcLEOj60prSBb+tCjbE7lZYnJaJdmiHcD91y1PnMoi9
+         sh8Q==
+X-Gm-Message-State: AOAM532reDsd5AUFdF6JRoin9y3LhKl64QtCc+cPUfAbqVCR5CLsdNhu
+        uXhbOhbGulYJBMcutNRBBzuELVnwy895v7kn86A=
+X-Google-Smtp-Source: ABdhPJwAGVbtfBXLiP1uTbiJcc0nmgQSOtIOs+nJyuFDPnKWtX2a2qUvrhjJ9UhGjj4Zu4hmeCriWNHv96U5kG+Kc7c=
+X-Received: by 2002:a5b:286:: with SMTP id x6mr23395041ybl.347.1622343950023;
+ Sat, 29 May 2021 20:05:50 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210529114919.4f8b1980@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <20210528235250.2635167-1-memxor@gmail.com> <20210528235250.2635167-4-memxor@gmail.com>
+In-Reply-To: <20210528235250.2635167-4-memxor@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 29 May 2021 20:05:38 -0700
+Message-ID: <CAEf4BzYWcg=--yocHgHvoaOs4Bq95Y6zMhGJCenVX0f2i_kP7w@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next 03/15] samples: bpf: split out common bpf
+ progs to its own file
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/5/30 2:49, Jakub Kicinski wrote:
-> On Sat, 29 May 2021 15:03:09 +0800 Yunsheng Lin wrote:
->> On 2021/5/29 12:32, Jakub Kicinski wrote:
->>> On Sat, 29 May 2021 09:44:57 +0800 Yunsheng Lin wrote:  
->>>> MISSED is only set when there is lock contention, which means it
->>>> is better not to do the qdisc bypass to avoid out of order packet
->>>> problem,   
->>>
->>> Avoid as in make less likely? Nothing guarantees other thread is not
->>> interrupted after ->enqueue and before qdisc_run_begin().
->>>
->>> TBH I'm not sure what out-of-order situation you're referring to,
->>> there is no ordering guarantee between separate threads trying to
->>> transmit AFAIU.  
->> A thread need to do the bypass checking before doing enqueuing, so
->> it means MISSED is set or the trylock fails for the bypass transmiting(
->> which will set the MISSED after the first trylock), so the MISSED will
->> always be set before a thread doing a enqueuing, and we ensure MISSED
->> only be cleared during the protection of q->seqlock, after clearing
->> MISSED, we do anther round of dequeuing within the protection of
->> q->seqlock.
-> 
-> The fact that MISSED is only cleared under q->seqlock does not matter,
-> because setting it and ->enqueue() are not under any lock. If the thread
-> gets interrupted between:
-> 
-> 	if (q->flags & TCQ_F_CAN_BYPASS && nolock_qdisc_is_empty(q) &&
-> 	    qdisc_run_begin(q)) {
-> 
-> and ->enqueue() we can't guarantee that something else won't come in,
-> take q->seqlock and clear MISSED.
-> 
-> thread1                thread2             thread3
-> # holds seqlock
->                        qdisc_run_begin(q)
->                        set(MISSED)
-> pfifo_fast_dequeue
->   clear(MISSED)
->   # recheck the queue
-> qdisc_run_end()
->                        ->enqueue()
->                                             q->flags & TCQ_F_CAN_BYPASS..
->                                             qdisc_run_begin() # true
->                                             sch_direct_xmit()
->                        qdisc_run_begin()
->                        set(MISSED)
-> 
-> Or am I missing something?
-> 
-> Re-checking nolock_qdisc_is_empty() may or may not help.
-> But it doesn't really matter because there is no ordering
-> requirement between thread2 and thread3 here.
+On Fri, May 28, 2021 at 4:53 PM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> This is done to later reuse these in a way that can be shared
+> among multiple samples.
+>
+> We are using xdp_redirect_cpu_kern.c as a base to build further support on
+> top (mostly adding a few other things missing that xdp_monitor does in
+> subsequent patches).
+>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> ---
+>  samples/bpf/xdp_sample_kern.h | 220 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 220 insertions(+)
+>  create mode 100644 samples/bpf/xdp_sample_kern.h
+>
+> diff --git a/samples/bpf/xdp_sample_kern.h b/samples/bpf/xdp_sample_kern.h
 
-I were more focued on explaining that using MISSED is reliable
-as sch_may_need_requeuing() checking in RFCv3 [1] to indicate a
-empty qdisc, and forgot to mention the data race described in
-RFCv3, which is kind of like the one described above:
+instead of doing it as a header, can you please use BPF static linking
+instead? I think that's a better approach and a good showcase for
+anyone that would like to use static linking for their BPF programs
 
-"There is a data race as below:
+> new file mode 100644
+> index 000000000000..bb809542ac20
+> --- /dev/null
+> +++ b/samples/bpf/xdp_sample_kern.h
+> @@ -0,0 +1,220 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*  GPLv2, Copyright(c) 2017 Jesper Dangaard Brouer, Red Hat, Inc. */
+> +#pragma once
+> +
+> +#include <uapi/linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#define MAX_CPUS 64
+> +
+> +/* Common stats data record to keep userspace more simple */
+> +struct datarec {
+> +       __u64 processed;
+> +       __u64 dropped;
+> +       __u64 issue;
+> +       __u64 xdp_pass;
+> +       __u64 xdp_drop;
+> +       __u64 xdp_redirect;
+> +};
+> +
+> +/* Count RX packets, as XDP bpf_prog doesn't get direct TX-success
+> + * feedback.  Redirect TX errors can be caught via a tracepoint.
+> + */
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+> +       __type(key, u32);
+> +       __type(value, struct datarec);
+> +       __uint(max_entries, 1);
+> +} rx_cnt SEC(".maps");
+> +
+> +/* Used by trace point */
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+> +       __type(key, u32);
+> +       __type(value, struct datarec);
+> +       __uint(max_entries, 2);
+> +       /* TODO: have entries for all possible errno's */
+> +} redirect_err_cnt SEC(".maps");
+> +
+> +/* Used by trace point */
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+> +       __type(key, u32);
+> +       __type(value, struct datarec);
+> +       __uint(max_entries, MAX_CPUS);
+> +} cpumap_enqueue_cnt SEC(".maps");
 
-      CPU1                                   CPU2
-qdisc_run_begin(q)                            .
-        .                                q->enqueue()
-sch_may_need_requeuing()                      .
-    return true                               .
-        .                                     .
-        .                                     .
-    q->enqueue()                              .
+One way to squeeze a bit more performance would be to instead use
+global variables instead of maps:
 
-When above happen, the skb enqueued by CPU1 is dequeued after the
-skb enqueued by CPU2 because sch_may_need_requeuing() return true.
-If there is not qdisc bypass, the CPU1 has better chance to queue
-the skb quicker than CPU2.
+struct datarec cpu_map_enqueue_cnts[MAX_CPUS][MAX_CPUS];
 
-This patch does not take care of the above data race, because I
-view this as similar as below:
+and other PERCPU_ARRAY arrays could be just one-dimensional arrays.
 
-Even at the same time CPU1 and CPU2 write the skb to two socket
-which both heading to the same qdisc, there is no guarantee that
-which skb will hit the qdisc first, becuase there is a lot of
-factor like interrupt/softirq/cache miss/scheduling afffecting
-that."
+You'd need to ensure each value sits on its own cache-line, of course.
 
-Does above make sense? Or any idea to avoid it?
+> +
+> +/* Used by trace point */
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+> +       __type(key, u32);
+> +       __type(value, struct datarec);
+> +       __uint(max_entries, 1);
+> +} cpumap_kthread_cnt SEC(".maps");
+> +
 
-1. https://patchwork.kernel.org/project/netdevbpf/patch/1616404156-11772-1-git-send-email-linyunsheng@huawei.com/
+[...]
 
-> 
->> So if a thread has taken the q->seqlock and the MISSED is not set yet,
->> it is allowed to send the packet directly without going through the
->> qdisc enqueuing and dequeuing process.
->>
->>> IOW this check is not required for correctness, right?  
->>
->> if a thread has taken the q->seqlock and the MISSED is not set, it means
->> other thread has not set MISSED after the first trylock and before the
->> second trylock, which means the enqueuing is not done yet.
->> So I assume the this check is required for correctness if I understand
->> your question correctly.
->>
->>>> another good thing is that we could also do the batch
->>>> dequeuing and transmiting of packets when there is lock contention.  
->>>
->>> No doubt, but did you see the flag get set significantly often here 
->>> to warrant the double-checking?  
->>
->> No, that is just my guess:)
-> 
-> 
+> +
+> +/* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_cpumap_enqueue/format
+> + * Code in:         kernel/include/trace/events/xdp.h
+> + */
+> +struct cpumap_enqueue_ctx {
+> +       u64 __pad;              // First 8 bytes are not accessible by bpf code
+> +       int map_id;             //      offset:8;  size:4; signed:1;
+> +       u32 act;                //      offset:12; size:4; signed:0;
+> +       int cpu;                //      offset:16; size:4; signed:1;
+> +       unsigned int drops;     //      offset:20; size:4; signed:0;
+> +       unsigned int processed; //      offset:24; size:4; signed:0;
+> +       int to_cpu;             //      offset:28; size:4; signed:1;
+> +};
+
+if you used vmlinux.h, this is already in there as struct
+trace_event_raw_xdp_cpumap_enqueue, similarly for other tracepoints
+
+> +
+> +SEC("tracepoint/xdp/xdp_cpumap_enqueue")
+> +int trace_xdp_cpumap_enqueue(struct cpumap_enqueue_ctx *ctx)
+> +{
+> +       u32 to_cpu = ctx->to_cpu;
+> +       struct datarec *rec;
+> +
+> +       if (to_cpu >= MAX_CPUS)
+> +               return 1;
+> +
+> +       rec = bpf_map_lookup_elem(&cpumap_enqueue_cnt, &to_cpu);
+> +       if (!rec)
+> +               return 0;
+> +       rec->processed += ctx->processed;
+> +       rec->dropped   += ctx->drops;
+> +
+> +       /* Record bulk events, then userspace can calc average bulk size */
+> +       if (ctx->processed > 0)
+> +               rec->issue += 1;
+> +
+> +       /* Inception: It's possible to detect overload situations, via
+> +        * this tracepoint.  This can be used for creating a feedback
+> +        * loop to XDP, which can take appropriate actions to mitigate
+> +        * this overload situation.
+> +        */
+> +       return 0;
+> +}
+> +
+
+[...]
