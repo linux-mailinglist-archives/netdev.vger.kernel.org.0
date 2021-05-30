@@ -2,180 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8C9395355
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 01:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B6F39535B
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 01:07:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230044AbhE3XBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 19:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35604 "EHLO
+        id S229917AbhE3XIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 19:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbhE3XBg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 19:01:36 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8042BC0613CE
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 15:59:56 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id t3so11335338edc.7
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 15:59:56 -0700 (PDT)
+        with ESMTP id S229565AbhE3XIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 19:08:51 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA715C061574
+        for <netdev@vger.kernel.org>; Sun, 30 May 2021 16:07:05 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id a2so13983940lfc.9
+        for <netdev@vger.kernel.org>; Sun, 30 May 2021 16:07:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kSYwMOa+R+P9hkLHoNO8iJqgLdOBCCpod7zfQ51svfM=;
-        b=XlH2mvJpdld3li616eVe8z03SIExHAExk2uKFK/zwh1wNIwLw4zBVnphyE7t1ZNxNq
-         JI4+I8EN+VyecBD0z4vP6e/TkrGjQ7oG+ORsgPwuz7OTzObVDOEVB7lW62Y3Dzg2T7bZ
-         SIjdcyAevSIbs/Ne8AVp8nxWL7PDjBdgo2tTRNP4WgrEsCS1fpExO7pHyKEqK1bStiSo
-         pfhSNNRNRs6y2CjqRHo32UHGTw6TSiLETsACB9uU2VLRgInO/r4E1fwetnijUf2BGsgJ
-         hsiFATDDTBQZFiboedTKEtmnoHBSl060qSoWFU1lKgrfC0XDIhldZ5OaapYcfVwYo6xv
-         pbGw==
+        h=message-id:date:from:user-agent:mime-version:to:cc:subject
+         :references:in-reply-to:content-transfer-encoding;
+        bh=wKdqP3siAavLqN9eF024T/2AMtd3S4fvI+WJf6lroUs=;
+        b=HNBfVoA2uH9+k7DzwxascQjMUTlgg/duSGdiSzGxXrYQnCu8IkEoWenClf8rCbIu1C
+         1YqQCwDrlhCxIX9wf0ssTT3qU+E8DRf+rtLMHJe9gK5llmnmdTUGDThV463dvj3bY/zo
+         Qj8iMs0O88KZXCcpPx6C0fJ2iWF8ybYT5q7j2jlPMkkbNznLfHWsiNGnY0Pl6RknzEc2
+         6NnU5n+GizUEb1EdhiCkICqpFtT+VdYvuEMyTzQaoeSyN5MFvBn/uTqMktoExZHdLIlY
+         zchwKtDPJQVw66tAJQK0EQGjyyAzY3oKyyhZm7Mf//Sq6QaC8tsLwGWyvU30uhukl3PI
+         d7Bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kSYwMOa+R+P9hkLHoNO8iJqgLdOBCCpod7zfQ51svfM=;
-        b=XICACXO57IZsKvehj6PgnwcHJ0Jp3h8AzR9q3y2dSzx/AWYmYuFd7X1mjgGS7MCvdr
-         CSybqIv9PaE0FbwZx6xff/1RvV7Ub1UL6AKV176EGUJwnIEvCojs+2/O192w60QnFtc7
-         eUm9tNAyFjmwSL4mEvATjQ3dmxIrkG0P1thg878nmqXWmKfRAmDgmqnixY7we1dB4PKV
-         4lzyB0qw3tKLKeyaSIdzlkj2VMYOLzFb7rIGS3caPwgHn3kosEeaSpCKP+Hu80r+6oRJ
-         TX6JN2EoY4FxxlRrKXRBBoR+M6i6GpJddfnhc9bCJLRB+4OMQwK9oD0728B6Vz3NOZPS
-         u4Pw==
-X-Gm-Message-State: AOAM530KYikrcGOKmD5V3NBedFuVbMmuJn6ZgB+KY6eG7A/EzOd6ls6m
-        1RrMP8OsO83aqymmR0tyty4=
-X-Google-Smtp-Source: ABdhPJwsmQpPGsbRxhoDKUq0BuVgJozCKvjgdIHX//J7B9swk0gs/pskTrfudCmA5Dm6mWgtlkq1kQ==
-X-Received: by 2002:aa7:d84e:: with SMTP id f14mr9029111eds.12.1622415595129;
-        Sun, 30 May 2021 15:59:55 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id c6sm5135120eje.9.2021.05.30.15.59.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 May 2021 15:59:54 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 8/8] net: dsa: sja1105: some table entries are always present when read dynamically
-Date:   Mon, 31 May 2021 01:59:39 +0300
-Message-Id: <20210530225939.772553-9-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210530225939.772553-1-olteanv@gmail.com>
-References: <20210530225939.772553-1-olteanv@gmail.com>
+        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
+         :cc:subject:references:in-reply-to:content-transfer-encoding;
+        bh=wKdqP3siAavLqN9eF024T/2AMtd3S4fvI+WJf6lroUs=;
+        b=ksusrJ3TUeGC4a6ZnCpxrfXldzOsxBky70TAXMY7pCdhOfaw0FZK9uXVjjzMgxRTdd
+         gYFhiubCvWW+51j0N5LtupzGFLGOSyJQTRT1vGAQYBfd4zkWzfYB0y+HrwcPyQ2IEUmN
+         2eQRs8a06iSOqRQeQf1hnpOmLzjQepush5mWpphq7nCcTpfj7ZljESRDtDQu11M+kVTr
+         LlRsrosoZsfN/2ZDh20Po3QqlKfzZEpLOmCMNdg8b1TmkBwG3/8OZCY3wHTrWdVWgjjY
+         4so20fndI8guCePlL0o2N09Xrm3xin+Qeq6sngLnJLk9GZ1qudAnlwChQw1r5vrd0aw3
+         HvUA==
+X-Gm-Message-State: AOAM532dWo9/lhn8LYs+/O9pkogCxVhQPEI5XiOYwwIGY+NdqUuT9C0s
+        0NwzQpUCozQrc/hLJd7CjqEp8393iJJIT3fU
+X-Google-Smtp-Source: ABdhPJynF7sma/rtUsz3uK+P7xlt9Gn/h01AY3ulA4aG+l6bEMjRI/JrGQclWry7N0fBY6UAz4U2dw==
+X-Received: by 2002:ac2:5e66:: with SMTP id a6mr13075419lfr.579.1622416024270;
+        Sun, 30 May 2021 16:07:04 -0700 (PDT)
+Received: from [192.168.0.91] ([188.242.181.97])
+        by smtp.googlemail.com with ESMTPSA id n15sm1146019lfq.274.2021.05.30.16.07.03
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Sun, 30 May 2021 16:07:03 -0700 (PDT)
+Message-ID: <60B41D00.8050801@gmail.com>
+Date:   Mon, 31 May 2021 02:17:20 +0300
+From:   Nikolai Zhubr <zhubr.2@gmail.com>
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.2.4) Gecko/20100608 Thunderbird/3.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+To:     Arnd Bergmann <arnd@kernel.org>
+CC:     netdev <netdev@vger.kernel.org>,
+        tedheadster <tedheadster@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, whiteheadm@acm.org,
+        Jeff Garzik <jgarzik@pobox.com>
+Subject: Re: Realtek 8139 problem on 486.
+References: <60B24AC2.9050505@gmail.com> <ca333156-f839-9850-6e3d-696d7b725b09@gmail.com> <CAP8WD_bKiGLczUfRVOWY3y4TT80yhRCPmLkN7pDMhkJ5m=2Pew@mail.gmail.com> <60B2E0FF.4030705@gmail.com> <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com> <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com>
+In-Reply-To: <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hi all,
 
-The SJA1105 has a static configuration comprised of a number of tables
-with entries. Some of these can be read and modified at runtime as well,
-through the dynamic configuration interface.
+30.05.2021 23:54, Arnd Bergmann:
+[...]
+>> Unmodified kernel 2.6.2 works fine, unmodified kernel 2.6.3 shows
+>> reproducable connectivity issues.
+>>
+>> The diff is not small, I'm not sure I can dig through.
+>> Any hints/ideas greatly appreciated.
+>
+> This is apparently when NAPI was introduced into the driver.
+>
+> One thing I noticed here was the handling for shared IRQs changing in
+> the process. Do you happen to have shared IRQs, and if so, can you
 
-As a careful reader can notice from the comments in this file, the
-software interface for accessing a table entry through the dynamic
-reconfiguration is a bit of a no man's land, and varies wildly across
-switch generations and even from one kind of table to another.
+I think this IRQ is not shared:
 
-I have tried my best to come up with a software representation of a
-'common denominator' SPI command to access a table entry through the
-dynamic configuration interface:
+# cat /proc/interrupts
+            CPU0
+   0:     322570          XT-PIC  timer
+   1:          8          XT-PIC  i8042
+   2:          0          XT-PIC  cascade
+   9:        896          XT-PIC  eth0
+  14:      18000          XT-PIC  ide0
+NMI:          0
+ERR:          0
 
-struct sja1105_dyn_cmd {
-	bool search;
-	u64 valid; /* must be set to 1 */
-	u64 rdwrset; /* 0 to read, 1 to write */
-	u64 errors;
-	u64 valident; /* 0 if entry is invalid, 1 if valid */
-	u64 index;
-};
+# dmesg | grep -i irq
+eth0: RealTek RTL8139 at 0xc4800000, 00:11:6b:32:85:74, IRQ 9
+ide0 at 0x1f0-0x1f7,0x3f6 on irq 14
+serio: i8042 AUX port at 0x60,0x64 irq 12
+serio: i8042 KBD port at 0x60,0x64 irq 1
 
-Relevant to this patch is the VALIDENT bit, which for READ commands is
-populated by the switch and lets us know if we're looking at junk or at
-a real table entry.
+However indeed, it seems a problem was introduced with a rework of 
+interrupt handling (rtl8139_interrupt) in 2.6.3, because I have already 
+pushed all other differences from 2.6.3 to 2.6.2 and it still keeps 
+working fine.
+My resulting minimized diff is still ~300 lines, it is too big and 
+complicated to be usefull to post here as is.
 
-In SJA1105, the dynamic reconfiguration interface for management routes
-has notably not implemented the VALIDENT bit, leading to a workaround to
-ignore this field in sja1105_dynamic_config_read(), as it will be set to
-zero, but the data is valid nonetheless.
 
-In SJA1110, this pattern has sadly been abused to death, and while there
-are many more tables which can be read back over the dynamic config
-interface compared to SJA1105, their handling isn't in any way more
-uniform. Generally speaking, if there is a single possible entry in a
-given table, and loading that table in the static config is mandatory as
-per the documentation, then the VALIDENT bit is deemed as redundant and
-more than likely not implemented.
+Thank you,
 
-So it is time to make the workaround more official, and add a bit to the
-flags implemented by dynamic config tables. It will be used by more
-tables when SJA1110 support arrives.
+Regards,
+Nikolai
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v3:
-None.
 
-Changes in v2:
-None.
-
- drivers/net/dsa/sja1105/sja1105_dynamic_config.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-index 12cd04b56803..ff2742f53de3 100644
---- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-@@ -78,6 +78,9 @@
-  *		   on its ENTRY portion, as a result of a SPI write command.
-  *		   Only the TCAM-based FDB table on SJA1105 P/Q/R/S supports
-  *		   this.
-+ *	OP_VALID_ANYWAY: Reading some tables through the dynamic config
-+ *			 interface is possible even if the VALIDENT bit is not
-+ *			 set in the writeback. So don't error out in that case.
-  * - .max_entry_count: The number of entries, counting from zero, that can be
-  *		       reconfigured through the dynamic interface. If a static
-  *		       table can be reconfigured at all dynamically, this
-@@ -651,6 +654,7 @@ static size_t sja1105pqrs_cbs_entry_packing(void *buf, void *entry_ptr,
- #define OP_WRITE	BIT(1)
- #define OP_DEL		BIT(2)
- #define OP_SEARCH	BIT(3)
-+#define OP_VALID_ANYWAY	BIT(4)
- 
- /* SJA1105E/T: First generation */
- const struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
-@@ -673,7 +677,7 @@ const struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
- 	[BLK_IDX_MGMT_ROUTE] = {
- 		.entry_packing = sja1105et_mgmt_route_entry_packing,
- 		.cmd_packing = sja1105et_mgmt_route_cmd_packing,
--		.access = (OP_READ | OP_WRITE),
-+		.access = (OP_READ | OP_WRITE | OP_VALID_ANYWAY),
- 		.max_entry_count = SJA1105_NUM_PORTS,
- 		.packed_size = SJA1105ET_SIZE_L2_LOOKUP_DYN_CMD,
- 		.addr = 0x20,
-@@ -757,7 +761,7 @@ const struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
- 	[BLK_IDX_MGMT_ROUTE] = {
- 		.entry_packing = sja1105pqrs_mgmt_route_entry_packing,
- 		.cmd_packing = sja1105pqrs_mgmt_route_cmd_packing,
--		.access = (OP_READ | OP_WRITE | OP_DEL | OP_SEARCH),
-+		.access = (OP_READ | OP_WRITE | OP_DEL | OP_SEARCH | OP_VALID_ANYWAY),
- 		.max_entry_count = SJA1105_NUM_PORTS,
- 		.packed_size = SJA1105PQRS_SIZE_L2_LOOKUP_DYN_CMD,
- 		.addr = 0x24,
-@@ -911,11 +915,8 @@ int sja1105_dynamic_config_read(struct sja1105_private *priv,
- 
- 		cmd = (struct sja1105_dyn_cmd) {0};
- 		ops->cmd_packing(packed_buf, &cmd, UNPACK);
--		/* UM10944: [valident] will always be found cleared
--		 * during a read access with MGMTROUTE set.
--		 * So don't error out in that case.
--		 */
--		if (!cmd.valident && blk_idx != BLK_IDX_MGMT_ROUTE)
-+
-+		if (!cmd.valident && !(ops->access & OP_VALID_ANYWAY))
- 			return -ENOENT;
- 		cpu_relax();
- 	} while (cmd.valid && --retries);
--- 
-2.25.1
+> change it so this card has an IRQ that is not shared with any other
+> device?
+>
+>          Arnd
+>
 
