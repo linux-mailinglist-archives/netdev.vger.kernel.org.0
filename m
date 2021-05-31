@@ -2,62 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41DEA39565D
+	by mail.lfdr.de (Postfix) with ESMTP id B1AFB39565E
 	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:39:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbhEaHlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 03:41:19 -0400
-Received: from mga07.intel.com ([134.134.136.100]:63237 "EHLO mga07.intel.com"
+        id S230405AbhEaHlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 03:41:24 -0400
+Received: from mga07.intel.com ([134.134.136.100]:63239 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230355AbhEaHlD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230368AbhEaHlD (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 31 May 2021 03:41:03 -0400
-IronPort-SDR: wZm79MtOxrQVH0Ry9qPFC4j/K/uwy5XrvKrsDavYUIDEzG776XjnhAiHzY7u2lYHDCNH+xsVuj
- r9qtyiTYN5dA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10000"; a="267194628"
+IronPort-SDR: D5DzqCvOyua12C86D1mNi6HrlU70y88WNcJxnxXEmn6kBL1ahCI4s5NEo4rrbM2efcks9ek8L7
+ SE3bKr6qpAng==
+X-IronPort-AV: E=McAfee;i="6200,9189,10000"; a="267194637"
 X-IronPort-AV: E=Sophos;i="5.83,236,1616482800"; 
-   d="scan'208";a="267194628"
+   d="scan'208";a="267194637"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 00:39:22 -0700
-IronPort-SDR: 8mzKjbSk3zBRRTTG/FCo+6jedjy0RykXOVWJfJd3eOxed+w9zvOh3PQ5Li0RtfssqKaPY6Fkl4
- l0bolLC04t1w==
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 00:39:23 -0700
+IronPort-SDR: F5GrikyAYSVLxtzIS9Cf5U8objBtnOI+ZiyUDQeZmxei9rQaAX/aJZvOdRJQH+vcgUvdrc6k1y
+ +nUwyQiqpAmg==
 X-IronPort-AV: E=Sophos;i="5.83,236,1616482800"; 
-   d="scan'208";a="478811507"
+   d="scan'208";a="478811529"
 Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.107])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 00:39:19 -0700
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 00:39:21 -0700
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     jasowang@redhat.com, mst@redhat.com
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V2 RESEND 0/2] vDPA/ifcvf: implement doorbell mapping feature
-Date:   Mon, 31 May 2021 15:33:14 +0800
-Message-Id: <20210531073316.363655-1-lingshan.zhu@intel.com>
+Subject: [PATCH V2 RESEND 1/2] vDPA/ifcvf: record virtio notify base
+Date:   Mon, 31 May 2021 15:33:15 +0800
+Message-Id: <20210531073316.363655-2-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210531073316.363655-1-lingshan.zhu@intel.com>
+References: <20210531073316.363655-1-lingshan.zhu@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series implements doorbell mapping feature for ifcvf.
+This commit records virtio notify base physical addr and
+calculate doorbell physical address for vqs.
 
-Please help review
+Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+---
+ drivers/vdpa/ifcvf/ifcvf_base.c | 4 ++++
+ drivers/vdpa/ifcvf/ifcvf_base.h | 2 ++
+ 2 files changed, 6 insertions(+)
 
-Thanks!
-
-Chagnes from V1:
-calculate the doorbell address per vq than per device(Jason)
-let upper layer driver decide how to use the non page_size
-aligned doorbell(Jason)
-
-Zhu Lingshan (2):
-  vDPA/ifcvf: record virtio notify base
-  vDPA/ifcvf: implement doorbell mapping for ifcvf
-
- drivers/vdpa/ifcvf/ifcvf_base.c |  4 ++++
- drivers/vdpa/ifcvf/ifcvf_base.h |  2 ++
- drivers/vdpa/ifcvf/ifcvf_main.c | 17 +++++++++++++++++
- 3 files changed, 23 insertions(+)
-
+diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
+index 1a661ab45af5..6e197fe0fcf9 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_base.c
++++ b/drivers/vdpa/ifcvf/ifcvf_base.c
+@@ -133,6 +133,8 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
+ 					      &hw->notify_off_multiplier);
+ 			hw->notify_bar = cap.bar;
+ 			hw->notify_base = get_cap_addr(hw, &cap);
++			hw->notify_base_pa = pci_resource_start(pdev, cap.bar) +
++					le32_to_cpu(cap.offset);
+ 			IFCVF_DBG(pdev, "hw->notify_base = %p\n",
+ 				  hw->notify_base);
+ 			break;
+@@ -161,6 +163,8 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
+ 		notify_off = ifc_ioread16(&hw->common_cfg->queue_notify_off);
+ 		hw->vring[i].notify_addr = hw->notify_base +
+ 			notify_off * hw->notify_off_multiplier;
++		hw->vring[i].notify_pa = hw->notify_base_pa +
++			notify_off * hw->notify_off_multiplier;
+ 	}
+ 
+ 	hw->lm_cfg = hw->base[IFCVF_LM_BAR];
+diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
+index 0111bfdeb342..447f4ad9c0bf 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_base.h
++++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+@@ -73,6 +73,7 @@ struct vring_info {
+ 	u16 last_avail_idx;
+ 	bool ready;
+ 	void __iomem *notify_addr;
++	phys_addr_t notify_pa;
+ 	u32 irq;
+ 	struct vdpa_callback cb;
+ 	char msix_name[256];
+@@ -87,6 +88,7 @@ struct ifcvf_hw {
+ 	u8 notify_bar;
+ 	/* Notificaiton bar address */
+ 	void __iomem *notify_base;
++	phys_addr_t notify_base_pa;
+ 	u32 notify_off_multiplier;
+ 	u64 req_features;
+ 	u64 hw_features;
 -- 
 2.27.0
 
