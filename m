@@ -2,113 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00F4B3966C6
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 19:19:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD57396712
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 19:29:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232870AbhEaRV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 13:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51992 "EHLO
+        id S233437AbhEaRbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 13:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233271AbhEaRUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 13:20:40 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40996C0431FC;
-        Mon, 31 May 2021 08:34:35 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id b15-20020a17090a550fb029015dad75163dso195798pji.0;
-        Mon, 31 May 2021 08:34:35 -0700 (PDT)
+        with ESMTP id S232870AbhEaRay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 13:30:54 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26738C04C49A
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 09:17:16 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id b17so14129569ede.0
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 09:17:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YIxlSk91TuUABFkgr/k5Yi3OXLq37Uwi7gnEsi3Btt4=;
-        b=qA1l1Pe1DWi2hEyakId/vhm80G9PN4zkftLWig/60q0ofmynv4I1G8aZ4XXV8vQXbj
-         WVB3kXNm6E9OQqjJHiGyxRZ4c1O7V6o3ncjQi0a93RiGYfFi0E8e13d2PiXvRRCrvXeo
-         PxyrN926RykD739bnPk8dOe43GPF0cRbDyF+0JY/9LeFfP/QNriKZ1VCACRAz+ZLWGpS
-         ebwNvVgr1Hm4u180TAnKmKaDiv3MKIAflhjnlBVeS/Jox/Qzzz1CtYBWk8lY9KeIvlCw
-         079N4B+ZGg1KzzZQBPpXNkkBwkWpqlhD5eooQ/TctDSzGJQMcJDEIgewQN8d9v1Dn0Uy
-         qJOQ==
+        bh=stnM2/sJcAsXBAJyDqFS24d9EhqJV2yT9cn8XxVQ/zk=;
+        b=dbGoJVl91VnmZmbq1cPEc4iyJa1QJzM8MVM14V5uIU1Wfl8ojN44Hz6zOoRzKzLUER
+         woTXRvGA36iEEdSKnyPWIuBMBhXbVsejFBFy4yl41voFybg61mKsAM0IOdtgKDwHe7KK
+         Idtvyj3DD7clm+x0SMTjSQbAz4Iw3ZHsAdxb3oZtDiePh2wyhI+WKMYTRTJ372/TgE63
+         7RHnCRch7xH/ulQtdU6cqaJa2WxFI5GJ+e1IZ7mvAlkMSKOgr6T+JpkdWBmAtruljK2j
+         ovqVEPYzxNOjD/9sekjqPX20Lmi1UNuJv8aY9tuN0/szQldP4a3l03cUTR/qaXWgS9v4
+         vQTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YIxlSk91TuUABFkgr/k5Yi3OXLq37Uwi7gnEsi3Btt4=;
-        b=MEo2pALqI07o9n8WYQfD+2n6uBfxVJm7eeVVMDauOC8qev/JLSXYqDMmw15PBYbP4A
-         /FhYvxf4aielTZwkGzHl/q8FOPWaJXFs9FQt6kT1q5HaZa8nhAErrFuGCGcyvNd5kKqK
-         speVMhhtVcpVU+NKuOP7dgxAPyoEVBg8S+epmjDig1njCXz/vUoMe2c+ZpnZ0P5RfUcL
-         WGU2inTeT9ZrRH3gbfKswOUce+0KezyAuaPByNtJBOEOGaLU5X/h27QZgM4mTiOl13qC
-         M4hKMjHyUV6IgYz6tfvWq3w7U56QmmNqWtvvN8OEcqorkXb3Ed5XGeUcEQ3TL4idGqh1
-         xlYQ==
-X-Gm-Message-State: AOAM5307BxTkcIe/IAMqMYxsqHAI2TKIZnaoOuQTXKe/qqbjV8MLODr5
-        TTrBuL+9QJQ3BpjA1g68Inh3XGZ5ylqw9Q==
-X-Google-Smtp-Source: ABdhPJxBeDoQ03UvPdZrXyEDANCwqA6KpN9Fw8xlBY8PZqLQZjNg5gycu4uQgC25e5/u1f8AccrWlg==
-X-Received: by 2002:a17:90a:aa12:: with SMTP id k18mr19852008pjq.232.1622475274796;
-        Mon, 31 May 2021 08:34:34 -0700 (PDT)
-Received: from WRT-WX9.. ([141.164.41.4])
-        by smtp.gmail.com with ESMTPSA id q91sm4369382pja.50.2021.05.31.08.34.25
+        bh=stnM2/sJcAsXBAJyDqFS24d9EhqJV2yT9cn8XxVQ/zk=;
+        b=CjnhoWzAxNnUAyhfM1vdmZ4tb6fanI/IMtu4FJWZ64RqZwGQtzHnKKT2LUGtwjn8tj
+         7FEMToU5fWn67S+lYLsXGUYlsd148WvJUGeAkEUTa7e4mB5f4f3uVGiejzfAd36DZ/Xc
+         8Zxp2HQbI9onLg+EyUmN4j7XHIPR4FFZABpOV4Bs7wUYflTrGPe/V6cwI+TW2Tq6ikpm
+         E4y+4U2s0R2/WVazNy0YJcm9cHJlJmwrGeNaEcJTrCSEUbYCS0WaQ3IC185S/IpDHHp3
+         6OmQ8lNykGPAOCGMc1IDXbHZo9CXZ8h6Rvkv8YNM/gTansTwgcDmDvUSJa0nE9UuWRBB
+         q+bQ==
+X-Gm-Message-State: AOAM530wBIxWHVCcqA8vzPgPHOFgdgjmmOC19bt4N3wwadv0kRaXFwlc
+        btlr5iOOvwcj8C7T4dH6QlY=
+X-Google-Smtp-Source: ABdhPJznEDsOMcJBg04D3w/2j7JOPvYMXqkBsCwQovtApnioL1lzLsPBm3APOvIMVrnEQL+2nZ2DXw==
+X-Received: by 2002:a05:6402:b89:: with SMTP id cf9mr7760321edb.198.1622477834734;
+        Mon, 31 May 2021 09:17:14 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id f8sm1566483ejw.75.2021.05.31.09.17.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 May 2021 08:34:34 -0700 (PDT)
-From:   Changbin Du <changbin.du@gmail.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kici nski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Changbin Du <changbin.du@gmail.com>, stable@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        David Laight <David.Laight@ACULAB.COM>
-Subject: [PATCH] nsfs: fix oops when ns->ops is not provided
-Date:   Mon, 31 May 2021 23:34:10 +0800
-Message-Id: <20210531153410.93150-1-changbin.du@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 31 May 2021 09:17:14 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next] net: enetc: catch negative return code from enetc_pf_to_port()
+Date:   Mon, 31 May 2021 19:17:07 +0300
+Message-Id: <20210531161707.1142218-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We should not create inode for disabled namespace. A disabled namespace
-sets its ns->ops to NULL. Kernel could panic if we try to create a inode
-for such namespace.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Here is an example oops in socket ioctl cmd SIOCGSKNS when NET_NS is
-disabled. Kernel panicked wherever nsfs trys to access ns->ops since the
-proc_ns_operations is not implemented in this case.
+After the refactoring introduced in commit 87614b931c24 ("net: enetc:
+create a common enetc_pf_to_port helper"), enetc_pf_to_port was coded up
+to return -1 in case the passed PCIe device does not have a recognized
+BDF.
 
-[7.670023] Unable to handle kernel NULL pointer dereference at virtual address 00000010
-[7.670268] pgd = 32b54000
-[7.670544] [00000010] *pgd=00000000
-[7.671861] Internal error: Oops: 5 [#1] SMP ARM
-[7.672315] Modules linked in:
-[7.672918] CPU: 0 PID: 1 Comm: systemd Not tainted 5.13.0-rc3-00375-g6799d4f2da49 #16
-[7.673309] Hardware name: Generic DT based system
-[7.673642] PC is at nsfs_evict+0x24/0x30
-[7.674486] LR is at clear_inode+0x20/0x9c
+Make sure the -1 value is checked by the callers, to appease static
+checkers.
 
-So let's reject such request for disabled namespace.
-
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
-Cc: <stable@vger.kernel.org>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: David Laight <David.Laight@ACULAB.COM>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- fs/nsfs.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../net/ethernet/freescale/enetc/enetc_qos.c  | 31 ++++++++++++++-----
+ 1 file changed, 24 insertions(+), 7 deletions(-)
 
-diff --git a/fs/nsfs.c b/fs/nsfs.c
-index 800c1d0eb0d0..6c055eb7757b 100644
---- a/fs/nsfs.c
-+++ b/fs/nsfs.c
-@@ -62,6 +62,10 @@ static int __ns_get_path(struct path *path, struct ns_common *ns)
- 	struct inode *inode;
- 	unsigned long d;
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+index af699f2ad095..4577226d3c6a 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+@@ -465,8 +465,13 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
+ 	struct streamid_conf *si_conf;
+ 	u16 data_size;
+ 	dma_addr_t dma;
++	int port;
+ 	int err;
  
-+	/* In case the namespace is not actually enabled. */
-+	if (!ns->ops)
-+		return -EOPNOTSUPP;
++	port = enetc_pf_to_port(priv->si->pdev);
++	if (port < 0)
++		return -EINVAL;
 +
- 	rcu_read_lock();
- 	d = atomic_long_read(&ns->stashed);
- 	if (!d)
+ 	if (sid->index >= priv->psfp_cap.max_streamid)
+ 		return -EINVAL;
+ 
+@@ -499,7 +504,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
+ 
+ 	si_conf = &cbd.sid_set;
+ 	/* Only one port supported for one entry, set itself */
+-	si_conf->iports = cpu_to_le32(1 << enetc_pf_to_port(priv->si->pdev));
++	si_conf->iports = cpu_to_le32(1 << port);
+ 	si_conf->id_type = 1;
+ 	si_conf->oui[2] = 0x0;
+ 	si_conf->oui[1] = 0x80;
+@@ -524,7 +529,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
+ 
+ 	si_conf->en = 0x80;
+ 	si_conf->stream_handle = cpu_to_le32(sid->handle);
+-	si_conf->iports = cpu_to_le32(1 << enetc_pf_to_port(priv->si->pdev));
++	si_conf->iports = cpu_to_le32(1 << port);
+ 	si_conf->id_type = sid->filtertype;
+ 	si_conf->oui[2] = 0x0;
+ 	si_conf->oui[1] = 0x80;
+@@ -567,6 +572,11 @@ static int enetc_streamfilter_hw_set(struct enetc_ndev_priv *priv,
+ {
+ 	struct enetc_cbd cbd = {.cmd = 0};
+ 	struct sfi_conf *sfi_config;
++	int port;
++
++	port = enetc_pf_to_port(priv->si->pdev);
++	if (port < 0)
++		return -EINVAL;
+ 
+ 	cbd.index = cpu_to_le16(sfi->index);
+ 	cbd.cls = BDCR_CMD_STREAM_FILTER;
+@@ -586,8 +596,7 @@ static int enetc_streamfilter_hw_set(struct enetc_ndev_priv *priv,
+ 	}
+ 
+ 	sfi_config->sg_inst_table_index = cpu_to_le16(sfi->gate_id);
+-	sfi_config->input_ports =
+-		cpu_to_le32(1 << enetc_pf_to_port(priv->si->pdev));
++	sfi_config->input_ports = cpu_to_le32(1 << port);
+ 
+ 	/* The priority value which may be matched against the
+ 	 * frame’s priority value to determine a match for this entry.
+@@ -1548,7 +1557,7 @@ int enetc_setup_tc_psfp(struct net_device *ndev, void *type_data)
+ {
+ 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+ 	struct flow_block_offload *f = type_data;
+-	int err;
++	int port, err;
+ 
+ 	err = flow_block_cb_setup_simple(f, &enetc_block_cb_list,
+ 					 enetc_setup_tc_block_cb,
+@@ -1558,10 +1567,18 @@ int enetc_setup_tc_psfp(struct net_device *ndev, void *type_data)
+ 
+ 	switch (f->command) {
+ 	case FLOW_BLOCK_BIND:
+-		set_bit(enetc_pf_to_port(priv->si->pdev), &epsfp.dev_bitmap);
++		port = enetc_pf_to_port(priv->si->pdev);
++		if (port < 0)
++			return -EINVAL;
++
++		set_bit(port, &epsfp.dev_bitmap);
+ 		break;
+ 	case FLOW_BLOCK_UNBIND:
+-		clear_bit(enetc_pf_to_port(priv->si->pdev), &epsfp.dev_bitmap);
++		port = enetc_pf_to_port(priv->si->pdev);
++		if (port < 0)
++			return -EINVAL;
++
++		clear_bit(port, &epsfp.dev_bitmap);
+ 		if (!epsfp.dev_bitmap)
+ 			clean_psfp_all();
+ 		break;
 -- 
-2.30.2
+2.25.1
 
