@@ -2,722 +2,344 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B433D3962C5
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 16:59:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B509C395F05
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 16:05:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231949AbhEaPA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 11:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234338AbhEaO7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 10:59:17 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4CAC014CB4
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 07:02:29 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id u24so4090605edy.11
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 07:02:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=g6KE7qxJkSlFrye+cGyIzYWa5dPIDL/EU1aNcbuAXSk=;
-        b=o8DCX0SFOhF+XHBSaWZtNvmdQJJirIn0b6k9GM0J33PbaX5Yprc+wKQ4a0Ui7yNZCr
-         hEMqn1M78U6odCXDEHzYc1rwLJihz4w8HO9U9/OCRZhMqAAjU3T6lw/eO6DL7b+W4XkX
-         4r1nz3O5ScEaJ5SmTN/w9TgHNLLK4tLAGwkBqiFBwO3uBf+329r4ZkVA/9WkfnLUtFcb
-         M3WE/gT4Mr3c9lQuMdMNEu4Qh/voXIklxuvjjeb9rGAqRODsbF6XzNn+jhFibqnjdAbA
-         qKwVvHascY6SMWp7A0cya61Z5X+IWLAtHZqfJ75qYcNnd3RJcY4G6rMl/29HiIDiReBM
-         feJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=g6KE7qxJkSlFrye+cGyIzYWa5dPIDL/EU1aNcbuAXSk=;
-        b=HnnrB1zfp2vjP2x1tKN2gsEqxPLiPfNQuFNKOhaeHuRoBuASjUJcsVHxbZc7iO4fsG
-         /MHW5773k8GipBYlWmL/WH2FzZ0IWqIhoCxtjqdymS4DBSwQgVxd3IPjLIwhqIf6IsXe
-         8pasbwWHxLsZH2hIiUCCXp1mYv/2Ynb1NhuQZReJHaoY/SpS8aLR9F9Whkvyha8LI5aQ
-         lH6p4APM/oSGvx9ryfTvDIJ4beE+I27Hx7S9Fdr3XW4k1PZxMEcxAUFj0Xi/r2K+cxqT
-         E+Rz3hHfDUi9aZtD/jJRWKctfdM74aeW+FmoG3hcNOSaEwfzkEVFPgodKDqCNb64xGLe
-         x7YQ==
-X-Gm-Message-State: AOAM533fsQKoP+gvK7MjB01PdEZyhZtuSqyh9Aivl0eBx1hAHnp1KwD+
-        dUEYLzaRjXZFskWq6RgJgDU3rgf6qciXwjfDecM=
-X-Google-Smtp-Source: ABdhPJzDOg2GFrwdwd+zbbJdYg6mXV6XqIe75m9RAA9kPedXqPTdeuZsc8lH/tbJAfnoFCW+V0Rk+oOWZs+rvYnw/3A=
-X-Received: by 2002:a05:6402:50c6:: with SMTP id h6mr25722171edb.327.1622469747571;
- Mon, 31 May 2021 07:02:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210527235902.2185-1-smalin@marvell.com> <20210527235902.2185-6-smalin@marvell.com>
- <0fa12e28-63e3-2404-2ede-2b2647786ccf@suse.de>
-In-Reply-To: <0fa12e28-63e3-2404-2ede-2b2647786ccf@suse.de>
-From:   Shai Malin <malin1024@gmail.com>
-Date:   Mon, 31 May 2021 17:02:15 +0300
-Message-ID: <CAKKgK4yrVRJ4+QuOQfFrFf28d=3O1+-4LJ9iQuE_OFWRtMkZtQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v6 05/27] nvme-tcp-offload: Add controller level implementation
-To:     Hannes Reinecke <hare@suse.de>
-Cc:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, Sagi Grimberg <sagi@grimberg.me>, hch@lst.de,
-        axboe@fb.com, kbusch@kernel.org, Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>, okulkarni@marvell.com,
-        pkushwaha@marvell.com, Arie Gershberg <agershberg@marvell.com>
+        id S233286AbhEaOGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 10:06:47 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:7004 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233375AbhEaOEl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 10:04:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1622469782; x=1654005782;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=aOLRh1nZ8qZ4yWi4WFrdL0SqA6I+bc8OYXSH743isV4=;
+  b=RF74oivFBO+8TcQwD/JmYZIsl31S5CnNJKsiCfrKp/q/+hJNxQ5pTArM
+   BdtjAWy+sBE9VzEMwwXoYHCME6/45+wthbp7n2ZeIDslYppM/CW727MMT
+   Fz4ff8fXmY45ltV4lY7SXILN0W3ZZc35nP4Ropbne42GjF2HCj+93TnB8
+   FogKf+rT6GXuk3nyvOMNMfKBOO7bBwwZSPq7fdI1/cigAkqv3HNV216os
+   3dThxKV3qMK0NRdK6q6r2rAfZIo9ss6nUswuUsW75HeUFXbCSnqojitZN
+   Pr0Oqx2nYTWFm4As7SaIx+kk6A72TsmWsVENQnzchrqCc9ShdX1QuKUJp
+   g==;
+IronPort-SDR: L0agBqlugw/Gm3todf9i0+72kN5ygBPWH10PzC463dzXZ1yH3mW900QuF4EogyIatbu+8Lx8T9
+ 9lrRKFC7GvF17uxfOxcPDXK5jti/cAWWKPVdJGeRcfcoJyzEzvtlS+el2aH5WmSkPCcxMwlr2k
+ kSHfIGokvLFJsJN8mnrAuZtqgiNj+vgWo04oV3tH6S6UBKj77OZE/BHAX8aqeDiLX6L3RHHAfq
+ mLyoTg8ZV//QPxYfvZKH1CeO7ncub46nZ2cMqdXLlJUieDEHNkyWUSxU/R5Tm08BTPaLzNCKgO
+ R1E=
+X-IronPort-AV: E=Sophos;i="5.83,237,1616482800"; 
+   d="scan'208";a="122982447"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 May 2021 07:02:59 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 31 May 2021 07:02:57 -0700
+Received: from [10.205.21.35] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Mon, 31 May 2021 07:02:54 -0700
+Message-ID: <5719f0fad28e453e0398048ebcfbc421b85a9647.camel@microchip.com>
+Subject: Re: [PATCH net-next v2 03/10] net: sparx5: add hostmode with
+ phylink support
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "Simon Horman" <simon.horman@netronome.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Date:   Mon, 31 May 2021 16:02:54 +0200
+In-Reply-To: <20210530141502.561920a7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <20210528123419.1142290-1-steen.hegelund@microchip.com>
+         <20210528123419.1142290-4-steen.hegelund@microchip.com>
+         <20210530141502.561920a7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.40.1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/21 2:21 PM, Hannes Reinecke wrote:
-> On 5/28/21 1:58 AM, Shai Malin wrote:
-> > From: Arie Gershberg <agershberg@marvell.com>
-> >
-> > In this patch we implement controller level functionality including:
-> > - create_ctrl.
-> > - delete_ctrl.
-> > - free_ctrl.
-> >
-> > The implementation is similar to other nvme fabrics modules, the main
-> > difference being that the nvme-tcp-offload ULP calls the vendor specifi=
-c
-> > claim_dev() op with the given TCP/IP parameters to determine which devi=
-ce
-> > will be used for this controller.
-> > Once found, the vendor specific device and controller will be paired an=
-d
-> > kept in a controller list managed by the ULP.
-> >
-> > Acked-by: Igor Russkikh <irusskikh@marvell.com>
-> > Signed-off-by: Arie Gershberg <agershberg@marvell.com>
-> > Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> > Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> > Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> > Signed-off-by: Ariel Elior <aelior@marvell.com>
-> > Signed-off-by: Shai Malin <smalin@marvell.com>
-> > Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-> > ---
-> >  drivers/nvme/host/tcp-offload.c | 481 +++++++++++++++++++++++++++++++-
-> >  1 file changed, 476 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/nvme/host/tcp-offload.c b/drivers/nvme/host/tcp-of=
-fload.c
-> > index e602801d43d3..9b2ae54a2679 100644
-> > --- a/drivers/nvme/host/tcp-offload.c
-> > +++ b/drivers/nvme/host/tcp-offload.c
-> > @@ -12,6 +12,10 @@
-> >
-> >  static LIST_HEAD(nvme_tcp_ofld_devices);
-> >  static DEFINE_MUTEX(nvme_tcp_ofld_devices_mutex);
-> > +static LIST_HEAD(nvme_tcp_ofld_ctrl_list);
-> > +static DEFINE_MUTEX(nvme_tcp_ofld_ctrl_mutex);
-> > +static struct blk_mq_ops nvme_tcp_ofld_admin_mq_ops;
-> > +static struct blk_mq_ops nvme_tcp_ofld_mq_ops;
-> >
-> >  static inline struct nvme_tcp_ofld_ctrl *to_tcp_ofld_ctrl(struct nvme_=
-ctrl *nctrl)
-> >  {
-> > @@ -119,21 +123,439 @@ nvme_tcp_ofld_lookup_dev(struct nvme_tcp_ofld_ct=
-rl *ctrl)
-> >       return dev;
-> >  }
-> >
-> > +static struct blk_mq_tag_set *
-> > +nvme_tcp_ofld_alloc_tagset(struct nvme_ctrl *nctrl, bool admin)
-> > +{
-> > +     struct nvme_tcp_ofld_ctrl *ctrl =3D to_tcp_ofld_ctrl(nctrl);
-> > +     struct blk_mq_tag_set *set;
-> > +     int rc;
-> > +
-> > +     if (admin) {
-> > +             set =3D &ctrl->admin_tag_set;
-> > +             memset(set, 0, sizeof(*set));
-> > +             set->ops =3D &nvme_tcp_ofld_admin_mq_ops;
-> > +             set->queue_depth =3D NVME_AQ_MQ_TAG_DEPTH;
-> > +             set->reserved_tags =3D NVMF_RESERVED_TAGS;
-> > +             set->numa_node =3D nctrl->numa_node;
-> > +             set->flags =3D BLK_MQ_F_BLOCKING;
-> > +             set->cmd_size =3D sizeof(struct nvme_tcp_ofld_req);
-> > +             set->driver_data =3D ctrl;
-> > +             set->nr_hw_queues =3D 1;
-> > +             set->timeout =3D NVME_ADMIN_TIMEOUT;
-> > +     } else {
-> > +             set =3D &ctrl->tag_set;
-> > +             memset(set, 0, sizeof(*set));
-> > +             set->ops =3D &nvme_tcp_ofld_mq_ops;
-> > +             set->queue_depth =3D nctrl->sqsize + 1;
-> > +             set->reserved_tags =3D NVMF_RESERVED_TAGS;
-> > +             set->numa_node =3D nctrl->numa_node;
-> > +             set->flags =3D BLK_MQ_F_SHOULD_MERGE;
-> > +             set->cmd_size =3D sizeof(struct nvme_tcp_ofld_req);
-> > +             set->driver_data =3D ctrl;
-> > +             set->nr_hw_queues =3D nctrl->queue_count - 1;
-> > +             set->timeout =3D NVME_IO_TIMEOUT;
-> > +             set->nr_maps =3D nctrl->opts->nr_poll_queues ? HCTX_MAX_T=
-YPES : 2;
-> > +     }
-> > +
-> > +     rc =3D blk_mq_alloc_tag_set(set);
-> > +     if (rc)
-> > +             return ERR_PTR(rc);
-> > +
-> > +     return set;
-> > +}
-> > +
-> > +static int nvme_tcp_ofld_configure_admin_queue(struct nvme_ctrl *nctrl=
-,
-> > +                                            bool new)
-> > +{
-> > +     int rc;
-> > +
-> > +     /* Placeholder - alloc_admin_queue */
-> > +     if (new) {
-> > +             nctrl->admin_tagset =3D
-> > +                             nvme_tcp_ofld_alloc_tagset(nctrl, true);
-> > +             if (IS_ERR(nctrl->admin_tagset)) {
-> > +                     rc =3D PTR_ERR(nctrl->admin_tagset);
-> > +                     nctrl->admin_tagset =3D NULL;
-> > +                     goto out_destroy_queue;
-> > +             }
-> > +
-> > +             nctrl->fabrics_q =3D blk_mq_init_queue(nctrl->admin_tagse=
-t);
-> > +             if (IS_ERR(nctrl->fabrics_q)) {
-> > +                     rc =3D PTR_ERR(nctrl->fabrics_q);
-> > +                     nctrl->fabrics_q =3D NULL;
-> > +                     goto out_free_tagset;
-> > +             }
-> > +
-> > +             nctrl->admin_q =3D blk_mq_init_queue(nctrl->admin_tagset)=
-;
-> > +             if (IS_ERR(nctrl->admin_q)) {
-> > +                     rc =3D PTR_ERR(nctrl->admin_q);
-> > +                     nctrl->admin_q =3D NULL;
-> > +                     goto out_cleanup_fabrics_q;
-> > +             }
-> > +     }
-> > +
-> > +     /* Placeholder - nvme_tcp_ofld_start_queue */
-> > +
-> > +     rc =3D nvme_enable_ctrl(nctrl);
-> > +     if (rc)
-> > +             goto out_stop_queue;
-> > +
-> > +     blk_mq_unquiesce_queue(nctrl->admin_q);
-> > +
-> > +     rc =3D nvme_init_ctrl_finish(nctrl);
-> > +     if (rc)
-> > +             goto out_quiesce_queue;
-> > +
-> > +     return 0;
-> > +
-> > +out_quiesce_queue:
-> > +     blk_mq_quiesce_queue(nctrl->admin_q);
-> > +     blk_sync_queue(nctrl->admin_q);
-> > +
-> > +out_stop_queue:
-> > +     /* Placeholder - stop offload queue */
-> > +     nvme_cancel_admin_tagset(nctrl);
-> > +
-> > +out_cleanup_fabrics_q:
-> > +     if (new)
-> > +             blk_cleanup_queue(nctrl->fabrics_q);
-> > +out_free_tagset:
-> > +     if (new)
-> > +             blk_mq_free_tag_set(nctrl->admin_tagset);
-> > +out_destroy_queue:
-> > +     /* Placeholder - free admin queue */
-> > +
-> > +     return rc;
-> > +}
-> > +
-> > +static int
-> > +nvme_tcp_ofld_configure_io_queues(struct nvme_ctrl *nctrl, bool new)
-> > +{
-> > +     int rc;
-> > +
-> > +     /* Placeholder - alloc_io_queues */
-> > +
-> > +     if (new) {
-> > +             nctrl->tagset =3D nvme_tcp_ofld_alloc_tagset(nctrl, false=
-);
-> > +             if (IS_ERR(nctrl->tagset)) {
-> > +                     rc =3D PTR_ERR(nctrl->tagset);
-> > +                     nctrl->tagset =3D NULL;
-> > +                     goto out_free_io_queues;
-> > +             }
-> > +
-> > +             nctrl->connect_q =3D blk_mq_init_queue(nctrl->tagset);
-> > +             if (IS_ERR(nctrl->connect_q)) {
-> > +                     rc =3D PTR_ERR(nctrl->connect_q);
-> > +                     nctrl->connect_q =3D NULL;
-> > +                     goto out_free_tag_set;
-> > +             }
-> > +     }
-> > +
-> > +     /* Placeholder - start_io_queues */
-> > +
-> > +     if (!new) {
-> > +             nvme_start_queues(nctrl);
-> > +             if (!nvme_wait_freeze_timeout(nctrl, NVME_IO_TIMEOUT)) {
-> > +                     /*
-> > +                      * If we timed out waiting for freeze we are like=
-ly to
-> > +                      * be stuck.  Fail the controller initialization =
-just
-> > +                      * to be safe.
-> > +                      */
-> > +                     rc =3D -ENODEV;
-> > +                     goto out_wait_freeze_timed_out;
-> > +             }
-> > +             blk_mq_update_nr_hw_queues(nctrl->tagset, nctrl->queue_co=
-unt - 1);
-> > +             nvme_unfreeze(nctrl);
-> > +     }
-> > +
-> > +     return 0;
-> > +
-> > +out_wait_freeze_timed_out:
-> > +     nvme_stop_queues(nctrl);
-> > +     nvme_sync_io_queues(nctrl);
-> > +
-> > +     /* Placeholder - Stop IO queues */
-> > +
-> > +     if (new)
-> > +             blk_cleanup_queue(nctrl->connect_q);
-> > +out_free_tag_set:
-> > +     if (new)
-> > +             blk_mq_free_tag_set(nctrl->tagset);
-> > +out_free_io_queues:
-> > +     /* Placeholder - free_io_queues */
-> > +
-> > +     return rc;
-> > +}
-> > +
-> > +static int nvme_tcp_ofld_setup_ctrl(struct nvme_ctrl *nctrl, bool new)
-> > +{
-> > +     struct nvme_tcp_ofld_ctrl *ctrl =3D to_tcp_ofld_ctrl(nctrl);
-> > +     struct nvmf_ctrl_options *opts =3D nctrl->opts;
-> > +     int rc =3D 0;
-> > +
-> > +     rc =3D ctrl->dev->ops->setup_ctrl(ctrl);
-> > +     if (rc)
-> > +             return rc;
-> > +
-> > +     rc =3D nvme_tcp_ofld_configure_admin_queue(nctrl, new);
-> > +     if (rc)
-> > +             goto out_release_ctrl;
-> > +
-> > +     if (nctrl->icdoff) {
-> > +             dev_err(nctrl->device, "icdoff is not supported!\n");
-> > +             rc =3D -EINVAL;
-> > +             goto destroy_admin;
-> > +     }
-> > +
-> > +     if (!(nctrl->sgls & ((1 << 0) | (1 << 1)))) {
-> > +             dev_err(nctrl->device, "Mandatory sgls are not supported!=
-\n");
-> > +             goto destroy_admin;
-> > +     }
-> > +
-> > +     if (opts->queue_size > nctrl->sqsize + 1)
-> > +             dev_warn(nctrl->device,
-> > +                      "queue_size %zu > ctrl sqsize %u, clamping down\=
-n",
-> > +                      opts->queue_size, nctrl->sqsize + 1);
-> > +
-> > +     if (nctrl->sqsize + 1 > nctrl->maxcmd) {
-> > +             dev_warn(nctrl->device,
-> > +                      "sqsize %u > ctrl maxcmd %u, clamping down\n",
-> > +                      nctrl->sqsize + 1, nctrl->maxcmd);
-> > +             nctrl->sqsize =3D nctrl->maxcmd - 1;
-> > +     }
-> > +
-> > +     if (nctrl->queue_count > 1) {
-> > +             rc =3D nvme_tcp_ofld_configure_io_queues(nctrl, new);
-> > +             if (rc)
-> > +                     goto destroy_admin;
-> > +     }
-> > +
-> > +     if (!nvme_change_ctrl_state(nctrl, NVME_CTRL_LIVE)) {
-> > +             /*
-> > +              * state change failure is ok if we started ctrl delete,
-> > +              * unless we're during creation of a new controller to
-> > +              * avoid races with teardown flow.
-> > +              */
-> > +             WARN_ON_ONCE(nctrl->state !=3D NVME_CTRL_DELETING &&
-> > +                          nctrl->state !=3D NVME_CTRL_DELETING_NOIO);
-> > +             WARN_ON_ONCE(new);
-> > +             rc =3D -EINVAL;
-> > +             goto destroy_io;
-> > +     }
-> > +
-> > +     nvme_start_ctrl(nctrl);
-> > +
-> > +     return 0;
-> > +
-> > +destroy_io:
-> > +     /* Placeholder - stop and destroy io queues*/
-> > +destroy_admin:
-> > +     /* Placeholder - stop and destroy admin queue*/
-> > +out_release_ctrl:
-> > +     ctrl->dev->ops->release_ctrl(ctrl);
-> > +
-> > +     return rc;
-> > +}
-> > +
-> > +static int
-> > +nvme_tcp_ofld_check_dev_opts(struct nvmf_ctrl_options *opts,
-> > +                          struct nvme_tcp_ofld_ops *ofld_ops)
-> > +{
-> > +     unsigned int nvme_tcp_ofld_opt_mask =3D NVMF_ALLOWED_OPTS |
-> > +                     ofld_ops->allowed_opts | ofld_ops->required_opts;
-> > +     struct nvmf_ctrl_options dev_opts_mask;
-> > +
-> > +     if (opts->mask & ~nvme_tcp_ofld_opt_mask) {
-> > +             pr_warn("One or more nvmf options missing from ofld drvr =
-%s.\n",
-> > +                     ofld_ops->name);
-> > +
-> > +             dev_opts_mask.mask =3D nvme_tcp_ofld_opt_mask;
-> > +
-> > +             return nvmf_check_required_opts(&dev_opts_mask, opts->mas=
-k);
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static void nvme_tcp_ofld_free_ctrl(struct nvme_ctrl *nctrl)
-> > +{
-> > +     struct nvme_tcp_ofld_ctrl *ctrl =3D to_tcp_ofld_ctrl(nctrl);
-> > +     struct nvme_tcp_ofld_dev *dev =3D ctrl->dev;
-> > +
-> > +     if (list_empty(&ctrl->list))
-> > +             goto free_ctrl;
-> > +
-> > +     ctrl->dev->ops->release_ctrl(ctrl);
-> > +
-> > +     mutex_lock(&nvme_tcp_ofld_ctrl_mutex);
-> > +     list_del(&ctrl->list);
-> > +     mutex_unlock(&nvme_tcp_ofld_ctrl_mutex);
-> > +
-> > +     nvmf_free_options(nctrl->opts);
-> > +free_ctrl:
-> > +     module_put(dev->ops->module);
-> > +     kfree(ctrl->queues);
-> > +     kfree(ctrl);
-> > +}
-> > +
-> > +static void
-> > +nvme_tcp_ofld_teardown_admin_queue(struct nvme_ctrl *ctrl, bool remove=
-)
-> > +{
-> > +     /* Placeholder - teardown_admin_queue */
-> > +}
-> > +
-> > +static void
-> > +nvme_tcp_ofld_teardown_io_queues(struct nvme_ctrl *nctrl, bool remove)
-> > +{
-> > +     /* Placeholder - teardown_io_queues */
-> > +}
-> > +
-> > +static void
-> > +nvme_tcp_ofld_teardown_ctrl(struct nvme_ctrl *nctrl, bool shutdown)
-> > +{
-> > +     /* Placeholder - err_work and connect_work */
-> > +     nvme_tcp_ofld_teardown_io_queues(nctrl, shutdown);
-> > +     blk_mq_quiesce_queue(nctrl->admin_q);
-> > +     if (shutdown)
-> > +             nvme_shutdown_ctrl(nctrl);
-> > +     else
-> > +             nvme_disable_ctrl(nctrl);
-> > +     nvme_tcp_ofld_teardown_admin_queue(nctrl, shutdown);
-> > +}
-> > +
-> > +static void nvme_tcp_ofld_delete_ctrl(struct nvme_ctrl *nctrl)
-> > +{
-> > +     nvme_tcp_ofld_teardown_ctrl(nctrl, true);
-> > +}
-> > +
-> > +static int
-> > +nvme_tcp_ofld_init_request(struct blk_mq_tag_set *set,
-> > +                        struct request *rq,
-> > +                        unsigned int hctx_idx,
-> > +                        unsigned int numa_node)
-> > +{
-> > +     struct nvme_tcp_ofld_req *req =3D blk_mq_rq_to_pdu(rq);
-> > +
-> > +     /* Placeholder - init request */
-> > +
-> > +     req->done =3D nvme_tcp_ofld_req_done;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static blk_status_t
-> > +nvme_tcp_ofld_queue_rq(struct blk_mq_hw_ctx *hctx,
-> > +                    const struct blk_mq_queue_data *bd)
-> > +{
-> > +     /* Call nvme_setup_cmd(...) */
-> > +
-> > +     /* Call ops->send_req(...) */
-> > +
-> > +     return BLK_STS_OK;
-> > +}
-> > +
-> > +static struct blk_mq_ops nvme_tcp_ofld_mq_ops =3D {
-> > +     .queue_rq       =3D nvme_tcp_ofld_queue_rq,
-> > +     .init_request   =3D nvme_tcp_ofld_init_request,
-> > +     /*
-> > +      * All additional ops will be also implemented and registered sim=
-ilar to
-> > +      * tcp.c
-> > +      */
-> > +};
-> > +
-> > +static struct blk_mq_ops nvme_tcp_ofld_admin_mq_ops =3D {
-> > +     .queue_rq       =3D nvme_tcp_ofld_queue_rq,
-> > +     .init_request   =3D nvme_tcp_ofld_init_request,
-> > +     /*
-> > +      * All additional ops will be also implemented and registered sim=
-ilar to
-> > +      * tcp.c
-> > +      */
-> > +};
-> > +
-> > +static const struct nvme_ctrl_ops nvme_tcp_ofld_ctrl_ops =3D {
-> > +     .name                   =3D "tcp_offload",
-> > +     .module                 =3D THIS_MODULE,
-> > +     .flags                  =3D NVME_F_FABRICS,
-> > +     .reg_read32             =3D nvmf_reg_read32,
-> > +     .reg_read64             =3D nvmf_reg_read64,
-> > +     .reg_write32            =3D nvmf_reg_write32,
-> > +     .free_ctrl              =3D nvme_tcp_ofld_free_ctrl,
-> > +     .delete_ctrl            =3D nvme_tcp_ofld_delete_ctrl,
-> > +     .get_address            =3D nvmf_get_address,
-> > +};
-> > +
-> > +static bool
-> > +nvme_tcp_ofld_existing_controller(struct nvmf_ctrl_options *opts)
-> > +{
-> > +     struct nvme_tcp_ofld_ctrl *ctrl;
-> > +     bool found =3D false;
-> > +
-> > +     mutex_lock(&nvme_tcp_ofld_ctrl_mutex);
-> > +     list_for_each_entry(ctrl, &nvme_tcp_ofld_ctrl_list, list) {
-> > +             found =3D nvmf_ip_options_match(&ctrl->nctrl, opts);
->
-> Well; meanwhile we've earned yet another flags (hostiface) which allows
-> us to specify a network interface.
->
-> Originally intended to bind the network flow to a specific interface,
-> but question is how it would apply here.
-> Do you even _have_ a network interface?
-> (I guess you would for the network side, not necessarily for the offload
-> part, though).
-> What would be the appropriate action here if the user specifies the
-> network interface of the network part?
-> Still enable the offload?
-> Technically that would against the spirit of that flag; so it would be
-> feasible to have that flag controller software vs offload behaviour.
-> IE one could envision that _using_ this flag to specify the network
-> interface would disable the offload engine.
-> Mind you, would be slightly counter-intuitive, as we probably don't have
-> a corresponding offload interface which we could select.
-> But really not sure what would be the best approach here.
->
-> We should, however, figure out what to do with that flag.
+Hi Jakub,
 
-The opts->host_iface will be added to the nvme-tcp-offload layer and it wil=
-l
-be passed (together with opts->traddr and opts->host_traddr) to the vendor
-driver claim_dev() in order to control the chosen path.
+Thanks for your review.
 
-Regarding qedn, with the Marvell NVMeTCP offload design, the network-device
-(qede) and the offload-device (qedn) are paired. All network attributes suc=
-h
-as MAC, VLAN, SRC IP (if not provided) will be queried from the paired
-network device.
-Hence we will use the qede network device for both the sw NVMeTCP (qede)
-and the offload NVMeTCP (qedn) while we will allow a separate attribute to
-control which one should be used - the transport type (-t tcp_offload).
-
-As we explained in the cover letter, an alternative approach, and as
-a future enhancement that will not impact this series, nvme-cli can be
-enhanced with a new flag that will determine whether "-t tcp" should be
-the regular nvme-tcp (which will be the default) or nvme-tcp-offload.
-
-The opts->host_iface will be added not as part of this series.
-
->
-> > +             if (found)
-> > +                     break;
-> > +     }
-> > +     mutex_unlock(&nvme_tcp_ofld_ctrl_mutex);
+On Sun, 2021-05-30 at 14:15 -0700, Jakub Kicinski wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On Fri, 28 May 2021 14:34:12 +0200 Steen Hegelund wrote:
+> > This patch adds netdevs and phylink support for the ports in the switch.
+> > It also adds register based injection and extraction for these ports.
+> > 
+> > Frame DMA support for injection and extraction will be added in a later
+> > series.
+> 
+> > +struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno)
+> > +{
+> > +     struct sparx5_port *spx5_port;
+> > +     struct net_device *ndev;
+> > +     u64 val;
 > > +
-> > +     return found;
+> > +     ndev = devm_alloc_etherdev(sparx5->dev, sizeof(struct sparx5_port));
+> > +     if (!ndev)
+> > +             return ERR_PTR(-ENOMEM);
+> > +
+> > +     SET_NETDEV_DEV(ndev, sparx5->dev);
+> > +     spx5_port = netdev_priv(ndev);
+> > +     spx5_port->ndev = ndev;
+> > +     spx5_port->sparx5 = sparx5;
+> > +     spx5_port->portno = portno;
+> > +     sparx5_set_port_ifh(spx5_port->ifh, portno);
+> > +
+> > +     ndev->netdev_ops = &sparx5_port_netdev_ops;
+> > +     ndev->features |= NETIF_F_LLTX; /* software tx */
+> 
+> Is your transmission method really lockless? How does
+> simultaneous Tx from two CPUs work?
+
+Hmm, no that is a mistake.  I can also see that NETIF_F_LLTX is not recommended, so I will remove
+that.
+> 
+> > +     val = ether_addr_to_u64(sparx5->base_mac) + portno + 1;
+> > +     u64_to_ether_addr(val, ndev->dev_addr);
+> > +
+> > +     return ndev;
+> > +}
+> 
+> > +static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
+> > +{
+> > +     bool eof_flag = false, pruned_flag = false, abort_flag = false;
+> > +     struct net_device *netdev;
+> > +     struct sparx5_port *port;
+> > +     struct frame_info fi;
+> > +     int i, byte_cnt = 0;
+> > +     struct sk_buff *skb;
+> > +     u32 ifh[IFH_LEN];
+> > +     u32 *rxbuf;
+> > +
+> > +     /* Get IFH */
+> > +     for (i = 0; i < IFH_LEN; i++)
+> > +             ifh[i] = spx5_rd(sparx5, QS_XTR_RD(grp));
+> > +
+> > +     /* Decode IFH (whats needed) */
+> > +     sparx5_ifh_parse(ifh, &fi);
+> > +
+> > +     /* Map to port netdev */
+> > +     port = fi.src_port < SPX5_PORTS ?
+> > +             sparx5->ports[fi.src_port] : NULL;
+> > +     if (!port || !port->ndev) {
+> > +             dev_err(sparx5->dev, "Data on inactive port %d\n", fi.src_port);
+> > +             sparx5_xtr_flush(sparx5, grp);
+> > +             return;
+> 
+> You should probably increment appropriate counter for each error
+> condition.
+
+At this first check I do not have the netdev, so it will not be possible to update any counters, but
+below I can use rx_dropped.  Is that what you mean?
+
+> 
+> > +     }
+> > +
+> > +     /* Have netdev, get skb */
+> > +     netdev = port->ndev;
+> > +     skb = netdev_alloc_skb(netdev, netdev->mtu + ETH_HLEN);
+> > +     if (!skb) {
+> > +             sparx5_xtr_flush(sparx5, grp);
+> > +             dev_err(sparx5->dev, "No skb allocated\n");
+> > +             return;
+> > +     }
+> > +     rxbuf = (u32 *)skb->data;
+> > +
+> > +     /* Now, pull frame data */
+> > +     while (!eof_flag) {
+> > +             u32 val = spx5_rd(sparx5, QS_XTR_RD(grp));
+> > +             u32 cmp = val;
+> > +
+> > +             if (byte_swap)
+> > +                     cmp = ntohl((__force __be32)val);
+> > +
+> > +             switch (cmp) {
+> > +             case XTR_NOT_READY:
+> > +                     break;
+> > +             case XTR_ABORT:
+> > +                     /* No accompanying data */
+> > +                     abort_flag = true;
+> > +                     eof_flag = true;
+> > +                     break;
+> > +             case XTR_EOF_0:
+> > +             case XTR_EOF_1:
+> > +             case XTR_EOF_2:
+> > +             case XTR_EOF_3:
+> > +                     /* This assumes STATUS_WORD_POS == 1, Status
+> > +                      * just after last data
+> > +                      */
+> > +                     byte_cnt -= (4 - XTR_VALID_BYTES(val));
+> > +                     eof_flag = true;
+> > +                     break;
+> > +             case XTR_PRUNED:
+> > +                     /* But get the last 4 bytes as well */
+> > +                     eof_flag = true;
+> > +                     pruned_flag = true;
+> > +                     fallthrough;
+> > +             case XTR_ESCAPE:
+> > +                     *rxbuf = spx5_rd(sparx5, QS_XTR_RD(grp));
+> > +                     byte_cnt += 4;
+> > +                     rxbuf++;
+> > +                     break;
+> > +             default:
+> > +                     *rxbuf = val;
+> > +                     byte_cnt += 4;
+> > +                     rxbuf++;
+> > +             }
+> > +     }
+> > +
+> > +     if (abort_flag || pruned_flag || !eof_flag) {
+> > +             netdev_err(netdev, "Discarded frame: abort:%d pruned:%d eof:%d\n",
+> > +                        abort_flag, pruned_flag, eof_flag);
+> > +             kfree_skb(skb);
+> > +             return;
+> > +     }
+> > +
+> > +#if defined(CONFIG_DEBUG_KERNEL) /* TODO: Remove before upstreaming */
+> > +     if (!netif_oper_up(netdev)) {
+> > +             netdev_err(netdev, "Discarded frame: Interface not up\n");
+> > +             kfree_skb(skb);
+> > +             return;
+> > +     }
+> > +#endif
+> > +
+> > +     /* Finish up skb */
+> > +     skb_put(skb, byte_cnt - ETH_FCS_LEN);
+> > +     eth_skb_pad(skb);
+> > +     skb->protocol = eth_type_trans(skb, netdev);
+> > +     netif_rx(skb);
+> > +     netdev->stats.rx_bytes += skb->len;
+> > +     netdev->stats.rx_packets++;
+> 
+> Does the Rx really need to happen in an interrupt context?
+> Did you consider using NAPI or a tasklet?
+
+This register base injection and extraction is just preliminary.  I have the next series waiting
+with support for Frame DMA'ing and there I use NAPI, so if possible I would like to leave this as it
+is, since it only a stopgap.
+
+> 
 > > +}
 > > +
-> >  static struct nvme_ctrl *
-> >  nvme_tcp_ofld_create_ctrl(struct device *ndev, struct nvmf_ctrl_option=
-s *opts)
-> >  {
-> > +     struct nvme_tcp_ofld_queue *queue;
-> >       struct nvme_tcp_ofld_ctrl *ctrl;
-> >       struct nvme_tcp_ofld_dev *dev;
-> >       struct nvme_ctrl *nctrl;
-> > -     int rc =3D 0;
-> > +     int i, rc =3D 0;
-> >
-> >       ctrl =3D kzalloc(sizeof(*ctrl), GFP_KERNEL);
-> >       if (!ctrl)
-> >               return ERR_PTR(-ENOMEM);
-> >
-> > +     INIT_LIST_HEAD(&ctrl->list);
-> >       nctrl =3D &ctrl->nctrl;
-> > +     nctrl->opts =3D opts;
-> > +     nctrl->queue_count =3D opts->nr_io_queues + opts->nr_write_queues=
- +
-> > +                          opts->nr_poll_queues + 1;
-> > +     nctrl->sqsize =3D opts->queue_size - 1;
-> > +     nctrl->kato =3D opts->kato;
-> > +     if (!(opts->mask & NVMF_OPT_TRSVCID)) {
-> > +             opts->trsvcid =3D
-> > +                     kstrdup(__stringify(NVME_TCP_DISC_PORT), GFP_KERN=
-EL);
-> > +             if (!opts->trsvcid) {
-> > +                     rc =3D -ENOMEM;
-> > +                     goto out_free_ctrl;
-> > +             }
-> > +             opts->mask |=3D NVMF_OPT_TRSVCID;
-> > +     }
+> > +static int sparx5_inject(struct sparx5 *sparx5,
+> > +                      u32 *ifh,
+> > +                      struct sk_buff *skb)
+> > +{
+> > +     int grp = INJ_QUEUE;
+> > +     u32 val, w, count;
+> > +     u8 *buf;
 > > +
-> > +     rc =3D inet_pton_with_scope(&init_net, AF_UNSPEC, opts->traddr,
-> > +                               opts->trsvcid,
-> > +                               &ctrl->conn_params.remote_ip_addr);
-> > +     if (rc) {
-> > +             pr_err("malformed address passed: %s:%s\n",
-> > +                    opts->traddr, opts->trsvcid);
-> > +             goto out_free_ctrl;
-> > +     }
-> > +
-> > +     if (opts->mask & NVMF_OPT_HOST_TRADDR) {
-> > +             rc =3D inet_pton_with_scope(&init_net, AF_UNSPEC,
-> > +                                       opts->host_traddr, NULL,
-> > +                                       &ctrl->conn_params.local_ip_add=
-r);
-> > +             if (rc) {
-> > +                     pr_err("malformed src address passed: %s\n",
-> > +                            opts->host_traddr);
-> > +                     goto out_free_ctrl;
-> > +             }
-> > +     }
-> >
->
-> -> And here we would need to check for the interface ...
+> > +     val = spx5_rd(sparx5, QS_INJ_STATUS);
+> > +     if (!(QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp))) {
+> > +             pr_err("Injection: Queue not ready: 0x%lx\n",
+> > +                    QS_INJ_STATUS_FIFO_RDY_GET(val));
+> 
+> non-rate-limited errors on the datapath are a bad idea
+> 
+> > +             return -EBUSY;
 
-It will be done from nvme_tcp_ofld_lookup_dev() by passing opts->host_iface
-(together with opts->traddr and opts->host_traddr) to the vendor driver
-claim_dev() in order to control the chosen path.
-The opts->host_iface will be added not as part of this series.
+I will change that to ratelimited prints.
 
->
-> > -     /* Init nvme_tcp_ofld_ctrl and nvme_ctrl params based on received=
- opts */
-> > +     if (!opts->duplicate_connect &&
-> > +         nvme_tcp_ofld_existing_controller(opts)) {
-> > +             rc =3D -EALREADY;
-> > +             goto out_free_ctrl;
-> > +     }
-> >
-> >       /* Find device that can reach the dest addr */
-> >       dev =3D nvme_tcp_ofld_lookup_dev(ctrl);
-> > @@ -151,6 +573,10 @@ nvme_tcp_ofld_create_ctrl(struct device *ndev, str=
-uct nvmf_ctrl_options *opts)
-> >               goto out_free_ctrl;
-> >       }
-> >
-> > +     rc =3D nvme_tcp_ofld_check_dev_opts(opts, dev->ops);
-> > +     if (rc)
-> > +             goto out_module_put;
+> 
+> What do you expect to happen at this point? Kernel can retry sending
+> for ever, is there a way for the driver to find out that the fifo is
+> no longer busy to stop/start the software queuing appropriately?
+
+Hmm.  I am not too familiar with the netdev queuing, but would this be a way forward?
+
+1) In sparx5_inject: After injecting a frame then test for HW queue readiness and watermark levels,
+and if there is a problem then call netif_queue_stop
+
+2) Add an implementation of ndo_tx_timeout where the HW queue and Watermark level is checked and if
+all is OK, then do a netif_wake_queue.
+
+3) But if the HW queue and/or Watermark level is still not OK - then probably something went
+seriously wrong, or the wait was to short.  Will the ndo_tx_timeout be called again or is this a
+one-off?
+
+If the ndo_tx_timeout call is a one-off the driver would need to reset the HW queue system or even
+deeper down...
+
+> 
+> > +     }
 > > +
-> >       ctrl->dev =3D dev;
-> >
-> >       if (ctrl->dev->ops->max_hw_sectors)
-> > @@ -158,14 +584,51 @@ nvme_tcp_ofld_create_ctrl(struct device *ndev, st=
-ruct nvmf_ctrl_options *opts)
-> >       if (ctrl->dev->ops->max_segments)
-> >               nctrl->max_segments =3D ctrl->dev->ops->max_segments;
-> >
-> > -     /* Init queues */
-> > +     ctrl->queues =3D kcalloc(nctrl->queue_count,
-> > +                            sizeof(struct nvme_tcp_ofld_queue),
-> > +                            GFP_KERNEL);
-> > +     if (!ctrl->queues) {
-> > +             rc =3D -ENOMEM;
-> > +             goto out_module_put;
-> > +     }
+> > +     if (QS_INJ_STATUS_WMARK_REACHED_GET(val) & BIT(grp)) {
+> > +             pr_err("Injection: Watermark reached: 0x%lx\n",
+> > +                    QS_INJ_STATUS_WMARK_REACHED_GET(val));
+> > +             return -EBUSY;
+> 
+> ditto
+
+Yes.
+
+> 
+> > +     }
 > > +
-> > +     for (i =3D 0; i < nctrl->queue_count; ++i) {
-> > +             queue =3D &ctrl->queues[i];
-> > +             queue->ctrl =3D ctrl;
-> > +             queue->dev =3D dev;
-> > +             queue->report_err =3D nvme_tcp_ofld_report_queue_err;
-> > +     }
+> > +     /* Indicate SOF */
+> > +     spx5_wr(QS_INJ_CTRL_SOF_SET(1) |
+> > +             QS_INJ_CTRL_GAP_SIZE_SET(1),
+> > +             sparx5, QS_INJ_CTRL(grp));
 > > +
-> > +     rc =3D nvme_init_ctrl(nctrl, ndev, &nvme_tcp_ofld_ctrl_ops, 0);
-> > +     if (rc)
-> > +             goto out_free_queues;
+> > +     // Write the IFH to the chip.
+> 
+> Why the mix of comment styles?
+
+A mistake - I will update that.
+
+> 
+> > +     for (w = 0; w < IFH_LEN; w++)
+> > +             spx5_wr(ifh[w], sparx5, QS_INJ_WR(grp));
 > > +
-> > +     if (!nvme_change_ctrl_state(nctrl, NVME_CTRL_CONNECTING)) {
-> > +             WARN_ON_ONCE(1);
-> > +             rc =3D -EINTR;
-> > +             goto out_uninit_ctrl;
-> > +     }
-> >
-> > -     /* Call nvme_init_ctrl */
-> > +     rc =3D nvme_tcp_ofld_setup_ctrl(nctrl, true);
-> > +     if (rc)
-> > +             goto out_uninit_ctrl;
-> >
-> > -     /* Setup ctrl */
-> > +     dev_info(nctrl->device, "new ctrl: NQN \"%s\", addr %pISp\n",
-> > +              opts->subsysnqn, &ctrl->conn_params.remote_ip_addr);
+> > +     /* Write words, round up */
+> > +     count = ((skb->len + 3) / 4);
+> 
+> DIV_ROUND_UP()
+
+I will use that instead.
+
+> 
+> > +     buf = skb->data;
+> > +     for (w = 0; w < count; w++, buf += 4) {
+> > +             val = get_unaligned((const u32 *)buf);
+> > +             spx5_wr(val, sparx5, QS_INJ_WR(grp));
+> > +     }
 > > +
-> > +     mutex_lock(&nvme_tcp_ofld_ctrl_mutex);
-> > +     list_add_tail(&ctrl->list, &nvme_tcp_ofld_ctrl_list);
-> > +     mutex_unlock(&nvme_tcp_ofld_ctrl_mutex);
-> >
-> >       return nctrl;
-> >
-> > +out_uninit_ctrl:
-> > +     nvme_uninit_ctrl(nctrl);
-> > +     nvme_put_ctrl(nctrl);
-> > +out_free_queues:
-> > +     kfree(ctrl->queues);
-> > +out_module_put:
-> > +     module_put(dev->ops->module);
-> >  out_free_ctrl:
-> >       kfree(ctrl);
-> >
-> > @@ -193,7 +656,15 @@ static int __init nvme_tcp_ofld_init_module(void)
-> >
-> >  static void __exit nvme_tcp_ofld_cleanup_module(void)
-> >  {
-> > +     struct nvme_tcp_ofld_ctrl *ctrl;
+> > +     /* Add padding */
+> > +     while (w < (60 / 4)) {
+> > +             spx5_wr(0, sparx5, QS_INJ_WR(grp));
+> > +             w++;
+> > +     }
 > > +
-> >       nvmf_unregister_transport(&nvme_tcp_ofld_transport);
+> > +     /* Indicate EOF and valid bytes in last word */
+> > +     spx5_wr(QS_INJ_CTRL_GAP_SIZE_SET(1) |
+> > +             QS_INJ_CTRL_VLD_BYTES_SET(skb->len < 60 ? 0 : skb->len % 4) |
+> > +             QS_INJ_CTRL_EOF_SET(1),
+> > +             sparx5, QS_INJ_CTRL(grp));
 > > +
-> > +     mutex_lock(&nvme_tcp_ofld_ctrl_mutex);
-> > +     list_for_each_entry(ctrl, &nvme_tcp_ofld_ctrl_list, list)
-> > +             nvme_delete_ctrl(&ctrl->nctrl);
-> > +     mutex_unlock(&nvme_tcp_ofld_ctrl_mutex);
-> > +     flush_workqueue(nvme_delete_wq);
-> >  }
-> >
-> >  module_init(nvme_tcp_ofld_init_module);
-> >
-> Cheers,
->
-> Hannes
-> --
-> Dr. Hannes Reinecke                     Kernel Storage Architect
-> hare@suse.de                                   +49 911 74053 688
-> SUSE Software Solutions Germany GmbH, 90409 N=C3=BCrnberg
-> GF: F. Imend=C3=B6rffer, HRB 36809 (AG N=C3=BCrnberg)
+> > +     /* Add dummy CRC */
+> > +     spx5_wr(0, sparx5, QS_INJ_WR(grp));
+> > +     w++;
+> > +
+> > +     return NETDEV_TX_OK;
+> > +}
+
+
