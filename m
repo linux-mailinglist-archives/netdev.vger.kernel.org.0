@@ -2,86 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3C58395618
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:30:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41DEA39565D
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:39:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230262AbhEaHcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 03:32:06 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:60482 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbhEaHcB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 03:32:01 -0400
-Received: from mail-wr1-f71.google.com ([209.85.221.71])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lncNR-0002FK-Pg
-        for netdev@vger.kernel.org; Mon, 31 May 2021 07:30:21 +0000
-Received: by mail-wr1-f71.google.com with SMTP id u5-20020adf9e050000b029010df603f280so3606600wre.18
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 00:30:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=cAlI26tnTTG5mkLy5nypjSlUByQ/kCeC+Y7Gnr7Dwj8=;
-        b=umpRVGLWCN9Pz0bQSTPcrIqPDoWCbcnRqdhfqh6HV+43kn9KQBzI6i+X0yWlu2fKCj
-         Fi2t7h6yz27VBIET63rmOOZn5jbTCTdbqKWgZyh5lk9Fwm6yV0biMBkTi94OIrkOYYTz
-         T1dUhZTMupNJ1kKxP0xg7tnz9LfcTu8C2Vim91yUvWWNjNt09MRnbYSD7FEXnBQcxirX
-         kmBgsTRUcSrRCV7nLZo+V4OQibg63QNpV6QbEwL1DC9jan+fV1FxkgrS4IAcmCHDw+JF
-         PZzptpNQarUOcLjPgXYRZBnLHFUr90RnUlR0xfxCsInrjCBMGL8gbXhDPrr+kSPlGMgS
-         2G6Q==
-X-Gm-Message-State: AOAM53008FTI6LpX1KPfmUN8NW4/pxFbheeXuVOIMHwOQ4fwd/CdyRs/
-        /piJa09f2bt2KafOO1K57NHhHi3WKLn5PAhB6W6Br0Wdw0BBjofgFCWvUtfK1H/eqWZHMyjisXu
-        UDlL9a5D4DvWY4eDdm7H85HTcORVPF5wI9g==
-X-Received: by 2002:a7b:c084:: with SMTP id r4mr19400392wmh.102.1622446221038;
-        Mon, 31 May 2021 00:30:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyGn2RwHbI3WaJdd8bqimsKztQEfvYoe5ivVyqd/sUnbSsNPwopPg2sBXTTyFD3lrJGA4eoOw==
-X-Received: by 2002:a7b:c084:: with SMTP id r4mr19400386wmh.102.1622446220937;
-        Mon, 31 May 2021 00:30:20 -0700 (PDT)
-Received: from [192.168.1.115] (xdsl-188-155-185-9.adslplus.ch. [188.155.185.9])
-        by smtp.gmail.com with ESMTPSA id v15sm22303365wmj.39.2021.05.31.00.30.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 May 2021 00:30:20 -0700 (PDT)
-Subject: Re: [PATCH 01/11] nfc: fdp: drop ftrace-like debugging messages
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Randy Dunlap <rdunlap@infradead.org>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20210528145330.125055-1-krzysztof.kozlowski@canonical.com>
- <20210528151340.7ea69c15@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <4f44c25c-c296-ba3e-7c6d-bc1016574231@canonical.com>
-Date:   Mon, 31 May 2021 09:30:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S230440AbhEaHlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 03:41:19 -0400
+Received: from mga07.intel.com ([134.134.136.100]:63237 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230355AbhEaHlD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 May 2021 03:41:03 -0400
+IronPort-SDR: wZm79MtOxrQVH0Ry9qPFC4j/K/uwy5XrvKrsDavYUIDEzG776XjnhAiHzY7u2lYHDCNH+xsVuj
+ r9qtyiTYN5dA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10000"; a="267194628"
+X-IronPort-AV: E=Sophos;i="5.83,236,1616482800"; 
+   d="scan'208";a="267194628"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 00:39:22 -0700
+IronPort-SDR: 8mzKjbSk3zBRRTTG/FCo+6jedjy0RykXOVWJfJd3eOxed+w9zvOh3PQ5Li0RtfssqKaPY6Fkl4
+ l0bolLC04t1w==
+X-IronPort-AV: E=Sophos;i="5.83,236,1616482800"; 
+   d="scan'208";a="478811507"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.107])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 00:39:19 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     jasowang@redhat.com, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH V2 RESEND 0/2] vDPA/ifcvf: implement doorbell mapping feature
+Date:   Mon, 31 May 2021 15:33:14 +0800
+Message-Id: <20210531073316.363655-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20210528151340.7ea69c15@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/05/2021 00:13, Jakub Kicinski wrote:
-> On Fri, 28 May 2021 10:53:20 -0400 Krzysztof Kozlowski wrote:
->> Now that the kernel has ftrace, any debugging calls that just do "made
->> it to this function!" and "leaving this function!" can be removed.
->> Better to use standard debugging tools.
->>
->> This allows also to remove several local variables and entire
->> fdp_nci_recv_frame() function (whose purpose was only to log).
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> 
-> Hi! Would you mind reposting these 11 fixes? build bots don't
-> understand series dependencies and the last patch here depends 
-> on the previous clean up set.
+This series implements doorbell mapping feature for ifcvf.
 
-Sure, no problem.
+Please help review
 
+Thanks!
 
-Best regards,
-Krzysztof
+Chagnes from V1:
+calculate the doorbell address per vq than per device(Jason)
+let upper layer driver decide how to use the non page_size
+aligned doorbell(Jason)
+
+Zhu Lingshan (2):
+  vDPA/ifcvf: record virtio notify base
+  vDPA/ifcvf: implement doorbell mapping for ifcvf
+
+ drivers/vdpa/ifcvf/ifcvf_base.c |  4 ++++
+ drivers/vdpa/ifcvf/ifcvf_base.h |  2 ++
+ drivers/vdpa/ifcvf/ifcvf_main.c | 17 +++++++++++++++++
+ 3 files changed, 23 insertions(+)
+
+-- 
+2.27.0
+
