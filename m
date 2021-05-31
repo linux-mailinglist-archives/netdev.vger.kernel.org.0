@@ -2,240 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E907E39596E
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 13:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E736B395974
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 13:10:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231124AbhEaLJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 07:09:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51692 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230518AbhEaLJH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 07:09:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622459247;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IaDE8FBaVLPwZ3XaIcfWetPKdEKG+w4O7/4mL9L5gRk=;
-        b=I3C0NhunHq79c1IBqVaqeiZQqJaqr07P5H3EBFSpxQiP663xYnUxtsy1DEE6F7r+j0RFAr
-        1h9Lz6k1MenA1iW72QY4wMS8Ltc1FOHtfZqm2OEk8jw5+af7UAXyOcpOz9NcPNsL0QhYSA
-        g3uleRSEkl3PPViOg4kMAWg4lZGzhQ4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-446-UuYgMJwoP-2cWvT9PK8bCA-1; Mon, 31 May 2021 07:07:25 -0400
-X-MC-Unique: UuYgMJwoP-2cWvT9PK8bCA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2B1FC18766D0;
-        Mon, 31 May 2021 11:07:24 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AF70E101E24F;
-        Mon, 31 May 2021 11:07:13 +0000 (UTC)
-Date:   Mon, 31 May 2021 13:07:12 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     Tom Herbert <tom@herbertland.com>, bpf@vger.kernel.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S231211AbhEaLLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 07:11:47 -0400
+Received: from mail-dm6nam08on2053.outbound.protection.outlook.com ([40.107.102.53]:6587
+        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230518AbhEaLLp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 May 2021 07:11:45 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UTtzXAQM+lMSt2M5oT2uxTx/rHL2crpkKAzCie6f2YoopKpb0lE9z6ygiIF930/g6XfY2Elw0dGH3mv/jEzTRLq60NAi+SgT0pLByUj8WZGLsYPfR8WdL5pnfOz7nqWLujjfRVlCevb+D4261QSrNl9FeGCKJqNoD3jlbmHKZ7n8artwj8Hhw4a1Pm0/uZm+ptVwNzguL8u/KEx2p/IyF7vJsIp1+bx7zDP7NGd12aOjSQOeoHOa15UwAXcjHkTJsuR2lQUYPIdcOh14Dbv7pXrz7TqGaoTduZ0LWWqIee5VzaFFmNOMkfKEqdkq/+zqmSIfOOEY1x5ZyNcjK5HHGA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ldr3qPnIyrAbPxQDPyUXICk5zrUyRU9sMmU0UDpDfg0=;
+ b=FAHmkGBT7cLK4RrjJEiDSCanornLi+Ntv8BJmuJTl83vWcyom1Z3dJPkFh1H2M4MbEmAZy2H2CtkI+8TB8Wssw2srj2qDtJVU1+xhtyKmxyxijRLLg1WoHWpt/DtzAoKuDm6OFqGUxSs1KGSW110OCEGHY1busVQqmB3MKH0JjLGAZmbayzN1+oNwM1CJKcNclftl9biE8ShXu409KMudPg/9o6XPh9t8C8sdiVZOQ8320sL1jznLGHWEU5Ow3qYXYNOcG+Q8TwbaMdRNmnJ1fK3fBWCjcKjYaHjCg8aIFh4pky5FK3akBQhREWXj0tZv3InPyYm8JUK3P3T80Up7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ldr3qPnIyrAbPxQDPyUXICk5zrUyRU9sMmU0UDpDfg0=;
+ b=H/wcRFaaOhi0ydtOsUnSGLNWNnwvNLvygcWEoRlmxzrIcm4o7uKsagTRZ0QRgIKKU2wZ0mMCTUsT0ix3LwcSQ85pJ5ZMf9Dsx9MgaypeKH22YbH60mEnjQdjlJ1udPVRy/cT4CKZ7lW/EdGkJ/1ZhwNCp7fvFE+LLuZDmm/upFSRflxZIWtamG8yzc8pQBZyeKTcVLiI2F8GlkCSsCS5+FxzNl3owBJ2uXCchFoKvS4m7MgBRajjoCgTSMqwn4Xo6qFrvkjnK7b914XKoDJclTTHa9UOMRg3FNXru+ZWjzw4EzwS46n05RQTZUksYF2sdV2Phy42Izg17epL9pobxQ==
+Received: from MW4PR03CA0234.namprd03.prod.outlook.com (2603:10b6:303:b9::29)
+ by DM6PR12MB3865.namprd12.prod.outlook.com (2603:10b6:5:1c4::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21; Mon, 31 May
+ 2021 11:10:05 +0000
+Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b9:cafe::28) by MW4PR03CA0234.outlook.office365.com
+ (2603:10b6:303:b9::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22 via Frontend
+ Transport; Mon, 31 May 2021 11:10:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4150.30 via Frontend Transport; Mon, 31 May 2021 11:10:04 +0000
+Received: from [172.27.12.2] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 31 May
+ 2021 11:09:59 +0000
+Subject: Re: [PATCH net 2/2] net/tls: Fix use-after-free after the TLS device
+ goes down and up
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        David Ahern <dsahern@gmail.com>, magnus.karlsson@intel.com,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        bjorn@kernel.org,
-        "Maciej =?UTF-8?B?RmlqYcWCa293c2tp?= (Intel)" 
-        <maciej.fijalkowski@intel.com>,
-        john fastabend <john.fastabend@gmail.com>, brouer@redhat.com,
-        XDP-hints working-group <xdp-hints@xdp-project.net>
-Subject: Re: [RFC bpf-next 1/4] net: xdp: introduce flags field in xdp_buff
- and xdp_frame
-Message-ID: <20210531130712.29232932@carbon>
-In-Reply-To: <YLJC2ox7HmAL8dnX@lore-desk>
-References: <cover.1622222367.git.lorenzo@kernel.org>
-        <b5b2f560006cf5f56d67d61d5837569a0949d0aa.1622222367.git.lorenzo@kernel.org>
-        <CALx6S34cmsFX6QwUq0sRpHok1j6ecBBJ7WC2BwjEmxok+CHjqg@mail.gmail.com>
-        <YLJC2ox7HmAL8dnX@lore-desk>
+        "David S. Miller" <davem@davemloft.net>,
+        Aviad Yehezkel <aviadye@nvidia.com>,
+        "Tariq Toukan" <tariqt@nvidia.com>, <netdev@vger.kernel.org>
+References: <20210524121220.1577321-1-maximmi@nvidia.com>
+ <20210524121220.1577321-3-maximmi@nvidia.com>
+ <20210525103915.05264e8c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <afa246d3-acfd-f3be-445c-3beace105c8f@nvidia.com>
+ <20210528124421.12a84cb7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+Message-ID: <03669e23-0697-7a96-3d49-202e045cbf48@nvidia.com>
+Date:   Mon, 31 May 2021 14:09:56 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210528124421.12a84cb7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 16d9acf6-4a9c-454f-2885-08d92424a497
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3865:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB386564FA27CD543354180773DC3F9@DM6PR12MB3865.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PQFZOUSoyr9ei5oun3+7uCMrKGllnzoLTS3h1bOwyME4qBzv0OdNoV8Sa6vuK3r8p5Hn0fOPOWyhXzV1kDfmAECLV00SHLV6sF1A+U46kO+83k89udProcEwLdGjxf1xZ042tqZmjE1ZemmxCC+TBPx9UbPktX/onLAdefMYetz0GSmTZhYzoaqs9QtFPNV//OoKT3NeJNkaZCNUw6avOvSLmea/gdSG8Ugo6toOyIa/kGhKd6CnUNIlG63RYF3YW3GND2beSeAt5r5pAL9sZ7c9cV44gYUr4htdUwkfomO5GNIHPcE1IPUXdZr0k1bUEDJbGHXgObFcXGmomGQaAXh/+PxGtu/cGv69+bh3KF2IqyA7WVu7HMiZSamTOgTyBeEbU2qDZRXaWva8DN0MwyQkhGH2Bbtkb9R9K8zehFB83pUazlm/Em8ZYvBO2kHQkg6xcjUxbgL7z2REKIP4cH8Pqk/FPgLfJjyEF83xhZ72+IBDcBD+EQZvvmWfVFtjCJTL01Ak59BXCHlVJjjFV/vy9IkOIz8YgcMEnGv7T0AF3UwEUh/r8kMpVln7yibYcj3n2B50ZZDtAGT3RotkOYKEmZzwGFwXkb4lfFpRfwThiLKLA6VG7iQ4d+iDNO+G662BJlNRSplwE4lHRLMVUn74fFea859FsqNkmHafjnxOPyetb5ndsmrXnvZJgxfn
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(136003)(346002)(376002)(39860400002)(46966006)(36840700001)(6666004)(36906005)(16576012)(316002)(31686004)(36756003)(53546011)(356005)(6916009)(4326008)(70586007)(86362001)(82740400003)(54906003)(2616005)(26005)(5660300002)(8676002)(70206006)(8936002)(82310400003)(336012)(16526019)(186003)(426003)(478600001)(7636003)(47076005)(31696002)(36860700001)(2906002)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2021 11:10:04.7338
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16d9acf6-4a9c-454f-2885-08d92424a497
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3865
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 29 May 2021 15:34:18 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-
-> > On Fri, May 28, 2021 at 10:44 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:  
-> > >
-> > > Introduce flag field in xdp_buff and xdp_frame data structure in order
-> > > to report xdp_buffer metadata. For the moment just hw checksum hints
-> > > are defined but flags field will be reused for xdp multi-buffer
-> > > For the moment just CHECKSUM_UNNECESSARY is supported.
-> > > CHECKSUM_COMPLETE will need to set csum value in metada space.
-> > >  
-> > Lorenzo,  
+On 2021-05-28 22:44, Jakub Kicinski wrote:
+> On Fri, 28 May 2021 15:40:38 +0300 Maxim Mikityanskiy wrote:
+>>>> @@ -961,6 +964,17 @@ int tls_device_decrypted(struct sock *sk, struct tls_context *tls_ctx,
+>>>>    
+>>>>    	ctx->sw.decrypted |= is_decrypted;
+>>>>    
+>>>> +	if (unlikely(test_bit(TLS_RX_DEV_DEGRADED, &tls_ctx->flags))) {
+>>>
+>>> Why not put the check in tls_device_core_ctrl_rx_resync()?
+>>> Would be less code, right?
+>>
+>> I see what you mean, and I considered this option, but I think my option
+>> has better readability and is more future-proof. By doing an early
+>> return, I skip all code irrelevant to the degraded mode, and even though
+>> changing ctx->resync_nh_reset won't have effect in the degraded mode, it
+>> will be easier for readers to understand that this part of code is not
+>> relevant. Furthermore, if someone decides to add more code to
+>> !is_encrypted branches in the future, there is a chance that the
+>> degraded mode will be missed from consideration. With the early return
+>> there is not problem, but if I follow your suggestion and do the check
+>> only under is_encrypted, a future contributor unfamiliar with this
+>> "degraded flow" might fail to add that check where it will be needed.
+>>
+>> This was the reason I implemented it this way. What do you think?
 > 
-> Hi Tom,
+> In general "someone may miss this in the future" is better served by
+> adding a test case than code duplication. But we don't have infra to
+> fake-offload TLS so I don't feel strongly. You can keep as is if that's
+> your preference.
+
+Yeah, I agree that we would benefit from having unit tests for such 
+flows. But as we don't have the needed infrastructure, and you are fine 
+with the current implementation, I'll keep it. The only thing I need to 
+fix when resubmitting is the unneeded EXPORT_SYMBOL_GPL, right?
+
+Thanks for reviewing.
+
 > 
-> > 
-> > This isn't sufficient for the checksum-unnecessary interface, we'd
-> > also need ability to set csum_level for cases the device validated
-> > more than one checksum.  
-> 
-> ack, right. I guess we can put this info in xdp metadata or do you
-> think we can add it in xdp_buff/xdp_frame as well?
-
-This is an interesting question as where do we draw the line.  I
-definitely only don't want to add the same information in two places.
-
-As is clear by the XDP-hints discussion: Today we are lacking *kernel*
-infrastructure to interpret the XDP-metadata area when we create the
-SKB from xdp_frame.  I want to add this capability...
-
-(See XDP-hints discussion, as wisely pointed out by John, the BPF-prog
-infrastructure to interpret XDP-metadata via BTF-info is already
-available to userspace loading BPF-progs, but AFAIK the kernel is
-lacking this capability. Maybe we will end-up loading BPF-progs that
-populate SKB fields based on xdp_frame + XDP-metadata area... I'm
-keeping an open mind for the solutions in this space.).
-
-The question is really, should we wait for this infra (that can use
-csum value from metadata) or should be go ahead and expand
-xdp_buff/xdp_frame with an csum value (+ ip_summed) for the
-CHECKSUM_COMPLETE use-case?
-
- 
-> > 
-> > IMO, we shouldn't support CHECKSUM_UNNECESSARY for new uses like this.
-> > For years now, the Linux community has been pleading with vendors to
-> > provide CHECKSUM_COMPLETE which is far more useful and robust than
-> > CHECSUM_UNNECESSARY, and yet some still haven't got with the program
-> > even though we see more and more instances where CHECKSUM_UNNECESSARY
-> > doesn't even work at all (e.g. cases with SRv6, new encaps device
-> > doesn't understand). I believe it's time to take a stand! :-)  
-> 
-> I completely agree CHECKSUM_COMPLETE is more useful and robust than
-> CHECSUM_UNNECESSARY and I want to add support for it as soon as we
-> agree on the best way to do it. At the same time there are plenty of
-> XDP NICs where this feature is quite useful since they support just
-> CHECSUM_UNNECESSARY.
-> 
-> Regards,
-> Lorenzo
-> 
-> > 
-> > Tom
-> >   
-> > > Signed-off-by: David Ahern <dsahern@kernel.org>
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > ---
-> > >  include/net/xdp.h | 36 ++++++++++++++++++++++++++++++++++++
-> > >  1 file changed, 36 insertions(+)
-> > >
-> > > diff --git a/include/net/xdp.h b/include/net/xdp.h
-> > > index 5533f0ab2afc..e81ac505752b 100644
-> > > --- a/include/net/xdp.h
-> > > +++ b/include/net/xdp.h
-> > > @@ -66,6 +66,13 @@ struct xdp_txq_info {
-> > >         struct net_device *dev;
-> > >  };
-> > >
-> > > +/* xdp metadata bitmask */
-> > > +#define XDP_CSUM_MASK          GENMASK(1, 0)
-> > > +enum xdp_flags {
-> > > +       XDP_CSUM_UNNECESSARY    = BIT(0),
-> > > +       XDP_CSUM_COMPLETE       = BIT(1),
-> > > +};
-> > > +
-> > >  struct xdp_buff {
-> > >         void *data;
-> > >         void *data_end;
-> > > @@ -74,6 +81,7 @@ struct xdp_buff {
-> > >         struct xdp_rxq_info *rxq;
-> > >         struct xdp_txq_info *txq;
-> > >         u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
-> > > +       u16 flags; /* xdp_flags */
-> > >  };
-> > >
-> > >  static __always_inline void
-> > > @@ -81,6 +89,7 @@ xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
-> > >  {
-> > >         xdp->frame_sz = frame_sz;
-> > >         xdp->rxq = rxq;
-> > > +       xdp->flags = 0;
-> > >  }
-> > >
-> > >  static __always_inline void
-> > > @@ -95,6 +104,18 @@ xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
-> > >         xdp->data_meta = meta_valid ? data : data + 1;
-> > >  }
-> > >
-> > > +static __always_inline void
-> > > +xdp_buff_get_csum(struct xdp_buff *xdp, struct sk_buff *skb)
-> > > +{
-> > > +       switch (xdp->flags & XDP_CSUM_MASK) {
-> > > +       case XDP_CSUM_UNNECESSARY:
-> > > +               skb->ip_summed = CHECKSUM_UNNECESSARY;
-> > > +               break;
-> > > +       default:
-> > > +               break;
-> > > +       }
-> > > +}
-> > > +
-> > >  /* Reserve memory area at end-of data area.
-> > >   *
-> > >   * This macro reserves tailroom in the XDP buffer by limiting the
-> > > @@ -122,8 +143,21 @@ struct xdp_frame {
-> > >          */
-> > >         struct xdp_mem_info mem;
-> > >         struct net_device *dev_rx; /* used by cpumap */
-> > > +       u16 flags; /* xdp_flags */
-> > >  };
-> > >
-> > > +static __always_inline void
-> > > +xdp_frame_get_csum(struct xdp_frame *xdpf, struct sk_buff *skb)
-> > > +{
-> > > +       switch (xdpf->flags & XDP_CSUM_MASK) {
-> > > +       case XDP_CSUM_UNNECESSARY:
-> > > +               skb->ip_summed = CHECKSUM_UNNECESSARY;
-> > > +               break;
-> > > +       default:
-> > > +               break;
-> > > +       }
-> > > +}
-> > > +
-> > >  #define XDP_BULK_QUEUE_SIZE    16
-> > >  struct xdp_frame_bulk {
-> > >         int count;
-> > > @@ -180,6 +214,7 @@ void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
-> > >         xdp->data_end = frame->data + frame->len;
-> > >         xdp->data_meta = frame->data - frame->metasize;
-> > >         xdp->frame_sz = frame->frame_sz;
-> > > +       xdp->flags = frame->flags;
-> > >  }
-> > >
-> > >  static inline
-> > > @@ -206,6 +241,7 @@ int xdp_update_frame_from_buff(struct xdp_buff *xdp,
-> > >         xdp_frame->headroom = headroom - sizeof(*xdp_frame);
-> > >         xdp_frame->metasize = metasize;
-> > >         xdp_frame->frame_sz = xdp->frame_sz;
-> > > +       xdp_frame->flags = xdp->flags;
-> > >
-> > >         return 0;
-> > >  }
-> > > --
-> > > 2.31.1
-> > >  
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
 
