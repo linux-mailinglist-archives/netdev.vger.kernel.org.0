@@ -2,146 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ED18395736
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 10:40:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AC4D39574B
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 10:44:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbhEaImT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 04:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49846 "EHLO
+        id S230104AbhEaIqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 04:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231174AbhEaIl2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 04:41:28 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7A3C06138B
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 01:39:21 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id hf1-20020a17090aff81b02901630f822d2aso3593307pjb.6
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 01:39:21 -0700 (PDT)
+        with ESMTP id S229640AbhEaIqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 04:46:17 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E9BC061760
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 01:44:37 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id v5so13998366ljg.12
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 01:44:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=I47+8sZS5vFBjHugHifrCfYmHlFzUUVVfCUyGAkwPdU=;
-        b=p2cQ1ZY8aFv8lBcLXEa/sa0GEa88j9usNJvSu6fbrDsA/XbST8NnFnoCjogN+nH9+/
-         VGw3zK7714U3CjLjRWwfTNnqHVynokyNaX1HTsBZLH3JY+h/4oUo0t75pryGetDe3MQj
-         qgeZmQHQhBAUPznmxc9knsF5vHygwpaXiJzzQXewVtagpXA1OnMoJx0ld+yNRXjg/gs4
-         o9Tsvem9mlGtoB0oHUSmEeOJIXM6pfBTwBs8YSEpvxRpijGuAUa8ob15NlDfHPdLNTz2
-         8njbolvE5qAh/Ft0U7ijfoZVl9fQpD9TC2j57JM29s3NYk5YjkbZJVU7L7sjoAjoACtK
-         VS5g==
+        bh=qSiHm2x0VYis9oHGnKO3wH7svcL5++yEAOjW2BWiBYU=;
+        b=lUxQ/k0n1JapZZYTm69WFnp1eyRdyBv9rIpg5Qh78uGFcJwW9zj0JcGANNe5jNTAFG
+         ozbtZ19Nc+BI3pdHuSh+/AHWTjfLNx+jpgL2KiYFpm5juWP8Q+fXbywiRAarGYsAFa66
+         n5Lmmdf6u0AfEvUhf/zjjSwkd4PUgWkBeSrNEGIKth9VCi0zGtBuhxe4oAhERKzc18wf
+         IIi4BH9yYkES5wS/298ydjGJp8UFleI9hGUBoL9WweIR1jYeZDqGgHYcl/D6UNXQyOR8
+         MNiFxe6hNyYGtsi2S9uF7/N7aDogN7+HMo7wS1+aCdcMz53ZnOoS5VHUytvp03Gppzzc
+         XM2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=I47+8sZS5vFBjHugHifrCfYmHlFzUUVVfCUyGAkwPdU=;
-        b=j62/brHVCiN86Z0ogsvrA2nZbHtJxdZNkBLEhtSIBTYOYOsMcAn+oh1B62LxsJP8X2
-         mcp8VibgBSwCPJF8+SjgMpPaNdKu06fvzWwfn9RMJSSt49r7WogvltFO0VIcjvWnLXBp
-         7tZZeKl8sOCHTqHkZ9qVvAivCY580iftJcVpRZ4/7SCPvZ6pvJi7sX22re/IDHKoFcW9
-         wlsgoD5y839NxIswDACVfhCQlKN0f80w0x0tYeSRLhnBq+wiBd0aOKSWpkMSCKMoZ3iC
-         UB5ad4eWJ33LPPDR9sVB8rxjRsLD2iqMJCg0BnAncKD4d7UICvMP11PSzXCEMWAcTHBZ
-         Y+mg==
-X-Gm-Message-State: AOAM532wtcG1jnc/Byj3xOOq/8SZGSAE9dbHrMcWwkyH9AlUMdNaayrO
-        5sZKeEt1Lmhrm6y+9iJXbQJQ84nfuNIY
-X-Google-Smtp-Source: ABdhPJx5zw4Stx/SlMRqjDW+UtziKUSYEIKr5Q9tgSSeyEBn+PbUpTQ+i9iCyr9e5z3vx3fj10EIb6IXczh3
-X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:b:a6d1:a727:b17d:154e])
- (user=apusaka job=sendgmr) by 2002:a17:902:8695:b029:fd:6105:c936 with SMTP
- id g21-20020a1709028695b02900fd6105c936mr19673956plo.25.1622450361211; Mon,
- 31 May 2021 01:39:21 -0700 (PDT)
-Date:   Mon, 31 May 2021 16:37:28 +0800
-In-Reply-To: <20210531083726.1949001-1-apusaka@google.com>
-Message-Id: <20210531163500.v2.8.I361d8bede7e78ecb42a83a42994f191b13e60279@changeid>
-Mime-Version: 1.0
-References: <20210531083726.1949001-1-apusaka@google.com>
-X-Mailer: git-send-email 2.32.0.rc0.204.g9fa02ecfa5-goog
-Subject: [PATCH v2 8/8] Bluetooth: use inclusive language in comments
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qSiHm2x0VYis9oHGnKO3wH7svcL5++yEAOjW2BWiBYU=;
+        b=nXH3rHIu+0bXHBuDgxC1GTn4QMUwLnJVw+duQ5YBUCsvm5HGwrXIKTWp4BuD7JTq+a
+         +p7cPfE7SYQ8VLt9GYxfwrAODnbhGMsaQ+qofb0pFYzOktVsYyUSC8R2JbB8nw35y81S
+         b8pRT0sw+jKubMfSjmx66KaMzUathNUZZRBL9xNsvARuMfbYL9JUhBWWPR+xiNq4/B1w
+         MWmALnUw5exda53DKd074Yyicr7i3TuAVPZnIhCisseghEs/uSSmWdLR8VY/gX1XoM7H
+         Zy0rXiTQFYw1xT3TagDLsTow+9Vb4H2+0aIkRKdD1jaNWSk43io3H2a30y49HT1AxNjx
+         T25A==
+X-Gm-Message-State: AOAM531dwZRIBO+E63IDuEoUnP2kf9MCr5EIDv50y8hwSlk0a1pggA3h
+        3LDKYUyuZOynvXd1aPLxZlUi7Rinr4ZxtTJRHDYK3w==
+X-Google-Smtp-Source: ABdhPJx9Ta1DFU72yZxzmXeXZOHH/mxW2HUJNM4rOxP7dcdz3+l3k6YcFpfBLmsFpnqUgnCpq0TZ4Q5SQiQ1fLRuA1Q=
+X-Received: by 2002:a2e:154a:: with SMTP id 10mr15435817ljv.133.1622450676013;
+ Mon, 31 May 2021 01:44:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210525102941.3958649-1-apusaka@google.com> <20210525182900.6.Id35872ce1572f18e0792e6f4d70721132e97a480@changeid>
+ <42C641C9-2EAC-4A47-9FF7-8A079DF278E0@holtmann.org>
+In-Reply-To: <42C641C9-2EAC-4A47-9FF7-8A079DF278E0@holtmann.org>
 From:   Archie Pusaka <apusaka@google.com>
-To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+Date:   Mon, 31 May 2021 16:44:25 +0800
+Message-ID: <CAJQfnxHf1FEe-TWgSj7rJ=h4+_=LXm0QPXHoJUn3tpWnm6mvtw@mail.gmail.com>
+Subject: Re: [PATCH 06/12] Bluetooth: use inclusive language in RFCOMM
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
         Archie Pusaka <apusaka@chromium.org>,
         Miao-chen Chou <mcchou@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
         Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "=?UTF-8?q?Ole=20Bj=C3=B8rn=20Midtb=C3=B8?=" <omidtbo@cisco.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+Hi Marcel,
 
-This patch replaces some non-inclusive terms based on the appropriate
-language mapping table compiled by the Bluetooth SIG:
-https://specificationrefs.bluetooth.com/language-mapping/Appropriate_Language_Mapping_Table.pdf
+Thanks for the reply. I have sent v2 which omits this patch. Please take a look.
 
-Specifically, these terms are replaced:
-slave       -> peripheral
-blacklisted -> blocked
+I am not familiar with the libbluetooth API. Could you tell me more about it?
+Beside this and the L2CAP change, are there any other terms
+replacement which can't be accepted due to the libbluetooth API?
 
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+Cheers,
+Archie
 
----
 
-Changes in v2:
-* Add details in commit message
-
- net/bluetooth/hci_event.c | 6 +++---
- net/bluetooth/hidp/core.c | 2 +-
- net/bluetooth/mgmt.c      | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 760e8e14e0f2..df5e17019e00 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -5404,7 +5404,7 @@ static struct hci_conn *check_pending_le_conn(struct hci_dev *hdev,
- 		case HCI_AUTO_CONN_DIRECT:
- 			/* Only devices advertising with ADV_DIRECT_IND are
- 			 * triggering a connection attempt. This is allowing
--			 * incoming connections from slave devices.
-+			 * incoming connections from peripheral devices.
- 			 */
- 			if (adv_type != LE_ADV_DIRECT_IND)
- 				return NULL;
-@@ -5412,8 +5412,8 @@ static struct hci_conn *check_pending_le_conn(struct hci_dev *hdev,
- 		case HCI_AUTO_CONN_ALWAYS:
- 			/* Devices advertising with ADV_IND or ADV_DIRECT_IND
- 			 * are triggering a connection attempt. This means
--			 * that incoming connections from slave device are
--			 * accepted and also outgoing connections to slave
-+			 * that incoming connections from peripheral device are
-+			 * accepted and also outgoing connections to peripheral
- 			 * devices are established when found.
- 			 */
- 			break;
-diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
-index 0db48c812662..96fedef14723 100644
---- a/net/bluetooth/hidp/core.c
-+++ b/net/bluetooth/hidp/core.c
-@@ -794,7 +794,7 @@ static int hidp_setup_hid(struct hidp_session *session,
- 	hid->dev.parent = &session->conn->hcon->dev;
- 	hid->ll_driver = &hidp_hid_driver;
- 
--	/* True if device is blacklisted in drivers/hid/hid-quirks.c */
-+	/* True if device is blocked in drivers/hid/hid-quirks.c */
- 	if (hid_ignore(hid)) {
- 		hid_destroy_device(session->hid);
- 		session->hid = NULL;
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index f0e4ebed72b8..35e3563f2a4e 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -2959,7 +2959,7 @@ static int pair_device(struct sock *sk, struct hci_dev *hdev, void *data,
- 		/* When pairing a new device, it is expected to remember
- 		 * this device for future connections. Adding the connection
- 		 * parameter information ahead of time allows tracking
--		 * of the slave preferred values and will speed up any
-+		 * of the peripheral preferred values and will speed up any
- 		 * further connection establishment.
- 		 *
- 		 * If connection parameters already exist, then they
--- 
-2.32.0.rc0.204.g9fa02ecfa5-goog
-
+On Wed, 26 May 2021 at 23:07, Marcel Holtmann <marcel@holtmann.org> wrote:
+>
+> Hi Archie,
+>
+> > Use "central" and "peripheral".
+> >
+> > Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+> > Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+> >
+> > ---
+> >
+> > include/net/bluetooth/rfcomm.h | 2 +-
+> > net/bluetooth/rfcomm/sock.c    | 4 ++--
+> > 2 files changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/include/net/bluetooth/rfcomm.h b/include/net/bluetooth/rfcomm.h
+> > index 99d26879b02a..6472ec0053b9 100644
+> > --- a/include/net/bluetooth/rfcomm.h
+> > +++ b/include/net/bluetooth/rfcomm.h
+> > @@ -290,7 +290,7 @@ struct rfcomm_conninfo {
+> > };
+> >
+> > #define RFCOMM_LM     0x03
+> > -#define RFCOMM_LM_MASTER     0x0001
+> > +#define RFCOMM_LM_CENTRAL    0x0001
+> > #define RFCOMM_LM_AUTH                0x0002
+> > #define RFCOMM_LM_ENCRYPT     0x0004
+> > #define RFCOMM_LM_TRUSTED     0x0008
+>
+> I am not planning to accept this change any time soon since this is also in the libbluetooth API.
+>
+> Regards
+>
+> Marcel
+>
