@@ -2,85 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22C21395666
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:40:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 422C839566F
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:43:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbhEaHls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 03:41:48 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:60647 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbhEaHlF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 03:41:05 -0400
-Received: from mail-wm1-f72.google.com ([209.85.128.72])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lncWD-0003AU-1J
-        for netdev@vger.kernel.org; Mon, 31 May 2021 07:39:25 +0000
-Received: by mail-wm1-f72.google.com with SMTP id l18-20020a05600c4f12b02901921c0f2098so3893744wmq.0
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 00:39:25 -0700 (PDT)
+        id S230385AbhEaHoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 03:44:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38175 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230104AbhEaHn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 03:43:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622446939;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dNMKv4iHn4dAF4Hn2qRzZTAcsE05a7bckIbW9ZiGeiQ=;
+        b=Vka7xTPFNOD+FVTbpbuhO4SO4hLuRqN0LmJ/EG6f7fKERHtsmaLPl/81/jxJiKMhCqRKzR
+        QOZFhvrwv6aAll0eL1u3jefRfJMjzcrd5bJUGip4AejC0ayGyf0PQrIUsTBZGT4OF3Zksk
+        iDGuhEDPQ5AbUArP1R0sT9ug9dZB9Ac=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-519-RDhJ7ddnNpSKbyiT2fifsA-1; Mon, 31 May 2021 03:42:17 -0400
+X-MC-Unique: RDhJ7ddnNpSKbyiT2fifsA-1
+Received: by mail-lj1-f197.google.com with SMTP id w8-20020a05651c1028b02900f6e4f47184so3131754ljm.5
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 00:42:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=edJlbbhDO28RmalfYtPxF+agVQnBc9uKOzw55MZRkiU=;
-        b=CEctU7IdeITH81E7QuelXTi990J+zHBcK/UHwZDeFpQsrz5wstoeLw1oLDP1pR2DGs
-         zrnV5HVzawbsqqVXdqW4Byyu40oVz+iLVU3NokUrDTpqcs735OIrkpw/NA0UYmgyH+pR
-         XI57QEtPLMnhwnf3d09ig3tlI1cQ1gLXKI2AZJJXcQKeBMmI17tIkXmUirDDD60ZKA6g
-         6gUTn8FNbMM1q2+KXdxW1NvfW8Q8xrMSEqORIeFsipA6RKvwt+zb1mcMHTNy3ODHYKyS
-         +mcaeKrrP1H3afzshW+tEPTHHd4kCMNl6CDKnwsH1beZAoq1+XC2nsElOBjzpTmIyV/h
-         vjRg==
-X-Gm-Message-State: AOAM533gWLm8oao52KDHhIny4m+OSL0n5Wu3ErxpxcFeEJCCtwt3Sik6
-        b3Ysu/NHFIP7z2cK+jE0ICaK3NkICNByloXiXDaibCEnD1nFd8rEOiEprv7yOO5+7f9ZvNEWSpP
-        LaZr7VO7y0POm2e31eBkGURq5CwZbar2EUQ==
-X-Received: by 2002:adf:e3c8:: with SMTP id k8mr20361124wrm.212.1622446764458;
-        Mon, 31 May 2021 00:39:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzhrRG0xVTTRKmEPbpAveb22Wz/57NL6TRG+5R1+rJ9+T+fewiXUT5mJUt4uwtoCVIYndAGjw==
-X-Received: by 2002:adf:e3c8:: with SMTP id k8mr20361115wrm.212.1622446764356;
-        Mon, 31 May 2021 00:39:24 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-185-9.adslplus.ch. [188.155.185.9])
-        by smtp.gmail.com with ESMTPSA id a1sm9168911wrg.92.2021.05.31.00.39.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 May 2021 00:39:23 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH 11/11] nfc: st95hf: fix indentation to tabs
-Date:   Mon, 31 May 2021 09:39:02 +0200
-Message-Id: <20210531073902.7111-7-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210531073522.6720-1-krzysztof.kozlowski@canonical.com>
-References: <20210531073522.6720-1-krzysztof.kozlowski@canonical.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dNMKv4iHn4dAF4Hn2qRzZTAcsE05a7bckIbW9ZiGeiQ=;
+        b=q0UfcCgCZlviZivB+ZD/+JoQ40cGxIhuaM4ZRWtKPZkx9DCi93UnuuVsxJR720Yn0e
+         2nmDrBlFho7UzRTUsXBXWHqW0kWmhRT1pp+BUpb1kotXdbB7zayLAiBLfZEUd1CnIhfc
+         AxKnXBtV9FDqi6HFQ5ToZ7hUUdRm7t9R5D+V+uqNtIFXLhWnhPrtiErPSORYsRXab0zo
+         ztwYbghLhZ5QY7FurpgUzIyboL2BS92CEV40cnYFNgLsbnAUg95Rv7UMQ8aQAFnu7pyz
+         FIhLjwc43mayLHw5Jjso44RVQ61dnt/V1lMOotPwRNoKrKuC8bmTaNWmWg9xTF/SN8/u
+         sHSA==
+X-Gm-Message-State: AOAM530qbI3pJgyaSbRKM3hpynGjOSDiDSqY13dq1MHr7ROJRtNwRLFn
+        bBzjBQVCGVjhhUnHMxgtQ7xbarcFecvI8mUwV9Z3Ehk0+NQVbFXYvss4TMAXPSkkVK8x9QUQXa8
+        ghkL2TTSfzx7zzs/jeNf917KbFE9X5BC6
+X-Received: by 2002:a19:8083:: with SMTP id b125mr13619939lfd.204.1622446936152;
+        Mon, 31 May 2021 00:42:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyqt7RfwNZfOiBT8iIRimwijOG1srChZjyxPkE2aFME4McHTTQyrw5iz8m+1J5rRmzgIXj6U+3VgKv8WzsKJ1U=
+X-Received: by 2002:a19:8083:: with SMTP id b125mr13619926lfd.204.1622446935902;
+ Mon, 31 May 2021 00:42:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <ksundara@redhat.com> <20210527103318.801175-1-ksundara@redhat.com>
+ <BY5PR12MB43223DDB8011260DD65B9405DC239@BY5PR12MB4322.namprd12.prod.outlook.com>
+In-Reply-To: <BY5PR12MB43223DDB8011260DD65B9405DC239@BY5PR12MB4322.namprd12.prod.outlook.com>
+From:   Karthik Sundaravel <ksundara@redhat.com>
+Date:   Mon, 31 May 2021 13:12:04 +0530
+Message-ID: <CAPh+B4Jhpwzcv=hyufYRhNfH+=DqqJkMGaJVMWswVAk9iZ_gKw@mail.gmail.com>
+Subject: Re: [PATCH 0/1] net-next: Port Mirroring support for SR-IOV
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "karthik.sundaravel@gmail.com" <karthik.sundaravel@gmail.com>,
+        Christophe Fontaine <cfontain@redhat.com>,
+        Veda Barrenkala <vbarrenk@redhat.com>,
+        Vijay Chundury <vchundur@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use tabs to indent instead of spaces. No functional change.
+On Thu, May 27, 2021 at 6:36 PM Parav Pandit <parav@nvidia.com> wrote:
+>
+>
+> > From: Karthik S <ksundara@redhat.com>
+> > Sent: Thursday, May 27, 2021 4:03 PM
+> >
+> > The purpose of this message is to gather feedback from the Netdev
+> > community on the addition of SRIOV port mirroring to the iproute2 ip CLI.
+>
+> > iproute2 was chosen as the desired interface because there is already
+> > extensive support for SRIOV configuration built in and many Linux users are
+> > familiar with it for configuring Network functionality in the driver thus port
+> > mirroring naturally fits into this schema.
+> >
+> > Port mirroring involves sending a copy of packets entering and/or leaving one
+> > port to another port which is usually different from the original destination
+> > of the packets being mirrored.Hardware Port Mirroring can provide the
+> > following benefits for users:
+> > 1) Live debugging of network issues without bringing any interface or
+> > connection down
+> > 2) No latency addition when port mirroring tap is introduced
+> > 3) No extra CPU resources are required to perform this function
+> >
+> > The prospective implementation would provide three modes of packet
+> > mirroring (For Egress or Ingress):
+> > 1) PF to VF
+> > 2) VF to VF
+> > 3) VLAN to VF
+> >
+> > The suggested iproute2 ip link interface for setting up Port Mirroring is as
+> > follows:
+>
+> ip link vf set commands are for legacy sriov implementation to my knowledge.
+> It is not usable for below 4 cases.
+> 1. switchdev sriov devices
+> 2. pci subfunctions switchdev devices
+> 3. smartnic where VFs and eswitch are on different PCI device.
+> 4. PCI PF on the smartnic managed via same switchdev cannot be mirrored.
+>
+> With the rich switchdev framework via PF,VF, SF representors, tc seems to be right approach to me.
+>
+> Such as,
+> $ tc filter add dev vf1_rep_eth0 parent ffff: \
+>         protocol ip u32 match ip protocol 1 0xff \
+>         action mirred egress mirror dev vf2_rep_eth1
+>
+> Few advantages of tc I see are:
+> 1. It overcomes limitations of all above #4 use cases
+>
+> 2. tc gives the ability to mirror specific traffic based on match criteria instead of proposed _all_vf_ traffic
+> This is useful at high throughput VFs where filter itself helps to mirror specific packets.
+> At the same time matchall criteria also works like the proposed API.
+>
+> I do not know the netdev direction for non switchdev (legacy) sriov nics.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/nfc/st95hf/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/nfc/st95hf/core.c b/drivers/nfc/st95hf/core.c
-index 0d99181b6ce3..2dc788c363fd 100644
---- a/drivers/nfc/st95hf/core.c
-+++ b/drivers/nfc/st95hf/core.c
-@@ -1057,8 +1057,8 @@ static const struct spi_device_id st95hf_id[] = {
- MODULE_DEVICE_TABLE(spi, st95hf_id);
- 
- static const struct of_device_id st95hf_spi_of_match[] __maybe_unused = {
--        { .compatible = "st,st95hf" },
--        { },
-+	{ .compatible = "st,st95hf" },
-+	{},
- };
- MODULE_DEVICE_TABLE(of, st95hf_spi_of_match);
- 
--- 
-2.27.0
+1. While iproute and switchdev may be similar in their actions for
+port mirroring, they both have unique use-cases for it, switchdev uses
+it for flow replication and iproute uses it for port/device tracking.
+2. Also some legacy devices do not support switchdev, and iproute
+provides a means of a port mirroring solution that covers a wide range
+of Network Interface Controllers out there today.
 
