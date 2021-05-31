@@ -2,99 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 346B339692C
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 23:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1F939693A
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 23:14:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231899AbhEaVC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 17:02:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29504 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230032AbhEaVCW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 17:02:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622494841;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=TVJOjpnm1EByhFidIJEbJsSj9xgDF8Hy0qPiU9qnT+Y=;
-        b=f51wBpl2n4MzgSTMhR13ltCdlJLMXvQKfgHow20MmxZBjHm0NoB3CjwxPh7OOOSCMvKK6L
-        okGVpi+XtfhVVYLrmCWXfbWsPhs3pzGAXwyQevoNnFX3wEqkaWFIhEvJQzGigx/0EHLXdU
-        qc/UXJDsuqfnX1OG7ALXUOXVSZqHgNs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-328-fcOP-VzsPR6cVsdjQiPI2A-1; Mon, 31 May 2021 17:00:39 -0400
-X-MC-Unique: fcOP-VzsPR6cVsdjQiPI2A-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E0091501E0;
-        Mon, 31 May 2021 21:00:38 +0000 (UTC)
-Received: from carbon.redhat.com (ovpn-113-1.rdu2.redhat.com [10.10.113.1])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3179B16558;
-        Mon, 31 May 2021 21:00:38 +0000 (UTC)
-From:   Alexander Aring <aahringo@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     marcelo.leitner@gmail.com, davem@davemloft.net, kuba@kernel.org
-Subject: [PATCH net] net: sock: fix in-kernel mark setting
-Date:   Mon, 31 May 2021 17:00:30 -0400
-Message-Id: <20210531210030.1462995-1-aahringo@redhat.com>
+        id S232138AbhEaVQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 17:16:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45744 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230032AbhEaVQ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 May 2021 17:16:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DC70660231;
+        Mon, 31 May 2021 21:14:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622495686;
+        bh=/ocKFwsXqJNsoxcMXQC2YnnCqnhQgf5FvluVu9O+ofQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IbAUBygFsyn7qZ711gsNXhex0PfwcLPQtg8lpbK/hFOmaZvk1aLPERINVscnUqjRw
+         CEaRB1mNSXJPKHSnask91fqYKFLTZGLzZ4AsNVKBIpnOqitJwRkFfSrt3uUmckiaET
+         +cam9F3u8e22P8euQci5VUYangv/jfmcO4ypI/WlTO2LiVSAcVH/Luc/e+6d02BaMu
+         kAa/Ey0t1lqgbvdAEYRgT6lnwWUofh/lLftCjiA5TlGXC2irYj/1ya0jKZFwtXLAh+
+         IIZ1UJ4Ry6HK8YyQlI3d0So8Ze8Tll00gUXUeL/de30AHFy/BrIkTcp9MjTYe6MA9L
+         Mpst8li+uDZLg==
+Date:   Mon, 31 May 2021 17:14:44 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Pavel Machek <pavel@denx.de>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Anirudh Rayabharam <mail@anirudhrb.com>,
+        Kangjie Lu <kjlu@umn.edu>, Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 4.4 07/16] ath6kl: return error code in
+ ath6kl_wmi_set_roam_lrssi_cmd()
+Message-ID: <YLVRxE04XbJXsxPW@sashalap>
+References: <20210524145130.2499829-1-sashal@kernel.org>
+ <20210524145130.2499829-7-sashal@kernel.org>
+ <20210531204700.GA19694@amd>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210531204700.GA19694@amd>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes the in-kernel mark setting by doing an additional
-sk_dst_reset() which was introduced by commit 50254256f382 ("sock: Reset
-dst when changing sk_mark via setsockopt"). The code is now shared to
-avoid any further suprises when changing the socket mark value.
+On Mon, May 31, 2021 at 10:47:00PM +0200, Pavel Machek wrote:
+>Hi!
+>
+>> From: Anirudh Rayabharam <mail@anirudhrb.com>
+>>
+>> [ Upstream commit fc6a6521556c8250e356ddc6a3f2391aa62dc976 ]
+>>
+>> ath6kl_wmi_cmd_send could fail, so let's return its error code
+>> upstream.
+>
+>Something went very wrong here.
+>
+>Content is okay, but "upstream commit" label is wrong, pointing to
+>incomplete fix that was reverted (with different content and different
+>author).
 
-Fixes: 84d1c617402e ("net: sock: add sock_set_mark")
-Reported-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
----
- net/core/sock.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+Yup, what ended up happening here is that my scripts got confused by the
+reverted commit and the real fix having the same subject line. I've
+fixed up my scripts and this patch was dropped. Thanks!
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 958614ea16ed..946888afef88 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -815,10 +815,18 @@ void sock_set_rcvbuf(struct sock *sk, int val)
- }
- EXPORT_SYMBOL(sock_set_rcvbuf);
- 
-+static void __sock_set_mark(struct sock *sk, u32 val)
-+{
-+	if (val != sk->sk_mark) {
-+		sk->sk_mark = val;
-+		sk_dst_reset(sk);
-+	}
-+}
-+
- void sock_set_mark(struct sock *sk, u32 val)
- {
- 	lock_sock(sk);
--	sk->sk_mark = val;
-+	__sock_set_mark(sk, val);
- 	release_sock(sk);
- }
- EXPORT_SYMBOL(sock_set_mark);
-@@ -1126,10 +1134,10 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 	case SO_MARK:
- 		if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN)) {
- 			ret = -EPERM;
--		} else if (val != sk->sk_mark) {
--			sk->sk_mark = val;
--			sk_dst_reset(sk);
-+			break;
- 		}
-+
-+		__sock_set_mark(sk, val);
- 		break;
- 
- 	case SO_RXQ_OVFL:
 -- 
-2.26.3
-
+Thanks,
+Sasha
