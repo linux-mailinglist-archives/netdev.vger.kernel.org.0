@@ -2,248 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 074E9396442
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 17:50:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 986363966A6
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 19:14:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233562AbhEaPw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 11:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60504 "EHLO
+        id S233717AbhEaRPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 13:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231991AbhEaPuZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 11:50:25 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C5AC08E9AF
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 07:34:04 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id r6so2769378ilj.1
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 07:34:04 -0700 (PDT)
+        with ESMTP id S233852AbhEaRNy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 13:13:54 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5094C0431DC;
+        Mon, 31 May 2021 08:22:06 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id 22-20020a17090a0c16b0290164a5354ad0so1488407pjs.2;
+        Mon, 31 May 2021 08:22:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
+        d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NcVYpSX49t8trK3HFTEm9MxOc7bF5TalzkVGbp2+Mm8=;
-        b=TXOuCcEQqmXbkK8iQgEW3orS1n/esiRzw8x3PAg+0/Q0a7u0+MYJIlRbGRvHkYZTZB
-         0yac0an/YY1u29rDUhu7qdxlKsSzu72IvKe/VAgQx5oqBdZO+kmR++lNjQwIuYoa6SFX
-         SkMF4uL1D7JUF0Gad9oeDrxy7cwq+LxmFRhdM=
+        bh=E/nsoegynA0NxQg1GYgvxu0633H8HmQGqO4a4h40Vrs=;
+        b=io7rMBM/BpXIrLooSN5ZmWTDIy8m4xnHFuzzSYxQc5JYEE4I8f0DKG79Vyj9CC74nq
+         1CZs6Ie+s3Pr4WVULFjr2S0GHvnAztxCX9TRrurmhhwkHMubsj8ZVpn4foE/3GmSla8Q
+         BpAuAYKBm8XJHQ8smIybRfC+TH161xzYLi+mCuTr3FqC9n36T2U/Oq3KrN1pMnsj8MlU
+         0XPK0Wn1+mThvjwPlqMg0jDYdpP9Rlo+a0q87UkJTAviFjMkhGsNizQOETq9vRUsuPC2
+         9Tp1kJZnEyCtMScONCFbsYO/mARS8AIxYYIK0Tn+DFrsO0XIy5ADyy2Yads+vm3lOl5M
+         Av5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=NcVYpSX49t8trK3HFTEm9MxOc7bF5TalzkVGbp2+Mm8=;
-        b=MU0vZA4Q60D9T+GzeWRx7EZAgN++o8dzMTH9CTE6hDifnAHsWqBptqq3Jqnn78+kjL
-         1z/P4FS7mmVmJlZUrTW1c3dFg2541To2EgEevqq/1fPxuVOyF5XbtvrP9j/X6aKF8vgw
-         /A5bZ8Yav3kpNluf46rldoKujFBtuhzMP1swYITXWWu3cJaKs1u1ABEyySWefLy2nHzb
-         W+aGvvvFsUxpg3EDofV7lm8xpr8Rpag1q9Rtx2HTJd1btTTY4lxfoV6LvIkISOr+RRi/
-         iedi1yLAFz04BzC2BQcDQU0U0C4rqiVddBdIKgo6o5iywnL9cuiTV5yvx0b0/VJudRrZ
-         20sg==
-X-Gm-Message-State: AOAM532e8tuMPkoTXkE5fenAjrNMXRY0awBI531pctP8jg+Sl17ShK5u
-        wBYqhEio8BG+W4tDCK+0gYmANQ==
-X-Google-Smtp-Source: ABdhPJxb9sAnFSZc+NWXH31Bpzm/veQvF4YxIn5+fFngnPEIVPBExdALMpKWpE2f+wGp2uGFs0BUnw==
-X-Received: by 2002:a92:d282:: with SMTP id p2mr17416796ilp.143.1622471643575;
-        Mon, 31 May 2021 07:34:03 -0700 (PDT)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id c4sm7751445ioo.50.2021.05.31.07.34.02
+        bh=E/nsoegynA0NxQg1GYgvxu0633H8HmQGqO4a4h40Vrs=;
+        b=eimkLXtidNWLlbCThHGk+x2IvJHskH9aOezAe4RfmCDZjwZVOpYvY2jqYPFKGWIcaE
+         Gt+hbYGnkWIX+/mpwbeEHUl0y9+369WRt0T1Itts1BfCl3csMAHw/PleYa2q0O7zLS+7
+         L0g4TeysxG7ABvjW7m1icVN6pTt8SdurfjPN7bsywLldF6TOjNJ0cXQQ5zybtKgr4X6J
+         HJRyd2H70pJAonUrOeUo0rkUC5MTrwEZU26h8wQnugffi/utqAdYTXtM1hd4rgrrQwt6
+         nAngI2Hhvl3xYxKDgREHOVAXrUzIRC48K/XovhO50lrQPaRintfeX7D9TQhqgZ0C0cP/
+         EXPg==
+X-Gm-Message-State: AOAM533Z8uE56eGbxfawU7jYkDGMKFFklkR2YbfRA6BCgTInRXZJeU1C
+        q/p2ioBM71t427JR8Fbcmss=
+X-Google-Smtp-Source: ABdhPJyNi4I3yqF6G0P2FwAnt5dHjxqfjdJxnyvT4DlnNqIlwQHOyrX2w4rRtSRr4PQKzE3141t0nA==
+X-Received: by 2002:a17:902:dac3:b029:105:66fc:8ed7 with SMTP id q3-20020a170902dac3b029010566fc8ed7mr4138063plx.6.1622474526131;
+        Mon, 31 May 2021 08:22:06 -0700 (PDT)
+Received: from [192.168.1.67] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id np1sm10880007pjb.13.2021.05.31.08.22.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 May 2021 07:34:03 -0700 (PDT)
-Subject: Re: [PATCH net-next v7 2/3] net: ethernet: rmnet: Support for ingress
- MAPv5 checksum offload
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Sharath Chandra Vurukala <sharathv@codeaurora.org>
-Cc:     davem@davemloft.net, elder@kernel.org, cpratapa@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1622105322-2975-1-git-send-email-sharathv@codeaurora.org>
- <1622105322-2975-3-git-send-email-sharathv@codeaurora.org>
- <20210528155800.0514d249@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <915b733f-6312-94b3-099d-3c11eb3d3b32@ieee.org>
-Date:   Mon, 31 May 2021 09:34:02 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Mon, 31 May 2021 08:22:05 -0700 (PDT)
+Subject: Re: Ethernet padding - ti_cpsw vs DSA tail tag
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Ben Hutchings <ben.hutchings@essensium.com>
+Cc:     netdev@vger.kernel.org,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        linux-omap@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <20210531124051.GA15218@cephalopod>
+ <20210531142914.bfvcbhglqz55us6s@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <cfa6494d-0d7c-a260-6f9f-d7b8d74b287e@gmail.com>
+Date:   Mon, 31 May 2021 08:22:03 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210528155800.0514d249@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20210531142914.bfvcbhglqz55us6s@skbuf>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/21 5:58 PM, Jakub Kicinski wrote:
-> On Thu, 27 May 2021 14:18:41 +0530 Sharath Chandra Vurukala wrote:
->> Adding support for processing of MAPv5 downlink packets.
->> It involves parsing the Mapv5 packet and checking the csum header
->> to know whether the hardware has validated the checksum and is
->> valid or not.
 
-Nice review Jakub.  I will wait for version 8 and will review that.
 
-					-Alex
-
+On 5/31/2021 7:29 AM, Vladimir Oltean wrote:
+> Hi Ben,
+> 
+> On Mon, May 31, 2021 at 02:40:52PM +0200, Ben Hutchings wrote:
+>> I'm working on a system that uses a TI Sitara SoC with one of its
+>> Ethernet ports connected to the host port of a Microchip KSZ8795
+>> switch.  I'm updating the kernel from 4.14.y to 5.10.y.  Currently I
+>> am using the ti_cpsw driver, but it looks like the ti_cpsw_new driver
+>> has the same issue.
 >>
->> Based on the checksum valid bit the corresponding stats are
->> incremented and skb->ip_summed is marked either CHECKSUM_UNNECESSARY
->> or left as CHEKSUM_NONE to let network stack revalidate the checksum
->> and update the respective snmp stats.
+>> The Microchip switch expects a tail tag on ingress from the host port
+>> to control which external port(s) to forward to.  This must appear
+>> immediately before the frame checksum.  The DSA core correctly pads
+>> outgoing skbs to at least 60 bytes before tag_ksz appends the tag.
 >>
->> Current MAPV1 header has been modified, the reserved field in the
->> Mapv1 header is now used for next header indication.
+>> However, since commit 9421c9015047 ("net: ethernet: ti: cpsw: fix min
+>> eth packet size"), the cpsw driver pads outgoing skbs to at least 64
+>> bytes.  This means that in smaller packets the tag byte is no longer
+>> at the tail.
 >>
->> Signed-off-by: Sharath Chandra Vurukala <sharathv@codeaurora.org>
+>> It's not obvious to me where this should be fixed.  Should drivers
+>> that pad in ndo_start_xmit be aware of any tail tag that needs to be
+>> moved?  Should DSA be aware that a lower driver has a minimum size >
+>> 60 bytes?
 > 
->> @@ -300,8 +301,11 @@ struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
->>  struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
->>  				      struct rmnet_port *port)
->>  {
->> +	struct rmnet_map_v5_csum_header *next_hdr = NULL;
->> +	void *data = skb->data;
->>  	struct rmnet_map_header *maph;
+> These are good questions.
 > 
-> Please maintain reverse xmas tree ordering
+> In principle, DSA needs a hint from the master driver for tail taggers
+> to work properly. We should pad to ETH_ZLEN + <the hint value> before
+> inserting the tail tag. This is for correctness, to ensure we do not
+> operate in marginal conditions which are not guaranteed to work.
 > 
->>  	struct sk_buff *skbn;
->> +	u8 nexthdr_type;
->>  	u32 packet_len;
->>  
->>  	if (skb->len == 0)
->> @@ -310,8 +314,18 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
->>  	maph = (struct rmnet_map_header *)skb->data;
->>  	packet_len = ntohs(maph->pkt_len) + sizeof(*maph);
->>  
->> -	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
->> +	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4) {
->>  		packet_len += sizeof(struct rmnet_map_dl_csum_trailer);
->> +	} else if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV5) {
->> +		if (!(maph->flags & MAP_CMD_FLAG)) {
->> +			packet_len += sizeof(*next_hdr);
->> +			if (maph->flags & MAP_NEXT_HEADER_FLAG)
->> +				next_hdr = (data + sizeof(*maph));
+> A naive approach would be to take the hint from master->min_mtu.
+> However, the first issue that appears is that the dev->min_mtu value is
+> not always set quite correctly.
 > 
-> brackets unnecessary
+> The MTU in general measures the number of bytes in the L2 payload (i.e.
+> not counting the Ethernet + VLAN header, nor FCS). The DSA tag is
+> considered to be a part of the L2 payload from the perspective of a
+> DSA-unaware master.
 > 
->> +			else
->> +				/* Mapv5 data pkt without csum hdr is invalid */
->> +				return NULL;
->> +		}
->> +	}
->>  
->>  	if (((int)skb->len - (int)packet_len) < 0)
->>  		return NULL;
->> @@ -320,6 +334,13 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
->>  	if (!maph->pkt_len)
->>  		return NULL;
->>  
->> +	if (next_hdr) {
->> +		nexthdr_type = u8_get_bits(next_hdr->header_info,
->> +					   MAPV5_HDRINFO_HDR_TYPE_FMASK);
->> +		if (nexthdr_type != RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD)
->> +			return NULL;
->> +	}
->> +
->>  	skbn = alloc_skb(packet_len + RMNET_MAP_DEAGGR_SPACING, GFP_ATOMIC);
->>  	if (!skbn)
->>  		return NULL;
->> @@ -414,3 +435,37 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
->>  
->>  	priv->stats.csum_sw++;
->>  }
->> +
->> +/* Process a MAPv5 packet header */
->> +int rmnet_map_process_next_hdr_packet(struct sk_buff *skb,
->> +				      u16 len)
->> +{
->> +	struct rmnet_priv *priv = netdev_priv(skb->dev);
->> +	struct rmnet_map_v5_csum_header *next_hdr;
->> +	u8 nexthdr_type;
->> +	int rc = 0;
+> But ether_setup() sets up dev->min_mtu by default to ETH_MIN_MTU (68),
+> which cites RFC791. This says:
 > 
-> rc is not meaningfully used
+>     Every internet module must be able to forward a datagram of 68
+>     octets without further fragmentation.  This is because an internet
+>     header may be up to 60 octets, and the minimum fragment is 8 octets.
 > 
->> +	next_hdr = (struct rmnet_map_v5_csum_header *)(skb->data +
->> +			sizeof(struct rmnet_map_header));
->> +
->> +	nexthdr_type = u8_get_bits(next_hdr->header_info,
->> +				   MAPV5_HDRINFO_HDR_TYPE_FMASK);
->> +
->> +	if (nexthdr_type == RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD) {
->> +		if (unlikely(!(skb->dev->features & NETIF_F_RXCSUM))) {
->> +			priv->stats.csum_sw++;
->> +		} else if (next_hdr->csum_info & MAPV5_CSUMINFO_VALID_FLAG) {
->> +			priv->stats.csum_ok++;
->> +			skb->ip_summed = CHECKSUM_UNNECESSARY;
->> +		} else {
->> +			priv->stats.csum_valid_unset++;
->> +		}
->> +
->> +		/* Pull csum v5 header */
->> +		skb_pull(skb, sizeof(*next_hdr));
->> +	} else {
->> +		return -EINVAL;
+> But many drivers simply don't set dev->min_mtu = 0, even if they support
+> sending minimum-sized Ethernet frames. Many set dev->min_mtu to ETH_ZLEN,
+> proving nothing except the fact that they don't understand that the
+> Ethernet header should not be counted by the MTU anyway.
 > 
-> flip condition, return early
+> So to work with these drivers which leave dev->min_mtu = ETH_MIN_MTU, we
+> would have to pad the packets in DSA to ETH_ZLEN + ETH_MIN_MTU. This is
+> not quite ideal, so even if it would be the correct approach, a large
+> amount of drivers would have to be converted to set dev->min_mtu = 0
+> before we could consider switching to that and not have too many
+> regressions.
 > 
->> +	}
->> +
->> +	return rc;
->> +}
->> diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
->> index 4efb537..8502ccc 100644
->> --- a/include/linux/if_rmnet.h
->> +++ b/include/linux/if_rmnet.h
->> @@ -1,5 +1,5 @@
->>  /* SPDX-License-Identifier: GPL-2.0-only
->> - * Copyright (c) 2013-2019, The Linux Foundation. All rights reserved.
->> + * Copyright (c) 2013-2019, 2021 The Linux Foundation. All rights reserved.
->>   */
->>  
->>  #ifndef _LINUX_IF_RMNET_H_
->> @@ -14,8 +14,10 @@ struct rmnet_map_header {
->>  /* rmnet_map_header flags field:
->>   *  PAD_LEN:	number of pad bytes following packet data
->>   *  CMD:	1 = packet contains a MAP command; 0 = packet contains data
->> + *  NEXT_HEADER	1 = packet contains V5 CSUM header 0 = no V5 CSUM header
+> Also, dev->min_mtu does not appear to have a very strict definition
+> anywhere other than "Interface Minimum MTU value". My hopes were some
+> guarantees along the lines of "if you try to send a packet with a
+> smaller L2 payload than dev->mtu, the controller might pad the packet".
+> But no luck with that, it seems.
 > 
-> Colon missing?
-> 
->>   */
->>  #define MAP_PAD_LEN_MASK		GENMASK(5, 0)
->> +#define MAP_NEXT_HEADER_FLAG		BIT(6)
->>  #define MAP_CMD_FLAG			BIT(7)
->>  
->>  struct rmnet_map_dl_csum_trailer {
->> @@ -45,4 +47,26 @@ struct rmnet_map_ul_csum_header {
->>  #define MAP_CSUM_UL_UDP_FLAG		BIT(14)
->>  #define MAP_CSUM_UL_ENABLED_FLAG	BIT(15)
->>  
->> +/* MAP CSUM headers */
->> +struct rmnet_map_v5_csum_header {
->> +	u8 header_info;
->> +	u8 csum_info;
->> +	__be16 reserved;
->> +} __aligned(1);
-> 
-> __aligned() seems rather pointless here but ok.
-> 
->> +/* v5 header_info field
->> + * NEXT_HEADER:  Represents whether there is any other header
-> 
-> double space
-> 
->> + * HEADER TYPE: represents the type of this header
-> 
-> On previous line you used _ for a space, and started from capital
-> letter. Please be consistent.
-> 
->> + *
->> + * csum_info field
->> + * CSUM_VALID_OR_REQ:
->> + * 1 = for UL, checksum computation is requested.
->> + * 1 = for DL, validated the checksum and has found it valid
->> + */
->> +
->> +#define MAPV5_HDRINFO_NXT_HDR_FLAG	BIT(0)
->> +#define MAPV5_HDRINFO_HDR_TYPE_FMASK	GENMASK(7, 1)
->> +#define MAPV5_CSUMINFO_VALID_FLAG	BIT(7)
->> +
->> +#define RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD 2
->>  #endif /* !(_LINUX_IF_RMNET_H_) */
+> Going to commit 9421c9015047, it looks like that took a shortcut for
+> performance reasons, and omitted to check whether the skb is actually
+> VLAN-tagged or not, and if egress untagging was requested or not.
+> My understanding is that packets smaller than CPSW_MIN_PACKET_SIZE _can_
+> be sent, it's only that the value was chosen (too) conservatively as
+> VLAN_ETH_ZLEN. The cpsw driver might be able to check whether the packet
+> is a VLAN tagged one by looking at skb->protocol, and choose the pad
+> size dynamically. Although I can understand why Grygorii might not want
+> to do that.
 
+Agree, that specific commit seems to be possibly by off by 4 in most cases.
+
+> 
+> The pitfall is that even if we declare the proper min_mtu value for
+> every master driver, it would still not avoid padding in the cpsw case.
+> This is because the reason cpsw pads is due to VLAN, but VLAN is not
+> part of the L2 payload, so cpsw would still declare dev->min_mtu = 0 in
+> spite of needing to pad.
+> 
+> The only honest solution might be to extend struct net_device and add a
+> pad_size value somewhere in there. You might be able to find a hole with
+> pahole or something, and it doesn't need to be larger than an u8 (for up
+> to 255 bytes of padding). Then cpsw can set master->pad_size, and DSA
+> can look at it for tail taggers.
+
+Do we need another way for drivers to be left a chance to be wrong? Even
+if we document the semantics of net_device::pad_size correctly this
+probably won't cut it.
+
+TBH, I don't fully understand why the network stack has left so much
+leeway for Ethernet drivers to do their own padding as opposed to making
+sure that non-tagged (VLAN, DSA, whatever) frames are guaranteed to be
+at least 60 bytes when they reach ndo_start_xmit() and then just leave
+the stacking of devices to add their bytes where they need them, with
+the special trailer case that is a tiny bit harder to figure out. Maybe
+back in the days most Ethernet NICs would hardware pad and this only
+became a concern with newer/cheaper/embedded SoCs NICs that can no
+longer hardware pad by default? I can understand the argument about raw
+sockets which should permit an application to have full control over the
+minimum packet length, but again, in general we have a real link partner
+on the other side that is not going to be very tolerant.
+-- 
+Florian
