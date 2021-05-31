@@ -2,153 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 340EC396405
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 17:43:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96D0E396134
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 16:35:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233165AbhEaPn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 11:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59456 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233024AbhEaPlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 11:41:53 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6059C08E9AC;
-        Mon, 31 May 2021 07:29:17 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id b9so16901120ejc.13;
-        Mon, 31 May 2021 07:29:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qNjqZ5zd2V40yN4Zg4sWv5pTo9qBY5VHb+FiIliKXlQ=;
-        b=RfzreTFwv7GzzZL2BeFwL70PpxPupd5vxJ6j6yTfPHtV636uy1Qb8ycfBgYRRiMz6V
-         1QDhtIQokdhY6SS5DkDxRQXWQHuqVzAlB7+v9QmyrOsriJRWIYbhVEAf7OASAnUAz3Tg
-         R/Nw4ap6hT8Ekl/1dEp0GYgjjXyyrqzQyEOWelDf3GIUuUXqsOqxBpZsBhNSTG6CYYKy
-         smk2hiOGcMO2fB8B2tYXlMYTFYNfgFQIK1/l+gYcg2IbfAi9/d6PwcMLS/Y4lSTTKyo3
-         1l1Xhpq4FuiSM6W/KJ54uDjICcviWnlKUKbIFZG3E04hWYGCD7Vg/5BFls4Fu6hOG7/f
-         MBFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qNjqZ5zd2V40yN4Zg4sWv5pTo9qBY5VHb+FiIliKXlQ=;
-        b=Tubry8l/VMrBZlmKeG2r+00WM0HGQZOHE5i82UDRjAhor1BPIsyjBZcG/tqVC2EiZr
-         LTRlzDlF9pssX00i+kNOnGt9UaqdxUh2d4XOZSN+cFfI9eBf03ryQQXEsVUrAprZJ0Qh
-         hakMBuVUDIYsLaX/XHjZAlyCNgskGRVHz3ksjbwDzv8BRgKSVrFze4XqKcxcpt8Hod7V
-         pV4GoGzH4IqKU9QGvLcyaI1onoiNMDbkNlXOuQn5J7+H0DRfLldicYaYAvKVKe3fHSth
-         5I/wVUoPyax31kcuQxIsg6W8iycQ9HyTZA7kxZ4VQ9Pp5tXt9b/qi+dmdfoYNoK9CqvR
-         rl2g==
-X-Gm-Message-State: AOAM531EuZhMr5ByMZX1QTC28PB1xCid3UaVsvaTHa80jFFtxrBd2GQU
-        IdEyW96WLhlGhgwUFqx1kDE=
-X-Google-Smtp-Source: ABdhPJyxfWuqNyBrWukySA+Pv7Eu8C+/LWEiJmrzZkXj1dqR35uMeIMS8NCjnFFsE2PAd7ML1rCA9A==
-X-Received: by 2002:a17:906:3f86:: with SMTP id b6mr23407366ejj.530.1622471356280;
-        Mon, 31 May 2021 07:29:16 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id kj1sm2804057ejc.10.2021.05.31.07.29.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 May 2021 07:29:15 -0700 (PDT)
-Date:   Mon, 31 May 2021 17:29:14 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ben Hutchings <ben.hutchings@essensium.com>
-Cc:     netdev@vger.kernel.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        linux-omap@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: Ethernet padding - ti_cpsw vs DSA tail tag
-Message-ID: <20210531142914.bfvcbhglqz55us6s@skbuf>
-References: <20210531124051.GA15218@cephalopod>
+        id S233732AbhEaOhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 10:37:35 -0400
+Received: from mail-am6eur05on2099.outbound.protection.outlook.com ([40.107.22.99]:51826
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232091AbhEaOfI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 May 2021 10:35:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mzGQo0JtB51XVS6t7upZ0vx8QUFWf+mAoDSukF21xaYkPvlQRZEWe8NPXqMceO27QzQktBjPkuDpc6F4F7OcrvHupog7PNf2rSVyJpzqG1dSQc5tMtNtvumfd7QqJx1Z3oVPTdjV9u9i7mO+nj9d20yoixkgPQDDvzbAw9NEdB+qxhsrlYvzu/iqjONli2WQKljIa5HpQy6Abe2uLuRdOLi8hAwTmlDTMroFB5UcXfoiOGb9jkecDrOdAodz0GZidg7l2n4uk8+q1qKq7M7qQ8zxvS5YO8vfKvtRz/F6dSDAlD+vH91Z+UN0s4+Vh4Z202Hwb5wYbKRzzYwgbtvwWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1Obcph5sUd0iHm8byLLHcLv2ZWozpIWcfgZFUCWXkrU=;
+ b=IUTLmgT68LHfb1lG2F7d8SHn8pcFFX5h/dLdqztliY94v937qXGjRpE7xzZdiEszHeOYdhzREc48nqX0ceXMmfHt3fiIU55jKZ6+IOMuHhU3WcPFyJMtGDdAwtQUMAW0TTfWWdmifJEpAmXLvZ8j/PMBLUiHdagDy3gZ/kS5ywBag8nfN9r+ImK5vjuPesmVwrrZdhDI9NhFEpK/bi3OhimydNAkaFDDhG2ZeS2ER7trDXJm5DFCyaqsghbKH8dmF/aXgaM2T0kchVGMjTa1M3pGm61ExvhJxse8XlhouDGbdj4j6T+7mRgYfNB5+tg8UDzrJ9J15fl+sXH0jsReGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1Obcph5sUd0iHm8byLLHcLv2ZWozpIWcfgZFUCWXkrU=;
+ b=K8n+PQpKpKAN/DAKzccqqE7ymkjMKQFHWVUO5SIRtw9xggAUV0sggnz4rAc3UhvoymZPAwbgh3boDM7mFR1lgaAS0Ei8P+18bmnk0gUrMztjochLbE7r5R84RPZapzDgR0JbGVLe6C/eglxEhFsAQKuzhLMtC8OwxSQVlFGeSHo=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
+ HE1P190MB0459.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:5b::14) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4173.29; Mon, 31 May 2021 14:33:24 +0000
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::edb4:ae92:2efe:8c8a]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::edb4:ae92:2efe:8c8a%4]) with mapi id 15.20.4173.030; Mon, 31 May 2021
+ 14:33:24 +0000
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        linux-kernel@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Vadym Kochan <vkochan@marvell.com>
+Subject: [PATCH net-next v2 0/4] Marvell Prestera Switchdev initial updates for firmware version 3.0
+Date:   Mon, 31 May 2021 17:32:42 +0300
+Message-Id: <20210531143246.24202-1-vadym.kochan@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [217.20.186.93]
+X-ClientProxiedBy: AM0PR04CA0036.eurprd04.prod.outlook.com
+ (2603:10a6:208:122::49) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:7:56::28)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210531124051.GA15218@cephalopod>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM0PR04CA0036.eurprd04.prod.outlook.com (2603:10a6:208:122::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.26 via Frontend Transport; Mon, 31 May 2021 14:33:23 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2b7ebacd-35f0-4c2a-0752-08d924410bd0
+X-MS-TrafficTypeDiagnostic: HE1P190MB0459:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1P190MB04599954A025863905888970953F9@HE1P190MB0459.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XdswGmY4Zcrbtuj480LiYXAuILoF9sCleugnKxVIH0Iudo64ho3Owr/tn/0tv4YBAjRwcz2aO1b5N3FYSCtGO0WsI6mpckWjQTCKJbe/Ka4AB3tTIkhngjhf/BE414fe/VrO6QVHfXSMqVcl5dG/80BIghuHB4JJaH4Pjx/HV/2D0m8xKr7jyKoJmD4Q+U2m0GZM/a417IclNQ9u60XNFFIrQChEuZmGUAxrNdelXyS8TMvMoxS6b3JABN9D1EbVd4iM8/p+4bSlVhCuRV0HC1QF6tlcNloAoLcYsE5bN0zYMgRsKhfsubHEeFRMiZ9vSrmCJeQOcveuVw7N4w6ZPbEKf3xvDm6tuxk4EWhHerFzCsG2kKByF5wsk1wvrqMYLQKM2t6kj8wGfUBwBAjVd7c+lLdx6DbO7iKpWzrEB8ZxTzhnOVT21064D1ecfxfyC7NgKYo/RoGCWlE3Ff8mCwLiXAq5O4uCkrwlWBmWC+5f6TGJWDRGUJG+TueCB+wN1u43ujmw0rARsPL4FEIQrxL1ZAInMg6awkMSGzW0ZAyu9uTnOXFH2uCujLN2AB73//U+L38k321jbUlROwGJvEYzKMVumBNZzL9yI5iC75QVr2ub9T/RmKjyyJiuij3TPuwHiutsRbDwuLXABVIb6Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(376002)(396003)(39830400003)(136003)(366004)(16526019)(26005)(5660300002)(15650500001)(6506007)(8676002)(2906002)(6512007)(6486002)(38100700002)(38350700002)(44832011)(316002)(186003)(66476007)(54906003)(110136005)(478600001)(66946007)(86362001)(66556008)(2616005)(6666004)(4326008)(36756003)(83380400001)(1076003)(8936002)(956004)(52116002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?4j5SI7aEGtQ6Z4YdverKIEwoGzVUo2ThtkZZIkBhkLV6Xq//BK4oXmEjTMYt?=
+ =?us-ascii?Q?HlWdF/LoICt1tmK4gvoBhmNaYNYlNq/xI+C2P3FS2tEzSe4UcSjfVFwumT44?=
+ =?us-ascii?Q?sPoZOBc1cGqCpAflGQEyev5jU00yEe9WMnQUw0ARf3uEzz2ESXOQQNELOYgJ?=
+ =?us-ascii?Q?Fqou+V45PmK2M99+2Vus4bNFWTsq3Ktu1qrqFLnDb+nVUr7ujP8KkhTmu9+O?=
+ =?us-ascii?Q?NojgxwvDV1hl0LMwbTyF1ubM9VAbDggT/enxdkTnbguX4/jDLrGrLNhXudrT?=
+ =?us-ascii?Q?wKZUhCp0ogs+FWxKXtL2nLw4+LOLTeR/hlY3ovTB6HEtOhuKdbmXo3DLuMUg?=
+ =?us-ascii?Q?stymDSLhgLu/ZaOTjKMet4K/aYM+lEKbFey11C5Rd8vUUph7b3ZJ+33EDlre?=
+ =?us-ascii?Q?gJfF9eOD7f2NS8b0IvSQdxBF2J43nv+HRVGJx7B+IRFqwSHnT+h5dFaYqlSc?=
+ =?us-ascii?Q?XlIt8LUMEX84eUbb6j9qunp8/vfHP2FgAf6QNP5epYeWoX/xPe6LfU+DjPF2?=
+ =?us-ascii?Q?WkqL2ClXZnXc26G78vLT2QRuqC+C4jBWbWP96+/gsOAUwn9QT4mN8M++xvlr?=
+ =?us-ascii?Q?D4+Wt/mZh6i0C/Czd2w0zuJnIm3Yz+M7K3L39nzu13Rjb3ErLifc97oRY2wu?=
+ =?us-ascii?Q?cumT5+gb5P+MPrhIWWjQbACWpcRrKGFvKPyOoHGt6jNg0LH23+wWhcmN5AuH?=
+ =?us-ascii?Q?fhkelSxdPI3UXzycwXQzxWsml/s9Z8Kfy8MZWc+uejP0TFHrI//5g+Cey3YM?=
+ =?us-ascii?Q?XYf7OtxtzzfnT097Ih53RwTKtjH1dVoVnasUjREg8FxWMGGrwtnDOEbv04xo?=
+ =?us-ascii?Q?LIn5iuB03Nv7Hbc9ndG/zEaIDou8k302omLfzCLyoQy7RjUiZ5/NjBeRVYWS?=
+ =?us-ascii?Q?8aU/aiFoHYguXdFOtEqAgzRWXgkVCzjZe6zQDXQvtm6eVP+MBXNJh+4+g4bV?=
+ =?us-ascii?Q?+ybn4AKyY8Xr1Ii/oCIzcis+ve2r/CoFuSTSxNFfpSo7sEqkSB6VL+QKopAU?=
+ =?us-ascii?Q?IWIoR8d8pbA2HwQoBI+wW0GuixTh3qagBRAl4KGfAc5A9SOyuuDPEaEEgHN9?=
+ =?us-ascii?Q?nnQMTxBAGuwfLrynVRUG0d5ieNEMKoKGR4+XMIvac4h6VBYrCFDZD9ECYM67?=
+ =?us-ascii?Q?DEmRf0hLT5/HxJLS9y7TLdWnjXH9OlFpO/HWpBGJKW/HX8JzB3o0qWxOC36n?=
+ =?us-ascii?Q?/ckbHQAXpZ1SUKi4eiL/bGlsv9bOrkTNpRNhHthhCtczZ8Fh0Ls+R8DK9lbK?=
+ =?us-ascii?Q?JRsJq2AYzWz95X7ehwbAehmNX93LDUjWWFftOEp83LMffN+wayfZkk9moCTL?=
+ =?us-ascii?Q?v1lDrTTnsb3LldB8WbFALfUY?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b7ebacd-35f0-4c2a-0752-08d924410bd0
+X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2021 14:33:24.1581
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uDFYkL+LRnZHY2jD53auAy9EPVGK7c/xvSno/AN7lMlnzxbaVNVDrBMYGdJvAMddPyPe3cIPgI7pMFxHNkRtu6p046EJ2YPeivRSXIgF9rs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0459
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ben,
+From: Vadym Kochan <vkochan@marvell.com>
 
-On Mon, May 31, 2021 at 02:40:52PM +0200, Ben Hutchings wrote:
-> I'm working on a system that uses a TI Sitara SoC with one of its
-> Ethernet ports connected to the host port of a Microchip KSZ8795
-> switch.  I'm updating the kernel from 4.14.y to 5.10.y.  Currently I
-> am using the ti_cpsw driver, but it looks like the ti_cpsw_new driver
-> has the same issue.
-> 
-> The Microchip switch expects a tail tag on ingress from the host port
-> to control which external port(s) to forward to.  This must appear
-> immediately before the frame checksum.  The DSA core correctly pads
-> outgoing skbs to at least 60 bytes before tag_ksz appends the tag.
-> 
-> However, since commit 9421c9015047 ("net: ethernet: ti: cpsw: fix min
-> eth packet size"), the cpsw driver pads outgoing skbs to at least 64
-> bytes.  This means that in smaller packets the tag byte is no longer
-> at the tail.
-> 
-> It's not obvious to me where this should be fixed.  Should drivers
-> that pad in ndo_start_xmit be aware of any tail tag that needs to be
-> moved?  Should DSA be aware that a lower driver has a minimum size >
-> 60 bytes?
+This series adds minimal support for firmware version 3.0 which
+has such changes like:
 
-These are good questions.
+    - initial routing support
 
-In principle, DSA needs a hint from the master driver for tail taggers
-to work properly. We should pad to ETH_ZLEN + <the hint value> before
-inserting the tail tag. This is for correctness, to ensure we do not
-operate in marginal conditions which are not guaranteed to work.
+    - LAG support
 
-A naive approach would be to take the hint from master->min_mtu.
-However, the first issue that appears is that the dev->min_mtu value is
-not always set quite correctly.
+    - events interrupt handling changes
 
-The MTU in general measures the number of bytes in the L2 payload (i.e.
-not counting the Ethernet + VLAN header, nor FCS). The DSA tag is
-considered to be a part of the L2 payload from the perspective of a
-DSA-unaware master.
+Changes just make able to work with new firmware version but
+supported features in driver will be added later.
 
-But ether_setup() sets up dev->min_mtu by default to ETH_MIN_MTU (68),
-which cites RFC791. This says:
+New firmware version was recently merged into linux-firmware tree.
 
-    Every internet module must be able to forward a datagram of 68
-    octets without further fragmentation.  This is because an internet
-    header may be up to 60 octets, and the minimum fragment is 8 octets.
+Added ability of loading previous fw major version if the latest one
+is missing, also add support for previous FW ABI.
 
-But many drivers simply don't set dev->min_mtu = 0, even if they support
-sending minimum-sized Ethernet frames. Many set dev->min_mtu to ETH_ZLEN,
-proving nothing except the fact that they don't understand that the
-Ethernet header should not be counted by the MTU anyway.
+PATCH -> RFC:
+    1) Load previous fw version if the latest one is missing (suggested by Andrew Lunn)
 
-So to work with these drivers which leave dev->min_mtu = ETH_MIN_MTU, we
-would have to pad the packets in DSA to ETH_ZLEN + ETH_MIN_MTU. This is
-not quite ideal, so even if it would be the correct approach, a large
-amount of drivers would have to be converted to set dev->min_mtu = 0
-before we could consider switching to that and not have too many
-regressions.
+    2) Add support for previous FW ABI version (suggested by Andrew Lunn)
 
-Also, dev->min_mtu does not appear to have a very strict definition
-anywhere other than "Interface Minimum MTU value". My hopes were some
-guarantees along the lines of "if you try to send a packet with a
-smaller L2 payload than dev->mtu, the controller might pad the packet".
-But no luck with that, it seems.
+RFC v2:
+    1) Get rid of automatic decrementing of
+       major version but hard code it.
 
-Going to commit 9421c9015047, it looks like that took a shortcut for
-performance reasons, and omitted to check whether the skb is actually
-VLAN-tagged or not, and if egress untagging was requested or not.
-My understanding is that packets smaller than CPSW_MIN_PACKET_SIZE _can_
-be sent, it's only that the value was chosen (too) conservatively as
-VLAN_ETH_ZLEN. The cpsw driver might be able to check whether the packet
-is a VLAN tagged one by looking at skb->protocol, and choose the pad
-size dynamically. Although I can understand why Grygorii might not want
-to do that.
+    2) Print error message with file path if
+       previous FW could not be loaded.
 
-The pitfall is that even if we declare the proper min_mtu value for
-every master driver, it would still not avoid padding in the cpsw case.
-This is because the reason cpsw pads is due to VLAN, but VLAN is not
-part of the L2 payload, so cpsw would still declare dev->min_mtu = 0 in
-spite of needing to pad.
+Vadym Kochan (4):
+  net: marvell: prestera: disable events interrupt while handling
+  net: marvell: prestera: align flood setting according to latest
+    firmware version
+  net: marvell: prestera: bump supported firmware version to 3.0
+  net: marvell: prestera: try to load previous fw version
 
-The only honest solution might be to extend struct net_device and add a
-pad_size value somewhere in there. You might be able to find a hole with
-pahole or something, and it doesn't need to be larger than an u8 (for up
-to 255 bytes of padding). Then cpsw can set master->pad_size, and DSA
-can look at it for tail taggers.
+ .../ethernet/marvell/prestera/prestera_hw.c   |  85 +++++++++++++-
+ .../ethernet/marvell/prestera/prestera_hw.h   |   3 +-
+ .../ethernet/marvell/prestera/prestera_pci.c  | 104 ++++++++++++++----
+ .../marvell/prestera/prestera_switchdev.c     |  17 ++-
+ 4 files changed, 175 insertions(+), 34 deletions(-)
+
+-- 
+2.17.1
+
