@@ -2,75 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38A0C395A04
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 14:04:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FCD2395A30
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 14:13:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231432AbhEaMF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 08:05:58 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:41920 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231245AbhEaMFz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 08:05:55 -0400
-Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id 30CC9200BBBF;
-        Mon, 31 May 2021 14:04:14 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 30CC9200BBBF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1622462654;
-        bh=oBMvi5LXFH8jmfuLZrnygosixJKiUuvq9ERtrgVvdSw=;
-        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
-        b=cO6MZCHTv+hLYA8kbbBVjvfAail6zGKvgGtc2UEQeOBklpQymM74S/gjMwaut3wW5
-         bVgaJQ0mV8u7Sdc/kI9yisJ/99JdZVQ8WX/53viZN4DMdLrCod2QJqXvGM60J9JdJj
-         varCV0WiXqNQ7DUnnfJCZHlRYVPt1UQL4z0+5AbuMucJWvR3EHeoK8SvSHL4UqvjC5
-         Pqp4I8IOIYA0wI42DPsQV4qyd9Ab8kd7v8cahymQonoqSuzIrCy1oRTiGPliacYDM+
-         r3oLbvNlH2EP5conFUEZyxN3/1XnZ+d1p4zfBgnhNdDcB1GE0t1NqqyWCG4sqkYrpX
-         Ho1zDXJxwlFBg==
-Received: from localhost (localhost [127.0.0.1])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 27AD16008D58E;
-        Mon, 31 May 2021 14:04:14 +0200 (CEST)
-Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
-        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id elLTnSQnqr9Z; Mon, 31 May 2021 14:04:14 +0200 (CEST)
-Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 112346008D55E;
-        Mon, 31 May 2021 14:04:14 +0200 (CEST)
-Date:   Mon, 31 May 2021 14:04:14 +0200 (CEST)
-From:   Justin Iurman <justin.iurman@uliege.be>
-Reply-To: Justin Iurman <justin.iurman@uliege.be>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        tom@herbertland.com
-Message-ID: <1439349685.35359322.1622462654030.JavaMail.zimbra@uliege.be>
-In-Reply-To: <cc16923b-74bc-7681-92c7-19e84a44c0e1@gmail.com>
-References: <20210527151652.16074-1-justin.iurman@uliege.be> <85a22702-da46-30c2-46c9-66d293d510ff@gmail.com> <1049853171.33683948.1622305441066.JavaMail.zimbra@uliege.be> <cc16923b-74bc-7681-92c7-19e84a44c0e1@gmail.com>
-Subject: Re: [PATCH net-next v4 0/5] Support for the IOAM Pre-allocated
- Trace with IPv6
+        id S231462AbhEaMOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 08:14:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231397AbhEaMOs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 08:14:48 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE21C061574
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 05:13:07 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id c20so10988169qkm.3
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 05:13:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mX6vpqpr3JLgxu1jEwCMQgMPdHWhzij0Fneqz5FAH9c=;
+        b=FT5P6jzsIGBxTh50FwxtMBBMcoExrJ12fQ5TLa93BPHFE8rdPR6U/L9ezueKmz7fSX
+         IjUYPSvZNCvYvEHWPZTfTWYQFx+rAu4yE3+cVd3f8CdkNsiSrEzF9fy5XK7DbTKNek05
+         8T5bjmjgwdgYw3qZiaBuyfvksJDtjBy5lCZaJ76SHh7dwiZ1CkHaVkIJAJh1dmUxy4xO
+         BqeYmPr64/khITOn/W9i7ARNQCp9g35Mb7JPlRUu9c7KJ2EpkowcI0b+Yf/aaGgqYfzX
+         dzX7whqSfMGe1qQdDB3YllMz8TfW6S6LylFoRJ+ikydwsPfY9PlVYAlqZPYHIbwnEoBR
+         A65Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mX6vpqpr3JLgxu1jEwCMQgMPdHWhzij0Fneqz5FAH9c=;
+        b=EWxRWJUPnxC6azsOWr5SwxcwaQ7MlET3336HqAxXkRVTiBMXLyqdex85uaitm9ap92
+         PcM3nAU430p68F2enP/GZ70ubSggPziT4pnIIv8/8K1SaoQVDK+sI422/F9VBptTIryG
+         193fYc6cTDVb0qeO2L0PvkUkPV2lYcaIkYF8XJqm1q4ey6dk551lkWMIceo6FtZlwVl9
+         YkiI3Ri7B2ygiGgN22Gn7s+wukqeA6pKiXimMRo9xLn+eQiT0mGsrh0SQIGQBM5IsNLj
+         CaUi7i4ku5JfSspaij5JiZrqGDXu9IegAjH26AN9UlyTVGTY7FjHRDwxBMTaAQv0nf0w
+         WkUA==
+X-Gm-Message-State: AOAM532Eeysrn3+Z42PmcniwJpIjmTfTf0psJK/eKr86TtAwQUki5SoM
+        KlIYslBMGzWC3EUFvM1drPISAA==
+X-Google-Smtp-Source: ABdhPJzLbBjOLjfRjRGp4qrb0nKkpTdLK1WPh4CYmJ9ltPonzG40evaEQV5E30ZvHU0qPcpJ4eGe0A==
+X-Received: by 2002:a37:46cd:: with SMTP id t196mr16298837qka.305.1622463186703;
+        Mon, 31 May 2021 05:13:06 -0700 (PDT)
+Received: from [192.168.1.79] (bras-base-kntaon1617w-grc-28-184-148-47-211.dsl.bell.ca. [184.148.47.211])
+        by smtp.googlemail.com with ESMTPSA id p19sm8947842qki.119.2021.05.31.05.13.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 May 2021 05:13:06 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 0/3] net/sched: act_vlan: Fix modify to allow
+ 0
+To:     Davide Caratti <dcaratti@redhat.com>,
+        Boris Sukholitko <boris.sukholitko@broadcom.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        linux-kselftest@vger.kernel.org, shuah@kernel.org,
+        Ilya Lifshits <ilya.lifshits@broadcom.com>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210530114052.16483-1-boris.sukholitko@broadcom.com>
+ <YLTPEzvYsUmxOIr9@dcaratti.users.ipa.redhat.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <98780fe0-f34f-277a-f137-543f7ddd5d0c@mojatatu.com>
+Date:   Mon, 31 May 2021 08:13:05 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <YLTPEzvYsUmxOIr9@dcaratti.users.ipa.redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [81.240.24.148]
-X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF88 (Linux)/8.8.15_GA_4026)
-Thread-Topic: Support for the IOAM Pre-allocated Trace with IPv6
-Thread-Index: canxdIAORlXtsVJJiW/0LnB5yhrk1A==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> Actually, February 2021 is the last update. The main draft
->> (draft-ietf-ippm-ioam-data) has already come a long way (version 12) and has
->> already been Submitted to IESG for Publication. I don't think it would hurt
+On 2021-05-31 7:57 a.m., Davide Caratti wrote:
+> On Sun, May 30, 2021 at 02:40:49PM +0300, Boris Sukholitko wrote:
+>> Currently vlan modification action checks existence of vlan priority by
+>> comparing it to 0. Therefore it is impossible to modify existing vlan
+>> tag to have priority 0.
 > 
-> when the expected decision on publication?
-
-Hard to tell precisely, a couple weeks probably. There are still some comment/discuss to clear and our next IETF working group meeting is in July. However, it shouldn't be a concern (see below).
-
-> that much to have it in the kernel as we're talking about a stable
-> draft (the other one is just a wrapper to define the encapsulation of
-> IOAM with IPv6) and something useful. And, if you think about Segment
-> Routing for IPv6, it was merged in the kernel when it was still a draft.
+> hello Boris, thanks for following up!
+>   
+>> Change Log:
+>> v2 -> v3:
+>> - Push assumes that the priority is being set
+>> - tcf_vlan_get_fill_size accounts for priority existence
 > 
-> The harm is if there are any changes to the uapi.
+> Reviewed-by: Davide Caratti <dcaratti@redhat.com>
+> 
 
-Definitely agree. But, I can assure you there won't be any uapi change at this stage. None of the comment/discuss I mentioned above are about this at all. Headers definition and IANA codes are defined for a long time now and won't change anymore.
+Looks good to me as well. And thanks for adding the tests!
+
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+
+cheers,
+jamal
