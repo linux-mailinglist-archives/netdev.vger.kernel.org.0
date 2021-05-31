@@ -2,86 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 103FB3953D4
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 04:02:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3DC73953E6
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 04:30:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbhEaCEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 22:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230044AbhEaCEc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 22:04:32 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B468C061574
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 19:02:52 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id m18so9243464wrv.2
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 19:02:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VOTYKr9ClxWd1s2Ahe0QVirYxLvSTejb/XTAL5/mg1o=;
-        b=fFHixn8oFyI7RdOciGF9hhikSupAL3LuJB5Cbt6A2i7QpoShIJ7oCRj8n4Lh7+V4J4
-         M8jNG2qIlVQrDEYbb0ktQKUmLZeWDXU/1unh/Z3q01J+WOtbO2Lc7sLPbXdnerG3IxQ8
-         yHZyjwiLxTplAaVkamoEIbbW5NTE1Jd3BsUW2/JBRS105xWe7T7Fyh2mZhrq9rO8g5D6
-         wavzzYbX/n6agtUW8eTXyu8qGjLFXYZu8aJ/BaiHzLhaNdNPERJPfTp45XiC3kur3oTq
-         4t7f/cvX5Ohw8/y/3n072anLnUiHoXTbjLtrzdu6LN4+cURgXNAt3erQZBgRP4t5eveY
-         bdcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VOTYKr9ClxWd1s2Ahe0QVirYxLvSTejb/XTAL5/mg1o=;
-        b=H26F5LEMTAGMAkvp6Wx7V7J3g0/FuuLPm2gLRi4UxC635tvl6qEg/z37OEefE93HxM
-         OJPcOFgFfomjbOvnqByGqVWisI5wrIh9/0EqeCWkUDd0TTUsEytievVaLdjvi9gMignD
-         blbkY/QbMXPctNTWXWb2o5oJEPQMXWoIgPwqiEDjrN5XmqQY0yTab+xXTihavg+5v3U9
-         KjuWxTx2tHVtFwWOB6uDmAKucScs8RRJWi5KJjLtXxwKec9v5Hct+EIAa7p9u1ctKm9S
-         TPxO+2mZii2CKOhCjubETdKG5322PUUvodL4ShxsmlmIMr3qm2/AKBYiqDt+3t7K8AYi
-         b9jA==
-X-Gm-Message-State: AOAM533dNFp+0keK+rjxnxHxedd+MitpHdHDolKBVztFBUhnblL1yKsl
-        KDsTQxZXzxGbiYT0Ypx83nB80wGLSmmX6FlRLGQ=
-X-Google-Smtp-Source: ABdhPJzXN1NZySAPIpbVM+/eQB5N1rMZGf5zbepNKKTXQd0Eub1O+KtfsG6jR2uz1gVy2OiyinH+iVvG1gdDTUAF6Wo=
-X-Received: by 2002:a05:6000:2cf:: with SMTP id o15mr20028401wry.243.1622426570893;
- Sun, 30 May 2021 19:02:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <04cb0c7f6884224c99fbf656579250896af82d5b.1622142759.git.lucien.xin@gmail.com>
- <CADvbK_e0PkKBYAUyg6iYyUwUp+owpv1r9_cnS7pbkLSjwX+VWg@mail.gmail.com>
- <20210528153911.4f67a691@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <CADvbK_dvj2ywH5nQGcsjAWOKb5hdLfoVnjKNmLsstk3R1j7MyA@mail.gmail.com>
- <54cb4e46-28f9-b6db-85ec-f67df1e6bacf@gmail.com> <CADvbK_endt5VLzyDMumn6ks8oF5WkQ0hbx6XguyRbJZzOf4K5A@mail.gmail.com>
- <cf628b45-c527-3390-4738-de7732268e44@gmail.com>
-In-Reply-To: <cf628b45-c527-3390-4738-de7732268e44@gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Sun, 30 May 2021 22:02:39 -0400
-Message-ID: <CADvbK_fQQzH9uuHj_8mSQ=OSGETpwO4qdaZeBc-uE24AyphAWg@mail.gmail.com>
-Subject: Re: [PATCH net] udp: fix the len check in udp_lib_getsockopt
-To:     David Ahern <dsahern@gmail.com>
+        id S230041AbhEaCcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 22:32:12 -0400
+Received: from mga06.intel.com ([134.134.136.31]:63556 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229963AbhEaCcF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 30 May 2021 22:32:05 -0400
+IronPort-SDR: 2ddfJmEbZLBfA2dF0gSFhgYkvK1pJVDC6hQrWos4fdQvFc4lQDr/uN2Bo0lb3sy3Dzm9JmcSti
+ fGGQcQMdjvqQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,10000"; a="264471809"
+X-IronPort-AV: E=Sophos;i="5.83,236,1616482800"; 
+   d="scan'208";a="264471809"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2021 19:30:26 -0700
+IronPort-SDR: KoPf0wCxmg+RnIOC/i/4CwQN7sq0U7W3UOp5U64iSMqxB1Nw7hODoDJY6wJTfWftqD7S/gOa2c
+ ecwKaAlULwag==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,236,1616482800"; 
+   d="scan'208";a="548601626"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga004.jf.intel.com with ESMTP; 30 May 2021 19:30:26 -0700
+Received: from linux.intel.com (unknown [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 3F6F1580921;
+        Sun, 30 May 2021 19:30:22 -0700 (PDT)
+Date:   Mon, 31 May 2021 10:30:19 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH net-next 0/8] Convert xpcs to phylink_pcs_ops
+Message-ID: <20210531023019.GA5494@linux.intel.com>
+References: <20210527204528.3490126-1-olteanv@gmail.com>
+ <20210528021521.GA20022@linux.intel.com>
+ <20210528091230.hzuzhotuna34amhj@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210528091230.hzuzhotuna34amhj@skbuf>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 30, 2021 at 9:31 PM David Ahern <dsahern@gmail.com> wrote:
->
-> On 5/29/21 10:47 AM, Xin Long wrote:
-> > On Fri, May 28, 2021 at 9:57 PM David Ahern <dsahern@gmail.com> wrote:
-> >>
-> >> On 5/28/21 7:47 PM, Xin Long wrote:
-> >>> The partial byte(or even 0) of the value returned due to passing a wrong
-> >>> optlen should be considered as an error. "On error, -1 is returned, and
-> >>> errno is set appropriately.". Success returned in that case only confuses
-> >>> the user.
-> >>
-> >> It is feasible that some app could use bool or u8 for options that have
-> >> 0 or 1 values and that code has so far worked. This change would break that.
-> > Got it.
-> > Not sure if it's possible or necessary to also return -EINVAL if optlen == 0
-> >
->
-> do_tcp_getsockopt for example does not fail on optlen 0; no reason to
-> make this one fail.
-I was about to say do_tcp_getsockopt has the same issue. :-)
+On Fri, May 28, 2021 at 12:12:30PM +0300, Vladimir Oltean wrote:
+> Hi VK,
+> 
+> On Fri, May 28, 2021 at 10:15:21AM +0800, Wong Vee Khee wrote:
+> > I got the following kernel panic after applying [1], and followed by
+> > this patch series.
+> > 
+> > [1] https://patchwork.kernel.org/project/netdevbpf/patch/20210527155959.3270478-1-olteanv@gmail.com/
+> > 
+> > [   10.742057] libphy: stmmac: probed
+> > [   10.750396] mdio_bus stmmac-1:01: attached PHY driver [unbound] (mii_bus:phy_addr=stmmac-1:01, irq=POLL)
+> > [   10.818222] intel-eth-pci 0000:00:1e.4 (unnamed net_device) (uninitialized): failed to validate link configuration for in-band status
+> > [   10.830348] intel-eth-pci 0000:00:1e.4 (unnamed net_device) (uninitialized): failed to setup phy (-22)
+> 
+> Thanks a lot for testing. Sadly I can't figure out what is the mistake.
+> Could you please add this debugging patch on top and let me know what it
+> prints?
+> 
+
+Sorry for the late response. Here the debug log:
+
+[   11.474302] mdio_bus stmmac-1:01: attached PHY driver [unbound] (mii_bus:phy_addr=stmmac-1:01, irq=POLL)
+[   11.495564] mdio_bus stmmac-1:16: xpcs_create: xpcs_id 7996ced0 matched on entry 0
+[   11.503154] mdio_bus stmmac-1:16: xpcs_create: setting entry->supported bit 13
+[   11.510377] mdio_bus stmmac-1:16: xpcs_create: setting entry->supported bit 14
+[   11.517590] mdio_bus stmmac-1:16: xpcs_create: setting entry->supported bit 6
+[   11.524725] mdio_bus stmmac-1:16: xpcs_create: setting entry->supported bit 17
+[   11.531946] mdio_bus stmmac-1:16: xpcs_create: setting entry->supported bit 18
+[   11.539278] mdio_bus stmmac-1:16: xpcs_create: setting entry->supported bit 19
+[   11.541316] ish-hid {33AECD58-B679-4E54-9BD9-A04D34F0C226}: [hid-ish]: enum_devices_done OK, num_hid_devices=6
+[   11.546487] mdio_bus stmmac-1:16: xpcs_create: setting entry->supported bit 15
+[   11.546489] mdio_bus stmmac-1:16: xpcs_create: xpcs->supported 0000000,00000000,000ee040
+[   11.584687] hid-generic 001F:8087:0AC2.0001: device has no listeners, quitting
+[   11.599461] mdio_bus stmmac-1:16: xpcs_validate: provided interface sgmii does not match supported interface 0 (usxgmii)
+[   11.606538] hid-generic 001F:8087:0AC2.0002: device has no listeners, quitting
+[   11.610306] mdio_bus stmmac-1:16: xpcs_validate: provided interface sgmii does not match any supported interface
+[   11.610309] mdio_bus stmmac-1:16: xpcs_validate: provided interface sgmii does not match supported interface 0 (usxgmii)
+[   11.626259] hid-generic 001F:8087:0AC2.0003: device has no listeners, quitting
+[   11.627675] mdio_bus stmmac-1:16: xpcs_validate: provided interface sgmii does not match any supported interface
+[   11.627677] intel-eth-pci 0000:00:1e.4 (unnamed net_device) (uninitialized): failed to validate link configuration for in-band status
+[   11.641996] hid-generic 001F:8087:0AC2.0004: device has no listeners, quitting
+[   11.645729] intel-eth-pci 0000:00:1e.4 (unnamed net_device) (uninitialized): failed to setup phy (-22)
+
+Regards,
+VK
