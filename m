@@ -2,131 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D53E395693
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9410739569D
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:58:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230351AbhEaH6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 03:58:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27299 "EHLO
+        id S230372AbhEaH77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 03:59:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49539 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230165AbhEaH5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 03:57:53 -0400
+        by vger.kernel.org with ESMTP id S229640AbhEaH75 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 03:59:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622447773;
+        s=mimecast20190719; t=1622447894;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=twMQBKVBYP+3C668h6+k4MZ8lCmQRLRa2Kt2PzgnD7I=;
-        b=fU4eIbHq0Nl6gtwa6d40jnWXHCCE79En0ou2KhdeJwV9pbHBPs6F8qBzvIo8XzF8r7DXch
-        SP9LBd3CaGxGTdib/ZoQ++5F8KFsK704pFO4lcYLQH5jVmnJ0uMk4A4U9ViCNpzrbpK01D
-        BSaxPID2cFc6DOGYe7MoZzMrbhTtcAk=
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
- [209.85.214.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-559-LRAG_wL1M6OC9zrJ2R-M5g-1; Mon, 31 May 2021 03:56:12 -0400
-X-MC-Unique: LRAG_wL1M6OC9zrJ2R-M5g-1
-Received: by mail-pl1-f198.google.com with SMTP id d10-20020a170902cecab02900f342ad66bdso2805388plg.4
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 00:56:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=twMQBKVBYP+3C668h6+k4MZ8lCmQRLRa2Kt2PzgnD7I=;
-        b=qcaDLkOntRzNpkefToyI6UiU/2UoLywxsFb2ydhNVc2HyVuDtuZhlRbfUfjoLwBF7W
-         ay0lHj9gVJPIDsE3IiKuAiYd13Dc6ExDnoVFsLPyiDV5zA43hGp+GjjoDcae7gR1N29B
-         6iOGmv4zhXl0LvFsAdaEySkIK2pj3+LTjRmUGlJe+lkSi3o+uR003hnqVDCOwELLfAtZ
-         yMpYkz9TC8temockqf+KPv3Q954jPaI6oPEaeIHy88INJOJ/QDEqLF3sraAThi3Y6jI1
-         k81m2kqPg3bEeBZywqt7iiGQ/T7ZAldV0WuKxuBjdOivpjkQHpkltrSSYbvm3E6CGUcK
-         gslA==
-X-Gm-Message-State: AOAM5330KWrVGjIEMuB+oH1q7G9D4CPNF7pchOlk9Mo6W5NcUkZmeDsT
-        303cVdHbM580FCo5Z/beSgAQYXJJ1MAqpOICJWSceRZsavCpghWypMYwdesz6e4CaSJc5CWnH+3
-        A28mtslTrzTXd1A6v
-X-Received: by 2002:a17:90a:d24a:: with SMTP id o10mr64990pjw.19.1622447771202;
-        Mon, 31 May 2021 00:56:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx8TC88Xtx7F14ZsQpXbpJHfPDYW9N6L5JuXudwujjTwdCrrK/LGYsXmWWRMwVYIznSPLKRCw==
-X-Received: by 2002:a17:90a:d24a:: with SMTP id o10mr64969pjw.19.1622447770917;
-        Mon, 31 May 2021 00:56:10 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 76sm920482pfy.82.2021.05.31.00.56.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 May 2021 00:56:10 -0700 (PDT)
-Subject: Re: [PATCH V2 RESEND 2/2] vDPA/ifcvf: implement doorbell mapping for
- ifcvf
-To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        bh=EdRsDMw4H1zTHoV4Q0DDi+MXBcsk6roz9PziidrlNag=;
+        b=DnqUoRAy4Uqw1XaHjWu3Kw3vuvVNS1jH6yTUe1z2TWGbaaWKr0aHglMEl29BbYKR3ij8t0
+        N2Mv1E24gEhb51fgWifKSjAe94EN7onPgmzj59OiiiZ7+3qo1KWZtHvZh0fTvL2V9nBv+A
+        sLqr2l+qrnQevTfG/W5iOm37aTVQN0k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-462-I3OLvASbNja5hRImbNs9cg-1; Mon, 31 May 2021 03:58:12 -0400
+X-MC-Unique: I3OLvASbNja5hRImbNs9cg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8C7F8107ACCA;
+        Mon, 31 May 2021 07:58:11 +0000 (UTC)
+Received: from gondolin.fritz.box (ovpn-113-190.ams2.redhat.com [10.36.113.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F0D91E6;
+        Mon, 31 May 2021 07:58:07 +0000 (UTC)
+Date:   Mon, 31 May 2021 09:58:04 +0200
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     jasowang@redhat.com, mst@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org
-References: <20210531073316.363655-1-lingshan.zhu@intel.com>
- <20210531073316.363655-3-lingshan.zhu@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f3c28e92-3e8d-2a8a-ec5a-fc64f2098678@redhat.com>
-Date:   Mon, 31 May 2021 15:56:06 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+Subject: Re: [PATCH RESEND 1/2] virtio: update virtio id table, add
+ transitional ids
+Message-ID: <20210531095804.47629646.cohuck@redhat.com>
+In-Reply-To: <20210531072743.363171-2-lingshan.zhu@intel.com>
+References: <20210531072743.363171-1-lingshan.zhu@intel.com>
+        <20210531072743.363171-2-lingshan.zhu@intel.com>
+Organization: Red Hat GmbH
 MIME-Version: 1.0
-In-Reply-To: <20210531073316.363655-3-lingshan.zhu@intel.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 31 May 2021 15:27:42 +0800
+Zhu Lingshan <lingshan.zhu@intel.com> wrote:
 
-ÔÚ 2021/5/31 ÏÂÎç3:33, Zhu Lingshan Ð´µÀ:
-> This commit implements doorbell mapping feature for ifcvf.
-> This feature maps the notify page to userspace, to eliminate
-> vmexit when kick a vq.
->
+> This commit updates virtio id table by adding transitional device
+> ids
+> 
 > Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 > ---
->   drivers/vdpa/ifcvf/ifcvf_main.c | 17 +++++++++++++++++
->   1 file changed, 17 insertions(+)
->
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-> index ab0ab5cf0f6e..effb0e549135 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> @@ -413,6 +413,22 @@ static int ifcvf_vdpa_get_vq_irq(struct vdpa_device *vdpa_dev,
->   	return vf->vring[qid].irq;
->   }
->   
-> +static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
-> +							       u16 idx)
-> +{
-> +	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
-> +	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-> +	struct pci_dev *pdev = adapter->pdev;
-> +	struct vdpa_notification_area area;
+>  include/uapi/linux/virtio_ids.h | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/include/uapi/linux/virtio_ids.h b/include/uapi/linux/virtio_ids.h
+> index f0c35ce8628c..fcc9ec6a73c1 100644
+> --- a/include/uapi/linux/virtio_ids.h
+> +++ b/include/uapi/linux/virtio_ids.h
+> @@ -57,4 +57,16 @@
+>  #define VIRTIO_ID_BT			28 /* virtio bluetooth */
+>  #define VIRTIO_ID_MAC80211_HWSIM	29 /* virtio mac80211-hwsim */
+>  
+> +/*
+> + * Virtio Transitional IDs
+> + */
 > +
-> +	area.addr = vf->vring[idx].notify_pa;
-> +	area.size = PAGE_SIZE;
-> +	if (area.addr % PAGE_SIZE)
-> +		IFCVF_DBG(pdev, "vq %u doorbell address is not PAGE_SIZE aligned\n", idx);
-
-
-Let's leave the decision to upper layer by: (see 
-vp_vdpa_get_vq_notification)
-
-area.addr = notify_pa;
-area.size = notify_offset_multiplier;
-
-Thanks
-
-
+> +#define VIRTIO_TRANS_ID_NET		1000 /* transitional virtio net */
+> +#define VIRTIO_TRANS_ID_BLOCK		1001 /* transitional virtio block */
+> +#define VIRTIO_TRANS_ID_BALLOON		1002 /* transitional virtio balloon */
+> +#define VIRTIO_TRANS_ID_CONSOLE		1003 /* transitional virtio console */
+> +#define VIRTIO_TRANS_ID_SCSI		1004 /* transitional virtio SCSI */
+> +#define VIRTIO_TRANS_ID_RNG		1005 /* transitional virtio rng */
+> +#define VIRTIO_TRANS_ID_9P		1009 /* transitional virtio 9p console */
 > +
-> +	return area;
-> +}
-> +
->   /*
->    * IFCVF currently does't have on-chip IOMMU, so not
->    * implemented set_map()/dma_map()/dma_unmap()
-> @@ -440,6 +456,7 @@ static const struct vdpa_config_ops ifc_vdpa_ops = {
->   	.get_config	= ifcvf_vdpa_get_config,
->   	.set_config	= ifcvf_vdpa_set_config,
->   	.set_config_cb  = ifcvf_vdpa_set_config_cb,
-> +	.get_vq_notification = ifcvf_get_vq_notification,
->   };
->   
->   static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  #endif /* _LINUX_VIRTIO_IDS_H */
+
+Isn't this a purely virtio-pci concept? (The spec lists the virtio ids
+in the common section, and those transitional ids in the pci section.)
+IOW, is there a better, virtio-pci specific, header for this?
 
