@@ -2,124 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E6E43966B1
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 19:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B151F3966BD
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 19:18:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234035AbhEaRRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 13:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51992 "EHLO
+        id S231722AbhEaRTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 13:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233480AbhEaRPn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 13:15:43 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63606C0611EB;
-        Mon, 31 May 2021 08:29:07 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id k22-20020a17090aef16b0290163512accedso128947pjz.0;
-        Mon, 31 May 2021 08:29:07 -0700 (PDT)
+        with ESMTP id S233565AbhEaRTN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 13:19:13 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970B5C043474;
+        Mon, 31 May 2021 08:31:09 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id i5so8621667pgm.0;
+        Mon, 31 May 2021 08:31:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=R3ERwvWAJQeMnwLML6I5CNggHBvI3ijt6irwEhA0CSU=;
-        b=ZjcWRA2zVVf2u39IwROdRm+73SIR4lpLX33ihPFpccyUmmwKGXuEURi0bGu4ChqTds
-         qbWYG7Ryuo/jLZeeXHauSo899ebOPGJ9UIr2EkiM//zBZcok6/ELX79M6ZqIdWEksGOV
-         lSuljF4vJqYpWRlmsJB2tMuqpqgxVajKZO/q3dLh/26/ghOonKlPwxqxSJ7ZkJFdA1cR
-         C2zlYiuSeJ5EKIsIqhq0Ww3jwn+xPLMNrjEJy4r+fbqgBXQWk7HkSpfAJJPvp1/BztMK
-         /Ze895BJAIxsRCi3pGceCSh/CP6Nql9so5EzCN93ySHKrawSCQgjdiqOnqu5AJEaFHVP
-         /GUw==
+        bh=a0wbqAwVg5nm3epwFVJrv6sZ/e1eVDrfHAVlzb8ZgCY=;
+        b=bmrdu6VhulS68pVreUiO85i8Hr6HmEiUCcdCebIzlAGB7ynHhvE1Ce6jiswRDyvs2/
+         DwkBC5U4BByV2BxUAS2ozBaomBN/lPAqltOO/r+vLqn6y2xEtrolOAjg5eNBQl/NJc3F
+         ZQuOaoafGhoG8Byabwfupeb3Dy/0Q0lcTw6gsy82APp4Npss6+tino7UK4wVsVPEhqel
+         Qstmqg7VJ7QSXzvu22s9ikm8Fbk58n+AGa1rg94DWMEU2mMlRdD0l51z3jOhf/ebsCT8
+         JkmHtJo0unQKUJuS7N8U5tsVz5shWBoyDJO0c01vL7ualRcj1qXhgr4qfKI710XfO2Xc
+         e8xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=R3ERwvWAJQeMnwLML6I5CNggHBvI3ijt6irwEhA0CSU=;
-        b=UEIB1Lty8JBvtPbqWmBG3dRXo513wC5cdFIpiBt2uMuLo7phjm3p5V8vcZX0e6hn72
-         GJnwJQP/ClCIRiED4+LY9FjgEsAiV+hkVLesHAJv7fOtuNOZtC08+nOG3hY8rDfxJ7YT
-         FrU/QhW0Zo8sDVAxcVOxQELw1rcLljlrApZugezXnFDW9qK09muTlsubz0WmEiUZxmxu
-         bQ2Yo4aGXybNyIxrfMTJWKJ9uZgNtIj8w1OCwjkt0QzORrqU78c5VzpqC7KZB8eDnDz7
-         wCxAc8/+LTrxRlPjuTLXNoAfdaL4ZHek4hb8i/5lZtHwqKBbEUJX6KWsBvuPspXg1ok+
-         g3ug==
-X-Gm-Message-State: AOAM532COuGdn0j1MPjtacfmVK+/AzKTPcFs/g0sYJ4lYiqz9U0rhOtL
-        fQXlJVoXBNKAA+I3i0SyjsI=
-X-Google-Smtp-Source: ABdhPJxzmBuYkOtFsW5fXmvfOuELbxqIAdDR2FQ12ZJ1ILKtDC6SzoIpta8D6y5gWAqw7OkY0VqRHA==
-X-Received: by 2002:a17:903:2482:b029:fd:696c:1d2b with SMTP id p2-20020a1709032482b02900fd696c1d2bmr21292801plw.24.1622474946893;
-        Mon, 31 May 2021 08:29:06 -0700 (PDT)
+        bh=a0wbqAwVg5nm3epwFVJrv6sZ/e1eVDrfHAVlzb8ZgCY=;
+        b=aEy1v+MgrVqZ3zQJcoZqc1jQbJiT6vtgUDV8GB1YhHk7HY5mJPF+OrXuz7D9/nZbCX
+         myYfnUYQe9IBtnHvJQ8kYgXPkPvdg+ZccpX8lIMFMnJh2vPrWA4CSDVItCvyewxj+x44
+         uisE9QF4iN1jQQm/uRLcZ4P2jmS03umSxawyrKgF+It04uegwH6/kIukV8s38xLkspBV
+         2+DlZMMlPaYgNAffxsyAujZ3QSIy+y2lhpyOzS6Bv8PSj2VcCJZQtAFP3h55qpel/ExZ
+         rpzdSJUCbETYUz2Q1/4RfW6pbqAPF5WzpssHyECCyn4Yk3CNZh2zaAuQy2IEivGNyOu9
+         Nj0Q==
+X-Gm-Message-State: AOAM531t77MioqKT8KFfHOUtBHXnqulxRXGmFeCHX6byYLoihpjMsWoa
+        +wuAlbCVgX+wlrPqV3jGOmM=
+X-Google-Smtp-Source: ABdhPJwc6y8XH5gMUlg33c5mjAYxp7Z31S26smo63/2m3ach+dZuwQqYo1pbMXG3ssNyK6/eetIPhQ==
+X-Received: by 2002:a62:f947:0:b029:2e9:c502:7939 with SMTP id g7-20020a62f9470000b02902e9c5027939mr8021098pfm.34.1622475069168;
+        Mon, 31 May 2021 08:31:09 -0700 (PDT)
 Received: from mail.google.com ([141.164.41.4])
-        by smtp.gmail.com with ESMTPSA id t13sm4319859pfh.97.2021.05.31.08.29.02
+        by smtp.gmail.com with ESMTPSA id y24sm11284730pfn.81.2021.05.31.08.31.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 May 2021 08:29:06 -0700 (PDT)
-Date:   Mon, 31 May 2021 23:28:58 +0800
+        Mon, 31 May 2021 08:31:08 -0700 (PDT)
+Date:   Mon, 31 May 2021 23:31:00 +0800
 From:   Changbin Du <changbin.du@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Changbin Du <changbin.du@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     'Cong Wang' <xiyou.wangcong@gmail.com>,
+        Changbin Du <changbin.du@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kici nski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>
 Subject: Re: [PATCH] net: fix oops in socket ioctl cmd SIOCGSKNS when NET_NS
  is disabled
-Message-ID: <20210531152858.nz2orstfcm2bwvjr@mail.google.com>
+Message-ID: <20210531153100.pfwlrkrqdisp6heu@mail.google.com>
 References: <20210529060526.422987-1-changbin.du@gmail.com>
- <20210529112735.22bdc153@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAM_iQpWwApLVg39rUkyXxnhsiP0SZf=0ft6vsq=VxFtJ2SumAQ@mail.gmail.com>
+ <55effe20acc54ea4a96ea86015d99a5b@AcuMS.aculab.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210529112735.22bdc153@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <55effe20acc54ea4a96ea86015d99a5b@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 29, 2021 at 11:27:35AM -0700, Jakub Kicinski wrote:
-> On Sat, 29 May 2021 14:05:26 +0800 Changbin Du wrote:
-> > When NET_NS is not enabled, socket ioctl cmd SIOCGSKNS should do nothing
-> > but acknowledge userspace it is not supported. Otherwise, kernel would
-> > panic wherever nsfs trys to access ns->ops since the proc_ns_operations
-> > is not implemented in this case.
+On Mon, May 31, 2021 at 08:30:58AM +0000, David Laight wrote:
+> From: Cong Wang
+> > Sent: 29 May 2021 20:15
 > > 
-> > [7.670023] Unable to handle kernel NULL pointer dereference at virtual address 00000010
-> > [7.670268] pgd = 32b54000
-> > [7.670544] [00000010] *pgd=00000000
-> > [7.671861] Internal error: Oops: 5 [#1] SMP ARM
-> > [7.672315] Modules linked in:
-> > [7.672918] CPU: 0 PID: 1 Comm: systemd Not tainted 5.13.0-rc3-00375-g6799d4f2da49 #16
-> > [7.673309] Hardware name: Generic DT based system
-> > [7.673642] PC is at nsfs_evict+0x24/0x30
-> > [7.674486] LR is at clear_inode+0x20/0x9c
+> > On Fri, May 28, 2021 at 11:08 PM Changbin Du <changbin.du@gmail.com> wrote:
+> > > diff --git a/net/socket.c b/net/socket.c
+> > > index 27e3e7d53f8e..644b46112d35 100644
+> > > --- a/net/socket.c
+> > > +++ b/net/socket.c
+> > > @@ -1149,11 +1149,15 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
+> > >                         mutex_unlock(&vlan_ioctl_mutex);
+> > >                         break;
+> > >                 case SIOCGSKNS:
+> > > +#ifdef CONFIG_NET_NS
+> > >                         err = -EPERM;
+> > >                         if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
+> > >                                 break;
+> > >
+> > >                         err = open_related_ns(&net->ns, get_net_ns);
+> > > +#else
+> > > +                       err = -ENOTSUPP;
+> > > +#endif
 > > 
-> > Signed-off-by: Changbin Du <changbin.du@gmail.com>
-> > Cc: <stable@vger.kernel.org> # v4.9
+> > I wonder if it is easier if we just reject ns->ops==NULL case
+> > in open_related_ns(). For 1) we can save an ugly #ifdef here;
+> > 2) drivers/net/tun.c has the same bugs.
 > 
-> Please provide a Fixes tag.
+> If CONFIG_NET_NS is unset then why not make both ns_capable()
+> and open_related_ns() unconditionally return -ENOTSUPP?
 >
-Now it will be fixed by nsfs side. And the code has been changed to many times..
+Here is the new fix that reject creating indoe for disabled ns.
+--- a/fs/nsfs.c
++++ b/fs/nsfs.c
+@@ -62,6 +62,10 @@ static int __ns_get_path(struct path *path, struct ns_common *ns)
+        struct inode *inode;
+        unsigned long d;
+ 
++       /* In case the namespace is not actually enabled. */
++       if (!ns->ops)
++               return -EOPNOTSUPP;
 
-> > diff --git a/net/socket.c b/net/socket.c
-> > index 27e3e7d53f8e..644b46112d35 100644
-> > --- a/net/socket.c
-> > +++ b/net/socket.c
-> > @@ -1149,11 +1149,15 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
-> >  			mutex_unlock(&vlan_ioctl_mutex);
-> >  			break;
-> >  		case SIOCGSKNS:
-> > +#ifdef CONFIG_NET_NS
-> >  			err = -EPERM;
-> >  			if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
-> >  				break;
-> >  
-> >  			err = open_related_ns(&net->ns, get_net_ns);
+> 	David
 > 
-> There's a few more places with this exact code. Can we please add the
-> check in get_net_ns? That should fix all callers.
-> 
-> > +#else
-> > +			err = -ENOTSUPP;
-> 
-> EOPNOTSUPP, you shouldn't return ENOTSUPP to user space.
->
-Thanks for pointing out. Will change it.
-
-> > +#endif
-> >  			break;
-> >  		case SIOCGSTAMP_OLD:
-> >  		case SIOCGSTAMPNS_OLD:
-> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
 
 -- 
 Cheers,
