@@ -2,170 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DD57396712
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 19:29:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A33DD39671A
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 19:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233437AbhEaRbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 13:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
+        id S233664AbhEaRcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 13:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232870AbhEaRay (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 13:30:54 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26738C04C49A
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 09:17:16 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b17so14129569ede.0
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 09:17:16 -0700 (PDT)
+        with ESMTP id S233807AbhEaRbj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 13:31:39 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26619C022582;
+        Mon, 31 May 2021 09:23:51 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id o2-20020a05600c4fc2b029019a0a8f959dso285506wmq.1;
+        Mon, 31 May 2021 09:23:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=stnM2/sJcAsXBAJyDqFS24d9EhqJV2yT9cn8XxVQ/zk=;
-        b=dbGoJVl91VnmZmbq1cPEc4iyJa1QJzM8MVM14V5uIU1Wfl8ojN44Hz6zOoRzKzLUER
-         woTXRvGA36iEEdSKnyPWIuBMBhXbVsejFBFy4yl41voFybg61mKsAM0IOdtgKDwHe7KK
-         Idtvyj3DD7clm+x0SMTjSQbAz4Iw3ZHsAdxb3oZtDiePh2wyhI+WKMYTRTJ372/TgE63
-         7RHnCRch7xH/ulQtdU6cqaJa2WxFI5GJ+e1IZ7mvAlkMSKOgr6T+JpkdWBmAtruljK2j
-         ovqVEPYzxNOjD/9sekjqPX20Lmi1UNuJv8aY9tuN0/szQldP4a3l03cUTR/qaXWgS9v4
-         vQTA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Pf9JOeuGnWxTtpGd/Tm8paJ7v83AlOEMeE+3fXLdQ/w=;
+        b=kGRIshQ0J2HFgrUGH2HM+jIRiRC2yJ7Gryf3Kkr8tr1CKGUYphIrs9ugJrxm0KnFKy
+         D3Kvhq3gCRa9HDpAaUhmVEESlIbiicifSHvY20Kfm5XAnGERKFECVBfCNZVmElXErTRp
+         3z2yZKarnFhRKmnghNb9HolGtqp43VKVqFGN/9/NQPreLukUmZqxTsEkKv56YQobdBwQ
+         uFTObV5Qjz9LmbJtR6Jsg2hiO6mi3La6AAsVf9zRbc9wyJ4/SKHCzWgF9AztkADi7HD+
+         V8BjUdpy9GoACtHave43pM5mRLVvRNFrX+vC55qNIDr3o1yUj2yraMXvUjFoWHdO7IXb
+         308g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=stnM2/sJcAsXBAJyDqFS24d9EhqJV2yT9cn8XxVQ/zk=;
-        b=CjnhoWzAxNnUAyhfM1vdmZ4tb6fanI/IMtu4FJWZ64RqZwGQtzHnKKT2LUGtwjn8tj
-         7FEMToU5fWn67S+lYLsXGUYlsd148WvJUGeAkEUTa7e4mB5f4f3uVGiejzfAd36DZ/Xc
-         8Zxp2HQbI9onLg+EyUmN4j7XHIPR4FFZABpOV4Bs7wUYflTrGPe/V6cwI+TW2Tq6ikpm
-         E4y+4U2s0R2/WVazNy0YJcm9cHJlJmwrGeNaEcJTrCSEUbYCS0WaQ3IC185S/IpDHHp3
-         6OmQ8lNykGPAOCGMc1IDXbHZo9CXZ8h6Rvkv8YNM/gTansTwgcDmDvUSJa0nE9UuWRBB
-         q+bQ==
-X-Gm-Message-State: AOAM530wBIxWHVCcqA8vzPgPHOFgdgjmmOC19bt4N3wwadv0kRaXFwlc
-        btlr5iOOvwcj8C7T4dH6QlY=
-X-Google-Smtp-Source: ABdhPJznEDsOMcJBg04D3w/2j7JOPvYMXqkBsCwQovtApnioL1lzLsPBm3APOvIMVrnEQL+2nZ2DXw==
-X-Received: by 2002:a05:6402:b89:: with SMTP id cf9mr7760321edb.198.1622477834734;
-        Mon, 31 May 2021 09:17:14 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id f8sm1566483ejw.75.2021.05.31.09.17.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 May 2021 09:17:14 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next] net: enetc: catch negative return code from enetc_pf_to_port()
-Date:   Mon, 31 May 2021 19:17:07 +0300
-Message-Id: <20210531161707.1142218-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Pf9JOeuGnWxTtpGd/Tm8paJ7v83AlOEMeE+3fXLdQ/w=;
+        b=kJD6eXB2KwZvfBvw4B/6GYy8GqmL7mGVMYP0wYD/juwBemDr+ZJoPlzri/IZ9h5ono
+         u6TmwH5kl0tnau5v4eaWtLFiZbqNAUwNXD4wrfUqWlM6bv5EvfKvCreMD/uKzOjAelmt
+         hW5+6AnAG7M1ZREbfAAhJtzHuTnuJDl0AGc7/RMfBmB4uTvEKxBLlgjdCRhld68fsR23
+         FT9JI2fdJuRx44hy3trcPeOSZedQk0rCoNEZfmaZqAUejCByRcUk9bcos0TzY+TnkgQR
+         UjirsIZaJOjzuE/xlQH0yGr2Jy+ZiRwa91qj5XXO0shX3Cx7yfTtzHS8WUMjAqyFOvZK
+         24NQ==
+X-Gm-Message-State: AOAM530z0YYWF2UNCWhtDQjyCBiId01ktNxpA4WaLvTRJB0G/i32l88P
+        2ZZgv6vgnA44KSXTm//GdkmPgVn6k3rTt6nRVrs=
+X-Google-Smtp-Source: ABdhPJxe3CDBegSvNgnvY+CUpeT0x4bUhMtrUTp7VL/Hg4T2C0qI0r1yJNSCIMCSx4P41EialqiUjRSOgQ7/FM2mo2U=
+X-Received: by 2002:a1c:7402:: with SMTP id p2mr26614461wmc.88.1622478229806;
+ Mon, 31 May 2021 09:23:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20210531020110.2920255-1-zhengyongjun3@huawei.com>
+In-Reply-To: <20210531020110.2920255-1-zhengyongjun3@huawei.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 31 May 2021 12:23:39 -0400
+Message-ID: <CADvbK_eCmDbAZ6_tppe=q3aW76OAnfZd3TXoAafDTk0h=JaTAg@mail.gmail.com>
+Subject: Re: [PATCH net-next] sctp: sm_statefuns: Fix spelling mistakes
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Sun, May 30, 2021 at 9:48 PM Zheng Yongjun <zhengyongjun3@huawei.com> wrote:
+>
+> Fix some spelling mistakes in comments:
+> genereate ==> generate
+> correclty ==> correctly
+> boundries ==> boundaries
+> failes ==> fails
 
-After the refactoring introduced in commit 87614b931c24 ("net: enetc:
-create a common enetc_pf_to_port helper"), enetc_pf_to_port was coded up
-to return -1 in case the passed PCIe device does not have a recognized
-BDF.
+I believe more mistakes below in this file could hitchhike this patch
+to get fixed. :-)
 
-Make sure the -1 value is checked by the callers, to appease static
-checkers.
+isses -> issues
+assocition -> association
+signe -> sign
+assocaition -> association
+managemement-> management
+restransmissions->retransmission
+sideffect -> sideeffect
+bomming -> booming
+chukns-> chunks
+SHUDOWN -> SHUTDOWN
+violationg->violating
+explcitly-> explicitly
+CHunk-> Chunk
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- .../net/ethernet/freescale/enetc/enetc_qos.c  | 31 ++++++++++++++-----
- 1 file changed, 24 insertions(+), 7 deletions(-)
+Thanks.
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-index af699f2ad095..4577226d3c6a 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-@@ -465,8 +465,13 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 	struct streamid_conf *si_conf;
- 	u16 data_size;
- 	dma_addr_t dma;
-+	int port;
- 	int err;
- 
-+	port = enetc_pf_to_port(priv->si->pdev);
-+	if (port < 0)
-+		return -EINVAL;
-+
- 	if (sid->index >= priv->psfp_cap.max_streamid)
- 		return -EINVAL;
- 
-@@ -499,7 +504,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 
- 	si_conf = &cbd.sid_set;
- 	/* Only one port supported for one entry, set itself */
--	si_conf->iports = cpu_to_le32(1 << enetc_pf_to_port(priv->si->pdev));
-+	si_conf->iports = cpu_to_le32(1 << port);
- 	si_conf->id_type = 1;
- 	si_conf->oui[2] = 0x0;
- 	si_conf->oui[1] = 0x80;
-@@ -524,7 +529,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
- 
- 	si_conf->en = 0x80;
- 	si_conf->stream_handle = cpu_to_le32(sid->handle);
--	si_conf->iports = cpu_to_le32(1 << enetc_pf_to_port(priv->si->pdev));
-+	si_conf->iports = cpu_to_le32(1 << port);
- 	si_conf->id_type = sid->filtertype;
- 	si_conf->oui[2] = 0x0;
- 	si_conf->oui[1] = 0x80;
-@@ -567,6 +572,11 @@ static int enetc_streamfilter_hw_set(struct enetc_ndev_priv *priv,
- {
- 	struct enetc_cbd cbd = {.cmd = 0};
- 	struct sfi_conf *sfi_config;
-+	int port;
-+
-+	port = enetc_pf_to_port(priv->si->pdev);
-+	if (port < 0)
-+		return -EINVAL;
- 
- 	cbd.index = cpu_to_le16(sfi->index);
- 	cbd.cls = BDCR_CMD_STREAM_FILTER;
-@@ -586,8 +596,7 @@ static int enetc_streamfilter_hw_set(struct enetc_ndev_priv *priv,
- 	}
- 
- 	sfi_config->sg_inst_table_index = cpu_to_le16(sfi->gate_id);
--	sfi_config->input_ports =
--		cpu_to_le32(1 << enetc_pf_to_port(priv->si->pdev));
-+	sfi_config->input_ports = cpu_to_le32(1 << port);
- 
- 	/* The priority value which may be matched against the
- 	 * frame’s priority value to determine a match for this entry.
-@@ -1548,7 +1557,7 @@ int enetc_setup_tc_psfp(struct net_device *ndev, void *type_data)
- {
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
- 	struct flow_block_offload *f = type_data;
--	int err;
-+	int port, err;
- 
- 	err = flow_block_cb_setup_simple(f, &enetc_block_cb_list,
- 					 enetc_setup_tc_block_cb,
-@@ -1558,10 +1567,18 @@ int enetc_setup_tc_psfp(struct net_device *ndev, void *type_data)
- 
- 	switch (f->command) {
- 	case FLOW_BLOCK_BIND:
--		set_bit(enetc_pf_to_port(priv->si->pdev), &epsfp.dev_bitmap);
-+		port = enetc_pf_to_port(priv->si->pdev);
-+		if (port < 0)
-+			return -EINVAL;
-+
-+		set_bit(port, &epsfp.dev_bitmap);
- 		break;
- 	case FLOW_BLOCK_UNBIND:
--		clear_bit(enetc_pf_to_port(priv->si->pdev), &epsfp.dev_bitmap);
-+		port = enetc_pf_to_port(priv->si->pdev);
-+		if (port < 0)
-+			return -EINVAL;
-+
-+		clear_bit(port, &epsfp.dev_bitmap);
- 		if (!epsfp.dev_bitmap)
- 			clean_psfp_all();
- 		break;
--- 
-2.25.1
-
+>
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+> ---
+>  net/sctp/sm_statefuns.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+> index fd1e319eda00..68e7d14c3799 100644
+> --- a/net/sctp/sm_statefuns.c
+> +++ b/net/sctp/sm_statefuns.c
+> @@ -608,7 +608,7 @@ enum sctp_disposition sctp_sf_do_5_1C_ack(struct net *net,
+>         sctp_add_cmd_sf(commands, SCTP_CMD_NEW_STATE,
+>                         SCTP_STATE(SCTP_STATE_COOKIE_ECHOED));
+>
+> -       /* SCTP-AUTH: genereate the assocition shared keys so that
+> +       /* SCTP-AUTH: generate the assocition shared keys so that
+>          * we can potentially signe the COOKIE-ECHO.
+>          */
+>         sctp_add_cmd_sf(commands, SCTP_CMD_ASSOC_SHKEY, SCTP_NULL());
+> @@ -838,7 +838,7 @@ enum sctp_disposition sctp_sf_do_5_1D_ce(struct net *net,
+>
+>         /* Add all the state machine commands now since we've created
+>          * everything.  This way we don't introduce memory corruptions
+> -        * during side-effect processing and correclty count established
+> +        * during side-effect processing and correctly count established
+>          * associations.
+>          */
+>         sctp_add_cmd_sf(commands, SCTP_CMD_NEW_ASOC, SCTP_ASOC(new_asoc));
+> @@ -2950,7 +2950,7 @@ enum sctp_disposition sctp_sf_do_9_2_reshutack(
+>                                                   commands);
+>
+>         /* Since we are not going to really process this INIT, there
+> -        * is no point in verifying chunk boundries.  Just generate
+> +        * is no point in verifying chunk boundaries.  Just generate
+>          * the SHUTDOWN ACK.
+>          */
+>         reply = sctp_make_shutdown_ack(asoc, chunk);
+> @@ -3560,7 +3560,7 @@ enum sctp_disposition sctp_sf_do_9_2_final(struct net *net,
+>                 goto nomem_chunk;
+>
+>         /* Do all the commands now (after allocation), so that we
+> -        * have consistent state if memory allocation failes
+> +        * have consistent state if memory allocation fails
+>          */
+>         sctp_add_cmd_sf(commands, SCTP_CMD_EVENT_ULP, SCTP_ULPEVENT(ev));
+>
+> --
+> 2.25.1
+>
