@@ -2,110 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 980D03963AE
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 17:29:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E6E43966B1
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 19:15:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234811AbhEaPbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 11:31:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29528 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234451AbhEaPZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 11:25:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622474627;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=i17u7i2bEbZO5Ke3bJPruekBEIb7LASzWJbDq7cVY8E=;
-        b=gJJarH/75bJcUcsyC7MOqIIYlPdg3VnLiA9EDtyP94ZXFIil3nqXvYw5nAS0qyMBvMjKAa
-        1zYk9z1891M43c/zaIZuCNQH4HcvKY84B1y0cnM+dJJY9BZqn7J39oSlu3JtDuMDX61dK9
-        vSjaeDG80sEbdkjkyJ4rLk88A0b8r8M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-301-gjN5G9evPfqtdiDICNaDQA-1; Mon, 31 May 2021 11:23:46 -0400
-X-MC-Unique: gjN5G9evPfqtdiDICNaDQA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6A01D106BB2A;
-        Mon, 31 May 2021 15:23:44 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 863DE5D6D5;
-        Mon, 31 May 2021 15:23:39 +0000 (UTC)
-Date:   Mon, 31 May 2021 17:23:38 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Linux-MM <linux-mm@kvack.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, brouer@redhat.com,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/2] mm/page_alloc: Allow high-order pages to be stored
- on the per-cpu lists
-Message-ID: <20210531172338.2e7cb070@carbon>
-In-Reply-To: <20210531120412.17411-3-mgorman@techsingularity.net>
-References: <20210531120412.17411-1-mgorman@techsingularity.net>
-        <20210531120412.17411-3-mgorman@techsingularity.net>
+        id S234035AbhEaRRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 13:17:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233480AbhEaRPn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 13:15:43 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63606C0611EB;
+        Mon, 31 May 2021 08:29:07 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id k22-20020a17090aef16b0290163512accedso128947pjz.0;
+        Mon, 31 May 2021 08:29:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=R3ERwvWAJQeMnwLML6I5CNggHBvI3ijt6irwEhA0CSU=;
+        b=ZjcWRA2zVVf2u39IwROdRm+73SIR4lpLX33ihPFpccyUmmwKGXuEURi0bGu4ChqTds
+         qbWYG7Ryuo/jLZeeXHauSo899ebOPGJ9UIr2EkiM//zBZcok6/ELX79M6ZqIdWEksGOV
+         lSuljF4vJqYpWRlmsJB2tMuqpqgxVajKZO/q3dLh/26/ghOonKlPwxqxSJ7ZkJFdA1cR
+         C2zlYiuSeJ5EKIsIqhq0Ww3jwn+xPLMNrjEJy4r+fbqgBXQWk7HkSpfAJJPvp1/BztMK
+         /Ze895BJAIxsRCi3pGceCSh/CP6Nql9so5EzCN93ySHKrawSCQgjdiqOnqu5AJEaFHVP
+         /GUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R3ERwvWAJQeMnwLML6I5CNggHBvI3ijt6irwEhA0CSU=;
+        b=UEIB1Lty8JBvtPbqWmBG3dRXo513wC5cdFIpiBt2uMuLo7phjm3p5V8vcZX0e6hn72
+         GJnwJQP/ClCIRiED4+LY9FjgEsAiV+hkVLesHAJv7fOtuNOZtC08+nOG3hY8rDfxJ7YT
+         FrU/QhW0Zo8sDVAxcVOxQELw1rcLljlrApZugezXnFDW9qK09muTlsubz0WmEiUZxmxu
+         bQ2Yo4aGXybNyIxrfMTJWKJ9uZgNtIj8w1OCwjkt0QzORrqU78c5VzpqC7KZB8eDnDz7
+         wCxAc8/+LTrxRlPjuTLXNoAfdaL4ZHek4hb8i/5lZtHwqKBbEUJX6KWsBvuPspXg1ok+
+         g3ug==
+X-Gm-Message-State: AOAM532COuGdn0j1MPjtacfmVK+/AzKTPcFs/g0sYJ4lYiqz9U0rhOtL
+        fQXlJVoXBNKAA+I3i0SyjsI=
+X-Google-Smtp-Source: ABdhPJxzmBuYkOtFsW5fXmvfOuELbxqIAdDR2FQ12ZJ1ILKtDC6SzoIpta8D6y5gWAqw7OkY0VqRHA==
+X-Received: by 2002:a17:903:2482:b029:fd:696c:1d2b with SMTP id p2-20020a1709032482b02900fd696c1d2bmr21292801plw.24.1622474946893;
+        Mon, 31 May 2021 08:29:06 -0700 (PDT)
+Received: from mail.google.com ([141.164.41.4])
+        by smtp.gmail.com with ESMTPSA id t13sm4319859pfh.97.2021.05.31.08.29.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 May 2021 08:29:06 -0700 (PDT)
+Date:   Mon, 31 May 2021 23:28:58 +0800
+From:   Changbin Du <changbin.du@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Changbin Du <changbin.du@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] net: fix oops in socket ioctl cmd SIOCGSKNS when NET_NS
+ is disabled
+Message-ID: <20210531152858.nz2orstfcm2bwvjr@mail.google.com>
+References: <20210529060526.422987-1-changbin.du@gmail.com>
+ <20210529112735.22bdc153@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210529112735.22bdc153@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 31 May 2021 13:04:12 +0100
-Mel Gorman <mgorman@techsingularity.net> wrote:
-
-> The per-cpu page allocator (PCP) only stores order-0 pages. This means
-> that all THP and "cheap" high-order allocations including SLUB contends
-> on the zone->lock. This patch extends the PCP allocator to store THP and
-> "cheap" high-order pages. Note that struct per_cpu_pages increases in
-> size to 256 bytes (4 cache lines) on x86-64.
+On Sat, May 29, 2021 at 11:27:35AM -0700, Jakub Kicinski wrote:
+> On Sat, 29 May 2021 14:05:26 +0800 Changbin Du wrote:
+> > When NET_NS is not enabled, socket ioctl cmd SIOCGSKNS should do nothing
+> > but acknowledge userspace it is not supported. Otherwise, kernel would
+> > panic wherever nsfs trys to access ns->ops since the proc_ns_operations
+> > is not implemented in this case.
+> > 
+> > [7.670023] Unable to handle kernel NULL pointer dereference at virtual address 00000010
+> > [7.670268] pgd = 32b54000
+> > [7.670544] [00000010] *pgd=00000000
+> > [7.671861] Internal error: Oops: 5 [#1] SMP ARM
+> > [7.672315] Modules linked in:
+> > [7.672918] CPU: 0 PID: 1 Comm: systemd Not tainted 5.13.0-rc3-00375-g6799d4f2da49 #16
+> > [7.673309] Hardware name: Generic DT based system
+> > [7.673642] PC is at nsfs_evict+0x24/0x30
+> > [7.674486] LR is at clear_inode+0x20/0x9c
+> > 
+> > Signed-off-by: Changbin Du <changbin.du@gmail.com>
+> > Cc: <stable@vger.kernel.org> # v4.9
 > 
-> Note that this is not necessarily a universal performance win because of
-> how it is implemented. High-order pages can cause pcp->high to be exceeded
-> prematurely for lower-orders so for example, a large number of THP pages
-> being freed could release order-0 pages from the PCP lists. Hence, much
-> depends on the allocation/free pattern as observed by a single CPU to
-> determine if caching helps or hurts a particular workload.
+> Please provide a Fixes tag.
+>
+Now it will be fixed by nsfs side. And the code has been changed to many times..
+
+> > diff --git a/net/socket.c b/net/socket.c
+> > index 27e3e7d53f8e..644b46112d35 100644
+> > --- a/net/socket.c
+> > +++ b/net/socket.c
+> > @@ -1149,11 +1149,15 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
+> >  			mutex_unlock(&vlan_ioctl_mutex);
+> >  			break;
+> >  		case SIOCGSKNS:
+> > +#ifdef CONFIG_NET_NS
+> >  			err = -EPERM;
+> >  			if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
+> >  				break;
+> >  
+> >  			err = open_related_ns(&net->ns, get_net_ns);
 > 
-> That said, basic performance testing passed. The following is a netperf
-> UDP_STREAM test which hits the relevant patches as some of the network
-> allocations are high-order.
-
-This series[1] looks very interesting!  I confirm that some network
-allocations do use high-order allocations.  Thus, I think this will
-increase network performance in general, like you confirm below:
-
-> netperf-udp
->                                  5.13.0-rc2             5.13.0-rc2
->                            mm-pcpburst-v3r4   mm-pcphighorder-v1r7
-> Hmean     send-64         261.46 (   0.00%)      266.30 *   1.85%*
-> Hmean     send-128        516.35 (   0.00%)      536.78 *   3.96%*
-> Hmean     send-256       1014.13 (   0.00%)     1034.63 *   2.02%*
-> Hmean     send-1024      3907.65 (   0.00%)     4046.11 *   3.54%*
-> Hmean     send-2048      7492.93 (   0.00%)     7754.85 *   3.50%*
-> Hmean     send-3312     11410.04 (   0.00%)    11772.32 *   3.18%*
-> Hmean     send-4096     13521.95 (   0.00%)    13912.34 *   2.89%*
-> Hmean     send-8192     21660.50 (   0.00%)    22730.72 *   4.94%*
-> Hmean     send-16384    31902.32 (   0.00%)    32637.50 *   2.30%*
+> There's a few more places with this exact code. Can we please add the
+> check in get_net_ns? That should fix all callers.
 > 
-> From a functional point of view, a patch like this is necessary to
-> make bulk allocation of high-order pages work with similar performance
-> to order-0 bulk allocations. The bulk allocator is not updated in this
-> series as it would have to be determined by bulk allocation users how
-> they want to track the order of pages allocated with the bulk allocator.
+> > +#else
+> > +			err = -ENOTSUPP;
+> 
+> EOPNOTSUPP, you shouldn't return ENOTSUPP to user space.
+>
+Thanks for pointing out. Will change it.
 
-Thanks for working on this Mel, it is great to see! :-)
+> > +#endif
+> >  			break;
+> >  		case SIOCGSTAMP_OLD:
+> >  		case SIOCGSTAMPNS_OLD:
+> 
 
-Message-Id: <20210531120412.17411-3-mgorman@techsingularity.net>
- [1] https://lore.kernel.org/linux-mm/20210531120412.17411-3-mgorman@techsingularity.net/
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Cheers,
+Changbin Du
