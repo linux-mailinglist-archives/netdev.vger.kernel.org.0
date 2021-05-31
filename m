@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 123F739567F
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:51:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D53E395693
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:56:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230282AbhEaHxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 03:53:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26820 "EHLO
+        id S230351AbhEaH6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 03:58:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27299 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230206AbhEaHxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 03:53:09 -0400
+        by vger.kernel.org with ESMTP id S230165AbhEaH5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 03:57:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622447488;
+        s=mimecast20190719; t=1622447773;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bNGA1jL4s1cXzURPp/0nj2H5xrOIbUXubYxtkYgHXmM=;
-        b=c1YL1IfzfUxIfItqjEZpcLd3aAItHCopgKmCAlnIFhSX8XWmY3i4LnmOGtlRMA2R+smF38
-        zcZFO5FbML03C1+dKrZI6AuV9JMxugowHoOvliXQO8yGkzGPp8qlfokcA9Xv6lLCcRFgM+
-        ZnmczZfnt0A34e/hyDf1YVEz5mj2I04=
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
- [209.85.210.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-541-Gefg0FB5MligW3BQo-Mnow-1; Mon, 31 May 2021 03:51:27 -0400
-X-MC-Unique: Gefg0FB5MligW3BQo-Mnow-1
-Received: by mail-pf1-f200.google.com with SMTP id g21-20020aa787550000b02902db9841d2a1so5473878pfo.15
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 00:51:27 -0700 (PDT)
+        bh=twMQBKVBYP+3C668h6+k4MZ8lCmQRLRa2Kt2PzgnD7I=;
+        b=fU4eIbHq0Nl6gtwa6d40jnWXHCCE79En0ou2KhdeJwV9pbHBPs6F8qBzvIo8XzF8r7DXch
+        SP9LBd3CaGxGTdib/ZoQ++5F8KFsK704pFO4lcYLQH5jVmnJ0uMk4A4U9ViCNpzrbpK01D
+        BSaxPID2cFc6DOGYe7MoZzMrbhTtcAk=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-559-LRAG_wL1M6OC9zrJ2R-M5g-1; Mon, 31 May 2021 03:56:12 -0400
+X-MC-Unique: LRAG_wL1M6OC9zrJ2R-M5g-1
+Received: by mail-pl1-f198.google.com with SMTP id d10-20020a170902cecab02900f342ad66bdso2805388plg.4
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 00:56:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=bNGA1jL4s1cXzURPp/0nj2H5xrOIbUXubYxtkYgHXmM=;
-        b=mCRo5uzrMToLXSkN5/zvyfsajhrLDN9nZwwAJ/i8t+E3P/l3kxZ1Aln8jsG1EHCc31
-         0GtcE/jumQ6whUrGeOVIE7jO9sC0ChKhxglMgimRX6rpKZmEkMP/EBwc2JpeKZi6hD6Z
-         dJ5Qdrpt0b8CPDEhLCBLBsFpqwlw64Ud8OnMkvy0fb5UroiWAqgLMiUQLImw9JX5vWUu
-         LP2smhR6k7SSgG78oLbbIc61NOcR+93wjDkSwXr7mPNVaXH4P43cjoUW4C7eyyW/ljRH
-         zAUzFwD80TsKOk8PKM2guFlgiPT+84uV4/akROKi+ndFxCl2IUxmkB23NcSrRhQ4aKZb
-         sKog==
-X-Gm-Message-State: AOAM531s2jnaaYUaoswzN3otw9B7xAPEle7j91fLD0xt5qIx18L1/1bk
-        pFpmm7lsyTr/SBcj98M6PL3LvZ/304LGKYB/fIKLIPKZ7q94Xvw7wQzCvAYFH8BgrBARiWtZXcO
-        9YHN/z+7ON3dMm10N
-X-Received: by 2002:a62:828f:0:b029:2e9:1449:4269 with SMTP id w137-20020a62828f0000b02902e914494269mr15634100pfd.6.1622447486338;
-        Mon, 31 May 2021 00:51:26 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy0CMdqh/gqxDzY6nw0FnXAh/wMfejyrnXngWxGVTIiHVeU9O/RV3kFZY0/yKKbzZhYNYlaVA==
-X-Received: by 2002:a62:828f:0:b029:2e9:1449:4269 with SMTP id w137-20020a62828f0000b02902e914494269mr15634083pfd.6.1622447486045;
-        Mon, 31 May 2021 00:51:26 -0700 (PDT)
+        bh=twMQBKVBYP+3C668h6+k4MZ8lCmQRLRa2Kt2PzgnD7I=;
+        b=qcaDLkOntRzNpkefToyI6UiU/2UoLywxsFb2ydhNVc2HyVuDtuZhlRbfUfjoLwBF7W
+         ay0lHj9gVJPIDsE3IiKuAiYd13Dc6ExDnoVFsLPyiDV5zA43hGp+GjjoDcae7gR1N29B
+         6iOGmv4zhXl0LvFsAdaEySkIK2pj3+LTjRmUGlJe+lkSi3o+uR003hnqVDCOwELLfAtZ
+         yMpYkz9TC8temockqf+KPv3Q954jPaI6oPEaeIHy88INJOJ/QDEqLF3sraAThi3Y6jI1
+         k81m2kqPg3bEeBZywqt7iiGQ/T7ZAldV0WuKxuBjdOivpjkQHpkltrSSYbvm3E6CGUcK
+         gslA==
+X-Gm-Message-State: AOAM5330KWrVGjIEMuB+oH1q7G9D4CPNF7pchOlk9Mo6W5NcUkZmeDsT
+        303cVdHbM580FCo5Z/beSgAQYXJJ1MAqpOICJWSceRZsavCpghWypMYwdesz6e4CaSJc5CWnH+3
+        A28mtslTrzTXd1A6v
+X-Received: by 2002:a17:90a:d24a:: with SMTP id o10mr64990pjw.19.1622447771202;
+        Mon, 31 May 2021 00:56:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx8TC88Xtx7F14ZsQpXbpJHfPDYW9N6L5JuXudwujjTwdCrrK/LGYsXmWWRMwVYIznSPLKRCw==
+X-Received: by 2002:a17:90a:d24a:: with SMTP id o10mr64969pjw.19.1622447770917;
+        Mon, 31 May 2021 00:56:10 -0700 (PDT)
 Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id c17sm11010862pgm.3.2021.05.31.00.51.23
+        by smtp.gmail.com with ESMTPSA id 76sm920482pfy.82.2021.05.31.00.56.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 May 2021 00:51:25 -0700 (PDT)
-Subject: Re: [PATCH v3] virtio-net: Add validation for used length
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
-References: <20210528121157.105-1-xieyongji@bytedance.com>
- <49ab3d41-c5d8-a49d-3ff4-28ebfdba0181@redhat.com>
- <CACycT3uo-J3MYdEo0TscENewp3Xnjce8yFLtt6JkK8uZrvsMjg@mail.gmail.com>
+        Mon, 31 May 2021 00:56:10 -0700 (PDT)
+Subject: Re: [PATCH V2 RESEND 2/2] vDPA/ifcvf: implement doorbell mapping for
+ ifcvf
+To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <20210531073316.363655-1-lingshan.zhu@intel.com>
+ <20210531073316.363655-3-lingshan.zhu@intel.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <4ff90e78-0c7a-def6-ef84-367bcce4cea5@redhat.com>
-Date:   Mon, 31 May 2021 15:51:18 +0800
+Message-ID: <f3c28e92-3e8d-2a8a-ec5a-fc64f2098678@redhat.com>
+Date:   Mon, 31 May 2021 15:56:06 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <CACycT3uo-J3MYdEo0TscENewp3Xnjce8yFLtt6JkK8uZrvsMjg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210531073316.363655-3-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=gbk; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
 Precedence: bulk
@@ -75,73 +73,60 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-åœ¨ 2021/5/31 ä¸‹åˆ3:19, Yongji Xie å†™é“:
-> On Mon, May 31, 2021 at 2:49 PM Jason Wang <jasowang@redhat.com> wrote:
->>
->> åœ¨ 2021/5/28 ä¸‹åˆ8:11, Xie Yongji å†™é“:
->>> This adds validation for used length (might come
->>> from an untrusted device) to avoid data corruption
->>> or loss.
->>>
->>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
->>> ---
->>>    drivers/net/virtio_net.c | 28 +++++++++++++++++++++-------
->>>    1 file changed, 21 insertions(+), 7 deletions(-)
->>>
->>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>> index 073fec4c0df1..01f15b65824c 100644
->>> --- a/drivers/net/virtio_net.c
->>> +++ b/drivers/net/virtio_net.c
->>> @@ -732,6 +732,17 @@ static struct sk_buff *receive_small(struct net_device *dev,
->>>
->>>        rcu_read_lock();
->>>        xdp_prog = rcu_dereference(rq->xdp_prog);
->>> +     if (unlikely(len > GOOD_PACKET_LEN)) {
->>> +             pr_debug("%s: rx error: len %u exceeds max size %d\n",
->>> +                      dev->name, len, GOOD_PACKET_LEN);
->>> +             dev->stats.rx_length_errors++;
->>> +             if (xdp_prog)
->>> +                     goto err_xdp;
->>> +
->>> +             rcu_read_unlock();
->>> +             put_page(page);
->>> +             return NULL;
->>> +     }
->>>        if (xdp_prog) {
->>>                struct virtio_net_hdr_mrg_rxbuf *hdr = buf + header_offset;
->>>                struct xdp_frame *xdpf;
->>> @@ -888,6 +899,16 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->>>
->>>        rcu_read_lock();
->>>        xdp_prog = rcu_dereference(rq->xdp_prog);
->>> +     if (unlikely(len > truesize)) {
->>> +             pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
->>> +                      dev->name, len, (unsigned long)ctx);
->>> +             dev->stats.rx_length_errors++;
->>> +             if (xdp_prog)
->>> +                     goto err_xdp;
->>> +
->>> +             rcu_read_unlock();
->>> +             goto err_skb;
->>> +     }
->>
->> Patch looks correct but I'd rather not bother XDP here. It would be
->> better if we just do the check before rcu_read_lock() and use err_skb
->> directly() to avoid RCU/XDP stuffs.
->>
-> If so, we will miss the statistics of xdp_drops. Is it OK?
+ÔÚ 2021/5/31 ÏÂÎç3:33, Zhu Lingshan Ð´µÀ:
+> This commit implements doorbell mapping feature for ifcvf.
+> This feature maps the notify page to userspace, to eliminate
+> vmexit when kick a vq.
+>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>   drivers/vdpa/ifcvf/ifcvf_main.c | 17 +++++++++++++++++
+>   1 file changed, 17 insertions(+)
+>
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+> index ab0ab5cf0f6e..effb0e549135 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+> @@ -413,6 +413,22 @@ static int ifcvf_vdpa_get_vq_irq(struct vdpa_device *vdpa_dev,
+>   	return vf->vring[qid].irq;
+>   }
+>   
+> +static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
+> +							       u16 idx)
+> +{
+> +	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
+> +	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+> +	struct pci_dev *pdev = adapter->pdev;
+> +	struct vdpa_notification_area area;
+> +
+> +	area.addr = vf->vring[idx].notify_pa;
+> +	area.size = PAGE_SIZE;
+> +	if (area.addr % PAGE_SIZE)
+> +		IFCVF_DBG(pdev, "vq %u doorbell address is not PAGE_SIZE aligned\n", idx);
 
 
-It should be ok, we still had drops and it was dropped before dealing 
-with XDP.
+Let's leave the decision to upper layer by: (see 
+vp_vdpa_get_vq_notification)
 
-The motivation is to have simple codes.
+area.addr = notify_pa;
+area.size = notify_offset_multiplier;
 
 Thanks
 
 
->
-> Thanks,
-> Yongji
->
+> +
+> +	return area;
+> +}
+> +
+>   /*
+>    * IFCVF currently does't have on-chip IOMMU, so not
+>    * implemented set_map()/dma_map()/dma_unmap()
+> @@ -440,6 +456,7 @@ static const struct vdpa_config_ops ifc_vdpa_ops = {
+>   	.get_config	= ifcvf_vdpa_get_config,
+>   	.set_config	= ifcvf_vdpa_set_config,
+>   	.set_config_cb  = ifcvf_vdpa_set_config_cb,
+> +	.get_vq_notification = ifcvf_get_vq_notification,
+>   };
+>   
+>   static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
