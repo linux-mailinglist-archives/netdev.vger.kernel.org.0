@@ -2,101 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80E7539586C
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 11:48:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFF22395888
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 11:58:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbhEaJt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 05:49:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59774 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231124AbhEaJtj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 05:49:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622454475;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=y76x+T/DqY7snXN4EJ21xEIauzznPe1EtLBqOk+ixi8=;
-        b=FqRA1OXO9ieSAAq8W7xJYgqoj7U+7t4EVLh2hHbcl2S1m8rksm7Icbw9ToEpMJ1zEH5tuy
-        P6r2aHjETSBpSklGqzmvxm68gJrOKJPTeHZDhWzO50Mlop7lq7E/A5dBG90sPsIJDi+DVs
-        yD7QGpmy+OS9NWqPpi//f9+iDHYaFoU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-520-lDOLQirXMcmJnOeqVkmafw-1; Mon, 31 May 2021 05:47:54 -0400
-X-MC-Unique: lDOLQirXMcmJnOeqVkmafw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 22A111008560;
-        Mon, 31 May 2021 09:47:53 +0000 (UTC)
-Received: from Leo-laptop-t470s.redhat.com (ovpn-12-207.pek2.redhat.com [10.72.12.207])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 823B95D9C0;
-        Mon, 31 May 2021 09:47:51 +0000 (UTC)
-From:   Hangbin Liu <haliu@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org, Hangbin Liu <haliu@redhat.com>
-Subject: [PATCH iproute2-next 2/2] configure: convert LIBBPF environment variables to command-line options
-Date:   Mon, 31 May 2021 17:47:40 +0800
-Message-Id: <20210531094740.2483122-3-haliu@redhat.com>
-In-Reply-To: <20210531094740.2483122-1-haliu@redhat.com>
-References: <20210531094740.2483122-1-haliu@redhat.com>
+        id S231307AbhEaJ7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 05:59:34 -0400
+Received: from mga18.intel.com ([134.134.136.126]:43332 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231231AbhEaJ7c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 May 2021 05:59:32 -0400
+IronPort-SDR: iu8iJt7uMtizO2c9WWv12EbH6YHIQCxepLragOWhKeyS/tq0uKxCIF2sdKk/IEAk9CBp8GXL0v
+ fSMmntFcxD2A==
+X-IronPort-AV: E=McAfee;i="6200,9189,10000"; a="190694848"
+X-IronPort-AV: E=Sophos;i="5.83,236,1616482800"; 
+   d="scan'208";a="190694848"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 02:57:51 -0700
+IronPort-SDR: D87E8g807KfBxpAgMw14PAIF7Ktmu5SkA5rUR+BxswgTXbo+LICnf2zriB4odrnAD94HSgI4np
+ PRB7Ctemt9gw==
+X-IronPort-AV: E=Sophos;i="5.83,236,1616482800"; 
+   d="scan'208";a="478856558"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.215.190]) ([10.254.215.190])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 02:57:50 -0700
+Subject: Re: [PATCH RESEND 1/2] virtio: update virtio id table, add
+ transitional ids
+To:     Cornelia Huck <cohuck@redhat.com>
+Cc:     jasowang@redhat.com, mst@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <20210531072743.363171-1-lingshan.zhu@intel.com>
+ <20210531072743.363171-2-lingshan.zhu@intel.com>
+ <20210531095804.47629646.cohuck@redhat.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Message-ID: <53862384-be2b-4a5f-adbb-37eb25ec9fe1@intel.com>
+Date:   Mon, 31 May 2021 17:57:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <20210531095804.47629646.cohuck@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Hangbin Liu <haliu@redhat.com>
----
- configure | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/configure b/configure
-index c58419c2..0a4a0fc9 100755
---- a/configure
-+++ b/configure
-@@ -1,11 +1,6 @@
- #!/bin/sh
- # SPDX-License-Identifier: GPL-2.0
- # This is not an autoconf generated configure
--#
--# Influential LIBBPF environment variables:
--#   LIBBPF_FORCE={on,off}   on: require link against libbpf;
--#                           off: disable libbpf probing
--#   LIBBPF_DIR              Path to libbpf DESTDIR to use
- 
- INCLUDE="$PWD/include"
- 
-@@ -491,6 +486,10 @@ usage()
- 	cat <<EOF
- Usage: $0 [OPTIONS]
- 	--include_dir		Path to iproute2 include dir
-+	--libbpf_dir		Path to libbpf DESTDIR
-+	--libbpf_force		Enable/disable libbpf by force. Available options:
-+				  on: require link against libbpf, quit config if no libbpf support
-+				  off: disable libbpf probing
- 	-h | --help		Show this usage info
- EOF
- 	exit $1
-@@ -505,6 +504,15 @@ else
- 			--include_dir)
- 				INCLUDE=$2
- 				shift 2 ;;
-+			--libbpf_dir)
-+				LIBBPF_DIR="$2"
-+				shift 2 ;;
-+			--libbpf_force)
-+				if [ "$2" != 'on' ] && [ "$2" != 'off' ]; then
-+					usage 1
-+				fi
-+				LIBBPF_FORCE=$2
-+				shift 2 ;;
- 			-h | --help)
- 				usage 0 ;;
- 			"")
--- 
-2.26.3
+
+On 5/31/2021 3:58 PM, Cornelia Huck wrote:
+> On Mon, 31 May 2021 15:27:42 +0800
+> Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>
+>> This commit updates virtio id table by adding transitional device
+>> ids
+>> virtio_pci_common.h
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> ---
+>>   include/uapi/linux/virtio_ids.h | 12 ++++++++++++
+>>   1 file changed, 12 insertions(+)
+>>
+>> diff --git a/include/uapi/linux/virtio_ids.h b/include/uapi/linux/virtio_ids.h
+>> index f0c35ce8628c..fcc9ec6a73c1 100644
+>> --- a/include/uapi/linux/virtio_ids.h
+>> +++ b/include/uapi/linux/virtio_ids.h
+>> @@ -57,4 +57,16 @@
+>>   #define VIRTIO_ID_BT			28 /* virtio bluetooth */
+>>   #define VIRTIO_ID_MAC80211_HWSIM	29 /* virtio mac80211-hwsim */
+>>   
+>> +/*
+>> + * Virtio Transitional IDs
+>> + */
+>> +
+>> +#define VIRTIO_TRANS_ID_NET		1000 /* transitional virtio net */
+>> +#define VIRTIO_TRANS_ID_BLOCK		1001 /* transitional virtio block */
+>> +#define VIRTIO_TRANS_ID_BALLOON		1002 /* transitional virtio balloon */
+>> +#define VIRTIO_TRANS_ID_CONSOLE		1003 /* transitional virtio console */
+>> +#define VIRTIO_TRANS_ID_SCSI		1004 /* transitional virtio SCSI */
+>> +#define VIRTIO_TRANS_ID_RNG		1005 /* transitional virtio rng */
+>> +#define VIRTIO_TRANS_ID_9P		1009 /* transitional virtio 9p console */
+>> +
+>>   #endif /* _LINUX_VIRTIO_IDS_H */
+> Isn't this a purely virtio-pci concept? (The spec lists the virtio ids
+> in the common section, and those transitional ids in the pci section.)
+> IOW, is there a better, virtio-pci specific, header for this?
+Hi Cornelia,
+
+yes they are pure virtio-pci transitional concept. There is a 
+virtio_pci.h, but not looks like
+a good place for these stuffs, Michael ever suggested to add these ids 
+to virtio_ids.h, so I have
+chosen this file.
+
+https://www.spinics.net/lists/netdev/msg739269.html
+
+Thanks
+Zhu Lingshan
+>
 
