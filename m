@@ -2,142 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E736B395974
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 13:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BCB139597F
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 13:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231211AbhEaLLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 07:11:47 -0400
-Received: from mail-dm6nam08on2053.outbound.protection.outlook.com ([40.107.102.53]:6587
-        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230518AbhEaLLp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 May 2021 07:11:45 -0400
+        id S231394AbhEaLOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 07:14:20 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:30276 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231344AbhEaLOR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 07:14:17 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14VB9x5v012713;
+        Mon, 31 May 2021 04:12:33 -0700
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2175.outbound.protection.outlook.com [104.47.55.175])
+        by mx0a-0016f401.pphosted.com with ESMTP id 38vjqj1see-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 May 2021 04:12:33 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UTtzXAQM+lMSt2M5oT2uxTx/rHL2crpkKAzCie6f2YoopKpb0lE9z6ygiIF930/g6XfY2Elw0dGH3mv/jEzTRLq60NAi+SgT0pLByUj8WZGLsYPfR8WdL5pnfOz7nqWLujjfRVlCevb+D4261QSrNl9FeGCKJqNoD3jlbmHKZ7n8artwj8Hhw4a1Pm0/uZm+ptVwNzguL8u/KEx2p/IyF7vJsIp1+bx7zDP7NGd12aOjSQOeoHOa15UwAXcjHkTJsuR2lQUYPIdcOh14Dbv7pXrz7TqGaoTduZ0LWWqIee5VzaFFmNOMkfKEqdkq/+zqmSIfOOEY1x5ZyNcjK5HHGA==
+ b=a9bscks/T+nKpJpFFS1RqKglkGQGixegIYxOC+q3wIHx3BE4hg5AWbSzat6G1DROosEMuUZlDMeQ6SeaLpUSWcM8zb0vb3+a36Aeo5ctwM/CG3yl3+qmB07a0MR1R3lU47yYmM6aB6RpwqUnNIDJU+yOoJaflYFYBwP+Ac6+N9BFVLNUGsr3jriVHJ/VVuJp+Phvr4g8voh40gYgMf11xxXtGQNYlyp0iSlPl5f9sLujoabGesvp420ya82ywWDzdEIWUAARj94g5gs+5bIOuCXDHKtePkZ/OBqiMVYSmEWFDe3dZeW0FJx+xTrchfzGVw1dR5jIlpZy32NdGPzaVw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ldr3qPnIyrAbPxQDPyUXICk5zrUyRU9sMmU0UDpDfg0=;
- b=FAHmkGBT7cLK4RrjJEiDSCanornLi+Ntv8BJmuJTl83vWcyom1Z3dJPkFh1H2M4MbEmAZy2H2CtkI+8TB8Wssw2srj2qDtJVU1+xhtyKmxyxijRLLg1WoHWpt/DtzAoKuDm6OFqGUxSs1KGSW110OCEGHY1busVQqmB3MKH0JjLGAZmbayzN1+oNwM1CJKcNclftl9biE8ShXu409KMudPg/9o6XPh9t8C8sdiVZOQ8320sL1jznLGHWEU5Ow3qYXYNOcG+Q8TwbaMdRNmnJ1fK3fBWCjcKjYaHjCg8aIFh4pky5FK3akBQhREWXj0tZv3InPyYm8JUK3P3T80Up7Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=L8EdCwcTzaI2MqR5e4xG0KryKm8eiNxCPDnyCsbLfVU=;
+ b=Lo63BZIfcu15IsOSloNOGm67tNe7usVW5/i/z1XNwWWKSSm1fvSA+IFZzEEswbD143Ezq6w07pC9VKZlCRHF3pVfW3TM7pEM/cpx0iyc5npsqZ/vgQrbWdRzZ6lcljrVzRzEy4bVFSCC3JMsaWnu57lFPfgc2/n21z+42ZY1I774KwY77uqBjCp+9TBti0VQCkC+2wd0XMlYtCF8Z9uMNVaL+RVMABmSFNQl8MLJz1zUIBUDIF/gfQ0bWWEFvFzTC0ELwIolfVJaRSrgeM89DQhh9PaAMEr9BxqeeYsJUtgS/uLgz/H7Tx1LYMfRpR6TuME8Zur84A5b7T1W5CiK7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ldr3qPnIyrAbPxQDPyUXICk5zrUyRU9sMmU0UDpDfg0=;
- b=H/wcRFaaOhi0ydtOsUnSGLNWNnwvNLvygcWEoRlmxzrIcm4o7uKsagTRZ0QRgIKKU2wZ0mMCTUsT0ix3LwcSQ85pJ5ZMf9Dsx9MgaypeKH22YbH60mEnjQdjlJ1udPVRy/cT4CKZ7lW/EdGkJ/1ZhwNCp7fvFE+LLuZDmm/upFSRflxZIWtamG8yzc8pQBZyeKTcVLiI2F8GlkCSsCS5+FxzNl3owBJ2uXCchFoKvS4m7MgBRajjoCgTSMqwn4Xo6qFrvkjnK7b914XKoDJclTTHa9UOMRg3FNXru+ZWjzw4EzwS46n05RQTZUksYF2sdV2Phy42Izg17epL9pobxQ==
-Received: from MW4PR03CA0234.namprd03.prod.outlook.com (2603:10b6:303:b9::29)
- by DM6PR12MB3865.namprd12.prod.outlook.com (2603:10b6:5:1c4::14) with
+ bh=L8EdCwcTzaI2MqR5e4xG0KryKm8eiNxCPDnyCsbLfVU=;
+ b=QHEbUwymwkrhzaBTH0JsMCbJ2wsV5xSZ2EZYJ+cAjWHNE20nlSX8EOc+YTD0xySjbz9ZpnNXckWmK6h+YeUA5b8xFnULUl6H0M34Xy7gZaUbsM8n1hmQGmWJZWBl0roOL7gAKdjy4LStOl85cjVenAVxEVuYHHYvEpOJE0x4JSw=
+Received: from PH0PR18MB4039.namprd18.prod.outlook.com (2603:10b6:510:2d::6)
+ by PH0PR18MB4007.namprd18.prod.outlook.com (2603:10b6:510:2c::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21; Mon, 31 May
- 2021 11:10:05 +0000
-Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b9:cafe::28) by MW4PR03CA0234.outlook.office365.com
- (2603:10b6:303:b9::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22 via Frontend
- Transport; Mon, 31 May 2021 11:10:04 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4150.30 via Frontend Transport; Mon, 31 May 2021 11:10:04 +0000
-Received: from [172.27.12.2] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 31 May
- 2021 11:09:59 +0000
-Subject: Re: [PATCH net 2/2] net/tls: Fix use-after-free after the TLS device
- goes down and up
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Aviad Yehezkel <aviadye@nvidia.com>,
-        "Tariq Toukan" <tariqt@nvidia.com>, <netdev@vger.kernel.org>
-References: <20210524121220.1577321-1-maximmi@nvidia.com>
- <20210524121220.1577321-3-maximmi@nvidia.com>
- <20210525103915.05264e8c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <afa246d3-acfd-f3be-445c-3beace105c8f@nvidia.com>
- <20210528124421.12a84cb7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-Message-ID: <03669e23-0697-7a96-3d49-202e045cbf48@nvidia.com>
-Date:   Mon, 31 May 2021 14:09:56 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
-MIME-Version: 1.0
-In-Reply-To: <20210528124421.12a84cb7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Mon, 31 May
+ 2021 11:12:31 +0000
+Received: from PH0PR18MB4039.namprd18.prod.outlook.com
+ ([fe80::10ad:7f4c:f888:b700]) by PH0PR18MB4039.namprd18.prod.outlook.com
+ ([fe80::10ad:7f4c:f888:b700%4]) with mapi id 15.20.4173.030; Mon, 31 May 2021
+ 11:12:31 +0000
+From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
+To:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>
+Subject: RE: [EXT] [PATCH] bnx2x: Remove the repeated declaration
+Thread-Topic: [EXT] [PATCH] bnx2x: Remove the repeated declaration
+Thread-Index: AQHXVfcVoecU8h9ZXE2cTE85ZfiKnar9QswA
+Date:   Mon, 31 May 2021 11:12:31 +0000
+Message-ID: <PH0PR18MB40399D3B99EB8CDC0EF2273ED33F9@PH0PR18MB4039.namprd18.prod.outlook.com>
+References: <1622449756-2627-1-git-send-email-zhangshaokun@hisilicon.com>
+In-Reply-To: <1622449756-2627-1-git-send-email-zhangshaokun@hisilicon.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 16d9acf6-4a9c-454f-2885-08d92424a497
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3865:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB386564FA27CD543354180773DC3F9@DM6PR12MB3865.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PQFZOUSoyr9ei5oun3+7uCMrKGllnzoLTS3h1bOwyME4qBzv0OdNoV8Sa6vuK3r8p5Hn0fOPOWyhXzV1kDfmAECLV00SHLV6sF1A+U46kO+83k89udProcEwLdGjxf1xZ042tqZmjE1ZemmxCC+TBPx9UbPktX/onLAdefMYetz0GSmTZhYzoaqs9QtFPNV//OoKT3NeJNkaZCNUw6avOvSLmea/gdSG8Ugo6toOyIa/kGhKd6CnUNIlG63RYF3YW3GND2beSeAt5r5pAL9sZ7c9cV44gYUr4htdUwkfomO5GNIHPcE1IPUXdZr0k1bUEDJbGHXgObFcXGmomGQaAXh/+PxGtu/cGv69+bh3KF2IqyA7WVu7HMiZSamTOgTyBeEbU2qDZRXaWva8DN0MwyQkhGH2Bbtkb9R9K8zehFB83pUazlm/Em8ZYvBO2kHQkg6xcjUxbgL7z2REKIP4cH8Pqk/FPgLfJjyEF83xhZ72+IBDcBD+EQZvvmWfVFtjCJTL01Ak59BXCHlVJjjFV/vy9IkOIz8YgcMEnGv7T0AF3UwEUh/r8kMpVln7yibYcj3n2B50ZZDtAGT3RotkOYKEmZzwGFwXkb4lfFpRfwThiLKLA6VG7iQ4d+iDNO+G662BJlNRSplwE4lHRLMVUn74fFea859FsqNkmHafjnxOPyetb5ndsmrXnvZJgxfn
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(136003)(346002)(376002)(39860400002)(46966006)(36840700001)(6666004)(36906005)(16576012)(316002)(31686004)(36756003)(53546011)(356005)(6916009)(4326008)(70586007)(86362001)(82740400003)(54906003)(2616005)(26005)(5660300002)(8676002)(70206006)(8936002)(82310400003)(336012)(16526019)(186003)(426003)(478600001)(7636003)(47076005)(31696002)(36860700001)(2906002)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2021 11:10:04.7338
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: hisilicon.com; dkim=none (message not signed)
+ header.d=none;hisilicon.com; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [49.37.150.229]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 71fa37d9-bef4-4830-2cf8-08d92424fbe9
+x-ms-traffictypediagnostic: PH0PR18MB4007:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <PH0PR18MB4007686009E843DE96AC6ACCD33F9@PH0PR18MB4007.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:862;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ncJP8+HD1InE0QPRBMtSImMgsO6Wx2M5UgPc+rN+L9q9luKjTmXJbrEmU7lUwTFhdnibeWvQOHGBQoX08YgnRiDo4L1KdC1BtNGw7ZqWkGJJvmNnFFmxoKdAGyk8Zev25z6vLX7jZT/1RDBDSE8OuRFKmBgK+uJEnqzlW/ZFRAwhlr8Z1eHL5Aej2+sPFcaj9V/RkJMxcH/FMr8XZjDbNBh3Gt2nw6owfgBQGFMnPeDN+BhdEGRsalgDbJMNV8GngWkUMQLhYkVcUxCJXK7PEIpFjH3PONnHTqGuK8TzA0oZdCmy5TBd/fif4DMi6KCwJ7VdBxvHJtkwmRvOomVxz1mhJSn7JqsXCckwqG3oDhTUgGe69TUuugxw+HosecIYhUyOiy7ou81znuWhMK+5DiyY8yFLKPjd+78LCOk6Z1CyAFhM9H8XeDzrFdjV+rzQ3+sLg9/7Q6GBBOB40AVXYl1lWuYVwGO8ly22PfhIgIOlqEgm3PpVBx7ZDpXp3wczIAuLUz1Wwyi314fHssEwXFHGyWMvuLmEJePLsxrj0dgRvQcgVp1ips4XbljRgJMe98z5k55R7RcLs5gD7rfY49pf8VZR999S3cAol10lOQ4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR18MB4039.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(396003)(39860400002)(136003)(376002)(76116006)(53546011)(52536014)(8936002)(122000001)(8676002)(26005)(66476007)(6506007)(66556008)(64756008)(316002)(107886003)(66446008)(66946007)(38100700002)(54906003)(9686003)(478600001)(110136005)(5660300002)(86362001)(55016002)(2906002)(4326008)(71200400001)(186003)(7696005)(33656002)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?BKWpF3eIYkew8VQ5NWtXdcyJ2TgIQTQbiCDG+eDwl/2CJqfnl3DFTIhsSWsW?=
+ =?us-ascii?Q?2i1xduUYVhv0shEiUrXNXYOP/FuTYwrxNgrBYm5mj1N0UxBV290X/sHDX9ut?=
+ =?us-ascii?Q?csgWaNvGEgKhSZF7paN2gSFi1kGPbGE9yL94KVhZUk89Lmkmae9edpUhEnBS?=
+ =?us-ascii?Q?MeMdOE8nXuG24dl9VQ9LQvy/Ro6hcSV56JH2MHXzOuyhhLVKdVggFtDYSWPK?=
+ =?us-ascii?Q?7urQtoJqJXlreFUKJulelUzM9IFid7SW1jN4GHXMAdjpNveiAyXYN72Y6eVd?=
+ =?us-ascii?Q?DS5eRbMgOly4iNyWOfK5JATzGWSviNqWZS65JVgWzE38avVF3br/8BnKVpF9?=
+ =?us-ascii?Q?YEGMqWC08QQAK+beirs9SX984ICRlfAvlX87mcbgea/q90F2kicvPyHCxmFN?=
+ =?us-ascii?Q?qFj9/09InWep74O7nztKqHt5J6W9WgNOhWlwGK5M824/KziNBLU5aNgsLRRK?=
+ =?us-ascii?Q?4CeMs6pZsj56LVQWL8XU5D79pSoGYo041w573XxUffZDhkjIclUxktAsvJap?=
+ =?us-ascii?Q?zFY/yIhSBIgegbYwQ9w5GZS7oQf0o03w62aynHGH+S04QPHbGuOQO3Bn2yRX?=
+ =?us-ascii?Q?QuBZHTVm5r5L0JmmNkeduh9SmH4jU7wi0ClZ4odCkgVeBhwunDlSz/348GX1?=
+ =?us-ascii?Q?LnxCWpSL1wksZVnCcYP+V0s1xeVqMMqVaZBA8QvUF9oI8MoHZy8yEp4sWzM7?=
+ =?us-ascii?Q?ZX2qGfXeHkqQDGvwxjLY/LDV7L3z34JLjDz60xmlKEFkN6REJ6P8xL+Bw6GQ?=
+ =?us-ascii?Q?3mAtp8hVY6pOCCpHUWDKbrXd/vVWIuItMbSUCEkPITbVEr6RHBxT1wM0lDBu?=
+ =?us-ascii?Q?Ob6ln5XSTfSn3d8J+YwkDNlMvBxWJLZZTEvHqxPO9NrR8IBviM/Q78gf0LDp?=
+ =?us-ascii?Q?bc1IdZwAlFxcGLF2rpBDI4KEnNvO2KbidKqfGBTtwPutwgWPFd/AXlkll+qo?=
+ =?us-ascii?Q?b5qLBN+KDrylapJ+5oxpF9jV/c3GDJMVDsXPskmKWs1wtAt86LKfUvaCZ2Sm?=
+ =?us-ascii?Q?wMGwFcPZP4t7yAxuLyYvpUfDJBJVxO8uYid5kWmKAluSINp4tuxKek/KBAal?=
+ =?us-ascii?Q?VZZTtGHAB4NTU39IQ2JNrrGJDEJC331ghw9kfxmxDNV8fLcGKHDE5QZOWbtj?=
+ =?us-ascii?Q?lpvjQ+lC0MRu/RvmNiw+IsylfNRBEEgZk7Z+URM+ujBBtS97nh5Y5D0bSa+9?=
+ =?us-ascii?Q?2u0sraVXNLLuBDHnbYvsXfoWZGD5cp2BuuC7e7I/jWHFycQFsVcS9Q1mJDiU?=
+ =?us-ascii?Q?DohXfqzMvT2hL9zQkTlDzjXGdomNAC7Vpa3cLeku1bEvq1sJKgCOrXuVIhET?=
+ =?us-ascii?Q?KlgtKbawY1aftewrpKAbrP16?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR18MB4039.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71fa37d9-bef4-4830-2cf8-08d92424fbe9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2021 11:12:31.2106
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16d9acf6-4a9c-454f-2885-08d92424a497
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3865
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7JF5Csi0/GXus5LwSpDj4gsfVznbqm1Vdn51GgNAwfqQIlyWDnXIfBhgAEX0+jXCpOTHfJCTrjWHkfBqf4zk3g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR18MB4007
+X-Proofpoint-GUID: g87gAQTyvbek34WXSo4lUdbCvaeg3ZWz
+X-Proofpoint-ORIG-GUID: g87gAQTyvbek34WXSo4lUdbCvaeg3ZWz
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-31_08:2021-05-31,2021-05-31 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-05-28 22:44, Jakub Kicinski wrote:
-> On Fri, 28 May 2021 15:40:38 +0300 Maxim Mikityanskiy wrote:
->>>> @@ -961,6 +964,17 @@ int tls_device_decrypted(struct sock *sk, struct tls_context *tls_ctx,
->>>>    
->>>>    	ctx->sw.decrypted |= is_decrypted;
->>>>    
->>>> +	if (unlikely(test_bit(TLS_RX_DEV_DEGRADED, &tls_ctx->flags))) {
->>>
->>> Why not put the check in tls_device_core_ctrl_rx_resync()?
->>> Would be less code, right?
->>
->> I see what you mean, and I considered this option, but I think my option
->> has better readability and is more future-proof. By doing an early
->> return, I skip all code irrelevant to the degraded mode, and even though
->> changing ctx->resync_nh_reset won't have effect in the degraded mode, it
->> will be easier for readers to understand that this part of code is not
->> relevant. Furthermore, if someone decides to add more code to
->> !is_encrypted branches in the future, there is a chance that the
->> degraded mode will be missed from consideration. With the early return
->> there is not problem, but if I follow your suggestion and do the check
->> only under is_encrypted, a future contributor unfamiliar with this
->> "degraded flow" might fail to add that check where it will be needed.
->>
->> This was the reason I implemented it this way. What do you think?
-> 
-> In general "someone may miss this in the future" is better served by
-> adding a test case than code duplication. But we don't have infra to
-> fake-offload TLS so I don't feel strongly. You can keep as is if that's
-> your preference.
 
-Yeah, I agree that we would benefit from having unit tests for such 
-flows. But as we don't have the needed infrastructure, and you are fine 
-with the current implementation, I'll keep it. The only thing I need to 
-fix when resubmitting is the unneeded EXPORT_SYMBOL_GPL, right?
+> -----Original Message-----
+> From: Shaokun Zhang <zhangshaokun@hisilicon.com>
+> Sent: Monday, May 31, 2021 1:59 PM
+> To: netdev@vger.kernel.org
+> Cc: Shaokun Zhang <zhangshaokun@hisilicon.com>; Ariel Elior
+> <aelior@marvell.com>; Sudarsana Reddy Kalluru <skalluru@marvell.com>;
+> GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>
+> Subject: [EXT] [PATCH] bnx2x: Remove the repeated declaration
+>=20
+> External Email
+>=20
+> ----------------------------------------------------------------------
+> Function 'bnx2x_vfpf_release' is declared twice, so remove the repeated
+> declaration.
+>=20
+> Cc: Ariel Elior <aelior@marvell.com>
+> Cc: Sudarsana Kalluru <skalluru@marvell.com>
+> Cc: GR-everest-linux-l2@marvell.com
+> Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+> ---
+>  drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.h | 1 -
+>  1 file changed, 1 deletion(-)
+>=20
+> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.h
+> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.h
+> index 3a716c015415..966d5722c5e2 100644
+> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.h
+> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.h
+> @@ -504,7 +504,6 @@ enum sample_bulletin_result
+> bnx2x_sample_bulletin(struct bnx2x *bp);
+>  /* VF side vfpf channel functions */
+>  int bnx2x_vfpf_acquire(struct bnx2x *bp, u8 tx_count, u8 rx_count);  int
+> bnx2x_vfpf_release(struct bnx2x *bp); -int bnx2x_vfpf_release(struct bnx2=
+x
+> *bp);  int bnx2x_vfpf_init(struct bnx2x *bp);  void bnx2x_vfpf_close_vf(s=
+truct
+> bnx2x *bp);  int bnx2x_vfpf_setup_q(struct bnx2x *bp, struct bnx2x_fastpa=
+th
+> *fp,
+> --
+> 2.7.4
 
-Thanks for reviewing.
-
-> 
-
+Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
