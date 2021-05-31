@@ -2,119 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC4D39574B
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 10:44:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F527395756
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 10:47:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230104AbhEaIqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 04:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51186 "EHLO
+        id S230439AbhEaItb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 04:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbhEaIqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 04:46:17 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E9BC061760
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 01:44:37 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id v5so13998366ljg.12
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 01:44:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qSiHm2x0VYis9oHGnKO3wH7svcL5++yEAOjW2BWiBYU=;
-        b=lUxQ/k0n1JapZZYTm69WFnp1eyRdyBv9rIpg5Qh78uGFcJwW9zj0JcGANNe5jNTAFG
-         ozbtZ19Nc+BI3pdHuSh+/AHWTjfLNx+jpgL2KiYFpm5juWP8Q+fXbywiRAarGYsAFa66
-         n5Lmmdf6u0AfEvUhf/zjjSwkd4PUgWkBeSrNEGIKth9VCi0zGtBuhxe4oAhERKzc18wf
-         IIi4BH9yYkES5wS/298ydjGJp8UFleI9hGUBoL9WweIR1jYeZDqGgHYcl/D6UNXQyOR8
-         MNiFxe6hNyYGtsi2S9uF7/N7aDogN7+HMo7wS1+aCdcMz53ZnOoS5VHUytvp03Gppzzc
-         XM2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qSiHm2x0VYis9oHGnKO3wH7svcL5++yEAOjW2BWiBYU=;
-        b=nXH3rHIu+0bXHBuDgxC1GTn4QMUwLnJVw+duQ5YBUCsvm5HGwrXIKTWp4BuD7JTq+a
-         +p7cPfE7SYQ8VLt9GYxfwrAODnbhGMsaQ+qofb0pFYzOktVsYyUSC8R2JbB8nw35y81S
-         b8pRT0sw+jKubMfSjmx66KaMzUathNUZZRBL9xNsvARuMfbYL9JUhBWWPR+xiNq4/B1w
-         MWmALnUw5exda53DKd074Yyicr7i3TuAVPZnIhCisseghEs/uSSmWdLR8VY/gX1XoM7H
-         Zy0rXiTQFYw1xT3TagDLsTow+9Vb4H2+0aIkRKdD1jaNWSk43io3H2a30y49HT1AxNjx
-         T25A==
-X-Gm-Message-State: AOAM531dwZRIBO+E63IDuEoUnP2kf9MCr5EIDv50y8hwSlk0a1pggA3h
-        3LDKYUyuZOynvXd1aPLxZlUi7Rinr4ZxtTJRHDYK3w==
-X-Google-Smtp-Source: ABdhPJx9Ta1DFU72yZxzmXeXZOHH/mxW2HUJNM4rOxP7dcdz3+l3k6YcFpfBLmsFpnqUgnCpq0TZ4Q5SQiQ1fLRuA1Q=
-X-Received: by 2002:a2e:154a:: with SMTP id 10mr15435817ljv.133.1622450676013;
- Mon, 31 May 2021 01:44:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210525102941.3958649-1-apusaka@google.com> <20210525182900.6.Id35872ce1572f18e0792e6f4d70721132e97a480@changeid>
- <42C641C9-2EAC-4A47-9FF7-8A079DF278E0@holtmann.org>
-In-Reply-To: <42C641C9-2EAC-4A47-9FF7-8A079DF278E0@holtmann.org>
-From:   Archie Pusaka <apusaka@google.com>
-Date:   Mon, 31 May 2021 16:44:25 +0800
-Message-ID: <CAJQfnxHf1FEe-TWgSj7rJ=h4+_=LXm0QPXHoJUn3tpWnm6mvtw@mail.gmail.com>
-Subject: Re: [PATCH 06/12] Bluetooth: use inclusive language in RFCOMM
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
+        with ESMTP id S230475AbhEaItQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 04:49:16 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E9BC061574
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 01:47:37 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lndZy-0003CN-NZ; Mon, 31 May 2021 10:47:22 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:eb0a:85ec:ae31:4631])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id CD72F62FB35;
+        Mon, 31 May 2021 08:47:20 +0000 (UTC)
+Date:   Mon, 31 May 2021 10:47:20 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
         "David S. Miller" <davem@davemloft.net>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v2 1/2] can: mcp251xfd: Try to get crystal clock rate
+ from property
+Message-ID: <20210531084720.6xql2r4uhp6ruzl6@pengutronix.de>
+References: <20210526193327.70468-1-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="2berr7nn6ppdwg42"
+Content-Disposition: inline
+In-Reply-To: <20210526193327.70468-1-andriy.shevchenko@linux.intel.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
 
-Thanks for the reply. I have sent v2 which omits this patch. Please take a look.
+--2berr7nn6ppdwg42
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I am not familiar with the libbluetooth API. Could you tell me more about it?
-Beside this and the L2CAP change, are there any other terms
-replacement which can't be accepted due to the libbluetooth API?
+On 26.05.2021 22:33:26, Andy Shevchenko wrote:
+> In some configurations, mainly ACPI-based, the clock frequency of the dev=
+ice
+> is supplied by very well established 'clock-frequency' property. Hence, t=
+ry
+> to get it from the property at last if no other providers are available.
+>=20
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> v2: new patch
+>  drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net=
+/can/spi/mcp251xfd/mcp251xfd-core.c
+> index e0ae00e34c7b..e42f87c3f2ec 100644
+> --- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+> +++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+> @@ -2856,7 +2856,7 @@ static int mcp251xfd_probe(struct spi_device *spi)
+>  	struct gpio_desc *rx_int;
+>  	struct regulator *reg_vdd, *reg_xceiver;
+>  	struct clk *clk;
+> -	u32 freq;
+> +	u32 freq, rate;
+>  	int err;
+> =20
+>  	if (!spi->irq)
+> @@ -2883,11 +2883,16 @@ static int mcp251xfd_probe(struct spi_device *spi)
+>  		return dev_err_probe(&spi->dev, PTR_ERR(reg_xceiver),
+>  				     "Failed to get Transceiver regulator!\n");
+> =20
+> -	clk =3D devm_clk_get(&spi->dev, NULL);
+> +	/* Always ask for fixed clock rate from a property. */
+> +	device_property_read_u32(&spi->dev, "clock-frequency", &rate);
 
-Cheers,
-Archie
+what about error handling....?
 
+> +
+> +	clk =3D devm_clk_get_optional(&spi->dev, NULL);
+>  	if (IS_ERR(clk))
+>  		return dev_err_probe(&spi->dev, PTR_ERR(clk),
+>  				     "Failed to get Oscillator (clock)!\n");
+>  	freq =3D clk_get_rate(clk);
+> +	if (freq =3D=3D 0)
+> +		freq =3D rate;
 
-On Wed, 26 May 2021 at 23:07, Marcel Holtmann <marcel@holtmann.org> wrote:
+=2E.. this means we don't fail if there is neither a clk nor a
+clock-frequency property. I've send a v3 to fix this.
+
+> =20
+>  	/* Sanity check */
+>  	if (freq < MCP251XFD_SYSCLOCK_HZ_MIN ||
+> --=20
+> 2.30.2
+>=20
 >
-> Hi Archie,
->
-> > Use "central" and "peripheral".
-> >
-> > Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> > Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-> >
-> > ---
-> >
-> > include/net/bluetooth/rfcomm.h | 2 +-
-> > net/bluetooth/rfcomm/sock.c    | 4 ++--
-> > 2 files changed, 3 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/include/net/bluetooth/rfcomm.h b/include/net/bluetooth/rfcomm.h
-> > index 99d26879b02a..6472ec0053b9 100644
-> > --- a/include/net/bluetooth/rfcomm.h
-> > +++ b/include/net/bluetooth/rfcomm.h
-> > @@ -290,7 +290,7 @@ struct rfcomm_conninfo {
-> > };
-> >
-> > #define RFCOMM_LM     0x03
-> > -#define RFCOMM_LM_MASTER     0x0001
-> > +#define RFCOMM_LM_CENTRAL    0x0001
-> > #define RFCOMM_LM_AUTH                0x0002
-> > #define RFCOMM_LM_ENCRYPT     0x0004
-> > #define RFCOMM_LM_TRUSTED     0x0008
->
-> I am not planning to accept this change any time soon since this is also in the libbluetooth API.
->
-> Regards
->
-> Marcel
->
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--2berr7nn6ppdwg42
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmC0opUACgkQqclaivrt
+76kAVAgAqxbBCmlQAhoPyB073hbARvhTkRMi7Q//Py9WHyiwEPwLFfAvTGN/7sFr
+R7B09kzNaahBQ+bX/BclI5UcsGva5QgGouXJDz8MF/ilXskAeqzVhw4GUJbVj2EJ
+CYVk1Hu4QebsFgUH0+g8PPd4R6FxK3t+xPmG9KlyHy6DC+zTCl8AK8PbvJcKMdHH
+s1mM09kknfCCUVlT8xyUifEYY9OyPj+OHfsxMiRzxqRKx+ep5/wmgy2BJ/C0I4YC
+2cU044bLKbcNd21nduqrt8uD9+QBL4J10MNhGZW3J3nonzmXiEJ48vLOLXLZqKAR
+AQC/CFipnfIvuy7Ctupd0xLvmMcH7Q==
+=58nX
+-----END PGP SIGNATURE-----
+
+--2berr7nn6ppdwg42--
