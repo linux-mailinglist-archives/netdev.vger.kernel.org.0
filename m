@@ -2,341 +2,412 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2F1E3969F0
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 00:58:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A05B396A22
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 01:47:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232683AbhEaW7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 18:59:36 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:34324 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232633AbhEaW7c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 18:59:32 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14VMpOsU002173;
-        Mon, 31 May 2021 15:55:42 -0700
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 38vtnja4rd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 31 May 2021 15:55:42 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 31 May
- 2021 15:55:40 -0700
-Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
- DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Mon, 31 May 2021 15:55:36 -0700
-From:   Shai Malin <smalin@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-nvme@lists.infradead.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <sagi@grimberg.me>,
-        <hch@lst.de>, <axboe@fb.com>, <kbusch@kernel.org>
-CC:     <aelior@marvell.com>, <mkalderon@marvell.com>,
-        <okulkarni@marvell.com>, <pkushwaha@marvell.com>,
-        <prabhakar.pkin@gmail.com>, <malin1024@gmail.com>,
-        <smalin@marvell.com>
-Subject: [RFC PATCH v7 27/27] qedn: Add support of ASYNC
-Date:   Tue, 1 Jun 2021 01:52:22 +0300
-Message-ID: <20210531225222.16992-28-smalin@marvell.com>
-X-Mailer: git-send-email 2.16.6
-In-Reply-To: <20210531225222.16992-1-smalin@marvell.com>
-References: <20210531225222.16992-1-smalin@marvell.com>
+        id S232320AbhEaXtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 19:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231144AbhEaXtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 19:49:24 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E356C061574;
+        Mon, 31 May 2021 16:47:42 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id jt22so18831136ejb.7;
+        Mon, 31 May 2021 16:47:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Nye33/azhY989fSWfDH7wtSEsC0TAbGD11w81JUZxGE=;
+        b=MZb9AkEXGg8B+vuB5Ox/rWWo8pI+apxYeG6/xMNneCyZvWdUuj6h2F8wgggSRCExA8
+         odJt0E1a5TISxeerM5jDT8vaCkjLgCXNLKhyMuzYImoXpKZhrBEYOFKUFw8uUyp86P4N
+         xTgaZNnZpOou+hcOqeIsSHqJ4X7BiR6gLr1LiRwwA+7eXiuf6fFnZ9C++IrMusNP4kIo
+         GtcdUKNNGXmw7Mn+/CuYgV+XNpx/RefKIyY+1vbaFxS+kUrtNWEaolgZAFbHcmDUGPRb
+         sebGlY+JZs2WL4ve7Sa8E8etWVWOoswX7+NA+tG08261iAXdV3ta3/1arR4f2PHNJy5N
+         nxpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Nye33/azhY989fSWfDH7wtSEsC0TAbGD11w81JUZxGE=;
+        b=scKh/ZojHPQk1bbS+i1hLptf6AacjkQNsgcY0VlIGD6TLZSiop+Q1h1yVBTUOu2eoI
+         pX96RpKMKiINxf/pi+do6xUiSo2YhRf4KvkAdVZpAT4lZAwIJ76Qi2Rq6CkWhpFxc61D
+         +ZsnkozNSBa740KZpMORQOiQXVi47gamZzbdcOAj9lrsoCB+It19VfHv6g18fN67I3RY
+         V10P8r4BMWLScuB2HH0cYKEBdO30qKpHyYl6DHmcBXH6CUudj3nk9srKAM1PK5BRySPC
+         whrHuSqvKkQYT1OyxDx8k8U0gggWLdIuMxxPRr5sO0Iowmr81UKBGGFCYByK29kyf5GA
+         92sQ==
+X-Gm-Message-State: AOAM5311C7BAQjcpBjuE1J2hOF/LwXsgSVjBJdntAGBZBpWxc7lvIdTX
+        hKF1t8H6luNkmeiovNL7Xd0=
+X-Google-Smtp-Source: ABdhPJwrfEM1+PCKlvcFKnJ2L+EXEx1iN/afVIrMCo9Qw2yPbWxIKObVtxnSVETPIchvgva6+rflyQ==
+X-Received: by 2002:a17:906:bb0e:: with SMTP id jz14mr25124027ejb.285.1622504859889;
+        Mon, 31 May 2021 16:47:39 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id um5sm3342658ejb.109.2021.05.31.16.47.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 May 2021 16:47:39 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next] dt-bindings: net: dsa: sja1105: convert to YAML schema
+Date:   Tue,  1 Jun 2021 02:47:35 +0300
+Message-Id: <20210531234735.1582031-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: jAI4ztD0ojnPJhhUFB6tX25cC4A8-1Cd
-X-Proofpoint-ORIG-GUID: jAI4ztD0ojnPJhhUFB6tX25cC4A8-1Cd
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-05-31_15:2021-05-31,2021-05-31 signatures=0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Prabhakar Kushwaha <pkushwaha@marvell.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This patch implement ASYNC request and response event notification
-handling at qedn driver level.
+The following issues exist with the device-specific sja1105,role-mac and
+sja1105,role-phy:
 
-NVME Ofld layer's ASYNC request is treated similar to read with
-fake CCCID. This CCCID used to route ASYNC notification back to
-the NVME ofld layer.
+(a) the "sja1105" is not a valid vendor prefix and should probably have
+    been "nxp", but
+(b) as per the discussion with Florian here:
+    https://lore.kernel.org/netdev/20210201214515.cx6ivvme2tlquge2@skbuf/
+    more phy-mode values similar to "revmii" can be added which denote
+    that the port is in the role of a PHY (such as "revrmii"), making
+    the sja1105,role-phy redundant. Because there are no upstream users
+    (or any users at all, to my knowledge) of these properties, they
+    could even be removed in a future commit as far as I am concerned.
+(c) when I force-add sja1105,role-phy to a device tree for testing, the
+    patternProperties matching does not work, it results in the following
+    error:
 
-Acked-by: Igor Russkikh <irusskikh@marvell.com>
-Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
+ethernet-switch@2: ethernet-ports:port@1: 'sja1105,role-phy' does not match any of the regexes: 'pinctrl-[0-9]+'
+        From schema: Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+
+But what's even more interesting is that if I remove the
+"additionalProperties: true" that dsa.yaml has, I get even more
+validation errors coming from patternProperties not matching either,
+from spi-controller.yaml:
+
+ethernet-switch@2: 'compatible', 'mdio', 'reg', 'spi-cpol', 'spi-max-frequency' do not match any of the regexes: '^(ethernet-)?ports$', 'pinctrl-[0-9]+'
+
+So... it is probably broken. Rob Herring says here:
+https://lore.kernel.org/linux-spi/20210324181037.GB3320002@robh.at.kernel.org/
+
+  I'm aware of the issue, but I don't have a solution for this situation.
+  It's a problem anywhere we have a parent or bus binding defining
+  properties for child nodes. For now, I'd just avoid it in the examples
+  and we'll figure out how to deal with actual dts files later.
+
+So that's what I did.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/nvme/hw/qedn/qedn.h      |   8 ++
- drivers/nvme/hw/qedn/qedn_main.c |   1 +
- drivers/nvme/hw/qedn/qedn_task.c | 148 +++++++++++++++++++++++++++++--
- 3 files changed, 148 insertions(+), 9 deletions(-)
+ .../bindings/net/dsa/nxp,sja1105.yaml         | 128 ++++++++++++++
+ .../devicetree/bindings/net/dsa/sja1105.txt   | 156 ------------------
+ 2 files changed, 128 insertions(+), 156 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/dsa/sja1105.txt
 
-diff --git a/drivers/nvme/hw/qedn/qedn.h b/drivers/nvme/hw/qedn/qedn.h
-index 286d2f984a41..f50c5aa0c936 100644
---- a/drivers/nvme/hw/qedn/qedn.h
-+++ b/drivers/nvme/hw/qedn/qedn.h
-@@ -96,6 +96,9 @@
- #define QEDN_TASK_CLEANUP_TMO 3000 /* 3 sec */
- #define QEDN_DRAIN_TMO 1000 /* 1 sec */
- 
-+#define QEDN_MAX_OUTSTAND_ASYNC 32
-+#define QEDN_INVALID_CCCID (-1)
+diff --git a/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml b/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+new file mode 100644
+index 000000000000..312f859cc40c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+@@ -0,0 +1,128 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/dsa/nxp,sja1105.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- enum qedn_state {
- 	QEDN_STATE_CORE_PROBED = 0,
- 	QEDN_STATE_CORE_OPEN,
-@@ -178,6 +181,7 @@ struct qedn_ctx {
- 
- enum qedn_task_flags {
- 	QEDN_TASK_IS_ICREQ,
-+	QEDN_TASK_ASYNC,
- 	QEDN_TASK_USED_BY_FW,
- 	QEDN_TASK_WAIT_FOR_CLEANUP,
- };
-@@ -346,6 +350,10 @@ struct qedn_conn_ctx {
- 	struct nvme_tcp_icresp_pdu icresp;
- 	struct qedn_icreq_padding *icreq_pad;
- 
-+	DECLARE_BITMAP(async_cccid_idx_map, QEDN_MAX_OUTSTAND_ASYNC);
-+	/* Spinlock for fetching pseudo CCCID for async request */
-+	spinlock_t async_cccid_bitmap_lock;
++title: NXP SJA1105 Automotive Ethernet Switch Family Device Tree Bindings
 +
- 	/* "dummy" socket */
- 	struct socket *sock;
- };
-diff --git a/drivers/nvme/hw/qedn/qedn_main.c b/drivers/nvme/hw/qedn/qedn_main.c
-index d2f8124a8267..5d761a68a516 100644
---- a/drivers/nvme/hw/qedn/qedn_main.c
-+++ b/drivers/nvme/hw/qedn/qedn_main.c
-@@ -332,6 +332,7 @@ static int qedn_create_queue(struct nvme_tcp_ofld_queue *queue, int qid,
- 	atomic_set(&conn_ctx->destroy_conn_indicator, 0);
- 
- 	spin_lock_init(&conn_ctx->conn_state_lock);
-+	spin_lock_init(&conn_ctx->async_cccid_bitmap_lock);
- 
- 	conn_ctx->qid = qid;
- 
-diff --git a/drivers/nvme/hw/qedn/qedn_task.c b/drivers/nvme/hw/qedn/qedn_task.c
-index 2ac41b251292..6e3347a6218f 100644
---- a/drivers/nvme/hw/qedn/qedn_task.c
-+++ b/drivers/nvme/hw/qedn/qedn_task.c
-@@ -260,10 +260,45 @@ void qedn_common_clear_fw_sgl(struct storage_sgl_task_params *sgl_task_params)
- 	sgl_task_params->num_sges = 0;
- }
- 
--inline void qedn_host_reset_cccid_itid_entry(struct qedn_conn_ctx *conn_ctx,
--					     u16 cccid)
-+inline void qedn_host_reset_cccid_itid_entry(struct qedn_conn_ctx *conn_ctx, u16 cccid, bool async)
- {
- 	conn_ctx->host_cccid_itid[cccid].itid = cpu_to_le16(QEDN_INVALID_ITID);
-+	if (unlikely(async))
-+		clear_bit(cccid - NVME_AQ_DEPTH,
-+			  conn_ctx->async_cccid_idx_map);
-+}
++description:
++  The SJA1105 SPI interface requires a CS-to-CLK time (t2 in UM10944.pdf) of at
++  least one half of t_CLK. At an SPI frequency of 1MHz, this means a minimum
++  cs_sck_delay of 500ns. Ensuring that this SPI timing requirement is observed
++  depends on the SPI bus master driver.
 +
-+static int qedn_get_free_idx(struct qedn_conn_ctx *conn_ctx, unsigned int size)
-+{
-+	int idx;
++allOf:
++  - $ref: "dsa.yaml#"
 +
-+	spin_lock(&conn_ctx->async_cccid_bitmap_lock);
-+	idx = find_first_zero_bit(conn_ctx->async_cccid_idx_map, size);
-+	if (unlikely(idx >= size)) {
-+		idx = -1;
-+		spin_unlock(&conn_ctx->async_cccid_bitmap_lock);
-+		goto err_idx;
-+	}
-+	set_bit(idx, conn_ctx->async_cccid_idx_map);
-+	spin_unlock(&conn_ctx->async_cccid_bitmap_lock);
++maintainers:
++  - Vladimir Oltean <vladimir.oltean@nxp.com>
 +
-+err_idx:
++properties:
++  compatible:
++    enum:
++      - nxp,sja1105e
++      - nxp,sja1105t
++      - nxp,sja1105p
++      - nxp,sja1105q
++      - nxp,sja1105r
++      - nxp,sja1105s
 +
-+	return idx;
-+}
++  reg:
++    maxItems: 1
 +
-+int qedn_get_free_async_cccid(struct qedn_conn_ctx *conn_ctx)
-+{
-+	int async_cccid;
++patternProperties:
++  "^(ethernet-)?ports$":
++    type: object
 +
-+	async_cccid =
-+		qedn_get_free_idx(conn_ctx, QEDN_MAX_OUTSTAND_ASYNC);
-+	if (unlikely(async_cccid == QEDN_INVALID_CCCID))
-+		pr_err("No available CCCID for Async.\n");
-+	else
-+		async_cccid += NVME_AQ_DEPTH;
++    patternProperties:
++      "^(ethernet-)?port@[0-9]+$":
++        type: object
++        properties:
 +
-+	return async_cccid;
- }
- 
- inline void qedn_host_set_cccid_itid_entry(struct qedn_conn_ctx *conn_ctx, u16 cccid, u16 itid)
-@@ -352,10 +387,12 @@ void qedn_return_task_to_pool(struct qedn_conn_ctx *conn_ctx,
- 	struct qedn_fp_queue *fp_q = conn_ctx->fp_q;
- 	struct qedn_io_resources *io_resrc;
- 	unsigned long lock_flags;
-+	bool async;
- 
- 	io_resrc = &fp_q->host_resrc;
- 
- 	spin_lock_irqsave(&qedn_task->lock, lock_flags);
-+	async = test_bit(QEDN_TASK_ASYNC, &(qedn_task)->flags);
- 	qedn_task->valid = 0;
- 	qedn_task->flags = 0;
- 	qedn_clear_sgl(conn_ctx->qedn, qedn_task);
-@@ -363,7 +400,7 @@ void qedn_return_task_to_pool(struct qedn_conn_ctx *conn_ctx,
- 
- 	spin_lock(&conn_ctx->task_list_lock);
- 	list_del(&qedn_task->entry);
--	qedn_host_reset_cccid_itid_entry(conn_ctx, qedn_task->cccid);
-+	qedn_host_reset_cccid_itid_entry(conn_ctx, qedn_task->cccid, async);
- 	spin_unlock(&conn_ctx->task_list_lock);
- 
- 	atomic_dec(&conn_ctx->num_active_tasks);
-@@ -410,6 +447,60 @@ qedn_get_free_task_from_pool(struct qedn_conn_ctx *conn_ctx, u16 cccid)
- 	return qedn_task;
- }
- 
-+void qedn_send_async_event_cmd(struct qedn_task_ctx *qedn_task,
-+			       struct qedn_conn_ctx *conn_ctx)
-+{
-+	struct nvme_tcp_ofld_req *async_req = qedn_task->req;
-+	struct nvme_command *nvme_cmd = &async_req->nvme_cmd;
-+	struct storage_sgl_task_params *sgl_task_params;
-+	struct nvmetcp_task_params task_params;
-+	struct nvme_tcp_cmd_pdu cmd_hdr;
-+	struct nvmetcp_wqe *chain_sqe;
-+	struct nvmetcp_wqe local_sqe;
++          # By default (unless otherwise specified) a port is configured as MAC
++          # if it is driving a PHY (phy-handle is present) or as PHY if it is
++          # PHY-less (fixed-link specified, presumably because it is connected
++          # to a MAC). It is suggested to not use these bindings unless an
++          # explicit override is necessary (for example, if SJA1105 ports are at
++          # both ends of a MII/RMII PHY-less setup. In that case, one end would
++          # need to have sja1105,role-mac, and the other sja1105,role-phy).
++          sja1105,role-mac:
++            $ref: /schemas/types.yaml#/definitions/flag
++            description: |
++                Specifies whether the SJA1105 port is a clock source or sink
++                for this interface, according to the applicable standard
++                (applicable for MII and RMII, but not applicable for RGMII
++                where there are separate TX and RX clocks). In the case of
++                RGMII it affects the behavior regarding internal delays.
++                If the port is configured in the role of an RGMII MAC, it will
++                let the PHY apply internal RGMII delays according to the
++                phy-mode property, otherwise it will apply the delays itself.
 +
-+	set_bit(QEDN_TASK_ASYNC, &qedn_task->flags);
-+	nvme_cmd->common.command_id = qedn_task->cccid;
-+	qedn_task->task_size = 0;
++          sja1105,role-phy:
++            $ref: /schemas/types.yaml#/definitions/flag
++            description:
++                See sja1105,role-mac.
 +
-+	/* Initialize sgl params */
-+	sgl_task_params = &qedn_task->sgl_task_params;
-+	sgl_task_params->total_buffer_size = 0;
-+	sgl_task_params->num_sges = 0;
-+	sgl_task_params->small_mid_sge = false;
++required:
++  - compatible
++  - reg
 +
-+	task_params.opq.lo = cpu_to_le32(((u64)(qedn_task)) & 0xffffffff);
-+	task_params.opq.hi = cpu_to_le32(((u64)(qedn_task)) >> 32);
++unevaluatedProperties: false
 +
-+	/* Initialize task params */
-+	task_params.context = qedn_task->fw_task_ctx;
-+	task_params.sqe = &local_sqe;
-+	task_params.tx_io_size = 0;
-+	task_params.rx_io_size = 0;
-+	task_params.conn_icid = (u16)conn_ctx->conn_handle;
-+	task_params.itid = qedn_task->itid;
-+	task_params.cq_rss_number = conn_ctx->default_cq;
-+	task_params.send_write_incapsule = 0;
++examples:
++  - |
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
 +
-+	/* Internal impl. - async is treated like zero len read */
-+	cmd_hdr.hdr.type = nvme_tcp_cmd;
-+	cmd_hdr.hdr.flags = 0;
-+	cmd_hdr.hdr.hlen = sizeof(cmd_hdr);
-+	cmd_hdr.hdr.pdo = 0x0;
-+	cmd_hdr.hdr.plen = cpu_to_le32(cmd_hdr.hdr.hlen);
++        ethernet-switch@1 {
++            reg = <0x1>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++            compatible = "nxp,sja1105t";
 +
-+	qed_ops->init_read_io(&task_params, &cmd_hdr, nvme_cmd,
-+			      &qedn_task->sgl_task_params);
++            ethernet-ports {
++                #address-cells = <1>;
++                #size-cells = <0>;
 +
-+	set_bit(QEDN_TASK_USED_BY_FW, &qedn_task->flags);
-+	atomic_inc(&conn_ctx->num_active_fw_tasks);
++                port@0 {
++                    phy-handle = <&rgmii_phy6>;
++                    phy-mode = "rgmii-id";
++                    reg = <0>;
++                    /* Implicit "sja1105,role-mac;" */
++                };
 +
-+	spin_lock(&conn_ctx->ep.doorbell_lock);
-+	chain_sqe = qed_chain_produce(&conn_ctx->ep.fw_sq_chain);
-+	memcpy(chain_sqe, &local_sqe, sizeof(local_sqe));
-+	qedn_ring_doorbell(conn_ctx);
-+	spin_unlock(&conn_ctx->ep.doorbell_lock);
-+}
++                port@1 {
++                    phy-handle = <&rgmii_phy3>;
++                    phy-mode = "rgmii-id";
++                    reg = <1>;
++                    /* Implicit "sja1105,role-mac;" */
++                };
 +
- int qedn_send_read_cmd(struct qedn_task_ctx *qedn_task, struct qedn_conn_ctx *conn_ctx)
- {
- 	struct nvme_command *nvme_cmd = &qedn_task->req->nvme_cmd;
-@@ -521,6 +612,21 @@ int qedn_send_write_cmd(struct qedn_task_ctx *qedn_task, struct qedn_conn_ctx *c
- 	return 0;
- }
- 
-+static void qedn_return_error_req(struct nvme_tcp_ofld_req *req)
-+{
-+	__le16 status = cpu_to_le16(NVME_SC_HOST_PATH_ERROR << 1);
-+	union nvme_result res = {};
++                port@2 {
++                    phy-handle = <&rgmii_phy4>;
++                    phy-mode = "rgmii-id";
++                    reg = <2>;
++                    /* Implicit "sja1105,role-mac;" */
++                };
 +
-+	if (!req)
-+		return;
++                port@3 {
++                    phy-mode = "rgmii-id";
++                    reg = <3>;
++                };
 +
-+	/* Call request done to compelete the request */
-+	if (req->done)
-+		req->done(req, &res, status);
-+	else
-+		pr_err("request done not set !!!\n");
-+}
++                port@4 {
++                    ethernet = <&enet2>;
++                    phy-mode = "rgmii";
++                    reg = <4>;
++                    /* Implicit "sja1105,role-phy;" */
 +
- int qedn_queue_request(struct qedn_conn_ctx *qedn_conn, struct nvme_tcp_ofld_req *req)
- {
- 	struct qedn_task_ctx *qedn_task;
-@@ -530,9 +636,17 @@ int qedn_queue_request(struct qedn_conn_ctx *qedn_conn, struct nvme_tcp_ofld_req
- 
- 	rq = blk_mq_rq_from_pdu(req);
- 
--	/* Placeholder - async */
-+	if (unlikely(req->async)) {
-+		cccid = qedn_get_free_async_cccid(qedn_conn);
-+		if (cccid == QEDN_INVALID_CCCID) {
-+			qedn_return_error_req(req);
-+
-+			return BLK_STS_NOTSUPP;
-+		}
-+	} else {
-+		cccid = rq->tag;
-+	}
- 
--	cccid = rq->tag;
- 	qedn_task = qedn_get_free_task_from_pool(qedn_conn, cccid);
- 	if (unlikely(!qedn_task)) {
- 		pr_err("Not able to allocate task context resource\n");
-@@ -543,7 +657,11 @@ int qedn_queue_request(struct qedn_conn_ctx *qedn_conn, struct nvme_tcp_ofld_req
- 	req->private_data = qedn_task;
- 	qedn_task->req = req;
- 
--	/* Placeholder - handle (req->async) */
-+	if (unlikely(req->async)) {
-+		qedn_send_async_event_cmd(qedn_task, qedn_conn);
-+
-+		return BLK_STS_TRANSPORT;
-+	}
- 
- 	/* Check if there are physical segments in request to determine the task size.
- 	 * The logic of nvme_tcp_set_sg_null() will be implemented as part of
-@@ -613,16 +731,28 @@ static inline int qedn_comp_valid_task(struct qedn_task_ctx *qedn_task,
- 
- int qedn_process_nvme_cqe(struct qedn_task_ctx *qedn_task, struct nvme_completion *cqe)
- {
-+	struct qedn_conn_ctx *conn_ctx = qedn_task->qedn_conn;
-+	struct nvme_tcp_ofld_req *req;
- 	int rc = 0;
-+	bool async;
-+
-+	async = test_bit(QEDN_TASK_ASYNC, &(qedn_task)->flags);
- 
- 	/* CQE arrives swapped
- 	 * Swapping requirement will be removed in future FW versions
- 	 */
- 	qedn_swap_bytes((u32 *)cqe, (sizeof(*cqe) / sizeof(u32)));
- 
--	/* Placeholder - async */
++                    fixed-link {
++                        speed = <1000>;
++                        full-duplex;
++                    };
++                };
++            };
++        };
++    };
+diff --git a/Documentation/devicetree/bindings/net/dsa/sja1105.txt b/Documentation/devicetree/bindings/net/dsa/sja1105.txt
+deleted file mode 100644
+index 13fd21074d48..000000000000
+--- a/Documentation/devicetree/bindings/net/dsa/sja1105.txt
++++ /dev/null
+@@ -1,156 +0,0 @@
+-NXP SJA1105 switch driver
+-=========================
 -
--	rc = qedn_comp_valid_task(qedn_task, &cqe->result, cqe->status);
-+	if (unlikely(async)) {
-+		qedn_return_task_to_pool(conn_ctx, qedn_task);
-+		req = qedn_task->req;
-+		if (req->done)
-+			req->done(req, &cqe->result, cqe->status);
-+		else
-+			pr_err("request done not set for async request !!!\n");
-+	} else {
-+		rc = qedn_comp_valid_task(qedn_task, &cqe->result, cqe->status);
-+	}
- 
- 	return rc;
- }
+-Required properties:
+-
+-- compatible:
+-	Must be one of:
+-	- "nxp,sja1105e"
+-	- "nxp,sja1105t"
+-	- "nxp,sja1105p"
+-	- "nxp,sja1105q"
+-	- "nxp,sja1105r"
+-	- "nxp,sja1105s"
+-
+-	Although the device ID could be detected at runtime, explicit bindings
+-	are required in order to be able to statically check their validity.
+-	For example, SGMII can only be specified on port 4 of R and S devices,
+-	and the non-SGMII devices, while pin-compatible, are not equal in terms
+-	of support for RGMII internal delays (supported on P/Q/R/S, but not on
+-	E/T).
+-
+-Optional properties:
+-
+-- sja1105,role-mac:
+-- sja1105,role-phy:
+-	Boolean properties that can be assigned under each port node. By
+-	default (unless otherwise specified) a port is configured as MAC if it
+-	is driving a PHY (phy-handle is present) or as PHY if it is PHY-less
+-	(fixed-link specified, presumably because it is connected to a MAC).
+-	The effect of this property (in either its implicit or explicit form)
+-	is:
+-	- In the case of MII or RMII it specifies whether the SJA1105 port is a
+-	  clock source or sink for this interface (not applicable for RGMII
+-	  where there is a Tx and an Rx clock).
+-	- In the case of RGMII it affects the behavior regarding internal
+-	  delays:
+-	  1. If sja1105,role-mac is specified, and the phy-mode property is one
+-	     of "rgmii-id", "rgmii-txid" or "rgmii-rxid", then the entity
+-	     designated to apply the delay/clock skew necessary for RGMII
+-	     is the PHY. The SJA1105 MAC does not apply any internal delays.
+-	  2. If sja1105,role-phy is specified, and the phy-mode property is one
+-	     of the above, the designated entity to apply the internal delays
+-	     is the SJA1105 MAC (if hardware-supported). This is only supported
+-	     by the second-generation (P/Q/R/S) hardware. On a first-generation
+-	     E or T device, it is an error to specify an RGMII phy-mode other
+-	     than "rgmii" for a port that is in fixed-link mode. In that case,
+-	     the clock skew must either be added by the MAC at the other end of
+-	     the fixed-link, or by PCB serpentine traces on the board.
+-	These properties are required, for example, in the case where SJA1105
+-	ports are at both ends of a MII/RMII PHY-less setup. One end would need
+-	to have sja1105,role-mac, while the other sja1105,role-phy.
+-
+-See Documentation/devicetree/bindings/net/dsa/dsa.txt for the list of standard
+-DSA required and optional properties.
+-
+-Other observations
+-------------------
+-
+-The SJA1105 SPI interface requires a CS-to-CLK time (t2 in UM10944) of at least
+-one half of t_CLK. At an SPI frequency of 1MHz, this means a minimum
+-cs_sck_delay of 500ns. Ensuring that this SPI timing requirement is observed
+-depends on the SPI bus master driver.
+-
+-Example
+--------
+-
+-Ethernet switch connected via SPI to the host, CPU port wired to enet2:
+-
+-arch/arm/boot/dts/ls1021a-tsn.dts:
+-
+-/* SPI controller of the LS1021 */
+-&dspi0 {
+-	sja1105@1 {
+-		reg = <0x1>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		compatible = "nxp,sja1105t";
+-		spi-max-frequency = <4000000>;
+-		fsl,spi-cs-sck-delay = <1000>;
+-		fsl,spi-sck-cs-delay = <1000>;
+-		ports {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			port@0 {
+-				/* ETH5 written on chassis */
+-				label = "swp5";
+-				phy-handle = <&rgmii_phy6>;
+-				phy-mode = "rgmii-id";
+-				reg = <0>;
+-				/* Implicit "sja1105,role-mac;" */
+-			};
+-			port@1 {
+-				/* ETH2 written on chassis */
+-				label = "swp2";
+-				phy-handle = <&rgmii_phy3>;
+-				phy-mode = "rgmii-id";
+-				reg = <1>;
+-				/* Implicit "sja1105,role-mac;" */
+-			};
+-			port@2 {
+-				/* ETH3 written on chassis */
+-				label = "swp3";
+-				phy-handle = <&rgmii_phy4>;
+-				phy-mode = "rgmii-id";
+-				reg = <2>;
+-				/* Implicit "sja1105,role-mac;" */
+-			};
+-			port@3 {
+-				/* ETH4 written on chassis */
+-				phy-handle = <&rgmii_phy5>;
+-				label = "swp4";
+-				phy-mode = "rgmii-id";
+-				reg = <3>;
+-				/* Implicit "sja1105,role-mac;" */
+-			};
+-			port@4 {
+-				/* Internal port connected to eth2 */
+-				ethernet = <&enet2>;
+-				phy-mode = "rgmii";
+-				reg = <4>;
+-				/* Implicit "sja1105,role-phy;" */
+-				fixed-link {
+-					speed = <1000>;
+-					full-duplex;
+-				};
+-			};
+-		};
+-	};
+-};
+-
+-/* MDIO controller of the LS1021 */
+-&mdio0 {
+-	/* BCM5464 */
+-	rgmii_phy3: ethernet-phy@3 {
+-		reg = <0x3>;
+-	};
+-	rgmii_phy4: ethernet-phy@4 {
+-		reg = <0x4>;
+-	};
+-	rgmii_phy5: ethernet-phy@5 {
+-		reg = <0x5>;
+-	};
+-	rgmii_phy6: ethernet-phy@6 {
+-		reg = <0x6>;
+-	};
+-};
+-
+-/* Ethernet master port of the LS1021 */
+-&enet2 {
+-	phy-connection-type = "rgmii";
+-	status = "ok";
+-	fixed-link {
+-		speed = <1000>;
+-		full-duplex;
+-	};
+-};
 -- 
-2.22.0
+2.25.1
 
