@@ -2,92 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A8B3953B0
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 03:31:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 499F63953BA
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 03:47:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbhEaBd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 21:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229891AbhEaBd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 21:33:26 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B19AC061574
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 18:31:45 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id i23-20020a9d68d70000b02902dc19ed4c15so9693104oto.0
-        for <netdev@vger.kernel.org>; Sun, 30 May 2021 18:31:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=A/Dn9ugc/xkidX4z9k+NtNePIBtXCwu2DLEwl+0IIls=;
-        b=glLYgJzfXA5ySiTt89c2CJaKMlM52VeHdkDIEzz8/DADH0SBqRdj5qBQ5er+XNWsCR
-         /aVNiL/QDhjCfnTz3VqJWx/Sjras89sFFypvkpbYAnfscsk1Zuuii+/s5DtATnuAleTb
-         wqsOnFxJBnx9gp8K4Vrhz36XbQEUMu5FTyXGiRRzbXiW49r1SAa+k0PlRr1w3dHc07Ts
-         56lIyM7nO0lMgluQ/veaD0pt4DzYtxkZ25yCTt2yqkJP+EVZYFWxmXo1QxKhC+7bi37W
-         JNgt9ehwNThKeH2n7MEu7qyw+aOyRZtPxJaADxvCIBYHFPi+NspCITlfO8Oj6TVhkcXi
-         WfhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=A/Dn9ugc/xkidX4z9k+NtNePIBtXCwu2DLEwl+0IIls=;
-        b=M1W4m11CsTvPVPLum/HljNXV+istp5QzVdsStZWcSR16/LMf9Boiweq6aY2YzzmiNT
-         +4dyhuR+0U2aovsat4cIZosf9xN7Vb+PVxunzwcLVPxdu1VJpGvYwpPo434Y45IvmfE5
-         ra5S0S8kkBpK0zNW7iwbuWXe9p+0Rsfd6CQ5UaH4yukvtj2Ibd+3GczulklfnB8WMKQB
-         vF09np6CLYZ51acbSAT150zPElYtfHkajlIYhavrszCra5UJv82DqFSOcl21dn4aNGbD
-         +YRNsq21UVIMqYYKGS8YoVPwjIDkk0jjjW3xTLQcegVxgK+QzihrVzhoUj8Pt9PoqoRn
-         UVVA==
-X-Gm-Message-State: AOAM533wlOI71lO7yf0PFO8lmBvW68jSjniyVKqsXn25WN7EN28Wnw4F
-        0tBfsxQCpU6xRN5TkwyFL5Q=
-X-Google-Smtp-Source: ABdhPJx7LiuiqUAzXaIwQ4nb/Xht6YFtrvOyLVGfSTsif6DL6w8/D/TaTkKPPn86/reNf/vTNes9ug==
-X-Received: by 2002:a9d:1791:: with SMTP id j17mr5970913otj.366.1622424704843;
-        Sun, 30 May 2021 18:31:44 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id 12sm479133ooy.0.2021.05.30.18.31.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 30 May 2021 18:31:44 -0700 (PDT)
-Subject: Re: [PATCH net] udp: fix the len check in udp_lib_getsockopt
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <04cb0c7f6884224c99fbf656579250896af82d5b.1622142759.git.lucien.xin@gmail.com>
- <CADvbK_e0PkKBYAUyg6iYyUwUp+owpv1r9_cnS7pbkLSjwX+VWg@mail.gmail.com>
- <20210528153911.4f67a691@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <CADvbK_dvj2ywH5nQGcsjAWOKb5hdLfoVnjKNmLsstk3R1j7MyA@mail.gmail.com>
- <54cb4e46-28f9-b6db-85ec-f67df1e6bacf@gmail.com>
- <CADvbK_endt5VLzyDMumn6ks8oF5WkQ0hbx6XguyRbJZzOf4K5A@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <cf628b45-c527-3390-4738-de7732268e44@gmail.com>
-Date:   Sun, 30 May 2021 19:31:43 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+        id S230024AbhEaBsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 21:48:30 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:3292 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229912AbhEaBs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 21:48:29 -0400
+Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FtdM54F3Gz1BGgZ;
+        Mon, 31 May 2021 09:42:09 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ dggeme760-chm.china.huawei.com (10.3.19.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Mon, 31 May 2021 09:46:48 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <krzysztof.kozlowski@canonical.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH net-next] nfc: hci: Fix spelling mistakes
+Date:   Mon, 31 May 2021 10:00:19 +0800
+Message-ID: <20210531020019.2919799-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CADvbK_endt5VLzyDMumn6ks8oF5WkQ0hbx6XguyRbJZzOf4K5A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggeme760-chm.china.huawei.com (10.3.19.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/29/21 10:47 AM, Xin Long wrote:
-> On Fri, May 28, 2021 at 9:57 PM David Ahern <dsahern@gmail.com> wrote:
->>
->> On 5/28/21 7:47 PM, Xin Long wrote:
->>> The partial byte(or even 0) of the value returned due to passing a wrong
->>> optlen should be considered as an error. "On error, -1 is returned, and
->>> errno is set appropriately.". Success returned in that case only confuses
->>> the user.
->>
->> It is feasible that some app could use bool or u8 for options that have
->> 0 or 1 values and that code has so far worked. This change would break that.
-> Got it.
-> Not sure if it's possible or necessary to also return -EINVAL if optlen == 0
-> 
+Fix some spelling mistakes in comments:
+occured  ==> occurred
+negociate  ==> negotiate
 
-do_tcp_getsockopt for example does not fail on optlen 0; no reason to
-make this one fail.
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ net/nfc/hci/command.c   | 2 +-
+ net/nfc/hci/core.c      | 2 +-
+ net/nfc/hci/llc_shdlc.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/nfc/hci/command.c b/net/nfc/hci/command.c
+index e02b9befce0b..3a89bd9b89fc 100644
+--- a/net/nfc/hci/command.c
++++ b/net/nfc/hci/command.c
+@@ -34,7 +34,7 @@ static int nfc_hci_execute_cmd_async(struct nfc_hci_dev *hdev, u8 pipe, u8 cmd,
+  * HCI command execution completion callback.
+  * err will be a standard linux error (may be converted from HCI response)
+  * skb contains the response data and must be disposed, or may be NULL if
+- * an error occured
++ * an error occurred
+  */
+ static void nfc_hci_execute_cb(void *context, struct sk_buff *skb, int err)
+ {
+diff --git a/net/nfc/hci/core.c b/net/nfc/hci/core.c
+index 43811b5219b5..3481941be70b 100644
+--- a/net/nfc/hci/core.c
++++ b/net/nfc/hci/core.c
+@@ -705,7 +705,7 @@ static void hci_transceive_cb(void *context, struct sk_buff *skb, int err)
+ 		/*
+ 		 * TODO: Check RF Error indicator to make sure data is valid.
+ 		 * It seems that HCI cmd can complete without error, but data
+-		 * can be invalid if an RF error occured? Ignore for now.
++		 * can be invalid if an RF error occurred? Ignore for now.
+ 		 */
+ 		if (err == 0)
+ 			skb_trim(skb, skb->len - 1); /* RF Err ind */
+diff --git a/net/nfc/hci/llc_shdlc.c b/net/nfc/hci/llc_shdlc.c
+index c0c8fea3a186..1e3a90049da9 100644
+--- a/net/nfc/hci/llc_shdlc.c
++++ b/net/nfc/hci/llc_shdlc.c
+@@ -406,7 +406,7 @@ static void llc_shdlc_rcv_u_frame(struct llc_shdlc *shdlc,
+ 		case SHDLC_NEGOTIATING:
+ 		case SHDLC_CONNECTING:
+ 			/*
+-			 * We sent RSET, but chip wants to negociate or we
++			 * We sent RSET, but chip wants to negotiate or we
+ 			 * got RSET before we managed to send out our.
+ 			 */
+ 			if (skb->len > 0)
+-- 
+2.25.1
+
