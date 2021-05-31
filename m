@@ -2,224 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F3A93955D2
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:13:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1259A3955E0
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 09:17:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230264AbhEaHPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 03:15:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbhEaHPK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 03:15:10 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DEBC061761
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 00:13:30 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id r11so12258189edt.13
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 00:13:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HsUiQi3ntUxHPOgfLtJZfOJE0YtMnjg4ItjU9q5zMjE=;
-        b=pjl+eyiZ3SVuMuplEw97FDWO0PFqcd17F4vwf+if4jHNgPbn1w1mQjgqab4EuyqMH4
-         i2yCpgZbMQHteb4eEJfalzc4jiHuoaRyUEnLGscOViLDFU+FaIzY9+FgYY/vzLGLhGwa
-         Cl2uBYhAWAGrrML81PUus32wzX3oLmigWxiVFrw0QBv51HciWo8blYjKOHMBj9iDIhBq
-         OA8nYaQ7Aw+DzdfB6Pms1I5qeAWNW6gF1ew/EkpajY0jHoLlTYi9BzhksrzBNJSWC4xg
-         fhqGEFYXOVa6N6fS6yzpW9wpuwbybGX9qNarvRbYOiESGPy1kA70dU0szyW+EGJSqMkW
-         Qvwg==
+        id S230178AbhEaHTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 03:19:20 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:60258 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230135AbhEaHTK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 03:19:10 -0400
+Received: from mail-wm1-f69.google.com ([209.85.128.69])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1lncAz-00012N-0a
+        for netdev@vger.kernel.org; Mon, 31 May 2021 07:17:29 +0000
+Received: by mail-wm1-f69.google.com with SMTP id o3-20020a05600c3783b029017dca14ec2dso2842914wmr.8
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 00:17:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HsUiQi3ntUxHPOgfLtJZfOJE0YtMnjg4ItjU9q5zMjE=;
-        b=B9ZiMR0OYueqFMBeCfxo751FroaMsYViK95IF7sHDe2uZLB1R3mqEbMQM19kfuBwTq
-         LJuBN7F6tbfwmgfdEDhrbpRWUA98uKSwA63MaU8lsVKIuFQrBFEZYhBJbr5aK8RerhZ0
-         I7bK4J253k0sjonhg0JvOcc6v+BivhJ4diTmPD/k8roqislyAMYoUMSw0HjbrNjNenm2
-         3569ovkfSLqQx/oZ+XFveN24lBUxARmxvLILRAuNpcnLr73sW0az1L0esVMxwF8LkBuW
-         BLDx6EhZnM6zn0cDNtdU53n3jHJCKIQ3WMqToHfNpt/mIFWTjHkHZSHHyE/6ci0j/Fgo
-         7WsQ==
-X-Gm-Message-State: AOAM533o+vE9HZp7/Wqdn1bUYBrO9TmMNEMyyu4B5vYwXRDJQCpVsGxf
-        lIUVOK8plotcDxA/UWiWiEbAuNl4myLIbyw38fOH
-X-Google-Smtp-Source: ABdhPJxz6zmra41o6Y5jQKsKyQQGK6vr2Kk7000vKI5r+AMsAhkzn/ieUzE/Q93Iok6mSGB/HstZcEDQcLUJcTjE5oM=
-X-Received: by 2002:a50:9e8e:: with SMTP id a14mr2295520edf.5.1622445209532;
- Mon, 31 May 2021 00:13:29 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZTOFo+MaUW6bLeDfHsCuxgOawe6aQHUICLT+z0be/C4=;
+        b=i03RJKFepD0v9Ge7CxYX8smuaeSteLsIU/1MRll7I1ajQNQ1Kf/kqZNUKZpPCkGm47
+         FbTzviQ0TSDwwR1Y2HylFPcSE4luS6QnueYqQ0pIY5jUjMs9gWmOtx228JYxM0zMQVCA
+         ldWfNRoUfXUeXFjCwjnCYNzM9hdPGLOAvB2aBSmvG+x7gKRIIIoP7yTdtt+eS+YqUGkP
+         wJ28I60w6oqshsPQKqiqluE4rTJvz/cTCNrew0mzs3hLVruC5bxVLt4pSZFkmfv3YIDd
+         2p+B2i50jLmsk4W02foEPJCVtWYzdKnttaAfzu3EKEsNpxMlD6SNS0bHDCstUTGnox1V
+         Bf6g==
+X-Gm-Message-State: AOAM533kFnjHhvd7fZf+zOyvr5ZbxEYHAvnOGblIo5ujwNImEpjM9bQ0
+        Lb6GgTn/SRYtbAp9hFdxT9CvukHQr5O7FPnF6imwg9+qJvPlGhhE1dq75TzaFP5ywSCPwa8KDdx
+        ugsTPHY0snYYCULBnLcAe6fM+oPy2/Lj2iQ==
+X-Received: by 2002:a05:6000:110b:: with SMTP id z11mr20101323wrw.278.1622445448810;
+        Mon, 31 May 2021 00:17:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzyL1dPyIG3xEo8t+XluxVdxVZL6v4mAgtBCgrs0AQgTyghIEB8Z9V9txxck75EZzjFW1LA/g==
+X-Received: by 2002:a05:6000:110b:: with SMTP id z11mr20101314wrw.278.1622445448672;
+        Mon, 31 May 2021 00:17:28 -0700 (PDT)
+Received: from [192.168.1.115] (xdsl-188-155-185-9.adslplus.ch. [188.155.185.9])
+        by smtp.gmail.com with ESMTPSA id c6sm16090699wrt.20.2021.05.31.00.17.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 May 2021 00:17:28 -0700 (PDT)
+Subject: Re: [PATCH net-next] nfc: hci: Fix spelling mistakes
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210531020019.2919799-1-zhengyongjun3@huawei.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <d9c68f7c-6956-48ee-97d3-5a3df93cced2@canonical.com>
+Date:   Mon, 31 May 2021 09:17:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20210517095513.850-1-xieyongji@bytedance.com> <20210517095513.850-12-xieyongji@bytedance.com>
- <YLRsehBRAiCJEDl0@kroah.com> <CACycT3vRHPfOGxmy1Uv=8_dqqq8iG4YTZHUizo+y8EYKGS5g8g@mail.gmail.com>
- <YLSC6AthAl+VeQsv@kroah.com>
-In-Reply-To: <YLSC6AthAl+VeQsv@kroah.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Mon, 31 May 2021 15:13:18 +0800
-Message-ID: <CACycT3t4OABUoXGjx4Fyf1iMm--OTC8Vdp8rN1ppCs0W15V6iA@mail.gmail.com>
-Subject: Re: Re: Re: [PATCH v7 11/12] vduse: Introduce VDUSE - vDPA Device in Userspace
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210531020019.2919799-1-zhengyongjun3@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 31, 2021 at 2:32 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Mon, May 31, 2021 at 02:19:37PM +0800, Yongji Xie wrote:
-> > Hi Greg,
-> >
-> > Thanks a lot for the review!
-> >
-> > On Mon, May 31, 2021 at 12:56 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Mon, May 17, 2021 at 05:55:12PM +0800, Xie Yongji wrote:
-> > > > +struct vduse_dev {
-> > > > +     struct vduse_vdpa *vdev;
-> > > > +     struct device dev;
-> > > > +     struct cdev cdev;
-> > >
-> > > You now have 2 reference counted devices controling the lifespace of a
-> > > single structure.  A mess that is guaranteed to go wrong.  Please never
-> > > do this.
-> > >
-> >
-> > These two are both used by cdev_device_add(). Looks like I didn't find
-> > any problem. Any suggestions?
->
-> Make one of these dynamic and do not have them both control the lifespan
-> of the structure.
->
+On 31/05/2021 04:00, Zheng Yongjun wrote:
+> Fix some spelling mistakes in comments:
+> occured  ==> occurred
+> negociate  ==> negotiate
+> 
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+> ---
+>  net/nfc/hci/command.c   | 2 +-
+>  net/nfc/hci/core.c      | 2 +-
+>  net/nfc/hci/llc_shdlc.c | 2 +-
+>  3 files changed, 3 insertions(+), 3 deletions(-)
+> 
 
-I see some comments in cdev_device_add():
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-"This function should be used whenever the struct cdev and the struct
-device are members of the same structure whose lifetime is managed by
-the struct device."
-
-So it seems to be ok here?
-
-> > > > +     struct vduse_virtqueue *vqs;
-> > > > +     struct vduse_iova_domain *domain;
-> > > > +     char *name;
-> > > > +     struct mutex lock;
-> > > > +     spinlock_t msg_lock;
-> > > > +     atomic64_t msg_unique;
-> > >
-> > > Why do you need an atomic and a lock?
-> > >
-> >
-> > You are right. We don't need an atomic here.
-> >
-> > > > +     wait_queue_head_t waitq;
-> > > > +     struct list_head send_list;
-> > > > +     struct list_head recv_list;
-> > > > +     struct list_head list;
-> > > > +     struct vdpa_callback config_cb;
-> > > > +     struct work_struct inject;
-> > > > +     spinlock_t irq_lock;
-> > > > +     unsigned long api_version;
-> > > > +     bool connected;
-> > > > +     int minor;
-> > > > +     u16 vq_size_max;
-> > > > +     u32 vq_num;
-> > > > +     u32 vq_align;
-> > > > +     u32 config_size;
-> > > > +     u32 device_id;
-> > > > +     u32 vendor_id;
-> > > > +};
-> > > > +
-> > > > +struct vduse_dev_msg {
-> > > > +     struct vduse_dev_request req;
-> > > > +     struct vduse_dev_response resp;
-> > > > +     struct list_head list;
-> > > > +     wait_queue_head_t waitq;
-> > > > +     bool completed;
-> > > > +};
-> > > > +
-> > > > +struct vduse_control {
-> > > > +     unsigned long api_version;
-> > >
-> > > u64?
-> > >
-> >
-> > OK.
-> >
-> > > > +};
-> > > > +
-> > > > +static unsigned long max_bounce_size = (64 * 1024 * 1024);
-> > > > +module_param(max_bounce_size, ulong, 0444);
-> > > > +MODULE_PARM_DESC(max_bounce_size, "Maximum bounce buffer size. (default: 64M)");
-> > > > +
-> > > > +static unsigned long max_iova_size = (128 * 1024 * 1024);
-> > > > +module_param(max_iova_size, ulong, 0444);
-> > > > +MODULE_PARM_DESC(max_iova_size, "Maximum iova space size (default: 128M)");
-> > > > +
-> > > > +static bool allow_unsafe_device_emulation;
-> > > > +module_param(allow_unsafe_device_emulation, bool, 0444);
-> > > > +MODULE_PARM_DESC(allow_unsafe_device_emulation, "Allow emulating unsafe device."
-> > > > +     " We must make sure the userspace device emulation process is trusted."
-> > > > +     " Otherwise, don't enable this option. (default: false)");
-> > > > +
-> > >
-> > > This is not the 1990's anymore, please never use module parameters, make
-> > > these per-device attributes if you really need them.
-> > >
-> >
-> > These parameters will be used before the device is created. Or do you
-> > mean add some attributes to the control device?
->
-> You need to do something, as no one can mess with a module parameter
-> easily.  Why do you need them at all, shouldn't it "just work" properly
-> with no need for userspace interaction?
->
-
-OK, I get you. It works fine with the default value. So I think it
-should be ok to remove these parameters before we find a situation
-that really needs them.
-
-> > > > +static int vduse_init(void)
-> > > > +{
-> > > > +     int ret;
-> > > > +
-> > > > +     if (max_bounce_size >= max_iova_size)
-> > > > +             return -EINVAL;
-> > > > +
-> > > > +     ret = misc_register(&vduse_misc);
-> > > > +     if (ret)
-> > > > +             return ret;
-> > > > +
-> > > > +     vduse_class = class_create(THIS_MODULE, "vduse");
-> > >
-> > > If you have a misc device, you do not need to create a class at the same
-> > > time.  Why are you doing both here?  Just stick with the misc device, no
-> > > need for anything else.
-> > >
-> >
-> > The misc device is the control device represented by
-> > /dev/vduse/control. Then a VDUSE device represented by
-> > /dev/vduse/$NAME can be created by the ioctl(VDUSE_CREATE_DEV) on this
-> > control device.
->
-> Ah.  Then how about using the same MAJOR for all of these, and just have
-> the first minor (0) be your control?  That happens for other device
-> types (raw, loop, etc.).  Or just document this really well please, as
-> it was not obvious what you were doing here.
->
-
-OK, I will reserve the first minor (0) for the control device instead.
-
-Thanks,
-Yongji
+Best regards,
+Krzysztof
