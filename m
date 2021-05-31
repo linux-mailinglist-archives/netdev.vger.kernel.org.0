@@ -2,149 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C613956DC
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 10:24:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F5583956E2
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 10:24:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230381AbhEaIZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 04:25:36 -0400
-Received: from mail-bn8nam11on2050.outbound.protection.outlook.com ([40.107.236.50]:54925
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230070AbhEaIZf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 May 2021 04:25:35 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WdFk8ZAjKzXuqxd+73d5KutAo3UXT7SdGmJDt061grjK/jCH1Dj8Ri3sYrv0tzpn2eKqhlj2YPJyRZn/wjhGRuw81Rc819McLv7ZAnWNXR8NawYqY6NRSN3kiRdhTNySM7R6PQ/7gyGdIlFISHYdEwqDP8L23swePSgIEi72KP4aT4ou5Hamsm8BhQsceW6wNkW4oAL/tRcCpvOubWGwWRXK7TQYvpV93gwJS6Hig0ENp/lPiqY8v0Yfz1MqbM4MQcpS4ryHO+M+pD6HH+t9vjdEotq8tvDSdThUHgC/bpv0bmdPxqCu+i+FMmV0eUrzIdB6eXLOkneDji50Ng+DCQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uu/VxkNi6OFQQgE+Xg4K/Y4lKODdCRa8/gvimEf2wPQ=;
- b=czEI1w+QbF90+c2l2oq28PWZoJkHC1uq96qX4B/f6V1WHTxqyTPyK8SLULqC1b4SmDHUNbeipPyEEUvQ8wamnHsfRgLhem6TDUrtOz7nfqQzaNf1tXoAvUFGhMduQ9vjUhX8ODOuaZSdtksmLiuPxTf/hBLEH53nIronaLtcCPTwaMAo61VjCZY+3ZUcSHnLmH3LThZQQ0CHMIYRIRfVb4HJQyhF+8IZEWmBXc5jc1SNhDruCBhDBR5GhNzUC680ZO7rPurEE+KfxuCF6SN2JAaMiQNCUnHtsN74xZg00Ypx1E3QrM9MnIazW51O62TNcMQ+xgIVvR7XcIdhq6HNNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synaptics.com; dmarc=pass action=none
- header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+        id S230438AbhEaI0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 04:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230419AbhEaIZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 04:25:50 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 333A9C061760
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 01:24:11 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id k7so5902211ejv.12
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 01:24:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uu/VxkNi6OFQQgE+Xg4K/Y4lKODdCRa8/gvimEf2wPQ=;
- b=XKhv9Ll5e7i0VOGOaJjPGUFHIEcyPc6LA4KEpS1soq/uQGfhCT2veRJi4Y5IE2ACIXTex99WbYMq2g4pHZXX1+792PSahuFb3VjfVsfVFzH2kmVBUO72XFh/zZYW3lHLU4hr0eLcNGRfmqOKVH8yj4dbAjYFbChYYW+j3JadEq8=
-Authentication-Results: mediatek.com; dkim=none (message not signed)
- header.d=none;mediatek.com; dmarc=none action=none header.from=synaptics.com;
-Received: from BN9PR03MB6058.namprd03.prod.outlook.com (2603:10b6:408:137::15)
- by BN7PR03MB4449.namprd03.prod.outlook.com (2603:10b6:408:3f::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Mon, 31 May
- 2021 08:23:54 +0000
-Received: from BN9PR03MB6058.namprd03.prod.outlook.com
- ([fe80::308b:9168:78:9791]) by BN9PR03MB6058.namprd03.prod.outlook.com
- ([fe80::308b:9168:78:9791%4]) with mapi id 15.20.4173.030; Mon, 31 May 2021
- 08:23:54 +0000
-Date:   Mon, 31 May 2021 16:23:42 +0800
-From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-To:     Landen Chao <landen.chao@mediatek.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>, <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <frank-w@public-files.de>,
-        <steven.liu@mediatek.com>
-Subject: Re: [PATCH net] net: Update MAINTAINERS for MediaTek switch driver
-Message-ID: <20210531162342.339635bb@xhacker.debian>
-In-Reply-To: <49e67daeadace13a9fa3f4553f1ec14c6a93bdc8.1622445132.git.landen.chao@mediatek.com>
-References: <49e67daeadace13a9fa3f4553f1ec14c6a93bdc8.1622445132.git.landen.chao@mediatek.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.147.44.204]
-X-ClientProxiedBy: SJ0PR03CA0077.namprd03.prod.outlook.com
- (2603:10b6:a03:331::22) To BN9PR03MB6058.namprd03.prod.outlook.com
- (2603:10b6:408:137::15)
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=AMGF9A8NxX5xFp88g1oq61PA7j73RZ9YA7ACwFU1V+Y=;
+        b=t/b9iXIrxu/JhKkcetsLcVbf2g4krNVZWx3+IVeEMFw0sT4uEsCq2s1mb1rXSouKd5
+         8vGX9l9EoyWU23XlOf6fbpTGEKT244+RAxx0pkIALHCSijxRIfLq+I/0vorhbC4LzH7c
+         bsCW4UE+tho2K+PD0vu71vAeCOJOAIuPKtxqhH7g46apcPDd81Te5nAJVySLXax9PSzu
+         B1GbsPIFOeR8m0t506LH1nMU04VAF4SQ4/9BJdTlq+rcNOjZlFo0imU8nBfv6LVe5W2i
+         ZiIkppTZCx+QLvL+HmbmWN8taFPbZoND8j5ze+Zc+pAaxBSseBUdjkgiM4177f/51gNZ
+         mZ0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=AMGF9A8NxX5xFp88g1oq61PA7j73RZ9YA7ACwFU1V+Y=;
+        b=OK6KPOG3lLzw08zjzrsoL0qnb7jvdgVI0zFCRQyRJSr84qMajRXRqdMgL7ykWZhTbS
+         T5lmiLl9c3Ko5ViEjbdveXc7dGGg07Hjt6rv3TUR2aUTNcWND2l4WwWhL7XCkqQ/i63U
+         tO2QMD/OcTj43vk4bf6/L1FsqStyGMBKJzaz8SViXhR3LRp27G+WyxZh1B1LH0TPHTns
+         u2TqB8s9WHwRMpXHexEnoQLCBSgP6VpQxptpI+F4tECBgObX9q610wbDzKf4wKEep9Dx
+         Nnc5hUNruQp7P9AAuWfDc5IKCyFk6Nu3WW69CcGCIkTSZj1j+nNbX0s5fSOOLJzr2hO/
+         0Dtw==
+X-Gm-Message-State: AOAM532/1+p1EyiXT9Zia4O+HjhmgefLeMHSFpcJaBGmbUTq8CBU4qYD
+        dAfkwtYTqmQubAajBeCf/BU6b6R26Y6sIajVqoKc
+X-Google-Smtp-Source: ABdhPJyLXTMInE0lOUyC+YYVTDrsstRUXgMnU1e7dlRtQMym/NrAjnWfJ0HslXQMiem1oFI8/USmGvJadwSNN/fSxw4=
+X-Received: by 2002:a17:906:318b:: with SMTP id 11mr21157495ejy.395.1622449449822;
+ Mon, 31 May 2021 01:24:09 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from xhacker.debian (192.147.44.204) by SJ0PR03CA0077.namprd03.prod.outlook.com (2603:10b6:a03:331::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21 via Frontend Transport; Mon, 31 May 2021 08:23:49 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3c58957c-8233-47d9-b751-08d9240d6d7a
-X-MS-TrafficTypeDiagnostic: BN7PR03MB4449:
-X-Microsoft-Antispam-PRVS: <BN7PR03MB4449242023DC6DCA51EC17E2ED3F9@BN7PR03MB4449.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SPQ8yRRZ3l1LzMYRarixEyH8rsta+phVZXixXpsreHbJAbDYkstjLwbdwVpCZh7bbQTXcI6oUqfWCvKD6/0q2NXRVPZrGg5FJnuiJunx9BjMFliT28b9Xkv87mUrm+HShwZgxubbpEmQN9ajDghKYgobardA2qx9LMhALu8KIYf2z9AHGDNRTKNevJE4m/9ZecH2qy3BXHSWMv5GpOXn6b+a6JtlptWYpSdvvGLH/cb0WhNFHcD+P/GdoeMaGcOOgjotILn4gkwWk+t8y9VT1mpxhTyRTrfQweVdtuklW+U1Tu2X44GkyugM3i1mafx92VTr8MzlLXZsfS3FPacx7VZEo74oMN3XbsdA0nutFp8DOB0mhhjjGAAJVi8e912fqgGkZbP+eiKgzQ2Lzfy75LtM3CmCxhQS11vMNMkLa4GmYM4+oJM0EZ/kKB0DjG1xEDn466ObY8701uOr7Ujlt0oOyFGxCaJRpsRgXEzwvdjOpn00CKg9ZRpJmOQeRB3Yw98drIKPrdEDQNZ0W4m4fHMHxJD2yNdMZ4pA/j3w+iqgK/oWD8dssrWDVo28Ap/VGQvT2uXeJpOEuUgYdcb0FdtoP9RwPwIXpfi2F+k2c1FUbTpR5UjTWotXISh/lzfDIKzwaORpgRY70lSNmP/To+88FFoYtzp8PHQWWZBGWwQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR03MB6058.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(39850400004)(136003)(396003)(376002)(346002)(366004)(26005)(86362001)(83380400001)(186003)(16526019)(9686003)(5660300002)(8676002)(6506007)(66476007)(66556008)(6666004)(4326008)(66946007)(7696005)(6916009)(52116002)(7416002)(4744005)(54906003)(55016002)(15650500001)(38100700002)(316002)(38350700002)(2906002)(956004)(1076003)(8936002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?DJxAZOitTCGiN7jJX7QG41ItsFDjMC2jVEra2u22G+JDEvFkGS6pPXAXBcSk?=
- =?us-ascii?Q?ugTv8XySs4B5DWdtvLYRkgtaFmdkhWl8neH7zL/JS/dsNsKiYRe6SGBHbc+H?=
- =?us-ascii?Q?F3n5RDv01QjrmmRj/iO1DZq+Ic8HRBk5eSI64i3ZONkTHB5/DLmSiYQ9nQ8b?=
- =?us-ascii?Q?iqhqdaE9VToItWWe5U5ZTutC/LSCUMq0Fm+5XkJ5s58pCm36g342I9ntqVWk?=
- =?us-ascii?Q?ejY8ZSic6OIJpWeC2Mb2sEJyX1lGFhoKz0VBh8C/Ym9TDrfXCGLA+eB1A15O?=
- =?us-ascii?Q?t1CTpPwUIMF0WjA0t04wvUY0w4J7xWrCpDEoShktl0P8eGaUTIXvfwppX84c?=
- =?us-ascii?Q?IgROSjJgcAiVt9PZVordh39Kf/F1NNtKg6jL/BnqF9Bfo1knWYmaiGmVarL2?=
- =?us-ascii?Q?3yt5QN7SHCa15Pi9m8P08vqISU63gZT09QOk8Id4yW9BT9TiabjWbsUq8o0t?=
- =?us-ascii?Q?l1n9TQdWB8yzQLRrBwF4Z2XROq1vKKoEkj44tXfzukH0nrwaUCIflCFMYMZL?=
- =?us-ascii?Q?BivVeFTFOJYXubfDidQsY3CDpibS7I+KhV7P2hUV1bNcWWCDOsQ2vI+hPBJd?=
- =?us-ascii?Q?UFO0/2HUoq33palACNxthgIjEcgMAv1QXhBpNVKlge5eB1pbtr8e++Q8wfgY?=
- =?us-ascii?Q?gPOrwqq8MwXkJXUb9dpm5jmyEaKGlOEuOmF9PIVnz754shxbWb+ekwPUVLuD?=
- =?us-ascii?Q?0bJl/vZRdIEyRkYE7MTteRZtHNufFhCK7QGnn9o7nXBHFHkzvKhal8sePchj?=
- =?us-ascii?Q?kxPdbZaxRnN1bUKxLISkeGfue4It+Z55vo0GqqCf6X24HMUH6PLaiVIYfLcg?=
- =?us-ascii?Q?5bJNwPOsQipEQKyVAQrPtFDk5ZPIntD4828co9JJWx4t9rQmbR6Sx/DHTxNV?=
- =?us-ascii?Q?ovYttz/3TkEwF0fSeLFthksVj5S7qsy5GRl3vjJzt+2DFhLRF8azCANPKCXP?=
- =?us-ascii?Q?I4QLQg8Tl6ErEomcvbjU16i/dhadAU5uNXAOYkibwOlZ0CETyDylIz+2+bE9?=
- =?us-ascii?Q?m2hthhaZJoUeRu8uajb//1Fp+8avmfP8uhkTtVlkfyHkQSDf8jc1bOz/y1ML?=
- =?us-ascii?Q?/kLNk4aSmj4ineaIXQPx8FJywjMRX+lqxc8+4JzXOkkfYtkjd9KOky5BAoEH?=
- =?us-ascii?Q?UHVrm6m6/5Jwf6oJBBDmsvTO4PyO18RPTrBfqJsLfKiie0X/BEGeg6Gd/y+T?=
- =?us-ascii?Q?F+StltPNzXx6sYpT3SQ1SO/Y3DKSYntBbil80BKGhp4EDp7iad7tgdHFfVoY?=
- =?us-ascii?Q?Kj5CwdvvGHzreVOxaMxtjTsezDvhYO9B92+7wLQUqenHsuLtDFlE5ERS1Ff1?=
- =?us-ascii?Q?FxHj+c97O9o/8Kv6VwXa7vfL?=
-X-OriginatorOrg: synaptics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c58957c-8233-47d9-b751-08d9240d6d7a
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR03MB6058.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2021 08:23:54.0664
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nMW+YWiV2WXmvh/FeE8fLaV4QU73lhZQst2td51q5yCrkH1QmFcFBagS5zr1bI9I0m4owmKDuue8Ls8qFBNqoA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR03MB4449
+References: <20210528121157.105-1-xieyongji@bytedance.com> <49ab3d41-c5d8-a49d-3ff4-28ebfdba0181@redhat.com>
+ <CACycT3uo-J3MYdEo0TscENewp3Xnjce8yFLtt6JkK8uZrvsMjg@mail.gmail.com> <4ff90e78-0c7a-def6-ef84-367bcce4cea5@redhat.com>
+In-Reply-To: <4ff90e78-0c7a-def6-ef84-367bcce4cea5@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Mon, 31 May 2021 16:23:59 +0800
+Message-ID: <CACycT3vrngdkrocvegMGMyp8AGq9HRBx7mXD7o49m6TUDfh_BQ@mail.gmail.com>
+Subject: Re: Re: [PATCH v3] virtio-net: Add validation for used length
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 31 May 2021 15:59:39 +0800
-Landen Chao <landen.chao@mediatek.com> wrote:
+On Mon, May 31, 2021 at 3:51 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/5/31 =E4=B8=8B=E5=8D=883:19, Yongji Xie =E5=86=99=E9=81=93=
+:
+> > On Mon, May 31, 2021 at 2:49 PM Jason Wang <jasowang@redhat.com> wrote:
+> >>
+> >> =E5=9C=A8 2021/5/28 =E4=B8=8B=E5=8D=888:11, Xie Yongji =E5=86=99=E9=81=
+=93:
+> >>> This adds validation for used length (might come
+> >>> from an untrusted device) to avoid data corruption
+> >>> or loss.
+> >>>
+> >>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> >>> ---
+> >>>    drivers/net/virtio_net.c | 28 +++++++++++++++++++++-------
+> >>>    1 file changed, 21 insertions(+), 7 deletions(-)
+> >>>
+> >>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> >>> index 073fec4c0df1..01f15b65824c 100644
+> >>> --- a/drivers/net/virtio_net.c
+> >>> +++ b/drivers/net/virtio_net.c
+> >>> @@ -732,6 +732,17 @@ static struct sk_buff *receive_small(struct net_=
+device *dev,
+> >>>
+> >>>        rcu_read_lock();
+> >>>        xdp_prog =3D rcu_dereference(rq->xdp_prog);
+> >>> +     if (unlikely(len > GOOD_PACKET_LEN)) {
+> >>> +             pr_debug("%s: rx error: len %u exceeds max size %d\n",
+> >>> +                      dev->name, len, GOOD_PACKET_LEN);
+> >>> +             dev->stats.rx_length_errors++;
+> >>> +             if (xdp_prog)
+> >>> +                     goto err_xdp;
+> >>> +
+> >>> +             rcu_read_unlock();
+> >>> +             put_page(page);
+> >>> +             return NULL;
+> >>> +     }
+> >>>        if (xdp_prog) {
+> >>>                struct virtio_net_hdr_mrg_rxbuf *hdr =3D buf + header_=
+offset;
+> >>>                struct xdp_frame *xdpf;
+> >>> @@ -888,6 +899,16 @@ static struct sk_buff *receive_mergeable(struct =
+net_device *dev,
+> >>>
+> >>>        rcu_read_lock();
+> >>>        xdp_prog =3D rcu_dereference(rq->xdp_prog);
+> >>> +     if (unlikely(len > truesize)) {
+> >>> +             pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
+> >>> +                      dev->name, len, (unsigned long)ctx);
+> >>> +             dev->stats.rx_length_errors++;
+> >>> +             if (xdp_prog)
+> >>> +                     goto err_xdp;
+> >>> +
+> >>> +             rcu_read_unlock();
+> >>> +             goto err_skb;
+> >>> +     }
+> >>
+> >> Patch looks correct but I'd rather not bother XDP here. It would be
+> >> better if we just do the check before rcu_read_lock() and use err_skb
+> >> directly() to avoid RCU/XDP stuffs.
+> >>
+> > If so, we will miss the statistics of xdp_drops. Is it OK?
+>
+>
+> It should be ok, we still had drops and it was dropped before dealing
+> with XDP.
+>
+> The motivation is to have simple codes.
+>
 
+OK, will send v4 soon.
 
-> 
-> 
-> Update maintainers for MediaTek switch driver with Deng Qingfang who
-> contributes many useful patches (interrupt, VLAN, GPIO, and etc.) to
-> enhance MediaTek switch driver and will help maintenance.
-> 
-> Change-Id: If372c1a0df6e3ba9f93b1699dbda81f1fd501a7c
-
-do we need to remove this Change-Id tag?
-
-> Signed-off-by: Landen Chao <landen.chao@mediatek.com>
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-> ---
->  MAINTAINERS | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index bd7aff0c120f..3315627ebb6b 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -11588,6 +11588,7 @@ F:      drivers/char/hw_random/mtk-rng.c
->  MEDIATEK SWITCH DRIVER
->  M:     Sean Wang <sean.wang@mediatek.com>
->  M:     Landen Chao <landen.chao@mediatek.com>
-> +M:     DENG Qingfang <dqfext@gmail.com>
->  L:     netdev@vger.kernel.org
->  S:     Maintained
->  F:     drivers/net/dsa/mt7530.*
-> --
-> 2.29.2
+Thanks,
+Yongji
