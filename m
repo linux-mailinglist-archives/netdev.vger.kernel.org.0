@@ -2,67 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C51D39578B
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 10:52:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6BD73957C5
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 11:03:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231218AbhEaIyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 04:54:07 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:6092 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231219AbhEaIyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 04:54:03 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FtprM6J6nzYp4s;
-        Mon, 31 May 2021 16:49:39 +0800 (CST)
-Received: from dggpeml500023.china.huawei.com (7.185.36.114) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 31 May 2021 16:52:22 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 31 May 2021 16:52:22 +0800
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-To:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>
-CC:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: [PATCH] net/mlx5e: Remove the repeated declaration
-Date:   Mon, 31 May 2021 16:52:10 +0800
-Message-ID: <1622451130-58224-1-git-send-email-zhangshaokun@hisilicon.com>
-X-Mailer: git-send-email 2.7.4
+        id S230288AbhEaJEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 05:04:55 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:34418 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229522AbhEaJEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 05:04:53 -0400
+Received: from 111-240-143-199.dynamic-ip.hinet.net ([111.240.143.199] helo=localhost.localdomain)
+        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <chris.chiu@canonical.com>)
+        id 1lndpE-0004qd-RV; Mon, 31 May 2021 09:03:09 +0000
+From:   chris.chiu@canonical.com
+To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     code@reto-schneider.ch, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Chiu <chris.chiu@canonical.com>
+Subject: [PATCH 0/2] Make ampdu tx work correctly
+Date:   Mon, 31 May 2021 17:02:52 +0800
+Message-Id: <20210531090254.86830-1-chris.chiu@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function 'mlx5e_deactivate_rq' is declared twice, so remove the
-repeated declaration.
+From: Chris Chiu <chris.chiu@canonical.com>
 
-Cc: Saeed Mahameed <saeedm@nvidia.com>
-Cc: Leon Romanovsky <leon@kernel.org>
-Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en.h | 1 -
- 1 file changed, 1 deletion(-)
+The rtl8xxxu is the driver based on mac80211 framework, but the
+ampdu tx is never working. Fix the ampdu_action and the hw capability
+to enable the ampdu tx.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index b636d63358d2..d966d5f40e78 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -974,7 +974,6 @@ int mlx5e_open_rq(struct mlx5e_params *params, struct mlx5e_rq_param *param,
- 		  struct mlx5e_xsk_param *xsk, int node,
- 		  struct mlx5e_rq *rq);
- int mlx5e_wait_for_min_rx_wqes(struct mlx5e_rq *rq, int wait_time);
--void mlx5e_deactivate_rq(struct mlx5e_rq *rq);
- void mlx5e_close_rq(struct mlx5e_rq *rq);
- int mlx5e_create_rq(struct mlx5e_rq *rq, struct mlx5e_rq_param *param);
- void mlx5e_destroy_rq(struct mlx5e_rq *rq);
+Chris Chiu (2):
+  rtl8xxxu: unset the hw capability HAS_RATE_CONTROL
+  rtl8xxxu: Fix ampdu_action to get block ack session work
+
+ .../net/wireless/realtek/rtl8xxxu/rtl8xxxu.h  |  1 +
+ .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 28 ++++++++++++-------
+ 2 files changed, 19 insertions(+), 10 deletions(-)
+
 -- 
-2.7.4
+2.20.1
 
