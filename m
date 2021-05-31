@@ -2,129 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52D853953A8
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 03:24:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36A973953A9
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 03:24:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230031AbhEaBZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 May 2021 21:25:45 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:3291 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229891AbhEaBZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 21:25:44 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Ftcrp3WBfz1BGCN;
-        Mon, 31 May 2021 09:19:22 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 31 May 2021 09:24:02 +0800
-Received: from [127.0.0.1] (10.69.26.252) by dggpemm500006.china.huawei.com
- (7.185.36.236) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Mon, 31 May
- 2021 09:24:01 +0800
-Subject: Re: [RFC V2 net-next 1/3] ethtool: extend coalesce setting uAPI with
- CQE mode
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <huangdaode@huawei.com>, <linuxarm@huawei.com>,
-        <dledford@redhat.com>, <jgg@ziepe.ca>, <netanel@amazon.com>,
-        <akiyano@amazon.com>, <thomas.lendacky@amd.com>,
-        <irusskikh@marvell.com>, <michael.chan@broadcom.com>,
-        <edwin.peer@broadcom.com>, <rohitm@chelsio.com>,
-        <jesse.brandeburg@intel.com>, <jacob.e.keller@intel.com>,
-        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
-        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
-        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
-        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
-        <linux-wireless@vger.kernel.org>
-References: <1622258536-55776-1-git-send-email-tanhuazhong@huawei.com>
- <1622258536-55776-2-git-send-email-tanhuazhong@huawei.com>
- <20210529142355.17fb609d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-Message-ID: <dbdfcac5-f772-1b73-7af8-af2340f21aea@huawei.com>
-Date:   Mon, 31 May 2021 09:24:01 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S230036AbhEaBZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 May 2021 21:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229891AbhEaBZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 May 2021 21:25:50 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19004C061574
+        for <netdev@vger.kernel.org>; Sun, 30 May 2021 18:24:10 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id 69-20020a9d0a4b0000b02902ed42f141e1so9656676otg.2
+        for <netdev@vger.kernel.org>; Sun, 30 May 2021 18:24:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FUMtbhS9Vm9ltvUN4m/UF7B3F2/o1UvNXJ5gC7QflMI=;
+        b=ZKNIcZ9WDRe681ZYTh4P8k8P2CcMb0DejTq5a1zRewVkqz2fCcsCLO20Wwh1VBM6bx
+         sf80JgNrSoT4mQy4EevSmQktpvnAwFMdpt7p6S5THuFREdlFERBUfThyhE508UeghyN1
+         tqgwSkr3XRk4XUoO3q9RDCCV00U/Fzwra+PVzkJfTLoIivxBRwVp6mYFp9x69wswP+Qh
+         RiqhbRTVUxDRdx9zWIeaBG9BCx5spI82UtQjLFSEDxwiqhbXCMNw/Tcf+6NqVXz3+B62
+         34LK6Ie/axN754d6xXO7SrpkinArKn3jVTdnCbcd53fJvdMqypZHMRuc/Bz8qqDZ0hwe
+         tD3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FUMtbhS9Vm9ltvUN4m/UF7B3F2/o1UvNXJ5gC7QflMI=;
+        b=hSFk2qQczrfF9LLmsD/3hu5KBGNaEL06BL9Bdlj+Y30CCmfoFkvgdQEfOLG4ggrUJV
+         hH6fcVHmsYII95PwQ5iWB//Cqbgsn2p81jvuw5U4Sc76pdaU5X6PKTwKgzc6ALU9qfXw
+         uuUcnD6/vjHsrxrYDsEOMWPHhLalUjR/CIipiAgvYbeCVkPPcAf5jBEqxcBkW3JvZ6Hw
+         NgA+a2kfuGUh/ykD6K5wMjbxf4cMF5v0TCPCerOYjslUFoFm9br2dKv6SOcjG3hQsEHM
+         Byc6OqnoewJpCbfu0+AwdBo6VtGZm5Oi2oHhecayiXqgljm+AcAIjgF0WdE110Kguyt1
+         YtmA==
+X-Gm-Message-State: AOAM530BZp/B1M7UNkxTxDdu05QJXz/VHUMXi6bWRiii2FQawGjIVqgn
+        lArPv0Ym+PVFQIUzhvL96OQ=
+X-Google-Smtp-Source: ABdhPJz8Wo1y5E+/EIR2e068UKeEOf1hIeY9Gl2NqDdF9fq7K7jsUSIpWCiGctTH1VP2dPVKYy3O3Q==
+X-Received: by 2002:a05:6830:1184:: with SMTP id u4mr15586100otq.324.1622424249483;
+        Sun, 30 May 2021 18:24:09 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.22])
+        by smtp.googlemail.com with ESMTPSA id a71sm2534476oib.20.2021.05.30.18.24.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 30 May 2021 18:24:08 -0700 (PDT)
+Subject: Re: [PATCH net-next v4 0/5] Support for the IOAM Pre-allocated Trace
+ with IPv6
+To:     Justin Iurman <justin.iurman@uliege.be>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        tom@herbertland.com
+References: <20210527151652.16074-1-justin.iurman@uliege.be>
+ <85a22702-da46-30c2-46c9-66d293d510ff@gmail.com>
+ <1049853171.33683948.1622305441066.JavaMail.zimbra@uliege.be>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <cc16923b-74bc-7681-92c7-19e84a44c0e1@gmail.com>
+Date:   Sun, 30 May 2021 19:24:07 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210529142355.17fb609d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1049853171.33683948.1622305441066.JavaMail.zimbra@uliege.be>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Originating-IP: [10.69.26.252]
-X-ClientProxiedBy: dggeme707-chm.china.huawei.com (10.1.199.103) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 5/29/21 10:24 AM, Justin Iurman wrote:
+> Actually, February 2021 is the last update. The main draft (draft-ietf-ippm-ioam-data) has already come a long way (version 12) and has already been Submitted to IESG for Publication. I don't think it would hurt
 
-On 2021/5/30 5:23, Jakub Kicinski wrote:
-> On Sat, 29 May 2021 11:22:14 +0800 Huazhong Tan wrote:
->> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
->> index 25131df..8e8c6b3 100644
->> --- a/Documentation/networking/ethtool-netlink.rst
->> +++ b/Documentation/networking/ethtool-netlink.rst
->> @@ -937,6 +937,8 @@ Kernel response contents:
->>     ``ETHTOOL_A_COALESCE_TX_USECS_HIGH``         u32     delay (us), high Tx
->>     ``ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH``    u32     max packets, high Tx
->>     ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
->> +  ``ETHTOOL_A_COALESCE_USE_CQE_TX``	       bool    timer reset in CQE, Tx
->> +  ``ETHTOOL_A_COALESCE_USE_CQE_RX``	       bool    timer reset in CQE, Rx
->>     ===========================================  ======  =======================
->>   
->>   Attributes are only included in reply if their value is not zero or the
->> @@ -975,6 +977,8 @@ Request contents:
->>     ``ETHTOOL_A_COALESCE_TX_USECS_HIGH``         u32     delay (us), high Tx
->>     ``ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH``    u32     max packets, high Tx
->>     ``ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL``  u32     rate sampling interval
->> +  ``ETHTOOL_A_COALESCE_USE_CQE_TX``	       bool    timer reset in CQE, Tx
->> +  ``ETHTOOL_A_COALESCE_USE_CQE_RX``	       bool    timer reset in CQE, Rx
->>     ===========================================  ======  =======================
->>   
->>   Request is rejected if it attributes declared as unsupported by driver (i.e.
-> Did you provide the theory of operation for CQE vs EQE mode somewhere,
-> as I requested?
+when the expected decision on publication?
 
+ that much to have it in the kernel as we're talking about a stable
+draft (the other one is just a wrapper to define the encapsulation of
+IOAM with IPv6) and something useful. And, if you think about Segment
+Routing for IPv6, it was merged in the kernel when it was still a draft.
 
-the definition of enum dim_cq_period_mode in include/linux/dim.h has
-
-below comment:
-
-/**
-  * enum dim_cq_period_mode - Modes for CQ period count
-  *
-  * @DIM_CQ_PERIOD_MODE_START_FROM_EQE: Start counting from EQE
-  * @DIM_CQ_PERIOD_MODE_START_FROM_CQE: Start counting from CQE (implies 
-timer reset)
-  * @DIM_CQ_PERIOD_NUM_MODES: Number of modes
-  */
-
-
-is this comment suitable? and add reference in 
-Documentation/networking/ethtool-netlink.rst to
-
-the comment in dim.h.
-
-
->> +	[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX]	= { .type = NLA_U8 },
->> +	[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX]	= { .type = NLA_U8 },
-> Why not NLA_POLICY_MAX(NLA_U8, 1) ?
-
-
-will fix it.
-
-
-> Any chance you could split the patch into adding the new parameter
-> to the callback and adding new attributes?
-
-
-ok, will split it in the next version.
-
-
-Thanks.
-
-
-> .
-
+The harm is if there are any changes to the uapi.
