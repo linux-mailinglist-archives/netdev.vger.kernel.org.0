@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C743A395AD8
-	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 14:47:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9FC3395ADB
+	for <lists+netdev@lfdr.de>; Mon, 31 May 2021 14:47:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231652AbhEaMsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 08:48:35 -0400
+        id S231609AbhEaMsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 08:48:51 -0400
 Received: from mail-mw2nam12on2114.outbound.protection.outlook.com ([40.107.244.114]:7041
         "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231611AbhEaMsP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 May 2021 08:48:15 -0400
+        id S231589AbhEaMsb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 May 2021 08:48:31 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OX98FVYYv4qkiCgqqNEDFy6UHl468CWDpWyM6Al6c5BnfWEndskDsv+YJ60kqehhneRQ47jsYr0SSkRJloRB90/k589Bs5Aupxg+Mjob3JwXjRf9K9WsKE5kde08v/251Hpnj1EY9/0i18c9m7h3SIynQ0mw3Bpa6t1UXksw/P2P2BVUUHqUzPwnBLhbVioXnuA6aFZRfe9/HlG6gy83w0u+/Z+zm4gjkC5p+tuPdqzARQamSvl37hb4EamE6e9E6hx5HZEIk72mCeFY0C0vCi0HEIkDK2aBvrPu7RNoXEQcH3YVXHLqtqt43bWeND1vpMb5sg0Gc61Ad1oAiNXETg==
+ b=VwPAGDGhY1Xw5SN1i65jSm9ALwObJHgMuGPsVH9aSNYrGQj+jmpXM5yGykdi/xeicAU7SrVPnXxcZZr4exyJy1z7T0zrlZTdWOIl24W07fe1bAzgnrgtm6kOaAhJZdJlu2TtTMkw6c447xihu96CqpHSJO7uZbj9xi2eudm2LaZZMuqaTPhnfqi7wFxLn6ElK/8FsHMjSbX/8np9WGAEISsPr9Ufm2BAhnI0WpoBt4gAliHaO4aDRp56W/3hxwkg0qabTc8WZ20HK8wBvF/nAFpaTJDzDFLtTnzWNz9GYKnDFzQX3+A7HsAuXlP7vuvd8gOi89lJd0Mj6KEoGc+u7A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tXGpXXL+YDJDOJH2gnMglEcURAVS7ACDx5Pj0ZB4OVo=;
- b=fuctGXZfkU4sQ6TmVsSstOs9n9Mqk25wy2Cz46afQezRJOhY4QYepPJLO9NHtIPBlSa7v8vCj37oldYNgIZ3ZNkR29wdstNpn7D/7Kk3WMotiCvWptASZVyu23Ju7rrATXqL8wu6X7RHhpQ9XvtwU5QpbUYL8jW6cHcBvV4oDFaBzWUVToZeC7jJdHhwdFo1KMy2diMcmztyfBZSyI0++ioVqzo1Xz+kwnhaExY4IN9eT/cgZuN4EaNjm2YJwiIci9cJjiQYSKmqxGAkgNaJve1p4VdGm9YGv29QpP5yqq4EMXOmREuE9tVlFx0YWVBueSDm6EdJPep+9oFlfkGNFw==
+ bh=P9k+GZgNG6ZbpnRK9NxAX8z/uUTsAWKae9DLHUtVWfY=;
+ b=igQb5QcR4xZc+YYpSx06dFsKt/+MqND4x7uVehh3FnwNXqq41r7WEzIpyivnO/bhE9fEAXRHz5GHnz60pWNQIvWhyfF87Z05gIH7ybKxmpiW75thL7QqP2BwEwaakh3le1mWwalJ5zel5BlSJZpdV4NL+/iEGdwEcLsqsytAsSSvLuSB5c4o+ue0KF0DTEnWe2hTBs50pkhPCuUMc3Zem3N5poyZpzU99Lo3O725lRfJapUXhQH+RrDXZ8cY+UiR67v99HxlPpOfJpkVeXn9ofLJtUngJMMOlA3uFXmUFoC5ctdp4RAM7Jiwh8uP6WagAQ6Ze6otMfQt8qKh6YO3SA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tXGpXXL+YDJDOJH2gnMglEcURAVS7ACDx5Pj0ZB4OVo=;
- b=XanyEarzMeHd4QG74tEia+lWutyYhTflgDRpeeO9Gre9lgN2ak14zpj8cIESrFc+IeUo9TG/brqn6oMRrXKn88qe94BbdSvHl05SR9sRm2wLFSDmuO1cfvUgGSAPlWJn97c7cMiQvemqXDs9j32pkcEwaSKsU+bSC4L0mUVa548=
+ bh=P9k+GZgNG6ZbpnRK9NxAX8z/uUTsAWKae9DLHUtVWfY=;
+ b=H1EEv50ujCKiqVO0VXWoAWpA1J7kPmNx1WBIfTvLvhPeap4DiHJRc+TPzKkjh6G6oBKE0NjRK92cCV6lcda7VLTdLYYEY44gLFO3WgvW8rcO5nlvag8z8cxX+bXLMjNVwR1WZpv4j2EXS0DVnEYB3GFF/HZYDq3+CpRZu9muABo=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH0PR13MB4891.namprd13.prod.outlook.com (2603:10b6:510:96::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.12; Mon, 31 May
- 2021 12:46:33 +0000
+ 2021 12:46:36 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a%9]) with mapi id 15.20.4195.016; Mon, 31 May 2021
- 12:46:33 +0000
+ 12:46:35 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -45,9 +45,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Louis Peens <louis.peens@corigine.com>,
         Yinjun Zhang <yinjun.zhang@corigine.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v2 4/8] nfp: flower-ct: add zone table entry when handling pre/post_ct flows
-Date:   Mon, 31 May 2021 14:46:03 +0200
-Message-Id: <20210531124607.29602-5-simon.horman@corigine.com>
+Subject: [PATCH net-next v2 5/8] nfp: flower-ct: add nfp_fl_ct_flow_entries
+Date:   Mon, 31 May 2021 14:46:04 +0200
+Message-Id: <20210531124607.29602-6-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210531124607.29602-1-simon.horman@corigine.com>
 References: <20210531124607.29602-1-simon.horman@corigine.com>
@@ -58,51 +58,51 @@ X-ClientProxiedBy: AM4PR05CA0029.eurprd05.prod.outlook.com (2603:10a6:205::42)
  To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from madeliefje.horms.nl (2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a) by AM4PR05CA0029.eurprd05.prod.outlook.com (2603:10a6:205::42) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Mon, 31 May 2021 12:46:31 +0000
+Received: from madeliefje.horms.nl (2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a) by AM4PR05CA0029.eurprd05.prod.outlook.com (2603:10a6:205::42) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Mon, 31 May 2021 12:46:33 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 460d0b1b-87ff-4bcc-8874-08d924321edf
+X-MS-Office365-Filtering-Correlation-Id: 0f237c61-13b1-470d-4328-08d92432201e
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4891:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB489133991ADAE9487B01DE1CE83F9@PH0PR13MB4891.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Microsoft-Antispam-PRVS: <PH0PR13MB48913D4DBAC1644276D51191E83F9@PH0PR13MB4891.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:525;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: x27MFk5Jjayh/LHY1oii17JQXvbNpJ+5xa4bn9Qf7dJ1V+gmQBH98i7C3HLbdvwpAABBxLYCPaAL183xJdmM7JeVbUKOI01pko+jzzjsQqdPKzd2CXsvXOvt31bgi5y4PxkMh3TUnrGw8Ku+LsCJBtoMDxLUuKF3ckS7TEiVvFVWSbS7HUEaa/MY2UQQyUJSjIFkyD3Cn7up5l4jx87eG1mOSLLsCFdixMn0fpccTBYkyyYvxifP9vs0sn3bBhUbD/SmXwkhjpIdvDrQQpdh+XPWlxALg8mNvbABPZ1Bu0P3B3GbZ2KAVip9PC9pnCA/9vS6tPqMRpWA7Vnd9gFhaQ7PAnFwhPgX6Kmm2lvPeYmwrrDzMYO2pNrkqI0iIotloHYuMlWFCSYevwBcbMxm6FTt995BYh55zK1Mj3JcTsi6wUjABmo5bidBOt4fP9WaYreWwaVirpR/gy1db0wURA2u9PQMCtfis14apfqpAB6fl0SxmWBxCAPJmcpgwA//YQ+p8aRSv0ivAJML/jBony7Q+vs/0MezgjbsVBShbXH1ouKc3A9lU2OE0x3svrj1CjGPuRmHohj2rhkuUPvQ78Swsd47bwOTxldJdLYZ4us=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(346002)(366004)(39830400003)(376002)(107886003)(2906002)(66946007)(66476007)(66556008)(36756003)(38100700002)(6512007)(186003)(16526019)(4326008)(86362001)(8936002)(8676002)(6666004)(44832011)(1076003)(6506007)(54906003)(110136005)(6486002)(478600001)(2616005)(316002)(52116002)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?4AcPQ5NwTKWugVXNSX1WVM40sWPbiMUHR94jSUwxgiRbQnQoDfkclfhnCvzW?=
- =?us-ascii?Q?bFsvOwrGlRUJiyMWYwiztEr0a2g9aPI7n+FbdXsTAjtv/X5jJSozjO9QOm2n?=
- =?us-ascii?Q?ejNUzqYtISgDSbKq2IsQbwBT1ZvJNbtujcfOye+BgRuUBkJtzxxAZ4n4oeZp?=
- =?us-ascii?Q?CKry2hyC08FX1sUUJrGd54KEEalKLH/iOlwpyovc+QNAwLkwo09+nvtQfWd9?=
- =?us-ascii?Q?ekLT+k6ZWvDLCd5mr8XTpK9/lpyNc5a+mrpSv6ZTSJglsErB3JN2aO2b7S4G?=
- =?us-ascii?Q?EoLFYjo2wJxdsOQHranjeVmvlQVYIrkiIIlK6pJkh8kVr+2XULul2b4KF+9i?=
- =?us-ascii?Q?MJwvke6CA2hmXLEuGoEHKyOdHMnj1hAnYQDs+oxn5cCFIrr6y9/+sA5bmort?=
- =?us-ascii?Q?zXz2iYrgeGWpreatoJwl8EfFLSRjRmr9vVhu7MxRh6EJfwR7Ui05AFM5SHUI?=
- =?us-ascii?Q?ZNGLkKEddiejzE7A65XReFCEDcUFBZQlOxA5Ax/a9B9R4e2MI+kS37GGh5E/?=
- =?us-ascii?Q?bOtYvdu2qxm9NknYXXdzA0wRGJBjPwzBc9b6zjmxLkkfPM2aEp1ZmT6Dp5zc?=
- =?us-ascii?Q?r8rkoPweGBiCgLW1dA8UvnrBs0PHP6MaIy523TouZkcXp3nzHk2FKbWQwDHT?=
- =?us-ascii?Q?2hsHLZwRoPcyCZdo/k8OKGFK/50UwYDAM8SbSZUUOr9B/ngyFePG7oG3Fodo?=
- =?us-ascii?Q?qkjcWYZSJ7Tk5QoZR13nZWogFdInXGE2s7RZK1lNACCneKuGBS8sk9i/q6+R?=
- =?us-ascii?Q?JS/dtelZGqftlGQnQJdB07yyAuCS8N4OopHMXah4kv6GXH9TgiKvCfeQObFB?=
- =?us-ascii?Q?eBz1JhN+rQ6kkD11+8suwKMt+B5zRp+lnGswc4lTazGlgjSyS9o6zoCPMfQ+?=
- =?us-ascii?Q?tYOsT2z/FQLDAkcSGimfYK5eQTyw4M9QQbVzaUpzXnJmS2/jUZ6U4F0iK8os?=
- =?us-ascii?Q?M0sccjiXa9YwnuZzL574Bi1f3QdO7VHCJSNWUWS5fCFwZy8cPNNWqG9VqN7j?=
- =?us-ascii?Q?gJsFgna31fuO8KnFSWWJKAWKCAwysOETCyJX8jdAu9IjMJVap/K8ktK4dfXM?=
- =?us-ascii?Q?A7OL24/UcmSMxond2/joCIDagfHjwxpcnP2ami6Y3lPpckcvYeMFUcinGAB+?=
- =?us-ascii?Q?DH9WTHI5thNzDrcNDuZTQJGMbr9mhhq5s4PqQ/Zk/adPw4AdPGkgKI/2N+RK?=
- =?us-ascii?Q?JtLizYczw0p/DsTI12zREKHX2hZ+Ocf3KCYsQHfNOPFrAa3Qss3vGu1LUtZx?=
- =?us-ascii?Q?d0LAOAe5+2j0Uy6kQ1fTnZVB7IQYA7rJcPQjdvOHLOn1OATWv5FV7jQSeNXf?=
- =?us-ascii?Q?41vpFkjIJrX9LzpkpIOM4daSNThNcMRA1GMUKj2VgOMhgm1paWjjnBppht7P?=
- =?us-ascii?Q?SgVvWoGodNGQP/hEBfRUNrkuPKeV?=
+X-Microsoft-Antispam-Message-Info: mSFmT8FGMxnwbtIiXU5p9bU3gKG0SS/OlsboBiL5+wO5JqEVvSZzlS4qofItl2BR7RCmNW0KZtexYNSXeGudWs9n+Qf2r6Xm4/1i42BbSe36/wHFIyXauFykstH/DCg/r1I8YLWddb9Qf7521/3a+PmNgXCqiiUB1oBOR2Tg7cUGJcJkkukIRsyLWTH7FbBWTzpohWOqC39wyywcLD4w5Qw20Wdffuk9zxU6aU70w4MNTpxCubR0rMwy0RDfUb6QtYiBKrW2gkRXl3R0M/S15xrlES4PFjkEiAyWoNAKcFQo+I0mv9N1MXYsR9s4yPufNmmlFSHj9xpaGefAIKci66YOm4gv3J4F+yE2eHTJHpa7VAxFSNEODlKQlbcHUzlT4qu4HtAoMF9xoBlV8UdyfSXoOzZvowsbtO9Iq+BgK9Nyng8dpj8dNv/sMwzu41AVCBumdZOAiMtG1WNkz2zDZCNXqMnCjPZ9I/ir1cAa3No57xQqjD+sKa6zpdg8ORnStaw4IgeDmI1dIXYV0Sp9W9zqtVqxFk8ii4S8iDrkNEhvBtHqlb6C7j+lvZ1nymg2ihAmEVqtlcnZbNINdrFda4GqtyU8vCzky+HJB5VS70o=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(346002)(366004)(39830400003)(376002)(107886003)(2906002)(66946007)(66476007)(66556008)(36756003)(38100700002)(6512007)(186003)(16526019)(4326008)(86362001)(8936002)(8676002)(83380400001)(6666004)(44832011)(30864003)(1076003)(6506007)(54906003)(110136005)(6486002)(478600001)(2616005)(316002)(52116002)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Ju2irf8AFRb2uhK0mk3jKxCZSVp3BZryypo+c9tNvmnw0FF9Zn1CsTQi1FoJ?=
+ =?us-ascii?Q?peEKuDoQ8yGc6B7V+8zdua2LR33kxwi/ERFY8Lidva2XNw/tQxQpDIvwxl7I?=
+ =?us-ascii?Q?DRHvoAoewBgEz3NHQjzy+6G0OppVWOvbWwYx3LYWo6du8jp9cYGSP5g3QYDU?=
+ =?us-ascii?Q?ZEs8HxmiavcrAfceEN4pDESHJb3fuHIgVp5QtcqC5IQ8rtYKxicJNhe3Rxok?=
+ =?us-ascii?Q?bimwPfskmak919POY7V+vbmeahi7TirToYPVtpT27UP5veTmRnLR5qZeMKgR?=
+ =?us-ascii?Q?K7zY8jQWEWM++IHEjQffy4TJaXHQqcbNzK39f+McJqvt7tCeheyfnR8DjTe8?=
+ =?us-ascii?Q?J/yP3R+lAn296fnPZ1ncctEjEMcO8/J+q79omTK1anm5gr3O+lA5jKT41HaL?=
+ =?us-ascii?Q?C4ecI0mR3VMTZFulHxiuamHpbe9QiFnc8gJD/oTAwJvx72Uuidw7S8R7tb9j?=
+ =?us-ascii?Q?ELaoc9RRUrFaNUBqw5JVgoni/s+S9igmhqPECPhuZBoPeN04kTdBvqtVrzHH?=
+ =?us-ascii?Q?mUQ+4+7vGcmS9f8xAMXUJ6JZqNiF7KkLfenavOABbgY1j5OI7A/DpAv4Phmd?=
+ =?us-ascii?Q?0tOTYXVCwv0NiqblpVdhvLosH809d7g6sClP74iwGJxl/h71MRS4xciXsxja?=
+ =?us-ascii?Q?UqwXoo2gCjBhIS+FoD4DPkLP+fIMk1YWg2yimNBaCvD1OxtP5k35taPWALM4?=
+ =?us-ascii?Q?h1XRm/9IpUo/35Oarngr1zhV+K84FJ83ET9dG64Z7lkd9xCjuOq9ssD0S+Xa?=
+ =?us-ascii?Q?cXQNU6+rUcM8Q0DibJJ0QVwzEwjYf8O4ZcHENwZbIoCsKdZs8i3WADkcCOdP?=
+ =?us-ascii?Q?slxOcgWeoYCVwIVQUNyzetD2xGe0nodxaF74QPpJFxloTBQqdbcfdDgDFr0e?=
+ =?us-ascii?Q?SIE0g+mShHpXcHFckvJfVAHF1t7JMX/B6yEW61Kt9gIMANZj+YztdPpe7dv3?=
+ =?us-ascii?Q?ZiMJ5JqOKpU8YkK8ghX/LkGrzG2pEMklIWDTLhMz18nlYNqa+I00A7GWTRX6?=
+ =?us-ascii?Q?e5MHrWAB6yR9O79SAGAqQnIEmh1S7hzo65sDMAsfoTZ+KWvWRsBI/xq3IErS?=
+ =?us-ascii?Q?m8a5W4plII2kU6LiZGTVF0R5aPE6h27JY44etgxDB7WK/35Z+MyKQnxHugFE?=
+ =?us-ascii?Q?yF72KUfWF28hipf4a11ghLq99HEBOm+LQs/5cokEt9LHrBm+k/I9VaX6Ycov?=
+ =?us-ascii?Q?UbjsAs7Zc9/L7fhCz+w9b01FZNzrOjKHa/aKUXx9McEsCupGsqGg/dxjhaIt?=
+ =?us-ascii?Q?HXdybn0OrWHOYnLvU6yckGvDt+v/X+cDa01g8BU8bkLYzHvhUCPYr/Bxnkuh?=
+ =?us-ascii?Q?q/fUDmUozUtEexhn8eOVDQ2Cs0uuUGfA0N/NE2PWhlGqLjOmvxhwtsXkHYwd?=
+ =?us-ascii?Q?/U34HZQHJO3iH7jmUJuQPojgfC9j?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 460d0b1b-87ff-4bcc-8874-08d924321edf
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0f237c61-13b1-470d-4328-08d92432201e
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2021 12:46:33.5801
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2021 12:46:35.8123
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: niMqJfyAonVm+w4+zonMGc3lgsAqU3YFXE8DqyqSwxRb6uxOIdH/+I7VnZwfwmDhcLPrCOLWuQT11vwYwm4/yoFZaQGelpqwClf5048a3DQ=
+X-MS-Exchange-CrossTenant-UserPrincipalName: ytyTlT0ePy5dgUIYS4c6WdjZL5s198OAGIwTxWKVaCLJaGNAu2UAUhfOCa3ld+52tKktKT2dkE4Ft/T5+RQSGFQ2eFtgxM+zhAEMOSonEyc=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4891
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -110,213 +110,335 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Louis Peens <louis.peens@corigine.com>
 
-Start populating the pre/post_ct handler functions. Add a zone entry
-to the zone table, based on the zone information from the flow. In
-the case of a post_ct flow which has a wildcarded match on the zone
-create a special entry.
+This commit starts adding the structures and lists that will
+be used in follow up commits to enable offloading of conntrack.
+Some stub functions are also introduced as placeholders by
+this commit.
 
 Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- .../ethernet/netronome/nfp/flower/conntrack.c | 124 ++++++++++++++++++
- .../net/ethernet/netronome/nfp/flower/main.h  |   2 +
- .../ethernet/netronome/nfp/flower/metadata.c  |   4 +
- 3 files changed, 130 insertions(+)
+ .../ethernet/netronome/nfp/flower/conntrack.c | 130 +++++++++++++++++-
+ .../ethernet/netronome/nfp/flower/conntrack.h |  51 +++++++
+ .../ethernet/netronome/nfp/flower/metadata.c  |  31 ++++-
+ 3 files changed, 209 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-index aeea37a0135e..3a07196a8fe2 100644
+index 3a07196a8fe2..186f821c8e49 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
 +++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-@@ -3,6 +3,32 @@
+@@ -82,6 +82,10 @@ nfp_fl_ct_zone_entry *get_nfp_zone_entry(struct nfp_flower_priv *priv,
+ 	zt->priv = priv;
+ 	zt->nft = NULL;
  
- #include "conntrack.h"
- 
-+/**
-+ * get_hashentry() - Wrapper around hashtable lookup.
-+ * @ht:		hashtable where entry could be found
-+ * @params:	hashtable params
-+ * @size:	size of entry to allocate if not in table
-+ *
-+ * Returns an entry from a hashtable. If entry does not exist
-+ * yet allocate the memory for it and return the new entry.
-+ */
-+static void *get_hashentry(struct rhashtable *ht, void *key,
-+			   const struct rhashtable_params params, size_t size)
-+{
-+	void *result;
++	/* init the various hash tables and lists*/
++	INIT_LIST_HEAD(&zt->pre_ct_list);
++	INIT_LIST_HEAD(&zt->post_ct_list);
 +
-+	result = rhashtable_lookup_fast(ht, key, params);
-+
-+	if (result)
-+		return result;
-+
-+	result = kzalloc(size, GFP_KERNEL);
-+	if (!result)
-+		return ERR_PTR(-ENOMEM);
-+
-+	return result;
-+}
-+
- bool is_pre_ct_flow(struct flow_cls_offload *flow)
- {
- 	struct flow_action_entry *act;
-@@ -29,11 +55,88 @@ bool is_post_ct_flow(struct flow_cls_offload *flow)
- 	return false;
+ 	if (wildcarded) {
+ 		priv->ct_zone_wc = zt;
+ 	} else {
+@@ -99,6 +103,100 @@ nfp_fl_ct_zone_entry *get_nfp_zone_entry(struct nfp_flower_priv *priv,
+ 	return ERR_PTR(err);
  }
  
 +static struct
-+nfp_fl_ct_zone_entry *get_nfp_zone_entry(struct nfp_flower_priv *priv,
-+					 u16 zone, bool wildcarded)
++nfp_fl_ct_flow_entry *nfp_fl_ct_add_flow(struct nfp_fl_ct_zone_entry *zt,
++					 struct net_device *netdev,
++					 struct flow_cls_offload *flow)
 +{
-+	struct nfp_fl_ct_zone_entry *zt;
-+	int err;
++	struct nfp_fl_ct_flow_entry *entry;
++	struct flow_action_entry *act;
++	int err, i;
 +
-+	if (wildcarded && priv->ct_zone_wc)
-+		return priv->ct_zone_wc;
++	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
++	if (!entry)
++		return ERR_PTR(-ENOMEM);
 +
-+	if (!wildcarded) {
-+		zt = get_hashentry(&priv->ct_zone_table, &zone,
-+				   nfp_zone_table_params, sizeof(*zt));
++	entry->zt = zt;
++	entry->netdev = netdev;
++	entry->cookie = flow->cookie;
++	entry->rule = flow_rule_alloc(flow->rule->action.num_entries);
++	if (!entry->rule) {
++		err = -ENOMEM;
++		goto err_pre_ct_act;
++	}
++	entry->rule->match.dissector = flow->rule->match.dissector;
++	entry->rule->match.mask = flow->rule->match.mask;
++	entry->rule->match.key = flow->rule->match.key;
++	entry->chain_index = flow->common.chain_index;
++	entry->tun_offset = NFP_FL_CT_NO_TUN;
 +
-+		/* If priv is set this is an existing entry, just return it */
-+		if (IS_ERR(zt) || zt->priv)
-+			return zt;
-+	} else {
-+		zt = kzalloc(sizeof(*zt), GFP_KERNEL);
-+		if (!zt)
-+			return ERR_PTR(-ENOMEM);
++	/* Copy over action data. Unfortunately we do not get a handle to the
++	 * original tcf_action data, and the flow objects gets destroyed, so we
++	 * cannot just save a pointer to this either, so need to copy over the
++	 * data unfortunately.
++	 */
++	entry->rule->action.num_entries = flow->rule->action.num_entries;
++	flow_action_for_each(i, act, &flow->rule->action) {
++		struct flow_action_entry *new_act;
++
++		new_act = &entry->rule->action.entries[i];
++		memcpy(new_act, act, sizeof(struct flow_action_entry));
++		/* Entunnel is a special case, need to allocate and copy
++		 * tunnel info.
++		 */
++		if (act->id == FLOW_ACTION_TUNNEL_ENCAP) {
++			struct ip_tunnel_info *tun = act->tunnel;
++			size_t tun_size = sizeof(*tun) + tun->options_len;
++
++			new_act->tunnel = kmemdup(tun, tun_size, GFP_ATOMIC);
++			if (!new_act->tunnel) {
++				err = -ENOMEM;
++				goto err_pre_ct_tun_cp;
++			}
++			entry->tun_offset = i;
++		}
 +	}
 +
-+	zt->zone = zone;
-+	zt->priv = priv;
-+	zt->nft = NULL;
++	INIT_LIST_HEAD(&entry->children);
 +
-+	if (wildcarded) {
-+		priv->ct_zone_wc = zt;
-+	} else {
-+		err = rhashtable_insert_fast(&priv->ct_zone_table,
-+					     &zt->hash_node,
-+					     nfp_zone_table_params);
-+		if (err)
-+			goto err_zone_insert;
-+	}
++	/* Creation of a ct_map_entry and adding it to a hashtable
++	 * will happen here in follow up patches.
++	 */
 +
-+	return zt;
++	return entry;
 +
-+err_zone_insert:
-+	kfree(zt);
++err_pre_ct_tun_cp:
++	kfree(entry->rule);
++err_pre_ct_act:
++	kfree(entry);
 +	return ERR_PTR(err);
 +}
 +
-+static struct flow_action_entry *get_flow_act(struct flow_cls_offload *flow,
-+					      enum flow_action_id act_id)
++static void nfp_free_tc_merge_children(struct nfp_fl_ct_flow_entry *entry)
 +{
-+	struct flow_action_entry *act = NULL;
-+	int i;
-+
-+	flow_action_for_each(i, act, &flow->rule->action) {
-+		if (act->id == act_id)
-+			return act;
-+	}
-+	return NULL;
 +}
 +
- int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
- 			    struct net_device *netdev,
++static void nfp_free_nft_merge_children(void *entry, bool is_nft_flow)
++{
++}
++
++void nfp_fl_ct_clean_flow_entry(struct nfp_fl_ct_flow_entry *entry)
++{
++	list_del(&entry->list_node);
++
++	if (!list_empty(&entry->children)) {
++		if (entry->type == CT_TYPE_NFT)
++			nfp_free_nft_merge_children(entry, true);
++		else
++			nfp_free_tc_merge_children(entry);
++	}
++
++	if (entry->tun_offset != NFP_FL_CT_NO_TUN)
++		kfree(entry->rule->action.entries[entry->tun_offset].tunnel);
++	kfree(entry->rule);
++	kfree(entry);
++}
++
+ static struct flow_action_entry *get_flow_act(struct flow_cls_offload *flow,
+ 					      enum flow_action_id act_id)
+ {
+@@ -117,7 +215,8 @@ int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
  			    struct flow_cls_offload *flow,
  			    struct netlink_ext_ack *extack)
  {
-+	struct flow_action_entry *ct_act;
-+	struct nfp_fl_ct_zone_entry *zt;
-+
-+	ct_act = get_flow_act(flow, FLOW_ACTION_CT);
-+	if (!ct_act) {
+-	struct flow_action_entry *ct_act;
++	struct flow_action_entry *ct_act, *ct_goto;
++	struct nfp_fl_ct_flow_entry *ct_entry;
+ 	struct nfp_fl_ct_zone_entry *zt;
+ 
+ 	ct_act = get_flow_act(flow, FLOW_ACTION_CT);
+@@ -127,6 +226,13 @@ int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
++	ct_goto = get_flow_act(flow, FLOW_ACTION_GOTO);
++	if (!ct_goto) {
 +		NL_SET_ERR_MSG_MOD(extack,
-+				   "unsupported offload: Conntrack action empty in conntrack offload");
++				   "unsupported offload: Conntrack requires ACTION_GOTO");
 +		return -EOPNOTSUPP;
 +	}
 +
-+	zt = get_nfp_zone_entry(priv, ct_act->ct.zone, false);
-+	if (IS_ERR(zt)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "offload error: Could not create zone table entry");
-+		return PTR_ERR(zt);
-+	}
-+
-+	if (!zt->nft)
-+		zt->nft = ct_act->ct.flow_table;
+ 	zt = get_nfp_zone_entry(priv, ct_act->ct.zone, false);
+ 	if (IS_ERR(zt)) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+@@ -137,7 +243,17 @@ int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
+ 	if (!zt->nft)
+ 		zt->nft = ct_act->ct.flow_table;
+ 
++	/* Add entry to pre_ct_list */
++	ct_entry = nfp_fl_ct_add_flow(zt, netdev, flow);
++	if (IS_ERR(ct_entry))
++		return PTR_ERR(ct_entry);
++	ct_entry->type = CT_TYPE_PRE_CT;
++	ct_entry->chain_index = ct_goto->chain_index;
++	list_add(&ct_entry->list_node, &zt->pre_ct_list);
++	zt->pre_ct_count++;
 +
  	NL_SET_ERR_MSG_MOD(extack, "unsupported offload: Conntrack action not supported");
++	nfp_fl_ct_clean_flow_entry(ct_entry);
  	return -EOPNOTSUPP;
  }
-@@ -43,6 +146,27 @@ int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
- 			     struct flow_cls_offload *flow,
+ 
+@@ -147,6 +263,7 @@ int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
  			     struct netlink_ext_ack *extack)
  {
-+	struct flow_rule *rule = flow_cls_offload_flow_rule(flow);
-+	struct nfp_fl_ct_zone_entry *zt;
-+	bool wildcarded = false;
-+	struct flow_match_ct ct;
+ 	struct flow_rule *rule = flow_cls_offload_flow_rule(flow);
++	struct nfp_fl_ct_flow_entry *ct_entry;
+ 	struct nfp_fl_ct_zone_entry *zt;
+ 	bool wildcarded = false;
+ 	struct flow_match_ct ct;
+@@ -167,6 +284,17 @@ int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
+ 		return PTR_ERR(zt);
+ 	}
+ 
++	/* Add entry to post_ct_list */
++	ct_entry = nfp_fl_ct_add_flow(zt, netdev, flow);
++	if (IS_ERR(ct_entry))
++		return PTR_ERR(ct_entry);
 +
-+	flow_rule_match_ct(rule, &ct);
-+	if (!ct.mask->ct_zone) {
-+		wildcarded = true;
-+	} else if (ct.mask->ct_zone != U16_MAX) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "unsupported offload: partially wildcarded ct_zone is not supported");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	zt = get_nfp_zone_entry(priv, ct.key->ct_zone, wildcarded);
-+	if (IS_ERR(zt)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "offload error: Could not create zone table entry");
-+		return PTR_ERR(zt);
-+	}
++	ct_entry->type = CT_TYPE_POST_CT;
++	ct_entry->chain_index = flow->common.chain_index;
++	list_add(&ct_entry->list_node, &zt->post_ct_list);
++	zt->post_ct_count++;
 +
  	NL_SET_ERR_MSG_MOD(extack, "unsupported offload: Conntrack match not supported");
++	nfp_fl_ct_clean_flow_entry(ct_entry);
  	return -EOPNOTSUPP;
  }
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
-index 0073851f31d7..060c6de36c02 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/main.h
-+++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
-@@ -194,6 +194,7 @@ struct nfp_fl_internal_ports {
-  * @pre_tun_rule_cnt:	Number of pre-tunnel rules offloaded
-  * @merge_table:	Hash table to store merged flows
-  * @ct_zone_table:	Hash table used to store the different zones
-+ * @ct_zone_wc:		Special zone entry for wildcarded zone matches
-  */
- struct nfp_flower_priv {
- 	struct nfp_app *app;
-@@ -229,6 +230,7 @@ struct nfp_flower_priv {
- 	int pre_tun_rule_cnt;
- 	struct rhashtable merge_table;
- 	struct rhashtable ct_zone_table;
-+	struct nfp_fl_ct_zone_entry *ct_zone_wc;
- };
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.h b/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
+index 5f1f54ccc5a1..46437de4d75f 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
+@@ -6,6 +6,8 @@
+ 
+ #include "main.h"
+ 
++#define NFP_FL_CT_NO_TUN	0xff
++
+ extern const struct rhashtable_params nfp_zone_table_params;
  
  /**
+@@ -14,6 +16,12 @@ extern const struct rhashtable_params nfp_zone_table_params;
+  * @hash_node:	Used by the hashtable
+  * @priv:	Pointer to nfp_flower_priv data
+  * @nft:	Pointer to nf_flowtable for this zone
++ *
++ * @pre_ct_list:	The pre_ct_list of nfp_fl_ct_flow_entry entries
++ * @pre_ct_count:	Keep count of the number of pre_ct entries
++ *
++ * @post_ct_list:	The post_ct_list of nfp_fl_ct_flow_entry entries
++ * @post_ct_count:	Keep count of the number of post_ct entries
+  */
+ struct nfp_fl_ct_zone_entry {
+ 	u16 zone;
+@@ -21,6 +29,44 @@ struct nfp_fl_ct_zone_entry {
+ 
+ 	struct nfp_flower_priv *priv;
+ 	struct nf_flowtable *nft;
++
++	struct list_head pre_ct_list;
++	unsigned int pre_ct_count;
++
++	struct list_head post_ct_list;
++	unsigned int post_ct_count;
++};
++
++enum ct_entry_type {
++	CT_TYPE_PRE_CT,
++	CT_TYPE_NFT,
++	CT_TYPE_POST_CT,
++};
++
++/**
++ * struct nfp_fl_ct_flow_entry - Flow entry containing conntrack flow information
++ * @cookie:	Flow cookie, same as original TC flow, used as key
++ * @list_node:	Used by the list
++ * @chain_index:	Chain index of the original flow
++ * @netdev:	netdev structure.
++ * @type:	Type of pre-entry from enum ct_entry_type
++ * @zt:		Reference to the zone table this belongs to
++ * @children:	List of tc_merge flows this flow forms part of
++ * @rule:	Reference to the original TC flow rule
++ * @stats:	Used to cache stats for updating
++ * @tun_offset: Used to indicate tunnel action offset in action list
++ */
++struct nfp_fl_ct_flow_entry {
++	unsigned long cookie;
++	struct list_head list_node;
++	u32 chain_index;
++	enum ct_entry_type type;
++	struct net_device *netdev;
++	struct nfp_fl_ct_zone_entry *zt;
++	struct list_head children;
++	struct flow_rule *rule;
++	struct flow_stats stats;
++	u8 tun_offset;		// Set to NFP_FL_CT_NO_TUN if no tun
+ };
+ 
+ bool is_pre_ct_flow(struct flow_cls_offload *flow);
+@@ -59,4 +105,9 @@ int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
+ 			     struct flow_cls_offload *flow,
+ 			     struct netlink_ext_ack *extack);
+ 
++/**
++ * nfp_fl_ct_clean_flow_entry() - Free a nfp_fl_ct_flow_entry
++ * @entry:	Flow entry to cleanup
++ */
++void nfp_fl_ct_clean_flow_entry(struct nfp_fl_ct_flow_entry *entry);
+ #endif
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/metadata.c b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-index 4a00ce803df1..10d84ebf77bf 100644
+index 10d84ebf77bf..062e963a8838 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/metadata.c
 +++ b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-@@ -585,6 +585,9 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+@@ -583,11 +583,38 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 	return -ENOMEM;
+ }
  
++static void nfp_zone_table_entry_destroy(struct nfp_fl_ct_zone_entry *zt)
++{
++	if (!zt)
++		return;
++
++	if (!list_empty(&zt->pre_ct_list)) {
++		struct nfp_fl_ct_flow_entry *entry, *tmp;
++
++		WARN_ONCE(1, "pre_ct_list not empty as expected, cleaning up\n");
++		list_for_each_entry_safe(entry, tmp, &zt->pre_ct_list,
++					 list_node) {
++			nfp_fl_ct_clean_flow_entry(entry);
++		}
++	}
++
++	if (!list_empty(&zt->post_ct_list)) {
++		struct nfp_fl_ct_flow_entry *entry, *tmp;
++
++		WARN_ONCE(1, "post_ct_list not empty as expected, cleaning up\n");
++		list_for_each_entry_safe(entry, tmp, &zt->post_ct_list,
++					 list_node) {
++			nfp_fl_ct_clean_flow_entry(entry);
++		}
++	}
++	kfree(zt);
++}
++
  static void nfp_free_zone_table_entry(void *ptr, void *arg)
  {
-+	struct nfp_fl_ct_zone_entry *zt = ptr;
-+
-+	kfree(zt);
+ 	struct nfp_fl_ct_zone_entry *zt = ptr;
+ 
+-	kfree(zt);
++	nfp_zone_table_entry_destroy(zt);
  }
  
  void nfp_flower_metadata_cleanup(struct nfp_app *app)
-@@ -602,6 +605,7 @@ void nfp_flower_metadata_cleanup(struct nfp_app *app)
+@@ -605,7 +632,7 @@ void nfp_flower_metadata_cleanup(struct nfp_app *app)
  				    nfp_check_rhashtable_empty, NULL);
  	rhashtable_free_and_destroy(&priv->ct_zone_table,
  				    nfp_free_zone_table_entry, NULL);
-+	kfree(priv->ct_zone_wc);
+-	kfree(priv->ct_zone_wc);
++	nfp_zone_table_entry_destroy(priv->ct_zone_wc);
  	kvfree(priv->stats);
  	kfree(priv->mask_ids.mask_id_free_list.buf);
  	kfree(priv->mask_ids.last_used);
