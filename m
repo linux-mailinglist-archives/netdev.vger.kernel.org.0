@@ -2,108 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B15A1397881
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 18:55:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53A123978B2
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 19:06:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233904AbhFAQ4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 12:56:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39152 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230288AbhFAQ4r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 12:56:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=HUgJUFHWhFqGGVtr0GW02t4yLZoPpe5HYrZEnVB3RYs=; b=KO2bJeUOO5ItiycNjOLAH6dEbk
-        Q2xez1L5M/44oMRO8X8dgwVxC4fHke0BPcZm9zyUf43trlKbwGobNFO3Pn/VcxbE7R9d30x88nGNA
-        j9+iXndu2PWQUNYU9AuD4i1nAEL+Zt7thbJd35epKCiOEQSHotc3K1af2FT0bZjO5cfs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lo7fT-007JcI-6s; Tue, 01 Jun 2021 18:55:03 +0200
-Date:   Tue, 1 Jun 2021 18:55:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Liang Xu <lxu@maxlinear.com>
-Cc:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        id S234556AbhFARIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 13:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231918AbhFARIE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 13:08:04 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C0B5C061574;
+        Tue,  1 Jun 2021 10:06:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=hA62la00vFMppd9s1AomcqtrMlyNDRJAkQFp1nXnFAg=; b=bhrq8HGvk2ZC9QEwuF3N+FtO15
+        D91cwCGObxRWpjhgo3KsDyZ/ccqpaKL1PKiqNJ6DyXoAd3sH8j3/v38LCVcvBBaQBBbuic3LwsDAJ
+        +8tAvC6xnAzAmA2HBRfvUbPq/pfObzWigW5VlFNHN6lhA+Gd/VRL+a5EXewYUpnCrHRxvkb1TzGlH
+        N401VSuO7kjeKd04aOalX52/LMQFAWweJvJvB+wz/rFUfpsnLI/iY+MRzMxnPT/d5GwzdRe7k/JbE
+        vf5bEBx1jR7MUlL5Kj0nk0aza5v71zysqRMPjrRoDA00lec1DdVTRanpocwFGdS/z1Iad8J2I7IBt
+        rFdK0zyg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lo7pK-00AEY3-91; Tue, 01 Jun 2021 17:05:15 +0000
+Date:   Tue, 1 Jun 2021 18:05:14 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Justin He <Justin.He@arm.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        Hauke Mehrtens <hmehrtens@maxlinear.com>,
-        Thomas Mohren <tmohren@maxlinear.com>
-Subject: Re: [PATCH] phy: maxlinear: add Maxlinear GPY115/21x/24x driver
-Message-ID: <YLZmZ0pa4vULonsZ@lunn.ch>
-References: <20210601074427.40990-1-lxu@maxlinear.com>
- <YLYrFDvGr7flA9rt@lunn.ch>
- <050c9cd2-ba6e-332d-d235-4fa9364b461b@maxlinear.com>
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>
+Subject: Re: [PATCH RFCv2 2/3] lib/vsprintf.c: make %pD print full path for
+ file
+Message-ID: <YLZoyjSJyzU5w1qO@casper.infradead.org>
+References: <AM6PR08MB437691E7314C6B774EFED4BDF7229@AM6PR08MB4376.eurprd08.prod.outlook.com>
+ <YLEDwFCPcFx+qeul@casper.infradead.org>
+ <AM6PR08MB437615DB6A6DEC33223A3138F7229@AM6PR08MB4376.eurprd08.prod.outlook.com>
+ <YLEKqGkm8bX6LZfP@casper.infradead.org>
+ <AM6PR08MB43764764B52AAC7F05B71056F73E9@AM6PR08MB4376.eurprd08.prod.outlook.com>
+ <YLZSgZIcWyYTmqOT@casper.infradead.org>
+ <CAHp75VfYgEtJeiVp8b10Va54QShyg4DmWeufuB_WGC8C2SE2mQ@mail.gmail.com>
+ <YLZVwFh9MZJR3amM@casper.infradead.org>
+ <YLZX9oicn8u4ZVCl@smile.fi.intel.com>
+ <YLZcAesVG1SYL5fp@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <050c9cd2-ba6e-332d-d235-4fa9364b461b@maxlinear.com>
+In-Reply-To: <YLZcAesVG1SYL5fp@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> +     linkmode_mod_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT,
-> >> +                      phydev->supported,
-> >> +                      ret & MDIO_PMA_NG_EXTABLE_5GBT);
-> >> +
-> > Does genphy_c45_pma_read_abilities() do the wrong thing here? What
-> > does it get wrong?
+On Tue, Jun 01, 2021 at 07:10:41PM +0300, Andy Shevchenko wrote:
+> On Tue, Jun 01, 2021 at 06:53:26PM +0300, Andy Shevchenko wrote:
+> > On Tue, Jun 01, 2021 at 04:44:00PM +0100, Matthew Wilcox wrote:
+> > > On Tue, Jun 01, 2021 at 06:36:41PM +0300, Andy Shevchenko wrote:
+> > > > On Tue, Jun 1, 2021 at 6:32 PM Matthew Wilcox <willy@infradead.org> wrote:
+> > > > > On Tue, Jun 01, 2021 at 02:42:15PM +0000, Justin He wrote:
+> > > > 
+> > > > ...
+> > > > 
+> > > > > Just don't put anything
+> > > > > in the buffer if the user didn't supply enough space.  As long as you
+> > > > > get the return value right, they know the string is bad (or they don't
+> > > > > care if the string is bad)
+> > > > 
+> > > > It might be that I'm out of context here, but printf() functionality
+> > > > in the kernel (vsprintf() if being precise)  and its users consider
+> > > > that it should fill buffer up to the end of whatever space is
+> > > > available.
+> > > 
+> > > Do they though?  What use is it to specify a small buffer, print a
+> > > large filename into it and then use that buffer, knowing that it wasn't
+> > > big enough?  That would help decide whether we should print the
+> > > start or the end of the filename.
+> > > 
+> > > Remember, we're going for usefulness here, not abiding by the letter of
+> > > the standard under all circumstances, no matter the cost.  At least
+> > > partially because we're far outside the standard here; POSIX does
+> > > not specify what %pD does.
+> > > 
+> > > "The argument shall be a pointer to void. The value of the
+> > > pointer is converted to a sequence of printable characters, in an
+> > > implementation-defined manner."
+> > 
+> > All nice words, but don't forget kasprintf() or other usages like this.
+> > For the same input we have to have the same result independently on the room in
+> > the buffer.
+> > 
+> > So, if I print "Hello, World" I should always get it, not "Monkey's Paw".
+> > I.o.w.
+> > 
+> >  snprintf(10) ==> "Hello, Wor"
+> >  snprintf(5)  ==> "Hello"
+> >  snprintf(2)  !=> "Mo"
+> >  snprintf(1)  !=> "M"
+> >  snprintf(1)  ==> "H"
+> > 
+> > Inconsistency here is really not what we want.
 > 
-> The problem comes from condition "phydev->c45_ids.mmds_present & 
-> MDIO_DEVS_AN".
-> 
-> Our product supports both C22 and C45.
-> 
-> In the real system, we found C22 was used by customers (with indirect 
-> access to C45 registers when necessary).
-> 
-> Then during probe, in API "get_phy_device", it skips reading C45 IDs.
-> 
-> So that genphy_c45_pma_read_abilities skip the supported flag 
-> ETHTOOL_LINK_MODE_Autoneg_BIT.
+> I have to add that in light of the topic those characters should be counted
+> from the end of the filename. So, we will give user as much as possible of useful
+> information. I.o.w. always print the last part of filename up to the buffer
+> size or if the filename is shorter than buffer we will have it in full.
 
-This sounds like a generic problem, which will affect any PHY which
-has both C22 and C45. I wounder if it makes sense to add a helper
-function which a PHY driver can call to get the
-phydev->c45_ids.mmds_present populated?
+Ah, not monkey's paw, but donkey hoof then ...
 
-> >> +static int gpy_read_status(struct phy_device *phydev)
-> >> +{
-> >> +     int ret;
-> >> +
-> >> +     ret = genphy_update_link(phydev);
-> >> +     if (ret)
-> >> +             return ret;
-> >> +
-> >> +     phydev->speed = SPEED_UNKNOWN;
-> >> +     phydev->duplex = DUPLEX_UNKNOWN;
-> >> +     phydev->pause = 0;
-> >> +     phydev->asym_pause = 0;
-> >> +
-> >> +     if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
-> >> +             ret = genphy_c45_read_lpa(phydev);
-> >> +             if (ret < 0)
-> >> +                     return ret;
-> >> +
-> >> +             /* Read the link partner's 1G advertisement */
-> >> +             ret = phy_read(phydev, MII_STAT1000);
-> >> +             if (ret < 0)
-> >> +                     return ret;
-> >> +             mii_stat1000_mod_linkmode_lpa_t(phydev->lp_advertising, ret);
-> > can genphy_read_lpa() be used here?
-> 
-> 2.5G is not covered in genphy_read_lpa.
-> 
-> If I use genphy_c45_read_lpa first then genphy_read_lpa after, it seems 
-> a bit redundant.
+Here's some examples, what do you think makes sense?
 
-I'm just trying to avoid repeating code which is in helpers. I think
-this is the first PHY driver which uses a mixture of C22 and C45 like
-this. So it could be the helpers need small modifications to make them
-work. We should make those modifications, since your PHY is not likely
-to be the only mixed C22 and C45 device.
+snprintf(buf, 16, "bad file '%pD'\n", q);
 
-   Andrew
+what content do you want buf to have when q is variously:
+
+1. /abcd/efgh
+2. /a/bcdefgh.iso
+3. /abcdef/gh
+
+I would argue that
+"bad file ''\n"
+is actually a better string to have than any of (case 2)
+"bad file '/a/bc"
+"bad file 'bcdef"
+"bad file 'h.iso"
