@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4152C397C16
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 00:06:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C710397C19
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 00:06:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234956AbhFAWIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 18:08:21 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:39552 "EHLO
+        id S234973AbhFAWIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 18:08:23 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:39558 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234898AbhFAWIT (ORCPT
+        with ESMTP id S234908AbhFAWIT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 18:08:19 -0400
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 72AF6641A1;
+        by mail.netfilter.org (Postfix) with ESMTPSA id E9D6B641C5;
         Wed,  2 Jun 2021 00:05:29 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 02/16] netfilter: nft_set_pipapo_avx2: Skip LDMXCSR, we don't need a valid MXCSR state
-Date:   Wed,  2 Jun 2021 00:06:15 +0200
-Message-Id: <20210601220629.18307-3-pablo@netfilter.org>
+Subject: [PATCH net-next 03/16] netfilter: add and use nft_set_do_lookup helper
+Date:   Wed,  2 Jun 2021 00:06:16 +0200
+Message-Id: <20210601220629.18307-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210601220629.18307-1-pablo@netfilter.org>
 References: <20210601220629.18307-1-pablo@netfilter.org>
@@ -29,83 +29,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Brivio <sbrivio@redhat.com>
+From: Florian Westphal <fw@strlen.de>
 
-We don't need a valid MXCSR state for the lookup routines, none of
-the instructions we use rely on or affect any bit in the MXCSR
-register.
+Followup patch will add a CONFIG_RETPOLINE wrapper to avoid
+the ops->lookup() indirection cost for retpoline builds.
 
-Instead of calling kernel_fpu_begin(), we can pass 0 as mask to
-kernel_fpu_begin_mask() and spare one LDMXCSR instruction.
-
-Commit 49200d17d27d ("x86/fpu/64: Don't FNINIT in kernel_fpu_begin()")
-already speeds up lookups considerably, and by dropping the MCXSR
-initialisation we can now get a much smaller, but measurable, increase
-in matching rates.
-
-The table below reports matching rates and a wild approximation of
-clock cycles needed for a match in a "port,net" test with 10 entries
-from selftests/netfilter/nft_concat_range.sh, limited to the first
-field, i.e. the port (with nft_set_rbtree initialisation skipped), run
-on a single AMD Epyc 7351 thread (2.9GHz, 512 KiB L1D$, 8 MiB L2$).
-
-The (very rough) estimation of clock cycles is obtained by simply
-dividing frequency by matching rate. The "cycles spared" column refers
-to the difference in cycles compared to the previous row, and the rate
-increase also refers to the previous row. Results are averages of six
-runs.
-
-Merely for context, I'm also reporting packet rates obtained by
-skipping kernel_fpu_begin() and kernel_fpu_end() altogether (which
-shows a very limited impact now), as well as skipping the whole lookup
-function, compared to simply counting and dropping all packets using
-the netdev hook drop (see nft_concat_range.sh for details). This
-workload also includes packet generation with pktgen and the receive
-path of veth.
-
-                                      |matching|  est.  | cycles |  rate  |
-                                      |  rate  | cycles | spared |increase|
-                                      | (Mpps) |        |        |        |
---------------------------------------|--------|--------|--------|--------|
-FNINIT, LDMXCSR (before 49200d17d27d) |  5.245 |    553 |      - |      - |
-LDMXCSR only (with 49200d17d27d)      |  6.347 |    457 |     96 |  21.0% |
-Without LDMXCSR (this patch)          |  6.461 |    449 |      8 |   1.8% |
--------- for reference only: ---------|--------|--------|--------|--------|
-Without kernel_fpu_begin()            |  6.513 |    445 |      4 |   0.8% |
-Without actual matching (return true) |  7.649 |    379 |     66 |  17.4% |
-Without lookup operation (netdev drop)| 10.320 |    281 |     98 |  34.9% |
-
-The clock cycles spared by avoiding LDMXCSR appear to be in line with CPI
-and latency indicated in the manuals of comparable architectures: Intel
-Skylake (CPI: 1, latency: 7) and AMD 12h (latency: 12) -- I couldn't find
-this information for AMD 17h.
-
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nft_set_pipapo_avx2.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ include/net/netfilter/nf_tables_core.h | 7 +++++++
+ net/netfilter/nft_lookup.c             | 4 ++--
+ net/netfilter/nft_objref.c             | 4 ++--
+ 3 files changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nft_set_pipapo_avx2.c b/net/netfilter/nft_set_pipapo_avx2.c
-index eabdb8d552ee..1c2620923a61 100644
---- a/net/netfilter/nft_set_pipapo_avx2.c
-+++ b/net/netfilter/nft_set_pipapo_avx2.c
-@@ -1136,8 +1136,13 @@ bool nft_pipapo_avx2_lookup(const struct net *net, const struct nft_set *set,
+diff --git a/include/net/netfilter/nf_tables_core.h b/include/net/netfilter/nf_tables_core.h
+index fd10a7862fdc..5eb699454490 100644
+--- a/include/net/netfilter/nf_tables_core.h
++++ b/include/net/netfilter/nf_tables_core.h
+@@ -88,6 +88,13 @@ extern const struct nft_set_type nft_set_bitmap_type;
+ extern const struct nft_set_type nft_set_pipapo_type;
+ extern const struct nft_set_type nft_set_pipapo_avx2_type;
  
- 	m = rcu_dereference(priv->match);
++static inline bool
++nft_set_do_lookup(const struct net *net, const struct nft_set *set,
++		  const u32 *key, const struct nft_set_ext **ext)
++{
++	return set->ops->lookup(net, set, key, ext);
++}
++
+ struct nft_expr;
+ struct nft_regs;
+ struct nft_pktinfo;
+diff --git a/net/netfilter/nft_lookup.c b/net/netfilter/nft_lookup.c
+index a479f8a1270c..1a8581879af5 100644
+--- a/net/netfilter/nft_lookup.c
++++ b/net/netfilter/nft_lookup.c
+@@ -33,8 +33,8 @@ void nft_lookup_eval(const struct nft_expr *expr,
+ 	const struct net *net = nft_net(pkt);
+ 	bool found;
  
--	/* This also protects access to all data related to scratch maps */
--	kernel_fpu_begin();
-+	/* This also protects access to all data related to scratch maps.
-+	 *
-+	 * Note that we don't need a valid MXCSR state for any of the
-+	 * operations we use here, so pass 0 as mask and spare a LDMXCSR
-+	 * instruction.
-+	 */
-+	kernel_fpu_begin_mask(0);
+-	found = set->ops->lookup(net, set, &regs->data[priv->sreg], &ext) ^
+-				 priv->invert;
++	found =	nft_set_do_lookup(net, set, &regs->data[priv->sreg], &ext) ^
++				  priv->invert;
+ 	if (!found) {
+ 		ext = nft_set_catchall_lookup(net, set);
+ 		if (!ext) {
+diff --git a/net/netfilter/nft_objref.c b/net/netfilter/nft_objref.c
+index 7e47edee88ee..94b2327e71dc 100644
+--- a/net/netfilter/nft_objref.c
++++ b/net/netfilter/nft_objref.c
+@@ -9,7 +9,7 @@
+ #include <linux/netlink.h>
+ #include <linux/netfilter.h>
+ #include <linux/netfilter/nf_tables.h>
+-#include <net/netfilter/nf_tables.h>
++#include <net/netfilter/nf_tables_core.h>
  
- 	scratch = *raw_cpu_ptr(m->scratch_aligned);
- 	if (unlikely(!scratch)) {
+ #define nft_objref_priv(expr)	*((struct nft_object **)nft_expr_priv(expr))
+ 
+@@ -110,7 +110,7 @@ static void nft_objref_map_eval(const struct nft_expr *expr,
+ 	struct nft_object *obj;
+ 	bool found;
+ 
+-	found = set->ops->lookup(net, set, &regs->data[priv->sreg], &ext);
++	found = nft_set_do_lookup(net, set, &regs->data[priv->sreg], &ext);
+ 	if (!found) {
+ 		ext = nft_set_catchall_lookup(net, set);
+ 		if (!ext) {
 -- 
 2.30.2
 
