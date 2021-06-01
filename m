@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 204D1396EEC
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 10:29:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01572396EF0
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 10:29:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233485AbhFAIak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 04:30:40 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:46994 "EHLO inva020.nxp.com"
+        id S233381AbhFAIan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 04:30:43 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:41782 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233451AbhFAIae (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 04:30:34 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 8A0141A0984;
-        Tue,  1 Jun 2021 10:28:52 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 inva020.eu-rdc02.nxp.com 8A0141A0984
+        id S233465AbhFAIak (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 04:30:40 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6D3DA20186F;
+        Tue,  1 Jun 2021 10:28:55 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 inva021.eu-rdc02.nxp.com 6D3DA20186F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com;
-        s=nselector3; t=1622536132;
-        bh=7KIiz9aJ9kl78LKRrsVHskesiQqeHXWB0XHkiZOuBeI=;
+        s=nselector4; t=1622536135;
+        bh=Vp/YVFqiOklhN/F6UxgOeg6zBvCd93y8gqG1jloJHJo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n9nMCEbBHycWNzN7ql/bcSW9cp4UxZLQ5jW48kpd7JB44jEvU/ppQr+MJdJ4PY67d
-         T9d4NFHKb2zhHyF/dcYijDi7bg5klGhtF7Xnb9TQ71z/vpzNNQVkKmxJtizSsGpj5e
-         AJKmG7MbKbysGOIGKsZzjXgleVJKok3LKUacTULJ9eHRoPxIkhkorRmKw4dtAZP2Hx
-         QN35Pmgn+4j2MXgHK0siytoEtsj+UBvNnJjY0meO1ncJfpVvFNnJC4DDOsdZ4RMbmx
-         JBSxOD5ZM1sH9J4z6m3S5Dt7VyLYaIRsceVA7CkEwN89QV0ylOwWC2urmXieo3GoOq
-         tU5tw/N7DlEFQ==
+        b=g0X0ybUEt7kfjH+qJ500hs8MyqwY2G9SwgJKnUN0NubZBFRlWX2O8TPSktbV5Nqs2
+         mAPgqamFNO+or8y5a3Na7IvodgtnnlSQ6djNUpI8STQg6tHSZmlJ+Jb2uuWG0N92+z
+         Gs4TKtI2HGr1ywV+ZKBWXlTWQ7MrcPUc81D5WIFHhU/f0gBlPOqiX5wJU0zoH9qGDv
+         e5y5er+TtjlJP5fYACKsI6oLJMiXETrlQ5xqWplByehAaoQpw/6UeR43zuaR3VACMz
+         +Gji5ibfKOKp0zBirmjxuceGyywrJXFaJheM4/rQWRIPsEVmtjskrDUKLkgnc37tui
+         0RH14zWoCmvwA==
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 54BFE1A189C;
-        Tue,  1 Jun 2021 10:28:44 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 inva020.eu-rdc02.nxp.com 54BFE1A189C
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 364C4200D1F;
+        Tue,  1 Jun 2021 10:28:47 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 inva021.eu-rdc02.nxp.com 364C4200D1F
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id EA5544031B;
-        Tue,  1 Jun 2021 16:28:33 +0800 (+08)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 48222402F1;
+        Tue,  1 Jun 2021 16:28:36 +0800 (+08)
 From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 To:     davem@davemloft.net, joabreu@synopsys.com, kuba@kernel.org,
         alexandre.torgue@st.com, peppe.cavallaro@st.com,
@@ -44,9 +44,9 @@ Cc:     netdev@vger.kernel.org, boon.leong.ong@intel.com,
         leoyang.li@nxp.com, vladimir.oltean@nxp.com,
         qiangqing.zhang@nxp.com, rui.sousa@nxp.com, mingkai.hu@nxp.com,
         yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com
-Subject: [PATCH v1 net-next 2/3] net: stmmac: add mutex lock to protect est parameters
-Date:   Tue,  1 Jun 2021 16:38:12 +0800
-Message-Id: <20210601083813.1078-3-xiaoliang.yang_1@nxp.com>
+Subject: [PATCH v1 net-next 3/3] net: stmmac: ptp: update tas basetime after ptp adjust
+Date:   Tue,  1 Jun 2021 16:38:13 +0800
+Message-Id: <20210601083813.1078-4-xiaoliang.yang_1@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210601083813.1078-1-xiaoliang.yang_1@nxp.com>
 References: <20210601083813.1078-1-xiaoliang.yang_1@nxp.com>
@@ -55,78 +55,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a mutex lock to protect est structure parameters so that the
-EST parameters can be updated by other threads.
+After adjusting the ptp time, the Qbv base time may be the past time
+of the new current time. dwmac5 hardware limited the base time cannot
+be set as past time. This patch calculate the base time and reset the
+Qbv configuration after ptp time adjust.
 
 Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c | 8 ++++++++
- include/linux/stmmac.h                          | 1 +
- 2 files changed, 9 insertions(+)
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 41 ++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-index d7d448c5a72b..8e1f9a18ef59 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-@@ -798,14 +798,18 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- 					 GFP_KERNEL);
- 		if (!plat->est)
- 			return -ENOMEM;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+index 4e86cdf2bc9f..c573bc8b2595 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+@@ -62,7 +62,8 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
+ 	u32 sec, nsec;
+ 	u32 quotient, reminder;
+ 	int neg_adj = 0;
+-	bool xmac;
++	bool xmac, est_rst = false;
++	int ret;
+ 
+ 	xmac = priv->plat->has_gmac4 || priv->plat->has_xgmac;
+ 
+@@ -75,10 +76,48 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
+ 	sec = quotient;
+ 	nsec = reminder;
+ 
++	/* If EST is enabled, disabled it before adjust ptp time. */
++	if (priv->plat->est && priv->plat->est->enable) {
++		est_rst = true;
++		mutex_lock(&priv->plat->est->lock);
++		priv->plat->est->enable = false;
++		stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
++				     priv->plat->clk_ptp_rate);
++		mutex_unlock(&priv->plat->est->lock);
++	}
 +
-+		mutex_init(&priv->plat->est->lock);
- 	} else {
- 		memset(plat->est, 0, sizeof(*plat->est));
- 	}
+ 	spin_lock_irqsave(&priv->ptp_lock, flags);
+ 	stmmac_adjust_systime(priv, priv->ptpaddr, sec, nsec, neg_adj, xmac);
+ 	spin_unlock_irqrestore(&priv->ptp_lock, flags);
  
- 	size = qopt->num_entries;
- 
-+	mutex_lock(&priv->plat->est->lock);
- 	priv->plat->est->gcl_size = size;
- 	priv->plat->est->enable = qopt->enable;
-+	mutex_unlock(&priv->plat->est->lock);
- 
- 	for (i = 0; i < size; i++) {
- 		s64 delta_ns = qopt->entries[i].interval;
-@@ -842,6 +846,7 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- 	time = stmmac_calc_tas_basetime(qopt->base_time, current_time_ns,
- 					qopt->cycle_time);
- 
-+	mutex_lock(&priv->plat->est->lock);
- 	priv->plat->est->btr[0] = (u32)time.tv_nsec;
- 	priv->plat->est->btr[1] = (u32)time.tv_sec;
- 
-@@ -859,6 +864,7 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- 
- 	ret = stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
- 				   priv->plat->clk_ptp_rate);
-+	mutex_unlock(&priv->plat->est->lock);
- 	if (ret) {
- 		netdev_err(priv->dev, "failed to configure EST\n");
- 		goto disable;
-@@ -874,9 +880,11 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
++	/* Caculate new basetime and re-configured EST after PTP time adjust. */
++	if (est_rst) {
++		struct timespec64 current_time, time;
++		ktime_t current_time_ns, basetime;
++		u64 cycle_time;
++
++		priv->ptp_clock_ops.gettime64(&priv->ptp_clock_ops, &current_time);
++		current_time_ns = timespec64_to_ktime(current_time);
++		time.tv_nsec = priv->plat->est->btr[0];
++		time.tv_sec = priv->plat->est->btr[1];
++		basetime = timespec64_to_ktime(time);
++		cycle_time = priv->plat->est->ctr[1] * NSEC_PER_SEC +
++			     priv->plat->est->ctr[0];
++		time = stmmac_calc_tas_basetime(basetime,
++						current_time_ns,
++						cycle_time);
++
++		mutex_lock(&priv->plat->est->lock);
++		priv->plat->est->btr[0] = (u32)time.tv_nsec;
++		priv->plat->est->btr[1] = (u32)time.tv_sec;
++		priv->plat->est->enable = true;
++		ret = stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
++					   priv->plat->clk_ptp_rate);
++		mutex_unlock(&priv->plat->est->lock);
++		if (ret)
++			netdev_err(priv->dev, "failed to configure EST\n");
++	}
++
  	return 0;
+ }
  
- disable:
-+	mutex_lock(&priv->plat->est->lock);
- 	priv->plat->est->enable = false;
- 	stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
- 			     priv->plat->clk_ptp_rate);
-+	mutex_unlock(&priv->plat->est->lock);
- 
- 	priv->plat->fpe_cfg->enable = false;
- 	stmmac_fpe_configure(priv, priv->ioaddr,
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index e14a12df381b..c38b65aaf8c2 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -115,6 +115,7 @@ struct stmmac_axi {
- 
- #define EST_GCL		1024
- struct stmmac_est {
-+	struct mutex lock;
- 	int enable;
- 	u32 btr_offset[2];
- 	u32 btr[2];
 -- 
 2.17.1
 
