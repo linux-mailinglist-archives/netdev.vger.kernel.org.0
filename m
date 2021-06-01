@@ -2,86 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6714B397D05
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 01:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E5E9397D30
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 01:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235145AbhFAX2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 19:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234766AbhFAX2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 19:28:47 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E924C061574
-        for <netdev@vger.kernel.org>; Tue,  1 Jun 2021 16:27:05 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id u22so159325ljh.7
-        for <netdev@vger.kernel.org>; Tue, 01 Jun 2021 16:27:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:date:from:user-agent:mime-version:to:cc:subject
-         :references:in-reply-to:content-transfer-encoding;
-        bh=LxhJNLbL7zy9P78thi+FO/rz6BLUObpyILXwuDbH/vs=;
-        b=GItBkRCz4DaFw75ju2VE63etRJd7q1fG5+CXBEPpb/V8BUi8D8UMjUubcL0wn/qrw7
-         yA1434EtBVDx0pohnQcYV8cgqU8h70OovryFIxvuzvBb5z5Z0qdHYXTYhxuKqkBSxSAu
-         uQvoNowlaJY+noPuTceudaHOYf2kwQicpZZBzSHzxvv9gtruzLL1vBSTlrCxr1pjo17Q
-         QPyJSkr3y0T2B6shsP7n+ujCpiQKL8mJwr8F8HQBIMe9RTTGeilNBhvlRru8JuOgVbwE
-         mH3YgIdCUpQxc5HUYRqmVDvXrbbr21m2fvtLQJ44c7AIVNcEila2ZJ1g9svk2KiU71Tm
-         57zw==
+        id S235203AbhFAXuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 19:50:39 -0400
+Received: from mail-oo1-f48.google.com ([209.85.161.48]:35469 "EHLO
+        mail-oo1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235034AbhFAXuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 19:50:39 -0400
+Received: by mail-oo1-f48.google.com with SMTP id s20-20020a4ae9940000b02902072d5df239so181237ood.2;
+        Tue, 01 Jun 2021 16:48:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
-         :cc:subject:references:in-reply-to:content-transfer-encoding;
-        bh=LxhJNLbL7zy9P78thi+FO/rz6BLUObpyILXwuDbH/vs=;
-        b=lCGaHVryI+muMSkS4BMqHKGTpNpkxfiAZgtRAJwlbhWfDiFCiwSqoAtgciD4QlLifM
-         f2JI7BpV47i0z+9G+XYmOVhDjkj2nKOPfk7eqbAzBHwxroMA5eIF12TH8vKvSgYLr9uM
-         Uq0AZBSP7X846gSMcCtehRLM6GIn2BNk0VcfT5XRdOcXNW33LoRWZbMnbgoX99xC4Lmn
-         MxcfD4ENkAiMKqYMPDK82pwHQkHrvTxfJPhAZVLL1M8UAxiXELl09Z65uCitUZ7P9y2d
-         jHh9C8CxOIX+aGKFhHLdRj7Dhn9YyghrrWzkAXd3SPHg6xC9NfQZHnQ1IyMHOcepzxJL
-         wsNQ==
-X-Gm-Message-State: AOAM532qCPu70xIbMVVOm/wmY2hfE5o/kWZV0Zc8NhfdY2ErKrYGkvv4
-        69Gc/c7AAf/rpPXGx3ZwZ2w=
-X-Google-Smtp-Source: ABdhPJwUrJaT5HcdxcMbm04cbilT/tk1TufkAbIs6A7KxzlfvTzHJJ5jWr6T2EVqKYUaE/Vm02eG5g==
-X-Received: by 2002:a2e:9f49:: with SMTP id v9mr23174181ljk.15.1622590023563;
-        Tue, 01 Jun 2021 16:27:03 -0700 (PDT)
-Received: from [192.168.0.91] ([188.242.181.97])
-        by smtp.googlemail.com with ESMTPSA id n130sm1982220lfa.10.2021.06.01.16.27.02
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Tue, 01 Jun 2021 16:27:02 -0700 (PDT)
-Message-ID: <60B6C4B2.1080704@gmail.com>
-Date:   Wed, 02 Jun 2021 02:37:22 +0300
-From:   Nikolai Zhubr <zhubr.2@gmail.com>
-User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.2.4) Gecko/20100608 Thunderbird/3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Nhdv9yyqyc2cM0eNSgIXuxGtoBf6kf7h8vLahsndfwg=;
+        b=HzjX5jLYMa9FbFk6pgy2MCUOxxeT83LFn7/Wi1cxa8AwPxoclMxdWXfVDAic3yoXWW
+         HyrgFWMmfD0o3kGAgRbu/TJxwDqCkG0KVYQqLP0z8iRDFrGW/2kasGt2oo8rQJtkeyFk
+         dCBuOhXn+nh35B6/LUx7xJELf3Cb0Y/7rJOH1uv9B2zgYQWs8X8JA2TCEjjjx4aDUPBe
+         u8quxuWVNREZRWJ6kVeb7SyI7mP2OYtwZkZ8OvF6T7BXYSaqoX02gzc0B8FIor2GXTVO
+         pvTyUbqJZ5ZxcepP5sXTUNZ0ZCWQQiTAXlD7Htt76oil3mMF/HMAyVhSwUduCwU7ZXK6
+         uP/g==
+X-Gm-Message-State: AOAM530R0sipCLmSj1tktlttv1TrSzSyK7s0SJu+uqoyHte268amQyhl
+        8ZqhfE4cL0NzDbP6BDs6wtouucUIgA==
+X-Google-Smtp-Source: ABdhPJx4PNWKe0l7HiCEH+vmXOGx0pj/2w264qi2I0z4IZTf+VOPET+t7I0bPZLOE5Pj4rkPfS1xuw==
+X-Received: by 2002:a4a:d41a:: with SMTP id n26mr22943551oos.66.1622591336821;
+        Tue, 01 Jun 2021 16:48:56 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id f8sm3672922oos.33.2021.06.01.16.48.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Jun 2021 16:48:56 -0700 (PDT)
+Received: (nullmailer pid 1357101 invoked by uid 1000);
+        Tue, 01 Jun 2021 23:48:55 -0000
+Date:   Tue, 1 Jun 2021 18:48:55 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Scott Branden <sbranden@broadcom.com>,
+        linux-arm-kernel@lists.infradead.org, Ray Jui <rjui@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2] dt-bindings: net: Convert MDIO mux bindings to DT
+ schema
+Message-ID: <20210601234855.GA1357013@robh.at.kernel.org>
+References: <20210526181411.2888516-1-robh@kernel.org>
 MIME-Version: 1.0
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-CC:     Arnd Bergmann <arnd@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Jeff Garzik <jgarzik@pobox.com>
-Subject: Re: Realtek 8139 problem on 486.
-References: <60B24AC2.9050505@gmail.com> <ca333156-f839-9850-6e3d-696d7b725b09@gmail.com> <CAP8WD_bKiGLczUfRVOWY3y4TT80yhRCPmLkN7pDMhkJ5m=2Pew@mail.gmail.com> <60B2E0FF.4030705@gmail.com> <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com> <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com> <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com> <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com> <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com> <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com> <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com>
-In-Reply-To: <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210526181411.2888516-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Wed, 26 May 2021 13:14:11 -0500, Rob Herring wrote:
+> Convert the common MDIO mux bindings to DT schema.
+> 
+> Drop the example from mdio-mux.yaml as mdio-mux-gpio.yaml has the same one.
+> 
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Ray Jui <rjui@broadcom.com>
+> Cc: Scott Branden <sbranden@broadcom.com>
+> Cc: bcm-kernel-feedback-list@broadcom.com
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> v2:
+>  - Fix copy-n-paste error: s/I2C/MDIO/
+> ---
+>  .../bindings/net/brcm,mdio-mux-iproc.txt      |   2 +-
+>  .../devicetree/bindings/net/mdio-mux-gpio.txt | 119 ---------------
+>  .../bindings/net/mdio-mux-gpio.yaml           | 135 ++++++++++++++++++
+>  .../bindings/net/mdio-mux-mmioreg.txt         |  75 ----------
+>  .../bindings/net/mdio-mux-mmioreg.yaml        |  78 ++++++++++
+>  .../bindings/net/mdio-mux-multiplexer.txt     |  82 -----------
+>  .../bindings/net/mdio-mux-multiplexer.yaml    |  82 +++++++++++
+>  .../devicetree/bindings/net/mdio-mux.txt      | 129 -----------------
+>  .../devicetree/bindings/net/mdio-mux.yaml     |  44 ++++++
+>  9 files changed, 340 insertions(+), 406 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/mdio-mux-gpio.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/mdio-mux-gpio.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/mdio-mux-mmioreg.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/mdio-mux-mmioreg.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/mdio-mux-multiplexer.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/mdio-mux-multiplexer.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/mdio-mux.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/mdio-mux.yaml
+> 
 
-02.06.2021 0:48, Heiner Kallweit:
-> Driver 8139too has no maintainer.
-
-Ups, indeed. I just looked at the header and supposed it has. Sorry.
-(I do not touch kernel development much, usually)
-
-> who are paid by somebody to maintain all drivers in the kernel. That's not the case in general.
-> You provided valuable input, and if you'd contribute to improving 8139too and submit patches for
-> fixing the issue you're facing, this would be much appreciated.
-
-Ok, it is a bit more clear now.
-I'll do more testing/searching/reading and probably come up with 
-something then.
-
-
-Thank you,
-
-Regards,
-Nikolai
+Applied, thanks!
