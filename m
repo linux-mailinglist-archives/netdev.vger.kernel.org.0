@@ -2,176 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B51BE397289
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 13:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1929E397290
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 13:38:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233768AbhFALjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 07:39:18 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:3322 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233698AbhFALjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 07:39:15 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FvVQB6jXDz1BGd9;
-        Tue,  1 Jun 2021 19:32:50 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Tue, 1 Jun 2021 19:37:30 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 1 Jun 2021 19:37:29 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <lipeng321@huawei.com>,
-        <tanhuazhong@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 2/2] net: hns3: add debugfs support for ptp info
-Date:   Tue, 1 Jun 2021 19:34:25 +0800
-Message-ID: <1622547265-48051-3-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1622547265-48051-1-git-send-email-huangguangbin2@huawei.com>
-References: <1622547265-48051-1-git-send-email-huangguangbin2@huawei.com>
+        id S233848AbhFALjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 07:39:45 -0400
+Received: from relay.smtp-ext.broadcom.com ([192.19.11.229]:38874 "EHLO
+        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233409AbhFALjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 07:39:43 -0400
+Received: from bld-lvn-bcawlan-34.lvn.broadcom.net (bld-lvn-bcawlan-34.lvn.broadcom.net [10.75.138.137])
+        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 3A7C5829D;
+        Tue,  1 Jun 2021 04:38:01 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 3A7C5829D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+        s=dkimrelay; t=1622547481;
+        bh=A7DViLzhSSmk++S9KSFL1GRI7XxOsNHRI9z60MGz1zw=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=Bxwbgz/205KnBPTpWMrQIYHlRNlywbla8G5vLdUvYZVgjA9StBtnydwBRPdIRUs4m
+         hiil/PzpEiJqXrmJ3XdGhrfqC6RbYfrNsvPW46pJQgdF9gRi8hRFtB9d4/5+5uiTBQ
+         KuWHSJqlhA64kjfJVXa1ltvQQVp+feVBW1xr1S/8=
+Received: from [10.230.42.155] (unknown [10.230.42.155])
+        by bld-lvn-bcawlan-34.lvn.broadcom.net (Postfix) with ESMTPSA id 16ACE1874BE;
+        Tue,  1 Jun 2021 04:37:56 -0700 (PDT)
+Subject: Re: [PATCH -next] brcmfmac: Fix a double-free in brcmf_sdio_bus_reset
+To:     Tong Tiangen <tongtiangen@huawei.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210601100128.69561-1-tongtiangen@huawei.com>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <224ed779-5d68-9f67-9b17-75e1e1b4250c@broadcom.com>
+Date:   Tue, 1 Jun 2021 13:37:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20210601100128.69561-1-tongtiangen@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huazhong Tan <tanhuazhong@huawei.com>
-
-Add a debugfs interface for dumping ptp information, which
-is helpful for debugging.
-
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c | 13 ++++-
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 55 ++++++++++++++++++++++
- 3 files changed, 67 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 545dcbc7af49..dfdb22b0ccdc 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -273,6 +273,7 @@ enum hnae3_dbg_cmd {
- 	HNAE3_DBG_CMD_MAC_MC,
- 	HNAE3_DBG_CMD_MNG_TBL,
- 	HNAE3_DBG_CMD_LOOPBACK,
-+	HNAE3_DBG_CMD_PTP_INFO,
- 	HNAE3_DBG_CMD_INTERRUPT_INFO,
- 	HNAE3_DBG_CMD_RESET_INFO,
- 	HNAE3_DBG_CMD_IMP_INFO,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index cf1efd2f4a0f..6d57709ddbf5 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -316,6 +316,13 @@ static struct hns3_dbg_cmd_info hns3_dbg_cmd[] = {
- 		.buf_len = HNS3_DBG_READ_LEN,
- 		.init = hns3_dbg_common_file_init,
- 	},
-+	{
-+		.name = "ptp_info",
-+		.cmd = HNAE3_DBG_CMD_PTP_INFO,
-+		.dentry = HNS3_DBG_DENTRY_COMMON,
-+		.buf_len = HNS3_DBG_READ_LEN,
-+		.init = hns3_dbg_common_file_init,
-+	},
- };
- 
- static struct hns3_dbg_cap_info hns3_dbg_cap[] = {
-@@ -1056,8 +1063,10 @@ int hns3_dbg_init(struct hnae3_handle *handle)
- 					   handle->hnae3_dbgfs);
- 
- 	for (i = 0; i < ARRAY_SIZE(hns3_dbg_cmd); i++) {
--		if (hns3_dbg_cmd[i].cmd == HNAE3_DBG_CMD_TM_NODES &&
--		    ae_dev->dev_version <= HNAE3_DEVICE_VERSION_V2)
-+		if ((hns3_dbg_cmd[i].cmd == HNAE3_DBG_CMD_TM_NODES &&
-+		     ae_dev->dev_version <= HNAE3_DEVICE_VERSION_V2) ||
-+		    (hns3_dbg_cmd[i].cmd == HNAE3_DBG_CMD_PTP_INFO &&
-+		     !test_bit(HNAE3_DEV_SUPPORT_PTP_B, ae_dev->caps)))
- 			continue;
- 
- 		if (!hns3_dbg_cmd[i].init) {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-index 0d433a5ff807..6fc50d09b9db 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-@@ -2173,6 +2173,57 @@ static int hclge_dbg_dump_vlan_config(struct hclge_dev *hdev, char *buf,
- 	return hclge_dbg_dump_vlan_offload_config(hdev, buf, len, &pos);
- }
- 
-+static int hclge_dbg_dump_ptp_info(struct hclge_dev *hdev, char *buf, int len)
-+{
-+	struct hclge_ptp *ptp = hdev->ptp;
-+	u32 sw_cfg = ptp->ptp_cfg;
-+	unsigned int tx_start;
-+	unsigned int last_rx;
-+	int pos = 0;
-+	u32 hw_cfg;
-+	int ret;
-+
-+	pos += scnprintf(buf + pos, len - pos, "phc %s's debug info:\n",
-+			 ptp->info.name);
-+	pos += scnprintf(buf + pos, len - pos, "ptp enable: %s\n",
-+			 test_bit(HCLGE_PTP_FLAG_EN, &ptp->flags) ?
-+			 "yes" : "no");
-+	pos += scnprintf(buf + pos, len - pos, "ptp tx enable: %s\n",
-+			 test_bit(HCLGE_PTP_FLAG_TX_EN, &ptp->flags) ?
-+			 "yes" : "no");
-+	pos += scnprintf(buf + pos, len - pos, "ptp rx enable: %s\n",
-+			 test_bit(HCLGE_PTP_FLAG_RX_EN, &ptp->flags) ?
-+			 "yes" : "no");
-+
-+	last_rx = jiffies_to_msecs(ptp->last_rx);
-+	pos += scnprintf(buf + pos, len - pos, "last rx time: %lu.%lu\n",
-+			 last_rx / MSEC_PER_SEC, last_rx % MSEC_PER_SEC);
-+	pos += scnprintf(buf + pos, len - pos, "rx count: %lu\n", ptp->rx_cnt);
-+
-+	tx_start = jiffies_to_msecs(ptp->tx_start);
-+	pos += scnprintf(buf + pos, len - pos, "last tx start time: %lu.%lu\n",
-+			 tx_start / MSEC_PER_SEC, tx_start % MSEC_PER_SEC);
-+	pos += scnprintf(buf + pos, len - pos, "tx count: %lu\n", ptp->tx_cnt);
-+	pos += scnprintf(buf + pos, len - pos, "tx skipped count: %lu\n",
-+			 ptp->tx_skipped);
-+	pos += scnprintf(buf + pos, len - pos, "tx timeout count: %lu\n",
-+			 ptp->tx_timeout);
-+	pos += scnprintf(buf + pos, len - pos, "last tx seqid: %u\n",
-+			 ptp->last_tx_seqid);
-+
-+	ret = hclge_ptp_cfg_qry(hdev, &hw_cfg);
-+	if (ret)
-+		return ret;
-+
-+	pos += scnprintf(buf + pos, len - pos, "sw_cfg: %#x, hw_cfg: %#x\n",
-+			 sw_cfg, hw_cfg);
-+
-+	pos += scnprintf(buf + pos, len - pos, "tx type: %d, rx filter: %d\n",
-+			 ptp->ts_cfg.tx_type, ptp->ts_cfg.rx_filter);
-+
-+	return 0;
-+}
-+
- static int hclge_dbg_dump_mac_uc(struct hclge_dev *hdev, char *buf, int len)
- {
- 	hclge_dbg_dump_mac_list(hdev, buf, len, true);
-@@ -2245,6 +2296,10 @@ static const struct hclge_dbg_func hclge_dbg_cmd_func[] = {
- 		.dbg_dump = hclge_dbg_dump_loopback,
- 	},
- 	{
-+		.cmd = HNAE3_DBG_CMD_PTP_INFO,
-+		.dbg_dump = hclge_dbg_dump_ptp_info,
-+	},
-+	{
- 		.cmd = HNAE3_DBG_CMD_INTERRUPT_INFO,
- 		.dbg_dump = hclge_dbg_dump_interrupt,
- 	},
--- 
-2.8.1
-
+On 01-06-2021 12:01, Tong Tiangen wrote:
+> brcmf_sdiod_remove has been called inside brcmf_sdiod_probe when fails,
+> so there's no need to call another one. Otherwise, sdiodev->freezer
+> would be double freed.
+> 
+> Fixes: 7836102a750a ("brcmfmac: reset SDIO bus on a firmware crash")
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+> ---
+>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 1 -
+>   1 file changed, 1 deletion(-)
