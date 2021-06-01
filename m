@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE39A397C7C
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 00:40:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D21B6397CC2
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 00:53:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235018AbhFAWlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 18:41:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34624 "EHLO mail.kernel.org"
+        id S235048AbhFAWzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 18:55:22 -0400
+Received: from mga11.intel.com ([192.55.52.93]:7004 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234714AbhFAWlp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 18:41:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0C184610E7;
-        Tue,  1 Jun 2021 22:40:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622587203;
-        bh=ywtmXo3Zcogeur9X+rnmtLDg5MjhJrHN8KGOkMG6SSw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=maZj6Nx5VqdTMIGIIDeykSHBYiRmrz3SrAvFlMFyfRXrP2ZGSiKZN1gOzxvsrmQ7s
-         OEod4CX4U+k5uU/oASYcyBdBflWglrMqMo1aKw+SjEHxUdZW3RZaXlfJOYdKRTApef
-         S1Ia0wsjPBW0z4y6PdKHLUe2x/fSALJ3Kif21eSiqJKqBqLP5OAufhwitQ8n7jc2oM
-         mUkiZcBYrwD/UzOtTXCIdrCZZaiClRIpV6uh13OePf+DVlmjGagNqQQPoFcNH7KZZj
-         yO45HYLZzyrTN5lg1t+T6MZKOqJZc1HHspOGlB1nSXC2xosWDiXa8iJSX7B+kzn57K
-         h96C+FbrpqWxQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F332A60A6F;
-        Tue,  1 Jun 2021 22:40:02 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234947AbhFAWzV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 18:55:21 -0400
+IronPort-SDR: k8kKGTIQRZM4vldxgJtAXmRLvHlahr4zqseUuYf7AGDa86YjVZ54G+ydOv2loz7ys3ZWTQx0Cr
+ rChinm0G7TCg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10002"; a="200645940"
+X-IronPort-AV: E=Sophos;i="5.83,241,1616482800"; 
+   d="scan'208";a="200645940"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 15:53:38 -0700
+IronPort-SDR: FvEmDQWzTVhQd/WWqFcCGAW6HmJXwMVVR8bLQvrSXfd4I0F6d/lz+Xf7/vbINV9W9Pm13zt9CE
+ lb58nMB2c3fg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,241,1616482800"; 
+   d="scan'208";a="399766174"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga006.jf.intel.com with ESMTP; 01 Jun 2021 15:53:38 -0700
+Received: from linux.intel.com (unknown [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id BAB63580427;
+        Tue,  1 Jun 2021 15:53:35 -0700 (PDT)
+Date:   Wed, 2 Jun 2021 06:53:32 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/1] net: stmmac: enable platform specific
+ safety features
+Message-ID: <20210601225332.GA28151@linux.intel.com>
+References: <20210601135235.1058841-1-vee.khee.wong@linux.intel.com>
+ <YLawrTO4pkgc6tnb@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next] net: vxge: Declare the function
- vxge_reset_all_vpaths as void
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162258720299.16379.13555638109593005696.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Jun 2021 22:40:02 +0000
-References: <20210601082304.4093866-1-zhengyongjun3@huawei.com>
-In-Reply-To: <20210601082304.4093866-1-zhengyongjun3@huawei.com>
-To:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jdmason@kudzu.us
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YLawrTO4pkgc6tnb@lunn.ch>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Tue, 1 Jun 2021 16:23:04 +0800 you wrote:
-> variable 'status' is unneeded and it's noneed to check the
-> return value of function vxge_reset_all_vpaths,so declare
-> it as void.
+On Wed, Jun 02, 2021 at 12:11:57AM +0200, Andrew Lunn wrote:
+> On Tue, Jun 01, 2021 at 09:52:35PM +0800, Wong Vee Khee wrote:
+> > On Intel platforms, not all safety features are enabled on the hardware.
 > 
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-> ---
->  .../net/ethernet/neterion/vxge/vxge-main.c    | 27 +++++--------------
->  1 file changed, 6 insertions(+), 21 deletions(-)
+> Is it possible to read a register is determine what safety features
+> have been synthesised?
+>
 
-Here is the summary with links:
-  - [v2,net-next] net: vxge: Declare the function vxge_reset_all_vpaths as void
-    https://git.kernel.org/netdev/net-next/c/52aa0b189288
+No. The value of these registers after reset are 0x0. We need to set it
+manually.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+VK
