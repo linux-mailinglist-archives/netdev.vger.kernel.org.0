@@ -2,141 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7378A396AB9
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 03:52:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DD87396ABE
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 03:53:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbhFABxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 21:53:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38209 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232268AbhFABxl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 21:53:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622512320;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YWev/Te8IAqF0czBilN1sKjy7odret07+EIptXPPlVg=;
-        b=TXwF/i8V6hrGIl92RaXvW/ky4c5+dZMFRko8AV4zlFc0N0sjTXu9WZvV0YI1mUKxwVU9wP
-        GXppf4zYqjR/H9eDfxZriREHOMH9aajthwl3QfA51yBlJBhQ6eq4skCksIas6XgioeICSz
-        exbJ4Z4GT6XceQY+Jn6JR1UUSy0xbKQ=
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
- [209.85.214.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-594-UcIFkHbKMaC4f60AE4ReuA-1; Mon, 31 May 2021 21:51:58 -0400
-X-MC-Unique: UcIFkHbKMaC4f60AE4ReuA-1
-Received: by mail-pl1-f198.google.com with SMTP id 37-20020a1709020328b02900f916f1d504so3795014pld.1
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 18:51:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=YWev/Te8IAqF0czBilN1sKjy7odret07+EIptXPPlVg=;
-        b=Xpb/NAp7gE5iSVSXKAWE+Se+aACezLO1efRmVqERw2FUrL+i/UrRLszwYq70a9soKb
-         +OegcPBC5Tbz1BD4/r2q9aMT+UhPTtEHfk5bkTjemNUJhbTr36n3TQiYoBPIEN/aia+o
-         QzduUAezPBWK1ahzXlm088MnbOTXgNr/rXHCdqIfc0Xx8Na/2byXJb9OFrxzVUcb51Z/
-         UwSc7N8Gc6C0ENuyT6iedMCuRRsu5PK0UZRpGev/b7R9DDuo4j9tnETSFUj1sBh/8/yR
-         pGf9uBnoZSw61ya3cdc81HedMyPOIhf46cXNzMklZRmbJDDo4mbAzMsgeab4+buDpNIq
-         mP6A==
-X-Gm-Message-State: AOAM533gdA/PqRYFFxXh/tDQUO9s2eeetstPaRJycWlTlxGWkCBgOOKs
-        Z8MGOmhARVBMoTmbk+3/yRb4UJMb1zkTDPm7VgJZCv6ti50hCbMnU0yxj5AntHZoVefMyxpFQc2
-        2aWPqf9BBDkt1nrqH
-X-Received: by 2002:a17:90a:43a6:: with SMTP id r35mr1957755pjg.222.1622512317806;
-        Mon, 31 May 2021 18:51:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwZhUSTY2svEIOJpmqKwnCCesMbeoDS4VzTWct+zhBKdDDhqnrLsxPBRcTsNvaHlbKxAssgRw==
-X-Received: by 2002:a17:90a:43a6:: with SMTP id r35mr1957746pjg.222.1622512317648;
-        Mon, 31 May 2021 18:51:57 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id k12sm7581515pga.13.2021.05.31.18.51.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 May 2021 18:51:57 -0700 (PDT)
-Subject: Re: [PATCH v4] virtio-net: Add validation for used length
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        kuba@kernel.org
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210531135852.113-1-xieyongji@bytedance.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <32febeff-cc36-2333-5d2c-1f3ae3d91f94@redhat.com>
-Date:   Tue, 1 Jun 2021 09:51:53 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+        id S232598AbhFABzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 21:55:23 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:3359 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232320AbhFABzU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 21:55:20 -0400
+Received: from dggeme712-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FvFTb0PLxz677c;
+        Tue,  1 Jun 2021 09:49:55 +0800 (CST)
+Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
+ dggeme712-chm.china.huawei.com (10.1.199.108) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Tue, 1 Jun 2021 09:53:37 +0800
+Received: from dggeme760-chm.china.huawei.com ([10.6.80.70]) by
+ dggeme760-chm.china.huawei.com ([10.6.80.70]) with mapi id 15.01.2176.012;
+ Tue, 1 Jun 2021 09:53:37 +0800
+From:   zhengyongjun <zhengyongjun3@huawei.com>
+To:     Xin Long <lucien.xin@gmail.com>
+CC:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggbmV0LW5leHRdIHNjdHA6IHNtX3N0YXRlZnVuczog?=
+ =?utf-8?Q?Fix_spelling_mistakes?=
+Thread-Topic: [PATCH net-next] sctp: sm_statefuns: Fix spelling mistakes
+Thread-Index: AQHXVb7r2PGYQfiLYUeXXJTSIeBLlKr9QQaAgAEk9cA=
+Date:   Tue, 1 Jun 2021 01:53:37 +0000
+Message-ID: <0a8bacf10bc145c5924f1d33a9aefd43@huawei.com>
+References: <20210531020110.2920255-1-zhengyongjun3@huawei.com>
+ <CADvbK_eCmDbAZ6_tppe=q3aW76OAnfZd3TXoAafDTk0h=JaTAg@mail.gmail.com>
+In-Reply-To: <CADvbK_eCmDbAZ6_tppe=q3aW76OAnfZd3TXoAafDTk0h=JaTAg@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.176.64]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20210531135852.113-1-xieyongji@bytedance.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-ÔÚ 2021/5/31 ÏÂÎç9:58, Xie Yongji Ð´µÀ:
-> This adds validation for used length (might come
-> from an untrusted device) to avoid data corruption
-> or loss.
->
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-
-> ---
->   drivers/net/virtio_net.c | 20 +++++++++++++-------
->   1 file changed, 13 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 073fec4c0df1..ed969b65126e 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -730,6 +730,12 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   	len -= vi->hdr_len;
->   	stats->bytes += len;
->   
-> +	if (unlikely(len > GOOD_PACKET_LEN)) {
-> +		pr_debug("%s: rx error: len %u exceeds max size %d\n",
-> +			 dev->name, len, GOOD_PACKET_LEN);
-> +		dev->stats.rx_length_errors++;
-> +		goto err_len;
-> +	}
->   	rcu_read_lock();
->   	xdp_prog = rcu_dereference(rq->xdp_prog);
->   	if (xdp_prog) {
-> @@ -833,6 +839,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   err_xdp:
->   	rcu_read_unlock();
->   	stats->xdp_drops++;
-> +err_len:
->   	stats->drops++;
->   	put_page(page);
->   xdp_xmit:
-> @@ -886,6 +893,12 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   	head_skb = NULL;
->   	stats->bytes += len - vi->hdr_len;
->   
-> +	if (unlikely(len > truesize)) {
-> +		pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
-> +			 dev->name, len, (unsigned long)ctx);
-> +		dev->stats.rx_length_errors++;
-> +		goto err_skb;
-> +	}
->   	rcu_read_lock();
->   	xdp_prog = rcu_dereference(rq->xdp_prog);
->   	if (xdp_prog) {
-> @@ -1012,13 +1025,6 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   	}
->   	rcu_read_unlock();
->   
-> -	if (unlikely(len > truesize)) {
-> -		pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
-> -			 dev->name, len, (unsigned long)ctx);
-> -		dev->stats.rx_length_errors++;
-> -		goto err_skb;
-> -	}
-> -
->   	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog,
->   			       metasize, !!headroom);
->   	curr_skb = head_skb;
-
+VGhhbmtzIGZvciB5b3VyIGFkdmljZSwgSSB3aWxsIGZpeCBpdCBhcyB5b3Ugc3VnZ2VzdCBhbmQg
+c2VuZCBwYXRjaCB2MiA6KQ0KDQotLS0tLemCruS7tuWOn+S7ti0tLS0tDQrlj5Hku7bkuro6IFhp
+biBMb25nIFttYWlsdG86bHVjaWVuLnhpbkBnbWFpbC5jb21dIA0K5Y+R6YCB5pe26Ze0OiAyMDIx
+5bm0NuaciDHml6UgMDoyNA0K5pS25Lu25Lq6OiB6aGVuZ3lvbmdqdW4gPHpoZW5neW9uZ2p1bjNA
+aHVhd2VpLmNvbT4NCuaKhOmAgTogVmxhZCBZYXNldmljaCA8dnlhc2V2aWNoQGdtYWlsLmNvbT47
+IE5laWwgSG9ybWFuIDxuaG9ybWFuQHR1eGRyaXZlci5jb20+OyBNYXJjZWxvIFJpY2FyZG8gTGVp
+dG5lciA8bWFyY2Vsby5sZWl0bmVyQGdtYWlsLmNvbT47IGRhdmVtIDxkYXZlbUBkYXZlbWxvZnQu
+bmV0PjsgSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47IGxpbnV4LXNjdHAgQCB2Z2Vy
+IC4ga2VybmVsIC4gb3JnIDxsaW51eC1zY3RwQHZnZXIua2VybmVsLm9yZz47IG5ldHdvcmsgZGV2
+IDxuZXRkZXZAdmdlci5rZXJuZWwub3JnPjsgTEtNTCA8bGludXgta2VybmVsQHZnZXIua2VybmVs
+Lm9yZz4NCuS4u+mimDogUmU6IFtQQVRDSCBuZXQtbmV4dF0gc2N0cDogc21fc3RhdGVmdW5zOiBG
+aXggc3BlbGxpbmcgbWlzdGFrZXMNCg0KT24gU3VuLCBNYXkgMzAsIDIwMjEgYXQgOTo0OCBQTSBa
+aGVuZyBZb25nanVuIDx6aGVuZ3lvbmdqdW4zQGh1YXdlaS5jb20+IHdyb3RlOg0KPg0KPiBGaXgg
+c29tZSBzcGVsbGluZyBtaXN0YWtlcyBpbiBjb21tZW50czoNCj4gZ2VuZXJlYXRlID09PiBnZW5l
+cmF0ZQ0KPiBjb3JyZWNsdHkgPT0+IGNvcnJlY3RseQ0KPiBib3VuZHJpZXMgPT0+IGJvdW5kYXJp
+ZXMNCj4gZmFpbGVzID09PiBmYWlscw0KDQpJIGJlbGlldmUgbW9yZSBtaXN0YWtlcyBiZWxvdyBp
+biB0aGlzIGZpbGUgY291bGQgaGl0Y2hoaWtlIHRoaXMgcGF0Y2ggdG8gZ2V0IGZpeGVkLiA6LSkN
+Cg0KaXNzZXMgLT4gaXNzdWVzDQphc3NvY2l0aW9uIC0+IGFzc29jaWF0aW9uDQpzaWduZSAtPiBz
+aWduDQphc3NvY2FpdGlvbiAtPiBhc3NvY2lhdGlvbg0KbWFuYWdlbWVtZW50LT4gbWFuYWdlbWVu
+dA0KcmVzdHJhbnNtaXNzaW9ucy0+cmV0cmFuc21pc3Npb24NCnNpZGVmZmVjdCAtPiBzaWRlZWZm
+ZWN0DQpib21taW5nIC0+IGJvb21pbmcNCmNodWtucy0+IGNodW5rcw0KU0hVRE9XTiAtPiBTSFVU
+RE9XTg0KdmlvbGF0aW9uZy0+dmlvbGF0aW5nDQpleHBsY2l0bHktPiBleHBsaWNpdGx5DQpDSHVu
+ay0+IENodW5rDQoNClRoYW5rcy4NCg0KPg0KPiBTaWduZWQtb2ZmLWJ5OiBaaGVuZyBZb25nanVu
+IDx6aGVuZ3lvbmdqdW4zQGh1YXdlaS5jb20+DQo+IC0tLQ0KPiAgbmV0L3NjdHAvc21fc3RhdGVm
+dW5zLmMgfCA4ICsrKystLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCA0
+IGRlbGV0aW9ucygtKQ0KPg0KPiBkaWZmIC0tZ2l0IGEvbmV0L3NjdHAvc21fc3RhdGVmdW5zLmMg
+Yi9uZXQvc2N0cC9zbV9zdGF0ZWZ1bnMuYyBpbmRleCANCj4gZmQxZTMxOWVkYTAwLi42OGU3ZDE0
+YzM3OTkgMTAwNjQ0DQo+IC0tLSBhL25ldC9zY3RwL3NtX3N0YXRlZnVucy5jDQo+ICsrKyBiL25l
+dC9zY3RwL3NtX3N0YXRlZnVucy5jDQo+IEBAIC02MDgsNyArNjA4LDcgQEAgZW51bSBzY3RwX2Rp
+c3Bvc2l0aW9uIHNjdHBfc2ZfZG9fNV8xQ19hY2soc3RydWN0IG5ldCAqbmV0LA0KPiAgICAgICAg
+IHNjdHBfYWRkX2NtZF9zZihjb21tYW5kcywgU0NUUF9DTURfTkVXX1NUQVRFLA0KPiAgICAgICAg
+ICAgICAgICAgICAgICAgICBTQ1RQX1NUQVRFKFNDVFBfU1RBVEVfQ09PS0lFX0VDSE9FRCkpOw0K
+Pg0KPiAtICAgICAgIC8qIFNDVFAtQVVUSDogZ2VuZXJlYXRlIHRoZSBhc3NvY2l0aW9uIHNoYXJl
+ZCBrZXlzIHNvIHRoYXQNCj4gKyAgICAgICAvKiBTQ1RQLUFVVEg6IGdlbmVyYXRlIHRoZSBhc3Nv
+Y2l0aW9uIHNoYXJlZCBrZXlzIHNvIHRoYXQNCj4gICAgICAgICAgKiB3ZSBjYW4gcG90ZW50aWFs
+bHkgc2lnbmUgdGhlIENPT0tJRS1FQ0hPLg0KPiAgICAgICAgICAqLw0KPiAgICAgICAgIHNjdHBf
+YWRkX2NtZF9zZihjb21tYW5kcywgU0NUUF9DTURfQVNTT0NfU0hLRVksIFNDVFBfTlVMTCgpKTsg
+DQo+IEBAIC04MzgsNyArODM4LDcgQEAgZW51bSBzY3RwX2Rpc3Bvc2l0aW9uIHNjdHBfc2ZfZG9f
+NV8xRF9jZShzdHJ1Y3QgDQo+IG5ldCAqbmV0LA0KPg0KPiAgICAgICAgIC8qIEFkZCBhbGwgdGhl
+IHN0YXRlIG1hY2hpbmUgY29tbWFuZHMgbm93IHNpbmNlIHdlJ3ZlIGNyZWF0ZWQNCj4gICAgICAg
+ICAgKiBldmVyeXRoaW5nLiAgVGhpcyB3YXkgd2UgZG9uJ3QgaW50cm9kdWNlIG1lbW9yeSBjb3Jy
+dXB0aW9ucw0KPiAtICAgICAgICAqIGR1cmluZyBzaWRlLWVmZmVjdCBwcm9jZXNzaW5nIGFuZCBj
+b3JyZWNsdHkgY291bnQgZXN0YWJsaXNoZWQNCj4gKyAgICAgICAgKiBkdXJpbmcgc2lkZS1lZmZl
+Y3QgcHJvY2Vzc2luZyBhbmQgY29ycmVjdGx5IGNvdW50IA0KPiArIGVzdGFibGlzaGVkDQo+ICAg
+ICAgICAgICogYXNzb2NpYXRpb25zLg0KPiAgICAgICAgICAqLw0KPiAgICAgICAgIHNjdHBfYWRk
+X2NtZF9zZihjb21tYW5kcywgU0NUUF9DTURfTkVXX0FTT0MsIA0KPiBTQ1RQX0FTT0MobmV3X2Fz
+b2MpKTsgQEAgLTI5NTAsNyArMjk1MCw3IEBAIGVudW0gc2N0cF9kaXNwb3NpdGlvbiBzY3RwX3Nm
+X2RvXzlfMl9yZXNodXRhY2soDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgY29tbWFuZHMpOw0KPg0KPiAgICAgICAgIC8qIFNpbmNlIHdlIGFyZSBu
+b3QgZ29pbmcgdG8gcmVhbGx5IHByb2Nlc3MgdGhpcyBJTklULCB0aGVyZQ0KPiAtICAgICAgICAq
+IGlzIG5vIHBvaW50IGluIHZlcmlmeWluZyBjaHVuayBib3VuZHJpZXMuICBKdXN0IGdlbmVyYXRl
+DQo+ICsgICAgICAgICogaXMgbm8gcG9pbnQgaW4gdmVyaWZ5aW5nIGNodW5rIGJvdW5kYXJpZXMu
+ICBKdXN0IGdlbmVyYXRlDQo+ICAgICAgICAgICogdGhlIFNIVVRET1dOIEFDSy4NCj4gICAgICAg
+ICAgKi8NCj4gICAgICAgICByZXBseSA9IHNjdHBfbWFrZV9zaHV0ZG93bl9hY2soYXNvYywgY2h1
+bmspOyBAQCAtMzU2MCw3IA0KPiArMzU2MCw3IEBAIGVudW0gc2N0cF9kaXNwb3NpdGlvbiBzY3Rw
+X3NmX2RvXzlfMl9maW5hbChzdHJ1Y3QgbmV0ICpuZXQsDQo+ICAgICAgICAgICAgICAgICBnb3Rv
+IG5vbWVtX2NodW5rOw0KPg0KPiAgICAgICAgIC8qIERvIGFsbCB0aGUgY29tbWFuZHMgbm93IChh
+ZnRlciBhbGxvY2F0aW9uKSwgc28gdGhhdCB3ZQ0KPiAtICAgICAgICAqIGhhdmUgY29uc2lzdGVu
+dCBzdGF0ZSBpZiBtZW1vcnkgYWxsb2NhdGlvbiBmYWlsZXMNCj4gKyAgICAgICAgKiBoYXZlIGNv
+bnNpc3RlbnQgc3RhdGUgaWYgbWVtb3J5IGFsbG9jYXRpb24gZmFpbHMNCj4gICAgICAgICAgKi8N
+Cj4gICAgICAgICBzY3RwX2FkZF9jbWRfc2YoY29tbWFuZHMsIFNDVFBfQ01EX0VWRU5UX1VMUCwg
+DQo+IFNDVFBfVUxQRVZFTlQoZXYpKTsNCj4NCj4gLS0NCj4gMi4yNS4xDQo+DQo=
