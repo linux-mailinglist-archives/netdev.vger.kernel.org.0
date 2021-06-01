@@ -2,68 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DC5E3978F9
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 19:21:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44807397953
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 19:41:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233971AbhFARXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 13:23:33 -0400
-Received: from mga01.intel.com ([192.55.52.88]:41397 "EHLO mga01.intel.com"
+        id S234574AbhFARnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 13:43:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33574 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231918AbhFARXd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 13:23:33 -0400
-IronPort-SDR: BX1/bpMnqcXPx/1YEe/bx+GcCRDMhkQNQ3AUHCeX6ptwu/9Z2khOnb4yKgMs6Sccwf/+ez8HR9
- m4AJHcRNqhUA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10002"; a="224868193"
-X-IronPort-AV: E=Sophos;i="5.83,240,1616482800"; 
-   d="scan'208";a="224868193"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 10:21:51 -0700
-IronPort-SDR: mUUFdZakwdUrX2r0uqMC+u9+ApcxRj1SgJ/AHj9HMjTWXE/+g8MHFyaTFckOt6Zg5X+X8GknYX
- KQhreUlkGVtA==
-X-IronPort-AV: E=Sophos;i="5.83,240,1616482800"; 
-   d="scan'208";a="479366127"
-Received: from ipiacent-mobl1.amr.corp.intel.com ([10.209.119.149])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 10:21:51 -0700
-Date:   Tue, 1 Jun 2021 10:21:50 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
-Subject: Re: [PATCH net-next 0/7] mptcp: Miscellaneous cleanup
-In-Reply-To: <20210528140719.0e18900f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Message-ID: <2832722e-2697-3563-c16f-422d8c743f8d@linux.intel.com>
-References: <20210527235430.183465-1-mathew.j.martineau@linux.intel.com> <20210528140719.0e18900f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        id S231331AbhFARnC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 13:43:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5027761042;
+        Tue,  1 Jun 2021 17:41:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622569280;
+        bh=2IFDrzvsvhbzI9SgMn3XalE8GIMt01IatSD60Qc5Gmo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j0b+3rm95SfAaBVuhPEnN6N/bHDGpbZlvxz2MUhN1Y8tQzui/fmCb3FS0lS+GWJsQ
+         o5SpVaWWiRcwHIMsgnYCMr1uyzecIfP0dNToJXvWZyviw0eAcBG6yr/PHYBXDPw5kI
+         9paSMIESAuJs6QhCY7lixIZoZCJBJAKF//LiCQaOVIhwqO0K3WzdKCm47f0+Lbenu5
+         cG1ACuHAogEa7+XnqlGLqgQ4LXIrv3D0Ogud3q1BT/+9UailhDuUfP5vXtYGj8zYOs
+         JgP4t2aIfOSDQ+TPBNX6fOuo9VmG1RaNDA58ch6RfILS4S+yPLhdfRj/fi3cN7BLka
+         Shwv9Yu7a6S2Q==
+Date:   Tue, 1 Jun 2021 18:41:15 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Yanfei Xu <yanfei.xu@windriver.com>, ast@kernel.org,
+        zlim.lnx@gmail.com, catalin.marinas@arm.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] bpf: avoid unnecessary IPI in bpf_flush_icache
+Message-ID: <20210601174114.GA29130@willie-the-truck>
+References: <20210601150625.37419-1-yanfei.xu@windriver.com>
+ <20210601150625.37419-2-yanfei.xu@windriver.com>
+ <56cc1e25-25c3-a3da-64e3-8a1c539d685b@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <56cc1e25-25c3-a3da-64e3-8a1c539d685b@iogearbox.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 May 2021, Jakub Kicinski wrote:
+On Tue, Jun 01, 2021 at 07:20:04PM +0200, Daniel Borkmann wrote:
+> On 6/1/21 5:06 PM, Yanfei Xu wrote:
+> > It's no need to trigger IPI for keeping pipeline fresh in bpf case.
+> 
+> This needs a more concrete explanation/analysis on "why it is safe" to do so
+> rather than just saying that it is not needed.
 
-> On Thu, 27 May 2021 16:54:23 -0700 Mat Martineau wrote:
->> Here are some cleanup patches we've collected in the MPTCP tree.
->>
->> Patches 1-4 do some general tidying.
->>
->> Patch 5 adds an explicit check at netlink command parsing time to
->> require a port number when the 'signal' flag is set, to catch the error
->> earlier.
->>
->> Patches 6 & 7 fix up the MPTCP 'enabled' sysctl, enforcing it as a
->> boolean value, and ensuring that the !CONFIG_SYSCTL build still works
->> after the boolean change.
->
-> Pulled, thanks!
->
-> Would you mind making sure that all maintainers and authors of commits
-> pointed to by Fixes tags are always CCed? I assume that those folks
-> usually see the patches on mptcp@ ML before they hit netdev but I'd
-> rather not have to assume..
+Agreed. You need to show how the executing thread ends up going through a
+context synchronizing operation before jumping to the generated code if
+the IPI here is removed.
 
-No problem at all, I will add get_maintainers.pl to my checklist and add 
-Cc: tags to future patch sets.
-
---
-Mat Martineau
-Intel
+Will
