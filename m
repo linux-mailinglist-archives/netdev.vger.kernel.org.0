@@ -2,84 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 138AD3974DD
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 16:03:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C3A939756C
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 16:29:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234256AbhFAOEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 10:04:32 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:3325 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234228AbhFAOEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 10:04:31 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FvYdp3brmz1BGgh;
-        Tue,  1 Jun 2021 21:58:06 +0800 (CST)
-Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Tue, 1 Jun 2021 22:02:48 +0800
-Received: from localhost (10.174.179.215) by dggema769-chm.china.huawei.com
- (10.1.198.211) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 1 Jun
- 2021 22:02:47 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] igb: Fix -Wunused-const-variable warning
-Date:   Tue, 1 Jun 2021 22:02:38 +0800
-Message-ID: <20210601140238.20712-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S234160AbhFAObY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 10:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54520 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233797AbhFAObY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 10:31:24 -0400
+X-Greylist: delayed 1173 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Jun 2021 07:29:42 PDT
+Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3F2C061574;
+        Tue,  1 Jun 2021 07:29:42 -0700 (PDT)
+Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1lo55o-0006dN-Af; Tue, 01 Jun 2021 16:10:04 +0200
+Received: from laforge by localhost.localdomain with local (Exim 4.94.2)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1lo54u-004M7u-30; Tue, 01 Jun 2021 16:09:08 +0200
+Date:   Tue, 1 Jun 2021 16:09:08 +0200
+From:   Harald Welte <laforge@gnumonks.org>
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc:     pablo@netfilter.org, davem@davemloft.net, kuba@kernel.org,
+        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] gtp: Fix a typo
+Message-ID: <YLY/hDKxXLC507ft@nataraja>
+References: <20210601141625.4131445-1-zhengyongjun3@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggema769-chm.china.huawei.com (10.1.198.211)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210601141625.4131445-1-zhengyongjun3@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_IGB_HWMON is n, gcc warns:
+On Tue, Jun 01, 2021 at 10:16:25PM +0800, Zheng Yongjun wrote:
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-drivers/net/ethernet/intel/igb/e1000_82575.c:2765:17:
- warning: ‘e1000_emc_therm_limit’ defined but not used [-Wunused-const-variable=]
- static const u8 e1000_emc_therm_limit[4] = {
-                 ^~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/intel/igb/e1000_82575.c:2759:17:
- warning: ‘e1000_emc_temp_data’ defined but not used [-Wunused-const-variable=]
- static const u8 e1000_emc_temp_data[4] = {
-                 ^~~~~~~~~~~~~~~~~~~
+Obviousy-Acked-by: Harald Welte <laforge@gnumonks.org>
 
-Move it into #ifdef block to fix this.
-
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/ethernet/intel/igb/e1000_82575.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/igb/e1000_82575.c b/drivers/net/ethernet/intel/igb/e1000_82575.c
-index 50863fd87d53..cbe92fd23a70 100644
---- a/drivers/net/ethernet/intel/igb/e1000_82575.c
-+++ b/drivers/net/ethernet/intel/igb/e1000_82575.c
-@@ -2756,6 +2756,7 @@ s32 igb_get_eee_status_i354(struct e1000_hw *hw, bool *status)
- 	return ret_val;
- }
- 
-+#ifdef CONFIG_IGB_HWMON
- static const u8 e1000_emc_temp_data[4] = {
- 	E1000_EMC_INTERNAL_DATA,
- 	E1000_EMC_DIODE1_DATA,
-@@ -2769,7 +2770,6 @@ static const u8 e1000_emc_therm_limit[4] = {
- 	E1000_EMC_DIODE3_THERM_LIMIT
- };
- 
--#ifdef CONFIG_IGB_HWMON
- /**
-  *  igb_get_thermal_sensor_data_generic - Gathers thermal sensor data
-  *  @hw: pointer to hardware structure
 -- 
-2.17.1
-
+- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
+============================================================================
+"Privacy in residential applications is a desirable marketing option."
+                                                  (ETSI EN 300 175-7 Ch. A6)
