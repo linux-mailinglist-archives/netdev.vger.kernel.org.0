@@ -2,106 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEEFC396E89
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 10:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1EDD396EAF
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 10:17:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233343AbhFAIIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 04:08:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44992 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233162AbhFAIIl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 04:08:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9ECF86136E;
-        Tue,  1 Jun 2021 08:06:57 +0000 (UTC)
-Date:   Tue, 1 Jun 2021 10:06:54 +0200
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Changbin Du <changbin.du@gmail.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        stable@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        David Laight <David.Laight@ACULAB.COM>
-Subject: Re: [PATCH] nsfs: fix oops when ns->ops is not provided
-Message-ID: <20210601080654.cl7caplm7rsagl6u@wittgenstein>
-References: <20210531153410.93150-1-changbin.du@gmail.com>
- <20210531220128.26c0cb36@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        id S233324AbhFAITY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 04:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53866 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233193AbhFAITX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 04:19:23 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175A2C061574
+        for <netdev@vger.kernel.org>; Tue,  1 Jun 2021 01:17:41 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id v9so14328555ion.11
+        for <netdev@vger.kernel.org>; Tue, 01 Jun 2021 01:17:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=YbAy7u1ieBaLf63PO/2LkCEz5Re1c9EXeyaJCJMYNCA=;
+        b=YWkZynTeCPqDYJYZgVz4HM08IaGdNqq4WUczzmdoPfru4CCnJJvpDW9s6DfUsG26Rr
+         1sFVB4Kg6RVnZJ/8Zqm4obSutZXLY0V8cUrrbXuvoaKlRuJA8XqiW+gEgS9LdDvNAZ5/
+         +SL4+gD9Nziw86uVr76PXhXguXuSY+FmWREtigB67mPDyQ8NG6qIP9ftKdgSOByi0egB
+         my+QKB2C+6+IsxRKVNZhivnGa6Z9N2wwDWRwv7AXnE+gAnpit8mqP/1c+jGw97NNHybH
+         vBe+58FwrH2BhQcvHW0FFEVHJjncGOJ4WLiPS+eFcRF2D8iiJwbtwG9P7ZN4YsOmLr1p
+         tGHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=YbAy7u1ieBaLf63PO/2LkCEz5Re1c9EXeyaJCJMYNCA=;
+        b=hPtVCtnVnYY0e45wcBnNcB3mopkEOSkoOV8DuNLLs5QtmFiRX1IdDS1XC7vHb6V8Pw
+         ceHkFyS54KHZpnDBPpQHzDzb9JT9P2NOs9o6JCVv5L5Ew7m8g2kpjaQ/Ox/aSwhRpOAI
+         vT6ws3Xi2meMJSYS7KjBZKKR4CzHtXeNmI8PJ1gnPJIZLDpf6cdphxeRIxnDnjYZOSRG
+         UF+knxXA6SkxYsBFOC+Lvv+e7PZtHFcVAiVzZJjkWq52L1YIZwJGNNVxNoXYdaq8o3hN
+         GAxDtFvlANujX1N3VArPPRnWA8pQUdaFjGUkS3tIyQUyqLM4/uATBUhwlPENfTrFtogM
+         OBNg==
+X-Gm-Message-State: AOAM530irkhkPjmqZnYnpRE51bsZ0eFJ4xkmtlPTXB/c0bdX8m/6tPVN
+        aEhvCISDPc+pDuQ8+YHbHF5lJHXFxTzJ8XmvQSg=
+X-Google-Smtp-Source: ABdhPJwYcKCqySi4k5SY89vrdU7tnY9VMmcqHjxXnjAWvYq2esa8zrSDDK5FHaV9IlgrbLpQs1Kau7DbTYQ/EqwW7fc=
+X-Received: by 2002:a6b:e00a:: with SMTP id z10mr20448417iog.109.1622535460491;
+ Tue, 01 Jun 2021 01:17:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210531220128.26c0cb36@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   tianyu zhou <tyjoe.linux@gmail.com>
+Date:   Tue, 1 Jun 2021 16:17:29 +0800
+Message-ID: <CAM6ytZoLkndXUaBxDDk36y_QW3JfNwtksQm3XAdUk+GLr28rEw@mail.gmail.com>
+Subject: CAP_NET_ADMIN check in tc_ctl_action() makes it not allowed for user
+ ns root
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 31, 2021 at 10:01:28PM -0700, Jakub Kicinski wrote:
-> On Mon, 31 May 2021 23:34:10 +0800 Changbin Du wrote:
-> > We should not create inode for disabled namespace. A disabled namespace
-> > sets its ns->ops to NULL. Kernel could panic if we try to create a inode
-> > for such namespace.
-> > 
-> > Here is an example oops in socket ioctl cmd SIOCGSKNS when NET_NS is
-> > disabled. Kernel panicked wherever nsfs trys to access ns->ops since the
-> > proc_ns_operations is not implemented in this case.
-> > 
-> > [7.670023] Unable to handle kernel NULL pointer dereference at virtual address 00000010
-> > [7.670268] pgd = 32b54000
-> > [7.670544] [00000010] *pgd=00000000
-> > [7.671861] Internal error: Oops: 5 [#1] SMP ARM
-> > [7.672315] Modules linked in:
-> > [7.672918] CPU: 0 PID: 1 Comm: systemd Not tainted 5.13.0-rc3-00375-g6799d4f2da49 #16
-> > [7.673309] Hardware name: Generic DT based system
-> > [7.673642] PC is at nsfs_evict+0x24/0x30
-> > [7.674486] LR is at clear_inode+0x20/0x9c
-> > 
-> > So let's reject such request for disabled namespace.
-> > 
-> > Signed-off-by: Changbin Du <changbin.du@gmail.com>
-> > Cc: <stable@vger.kernel.org>
-> > Cc: Cong Wang <xiyou.wangcong@gmail.com>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: David Laight <David.Laight@ACULAB.COM>
-> > ---
-> >  fs/nsfs.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/fs/nsfs.c b/fs/nsfs.c
-> > index 800c1d0eb0d0..6c055eb7757b 100644
-> > --- a/fs/nsfs.c
-> > +++ b/fs/nsfs.c
-> > @@ -62,6 +62,10 @@ static int __ns_get_path(struct path *path, struct ns_common *ns)
-> >  	struct inode *inode;
-> >  	unsigned long d;
-> >  
-> > +	/* In case the namespace is not actually enabled. */
-> > +	if (!ns->ops)
-> > +		return -EOPNOTSUPP;
-> > +
-> >  	rcu_read_lock();
-> >  	d = atomic_long_read(&ns->stashed);
-> >  	if (!d)
-> 
-> I'm not sure why we'd pick runtime checks for something that can be
-> perfectly easily solved at compilation time. Networking should not
-> be asking for FDs for objects which don't exist.
+Hi, from commit "net: Allow tc changes in user
+namespaces"(SHA:4e8bbb819d1594a01f91b1de83321f68d3e6e245) I learned
+that "root in a user namespace may set tc rules inside that
+namespace".
 
-Agreed!
-This should be fixable by sm like:
+I do see the CAP_NET_ADMIN check in tc_* functions has changed from
+capable() to ns_capable() (which is now in term of
+netlink_ns_capable())
 
-diff --git a/net/socket.c b/net/socket.c
-index 27e3e7d53f8e..2484466d96ad 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -1150,10 +1150,12 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
-                        break;
-                case SIOCGSKNS:
-                        err = -EPERM;
-+#ifdef CONFIG_NET_NS
-                        if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
-                                break;
+However, in function tc_ctl_action(), the check for CAP_NET_ADMIN is
+still netlink_capable which does not allow user ns root to pass this
+check.
 
-                        err = open_related_ns(&net->ns, get_net_ns);
-+#endif
-                        break;
-                case SIOCGSTAMP_OLD:
-                case SIOCGSTAMPNS_OLD:
+static int tc_ctl_action(struct sk_buff *skb, struct nlmsghdr *n,
+             struct netlink_ext_ack *extack)
+{
+    ...
+    if ((n->nlmsg_type != RTM_GETACTION) &&
+        !netlink_capable(skb, CAP_NET_ADMIN))
+        return -EPERM;
+    ...
+}
+
+So is this a check missing changing for user ns?
+
+Thanks!
+
+Best regards,
+Tianyu
