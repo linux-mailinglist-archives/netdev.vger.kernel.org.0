@@ -2,72 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0105239796C
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 19:45:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31E7F3979DD
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 20:14:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234624AbhFARqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 13:46:43 -0400
-Received: from angie.orcam.me.uk ([78.133.224.34]:33700 "EHLO
-        angie.orcam.me.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234597AbhFARql (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 13:46:41 -0400
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 9A3FB92009C; Tue,  1 Jun 2021 19:44:58 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 93D4E92009B;
-        Tue,  1 Jun 2021 19:44:58 +0200 (CEST)
-Date:   Tue, 1 Jun 2021 19:44:58 +0200 (CEST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-cc:     Nikolai Zhubr <zhubr.2@gmail.com>, Arnd Bergmann <arnd@kernel.org>,
-        netdev <netdev@vger.kernel.org>, Jeff Garzik <jgarzik@pobox.com>
-Subject: Re: Realtek 8139 problem on 486.
-In-Reply-To: <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com>
-Message-ID: <alpine.DEB.2.21.2106011918390.11113@angie.orcam.me.uk>
-References: <60B24AC2.9050505@gmail.com> <ca333156-f839-9850-6e3d-696d7b725b09@gmail.com> <CAP8WD_bKiGLczUfRVOWY3y4TT80yhRCPmLkN7pDMhkJ5m=2Pew@mail.gmail.com> <60B2E0FF.4030705@gmail.com> <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com>
- <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com> <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com> <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
- <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com> <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S234624AbhFASQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 14:16:22 -0400
+Received: from mga01.intel.com ([192.55.52.88]:46250 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234513AbhFASQU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 14:16:20 -0400
+IronPort-SDR: hhVZFbIvqa77dbgX9pzFHwngmTT9heU9E5H73yBfLBIgbONSh/zMzQ710iMSpIvg/GlL58xCdH
+ OaCyRjkFCmSQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,10002"; a="224884243"
+X-IronPort-AV: E=Sophos;i="5.83,240,1616482800"; 
+   d="scan'208";a="224884243"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 11:14:38 -0700
+IronPort-SDR: fQcAOBUzDfMZaD5LQ8NCA9urtGcc04vjtIctOInIq5o96ywMjVIqWEBiOhEkPfRTQ51CijOyM0
+ XSiC1wy+HD3A==
+X-IronPort-AV: E=Sophos;i="5.83,240,1616482800"; 
+   d="scan'208";a="549147068"
+Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.212.201.74])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 11:14:37 -0700
+Date:   Tue, 1 Jun 2021 11:14:36 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@huawei.com>,
+        <dledford@redhat.com>, <jgg@ziepe.ca>, <netanel@amazon.com>,
+        <akiyano@amazon.com>, <thomas.lendacky@amd.com>,
+        <irusskikh@marvell.com>, <michael.chan@broadcom.com>,
+        <edwin.peer@broadcom.com>, <rohitm@chelsio.com>,
+        <jacob.e.keller@intel.com>, <ioana.ciornei@nxp.com>,
+        <vladimir.oltean@nxp.com>, <sgoutham@marvell.com>,
+        <sbhatta@marvell.com>, <saeedm@nvidia.com>,
+        <ecree.xilinx@gmail.com>, <grygorii.strashko@ti.com>,
+        <merez@codeaurora.org>, <kvalo@codeaurora.org>,
+        <linux-wireless@vger.kernel.org>
+Subject: Re: [RFC V2 net-next 0/3] ethtool: extend coalesce uAPI
+Message-ID: <20210601111436.00001c69@intel.com>
+In-Reply-To: <1622258536-55776-1-git-send-email-tanhuazhong@huawei.com>
+References: <1622258536-55776-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Jun 2021, Heiner Kallweit wrote:
+Huazhong Tan wrote:
 
-> > Alternatively, maybe it is possible to explicitely request level mode from 8259 at the driver startup?
-> > 
-> I have doubts that it is possible to overrule what the BIOS/ACPI communicate
-> to the kernel.
+> In order to support some configuration in coalesce uAPI, this RFC
+> extends coalesce uAPI and add support for CQE mode.
+> ...
 
- Umm, any 486 system surely predates ACPI by several years; indeed I have 
-a dual Pentium MMX system from 1997 that does not have ACPI either and 
-uses an MP Table to communicate interrupt line configuration.  I am fairly
-sure an old UP 486 system communicates nothing.
+> 3. ethool(netlink with cqe mode) + kernel with cqe mode:
+> estuary:/$ ethtool -c eth0
+> Coalesce parameters for eth0:
+> Adaptive RX: on  TX: on
+> stats-block-usecs: n/a
+> sample-interval: n/a
+> pkt-rate-low: n/a
+> pkt-rate-high: n/a
+> 
+> rx-usecs: 20
+> rx-frames: 0
+> rx-usecs-irq: n/a
+> rx-frames-irq: n/a
+> 
+> tx-usecs: 20
+> tx-frames: 0
+> tx-usecs-irq: n/a
+> tx-frames-irq: n/a
+> 
+> rx-usecs-low: n/a
+> rx-frame-low: n/a
+> tx-usecs-low: n/a
+> tx-frame-low: n/a
+> 
+> rx-usecs-high: 0
+> rx-frame-high: n/a
+> tx-usecs-high: 0
+> tx-frame-high: n/a
+> 
+> CQE mode RX: off  TX: off
 
- Since the inception of EISA the usual way for x86 systems to switch 
-between classic edge-triggered and level-triggered interrupts on a line by 
-line basis has been the ELCR, a 16-bit mainboard register at 0x4d0 in the 
-port I/O space.  We do have support for that register, however used in 
-certain circumstances only, clearly not yours.  Classic 8259A chips could 
-only switch trigger modes globally across all interrupt lines.
+BTW, thanks for working on something like this.
+I hope it's not just me, but I don't like the display of the new CQE
+line, at the very least, it's not consistent with what is there already
+in the output of this command, and at worst, it surprises the user and
+makes it hard to parse for any scripting tools.
 
- You might be able to add a quirk based on your chipset's vendor/device ID 
-though, which would call `elcr_set_level_irq' for interrupt lines claimed 
-by PCI devices.  You'd have to match on the southbridge's ID I imagine, if 
-any (ISTR at least one Intel chipset did not have a southbridge visible on 
-PCI), as it's where the 8259A cores along with any ELCR reside.
+Can I suggest something like:
 
- It would be the right thing to do IMO; those early PCI systems often got 
-these things wrong, and the selection for the trigger mode shouldn't have 
-been there in the BIOS setup in the first place (the manufacturer couldn't 
-obviously figure it out how to do this correctly by just scanning PCI, so 
-they shifted the burden onto the end user; though I have to admit odd hw 
-used to be made too, e.g. I remember seeing a PCI PATA option card with an 
-extra cable and a tiny PCB stub to be plugged into the upper part of a 
-spare ISA slot to get IRQ 14/15 routed from there).
+rx-cqe: off
+tx-cqe: off
+rx-eqe: off
+tx-eqe: off
 
- HTH,
+Then, if hardware is in EQE mode it is clear that it's supported and
+ON/OFF, as well as for CQE mode.
 
-  Maciej
+-Jesse
