@@ -2,72 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB8A5397D0C
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 01:30:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6714B397D05
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 01:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235172AbhFAXbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 19:31:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49246 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234766AbhFAXbp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 19:31:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id EFC0D613BC;
-        Tue,  1 Jun 2021 23:30:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622590204;
-        bh=9jBBGc5/tlEn3Q34kDZN1+/teHzhfZVd4bupvmg7+D4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GKLECLE4dEMV8InJBYItYwPSBsI14RzkochqCKAzwyq2d3BgqjBye/SpEsExDWli/
-         9Xd+4hdLQ7NTfJCWLhaMqOiT9sTIpmB3POuLaWXDkppbZ4rFiqSRyGCg5HfvLBl/O7
-         bagOUXarr8D+weW4ShtZakSStb/AC8oQruRkXn02VdJRU/TkUYgUrnkZo3WV1PQoA9
-         9U2ggwOn6YbHd6clOCR1YHZTKWQ2Jbnd2GGIX/3bV3TGglLdGxRHdaBTFQGDeSUGwm
-         oVeUBXzq+YaC7pYya09J+HHiLo7YewPpnQ/1g9NTGQJfBWUpbaPHlTYkR7cCQ9tL/Q
-         MnKokiSUvwg4Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E33F9609F8;
-        Tue,  1 Jun 2021 23:30:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235145AbhFAX2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 19:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34220 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234766AbhFAX2r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 19:28:47 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E924C061574
+        for <netdev@vger.kernel.org>; Tue,  1 Jun 2021 16:27:05 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id u22so159325ljh.7
+        for <netdev@vger.kernel.org>; Tue, 01 Jun 2021 16:27:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:date:from:user-agent:mime-version:to:cc:subject
+         :references:in-reply-to:content-transfer-encoding;
+        bh=LxhJNLbL7zy9P78thi+FO/rz6BLUObpyILXwuDbH/vs=;
+        b=GItBkRCz4DaFw75ju2VE63etRJd7q1fG5+CXBEPpb/V8BUi8D8UMjUubcL0wn/qrw7
+         yA1434EtBVDx0pohnQcYV8cgqU8h70OovryFIxvuzvBb5z5Z0qdHYXTYhxuKqkBSxSAu
+         uQvoNowlaJY+noPuTceudaHOYf2kwQicpZZBzSHzxvv9gtruzLL1vBSTlrCxr1pjo17Q
+         QPyJSkr3y0T2B6shsP7n+ujCpiQKL8mJwr8F8HQBIMe9RTTGeilNBhvlRru8JuOgVbwE
+         mH3YgIdCUpQxc5HUYRqmVDvXrbbr21m2fvtLQJ44c7AIVNcEila2ZJ1g9svk2KiU71Tm
+         57zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
+         :cc:subject:references:in-reply-to:content-transfer-encoding;
+        bh=LxhJNLbL7zy9P78thi+FO/rz6BLUObpyILXwuDbH/vs=;
+        b=lCGaHVryI+muMSkS4BMqHKGTpNpkxfiAZgtRAJwlbhWfDiFCiwSqoAtgciD4QlLifM
+         f2JI7BpV47i0z+9G+XYmOVhDjkj2nKOPfk7eqbAzBHwxroMA5eIF12TH8vKvSgYLr9uM
+         Uq0AZBSP7X846gSMcCtehRLM6GIn2BNk0VcfT5XRdOcXNW33LoRWZbMnbgoX99xC4Lmn
+         MxcfD4ENkAiMKqYMPDK82pwHQkHrvTxfJPhAZVLL1M8UAxiXELl09Z65uCitUZ7P9y2d
+         jHh9C8CxOIX+aGKFhHLdRj7Dhn9YyghrrWzkAXd3SPHg6xC9NfQZHnQ1IyMHOcepzxJL
+         wsNQ==
+X-Gm-Message-State: AOAM532qCPu70xIbMVVOm/wmY2hfE5o/kWZV0Zc8NhfdY2ErKrYGkvv4
+        69Gc/c7AAf/rpPXGx3ZwZ2w=
+X-Google-Smtp-Source: ABdhPJwUrJaT5HcdxcMbm04cbilT/tk1TufkAbIs6A7KxzlfvTzHJJ5jWr6T2EVqKYUaE/Vm02eG5g==
+X-Received: by 2002:a2e:9f49:: with SMTP id v9mr23174181ljk.15.1622590023563;
+        Tue, 01 Jun 2021 16:27:03 -0700 (PDT)
+Received: from [192.168.0.91] ([188.242.181.97])
+        by smtp.googlemail.com with ESMTPSA id n130sm1982220lfa.10.2021.06.01.16.27.02
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Tue, 01 Jun 2021 16:27:02 -0700 (PDT)
+Message-ID: <60B6C4B2.1080704@gmail.com>
+Date:   Wed, 02 Jun 2021 02:37:22 +0300
+From:   Nikolai Zhubr <zhubr.2@gmail.com>
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.2.4) Gecko/20100608 Thunderbird/3.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/2] Fix use-after-free after the TLS device goes down
- and up
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162259020392.5946.15667853325648383667.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Jun 2021 23:30:03 +0000
-References: <20210601120800.2177503-1-maximmi@nvidia.com>
-In-Reply-To: <20210601120800.2177503-1-maximmi@nvidia.com>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     borisp@nvidia.com, john.fastabend@gmail.com, daniel@iogearbox.net,
-        kuba@kernel.org, davem@davemloft.net, aviadye@nvidia.com,
-        tariqt@nvidia.com, netdev@vger.kernel.org
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     Arnd Bergmann <arnd@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Jeff Garzik <jgarzik@pobox.com>
+Subject: Re: Realtek 8139 problem on 486.
+References: <60B24AC2.9050505@gmail.com> <ca333156-f839-9850-6e3d-696d7b725b09@gmail.com> <CAP8WD_bKiGLczUfRVOWY3y4TT80yhRCPmLkN7pDMhkJ5m=2Pew@mail.gmail.com> <60B2E0FF.4030705@gmail.com> <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com> <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com> <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com> <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com> <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com> <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com> <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com>
+In-Reply-To: <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi all,
 
-This series was applied to netdev/net.git (refs/heads/master):
+02.06.2021 0:48, Heiner Kallweit:
+> Driver 8139too has no maintainer.
 
-On Tue, 1 Jun 2021 15:07:58 +0300 you wrote:
-> This small series fixes a use-after-free bug in the TLS offload code.
-> The first patch is a preparation for the second one, and the second is
-> the fix itself.
-> 
-> v2 changes:
-> 
-> Remove unneeded EXPORT_SYMBOL_GPL.
-> 
-> [...]
+Ups, indeed. I just looked at the header and supposed it has. Sorry.
+(I do not touch kernel development much, usually)
 
-Here is the summary with links:
-  - [net,v2,1/2] net/tls: Replace TLS_RX_SYNC_RUNNING with RCU
-    https://git.kernel.org/netdev/net/c/05fc8b6cbd4f
-  - [net,v2,2/2] net/tls: Fix use-after-free after the TLS device goes down and up
-    https://git.kernel.org/netdev/net/c/c55dcdd435aa
+> who are paid by somebody to maintain all drivers in the kernel. That's not the case in general.
+> You provided valuable input, and if you'd contribute to improving 8139too and submit patches for
+> fixing the issue you're facing, this would be much appreciated.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Ok, it is a bit more clear now.
+I'll do more testing/searching/reading and probably come up with 
+something then.
 
 
+Thank you,
+
+Regards,
+Nikolai
