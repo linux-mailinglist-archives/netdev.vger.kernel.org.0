@@ -2,107 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7162F396DF6
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 09:33:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D046396E06
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 09:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233098AbhFAHey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 03:34:54 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3489 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230326AbhFAHex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 03:34:53 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FvP2W21X0zYrxk;
-        Tue,  1 Jun 2021 15:30:27 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+        id S233162AbhFAHjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 03:39:17 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:32900 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230326AbhFAHjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 03:39:16 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1517bRh15010689, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1517bRh15010689
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 1 Jun 2021 15:37:27 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 1 Jun 2021 15:33:09 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 1 Jun 2021
- 15:33:09 +0800
-Subject: Re: [RFC net-next 0/8] Introducing subdev bus and devlink extension
-To:     Jakub Kicinski <kuba@kernel.org>, moyufeng <moyufeng@huawei.com>
-CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Parav Pandit <parav@mellanox.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "michal.lkml@markovi.net" <michal.lkml@markovi.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "lipeng (Y)" <lipeng321@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        <shenjian15@huawei.com>, "chenhao (DY)" <chenhao288@hisilicon.com>,
-        Jiaran Zhang <zhangjiaran@huawei.com>
-References: <1551418672-12822-1-git-send-email-parav@mellanox.com>
- <20190301120358.7970f0ad@cakuba.netronome.com>
- <VI1PR0501MB227107F2EB29C7462DEE3637D1710@VI1PR0501MB2271.eurprd05.prod.outlook.com>
- <20190304174551.2300b7bc@cakuba.netronome.com>
- <VI1PR0501MB22718228FC8198C068EFC455D1720@VI1PR0501MB2271.eurprd05.prod.outlook.com>
- <76785913-b1bf-f126-a41e-14cd0f922100@huawei.com>
- <20210531223711.19359b9a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <7c591bad-75ed-75bc-5dac-e26bdde6e615@huawei.com>
-Date:   Tue, 1 Jun 2021 15:33:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+ 15.1.2106.2; Tue, 1 Jun 2021 15:37:27 +0800
+Received: from fc32.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Tue, 1 Jun 2021
+ 15:37:26 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net-next] r8152: support pauseparam of ethtool_ops
+Date:   Tue, 1 Jun 2021 15:37:12 +0800
+Message-ID: <1394712342-15778-366-Taiwan-albertk@realtek.com>
+X-Mailer: Microsoft Office Outlook 11
 MIME-Version: 1.0
-In-Reply-To: <20210531223711.19359b9a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme718-chm.china.huawei.com (10.1.199.114) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.102]
+X-ClientProxiedBy: RTEXMBS02.realtek.com.tw (172.21.6.95) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/01/2021 07:21:00
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzYvMSCkV6TIIDA2OjIyOjAw?=
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/01/2021 07:19:03
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 164034 [Jun 01 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/01/2021 07:21:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/6/1 13:37, Jakub Kicinski wrote:
-> On Mon, 31 May 2021 18:36:12 +0800 moyufeng wrote:
->> Hi, Jiri & Jakub
->>
->>     Generally, a devlink instance is created for each PF/VF. This
->> facilitates the query and configuration of the settings of each
->> function. But if some common objects, like the health status of
->> the entire ASIC, the data read by those instances will be duplicate.
->>
->>     So I wonder do I just need to apply a public devlink instance for the
->> entire ASIC to avoid reading the same data? If so, then I can't set
->> parameters for each function individually. Or is there a better suggestion
->> to implement it?
-> 
-> I don't think there is a great way to solve this today. In my mind
-> devlink instances should be per ASIC, but I never had to solve this
-> problem for a multi-function ASIC. 
+Support get_pauseparam and set_pauseparam of ethtool_ops.
 
-Is there a reason why it didn't have to be solved yet?
-Is it because the devices currently supporting devlink do not have
-this kind of problem, like single-function ASIC or multi-function
-ASIC without sharing common resource?
+Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+---
+ drivers/net/usb/r8152.c | 75 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 75 insertions(+)
 
-Was there a discussion how to solved it in the past?
-
-> 
-> Can you assume all functions are in the same control domain? Can they
-> trust each other?
-
-"same control domain" means if it is controlled by a single host, not
-by multi hosts, right?
-
-If the PF is not passed through to a vm using VFIO and other PF is still
-in the host, then I think we can say it is controlled by a single host.
-
-And each PF is trusted with each other right now, at least at the driver
-level, but not between VF.
-
-> 
-> .
-> 
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index f6abb2fbf972..21e6b9b6776c 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -8967,6 +8967,79 @@ static int rtl8152_set_ringparam(struct net_device *netdev,
+ 	return 0;
+ }
+ 
++static void rtl8152_get_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
++{
++	struct r8152 *tp = netdev_priv(netdev);
++	u16 bmcr, lcladv, rmtadv;
++	u8 cap;
++
++	if (usb_autopm_get_interface(tp->intf) < 0)
++		return;
++
++	mutex_lock(&tp->control);
++
++	bmcr = r8152_mdio_read(tp, MII_BMCR);
++	lcladv = r8152_mdio_read(tp, MII_ADVERTISE);
++	rmtadv = r8152_mdio_read(tp, MII_LPA);
++
++	mutex_unlock(&tp->control);
++
++	usb_autopm_put_interface(tp->intf);
++
++	if (!(bmcr & BMCR_ANENABLE)) {
++		pause->autoneg = 0;
++		pause->rx_pause = 0;
++		pause->tx_pause = 0;
++		return;
++	}
++
++	pause->autoneg = 1;
++
++	cap = mii_resolve_flowctrl_fdx(lcladv, rmtadv);
++
++	if (cap & FLOW_CTRL_RX)
++		pause->rx_pause = 1;
++
++	if (cap & FLOW_CTRL_TX)
++		pause->tx_pause = 1;
++}
++
++static int rtl8152_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
++{
++	struct r8152 *tp = netdev_priv(netdev);
++	u16 old, new1;
++	u8 cap = 0;
++	int ret;
++
++	ret = usb_autopm_get_interface(tp->intf);
++	if (ret < 0)
++		return ret;
++
++	mutex_lock(&tp->control);
++
++	if (pause->autoneg && !(r8152_mdio_read(tp, MII_BMCR) & BMCR_ANENABLE)) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	if (pause->rx_pause)
++		cap |= FLOW_CTRL_RX;
++
++	if (pause->tx_pause)
++		cap |= FLOW_CTRL_TX;
++
++	old = r8152_mdio_read(tp, MII_ADVERTISE);
++	new1 = (old & ~(ADVERTISE_PAUSE_CAP | ADVERTISE_PAUSE_ASYM)) | mii_advertise_flowctrl(cap);
++	if (old != new1)
++		r8152_mdio_write(tp, MII_ADVERTISE, new1);
++
++out:
++	mutex_unlock(&tp->control);
++	usb_autopm_put_interface(tp->intf);
++
++	return ret;
++}
++
+ static const struct ethtool_ops ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS,
+ 	.get_drvinfo = rtl8152_get_drvinfo,
+@@ -8989,6 +9062,8 @@ static const struct ethtool_ops ops = {
+ 	.set_tunable = rtl8152_set_tunable,
+ 	.get_ringparam = rtl8152_get_ringparam,
+ 	.set_ringparam = rtl8152_set_ringparam,
++	.get_pauseparam = rtl8152_get_pauseparam,
++	.set_pauseparam = rtl8152_set_pauseparam,
+ };
+ 
+ static int rtl8152_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
+-- 
+2.26.3
 
