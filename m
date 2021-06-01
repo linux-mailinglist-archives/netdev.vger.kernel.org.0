@@ -2,150 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5065939705F
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 11:28:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6026397074
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 11:33:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233586AbhFAJaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 05:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233096AbhFAJaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 05:30:11 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C43C061574
-        for <netdev@vger.kernel.org>; Tue,  1 Jun 2021 02:28:30 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id 27so10248776pgy.3
-        for <netdev@vger.kernel.org>; Tue, 01 Jun 2021 02:28:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Clq5ycZC/DAkJrYzdB1pjmh54x4ErJny57qDeI6dFMY=;
-        b=dqKX3q8NCgLQ8S4jk1QY0OmAyeKWU/lyZWfKfBB96LACpUFbC/sWq3KYPZYjOphssF
-         3Yl8gRO5UbgB6hzGstclGpYDZZKtawQHpfvjL6qyl2vPfslKnofb7b+/suNTC2BIWaE4
-         Tiuh0Gd0oE7vtsPRMSo+tPeE0oxVgLYeb4gsvD3vUYdCLM39TpggczBvxzXapSWHixA1
-         peqD/Glhwj0vCPZG6XPmwApk2tR9h6FHhJFnn3dbbIqtbhUR6XgNfB2e/fvXxVtdBB9Y
-         MExlglVyfGgMHBIuu2oamq3Xvsfad4qWXXnM3OCi0RBs42WUF+sDcIhe8GFtwO/4fJ+6
-         WDNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Clq5ycZC/DAkJrYzdB1pjmh54x4ErJny57qDeI6dFMY=;
-        b=p/EyUX8jXsNgbG5H8LP49rXIymDjL/pnytM9cjBaucHdDN+haweUjHEFLsULH4yEL1
-         sH/+/Wt9QnZVBeVniLToYS+XauBFgDMxZ14LAHUDfhYTrFlsPQlPfITkvScLyl5K0Ing
-         cbikT4dE/BF/AiVq69O938medyL3r/6d8P/CF6/VENcBGi3yLfqiPj2pUPP5ThZ2IFDJ
-         0oysvJ/WVbkd74/TZUwRZ7+IlFQqYu9NoW20DW0TGA2PhH2T8cFfk6CiVTsrOujs0wK3
-         jjJY3VRAZwR3eo1Sfg/bh6ORiy5Y9+5ZaV7UQtPzsgNVzJDP0d71AkiJENCb0lVk2fso
-         xrNQ==
-X-Gm-Message-State: AOAM531aggciALbcnqMavAS5FAxW1nKlrdD5w1HnDuwEBBnkrP23CMqS
-        904DTrIEaJ+qwBbOWfh4XnFOOkGOYetkDVFpZvLlzw==
-X-Google-Smtp-Source: ABdhPJySTvgpukyVQ3CCDDXP1MyH8YRLR2q7+viVESyoBvVTzX1jPv2ME/JVkoLduK0+S61xmqcZlgPx+rEgxdOuZHo=
-X-Received: by 2002:a63:1906:: with SMTP id z6mr26722024pgl.173.1622539709406;
- Tue, 01 Jun 2021 02:28:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210601080538.71036-1-johannes@sipsolutions.net> <20210601100320.7d39e9c33a18.I0474861dad426152ac7e7afddfd7fe3ce70870e4@changeid>
-In-Reply-To: <20210601100320.7d39e9c33a18.I0474861dad426152ac7e7afddfd7fe3ce70870e4@changeid>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 1 Jun 2021 11:37:48 +0200
-Message-ID: <CAMZdPi-ZaH8WWKfhfKzy0OKpUtNAiCUfekh9R1de5awFP-ed=A@mail.gmail.com>
-Subject: Re: [RFC 3/4] wwan: add interface creation support
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-wireless@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>
+        id S233539AbhFAJfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 05:35:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48998 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233218AbhFAJfC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 05:35:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 39A4060FE5;
+        Tue,  1 Jun 2021 09:33:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622540001;
+        bh=z9BF47t2jCOs1z4eddFfaMUgAQ8k2fwgJgS+XUassNk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=JIzELpx2qyYoBpdjTznHY7qNWdOll4CxnMDzTufG8ULUtHrZgV6ySyCtmXSZLYpk3
+         VRE4VXffLdOM4PLh0plDcJJa2zUFtiyRsCGMLIaYLJKuQpQ8JHLK+TbdfJU2M3ionf
+         40YDpxXN+uwEIyb9c6Y94UMTqSyUx0Ra1F9VjzJt2Ve6GhBz6E9hx5CAVaz+Xct7Vl
+         28gD0KtJLlq0e3qgJcrkz8609TVDrkFovc7euQYs10mfgwXYJUhR6GVhyJ++1Q/rXo
+         fTmK+QAjHcS2jI1RfL/ulGSqealBcXTiKCzy+OaKIzVycuHcapE/e1/YiQz4sk/Heg
+         D07n64obamlYw==
+Message-ID: <483c73edf02fa0139aae2b81e797534817655ea0.camel@kernel.org>
+Subject: Re: Kernel Panic in skb_release_data using genet
+From:   nicolas saenz julienne <nsaenz@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>
+Cc:     Doug Berger <opendmb@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Date:   Tue, 01 Jun 2021 11:33:18 +0200
+In-Reply-To: <9e99ade5-ebfc-133e-ac61-1aba07ca80a2@gmail.com>
+References: <20210524130147.7xv6ih2e3apu2zvu@gilmour>
+         <a53f6192-3520-d5f8-df4b-786b3e4e8707@gmail.com>
+         <20210524151329.5ummh4dfui6syme3@gilmour>
+         <1482eff4-c5f4-66d9-237c-55a096ae2eb4@gmail.com>
+         <6caa98e7-28ba-520c-f0cc-ee1219305c17@gmail.com>
+         <20210528163219.x6yn44aimvdxlp6j@gilmour>
+         <77d412b4-cdd6-ea86-d7fd-adb3af8970d9@gmail.com>
+         <9e99ade5-ebfc-133e-ac61-1aba07ca80a2@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.0 (3.40.0-1.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Johannes,
+On Mon, 2021-05-31 at 19:36 -0700, Florian Fainelli wrote:
+> > That is also how I boot my Pi4 at home, and I suspect you are right, if
+> > the VPU does not shut down GENET's DMA, and leaves buffer addresses in
+> > the on-chip descriptors that point to an address space that is managed
+> > totally differently by Linux, then we can have a serious problem and
+> > create some memory corruption when the ring is being reclaimed. I will
+> > run a few experiments to test that theory and there may be a solution
+> > using the SW_INIT reset controller to have a big reset of the controller
+> > before handing it over to the Linux driver.
+> 
+> Adding a WARN_ON(reg & DMA_EN) in bcmgenet_dma_disable() has not shown
+> that the TX or RX DMA have been left running during the hand over from
+> the VPU to the kernel. I checked out drm-misc-next-2021-05-17 to reduce
+> as much as possible the differences between your set-up and my set-up
+> but so far have not been able to reproduce the crash in booting from NFS
+> repeatedly, I will try again.
 
-On Tue, 1 Jun 2021 at 10:05, Johannes Berg <johannes@sipsolutions.net> wrote:
->
-> From: Johannes Berg <johannes.berg@intel.com>
->
-> Add support to create (and destroy) interfaces via a new
-> rtnetlink kind "wwan". The responsible driver has to use
-> the new wwan_register_ops() to make this possible.
->
-> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-> ---
->  drivers/net/wwan/wwan_core.c | 219 ++++++++++++++++++++++++++++++++++-
->  include/linux/wwan.h         |  36 ++++++
->  include/uapi/linux/wwan.h    |  17 +++
->  3 files changed, 267 insertions(+), 5 deletions(-)
->  create mode 100644 include/uapi/linux/wwan.h
->
-> diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-> index cff04e532c1e..b1ad78f386bc 100644
-> --- a/drivers/net/wwan/wwan_core.c
-> +++ b/drivers/net/wwan/wwan_core.c
-> @@ -13,6 +13,8 @@
->  #include <linux/slab.h>
->  #include <linux/types.h>
->  #include <linux/wwan.h>
-> +#include <net/rtnetlink.h>
-> +#include <uapi/linux/wwan.h>
->
->  #define WWAN_MAX_MINORS 256 /* 256 minors allowed with register_chrdev() */
->
-> @@ -524,24 +526,231 @@ static const struct file_operations wwan_port_fops = {
->         .llseek = noop_llseek,
->  };
->
-> +struct wwan_dev_reg {
-> +       struct list_head list;
-> +       struct device *dev;
-> +       const struct wwan_ops *ops;
-> +       void *ctxt;
-> +};
-> +
-> +static DEFINE_MUTEX(wwan_mtx);
-> +static LIST_HEAD(wwan_devs);
-> +
-> +int wwan_register_ops(struct device *parent, const struct wwan_ops *ops,
-> +                     void *ctxt)
-> +{
-> +       struct wwan_dev_reg *reg;
-> +       int ret;
-> +
-> +       if (WARN_ON(!parent || !ops))
-> +               return -EINVAL;
-> +
-> +       mutex_lock(&wwan_mtx);
-> +       list_for_each_entry(reg, &wwan_devs, list) {
-> +               if (WARN_ON(reg->dev == parent)) {
-> +                       ret = -EBUSY;
-> +                       goto out;
-> +               }
-> +       }
-
-Thanks for this, overall it looks good to me, but just checking why
-you're not using the wwan_dev internally to create-or-pick wwan_dev
-(wwan_dev_create) and register ops to it, instead of having a global
-new wwan_devs list.
-
-> +
-> +       reg = kzalloc(sizeof(*reg), GFP_KERNEL);
-> +       if (!reg) {
-> +               ret = -ENOMEM;
-> +               goto out;
-> +       }
-> +
-> +       reg->dev = parent;
-> +       reg->ops = ops;
-> +       reg->ctxt = ctxt;
-> +       list_add_tail(&reg->list, &wwan_devs);
-> +
-> +       ret = 0;
-> +
-> +out:
-> +       mutex_unlock(&wwan_mtx);
-> +       return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(wwan_register_ops);
+FWIW I can reproduce the error too. That said it's rather hard to reproduce,
+something in the order of 1 failure every 20 tries.
 
 Regards,
-Loic
+Nicolas
+
