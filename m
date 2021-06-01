@@ -2,71 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2071396A6D
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 02:48:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9011B396A6F
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 02:52:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232386AbhFAAtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 20:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232084AbhFAAty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 20:49:54 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB31C061574
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 17:48:13 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id c10so9017879qtx.10
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 17:48:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8ZlUjDCgsuFWhxvYifxTNKmVsvLWaULGbLRVxGxQoSM=;
-        b=JWFQUzLZ7DOB7kAIScftoxqju3Z4p+Or6uJXs9XrGZGqH6t9nOVHX89/ljGzxerpwf
-         /RU6l94a6knLlW0z4QmurHjKeBy0VDazHIkc7remepSMBUF8zaeiRga1q/X4AK10WNHw
-         fnXsoYAZJz/f14OECkGioGqo/GU8m0+JrDNc86ti6EMZd0xpTm+rWog8BgUQ2RNO0rs3
-         ZOQj6DGjpSPT2DPgl1/kAsIR0DWyJ3X1Igf98dYxeYgKYOEjXgFez3IslbQUb97Ug5SI
-         Qs7gxf3C0t0c5tU9nWizEcaDVi77W6e4/lDDR+T6sn/3SQ7VRNFzo0CQD/bnU0vQQwou
-         4PlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8ZlUjDCgsuFWhxvYifxTNKmVsvLWaULGbLRVxGxQoSM=;
-        b=jr9A5bzomO7dyXWsTF9BOdMl//uA64caGiTZ3mGzY5rphAW11zbd56CzvH9qSZWcBO
-         8HlF7G7tnm1Zd7vcGvaVxO7HYiwAftwTH3XgPj75ffy+96E3+tCJI0GhWQORrW2L+MlM
-         a0TIqa65tYP10ozy7XSKEjx+gzO+swKdSDEZkZ0TTSVPkJHRiSdHi4mO/t/F3eJxyruj
-         5ADpKuR8CI1TAkIQxQWxI6XtUim0cuCaUW/oCDqjMzE29MMpbVbrF/h1twOn/QJ08xaY
-         IxVuHYDMPnDGynoNL2Aj0azDcNEwCp7ntWGSOn2qaIrDs0AV+oJjW3KFKwTnyfPB+LHT
-         awwQ==
-X-Gm-Message-State: AOAM531ffGWaYtMj+o/SfCC2jIpdu+Ltjhz0XgRQzRrFh7gEtDLj31Jc
-        QvywHU12ENeTkdE2jTrY08lRaTQpLRuvDnD5Eofv8UN5ZLn5BQ==
-X-Google-Smtp-Source: ABdhPJxzJBTKk6VjVfWZVlNuDmaF4bfTo4cRHTkv6Yn2tJvxoMZOP8XGalAK0tjSq/RVWpWD1MyDsUVee2/TsiSmeS0=
-X-Received: by 2002:ac8:4ccb:: with SMTP id l11mr12314288qtv.127.1622508492351;
- Mon, 31 May 2021 17:48:12 -0700 (PDT)
+        id S232183AbhFAAxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 20:53:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45782 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231714AbhFAAxk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 May 2021 20:53:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 52E606124B;
+        Tue,  1 Jun 2021 00:51:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622508720;
+        bh=y8mZX9crz1d7qe1PfUZcRMNKRjOU8vw8R55fjN2gsWM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lEWF+e5VZSgE03d6tuj9x/xG14ilY9zx5GWZZPDwu+lGjqe73v3yuzcURqlrSwviX
+         2Yv1p3VHWDDxGkNkF0AAySEJmwiqcbJCxkPEwa2OAcicWaEMUm2agz9SIoIXQx6HJO
+         Xj4Q0lCm/Ef7WUCR2vCuz6gGXv91NBaPRc8m6h2gVBJ/NvNLXUJ5ixlByE1EiJ7FUc
+         YVulp4Da77RfO1K772F03yQVk7eyoO0FNhFerFcUNShBxWwwu51AJqxpum4zs9D6eg
+         BBLKLePlQJiIy+AA3iLbk/O9Ym6Se5XsTGimtywUES4l7rd2YO7zIyDBvuueZ3Tvtf
+         8SsA4a1zZ0alw==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     linux-leds@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Dan Murphy <dmurphy@ti.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH leds v2 00/10] Add support for offloading netdev trigger to HW + example implementation for Turris Omnia
+Date:   Tue,  1 Jun 2021 02:51:45 +0200
+Message-Id: <20210601005155.27997-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-References: <20210525121507.6602-1-liuhangbin@gmail.com> <CAHmME9rYp0iO_=c_+UxvU9+UpHnnGkQVJYoikyjwav04UwZwBQ@mail.gmail.com>
-In-Reply-To: <CAHmME9rYp0iO_=c_+UxvU9+UpHnnGkQVJYoikyjwav04UwZwBQ@mail.gmail.com>
-From:   Hangbin Liu <liuhangbin@gmail.com>
-Date:   Tue, 1 Jun 2021 08:48:01 +0800
-Message-ID: <CAPwn2JTgovNOOWcPTkDgZxRFcmk5MciHMEgGio2iJajjtrpfKw@mail.gmail.com>
-Subject: Re: [PATCH net] selftests/wireguard: make sure rp_filter disabled on vethc
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 31, 2021 at 8:39 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> > +n1 sysctl -w net.ipv4.conf.vethc.rp_filter=0
->
-> The VM does not ship with sysctl, and you'll notice that other changes
-> go through /proc directly. Since it's a trivial change, I'll rewrite
-> your commit.
+Hello,
 
-Sorry to make this trouble. I saw other selftests also using sysctl, so I didn't
-realize some VM may not have sysctl installed.
+this is v2 of series adding support for offloading LED triggers to HW.
+The netdev trigger is the first user and leds-turris-omnia is the first
+example implementation.
 
-Thanks for your fix.
+A video comparing SW (left LED) vs HW (right LED) netdev trigger on
+Omnia
+  https://secure.nic.cz/files/mbehun/omnia-wan-netdev-trig-offload.mp4
 
-Hangbin
+Changes since v1:
+- changed typo in doc
+- the netdev trigger data structure now lives in
+  include/linux/ledtrig-netdev.h instead of ledtrig.h, as suggested by
+  Andrew. Also the structure is always defined, no guard against
+  CONFIG_LEDS_TRIGGER_NETDEV
+- we do not export netdev_led_trigger variable. The trigger_offload()
+  method can look at led_cdev->trigger->name to see which trigger it
+  should try to offload, i.e. compare the string to "netdev"
+- netdev trigger is being offloaded only if link is up, and at least one
+  of the rx, tx parameters are set. No need to offload otherwise
+- a patch is added that moves setting flag LED_UNREGISTERING in
+  led_classdev_unregister() before unsetting trigger. This makes it
+  possible for the trigger_offload() method to determine whether the
+  offloading is being disabled because the LED is being unregistered.
+  The driver may put the LED into HW triggering mode in this case, to
+  achieve behaviour as was before the driver was loaded
+- an example implementation for offloading the netdev trigger for the
+  WAN LED on Turris Omnia is added. LAN LEDs are not yet supported
+
+Changes since RFC:
+- split the patch adding HW offloading support to netdev trigger into
+  several separate patches (suggested by Pavel):
+  1. move trigger data structure to include/linux/ledtrig.h
+  2. support HW offloading
+  3. change spinlock to mutex
+- fixed bug where the .offloaded variable was not set to false when
+  offloading was disabled (suggested by Pavel)
+- removed the code saving one call to set_baseline_state() on the
+  NETDEV_CHANGE event. It is not needed, the trigger_offload() method
+  can handle this situation on its own (suggested by Pavel)
+- documentation now explicitly says that when offloading is being
+  disabled, the function must return 0 (no error) (suggested by Pavel)
+
+Marek Behún (10):
+  leds: trigger: netdev: don't explicitly zero kzalloced data
+  leds: trigger: add API for HW offloading of triggers
+  leds: trigger: netdev: move trigger data structure to global include
+    dir
+  leds: trigger: netdev: support HW offloading
+  leds: trigger: netdev: change spinlock to mutex
+  leds: core: inform trigger that it's deactivation is due to LED
+    removal
+  leds: turris-omnia: refactor sw mode setting code into separate
+    function
+  leds: turris-omnia: refactor brightness setting function
+  leds: turris-omnia: initialize each multicolor LED to white color
+  leds: turris-omnia: support offloading netdev trigger for WAN LED
+
+ Documentation/leds/leds-class.rst     |  22 ++
+ drivers/leds/Kconfig                  |   3 +
+ drivers/leds/led-class.c              |   4 +-
+ drivers/leds/led-triggers.c           |   1 +
+ drivers/leds/leds-turris-omnia.c      | 284 ++++++++++++++++++++++++--
+ drivers/leds/trigger/ledtrig-netdev.c |  56 ++---
+ include/linux/leds.h                  |  29 +++
+ include/linux/ledtrig-netdev.h        |  34 +++
+ 8 files changed, 377 insertions(+), 56 deletions(-)
+ create mode 100644 include/linux/ledtrig-netdev.h
+
+-- 
+2.26.3
+
