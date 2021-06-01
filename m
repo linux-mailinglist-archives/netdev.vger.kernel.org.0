@@ -2,115 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F91396DB3
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 09:03:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8129396DDF
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 09:21:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233180AbhFAHEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 03:04:37 -0400
-Received: from mga04.intel.com ([192.55.52.120]:1489 "EHLO mga04.intel.com"
+        id S233056AbhFAHXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 03:23:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45092 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233014AbhFAHEb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 03:04:31 -0400
-IronPort-SDR: 3l/DxF3E8yF13Q43oH6Ln4mUFEe3ZyBJC0YPn18qy3+Pf/xL9SY4Jm6RHPi6yj5YKqhHuj20Ys
- HL0CcAhu+XQg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10001"; a="201619830"
-X-IronPort-AV: E=Sophos;i="5.83,239,1616482800"; 
-   d="scan'208";a="201619830"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 00:02:50 -0700
-IronPort-SDR: mCw/I4r7R4M3EsBTEjFartncXX1LKelS0wpSp454fjNNzu7gCEghroZZseDV0XfCKQlDVbT9Fv
- KFcpnnpDi2XA==
-X-IronPort-AV: E=Sophos;i="5.83,239,1616482800"; 
-   d="scan'208";a="445224695"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.107])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 00:02:48 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V2 2/2] vDPA/ifcvf: reuse pre-defined macros for device ids and vendor ids
-Date:   Tue,  1 Jun 2021 14:57:10 +0800
-Message-Id: <20210601065710.224300-3-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210601065710.224300-1-lingshan.zhu@intel.com>
-References: <20210601065710.224300-1-lingshan.zhu@intel.com>
+        id S231928AbhFAHXg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 03:23:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 533CB61396
+        for <netdev@vger.kernel.org>; Tue,  1 Jun 2021 07:21:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622532115;
+        bh=tlEwOIYfyR+OavcAkBRzWA6HZ6XD6VhyOTfadbFLfIA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=SVjhmMnEbLbevBFCQgyX3n8kAzUtn21hYsK5pJrqb9hh/Q/8x09bGAU0RFK/bz9v9
+         7ZJEKjQnXXclmFPHqmt3g1venXcMbUxQEn5nKQJnZWAPNjUldg7zdN06sBCBX9UGVy
+         qRKUH8ohZJwIvMM5moFk0XV2oqeM4fc5LqyRIwv4fAjhuKt0A+H2b7N8xG/22oTYkt
+         DOw/MUtny8TQIsFWtovubERzMuvo46Nfx0FueuMFSk2jBM8d48KrqBMKOZeimS826S
+         s0KrsFnbkTMbkaUojXTdDEgPN/8hF30YwaT8c+ak4fINiS88UJWaZkfsrpinErARvP
+         L9iLR1HrxDnAw==
+Received: by mail-wm1-f44.google.com with SMTP id o2-20020a05600c4fc2b029019a0a8f959dso1255470wmq.1
+        for <netdev@vger.kernel.org>; Tue, 01 Jun 2021 00:21:55 -0700 (PDT)
+X-Gm-Message-State: AOAM532HUCZ06tSGHoQMDsEdaEJ6za3PNZdeTaPwJancM9ENLOd4qMGL
+        oyOL9mgQvOmvlSrbr0RCI4y4HP4sum4TM/+vbiI=
+X-Google-Smtp-Source: ABdhPJx73lIkjqqg5TsZIx7QM1gRtv+Nl8GErDobbRJkoOFdcGezOr4SMpnbZDocNxC90c0Vxzlrnqh5n41FMK14tPE=
+X-Received: by 2002:a1c:c90f:: with SMTP id f15mr3133540wmb.142.1622532113910;
+ Tue, 01 Jun 2021 00:21:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <60B24AC2.9050505@gmail.com> <ca333156-f839-9850-6e3d-696d7b725b09@gmail.com>
+ <CAP8WD_bKiGLczUfRVOWY3y4TT80yhRCPmLkN7pDMhkJ5m=2Pew@mail.gmail.com>
+ <60B2E0FF.4030705@gmail.com> <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com>
+ <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com>
+ <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com>
+ <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
+In-Reply-To: <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 1 Jun 2021 09:20:17 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com>
+Message-ID: <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com>
+Subject: Re: Realtek 8139 problem on 486.
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Nikolai Zhubr <zhubr.2@gmail.com>, netdev <netdev@vger.kernel.org>,
+        Jeff Garzik <jgarzik@pobox.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit would reuse pre-defined macros for ifcvf device ids
-and vendor ids
+On Tue, Jun 1, 2021 at 12:31 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> On 01.06.2021 00:18, Nikolai Zhubr wrote:
+> > But meanwhile, I tried a dumb thing instead, and it worked!
+> > I've put back The Loop:
+> > ---------------------------
+> > +       int boguscnt = 20;
+> >
+> >         spin_lock (&tp->lock);
+> > +       do {
+> >         status = RTL_R16 (IntrStatus);
+> >
+> >         /* shared irq? */
+> > @@ -2181,6 +2183,8 @@
+> >                 if (status & TxErr)
+> >                         RTL_W16 (IntrStatus, TxErr);
+> >         }
+> > +       boguscnt--;
+> > +       } while (boguscnt > 0);
+> >   out:
+> > ---------------------------
+> > With this added, connection works fine again. Of course it is silly, but hopefully it gives a path for a real fix.
+> >
+>
+> What was discussed here 16 yrs ago should sound familiar to you.
+> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg92234.html
+> "It was an option in my BIOS PCI level/edge settings as I posted."
+> You could check whether you have same/similar option in your BIOS
+> and play with it.
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/ifcvf/ifcvf_base.h | 12 ------------
- drivers/vdpa/ifcvf/ifcvf_main.c | 23 +++++++++++++----------
- 2 files changed, 13 insertions(+), 22 deletions(-)
+So it appears that the interrupt is lost if new TX events come in after the
+status register is read, and that checking it again manages to make that
+race harder to hit, but maybe not reliably.
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index 0111bfdeb342..ded1b1b5fb13 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -19,21 +19,9 @@
- #include <uapi/linux/virtio_config.h>
- #include <uapi/linux/virtio_pci.h>
- 
--#define N3000_VENDOR_ID		0x1AF4
- #define N3000_DEVICE_ID		0x1041
--#define N3000_SUBSYS_VENDOR_ID	0x8086
- #define N3000_SUBSYS_DEVICE_ID	0x001A
- 
--#define C5000X_PL_VENDOR_ID		0x1AF4
--#define C5000X_PL_DEVICE_ID		0x1000
--#define C5000X_PL_SUBSYS_VENDOR_ID	0x8086
--#define C5000X_PL_SUBSYS_DEVICE_ID	0x0001
--
--#define C5000X_PL_BLK_VENDOR_ID		0x1AF4
--#define C5000X_PL_BLK_DEVICE_ID		0x1001
--#define C5000X_PL_BLK_SUBSYS_VENDOR_ID	0x8086
--#define C5000X_PL_BLK_SUBSYS_DEVICE_ID	0x0002
--
- #define IFCVF_NET_SUPPORTED_FEATURES \
- 		((1ULL << VIRTIO_NET_F_MAC)			| \
- 		 (1ULL << VIRTIO_F_ANY_LAYOUT)			| \
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index ab0ab5cf0f6e..bc1d59f316d1 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -536,18 +536,21 @@ static void ifcvf_remove(struct pci_dev *pdev)
- }
- 
- static struct pci_device_id ifcvf_pci_ids[] = {
--	{ PCI_DEVICE_SUB(N3000_VENDOR_ID,
-+	/* N3000 network device */
-+	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_REDHAT_QUMRANET,
- 			 N3000_DEVICE_ID,
--			 N3000_SUBSYS_VENDOR_ID,
-+			 PCI_VENDOR_ID_INTEL,
- 			 N3000_SUBSYS_DEVICE_ID) },
--	{ PCI_DEVICE_SUB(C5000X_PL_VENDOR_ID,
--			 C5000X_PL_DEVICE_ID,
--			 C5000X_PL_SUBSYS_VENDOR_ID,
--			 C5000X_PL_SUBSYS_DEVICE_ID) },
--	{ PCI_DEVICE_SUB(C5000X_PL_BLK_VENDOR_ID,
--			 C5000X_PL_BLK_DEVICE_ID,
--			 C5000X_PL_BLK_SUBSYS_VENDOR_ID,
--			 C5000X_PL_BLK_SUBSYS_DEVICE_ID) },
-+	/* C5000X-PL network device */
-+	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_REDHAT_QUMRANET,
-+			 VIRTIO_TRANS_ID_NET,
-+			 PCI_VENDOR_ID_INTEL,
-+			 VIRTIO_ID_NET) },
-+	/* C5000X-PL block device */
-+	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_REDHAT_QUMRANET,
-+			 VIRTIO_TRANS_ID_BLOCK,
-+			 PCI_VENDOR_ID_INTEL,
-+			 VIRTIO_ID_BLOCK) },
- 
- 	{ 0 },
- };
--- 
-2.27.0
+The best idea I have for a proper fix would be to move the TX processing
+into the poll function as well, making sure that by the end of that function
+the driver is either still in napi polling mode, or both RX and TX interrupts
+are enabled and acked.
 
+         Arnd
