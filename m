@@ -2,113 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AD96396A5B
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 02:37:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2071396A6D
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 02:48:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232525AbhFAAjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 20:39:00 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:47859 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232412AbhFAAi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 20:38:59 -0400
-Received: by mail-il1-f200.google.com with SMTP id c2-20020a92d3c20000b02901d9fda18626so5270827ilh.14
-        for <netdev@vger.kernel.org>; Mon, 31 May 2021 17:37:18 -0700 (PDT)
+        id S232386AbhFAAtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 20:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232084AbhFAAty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 May 2021 20:49:54 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB31C061574
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 17:48:13 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id c10so9017879qtx.10
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 17:48:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8ZlUjDCgsuFWhxvYifxTNKmVsvLWaULGbLRVxGxQoSM=;
+        b=JWFQUzLZ7DOB7kAIScftoxqju3Z4p+Or6uJXs9XrGZGqH6t9nOVHX89/ljGzxerpwf
+         /RU6l94a6knLlW0z4QmurHjKeBy0VDazHIkc7remepSMBUF8zaeiRga1q/X4AK10WNHw
+         fnXsoYAZJz/f14OECkGioGqo/GU8m0+JrDNc86ti6EMZd0xpTm+rWog8BgUQ2RNO0rs3
+         ZOQj6DGjpSPT2DPgl1/kAsIR0DWyJ3X1Igf98dYxeYgKYOEjXgFez3IslbQUb97Ug5SI
+         Qs7gxf3C0t0c5tU9nWizEcaDVi77W6e4/lDDR+T6sn/3SQ7VRNFzo0CQD/bnU0vQQwou
+         4PlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=tLrApr8w4+dztkSbD/w9zsnd5ZWNoZ15dc1n0EYhArQ=;
-        b=kLmzi61kKE/xM0nNnau/EJTbG4/D+A274HMYDJY4aitfzJ+07GaBoyFasEy6BykSF4
-         exbqS0IEcqjfxOt9W3EvJD7nsrQ4MLEN599QuMUTSL2C/Zn0TEOd2am+RlYiD0mdbCLp
-         vgB48hXhwKqMK79mQL5cJXzKSxMnFy9YhJEygQo+JMuzNCyVigepaSS/uwSc50HxV9cw
-         38bq/eEUo2vHdQyeOymDjavz3wg7to85tURcgbmeREi0Znx+hzMwvg828/AZrWVyKrj+
-         imrJc23GJjv7KFM060Ganz2XScGz3Xg5i8pPh65m1iYT5J+i48W5pjrZayG05kx7aiDe
-         4uKQ==
-X-Gm-Message-State: AOAM5306ij8EweFwfYOz5aVVEYVOmf7AQbTFKBnD6oLSlObrwhUVzQnA
-        dvwg+evBrAqQijNDGxD+DXtePgkuBAH1QMaladrWSNhPyDPD
-X-Google-Smtp-Source: ABdhPJzSw2Chb5clU1DbTD2aFN6LSIK1Y+cmqxjo22aneyGOo5IEACVnmyCVaQ8DTmL51ApTlz33JYXtsb4ZY/AT5HM7HFZQTKgY
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8ZlUjDCgsuFWhxvYifxTNKmVsvLWaULGbLRVxGxQoSM=;
+        b=jr9A5bzomO7dyXWsTF9BOdMl//uA64caGiTZ3mGzY5rphAW11zbd56CzvH9qSZWcBO
+         8HlF7G7tnm1Zd7vcGvaVxO7HYiwAftwTH3XgPj75ffy+96E3+tCJI0GhWQORrW2L+MlM
+         a0TIqa65tYP10ozy7XSKEjx+gzO+swKdSDEZkZ0TTSVPkJHRiSdHi4mO/t/F3eJxyruj
+         5ADpKuR8CI1TAkIQxQWxI6XtUim0cuCaUW/oCDqjMzE29MMpbVbrF/h1twOn/QJ08xaY
+         IxVuHYDMPnDGynoNL2Aj0azDcNEwCp7ntWGSOn2qaIrDs0AV+oJjW3KFKwTnyfPB+LHT
+         awwQ==
+X-Gm-Message-State: AOAM531ffGWaYtMj+o/SfCC2jIpdu+Ltjhz0XgRQzRrFh7gEtDLj31Jc
+        QvywHU12ENeTkdE2jTrY08lRaTQpLRuvDnD5Eofv8UN5ZLn5BQ==
+X-Google-Smtp-Source: ABdhPJxzJBTKk6VjVfWZVlNuDmaF4bfTo4cRHTkv6Yn2tJvxoMZOP8XGalAK0tjSq/RVWpWD1MyDsUVee2/TsiSmeS0=
+X-Received: by 2002:ac8:4ccb:: with SMTP id l11mr12314288qtv.127.1622508492351;
+ Mon, 31 May 2021 17:48:12 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:13d3:: with SMTP id v19mr19771386ilj.168.1622507838482;
- Mon, 31 May 2021 17:37:18 -0700 (PDT)
-Date:   Mon, 31 May 2021 17:37:18 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005bad6f05c3a98b9c@google.com>
-Subject: [syzbot] general protection fault in cgroup_rstat_flush_locked
-From:   syzbot <syzbot+363f98e1c445bd838351@syzkaller.appspotmail.com>
-To:     cgroups@vger.kernel.org, hannes@cmpxchg.org,
-        linux-kernel@vger.kernel.org, lizefan.x@bytedance.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tj@kernel.org
+References: <20210525121507.6602-1-liuhangbin@gmail.com> <CAHmME9rYp0iO_=c_+UxvU9+UpHnnGkQVJYoikyjwav04UwZwBQ@mail.gmail.com>
+In-Reply-To: <CAHmME9rYp0iO_=c_+UxvU9+UpHnnGkQVJYoikyjwav04UwZwBQ@mail.gmail.com>
+From:   Hangbin Liu <liuhangbin@gmail.com>
+Date:   Tue, 1 Jun 2021 08:48:01 +0800
+Message-ID: <CAPwn2JTgovNOOWcPTkDgZxRFcmk5MciHMEgGio2iJajjtrpfKw@mail.gmail.com>
+Subject: Re: [PATCH net] selftests/wireguard: make sure rp_filter disabled on vethc
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, May 31, 2021 at 8:39 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> > +n1 sysctl -w net.ipv4.conf.vethc.rp_filter=0
+>
+> The VM does not ship with sysctl, and you'll notice that other changes
+> go through /proc directly. Since it's a trivial change, I'll rewrite
+> your commit.
 
-syzbot found the following issue on:
+Sorry to make this trouble. I saw other selftests also using sysctl, so I didn't
+realize some VM may not have sysctl installed.
 
-HEAD commit:    d0c0fe10 bpf: Avoid using ARRAY_SIZE on an uninitialized p..
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=13817145d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5b86a12e0d1933b5
-dashboard link: https://syzkaller.appspot.com/bug?extid=363f98e1c445bd838351
+Thanks for your fix.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+363f98e1c445bd838351@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000077: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x00000000000003b8-0x00000000000003bf]
-CPU: 1 PID: 26368 Comm: kworker/1:4 Not tainted 5.12.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: cgroup_destroy css_release_work_fn
-RIP: 0010:cgroup_rstat_cpu kernel/cgroup/rstat.c:13 [inline]
-RIP: 0010:cgroup_rstat_cpu_pop_updated kernel/cgroup/rstat.c:106 [inline]
-RIP: 0010:cgroup_rstat_flush_locked+0x182/0xcc0 kernel/cgroup/rstat.c:161
-Code: 85 f6 49 89 f4 48 89 44 24 10 75 0a e9 94 06 00 00 4c 8b 64 24 08 e8 cd f5 05 00 4d 8d bc 24 78 03 00 00 4c 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 6b 08 00 00 49 8b 9c 24 78 03 00 00 48 83 3c
-RSP: 0018:ffffc900027a7c20 EFLAGS: 00010007
-RAX: 0000000000000077 RBX: ffffe8ffffc82510 RCX: 0000000000000000
-RDX: ffff88802723d4c0 RSI: ffffffff816ed0a3 RDI: ffffe8ffffc82540
-RBP: ffff888037f5c000 R08: 0000000000000001 R09: 0000000000000003
-R10: fffff520004f4f76 R11: 0000000000000000 R12: 0000000000000046
-R13: dffffc0000000000 R14: ffff8880b9c00000 R15: 00000000000003be
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b33a2a000 CR3: 000000005e401000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- cgroup_rstat_flush+0x3a/0x50 kernel/cgroup/rstat.c:203
- css_release_work_fn+0x440/0x920 kernel/cgroup/cgroup.c:4991
- process_one_work+0x98d/0x1600 kernel/workqueue.c:2275
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
- kthread+0x3b1/0x4a0 kernel/kthread.c:313
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Modules linked in:
----[ end trace c2ed221e705dd64b ]---
-RIP: 0010:cgroup_rstat_cpu kernel/cgroup/rstat.c:13 [inline]
-RIP: 0010:cgroup_rstat_cpu_pop_updated kernel/cgroup/rstat.c:106 [inline]
-RIP: 0010:cgroup_rstat_flush_locked+0x182/0xcc0 kernel/cgroup/rstat.c:161
-Code: 85 f6 49 89 f4 48 89 44 24 10 75 0a e9 94 06 00 00 4c 8b 64 24 08 e8 cd f5 05 00 4d 8d bc 24 78 03 00 00 4c 89 f8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 6b 08 00 00 49 8b 9c 24 78 03 00 00 48 83 3c
-RSP: 0018:ffffc900027a7c20 EFLAGS: 00010007
-RAX: 0000000000000077 RBX: ffffe8ffffc82510 RCX: 0000000000000000
-RDX: ffff88802723d4c0 RSI: ffffffff816ed0a3 RDI: ffffe8ffffc82540
-RBP: ffff888037f5c000 R08: 0000000000000001 R09: 0000000000000003
-R10: fffff520004f4f76 R11: 0000000000000000 R12: 0000000000000046
-R13: dffffc0000000000 R14: ffff8880b9c00000 R15: 00000000000003be
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b33a2a000 CR3: 000000005e401000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Hangbin
