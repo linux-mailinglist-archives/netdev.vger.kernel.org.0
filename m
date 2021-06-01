@@ -2,62 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4C23974CB
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 16:00:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26D5C3974D2
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 16:01:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234192AbhFAOCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 10:02:13 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:6118 "EHLO
+        id S234116AbhFAOD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 10:03:27 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:2828 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233823AbhFAOCM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 10:02:12 -0400
-Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FvYdP5H3gzYp79;
-        Tue,  1 Jun 2021 21:57:45 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeme760-chm.china.huawei.com (10.3.19.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 1 Jun 2021 22:00:28 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] net: Return the correct errno code
-Date:   Tue, 1 Jun 2021 22:14:07 +0800
-Message-ID: <20210601141407.4131229-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S234016AbhFAOD0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 10:03:26 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FvYcY38YmzWqbv;
+        Tue,  1 Jun 2021 21:57:01 +0800 (CST)
+Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Tue, 1 Jun 2021 22:01:43 +0800
+Received: from localhost (10.174.179.215) by dggema769-chm.china.huawei.com
+ (10.1.198.211) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 1 Jun
+ 2021 22:01:42 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <xiyou.wangcong@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] hamradio: bpqether: Fix -Wunused-const-variable warning
+Date:   Tue, 1 Jun 2021 22:00:52 +0800
+Message-ID: <20210601140052.31456-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.215]
 X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
+ dggema769-chm.china.huawei.com (10.1.198.211)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When kalloc or kmemdup failed, should return ENOMEM rather than ENOBUF.
+If CONFIG_PROC_FS is n, gcc warns:
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+drivers/net/hamradio/bpqether.c:437:36:
+ warning: ‘bpq_seqops’ defined but not used [-Wunused-const-variable=]
+ static const struct seq_operations bpq_seqops = {
+                                    ^~~~~~~~~~
+Use #ifdef macro to gurad this.
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- net/ipv4/af_inet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/hamradio/bpqether.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index f17870ee558b..6608a3c475e3 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -318,7 +318,7 @@ static int inet_create(struct net *net, struct socket *sock, int protocol,
+diff --git a/drivers/net/hamradio/bpqether.c b/drivers/net/hamradio/bpqether.c
+index 1ad6085994b1..0e623c2e8b2d 100644
+--- a/drivers/net/hamradio/bpqether.c
++++ b/drivers/net/hamradio/bpqether.c
+@@ -368,7 +368,7 @@ static int bpq_close(struct net_device *dev)
  
- 	WARN_ON(!answer_prot->slab);
+ /* ------------------------------------------------------------------------ */
  
--	err = -ENOBUFS;
-+	err = -ENOMEM;
- 	sk = sk_alloc(net, PF_INET, GFP_KERNEL, answer_prot, kern);
- 	if (!sk)
- 		goto out;
+-
++#ifdef CONFIG_PROC_FS
+ /*
+  *	Proc filesystem
+  */
+@@ -440,7 +440,7 @@ static const struct seq_operations bpq_seqops = {
+ 	.stop = bpq_seq_stop,
+ 	.show = bpq_seq_show,
+ };
+-
++#endif
+ /* ------------------------------------------------------------------------ */
+ 
+ static const struct net_device_ops bpq_netdev_ops = {
 -- 
-2.25.1
+2.17.1
 
