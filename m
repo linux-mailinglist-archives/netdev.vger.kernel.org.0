@@ -2,165 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 760973972A3
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 13:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 237263972CA
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 13:49:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233764AbhFALon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 07:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44634 "EHLO
+        id S233805AbhFALuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 07:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231219AbhFALom (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 07:44:42 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F142C061574
-        for <netdev@vger.kernel.org>; Tue,  1 Jun 2021 04:43:00 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id o2-20020a05600c4fc2b029019a0a8f959dso1721113wmq.1
-        for <netdev@vger.kernel.org>; Tue, 01 Jun 2021 04:43:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=n63Q6mr5fRqA3BCadKXwD2/n1K1EdQXoIo0D+XKXpys=;
-        b=Pkb+z47Ga/gBav6436NMeWGiqty2MsQimsia28qpx+hkSlgpJIvk8xLWS+VUXiGwF3
-         twfZeX8pHsVgrk84zmLvls2BJR1fYGjhnlQMgttGCiOMQfWSHeCSfO8NkIlG6ZXyakoG
-         DgMAHT04qyAydgf/3LGsJlewpQ1gS3ci5Y+8+Fxt+0OravktC2MRwMipnlWzx+JqEqCI
-         4ax/eE51ak6Oa+YtYHS8V0bspLa3VAPt6qRm7P7qkC9B9PXrKpoPIxAHAZoQl80hBLfw
-         xZGnZVqzY5Wb3mK8aDf+HzRL1+Evd3l33KraGB89vGkHe9ec7DgDuL+1OHREzdrvcJ0c
-         SGAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=n63Q6mr5fRqA3BCadKXwD2/n1K1EdQXoIo0D+XKXpys=;
-        b=kTdOANfgTuBVZVo6zN1JD2OCmIL9LFDGXtA4F//NwOc9oS+BoqGWK0oIyIlV53itPa
-         lSt6NqYw1wUzgAbkC3wFfX8zeztmJfJ8jpRgK6e0gJwemAdkgt2uaEMhZrROPMVBDcQ2
-         fWJB8IOXbvjYjO4YTK5JlBlFkLIxDJ4AX04Mu7WwFNDqTiQk0FK8VCPZrtkWVklq5sib
-         3Aq9I7Y30I/YXeL+2bj9XmJkWhAlZxMsCs+h1RA3qV8GX8slvW5rGyHDMbab6NpBtVO6
-         ihDke4izdPVXupy824ehxzwOjq/J4nO4QYr4HUw0/6Sf45nbH0w7CU367U6GusVFbvg7
-         M4Sw==
-X-Gm-Message-State: AOAM530ZFLEAE2/e84j94r1Fhixjs0dktgKA9cDN+mGAbv2iEm16sqQo
-        liSHnrOX0MQODmcmP6znzKM=
-X-Google-Smtp-Source: ABdhPJxuj/B+KqWBCdKxpGXwCaS603CUQ7FnZH/XoYgnksBBUJJX3Iod7eXvqoJeJxvaQ6yRwR81ig==
-X-Received: by 2002:a1c:2cc3:: with SMTP id s186mr4329878wms.150.1622547778903;
-        Tue, 01 Jun 2021 04:42:58 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:c00:7413:c444:b8f3:1878? (p200300ea8f2f0c007413c444b8f31878.dip0.t-ipconnect.de. [2003:ea:8f2f:c00:7413:c444:b8f3:1878])
-        by smtp.googlemail.com with ESMTPSA id a16sm2829492wrw.62.2021.06.01.04.42.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Jun 2021 04:42:58 -0700 (PDT)
-Subject: Re: Realtek 8139 problem on 486.
-To:     Nikolai Zhubr <zhubr.2@gmail.com>, Arnd Bergmann <arnd@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>, Jeff Garzik <jgarzik@pobox.com>
-References: <60B24AC2.9050505@gmail.com>
- <ca333156-f839-9850-6e3d-696d7b725b09@gmail.com>
- <CAP8WD_bKiGLczUfRVOWY3y4TT80yhRCPmLkN7pDMhkJ5m=2Pew@mail.gmail.com>
- <60B2E0FF.4030705@gmail.com> <60B36A9A.4010806@gmail.com>
- <60B3CAF8.90902@gmail.com>
- <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com>
- <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com>
- <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com>
- <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
- <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com>
- <60B611C6.2000801@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com>
-Date:   Tue, 1 Jun 2021 13:42:47 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
+        with ESMTP id S233064AbhFALuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 07:50:51 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D89AC061574;
+        Tue,  1 Jun 2021 04:49:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=H/HM1WVJ7mnoqRbkGOWXXNo3F/vveMrIh8BwkNykNIE=; b=QQgc3cFyzWZ7FkAx+KCVEPR1y
+        xwt54wMQEr7wwSoPlSfX09YV6iuZV+BwNTUSxd31JaJKthxV6cYW4trItZftUl778oqgfUHlXLjof
+        MJvfBK+fadvitjy+7KHzoV4+o9hkyPnfAGJvqZPAfCJXVHpZth6NPYkiqhym+zzkNozkpd/QE9Mvx
+        YrYa/O3oTt1NspqU23b6JWUd+QSTev6Ekl+XDcIqXEhmrE7QYdeitvXTwmUs0/e/3iiUrI//RLcrv
+        p0hLhMDyH7HaZkPjJjNnMKCofxVNKkx3IccSPhki6fc5qF2FdJOMTE/r+gAxzN6jG1hKtdkvhy3My
+        EcanDoHbA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44562)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lo2tE-0003vr-W7; Tue, 01 Jun 2021 12:48:57 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lo2tC-0008Vi-Ao; Tue, 01 Jun 2021 12:48:54 +0100
+Date:   Tue, 1 Jun 2021 12:48:54 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        andrew@lunn.ch, hkallweit1@gmail.com, f.fainelli@gmail.com,
+        linux-imx@nxp.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/4] net: phy: realtek: add dt property to
+ disable CLKOUT clock
+Message-ID: <20210601114854.GT30436@shell.armlinux.org.uk>
+References: <20210601090408.22025-1-qiangqing.zhang@nxp.com>
+ <20210601090408.22025-3-qiangqing.zhang@nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <60B611C6.2000801@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210601090408.22025-3-qiangqing.zhang@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01.06.2021 12:53, Nikolai Zhubr wrote:
-> Hi all,
+On Tue, Jun 01, 2021 at 05:04:06PM +0800, Joakim Zhang wrote:
+> Add "rtl821x,clkout-disable" property for user to disable CLKOUT clock
+> to save PHY power.
 > 
-> 01.06.2021 10:20, Arnd Bergmann:
-> [...]
->>> What was discussed here 16 yrs ago should sound familiar to you.
->>> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg92234.html
->>> "It was an option in my BIOS PCI level/edge settings as I posted."
->>> You could check whether you have same/similar option in your BIOS
->>> and play with it.
+> Per RTL8211F guide, a PHY reset should be issued after setting these
+> bits in PHYCR2 register. After this patch, CLKOUT clock output to be
+> disabled.
 > 
-> Yes indeed, this motherboard does have such an option, and it defaulted to "Edge", which apparently is not what PCI device normally expects.
-> Changing it to "Level" made unmodified kernel 2.6.4 work fine.
+> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+>  drivers/net/phy/realtek.c | 48 ++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 47 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+> index 821e85a97367..4219c23ff2b0 100644
+> --- a/drivers/net/phy/realtek.c
+> +++ b/drivers/net/phy/realtek.c
+> @@ -8,6 +8,7 @@
+>   * Copyright (c) 2004 Freescale Semiconductor, Inc.
+>   */
+>  #include <linux/bitops.h>
+> +#include <linux/of.h>
+>  #include <linux/phy.h>
+>  #include <linux/module.h>
+>  #include <linux/delay.h>
+> @@ -27,6 +28,7 @@
+>  #define RTL821x_PAGE_SELECT			0x1f
+>  
+>  #define RTL8211F_PHYCR1				0x18
+> +#define RTL8211F_PHYCR2				0x19
+>  #define RTL8211F_INSR				0x1d
+>  
+>  #define RTL8211F_TX_DELAY			BIT(8)
+> @@ -40,6 +42,8 @@
+>  #define RTL8211E_TX_DELAY			BIT(12)
+>  #define RTL8211E_RX_DELAY			BIT(11)
+>  
+> +#define RTL8211F_CLKOUT_EN			BIT(0)
+> +
+>  #define RTL8201F_ISR				0x1e
+>  #define RTL8201F_ISR_ANERR			BIT(15)
+>  #define RTL8201F_ISR_DUPLEX			BIT(13)
+> @@ -67,10 +71,17 @@
+>  
+>  #define RTL_GENERIC_PHYID			0x001cc800
+>  
+> +/* quirks for realtek phy */
+> +#define RTL821X_CLKOUT_DISABLE_FEATURE		BIT(0)
+> +
+>  MODULE_DESCRIPTION("Realtek PHY driver");
+>  MODULE_AUTHOR("Johnson Leung");
+>  MODULE_LICENSE("GPL");
+>  
+> +struct rtl821x_priv {
+> +	u32 quirks;
+> +};
+> +
+>  static int rtl821x_read_page(struct phy_device *phydev)
+>  {
+>  	return __phy_read(phydev, RTL821x_PAGE_SELECT);
+> @@ -81,6 +92,23 @@ static int rtl821x_write_page(struct phy_device *phydev, int page)
+>  	return __phy_write(phydev, RTL821x_PAGE_SELECT, page);
+>  }
+>  
+> +static int rtl821x_probe(struct phy_device *phydev)
+> +{
+> +	struct device *dev = &phydev->mdio.dev;
+> +	struct rtl821x_priv *priv;
+> +
+> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	if (of_property_read_bool(dev->of_node, "rtl821x,clkout-disable"))
+> +		priv->quirks |= RTL821X_CLKOUT_DISABLE_FEATURE;
+> +
+> +	phydev->priv = priv;
+> +
+> +	return 0;
+> +}
+> +
+>  static int rtl8201_ack_interrupt(struct phy_device *phydev)
+>  {
+>  	int err;
+> @@ -291,6 +319,7 @@ static int rtl8211c_config_init(struct phy_device *phydev)
+>  
+>  static int rtl8211f_config_init(struct phy_device *phydev)
+>  {
+> +	struct rtl821x_priv *priv = phydev->priv;
+>  	struct device *dev = &phydev->mdio.dev;
+>  	u16 val_txdly, val_rxdly;
+>  	u16 val;
+> @@ -354,7 +383,23 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+>  			val_rxdly ? "enabled" : "disabled");
+>  	}
+>  
+> -	return 0;
+> +	if (priv->quirks & RTL821X_CLKOUT_DISABLE_FEATURE) {
+> +		ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
+> +				       RTL8211F_CLKOUT_EN, 0);
+> +		if (ret < 0) {
+> +			dev_err(&phydev->mdio.dev, "clkout disable failed\n");
 
-Great, so you have a solution for your problem, as i would expect that this
-setting also makes 8139too in newer kernels usable for you.
+You already have "dev" above, so this can be simplified to:
 
-> And 8259A.pl comfirms this, too.
-> 
-> Before:
-> # ./8259A.pl
-> irq 0: 00, edge
-> irq 1: 00, edge
-> irq 2: 00, edge
-> irq 3: 00, edge
-> irq 4: 00, edge
-> irq 5: 00, edge
-> irq 6: 00, edge
-> irq 7: 00, edge
-> irq 8: 00, edge
-> irq 9: 00, edge
-> irq 10: 00, edge
-> irq 11: 00, edge
-> irq 12: 00, edge
-> irq 13: 00, edge
-> irq 14: 00, edge
-> irq 15: 00, edge
-> 
-> After:
-> # ./8259A.pl
-> irq 0: 00, edge
-> irq 1: 00, edge
-> irq 2: 00, edge
-> irq 3: 00, edge
-> irq 4: 00, edge
-> irq 5: 00, edge
-> irq 6: 00, edge
-> irq 7: 00, edge
-> irq 8: 06, edge
-> irq 9: 06, level
-> irq 10: 06, level
-> irq 11: 06, edge
-> irq 12: 06, edge
-> irq 13: 06, edge
-> irq 14: 06, edge
-> irq 15: 06, edge
-> 
->> So it appears that the interrupt is lost if new TX events come in after the
->> status register is read, and that checking it again manages to make that
->> race harder to hit, but maybe not reliably.
-> 
-> It looks like incorrect IRQ triggering mode makes 2 or more IRQs merge into one, kind of. However, if I understand this 8139 operation logic correctly, the possible max number of signaled events in one go is limited by the number of tx/rx descriptors and can not grow beyond it while inside the interrupt handler in any case. If so, using the loop would seem not that bad, and the limit would be certainly not 20 but max(NUM_TX_DESC, CONFIG_8139_RXBUF_IDX) == 4.
-> 
->> The best idea I have for a proper fix would be to move the TX processing
->> into the poll function as well, making sure that by the end of that function
->> the driver is either still in napi polling mode, or both RX and TX interrupts
->> are enabled and acked.
-> 
-> This one is too complicated for me to implement myself, so I'll have to wait if someone does this.
-> 
-This hardware is so old that it's not very likely someone spends effort on this.
+			dev_err(dev, "clkout disable failed\n");
 
-> Alternatively, maybe it is possible to explicitely request level mode from 8259 at the driver startup?
-> 
-I have doubts that it is possible to overrule what the BIOS/ACPI communicate
-to the kernel.
+> +			return ret;
+> +		}
+> +	} else {
+> +		ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
+> +				       RTL8211F_CLKOUT_EN, RTL8211F_CLKOUT_EN);
+> +		if (ret < 0) {
+> +			dev_err(&phydev->mdio.dev, "clkout enable failed\n");
 
-> 
-> Thank you,
-> 
-> Regards,
-> Nikolai
-> 
->>
->>           Arnd
->>
-> 
+Same here.
 
+> +			return ret;
+> +		}
+> +	}
+
+Do you really need to distinguish between the enable and disable
+operation? Would the following be better?
+
+	if (priv->quirks & RTL821X_CLKOUT_DISABLE_FEATURE)
+		clkout = 0;
+	else
+		clkout = RTL8211_CLKOUT_EN;
+
+	ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
+			       RTL8211_CLKOUT_EN, clkout);
+	if (ret < 0) {
+		dev_err(dev, "clkout configuration failed: %pe\n",
+			ERR_PTR(ret));
+		return ret;
+	}
+
+Other questions:
+- Does the clock output default to enabled or disabled during kernel
+  boot without this patch? Does this state depend on the boot loader?
+- Do we really need the use of negative logic here (which depends on
+  the answer to the above question)?
+- Could other bits in the RTL8211F_PHYCR2 register also require future
+  configuration? Would it be better to store the desired PHYCR2
+  register value in "priv" rather than using "quirks". Quirks can become
+  very unweildy over time.
+
+By way of example on the last point... probe() would become:
+
+	priv->phycr2 = RTL8211_CLKOUT_EN;
+
+	if (of_property_read_bool(dev->of_node, "rtl821x,clkout-disable"))
+		priv->phycr2 &= ~RTL8211_CLKOUT_EN;
+
+and config_init():
+
+	ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
+			       RTL8211_CLKOUT_EN, priv->phycr2);
+	if (ret < 0) {
+		dev_err(dev, "clkout configuration failed: %pe\n",
+			ERR_PTR(ret));
+		return ret;
+	}
+
+Note that phycr2 would be a u16 value.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
