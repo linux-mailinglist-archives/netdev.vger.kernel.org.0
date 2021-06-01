@@ -2,91 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8129396DDF
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 09:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32FF5396DF2
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 09:31:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233056AbhFAHXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 03:23:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45092 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231928AbhFAHXg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 03:23:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 533CB61396
-        for <netdev@vger.kernel.org>; Tue,  1 Jun 2021 07:21:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622532115;
-        bh=tlEwOIYfyR+OavcAkBRzWA6HZ6XD6VhyOTfadbFLfIA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=SVjhmMnEbLbevBFCQgyX3n8kAzUtn21hYsK5pJrqb9hh/Q/8x09bGAU0RFK/bz9v9
-         7ZJEKjQnXXclmFPHqmt3g1venXcMbUxQEn5nKQJnZWAPNjUldg7zdN06sBCBX9UGVy
-         qRKUH8ohZJwIvMM5moFk0XV2oqeM4fc5LqyRIwv4fAjhuKt0A+H2b7N8xG/22oTYkt
-         DOw/MUtny8TQIsFWtovubERzMuvo46Nfx0FueuMFSk2jBM8d48KrqBMKOZeimS826S
-         s0KrsFnbkTMbkaUojXTdDEgPN/8hF30YwaT8c+ak4fINiS88UJWaZkfsrpinErARvP
-         L9iLR1HrxDnAw==
-Received: by mail-wm1-f44.google.com with SMTP id o2-20020a05600c4fc2b029019a0a8f959dso1255470wmq.1
-        for <netdev@vger.kernel.org>; Tue, 01 Jun 2021 00:21:55 -0700 (PDT)
-X-Gm-Message-State: AOAM532HUCZ06tSGHoQMDsEdaEJ6za3PNZdeTaPwJancM9ENLOd4qMGL
-        oyOL9mgQvOmvlSrbr0RCI4y4HP4sum4TM/+vbiI=
-X-Google-Smtp-Source: ABdhPJx73lIkjqqg5TsZIx7QM1gRtv+Nl8GErDobbRJkoOFdcGezOr4SMpnbZDocNxC90c0Vxzlrnqh5n41FMK14tPE=
-X-Received: by 2002:a1c:c90f:: with SMTP id f15mr3133540wmb.142.1622532113910;
- Tue, 01 Jun 2021 00:21:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <60B24AC2.9050505@gmail.com> <ca333156-f839-9850-6e3d-696d7b725b09@gmail.com>
- <CAP8WD_bKiGLczUfRVOWY3y4TT80yhRCPmLkN7pDMhkJ5m=2Pew@mail.gmail.com>
- <60B2E0FF.4030705@gmail.com> <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com>
- <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com>
- <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com>
- <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
-In-Reply-To: <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 1 Jun 2021 09:20:17 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com>
-Message-ID: <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com>
-Subject: Re: Realtek 8139 problem on 486.
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Nikolai Zhubr <zhubr.2@gmail.com>, netdev <netdev@vger.kernel.org>,
-        Jeff Garzik <jgarzik@pobox.com>
+        id S233143AbhFAHdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 03:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43480 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229984AbhFAHc7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 03:32:59 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE59CC061574;
+        Tue,  1 Jun 2021 00:31:15 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94.2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1lnyrp-000UR1-9H; Tue, 01 Jun 2021 09:31:13 +0200
+Message-ID: <3e0f8a6d02435f0bba0b47176e684e331b6a6459.camel@sipsolutions.net>
+Subject: Re: [PATCH V3 15/16] net: iosm: net driver
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     "Kumar, M Chetan" <m.chetan.kumar@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
+        linuxwwan <linuxwwan@intel.com>, Dan Williams <dcbw@redhat.com>,
+        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Tue, 01 Jun 2021 09:31:12 +0200
+In-Reply-To: <CAMZdPi9Tmz1oD3rcpg3RfrvjwWo8RuiinpmURJF6WpETyumAGg@mail.gmail.com> (sfid-20210527_133055_476133_D9F74328)
+References: <20210520140158.10132-1-m.chetan.kumar@intel.com>
+         <20210520140158.10132-16-m.chetan.kumar@intel.com>
+         <CAMZdPi-Xs00vMq-im_wHnNE5XkhXU1-mOgrNbGnExPbHYAL-rw@mail.gmail.com>
+         <90f93c17164a4d8299d17a02b1f15bfa@intel.com>
+         <CAMZdPi_VbLcbVA34Bb3uBGDsDCkN0GjP4HmHUbX95PF9skwe2Q@mail.gmail.com>
+         <c7d2dd39e82ada5aa4e4d6741865ecb1198959fe.camel@sipsolutions.net>
+         <CAMZdPi99Un=AQeUMZUWzudubr2kR6=YciefdaXxYbhebSy+yVQ@mail.gmail.com>
+         <c7b149f5f3014e02a0b94b11d957cfc73d675ad7.camel@sipsolutions.net>
+         <CAMZdPi9Tmz1oD3rcpg3RfrvjwWo8RuiinpmURJF6WpETyumAGg@mail.gmail.com>
+         (sfid-20210527_133055_476133_D9F74328)
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 1, 2021 at 12:31 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> On 01.06.2021 00:18, Nikolai Zhubr wrote:
-> > But meanwhile, I tried a dumb thing instead, and it worked!
-> > I've put back The Loop:
-> > ---------------------------
-> > +       int boguscnt = 20;
-> >
-> >         spin_lock (&tp->lock);
-> > +       do {
-> >         status = RTL_R16 (IntrStatus);
-> >
-> >         /* shared irq? */
-> > @@ -2181,6 +2183,8 @@
-> >                 if (status & TxErr)
-> >                         RTL_W16 (IntrStatus, TxErr);
-> >         }
-> > +       boguscnt--;
-> > +       } while (boguscnt > 0);
-> >   out:
-> > ---------------------------
-> > With this added, connection works fine again. Of course it is silly, but hopefully it gives a path for a real fix.
-> >
->
-> What was discussed here 16 yrs ago should sound familiar to you.
-> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg92234.html
-> "It was an option in my BIOS PCI level/edge settings as I posted."
-> You could check whether you have same/similar option in your BIOS
-> and play with it.
+Hi,
 
-So it appears that the interrupt is lost if new TX events come in after the
-status register is read, and that checking it again manages to make that
-race harder to hit, but maybe not reliably.
+> Yes, or alternatively add an optional alloc_netdev() rtnl ops, e.g. in
+> rtnl_create_link:
 
-The best idea I have for a proper fix would be to move the TX processing
-into the poll function as well, making sure that by the end of that function
-the driver is either still in napi polling mode, or both RX and TX interrupts
-are enabled and acked.
 
-         Arnd
+Yes, that works. It needs some more fiddling (we need 'data', not just
+'tb') and it cannot be called 'alloc_netdev' (that's a macro!), but
+yeah, otherwise works. I'll just call it alloc().
+
+I'll send a few updated patches in a few minutes.
+
+johannes
+
