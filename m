@@ -2,245 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 186C7396EB4
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 10:19:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA740396EC3
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 10:20:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233374AbhFAIUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 04:20:40 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:3316 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232963AbhFAIUi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 04:20:38 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FvQ121RVYz19S9G;
-        Tue,  1 Jun 2021 16:14:14 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 1 Jun 2021 16:18:55 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 1 Jun 2021
- 16:18:55 +0800
-Subject: Re: [Linuxarm] Re: [PATCH net-next 2/3] net: sched: implement
- TCQ_F_CAN_BYPASS for lockless qdisc
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Yunsheng Lin <yunshenglin0825@gmail.com>, <davem@davemloft.net>,
-        <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
-        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
-        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
-        <alobakin@pm.me>
-References: <1622170197-27370-1-git-send-email-linyunsheng@huawei.com>
- <1622170197-27370-3-git-send-email-linyunsheng@huawei.com>
- <20210528180012.676797d6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <a6a965ee-7368-d37b-9c70-bba50c67eec9@huawei.com>
- <20210528213218.2b90864c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <ee1a62da-9758-70db-abd3-c5ca2e8e0ce0@huawei.com>
- <20210529114919.4f8b1980@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <9cc9f513-7655-07df-3c74-5abe07ae8321@gmail.com>
- <20210530132111.3a974275@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <3c2fbc70-841f-d90b-ca13-1f058169be50@huawei.com>
- <3a307707-9fb5-d73a-01f9-93aaf5c7a437@huawei.com>
- <428f92d8-f4a2-13cf-8dcc-b38d48a42965@huawei.com>
- <20210531215146.5ca802a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <cf75e1f4-7972-8efa-7554-fc528c5da380@huawei.com>
-Date:   Tue, 1 Jun 2021 16:18:54 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S233364AbhFAIWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 04:22:10 -0400
+Received: from mga12.intel.com ([192.55.52.136]:52680 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233300AbhFAIWK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 04:22:10 -0400
+IronPort-SDR: 63OOVneRAB5Ao5xgi1gwFD1wSuqOmwBZgmi4UVeBE79eS/c3xMLKAmqGNEefA/3+4NJsx5GMcp
+ wZndFpkqbS0g==
+X-IronPort-AV: E=McAfee;i="6200,9189,10001"; a="183183221"
+X-IronPort-AV: E=Sophos;i="5.83,239,1616482800"; 
+   d="scan'208";a="183183221"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 01:20:17 -0700
+IronPort-SDR: 4gFtPXPkZ2YtR5X48ND2vMvAiT/6Mooc4BeqL9IwEpA/lrwQApYD00uaRhA852xoNV6vzaxIVJ
+ aHMzkmlbAFFQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,239,1616482800"; 
+   d="scan'208";a="632791218"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga006.fm.intel.com with ESMTP; 01 Jun 2021 01:20:16 -0700
+Received: from linux.intel.com (unknown [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 13453580409;
+        Tue,  1 Jun 2021 01:20:12 -0700 (PDT)
+Date:   Tue, 1 Jun 2021 16:20:09 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH v2 net-next 0/9] Convert xpcs to phylink_pcs_ops
+Message-ID: <20210601082009.GA16813@linux.intel.com>
+References: <20210601003325.1631980-1-olteanv@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210531215146.5ca802a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme708-chm.china.huawei.com (10.1.199.104) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210601003325.1631980-1-olteanv@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/6/1 12:51, Jakub Kicinski wrote:
-> On Mon, 31 May 2021 20:40:01 +0800 Yunsheng Lin wrote:
->> On 2021/5/31 9:10, Yunsheng Lin wrote:
->>> On 2021/5/31 8:40, Yunsheng Lin wrote:  
->>>> On 2021/5/31 4:21, Jakub Kicinski wrote:  
->>  [...]  >>>
->>>
->>>          CPU1                                   CPU2
->>>    qdisc_run_begin(q)                            .
->>>            .                                enqueue skb1
->>>      dequeue skb1                                .
->>>            .                                     .
->>> netdevice stopped and MISSED is clear            .
->>>            .                        nolock_qdisc_is_empty() return true
->>>      requeue skb                                 .
->>>            .                                     .
->>>            .                                     .
->>>            .                                     .
->>>   qdisc_run_end(q)                               .
->>>            .                              qdisc_run_begin(q)
->>>            .                             transmit skb2 directly
->>>            .                           transmit the requeued skb1
->>>
->>> The above sequence diagram seems more correct, it is basically about how to
->>> avoid transmitting a packet directly bypassing the requeued packet.
+On Tue, Jun 01, 2021 at 03:33:16AM +0300, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> I see, thanks! That explains the need. Perhaps we can rephrase the
-> comment? Maybe:
+> This patch series is partially tested (some code paths have been covered
+> on the NXP SJA1105) but since I don't have stmmac hardware, it would
+> still be appreciated if people from Intel could give this another run.
 > 
-> +			/* Retest nolock_qdisc_is_empty() within the protection
-> +			 * of q->seqlock to protect from racing with requeuing.
-> +			 */
-
-Yes if we still decide to preserve the nolock_qdisc_is_empty() rechecking
-under q->seqlock.
-
+> Background: the sja1105 DSA driver currently drives a Designware XPCS
+> for SGMII and 2500base-X, and it would be nice to reuse some code with
+> the xpcs module. This would also help consolidate the phylink_pcs_ops,
+> since the only other dedicated PCS driver, currently, is the lynx_pcs.
 > 
->> I had did some interesting testing to show how adjust a small number
->> of code has some notiable performance degrade.
->>
->> 1. I used below patch to remove the nolock_qdisc_is_empty() testing
->>    under q->seqlock.
->>
->> @@ -3763,17 +3763,6 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
->>         if (q->flags & TCQ_F_NOLOCK) {
->>                 if (q->flags & TCQ_F_CAN_BYPASS && nolock_qdisc_is_empty(q) &&
->>                     qdisc_run_begin(q)) {
->> -                       /* Retest nolock_qdisc_is_empty() within the protection
->> -                        * of q->seqlock to ensure qdisc is indeed empty.
->> -                        */
->> -                       if (unlikely(!nolock_qdisc_is_empty(q))) {
->> -                               rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
->> -                               __qdisc_run(q);
->> -                               qdisc_run_end(q);
->> -
->> -                               goto no_lock_out;
->> -                       }
->> -
->>                         qdisc_bstats_cpu_update(q, skb);
->>                         if (sch_direct_xmit(skb, q, dev, txq, NULL, true) &&
->>                             !nolock_qdisc_is_empty(q))
->> @@ -3786,7 +3775,6 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
->>                 rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
->>                 qdisc_run(q);
->>
->> -no_lock_out:
->>                 if (unlikely(to_free))
->>                         kfree_skb_list(to_free);
->>                 return rc;
->>
->> which has the below performance improvement:
->>
->>  threads      v1             v1 + above patch          delta
->>     1       3.21Mpps            3.20Mpps               -0.3%
->>     2       5.56Mpps            5.94Mpps               +4.9%
->>     4       5.58Mpps            5.60Mpps               +0.3%
->>     8       2.76Mpps            2.77Mpps               +0.3%
->>    16       2.23Mpps            2.23Mpps               +0.0%
->>
->> v1 = this patchset.
->>
->>
->> 2. After the above testing, it seems worthwhile to remove the
->>    nolock_qdisc_is_empty() testing under q->seqlock, so I used below
->>    patch to make sure nolock_qdisc_is_empty() always return false for
->>    netdev queue stopped case。
->>
->> --- a/net/sched/sch_generic.c
->> +++ b/net/sched/sch_generic.c
->> @@ -38,6 +38,15 @@ EXPORT_SYMBOL(default_qdisc_ops);
->>  static void qdisc_maybe_clear_missed(struct Qdisc *q,
->>                                      const struct netdev_queue *txq)
->>  {
->> +       set_bit(__QDISC_STATE_DRAINING, &q->state);
->> +
->> +       /* Make sure DRAINING is set before clearing MISSED
->> +        * to make sure nolock_qdisc_is_empty() always return
->> +        * false for aoviding transmitting a packet directly
->> +        * bypassing the requeued packet.
->> +        */
->> +       smp_mb__after_atomic();
->> +
->>         clear_bit(__QDISC_STATE_MISSED, &q->state);
->>
->>         /* Make sure the below netif_xmit_frozen_or_stopped()
->> @@ -52,8 +61,6 @@ static void qdisc_maybe_clear_missed(struct Qdisc *q,
->>          */
->>         if (!netif_xmit_frozen_or_stopped(txq))
->>                 set_bit(__QDISC_STATE_MISSED, &q->state);
->> -       else
->> -               set_bit(__QDISC_STATE_DRAINING, &q->state);
->>  }
+> Therefore, this series makes the xpcs expose the same kind of API that
+> the lynx_pcs module does. The main changes are getting rid of struct
+> mdio_xpcs_ops, being compatible with struct phylink_pcs_ops and being
+> less reliant on the phy_interface_t passed to xpcs_probe (now renamed to
+> xpcs_create).
 > 
-> But this would not be enough because we may also clear MISSING 
-> in pfifo_fast_dequeue()?
-
-For the MISSING clearing in pfifo_fast_dequeue(), it seems it
-looks like the data race described in RFC v3 too?
-
-      CPU1                 CPU2               CPU3
-qdisc_run_begin(q)          .                  .
-        .              MISSED is set           .
-  MISSED is cleared         .                  .
-    q->dequeue()            .                  .
-        .              enqueue skb1     check MISSED # true
-qdisc_run_end(q)            .                  .
-        .                   .         qdisc_run_begin(q) # true
-        .            MISSED is set      send skb2 directly
-
-
+> Vladimir Oltean (9):
+>   net: pcs: xpcs: delete shim definition for mdio_xpcs_get_ops()
+>   net: pcs: xpcs: there is only one PHY ID
+>   net: pcs: xpcs: make the checks related to the PHY interface mode
+>     stateless
+>   net: pcs: xpcs: export xpcs_validate
+>   net: pcs: xpcs: export xpcs_config_eee
+>   net: pcs: xpcs: export xpcs_probe
+>   net: pcs: xpcs: use mdiobus_c45_addr in xpcs_{read,write}
+>   net: pcs: xpcs: convert to mdio_device
+>   net: pcs: xpcs: convert to phylink_pcs_ops
 > 
->> which has the below performance data:
->>
->>  threads      v1          v1 + above two patch          delta
->>     1       3.21Mpps            3.20Mpps               -0.3%
->>     2       5.56Mpps            5.94Mpps               +4.9%
->>     4       5.58Mpps            5.02Mpps                -10%
->>     8       2.76Mpps            2.77Mpps               +0.3%
->>    16       2.23Mpps            2.23Mpps               +0.0%
->>
->> So the adjustment in qdisc_maybe_clear_missed() seems to have
->> caused about 10% performance degradation for 4 threads case.
->>
->> And the cpu topdown perf data suggested that icache missed and
->> bad Speculation play the main factor to those performance difference.
->>
->> I tried to control the above factor by removing the inline function
->> and add likely and unlikely tag for netif_xmit_frozen_or_stopped()
->> in sch_generic.c.
->>
->> And after removing the inline mark for function in sch_generic.c
->> and add likely/unlikely tag for netif_xmit_frozen_or_stopped()
->> checking in in sch_generic.c, we got notiable performance improvement
->> for 1/2 threads case(some performance improvement for ip forwarding
->> test too), but not for 4 threads case.
->>
->> So it seems we need to ignore the performance degradation for 4
->> threads case? or any idea?
-> 
-> No ideas, are the threads pinned to CPUs in some particular way?
+>  drivers/net/ethernet/stmicro/stmmac/common.h  |   3 +-
+>  drivers/net/ethernet/stmicro/stmmac/hwif.h    |  14 -
+>  .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |  12 +-
+>  .../net/ethernet/stmicro/stmmac/stmmac_main.c |  44 +--
+>  .../net/ethernet/stmicro/stmmac/stmmac_mdio.c |  47 ++-
+>  drivers/net/pcs/pcs-xpcs.c                    | 371 ++++++++++++------
+>  include/linux/pcs/pcs-xpcs.h                  |  40 +-
+>  7 files changed, 306 insertions(+), 225 deletions(-)
 
-The pktgen seems already runnig a thread for each CPU, so I do not
-need to do the pinning myself, for the 4 threads case, it runs on
-the 0~3 cpu.
+I am seeing kernel panic after applying this patch series on my Intel
+Tigerlake board:
 
-It seems more related to specific cpu implemantaion.
-
-> 
-> .
-> 
+[   12.770067] intel-eth-pci 0000:00:1e.4 enp0s30f4: FPE workqueue start
+[   12.776481] intel-eth-pci 0000:00:1e.4 enp0s30f4: configuring for inband/sgmii link mode
+[   12.784527] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[   12.791454] #PF: supervisor instruction fetch in kernel mode
+[   12.797083] #PF: error_code(0x0010) - not-present page
+[   12.802203] PGD 0 P4D 0
+[   12.804739] Oops: 0010 [#1] PREEMPT SMP NOPTI
+[   12.809080] CPU: 2 PID: 2023 Comm: connmand Tainted: G     U            5.13.0-rc3-intel-lts #73
+[   12.817813] Hardware name: Intel Corporation Tiger Lake Client Platform/TigerLake U DDR4 SODIMM RVP, BIOS TGLIFUI1.R00.3373.AF0.2009230546 09/23/2020
+[   12.831105] RIP: 0010:0x0
+[   12.833732] Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+[   12.840566] RSP: 0018:ffff9f404052bb78 EFLAGS: 00010246
+[   12.845771] RAX: 0000000000000000 RBX: ffff93e489bdda00 RCX: 0000000000000000
+[   12.852867] RDX: ffff9f404052bba0 RSI: 0000000000000002 RDI: ffff93e4891244d8
+[   12.859963] RBP: ffff9f404052bba0 R08: 0000000000000000 R09: ffff9f404052b888
+[   12.867054] R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000001
+[   12.874145] R13: ffff93e4891208c0 R14: 0000000000000006 R15: 0000000000000001
+[   12.881242] FS:  00007fd656ece7c0(0000) GS:ffff93e617f00000(0000) knlGS:0000000000000000
+[   12.889286] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   12.895000] CR2: ffffffffffffffd6 CR3: 000000010e674004 CR4: 0000000000770ee0
+[   12.902094] PKRU: 55555554
+[   12.904796] Call Trace:
+[   12.907245]  phylink_major_config+0x5e/0x1a0 [phylink]
+[   12.912368]  phylink_start+0x204/0x2c0 [phylink]
+[   12.916971]  stmmac_open+0x3d0/0x9f0 [stmmac]
+[   12.921317]  __dev_open+0xe7/0x180
+[   12.924710]  __dev_change_flags+0x174/0x1d0
+[   12.928882]  ? __thaw_task+0x40/0x40
+[   12.932453]  ? arch_stack_walk+0x9e/0xf0
+[   12.936363]  dev_change_flags+0x21/0x60
+[   12.940188]  devinet_ioctl+0x5e8/0x750
+[   12.943925]  ? common_interrupt+0xc0/0xe0
+[   12.947927]  inet_ioctl+0x190/0x1c0
+[   12.951408]  ? dev_ioctl+0x26d/0x4c0
+[   12.954972]  sock_do_ioctl+0x44/0x140
+[   12.958627]  ? alloc_empty_file+0x61/0xb0
+[   12.962628]  sock_ioctl+0x22c/0x320
+[   12.966111]  __x64_sys_ioctl+0x80/0xb0
+[   12.969852]  do_syscall_64+0x42/0x80
+[   12.973418]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   12.978446] RIP: 0033:0x7fd65741b4bb
+[   12.982015] Code: 0f 1e fa 48 8b 05 c5 69 0c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 95 69 0c 00 f7 d8 64 89 01 48
+[   13.000645] RSP: 002b:00007ffda8ca3288 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+[   13.008170] RAX: ffffffffffffffda RBX: 00005576e8ee2100 RCX: 00007fd65741b4bb
+[   13.015262] RDX: 00007ffda8ca3290 RSI: 0000000000008914 RDI: 0000000000000010
+[   13.022355] RBP: 0000000000000010 R08: 00005576e8ee2100 R09: 0000000000000000
+[   13.029447] R10: 00005576e8e8f010 R11: 0000000000000246 R12: 0000000000000000
+[   13.036539] R13: 00007ffda8ca3290 R14: 0000000000000001 R15: 00007ffda8ca39d0
+[   13.043633] Modules linked in: bluetooth ecryptfs hid_sensor_gyro_3d hid_sensor_incl_3d hid_sensor_magn_3d hid_sensor_accel_3d hid_sensor_als hid_sensor_trigger hid_sensor_iio_common hid_sensor_custom hid_sensor_hub intel_ishtp_loader intel_ishtp_hid intel_gpy ax88179_178a usbnet dwmac_intel mii x86_pkg_temp_thermal stmmac dwc3 kvm_intel pcs_xpcs mei_wdt mei_hdcp atkbd udc_core libps2 phylink kvm libphy i915 spi_pxa2xx_platform irqbypass intel_rapl_msr mei_me wdat_wdt i2c_i801 pcspkr dw_dmac dw_dmac_core intel_ish_ipc i2c_smbus mei intel_ishtp dwc3_pci tpm_crb thermal parport_pc i8042 tpm_tis parport tpm_tis_core tpm intel_pmc_core sch_fq_codel uhid fuse configfs snd_hda_intel snd_intel_dspcfg snd_intel_sdw_acpi snd_hda_codec snd_hda_core snd_pcm snd_timer snd soundcore
+[   13.111247] CR2: 0000000000000000
+[   13.114556] ---[ end trace aef3fc6d992073a6 ]---
 
