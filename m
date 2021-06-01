@@ -2,115 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D8ED397BC9
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 23:34:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F953397BCA
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 23:35:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234845AbhFAVfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 17:35:54 -0400
-Received: from mail-oi1-f177.google.com ([209.85.167.177]:43892 "EHLO
-        mail-oi1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234747AbhFAVfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 17:35:53 -0400
-Received: by mail-oi1-f177.google.com with SMTP id x196so363646oif.10;
-        Tue, 01 Jun 2021 14:34:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vCRZODBEDwRSj5Y4MjRIeKum+fRvWUZtlNREx03Eovs=;
-        b=EikFpxQuDwzOuLs58Ar1zBh/aA0jYufdhijl7W3Zv1/Q8NSIyj3sY4ZhneHEK5oNOC
-         uqBmA87361sMHtk+TPRaogwFgXdkvIHoWJYien+sJYSMpLbRyOucuYy82v1lH3NgajeL
-         T2DB9JrDBmRI42fmVxCXWRNbiLxFUWAMuOmY9wwbs5r9VNls/f1wjqyaxtJTX6ljBQWw
-         mgi+rOcxEc8Ya716AOzodCf9IplqncQId+RtkEvTof59IF2FnOkQ9vyVKEYD29Ri3jFO
-         fwKFIlJPFcYgi7lBuBgUjrBI35XWG732PCHxIc5XRilK2qg1QraG56r+jgNITljL8xPg
-         isTA==
-X-Gm-Message-State: AOAM533px1yoXsUNpyTGO4IXG/FAEag++Lko8jwhf9m7yzmTCSOg8BJi
-        trMsfu4UNQiR+rt9bqzMPYyiFwZ+bw==
-X-Google-Smtp-Source: ABdhPJynVMGbHPi+5o+/L1ae1BVEkx3m0bLmHi6nLXdMSWfSNeYbnhXRS0/x2nEI2hm/d6eVUso6WQ==
-X-Received: by 2002:aca:c488:: with SMTP id u130mr19477551oif.0.1622583250396;
-        Tue, 01 Jun 2021 14:34:10 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id c32sm3897897otu.13.2021.06.01.14.34.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Jun 2021 14:34:09 -0700 (PDT)
-Received: (nullmailer pid 1092629 invoked by uid 1000);
-        Tue, 01 Jun 2021 21:34:09 -0000
-Date:   Tue, 1 Jun 2021 16:34:09 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next] dt-bindings: net: dsa: sja1105: convert to YAML
- schema
-Message-ID: <20210601213409.GA1031105@robh.at.kernel.org>
-References: <20210531234735.1582031-1-olteanv@gmail.com>
+        id S234900AbhFAVge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 17:36:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54456 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234747AbhFAVge (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 17:36:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EC3E0613B4;
+        Tue,  1 Jun 2021 21:34:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622583292;
+        bh=kqnuJdvqpIeAot1ffooo2UK7VmfmnWmuJOhnmB7pOHE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JBz/dV0tsA2sAWPt5ApH1k3KAicOPjy88X0j4W2Xj9ZCN6k5e+JMh6fGGyjF8Xb3Y
+         euKnsRkdtTihdnJ0sGQUblOUqdsZ6TnN54gQuSstIzvPXuARMk4Hmq6N1uAxkAzVBD
+         a4UxPjQOvmIzZt7T1rJE0OxdEMlQSPODBVK/XWuPmSkqH77v3bdL0HkjbM+ObfP5rH
+         UEoenbNOS5F/cYYBy9/JE/6OKPmByrQoJYta/cHvnwv5Qb+y9NbLj0bSZa+vxNixsG
+         i9A+JHLGJdjDc3VtEufqUEe0u5HUTCqQMF1HteCrJiKTCn8z631iUHpC0P3WfOqym0
+         k8WyZWizSpnOw==
+Date:   Tue, 1 Jun 2021 14:34:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     moyufeng <moyufeng@huawei.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Parav Pandit <parav@mellanox.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "michal.lkml@markovi.net" <michal.lkml@markovi.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "lipeng (Y)" <lipeng321@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        <shenjian15@huawei.com>, "chenhao (DY)" <chenhao288@hisilicon.com>,
+        Jiaran Zhang <zhangjiaran@huawei.com>
+Subject: Re: [RFC net-next 0/8] Introducing subdev bus and devlink extension
+Message-ID: <20210601143451.4b042a94@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <7c591bad-75ed-75bc-5dac-e26bdde6e615@huawei.com>
+References: <1551418672-12822-1-git-send-email-parav@mellanox.com>
+        <20190301120358.7970f0ad@cakuba.netronome.com>
+        <VI1PR0501MB227107F2EB29C7462DEE3637D1710@VI1PR0501MB2271.eurprd05.prod.outlook.com>
+        <20190304174551.2300b7bc@cakuba.netronome.com>
+        <VI1PR0501MB22718228FC8198C068EFC455D1720@VI1PR0501MB2271.eurprd05.prod.outlook.com>
+        <76785913-b1bf-f126-a41e-14cd0f922100@huawei.com>
+        <20210531223711.19359b9a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <7c591bad-75ed-75bc-5dac-e26bdde6e615@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210531234735.1582031-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 01, 2021 at 02:47:35AM +0300, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Tue, 1 Jun 2021 15:33:09 +0800 Yunsheng Lin wrote:
+> On 2021/6/1 13:37, Jakub Kicinski wrote:
+> > On Mon, 31 May 2021 18:36:12 +0800 moyufeng wrote:  
+> >> Hi, Jiri & Jakub
+> >>
+> >>     Generally, a devlink instance is created for each PF/VF. This
+> >> facilitates the query and configuration of the settings of each
+> >> function. But if some common objects, like the health status of
+> >> the entire ASIC, the data read by those instances will be duplicate.
+> >>
+> >>     So I wonder do I just need to apply a public devlink instance for the
+> >> entire ASIC to avoid reading the same data? If so, then I can't set
+> >> parameters for each function individually. Or is there a better suggestion
+> >> to implement it?  
+> > 
+> > I don't think there is a great way to solve this today. In my mind
+> > devlink instances should be per ASIC, but I never had to solve this
+> > problem for a multi-function ASIC.   
 > 
-> The following issues exist with the device-specific sja1105,role-mac and
-> sja1105,role-phy:
+> Is there a reason why it didn't have to be solved yet?
+> Is it because the devices currently supporting devlink do not have
+> this kind of problem, like single-function ASIC or multi-function
+> ASIC without sharing common resource?
+
+I'm not 100% sure, my guess is multi-function devices supporting
+devlink are simple enough for the problem not to matter all that much.
+
+> Was there a discussion how to solved it in the past?
+
+Not really, we floated an idea of creating aliases for devlink
+instances so a single devlink instance could answer to multiple 
+bus identifiers. But nothing concrete.
+
+> > Can you assume all functions are in the same control domain? Can they
+> > trust each other?  
 > 
-> (a) the "sja1105" is not a valid vendor prefix and should probably have
->     been "nxp", but
-> (b) as per the discussion with Florian here:
->     https://lore.kernel.org/netdev/20210201214515.cx6ivvme2tlquge2@skbuf/
->     more phy-mode values similar to "revmii" can be added which denote
->     that the port is in the role of a PHY (such as "revrmii"), making
->     the sja1105,role-phy redundant. Because there are no upstream users
->     (or any users at all, to my knowledge) of these properties, they
->     could even be removed in a future commit as far as I am concerned.
-> (c) when I force-add sja1105,role-phy to a device tree for testing, the
->     patternProperties matching does not work, it results in the following
->     error:
+> "same control domain" means if it is controlled by a single host, not
+> by multi hosts, right?
 > 
-> ethernet-switch@2: ethernet-ports:port@1: 'sja1105,role-phy' does not match any of the regexes: 'pinctrl-[0-9]+'
->         From schema: Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
-
-I believe that would be from 'additionalProperties: false' under 
-"^(ethernet-)?port@[0-9]+$" in dsa.yaml. If additional properties need 
-to be allowed, then it needs to be changed to 'true'. But if the 
-properties aren't really used, just removing them would be better. But 
-maybe there's other DSA users with custom properties.
-
+> If the PF is not passed through to a vm using VFIO and other PF is still
+> in the host, then I think we can say it is controlled by a single host.
 > 
-> But what's even more interesting is that if I remove the
-> "additionalProperties: true" that dsa.yaml has, I get even more
-> validation errors coming from patternProperties not matching either,
-> from spi-controller.yaml:
+> And each PF is trusted with each other right now, at least at the driver
+> level, but not between VF.
 
-Why would you do that?
-
-> 
-> ethernet-switch@2: 'compatible', 'mdio', 'reg', 'spi-cpol', 'spi-max-frequency' do not match any of the regexes: '^(ethernet-)?ports$', 'pinctrl-[0-9]+'
-> 
-> So... it is probably broken. Rob Herring says here:
-> https://lore.kernel.org/linux-spi/20210324181037.GB3320002@robh.at.kernel.org/
-> 
->   I'm aware of the issue, but I don't have a solution for this situation.
->   It's a problem anywhere we have a parent or bus binding defining
->   properties for child nodes. For now, I'd just avoid it in the examples
->   and we'll figure out how to deal with actual dts files later.
-
-That was mainly in reference to vendor specific SPI master properties. 
-
-For 'spi-cpol', that generally shouldn't be needed. A given device 
-generally only supports 1 mode and the driver should know that. IOW, it 
-can be implied from the compatible. There's of course some exceptions.
-
-For 'spi-max-frequency', just add 'spi-max-frequency: true' (or provide 
-some constraints as to what the max is.
-
-Rob
+Right, the challenge AFAIU is how to match up multiple functions into 
+a single devlink instance, when driver has to probe them one by one.
+If there is no requirement that different functions are securely
+isolated it becomes a lot simpler (e.g. just compare device serial
+numbers).
