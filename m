@@ -2,102 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D90D396DFE
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 09:34:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8B9396E5D
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 09:56:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233248AbhFAHgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 03:36:15 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2926 "EHLO
+        id S233232AbhFAH5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 03:57:51 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3490 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233096AbhFAHgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 03:36:14 -0400
-Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FvP3q0Tpsz67H4;
-        Tue,  1 Jun 2021 15:31:35 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeme760-chm.china.huawei.com (10.3.19.106) with Microsoft SMTP Server
+        with ESMTP id S233142AbhFAH5u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 03:57:50 -0400
+Received: from dggeme761-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FvPY00Zb1zYptK;
+        Tue,  1 Jun 2021 15:53:24 +0800 (CST)
+Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
+ dggeme761-chm.china.huawei.com (10.3.19.107) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 1 Jun 2021 15:34:30 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] igb: Declare the function igb_init_nvm_params_i210 as void
-Date:   Tue, 1 Jun 2021 15:48:10 +0800
-Message-ID: <20210601074810.4079573-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+ 15.1.2176.2; Tue, 1 Jun 2021 15:56:07 +0800
+Received: from dggeme760-chm.china.huawei.com ([10.6.80.70]) by
+ dggeme760-chm.china.huawei.com ([10.6.80.70]) with mapi id 15.01.2176.012;
+ Tue, 1 Jun 2021 15:56:07 +0800
+From:   zhengyongjun <zhengyongjun3@huawei.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     "jdmason@kudzu.us" <jdmason@kudzu.us>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggbmV0LW5leHRdIG5ldDogdnhnZTogUmVtb3ZlIHVu?=
+ =?utf-8?Q?used_variable?=
+Thread-Topic: [PATCH net-next] net: vxge: Remove unused variable
+Thread-Index: AQHXVriJvWdEYw7g0E2WJNfgON0Jh6r+yX2Q
+Date:   Tue, 1 Jun 2021 07:56:07 +0000
+Message-ID: <937ae366ecb54612a05fec858a3b5418@huawei.com>
+References: <20210601074744.4079327-1-zhengyongjun3@huawei.com>
+In-Reply-To: <20210601074744.4079327-1-zhengyongjun3@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.176.64]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-variable 'ret_val' is unneeded and it's noneed to check the
-return value of function igb_init_nvm_params_i210, so
-declare it as void.
-
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/net/ethernet/intel/igb/e1000_82575.c | 2 +-
- drivers/net/ethernet/intel/igb/e1000_i210.c  | 4 +---
- drivers/net/ethernet/intel/igb/e1000_i210.h  | 2 +-
- 3 files changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igb/e1000_82575.c b/drivers/net/ethernet/intel/igb/e1000_82575.c
-index 50863fd87d53..967aa20f4cc6 100644
---- a/drivers/net/ethernet/intel/igb/e1000_82575.c
-+++ b/drivers/net/ethernet/intel/igb/e1000_82575.c
-@@ -682,7 +682,7 @@ static s32 igb_get_invariants_82575(struct e1000_hw *hw)
- 	switch (hw->mac.type) {
- 	case e1000_i210:
- 	case e1000_i211:
--		ret_val = igb_init_nvm_params_i210(hw);
-+		igb_init_nvm_params_i210(hw);
- 		break;
- 	default:
- 		break;
-diff --git a/drivers/net/ethernet/intel/igb/e1000_i210.c b/drivers/net/ethernet/intel/igb/e1000_i210.c
-index 9265901455cd..986e86ab7978 100644
---- a/drivers/net/ethernet/intel/igb/e1000_i210.c
-+++ b/drivers/net/ethernet/intel/igb/e1000_i210.c
-@@ -790,9 +790,8 @@ s32 igb_write_xmdio_reg(struct e1000_hw *hw, u16 addr, u8 dev_addr, u16 data)
-  *  igb_init_nvm_params_i210 - Init NVM func ptrs.
-  *  @hw: pointer to the HW structure
-  **/
--s32 igb_init_nvm_params_i210(struct e1000_hw *hw)
-+void igb_init_nvm_params_i210(struct e1000_hw *hw)
- {
--	s32 ret_val = 0;
- 	struct e1000_nvm_info *nvm = &hw->nvm;
- 
- 	nvm->ops.acquire = igb_acquire_nvm_i210;
-@@ -813,7 +812,6 @@ s32 igb_init_nvm_params_i210(struct e1000_hw *hw)
- 		nvm->ops.validate = NULL;
- 		nvm->ops.update   = NULL;
- 	}
--	return ret_val;
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/igb/e1000_i210.h b/drivers/net/ethernet/intel/igb/e1000_i210.h
-index 5c437fdc49ee..2a436da0be69 100644
---- a/drivers/net/ethernet/intel/igb/e1000_i210.h
-+++ b/drivers/net/ethernet/intel/igb/e1000_i210.h
-@@ -11,7 +11,7 @@ s32 igb_read_invm_version(struct e1000_hw *hw,
- 			  struct e1000_fw_version *invm_ver);
- s32 igb_read_xmdio_reg(struct e1000_hw *hw, u16 addr, u8 dev_addr, u16 *data);
- s32 igb_write_xmdio_reg(struct e1000_hw *hw, u16 addr, u8 dev_addr, u16 data);
--s32 igb_init_nvm_params_i210(struct e1000_hw *hw);
-+void igb_init_nvm_params_i210(struct e1000_hw *hw);
- bool igb_get_flash_presence_i210(struct e1000_hw *hw);
- s32 igb_pll_workaround_i210(struct e1000_hw *hw);
- s32 igb_get_cfg_done_i210(struct e1000_hw *hw);
--- 
-2.25.1
-
+VGhpcyBwYXRjaCBzaG91bGQgbWVsZCBpbnRvIHBhdGNoIEkgc2VuZCBiZWZvcmUsIHNvIHBsZWFz
+ZSBpZ25vcmUgdGhpcyBwYXRjaCwgdGhhbmsgeW91IDopDQoNCi0tLS0t6YKu5Lu25Y6f5Lu2LS0t
+LS0NCuWPkeS7tuS6ujogemhlbmd5b25nanVuIA0K5Y+R6YCB5pe26Ze0OiAyMDIx5bm0NuaciDHm
+l6UgMTU6NDgNCuaUtuS7tuS6ujogZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwub3Jn
+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQrm
+ioTpgIE6IGpkbWFzb25Aa3VkenUudXM7IHpoZW5neW9uZ2p1biA8emhlbmd5b25nanVuM0BodWF3
+ZWkuY29tPg0K5Li76aKYOiBbUEFUQ0ggbmV0LW5leHRdIG5ldDogdnhnZTogUmVtb3ZlIHVudXNl
+ZCB2YXJpYWJsZQ0KDQpSZW1vdmVzIHRoaXMgYW5ub3lpbmcgd2FybmluZzoNCg0KZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvbmV0ZXJpb24vdnhnZS92eGdlLW1haW4uYzoxNjA5OjIyOiB3YXJuaW5nOiB1
+bnVzZWQgdmFyaWFibGUg4oCYc3RhdHVz4oCZIFstV3VudXNlZC12YXJpYWJsZV0NCiAxNjA5IHwg
+IGVudW0gdnhnZV9od19zdGF0dXMgc3RhdHVzOw0KDQpTaWduZWQtb2ZmLWJ5OiBaaGVuZyBZb25n
+anVuIDx6aGVuZ3lvbmdqdW4zQGh1YXdlaS5jb20+DQotLS0NCiBkcml2ZXJzL25ldC9ldGhlcm5l
+dC9uZXRlcmlvbi92eGdlL3Z4Z2UtbWFpbi5jIHwgMSAtDQogMSBmaWxlIGNoYW5nZWQsIDEgZGVs
+ZXRpb24oLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L25ldGVyaW9uL3Z4
+Z2UvdnhnZS1tYWluLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9uZXRlcmlvbi92eGdlL3Z4Z2Ut
+bWFpbi5jDQppbmRleCAyMWJjNGQ2NjYyZTQuLjI5N2JjZTVmNjM1ZiAxMDA2NDQNCi0tLSBhL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L25ldGVyaW9uL3Z4Z2UvdnhnZS1tYWluLmMNCisrKyBiL2RyaXZl
+cnMvbmV0L2V0aGVybmV0L25ldGVyaW9uL3Z4Z2UvdnhnZS1tYWluLmMNCkBAIC0xNjA2LDcgKzE2
+MDYsNiBAQCBzdGF0aWMgdm9pZCB2eGdlX2NvbmZpZ19jaV9mb3JfdHRpX3J0aShzdHJ1Y3Qgdnhn
+ZWRldiAqdmRldikNCiANCiBzdGF0aWMgaW50IGRvX3Z4Z2VfcmVzZXQoc3RydWN0IHZ4Z2VkZXYg
+KnZkZXYsIGludCBldmVudCkgIHsNCi0JZW51bSB2eGdlX2h3X3N0YXR1cyBzdGF0dXM7DQogCWlu
+dCByZXQgPSAwLCB2cF9pZCwgaTsNCiANCiAJdnhnZV9kZWJ1Z19lbnRyeWV4aXQoVlhHRV9UUkFD
+RSwgIiVzOiVkIiwgX19mdW5jX18sIF9fTElORV9fKTsNCi0tDQoyLjI1LjENCg0K
