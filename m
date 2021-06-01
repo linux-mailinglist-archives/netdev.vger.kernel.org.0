@@ -2,64 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7275396D09
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 07:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65779396D17
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 08:00:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233184AbhFAFwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 01:52:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56956 "EHLO mail.kernel.org"
+        id S231928AbhFAGBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 02:01:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34590 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233000AbhFAFvr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 01:51:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 68372613C1;
-        Tue,  1 Jun 2021 05:50:06 +0000 (UTC)
+        id S229477AbhFAGBp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 02:01:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id D5AFC61375;
+        Tue,  1 Jun 2021 06:00:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622526606;
-        bh=FlJ3viznYg3tQPzp32cHJMDq0VgTfFhuink3pMVQpak=;
+        s=k20201202; t=1622527204;
+        bh=hRnoa3eOGnYroPPcNEfoQ0Ex7auD0Y2pFJGB/7zcF0Y=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=j9tCIW2uiXWerpJRpYzOHvPz4Ex2KdW4eTpE865S8wkehL1f+2Wb6gpJ4dodfMxEI
-         H4N5s6wPcBLHQ8utwfj/Xl/HQ3y5jTICJHXJZL0TK1nBVBpTLitO2zdNqkToZdBs6Y
-         hPmAvc3sCK/WdzFXpgJtX2FOnYS8r+F89kgavCfMO60A8ky1pDfa8klOTEwxSmaa1y
-         /mT8pSMhtybzU0ZQx9QtsZnffiqNW+4HVCyRzVCvOdUgW0Od8p4DGVOeZiUjmE0v6j
-         96YNIUt2058qGYNbvP0rWwsIGNwuaUqfDnE1IFrNvIDn5lKlIuwl6GjLWsuvp+cZWF
-         yaVGqVrHzpkTg==
+        b=QNlXjmriNm22woDVLpeh3zieKJE6Oqz/uASMREE/+b+WmBStPZrw+90o9+3PmrbTa
+         dOQHuZ8+m/sudADVWOhYUGnVsh5xQajYyD0mgX1NuKRVtQKAG+Gts19+uPIK5QqgSE
+         k7Fm4qhLY9tWGqAqJ28hNLjQpe6RbTE/mnp2HbuO0yI9zBZaIisyAv6e2Dr6OQL9dG
+         ngsWFbhhXMBCNvCbWwwxIxtibtVh3b43/lXISK92AI2AhJOQqaFK/sHBF0H03QrHRo
+         lkbhy5vLqX+WdO5+FIkRONAJSgmMbig1uMr6PymSELGsXNvo8xnCLdybOf2HtHW1Ll
+         eTtm+ewvtHN1w==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 629C560CD1;
-        Tue,  1 Jun 2021 05:50:06 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C4E6960ACA;
+        Tue,  1 Jun 2021 06:00:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] rds: Fix spelling mistakes
+Subject: Re: [PATCH net-next 0/8] net: hns3: add VLAN filter control support
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162252660640.4642.2796141808873153557.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Jun 2021 05:50:06 +0000
-References: <20210531063617.3018637-1-zhengyongjun3@huawei.com>
-In-Reply-To: <20210531063617.3018637-1-zhengyongjun3@huawei.com>
-To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Message-Id: <162252720480.8628.16568170830538460479.git-patchwork-notify@kernel.org>
+Date:   Tue, 01 Jun 2021 06:00:04 +0000
+References: <1622428725-30049-1-git-send-email-tanhuazhong@huawei.com>
+In-Reply-To: <1622428725-30049-1-git-send-email-tanhuazhong@huawei.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        santosh.shilimkar@oracle.com
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
+        huangdaode@huawei.com, linuxarm@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 31 May 2021 14:36:17 +0800 you wrote:
-> Fix some spelling mistakes in comments:
-> alloced  ==> allocated
+On Mon, 31 May 2021 10:38:37 +0800 you wrote:
+> This patchset add VLAN filter control support for HNS3 driver.
 > 
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-> ---
->  net/rds/ib_ring.c  | 2 +-
->  net/rds/tcp_recv.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+> Jian Shen (8):
+>   net: hns3: add 'QoS' support for port based VLAN configuration
+>   net: hns3: refine for hclge_push_vf_port_base_vlan_info()
+>   net: hns3: remove unnecessary updating port based VLAN
+>   net: hns3: refine function hclge_set_vf_vlan_cfg()
+>   net: hns3: add support for modify VLAN filter state
+>   net: hns3: add query basic info support for VF
+>   net: hns3: add support for VF modify VLAN filter state
+>   net: hns3: add debugfs support for vlan configuration
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next] rds: Fix spelling mistakes
-    https://git.kernel.org/netdev/net-next/c/379aecbce08f
+  - [net-next,1/8] net: hns3: add 'QoS' support for port based VLAN configuration
+    https://git.kernel.org/netdev/net-next/c/b44eb28d44a6
+  - [net-next,2/8] net: hns3: refine for hclge_push_vf_port_base_vlan_info()
+    https://git.kernel.org/netdev/net-next/c/f2dbf0ed4e0c
+  - [net-next,3/8] net: hns3: remove unnecessary updating port based VLAN
+    https://git.kernel.org/netdev/net-next/c/132023de7149
+  - [net-next,4/8] net: hns3: refine function hclge_set_vf_vlan_cfg()
+    https://git.kernel.org/netdev/net-next/c/060e9accaa74
+  - [net-next,5/8] net: hns3: add support for modify VLAN filter state
+    https://git.kernel.org/netdev/net-next/c/2ba306627f59
+  - [net-next,6/8] net: hns3: add query basic info support for VF
+    https://git.kernel.org/netdev/net-next/c/32e6d104c6fe
+  - [net-next,7/8] net: hns3: add support for VF modify VLAN filter state
+    https://git.kernel.org/netdev/net-next/c/fa6a262a2550
+  - [net-next,8/8] net: hns3: add debugfs support for vlan configuration
+    https://git.kernel.org/netdev/net-next/c/0ca821da86a5
 
 You are awesome, thank you!
 --
