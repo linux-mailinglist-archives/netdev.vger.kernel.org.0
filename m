@@ -2,115 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D08533974B6
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 15:56:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 495813974CA
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 16:00:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234163AbhFAN5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 09:57:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33438 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234119AbhFAN5g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 09:57:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0B324613AE;
-        Tue,  1 Jun 2021 13:55:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622555755;
-        bh=uDkz4YoEHcgBW7m92lJvZYICBqyo72YlqEVTWUbMiRg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZVkzo27Mj0F/+XVAb7Pw2B8W97FekTZBXxYswPbWs2QxuOu4AejG/xzX1XCBYpQie
-         vAVhvyi23fC2KHpFCB5mke3sxNhZ86Lr6Wt8zrbIR1MalzoGxQkEOGBzjKyMIIYU67
-         CJHo3AXVtRTpQGpG+gCpYxgOKAwXIkebXYJzuQtZmxYVYFoBjQv1taJ6J2IVmG/stN
-         mRrZNhYDdG7NMjiVLzjHV+7JkGpb7+Kwzbw/5rmhz4DQFPF67M/Pm9GQiVlClNoNXZ
-         YTsyvSbH9aBCKtIRlsNAV72XvP6kskT1LRbF6YdanDvszeBt0K8MQjEPL4e0S/NCT7
-         PRRI3pa8/xoFA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 78FB34011C; Tue,  1 Jun 2021 10:55:52 -0300 (-03)
-Date:   Tue, 1 Jun 2021 10:55:52 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Yu Kuai <yukuai3@huawei.com>, Song Liu <songliubraving@fb.com>
-Cc:     peterz@infradead.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, yi.zhang@huawei.com
-Subject: Re: [PATCH] perf stat: Fix error return code in bperf__load()
-Message-ID: <YLY8aKsMvBG+DB1W@kernel.org>
-References: <20210517081254.1561564-1-yukuai3@huawei.com>
- <YLY7qozcJcj8RVe+@kernel.org>
+        id S234135AbhFAOCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 10:02:04 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:2827 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233823AbhFAOCD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 10:02:03 -0400
+Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FvYZx5qM9zWnHw;
+        Tue,  1 Jun 2021 21:55:37 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ dggeme760-chm.china.huawei.com (10.3.19.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Tue, 1 Jun 2021 22:00:18 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH net-next] net: dcb: Return the correct errno code
+Date:   Tue, 1 Jun 2021 22:13:58 +0800
+Message-ID: <20210601141358.4131155-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YLY7qozcJcj8RVe+@kernel.org>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggeme760-chm.china.huawei.com (10.3.19.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Tue, Jun 01, 2021 at 10:52:42AM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Mon, May 17, 2021 at 04:12:54PM +0800, Yu Kuai escreveu:
-> > Fix to return a negative error code from the error handling
-> > case instead of 0, as done elsewhere in this function.
-> > 
-> > Reported-by: Hulk Robot <hulkci@huawei.com>
-> > Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> 
-> Applied, but I had to add Song to the CC list and also add this line:
-> 
-> Fixes: 7fac83aaf2eecc9e ("perf stat: Introduce 'bperf' to share hardware PMCs with BPF")
-> 
-> So that the stable@kernel.org folks can get this auto-collected.
-> 
-> Perhaps you guys can make Hulk do that as well? :-)
-> 
-> Thanks,
+When kalloc or kmemdup failed, should return ENOMEM rather than ENOBUF.
 
-Something else to teach Hulk:
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ net/dcb/dcbnl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-util/bpf_counter.c: In function ‘bperf__load’:
-util/bpf_counter.c:523:9: error: this ‘if’ clause does not guard... [-Werror=misleading-indentation]
-  523 |         if (evsel->bperf_leader_link_fd < 0 &&
-      |         ^~
-util/bpf_counter.c:526:17: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
-  526 |                 goto out;
-      |                 ^~~~
-cc1: all warnings being treated as errors
-
-I'm adding the missing {} for the now multiline if block.
-
-- Arnaldo
-> 
-> > ---
-> >  tools/perf/util/bpf_counter.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_counter.c
-> > index ddb52f748c8e..843b20aa6688 100644
-> > --- a/tools/perf/util/bpf_counter.c
-> > +++ b/tools/perf/util/bpf_counter.c
-> > @@ -522,6 +522,7 @@ static int bperf__load(struct evsel *evsel, struct target *target)
-> >  	evsel->bperf_leader_link_fd = bpf_link_get_fd_by_id(entry.link_id);
-> >  	if (evsel->bperf_leader_link_fd < 0 &&
-> >  	    bperf_reload_leader_program(evsel, attr_map_fd, &entry))
-> > +		err = -1;
-> >  		goto out;
-> >  
-> >  	/*
-> > @@ -550,6 +551,7 @@ static int bperf__load(struct evsel *evsel, struct target *target)
-> >  	/* Step 2: load the follower skeleton */
-> >  	evsel->follower_skel = bperf_follower_bpf__open();
-> >  	if (!evsel->follower_skel) {
-> > +		err = -1;
-> >  		pr_err("Failed to open follower skeleton\n");
-> >  		goto out;
-> >  	}
-> > -- 
-> > 2.25.4
-> > 
-> 
-> -- 
-> 
-> - Arnaldo
-
+diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
+index 653e3bc9c87b..7352ff6133c1 100644
+--- a/net/dcb/dcbnl.c
++++ b/net/dcb/dcbnl.c
+@@ -1381,7 +1381,7 @@ static int dcbnl_notify(struct net_device *dev, int event, int cmd,
+ 
+ 	skb = dcbnl_newmsg(event, cmd, portid, seq, 0, &nlh);
+ 	if (!skb)
+-		return -ENOBUFS;
++		return -ENOMEM;
+ 
+ 	if (dcbx_ver == DCB_CAP_DCBX_VER_IEEE)
+ 		err = dcbnl_ieee_fill(skb, dev);
+@@ -1781,7 +1781,7 @@ static int dcb_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	reply_skb = dcbnl_newmsg(fn->type, dcb->cmd, portid, nlh->nlmsg_seq,
+ 				 nlh->nlmsg_flags, &reply_nlh);
+ 	if (!reply_skb)
+-		return -ENOBUFS;
++		return -ENOMEM;
+ 
+ 	ret = fn->cb(netdev, nlh, nlh->nlmsg_seq, tb, reply_skb);
+ 	if (ret < 0) {
 -- 
+2.25.1
 
-- Arnaldo
