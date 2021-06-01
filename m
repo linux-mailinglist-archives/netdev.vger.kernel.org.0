@@ -2,61 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F04D3974DE
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 16:03:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C03239753C
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 16:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234275AbhFAOEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 10:04:42 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3495 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234207AbhFAOEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 10:04:40 -0400
-Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FvYhF1hqbzYs4B;
-        Tue,  1 Jun 2021 22:00:13 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeme760-chm.china.huawei.com (10.3.19.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 1 Jun 2021 22:02:55 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <dsahern@kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] vrf: Fix a typo
-Date:   Tue, 1 Jun 2021 22:16:35 +0800
-Message-ID: <20210601141635.4131513-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S234135AbhFAOTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 10:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233797AbhFAOTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 10:19:31 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800C4C061574;
+        Tue,  1 Jun 2021 07:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=pYuoXpehqLzyZ3pH+QsdnfFqkhLiBGCB8wzijudRl7I=; b=Hboa5vFvlz19kz9IvLQ269gM2
+        VQ5ISmnouMfMM1Fyj7MZfwXqcc0OAflXlHKeT4YzBBEQRa/j7zEAJ0gRQqI/xkQrWbQGBEt1Dt866
+        488ivUswZBJKDkAT82fv1nPsRymZJok+PaKwxE2/9z9DRIcu6nFr4bqsgilZEXTG725naCMYzTHc2
+        npHRsKV3i5QFKL4cJ5xqBQ65ZXGX34dlbwXf+Y3nZG68DPrXpIrrfIvuPRlcSPNRJQmoqlv8wCzgX
+        Q0VWXyEclQWHD4wzGQTlUq+y/QouMLVuzHZMLVNL6saOxLA0gDpq56IrBY/SIiSPF+2gZ1PHr2FI2
+        x/1HJKkvw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44580)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lo5DC-0004C2-Ft; Tue, 01 Jun 2021 15:17:42 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lo5D9-0000C2-0m; Tue, 01 Jun 2021 15:17:39 +0100
+Date:   Tue, 1 Jun 2021 15:17:38 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, rjui@broadcom.com, sbranden@broadcom.com,
+        bcm-kernel-feedback-list@broadcom.com, narmstrong@baylibre.com,
+        khilman@baylibre.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        opendmb@gmail.com, f.fainelli@gmail.com, jbrunet@baylibre.com,
+        martin.blumenstingl@googlemail.com
+Subject: Re: [PATCH net-next] net: mdio: Fix spelling mistakes
+Message-ID: <20210601141738.GA30436@shell.armlinux.org.uk>
+References: <20210601141859.4131776-1-zhengyongjun3@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210601141859.4131776-1-zhengyongjun3@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-possibile  ==> possible
+On Tue, Jun 01, 2021 at 10:18:59PM +0800, Zheng Yongjun wrote:
+> informations  ==> information
+> typicaly  ==> typically
+> derrive  ==> derive
+> eventhough  ==> even though
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/net/vrf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If you're doing this, then please also change "hz" to "Hz". The unit of
+frequency is the latter, not the former. Thanks.
 
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index 503e2fd7ce51..07eaef5e73c2 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -274,7 +274,7 @@ vrf_map_register_dev(struct net_device *dev, struct netlink_ext_ack *extack)
- 	int res;
- 
- 	/* we pre-allocate elements used in the spin-locked section (so that we
--	 * keep the spinlock as short as possibile).
-+	 * keep the spinlock as short as possible).
- 	 */
- 	new_me = vrf_map_elem_alloc(GFP_KERNEL);
- 	if (!new_me)
 -- 
-2.25.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
