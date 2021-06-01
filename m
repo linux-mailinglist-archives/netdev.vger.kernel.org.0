@@ -2,92 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56794396D6B
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 08:34:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9D3F396D64
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 08:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233127AbhFAGgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 02:36:18 -0400
-Received: from mga07.intel.com ([134.134.136.100]:35631 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233084AbhFAGgO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 02:36:14 -0400
-IronPort-SDR: 91KIK59/M1LRNK/3tZxQkllBvGKG+PaJ5t7AuWod82FOfOY4ccyzpbGu4bk4NR3GFKLtBa/4/P
- eiWA1gw/EfWQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10001"; a="267361150"
-X-IronPort-AV: E=Sophos;i="5.83,239,1616482800"; 
-   d="scan'208";a="267361150"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 23:34:33 -0700
-IronPort-SDR: N8QGlVauSPU46wudV08MV7CUmBMQI7zFzfF3ys80T0NGH7FiTphBHDT5eibx4HUpOrXpDYDp1T
- DrTWY73BiJZA==
-X-IronPort-AV: E=Sophos;i="5.83,239,1616482800"; 
-   d="scan'208";a="446839328"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.107])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2021 23:34:30 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V3 2/2] vDPA/ifcvf: implement doorbell mapping for ifcvf
-Date:   Tue,  1 Jun 2021 14:28:50 +0800
-Message-Id: <20210601062850.4547-3-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210601062850.4547-1-lingshan.zhu@intel.com>
-References: <20210601062850.4547-1-lingshan.zhu@intel.com>
+        id S233026AbhFAGfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 02:35:50 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:2921 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233014AbhFAGfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 02:35:47 -0400
+Received: from dggeme759-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FvMk337J0z64ZS;
+        Tue,  1 Jun 2021 14:31:07 +0800 (CST)
+Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
+ dggeme759-chm.china.huawei.com (10.3.19.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Tue, 1 Jun 2021 14:34:04 +0800
+Received: from dggeme760-chm.china.huawei.com ([10.6.80.70]) by
+ dggeme760-chm.china.huawei.com ([10.6.80.70]) with mapi id 15.01.2176.012;
+ Tue, 1 Jun 2021 14:34:04 +0800
+From:   zhengyongjun <zhengyongjun3@huawei.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "trond.myklebust@hammerspace.com" <trond.myklebust@hammerspace.com>,
+        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bfields@fieldses.org" <bfields@fieldses.org>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIIG5ldC1uZXh0XSB4cHJ0cmRtYTogRml4IHNwZWxsaW5n?=
+ =?gb2312?Q?_mistakes?=
+Thread-Topic: [PATCH net-next] xprtrdma: Fix spelling mistakes
+Thread-Index: AQHXVeVpMNGWR7lJskGFmjxjGRAR5Kr+G62AgACYXYA=
+Date:   Tue, 1 Jun 2021 06:34:04 +0000
+Message-ID: <6b737fb5440d4fe3a53a163624d9cbf8@huawei.com>
+References: <20210531063640.3018843-1-zhengyongjun3@huawei.com>
+ <20210531222719.3e742ed6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20210531222719.3e742ed6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.176.64]
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit implements doorbell mapping feature for ifcvf.
-This feature maps the notify page to userspace, to eliminate
-vmexit when kick a vq.
-
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/ifcvf/ifcvf_main.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
-
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index ab0ab5cf0f6e..d41db042612c 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -413,6 +413,26 @@ static int ifcvf_vdpa_get_vq_irq(struct vdpa_device *vdpa_dev,
- 	return vf->vring[qid].irq;
- }
- 
-+static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
-+							       u16 idx)
-+{
-+	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
-+	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-+	struct pci_dev *pdev = adapter->pdev;
-+	struct vdpa_notification_area area;
-+
-+	area.addr = vf->vring[idx].notify_pa;
-+	if (!vf->notify_off_multiplier)
-+		area.size = PAGE_SIZE;
-+	else
-+		area.size = vf->notify_off_multiplier;
-+
-+	if (area.addr % PAGE_SIZE)
-+		IFCVF_DBG(pdev, "vq %u doorbell address is not PAGE_SIZE aligned\n", idx);
-+
-+	return area;
-+}
-+
- /*
-  * IFCVF currently does't have on-chip IOMMU, so not
-  * implemented set_map()/dma_map()/dma_unmap()
-@@ -440,6 +460,7 @@ static const struct vdpa_config_ops ifc_vdpa_ops = {
- 	.get_config	= ifcvf_vdpa_get_config,
- 	.set_config	= ifcvf_vdpa_set_config,
- 	.set_config_cb  = ifcvf_vdpa_set_config_cb,
-+	.get_vq_notification = ifcvf_get_vq_notification,
- };
- 
- static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
--- 
-2.27.0
-
+U2hvdWxkIEkgcmVtb3ZlIG5ldC1uZXh0IHRhZyBhbmQgc2VuZCBwYXRjaCB2Mj8gV2FpdGluZyBm
+b3IgeW91ciBzdWdnZXN0IDopDQoNCi0tLS0t08q8/tStvP4tLS0tLQ0Kt6K8/sjLOiBKYWt1YiBL
+aWNpbnNraSBbbWFpbHRvOmt1YmFAa2VybmVsLm9yZ10gDQq3osvNyrG85DogMjAyMcTqNtTCMcjV
+IDEzOjI3DQrK1bz+yMs6IHpoZW5neW9uZ2p1biA8emhlbmd5b25nanVuM0BodWF3ZWkuY29tPg0K
+s63LzTogdHJvbmQubXlrbGVidXN0QGhhbW1lcnNwYWNlLmNvbTsgYW5uYS5zY2h1bWFrZXJAbmV0
+YXBwLmNvbTsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsgbGludXgtbmZzQHZnZXIua2VybmVsLm9yZzsg
+bmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgYmZp
+ZWxkc0BmaWVsZHNlcy5vcmc7IGNodWNrLmxldmVyQG9yYWNsZS5jb20NCtb3zOI6IFJlOiBbUEFU
+Q0ggbmV0LW5leHRdIHhwcnRyZG1hOiBGaXggc3BlbGxpbmcgbWlzdGFrZXMNCg0KT24gTW9uLCAz
+MSBNYXkgMjAyMSAxNDozNjo0MCArMDgwMCBaaGVuZyBZb25nanVuIHdyb3RlOg0KPiBGaXggc29t
+ZSBzcGVsbGluZyBtaXN0YWtlcyBpbiBjb21tZW50czoNCj4gc3VjY2VzICA9PT4gc3VjY2Vzcw0K
+PiANCj4gU2lnbmVkLW9mZi1ieTogWmhlbmcgWW9uZ2p1biA8emhlbmd5b25nanVuM0BodWF3ZWku
+Y29tPg0KDQpUaGlzIHNob3VsZCBub3QgaGF2ZSBiZWVuIHRhZ2dlZCBmb3IgbmV0LW5leHQsIGxl
+YXZpbmcgaXQgdG8gVHJvbmQuDQo=
