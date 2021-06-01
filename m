@@ -2,68 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D21B6397CC2
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 00:53:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA4F1397CD4
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 01:00:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235048AbhFAWzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 18:55:22 -0400
-Received: from mga11.intel.com ([192.55.52.93]:7004 "EHLO mga11.intel.com"
+        id S235113AbhFAXBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 19:01:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40908 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234947AbhFAWzV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 18:55:21 -0400
-IronPort-SDR: k8kKGTIQRZM4vldxgJtAXmRLvHlahr4zqseUuYf7AGDa86YjVZ54G+ydOv2loz7ys3ZWTQx0Cr
- rChinm0G7TCg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10002"; a="200645940"
-X-IronPort-AV: E=Sophos;i="5.83,241,1616482800"; 
-   d="scan'208";a="200645940"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 15:53:38 -0700
-IronPort-SDR: FvEmDQWzTVhQd/WWqFcCGAW6HmJXwMVVR8bLQvrSXfd4I0F6d/lz+Xf7/vbINV9W9Pm13zt9CE
- lb58nMB2c3fg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,241,1616482800"; 
-   d="scan'208";a="399766174"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga006.jf.intel.com with ESMTP; 01 Jun 2021 15:53:38 -0700
-Received: from linux.intel.com (unknown [10.88.229.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id BAB63580427;
-        Tue,  1 Jun 2021 15:53:35 -0700 (PDT)
-Date:   Wed, 2 Jun 2021 06:53:32 +0800
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/1] net: stmmac: enable platform specific
- safety features
-Message-ID: <20210601225332.GA28151@linux.intel.com>
-References: <20210601135235.1058841-1-vee.khee.wong@linux.intel.com>
- <YLawrTO4pkgc6tnb@lunn.ch>
+        id S234656AbhFAXBp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 19:01:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id F15E1613BC;
+        Tue,  1 Jun 2021 23:00:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622588403;
+        bh=tbqCPYrPXuGVLzNNNZFMxmyWcRmpu8AG1sQfIicFoq8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tJpyGTBZt9ZKeMnd2wlkLnKlqJVrus7LULc1RVwAEVJ/fV8y5oWZP0nMRG8gFlWzj
+         W4Ww2MYBz5hKnlj+Yk941R8cLacHGXzU5DkElWwJ8oGeN/VIbZmjoNg0Th/GoQOhJ7
+         7ZdV1PvOgYiLUH6QI764+fYi7/rnwublpxhAqC73u7Q1gkFiWWxlrXqt13HFtYVmep
+         JCJVbrD5jLxA6SPoeidotIVPwhM/HMW1VTiOAeV3I0h12OLQ6E8uf3rSnsKHCgm3J2
+         tJFy8TKMspLMcw+COSUiycPOOHiaNicfop56Yu7ewCWWjWffZGYY2dPbepLPDWYtub
+         tDFPd8S2VH3qQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E35FC60A47;
+        Tue,  1 Jun 2021 23:00:02 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YLawrTO4pkgc6tnb@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ethernet: myri10ge: Fix missing error code in
+ myri10ge_probe()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162258840292.25475.8812296337772071436.git-patchwork-notify@kernel.org>
+Date:   Tue, 01 Jun 2021 23:00:02 +0000
+References: <1622545491-18706-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <1622545491-18706-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     christopher.lee@cspi.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 12:11:57AM +0200, Andrew Lunn wrote:
-> On Tue, Jun 01, 2021 at 09:52:35PM +0800, Wong Vee Khee wrote:
-> > On Intel platforms, not all safety features are enabled on the hardware.
+Hello:
+
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Tue,  1 Jun 2021 19:04:51 +0800 you wrote:
+> The error code is missing in this code scenario, add the error code
+> '-EINVAL' to the return value 'status'.
 > 
-> Is it possible to read a register is determine what safety features
-> have been synthesised?
->
+> Eliminate the follow smatch warning:
+> 
+> drivers/net/ethernet/myricom/myri10ge/myri10ge.c:3818 myri10ge_probe()
+> warn: missing error code 'status'.
+> 
+> [...]
 
-No. The value of these registers after reset are 0x0. We need to set it
-manually.
+Here is the summary with links:
+  - ethernet: myri10ge: Fix missing error code in myri10ge_probe()
+    https://git.kernel.org/netdev/net/c/f336d0b93ae9
 
-VK
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
