@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2BC1396A7B
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 02:52:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58EF8396A7D
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 02:52:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232569AbhFAAx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 20:53:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46090 "EHLO mail.kernel.org"
+        id S232035AbhFAAyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 20:54:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46138 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232517AbhFAAxv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 May 2021 20:53:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EC7AC613AD;
-        Tue,  1 Jun 2021 00:52:08 +0000 (UTC)
+        id S232544AbhFAAxx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 May 2021 20:53:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 160AE61375;
+        Tue,  1 Jun 2021 00:52:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622508730;
-        bh=Nu/uf/ccww5gMoSX6cDd3d8bysChi7qjNX8MVEc2FMw=;
+        s=k20201202; t=1622508732;
+        bh=z6Xsa2Rq528vEA4u9yW2RDF1eAQO1alQJELR9y3xA50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eCUd4yCuYC+w4CZx7hXJJ40s3wA3Fu4IqnCQ5K+MlU+Abnpbs+Kl0XJWyWEi7di7b
-         dImId6l4WTdkcnnLlQ0nzlFFb3nXCs3bQtCEytv+pEeaObt+ovQjW9n1S4E5+l5rQR
-         lpEVnGvusmY85GTI4kSymLzWO0WNpuMv9uoV+bCxxlQDGKLnwj/bM0odvbImVvyoCu
-         78RsWCx9k5CPqdWpU36y7HQN9QzLXlC7KrrK54gpaRZ+XF20R33COWjJoOtkBuRh8H
-         dmT5CbIci4QWP4kH22VrKjZf6rTwLTdgSEijaYH8pzwb6JV4Hxs8kBnos9z4V6xHGt
-         77iG83CjR6LlQ==
+        b=bK1+vC3zS2QJytjsq4sW5LxNpoQ+drm28iJLbpsWaukxBWOFgySKkDQGSaaj+bmXr
+         zkH74Ep1aXo1XMZo2dXbwJG2P9PFtOmJ/e6US+NRXpMG7z1eAy1/9njojQdHXtPSVi
+         QWT3m9JAPyQF0PrwxuffA/Qi9ocw7S9C3i+Pk+qkhIHsqA8m8eVb5Nd3UFvrJGH37H
+         M4fwz7dZCk5w/CIHHoHLDZPRs5PZaX7OiaV6LPk8yAQREfilF0T7g3H7YaU83clx+a
+         waZT4/NEdnRNpBzOxEmsd8o2GOG/4HsidsK/LxzBb9rFZK0w11IiCxyakdYIXBUQXg
+         vdtKf1ixL2Ykw==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     linux-leds@vger.kernel.org
 Cc:     netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
@@ -33,9 +33,9 @@ Cc:     netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
         Jacek Anaszewski <jacek.anaszewski@gmail.com>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH leds v2 05/10] leds: trigger: netdev: change spinlock to mutex
-Date:   Tue,  1 Jun 2021 02:51:50 +0200
-Message-Id: <20210601005155.27997-6-kabel@kernel.org>
+Subject: [PATCH leds v2 06/10] leds: core: inform trigger that it's deactivation is due to LED removal
+Date:   Tue,  1 Jun 2021 02:51:51 +0200
+Message-Id: <20210601005155.27997-7-kabel@kernel.org>
 X-Mailer: git-send-email 2.26.3
 In-Reply-To: <20210601005155.27997-1-kabel@kernel.org>
 References: <20210601005155.27997-1-kabel@kernel.org>
@@ -46,100 +46,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using spinlocks requires that the trigger_offload() method cannot sleep.
-This can be problematic for some hardware, since access to registers may
-sleep.
+Move setting of the LED_UNREGISTERING before deactivating the trigger in
+led_classdev_unregister().
 
-We can change the spinlock to mutex because, according to Jacek:
-  register_netdevice_notifier() registers raw notifier chain,
-  whose callbacks are not called from atomic context and there are
-  no restrictions on callbacks. See include/linux/notifier.h.
+It can be useful for a LED trigger to know whether it is being
+deactivated due to the LED being unregistered. This makes it possible
+for LED drivers which implement trigger offloading to leave the LED in
+HW triggering mode when the LED is unregistered, instead of disabling
+it.
 
 Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
- drivers/leds/trigger/ledtrig-netdev.c | 14 +++++++-------
- include/linux/ledtrig-netdev.h        |  4 ++--
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ drivers/leds/led-class.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
-index 1f1b63d5a78d..341e1f174c5b 100644
---- a/drivers/leds/trigger/ledtrig-netdev.c
-+++ b/drivers/leds/trigger/ledtrig-netdev.c
-@@ -83,9 +83,9 @@ static ssize_t device_name_show(struct device *dev,
- 	struct led_netdev_data *trigger_data = led_trigger_get_drvdata(dev);
- 	ssize_t len;
+diff --git a/drivers/leds/led-class.c b/drivers/leds/led-class.c
+index 2e495ff67856..0486129a7f31 100644
+--- a/drivers/leds/led-class.c
++++ b/drivers/leds/led-class.c
+@@ -436,6 +436,8 @@ void led_classdev_unregister(struct led_classdev *led_cdev)
+ 	if (IS_ERR_OR_NULL(led_cdev->dev))
+ 		return;
  
--	spin_lock_bh(&trigger_data->lock);
-+	mutex_lock(&trigger_data->lock);
- 	len = sprintf(buf, "%s\n", trigger_data->device_name);
--	spin_unlock_bh(&trigger_data->lock);
-+	mutex_unlock(&trigger_data->lock);
++	led_cdev->flags |= LED_UNREGISTERING;
++
+ #ifdef CONFIG_LEDS_TRIGGERS
+ 	down_write(&led_cdev->trigger_lock);
+ 	if (led_cdev->trigger)
+@@ -443,8 +445,6 @@ void led_classdev_unregister(struct led_classdev *led_cdev)
+ 	up_write(&led_cdev->trigger_lock);
+ #endif
  
- 	return len;
- }
-@@ -101,7 +101,7 @@ static ssize_t device_name_store(struct device *dev,
+-	led_cdev->flags |= LED_UNREGISTERING;
+-
+ 	/* Stop blinking */
+ 	led_stop_software_blink(led_cdev);
  
- 	cancel_delayed_work_sync(&trigger_data->work);
- 
--	spin_lock_bh(&trigger_data->lock);
-+	mutex_lock(&trigger_data->lock);
- 
- 	if (trigger_data->net_dev) {
- 		dev_put(trigger_data->net_dev);
-@@ -125,7 +125,7 @@ static ssize_t device_name_store(struct device *dev,
- 	trigger_data->last_activity = 0;
- 
- 	set_baseline_state(trigger_data);
--	spin_unlock_bh(&trigger_data->lock);
-+	mutex_unlock(&trigger_data->lock);
- 
- 	return size;
- }
-@@ -299,7 +299,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
- 
- 	cancel_delayed_work_sync(&trigger_data->work);
- 
--	spin_lock_bh(&trigger_data->lock);
-+	mutex_lock(&trigger_data->lock);
- 
- 	clear_bit(NETDEV_LED_MODE_LINKUP, &trigger_data->mode);
- 	switch (evt) {
-@@ -323,7 +323,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
- 
- 	set_baseline_state(trigger_data);
- 
--	spin_unlock_bh(&trigger_data->lock);
-+	mutex_unlock(&trigger_data->lock);
- 
- 	return NOTIFY_DONE;
- }
-@@ -384,7 +384,7 @@ static int netdev_trig_activate(struct led_classdev *led_cdev)
- 	if (!trigger_data)
- 		return -ENOMEM;
- 
--	spin_lock_init(&trigger_data->lock);
-+	mutex_init(&trigger_data->lock);
- 
- 	trigger_data->notifier.notifier_call = netdev_trig_notify;
- 	trigger_data->notifier.priority = 10;
-diff --git a/include/linux/ledtrig-netdev.h b/include/linux/ledtrig-netdev.h
-index d6be039e1247..b93687ecc801 100644
---- a/include/linux/ledtrig-netdev.h
-+++ b/include/linux/ledtrig-netdev.h
-@@ -8,11 +8,11 @@
- 
- #include <linux/atomic.h>
- #include <linux/leds.h>
-+#include <linux/mutex.h>
- #include <linux/netdevice.h>
--#include <linux/spinlock.h>
- 
- struct led_netdev_data {
--	spinlock_t lock;
-+	struct mutex lock;
- 
- 	struct delayed_work work;
- 	struct notifier_block notifier;
 -- 
 2.26.3
 
