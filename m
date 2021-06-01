@@ -2,80 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE5C39777F
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 18:07:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 377D03977A9
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 18:12:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234028AbhFAQJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 12:09:00 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:49081 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233871AbhFAQI7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 12:08:59 -0400
-Received: from mail-ej1-f69.google.com ([209.85.218.69])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lo6vF-0006pL-1X
-        for netdev@vger.kernel.org; Tue, 01 Jun 2021 16:07:17 +0000
-Received: by mail-ej1-f69.google.com with SMTP id mp38-20020a1709071b26b02903df8ccd76fbso3535945ejc.23
-        for <netdev@vger.kernel.org>; Tue, 01 Jun 2021 09:07:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NG5lMIADTn8CON0lTv5ao0jAEzyt4S1tTd5JRxguyoQ=;
-        b=YpATAiR9c46zBKy8mPvIdeR7YsYKgY41xxv7SiA2Tyq2wEMXk7XNqNVMQEPGRDbgFl
-         JA+wR86reXByvzbM6Luc2AUCevaxyFaJ8meRbLT/WBc5FtRZa60e9N6C2RtiE4yC62WM
-         QQ9YlwP9yqszksik1V+QlpZ6sn1rReFfZSKxJ4PFOBDflRfCnktvaz91t5qGIxgQ1CH+
-         cz96EXHcNyjYoGquFXrdXO7xrhSIC7nmF3aBfFZ1u3OWZuBfPqKsa7gxq+07UNoZ1X91
-         SubFbIpTyIs1yFFAXIwzWCYzLx4Uw7GCB5YKCUjd5li2AkLQ4Yl6/7cwX546t/EmEaVD
-         kk/w==
-X-Gm-Message-State: AOAM5309IavTQWGPGXzyQXzlRV3ihYLuJfBdqp1gr0igLp1R1/Slio9+
-        62r5OGJ9n5zuNFEsxauiF3ObSQigL+cHi/bHbhIDFHC1v/EV4zhyHbZiIdLZSWk3EEkhosqYKIU
-        oXZXSmiaTJcKJU80gAUONuI42twZ64dARow==
-X-Received: by 2002:aa7:c359:: with SMTP id j25mr32834983edr.171.1622563636773;
-        Tue, 01 Jun 2021 09:07:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxXuDJan1liufQhFoz7cUP5EJTQ5z9AdgUXI1Nfs/cIJjXy6zEGa76y2xp/KLXolqsq/Wozgw==
-X-Received: by 2002:aa7:c359:: with SMTP id j25mr32834972edr.171.1622563636677;
-        Tue, 01 Jun 2021 09:07:16 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-185-9.adslplus.ch. [188.155.185.9])
-        by smtp.gmail.com with ESMTPSA id dk12sm3382668ejb.84.2021.06.01.09.07.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Jun 2021 09:07:16 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] nfc: mrvl: remove useless "continue" at end of loop
-Date:   Tue,  1 Jun 2021 18:07:13 +0200
-Message-Id: <20210601160713.312622-1-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.27.0
+        id S234295AbhFAQNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 12:13:48 -0400
+Received: from mga11.intel.com ([192.55.52.93]:40749 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230523AbhFAQNp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 12:13:45 -0400
+IronPort-SDR: 6Dkv8BuOKeY+L7xXcEHmzPTLyKWGWDZixwFkq9yD2vweJlIYLn6oQPK8dNSfT9EL/8mStwBcrJ
+ oD1Tl+0XTZhQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,10002"; a="200564663"
+X-IronPort-AV: E=Sophos;i="5.83,240,1616482800"; 
+   d="scan'208";a="200564663"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 09:10:50 -0700
+IronPort-SDR: p6iGhjR6RZGIaThSJIMsrDMkBC2yTJlyRQMHAQQu9Ss7eIs9YVt2ec8zXDcXUzwZchHJzXPSuv
+ K1tCePzPVo4Q==
+X-IronPort-AV: E=Sophos;i="5.83,240,1616482800"; 
+   d="scan'208";a="549777277"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2021 09:10:45 -0700
+Received: from andy by smile with local (Exim 4.94)
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1lo6yX-00GTkz-TQ; Tue, 01 Jun 2021 19:10:41 +0300
+Date:   Tue, 1 Jun 2021 19:10:41 +0300
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Justin He <Justin.He@arm.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>
+Subject: Re: [PATCH RFCv2 2/3] lib/vsprintf.c: make %pD print full path for
+ file
+Message-ID: <YLZcAesVG1SYL5fp@smile.fi.intel.com>
+References: <YLDpSnV9XBUJq5RU@casper.infradead.org>
+ <AM6PR08MB437691E7314C6B774EFED4BDF7229@AM6PR08MB4376.eurprd08.prod.outlook.com>
+ <YLEDwFCPcFx+qeul@casper.infradead.org>
+ <AM6PR08MB437615DB6A6DEC33223A3138F7229@AM6PR08MB4376.eurprd08.prod.outlook.com>
+ <YLEKqGkm8bX6LZfP@casper.infradead.org>
+ <AM6PR08MB43764764B52AAC7F05B71056F73E9@AM6PR08MB4376.eurprd08.prod.outlook.com>
+ <YLZSgZIcWyYTmqOT@casper.infradead.org>
+ <CAHp75VfYgEtJeiVp8b10Va54QShyg4DmWeufuB_WGC8C2SE2mQ@mail.gmail.com>
+ <YLZVwFh9MZJR3amM@casper.infradead.org>
+ <YLZX9oicn8u4ZVCl@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YLZX9oicn8u4ZVCl@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "continue" statement at the end of a for loop does not have an
-effect.
+On Tue, Jun 01, 2021 at 06:53:26PM +0300, Andy Shevchenko wrote:
+> On Tue, Jun 01, 2021 at 04:44:00PM +0100, Matthew Wilcox wrote:
+> > On Tue, Jun 01, 2021 at 06:36:41PM +0300, Andy Shevchenko wrote:
+> > > On Tue, Jun 1, 2021 at 6:32 PM Matthew Wilcox <willy@infradead.org> wrote:
+> > > > On Tue, Jun 01, 2021 at 02:42:15PM +0000, Justin He wrote:
+> > > 
+> > > ...
+> > > 
+> > > > Just don't put anything
+> > > > in the buffer if the user didn't supply enough space.  As long as you
+> > > > get the return value right, they know the string is bad (or they don't
+> > > > care if the string is bad)
+> > > 
+> > > It might be that I'm out of context here, but printf() functionality
+> > > in the kernel (vsprintf() if being precise)  and its users consider
+> > > that it should fill buffer up to the end of whatever space is
+> > > available.
+> > 
+> > Do they though?  What use is it to specify a small buffer, print a
+> > large filename into it and then use that buffer, knowing that it wasn't
+> > big enough?  That would help decide whether we should print the
+> > start or the end of the filename.
+> > 
+> > Remember, we're going for usefulness here, not abiding by the letter of
+> > the standard under all circumstances, no matter the cost.  At least
+> > partially because we're far outside the standard here; POSIX does
+> > not specify what %pD does.
+> > 
+> > "The argument shall be a pointer to void. The value of the
+> > pointer is converted to a sequence of printable characters, in an
+> > implementation-defined manner."
+> 
+> All nice words, but don't forget kasprintf() or other usages like this.
+> For the same input we have to have the same result independently on the room in
+> the buffer.
+> 
+> So, if I print "Hello, World" I should always get it, not "Monkey's Paw".
+> I.o.w.
+> 
+>  snprintf(10) ==> "Hello, Wor"
+>  snprintf(5)  ==> "Hello"
+>  snprintf(2)  !=> "Mo"
+>  snprintf(1)  !=> "M"
+>  snprintf(1)  ==> "H"
+> 
+> Inconsistency here is really not what we want.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/nfc/nfcmrvl/usb.c | 1 -
- 1 file changed, 1 deletion(-)
+I have to add that in light of the topic those characters should be counted
+from the end of the filename. So, we will give user as much as possible of useful
+information. I.o.w. always print the last part of filename up to the buffer
+size or if the filename is shorter than buffer we will have it in full.
 
-diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
-index bcd563cb556c..433bdc37ba91 100644
---- a/drivers/nfc/nfcmrvl/usb.c
-+++ b/drivers/nfc/nfcmrvl/usb.c
-@@ -325,7 +325,6 @@ static int nfcmrvl_probe(struct usb_interface *intf,
- 		if (!drv_data->bulk_rx_ep &&
- 		    usb_endpoint_is_bulk_in(ep_desc)) {
- 			drv_data->bulk_rx_ep = ep_desc;
--			continue;
- 		}
- 	}
- 
 -- 
-2.27.0
+With Best Regards,
+Andy Shevchenko
+
 
