@@ -2,243 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78F3E396C85
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 06:52:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A33F1396C93
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 07:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232839AbhFAExj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 00:53:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38754 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229477AbhFAEx3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 00:53:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8C51861003;
-        Tue,  1 Jun 2021 04:51:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622523108;
-        bh=zbhAZ5uRzbyUXrwLYT5OmvYg1ARvAESaL9haVdymp7M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Vna5BIvy4FXZPNCyHM133ndFjDqf/tqlanbNXpK9URqQoahBchrt3egQX6mwxBjzy
-         1mDuvFqPUBM3vEkwQyNH8t5Xix9fO+epsU2L4e8PV8PR5LkTOIqot54VIwCPOb5QSP
-         Og8NDVy0/yqOcp9XPvO9MRiwD4pTPjz4+yqtznfRW9ROF+HcLePIhO4dTYx2PsF2Ha
-         bSMsc/ah1pho5GFFJHCUrUY4VoZoGTwq8TL5qQ2NIbH92OaQEwms/zzovyMa5Zk3s1
-         OgzExfWoScbv0eZIUIvH2iDYQotgutyUOOiFLUmDoarDAGmSWp7mUelCTPgEIkXFlA
-         /CleF295e+3kQ==
-Date:   Mon, 31 May 2021 21:51:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Yunsheng Lin <yunshenglin0825@gmail.com>, <davem@davemloft.net>,
-        <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
-        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
-        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
-        <alobakin@pm.me>
-Subject: Re: [Linuxarm] Re: [PATCH net-next 2/3] net: sched: implement
- TCQ_F_CAN_BYPASS for lockless qdisc
-Message-ID: <20210531215146.5ca802a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <428f92d8-f4a2-13cf-8dcc-b38d48a42965@huawei.com>
-References: <1622170197-27370-1-git-send-email-linyunsheng@huawei.com>
-        <1622170197-27370-3-git-send-email-linyunsheng@huawei.com>
-        <20210528180012.676797d6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <a6a965ee-7368-d37b-9c70-bba50c67eec9@huawei.com>
-        <20210528213218.2b90864c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <ee1a62da-9758-70db-abd3-c5ca2e8e0ce0@huawei.com>
-        <20210529114919.4f8b1980@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <9cc9f513-7655-07df-3c74-5abe07ae8321@gmail.com>
-        <20210530132111.3a974275@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <3c2fbc70-841f-d90b-ca13-1f058169be50@huawei.com>
-        <3a307707-9fb5-d73a-01f9-93aaf5c7a437@huawei.com>
-        <428f92d8-f4a2-13cf-8dcc-b38d48a42965@huawei.com>
+        id S232776AbhFAFB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 01:01:56 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:46001 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230329AbhFAFBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 01:01:51 -0400
+Received: by mail-il1-f199.google.com with SMTP id s18-20020a92cbd20000b02901bb78581beaso9312503ilq.12
+        for <netdev@vger.kernel.org>; Mon, 31 May 2021 22:00:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=HZoCrhifvFqebweO5oM8sTQXrnYAq0UL7ZIrots2vSc=;
+        b=oo+o2ZkYVgFfj0vliMZuet82zVIPdJ44xFWnJOjGUmCTedMbiB4IdXCDawoajeu+bY
+         KrP6aSmHE6sQWjaALVXNXjfyoRhuUUbsSJAqor4zjePkWkzU1H+I9gKcONBGymHAxwC9
+         ue5F+Kj2YwtG3mIj9f+pLcWe/R4+1DldaU1YzVnr5z2RGA2Ca8AUnq3wFmeeiC5amDoO
+         UqOVOH6Amu/HnB2icsU3+q+mRVzkcZzq7r+plVq4JbGoKvOtSi7uyS7wtnJ9zeQa8pjP
+         IhY9DdN8V+gFfUngolfa5sQGVOpKg/ip04H31a6BCzmF5tMlWIAnNBWlSFDe9Y04SMQ1
+         E0kw==
+X-Gm-Message-State: AOAM532w0DUb9QggkXErXCjRxha6+ujRUar6j3C+mK9gM6lSi1gnEFoh
+        6aYUiDcuwcTBKrFPuWtYmOsCBSqZJsu0cqIKmyy0qS6rEZao
+X-Google-Smtp-Source: ABdhPJyDPqVeQwFPYxvwDFNm5lVzsEmrtB9fOyxrUNzo2mPUK0UzLNL7BZ0jpoGpdR7H0zY1Wl5YoHHlpd3CmiPaYpmOLCQaOLqA
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a92:d201:: with SMTP id y1mr19795884ily.103.1622523610124;
+ Mon, 31 May 2021 22:00:10 -0700 (PDT)
+Date:   Mon, 31 May 2021 22:00:10 -0700
+In-Reply-To: <000000000000f32b3c05958ed0eb@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006bd5ff05c3ad37da@google.com>
+Subject: Re: [syzbot] INFO: task hung in register_netdevice_notifier (2)
+From:   syzbot <syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com>
+To:     a@unstable.cc, ast@kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
+        bpf@vger.kernel.org, brouer@redhat.com, daniel@iogearbox.net,
+        davem@davemloft.net, hawk@kernel.org, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com, kafai@fb.com, kuba@kernel.org,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, mkl@pengutronix.de,
+        netdev@vger.kernel.org, socketcan@hartkopp.net,
+        songliubraving@fb.com, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com, xdp-newbies@vger.kernel.org,
+        yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 31 May 2021 20:40:01 +0800 Yunsheng Lin wrote:
-> On 2021/5/31 9:10, Yunsheng Lin wrote:
-> > On 2021/5/31 8:40, Yunsheng Lin wrote: =20
-> >> On 2021/5/31 4:21, Jakub Kicinski wrote: =20
->  [...] =20
->  [...] =20
->  [...] =20
->  [...] =20
->  [...] =20
->  [...] =20
->  [...] =20
-> >>
-> >> When nolock_qdisc_is_empty() is not re-checking under q->seqlock, we
-> >> may have:
-> >>
-> >>
-> >>         CPU1                                   CPU2
-> >>   qdisc_run_begin(q)                            .
-> >>           .                                enqueue skb1
-> >> deuqueue skb1 and clear MISSED                  .
-> >>           .                        nolock_qdisc_is_empty() return true
-> >>     requeue skb                                 .
-> >>    q->enqueue()                                 .
-> >>     set MISSED                                  .
-> >>         .                                       .
-> >>  qdisc_run_end(q)                               .
-> >>         .                              qdisc_run_begin(q)
-> >>         .                             transmit skb2 directly
-> >>         .                           transmit the requeued skb1
-> >>
-> >> The problem here is that skb1 and skb2  are from the same CPU, which
-> >> means they are likely from the same flow, so we need to avoid this,
-> >> right? =20
-> >=20
-> >=20
-> >          CPU1                                   CPU2
-> >    qdisc_run_begin(q)                            .
-> >            .                                enqueue skb1
-> >      dequeue skb1                                .
-> >            .                                     .
-> > netdevice stopped and MISSED is clear            .
-> >            .                        nolock_qdisc_is_empty() return true
-> >      requeue skb                                 .
-> >            .                                     .
-> >            .                                     .
-> >            .                                     .
-> >   qdisc_run_end(q)                               .
-> >            .                              qdisc_run_begin(q)
-> >            .                             transmit skb2 directly
-> >            .                           transmit the requeued skb1
-> >=20
-> > The above sequence diagram seems more correct, it is basically about ho=
-w to
-> > avoid transmitting a packet directly bypassing the requeued packet.
+syzbot has bisected this issue to:
 
-I see, thanks! That explains the need. Perhaps we can rephrase the
-comment? Maybe:
+commit 6bf071bf09d4b2ff3ee8783531e2ce814f0870cb
+Author: Jesper Dangaard Brouer <brouer@redhat.com>
+Date:   Tue Jun 18 13:05:27 2019 +0000
 
-+			/* Retest nolock_qdisc_is_empty() within the protection
-+			 * of q->seqlock to protect from racing with requeuing.
-+			 */
+    xdp: page_pool related fix to cpumap
 
-> I had did some interesting testing to show how adjust a small number
-> of code has some notiable performance degrade.
->=20
-> 1. I used below patch to remove the nolock_qdisc_is_empty() testing
->    under q->seqlock.
->=20
-> @@ -3763,17 +3763,6 @@ static inline int __dev_xmit_skb(struct sk_buff *s=
-kb, struct Qdisc *q,
->         if (q->flags & TCQ_F_NOLOCK) {
->                 if (q->flags & TCQ_F_CAN_BYPASS && nolock_qdisc_is_empty(=
-q) &&
->                     qdisc_run_begin(q)) {
-> -                       /* Retest nolock_qdisc_is_empty() within the prot=
-ection
-> -                        * of q->seqlock to ensure qdisc is indeed empty.
-> -                        */
-> -                       if (unlikely(!nolock_qdisc_is_empty(q))) {
-> -                               rc =3D q->enqueue(skb, q, &to_free) & NET=
-_XMIT_MASK;
-> -                               __qdisc_run(q);
-> -                               qdisc_run_end(q);
-> -
-> -                               goto no_lock_out;
-> -                       }
-> -
->                         qdisc_bstats_cpu_update(q, skb);
->                         if (sch_direct_xmit(skb, q, dev, txq, NULL, true)=
- &&
->                             !nolock_qdisc_is_empty(q))
-> @@ -3786,7 +3775,6 @@ static inline int __dev_xmit_skb(struct sk_buff *sk=
-b, struct Qdisc *q,
->                 rc =3D q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
->                 qdisc_run(q);
->=20
-> -no_lock_out:
->                 if (unlikely(to_free))
->                         kfree_skb_list(to_free);
->                 return rc;
->=20
-> which has the below performance improvement:
->=20
->  threads      v1             v1 + above patch          delta
->     1       3.21Mpps            3.20Mpps               -0.3%
->     2       5.56Mpps            5.94Mpps               +4.9%
->     4       5.58Mpps            5.60Mpps               +0.3%
->     8       2.76Mpps            2.77Mpps               +0.3%
->    16       2.23Mpps            2.23Mpps               +0.0%
->=20
-> v1 =3D this patchset.
->=20
->=20
-> 2. After the above testing, it seems worthwhile to remove the
->    nolock_qdisc_is_empty() testing under q->seqlock, so I used below
->    patch to make sure nolock_qdisc_is_empty() always return false for
->    netdev queue stopped case=E3=80=82
->=20
-> --- a/net/sched/sch_generic.c
-> +++ b/net/sched/sch_generic.c
-> @@ -38,6 +38,15 @@ EXPORT_SYMBOL(default_qdisc_ops);
->  static void qdisc_maybe_clear_missed(struct Qdisc *q,
->                                      const struct netdev_queue *txq)
->  {
-> +       set_bit(__QDISC_STATE_DRAINING, &q->state);
-> +
-> +       /* Make sure DRAINING is set before clearing MISSED
-> +        * to make sure nolock_qdisc_is_empty() always return
-> +        * false for aoviding transmitting a packet directly
-> +        * bypassing the requeued packet.
-> +        */
-> +       smp_mb__after_atomic();
-> +
->         clear_bit(__QDISC_STATE_MISSED, &q->state);
->=20
->         /* Make sure the below netif_xmit_frozen_or_stopped()
-> @@ -52,8 +61,6 @@ static void qdisc_maybe_clear_missed(struct Qdisc *q,
->          */
->         if (!netif_xmit_frozen_or_stopped(txq))
->                 set_bit(__QDISC_STATE_MISSED, &q->state);
-> -       else
-> -               set_bit(__QDISC_STATE_DRAINING, &q->state);
->  }
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1397c4a7d00000
+start commit:   7ac3a1c1 Merge tag 'mtd/fixes-for-5.13-rc4' of git://git.k..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1057c4a7d00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1797c4a7d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=266cda122a0b56c
+dashboard link: https://syzkaller.appspot.com/bug?extid=355f8edb2ff45d5f95fa
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16cc630fd00000
 
-But this would not be enough because we may also clear MISSING=20
-in pfifo_fast_dequeue()?
+Reported-by: syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com
+Fixes: 6bf071bf09d4 ("xdp: page_pool related fix to cpumap")
 
-> which has the below performance data:
->=20
->  threads      v1          v1 + above two patch          delta
->     1       3.21Mpps            3.20Mpps               -0.3%
->     2       5.56Mpps            5.94Mpps               +4.9%
->     4       5.58Mpps            5.02Mpps                -10%
->     8       2.76Mpps            2.77Mpps               +0.3%
->    16       2.23Mpps            2.23Mpps               +0.0%
->=20
-> So the adjustment in qdisc_maybe_clear_missed() seems to have
-> caused about 10% performance degradation for 4 threads case.
->=20
-> And the cpu topdown perf data suggested that icache missed and
-> bad Speculation play the main factor to those performance difference.
->=20
-> I tried to control the above factor by removing the inline function
-> and add likely and unlikely tag for netif_xmit_frozen_or_stopped()
-> in sch_generic.c.
->=20
-> And after removing the inline mark for function in sch_generic.c
-> and add likely/unlikely tag for netif_xmit_frozen_or_stopped()
-> checking in in sch_generic.c, we got notiable performance improvement
-> for 1/2 threads case(some performance improvement for ip forwarding
-> test too), but not for 4 threads case.
->=20
-> So it seems we need to ignore the performance degradation for 4
-> threads case? or any idea?
-
-No ideas, are the threads pinned to CPUs in some particular way?
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
