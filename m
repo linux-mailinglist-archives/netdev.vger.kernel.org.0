@@ -2,41 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70DA3396C19
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 06:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DEF5396C1B
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 06:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232787AbhFAEX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 00:23:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44450 "EHLO mail.kernel.org"
+        id S229654AbhFAEZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 00:25:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46252 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230212AbhFAEX1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 00:23:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 506E961263;
-        Tue,  1 Jun 2021 04:21:46 +0000 (UTC)
+        id S229460AbhFAEZn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 00:25:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ADB70611BE;
+        Tue,  1 Jun 2021 04:24:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622521306;
-        bh=nb8/767fE3N+SWGFQVvNWNF7q7EncmjPK2C39GKZ+3I=;
+        s=k20201202; t=1622521443;
+        bh=jp50rspU3gtjJ7KHtdKj3CbWgVc/CR9O+EemLeRSjwk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NftkSjNca7kif7hWbCDBM3vDXg0mm5xW+lzpGIEs6zNB+9Y2fmGjD4DD05GD/Nbe3
-         dslTTtN53EUNeaIdZvhP71fsjQAPucExsjQpYxyGf5D5l/j1aAUHbAoxbWYXFVkRxa
-         4Y1o+fWxGhdiPdLOjdEB90nQZw0L343l25kgpgG1wiWcNEY4iT8/l/cs4WM1N37Bp1
-         OlwtYeIggL06hJCT2jgpncrRC3fbJCX95qCINGQKPhDV8I1/J6LluBso7Y2k99BRHY
-         mPHRede5sks8r30giReg4M/zi7N9kOTVSwzAm3a3Kq3pl7F5UX8b/XuEi1dCX56gJC
-         YO2QTgsvskAAQ==
-Date:   Mon, 31 May 2021 21:21:45 -0700
+        b=pCLKjBRnj7z38JrxgbOcuhLQE1sczVq4HpaidfjIlJZQ0XKPNzQo5/+RUIrjeERKG
+         mmecV03uU1gdaVB5j27czvQ0hUytHBAvFih1g9crPq/QKNn+b3cdZPD4LIf2nR41va
+         hD3bgmIE0zCAXtLcth9olB2XERd8Iyw0jRlbt7Zq2uwQJ0tAHYjsYSaFy442UeopC3
+         lWpKkE3mJZFQLePge1dTdpyiTA5dZI2RTXYo/o+HPLSNm9K5vTSpKjFxAeqDFB1pMG
+         pnaJYFl/yo6QUE0D595I3axS4BLAbaVuTU6F7uSCfoOAUwiasrL+EY5O1Lly3ONofg
+         8grfT5ZnF3mmQ==
+Date:   Mon, 31 May 2021 21:24:01 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, tom@herbertland.com
-Subject: Re: [PATCH net-next v4 2/5] ipv6: ioam: Data plane support for
- Pre-allocated Trace
-Message-ID: <20210531212145.359f1fed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <915310398.35293280.1622461417600.JavaMail.zimbra@uliege.be>
-References: <20210527151652.16074-1-justin.iurman@uliege.be>
-        <20210527151652.16074-3-justin.iurman@uliege.be>
-        <20210529140555.3536909f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <1678535209.34108899.1622370998279.JavaMail.zimbra@uliege.be>
-        <20210530130212.327a0a0c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <915310398.35293280.1622461417600.JavaMail.zimbra@uliege.be>
+To:     Karthik Sundaravel <ksundara@redhat.com>
+Cc:     Parav Pandit <parav@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "karthik.sundaravel@gmail.com" <karthik.sundaravel@gmail.com>,
+        Christophe Fontaine <cfontain@redhat.com>,
+        Veda Barrenkala <vbarrenk@redhat.com>,
+        Vijay Chundury <vchundur@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH 0/1] net-next: Port Mirroring support for SR-IOV
+Message-ID: <20210531212401.205c6d06@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAPh+B4Jhpwzcv=hyufYRhNfH+=DqqJkMGaJVMWswVAk9iZ_gKw@mail.gmail.com>
+References: <ksundara@redhat.com>
+        <20210527103318.801175-1-ksundara@redhat.com>
+        <BY5PR12MB43223DDB8011260DD65B9405DC239@BY5PR12MB4322.namprd12.prod.outlook.com>
+        <CAPh+B4Jhpwzcv=hyufYRhNfH+=DqqJkMGaJVMWswVAk9iZ_gKw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,24 +48,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 31 May 2021 13:43:37 +0200 (CEST) Justin Iurman wrote:
-> > BTW the ASCII art in patch 1 looks like node data is filled in in order  
-> 
-> I agree, this one could be quite confusing without the related
-> paragraph in the draft that explains it. Two possibilities here: (a)
-> add the paragraph in the patch description to remove ambiguity; or
-> (b) revert indexes in the ASCII art (from n to 0). Thoughts?
+On Mon, 31 May 2021 13:12:04 +0530 Karthik Sundaravel wrote:
+> 1. While iproute and switchdev may be similar in their actions for
+> port mirroring, they both have unique use-cases for it, switchdev uses
+> it for flow replication and iproute uses it for port/device tracking.
+> 2. Also some legacy devices do not support switchdev, and iproute
+> provides a means of a port mirroring solution that covers a wide range
+> of Network Interface Controllers out there today.
 
-Inverting the indexes in the ASCII art would make it clear enough 
-for me.
-
-> > but:
-> > 
-> > +	data = trace->data + trace->remlen * 4 - trace->nodelen *
-> > 4 - sclen * 4;
-> > 
-> > Looks like we'd start from the last node data?  
-> 
-> Correct, it works as a stack from bottom (end of the pre-allocated
-> space) to top (start of the pre-allocated space).
-
+Hard no on extending legacy SR-IOV API.
