@@ -2,42 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 700B5396C0C
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 06:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70DA3396C19
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 06:21:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230063AbhFAEWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 00:22:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43430 "EHLO mail.kernel.org"
+        id S232787AbhFAEX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 00:23:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44450 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229491AbhFAEWd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 00:22:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EBE6C6135D;
-        Tue,  1 Jun 2021 04:20:52 +0000 (UTC)
+        id S230212AbhFAEX1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 00:23:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 506E961263;
+        Tue,  1 Jun 2021 04:21:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622521253;
-        bh=s1jFIDeqCQ9weYzltcR9NGUTexPyHMP93HqOhHVdb20=;
+        s=k20201202; t=1622521306;
+        bh=nb8/767fE3N+SWGFQVvNWNF7q7EncmjPK2C39GKZ+3I=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FiGF1+Ot+7/PnNvH10NggXPm4lp5ynJCuPVXavSbvBovFoUbCx6b0uu4IW7z9X75l
-         uiRXEr+XMKB9jxdoRD9y1L5apOIuQfpIuZAyxl+A+w7udeyMO+KLIGk/4RjjtLHxYT
-         AD/04CU0hY+PO8k6PdFp58MCGymHeIA/lYgK/U6zrSzEo0ewA9A803jl8d8YH4iWVR
-         AOosb4z/hHNeNCmP4x13+u6F2/ZpGzIWP859BB+VSa/9Hb+ypC/+y2NjZ2shsXXMv+
-         QLeoJ2Q6xTZJY9sJ8m5HxFHujb1oxdLbOzV3pjWMQnfD0GnCnO6LUuWGIn/V8grHnI
-         Rm/HMd+8PKqsg==
-Date:   Mon, 31 May 2021 21:20:52 -0700
+        b=NftkSjNca7kif7hWbCDBM3vDXg0mm5xW+lzpGIEs6zNB+9Y2fmGjD4DD05GD/Nbe3
+         dslTTtN53EUNeaIdZvhP71fsjQAPucExsjQpYxyGf5D5l/j1aAUHbAoxbWYXFVkRxa
+         4Y1o+fWxGhdiPdLOjdEB90nQZw0L343l25kgpgG1wiWcNEY4iT8/l/cs4WM1N37Bp1
+         OlwtYeIggL06hJCT2jgpncrRC3fbJCX95qCINGQKPhDV8I1/J6LluBso7Y2k99BRHY
+         mPHRede5sks8r30giReg4M/zi7N9kOTVSwzAm3a3Kq3pl7F5UX8b/XuEi1dCX56gJC
+         YO2QTgsvskAAQ==
+Date:   Mon, 31 May 2021 21:21:45 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Justin Iurman <justin.iurman@uliege.be>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, tom@herbertland.com
 Subject: Re: [PATCH net-next v4 2/5] ipv6: ioam: Data plane support for
  Pre-allocated Trace
-Message-ID: <20210531212052.14aca857@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <1696168387.35309838.1622461844972.JavaMail.zimbra@uliege.be>
+Message-ID: <20210531212145.359f1fed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <915310398.35293280.1622461417600.JavaMail.zimbra@uliege.be>
 References: <20210527151652.16074-1-justin.iurman@uliege.be>
         <20210527151652.16074-3-justin.iurman@uliege.be>
         <20210529140555.3536909f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
         <1678535209.34108899.1622370998279.JavaMail.zimbra@uliege.be>
-        <1616887215.34203636.1622386231363.JavaMail.zimbra@uliege.be>
-        <20210530130519.2fc95684@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <1696168387.35309838.1622461844972.JavaMail.zimbra@uliege.be>
+        <20210530130212.327a0a0c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <915310398.35293280.1622461417600.JavaMail.zimbra@uliege.be>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -45,42 +44,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 31 May 2021 13:50:44 +0200 (CEST) Justin Iurman wrote:
-> >> Actually, it's more than for semantic reasons. Take the following topology:
-> >> 
-> >>  _____              _____              _____
-> >> |     | eth0  eth0 |     | eth1  eth0 |     |
-> >> |  A  |.----------.|  B  |.----------.|  C  |
-> >> |_____|            |_____|            |_____|
-> >> 
-> >> If I only want IOAM to be deployed from A to C but not from C to A,
-> >> then I would need the following on B (let's just focus on B):
-> >> 
-> >> B.eth0.ioam6_enabled = 1 // enable IOAM *on input* for B.eth0
-> >> B.eth0.ioam6_id = B1
-> >> B.eth1.ioam6_id = B2
-> >> 
-> >> Back to your suggestion, if I only had one field (i.e., ioam6_id != 0
-> >> to enable IOAM), I would end up with:
-> >> 
-> >> B.eth0.ioam6_id = B1 // (!= 0)
-> >> B.eth1.ioam6_id = B2 // (!= 0)
-> >> 
-> >> Which means in this case that IOAM would also be enabled on B for the
-> >> reverse path. So we definitely need two fields to distinguish both
-> >> the status (enabled/disabled) and the IOAM ID of an interface.  
-> > 
-> > Makes sense. Is it okay to assume 0 is equivalent to ~0, though:
-> > 
-> > +		raw32 = dev_net(skb->dev)->ipv6.sysctl.ioam6_id;
-> > +		if (!raw32)
-> > +			raw32 = IOAM6_EMPTY_u24;
-> > 
-> > etc. Quick grep through the RFC only reveals that ~0 is special (not
-> > available). Should we init ids to ~0 instead of 0 explicitly?  
+On Mon, 31 May 2021 13:43:37 +0200 (CEST) Justin Iurman wrote:
+> > BTW the ASCII art in patch 1 looks like node data is filled in in order  
 > 
-> Yes, I think so. And it is indeed correct to assume that. So, if it's
-> fine for you to init IDs to ~0, then it'd be definitely a big yes
-> from me.
+> I agree, this one could be quite confusing without the related
+> paragraph in the draft that explains it. Two possibilities here: (a)
+> add the paragraph in the patch description to remove ambiguity; or
+> (b) revert indexes in the ASCII art (from n to 0). Thoughts?
 
-Yes, we can init the sysctl to ~0, I don't see why not.
+Inverting the indexes in the ASCII art would make it clear enough 
+for me.
+
+> > but:
+> > 
+> > +	data = trace->data + trace->remlen * 4 - trace->nodelen *
+> > 4 - sclen * 4;
+> > 
+> > Looks like we'd start from the last node data?  
+> 
+> Correct, it works as a stack from bottom (end of the pre-allocated
+> space) to top (start of the pre-allocated space).
+
