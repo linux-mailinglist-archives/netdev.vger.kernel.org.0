@@ -2,113 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5503239723D
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 13:23:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72060397243
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 13:24:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233397AbhFALYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 07:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230308AbhFALYf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 07:24:35 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A270C061574;
-        Tue,  1 Jun 2021 04:22:53 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id g204so4699882wmf.5;
-        Tue, 01 Jun 2021 04:22:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rVrLh+BnhfDpoEGB+4L9ayZQJ1wLZDvIL7BKTg+V8yY=;
-        b=kOm6p0KZkuXKLYwtWiOtqBrBUDUNhj2g/+vA2A2KjSDgEowaSINtGYQlwL6En8Hj5D
-         /hSNrBZCd934qh1zr97wy1954jLUmj3hvSvMutGCjQPabwlGT9lbUC9n6LIHPXuGN5PE
-         8/jf16cgNtN6P62uUsbceAJ/uzpvfosNvMRZMCo2g2QZU8LNVfo9Debccdu1ARuruc7L
-         P5aa41K3/49enqnZZyNojPmvRN+CVldQ0oDgJD7l9cfsgcSmQ7km2XzTMVrQw/cgymt0
-         8jMFIJ+/rUyTQFMVVLpdAtCbNhedAzWHkwCst45csjAyGbDCGznFDrNDJQyAAGCKtr3q
-         /psQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rVrLh+BnhfDpoEGB+4L9ayZQJ1wLZDvIL7BKTg+V8yY=;
-        b=OW9iL7Je83wvKkVnrzrjkCSxip7TmcY3rxIzmuqfbBFINsHUcN6bSigH7j1R9hv1/K
-         Fggx50CS0IwvnhhPNrbPQFMuBKCgUxX9pvX11C1kYZWD8zIdxgfBa8ThkO/ORIrE6JYt
-         Mu/04Go+PXvI6lNEOEf/JqGdPPIa5UvC2SVWwRy2CdUqqc0bcpCU4X6o4g1Nq0UAWna/
-         YCg7ieFNrdn40Vz+ZRDa8yDKuYE3MeYb9elzhOH4kC8PcKzJRs/kzSf/YWrguP0uVhf4
-         ly6JGiZWixGABGoVCOLPAw1iO0MQNWyFw/N1RYP1tB7JX4k2fAVYTGaacoHEJjsLCshk
-         3f6w==
-X-Gm-Message-State: AOAM530s37Jo51Yabyu/T6EZ3EhhdCqQ0STGriXanEkJ+mBZFA9j8ihv
-        azg6/Vvwm83Q69LY0a8WNT/RwDjxf243Iw==
-X-Google-Smtp-Source: ABdhPJwfvNa8USFgUViuIRIQKpnat3yAxEGXpenkCdrAvehdmYYVQQ0G0uZPm2PMpGfV8aUgXaz+wQ==
-X-Received: by 2002:a1c:f303:: with SMTP id q3mr4190518wmq.9.1622546571720;
-        Tue, 01 Jun 2021 04:22:51 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id n8sm5715215wmi.16.2021.06.01.04.22.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Jun 2021 04:22:51 -0700 (PDT)
-Subject: Re: [PATCH] sfc-falcon: Fix missing error code in ef4_reset_up()
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     habetsm.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1622545602-19483-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <a0cfa46c-9545-2c6d-fd03-a97f0a3c4869@gmail.com>
-Date:   Tue, 1 Jun 2021 12:22:50 +0100
+        id S233718AbhFALZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 07:25:53 -0400
+Received: from phobos.denx.de ([85.214.62.61]:49358 "EHLO phobos.denx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233669AbhFALZx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 07:25:53 -0400
+Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 989B581E53;
+        Tue,  1 Jun 2021 13:24:09 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1622546650;
+        bh=RroPKtbFJQSMP/iLjGkKVj+A5yN19PkqgH8gsUMorI0=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=h0GGXPmkBRsoC00pYZ7k3i7iFsPz/+gDpfI0vBNDB2OBknJgeurxTZ0Y1IMteciUu
+         6qfIf7nOexoPa0i2kk0Mi17NV04E83sntgaSp6orkZYisHgVq1ttOX2EZEAGUTfx1W
+         34Dxx20eUfKxkfdk7UE9QjmbJYUvraTVqW3XayNOwOih8r2oxoghZjnIEKHaqUy026
+         i1C5VycWz7Ufn7FY3PJ2Pm214KJWxdtclzqwPaAqVEZAx2hQXKagxQiXBryE2wirzO
+         KID/IdjMyHIFuCPU6iJFSaSrQc7tbTSbk73VngTDTjixhl9Emz4wkHBDKCWN8R+Rws
+         7eo8YlqXmiTVg==
+Subject: Re: [PATCH] rsi: fix broken AP mode due to unwanted encryption
+To:     "Fuzzey, Martin" <martin.fuzzey@flowbird.group>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        Angus Ainslie <angus@akkea.ca>,
+        =?UTF-8?Q?Guido_G=c3=bcnther?= <agx@sigxcpu.org>
+References: <1622222314-17192-1-git-send-email-martin.fuzzey@flowbird.group>
+ <6f1d3952-c30e-4a6d-9857-5a6d68e962b2@denx.de>
+ <CANh8QzykdFSvmEgY=iTyZdbzg5Uv785zVZdAoYbrx2--sDyiCQ@mail.gmail.com>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <c503e8e8-6082-3f81-f22d-efdbf4a1b357@denx.de>
+Date:   Tue, 1 Jun 2021 13:24:09 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-In-Reply-To: <1622545602-19483-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+In-Reply-To: <CANh8QzykdFSvmEgY=iTyZdbzg5Uv785zVZdAoYbrx2--sDyiCQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.102.4 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/06/2021 12:06, Jiapeng Chong wrote:
-> The error code is missing in this code scenario, add the error code
-> '-EINVAL' to the return value 'rc'.
-> 
-> Eliminate the follow smatch warning:
-> 
-> drivers/net/ethernet/sfc/falcon/efx.c:2389 ef4_reset_up() warn: missing
-> error code 'rc'.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  drivers/net/ethernet/sfc/falcon/efx.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/sfc/falcon/efx.c b/drivers/net/ethernet/sfc/falcon/efx.c
-> index 5e7a57b..d336c24 100644
-> --- a/drivers/net/ethernet/sfc/falcon/efx.c
-> +++ b/drivers/net/ethernet/sfc/falcon/efx.c
-> @@ -2385,8 +2385,10 @@ int ef4_reset_up(struct ef4_nic *efx, enum reset_type method, bool ok)
->  		goto fail;
->  	}
->  
-> -	if (!ok)
-> +	if (!ok) {
-> +		rc = -EINVAL;
->  		goto fail;
-> +	}
-Not sure this is correct.  Without the patch, we return with rc == 0
- (set by the efx->type->init() call just above), which seems reasonable
- as we successfully finished a RESET_TYPE_DISABLE.
-The label name 'fail:' might be misleading; it does seem like this is
- intended behaviour.
-Have you tested this at all?
+On 6/1/21 11:02 AM, Fuzzey, Martin wrote:
+> Hi Marek,
+> thanks for the review.
 
-Note that the sfc driver (efx_common.c) does much the same thing as the
- code here before your patch.
+Hi,
 
--ed
-
->  
->  	if (efx->port_initialized && method != RESET_TYPE_INVISIBLE &&
->  	    method != RESET_TYPE_DATAPATH) {
+> On Fri, 28 May 2021 at 20:11, Marek Vasut <marex@denx.de> wrote:
+>>
+>>> Signed-off-by: Martin Fuzzey <martin.fuzzey@flowbird.group>
+>>> CC: stable@vger.kernel.org
+>>
+>> This likely needs a Fixes: tag ?
+>>
 > 
+> I'm not quite sure what that should be.
 
+Based on git log -p --follow drivers/net/wireless/rsi/rsi_91x_hal.c
+
+Fixes: dad0d04fa7ba ("rsi: Add RS9113 wireless driver")
+
+> The test involved here has been present since the very first version
+> of the driver back in 2014 but at that time AP mode wasn't supported.
+> 
+> AP mode was added in 2017 by the patch series "rsi: support for AP mode" [1]
+> In particular 38ef62353acb ("rsi: security enhancements for AP mode")
+> does some stuff relating to AP key configuration but it doesn't
+> actually change the behaviour concerning the encryption condition.
+> 
+> In fact I don't understand how it ever worked in AP WPA2 mode given
+> that secinfo->security_enable (which is tested in the encryption
+> condition) has always been unconditionally set in set_key (when
+> setting not deleting).
+> Yet the series cover letter [1] says "Tests are performed to confirm
+> aggregation, connections in WEP and WPA/WPA2 security."
+
+There are way too many bugs in that RSI driver, yes. Compared to the 
+other WiFi vendors, this driver seems to be real poor.
+
+> The problem is that in AP mode with WPA2 there is a set_key done at AP
+> startup time to set the GTK (but not yet the pairwise key which is
+> only done after the 4 way handshake) so this sets security_enable to
+> true which later causes the EAPOL messages to be sent encrypted.
+> 
+> Maybe there have been userspace changes to hostapd that have changed
+> the time at which the GTK is set?
+> I had a quick look at the hostapd history but didn't see anything obvious.
+
+I recall seeing a patched WPA supplicant in one set of the RSI 
+downstream drivers. And then there is another older RSI "onebox" driver 
+which definitely ships patched userspace components. So I wouldn't be 
+surprised if some of that was involved.
+
+> I'm going to send a V2 completely removing the security_enable flag in
+> addition to adding the new test (which is what downstream has too).
+> Keeping security_enable doesn't actually break anything but is
+> redundant and confusing.
+> 
+> Unfortunately I cannot find any downstream history, I just have 2
+> downstream tarballs, a "2.0 RC2" which has the same problem as
+> mainline and a "2.0 RC4" which does not
+
+Yes indeed, I pointed that out to RSI before, that this kind of release 
+management is useless. I'm still waiting for any input from them.
+
+> [1] https://www.spinics.net/lists/linux-wireless/msg165302.html
+> 
+>>>        if ((!(info->flags & IEEE80211_TX_INTFL_DONT_ENCRYPT)) &&
+>>> +         (info->control.hw_key) &&
+>>
+>> The () are not needed.
+>>
+> 
+> Ok, will fix for V2
+
+Thanks
