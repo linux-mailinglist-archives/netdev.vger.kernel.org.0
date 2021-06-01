@@ -2,88 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 717943973B5
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 15:00:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 938AD3973C6
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 15:05:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233698AbhFANCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 09:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233064AbhFANCT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 09:02:19 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89806C061574;
-        Tue,  1 Jun 2021 06:00:36 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id c20so14104469qkm.3;
-        Tue, 01 Jun 2021 06:00:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=Fw6An070zveYAJQ7tdby9/Ztlto07U6GPJhm66jpGcU=;
-        b=i9wiT7EX/t/133OY0aZzt72AkEqB27Qm0KwFu1HuQHFYbf0T3klVoqOpLw4E4wwJZZ
-         auYzQR9JrDD35Qe8F6OTc7ZJsybvTd87pg7Vc+nvCdIwJS3qy5mKdKf7wCGWrMhzBs30
-         VCwJV337q48G45sgEl1iuFaoiujaVtHVIEPT9cxGNve4CvVbV1WICd8wLpYl4dYatzeK
-         7m2xiaAKc3szaoHQgI4VSgrF6a+MbElVborL5Xs8ezjJ+X4YwmhmKCjuF1YIzlH7nAir
-         YXHiX/9wFzH+bhesOnTXt+sGk0sMnbITuJXv3gwK9lw1NBzQbX/aVQBvBqGz47YDxsRV
-         7lLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Fw6An070zveYAJQ7tdby9/Ztlto07U6GPJhm66jpGcU=;
-        b=CH2oqAs6rpekNGFzxznfCw8pvC78MvhjOV6N1CkNHeLa9CsbaT/caXLMYJdIFXVHZR
-         hLgmaDU3CHp23o4FXQWC+dGIOEqsukPu98xP5nxU9JLFGAfthX2ulTRqYQdY3aeivW8k
-         1AnW3XROjfyrurnp3Mpz+zQE4llhYFh0DOQHtTdqIo/jQClHZpghWRFA0wtUUAkvats4
-         dy1mSMaQms5HX6L2V5baoGj5XX4rQ1gJDfzt8MlIr0G6f1vXRk0zVyqL39CisLJocTm4
-         2F3yU1wtG8XBqe50n774ZClNGPlcKoSMVpuv1elNzd+l82fa1Qnr0TnUL0mXKT8tVwQp
-         Rvpg==
-X-Gm-Message-State: AOAM531f+r52xui60wi4qXe6mKsv24g9zIQTEVOmYs4oCwL5iFTQbx4F
-        LDkFuiGYgt4LBcfFWndbztv5bRsSz2mTa0MI/ksjbg==
-X-Google-Smtp-Source: ABdhPJx2FCEYNTg8buJha8b17AbLcXHSd+6eS6JmjUsxQTkFctOYegXHzovLaDTaWVEE8PwhI1KHnQ==
-X-Received: by 2002:a05:620a:c0b:: with SMTP id l11mr2014876qki.181.1622552435772;
-        Tue, 01 Jun 2021 06:00:35 -0700 (PDT)
-Received: from fedora (cpe-68-174-153-112.nyc.res.rr.com. [68.174.153.112])
-        by smtp.gmail.com with ESMTPSA id v20sm740015qtq.67.2021.06.01.06.00.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Jun 2021 06:00:35 -0700 (PDT)
-Date:   Tue, 1 Jun 2021 09:00:33 -0400
-From:   Nigel Christian <nigel.l.christian@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH] NFC: microread: Pass err variable to async_cb()
-Message-ID: <YLYvcbjuPg1JFr7/@fedora>
+        id S233924AbhFANGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 09:06:38 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38728 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233905AbhFANGg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 09:06:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=1nlyDUEZQwgAaoaZn/Zf38Ai9ligQ5XU00uvWa0IyRo=; b=ldePIHyiDH9JQeGLucmWsxSu58
+        KAxlYi0h7zPGSssVPnhFtrG6wzD+HfzktSxy5WQSyh1DR3kCBBMEMDmMr0AdPYSJ33BprG9nXMULt
+        X2RNxCDQe+LGxd7/FjJCvo1p3gb5yIJEKADV/ysWHaBjjhywmwmbroBDpVPLD7R07/w0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lo44h-007I14-HY; Tue, 01 Jun 2021 15:04:51 +0200
+Date:   Tue, 1 Jun 2021 15:04:51 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC net-next 0/2] Introduce MDIO probe order C45 over C22
+Message-ID: <YLYwcx3aHXFu4n5C@lunn.ch>
+References: <20210525055803.22116-1-vee.khee.wong@linux.intel.com>
+ <YKz86iMwoP3VT4uh@lunn.ch>
+ <20210601104734.GA18984@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20210601104734.GA18984@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the case MICROREAD_CB_TYPE_READER_ALL clang reports a dead
-code warning. The error code is being directly passed to 
-async_cb(). Fix this by passing the err variable, which is also
-done in another path.
+On Tue, Jun 01, 2021 at 06:47:34PM +0800, Wong Vee Khee wrote:
+> On Tue, May 25, 2021 at 03:34:34PM +0200, Andrew Lunn wrote:
+> > On Tue, May 25, 2021 at 01:58:03PM +0800, Wong Vee Khee wrote:
+> > > Synopsys MAC controller is capable of pairing with external PHY devices
+> > > that accessible via Clause-22 and Clause-45.
+> > > 
+> > > There is a problem when it is paired with Marvell 88E2110 which returns
+> > > PHY ID of 0 using get_phy_c22_id(). We can add this check in that
+> > > function, but this will break swphy, as swphy_reg_reg() return 0. [1]
+> > 
+> > Is it possible to identify it is a Marvell PHY? Do any of the other
+> > C22 registers return anything unique? I'm wondering if adding
+> > .match_phy_device to genphy would work to identify it is a Marvell PHY
+> > and not bind to it. Or we can turn it around, make the
+> > .match_phy_device specifically look for the fixed-link device by
+> > putting a magic number in one of the vendor registers.
+> >
+> 
+> I checked the Marvell and did not see any unique register values.
+> Also, since get_phy_c22_id() returns a *phy_id== 0, it is not bind to
+> any PHY driver, so I don't think adding the match_phy_device check in
+> getphy would help.
 
-Addresses-Coverity: ("Unused value") 
-Signed-off-by: Nigel Christian <nigel.l.christian@gmail.com>
----
- drivers/nfc/microread/microread.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+It has a Marvell ID in C45 space. So maybe we need to special case for
+ID 0. If we get that, go look in C45 space. If we find a valid ID, use
+it. If we get EOPNOTSUP because the MDIO bus is not C45 capable, or we
+don't find a vendor ID in C45 space, keep with id == 0 and load
+genphy?
 
-diff --git a/drivers/nfc/microread/microread.c b/drivers/nfc/microread/microread.c
-index 8d3988457c58..130b0f554016 100644
---- a/drivers/nfc/microread/microread.c
-+++ b/drivers/nfc/microread/microread.c
-@@ -367,7 +367,7 @@ static void microread_im_transceive_cb(void *context, struct sk_buff *skb,
- 				err = -EPROTO;
- 				kfree_skb(skb);
- 				info->async_cb(info->async_cb_context, NULL,
--					       -EPROTO);
-+					       err);
- 				return;
- 			}
- 
--- 
-2.31.1
+The other option is consider the PHY broken, and require that you put
+the correct ID in DT as the compatible string. The correct driver will
+then be loaded, based on the compatible string, rather than what is
+found by probing.
 
+      Andrew
