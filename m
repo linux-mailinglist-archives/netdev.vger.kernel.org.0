@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 327CB396FD7
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 11:04:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CD0B396FDA
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 11:04:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233665AbhFAJGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 05:06:33 -0400
-Received: from mail-eopbgr80082.outbound.protection.outlook.com ([40.107.8.82]:14338
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S233682AbhFAJGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 05:06:36 -0400
+Received: from mail-eopbgr40044.outbound.protection.outlook.com ([40.107.4.44]:48470
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233471AbhFAJGa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 05:06:30 -0400
+        id S233658AbhFAJGd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 05:06:33 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J60N58cssqRoqzFlCTcR8z0ZMDZ2g0B0m/uQuqtoyK3B+X79F+J+9qVNqNZSTEJsvveJ+87XAogO1yCxA8Yn3oAFAXPQHVT3I8cdWk9j9oyGNZW+6Jd6bvHrl9TtBB99fOZlJnmGa8SjAWyDkx5gacFiw27pBvjqtRQN+VbU2XG8WwlF2Te0AoboRU6U1mjJPPYKgbd5Ycw7Ck10vUtWeNXe/S0P1bHPcrjgNd9m8ktFlofUEa4fx5ULXbpT95jAwIcRKBONcUqO3dP5dM3qhWSwBGHkuwqibwXe6hPpemRZRik84mSWIvvBbOncMZevS+QgXMYTZMUPfnXPG68G3Q==
+ b=SV9rncMYc6KnX/x5stpndA35bKfsLkj5ceVnrAsVxYrO9SoR/A0QOMUieoVeJSZLpuTxAM7A4U6BCk3hXrKxFvWbmj04h+G0soIP8404oReMNcHTdF4Bykw4tXOOuI/EPmroD4JOYdzVhJEB8NC/p7qfS8Oay/cT+FBuBcYN2xH5nraI8Xd8LrXm8SR6JYMGLkbpkpVaqFh2N6SgFsCAS8tuDtCnFAOQD1R36WgBtbE8UMT+4iCEDtByMg9bu0Xo4lz/oqi13q6cbbOC3VApHq49CMsCnlG3F9qTwSxpK+1XjkKhhLfUZAdBaSYAdyzrLKdmhsWmczMQc2nADTuA2w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ON6dpJK41vOHU8NGiLseCfVJlUhKCk3AlgZE0tkPxwY=;
- b=bcTUWFAJUyQoaa2yUri0oQkbFroz6x9vnUUTR3QRFVAGe7vKhLzEexJehrPk6kYFnudW5mxaRN1cmLQRbK8wYZHU0p5fwpTw5+NSp/71MHesN9l0XLptf0gZAD/I7uTBV7RNNhoJNaUQhVdf4xrbLkmjDoF/B7qU0vRl48bABQs9BrgZA5czBhPM52VJYaRBaKYAvyRti0cfomWXJyK31+xW6IY2+VAi0V0Iz7wmQiOBWLX7PR2thLqZmN+PTtpILj3ediIL4Wq5RTamBH9G5ttNlysTi+nBomKJcefeQc5Z1H8PvISualLkfu2w59SfoNiqZzQGqpRsMP/5CckZyg==
+ bh=r/hqRBmKdQu0MkR26jGdW6r+aroBnOiUnGLlO+foYYs=;
+ b=AxKCx+iRF/u0r/HX0kUZK10wpS5LhtVABOIr4eE9Xk2FVHbisE194OrIWTp+nir8dpLKHc4J0HNPKAed0ZiuEO9o6qR1P1b0wRSoR1G3wZbDIo+qAxe5ln1scY9wXUfo9ZiUAm8QIYbq5WpF6xZFK6sraJ7JhQXtE7Eb4hZ85YrXbAhMoUSpynH7IhZM+XLtzq9vE9+Na4YU/iLqKJ8AOHdTb35mfJbnBRVZRnA0LrHo6rfgDfAi95GK0re0awk7GjGkmQm/dybQxqM+643hx6YFrqESvv4gF5rvZfzkVf4zHsinHPeY7046cfzup+tWzLUGyJ1KsA2OxUI6sj+Slw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ON6dpJK41vOHU8NGiLseCfVJlUhKCk3AlgZE0tkPxwY=;
- b=l4kwJbKw3J5cTDltq5SJiGujdmP1+nvZEvCQEtSpgAhAIbRrHWYi9HE+ihtaIWrEOyHVOXQ11dwDTimyqxuwO+hEkUBfUgcjgr5bn54uycWBFCJnKXDauhuDLm11iBPnFk/T/vRlD3M8CpxN2zao4DiLfyxBeDD02oO0+JL1Bic=
+ bh=r/hqRBmKdQu0MkR26jGdW6r+aroBnOiUnGLlO+foYYs=;
+ b=Xbh1+IdsLx4TbQqpTSNCirn82Fcw7DZCc0ehI6pTnNxfUyYCnzd2mea2Hyvw75lxj0PLi+txM8HfSVTj8jyKez8YBcEgiv9q40M5CAB0GR9XwLljgCewfDUvQ8Z1GKaXe9E/GlYFuNTKVpsTOPvHfzJejrH1HT/MKitVKkz5To0=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
  by DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21; Tue, 1 Jun
- 2021 09:04:47 +0000
+ 2021 09:04:50 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4173.030; Tue, 1 Jun 2021
- 09:04:47 +0000
+ 09:04:50 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         f.fainelli@gmail.com
 Cc:     linux-imx@nxp.com, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/4] net: phy: realtek: add dt property to disable CLKOUT clock
-Date:   Tue,  1 Jun 2021 17:04:06 +0800
-Message-Id: <20210601090408.22025-3-qiangqing.zhang@nxp.com>
+Subject: [PATCH net-next 3/4] net: phy: realteck: add dt property to disable ALDPS mode
+Date:   Tue,  1 Jun 2021 17:04:07 +0800
+Message-Id: <20210601090408.22025-4-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210601090408.22025-1-qiangqing.zhang@nxp.com>
 References: <20210601090408.22025-1-qiangqing.zhang@nxp.com>
@@ -55,180 +55,103 @@ X-ClientProxiedBy: SGBP274CA0013.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::25)
  To DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SGBP274CA0013.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Tue, 1 Jun 2021 09:04:43 +0000
+Received: from localhost.localdomain (119.31.174.71) by SGBP274CA0013.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Tue, 1 Jun 2021 09:04:47 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a2479ff7-ea76-4c03-57ef-08d924dc4e07
+X-MS-Office365-Filtering-Correlation-Id: 76956b38-1cf8-4f1f-1e3a-08d924dc503b
 X-MS-TrafficTypeDiagnostic: DB8PR04MB6795:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB8PR04MB679512C663B9AE88F0E6A679E63E9@DB8PR04MB6795.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
+X-Microsoft-Antispam-PRVS: <DB8PR04MB679545F6382E3046C90B55DEE63E9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:962;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V/4j6A4BfL7Tw4+0KC9TbxGyE30yrC5XEfmOzlvx+r9HMuRUCp2B8Ud/GDlqMsK4Bv4YW6J9eFDwywCwVKMvoDfgjkBvUbKgfLky15XthWFWaCGtzp/fe8/JY1sL8VHqM9+wZLa5Rt/hVytzYWLn9OBejQtcrCu98wCR2pEqjenG3Uml81faU2td8/1JUifZ9S3Y3nRvQX++w+pRfRfBXhP63fBGc5gU5jAc8mNbEgazaxoIm2U3NCXFJQCF4Jgf1g5xnGnCqLc+LTt4r+mbB2/YA5Pn+qYuVQCATgZw76cpa7Y0dhQQeOihf5RfFata10q5ktWS2jk9af/XbWxEaxMEyRUt4UjgD7qsi6+iXomo/s3Hjq2l7w6lF8S/Uw1survkYqxKPXYgJZB65E2sBDgJu2TGY9Ci8JgO6+Ta6Y4QixEvpVuFLW8P39PodthpYuikFFeclaubp90LqOh5LgEGL5rNpuyyR0muGGOoQhB0xdUc6Rw3z1K1WI5Rw+W2cbqpMqCNAt6d1847HM/aFpk/w45h6g7B7PnHCJzy9HeUfxDLO95DZswJJ3+G4es2tL1Uc+Z+thdPqCXfk2/Xez5S82yWjpLuREWxOAx68kVgPhddPOa4vhxQK49wfGSU8WuIZ8wMDjIEG+r/gDDk2EyhC6/ZAABId5PM9SK+yDdphQoi6c16aBo7WCFjUVw9
+X-Microsoft-Antispam-Message-Info: 4CQeImz/FRqXuBTwt6M4VPiwoGqxzL8n/6AXc0+E1BcAZnxLtWKxWBX5uRfdycXUsiLtg5CWRWLZBvLGziWTU05a6igVHY+jpQMjnXVuSDkiFtH8UwqdU0vJj5cg8tLtqtqkVRef7XN2c8aTaa0c0mQzrSddfToUccByAgc34nRJ5pP7YTVjKpmZEJd4yENsJObq/BdjNO+9Gz5mjU9rfo0y7/0NK9dG8x/t3C8MxWU5CxT0Xo5YzfqBqMeGuGkg8YAhhA3B0kPEEhWqAcnkZA2HDZPADGMYcd6IrPqAdxoDLd9UfzKwjKtAFWpkLxAEyt/MvlUSIj+3ADtBCYezkDCZ86PdO+Ul7I1KoK+lbqlVRjBxbBj4c1SCj/vgopt6OBojojs8hIW8BQCOBfaw1FX1Vi9p3iXcWrLAViYoQow4sh4b2dgPa2IcVsLOctTagKQXkeCpiks81FC71uc2M6ECV4PM9KeAASnB09sKblcrPDHO6SXFURx+XxWYoX4GZUgll0uYQy6q8HBPZLiv1q2BE7YzZJ8O72ZnuGN4gqs2B2osPntxZli6t6xMXazJvbervfopobnhT/DrnetAU1GW8kbTH6fXor3amuz70OfEeP3swQO+3gE9eE/v6P2+9cWcXD1Va6Ibu+yY+Pnhx8Bd7lbf3jPvmCMMeOQ7nviIhYQtbfBizXrwe0OMgoyu
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(366004)(39850400004)(396003)(136003)(66946007)(38350700002)(8936002)(478600001)(6666004)(36756003)(2616005)(52116002)(6506007)(2906002)(316002)(86362001)(16526019)(6486002)(186003)(956004)(38100700002)(5660300002)(6512007)(83380400001)(26005)(1076003)(66556008)(7416002)(8676002)(4326008)(66476007)(69590400013);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?dgolh76/4oeI86TcCl/xCNJZHQxyYq1ngtwB3n7Ucuun+D89ZzRR8dTFAb3H?=
- =?us-ascii?Q?2ZvsJ9v/1jOY50yYwiUTTweqof1vMAHsvWmoIoBGtdImwkjMRHMcG828Bv7j?=
- =?us-ascii?Q?VhBV5gs22k2s+vaE289BewvGI2JpWx5Hyf9hpFYkiSekYAeFP/V3CULE6YI8?=
- =?us-ascii?Q?/rP//OTj/zJME0yc+m0GrFwWCZYAfpEURSlR+AEb6It4hrOVSwyn+vdItFOL?=
- =?us-ascii?Q?TlcdaCrR15RWfsFkPzgRP7cd7TG6D5jcdQG9TDq/NWjFNYmERN11uzeP817R?=
- =?us-ascii?Q?emzWeuANPkEOQ3mHZ7wpr6sBuHqx88bA9Ei0VNYBHpeXiwEot39KeMt+1kBp?=
- =?us-ascii?Q?w6PcAcCukeE90aMtTjm6vmKpWJLEQZ1ANnEAn8K0y2ighsM9/8AwVBRo+bb5?=
- =?us-ascii?Q?miXu58ooiYsEiHwn1YYCd/nn4u1cs9vuP8Ji65P69LpM0dEsNXf4NGY1hHcq?=
- =?us-ascii?Q?aHGZfVizvlcotArD/aDOhNJbddM9mBlquA27Ywv4PhYdPko3NA76zilLv+Pr?=
- =?us-ascii?Q?yr4RsIYk9q1atnlNxeYb/Tnh2gEZuyfzVZOVLtE0RvjT+fZlN0Z7pPb/hXaL?=
- =?us-ascii?Q?ye5tu61TtvlOafYDzJxfnLuX8z7I6SxujMqTmj7CQdfXAJnHG1SM7nkoCzuh?=
- =?us-ascii?Q?pNBMihltpXP0h9JRjPKgBlBx4C511eoIQrOMUFxMRJswLwiRjfr2jti4X2ZC?=
- =?us-ascii?Q?xy+XY5dUi/ZP4/UhZG7RebeR1/4h/dRsLoAAr72WGr4Bq3YJi6uLrrRjweYa?=
- =?us-ascii?Q?Vy2ODDwucOKV2ctodJygCnCvIdQkvk3brRPysmDCj95UUovKfKF3uhdlb0Wc?=
- =?us-ascii?Q?xoTPxkZag/QMzmUpjsEu/P/JexKSYjPHuKqUKq7uYt8hW+0h24Ea7mqbpQgL?=
- =?us-ascii?Q?2sHH9bvcPQe3eivmsmAQTrS+kOqt8i1xQ3N9v63ixXaZwZlLhTS8lb7nfIHU?=
- =?us-ascii?Q?7FLq8rsfCPWckpDaOeW7hNFutLgFYfB1v0SOTTDO5eo5rlw0k1GQZTwcGiDP?=
- =?us-ascii?Q?A4LvCxpTkWAyHx40KPgmDY+GGifiYuJov8YqmcII7wSDaMnNBaxyxgUE2aA/?=
- =?us-ascii?Q?Bx9yNDEtVSQcPNQffS0pb10pFqpL2zRRM5c6KU9HZwjnoYId1/uVknMgKPUb?=
- =?us-ascii?Q?ZmkE/9FfbNxS8Uj7Vw8J+9BgUfVrwLKDT2Pqd2fP+YK2hBKxV9gxJVKya6Gi?=
- =?us-ascii?Q?jgVjNp0uPZXbhZSbnD68CCkRncGz/+lery2TzuI8JjZnTPiwKvI/T2jk9ORF?=
- =?us-ascii?Q?eSUA4qC3LKY+Av05MOhnscd8v6GH+Wlz5NSEPUYP4ZJAS+XTE8uaRc3uKE59?=
- =?us-ascii?Q?IiZKppTQkaEj1kUI19tEtyZh?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?gKgVtuMKz0qUt4BQN4OkUhJHBl+NniIZ1kD1dvKiM+3iWfuYwD0OS0HiVXOV?=
+ =?us-ascii?Q?YTgxULMWPrUoOKHR39PgSww8/h6dQLIxbQPNGrkf5GqlGJqkLM0PMYzM7RTM?=
+ =?us-ascii?Q?f1NFEdyXvqWLxKaK3QYQNuEFhxwtozE7exyiOg25YN5WVglBvAdMoPk5BnU8?=
+ =?us-ascii?Q?oR1ylaXU6j3rYP3ti/KvCt8S4sRICrNpXVNj1GKRmS7oJY0ZG1pxt/ynLuyM?=
+ =?us-ascii?Q?ND5iGgDKMv1rPdkkMz5OIhT1d/0WzsSnV2+MMkFOQ16xUDsxB7bAI4gvkteV?=
+ =?us-ascii?Q?d6LkXQpfMMP9mqooMX4jxNe+ze4ANgRkbCPdABZDx5YtPtDybaR8/yaJXRaC?=
+ =?us-ascii?Q?kCNGGZspnKCpDuc240uUTgZx53lvy3d+KUKnRC9htav9ffaBOfgbdUCOl0X/?=
+ =?us-ascii?Q?RcIAXOsVTejadImEnEFXhpPklCuXOxubmBcBq5UPnrp18i458cOW6Vn/sHK5?=
+ =?us-ascii?Q?yDHGu9RG97djqIYWHmSotey5h32wdW+GmMaJs36WVo5xnE1pxTlDzJiDHqtk?=
+ =?us-ascii?Q?ctFL5E4pECpS/bLxWnhbaGEVvSi13WpfRGfo5JB04V+gHspfbUFDPmEoL//4?=
+ =?us-ascii?Q?UUn6CKMgC9ErTiAINLjkLakvVvnrn1tb9KxcvicUCV3B10cvW6VY6nQB+wNi?=
+ =?us-ascii?Q?yR0VSlAcFf6Tmj/0w7tOaxrRCxYza9WwL9sF8ARb926pPNvijBaP4PFrsKkR?=
+ =?us-ascii?Q?vXIAD4VV8jU+QTt/DEAHtWV/iS4NwDPhwSLjVk2iO7XAwTOMv62mh3CCnehI?=
+ =?us-ascii?Q?Y90DoDyoX1lOK2degHtNYCDIz6m7j/onJIZKjkWIbG1TW3TWhoL9J19MsYpc?=
+ =?us-ascii?Q?DL9aobxiLEuogt38Qr4NGuX/q8ODs/rtME94GxNX0qqobf0N8FMWHIIi2aUC?=
+ =?us-ascii?Q?J9V+YOUu9ol9XnIt4KMX0aLYX4bP6jVHSxaxE+05CsTBMT1saZxckf0dutck?=
+ =?us-ascii?Q?TAKAAubszSyByXEOqTLNaOBkUd+V3lGokUNZ1SlPSTbEcLenU9tkhhDVDKK+?=
+ =?us-ascii?Q?T+MwxkEdcaAG4G43ZkgemtJGId1hMkXrNH9I7GQeOCBArHXKQxPke2k6YLGd?=
+ =?us-ascii?Q?SDJ6+1q1KeEoqwAXYhWtto9/heGwf0yQvbmPwZgQrXooDZUSCB+jygOi9q/9?=
+ =?us-ascii?Q?Db89AqPO2xCMbBFR1fTTVN4mHyQcJq5pHlfixiFkqwrxzMsJPmAMd7CNyTFG?=
+ =?us-ascii?Q?JY+1pXDbx3Oy0nYQYog9fJkYkNdzolkjVuzbGxkn0EwZxv3EK3asynhQe/9h?=
+ =?us-ascii?Q?8mv6mJNsJzNmhhHL0L5etlVkcogeS0Ow4ttfl5PB+kQx5faztD+zyyd3mjK0?=
+ =?us-ascii?Q?INm6rc3U0SEXBR24Bg+sRtVI?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2479ff7-ea76-4c03-57ef-08d924dc4e07
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76956b38-1cf8-4f1f-1e3a-08d924dc503b
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2021 09:04:47.1927
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2021 09:04:50.8814
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MTeOzaHRAGCCViVVSPWDPKgcXsTPkN/LjwPZUTl+s0VVVXC1sqGUp5B22cbRMVJYVsGsKzmYCvwjWsQripvqgg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: im9bJpxG1Q142cLUS3Ktx6Zy3AQT0gsdbFNLpaOeeCuCnfP5Ff/1YUHFx1v6MWgnDDt1OR85s6oOc5VYnZYfsw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6795
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add "rtl821x,clkout-disable" property for user to disable CLKOUT clock
-to save PHY power.
+If enable Advance Link Down Power Saving (ALDPS) mode, it will change
+crystal/clock behavior, which cause RXC clock stop for dozens to hundreds
+of miliseconds. This is comfirmed by Realtek engineer.
 
-Per RTL8211F guide, a PHY reset should be issued after setting these
-bits in PHYCR2 register. After this patch, CLKOUT clock output to be
-disabled.
+For some MACs, it needs RXC clock to support RX logic, after this patch,
+PHY can generate continuous RXC clock during auto-negotiation. This patch
+adds dt property to disable ALDPS mode per users' requirement.
 
-Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- drivers/net/phy/realtek.c | 48 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 47 insertions(+), 1 deletion(-)
+ drivers/net/phy/realtek.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 821e85a97367..4219c23ff2b0 100644
+index 4219c23ff2b0..90e3a8cbfc2f 100644
 --- a/drivers/net/phy/realtek.c
 +++ b/drivers/net/phy/realtek.c
-@@ -8,6 +8,7 @@
-  * Copyright (c) 2004 Freescale Semiconductor, Inc.
-  */
- #include <linux/bitops.h>
-+#include <linux/of.h>
- #include <linux/phy.h>
- #include <linux/module.h>
- #include <linux/delay.h>
-@@ -27,6 +28,7 @@
- #define RTL821x_PAGE_SELECT			0x1f
+@@ -73,6 +73,7 @@
  
- #define RTL8211F_PHYCR1				0x18
-+#define RTL8211F_PHYCR2				0x19
- #define RTL8211F_INSR				0x1d
+ /* quirks for realtek phy */
+ #define RTL821X_CLKOUT_DISABLE_FEATURE		BIT(0)
++#define RTL821X_ALDPS_DISABLE_FEATURE		BIT(1)
  
- #define RTL8211F_TX_DELAY			BIT(8)
-@@ -40,6 +42,8 @@
- #define RTL8211E_TX_DELAY			BIT(12)
- #define RTL8211E_RX_DELAY			BIT(11)
- 
-+#define RTL8211F_CLKOUT_EN			BIT(0)
-+
- #define RTL8201F_ISR				0x1e
- #define RTL8201F_ISR_ANERR			BIT(15)
- #define RTL8201F_ISR_DUPLEX			BIT(13)
-@@ -67,10 +71,17 @@
- 
- #define RTL_GENERIC_PHYID			0x001cc800
- 
-+/* quirks for realtek phy */
-+#define RTL821X_CLKOUT_DISABLE_FEATURE		BIT(0)
-+
  MODULE_DESCRIPTION("Realtek PHY driver");
  MODULE_AUTHOR("Johnson Leung");
- MODULE_LICENSE("GPL");
+@@ -104,6 +105,9 @@ static int rtl821x_probe(struct phy_device *phydev)
+ 	if (of_property_read_bool(dev->of_node, "rtl821x,clkout-disable"))
+ 		priv->quirks |= RTL821X_CLKOUT_DISABLE_FEATURE;
  
-+struct rtl821x_priv {
-+	u32 quirks;
-+};
++	if (of_property_read_bool(dev->of_node, "rtl821x,aldps-disable"))
++		priv->quirks |= RTL821X_ALDPS_DISABLE_FEATURE;
 +
- static int rtl821x_read_page(struct phy_device *phydev)
- {
- 	return __phy_read(phydev, RTL821x_PAGE_SELECT);
-@@ -81,6 +92,23 @@ static int rtl821x_write_page(struct phy_device *phydev, int page)
- 	return __phy_write(phydev, RTL821x_PAGE_SELECT, page);
- }
+ 	phydev->priv = priv;
  
-+static int rtl821x_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct rtl821x_priv *priv;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	if (of_property_read_bool(dev->of_node, "rtl821x,clkout-disable"))
-+		priv->quirks |= RTL821X_CLKOUT_DISABLE_FEATURE;
-+
-+	phydev->priv = priv;
-+
-+	return 0;
-+}
-+
- static int rtl8201_ack_interrupt(struct phy_device *phydev)
- {
- 	int err;
-@@ -291,6 +319,7 @@ static int rtl8211c_config_init(struct phy_device *phydev)
- 
- static int rtl8211f_config_init(struct phy_device *phydev)
- {
-+	struct rtl821x_priv *priv = phydev->priv;
- 	struct device *dev = &phydev->mdio.dev;
- 	u16 val_txdly, val_rxdly;
+ 	return 0;
+@@ -325,8 +329,10 @@ static int rtl8211f_config_init(struct phy_device *phydev)
  	u16 val;
-@@ -354,7 +383,23 @@ static int rtl8211f_config_init(struct phy_device *phydev)
- 			val_rxdly ? "enabled" : "disabled");
- 	}
+ 	int ret;
  
--	return 0;
-+	if (priv->quirks & RTL821X_CLKOUT_DISABLE_FEATURE) {
-+		ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
-+				       RTL8211F_CLKOUT_EN, 0);
-+		if (ret < 0) {
-+			dev_err(&phydev->mdio.dev, "clkout disable failed\n");
-+			return ret;
-+		}
-+	} else {
-+		ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
-+				       RTL8211F_CLKOUT_EN, RTL8211F_CLKOUT_EN);
-+		if (ret < 0) {
-+			dev_err(&phydev->mdio.dev, "clkout enable failed\n");
-+			return ret;
-+		}
+-	val = RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_XTAL_OFF;
+-	phy_modify_paged_changed(phydev, 0xa43, RTL8211F_PHYCR1, val, val);
++	if (!(priv->quirks & RTL821X_ALDPS_DISABLE_FEATURE)) {
++		val = RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_XTAL_OFF;
++		phy_modify_paged_changed(phydev, 0xa43, RTL8211F_PHYCR1, val, val);
 +	}
-+
-+	return genphy_soft_reset(phydev);
- }
  
- static int rtl8211e_config_init(struct phy_device *phydev)
-@@ -847,6 +892,7 @@ static struct phy_driver realtek_drvs[] = {
- 	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc916),
- 		.name		= "RTL8211F Gigabit Ethernet",
-+		.probe		= rtl821x_probe,
- 		.config_init	= &rtl8211f_config_init,
- 		.read_status	= rtlgen_read_status,
- 		.config_intr	= &rtl8211f_config_intr,
+ 	switch (phydev->interface) {
+ 	case PHY_INTERFACE_MODE_RGMII:
 -- 
 2.17.1
 
