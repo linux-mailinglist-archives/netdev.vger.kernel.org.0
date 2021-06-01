@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D366396A7E
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 02:52:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DC65396A81
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 02:52:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232618AbhFAAyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 May 2021 20:54:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46182 "EHLO mail.kernel.org"
+        id S232525AbhFAAyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 May 2021 20:54:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46220 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232559AbhFAAxz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 May 2021 20:53:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3341D61364;
-        Tue,  1 Jun 2021 00:52:13 +0000 (UTC)
+        id S232398AbhFAAx5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 May 2021 20:53:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 515DD61374;
+        Tue,  1 Jun 2021 00:52:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622508734;
-        bh=thmtUafonYJfxBh+qZjVikVs+8hrEVyZs31+MWKROxY=;
+        s=k20201202; t=1622508737;
+        bh=O5Y4AT4esPTiPEG+/lih5Kns+T03xStg/IARP4QSYJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lEVzPQPdMkCfq71Ex4q1U6MrqdEchhLnNrNIneo8BxRTzNwqw4GQlNGUxwH4rsSzk
-         EDWYLjbXLp18w94EHr7xGzF2qQjyUcFjgz99qJtLaYuuEt+bT6Od9EjCM+CkEFeVRi
-         QAn9u09ri+/66y3Ayq/mHvVCCnFQVGbquNi8wUvi0tNOgsM8wEp4kfkZZ+uApO3Sm0
-         epOZg9yA5DspB8rsN5LTaJsXImwx7a9g1dYFHf+mhiSqwkI49/Ed/53fuBJbGgkM0A
-         nSGkVOYkmVEFfFBrCGfOc9dRsNuvtlVvYj7cWn/KjzMMMnr1oHN1R8immtZ1sjLIcn
-         5jPDdCXDpgNKA==
+        b=oCEbiBarnn6WMMuGmZdXend06qn+Fg/GWkqHJ5TMzNfk4q5WYP4dhoemg2s1y3Toj
+         D7k4lFJ9R1zAD5uTIilLHOQ32FaHjUgKoapwTW0FfgBw+wlxnk9qnYRmA0enaKA9Qn
+         7FsAYYf2MZiOk6D9yLUAdcbOQZRWSjMWErOy+9l6cStzcpQvS+Au6XOKQ3so6169tN
+         ZS0Ill8rlOy7h5YxhTelpkj18ALgweTPTrDjOLPkFLu4tMiB6SoEYDMMkpGWmSRErD
+         0EH7icd7po/Xrr3Xij3tnztaMfehHqvhrivv7ZC4bjPUeQv52kwlJ07N8v12NsCFuK
+         ktUkuQCA6FFyg==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     linux-leds@vger.kernel.org
 Cc:     netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
@@ -33,9 +33,9 @@ Cc:     netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
         Jacek Anaszewski <jacek.anaszewski@gmail.com>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH leds v2 07/10] leds: turris-omnia: refactor sw mode setting code into separate function
-Date:   Tue,  1 Jun 2021 02:51:52 +0200
-Message-Id: <20210601005155.27997-8-kabel@kernel.org>
+Subject: [PATCH leds v2 08/10] leds: turris-omnia: refactor brightness setting function
+Date:   Tue,  1 Jun 2021 02:51:53 +0200
+Message-Id: <20210601005155.27997-9-kabel@kernel.org>
 X-Mailer: git-send-email 2.26.3
 In-Reply-To: <20210601005155.27997-1-kabel@kernel.org>
 References: <20210601005155.27997-1-kabel@kernel.org>
@@ -46,53 +46,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to make trigger offloading code more readable, put the code
-that sets/unsets software mode into a separate function.
+Move the code of brightness setting function guarded by mutex into
+separate function. This will be useful when used from trigger offload
+method.
 
 Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
- drivers/leds/leds-turris-omnia.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/leds/leds-turris-omnia.c | 35 +++++++++++++++++++++-----------
+ 1 file changed, 23 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/leds/leds-turris-omnia.c b/drivers/leds/leds-turris-omnia.c
-index 2f9a289ab245..c5a40afe5d45 100644
+index c5a40afe5d45..2b51c14b8363 100644
 --- a/drivers/leds/leds-turris-omnia.c
 +++ b/drivers/leds/leds-turris-omnia.c
-@@ -73,6 +73,13 @@ static int omnia_led_brightness_set_blocking(struct led_classdev *cdev,
- 	return ret;
- }
+@@ -41,32 +41,43 @@ struct omnia_leds {
+ 	struct omnia_led leds[];
+ };
  
-+static int omnia_led_set_sw_mode(struct i2c_client *client, int led, bool sw)
-+{
-+	return i2c_smbus_write_byte_data(client, CMD_LED_MODE,
-+					 CMD_LED_MODE_LED(led) |
-+					 (sw ? CMD_LED_MODE_USER : 0));
+-static int omnia_led_brightness_set_blocking(struct led_classdev *cdev,
+-					     enum led_brightness brightness)
++static int omnia_led_brightness_set(struct i2c_client *client,
++				    struct omnia_led *led,
++				    enum led_brightness brightness)
+ {
+-	struct led_classdev_mc *mc_cdev = lcdev_to_mccdev(cdev);
+-	struct omnia_leds *leds = dev_get_drvdata(cdev->dev->parent);
+-	struct omnia_led *led = to_omnia_led(mc_cdev);
+ 	u8 buf[5], state;
+ 	int ret;
+ 
+-	mutex_lock(&leds->lock);
+-
+ 	led_mc_calc_color_components(&led->mc_cdev, brightness);
+ 
+ 	buf[0] = CMD_LED_COLOR;
+ 	buf[1] = led->reg;
+-	buf[2] = mc_cdev->subled_info[0].brightness;
+-	buf[3] = mc_cdev->subled_info[1].brightness;
+-	buf[4] = mc_cdev->subled_info[2].brightness;
++	buf[2] = led->mc_cdev.subled_info[0].brightness;
++	buf[3] = led->mc_cdev.subled_info[1].brightness;
++	buf[4] = led->mc_cdev.subled_info[2].brightness;
+ 
+ 	state = CMD_LED_STATE_LED(led->reg);
+ 	if (buf[2] || buf[3] || buf[4])
+ 		state |= CMD_LED_STATE_ON;
+ 
+-	ret = i2c_smbus_write_byte_data(leds->client, CMD_LED_STATE, state);
++	ret = i2c_smbus_write_byte_data(client, CMD_LED_STATE, state);
+ 	if (ret >= 0 && (state & CMD_LED_STATE_ON))
+-		ret = i2c_master_send(leds->client, buf, 5);
++		ret = i2c_master_send(client, buf, 5);
++
++	return ret < 0 ? ret : 0;
 +}
 +
- static int omnia_led_register(struct i2c_client *client, struct omnia_led *led,
- 			      struct device_node *np)
- {
-@@ -114,9 +121,7 @@ static int omnia_led_register(struct i2c_client *client, struct omnia_led *led,
- 	cdev->brightness_set_blocking = omnia_led_brightness_set_blocking;
++static int omnia_led_brightness_set_blocking(struct led_classdev *cdev,
++					     enum led_brightness brightness)
++{
++	struct led_classdev_mc *mc_cdev = lcdev_to_mccdev(cdev);
++	struct omnia_leds *leds = dev_get_drvdata(cdev->dev->parent);
++	struct omnia_led *led = to_omnia_led(mc_cdev);
++	int ret;
++
++	mutex_lock(&leds->lock);
++
++	ret = omnia_led_brightness_set(leds->client, led, brightness);
  
- 	/* put the LED into software mode */
--	ret = i2c_smbus_write_byte_data(client, CMD_LED_MODE,
--					CMD_LED_MODE_LED(led->reg) |
--					CMD_LED_MODE_USER);
-+	ret = omnia_led_set_sw_mode(client, led->reg, true);
- 	if (ret < 0) {
- 		dev_err(dev, "Cannot set LED %pOF to software mode: %i\n", np,
- 			ret);
-@@ -250,8 +255,7 @@ static int omnia_leds_remove(struct i2c_client *client)
- 	u8 buf[5];
+ 	mutex_unlock(&leds->lock);
  
- 	/* put all LEDs into default (HW triggered) mode */
--	i2c_smbus_write_byte_data(client, CMD_LED_MODE,
--				  CMD_LED_MODE_LED(OMNIA_BOARD_LEDS));
-+	omnia_led_set_sw_mode(client, OMNIA_BOARD_LEDS, false);
- 
- 	/* set all LEDs color to [255, 255, 255] */
- 	buf[0] = CMD_LED_COLOR;
 -- 
 2.26.3
 
