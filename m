@@ -2,86 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D7ED3973FF
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 15:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AAA3397419
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 15:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233900AbhFANVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 09:21:38 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38762 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233064AbhFANVg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 09:21:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=+u4SacplXlTkNNJW8BzGweLscGfIHsyXrxZtnVa/2Gc=; b=zVa7iUPXcUVaD1A2u2w2D1ec/O
-        8YXJGb0khfrhWFCxia4mThkPojjrPS93yEiuumYG5pS3r7Bbx1nugMKx7FAI0PAuPy91eodrcLa8k
-        qMjSGlgxYp2Q0q9DacnQWDvZ/fEv6Kfa/hkhCd6a3iv/82IQXMicxQpnPHUea6x/kEcE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lo4JD-007I76-L1; Tue, 01 Jun 2021 15:19:51 +0200
-Date:   Tue, 1 Jun 2021 15:19:51 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Asmaa Mnebhi <asmaa@nvidia.com>
-Cc:     David Thompson <davthompson@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Liming Sun <limings@nvidia.com>
-Subject: Re: [PATCH net-next v5] Add Mellanox BlueField Gigabit Ethernet
- driver
-Message-ID: <YLYz94yo0ge6CDh+@lunn.ch>
-References: <20210528193719.6132-1-davthompson@nvidia.com>
- <YLGJLv7y0NLPFR28@lunn.ch>
- <CH2PR12MB3895FA4354E69D830F39CDC8D73E9@CH2PR12MB3895.namprd12.prod.outlook.com>
+        id S234038AbhFAN2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 09:28:11 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:2823 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233823AbhFAN2J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 09:28:09 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FvXqr088CzWqcL;
+        Tue,  1 Jun 2021 21:21:44 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Tue, 1 Jun 2021 21:26:25 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Tue, 1 Jun 2021 21:26:25 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
+        <ms@dev.tdt.de>, <willemb@google.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <tanhuazhong@huawei.com>,
+        <huangguangbin2@huawei.com>
+Subject: [PATCH net-next 0/7] net: hdlc: clean up some code style issues
+Date:   Tue, 1 Jun 2021 21:23:15 +0800
+Message-ID: <1622553802-19903-1-git-send-email-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CH2PR12MB3895FA4354E69D830F39CDC8D73E9@CH2PR12MB3895.namprd12.prod.outlook.com>
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please do not top post.
+From: Peng Li <lipeng321@huawei.com>
 
-> Thanks.
-> Asmaa
-> -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch> 
-> Sent: Friday, May 28, 2021 8:22 PM
-> To: David Thompson <davthompson@nvidia.com>
-> Cc: davem@davemloft.net; kuba@kernel.org; netdev@vger.kernel.org; Liming Sun <limings@nvidia.com>; Asmaa Mnebhi <asmaa@nvidia.com>
-> Subject: Re: [PATCH net-next v5] Add Mellanox BlueField Gigabit Ethernet driver
-> 
-> > +static void mlxbf_gige_adjust_link (struct net_device *netdev) {
-> > +	struct mlxbf_gige *priv = netdev_priv(netdev);
-> > +	struct phy_device *phydev = netdev->phydev;
-> > +
-> > +	if (phydev->link) {
-> > +		priv->rx_pause = phydev->pause;
-> > +		priv->tx_pause = phydev->pause;
-> > +	}
-> 
-> ...
-> 
-> > +	/* MAC supports symmetric flow control */
-> > +	phy_support_sym_pause(phydev);
-> 
+This patchset clean up some code style issues.
 
-> What i don't see anywhere is you acting on the results of the pause
-> negotiation. It could be, mlxbf_gige_adjust_link() tells you the
-> peer does not support pause, and you need to disable it in this MAC
-> as well. It is a negotiation, after all.
+Peng Li (7):
+  net: hdlc: remove redundant blank lines
+  net: hdlc: add blank line after declarations
+  net: hdlc: fix an code style issue about "foo* bar"
+  net: hdlc: fix an code style issue about EXPORT_SYMBOL(foo)
+  net: hdlc: replace comparison to NULL with "!param"
+  net: hdlc: move out assignment in if condition
+  net: hdlc: add braces {} to all arms of the statement
 
-From what you are saying, this is all wrong. You don't negotiate at
-all. So don't report negotiated values in ethtool, just report the
-fixed values, and do not set autoneg in ethtool_pauseparam because you
-have not negotiated it.
+ drivers/net/wan/hdlc.c | 63 ++++++++++++++++++--------------------------------
+ 1 file changed, 23 insertions(+), 40 deletions(-)
 
-You also should not be calling phy_support_sym_pause(), which means, i
-support negotiated pause up to and including symmetric pause. You
-might also need to clear the pause bits from phydev->advertising.
+-- 
+2.8.1
 
-	Andrew
