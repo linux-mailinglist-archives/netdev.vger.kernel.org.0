@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A80793974D5
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 16:02:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 138AD3974DD
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 16:03:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234170AbhFAODu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 10:03:50 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2933 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234050AbhFAODs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 10:03:48 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FvYfw44LXz67w9;
-        Tue,  1 Jun 2021 21:59:04 +0800 (CST)
+        id S234256AbhFAOEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 10:04:32 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:3325 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234228AbhFAOEb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 10:04:31 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FvYdp3brmz1BGgh;
+        Tue,  1 Jun 2021 21:58:06 +0800 (CST)
 Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Tue, 1 Jun 2021 22:02:01 +0800
+ 15.1.2176.2; Tue, 1 Jun 2021 22:02:48 +0800
 Received: from localhost (10.174.179.215) by dggema769-chm.china.huawei.com
  (10.1.198.211) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 1 Jun
- 2021 22:02:01 +0800
+ 2021 22:02:47 +0800
 From:   YueHaibing <yuehaibing@huawei.com>
-To:     <rajur@chelsio.com>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] cxgb4: Fix -Wunused-const-variable warning
-Date:   Tue, 1 Jun 2021 22:01:48 +0800
-Message-ID: <20210601140148.27968-1-yuehaibing@huawei.com>
+To:     <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] igb: Fix -Wunused-const-variable warning
+Date:   Tue, 1 Jun 2021 22:02:38 +0800
+Message-ID: <20210601140238.20712-1-yuehaibing@huawei.com>
 X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
@@ -41,40 +42,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_PCI_IOV is n, make W=1 warns:
+If CONFIG_IGB_HWMON is n, gcc warns:
 
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:3909:33:
- warning: ‘cxgb4_mgmt_ethtool_ops’ defined but not used [-Wunused-const-variable=]
- static const struct ethtool_ops cxgb4_mgmt_ethtool_ops = {
-                                 ^~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/intel/igb/e1000_82575.c:2765:17:
+ warning: ‘e1000_emc_therm_limit’ defined but not used [-Wunused-const-variable=]
+ static const u8 e1000_emc_therm_limit[4] = {
+                 ^~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/intel/igb/e1000_82575.c:2759:17:
+ warning: ‘e1000_emc_temp_data’ defined but not used [-Wunused-const-variable=]
+ static const u8 e1000_emc_temp_data[4] = {
+                 ^~~~~~~~~~~~~~~~~~~
 
 Move it into #ifdef block to fix this.
 
 Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 2 +-
+ drivers/net/ethernet/intel/igb/e1000_82575.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 421bd9b88028..b730aa1cb141 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -3894,7 +3894,6 @@ static const struct net_device_ops cxgb4_mgmt_netdev_ops = {
- 	.ndo_set_vf_vlan        = cxgb4_mgmt_set_vf_vlan,
- 	.ndo_set_vf_link_state	= cxgb4_mgmt_set_vf_link_state,
- };
--#endif
+diff --git a/drivers/net/ethernet/intel/igb/e1000_82575.c b/drivers/net/ethernet/intel/igb/e1000_82575.c
+index 50863fd87d53..cbe92fd23a70 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_82575.c
++++ b/drivers/net/ethernet/intel/igb/e1000_82575.c
+@@ -2756,6 +2756,7 @@ s32 igb_get_eee_status_i354(struct e1000_hw *hw, bool *status)
+ 	return ret_val;
+ }
  
- static void cxgb4_mgmt_get_drvinfo(struct net_device *dev,
- 				   struct ethtool_drvinfo *info)
-@@ -3909,6 +3908,7 @@ static void cxgb4_mgmt_get_drvinfo(struct net_device *dev,
- static const struct ethtool_ops cxgb4_mgmt_ethtool_ops = {
- 	.get_drvinfo       = cxgb4_mgmt_get_drvinfo,
++#ifdef CONFIG_IGB_HWMON
+ static const u8 e1000_emc_temp_data[4] = {
+ 	E1000_EMC_INTERNAL_DATA,
+ 	E1000_EMC_DIODE1_DATA,
+@@ -2769,7 +2770,6 @@ static const u8 e1000_emc_therm_limit[4] = {
+ 	E1000_EMC_DIODE3_THERM_LIMIT
  };
-+#endif
  
- static void notify_fatal_err(struct work_struct *work)
- {
+-#ifdef CONFIG_IGB_HWMON
+ /**
+  *  igb_get_thermal_sensor_data_generic - Gathers thermal sensor data
+  *  @hw: pointer to hardware structure
 -- 
 2.17.1
 
