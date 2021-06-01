@@ -2,71 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE382397C33
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 00:07:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82C4B397C37
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 00:08:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235143AbhFAWIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 18:08:51 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:39572 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234949AbhFAWIX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 18:08:23 -0400
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id BF573641A1;
-        Wed,  2 Jun 2021 00:05:34 +0200 (CEST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 16/16] netfilter: fix clang-12 fmt string warnings
-Date:   Wed,  2 Jun 2021 00:06:29 +0200
-Message-Id: <20210601220629.18307-17-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210601220629.18307-1-pablo@netfilter.org>
-References: <20210601220629.18307-1-pablo@netfilter.org>
+        id S235020AbhFAWJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 18:09:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39666 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234897AbhFAWJk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 18:09:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=FtHxG6xUI+ZK/LdOWImVo2KBg5IQssGdB+TkgX8DaAc=; b=07F7bXGF6o2GkIt8YI5oQtaLJl
+        GzHjxDA/eXv6w4vO5Gmy2VHFMqWYbq7va2EhmbRi5HG5YZ4p4xRpoOQ4IInl/fuUvlUz24w5NunKH
+        SCdVry8Y5mhDETT957/nbzuM1JPVaVNrovPsOE6BqTvVH91gXS/pD/yGFI5ZQD9UEbDM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1loCYA-007LxQ-F7; Wed, 02 Jun 2021 00:07:50 +0200
+Date:   Wed, 2 Jun 2021 00:07:50 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, f.fainelli@gmail.com,
+        linux-imx@nxp.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/4] net: phy: realtek: add dt property to
+ disable CLKOUT clock
+Message-ID: <YLavtkj5YO4WGlLd@lunn.ch>
+References: <20210601090408.22025-1-qiangqing.zhang@nxp.com>
+ <20210601090408.22025-3-qiangqing.zhang@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210601090408.22025-3-qiangqing.zhang@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+> +struct rtl821x_priv {
+> +	u32 quirks;
 
-nf_conntrack_h323_main.c:198:6: warning: format specifies type 'unsigned short' but
-xt_AUDIT.c:121:9: warning: format specifies type 'unsigned char' but the argument has type 'int' [-Wformat]
+I'm not sure quirks is the correct word here. I would probably use
+features, or flags.
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_conntrack_h323_main.c | 2 +-
- net/netfilter/xt_AUDIT.c               | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/netfilter/nf_conntrack_h323_main.c b/net/netfilter/nf_conntrack_h323_main.c
-index aafaff00baf1..2eb31ffb3d14 100644
---- a/net/netfilter/nf_conntrack_h323_main.c
-+++ b/net/netfilter/nf_conntrack_h323_main.c
-@@ -194,7 +194,7 @@ static int get_tpkt_data(struct sk_buff *skb, unsigned int protoff,
- 		if (tcpdatalen == 4) {	/* Separate TPKT header */
- 			/* Netmeeting sends TPKT header and data separately */
- 			pr_debug("nf_ct_h323: separate TPKT header indicates "
--				 "there will be TPKT data of %hu bytes\n",
-+				 "there will be TPKT data of %d bytes\n",
- 				 tpktlen - 4);
- 			info->tpkt_len[dir] = tpktlen - 4;
- 			return 0;
-diff --git a/net/netfilter/xt_AUDIT.c b/net/netfilter/xt_AUDIT.c
-index 9cdc16b0d0d8..b6a015aee0ce 100644
---- a/net/netfilter/xt_AUDIT.c
-+++ b/net/netfilter/xt_AUDIT.c
-@@ -117,7 +117,7 @@ static int audit_tg_check(const struct xt_tgchk_param *par)
- 	const struct xt_audit_info *info = par->targinfo;
- 
- 	if (info->type > XT_AUDIT_TYPE_MAX) {
--		pr_info_ratelimited("Audit type out of range (valid range: 0..%hhu)\n",
-+		pr_info_ratelimited("Audit type out of range (valid range: 0..%u)\n",
- 				    XT_AUDIT_TYPE_MAX);
- 		return -ERANGE;
- 	}
--- 
-2.30.2
-
+	  Andrew
