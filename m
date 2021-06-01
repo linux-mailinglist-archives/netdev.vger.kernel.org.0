@@ -2,132 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F00A396E8F
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 10:09:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15982396EEB
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 10:28:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233319AbhFAILM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 04:11:12 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2927 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233056AbhFAILJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 04:11:09 -0400
-Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FvPr60rRtz68Yw;
-        Tue,  1 Jun 2021 16:06:30 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeme760-chm.china.huawei.com (10.3.19.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 1 Jun 2021 16:09:25 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <jdmason@kudzu.us>, Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH v2 net-next] net: vxge: Declare the function vxge_reset_all_vpaths as void
-Date:   Tue, 1 Jun 2021 16:23:04 +0800
-Message-ID: <20210601082304.4093866-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+        id S233421AbhFAIaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 04:30:30 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:46876 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232963AbhFAIa3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 04:30:29 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B06841A3C1C;
+        Tue,  1 Jun 2021 10:28:47 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 inva020.eu-rdc02.nxp.com B06841A3C1C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com;
+        s=nselector3; t=1622536127;
+        bh=vWCv+MeGTvvz1WVA73qZXjvvuHB4aTe/cxgc3hg+kwE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VG9n6A0RyiNUtHUejUzAqLT6FnL31SuW+5En8RdNlio7+Y0PmJ3tVfjJalxhgLygs
+         G/xxWi3y0zAfVgCJycJnYYtViDyjbbQVucutgzgGxk2xpy1kfOBC3wgO9q1POWYg7C
+         ZHsgS0oGff0HFORc9UGDQ05MKhzocTfeBo7/x7JmTz2a8gajtJPOknYugnFjhWw7wE
+         izxOkhL1zmzsHMnTHvB9KoYRgrpF9BXVrEtTN+86L7YWB0Cm5WQt6D41vmIPdNbTg5
+         HQceHZ3s+/lic1fx1PkR2z9tH37P/sq9tdtxkuF8rcxrV4FhzqZ1ZOdkd8Y03YYuyj
+         Q2Y95HtdTmlog==
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7C5FE1A3C23;
+        Tue,  1 Jun 2021 10:28:39 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 inva020.eu-rdc02.nxp.com 7C5FE1A3C23
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 75AF2402E9;
+        Tue,  1 Jun 2021 16:28:28 +0800 (+08)
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     davem@davemloft.net, joabreu@synopsys.com, kuba@kernel.org,
+        alexandre.torgue@st.com, peppe.cavallaro@st.com,
+        mcoquelin.stm32@gmail.com
+Cc:     netdev@vger.kernel.org, boon.leong.ong@intel.com,
+        weifeng.voon@intel.com, vee.khee.wong@intel.com,
+        tee.min.tan@intel.com, mohammad.athari.ismail@intel.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        leoyang.li@nxp.com, vladimir.oltean@nxp.com,
+        qiangqing.zhang@nxp.com, rui.sousa@nxp.com, mingkai.hu@nxp.com,
+        yangbo.lu@nxp.com, xiaoliang.yang_1@nxp.com
+Subject: [PATCH v1 net-next 0/3] net: stmmac: re-configure tas basetime after ptp time adjust
+Date:   Tue,  1 Jun 2021 16:38:10 +0800
+Message-Id: <20210601083813.1078-1-xiaoliang.yang_1@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-variable 'status' is unneeded and it's noneed to check the
-return value of function vxge_reset_all_vpaths,so declare
-it as void.
+If the DWMAC Ethernet device has already set the Qbv EST configuration
+before using ptp to synchronize the time adjustment, the Qbv base time
+may change to be the past time of the new current time. This is not
+allowed by hardware.
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- .../net/ethernet/neterion/vxge/vxge-main.c    | 27 +++++--------------
- 1 file changed, 6 insertions(+), 21 deletions(-)
+This patch calculates and re-configures the Qbv basetime after ptp time
+adjustment.
 
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-index 87892bd992b1..297bce5f635f 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-@@ -87,7 +87,7 @@ static unsigned int bw_percentage[VXGE_HW_MAX_VIRTUAL_PATHS] =
- module_param_array(bw_percentage, uint, NULL, 0);
- 
- static struct vxge_drv_config *driver_config;
--static enum vxge_hw_status vxge_reset_all_vpaths(struct vxgedev *vdev);
-+static void vxge_reset_all_vpaths(struct vxgedev *vdev);
- 
- static inline int is_vxge_card_up(struct vxgedev *vdev)
- {
-@@ -1606,7 +1606,6 @@ static void vxge_config_ci_for_tti_rti(struct vxgedev *vdev)
- 
- static int do_vxge_reset(struct vxgedev *vdev, int event)
- {
--	enum vxge_hw_status status;
- 	int ret = 0, vp_id, i;
- 
- 	vxge_debug_entryexit(VXGE_TRACE, "%s:%d", __func__, __LINE__);
-@@ -1709,14 +1708,7 @@ static int do_vxge_reset(struct vxgedev *vdev, int event)
- 		netif_tx_stop_all_queues(vdev->ndev);
- 
- 	if (event == VXGE_LL_FULL_RESET) {
--		status = vxge_reset_all_vpaths(vdev);
--		if (status != VXGE_HW_OK) {
--			vxge_debug_init(VXGE_ERR,
--				"fatal: %s: can not reset vpaths",
--				vdev->ndev->name);
--			ret = -EPERM;
--			goto out;
--		}
-+		vxge_reset_all_vpaths(vdev);
- 	}
- 
- 	if (event == VXGE_LL_COMPL_RESET) {
-@@ -1969,9 +1961,8 @@ static enum vxge_hw_status vxge_rth_configure(struct vxgedev *vdev)
- }
- 
- /* reset vpaths */
--static enum vxge_hw_status vxge_reset_all_vpaths(struct vxgedev *vdev)
-+static void vxge_reset_all_vpaths(struct vxgedev *vdev)
- {
--	enum vxge_hw_status status = VXGE_HW_OK;
- 	struct vxge_vpath *vpath;
- 	int i;
- 
-@@ -1986,18 +1977,16 @@ static enum vxge_hw_status vxge_reset_all_vpaths(struct vxgedev *vdev)
- 						"vxge_hw_vpath_recover_"
- 						"from_reset failed for vpath: "
- 						"%d", i);
--					return status;
-+					return;
- 				}
- 			} else {
- 				vxge_debug_init(VXGE_ERR,
- 					"vxge_hw_vpath_reset failed for "
- 					"vpath:%d", i);
--				return status;
-+				return;
- 			}
- 		}
- 	}
--
--	return status;
- }
- 
- /* close vpaths */
-@@ -2676,11 +2665,7 @@ static int vxge_set_features(struct net_device *dev, netdev_features_t features)
- 	/* !netif_running() ensured by vxge_fix_features() */
- 
- 	vdev->devh->config.rth_en = !!(features & NETIF_F_RXHASH);
--	if (vxge_reset_all_vpaths(vdev) != VXGE_HW_OK) {
--		dev->features = features ^ NETIF_F_RXHASH;
--		vdev->devh->config.rth_en = !!(dev->features & NETIF_F_RXHASH);
--		return -EIO;
--	}
-+	vxge_reset_all_vpaths(vdev);
- 
- 	return 0;
- }
+Xiaoliang Yang (3):
+  net: stmmac: separate the tas basetime calculation function
+  net: stmmac: add mutex lock to protect est parameters
+  net: stmmac: ptp: update tas basetime after ptp adjust
+
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  3 ++
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 41 ++++++++++++++++-
+ .../net/ethernet/stmicro/stmmac/stmmac_tc.c   | 46 +++++++++++++------
+ include/linux/stmmac.h                        |  1 +
+ 4 files changed, 77 insertions(+), 14 deletions(-)
+
 -- 
-2.25.1
+2.17.1
 
