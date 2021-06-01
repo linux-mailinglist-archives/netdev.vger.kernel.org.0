@@ -2,162 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99F5E397A76
-	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 21:09:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2E56397A89
+	for <lists+netdev@lfdr.de>; Tue,  1 Jun 2021 21:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234765AbhFATKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 15:10:47 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:54498 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234650AbhFATKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 15:10:45 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1622574543; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=+bLsBPHU1LaIdCv04nFKLHzd65rHOKclCOVC2UEdtNU=;
- b=f5M8NMMCZ9jtZh/UEf1Q+1HGrdx+s9d9bwhBRyh0Ezeo1PFY7Gk4bPRN1eDWR2Kf0LDWSVYn
- uNpmfpjKyO5IUnTwqoNdNYed0fpneN8gYeuuA3aHAtilnchH8WtA2U2hEA5U1tIeIrtnw9WR
- jsKDtzSh023g+VrWxGi320nx3zw=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 60b685c281efe91cdafdcc2a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Jun 2021 19:08:50
- GMT
-Sender: sharathv=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4D6A5C4338A; Tue,  1 Jun 2021 19:08:50 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sharathv)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8D5D2C433D3;
-        Tue,  1 Jun 2021 19:08:49 +0000 (UTC)
+        id S234741AbhFATPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 15:15:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39332 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234628AbhFATPl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 15:15:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/2m2vE+ftN28tEQqzl4iBDZLbfMKxT2qINDoF6ixKBM=; b=I+Zp2SeFeffnTgV9/RQCJIK7Qp
+        Om0tGplIF3YckOpIrFCm887bBQHjblAVq6TWvUbMg3QiMdNOLye7qcksiNjHgT7Sasm4xJJkKl3hX
+        c4tae6hp0u7T9b+JsKeHSz24Mwny8Vww+ZxHA7d9vgDpiCAI6kZJHNtKIPKhZ6UgNlKI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lo9pt-007Khz-CP; Tue, 01 Jun 2021 21:13:57 +0200
+Date:   Tue, 1 Jun 2021 21:13:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Liang Xu <lxu@maxlinear.com>
+Cc:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        Thomas Mohren <tmohren@maxlinear.com>
+Subject: Re: [PATCH] phy: maxlinear: add Maxlinear GPY115/21x/24x driver
+Message-ID: <YLaG9cdn6ewdffjV@lunn.ch>
+References: <20210601074427.40990-1-lxu@maxlinear.com>
+ <YLYrFDvGr7flA9rt@lunn.ch>
+ <050c9cd2-ba6e-332d-d235-4fa9364b461b@maxlinear.com>
+ <YLZmZ0pa4vULonsZ@lunn.ch>
+ <089adb48-c3f7-4c4e-808f-b303a0cd16d6@maxlinear.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 02 Jun 2021 00:38:49 +0530
-From:   sharathv@codeaurora.org
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, elder@kernel.org, cpratapa@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v7 3/3] net: ethernet: rmnet: Add support for
- MAPv5 egress packets
-In-Reply-To: <20210528161131.5f7b9920@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <1622105322-2975-1-git-send-email-sharathv@codeaurora.org>
- <1622105322-2975-4-git-send-email-sharathv@codeaurora.org>
- <20210528161131.5f7b9920@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Message-ID: <bea88cea5094f7fec640a5d867b5a31a@codeaurora.org>
-X-Sender: sharathv@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <089adb48-c3f7-4c4e-808f-b303a0cd16d6@maxlinear.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-05-29 04:41, Jakub Kicinski wrote:
-> On Thu, 27 May 2021 14:18:42 +0530 Sharath Chandra Vurukala wrote:
->> Adding support for MAPv5 egress packets.
->> 
->> This involves adding the MAPv5 header and setting the 
->> csum_valid_required
->> in the checksum header to request HW compute the checksum.
->> 
->> Corresponding stats are incremented based on whether the checksum is
->> computed in software or HW.
->> 
->> New stat has been added which represents the count of packets whose
->> checksum is calculated by the HW.
->> 
->> Signed-off-by: Sharath Chandra Vurukala <sharathv@codeaurora.org>
+On Tue, Jun 01, 2021 at 05:14:01PM +0000, Liang Xu wrote:
+> On 2/6/2021 12:55 am, Andrew Lunn wrote:
+> > This email was sent from outside of MaxLinear.
+> >
+> >
+> >>>> +     linkmode_mod_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT,
+> >>>> +                      phydev->supported,
+> >>>> +                      ret & MDIO_PMA_NG_EXTABLE_5GBT);
+> >>>> +
+> >>> Does genphy_c45_pma_read_abilities() do the wrong thing here? What
+> >>> does it get wrong?
+> >> The problem comes from condition "phydev->c45_ids.mmds_present &
+> >> MDIO_DEVS_AN".
+> >>
+> >> Our product supports both C22 and C45.
+> >>
+> >> In the real system, we found C22 was used by customers (with indirect
+> >> access to C45 registers when necessary).
+> >>
+> >> Then during probe, in API "get_phy_device", it skips reading C45 IDs.
+> >>
+> >> So that genphy_c45_pma_read_abilities skip the supported flag
+> >> ETHTOOL_LINK_MODE_Autoneg_BIT.
+> > This sounds like a generic problem, which will affect any PHY which
+> > has both C22 and C45. I wounder if it makes sense to add a helper
+> > function which a PHY driver can call to get the
+> > phydev->c45_ids.mmds_present populated?
 > 
->> +static void rmnet_map_v5_checksum_uplink_packet(struct sk_buff *skb,
->> +						struct rmnet_port *port,
->> +						struct net_device *orig_dev)
->> +{
->> +	struct rmnet_priv *priv = netdev_priv(orig_dev);
->> +	struct rmnet_map_v5_csum_header *ul_header;
->> +
->> +	if (!(port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV5))
->> +		return;
-> 
-> how can we get here if this condition is not met? Looks like defensive
-> programming.
-> 
+> I thought to use get_phy_c45_ids in gpy_config_init to populate the 
+> c45_ids, but this is a static function inside phy_device.c.
 
-Yes we get here only for the MAPv5 case, as you think this is just a 
-defensive code.
-will remove this in next patch.
+Yes, which i said maybe add a helper. Something like this in phy_device.c
 
->> +	ul_header = skb_push(skb, sizeof(*ul_header));
-> 
-> Are you making sure you can modify head? I only see a check if there is
-> enough headroom but not if head is writable (skb_cow_head()).
-> 
+int phy_get_c45_ids(struct phy_device *phydev) {
 
-TSkb_cow_head() changes will be done in the rmnet_map_egress_handler() 
-in the next patch.
+	return get_phy_c45_ids(phydev->mdio.bus, phydev->mdio.addr,
+			       phydev->c45_ids);
+}
 
->> +	memset(ul_header, 0, sizeof(*ul_header));
->> +	ul_header->header_info = 
->> u8_encode_bits(RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD,
->> +						MAPV5_HDRINFO_HDR_TYPE_FMASK);
-> 
-> Is prepending the header required even when packet doesn't need
-> checksuming?
-> 
->> +	if (skb->ip_summed == CHECKSUM_PARTIAL) {
->> +		void *iph = (char *)ul_header + sizeof(*ul_header);
-> 
-> ip_hdr(skb)
-> 
+Completely untested. Hopefully you get the idea.
 
->> +		__sum16 *check;
->> +		void *trans;
->> +		u8 proto;
->> +
->> +		if (skb->protocol == htons(ETH_P_IP)) {
->> +			u16 ip_len = ((struct iphdr *)iph)->ihl * 4;
->> +
->> +			proto = ((struct iphdr *)iph)->protocol;
->> +			trans = iph + ip_len;
->> +		} else if (skb->protocol == htons(ETH_P_IPV6)) {
->> +#if IS_ENABLED(CONFIG_IPV6)
->> +			u16 ip_len = sizeof(struct ipv6hdr);
->> +
->> +			proto = ((struct ipv6hdr *)iph)->nexthdr;
->> +			trans = iph + ip_len;
->> +#else
->> +			priv->stats.csum_err_invalid_ip_version++;
->> +			goto sw_csum;
->> +#endif /* CONFIG_IPV6 */
->> +		} else {
->> +			priv->stats.csum_err_invalid_ip_version++;
->> +			goto sw_csum;
->> +		}
->> +
->> +		check = rmnet_map_get_csum_field(proto, trans);
->> +		if (check) {
->> +			skb->ip_summed = CHECKSUM_NONE;
->> +			/* Ask for checksum offloading */
->> +			ul_header->csum_info |= MAPV5_CSUMINFO_VALID_FLAG;
->> +			priv->stats.csum_hw++;
->> +			return;
-> 
-> Please try to keep the success path unindented.
-> 
 
-Sure will take care of these comments in next patch.
->> +		}
->> +	}
->> +
->> +sw_csum:
->> +	priv->stats.csum_sw++;
->> +}
+> 
+> Or maybe in genphy_c45_pma_read_abilities, it reads MII_BMSR register if 
+> is_c45 not set.
+> 
+> >>>> +static int gpy_read_status(struct phy_device *phydev)
+> >>>> +{
+> >>>> +     int ret;
+> >>>> +
+> >>>> +     ret = genphy_update_link(phydev);
+> >>>> +     if (ret)
+> >>>> +             return ret;
+> >>>> +
+> >>>> +     phydev->speed = SPEED_UNKNOWN;
+> >>>> +     phydev->duplex = DUPLEX_UNKNOWN;
+> >>>> +     phydev->pause = 0;
+> >>>> +     phydev->asym_pause = 0;
+> >>>> +
+> >>>> +     if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
+> >>>> +             ret = genphy_c45_read_lpa(phydev);
+> >>>> +             if (ret < 0)
+> >>>> +                     return ret;
+> >>>> +
+> >>>> +             /* Read the link partner's 1G advertisement */
+> >>>> +             ret = phy_read(phydev, MII_STAT1000);
+> >>>> +             if (ret < 0)
+> >>>> +                     return ret;
+> >>>> +             mii_stat1000_mod_linkmode_lpa_t(phydev->lp_advertising, ret);
+> >>> can genphy_read_lpa() be used here?
+> >> 2.5G is not covered in genphy_read_lpa.
+> >>
+> >> If I use genphy_c45_read_lpa first then genphy_read_lpa after, it seems
+> >> a bit redundant.
+> > I'm just trying to avoid repeating code which is in helpers. I think
+> > this is the first PHY driver which uses a mixture of C22 and C45 like
+> > this. So it could be the helpers need small modifications to make them
+> > work. We should make those modifications, since your PHY is not likely
+> > to be the only mixed C22 and C45 device.
+> 
+> I agree, this is issue for mixed C22/45 device.
+> 
+> I saw something similar in BRCM driver (bcm84881_read_status) and 
+> Marvell driver (mv3310_read_status_copper).
+> 
+> They are C45 device and use vendor specific register in MMD to access 
+> C22 equivalent registers.
+
+As you said, those drivers use vendor specific registers.  In your
+case, you use standard registers. So that is why i'm thinking it
+should be possible to use the helpers.
+
+	 Andrew
