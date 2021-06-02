@@ -2,97 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A698399680
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 01:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55A61399681
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 01:52:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229710AbhFBXw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 19:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbhFBXwz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 19:52:55 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DAC7C06174A;
-        Wed,  2 Jun 2021 16:51:04 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id s14so2601078pfd.9;
-        Wed, 02 Jun 2021 16:51:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xJN4h0Af4vbWS+F0SPnPqFWxpb+PEYbshYpn2hAAdeQ=;
-        b=ufUyI7WdxZ5iZJoDtwMffMqA3HWT7Oy9bJmRUsxKSI571a390l4dv+JYhZcHp9AhpV
-         w3CcWYyOtNd9qZ/aYyrmRtPlf+jPmqjPAVQAzjd5n3GSOfpLEZJj0RqJ0Ydt8dwlUQil
-         RPIcyN1xLKrzhipDGNnNHIdYA/g+sJqwQYIcUqHhfx2mq/Ea45QHjhdOphyafin5xtli
-         zTGL1xwhcZAacw1yNsAjaX1t05WHrV0Y6Cf0iVLufZxphH2stRv1VibWFE75clCnWmGt
-         QtFVdhqNrZwiqsJM9+8sLaXHJCpEsfHrXttCpYacZn3xZXRrCNHc6FnisUY/4QasWJvT
-         DCZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xJN4h0Af4vbWS+F0SPnPqFWxpb+PEYbshYpn2hAAdeQ=;
-        b=dTC68+A1+ZmIeWR/iZY0uDY3FlSfOY8gUwljltJMe23A+CXf777q4Xm/JBpJgaSWDF
-         OCPXqLDMAL9JOydW07ihRkcsYvjhmk++rYouc0U6uM7aandXEQ3EucW34PQuHLNa/9GU
-         COl5URuzIvQWmoyzKlLSLkBtxL/mQnrZ318ycFkGG71hXp9/ncjAJQ7hlm4P/qRHO+qH
-         vLWhAnfGcjKCjQKmsv0B4fcLcri6I6ez1P6MjguFXw453o6+dsCFrjOf04l53QO5hwh/
-         1kLjoU/L0rSwgeqtui+lDoqUM4iikTFVqpuqEC4mrmzxSsTj5cG6LIugkf+ceihTVkrW
-         /Kqw==
-X-Gm-Message-State: AOAM53270XIh90wDHG9c4E8c9Etvzgvdgz66aX0vxAUMj138XHmX4ycg
-        au7W+UYXyiRboOo33Jvrcg8jCp8NMAg=
-X-Google-Smtp-Source: ABdhPJzey9N1phCoubDBGdfDpkPEurxP3JlKDiG4fbN+SBwgKkTuuuPqgD7WzRwi55dG1iUAfhAYRQ==
-X-Received: by 2002:a62:2c0e:0:b029:2e9:dcb9:4a09 with SMTP id s14-20020a622c0e0000b02902e9dcb94a09mr15954386pfs.75.1622677863620;
-        Wed, 02 Jun 2021 16:51:03 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:27da])
-        by smtp.gmail.com with ESMTPSA id j10sm419162pjb.36.2021.06.02.16.51.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 16:51:02 -0700 (PDT)
-Date:   Wed, 2 Jun 2021 16:50:58 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
-Message-ID: <20210602235058.njuz2gzsd5wqxwes@ast-mbp.dhcp.thefacebook.com>
-References: <20210528195946.2375109-1-memxor@gmail.com>
- <CAEf4BzZt5nRsfCiqGkJxW2b-==AYEVCiz6jHC-FrXKkPF=Qj7w@mail.gmail.com>
- <20210602214513.eprgwxqgqruliqeu@apollo>
+        id S229726AbhFBXxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 19:53:50 -0400
+Received: from mga17.intel.com ([192.55.52.151]:60626 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229629AbhFBXxu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 19:53:50 -0400
+IronPort-SDR: rrdXNixNrh9oQSmaetRhUJwdWUasFBpvmaSskMTvSzwaQ12xDB2AfzrBWk5xUilhcaR5MNrR+d
+ E544s8n+mnDg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="184295521"
+X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; 
+   d="scan'208";a="184295521"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2021 16:52:01 -0700
+IronPort-SDR: 26E395JD8qkArSHyUz0RYqGDvOIy/KSiePLDthD3zpFT+RW3QGF1xcmxedV0sAWWDviNLkOpSA
+ cMygN36mDqYA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; 
+   d="scan'208";a="636047685"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga005.fm.intel.com with ESMTP; 02 Jun 2021 16:51:59 -0700
+Received: from linux.intel.com (unknown [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 3A07558093D;
+        Wed,  2 Jun 2021 16:51:58 -0700 (PDT)
+Date:   Thu, 3 Jun 2021 07:51:55 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC net-next 0/2] Introduce MDIO probe order C45 over C22
+Message-ID: <20210602235155.GA31624@linux.intel.com>
+References: <20210525055803.22116-1-vee.khee.wong@linux.intel.com>
+ <YKz86iMwoP3VT4uh@lunn.ch>
+ <20210601104734.GA18984@linux.intel.com>
+ <YLYwcx3aHXFu4n5C@lunn.ch>
+ <20210601154423.GA27463@linux.intel.com>
+ <YLazBrpXbpsb6aXI@lunn.ch>
+ <20210601230352.GA28209@linux.intel.com>
+ <YLbqv0Sy/3E2XaVU@lunn.ch>
+ <20210602141557.GA29554@linux.intel.com>
+ <YLed2G1iDRTbA9eT@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210602214513.eprgwxqgqruliqeu@apollo>
+In-Reply-To: <YLed2G1iDRTbA9eT@lunn.ch>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 03:15:13AM +0530, Kumar Kartikeya Dwivedi wrote:
+On Wed, Jun 02, 2021 at 05:03:52PM +0200, Andrew Lunn wrote:
+> > I took a look at how most ethernet drivers implement their "bus->read"
+> > function. Most of them either return -EIO or -ENODEV.
+> > 
+> > I think it safe to drop the return error type when we try with C45 access:
+> > 
+> > 
+> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> > index 1539ea021ac0..282d16fdf6e1 100644
+> > --- a/drivers/net/phy/phy_device.c
+> > +++ b/drivers/net/phy/phy_device.c
+> > @@ -870,6 +870,18 @@ struct phy_device *get_phy_device(struct mii_bus *bus, int addr, bool is_c45)
+> >         if (r)
+> >                 return ERR_PTR(r);
+> > 
+> > +       /* PHY device such as the Marvell Alaska 88E2110 will return a PHY ID
+> > +        * of 0 when probed using get_phy_c22_id() with no error. Proceed to
+> > +        * probe with C45 to see if we're able to get a valid PHY ID in the C45
+> > +        * space, if successful, create the C45 PHY device.
+> > +        */
+> > +       if ((!is_c45) && (phy_id == 0)) {
+> > +               r = get_phy_c45_ids(bus, addr, &c45_ids);
+> > +               if (!r)
+> > +                       return phy_device_create(bus, addr, phy_id,
+> > +                                                true, &c45_ids);
+> > +       }
 > 
-> > The problem is that your patch set was marked as spam by Google, so I
-> > suspect a bunch of folks haven't gotten it. I suggest re-sending it
-> > again but trimming down the CC list, leaving only bpf@vger,
-> > netdev@vger, and BPF maintainers CC'ed directly.
-> >
-> 
-> Thanks for the heads up, I'll resend tomorrow.
+> This is getting better. But look at for example
+> drivers/net/mdio/mdio-bcm-unimac.c. What will happen when you ask it
+> to do get_phy_c45_ids()?
+>
 
-fyi I see this thread in my inbox, but, sadly, not the patches.
-So guessing based on cover letter and hoping that the following is true:
-link_fd is returned by BPF_LINK_CREATE command.
-If anything is missing in struct link_create the patches are adding it there.
-target_ifindex, flags are reused. attach_type indicates ingress vs egress.
+I will add an additional check for bus->probe_capabilities. This will ensure
+that only a MDIO bus that is capable for C45 access will go for the 'try getting
+PHY ID from C45 space' approach. Currently, only Freescale's QorIQ 10G MDIO
+Controller driver and STMMAC driver has a bus->probe_capabilities of > MDIOBUS_C45.
+So, I would say with this additional checking, it would not break most of the drivers:-
+
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 1539ea021ac0..460c0866ac84 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -870,6 +870,19 @@ struct phy_device *get_phy_device(struct mii_bus *bus, int addr, bool is_c45)
+        if (r)
+                return ERR_PTR(r);
+
++       /* PHY device such as the Marvell Alaska 88E2110 will return a PHY ID
++        * of 0 when probed using get_phy_c22_id() with no error. Proceed to
++        * probe with C45 to see if we're able to get a valid PHY ID in the C45
++        * space, if successful, create the C45 PHY device.
++        */
++       if ((!is_c45) && (phy_id == 0) &&
++            (bus->probe_capabilities >= MDIOBUS_C45)) {
++               r = get_phy_c45_ids(bus, addr, &c45_ids);
++               if (!r)
++                       return phy_device_create(bus, addr, phy_id,
++                                                true, &c45_ids);
++       }
++
+        return phy_device_create(bus, addr, phy_id, is_c45, &c45_ids);
+ }
+ EXPORT_SYMBOL(get_phy_device);
+
+  VK
