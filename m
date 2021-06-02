@@ -2,105 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC0A398DC4
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 17:02:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A814E398DCB
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 17:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232105AbhFBPER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 11:04:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36236 "EHLO mail.kernel.org"
+        id S231617AbhFBPFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 11:05:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41284 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232054AbhFBPEH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 11:04:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 407C1613BF;
-        Wed,  2 Jun 2021 15:02:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622646144;
-        bh=iqy0WVYDEpl3OEqiwYR2vHlixZDZNAuGOuMgnWDXeR8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=O+pqG+GrEcw9WVS8/OW/fQfSxSijYrBV2XZxysaVScijAUnd0cVcWSF4nom6VYF7/
-         Xyj4yQuXkrrTuHJnUpufQZyClixRruRrV6dddsrZRqOQc+UgpG4vsSCBUy91HBwhfj
-         S4qt9rHniezYWqyJmpYVr3rEugD00r4pGxG9asyrSW0y4cnvEcyeHwtxVwtOD0WKZZ
-         CxVeWNbOBJkHO0H7W+0s6rOxAZoTcR6qnwXcmM/nQ5icf4zBj8IsluJAeqSZ9roUcx
-         S4+extTRu1FhJzpL0fTK8fMnTglu0lQMSa9EV3Tq/LcFiaa96LORrcAJlT/uJ7FgCX
-         ZTIEp+h3YHIzg==
-Date:   Wed, 2 Jun 2021 16:02:11 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Jens Axboe <axboe@kernel.dk>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, cgroups@vger.kernel.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
-        rcu@vger.kernel.org, linux-mm@kvack.org, kvm@vger.kernel.org
-Subject: Re: [PATCH 4/6] sched: Add get_current_state()
-Message-ID: <20210602150211.GC31179@willie-the-truck>
-References: <20210602131225.336600299@infradead.org>
- <20210602133040.461908001@infradead.org>
+        id S230406AbhFBPFl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 11:05:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=WEjzdT1K9N/i7mrDHuJGeWQegSBmwOjCS27olR29tFk=; b=ISRzAwpaGAYYYqy4KR0GnG3irm
+        ntifB42kf2MY+Gy3u5hucy2Ro2iU5gWNvNBNqLgKQrJVIWg8Ez9bMHWeIXEcYE2cqwvb5BWGFgof1
+        7xD2gCV+l69WU7jTW3CUS58Epu+3CwIOUEKZo/W6TIoOUVkV9eUJMGvFohKco2t2aokk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1loSPQ-007TeB-FA; Wed, 02 Jun 2021 17:03:52 +0200
+Date:   Wed, 2 Jun 2021 17:03:52 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC net-next 0/2] Introduce MDIO probe order C45 over C22
+Message-ID: <YLed2G1iDRTbA9eT@lunn.ch>
+References: <20210525055803.22116-1-vee.khee.wong@linux.intel.com>
+ <YKz86iMwoP3VT4uh@lunn.ch>
+ <20210601104734.GA18984@linux.intel.com>
+ <YLYwcx3aHXFu4n5C@lunn.ch>
+ <20210601154423.GA27463@linux.intel.com>
+ <YLazBrpXbpsb6aXI@lunn.ch>
+ <20210601230352.GA28209@linux.intel.com>
+ <YLbqv0Sy/3E2XaVU@lunn.ch>
+ <20210602141557.GA29554@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210602133040.461908001@infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210602141557.GA29554@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 03:12:29PM +0200, Peter Zijlstra wrote:
-> Remove yet another few p->state accesses.
+> I took a look at how most ethernet drivers implement their "bus->read"
+> function. Most of them either return -EIO or -ENODEV.
 > 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  block/blk-mq.c        |    2 +-
->  include/linux/sched.h |    2 ++
->  kernel/freezer.c      |    2 +-
->  kernel/sched/core.c   |    6 +++---
->  4 files changed, 7 insertions(+), 5 deletions(-)
+> I think it safe to drop the return error type when we try with C45 access:
+> 
+> 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 1539ea021ac0..282d16fdf6e1 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -870,6 +870,18 @@ struct phy_device *get_phy_device(struct mii_bus *bus, int addr, bool is_c45)
+>         if (r)
+>                 return ERR_PTR(r);
+> 
+> +       /* PHY device such as the Marvell Alaska 88E2110 will return a PHY ID
+> +        * of 0 when probed using get_phy_c22_id() with no error. Proceed to
+> +        * probe with C45 to see if we're able to get a valid PHY ID in the C45
+> +        * space, if successful, create the C45 PHY device.
+> +        */
+> +       if ((!is_c45) && (phy_id == 0)) {
+> +               r = get_phy_c45_ids(bus, addr, &c45_ids);
+> +               if (!r)
+> +                       return phy_device_create(bus, addr, phy_id,
+> +                                                true, &c45_ids);
+> +       }
 
-I think you can include kernel/kcsan/report.c here too.
+This is getting better. But look at for example
+drivers/net/mdio/mdio-bcm-unimac.c. What will happen when you ask it
+to do get_phy_c45_ids()?
 
-With that:
-
-Acked-by: Will Deacon <will@kernel.org>
-
-Will
+   Andrew
