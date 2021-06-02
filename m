@@ -2,68 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82603397F98
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 05:39:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 635DA397FAA
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 05:46:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbhFBDlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 23:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33248 "EHLO
+        id S229964AbhFBDsc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 23:48:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbhFBDla (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 23:41:30 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F675C061574;
-        Tue,  1 Jun 2021 20:39:47 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id r4so1036370iol.6;
-        Tue, 01 Jun 2021 20:39:47 -0700 (PDT)
+        with ESMTP id S229625AbhFBDsb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 23:48:31 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9224EC061574;
+        Tue,  1 Jun 2021 20:46:47 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id d9so1068192ioo.2;
+        Tue, 01 Jun 2021 20:46:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=Ky3B8DwaaLwtu1BzJ+lvGvXYskHVLpWoa3hnGNfCdz8=;
-        b=mqJnerbBbS5zYuCpt7hm5StZv2aP4UDbaIDln33KCTZHq4rmjwbAlrjy9iEoIrLtl9
-         PIywHllYRWEbLJsifhgegsliS2HxRjBE+Ak74F+CqkHdCaoUkvCCw+bX/1Q7sh2yWh/4
-         lHQWs/VF1RuqugXjtNvkq61HIMqLiN6hpBJGsEO1yBoCe01s6LuQLWVsvxBxAAS45Rpv
-         huNhIjnHvchFoSSsE/t1k8gCD8yznNBERooNz7vCzrISvX1clRCyod7rFcfPhp0l0hrc
-         NQEUPV/cTkcSI7aMEJxARqVL9se2HOZeLKuGlBSc7BPJiULdGNB5hxE5VZtZmtKklpbU
-         J2VQ==
+        bh=2TC9lXN4UJvwqVAhSqc21INyQWxK5qbYrtHS8/wDgPE=;
+        b=jHfzfa2oRd/caEHPDmbO0u78O58FtSh4yc8LuoKmgCrm+S0wilmpz9+vQGpk+hY1if
+         aD5v/L5ISG7SGJqIb0Vd5brm8X4KM6nnOI1Y1KWziTfVY+dF/t8IVzkA34X0VljRRDE9
+         uw2GrOEDyaBgaE07xXDPVSi9k7UmLCkdGlzGhuinPeaCkEVcWM2qPVdhnXz6si0Axiju
+         7bhYtDbMvvr9ljLT7PEaqydUESTRZ8f4vNSCrZtd5hddzfLkw1XySG2HqIMNRw3qBBER
+         0V7my8K+rVdaPF0y2GbpPskgohx9ej/7tqxsyMrPZ2iFMGyN1dvg7MVyOeJagVHhJIU5
+         9kcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=Ky3B8DwaaLwtu1BzJ+lvGvXYskHVLpWoa3hnGNfCdz8=;
-        b=et7KPhPDlD2J9+2b7d2nI+5AeXe2kX54fCgU7bnv+4fXBoeqLx5GFL+Rnf+bR4e01A
-         UQ9S/H7W9uTkE6hQBYZufzSH/f++dFDsiiwPIdtnDQPoPn2XFKm0jnCzAHKCcwZiUxQh
-         jOLRKhDDcDXbBZ0UYroFIe6MaJoiDfMN2FmN5nEo0geThHnyV/j2n0d0Z3ak9aC2/SsJ
-         1wsFuDdP5yIuSt9IBpd//o4lceu6nIvV2EvmOTFvPyPBB8nWiVBZOWh0l3p7QVsoZsSr
-         fdsinJ1dRxEtFtzDSUsS1Hr30y8hQB9tIWCe+uZjaUGQBRHUa6ErQlHaCrLP9KyIRhQY
-         pZGA==
-X-Gm-Message-State: AOAM530i6FSgydbYXNGbGiKE77GCxD4YZxRQyD2+fW3baDS8XFuyptpw
-        t/nAg3QFrthS/ZhrTm3lOZE=
-X-Google-Smtp-Source: ABdhPJz+22nUAqsxhZJGmxfNqr5zUERUccK1LxJBCUbyzdOnDvDUTx8sMi7dsoWllVbU3oJBO1NM2A==
-X-Received: by 2002:a02:c04c:: with SMTP id u12mr28210762jam.129.1622605186571;
-        Tue, 01 Jun 2021 20:39:46 -0700 (PDT)
+        bh=2TC9lXN4UJvwqVAhSqc21INyQWxK5qbYrtHS8/wDgPE=;
+        b=Q0fTduxd0/ewNe7tpRA8BiWyZCdeRva11/bv7hnK6Qso0nCmphak1kjMXDU0hSrLWp
+         MwOsTJB5VXSspiF1u70gWJgtmmk1TeywT0GzQEwkwugfjmkQEK/rJwKZwoMM1qCZJRrr
+         ZkB6CrzXglLNezpAnL36OtTv5aDhurp3YkZ4oM/cWQQmPIZMLtmc1aJsZ38eH0lYmhzr
+         AG6uuXIQVt4CrtNRBOrhguiMwJ/BNdaP8dugwKsz1dyxz7BSnztOZFFynfjcVsCZajj9
+         9xYL9SVoiSgrQH0OLdgQ9yjkQeUquB7QNTpA6BcZjncUtRJz1hPKNXIF4/uRTSAXHRfG
+         3rVw==
+X-Gm-Message-State: AOAM533uyOyD+N+FRYcJQJgJLpcLnWnCS7z1kIkOdA3uQOO77dfNO56I
+        h2JoZiu/MnPN4J7W2rwWW1g=
+X-Google-Smtp-Source: ABdhPJyLXu4c8a1PYK6hGdsGI+gibtoN+C2NlJ1KYQuoWR8z4yCTlyDM0faQyB58G5SM9Opv5Tzi8Q==
+X-Received: by 2002:a05:6638:148c:: with SMTP id j12mr11704978jak.74.1622605606855;
+        Tue, 01 Jun 2021 20:46:46 -0700 (PDT)
 Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id p18sm4391987ilg.32.2021.06.01.20.39.44
+        by smtp.gmail.com with ESMTPSA id x6sm10936413ilc.59.2021.06.01.20.46.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Jun 2021 20:39:45 -0700 (PDT)
-Date:   Tue, 01 Jun 2021 20:39:38 -0700
+        Tue, 01 Jun 2021 20:46:46 -0700 (PDT)
+Date:   Tue, 01 Jun 2021 20:46:38 -0700
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <60b6fd7ace348_38d6d208eb@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAM_iQpU0evVG6_M33ZAgirRsTAJzZcMMN-cYfxqHepbC0UN0iQ@mail.gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Message-ID: <60b6ff1e45070_38d6d20881@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210527011155.10097-1-xiyou.wangcong@gmail.com>
 References: <20210527011155.10097-1-xiyou.wangcong@gmail.com>
- <20210527011155.10097-9-xiyou.wangcong@gmail.com>
- <60b07f49377b6_1cf82088d@john-XPS-13-9370.notmuch>
- <CAM_iQpU0evVG6_M33ZAgirRsTAJzZcMMN-cYfxqHepbC0UN0iQ@mail.gmail.com>
-Subject: Re: [Patch bpf v3 8/8] skmsg: increase sk->sk_drops when dropping
- packets
+Subject: RE: [Patch bpf v3 0/8] sock_map: some bug fixes and improvements
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -73,63 +64,54 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Cong Wang wrote:
-> On Thu, May 27, 2021 at 10:27 PM John Fastabend
-> <john.fastabend@gmail.com> wrote:
-> >
-> > Cong Wang wrote:
-> > > From: Cong Wang <cong.wang@bytedance.com>
-> > >
-> > > It is hard to observe packet drops without increasing relevant
-> > > drop counters, here we should increase sk->sk_drops which is
-> > > a protocol-independent counter. Fortunately psock is always
-> > > associated with a struct sock, we can just use psock->sk.
-> > >
-> > > Suggested-by: John Fastabend <john.fastabend@gmail.com>
-> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > > Cc: Lorenz Bauer <lmb@cloudflare.com>
-> > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > > ---
-> > >  net/core/skmsg.c | 22 ++++++++++++++--------
-> > >  1 file changed, 14 insertions(+), 8 deletions(-)
-> > >
-> >
-> > [...]
-> >
-> > > @@ -942,7 +948,7 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
-> > >       case __SK_DROP:
-> > >       default:
-> > >  out_free:
-> > > -             kfree_skb(skb);
-> > > +             sock_drop(psock->sk, skb);
-> >
-> > I must have missed this on first review.
-> >
-> > Why should we mark a packet we intentionally drop as sk_drops? I think
-> > we should leave it as just kfree_skb() this way sk_drops is just
-> > the error cases and if users want this counter they can always add
-> > it to the bpf prog itself.
+> From: Cong Wang <cong.wang@bytedance.com>
 > 
-> This is actually a mixed case of error and non-error drops,
-> because bpf_sk_redirect_map() could return SK_DROP
-> in error cases. And of course users could want to drop packets
-> in whatever cases.
+> This patchset contains a few bug fixes and improvements for sock_map.
 > 
-> But if you look at packet filter cases, for example UDP one,
-> it increases drop counters too when user-defined rules drop
-> them:
+> Patch 1 improves recvmsg() accuracy for UDP, patch 2 improves UDP
+> non-blocking read() by retrying on EAGAIN. With both of them, the
+> failure rate of the UDP test case goes down from 10% to 1%.
 > 
-> 2182         if (sk_filter_trim_cap(sk, skb, sizeof(struct udphdr)))
-> 2183                 goto drop;
-> 2184
-> ...
-> 2192 drop:
-> 2193         __UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
-> 2194         atomic_inc(&sk->sk_drops);
-> 2195         kfree_skb(skb);
-> 2196         return -1;
-> 
-> 
-> Thanks.
+> Patch 3 is memory leak fix I posted, no change since v1. The rest
+> patches address similar memory leaks or improve error handling,
+> including one increases sk_drops counter for error cases. Please
+> check each patch description for more details.
 
-OK same for TCP side for sk_filter_trim_cap() case. Works for me.
+For the series. My initial concern about marking BPF drops as
+socket drops appears to be common so I guess lets do it.
+
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+
+> 
+> ---
+> v3: add another bug fix as patch 4
+>     update patch 5 accordingly
+>     address John's review on the last patch
+>     fix a few typos in patch descriptions
+> 
+> v2: group all patches together
+>     set max for retries of EAGAIN
+> 
+> Cong Wang (8):
+>   skmsg: improve udp_bpf_recvmsg() accuracy
+>   selftests/bpf: Retry for EAGAIN in udp_redir_to_connected()
+>   udp: fix a memory leak in udp_read_sock()
+>   skmsg: clear skb redirect pointer before dropping it
+>   skmsg: fix a memory leak in sk_psock_verdict_apply()
+>   skmsg: teach sk_psock_verdict_apply() to return errors
+>   skmsg: pass source psock to sk_psock_skb_redirect()
+>   skmsg: increase sk->sk_drops when dropping packets
+> 
+>  include/linux/skmsg.h                         |  2 -
+>  net/core/skmsg.c                              | 82 +++++++++----------
+>  net/ipv4/tcp_bpf.c                            | 24 +++++-
+>  net/ipv4/udp.c                                |  2 +
+>  net/ipv4/udp_bpf.c                            | 47 +++++++++--
+>  .../selftests/bpf/prog_tests/sockmap_listen.c |  7 +-
+>  6 files changed, 112 insertions(+), 52 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
+
+
