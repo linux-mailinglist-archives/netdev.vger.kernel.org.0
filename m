@@ -2,258 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C681A398AEA
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 15:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1BD5398AF0
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 15:44:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229994AbhFBNlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 09:41:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47648 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229902AbhFBNlo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 09:41:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622641201;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RSyNYGQzSIGWwH69Ad9FPmGQv4nF3yGhgBhDO7Psolk=;
-        b=cIsUee5qWUV/GEZMscpYj5ZdM0BuPqtS/spo7ScAipt4W0QUgNcf+urbRQU3Tl4OIY1UZK
-        hi3CagfILnG9B0MAIA8gu52BI69vz7GqSUYtlmJcPFG/k9umqEpFVmr+8vA6tjqBZ6atB0
-        5euJHs0hv+xp2fS3ZgB/bmC+UrOg/6o=
-Received: from mail-yb1-f200.google.com (mail-yb1-f200.google.com
- [209.85.219.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-378-9m1NXMM1MaK1GNIXg_4hRQ-1; Wed, 02 Jun 2021 09:40:00 -0400
-X-MC-Unique: 9m1NXMM1MaK1GNIXg_4hRQ-1
-Received: by mail-yb1-f200.google.com with SMTP id 67-20020a2514460000b029053a9edba2a6so3239451ybu.7
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 06:40:00 -0700 (PDT)
+        id S229778AbhFBNqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 09:46:19 -0400
+Received: from mail-ej1-f52.google.com ([209.85.218.52]:35742 "EHLO
+        mail-ej1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229579AbhFBNqS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 09:46:18 -0400
+Received: by mail-ej1-f52.google.com with SMTP id h24so3965066ejy.2
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 06:44:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KWqgYeLlxYZiliOYiaWXQibd9qtFvy48JHYxtD1KSnA=;
+        b=S6yRQw4rnLMiXV5km0szS2tt35lFZ9JfMmF+0iGSt8bV9eXz2CH0le8ld8bHSgubyz
+         LcjbWvHzPjrVplMMQ7sB6VW82FpG4m5WD9OUUfzEH5di2AxXKBHWa+g3+7Si59p4Ntiy
+         gf7H4/00ygt/6Zf7DgL3NliwSCrBEGzP/kF9VeJPYFIJTC9hn5ivfVtNc8t1gx30VjPS
+         ObGoSVQ1b1K9IHeOXD5YIGKvHUNlxfw2UzFGjkQuMQ/uEqi/merxplmqidkmtsqCw+tM
+         uENNWMtudAhQbxEj12XkdM5P+X34iMwwEzKTb8PBd+kSM5IyYgRIhbjZsY1pdjss4T44
+         RESg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RSyNYGQzSIGWwH69Ad9FPmGQv4nF3yGhgBhDO7Psolk=;
-        b=B/x1aPDDv0rGFLoUVIzJwhP4Qt6TF4triIZ2yxyfvp0SIjR9HIredGmTM+01xxRO2B
-         C7FUTEPEtqDZMLoezYl3fXy29rcVsyjD5nRJ+upbGZM5m8z0Cvfd0zafRpbef22v+Jf2
-         ArHrmkUF6307vZbuAtk00P8YThzgdNzx0lsNguAtBtms8Jmon8YXQKPw3a78ToSNlTCR
-         XlpVyF3J8/kZpmcqkmswob6WT3qhNHSUd1ABXqshgZvqbdYOgzUTtFNAioeqE3f6KtL6
-         1oNQ3zcIUC3YlHh/kgt+4gMt25eP+R7L4WyN7/b8eM+iHKKJlEzSa8AJ+Ny+umw2slkZ
-         fJ2w==
-X-Gm-Message-State: AOAM531mSjjgbe66s1630qIPcdrzzpD2MvmxvGXxcLPfKzdo1kaW5eMs
-        b8DwcdjmI96f6rQVKlyqikO6IIvISTTpWD+q9D/BIBxQM9+0msWLpREFKmI6Ahsp87uAW7Ka5Ll
-        oi75OqiuIPPyfBR/Wkhfk4+OF5rbgSmHE
-X-Received: by 2002:a25:1fc1:: with SMTP id f184mr49512902ybf.289.1622641199361;
-        Wed, 02 Jun 2021 06:39:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzw5HMz1i5JZoc28rMvNEKCzlMpWnbJkeOjx0h3wVL7BIyqJUVNqQMi69Vk7Zxbp7rEd6SlqgoL+Hsz/MSD+is=
-X-Received: by 2002:a25:1fc1:: with SMTP id f184mr49512857ybf.289.1622641199013;
- Wed, 02 Jun 2021 06:39:59 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KWqgYeLlxYZiliOYiaWXQibd9qtFvy48JHYxtD1KSnA=;
+        b=RyL4oaX153DmBeX52Fi7qe/3+tKmTp0t83f9T/0F9hN7j+B/EbypsiDuuFS09jC3V5
+         Xim9FKcdF+nQJlIhsk9nGHJOJgbxujQtBZHCNrgNMD9PokRnvb58HCaKA33/M2RBchRI
+         t5KL7i9fp1T9N7dJhw5UCZ6NGJwm0cKhMXHDoXasXup1aueoN8xKAE3d6be9pMqFN1jC
+         86r2QL/EdaOtTrk1xIlZ16nTxyvtdotsY2lbCs4zRpmrI76/0prF9Ub2Zo5h6lJO2w7F
+         UHpVtSXyo1Gq6+ByMqWAzUKN1Mq6N3wXVTA5Gm/l6pUacNzeUTFLvRAKh0YUHWJqiK5J
+         98jQ==
+X-Gm-Message-State: AOAM532uN6CjvbaGFzaQul2s268ztjlQ4rCCbkzketRHN33dCfxU5v0j
+        bJgOwkL/JOSAShkCc6f+WRA=
+X-Google-Smtp-Source: ABdhPJzqD4SY8CQ8mbBnJy2fSut57oiXF6XTgk5LckhnDCE0iEZz5sAvEgFiDQVwYJPEKBJ/bTRuMQ==
+X-Received: by 2002:a17:906:5293:: with SMTP id c19mr1911787ejm.245.1622641403227;
+        Wed, 02 Jun 2021 06:43:23 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id s2sm1411108edu.89.2021.06.02.06.43.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Jun 2021 06:43:22 -0700 (PDT)
+Date:   Wed, 2 Jun 2021 16:43:21 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH v2 net-next 9/9] net: pcs: xpcs: convert to
+ phylink_pcs_ops
+Message-ID: <20210602134321.ppvusilvmmybodtx@skbuf>
+References: <20210601003325.1631980-1-olteanv@gmail.com>
+ <20210601003325.1631980-10-olteanv@gmail.com>
+ <20210601121032.GV30436@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20210517092006.803332-1-omosnace@redhat.com> <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
-In-Reply-To: <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
-From:   Ondrej Mosnacek <omosnace@redhat.com>
-Date:   Wed, 2 Jun 2021 15:39:43 +0200
-Message-ID: <CAFqZXNsh9njbFUNBugidbdiNqD3QbKzsw=KgNKSmW5hv-fD6tA@mail.gmail.com>
-Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
- permission checks
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        SElinux list <selinux@vger.kernel.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, network dev <netdev@vger.kernel.org>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210601121032.GV30436@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 28, 2021 at 3:37 AM Paul Moore <paul@paul-moore.com> wrote:
-> On Mon, May 17, 2021 at 5:22 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> >
-> > Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
-> > lockdown") added an implementation of the locked_down LSM hook to
-> > SELinux, with the aim to restrict which domains are allowed to perform
-> > operations that would breach lockdown.
-> >
-> > However, in several places the security_locked_down() hook is called in
-> > situations where the current task isn't doing any action that would
-> > directly breach lockdown, leading to SELinux checks that are basically
-> > bogus.
-> >
-> > Since in most of these situations converting the callers such that
-> > security_locked_down() is called in a context where the current task
-> > would be meaningful for SELinux is impossible or very non-trivial (and
-> > could lead to TOCTOU issues for the classic Lockdown LSM
-> > implementation), fix this by modifying the hook to accept a struct cred
-> > pointer as argument, where NULL will be interpreted as a request for a
-> > "global", task-independent lockdown decision only. Then modify SELinux
-> > to ignore calls with cred == NULL.
->
-> I'm not overly excited about skipping the access check when cred is
-> NULL.  Based on the description and the little bit that I've dug into
-> thus far it looks like using SECINITSID_KERNEL as the subject would be
-> much more appropriate.  *Something* (the kernel in most of the
-> relevant cases it looks like) is requesting that a potentially
-> sensitive disclosure be made, and ignoring it seems like the wrong
-> thing to do.  Leaving the access control intact also provides a nice
-> avenue to audit these requests should users want to do that.
->
-> Those users that generally don't care can grant kernel_t all the
-> necessary permissions without much policy.
+On Tue, Jun 01, 2021 at 01:10:33PM +0100, Russell King (Oracle) wrote:
+> On Tue, Jun 01, 2021 at 03:33:25AM +0300, Vladimir Oltean wrote:
+> >  static const struct phylink_mac_ops stmmac_phylink_mac_ops = {
+> >  	.validate = stmmac_validate,
+> > -	.mac_pcs_get_state = stmmac_mac_pcs_get_state,
+> > -	.mac_config = stmmac_mac_config,
+> 
+> mac_config is still a required function.
 
-Seems kind of pointless to me, but it's a relatively simple change to
-do a check against SECINITSID_KERNEL, so I don't mind doing it like
-that.
+This is correct, thanks.
 
-> > Since most callers will just want to pass current_cred() as the cred
-> > parameter, rename the hook to security_cred_locked_down() and provide
-> > the original security_locked_down() function as a simple wrapper around
-> > the new hook.
->
-> I know you and Casey went back and forth on this in v1, but I agree
-> with Casey that having two LSM hooks here is a mistake.  I know it
-> makes backports hard, but spoiler alert: maintaining complex software
-> over any non-trivial period of time is hard, reeeeally hard sometimes
-> ;)
+VK, would you mind testing again with this extra patch added to the mix?
+If it works, I will add it to the series in v3, ordered properly.
 
-Do you mean having two slots in lsm_hook_defs.h or also having two
-security_*() functions? (It's not clear to me if you're just
-reiterating disagreement with v1 or if you dislike the simplified v2
-as well.)
+-----------------------------[ cut here]-----------------------------
+From a79863027998451c73d5bbfaf1b77cf6097a110c Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Wed, 2 Jun 2021 16:35:55 +0300
+Subject: [PATCH] net: phylink: allow the mac_config method to be missing if
+ pcs_ops are provided
 
-> > The callers migrated to the new hook, passing NULL as cred:
-> > 1. arch/powerpc/xmon/xmon.c
-> >      Here the hook seems to be called from non-task context and is only
-> >      used for redacting some sensitive values from output sent to
-> >      userspace.
->
-> This definitely sounds like kernel_t based on the description above.
+The pcs_config method from struct phylink_pcs_ops does everything that
+the mac_config method from struct phylink_mac_ops used to do in the
+legacy approach of driving a MAC PCS. So allow drivers to not implement
+the mac_config method if there is nothing to do. Keep the method
+required for setups that do not provide pcs_ops.
 
-Here I'm a little concerned that the hook might be called from some
-unusual interrupt, which is not masked by spin_lock_irqsave()... We
-ran into this with PMI (Platform Management Interrupt) before, see
-commit 5ae5fbd21079 ("powerpc/perf: Fix handling of privilege level
-checks in perf interrupt context"). While I can't see anything that
-would suggest something like this happening here, the whole thing is
-so foreign to me that I'm wary of making assumptions :)
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/phy/phylink.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-@Michael/PPC devs, can you confirm to us that xmon_is_locked_down() is
-only called from normal syscall/interrupt context (as opposed to
-something tricky like PMI)?
-
-> > 2. fs/tracefs/inode.c:tracefs_create_file()
-> >      Here the call is used to prevent creating new tracefs entries when
-> >      the kernel is locked down. Assumes that locking down is one-way -
-> >      i.e. if the hook returns non-zero once, it will never return zero
-> >      again, thus no point in creating these files.
->
-> More kernel_t.
-
-This should be OK.
-
-> > 3. kernel/trace/bpf_trace.c:bpf_probe_read_kernel{,_str}_common()
-> >      Called when a BPF program calls a helper that could leak kernel
-> >      memory. The task context is not relevant here, since the program
-> >      may very well be run in the context of a different task than the
-> >      consumer of the data.
-> >      See: https://bugzilla.redhat.com/show_bug.cgi?id=1955585
->
-> The access control check isn't so much who is consuming the data, but
-> who is requesting a potential violation of a "lockdown", yes?  For
-> example, the SELinux policy rule for the current lockdown check looks
-> something like this:
->
->   allow <who> <who> : lockdown { <reason> };
->
-> It seems to me that the task context is relevant here and performing
-> the access control check based on the task's domain is correct.  If we
-> are also concerned about who has access to this sensitive information
-> once it has been determined that the task can cause it to be sent, we
-> should have another check point for that, assuming the access isn't
-> already covered by another check/hook.
-
-This case is being discussed further in this thread, so I'm going to
-skip it in this reply.
-
-> > 4. net/xfrm/xfrm_user.c:copy_to_user_*()
-> >      Here a cryptographic secret is redacted based on the value returned
-> >      from the hook. There are two possible actions that may lead here:
-> >      a) A netlink message XFRM_MSG_GETSA with NLM_F_DUMP set - here the
-> >         task context is relevant, since the dumped data is sent back to
-> >         the current task.
->
-> If the task context is relevant we should use it.
-
-Yes, but as I said it would create an asymmetry with case b), which
-I'll expand on below...
-
-> >      b) When deleting an SA via XFRM_MSG_DELSA, the dumped SAs are
-> >         broadcasted to tasks subscribed to XFRM events - here the
-> >         SELinux check is not meningful as the current task's creds do
-> >         not represent the tasks that could potentially see the secret.
->
-> This looks very similar to the BPF hook discussed above, I believe my
-> comments above apply here as well.
-
-Using the current task is just logically wrong in this case. The
-current task here is just simply deleting an SA that happens to have
-some secret value in it. When deleting an SA, a notification is sent
-to a group of subscribers (some group of other tasks), which includes
-a dump of the secret value. The current task isn't doing any attempt
-to breach lockdown, it's just deleting an SA.
-
-It also makes it really awkward to make policy decisions around this.
-Suppose that domains A, B, and C need to be able to add/delete SAs and
-domains D, E, and F need to receive notifications about changes in
-SAs. Then if, say, domain E actually needs to see the secret values in
-the notifications, you must grant the confidentiality permission to
-all of A, B, C to keep things working. And now you have opened up the
-door for A, B, C to do other lockdown-confidentiality stuff, even
-though these domains themselves actually don't request/need any
-confidential data from the kernel. That's just not logical and you may
-actually end up (slightly) worse security-wise than if you just
-skipped checking for XFRM secrets altogether, because you need to
-allow confidentiality to domains for which it may be excessive.
-
-This is why I talk about the task that gets to see the sensitive
-values as the relevant one - because otherwise the semantics of a
-given domain having the confidentiality permission granted becomes
-very hard to reason about.
-
-> >      It really doesn't seem worth it to try to preserve the check in the
-> >      a) case ...
->
-> After you've read all of the above I hope you can understand why I
-> disagree with this.
->
-> >      ... since the eventual leak can be circumvented anyway via b)
->
-> I don't follow the statement above ... ?  However I'm not sure it
-> matters much considering my other concerns.
-
-What I meant was that if we skip/kernel_t-ize the check in case b)
-(for which I don't see a good alternative), then denying
-confidentiality perm to a given domain wouldn't prevent it from seeing
-the key value, as it could potentially see them by subscribing to SA
-modification events. IMO, in that case it's better to just give up on
-controlling the SA secrets with SELinux lockdown altogether than to
-create some false assumptions of this being covered. You may disagree
-and would be willing to implement the partial checking as well if you
-insist, but we need to first come to a consensus about case b) before
-such discussion becomes relevant, anyway...
-
-Given the yet unresolved discussions around the XFRM and BPF cases, I
-plan to respin the patch with just the tracefs and xmon changes and we
-can then incrementally address the rest as the individual discussions
-come to a consensus.
-
---
-Ondrej Mosnacek
-Software Engineer, Linux Security - SELinux kernel
-Red Hat, Inc.
-
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 96d8e88b4e46..a8842c6ce3a2 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -415,6 +415,9 @@ static void phylink_resolve_flow(struct phylink_link_state *state)
+ static void phylink_mac_config(struct phylink *pl,
+ 			       const struct phylink_link_state *state)
+ {
++	if (!pl->mac_ops->mac_config)
++		return;
++
+ 	phylink_dbg(pl,
+ 		    "%s: mode=%s/%s/%s/%s adv=%*pb pause=%02x link=%u an=%u\n",
+ 		    __func__, phylink_an_mode_str(pl->cur_link_an_mode),
+@@ -1192,6 +1195,12 @@ void phylink_start(struct phylink *pl)
+ 
+ 	ASSERT_RTNL();
+ 
++	/* The mac_ops::mac_config method may be absent only if the
++	 * pcs_ops are present.
++	 */
++	if (WARN_ON_ONCE(!pl->mac_ops->mac_config && !pl->pcs_ops))
++		return;
++
+ 	phylink_info(pl, "configuring for %s/%s link mode\n",
+ 		     phylink_an_mode_str(pl->cur_link_an_mode),
+ 		     phy_modes(pl->link_config.interface));
+-----------------------------[ cut here]-----------------------------
