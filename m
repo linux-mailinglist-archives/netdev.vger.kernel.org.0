@@ -2,102 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A23803987FA
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 13:21:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC78439885D
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 13:27:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232398AbhFBLW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 07:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232111AbhFBLWz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 07:22:55 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27ACBC061763
-        for <netdev@vger.kernel.org>; Wed,  2 Jun 2021 04:21:11 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id 76so1846839qkn.13
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 04:21:11 -0700 (PDT)
+        id S232068AbhFBL32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 07:29:28 -0400
+Received: from mx0a-0064b401.pphosted.com ([205.220.166.238]:3418 "EHLO
+        mx0a-0064b401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232527AbhFBL2v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 07:28:51 -0400
+Received: from pps.filterd (m0250810.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 152BKevg011143;
+        Wed, 2 Jun 2021 04:26:16 -0700
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2175.outbound.protection.outlook.com [104.47.73.175])
+        by mx0a-0064b401.pphosted.com with ESMTP id 38ww8v8byp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 02 Jun 2021 04:26:16 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X6KIgxwj2M9/FXhCK7EJonlZF1WFafcHWRIUfzklpSgw/vSHSwphXWO8Zame4CnMN207XG/0u7Aj83w7XDasU8OMKFZ7ZUOBkojQK4zMlg34XjUUFW9FZbqTq2E6Ov7FnrzP+e75eOuW+dwqHmpLyC+AzqtLt+0lIkcyQQY+UnAdr4gfcOn1Tj3lH/6TfGMmdLVg5hkxbrIEpI9sBchuO0l/UKOqyBaCQ2bA8MUAS58JaPXySjvXQMOL3qS7szHB9uIDpC9kBnz05n5uj7okv8SUqK2p58HIcQqxoOOxIOo69hCKSE5saEYDoia+xIzxqGhNi8yfnslgImR0rx5YFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UQ4To3v4UW0NyhcVR+1mvWNqXPVPvwx0m4AhbmB+GUE=;
+ b=k+fSzqSu9KyCPgehrm1EzlcCb7Y2Io8Rzbyd+0iTVJeHvtRQF9Pjaf2vFvhRpvbDDNcZFSf60xGxi8yzxPY8/ODPhhzSvbc4pkPxMW9Jc5sSr7uhmIjEeyewFB36whQNvUqn17l9mJfXv94D4DvTi230h5FEjPvnJ+TI+AUTFo7i8U3oik5pFLRf1uiXNK89oJeuANivTy3Ff1Ol3SkhuilRYZYU7AF4RmWRg+HQSe8aZ2B/BYnFLGz/5KC2w9hW5aywR8QLmDLCO1CWvIMa6O4PvuoUQM6culEs6wCXcMKUamZZv57ep7uyr+JA0GDZHw+JGhFryCzP5mQur18nKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gchpafLKJ6F6uOATukxao5S0fzx1QuO5gM2w3naYObs=;
-        b=RYDTY0QjdOGb7GBWzWXSIgmp3riEMTtlJ6ePjnS+zHZaqHYFqkBg61i+LUjT8vT0yX
-         0aFpRQzdhdiMFqLC0g8cGKUzYmQ+6Uvp5324tCxg7MgufCsg5COzkVbUDxigOpidKyj0
-         DfE61GhP1X/GTu1+yxXuVjsqsxs+5CW7o4mkpLeONuCCNft/BESAatIMWgCmnsIdnmvl
-         aR9+WJswy89YDIvJ/HT1wB296lsOy7zulRpyVy1u04f604IifYk4496HUh8S5UOkGiKq
-         VXJ4JzhBsS2k6HdiksLiL0UqPD8JZjTSwUNnY9Td8DpldjOrRbnm7CLOtyewUJAz7VnE
-         QFeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gchpafLKJ6F6uOATukxao5S0fzx1QuO5gM2w3naYObs=;
-        b=dg3+M0f+bpsUNzmaNcK+hvCevisKV2ynquFMwIL966+Gn3Z3eL5OMbOiZzT/qhT14W
-         zmS0yrVNMpspiu7B2qzmkPTXo41fLhMw/O1U1kp89N84F5+ZSQlwFTINIXHF5r8fn2TY
-         bH/F1TQEdAun4GcReld19HfR/TZTshn6fIHAHh+8kXmuVysd8uEnZ+t3biwSB+8nuXBx
-         wDwfJyM/w8jXd/K/hWEzxeApfSw8+oThgrU0X9PTLQKpLoy9sAarkMzmn80FQ6loHf6F
-         qfmPcLYDL2MInlxeX/fyNGy0Y41Y47F9V9AgqQelba4Sgku/RUxDTOQbSgACo8+vRa30
-         VOrg==
-X-Gm-Message-State: AOAM531Dl936sHRE5nvH/ha29HaYZjnMKlgs56UH9FbeVRq+TUkI4mRx
-        q/qGzDPnXCZ1j0zi6dWdt4iBdCr+PHNdKpIYPy94WQ==
-X-Google-Smtp-Source: ABdhPJxkQvzCyua+2YCHkeNe+i/7cmwbKWtNkqHYzH1bZ1etsu2/XFklrkSEo8/9k2tD2Ih4LDt8IMgD4M2z0xhIp6w=
-X-Received: by 2002:a05:620a:15b:: with SMTP id e27mr19426423qkn.501.1622632869281;
- Wed, 02 Jun 2021 04:21:09 -0700 (PDT)
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UQ4To3v4UW0NyhcVR+1mvWNqXPVPvwx0m4AhbmB+GUE=;
+ b=RnnPVw4OXI/TfPUk1pOrkTgTrMK4MF5cA+8XK8rUv2rXnz3Xr2jrFjyisTfjqN5EEx/gkRSIIae9GPeaAvYGJWEwryxgxN3K+lYPbm8vCfQq1UHuTilu3wVVpmfnIPcA5WigPPdRXtr9y0x7IfU+5br9aWrVkSgGnjUexVjpbPQ=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=windriver.com;
+Received: from BY5PR11MB4241.namprd11.prod.outlook.com (2603:10b6:a03:1ca::13)
+ by BY5PR11MB4103.namprd11.prod.outlook.com (2603:10b6:a03:18c::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.21; Wed, 2 Jun
+ 2021 11:26:13 +0000
+Received: from BY5PR11MB4241.namprd11.prod.outlook.com
+ ([fe80::34b3:17c2:b1ad:286c]) by BY5PR11MB4241.namprd11.prod.outlook.com
+ ([fe80::34b3:17c2:b1ad:286c%5]) with mapi id 15.20.4173.030; Wed, 2 Jun 2021
+ 11:26:13 +0000
+Subject: Re: [PATCH 1/1] bpf: avoid unnecessary IPI in bpf_flush_icache
+To:     Will Deacon <will@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     ast@kernel.org, zlim.lnx@gmail.com, catalin.marinas@arm.com,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20210601150625.37419-1-yanfei.xu@windriver.com>
+ <20210601150625.37419-2-yanfei.xu@windriver.com>
+ <56cc1e25-25c3-a3da-64e3-8a1c539d685b@iogearbox.net>
+ <20210601174114.GA29130@willie-the-truck>
+From:   "Xu, Yanfei" <yanfei.xu@windriver.com>
+Message-ID: <7637dcdf-12b4-2861-3c76-f8a8e240a05e@windriver.com>
+Date:   Wed, 2 Jun 2021 19:26:03 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20210601174114.GA29130@willie-the-truck>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [60.247.85.82]
+X-ClientProxiedBy: HK0PR01CA0056.apcprd01.prod.exchangelabs.com
+ (2603:1096:203:a6::20) To BY5PR11MB4241.namprd11.prod.outlook.com
+ (2603:10b6:a03:1ca::13)
 MIME-Version: 1.0
-References: <000000000000c98d7205ae300144@google.com> <0000000000003e409f05c3c5f190@google.com>
- <YLdo77SkmGLgPUBi@casper.infradead.org>
-In-Reply-To: <YLdo77SkmGLgPUBi@casper.infradead.org>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 2 Jun 2021 13:20:57 +0200
-Message-ID: <CACT4Y+YUa41KMCO3n9WSvsbLqXo=F5nxpnoYWyiyB=AFWZ-KVA@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in idr_get_next
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     syzbot <syzbot+f7204dcf3df4bb4ce42c@syzkaller.appspotmail.com>,
-        anmol.karan123@gmail.com,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        coreteam@netfilter.org, David Miller <davem@davemloft.net>,
-        dsahern@kernel.org, Eric Biggers <ebiggers@google.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Necip Fazil Yildiran <necip@google.com>,
-        netdev <netdev@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [128.224.162.160] (60.247.85.82) by HK0PR01CA0056.apcprd01.prod.exchangelabs.com (2603:1096:203:a6::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Wed, 2 Jun 2021 11:26:10 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ffc924ff-b4c4-44d6-7d8b-08d925b93abc
+X-MS-TrafficTypeDiagnostic: BY5PR11MB4103:
+X-Microsoft-Antispam-PRVS: <BY5PR11MB41037B527E472ABDDDE999F2E43D9@BY5PR11MB4103.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bvWMZY+UTghlY+QNk9fX9N2DGVcswfTcAzbTXnl6eC6+FhGbqkoluuy9LVFm7OkEEiW2P/6/8f6k0sxpY262mx12EtvwoFWkgs+2RkXiuLsKyBsXBvDilz/xutMXKrTafBcaJlkbOSYb7k/wwL+5DMs70HAmZfDqeTYcZPwamL9JQOLzMLbjsZts5kP9PXTgVk8nEBkeQY0VOV5UHWDY0EDByVDMem7pbzmPSjrI0l1X8mAOFwz0AoHpAEtVxCVyPODM4/iSBeoQEbFZAQl7SDHtPHFAIuQlxAjRM9ZgjmZnQ5PvmUW3EnsugkDXRhDA3U9WkKlkS/6lXjdk9oT9GJQ0LK9URlyKw4lxvey0EPXsVRGkvOlcZprNjhUAQvVSfqw5DtsWffutB9OAE9vSZvxtenBT18lUxrEowa+WILYe6VQbmcyj9Ole0C1oB4c6OGqJEDiOtFgz3DLQBAu1lZzq1CAxNigDvBRYSf/7cE1k9Sr8hpitZs38ZhBvJhaHAPfiPO/jc6eRRHjqRvVJ+tVTffphOjX8RYG1/azcSS9xtfLiw1kmoPPafrrvIMaPLjRDwrnvV4+845Rc+dcC8k96JNRVROWIaFwbC/pFOzS0WPmIWjFIi42jrIwqDQGHuWcO1IwpP/qJTXkKJ1WscXfPoBwzJtq+pGowCZ90bZ8j+4Gz6773CSAQVZKDPzKk/wqX6iZWCdYewTuMs5D2gA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR11MB4241.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(366004)(39850400004)(346002)(38100700002)(31696002)(38350700002)(4744005)(2906002)(66556008)(66476007)(31686004)(6706004)(6486002)(186003)(86362001)(36756003)(7416002)(16526019)(16576012)(6666004)(4326008)(8676002)(110136005)(5660300002)(8936002)(52116002)(956004)(2616005)(26005)(66946007)(478600001)(316002)(53546011)(78286007)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?K1NIZm40d09LREMvVkJRYjFaMXZwdGVnenNGVnlETDhEa0VhUTArQ05MTTNv?=
+ =?utf-8?B?SEswUkNRa01nWHBHblgyTmlNdk1GRWtyQzhMTkx1TTNMdHhKclhUeEZ0Njlq?=
+ =?utf-8?B?cEx4a3NxbTh2SEtMWnVSSld6UThvL2NMaWUzYVpKZTdUNnd5cmFzVjF1L3dM?=
+ =?utf-8?B?U2t3NDlybWwrTjF2aDgzQzduVEEwN2thWXpTUzAvNlFPVjJsWXJTVTE2TjU5?=
+ =?utf-8?B?bTc0T0pSek0wRE5DQnlPQ1dJOVF3SWQvT0szekRUQ2krK2wySnRaaTMvcFVM?=
+ =?utf-8?B?dHBXbjRIOXhHTHlGUzFMMkYrcXJGYVJ6OEhRUFdmUGpWRjZOWUtaUEkySUZD?=
+ =?utf-8?B?bFBVeHZXMmFvRkhGVk94VFdEMSt5SkRDRzdMMUpxZEtXNnZCaENSM3NWbWs4?=
+ =?utf-8?B?ZzF0RDcrZ3N6YURwN09YVXBYM2l2dXpod3JGeGoxTjVMK2lKTEVWUHhoTGFQ?=
+ =?utf-8?B?LzdxeVN3b2g1UjE0WGl2K2xmNzRObTZQYVpuSG1OcWJMZnNqb0NHUHh6a0Zl?=
+ =?utf-8?B?azh2V24xd1ArQktnNkJlNlF5NG93bVVOZDV2R09YbXFsdktKYlBYL3hGdWVa?=
+ =?utf-8?B?RTVQWVpmcVErcnhhckY5UVdMaldGSkt2RUNQNmM3ZWFmS2dtZXMzYVg0YzdT?=
+ =?utf-8?B?Tm9Da1JsTE9Kc1d3VkU3Uk1BMEwybkVMSFQ2RkZmZTRKUTFOY0FMZU5HTTJX?=
+ =?utf-8?B?NjNSSml5SGJvQSt2ckdDTFFFMXhKTk95TVkwa3prQlBGK2FoU2d5WEFiUDJw?=
+ =?utf-8?B?eVBNWHpzbVVQbHhVN0ZWTDNaL2g2alZSQzZGWE5TdTJkYS9jbG5lN20wMUtV?=
+ =?utf-8?B?OXNsUFVlSkg4WW1ENWhNcHBDc3RCTHpqUGNlWko4cVYrcEdLcGJFTXJRd1dT?=
+ =?utf-8?B?RzdXalBkZU9CdVNYSGhHcFBkYWhBRDk2MTZCc3VHOWNvcm5CK3JGcFhJTkkw?=
+ =?utf-8?B?VlMvSFZYUUV1aUJBam9YVWV2V2NsWXhiVllaZEgxSkxTUzRGdWZUeGwrYW9p?=
+ =?utf-8?B?OU1pUEtpN1pmQzJJRVVXWWJma3VkdnVzdDVKemFMTHpjUmp2Q0FSNmJpdEo2?=
+ =?utf-8?B?bWQwN3kxbGJYTzluR3Z5Q3c0cXJHWnRja2NndUt1VFU2aGc2ZDhsTXUrVXd3?=
+ =?utf-8?B?d0djREtSaW5nZUh3TDhtS0QrMFpLWjZ4b2FFRS82a2NEek5jVlZ3MGROUlBQ?=
+ =?utf-8?B?MWgreDlFbWVJK0JrU1dvaVU5M1gybmxFTmlZekhPemtSZlRWNzNCbVN0U1JZ?=
+ =?utf-8?B?ZGxLd2l4bk5mK0pxRUxtalhkdnhBMmJ6emFIRFRGZ1FUY2p6ZDY3RXdSZk5y?=
+ =?utf-8?B?OG1ya0swVnBhTnRReWZLanJRV1BBSHlYWE80ZUNiVFdRNmFaZU5KQi8yMkZ5?=
+ =?utf-8?B?QVJnTzVqNTh4NVVpRzIxSGhTU29qei90M2N4SmZEMlRRYWFzSG1WMU9mUWhR?=
+ =?utf-8?B?NjdkWjdBWGYvcmpVTWl2QXcwbVFvakRsR0ZuWnNrK1RRSTRDQS85QnpPYnhI?=
+ =?utf-8?B?ajc3cTVYQ0xPUFBlRG4rL1RnNW1qdFJ5VG5CbStBMUkyWER5ODR5UmJlOWdZ?=
+ =?utf-8?B?QWR3TVE2RkRyclRHN0owM1BFOHB4R2pBanJnd3dmMTBqLyt3NDN5N1lXb3lS?=
+ =?utf-8?B?c3NBY3NONXFlK3o0dXE4QU03M001d1VYd3VzVXpsNlRvT1NVeTN6cFl5UXdy?=
+ =?utf-8?B?amRrYjNGamFkMjhTaFR4R2Y3MENwZlV5Zy9aZHJHbks3dm1YVG5WZnpaUzZH?=
+ =?utf-8?Q?bpNROBdbhEayxfdmhql4ondWv3K9Dl8brlaDhUR?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ffc924ff-b4c4-44d6-7d8b-08d925b93abc
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR11MB4241.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 11:26:13.6583
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: h7fUqaWXuarIqbXy6C3iiMBjCtx/No015pJOhx3oArfGQ67hmkfQ1+cDV7ltmA7PCTmLWUCfXmBO0Inwh7bnhg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB4103
+X-Proofpoint-GUID: URAxstFfMxT3UrD2nhLmQdkXXofw8kHy
+X-Proofpoint-ORIG-GUID: URAxstFfMxT3UrD2nhLmQdkXXofw8kHy
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-02_06:2021-06-02,2021-06-02 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ malwarescore=0 phishscore=0 mlxlogscore=999 bulkscore=0 lowpriorityscore=0
+ spamscore=0 impostorscore=0 adultscore=0 priorityscore=1501 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
+ definitions=main-2106020072
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 2, 2021 at 1:19 PM Matthew Wilcox <willy@infradead.org> wrote:
->
-> #syz fixed qrtr: Convert qrtr_ports from IDR to XArray
-
-This would be:
-
-#syz fix: qrtr: Convert qrtr_ports from IDR to XArray
-
-Thanks for looking up the proper fix.
 
 
-> On Wed, Jun 02, 2021 at 03:30:06AM -0700, syzbot wrote:
-> > syzbot suspects this issue was fixed by commit:
-> >
-> > commit 43016d02cf6e46edfc4696452251d34bba0c0435
-> > Author: Florian Westphal <fw@strlen.de>
-> > Date:   Mon May 3 11:51:15 2021 +0000
->
-> Your bisect went astray.
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/YLdo77SkmGLgPUBi%40casper.infradead.org.
+On 6/2/21 1:41 AM, Will Deacon wrote:
+> [Please note: This e-mail is from an EXTERNAL e-mail address]
+> 
+> On Tue, Jun 01, 2021 at 07:20:04PM +0200, Daniel Borkmann wrote:
+>> On 6/1/21 5:06 PM, Yanfei Xu wrote:
+>>> It's no need to trigger IPI for keeping pipeline fresh in bpf case.
+>>
+>> This needs a more concrete explanation/analysis on "why it is safe" to do so
+>> rather than just saying that it is not needed.
+> 
+> Agreed. You need to show how the executing thread ends up going through a
+> context synchronizing operation before jumping to the generated code if
+> the IPI here is removed.
+
+This patch came out with I looked through ftrace codes. Ftrace modify
+the text code and don't send IPI in aarch64_insn_patch_text_nosync(). I
+mistakenly thought the bpf is same with ftrace.
+
+But now I'm still not sure why the ftrace don't need the IPI to go
+through context synchronizing, maybe the worst situation is omit a
+tracing event?
+
+Thanks,
+Yanfei
+
+> 
+> Will
+> 
