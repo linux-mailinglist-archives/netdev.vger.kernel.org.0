@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08F93397E1E
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 03:37:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00FF3397E1F
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 03:37:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230080AbhFBBjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 21:39:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39552 "EHLO mail.kernel.org"
+        id S230063AbhFBBjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 21:39:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39562 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230044AbhFBBjP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230048AbhFBBjP (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 1 Jun 2021 21:39:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E57B7613D6;
-        Wed,  2 Jun 2021 01:37:32 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 57CF3613DB;
+        Wed,  2 Jun 2021 01:37:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1622597853;
-        bh=9SxytobkgeNl7qIabI0qnRcnfQljhbl2t9keREljCpI=;
+        bh=6bmO7LHIC+cZwYKQBUkNYONcriDeDP8aC85YzyP9rY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VNT8rCM5Kwd46KF6p3VNzv1kNVlPuRYWoJ68zHP8Q5oTc5F3jEIX8QuIQV9MtEe4O
-         5jF3/aw/+n1YjxR97wkrnutF5ff4p4/PZr8jGRAP8puhwVNDXDQToNGBjFfQzuQrOx
-         mFml/Kt0um8BIRLsmZ7G18eycjG4pCPw5dANtEtsLOS5tpbFpLIdINrDFz/8g/P+TH
-         jQUaE87rkXjd72yGUhMLkrY8cXaaH8/swpxHwLeemdSKVmtWf6S3dToMPPT+aQ/ZNR
-         QC9sBhVsTW3v376S0eaTZec0ikhCH4jomtfdQqyE2SONGXofQG8CNqjPm5mUiP2Osr
-         039QI0SyhwzDw==
+        b=OMOR2WX9EnTPMFydZP0lRCDoknh+i2cJYV7IoUJU4H/U6jP2hPL5oUsc5lArmRDV4
+         DUBk8LidBzk3sQFZvMwg4jRneHFS/469c+34s1B6WHulUlwcC2LAEp2ZIgpMv9wwvd
+         tYt3GOcfZw0tOoFJZ4CbodVC6vJb7L3eACq8YGEGhqFrHfsKKVg9nq6avGXhKv8gQU
+         ZjYmqfB/IRW9EQwuux1RvbcO9xzJu0ATJcMS/mZEnscYVhzdeLZLHcVovC5Y1Equ8E
+         z0WcCze6UEJ2hNt30A+BK+iLqxXcJv8biXNc43I7mfQzBjvjLxfZj8WYqxaMF8D4Nm
+         0PSgX0htVyrrQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 3/8] net/mlx5: Check firmware sync reset requested is set before trying to abort it
-Date:   Tue,  1 Jun 2021 18:37:18 -0700
-Message-Id: <20210602013723.1142650-4-saeed@kernel.org>
+Subject: [net 4/8] net/mlx5e: Check for needed capability for cvlan matching
+Date:   Tue,  1 Jun 2021 18:37:19 -0700
+Message-Id: <20210602013723.1142650-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210602013723.1142650-1-saeed@kernel.org>
 References: <20210602013723.1142650-1-saeed@kernel.org>
@@ -41,35 +42,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Roi Dayan <roid@nvidia.com>
 
-In case driver sent NACK to firmware on sync reset request, it will get
-sync reset abort event while it didn't set sync reset requested mode.
-Thus, on abort sync reset event handler, driver should check reset
-requested is set before trying to stop sync reset poll.
+If not supported show an error and return instead of trying to offload
+to the hardware and fail.
 
-Fixes: 7dd6df329d4c ("net/mlx5: Handle sync reset abort event")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Fixes: 699e96ddf47f ("net/mlx5e: Support offloading tc double vlan headers match")
+Reported-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index d5d57630015f..106b50e42b46 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -349,6 +349,9 @@ static void mlx5_sync_reset_abort_event(struct work_struct *work)
- 						      reset_abort_work);
- 	struct mlx5_core_dev *dev = fw_reset->dev;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 2c776e7a7692..dd64878e5b38 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -2015,11 +2015,13 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 				    misc_parameters_3);
+ 	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+ 	struct flow_dissector *dissector = rule->match.dissector;
++	enum fs_flow_table_type fs_type;
+ 	u16 addr_type = 0;
+ 	u8 ip_proto = 0;
+ 	u8 *match_level;
+ 	int err;
  
-+	if (!test_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags))
-+		return;
++	fs_type = mlx5e_is_eswitch_flow(flow) ? FS_FT_FDB : FS_FT_NIC_RX;
+ 	match_level = outer_match_level;
+ 
+ 	if (dissector->used_keys &
+@@ -2145,6 +2147,13 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 		if (match.mask->vlan_id ||
+ 		    match.mask->vlan_priority ||
+ 		    match.mask->vlan_tpid) {
++			if (!MLX5_CAP_FLOWTABLE_TYPE(priv->mdev, ft_field_support.outer_second_vid,
++						     fs_type)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Matching on CVLAN is not supported");
++				return -EOPNOTSUPP;
++			}
 +
- 	mlx5_sync_reset_clear_reset_requested(dev, true);
- 	mlx5_core_warn(dev, "PCI Sync FW Update Reset Aborted.\n");
- }
+ 			if (match.key->vlan_tpid == htons(ETH_P_8021AD)) {
+ 				MLX5_SET(fte_match_set_misc, misc_c,
+ 					 outer_second_svlan_tag, 1);
 -- 
 2.31.1
 
