@@ -2,279 +2,540 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2803398E18
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 17:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A464E398E55
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 17:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231955AbhFBPQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 11:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231515AbhFBPQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 11:16:48 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C071C061574
-        for <netdev@vger.kernel.org>; Wed,  2 Jun 2021 08:14:51 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id ba2so1642090edb.2
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 08:14:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8e+CSgZrgQCmn/jG8Ae/cWApStQSDrWr5xdd//18K7M=;
-        b=JBjxDpb3VvHajqzfpshHt856M/onUIaAa3zQuHV2JqI4/cHyQ5ZcBZu8PbHUU6fGiC
-         urLkO79LP8T4J/w3fCXkBD2bLOZMjuhihAU44Tk73XFvvPEjkJi9vqFOTmwrHxGpxMUW
-         UtxxVTCkNnY6A+jBxhS2Ixdi0J1ZzmUJFgGUe2hJlro8XurkbOzUL5eW5ixdcR/8j3Wg
-         FTHIoWjcs16+0GNN8v/1B39W0IDOqUS00nq+B1ZxwkIaLLnNgRjly23FUBKJI3hykVw9
-         FRZiiV2rKG0GTZcBC+iTHcn+e/AS//QRvaRsVI+FEWu3ST5zNUPFv7MmF+tEYRRgpwd+
-         ef8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8e+CSgZrgQCmn/jG8Ae/cWApStQSDrWr5xdd//18K7M=;
-        b=Wi91l5aVgLQ4SIr9E24CsVTYvJiRSmqgyzR1J8MDq7ltmCIfp7gAP0jItXMc8rsiBI
-         eoifWfvwIPShfQA69c84A0sB01yiVY069EduXcyAdfKuc2OObpN1+B9R/QvPBQMZ7fDb
-         0SFKcc4j5CtbdF4baeouFe6oy/0sCXiafVTMZ6kpQKv5VEno0G6g2VtzhoN7wEAWyC1x
-         A7nvg4MNWTyaVTL+wdwwG4AYEEHNHhkQoMwPwAIgzDJHjxaLZPN127jzIvt2pv5Dylcn
-         Earao+t8aujizey/NvvihN7dMTN4svTyY/9CWCHzS6SERQpaWN0sdlG3GZdCFmZB1WXi
-         +jsQ==
-X-Gm-Message-State: AOAM533u24cVCd8F24aXVuy3OVuzGfziN8rxmMbs+3uGBKwtBMqquwYy
-        cvzaXxba4KHrAN7LG4FHQ6w=
-X-Google-Smtp-Source: ABdhPJxELLNaxUO9USXGyAnSd2q7om/xoJyR/0mC2v4RYI6QXwbO38JQBLEP2Nvt3Tr17M4HPnprRQ==
-X-Received: by 2002:aa7:c2c7:: with SMTP id m7mr7339153edp.156.1622646889612;
-        Wed, 02 Jun 2021 08:14:49 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id f21sm132447edr.45.2021.06.02.08.14.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 08:14:49 -0700 (PDT)
-Date:   Wed, 2 Jun 2021 18:14:47 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH v2 net-next 9/9] net: pcs: xpcs: convert to
- phylink_pcs_ops
-Message-ID: <20210602151447.fh6xlp6guctapdrf@skbuf>
-References: <20210601003325.1631980-1-olteanv@gmail.com>
- <20210601003325.1631980-10-olteanv@gmail.com>
- <20210601121032.GV30436@shell.armlinux.org.uk>
- <20210602134321.ppvusilvmmybodtx@skbuf>
- <20210602134749.GL30436@shell.armlinux.org.uk>
- <20210602140233.3zk6mtr7turmza2r@skbuf>
- <20210602144336.GA30309@linux.intel.com>
- <20210602145730.nxknzruahn7waqq3@skbuf>
- <20210602151056.GA30419@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210602151056.GA30419@linux.intel.com>
+        id S232265AbhFBPU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 11:20:27 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:52560 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232223AbhFBPUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 11:20:14 -0400
+Received: from fsav106.sakura.ne.jp (fsav106.sakura.ne.jp [27.133.134.233])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 152FHoA3006873;
+        Thu, 3 Jun 2021 00:17:50 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav106.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav106.sakura.ne.jp);
+ Thu, 03 Jun 2021 00:17:50 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav106.sakura.ne.jp)
+Received: from localhost.localdomain (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 152FHiKp006736
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 3 Jun 2021 00:17:49 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Subject: [PATCH] can: bcm/raw/isotp: use per module netdevice notifier
+Date:   Thu,  3 Jun 2021 00:17:33 +0900
+Message-Id: <20210602151733.3630-1-penguin-kernel@I-love.SAKURA.ne.jp>
+X-Mailer: git-send-email 2.18.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 11:10:56PM +0800, Wong Vee Khee wrote:
-> On Wed, Jun 02, 2021 at 05:57:30PM +0300, Vladimir Oltean wrote:
-> > On Wed, Jun 02, 2021 at 10:43:36PM +0800, Wong Vee Khee wrote:
-> > > On Wed, Jun 02, 2021 at 05:02:33PM +0300, Vladimir Oltean wrote:
-> > > > On Wed, Jun 02, 2021 at 02:47:49PM +0100, Russell King (Oracle) wrote:
-> > > > > On Wed, Jun 02, 2021 at 04:43:21PM +0300, Vladimir Oltean wrote:
-> > > > > > On Tue, Jun 01, 2021 at 01:10:33PM +0100, Russell King (Oracle) wrote:
-> > > > > > > On Tue, Jun 01, 2021 at 03:33:25AM +0300, Vladimir Oltean wrote:
-> > > > > > > >  static const struct phylink_mac_ops stmmac_phylink_mac_ops = {
-> > > > > > > >  	.validate = stmmac_validate,
-> > > > > > > > -	.mac_pcs_get_state = stmmac_mac_pcs_get_state,
-> > > > > > > > -	.mac_config = stmmac_mac_config,
-> > > > > > > 
-> > > > > > > mac_config is still a required function.
-> > > > > > 
-> > > > > > This is correct, thanks.
-> > > > > > 
-> > > > > > VK, would you mind testing again with this extra patch added to the mix?
-> > > > > > If it works, I will add it to the series in v3, ordered properly.
-> > > > > > 
-> > > > > > -----------------------------[ cut here]-----------------------------
-> > > > > > From a79863027998451c73d5bbfaf1b77cf6097a110c Mon Sep 17 00:00:00 2001
-> > > > > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > > > > Date: Wed, 2 Jun 2021 16:35:55 +0300
-> > > > > > Subject: [PATCH] net: phylink: allow the mac_config method to be missing if
-> > > > > >  pcs_ops are provided
-> > > > > > 
-> > > > > > The pcs_config method from struct phylink_pcs_ops does everything that
-> > > > > > the mac_config method from struct phylink_mac_ops used to do in the
-> > > > > > legacy approach of driving a MAC PCS. So allow drivers to not implement
-> > > > > > the mac_config method if there is nothing to do. Keep the method
-> > > > > > required for setups that do not provide pcs_ops.
-> > > > > > 
-> > > > > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > > > > ---
-> > > > > >  drivers/net/phy/phylink.c | 9 +++++++++
-> > > > > >  1 file changed, 9 insertions(+)
-> > > > > > 
-> > > > > > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> > > > > > index 96d8e88b4e46..a8842c6ce3a2 100644
-> > > > > > --- a/drivers/net/phy/phylink.c
-> > > > > > +++ b/drivers/net/phy/phylink.c
-> > > > > > @@ -415,6 +415,9 @@ static void phylink_resolve_flow(struct phylink_link_state *state)
-> > > > > >  static void phylink_mac_config(struct phylink *pl,
-> > > > > >  			       const struct phylink_link_state *state)
-> > > > > >  {
-> > > > > > +	if (!pl->mac_ops->mac_config)
-> > > > > > +		return;
-> > > > > > +
-> > > > > >  	phylink_dbg(pl,
-> > > > > >  		    "%s: mode=%s/%s/%s/%s adv=%*pb pause=%02x link=%u an=%u\n",
-> > > > > >  		    __func__, phylink_an_mode_str(pl->cur_link_an_mode),
-> > > > > > @@ -1192,6 +1195,12 @@ void phylink_start(struct phylink *pl)
-> > > > > >  
-> > > > > >  	ASSERT_RTNL();
-> > > > > >  
-> > > > > > +	/* The mac_ops::mac_config method may be absent only if the
-> > > > > > +	 * pcs_ops are present.
-> > > > > > +	 */
-> > > > > > +	if (WARN_ON_ONCE(!pl->mac_ops->mac_config && !pl->pcs_ops))
-> > > > > > +		return;
-> > > > > > +
-> > > > > >  	phylink_info(pl, "configuring for %s/%s link mode\n",
-> > > > > >  		     phylink_an_mode_str(pl->cur_link_an_mode),
-> > > > > >  		     phy_modes(pl->link_config.interface));
-> > > > > 
-> > > > > I would rather we didn't do that - I suspect your case is not the
-> > > > > common scenario, so please add a dummy function to stmmac instead.
-> > > > 
-> > > > Ok, in that case the only delta to be applied should be:
-> > > > 
-> > > > -----------------------------[ cut here]-----------------------------
-> > > > >From 998569108392befc591f790e46fe5dcd1d0b6278 Mon Sep 17 00:00:00 2001
-> > > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > > Date: Wed, 2 Jun 2021 17:00:12 +0300
-> > > > Subject: [PATCH] fixup! net: pcs: xpcs: convert to phylink_pcs_ops
-> > > > 
-> > > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > > ---
-> > > >  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 6 ++++++
-> > > >  1 file changed, 6 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > > > index d5685a74f3b7..704aa91b145a 100644
-> > > > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > > > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > > > @@ -1000,6 +1000,12 @@ static void stmmac_validate(struct phylink_config *config,
-> > > >  		xpcs_validate(priv->hw->xpcs, supported, state);
-> > > >  }
-> > > >  
-> > > > +static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
-> > > > +			      const struct phylink_link_state *state)
-> > > > +{
-> > > > +	/* Nothing to do, xpcs_config() handles everything */
-> > > > +}
-> > > > +
-> > > >  static void stmmac_fpe_link_state_handle(struct stmmac_priv *priv, bool is_up)
-> > > >  {
-> > > >  	struct stmmac_fpe_cfg *fpe_cfg = priv->plat->fpe_cfg;
-> > > > -----------------------------[ cut here]-----------------------------
-> > > 
-> > > No luck.. I am still seeing the same kernel panic on my side with the
-> > > additional patch applied:
-> > > 
-> > > [   12.513652] intel-eth-pci 0000:00:1e.4 enp0s30f4: FPE workqueue start
-> > > [   12.520079] intel-eth-pci 0000:00:1e.4 enp0s30f4: configuring for inband/sgmii link mode
-> > > [   12.528141] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> > > [   12.535072] #PF: supervisor instruction fetch in kernel mode
-> > > [   12.540719] #PF: error_code(0x0010) - not-present page
-> > > [   12.545843] PGD 0 P4D 0
-> > > [   12.548382] Oops: 0010 [#1] PREEMPT SMP NOPTI
-> > > [   12.552733] CPU: 3 PID: 2657 Comm: connmand Tainted: G     U            5.13.0-rc3-intel-lts #79
-> > > [   12.561485] Hardware name: Intel Corporation Tiger Lake Client Platform/TigerLake U DDR4 SODIMM RVP, BIOS TGLIFUI1.R00.3373.AF0.2009230546 09/23/2020
-> > > [   12.574803] RIP: 0010:0x0
-> > > [   12.577436] Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
-> > > [   12.584280] RSP: 0018:ffffaa05404efb78 EFLAGS: 00010246
-> > > [   12.589489] RAX: 0000000000000000 RBX: ffffa0fb91758c00 RCX: 0000000000000000
-> > > [   12.596600] RDX: ffffaa05404efba0 RSI: 0000000000000002 RDI: ffffa0facc63c4d8
-> > > [   12.603711] RBP: ffffaa05404efba0 R08: 0000000000000000 R09: ffffaa05404ef888
-> > > [   12.610825] R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000001
-> > > [   12.617935] R13: ffffa0facc6388c0 R14: 0000000000000006 R15: 0000000000000001
-> > > [   12.625040] FS:  00007f4a6d5b87c0(0000) GS:ffffa0fc57f80000(0000) knlGS:0000000000000000
-> > > [   12.633096] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > [   12.638825] CR2: ffffffffffffffd6 CR3: 000000010e3f6004 CR4: 0000000000770ee0
-> > > [   12.645932] PKRU: 55555554
-> > > [   12.648641] Call Trace:
-> > > [   12.651095]  phylink_major_config+0x5e/0x1a0 [phylink]
-> > > [   12.656219]  phylink_start+0x204/0x2c0 [phylink]
-> > > [   12.660833]  stmmac_open+0x3d0/0x9f0 [stmmac]
-> > > [   12.665186]  __dev_open+0xe7/0x180
-> > > [   12.668594]  __dev_change_flags+0x174/0x1d0
-> > > [   12.672773]  ? __thaw_task+0x40/0x40
-> > > [   12.676348]  ? arch_stack_walk+0x9e/0xf0
-> > > [   12.680266]  dev_change_flags+0x21/0x60
-> > > [   12.684100]  devinet_ioctl+0x5e8/0x750
-> > > [   12.687847]  inet_ioctl+0x190/0x1c0
-> > > [   12.691335]  ? dev_ioctl+0x26d/0x4c0
-> > > [   12.694907]  sock_do_ioctl+0x44/0x140
-> > > [   12.698569]  ? alloc_empty_file+0x61/0xb0
-> > > [   12.702572]  sock_ioctl+0x22c/0x320
-> > > [   12.706061]  __x64_sys_ioctl+0x80/0xb0
-> > > [   12.709808]  do_syscall_64+0x42/0x80
-> > > [   12.713381]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > > 
-> > > My git log:-
-> > > dc25bc46886e (HEAD -> master) phy: maxlinear: add Maxlinear GPY115/21x/24x driver
-> > > d059f32fcef1 fixup! net: pcs: xpcs: convert to phylink_pcs_ops
-> > > 1a1a9c7267c1 net: pcs: xpcs: convert to phylink_pcs_ops
-> > > ec25f3c80108 net: pcs: xpcs: convert to mdio_device
-> > > 912a23a5768a net: pcs: xpcs: use mdiobus_c45_addr in xpcs_{read,write}
-> > > af2bd0a4e32c net: pcs: xpcs: export xpcs_probe
-> > > 7e4eea51132f net: pcs: xpcs: export xpcs_config_eee
-> > > 37d5e086fc83 net: pcs: xpcs: export xpcs_validate
-> > > d58487edb1a8 net: pcs: xpcs: make the checks related to the PHY interface mode stateless
-> > > 2f0eba94af8d net: pcs: xpcs: there is only one PHY ID
-> > > 67148dd06896 net: pcs: xpcs: delete shim definition for mdio_xpcs_get_ops()
-> > > 5fe8e519e44f (origin/master, origin/HEAD) Merge git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next
-> > 
-> > Yikes, stupid me, I forgot to add this piece to the delta, the new
-> > callback wasn't doing anything, but it also didn't warn me that the
-> > static function is unused in my build:
-> > 
-> > -----------------------------[ cut here]-----------------------------
-> > >From 7a2b56091fd480ae1018ac964756368904a41a0c Mon Sep 17 00:00:00 2001
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Date: Wed, 2 Jun 2021 17:54:58 +0300
-> > Subject: [PATCH] fixup! fixup! net: pcs: xpcs: convert to phylink_pcs_ops
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
-> >  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > index 704aa91b145a..5b5edfdccab3 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > @@ -1137,6 +1137,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
-> >  
-> >  static const struct phylink_mac_ops stmmac_phylink_mac_ops = {
-> >  	.validate = stmmac_validate,
-> > +	.mac_config = stmmac_mac_config,
-> >  	.mac_link_down = stmmac_mac_link_down,
-> >  	.mac_link_up = stmmac_mac_link_up,
-> >  };
-> > -----------------------------[ cut here]-----------------------------
-> 
-> It works on my setup now after applying the last fixup patch! :)
+syzbot is reporting hung task at register_netdevice_notifier() [1] and
+unregister_netdevice_notifier() [2], for cleanup_net() might perform
+time consuming operations while CAN driver's raw/bcm/isotp modules are
+calling {register,unregister}_netdevice_notifier() on each socket.
 
-Thanks again for testing.
-Just for clarity, "it works" includes traffic at 10/100/1000, right?
-If I'm not mistaken, you tested with sgmii and MLO_INBAND_AN, correct?
-On the sja1105 I am testing with sgmii and no MLO_INBAND_AN, so not
-exactly the same setup (that, plus my hardware needs a few more changes
-still).
+Change raw/bcm/isotp modules to call register_netdevice_notifier() from
+module's __init function and call unregister_netdevice_notifier() from
+module's __exit function, as with gw/j1939 modules are doing.
+
+Link: https://syzkaller.appspot.com/bug?id=391b9498827788b3cc6830226d4ff5be87107c30 [1]
+Link: https://syzkaller.appspot.com/bug?id=1724d278c83ca6e6df100a2e320c10d991cf2bce [2]
+Reported-by: syzbot <syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com>
+Reported-by: syzbot <syzbot+0f1827363a305f74996f@syzkaller.appspotmail.com>
+Tested-by: syzbot <syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+---
+ net/can/bcm.c   | 79 +++++++++++++++++++++++++++++++++++++++--------
+ net/can/isotp.c | 82 +++++++++++++++++++++++++++++++++++++++++--------
+ net/can/raw.c   | 82 ++++++++++++++++++++++++++++++++++++++++---------
+ 3 files changed, 203 insertions(+), 40 deletions(-)
+
+diff --git a/net/can/bcm.c b/net/can/bcm.c
+index 909b9e684e04..d503abd020ab 100644
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -121,11 +121,18 @@ struct bcm_op {
+ 	struct net_device *rx_reg_dev;
+ };
+ 
++struct bcm_notifier_block {
++	/* Linked to bcm_notifier_list list. Becomes empty when removed. */
++	struct list_head list;
++	/* Notifier call is in progress when this value is 0. */
++	unsigned int sequence;
++};
++
+ struct bcm_sock {
+ 	struct sock sk;
+ 	int bound;
+ 	int ifindex;
+-	struct notifier_block notifier;
++	struct bcm_notifier_block notifier;
+ 	struct list_head rx_ops;
+ 	struct list_head tx_ops;
+ 	unsigned long dropped_usr_msgs;
+@@ -133,6 +140,11 @@ struct bcm_sock {
+ 	char procname [32]; /* inode number in decimal with \0 */
+ };
+ 
++static DECLARE_WAIT_QUEUE_HEAD(bcm_notifier_wait);
++static LIST_HEAD(bcm_notifier_list);
++static DEFINE_SPINLOCK(bcm_notifier_lock);
++static unsigned int bcm_notifier_sequence = 1; /* Cannot become 0. */
++
+ static inline struct bcm_sock *bcm_sk(const struct sock *sk)
+ {
+ 	return (struct bcm_sock *)sk;
+@@ -1378,20 +1390,15 @@ static int bcm_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ /*
+  * notification handler for netdevice status changes
+  */
+-static int bcm_notifier(struct notifier_block *nb, unsigned long msg,
+-			void *ptr)
++static void bcm_notify(struct bcm_sock *bo, unsigned long msg,
++		       struct net_device *dev)
+ {
+-	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+-	struct bcm_sock *bo = container_of(nb, struct bcm_sock, notifier);
+ 	struct sock *sk = &bo->sk;
+ 	struct bcm_op *op;
+ 	int notify_enodev = 0;
+ 
+ 	if (!net_eq(dev_net(dev), sock_net(sk)))
+-		return NOTIFY_DONE;
+-
+-	if (dev->type != ARPHRD_CAN)
+-		return NOTIFY_DONE;
++		return;
+ 
+ 	switch (msg) {
+ 
+@@ -1426,7 +1433,43 @@ static int bcm_notifier(struct notifier_block *nb, unsigned long msg,
+ 				sk->sk_error_report(sk);
+ 		}
+ 	}
++}
+ 
++static int bcm_notifier(struct notifier_block *nb, unsigned long msg,
++			void *ptr)
++{
++	struct bcm_notifier_block *notify;
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++
++	if (dev->type != ARPHRD_CAN)
++		return NOTIFY_DONE;
++
++	spin_lock(&bcm_notifier_lock);
++	if (unlikely(!++bcm_notifier_sequence))
++		bcm_notifier_sequence = 1;
++ restart:
++	list_for_each_entry(notify, &bcm_notifier_list, list) {
++		if (unlikely(notify->sequence == bcm_notifier_sequence))
++			continue;
++		notify->sequence = 0;
++		spin_unlock(&bcm_notifier_lock);
++		bcm_notify(container_of(notify, struct bcm_sock, notifier),
++			   msg, dev);
++		spin_lock(&bcm_notifier_lock);
++		notify->sequence = bcm_notifier_sequence;
++		/*
++		 * If bcm_release() did not remove this entry while we were at
++		 * bcm_notify(), we can continue list traversal. Otherwise,
++		 * tell bcm_release() that the sequence number became non-zero,
++		 * and then restart list traversal. The sequence number also
++		 * protects us from calling bcm_notify() for more than once.
++		 */
++		if (likely(!list_empty(&notify->list)))
++			continue;
++		wake_up_all(&bcm_notifier_wait);
++		goto restart;
++	}
++	spin_unlock(&bcm_notifier_lock);
+ 	return NOTIFY_DONE;
+ }
+ 
+@@ -1446,9 +1489,10 @@ static int bcm_init(struct sock *sk)
+ 	INIT_LIST_HEAD(&bo->rx_ops);
+ 
+ 	/* set notifier */
+-	bo->notifier.notifier_call = bcm_notifier;
+-
+-	register_netdevice_notifier(&bo->notifier);
++	spin_lock(&bcm_notifier_lock);
++	bo->notifier.sequence = bcm_notifier_sequence;
++	list_add_tail(&bo->notifier.list, &bcm_notifier_list);
++	spin_unlock(&bcm_notifier_lock);
+ 
+ 	return 0;
+ }
+@@ -1471,7 +1515,10 @@ static int bcm_release(struct socket *sock)
+ 
+ 	/* remove bcm_ops, timer, rx_unregister(), etc. */
+ 
+-	unregister_netdevice_notifier(&bo->notifier);
++	spin_lock(&bcm_notifier_lock);
++	list_del_init(&bo->notifier.list);
++	spin_unlock(&bcm_notifier_lock);
++	wait_event(bcm_notifier_wait, bo->notifier.sequence);
+ 
+ 	lock_sock(sk);
+ 
+@@ -1692,6 +1739,10 @@ static struct pernet_operations canbcm_pernet_ops __read_mostly = {
+ 	.exit = canbcm_pernet_exit,
+ };
+ 
++static struct notifier_block canbcm_notifier = {
++	.notifier_call = bcm_notifier
++};
++
+ static int __init bcm_module_init(void)
+ {
+ 	int err;
+@@ -1705,12 +1756,14 @@ static int __init bcm_module_init(void)
+ 	}
+ 
+ 	register_pernet_subsys(&canbcm_pernet_ops);
++	register_netdevice_notifier(&canbcm_notifier);
+ 	return 0;
+ }
+ 
+ static void __exit bcm_module_exit(void)
+ {
+ 	can_proto_unregister(&bcm_can_proto);
++	unregister_netdevice_notifier(&canbcm_notifier);
+ 	unregister_pernet_subsys(&canbcm_pernet_ops);
+ }
+ 
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index 253b24417c8e..4e41babb81b7 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -128,6 +128,13 @@ struct tpcon {
+ 	u8 buf[MAX_MSG_LENGTH + 1];
+ };
+ 
++struct isotp_notifier_block {
++	/* Linked to isotp_notifier_list list. Becomes empty when removed. */
++	struct list_head list;
++	/* Notifier call is in progress when this value is 0. */
++	unsigned int sequence;
++};
++
+ struct isotp_sock {
+ 	struct sock sk;
+ 	int bound;
+@@ -143,10 +150,15 @@ struct isotp_sock {
+ 	u32 force_tx_stmin;
+ 	u32 force_rx_stmin;
+ 	struct tpcon rx, tx;
+-	struct notifier_block notifier;
++	struct isotp_notifier_block notifier;
+ 	wait_queue_head_t wait;
+ };
+ 
++static DECLARE_WAIT_QUEUE_HEAD(isotp_notifier_wait);
++static LIST_HEAD(isotp_notifier_list);
++static DEFINE_SPINLOCK(isotp_notifier_lock);
++static unsigned int isotp_notifier_sequence = 1; /* Cannot become 0. */
++
+ static inline struct isotp_sock *isotp_sk(const struct sock *sk)
+ {
+ 	return (struct isotp_sock *)sk;
+@@ -1013,7 +1025,10 @@ static int isotp_release(struct socket *sock)
+ 	/* wait for complete transmission of current pdu */
+ 	wait_event_interruptible(so->wait, so->tx.state == ISOTP_IDLE);
+ 
+-	unregister_netdevice_notifier(&so->notifier);
++	spin_lock(&isotp_notifier_lock);
++	list_del_init(&so->notifier.list);
++	spin_unlock(&isotp_notifier_lock);
++	wait_event(isotp_notifier_wait, so->notifier.sequence);
+ 
+ 	lock_sock(sk);
+ 
+@@ -1317,21 +1332,16 @@ static int isotp_getsockopt(struct socket *sock, int level, int optname,
+ 	return 0;
+ }
+ 
+-static int isotp_notifier(struct notifier_block *nb, unsigned long msg,
+-			  void *ptr)
++static void isotp_notify(struct isotp_sock *so, unsigned long msg,
++			 struct net_device *dev)
+ {
+-	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+-	struct isotp_sock *so = container_of(nb, struct isotp_sock, notifier);
+ 	struct sock *sk = &so->sk;
+ 
+ 	if (!net_eq(dev_net(dev), sock_net(sk)))
+-		return NOTIFY_DONE;
+-
+-	if (dev->type != ARPHRD_CAN)
+-		return NOTIFY_DONE;
++		return;
+ 
+ 	if (so->ifindex != dev->ifindex)
+-		return NOTIFY_DONE;
++		return;
+ 
+ 	switch (msg) {
+ 	case NETDEV_UNREGISTER:
+@@ -1357,7 +1367,44 @@ static int isotp_notifier(struct notifier_block *nb, unsigned long msg,
+ 			sk->sk_error_report(sk);
+ 		break;
+ 	}
++}
+ 
++static int isotp_notifier(struct notifier_block *nb, unsigned long msg,
++			  void *ptr)
++{
++	struct isotp_notifier_block *notify;
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++
++	if (dev->type != ARPHRD_CAN)
++		return NOTIFY_DONE;
++
++	spin_lock(&isotp_notifier_lock);
++	if (unlikely(!++isotp_notifier_sequence))
++		isotp_notifier_sequence = 1;
++ restart:
++	list_for_each_entry(notify, &isotp_notifier_list, list) {
++		if (unlikely(notify->sequence == isotp_notifier_sequence))
++			continue;
++		notify->sequence = 0;
++		spin_unlock(&isotp_notifier_lock);
++		isotp_notify(container_of(notify, struct isotp_sock, notifier),
++			     msg, dev);
++		spin_lock(&isotp_notifier_lock);
++		notify->sequence = isotp_notifier_sequence;
++		/*
++		 * If isotp_release() did not remove this entry while we were
++		 * at isotp_notify(), we can continue list traversal.
++		 * Otherwise, tell isotp_release() that the sequence number
++		 * became non-zero, and then restart list traversal. The
++		 * sequence number also protects us from calling isotp_notify()
++		 * for more than once.
++		 */
++		if (likely(!list_empty(&notify->list)))
++			continue;
++		wake_up_all(&isotp_notifier_wait);
++		goto restart;
++	}
++	spin_unlock(&isotp_notifier_lock);
+ 	return NOTIFY_DONE;
+ }
+ 
+@@ -1394,8 +1441,10 @@ static int isotp_init(struct sock *sk)
+ 
+ 	init_waitqueue_head(&so->wait);
+ 
+-	so->notifier.notifier_call = isotp_notifier;
+-	register_netdevice_notifier(&so->notifier);
++	spin_lock(&isotp_notifier_lock);
++	so->notifier.sequence = isotp_notifier_sequence;
++	list_add_tail(&so->notifier.list, &isotp_notifier_list);
++	spin_unlock(&isotp_notifier_lock);
+ 
+ 	return 0;
+ }
+@@ -1442,6 +1491,10 @@ static const struct can_proto isotp_can_proto = {
+ 	.prot = &isotp_proto,
+ };
+ 
++static struct notifier_block canisotp_notifier = {
++	.notifier_call = isotp_notifier
++};
++
+ static __init int isotp_module_init(void)
+ {
+ 	int err;
+@@ -1451,6 +1504,8 @@ static __init int isotp_module_init(void)
+ 	err = can_proto_register(&isotp_can_proto);
+ 	if (err < 0)
+ 		pr_err("can: registration of isotp protocol failed\n");
++	else
++		register_netdevice_notifier(&canisotp_notifier);
+ 
+ 	return err;
+ }
+@@ -1458,6 +1513,7 @@ static __init int isotp_module_init(void)
+ static __exit void isotp_module_exit(void)
+ {
+ 	can_proto_unregister(&isotp_can_proto);
++	unregister_netdevice_notifier(&canisotp_notifier);
+ }
+ 
+ module_init(isotp_module_init);
+diff --git a/net/can/raw.c b/net/can/raw.c
+index 139d9471ddcf..f9cdd8698dec 100644
+--- a/net/can/raw.c
++++ b/net/can/raw.c
+@@ -79,11 +79,18 @@ struct uniqframe {
+ 	unsigned int join_rx_count;
+ };
+ 
++struct raw_notifier_block {
++	/* Linked to raw_notifier_list list. Becomes empty when removed. */
++	struct list_head list;
++	/* Notifier call is in progress when this value is 0. */
++	unsigned int sequence;
++};
++
+ struct raw_sock {
+ 	struct sock sk;
+ 	int bound;
+ 	int ifindex;
+-	struct notifier_block notifier;
++	struct raw_notifier_block notifier;
+ 	int loopback;
+ 	int recv_own_msgs;
+ 	int fd_frames;
+@@ -95,6 +102,11 @@ struct raw_sock {
+ 	struct uniqframe __percpu *uniq;
+ };
+ 
++static DECLARE_WAIT_QUEUE_HEAD(raw_notifier_wait);
++static LIST_HEAD(raw_notifier_list);
++static DEFINE_SPINLOCK(raw_notifier_lock);
++static unsigned int raw_notifier_sequence = 1; /* Cannot become 0. */
++
+ /* Return pointer to store the extra msg flags for raw_recvmsg().
+  * We use the space of one unsigned int beyond the 'struct sockaddr_can'
+  * in skb->cb.
+@@ -263,21 +275,16 @@ static int raw_enable_allfilters(struct net *net, struct net_device *dev,
+ 	return err;
+ }
+ 
+-static int raw_notifier(struct notifier_block *nb,
+-			unsigned long msg, void *ptr)
++static void raw_notify(struct raw_sock *ro, unsigned long msg,
++		       struct net_device *dev)
+ {
+-	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+-	struct raw_sock *ro = container_of(nb, struct raw_sock, notifier);
+ 	struct sock *sk = &ro->sk;
+ 
+ 	if (!net_eq(dev_net(dev), sock_net(sk)))
+-		return NOTIFY_DONE;
+-
+-	if (dev->type != ARPHRD_CAN)
+-		return NOTIFY_DONE;
++		return;
+ 
+ 	if (ro->ifindex != dev->ifindex)
+-		return NOTIFY_DONE;
++		return;
+ 
+ 	switch (msg) {
+ 	case NETDEV_UNREGISTER:
+@@ -305,7 +312,43 @@ static int raw_notifier(struct notifier_block *nb,
+ 			sk->sk_error_report(sk);
+ 		break;
+ 	}
++}
+ 
++static int raw_notifier(struct notifier_block *nb, unsigned long msg,
++			void *ptr)
++{
++	struct raw_notifier_block *notify;
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++
++	if (dev->type != ARPHRD_CAN)
++		return NOTIFY_DONE;
++
++	spin_lock(&raw_notifier_lock);
++	if (unlikely(!++raw_notifier_sequence))
++		raw_notifier_sequence = 1;
++ restart:
++	list_for_each_entry(notify, &raw_notifier_list, list) {
++		if (unlikely(notify->sequence == raw_notifier_sequence))
++			continue;
++		notify->sequence = 0;
++		spin_unlock(&raw_notifier_lock);
++		raw_notify(container_of(notify, struct raw_sock, notifier),
++			   msg, dev);
++		spin_lock(&raw_notifier_lock);
++		notify->sequence = raw_notifier_sequence;
++		/*
++		 * If raw_release() did not remove this entry while we were at
++		 * raw_notify(), we can continue list traversal. Otherwise,
++		 * tell raw_release() that the sequence number became non-zero,
++		 * and then restart list traversal. The sequence number also
++		 * protects us from calling raw_notify() for more than once.
++		 */
++		if (likely(!list_empty(&notify->list)))
++			continue;
++		wake_up_all(&raw_notifier_wait);
++		goto restart;
++	}
++	spin_unlock(&raw_notifier_lock);
+ 	return NOTIFY_DONE;
+ }
+ 
+@@ -334,9 +377,10 @@ static int raw_init(struct sock *sk)
+ 		return -ENOMEM;
+ 
+ 	/* set notifier */
+-	ro->notifier.notifier_call = raw_notifier;
+-
+-	register_netdevice_notifier(&ro->notifier);
++	spin_lock(&raw_notifier_lock);
++	ro->notifier.sequence = raw_notifier_sequence;
++	list_add_tail(&ro->notifier.list, &raw_notifier_list);
++	spin_unlock(&raw_notifier_lock);
+ 
+ 	return 0;
+ }
+@@ -351,7 +395,10 @@ static int raw_release(struct socket *sock)
+ 
+ 	ro = raw_sk(sk);
+ 
+-	unregister_netdevice_notifier(&ro->notifier);
++	spin_lock(&raw_notifier_lock);
++	list_del_init(&ro->notifier.list);
++	spin_unlock(&raw_notifier_lock);
++	wait_event(raw_notifier_wait, ro->notifier.sequence);
+ 
+ 	lock_sock(sk);
+ 
+@@ -889,6 +936,10 @@ static const struct can_proto raw_can_proto = {
+ 	.prot       = &raw_proto,
+ };
+ 
++static struct notifier_block canraw_notifier = {
++	.notifier_call = raw_notifier
++};
++
+ static __init int raw_module_init(void)
+ {
+ 	int err;
+@@ -898,6 +949,8 @@ static __init int raw_module_init(void)
+ 	err = can_proto_register(&raw_can_proto);
+ 	if (err < 0)
+ 		pr_err("can: registration of raw protocol failed\n");
++	else
++		register_netdevice_notifier(&canraw_notifier);
+ 
+ 	return err;
+ }
+@@ -905,6 +958,7 @@ static __init int raw_module_init(void)
+ static __exit void raw_module_exit(void)
+ {
+ 	can_proto_unregister(&raw_can_proto);
++	unregister_netdevice_notifier(&canraw_notifier);
+ }
+ 
+ module_init(raw_module_init);
+-- 
+2.18.4
+
