@@ -2,209 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 092FE3991E2
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:44:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAA923991EA
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:47:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230394AbhFBRqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 13:46:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38444 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230372AbhFBRqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 13:46:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622655876;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0nSZvdYysQWxC6uneZcF7tt6OS9HwJAboMhzv5Ww/FA=;
-        b=RA22eflKFIU2J1gPCb+EKG058UqMR2lpXYiW1DKh3CkLzr28euC5+enYsEN1NdaXAttfR9
-        0tweBYEfH65x6fKMT0XMQ73I9UWaH5ggHpctUyTFyZal/aMBGqshAL+KRwu9UKMVCy016s
-        7arQvhT3Rw3mrF7mB4wBZz/8rMaLiS4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-588-otsj5cXvNxy7UNj-uBk5pA-1; Wed, 02 Jun 2021 13:44:32 -0400
-X-MC-Unique: otsj5cXvNxy7UNj-uBk5pA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 503571883520;
-        Wed,  2 Jun 2021 17:44:31 +0000 (UTC)
-Received: from ymir.virt.lab.eng.bos.redhat.com (virtlab420.virt.lab.eng.bos.redhat.com [10.19.152.148])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7AB425C5E0;
-        Wed,  2 Jun 2021 17:44:30 +0000 (UTC)
-From:   jmaloy@redhat.com
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     tipc-discussion@lists.sourceforge.net,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
-        xinl@redhat.com, ying.xue@windriver.com,
-        parthasarathy.bhuvaragan@gmail.com
-Subject: [net-next v2 3/3] tipc: simplify handling of lookup scope during multicast message reception
-Date:   Wed,  2 Jun 2021 13:44:26 -0400
-Message-Id: <20210602174426.870536-4-jmaloy@redhat.com>
-In-Reply-To: <20210602174426.870536-1-jmaloy@redhat.com>
-References: <20210602174426.870536-1-jmaloy@redhat.com>
+        id S229685AbhFBRtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 13:49:20 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:36236 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229574AbhFBRtR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 13:49:17 -0400
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 152HYQvj152742
+        for <netdev@vger.kernel.org>; Wed, 2 Jun 2021 13:47:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=JVLvKAFJc5n4vUKw/MowFjqL5Yt3oEu5k64jYNAhhPo=;
+ b=kCMzW1OLAUD+Ar+kAuZ8T02U70i1zBo0fAWL/qL5J3+LSvdTUSW5x0wjP+/CLyxNBZSr
+ JyoEEhJN7/PFaeIX5QbDdAjhii18fwIovcZvPHhK4Ks+0m2y8EQ3/tYc/Ds/J103Dt7I
+ cqNwVEBlUqT7QAHuoxGAcmpMCYqSWXtTEQsj+2NhQszTguzHXRI2KWxw1g613KphhY1n
+ L8PDs7qFOtQMqa/Lee/pRLXSej4C0u8zL/4/vqKL9YNQ1DOFetypRs8lBMF1uwj2nbzd
+ 82fTKUxfemYK6dDa8cPUP7oZrsJY9JDZqXkHFoUC8piQKw5Rhb5SCDj/LfpMxfzggT5r xQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 38xe0498vf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 13:47:32 -0400
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 152HYgEs153537
+        for <netdev@vger.kernel.org>; Wed, 2 Jun 2021 13:47:31 -0400
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 38xe0498ux-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 02 Jun 2021 13:47:31 -0400
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 152Hkmrw004292;
+        Wed, 2 Jun 2021 17:47:30 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma02wdc.us.ibm.com with ESMTP id 38ud89sdnt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 02 Jun 2021 17:47:30 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 152HlTDg30867824
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 2 Jun 2021 17:47:29 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B94B26E04E;
+        Wed,  2 Jun 2021 17:47:29 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2ACE86E054;
+        Wed,  2 Jun 2021 17:47:29 +0000 (GMT)
+Received: from [9.160.41.210] (unknown [9.160.41.210])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed,  2 Jun 2021 17:47:28 +0000 (GMT)
+Subject: Re: [PATCH net-next] net: ibm: replenish rx pool and poll less
+ frequently
+To:     Lijun Pan <lijunp213@gmail.com>, netdev@vger.kernel.org
+References: <20210602170156.41643-1-lijunp213@gmail.com>
+From:   Rick Lindsley <ricklind@linux.vnet.ibm.com>
+Message-ID: <0bddd39e-b6da-2c69-fd37-a08bd5a1e18b@linux.vnet.ibm.com>
+Date:   Wed, 2 Jun 2021 10:47:27 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <20210602170156.41643-1-lijunp213@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: s0KDrJwDjGB9jsj6RpgQJNqZfXfnO984
+X-Proofpoint-GUID: 2QWNajfkHUrifG9VSp8TcfU9nnzr5lMm
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-02_09:2021-06-02,2021-06-02 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
+ bulkscore=0 mlxscore=0 clxscore=1011 impostorscore=0 adultscore=0
+ priorityscore=1501 suspectscore=0 lowpriorityscore=0 phishscore=0
+ mlxlogscore=945 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106020111
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+On 6/2/21 10:01 AM, Lijun Pan wrote:
+> The old mechanism replenishes rx pool even only one frames is processed in
+> the poll function, which causes lots of overheads. The old mechanism
+> restarts polling until processed frames reaches the budget, which can
+> cause the poll function to loop into restart_poll 63 times at most and to
+> call replenish_rx_poll 63 times at most.
 
-We introduce a new macro TIPC_ANY_SCOPE to make the handling of the
-lookup scope value more comprehensible during multicast reception.
-
-The (unchanged) rules go as follows:
-
-1) Multicast messages sent from own node are delivered to all matching
-   sockets on the own node, irrespective of their binding scope.
-
-2) Multicast messages sent from other nodes arrive here because they
-   have found TIPC_CLUSTER_SCOPE bindings emanating from this node.
-   Those messages should be delivered to exactly those sockets, but not
-   to local sockets bound with TIPC_NODE_SCOPE, since the latter
-   obviously were not meant to be visible for those senders.
-
-3) Group multicast/broadcast messages are delivered to the sockets with
-   a binding scope matching exactly the lookup scope indicated in the
-   message header, and nobody else.
-
-Reviewed-by: Xin Long <lucien.xin@gmail.com>
-Tested-by: Hoang Le <hoang.h.le@dektech.com.au>
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
-
----
-v2: Changed value of TIPC_ANY_SCOPE to avoid compiler warning
-
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
----
- net/tipc/name_table.c |  6 +++---
- net/tipc/name_table.h |  4 +++-
- net/tipc/socket.c     | 26 ++++++++++----------------
- 3 files changed, 16 insertions(+), 20 deletions(-)
-
-diff --git a/net/tipc/name_table.c b/net/tipc/name_table.c
-index fecab516bf41..01396dd1c899 100644
---- a/net/tipc/name_table.c
-+++ b/net/tipc/name_table.c
-@@ -673,12 +673,12 @@ bool tipc_nametbl_lookup_group(struct net *net, struct tipc_uaddr *ua,
-  * Returns a list of local sockets
-  */
- void tipc_nametbl_lookup_mcast_sockets(struct net *net, struct tipc_uaddr *ua,
--				       bool exact, struct list_head *dports)
-+				       struct list_head *dports)
- {
- 	struct service_range *sr;
- 	struct tipc_service *sc;
- 	struct publication *p;
--	u32 scope = ua->scope;
-+	u8 scope = ua->scope;
- 
- 	rcu_read_lock();
- 	sc = tipc_service_find(net, ua);
-@@ -688,7 +688,7 @@ void tipc_nametbl_lookup_mcast_sockets(struct net *net, struct tipc_uaddr *ua,
- 	spin_lock_bh(&sc->lock);
- 	service_range_foreach_match(sr, sc, ua->sr.lower, ua->sr.upper) {
- 		list_for_each_entry(p, &sr->local_publ, local_publ) {
--			if (p->scope == scope || (!exact && p->scope < scope))
-+			if (scope == p->scope || scope == TIPC_ANY_SCOPE)
- 				tipc_dest_push(dports, 0, p->sk.ref);
- 		}
- 	}
-diff --git a/net/tipc/name_table.h b/net/tipc/name_table.h
-index c7c9a3ddd420..259f95e3d99c 100644
---- a/net/tipc/name_table.h
-+++ b/net/tipc/name_table.h
-@@ -51,6 +51,8 @@ struct tipc_uaddr;
- #define TIPC_PUBL_SCOPE_NUM	(TIPC_NODE_SCOPE + 1)
- #define TIPC_NAMETBL_SIZE	1024	/* must be a power of 2 */
- 
-+#define TIPC_ANY_SCOPE 10      /* Both node and cluster scope will match */
-+
- /**
-  * struct publication - info about a published service address or range
-  * @sr: service range represented by this publication
-@@ -113,7 +115,7 @@ int tipc_nl_name_table_dump(struct sk_buff *skb, struct netlink_callback *cb);
- bool tipc_nametbl_lookup_anycast(struct net *net, struct tipc_uaddr *ua,
- 				 struct tipc_socket_addr *sk);
- void tipc_nametbl_lookup_mcast_sockets(struct net *net, struct tipc_uaddr *ua,
--				       bool exact, struct list_head *dports);
-+				       struct list_head *dports);
- void tipc_nametbl_lookup_mcast_nodes(struct net *net, struct tipc_uaddr *ua,
- 				     struct tipc_nlist *nodes);
- bool tipc_nametbl_lookup_group(struct net *net, struct tipc_uaddr *ua,
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index c635fd27fb38..575a0238deb2 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -1200,12 +1200,12 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
- 	struct tipc_msg *hdr;
- 	struct tipc_uaddr ua;
- 	int user, mtyp, hlen;
--	bool exact;
- 
- 	__skb_queue_head_init(&tmpq);
- 	INIT_LIST_HEAD(&dports);
- 	ua.addrtype = TIPC_SERVICE_RANGE;
- 
-+	/* tipc_skb_peek() increments the head skb's reference counter */
- 	skb = tipc_skb_peek(arrvq, &inputq->lock);
- 	for (; skb; skb = tipc_skb_peek(arrvq, &inputq->lock)) {
- 		hdr = buf_msg(skb);
-@@ -1214,6 +1214,12 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
- 		hlen = skb_headroom(skb) + msg_hdr_sz(hdr);
- 		onode = msg_orignode(hdr);
- 		ua.sr.type = msg_nametype(hdr);
-+		ua.sr.lower = msg_namelower(hdr);
-+		ua.sr.upper = msg_nameupper(hdr);
-+		if (onode == self)
-+			ua.scope = TIPC_ANY_SCOPE;
-+		else
-+			ua.scope = TIPC_CLUSTER_SCOPE;
- 
- 		if (mtyp == TIPC_GRP_UCAST_MSG || user == GROUP_PROTOCOL) {
- 			spin_lock_bh(&inputq->lock);
-@@ -1231,20 +1237,10 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
- 			ua.sr.lower = 0;
- 			ua.sr.upper = ~0;
- 			ua.scope = msg_lookup_scope(hdr);
--			exact = true;
--		} else {
--			/* TIPC_NODE_SCOPE means "any scope" in this context */
--			if (onode == self)
--				ua.scope = TIPC_NODE_SCOPE;
--			else
--				ua.scope = TIPC_CLUSTER_SCOPE;
--			exact = false;
--			ua.sr.lower = msg_namelower(hdr);
--			ua.sr.upper = msg_nameupper(hdr);
- 		}
- 
- 		/* Create destination port list: */
--		tipc_nametbl_lookup_mcast_sockets(net, &ua, exact, &dports);
-+		tipc_nametbl_lookup_mcast_sockets(net, &ua, &dports);
- 
- 		/* Clone message per destination */
- 		while (tipc_dest_pop(&dports, NULL, &portid)) {
-@@ -1256,13 +1252,11 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
- 			}
- 			pr_warn("Failed to clone mcast rcv buffer\n");
- 		}
--		/* Append to inputq if not already done by other thread */
-+		/* Append clones to inputq only if skb is still head of arrvq */
- 		spin_lock_bh(&inputq->lock);
- 		if (skb_peek(arrvq) == skb) {
- 			skb_queue_splice_tail_init(&tmpq, inputq);
--			/* Decrease the skb's refcnt as increasing in the
--			 * function tipc_skb_peek
--			 */
-+			/* Decrement the skb's refcnt */
- 			kfree_skb(__skb_dequeue(arrvq));
- 		}
- 		spin_unlock_bh(&inputq->lock);
--- 
-2.31.1
-
+Presumably this frequency is to keep ahead of demand.  When you say lots
+of overhead - can you attach a number to that?  How much does this change
+improve on that number (what workload benefits?)
