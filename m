@@ -2,114 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4805C39910A
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:02:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50BC039910C
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:03:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbhFBREX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 13:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbhFBREW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 13:04:22 -0400
-Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AD0C061574
-        for <netdev@vger.kernel.org>; Wed,  2 Jun 2021 10:02:25 -0700 (PDT)
-Received: by mail-oo1-xc33.google.com with SMTP id v13-20020a4ac00d0000b029020b43b918eeso709410oop.9
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 10:02:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8eXIXsiyDuFNJesSFaHSyWarlGbS/8XfDyl7g5cf8OE=;
-        b=EjM3bO/ZLNjM+kNXsWvsFtNCg9zrTeqcJn5PgFP9y/D+IvGRwuJ7WITIcMYz6ofrhh
-         76RMw3/P/jbhaVc7iRcFAOQG3dqGjWlA7jCb0kRd+jHW9a+hzzm2ojmqFzWePp6Z/9Md
-         Ao+dOBY2TSK1tvKWmxuugp3NEyyO9yaOQiBGyJbdnMe9IV6stK5Py0+qOw95fShwesd9
-         qC8BGiZdhfR7+KkGDdVuoFSEaLDlTCSXlAtuqn2JWLKujV79doqEjZR9fqGyYgIaYyKq
-         ixyGtNgx4O4hlUiue/d6UsTMAY9XbkCUF3jJNuY9Nu1VhV6iMSQfCIdGUgoY0uUcBjra
-         v1zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8eXIXsiyDuFNJesSFaHSyWarlGbS/8XfDyl7g5cf8OE=;
-        b=F0uqGfkSa/ntrrQWX6SVE+vXpccS78Bjt1obbSFMSP2H4XkbVjEBoVGp8Q/4Y1wGeI
-         Bi43ToV2A2wivUWu1EmUEg1cFgNc1YDD2GJrpyRttBNeBMLBo2b79KHhVsbQCBJd+DFi
-         qwo70yaKmclEvyrmKX5WXZZbmSXg7V7ZSsLSiTjtBkH+B9XHpTTCHOmVQiBPNXIiCCQE
-         NaruNKAF+ygG0j7USm6jLIcTqMHtvwVT9DSR01z08KfbmwYd4c42xBaGYrq1odUlcwTo
-         rL77zOOrrDRSNzNomaoAE09JTljpKewF9FIoPOfCp7QDAKQqi1LAtfPSiMoKnSWPi0YI
-         Mejg==
-X-Gm-Message-State: AOAM530pW8Z81IBx23+cmAyAtTd2VX2Plt2WUjiTyewtZLZWAr2wW0wg
-        H+sYiEhP7vxrh6kNdCcSauWKu6eURE3aeQ==
-X-Google-Smtp-Source: ABdhPJyjX267gZK+Ev67d15oljy8KITsheckM5TbX/MY7Iagahq8HwPHmdgxDtu2rVkH/SzzDZFybg==
-X-Received: by 2002:a4a:b202:: with SMTP id d2mr25471663ooo.13.1622653344331;
-        Wed, 02 Jun 2021 10:02:24 -0700 (PDT)
-Received: from pear.attlocal.net ([2600:1700:271:1a80:c833:45c4:b8d7:9287])
-        by smtp.gmail.com with ESMTPSA id e83sm91443oia.40.2021.06.02.10.02.23
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 02 Jun 2021 10:02:24 -0700 (PDT)
-From:   Lijun Pan <lijunp213@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Lijun Pan <lijunp213@gmail.com>
-Subject: [PATCH net-next] net: ibm: replenish rx pool and poll less frequently
-Date:   Wed,  2 Jun 2021 12:01:56 -0500
-Message-Id: <20210602170156.41643-1-lijunp213@gmail.com>
-X-Mailer: git-send-email 2.23.0
+        id S230284AbhFBRFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 13:05:05 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:42458 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229831AbhFBRFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 13:05:04 -0400
+Received: from netfilter.org (unknown [90.77.255.23])
+        by mail.netfilter.org (Postfix) with ESMTPSA id BE28F641FC;
+        Wed,  2 Jun 2021 19:02:12 +0200 (CEST)
+Date:   Wed, 2 Jun 2021 19:03:17 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     syzbot <syzbot+ce96ca2b1d0b37c6422d@syzkaller.appspotmail.com>
+Cc:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] general protection fault in nft_set_elem_expr_alloc
+Message-ID: <20210602170317.GA18869@salvia>
+References: <000000000000ef07b205c3cb1234@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <000000000000ef07b205c3cb1234@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The old mechanism replenishes rx pool even only one frames is processed in
-the poll function, which causes lots of overheads. The old mechanism
-restarts polling until processed frames reaches the budget, which can
-cause the poll function to loop into restart_poll 63 times at most and to
-call replenish_rx_poll 63 times at most. This will cause soft lockup very
-easily. So, don't replenish too often, and don't goto restart_poll in each
-poll function. If there are pending descriptors, fetch them in the next
-poll instance.
+On Wed, Jun 02, 2021 at 09:37:26AM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    6850ec97 Merge branch 'mptcp-fixes-for-5-13'
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1355504dd00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=770708ea7cfd4916
+> dashboard link: https://syzkaller.appspot.com/bug?extid=ce96ca2b1d0b37c6422d
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1502d517d00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12bbbe13d00000
+> 
+> The issue was bisected to:
+> 
+> commit 05abe4456fa376040f6cc3cc6830d2e328723478
+> Author: Pablo Neira Ayuso <pablo@netfilter.org>
+> Date:   Wed May 20 13:44:37 2020 +0000
+> 
+>     netfilter: nf_tables: allow to register flowtable with no devices
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10fa1387d00000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=12fa1387d00000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=14fa1387d00000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+ce96ca2b1d0b37c6422d@syzkaller.appspotmail.com
+> Fixes: 05abe4456fa3 ("netfilter: nf_tables: allow to register flowtable with no devices")
+> 
+> general protection fault, probably for non-canonical address 0xdffffc000000000e: 0000 [#1] PREEMPT SMP KASAN
+> KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
+> CPU: 1 PID: 8438 Comm: syz-executor343 Not tainted 5.13.0-rc3-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:nft_set_elem_expr_alloc+0x17e/0x280 net/netfilter/nf_tables_api.c:5321
+> Code: 48 c1 ea 03 80 3c 02 00 0f 85 09 01 00 00 49 8b 9d c0 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 d9 00 00 00 48 8b 5b 70 48 85 db 74 21 e8 9a bd
 
-Signed-off-by: Lijun Pan <lijunp213@gmail.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 15 +++------------
- 1 file changed, 3 insertions(+), 12 deletions(-)
+It's a real bug. Bisect is not correct though.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index ffb2a91750c7..fae1eaa39dd0 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2435,7 +2435,6 @@ static int ibmvnic_poll(struct napi_struct *napi, int budget)
- 	frames_processed = 0;
- 	rx_scrq = adapter->rx_scrq[scrq_num];
- 
--restart_poll:
- 	while (frames_processed < budget) {
- 		struct sk_buff *skb;
- 		struct ibmvnic_rx_buff *rx_buff;
-@@ -2512,20 +2511,12 @@ static int ibmvnic_poll(struct napi_struct *napi, int budget)
- 	}
- 
- 	if (adapter->state != VNIC_CLOSING &&
--	    ((atomic_read(&adapter->rx_pool[scrq_num].available) <
--	      adapter->req_rx_add_entries_per_subcrq / 2) ||
--	      frames_processed < budget))
-+	    (atomic_read(&adapter->rx_pool[scrq_num].available) <
-+	      adapter->req_rx_add_entries_per_subcrq / 2))
- 		replenish_rx_pool(adapter, &adapter->rx_pool[scrq_num]);
- 	if (frames_processed < budget) {
--		if (napi_complete_done(napi, frames_processed)) {
-+		if (napi_complete_done(napi, frames_processed))
- 			enable_scrq_irq(adapter, rx_scrq);
--			if (pending_scrq(adapter, rx_scrq)) {
--				if (napi_reschedule(napi)) {
--					disable_scrq_irq(adapter, rx_scrq);
--					goto restart_poll;
--				}
--			}
--		}
- 	}
- 	return frames_processed;
- }
--- 
-2.23.0
-
+I'll post a patch to fix it. Thanks.
