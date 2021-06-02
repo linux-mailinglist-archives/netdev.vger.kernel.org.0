@@ -2,89 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F3BE397DB3
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 02:38:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA759397DB7
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 02:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229675AbhFBAkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 20:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbhFBAkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 20:40:10 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47478C061574;
-        Tue,  1 Jun 2021 17:38:27 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id c31-20020a056830349fb02903a5bfa6138bso992661otu.7;
-        Tue, 01 Jun 2021 17:38:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5bf4YzypzuLYRxXllTngjIxMycW0hM5btc0BbcP4pGQ=;
-        b=EpUeOPldVcaG6JyVgTky4Lswy3xM0/LQ+apM+dqJwFBqrnPSX0P5RSeFPeIXNJGBQI
-         EI6B1dpBjdeNUAD/sb1uatmRduombvSTGzGdwtrNOImPpJmLynGSFFAwy3ZzWUll7HkC
-         YXeDFOIsWEEzt+q1eoaXhRSjpvG+ePrSxJ9p8IqHY/R+esqd2m96ajobsAlUuuwdalgz
-         P3V7NNoTfJpW/DtruOUo95DodZiKfq4qUbSh4zF/l9kdsLjiacJYVhmnORyzq5aSWv8O
-         F0ZGQbmS+MuTtpRLlxpo4lStiuQ+6lr1xRBzSlSU8KwPEka6CeUZlyh3G40xPuAZalCj
-         /k/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5bf4YzypzuLYRxXllTngjIxMycW0hM5btc0BbcP4pGQ=;
-        b=D43zOSq19TQNTKYJC/ckJ5nKjXXpAvX74g1AH64HEcJIppIgLkPw5jpoBRY9qhIVUM
-         XEYoMUeW6+QVTmXTgDlxXsC00mK/7NLD0FpAnQ2sFpatQYCDKFbmMm+ycbP0X3E0j+r+
-         5SrHJrHpeoLvATHQQNRbixLic6n/HWuBNbCSzaYbSsQMYQfk6BfaEM/uZCG7QJgfOViD
-         KkjD3ZWtQrghK+jESi168DPZCCHhpvx8ZJtu0BP/9V8NSvtb7k6VFO7ojLudivHBi2si
-         dDy+yU4o6YnSbTEtlChE/kPu/hDe2H9a/HHaSGvTwhUvTri3SPTNO5YLpQJo1Y76WcO9
-         r5zQ==
-X-Gm-Message-State: AOAM533W/bLJsBXOxycVbpoBjxuCo+m2rE2LXXZJUqT7KeP3T+dS8wK6
-        YXTe9yZiLnLzyIDXMT2JU90=
-X-Google-Smtp-Source: ABdhPJzJiWvLC/ae7Gp5Fc6qFYk/xLmDP/aKqAySyNqBoLY+ltYsC4P4mi18p87bVFFitpB+zf0zUQ==
-X-Received: by 2002:a9d:554b:: with SMTP id h11mr23553952oti.4.1622594306582;
-        Tue, 01 Jun 2021 17:38:26 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id p25sm614586ood.4.2021.06.01.17.38.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Jun 2021 17:38:26 -0700 (PDT)
-Subject: Re: [PATCH] ipv6: create ra_mtu proc file to only record mtu in RA
-To:     Rocco Yue <rocco.yue@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com,
-        rocco.yue@gmail.com
-References: <20210601091619.19372-1-rocco.yue@mediatek.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7087f518-f86e-58fb-6f32-a7cda77fb065@gmail.com>
-Date:   Tue, 1 Jun 2021 18:38:24 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+        id S229710AbhFBAlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 20:41:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59542 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229690AbhFBAls (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 20:41:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 166FA613C1;
+        Wed,  2 Jun 2021 00:40:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622594406;
+        bh=qXbXawDC8sc/qiJMTIVwnFI7+N+jS9KFws81G+M31eU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=M+Ju086bFqN705/+ICCJNoCgWmEXI8eQGwFPsr6Kye1Ds8uZFOQEoB6BRIZNzcjie
+         wlgidsPBtBNcGTdEwBimFotInhl2nxzAOj4/9e+3JmYtrmXcY4rH68ScYZPOshVxZQ
+         z8F7Z77jvAPDLta5FKdSyoFsKFk1gazxeSJ3E645WG4f3Nda0DjZnJqv/IXX/5TQKM
+         +bNA6o6DHmMRwDubrw6IUUMG8rZ/aImd5hNr1WDH8922CZ9DRgtJEqTE4gZLmOaAVZ
+         +nsyxf3tLjrRD9fcVAD581Vga36vO8wq3aJrAwmiAQYmXkply2abfbWkprgSnIPBiU
+         JTlb5RUEcNBiA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 083D760A22;
+        Wed,  2 Jun 2021 00:40:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210601091619.19372-1-rocco.yue@mediatek.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 01/16] netfilter: nft_exthdr: Support SCTP chunks
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162259440602.2786.16553197408865657330.git-patchwork-notify@kernel.org>
+Date:   Wed, 02 Jun 2021 00:40:06 +0000
+References: <20210601220629.18307-2-pablo@netfilter.org>
+In-Reply-To: <20210601220629.18307-2-pablo@netfilter.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/1/21 3:16 AM, Rocco Yue wrote:
-> For this patch set, if RA message carries the mtu option,
-> "proc/sys/net/ipv6/conf/<iface>/ra_mtu" will be updated to the
-> mtu value carried in the last RA message received, and ra_mtu
-> is an independent proc file, which is not affected by the update
-> of interface mtu value.
+Hello:
 
-I am not a fan of more /proc/sys files.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-You are adding it to devconf which is good. You can add another link
-attribute, e.g., IFLA_RA_MTU, and have it returned on link queries.
+On Wed,  2 Jun 2021 00:06:14 +0200 you wrote:
+> From: Phil Sutter <phil@nwl.cc>
+> 
+> Chunks are SCTP header extensions similar in implementation to IPv6
+> extension headers or TCP options. Reusing exthdr expression to find and
+> extract field values from them is therefore pretty straightforward.
+> 
+> For now, this supports extracting data from chunks at a fixed offset
+> (and length) only - chunks themselves are an extensible data structure;
+> in order to make all fields available, a nested extension search is
+> needed.
+> 
+> [...]
 
-Make sure the attribute can not be sent in a NEWLINK or SETLINK request;
-it should be read-only for GETLINK.
+Here is the summary with links:
+  - [net-next,01/16] netfilter: nft_exthdr: Support SCTP chunks
+    https://git.kernel.org/netdev/net-next/c/133dc203d77d
+  - [net-next,02/16] netfilter: nft_set_pipapo_avx2: Skip LDMXCSR, we don't need a valid MXCSR state
+    https://git.kernel.org/netdev/net-next/c/a58db7ad80e8
+  - [net-next,03/16] netfilter: add and use nft_set_do_lookup helper
+    https://git.kernel.org/netdev/net-next/c/0974cff3eb66
+  - [net-next,04/16] netfilter: nf_tables: prefer direct calls for set lookups
+    https://git.kernel.org/netdev/net-next/c/f227925e53c3
+  - [net-next,05/16] netfilter: Remove leading spaces in Kconfig
+    https://git.kernel.org/netdev/net-next/c/06f029930264
+  - [net-next,06/16] netfilter: x_tables: improve limit_mt scalability
+    https://git.kernel.org/netdev/net-next/c/07df3fc90a03
+  - [net-next,07/16] netfilter: xt_CT: Remove redundant assignment to ret
+    https://git.kernel.org/netdev/net-next/c/02d85142670b
+  - [net-next,08/16] netfilter: use nfnetlink_unicast()
+    https://git.kernel.org/netdev/net-next/c/e0241ae6ac59
+  - [net-next,09/16] netfilter: x_tables: reduce xt_action_param by 8 byte
+    https://git.kernel.org/netdev/net-next/c/586d5a8bcede
+  - [net-next,10/16] netfilter: reduce size of nf_hook_state on 32bit platforms
+    https://git.kernel.org/netdev/net-next/c/6802db48fc27
+  - [net-next,11/16] netfilter: nf_tables: add and use nft_sk helper
+    https://git.kernel.org/netdev/net-next/c/85554eb981e5
+  - [net-next,12/16] netfilter: nf_tables: add and use nft_thoff helper
+    https://git.kernel.org/netdev/net-next/c/2d7b4ace0754
+  - [net-next,13/16] netfilter: nf_tables: remove unused arg in nft_set_pktinfo_unspec()
+    https://git.kernel.org/netdev/net-next/c/f06ad944b6a9
+  - [net-next,14/16] netfilter: nf_tables: remove xt_action_param from nft_pktinfo
+    https://git.kernel.org/netdev/net-next/c/897389de4828
+  - [net-next,15/16] netfilter: nft_set_pipapo_avx2: fix up description warnings
+    https://git.kernel.org/netdev/net-next/c/89258f8e4148
+  - [net-next,16/16] netfilter: fix clang-12 fmt string warnings
+    https://git.kernel.org/netdev/net-next/c/8a1c08ad19b6
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
