@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E907398379
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 09:46:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D64D398380
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 09:47:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232165AbhFBHsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 03:48:21 -0400
-Received: from mail-bn8nam12on2072.outbound.protection.outlook.com ([40.107.237.72]:56832
+        id S232191AbhFBHs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 03:48:59 -0400
+Received: from mail-bn8nam12on2047.outbound.protection.outlook.com ([40.107.237.47]:30848
         "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232148AbhFBHsU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 03:48:20 -0400
+        id S232180AbhFBHsy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 03:48:54 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gD7QzN8Gw6Oug8mqNiDKfKhNeATLgj2N1rpzgwsGey1GURU5IeCvim1kcigAhsBliyLZrt3UJzf3a77dLyk9DCylgi6yeUZBzFjOD3GeRxtiCnrW7danhRRjcY6HH4TWiq8wuN84azZrzmBe/wug1DIJ5pOoZYjhxLu1oxZeOkn0dXNQUMBkJ9/Zexp65Zkes7FZevAQ6YyFSI2AsBDhYkGn/QCvDKXsvFNJxuQX7BnjzxEkC3NLjrDlgwLPbrSv2HlzIZ5X42ZaCm88l+ToRoF7t/DiDxWRFqpQJefLJ+lPUf8Z9qE3529T/UU5K9cK3BffllLddAHcz/f6IaPIGw==
+ b=da1GG4K+aPKUO0Avv6gevPhKxRgs5N8VZ0xtvgzUePOLmPEtpPkhS6fYmBgCdI25fEIoSOcX5LxlukDOM2ctJaS8I+JL46smmr0u6xQZLCNjujevxQmu5CxbTSjCb1InJ2vzzfH9ehD6VTcdBcO2a5vHNf+l2c5EVnf35AhMe5kO8Cxo3eCAaY/lbIddalZZf4ELhIcW1zDw1Cdu+EVMZliOE72GDGr4ihj08KIy/ZDXliYXIEpXcgso5HGlz6QxGXjlOD4ryY9kbcsPUn9dz0qQqRg6nNb4NdqGvdnptyqBThnZJR3hNS/qSOz4TpNMvLueinrc8jfoWhnAik6LFg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2ZQQhjXrc1hMMP3A0JUh4fOrIGss5rR4K/ZEzyP1LB8=;
- b=npheL9DN0Ub65oL2rEezFay7lNolOnNJV62QFvqmzqiaOV6pPJCHIHHZeBycq8dWQ/Odfyuc2PAN6kt2e/nSjCRFXitZab6jC3USMtisiW1UoMXTmgfMJ4KdiLfR3t7CNxUeAVXVs6xDm5kVvfHtGY1fi1F9raL1Zt948EIFIgEeVDC0IKBbGE4f1HvShJYUsRtEu09sPGn5RIS/xw5Ai95cbZpTef0m5CbpaWIV5c0cJ4TWyKDC7qoWml8RrYSq6vH2Z8hOHlm3UjhBVSSmgGz7M1ir4qCxx/gqUDMlmoxfSG2FiTpLyGccXZ7CncOLtplnBTgiAePzOgoS3KkZyA==
+ bh=BgKthxxxMVSs1mBmJ3MWnQ2qJGAWYcEXwpmjkIU8yqI=;
+ b=G7DL8c4N1zEnsT/gv3cJHObuUiaElmw71y+XzVjFVwVQEfthvehfPJLokMLUZriyO20nErNUuc1pXobAL8rnwWQ6wXDlK55MJMuMNiLtvpe3ayW1cCZwFNFeX8JK3jI+nn29oMDjJj84wXQxFdNet9VvysHvHRMV5cak2tHi35A7Pkz2GhXpg3tiTwUQEbV4DeGv7S5PL6AjvXUYu225006Jnwi98/7+7UQFeNWN3jbi6O7JT+ubUzbNl7Dw+tXw23AyRPJvdS4AeeEZgjFDQb0qgrnL8YkjJotZkf3qj0q0X0a/JDfsaKhSyTthWQ+7s+mXDSjiH7+6cFYQDfzVxQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,17 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2ZQQhjXrc1hMMP3A0JUh4fOrIGss5rR4K/ZEzyP1LB8=;
- b=FjILdxGWsTbniFbex4XdsjbCyOp/g52spbwjky2M3aNwkZ6SP5Pbk/n6fnFjriLABUzTZP9GKwpjBqH5+DjfTTJxLLJd9p8/X1b/4n43MxFpx4Fqr5HEYOyKwk6TlRiGxSnUN7SKNBOFJ9oyxh/g7dKprrcw5RLhp3fYgtDrADh4ipesm5cG2c+EI50T5Q7/WbG18xlRkGKbQbkyoeMevrUj2K0Hj6iL32+V2/KdI/yRAOuvY7+MUEFNQLTOt1YjxXbKCAs+L8ZuJ4GlkA+SBSWF7eVWWeSEaluiVpYNbW/TBXe1zpdJD4pMmcokJsA1gryiiVaE97XTwqaNwndlzA==
-Received: from DM6PR06CA0062.namprd06.prod.outlook.com (2603:10b6:5:54::39) by
- MWHPR12MB1295.namprd12.prod.outlook.com (2603:10b6:300:11::11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4173.20; Wed, 2 Jun 2021 07:46:35 +0000
-Received: from DM6NAM11FT063.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:54:cafe::cf) by DM6PR06CA0062.outlook.office365.com
- (2603:10b6:5:54::39) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21 via Frontend
- Transport; Wed, 2 Jun 2021 07:46:35 +0000
+ bh=BgKthxxxMVSs1mBmJ3MWnQ2qJGAWYcEXwpmjkIU8yqI=;
+ b=d2iXk9yG3A4aja8wmODAtXPfSce1264Nw1ZhC62tjj1W/4kXg7bRSNNkqDbVq+6w+vO8Iq9usoz1MBZ035BaCF5ZClgWard+XicaH0VqPglTxDco75K6kIXiOp3/7RhwRH8LYZGlBoJeYxxjxZKN4YdrT4awrUS1v1cAzo5uySztbx9N/uivgWLECJRQczuI63X0BooEYWheDJxjMixHGHc3Gxi9f3J/cyZFMAUVcj2ctazG2ZHNymDWe6kYN0yB1h58EU+R+evCxq/1yZItMVKqcSJpzQvFAkT3VTHWNtVcU+btZwUTfU+PsucBwhFuQvT8pdAaAtoOPUakLF5H4A==
+Received: from DM5PR04CA0059.namprd04.prod.outlook.com (2603:10b6:3:ef::21) by
+ BYAPR12MB4600.namprd12.prod.outlook.com (2603:10b6:a03:112::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.24; Wed, 2 Jun
+ 2021 07:47:10 +0000
+Received: from DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:ef::4) by DM5PR04CA0059.outlook.office365.com
+ (2603:10b6:3:ef::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.15 via Frontend
+ Transport; Wed, 2 Jun 2021 07:47:09 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
@@ -44,126 +45,105 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.34 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.34; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT063.mail.protection.outlook.com (10.13.172.219) with Microsoft SMTP
+ DM6NAM11FT057.mail.protection.outlook.com (10.13.172.252) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4150.30 via Frontend Transport; Wed, 2 Jun 2021 07:46:35 +0000
+ 15.20.4150.30 via Frontend Transport; Wed, 2 Jun 2021 07:47:09 +0000
 Received: from mtl-vdi-166.wap.labs.mlnx (172.20.187.5) by
  HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 2 Jun 2021 07:46:32 +0000
-Date:   Wed, 2 Jun 2021 10:46:27 +0300
+ 15.0.1497.2; Wed, 2 Jun 2021 07:47:06 +0000
+Date:   Wed, 2 Jun 2021 10:47:02 +0300
 From:   Eli Cohen <elic@nvidia.com>
 To:     Jason Wang <jasowang@redhat.com>
 CC:     <mst@redhat.com>, <virtualization@lists.linux-foundation.org>,
         <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
         <netdev@vger.kernel.org>, <eli@mellanox.com>
-Subject: Re: [PATCH V2 RESEND 3/4] vp_vdpa: allow set vq state to initial
- state after reset
-Message-ID: <20210602074627.GG12498@mtl-vdi-166.wap.labs.mlnx>
+Subject: Re: [PATCH V2 RESEND 4/4] virtio/vdpa: clear the virtqueue state
+ during probe
+Message-ID: <20210602074702.GH12498@mtl-vdi-166.wap.labs.mlnx>
 References: <20210602021536.39525-1-jasowang@redhat.com>
- <20210602021536.39525-4-jasowang@redhat.com>
+ <20210602021536.39525-5-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20210602021536.39525-4-jasowang@redhat.com>
+In-Reply-To: <20210602021536.39525-5-jasowang@redhat.com>
 User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
 X-Originating-IP: [172.20.187.5]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 87ebd7d4-e7cf-4689-f613-08d9259a8c25
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1295:
-X-Microsoft-Antispam-PRVS: <MWHPR12MB12954867F5FB59F076E11C2DAB3D9@MWHPR12MB1295.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-MS-Office365-Filtering-Correlation-Id: d9d968f2-c47d-4fa3-9949-08d9259aa08d
+X-MS-TrafficTypeDiagnostic: BYAPR12MB4600:
+X-Microsoft-Antispam-PRVS: <BYAPR12MB4600163C6FD589C92765A6BEAB3D9@BYAPR12MB4600.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:196;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 316BDnYtqivFAZSEZr/vAR0HOG6yaoCvmpZa8l95yrjeeodgDPFPH20mjOhOFpGMZL2CFwjFbFWfNhjjuLDn2AEnCmbVXIAQrO67TzO8FephlKKkw7N1mWq5vQdL123xAxRycliUkdNHLvMP9WSsMshMLbU2RLl3o1ojR1syLyUPjj2iQ51AfVHJyHQtyomjxEYQxcDSz7L8wgmVoOkv/t9NCg+6D9JthsEEuqNVGl+kD9PCy1PDdNElfl9dSXV7J+mR5WgWkygOV4uozDUalg8TMSXjDHuQObjprk//GTft8L8jQYt1uMuvKVEbo90clzZ2Ip1iPowOX+Q9fwNkpuDaZdE6qws4N/yck54fVvQUhNTy7r15VrWa/Xq+Vsxx/iZFWmqcvO5PhpDDWS9yrsLMA0H7cWDyx7fN0kTS8oZHMu6b485B6SV0JKYV/ZhhswZjej2tIpD+dswYeL27lnmoej6Y9hWV+BzQsq2G4P9lV9CZRohaj8mioSjheGTZvhDAZacruf5j9fxN4JsMI3BYR4FwQ11QyYlEnQFq16k3GTRWUfWqnsZv8MYRvxFoKA+ZkvQlQ2VXjcGdh4nJTYaEMhd6O3zKYk8rGxnhIMr+Pi0gx0g5QTNNWW2lAUXZBNK1HbFX8IWyXEW3FG8RGLjPOUJ9SaeQE8abGays54g=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(396003)(346002)(136003)(376002)(46966006)(36840700001)(36860700001)(86362001)(16526019)(186003)(6916009)(336012)(8676002)(7636003)(1076003)(356005)(82740400003)(70206006)(33656002)(54906003)(426003)(5660300002)(9686003)(6666004)(83380400001)(478600001)(82310400003)(36906005)(7696005)(70586007)(4326008)(55016002)(2906002)(47076005)(26005)(316002)(8936002)(107886003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: CKssnmxw3lI5HQ8+qGjUGFY60hynShb3WoMLeTRdsSF0E1bXbiI5Rr4iUJj36I8gFmWPbSOVpCDGPK01+olfLUrkDin+7iAaJ0i22zQGxrfVEzAiBexY5JwlTWxycAC16/zWH/Ou0Z6ioqSILOKvRT37Dfmx68mBlevmXSchIFFWxLsSOi1OHu9BByLcGH4IXeA3lstOo7FWeG4ZHAazAjypV66KKGXt1/0RTBfdJ//lFYE+9S/QNzj/E2Vc0B/axjjk5arZ48zhw8DgREalPNag6OOYOYR9UnJRWqPc1EahXUEPk4HM0b52ieZEuCBcWM5lsJFZIYzLWOmGfiKdhx5dwla36E0Ffs7BZ6fjRc176bVwDW+2/w0+W7fQhAtujUkmrsMfamM6O6I9spe9AEWkjSSyoURQv61hj9XTlgFUD5Q3HfVZveH2/dFGPtdnj+dkG7UMoTXKA1kvpa/n+/NItsXQH52M/dngwz/dwsbkBzEv02p1q1A1+wlAnnPxDllimS3YVwvCluWgvfpMAlvAYtoxK9LmI1ehVg9qqy5tH5K85YfINqaWa3aLeZmERVFPdPEd6ggz664AXAVTgLjyiLy6S8qpc6HR8CClJTbS2iEuK8oep4NgviTEhJ3CeMqAMbaPx3jMDnUfIvE1Qw==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(396003)(376002)(39860400002)(346002)(46966006)(36840700001)(47076005)(2906002)(70586007)(8936002)(33656002)(70206006)(107886003)(478600001)(4326008)(5660300002)(16526019)(336012)(7696005)(316002)(426003)(26005)(36906005)(36860700001)(6916009)(55016002)(9686003)(54906003)(186003)(86362001)(6666004)(82310400003)(8676002)(7636003)(83380400001)(82740400003)(1076003)(356005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 07:46:35.4945
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 07:47:09.7342
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 87ebd7d4-e7cf-4689-f613-08d9259a8c25
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9d968f2-c47d-4fa3-9949-08d9259aa08d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT063.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1295
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB4600
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 10:15:35AM +0800, Jason Wang wrote:
-> We used to fail the set_vq_state() since it was not supported yet by
-> the virtio spec. But if the bus tries to set the state which is equal
-> to the device initial state after reset, we can let it go.
+On Wed, Jun 02, 2021 at 10:15:36AM +0800, Jason Wang wrote:
+> From: Eli Cohen <elic@nvidia.com>
 > 
-> This is a must for virtio_vdpa() to set vq state during probe which is
-> required for some vDPA parents.
+> Clear the available index as part of the initialization process to
+> clear and values that might be left from previous usage of the device.
+> For example, if the device was previously used by vhost_vdpa and now
+> probed by vhost_vdpa, you want to start with indices.
 > 
+> Fixes: c043b4a8cf3b ("virtio: introduce a vDPA based transport")
+> Signed-off-by: Eli Cohen <elic@nvidia.com>
 > Signed-off-by: Jason Wang <jasowang@redhat.com>
+
 Reviewed-by: Eli Cohen <elic@nvidia.com>
 > ---
->  drivers/vdpa/virtio_pci/vp_vdpa.c | 42 ++++++++++++++++++++++++++++---
->  1 file changed, 39 insertions(+), 3 deletions(-)
+>  drivers/virtio/virtio_vdpa.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
 > 
-> diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
-> index c76ebb531212..18bf4a422772 100644
-> --- a/drivers/vdpa/virtio_pci/vp_vdpa.c
-> +++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
-> @@ -210,13 +210,49 @@ static int vp_vdpa_get_vq_state(struct vdpa_device *vdpa, u16 qid,
->  	return -EOPNOTSUPP;
->  }
+> diff --git a/drivers/virtio/virtio_vdpa.c b/drivers/virtio/virtio_vdpa.c
+> index e28acf482e0c..e1a141135992 100644
+> --- a/drivers/virtio/virtio_vdpa.c
+> +++ b/drivers/virtio/virtio_vdpa.c
+> @@ -142,6 +142,8 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
+>  	struct vdpa_callback cb;
+>  	struct virtqueue *vq;
+>  	u64 desc_addr, driver_addr, device_addr;
+> +	/* Assume split virtqueue, switch to packed if necessary */
+> +	struct vdpa_vq_state state = {0};
+>  	unsigned long flags;
+>  	u32 align, num;
+>  	int err;
+> @@ -191,6 +193,19 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
+>  		goto err_vq;
+>  	}
 >  
-> +static int vp_vdpa_set_vq_state_split(struct vdpa_device *vdpa,
-> +				      const struct vdpa_vq_state *state)
-> +{
-> +	const struct vdpa_vq_state_split *split = &state->split;
+> +	/* reset virtqueue state index */
+> +	if (virtio_has_feature(vdev, VIRTIO_F_RING_PACKED)) {
+> +		struct vdpa_vq_state_packed *s = &state.packed;
 > +
-> +	if (split->avail_index == 0)
-> +		return 0;
-> +
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static int vp_vdpa_set_vq_state_packed(struct vdpa_device *vdpa,
-> +				       const struct vdpa_vq_state *state)
-> +{
-> +	const struct vdpa_vq_state_packed *packed = &state->packed;
-> +
-> +	if (packed->last_avail_counter == 1 &&
-> +	    packed->last_avail_idx == 0 &&
-> +	    packed->last_used_counter == 1 &&
-> +	    packed->last_used_idx == 0)
-> +		return 0;
-> +
-> +	return -EOPNOTSUPP;
-> +}
-> +
->  static int vp_vdpa_set_vq_state(struct vdpa_device *vdpa, u16 qid,
->  				const struct vdpa_vq_state *state)
->  {
-> -	/* Note that this is not supported by virtio specification, so
-> -	 * we return -ENOPOTSUPP here. This means we can't support live
-> -	 * migration, vhost device start/stop.
-> +	struct virtio_pci_modern_device *mdev = vdpa_to_mdev(vdpa);
-> +
-> +	/* Note that this is not supported by virtio specification.
-> +	 * But if the state is by chance equal to the device initial
-> +	 * state, we can let it go.
->  	 */
-> +	if ((vp_modern_get_status(mdev) & VIRTIO_CONFIG_S_FEATURES_OK) &&
-> +	    !vp_modern_get_queue_enable(mdev, qid)) {
-> +		if (vp_modern_get_driver_features(mdev) &
-> +		    BIT_ULL(VIRTIO_F_RING_PACKED))
-> +			return vp_vdpa_set_vq_state_packed(vdpa, state);
-> +		else
-> +			return vp_vdpa_set_vq_state_split(vdpa,	state);
+> +		s->last_avail_counter = 1;
+> +		s->last_avail_idx = 0;
+> +		s->last_used_counter = 1;
+> +		s->last_used_idx = 0;
 > +	}
+> +	err = ops->set_vq_state(vdpa, index, &state);
+> +	if (err)
+> +		goto err_vq;
 > +
->  	return -EOPNOTSUPP;
->  }
+>  	ops->set_vq_ready(vdpa, index, 1);
 >  
+>  	vq->priv = info;
 > -- 
 > 2.25.1
 > 
