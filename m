@@ -2,92 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 541013980D2
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 07:50:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47AE53980D9
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 07:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230234AbhFBFwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 01:52:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46510 "EHLO mail.kernel.org"
+        id S230292AbhFBGBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 02:01:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48308 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229779AbhFBFwc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 01:52:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A713161360;
-        Wed,  2 Jun 2021 05:50:49 +0000 (UTC)
+        id S229779AbhFBGBM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 02:01:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AB97D61027;
+        Wed,  2 Jun 2021 05:59:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622613050;
-        bh=D52BA1TKwtARtppT4vzXwF1FMjDUS7v+afZJl5NMqhQ=;
+        s=k20201202; t=1622613570;
+        bh=WFGn28PIenT8iwgpyo1Uh1UYGjMQG1gWUpqwqXSvJlk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YAEe4BsGeoDBwhLRcW2MC+qqQPKO0RzuYvo855vjZ+7PlTdDhLa7hcMLN1hyLehy5
-         cr8fSUnZVkuWitgEaiev4i+fkY8qpSuo2iPoduBxbbxlE2J/RpMyYDxfctDB0V44N0
-         OeiOOWucg6Cb5DXQ0lXBPPGm3z11zg0is46/quMhY9DIO98PtSWrR0cK6PZ/YAw/CO
-         FTD+lq2911PSop3DCY3/YF7/ZXAawuPzE2dJOtq2BBTreJ4mS0InA6q0TAg+K9ER4Z
-         gz4N/x+wfz9CqieFL1G7O/QiMjnqLidqzBOAh+F9kcZd3YFvb0XCyoaSEnCVsUDCPh
-         N3UiCLC2H4LMg==
-Date:   Wed, 2 Jun 2021 08:50:46 +0300
+        b=PfDD9zftySnlohgnH0popDk3aWgGYjbEafnbJopaPd7jvH+1yCL5jnQgWlZ2ahGI/
+         34+u5QMuxWSbIYs+srYytLppF3vvE37DCrQquvxNh6bFaEUvCVJuvNVol36aXBnXd9
+         2+V11/33toVh4lB/DD3MH/exJbS8sHyeTWICoCjUXdNtaHyPnXYTiUYG59NWugIJuk
+         tEboug6LCa/Y5ByPtTBuFNgq9A2g5pbrmZpCbuW6Hr9o7nkHNglUBqVy009PIYUkvD
+         dhlkBkRWpo5G+bN9nSd9y2mbpvEf9H6yCrMiSqRsQuPMyaM/9V4L9K44Dgz2mmvkdF
+         ota0lbaMbWaLQ==
+Date:   Wed, 2 Jun 2021 08:59:26 +0300
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jason Wang <jasowang@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        "Guodeqing (A)" <geffrey.guo@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "mst@redhat.com" <mst@redhat.com>
-Subject: Re: [PATCH] virtio-net: fix the kzalloc/kfree mismatch problem
-Message-ID: <YLccNiOW8UGFowli@unreal>
-References: <1621821978.04102-1-xuanzhuo@linux.alibaba.com>
- <36d1b92c-7dc5-f84e-ef86-980b15c39965@redhat.com>
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, davem@davemloft.net,
+        kuba@kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] virtio_net: Remove BUG() to aviod machine dead
+Message-ID: <YLcePtKhnt9gXq8E@unreal>
+References: <a351fbe1-0233-8515-2927-adc826a7fb94@linux.alibaba.com>
+ <20210518055336-mutt-send-email-mst@kernel.org>
+ <4aaf5125-ce75-c72a-4b4a-11c91cb85a72@linux.alibaba.com>
+ <72f284c6-b2f5-a395-a68f-afe801eb81be@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <36d1b92c-7dc5-f84e-ef86-980b15c39965@redhat.com>
+In-Reply-To: <72f284c6-b2f5-a395-a68f-afe801eb81be@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 24, 2021 at 10:37:14AM +0800, Jason Wang wrote:
+On Tue, May 25, 2021 at 02:19:03PM +0800, Jason Wang wrote:
 > 
-> 在 2021/5/24 上午10:06, Xuan Zhuo 写道:
-> > On Mon, 24 May 2021 01:48:53 +0000, Guodeqing (A) <geffrey.guo@huawei.com> wrote:
+> 在 2021/5/19 下午10:18, Xianting Tian 写道:
+> > thanks, I submit the patch as commented by Andrew
+> > https://lkml.org/lkml/2021/5/18/256
+> > 
+> > Actually, if xmit_skb() returns error, below code will give a warning
+> > with error code.
+> > 
+> >     /* Try to transmit */
+> >     err = xmit_skb(sq, skb);
+> > 
+> >     /* This should not happen! */
+> >     if (unlikely(err)) {
+> >         dev->stats.tx_fifo_errors++;
+> >         if (net_ratelimit())
+> >             dev_warn(&dev->dev,
+> >                  "Unexpected TXQ (%d) queue failure: %d\n",
+> >                  qnum, err);
+> >         dev->stats.tx_dropped++;
+> >         dev_kfree_skb_any(skb);
+> >         return NETDEV_TX_OK;
+> >     }
+> > 
+> > 
+> > 
+> > 
+> > 
+> > 在 2021/5/18 下午5:54, Michael S. Tsirkin 写道:
+> > > typo in subject
 > > > 
-> > > > -----Original Message-----
-> > > > From: Max Gurtovoy [mailto:mgurtovoy@nvidia.com]
-> > > > Sent: Sunday, May 23, 2021 15:25
-> > > > To: Guodeqing (A) <geffrey.guo@huawei.com>; mst@redhat.com
-> > > > Cc: jasowang@redhat.com; davem@davemloft.net; kuba@kernel.org;
-> > > > virtualization@lists.linux-foundation.org; netdev@vger.kernel.org
-> > > > Subject: Re: [PATCH] virtio-net: fix the kzalloc/kfree mismatch problem
-> > > > 
-> > > > 
-> > > > On 5/22/2021 11:02 AM, guodeqing wrote:
-> > > > > If the virtio_net device does not suppurt the ctrl queue feature, the
-> > > > > vi->ctrl was not allocated, so there is no need to free it.
-> > > > you don't need this check.
-> > > > 
-> > > > from kfree doc:
-> > > > 
-> > > > "If @objp is NULL, no operation is performed."
-> > > > 
-> > > > This is not a bug. I've set vi->ctrl to be NULL in case !vi->has_cvq.
-> > > > 
-> > > > 
-> > >    yes,  this is not a bug, the patch is just a optimization, because the vi->ctrl maybe
-> > >    be freed which  was not allocated, this may give people a misunderstanding.
-> > >    Thanks.
-> > 
-> > I think it may be enough to add a comment, and the code does not need to be
-> > modified.
-> > 
-> > Thanks.
+> > > On Tue, May 18, 2021 at 05:46:56PM +0800, Xianting Tian wrote:
+> > > > When met error, we output a print to avoid a BUG().
 > 
 > 
-> Or even just leave the current code as is. A lot of kernel codes was wrote
-> under the assumption that kfree() should deal with NULL.
+> So you don't explain why you need to remove BUG(). I think it deserve a
+> BUG().
 
-It is not assumption but standard practice that can be seen as side
-effect of "7) Centralized exiting of functions" section of coding-style.rst.
+BUG() will crash the machine and virtio_net is not kernel core
+functionality that must stop the machine to prevent anything truly
+harmful and basic.
+
+I would argue that code in drivers/* shouldn't call BUG() macros at all.
+
+If it is impossible, don't check for that or add WARN_ON() and recover,
+but don't crash whole system.
 
 Thanks
