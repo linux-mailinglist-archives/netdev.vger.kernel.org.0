@@ -2,78 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B44F63985FD
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 12:10:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32E69398617
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 12:15:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231908AbhFBKLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 06:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbhFBKLm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 06:11:42 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA667C061574;
-        Wed,  2 Jun 2021 03:09:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=nPmfDu3O74mL+IcHu+Wc9SQ6GHgafd370qmEKo52PsM=; b=gy17awE98yI8P6+rFtZfMfLX+
-        xwQFH96xRbCtJb0s7Yr5+NPXcMlLOHUHIbd06D/m+NXDyRVhJr52Boihz5gyjmyN5m72MNsQCZCVi
-        enFKkziJdCPfYiXEx9gA8VuQPLcRmpyJJw1aL3ZJk3mbVXikptjsO87wgjUMGRQ0oN11lABVkWPHq
-        kHzPDWd9V2FimfPAHAC6p+s70mnCtmFeINrZpQn65Q6fQNwwhfoE7Eyo8zZc0cb8He0YC1EadUbbT
-        sVbrDrKwpukZQwKRwWzWPRNcWqsocUHunzGKyPtuTkbEAHBvnzTFpPVBAkeYMzvbMGDz5SLxx+DCa
-        6iDkOFH4w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44606)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1loNox-0000wZ-I1; Wed, 02 Jun 2021 11:09:55 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1loNox-00011W-AM; Wed, 02 Jun 2021 11:09:55 +0100
-Date:   Wed, 2 Jun 2021 11:09:55 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     zhengyongjun <zhengyongjun3@huawei.com>
-Cc:     Joe Perches <joe@perches.com>, "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "opendmb@gmail.com" <opendmb@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
-Subject: Re: =?utf-8?B?562U5aSN?= =?utf-8?Q?=3A?= [PATCH net-next] net: mdio:
- Fix a typo
-Message-ID: <20210602100955.GA1350@shell.armlinux.org.uk>
-References: <20210602063914.89177-1-zhengyongjun3@huawei.com>
- <76fd35fe623867c3be3f93b51d5d3461a2eabed9.camel@perches.com>
- <264010307fb24b0193cfd451152bd71d@huawei.com>
- <20210602100749.GC30436@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210602100749.GC30436@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+        id S231287AbhFBKRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 06:17:06 -0400
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:44556 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229826AbhFBKRA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 06:17:00 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R851e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0Ub2Bs4M_1622628910;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0Ub2Bs4M_1622628910)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 02 Jun 2021 18:15:15 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] rtnetlink: Fix missing error code in rtnl_bridge_notify()
+Date:   Wed,  2 Jun 2021 18:15:04 +0800
+Message-Id: <1622628904-93532-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 11:07:49AM +0100, Russell King (Oracle) wrote:
-> On Wed, Jun 02, 2021 at 07:43:19AM +0000, zhengyongjun wrote:
-> > Russell King told me to do so...  Did I understand it wrong?  
-> > But from your opinion, I think "Hz" is more appropriate :)
-> 
-> Sadly, you understood wrong. I requested to change from hz to Hz.
+The error code is missing in this code scenario, add the error code
+'-EINVAL' to the return value 'err'.
 
-... which is odd, because you did the correct thing in your v2 spelling
-fix patch posted previously.
+Eliminate the follow smatch warning:
 
+net/core/rtnetlink.c:4834 rtnl_bridge_notify() warn: missing error code
+'err'.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ net/core/rtnetlink.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 714d5fa..3e84279 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -4842,8 +4842,10 @@ static int rtnl_bridge_notify(struct net_device *dev)
+ 	if (err < 0)
+ 		goto errout;
+ 
+-	if (!skb->len)
++	if (!skb->len) {
++		err = -EINVAL;
+ 		goto errout;
++	}
+ 
+ 	rtnl_notify(skb, net, 0, RTNLGRP_LINK, NULL, GFP_ATOMIC);
+ 	return 0;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+1.8.3.1
+
