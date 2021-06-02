@@ -2,42 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC87F39901D
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 18:37:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9151399021
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 18:37:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbhFBQjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 12:39:14 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:35368 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbhFBQjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 12:39:10 -0400
-Received: by mail-il1-f200.google.com with SMTP id n7-20020a056e021487b02901d29983f028so2035426ilk.2
+        id S230217AbhFBQj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 12:39:27 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:48035 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229927AbhFBQj1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 12:39:27 -0400
+Received: by mail-il1-f197.google.com with SMTP id c2-20020a92d3c20000b02901d9fda18626so2005235ilh.14
         for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 09:37:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=cF7ayDf+Ts1jZfgvnRObEnmRdhXet0IgINJELNWfuiE=;
-        b=MyZYZwcEdun+kKPsLBo3zHmrFHqRFhuBPnnrt87kAoJHa7gxGfZdPur9syE5uot7At
-         J3pekV59CPGqrab9cVsm6W7k0/mVOEz7aX6lWT7/7zQOrs71MWb/egkLc07FnAaPEnkg
-         3jrAZoR2Dk6gRhFqXMwoAWeUWkOCCfdyYDWLtTnxdMnrEB4oUxTMvh+/GXP2fAGowNcU
-         DkzYjz2urq0png/jgM2ajTJvfICCWb+Ss+PwVbXyvNYOEMBVcRBUsSVk75X6PW+V2IG7
-         kCVf1pmdzxG7ExD+IjIHrq20xqYoG7CDrtQK2VftaWeBwVm7aGnAybcgtcPvfj6RDFR6
-         E7VQ==
-X-Gm-Message-State: AOAM533ryLr3JoNbVyHOWQAGrQYIzs5nFO/fCXqSI2YPXeubab/4oPgt
-        0194HtKgj7N7mvw6dq5H9PQFXcUlFxU851IGozkzfEFt1/Uj
-X-Google-Smtp-Source: ABdhPJx4bmf/t6/ZLYN8JvIKGX3pFznCArM1dR0UnyPm7FWAtUvZa2UnDBPnH7PIzp6I9y2U0dOSOudbBfff98P6P4JPmEntn53R
+        bh=kaa2yadqbxfM98fGWlqhzlCBWMNgO1nQ34AqbCOd+Ug=;
+        b=SJDp4ANwLO0zHTnChDxGp1os1zNFo6l7f4f2MoPLF7Nac6Qk7lyrefrq3HlV/dBch/
+         aLrDjKIlooqHwdC/LDCoDzp9TurLsRJn22zMV+GPc3W3j74ZOAaf7uc8pcczEh75SjrB
+         W5V16MCKuonNYJ2D9kFR0BR5QywjJ4ON8lybGEIjkwDrcdRxACLAxXlmjcRCTqIW5BM1
+         8ZFXwzYlNX3nDj0Txb7DQBwhdmKP6Eip+8PmWF7qZYmG1bNYDPmkRPvB/BI1hs70HitN
+         DTbxuHR20ekNEJz3BiVf5cRNmR6+ouHHn2sj0IFuYu96lPVA9SuLCrg+U8xj5aQis05x
+         SSIw==
+X-Gm-Message-State: AOAM530jsxPBSJMRtnLUaofM0WRkjAvvfnMNMrOtro3m0MNYnntCr93J
+        Onp5uRqNaU8ExX8N4QpXBU/lDVjJIPqHBrcZeKeObxjkMl7w
+X-Google-Smtp-Source: ABdhPJxb5RcIkLclOuo1ds69KxkNJjR6Hh8O7u1W6hGDT2+NlVonxrtP5jwVaNsLbchUvHguaT3xNifgIYEO4vigrPmZLqnx7FC5
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2285:: with SMTP id y5mr15870114jas.19.1622651847454;
+X-Received: by 2002:a05:6638:1008:: with SMTP id r8mr15472439jab.112.1622651847194;
  Wed, 02 Jun 2021 09:37:27 -0700 (PDT)
 Date:   Wed, 02 Jun 2021 09:37:27 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f632ba05c3cb12c2@google.com>
-Subject: [syzbot] memory leak in cfg80211_inform_single_bss_frame_data
-From:   syzbot <syzbot+7a942657a255a9d9b18a@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Message-ID: <000000000000f23c9e05c3cb1250@google.com>
+Subject: [syzbot] general protection fault in lock_page_memcg
+From:   syzbot <syzbot+15a9609cfd4687eb7269@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, cgroups@vger.kernel.org,
+        coreteam@netfilter.org, davem@davemloft.net, dsahern@kernel.org,
+        fw@strlen.de, hannes@cmpxchg.org, kadlec@netfilter.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        mhocko@kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, vdavydov.dev@gmail.com,
+        yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -47,92 +52,92 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    b90e90f4 Merge branch 'i2c/for-current' of git://git.kerne..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13bd382fd00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b8c23f7848d1c696
-dashboard link: https://syzkaller.appspot.com/bug?extid=7a942657a255a9d9b18a
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=131ce883d00000
+HEAD commit:    a1f92694 Add linux-next specific files for 20210518
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=112d5fcfd00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d612e75ffd53a6d3
+dashboard link: https://syzkaller.appspot.com/bug?extid=15a9609cfd4687eb7269
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143ecb5fd00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11c7326bd00000
+
+The issue was bisected to:
+
+commit f9006acc8dfe59e25aa75729728ac57a8d84fc32
+Author: Florian Westphal <fw@strlen.de>
+Date:   Wed Apr 21 07:51:08 2021 +0000
+
+    netfilter: arp_tables: pass table pointer via nf_hook_ops
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16d4af03d00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=15d4af03d00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11d4af03d00000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7a942657a255a9d9b18a@syzkaller.appspotmail.com
+Reported-by: syzbot+15a9609cfd4687eb7269@syzkaller.appspotmail.com
+Fixes: f9006acc8dfe ("netfilter: arp_tables: pass table pointer via nf_hook_ops")
 
-BUG: memory leak
-unreferenced object 0xffff888119584780 (size 96):
-  comm "kworker/u4:0", pid 8670, jiffies 4295047890 (age 8.810s)
-  hex dump (first 32 bytes):
-    fd f0 0a 3d 90 c3 05 00 00 00 00 00 00 00 00 00  ...=............
-    00 00 00 00 00 00 00 00 28 00 00 00 01 00 06 10  ........(.......
-  backtrace:
-    [<ffffffff83e52709>] cfg80211_inform_single_bss_frame_data+0x139/0x640 net/wireless/scan.c:2376
-    [<ffffffff83e52c5b>] cfg80211_inform_bss_frame_data+0x4b/0x470 net/wireless/scan.c:2437
-    [<ffffffff83ef1d43>] ieee80211_bss_info_update+0x183/0x470 net/mac80211/scan.c:190
-    [<ffffffff83eff43b>] ieee80211_rx_bss_info net/mac80211/ibss.c:1126 [inline]
-    [<ffffffff83eff43b>] ieee80211_rx_mgmt_probe_beacon+0x60b/0x950 net/mac80211/ibss.c:1615
-    [<ffffffff83effe8c>] ieee80211_ibss_rx_queued_mgmt+0x23c/0x6e0 net/mac80211/ibss.c:1642
-    [<ffffffff83f01d76>] ieee80211_iface_work+0x476/0x5f0 net/mac80211/iface.c:1437
-    [<ffffffff8125f9d9>] process_one_work+0x2c9/0x600 kernel/workqueue.c:2276
-    [<ffffffff812602c9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2422
-    [<ffffffff81267bf8>] kthread+0x178/0x1b0 kernel/kthread.c:313
-    [<ffffffff810022ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-
-BUG: memory leak
-unreferenced object 0xffff888119584680 (size 96):
-  comm "kworker/u4:0", pid 8670, jiffies 4295048012 (age 7.590s)
-  hex dump (first 32 bytes):
-    f4 b0 1d 3d 90 c3 05 00 00 00 00 00 00 00 00 00  ...=............
-    00 00 00 00 00 00 00 00 28 00 00 00 01 00 06 10  ........(.......
-  backtrace:
-    [<ffffffff83e52709>] cfg80211_inform_single_bss_frame_data+0x139/0x640 net/wireless/scan.c:2376
-    [<ffffffff83e52c5b>] cfg80211_inform_bss_frame_data+0x4b/0x470 net/wireless/scan.c:2437
-    [<ffffffff83ef1d43>] ieee80211_bss_info_update+0x183/0x470 net/mac80211/scan.c:190
-    [<ffffffff83eff43b>] ieee80211_rx_bss_info net/mac80211/ibss.c:1126 [inline]
-    [<ffffffff83eff43b>] ieee80211_rx_mgmt_probe_beacon+0x60b/0x950 net/mac80211/ibss.c:1615
-    [<ffffffff83effe8c>] ieee80211_ibss_rx_queued_mgmt+0x23c/0x6e0 net/mac80211/ibss.c:1642
-    [<ffffffff83f01d76>] ieee80211_iface_work+0x476/0x5f0 net/mac80211/iface.c:1437
-    [<ffffffff8125f9d9>] process_one_work+0x2c9/0x600 kernel/workqueue.c:2276
-    [<ffffffff812602c9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2422
-    [<ffffffff81267bf8>] kthread+0x178/0x1b0 kernel/kthread.c:313
-    [<ffffffff810022ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-
-BUG: memory leak
-unreferenced object 0xffff888119584400 (size 96):
-  comm "kworker/u4:0", pid 8670, jiffies 4295048012 (age 7.590s)
-  hex dump (first 32 bytes):
-    f5 b0 1d 3d 90 c3 05 00 00 00 00 00 00 00 00 00  ...=............
-    00 00 00 00 00 00 00 00 28 00 00 00 01 00 06 10  ........(.......
-  backtrace:
-    [<ffffffff83e52709>] cfg80211_inform_single_bss_frame_data+0x139/0x640 net/wireless/scan.c:2376
-    [<ffffffff83e52c5b>] cfg80211_inform_bss_frame_data+0x4b/0x470 net/wireless/scan.c:2437
-    [<ffffffff83ef1d43>] ieee80211_bss_info_update+0x183/0x470 net/mac80211/scan.c:190
-    [<ffffffff83eff43b>] ieee80211_rx_bss_info net/mac80211/ibss.c:1126 [inline]
-    [<ffffffff83eff43b>] ieee80211_rx_mgmt_probe_beacon+0x60b/0x950 net/mac80211/ibss.c:1615
-    [<ffffffff83effe8c>] ieee80211_ibss_rx_queued_mgmt+0x23c/0x6e0 net/mac80211/ibss.c:1642
-    [<ffffffff83f01d76>] ieee80211_iface_work+0x476/0x5f0 net/mac80211/iface.c:1437
-    [<ffffffff8125f9d9>] process_one_work+0x2c9/0x600 kernel/workqueue.c:2276
-    [<ffffffff812602c9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2422
-    [<ffffffff81267bf8>] kthread+0x178/0x1b0 kernel/kthread.c:313
-    [<ffffffff810022ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-
-BUG: memory leak
-unreferenced object 0xffff8881196dda80 (size 96):
-  comm "kworker/u4:1", pid 8689, jiffies 4295048023 (age 7.480s)
-  hex dump (first 32 bytes):
-    e4 40 1f 3d 90 c3 05 00 00 00 00 00 00 00 00 00  .@.=............
-    00 00 00 00 00 00 00 00 28 00 00 00 01 00 06 10  ........(.......
-  backtrace:
-    [<ffffffff83e52709>] cfg80211_inform_single_bss_frame_data+0x139/0x640 net/wireless/scan.c:2376
-    [<ffffffff83e52c5b>] cfg80211_inform_bss_frame_data+0x4b/0x470 net/wireless/scan.c:2437
-    [<ffffffff83ef1d43>] ieee80211_bss_info_update+0x183/0x470 net/mac80211/scan.c:190
-    [<ffffffff83eff43b>] ieee80211_rx_bss_info net/mac80211/ibss.c:1126 [inline]
-    [<ffffffff83eff43b>] ieee80211_rx_mgmt_probe_beacon+0x60b/0x950 net/mac80211/ibss.c:1615
-    [<ffffffff83effe8c>] ieee80211_ibss_rx_queued_mgmt+0x23c/0x6e0 net/mac80211/ibss.c:1642
-    [<ffffffff83f01d76>] ieee80211_iface_work+0x476/0x5f0 net/mac80211/iface.c:1437
-    [<ffffffff8125f9d9>] process_one_work+0x2c9/0x600 kernel/workqueue.c:2276
-    [<ffffffff812602c9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2422
-    [<ffffffff81267bf8>] kthread+0x178/0x1b0 kernel/kthread.c:313
-    [<ffffffff810022ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-
+general protection fault, probably for non-canonical address 0xdffffd1002ed3a01: 0000 [#1] PREEMPT SMP KASAN
+KASAN: probably user-memory-access in range [0x000008801769d008-0x000008801769d00f]
+CPU: 1 PID: 8455 Comm: syz-executor974 Not tainted 5.13.0-rc2-next-20210518-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:_compound_head include/linux/page-flags.h:182 [inline]
+RIP: 0010:lock_page_memcg+0x29/0x7d0 mm/memcontrol.c:1984
+Code: 00 48 b8 00 00 00 00 00 fc ff df 55 48 89 e5 41 57 49 89 ff 41 56 41 55 41 54 4c 8d 67 08 4c 89 e2 53 48 c1 ea 03 48 83 ec 20 <80> 3c 02 00 0f 85 10 06 00 00 49 8b 47 08 48 8d 50 ff a8 01 4c 0f
+RSP: 0018:ffffc9000194f8b8 EFLAGS: 00010286
+RAX: dffffc0000000000 RBX: 00001e801769d000 RCX: 0000000000000000
+RDX: 0000011002ed3a01 RSI: ffffffff81aee7cd RDI: 000008801769d000
+RBP: ffffc9000194f900 R08: 0000000000000000 R09: ffff88801cf9b82f
+R10: ffffffff81be0aa6 R11: 000000000000003f R12: 000008801769d008
+R13: 0000000000000001 R14: 000008801769d000 R15: 000008801769d000
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000480de8 CR3: 00000000127fa000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ page_remove_rmap+0x25/0x1480 mm/rmap.c:1348
+ zap_huge_pmd+0x9c4/0xfb0 mm/huge_memory.c:1689
+ zap_pmd_range mm/memory.c:1362 [inline]
+ zap_pud_range mm/memory.c:1404 [inline]
+ zap_p4d_range mm/memory.c:1425 [inline]
+ unmap_page_range+0x1aac/0x2660 mm/memory.c:1446
+ unmap_single_vma+0x198/0x300 mm/memory.c:1491
+ unmap_vmas+0x16d/0x2f0 mm/memory.c:1523
+ exit_mmap+0x1d0/0x620 mm/mmap.c:3201
+ __mmput+0x122/0x470 kernel/fork.c:1096
+ mmput+0x58/0x60 kernel/fork.c:1117
+ exit_mm kernel/exit.c:502 [inline]
+ do_exit+0xb0a/0x2a70 kernel/exit.c:813
+ do_group_exit+0x125/0x310 kernel/exit.c:923
+ __do_sys_exit_group kernel/exit.c:934 [inline]
+ __se_sys_exit_group kernel/exit.c:932 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:932
+ do_syscall_64+0x31/0xb0 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43da89
+Code: Unable to access opcode bytes at RIP 0x43da5f.
+RSP: 002b:00007ffc45bf0b08 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00000000004ae230 RCX: 000000000043da89
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000000000000
+R10: 0000000000000003 R11: 0000000000000246 R12: 00000000004ae230
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+Modules linked in:
+---[ end trace 048141dd003294dd ]---
+RIP: 0010:_compound_head include/linux/page-flags.h:182 [inline]
+RIP: 0010:lock_page_memcg+0x29/0x7d0 mm/memcontrol.c:1984
+Code: 00 48 b8 00 00 00 00 00 fc ff df 55 48 89 e5 41 57 49 89 ff 41 56 41 55 41 54 4c 8d 67 08 4c 89 e2 53 48 c1 ea 03 48 83 ec 20 <80> 3c 02 00 0f 85 10 06 00 00 49 8b 47 08 48 8d 50 ff a8 01 4c 0f
+RSP: 0018:ffffc9000194f8b8 EFLAGS: 00010286
+RAX: dffffc0000000000 RBX: 00001e801769d000 RCX: 0000000000000000
+RDX: 0000011002ed3a01 RSI: ffffffff81aee7cd RDI: 000008801769d000
+RBP: ffffc9000194f900 R08: 0000000000000000 R09: ffff88801cf9b82f
+R10: ffffffff81be0aa6 R11: 000000000000003f R12: 000008801769d008
+R13: 0000000000000001 R14: 000008801769d000 R15: 000008801769d000
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000480de8 CR3: 00000000127fa000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
 ---
@@ -142,5 +147,6 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this issue, for details see:
 https://goo.gl/tpsmEJ#testing-patches
