@@ -2,115 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98E223989F0
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:45:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9537F3989F6
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:46:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230122AbhFBMqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 08:46:50 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:2852 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbhFBMqq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 08:46:46 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Fw7sY5RRwzWr04;
-        Wed,  2 Jun 2021 20:40:17 +0800 (CST)
-Received: from dggpemm500021.china.huawei.com (7.185.36.109) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 2 Jun 2021 20:45:00 +0800
-Received: from DESKTOP-9883QJJ.china.huawei.com (10.136.114.155) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 2 Jun 2021 20:45:00 +0800
-From:   zhudi <zhudi21@huawei.com>
-To:     <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <kuba@kernel.org>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <zhudi21@huawei.com>,
-        <rose.chen@huawei.com>
-Subject: [PATCH] bonding: 3ad: fix a crash in agg_device_up()
-Date:   Wed, 2 Jun 2021 20:44:48 +0800
-Message-ID: <20210602124448.49828-1-zhudi21@huawei.com>
-X-Mailer: git-send-email 2.27.0
+        id S229996AbhFBMrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 08:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229541AbhFBMrw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 08:47:52 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAEBC061574;
+        Wed,  2 Jun 2021 05:45:53 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id 5-20020a9d01050000b02903c700c45721so1225904otu.6;
+        Wed, 02 Jun 2021 05:45:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WVXpnpg85QY1n+XQbQwo5ampIxgrZeixQi2//ZteRcA=;
+        b=kfQtdmfpIv+3c9Qbxo12VXBCRlc5f0AxnV8Y9Rr0Y9Wci7q0FR3tAcqOinrF0W57ya
+         /wf8YiwTn25gWQANErDQ7K7lH/q9clxWyK7JTgqf0Mx3L+r1wVHlmXjN6ZTjCTukCqVm
+         03sJ4DbeN1GwYla8CPlI248q7Y7ydnc1iChjL5FMOWWww4XPRPQNM9P2mN0VkDc05ZSu
+         JSPQQHPfok/D08DJqmRRT23p8XHSeudXFe6JOFt6+1mzQ3TiYQPHhuGBhkRT3FC8eZGr
+         pLth2IlW+RJ3EtDDHD7AAM85hR61s/LB1uCHpN4LMBqmrH4mPQtLMg9fIEK7S7Gvjp+P
+         pLdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WVXpnpg85QY1n+XQbQwo5ampIxgrZeixQi2//ZteRcA=;
+        b=l601Hnz8+iAYbMGIt/L31qFmjnj8bzRTXPKXnARJw+waYEIA0iXBhlku47dnkvIRNK
+         Gt3ba2nbq0wtaMgOzu2oaGbxmy4XRD/DHuiY0yqRO4fHGuZ7DlmcYRhF0uT8c3uqxvnm
+         A7/z7+Gl7fgRwIY7K30XKY8kKhmtpyJbgzrR1LfjDzL46Kz2jirpI8WLiza8V/ZG3u90
+         GZC4//kqsq2cMmY9Ix/SrNMffOiL5q1Uvom8zHoMkXErSOQAF1nig47T2kRnNb0tJFwK
+         bVRnhd1EVR/EIkXBk97m6cWJLzTgpJnOTzPchzUoLO4et6pMmINpNyBnci1+leYd0FrM
+         Pi+g==
+X-Gm-Message-State: AOAM531hxnysm4KUHwyXtsbBKp2ns+/K8ppFDDBaqctTwMoV/5S0oq9d
+        GDzzzOZ49w6IqdeUE1KQiXWyMXkU1IFdoamoiPrrPCmNq8E=
+X-Google-Smtp-Source: ABdhPJwO0yC8co2oFUFXOIwYhqkhiXCm7Gf+8AGtoeMSCfLI1WcFL+xloe7R8Cg/NcqdY5iJnkk42pKHQ3bJw7AnlZA=
+X-Received: by 2002:a9d:3e5:: with SMTP id f92mr3464476otf.181.1622637952761;
+ Wed, 02 Jun 2021 05:45:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.136.114.155]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500021.china.huawei.com (7.185.36.109)
-X-CFilter-Loop: Reflected
+References: <20210601080538.71036-1-johannes@sipsolutions.net>
+ <20210601100320.7d39e9c33a18.I0474861dad426152ac7e7afddfd7fe3ce70870e4@changeid>
+ <CAHNKnsRv3r=Y7fTR-kUNVXyqeKiugXwAmzryBPvwYpxgjgBeBA@mail.gmail.com> <15e467334b2162728de22d393860d7c01e26ea97.camel@sipsolutions.net>
+In-Reply-To: <15e467334b2162728de22d393860d7c01e26ea97.camel@sipsolutions.net>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Wed, 2 Jun 2021 15:45:41 +0300
+Message-ID: <CAHNKnsQh7ikP4MCB0LhjpdqkMTjWq2ByWG4wToaXgzteYjUQaQ@mail.gmail.com>
+Subject: Re: [RFC 3/4] wwan: add interface creation support
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        m.chetan.kumar@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Di Zhu <zhudi21@huawei.com>
+Hello Johannes,
 
-When doing the test of restarting the network card, the system is
-broken because the port->slave is null pointer in agg_device_up().
-After in-depth investigation, we found the real cause: in
-bond_3ad_unbind_slave()  if there are no active ports in the
-aggregator to be deleted, the ad_clear_agg() will be called to
-set "aggregator->lag_ports = NULL", but the ports originally
-belonging to the aggregator are still linked together.
+On Wed, Jun 2, 2021 at 10:38 AM Johannes Berg <johannes@sipsolutions.net> wrote:
+>> Wow, this is a perfect solution! I just could not help but praise this
+>> proposal :)
+>
+> Heh.
+>
+>> When researching the latest WWAN device drivers and related
+>> discussions, I began to assume that implementing the netdev management
+>> API without the dummy (no-op) netdev is only possible using genetlink.
+>> But this usage of a regular device specified by its name as a parent
+>> for netdev creation is so natural and clear that I believe in RTNL
+>> again.
+>>
+>> Let me place my 2 cents. Maybe the parent device attribute should be
+>> made generic? E.g. call it IFLA_PARENT_DEV_NAME, with usage semantics
+>> similar to the IFLA_LINK attribute for VLAN interfaces. The case when
+>> a user needs to create a netdev on behalf of a regular device is not
+>> WWAN specific, IMHO. So, other drivers could benefit from such
+>> attribute too. To be honest, I can not recall any driver that could
+>> immediately start using such attribute, but the situation with the
+>> need for such attribute seems to be quite common.
+>
+> That's a good question/thought.
+>
+> I mean, in principle this is trivial, right? Just add a
+> IFLA_PARENT_DEV_NAME like you say, and use it instead of
+> IFLA_WWAN_DEV_NAME.
+>
+> It'd come out of tb[] instead of data[] and in this case would remove
+> the need to add the additional data[] argument to rtnl_create_link() in
+> my patch, since it's in tb[] then.
 
-Before bond_3ad_unbind_slave():
-	aggregator4->lag_ports = port1->port2->port3
-After bond_3ad_unbind_slave():
-	aggregator4->lag_ports = NULL
-	port1->port2->port3
+Yep, exactly.
 
-After the port2 is deleted, the port is still  remain in the linked
-list: because the port does not belong to any agg, so unbind do
-nothing for this port.
+> The only thing I'd be worried about is that different implementations
+> use it for different meanings, but I guess that's not that big a deal?
 
-After a while, bond_3ad_state_machine_handler() will run and
-traverse each existing port, trying to bind each port to the
-newly selected agg, such as:
-	if (!found) {
-		if (free_aggregator) {
-			...
-			port->aggregator->lag_ports = port;
-			...
-		}
-	}
-After this operation, the link list looks like this:
-	 aggregator1->lag_ports = port1->port2(has been deleted)->port3
+The spectrum of sane use of the IFLA_PARENT_DEV_NAME attribute by
+various subsystems and (or) drivers will be quite narrow. It should do
+exactly what its name says - identify a parent device.
 
-After that, just traverse the linked list of agg1 and access the
-port2->slave, the crash will happen.
+We can not handle the attribute in the common rtnetlink code since
+rtnetlink does not know the HW configuration details. That is why
+IFLA_PARENT_DEV_NAME should be handled by the RTNL ->newlink()
+callback. But after all the processing, the device that is identified
+by the IFLA_PARENT_DEV_NAME attribute should appear in the
+netdev->dev.parent field with help of SET_NETDEV_DEV(). Eventually
+RTNL will be able to fill IFLA_PARENT_DEV_NAME during the netdevs dump
+on its own, taking data from netdev->dev.parent.
 
-The easiest way to fix it is: if a port does not belong to any agg, delete
-it from the list and wait for the state machine to select the agg again
+I assume that IFLA_PARENT_DEV_NAME could replace the IFLA_LINK
+attribute usage in such drivers as MBIM and RMNET. But the best way to
+evolve these drivers is to make them WWAN-subsystem-aware using the
+WWAN interface configuration API from your proposal, IMHO.
 
-Signed-off-by: Di Zhu <zhudi21@huawei.com>
----
- drivers/net/bonding/bond_3ad.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index 6908822d9773..1d6ff4e1ed28 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -1793,6 +1793,8 @@ static void ad_agg_selection_logic(struct aggregator *agg,
- static void ad_clear_agg(struct aggregator *aggregator)
- {
- 	if (aggregator) {
-+		struct port *port, *next;
-+
- 		aggregator->is_individual = false;
- 		aggregator->actor_admin_aggregator_key = 0;
- 		aggregator->actor_oper_aggregator_key = 0;
-@@ -1801,6 +1803,11 @@ static void ad_clear_agg(struct aggregator *aggregator)
- 		aggregator->partner_oper_aggregator_key = 0;
- 		aggregator->receive_state = 0;
- 		aggregator->transmit_state = 0;
-+		for (port = aggregator->lag_ports; port; port = next) {
-+			next = port->next_port_in_aggregator;
-+			if (port->aggregator == aggregator)
-+				port->next_port_in_aggregator = NULL;
-+		}
- 		aggregator->lag_ports = NULL;
- 		aggregator->is_active = 0;
- 		aggregator->num_of_ports = 0;
 -- 
-2.23.0
-
+Sergey
