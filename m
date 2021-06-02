@@ -2,113 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A18FD397E26
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 03:38:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF36B397E5A
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 04:00:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbhFBBj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 21:39:59 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:3377 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229988AbhFBBj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 21:39:59 -0400
-Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Fvs5L517Tz67kb;
-        Wed,  2 Jun 2021 09:34:30 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeme760-chm.china.huawei.com (10.3.19.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Wed, 2 Jun 2021 09:38:12 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <rjui@broadcom.com>, <sbranden@broadcom.com>,
-        <bcm-kernel-feedback-list@broadcom.com>, <narmstrong@baylibre.com>,
-        <khilman@baylibre.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-amlogic@lists.infradead.org>
-CC:     <opendmb@gmail.com>, <f.fainelli@gmail.com>,
-        <linux@armlinux.org.uk>, <jbrunet@baylibre.com>,
-        <martin.blumenstingl@googlemail.com>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH v2 net-next] net: mdio: Fix spelling mistakes
-Date:   Wed, 2 Jun 2021 09:51:51 +0800
-Message-ID: <20210602015151.4135891-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S230281AbhFBCCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 22:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39494 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230262AbhFBCCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 22:02:20 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED43EC061574;
+        Tue,  1 Jun 2021 19:00:36 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id u18so934765pfk.11;
+        Tue, 01 Jun 2021 19:00:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xzyOqcnctFOyPxSc8L2wJ1XR+PmOQ8cJpVzrQFBidtM=;
+        b=ICE90dwSoe9eF9YAe6+ZI37Pu27uZO+rxv2Y5eic1Iv9xDvbL9dwNHwoP+ytKVYsgI
+         92TgJF3yqoFLZb2dqRB8KmJDwlk52ciTQEWDYIQDUu389Ds46S3fvcwTlYJqHzd8/peZ
+         KERVt+l7WTWEAjQSEijePPcJCoTukhWmjkSYJaYaYpT5YjuPeUzu5WruTiMnCQhl+72D
+         faxsK9vOzT7lNtKVYO1hRiCDnnRah1S+C3VvJi2CrUnZ/8fyy9qZxkN0jTxBgqOVvyGk
+         xIiRwVhCjOcPAF9MNqjfreacuAr1F5Fz/tJEkFmPGze5ccCkP0LuaqLvHBPadsxqND/E
+         J1rQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xzyOqcnctFOyPxSc8L2wJ1XR+PmOQ8cJpVzrQFBidtM=;
+        b=CBSvNvGXMZxHZCzrIKAwd9GCffdHlPAkeG7VXYwA8LfUcMmySjFPlZmZ3qlGlXF70F
+         5uLMWv/1jqUJ0LIpFxZ0xhW/GOyM+s0WHoM9HJ5z9xvVB7Z/9Fra0CxEQuMYMTjg+G16
+         AZD0a19Gzbfyc428joajJOJm9roCOthEXwDQ6Huk3C6CGQhcEJcMeZXgFknij+PUHc6D
+         07KhAIMjinFzON4F4WFdF0ruQ4jcokdCuJoIVP4WFNmqQV8A62jMY+dQyYiLoAC6/fki
+         cVNA9xbcyoZH7XYURfw3QmtgYgqEtLXZvWeUstd6Uhk4DU3K3GjPP+KoEbg2C9y9MIcV
+         DfXA==
+X-Gm-Message-State: AOAM5307GlDCF+2VOU8CrLOdSJsD4dMOowQF9x9hf2jNadep91tKxcEd
+        HLCu48nd+qLuCqTKpZLBf+A=
+X-Google-Smtp-Source: ABdhPJwPzs/P7uOa3LSkFdUzx2LeqQtzkdPTXJLERQyL1S+sXpiScFjHtaGXP0UaMJ5dVnnf2pFcQw==
+X-Received: by 2002:a63:1443:: with SMTP id 3mr31535090pgu.69.1622599236184;
+        Tue, 01 Jun 2021 19:00:36 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:bdb9])
+        by smtp.gmail.com with ESMTPSA id o14sm1303962pfu.89.2021.06.01.19.00.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Jun 2021 19:00:35 -0700 (PDT)
+Date:   Tue, 1 Jun 2021 19:00:30 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
+Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
+Message-ID: <20210602020030.igrx5jp45tocekvy@ast-mbp.dhcp.thefacebook.com>
+References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
+ <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
+ <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
+ <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
+ <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
+ <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
+ <CAM_iQpXUBuOirztj3kifdFpvygKb-aoqwuXKkLdG9VFte5nynA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpXUBuOirztj3kifdFpvygKb-aoqwuXKkLdG9VFte5nynA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-informations  ==> information
-typicaly  ==> typically
-derrive  ==> derive
-eventhough  ==> even though
-hz ==> Hz
+On Sat, May 29, 2021 at 11:36:08PM -0700, Cong Wang wrote:
+> On Tue, May 25, 2021 at 11:21 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Mon, May 24, 2021 at 9:59 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > >
+> > > On Mon, May 24, 2021 at 8:16 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > >
+> > > > On Sun, May 23, 2021 at 9:01 AM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > On Fri, May 21, 2021 at 2:37 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > > > >
+> > > > > > Hi, Alexei
+> > > > > >
+> > > > > > On Thu, May 20, 2021 at 11:52 PM Alexei Starovoitov
+> > > > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > > > >
+> > > > > > > Introduce 'struct bpf_timer' that can be embedded in most BPF map types
+> > > > > > > and helpers to operate on it:
+> > > > > > > long bpf_timer_init(struct bpf_timer *timer, void *callback, int flags)
+> > > > > > > long bpf_timer_mod(struct bpf_timer *timer, u64 msecs)
+> > > > > > > long bpf_timer_del(struct bpf_timer *timer)
+> > > > > >
+> > > > > > Like we discussed, this approach would make the timer harder
+> > > > > > to be independent of other eBPF programs, which is a must-have
+> > > > > > for both of our use cases (mine and Jamal's). Like you explained,
+> > > > > > this requires at least another program array, a tail call, a mandatory
+> > > > > > prog pinning to work.
+> > > > >
+> > > > > That is simply not true.
+> > > >
+> > > > Which part is not true? The above is what I got from your explanation.
+> > >
+> > > I tried to write some code sketches to use your timer to implement
+> > > our conntrack logic, below shows how difficult it is to use,
+> >
+> > Was it difficult because you've used tail_call and over complicated
+> > the progs for no good reason?
+> 
+> Using tail call is what I got from you, here is the quote:
+> 
+> "Sure. That's trivially achieved with pinning.
+> One can have an ingress prog that tailcalls into another prog
+> that arms the timer with one of its subprogs.
+> Egress prog can tailcall into the same prog as well.
+> The ingress and egress progs can be replaced one by one
+> or removed both together and middle prog can stay alive
+> if it's pinned in bpffs or held alive by FD."
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/net/mdio/mdio-bcm-unimac.c     | 2 +-
- drivers/net/mdio/mdio-mux-bcm-iproc.c  | 2 +-
- drivers/net/mdio/mdio-mux-meson-g12a.c | 2 +-
- drivers/net/mdio/of_mdio.c             | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+That was in the context of doing auto-cancel of timers.
+There is only one choice to make. Either auto-cancel or not.
+That quote was during the time when auto-cancel felt as it would fit
+the FD model better.
+We auto-detach on close(link_fd) and auto-unload on close(prog_fd).
+The armed timer would prevent that and that promise felt
+necessary to keep. But disappearing timer is a bigger surprise
+to users than not auto-unloading progs.
+Hence this patch is doing prog_refcnt++ in bpf_timer_start.
+Please see other emails threads in v1 patch set.
 
-diff --git a/drivers/net/mdio/mdio-bcm-unimac.c b/drivers/net/mdio/mdio-bcm-unimac.c
-index 5d171e7f118d..63348716b426 100644
---- a/drivers/net/mdio/mdio-bcm-unimac.c
-+++ b/drivers/net/mdio/mdio-bcm-unimac.c
-@@ -203,7 +203,7 @@ static void unimac_mdio_clk_set(struct unimac_mdio_priv *priv)
- 		return;
- 	}
- 
--	/* The MDIO clock is the reference clock (typicaly 250Mhz) divided by
-+	/* The MDIO clock is the reference clock (typically 250MHz) divided by
- 	 * 2 x (MDIO_CLK_DIV + 1)
- 	 */
- 	reg = unimac_mdio_readl(priv, MDIO_CFG);
-diff --git a/drivers/net/mdio/mdio-mux-bcm-iproc.c b/drivers/net/mdio/mdio-mux-bcm-iproc.c
-index 03261e6b9ceb..239e88c7a272 100644
---- a/drivers/net/mdio/mdio-mux-bcm-iproc.c
-+++ b/drivers/net/mdio/mdio-mux-bcm-iproc.c
-@@ -65,7 +65,7 @@ static void mdio_mux_iproc_config(struct iproc_mdiomux_desc *md)
- 	writel(val, md->base + MDIO_SCAN_CTRL_OFFSET);
- 
- 	if (md->core_clk) {
--		/* use rate adjust regs to derrive the mdio's operating
-+		/* use rate adjust regs to derive the mdio's operating
- 		 * frequency from the specified core clock
- 		 */
- 		divisor = clk_get_rate(md->core_clk) / MDIO_OPERATING_FREQUENCY;
-diff --git a/drivers/net/mdio/mdio-mux-meson-g12a.c b/drivers/net/mdio/mdio-mux-meson-g12a.c
-index bf86c9c7a288..b8866bc3f2e8 100644
---- a/drivers/net/mdio/mdio-mux-meson-g12a.c
-+++ b/drivers/net/mdio/mdio-mux-meson-g12a.c
-@@ -95,7 +95,7 @@ static int g12a_ephy_pll_enable(struct clk_hw *hw)
- 
- 	/* Poll on the digital lock instead of the usual analog lock
- 	 * This is done because bit 31 is unreliable on some SoC. Bit
--	 * 31 may indicate that the PLL is not lock eventhough the clock
-+	 * 31 may indicate that the PLL is not lock even though the clock
- 	 * is actually running
- 	 */
- 	return readl_poll_timeout(pll->base + ETH_PLL_CTL0, val,
-diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
-index 094494a68ddf..8e97d5b825f5 100644
---- a/drivers/net/mdio/of_mdio.c
-+++ b/drivers/net/mdio/of_mdio.c
-@@ -466,7 +466,7 @@ EXPORT_SYMBOL(of_phy_get_and_connect);
-  * of_phy_is_fixed_link() and of_phy_register_fixed_link() must
-  * support two DT bindings:
-  * - the old DT binding, where 'fixed-link' was a property with 5
-- *   cells encoding various informations about the fixed PHY
-+ *   cells encoding various information about the fixed PHY
-  * - the new DT binding, where 'fixed-link' is a sub-node of the
-  *   Ethernet device.
-  */
--- 
-2.25.1
+> >
+> > tail_calls are unnecessary. Just call the funcs directly.
+> > All lookups and maps are unnecessary as well.
+> > Looks like a single global timer will be enough for this use case.
+> 
+> Hmm? With your design, a timer has to be embedded into a map
+> value, you said this is to mimic bpf spinlock.
 
+The global data is a map.
+When spin_lock was introduced there was no global data concept.
+
+> >
+> > In general the garbage collection in any form doesn't scale.
+> > The conntrack logic doesn't need it. The cillium conntrack is a great
+> > example of how to implement a conntrack without GC.
+> 
+> That is simply not a conntrack. We expire connections based on
+> its time, not based on the size of the map where it residents.
+
+Sounds like your goal is to replicate existing kernel conntrack
+as bpf program by doing exactly the same algorithm and repeating
+the same mistakes. Then add kernel conntrack functions to allow list
+of kfuncs (unstable helpers) and call them from your bpf progs.
