@@ -2,69 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 203D7397FF1
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 06:01:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C606439801F
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 06:20:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230312AbhFBEDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 00:03:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
+        id S229799AbhFBEVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 00:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbhFBEDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 00:03:14 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DC7C06175F;
-        Tue,  1 Jun 2021 21:01:31 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id 133so1180367pgf.2;
-        Tue, 01 Jun 2021 21:01:31 -0700 (PDT)
+        with ESMTP id S229469AbhFBEVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 00:21:50 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B164C061574;
+        Tue,  1 Jun 2021 21:20:06 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id i12-20020a05683033ecb02903346fa0f74dso1326546otu.10;
+        Tue, 01 Jun 2021 21:20:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Psg5LZgVxkE0XFjla4qijJ1f+kTs+VjX8IAhvkS1TnU=;
-        b=PzEglsbnRKOgy2zmiQZPocEgrcplSj7vy6E3yjFAHp2jSlOuDmSsyi0VJeZ6SREY8j
-         b9aoSpkmlve5vyHZXP4NOWe8xEGYOB9FddFgVhcn0hwPiGoG08dYbr43ahwIwG+LcGT2
-         CejYHEVx6cJDLEc81g7FA5LeQ+XetLJZf80PPQwHwxlgUBlzwqvDJ3dXyO+9cDVRYSK1
-         26KOszqc1Bi4JhB5bJvO7LXt83NvpFtxge0SpSxDoqHUzVmuV/iki2xcZXuF7eeUrMh7
-         XriLy2HSXpf3DA5n3PiT+i8mi1zv6TZT40lbR/YZ2X/mrS4rn1s0T7fgXsDX2lIohWpo
-         /eJQ==
+        bh=iMGGsERMcpA8geFW9RIY3rOzp/NmJwFBkoB6KSFK9fg=;
+        b=kXURr4p8FYVcPWJPYQpN81Dnc23rFNR576uqzwHXok9JqcJIjI6lYm+b/65+Kc7BzQ
+         r3lfmmlY/ey68rQd9erNzPIRbPTPUCxhzBZWVFFYM354letowY1j3NV0w5pkBdOTs7fX
+         lTDz4+vUHQ+5wN/nV8MO+4oMzUADGYznF/ijy2lvw6uR4vhT/Dch7MpI8OFKHPLWdHNZ
+         kPeOF4sU8Umpl/15u5sBC9ePcVHkxAoG46af2xb1ljN4C150i/RHON091eYeWHF9R0St
+         K8tN98do0Ar+WlfhtnaJUj5tDrmoZcYtM+re/HfDitBJY0H3GWZ/Cg70t+mpnsG/DECq
+         LNag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Psg5LZgVxkE0XFjla4qijJ1f+kTs+VjX8IAhvkS1TnU=;
-        b=P9r4wW3ibhG4c/RYw+oo7b/Bk4VgTM/ENfUeOT8CLwVo/RUSAA6hzo/TbEz/wafnp0
-         zrKEd0EqOCLsA99zBPJZxVUS54I3SzsPX+TYc0BBfIGlfNuggSy4241ZS79H7bHf5t41
-         x9K7ujcaDNt0wgLJqRqTbPmUXbxkT2HQh9WTt4X4KkDeqnfDZYndgsrKSDcJiF0wWaIa
-         m7b/5mvwE0PI0h7/RmjEQAZ4f8kAiSfo8JV0mcBFmKSr5XNC8f/gkMI3puloM9c9yntj
-         MPWqGeHFa9jc1veEGdE2RNvN23l6LPcjyNxvLD/U9aoqpA1QbSVHUBKDQ4F27tfnk3ZB
-         XBRg==
-X-Gm-Message-State: AOAM531u0Ir6WGBqdK0f5+MpUdw3dNnQKk2FYkTpz2Ox+kndJUgQ+VTM
-        1Dy78HWEHPfLPapjlHDVPJY=
-X-Google-Smtp-Source: ABdhPJxKlLfx8fGrjuW4kyOWyd346i+7tCQUK8Q7+rHQRknOzVIZop1GxuD0qUV4+7AkKc3PzRieRw==
-X-Received: by 2002:a63:1b04:: with SMTP id b4mr12560718pgb.224.1622606490927;
-        Tue, 01 Jun 2021 21:01:30 -0700 (PDT)
-Received: from [192.168.1.67] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id c21sm2955384pfi.44.2021.06.01.21.01.22
+        bh=iMGGsERMcpA8geFW9RIY3rOzp/NmJwFBkoB6KSFK9fg=;
+        b=pskiJ+wiAsBnnQ0ZwCR1YEqavTWWy4H+cpH2xiLnfvlUOEJohvr4WosOoo4ug9Rvml
+         gYyVWb8SMLEPDNIUqgnIHzeftJrMdYDSuvSlhQPipMqSjv+8Qr9uli8299DvI+nvWP4V
+         oXXsuXeKN1yOT2YvOBjl62ElnKDGcibczURFVV8/mHSEctd0VFN5GmZyBCbmKVPnm5FS
+         qMlJZjOWVW3aUfUtzFX8UaIQj68MSVaBZg1UVaf5ll0kvScjji/HHvKOPWNd9b8orWiQ
+         A+FLbwpLNODirMU7rP3KGPYn6OiZ0vWKd6nDeU+Iocxqgg9iymC6VcItADwULvM8iIVj
+         VB/w==
+X-Gm-Message-State: AOAM533sYufswtFAenhZC6LH0Rx/Wh4TT4CQ5lSyGpn48PhXD46lNnqS
+        6URmhr4N6L9suVuOXtVVlEc=
+X-Google-Smtp-Source: ABdhPJxIICiS9DApqp6rDz37Pujc3qqjy2E0zZ1KFQCNVyxmacAjPjgq5QQFR3HoGsyV5xY4tmfwRQ==
+X-Received: by 2002:a05:6830:16c4:: with SMTP id l4mr25176368otr.93.1622607605823;
+        Tue, 01 Jun 2021 21:20:05 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.22])
+        by smtp.googlemail.com with ESMTPSA id x14sm3932671oic.3.2021.06.01.21.20.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Jun 2021 21:01:30 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next] net: mdio: Fix spelling mistakes
-To:     Zheng Yongjun <zhengyongjun3@huawei.com>, andrew@lunn.ch,
-        hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        rjui@broadcom.com, sbranden@broadcom.com,
-        bcm-kernel-feedback-list@broadcom.com, narmstrong@baylibre.com,
-        khilman@baylibre.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org
-Cc:     opendmb@gmail.com, f.fainelli@gmail.com, linux@armlinux.org.uk,
-        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com
-References: <20210602015151.4135891-1-zhengyongjun3@huawei.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <ce8d1b78-47ce-9211-d948-093d316ea647@gmail.com>
-Date:   Tue, 1 Jun 2021 21:01:19 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.10.2
+        Tue, 01 Jun 2021 21:20:05 -0700 (PDT)
+Subject: Re: [PATCH] ipv6: create ra_mtu proc file to only record mtu in RA
+To:     Rocco Yue <rocco.yue@mediatek.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com,
+        rocco.yue@gmail.com
+References: <7087f518-f86e-58fb-6f32-a7cda77fb065@gmail.com>
+ <20210602031502.31600-1-rocco.yue@mediatek.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <05efe271-72f8-bc77-8869-ae4685af5ea4@gmail.com>
+Date:   Tue, 1 Jun 2021 22:20:03 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210602015151.4135891-1-zhengyongjun3@huawei.com>
+In-Reply-To: <20210602031502.31600-1-rocco.yue@mediatek.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,21 +75,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 6/1/2021 6:51 PM, Zheng Yongjun wrote:
-> informations  ==> information
-> typicaly  ==> typically
-> derrive  ==> derive
-> eventhough  ==> even though
-> hz ==> Hz
+On 6/1/21 9:15 PM, Rocco Yue wrote:
+> On Tue, 2021-06-01 at 18:38 -0600, David Ahern wrote:
+> On 6/1/21 3:16 AM, Rocco Yue wrote:
+>>> For this patch set, if RA message carries the mtu option,
+>>> "proc/sys/net/ipv6/conf/<iface>/ra_mtu" will be updated to the
+>>> mtu value carried in the last RA message received, and ra_mtu
+>>> is an independent proc file, which is not affected by the update
+>>> of interface mtu value.
+>>
+>> I am not a fan of more /proc/sys files.
+>>
+>> You are adding it to devconf which is good. You can add another link
+>> attribute, e.g., IFLA_RA_MTU, and have it returned on link queries.
+>>
+>> Make sure the attribute can not be sent in a NEWLINK or SETLINK request;
+>> it should be read-only for GETLINK.
 > 
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+> Thanks for your review and advice.
+> Do you mean that I should keep the ra_mtu proc and add an another extra netlink msg?
+> Or only use netlink msg instead of ra_mtu proc?
+> I will do it.
+> 
 
-Your v1 was applied already:
-
-https://git.kernel.org/netdev/net-next/c/e65c27938d8e
-
-so you would need to submit an incremental patch thanks!
--- 
-Florian
+I meant DEVCONF and notification to userspace was good, but using an
+IFLA attribute and no proc/sys file is better.
