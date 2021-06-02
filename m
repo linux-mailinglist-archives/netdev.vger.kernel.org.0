@@ -2,128 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47133399378
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 21:25:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4F4739937B
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 21:27:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbhFBT0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 15:26:55 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:52046 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229583AbhFBT0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 15:26:54 -0400
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 152J2sXK152710
-        for <netdev@vger.kernel.org>; Wed, 2 Jun 2021 15:25:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=2IrVkn99KnLniNrAWI8BvzUxF6VuVy5njx57gpCJyuw=;
- b=Y3y7vl7YCHpxn+JP6pBfseYIecXy8VFcZRE+DKRa5fiHMZ2KP+DOQTLd2ESN8QBN97qK
- RYHpsgH9wQCMPBCnxjiv3EgrP3CKL18An0MdgaYhwul3vxcfi6VT4MyVJusDw+vhh3qz
- QI8272WzSZFLtzWtHmNdocNGKD8t4wfi1CRvwCFlKL41eeJ8ldTu+j3Mo1TEpnwCP8VX
- Qgmh3H61JY33hVPr4DFV4hqiaW87oK2NfpaJd1FcZKCxzhu9AL4atAT9pVIblrbRbMok
- 0yHw3zay3P6PojlQevV5y7axGESqI6KMJkQJG7rqNg2mAwogQem9N8IMadZCzXqXTXIY Aw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 38xbsqg7u5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 15:25:11 -0400
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 152J2u43152928
-        for <netdev@vger.kernel.org>; Wed, 2 Jun 2021 15:25:10 -0400
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 38xbsqg7tw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Jun 2021 15:25:10 -0400
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 152JCQQV029411;
-        Wed, 2 Jun 2021 19:25:10 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma01wdc.us.ibm.com with ESMTP id 38ud89a1t5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Jun 2021 19:25:10 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 152JP9sm38863268
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 2 Jun 2021 19:25:09 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8AA27AC07D;
-        Wed,  2 Jun 2021 19:25:09 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6A9C9AC073;
-        Wed,  2 Jun 2021 19:25:09 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.85.128.141])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed,  2 Jun 2021 19:25:09 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id EA04C2E0AF7; Wed,  2 Jun 2021 12:25:06 -0700 (PDT)
-Date:   Wed, 2 Jun 2021 12:25:06 -0700
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     Lijun Pan <lijunp213@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ibm: replenish rx pool and poll less
- frequently
-Message-ID: <YLfbEjiu671HApgi@us.ibm.com>
-References: <20210602170156.41643-1-lijunp213@gmail.com>
+        id S229702AbhFBT2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 15:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49374 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229552AbhFBT2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 15:28:42 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A121C061756;
+        Wed,  2 Jun 2021 12:26:51 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id r198so1733278lff.11;
+        Wed, 02 Jun 2021 12:26:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3eTcKsWffVVKPjZgROWnlvuBXI7UvAVKKPxxp+2QZlg=;
+        b=VmSDYsE6qXuKdsNbzP+1a5Fb8IMfzB8xg1zz8XrQUtTPsSJ0dtdnWLdzLGjyA0TyE0
+         j6Xut2notzCNhkZh2rfcRhfS8LN26+woBgoMQ30tkSBhROLRxFR4InBS4hjHfyOxKILg
+         r9SaIhBCh482gLYqcu2pDrPnU/694khEiv6VwzIw+arNZERh1KQ+lHOU6IVlf2EZRE7g
+         Z/XzZeaaG6NdLGXyh97u7Bd+AMljVPkcRa8UF1PCvZsB66/uRPHFLhyVUOso0GEhnbEC
+         pmR72bsDROB1ke0GZf7tWT2y7N15abAI3VFKVbiMt3nQXvRSUPsXILJ2yTS/emKYkyjA
+         ueZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3eTcKsWffVVKPjZgROWnlvuBXI7UvAVKKPxxp+2QZlg=;
+        b=hlmc/Rp5kWR0wxSjYxb5k0/2631IqzIt82nID7V2N0AIpvxPHVA9nwRYwfpULA4vHy
+         RQjKJm68H9ZgE7ke6NpbdI5Lkt24c7Y7UTKmPYhsfWTVrO2/+8tsi9tJDLukv7b46KpD
+         p1KqJQU3xYxG5i0nraRE+7eRv+0zhjls3cVy5yLMgb98iSi7fLm0Jd5U8EJpwZ9OCyh+
+         EEnvqS4e1IBGy8e5spVu7VdysaK0jBFF/69EGvdzwG0/1zK3d97sXJ3jEL/7Gv4/8mFS
+         ekqF/3PPPA1WtQo1Xk9UuRtGxOBN7ZEmM8fSaEBK0gnKt02JUPqa84J+4W8kMaB/lr4V
+         uuGQ==
+X-Gm-Message-State: AOAM530H0ex3/nA1hQvr1WKSndD7NI/WGg0jIu0GmsnqT1qqrgn2TbKR
+        4HrJtMSAPQdq7ezEpwvkvfw=
+X-Google-Smtp-Source: ABdhPJw7BLv63SqhnBYy0dv4fOThx1h0GBRVTPJ5dZ1FRG00zjHtGJK6dX7HUPLtFXA8dJX7oVIZFg==
+X-Received: by 2002:ac2:5d6c:: with SMTP id h12mr24423879lft.354.1622662009569;
+        Wed, 02 Jun 2021 12:26:49 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.224.40])
+        by smtp.gmail.com with ESMTPSA id w21sm76683lfu.174.2021.06.02.12.26.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Jun 2021 12:26:49 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, tom@herbertland.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+b039f5699bd82e1fb011@syzkaller.appspotmail.com,
+        stable@vger.kernel.org
+Subject: [PATCH] net: kcm: fix memory leak in kcm_sendmsg
+Date:   Wed,  2 Jun 2021 22:26:40 +0300
+Message-Id: <20210602192640.13597-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210602170156.41643-1-lijunp213@gmail.com>
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Fa3lUfb3YF8A-xSE2Zr3PTw2WnCZZJFU
-X-Proofpoint-GUID: HCh-mPiUeAy9iZBy4p5YYqVh5aPwl7ZF
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-06-02_10:2021-06-02,2021-06-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
- mlxlogscore=982 spamscore=0 malwarescore=0 priorityscore=1501 mlxscore=0
- adultscore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
- definitions=main-2106020122
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lijun Pan [lijunp213@gmail.com] wrote:
-> The old mechanism replenishes rx pool even only one frames is processed in
-> the poll function, which causes lots of overheads. The old mechanism
+Syzbot reported memory leak in kcm_sendmsg()[1].
+The problem was in non-freed frag_list in case of error.
 
-The soft lockup is not seen when replenishing a small number of buffers at
-a time. Its only under some conditions when replenishing a _large_ number
-at once - appears to be because the netdev_alloc_skb() calls collectively
-take a long time.
+In the while loop:
 
-Replenishing a small number at a time is not a problem.
+	if (head == skb)
+		skb_shinfo(head)->frag_list = tskb;
+	else
+		skb->next = tskb;
 
-> restarts polling until processed frames reaches the budget, which can
-> cause the poll function to loop into restart_poll 63 times at most and to
-> call replenish_rx_poll 63 times at most. This will cause soft lockup very
-> easily. So, don't replenish too often, and don't goto restart_poll in each
+frag_list filled with skbs, but nothing was freeing them.
 
-The 64 is from the budget the system gave us. And for us to hit the goto
-restart_loop:
-	a. pending_scrq() in the while loop must not have a found a packet,
-	   and
-	b. by the time we replenished the pool, completed napi etc we must
-	   have found a packet
+backtrace:
+  [<0000000094c02615>] __alloc_skb+0x5e/0x250 net/core/skbuff.c:198
+  [<00000000e5386cbd>] alloc_skb include/linux/skbuff.h:1083 [inline]
+  [<00000000e5386cbd>] kcm_sendmsg+0x3b6/0xa50 net/kcm/kcmsock.c:967 [1]
+  [<00000000f1613a8a>] sock_sendmsg_nosec net/socket.c:652 [inline]
+  [<00000000f1613a8a>] sock_sendmsg+0x4c/0x60 net/socket.c:672
 
-For this to happen 64 times, we must find
-	- exactly zero packets in a. and
-	- exactly one packet in b, and
-	- the tight sequence must occur 64 times.
+Reported-and-tested-by: syzbot+b039f5699bd82e1fb011@syzkaller.appspotmail.com
+Fixes: ab7ac4eb9832 ("kcm: Kernel Connection Multiplexor module")
+Cc: stable@vger.kernel.org
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ net/kcm/kcmsock.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-IOW its more theoretical right?
+diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
+index 6201965bd822..1c572c8daced 100644
+--- a/net/kcm/kcmsock.c
++++ b/net/kcm/kcmsock.c
+@@ -1066,6 +1066,11 @@ static int kcm_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 		goto partial_message;
+ 	}
+ 
++	if (skb_has_frag_list(head)) {
++		kfree_skb_list(skb_shinfo(head)->frag_list);
++		skb_shinfo(head)->frag_list = NULL;
++	}
++
+ 	if (head != kcm->seq_skb)
+ 		kfree_skb(head);
+ 
+-- 
+2.31.1
 
-Even if it did happen a handful of times, the only "overheads" in the
-replenish are the netdev_alloc_skb() and the send-subcrq-indirect hcall.
-
-The skb alloc cannot be avoided - we must do it now or in the future
-anyway. The hcall is issued every 16 skbs. If we issue it for <16 skbs
-it means the traffic is extremely low. No point optimizing for that.
-Besides the hcalls are not very expensive.
-
-There was a lot of testing done in Nov 2020 when the subcrq-indirect
-hcall support was added. We would need to repeat that testing at the
-least.
-
-Thanks,
-
-Sukadev
