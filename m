@@ -2,111 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1BC0398DBB
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 17:01:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAC0A398DC4
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 17:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232027AbhFBPDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 11:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbhFBPDf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 11:03:35 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA77C061574;
-        Wed,  2 Jun 2021 08:01:52 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id y15so2405396pfl.4;
-        Wed, 02 Jun 2021 08:01:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+az3hl/4w22b3I/rRlTcQ1/sSF9KD2GATy/NbYn2SjU=;
-        b=LFh9HsM5N4yAOGzJ85RpIVWyAjUPznHirCf8/j7G4yx59JLH20/Uh4u7wbdu1FOv1R
-         BMS/VcyQyPaNyIBLyV79xaZ6CaUNzIjmBxRj8Fe+1khO8KcH3zpgVSaCPqyrS/mPSxUA
-         SxH1O0RaYnJym4R1ouc54zGTJI9ko785LbI0cE/6JrbOl++1vJMUiWvQ+YxS/x02SX1A
-         GtQ9eZiWdQ81n3fEqhZUgWSVZqHZymyGyts8taigNA7xByYUg2QhaEC1Sqw034dlDQ+n
-         EaQjVI9wbITemQxMjxw+B5xkVM7JxSTIPhVvW43gJtVIEw3fB0lKjLuGjHRyUK5Iy7k4
-         pXzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+az3hl/4w22b3I/rRlTcQ1/sSF9KD2GATy/NbYn2SjU=;
-        b=sI4Vy4nBU5dmDoIiGcLaXTloMRiWF4DKdtAQg7+ctEWccFnHxPdQbnEDEUXl1/riRL
-         QRW69aWC2NaBnC8kzGtJC1478CWNkidr3flpUP+JOHkt5/OaR7n1sEJyBZYh2mu+ReBZ
-         hfI1YLOxlMGN/k1W6pqMXBchH/Pq6zchuIWztQwEWIHhTSYunAjQ4dEnTq89K20Gpr/y
-         qc5I3smFTAVL7U/j3d2V5ldbc1838nBrknSsEj364zr47K5hYbTIspwUSt3T0nQtuJhY
-         7CfRfOKniqRSZosM8eWdbhLIUeKdhbSmUD849Cu8Mn6/6Ei0z3KoNjSMRhwWteQKEcm7
-         xmVw==
-X-Gm-Message-State: AOAM532io0b+Ywbz+UNz2fJuj15tdtXTZEzT/s50ib0LwpWZ5LGA9kLr
-        H38eIB4ZGDZzmldiXuhZs7w=
-X-Google-Smtp-Source: ABdhPJztpeXS5x/Q7Ocwttmq+13ab9HvNAwDx8hEcPtnl/lWI6mAldnzn4lX5IPnQcCsuOUMA5JO9w==
-X-Received: by 2002:a62:4e96:0:b029:2ea:2244:5e31 with SMTP id c144-20020a624e960000b02902ea22445e31mr3354423pfb.43.1622646112263;
-        Wed, 02 Jun 2021 08:01:52 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
-        by smtp.gmail.com with ESMTPSA id y13sm97917pgp.16.2021.06.02.08.01.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Jun 2021 08:01:51 -0700 (PDT)
-Subject: Re: [RFC PATCH V3 09/11] HV/IOMMU: Enable swiotlb bounce buffer for
- Isolation VM
-To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com, arnd@arndb.de,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
-        rppt@kernel.org, hannes@cmpxchg.org, cai@lca.pw,
-        krish.sadhukhan@oracle.com, saravanand@fb.com,
-        Tianyu.Lan@microsoft.com, konrad.wilk@oracle.com, hch@lst.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com, jgross@suse.com,
-        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
-        xen-devel@lists.xenproject.org, davem@davemloft.net,
-        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, thomas.lendacky@amd.com,
-        brijesh.singh@amd.com, sunilmut@microsoft.com
-References: <20210530150628.2063957-1-ltykernel@gmail.com>
- <20210530150628.2063957-10-ltykernel@gmail.com>
- <9488c114-81ad-eb67-79c0-5ed319703d3e@oracle.com>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <a023ee3f-ce85-b54f-79c3-146926bf3279@gmail.com>
-Date:   Wed, 2 Jun 2021 23:01:36 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
+        id S232105AbhFBPER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 11:04:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36236 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232054AbhFBPEH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 11:04:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 407C1613BF;
+        Wed,  2 Jun 2021 15:02:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622646144;
+        bh=iqy0WVYDEpl3OEqiwYR2vHlixZDZNAuGOuMgnWDXeR8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=O+pqG+GrEcw9WVS8/OW/fQfSxSijYrBV2XZxysaVScijAUnd0cVcWSF4nom6VYF7/
+         Xyj4yQuXkrrTuHJnUpufQZyClixRruRrV6dddsrZRqOQc+UgpG4vsSCBUy91HBwhfj
+         S4qt9rHniezYWqyJmpYVr3rEugD00r4pGxG9asyrSW0y4cnvEcyeHwtxVwtOD0WKZZ
+         CxVeWNbOBJkHO0H7W+0s6rOxAZoTcR6qnwXcmM/nQ5icf4zBj8IsluJAeqSZ9roUcx
+         S4+extTRu1FhJzpL0fTK8fMnTglu0lQMSa9EV3Tq/LcFiaa96LORrcAJlT/uJ7FgCX
+         ZTIEp+h3YHIzg==
+Date:   Wed, 2 Jun 2021 16:02:11 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Jens Axboe <axboe@kernel.dk>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Pavel Machek <pavel@ucw.cz>, Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, cgroups@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
+        rcu@vger.kernel.org, linux-mm@kvack.org, kvm@vger.kernel.org
+Subject: Re: [PATCH 4/6] sched: Add get_current_state()
+Message-ID: <20210602150211.GC31179@willie-the-truck>
+References: <20210602131225.336600299@infradead.org>
+ <20210602133040.461908001@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <9488c114-81ad-eb67-79c0-5ed319703d3e@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210602133040.461908001@infradead.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Boris:
-	Thanks for your review.
+On Wed, Jun 02, 2021 at 03:12:29PM +0200, Peter Zijlstra wrote:
+> Remove yet another few p->state accesses.
+> 
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  block/blk-mq.c        |    2 +-
+>  include/linux/sched.h |    2 ++
+>  kernel/freezer.c      |    2 +-
+>  kernel/sched/core.c   |    6 +++---
+>  4 files changed, 7 insertions(+), 5 deletions(-)
 
-On 6/2/2021 9:16 AM, Boris Ostrovsky wrote:
-> 
-> On 5/30/21 11:06 AM, Tianyu Lan wrote:
->> @@ -91,6 +92,6 @@ int pci_xen_swiotlb_init_late(void)
->>   EXPORT_SYMBOL_GPL(pci_xen_swiotlb_init_late);
->>   
->>   IOMMU_INIT_FINISH(2,
->> -		  NULL,
->> +		  hyperv_swiotlb_detect,
->>   		  pci_xen_swiotlb_init,
->>   		  NULL);
-> 
-> 
-> Could you explain this change?
+I think you can include kernel/kcsan/report.c here too.
 
-Hyper-V allocates its own swiotlb bounce buffer and the default
-swiotlb buffer should not be allocated. swiotlb_init() in 
-pci_swiotlb_init() is to allocate default swiotlb buffer.
-To achieve this, put hyperv_swiotlb_detect() as the first entry in the 
-iommu_table_entry list. The detect loop in the pci_iommu_alloc() will 
-exit once hyperv_swiotlb_detect() is called in Hyper-V VM and other 
-iommu_table_entry callback will not be called.
+With that:
+
+Acked-by: Will Deacon <will@kernel.org>
+
+Will
