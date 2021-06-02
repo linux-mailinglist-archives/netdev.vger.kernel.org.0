@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C6B1398DEA
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 17:06:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8606D398E02
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 17:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232164AbhFBPII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 11:08:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37718 "EHLO mail.kernel.org"
+        id S231851AbhFBPMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 11:12:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38692 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230456AbhFBPIF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 11:08:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DA65E613B1;
-        Wed,  2 Jun 2021 15:06:12 +0000 (UTC)
+        id S230456AbhFBPML (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 11:12:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 73C1A61182;
+        Wed,  2 Jun 2021 15:10:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622646382;
-        bh=BP0oFnLplpQzbCvalvHpB7NqrdywR5DFEAfyxB1g9Jw=;
+        s=k20201202; t=1622646628;
+        bh=MmmB5edNPbRN/+c+2On4lV0BgwteW7Cw405ip5Z8YuI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jt/JfwEGGlSy3hTqeZO3M/TRZGRYdN+uS6BuUDgGWYc5+7OM1jehc/I9GyTKk2giU
-         x8Fz6MywEP2GyftaSPZuTT4frUE4LJJFTbKNlFpWaV8FNSJBHs39bu4E9I4SLfLcqO
-         HMHRVnWqIqa56gxBT11Ofr79h6KJWIenXTFIjgotpx1WoRwxUuESzepF3f2J82onWW
-         6KmGn6d5Bc6iSjd3ikJm06ctf56Aqa5WONxHcW0SvlYtFWsSxXD7djl+hbn3SCVIAR
-         qZZg4puE8ocBtV+bfRn446ajL6ZLJwoZfD6XNzRQcxu8UqCMnHwciVTCXlxPOmPFq8
-         KdRM+B30YEPFA==
-Date:   Wed, 2 Jun 2021 16:06:09 +0100
+        b=eoW8oxXoywj95HF19beDzh3Wa+WhWkiyj9FjvvSEw7ScJ8OuGQbEy6+2TGjP0xVYN
+         XSSJAJXvhI5MOj1+GRdHIbg46k9rJSpJMlo/HDJefXpEwJPCDFcYn8COIR/VQO5DZl
+         47yzM30C6QaWLqEpy6LeVNCLBHEk+aKjfkrC6CQ5ViDR3bMQ0fCKMIt+zFjJNZMY+v
+         SNl2CwOo9QKvwQF6AUEFLQH9ccSyIziiULTl3YApDUWutkiYOLv0+Q04TM9wwWdkfx
+         bdsysjlbcoFBsmj9C1l84fr+oHwMhBsnHonyI6jC2MFd17CoX0BlIS16/UkYyFRS6U
+         MochfZ+/mAepQ==
+Date:   Wed, 2 Jun 2021 16:10:11 +0100
 From:   Will Deacon <will@kernel.org>
 To:     Peter Zijlstra <peterz@infradead.org>
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
@@ -73,35 +73,58 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         kgdb-bugreport@lists.sourceforge.net,
         linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
         rcu@vger.kernel.org, linux-mm@kvack.org, kvm@vger.kernel.org
-Subject: Re: [PATCH 5/6] sched,timer: Use __set_current_state()
-Message-ID: <20210602150609.GD31179@willie-the-truck>
+Subject: Re: [PATCH 6/6] sched: Change task_struct::state
+Message-ID: <20210602151010.GE31179@willie-the-truck>
 References: <20210602131225.336600299@infradead.org>
- <20210602133040.524487671@infradead.org>
+ <20210602133040.587042016@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210602133040.524487671@infradead.org>
+In-Reply-To: <20210602133040.587042016@infradead.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 03:12:30PM +0200, Peter Zijlstra wrote:
+On Wed, Jun 02, 2021 at 03:12:31PM +0200, Peter Zijlstra wrote:
+> Change the type and name of task_struct::state. Drop the volatile and
+> shrink it to an 'unsigned int'. Rename it in order to find all uses
+> such that we can use READ_ONCE/WRITE_ONCE as appropriate.
 > 
 > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 > ---
->  kernel/time/timer.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> --- a/kernel/time/timer.c
-> +++ b/kernel/time/timer.c
-> @@ -1879,7 +1879,7 @@ signed long __sched schedule_timeout(sig
->  			printk(KERN_ERR "schedule_timeout: wrong timeout "
->  				"value %lx\n", timeout);
->  			dump_stack();
-> -			current->state = TASK_RUNNING;
-> +			__set_current_state(TASK_RUNNING);
+>  block/blk-mq.c                 |    2 -
+>  drivers/md/dm.c                |    6 ++--
+>  fs/binfmt_elf.c                |    8 +++---
+>  fs/userfaultfd.c               |    4 +--
+>  include/linux/sched.h          |   31 +++++++++++------------
+>  include/linux/sched/debug.h    |    2 -
+>  include/linux/sched/signal.h   |    2 -
+>  init/init_task.c               |    2 -
+>  kernel/cgroup/cgroup-v1.c      |    2 -
+>  kernel/debug/kdb/kdb_support.c |   18 +++++++------
+>  kernel/fork.c                  |    4 +--
+>  kernel/hung_task.c             |    2 -
+>  kernel/kthread.c               |    4 +--
+>  kernel/locking/mutex.c         |    6 ++--
+>  kernel/locking/rtmutex.c       |    4 +--
+>  kernel/locking/rwsem.c         |    2 -
+>  kernel/ptrace.c                |   12 ++++-----
+>  kernel/rcu/rcutorture.c        |    4 +--
+>  kernel/rcu/tree_stall.h        |   12 ++++-----
+>  kernel/sched/core.c            |   53 +++++++++++++++++++++--------------------
+>  kernel/sched/deadline.c        |   10 +++----
+>  kernel/sched/fair.c            |   11 +++++---
+>  lib/syscall.c                  |    4 +--
+>  net/core/dev.c                 |    2 -
+>  24 files changed, 108 insertions(+), 99 deletions(-)
+
+I think this makes the code a _lot_ easier to understand, so:
 
 Acked-by: Will Deacon <will@kernel.org>
+
+on the assumption that you'll fix get_wchan() for !x86 as well.
+
+Cheers,
 
 Will
