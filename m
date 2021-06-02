@@ -2,73 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50BC039910C
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:03:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BC4639912A
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:10:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbhFBRFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 13:05:05 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:42458 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229831AbhFBRFE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 13:05:04 -0400
-Received: from netfilter.org (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id BE28F641FC;
-        Wed,  2 Jun 2021 19:02:12 +0200 (CEST)
-Date:   Wed, 2 Jun 2021 19:03:17 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     syzbot <syzbot+ce96ca2b1d0b37c6422d@syzkaller.appspotmail.com>
-Cc:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] general protection fault in nft_set_elem_expr_alloc
-Message-ID: <20210602170317.GA18869@salvia>
-References: <000000000000ef07b205c3cb1234@google.com>
+        id S229753AbhFBRMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 13:12:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38608 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229604AbhFBRMR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 13:12:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 77D0161028;
+        Wed,  2 Jun 2021 17:10:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622653834;
+        bh=u+W+i+heGBo0X2/7Y5sUYkYNAmcg7PCzOMtS61Lgui4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WDBaxHIH+dgbVWsbw/zV7rEAZMUMeVP3f9sBPlit/Sy95rlnIgoJQ50vhl0pIgfrM
+         VXclJnBEQQAMhIklE+uYV0YlB4Vgz8rtEgDs31rJcf5AWdGixNSueNEhXIdHK5zJ1b
+         b/tL3B0cVr96PHXqT3E/DUXWHi06057dwUs/dMWXdsUOvJTHBS1jj3aQw9LYjLOw4b
+         iXk0aZo20Su9QSRZNazvZGyVMDgVMFzwHQrZRHMDXVHuIzMx/psWz60/8T8oQPX391
+         e1dNsXR9WZU+0FdoEbZconPB4MObTXfZRhxoPKVA7W7FtUOWj7be/dXv2xxJkAidH9
+         DxBLzEUx3JrzQ==
+Date:   Wed, 2 Jun 2021 10:10:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>, Aya Levin <ayal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [net 1/8] net/mlx5e: Fix incompatible casting
+Message-ID: <20210602101033.71216ba6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20210602013723.1142650-2-saeed@kernel.org>
+References: <20210602013723.1142650-1-saeed@kernel.org>
+        <20210602013723.1142650-2-saeed@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <000000000000ef07b205c3cb1234@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 09:37:26AM -0700, syzbot wrote:
-> Hello,
+On Tue,  1 Jun 2021 18:37:16 -0700 Saeed Mahameed wrote:
+> From: Aya Levin <ayal@nvidia.com>
 > 
-> syzbot found the following issue on:
+> Device supports setting of a single fec mode at a time, enforce this
+> by bitmap_weight == 1. Input from fec command is in u32, avoid cast to
+> unsigned long and use bitmap_from_arr32 to populate bitmap safely.
 > 
-> HEAD commit:    6850ec97 Merge branch 'mptcp-fixes-for-5-13'
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1355504dd00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=770708ea7cfd4916
-> dashboard link: https://syzkaller.appspot.com/bug?extid=ce96ca2b1d0b37c6422d
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1502d517d00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12bbbe13d00000
+> Fixes: 4bd9d5070b92 ("net/mlx5e: Enforce setting of a single FEC mode")
+> Signed-off-by: Aya Levin <ayal@nvidia.com>
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> The issue was bisected to:
-> 
-> commit 05abe4456fa376040f6cc3cc6830d2e328723478
-> Author: Pablo Neira Ayuso <pablo@netfilter.org>
-> Date:   Wed May 20 13:44:37 2020 +0000
-> 
->     netfilter: nf_tables: allow to register flowtable with no devices
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10fa1387d00000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=12fa1387d00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14fa1387d00000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+ce96ca2b1d0b37c6422d@syzkaller.appspotmail.com
-> Fixes: 05abe4456fa3 ("netfilter: nf_tables: allow to register flowtable with no devices")
-> 
-> general protection fault, probably for non-canonical address 0xdffffc000000000e: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
-> CPU: 1 PID: 8438 Comm: syz-executor343 Not tainted 5.13.0-rc3-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:nft_set_elem_expr_alloc+0x17e/0x280 net/netfilter/nf_tables_api.c:5321
-> Code: 48 c1 ea 03 80 3c 02 00 0f 85 09 01 00 00 49 8b 9d c0 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 d9 00 00 00 48 8b 5b 70 48 85 db 74 21 e8 9a bd
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> index 8360289813f0..c4724742eef1 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> @@ -1624,12 +1624,13 @@ static int mlx5e_set_fecparam(struct net_device *netdev,
+>  {
+>  	struct mlx5e_priv *priv = netdev_priv(netdev);
+>  	struct mlx5_core_dev *mdev = priv->mdev;
+> +	unsigned long fec_bitmap;
+>  	u16 fec_policy = 0;
+>  	int mode;
+>  	int err;
+>  
+> -	if (bitmap_weight((unsigned long *)&fecparam->fec,
+> -			  ETHTOOL_FEC_LLRS_BIT + 1) > 1)
+> +	bitmap_from_arr32(&fec_bitmap, &fecparam->fec, sizeof(fecparam->fec) * BITS_PER_BYTE);
+> +	if (bitmap_weight(&fec_bitmap, ETHTOOL_FEC_LLRS_BIT + 1) > 1)
+>  		return -EOPNOTSUPP;
+>  
+>  	for (mode = 0; mode < ARRAY_SIZE(pplm_fec_2_ethtool); mode++) {
 
-It's a real bug. Bisect is not correct though.
-
-I'll post a patch to fix it. Thanks.
+hweight32()? Not that'd be worth a respin
