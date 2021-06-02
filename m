@@ -2,162 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C59A739927A
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 20:23:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F795399287
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 20:27:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbhFBSYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 14:24:51 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:43462 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229489AbhFBSYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:24:51 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 152IJ135189642
-        for <netdev@vger.kernel.org>; Wed, 2 Jun 2021 14:23:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=content-type : date :
- from : to : cc : subject : in-reply-to : references : message-id :
- content-transfer-encoding : mime-version; s=pp1;
- bh=M696bEyUInuxSbgkUw+QRJv4TeXDFKY2Jdn+U8Uclw4=;
- b=omyAJJPqvdBCWLdI7ofINpr+24vBhlHzw9ao4FHjLwwD2OHgI6gL6JIxgMXBEwPnbxUR
- veS8Sbf4/Z4+5J4kC+Wm+D5eN8H+OGeV4tuRM0QQUNieTBL6huI0zbp7ZWVKp794r+fZ
- rNO1/EezFUrTg3nminI99EsZS0lILw2kOKn5Us58ydRLXZRCgx8cQQEd2e4eyirquAaS
- 0/2s5HLEMPQOewXuQ8tv5BBn3yJbVcN25uwmCbTlXptqnksIxWFWhvhWUxw8Zu9C+WIh
- LqXv4KtnT4a3ZwhsSdsbj2I1kLQyEB7svDnYzzWVCwkHHPPP/SnJc8Nmi8GQW930JdPa 8w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 38xdtttenp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 14:23:07 -0400
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 152IK2L7195419
-        for <netdev@vger.kernel.org>; Wed, 2 Jun 2021 14:23:07 -0400
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 38xdtttemt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Jun 2021 14:23:07 -0400
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 152IDKPk018269;
-        Wed, 2 Jun 2021 18:23:06 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma05wdc.us.ibm.com with ESMTP id 38ud899ne7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Jun 2021 18:23:05 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 152IN54812976412
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 2 Jun 2021 18:23:05 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 09C107805F;
-        Wed,  2 Jun 2021 18:23:05 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C34FA78060;
-        Wed,  2 Jun 2021 18:23:04 +0000 (GMT)
-Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed,  2 Jun 2021 18:23:04 +0000 (GMT)
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Date:   Wed, 02 Jun 2021 11:23:04 -0700
-From:   Dany Madden <drt@linux.ibm.com>
-To:     Lijun Pan <lijunp213@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ibm: replenish rx pool and poll less
- frequently
-In-Reply-To: <4765c54a8cb7b87ae1d7db928c44f40b@imap.linux.ibm.com>
-References: <20210602170156.41643-1-lijunp213@gmail.com>
- <4765c54a8cb7b87ae1d7db928c44f40b@imap.linux.ibm.com>
-Message-ID: <a85942b56e72cae74d23bd8ab379490e@imap.linux.ibm.com>
-X-Sender: drt@linux.ibm.com
-User-Agent: Roundcube Webmail/1.1.12
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 3haBcDMnLQNsMCxVtTBKhHs18p51hZuo
-X-Proofpoint-ORIG-GUID: N_muTg3xiOIS7KUp_pC6iY8fHN9wAcK9
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S229657AbhFBS3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 14:29:38 -0400
+Received: from mail-lj1-f169.google.com ([209.85.208.169]:40829 "EHLO
+        mail-lj1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229467AbhFBS3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:29:36 -0400
+Received: by mail-lj1-f169.google.com with SMTP id u22so3802831ljh.7;
+        Wed, 02 Jun 2021 11:27:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8UqDhXrXjsAxzr58NBRBsGjtJDHkgQVZ6cKClZ531zY=;
+        b=ViFTnJXh801TRjKKj3i829MHXnMV6NvAvdOMnZKySEmLWpzUvVAKRccfZPdoKAS7AL
+         jn5e8SG6OspXz3H3NRWqdL48aR3uKQoFzDe0T/wY3gg/FHkyNY8yM0B4punMfpTC4VSp
+         rXUBtEQZOg5gSnvCn4CjKIaW69j/HtJe63tRgv7ePAr587hXVGXBUYxyGC+xvg1R9wj0
+         sTq2XuRmQACXS6mRR0LUhUDPHFStiwmeTyzwPfGTz24qndtn7tE+jjXtJN36OSGwiIv2
+         WY498QN+W7EZkBRcoY6oPJbFn7vmddfXRDnZ1j5zMMP4Zjtd5C/GbOiw/Billvdk6J36
+         QgiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8UqDhXrXjsAxzr58NBRBsGjtJDHkgQVZ6cKClZ531zY=;
+        b=kau2KEEJe1FVKLJ3Q9dG650KKdr72ZU2sKnTUrTs/QUveJWqabAXl3lKlzHZ++mEKb
+         EsP1CG1ULiCM2y7lmH9Zo3Bw9gfUnpxesL+9Rk+3ceZwjRShJjFy8//791bRTL8JiLZL
+         zDNIwWpDgxBgI0wlyx/Z1HYYg0e+BhGiPTWvsnUmnT9PqS6omQAQmuZtjQUN9/Hj+bjk
+         a9zotdj+hsmddTJNYwJjGBSKVL77GAVON+vFcOcSj1gNP4ZW+0KXeV6gb+HAx2Bn2cjB
+         8ZL5nOFtFSglJeF1bJFtGP6J2DoK36Cow1zZAi8Umvq7fk0bJzI6QsjXqnxszD8z2IeG
+         jpaQ==
+X-Gm-Message-State: AOAM532F4Tvv3ZT2A3q+4EpsB1+J04wQINqZ0zAgNbm0mnc1+JtIBvOX
+        lqUAEGBgeSZ+l9/wXzja16WcD28z9624QUUtmdg=
+X-Google-Smtp-Source: ABdhPJxsBKRxQpr7tXw+0EuzmckLOWkArujX1A5ryUMwKzLh3yvcX9QyLrKqZyNUCEzvUM0LG3M7e++1C7kAute5220=
+X-Received: by 2002:a2e:a489:: with SMTP id h9mr26720489lji.21.1622658412355;
+ Wed, 02 Jun 2021 11:26:52 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-06-02_10:2021-06-02,2021-06-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- lowpriorityscore=0 phishscore=0 priorityscore=1501 mlxscore=0
- mlxlogscore=750 clxscore=1015 impostorscore=0 adultscore=0 bulkscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2106020115
+References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
+ <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
+ <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
+ <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
+ <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
+ <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
+ <CAM_iQpXUBuOirztj3kifdFpvygKb-aoqwuXKkLdG9VFte5nynA@mail.gmail.com>
+ <20210602020030.igrx5jp45tocekvy@ast-mbp.dhcp.thefacebook.com>
+ <874kegbqkd.fsf@toke.dk> <20210602175436.axeoauoxetqxzklp@kafai-mbp> <20210602181333.3m4vz2xqd5klbvyf@apollo>
+In-Reply-To: <20210602181333.3m4vz2xqd5klbvyf@apollo>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 2 Jun 2021 11:26:40 -0700
+Message-ID: <CAADnVQJTJzxzig=1vvAUMXELUoOwm2vXq0ahP4mfhBWGsCm9QA@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-06-02 10:58, Dany Madden wrote:
-> On 2021-06-02 10:01, Lijun Pan wrote:
->> The old mechanism replenishes rx pool even only one frames is 
->> processed in
->> the poll function, which causes lots of overheads. The old mechanism
->> restarts polling until processed frames reaches the budget, which can
->> cause the poll function to loop into restart_poll 63 times at most and 
->> to
->> call replenish_rx_poll 63 times at most. This will cause soft lockup 
->> very
->> easily. So, don't replenish too often, and don't goto restart_poll in 
->> each
->> poll function. If there are pending descriptors, fetch them in the 
->> next
->> poll instance.
-> 
-> Does this improve performance?
-> 
->> 
->> Signed-off-by: Lijun Pan <lijunp213@gmail.com>
->> ---
->>  drivers/net/ethernet/ibm/ibmvnic.c | 15 +++------------
->>  1 file changed, 3 insertions(+), 12 deletions(-)
->> 
->> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
->> b/drivers/net/ethernet/ibm/ibmvnic.c
->> index ffb2a91750c7..fae1eaa39dd0 100644
->> --- a/drivers/net/ethernet/ibm/ibmvnic.c
->> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
->> @@ -2435,7 +2435,6 @@ static int ibmvnic_poll(struct napi_struct
->> *napi, int budget)
->>  	frames_processed = 0;
->>  	rx_scrq = adapter->rx_scrq[scrq_num];
->> 
->> -restart_poll:
->>  	while (frames_processed < budget) {
->>  		struct sk_buff *skb;
->>  		struct ibmvnic_rx_buff *rx_buff;
->> @@ -2512,20 +2511,12 @@ static int ibmvnic_poll(struct napi_struct
->> *napi, int budget)
->>  	}
->> 
->>  	if (adapter->state != VNIC_CLOSING &&
->> -	    ((atomic_read(&adapter->rx_pool[scrq_num].available) <
->> -	      adapter->req_rx_add_entries_per_subcrq / 2) ||
->> -	      frames_processed < budget))
-> 
-> There is a budget that the driver should adhere to. Even one frame, it
-> should still process the frame within a budget.
-I meant it should replenish the buffer because the commit that added 
-this check, 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=41ed0a00ffcd903ece4304a4a65d95706115ffcb, 
-stated that low frame_processed means low incoming packets, so use the 
-time to refill the buffers.
+On Wed, Jun 2, 2021 at 11:14 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> On Wed, Jun 02, 2021 at 11:24:36PM IST, Martin KaFai Lau wrote:
+> > On Wed, Jun 02, 2021 at 10:48:02AM +0200, Toke H=C3=B8iland-J=C3=B8rgen=
+sen wrote:
+> > > Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> > >
+> > > >> > In general the garbage collection in any form doesn't scale.
+> > > >> > The conntrack logic doesn't need it. The cillium conntrack is a =
+great
+> > > >> > example of how to implement a conntrack without GC.
+> > > >>
+> > > >> That is simply not a conntrack. We expire connections based on
+> > > >> its time, not based on the size of the map where it residents.
+> > > >
+> > > > Sounds like your goal is to replicate existing kernel conntrack
+> > > > as bpf program by doing exactly the same algorithm and repeating
+> > > > the same mistakes. Then add kernel conntrack functions to allow lis=
+t
+> > > > of kfuncs (unstable helpers) and call them from your bpf progs.
+> > >
+> > > FYI, we're working on exactly this (exposing kernel conntrack to BPF)=
+.
+> > > Hoping to have something to show for our efforts before too long, but
+> > > it's still in a bit of an early stage...
+> > Just curious, what conntrack functions will be made callable to BPF?
+>
+> Initially we're planning to expose the equivalent of nf_conntrack_in and
+> nf_conntrack_confirm to XDP and TC programs (so XDP one works without an =
+skb,
+> and TC one works with an skb), to map these to higher level lookup/insert=
+.
 
-So, it would be good to see some numbers of how this change is doing in 
-comparison to the code before.
-
-> 
->> +	    (atomic_read(&adapter->rx_pool[scrq_num].available) <
->> +	      adapter->req_rx_add_entries_per_subcrq / 2))
->>  		replenish_rx_pool(adapter, &adapter->rx_pool[scrq_num]);
->>  	if (frames_processed < budget) {
->> -		if (napi_complete_done(napi, frames_processed)) {
->> +		if (napi_complete_done(napi, frames_processed))
->>  			enable_scrq_irq(adapter, rx_scrq);
->> -			if (pending_scrq(adapter, rx_scrq)) {
->> -				if (napi_reschedule(napi)) {
->> -					disable_scrq_irq(adapter, rx_scrq);
->> -					goto restart_poll;
->> -				}
->> -			}
->> -		}
->>  	}
->>  	return frames_processed;
->>  }
+To make sure we're on the same page...
+I still strongly prefer to avoid exposing conntrack via stable helpers.
+Pls use kfunc and unstable interface.
