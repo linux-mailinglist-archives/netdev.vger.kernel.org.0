@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D99153988BB
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA7963988BC
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229625AbhFBMB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 08:01:59 -0400
-Received: from mail-bn8nam12on2114.outbound.protection.outlook.com ([40.107.237.114]:31649
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        id S229663AbhFBMCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 08:02:01 -0400
+Received: from mail-dm6nam11on2100.outbound.protection.outlook.com ([40.107.223.100]:56833
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229533AbhFBMB5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 08:01:57 -0400
+        id S229604AbhFBMCA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 08:02:00 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l65KoLcaQ5J1w0tr+NNkP+xVFQGRi+2rX+646dJASgJqtm6enbUy0BuiYdx/ktbltLz4YCr3dCbWaOqQwFzBVfZ8cdYuKWJgf+3UZ8IfeJAmV1nV862L8mnOJW/f+KmeHZ3Zu3GL/arQG2l8myNEfD0yIH4x0bRlDftXcYX6VtS2NQXZ24GRRbWyLgUn3gEMppsoCIPMX0NumxDImo7pbiLWGldavsJjJmlyPqGucP1zN455oiHXzdzjtm89FjSWajthbwsKzqhkNL+6sIGYKjN2W2xyX3vdwixOe969x6JDvedXggObNHjYIv3kWXT1RHjxR04rQeE/2azjh2jF3A==
+ b=DSLw8qLlZ+al+btgkQDoFKkxzze30fXuWZ3Fy3xv4XXIwcfLXTDbGeUKjenZ95VY4eJel9eZS6wpnLUgug6G4WDl8H9j0o/pJAjbYaiumTDB1SxkNHSSzGM6JR6m64+UbPjDPKoxGSmEH6ZpC224cCRsxzi7VQxDDYuSUnfnDJ1EYNxjo7U4opebDIfBpYw/l0OQvz+X5A+LXfFEYQAYCbGa5ZgnGioqkmSpZynpZTRhes3ihGAPrY2WQkIwry9v9FFuJzt9A4s2zS0UYHIiLqzJuODVIQaXTAMqFSieVX3GqaCurIl+81y7fK2NW1X/vPbFVxot+3sGbSxWdUlZzw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zxnO2mRe3Rx0Cxox4uZIyS2SMFg22I/rLRNqMebFIsw=;
- b=LkKT37qPsdrvJ/NquWUPNtHRsMcb0PfbrCjtzTYKaj1g0zni5D/8PpLUX4w1r0QGCtLQaHDe0XLJ6J6nzKmxSt1pldNr/7mNLzd02tzbLwGTWh043ftX0/8A/lu5fB4suPD23RJ22E1OAw5XCjv9fc+1X00D76yatZdxSKiEqm2KVNRvanMzvpNkZCWep/7IqBvWdoireSwiE1d9tB0UyVwQwC1UQpIXXoMUreDtD1G9YWb5t2LBDoESAXpt+UVuQaG7H4M86ID8vVBNs3iGzNocYmPajsInkAAeTctGwSNLyrWnUmeMY9UL7sT47B1xe7g0lwkq3NotmKmz1ytrHw==
+ bh=abh6auORIQRf9gGa4Nw4JmfejIc2U4p4JyWtRCXEUEk=;
+ b=Hu9ztz8EXHXhqYeo7Co81XwhY06+gEcmGgQK9Gb3JRuUT0ltByHUvLQ5+o5SlnSxJJI54M9E0RYpQEedzaXPMlMmSn82XTk15CtDueciqzgTE+IA/h2HyYuR5vgmMysmEcwH0jwUofAt6xkSLfXzHMtx9t6RUlrIvbJSQL0MZU7QpSaGd2geohcHFOA+qD0NR9Id2TflrM9bCuU9hCWqQqCR6rEdfVaezuhH6e/smV1yW2k7wO5h3BuXmVBdAYdXcrloP8Na68+guMOHDgfYM2AKqm6E5TPCRViWYWmQTEgn8bcFQrMV7buww/4IhHMK+SL+NOpchpTIXufAqMwAxw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zxnO2mRe3Rx0Cxox4uZIyS2SMFg22I/rLRNqMebFIsw=;
- b=YgODvliQKNQEpmI2Cb1/qy0KV6ghsk5+EIeP69dvYndmkBnaNXFZUo3UK33mcDa0UY3TEX5MseY7PYviC7JbAiPGbknWA47XITEesbXkbslJ2p70oDLaAP6HDhdHuBn2aUmNz0H+MCS99xPcKRKCrM7QUsbKQNt35hVTYJ5jExs=
+ bh=abh6auORIQRf9gGa4Nw4JmfejIc2U4p4JyWtRCXEUEk=;
+ b=MXQ6gkHSe5t0GaczeNr1CZWYXAwxoyMcGNM8QZFpr/qN9WKZxY5zRgXqVOxknvPmm8Y4KMyVgH24UE5wYr9OluecIqOgsv5ztABoEX3g1Of5edzOlrc5e6EI4pr1eDfdJgVOD7zltJ4M4rWmlue3GvT/ZyFb+gA5683x7I2ZbSg=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4892.namprd13.prod.outlook.com (2603:10b6:510:74::5) with
+ by PH0PR13MB4986.namprd13.prod.outlook.com (2603:10b6:510:92::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.9; Wed, 2 Jun
- 2021 12:00:12 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.11; Wed, 2 Jun
+ 2021 12:00:14 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a%9]) with mapi id 15.20.4195.018; Wed, 2 Jun 2021
- 12:00:12 +0000
+ 12:00:14 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -45,10 +45,12 @@ Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Louis Peens <louis.peens@corigine.com>,
         Yinjun Zhang <yinjun.zhang@corigine.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v3 0/8] Introduce conntrack offloading to the nfp driver
-Date:   Wed,  2 Jun 2021 13:59:44 +0200
-Message-Id: <20210602115952.17591-1-simon.horman@corigine.com>
+Subject: [PATCH net-next v3 1/8] nfp: flower: move non-zero chain check
+Date:   Wed,  2 Jun 2021 13:59:45 +0200
+Message-Id: <20210602115952.17591-2-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210602115952.17591-1-simon.horman@corigine.com>
+References: <20210602115952.17591-1-simon.horman@corigine.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a]
@@ -57,130 +59,127 @@ X-ClientProxiedBy: AM9P192CA0012.EURP192.PROD.OUTLOOK.COM
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from madeliefje.horms.nl (2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a) by AM9P192CA0012.EURP192.PROD.OUTLOOK.COM (2603:10a6:20b:21d::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Wed, 2 Jun 2021 12:00:11 +0000
+Received: from madeliefje.horms.nl (2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a) by AM9P192CA0012.EURP192.PROD.OUTLOOK.COM (2603:10a6:20b:21d::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Wed, 2 Jun 2021 12:00:12 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f2bf2d08-ac25-4444-b120-08d925bdfa09
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4892:
+X-MS-Office365-Filtering-Correlation-Id: af554f61-099c-41fc-5a40-08d925bdfb23
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4986:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB489212CC5B7D0F4B6A50AB55E83D9@PH0PR13MB4892.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <PH0PR13MB498682AAB4FD1B625DFC017CE83D9@PH0PR13MB4986.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XXNGBzmrD9aCV2W5veWFKiHkz6NucNoBBrIdH7KGZy5FbFdnw4/ootMANeIoK4He9ZG65FvGth+QbCNZW1IGZOtWkqmUPtM8rbIwlKxb+SGf4wVHEAJQaqFvC/8CzY2LIBPx+uiBRoWLYsrFfxNQLdw7CQTvO2vU7ndtrq/d7qGY6ysGpmbiWwZycuAAVYFdWPWz1amlbLDMitxcEqWp9o5Jps09yRtZfT5hebNqor0+7sBPSuZMbdhKxn2Al8nr3wnLXV6EUbbsE3Icgpsj7HuNr41TCItMmz0fjw6NFv/FKA+htAnSTvpaFewpGHf3W6m3PdWFlxLwkQA0ji/6JKmaBINOo+2kfeuhw/RciT2knOPwiv0xXjzFt0ytvKHV+6I1YquajmcBRh8yQ1mPoola7C3acSOynHHFDzXMzvWR5maRXhy+RBgI8oTzUZh3ON6AXr/fhPMKqkM+m2McZMqUZnFrR7QgzugNowqhrcqZg7JFvC4fp2/7wt+w7QAw2TU8OvXxed3ouImd3HM3UYTy/VmeKP8e5r2Kml2eIBvGguBkPBwq7q6vHw8xgMSnNw/FnxGV8U8xzhvKrloRht8ZwJVR1bf6a0dE6W+4eTw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(376002)(346002)(39830400003)(366004)(38100700002)(2906002)(66556008)(66476007)(6512007)(6486002)(186003)(86362001)(36756003)(110136005)(16526019)(6666004)(54906003)(4326008)(8676002)(5660300002)(107886003)(8936002)(52116002)(44832011)(2616005)(66946007)(83380400001)(478600001)(316002)(1076003)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?vpwc2oqPGQQKcZre53oFtMa3sfxDpx3mDntmqMFWfOS1ZcWtgOlgrWCBPSjp?=
- =?us-ascii?Q?wNvP4KhB2WIs4t6utcY+aoEithSbmW652/qvaBurS4STcyv6p90zWS1n/98d?=
- =?us-ascii?Q?TV76b3vC6RgjVceU2QRNiv93rcEC5alq1kC7NtZ5E72NX27DNQLZ5DGO+u22?=
- =?us-ascii?Q?z9D3wRX7axzjfJMUaIPenbis0NGXNGzkNmS0cN6nvAogabK+YHQqzfLFRDSg?=
- =?us-ascii?Q?/C+8ykaDjE/RFCjDNiJofXXBbtnP6s+7SuGSNXsyaR5+TtVm9LHIDrHWUA4A?=
- =?us-ascii?Q?Mn8AwWwjklSo5bi9Eddo7SdaHUxvIrcIer47mtmA54hfs36t+HPhksayMe7p?=
- =?us-ascii?Q?380v40nShQyGAd9CPaJ39eQ2bRvrGt4p8plrpgxDk7cldEBIbA22mPSPDyqx?=
- =?us-ascii?Q?qVsT9XSVxlQxk5ShaGWP6F/FbYnlxqa6TcIEAArkRwfhmKB7KCGzMN6CMaZc?=
- =?us-ascii?Q?DxD44LifSFwrs5pPBc1rOjAYaZRggvdpanR/xUZ2SKgB1dccLYCa2i//Ahlr?=
- =?us-ascii?Q?QoOXUW9QIYfYtjlQQMieqkCf7PLQEEJCZERuuBJ/F/eEoHtqQQ9JGpwgYPNz?=
- =?us-ascii?Q?sDIK99lyfhzR+Ds0WgDY3ntzo8RjmuZBD3VDszD3LeLSgszQWDkkyvDsRquX?=
- =?us-ascii?Q?vUvukFF++A5y1VRlUfqsut24RMiBa/K6dn2p/gxY5ToeZRXyd39gKdlX1S6I?=
- =?us-ascii?Q?trXEmKp1GH513QLyFdlaVajHAXnoB+AJiWzZUhqMeskFVGVKdL0NYlGXYz1G?=
- =?us-ascii?Q?lajyFMDgXLhTZDbHyUfy3UbjxMO7nJmpEp2iPhYSCyWuIVlLq7ZVPmk1KWOi?=
- =?us-ascii?Q?uAQJIbcLpRRi1GUSFtmOuErB9yFg1ECrjIuw90+BEaislyiJq+h2zxgg6jEV?=
- =?us-ascii?Q?k4uaLeuY2Hrj1u9IPhjaGGV+eLcEqe3L5qTLkz/2l4kRysHzKOti0YuepLuq?=
- =?us-ascii?Q?sEZr5YC+wbAUvq0wHwdxkOgUvqh9r19Thb0UIto0WJb7LI6QuzNoei9bLYV/?=
- =?us-ascii?Q?Txf/Kv9yrkSJZZ6AkUZftFOAjyIytJ9FUSmU+/tX1RJmV2cl7hMNRjdKDXx+?=
- =?us-ascii?Q?tKYpQw0MZjkaz9+rRRsgMrXXLvKCWvy0VnVl+g2Ji3sX4OIE8G7sjBmNzr9B?=
- =?us-ascii?Q?cEGmfFH4LRkA3Of4IipGTYsgEMJYDGaHqO+BIWYL3U9wzxcy7ijM+PhCcWZ9?=
- =?us-ascii?Q?nKqzOtumAbNkbOBP3GQxONHNZKF3H96MWDOm9gIRE7SdtJNbTK5/LvMxBnft?=
- =?us-ascii?Q?1Siwv5QO6yzIU5sZ30KYI/YpoL1b7eWaV1OZq/QXlmgKTOs+jKF02bmKPyDC?=
- =?us-ascii?Q?jgHYwmo9F2DTYhiaMkJKlBd5p42u1VuuW07kbzntgUcE3GOWMlImuSaOblCm?=
- =?us-ascii?Q?NpCfkuUpe0hgte2fVWIUNW5tH9os?=
+X-Microsoft-Antispam-Message-Info: 40gUBXXl3b7MmsZBYr41WKD6Vz4uw0qobap0srm2YVuuoAYp4MKqaAKP7Zy6BIOAeBew4Iemw2Qgo0dbR8/YveURNIMBbZmOl4R6pDIx5rFl/J10BnvU1PeCWqZ3w4xTBMTlMi7zj7iFmNMJX06ETh0fnhNSAW6qCZqnjftkgSdVMTeUzGGGyCtESRrpSdYO/O6+z8Uu5AAXHrGFBJpfGU8xWyqBBsiBqCwlGiV540COMSWqcBhVJdJJ0cUnhXdZRKyZ6TgGEgsdQug0ZL9mdqy8umugFQlNJ+xffq6EJ4hXKoZeE4Ma+Rv24UGyvkSR+qMDBtZNjT469ACOvwdk0v/WuR6oc/kY3ZESIsnt1Ssggtzpebcbe7uSzeOP/k6qgJYKpN02amwukqxgQ2C0+MiJcQqy8LJ+z515ANvt7EB2siW4CeIPBPZDFz1YFyu60873ZDQNAjy9+Tw7HPPKvTC3ZqsVhJkCh/jSHbz9oK3VFfGiR+/iHsRbLv54SNEm/OZ5W1+iUmW9wU8lBagy+skfDfpI8edjzll5NmLd88/PxYYUKVqhoMYB0vCIKq6F5rVnGLVANYcPvWElrQU9P8p6ZTPgQ3MVUwLPKNEMxG8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(136003)(346002)(396003)(39830400003)(5660300002)(44832011)(36756003)(66556008)(6486002)(107886003)(66946007)(38100700002)(1076003)(8676002)(52116002)(6512007)(6666004)(16526019)(4326008)(66476007)(86362001)(83380400001)(2906002)(8936002)(478600001)(186003)(2616005)(54906003)(110136005)(6506007)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?y1DguaeKnn1ZihPbTFa6MEe0qSPDlGCp+z/1P3IB1VtQQvg15h0JqEuInhiV?=
+ =?us-ascii?Q?qQ4RQn5l8Cw0D1APCqf/fy1WQefH5hSw/dD3reuX5PbPpIc+GNQ9M/A4gCry?=
+ =?us-ascii?Q?laNrpnKHXc0Efc3PSg0F9Mnpn5iZSMg8Og9LqKJKtzsW103fKeRw1PPnmjn3?=
+ =?us-ascii?Q?/I2dww8ygtRFclW8ue4XIykZg//QaJS3WtzzKzp2eS8YcV33f0uUufulanwZ?=
+ =?us-ascii?Q?TyOobgC/DwHWCOwsCuqZLce7PG1Iz4sLGkSxh+FzhQxk6hS3WqKlNufU9MQc?=
+ =?us-ascii?Q?vykBXMi40WaEnrp9+qDVKpu2MgamMVXgm7oKSbd3xeFkzmwHDqJHn+HgioMG?=
+ =?us-ascii?Q?/Hn1BFqfkksWeMUsuXvpdVxnZW+63LnJrXm3c4gLCmr8FLUgm7kx1RCM3Qlo?=
+ =?us-ascii?Q?VUYDQ2mb1IgaK+gJOsLj7mIb/sdWs2kcmeG4ji2Ynl9wJ803r2SQuekSOnvE?=
+ =?us-ascii?Q?s4ff3R2Z0UHkVywHvDECXFbwhORWN3F1pEpXPvuOnrqJm91TioOTLysV3iH9?=
+ =?us-ascii?Q?bSMt3fX2iig1HxPPhZaaVDsTBMOMGzKhyalR3AswcYdclCrDwnQKO1Z9FgBg?=
+ =?us-ascii?Q?VyoPU60hrJFThnfGicO6kyaXzbIg+36cZdrIzrr7D6imitZwhpCDwZGLrlin?=
+ =?us-ascii?Q?ztSkozirqLjyKntGiTXi9kJ43TW2UN/0roKNIMkCAckR3CoeaNyishJUe6RT?=
+ =?us-ascii?Q?ZY7uKmrEfnfh0dXYiJfaq+9Rkf5Gv7fchdG45F6Sn7rnV8H7KGCLaI6dNoNv?=
+ =?us-ascii?Q?ZFM15+77mVzoMKoboBawC1ADJxRay3cHwWv2CMZ1v1sUgiRO0f2e8w11F+fO?=
+ =?us-ascii?Q?+l1ZSeeBwP2/5zsU1Oj069PebyTIhdvROm6pc/hsEg5+3n9fbIcCoDQoWazo?=
+ =?us-ascii?Q?SXAP90B2OtSTU9/kxLFHTAWCD6+BDscY3QGexiSq/NQiVHBnlqGv1e86oDgb?=
+ =?us-ascii?Q?d4RKDq9xtArrbZqzLADTMlEFLeHKWIU6Jx6m7wXqdWdHOBX8+bRnKBtzxImf?=
+ =?us-ascii?Q?wwNijLDpiaGWq2awYrYNE+z+QNekA8VYUKSfZwKZma2Zq5djSu7DrRY0rpEH?=
+ =?us-ascii?Q?79z7NJHDEtHZPh9rrtl1c+H1ECJKpPjUr623ctHsKuWGbb78JrRxVp77l8am?=
+ =?us-ascii?Q?CUlerYkEsAMl7N40ap+fcY3nJPM3GyZnZVzVmiDxiEya9WjTynATdP54Fbj3?=
+ =?us-ascii?Q?7hWladwo8G4oXSw/mvvxz7FriEG4MHzREhQjzZL8nqs/eJhRVbmnVAqR7wRm?=
+ =?us-ascii?Q?B73DtII83iYlGHAoIMV6pjMYF5HIXgt34dPA6ApoNDM8yeIYv0kBPTf1WUmL?=
+ =?us-ascii?Q?nIFXMVrAJvKmgYhSvHOLvHpDHnDVzoCaLL52+vlHRMl5bqc10t8yTyLwAAVv?=
+ =?us-ascii?Q?RuPn7rp3E3MHVGvD+FgfWrEY9sq5?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f2bf2d08-ac25-4444-b120-08d925bdfa09
+X-MS-Exchange-CrossTenant-Network-Message-Id: af554f61-099c-41fc-5a40-08d925bdfb23
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 12:00:12.6299
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 12:00:14.3424
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /b/qRnbErdtn0js2MhiGpY/qeH9FmRdmGSJa3dVGLINMoKTRn2g1pb4B0F1/Fs2yzEzgClwzZpM2G8nCjUV/zzIyMOtJy1A+D/0KV78yYek=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4892
+X-MS-Exchange-CrossTenant-UserPrincipalName: KuZ0ZlPOXnvEMJxoygKvtw9M0NaVYB1GKB40icacfRRs0OR3XGfQeVNR6HsqPH/+XL/w15rSFZ7ov1aAK7SfL2qA9H7/YN1xxU7Zz88jEnM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4986
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Louis Peens says:
+From: Louis Peens <louis.peens@corigine.com>
 
-This is the first in a series of patches to offload conntrack
-to the nfp. The approach followed is to flatten out three
-different flow rules into a single offloaded flow. The three
-different flows are:
+This is in preparation for conntrack offload support which makes
+used of different chains. Add explicit checks for conntrack and
+non-zero chains in the add_offload path.
 
-1) The rule sending the packet to conntrack (pre_ct)
-2) The rule matching on +trk+est after a packet has been through
-   conntrack. (post_ct)
-3) The rule received via callback from the netfilter (nft)
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+---
+ .../ethernet/netronome/nfp/flower/offload.c   | 24 +++++++++++++++----
+ 1 file changed, 19 insertions(+), 5 deletions(-)
 
-In order to offload a flow we need a combination of all three flows, but
-they could be added/deleted at different times and in different order.
-
-To solve this we save potential offloadable CT flows in the driver,
-and every time we receive a callback we check against these saved flows
-for valid merges. Once we have a valid combination of all three flows
-this will be offloaded to the NFP. This is demonstrated in the diagram
-below.
-
-	+-------------+                      +----------+
-	| pre_ct flow +--------+             | nft flow |
-	+-------------+        v             +------+---+
-	                  +----------+              |
-	                  | tc_merge +--------+     |
-	                  +----------+        v     v
-	+--------------+       ^           +-------------+
-	| post_ct flow +-------+       +---+nft_tc merge |
-	+--------------+               |   +-------------+
-	                               |
-	                               |
-	                               |
-	                               v
-	                        Offload to nfp
-
-This series is only up to the point of the pre_ct and post_ct
-merges into the tc_merge. Follow up series will continue
-to add the nft flows and merging of these flows with the result
-of the pre_ct and post_ct merged flows.
-
-Changes since v2:
-- nfp: flower-ct: add zone table entry when handling pre/post_ct flows
-    Fixed another docstring. Should finally have the patch check
-    environment properly configured now to avoid more of these.
-- nfp: flower-ct: add tc merge functionality
-    Fixed warning found by "kernel test robot <lkp@intel.com>"
-    Added code comment explaining chain_index comparison
-
-Changes since v1:
-- nfp: flower-ct: add ct zone table
-    Fixed unused variable compile warning
-    Fixed missing colon in struct description
-
-Louis Peens (8):
-  nfp: flower: move non-zero chain check
-  nfp: flower-ct: add pre and post ct checks
-  nfp: flower-ct: add ct zone table
-  nfp: flower-ct: add zone table entry when handling pre/post_ct flows
-  nfp: flower-ct: add nfp_fl_ct_flow_entries
-  nfp: flower-ct: add a table to map flow cookies to ct flows
-  nfp: flower-ct: add tc_merge_tb
-  nfp: flower-ct: add tc merge functionality
-
- drivers/net/ethernet/netronome/nfp/Makefile   |   3 +-
- .../ethernet/netronome/nfp/flower/conntrack.c | 492 ++++++++++++++++++
- .../ethernet/netronome/nfp/flower/conntrack.h | 155 ++++++
- .../net/ethernet/netronome/nfp/flower/main.h  |   6 +
- .../ethernet/netronome/nfp/flower/metadata.c  | 101 +++-
- .../ethernet/netronome/nfp/flower/offload.c   |  31 +-
- 6 files changed, 781 insertions(+), 7 deletions(-)
- create mode 100644 drivers/net/ethernet/netronome/nfp/flower/conntrack.c
- create mode 100644 drivers/net/ethernet/netronome/nfp/flower/conntrack.h
-
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+index e95969c462e4..16ef960a150d 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+@@ -1276,6 +1276,20 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
+ 	return 0;
+ }
+ 
++static bool offload_pre_check(struct flow_cls_offload *flow)
++{
++	struct flow_rule *rule = flow_cls_offload_flow_rule(flow);
++	struct flow_dissector *dissector = rule->match.dissector;
++
++	if (dissector->used_keys & BIT(FLOW_DISSECTOR_KEY_CT))
++		return false;
++
++	if (flow->common.chain_index)
++		return false;
++
++	return true;
++}
++
+ /**
+  * nfp_flower_add_offload() - Adds a new flow to hardware.
+  * @app:	Pointer to the APP handle
+@@ -1302,6 +1316,9 @@ nfp_flower_add_offload(struct nfp_app *app, struct net_device *netdev,
+ 	if (nfp_netdev_is_nfp_repr(netdev))
+ 		port = nfp_port_from_netdev(netdev);
+ 
++	if (!offload_pre_check(flow))
++		return -EOPNOTSUPP;
++
+ 	key_layer = kmalloc(sizeof(*key_layer), GFP_KERNEL);
+ 	if (!key_layer)
+ 		return -ENOMEM;
+@@ -1646,9 +1663,10 @@ nfp_flower_repr_offload(struct nfp_app *app, struct net_device *netdev,
+ static int nfp_flower_setup_tc_block_cb(enum tc_setup_type type,
+ 					void *type_data, void *cb_priv)
+ {
++	struct flow_cls_common_offload *common = type_data;
+ 	struct nfp_repr *repr = cb_priv;
+ 
+-	if (!tc_cls_can_offload_and_chain0(repr->netdev, type_data))
++	if (!tc_can_offload_extack(repr->netdev, common->extack))
+ 		return -EOPNOTSUPP;
+ 
+ 	switch (type) {
+@@ -1746,10 +1764,6 @@ static int nfp_flower_setup_indr_block_cb(enum tc_setup_type type,
+ 					  void *type_data, void *cb_priv)
+ {
+ 	struct nfp_flower_indr_block_cb_priv *priv = cb_priv;
+-	struct flow_cls_offload *flower = type_data;
+-
+-	if (flower->common.chain_index)
+-		return -EOPNOTSUPP;
+ 
+ 	switch (type) {
+ 	case TC_SETUP_CLSFLOWER:
 -- 
 2.20.1
 
