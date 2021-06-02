@@ -2,96 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E14399244
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 20:12:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1280439924B
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 20:14:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbhFBSOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 14:14:33 -0400
-Received: from mail-pj1-f54.google.com ([209.85.216.54]:38775 "EHLO
-        mail-pj1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbhFBSOd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:14:33 -0400
-Received: by mail-pj1-f54.google.com with SMTP id m13-20020a17090b068db02901656cc93a75so3917436pjz.3
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 11:12:37 -0700 (PDT)
+        id S229653AbhFBSQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 14:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229489AbhFBSQa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:16:30 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 704D0C061574;
+        Wed,  2 Jun 2021 11:14:37 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id c12so2856657pfl.3;
+        Wed, 02 Jun 2021 11:14:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2GuUNe4sUbo8SYTJ3ZCyTMOYGwjKXZAJXEGqFop91ew=;
-        b=Ry6vjTsznuzxu8W5O1DZkGVTjrLlo1KrgmIMAdFmU6cz2udwGF1gR0wD+bMu2MmYu/
-         6lC4HrMDPCdXi59jSpLB5dIH1BnTgVij4NK1Ud34VraK+cbueZexA6NKJQgPZH+aexWG
-         ZbvEyjb1m9Fu8EjzudGIz7vBkhccDZb6caNRM=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=FwuJ0u4UB9KKYUxy2ZJWFHPpRAw5cDFJ3xn49DV3QA4=;
+        b=u8REXWcegYopPJEHIKOuueDX5DkAXwcwZEb752wefyYwOYNS458kIkjQMnqzy54y+r
+         jZuDyle4ZfahMSlQLG9+IrBeTztYjMsF9d/ko+tmk0ggBQzj2zx3CPMb7H/l9ODc5SFg
+         JsX9Lcj3otPIaVTZ8eZQdlGSlLGC40sQudTdXXxyAgjaD1mTf6N776oY/80SpHE9alie
+         05ZPg0GWJVFNtGGvGVRwuR83CY/F+MaZkCEIbsUAzZVCTkNlpgrz9H+GhiDZBNICs1DA
+         KylR7mkkTrmp3K96SRxWXwfoDprke+9uKtQIPVP5rUOFUeCucMM/zv/lq/UcMiuf8quQ
+         2V1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2GuUNe4sUbo8SYTJ3ZCyTMOYGwjKXZAJXEGqFop91ew=;
-        b=XzvmUvIiXREWjTTU353n4zP/TYUsXRjnY/XlNamrs0z7yiDP69B7Ag3n1lPl7g5vxm
-         Pdl8oMgEMEyrKRJjrtus8trT/Y180p0w88I76r3vlFhfsC81QcodLZO256WAf6X2LZKA
-         9Hvik5+vW8PbmRUWMbHkCcMO2d3XzMQ3Hnwny9iSvfg+2aPdaY6uyl7MRMwAoRkda+0I
-         Nhb21HmgY0GwTUWJXeK2/+e9SW8E8TG2D+f+hLTJun1ZtEik/i2/QOvjIiAEfYgq0PND
-         WqfdRTgvtmfY8nFORpyUQkPmDSlGB2WghpNXxc6GFOSTi5XWwbhgJQCEJdWLComsQ5U8
-         TzoA==
-X-Gm-Message-State: AOAM531zYsExYdKc4tgfv+qbwlpyGn5Ac/JjoNvTtMvqOKvrQ62uHuQj
-        eyb57u3r3fwQ9xHzchwVt2rNTw==
-X-Google-Smtp-Source: ABdhPJzzszQ4456Ap1WdtkdbN8tapHCqtT/yvYuGCx7dNarmq+s0H0g6yROU36W8D05oQxchGMWumA==
-X-Received: by 2002:a17:90a:9bc4:: with SMTP id b4mr6703832pjw.42.1622657496853;
-        Wed, 02 Jun 2021 11:11:36 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id n69sm270015pfd.132.2021.06.02.11.11.35
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=FwuJ0u4UB9KKYUxy2ZJWFHPpRAw5cDFJ3xn49DV3QA4=;
+        b=o8rWzaYODxskqFc8aiiT978cKm7o6CYRb2VxhZ2N9C+D7cG4+uPCOA2Vf2a981Jri8
+         5CjY9jox/ZOVRl1oNUnKEwn8JAupIR3JSaNKjrRvEkr/HcY9x2ReMdczxIqtuvahJ7Vy
+         dvimOjOm5Ymk5Mw+fAgAEBL7TJT069JciZM4YWia56ChtExENeyK9MMfK/Duqu3Eo1Sy
+         EDoC6agGi1T2dK5k8zmppNJsazonFktS3QyTJaYRJtfxoyBlBlqwO4OIsSPqBGl/eEsc
+         TMFeYZAgLgOv9zBqidRogunEbOGIW4pEaqTbQOw4f0QASuwd9ak4IG5Ro2NedgVkx+qZ
+         WiQg==
+X-Gm-Message-State: AOAM530TTYhCB1bVZW2+dtNBF6LM9HtnwJ6a/lvE6qECRrKdWp8r8mXb
+        qYQkaFMAWEaBNKCvm1s0f9w=
+X-Google-Smtp-Source: ABdhPJy+2LsmijJ7jvZK8+x6/j5ZPKnWSYTrdqBLRgpASXLKs7ze8JX5I69TfjtC5Snq5f45add2HA==
+X-Received: by 2002:a63:125d:: with SMTP id 29mr18783065pgs.151.1622657676950;
+        Wed, 02 Jun 2021 11:14:36 -0700 (PDT)
+Received: from localhost ([2402:3a80:11c3:3834:fb69:d961:ca12:b10d])
+        by smtp.gmail.com with ESMTPSA id w23sm256889pfi.220.2021.06.02.11.14.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 11:11:36 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     Jay Vosburgh <j.vosburgh@gmail.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        kernel test robot <lkp@intel.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH] net: bonding: Use strscpy() instead of manually-truncated strncpy()
-Date:   Wed,  2 Jun 2021 11:11:33 -0700
-Message-Id: <20210602181133.3326856-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.25.1
+        Wed, 02 Jun 2021 11:14:36 -0700 (PDT)
+Date:   Wed, 2 Jun 2021 23:43:33 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
+Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
+Message-ID: <20210602181333.3m4vz2xqd5klbvyf@apollo>
+References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
+ <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
+ <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
+ <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
+ <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
+ <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
+ <CAM_iQpXUBuOirztj3kifdFpvygKb-aoqwuXKkLdG9VFte5nynA@mail.gmail.com>
+ <20210602020030.igrx5jp45tocekvy@ast-mbp.dhcp.thefacebook.com>
+ <874kegbqkd.fsf@toke.dk>
+ <20210602175436.axeoauoxetqxzklp@kafai-mbp>
 MIME-Version: 1.0
-X-Patch-Hashes: v=1; h=sha256; g=3f61903c76c789f32d65acb60d6b57550ace0464; i=+jq1hjyNarBiZF1iCP+ld51I3zySb92TJIxasbU5Dvg=; m=Ah79ZzdISBOESKLrfqwFLaaLO/pavYkh4XaFeC1dpRE=; p=wiF5U0J2tCL474X+qPHfVl2ssY7ZE/qDY5eF8gxKAwA=
-X-Patch-Sig: m=pgp; i=keescook@chromium.org; s=0x0x8972F4DFDC6DC026; b=iQIzBAABCgAdFiEEpcP2jyKd1g9yPm4TiXL039xtwCYFAmC3ydUACgkQiXL039xtwCYZZxAAhUb 2z0F2AYS4Vmc+SCkudP4bOpCOnqSNfTHvMi+9y5JsQaxeNUUnuKquDnNxbX1FuLqHIJtyB0yya9o2 5b7Ayx9JHiZD3bDCUcAt3LZBFP1Cp26q8aXgupLZjzqN80OLMfHcfBDnTWC7tVnedVPbyVfl+xmpJ ej1rzkAWzVcG9g4Ez/gIzJg8+5Ca1L0beLZnsVXy7+VUXGGcyEWSxLCfnVMKxgzIgjZdL6UDLW78k qv7n0CCdQhX2wlS0epA3Uc0xlYwkMC5h8ym/rWLQ5l8tARqQvLhJDrgiRmWrhirhHdDnrF8XO8fLo XGFVWSFWTLy52KSLHLzuQqrUxYUla0g+EigLOtCRxxZ/t4ITiFEfyiyWaUVKzquoqfMCYVN7SMwdX v8cNzeIe4U80KB0eaJGpAuDM+fcVIMmOQ7aF/o8NE+R0IOsFNLnXTPN9dy759xolMFrpD9nq2dY2v Xqa6KRV505i85MXcN3eP38BfLDme/0IhwJJLyOWwQeLgCuS5ZrWSKZDQSgJ4sBqM/+ib+ieeoIm+h DXMmwuvFNqc5R4zLk58nsEqTxwWVq6cn6RGnvCUUcBxKiaPbKrhsEMoeJ+dz3wUF71sE9wZJXNDdh He/3J6jqPyJDJ4Eh8Z/OKItVGZg+9xzrrRT8WOBB3Qm3c7zgvLUoOsGYCzFqIWso=
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210602175436.axeoauoxetqxzklp@kafai-mbp>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Silence this warning by just using strscpy() directly:
+On Wed, Jun 02, 2021 at 11:24:36PM IST, Martin KaFai Lau wrote:
+> On Wed, Jun 02, 2021 at 10:48:02AM +0200, Toke Høiland-Jørgensen wrote:
+> > Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> >
+> > >> > In general the garbage collection in any form doesn't scale.
+> > >> > The conntrack logic doesn't need it. The cillium conntrack is a great
+> > >> > example of how to implement a conntrack without GC.
+> > >>
+> > >> That is simply not a conntrack. We expire connections based on
+> > >> its time, not based on the size of the map where it residents.
+> > >
+> > > Sounds like your goal is to replicate existing kernel conntrack
+> > > as bpf program by doing exactly the same algorithm and repeating
+> > > the same mistakes. Then add kernel conntrack functions to allow list
+> > > of kfuncs (unstable helpers) and call them from your bpf progs.
+> >
+> > FYI, we're working on exactly this (exposing kernel conntrack to BPF).
+> > Hoping to have something to show for our efforts before too long, but
+> > it's still in a bit of an early stage...
+> Just curious, what conntrack functions will be made callable to BPF?
 
-drivers/net/bonding/bond_main.c:4877:3: warning: 'strncpy' specified bound 16 equals destination size [-Wstringop-truncation]
-    4877 |   strncpy(params->primary, primary, IFNAMSIZ);
-         |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Initially we're planning to expose the equivalent of nf_conntrack_in and
+nf_conntrack_confirm to XDP and TC programs (so XDP one works without an skb,
+and TC one works with an skb), to map these to higher level lookup/insert.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/lkml/202102150705.fdR6obB0-lkp@intel.com
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- drivers/net/bonding/bond_main.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index c5a646d06102..ecfc48f2d0d0 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -5329,10 +5329,8 @@ static int bond_check_params(struct bond_params *params)
- 			(struct reciprocal_value) { 0 };
- 	}
- 
--	if (primary) {
--		strncpy(params->primary, primary, IFNAMSIZ);
--		params->primary[IFNAMSIZ - 1] = 0;
--	}
-+	if (primary)
-+		strscpy(params->primary, primary, sizeof(params->primary));
- 
- 	memcpy(params->arp_targets, arp_target, sizeof(arp_target));
- 
--- 
-2.25.1
-
+--
+Kartikeya
