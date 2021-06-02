@@ -2,117 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 177B53984A2
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 10:54:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2AAC3984B4
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 10:56:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231521AbhFBIzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 04:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbhFBIzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 04:55:49 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A605C061574;
-        Wed,  2 Jun 2021 01:54:05 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id u7so762358plq.4;
-        Wed, 02 Jun 2021 01:54:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=3jN1riE8G5x/joSgn6CfxsOWR+MfQo/IZ4OM91hdWRU=;
-        b=XZU0/5kihTt1Fi5lrecm22ldzuh1Z2j9FstXTpn0PlY3qTcINdmC9RcSfoEQ1xiXMA
-         95aXNc3q/HsQL1Jk6ygkSS2wXzcHu9SARdpmZ7gSJUqXYsJjwcsXw38kE+AZ+nvglZef
-         34RV21IbdUiRv6IbsE552aI/z6s456Eai+7IqCa+klsJAEXqdFQUlWraEPHrOBUf/dwg
-         TyNG9gUOMNvvxqVqQM09JXxM1KUjjk5XACh0Kn5vkBWHenlzVT8DxUa+iQIHcb2GDUV1
-         bYcULpOBdi/vB6bgwU1Y+d26N3F6n69AVqUJxkn7X7cb9SMjRHL1/kBUZ172oBIwSn1i
-         uTaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=3jN1riE8G5x/joSgn6CfxsOWR+MfQo/IZ4OM91hdWRU=;
-        b=cR5Znf4kYnsL4VLEIWpEgi6RZPT+vOjBiVLILXFtJc79ZsiFoEAJoIvtrRHiWvpW/p
-         R46F7uTVQ/GcZHHnaYYt87jxq6XFIP6CBGHFg6p+W0JM26gIfMHjATjustemsS0bQMV1
-         DE9QvpT86agJGPL3fehMuWRqgBBdhFCUTmdNwjYmbgJpuwJLlYrpbovoX/o7x41xyX3c
-         eLOzj+Te5FAIvQJkAQUMG2LyrsRsqpdFNe9nBBpefq9FaJATE/CXL1KK7URJpUjAYEB5
-         1B8jRj7TeSc6Rgil6jXMa4gPrvcr/dU1cneTJhkk17drIqXNKDc+b9jWmia9Qe6FGZTI
-         oIIQ==
-X-Gm-Message-State: AOAM533Cak8UnsW5SCW5tBxxwLz4ISULegfphUdas6H30VIIMFI2Qxe1
-        eH1jOQkhlMDoPpyTTTQRLYJ0HhB9/5vaPw+RwfY=
-X-Google-Smtp-Source: ABdhPJyam0wFcKF8z4CzmgGzK2e/33Enjt0y/yByEDIOJq499UTxgEmKGB9lI6M+5aRiSprbuu7B+8ipdGhw2VfN5ws=
-X-Received: by 2002:a17:90a:a08c:: with SMTP id r12mr4431756pjp.204.1622624045045;
- Wed, 02 Jun 2021 01:54:05 -0700 (PDT)
+        id S232943AbhFBI61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 04:58:27 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:1538 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232932AbhFBI6Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 04:58:24 -0400
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1528YwuY195564;
+        Wed, 2 Jun 2021 04:56:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=UdY9VBzt5D5v6s8lbFMOPIBsV2WH5FKPCD1GGo3F674=;
+ b=jC0cwsbTnWXrdV28UbKq8Xg+SOKJ5IUHKuVeShmlT1rJU9Whh/gZdkxKbpuZBC0gSqJ0
+ 9rLciWP9w6nSJuTVA+XgeLk9tQZkFL5gLbiTOHycFaZoZMhgw3IgIwYHsshxVrohhAX7
+ 5zltwsJsS5XspsYnUhk0gIYisSZD2ysUv1llAgWuyJKD++x6pPWabDU20N6sbqMq+6py
+ IhXq7CWVFGRneNrFog52sIdMebLxfZKuaOkVgSke0HpUVfIvOO1FQY8OPnnC1ll1enO3
+ dCD4wAzF9AsizRk3u3C5mGI+zx/2rMiMInliZNRQhigYGL+pQ3eccHTB8Mce7r6xEwCs wA== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 38x6bngwe3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 02 Jun 2021 04:56:37 -0400
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1528uZWh017482;
+        Wed, 2 Jun 2021 08:56:35 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06fra.de.ibm.com with ESMTP id 38ucvh97ds-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 02 Jun 2021 08:56:35 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1528uWdW27656570
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 2 Jun 2021 08:56:32 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AE035A4060;
+        Wed,  2 Jun 2021 08:56:32 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6A84EA4054;
+        Wed,  2 Jun 2021 08:56:32 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  2 Jun 2021 08:56:32 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH net-next 0/2] net/smc: updates 2021-06-02
+Date:   Wed,  2 Jun 2021 10:56:24 +0200
+Message-Id: <20210602085626.2877926-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210602031001.18656-1-wanghai38@huawei.com> <CAJ8uoz2sT9iyqjWcsUDQZqZCVoCfpqgM7TseOTqeCzOuChAwww@mail.gmail.com>
- <87a6o8bqzs.fsf@toke.dk>
-In-Reply-To: <87a6o8bqzs.fsf@toke.dk>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 2 Jun 2021 10:53:54 +0200
-Message-ID: <CAJ8uoz1_fzpZkKZd=h=tEQG7_V+waYjGN5ocnC29pPaBGLrg4w@mail.gmail.com>
-Subject: Re: [PATCH net-next] xsk: Return -EINVAL instead of -EBUSY after
- xsk_get_pool_from_qid() fails
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Wang Hai <wanghai38@huawei.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: DCv7hmhcm48DvWvxX2_hooG5DRBhcH12
+X-Proofpoint-ORIG-GUID: DCv7hmhcm48DvWvxX2_hooG5DRBhcH12
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-02_05:2021-06-02,2021-06-02 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ lowpriorityscore=0 mlxscore=0 suspectscore=0 malwarescore=0 bulkscore=0
+ adultscore=0 impostorscore=0 priorityscore=1501 mlxlogscore=702
+ clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106020055
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 2, 2021 at 10:38 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Magnus Karlsson <magnus.karlsson@gmail.com> writes:
->
-> > On Wed, Jun 2, 2021 at 6:02 AM Wang Hai <wanghai38@huawei.com> wrote:
-> >>
-> >> xsk_get_pool_from_qid() fails not because the device's queues are busy=
-,
-> >> but because the queue_id exceeds the current number of queues.
-> >> So when it fails, it is better to return -EINVAL instead of -EBUSY.
-> >>
-> >> Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> >> ---
-> >>  net/xdp/xsk_buff_pool.c | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-> >> index 8de01aaac4a0..30ece117117a 100644
-> >> --- a/net/xdp/xsk_buff_pool.c
-> >> +++ b/net/xdp/xsk_buff_pool.c
-> >> @@ -135,7 +135,7 @@ int xp_assign_dev(struct xsk_buff_pool *pool,
-> >>                 return -EINVAL;
-> >>
-> >>         if (xsk_get_pool_from_qid(netdev, queue_id))
-> >> -               return -EBUSY;
-> >> +               return -EINVAL;
-> >
-> > I guess your intent here is to return -EINVAL only when the queue_id
-> > is larger than the number of active queues. But this patch also
-> > changes the return code when the queue id is already in use and in
-> > that case we should continue to return -EBUSY. As this function is
-> > used by a number of drivers, the easiest way to accomplish this is to
-> > introduce a test for queue_id out of bounds before this if-statement
-> > and return -EINVAL there.
->
-> Isn't the return code ABI by now, though?
+Please apply the following patch series for smc to netdev's net-next tree.
 
-You are probably right and in that case this should not change at all.
-It has been returning this for quite a while too as it is nothing new.
-But I leave the final decision to other people on the list.
+Both patches are cleanups and remove unnecessary code.
 
-> -Toke
->
+Julian Wiedmann (1):
+  net/smc: no need to flush smcd_dev's event_wq before destroying it
+
+Karsten Graul (1):
+  net/smc: avoid possible duplicate dmb unregistration
+
+ net/smc/smc_core.c | 15 ---------------
+ net/smc/smc_ism.c  |  1 -
+ 2 files changed, 16 deletions(-)
+
+-- 
+2.25.1
+
