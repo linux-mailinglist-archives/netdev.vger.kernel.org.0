@@ -2,136 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BCB8398C88
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4C22398C98
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232800AbhFBOTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 10:19:32 -0400
-Received: from mail.efficios.com ([167.114.26.124]:40610 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231982AbhFBORB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 10:17:01 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 2C430302C5A;
-        Wed,  2 Jun 2021 10:15:17 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id MFUulvWoU4e4; Wed,  2 Jun 2021 10:15:16 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 935A5302C57;
-        Wed,  2 Jun 2021 10:15:16 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 935A5302C57
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1622643316;
-        bh=wTS/crR/26N4BDTiNFNNZoqsETfUenagK9Jc/umukAM=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=HjuuxeCx/W0ucWdgkdPe4Ltmueov6LEz9QoWVQ9n275sUH5V2BfBx2uLemee8nOgV
-         iEPOUdYsPm3Mmmkxyd2M/xe2NzuiK0lte25kNJqF/D6aBdMudEsd6+/AvYnVI3XvQB
-         I3eKlxdMnA/4sIrtiEyziYHBHFsURA8x1tU1usHbZhQ+Nqw4zpB4HKNzuSQ6QLswXS
-         8VevSWMXfGVlYdJrwg5WBPwEe4w0fAdx0pE768+FRtKKL3etA75RfRjkypdxFoVZY5
-         KUm3EJy+oFxv1WaIjL0MV00CLSuspl8VcSBxV1CpXr+Or5zRpRWJvt+/OT6gN/Sqjt
-         hvtczOpS4cKPQ==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id toHMU-3uXU92; Wed,  2 Jun 2021 10:15:16 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 702A6302A65;
-        Wed,  2 Jun 2021 10:15:16 -0400 (EDT)
-Date:   Wed, 2 Jun 2021 10:15:16 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        rostedt <rostedt@goodmis.org>, Ben Segall <bsegall@google.com>,
-        Mel Gorman <mgorman@suse.de>, bristot <bristot@redhat.com>,
-        Borislav Petkov <bp@alien8.de>, x86 <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jens Axboe <axboe@kernel.dk>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        acme <acme@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        paulmck <paulmck@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Joel Fernandes, Google" <joel@joelfernandes.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-block@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        linux-usb@vger.kernel.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        cgroups <cgroups@vger.kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
-        rcu <rcu@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        KVM list <kvm@vger.kernel.org>
-Message-ID: <1524365960.5868.1622643316351.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20210602133040.398289363@infradead.org>
-References: <20210602131225.336600299@infradead.org> <20210602133040.398289363@infradead.org>
-Subject: Re: [PATCH 3/6] sched,perf,kvm: Fix preemption condition
+        id S231217AbhFBOWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 10:22:44 -0400
+Received: from mga11.intel.com ([192.55.52.93]:3985 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230157AbhFBOW0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 10:22:26 -0400
+IronPort-SDR: 4Vr7qy238QQUW09T87soU7w3XQMUoitvMKyZalyWGtUtVuXUDTlsJtRvOMbGL8CIhPNpRjWStB
+ Ln4NYfDlI9Ig==
+X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="200784826"
+X-IronPort-AV: E=Sophos;i="5.83,242,1616482800"; 
+   d="scan'208";a="200784826"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2021 07:16:02 -0700
+IronPort-SDR: aHAs0+fBta5wp3xZPCApw//O0ERV7T4s98G9KA4Eo5w9XV8CrBX2mfwwvwsTa3vEkp8Z5mnWyt
+ opZOX9WQ73lQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,242,1616482800"; 
+   d="scan'208";a="483055015"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga002.fm.intel.com with ESMTP; 02 Jun 2021 07:16:02 -0700
+Received: from linux.intel.com (unknown [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 823265807D4;
+        Wed,  2 Jun 2021 07:16:00 -0700 (PDT)
+Date:   Wed, 2 Jun 2021 22:15:57 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC net-next 0/2] Introduce MDIO probe order C45 over C22
+Message-ID: <20210602141557.GA29554@linux.intel.com>
+References: <20210525055803.22116-1-vee.khee.wong@linux.intel.com>
+ <YKz86iMwoP3VT4uh@lunn.ch>
+ <20210601104734.GA18984@linux.intel.com>
+ <YLYwcx3aHXFu4n5C@lunn.ch>
+ <20210601154423.GA27463@linux.intel.com>
+ <YLazBrpXbpsb6aXI@lunn.ch>
+ <20210601230352.GA28209@linux.intel.com>
+ <YLbqv0Sy/3E2XaVU@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF88 (Linux)/8.8.15_GA_4026)
-Thread-Topic: sched,perf,kvm: Fix preemption condition
-Thread-Index: NELkknquBPwUAC7hR8bH+DhrqDwz1A==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YLbqv0Sy/3E2XaVU@lunn.ch>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On Jun 2, 2021, at 9:12 AM, Peter Zijlstra peterz@infradead.org wrote:
-[...]
-> --- a/kernel/events/core.c
-> +++ b/kernel/events/core.c
-> @@ -8568,13 +8568,12 @@ static void perf_event_switch(struct tas
-> 		},
-> 	};
+On Wed, Jun 02, 2021 at 04:19:43AM +0200, Andrew Lunn wrote:
+> > Yeah, you're right. Thanks for pointing that out. It should be:
+> > 
+> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> > index 1539ea021ac0..73bfde770f2d 100644
+> > --- a/drivers/net/phy/phy_device.c
+> > +++ b/drivers/net/phy/phy_device.c
+> > @@ -862,11 +862,22 @@ struct phy_device *get_phy_device(struct mii_bus *bus, int addr, bool is_c45)
+> >         c45_ids.mmds_present = 0;
+> >         memset(c45_ids.device_ids, 0xff, sizeof(c45_ids.device_ids));
+> > 
+> > -       if (is_c45)
+> > +       if (is_c45) {
+> >                 r = get_phy_c45_ids(bus, addr, &c45_ids);
+> > -       else
+> > +       } else {
+> >                 r = get_phy_c22_id(bus, addr, &phy_id);
+> > 
+> > +               if (phy_id == 0) {
+> > +                       r = get_phy_c45_ids(bus, addr, &c45_ids);
+> > +                       if (r == -ENOTSUPP || r == -ENODEV)
+> > +                               return phy_device_create(bus, addr, phy_id,
+> > +                                                        false, &c45_ids);
+> > +                       else
+> > +                               return phy_device_create(bus, addr, phy_id,
+> > +                                                        true, &c45_ids);
 > 
-> -	if (!sched_in && task->state == TASK_RUNNING)
-> +	if (!sched_in && current->on_rq) {
-> 		switch_event.event_id.header.misc |=
-> 				PERF_RECORD_MISC_SWITCH_OUT_PREEMPT;
-> +	}
-> 
-> -	perf_iterate_sb(perf_event_switch_output,
-> -		       &switch_event,
-> -		       NULL);
-> +	perf_iterate_sb(perf_event_switch_output, &switch_event, NULL);
-> }
+> Still not correct. Think about when get_phy_c22_id() returns an
+> error. Walk through all the different code paths and check they do the
+> right thing. It is actually a lot more complex than what is shown
+> here. Think about all the different types of PHYs and all the
+> different types of MDIO bus drivers.
+>
 
-There is a lot of code cleanup going on here which does not seem to belong
-to a "Fix" patch.
+I took a look at how most ethernet drivers implement their "bus->read"
+function. Most of them either return -EIO or -ENODEV.
 
-Thanks,
+I think it safe to drop the return error type when we try with C45 access:
 
-Mathieu
 
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 1539ea021ac0..282d16fdf6e1 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -870,6 +870,18 @@ struct phy_device *get_phy_device(struct mii_bus *bus, int addr, bool is_c45)
+        if (r)
+                return ERR_PTR(r);
+
++       /* PHY device such as the Marvell Alaska 88E2110 will return a PHY ID
++        * of 0 when probed using get_phy_c22_id() with no error. Proceed to
++        * probe with C45 to see if we're able to get a valid PHY ID in the C45
++        * space, if successful, create the C45 PHY device.
++        */
++       if ((!is_c45) && (phy_id == 0)) {
++               r = get_phy_c45_ids(bus, addr, &c45_ids);
++               if (!r)
++                       return phy_device_create(bus, addr, phy_id,
++                                                true, &c45_ids);
++       }
++
+        return phy_device_create(bus, addr, phy_id, is_c45, &c45_ids);
+ }
+ EXPORT_SYMBOL(get_phy_device);
+
+With this implementation, it should have handled all four scenarios listed
+in the table below:
+
+    *------------------*------------*------------*
+    | get_phy_c22_id() |  phy_id==0 |   Handled  |
+    |   return error   |            |            |
+    *------------------*------------*------------*
+    |     false        |    false   |   true     |
+    *------------------*------------*------------*
+    |     false        |    true    |   true     |
+    *------------------*------------*------------*
+    |     true         |    false   |   true     |
+    *------------------*------------*------------*
+    |     true         |    true    |   true     |
+    *------------------*------------*------------*
+
+
+VK
