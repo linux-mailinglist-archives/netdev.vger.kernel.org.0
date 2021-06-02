@@ -2,101 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C606439801F
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 06:20:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7752398070
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 06:38:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229799AbhFBEVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 00:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42096 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbhFBEVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 00:21:50 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B164C061574;
-        Tue,  1 Jun 2021 21:20:06 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id i12-20020a05683033ecb02903346fa0f74dso1326546otu.10;
-        Tue, 01 Jun 2021 21:20:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iMGGsERMcpA8geFW9RIY3rOzp/NmJwFBkoB6KSFK9fg=;
-        b=kXURr4p8FYVcPWJPYQpN81Dnc23rFNR576uqzwHXok9JqcJIjI6lYm+b/65+Kc7BzQ
-         r3lfmmlY/ey68rQd9erNzPIRbPTPUCxhzBZWVFFYM354letowY1j3NV0w5pkBdOTs7fX
-         lTDz4+vUHQ+5wN/nV8MO+4oMzUADGYznF/ijy2lvw6uR4vhT/Dch7MpI8OFKHPLWdHNZ
-         kPeOF4sU8Umpl/15u5sBC9ePcVHkxAoG46af2xb1ljN4C150i/RHON091eYeWHF9R0St
-         K8tN98do0Ar+WlfhtnaJUj5tDrmoZcYtM+re/HfDitBJY0H3GWZ/Cg70t+mpnsG/DECq
-         LNag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iMGGsERMcpA8geFW9RIY3rOzp/NmJwFBkoB6KSFK9fg=;
-        b=pskiJ+wiAsBnnQ0ZwCR1YEqavTWWy4H+cpH2xiLnfvlUOEJohvr4WosOoo4ug9Rvml
-         gYyVWb8SMLEPDNIUqgnIHzeftJrMdYDSuvSlhQPipMqSjv+8Qr9uli8299DvI+nvWP4V
-         oXXsuXeKN1yOT2YvOBjl62ElnKDGcibczURFVV8/mHSEctd0VFN5GmZyBCbmKVPnm5FS
-         qMlJZjOWVW3aUfUtzFX8UaIQj68MSVaBZg1UVaf5ll0kvScjji/HHvKOPWNd9b8orWiQ
-         A+FLbwpLNODirMU7rP3KGPYn6OiZ0vWKd6nDeU+Iocxqgg9iymC6VcItADwULvM8iIVj
-         VB/w==
-X-Gm-Message-State: AOAM533sYufswtFAenhZC6LH0Rx/Wh4TT4CQ5lSyGpn48PhXD46lNnqS
-        6URmhr4N6L9suVuOXtVVlEc=
-X-Google-Smtp-Source: ABdhPJxIICiS9DApqp6rDz37Pujc3qqjy2E0zZ1KFQCNVyxmacAjPjgq5QQFR3HoGsyV5xY4tmfwRQ==
-X-Received: by 2002:a05:6830:16c4:: with SMTP id l4mr25176368otr.93.1622607605823;
-        Tue, 01 Jun 2021 21:20:05 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id x14sm3932671oic.3.2021.06.01.21.20.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Jun 2021 21:20:05 -0700 (PDT)
-Subject: Re: [PATCH] ipv6: create ra_mtu proc file to only record mtu in RA
-To:     Rocco Yue <rocco.yue@mediatek.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com,
-        rocco.yue@gmail.com
-References: <7087f518-f86e-58fb-6f32-a7cda77fb065@gmail.com>
- <20210602031502.31600-1-rocco.yue@mediatek.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <05efe271-72f8-bc77-8869-ae4685af5ea4@gmail.com>
-Date:   Tue, 1 Jun 2021 22:20:03 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+        id S229814AbhFBEke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 00:40:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36910 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229744AbhFBEkd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 00:40:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6D9D2610E7;
+        Wed,  2 Jun 2021 04:38:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622608731;
+        bh=21FyACrIYYe/gZyiRrdPvkvisSOkr/1qMXI30OMpcZo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CTbvv3zKCzWoqJWgE/aZ3BDFg4mFJgsO0I6t9EAAkMIyvV1Wv742B16eTjODTS3xY
+         tSYqgrDsjxCdI0MB87neo6gS/OdqYQY1nHOVM2hqAwVj4Z1CXkrIz8LKGGadE/wTrt
+         6AOLdkr4k95cp3G7i+5rg94uOEmSPtaWokv3hN+d5DTjiSPx6QBFPjoPIKRQatT0m/
+         2PE7cn3PBOI+xtZ4v//OvOT/UDaujdq2+6J7YB2N7RYSA35Rs1WqSUMnfA3b1vaxup
+         7xiM3LR26zlhdACbRJ1MrNMOV0tjbB8QDswD6+D/RZOpz+sRAmm/69ijEFWVPyg5yl
+         petRBt3SeHA8g==
+Date:   Wed, 2 Jun 2021 07:38:47 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     David Thompson <davthompson@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        limings@nvidia.com, Asmaa Mnebhi <asmaa@nvidia.com>
+Subject: Re: [PATCH net-next v6] Add Mellanox BlueField Gigabit Ethernet
+ driver
+Message-ID: <YLcLV+p4yZGjdMHO@unreal>
+References: <20210601122455.1025-1-davthompson@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20210602031502.31600-1-rocco.yue@mediatek.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210601122455.1025-1-davthompson@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/1/21 9:15 PM, Rocco Yue wrote:
-> On Tue, 2021-06-01 at 18:38 -0600, David Ahern wrote:
-> On 6/1/21 3:16 AM, Rocco Yue wrote:
->>> For this patch set, if RA message carries the mtu option,
->>> "proc/sys/net/ipv6/conf/<iface>/ra_mtu" will be updated to the
->>> mtu value carried in the last RA message received, and ra_mtu
->>> is an independent proc file, which is not affected by the update
->>> of interface mtu value.
->>
->> I am not a fan of more /proc/sys files.
->>
->> You are adding it to devconf which is good. You can add another link
->> attribute, e.g., IFLA_RA_MTU, and have it returned on link queries.
->>
->> Make sure the attribute can not be sent in a NEWLINK or SETLINK request;
->> it should be read-only for GETLINK.
+On Tue, Jun 01, 2021 at 08:24:55AM -0400, David Thompson wrote:
+> This patch adds build and driver logic for the "mlxbf_gige"
+> Ethernet driver from Mellanox Technologies. The second
+> generation BlueField SoC from Mellanox supports an
+> out-of-band GigaBit Ethernet management port to the Arm
+> subsystem.  This driver supports TCP/IP network connectivity
+> for that port, and provides back-end routines to handle
+> basic ethtool requests.
 > 
-> Thanks for your review and advice.
-> Do you mean that I should keep the ra_mtu proc and add an another extra netlink msg?
-> Or only use netlink msg instead of ra_mtu proc?
-> I will do it.
+> The driver interfaces to the Gigabit Ethernet block of
+> BlueField SoC via MMIO accesses to registers, which contain
+> control information or pointers describing transmit and
+> receive resources.  There is a single transmit queue, and
+> the port supports transmit ring sizes of 4 to 256 entries.
+> There is a single receive queue, and the port supports
+> receive ring sizes of 32 to 32K entries. The transmit and
+> receive rings are allocated from DMA coherent memory. There
+> is a 16-bit producer and consumer index per ring to denote
+> software ownership and hardware ownership, respectively.
 > 
+> The main driver logic such as probe(), remove(), and netdev
+> ops are in "mlxbf_gige_main.c".  Logic in "mlxbf_gige_rx.c"
+> and "mlxbf_gige_tx.c" handles the packet processing for
+> receive and transmit respectively.
+> 
+> The logic in "mlxbf_gige_ethtool.c" supports the handling
+> of some basic ethtool requests: get driver info, get ring
+> parameters, get registers, and get statistics.
+> 
+> The logic in "mlxbf_gige_mdio.c" is the driver controlling
+> the Mellanox BlueField hardware that interacts with a PHY
+> device via MDIO/MDC pins.  This driver does the following:
+>   - At driver probe time, it configures several BlueField MDIO
+>     parameters such as sample rate, full drive, voltage and MDC
+>   - It defines functions to read and write MDIO registers and
+>     registers the MDIO bus.
+>   - It defines the phy interrupt handler reporting a
+>     link up/down status change
+>   - This driver's probe is invoked from the main driver logic
+>     while the phy interrupt handler is registered in ndo_open.
+> 
+> Driver limitations
+>   - Only supports 1Gbps speed
+>   - Only supports GMII protocol
+>   - Supports maximum packet size of 2KB
+>   - Does not support scatter-gather buffering
+> 
+> Testing
+>   - Successful build of kernel for ARM64, ARM32, X86_64
+>   - Tested ARM64 build on FastModels & Palladium
+>   - Tested ARM64 build on several Mellanox boards that are built with
+>     the BlueField-2 SoC.  The testing includes coverage in the areas
+>     of networking (e.g. ping, iperf, ifconfig, route), file transfers
+>     (e.g. SCP), and various ethtool options relevant to this driver.
+> 
+> v5 -> v6
 
-I meant DEVCONF and notification to userspace was good, but using an
-IFLA attribute and no proc/sys file is better.
+Please put changelog under "---" below your SOBs. We don't need to see
+this history in the git log.
+
+>   Fixed use of COMPILE_TEST for ARM32 build; changed driver to not
+>   depend on CONFIG_ACPI for ARM32 build
+> v4 -> v5
+>   Created a separate interrupt controller for the GPIO PHY interrupt
+>   and as a result, the GIGE driver no longer depends on GPIO driver
+>   Updated the logic in mlxbf_gige_adjust_link() to store the negotiated
+>   pause settings into the driver's private settings.
+>   Modified logic to only change enable bit in RX_DMA register
+>   Changed logic to only map and unmap the actual length of the TX SKB,
+>   instead using the default size.
+>   Added better error handling to open() method
+>   Modified receive packet logic to use polarity bit to signify ownership
+>   (software vs. hardware) of the RX CQE slot
+> v3 -> v4
+>   Main driver module broken out into rx, tx, intr, and ethtool modules
+>   Removed some GPIO PHY interrupt logic; moved to GPIO_MLXBF2 driver
+> v2 -> v3
+>   Added logic to handle PHY link up/down interrupts
+>   Use streaming DMA mapping for packet buffers
+>   Changed logic to use standard iopoll methods
+>   Changed PHY logic to not allow C45 transactions
+>   Enhanced the error handling in open() method
+>   Enhanced start_xmit() method to use xmit_more mechanism
+>   Added support for ndo_get_stats64
+>   Removed standard stats from "ethtool -S" output
+> v1 -> v2:
+>   Fixed all warnings raised by "make C=1" and "make W=1"
+>     a) Changed logic in mlxbf_gige_rx_deinit() and mlxbf_gige_tx_deinit()
+>        to initialize relevant pointers as NULL, not 0
+>     b) Change mlxbf_gige_get_mac_rx_filter() to return void,
+>        as this function's return status is not used by caller
+>     c) Fixed type definition of "buff" in mlxbf_gige_get_regs()
+> 
+> Signed-off-by: David Thompson <davthompson@nvidia.com>
+> Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
+> Reviewed-by: Liming Sun <limings@nvidia.com>
+> ---
+
+The patch generates checkpatch warnings.
+
+ CHECK: spinlock_t definition without comment
+ #272: FILE: drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h:87:
+ +	spinlock_t lock;
+
+ CHECK: spinlock_t definition without comment
+ #273: FILE: drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h:88:
+ +	spinlock_t gpio_lock;
+
+ CHECK: Macro argument 'tx_wqe_addr' may be better as '(tx_wqe_addr)' to avoid precedence issues
+ #328: FILE: drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h:143:
+ +#define MLXBF_GIGE_TX_WQE_PKT_LEN(tx_wqe_addr) \
+ +	(*(tx_wqe_addr + 1) & MLXBF_GIGE_TX_WQE_PKT_LEN_MASK)
+
+ CHECK: multiple assignments should be avoided
+ #1271: FILE: drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c:374:
+ +	phydev->irq = priv->mdiobus->irq[addr] = priv->phy_irq;
+
+Thanks
