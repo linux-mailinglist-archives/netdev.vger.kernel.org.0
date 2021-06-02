@@ -2,64 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9D0E3989EB
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:44:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 577F43989EF
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:44:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbhFBMqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 08:46:25 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:41576 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229916AbhFBMqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 08:46:21 -0400
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id AF061641DB;
-        Wed,  2 Jun 2021 14:43:30 +0200 (CEST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 2/2] netfilter: nfnetlink_cthelper: hit EBUSY on updates if size mismatches
-Date:   Wed,  2 Jun 2021 14:44:30 +0200
-Message-Id: <20210602124430.10863-3-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210602124430.10863-1-pablo@netfilter.org>
-References: <20210602124430.10863-1-pablo@netfilter.org>
+        id S230116AbhFBMqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 08:46:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33784 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230097AbhFBMqb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 08:46:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ABB38613B8;
+        Wed,  2 Jun 2021 12:44:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622637888;
+        bh=mY9aru4I5jdUUWZCv3k0iPOk0GIOpJClPDnCv3XBDEQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Et463j64ps/dUobh8R14kaIEgDuQcOVfTqO8FXPiAYSWU2K8HszAmgi8yQFsSt423
+         fpP0wYjvOEXlMNuFb3iHXfvQqoFfTyZbYA6pv8P+u4Zhr6qP2+0iOwzQjNh9jUeHz6
+         F28XcMf/0RP1LnP56WO0bvaQYYpI2VaZECsDdzQTr842VTCMJ9TvVdyA2py+yVdbYl
+         4zrrKHV2LOb/eub7+mj4rPUdU80d0+hJVtuPYujbTVJePRpGXkcLsj3JD01u3DFL5O
+         xVMyZMFpFYKRGG2zavWHb3u1P5zJUcLCxEFobYygssZtiw/WoVMjGXM6TJCxkibIea
+         /G2L43TCfQYqA==
+Date:   Wed, 2 Jun 2021 14:44:39 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-leds@vger.kernel.org, netdev@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: Re: [PATCH leds v2 06/10] leds: core: inform trigger that it's
+ deactivation is due to LED removal
+Message-ID: <20210602144439.4d20b295@dellmb>
+In-Reply-To: <YLai2aHKKKqwRysm@lunn.ch>
+References: <20210601005155.27997-1-kabel@kernel.org>
+        <20210601005155.27997-7-kabel@kernel.org>
+        <YLai2aHKKKqwRysm@lunn.ch>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The private helper data size cannot be updated. However, updates that
-contain NFCTH_PRIV_DATA_LEN might bogusly hit EBUSY even if the size is
-the same.
+On Tue, 1 Jun 2021 23:12:57 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-Fixes: 12f7a505331e ("netfilter: add user-space connection tracking helper infrastructure")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nfnetlink_cthelper.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+> On Tue, Jun 01, 2021 at 02:51:51AM +0200, Marek Beh=C3=BAn wrote:
+> > Move setting of the LED_UNREGISTERING before deactivating the
+> > trigger in led_classdev_unregister().
+> >=20
+> > It can be useful for a LED trigger to know whether it is being
+> > deactivated due to the LED being unregistered. This makes it
+> > possible for LED drivers which implement trigger offloading to
+> > leave the LED in HW triggering mode when the LED is unregistered,
+> > instead of disabling it. =20
+>=20
+> Humm, i'm not sure that is a good idea. I don't expect my Ethernet
+> switch to keep forwarding frames when i unload the driver.
 
-diff --git a/net/netfilter/nfnetlink_cthelper.c b/net/netfilter/nfnetlink_cthelper.c
-index 322ac5dd5402..752b10cae524 100644
---- a/net/netfilter/nfnetlink_cthelper.c
-+++ b/net/netfilter/nfnetlink_cthelper.c
-@@ -380,10 +380,14 @@ static int
- nfnl_cthelper_update(const struct nlattr * const tb[],
- 		     struct nf_conntrack_helper *helper)
- {
-+	u32 size;
- 	int ret;
- 
--	if (tb[NFCTH_PRIV_DATA_LEN])
--		return -EBUSY;
-+	if (tb[NFCTH_PRIV_DATA_LEN]) {
-+		size = ntohl(nla_get_be32(tb[NFCTH_PRIV_DATA_LEN]));
-+		if (size != helper->data_len)
-+			return -EBUSY;
-+	}
- 
- 	if (tb[NFCTH_POLICY]) {
- 		ret = nfnl_cthelper_update_policy(helper, tb[NFCTH_POLICY]);
--- 
-2.20.1
+We want to make it so that when leds-turris-omnia driver is unloaded,
+the LEDs will start blinking in HW mode as they did before the driver
+was loaded. This is needed for that.
 
+Marek
