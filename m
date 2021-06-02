@@ -2,29 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA4D939841B
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 10:29:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E7EE39841D
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 10:29:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232616AbhFBIai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 04:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41376 "EHLO
+        id S232627AbhFBIak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 04:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232577AbhFBIa3 (ORCPT
+        with ESMTP id S232583AbhFBIa3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 04:30:29 -0400
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA33C06174A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B403EC061756;
         Wed,  2 Jun 2021 01:28:46 -0700 (PDT)
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.94.2)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1loMF2-000xxd-GJ; Wed, 02 Jun 2021 10:28:44 +0200
+        id 1loMF2-000xxd-R9; Wed, 02 Jun 2021 10:28:44 +0200
 From:   Johannes Berg <johannes@sipsolutions.net>
 To:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org
 Cc:     m.chetan.kumar@intel.com, loic.poulain@linaro.org,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [RFC v2 2/5] rtnetlink: add alloc() method to rtnl_link_ops
-Date:   Wed,  2 Jun 2021 10:28:37 +0200
-Message-Id: <20210602102653.6e2d8b8026a2.Iadd04d389e9e8500e7de5e02081ab212c673d143@changeid>
+        Johannes Berg <johannes.berg@intel.com>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Subject: [RFC v2 3/5] rtnetlink: add IFLA_PARENT_DEV_NAME
+Date:   Wed,  2 Jun 2021 10:28:38 +0200
+Message-Id: <20210602102653.9d5c4789824f.Ia98e333bba58bc6a0b1c8fa28ad0964fb9c918d6@changeid>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210602082840.85828-1-johannes@sipsolutions.net>
 References: <20210602082840.85828-1-johannes@sipsolutions.net>
@@ -36,72 +37,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-In order to make rtnetlink ops that can create different
-kinds of devices, like what we want to add to the WWAN
-framework, the priv_size and setup parameters aren't quite
-sufficient. Make this easier to manage by allowing ops to
-allocate their own netdev via an @alloc method that gets
-the tb netlink data.
+In some cases, for example in the upcoming WWAN framework
+changes, there's no natural "parent netdev", so sometimes
+dummy netdevs are created or similar. IFLA_PARENT_DEV_NAME
+is a new attribute intended to contain a device (sysfs,
+struct device) name that can be used instead when creating
+a new netdev, if the rtnetlink family implements it.
 
+Suggested-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 ---
 v2:
- * remove data[] argument and thus many changes
+ * new patch
 ---
- include/net/rtnetlink.h |  8 ++++++++
- net/core/rtnetlink.c    | 13 +++++++++++--
- 2 files changed, 19 insertions(+), 2 deletions(-)
+ include/uapi/linux/if_link.h | 6 ++++++
+ net/core/rtnetlink.c         | 1 +
+ 2 files changed, 7 insertions(+)
 
-diff --git a/include/net/rtnetlink.h b/include/net/rtnetlink.h
-index 479f60ef54c0..384e800665f2 100644
---- a/include/net/rtnetlink.h
-+++ b/include/net/rtnetlink.h
-@@ -37,6 +37,9 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
-  *	@maxtype: Highest device specific netlink attribute number
-  *	@policy: Netlink policy for device specific attribute validation
-  *	@validate: Optional validation function for netlink/changelink parameters
-+ *	@alloc: netdev allocation function, can be %NULL and is then used
-+ *		in place of alloc_netdev_mqs(), in this case @priv_size
-+ *		and @setup are unused. Returns a netdev or ERR_PTR().
-  *	@priv_size: sizeof net_device private space
-  *	@setup: net_device setup function
-  *	@newlink: Function for configuring and registering a new device
-@@ -63,6 +66,11 @@ struct rtnl_link_ops {
- 	const char		*kind;
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index f7c3beebb074..3455780193a4 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -341,6 +341,12 @@ enum {
+ 	IFLA_ALT_IFNAME, /* Alternative ifname */
+ 	IFLA_PERM_ADDRESS,
+ 	IFLA_PROTO_DOWN_REASON,
++
++	/* device (sysfs) name as parent, used instead
++	 * of IFLA_LINK where there's no parent netdev
++	 */
++	IFLA_PARENT_DEV_NAME,
++
+ 	__IFLA_MAX
+ };
  
- 	size_t			priv_size;
-+	struct net_device	*(*alloc)(struct nlattr *tb[],
-+					  const char *ifname,
-+					  unsigned char name_assign_type,
-+					  unsigned int num_tx_queues,
-+					  unsigned int num_rx_queues);
- 	void			(*setup)(struct net_device *dev);
- 
- 	bool			netns_refund;
 diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 714d5fa38546..4975dd91407d 100644
+index 4975dd91407d..49a27bf6e4a7 100644
 --- a/net/core/rtnetlink.c
 +++ b/net/core/rtnetlink.c
-@@ -3177,8 +3177,17 @@ struct net_device *rtnl_create_link(struct net *net, const char *ifname,
- 		return ERR_PTR(-EINVAL);
- 	}
+@@ -1878,6 +1878,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+ 	[IFLA_PERM_ADDRESS]	= { .type = NLA_REJECT },
+ 	[IFLA_PROTO_DOWN_REASON] = { .type = NLA_NESTED },
+ 	[IFLA_NEW_IFINDEX]	= NLA_POLICY_MIN(NLA_S32, 1),
++	[IFLA_PARENT_DEV_NAME]	= { .type = NLA_NUL_STRING },
+ };
  
--	dev = alloc_netdev_mqs(ops->priv_size, ifname, name_assign_type,
--			       ops->setup, num_tx_queues, num_rx_queues);
-+	if (ops->alloc) {
-+		dev = ops->alloc(tb, ifname, name_assign_type,
-+				 num_tx_queues, num_rx_queues);
-+		if (IS_ERR(dev))
-+			return dev;
-+	} else {
-+		dev = alloc_netdev_mqs(ops->priv_size, ifname,
-+				       name_assign_type, ops->setup,
-+				       num_tx_queues, num_rx_queues);
-+	}
-+
- 	if (!dev)
- 		return ERR_PTR(-ENOMEM);
- 
+ static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
 -- 
 2.31.1
 
