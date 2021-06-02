@@ -2,216 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF8BC399601
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 00:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 724B6399607
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 00:41:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbhFBWl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 18:41:26 -0400
-Received: from mail-yb1-f172.google.com ([209.85.219.172]:46953 "EHLO
-        mail-yb1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbhFBWlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 18:41:25 -0400
-Received: by mail-yb1-f172.google.com with SMTP id y2so5994612ybq.13;
-        Wed, 02 Jun 2021 15:39:29 -0700 (PDT)
+        id S229810AbhFBWnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 18:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229736AbhFBWnW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 18:43:22 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589ECC06174A;
+        Wed,  2 Jun 2021 15:41:22 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id t4-20020a1c77040000b029019d22d84ebdso4683857wmi.3;
+        Wed, 02 Jun 2021 15:41:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Vzhx/vKpzfrXH+wJr+JMQ+rv4aUf7p/XJfVkwdm5+QM=;
-        b=CCS5wiAVcs6mBKi/ogvGKFE+gB+YLfS4wn9cYdSvEoA/+cPLK2fYkD/JZPFEJvAWeW
-         qk5zJWNnCcp5qeK23vJehVyBKnnBFg8lGif4SS7reybuDL852Ef5RWP6fyWSqDuLBj/v
-         goQ7ub0jKzIH6D/tL6uDuyWjhO1ZwUqp7TZomtNj1+I4xmLLwO0uaqs55J0XkzkmdvEi
-         feakTaey5pDrCb6LurW1AYY7fhzb8E0nNYNO4jwBRscf3zFF070R8VBDZQoy162HfecW
-         xCegndZRumC/12vWTJddt3x/wCaUULSyKj0TNmm58OGLHjQ4t7hHm07qhissr8CsP8MM
-         s56w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7SMLKgtfzFTtNrhbiL6cD20E7gNbNd4sAIT8l+acqgE=;
+        b=b6/s6tFIRIft9gCYchObMSOTJ02+08GMwVOVkZlGerz4Sj/HODJGkVnRhWfSh52dXx
+         hWdeUV9x0a22x8J+7BROrn9EjDO5MfavRFS0w/PvRbruokRotdXnMwIxvMeOye78vK2I
+         qyrPmQ0BKeZCMTjw0KYTxjKmRPVf0cq9MawSzrWVip8EoiKIsnXIZdV7MKHRPHfJJEPn
+         AcSEwLcXb9Ns8b6DueMJLuQoX2HyJ6+bBryvsyROM41mLqrl1sJEJ9xz8GXoA6bCcEbH
+         oVf0hDbnkpADv7cBTCBzLFowOi+qYb8QsnnFcjTNfQ55kuE4AdYuLZHO5HW8c/TGZYCb
+         jMcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Vzhx/vKpzfrXH+wJr+JMQ+rv4aUf7p/XJfVkwdm5+QM=;
-        b=uLtMuSJlFgw7DsDMAOvHlVTDH93gbZvzQ2g6L0RhdQ2rsDQbrmQNi6RGPF6+zLUY7E
-         Xhsvh+xB0uafd8SdVfNBND3bJR5ZQYm1Isvs5Ms4S88uvC/kvlsiyXvTm5G5c4/8rS5i
-         CTrZa5N4k97dp/79HObpmyECom/SS/36KHa2o6m2+VSy6IrGRCUWdsLP4mmhHTH2/wpo
-         C116ho8OId8tlTOJ2tiBXamX38R7mPESBr6AjmM2ta7eUb2ng3at3wxfkDtrj6ZYkVms
-         3FmtMzqoNfnanMVtYYsRE/9uXLmAGr8c8MDAOOsXc88zRJpApgyLgs8ZSWYdr67U5M5O
-         oy0A==
-X-Gm-Message-State: AOAM530po6ypuQNKK7dPsUaXGUzGuD0pyUpRrMD1ZbZMsNuvobFmHAGU
-        4PSLkZ9gLKd5p9JI1MZhKVRn8c+dN3l+1038fnA=
-X-Google-Smtp-Source: ABdhPJwhL/m7rPxp8PcdypVkLa5tEaVMqVl7PqY+uGQqnoosxvCf/f/HYzyOHb2rTMW6K7+4J0AEgiLBuOfkS/7J4Og=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr46914008ybg.459.1622673509507;
- Wed, 02 Jun 2021 15:38:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210527040259.77823-1-alexei.starovoitov@gmail.com>
- <20210527040259.77823-3-alexei.starovoitov@gmail.com> <CAEf4BzbPkUdsY8XD5n2yMB8CDvakz4jxshjF8xrzqHXQS0ct9g@mail.gmail.com>
-In-Reply-To: <CAEf4BzbPkUdsY8XD5n2yMB8CDvakz4jxshjF8xrzqHXQS0ct9g@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Jun 2021 15:38:18 -0700
-Message-ID: <CAEf4Bzbq=ysuE90OkpCXxkm-7_MewANteSQQj_HYuTkVbwNhhA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/3] bpf: Add verifier checks for bpf_timer.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7SMLKgtfzFTtNrhbiL6cD20E7gNbNd4sAIT8l+acqgE=;
+        b=exsomPgJl99ntlMPO1PB9qTsnOxBVa/NMzG1zWcsAPhG78JLaZ54gbl+qb6VP+PfCu
+         KABl+lAd/XKfnwOHkhIpgxATrTUwNaS7amDmlx+ETR9KvL8iXw4drJguluBOKQPbf5sK
+         j315xzobHGdc2q7SEWAgykiX0HMv2c2o5FqFdX+Q4C4bHj7oUjyqlTv+640mw8WFarME
+         SeWDOm2IpsUbmJB0GqTSPZ9zAMyGHwuo1bM7WoVwcIrFtR4aEu1pxYwmh0gZ+rAbN5DA
+         rKzJnKzkKCMwhepqJEINZGetO26vHbx6FYjkzEJ00PqaOGOKeJvPw4qC/lvDlbqNALWx
+         /pPw==
+X-Gm-Message-State: AOAM532S0H1bySRiuty8btXL07GUJoq41Azx0dFEvBezfNsVUbBrTBtp
+        SNKhDowY+97tEnWVmSo7Xxw=
+X-Google-Smtp-Source: ABdhPJx68oQrhXRFKI2BC5VsXcE66i95OnCh99GSXYS8dNm9F0OWAXIyaAozg1vda20ltNHMcAAUMA==
+X-Received: by 2002:a1c:1d14:: with SMTP id d20mr7160755wmd.177.1622673679238;
+        Wed, 02 Jun 2021 15:41:19 -0700 (PDT)
+Received: from honeypot.epfl.ch ([151.29.82.133])
+        by smtp.googlemail.com with ESMTPSA id 11sm957010wmo.24.2021.06.02.15.41.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Jun 2021 15:41:18 -0700 (PDT)
+From:   Riccardo Mancini <rickyman7@gmail.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>
+Cc:     Riccardo Mancini <rickyman7@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH] perf env: fix memory leak: free bpf_prog_info_linear
+Date:   Thu,  3 Jun 2021 00:40:23 +0200
+Message-Id: <20210602224024.300485-1-rickyman7@gmail.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 2, 2021 at 3:34 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Wed, May 26, 2021 at 9:03 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > From: Alexei Starovoitov <ast@kernel.org>
-> >
-> > Add appropriate safety checks for bpf_timer:
-> > - restrict to array, hash, lru. per-cpu maps cannot be supported.
-> > - kfree bpf_timer during map_delete_elem and map_free.
-> > - verifier btf checks.
-> > - safe interaction with lookup/update/delete operations and iterator.
-> > - relax the first field only requirement of the previous patch.
-> > - allow bpf_timer in global data and search for it in datasec.
+ASan reported a memory leak caused by info_linear not being
+deallocated. The info_linear was allocated during
+perf_event__synthesize_one_bpf_prog.
+This patch adds the corresponding free() when bpf_prog_info_node
+is freed in perf_env__purge_bpf.
 
-I'll mention it here for completeness. I don't think safety
-implications are worth it to support timer or spinlock in
-memory-mapped maps. It's way too easy to abuse it (or even
-accidentally corrupt kernel state). Sure it's nice, but doing an
-explicit single-element map for "global" timer is just fine. And it
-generalizes nicely to having 2, 3, ..., N timers.
+$ sudo ./perf record -- sleep 5
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.025 MB perf.data (8 samples) ]
 
-> > - check prog_rdonly, frozen flags.
-> > - mmap is allowed. otherwise global timer is not possible.
-> >
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > ---
-> >  include/linux/bpf.h        | 36 +++++++++++++-----
-> >  include/linux/btf.h        |  1 +
-> >  kernel/bpf/arraymap.c      |  7 ++++
-> >  kernel/bpf/btf.c           | 77 +++++++++++++++++++++++++++++++-------
-> >  kernel/bpf/hashtab.c       | 53 ++++++++++++++++++++------
-> >  kernel/bpf/helpers.c       |  2 +-
-> >  kernel/bpf/local_storage.c |  4 +-
-> >  kernel/bpf/syscall.c       | 23 ++++++++++--
-> >  kernel/bpf/verifier.c      | 30 +++++++++++++--
-> >  9 files changed, 190 insertions(+), 43 deletions(-)
-> >
->
-> [...]
->
-> >  /* copy everything but bpf_spin_lock */
-> >  static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
-> >  {
-> > +       u32 off = 0, size = 0;
-> > +
-> >         if (unlikely(map_value_has_spin_lock(map))) {
-> > -               u32 off = map->spin_lock_off;
-> > +               off = map->spin_lock_off;
-> > +               size = sizeof(struct bpf_spin_lock);
-> > +       } else if (unlikely(map_value_has_timer(map))) {
-> > +               off = map->timer_off;
-> > +               size = sizeof(struct bpf_timer);
-> > +       }
->
-> so the need to handle 0, 1, or 2 gaps seems to be the only reason to
-> disallow both bpf_spinlock and bpf_timer in one map element, right?
-> Isn't it worth addressing it from the very beginning to lift the
-> artificial restriction? E.g., for speed, you'd do:
->
-> if (likely(neither spinlock nor timer)) {
->  /* fastest pass */
-> } else if (only one of spinlock or timer) {
->   /* do what you do here */
-> } else {
->   int off1, off2, sz1, sz2;
->
->   if (spinlock_off < timer_off) {
->     off1 = spinlock_off;
->     sz1 = spinlock_sz;
->     off2 = timer_off;
->     sz2 = timer_sz;
->   } else {
->     ... you get the idea
->   }
->
->   memcpy(0, off1);
->   memcpy(off1+sz1, off2);
->   memcpy(off2+sz2, total_sz);
-> }
->
-> It's not that bad, right?
->
-> >
-> > +       if (unlikely(size)) {
-> >                 memcpy(dst, src, off);
-> > -               memcpy(dst + off + sizeof(struct bpf_spin_lock),
-> > -                      src + off + sizeof(struct bpf_spin_lock),
-> > -                      map->value_size - off - sizeof(struct bpf_spin_lock));
-> > +               memcpy(dst + off + size,
-> > +                      src + off + size,
-> > +                      map->value_size - off - size);
-> >         } else {
-> >                 memcpy(dst, src, map->value_size);
-> >         }
->
-> [...]
->
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index f386f85aee5c..0a828dc4968e 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -3241,6 +3241,15 @@ static int check_map_access(struct bpf_verifier_env *env, u32 regno,
-> >                         return -EACCES;
-> >                 }
-> >         }
-> > +       if (map_value_has_timer(map)) {
-> > +               u32 t = map->timer_off;
-> > +
-> > +               if (reg->smin_value + off < t + sizeof(struct bpf_timer) &&
->
-> <= ? Otherwise we allow accessing the first byte, unless I'm mistaken.
->
-> > +                    t < reg->umax_value + off + size) {
-> > +                       verbose(env, "bpf_timer cannot be accessed directly by load/store\n");
-> > +                       return -EACCES;
-> > +               }
-> > +       }
-> >         return err;
-> >  }
-> >
-> > @@ -4675,9 +4684,24 @@ static int process_timer_func(struct bpf_verifier_env *env, int regno,
-> >                         map->name);
-> >                 return -EINVAL;
-> >         }
-> > -       if (val) {
-> > -               /* todo: relax this requirement */
-> > -               verbose(env, "bpf_timer field can only be first in the map value element\n");
->
-> ok, this was confusing, but now I see why you did that...
->
-> > +       if (!map_value_has_timer(map)) {
-> > +               if (map->timer_off == -E2BIG)
-> > +                       verbose(env,
-> > +                               "map '%s' has more than one 'struct bpf_timer'\n",
-> > +                               map->name);
-> > +               else if (map->timer_off == -ENOENT)
-> > +                       verbose(env,
-> > +                               "map '%s' doesn't have 'struct bpf_timer'\n",
-> > +                               map->name);
-> > +               else
-> > +                       verbose(env,
-> > +                               "map '%s' is not a struct type or bpf_timer is mangled\n",
-> > +                               map->name);
-> > +               return -EINVAL;
-> > +       }
-> > +       if (map->timer_off != val + reg->off) {
-> > +               verbose(env, "off %lld doesn't point to 'struct bpf_timer' that is at %d\n",
-> > +                       val + reg->off, map->timer_off);
-> >                 return -EINVAL;
-> >         }
-> >         WARN_ON(meta->map_ptr);
-> > --
-> > 2.30.2
-> >
+=================================================================
+==297735==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 7688 byte(s) in 19 object(s) allocated from:
+    #0 0x4f420f in malloc (/home/user/linux/tools/perf/perf+0x4f420f)
+    #1 0xc06a74 in bpf_program__get_prog_info_linear /home/user/linux/tools/lib/bpf/libbpf.c:11113:16
+    #2 0xb426fe in perf_event__synthesize_one_bpf_prog /home/user/linux/tools/perf/util/bpf-event.c:191:16
+    #3 0xb42008 in perf_event__synthesize_bpf_events /home/user/linux/tools/perf/util/bpf-event.c:410:9
+    #4 0x594596 in record__synthesize /home/user/linux/tools/perf/builtin-record.c:1490:8
+    #5 0x58c9ac in __cmd_record /home/user/linux/tools/perf/builtin-record.c:1798:8
+    #6 0x58990b in cmd_record /home/user/linux/tools/perf/builtin-record.c:2901:8
+    #7 0x7b2a20 in run_builtin /home/user/linux/tools/perf/perf.c:313:11
+    #8 0x7b12ff in handle_internal_command /home/user/linux/tools/perf/perf.c:365:8
+    #9 0x7b2583 in run_argv /home/user/linux/tools/perf/perf.c:409:2
+    #10 0x7b0d79 in main /home/user/linux/tools/perf/perf.c:539:3
+    #11 0x7fa357ef6b74 in __libc_start_main /usr/src/debug/glibc-2.33-8.fc34.x86_64/csu/../csu/libc-start.c:332:16
+
+Signed-off-by: Riccardo Mancini <rickyman7@gmail.com>
+---
+ tools/perf/util/env.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/perf/util/env.c b/tools/perf/util/env.c
+index 9130f6fad8d54..bc5e4f294e9e9 100644
+--- a/tools/perf/util/env.c
++++ b/tools/perf/util/env.c
+@@ -144,6 +144,7 @@ static void perf_env__purge_bpf(struct perf_env *env)
+ 		node = rb_entry(next, struct bpf_prog_info_node, rb_node);
+ 		next = rb_next(&node->rb_node);
+ 		rb_erase(&node->rb_node, root);
++		free(node->info_linear);
+ 		free(node);
+ 	}
+ 
+-- 
+2.31.1
+
