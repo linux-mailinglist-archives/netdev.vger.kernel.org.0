@@ -2,541 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EF2F398FDA
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 18:22:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A93F398FF0
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 18:28:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230128AbhFBQXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 12:23:40 -0400
-Received: from mail-ed1-f46.google.com ([209.85.208.46]:40952 "EHLO
-        mail-ed1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230078AbhFBQXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 12:23:36 -0400
-Received: by mail-ed1-f46.google.com with SMTP id t3so3617408edc.7
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 09:21:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PUPXXtQVaSadA9URtuI7p7qcIAmLchJuS57c7C45SSQ=;
-        b=MKuV6PcM/sPkcWsVsRTpG0zkGxn6J2VYYfDmQJ4pfNcYbyOkeSpXvv7ytrMQmkshiA
-         CwFqIlKaABhfzCBpJ4wrrgLB2cM14vTKWSM3h66y0YHfGl/umPygmrOClaVzBqjIbWGv
-         w8QmazKCp5xOUEj73aS/45/XqqD8ohYcL1N35LBPuj0O/OyRlyhxryVPeZJvd3iQjJDB
-         7qsmZJCSM5hBo+/MgbDnU6CnkI4D0t+e5lk1dWx2RoeIPRMoVQc9P3jfhH+xzXdjlNCC
-         xduDbbS6g2cox9YnmQmgtihvmJIEpdrE/fT713qfRDt7RgteZiE1wdjtffuODjbUHM+H
-         qgtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PUPXXtQVaSadA9URtuI7p7qcIAmLchJuS57c7C45SSQ=;
-        b=EGHtL2CR4sxS8fLBJvqHDbA8t54u0NGEq81DpsfYTZDUZvRnMD1cHboQYyWCeaa5un
-         4i5oszLRlzfSLxDUHjRNc+A72loCzvZkeyIEzmQCVlJOBoLDY5rYbPFyS5LcKOH+VPmG
-         +TYPBECBllK6ed9H3CI0t1SC/K96TkKlNdmCFuqg/5jMjCZ84WJpk+zpaXOon9kjN9gm
-         kVEETc04V7+y0S0+bHOlAGxVe9XeaQzwxHXR5YU+Da4+JfVobUJCiWM+YohXrMhlb13F
-         S3ZklpggNFCshvLF5rtowef/60Pngqe5FjZY60zq/Uz6Tw0iO7q7OCTk321UD10C7Dvt
-         T2oA==
-X-Gm-Message-State: AOAM531erfg3/ul8wQqBa6yycZ2BNC9j+ukiGv3yFWKXCIC6JHBDgaqb
-        OgR7R1vfvDbHCgKkB5wSmv8=
-X-Google-Smtp-Source: ABdhPJyLzNKg1VoJjgBE0+DxUE9wCJ820RvTLzZvX2CaJJsC/8D2fFubOq+824YBeE9phrdz00H1Dw==
-X-Received: by 2002:a05:6402:44:: with SMTP id f4mr39780148edu.364.1622650842833;
-        Wed, 02 Jun 2021 09:20:42 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id m12sm228078edc.40.2021.06.02.09.20.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 09:20:42 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 9/9] net: pcs: xpcs: convert to phylink_pcs_ops
-Date:   Wed,  2 Jun 2021 19:20:19 +0300
-Message-Id: <20210602162019.2201925-10-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210602162019.2201925-1-olteanv@gmail.com>
-References: <20210602162019.2201925-1-olteanv@gmail.com>
+        id S229736AbhFBQaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 12:30:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57108 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229541AbhFBQaO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 12:30:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8E1806197C;
+        Wed,  2 Jun 2021 16:28:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622651310;
+        bh=ym3BhES639iZHefP/a/KoEYjxWioWEK1emlID8aS13o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bOsoN+tVW0saMH88vcIVp0E/Dvsx2otzQyMvCxf7gIlWFtRbavufvF1MfuSlpa/kG
+         B9pcBgUr1Xkl1akir38jE5sq5RFJ1PxTRCc8CK7J509YCWF9bGHtXXVrRFdNQYqKXQ
+         RauoG54tu3oD5Cd31Tk141tJIT8/4+08/P0UugxiqEqlZzPGAWUtPSfK9ngMBQUB6q
+         GhHvJCGIH7EZsq5EAvrZaV/HqDJt/wzRKFkGDT35sNbvuP7mb8Abd7vFWqty7CEQT9
+         FH7Od/yFs9b7o1PbshhFnkzgIePNnkeT8L7DnzbZrAmyQvn3FgpgynR6l4eYHBK00O
+         57hfSfTFUzGeA==
+Date:   Wed, 2 Jun 2021 09:28:28 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Yunsheng Lin <yunshenglin0825@gmail.com>, <davem@davemloft.net>,
+        <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
+        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
+        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
+        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
+        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
+        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
+        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
+        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
+        <alobakin@pm.me>
+Subject: Re: [Linuxarm] Re: [PATCH net-next 2/3] net: sched: implement
+ TCQ_F_CAN_BYPASS for lockless qdisc
+Message-ID: <20210602092828.21d30135@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20e9bf35-444c-8c35-97ec-de434fc80d73@huawei.com>
+References: <1622170197-27370-1-git-send-email-linyunsheng@huawei.com>
+        <1622170197-27370-3-git-send-email-linyunsheng@huawei.com>
+        <20210528180012.676797d6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <a6a965ee-7368-d37b-9c70-bba50c67eec9@huawei.com>
+        <20210528213218.2b90864c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <ee1a62da-9758-70db-abd3-c5ca2e8e0ce0@huawei.com>
+        <20210529114919.4f8b1980@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <9cc9f513-7655-07df-3c74-5abe07ae8321@gmail.com>
+        <20210530132111.3a974275@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <3c2fbc70-841f-d90b-ca13-1f058169be50@huawei.com>
+        <3a307707-9fb5-d73a-01f9-93aaf5c7a437@huawei.com>
+        <428f92d8-f4a2-13cf-8dcc-b38d48a42965@huawei.com>
+        <20210531215146.5ca802a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <cf75e1f4-7972-8efa-7554-fc528c5da380@huawei.com>
+        <20210601134856.12573333@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <20e9bf35-444c-8c35-97ec-de434fc80d73@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Wed, 2 Jun 2021 09:21:01 +0800 Yunsheng Lin wrote:
+> >> For the MISSING clearing in pfifo_fast_dequeue(), it seems it
+> >> looks like the data race described in RFC v3 too?
+> >>
+> >>       CPU1                 CPU2               CPU3
+> >> qdisc_run_begin(q)          .                  .
+> >>         .              MISSED is set           .
+> >>   MISSED is cleared         .                  .
+> >>     q->dequeue()            .                  .
+> >>         .              enqueue skb1     check MISSED # true
+> >> qdisc_run_end(q)            .                  .
+> >>         .                   .         qdisc_run_begin(q) # true
+> >>         .            MISSED is set      send skb2 directly  
+> > 
+> > Not sure what you mean.  
+> 
+>        CPU1                 CPU2               CPU3
+>  qdisc_run_begin(q)          .                  .
+>          .              MISSED is set           .
+>    MISSED is cleared         .                  .
+>    another dequeuing         .                  .
+>          .                   .                  .
+>          .              enqueue skb1  nolock_qdisc_is_empty() # true
+>  qdisc_run_end(q)            .                  .
+>          .                   .         qdisc_run_begin(q) # true
+>          .                   .          send skb2 directly
+>          .               MISSED is set          .
+> 
+> As qdisc is indeed empty at the point when MISSED is clear and
+> another dequeue is retried by CPU1, MISSED setting is not under
+> q->seqlock, so it seems retesting MISSED under q->seqlock does not
+> seem to make any difference? and it seems like the case that does
+> not need handling as we agreed previously?
 
-Since all the remaining members of struct mdio_xpcs_ops have direct
-equivalents in struct phylink_pcs_ops, it is about time we remove it
-altogether.
-
-Since the phylink ops return void, we need to remove the error
-propagation from the various xpcs methods and simply print an error
-message where appropriate.
-
-Since xpcs_get_state_c73() detects link faults and attempts to reset the
-link on its own by calling xpcs_config(), but xpcs_config() now has a
-lot of phylink arguments which are not needed and cannot be simply
-fabricated by anybody else except phylink, the actual implementation has
-been moved into a smaller xpcs_do_config().
-
-The const struct mdio_xpcs_ops *priv->hw->xpcs has been removed, so we
-need to look at the struct mdio_xpcs_args pointer now as an indication
-whether the port has an XPCS or not.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-v1->v2: resolve conflicts after patch reordering
-v2->v3: leave stmmac_mac_config() in place since it is a required function.
-
- drivers/net/ethernet/stmicro/stmmac/common.h  |  3 +-
- drivers/net/ethernet/stmicro/stmmac/hwif.h    |  8 --
- .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |  2 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 36 +++----
- .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 16 +--
- drivers/net/pcs/pcs-xpcs.c                    | 99 +++++++++++--------
- include/linux/pcs/pcs-xpcs.h                  | 11 +--
- 7 files changed, 78 insertions(+), 97 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 4bcd1d340766..8a83f9e1e95b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -503,8 +503,7 @@ struct mac_device_info {
- 	const struct stmmac_hwtimestamp *ptp;
- 	const struct stmmac_tc_ops *tc;
- 	const struct stmmac_mmc_ops *mmc;
--	const struct mdio_xpcs_ops *xpcs;
--	struct mdio_xpcs_args *xpcs_args;
-+	struct mdio_xpcs_args *xpcs;
- 	struct mii_regs mii;	/* MII register Addresses */
- 	struct mac_link link;
- 	void __iomem *pcsr;     /* vpointer to device CSRs */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 5014b260844b..91f7592a0189 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -612,14 +612,6 @@ struct stmmac_mmc_ops {
- #define stmmac_mmc_read(__priv, __args...) \
- 	stmmac_do_void_callback(__priv, mmc, read, __args)
- 
--/* XPCS callbacks */
--#define stmmac_xpcs_config(__priv, __args...) \
--	stmmac_do_callback(__priv, xpcs, config, __args)
--#define stmmac_xpcs_get_state(__priv, __args...) \
--	stmmac_do_callback(__priv, xpcs, get_state, __args)
--#define stmmac_xpcs_link_up(__priv, __args...) \
--	stmmac_do_callback(__priv, xpcs, link_up, __args)
--
- struct stmmac_regs_off {
- 	u32 ptp_off;
- 	u32 mmc_off;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index 050576ee704d..d0ce608b81c3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -721,7 +721,7 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
- 			    "Setting EEE tx-lpi is not supported\n");
- 
- 	if (priv->hw->xpcs) {
--		ret = xpcs_config_eee(priv->hw->xpcs_args,
-+		ret = xpcs_config_eee(priv->hw->xpcs,
- 				      priv->plat->mult_fact_100ns,
- 				      edata->eee_enabled);
- 		if (ret)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 426c8f891f5a..5b5edfdccab3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -997,29 +997,13 @@ static void stmmac_validate(struct phylink_config *config,
- 
- 	/* If PCS is supported, check which modes it supports. */
- 	if (priv->hw->xpcs)
--		xpcs_validate(priv->hw->xpcs_args, supported, state);
--}
--
--static void stmmac_mac_pcs_get_state(struct phylink_config *config,
--				     struct phylink_link_state *state)
--{
--	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
--
--	state->link = 0;
--	stmmac_xpcs_get_state(priv, priv->hw->xpcs_args, state);
-+		xpcs_validate(priv->hw->xpcs, supported, state);
- }
- 
- static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
- 			      const struct phylink_link_state *state)
- {
--	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
--
--	stmmac_xpcs_config(priv, priv->hw->xpcs_args, state);
--}
--
--static void stmmac_mac_an_restart(struct phylink_config *config)
--{
--	/* Not Supported */
-+	/* Nothing to do, xpcs_config() handles everything */
- }
- 
- static void stmmac_fpe_link_state_handle(struct stmmac_priv *priv, bool is_up)
-@@ -1061,8 +1045,6 @@ static void stmmac_mac_link_up(struct phylink_config *config,
- 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
- 	u32 ctrl;
- 
--	stmmac_xpcs_link_up(priv, priv->hw->xpcs_args, speed, interface);
--
- 	ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
- 	ctrl &= ~priv->hw->link.speed_mask;
- 
-@@ -1155,9 +1137,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
- 
- static const struct phylink_mac_ops stmmac_phylink_mac_ops = {
- 	.validate = stmmac_validate,
--	.mac_pcs_get_state = stmmac_mac_pcs_get_state,
- 	.mac_config = stmmac_mac_config,
--	.mac_an_restart = stmmac_mac_an_restart,
- 	.mac_link_down = stmmac_mac_link_down,
- 	.mac_link_up = stmmac_mac_link_up,
- };
-@@ -1234,6 +1214,7 @@ static int stmmac_init_phy(struct net_device *dev)
- 
- static int stmmac_phy_setup(struct stmmac_priv *priv)
- {
-+	struct stmmac_mdio_bus_data *mdio_bus_data = priv->plat->mdio_bus_data;
- 	struct fwnode_handle *fwnode = of_fwnode_handle(priv->plat->phylink_node);
- 	int mode = priv->plat->phy_interface;
- 	struct phylink *phylink;
-@@ -1241,8 +1222,7 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
- 	priv->phylink_config.dev = &priv->dev->dev;
- 	priv->phylink_config.type = PHYLINK_NETDEV;
- 	priv->phylink_config.pcs_poll = true;
--	priv->phylink_config.ovr_an_inband =
--		priv->plat->mdio_bus_data->xpcs_an_inband;
-+	priv->phylink_config.ovr_an_inband = mdio_bus_data->xpcs_an_inband;
- 
- 	if (!fwnode)
- 		fwnode = dev_fwnode(priv->device);
-@@ -1252,6 +1232,12 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
- 	if (IS_ERR(phylink))
- 		return PTR_ERR(phylink);
- 
-+	if (mdio_bus_data->has_xpcs) {
-+		struct mdio_xpcs_args *xpcs = priv->hw->xpcs;
-+
-+		phylink_set_pcs(phylink, &xpcs->pcs);
-+	}
-+
- 	priv->phylink = phylink;
- 	return 0;
- }
-@@ -3652,7 +3638,7 @@ int stmmac_open(struct net_device *dev)
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI &&
- 	    (!priv->hw->xpcs ||
--	     xpcs_get_an_mode(priv->hw->xpcs_args, mode) != DW_AN_C73)) {
-+	     xpcs_get_an_mode(priv->hw->xpcs, mode) != DW_AN_C73)) {
- 		ret = stmmac_init_phy(dev);
- 		if (ret) {
- 			netdev_err(priv->dev,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 9b4bf78d2eaa..6312a152c8ad 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -444,14 +444,6 @@ int stmmac_mdio_register(struct net_device *ndev)
- 		max_addr = PHY_MAX_ADDR;
- 	}
- 
--	if (mdio_bus_data->has_xpcs) {
--		priv->hw->xpcs = mdio_xpcs_get_ops();
--		if (!priv->hw->xpcs) {
--			err = -ENODEV;
--			goto bus_register_fail;
--		}
--	}
--
- 	if (mdio_bus_data->needs_reset)
- 		new_bus->reset = &stmmac_mdio_reset;
- 
-@@ -526,11 +518,11 @@ int stmmac_mdio_register(struct net_device *ndev)
- 				continue;
- 			}
- 
--			priv->hw->xpcs_args = xpcs;
-+			priv->hw->xpcs = xpcs;
- 			break;
- 		}
- 
--		if (!priv->hw->xpcs_args) {
-+		if (!priv->hw->xpcs) {
- 			dev_warn(dev, "No XPCS found\n");
- 			err = -ENODEV;
- 			goto no_xpcs_found;
-@@ -563,8 +555,8 @@ int stmmac_mdio_unregister(struct net_device *ndev)
- 		return 0;
- 
- 	if (priv->hw->xpcs) {
--		mdio_device_free(priv->hw->xpcs_args->mdiodev);
--		xpcs_destroy(priv->hw->xpcs_args);
-+		mdio_device_free(priv->hw->xpcs->mdiodev);
-+		xpcs_destroy(priv->hw->xpcs);
- 	}
- 
- 	mdiobus_unregister(priv->mii);
-diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index e17e72175ebb..34164437c135 100644
---- a/drivers/net/pcs/pcs-xpcs.c
-+++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -100,6 +100,9 @@
- /* VR MII EEE Control 1 defines */
- #define DW_VR_MII_EEE_TRN_LPI		BIT(0)	/* Transparent Mode Enable */
- 
-+#define phylink_pcs_to_xpcs(pl_pcs) \
-+	container_of((pl_pcs), struct mdio_xpcs_args, pcs)
-+
- static const int xpcs_usxgmii_features[] = {
- 	ETHTOOL_LINK_MODE_Pause_BIT,
- 	ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-@@ -413,7 +416,7 @@ static int xpcs_get_max_usxgmii_speed(const unsigned long *supported)
- 	return max;
- }
- 
--static int xpcs_config_usxgmii(struct mdio_xpcs_args *xpcs, int speed)
-+static void xpcs_config_usxgmii(struct mdio_xpcs_args *xpcs, int speed)
- {
- 	int ret, speed_sel;
- 
-@@ -438,33 +441,40 @@ static int xpcs_config_usxgmii(struct mdio_xpcs_args *xpcs, int speed)
- 		break;
- 	default:
- 		/* Nothing to do here */
--		return -EINVAL;
-+		return;
- 	}
- 
- 	ret = xpcs_read_vpcs(xpcs, MDIO_CTRL1);
- 	if (ret < 0)
--		return ret;
-+		goto out;
- 
- 	ret = xpcs_write_vpcs(xpcs, MDIO_CTRL1, ret | DW_USXGMII_EN);
- 	if (ret < 0)
--		return ret;
-+		goto out;
- 
- 	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, MDIO_CTRL1);
- 	if (ret < 0)
--		return ret;
-+		goto out;
- 
- 	ret &= ~DW_USXGMII_SS_MASK;
- 	ret |= speed_sel | DW_USXGMII_FULL;
- 
- 	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, MDIO_CTRL1, ret);
- 	if (ret < 0)
--		return ret;
-+		goto out;
- 
- 	ret = xpcs_read_vpcs(xpcs, MDIO_CTRL1);
- 	if (ret < 0)
--		return ret;
-+		goto out;
-+
-+	ret = xpcs_write_vpcs(xpcs, MDIO_CTRL1, ret | DW_USXGMII_RST);
-+	if (ret < 0)
-+		goto out;
-+
-+	return;
- 
--	return xpcs_write_vpcs(xpcs, MDIO_CTRL1, ret | DW_USXGMII_RST);
-+out:
-+	pr_err("%s: XPCS access returned %pe\n", __func__, ERR_PTR(ret));
- }
- 
- static int _xpcs_config_aneg_c73(struct mdio_xpcs_args *xpcs,
-@@ -794,19 +804,19 @@ static int xpcs_config_aneg_c37_sgmii(struct mdio_xpcs_args *xpcs)
- 	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
- }
- 
--static int xpcs_config(struct mdio_xpcs_args *xpcs,
--		       const struct phylink_link_state *state)
-+static int xpcs_do_config(struct mdio_xpcs_args *xpcs,
-+			  phy_interface_t interface, unsigned int mode)
- {
- 	const struct xpcs_compat *compat;
- 	int ret;
- 
--	compat = xpcs_find_compat(xpcs->id, state->interface);
-+	compat = xpcs_find_compat(xpcs->id, interface);
- 	if (!compat)
- 		return -ENODEV;
- 
- 	switch (compat->an_mode) {
- 	case DW_AN_C73:
--		if (state->an_enabled) {
-+		if (phylink_autoneg_inband(mode)) {
- 			ret = xpcs_config_aneg_c73(xpcs, compat);
- 			if (ret)
- 				return ret;
-@@ -824,6 +834,16 @@ static int xpcs_config(struct mdio_xpcs_args *xpcs,
- 	return 0;
- }
- 
-+static int xpcs_config(struct phylink_pcs *pcs, unsigned int mode,
-+		       phy_interface_t interface,
-+		       const unsigned long *advertising,
-+		       bool permit_pause_to_mac)
-+{
-+	struct mdio_xpcs_args *xpcs = phylink_pcs_to_xpcs(pcs);
-+
-+	return xpcs_do_config(xpcs, interface, mode);
-+}
-+
- static int xpcs_get_state_c73(struct mdio_xpcs_args *xpcs,
- 			      struct phylink_link_state *state,
- 			      const struct xpcs_compat *compat)
-@@ -842,7 +862,7 @@ static int xpcs_get_state_c73(struct mdio_xpcs_args *xpcs,
- 
- 		state->link = 0;
- 
--		return xpcs_config(xpcs, state);
-+		return xpcs_do_config(xpcs, state->interface, MLO_AN_INBAND);
- 	}
- 
- 	if (state->an_enabled && xpcs_aneg_done_c73(xpcs, state, compat)) {
-@@ -899,41 +919,45 @@ static int xpcs_get_state_c37_sgmii(struct mdio_xpcs_args *xpcs,
- 	return 0;
- }
- 
--static int xpcs_get_state(struct mdio_xpcs_args *xpcs,
--			  struct phylink_link_state *state)
-+static void xpcs_get_state(struct phylink_pcs *pcs,
-+			   struct phylink_link_state *state)
- {
-+	struct mdio_xpcs_args *xpcs = phylink_pcs_to_xpcs(pcs);
- 	const struct xpcs_compat *compat;
- 	int ret;
- 
- 	compat = xpcs_find_compat(xpcs->id, state->interface);
- 	if (!compat)
--		return -ENODEV;
-+		return;
- 
- 	switch (compat->an_mode) {
- 	case DW_AN_C73:
- 		ret = xpcs_get_state_c73(xpcs, state, compat);
--		if (ret)
--			return ret;
-+		if (ret) {
-+			pr_err("xpcs_get_state_c73 returned %pe\n",
-+			       ERR_PTR(ret));
-+			return;
-+		}
- 		break;
- 	case DW_AN_C37_SGMII:
- 		ret = xpcs_get_state_c37_sgmii(xpcs, state);
--		if (ret)
--			return ret;
-+		if (ret) {
-+			pr_err("xpcs_get_state_c37_sgmii returned %pe\n",
-+			       ERR_PTR(ret));
-+		}
- 		break;
- 	default:
--		return -1;
-+		return;
- 	}
--
--	return 0;
- }
- 
--static int xpcs_link_up(struct mdio_xpcs_args *xpcs, int speed,
--			phy_interface_t interface)
-+static void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
-+			 phy_interface_t interface, int speed, int duplex)
- {
-+	struct mdio_xpcs_args *xpcs = phylink_pcs_to_xpcs(pcs);
-+
- 	if (interface == PHY_INTERFACE_MODE_USXGMII)
- 		return xpcs_config_usxgmii(xpcs, speed);
--
--	return 0;
- }
- 
- static u32 xpcs_get_id(struct mdio_xpcs_args *xpcs)
-@@ -1009,6 +1033,12 @@ static const struct xpcs_id xpcs_id_list[] = {
- 	},
- };
- 
-+static const struct phylink_pcs_ops xpcs_phylink_ops = {
-+	.pcs_config = xpcs_config,
-+	.pcs_get_state = xpcs_get_state,
-+	.pcs_link_up = xpcs_link_up,
-+};
-+
- struct mdio_xpcs_args *xpcs_create(struct mdio_device *mdiodev,
- 				   phy_interface_t interface)
- {
-@@ -1039,6 +1069,9 @@ struct mdio_xpcs_args *xpcs_create(struct mdio_device *mdiodev,
- 			goto out;
- 		}
- 
-+		xpcs->pcs.ops = &xpcs_phylink_ops;
-+		xpcs->pcs.poll = true;
-+
- 		ret = xpcs_soft_reset(xpcs, compat);
- 		if (ret)
- 			goto out;
-@@ -1061,16 +1094,4 @@ void xpcs_destroy(struct mdio_xpcs_args *xpcs)
- }
- EXPORT_SYMBOL_GPL(xpcs_destroy);
- 
--static struct mdio_xpcs_ops xpcs_ops = {
--	.config = xpcs_config,
--	.get_state = xpcs_get_state,
--	.link_up = xpcs_link_up,
--};
--
--struct mdio_xpcs_ops *mdio_xpcs_get_ops(void)
--{
--	return &xpcs_ops;
--}
--EXPORT_SYMBOL_GPL(mdio_xpcs_get_ops);
--
- MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
-index 57a199393d63..0860a5b59f10 100644
---- a/include/linux/pcs/pcs-xpcs.h
-+++ b/include/linux/pcs/pcs-xpcs.h
-@@ -19,19 +19,10 @@ struct xpcs_id;
- struct mdio_xpcs_args {
- 	struct mdio_device *mdiodev;
- 	const struct xpcs_id *id;
--};
--
--struct mdio_xpcs_ops {
--	int (*config)(struct mdio_xpcs_args *xpcs,
--		      const struct phylink_link_state *state);
--	int (*get_state)(struct mdio_xpcs_args *xpcs,
--			 struct phylink_link_state *state);
--	int (*link_up)(struct mdio_xpcs_args *xpcs, int speed,
--		       phy_interface_t interface);
-+	struct phylink_pcs pcs;
- };
- 
- int xpcs_get_an_mode(struct mdio_xpcs_args *xpcs, phy_interface_t interface);
--struct mdio_xpcs_ops *mdio_xpcs_get_ops(void);
- void xpcs_validate(struct mdio_xpcs_args *xpcs, unsigned long *supported,
- 		   struct phylink_link_state *state);
- int xpcs_config_eee(struct mdio_xpcs_args *xpcs, int mult_fact_100ns,
--- 
-2.25.1
-
+Right, this case doesn't need the re-check under the lock, but pointed
+out that the re-queuing case requires the re-check.
