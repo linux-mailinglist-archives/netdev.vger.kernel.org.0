@@ -2,68 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17178398946
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:18:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7137398949
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:19:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbhFBMUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 08:20:31 -0400
-Received: from mail-mw2nam10on2064.outbound.protection.outlook.com ([40.107.94.64]:59616
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        id S230073AbhFBMUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 08:20:32 -0400
+Received: from mail-bn8nam12on2074.outbound.protection.outlook.com ([40.107.237.74]:30145
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229762AbhFBMUE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 08:20:04 -0400
+        id S229932AbhFBMUG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 08:20:06 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BhtYGLOGpPEytYiCeh3japh9EaJ9QH8r1ZvLHaY1O78M0WrFk5bC+gLTVPlHKz1jF2teRgZLCE+KqbbYLqWQfLq94T4ndgvl4t/tZkDAN3JkRieSItAh0WExHla5X7vHL2aLMMoTo9bRWAeUw7GclP/sj+n5jsFU+JPagQeXlQQdn/vIqg9+j5sHZxzn0XGkzWZOiYqkFMfVtlVkihEqlKAtHOnG5p3euSYagb/oRWH1kLp9gwNOhMNA8ziCaJ6rAZWoEhrxP0QOMAjmkqDmwEscm6mD1rKbUikGmI2u8pigQiE7TBXc6OrLVJqZyeg3Xa5u0lHKJ1rxya9VEcTTxw==
+ b=hoz3XEwAE/KPJkn19rwkhopUG6hcHEjewgdkuVpEaWLHjvNnOIYB3Hl2knS+bGJ9WlrI1Zuxyn6CdxC5dx2zPBg/PrU3En9eS6NnAq50M90fVlgMWvanlcNiOrVD4DZzhBq6VxcXhdwtFdc4g78jD9BuBzVYztTl28ksAe+VW8OUKaArXPnMCYdyamYRMATKVX7VXBL2GfWImmodd3U1wXH/3g/7uRU9KP4/pppFeCGk6HaqmYlhjFODXz0D0C+23Z8OrCZ3ZhbUhXRf0yikrnIY588VTOM3P2ZuRiEZQuVagqBazODOQujGKzfaiwYgGGXquYzM1pb4Lt/F8yOKCg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l38TADw6uTKrPt/uwljOd7X1kJKoyrfOyloFQ8G+6/4=;
- b=JDVdfpSJ4lKzqiz7UbUalA/uK4A1Hb4WM9nKMWLzSHpU68fEDt/nuOYItbwoS9+/fkXhyiZtEG7kNzAq+5tsqmm6j9teTBaAdcdQW0yg9dposeiE/65QpkVqyAAFwlO8ZjV0ccuYaTrtvHPFjX78kYGQ15aLJwXGSHvaxE9GyHDcs+MWHV2frg27m6CSc5WNE+YW15MqYfNaDQbFT/F+TeWXkzTA+EvXQ98WXCF7aOddDH18z5JEzYuYXMCzscbFIMzIPyM1s/gN4HVG9q/GZSRrOnnJx/cFfMc4IfkVSDQWqVkinf8XhhbJLmP+yDIqn2+EFpwp2tLzg2egdRxbIw==
+ bh=Yc4oij1qguvE2qTc64DTBA8PoMiHrA3p6D6Wziql+uE=;
+ b=KkO71HIXWJCmH5TIDL1cCnd7utfE6QTTRwt2M6l4bYmXemkqKjTvX/8AD6aWAHnz225Pd10FnUAKCVEY1V0p3oBJtnQuhVKPY6xTM5P7Z/ByXTTr0zl2hWoU+btu01aze3s+YoBPVWDOS3qJGLGfmBjzoK7EemePwzgplq8tf3FBgIG6mHn6s6kj17Vq35pYPoVgxiXyzFd+awveeyPFTbCO0tIbASH/UwwdVDlWFpE9EXnPAjU28ikP3W3Ve/O7SAr5m4MynP8fsBOhsCIhVa5KlL4y6qNSUbtCwFahw9VU9VmtatFA23jey46CAoZsJbscdheSVw5IdOgzVZZRqQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=networkplumber.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
+ 216.228.112.35) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l38TADw6uTKrPt/uwljOd7X1kJKoyrfOyloFQ8G+6/4=;
- b=pUnCz4yZNPIBtqiLZcULI/l7/kFKJrB+sPODENFOYT4ulh+g4bn4pXHG4RCxBPEAAJEPhjZGp6TAgsSJilDiFR9mhSfzEQCOVTQkzUgoOZwIpfdZsCXgYQ9z9WTU1VmCiP6b6ZYtKzoc66ggrU4OjYHyGo8UWr2uHqxWBcRh+dA6L18ySL9iTcz8r540a4ji3p0RB4ZRNa9d3I0jPJxMKTs9ZRW2d24qNUHkOeTanaP/SZ0PVTcTlcMvTZIDN5M/CKJDcUUmm0aQCoHvMwTJnNaALyX4DC5Uk+EsprrM4aMUQDt+bv4t/Bhhmt7TWFkwVfmLxOmOBZNMsmDfm1En9w==
-Received: from MWHPR18CA0070.namprd18.prod.outlook.com (2603:10b6:300:39::32)
- by MN2PR12MB3936.namprd12.prod.outlook.com (2603:10b6:208:16a::33) with
+ bh=Yc4oij1qguvE2qTc64DTBA8PoMiHrA3p6D6Wziql+uE=;
+ b=eCd8cXpvjS/87mvPSElv2l8XjBVgKYeeoNuQEYbdxuqQ50QLF8aMwePpkftbs+HnJ0GYFhfw2HcKVd7giBF1J1B3/lIB1y4bFS3OSFug8iQ+m32lxgoZ1oUxcNRObo2JRWilxfpfkkv10ZZzLyEBEE65z3Irp+rKROfhiL5pEWDF6xmh8n5VIlU5N0750a0SrryCfGIxdX2EL4xdbU73V/zfI+qLLz2HsAqESwcN2rA3QrvMExj/a7qX4my6PT8V/SuJ0roaLTlexm5HMJay4y/RaxubnVBtvS0I/N4hs/PNiDmu6LUsmE4CL7SyPWEzKa+Im/knK0kfJCkI/r8F/g==
+Received: from MW4PR04CA0247.namprd04.prod.outlook.com (2603:10b6:303:88::12)
+ by MW2PR12MB2395.namprd12.prod.outlook.com (2603:10b6:907:3::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21; Wed, 2 Jun
- 2021 12:18:19 +0000
-Received: from CO1NAM11FT004.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:39:cafe::2e) by MWHPR18CA0070.outlook.office365.com
- (2603:10b6:300:39::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend
- Transport; Wed, 2 Jun 2021 12:18:19 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Wed, 2 Jun
+ 2021 12:18:22 +0000
+Received: from CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:88:cafe::bd) by MW4PR04CA0247.outlook.office365.com
+ (2603:10b6:303:88::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.21 via Frontend
+ Transport; Wed, 2 Jun 2021 12:18:22 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
- smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
- header.d=none;networkplumber.org; dmarc=pass action=none
- header.from=nvidia.com;
+ smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.35 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.35; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.35) by
- CO1NAM11FT004.mail.protection.outlook.com (10.13.175.89) with Microsoft SMTP
+ CO1NAM11FT060.mail.protection.outlook.com (10.13.175.132) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4150.30 via Frontend Transport; Wed, 2 Jun 2021 12:18:18 +0000
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL111.nvidia.com
+ 15.20.4150.30 via Frontend Transport; Wed, 2 Jun 2021 12:18:22 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL111.nvidia.com
  (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 2 Jun
- 2021 12:18:18 +0000
+ 2021 12:18:21 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 2 Jun
+ 2021 12:18:21 +0000
 Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
  (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 2 Jun 2021 05:18:15 -0700
+ Transport; Wed, 2 Jun 2021 05:18:18 -0700
 From:   <dlinkin@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>,
         <stephen@networkplumber.org>, <dsahern@gmail.com>,
         <vladbu@nvidia.com>, <parav@nvidia.com>, <huyn@nvidia.com>,
         Dmytro Linkin <dlinkin@nvidia.com>
-Subject: [PATCH RESEND net-next v3 15/18] devlink: Allow setting parent node of rate objects
-Date:   Wed, 2 Jun 2021 15:17:28 +0300
-Message-ID: <1622636251-29892-16-git-send-email-dlinkin@nvidia.com>
+Subject: [PATCH RESEND net-next v3 16/18] netdevsim: Allow setting parent node of rate objects
+Date:   Wed, 2 Jun 2021 15:17:29 +0300
+Message-ID: <1622636251-29892-17-git-send-email-dlinkin@nvidia.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1622636251-29892-1-git-send-email-dlinkin@nvidia.com>
 References: <1622636251-29892-1-git-send-email-dlinkin@nvidia.com>
@@ -71,331 +73,226 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b2f99019-9f49-4b13-e4c1-08d925c081be
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3936:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB39369C86EB1EC8FF885986E2CB3D9@MN2PR12MB3936.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:121;
+X-MS-Office365-Filtering-Correlation-Id: f2fe7d36-0c54-4f26-b6fe-08d925c0839f
+X-MS-TrafficTypeDiagnostic: MW2PR12MB2395:
+X-Microsoft-Antispam-PRVS: <MW2PR12MB23950D92B13EB73D46F164DECB3D9@MW2PR12MB2395.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:506;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 44D+HgEMs7VvEDi6AtEG16CtGMgR4Ao9PRP/ADw/E16zEB8ISWH7sKTm77fmKa3IwIiZcONlJP231HsvYdFW10qo2UaFv282UgBzXlDCwD4oMHiVAL6XV6UMArG2bs1wGR+x10XvlzrrqRP1jkxZo4qN+g9rkyVS1uhF74a6qSrCQ7tVoFLhYx1IXsV0PBA3THdJpHnt1LR2QXMPYWLAkvyh2bQdmndq01EHg7ybvo59RzePDSzyz7wU/Tc+VDUD1JmogmfJOSHyGI/dpk4DbkMrU03g9Ax+ONF1ZvZLNPL6pEu4mzYS0SPmHfON3uQ6lDIsN0Eq584Gt6Br95fjpXhE11Eb+oHwf3rNoLYvXjTIpcYD/yq8N6CsV71lbFmVii9N+v98vlhPGAN7IKxq2RJZydotro7Uq5w2SAzVsmaWUT7d82IbmW7Ik+SoCKM1CvnmKSjnqZ3aFrwGV2Yen5VgyMWiSUOj1voHWFY1dYc8X9qGg/RdWzyI95/awBt54xfmum7DdqnPZdFZgZLr7sDZ0LHi6BJLq93M+28BpdmYjiVyAgQe93GSgja7q3m9jM0Mpmn4WClgvwwyDGJj1kvq6uf1R16ktij9yuim7fCwUOdNI+CESFJ3r+s1zgH9sdr/WtvBvKVaGnHOUB4szT66vr4JS6E4n9KE8oVVMM0=
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(39860400002)(376002)(136003)(46966006)(36840700001)(26005)(54906003)(7696005)(336012)(86362001)(36906005)(8936002)(82310400003)(5660300002)(7636003)(70206006)(186003)(36756003)(356005)(2616005)(36860700001)(83380400001)(4326008)(47076005)(6666004)(107886003)(6916009)(426003)(2906002)(82740400003)(70586007)(8676002)(316002)(478600001)(2876002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: bs+96gkp2sccDZYP9aDyhKNBMGtQ/TQuVvGdkUTY2PSoMeS2lur3+oHxoo2kthfUferw0BvfldSMeVsL/5n6YwTcHGyztAGb5mbqGM6j4ctoKefZmWwnlV+cydDkwr7ts8DhE5h1AkHfBNXi3LpecmcmNnq6Ilt0Yq/Q/K0mnOw8ZRqZrDF64Y6S1be4BoVnUE6G4uggcaz7H4irBCfbfxCRq3Mv4IUqqhegSY9zF1/K1JqUIqsvWYnZfgGSz8cVUZvsOELBzAIQOy659MlbX190yY4qlti0KiIIIyrVS4w9Q4AqYaZtZQKHYrzjtDuBDcc6cnXLy52fcGeH9y/J80L7ewkAJXasU5KifmyqoHqtszQAycialx551UFFPuonIfaB80mMnLc5+RduDbcHPi6JbGKtp+hydOVB4AeewDKXscsEjRFtjdDgnk3C82zjPnhjmu7rP1XL3+6XMZhfGglUIDfGuTAgPoaZ8/7qC5Gwkju0MiBiG37nNCzNQL8pevyGeA5/yBHyteCei22AKHXceoRjxhHPwh/YsqQuL54mWgbc4UzmooBPQNaOeMOycQMh5XPN0UNA40egQsYBVWRi2n/VqV+0QNsEVsKPrDh53wNdh/KkDAIDaFVlViTDO16Y49/T3Cca8GeR508myg==
+X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(136003)(396003)(39860400002)(346002)(36840700001)(46966006)(7696005)(36906005)(2616005)(26005)(5660300002)(36756003)(336012)(36860700001)(478600001)(426003)(47076005)(70206006)(83380400001)(4326008)(8676002)(82310400003)(2906002)(86362001)(82740400003)(2876002)(316002)(54906003)(186003)(6666004)(8936002)(356005)(6916009)(70586007)(107886003)(7636003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 12:18:18.9056
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 12:18:22.0877
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2f99019-9f49-4b13-e4c1-08d925c081be
+X-MS-Exchange-CrossTenant-Network-Message-Id: f2fe7d36-0c54-4f26-b6fe-08d925c0839f
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT004.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3936
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2395
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmytro Linkin <dlinkin@nvidia.com>
 
-Refactor DEVLINK_CMD_RATE_{GET|SET} command handlers to support setting
-a node as a parent for another rate object (leaf or node) by means of
-new attribute DEVLINK_ATTR_RATE_PARENT_NODE_NAME. Extend devlink ops
-with new callbacks rate_{leaf|node}_parent_set() to set node as a parent
-for rate object to allow supporting drivers to implement rate grouping
-through devlink. Driver implementations are allowed to support leafs
-or node children only. Invoking callback with NULL as parent should be
-threated by the driver as unset parent action.
-Extend rate object struct with reference counter to disallow deleting a
-node with any child pointing to it. User should unset parent for the
-child explicitly.
-
-Example:
-
-$ devlink port function rate add netdevsim/netdevsim10/group1
-
-$ devlink port function rate add netdevsim/netdevsim10/group2
-
-$ devlink port function rate set netdevsim/netdevsim10/group1 parent group2
-
-$ devlink port function rate show netdevsim/netdevsim10/group1
-netdevsim/netdevsim10/group1: type node parent group2
-
-$ devlink port function rate set netdevsim/netdevsim10/group1 noparent
+Implement new devlink ops that allow setting rate node as a parent for
+devlink port (leaf) or another devlink node through devlink API.
+Expose parent names to netdevsim debugfs in read only mode.
 
 Co-developed-by: Vlad Buslov <vladbu@nvidia.com>
 Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
+ drivers/net/netdevsim/dev.c       | 91 +++++++++++++++++++++++++++++++++++++--
+ drivers/net/netdevsim/netdevsim.h |  2 +
+ 2 files changed, 89 insertions(+), 4 deletions(-)
 
-Notes:
-    v1->v2:
-    - s/func/function/ at commit message
-
-    v2->v3:
-    - unset parents for all rate objects at devlink_rate_nodes_destroy()
-
- include/net/devlink.h        |  14 ++++-
- include/uapi/linux/devlink.h |   1 +
- net/core/devlink.c           | 125 ++++++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 137 insertions(+), 3 deletions(-)
-
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 13162b5..eb045f1 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -142,9 +142,13 @@ struct devlink_rate {
- 	u64 tx_share;
- 	u64 tx_max;
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 9f01b6c..527b019 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -222,6 +222,7 @@ static ssize_t nsim_dev_trap_fa_cookie_write(struct file *file,
+ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
+ {
+ 	char dev_ddir_name[sizeof(DRV_NAME) + 10];
++	int err;
  
-+	struct devlink_rate *parent;
- 	union {
- 		struct devlink_port *devlink_port;
--		char *name;
-+		struct {
-+			char *name;
-+			refcount_t refcnt;
-+		};
- 	};
- };
- 
-@@ -1486,6 +1490,14 @@ struct devlink_ops {
- 			     struct netlink_ext_ack *extack);
- 	int (*rate_node_del)(struct devlink_rate *rate_node, void *priv,
- 			     struct netlink_ext_ack *extack);
-+	int (*rate_leaf_parent_set)(struct devlink_rate *child,
-+				    struct devlink_rate *parent,
-+				    void *priv_child, void *priv_parent,
-+				    struct netlink_ext_ack *extack);
-+	int (*rate_node_parent_set)(struct devlink_rate *child,
-+				    struct devlink_rate *parent,
-+				    void *priv_child, void *priv_parent,
-+				    struct netlink_ext_ack *extack);
- };
- 
- static inline void *devlink_priv(struct devlink *devlink)
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 7e15853..32f53a00 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -549,6 +549,7 @@ enum devlink_attr {
- 	DEVLINK_ATTR_RATE_TX_SHARE,		/* u64 */
- 	DEVLINK_ATTR_RATE_TX_MAX,		/* u64 */
- 	DEVLINK_ATTR_RATE_NODE_NAME,		/* string */
-+	DEVLINK_ATTR_RATE_PARENT_NODE_NAME,	/* string */
- 
- 	/* add new attributes above here, update the policy in devlink.c */
- 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index d520fb5..04cc5e5 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -880,6 +880,11 @@ static int devlink_nl_rate_fill(struct sk_buff *msg,
- 			      devlink_rate->tx_max, DEVLINK_ATTR_PAD))
- 		goto nla_put_failure;
- 
-+	if (devlink_rate->parent)
-+		if (nla_put_string(msg, DEVLINK_ATTR_RATE_PARENT_NODE_NAME,
-+				   devlink_rate->parent->name))
-+			goto nla_put_failure;
-+
- 	genlmsg_end(msg, hdr);
+ 	sprintf(dev_ddir_name, DRV_NAME "%u", nsim_dev->nsim_bus_dev->dev.id);
+ 	nsim_dev->ddir = debugfs_create_dir(dev_ddir_name, nsim_dev_ddir);
+@@ -264,10 +265,17 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
+ 						nsim_dev->nsim_bus_dev,
+ 						&nsim_dev_max_vfs_fops);
+ 	nsim_dev->nodes_ddir = debugfs_create_dir("rate_nodes", nsim_dev->ddir);
+-	if (IS_ERR(nsim_dev->nodes_ddir))
+-		return PTR_ERR(nsim_dev->nodes_ddir);
++	if (IS_ERR(nsim_dev->nodes_ddir)) {
++		err = PTR_ERR(nsim_dev->nodes_ddir);
++		goto err_out;
++	}
+ 	nsim_udp_tunnels_debugfs_create(nsim_dev);
  	return 0;
- 
-@@ -1152,6 +1157,18 @@ static int devlink_nl_cmd_rate_get_doit(struct sk_buff *skb,
- 	return genlmsg_reply(msg, info);
++
++err_out:
++	debugfs_remove_recursive(nsim_dev->ports_ddir);
++	debugfs_remove_recursive(nsim_dev->ddir);
++	return err;
  }
  
-+static bool
-+devlink_rate_is_parent_node(struct devlink_rate *devlink_rate,
-+			    struct devlink_rate *parent)
+ static void nsim_dev_debugfs_exit(struct nsim_dev *nsim_dev)
+@@ -277,6 +285,27 @@ static void nsim_dev_debugfs_exit(struct nsim_dev *nsim_dev)
+ 	debugfs_remove_recursive(nsim_dev->ddir);
+ }
+ 
++static ssize_t nsim_dev_rate_parent_read(struct file *file,
++					 char __user *data,
++					 size_t count, loff_t *ppos)
 +{
-+	while (parent) {
-+		if (parent == devlink_rate)
-+			return true;
-+		parent = parent->parent;
-+	}
-+	return false;
++	char **name_ptr = file->private_data;
++	size_t len;
++
++	if (!*name_ptr)
++		return 0;
++
++	len = strlen(*name_ptr);
++	return simple_read_from_buffer(data, count, ppos, *name_ptr, len);
 +}
 +
- static int devlink_nl_cmd_get_doit(struct sk_buff *skb, struct genl_info *info)
++static const struct file_operations nsim_dev_rate_parent_fops = {
++	.open = simple_open,
++	.read = nsim_dev_rate_parent_read,
++	.llseek = generic_file_llseek,
++	.owner = THIS_MODULE,
++};
++
+ static int nsim_dev_port_debugfs_init(struct nsim_dev *nsim_dev,
+ 				      struct nsim_dev_port *nsim_dev_port)
  {
- 	struct devlink *devlink = info->user_ptr[0];
-@@ -1572,11 +1589,75 @@ static int devlink_nl_cmd_port_del_doit(struct sk_buff *skb,
- 	return devlink->ops->port_del(devlink, port_index, extack);
- }
+@@ -299,6 +328,11 @@ static int nsim_dev_port_debugfs_init(struct nsim_dev *nsim_dev,
+ 				   &nsim_bus_dev->vfconfigs[vf_id].min_tx_rate);
+ 		debugfs_create_u16("tx_max", 0400, nsim_dev_port->ddir,
+ 				   &nsim_bus_dev->vfconfigs[vf_id].max_tx_rate);
++		nsim_dev_port->rate_parent = debugfs_create_file("rate_parent",
++								 0400,
++								 nsim_dev_port->ddir,
++								 &nsim_dev_port->parent_name,
++								 &nsim_dev_rate_parent_fops);
+ 	}
+ 	debugfs_create_symlink("dev", nsim_dev_port->ddir, dev_link_name);
  
-+static int
-+devlink_nl_rate_parent_node_set(struct devlink_rate *devlink_rate,
-+				struct genl_info *info,
-+				struct nlattr *nla_parent)
-+{
-+	struct devlink *devlink = devlink_rate->devlink;
-+	const char *parent_name = nla_data(nla_parent);
-+	const struct devlink_ops *ops = devlink->ops;
-+	size_t len = strlen(parent_name);
-+	struct devlink_rate *parent;
-+	int err = -EOPNOTSUPP;
-+
-+	parent = devlink_rate->parent;
-+	if (parent && len) {
-+		NL_SET_ERR_MSG_MOD(info->extack, "Rate object already has parent.");
-+		return -EBUSY;
-+	} else if (parent && !len) {
-+		if (devlink_rate_is_leaf(devlink_rate))
-+			err = ops->rate_leaf_parent_set(devlink_rate, NULL,
-+							devlink_rate->priv, NULL,
-+							info->extack);
-+		else if (devlink_rate_is_node(devlink_rate))
-+			err = ops->rate_node_parent_set(devlink_rate, NULL,
-+							devlink_rate->priv, NULL,
-+							info->extack);
-+		if (err)
-+			return err;
-+
-+		refcount_dec(&parent->refcnt);
-+		devlink_rate->parent = NULL;
-+	} else if (!parent && len) {
-+		parent = devlink_rate_node_get_by_name(devlink, parent_name);
-+		if (IS_ERR(parent))
-+			return -ENODEV;
-+
-+		if (parent == devlink_rate) {
-+			NL_SET_ERR_MSG_MOD(info->extack, "Parent to self is not allowed");
-+			return -EINVAL;
-+		}
-+
-+		if (devlink_rate_is_node(devlink_rate) &&
-+		    devlink_rate_is_parent_node(devlink_rate, parent->parent)) {
-+			NL_SET_ERR_MSG_MOD(info->extack, "Node is already a parent of parent node.");
-+			return -EEXIST;
-+		}
-+
-+		if (devlink_rate_is_leaf(devlink_rate))
-+			err = ops->rate_leaf_parent_set(devlink_rate, parent,
-+							devlink_rate->priv, parent->priv,
-+							info->extack);
-+		else if (devlink_rate_is_node(devlink_rate))
-+			err = ops->rate_node_parent_set(devlink_rate, parent,
-+							devlink_rate->priv, parent->priv,
-+							info->extack);
-+		if (err)
-+			return err;
-+
-+		refcount_inc(&parent->refcnt);
-+		devlink_rate->parent = parent;
+@@ -1068,6 +1102,8 @@ static int nsim_leaf_tx_max_set(struct devlink_rate *devlink_rate, void *priv,
+ 
+ struct nsim_rate_node {
+ 	struct dentry *ddir;
++	struct dentry *rate_parent;
++	char *parent_name;
+ 	u16 tx_share;
+ 	u16 tx_max;
+ };
+@@ -1105,6 +1141,7 @@ static int nsim_rate_node_new(struct devlink_rate *node, void **priv,
+ {
+ 	struct nsim_dev *nsim_dev = devlink_priv(node->devlink);
+ 	struct nsim_rate_node *nsim_node;
++	int err;
+ 
+ 	if (!nsim_esw_mode_is_switchdev(nsim_dev)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Node creation allowed only in switchdev mode.");
+@@ -1117,13 +1154,28 @@ static int nsim_rate_node_new(struct devlink_rate *node, void **priv,
+ 
+ 	nsim_node->ddir = debugfs_create_dir(node->name, nsim_dev->nodes_ddir);
+ 	if (!nsim_node->ddir) {
+-		kfree(nsim_node);
+-		return -ENOMEM;
++		err = -ENOMEM;
++		goto err_node;
+ 	}
+ 	debugfs_create_u16("tx_share", 0400, nsim_node->ddir, &nsim_node->tx_share);
+ 	debugfs_create_u16("tx_max", 0400, nsim_node->ddir, &nsim_node->tx_max);
++	nsim_node->rate_parent = debugfs_create_file("rate_parent", 0400,
++						     nsim_node->ddir,
++						     &nsim_node->parent_name,
++						     &nsim_dev_rate_parent_fops);
++	if (IS_ERR(nsim_node->rate_parent)) {
++		err = PTR_ERR(nsim_node->rate_parent);
++		goto err_ddir;
 +	}
 +
+ 	*priv = nsim_node;
+ 	return 0;
++
++err_ddir:
++	debugfs_remove_recursive(nsim_node->ddir);
++err_node:
++	kfree(nsim_node);
++	return err;
+ }
+ 
+ static int nsim_rate_node_del(struct devlink_rate *node, void *priv,
+@@ -1131,11 +1183,40 @@ static int nsim_rate_node_del(struct devlink_rate *node, void *priv,
+ {
+ 	struct nsim_rate_node *nsim_node = priv;
+ 
++	debugfs_remove(nsim_node->rate_parent);
+ 	debugfs_remove_recursive(nsim_node->ddir);
+ 	kfree(nsim_node);
+ 	return 0;
+ }
+ 
++static int nsim_rate_leaf_parent_set(struct devlink_rate *child,
++				     struct devlink_rate *parent,
++				     void *priv_child, void *priv_parent,
++				     struct netlink_ext_ack *extack)
++{
++	struct nsim_dev_port *nsim_dev_port = priv_child;
++
++	if (parent)
++		nsim_dev_port->parent_name = parent->name;
++	else
++		nsim_dev_port->parent_name = NULL;
 +	return 0;
 +}
 +
- static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
- 			       const struct devlink_ops *ops,
- 			       struct genl_info *info)
- {
--	struct nlattr **attrs = info->attrs;
-+	struct nlattr *nla_parent, **attrs = info->attrs;
- 	int err = -EOPNOTSUPP;
- 	u64 rate;
- 
-@@ -1606,6 +1687,14 @@ static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
- 		devlink_rate->tx_max = rate;
- 	}
- 
-+	nla_parent = attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME];
-+	if (nla_parent) {
-+		err = devlink_nl_rate_parent_node_set(devlink_rate, info,
-+						      nla_parent);
-+		if (err)
-+			return err;
-+	}
++static int nsim_rate_node_parent_set(struct devlink_rate *child,
++				     struct devlink_rate *parent,
++				     void *priv_child, void *priv_parent,
++				     struct netlink_ext_ack *extack)
++{
++	struct nsim_rate_node *nsim_node = priv_child;
 +
- 	return 0;
- }
- 
-@@ -1624,6 +1713,11 @@ static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
- 			NL_SET_ERR_MSG_MOD(info->extack, "TX max set isn't supported for the leafs");
- 			return false;
- 		}
-+		if (attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] &&
-+		    !ops->rate_leaf_parent_set) {
-+			NL_SET_ERR_MSG_MOD(info->extack, "Parent set isn't supported for the leafs");
-+			return false;
-+		}
- 	} else if (type == DEVLINK_RATE_TYPE_NODE) {
- 		if (attrs[DEVLINK_ATTR_RATE_TX_SHARE] && !ops->rate_node_tx_share_set) {
- 			NL_SET_ERR_MSG_MOD(info->extack, "TX share set isn't supported for the nodes");
-@@ -1633,6 +1727,11 @@ static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
- 			NL_SET_ERR_MSG_MOD(info->extack, "TX max set isn't supported for the nodes");
- 			return false;
- 		}
-+		if (attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] &&
-+		    !ops->rate_node_parent_set) {
-+			NL_SET_ERR_MSG_MOD(info->extack, "Parent set isn't supported for the nodes");
-+			return false;
-+		}
- 	} else {
- 		WARN_ON("Unknown type of rate object");
- 		return false;
-@@ -1702,6 +1801,7 @@ static int devlink_nl_cmd_rate_new_doit(struct sk_buff *skb,
- 	if (err)
- 		goto err_rate_set;
- 
-+	refcount_set(&rate_node->refcnt, 1);
- 	list_add(&rate_node->list, &devlink->rate_list);
- 	devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_NEW);
- 	return 0;
-@@ -1723,8 +1823,15 @@ static int devlink_nl_cmd_rate_del_doit(struct sk_buff *skb,
- 	const struct devlink_ops *ops = devlink->ops;
- 	int err;
- 
-+	if (refcount_read(&rate_node->refcnt) > 1) {
-+		NL_SET_ERR_MSG_MOD(info->extack, "Node has children. Cannot delete node.");
-+		return -EBUSY;
-+	}
++	if (parent)
++		nsim_node->parent_name = parent->name;
++	else
++		nsim_node->parent_name = NULL;
++	return 0;
++}
 +
- 	devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_DEL);
- 	err = ops->rate_node_del(rate_node, rate_node->priv, info->extack);
-+	if (rate_node->parent)
-+		refcount_dec(&rate_node->parent->refcnt);
- 	list_del(&rate_node->list);
- 	kfree(rate_node->name);
- 	kfree(rate_node);
-@@ -8224,6 +8331,7 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
- 	[DEVLINK_ATTR_RATE_TX_SHARE] = { .type = NLA_U64 },
- 	[DEVLINK_ATTR_RATE_TX_MAX] = { .type = NLA_U64 },
- 	[DEVLINK_ATTR_RATE_NODE_NAME] = { .type = NLA_NUL_STRING },
-+	[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] = { .type = NLA_NUL_STRING },
+ static const struct devlink_ops nsim_dev_devlink_ops = {
+ 	.eswitch_mode_set = nsim_devlink_eswitch_mode_set,
+ 	.eswitch_mode_get = nsim_devlink_eswitch_mode_get,
+@@ -1157,6 +1238,8 @@ static int nsim_rate_node_del(struct devlink_rate *node, void *priv,
+ 	.rate_node_tx_max_set = nsim_node_tx_max_set,
+ 	.rate_node_new = nsim_rate_node_new,
+ 	.rate_node_del = nsim_rate_node_del,
++	.rate_leaf_parent_set = nsim_rate_leaf_parent_set,
++	.rate_node_parent_set = nsim_rate_node_parent_set,
  };
  
- static const struct genl_small_ops devlink_nl_ops[] = {
-@@ -9135,7 +9243,8 @@ void devlink_rate_leaf_destroy(struct devlink_port *devlink_port)
-  *
-  * @devlink: devlink instance
-  *
-- * Destroy all rate nodes on specified device
-+ * Unset parent for all rate objects and destroy all rate nodes
-+ * on specified device.
-  *
-  * Context: Takes and release devlink->lock <mutex>.
-  */
-@@ -9145,6 +9254,18 @@ void devlink_rate_nodes_destroy(struct devlink *devlink)
- 	const struct devlink_ops *ops = devlink->ops;
+ #define NSIM_DEV_MAX_MACS_DEFAULT 32
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index d62a138..cdfdf2a 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -211,6 +211,8 @@ struct nsim_dev_port {
+ 	unsigned int port_index;
+ 	enum nsim_dev_port_type port_type;
+ 	struct dentry *ddir;
++	struct dentry *rate_parent;
++	char *parent_name;
+ 	struct netdevsim *ns;
+ };
  
- 	mutex_lock(&devlink->lock);
-+	list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
-+		if (!devlink_rate->parent)
-+			continue;
-+
-+		refcount_dec(&devlink_rate->parent->refcnt);
-+		if (devlink_rate_is_leaf(devlink_rate))
-+			ops->rate_leaf_parent_set(devlink_rate, NULL, devlink_rate->priv,
-+						  NULL, NULL);
-+		else if (devlink_rate_is_node(devlink_rate))
-+			ops->rate_node_parent_set(devlink_rate, NULL, devlink_rate->priv,
-+						  NULL, NULL);
-+	}
- 	list_for_each_entry_safe(devlink_rate, tmp, &devlink->rate_list, list) {
- 		if (devlink_rate_is_node(devlink_rate)) {
- 			ops->rate_node_del(devlink_rate, devlink_rate->priv, NULL);
 -- 
 1.8.3.1
 
