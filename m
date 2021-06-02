@@ -2,342 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 463963988C8
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:01:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4A0F398918
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:13:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbhFBMCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 08:02:53 -0400
-Received: from mail-dm6nam12on2135.outbound.protection.outlook.com ([40.107.243.135]:6496
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        id S229753AbhFBMOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 08:14:49 -0400
+Received: from mail-am6eur05on2049.outbound.protection.outlook.com ([40.107.22.49]:39392
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229765AbhFBMCt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 08:02:49 -0400
+        id S229482AbhFBMOs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 08:14:48 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FrwhyMhzExZAxUpzzlIpeFcCbr0IgE/5cqVJAtUF5gA+236YnbxjRnetgRDm8X+3QmLSPAuPmHumNEiKQzlzt++kGddqvXZhgI2HPtyL+i1xyXFzVo2yHELW50a00o5sAk3gpiapON3Vgc+iuTARXMVdTm0xFklfjccH/3bYkBxa8F2lXp33E7CYd/OQQVSj5YgvTQtp+Jym5q/udYMOr6Cpn7QfHQ6HpmHxT8ojMqh9EvHsf3K80hnw/9mcKBkFffx4H5b2SXI4m13RBHjxoDhwIjsydDHesCykbfb4KxLy0qT7IGvwhVv74eIXVkBSHBV1Wze9aDyNEZfRj79vCA==
+ b=obbt51DOpAoSVMNZWcfYdxCJ/2aD31EJ6ki17AnaVWRWqUrUuha2scEfKnBKZGXdBuFR1ryVZ5VY6ehZK85fL/5BHdX4I8v43TxxtHrnneFt55ckPDTdPOLxWXhjdmXCRXYl7S3x70bnDnl/SMDzjYZ7fWE3crcUq4N+CVJBfpM1X9OGCEUxFmt4RT3dXbHFb9Lg/LzBSeEE7mDe/aE9ZK65Bst3BhX8oMx1vXQon738R27+YXd3mljbMxa2FBI5aI5jGUSsxsy+emZcEHcKG2rz5h6Q2Oc1cm5Kje2qtZwkExITysnZlpjMC75aijuwkzycDPyzgL5RoNGKTKLlCg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0bZf2r92aZyzHVMYvs8+PJ0xF5cqzQmo2N0d+moaspM=;
- b=eiWq3bLMrs6zhXi1fnCUxFkGJLH1HxfMuP53OYzZn446YYswn4dKsFSULeJK3w4Fnn5vIe+5y1sJ3Vt1XIO4vLM/WN28U+MZAEKpCpu+QmUyy0080Yj+VoWFW0dP/0fFwPmVBqhI3SSjFJvtVkaEY0jMGnEG/Nny1sXXBim7YJB6XcekHLRuR+7LLaV7CLLqdw5qzjB5I0WZ+hKLurbKqtk7VfS1v1Hzmhw1lX7ps03/CQjVUgCPgCGdqKtHn7FjypVg5A7X1njOZgzaUt86h38k44T7pJSG6UFd0nQSEYFQ3Z5W2eXDV3LHgWiyKph+gEwEMSOugmZLGXfdoUOLow==
+ bh=H85OxNMfeKkGr+YsvyL9ZrTif5J99fhLol3iZhPK0zg=;
+ b=ZtIVb0hHlREmhT1I1FHmxAZkD0wXuNle0UkCamSWggwWbYbL6rWuePKDlMXDkhsktNHZYPt8sBWPr1WcSE1nUi2ndz/zgOmatPrYlX6jc0YQrj4/95H5lnIvtw/1+UtqfITHvyzivo7j1yaJP6BpZhKYVuGKBZriA/EHJzY1jmmvkZHO8bVjiWTXVfn9DS8TI4jegZelwzJfT47CX+c9gNMOMIJqzV1mUScr16CjbLZ9ANrEWMx8F/WQbi8Aj2RPPO18c1YudcZ5wNF66ezZkplKb6P+7f8zsv14LmOld4IU/cnYKDaNclSj7i7yg3iAzVIy4E+wzvR+vR73MK7ZkA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0bZf2r92aZyzHVMYvs8+PJ0xF5cqzQmo2N0d+moaspM=;
- b=nmfCh9eCRYjBeiWa8g0hP1Sny3CZ933KjEuJpqWLUpPMp+PVAXctUpIy8eFJ2+4+SqcA3DwFcyG47hKgHdMrPV1FA8sq1GD39S0hBCqir+EjGd2fYNVt2UowemFKNdzItgDd9oJzNrkwoPXDLuVZcp6Z8WT3YkjuBoDxJa8wXcY=
+ bh=H85OxNMfeKkGr+YsvyL9ZrTif5J99fhLol3iZhPK0zg=;
+ b=e04hyy/t1k6tpJu2wHxsf6KnxwNi7wfIbioKeu5kK45K8RsDxIlUZxc1xfI7yF2pZN3TtMQR6ZQ2Y0Z1KisRLf23b/hjiBdd3bG4UpibJY1+XPl4998jzLT3ivXC9uYsyDIqnOUv7sie4llQKOQjksp/GwfXtB+GsePqzuWij00=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4986.namprd13.prod.outlook.com (2603:10b6:510:92::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.11; Wed, 2 Jun
- 2021 12:00:26 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::4596:4181:eeee:7a8a]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::4596:4181:eeee:7a8a%9]) with mapi id 15.20.4195.018; Wed, 2 Jun 2021
- 12:00:26 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Louis Peens <louis.peens@corigine.com>,
-        Yinjun Zhang <yinjun.zhang@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v3 8/8] nfp: flower-ct: add tc merge functionality
-Date:   Wed,  2 Jun 2021 13:59:52 +0200
-Message-Id: <20210602115952.17591-9-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210602115952.17591-1-simon.horman@corigine.com>
-References: <20210602115952.17591-1-simon.horman@corigine.com>
-Content-Transfer-Encoding: 8bit
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB6PR04MB3208.eurprd04.prod.outlook.com (2603:10a6:6:3::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4173.24; Wed, 2 Jun 2021 12:13:01 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4173.030; Wed, 2 Jun 2021
+ 12:13:01 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     davem@davemloft.net, kuba@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com
+Subject: [PATCH net 0/3] net: ethernet: fixes for stmmac and fec
+Date:   Wed,  2 Jun 2021 20:12:35 +0800
+Message-Id: <20210602121238.12693-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
 Content-Type: text/plain
-X-Originating-IP: [2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a]
-X-ClientProxiedBy: AM9P192CA0012.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:21d::17) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+X-Originating-IP: [119.31.174.71]
+X-ClientProxiedBy: SG2PR02CA0119.apcprd02.prod.outlook.com
+ (2603:1096:4:92::35) To DB8PR04MB6795.eurprd04.prod.outlook.com
+ (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from madeliefje.horms.nl (2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a) by AM9P192CA0012.EURP192.PROD.OUTLOOK.COM (2603:10a6:20b:21d::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Wed, 2 Jun 2021 12:00:25 +0000
+Received: from localhost.localdomain (119.31.174.71) by SG2PR02CA0119.apcprd02.prod.outlook.com (2603:1096:4:92::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Wed, 2 Jun 2021 12:12:57 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0535b9d5-9da5-4a4b-84bd-08d925be0263
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4986:
+X-MS-Office365-Filtering-Correlation-Id: 24600364-49d6-4da8-79dc-08d925bfc433
+X-MS-TrafficTypeDiagnostic: DB6PR04MB3208:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB4986BE95F163371DADDB3AF4E83D9@PH0PR13MB4986.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <DB6PR04MB3208F0F6290C050F665288A5E63D9@DB6PR04MB3208.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cdNfuhGiKM12uNgF9RIAuJRbtI7nW8ql5UEu5VRJ3QF3Hq6qiihxf7PU05celPt3bhTR6lURaRNQK2l1jvERR2eqEbz2pmUJop9amCEPlNgCO5qykMP3MV/DIvDu4TXEP5fZh5qEV+izXB6iFM7VKT926teGvB6PHP19eEw4qReYAyWXA52N2KehBb48bo4P+Z2ytU6Mt2so5hMOns0h5PoeJnNMoTHd6gzXl/0LgGYHujpDqQ3iXHG24aN8S/uY/1CWeW/GKVzxG0b7Ypg7LUYhb17fQuAoxlU8ARKhMHxadvdHzoUHp3Vceabm7kbjEPTVv0dK4qFDuQMr6Jq+dUYeBQ0bWXKMluJYKOJbsQbbQd6u3m5JkPEUFGpKCgXVuT4gCUXV1OI3HxVICn4RudHYW6wyr2ciplhAhnlTJOGQkr7R/S26mxuSCVUjTQaTHQCusxNlZH6YJm6EWxa84Aj7In7guH0+a4ih9HdPD13SZvYyHch5+DYIF2CtgbgA4iopriBnmdiqrXC5Lrk/ZA2ZGfivGGysKvYJ+4YriQW4zK/4u5Ke/FsVe3EegGTKrkHHLHjcsB3ss2+vz//jLRQb/9W4Yp5Ef2I4yA6bvV0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(39840400004)(376002)(136003)(346002)(396003)(5660300002)(44832011)(36756003)(66556008)(6486002)(107886003)(66946007)(38100700002)(1076003)(8676002)(52116002)(6512007)(6666004)(16526019)(4326008)(66476007)(86362001)(83380400001)(2906002)(8936002)(478600001)(186003)(2616005)(54906003)(110136005)(6506007)(316002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?ejfqAH9fnr5vX/lzXinwrKT7+m8yIiFBtVLtd56mR9Bnxd0Fh2lik3APmyxw?=
- =?us-ascii?Q?5SBhAZyd3m8EzE2vxWo5+TjCPZ0ty/n4IK+LHNV7z8CA3AOlQ+btqif33m9G?=
- =?us-ascii?Q?W6xNugPjCcNfqU1ItIlqHJKM6KrtCcyOdscC6ivc13Aqph3iWS/uqFHNLqo9?=
- =?us-ascii?Q?2vWRKYwr7+/LpnNYdN+qcIKS+5B6Ug7ZOCvB7Wf+Nf4/bdwkD8r4pHHkwIbt?=
- =?us-ascii?Q?Q5tf9EIwP5upc3gdy4N37z2Mt0uzx2nNBOBxUhVrKQdIj3ntXV2T2a4QOpHW?=
- =?us-ascii?Q?6kmVSeisHxKtGvp2/XcjercOlGFmukTxqCMNxrQ/tqzw/pMsVHzwUqAEypwH?=
- =?us-ascii?Q?ogQ/ijd7P+OgPwX4dpFBHAG34KyvNPxzu0wafndJn3TQwetw84izzlq2zxnu?=
- =?us-ascii?Q?npAYLJNlGEvDhosqqLYXymTZPOyX0UJ1XhjTzegVYCsUA4hG8byOFeNGtrWe?=
- =?us-ascii?Q?6Lmb7+C1MFSYy0Y40h+HM0wfTrYbvvVYJOPXCwUgEv4/rn6DI07ZWgThhijs?=
- =?us-ascii?Q?Po/umLPWyqWXz0yArQH0KdM3OIQE+y+qGjlcLMBUz9f2PEIrFZkDSW3jjV4d?=
- =?us-ascii?Q?MzFigB6FTxVluQ15wcd9+Vg71ppnS1alna39XzEvLBotqt7qfOtUgRBK5o3c?=
- =?us-ascii?Q?uSUP0SYDFMHBEEE1cil+7ej1hE0FafJWrJZX6t52ooLH5EyjVwmDLlHNh3zx?=
- =?us-ascii?Q?FSw99X/hJsynpKEI8FJKNSFoz3flD+pA3hnsbp9xojIwc9nN/TGHyx5BcHc6?=
- =?us-ascii?Q?8xBiHwfVusC4c3Aj1k8mmcKdfGrSsYfLhBBzj2hnoA4VHfMyTVToK83AcvKd?=
- =?us-ascii?Q?tY/WzlCZ9IqjShf+icjJGWiumlqPVIehKFoPX336ySepsUgnoeM2kj5/SCq4?=
- =?us-ascii?Q?5Ih1E8huM3e+eOupijd+TZ0VN70kzA5poBuALkoauHj4i1c3NpLO50zFA+5p?=
- =?us-ascii?Q?OJZxWukaFUIR+VYf72WVyEsUEcFQGHWZK7WevjjCrawCTrnD8KZVTmbgngQb?=
- =?us-ascii?Q?1Yxd1tq6+qujFt1Jim8L1jycSrk9SQcbA+v9PVBgCCCjRmVSEuqokecFZgFf?=
- =?us-ascii?Q?zUEpqnZP/RLZJW+WPHPqCSV4zGj0sDGayy5zok+FgDRhb0TCMKmRJJMDUrc8?=
- =?us-ascii?Q?Xkas4FxTPkrM3JdTW/9L+k/he/fLMjkAGzqPPTwawM8Agx0r/2HSLIUwxn2H?=
- =?us-ascii?Q?SvuSEbk4/TELMFFDXK3k51r/iQbXtyACDEUawoAB8HFH3fsOhmaZOiMbaeGS?=
- =?us-ascii?Q?aAhGBraJd6+RyZiD6yLkH278yS1xHOjfOoDZnyG/lqI7pOLbmu8FI2C3Vn9c?=
- =?us-ascii?Q?FXVmiuohoSa3UB1PgXUclaDq2ESRtundGQqPSdD0qoxBdrNjT34yPi9rIXf1?=
- =?us-ascii?Q?t7zyiOTEncuf/8rTexT/K6sTeNTG?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0535b9d5-9da5-4a4b-84bd-08d925be0263
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: elgDNFcpf5HX4imjgQQnfhdqkcYtWyRFSwwE60eCDMue4AUeBmDYVPFfbicBRmuvySGwto6HZpaKmf6ugWSiPcP5bVuhExYZ+BcqkVl74NyKcJiQVak8YxSQXCUlUtDuIPuDuCO48gRqBRUw/mhx3wVDLW/TDz+y1LvU1Bf6WgKDmdPjU6b0hnT0rpCH0H09kH3V5Gi8/iy3nuZcW/l6J/nCV5CoP3Ew6lC3KkKCpN/CX49lBNz8K0+yJaneBgQDQ451anQPTqiWwn6mc5q705jGgutRsXjfnvS6waRdX9HOWujNE9wBKH80wp37iXkz++d9kz4k1azyPlr/N6YSBwq26JXV94y8rjm0CGWi/FtohejeLQcYrtwDYTLZA5SuhLtJuodhGHz4Q79P/okq/U8Y4dLfRYBHGO1C8P9AgJtHsnwSlPNEb3KJ0HoYuGdPBqkYKNvNWHxug8KOQw/P3Zd0YJXvV5ZBsSUnysW+obt4RXGBK12p+RS+BiwxofqqO5SNS4NaS0hRhAaJZeHeDnJeSA2hlg/YH4ukfsTgatvrtgoV38yZV5cI9fU4Y2cS3kKqMroSH7C8KG1zIsAhZ0JLkxEePTplNzKsqkB72s1iMHCjZ0TZaeDjxcwcMETkK3HMwLFAMCdGqWTIywifSKdS74LurhFwpx1fDSOqYi8bMGYd0AbkcZYqyQsx8nvY
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(136003)(346002)(396003)(376002)(66556008)(5660300002)(66476007)(4744005)(4326008)(2616005)(66946007)(16526019)(38350700002)(956004)(8676002)(36756003)(316002)(26005)(1076003)(83380400001)(478600001)(6512007)(6666004)(8936002)(6506007)(186003)(38100700002)(52116002)(2906002)(86362001)(7416002)(6486002)(69590400013);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?hIR7SMqgTaM4w/9VxqGHQcJtAElvxVUapNUh5vSUZ3N4Mpj6Qc2tKo5WlpYS?=
+ =?us-ascii?Q?a/HZEqWwu0W1tV+W3GjJGDILxruLlgiAhFi69mSpG5aCxzpkdrp4az3B5oo3?=
+ =?us-ascii?Q?wWU8hG88WABJ/B7NnwjF1TX3phGIpIiRoPiU28JE8EAjFP8KCv8RFVBuNcJJ?=
+ =?us-ascii?Q?Z/WbYJgCwcFGUOP3P6IuCqtAc9tAW8yIn8/EeMmYC0K+TGjUvdYYa4SmnafA?=
+ =?us-ascii?Q?S8ZAcYaOBIqDQ7mFdK3ACsiXLCVVIacubKFK+jYrX0v1nHbTdeGLawi4Hza+?=
+ =?us-ascii?Q?ND8nFuWdd3vlJSVf+sHlpevqygi4+XYtT0zjLHa9FP3eniw5+4R1OCQ7oCT9?=
+ =?us-ascii?Q?MnHIDqe+7iAEBfBOj4XS0uhm6PqrxVLs6DWFL+G0OGwqe2K+dgh7oELXwvhF?=
+ =?us-ascii?Q?KLdsrIRHH6Pgxe4NjP7aEULx+hVBRXOzfxnUxSZqzMpkvWawJb/sNGVF3mck?=
+ =?us-ascii?Q?wBPvGb5oZvG/J3NmGUvHJy0Y1OYoybhqAq8th5ZUpHfKYN9YIJ3yDIAyay8O?=
+ =?us-ascii?Q?O0P1ij+Toby5CcrbZgP/PrAVkLGOIsHeEzXq5ePA0jZ6t+hTl5YBjYzEd/ht?=
+ =?us-ascii?Q?h/Kb1y2WUF9Yz8Z3Jk3EJBpSdCIrpgikYA+Dnkdmp1GxSnNiQQ9/4acpMPpX?=
+ =?us-ascii?Q?6Lf+ZS0ql3kD8/MW+aIyGL3IT6NANi/YaCc7qQLUZnnKcrkhIsbR+J2PJEU7?=
+ =?us-ascii?Q?N/3h2A951hK4Dp5szcYwv7E+9HVNc7krIvPb/zQB5Pc0eN0MBxewJt8EjZfb?=
+ =?us-ascii?Q?0ppNWXmWvbUM+c6oBu2zbTYqyucrQdzTDDfAQ+Sh1VMVOKm33pl7VcjDQhG6?=
+ =?us-ascii?Q?9/DJMVw9vvbDTOuq5ayygxpJymeLiZNt154dGowdiqGGtxKkbFbL///RMm7S?=
+ =?us-ascii?Q?It9WJqg0z/xI9obrbE/isE32myBcH196l7DqJUGs2bVPyEBLUKXiWrYLzp97?=
+ =?us-ascii?Q?hGJmkG9D2GlHKW+iLCXbz2sbBgPwt0g6ujMV9097StcIv1KKdMPOLfEhLB18?=
+ =?us-ascii?Q?Kfk83v/Hrl5WBZLLs8dfBMRs626UHHxCmD0cOFkKmLfojk8JOs3pBhUfRP3C?=
+ =?us-ascii?Q?HSJvYyGhUlAEIm+710JLpddZZfxNAEisFS0EARC8vH+WSNgdOBNLXa4rxAC+?=
+ =?us-ascii?Q?9ZWjMXv2FXZ/FQy+HudmsimLM8t7SWWRcjZIJ8FW1Fvt/yQ7SgupP5nJORn7?=
+ =?us-ascii?Q?4v20vW3KS0lUE9z8X9kotdIjFcFhuphNKZz1OciSqpXo56UbSai5+a4s4DF6?=
+ =?us-ascii?Q?b0WkmwMpabVKlaQfCjVyYN0kNNSAMULXphO1AFJKhH0uAnSt+0xgoHygyDVZ?=
+ =?us-ascii?Q?D56Qshu/W7O1/4QlKVIKEv7W?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24600364-49d6-4da8-79dc-08d925bfc433
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 12:00:26.5408
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 12:13:01.3959
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Vm3XyUhHaB5kWVoKKk7Eu94cdK0Zy4vYU/Zt+vK1TJ4FxrMLVJ2k2irNEwNNs3x4o3TBlw/L6yE15BpzSyKgbo2ny/i2Dp+ZddcX8B9fIN0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4986
+X-MS-Exchange-CrossTenant-UserPrincipalName: h6VP66Gi3BJB3Uu7UdJN6GtK0qpJLCvYQoiOrzhX8z3bFFvtghT+u4JIfulJAkcCN9IxDEirUafqsD7U0rcwQw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR04MB3208
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Louis Peens <louis.peens@corigine.com>
+Small fixes for stmmac and fec.
 
-Add merging of pre/post_ct flow rules into the tc_merge table.
-Pre_ct flows needs to be merge with post_ct flows and vice versa.
+Andy Duan (1):
+  net: fec_ptp: add clock rate zero check
 
-This needs to be done for all flows in the same zone table, as well
-as with the wc_zone_table, which is for flows masking out ct_zone
-info.
+Joakim Zhang (2):
+  net: stmmac: disable clocks in stmmac_remove_config_dt()
+  net: stmmac: avoid kernel panic in tc_setup_taprio()
 
-Cleanup is happening when all the tables are cleared up and prints
-a warning traceback as this is not expected in the final version.
-At this point we are not actually returning success for the offload,
-so we do not get any delete requests for flows, so we can't delete
-them that way yet. This means that cleanup happens in what would
-usually be an exception path.
+ drivers/net/ethernet/freescale/fec_ptp.c              | 4 ++++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 ++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c       | 8 +++++---
+ 3 files changed, 11 insertions(+), 3 deletions(-)
 
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
- .../ethernet/netronome/nfp/flower/conntrack.c | 162 +++++++++++++++++-
- 1 file changed, 158 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-index afa024971c08..b1709affb52d 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-@@ -64,6 +64,77 @@ bool is_post_ct_flow(struct flow_cls_offload *flow)
- 	return false;
- }
- 
-+static int nfp_ct_merge_check(struct nfp_fl_ct_flow_entry *entry1,
-+			      struct nfp_fl_ct_flow_entry *entry2)
-+{
-+	return 0;
-+}
-+
-+static int nfp_ct_do_tc_merge(struct nfp_fl_ct_zone_entry *zt,
-+			      struct nfp_fl_ct_flow_entry *ct_entry1,
-+			      struct nfp_fl_ct_flow_entry *ct_entry2)
-+{
-+	struct nfp_fl_ct_flow_entry *post_ct_entry, *pre_ct_entry;
-+	struct nfp_fl_ct_tc_merge *m_entry;
-+	unsigned long new_cookie[2];
-+	int err;
-+
-+	if (ct_entry1->type == CT_TYPE_PRE_CT) {
-+		pre_ct_entry = ct_entry1;
-+		post_ct_entry = ct_entry2;
-+	} else {
-+		post_ct_entry = ct_entry1;
-+		pre_ct_entry = ct_entry2;
-+	}
-+
-+	if (post_ct_entry->netdev != pre_ct_entry->netdev)
-+		return -EINVAL;
-+	/* Checks that the chain_index of the filter matches the
-+	 * chain_index of the GOTO action.
-+	 */
-+	if (post_ct_entry->chain_index != pre_ct_entry->chain_index)
-+		return -EINVAL;
-+
-+	err = nfp_ct_merge_check(post_ct_entry, pre_ct_entry);
-+	if (err)
-+		return err;
-+
-+	new_cookie[0] = pre_ct_entry->cookie;
-+	new_cookie[1] = post_ct_entry->cookie;
-+	m_entry = get_hashentry(&zt->tc_merge_tb, &new_cookie,
-+				nfp_tc_ct_merge_params, sizeof(*m_entry));
-+	if (IS_ERR(m_entry))
-+		return PTR_ERR(m_entry);
-+
-+	/* m_entry already present, not merging again */
-+	if (!memcmp(&new_cookie, m_entry->cookie, sizeof(new_cookie)))
-+		return 0;
-+
-+	memcpy(&m_entry->cookie, &new_cookie, sizeof(new_cookie));
-+	m_entry->zt = zt;
-+	m_entry->post_ct_parent = post_ct_entry;
-+	m_entry->pre_ct_parent = pre_ct_entry;
-+
-+	/* Add this entry to the pre_ct and post_ct lists */
-+	list_add(&m_entry->post_ct_list, &post_ct_entry->children);
-+	list_add(&m_entry->pre_ct_list, &pre_ct_entry->children);
-+	INIT_LIST_HEAD(&m_entry->children);
-+
-+	err = rhashtable_insert_fast(&zt->tc_merge_tb, &m_entry->hash_node,
-+				     nfp_tc_ct_merge_params);
-+	if (err)
-+		goto err_ct_tc_merge_insert;
-+	zt->tc_merge_count++;
-+
-+	return 0;
-+
-+err_ct_tc_merge_insert:
-+	list_del(&m_entry->post_ct_list);
-+	list_del(&m_entry->pre_ct_list);
-+	kfree(m_entry);
-+	return err;
-+}
-+
- static struct
- nfp_fl_ct_zone_entry *get_nfp_zone_entry(struct nfp_flower_priv *priv,
- 					 u16 zone, bool wildcarded)
-@@ -210,12 +281,48 @@ nfp_fl_ct_flow_entry *nfp_fl_ct_add_flow(struct nfp_fl_ct_zone_entry *zt,
- 	return ERR_PTR(err);
- }
- 
--static void nfp_free_tc_merge_children(struct nfp_fl_ct_flow_entry *entry)
-+static void nfp_free_nft_merge_children(void *entry, bool is_nft_flow)
- {
- }
- 
--static void nfp_free_nft_merge_children(void *entry, bool is_nft_flow)
-+static void nfp_del_tc_merge_entry(struct nfp_fl_ct_tc_merge *m_ent)
-+{
-+	struct nfp_fl_ct_zone_entry *zt;
-+	int err;
-+
-+	zt = m_ent->zt;
-+	err = rhashtable_remove_fast(&zt->tc_merge_tb,
-+				     &m_ent->hash_node,
-+				     nfp_tc_ct_merge_params);
-+	if (err)
-+		pr_warn("WARNING: could not remove merge_entry from hashtable\n");
-+	zt->tc_merge_count--;
-+	list_del(&m_ent->post_ct_list);
-+	list_del(&m_ent->pre_ct_list);
-+
-+	if (!list_empty(&m_ent->children))
-+		nfp_free_nft_merge_children(m_ent, false);
-+	kfree(m_ent);
-+}
-+
-+static void nfp_free_tc_merge_children(struct nfp_fl_ct_flow_entry *entry)
- {
-+	struct nfp_fl_ct_tc_merge *m_ent, *tmp;
-+
-+	switch (entry->type) {
-+	case CT_TYPE_PRE_CT:
-+		list_for_each_entry_safe(m_ent, tmp, &entry->children, pre_ct_list) {
-+			nfp_del_tc_merge_entry(m_ent);
-+		}
-+		break;
-+	case CT_TYPE_POST_CT:
-+		list_for_each_entry_safe(m_ent, tmp, &entry->children, post_ct_list) {
-+			nfp_del_tc_merge_entry(m_ent);
-+		}
-+		break;
-+	default:
-+		break;
-+	}
- }
- 
- void nfp_fl_ct_clean_flow_entry(struct nfp_fl_ct_flow_entry *entry)
-@@ -248,6 +355,27 @@ static struct flow_action_entry *get_flow_act(struct flow_cls_offload *flow,
- 	return NULL;
- }
- 
-+static void
-+nfp_ct_merge_tc_entries(struct nfp_fl_ct_flow_entry *ct_entry1,
-+			struct nfp_fl_ct_zone_entry *zt_src,
-+			struct nfp_fl_ct_zone_entry *zt_dst)
-+{
-+	struct nfp_fl_ct_flow_entry *ct_entry2, *ct_tmp;
-+	struct list_head *ct_list;
-+
-+	if (ct_entry1->type == CT_TYPE_PRE_CT)
-+		ct_list = &zt_src->post_ct_list;
-+	else if (ct_entry1->type == CT_TYPE_POST_CT)
-+		ct_list = &zt_src->pre_ct_list;
-+	else
-+		return;
-+
-+	list_for_each_entry_safe(ct_entry2, ct_tmp, ct_list,
-+				 list_node) {
-+		nfp_ct_do_tc_merge(zt_dst, ct_entry2, ct_entry1);
-+	}
-+}
-+
- int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
- 			    struct net_device *netdev,
- 			    struct flow_cls_offload *flow,
-@@ -290,8 +418,13 @@ int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
- 	list_add(&ct_entry->list_node, &zt->pre_ct_list);
- 	zt->pre_ct_count++;
- 
-+	nfp_ct_merge_tc_entries(ct_entry, zt, zt);
-+
-+	/* Need to check and merge with tables in the wc_zone as well */
-+	if (priv->ct_zone_wc)
-+		nfp_ct_merge_tc_entries(ct_entry, priv->ct_zone_wc, zt);
-+
- 	NL_SET_ERR_MSG_MOD(extack, "unsupported offload: Conntrack action not supported");
--	nfp_fl_ct_clean_flow_entry(ct_entry);
- 	return -EOPNOTSUPP;
- }
- 
-@@ -332,7 +465,28 @@ int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
- 	list_add(&ct_entry->list_node, &zt->post_ct_list);
- 	zt->post_ct_count++;
- 
-+	if (wildcarded) {
-+		/* Iterate through all zone tables if not empty, look for merges with
-+		 * pre_ct entries and merge them.
-+		 */
-+		struct rhashtable_iter iter;
-+		struct nfp_fl_ct_zone_entry *zone_table;
-+
-+		rhashtable_walk_enter(&priv->ct_zone_table, &iter);
-+		rhashtable_walk_start(&iter);
-+		while ((zone_table = rhashtable_walk_next(&iter)) != NULL) {
-+			if (IS_ERR(zone_table))
-+				continue;
-+			rhashtable_walk_stop(&iter);
-+			nfp_ct_merge_tc_entries(ct_entry, zone_table, zone_table);
-+			rhashtable_walk_start(&iter);
-+		}
-+		rhashtable_walk_stop(&iter);
-+		rhashtable_walk_exit(&iter);
-+	} else {
-+		nfp_ct_merge_tc_entries(ct_entry, zt, zt);
-+	}
-+
- 	NL_SET_ERR_MSG_MOD(extack, "unsupported offload: Conntrack match not supported");
--	nfp_fl_ct_clean_flow_entry(ct_entry);
- 	return -EOPNOTSUPP;
- }
 -- 
-2.20.1
+2.17.1
 
