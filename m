@@ -2,144 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 505ED3994E6
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 22:53:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBBE7399508
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 22:57:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229817AbhFBUzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 16:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40252 "EHLO
+        id S229635AbhFBU6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 16:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbhFBUyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 16:54:45 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80840C06174A
-        for <netdev@vger.kernel.org>; Wed,  2 Jun 2021 13:53:01 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id n12so3263094pgs.13
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 13:53:01 -0700 (PDT)
+        with ESMTP id S229467AbhFBU6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 16:58:46 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E03C06174A;
+        Wed,  2 Jun 2021 13:56:48 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id i4so5758375ybe.2;
+        Wed, 02 Jun 2021 13:56:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wvBVKKuCkHy2pwXOhSmYF/8asqpcAnySspHtL7Uf0EY=;
-        b=GDb7DdnITH1/95qRk77G6hq5OLr2t1g+co9KRVhEi+aWul1jaq6z2UDQvaMBNXNCkd
-         XU1hsCa6WHRjDmMikEUzUuYq/c5MBH2aD7ZaQ8j3rC3CyvpdEuVEVGT2JGwp+R1oNaau
-         Zx+hSd72dIvWSuFCrKKhXruFxv7IB2leWk3FA=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=98R4y9Ho6Ds3Ftg0xtA3UpEMeFR69/Ooe51tALQPpbM=;
+        b=LCbji9yw3EhRCmaoHzv4Bm+6BTNkKugE9sQ8XCj5r03OwKnupL4di6BLbtwTLLM22S
+         xrwu4meCAb0RpZz/hJR3Jk3dqYZ4RlIEMcVGLonD9V/rcUuaqrarJVQzp0/XtsP0vIKV
+         VRiyuWPxJ3vTHycOC/77lHCCbS2+RV/luSDT+KV1YAemzHIeXLG2stS5a3qOFPcabxOR
+         YDfieU8V5CA3pCirFCmQfwfxAa3x2gbQlzMQPZX6i9hESOZgDFAoB2tpWg62ZRVQ/M7F
+         DCfmEmXJLcbHa9BXZ8f4FRGVSzR93dl1wd70GDqAFs5amy/nQvvrPOTsijwNMwKIEMhz
+         qobA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wvBVKKuCkHy2pwXOhSmYF/8asqpcAnySspHtL7Uf0EY=;
-        b=QiHRKGyJDmgMN9d7xT1EJRJGseXJyVJMUjxRBvqoO45IMrwedmTHcJueRgUnjIaW/T
-         cU+3YUd7SvvUo+rCIiHvji3/YI5ChVh0leTAo6jmxZOdHjp2fms3M8IoQ2mRYQs78dCy
-         QbO14+Cfxr6v/2b9yfgLxfVWLdt6A3jV5f97fHJhzwA93pKidDj6ZFrOtAyotUJfs12k
-         zmDxsOePtnUt7tNRGLsQlbpa382UqReAEA3AIFh/6DjBe78LlwxE330LNb8XMPu8dmSV
-         q4rUiVJbtYhst+vSC5iMtJZZd2gBxQrYuOUmcRId2EGqTXKLCDL+kScnJ1AWHfhKbzaa
-         aj8w==
-X-Gm-Message-State: AOAM531XKNITJmCvisZwauzqkPet7Ij45dbltCnJLTnRJcv3sjE5NEeI
-        y7l1fdJlzXwCZ+ISJTD0+nOQxA==
-X-Google-Smtp-Source: ABdhPJzQA2Kuv7FOGj+yBnevenaxOfCwvvS+TKqCt5Se8cg0JQNeLpwmhDa3WvqEYQgAIc8sX114Bw==
-X-Received: by 2002:a05:6a00:84f:b029:2be:3b80:e9eb with SMTP id q15-20020a056a00084fb02902be3b80e9ebmr28959717pfk.39.1622667181114;
-        Wed, 02 Jun 2021 13:53:01 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id f28sm545147pgb.12.2021.06.02.13.53.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 13:53:00 -0700 (PDT)
-Date:   Wed, 2 Jun 2021 13:52:59 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2] net: bonding: Use strscpy() instead of
- manually-truncated strncpy()
-Message-ID: <202106021352.484D660@keescook>
-References: <20210602203138.4082470-1-keescook@chromium.org>
- <7214.1622666840@famine>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=98R4y9Ho6Ds3Ftg0xtA3UpEMeFR69/Ooe51tALQPpbM=;
+        b=kPVeVwtu2k6a+7D0QR68NW2GR5GAOhYaA23glc2HkpRsXpriEYHoEgAC+QAiMtEM7J
+         A0vGrz6bwItO/PHdHuoFZahVHMQ63Gd6Won+TPy2QDI2RSwfZxEUuOoodxJoTZIFyF4o
+         bA+XL6VfDMPGfaNVK1jH4nJF90XtpmzdketSm4pGyLtZFSdlYW5NOhM5/uvo2x1VY2ut
+         TnEQh1ipQYuJXNm7/TfZth7benlpJ5CvjKDBqA5VNJVzVft8FxHKeP5BbffoXWBkCo9D
+         SXzdwxu5hwiGEByf6s5GXdXVjWYmPJZ/QcrgkLx2Nzki3jw9VbuaCQKJF+hHYZLfNPGS
+         WakQ==
+X-Gm-Message-State: AOAM531lWq6lFyOlZLsmIJR8PVBZuIJ6WDzBx9UaedOYfUYX/TZ7lzbg
+        No3a7OWlHjR9TkLB4mRHvDzpHxDb/sntstR0fIo=
+X-Google-Smtp-Source: ABdhPJzLeeinr8SRIhdmTc+TH1lTmioEAPlVkZAJomXsyYx5bE1Az/pNDImQprCLFW/Jf6f5FTazpVASKGLmwceYQes=
+X-Received: by 2002:a25:3357:: with SMTP id z84mr48894565ybz.260.1622667405589;
+ Wed, 02 Jun 2021 13:56:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7214.1622666840@famine>
+References: <20210528195946.2375109-1-memxor@gmail.com> <20210528195946.2375109-4-memxor@gmail.com>
+In-Reply-To: <20210528195946.2375109-4-memxor@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 2 Jun 2021 13:56:34 -0700
+Message-ID: <CAEf4BzYk1vRUPgP4rVc4WYcLUtqOcGKjHfgsVuDhOm5hJU-Qhg@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next 3/7] net: sched: add bpf_link API for bpf classifier
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 01:47:20PM -0700, Jay Vosburgh wrote:
-> Kees Cook <keescook@chromium.org> wrote:
-> 
-> >Silence this warning by just using strscpy_pad() directly:
-> >
-> >>> drivers/net/bonding/bond_main.c:4877:3: warning: 'strncpy' specified bound 16 equals destination size [-Wstringop-truncation]
-> >    4877 |   strncpy(params->primary, primary, IFNAMSIZ);
-> >         |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >
-> >Additionally replace other strncpy() uses, as it is considered deprecated:
-> >https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings
-> >
-> >Reported-by: kernel test robot <lkp@intel.com>
-> >Link: https://lore.kernel.org/lkml/202102150705.fdR6obB0-lkp@intel.com
-> >Signed-off-by: Kees Cook <keescook@chromium.org>
-> 
-> 	There's one more "strncpy(...); primary[IFNAMSIZ - 1] = 0;" set
-> in bond_options.c:bond_option_primary_set(), doesn't it also generate
-> this warning?
-
-Gah, I was looking only in the same file not the whole directory. :)
-
-v3 on the way!
-
-> 
-> 	Either way, the change looks good to me.
-
-Thanks!
-
-> 
-> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-> 
-> 	-J
-> 
-> 
-> >---
-> >v2:
-> > - switch to strscpy_pad() and replace earlier strncpy() too
-> >v1: https://lore.kernel.org/lkml/20210602181133.3326856-1-keescook@chromium.org
-> >---
-> > drivers/net/bonding/bond_main.c | 8 +++-----
-> > 1 file changed, 3 insertions(+), 5 deletions(-)
-> >
-> >diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> >index c5a646d06102..e9cb716ad849 100644
-> >--- a/drivers/net/bonding/bond_main.c
-> >+++ b/drivers/net/bonding/bond_main.c
-> >@@ -620,7 +620,7 @@ static int bond_check_dev_link(struct bonding *bond,
-> > 		 */
-> > 
-> > 		/* Yes, the mii is overlaid on the ifreq.ifr_ifru */
-> >-		strncpy(ifr.ifr_name, slave_dev->name, IFNAMSIZ);
-> >+		strscpy_pad(ifr.ifr_name, slave_dev->name, IFNAMSIZ);
-> > 		mii = if_mii(&ifr);
-> > 		if (ioctl(slave_dev, &ifr, SIOCGMIIPHY) == 0) {
-> > 			mii->reg_num = MII_BMSR;
-> >@@ -5329,10 +5329,8 @@ static int bond_check_params(struct bond_params *params)
-> > 			(struct reciprocal_value) { 0 };
-> > 	}
-> > 
-> >-	if (primary) {
-> >-		strncpy(params->primary, primary, IFNAMSIZ);
-> >-		params->primary[IFNAMSIZ - 1] = 0;
-> >-	}
-> >+	if (primary)
-> >+		strscpy_pad(params->primary, primary, sizeof(params->primary));
-> > 
-> > 	memcpy(params->arp_targets, arp_target, sizeof(arp_target));
-> > 
-> >-- 
-> >2.25.1
-> 
+On Fri, May 28, 2021 at 1:00 PM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> This commit introduces a bpf_link based kernel API for creating tc
+> filters and using the cls_bpf classifier. Only a subset of what netlink
+> API offers is supported, things like TCA_BPF_POLICE, TCA_RATE and
+> embedded actions are unsupported.
+>
+> The kernel API and the libbpf wrapper added in a subsequent patch are
+> more opinionated and mirror the semantics of low level netlink based
+> TC-BPF API, i.e. always setting direct action mode, always setting
+> protocol to ETH_P_ALL, and only exposing handle and priority as the
+> variables the user can control. We add an additional gen_flags parameter
+> though to allow for offloading use cases. It would be trivial to extend
+> the current API to support specifying other attributes in the future,
+> but for now I'm sticking how we want to push usage.
+>
+> The semantics around bpf_link support are as follows:
+>
+> A user can create a classifier attached to a filter using the bpf_link
+> API, after which changing it and deleting it only happens through the
+> bpf_link API. It is not possible to bind the bpf_link to existing
+> filter, and any such attempt will fail with EEXIST. Hence EEXIST can be
+> returned in two cases, when existing bpf_link owned filter exists, or
+> existing netlink owned filter exists.
+>
+> Removing bpf_link owned filter from netlink returns EPERM, denoting that
+> netlink is locked out from filter manipulation when bpf_link is
+> involved.
+>
+> Whenever a filter is detached due to chain removal, or qdisc tear down,
+> or net_device shutdown, the bpf_link becomes automatically detached.
+>
+> In this way, the netlink API and bpf_link creation path are exclusive
+> and don't stomp over one another. Filters created using bpf_link API
+> cannot be replaced by netlink API, and filters created by netlink API are
+> never replaced by bpf_link. Netfilter also cannot detach bpf_link filters.
+>
+> We serialize all changes dover rtnl_lock as cls_bpf API doesn't support the
+> unlocked classifier API.
+>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 > ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
+>  include/linux/bpf_types.h |   3 +
+>  include/net/pkt_cls.h     |  13 ++
+>  include/net/sch_generic.h |   6 +-
+>  include/uapi/linux/bpf.h  |  15 +++
+>  kernel/bpf/syscall.c      |  10 +-
+>  net/sched/cls_api.c       | 138 ++++++++++++++++++++-
+>  net/sched/cls_bpf.c       | 247 +++++++++++++++++++++++++++++++++++++-
+>  7 files changed, 426 insertions(+), 6 deletions(-)
+>
 
--- 
-Kees Cook
+[...]
+
+> +static int cls_bpf_link_change(struct net *net, struct tcf_proto *tp,
+> +                              struct bpf_prog *filter, void **arg,
+> +                              u32 handle, u32 gen_flags)
+> +{
+> +       struct cls_bpf_head *head = rtnl_dereference(tp->root);
+> +       struct cls_bpf_prog *oldprog = *arg, *prog;
+> +       struct bpf_link_primer primer;
+> +       struct cls_bpf_link *link;
+> +       int ret;
+> +
+> +       if (gen_flags & ~CLS_BPF_SUPPORTED_GEN_FLAGS)
+> +               return -EINVAL;
+> +
+> +       if (oldprog)
+> +               return -EEXIST;
+> +
+> +       prog = kzalloc(sizeof(*prog), GFP_KERNEL);
+> +       if (!prog)
+> +               return -ENOMEM;
+> +
+> +       link = kzalloc(sizeof(*link), GFP_KERNEL);
+> +       if (!link) {
+> +               ret = -ENOMEM;
+> +               goto err_prog;
+> +       }
+> +
+> +       bpf_link_init(&link->link, BPF_LINK_TYPE_TC, &cls_bpf_link_ops,
+> +                     filter);
+> +
+> +       ret = bpf_link_prime(&link->link, &primer);
+> +       if (ret < 0)
+> +               goto err_link;
+> +
+> +       /* We don't init exts to save on memory, but we still need to store the
+> +        * net_ns pointer, as during delete whether the deletion work will be
+> +        * queued or executed inline depends on the refcount of net_ns. In
+> +        * __cls_bpf_delete the reference is taken to keep the action IDR alive
+> +        * (which we don't require), but its maybe_get_net also allows us to
+> +        * detect whether we are being invoked in netns destruction path or not.
+> +        * In the former case deletion will have to be done synchronously.
+> +        *
+> +        * Leaving it NULL would prevent us from doing deletion work
+> +        * asynchronously, so set it here.
+> +        *
+> +        * On the tcf_classify side, exts->actions are not touched for
+> +        * exts_integrated progs, so we should be good.
+> +        */
+> +       prog->exts.net = net;
+> +
+> +       ret = __cls_bpf_alloc_idr(head, handle, prog, oldprog);
+> +       if (ret < 0)
+> +               goto err_primer;
+> +
+> +       prog->exts_integrated = true;
+> +       prog->bpf_link = link;
+> +       prog->filter = filter;
+> +       prog->tp = tp;
+> +       link->prog = prog;
+> +
+> +       prog->bpf_name = cls_bpf_link_name(filter->aux->id, filter->aux->name);
+> +       if (!prog->bpf_name) {
+> +               ret = -ENOMEM;
+> +               goto err_idr;
+> +       }
+> +
+> +       ret = __cls_bpf_change(head, tp, prog, oldprog, NULL);
+> +       if (ret < 0)
+> +               goto err_name;
+> +
+> +       bpf_prog_inc(filter);
+> +
+> +       if (filter->dst_needed)
+> +               tcf_block_netif_keep_dst(tp->chain->block);
+> +
+> +       return bpf_link_settle(&primer);
+> +
+> +err_name:
+> +       kfree(prog->bpf_name);
+> +err_idr:
+> +       idr_remove(&head->handle_idr, prog->handle);
+> +err_primer:
+> +       bpf_link_cleanup(&primer);
+
+once you prime the link, you can't kfree() it, you do only
+bpf_link_cleanup() and it will handle eventually freeing it. So if you
+look at other places doing bpf_link, they set link = NULL after
+bpf_link_cleanup() to avoid directly freeing.
+
+> +err_link:
+> +       kfree(link);
+> +err_prog:
+> +       kfree(prog);
+> +       return ret;
+> +}
+> +
+>  static struct tcf_proto_ops cls_bpf_ops __read_mostly = {
+>         .kind           =       "bpf",
+>         .owner          =       THIS_MODULE,
+> @@ -729,6 +973,7 @@ static struct tcf_proto_ops cls_bpf_ops __read_mostly = {
+>         .reoffload      =       cls_bpf_reoffload,
+>         .dump           =       cls_bpf_dump,
+>         .bind_class     =       cls_bpf_bind_class,
+> +       .bpf_link_change =      cls_bpf_link_change,
+>  };
+>
+>  static int __init cls_bpf_init_mod(void)
+> --
+> 2.31.1
+>
