@@ -2,125 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73FCE398CAA
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:24:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A238C398CBD
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:30:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230342AbhFBOZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 10:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbhFBOZm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 10:25:42 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AB1C06174A;
-        Wed,  2 Jun 2021 07:23:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=FXtOoRkqKzh7kLJLNx1aUNoAKOt2OwhOUmVlEeFOV/k=; b=CHh50MAnwHptxKKeb98FX0zBM/
-        hZGvhB4OgPfd+ch/7Q4Awrbwu4YMPhZZyT4MBL6ufwo9T1X3jzwrDiV2mV+NLG+uaGFtpk4wJW0Sl
-        qULAlfcMVVVzXG+nvaGIKpuQWC7oHU4cD3sRPQLrMBkEqwZcdjHxvNg+me0S6xPh9OUSlXXgEDC6Z
-        pzRSlZNULro6LWJusA97DADN/jHRNpmBokq3XpapoFAiUebSvq5DGMtNHHjHI7P94iuGqIHoF5IK5
-        c9Cs6a/FvoaHXq4eeNZQEa+OSz+uu1jB7/A+OTqK1Log/LLFviNFlK2bXPZ1hwESu9YATeOjws0cR
-        3OjnDBZg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1loRmg-002ugW-KD; Wed, 02 Jun 2021 14:23:57 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D5940300299;
-        Wed,  2 Jun 2021 16:23:56 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B6EF620223DA8; Wed,  2 Jun 2021 16:23:56 +0200 (CEST)
-Date:   Wed, 2 Jun 2021 16:23:56 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        rostedt <rostedt@goodmis.org>, Ben Segall <bsegall@google.com>,
-        Mel Gorman <mgorman@suse.de>, bristot <bristot@redhat.com>,
-        Borislav Petkov <bp@alien8.de>, x86 <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jens Axboe <axboe@kernel.dk>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        acme <acme@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        paulmck <paulmck@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Joel Fernandes, Google" <joel@joelfernandes.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-block@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        linux-usb@vger.kernel.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        cgroups <cgroups@vger.kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
-        rcu <rcu@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        KVM list <kvm@vger.kernel.org>
-Subject: Re: [PATCH 3/6] sched,perf,kvm: Fix preemption condition
-Message-ID: <YLeUfNEqKg27VwAB@hirez.programming.kicks-ass.net>
-References: <20210602131225.336600299@infradead.org>
- <20210602133040.398289363@infradead.org>
- <1524365960.5868.1622643316351.JavaMail.zimbra@efficios.com>
+        id S230169AbhFBObr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 10:31:47 -0400
+Received: from mail-ot1-f48.google.com ([209.85.210.48]:42959 "EHLO
+        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230031AbhFBObq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 10:31:46 -0400
+Received: by mail-ot1-f48.google.com with SMTP id x41-20020a05683040a9b02903b37841177eso2559661ott.9
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 07:30:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IiLMmHcn5KulfjfwqwMQzlST/9AG6iSzvPD7mycOf14=;
+        b=rV59shqZ/SKAlVQIduPtUpQdiB55dP6o4hIJqbJ8GGn/pBK60TVDxlLkqq6XUIdQ8L
+         V5xS1k9eAzJsK46lSKLodBsEkhClgcBVWnozs3uWzAWK+mc+viw5mpo0e5NqKRHfdVfK
+         e77nD+ijsRA/6flLWcXh/ga8keDtpE24T61apsUkgtMYv0fD1Ag6Q/ORYOPU8t1yoUOi
+         dZNHga5N2GOca5A+abZ57zmV4Oxt57mU6LBrHYco6rz48xJVdvMpaX1dllmbtteO1Hb5
+         EhGxjDMjvdPcyHwd0mKxJWEBFGK3GvI5Cug+iPtq2RFIVM/Qw3gxTbrWmA6ykeWLJYOS
+         ZjBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IiLMmHcn5KulfjfwqwMQzlST/9AG6iSzvPD7mycOf14=;
+        b=GUa4fVS+o6tgnMVNGF/XMCV3PeCTR7j6TVNssJCLibEZ/7f0tvNGG8d+1hJuaoiEa4
+         oZTpEPacEP1LGV9cr3NyQjCKqp05y8sbW7IUvIGeY7BQLH7hlCIOkN15Gye4i2hzGWiw
+         z326tDKF/n7M0YeAKzCYwbuqd4lHlmTN2IX1J/znM8muH/fXzmiVc13hzXRNgXhRsKj8
+         xWMeh8BERTg+QgsKaMemhqZc+XZGZw0qgBphFxye7Ff9ROAwvjp3SfcWGxD0rY6A868N
+         nyxBDPSBWOTEd7wdgBeV54dAfuJ2xWLgOVil3CY2x08afTYWXILv8OuzYCH1TxD2gyja
+         g0Tg==
+X-Gm-Message-State: AOAM531ebIpIz9NOdh7Lwklyf/YbKR0OqrrCmnhIxWrwPvE+4MVwcynH
+        Sex+7ER07EadywDmcw0uKvU9dGDEZAI=
+X-Google-Smtp-Source: ABdhPJx1xphed5OX+yvFVJtCOpln15kJsePOukVR1PJmeFuW0ttdep/s22TkI393sDAONfhzEeF9qQ==
+X-Received: by 2002:a9d:4911:: with SMTP id e17mr26637043otf.38.1622644143527;
+        Wed, 02 Jun 2021 07:29:03 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.22])
+        by smtp.googlemail.com with ESMTPSA id n186sm12904oia.1.2021.06.02.07.29.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Jun 2021 07:29:03 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] police: Add support for json output
+To:     Roi Dayan <roid@nvidia.com>, netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Paul Blakey <paulb@nvidia.com>
+References: <20210527130742.1070668-1-roid@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e107ce61-58bf-d106-3891-46c83e3bfe8f@gmail.com>
+Date:   Wed, 2 Jun 2021 08:29:01 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1524365960.5868.1622643316351.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20210527130742.1070668-1-roid@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 10:15:16AM -0400, Mathieu Desnoyers wrote:
-> ----- On Jun 2, 2021, at 9:12 AM, Peter Zijlstra peterz@infradead.org wrote:
-> [...]
-> > --- a/kernel/events/core.c
-> > +++ b/kernel/events/core.c
-> > @@ -8568,13 +8568,12 @@ static void perf_event_switch(struct tas
-> > 		},
-> > 	};
-> > 
-> > -	if (!sched_in && task->state == TASK_RUNNING)
-> > +	if (!sched_in && current->on_rq) {
-> > 		switch_event.event_id.header.misc |=
-> > 				PERF_RECORD_MISC_SWITCH_OUT_PREEMPT;
-> > +	}
-> > 
-> > -	perf_iterate_sb(perf_event_switch_output,
-> > -		       &switch_event,
-> > -		       NULL);
-> > +	perf_iterate_sb(perf_event_switch_output, &switch_event, NULL);
-> > }
-> 
-> There is a lot of code cleanup going on here which does not seem to belong
-> to a "Fix" patch.
+On 5/27/21 7:07 AM, Roi Dayan wrote:
+> @@ -300,13 +300,13 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
+>  	    RTA_PAYLOAD(tb[TCA_POLICE_RATE64]) >= sizeof(rate64))
+>  		rate64 = rta_getattr_u64(tb[TCA_POLICE_RATE64]);
+>  
+> -	fprintf(f, " police 0x%x ", p->index);
+> +	print_int(PRINT_ANY, "police", "police %d ", p->index);
 
-Maybe, but I so hate whitespace only patches :-/
+this changes the output format from hex to decimal.
+
+
+>  	tc_print_rate(PRINT_FP, NULL, "rate %s ", rate64);
+>  	buffer = tc_calc_xmitsize(rate64, p->burst);
+>  	print_size(PRINT_FP, NULL, "burst %s ", buffer);
+>  	print_size(PRINT_FP, NULL, "mtu %s ", p->mtu);
+>  	if (show_raw)
+> -		fprintf(f, "[%08x] ", p->burst);
+> +		print_hex(PRINT_FP, NULL, "[%08x] ", p->burst);
+>  
+>  	prate64 = p->peakrate.rate;
+>  	if (tb[TCA_POLICE_PEAKRATE64] &&
+
+
