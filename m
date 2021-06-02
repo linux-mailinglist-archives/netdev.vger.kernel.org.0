@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4938B398FD8
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 18:21:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74A7B398FD3
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 18:20:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230059AbhFBQXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 12:23:35 -0400
-Received: from mail-ej1-f51.google.com ([209.85.218.51]:34529 "EHLO
-        mail-ej1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229654AbhFBQXb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 12:23:31 -0400
-Received: by mail-ej1-f51.google.com with SMTP id g8so4762821ejx.1
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 09:21:37 -0700 (PDT)
+        id S230025AbhFBQWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 12:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229978AbhFBQWg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 12:22:36 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DD9C061574
+        for <netdev@vger.kernel.org>; Wed,  2 Jun 2021 09:20:39 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id g8so4762929ejx.1
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 09:20:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Bq4oZb2dKio7jhtcSXyjTHi6FvT3v8gKCUi4OjyUpAI=;
-        b=SmG/q6ZFigw9LUv331lYY33G/RUbSmOSdZR4CqfUz1L85Ij5lNCo1VJ0dJrxdw98ah
-         DankNTWBTBhppN6qHhxv5Jvg5jMxIM5btdBvYalztzI/BlbCNfKpCVBKNkT29xKTQafY
-         aQyd/CR/D8tSWCBFnk1K/fbsh4X0tloeziC0Tv9CZDvAs12k+HmSG1HunP1YozGSniK9
-         0nIbk5gQYKrhbh5z9k4yyFq6kyFgwIUDRVpDt5aD95ebXTqTyHGp9sB2L7xvjIJC5hdO
-         zRjF/NtxwnNL0Am/qv1QPyIZpHLXipvC43u56rMPJnlDryIUYc9VrnsV4T32inAOkrIu
-         OpDg==
+        bh=2DA9HGV5gAHjmfQUTJ8KwvaU2kjt03us8kFBmkRGg04=;
+        b=hGIhBjM8Huo+Pc1+tWAHnYM82N3c0RGdXEYIztPwsTLgRjTkU3IhqTL9fMVK7DJywM
+         owszF4b0rTuFfUf6KoBTAuNh/9BiYiZEdY61wTlpQieuktOnWZAQP3IIwLbOOySedeqS
+         hkkX/NvIEiGHtQW283a4MxcRzbALOCFFU27Fxe0CFiQxq6ffhFyHNkjyRUTATWAqBnXg
+         noP0QiVTk5QCbQoN2Dv7Nn76lBBFKQTmVscfkNTO6F+FsI6tkZQpk6zfkH5q4AlJcGzR
+         0ti/lTOxfnjahq3nzS4XymVt2s5+nGh+PaTNtCikNQVY4W9SZ6cr+IFaCDUXVam7r5LF
+         7XVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Bq4oZb2dKio7jhtcSXyjTHi6FvT3v8gKCUi4OjyUpAI=;
-        b=daGb+ooJwLzOkcT49Ho18ipoiH3w38hHIZgRvRXXJNL59DF81Y2Z1KsMEpmX3CdeFd
-         AXSnqfOgddaVIWiVNAOnET3EGd5aE/6L+3kgY2NGPJlP2/O603UwOU/C7e8mhtRSZTfX
-         iPf+W+22QJVp7sNFYfqqQQchKLZOcqcoa1NyHExhmhSp3LksrRllPpSRfRRe3Qr5z0n8
-         FzINexd013rWtWXIDKWW13uSflzkagZT3dH+gLaAUNEIGwJOMyl9V9OthtRyTBNrJqvu
-         PpQhgCRu2+xNFmpCD9+YCRoi4PPXIeiIgw7ac7xQN3WH75wWzxvL5lOzZ59KvI0790ep
-         54EQ==
-X-Gm-Message-State: AOAM533BK4AVqVTm6AY4wphp5Mt/GX4A8bo3hKK9Bi0+EOEzs+IK/tkH
-        qXLpnwm8kEgKB+nDjurS4o4Wdy1OggA=
-X-Google-Smtp-Source: ABdhPJzOZTcycaOCxrWxDDyxXlEJvGgvUmtBpEzsDgKIPKk1HcOmV1Jol4LW1bdLQJYOETAJpzZKKw==
-X-Received: by 2002:a17:906:d297:: with SMTP id ay23mr27183959ejb.418.1622650836659;
-        Wed, 02 Jun 2021 09:20:36 -0700 (PDT)
+        bh=2DA9HGV5gAHjmfQUTJ8KwvaU2kjt03us8kFBmkRGg04=;
+        b=Fh87hi9TkvSKZMSbXUUKKUvVdPKayQ7gmuoMxrk3Z6H0pjv7G6ANs3BqTTpIQoiiDa
+         3PTxmGOnG0Etuj/ZQ/YCeqjaHJnrqXAcxpElVsVLncx3Jbw5Gj8N8KPYkfll0ZgiNjjt
+         kejesD++eGFHi+PCuKirAsaz/P76Kwxnh6RIvodpuUqIPHCl6ID8PJH06GHNOMA1osAN
+         RpEG4PAtUTCXTHwZf9k/Ww5YzsBgi0hwt+zCYvcnS/tZ7+0WYCXICevM5b28L65J3aEl
+         YoOjZ05wfFBDniHv3PkzLGTPZXjX9xcIV8U2KbSHumFNM0zyNwftlXZHsDn+ucYbaSjE
+         +yBw==
+X-Gm-Message-State: AOAM533rJ6mkYJW7FMqzR5fNjUUFsXdoE2MZ4M8p55s5SDxXd/6U69Xl
+        0Zu2xQeROstaYAJTaOAHEUc=
+X-Google-Smtp-Source: ABdhPJw8/VmkzjMsE9GPy3gXpff8sNigFUICRddcGJMMxe9PdtUKytIJ8j4vcZ+eqOv7qP7GC0VNbg==
+X-Received: by 2002:a17:906:63d2:: with SMTP id u18mr34803214ejk.186.1622650838090;
+        Wed, 02 Jun 2021 09:20:38 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id m12sm228078edc.40.2021.06.02.09.20.35
+        by smtp.gmail.com with ESMTPSA id m12sm228078edc.40.2021.06.02.09.20.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 09:20:36 -0700 (PDT)
+        Wed, 02 Jun 2021 09:20:37 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -60,9 +63,9 @@ Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 4/9] net: pcs: xpcs: export xpcs_validate
-Date:   Wed,  2 Jun 2021 19:20:14 +0300
-Message-Id: <20210602162019.2201925-5-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 5/9] net: pcs: xpcs: export xpcs_config_eee
+Date:   Wed,  2 Jun 2021 19:20:15 +0300
+Message-Id: <20210602162019.2201925-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210602162019.2201925-1-olteanv@gmail.com>
 References: <20210602162019.2201925-1-olteanv@gmail.com>
@@ -74,13 +77,14 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Calling a function pointer with a single implementation through
-struct mdio_xpcs_ops is clunky, and the stmmac_do_callback system forces
-this to return int, even though it always returns zero.
+There is no good reason why we need to go through:
 
-Simply remove the "validate" function pointer from struct mdio_xpcs_ops
-and replace it with an exported xpcs_validate symbol which is called
-directly by stmmac.
+stmmac_xpcs_config_eee
+-> stmmac_do_callback
+   -> mdio_xpcs_ops->config_eee
+      -> xpcs_config_eee
+
+when we can simply call xpcs_config_eee.
 
 priv->hw->xpcs is of the type "const struct mdio_xpcs_ops *" and is used
 as a placeholder/synonym for priv->plat->mdio_bus_data->has_xpcs. It is
@@ -92,103 +96,97 @@ Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 v1->v2: guard against potential absence of xpcs on the port
 v2->v3: none
 
- drivers/net/ethernet/stmicro/stmmac/hwif.h        |  2 --
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  3 ++-
- drivers/net/pcs/pcs-xpcs.c                        | 11 ++++-------
- include/linux/pcs/pcs-xpcs.h                      |  5 ++---
- 4 files changed, 8 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/hwif.h           |  2 --
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 12 +++++++-----
+ drivers/net/pcs/pcs-xpcs.c                           |  6 +++---
+ include/linux/pcs/pcs-xpcs.h                         |  4 ++--
+ 4 files changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 75a8b90c202a..a86b358feae9 100644
+index a86b358feae9..2d2843edaf21 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -613,8 +613,6 @@ struct stmmac_mmc_ops {
- 	stmmac_do_void_callback(__priv, mmc, read, __args)
+@@ -621,8 +621,6 @@ struct stmmac_mmc_ops {
+ 	stmmac_do_callback(__priv, xpcs, link_up, __args)
+ #define stmmac_xpcs_probe(__priv, __args...) \
+ 	stmmac_do_callback(__priv, xpcs, probe, __args)
+-#define stmmac_xpcs_config_eee(__priv, __args...) \
+-	stmmac_do_callback(__priv, xpcs, config_eee, __args)
  
- /* XPCS callbacks */
--#define stmmac_xpcs_validate(__priv, __args...) \
--	stmmac_do_callback(__priv, xpcs, validate, __args)
- #define stmmac_xpcs_config(__priv, __args...) \
- 	stmmac_do_callback(__priv, xpcs, config, __args)
- #define stmmac_xpcs_get_state(__priv, __args...) \
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 129b103cd2b5..9f72e4dd1457 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -996,7 +996,8 @@ static void stmmac_validate(struct phylink_config *config,
- 	linkmode_andnot(state->advertising, state->advertising, mask);
+ struct stmmac_regs_off {
+ 	u32 ptp_off;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index 1f6d749fd9a3..ba7d0f40723a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -720,11 +720,13 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
+ 		netdev_warn(priv->dev,
+ 			    "Setting EEE tx-lpi is not supported\n");
  
- 	/* If PCS is supported, check which modes it supports. */
--	stmmac_xpcs_validate(priv, &priv->hw->xpcs_args, supported, state);
-+	if (priv->hw->xpcs)
-+		xpcs_validate(&priv->hw->xpcs_args, supported, state);
- }
+-	ret = stmmac_xpcs_config_eee(priv, &priv->hw->xpcs_args,
+-				     priv->plat->mult_fact_100ns,
+-				     edata->eee_enabled);
+-	if (ret)
+-		return ret;
++	if (priv->hw->xpcs) {
++		ret = xpcs_config_eee(&priv->hw->xpcs_args,
++				      priv->plat->mult_fact_100ns,
++				      edata->eee_enabled);
++		if (ret)
++			return ret;
++	}
  
- static void stmmac_mac_pcs_get_state(struct phylink_config *config,
+ 	if (!edata->eee_enabled)
+ 		stmmac_disable_eee_mode(priv);
 diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index 610073cb55d0..2f7791bcf07b 100644
+index 2f7791bcf07b..2f2ffab855aa 100644
 --- a/drivers/net/pcs/pcs-xpcs.c
 +++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -685,9 +685,8 @@ static void xpcs_resolve_pma(struct mdio_xpcs_args *xpcs,
- 	}
+@@ -715,8 +715,8 @@ void xpcs_validate(struct mdio_xpcs_args *xpcs, unsigned long *supported,
  }
+ EXPORT_SYMBOL_GPL(xpcs_validate);
  
--static int xpcs_validate(struct mdio_xpcs_args *xpcs,
--			 unsigned long *supported,
--			 struct phylink_link_state *state)
-+void xpcs_validate(struct mdio_xpcs_args *xpcs, unsigned long *supported,
-+		   struct phylink_link_state *state)
+-static int xpcs_config_eee(struct mdio_xpcs_args *xpcs, int mult_fact_100ns,
+-			   int enable)
++int xpcs_config_eee(struct mdio_xpcs_args *xpcs, int mult_fact_100ns,
++		    int enable)
  {
- 	__ETHTOOL_DECLARE_LINK_MODE_MASK(xpcs_supported);
- 	const struct xpcs_compat *compat;
-@@ -698,7 +697,7 @@ static int xpcs_validate(struct mdio_xpcs_args *xpcs,
- 	 * advertising masks and exit.
- 	 */
- 	if (state->interface == PHY_INTERFACE_MODE_NA)
--		return 0;
-+		return;
+ 	int ret;
  
- 	bitmap_zero(xpcs_supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
- 
-@@ -713,9 +712,8 @@ static int xpcs_validate(struct mdio_xpcs_args *xpcs,
- 
- 	linkmode_and(supported, supported, xpcs_supported);
- 	linkmode_and(state->advertising, state->advertising, xpcs_supported);
--
--	return 0;
+@@ -747,6 +747,7 @@ static int xpcs_config_eee(struct mdio_xpcs_args *xpcs, int mult_fact_100ns,
+ 	ret |= DW_VR_MII_EEE_TRN_LPI;
+ 	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_EEE_MCTRL1, ret);
  }
-+EXPORT_SYMBOL_GPL(xpcs_validate);
++EXPORT_SYMBOL_GPL(xpcs_config_eee);
  
- static int xpcs_config_eee(struct mdio_xpcs_args *xpcs, int mult_fact_100ns,
- 			   int enable)
-@@ -1031,7 +1029,6 @@ static int xpcs_probe(struct mdio_xpcs_args *xpcs, phy_interface_t interface)
- }
- 
- static struct mdio_xpcs_ops xpcs_ops = {
--	.validate = xpcs_validate,
- 	.config = xpcs_config,
+ static int xpcs_config_aneg_c37_sgmii(struct mdio_xpcs_args *xpcs)
+ {
+@@ -1033,7 +1034,6 @@ static struct mdio_xpcs_ops xpcs_ops = {
  	.get_state = xpcs_get_state,
  	.link_up = xpcs_link_up,
-diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
-index c2ec440d2c5d..5ec9aaca01fe 100644
---- a/include/linux/pcs/pcs-xpcs.h
-+++ b/include/linux/pcs/pcs-xpcs.h
-@@ -23,9 +23,6 @@ struct mdio_xpcs_args {
+ 	.probe = xpcs_probe,
+-	.config_eee = xpcs_config_eee,
  };
  
- struct mdio_xpcs_ops {
--	int (*validate)(struct mdio_xpcs_args *xpcs,
--			unsigned long *supported,
--			struct phylink_link_state *state);
- 	int (*config)(struct mdio_xpcs_args *xpcs,
- 		      const struct phylink_link_state *state);
- 	int (*get_state)(struct mdio_xpcs_args *xpcs,
-@@ -39,5 +36,7 @@ struct mdio_xpcs_ops {
+ struct mdio_xpcs_ops *mdio_xpcs_get_ops(void)
+diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
+index 5ec9aaca01fe..ae74a336dcb9 100644
+--- a/include/linux/pcs/pcs-xpcs.h
++++ b/include/linux/pcs/pcs-xpcs.h
+@@ -30,13 +30,13 @@ struct mdio_xpcs_ops {
+ 	int (*link_up)(struct mdio_xpcs_args *xpcs, int speed,
+ 		       phy_interface_t interface);
+ 	int (*probe)(struct mdio_xpcs_args *xpcs, phy_interface_t interface);
+-	int (*config_eee)(struct mdio_xpcs_args *xpcs, int mult_fact_100ns,
+-			  int enable);
+ };
  
  int xpcs_get_an_mode(struct mdio_xpcs_args *xpcs, phy_interface_t interface);
  struct mdio_xpcs_ops *mdio_xpcs_get_ops(void);
-+void xpcs_validate(struct mdio_xpcs_args *xpcs, unsigned long *supported,
-+		   struct phylink_link_state *state);
+ void xpcs_validate(struct mdio_xpcs_args *xpcs, unsigned long *supported,
+ 		   struct phylink_link_state *state);
++int xpcs_config_eee(struct mdio_xpcs_args *xpcs, int mult_fact_100ns,
++		    int enable);
  
  #endif /* __LINUX_PCS_XPCS_H */
 -- 
