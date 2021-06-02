@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60380397E1D
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 03:37:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08F93397E1E
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 03:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230061AbhFBBjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 21:39:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39544 "EHLO mail.kernel.org"
+        id S230080AbhFBBjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 21:39:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39552 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230004AbhFBBjO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Jun 2021 21:39:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7A5AC613D3;
+        id S230044AbhFBBjP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Jun 2021 21:39:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E57B7613D6;
         Wed,  2 Jun 2021 01:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622597852;
-        bh=kz/hCEY0NLEfNfyZ9ZjUBiXVJqw/daE9lGHoJXwMlkY=;
+        s=k20201202; t=1622597853;
+        bh=9SxytobkgeNl7qIabI0qnRcnfQljhbl2t9keREljCpI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U7EiJH7AW4gwbuF+t6wSeiCYlSnSL7XwCv9Vbpv+1uYiRjw8iicuYf+jYquhaJPfC
-         F+fSV3Sbt3auVhwwVoLw6NOvO3JFi50Fa5RhjZ2+/wybHW2Oz3kXqhVtQLIPUtJQr1
-         zD6vfS3dXZa0P4bd+P5aYUFgUnK9ZPjHbgAjGCZe36LxAdubFSYGIdd2ccP0eUHCrj
-         8crirrt9iGV9pkOOcG/sbSqHGLMGY7fU2OeaMrBkW8WP3z/JkcTiggv0nzT3oJu14Z
-         SngKmZidLEsgvBDgedNdswG7f42CDPpWhXrpeaCVgdiEUqhIRU90KLAv3cqq+gXVbP
-         e/FdRaew2yezQ==
+        b=VNT8rCM5Kwd46KF6p3VNzv1kNVlPuRYWoJ68zHP8Q5oTc5F3jEIX8QuIQV9MtEe4O
+         5jF3/aw/+n1YjxR97wkrnutF5ff4p4/PZr8jGRAP8puhwVNDXDQToNGBjFfQzuQrOx
+         mFml/Kt0um8BIRLsmZ7G18eycjG4pCPw5dANtEtsLOS5tpbFpLIdINrDFz/8g/P+TH
+         jQUaE87rkXjd72yGUhMLkrY8cXaaH8/swpxHwLeemdSKVmtWf6S3dToMPPT+aQ/ZNR
+         QC9sBhVsTW3v376S0eaTZec0ikhCH4jomtfdQqyE2SONGXofQG8CNqjPm5mUiP2Osr
+         039QI0SyhwzDw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 2/8] net/mlx5e: Disable TLS offload for uplink representor
-Date:   Tue,  1 Jun 2021 18:37:17 -0700
-Message-Id: <20210602013723.1142650-3-saeed@kernel.org>
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 3/8] net/mlx5: Check firmware sync reset requested is set before trying to abort it
+Date:   Tue,  1 Jun 2021 18:37:18 -0700
+Message-Id: <20210602013723.1142650-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210602013723.1142650-1-saeed@kernel.org>
 References: <20210602013723.1142650-1-saeed@kernel.org>
@@ -40,38 +41,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-TLS offload is not supported in switchdev mode.
+In case driver sent NACK to firmware on sync reset request, it will get
+sync reset abort event while it didn't set sync reset requested mode.
+Thus, on abort sync reset event handler, driver should check reset
+requested is set before trying to stop sync reset poll.
 
-Fixes: 7a9fb35e8c3a ("net/mlx5e: Do not reload ethernet ports when changing eswitch mode")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
+Fixes: 7dd6df329d4c ("net/mlx5: Handle sync reset abort event")
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index ad0f69480b9c..8eed2dcc8898 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3858,6 +3858,16 @@ static netdev_features_t mlx5e_fix_features(struct net_device *netdev,
- 			netdev_warn(netdev, "Disabling rxhash, not supported when CQE compress is active\n");
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index d5d57630015f..106b50e42b46 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -349,6 +349,9 @@ static void mlx5_sync_reset_abort_event(struct work_struct *work)
+ 						      reset_abort_work);
+ 	struct mlx5_core_dev *dev = fw_reset->dev;
  
-+	if (mlx5e_is_uplink_rep(priv)) {
-+		features &= ~NETIF_F_HW_TLS_RX;
-+		if (netdev->features & NETIF_F_HW_TLS_RX)
-+			netdev_warn(netdev, "Disabling hw_tls_rx, not supported in switchdev mode\n");
++	if (!test_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags))
++		return;
 +
-+		features &= ~NETIF_F_HW_TLS_TX;
-+		if (netdev->features & NETIF_F_HW_TLS_TX)
-+			netdev_warn(netdev, "Disabling hw_tls_tx, not supported in switchdev mode\n");
-+	}
-+
- 	mutex_unlock(&priv->state_lock);
- 
- 	return features;
+ 	mlx5_sync_reset_clear_reset_requested(dev, true);
+ 	mlx5_core_warn(dev, "PCI Sync FW Update Reset Aborted.\n");
+ }
 -- 
 2.31.1
 
