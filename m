@@ -2,64 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DDEF3987B2
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 13:08:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6816C39878C
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 13:04:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231357AbhFBLJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 07:09:46 -0400
-Received: from m15112.mail.126.com ([220.181.15.112]:50537 "EHLO
-        m15112.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbhFBLJp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 07:09:45 -0400
-X-Greylist: delayed 1867 seconds by postgrey-1.27 at vger.kernel.org; Wed, 02 Jun 2021 07:09:44 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=WwkpAIUENU38Gv1JRi
-        PQTpNDBjAvk902pkO/FF2D7EU=; b=AKNp6PMr3DC/9JCqqlOw0phzhfpuxNg1fk
-        Kd+EgYV0QT29hcu30jkzQNL7swy5HSCHmm5yYv/N7phC2L8BaPBXS/uaNkR5hyJC
-        Sfq9L3NHDPz85XvuGc0Dhb+ST3v1Ql2UMsh89wodoImnJtDaCvIvUlTdwbt9rLrH
-        lTvN0o8QY=
-Received: from localhost.localdomain (unknown [114.250.195.27])
-        by smtp2 (Coremail) with SMTP id DMmowAC3nEk7X7dgnXrgBw--.832S4;
-        Wed, 02 Jun 2021 18:36:44 +0800 (CST)
-From:   zhang kai <zhangkaiheb@126.com>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     zhang kai <zhangkaiheb@126.com>
-Subject: [PATCH] sit: set name of device back to struct parms
-Date:   Wed,  2 Jun 2021 18:36:26 +0800
-Message-Id: <20210602103626.26873-1-zhangkaiheb@126.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: DMmowAC3nEk7X7dgnXrgBw--.832S4
-X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjxUb5l1DUUUU
-X-Originating-IP: [114.250.195.27]
-X-CM-SenderInfo: x2kd0wxndlxvbe6rjloofrz/1tbiFxyl-lpEBcQ+7gAAsf
+        id S231649AbhFBLGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 07:06:14 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:3391 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229618AbhFBLGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 07:06:09 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Fw5fX0Bhnz61mF;
+        Wed,  2 Jun 2021 19:00:36 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Wed, 2 Jun 2021 19:04:20 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Wed, 2 Jun 2021 19:04:19 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
+        <ms@dev.tdt.de>, <willemb@google.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <tanhuazhong@huawei.com>,
+        <huangguangbin2@huawei.com>
+Subject: [PATCH net-next 0/6] net: hdlc_cisci: clean up some code style issues
+Date:   Wed, 2 Jun 2021 19:01:10 +0800
+Message-ID: <1622631676-34037-1-git-send-email-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.8.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-addrconf_set_sit_dstaddr will use parms->name.
+From: Peng Li <lipeng321@huawei.com>
 
-Signed-off-by: zhang kai <zhangkaiheb@126.com>
----
- net/ipv6/sit.c | 3 +++
- 1 file changed, 3 insertions(+)
+This patchset clean up some code style issues.
 
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index 71b57bdb1..e0a39b0bb 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -271,6 +271,9 @@ static struct ip_tunnel *ipip6_tunnel_locate(struct net *net,
- 	if (ipip6_tunnel_create(dev) < 0)
- 		goto failed_free;
- 
-+	if (!parms->name[0])
-+		strcpy(parms->name, dev->name);
-+
- 	return nt;
- 
- failed_free:
+Peng Li (6):
+  net: hdlc_cisco: remove redundant blank lines
+  net: hdlc_cisco: fix the code style issue about "foo* bar"
+  net: hdlc_cisco: add some required spaces
+  net: hdlc_cisco: remove unnecessary out of memory message
+  net: hdlc_cisco: add blank line after declaration
+  net: hdlc_cisco: remove redundant space
+
+ drivers/net/wan/hdlc_cisco.c | 49 +++++++++++++-------------------------------
+ 1 file changed, 14 insertions(+), 35 deletions(-)
+
 -- 
-2.17.1
+2.8.1
 
