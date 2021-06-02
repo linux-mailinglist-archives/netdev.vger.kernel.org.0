@@ -2,177 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 967E7397F45
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 05:00:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D44DA397F40
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 04:59:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbhFBDCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 23:02:35 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:2836 "EHLO
+        id S230255AbhFBDBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 23:01:33 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:2835 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbhFBDCd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 23:02:33 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FvtvV2Y7dzWlNt;
-        Wed,  2 Jun 2021 10:56:06 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Wed, 2 Jun 2021 11:00:48 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Wed, 2 Jun 2021 11:00:48 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <richardcochran@gmail.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <lipeng321@huawei.com>,
-        <tanhuazhong@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [RESEND net-next 2/2] net: hns3: add debugfs support for ptp info
-Date:   Wed, 2 Jun 2021 10:57:44 +0800
-Message-ID: <1622602664-20274-3-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1622602664-20274-1-git-send-email-huangguangbin2@huawei.com>
-References: <1622602664-20274-1-git-send-email-huangguangbin2@huawei.com>
+        with ESMTP id S229631AbhFBDBc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 23:01:32 -0400
+Received: from dggeme766-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FvttL2TSNzWlbT;
+        Wed,  2 Jun 2021 10:55:06 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by dggeme766-chm.china.huawei.com
+ (10.3.19.112) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 2 Jun
+ 2021 10:59:48 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <bjorn@kernel.org>, <magnus.karlsson@intel.com>,
+        <jonathan.lemon@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] xsk: Return -EINVAL instead of -EBUSY after xsk_get_pool_from_qid() fails
+Date:   Wed, 2 Jun 2021 11:10:01 +0800
+Message-ID: <20210602031001.18656-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
+X-Originating-IP: [10.175.113.133]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggeme766-chm.china.huawei.com (10.3.19.112)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huazhong Tan <tanhuazhong@huawei.com>
+xsk_get_pool_from_qid() fails not because the device's queues are busy,
+but because the queue_id exceeds the current number of queues.
+So when it fails, it is better to return -EINVAL instead of -EBUSY.
 
-Add a debugfs interface for dumping ptp information, which
-is helpful for debugging.
-
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c | 13 ++++-
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 55 ++++++++++++++++++++++
- 3 files changed, 67 insertions(+), 2 deletions(-)
+ net/xdp/xsk_buff_pool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 545dcbc7af49..dfdb22b0ccdc 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -273,6 +273,7 @@ enum hnae3_dbg_cmd {
- 	HNAE3_DBG_CMD_MAC_MC,
- 	HNAE3_DBG_CMD_MNG_TBL,
- 	HNAE3_DBG_CMD_LOOPBACK,
-+	HNAE3_DBG_CMD_PTP_INFO,
- 	HNAE3_DBG_CMD_INTERRUPT_INFO,
- 	HNAE3_DBG_CMD_RESET_INFO,
- 	HNAE3_DBG_CMD_IMP_INFO,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index cf1efd2f4a0f..6d57709ddbf5 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -316,6 +316,13 @@ static struct hns3_dbg_cmd_info hns3_dbg_cmd[] = {
- 		.buf_len = HNS3_DBG_READ_LEN,
- 		.init = hns3_dbg_common_file_init,
- 	},
-+	{
-+		.name = "ptp_info",
-+		.cmd = HNAE3_DBG_CMD_PTP_INFO,
-+		.dentry = HNS3_DBG_DENTRY_COMMON,
-+		.buf_len = HNS3_DBG_READ_LEN,
-+		.init = hns3_dbg_common_file_init,
-+	},
- };
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 8de01aaac4a0..30ece117117a 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -135,7 +135,7 @@ int xp_assign_dev(struct xsk_buff_pool *pool,
+ 		return -EINVAL;
  
- static struct hns3_dbg_cap_info hns3_dbg_cap[] = {
-@@ -1056,8 +1063,10 @@ int hns3_dbg_init(struct hnae3_handle *handle)
- 					   handle->hnae3_dbgfs);
+ 	if (xsk_get_pool_from_qid(netdev, queue_id))
+-		return -EBUSY;
++		return -EINVAL;
  
- 	for (i = 0; i < ARRAY_SIZE(hns3_dbg_cmd); i++) {
--		if (hns3_dbg_cmd[i].cmd == HNAE3_DBG_CMD_TM_NODES &&
--		    ae_dev->dev_version <= HNAE3_DEVICE_VERSION_V2)
-+		if ((hns3_dbg_cmd[i].cmd == HNAE3_DBG_CMD_TM_NODES &&
-+		     ae_dev->dev_version <= HNAE3_DEVICE_VERSION_V2) ||
-+		    (hns3_dbg_cmd[i].cmd == HNAE3_DBG_CMD_PTP_INFO &&
-+		     !test_bit(HNAE3_DEV_SUPPORT_PTP_B, ae_dev->caps)))
- 			continue;
- 
- 		if (!hns3_dbg_cmd[i].init) {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-index 0d433a5ff807..6fc50d09b9db 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-@@ -2173,6 +2173,57 @@ static int hclge_dbg_dump_vlan_config(struct hclge_dev *hdev, char *buf,
- 	return hclge_dbg_dump_vlan_offload_config(hdev, buf, len, &pos);
- }
- 
-+static int hclge_dbg_dump_ptp_info(struct hclge_dev *hdev, char *buf, int len)
-+{
-+	struct hclge_ptp *ptp = hdev->ptp;
-+	u32 sw_cfg = ptp->ptp_cfg;
-+	unsigned int tx_start;
-+	unsigned int last_rx;
-+	int pos = 0;
-+	u32 hw_cfg;
-+	int ret;
-+
-+	pos += scnprintf(buf + pos, len - pos, "phc %s's debug info:\n",
-+			 ptp->info.name);
-+	pos += scnprintf(buf + pos, len - pos, "ptp enable: %s\n",
-+			 test_bit(HCLGE_PTP_FLAG_EN, &ptp->flags) ?
-+			 "yes" : "no");
-+	pos += scnprintf(buf + pos, len - pos, "ptp tx enable: %s\n",
-+			 test_bit(HCLGE_PTP_FLAG_TX_EN, &ptp->flags) ?
-+			 "yes" : "no");
-+	pos += scnprintf(buf + pos, len - pos, "ptp rx enable: %s\n",
-+			 test_bit(HCLGE_PTP_FLAG_RX_EN, &ptp->flags) ?
-+			 "yes" : "no");
-+
-+	last_rx = jiffies_to_msecs(ptp->last_rx);
-+	pos += scnprintf(buf + pos, len - pos, "last rx time: %lu.%lu\n",
-+			 last_rx / MSEC_PER_SEC, last_rx % MSEC_PER_SEC);
-+	pos += scnprintf(buf + pos, len - pos, "rx count: %lu\n", ptp->rx_cnt);
-+
-+	tx_start = jiffies_to_msecs(ptp->tx_start);
-+	pos += scnprintf(buf + pos, len - pos, "last tx start time: %lu.%lu\n",
-+			 tx_start / MSEC_PER_SEC, tx_start % MSEC_PER_SEC);
-+	pos += scnprintf(buf + pos, len - pos, "tx count: %lu\n", ptp->tx_cnt);
-+	pos += scnprintf(buf + pos, len - pos, "tx skipped count: %lu\n",
-+			 ptp->tx_skipped);
-+	pos += scnprintf(buf + pos, len - pos, "tx timeout count: %lu\n",
-+			 ptp->tx_timeout);
-+	pos += scnprintf(buf + pos, len - pos, "last tx seqid: %u\n",
-+			 ptp->last_tx_seqid);
-+
-+	ret = hclge_ptp_cfg_qry(hdev, &hw_cfg);
-+	if (ret)
-+		return ret;
-+
-+	pos += scnprintf(buf + pos, len - pos, "sw_cfg: %#x, hw_cfg: %#x\n",
-+			 sw_cfg, hw_cfg);
-+
-+	pos += scnprintf(buf + pos, len - pos, "tx type: %d, rx filter: %d\n",
-+			 ptp->ts_cfg.tx_type, ptp->ts_cfg.rx_filter);
-+
-+	return 0;
-+}
-+
- static int hclge_dbg_dump_mac_uc(struct hclge_dev *hdev, char *buf, int len)
- {
- 	hclge_dbg_dump_mac_list(hdev, buf, len, true);
-@@ -2245,6 +2296,10 @@ static const struct hclge_dbg_func hclge_dbg_cmd_func[] = {
- 		.dbg_dump = hclge_dbg_dump_loopback,
- 	},
- 	{
-+		.cmd = HNAE3_DBG_CMD_PTP_INFO,
-+		.dbg_dump = hclge_dbg_dump_ptp_info,
-+	},
-+	{
- 		.cmd = HNAE3_DBG_CMD_INTERRUPT_INFO,
- 		.dbg_dump = hclge_dbg_dump_interrupt,
- 	},
+ 	pool->netdev = netdev;
+ 	pool->queue_id = queue_id;
 -- 
-2.8.1
+2.17.1
 
