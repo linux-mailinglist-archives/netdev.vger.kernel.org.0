@@ -2,88 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 806E8397E32
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 03:42:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A9AE397E36
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 03:46:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbhFBBoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 21:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35572 "EHLO
+        id S230173AbhFBBr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 21:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbhFBBog (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 21:44:36 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190A6C061574;
-        Tue,  1 Jun 2021 18:42:53 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id x6so1516470ybl.9;
-        Tue, 01 Jun 2021 18:42:53 -0700 (PDT)
+        with ESMTP id S230143AbhFBBr5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Jun 2021 21:47:57 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6B9C061574;
+        Tue,  1 Jun 2021 18:46:14 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id jz2-20020a17090b14c2b0290162cf0b5a35so2495454pjb.5;
+        Tue, 01 Jun 2021 18:46:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fNWp9/rN38E/C2OofAUlt+GU6ZGGQ1oJlQzk0xa0JZ8=;
-        b=H+TDw2dW8cTYgZIXRcip+fFoUwIam48rb5Sk1Z20gBoXBigas3nnZBwim6XPTf2Fx7
-         5KHHCVKBitj1PlZsljC1YEtI7FB87eDI13Pt6tedK3NSRZSEaQfuuO16cUwFO3PIzTZW
-         1RS80swbCIYHi/AA9VsiMN/9clzzsMh9HFzVPaU7kJkRLjanJUVLc3Ii5poa2S4D/TZ2
-         4X6qPa0VtmKqQHnNZ1QftJervhRfSGsS1MVMvpDUlY+OjXZPGWoLRKrHWFOu5I+HG/DQ
-         DtqW5kCogp/ZX9uW4rJ1DyBuGmkXMq7C9VMtlfoV1Pq1cvCYISwAUjfPSANSgDidlDuj
-         E3bA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=NQ/P7MmOfTgjLDrX8LPnbwkLUjHtdnmt9LzgvoXycJ8=;
+        b=i2oQvi+AxPV5aUIajMmP6uDrAMm0+iK3MAME114cvSQrseAOnqQgbBQQkVXGzRzjrB
+         IvGd7a0j7/U6ahzmXcEAdsz+3rTm09K1ZZ0FljGAjnhfjAmwdsMONc0jNiEyuQBKPn7E
+         kVUs+nsYaTqS5F+zaFeDZbXJVlzN3j8c8iT4bZnMEX0kG17UNlslkGZRHzdMNjTICFXn
+         NoMLHil1hw1neYgdTnJMZAsUSmOEky9hiJkSrJPPVotnM6G9JCMCzd1Qz9aazu+HH0Ok
+         mcqciFlwrTtC1XiyqQVyZ1Gmf+KvSsdKE6Z48Mkndtten9pBEsNDCHcB/bq3tVv8eeIG
+         0CLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fNWp9/rN38E/C2OofAUlt+GU6ZGGQ1oJlQzk0xa0JZ8=;
-        b=SHRLLLPu2gfvb8BiOU5cb9m0vcoN1bHdqvvkLENtVtRyd4eAQN/oXz00POY/rE6Za9
-         RxJ9bGIIxIVtoAIJ85Li1R3xVdbGL9LsuqzF2MWah81wZTmMabzTuPjTXC8OVYBFGx+c
-         aLAVbyXP65o6YpttXxrZksleNxnB3jMMy9KvsOxbRUmQ//iNkDL6Dma2eLc/wFUPnA/X
-         UZJIlaTLG/WMONjZDzosWJO/tCRiGHhNhI5ZCVHScDkSalMMFHYCA+qouFrAlyCewwmE
-         IsJVJZeSovl6ys/wr2SYQSxTCdJzlvBD0hUPFgkAxrnH7sTMO9HO5PZuepbainl7ofZx
-         X9tQ==
-X-Gm-Message-State: AOAM532njjUBQ7fsShpt6H+oZHWVbFu8enVxJUZPNv5DRhFgn/ST2qve
-        AF2LOD9G4IWYmSZKKW8dnRV+7+2R1kVR4YGsUJI=
-X-Google-Smtp-Source: ABdhPJxLBl75Zu8Q9Cbj35joIKtd8NkdymJ7r6HtohGG6YT/qn+H0rHjHlncHewERnQBNqTLEO5f3oGDnOLUjPyj5CQ=
-X-Received: by 2002:a25:ced4:: with SMTP id x203mr6401940ybe.354.1622598172279;
- Tue, 01 Jun 2021 18:42:52 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=NQ/P7MmOfTgjLDrX8LPnbwkLUjHtdnmt9LzgvoXycJ8=;
+        b=R1rhYHaFDzSLzK/dkzO7sUNTKwZIAQlXRRYx+8TE0msbPD9tyTn8WXXA9KBvtFRnXM
+         vjzh4PzIGRHVQx3WCqbg/eqapQ7RN/zkfAhNRR/YIzaiasJR50yU074amf7n1yDjn32f
+         PemwJw6fc0hByYENOB8VoSvFgi8/f8tmxKvz4vIjdy9zhsfwEVG1yDqx4IUtyN4JUe+M
+         fKbOn6bMn3tRoQrI4JSteNUOdTT3JdLIHVJ4IV4w5gULi/CJ6c11Li2G/tApIxSiPSQq
+         27fY+OnhtWxk+vLEn9bG+8j8qBDM278DgEyo1amMO1o7CEIiOyOsteC781mW72cjrF6r
+         ipxA==
+X-Gm-Message-State: AOAM530kfNyYnMcAnEtVwxlHWVjElM/Bd9zNTWe4oIwujW4De8AkTela
+        jLpuOvy2FPCkr/1ERb7Sa7I=
+X-Google-Smtp-Source: ABdhPJyk1OcfKjs+iGcc+TSQtJPs6yx36Aw0cJMpkiLro0EUq96/JtKsl68U6EwOWmCr/qFM7CX2tw==
+X-Received: by 2002:a17:90b:38c4:: with SMTP id nn4mr14063131pjb.166.1622598373413;
+        Tue, 01 Jun 2021 18:46:13 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:bdb9])
+        by smtp.gmail.com with ESMTPSA id 65sm4963049pfu.159.2021.06.01.18.46.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Jun 2021 18:46:12 -0700 (PDT)
+Date:   Tue, 1 Jun 2021 18:46:08 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 1/3] bpf: Introduce bpf_timer
+Message-ID: <20210602014608.wxzfsgzuq7rut4ra@ast-mbp.dhcp.thefacebook.com>
+References: <20210527040259.77823-1-alexei.starovoitov@gmail.com>
+ <20210527040259.77823-2-alexei.starovoitov@gmail.com>
+ <87r1hsgln6.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20210601080538.71036-1-johannes@sipsolutions.net> <20210601100320.7d39e9c33a18.I0474861dad426152ac7e7afddfd7fe3ce70870e4@changeid>
-In-Reply-To: <20210601100320.7d39e9c33a18.I0474861dad426152ac7e7afddfd7fe3ce70870e4@changeid>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Wed, 2 Jun 2021 04:42:41 +0300
-Message-ID: <CAHNKnsRv3r=Y7fTR-kUNVXyqeKiugXwAmzryBPvwYpxgjgBeBA@mail.gmail.com>
-Subject: Re: [RFC 3/4] wwan: add interface creation support
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        m.chetan.kumar@intel.com, Johannes Berg <johannes.berg@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87r1hsgln6.fsf@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Johannes and Loic,
+On Thu, May 27, 2021 at 06:57:17PM +0200, Toke Høiland-Jørgensen wrote:
+> >     if (val) {
+> >         bpf_timer_init(&val->timer, timer_cb2, 0);
+> >         bpf_timer_start(&val->timer, 1000 /* call timer_cb2 in 1 msec */);
+> 
+> nit: there are 1M nanoseconds in a millisecond :)
 
-On Tue, Jun 1, 2021 at 11:07 AM Johannes Berg <johannes@sipsolutions.net> wrote:
-> Add support to create (and destroy) interfaces via a new
-> rtnetlink kind "wwan". The responsible driver has to use
-> the new wwan_register_ops() to make this possible.
+oops :)
 
-Wow, this is a perfect solution! I just could not help but praise this
-proposal :)
+> >     }
+> > }
+> >
+> > This patch adds helper implementations that rely on hrtimers
+> > to call bpf functions as timers expire.
+> > The following patch adds necessary safety checks.
+> >
+> > Only programs with CAP_BPF are allowed to use bpf_timer.
+> >
+> > The amount of timers used by the program is constrained by
+> > the memcg recorded at map creation time.
+> >
+> > The bpf_timer_init() helper is receiving hidden 'map' and 'prog' arguments
+> > supplied by the verifier. The prog pointer is needed to do refcnting of bpf
+> > program to make sure that program doesn't get freed while timer is armed.
+> >
+> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> 
+> Overall this LGTM, and I believe it will be usable for my intended use
+> case. One question:
+> 
+> With this, it will basically be possible to create a BPF daemon, won't
+> it? I.e., if a program includes a timer and the callback keeps re-arming
+> itself this will continue indefinitely even if userspace closes all refs
+> to maps and programs? Not saying this is a problem, just wanted to check
+> my understanding (i.e., that there's not some hidden requirement on
+> userspace keeping a ref open that I'm missing)...
 
-When researching the latest WWAN device drivers and related
-discussions, I began to assume that implementing the netdev management
-API without the dummy (no-op) netdev is only possible using genetlink.
-But this usage of a regular device specified by its name as a parent
-for netdev creation is so natural and clear that I believe in RTNL
-again.
+That is correct.
+Another option would be to auto-cancel the timer when the last reference
+to the prog drops. That may feel safer, since forever
+running bpf daemon is a certainly new concept.
+The main benefits of doing prog_refcnt++ from bpf_timer_start are ease
+of use and no surprises.
+Disappearing timer callback when prog unloads is outside of bpf prog control.
+For example the tracing bpf prog might collect some data and periodically
+flush it to user space. The prog would arm the timer and when callback
+is invoked it would send the data via ring buffer and start another
+data collection cycle.
+When the user space part of the service exits it doesn't have
+an ability to enforce the flush of the last chunk of data.
+It could do prog_run cmd that will call the timer callback,
+but it's racy.
+The solution to this problem could be __init and __fini
+sections that will be invoked when the prog is loaded
+and when the last refcnt drops.
+It's a complementary feature though.
+The prog_refcnt++ from bpf_timer_start combined with a prog
+explicitly doing bpf_timer_cancel from __fini
+would be the most flexible combination.
+This way the prog can choose to be a daemon or it can choose
+to cancel its timers and do data flushing when the last prog
+reference drops.
+The prog refcnt would be split (similar to uref). The __fini callback
+will be invoked when refcnt reaches zero, but all increments
+done by bpf_timer_start will be counted separately.
+The user space wouldn't need to do the prog_run command.
+It would detach the prog and close(prog_fd).
+That will trigger __fini callback that will cancel the timers
+and the prog will be fully unloaded.
+That would make bpf progs resemble kernel modules even more.
 
-Let me place my 2 cents. Maybe the parent device attribute should be
-made generic? E.g. call it IFLA_PARENT_DEV_NAME, with usage semantics
-similar to the IFLA_LINK attribute for VLAN interfaces. The case when
-a user needs to create a netdev on behalf of a regular device is not
-WWAN specific, IMHO. So, other drivers could benefit from such
-attribute too. To be honest, I can not recall any driver that could
-immediately start using such attribute, but the situation with the
-need for such attribute seems to be quite common.
+> > +BPF_CALL_5(bpf_timer_init, struct bpf_timer_kern *, timer, void *, cb, int, flags,
+> > +	   struct bpf_map *, map, struct bpf_prog *, prog)
+> > +{
+> > +	struct bpf_hrtimer *t;
+> > +
+> > +	if (flags)
+> > +		return -EINVAL;
+> > +	if (READ_ONCE(timer->timer))
+> > +		return -EBUSY;
+> > +	/* allocate hrtimer via map_kmalloc to use memcg accounting */
+> > +	t = bpf_map_kmalloc_node(map, sizeof(*t), GFP_ATOMIC, NUMA_NO_NODE);
+> > +	if (!t)
+> > +		return -ENOMEM;
+> > +	t->callback_fn = cb;
+> > +	t->value = (void *)timer /* - offset of bpf_timer inside elem */;
+> > +	t->key = t->value - round_up(map->key_size, 8);
+> 
+> For array-maps won't this just point to somewhere inside the previous value?
 
--- 
-Sergey
+Excellent catch. Thank you. Will fix.
+
+> > +	t->map = map;
+> > +	t->prog = prog;
+> > +	spin_lock_init(&t->lock);
+> > +	hrtimer_init(&t->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_SOFT);
+> > +	t->timer.function = timer_cb;
+> > +	if (cmpxchg(&timer->timer, NULL, t)) {
+> > +		/* Parallel bpf_timer_init() calls raced. */
+> > +		kfree(t);
+> > +		return -EBUSY;
+> > +	}
+> > +	return 0;
+> > +}
+> > +
+> > +static const struct bpf_func_proto bpf_timer_init_proto = {
+> > +	.func		= bpf_timer_init,
+> > +	.gpl_only	= false,
+> 
+> hrtimer_init() is EXPORT_SYMBOL_GPL, should this be as well? Same with
+> the others below.
+
+Excellent catch as well! Will fix.
