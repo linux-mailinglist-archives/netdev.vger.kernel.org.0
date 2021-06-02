@@ -2,126 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1DD7398CC5
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:30:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C980C398D51
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:43:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230382AbhFBOcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 10:32:18 -0400
-Received: from foss.arm.com ([217.140.110.172]:46354 "EHLO foss.arm.com"
+        id S230359AbhFBOpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 10:45:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60592 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230031AbhFBOcQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 10:32:16 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 379C011FB;
-        Wed,  2 Jun 2021 07:30:32 -0700 (PDT)
-Received: from C02TD0UTHF1T.local (unknown [10.57.31.212])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D16593F73D;
-        Wed,  2 Jun 2021 07:30:19 -0700 (PDT)
-Date:   Wed, 2 Jun 2021 15:30:16 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        rostedt <rostedt@goodmis.org>, Ben Segall <bsegall@google.com>,
-        Mel Gorman <mgorman@suse.de>, bristot <bristot@redhat.com>,
-        Borislav Petkov <bp@alien8.de>, x86 <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jens Axboe <axboe@kernel.dk>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        acme <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        paulmck <paulmck@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Joel Fernandes, Google" <joel@joelfernandes.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-block@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        linux-usb@vger.kernel.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        cgroups <cgroups@vger.kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
-        rcu <rcu@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        KVM list <kvm@vger.kernel.org>
-Subject: Re: [PATCH 3/6] sched,perf,kvm: Fix preemption condition
-Message-ID: <20210602143016.GE12753@C02TD0UTHF1T.local>
-References: <20210602131225.336600299@infradead.org>
- <20210602133040.398289363@infradead.org>
- <1873020549.5854.1622642347895.JavaMail.zimbra@efficios.com>
- <YLeRVQbXt2hCiO8f@hirez.programming.kicks-ass.net>
+        id S230092AbhFBOpC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 10:45:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B7BF9613BF;
+        Wed,  2 Jun 2021 14:43:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622644999;
+        bh=6hYLmEtJfyj17Pk5FCyvFiZi3GRWNPANkuUiPoffKss=;
+        h=From:To:Cc:Subject:Date:From;
+        b=E5hNuZK0bX4AptxU9d0sWXEhSHtZZIajx7yEOTCqFhj2INqGeMoHeL8GYKtb2xunP
+         K2oCd+TOa+cAmRsFfPaQvAXHCsNxvzat4jkXKqbo1/IwmWZhLE//coH4j7DtL5f6R7
+         KQy9As2urUyiGBJdApPXHmQeyWBZ5sHlzJ/kfC4RZtK9I8YcstyU352/bSk/G80mUS
+         OUx1AX0IXprm99gKWuP0fxDvTV7IlO9b5i20XHGLnBcjncX9mAEXaEYrYx4U/dCuFn
+         YEbM39nbiQ7+ffWTB19KtoWt/s2iJhZ6ONq17a+4fIl8nhESZen1d8Qx+u3Oc/M0Z7
+         n5f0fAa8wSIxA==
+From:   matthias.bgg@kernel.org
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     brcm80211-dev-list.pdl@broadcom.com,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        netdev@vger.kernel.org,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        linux-wireless@vger.kernel.org, Amar Shankar <amsr@cypress.com>,
+        ivan.ivanov@suse.com, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        SHA-cyfmac-dev-list@infineon.com,
+        Wright Feng <wright.feng@infineon.com>,
+        Remi Depommier <rde@setrix.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Arend van Spriel <aspriel@gmail.com>, dmueller@suse.de,
+        Matthias Brugger <mbrugger@suse.com>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH] brcmfmac: Delete second brcm folder hierarchy
+Date:   Wed,  2 Jun 2021 16:43:05 +0200
+Message-Id: <20210602144305.4481-1-matthias.bgg@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YLeRVQbXt2hCiO8f@hirez.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 04:10:29PM +0200, Peter Zijlstra wrote:
-> On Wed, Jun 02, 2021 at 09:59:07AM -0400, Mathieu Desnoyers wrote:
-> > ----- On Jun 2, 2021, at 9:12 AM, Peter Zijlstra peterz@infradead.org wrote:
-> > 
-> > > When ran from the sched-out path (preempt_notifier or perf_event),
-> > > p->state is irrelevant to determine preemption. You can get preempted
-> > > with !task_is_running() just fine.
-> > > 
-> > > The right indicator for preemption is if the task is still on the
-> > > runqueue in the sched-out path.
-> > > 
-> > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > > ---
-> > > kernel/events/core.c |    7 +++----
-> > > virt/kvm/kvm_main.c  |    2 +-
-> > > 2 files changed, 4 insertions(+), 5 deletions(-)
-> > > 
-> > > --- a/kernel/events/core.c
-> > > +++ b/kernel/events/core.c
-> > > @@ -8568,13 +8568,12 @@ static void perf_event_switch(struct tas
-> > > 		},
-> > > 	};
-> > > 
-> > > -	if (!sched_in && task->state == TASK_RUNNING)
-> > > +	if (!sched_in && current->on_rq) {
-> > 
-> > This changes from checking task->state to current->on_rq, but this change
-> > from "task" to "current" is not described in the commit message, which is odd.
-> > 
-> > Are we really sure that task == current here ?
-> 
-> Yeah, @task == @prev == current at this point, but yes, not sure why I
-> changed that... lemme change that back to task.
+From: Matthias Brugger <mbrugger@suse.com>
 
-FWIW, with that:
+BRCMF_FW_DEFAULT_PATH already defines the brcm folder, delete the second
+folder to match with Linux firmware repository layout.
 
-Acked-by: Mark Rutland <mark.rutland@arm.com>
+Fixes: 75729e110e68 ("brcmfmac: expose firmware config files through modinfo")
+Signed-off-by: Matthias Brugger <mbrugger@suse.com>
 
-I have no strong feelings either way w.r.t. the whitespace cleanup. ;)
+---
 
-Thanks,
-Mark
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index 16ed325795a8..b8788d7090a4 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -626,8 +626,8 @@ BRCMF_FW_DEF(4373, "brcmfmac4373-sdio");
+ BRCMF_FW_DEF(43012, "brcmfmac43012-sdio");
+ 
+ /* firmware config files */
+-MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac*-sdio.*.txt");
+-MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac*-pcie.*.txt");
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-sdio.*.txt");
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
+ 
+ static const struct brcmf_firmware_mapping brcmf_sdio_fwnames[] = {
+ 	BRCMF_FW_ENTRY(BRCM_CC_43143_CHIP_ID, 0xFFFFFFFF, 43143),
+-- 
+2.31.1
+
