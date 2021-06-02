@@ -2,149 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F18E399208
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7225399209
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:58:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231164AbhFBR77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 13:59:59 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:53220 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229467AbhFBR76 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 13:59:58 -0400
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 152HY4sP144054
-        for <netdev@vger.kernel.org>; Wed, 2 Jun 2021 13:58:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version :
- content-type : content-transfer-encoding : date : from : to : cc : subject
- : in-reply-to : references : message-id; s=pp1;
- bh=HPkjmZo70f1gViHaF/TLHr4VK45rR1rC8rA+HZ9irHY=;
- b=kV0c4WkM9IXhgcow14kHIoUBjCrTbRRm5rSsqubAKgF4CPnXgh7f+sLC4ZJ97b9eKGks
- NZjH8VVu+2ICzvDpmasigxwnrAmYLTE8kiDtCkWJ+l+iatnXx3FCh3jQxc3NkNrmtWtE
- 4mWGfjXbvW+v1WWLi+9S/AjYSHCOhtr2suhzOjm2MyxiaN17lzJEESVigVLI8qHncPJo
- L9O6k1ybipZrNAHRVCBxExSkjo39ZafbDhBf5wbBjmfh5P8aamaLQ6L21hAp+0TgLXTo
- 0KB/QqR8e4u/kvK2GwDViIY2QPzPPK62iXqxFPQIH6r/P22FX/RlpMI+jNko5RUrKoQN Rg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 38xdw8hk6r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 13:58:14 -0400
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 152HYYso145382
-        for <netdev@vger.kernel.org>; Wed, 2 Jun 2021 13:58:14 -0400
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 38xdw8hk6h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Jun 2021 13:58:14 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 152HkaMW017779;
-        Wed, 2 Jun 2021 17:58:13 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma01dal.us.ibm.com with ESMTP id 38ud89sugg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Jun 2021 17:58:13 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 152HwCJ015729028
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 2 Jun 2021 17:58:12 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CB26C124058;
-        Wed,  2 Jun 2021 17:58:12 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 97EFA124053;
-        Wed,  2 Jun 2021 17:58:12 +0000 (GMT)
-Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed,  2 Jun 2021 17:58:12 +0000 (GMT)
+        id S231176AbhFBSAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 14:00:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57581 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230030AbhFBSAl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:00:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622656737;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Y/SQoG6L/Ht21nVVEnMXlRoDJN/utaABvt/IswwuD4Y=;
+        b=glF3zIyF69e5O+Ux3/JyEm9ociuwHrkks9fu8miuLPVKKl8AbQptoklaqvKvjTuqBUgHzo
+        BC6df3NlZNgHaWfPyvyFmD9l7QIdzwhGGlTBoyQLhO5j+f4L8uSfV/9eZZlhG+/RENbHZ8
+        D8J2LVK3DlyMKlP25GG8TwHS5u5/7mY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-390-XY1n7tPiNv2bw5gTuhk07Q-1; Wed, 02 Jun 2021 13:58:54 -0400
+X-MC-Unique: XY1n7tPiNv2bw5gTuhk07Q-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 04BEE6414C;
+        Wed,  2 Jun 2021 17:58:53 +0000 (UTC)
+Received: from oldenburg.str.redhat.com (ovpn-113-228.ams2.redhat.com [10.36.113.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 29CB85D6DC;
+        Wed,  2 Jun 2021 17:58:50 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
+To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Subject: Re: [PATCH net-next V6 1/6] icmp: add support for RFC 8335 PROBE
+References: <cover.1617067968.git.andreas.a.roeseler@gmail.com>
+        <ba81dcf8097c4d3cc43f4e2ed5cc6f5a7a4c33b6.1617067968.git.andreas.a.roeseler@gmail.com>
+Date:   Wed, 02 Jun 2021 19:58:49 +0200
+In-Reply-To: <ba81dcf8097c4d3cc43f4e2ed5cc6f5a7a4c33b6.1617067968.git.andreas.a.roeseler@gmail.com>
+        (Andreas Roeseler's message of "Mon, 29 Mar 2021 18:45:15 -0700")
+Message-ID: <87im2wup0m.fsf@oldenburg.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 02 Jun 2021 10:58:12 -0700
-From:   Dany Madden <drt@linux.ibm.com>
-To:     Lijun Pan <lijunp213@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ibm: replenish rx pool and poll less
- frequently
-In-Reply-To: <20210602170156.41643-1-lijunp213@gmail.com>
-References: <20210602170156.41643-1-lijunp213@gmail.com>
-Message-ID: <4765c54a8cb7b87ae1d7db928c44f40b@imap.linux.ibm.com>
-X-Sender: drt@linux.ibm.com
-User-Agent: Roundcube Webmail/1.1.12
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: CRmJ2U4G2XHZxDwcSWJDmy9rnCEW1_U7
-X-Proofpoint-ORIG-GUID: TjH1VU3BPbq-EgNKlFKQDLTeZqEJltHR
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-06-02_09:2021-06-02,2021-06-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- lowpriorityscore=0 bulkscore=0 spamscore=0 mlxlogscore=964 malwarescore=0
- suspectscore=0 phishscore=0 priorityscore=1501 clxscore=1011
- impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2106020111
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-06-02 10:01, Lijun Pan wrote:
-> The old mechanism replenishes rx pool even only one frames is processed 
-> in
-> the poll function, which causes lots of overheads. The old mechanism
-> restarts polling until processed frames reaches the budget, which can
-> cause the poll function to loop into restart_poll 63 times at most and 
-> to
-> call replenish_rx_poll 63 times at most. This will cause soft lockup 
-> very
-> easily. So, don't replenish too often, and don't goto restart_poll in 
-> each
-> poll function. If there are pending descriptors, fetch them in the next
-> poll instance.
+* Andreas Roeseler:
 
-Does this improve performance?
+> diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+> index fb169a50895e..222325d1d80e 100644
+> --- a/include/uapi/linux/icmp.h
+> +++ b/include/uapi/linux/icmp.h
+> @@ -20,6 +20,9 @@
+>=20=20
+>  #include <linux/types.h>
+>  #include <asm/byteorder.h>
+> +#include <linux/in.h>
+> +#include <linux/if.h>
+> +#include <linux/in6.h>
 
-> 
-> Signed-off-by: Lijun Pan <lijunp213@gmail.com>
-> ---
->  drivers/net/ethernet/ibm/ibmvnic.c | 15 +++------------
->  1 file changed, 3 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
-> b/drivers/net/ethernet/ibm/ibmvnic.c
-> index ffb2a91750c7..fae1eaa39dd0 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -2435,7 +2435,6 @@ static int ibmvnic_poll(struct napi_struct
-> *napi, int budget)
->  	frames_processed = 0;
->  	rx_scrq = adapter->rx_scrq[scrq_num];
-> 
-> -restart_poll:
->  	while (frames_processed < budget) {
->  		struct sk_buff *skb;
->  		struct ibmvnic_rx_buff *rx_buff;
-> @@ -2512,20 +2511,12 @@ static int ibmvnic_poll(struct napi_struct
-> *napi, int budget)
->  	}
-> 
->  	if (adapter->state != VNIC_CLOSING &&
-> -	    ((atomic_read(&adapter->rx_pool[scrq_num].available) <
-> -	      adapter->req_rx_add_entries_per_subcrq / 2) ||
-> -	      frames_processed < budget))
+We have received a report that this breaks compiliation of trinity
+because it includes <netinet/in.h> and <linux/icmp.h> at the same time,
+and there is no multiple-definition guard for struct in_addr and other
+definitions:
 
-There is a budget that the driver should adhere to. Even one frame, it 
-should still process the frame within a budget.
+In file included from include/net.h:5,
+                 from net/proto-ip-raw.c:2:
+/usr/include/netinet/in.h:31:8: error: redefinition of =E2=80=98struct in_a=
+ddr=E2=80=99
+   31 | struct in_addr
+      |        ^~~~~~~
+In file included from /usr/include/linux/icmp.h:23,
+                 from net/proto-ip-raw.c:1:
+/usr/include/linux/in.h:89:8: note: originally defined here
+   89 | struct in_addr {
+      |        ^~~~~~~
+In file included from /usr/include/netinet/in.h:37,
+                 from include/net.h:5,
+                 from net/proto-ip-raw.c:2:
+/usr/include/bits/in.h:150:8: error: redefinition of =E2=80=98struct ip_mre=
+qn=E2=80=99
+  150 | struct ip_mreqn
+      |        ^~~~~~~~
+In file included from /usr/include/linux/icmp.h:23,
+                 from net/proto-ip-raw.c:1:
+/usr/include/linux/in.h:178:8: note: originally defined here
+  178 | struct ip_mreqn {
+      |        ^~~~~~~~
 
-> +	    (atomic_read(&adapter->rx_pool[scrq_num].available) <
-> +	      adapter->req_rx_add_entries_per_subcrq / 2))
->  		replenish_rx_pool(adapter, &adapter->rx_pool[scrq_num]);
->  	if (frames_processed < budget) {
-> -		if (napi_complete_done(napi, frames_processed)) {
-> +		if (napi_complete_done(napi, frames_processed))
->  			enable_scrq_irq(adapter, rx_scrq);
-> -			if (pending_scrq(adapter, rx_scrq)) {
-> -				if (napi_reschedule(napi)) {
-> -					disable_scrq_irq(adapter, rx_scrq);
-> -					goto restart_poll;
-> -				}
-> -			}
-> -		}
->  	}
->  	return frames_processed;
->  }
+(More conflicts appear to follow.)
+
+I do not know what the correct way forward is.  Adding the
+multiple-definition guards is quite a bit of work and requires updates
+in glibc and the kernel to work properly.
+
+Thanks,
+Florian
+
