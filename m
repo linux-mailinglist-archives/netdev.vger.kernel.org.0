@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D5EB398C38
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:14:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BCB8398C88
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231872AbhFBOQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 10:16:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231846AbhFBOO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 10:14:28 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA205C061761;
-        Wed,  2 Jun 2021 07:12:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=FzJfBljo4B8RxU2ilIDhSLr34HFST0rQLNCYNw/HW+w=; b=L9vjUarjZTu6NzihPxyvfr9SrD
-        cXp2K8L/lswul4alVU9a5KXYcmiYKaI0pVqEPrOTObk1bWVjIa727CcohFhQnptUDt9rVM7+wZokD
-        bdiAP5TkdYqfBQHbyzuL3QwjL5RpkYojkJ5M5vFeN5hhURZOWxGVnCDXhqvgtesERKVZoPVmmu+1u
-        zvBuQ/5U6yi+c+8BHLKEGRhN8+mOxmjvdNXmQvv5K7kABrgsWq6TQpgiZuniSUsdWGatjG0TQN4HN
-        iyi9j9XYfQaN+mhBZrOglYAeu1Bmuw53jmWdaNNlHNX9gCtb8Ta+n9yUYscEboZQaYK4WTzPQHe3/
-        3aLE6Hfw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1loRbc-002uVV-R0; Wed, 02 Jun 2021 14:12:31 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D44963002A3;
-        Wed,  2 Jun 2021 16:12:30 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B760020223DA5; Wed,  2 Jun 2021 16:12:30 +0200 (CEST)
-Date:   Wed, 2 Jun 2021 16:12:30 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+        id S232800AbhFBOTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 10:19:32 -0400
+Received: from mail.efficios.com ([167.114.26.124]:40610 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231982AbhFBORB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 10:17:01 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 2C430302C5A;
+        Wed,  2 Jun 2021 10:15:17 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id MFUulvWoU4e4; Wed,  2 Jun 2021 10:15:16 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 935A5302C57;
+        Wed,  2 Jun 2021 10:15:16 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 935A5302C57
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1622643316;
+        bh=wTS/crR/26N4BDTiNFNNZoqsETfUenagK9Jc/umukAM=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=HjuuxeCx/W0ucWdgkdPe4Ltmueov6LEz9QoWVQ9n275sUH5V2BfBx2uLemee8nOgV
+         iEPOUdYsPm3Mmmkxyd2M/xe2NzuiK0lte25kNJqF/D6aBdMudEsd6+/AvYnVI3XvQB
+         I3eKlxdMnA/4sIrtiEyziYHBHFsURA8x1tU1usHbZhQ+Nqw4zpB4HKNzuSQ6QLswXS
+         8VevSWMXfGVlYdJrwg5WBPwEe4w0fAdx0pE768+FRtKKL3etA75RfRjkypdxFoVZY5
+         KUm3EJy+oFxv1WaIjL0MV00CLSuspl8VcSBxV1CpXr+Or5zRpRWJvt+/OT6gN/Sqjt
+         hvtczOpS4cKPQ==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id toHMU-3uXU92; Wed,  2 Jun 2021 10:15:16 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 702A6302A65;
+        Wed,  2 Jun 2021 10:15:16 -0400 (EDT)
+Date:   Wed, 2 Jun 2021 10:15:16 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Peter Zijlstra <peterz@infradead.org>
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>,
         Juri Lelli <juri.lelli@redhat.com>,
@@ -48,8 +51,7 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Borislav Petkov <bp@alien8.de>, x86 <x86@kernel.org>,
         "H. Peter Anvin" <hpa@zytor.com>, Jens Axboe <axboe@kernel.dk>,
         Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        dm-devel <dm-devel@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Felipe Balbi <balbi@kernel.org>,
@@ -79,46 +81,57 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Andrew Morton <akpm@linux-foundation.org>,
         Paolo Bonzini <pbonzini@redhat.com>,
         linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-usb <linux-usb@vger.kernel.org>,
+        linux-block@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        linux-usb@vger.kernel.org,
         linux-fsdevel <linux-fsdevel@vger.kernel.org>,
         cgroups <cgroups@vger.kernel.org>,
-        kgdb-bugreport <kgdb-bugreport@lists.sourceforge.net>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        linux-pm <linux-pm@vger.kernel.org>, rcu <rcu@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, KVM list <kvm@vger.kernel.org>
-Subject: Re: [PATCH 4/6] sched: Add get_current_state()
-Message-ID: <YLeRzlEmbdsMrFcG@hirez.programming.kicks-ass.net>
-References: <20210602131225.336600299@infradead.org>
- <20210602133040.461908001@infradead.org>
- <1731339790.5856.1622642489232.JavaMail.zimbra@efficios.com>
+        kgdb-bugreport@lists.sourceforge.net,
+        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
+        rcu <rcu@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
+        KVM list <kvm@vger.kernel.org>
+Message-ID: <1524365960.5868.1622643316351.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20210602133040.398289363@infradead.org>
+References: <20210602131225.336600299@infradead.org> <20210602133040.398289363@infradead.org>
+Subject: Re: [PATCH 3/6] sched,perf,kvm: Fix preemption condition
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1731339790.5856.1622642489232.JavaMail.zimbra@efficios.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF88 (Linux)/8.8.15_GA_4026)
+Thread-Topic: sched,perf,kvm: Fix preemption condition
+Thread-Index: NELkknquBPwUAC7hR8bH+DhrqDwz1A==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 10:01:29AM -0400, Mathieu Desnoyers wrote:
-> ----- On Jun 2, 2021, at 9:12 AM, Peter Zijlstra peterz@infradead.org wrote:
+----- On Jun 2, 2021, at 9:12 AM, Peter Zijlstra peterz@infradead.org wrote:
+[...]
+> --- a/kernel/events/core.c
+> +++ b/kernel/events/core.c
+> @@ -8568,13 +8568,12 @@ static void perf_event_switch(struct tas
+> 		},
+> 	};
 > 
-> > Remove yet another few p->state accesses.
+> -	if (!sched_in && task->state == TASK_RUNNING)
+> +	if (!sched_in && current->on_rq) {
+> 		switch_event.event_id.header.misc |=
+> 				PERF_RECORD_MISC_SWITCH_OUT_PREEMPT;
+> +	}
 > 
-> [...]
-> 
-> > 
-> > --- a/include/linux/sched.h
-> > +++ b/include/linux/sched.h
-> > @@ -212,6 +212,8 @@ struct task_group;
-> > 
-> > #endif
-> > 
-> > +#define get_current_state()	READ_ONCE(current->state)
-> 
-> Why use a macro rather than a static inline here ?
+> -	perf_iterate_sb(perf_event_switch_output,
+> -		       &switch_event,
+> -		       NULL);
+> +	perf_iterate_sb(perf_event_switch_output, &switch_event, NULL);
+> }
 
-Mostly to be consistent, all that state stuff is macros. I suppose we
-could try and make them inlines at the end or so -- if the header maze
-allows.
+There is a lot of code cleanup going on here which does not seem to belong
+to a "Fix" patch.
+
+Thanks,
+
+Mathieu
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
