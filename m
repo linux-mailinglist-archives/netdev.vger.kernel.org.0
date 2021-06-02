@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EDFF398FD7
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 18:21:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 226A8398FD9
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 18:21:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbhFBQXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 12:23:32 -0400
-Received: from mail-ej1-f50.google.com ([209.85.218.50]:37758 "EHLO
-        mail-ej1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbhFBQXb (ORCPT
+        id S230097AbhFBQXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 12:23:38 -0400
+Received: from mail-ej1-f45.google.com ([209.85.218.45]:36585 "EHLO
+        mail-ej1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229607AbhFBQXb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 12:23:31 -0400
-Received: by mail-ej1-f50.google.com with SMTP id ce15so4722875ejb.4
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 09:21:34 -0700 (PDT)
+Received: by mail-ej1-f45.google.com with SMTP id a11so4009380ejf.3
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 09:21:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6/ymcweiCG9wNftH8hsgp74pwu5eqC/48ceLEiARYPM=;
-        b=tzdXGrsC6odo0fnJCxXY6HVlddqLHTitRdJqqh3yP6HxyiHEbdqrZGrWSWqo1nTIJr
-         q7iR9cdPRBVPAMymJsmg6T77VmMQ4ONJ8qiUakGOOirghh0BFVD5+4hdy7iTESwotNWZ
-         HdNbthCD9486m/59r/aim9CvHA2fKTFDlsf+P4HNci+zc+0qLwtAugI8xK+So5ZJvkvI
-         5+twkW0ZxJLUUBfHiOM4t35LC/oOB5v0TJa09zlQ5SFlHJeNRjfpyqAQhwpqLnYcCQUb
-         BaNcQsMrvoZKr0Leb9kAr7CqWd+C9BImoVO3FBldNUsk15gqVRN5jzHpCP+66qcxVTu6
-         mp+g==
+        bh=ZwFdxR6KtulZD1ShgkQ7NtR/m6Bt92b8/+4ooloZOFU=;
+        b=exu/496OR9j8PnMpEk4HGzzBZpjN/uUoINeAgpUXtqjKy208dsnZxDyA3y1uarmhO1
+         OPKfyrkletweqrDRqH3/AzZYSkrWOctLyqrtOuHuuTuiMZYPPqRc/TBiTzCs2edIsmPI
+         vgUgZG8KXiewm01wGNIETiPwECxHcuvTbTlpXZCiSs/DGjvdMK1YK8BD8QEump39SNsR
+         cW/w6uu1SD1qsNuGzX7LSGm3oPTv/GWPBBXQMTKCMWLxbrJJVWrmUC9R197yj8kFiH8x
+         CFgPJSqs5JjAMvUtarrLoTAYRX1r8eLyNuYCeEnqHxBtpVAr2uOyFokCwl8VUq/UGiXR
+         ZDTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6/ymcweiCG9wNftH8hsgp74pwu5eqC/48ceLEiARYPM=;
-        b=bqOsHiOCyILR+XPdlZOO0ad3o8ib47MxRIcm8wHjd/C8y7oQhX3cGEcCMVxHXGtSCT
-         3EFzSzm8SXDX6xduHQAeSAm/+5aosCVRb+vjEV8FlRueHzFZag+sX4YVj7j6qBe4CbuW
-         sgsZ5o/qzRCwXTYTw8+NyPHcNh+HtK8kKjCK42+3iooxjn/ARZuGe6v3XT8cqI3OB5QB
-         nsZEcqmd/LQ5jNb0bi5fdAhEg8uG2by8mnFeXbxrnkJVNl9+QnPS8yAV09YFt0qOlFT4
-         EYFnnsxK5SXPm18fjunwObzBDzdSvefc9LPGgY45rzUaxdP+DJNuZhSKMI8mo4KjCSyC
-         I4sQ==
-X-Gm-Message-State: AOAM5305JMjTV4wPwsj+TZBgrHQyVZ65gZN4MB2hYmwI4RqieEgTg/ls
-        YEddRWFEBdhRfaiO7rYwwBMTsJw5oys=
-X-Google-Smtp-Source: ABdhPJwwf970YPDqXsb/s5DWSwR3Tgw5zq9R9OuMungtZVLSqJXQ++3qIxvYpHnfKCp66LqGhnjhgA==
-X-Received: by 2002:a17:906:b794:: with SMTP id dt20mr34729729ejb.521.1622650834311;
-        Wed, 02 Jun 2021 09:20:34 -0700 (PDT)
+        bh=ZwFdxR6KtulZD1ShgkQ7NtR/m6Bt92b8/+4ooloZOFU=;
+        b=GDx++i9eoSVxKWePo27j+9nAYXEj9wZ39VDNqgzs33Jv51I+StmaV5vZgzw9JAE8EU
+         YfYSmLl9ZgzSNJWKQ5kL5vGWAtBHLNsS53yNjtXR/j/rBPk5xmWHRXVOIvwd+mMNuyeB
+         LNPIQocUOZtrRwFFkYTqVzpH3j3itMhaIBGf7XjrHVdf64eZSoh8oCYJKX0UEGVT/Kcq
+         GeQSqnG4LKum4wHVuoTqa8MMi/ZfXYkHPHKUF3j3yScwMRrX4p9+CxogXdtF37MRgcHk
+         xZb+z9YpHBIzr1z9bHMaZxiUr3127qPT+MuxoOWtl0NrqxRvmSNEhrAQyUgY1N119kCW
+         t7vQ==
+X-Gm-Message-State: AOAM530XvISahvLYxx55menjPlWQDlv9eFbdmS2HT5XdmEabYFXuGbqU
+        oaJ+yO3uHMswrMB8CRKoeQo=
+X-Google-Smtp-Source: ABdhPJzBfhVSBXYZ32b/ECDinWWKPsHs3aVhATjzFXwErsxsV7GFrUNdaG4COxUbSBeEtAvZB3WHvg==
+X-Received: by 2002:a17:906:368e:: with SMTP id a14mr34353506ejc.366.1622650835483;
+        Wed, 02 Jun 2021 09:20:35 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id m12sm228078edc.40.2021.06.02.09.20.33
+        by smtp.gmail.com with ESMTPSA id m12sm228078edc.40.2021.06.02.09.20.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 09:20:34 -0700 (PDT)
+        Wed, 02 Jun 2021 09:20:35 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -60,9 +60,9 @@ Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 2/9] net: pcs: xpcs: there is only one PHY ID
-Date:   Wed,  2 Jun 2021 19:20:12 +0300
-Message-Id: <20210602162019.2201925-3-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 3/9] net: pcs: xpcs: make the checks related to the PHY interface mode stateless
+Date:   Wed,  2 Jun 2021 19:20:13 +0300
+Message-Id: <20210602162019.2201925-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210602162019.2201925-1-olteanv@gmail.com>
 References: <20210602162019.2201925-1-olteanv@gmail.com>
@@ -74,236 +74,423 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The xpcs driver has an apparently inadequate structure for the actual
-hardware it drives.
+The operating mode of the driver is currently to populate its
+struct mdio_xpcs_args::supported and struct mdio_xpcs_args::an_mode
+statically in xpcs_probe(), based on the passed phy_interface_t,
+and work with those.
 
-These defines and the xpcs_probe() function would suggest that there is
-one PHY ID per supported PHY interface type, and the driver simply
-validates whether the mode it should operate in (the argument of
-xpcs_probe) matches what the hardware is capable of:
+However this is not the operation that phylink expects from a PCS
+driver, because the port might be attached to an SFP cage that triggers
+changes of the phy_interface_t dynamically as one SFP module is
+unpluggged and another is plugged.
 
-	#define SYNOPSYS_XPCS_USXGMII_ID	0x7996ced0
-	#define SYNOPSYS_XPCS_10GKR_ID		0x7996ced0
-	#define SYNOPSYS_XPCS_XLGMII_ID		0x7996ced0
-	#define SYNOPSYS_XPCS_SGMII_ID		0x7996ced0
-	#define SYNOPSYS_XPCS_MASK		0xffffffff
+To migrate towards that model, the struct mdio_xpcs_args should not
+cache anything related to the phy_interface_t, but just look up the
+statically defined, const struct xpcs_compat structure corresponding to
+the detected PCS OUI/model number.
 
-but that is not the case, because upon closer inspection, all the above
-4 PHY ID definitions are in fact equal.
+So we delete the "supported" and "an_mode" members of struct
+mdio_xpcs_args, and add the "id" structure there (since the ID is not
+expected to change at runtime).
 
-So it is the same XPCS that is compatible with all 4 sets of PHY
-interface types.
-
-This change introduces an array of struct xpcs_compat which is populated
-by the single struct xpcs_id instance. It also eliminates the bogus
-defines for multiple Synopsys XPCS PHY IDs and replaces them with a
-single XPCS_ID, which better reflects the way in which the hardware
-operates.
-
-Because we are touching this area of the code anyway, the new array of
-struct xpcs_compat, as well as the array of xpcs_id, have been moved
-towards the end of the file, since they are variable declarations not
-definitions. If whichever of struct xpcs_compat or struct xpcs_id need
-to gain a function pointer member in the future, it is easier to
-reference functions (no forward declarations needed) if we have the
-const variable declarations at the end of the file.
+Since xpcs->supported is used deep in the code in _xpcs_config_aneg_c73(),
+we need to modify some function headers to pass the xpcs_compat from all
+callers. In turn, the xpcs_compat is always supplied externally to the
+xpcs module:
+- Most of the time by phylink
+- In xpcs_probe() it is needed because xpcs_soft_reset() writes to
+  MDIO_MMD_PCS or to MDIO_MMD_VEND2 depending on whether an_mode is clause
+  37 or clause 73. In order to not introduce functional changes related
+  to when the soft reset is issued, we continue to require the initial
+  phy_interface_t argument to be passed to xpcs_probe() so we can pass
+  this on to xpcs_soft_reset().
+- stmmac_open() wants to know whether to call stmmac_init_phy() or not,
+  and for that it looks inside xpcs->an_mode, because the clause 73
+  (backplane) AN modes supposedly do not have a PHY. Because we moved
+  an_mode outside of struct mdio_xpcs_args, this is now no longer
+  directly possible, so we introduce a helper function xpcs_get_an_mode()
+  which protects the data encapsulation of the xpcs module and requires
+  a phy_interface_t to be passed as argument. This function can look up
+  the appropriate compat based on the phy_interface_t.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2: patch is new
-v2->v3: move the xpcs_compat and xpcs_id declarations at the end, as
-        well as note this in the commit message (needed for sja1105
-        support)
+v1->v2: none
+v2->v3: none
 
- drivers/net/pcs/pcs-xpcs.c | 129 ++++++++++++++++++++++---------------
- 1 file changed, 78 insertions(+), 51 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |   4 +-
+ drivers/net/pcs/pcs-xpcs.c                    | 175 +++++++++++-------
+ include/linux/pcs/pcs-xpcs.h                  |   6 +-
+ 3 files changed, 120 insertions(+), 65 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 9962a1041d35..129b103cd2b5 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3637,6 +3637,7 @@ static int stmmac_request_irq(struct net_device *dev)
+ int stmmac_open(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
++	int mode = priv->plat->phy_interface;
+ 	int bfsize = 0;
+ 	u32 chan;
+ 	int ret;
+@@ -3649,7 +3650,8 @@ int stmmac_open(struct net_device *dev)
+ 
+ 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
+ 	    priv->hw->pcs != STMMAC_PCS_RTBI &&
+-	    priv->hw->xpcs_args.an_mode != DW_AN_C73) {
++	    (!priv->hw->xpcs ||
++	     xpcs_get_an_mode(&priv->hw->xpcs_args, mode) != DW_AN_C73)) {
+ 		ret = stmmac_init_phy(dev);
+ 		if (ret) {
+ 			netdev_err(priv->dev,
 diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index aa985a5aae8d..9f2da9e873c4 100644
+index 9f2da9e873c4..610073cb55d0 100644
 --- a/drivers/net/pcs/pcs-xpcs.c
 +++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -12,10 +12,7 @@
- #include <linux/phylink.h>
- #include <linux/workqueue.h>
- 
--#define SYNOPSYS_XPCS_USXGMII_ID	0x7996ced0
--#define SYNOPSYS_XPCS_10GKR_ID		0x7996ced0
--#define SYNOPSYS_XPCS_XLGMII_ID		0x7996ced0
--#define SYNOPSYS_XPCS_SGMII_ID		0x7996ced0
-+#define SYNOPSYS_XPCS_ID		0x7996ced0
- #define SYNOPSYS_XPCS_MASK		0xffffffff
- 
- /* Vendor regs access */
-@@ -163,56 +160,39 @@ static const int xpcs_sgmii_features[] = {
- 
- static const phy_interface_t xpcs_usxgmii_interfaces[] = {
- 	PHY_INTERFACE_MODE_USXGMII,
--	PHY_INTERFACE_MODE_MAX,
+@@ -195,6 +195,49 @@ struct xpcs_id {
+ 	const struct xpcs_compat *compat;
  };
  
- static const phy_interface_t xpcs_10gkr_interfaces[] = {
- 	PHY_INTERFACE_MODE_10GKR,
--	PHY_INTERFACE_MODE_MAX,
- };
- 
- static const phy_interface_t xpcs_xlgmii_interfaces[] = {
- 	PHY_INTERFACE_MODE_XLGMII,
--	PHY_INTERFACE_MODE_MAX,
- };
- 
- static const phy_interface_t xpcs_sgmii_interfaces[] = {
- 	PHY_INTERFACE_MODE_SGMII,
--	PHY_INTERFACE_MODE_MAX,
- };
- 
--static struct xpcs_id {
--	u32 id;
--	u32 mask;
-+enum {
-+	DW_XPCS_USXGMII,
-+	DW_XPCS_10GKR,
-+	DW_XPCS_XLGMII,
-+	DW_XPCS_SGMII,
-+	DW_XPCS_INTERFACE_MAX,
-+};
-+
-+struct xpcs_compat {
- 	const int *supported;
- 	const phy_interface_t *interface;
-+	int num_interfaces;
- 	int an_mode;
--} xpcs_id_list[] = {
--	{
--		.id = SYNOPSYS_XPCS_USXGMII_ID,
--		.mask = SYNOPSYS_XPCS_MASK,
--		.supported = xpcs_usxgmii_features,
--		.interface = xpcs_usxgmii_interfaces,
--		.an_mode = DW_AN_C73,
--	}, {
--		.id = SYNOPSYS_XPCS_10GKR_ID,
--		.mask = SYNOPSYS_XPCS_MASK,
--		.supported = xpcs_10gkr_features,
--		.interface = xpcs_10gkr_interfaces,
--		.an_mode = DW_AN_C73,
--	}, {
--		.id = SYNOPSYS_XPCS_XLGMII_ID,
--		.mask = SYNOPSYS_XPCS_MASK,
--		.supported = xpcs_xlgmii_features,
--		.interface = xpcs_xlgmii_interfaces,
--		.an_mode = DW_AN_C73,
--	}, {
--		.id = SYNOPSYS_XPCS_SGMII_ID,
--		.mask = SYNOPSYS_XPCS_MASK,
--		.supported = xpcs_sgmii_features,
--		.interface = xpcs_sgmii_interfaces,
--		.an_mode = DW_AN_C37_SGMII,
--	},
-+};
-+
-+struct xpcs_id {
-+	u32 id;
-+	u32 mask;
-+	const struct xpcs_compat *compat;
- };
- 
- static int xpcs_read(struct mdio_xpcs_args *xpcs, int dev, u32 reg)
-@@ -911,35 +891,82 @@ static u32 xpcs_get_id(struct mdio_xpcs_args *xpcs)
- }
- 
- static bool xpcs_check_features(struct mdio_xpcs_args *xpcs,
--				struct xpcs_id *match,
-+				const struct xpcs_id *match,
- 				phy_interface_t interface)
- {
--	int i;
++static const struct xpcs_compat *xpcs_find_compat(const struct xpcs_id *id,
++						  phy_interface_t interface)
++{
 +	int i, j;
- 
--	for (i = 0; match->interface[i] != PHY_INTERFACE_MODE_MAX; i++) {
--		if (match->interface[i] == interface)
--			break;
--	}
-+	for (i = 0; i < DW_XPCS_INTERFACE_MAX; i++) {
-+		const struct xpcs_compat *compat = &match->compat[i];
-+		bool supports_interface = false;
- 
--	if (match->interface[i] == PHY_INTERFACE_MODE_MAX)
--		return false;
-+		for (j = 0; j < compat->num_interfaces; j++) {
-+			if (compat->interface[j] == interface) {
-+				supports_interface = true;
-+				break;
-+			}
-+		}
 +
-+		if (!supports_interface)
-+			continue;
- 
--	for (i = 0; match->supported[i] != __ETHTOOL_LINK_MODE_MASK_NBITS; i++)
--		set_bit(match->supported[i], xpcs->supported);
-+		/* Populate the supported link modes for this
-+		 * PHY interface type
-+		 */
-+		for (j = 0; compat->supported[j] != __ETHTOOL_LINK_MODE_MASK_NBITS; j++)
-+			set_bit(compat->supported[j], xpcs->supported);
- 
--	xpcs->an_mode = match->an_mode;
-+		xpcs->an_mode = compat->an_mode;
- 
--	return true;
-+		return true;
++	for (i = 0; i < DW_XPCS_INTERFACE_MAX; i++) {
++		const struct xpcs_compat *compat = &id->compat[i];
++
++		for (j = 0; j < compat->num_interfaces; j++)
++			if (compat->interface[j] == interface)
++				return compat;
 +	}
 +
++	return NULL;
++}
++
++int xpcs_get_an_mode(struct mdio_xpcs_args *xpcs, phy_interface_t interface)
++{
++	const struct xpcs_compat *compat;
++
++	compat = xpcs_find_compat(xpcs->id, interface);
++	if (!compat)
++		return -ENODEV;
++
++	return compat->an_mode;
++}
++EXPORT_SYMBOL_GPL(xpcs_get_an_mode);
++
++static bool __xpcs_linkmode_supported(const struct xpcs_compat *compat,
++				      enum ethtool_link_mode_bit_indices linkmode)
++{
++	int i;
++
++	for (i = 0; compat->supported[i] != __ETHTOOL_LINK_MODE_MASK_NBITS; i++)
++		if (compat->supported[i] == linkmode)
++			return true;
++
 +	return false;
++}
++
++#define xpcs_linkmode_supported(compat, mode) \
++	__xpcs_linkmode_supported(compat, ETHTOOL_LINK_MODE_ ## mode ## _BIT)
++
+ static int xpcs_read(struct mdio_xpcs_args *xpcs, int dev, u32 reg)
+ {
+ 	u32 reg_addr = MII_ADDR_C45 | dev << 16 | reg;
+@@ -246,11 +289,12 @@ static int xpcs_poll_reset(struct mdio_xpcs_args *xpcs, int dev)
+ 	return (ret & MDIO_CTRL1_RESET) ? -ETIMEDOUT : 0;
  }
  
-+static const struct xpcs_compat synopsys_xpcs_compat[DW_XPCS_INTERFACE_MAX] = {
-+	[DW_XPCS_USXGMII] = {
-+		.supported = xpcs_usxgmii_features,
-+		.interface = xpcs_usxgmii_interfaces,
-+		.num_interfaces = ARRAY_SIZE(xpcs_usxgmii_interfaces),
-+		.an_mode = DW_AN_C73,
-+	},
-+	[DW_XPCS_10GKR] = {
-+		.supported = xpcs_10gkr_features,
-+		.interface = xpcs_10gkr_interfaces,
-+		.num_interfaces = ARRAY_SIZE(xpcs_10gkr_interfaces),
-+		.an_mode = DW_AN_C73,
-+	},
-+	[DW_XPCS_XLGMII] = {
-+		.supported = xpcs_xlgmii_features,
-+		.interface = xpcs_xlgmii_interfaces,
-+		.num_interfaces = ARRAY_SIZE(xpcs_xlgmii_interfaces),
-+		.an_mode = DW_AN_C73,
-+	},
-+	[DW_XPCS_SGMII] = {
-+		.supported = xpcs_sgmii_features,
-+		.interface = xpcs_sgmii_interfaces,
-+		.num_interfaces = ARRAY_SIZE(xpcs_sgmii_interfaces),
-+		.an_mode = DW_AN_C37_SGMII,
-+	},
-+};
+-static int xpcs_soft_reset(struct mdio_xpcs_args *xpcs)
++static int xpcs_soft_reset(struct mdio_xpcs_args *xpcs,
++			   const struct xpcs_compat *compat)
+ {
+ 	int ret, dev;
+ 
+-	switch (xpcs->an_mode) {
++	switch (compat->an_mode) {
+ 	case DW_AN_C73:
+ 		dev = MDIO_MMD_PCS;
+ 		break;
+@@ -419,7 +463,8 @@ static int xpcs_config_usxgmii(struct mdio_xpcs_args *xpcs, int speed)
+ 	return xpcs_write_vpcs(xpcs, MDIO_CTRL1, ret | DW_USXGMII_RST);
+ }
+ 
+-static int _xpcs_config_aneg_c73(struct mdio_xpcs_args *xpcs)
++static int _xpcs_config_aneg_c73(struct mdio_xpcs_args *xpcs,
++				 const struct xpcs_compat *compat)
+ {
+ 	int ret, adv;
+ 
+@@ -431,7 +476,7 @@ static int _xpcs_config_aneg_c73(struct mdio_xpcs_args *xpcs)
+ 
+ 	/* SR_AN_ADV3 */
+ 	adv = 0;
+-	if (phylink_test(xpcs->supported, 2500baseX_Full))
++	if (xpcs_linkmode_supported(compat, 2500baseX_Full))
+ 		adv |= DW_C73_2500KX;
+ 
+ 	/* TODO: 5000baseKR */
+@@ -442,11 +487,11 @@ static int _xpcs_config_aneg_c73(struct mdio_xpcs_args *xpcs)
+ 
+ 	/* SR_AN_ADV2 */
+ 	adv = 0;
+-	if (phylink_test(xpcs->supported, 1000baseKX_Full))
++	if (xpcs_linkmode_supported(compat, 1000baseKX_Full))
+ 		adv |= DW_C73_1000KX;
+-	if (phylink_test(xpcs->supported, 10000baseKX4_Full))
++	if (xpcs_linkmode_supported(compat, 10000baseKX4_Full))
+ 		adv |= DW_C73_10000KX4;
+-	if (phylink_test(xpcs->supported, 10000baseKR_Full))
++	if (xpcs_linkmode_supported(compat, 10000baseKR_Full))
+ 		adv |= DW_C73_10000KR;
+ 
+ 	ret = xpcs_write(xpcs, MDIO_MMD_AN, DW_SR_AN_ADV2, adv);
+@@ -455,19 +500,20 @@ static int _xpcs_config_aneg_c73(struct mdio_xpcs_args *xpcs)
+ 
+ 	/* SR_AN_ADV1 */
+ 	adv = DW_C73_AN_ADV_SF;
+-	if (phylink_test(xpcs->supported, Pause))
++	if (xpcs_linkmode_supported(compat, Pause))
+ 		adv |= DW_C73_PAUSE;
+-	if (phylink_test(xpcs->supported, Asym_Pause))
++	if (xpcs_linkmode_supported(compat, Asym_Pause))
+ 		adv |= DW_C73_ASYM_PAUSE;
+ 
+ 	return xpcs_write(xpcs, MDIO_MMD_AN, DW_SR_AN_ADV1, adv);
+ }
+ 
+-static int xpcs_config_aneg_c73(struct mdio_xpcs_args *xpcs)
++static int xpcs_config_aneg_c73(struct mdio_xpcs_args *xpcs,
++				const struct xpcs_compat *compat)
+ {
+ 	int ret;
+ 
+-	ret = _xpcs_config_aneg_c73(xpcs);
++	ret = _xpcs_config_aneg_c73(xpcs, compat);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -481,7 +527,8 @@ static int xpcs_config_aneg_c73(struct mdio_xpcs_args *xpcs)
+ }
+ 
+ static int xpcs_aneg_done_c73(struct mdio_xpcs_args *xpcs,
+-			      struct phylink_link_state *state)
++			      struct phylink_link_state *state,
++			      const struct xpcs_compat *compat)
+ {
+ 	int ret;
+ 
+@@ -496,7 +543,7 @@ static int xpcs_aneg_done_c73(struct mdio_xpcs_args *xpcs,
+ 
+ 		/* Check if Aneg outcome is valid */
+ 		if (!(ret & DW_C73_AN_ADV_SF)) {
+-			xpcs_config_aneg_c73(xpcs);
++			xpcs_config_aneg_c73(xpcs, compat);
+ 			return 0;
+ 		}
+ 
+@@ -642,8 +689,31 @@ static int xpcs_validate(struct mdio_xpcs_args *xpcs,
+ 			 unsigned long *supported,
+ 			 struct phylink_link_state *state)
+ {
+-	linkmode_and(supported, supported, xpcs->supported);
+-	linkmode_and(state->advertising, state->advertising, xpcs->supported);
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(xpcs_supported);
++	const struct xpcs_compat *compat;
++	int i;
 +
-+static const struct xpcs_id xpcs_id_list[] = {
-+	{
-+		.id = SYNOPSYS_XPCS_ID,
-+		.mask = SYNOPSYS_XPCS_MASK,
-+		.compat = synopsys_xpcs_compat,
-+	},
-+};
++	/* phylink expects us to report all supported modes with
++	 * PHY_INTERFACE_MODE_NA, just don't limit the supported and
++	 * advertising masks and exit.
++	 */
++	if (state->interface == PHY_INTERFACE_MODE_NA)
++		return 0;
 +
++	bitmap_zero(xpcs_supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
++
++	compat = xpcs_find_compat(xpcs->id, state->interface);
++
++	/* Populate the supported link modes for this
++	 * PHY interface type
++	 */
++	if (compat)
++		for (i = 0; compat->supported[i] != __ETHTOOL_LINK_MODE_MASK_NBITS; i++)
++			set_bit(compat->supported[i], xpcs_supported);
++
++	linkmode_and(supported, supported, xpcs_supported);
++	linkmode_and(state->advertising, state->advertising, xpcs_supported);
++
+ 	return 0;
+ }
+ 
+@@ -724,12 +794,17 @@ static int xpcs_config_aneg_c37_sgmii(struct mdio_xpcs_args *xpcs)
+ static int xpcs_config(struct mdio_xpcs_args *xpcs,
+ 		       const struct phylink_link_state *state)
+ {
++	const struct xpcs_compat *compat;
+ 	int ret;
+ 
+-	switch (xpcs->an_mode) {
++	compat = xpcs_find_compat(xpcs->id, state->interface);
++	if (!compat)
++		return -ENODEV;
++
++	switch (compat->an_mode) {
+ 	case DW_AN_C73:
+ 		if (state->an_enabled) {
+-			ret = xpcs_config_aneg_c73(xpcs);
++			ret = xpcs_config_aneg_c73(xpcs, compat);
+ 			if (ret)
+ 				return ret;
+ 		}
+@@ -747,7 +822,8 @@ static int xpcs_config(struct mdio_xpcs_args *xpcs,
+ }
+ 
+ static int xpcs_get_state_c73(struct mdio_xpcs_args *xpcs,
+-			      struct phylink_link_state *state)
++			      struct phylink_link_state *state,
++			      const struct xpcs_compat *compat)
+ {
+ 	int ret;
+ 
+@@ -757,7 +833,7 @@ static int xpcs_get_state_c73(struct mdio_xpcs_args *xpcs,
+ 	/* ... and then we check the faults. */
+ 	ret = xpcs_read_fault_c73(xpcs, state);
+ 	if (ret) {
+-		ret = xpcs_soft_reset(xpcs);
++		ret = xpcs_soft_reset(xpcs, compat);
+ 		if (ret)
+ 			return ret;
+ 
+@@ -766,7 +842,7 @@ static int xpcs_get_state_c73(struct mdio_xpcs_args *xpcs,
+ 		return xpcs_config(xpcs, state);
+ 	}
+ 
+-	if (state->an_enabled && xpcs_aneg_done_c73(xpcs, state)) {
++	if (state->an_enabled && xpcs_aneg_done_c73(xpcs, state, compat)) {
+ 		state->an_complete = true;
+ 		xpcs_read_lpa_c73(xpcs, state);
+ 		xpcs_resolve_lpa_c73(xpcs, state);
+@@ -823,11 +899,16 @@ static int xpcs_get_state_c37_sgmii(struct mdio_xpcs_args *xpcs,
+ static int xpcs_get_state(struct mdio_xpcs_args *xpcs,
+ 			  struct phylink_link_state *state)
+ {
++	const struct xpcs_compat *compat;
+ 	int ret;
+ 
+-	switch (xpcs->an_mode) {
++	compat = xpcs_find_compat(xpcs->id, state->interface);
++	if (!compat)
++		return -ENODEV;
++
++	switch (compat->an_mode) {
+ 	case DW_AN_C73:
+-		ret = xpcs_get_state_c73(xpcs, state);
++		ret = xpcs_get_state_c73(xpcs, state, compat);
+ 		if (ret)
+ 			return ret;
+ 		break;
+@@ -890,40 +971,6 @@ static u32 xpcs_get_id(struct mdio_xpcs_args *xpcs)
+ 	return 0xffffffff;
+ }
+ 
+-static bool xpcs_check_features(struct mdio_xpcs_args *xpcs,
+-				const struct xpcs_id *match,
+-				phy_interface_t interface)
+-{
+-	int i, j;
+-
+-	for (i = 0; i < DW_XPCS_INTERFACE_MAX; i++) {
+-		const struct xpcs_compat *compat = &match->compat[i];
+-		bool supports_interface = false;
+-
+-		for (j = 0; j < compat->num_interfaces; j++) {
+-			if (compat->interface[j] == interface) {
+-				supports_interface = true;
+-				break;
+-			}
+-		}
+-
+-		if (!supports_interface)
+-			continue;
+-
+-		/* Populate the supported link modes for this
+-		 * PHY interface type
+-		 */
+-		for (j = 0; compat->supported[j] != __ETHTOOL_LINK_MODE_MASK_NBITS; j++)
+-			set_bit(compat->supported[j], xpcs->supported);
+-
+-		xpcs->an_mode = compat->an_mode;
+-
+-		return true;
+-	}
+-
+-	return false;
+-}
+-
+ static const struct xpcs_compat synopsys_xpcs_compat[DW_XPCS_INTERFACE_MAX] = {
+ 	[DW_XPCS_USXGMII] = {
+ 		.supported = xpcs_usxgmii_features,
+@@ -961,19 +1008,23 @@ static const struct xpcs_id xpcs_id_list[] = {
+ 
  static int xpcs_probe(struct mdio_xpcs_args *xpcs, phy_interface_t interface)
  {
-+	const struct xpcs_id *match = NULL;
+-	const struct xpcs_id *match = NULL;
  	u32 xpcs_id = xpcs_get_id(xpcs);
--	struct xpcs_id *match = NULL;
  	int i;
  
  	for (i = 0; i < ARRAY_SIZE(xpcs_id_list); i++) {
--		struct xpcs_id *entry = &xpcs_id_list[i];
-+		const struct xpcs_id *entry = &xpcs_id_list[i];
+ 		const struct xpcs_id *entry = &xpcs_id_list[i];
++		const struct xpcs_compat *compat;
  
- 		if ((xpcs_id & entry->mask) == entry->id) {
- 			match = entry;
+-		if ((xpcs_id & entry->mask) == entry->id) {
+-			match = entry;
++		if ((xpcs_id & entry->mask) != entry->id)
++			continue;
+ 
+-			if (xpcs_check_features(xpcs, match, interface))
+-				return xpcs_soft_reset(xpcs);
+-		}
++		xpcs->id = entry;
++
++		compat = xpcs_find_compat(entry, interface);
++		if (!compat)
++			return -ENODEV;
++
++		return xpcs_soft_reset(xpcs, compat);
+ 	}
+ 
+ 	return -ENODEV;
+diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
+index c4d0a2c469c7..c2ec440d2c5d 100644
+--- a/include/linux/pcs/pcs-xpcs.h
++++ b/include/linux/pcs/pcs-xpcs.h
+@@ -14,11 +14,12 @@
+ #define DW_AN_C73			1
+ #define DW_AN_C37_SGMII			2
+ 
++struct xpcs_id;
++
+ struct mdio_xpcs_args {
+-	__ETHTOOL_DECLARE_LINK_MODE_MASK(supported);
+ 	struct mii_bus *bus;
++	const struct xpcs_id *id;
+ 	int addr;
+-	int an_mode;
+ };
+ 
+ struct mdio_xpcs_ops {
+@@ -36,6 +37,7 @@ struct mdio_xpcs_ops {
+ 			  int enable);
+ };
+ 
++int xpcs_get_an_mode(struct mdio_xpcs_args *xpcs, phy_interface_t interface);
+ struct mdio_xpcs_ops *mdio_xpcs_get_ops(void);
+ 
+ #endif /* __LINUX_PCS_XPCS_H */
 -- 
 2.25.1
 
