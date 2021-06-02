@@ -2,83 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0D47397D80
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 02:10:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A13A397D95
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 02:10:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235315AbhFBAL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Jun 2021 20:11:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55986 "EHLO mail.kernel.org"
+        id S235401AbhFBAMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Jun 2021 20:12:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56036 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235228AbhFBALu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235247AbhFBALu (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 1 Jun 2021 20:11:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 11968613CA;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2E8AA613D1;
         Wed,  2 Jun 2021 00:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1622592608;
-        bh=OxysOBcHmeIZbgczDdKcVXDBxCPDoUBJcUo+rF79/Fw=;
+        bh=k/R3M+Z0gY5AxBgS0EmJ/2I47IB9GAN9JHVTlj8MpVQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PmTEmaYO3zXVugXSIGd8WcPgUugxWH2xPnuJjMpxriOGvNXLFQoMu7ftERQM6na48
-         cYrNcp5D2z4tfspsoEg/q9vX+5TnuAOng+6xJEqQC5P5FHdNDl3uFQ6ffb4bYWAlvy
-         m1B6cyIADIi0AfEv9S0RE9dm5o2sRtbyXUwyvVqNXJGb4G8qp6QbH44TNtRdx9mVQ+
-         hgR1IGTPWAbxEB/gIURgS21hOWYoUOyJTSUAHYVb+BmDxAmWCbA1rXlG18uvqVHhrk
-         Noevke0q6gFkzb34Ds3dDtX0Flw7Q8XdMmI6Uicca1zqzT74UP8KyhiCkICmISMGAF
-         rZIzB+km3wGvw==
+        b=NDDI8qBZB1pfEOKXoMqmH3O7OEScRxd6wIDazqKmRGEfEf1v8glNnt6mFPu4ivO7J
+         tqFyTZVwdYBhKM9kihNOZOXzAORjwWDLURW+RZaxzSmGjYPfSjXv6IFD4aVWIChvTP
+         c/F4nvtkGcPCEN0k83hF1E5+2cq9oX6S29xCSbafA5FyHXR32GmrL8YCN5/4dp3ose
+         gkV4g4PpSWjvAGxzaB8JhV9LVLiPAk/Xf135YZDpYt816KNn4Ku9gcyT3BxUUoXKI9
+         sUnSeJf4JSeRmQwcyJruxfR6vXB97HT7wx1uslTjHxWkuBrM1YqUQ0xJV0ei5OCkI/
+         pes1aNOt0LqgA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 07B0760BFB;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 24B8260A6F;
         Wed,  2 Jun 2021 00:10:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/7] net: hdlc: clean up some code style issues
+Subject: Re: [PATCH net-next] igb: Fix -Wunused-const-variable warning
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162259260802.22595.5738598548558595264.git-patchwork-notify@kernel.org>
+Message-Id: <162259260814.22595.7166722857871359129.git-patchwork-notify@kernel.org>
 Date:   Wed, 02 Jun 2021 00:10:08 +0000
-References: <1622553802-19903-1-git-send-email-huangguangbin2@huawei.com>
-In-Reply-To: <1622553802-19903-1-git-send-email-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, xie.he.0141@gmail.com,
-        ms@dev.tdt.de, willemb@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
-        tanhuazhong@huawei.com
+References: <20210601140238.20712-1-yuehaibing@huawei.com>
+In-Reply-To: <20210601140238.20712-1-yuehaibing@huawei.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 1 Jun 2021 21:23:15 +0800 you wrote:
-> From: Peng Li <lipeng321@huawei.com>
+On Tue, 1 Jun 2021 22:02:38 +0800 you wrote:
+> If CONFIG_IGB_HWMON is n, gcc warns:
 > 
-> This patchset clean up some code style issues.
-> 
-> Peng Li (7):
->   net: hdlc: remove redundant blank lines
->   net: hdlc: add blank line after declarations
->   net: hdlc: fix an code style issue about "foo* bar"
->   net: hdlc: fix an code style issue about EXPORT_SYMBOL(foo)
->   net: hdlc: replace comparison to NULL with "!param"
->   net: hdlc: move out assignment in if condition
->   net: hdlc: add braces {} to all arms of the statement
+> drivers/net/ethernet/intel/igb/e1000_82575.c:2765:17:
+>  warning: ‘e1000_emc_therm_limit’ defined but not used [-Wunused-const-variable=]
+>  static const u8 e1000_emc_therm_limit[4] = {
+>                  ^~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/intel/igb/e1000_82575.c:2759:17:
+>  warning: ‘e1000_emc_temp_data’ defined but not used [-Wunused-const-variable=]
+>  static const u8 e1000_emc_temp_data[4] = {
+>                  ^~~~~~~~~~~~~~~~~~~
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/7] net: hdlc: remove redundant blank lines
-    https://git.kernel.org/netdev/net-next/c/30cd458be244
-  - [net-next,2/7] net: hdlc: add blank line after declarations
-    https://git.kernel.org/netdev/net-next/c/04cc04f07bb2
-  - [net-next,3/7] net: hdlc: fix an code style issue about "foo* bar"
-    https://git.kernel.org/netdev/net-next/c/68fd73925bce
-  - [net-next,4/7] net: hdlc: fix an code style issue about EXPORT_SYMBOL(foo)
-    https://git.kernel.org/netdev/net-next/c/01506939cc84
-  - [net-next,5/7] net: hdlc: replace comparison to NULL with "!param"
-    https://git.kernel.org/netdev/net-next/c/387847f295c8
-  - [net-next,6/7] net: hdlc: move out assignment in if condition
-    https://git.kernel.org/netdev/net-next/c/e50eb6c3578c
-  - [net-next,7/7] net: hdlc: add braces {} to all arms of the statement
-    https://git.kernel.org/netdev/net-next/c/1bb521825265
+  - [net-next] igb: Fix -Wunused-const-variable warning
+    https://git.kernel.org/netdev/net-next/c/0a206f9d9e23
 
 You are awesome, thank you!
 --
