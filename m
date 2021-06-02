@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7225399209
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1DE9399214
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 20:00:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231176AbhFBSAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 14:00:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57581 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230030AbhFBSAl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:00:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622656737;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y/SQoG6L/Ht21nVVEnMXlRoDJN/utaABvt/IswwuD4Y=;
-        b=glF3zIyF69e5O+Ux3/JyEm9ociuwHrkks9fu8miuLPVKKl8AbQptoklaqvKvjTuqBUgHzo
-        BC6df3NlZNgHaWfPyvyFmD9l7QIdzwhGGlTBoyQLhO5j+f4L8uSfV/9eZZlhG+/RENbHZ8
-        D8J2LVK3DlyMKlP25GG8TwHS5u5/7mY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-390-XY1n7tPiNv2bw5gTuhk07Q-1; Wed, 02 Jun 2021 13:58:54 -0400
-X-MC-Unique: XY1n7tPiNv2bw5gTuhk07Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 04BEE6414C;
-        Wed,  2 Jun 2021 17:58:53 +0000 (UTC)
-Received: from oldenburg.str.redhat.com (ovpn-113-228.ams2.redhat.com [10.36.113.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 29CB85D6DC;
-        Wed,  2 Jun 2021 17:58:50 +0000 (UTC)
-From:   Florian Weimer <fweimer@redhat.com>
-To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
-Subject: Re: [PATCH net-next V6 1/6] icmp: add support for RFC 8335 PROBE
-References: <cover.1617067968.git.andreas.a.roeseler@gmail.com>
-        <ba81dcf8097c4d3cc43f4e2ed5cc6f5a7a4c33b6.1617067968.git.andreas.a.roeseler@gmail.com>
-Date:   Wed, 02 Jun 2021 19:58:49 +0200
-In-Reply-To: <ba81dcf8097c4d3cc43f4e2ed5cc6f5a7a4c33b6.1617067968.git.andreas.a.roeseler@gmail.com>
-        (Andreas Roeseler's message of "Mon, 29 Mar 2021 18:45:15 -0700")
-Message-ID: <87im2wup0m.fsf@oldenburg.str.redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        id S231270AbhFBSCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 14:02:24 -0400
+Received: from mail-ej1-f49.google.com ([209.85.218.49]:42709 "EHLO
+        mail-ej1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231180AbhFBSCX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:02:23 -0400
+Received: by mail-ej1-f49.google.com with SMTP id qq22so5119171ejb.9
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 11:00:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pXdpJq/E28+wPu/xupCvA2u8F7Br3OMuk907mbo+m6A=;
+        b=tuqXyUCL1Nch2ku2bCpxHzc8KA11oc5VK89ewJHbt5CIers0mruD7ehmn75pQjl6hD
+         wkqlkJObQiMIWXpTc1YQZmAzxUsq9opaJKNGp+yxDLrS2gFk8kCPOCrt8FXBYIf5ZBtj
+         /4BEDeO9yY1D/+4OLjAiaOLwpx3SKUBe6WYJPlGgGmiZs0ZOMx+pd80OaFPMs2/hI6MP
+         /tcHBvKB3xws3zQlnuNn3h2PwZEtdVyUB/JwdVlfssRbTxK9JqC+e5cjzdxb9IwpRJWZ
+         OVCiiVGRdmfM1GxNip0CvoIJYC+3BkZVTmkeSs8R87RqIxYVbqHCj8Mkzk3RWA1av9L9
+         PwbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pXdpJq/E28+wPu/xupCvA2u8F7Br3OMuk907mbo+m6A=;
+        b=OJ5i5f9cLJm3VuQZlDRCmeRvc2Kq6MZTXT8/uyvuw/LMuzTZ5u8U2WJTD4SwpT8NkG
+         tCt7v5qRFSoLrqcaW9Q/Wy7PiPGIx5u6/fyXckLtjSkPsmRK/ewWk06z7ryzn0dFi5El
+         wOjW9BhuHjRn5VpNCCTMV9pACivkyF6OO4L8ScHAbaFpwRF6oZyKb5RqZ2bA33puC+z/
+         Um6Ud0kA/fldF+jH38IEt3SBvBxFCORAa9RoNoTTeMTy/Z9A0aof3mHNlngR+50twB+n
+         4X9qeM3NChNVm8TJ6uMKDOvX58PAiwdd7PR+fVPCdbnLVnr2vSyDOuABp8xAxTDs35I+
+         Mn8w==
+X-Gm-Message-State: AOAM532R+RuXSXR4Rvdjc+Xcr6gdsPtCHlikmrnTHNJ55sCP/haOijTp
+        1spNW108CNgAlOOG+lPgC1ts2UPp1U0=
+X-Google-Smtp-Source: ABdhPJzrSfpxFim39hz6zfPWSMMeuQpda4Vr4sgrJVnw7kC/jTS0p0PNlPzPweT4uIOxjRGqcdg75g==
+X-Received: by 2002:a17:907:7713:: with SMTP id kw19mr16736016ejc.249.1622656779356;
+        Wed, 02 Jun 2021 10:59:39 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id lb23sm352254ejb.73.2021.06.02.10.59.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Jun 2021 10:59:39 -0700 (PDT)
+Date:   Wed, 2 Jun 2021 20:59:37 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Michael Walle <michael@walle.cc>, Po Liu <po.liu@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 2/2] net: enetc: count the tc-taprio window drops
+Message-ID: <20210602175937.nwdz7xju4o5eqaby@skbuf>
+References: <20210602122114.2082344-1-olteanv@gmail.com>
+ <20210602122114.2082344-3-olteanv@gmail.com>
+ <20210602101920.3c09686a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210602101920.3c09686a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* Andreas Roeseler:
+On Wed, Jun 02, 2021 at 10:19:20AM -0700, Jakub Kicinski wrote:
+> On Wed,  2 Jun 2021 15:21:14 +0300 Vladimir Oltean wrote:
+> > From: Po Liu <Po.Liu@nxp.com>
+> > 
+> > The enetc scheduler for IEEE 802.1Qbv has 2 options (depending on
+> > PTGCR[TG_DROP_DISABLE]) when we attempt to send an oversized packet
+> > which will never fit in its allotted time slot for its traffic class:
+> > either block the entire port due to head-of-line blocking, or drop the
+> 
+> the entire port or the entire queue?
 
-> diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
-> index fb169a50895e..222325d1d80e 100644
-> --- a/include/uapi/linux/icmp.h
-> +++ b/include/uapi/linux/icmp.h
-> @@ -20,6 +20,9 @@
->=20=20
->  #include <linux/types.h>
->  #include <asm/byteorder.h>
-> +#include <linux/in.h>
-> +#include <linux/if.h>
-> +#include <linux/in6.h>
+I don't remember, I need to re-test.
 
-We have received a report that this breaks compiliation of trinity
-because it includes <netinet/in.h> and <linux/icmp.h> at the same time,
-and there is no multiple-definition guard for struct in_addr and other
-definitions:
+> > packet and set a bit in the writeback format of the transmit buffer
+> > descriptor, allowing other packets to be sent.
+> > 
+> > We obviously choose the second option in the driver, but we do not
+> > detect the drop condition, so from the perspective of the network stack,
+> > the packet is sent and no error counter is incremented.
+> > 
+> > This change checks the writeback of the TX BD when tc-taprio is enabled,
+> > and increments a specific ethtool statistics counter and a generic
+> > "tx_dropped" counter in ndo_get_stats64.
+> 
+> Any chance we should also report that back to the qdisc to have 
+> a standard way of querying from user space? Qdisc offload supports
+> stats in general, it shouldn't be an issue, and the stat seems generic
+> enough, no?
 
-In file included from include/net.h:5,
-                 from net/proto-ip-raw.c:2:
-/usr/include/netinet/in.h:31:8: error: redefinition of =E2=80=98struct in_a=
-ddr=E2=80=99
-   31 | struct in_addr
-      |        ^~~~~~~
-In file included from /usr/include/linux/icmp.h:23,
-                 from net/proto-ip-raw.c:1:
-/usr/include/linux/in.h:89:8: note: originally defined here
-   89 | struct in_addr {
-      |        ^~~~~~~
-In file included from /usr/include/netinet/in.h:37,
-                 from include/net.h:5,
-                 from net/proto-ip-raw.c:2:
-/usr/include/bits/in.h:150:8: error: redefinition of =E2=80=98struct ip_mre=
-qn=E2=80=99
-  150 | struct ip_mreqn
-      |        ^~~~~~~~
-In file included from /usr/include/linux/icmp.h:23,
-                 from net/proto-ip-raw.c:1:
-/usr/include/linux/in.h:178:8: note: originally defined here
-  178 | struct ip_mreqn {
-      |        ^~~~~~~~
-
-(More conflicts appear to follow.)
-
-I do not know what the correct way forward is.  Adding the
-multiple-definition guards is quite a bit of work and requires updates
-in glibc and the kernel to work properly.
-
-Thanks,
-Florian
-
+You're thinking of something along the lines of tc_codel_xstats?
+How do you propose I pass this on to the taprio qdisc? Just call a
+function in enetc that is exported by net/sched/sch_taprio.c?
+If the skb is bound to a socket, I'm thinking it might be more useful to
+report a struct sock_extended_err similar to the SO_EE_TXTIME_MISSED
+stuff for tc-etf, what do you think?
