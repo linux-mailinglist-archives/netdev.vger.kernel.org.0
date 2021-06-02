@@ -2,70 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72BAD399154
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:19:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD726399198
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230262AbhFBRVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 13:21:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41642 "EHLO mail.kernel.org"
+        id S230352AbhFBR16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 13:27:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43792 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230185AbhFBRVE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 13:21:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3F0AF61CBF;
-        Wed,  2 Jun 2021 17:19:21 +0000 (UTC)
+        id S229876AbhFBR1x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 13:27:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6928761CFF;
+        Wed,  2 Jun 2021 17:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622654361;
-        bh=eJUm+eDI5irPUa4S/Ka3aCYnW3lzUUnSvMok57V7Xks=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eRIiek8cwin6KdmuBPdbVbUh2a/lSRz+HXPHaHrJMc2LvByS0G52j03Wn4q1Vi1EU
-         Dg4Mm4Ouubhsln8ddb8LveITbjQVKQRPcPbPpkkbBNEyxhipbMf7t2dSecEDnjuAlD
-         Vc8lSpGOgZ8B+t8qsehBKqKPZv9Wv0tMUf+QHFGCuo2ncapav1cPMpXs3T+uXxZPw1
-         nzm/5lqr7C+zjX7s/fWnvslTCGh207SvXd38yjEMbm5Ma3OArtf/Mx71AmOtlwZmb0
-         WXQ+dRQkkxivJRhQw1PRH8hy9gTTBOUmkSPWjiNJmwO8vo5uXEjxsRqbn+aTWwHfpm
-         R75mjGaFQZeNQ==
-Date:   Wed, 2 Jun 2021 10:19:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Michael Walle <michael@walle.cc>, Po Liu <po.liu@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 2/2] net: enetc: count the tc-taprio window
- drops
-Message-ID: <20210602101920.3c09686a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20210602122114.2082344-3-olteanv@gmail.com>
-References: <20210602122114.2082344-1-olteanv@gmail.com>
-        <20210602122114.2082344-3-olteanv@gmail.com>
+        s=k20201202; t=1622654769;
+        bh=4TdZWdT458pa+A30aTCE5yanC9JhHWs29JrnvdhvEsk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IhTSPvX1oFWdhWHvPOOW2s4vlB00wzTN1wE2o6r5VK+9bObXTr3LC66LEhfIOILVO
+         OnXKWk9q28SQcFDyatOCgQyYUvVKL2himBVOIot23PfZWFuvevCSHoynsZiObqRgAw
+         UrIBVx+ZKiQ8k57gL/06h7pv75aF5KJW3I4nAnhPcFfbb7VAb5ksGBZd0Z4WX0YpdQ
+         jle8X/mqbZQQsDxn+kOwfTuCM5pHOLsk0jT230v0xX9tId75Q3+AtpOw+74b1mnE3B
+         7mlYEE1W96v5qY6Z3urtZDUFNTejlhORoonbDlImg3Dch0yZ73lAs54uxlK/8M3oA7
+         9oBvlXvUhEVTw==
+Date:   Wed, 2 Jun 2021 18:26:04 +0100
+From:   Will Deacon <will@kernel.org>
+To:     "Xu, Yanfei" <yanfei.xu@windriver.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
+        zlim.lnx@gmail.com, catalin.marinas@arm.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] bpf: avoid unnecessary IPI in bpf_flush_icache
+Message-ID: <20210602172603.GB31957@willie-the-truck>
+References: <20210601150625.37419-1-yanfei.xu@windriver.com>
+ <20210601150625.37419-2-yanfei.xu@windriver.com>
+ <56cc1e25-25c3-a3da-64e3-8a1c539d685b@iogearbox.net>
+ <20210601174114.GA29130@willie-the-truck>
+ <7637dcdf-12b4-2861-3c76-f8a8e240a05e@windriver.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7637dcdf-12b4-2861-3c76-f8a8e240a05e@windriver.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  2 Jun 2021 15:21:14 +0300 Vladimir Oltean wrote:
-> From: Po Liu <Po.Liu@nxp.com>
+On Wed, Jun 02, 2021 at 07:26:03PM +0800, Xu, Yanfei wrote:
 > 
-> The enetc scheduler for IEEE 802.1Qbv has 2 options (depending on
-> PTGCR[TG_DROP_DISABLE]) when we attempt to send an oversized packet
-> which will never fit in its allotted time slot for its traffic class:
-> either block the entire port due to head-of-line blocking, or drop the
-
-the entire port or the entire queue?
-
-> packet and set a bit in the writeback format of the transmit buffer
-> descriptor, allowing other packets to be sent.
 > 
-> We obviously choose the second option in the driver, but we do not
-> detect the drop condition, so from the perspective of the network stack,
-> the packet is sent and no error counter is incremented.
+> On 6/2/21 1:41 AM, Will Deacon wrote:
+> > [Please note: This e-mail is from an EXTERNAL e-mail address]
+> > 
+> > On Tue, Jun 01, 2021 at 07:20:04PM +0200, Daniel Borkmann wrote:
+> > > On 6/1/21 5:06 PM, Yanfei Xu wrote:
+> > > > It's no need to trigger IPI for keeping pipeline fresh in bpf case.
+> > > 
+> > > This needs a more concrete explanation/analysis on "why it is safe" to do so
+> > > rather than just saying that it is not needed.
+> > 
+> > Agreed. You need to show how the executing thread ends up going through a
+> > context synchronizing operation before jumping to the generated code if
+> > the IPI here is removed.
 > 
-> This change checks the writeback of the TX BD when tc-taprio is enabled,
-> and increments a specific ethtool statistics counter and a generic
-> "tx_dropped" counter in ndo_get_stats64.
+> This patch came out with I looked through ftrace codes. Ftrace modify
+> the text code and don't send IPI in aarch64_insn_patch_text_nosync(). I
+> mistakenly thought the bpf is same with ftrace.
+> 
+> But now I'm still not sure why the ftrace don't need the IPI to go
+> through context synchronizing, maybe the worst situation is omit a
+> tracing event?
 
-Any chance we should also report that back to the qdisc to have 
-a standard way of querying from user space? Qdisc offload supports
-stats in general, it shouldn't be an issue, and the stat seems generic
-enough, no?
+I think ftrace handles this itself via ftrace_sync_ipi, no?
+
+Will
