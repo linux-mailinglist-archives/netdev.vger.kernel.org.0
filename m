@@ -2,71 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BC6839878E
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 13:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C13483987B7
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 13:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231931AbhFBLGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 07:06:21 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:7071 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229721AbhFBLGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 07:06:10 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Fw5gh6zHyzYp7L;
-        Wed,  2 Jun 2021 19:01:36 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Wed, 2 Jun 2021 19:04:21 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Wed, 2 Jun 2021 19:04:20 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
-        <ms@dev.tdt.de>, <willemb@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <tanhuazhong@huawei.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 6/6] net: hdlc_cisco: remove redundant space
-Date:   Wed, 2 Jun 2021 19:01:16 +0800
-Message-ID: <1622631676-34037-7-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1622631676-34037-1-git-send-email-huangguangbin2@huawei.com>
-References: <1622631676-34037-1-git-send-email-huangguangbin2@huawei.com>
+        id S230321AbhFBLMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 07:12:03 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:52655 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229541AbhFBLMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 07:12:02 -0400
+Received: from mail-ed1-f72.google.com ([209.85.208.72])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1loOlO-0004Tu-Am
+        for netdev@vger.kernel.org; Wed, 02 Jun 2021 11:10:18 +0000
+Received: by mail-ed1-f72.google.com with SMTP id v18-20020a0564023492b029038d5ad7c8a8so1189086edc.11
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 04:10:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GM346qMDm5SkBVsnz+0MTRWteUg3MTSMm7l18tLMkIc=;
+        b=DmU47cOmK6ypUDUPaFnqbzKr+W8B+LI4+fWVzuu0je8+g/5WoGzJH1VG7GjpnnWBMA
+         Ck3Pi3rXoEtN/+QGzVlFMVbT3eUNg666UiqGxAE59ZlLOq/D09b8bUPBBtRl4BK6iHWV
+         Gmesx2FoCjkXlSKKbLG9KEPKQLZLorDZsgXAJD8cJR1wvpPaVB93GHM6G9DxAYl1VVWh
+         4L5nwUMDqbparXyOHPPfFL/mMI78EbahAy4LjxNnxB6Sqo9MuiyU+AbXj2ePMlpg62rL
+         zwZS9x27vVlz5JuTAb2bqY0xbW7F7GVJkWWUqPCh8bFLnmHi1BVgDHJk+fObK1AmprPx
+         t+Vw==
+X-Gm-Message-State: AOAM532gJUzyZ8e70gzAtB0VzSIu5sOafTsxZEpchGRiatLWJni9Qs7a
+        gzaPpsH5YqjKt6TLvqcNwbt5ujiADfFimGArHU+h1avep8LmDefQcd1FyaelCjicrzxGJv420V5
+        CMx5UdzufSxDYDlqMjI2Pk6UGEcQPDL3LTg==
+X-Received: by 2002:a50:fd13:: with SMTP id i19mr13052915eds.280.1622632218081;
+        Wed, 02 Jun 2021 04:10:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw06pkyMIjDmtQIx52ngcNxG9a4Pd49N7BCx77O2/Snm6f9UtSwWihRBF+HkFpauz9Ft3wqoQ==
+X-Received: by 2002:a50:fd13:: with SMTP id i19mr13052906eds.280.1622632217929;
+        Wed, 02 Jun 2021 04:10:17 -0700 (PDT)
+Received: from [192.168.1.115] (xdsl-188-155-185-9.adslplus.ch. [188.155.185.9])
+        by smtp.gmail.com with ESMTPSA id d24sm1142127edp.7.2021.06.02.04.10.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Jun 2021 04:10:17 -0700 (PDT)
+Subject: Re: [PATCH] nfc: mrvl: remove useless "continue" at end of loop
+To:     Joe Perches <joe@perches.com>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210601160713.312622-1-krzysztof.kozlowski@canonical.com>
+ <5780056e09dbbd285d470a313939e5d3cc1a0c3e.camel@perches.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <c3641235-6cd0-99dc-2e4b-c61875bdb52c@canonical.com>
+Date:   Wed, 2 Jun 2021 13:10:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+In-Reply-To: <5780056e09dbbd285d470a313939e5d3cc1a0c3e.camel@perches.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+On 01/06/2021 18:30, Joe Perches wrote:
+> On Tue, 2021-06-01 at 18:07 +0200, Krzysztof Kozlowski wrote:
+>> The "continue" statement at the end of a for loop does not have an
+>> effect.
+> []
+>> diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
+> []
+>> @@ -325,7 +325,6 @@ static int nfcmrvl_probe(struct usb_interface *intf,
+>>  		if (!drv_data->bulk_rx_ep &&
+>>  		    usb_endpoint_is_bulk_in(ep_desc)) {
+>>  			drv_data->bulk_rx_ep = ep_desc;
+>> -			continue;
+>>  		}
+>>  	}
+> 
+> I think this code would be clearer with an if/else instead of
+> multiple continues.
 
-Space prohibited between function name and open parenthesis '('.
+Makes sense. I'll send a v2.
 
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/wan/hdlc_cisco.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wan/hdlc_cisco.c b/drivers/net/wan/hdlc_cisco.c
-index d337711..349ca18 100644
---- a/drivers/net/wan/hdlc_cisco.c
-+++ b/drivers/net/wan/hdlc_cisco.c
-@@ -174,7 +174,7 @@ static int cisco_rx(struct sk_buff *skb)
- 		cisco_data = (struct cisco_packet *)(skb->data + sizeof
- 						    (struct hdlc_header));
- 
--		switch (ntohl (cisco_data->type)) {
-+		switch (ntohl(cisco_data->type)) {
- 		case CISCO_ADDR_REQ: /* Stolen from syncppp.c :-) */
- 			rcu_read_lock();
- 			in_dev = __in_dev_get_rcu(dev);
--- 
-2.8.1
-
+Best regards,
+Krzysztof
