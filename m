@@ -2,146 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BFE73992CA
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 20:46:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89C1F3992CB
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 20:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbhFBSsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 14:48:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40492 "EHLO
+        id S229629AbhFBSsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 14:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229467AbhFBSsW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:48:22 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3059BC06174A;
-        Wed,  2 Jun 2021 11:46:25 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id o9so3106537ilh.6;
-        Wed, 02 Jun 2021 11:46:25 -0700 (PDT)
+        with ESMTP id S229590AbhFBSs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:48:29 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A08C061756
+        for <netdev@vger.kernel.org>; Wed,  2 Jun 2021 11:46:34 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id b5so3077305ilc.12
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 11:46:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=42lSeKIaV1CGNphmGC2qEO05eLA2cNyDNNBAKkeOzoI=;
-        b=nXFG0t/B4mMaFeGppWiVlZHLZBrXWg5M1e6Be801+km1/mw3+c6HukNhhHzaGZNJxG
-         wDHD0gNhq9DxSlEiAYWP94k9l43JE+XxIMAM5LeVVjggOsy8y/lGJAmosSenGwFk+Cgy
-         F4DD/rChJ9CjbQX+APjuqrUmHiQFWskBR4UqlHQpkucx1e9ikXHNaQ9zObOlP3QHV9r6
-         jDMpahGVameU5O6X3h+ePPxLCoRuXQF8BdslOrcHF2JapTMj5TElJRmyGJPAGua/aYA1
-         dGh32f5mD2Q/K9zZemcHCb5lho/Pu2F+cc7TC743KuXVPJImOXZRpDSRQT6K66mGDDu8
-         8XKg==
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=oyW//aBbhfsZ2AYU/tmiJg56xJ4sB2f6p3p5Lg2LybE=;
+        b=AJLriqqMQ6Ffkuni6Ay70kZxK+hMc4Qjr3PYx/PE/BYPLuXLF8PR3jyqxxPyXKZAdu
+         qwPUu67vlFcjkKPSI/1JpTkbPi+BFCea6fShJQUyPbIqNS1U7EvZwWX0BLrZPAYuotMx
+         BX95sHCULLKTpOmBuDrEFq5DnMySp5utkiD7csSNmdcI+GgBR4Mhwz+oaBh/ABTfw1EN
+         BaxH6SoNN5mXPJ9V1BRHS/fnEqDHUWXyCqOOF306Mh//8N3oRoqsxoOGI/NJkPTTw6Vx
+         irv8EKGHJdwafXDDfK/0ZGR2DdeMcjBy6bJmaqLKBY668Pm98xPPDpiJn+PkSWjLRIlz
+         rtyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=42lSeKIaV1CGNphmGC2qEO05eLA2cNyDNNBAKkeOzoI=;
-        b=DcD9uNakJdvXfv3ESf1KD4oiVT9s3rxLdIwlFs/TJ07aQ2hvCOzySey/sgB5vgqUig
-         JwQ1NiBU3WIljxf5tP9xmFBjgDnmff/7LfOTzMqqveNDdJRTfi3oz7HRurOek3ognFZX
-         nItaT1mDHXlmoKn/3rLu2edfxIFb6epjwUHXgsJ1r4PJ/vJ4TmzxJDbhS7ii55+J6Unk
-         XR01MBpgVV7qRZyIu6Hx9rveMFskngHcXnCz2arls/J1wixVDTp1y61DehjVsyzEYi4j
-         WQKGj0Puc5suh2x0f+WgA66nxxVAwOU/IcNd6FVOOkhdbgKblOZm0NS1QhiBzFLe4oxd
-         1y3Q==
-X-Gm-Message-State: AOAM533NO/lPyWpsDHT5s3Os+ZKEr1NLImTJ3wfcZOtvzYrcvWbGJ7oY
-        bYmSyaxvcA3p1NTEia/U38A=
-X-Google-Smtp-Source: ABdhPJxXmmwBPh+BoeL9Vpyd3HPwW6l0gQ/244uTe34OToaOLxt4JzZHN/Hd5v74L1WjLXZGPoRBTg==
-X-Received: by 2002:a05:6e02:1be8:: with SMTP id y8mr27283526ilv.52.1622659584454;
-        Wed, 02 Jun 2021 11:46:24 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id s10sm451225ilu.34.2021.06.02.11.46.22
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=oyW//aBbhfsZ2AYU/tmiJg56xJ4sB2f6p3p5Lg2LybE=;
+        b=KN/C/2TYSZH4m/zHWaXDngq++NvLI04JHWTXMrKFc/EsDaLVYDsqQmPRYdBCJxeU9V
+         DmNL0sbP19eFBTLJ9/bk5PFAuAQzj0XON/IQbI7GQDOSG+o69U0T/F/hVuwHaEYb0Vdh
+         3udYBGx4CqUNvk3WNTol1W+jwzaf+QG8fBqlAWEkFfRcCtgaHwbdSbRn1NFkk7DgPOj4
+         u7myOIxFGhGzShV3L49tXIxOH6y2M8pDlhi821XvV0HorMeuoAZFNI+HBABaubISWbe6
+         WJxtjAMs8OfxDGoPqcOXo65+Ujd3lmAOPch6If6qbc4Ff6conxIZ/koUCTGhjrvJmna3
+         Eyrg==
+X-Gm-Message-State: AOAM531JcnLM85MLP0No0ZqpU23MdoSdpoHPSD+1KAb/5A/Zv8AiWBPO
+        olHieTZG1udAMUtMwdxML4E=
+X-Google-Smtp-Source: ABdhPJyQMnPcauJWrpaO57ntlILsJxlVaZYzgzDaNp5/YWslXdRvKWlmIW76wquYqHQeE09/vd3iyA==
+X-Received: by 2002:a92:c569:: with SMTP id b9mr11780605ilj.3.1622659593685;
+        Wed, 02 Jun 2021 11:46:33 -0700 (PDT)
+Received: from ?IPv6:2601:448:c580:1890::96b5? ([2601:448:c580:1890::96b5])
+        by smtp.gmail.com with ESMTPSA id n2sm364651iod.54.2021.06.02.11.46.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 11:46:24 -0700 (PDT)
-Date:   Wed, 02 Jun 2021 11:46:15 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
-Message-ID: <60b7d1f7e3640_5c74020841@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210602181333.3m4vz2xqd5klbvyf@apollo>
-References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
- <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
- <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
- <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
- <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
- <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
- <CAM_iQpXUBuOirztj3kifdFpvygKb-aoqwuXKkLdG9VFte5nynA@mail.gmail.com>
- <20210602020030.igrx5jp45tocekvy@ast-mbp.dhcp.thefacebook.com>
- <874kegbqkd.fsf@toke.dk>
- <20210602175436.axeoauoxetqxzklp@kafai-mbp>
- <20210602181333.3m4vz2xqd5klbvyf@apollo>
-Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Wed, 02 Jun 2021 11:46:33 -0700 (PDT)
+Message-ID: <48ff14c5fff0af909519619caa26d20fcda5159c.camel@gmail.com>
+Subject: Re: [PATCH net-next V6 1/6] icmp: add support for RFC 8335 PROBE
+From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
+To:     Florian Weimer <fweimer@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Date:   Wed, 02 Jun 2021 13:46:32 -0500
+In-Reply-To: <87im2wup0m.fsf@oldenburg.str.redhat.com>
+References: <cover.1617067968.git.andreas.a.roeseler@gmail.com>
+         <ba81dcf8097c4d3cc43f4e2ed5cc6f5a7a4c33b6.1617067968.git.andreas.a.roeseler@gmail.com>
+         <87im2wup0m.fsf@oldenburg.str.redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kumar Kartikeya Dwivedi wrote:
-> On Wed, Jun 02, 2021 at 11:24:36PM IST, Martin KaFai Lau wrote:
-> > On Wed, Jun 02, 2021 at 10:48:02AM +0200, Toke H=C3=B8iland-J=C3=B8rg=
-ensen wrote:
-> > > Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-> > >
-> > > >> > In general the garbage collection in any form doesn't scale.
-> > > >> > The conntrack logic doesn't need it. The cillium conntrack is =
-a great
-> > > >> > example of how to implement a conntrack without GC.
-> > > >>
-> > > >> That is simply not a conntrack. We expire connections based on
-> > > >> its time, not based on the size of the map where it residents.
-> > > >
-> > > > Sounds like your goal is to replicate existing kernel conntrack
-> > > > as bpf program by doing exactly the same algorithm and repeating
-> > > > the same mistakes. Then add kernel conntrack functions to allow l=
-ist
-> > > > of kfuncs (unstable helpers) and call them from your bpf progs.
-> > >
-> > > FYI, we're working on exactly this (exposing kernel conntrack to BP=
-F).
-> > > Hoping to have something to show for our efforts before too long, b=
-ut
-> > > it's still in a bit of an early stage...
-> > Just curious, what conntrack functions will be made callable to BPF?
-> =
+On Wed, 2021-06-02 at 19:58 +0200, Florian Weimer wrote:
+> * Andreas Roeseler:
+> 
+> > diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+> > index fb169a50895e..222325d1d80e 100644
+> > --- a/include/uapi/linux/icmp.h
+> > +++ b/include/uapi/linux/icmp.h
+> > @@ -20,6 +20,9 @@
+> >  
+> >  #include <linux/types.h>
+> >  #include <asm/byteorder.h>
+> > +#include <linux/in.h>
+> > +#include <linux/if.h>
+> > +#include <linux/in6.h>
+> 
+> We have received a report that this breaks compiliation of trinity
+> because it includes <netinet/in.h> and <linux/icmp.h> at the same
+> time,
+> and there is no multiple-definition guard for struct in_addr and
+> other
+> definitions:
+> 
+> In file included from include/net.h:5,
+>                  from net/proto-ip-raw.c:2:
+> /usr/include/netinet/in.h:31:8: error: redefinition of ‘struct
+> in_addr’
+>    31 | struct in_addr
+>       |        ^~~~~~~
+> In file included from /usr/include/linux/icmp.h:23,
+>                  from net/proto-ip-raw.c:1:
+> /usr/include/linux/in.h:89:8: note: originally defined here
+>    89 | struct in_addr {
+>       |        ^~~~~~~
+> In file included from /usr/include/netinet/in.h:37,
+>                  from include/net.h:5,
+>                  from net/proto-ip-raw.c:2:
+> /usr/include/bits/in.h:150:8: error: redefinition of ‘struct
+> ip_mreqn’
+>   150 | struct ip_mreqn
+>       |        ^~~~~~~~
+> In file included from /usr/include/linux/icmp.h:23,
+>                  from net/proto-ip-raw.c:1:
+> /usr/include/linux/in.h:178:8: note: originally defined here
+>   178 | struct ip_mreqn {
+>       |        ^~~~~~~~
+> 
+> (More conflicts appear to follow.)
+> 
+> I do not know what the correct way forward is.  Adding the
+> multiple-definition guards is quite a bit of work and requires
+> updates
+> in glibc and the kernel to work properly.
+> 
+> Thanks,
+> Florian
+> 
 
-> Initially we're planning to expose the equivalent of nf_conntrack_in an=
-d
-> nf_conntrack_confirm to XDP and TC programs (so XDP one works without a=
-n skb,
-> and TC one works with an skb), to map these to higher level lookup/inse=
-rt.
-> =
+Are <netinet/in.h> and <linux/in.h> the only conflicting files?
+<linux/in.h> is only included to gain use of the in_addr struct, but
+that can be easily substituted out of the code in favor of __be32.
+Therefore we would no longer need to include <linux/in.h> and would
+remove the conflict.
 
-> --
-> Kartikeya
-
-I think this is a missed opportunity. I can't see any advantage to
-tying a XDP datapath into nft. For local connections use a socket lookup
-no need for tables at all. For middle boxes you need some tables, but
-again really don't see why you want nft here. An entirely XDP based
-connection tracker is going to be faster, easier to debug, and
-more easy to tune to do what you want as your use cases changes.
-
-Other than architecture disagreements, the implementation of this
-gets ugly. You will need to export a set of nft hooks, teach nft
-about xdp_buffs and then on every packet poke nft. Just looking
-at nf_conntrack_in() tells me you likely need some serious surgery
-there to make this work and now you've forked a bunch of code that
-could be done generically in BPF into some C hard coded stuff you
-will have to maintain. Or you do an ugly hack to convert xdp into
-skb on every packet, but I'll NAK that because its really defeats
-the point of XDP. Maybe TC side is easier because you have skb,
-but then you miss the real win in XDP side. Sorry I don't see any
-upsides here and just more work to review, maintain code that is
-dubious to start with.
-
-Anyways original timers code above LGTM.
-
-.John=
