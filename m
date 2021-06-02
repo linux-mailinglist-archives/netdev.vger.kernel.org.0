@@ -2,111 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 469DE398A6E
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 15:28:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0E8398AAE
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 15:32:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbhFBNaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 09:30:09 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:34211 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229583AbhFBNaI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 09:30:08 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 75A235C005A;
-        Wed,  2 Jun 2021 09:28:25 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 02 Jun 2021 09:28:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:content-transfer-encoding:in-reply-to; s=fm3; bh=b
-        HeXkbF7PvwsXcWBA66Xyay/weKYecQSlLwIvV/2OEo=; b=XBwGzzC1ogFFij2Os
-        22qeO5mo4QKEoCwlNnOPqtF3wMkTRN0Ob89TWEN1psfO0PINwHc3qPGnzUH1ZbME
-        rW1ZRm4TgPyq9luKq1n59SGCBmgv2O/pAJo5x9AEI2mRg1jkUYDW950Da8abWW0j
-        EHJ6WDqn1+VYhMNT+RI3DHg/5/XzYp3I+keEaDe1zbsSm2RLY4wG2itUksfgRlqc
-        ZjR3vyzgKQZ1MpF8WsexxcdBznOO598XywMZmDZdSOD9z6LMwQ581zCR6dFWvw4V
-        x23L+yl6C5chOQTGR/v5MPlWWmHVEiQp6wgbebBJtri/qQw3BhRIkPHLUzO0GrXN
-        l3g6w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=bHeXkbF7PvwsXcWBA66Xyay/weKYecQSlLwIvV/2O
-        Eo=; b=nonIEzU560WGMqfwElLCUueaHtt2kZZFdj5MzSU3a2c+L+XeDgh+Oxcja
-        EynLVUVFKDRI9dMKchxHHCAvuly/gbRhcuN5QnBYE4gDqc67iWmI195gTEGpu/hY
-        FWHVCg3DiTnSas8V07UslxyD1hmd0CDlbLlAhiK+eWvbkSh7Z/20KSh1+xVXIWZ7
-        s+n8C0WyCKppw8Gn5ZjTeZLNnNKcXNESwaAUSY4Wcd016nLF+bRnGoF5vFASyVIS
-        Jde3fDq8n8h0btgYy8+EEMyRg06C82GYLo+YcRXtPH2b7/5bPLEJokdnVXnhkosa
-        6FVtqtuJaqB0/hA8HrGj4XjUUmVWA==
-X-ME-Sender: <xms:eYe3YIpWoxaViKKaiqnb10joNsTe2eogJk_lf_Z0Q3MP4612pYFnxA>
-    <xme:eYe3YOrweR48yVJ1oNv5gu4ZmMGtmtC0BpafmgmRlflRDaSDH_5WTwSF1SRMgpLrH
-    ESoY_MysKYXCaM0v4Q>
-X-ME-Received: <xmr:eYe3YNMndoOVzI2jCmIWP3SsJQlP2gPuWBnmIY8BrPW0HoIwMzI400gjDstaQQv2T6aK2RnqjhSa5UfnAORpTY0wwiSWtVBmn5Xp>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdeljedgieehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjgesthhqredttddtvdenucfhrhhomhepofgrgihi
-    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
-    htthgvrhhnpefgjeettdejgffgffdvteeutdehtdehgeehueetkeefgefhtdetjeekledu
-    gedvudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:eYe3YP7yfRZ3He1Pwhqo29iH5vrCkbPveAWy2HsK4lpLqn4GWiPSPQ>
-    <xmx:eYe3YH5uXD6PznHg6Fa0jMfkHxvcTKQ0XfNOHl_laBmkgl34AhUpVg>
-    <xmx:eYe3YPjbrjmGj8XVWh3YugOMmoWcGPt0k_LyWfK5-nIfSG5ADZ68lQ>
-    <xmx:eYe3YK1-I-AgbjtGftEaH0j01XDk-Pc1WY-x1kLxNj56JfXlGWYu7g>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 2 Jun 2021 09:28:24 -0400 (EDT)
-Date:   Wed, 2 Jun 2021 15:28:22 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     nicolas saenz julienne <nsaenz@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: Kernel Panic in skb_release_data using genet
-Message-ID: <20210602132822.5hw4yynjgoomcfbg@gilmour>
-References: <20210524130147.7xv6ih2e3apu2zvu@gilmour>
- <a53f6192-3520-d5f8-df4b-786b3e4e8707@gmail.com>
- <20210524151329.5ummh4dfui6syme3@gilmour>
- <1482eff4-c5f4-66d9-237c-55a096ae2eb4@gmail.com>
- <6caa98e7-28ba-520c-f0cc-ee1219305c17@gmail.com>
- <20210528163219.x6yn44aimvdxlp6j@gilmour>
- <77d412b4-cdd6-ea86-d7fd-adb3af8970d9@gmail.com>
- <9e99ade5-ebfc-133e-ac61-1aba07ca80a2@gmail.com>
- <483c73edf02fa0139aae2b81e797534817655ea0.camel@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <483c73edf02fa0139aae2b81e797534817655ea0.camel@kernel.org>
+        id S230267AbhFBNda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 09:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53976 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230114AbhFBNdG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 09:33:06 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D10CC061761;
+        Wed,  2 Jun 2021 06:31:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Subject:Cc:To:From:Date:Message-ID:
+        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=+0GJIyUeezLFp/ym4/vP+fC11EDSc+9M3QstIcNFnoM=; b=HwUP711Hi7fk/GRlHwhhfYuQB5
+        K5vYCOeQPuOhkpRqo74FjxBE7Qmwx8Wj6GWtoLKoGosJHAwdRgo9jNLQy1TmIkJWwpfsGoVcLemhp
+        yE/DBMFhvtilIfo4dv1JJaSo/mfYt/uX/LfisWcd+3wnlJLAvfkdTdiO1+HtsYKFPZ/tV6bjzqFeK
+        4bo4vY52aoMqPrC7we688zYhvu7+dOw4A1kcJpeVTuCoCOtBGxbR88VN+otXu+yI9l3xV+f66r/TA
+        vzFWO4ght7JIQB07yN0JwJ0Lzx83FvV5EUgJ9xU0ODmz2KYDDLO3n44qTW1zqH17jqyBTMXum4Ngk
+        tEM+eMIg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1loQxe-00B8nb-51; Wed, 02 Jun 2021 13:31:08 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B184A300299;
+        Wed,  2 Jun 2021 15:31:04 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 90C662C08A5B8; Wed,  2 Jun 2021 15:31:04 +0200 (CEST)
+Message-ID: <20210602131225.336600299@infradead.org>
+User-Agent: quilt/0.66
+Date:   Wed, 02 Jun 2021 15:12:25 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>
+Cc:     Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Jens Axboe <axboe@kernel.dk>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, cgroups@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
+        rcu@vger.kernel.org, linux-mm@kvack.org, kvm@vger.kernel.org
+Subject: [PATCH 0/6] sched: Cleanup task_struct::state
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 01, 2021 at 11:33:18AM +0200, nicolas saenz julienne wrote:
-> On Mon, 2021-05-31 at 19:36 -0700, Florian Fainelli wrote:
-> > > That is also how I boot my Pi4 at home, and I suspect you are right, =
-if
-> > > the VPU does not shut down GENET's DMA, and leaves buffer addresses in
-> > > the on-chip descriptors that point to an address space that is managed
-> > > totally differently by Linux, then we can have a serious problem and
-> > > create some memory corruption when the ring is being reclaimed. I will
-> > > run a few experiments to test that theory and there may be a solution
-> > > using the SW_INIT reset controller to have a big reset of the control=
-ler
-> > > before handing it over to the Linux driver.
-> >=20
-> > Adding a WARN_ON(reg & DMA_EN) in bcmgenet_dma_disable() has not shown
-> > that the TX or RX DMA have been left running during the hand over from
-> > the VPU to the kernel. I checked out drm-misc-next-2021-05-17 to reduce
-> > as much as possible the differences between your set-up and my set-up
-> > but so far have not been able to reproduce the crash in booting from NFS
-> > repeatedly, I will try again.
->=20
-> FWIW I can reproduce the error too. That said it's rather hard to reprodu=
-ce,
-> something in the order of 1 failure every 20 tries.
+Hi!
 
-Yeah, it looks like it's only from a cold boot and comes in "bursts",
-where you would get like 5 in a row and be done with it for a while.
+The task_struct::state variable is a bit odd in a number of ways:
 
-Maxime
+ - it's declared 'volatile' (against current practises);
+ - it's 'unsigned long' which is a weird size;
+ - it's type is inconsistent when used for function arguments.
+
+These patches clean that up by making it consistently 'unsigned int', and
+replace (almost) all accesses with READ_ONCE()/WRITE_ONCE(). In order to not
+miss any, the variable is renamed, ensuring a missed conversion results in a
+compile error.
+
+The first few patches fix a number of pre-existing errors and introduce a few
+helpers to make the final conversion less painful.
+
+
