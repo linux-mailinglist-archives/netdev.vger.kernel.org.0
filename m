@@ -2,342 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C415A3992C3
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 20:44:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BFE73992CA
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 20:46:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229583AbhFBSpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 14:45:45 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:37508 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229755AbhFBSpn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:45:43 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 152IeD0N012998;
-        Wed, 2 Jun 2021 11:43:51 -0700
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 38wufgv8n0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 02 Jun 2021 11:43:50 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 2 Jun
- 2021 11:43:49 -0700
-Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
- DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 2 Jun 2021 11:43:44 -0700
-From:   Shai Malin <smalin@marvell.com>
-To:     <linux-nvme@lists.infradead.org>, <sagi@grimberg.me>, <hch@lst.de>,
-        <axboe@fb.com>, <kbusch@kernel.org>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <aelior@marvell.com>, <mkalderon@marvell.com>,
-        <okulkarni@marvell.com>, <pkushwaha@marvell.com>,
-        <prabhakar.pkin@gmail.com>, <malin1024@gmail.com>,
-        <smalin@marvell.com>, Dean Balandin <dbalandin@marvell.com>
-Subject: [PATCH 8/8] nvme-tcp-offload: Add IO level implementation
-Date:   Wed, 2 Jun 2021 21:42:46 +0300
-Message-ID: <20210602184246.14184-9-smalin@marvell.com>
-X-Mailer: git-send-email 2.16.6
-In-Reply-To: <20210602184246.14184-1-smalin@marvell.com>
-References: <20210602184246.14184-1-smalin@marvell.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 2ZX_qaB_MwXD45Snt0ympBZWSfXtYjae
-X-Proofpoint-GUID: 2ZX_qaB_MwXD45Snt0ympBZWSfXtYjae
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-06-02_10:2021-06-02,2021-06-02 signatures=0
+        id S229553AbhFBSsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 14:48:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40492 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229467AbhFBSsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 14:48:22 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3059BC06174A;
+        Wed,  2 Jun 2021 11:46:25 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id o9so3106537ilh.6;
+        Wed, 02 Jun 2021 11:46:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=42lSeKIaV1CGNphmGC2qEO05eLA2cNyDNNBAKkeOzoI=;
+        b=nXFG0t/B4mMaFeGppWiVlZHLZBrXWg5M1e6Be801+km1/mw3+c6HukNhhHzaGZNJxG
+         wDHD0gNhq9DxSlEiAYWP94k9l43JE+XxIMAM5LeVVjggOsy8y/lGJAmosSenGwFk+Cgy
+         F4DD/rChJ9CjbQX+APjuqrUmHiQFWskBR4UqlHQpkucx1e9ikXHNaQ9zObOlP3QHV9r6
+         jDMpahGVameU5O6X3h+ePPxLCoRuXQF8BdslOrcHF2JapTMj5TElJRmyGJPAGua/aYA1
+         dGh32f5mD2Q/K9zZemcHCb5lho/Pu2F+cc7TC743KuXVPJImOXZRpDSRQT6K66mGDDu8
+         8XKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=42lSeKIaV1CGNphmGC2qEO05eLA2cNyDNNBAKkeOzoI=;
+        b=DcD9uNakJdvXfv3ESf1KD4oiVT9s3rxLdIwlFs/TJ07aQ2hvCOzySey/sgB5vgqUig
+         JwQ1NiBU3WIljxf5tP9xmFBjgDnmff/7LfOTzMqqveNDdJRTfi3oz7HRurOek3ognFZX
+         nItaT1mDHXlmoKn/3rLu2edfxIFb6epjwUHXgsJ1r4PJ/vJ4TmzxJDbhS7ii55+J6Unk
+         XR01MBpgVV7qRZyIu6Hx9rveMFskngHcXnCz2arls/J1wixVDTp1y61DehjVsyzEYi4j
+         WQKGj0Puc5suh2x0f+WgA66nxxVAwOU/IcNd6FVOOkhdbgKblOZm0NS1QhiBzFLe4oxd
+         1y3Q==
+X-Gm-Message-State: AOAM533NO/lPyWpsDHT5s3Os+ZKEr1NLImTJ3wfcZOtvzYrcvWbGJ7oY
+        bYmSyaxvcA3p1NTEia/U38A=
+X-Google-Smtp-Source: ABdhPJxXmmwBPh+BoeL9Vpyd3HPwW6l0gQ/244uTe34OToaOLxt4JzZHN/Hd5v74L1WjLXZGPoRBTg==
+X-Received: by 2002:a05:6e02:1be8:: with SMTP id y8mr27283526ilv.52.1622659584454;
+        Wed, 02 Jun 2021 11:46:24 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id s10sm451225ilu.34.2021.06.02.11.46.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Jun 2021 11:46:24 -0700 (PDT)
+Date:   Wed, 02 Jun 2021 11:46:15 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
+Message-ID: <60b7d1f7e3640_5c74020841@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210602181333.3m4vz2xqd5klbvyf@apollo>
+References: <20210520185550.13688-1-alexei.starovoitov@gmail.com>
+ <CAM_iQpWDgVTCnP3xC3=z7WCH05oDUuqxrw2OjjUC69rjSQG0qQ@mail.gmail.com>
+ <CAADnVQ+V5o31-h-A+eNsHvHgOJrVfP4wVbyb+jL2J=-ionV0TA@mail.gmail.com>
+ <CAM_iQpU-Cvpf-+9R0ZdZY+5Dv+stfodrH0MhvSgryv_tGiX7pA@mail.gmail.com>
+ <CAM_iQpVYBNkjDeo+2CzD-qMnR4-2uW+QdMSf_7ohwr0NjgipaQ@mail.gmail.com>
+ <CAADnVQJUHydpLwtj9hRWWNGx3bPbdk-+cQiSe3MDFQpwkKmkSw@mail.gmail.com>
+ <CAM_iQpXUBuOirztj3kifdFpvygKb-aoqwuXKkLdG9VFte5nynA@mail.gmail.com>
+ <20210602020030.igrx5jp45tocekvy@ast-mbp.dhcp.thefacebook.com>
+ <874kegbqkd.fsf@toke.dk>
+ <20210602175436.axeoauoxetqxzklp@kafai-mbp>
+ <20210602181333.3m4vz2xqd5klbvyf@apollo>
+Subject: Re: [RFC PATCH bpf-next] bpf: Introduce bpf_timer
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dean Balandin <dbalandin@marvell.com>
+Kumar Kartikeya Dwivedi wrote:
+> On Wed, Jun 02, 2021 at 11:24:36PM IST, Martin KaFai Lau wrote:
+> > On Wed, Jun 02, 2021 at 10:48:02AM +0200, Toke H=C3=B8iland-J=C3=B8rg=
+ensen wrote:
+> > > Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> > >
+> > > >> > In general the garbage collection in any form doesn't scale.
+> > > >> > The conntrack logic doesn't need it. The cillium conntrack is =
+a great
+> > > >> > example of how to implement a conntrack without GC.
+> > > >>
+> > > >> That is simply not a conntrack. We expire connections based on
+> > > >> its time, not based on the size of the map where it residents.
+> > > >
+> > > > Sounds like your goal is to replicate existing kernel conntrack
+> > > > as bpf program by doing exactly the same algorithm and repeating
+> > > > the same mistakes. Then add kernel conntrack functions to allow l=
+ist
+> > > > of kfuncs (unstable helpers) and call them from your bpf progs.
+> > >
+> > > FYI, we're working on exactly this (exposing kernel conntrack to BP=
+F).
+> > > Hoping to have something to show for our efforts before too long, b=
+ut
+> > > it's still in a bit of an early stage...
+> > Just curious, what conntrack functions will be made callable to BPF?
+> =
 
-In this patch, we present the IO level functionality.
-The nvme-tcp-offload shall work on the IO-level, meaning the
-nvme-tcp-offload ULP module shall pass the request to the nvme-tcp-offload
-vendor driver and shall expect for the request completion.
-No additional handling is needed in between, this design will reduce the
-CPU utilization as we will describe below.
+> Initially we're planning to expose the equivalent of nf_conntrack_in an=
+d
+> nf_conntrack_confirm to XDP and TC programs (so XDP one works without a=
+n skb,
+> and TC one works with an skb), to map these to higher level lookup/inse=
+rt.
+> =
 
-The nvme-tcp-offload vendor driver shall register to nvme-tcp-offload ULP
-with the following IO-path ops:
- - send_req - in order to pass the request to the handling of the offload
-   driver that shall pass it to the vendor specific device
- - poll_queue
+> --
+> Kartikeya
 
-The vendor driver will manage the context from which the request will be
-executed and the request aggregations.
-Once the IO completed, the nvme-tcp-offload vendor driver shall call
-command.done() that shall invoke the nvme-tcp-offload ULP layer for
-completing the request.
+I think this is a missed opportunity. I can't see any advantage to
+tying a XDP datapath into nft. For local connections use a socket lookup
+no need for tables at all. For middle boxes you need some tables, but
+again really don't see why you want nft here. An entirely XDP based
+connection tracker is going to be faster, easier to debug, and
+more easy to tune to do what you want as your use cases changes.
 
-This patch also add support for the nvme-tcp-offload timeout and
-nvme-tcp-offload ASYNC flow.
+Other than architecture disagreements, the implementation of this
+gets ugly. You will need to export a set of nft hooks, teach nft
+about xdp_buffs and then on every packet poke nft. Just looking
+at nf_conntrack_in() tells me you likely need some serious surgery
+there to make this work and now you've forked a bunch of code that
+could be done generically in BPF into some C hard coded stuff you
+will have to maintain. Or you do an ugly hack to convert xdp into
+skb on every packet, but I'll NAK that because its really defeats
+the point of XDP. Maybe TC side is easier because you have skb,
+but then you miss the real win in XDP side. Sorry I don't see any
+upsides here and just more work to review, maintain code that is
+dubious to start with.
 
-Acked-by: Igor Russkikh <irusskikh@marvell.com>
-Signed-off-by: Dean Balandin <dbalandin@marvell.com>
-Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
----
- drivers/nvme/host/tcp-offload.c | 176 ++++++++++++++++++++++++++++++--
- drivers/nvme/host/tcp-offload.h |   2 +
- 2 files changed, 171 insertions(+), 7 deletions(-)
+Anyways original timers code above LGTM.
 
-diff --git a/drivers/nvme/host/tcp-offload.c b/drivers/nvme/host/tcp-offload.c
-index 1700cdf42433..c76822e5ada7 100644
---- a/drivers/nvme/host/tcp-offload.c
-+++ b/drivers/nvme/host/tcp-offload.c
-@@ -125,7 +125,30 @@ void nvme_tcp_ofld_req_done(struct nvme_tcp_ofld_req *req,
- 			    union nvme_result *result,
- 			    __le16 status)
- {
--	/* Placeholder - complete request with/without error */
-+	struct request *rq = blk_mq_rq_from_pdu(req);
-+
-+	if (!nvme_try_complete_req(rq, cpu_to_le16(status << 1), *result))
-+		nvme_complete_rq(rq);
-+}
-+
-+/**
-+ * nvme_tcp_ofld_async_req_done() - NVMeTCP Offload request done callback
-+ * function for async request. Pointed to by nvme_tcp_ofld_req->done.
-+ * Handles both NVME_TCP_F_DATA_SUCCESS flag and NVMe CQ.
-+ * @req:	NVMeTCP offload request to complete.
-+ * @result:     The nvme_result.
-+ * @status:     The completion status.
-+ *
-+ * API function that allows the vendor specific offload driver to report request
-+ * completions to the common offload layer.
-+ */
-+void nvme_tcp_ofld_async_req_done(struct nvme_tcp_ofld_req *req,
-+				  union nvme_result *result, __le16 status)
-+{
-+	struct nvme_tcp_ofld_queue *queue = req->queue;
-+	struct nvme_tcp_ofld_ctrl *ctrl = queue->ctrl;
-+
-+	nvme_complete_async_event(&ctrl->nctrl, status, result);
- }
- 
- static struct nvme_tcp_ofld_dev *
-@@ -698,6 +721,54 @@ static void nvme_tcp_ofld_free_ctrl(struct nvme_ctrl *nctrl)
- 	kfree(ctrl);
- }
- 
-+static void nvme_tcp_ofld_set_sg_null(struct nvme_command *c)
-+{
-+	struct nvme_sgl_desc *sg = &c->common.dptr.sgl;
-+
-+	sg->addr = 0;
-+	sg->length = 0;
-+	sg->type = (NVME_TRANSPORT_SGL_DATA_DESC << 4) | NVME_SGL_FMT_TRANSPORT_A;
-+}
-+
-+inline void nvme_tcp_ofld_set_sg_inline(struct nvme_tcp_ofld_queue *queue,
-+					struct nvme_command *c, u32 data_len)
-+{
-+	struct nvme_sgl_desc *sg = &c->common.dptr.sgl;
-+
-+	sg->addr = cpu_to_le64(queue->ctrl->nctrl.icdoff);
-+	sg->length = cpu_to_le32(data_len);
-+	sg->type = (NVME_SGL_FMT_DATA_DESC << 4) | NVME_SGL_FMT_OFFSET;
-+}
-+
-+static void nvme_tcp_ofld_map_data(struct nvme_command *c, u32 data_len)
-+{
-+	struct nvme_sgl_desc *sg = &c->common.dptr.sgl;
-+
-+	sg->addr = 0;
-+	sg->length = cpu_to_le32(data_len);
-+	sg->type = (NVME_TRANSPORT_SGL_DATA_DESC << 4) | NVME_SGL_FMT_TRANSPORT_A;
-+}
-+
-+static void nvme_tcp_ofld_submit_async_event(struct nvme_ctrl *arg)
-+{
-+	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(arg);
-+	struct nvme_tcp_ofld_queue *queue = &ctrl->queues[0];
-+	struct nvme_tcp_ofld_dev *dev = queue->dev;
-+	struct nvme_tcp_ofld_ops *ops = dev->ops;
-+
-+	ctrl->async_req.nvme_cmd.common.opcode = nvme_admin_async_event;
-+	ctrl->async_req.nvme_cmd.common.command_id = NVME_AQ_BLK_MQ_DEPTH;
-+	ctrl->async_req.nvme_cmd.common.flags |= NVME_CMD_SGL_METABUF;
-+
-+	nvme_tcp_ofld_set_sg_null(&ctrl->async_req.nvme_cmd);
-+
-+	ctrl->async_req.async = true;
-+	ctrl->async_req.queue = queue;
-+	ctrl->async_req.done = nvme_tcp_ofld_async_req_done;
-+
-+	ops->send_req(&ctrl->async_req);
-+}
-+
- static void
- nvme_tcp_ofld_teardown_admin_queue(struct nvme_ctrl *nctrl, bool remove)
- {
-@@ -836,9 +907,13 @@ nvme_tcp_ofld_init_request(struct blk_mq_tag_set *set,
- 			   unsigned int numa_node)
- {
- 	struct nvme_tcp_ofld_req *req = blk_mq_rq_to_pdu(rq);
-+	struct nvme_tcp_ofld_ctrl *ctrl = set->driver_data;
-+	int qid;
- 
--	/* Placeholder - init request */
--
-+	qid = (set == &ctrl->tag_set) ? hctx_idx + 1 : 0;
-+	req->queue = &ctrl->queues[qid];
-+	nvme_req(rq)->ctrl = &ctrl->nctrl;
-+	nvme_req(rq)->cmd = &req->nvme_cmd;
- 	req->done = nvme_tcp_ofld_req_done;
- 
- 	return 0;
-@@ -854,9 +929,46 @@ static blk_status_t
- nvme_tcp_ofld_queue_rq(struct blk_mq_hw_ctx *hctx,
- 		       const struct blk_mq_queue_data *bd)
- {
--	/* Call nvme_setup_cmd(...) */
-+	struct nvme_tcp_ofld_req *req = blk_mq_rq_to_pdu(bd->rq);
-+	struct nvme_tcp_ofld_queue *queue = hctx->driver_data;
-+	struct nvme_tcp_ofld_ctrl *ctrl = queue->ctrl;
-+	struct nvme_ns *ns = hctx->queue->queuedata;
-+	struct nvme_tcp_ofld_dev *dev = queue->dev;
-+	struct nvme_tcp_ofld_ops *ops = dev->ops;
-+	struct nvme_command *nvme_cmd;
-+	struct request *rq = bd->rq;
-+	bool queue_ready;
-+	u32 data_len;
-+	int rc;
-+
-+	queue_ready = test_bit(NVME_TCP_OFLD_Q_LIVE, &queue->flags);
-+
-+	req->async = false;
-+
-+	if (!nvme_check_ready(&ctrl->nctrl, rq, queue_ready))
-+		return nvme_fail_nonready_command(&ctrl->nctrl, rq);
-+
-+	rc = nvme_setup_cmd(ns, rq);
-+	if (unlikely(rc))
-+		return rc;
- 
--	/* Call ops->send_req(...) */
-+	blk_mq_start_request(rq);
-+
-+	nvme_cmd = &req->nvme_cmd;
-+	nvme_cmd->common.flags |= NVME_CMD_SGL_METABUF;
-+
-+	data_len = blk_rq_nr_phys_segments(rq) ? blk_rq_payload_bytes(rq) : 0;
-+	if (!data_len)
-+		nvme_tcp_ofld_set_sg_null(&req->nvme_cmd);
-+	else if ((rq_data_dir(rq) == WRITE) &&
-+		 data_len <= nvme_tcp_ofld_inline_data_size(queue))
-+		nvme_tcp_ofld_set_sg_inline(queue, nvme_cmd, data_len);
-+	else
-+		nvme_tcp_ofld_map_data(nvme_cmd, data_len);
-+
-+	rc = ops->send_req(req);
-+	if (unlikely(rc))
-+		return rc;
- 
- 	return BLK_STS_OK;
- }
-@@ -929,9 +1041,56 @@ static int nvme_tcp_ofld_map_queues(struct blk_mq_tag_set *set)
- 
- static int nvme_tcp_ofld_poll(struct blk_mq_hw_ctx *hctx)
- {
--	/* Placeholder - Implement polling mechanism */
-+	struct nvme_tcp_ofld_queue *queue = hctx->driver_data;
-+	struct nvme_tcp_ofld_dev *dev = queue->dev;
-+	struct nvme_tcp_ofld_ops *ops = dev->ops;
- 
--	return 0;
-+	return ops->poll_queue(queue);
-+}
-+
-+static void nvme_tcp_ofld_complete_timed_out(struct request *rq)
-+{
-+	struct nvme_tcp_ofld_req *req = blk_mq_rq_to_pdu(rq);
-+	struct nvme_ctrl *nctrl = &req->queue->ctrl->nctrl;
-+
-+	nvme_tcp_ofld_stop_queue(nctrl, nvme_tcp_ofld_qid(req->queue));
-+	if (blk_mq_request_started(rq) && !blk_mq_request_completed(rq)) {
-+		nvme_req(rq)->status = NVME_SC_HOST_ABORTED_CMD;
-+		blk_mq_complete_request(rq);
-+	}
-+}
-+
-+static enum blk_eh_timer_return nvme_tcp_ofld_timeout(struct request *rq, bool reserved)
-+{
-+	struct nvme_tcp_ofld_req *req = blk_mq_rq_to_pdu(rq);
-+	struct nvme_tcp_ofld_ctrl *ctrl = req->queue->ctrl;
-+
-+	dev_warn(ctrl->nctrl.device,
-+		 "queue %d: timeout request %#x type %d\n",
-+		 nvme_tcp_ofld_qid(req->queue), rq->tag, req->nvme_cmd.common.opcode);
-+
-+	if (ctrl->nctrl.state != NVME_CTRL_LIVE) {
-+		/*
-+		 * If we are resetting, connecting or deleting we should
-+		 * complete immediately because we may block controller
-+		 * teardown or setup sequence
-+		 * - ctrl disable/shutdown fabrics requests
-+		 * - connect requests
-+		 * - initialization admin requests
-+		 * - I/O requests that entered after unquiescing and
-+		 *   the controller stopped responding
-+		 *
-+		 * All other requests should be cancelled by the error
-+		 * recovery work, so it's fine that we fail it here.
-+		 */
-+		nvme_tcp_ofld_complete_timed_out(rq);
-+
-+		return BLK_EH_DONE;
-+	}
-+
-+	nvme_tcp_ofld_error_recovery(&ctrl->nctrl);
-+
-+	return BLK_EH_RESET_TIMER;
- }
- 
- static struct blk_mq_ops nvme_tcp_ofld_mq_ops = {
-@@ -940,6 +1099,7 @@ static struct blk_mq_ops nvme_tcp_ofld_mq_ops = {
- 	.init_request	= nvme_tcp_ofld_init_request,
- 	.exit_request	= nvme_tcp_ofld_exit_request,
- 	.init_hctx	= nvme_tcp_ofld_init_hctx,
-+	.timeout	= nvme_tcp_ofld_timeout,
- 	.map_queues	= nvme_tcp_ofld_map_queues,
- 	.poll		= nvme_tcp_ofld_poll,
- };
-@@ -950,6 +1110,7 @@ static struct blk_mq_ops nvme_tcp_ofld_admin_mq_ops = {
- 	.init_request	= nvme_tcp_ofld_init_request,
- 	.exit_request	= nvme_tcp_ofld_exit_request,
- 	.init_hctx	= nvme_tcp_ofld_init_admin_hctx,
-+	.timeout	= nvme_tcp_ofld_timeout,
- };
- 
- static const struct nvme_ctrl_ops nvme_tcp_ofld_ctrl_ops = {
-@@ -960,6 +1121,7 @@ static const struct nvme_ctrl_ops nvme_tcp_ofld_ctrl_ops = {
- 	.reg_read64		= nvmf_reg_read64,
- 	.reg_write32		= nvmf_reg_write32,
- 	.free_ctrl		= nvme_tcp_ofld_free_ctrl,
-+	.submit_async_event     = nvme_tcp_ofld_submit_async_event,
- 	.delete_ctrl		= nvme_tcp_ofld_delete_ctrl,
- 	.get_address		= nvmf_get_address,
- };
-diff --git a/drivers/nvme/host/tcp-offload.h b/drivers/nvme/host/tcp-offload.h
-index 875fcd3ec04a..2ac5b2428612 100644
---- a/drivers/nvme/host/tcp-offload.h
-+++ b/drivers/nvme/host/tcp-offload.h
-@@ -114,6 +114,8 @@ struct nvme_tcp_ofld_ctrl {
- 	/* Connectivity params */
- 	struct nvme_tcp_ofld_ctrl_con_params conn_params;
- 
-+	struct nvme_tcp_ofld_req async_req;
-+
- 	/* Vendor specific driver context */
- 	void *private_data;
- };
--- 
-2.22.0
-
+.John=
