@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 178833991E3
+	by mail.lfdr.de (Postfix) with ESMTP id 092FE3991E2
 	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbhFBRqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 13:46:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44266 "EHLO
+        id S230394AbhFBRqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 13:46:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38444 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230378AbhFBRqU (ORCPT
+        by vger.kernel.org with ESMTP id S230372AbhFBRqU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 13:46:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622655877;
+        s=mimecast20190719; t=1622655876;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SgzrF+zBfvSEywg2ZYJcXcfBJSFli4SD7rD2v1yqnV4=;
-        b=LLqg8cjk1f5HE95/6cXH4b0iC3KTE1iKEjFqtXBElbdSDSK925VsvsrOx1CFNc/uR1dOzN
-        uX0YRmiMF98Xjiq5MkyAthM8FBn5n8yiJrnpYLwamhLCByhQGT3JChnTQ4K7qIPjhXT5Au
-        zKl93xXpOLSoEKhaBKl9R7DhQCJ8hYc=
+        bh=0nSZvdYysQWxC6uneZcF7tt6OS9HwJAboMhzv5Ww/FA=;
+        b=RA22eflKFIU2J1gPCb+EKG058UqMR2lpXYiW1DKh3CkLzr28euC5+enYsEN1NdaXAttfR9
+        0tweBYEfH65x6fKMT0XMQ73I9UWaH5ggHpctUyTFyZal/aMBGqshAL+KRwu9UKMVCy016s
+        7arQvhT3Rw3mrF7mB4wBZz/8rMaLiS4=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-157-TG-H-z_9N1er-f1ywM9NLw-1; Wed, 02 Jun 2021 13:44:32 -0400
-X-MC-Unique: TG-H-z_9N1er-f1ywM9NLw-1
+ us-mta-588-otsj5cXvNxy7UNj-uBk5pA-1; Wed, 02 Jun 2021 13:44:32 -0400
+X-MC-Unique: otsj5cXvNxy7UNj-uBk5pA-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 600E7801106;
-        Wed,  2 Jun 2021 17:44:30 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 503571883520;
+        Wed,  2 Jun 2021 17:44:31 +0000 (UTC)
 Received: from ymir.virt.lab.eng.bos.redhat.com (virtlab420.virt.lab.eng.bos.redhat.com [10.19.152.148])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8B9235C648;
-        Wed,  2 Jun 2021 17:44:29 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7AB425C5E0;
+        Wed,  2 Jun 2021 17:44:30 +0000 (UTC)
 From:   jmaloy@redhat.com
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     tipc-discussion@lists.sourceforge.net,
@@ -40,9 +40,9 @@ Cc:     tipc-discussion@lists.sourceforge.net,
         tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
         xinl@redhat.com, ying.xue@windriver.com,
         parthasarathy.bhuvaragan@gmail.com
-Subject: [net-next v2 2/3] tipc: refactor function tipc_sk_anc_data_recv()
-Date:   Wed,  2 Jun 2021 13:44:25 -0400
-Message-Id: <20210602174426.870536-3-jmaloy@redhat.com>
+Subject: [net-next v2 3/3] tipc: simplify handling of lookup scope during multicast message reception
+Date:   Wed,  2 Jun 2021 13:44:26 -0400
+Message-Id: <20210602174426.870536-4-jmaloy@redhat.com>
 In-Reply-To: <20210602174426.870536-1-jmaloy@redhat.com>
 References: <20210602174426.870536-1-jmaloy@redhat.com>
 MIME-Version: 1.0
@@ -54,127 +54,157 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jon Maloy <jmaloy@redhat.com>
 
-We refactor tipc_sk_anc_data_recv() to make it slightly more
-comprehensible, but also to facilitate application of some additions
-to the code in a future commit.
+We introduce a new macro TIPC_ANY_SCOPE to make the handling of the
+lookup scope value more comprehensible during multicast reception.
+
+The (unchanged) rules go as follows:
+
+1) Multicast messages sent from own node are delivered to all matching
+   sockets on the own node, irrespective of their binding scope.
+
+2) Multicast messages sent from other nodes arrive here because they
+   have found TIPC_CLUSTER_SCOPE bindings emanating from this node.
+   Those messages should be delivered to exactly those sockets, but not
+   to local sockets bound with TIPC_NODE_SCOPE, since the latter
+   obviously were not meant to be visible for those senders.
+
+3) Group multicast/broadcast messages are delivered to the sockets with
+   a binding scope matching exactly the lookup scope indicated in the
+   message header, and nobody else.
 
 Reviewed-by: Xin Long <lucien.xin@gmail.com>
 Tested-by: Hoang Le <hoang.h.le@dektech.com.au>
 Signed-off-by: Jon Maloy <jmaloy@redhat.com>
----
- net/tipc/socket.c | 85 +++++++++++++++++++++--------------------------
- 1 file changed, 38 insertions(+), 47 deletions(-)
 
+---
+v2: Changed value of TIPC_ANY_SCOPE to avoid compiler warning
+
+Signed-off-by: Jon Maloy <jmaloy@redhat.com>
+---
+ net/tipc/name_table.c |  6 +++---
+ net/tipc/name_table.h |  4 +++-
+ net/tipc/socket.c     | 26 ++++++++++----------------
+ 3 files changed, 16 insertions(+), 20 deletions(-)
+
+diff --git a/net/tipc/name_table.c b/net/tipc/name_table.c
+index fecab516bf41..01396dd1c899 100644
+--- a/net/tipc/name_table.c
++++ b/net/tipc/name_table.c
+@@ -673,12 +673,12 @@ bool tipc_nametbl_lookup_group(struct net *net, struct tipc_uaddr *ua,
+  * Returns a list of local sockets
+  */
+ void tipc_nametbl_lookup_mcast_sockets(struct net *net, struct tipc_uaddr *ua,
+-				       bool exact, struct list_head *dports)
++				       struct list_head *dports)
+ {
+ 	struct service_range *sr;
+ 	struct tipc_service *sc;
+ 	struct publication *p;
+-	u32 scope = ua->scope;
++	u8 scope = ua->scope;
+ 
+ 	rcu_read_lock();
+ 	sc = tipc_service_find(net, ua);
+@@ -688,7 +688,7 @@ void tipc_nametbl_lookup_mcast_sockets(struct net *net, struct tipc_uaddr *ua,
+ 	spin_lock_bh(&sc->lock);
+ 	service_range_foreach_match(sr, sc, ua->sr.lower, ua->sr.upper) {
+ 		list_for_each_entry(p, &sr->local_publ, local_publ) {
+-			if (p->scope == scope || (!exact && p->scope < scope))
++			if (scope == p->scope || scope == TIPC_ANY_SCOPE)
+ 				tipc_dest_push(dports, 0, p->sk.ref);
+ 		}
+ 	}
+diff --git a/net/tipc/name_table.h b/net/tipc/name_table.h
+index c7c9a3ddd420..259f95e3d99c 100644
+--- a/net/tipc/name_table.h
++++ b/net/tipc/name_table.h
+@@ -51,6 +51,8 @@ struct tipc_uaddr;
+ #define TIPC_PUBL_SCOPE_NUM	(TIPC_NODE_SCOPE + 1)
+ #define TIPC_NAMETBL_SIZE	1024	/* must be a power of 2 */
+ 
++#define TIPC_ANY_SCOPE 10      /* Both node and cluster scope will match */
++
+ /**
+  * struct publication - info about a published service address or range
+  * @sr: service range represented by this publication
+@@ -113,7 +115,7 @@ int tipc_nl_name_table_dump(struct sk_buff *skb, struct netlink_callback *cb);
+ bool tipc_nametbl_lookup_anycast(struct net *net, struct tipc_uaddr *ua,
+ 				 struct tipc_socket_addr *sk);
+ void tipc_nametbl_lookup_mcast_sockets(struct net *net, struct tipc_uaddr *ua,
+-				       bool exact, struct list_head *dports);
++				       struct list_head *dports);
+ void tipc_nametbl_lookup_mcast_nodes(struct net *net, struct tipc_uaddr *ua,
+ 				     struct tipc_nlist *nodes);
+ bool tipc_nametbl_lookup_group(struct net *net, struct tipc_uaddr *ua,
 diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index cb2d9fffbc5d..c635fd27fb38 100644
+index c635fd27fb38..575a0238deb2 100644
 --- a/net/tipc/socket.c
 +++ b/net/tipc/socket.c
-@@ -1733,67 +1733,58 @@ static void tipc_sk_set_orig_addr(struct msghdr *m, struct sk_buff *skb)
- static int tipc_sk_anc_data_recv(struct msghdr *m, struct sk_buff *skb,
- 				 struct tipc_sock *tsk)
- {
--	struct tipc_msg *msg;
--	u32 anc_data[3];
--	u32 err;
--	u32 dest_type;
--	int has_name;
--	int res;
-+	struct tipc_msg *hdr;
-+	u32 data[3] = {0,};
-+	bool has_addr;
-+	int dlen, rc;
+@@ -1200,12 +1200,12 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
+ 	struct tipc_msg *hdr;
+ 	struct tipc_uaddr ua;
+ 	int user, mtyp, hlen;
+-	bool exact;
  
- 	if (likely(m->msg_controllen == 0))
- 		return 0;
--	msg = buf_msg(skb);
+ 	__skb_queue_head_init(&tmpq);
+ 	INIT_LIST_HEAD(&dports);
+ 	ua.addrtype = TIPC_SERVICE_RANGE;
  
--	/* Optionally capture errored message object(s) */
--	err = msg ? msg_errcode(msg) : 0;
--	if (unlikely(err)) {
--		anc_data[0] = err;
--		anc_data[1] = msg_data_sz(msg);
--		res = put_cmsg(m, SOL_TIPC, TIPC_ERRINFO, 8, anc_data);
--		if (res)
--			return res;
--		if (anc_data[1]) {
--			if (skb_linearize(skb))
--				return -ENOMEM;
--			msg = buf_msg(skb);
--			res = put_cmsg(m, SOL_TIPC, TIPC_RETDATA, anc_data[1],
--				       msg_data(msg));
--			if (res)
--				return res;
--		}
-+	hdr = buf_msg(skb);
-+	dlen = msg_data_sz(hdr);
-+
-+	/* Capture errored message object, if any */
-+	if (msg_errcode(hdr)) {
-+		if (skb_linearize(skb))
-+			return -ENOMEM;
-+		hdr = buf_msg(skb);
-+		data[0] = msg_errcode(hdr);
-+		data[1] = dlen;
-+		rc = put_cmsg(m, SOL_TIPC, TIPC_ERRINFO, 8, data);
-+		if (rc || !dlen)
-+			return rc;
-+		rc = put_cmsg(m, SOL_TIPC, TIPC_RETDATA, dlen, msg_data(hdr));
-+		if (rc)
-+			return rc;
- 	}
++	/* tipc_skb_peek() increments the head skb's reference counter */
+ 	skb = tipc_skb_peek(arrvq, &inputq->lock);
+ 	for (; skb; skb = tipc_skb_peek(arrvq, &inputq->lock)) {
+ 		hdr = buf_msg(skb);
+@@ -1214,6 +1214,12 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
+ 		hlen = skb_headroom(skb) + msg_hdr_sz(hdr);
+ 		onode = msg_orignode(hdr);
+ 		ua.sr.type = msg_nametype(hdr);
++		ua.sr.lower = msg_namelower(hdr);
++		ua.sr.upper = msg_nameupper(hdr);
++		if (onode == self)
++			ua.scope = TIPC_ANY_SCOPE;
++		else
++			ua.scope = TIPC_CLUSTER_SCOPE;
  
--	/* Optionally capture message destination object */
--	dest_type = msg ? msg_type(msg) : TIPC_DIRECT_MSG;
--	switch (dest_type) {
-+	/* Capture TIPC_SERVICE_ADDR/RANGE destination address, if any */
-+	switch (msg_type(hdr)) {
- 	case TIPC_NAMED_MSG:
--		has_name = 1;
--		anc_data[0] = msg_nametype(msg);
--		anc_data[1] = msg_namelower(msg);
--		anc_data[2] = msg_namelower(msg);
-+		has_addr = true;
-+		data[0] = msg_nametype(hdr);
-+		data[1] = msg_namelower(hdr);
-+		data[2] = data[1];
- 		break;
- 	case TIPC_MCAST_MSG:
--		has_name = 1;
--		anc_data[0] = msg_nametype(msg);
--		anc_data[1] = msg_namelower(msg);
--		anc_data[2] = msg_nameupper(msg);
-+		has_addr = true;
-+		data[0] = msg_nametype(hdr);
-+		data[1] = msg_namelower(hdr);
-+		data[2] = msg_nameupper(hdr);
- 		break;
- 	case TIPC_CONN_MSG:
--		has_name = !!tsk->conn_addrtype;
--		anc_data[0] = msg_nametype(&tsk->phdr);
--		anc_data[1] = msg_nameinst(&tsk->phdr);
--		anc_data[2] = anc_data[1];
-+		has_addr = !!tsk->conn_addrtype;
-+		data[0] = msg_nametype(&tsk->phdr);
-+		data[1] = msg_nameinst(&tsk->phdr);
-+		data[2] = data[1];
- 		break;
- 	default:
--		has_name = 0;
--	}
--	if (has_name) {
--		res = put_cmsg(m, SOL_TIPC, TIPC_DESTNAME, 12, anc_data);
--		if (res)
--			return res;
-+		has_addr = false;
- 	}
--
--	return 0;
-+	if (!has_addr)
-+		return 0;
-+	return put_cmsg(m, SOL_TIPC, TIPC_DESTNAME, 12, data);
- }
+ 		if (mtyp == TIPC_GRP_UCAST_MSG || user == GROUP_PROTOCOL) {
+ 			spin_lock_bh(&inputq->lock);
+@@ -1231,20 +1237,10 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
+ 			ua.sr.lower = 0;
+ 			ua.sr.upper = ~0;
+ 			ua.scope = msg_lookup_scope(hdr);
+-			exact = true;
+-		} else {
+-			/* TIPC_NODE_SCOPE means "any scope" in this context */
+-			if (onode == self)
+-				ua.scope = TIPC_NODE_SCOPE;
+-			else
+-				ua.scope = TIPC_CLUSTER_SCOPE;
+-			exact = false;
+-			ua.sr.lower = msg_namelower(hdr);
+-			ua.sr.upper = msg_nameupper(hdr);
+ 		}
  
- static struct sk_buff *tipc_sk_build_ack(struct tipc_sock *tsk)
+ 		/* Create destination port list: */
+-		tipc_nametbl_lookup_mcast_sockets(net, &ua, exact, &dports);
++		tipc_nametbl_lookup_mcast_sockets(net, &ua, &dports);
+ 
+ 		/* Clone message per destination */
+ 		while (tipc_dest_pop(&dports, NULL, &portid)) {
+@@ -1256,13 +1252,11 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
+ 			}
+ 			pr_warn("Failed to clone mcast rcv buffer\n");
+ 		}
+-		/* Append to inputq if not already done by other thread */
++		/* Append clones to inputq only if skb is still head of arrvq */
+ 		spin_lock_bh(&inputq->lock);
+ 		if (skb_peek(arrvq) == skb) {
+ 			skb_queue_splice_tail_init(&tmpq, inputq);
+-			/* Decrease the skb's refcnt as increasing in the
+-			 * function tipc_skb_peek
+-			 */
++			/* Decrement the skb's refcnt */
+ 			kfree_skb(__skb_dequeue(arrvq));
+ 		}
+ 		spin_unlock_bh(&inputq->lock);
 -- 
 2.31.1
 
