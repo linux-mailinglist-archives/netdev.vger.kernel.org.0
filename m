@@ -2,133 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DB13399571
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 23:30:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8906839956E
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 23:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbhFBVcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 17:32:13 -0400
-Received: from mail-wr1-f45.google.com ([209.85.221.45]:46992 "EHLO
-        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbhFBVcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 17:32:12 -0400
-Received: by mail-wr1-f45.google.com with SMTP id a11so1801676wrt.13;
-        Wed, 02 Jun 2021 14:30:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4s+WtVD0z1zrvcjIi7mvIhu9JKhygKLIdbwXXCCDpJ8=;
-        b=UOENaWmX3PzGWYoKPFhCQXlJ9/5W38ns2q5K3buxLEbFhE0ynImXXyXe0xjWaUw+2k
-         3+HrtTIKZNHqHbPiOVtemxOy27y0wGopobb4amoi+NnmxXjOhatFWAoBLD/1dwECQvrb
-         76+T7NF9tD5xlnQ7EFqs6SrBVxRihaibGjEqi2PuMRhbTmheHCdCIdRW3Qcfc8HBhss1
-         0hugAJNGNvrWgLacfV+jzs0ATYO7VeUNzAMvq19O9/7PAU7y0ydzdJWkrAxXmbcUi4hO
-         C+r0lGgqUNzttSv8I7Rj38rxxUZjbg9ss5eXjhx8UilqupeVKU1cm8j0SQ48/seiaoyL
-         BepQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4s+WtVD0z1zrvcjIi7mvIhu9JKhygKLIdbwXXCCDpJ8=;
-        b=sELs9bzCVuZ58J9AGg6QIF3qlTemapa8ETXaI3qFuR7pBk5t1jXdVuBy3nD6r/9s6e
-         5kdYSOOM44Bn3i/MYf69YURD7BOSK4/hv9Uv0dRSbSS7Pt9Si/6ChodfbVUKNGl3+ijK
-         k1L5511FHNkCV3bYs6qImQnp0xfklBTA0VX2PWJpq7w8Llpnr/xXVVdjlweiZUNv0EDR
-         xNbPvBcgHIUPMwRWc3sae9twMvfUFGOCmpg7SDnFRdlXP5cJGgoSNQokBdfPW1uQhKq8
-         XCANvw0wbku4x8OPsFkmQaZSxtpzBmY5xYaBYtTKeVHiuckRCBI0zuRs7HgG2Q/H4JLT
-         g9KQ==
-X-Gm-Message-State: AOAM531f2UvGhP9W46ptHN8K+jTj34EvLI7IwxhGSCMy8zckFMySqDOz
-        ArwNgthOJ3A9bcKqNpE4id1A27TAqGLafw==
-X-Google-Smtp-Source: ABdhPJzjiDdoclNUldyrUeLFcTnrcPHIcR9mw6VbQ4HURvNHqRXQdc6ch3lj36KtL5Jsp1ptwwIdxg==
-X-Received: by 2002:adf:ef06:: with SMTP id e6mr24281131wro.393.1622669367880;
-        Wed, 02 Jun 2021 14:29:27 -0700 (PDT)
-Received: from localhost.localdomain ([185.199.80.151])
-        by smtp.gmail.com with ESMTPSA id 62sm1272616wrm.1.2021.06.02.14.29.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 14:29:27 -0700 (PDT)
-From:   Kurt Manucredo <fuzzybritches0@gmail.com>
-To:     syzbot+bed360704c521841c85d@syzkaller.appspotmail.com
-Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com, nathan@kernel.org,
-        ndesaulniers@google.com, clang-built-linux@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org, gregkh@linuxfoundation.org,
-        Kurt Manucredo <fuzzybritches0@gmail.com>
-Subject: [PATCH v3] bpf: core: fix shift-out-of-bounds in ___bpf_prog_run
-Date:   Wed,  2 Jun 2021 21:27:26 +0000
-Message-Id: <20210602212726.7-1-fuzzybritches0@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <000000000000c2987605be907e41@google.com>
-References: 
+        id S229604AbhFBVcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 17:32:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33832 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229541AbhFBVcA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 17:32:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 32B65613D2;
+        Wed,  2 Jun 2021 21:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622669416;
+        bh=27PXotcSAwyoOyuvKX7GPs9lOkrHOvxe9C8+Aqu841s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gk/Z5uINMC6H/V2GVDoc5KSTd8SuIt21LFoGPArQgSTw6SwYa6+1EszyXDpyoPKkT
+         zXnJFt8DrV2qei++JuNZjvQ8vrDZQvpXsyjYBEeF8eCa8ku1A/UUjeK4WsO1GmsQnV
+         GL2fspNmYtQ9gkjOcG/szlmgm9zbTqAp6LvrN968vBptf06YvBoE/tdxJHMDscpb5G
+         CneIvFq/m6q/4hhFGEcOlpGRpWG2MYBI9a+P6P/+y8QkYy0ELtuk7QQyhFz38kmbxz
+         OakHlC5PiN0wk2ctSoS4JOsQgoIQXu+9YfosdrVCWFSPO9H5fULSaOzggOHZw9G7Bb
+         QKhIzwTBXu/1w==
+Date:   Wed, 2 Jun 2021 14:30:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Michael Walle <michael@walle.cc>, Po Liu <po.liu@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 2/2] net: enetc: count the tc-taprio window
+ drops
+Message-ID: <20210602143015.75e3f56e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20210602175937.nwdz7xju4o5eqaby@skbuf>
+References: <20210602122114.2082344-1-olteanv@gmail.com>
+        <20210602122114.2082344-3-olteanv@gmail.com>
+        <20210602101920.3c09686a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <20210602175937.nwdz7xju4o5eqaby@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UBSAN: shift-out-of-bounds in kernel/bpf/core.c:1414:2
-shift exponent 248 is too large for 32-bit type 'unsigned int'
+On Wed, 2 Jun 2021 20:59:37 +0300 Vladimir Oltean wrote:
+> On Wed, Jun 02, 2021 at 10:19:20AM -0700, Jakub Kicinski wrote:
+> > On Wed,  2 Jun 2021 15:21:14 +0300 Vladimir Oltean wrote:  
+> > > From: Po Liu <Po.Liu@nxp.com>
+> > > 
+> > > The enetc scheduler for IEEE 802.1Qbv has 2 options (depending on
+> > > PTGCR[TG_DROP_DISABLE]) when we attempt to send an oversized packet
+> > > which will never fit in its allotted time slot for its traffic class:
+> > > either block the entire port due to head-of-line blocking, or drop the  
+> > 
+> > the entire port or the entire queue?  
+> 
+> I don't remember, I need to re-test.
+> 
+> > > packet and set a bit in the writeback format of the transmit buffer
+> > > descriptor, allowing other packets to be sent.
+> > > 
+> > > We obviously choose the second option in the driver, but we do not
+> > > detect the drop condition, so from the perspective of the network stack,
+> > > the packet is sent and no error counter is incremented.
+> > > 
+> > > This change checks the writeback of the TX BD when tc-taprio is enabled,
+> > > and increments a specific ethtool statistics counter and a generic
+> > > "tx_dropped" counter in ndo_get_stats64.  
+> > 
+> > Any chance we should also report that back to the qdisc to have 
+> > a standard way of querying from user space? Qdisc offload supports
+> > stats in general, it shouldn't be an issue, and the stat seems generic
+> > enough, no?  
+> 
+> You're thinking of something along the lines of tc_codel_xstats?
+> How do you propose I pass this on to the taprio qdisc? Just call a
+> function in enetc that is exported by net/sched/sch_taprio.c?
 
-Reported-and-tested-by: syzbot+bed360704c521841c85d@syzkaller.appspotmail.com
-Signed-off-by: Kurt Manucredo <fuzzybritches0@gmail.com>
----
+Check out red_dump_offload_stats()/TC_RED_STATS, this is the usual way
+of handling stats offload in TC.
 
-https://syzkaller.appspot.com/bug?id=edb51be4c9a320186328893287bb30d5eed09231
+> If the skb is bound to a socket, I'm thinking it might be more useful to
+> report a struct sock_extended_err similar to the SO_EE_TXTIME_MISSED
+> stuff for tc-etf, what do you think?
 
-Changelog:
-----------
-v3 - Make it clearer what the fix is for.
-v2 - Fix shift-out-of-bounds in ___bpf_prog_run() by adding boundary
-check in check_alu_op() in verifier.c.
-v1 - Fix shift-out-of-bounds in ___bpf_prog_run() by adding boundary
-check in ___bpf_prog_run().
-
-Hi everyone,
-
-I hope this fixes it!
-
-kind regards
-
- kernel/bpf/verifier.c | 22 +++++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 94ba5163d4c5..04e3bf344ecd 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -7880,13 +7880,25 @@ static int check_alu_op(struct bpf_verifier_env *env, struct bpf_insn *insn)
- 			return -EINVAL;
- 		}
- 
--		if ((opcode == BPF_LSH || opcode == BPF_RSH ||
--		     opcode == BPF_ARSH) && BPF_SRC(insn->code) == BPF_K) {
-+		if (opcode == BPF_LSH || opcode == BPF_RSH ||
-+		     opcode == BPF_ARSH) {
- 			int size = BPF_CLASS(insn->code) == BPF_ALU64 ? 64 : 32;
- 
--			if (insn->imm < 0 || insn->imm >= size) {
--				verbose(env, "invalid shift %d\n", insn->imm);
--				return -EINVAL;
-+			if (BPF_SRC(insn->code) == BPF_K) {
-+				if (insn->imm < 0 || insn->imm >= size) {
-+					verbose(env, "invalid shift %d\n", insn->imm);
-+					return -EINVAL;
-+				}
-+			}
-+			if (BPF_SRC(insn->code) == BPF_X) {
-+				struct bpf_reg_state *src_reg;
-+
-+				src_reg = &regs[insn->src_reg];
-+				if (src_reg->umax_value >= size) {
-+					verbose(env, "invalid shift %lld\n",
-+							src_reg->umax_value);
-+					return -EINVAL;
-+				}
- 			}
- 		}
- 
--- 
-2.30.2
-
+That's an interesting idea as well, dunno enough about the practical
+uses to be able to tell if applications care about per-socket state,
+per-interface state, or both.
