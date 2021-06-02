@@ -2,69 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 577F43989EF
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:44:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E223989F0
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:45:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230116AbhFBMqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 08:46:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33784 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230097AbhFBMqb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 08:46:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ABB38613B8;
-        Wed,  2 Jun 2021 12:44:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622637888;
-        bh=mY9aru4I5jdUUWZCv3k0iPOk0GIOpJClPDnCv3XBDEQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Et463j64ps/dUobh8R14kaIEgDuQcOVfTqO8FXPiAYSWU2K8HszAmgi8yQFsSt423
-         fpP0wYjvOEXlMNuFb3iHXfvQqoFfTyZbYA6pv8P+u4Zhr6qP2+0iOwzQjNh9jUeHz6
-         F28XcMf/0RP1LnP56WO0bvaQYYpI2VaZECsDdzQTr842VTCMJ9TvVdyA2py+yVdbYl
-         4zrrKHV2LOb/eub7+mj4rPUdU80d0+hJVtuPYujbTVJePRpGXkcLsj3JD01u3DFL5O
-         xVMyZMFpFYKRGG2zavWHb3u1P5zJUcLCxEFobYygssZtiw/WoVMjGXM6TJCxkibIea
-         /G2L43TCfQYqA==
-Date:   Wed, 2 Jun 2021 14:44:39 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-leds@vger.kernel.org, netdev@vger.kernel.org,
-        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: Re: [PATCH leds v2 06/10] leds: core: inform trigger that it's
- deactivation is due to LED removal
-Message-ID: <20210602144439.4d20b295@dellmb>
-In-Reply-To: <YLai2aHKKKqwRysm@lunn.ch>
-References: <20210601005155.27997-1-kabel@kernel.org>
-        <20210601005155.27997-7-kabel@kernel.org>
-        <YLai2aHKKKqwRysm@lunn.ch>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S230122AbhFBMqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 08:46:50 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:2852 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230121AbhFBMqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 08:46:46 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Fw7sY5RRwzWr04;
+        Wed,  2 Jun 2021 20:40:17 +0800 (CST)
+Received: from dggpemm500021.china.huawei.com (7.185.36.109) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 2 Jun 2021 20:45:00 +0800
+Received: from DESKTOP-9883QJJ.china.huawei.com (10.136.114.155) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 2 Jun 2021 20:45:00 +0800
+From:   zhudi <zhudi21@huawei.com>
+To:     <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <kuba@kernel.org>,
+        <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <zhudi21@huawei.com>,
+        <rose.chen@huawei.com>
+Subject: [PATCH] bonding: 3ad: fix a crash in agg_device_up()
+Date:   Wed, 2 Jun 2021 20:44:48 +0800
+Message-ID: <20210602124448.49828-1-zhudi21@huawei.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.136.114.155]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500021.china.huawei.com (7.185.36.109)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Jun 2021 23:12:57 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+From: Di Zhu <zhudi21@huawei.com>
 
-> On Tue, Jun 01, 2021 at 02:51:51AM +0200, Marek Beh=C3=BAn wrote:
-> > Move setting of the LED_UNREGISTERING before deactivating the
-> > trigger in led_classdev_unregister().
-> >=20
-> > It can be useful for a LED trigger to know whether it is being
-> > deactivated due to the LED being unregistered. This makes it
-> > possible for LED drivers which implement trigger offloading to
-> > leave the LED in HW triggering mode when the LED is unregistered,
-> > instead of disabling it. =20
->=20
-> Humm, i'm not sure that is a good idea. I don't expect my Ethernet
-> switch to keep forwarding frames when i unload the driver.
+When doing the test of restarting the network card, the system is
+broken because the port->slave is null pointer in agg_device_up().
+After in-depth investigation, we found the real cause: in
+bond_3ad_unbind_slave()  if there are no active ports in the
+aggregator to be deleted, the ad_clear_agg() will be called to
+set "aggregator->lag_ports = NULL", but the ports originally
+belonging to the aggregator are still linked together.
 
-We want to make it so that when leds-turris-omnia driver is unloaded,
-the LEDs will start blinking in HW mode as they did before the driver
-was loaded. This is needed for that.
+Before bond_3ad_unbind_slave():
+	aggregator4->lag_ports = port1->port2->port3
+After bond_3ad_unbind_slave():
+	aggregator4->lag_ports = NULL
+	port1->port2->port3
 
-Marek
+After the port2 is deleted, the port is still  remain in the linked
+list: because the port does not belong to any agg, so unbind do
+nothing for this port.
+
+After a while, bond_3ad_state_machine_handler() will run and
+traverse each existing port, trying to bind each port to the
+newly selected agg, such as:
+	if (!found) {
+		if (free_aggregator) {
+			...
+			port->aggregator->lag_ports = port;
+			...
+		}
+	}
+After this operation, the link list looks like this:
+	 aggregator1->lag_ports = port1->port2(has been deleted)->port3
+
+After that, just traverse the linked list of agg1 and access the
+port2->slave, the crash will happen.
+
+The easiest way to fix it is: if a port does not belong to any agg, delete
+it from the list and wait for the state machine to select the agg again
+
+Signed-off-by: Di Zhu <zhudi21@huawei.com>
+---
+ drivers/net/bonding/bond_3ad.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index 6908822d9773..1d6ff4e1ed28 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -1793,6 +1793,8 @@ static void ad_agg_selection_logic(struct aggregator *agg,
+ static void ad_clear_agg(struct aggregator *aggregator)
+ {
+ 	if (aggregator) {
++		struct port *port, *next;
++
+ 		aggregator->is_individual = false;
+ 		aggregator->actor_admin_aggregator_key = 0;
+ 		aggregator->actor_oper_aggregator_key = 0;
+@@ -1801,6 +1803,11 @@ static void ad_clear_agg(struct aggregator *aggregator)
+ 		aggregator->partner_oper_aggregator_key = 0;
+ 		aggregator->receive_state = 0;
+ 		aggregator->transmit_state = 0;
++		for (port = aggregator->lag_ports; port; port = next) {
++			next = port->next_port_in_aggregator;
++			if (port->aggregator == aggregator)
++				port->next_port_in_aggregator = NULL;
++		}
+ 		aggregator->lag_ports = NULL;
+ 		aggregator->is_active = 0;
+ 		aggregator->num_of_ports = 0;
+-- 
+2.23.0
+
