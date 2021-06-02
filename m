@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42F02399148
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:17:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1A7A39914C
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:17:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbhFBRTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 13:19:30 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:27814 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229790AbhFBRT2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 13:19:28 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 152HFhot018964;
-        Wed, 2 Jun 2021 10:17:26 -0700
+        id S230187AbhFBRTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 13:19:37 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:23292 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230169AbhFBRTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 13:19:35 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 152H6A9W025799;
+        Wed, 2 Jun 2021 10:17:31 -0700
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 38xe7xr09e-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 38wufguvf7-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 02 Jun 2021 10:17:26 -0700
+        Wed, 02 Jun 2021 10:17:31 -0700
 Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 2 Jun
- 2021 10:17:25 -0700
+ 2021 10:17:29 -0700
 Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
  DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 2 Jun 2021 10:17:21 -0700
+ 15.0.1497.2 via Frontend Transport; Wed, 2 Jun 2021 10:17:25 -0700
 From:   Shai Malin <smalin@marvell.com>
 To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <linux-nvme@lists.infradead.org>, <sagi@grimberg.me>, <hch@lst.de>,
@@ -31,249 +31,323 @@ CC:     <linux-nvme@lists.infradead.org>, <sagi@grimberg.me>, <hch@lst.de>,
         <mkalderon@marvell.com>, <okulkarni@marvell.com>,
         <pkushwaha@marvell.com>, <prabhakar.pkin@gmail.com>,
         <malin1024@gmail.com>, <smalin@marvell.com>
-Subject: [PATCH 0/7] QED NVMeTCP Offload
-Date:   Wed, 2 Jun 2021 20:16:48 +0300
-Message-ID: <20210602171655.23581-1-smalin@marvell.com>
+Subject: [PATCH 1/7] qed: Add TCP_ULP FW resource layout
+Date:   Wed, 2 Jun 2021 20:16:49 +0300
+Message-ID: <20210602171655.23581-2-smalin@marvell.com>
 X-Mailer: git-send-email 2.16.6
+In-Reply-To: <20210602171655.23581-1-smalin@marvell.com>
+References: <20210602171655.23581-1-smalin@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="y"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: xdW0Xul88ga1vDTMpkdjKGmce_1QEYws
-X-Proofpoint-GUID: xdW0Xul88ga1vDTMpkdjKGmce_1QEYws
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: Merj-KtTDMPgOidH2zzaOFo_C-xI9Ect
+X-Proofpoint-GUID: Merj-KtTDMPgOidH2zzaOFo_C-xI9Ect
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
  definitions=2021-06-02_09:2021-06-02,2021-06-02 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+From: Omkar Kulkarni <okulkarni@marvell.com>
 
-Intro:
-======
-This is the qed part of Marvell’s NVMeTCP offload series, shared as 
-RFC series "NVMeTCP Offload ULP and QEDN Device Drive".
-This part is a standalone series, and is not dependent on other parts 
-of the RFC.
-The overall goal is to add qedn as the offload driver for NVMeTCP, 
-alongside the existing offload drivers (qedr, qedi and qedf for rdma, 
-iscsi and fcoe respectively).
+Add TCP_ULP as a storage common TCP offload FW resource layout.
+This will be used by the core driver (QED) for both the NVMeTCP and iSCSI.
 
-In this series we are making the necessary changes to qed to enable this 
-by exposing APIs for FW/HW initializations.
+Acked-by: Igor Russkikh <irusskikh@marvell.com>
+Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Shai Malin <smalin@marvell.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+---
+ drivers/net/ethernet/qlogic/qed/qed_cxt.c     | 18 ++++++++---------
+ drivers/net/ethernet/qlogic/qed/qed_cxt.h     |  2 +-
+ drivers/net/ethernet/qlogic/qed/qed_dev.c     |  2 +-
+ drivers/net/ethernet/qlogic/qed/qed_hsi.h     |  2 +-
+ drivers/net/ethernet/qlogic/qed/qed_iscsi.c   | 20 +++++++++----------
+ drivers/net/ethernet/qlogic/qed/qed_ll2.c     |  8 ++++----
+ drivers/net/ethernet/qlogic/qed/qed_ooo.c     |  2 +-
+ .../net/ethernet/qlogic/qed/qed_sp_commands.c |  2 +-
+ include/linux/qed/common_hsi.h                |  2 +-
+ include/linux/qed/qed_ll2_if.h                |  2 +-
+ 10 files changed, 30 insertions(+), 30 deletions(-)
 
-The qedn series (and required changes to NVMe stack) will be sent to the 
-linux-nvme mailing list.
-I have included more details on the upstream plan under section with the 
-same name below.
-
-
-The Series Patches:
-===================
-1. qed: Add TCP_ULP FW resource layout – replacing iSCSI when common 
-   with NVMeTCP.
-2. qed: Add NVMeTCP Offload PF Level FW and HW HSI.
-3. qed: Add NVMeTCP Offload Connection Level FW and HW HSI.
-4. qed: Add support of HW filter block – enables redirecting NVMeTCP 
-   traffic to the dedicated PF.
-5. qed: Add NVMeTCP Offload IO Level FW and HW HSI.
-6. qed: Add NVMeTCP Offload IO Level FW Initializations.
-7. qed: Add IP services APIs support –VLAN, IP routing and reserving 
-   TCP ports for the offload device.
-
-
-The NVMeTCP Offload:
-====================
-With the goal of enabling a generic infrastructure that allows NVMe/TCP
-offload devices like NICs to seamlessly plug into the NVMe-oF stack, this
-patch series introduces the nvme-tcp-offload ULP host layer, which will
-be a new transport type called "tcp-offload" and will serve as an 
-abstraction layer to work with vendor specific nvme-tcp offload drivers.
-
-NVMeTCP offload is a full offload of the NVMeTCP protocol, this includes 
-both the TCP level and the NVMeTCP level.
-
-The nvme-tcp-offload transport can co-exist with the existing tcp and 
-other transports. The tcp offload was designed so that stack changes are 
-kept to a bare minimum: only registering new transports.
-All other APIs, ops etc. are identical to the regular tcp transport.
-Representing the TCP offload as a new transport allows clear and manageable
-differentiation between the connections which should use the offload path 
-and those that are not offloaded (even on the same device).
-
-The nvme-tcp-offload layers and API compared to nvme-tcp and nvme-rdma:
-
-* NVMe layer: *
-
-       [ nvme/nvme-fabrics/blk-mq ]
-             |
-        (nvme API and blk-mq API)
-             |
-             |			 
-* Vendor agnostic transport layer: *
-
-      [ nvme-rdma ] [ nvme-tcp ] [ nvme-tcp-offload ]
-             |        |             |
-           (Verbs) 
-             |        |             |
-             |     (Socket)
-             |        |             |
-             |        |        (nvme-tcp-offload API)
-             |        |             |
-             |        |             |
-* Vendor Specific Driver: *
-
-             |        |             |
-           [ qedr ]       
-                      |             |
-                   [ qede ]
-                                    |
-                                  [ qedn ]
-
-
-Performance:
-============
-With this implementation on top of the Marvell qedn driver (using the
-Marvell FastLinQ NIC), we were able to demonstrate the following CPU
-utilization improvement:
-
-On AMD EPYC 7402, 2.80GHz, 28 cores:
-- For 16K queued read IOs, 16jobs, 4qd (50Gbps line rate): 
-  Improved the CPU utilization from 15.1% with NVMeTCP SW to 4.7% with 
-  NVMeTCP offload.
-
-On Intel(R) Xeon(R) Gold 5122 CPU, 3.60GHz, 16 cores: 
-- For 512K queued read IOs, 16jobs, 4qd (25Gbps line rate): 
-  Improved the CPU utilization from 16.3% with NVMeTCP SW to 1.1% with 
-  NVMeTCP offload.
-
-In addition, we were able to demonstrate the following latency improvement:
-- For 200K read IOPS (16 jobs, 16 qd, with fio rate limiter):
-  Improved the average latency from 105 usec with NVMeTCP SW to 39 usec 
-  with NVMeTCP offload.
-  
-  Improved the 99.99 tail latency from 570 usec with NVMeTCP SW to 91 usec 
-  with NVMeTCP offload.
-
-The end-to-end offload latency was measured from fio while running against 
-back end of null device.
-
-
-The Marvell FastLinQ NIC HW engine:
-====================================
-The Marvell NIC HW engine is capable of offloading the entire TCP/IP
-stack and managing up to 64K connections per PF, already implemented and 
-upstream use cases for this include iWARP (by the Marvell qedr driver) 
-and iSCSI (by the Marvell qedi driver).
-In addition, the Marvell NIC HW engine offloads the NVMeTCP queue layer
-and is able to manage the IO level also in case of TCP re-transmissions
-and OOO events.
-The HW engine enables direct data placement (including the data digest CRC
-calculation and validation) and direct data transmission (including data
-digest CRC calculation).
-
-
-The Marvell qedn driver:
-========================
-The new driver will be added under "drivers/nvme/hw" and will be enabled
-by the Kconfig "Marvell NVM Express over Fabrics TCP offload".
-As part of the qedn init, the driver will register as a pci device driver 
-and will work with the Marvell fastlinQ NIC.
-As part of the probe, the driver will register to the nvme_tcp_offload
-(ULP) and to the qed module (qed_nvmetcp_ops) - similar to other
-"qed_*_ops" which are used by the qede, qedr, qedf and qedi device
-drivers.
-
-
-Upstream Plan:
-=============
-The RFC series "NVMeTCP Offload ULP and QEDN Device Driver" 
-https://lore.kernel.org/netdev/20210531225222.16992-1-smalin@marvell.com/
-was designed in a modular way so that part 1 (nvme-tcp-offload) and 
-part 2 (qed) are independent and part 3 (qedn) depends on both parts 1+2.
-
-- Part 1 (RFC patch 1-8): NVMeTCP Offload ULP
-  The nvme-tcp-offload patches, will be sent to 
-  'linux-nvme@lists.infradead.org'.
-  
-- Part 2 (RFC patches 9-15): QED NVMeTCP Offload
-  The qed infrastructure, will be sent to 'netdev@vger.kernel.org'.
-
-Once part 1 and 2 are accepted:
-
-- Part 3 (RFC patches 16-27): QEDN NVMeTCP Offload
-  The qedn patches, will be sent to 'linux-nvme@lists.infradead.org'.
-
-
-Changes since RFC v1,2:
-=====================
-- No changes in qed (only in nvme-tcp-offload and qedn).
-
-Changes since RFC v3:
-=====================
-- qed: Add support for the new AHP HW. 
-
-Changes since RFC v4:
-=====================
-(Many thanks to Hannes Reinecke for his feedback)
-- qed: Add TCP_ULP FW resource layout.
-- qed: Fix ipv4/ipv6 address initialization.
-- qed: Replace structures with nvme-tcp.h structures.
-
-Changes since RFC v5,6:
-=====================
-- No changes in qed (only in nvme-tcp-offload and qedn).
-
-
-Nikolay Assa (1):
-  qed: Add IP services APIs support
-
-Omkar Kulkarni (1):
-  qed: Add TCP_ULP FW resource layout
-
-Prabhakar Kushwaha (1):
-  qed: Add support of HW filter block
-
-Shai Malin (4):
-  qed: Add NVMeTCP Offload PF Level FW and HW HSI
-  qed: Add NVMeTCP Offload Connection Level FW and HW HSI
-  qed: Add NVMeTCP Offload IO Level FW and HW HSI
-  qed: Add NVMeTCP Offload IO Level FW Initializations
-
- drivers/net/ethernet/qlogic/Kconfig           |   3 +
- drivers/net/ethernet/qlogic/qed/Makefile      |   5 +
- drivers/net/ethernet/qlogic/qed/qed.h         |  14 +
- drivers/net/ethernet/qlogic/qed/qed_cxt.c     |  45 +-
- drivers/net/ethernet/qlogic/qed/qed_cxt.h     |   2 +-
- drivers/net/ethernet/qlogic/qed/qed_dev.c     | 140 ++-
- drivers/net/ethernet/qlogic/qed/qed_hsi.h     |   6 +-
- drivers/net/ethernet/qlogic/qed/qed_iscsi.c   |  20 +-
- drivers/net/ethernet/qlogic/qed/qed_ll2.c     |  40 +-
- drivers/net/ethernet/qlogic/qed/qed_mcp.c     |   3 +
- drivers/net/ethernet/qlogic/qed/qed_mng_tlv.c |   3 +-
- drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c | 829 ++++++++++++++++++
- drivers/net/ethernet/qlogic/qed/qed_nvmetcp.h | 103 +++
- .../qlogic/qed/qed_nvmetcp_fw_funcs.c         | 376 ++++++++
- .../qlogic/qed/qed_nvmetcp_fw_funcs.h         |  40 +
- .../qlogic/qed/qed_nvmetcp_ip_services.c      | 238 +++++
- drivers/net/ethernet/qlogic/qed/qed_ooo.c     |   5 +-
- drivers/net/ethernet/qlogic/qed/qed_sp.h      |   5 +
- .../net/ethernet/qlogic/qed/qed_sp_commands.c |   3 +-
- include/linux/qed/common_hsi.h                |   2 +-
- include/linux/qed/nvmetcp_common.h            | 531 +++++++++++
- include/linux/qed/qed_if.h                    |  18 +
- include/linux/qed/qed_ll2_if.h                |   2 +-
- include/linux/qed/qed_nvmetcp_if.h            | 240 +++++
- .../linux/qed/qed_nvmetcp_ip_services_if.h    |  29 +
- 25 files changed, 2650 insertions(+), 52 deletions(-)
- create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c
- create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp.h
- create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.c
- create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.h
- create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
- create mode 100644 include/linux/qed/nvmetcp_common.h
- create mode 100644 include/linux/qed/qed_nvmetcp_if.h
- create mode 100644 include/linux/qed/qed_nvmetcp_ip_services_if.h
-
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_cxt.c b/drivers/net/ethernet/qlogic/qed/qed_cxt.c
+index 0a22f8ce9a2c..fcabbaa518df 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_cxt.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_cxt.c
+@@ -94,14 +94,14 @@ struct src_ent {
+ 
+ static bool src_proto(enum protocol_type type)
+ {
+-	return type == PROTOCOLID_ISCSI ||
++	return type == PROTOCOLID_TCP_ULP ||
+ 	       type == PROTOCOLID_FCOE ||
+ 	       type == PROTOCOLID_IWARP;
+ }
+ 
+ static bool tm_cid_proto(enum protocol_type type)
+ {
+-	return type == PROTOCOLID_ISCSI ||
++	return type == PROTOCOLID_TCP_ULP ||
+ 	       type == PROTOCOLID_FCOE ||
+ 	       type == PROTOCOLID_ROCE ||
+ 	       type == PROTOCOLID_IWARP;
+@@ -2090,13 +2090,13 @@ int qed_cxt_set_pf_params(struct qed_hwfn *p_hwfn, u32 rdma_tasks)
+ 
+ 		if (p_params->num_cons && p_params->num_tasks) {
+ 			qed_cxt_set_proto_cid_count(p_hwfn,
+-						    PROTOCOLID_ISCSI,
++						    PROTOCOLID_TCP_ULP,
+ 						    p_params->num_cons,
+ 						    0);
+ 
+ 			qed_cxt_set_proto_tid_count(p_hwfn,
+-						    PROTOCOLID_ISCSI,
+-						    QED_CXT_ISCSI_TID_SEG,
++						    PROTOCOLID_TCP_ULP,
++						    QED_CXT_TCP_ULP_TID_SEG,
+ 						    0,
+ 						    p_params->num_tasks,
+ 						    true);
+@@ -2129,8 +2129,8 @@ int qed_cxt_get_tid_mem_info(struct qed_hwfn *p_hwfn,
+ 		seg = QED_CXT_FCOE_TID_SEG;
+ 		break;
+ 	case QED_PCI_ISCSI:
+-		proto = PROTOCOLID_ISCSI;
+-		seg = QED_CXT_ISCSI_TID_SEG;
++		proto = PROTOCOLID_TCP_ULP;
++		seg = QED_CXT_TCP_ULP_TID_SEG;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -2455,8 +2455,8 @@ int qed_cxt_get_task_ctx(struct qed_hwfn *p_hwfn,
+ 		seg = QED_CXT_FCOE_TID_SEG;
+ 		break;
+ 	case QED_PCI_ISCSI:
+-		proto = PROTOCOLID_ISCSI;
+-		seg = QED_CXT_ISCSI_TID_SEG;
++		proto = PROTOCOLID_TCP_ULP;
++		seg = QED_CXT_TCP_ULP_TID_SEG;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_cxt.h b/drivers/net/ethernet/qlogic/qed/qed_cxt.h
+index 056e79620a0e..8adb7ed0c12d 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_cxt.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_cxt.h
+@@ -50,7 +50,7 @@ int qed_cxt_get_cid_info(struct qed_hwfn *p_hwfn,
+ int qed_cxt_get_tid_mem_info(struct qed_hwfn *p_hwfn,
+ 			     struct qed_tid_mem *p_info);
+ 
+-#define QED_CXT_ISCSI_TID_SEG	PROTOCOLID_ISCSI
++#define QED_CXT_TCP_ULP_TID_SEG	PROTOCOLID_TCP_ULP
+ #define QED_CXT_ROCE_TID_SEG	PROTOCOLID_ROCE
+ #define QED_CXT_FCOE_TID_SEG	PROTOCOLID_FCOE
+ enum qed_cxt_elem_type {
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
+index d2f5855b2ea7..c231d0e56571 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
+@@ -2266,7 +2266,7 @@ int qed_resc_alloc(struct qed_dev *cdev)
+ 		} else if (p_hwfn->hw_info.personality == QED_PCI_ISCSI) {
+ 			num_cons =
+ 			    qed_cxt_get_proto_cid_count(p_hwfn,
+-							PROTOCOLID_ISCSI,
++							PROTOCOLID_TCP_ULP,
+ 							NULL);
+ 			n_eqes += 2 * num_cons;
+ 		}
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_hsi.h b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
+index 559df9f4d656..9dbeb2efdc51 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_hsi.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
+@@ -1118,7 +1118,7 @@ struct outer_tag_config_struct {
+ /* personality per PF */
+ enum personality_type {
+ 	BAD_PERSONALITY_TYP,
+-	PERSONALITY_ISCSI,
++	PERSONALITY_TCP_ULP,
+ 	PERSONALITY_FCOE,
+ 	PERSONALITY_RDMA_AND_ETH,
+ 	PERSONALITY_RDMA,
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iscsi.c b/drivers/net/ethernet/qlogic/qed/qed_iscsi.c
+index 448567a1f520..db926d8b3033 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iscsi.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iscsi.c
+@@ -158,7 +158,7 @@ qed_sp_iscsi_func_start(struct qed_hwfn *p_hwfn,
+ 
+ 	rc = qed_sp_init_request(p_hwfn, &p_ent,
+ 				 ISCSI_RAMROD_CMD_ID_INIT_FUNC,
+-				 PROTOCOLID_ISCSI, &init_data);
++				 PROTOCOLID_TCP_ULP, &init_data);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -250,7 +250,7 @@ qed_sp_iscsi_func_start(struct qed_hwfn *p_hwfn,
+ 	p_hwfn->p_iscsi_info->event_context = event_context;
+ 	p_hwfn->p_iscsi_info->event_cb = async_event_cb;
+ 
+-	qed_spq_register_async_cb(p_hwfn, PROTOCOLID_ISCSI,
++	qed_spq_register_async_cb(p_hwfn, PROTOCOLID_TCP_ULP,
+ 				  qed_iscsi_async_event);
+ 
+ 	return qed_spq_post(p_hwfn, p_ent, NULL);
+@@ -286,7 +286,7 @@ static int qed_sp_iscsi_conn_offload(struct qed_hwfn *p_hwfn,
+ 
+ 	rc = qed_sp_init_request(p_hwfn, &p_ent,
+ 				 ISCSI_RAMROD_CMD_ID_OFFLOAD_CONN,
+-				 PROTOCOLID_ISCSI, &init_data);
++				 PROTOCOLID_TCP_ULP, &init_data);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -465,7 +465,7 @@ static int qed_sp_iscsi_conn_update(struct qed_hwfn *p_hwfn,
+ 
+ 	rc = qed_sp_init_request(p_hwfn, &p_ent,
+ 				 ISCSI_RAMROD_CMD_ID_UPDATE_CONN,
+-				 PROTOCOLID_ISCSI, &init_data);
++				 PROTOCOLID_TCP_ULP, &init_data);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -506,7 +506,7 @@ qed_sp_iscsi_mac_update(struct qed_hwfn *p_hwfn,
+ 
+ 	rc = qed_sp_init_request(p_hwfn, &p_ent,
+ 				 ISCSI_RAMROD_CMD_ID_MAC_UPDATE,
+-				 PROTOCOLID_ISCSI, &init_data);
++				 PROTOCOLID_TCP_ULP, &init_data);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -548,7 +548,7 @@ static int qed_sp_iscsi_conn_terminate(struct qed_hwfn *p_hwfn,
+ 
+ 	rc = qed_sp_init_request(p_hwfn, &p_ent,
+ 				 ISCSI_RAMROD_CMD_ID_TERMINATION_CONN,
+-				 PROTOCOLID_ISCSI, &init_data);
++				 PROTOCOLID_TCP_ULP, &init_data);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -582,7 +582,7 @@ static int qed_sp_iscsi_conn_clear_sq(struct qed_hwfn *p_hwfn,
+ 
+ 	rc = qed_sp_init_request(p_hwfn, &p_ent,
+ 				 ISCSI_RAMROD_CMD_ID_CLEAR_SQ,
+-				 PROTOCOLID_ISCSI, &init_data);
++				 PROTOCOLID_TCP_ULP, &init_data);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -606,13 +606,13 @@ static int qed_sp_iscsi_func_stop(struct qed_hwfn *p_hwfn,
+ 
+ 	rc = qed_sp_init_request(p_hwfn, &p_ent,
+ 				 ISCSI_RAMROD_CMD_ID_DESTROY_FUNC,
+-				 PROTOCOLID_ISCSI, &init_data);
++				 PROTOCOLID_TCP_ULP, &init_data);
+ 	if (rc)
+ 		return rc;
+ 
+ 	rc = qed_spq_post(p_hwfn, p_ent, NULL);
+ 
+-	qed_spq_unregister_async_cb(p_hwfn, PROTOCOLID_ISCSI);
++	qed_spq_unregister_async_cb(p_hwfn, PROTOCOLID_TCP_ULP);
+ 	return rc;
+ }
+ 
+@@ -786,7 +786,7 @@ static int qed_iscsi_acquire_connection(struct qed_hwfn *p_hwfn,
+ 	u32 icid;
+ 
+ 	spin_lock_bh(&p_hwfn->p_iscsi_info->lock);
+-	rc = qed_cxt_acquire_cid(p_hwfn, PROTOCOLID_ISCSI, &icid);
++	rc = qed_cxt_acquire_cid(p_hwfn, PROTOCOLID_TCP_ULP, &icid);
+ 	spin_unlock_bh(&p_hwfn->p_iscsi_info->lock);
+ 	if (rc)
+ 		return rc;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.c b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
+index 49783f365079..286e53927866 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_ll2.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
+@@ -1037,8 +1037,8 @@ static int qed_sp_ll2_tx_queue_start(struct qed_hwfn *p_hwfn,
+ 	case QED_LL2_TYPE_FCOE:
+ 		p_ramrod->conn_type = PROTOCOLID_FCOE;
+ 		break;
+-	case QED_LL2_TYPE_ISCSI:
+-		p_ramrod->conn_type = PROTOCOLID_ISCSI;
++	case QED_LL2_TYPE_TCP_ULP:
++		p_ramrod->conn_type = PROTOCOLID_TCP_ULP;
+ 		break;
+ 	case QED_LL2_TYPE_ROCE:
+ 		p_ramrod->conn_type = PROTOCOLID_ROCE;
+@@ -1048,7 +1048,7 @@ static int qed_sp_ll2_tx_queue_start(struct qed_hwfn *p_hwfn,
+ 		break;
+ 	case QED_LL2_TYPE_OOO:
+ 		if (p_hwfn->hw_info.personality == QED_PCI_ISCSI)
+-			p_ramrod->conn_type = PROTOCOLID_ISCSI;
++			p_ramrod->conn_type = PROTOCOLID_TCP_ULP;
+ 		else
+ 			p_ramrod->conn_type = PROTOCOLID_IWARP;
+ 		break;
+@@ -2442,7 +2442,7 @@ static int __qed_ll2_start(struct qed_hwfn *p_hwfn,
+ 		conn_type = QED_LL2_TYPE_FCOE;
+ 		break;
+ 	case QED_PCI_ISCSI:
+-		conn_type = QED_LL2_TYPE_ISCSI;
++		conn_type = QED_LL2_TYPE_TCP_ULP;
+ 		break;
+ 	case QED_PCI_ETH_ROCE:
+ 		conn_type = QED_LL2_TYPE_ROCE;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_ooo.c b/drivers/net/ethernet/qlogic/qed/qed_ooo.c
+index 88353aa404dc..599da0d7366b 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_ooo.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_ooo.c
+@@ -83,7 +83,7 @@ int qed_ooo_alloc(struct qed_hwfn *p_hwfn)
+ 
+ 	switch (p_hwfn->hw_info.personality) {
+ 	case QED_PCI_ISCSI:
+-		proto = PROTOCOLID_ISCSI;
++		proto = PROTOCOLID_TCP_ULP;
+ 		break;
+ 	case QED_PCI_ETH_RDMA:
+ 	case QED_PCI_ETH_IWARP:
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c b/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
+index aa71adcf31ee..ee7dc0a7da6c 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
+@@ -385,7 +385,7 @@ int qed_sp_pf_start(struct qed_hwfn *p_hwfn,
+ 		p_ramrod->personality = PERSONALITY_FCOE;
+ 		break;
+ 	case QED_PCI_ISCSI:
+-		p_ramrod->personality = PERSONALITY_ISCSI;
++		p_ramrod->personality = PERSONALITY_TCP_ULP;
+ 		break;
+ 	case QED_PCI_ETH_ROCE:
+ 	case QED_PCI_ETH_IWARP:
+diff --git a/include/linux/qed/common_hsi.h b/include/linux/qed/common_hsi.h
+index 977807e1be53..0a3807e927c5 100644
+--- a/include/linux/qed/common_hsi.h
++++ b/include/linux/qed/common_hsi.h
+@@ -702,7 +702,7 @@ enum mf_mode {
+ 
+ /* Per-protocol connection types */
+ enum protocol_type {
+-	PROTOCOLID_ISCSI,
++	PROTOCOLID_TCP_ULP,
+ 	PROTOCOLID_FCOE,
+ 	PROTOCOLID_ROCE,
+ 	PROTOCOLID_CORE,
+diff --git a/include/linux/qed/qed_ll2_if.h b/include/linux/qed/qed_ll2_if.h
+index ea273ba1c991..ff808d248883 100644
+--- a/include/linux/qed/qed_ll2_if.h
++++ b/include/linux/qed/qed_ll2_if.h
+@@ -18,7 +18,7 @@
+ 
+ enum qed_ll2_conn_type {
+ 	QED_LL2_TYPE_FCOE,
+-	QED_LL2_TYPE_ISCSI,
++	QED_LL2_TYPE_TCP_ULP,
+ 	QED_LL2_TYPE_TEST,
+ 	QED_LL2_TYPE_OOO,
+ 	QED_LL2_TYPE_RESERVED2,
 -- 
 2.22.0
 
