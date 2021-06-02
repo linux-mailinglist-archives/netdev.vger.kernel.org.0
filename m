@@ -2,77 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD726399198
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:26:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44EB3991E0
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 19:44:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230352AbhFBR16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 13:27:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43792 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229876AbhFBR1x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 13:27:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6928761CFF;
-        Wed,  2 Jun 2021 17:26:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622654769;
-        bh=4TdZWdT458pa+A30aTCE5yanC9JhHWs29JrnvdhvEsk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IhTSPvX1oFWdhWHvPOOW2s4vlB00wzTN1wE2o6r5VK+9bObXTr3LC66LEhfIOILVO
-         OnXKWk9q28SQcFDyatOCgQyYUvVKL2himBVOIot23PfZWFuvevCSHoynsZiObqRgAw
-         UrIBVx+ZKiQ8k57gL/06h7pv75aF5KJW3I4nAnhPcFfbb7VAb5ksGBZd0Z4WX0YpdQ
-         jle8X/mqbZQQsDxn+kOwfTuCM5pHOLsk0jT230v0xX9tId75Q3+AtpOw+74b1mnE3B
-         7mlYEE1W96v5qY6Z3urtZDUFNTejlhORoonbDlImg3Dch0yZ73lAs54uxlK/8M3oA7
-         9oBvlXvUhEVTw==
-Date:   Wed, 2 Jun 2021 18:26:04 +0100
-From:   Will Deacon <will@kernel.org>
-To:     "Xu, Yanfei" <yanfei.xu@windriver.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        zlim.lnx@gmail.com, catalin.marinas@arm.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] bpf: avoid unnecessary IPI in bpf_flush_icache
-Message-ID: <20210602172603.GB31957@willie-the-truck>
-References: <20210601150625.37419-1-yanfei.xu@windriver.com>
- <20210601150625.37419-2-yanfei.xu@windriver.com>
- <56cc1e25-25c3-a3da-64e3-8a1c539d685b@iogearbox.net>
- <20210601174114.GA29130@willie-the-truck>
- <7637dcdf-12b4-2861-3c76-f8a8e240a05e@windriver.com>
+        id S230341AbhFBRqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 13:46:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23964 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229574AbhFBRqP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 13:46:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622655872;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Y62Jwe0lWGjkkhREiWukC1W0Cl1ntAjQYPKkQTwBGl0=;
+        b=TjM5KwrAQbZT36fHU9RyTNdk8h9khyyDug1lT+e6zNIclDtViiswhsjCWALSzqpKA+yzfW
+        GjUD1QBnJ5D51fNXuQYs52+8LQaq2jFAMlzh4QeiWg1Yq50N+dKPqDVQocASwaUIsZ3Obw
+        jVI3+Js5gAZqRtLmIjRti8c/VBdUKq4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-467-HLtX85rBMTmXffDUKZi-1A-1; Wed, 02 Jun 2021 13:44:30 -0400
+X-MC-Unique: HLtX85rBMTmXffDUKZi-1A-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7D280801817;
+        Wed,  2 Jun 2021 17:44:28 +0000 (UTC)
+Received: from ymir.virt.lab.eng.bos.redhat.com (virtlab420.virt.lab.eng.bos.redhat.com [10.19.152.148])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F032C5C277;
+        Wed,  2 Jun 2021 17:44:26 +0000 (UTC)
+From:   jmaloy@redhat.com
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     tipc-discussion@lists.sourceforge.net,
+        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
+        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
+        xinl@redhat.com, ying.xue@windriver.com,
+        parthasarathy.bhuvaragan@gmail.com
+Subject: [net-next v2 0/3] tipc: some small cleanups
+Date:   Wed,  2 Jun 2021 13:44:23 -0400
+Message-Id: <20210602174426.870536-1-jmaloy@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7637dcdf-12b4-2861-3c76-f8a8e240a05e@windriver.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 07:26:03PM +0800, Xu, Yanfei wrote:
-> 
-> 
-> On 6/2/21 1:41 AM, Will Deacon wrote:
-> > [Please note: This e-mail is from an EXTERNAL e-mail address]
-> > 
-> > On Tue, Jun 01, 2021 at 07:20:04PM +0200, Daniel Borkmann wrote:
-> > > On 6/1/21 5:06 PM, Yanfei Xu wrote:
-> > > > It's no need to trigger IPI for keeping pipeline fresh in bpf case.
-> > > 
-> > > This needs a more concrete explanation/analysis on "why it is safe" to do so
-> > > rather than just saying that it is not needed.
-> > 
-> > Agreed. You need to show how the executing thread ends up going through a
-> > context synchronizing operation before jumping to the generated code if
-> > the IPI here is removed.
-> 
-> This patch came out with I looked through ftrace codes. Ftrace modify
-> the text code and don't send IPI in aarch64_insn_patch_text_nosync(). I
-> mistakenly thought the bpf is same with ftrace.
-> 
-> But now I'm still not sure why the ftrace don't need the IPI to go
-> through context synchronizing, maybe the worst situation is omit a
-> tracing event?
+From: Jon Maloy <jmaloy@redhat.com>
 
-I think ftrace handles this itself via ftrace_sync_ipi, no?
+We make some minor code cleanups and improvements.
 
-Will
+---
+v2: Changed value of TIPC_ANY_SCOPE macro in patch #3
+    to avoid compiler warning
+
+Jon Maloy (3):
+  tipc: eliminate redundant fields in struct tipc_sock
+  tipc: refactor function tipc_sk_anc_data_recv()
+  tipc: simplify handling of lookup scope during multicast message
+    reception
+
+ net/tipc/name_table.c |   6 +-
+ net/tipc/name_table.h |   4 +-
+ net/tipc/socket.c     | 156 +++++++++++++++++++-----------------------
+ 3 files changed, 77 insertions(+), 89 deletions(-)
+
+-- 
+2.31.1
+
