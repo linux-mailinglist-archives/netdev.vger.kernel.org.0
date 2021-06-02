@@ -2,63 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56AB339811B
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 08:25:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0505E39815E
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 08:47:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231327AbhFBG1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 02:27:23 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:3331 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231336AbhFBG1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 02:27:22 -0400
-Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FvzRp5RnZz1BG39;
-        Wed,  2 Jun 2021 14:20:54 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeme760-chm.china.huawei.com (10.3.19.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Wed, 2 Jun 2021 14:25:35 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <bcm-kernel-feedback-list@broadcom.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <opendmb@gmail.com>, <f.fainelli@gmail.com>,
-        <linux@armlinux.org.uk>, Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] net: mdio: Fix a typo
-Date:   Wed, 2 Jun 2021 14:39:14 +0800
-Message-ID: <20210602063914.89177-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S229949AbhFBGtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 02:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229841AbhFBGtH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 02:49:07 -0400
+Received: from dvalin.narfation.org (dvalin.narfation.org [IPv6:2a00:17d8:100::8b1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B4EC061574
+        for <netdev@vger.kernel.org>; Tue,  1 Jun 2021 23:47:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1622616441;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BB+iaYp4LyFwJ9jGzQ7cmHxv8GHima8n/NGSOQHI0s4=;
+        b=gT355vjzgjUhPMYzSmsu52NzowUci9aReYxeuOdY53rumwmwnIlHmFV7zxbp3L0MO13Xvx
+        yFv+9vinBKDGbb3ceW2yLaxvBhOSSEmFuSVFE/AVpOu47BlATc3eeycsnJL5L5o8KeOsxi
+        JHOnvRPq/Ro84nxder7/568C8piQF5c=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        b.a.t.m.a.n@lists.open-mesh.org
+Subject: Re: [PATCH net-next] batman-adv: Fix spelling mistakes
+Date:   Wed, 02 Jun 2021 08:47:18 +0200
+Message-ID: <48077100.4opSpZgCWW@ripper>
+In-Reply-To: <20210602065603.106030-1-zhengyongjun3@huawei.com>
+References: <20210602065603.106030-1-zhengyongjun3@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="nextPart35456750.oCVJAORbYE"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hz  ==> hz
+--nextPart35456750.oCVJAORbYE
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Sven Eckelmann <sven@narfation.org>
+To: mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc, davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>, b.a.t.m.a.n@lists.open-mesh.org
+Subject: Re: [PATCH net-next] batman-adv: Fix spelling mistakes
+Date: Wed, 02 Jun 2021 08:47:18 +0200
+Message-ID: <48077100.4opSpZgCWW@ripper>
+In-Reply-To: <20210602065603.106030-1-zhengyongjun3@huawei.com>
+References: <20210602065603.106030-1-zhengyongjun3@huawei.com>
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/net/mdio/mdio-bcm-unimac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wednesday, 2 June 2021 08:56:03 CEST Zheng Yongjun wrote:
+> Fix some spelling mistakes in comments:
+> containg  ==> containing
+> dont  ==> don't
+> datas  ==> data
+> brodcast  ==> broadcast
+> 
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+> ---
+>  net/batman-adv/bridge_loop_avoidance.c | 4 ++--
+>  net/batman-adv/hard-interface.c        | 2 +-
+>  net/batman-adv/hash.h                  | 2 +-
+>  3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-bcm-unimac.c b/drivers/net/mdio/mdio-bcm-unimac.c
-index 63348716b426..bfc9be23c973 100644
---- a/drivers/net/mdio/mdio-bcm-unimac.c
-+++ b/drivers/net/mdio/mdio-bcm-unimac.c
-@@ -203,7 +203,7 @@ static void unimac_mdio_clk_set(struct unimac_mdio_priv *priv)
- 		return;
- 	}
- 
--	/* The MDIO clock is the reference clock (typically 250MHz) divided by
-+	/* The MDIO clock is the reference clock (typically 250Mhz) divided by
- 	 * 2 x (MDIO_CLK_DIV + 1)
- 	 */
- 	reg = unimac_mdio_readl(priv, MDIO_CFG);
--- 
-2.25.1
+
+You forgot to send it to the B.A.T.M.A.N. mailing list. And it therefore 
+didn't appear in our patchwork. And you send stuff from the future - which is 
+rather odd.
+
+Applied anyway.
+
+Thanks,
+	Sven
+
+--nextPart35456750.oCVJAORbYE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmC3KXYACgkQXYcKB8Em
+e0YXng//aLzrW36XvD5wdUTS/jlzrlxggP0i3YehwpVFOiSon6nDcxoAjjMij3qa
+8kJKrY1cjoVgQe93P6fc0nYb+UWwwbKEE9fOHw/FYIa6qU9XwfWN3MjbVAy0HEfr
+0OyBtx4o5MFA34uTCtxaE4TFXIn6am5P2U4u7rGLn9LejE1e0lfpWRUf3Wam/8Hg
+Mm681yStajB159NrEjVa6YnagZhqNI47U7mId+ZfAGjeHaGQX16p6NUD654+CtPW
+1P56KmH9p5JmKu1bbeUxXTaEq199I2GTsZUGZli6M6dcWaqcr2ILj6RV2G1y9vEK
+vltKRHnRo3vUlbONLgiCc6TwX+CZwf0D9fn4y5Fbhpwg+SKlMeTYoIsH36Q/VkQk
+kX+/iYT6WU+uQAnVcnYz9rAU6VIpkY2Gfnv9oDv5M1I653ySRY7x+5BnQBnUMCp4
+TYfojqC3Yd5U/RbT5giP+qh2yB88cBq26oxUDVEPs6VMQegcju3RBnh85rT/Iqav
+7pdWoLJicoB9ycbf8QFiwj8UcvEdXQKXdblkmCExuqG2BN2ln5G8GBK5PqOUenuJ
+3aozntk641U3swH54hjFP+c4ZyxVASGILANTHJk+HoM0x4aGQKABPGacO39V9oK9
+SkgMX8p285zxHwXICiCZGCt664FYBz9bUk1+Q9uc8bxj9mlSU/0=
+=+Ayg
+-----END PGP SIGNATURE-----
+
+--nextPart35456750.oCVJAORbYE--
+
+
 
