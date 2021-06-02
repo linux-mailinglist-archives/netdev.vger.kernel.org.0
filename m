@@ -2,61 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADA53398B1C
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 15:53:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68DCF398B50
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:01:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbhFBNzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 09:55:06 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3515 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbhFBNzE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 09:55:04 -0400
-Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fw9Qg24GTzYnFd;
-        Wed,  2 Jun 2021 21:50:35 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeme760-chm.china.huawei.com (10.3.19.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Wed, 2 Jun 2021 21:53:18 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] fib: Return the correct errno code
-Date:   Wed, 2 Jun 2021 22:06:58 +0800
-Message-ID: <20210602140658.486553-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S230138AbhFBODU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 10:03:20 -0400
+Received: from mail.efficios.com ([167.114.26.124]:36030 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229667AbhFBODO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 10:03:14 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 7AB6F302B32;
+        Wed,  2 Jun 2021 10:01:30 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id sk-FLnSPp3e6; Wed,  2 Jun 2021 10:01:29 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 72BA4302C27;
+        Wed,  2 Jun 2021 10:01:29 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 72BA4302C27
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1622642489;
+        bh=ildkMTk0vYSZK39yeI6C0NluRoGntZ1yA5EuqMA4g8k=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=L/w8o2fJN3kmP73a2vMCtFWwO5YPeIOe9ZmTydEyFWmyEaOlcyFybIdRWoe8hmy34
+         bHqWF5FDpTTdDr9jNR/6ossgQUg8/lo1uSvmOEMQI+8PvcMWXQjFHlESOaJErckXTB
+         oIuIBEBiJQ9FvKa8qYSLXZLHpWnciBfTelSzOSmbORnUr52zBvJXfWQpx94UqNlbmY
+         Y6yF4/4xX5ToklNVtEYeJ+rmH/TXxAzWx0JJ6vQD3FMua0nJmkIgpXS7yGiTDiDM65
+         T6y687zdG38LDyLZ4Slpb06ysgcGN+OXRe4bfPmRBCeqmhnbNwAWPu5258Lpn1Ta7C
+         10t9Cfwl8X+bQ==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id PBfpDWQ1MDaF; Wed,  2 Jun 2021 10:01:29 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 44D173029E9;
+        Wed,  2 Jun 2021 10:01:29 -0400 (EDT)
+Date:   Wed, 2 Jun 2021 10:01:29 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        rostedt <rostedt@goodmis.org>, Ben Segall <bsegall@google.com>,
+        Mel Gorman <mgorman@suse.de>, bristot <bristot@redhat.com>,
+        Borislav Petkov <bp@alien8.de>, x86 <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Jens Axboe <axboe@kernel.dk>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        dm-devel <dm-devel@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        acme <acme@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        paulmck <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        "Joel Fernandes, Google" <joel@joelfernandes.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-usb <linux-usb@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        cgroups <cgroups@vger.kernel.org>,
+        kgdb-bugreport <kgdb-bugreport@lists.sourceforge.net>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        linux-pm <linux-pm@vger.kernel.org>, rcu <rcu@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>, KVM list <kvm@vger.kernel.org>
+Message-ID: <1731339790.5856.1622642489232.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20210602133040.461908001@infradead.org>
+References: <20210602131225.336600299@infradead.org> <20210602133040.461908001@infradead.org>
+Subject: Re: [PATCH 4/6] sched: Add get_current_state()
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF88 (Linux)/8.8.15_GA_4026)
+Thread-Topic: sched: Add get_current_state()
+Thread-Index: E1ntXBdpTHBBRaSFxkm2wa7EtTrnhg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When kalloc or kmemdup failed, should return ENOMEM rather than ENOBUF.
+----- On Jun 2, 2021, at 9:12 AM, Peter Zijlstra peterz@infradead.org wrote:
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- net/core/fib_rules.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Remove yet another few p->state accesses.
 
-diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
-index cd80ffed6d26..a9f937975080 100644
---- a/net/core/fib_rules.c
-+++ b/net/core/fib_rules.c
-@@ -1168,7 +1168,7 @@ static void notify_rule_change(int event, struct fib_rule *rule,
- {
- 	struct net *net;
- 	struct sk_buff *skb;
--	int err = -ENOBUFS;
-+	int err = -ENOMEM;
- 
- 	net = ops->fro_net;
- 	skb = nlmsg_new(fib_rule_nlmsg_size(ops, rule), GFP_KERNEL);
+[...]
+
+> 
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -212,6 +212,8 @@ struct task_group;
+> 
+> #endif
+> 
+> +#define get_current_state()	READ_ONCE(current->state)
+
+Why use a macro rather than a static inline here ?
+
+Thanks,
+
+Mathieu
+
 -- 
-2.25.1
-
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
