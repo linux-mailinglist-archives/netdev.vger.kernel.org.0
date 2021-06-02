@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F5AA398BDC
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:09:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47AE2398BF7
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 16:11:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231928AbhFBOKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 10:10:42 -0400
-Received: from mail.efficios.com ([167.114.26.124]:37898 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231589AbhFBOIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 10:08:47 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 03FAA302C40;
-        Wed,  2 Jun 2021 10:07:03 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 3QMH2CT0qLws; Wed,  2 Jun 2021 10:06:58 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 79BFA302868;
-        Wed,  2 Jun 2021 10:06:58 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 79BFA302868
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1622642818;
-        bh=GwH0GdcKUFmXjwdSc5PC6qayNfPYEbeSfo7iFd8LGlc=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=IzY7rj9bG67qO5MhQCvNkTZ6NmKLl+j7CGAPSRZx3M3VXN4GE9cW/xiqKbb0lMrag
-         set1cTsKpmrC3scRLhvadBwRFL0ucET03FgN+RYhAetywU7SMjz4Jzot43Al7b42/w
-         wRf/j9ODOuM7qSvP03brlcfNA9m+dmMrwW5plmJFJwkQAs2hFyj/Dx0kstoADKFw0s
-         PShGdCuiX9KikFibuSZcET8LNklvf4YN8WFNh0QHjOaoJ5JxioNYTizyl5WrJqstOz
-         gIo6cZK3qsMar7jMzCrxaFOM5us8879gVttQyPgo4y+VuhrGp7sB3x4o9l+rwPGYzG
-         yQHn8ljzHTpmw==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 6Uyf8mgW0DhK; Wed,  2 Jun 2021 10:06:58 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 548823029F3;
-        Wed,  2 Jun 2021 10:06:58 -0400 (EDT)
-Date:   Wed, 2 Jun 2021 10:06:58 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Peter Zijlstra <peterz@infradead.org>
+        id S231157AbhFBONU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 10:13:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34826 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231238AbhFBOM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 10:12:58 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA53C061348;
+        Wed,  2 Jun 2021 07:10:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Sziljs0Kulfo1/57Liy6kTpQt/mrzjVM95lhyl4pzA4=; b=di9dQnw7YWomw7sRDOsQo7PUMD
+        TJInYkPIDn+/QK90Sos0c8Rezc7X8ImBRnaDqxkesZTzU3zBWgy4G6U4xXqLz09/hpYATAA8slRuH
+        z5QgLBkbaBJf/nxSrsbFRF31HH3ARg56XBhL22G9hLm1sHL0quLpRuKbqF/t2jaxsG2aoKnSpz0J6
+        JwRCyVRR/4oZYywGxUDYGOan1B+cIaFO1YcfQl0rAlpcHTiWKkj2/IJRMvkKXL0znHPsw7bjE4bnM
+        9Z7WPFFotrWHc/x+VwwKdH54p9rhGCj4A2ocBzrxy0h4dJrMU7v/Kb9Xu0TyOL8TyMumyZPfiWVKG
+        NNissGXA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1loRZl-00BBIr-Tt; Wed, 02 Jun 2021 14:10:35 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2A693300299;
+        Wed,  2 Jun 2021 16:10:29 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 10B2A20223DA5; Wed,  2 Jun 2021 16:10:29 +0200 (CEST)
+Date:   Wed, 2 Jun 2021 16:10:29 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>,
         Juri Lelli <juri.lelli@redhat.com>,
@@ -51,8 +48,7 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Borislav Petkov <bp@alien8.de>, x86 <x86@kernel.org>,
         "H. Peter Anvin" <hpa@zytor.com>, Jens Axboe <axboe@kernel.dk>,
         Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        dm-devel <dm-devel@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Felipe Balbi <balbi@kernel.org>,
@@ -82,94 +78,56 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Andrew Morton <akpm@linux-foundation.org>,
         Paolo Bonzini <pbonzini@redhat.com>,
         linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-usb <linux-usb@vger.kernel.org>,
+        linux-block@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        linux-usb@vger.kernel.org,
         linux-fsdevel <linux-fsdevel@vger.kernel.org>,
         cgroups <cgroups@vger.kernel.org>,
-        kgdb-bugreport <kgdb-bugreport@lists.sourceforge.net>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        linux-pm <linux-pm@vger.kernel.org>, rcu <rcu@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, KVM list <kvm@vger.kernel.org>
-Message-ID: <896642516.5866.1622642818225.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20210602133040.587042016@infradead.org>
-References: <20210602131225.336600299@infradead.org> <20210602133040.587042016@infradead.org>
-Subject: Re: [PATCH 6/6] sched: Change task_struct::state
+        kgdb-bugreport@lists.sourceforge.net,
+        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
+        rcu <rcu@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
+        KVM list <kvm@vger.kernel.org>
+Subject: Re: [PATCH 3/6] sched,perf,kvm: Fix preemption condition
+Message-ID: <YLeRVQbXt2hCiO8f@hirez.programming.kicks-ass.net>
+References: <20210602131225.336600299@infradead.org>
+ <20210602133040.398289363@infradead.org>
+ <1873020549.5854.1622642347895.JavaMail.zimbra@efficios.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF88 (Linux)/8.8.15_GA_4026)
-Thread-Topic: sched: Change task_struct::state
-Thread-Index: DzXPoSkxk24gPNa4OEu5k5Jl7651YA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1873020549.5854.1622642347895.JavaMail.zimbra@efficios.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On Jun 2, 2021, at 9:12 AM, Peter Zijlstra peterz@infradead.org wrote:
+On Wed, Jun 02, 2021 at 09:59:07AM -0400, Mathieu Desnoyers wrote:
+> ----- On Jun 2, 2021, at 9:12 AM, Peter Zijlstra peterz@infradead.org wrote:
+> 
+> > When ran from the sched-out path (preempt_notifier or perf_event),
+> > p->state is irrelevant to determine preemption. You can get preempted
+> > with !task_is_running() just fine.
+> > 
+> > The right indicator for preemption is if the task is still on the
+> > runqueue in the sched-out path.
+> > 
+> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > ---
+> > kernel/events/core.c |    7 +++----
+> > virt/kvm/kvm_main.c  |    2 +-
+> > 2 files changed, 4 insertions(+), 5 deletions(-)
+> > 
+> > --- a/kernel/events/core.c
+> > +++ b/kernel/events/core.c
+> > @@ -8568,13 +8568,12 @@ static void perf_event_switch(struct tas
+> > 		},
+> > 	};
+> > 
+> > -	if (!sched_in && task->state == TASK_RUNNING)
+> > +	if (!sched_in && current->on_rq) {
+> 
+> This changes from checking task->state to current->on_rq, but this change
+> from "task" to "current" is not described in the commit message, which is odd.
+> 
+> Are we really sure that task == current here ?
 
-> Change the type and name of task_struct::state. Drop the volatile and
-> shrink it to an 'unsigned int'. Rename it in order to find all uses
-> such that we can use READ_ONCE/WRITE_ONCE as appropriate.
-> 
-[...]
-> 
-> --- a/block/blk-mq.c
-> +++ b/block/blk-mq.c
-
-[...]
-> @@ -1559,7 +1560,8 @@ static int fill_psinfo(struct elf_prpsin
-> 	psinfo->pr_pgrp = task_pgrp_vnr(p);
-> 	psinfo->pr_sid = task_session_vnr(p);
-> 
-> -	i = p->state ? ffz(~p->state) + 1 : 0;
-> +	state = READ_ONCE(p->__state);
-> +	i = state ? ffz(~state) + 1 : 0;
-> 	psinfo->pr_state = i;
-> 	psinfo->pr_sname = (i > 5) ? '.' : "RSDTZW"[i];
-> 	psinfo->pr_zomb = psinfo->pr_sname == 'Z';
-
-[...]
-
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -113,13 +113,13 @@ struct task_group;
-> 					 __TASK_TRACED | EXIT_DEAD | EXIT_ZOMBIE | \
-> 					 TASK_PARKED)
-> 
-> -#define task_is_running(task)		(READ_ONCE((task)->state) == TASK_RUNNING)
-> +#define task_is_running(task)		(READ_ONCE((task)->__state) == TASK_RUNNING)
-> 
-> -#define task_is_traced(task)		((task->state & __TASK_TRACED) != 0)
-> +#define task_is_traced(task)		((READ_ONCE(task->__state) & __TASK_TRACED) != 0)
-> 
-> -#define task_is_stopped(task)		((task->state & __TASK_STOPPED) != 0)
-> +#define task_is_stopped(task)		((READ_ONCE(task->__state) & __TASK_STOPPED) !=
-> 0)
-> 
-> -#define task_is_stopped_or_traced(task)	((task->state & (__TASK_STOPPED |
-> __TASK_TRACED)) != 0)
-> +#define task_is_stopped_or_traced(task)	((READ_ONCE(task->__state) &
-> (__TASK_STOPPED | __TASK_TRACED)) != 0)
-> 
-> #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
-> 
-> @@ -134,14 +134,14 @@ struct task_group;
-> 	do {							\
-> 		WARN_ON_ONCE(is_special_task_state(state_value));\
-> 		current->task_state_change = _THIS_IP_;		\
-> -		current->state = (state_value);			\
-> +		WRITE_ONCE(current->__state, (state_value));	\
-> 	} while (0)
-
-Why not introduce set_task_state(p) and get_task_state(p) rather than sprinkle
-READ_ONCE() and WRITE_ONCE() all over the kernel ?
-
-Thanks,
-
-Mathieu
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+Yeah, @task == @prev == current at this point, but yes, not sure why I
+changed that... lemme change that back to task.
