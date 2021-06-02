@@ -2,86 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C13483987B7
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 13:10:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DFEC3987E4
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 13:19:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbhFBLMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 07:12:03 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:52655 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbhFBLMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 07:12:02 -0400
-Received: from mail-ed1-f72.google.com ([209.85.208.72])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1loOlO-0004Tu-Am
-        for netdev@vger.kernel.org; Wed, 02 Jun 2021 11:10:18 +0000
-Received: by mail-ed1-f72.google.com with SMTP id v18-20020a0564023492b029038d5ad7c8a8so1189086edc.11
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 04:10:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GM346qMDm5SkBVsnz+0MTRWteUg3MTSMm7l18tLMkIc=;
-        b=DmU47cOmK6ypUDUPaFnqbzKr+W8B+LI4+fWVzuu0je8+g/5WoGzJH1VG7GjpnnWBMA
-         Ck3Pi3rXoEtN/+QGzVlFMVbT3eUNg666UiqGxAE59ZlLOq/D09b8bUPBBtRl4BK6iHWV
-         Gmesx2FoCjkXlSKKbLG9KEPKQLZLorDZsgXAJD8cJR1wvpPaVB93GHM6G9DxAYl1VVWh
-         4L5nwUMDqbparXyOHPPfFL/mMI78EbahAy4LjxNnxB6Sqo9MuiyU+AbXj2ePMlpg62rL
-         zwZS9x27vVlz5JuTAb2bqY0xbW7F7GVJkWWUqPCh8bFLnmHi1BVgDHJk+fObK1AmprPx
-         t+Vw==
-X-Gm-Message-State: AOAM532gJUzyZ8e70gzAtB0VzSIu5sOafTsxZEpchGRiatLWJni9Qs7a
-        gzaPpsH5YqjKt6TLvqcNwbt5ujiADfFimGArHU+h1avep8LmDefQcd1FyaelCjicrzxGJv420V5
-        CMx5UdzufSxDYDlqMjI2Pk6UGEcQPDL3LTg==
-X-Received: by 2002:a50:fd13:: with SMTP id i19mr13052915eds.280.1622632218081;
-        Wed, 02 Jun 2021 04:10:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw06pkyMIjDmtQIx52ngcNxG9a4Pd49N7BCx77O2/Snm6f9UtSwWihRBF+HkFpauz9Ft3wqoQ==
-X-Received: by 2002:a50:fd13:: with SMTP id i19mr13052906eds.280.1622632217929;
-        Wed, 02 Jun 2021 04:10:17 -0700 (PDT)
-Received: from [192.168.1.115] (xdsl-188-155-185-9.adslplus.ch. [188.155.185.9])
-        by smtp.gmail.com with ESMTPSA id d24sm1142127edp.7.2021.06.02.04.10.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Jun 2021 04:10:17 -0700 (PDT)
-Subject: Re: [PATCH] nfc: mrvl: remove useless "continue" at end of loop
-To:     Joe Perches <joe@perches.com>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210601160713.312622-1-krzysztof.kozlowski@canonical.com>
- <5780056e09dbbd285d470a313939e5d3cc1a0c3e.camel@perches.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <c3641235-6cd0-99dc-2e4b-c61875bdb52c@canonical.com>
-Date:   Wed, 2 Jun 2021 13:10:16 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S232019AbhFBLUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 07:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52094 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230343AbhFBLUv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 07:20:51 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F442C061574;
+        Wed,  2 Jun 2021 04:19:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=HDweTCl+XEUHn4S+CyKOejrxpiweHcZr8IDGuVHWUQs=; b=Tcy9hOUYXzaNYvb838lLrK5nCc
+        5O8nyC5DFTersZ93EfzI5GQE21FOEITswYvUc1bzoXzAdmLrF9tATY/XDeKZrK6+Y7uDTo5SwI51V
+        FR7b3yUH8ZgB9lTGbgNiLOmPV9WaVtGCr2o1NZ6zmpnEnirvy/vLeqagzG8OwvRtkfqctkQqmBwLF
+        6eHNPe1uOWKY0CLOQJHqsjx2ew98SABPi+1IhMLEXUA+Fsr57UhENhx7uAjt2qKyo2SfVW15W8XR7
+        BMcLuj4i65zASAENdaHGegVz1dnCwLR8NxGcvdydOTuvbYsXAOwarYwENq71hDSajiOaROsMPsWXk
+        bTgtZoLg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1loOsx-00B1wM-Qt; Wed, 02 Jun 2021 11:18:13 +0000
+Date:   Wed, 2 Jun 2021 12:18:07 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     syzbot <syzbot+f7204dcf3df4bb4ce42c@syzkaller.appspotmail.com>
+Cc:     anmol.karan123@gmail.com, bjorn.andersson@linaro.org,
+        coreteam@netfilter.org, davem@davemloft.net, dsahern@kernel.org,
+        ebiggers@google.com, ebiggers@kernel.org, eric.dumazet@gmail.com,
+        fw@strlen.de, kadlec@netfilter.org, kuba@kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        necip@google.com, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Subject: Re: [syzbot] WARNING in idr_get_next
+Message-ID: <YLdo77SkmGLgPUBi@casper.infradead.org>
+References: <000000000000c98d7205ae300144@google.com>
+ <0000000000003e409f05c3c5f190@google.com>
 MIME-Version: 1.0
-In-Reply-To: <5780056e09dbbd285d470a313939e5d3cc1a0c3e.camel@perches.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000003e409f05c3c5f190@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/06/2021 18:30, Joe Perches wrote:
-> On Tue, 2021-06-01 at 18:07 +0200, Krzysztof Kozlowski wrote:
->> The "continue" statement at the end of a for loop does not have an
->> effect.
-> []
->> diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
-> []
->> @@ -325,7 +325,6 @@ static int nfcmrvl_probe(struct usb_interface *intf,
->>  		if (!drv_data->bulk_rx_ep &&
->>  		    usb_endpoint_is_bulk_in(ep_desc)) {
->>  			drv_data->bulk_rx_ep = ep_desc;
->> -			continue;
->>  		}
->>  	}
+#syz fixed qrtr: Convert qrtr_ports from IDR to XArray
+
+On Wed, Jun 02, 2021 at 03:30:06AM -0700, syzbot wrote:
+> syzbot suspects this issue was fixed by commit:
 > 
-> I think this code would be clearer with an if/else instead of
-> multiple continues.
+> commit 43016d02cf6e46edfc4696452251d34bba0c0435
+> Author: Florian Westphal <fw@strlen.de>
+> Date:   Mon May 3 11:51:15 2021 +0000
 
-Makes sense. I'll send a v2.
-
-
-Best regards,
-Krzysztof
+Your bisect went astray.
