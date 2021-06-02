@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB1BF398FDC
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 18:22:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D3D3398FDB
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 18:22:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbhFBQXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 12:23:48 -0400
-Received: from mail-ej1-f49.google.com ([209.85.218.49]:44846 "EHLO
-        mail-ej1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbhFBQXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 12:23:40 -0400
-Received: by mail-ej1-f49.google.com with SMTP id c10so4662666eja.11
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 09:21:41 -0700 (PDT)
+        id S230035AbhFBQXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 12:23:43 -0400
+Received: from mail-ed1-f52.google.com ([209.85.208.52]:45713 "EHLO
+        mail-ed1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230081AbhFBQXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 12:23:37 -0400
+Received: by mail-ed1-f52.google.com with SMTP id dg27so3584659edb.12
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 09:21:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=InEy5/81GRSeKeQLmbl3JxFBwNC56Mf2ggNeB4hyCvg=;
-        b=qIlT/RIakNceShPJINUCMN81CDz548JJCWRZItng/Ekm/iEnqnHY8TnX8kP5pj7DXA
-         Go0xpJFP1e4QZcf0QGetwRE2zmpg+LwGnxIoL+hIqOhq7xd/McR5akTtWBFQpVTz6p4E
-         FHI64pZLwYBlzR+qMGGLsnnwgbGRLuPmH3R8SP9KthsmyjmgcWIkqpewYFPchGVX4hDe
-         Mu4KTYxPs+wr1QIMSf1/jz3QrLWklhsMKvu6X9bYyazDv871UqMta4U3xYc9a/Tabwt6
-         QgNTCIpd2w47I8rGBaGb4nqfaHeFMKwHMLAzoazs7BXW0IxQRiqrlXIw5J3J888hgXq8
-         CGcg==
+        bh=zODqhf+CDFdGnQOAOvwJ5OGF2rDKwwZmXn4xipM6OwQ=;
+        b=GEdJikQINzr5qIJzL38Ox6xVOHNxghZSAe/dCYarYw5tKbTVfY0MQGYO4iQoPv8o18
+         N6+/FFtcS3IjLclyeavtYNmUSsmuDym3KxtfaYF2ZhnxW4w1LhUz83wFzAC5IsYN0+lc
+         1yL833wiExCaNwxW0S7XgDnw8cMnoBbH9XPhPcipV2C7o2GJN23jpnHmZxeR/Ud4awhe
+         jW8Rq8Fy8Zj6N06M6uiEqY/poJYpQteLJ0qFRliaYxn6iqRk9XtcqW7Osxmkv2gEALnJ
+         7iYO16reImIGR2Q0jhps+hQhPJ5ffaSNGj6f80dezgxz4zXRSqSZwW9QmpoikUFFjXtr
+         4m5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=InEy5/81GRSeKeQLmbl3JxFBwNC56Mf2ggNeB4hyCvg=;
-        b=uPv/g17o1WQMFGHIrJCU7MyE7SUUa7TRM/BN8VA0oFL88WlWekhqkjoI1jjSn7k6fr
-         1rCZlZB9Mz6GXjsQdFMVPZbWTG3eXwjDW9uLa6jUW4eoL711adKkfMPuEuyoJExWvkbl
-         kdWxea5pnlPZjbstGH53/CxDxYatJmwUGglGcn/Aef6QYa/+hy277ID9p30CBEPzdXSf
-         DI6svrKfFpt2YZm62QaiL2K6BZDPM+DyBrDxorWLv6mAdJX9eEDjQPzH7/uD6LTM0PY4
-         f6yUNsrlAlPoIhRfTxwrCtoR10o2tnh2Xek39V6ZEiMeD+/LxNJULLTZ/HH5taSHONa1
-         DpgQ==
-X-Gm-Message-State: AOAM531/oPPJwnziixGN91h7N052xHphcaRvy9LS4THvALJF4vJP2RLx
-        +H+m0JaI5bOW4UgxHfPfFVY=
-X-Google-Smtp-Source: ABdhPJyDRFMTham/AX0crT5WaUd9esixo9ZDUjkuycQ0o/p35jj/lO9XKCJEpzi7CW6bl7AFVzhseA==
-X-Received: by 2002:a17:906:4d04:: with SMTP id r4mr16476496eju.76.1622650840440;
-        Wed, 02 Jun 2021 09:20:40 -0700 (PDT)
+        bh=zODqhf+CDFdGnQOAOvwJ5OGF2rDKwwZmXn4xipM6OwQ=;
+        b=BVd6t+XmCi5oomiEKNkRN0P/pCpSLcIcfhtOThZt/8ba7IsQuVbFZt51hsHrphRT2T
+         YlwfG9yRCyW9zyBk/bBWf6uF8y0aWKYqxGgo/ah9+e0thDw2Y5YJSonOOPI9Y/4t8I5/
+         Refh/riNKzHwR7nlYO8fRMR8NZfvNRfq+78kkt46Ktm4BmsVzvk64ni2U7O62dpHreO7
+         fdURcyFqqZjXCMyXEqKacRGzwGKjbmGTnv1FLEZPHDJWJzwTIPtAxPymnF1FpyrhJBTR
+         MOmMInKn1n+VfsL0qI1rRMD3Hcw0gw5BhzpX/0M6D48xKyZ0ay35Oms/gNAAJ+pxmpzw
+         AzSA==
+X-Gm-Message-State: AOAM530fibJOB1pX30AQzOiCY3TMaZTImC6NL6D9WRG0ooj8bJt9JX7h
+        bC+l7G8Jgo8uN1QfMsp6eK0=
+X-Google-Smtp-Source: ABdhPJyn0sY0RUMDezmiIkVTqRu8peltFq3Gu9/euSgd6LTf7JjYlQqKMIw/p9Mc8mZpryxQAqFBsA==
+X-Received: by 2002:aa7:da94:: with SMTP id q20mr2314890eds.310.1622650841601;
+        Wed, 02 Jun 2021 09:20:41 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id m12sm228078edc.40.2021.06.02.09.20.39
+        by smtp.gmail.com with ESMTPSA id m12sm228078edc.40.2021.06.02.09.20.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 09:20:40 -0700 (PDT)
+        Wed, 02 Jun 2021 09:20:41 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -60,9 +60,9 @@ Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 7/9] net: pcs: xpcs: use mdiobus_c45_addr in xpcs_{read,write}
-Date:   Wed,  2 Jun 2021 19:20:17 +0300
-Message-Id: <20210602162019.2201925-8-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 8/9] net: pcs: xpcs: convert to mdio_device
+Date:   Wed,  2 Jun 2021 19:20:18 +0300
+Message-Id: <20210602162019.2201925-9-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210602162019.2201925-1-olteanv@gmail.com>
 References: <20210602162019.2201925-1-olteanv@gmail.com>
@@ -74,38 +74,288 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Use the dedicated helper for abstracting away how the clause 45 address
-is packed in reg_addr.
+Unify the 2 existing PCS drivers (lynx and xpcs) by doing a similar
+thing on probe, which is to have a *_create function that takes a
+struct mdio_device * given by the caller, and builds a private PCS
+structure around that.
+
+This changes stmmac to hold only a pointer to the xpcs, as opposed to
+the full structure. This will be used in the next patch when struct
+mdio_xpcs_ops is removed. Currently a pointer to struct mdio_xpcs_ops
+is used as a shorthand to determine whether the port has an XPCS or not.
+We can do the same now with the mdio_xpcs_args pointer.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2: none
+v1->v2: move this patch in front of the phylink_pcs_ops conversion so
+        that stmmac has a pointer to check against
 v2->v3: none
 
- drivers/net/pcs/pcs-xpcs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/common.h  |  2 +-
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |  2 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++--
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 39 ++++++++------
+ drivers/net/pcs/pcs-xpcs.c                    | 53 +++++++++++++++----
+ include/linux/pcs/pcs-xpcs.h                  |  7 +--
+ 6 files changed, 76 insertions(+), 37 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+index 619e3c0760d6..4bcd1d340766 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/common.h
++++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+@@ -504,7 +504,7 @@ struct mac_device_info {
+ 	const struct stmmac_tc_ops *tc;
+ 	const struct stmmac_mmc_ops *mmc;
+ 	const struct mdio_xpcs_ops *xpcs;
+-	struct mdio_xpcs_args xpcs_args;
++	struct mdio_xpcs_args *xpcs_args;
+ 	struct mii_regs mii;	/* MII register Addresses */
+ 	struct mac_link link;
+ 	void __iomem *pcsr;     /* vpointer to device CSRs */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index ba7d0f40723a..050576ee704d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -721,7 +721,7 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
+ 			    "Setting EEE tx-lpi is not supported\n");
+ 
+ 	if (priv->hw->xpcs) {
+-		ret = xpcs_config_eee(&priv->hw->xpcs_args,
++		ret = xpcs_config_eee(priv->hw->xpcs_args,
+ 				      priv->plat->mult_fact_100ns,
+ 				      edata->eee_enabled);
+ 		if (ret)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 9f72e4dd1457..426c8f891f5a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -997,7 +997,7 @@ static void stmmac_validate(struct phylink_config *config,
+ 
+ 	/* If PCS is supported, check which modes it supports. */
+ 	if (priv->hw->xpcs)
+-		xpcs_validate(&priv->hw->xpcs_args, supported, state);
++		xpcs_validate(priv->hw->xpcs_args, supported, state);
+ }
+ 
+ static void stmmac_mac_pcs_get_state(struct phylink_config *config,
+@@ -1006,7 +1006,7 @@ static void stmmac_mac_pcs_get_state(struct phylink_config *config,
+ 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
+ 
+ 	state->link = 0;
+-	stmmac_xpcs_get_state(priv, &priv->hw->xpcs_args, state);
++	stmmac_xpcs_get_state(priv, priv->hw->xpcs_args, state);
+ }
+ 
+ static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
+@@ -1014,7 +1014,7 @@ static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
+ {
+ 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
+ 
+-	stmmac_xpcs_config(priv, &priv->hw->xpcs_args, state);
++	stmmac_xpcs_config(priv, priv->hw->xpcs_args, state);
+ }
+ 
+ static void stmmac_mac_an_restart(struct phylink_config *config)
+@@ -1061,7 +1061,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+ 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
+ 	u32 ctrl;
+ 
+-	stmmac_xpcs_link_up(priv, &priv->hw->xpcs_args, speed, interface);
++	stmmac_xpcs_link_up(priv, priv->hw->xpcs_args, speed, interface);
+ 
+ 	ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
+ 	ctrl &= ~priv->hw->link.speed_mask;
+@@ -3652,7 +3652,7 @@ int stmmac_open(struct net_device *dev)
+ 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
+ 	    priv->hw->pcs != STMMAC_PCS_RTBI &&
+ 	    (!priv->hw->xpcs ||
+-	     xpcs_get_an_mode(&priv->hw->xpcs_args, mode) != DW_AN_C73)) {
++	     xpcs_get_an_mode(priv->hw->xpcs_args, mode) != DW_AN_C73)) {
+ 		ret = stmmac_init_phy(dev);
+ 		if (ret) {
+ 			netdev_err(priv->dev,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+index 56deb92a8430..9b4bf78d2eaa 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -510,25 +510,27 @@ int stmmac_mdio_register(struct net_device *ndev)
+ 	}
+ 
+ 	/* Try to probe the XPCS by scanning all addresses. */
+-	if (priv->hw->xpcs) {
+-		struct mdio_xpcs_args *xpcs = &priv->hw->xpcs_args;
+-		int ret, mode = priv->plat->phy_interface;
+-		max_addr = PHY_MAX_ADDR;
+-
+-		xpcs->bus = new_bus;
+-
+-		found = 0;
+-		for (addr = 0; addr < max_addr; addr++) {
+-			xpcs->addr = addr;
+-
+-			ret = xpcs_probe(xpcs, mode);
+-			if (!ret) {
+-				found = 1;
+-				break;
++	if (mdio_bus_data->has_xpcs) {
++		int mode = priv->plat->phy_interface;
++		struct mdio_device *mdiodev;
++		struct mdio_xpcs_args *xpcs;
++
++		for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
++			mdiodev = mdio_device_create(new_bus, addr);
++			if (IS_ERR(mdiodev))
++				continue;
++
++			xpcs = xpcs_create(mdiodev, mode);
++			if (IS_ERR_OR_NULL(xpcs)) {
++				mdio_device_free(mdiodev);
++				continue;
+ 			}
++
++			priv->hw->xpcs_args = xpcs;
++			break;
+ 		}
+ 
+-		if (!found && !mdio_node) {
++		if (!priv->hw->xpcs_args) {
+ 			dev_warn(dev, "No XPCS found\n");
+ 			err = -ENODEV;
+ 			goto no_xpcs_found;
+@@ -560,6 +562,11 @@ int stmmac_mdio_unregister(struct net_device *ndev)
+ 	if (!priv->mii)
+ 		return 0;
+ 
++	if (priv->hw->xpcs) {
++		mdio_device_free(priv->hw->xpcs_args->mdiodev);
++		xpcs_destroy(priv->hw->xpcs_args);
++	}
++
+ 	mdiobus_unregister(priv->mii);
+ 	priv->mii->priv = NULL;
+ 	mdiobus_free(priv->mii);
 diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index 7f51eb4bbaa4..afabb9209c52 100644
+index afabb9209c52..e17e72175ebb 100644
 --- a/drivers/net/pcs/pcs-xpcs.c
 +++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -240,14 +240,14 @@ static bool __xpcs_linkmode_supported(const struct xpcs_compat *compat,
- 
+@@ -241,15 +241,19 @@ static bool __xpcs_linkmode_supported(const struct xpcs_compat *compat,
  static int xpcs_read(struct mdio_xpcs_args *xpcs, int dev, u32 reg)
  {
--	u32 reg_addr = MII_ADDR_C45 | dev << 16 | reg;
-+	u32 reg_addr = mdiobus_c45_addr(dev, reg);
+ 	u32 reg_addr = mdiobus_c45_addr(dev, reg);
++	struct mii_bus *bus = xpcs->mdiodev->bus;
++	int addr = xpcs->mdiodev->addr;
  
- 	return mdiobus_read(xpcs->bus, xpcs->addr, reg_addr);
+-	return mdiobus_read(xpcs->bus, xpcs->addr, reg_addr);
++	return mdiobus_read(bus, addr, reg_addr);
  }
  
  static int xpcs_write(struct mdio_xpcs_args *xpcs, int dev, u32 reg, u16 val)
  {
--	u32 reg_addr = MII_ADDR_C45 | dev << 16 | reg;
-+	u32 reg_addr = mdiobus_c45_addr(dev, reg);
+ 	u32 reg_addr = mdiobus_c45_addr(dev, reg);
++	struct mii_bus *bus = xpcs->mdiodev->bus;
++	int addr = xpcs->mdiodev->addr;
  
- 	return mdiobus_write(xpcs->bus, xpcs->addr, reg_addr, val);
+-	return mdiobus_write(xpcs->bus, xpcs->addr, reg_addr, val);
++	return mdiobus_write(bus, addr, reg_addr, val);
  }
+ 
+ static int xpcs_read_vendor(struct mdio_xpcs_args *xpcs, int dev, u32 reg)
+@@ -315,7 +319,7 @@ static int xpcs_soft_reset(struct mdio_xpcs_args *xpcs,
+ #define xpcs_warn(__xpcs, __state, __args...) \
+ ({ \
+ 	if ((__state)->link) \
+-		dev_warn(&(__xpcs)->bus->dev, ##__args); \
++		dev_warn(&(__xpcs)->mdiodev->dev, ##__args); \
+ })
+ 
+ static int xpcs_read_fault_c73(struct mdio_xpcs_args *xpcs,
+@@ -1005,10 +1009,20 @@ static const struct xpcs_id xpcs_id_list[] = {
+ 	},
+ };
+ 
+-int xpcs_probe(struct mdio_xpcs_args *xpcs, phy_interface_t interface)
++struct mdio_xpcs_args *xpcs_create(struct mdio_device *mdiodev,
++				   phy_interface_t interface)
+ {
+-	u32 xpcs_id = xpcs_get_id(xpcs);
+-	int i;
++	struct mdio_xpcs_args *xpcs;
++	u32 xpcs_id;
++	int i, ret;
++
++	xpcs = kzalloc(sizeof(*xpcs), GFP_KERNEL);
++	if (!xpcs)
++		return NULL;
++
++	xpcs->mdiodev = mdiodev;
++
++	xpcs_id = xpcs_get_id(xpcs);
+ 
+ 	for (i = 0; i < ARRAY_SIZE(xpcs_id_list); i++) {
+ 		const struct xpcs_id *entry = &xpcs_id_list[i];
+@@ -1020,15 +1034,32 @@ int xpcs_probe(struct mdio_xpcs_args *xpcs, phy_interface_t interface)
+ 		xpcs->id = entry;
+ 
+ 		compat = xpcs_find_compat(entry, interface);
+-		if (!compat)
+-			return -ENODEV;
++		if (!compat) {
++			ret = -ENODEV;
++			goto out;
++		}
+ 
+-		return xpcs_soft_reset(xpcs, compat);
++		ret = xpcs_soft_reset(xpcs, compat);
++		if (ret)
++			goto out;
++
++		return xpcs;
+ 	}
+ 
+-	return -ENODEV;
++	ret = -ENODEV;
++
++out:
++	kfree(xpcs);
++
++	return ERR_PTR(ret);
++}
++EXPORT_SYMBOL_GPL(xpcs_create);
++
++void xpcs_destroy(struct mdio_xpcs_args *xpcs)
++{
++	kfree(xpcs);
+ }
+-EXPORT_SYMBOL_GPL(xpcs_probe);
++EXPORT_SYMBOL_GPL(xpcs_destroy);
+ 
+ static struct mdio_xpcs_ops xpcs_ops = {
+ 	.config = xpcs_config,
+diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
+index 1d8581b74d81..57a199393d63 100644
+--- a/include/linux/pcs/pcs-xpcs.h
++++ b/include/linux/pcs/pcs-xpcs.h
+@@ -17,9 +17,8 @@
+ struct xpcs_id;
+ 
+ struct mdio_xpcs_args {
+-	struct mii_bus *bus;
++	struct mdio_device *mdiodev;
+ 	const struct xpcs_id *id;
+-	int addr;
+ };
+ 
+ struct mdio_xpcs_ops {
+@@ -37,6 +36,8 @@ void xpcs_validate(struct mdio_xpcs_args *xpcs, unsigned long *supported,
+ 		   struct phylink_link_state *state);
+ int xpcs_config_eee(struct mdio_xpcs_args *xpcs, int mult_fact_100ns,
+ 		    int enable);
+-int xpcs_probe(struct mdio_xpcs_args *xpcs, phy_interface_t interface);
++struct mdio_xpcs_args *xpcs_create(struct mdio_device *mdiodev,
++				   phy_interface_t interface);
++void xpcs_destroy(struct mdio_xpcs_args *xpcs);
+ 
+ #endif /* __LINUX_PCS_XPCS_H */
 -- 
 2.25.1
 
