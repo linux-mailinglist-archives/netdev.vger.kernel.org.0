@@ -2,214 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B39D5398956
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50213398990
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 14:31:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbhFBMXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 08:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38428 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbhFBMXM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 08:23:12 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486BDC061574
-        for <netdev@vger.kernel.org>; Wed,  2 Jun 2021 05:21:29 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id qq22so3512866ejb.9
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 05:21:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=NDzypEDM/24TkYjn79MJZnAtZopAlw6XztPsiEC1pYI=;
-        b=HiBf+gKm9Bfe7LY/suQevGiGQXlMvF4x5eHbiVgIwy64N/ompnzjIZkJSx/s6nGTsA
-         WUih3mVlSPvAWU8hsz2TxuLtcP9HjrvBOdHgtntcjTrwBXR+j1JugV6g5yTBu8rMyM2C
-         pFp1Pj3msmopO7uRtkVQw00NPMUa9I8Aqt8foIfR7FRJ4w8JnF5I/bDIkbHj5Tk52sZz
-         XbyEtOU6qNYqCFi7PrI+vXpJbYY7xSgw0I+hcnrWHgQMJAaabfdfaLvV4fp8ccVVdW9N
-         +5BfaSSfnWBL/qWEcbUaF14zocZ6u8uA5CYQNmsGkBQXGhBwHfh7w457VqkI3XFQtL0I
-         A6Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=NDzypEDM/24TkYjn79MJZnAtZopAlw6XztPsiEC1pYI=;
-        b=QJqQUOCbgBOy8/L0G2KbegZcRlYfZF6NHDD7jMTQq1uR5gn/p0Ixu4MbRCEmlGzpx1
-         4H/lApWrPM+BtR4vpTyGqkKPHAksvL0J+HFcRBkuU98ALqlANUteBBHJdwSAsqy5RQ/c
-         lfQLiNMgaKtb5GDzPwfICxTSrDtqLHQk1ErHF8jFXPQ77ZeNSxIpAQk0RSKfXoEVGELj
-         klwqQUcDNqpwD+NxS0yOqt2TwhbrWXL9Y+0IEHI8qsnF2f/IbEA6vcWGROi5o7k+z9ZL
-         xJZ+JgVTBzgRFrhDePP4X/okkIp/N8iSE3E4ZYs4JEjCYVhjzSWzfVU+ZJPEX5yzDaUM
-         2nvA==
-X-Gm-Message-State: AOAM530LeaqMBBB6WCn5bp8JSZSrEgmXjGAypzZ74ZUw0JwYtZCJY/El
-        VZ8J6Av56NLdJ1FIkcCZws4=
-X-Google-Smtp-Source: ABdhPJznHcPXWwC9JGARuvCi+S2eCDBvlJddPOWaPPJrQ9HyTkNp3q5/2gCHIDWpQtHtpDJpIr1MSQ==
-X-Received: by 2002:a17:906:3042:: with SMTP id d2mr34537309ejd.234.1622636487854;
-        Wed, 02 Jun 2021 05:21:27 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id gw7sm1448745ejb.5.2021.06.02.05.21.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 05:21:27 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Michael Walle <michael@walle.cc>, Po Liu <po.liu@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Po Liu <Po.Liu@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 2/2] net: enetc: count the tc-taprio window drops
-Date:   Wed,  2 Jun 2021 15:21:14 +0300
-Message-Id: <20210602122114.2082344-3-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210602122114.2082344-1-olteanv@gmail.com>
-References: <20210602122114.2082344-1-olteanv@gmail.com>
+        id S229818AbhFBMc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 08:32:56 -0400
+Received: from mail-dm3nam07on2054.outbound.protection.outlook.com ([40.107.95.54]:12001
+        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229610AbhFBMcy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Jun 2021 08:32:54 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n+LgopS5j7OOKrVA3UZMvCWtxuLKqoHQWOt7r6OFY2xWA5pnSbJ/MJAEGouVqahxMtR5gKA+H2d2drtZIDrZWYOhsxBT4OFuSe/Kv1fcegfSTtOSCYeyoYJrSkZepHnnH+n4qoCWGqFwznLmlW8PHLaFpscmQ+rTaraGWQtLsnbzWyPn5lp2zJ05nMd8aglQTQ8bVFwX190Ko8+rsSNKeDa3RwPe6pZV1DiL81UVT2VV7PtmoEeHPkzirL0Y/9OK85b3Zo2OzExzsmyrft3+cqvH0isJ3tZ6Hhrx6Hes8HUCY1M1om0BEsSQSnqWMl9/IP1gNVGKgdNwzjkCow2t8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DRpplJ78U4kAWP1VgbzEpfhxX9oGV9KwGClL/ejQasg=;
+ b=B1niUl4L7iedZBbZG+Cr0P/MwOzoKc1dV9leOR+XJ0sbblyJPqXBXXRdDjgvU8Du3ASELjdSzkJfCajEh0icBjWINLRXBEiI0GsZ+mhO3LNaVGCXJ6nyPrrtUAFs/MOy5VlbXV1XAmfO55wrO67CbWWqjmfp+SQaa+QjpY6D8OgayhwGW3FzZoz66G0y976vw2vfyuN1SEJi0tyuutkqNu6Pj72hPQ84NVgaWJisDvkHoB4Y22Q5/RewTr2gD8N7OS7O/ri4xi1jUFcL5U1Vv3KFTpT5YYa9phLfLMKYXBq6/Zpm+2+eyxdMpyhyiyb8FYxNhZAHjIV6hE3llmA9UA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DRpplJ78U4kAWP1VgbzEpfhxX9oGV9KwGClL/ejQasg=;
+ b=U6TE9FJHeLZVPC8GbGCcj/ISZm+y5uoQomQTDUAQ6fICksgALdcTIeawrj1NkHnvE3h0KKgBJdBanwmz9Ajt9bhNOVVlckBJkMdjq9KGGj7wQKA/TaUQiEzIHs7T17F/Kh027d+H5W5+sIzPawH0xpF1jMVf22U5NAe1nYwK5CJaryjXGTY6TPUgzoKZmot+F14U6pWZi0eAxpCKYaztmdMSLb0P3wzZSM/KRMQkjDinF9Kklpdtot1EA8VOUga8m49N24m1gFr4gD6GPvu9R9GTi/TeyICY1bkKJ7xrUWO/YtCq8cTJOEmCOu1KbCF0U56gckqm+WRSnYA9WVcQ7A==
+Received: from BN9PR03CA0935.namprd03.prod.outlook.com (2603:10b6:408:108::10)
+ by BN6PR1201MB0243.namprd12.prod.outlook.com (2603:10b6:405:50::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Wed, 2 Jun
+ 2021 12:31:09 +0000
+Received: from BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:108:cafe::a0) by BN9PR03CA0935.outlook.office365.com
+ (2603:10b6:408:108::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.21 via Frontend
+ Transport; Wed, 2 Jun 2021 12:31:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT051.mail.protection.outlook.com (10.13.177.66) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4150.30 via Frontend Transport; Wed, 2 Jun 2021 12:31:09 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 2 Jun
+ 2021 12:31:09 +0000
+Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 2 Jun 2021 12:31:06 +0000
+From:   Dmytro Linkin <dlinkin@nvidia.com>
+To:     <dlinkin@nvidia.com>
+CC:     <davem@davemloft.net>, <dsahern@gmail.com>, <huyn@nvidia.com>,
+        <jiri@nvidia.com>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <parav@nvidia.com>, <stephen@networkplumber.org>,
+        <vladbu@nvidia.com>
+Subject: [PATCH RESEND iproute2 net-next 0/4] devlink rate support
+Date:   Wed, 2 Jun 2021 15:31:01 +0300
+Message-ID: <1622637065-30803-1-git-send-email-dlinkin@nvidia.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1622636251-29892-1-git-send-email-dlinkin@nvidia.com>
+References: <1622636251-29892-1-git-send-email-dlinkin@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 91ef4f07-7199-4527-1282-08d925c24d2f
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB0243:
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB0243E7AC429D1715A340E62FCB3D9@BN6PR1201MB0243.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gEoBVibYxoxgiz7pu+NBsn08T8r6r3usBBHIr5rJFP3tgh8OE3ekMOICd8vJVZYM9nd3sdRRj5r0EBkmbjTY9acZwiuuq1/cQKXFkIvq6UDawxoygVcIu+MXrNm19w7fdBY39lZp4Ad9Cf+Z0JsECh6sPdF+t7GZofwWwTY9y+9AVAgRdY/z/nAt6YTsDjme8P8UK/i9woPN4aC7ldScFwBIl6INDCBS3M0V0gO0eOGSew3sSerxL/cWFVTM3JfVeHVkDlA7zg4u7l4UYtTFKSSXZ7p6g+n08U6JSPVzMVr6QReEWuBrt4Qk2JUupWTNhXSO0AY7uVBy0Mh0kVExuvOzlZN2Wd3HsSF7qyiaDT5tnewnhg2K9Sixfwkg5l5xOPvNlXCMKxQnmJEkSpeikddYJs4U9v8f23dAUGMzmpM0+F5U/XXL+vBgp/eaumb3hrGcdx/Qe4CRshpkKI8W0kVLf/V5gYH4Qiz5mdFpICbngI/PmoPg4LKiM9hZ/G0K1bW8z79Am7VrPChwAp3hl9N20WPm68HEhfoGmQ8x/aJeVmUYLOgRF6uHVoXjeMML06j1KK8c0RWH/puNWxWa0Pgc710b/RbWpTpBfZ5ueJvH3Qrrun2pkmyfIIPyssTQX+AUSaIOTtI2/ZTJPSd3IA==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(346002)(39860400002)(396003)(136003)(36840700001)(46966006)(6862004)(426003)(2616005)(107886003)(83380400001)(336012)(86362001)(7696005)(7049001)(2906002)(47076005)(8936002)(6200100001)(82740400003)(54906003)(82310400003)(8676002)(7636003)(316002)(37006003)(36906005)(26005)(36860700001)(4326008)(70206006)(186003)(356005)(6666004)(36756003)(70586007)(5660300002)(478600001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 12:31:09.6580
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 91ef4f07-7199-4527-1282-08d925c24d2f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0243
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Po Liu <Po.Liu@nxp.com>
+Resending without RFC.
 
-The enetc scheduler for IEEE 802.1Qbv has 2 options (depending on
-PTGCR[TG_DROP_DISABLE]) when we attempt to send an oversized packet
-which will never fit in its allotted time slot for its traffic class:
-either block the entire port due to head-of-line blocking, or drop the
-packet and set a bit in the writeback format of the transmit buffer
-descriptor, allowing other packets to be sent.
+Serries implements devlink rate commands, which are:
+- Dump particular or all rate objects (JSON or non-JSON)
+- Add/Delete node rate object
+- Set tx rate share/max values for rate object
+- Set/Unset parent rate object for other rate object
 
-We obviously choose the second option in the driver, but we do not
-detect the drop condition, so from the perspective of the network stack,
-the packet is sent and no error counter is incremented.
+Examples:
 
-This change checks the writeback of the TX BD when tc-taprio is enabled,
-and increments a specific ethtool statistics counter and a generic
-"tx_dropped" counter in ndo_get_stats64.
+Display all rate objects:
 
-Signed-off-by: Po Liu <Po.Liu@nxp.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/freescale/enetc/enetc.c        | 13 +++++++++++--
- drivers/net/ethernet/freescale/enetc/enetc.h        |  2 ++
- .../net/ethernet/freescale/enetc/enetc_ethtool.c    |  2 ++
- drivers/net/ethernet/freescale/enetc/enetc_hw.h     |  1 +
- 4 files changed, 16 insertions(+), 2 deletions(-)
+    # devlink port function rate show
+    pci/0000:03:00.0/1 type leaf parent some_group
+    pci/0000:03:00.0/2 type leaf tx_share 12Mbit
+    pci/0000:03:00.0/some_group type node tx_share 1Gbps tx_max 5Gbps
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index 3ca93adb9662..3f1cb921571a 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -170,7 +170,8 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb)
- 	}
- 
- 	tx_swbd->do_twostep_tstamp = do_twostep_tstamp;
--	tx_swbd->check_wb = tx_swbd->do_twostep_tstamp;
-+	tx_swbd->qbv_en = !!(priv->active_offloads & ENETC_F_QBV);
-+	tx_swbd->check_wb = tx_swbd->do_twostep_tstamp || tx_swbd->qbv_en;
- 
- 	if (do_vlan || do_onestep_tstamp || do_twostep_tstamp)
- 		flags |= ENETC_TXBD_FLAGS_EX;
-@@ -525,9 +526,9 @@ static void enetc_recycle_xdp_tx_buff(struct enetc_bdr *tx_ring,
- 
- static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- {
-+	int tx_frm_cnt = 0, tx_byte_cnt = 0, tx_win_drop = 0;
- 	struct net_device *ndev = tx_ring->ndev;
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
--	int tx_frm_cnt = 0, tx_byte_cnt = 0;
- 	struct enetc_tx_swbd *tx_swbd;
- 	int i, bds_to_clean;
- 	bool do_twostep_tstamp;
-@@ -557,6 +558,10 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 						    &tstamp);
- 				do_twostep_tstamp = true;
- 			}
-+
-+			if (tx_swbd->qbv_en &&
-+			    txbd->wb.status & ENETC_TXBD_STATS_WIN)
-+				tx_win_drop++;
- 		}
- 
- 		if (tx_swbd->is_xdp_tx)
-@@ -610,6 +615,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 	tx_ring->next_to_clean = i;
- 	tx_ring->stats.packets += tx_frm_cnt;
- 	tx_ring->stats.bytes += tx_byte_cnt;
-+	tx_ring->stats.win_drop += tx_win_drop;
- 
- 	if (unlikely(tx_frm_cnt && netif_carrier_ok(ndev) &&
- 		     __netif_subqueue_stopped(ndev, tx_ring->index) &&
-@@ -2271,6 +2277,7 @@ struct net_device_stats *enetc_get_stats(struct net_device *ndev)
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
- 	struct net_device_stats *stats = &ndev->stats;
- 	unsigned long packets = 0, bytes = 0;
-+	unsigned long tx_dropped = 0;
- 	int i;
- 
- 	for (i = 0; i < priv->num_rx_rings; i++) {
-@@ -2286,10 +2293,12 @@ struct net_device_stats *enetc_get_stats(struct net_device *ndev)
- 	for (i = 0; i < priv->num_tx_rings; i++) {
- 		packets += priv->tx_ring[i]->stats.packets;
- 		bytes	+= priv->tx_ring[i]->stats.bytes;
-+		tx_dropped += priv->tx_ring[i]->stats.win_drop;
- 	}
- 
- 	stats->tx_packets = packets;
- 	stats->tx_bytes = bytes;
-+	stats->tx_dropped = tx_dropped;
- 
- 	return stats;
- }
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index 08b283347d9c..2a5973aebc31 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -34,6 +34,7 @@ struct enetc_tx_swbd {
- 	u8 is_eof:1;
- 	u8 is_xdp_tx:1;
- 	u8 is_xdp_redirect:1;
-+	u8 qbv_en:1;
- };
- 
- #define ENETC_RX_MAXFRM_SIZE	ENETC_MAC_MAXFRM_SIZE
-@@ -70,6 +71,7 @@ struct enetc_ring_stats {
- 	unsigned int xdp_redirect_sg;
- 	unsigned int recycles;
- 	unsigned int recycle_failures;
-+	unsigned int win_drop;
- };
- 
- struct enetc_xdp_data {
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-index ebccaf02411c..4d55e78fa353 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-@@ -204,6 +204,7 @@ static const char tx_ring_stats[][ETH_GSTRING_LEN] = {
- 	"Tx ring %2d frames",
- 	"Tx ring %2d XDP frames",
- 	"Tx ring %2d XDP drops",
-+	"Tx window drop %2d frames",
- };
- 
- static int enetc_get_sset_count(struct net_device *ndev, int sset)
-@@ -279,6 +280,7 @@ static void enetc_get_ethtool_stats(struct net_device *ndev,
- 		data[o++] = priv->tx_ring[i]->stats.packets;
- 		data[o++] = priv->tx_ring[i]->stats.xdp_tx;
- 		data[o++] = priv->tx_ring[i]->stats.xdp_tx_drops;
-+		data[o++] = priv->tx_ring[i]->stats.win_drop;
- 	}
- 
- 	for (i = 0; i < priv->num_rx_rings; i++) {
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-index 0f5f081a5baf..e7fa4fb85d0b 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-@@ -543,6 +543,7 @@ enum enetc_txbd_flags {
- 	ENETC_TXBD_FLAGS_EX = BIT(6),
- 	ENETC_TXBD_FLAGS_F = BIT(7)
- };
-+#define ENETC_TXBD_STATS_WIN	BIT(7)
- #define ENETC_TXBD_TXSTART_MASK GENMASK(24, 0)
- #define ENETC_TXBD_FLAGS_OFFSET 24
- 
+Display leaf rate object bound to the 1st devlink port of the
+pci/0000:03:00.0 device:
+
+    # devlink port function rate show pci/0000:03:00.0/1
+    pci/0000:03:00.0/1 type leaf
+
+Display node rate object with name some_group of the pci/0000:03:00.0
+device:
+
+    # devlink port function rate show pci/0000:03:00.0/some_group
+    pci/0000:03:00.0/some_group type node
+
+Display leaf rate object rate values using IEC units:
+
+    # devlink -i port function rate show pci/0000:03:00.0/2
+    pci/0000:03:00.0/2 type leaf 11718Kibit
+
+Display pci/0000:03:00.0/2 leaf rate object as pretty JSON output:
+
+    # devlink -jp port function rate show pci/0000:03:00.0/2
+    {
+        "rate": {
+            "pci/0000:03:00.0/2": {
+                "type": "leaf",
+                "tx_share": 1500000
+            }
+        }
+    }
+
+Create node rate object with name "1st_group" on pci/0000:03:00.0 device:
+
+    # devlink port function rate add pci/0000:03:00.0/1st_group
+
+Create node rate object with specified parameters:
+
+    # devlink port function rate add pci/0000:03:00.0/2nd_group \
+        tx_share 10Mbit tx_max 30Mbit parent 1st_group
+
+Set parameters to the specified leaf rate object:
+
+    # devlink port function rate set pci/0000:03:00.0/1 \
+        tx_share 2Mbit tx_max 10Mbit
+
+Set leaf's parent to "1st_group":
+
+    # devlink port function rate set pci/0000:03:00.0/1 parent 1st_group
+
+Unset leaf's parent:
+
+    # devlink port function rate set pci/0000:03:00.0/1 noparent
+
+Delete node rate object:
+
+    # devlink port function rate del pci/0000:03:00.0/2nd_group
+
+Rate values can be specified in bits or bytes per second (bit|bps), with
+any SI (k, m, g, t) or IEC (ki, mi, gi, ti) prefix. Bare number means
+bits per second. Units also printed in "show" command output, but not
+necessarily the same which were specified with "set" or "add" command.
+-i/--iec switch force output in IEC units. JSON output always print
+values as bytes per sec.
+
+Dmytro Linkin (4):
+  uapi: update devlink kernel header
+  devlink: Add helper function to validate object handler
+  devlink: Add port func rate support
+  devlink: Add ISO/IEC switch
+
+ devlink/devlink.c            | 527 ++++++++++++++++++++++++++++++++++++++++---
+ include/uapi/linux/devlink.h |  17 ++
+ man/man8/devlink-port.8      |   8 +
+ man/man8/devlink-rate.8      | 270 ++++++++++++++++++++++
+ man/man8/devlink.8           |   4 +
+ 5 files changed, 797 insertions(+), 29 deletions(-)
+ create mode 100644 man/man8/devlink-rate.8
+
 -- 
-2.25.1
+1.8.3.1
 
