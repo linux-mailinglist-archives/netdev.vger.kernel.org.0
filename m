@@ -2,102 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0505E39815E
-	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 08:47:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D4739815A
+	for <lists+netdev@lfdr.de>; Wed,  2 Jun 2021 08:43:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbhFBGtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 02:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45934 "EHLO
+        id S229955AbhFBGpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 02:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229841AbhFBGtH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 02:49:07 -0400
-Received: from dvalin.narfation.org (dvalin.narfation.org [IPv6:2a00:17d8:100::8b1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B4EC061574
-        for <netdev@vger.kernel.org>; Tue,  1 Jun 2021 23:47:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1622616441;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BB+iaYp4LyFwJ9jGzQ7cmHxv8GHima8n/NGSOQHI0s4=;
-        b=gT355vjzgjUhPMYzSmsu52NzowUci9aReYxeuOdY53rumwmwnIlHmFV7zxbp3L0MO13Xvx
-        yFv+9vinBKDGbb3ceW2yLaxvBhOSSEmFuSVFE/AVpOu47BlATc3eeycsnJL5L5o8KeOsxi
-        JHOnvRPq/Ro84nxder7/568C8piQF5c=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        b.a.t.m.a.n@lists.open-mesh.org
-Subject: Re: [PATCH net-next] batman-adv: Fix spelling mistakes
-Date:   Wed, 02 Jun 2021 08:47:18 +0200
-Message-ID: <48077100.4opSpZgCWW@ripper>
-In-Reply-To: <20210602065603.106030-1-zhengyongjun3@huawei.com>
-References: <20210602065603.106030-1-zhengyongjun3@huawei.com>
+        with ESMTP id S229806AbhFBGpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 02:45:10 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79AA6C06174A
+        for <netdev@vger.kernel.org>; Tue,  1 Jun 2021 23:43:28 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id pi6-20020a17090b1e46b029015cec51d7cdso1137091pjb.5
+        for <netdev@vger.kernel.org>; Tue, 01 Jun 2021 23:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NNCMYsORB2O0j+rBwqWrKCHuWb02Rwsv7Zd/jYnQBrk=;
+        b=rkYL51hNyBUVvfeo/Ts/JWjairp3sLaw8Wab8dcs76zfYyT09yCrHcNLwOWMR806h8
+         gn9b6kUEb0NBHt9jqHV2MwecHtMN2l3CYF+JnSspfE4WxvKI+8zqnXDBcYwfBcH8Ozgi
+         hNeDHnCkCrI4A+hR9EsFwBT5eah0PQrS/raMOFwqM0UdlxJAUbrdIlYJDLzwHp4C4JND
+         5/LTOKTnzpihFIQ/xyLwdax2EMVril6A3WFFhg+tef3TUmazybvPKERhfxiMSBfG7bjE
+         /UHGyfKmaVkggFvqEH/mPGFYqCfnCH6YeqrC5/KnySr+OPLl6e+8hMraL+ekWOYrC7md
+         sbuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NNCMYsORB2O0j+rBwqWrKCHuWb02Rwsv7Zd/jYnQBrk=;
+        b=JmW7U3rJ2Rx3ul1xpdcXXcClo7k99eQlW5X24UN+8jmwJHPmpXESpZHds52kAn0AQS
+         qh2hcuXkos3TCqjhnOBgRH37G7LUdY1ExzFKgpBvCNb3yJqim0ryFDlxNWBXlzXr95e/
+         x5MUTvV1Aekf53iaPxaouB6WaTUUrZr1qMP5rCXnjbyeEgXTYVBIEz2TJ1hZRHl3mQhG
+         Ngl1iC/nQdmRWFJXEESrKW3VGXYLoooMdkkx0tCL9Wru3QZUjBJ33eJKHF9Gy0JvGmbn
+         R5oTl51or3rfjVQJuKOz/pqV1ghsksXeM5Uo9hMQDP8YOgAMSGG80RU/G6hsmhPfv6W4
+         Mi8g==
+X-Gm-Message-State: AOAM531Vb2FVL6MoQ6OkFW6rjRP9TKjlxQ+x4l6MYVnKJXjz0PPR2djU
+        jmWBufuF7XHHySLzv7bcaMEP0VFOXJiBQG8WV8jfgw==
+X-Google-Smtp-Source: ABdhPJyZZUSH0rWkcmogDw1e5BiGDx0GJaN5/8zaj5DMGQU+UY2y+F3XsOlz/Io/znrXPSF4Jc2ce+AJf1LBq2YjMss=
+X-Received: by 2002:a17:902:d64e:b029:ef:8b85:d299 with SMTP id
+ y14-20020a170902d64eb02900ef8b85d299mr29459130plh.27.1622616207614; Tue, 01
+ Jun 2021 23:43:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart35456750.oCVJAORbYE"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+References: <20210601080538.71036-1-johannes@sipsolutions.net>
+ <20210601100320.7d39e9c33a18.I0474861dad426152ac7e7afddfd7fe3ce70870e4@changeid>
+ <CAMZdPi-ZaH8WWKfhfKzy0OKpUtNAiCUfekh9R1de5awFP-ed=A@mail.gmail.com> <0555025c6d7a88f4f3dcdd6704612ed8ba33b175.camel@sipsolutions.net>
+In-Reply-To: <0555025c6d7a88f4f3dcdd6704612ed8ba33b175.camel@sipsolutions.net>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Wed, 2 Jun 2021 08:52:45 +0200
+Message-ID: <CAMZdPi8Ca3YRaVWGL6Fjd7yfowQcX2V2RYNDNm-2kQdEZ-Z1Bw@mail.gmail.com>
+Subject: Re: [RFC 3/4] wwan: add interface creation support
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     linux-wireless@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart35456750.oCVJAORbYE
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Sven Eckelmann <sven@narfation.org>
-To: mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc, davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>, b.a.t.m.a.n@lists.open-mesh.org
-Subject: Re: [PATCH net-next] batman-adv: Fix spelling mistakes
-Date: Wed, 02 Jun 2021 08:47:18 +0200
-Message-ID: <48077100.4opSpZgCWW@ripper>
-In-Reply-To: <20210602065603.106030-1-zhengyongjun3@huawei.com>
-References: <20210602065603.106030-1-zhengyongjun3@huawei.com>
+On Tue, 1 Jun 2021 at 12:35, Johannes Berg <johannes@sipsolutions.net> wrote:
+>
+> Hi,
+>
+> > > +int wwan_register_ops(struct device *parent, const struct wwan_ops *ops,
+> > > +                     void *ctxt)
+> > > +{
+> > > +       struct wwan_dev_reg *reg;
+> > > +       int ret;
+> > > +
+> > > +       if (WARN_ON(!parent || !ops))
+> > > +               return -EINVAL;
+> > > +
+> > > +       mutex_lock(&wwan_mtx);
+> > > +       list_for_each_entry(reg, &wwan_devs, list) {
+> > > +               if (WARN_ON(reg->dev == parent)) {
+> > > +                       ret = -EBUSY;
+> > > +                       goto out;
+> > > +               }
+> > > +       }
+> >
+> > Thanks for this, overall it looks good to me, but just checking why
+> > you're not using the wwan_dev internally to create-or-pick wwan_dev
+> > (wwan_dev_create) and register ops to it, instead of having a global
+> > new wwan_devs list.
+>
+> Uh, no good reason. I just missed that all that infrastructure is
+> already there, oops.
 
-On Wednesday, 2 June 2021 08:56:03 CEST Zheng Yongjun wrote:
-> Fix some spelling mistakes in comments:
-> containg  ==> containing
-> dont  ==> don't
-> datas  ==> data
-> brodcast  ==> broadcast
-> 
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-> ---
->  net/batman-adv/bridge_loop_avoidance.c | 4 ++--
->  net/batman-adv/hard-interface.c        | 2 +-
->  net/batman-adv/hash.h                  | 2 +-
->  3 files changed, 4 insertions(+), 4 deletions(-)
+OK no prob ;-), are you going to resubmit something or do you want I
+take care of this?
 
-
-You forgot to send it to the B.A.T.M.A.N. mailing list. And it therefore 
-didn't appear in our patchwork. And you send stuff from the future - which is 
-rather odd.
-
-Applied anyway.
-
-Thanks,
-	Sven
-
---nextPart35456750.oCVJAORbYE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmC3KXYACgkQXYcKB8Em
-e0YXng//aLzrW36XvD5wdUTS/jlzrlxggP0i3YehwpVFOiSon6nDcxoAjjMij3qa
-8kJKrY1cjoVgQe93P6fc0nYb+UWwwbKEE9fOHw/FYIa6qU9XwfWN3MjbVAy0HEfr
-0OyBtx4o5MFA34uTCtxaE4TFXIn6am5P2U4u7rGLn9LejE1e0lfpWRUf3Wam/8Hg
-Mm681yStajB159NrEjVa6YnagZhqNI47U7mId+ZfAGjeHaGQX16p6NUD654+CtPW
-1P56KmH9p5JmKu1bbeUxXTaEq199I2GTsZUGZli6M6dcWaqcr2ILj6RV2G1y9vEK
-vltKRHnRo3vUlbONLgiCc6TwX+CZwf0D9fn4y5Fbhpwg+SKlMeTYoIsH36Q/VkQk
-kX+/iYT6WU+uQAnVcnYz9rAU6VIpkY2Gfnv9oDv5M1I653ySRY7x+5BnQBnUMCp4
-TYfojqC3Yd5U/RbT5giP+qh2yB88cBq26oxUDVEPs6VMQegcju3RBnh85rT/Iqav
-7pdWoLJicoB9ycbf8QFiwj8UcvEdXQKXdblkmCExuqG2BN2ln5G8GBK5PqOUenuJ
-3aozntk641U3swH54hjFP+c4ZyxVASGILANTHJk+HoM0x4aGQKABPGacO39V9oK9
-SkgMX8p285zxHwXICiCZGCt664FYBz9bUk1+Q9uc8bxj9mlSU/0=
-=+Ayg
------END PGP SIGNATURE-----
-
---nextPart35456750.oCVJAORbYE--
-
-
-
+Regards,
+Loic
