@@ -2,103 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDB8239A437
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:15:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDCAB39A441
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:16:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232086AbhFCPRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 11:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232056AbhFCPRW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:17:22 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCAEC061756;
-        Thu,  3 Jun 2021 08:15:29 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id x196so6196813oif.10;
-        Thu, 03 Jun 2021 08:15:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=7v66XhuZWrG8DKs0DmAQ+sD7453YhN/0jRM3VEpgNbs=;
-        b=A5XNHd1U5uUtlenn3okEPwadIdqiAJJh/q97lMxU1ChLK0BMpzpkFdSkWYcxbhGpc0
-         +A0DAQgt9VXmWI+/9ww2qR/h20TePwKRir1H/qOKvSyRBMkd7b7UDPnhSSLVVMBZ+FU3
-         q8F1h2kj20SYVgqBIUOPjIkyt0fbcMQIEL6KEo2jTbLfLJX3v4pEnIZyPiZFFqR/qN+a
-         dGx+lob6cB30Homjl1PT38IKCGtJkNeW4knOXwHqiJvk+6NVQVUeP76FBM/d5lkvqa64
-         eQp9c47SZmRwkFXup3Wv8Hra7Ih6ZyO8xfl9UOVUEuaGG3iHVxwBT5HEairg+BQntstw
-         +Uag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7v66XhuZWrG8DKs0DmAQ+sD7453YhN/0jRM3VEpgNbs=;
-        b=Q+uOgjfjjcRPPa8Ya5FQtwwmqZnx1Wpzg4WerdG5twlyXyJsqCdgtOS+C6f/EO9b1K
-         eIY3BRhamSxH0hMvNYnMR4Nagwnk/Sb0FEn8fJF0YWCqJknvHbsT5eUAYcwPCii7u12s
-         E2RZw3i5K0DM0DIj7bx6eEOjaquMLVpyAqngctFYL1Ehd/H0XMnQMd+ovLeUsi/RZawk
-         NDKzEjQAUc4O9qrnDyJzegLx46WBmnnssMNYx0FUGT7194jai1cnwNolTTHOXh0uzSU6
-         K6fwrMwOAMbC2hAUZp0564EDm/uKh+ThhrD/utjD+aszg62L29ndg3G1Kk2gWlac2nFw
-         1NXA==
-X-Gm-Message-State: AOAM532QMDpskQwUcMQqfCYG5UeblrhxrkHaIq0NxIkUoDR5qKh6ZdVF
-        iRRXkVknLb7TLFVV15kXRet1rZvzqIs=
-X-Google-Smtp-Source: ABdhPJy/g8zxRTE76lf8ZruWGdj5WOhFV6iZ8Y2xowCRo7rddjKqgwh1Ejrdn5IU++fVbCrXyAeUkQ==
-X-Received: by 2002:aca:b107:: with SMTP id a7mr7601143oif.170.1622733328983;
-        Thu, 03 Jun 2021 08:15:28 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id p5sm748043oip.35.2021.06.03.08.15.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Jun 2021 08:15:28 -0700 (PDT)
-Subject: Re: [PATCH] ipv6: parameter p.name is empty
-To:     nicolas.dichtel@6wind.com, zhang kai <zhangkaiheb@126.com>,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210603095030.2920-1-zhangkaiheb@126.com>
- <d1085905-215f-fb78-4d68-324bd6e48fdd@6wind.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <dd5b5a62-841c-5a21-7571-78d75e2f2482@gmail.com>
-Date:   Thu, 3 Jun 2021 09:15:27 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+        id S232113AbhFCPR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 11:17:57 -0400
+Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:46338 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S231553AbhFCPR5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:17:57 -0400
+Received: from tomoyo.flets-east.jp ([114.149.34.46])
+        by mwinf5d75 with ME
+        id CfFu2500H0zjR6y03fG8Pq; Thu, 03 Jun 2021 17:16:10 +0200
+X-ME-Helo: tomoyo.flets-east.jp
+X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 03 Jun 2021 17:16:10 +0200
+X-ME-IP: 114.149.34.46
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v2 0/2] add the netlink interface for CAN-FD Transmitter Delay Compensation (TDC)
+Date:   Fri,  4 Jun 2021 00:15:48 +0900
+Message-Id: <20210603151550.140727-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <d1085905-215f-fb78-4d68-324bd6e48fdd@6wind.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/3/21 7:33 AM, Nicolas Dichtel wrote:
-> Le 03/06/2021 à 11:50, zhang kai a écrit :
->> so do not check it.
->>
->> Signed-off-by: zhang kai <zhangkaiheb@126.com>
->> ---
->>  net/ipv6/addrconf.c | 3 ---
->>  1 file changed, 3 deletions(-)
->>
->> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
->> index b0ef65eb9..4c6b3fc7e 100644
->> --- a/net/ipv6/addrconf.c
->> +++ b/net/ipv6/addrconf.c
->> @@ -2833,9 +2833,6 @@ static int addrconf_set_sit_dstaddr(struct net *net, struct net_device *dev,
->>  	if (err)
->>  		return err;
->>  
->> -	dev = __dev_get_by_name(net, p.name);
->> -	if (!dev)
->> -		return -ENOBUFS;
->>  	return dev_open(dev, NULL);
->>  }
->>  
->>
-> This bug seems to exist since the beginning of the SIT driver (24 years!):
-> https://git.kernel.org/pub/scm/linux/kernel/git/davem/netdev-vger-cvs.git/commit/?id=e5afd356a411a
-> Search addrconf_set_dstaddr()
-> 
-> Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> 
+This series adds a netlink interface for the TDC parameters using
+netlink nested attributes.
 
-A patch was sent yesterday, "sit: set name of device back to struct
-parms", to set the name field in params.
+The first patch remove a redundant check. The second patch is the real
+thing: the TDC netlink interface.
+
+In March, I introduced the Transmitter Delay Compensation (TDC) to the
+kernel though two patches:
+  - commit 289ea9e4ae59 ("can: add new CAN FD bittiming parameters:
+    Transmitter Delay Compensation (TDC)")
+  - commit c25cc7993243 ("can: bittiming: add calculation for CAN FD
+    Transmitter Delay Compensation (TDC)")
+
+The netlink interface was missing from this series because the initial
+patch needed rework in order to make it more flexible for future
+changes.
+
+At that time, Marc suggested to take inspiration from the recently
+released ethtool-netlink interface.
+Ref: https://lore.kernel.org/linux-can/20210407081557.m3sotnepbgasarri@pengutronix.de/
+
+ethtool uses nested attributes (c.f. NLA_NESTED type in validation
+policy). A bit of trivia: the NLA_NESTED type was introduced in
+version 2.6.15 of the kernel and thus actually predates Socket CAN.
+Ref: commit bfa83a9e03cf ("[NETLINK]: Type-safe netlink messages/attributes interface")
+
+I sent a v1 as an RFC which got zero comments, so I am assuming that
+the overall design is OK :)
+
+Now, I feel confident enough to drop the RFC tag. Thanks for your review!
+
+For those who would like to test it, please refer to this iproute2 patch:
+https://lore.kernel.org/linux-can/20210507102819.1932386-1-mailhol.vincent@wanadoo.fr/t/#u
+
+** Changelog **
+The nested structure (IFLAC_CAN_TDC*) remains unchanged since RFC v1.
+The v2 fixes several issue in can_tdc_get_size() and
+can_tdc_fill_info(). Namely: can_tdc_get_size() returned an incorrect
+size if TDC was not implemented and can_tdc_fill_info() did not
+include a fail path with nla_nest_cancel().
+
+
+Vincent Mailhol (2):
+  can: netlink: remove redundant check in can_validate()
+  can: netlink: add interface for CAN-FD Transmitter Delay Compensation
+    (TDC)
+
+ drivers/net/can/dev/netlink.c    | 140 ++++++++++++++++++++++++++++++-
+ include/uapi/linux/can/netlink.h |  26 +++++-
+ 2 files changed, 160 insertions(+), 6 deletions(-)
+
+-- 
+2.31.1
+
