@@ -2,57 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E36F239A6A5
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F8A339A6C5
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:09:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230104AbhFCRHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 13:07:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43666 "EHLO vps0.lunn.ch"
+        id S230380AbhFCRJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 13:09:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40338 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229695AbhFCRHc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 13:07:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=i94mZKTdzIzK1JAgAL7WiUVWsC50HEuGJnIVHUQxEOI=; b=yHgYtHTMEMsYoByJ3CVGsZnTxx
-        joQq/48Kb2hmIVpbTd1Se0s8hBfpuSEuoua5Fd6scuZd3wrLmQDEP3Z3HVHYrJbWsBsAsxbO4Ikjs
-        PNJb4Fc6Bir7TpS9Ka78URWHvuWzW6nRp5/l3hmz7dprOyjDuxIPxf26vqK/HO4zFglc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1loqmu-007f6h-MB; Thu, 03 Jun 2021 19:05:44 +0200
-Date:   Thu, 3 Jun 2021 19:05:44 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Liang Xu <lxu@maxlinear.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
-        Hauke Mehrtens <hmehrtens@maxlinear.com>,
-        Thomas Mohren <tmohren@maxlinear.com>
-Subject: Re: [PATCH v2] net: phy: add Maxlinear GPY115/21x/24x driver
-Message-ID: <YLkL6MWJCheuUJv1@lunn.ch>
-References: <20210603073438.33967-1-lxu@maxlinear.com>
- <20210603091750.GQ30436@shell.armlinux.org.uk>
- <54b527d6-0fe6-075f-74d6-cc4c51706a87@maxlinear.com>
- <YLjzeMpRDIUV9OAI@lunn.ch>
- <1e580c98-3a0c-2e60-17e3-01ad8bfd69d9@maxlinear.com>
+        id S230333AbhFCRJ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 13:09:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 809F2613DE;
+        Thu,  3 Jun 2021 17:07:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622740061;
+        bh=27kYeqCQHC+7oB//+3h8Rl8uVvRD+9U76fLMbkQRlsM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CqTVKze93Vgeq3OA+NL8bli3d2jPLOMNlfv2VC33pBPKxt/QzFdMElrrnPsfZfLtV
+         pLbMCmaruE3lYL8skMAgNlwQDfYwOo4bwf4dCILIJ6RcY7RggrFfByp2FJnRzyc7fU
+         a9wlCD1KGEwN6/GQVNkjIWuYuvXNE9cDjZQIupnpFMEqPQnyYYM8zSz/8DphLm5lWP
+         V7fX31HJDsPA+pSPDUboGHPk+LU9Xn68dYc+bUZG7FogIIjt5fDT6zNp5IJbiuxE2C
+         3Z4MIfIOc/dhuLfmIIR5NARxV7QP816+ahECz+EmhEZO2kgCZnQbJKKdO1+mvm6vff
+         VUuSeXzmfi/fw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jiri Olsa <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 05/43] bpf: Forbid trampoline attach for functions with variable arguments
+Date:   Thu,  3 Jun 2021 13:06:55 -0400
+Message-Id: <20210603170734.3168284-5-sashal@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210603170734.3168284-1-sashal@kernel.org>
+References: <20210603170734.3168284-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1e580c98-3a0c-2e60-17e3-01ad8bfd69d9@maxlinear.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The firmware version can change because of switch of the firmware during 
-> running time.
+From: Jiri Olsa <jolsa@kernel.org>
 
-Please could you explain this some more. What happens if i initialize
-the PHY and then it decided to switch its firmware. Is the
-configuration kept? Does it need reconfiguring?
+[ Upstream commit 31379397dcc364a59ce764fabb131b645c43e340 ]
 
-      Andrew
+We can't currently allow to attach functions with variable arguments.
+The problem is that we should save all the registers for arguments,
+which is probably doable, but if caller uses more than 6 arguments,
+we need stack data, which will be wrong, because of the extra stack
+frame we do in bpf trampoline, so we could crash.
+
+Also currently there's malformed trampoline code generated for such
+functions at the moment as described in:
+
+  https://lore.kernel.org/bpf/20210429212834.82621-1-jolsa@kernel.org/
+
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20210505132529.401047-1-jolsa@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/bpf/btf.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index b1a76fe046cb..6bd003568fa5 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -5126,6 +5126,12 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
+ 	m->ret_size = ret;
+ 
+ 	for (i = 0; i < nargs; i++) {
++		if (i == nargs - 1 && args[i].type == 0) {
++			bpf_log(log,
++				"The function %s with variable args is unsupported.\n",
++				tname);
++			return -EINVAL;
++		}
+ 		ret = __get_type_size(btf, args[i].type, &t);
+ 		if (ret < 0) {
+ 			bpf_log(log,
+@@ -5133,6 +5139,12 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
+ 				tname, i, btf_kind_str[BTF_INFO_KIND(t->info)]);
+ 			return -EINVAL;
+ 		}
++		if (ret == 0) {
++			bpf_log(log,
++				"The function %s has malformed void argument.\n",
++				tname);
++			return -EINVAL;
++		}
+ 		m->arg_size[i] = ret;
+ 	}
+ 	m->nr_args = nargs;
+-- 
+2.30.2
+
