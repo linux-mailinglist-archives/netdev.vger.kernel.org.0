@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2DE439A673
+	by mail.lfdr.de (Postfix) with ESMTP id 2517F39A671
 	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 18:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230233AbhFCQ6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 12:58:51 -0400
+        id S230262AbhFCQ6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 12:58:48 -0400
 Received: from mga06.intel.com ([134.134.136.31]:13144 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230159AbhFCQ6n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 12:58:43 -0400
-IronPort-SDR: iLF3N9FFVcB6d8xayxrajRhSSIJ7yUK97VHzQbgE2SDY+IsyAulGEYab+scxb94GqP9SD4UyaX
- r0/Zgl21V/Sg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10004"; a="265260915"
+        id S230143AbhFCQ6m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 12:58:42 -0400
+IronPort-SDR: v8jqPu6Yp5uPZgoxyiRVZv7+JqczXZYGzzVTiLfpD0rVgVmwUBICMnvD7oWvS0uUQvR7ZIUoaP
+ nwTCS/i0abNg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10004"; a="265260916"
 X-IronPort-AV: E=Sophos;i="5.83,246,1616482800"; 
-   d="scan'208";a="265260915"
+   d="scan'208";a="265260916"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2021 09:56:55 -0700
-IronPort-SDR: 4Mjy8T1LJZo64FFL3EDKGxpNzv/NgOCIWFdIoBbeHExCf1MbfqQVpwIUS92BH4FtPi3MgXUPEb
- Ygu1aJX61zKw==
+IronPort-SDR: YAg6ubzYRiyLWRIgjExIf90b3lronLrYR9j73ob6JwiKwEwnnMjWzGT5o9qP2pBKTWTTbf7D/i
+ WoRLFH3a+Pjg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,246,1616482800"; 
-   d="scan'208";a="550239145"
+   d="scan'208";a="550239149"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga004.jf.intel.com with ESMTP; 03 Jun 2021 09:56:55 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -32,9 +32,9 @@ Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
         anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Vishakha Jambekar <vishakha.jambekar@intel.com>
-Subject: [PATCH net 4/8] ixgbe: add correct exception tracing for XDP
-Date:   Thu,  3 Jun 2021 09:59:19 -0700
-Message-Id: <20210603165923.1918030-5-anthony.l.nguyen@intel.com>
+Subject: [PATCH net 5/8] igb: add correct exception tracing for XDP
+Date:   Thu,  3 Jun 2021 09:59:20 -0700
+Message-Id: <20210603165923.1918030-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210603165923.1918030-1-anthony.l.nguyen@intel.com>
 References: <20210603165923.1918030-1-anthony.l.nguyen@intel.com>
@@ -51,44 +51,35 @@ errors can occur. The support was only partial. Several errors
 where not logged which would confuse the user quite a lot not
 knowing where and why the packets disappeared.
 
-Fixes: 33fdc82f0883 ("ixgbe: add support for XDP_TX action")
-Fixes: d0bcacd0a130 ("ixgbe: add AF_XDP zero-copy Rx support")
+Fixes: 9cbc948b5a20 ("igb: add XDP support")
 Reported-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 Tested-by: Vishakha Jambekar <vishakha.jambekar@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 16 ++++++++--------
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 14 ++++++++------
- 2 files changed, 16 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index c5ec17d19c59..2ac5b82676f3 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -2213,23 +2213,23 @@ static struct sk_buff *ixgbe_run_xdp(struct ixgbe_adapter *adapter,
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 0123285029fa..b2a042f825ff 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -8394,18 +8394,20 @@ static struct sk_buff *igb_run_xdp(struct igb_adapter *adapter,
  		break;
  	case XDP_TX:
- 		xdpf = xdp_convert_buff_to_frame(xdp);
--		if (unlikely(!xdpf)) {
--			result = IXGBE_XDP_CONSUMED;
--			break;
--		}
-+		if (unlikely(!xdpf))
-+			goto out_failure;
- 		result = ixgbe_xmit_xdp_ring(adapter, xdpf);
-+		if (result == IXGBE_XDP_CONSUMED)
+ 		result = igb_xdp_xmit_back(adapter, xdp);
++		if (result == IGB_XDP_CONSUMED)
 +			goto out_failure;
  		break;
  	case XDP_REDIRECT:
  		err = xdp_do_redirect(adapter->netdev, xdp, xdp_prog);
 -		if (!err)
--			result = IXGBE_XDP_REDIR;
+-			result = IGB_XDP_REDIR;
 -		else
--			result = IXGBE_XDP_CONSUMED;
+-			result = IGB_XDP_CONSUMED;
 +		if (err)
 +			goto out_failure;
-+		result = IXGBE_XDP_REDIR;
++		result = IGB_XDP_REDIR;
  		break;
  	default:
  		bpf_warn_invalid_xdp_action(act);
@@ -96,46 +87,7 @@ index c5ec17d19c59..2ac5b82676f3 100644
  	case XDP_ABORTED:
 +out_failure:
  		trace_xdp_exception(rx_ring->netdev, xdp_prog, act);
- 		fallthrough; /* handle aborts by dropping packet */
- 	case XDP_DROP:
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index 91ad5b902673..f72d2978263b 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -106,9 +106,10 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
- 
- 	if (likely(act == XDP_REDIRECT)) {
- 		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
--		result = !err ? IXGBE_XDP_REDIR : IXGBE_XDP_CONSUMED;
-+		if (err)
-+			goto out_failure;
- 		rcu_read_unlock();
--		return result;
-+		return IXGBE_XDP_REDIR;
- 	}
- 
- 	switch (act) {
-@@ -116,16 +117,17 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
- 		break;
- 	case XDP_TX:
- 		xdpf = xdp_convert_buff_to_frame(xdp);
--		if (unlikely(!xdpf)) {
--			result = IXGBE_XDP_CONSUMED;
--			break;
--		}
-+		if (unlikely(!xdpf))
-+			goto out_failure;
- 		result = ixgbe_xmit_xdp_ring(adapter, xdpf);
-+		if (result == IXGBE_XDP_CONSUMED)
-+			goto out_failure;
- 		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
  		fallthrough;
- 	case XDP_ABORTED:
-+out_failure:
- 		trace_xdp_exception(rx_ring->netdev, xdp_prog, act);
- 		fallthrough; /* handle aborts by dropping packet */
  	case XDP_DROP:
 -- 
 2.26.2
