@@ -2,335 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAD7D39A4BC
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:38:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D83D939A4E1
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:40:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbhFCPjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 11:39:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45690 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229778AbhFCPjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:39:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622734688;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MAfOCgAL+/4c+u2cKFnHe9PJR7//GbNGS7l7MR7qaKc=;
-        b=Vt0WcLCOaiemRoUncmv1MZTGgmuIdpKQ21SFnRn10IZ8+N1hRubwk9UZbM3IoXn1SaDyjI
-        DXCQknqP1u4rN4UWPAZOAiZO2+dNuBoeIZVjtVsK125rtQ1gHs59lIwQ74QMcAapc4y3p9
-        PGdDhniSbMxklxlH6N8OYU8m9/gBq8s=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-448-BswdoIuSMPGBKAPx7yxFVg-1; Thu, 03 Jun 2021 11:38:07 -0400
-X-MC-Unique: BswdoIuSMPGBKAPx7yxFVg-1
-Received: by mail-ej1-f70.google.com with SMTP id f1-20020a1709064941b02903f6b5ef17bfso2078534ejt.20
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 08:38:07 -0700 (PDT)
+        id S230055AbhFCPmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 11:42:36 -0400
+Received: from mail-qt1-f201.google.com ([209.85.160.201]:56093 "EHLO
+        mail-qt1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230048AbhFCPmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:42:36 -0400
+Received: by mail-qt1-f201.google.com with SMTP id s11-20020ac8758b0000b029020e731296abso2727904qtq.22
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 08:40:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=ylXTyxpFYn3LQgYPukgqBuWSxwDoIQ/GM2WEa6oXcPc=;
+        b=Z0M5UdVLAie4Kz2qi2JmGCK7H1nmqBJIsDCXfCveGhFazpe5bVaYDNgvW8jrVs/lA2
+         fbhcQTBA+B1gQycOUgrkfWeMdjvSNODrzQ0ojjA5PDOJSFTI26jfi9Wjln7GOFu2mnge
+         N1AjftmimA0TX4+HRKRZUgWE2vHsnA0nutr+al+N6AJxp6ORDr/TtH3bte6RG1gelP4z
+         SwZaz2qG86d8hWSQiTGewwHGMfpbwyF8sLsHuqxKnEg714XXYqc43WoSRc4YfhVr8Phd
+         +YgCKzOW9cSnkYeicPWiViif+lFpIZNIfuGxIOB09k5kfZypnY+ZD2mmXzDQteQxEYqs
+         3Rjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MAfOCgAL+/4c+u2cKFnHe9PJR7//GbNGS7l7MR7qaKc=;
-        b=ucBqZsJAvFRJKFCm9ANs2cxrV/Z/6CoCxVDEAMy8RCNWCT5NVvVmAZh9NTx0oiqRF2
-         ZetBlWtgytsnFHC00ZU+Tr38cgxdwgrigrSnSSmIddk0wm3Rk85SXj7NLTUexDHbdRQe
-         DXRfnYuCPUvbGei69uRfEKdN65V2JwaTjn24RFtXWl8s9UgUJdxQV4i1OYw6GG8RJ5lU
-         7AG9pE2zH5k/3kDMdtQYyy5bwqe8L/tCM5OD+B7EE/lVsQKFa7qy4F9tCwS4xMuosOhl
-         Al2zbASHOusDVLPwy6xOhC+ER5pQiti7buUEUJXU1Ir9ObtNPgVZ0kiw0qrAzNRztGIB
-         lAgw==
-X-Gm-Message-State: AOAM530lL+UBg/fhEyWhJH6ys/Mt9YEZhyfYNiPy6vAfNQjFRGaenbZD
-        N/Dqy1w/ZKqSoqbP0/Wpyghnng56iNnY8yBp98eMy9sgXeiZlMxCl24+CnK0kFCClt84/82rvb8
-        SwDiIq9DgJuZdTwBN
-X-Received: by 2002:a05:6402:b1a:: with SMTP id bm26mr61508edb.387.1622734686330;
-        Thu, 03 Jun 2021 08:38:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzCg4RiY3uWsOMEkG7pXj17Pm1AGWGs6kIw12MPkL7qvmBz82U9B68S6pavqH2tLMDPO5l1tw==
-X-Received: by 2002:a05:6402:b1a:: with SMTP id bm26mr61493edb.387.1622734686165;
-        Thu, 03 Jun 2021 08:38:06 -0700 (PDT)
-Received: from steredhat ([5.170.129.82])
-        by smtp.gmail.com with ESMTPSA id z20sm1641999ejd.18.2021.06.03.08.38.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 08:38:05 -0700 (PDT)
-Date:   Thu, 3 Jun 2021 17:38:01 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=ylXTyxpFYn3LQgYPukgqBuWSxwDoIQ/GM2WEa6oXcPc=;
+        b=X9XbJoDz6jfJ21ujiP/d3mPFwbce23x4stJ1AtC04AsENlvD/2Ni3A1MFosr740dXA
+         3/wTF58B28AhmWZ/YURcyaNhtbS1XxvLZeXcr3UtfZOXi+1vyoCgtJZju71jisX+Qzod
+         IyXsQmLWATLZC32j7UqDxJmcaeFLaTySOYhTw76i67JfSce2sj+Y+0QvanKz0EuO6I8M
+         vHu3wULsZMD37il0vknkUM90EpbrlMFs3Xyq7YVkbhKwJEA5I1+LNW8Ko/gDH3vPyIX3
+         67Rmq4G1kQiTN6DhC+rHiECcOoVB7MFhFcAtjYRqSIQUkCp55ULmBiv/Dph/XIR1lRkP
+         TD1w==
+X-Gm-Message-State: AOAM531hEovecYoUZ3UuL5DCFQULcpbrjkPyryYAS0da0YYwbChepLlS
+        kBLEf3k7DXa0Ghdba0q9jHZzg+I=
+X-Google-Smtp-Source: ABdhPJyEuWjJh/n0LQykDQMN1HhV/NPolL5VymF8E1YE6jxna3GLaSZAhPkJ102sdF8UMPi9V2I06nY=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:9d0a:7a1b:c5e:c9f])
+ (user=sdf job=sendgmr) by 2002:a0c:e752:: with SMTP id g18mr57915qvn.24.1622734775800;
+ Thu, 03 Jun 2021 08:39:35 -0700 (PDT)
+Date:   Thu, 3 Jun 2021 08:39:33 -0700
+In-Reply-To: <20210601221841.1251830-2-tannerlove.kernel@gmail.com>
+Message-Id: <YLj3tX141kQFkm+N@google.com>
+Mime-Version: 1.0
+References: <20210601221841.1251830-1-tannerlove.kernel@gmail.com> <20210601221841.1251830-2-tannerlove.kernel@gmail.com>
+Subject: Re: [PATCH net-next v3 1/3] net: flow_dissector: extend bpf flow
+ dissector support with vnet hdr
+From:   sdf@google.com
+To:     Tanner Love <tannerlove.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Petar Penkov <ppenkov@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, oxffffaa@gmail.com
-Subject: Re: [PATCH v10 17/18] vsock_test: add SOCK_SEQPACKET tests
-Message-ID: <20210603153801.xyew6p5d4x4orwka@steredhat>
-References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
- <20210520191953.1272798-1-arseny.krasnov@kaspersky.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210520191953.1272798-1-arseny.krasnov@kaspersky.com>
+        Tanner Love <tannerlove@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 10:19:50PM +0300, Arseny Krasnov wrote:
->Implement two tests of SOCK_SEQPACKET socket: first sends data by
->several 'write()'s and checks that number of 'read()' were same.
->Second test checks MSG_TRUNC flag. Cases for connect(), bind(),
->etc. are not tested, because it is same as for stream socket.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> v9 -> v10:
-> 1) Commit message updated.
-> 2) Add second test for message bounds.
+On 06/01, Tanner Love wrote:
+> From: Tanner Love <tannerlove@google.com>
 
-This patch LGTM, but I'll review better with the next version, running 
-also the test suite on my VMs.
+> Amend the bpf flow dissector program type to accept virtio_net_hdr
+> members. Do this to enable bpf flow dissector programs to perform
+> virtio-net header validation. The next patch in this series will add
+> a flow dissection hook in virtio_net_hdr_to_skb and make use of this
+> extended functionality. That commit message has more background on the
+> use case.
 
-Thanks,
-Stefano
+> Signed-off-by: Tanner Love <tannerlove@google.com>
+> Reviewed-by: Willem de Bruijn <willemb@google.com>
+> Reviewed-by: Petar Penkov <ppenkov@google.com>
+> ---
+>   drivers/net/bonding/bond_main.c |  2 +-
+>   include/linux/skbuff.h          | 26 ++++++++++++----
+>   include/net/flow_dissector.h    |  6 ++++
+>   include/uapi/linux/bpf.h        |  6 ++++
+>   net/core/filter.c               | 55 +++++++++++++++++++++++++++++++++
+>   net/core/flow_dissector.c       | 24 ++++++++++++--
+>   tools/include/uapi/linux/bpf.h  |  6 ++++
+>   7 files changed, 116 insertions(+), 9 deletions(-)
 
->
-> tools/testing/vsock/util.c       |  32 +++++++--
-> tools/testing/vsock/util.h       |   3 +
-> tools/testing/vsock/vsock_test.c | 116 +++++++++++++++++++++++++++++++
-> 3 files changed, 146 insertions(+), 5 deletions(-)
->
->diff --git a/tools/testing/vsock/util.c b/tools/testing/vsock/util.c
->index 93cbd6f603f9..2acbb7703c6a 100644
->--- a/tools/testing/vsock/util.c
->+++ b/tools/testing/vsock/util.c
->@@ -84,7 +84,7 @@ void vsock_wait_remote_close(int fd)
-> }
->
-> /* Connect to <cid, port> and return the file descriptor. */
->-int vsock_stream_connect(unsigned int cid, unsigned int port)
->+static int vsock_connect(unsigned int cid, unsigned int port, int type)
-> {
-> 	union {
-> 		struct sockaddr sa;
->@@ -101,7 +101,7 @@ int vsock_stream_connect(unsigned int cid, unsigned int port)
->
-> 	control_expectln("LISTENING");
->
->-	fd = socket(AF_VSOCK, SOCK_STREAM, 0);
->+	fd = socket(AF_VSOCK, type, 0);
->
-> 	timeout_begin(TIMEOUT);
-> 	do {
->@@ -120,11 +120,21 @@ int vsock_stream_connect(unsigned int cid, unsigned int port)
-> 	return fd;
-> }
->
->+int vsock_stream_connect(unsigned int cid, unsigned int port)
->+{
->+	return vsock_connect(cid, port, SOCK_STREAM);
->+}
->+
->+int vsock_seqpacket_connect(unsigned int cid, unsigned int port)
->+{
->+	return vsock_connect(cid, port, SOCK_SEQPACKET);
->+}
->+
-> /* Listen on <cid, port> and return the first incoming connection.  The remote
->  * address is stored to clientaddrp.  clientaddrp may be NULL.
->  */
->-int vsock_stream_accept(unsigned int cid, unsigned int port,
->-			struct sockaddr_vm *clientaddrp)
->+static int vsock_accept(unsigned int cid, unsigned int port,
->+			struct sockaddr_vm *clientaddrp, int type)
-> {
-> 	union {
-> 		struct sockaddr sa;
->@@ -145,7 +155,7 @@ int vsock_stream_accept(unsigned int cid, unsigned int port,
-> 	int client_fd;
-> 	int old_errno;
->
->-	fd = socket(AF_VSOCK, SOCK_STREAM, 0);
->+	fd = socket(AF_VSOCK, type, 0);
->
-> 	if (bind(fd, &addr.sa, sizeof(addr.svm)) < 0) {
-> 		perror("bind");
->@@ -189,6 +199,18 @@ int vsock_stream_accept(unsigned int cid, unsigned int port,
-> 	return client_fd;
-> }
->
->+int vsock_stream_accept(unsigned int cid, unsigned int port,
->+			struct sockaddr_vm *clientaddrp)
->+{
->+	return vsock_accept(cid, port, clientaddrp, SOCK_STREAM);
->+}
->+
->+int vsock_seqpacket_accept(unsigned int cid, unsigned int port,
->+			   struct sockaddr_vm *clientaddrp)
->+{
->+	return vsock_accept(cid, port, clientaddrp, SOCK_SEQPACKET);
->+}
->+
-> /* Transmit one byte and check the return value.
->  *
->  * expected_ret:
->diff --git a/tools/testing/vsock/util.h b/tools/testing/vsock/util.h
->index e53dd09d26d9..a3375ad2fb7f 100644
->--- a/tools/testing/vsock/util.h
->+++ b/tools/testing/vsock/util.h
->@@ -36,8 +36,11 @@ struct test_case {
-> void init_signals(void);
-> unsigned int parse_cid(const char *str);
-> int vsock_stream_connect(unsigned int cid, unsigned int port);
->+int vsock_seqpacket_connect(unsigned int cid, unsigned int port);
-> int vsock_stream_accept(unsigned int cid, unsigned int port,
-> 			struct sockaddr_vm *clientaddrp);
->+int vsock_seqpacket_accept(unsigned int cid, unsigned int port,
->+			   struct sockaddr_vm *clientaddrp);
-> void vsock_wait_remote_close(int fd);
-> void send_byte(int fd, int expected_ret, int flags);
-> void recv_byte(int fd, int expected_ret, int flags);
->diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
->index 5a4fb80fa832..67766bfe176f 100644
->--- a/tools/testing/vsock/vsock_test.c
->+++ b/tools/testing/vsock/vsock_test.c
->@@ -14,6 +14,8 @@
-> #include <errno.h>
-> #include <unistd.h>
-> #include <linux/kernel.h>
->+#include <sys/types.h>
->+#include <sys/socket.h>
->
-> #include "timeout.h"
-> #include "control.h"
->@@ -279,6 +281,110 @@ static void test_stream_msg_peek_server(const struct test_opts *opts)
-> 	close(fd);
-> }
->
->+#define MESSAGES_CNT 7
->+static void test_seqpacket_msg_bounds_client(const struct test_opts *opts)
->+{
->+	int fd;
->+
->+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
->+	if (fd < 0) {
->+		perror("connect");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	/* Send several messages, one with MSG_EOR flag */
->+	for (int i = 0; i < MESSAGES_CNT; i++)
->+		send_byte(fd, 1, 0);
->+
->+	control_writeln("SENDDONE");
->+	close(fd);
->+}
->+
->+static void test_seqpacket_msg_bounds_server(const struct test_opts *opts)
->+{
->+	int fd;
->+	char buf[16];
->+	struct msghdr msg = {0};
->+	struct iovec iov = {0};
->+
->+	fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
->+	if (fd < 0) {
->+		perror("accept");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	control_expectln("SENDDONE");
->+	iov.iov_base = buf;
->+	iov.iov_len = sizeof(buf);
->+	msg.msg_iov = &iov;
->+	msg.msg_iovlen = 1;
->+
->+	for (int i = 0; i < MESSAGES_CNT; i++) {
->+		if (recvmsg(fd, &msg, 0) != 1) {
->+			perror("message bound violated");
->+			exit(EXIT_FAILURE);
->+		}
->+	}
->+
->+	close(fd);
->+}
->+
->+#define MESSAGE_TRUNC_SZ 32
->+static void test_seqpacket_msg_trunc_client(const struct test_opts *opts)
->+{
->+	int fd;
->+	char buf[MESSAGE_TRUNC_SZ];
->+
->+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
->+	if (fd < 0) {
->+		perror("connect");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	if (send(fd, buf, sizeof(buf), 0) != sizeof(buf)) {
->+		perror("send failed");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	control_writeln("SENDDONE");
->+	close(fd);
->+}
->+
->+static void test_seqpacket_msg_trunc_server(const struct test_opts *opts)
->+{
->+	int fd;
->+	char buf[MESSAGE_TRUNC_SZ / 2];
->+	struct msghdr msg = {0};
->+	struct iovec iov = {0};
->+
->+	fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
->+	if (fd < 0) {
->+		perror("accept");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	control_expectln("SENDDONE");
->+	iov.iov_base = buf;
->+	iov.iov_len = sizeof(buf);
->+	msg.msg_iov = &iov;
->+	msg.msg_iovlen = 1;
->+
->+	ssize_t ret = recvmsg(fd, &msg, MSG_TRUNC);
->+
->+	if (ret != MESSAGE_TRUNC_SZ) {
->+		printf("%zi\n", ret);
->+		perror("MSG_TRUNC doesn't work");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	if (!(msg.msg_flags & MSG_TRUNC)) {
->+		fprintf(stderr, "MSG_TRUNC expected\n");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	close(fd);
->+}
->+
-> static struct test_case test_cases[] = {
-> 	{
-> 		.name = "SOCK_STREAM connection reset",
->@@ -309,6 +415,16 @@ static struct test_case test_cases[] = {
-> 		.run_client = test_stream_msg_peek_client,
-> 		.run_server = test_stream_msg_peek_server,
-> 	},
->+	{
->+		.name = "SOCK_SEQPACKET msg bounds",
->+		.run_client = test_seqpacket_msg_bounds_client,
->+		.run_server = test_seqpacket_msg_bounds_server,
->+	},
->+	{
->+		.name = "SOCK_SEQPACKET MSG_TRUNC flag",
->+		.run_client = test_seqpacket_msg_trunc_client,
->+		.run_server = test_seqpacket_msg_trunc_server,
->+	},
-> 	{},
-> };
->
->-- 
->2.25.1
->
+> diff --git a/drivers/net/bonding/bond_main.c  
+> b/drivers/net/bonding/bond_main.c
+> index 7e469c203ca5..5d2d7d5c5704 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -3554,7 +3554,7 @@ static bool bond_flow_dissect(struct bonding *bond,  
+> struct sk_buff *skb,
+>   	case BOND_XMIT_POLICY_ENCAP34:
+>   		memset(fk, 0, sizeof(*fk));
+>   		return __skb_flow_dissect(NULL, skb, &flow_keys_bonding,
+> -					  fk, NULL, 0, 0, 0, 0);
+> +					  fk, NULL, 0, 0, 0, 0, NULL);
+>   	default:
+>   		break;
+>   	}
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index dbf820a50a39..fef8f4b5db6e 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -1312,18 +1312,20 @@ struct bpf_flow_dissector;
+>   bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector  
+> *ctx,
+>   		      __be16 proto, int nhoff, int hlen, unsigned int flags);
 
+> +struct virtio_net_hdr;
+>   bool __skb_flow_dissect(const struct net *net,
+>   			const struct sk_buff *skb,
+>   			struct flow_dissector *flow_dissector,
+>   			void *target_container, const void *data,
+> -			__be16 proto, int nhoff, int hlen, unsigned int flags);
+> +			__be16 proto, int nhoff, int hlen, unsigned int flags,
+> +			const struct virtio_net_hdr *vhdr);
+
+>   static inline bool skb_flow_dissect(const struct sk_buff *skb,
+>   				    struct flow_dissector *flow_dissector,
+>   				    void *target_container, unsigned int flags)
+>   {
+>   	return __skb_flow_dissect(NULL, skb, flow_dissector,
+> -				  target_container, NULL, 0, 0, 0, flags);
+> +				  target_container, NULL, 0, 0, 0, flags, NULL);
+>   }
+
+>   static inline bool skb_flow_dissect_flow_keys(const struct sk_buff *skb,
+> @@ -1332,7 +1334,20 @@ static inline bool  
+> skb_flow_dissect_flow_keys(const struct sk_buff *skb,
+>   {
+>   	memset(flow, 0, sizeof(*flow));
+>   	return __skb_flow_dissect(NULL, skb, &flow_keys_dissector,
+> -				  flow, NULL, 0, 0, 0, flags);
+> +				  flow, NULL, 0, 0, 0, flags, NULL);
+> +}
+> +
+> +static inline bool
+> +__skb_flow_dissect_flow_keys_basic(const struct net *net,
+> +				   const struct sk_buff *skb,
+> +				   struct flow_keys_basic *flow,
+> +				   const void *data, __be16 proto,
+> +				   int nhoff, int hlen, unsigned int flags,
+> +				   const struct virtio_net_hdr *vhdr)
+> +{
+> +	memset(flow, 0, sizeof(*flow));
+> +	return __skb_flow_dissect(net, skb, &flow_keys_basic_dissector, flow,
+> +				  data, proto, nhoff, hlen, flags, vhdr);
+>   }
+
+>   static inline bool
+> @@ -1342,9 +1357,8 @@ skb_flow_dissect_flow_keys_basic(const struct net  
+> *net,
+>   				 const void *data, __be16 proto,
+>   				 int nhoff, int hlen, unsigned int flags)
+>   {
+> -	memset(flow, 0, sizeof(*flow));
+> -	return __skb_flow_dissect(net, skb, &flow_keys_basic_dissector, flow,
+> -				  data, proto, nhoff, hlen, flags);
+> +	return __skb_flow_dissect_flow_keys_basic(net, skb, flow, data, proto,
+> +						  nhoff, hlen, flags, NULL);
+>   }
+
+>   void skb_flow_dissect_meta(const struct sk_buff *skb,
+> diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+> index ffd386ea0dbb..0796ad745e69 100644
+> --- a/include/net/flow_dissector.h
+> +++ b/include/net/flow_dissector.h
+> @@ -370,6 +370,12 @@ struct bpf_flow_dissector {
+>   	const struct sk_buff	*skb;
+>   	const void		*data;
+>   	const void		*data_end;
+> +	__u8			vhdr_flags;
+> +	__u8			vhdr_gso_type;
+> +	__u16			vhdr_hdr_len;
+> +	__u16			vhdr_gso_size;
+> +	__u16			vhdr_csum_start;
+> +	__u16			vhdr_csum_offset;
+>   };
+
+>   static inline void
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 418b9b813d65..de525defd462 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -5155,6 +5155,12 @@ struct __sk_buff {
+>   	__u32 gso_segs;
+>   	__bpf_md_ptr(struct bpf_sock *, sk);
+>   	__u32 gso_size;
+
+[..]
+
+> +	__u8  vhdr_flags;
+> +	__u8  vhdr_gso_type;
+> +	__u16 vhdr_hdr_len;
+> +	__u16 vhdr_gso_size;
+> +	__u16 vhdr_csum_start;
+> +	__u16 vhdr_csum_offset;
+
+These are flow dissector specific, any reason not to add them to
+struct bpf_flow_keys instead?
