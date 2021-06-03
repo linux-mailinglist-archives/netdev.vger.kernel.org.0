@@ -2,64 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E90B739A355
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 16:34:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8D5739A360
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 16:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231678AbhFCOg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 10:36:27 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43318 "EHLO vps0.lunn.ch"
+        id S231770AbhFCOgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 10:36:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41882 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231659AbhFCOg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 10:36:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=YaS8z6uRPRbrqr5oaG8kgrxcuj2FKRWwtg6xBCV1NXY=; b=yU
-        XgX5gSJy4VhV+JfqgwJiaC53Vpy4yXFwJpwPHNpL0PvGQ9IALyNhXVOW6NQQy9ahEx4tORxC6OKLK
-        f8bPbeGj3JoVTpWJIi9VHBYVHnxKOPLFjv4IBAwuwBRLb4mPIKMSiDJ6y3s0a6vw+B/PUlu3xXRSH
-        1QAQY31eXmUDTdk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1looQi-007dOk-SE; Thu, 03 Jun 2021 16:34:40 +0200
-Date:   Thu, 3 Jun 2021 16:34:40 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: /sys/class/net/eth0/name_assign_type -> EINVAL
-Message-ID: <YLjogBwSY9QBoCwX@lunn.ch>
-References: <1b61b068cd72677cf5f0c80b82092dcb1684fa9d.camel@infinera.com>
- <5922a590219f3940a7ce94901b8d916daee31d3a.camel@infinera.com>
- <YLjkMw/TUYmuckzv@lunn.ch>
- <92a72e7b3f54d694a69b9286fadedf1e375640df.camel@infinera.com>
+        id S231760AbhFCOgk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 10:36:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 12D58613D6;
+        Thu,  3 Jun 2021 14:34:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622730896;
+        bh=zC5o6nmJh82wCjYwhPQ484UYLvePnOpYVLth3rHvgbE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=AFSjBT3W2fQzXOAHVkS+Nj1QRDm7ouAXdNeuT2JraCjDt2+PUi/jggkye8x7zpsu+
+         PAtGCfbUHEsQadZkNH0Qfq2fG5P926zxokxCagQC8GWfNI/XKKwhKXibC6HiPHjxZP
+         ueSbgFJZPTa41+jsqnLVUVtFsPXX9esW9/lGts8U63RtYYs71cv8g11DxEjykmVv3B
+         r6UsVlr99GDPcxk0++ybIJynNx6H8S+ScUgMjLRZyevt6y9k6d6ZSl70rGlUeUVT3V
+         tA8Pc3JOv3q/AQJQlfY12qzGkmhoER8ZhK2AgsTourrIWGtzCPNBvdRyQ61dgEpUcp
+         1p8NXsCOQeJIw==
+Received: by pali.im (Postfix)
+        id 3B87A1229; Thu,  3 Jun 2021 16:34:53 +0200 (CEST)
+Date:   Thu, 3 Jun 2021 16:34:53 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Igal Liberman <Igal.Liberman@freescale.com>,
+        Shruti Kanetkar <Shruti@freescale.com>,
+        Emil Medve <Emilian.Medve@Freescale.com>,
+        Scott Wood <oss@buserror.net>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Unsupported phy-connection-type sgmii-2500 in
+ arch/powerpc/boot/dts/fsl/t1023rdb.dts
+Message-ID: <20210603143453.if7hgifupx5k433b@pali>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <92a72e7b3f54d694a69b9286fadedf1e375640df.camel@infinera.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 02:29:38PM +0000, Joakim Tjernlund wrote:
-> On Thu, 2021-06-03 at 16:16 +0200, Andrew Lunn wrote:
-> > On Thu, Jun 03, 2021 at 01:12:16PM +0000, Joakim Tjernlund wrote:
-> > > Seems like old eth interface names cannot read name_assign_type:
-> > > cat /sys/class/net/eth0/name_assign_type
-> > > cat: /sys/class/net/eth0/name_assign_type: Invalid argument
-> > 
-> > Have you done a git bisect to figure out which change broke it?
-> > 
-> > The 5.10 kernel on my Debian desktop has this issue. So it is older
-> > than that.
-> > 
-> >      Andrew
-> 
-> No, I have not used systemd before, also on 5.10.latest, I am setting up a new FW @home and decided to try out systemd.
+Hello!
 
-Debian systemd does not seem to mind not being able to read
-/sys/class/net/eth0/name_assign_type. At least my Ethernet interface
-is working O.K.
+In commit 84e0f1c13806 ("powerpc/mpc85xx: Add MDIO bus muxing support to
+the board device tree(s)") was added following DT property into DT node:
+arch/powerpc/boot/dts/fsl/t1023rdb.dts fm1mac3: ethernet@e4000
 
-   Andrew
+    phy-connection-type = "sgmii-2500";
+
+But currently kernel does not recognize this "sgmii-2500" phy mode. See
+file include/linux/phy.h. In my opinion it should be "2500base-x" as
+this is mode which operates at 2.5 Gbps.
+
+I do not think that sgmii-2500 mode exist at all (correct me if I'm
+wrong).
+
+Could you look at this DT property issue? What should be filled here?
+
+I'm CCing netdev and other developers as I see that there is lot of
+times confusion between sgmii, 1000base-x and 2500base-x modes.
