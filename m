@@ -2,75 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33A2C39A2D0
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 16:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 858CA39A2E2
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 16:16:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231590AbhFCOI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 10:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbhFCOI4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 10:08:56 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD451C06174A;
-        Thu,  3 Jun 2021 07:07:08 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id i67so6006452qkc.4;
-        Thu, 03 Jun 2021 07:07:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gBucM2tWIfE7RZufFyihAb1W7wKbEZlz8vfM9AwERz4=;
-        b=fGK8XT6+BUSnhZ8oa5WyG3+FwOoVnO7kx1SWuB1mWpl8OSCDir9F25H536ejgTS5MW
-         zEP18f/4RqSBokjZipKa28rD/yHbL40Ik1TtuOGvN3KhRjstap7dLalCasO3rKIZAyCT
-         LGh3UhS3NyagGfg3oKKmXH48t5uKuo7WgRWy3ZZ1Nwsvcx9wakm79frr+jsaehC4LNPJ
-         1BfFcn1OCaAyJjmWD6VQovcjuamQ2ZVwsF7QivS8uexgpAKYv3V7Eiwm1Qi/OQDgjkIS
-         lCw/02Zs5IVl3EubFSsyWR84WtIcFcPCfCCpvoYGW0ff9hL+qAo1TZGkbFduwyBQ4XLX
-         YLZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gBucM2tWIfE7RZufFyihAb1W7wKbEZlz8vfM9AwERz4=;
-        b=B7uj0sdCGfmw/3QW5lw3Gvf19miPQvvPqAsWaJy8bd4A/CoEAaLT39LZZ3EjMMohyE
-         NOg12kl1tFXOXg/4Ij08kiVIgjz1iEu63Wnx4UJz0aCL7sEmZimMQjdL9imxEqNzjJ5j
-         tPdRMCz1hc/0O9bBsEqd+GajZFisNwC5W0Yc8UbWLEY6qVAzXEgqn2UgREIHdKlxN1EE
-         qw3HsmUHwP56L9tnvJ/Q2jgz+eVy2XRsPZicblmErnJSoVQP8/ahTCX4CPrE7FhMH7e3
-         E/Pp2X3irN9nGHA+3PpyrwRmsoMaBMkIr0cw0rKYcOgOfCmhs0aKUJTSqhje1PhRhRjs
-         11lQ==
-X-Gm-Message-State: AOAM532zrIn3pctLq7NUXl33HxjWg0gTJcN/IspCqIlkMn/o/f3+aAv1
-        Uv3QLj2kvlugfc8wLG6LajLX0sSWpUJmm9JUuFc0TMKuMKYVhQ==
-X-Google-Smtp-Source: ABdhPJyzJGfYVLXjE2rKVFFPW1eTVljleEGXu/Loi96HQQFmPgfV7xyiZKnx/eOHaIP5sMbJgN5cep7fHsDhQZO3IbA=
-X-Received: by 2002:a05:620a:22f3:: with SMTP id p19mr32675566qki.281.1622729228073;
- Thu, 03 Jun 2021 07:07:08 -0700 (PDT)
+        id S230251AbhFCOSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 10:18:06 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:43270 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229744AbhFCOSG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 10:18:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=9K3l5Is1F/Gf6aPY+mEemNuQ3FPsfGCFymAKHEh5Mqw=; b=3wf8r88fz7ZB340fyjJLD8DgJ5
+        vAbOo69iBzAK7z2beYHdBOyx/djt/8QI7yMTmaIdO7UEFB7sZE/A0yofRRxlZk3I2dFCb0HtzPPpp
+        xKeLLNH/bpONcvs2bOXbrS994b817Mg5c4WXJnC7niI7/SXX4d18laExA91WeYNL1lUU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1loo8x-007dCr-7e; Thu, 03 Jun 2021 16:16:19 +0200
+Date:   Thu, 3 Jun 2021 16:16:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: /sys/class/net/eth0/name_assign_type -> EINVAL
+Message-ID: <YLjkMw/TUYmuckzv@lunn.ch>
+References: <1b61b068cd72677cf5f0c80b82092dcb1684fa9d.camel@infinera.com>
+ <5922a590219f3940a7ce94901b8d916daee31d3a.camel@infinera.com>
 MIME-Version: 1.0
-References: <20210603055341.24473-1-liuhangbin@gmail.com> <CAHmME9qXTYVLenPBfq2xpfq=DSJAsdUwSqP4Fzc=0YP6kW+QsQ@mail.gmail.com>
-In-Reply-To: <CAHmME9qXTYVLenPBfq2xpfq=DSJAsdUwSqP4Fzc=0YP6kW+QsQ@mail.gmail.com>
-From:   Hangbin Liu <liuhangbin@gmail.com>
-Date:   Thu, 3 Jun 2021 22:06:56 +0800
-Message-ID: <CAPwn2JQh2ahvSwJiuMNSeoVe7czM1x=Pt5jyXQBVxpPb5PbU1A@mail.gmail.com>
-Subject: Re: [PATCH] crypto: x86/curve25519 - fix cpu feature checking logic
- in mod_exit
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Netdev <netdev@vger.kernel.org>, stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5922a590219f3940a7ce94901b8d916daee31d3a.camel@infinera.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 3, 2021 at 6:24 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> >         if (IS_REACHABLE(CONFIG_CRYPTO_KPP) &&
-> > -           (boot_cpu_has(X86_FEATURE_BMI2) || boot_cpu_has(X86_FEATURE_ADX)))
-> > +           static_branch_likely(&curve25519_use_bmi2_adx))
-> >                 crypto_unregister_kpp(&curve25519_alg);
-> >  }
->
-> Looks like the error is actually that the `||` should be a `&&`. But
-> if you'd like to branch on that static key instead, that's fine.
+On Thu, Jun 03, 2021 at 01:12:16PM +0000, Joakim Tjernlund wrote:
+> Seems like old eth interface names cannot read name_assign_type:
+> cat /sys/class/net/eth0/name_assign_type
+> cat: /sys/class/net/eth0/name_assign_type: Invalid argument
 
-Yes, the code would be shorter by checking the static key :)
+Have you done a git bisect to figure out which change broke it?
 
-Thanks
-hangbin
+The 5.10 kernel on my Debian desktop has this issue. So it is older
+than that.
+
+     Andrew
