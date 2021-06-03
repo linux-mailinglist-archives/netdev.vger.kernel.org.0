@@ -2,187 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFF6A39A3BF
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 16:56:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DB1B39A406
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:11:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231834AbhFCO6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 10:58:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28588 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230319AbhFCO6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 10:58:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622732190;
+        id S230396AbhFCPMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 11:12:46 -0400
+Received: from us-smtp-delivery-115.mimecast.com ([170.10.133.115]:33854 "EHLO
+        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230309AbhFCPMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:12:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
+        s=selector; t=1622733060;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=goc0S/3BnSXgINaDm4Ycz9KOeQAXHuNP6jsSEIzAQsg=;
-        b=D4kK9IIc6JQvVCCPrLfWa+f62toXy9n2KKUhlciGx5ezUpxiaGOWrO2++MNp3a5H/FMO+s
-        wWXSnwxL+pOwBT/QOAvehoz423HPDK/B8zyJrKxzREtZJ3rROOPZelwElLYw1h52504W2l
-        5miS5weDq4ESjyi6elKfmJ2eu6SQtmw=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-140-jfpPKT2RNR-FLNpFcEa3Lw-1; Thu, 03 Jun 2021 10:56:29 -0400
-X-MC-Unique: jfpPKT2RNR-FLNpFcEa3Lw-1
-Received: by mail-ed1-f71.google.com with SMTP id c21-20020a0564021015b029038c3f08ce5aso3409967edu.18
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 07:56:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=goc0S/3BnSXgINaDm4Ycz9KOeQAXHuNP6jsSEIzAQsg=;
-        b=taYRCqvXrCBL2VxKzxN9qmWoAyueXMqDHikcs86C+Ku05UqDg3zGUK6Nzskf+V3ggt
-         KCEbyvWnx8CPxrfaxjTgo9u7PFfJYK9LBKXW9yGDQob5hqY08M5JvwVCZnD9n1uRCaEZ
-         Qc06hRDUzViUH1U4UxgsXirSzBqrOF/Z4GvOG8BaiCz4Te+eUDLJxVFdZDjguBJpL9mx
-         sx6lFLPMOXP5tQfc1kGymP79jdUkEkUc4yl5udJIDZMOyB0VJDDn6Bnj7Bs9qUKvgCWd
-         TKHpBEWSFAKa5Q6Ja86xLGSyA0UTl/ww77QlD2Hoo9p9NxyU7ILnBarjhNG30E6MqCLk
-         wDNQ==
-X-Gm-Message-State: AOAM530eT3TLJ8J6Qz4M1OuTfaBcPEK9CqkI3K1+zKYzcrdOTYWpaHRW
-        umoqZSL0Ypk77xjINpVk3qvRZIK1TaPr/0jBDF2YzvJzwBWlDoMbo1harrWZEzgqybL5lBQhW2z
-        3KuW2NDCHiNDggdSA
-X-Received: by 2002:aa7:c594:: with SMTP id g20mr171102edq.193.1622732188104;
-        Thu, 03 Jun 2021 07:56:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxNs8fBb3HJWsNPx4vbS0w6t0xdKecgcrrzazaCK6WjM8HGlFblxyZ501bs6But06wi3tedQQ==
-X-Received: by 2002:aa7:c594:: with SMTP id g20mr171099edq.193.1622732187957;
-        Thu, 03 Jun 2021 07:56:27 -0700 (PDT)
-Received: from steredhat ([5.170.129.82])
-        by smtp.gmail.com with ESMTPSA id h2sm1391024edr.50.2021.06.03.07.56.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 07:56:27 -0700 (PDT)
-Date:   Thu, 3 Jun 2021 16:56:23 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, oxffffaa@gmail.com
-Subject: Re: [PATCH v10 12/18] virtio/vsock: add SEQPACKET receive logic
-Message-ID: <20210603145623.cv7cmf2zfjsx4w2t@steredhat>
-References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
- <20210520191824.1272172-1-arseny.krasnov@kaspersky.com>
+        bh=jaChTEMbRpN5pGsbYSZIAgE+6yaNuHl/SeJZ+zKEISw=;
+        b=d55qvNKkTBQ/G40V8mLKNqPHfFLmOa8M7u5rdB1MdlJ7Kjj16B7tnvw4ObZxw7TlI+3AbF
+        vsPMmD3xlEaaX13LK6ows3AMNJGAU/tQ64FDh+OVioTGTvGRFj3J3qoymPdoZlv7/R6Mtn
+        h5MahYjplRtIywsbsv/QBbplBLQEasA=
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam12lp2171.outbound.protection.outlook.com [104.47.55.171])
+ (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-420-8v53kOUPPj2hXmLPtPqPRQ-1; Thu, 03 Jun 2021 11:10:34 -0400
+X-MC-Unique: 8v53kOUPPj2hXmLPtPqPRQ-1
+Received: from MWHPR19MB0077.namprd19.prod.outlook.com (2603:10b6:301:67::32)
+ by CO1PR19MB4838.namprd19.prod.outlook.com (2603:10b6:303:d7::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Thu, 3 Jun
+ 2021 15:10:32 +0000
+Received: from MWHPR19MB0077.namprd19.prod.outlook.com
+ ([fe80::b931:30a4:ce59:dc87]) by MWHPR19MB0077.namprd19.prod.outlook.com
+ ([fe80::b931:30a4:ce59:dc87%4]) with mapi id 15.20.4195.022; Thu, 3 Jun 2021
+ 15:10:32 +0000
+From:   Liang Xu <lxu@maxlinear.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        Thomas Mohren <tmohren@maxlinear.com>
+Subject: Re: [PATCH v2] net: phy: add Maxlinear GPY115/21x/24x driver
+Thread-Topic: [PATCH v2] net: phy: add Maxlinear GPY115/21x/24x driver
+Thread-Index: AQHXWEr5aRzQQmYLZUuI1qUONcx6wKsCAhAAgABiiAA=
+Date:   Thu, 3 Jun 2021 15:10:31 +0000
+Message-ID: <54b527d6-0fe6-075f-74d6-cc4c51706a87@maxlinear.com>
+References: <20210603073438.33967-1-lxu@maxlinear.com>
+ <20210603091750.GQ30436@shell.armlinux.org.uk>
+In-Reply-To: <20210603091750.GQ30436@shell.armlinux.org.uk>
+Accept-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
+x-originating-ip: [27.104.174.186]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5c39f87f-b0da-4946-8fea-08d926a1bb23
+x-ms-traffictypediagnostic: CO1PR19MB4838:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CO1PR19MB4838F37BA75B819F71E4355ABD3C9@CO1PR19MB4838.namprd19.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0
+x-microsoft-antispam-message-info: TO+phNldvHSVDLYdoCniOjP9zp49ic0GVCdL38mzPjtWO4YRXFEaeiDon2XHHMW+xi3Uy1VX2z50aSp1oyDRbVzat0AhMMkNsEU3iiMT4XZfYDCvS6PKHY+ikgTQrWRWrp8E8breHwMGNYyracS+0J1C+ztjRiITMixt9qdx8z2K7KMaZc1zbdcFP6D5142bPpmCQslCy2W+a/d08JfbldnH4VqkfoPQ5g0I9GOjPIEh5Vc0/h7WFLcOexYiKn6gDHa4LfsyaE2oTjF1f01B535ctWLym6dSbJH7kom57o2VFcmITT/imnVfDqu6p3qbVEKwcyQFKhrIP5otswRSyuzUOIZXsNNJvIbkJIM6yZmyhhAb9JxolQhB0NGjqTp9xs5gE2gUsn8oHRVELQabNbllr1BF/rcwauhal0LSCloQ7nhWlbDJOqz5N9e4+VNBCwQmDoXlzwe2im97H/2GAeWFdOtNrvbbW0nPnbitEiEAN3A0VhIqdxLGGrKedpznyw70C+sPbH6TciPVyst7Xuh/92n/mhv2ch73BwXdET5urOcJBPtt0rHQdSJKMZi0t8+FRIbrK5jn/xFDfut98myI9x0ZWYCqrKg/oZXdauJU5jhahUBin/5ecUbLXvcgS/p7fKhX6buQDZIdeEX1gg5R7LOkGo25LQnb5JZVREbRDG+XrH/62zm8PXPZpEaa
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR19MB0077.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(346002)(366004)(39830400003)(396003)(6506007)(31686004)(4326008)(66946007)(38100700002)(316002)(122000001)(91956017)(76116006)(6916009)(31696002)(36756003)(86362001)(6486002)(71200400001)(54906003)(5660300002)(478600001)(107886003)(26005)(6512007)(8676002)(186003)(2616005)(2906002)(66476007)(66446008)(4744005)(53546011)(64756008)(66556008)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1102
+x-ms-exchange-antispam-messagedata: =?Windows-1252?Q?RzXITZeyblw9CZTt2eL7+jkNq3xt8MTT2IJlOiVxNcE5rqjcqi1kix8J?=
+ =?Windows-1252?Q?H1l+aQp42num3XAPd3EqVoir06jbfuk+vlnE4/aZ68p19zboBLT+tMvB?=
+ =?Windows-1252?Q?hNGrBYeH1bopuCNnnDbAvypSvkhfCXCtfA0sRvYjt4PqVwcmqiKYd8ST?=
+ =?Windows-1252?Q?2aojUcn4xY6G1LCmJGkN6d88aZBC0bW8E8OMhQfQ8HltFHmlEf3i4Zn7?=
+ =?Windows-1252?Q?VyA+5DDP8OXUa54Ro4VsHDOPJwPDZeUVF+NO0Yg8KuvHFXvn54wE54Ed?=
+ =?Windows-1252?Q?f2g+kJ8+IMrgSMq6PdlpkP14X0e6qpcoYZatNow+nz2tgGbWnpySZk3u?=
+ =?Windows-1252?Q?T4RWTkKgL+AXEEQ3BSkW0RDGcEzasdL01E8iakA3BjZvHNd1T7J40xFs?=
+ =?Windows-1252?Q?CIOEm0QERilmbwn9NQpmOHfvPySPBsGqPsOOJ6qlCp7/B/R0H709O0Ir?=
+ =?Windows-1252?Q?v6UATjbLToHKweztkYz6i2qFjmytk6sYHQ6Y/2rE1Jc3rMoPdKKNmVU8?=
+ =?Windows-1252?Q?CMh6kqYFh3wZlf1jGdRLldu9mUWXWo5nvu/mt2PCdqZgS1cJEfcQ46Fs?=
+ =?Windows-1252?Q?CygBzTCdpMNlFrlPHf1PDocc35HbbKU3o45BJ1MOwh4RM2dptM2e99c0?=
+ =?Windows-1252?Q?OHtJd8XlCU4uTFekbO/Kn1FCimKX/mF1G8o/KPdOj51eY+xouQNRlj50?=
+ =?Windows-1252?Q?SEAFte3+wIgUuadjqWGb2qcTvetSa6jrjsbmz+/et6W2gS24hvVPUCq+?=
+ =?Windows-1252?Q?yidf7rcpiF7c5WHrT+zxstySJA4YQk0MxBsncmVi50rVO1HQo15njali?=
+ =?Windows-1252?Q?s/9os4//tT0wTgXqSdEyk/aHnOCPNCFAGaEK1zATqo7xVHgiQCPeF0hl?=
+ =?Windows-1252?Q?gxSCNsvp/UAlSblo3hXzz76b2U0xyyCVZHC6iRuO6GkLoN4gblo4C9Gq?=
+ =?Windows-1252?Q?NbBhpYXrVErp/AJPoVnRnNX6rYCcvK9UUF8VXPBlbObz+wL0kYsrY/rk?=
+ =?Windows-1252?Q?ROwBZAXRuRxL7yVTp5iOU7UppMk/p9MbD10AJjNtRU+SIK7OZ55cLoAg?=
+ =?Windows-1252?Q?q/0MhZQNZAE+EKPPk3WUz7YaOt/r5/rUlMNl/O7Goitb6yqet+VhGvZK?=
+ =?Windows-1252?Q?q90sa5GJb7ytk1TC+BxGpuGERQ7x6+4r3mM20ISA51V7AUqnf/ziCAby?=
+ =?Windows-1252?Q?dXk7OsN0cJtLi0eTbNZ6/W/CAXXPN6GkLP/jDIWzt4a6Z6jsvdztEbXH?=
+ =?Windows-1252?Q?L0XQRZirTwHSUYsSr4G8aeTEP7a0e1HukANghTWeQT0Tgl9Duy9mnMCf?=
+ =?Windows-1252?Q?u0Jqxk5nXV0oYN1Y1oMFl1u0MG0zjt+0W5Za4X8a1WTjbUQsWS6XXbbU?=
+ =?Windows-1252?Q?+GrJIhq/jvK4CxWA8A+mQPf2r4DTSndqCQsAT9yWyDcbonqPBtS19DfZ?=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210520191824.1272172-1-arseny.krasnov@kaspersky.com>
+X-OriginatorOrg: maxlinear.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR19MB0077.namprd19.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c39f87f-b0da-4946-8fea-08d926a1bb23
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2021 15:10:31.8337
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: dac28005-13e0-41b8-8280-7663835f2b1d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: TO/xRHcA7CCQ7H4vjfdyN7L20QTrsTL06TSpjxX8YESb/gROJgBKAxM+JVYHSBoxSqfPWFcc9NuNhHujvRzJWA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR19MB4838
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: maxlinear.com
+Content-Language: en-US
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-ID: <76C81DA46997564F9BC4409878D77646@namprd19.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 10:18:21PM +0300, Arseny Krasnov wrote:
->Update current receive logic for SEQPACKET support: performs
->check for packet and socket types on receive(if mismatch, then
->reset connection).
+On 3/6/2021 5:17 pm, Russell King (Oracle) wrote:
+>
+> > +static int gpy_config_init(struct phy_device *phydev)
+> > +{
+> > + int ret, fw_ver;
+> > +
+> > + /* Show GPY PHY FW version in dmesg */
+> > + fw_ver =3D phy_read(phydev, PHY_FWV);
+> > + if (fw_ver < 0)
+> > + return fw_ver;
+> > +
+> > + phydev_info(phydev, "Firmware Version: 0x%04X (%s)\n", fw_ver,
+> > + (fw_ver & PHY_FWV_REL_MASK) ? "release" : "test");
+>
+> Does this need to print the firmware version each time config_init()
+> is called? Is it likely to change beyond? Would it be more sensible
+> to print it in the probe() method?
 
-We also copy the flags. Please check better your commit messages.
+The firmware version can change in device with different firmware=20
+loading mechanism.
 
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> v9 -> v10:
-> 1) Commit message updated.
-> 2) Comment updated.
-> 3) Updated way to to set 'last_pkt' flags.
->
-> net/vmw_vsock/virtio_transport_common.c | 30 ++++++++++++++++++++++---
-> 1 file changed, 27 insertions(+), 3 deletions(-)
->
->diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->index 61349b2ea7fe..a6f8b0f39775 100644
->--- a/net/vmw_vsock/virtio_transport_common.c
->+++ b/net/vmw_vsock/virtio_transport_common.c
->@@ -165,6 +165,14 @@ void virtio_transport_deliver_tap_pkt(struct virtio_vsock_pkt *pkt)
-> }
-> EXPORT_SYMBOL_GPL(virtio_transport_deliver_tap_pkt);
->
->+static u16 virtio_transport_get_type(struct sock *sk)
->+{
->+	if (sk->sk_type == SOCK_STREAM)
->+		return VIRTIO_VSOCK_TYPE_STREAM;
->+	else
->+		return VIRTIO_VSOCK_TYPE_SEQPACKET;
->+}
->+
-> /* This function can only be used on connecting/connected sockets,
->  * since a socket assigned to a transport is required.
->  *
->@@ -979,13 +987,17 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
-> 					   struct virtio_vsock_pkt, list);
->
-> 		/* If there is space in the last packet queued, we copy the
->-		 * new packet in its buffer.
->+		 * new packet in its buffer(except SEQPACKET case, when we
->+		 * also check that last packet is not last packet of previous
->+		 * record).
+I moved the print to probe and tested a few devices, found in some cases=20
+it did not print the active version number.
 
-Is better to explain why we don't do this for SEQPACKET, something like this:
-
-		/* If there is space in the last packet queued, we copy the
-		 * new packet in its buffer.
-		 * We avoid this if the last packet queued has
-		 * VIRTIO_VSOCK_SEQ_EOR set, because it is the delimiter
-		 * of SEQPACKET record, so `pkt` is the first packet
-		 * of a new record.
-		 */
-
-> 		 */
->-		if (pkt->len <= last_pkt->buf_len - last_pkt->len) {
->+		if ((pkt->len <= last_pkt->buf_len - last_pkt->len) &&
->+		    !(le32_to_cpu(last_pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR)) {
-> 			memcpy(last_pkt->buf + last_pkt->len, pkt->buf,
-> 			       pkt->len);
-> 			last_pkt->len += pkt->len;
-> 			free_pkt = true;
->+			last_pkt->hdr.flags |= pkt->hdr.flags;
-> 			goto out;
-> 		}
-> 	}
->@@ -1151,6 +1163,12 @@ virtio_transport_recv_listen(struct sock *sk, struct virtio_vsock_pkt *pkt,
-> 	return 0;
-> }
->
->+static bool virtio_transport_valid_type(u16 type)
->+{
->+	return (type == VIRTIO_VSOCK_TYPE_STREAM) ||
->+	       (type == VIRTIO_VSOCK_TYPE_SEQPACKET);
->+}
->+
-> /* We are under the virtio-vsock's vsock->rx_lock or vhost-vsock's vq->mutex
->  * lock.
->  */
->@@ -1176,7 +1194,7 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
-> 					le32_to_cpu(pkt->hdr.buf_alloc),
-> 					le32_to_cpu(pkt->hdr.fwd_cnt));
->
->-	if (le16_to_cpu(pkt->hdr.type) != VIRTIO_VSOCK_TYPE_STREAM) {
->+	if (!virtio_transport_valid_type(le16_to_cpu(pkt->hdr.type))) {
-> 		(void)virtio_transport_reset_no_sock(t, pkt);
-> 		goto free_pkt;
-> 	}
->@@ -1193,6 +1211,12 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
-> 		}
-> 	}
->
->+	if (virtio_transport_get_type(sk) != le16_to_cpu(pkt->hdr.type)) {
->+		(void)virtio_transport_reset_no_sock(t, pkt);
->+		sock_put(sk);
->+		goto free_pkt;
->+	}
->+
-> 	vsk = vsock_sk(sk);
->
-> 	lock_sock(sk);
->-- 
->2.25.1
->
-
-The rest LGTM.
-
-Stefano
+So I'm thinking to keep it here to cover all scenarios.
 
