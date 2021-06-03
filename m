@@ -2,87 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7505239ACA4
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 23:20:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7364C39ACB1
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 23:22:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbhFCVVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 17:21:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49070 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229640AbhFCVVu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 17:21:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0806961403;
-        Thu,  3 Jun 2021 21:20:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622755205;
-        bh=IfSq5Dd/Ab+O41ImRrQMvqTshXVTzVLzZsL1xJq/qtc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Phkd9DSV5zUozHMjfHwSYbWlmzgXhvipmhq7/6sTIzCAWB/mtuB+NKf1wu1bFoEwX
-         femnmpCD+UE/u/FolMoWY6TCZibHXTVBkgE4qn+AZuA8FsvtjuxeLO1ZExr+GfgLmN
-         vFfctzskAr5OEswYjH2KtfB06kRQQQ/MeENM+sylYZ+NB4ZDm4rmKUWZcgyEGLX2qd
-         2Aqyx7xCyX82EWnjt14slPTs62RuVu3uNLX4kzZ4RCEMjKRcW64jVheJzUsmuqufh9
-         RDRSDCxaWf9tqV1rz+ZPd1HFlf0tBWbv124ZrSazrppryEaYPwZkc1GR+fssBzDktv
-         4uQuapRvq6r9Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 014BA60ACA;
-        Thu,  3 Jun 2021 21:20:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230127AbhFCVYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 17:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229852AbhFCVYG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 17:24:06 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4DE2C06174A
+        for <netdev@vger.kernel.org>; Thu,  3 Jun 2021 14:22:14 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id k16so7831991ios.10
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 14:22:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cwUozxVN5m9I1zZ61uq3W8j+eMpZlhhM0ghdSjfRLt8=;
+        b=Yx7gLYh59UMNCZE5Iau8c9TgjOUGC18yYDoVG5pJr3PAi7OgZl64lthAdELtkZkIIR
+         Y3aRPKMsF3pWRFsTwEU/wLL/Z/QqLBJBEzcCxP2WyUzEP9ymIUdQj6aargWRVAplQzeY
+         VSzFo5ME2dJb3e2xNqm8cXzJ1fu/NqVOAs7EwTxHZAyA34bWiYFeYSTqE0WguD8AbfP4
+         IEd+0arJFIb1Y4AvXh2qKxKQ7JT48KDnulox1dh3glVvyM/0kuFdOM0rrQAa/2moZtDQ
+         pnvPfJoi3R+dCayBNIXf6TTT15XHwnHgvSkPSLjush3hCttHC19ZQbRIEEmi+EC9pL8f
+         hRYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cwUozxVN5m9I1zZ61uq3W8j+eMpZlhhM0ghdSjfRLt8=;
+        b=Pw6QjCDWDHTGB9A1hJrfKYdYr15sOFI18FhFINNPT5UlxDW9qRuRMJxzw0ENwlwkU7
+         dJB1DEgp5D0J4roYV7bdlzEITCmmu+qPNP9LPQeca5hhTcquhfd3xlBnBGavLKrRHpBD
+         41SyqKWzghsYK6S0a4nFglMMwXwQHYEf0trG2eFMrtXv7emGwuxj1G8619RJUWmjXy3y
+         Zn5M53NIcxgtmHsGd5SJFq44c8UhARt3CjGzj7vbiIYyoJmNc2Xw3a9ZTDbV/TYEf7XZ
+         PpNHMtA/kQ9wR+oZV04jaAkN5tW9TEYg1cFtXWxhT3UP4OtxKzrQRoTQyKStVt5UAyHw
+         ZcBw==
+X-Gm-Message-State: AOAM532MRU9ilBP+gkP13PDo+vWQexUn7LJopjApy2VWPuo42dsfJvjf
+        rk+IOr9O9hfsu8sDOB8hRpp3mkEjwS8=
+X-Google-Smtp-Source: ABdhPJzuA1rs4B1DjH2GMHuraSDURHwL7wZRgihhSJj9WWKwcc0BF9wkr1955BY0pF3qxgZbuJM/Fg==
+X-Received: by 2002:a05:6602:1584:: with SMTP id e4mr1060804iow.4.1622755333821;
+        Thu, 03 Jun 2021 14:22:13 -0700 (PDT)
+Received: from aroeseler-ly545.hsd1.mn.comcast.net ([2601:448:c580:1890::b74c])
+        by smtp.googlemail.com with ESMTPSA id j19sm2586763ile.52.2021.06.03.14.22.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Jun 2021 14:22:13 -0700 (PDT)
+From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        willemdebrujin.kernel@gmail.com, fweimer@sourceware.org,
+        Andreas Roeseler <andreas.a.roeseler@gmail.com>
+Subject: [PATCH net-next] icmp: fix lib conflict with trinity
+Date:   Thu,  3 Jun 2021 16:22:11 -0500
+Message-Id: <20210603212211.335237-1-andreas.a.roeseler@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/8] NVMeTCP Offload ULP
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162275520500.10237.9696423451786528380.git-patchwork-notify@kernel.org>
-Date:   Thu, 03 Jun 2021 21:20:05 +0000
-References: <20210602184246.14184-1-smalin@marvell.com>
-In-Reply-To: <20210602184246.14184-1-smalin@marvell.com>
-To:     Shai Malin <smalin@marvell.com>
-Cc:     linux-nvme@lists.infradead.org, sagi@grimberg.me, hch@lst.de,
-        axboe@fb.com, kbusch@kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, aelior@marvell.com,
-        mkalderon@marvell.com, okulkarni@marvell.com,
-        pkushwaha@marvell.com, prabhakar.pkin@gmail.com,
-        malin1024@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Including <linux/in.h> and <netinet/in.h> in the dependencies breaks
+compilation of trinity due to multiple definitions. <linux/in.h> is only
+used in <linux/icmp.h> to provide the definition of the struct in_addr,
+but this can be substituted out by using the datatype __be32.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
+---
+ include/uapi/linux/icmp.h | 3 +--
+ net/ipv4/icmp.c           | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
-On Wed, 2 Jun 2021 21:42:38 +0300 you wrote:
-> With the goal of enabling a generic infrastructure that allows NVMe/TCP
-> offload devices like NICs to seamlessly plug into the NVMe-oF stack, this
-> patch series introduces the nvme-tcp-offload ULP host layer, which will
-> be a new transport type called "tcp-offload" and will serve as an
-> abstraction layer to work with vendor specific nvme-tcp offload drivers.
-> 
-> NVMeTCP offload is a full offload of the NVMeTCP protocol, this includes
-> both the TCP level and the NVMeTCP level.
-> 
-> [...]
-
-Here is the summary with links:
-  - [1/8] nvme-tcp-offload: Add nvme-tcp-offload - NVMeTCP HW offload ULP
-    https://git.kernel.org/netdev/net-next/c/f0e8cb6106da
-  - [2/8] nvme-fabrics: Move NVMF_ALLOWED_OPTS and NVMF_REQUIRED_OPTS definitions
-    https://git.kernel.org/netdev/net-next/c/98a5097d1e08
-  - [3/8] nvme-fabrics: Expose nvmf_check_required_opts() globally
-    https://git.kernel.org/netdev/net-next/c/af527935bd5a
-  - [4/8] nvme-tcp-offload: Add device scan implementation
-    https://git.kernel.org/netdev/net-next/c/4b8178ec5794
-  - [5/8] nvme-tcp-offload: Add controller level implementation
-    https://git.kernel.org/netdev/net-next/c/5aadd5f9311e
-  - [6/8] nvme-tcp-offload: Add controller level error recovery implementation
-    https://git.kernel.org/netdev/net-next/c/5faf6d685548
-  - [7/8] nvme-tcp-offload: Add queue level implementation
-    https://git.kernel.org/netdev/net-next/c/e4ba452ded39
-  - [8/8] nvme-tcp-offload: Add IO level implementation
-    https://git.kernel.org/netdev/net-next/c/35155e2626dc
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+index c1da8244c5e1..163c0998aec9 100644
+--- a/include/uapi/linux/icmp.h
++++ b/include/uapi/linux/icmp.h
+@@ -20,7 +20,6 @@
+ 
+ #include <linux/types.h>
+ #include <asm/byteorder.h>
+-#include <linux/in.h>
+ #include <linux/if.h>
+ #include <linux/in6.h>
+ 
+@@ -154,7 +153,7 @@ struct icmp_ext_echo_iio {
+ 		struct {
+ 			struct icmp_ext_echo_ctype3_hdr ctype3_hdr;
+ 			union {
+-				struct in_addr	ipv4_addr;
++				__be32		ipv4_addr;
+ 				struct in6_addr	ipv6_addr;
+ 			} ip_addr;
+ 		} addr;
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 7b6931a4d775..2e09d62d59e3 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -1059,7 +1059,7 @@ static bool icmp_echo(struct sk_buff *skb)
+ 			if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
+ 					 sizeof(struct in_addr))
+ 				goto send_mal_query;
+-			dev = ip_dev_find(net, iio->ident.addr.ip_addr.ipv4_addr.s_addr);
++			dev = ip_dev_find(net, iio->ident.addr.ip_addr.ipv4_addr);
+ 			break;
+ #if IS_ENABLED(CONFIG_IPV6)
+ 		case ICMP_AFI_IP6:
+-- 
+2.31.1
 
