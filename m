@@ -2,129 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18DB439AB8C
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 22:08:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8674339AB96
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 22:09:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230008AbhFCUKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 16:10:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39578 "EHLO mail.kernel.org"
+        id S230116AbhFCUKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 16:10:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39754 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229656AbhFCUKf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 16:10:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E68B0611C9;
-        Thu,  3 Jun 2021 20:08:49 +0000 (UTC)
+        id S230083AbhFCUKu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 16:10:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8EBE8611C9;
+        Thu,  3 Jun 2021 20:09:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622750930;
-        bh=ohus4AnUUJOspGI/25odIC8ssfkU7zAoWzsK33rRY5c=;
+        s=k20201202; t=1622750945;
+        bh=vouxc5KMLEMa3QrqPqXja2Z4KHWtjXXf/sVDLuzgUZE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fy7QLqvlvNvV19XtoYpomwc7SWdbn2/6Af6JfFQKmOnXkyzsT3KXef7oAcH6kPNo0
-         GLwyKOBjpJ1Jb/6Ce/Jw/t1ViRXdPeurRK0ej+vZnjZrrkI/yhXlvOyI7M5y/skN4s
-         4kgLGyIALAMWRz3YGnCqJ4rjNkQch2CKA3OyyHabrPyrvmSkAP/BC7PhHvypbvZc3i
-         RfhMjmxRshaYL8K19qpFBeM32chXXhP3+Asgowcs3N/8n+UG0vjZl+Kkx4M2hH80ER
-         c2hMo/d/VQ81ju9K9rwJiuQv/tsKrDF+IeHhwGFd2uKHzn5MTwgt97WTroKvNOtn+U
-         Ncnha5C7tJUEA==
-Date:   Thu, 3 Jun 2021 22:08:47 +0200
+        b=UYeXhRQkhsFG2wW4pMFx1ENgilnnfZtGlHetX3wkENSTPOwGglvuReS2frt1cjTtl
+         JLKCPkpKMa+NFqpLVPYTtBPL0W7QDpwuraSUhXTED5ruFCTZ9l/ZX9j2f0fTHd72HX
+         kez6g1QVBsDVie8+Ol70lWcbLUVi1CXU1PW0xR/2pCdlEh0uFsIt5t1odTPh3MK5Rr
+         a5Km3PlwQZ/OU5n1g2kWDQQWpus4Z5O11Vo1RXQubZjb3F/M7e1Zij82vHdp1Vv0Lw
+         PNnhqdSX0wMy7B0BUu9GlN4yLxGGR/WG4yMmJYO7tsywLyQGMS7Po49eXeaSRMo1qA
+         +IfEKzjVtpXVQ==
+Date:   Thu, 3 Jun 2021 22:09:02 +0200
 From:   Wolfram Sang <wsa@kernel.org>
 To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jonathan Corbet <corbet@lwn.net>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, Keerthy <j-keerthy@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Nishanth Menon <nm@ti.com>, Ohad Ben-Cohen <ohad@wizery.com>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Roger Quadros <rogerq@ti.com>, Sekhar Nori <nsekhar@ti.com>,
+        Mark Brown <broonie@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Rob Herring <robh+dt@kernel.org>, Sekhar Nori <nsekhar@ti.com>,
         Stephen Boyd <sboyd@kernel.org>,
         Tero Kristo <kristo@kernel.org>,
         Ulf Hansson <ulf.hansson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
         Wolfgang Grandegger <wg@grandegger.com>,
-        devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-can@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 03/12] dt-bindings: soc: ti: update sci-pm-domain.yaml
+        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 04/12] dt-bindings: clock: update ti,sci-clk.yaml
  references
-Message-ID: <YLk2z0eEjX/kGpYb@kunai>
+Message-ID: <YLk23rrWN9ze+zru@kunai>
 Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jonathan Corbet <corbet@lwn.net>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, Keerthy <j-keerthy@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Nishanth Menon <nm@ti.com>, Ohad Ben-Cohen <ohad@wizery.com>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, Roger Quadros <rogerq@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>, Stephen Boyd <sboyd@kernel.org>,
-        Tero Kristo <kristo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>, Vinod Koul <vkoul@kernel.org>,
+        Mark Brown <broonie@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Rob Herring <robh+dt@kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>, Tero Kristo <kristo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Wolfgang Grandegger <wg@grandegger.com>, devicetree@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-can@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
+        linux-spi@vger.kernel.org, netdev@vger.kernel.org
 References: <cover.1622648507.git.mchehab+huawei@kernel.org>
- <c03020ff281054c3bd2527c510659e05fec6f181.1622648507.git.mchehab+huawei@kernel.org>
+ <0fae687366c09dfb510425b3c88316a727b27d6d.1622648507.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="eSf5OGSJ/yHsEMv1"
+        protocol="application/pgp-signature"; boundary="HwDyggedf9K45ZIg"
 Content-Disposition: inline
-In-Reply-To: <c03020ff281054c3bd2527c510659e05fec6f181.1622648507.git.mchehab+huawei@kernel.org>
+In-Reply-To: <0fae687366c09dfb510425b3c88316a727b27d6d.1622648507.git.mchehab+huawei@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---eSf5OGSJ/yHsEMv1
+--HwDyggedf9K45ZIg
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 02, 2021 at 05:43:09PM +0200, Mauro Carvalho Chehab wrote:
-> Changeset fda55c7256fe ("dt-bindings: soc: ti: Convert ti,sci-pm-domain t=
-o json schema")
-> renamed: Documentation/devicetree/bindings/soc/ti/sci-pm-domain.txt
-> to: Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml.
+On Wed, Jun 02, 2021 at 05:43:10PM +0200, Mauro Carvalho Chehab wrote:
+> Changeset a7dbfa6f3877 ("dt-bindings: clock: Convert ti,sci-clk to json s=
+chema")
+> renamed: Documentation/devicetree/bindings/clock/ti,sci-clk.txt
+> to: Documentation/devicetree/bindings/clock/ti,sci-clk.yaml.
 >=20
 > Update the cross-references accordingly.
 >=20
-> Fixes: fda55c7256fe ("dt-bindings: soc: ti: Convert ti,sci-pm-domain to j=
-son schema")
+> Fixes: a7dbfa6f3877 ("dt-bindings: clock: Convert ti,sci-clk to json sche=
+ma")
 > Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
 Acked-by: Wolfram Sang <wsa@kernel.org> # for I2C
 
 
---eSf5OGSJ/yHsEMv1
+--HwDyggedf9K45ZIg
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmC5Ns8ACgkQFA3kzBSg
-KbYFTRAAqF9TWZ+pTISLuMKGVBuNthxVoeuiLigsWW/9vfC9QmT42WbmWQLx2hLk
-hUIQK4Yk55RT94/cD1spz/yq0xYCXbk5J0VK0kVRt7+AcswPQG07pmbdwTpOjby8
-Um5IjYunC0vYKPDfdcAW/k7ZO4SREKVCVZUBVzo5lB+eSTlUdkPdxCGS+JtLoszv
-dzik1TD9wCS2DfdC0Mur4qvX2mdfZ+EIsh4UToC0FNN/JlowD/yUrKP9YdZco6Tt
-rHMyx1u1FxLcdhSjwMxEAS613dDaKAQMjhUQYX0n41ycMBNXqnHtbhcIRNh/9pd5
-hXumHx8IyZo/BBKUBEUjBWISpr9P9VJGbuToeDZQudumri3k8nLmGgntfrrnRSup
-gmCcuPGibZbLmw6R5POgYHujlJWpW7uVPXUTJkyX1MY91o4826M6XwweA3GCcmQZ
-CYy4XfE9EgEGYCCEPPhYw6Pbk4aJ+b2gfTeimssIBO9Ep4RtHEVr4qLR5w5QBkZM
-fLVzxA/NJFc+9b4CxkWwte+j9q3Re+JgqtPJrLa21gRMdyg/ReuA6fSAyt6ktNBy
-pM+ZxgyAcuL76EoF0qLH78ssshHX7ZRRDLWtpuE+n97YPQA0niwFkPPLwfEeVOYG
-oyATxaZ1YV6BwyJYLgeYhu0TuMT/poG+nvaDeyed23Sze4Tgunk=
-=k4Kj
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmC5Nt4ACgkQFA3kzBSg
+KbYA5BAAmxrTszpFm+SFwkhyzevlAeZO+O6tTPRp2hAT0FogM2Us0fUzfwLEFgWP
+dR+9Lw8BinKXs9tNQwP3RGM6/azDSnS8tL5a1l0aaI52mxwwu0zGKPZmCvvMizT2
+AQX51DP3llTCDdTc85P1C7TYhRyhYy1GWPJrfhAxfUBS+maMcJJ3VX7rfnmQlAWG
+6FOy1eZaCP2d2DxVZNlMi0TXsYuudltp75a0T7k8wesRQv+BEEE4MpyfFwDquX/N
+3BtPLsuwSDnSQ1hL3gEPEbrm++yG+3g0PHdhWxdrDeRV/eRW8EM4rjJ0xHutgimp
+LyQ0SnSdM6/EMF0h4jjQ2CPLGedDPpKkBdXsAH0yU8GqD2P5mijVUJHZqqyCKdz4
+8elfRdDzaLOrwvZrqTQYqGpeup/953O/m8mbKfy0zhkc2X0Ceqmqb2iKDzvemODe
+OpVnrneL06Fo3k9Mi0c828teZf7T4kZPBFI896XMP8MYeT7ghBaOrRBt6mIaefTN
+dCZGUE9vm2SbKqBOJ88QHbyFwDwHDj7UU4O9uhZH77nUj3kzQC+yfp0xLhkkT3lE
+ME9gAuT18XacriGNwHQVpMUPTvMAcLUWeHqfYIvPVd/HQRNMwV/IB2paBkGThO7/
+gzP8cd9cYoh9D2thXE0J/EnXq+MPeo6KVP9Uirz9eSo6jxKoggM=
+=2IA3
 -----END PGP SIGNATURE-----
 
---eSf5OGSJ/yHsEMv1--
+--HwDyggedf9K45ZIg--
