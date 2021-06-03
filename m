@@ -2,71 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 676EF39A291
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 15:55:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9AA539A2B0
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 16:00:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230426AbhFCN4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 09:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36164 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbhFCN4v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 09:56:51 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F74DC06174A
-        for <netdev@vger.kernel.org>; Thu,  3 Jun 2021 06:54:51 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id v27-20020a056830091bb02903cd67d40070so2708565ott.1
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 06:54:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=CQnWYlg8ipnEPisBxXFl5pShHdVfIuUqfX8fPPcRISE=;
-        b=d7ye2IpKZvbHtZoI4a+ySZUee99dve1HQkLRQURit6mHlDfPd/wd0FNaKgM+69bfUI
-         ufQ8gilFN/uH7rTU7ZWt+xb7j1QlvDIUjeQLuUn7w/jG8UW4HZi3awMI3h7jzSoR2Hgc
-         5X6fmPeeBT5WdQyJu0OsYeITjUEeJNYOoRqRrYwqjZzrJ9ggxtpORqfQHpYIuOwsyN2S
-         ryqS8treOXo+cCFJT7g0kNa/MgJa6OcC8klg+LvbEjMY9fN2WOqU5uFs9Zr8NEkmU2Tq
-         Xwz80mWBNIMF6pnIf4Vmlbd9FufH4uYxwBGxhZtAH48fcRz/Qj9PXg/LUQde/wQCt+jo
-         Gn1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=CQnWYlg8ipnEPisBxXFl5pShHdVfIuUqfX8fPPcRISE=;
-        b=W3u+1Nac3qdyZQwJN4kl667PSOqIdoFFakZ884lNQQvvZwjqAUTS8ZMepDNO9FxTmN
-         8SBP1BKD9JCrSB4DxP4EkZaMYqhaZ6m8s2aaJsSZ0bnLimhQWMj+Vz2V8pmaEf2W1ndc
-         taAh5M0K+wvA8zlmV58G7YrJvm8rD2v/K79hzZR1BhOexVlLs1ECobgNqZW/cwaJNueS
-         kaktzpKgnjfvWIDUMhzd40IP12dJthIbiq0R3LxEWz1eN6GD8t7yAWVcx680umKorsSH
-         qdv7VI7Z0xZmXdUoezY7VD8a9FhM6Z8BH+cz2WazEb7hQ4JsMRJLSEsuwG8XXadlF3V0
-         mhRQ==
-X-Gm-Message-State: AOAM532CyrN4MjX5RsFrNN5KtSfz1H67D0b1TYVQs++NdxsaFgmeelon
-        C7Cy9F4JpXisdpqpaE2PUnkn1pgxS/aKJ8Bj6Qw=
-X-Google-Smtp-Source: ABdhPJxTgGtguxfBJoNf9WPxyQXwYy/MNMl4GYSp+78QidpvoNEN52YGif8O3KQZGsk3E9vWyc6GwInfkv+pxj5XCU0=
-X-Received: by 2002:a9d:6f93:: with SMTP id h19mr2538701otq.292.1622728490620;
- Thu, 03 Jun 2021 06:54:50 -0700 (PDT)
+        id S231504AbhFCOBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 10:01:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35002 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231202AbhFCOBs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 10:01:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B5F2461407;
+        Thu,  3 Jun 2021 14:00:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622728803;
+        bh=MdK4OlgBeSSHPp6pdWTpVt6fMjNhhl5wYGtwrdQ0mEM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Hd8fVFK14U3LNL0JOz76b72z5+fE8PWlE3mvAgVgKNIlpnDCUXVsCe/Z/UePIlVOX
+         ZGCXeEKStpNNb9ynux9Ewhs3Qp1ZBpw1YF+vzCn28th3AJzJaHMJ4UcKz6ARMWABf2
+         aCdysbs1SkRVmVosRn7bzBycdmCTMyx7IVsrQ49VjRzujrKSPQTKpcyi69C2grzHXO
+         nRhiXTcfD/DDObHlCSGdtow6G86EjGFR9AwFwKNzITKT+R2mPEg0Z1DIA++qnRAvmB
+         alX9+9CO7Y+xC7cy19Kh9/TO11x90LTVXrpc2t8iPaXK5kbFfc7dT5zedFVY2XAlvd
+         zRQzjcHDEBmOA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id ADC2E60A5C;
+        Thu,  3 Jun 2021 14:00:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Sender: marianhasan2011@gmail.com
-Received: by 2002:a54:4004:0:0:0:0:0 with HTTP; Thu, 3 Jun 2021 06:54:50 -0700 (PDT)
-From:   "Mr. Alain Nkontchou" <mralainnkontchou503@gmail.com>
-Date:   Thu, 3 Jun 2021 15:54:50 +0200
-X-Google-Sender-Auth: PDdUeuaLZoQlGsOJ8CjgITQlgN0
-Message-ID: <CAJiL0FstOed6WxUTSX6DyRNeXLzF0QgujHi4YRhwkJA77E-uQQ@mail.gmail.com>
-Subject: Important business relationship
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next 0/4] Few small libbpf and selftests/bpf fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162272880370.29426.2025785721691622375.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Jun 2021 14:00:03 +0000
+References: <20210603004026.2698513-1-andrii@kernel.org>
+In-Reply-To: <20210603004026.2698513-1-andrii@kernel.org>
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, kernel-team@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-How are you today with your family, Hope fine? Please, I decided to
-contact you today as you can see and know my name is Mr.  Alain
-Nkontchou a Banker by profession from Burkina Faso. Please, I want our
-bank management to transfer an abandoned sum of Ten Million, Five
-Hundred Thousand United States Dollars (US $10.5M) in an escrow bank
-account into your bank account as soon as we get documents to justify
-this business established. The business is 100% risk free. Your share
-will be 40% while 60% for me. More details will be forwarded to you
-immediately I receive from you a positive response indicating you are
-interested to handle the business transaction following my direction.
+Hello:
 
-Regards,
-Mr. Alain Nkontchou.
+This series was applied to bpf/bpf-next.git (refs/heads/master):
+
+On Wed, 2 Jun 2021 17:40:22 -0700 you wrote:
+> Fix few small issues in libbpf and selftests/bpf:
+>   - fix up libbpf.map and move few APIs that didn't make it into final 0.4
+>     release;
+>   - install skel_internal.h which is used by light skeleton;
+>   - fix .gitignore for xdp_redirect_multi.
+> 
+> Andrii Nakryiko (4):
+>   libbpf: move few APIs from 0.4 to 0.5 version
+>   libbpf: refactor header installation portions of Makefile
+>   libbpf: install skel_internal.h header used from light skeletons
+>   selftests/bpf: add xdp_redirect_multi into .gitignore
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf-next,1/4] libbpf: move few APIs from 0.4 to 0.5 version
+    https://git.kernel.org/bpf/bpf-next/c/16cac0060680
+  - [bpf-next,2/4] libbpf: refactor header installation portions of Makefile
+    https://git.kernel.org/bpf/bpf-next/c/232c9e8bd5eb
+  - [bpf-next,3/4] libbpf: install skel_internal.h header used from light skeletons
+    https://git.kernel.org/bpf/bpf-next/c/7d8a819dd316
+  - [bpf-next,4/4] selftests/bpf: add xdp_redirect_multi into .gitignore
+    https://git.kernel.org/bpf/bpf-next/c/56b8b7f9533b
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
