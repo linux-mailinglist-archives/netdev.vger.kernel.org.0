@@ -2,204 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D83D939A4E1
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:40:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A20BC39A4D3
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230055AbhFCPmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 11:42:36 -0400
-Received: from mail-qt1-f201.google.com ([209.85.160.201]:56093 "EHLO
-        mail-qt1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230048AbhFCPmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:42:36 -0400
-Received: by mail-qt1-f201.google.com with SMTP id s11-20020ac8758b0000b029020e731296abso2727904qtq.22
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 08:40:36 -0700 (PDT)
+        id S230030AbhFCPmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 11:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229692AbhFCPmP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:42:15 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA317C06174A
+        for <netdev@vger.kernel.org>; Thu,  3 Jun 2021 08:40:15 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id q15so5420976pgg.12
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 08:40:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=ylXTyxpFYn3LQgYPukgqBuWSxwDoIQ/GM2WEa6oXcPc=;
-        b=Z0M5UdVLAie4Kz2qi2JmGCK7H1nmqBJIsDCXfCveGhFazpe5bVaYDNgvW8jrVs/lA2
-         fbhcQTBA+B1gQycOUgrkfWeMdjvSNODrzQ0ojjA5PDOJSFTI26jfi9Wjln7GOFu2mnge
-         N1AjftmimA0TX4+HRKRZUgWE2vHsnA0nutr+al+N6AJxp6ORDr/TtH3bte6RG1gelP4z
-         SwZaz2qG86d8hWSQiTGewwHGMfpbwyF8sLsHuqxKnEg714XXYqc43WoSRc4YfhVr8Phd
-         +YgCKzOW9cSnkYeicPWiViif+lFpIZNIfuGxIOB09k5kfZypnY+ZD2mmXzDQteQxEYqs
-         3Rjw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ak/IZSwFVeM9PvIqJks3Hzw5DOU/ylDLxFhneR4tQWQ=;
+        b=iosFoA4eCM4vbdv5CJtkWPNDMJ+Sfw5dgTEdJz8CazAvU16DrR8PExooZtstNtlguQ
+         8DUiB2vW4QNcRki8lP56IJlfsaCJwxUZSTEZE+xPtVJuNybrR1IxxVtfPMYOMeuEnk6c
+         yAJtCGmGGKnzGsAIkvJZusgn55VmucQHdhylU5aj6aUROrm6q/L2Ep343Cw2aWzP5MwF
+         od/KurunYV/dGLSmcfBUtu8VzGxyRhITJgSJltNF4YUTz9zRiK2xXZ7N6jy9GfJgze5z
+         yXUwrnTEgBw54sbd4O03xt8GqazURLkj7R0HlU59czwkoytrlsm9lYbgmivryTaQ1PPW
+         ixsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=ylXTyxpFYn3LQgYPukgqBuWSxwDoIQ/GM2WEa6oXcPc=;
-        b=X9XbJoDz6jfJ21ujiP/d3mPFwbce23x4stJ1AtC04AsENlvD/2Ni3A1MFosr740dXA
-         3/wTF58B28AhmWZ/YURcyaNhtbS1XxvLZeXcr3UtfZOXi+1vyoCgtJZju71jisX+Qzod
-         IyXsQmLWATLZC32j7UqDxJmcaeFLaTySOYhTw76i67JfSce2sj+Y+0QvanKz0EuO6I8M
-         vHu3wULsZMD37il0vknkUM90EpbrlMFs3Xyq7YVkbhKwJEA5I1+LNW8Ko/gDH3vPyIX3
-         67Rmq4G1kQiTN6DhC+rHiECcOoVB7MFhFcAtjYRqSIQUkCp55ULmBiv/Dph/XIR1lRkP
-         TD1w==
-X-Gm-Message-State: AOAM531hEovecYoUZ3UuL5DCFQULcpbrjkPyryYAS0da0YYwbChepLlS
-        kBLEf3k7DXa0Ghdba0q9jHZzg+I=
-X-Google-Smtp-Source: ABdhPJyEuWjJh/n0LQykDQMN1HhV/NPolL5VymF8E1YE6jxna3GLaSZAhPkJ102sdF8UMPi9V2I06nY=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:9d0a:7a1b:c5e:c9f])
- (user=sdf job=sendgmr) by 2002:a0c:e752:: with SMTP id g18mr57915qvn.24.1622734775800;
- Thu, 03 Jun 2021 08:39:35 -0700 (PDT)
-Date:   Thu, 3 Jun 2021 08:39:33 -0700
-In-Reply-To: <20210601221841.1251830-2-tannerlove.kernel@gmail.com>
-Message-Id: <YLj3tX141kQFkm+N@google.com>
-Mime-Version: 1.0
-References: <20210601221841.1251830-1-tannerlove.kernel@gmail.com> <20210601221841.1251830-2-tannerlove.kernel@gmail.com>
-Subject: Re: [PATCH net-next v3 1/3] net: flow_dissector: extend bpf flow
- dissector support with vnet hdr
-From:   sdf@google.com
-To:     Tanner Love <tannerlove.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tanner Love <tannerlove@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ak/IZSwFVeM9PvIqJks3Hzw5DOU/ylDLxFhneR4tQWQ=;
+        b=R0v8ss4ZhRIQZia/a7sVihxX1F6Uxyu8Av/Zhkw8f+bCtoT9eqEDHQmy5EjlCRRBdX
+         TfsVFECLht6HExWJ2ywS5AHle+6nzgDtLswMgsEGmgBReo6O273iMBVQgIjKUQli5Tgj
+         396CQuwgltw23c73J1VQDq/bxoIeHJt3PA6vLW4RkbbuZRdgsgHq0C+hReQhcjyLkM7r
+         u1PDLWYkNjgQQ5ifrPvo35O7xpXxSLalKGHp4XyjDNAJkZbkqc3T45HuFn7EAkNg9Hi2
+         BCCzBlYvUlU8pf3VpODrYfrS16RFsKicphixl+HHWx5Y4EwxKj/+KrbsZUHktiZug3ko
+         oe0g==
+X-Gm-Message-State: AOAM533HG9Rnij4mALh1NTDxy+NQuM/LEyT+vs8gjA0ZB4MCOwisnvJ3
+        +WGfl9zr9hY45fJ6NAfsdvh3a+CGbgX8aw==
+X-Google-Smtp-Source: ABdhPJzcQFtOvsd5fBAchFdA4QgC8p4oDOZC7rNFBbJUro33dzw20xH9BMbMHKGeaYaI69+n9yOkJQ==
+X-Received: by 2002:a62:3682:0:b029:2dd:ed69:6e85 with SMTP id d124-20020a6236820000b02902dded696e85mr17230pfa.20.1622734815377;
+        Thu, 03 Jun 2021 08:40:15 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id l11sm1392700pjh.28.2021.06.03.08.40.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Jun 2021 08:40:15 -0700 (PDT)
+Date:   Thu, 3 Jun 2021 08:40:06 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Roi Dayan <roid@nvidia.com>
+Cc:     David Ahern <dsahern@gmail.com>, <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Paul Blakey <paulb@nvidia.com>
+Subject: Re: [PATCH iproute2-next] police: Add support for json output
+Message-ID: <20210603084006.3e3c9b4b@hermes.local>
+In-Reply-To: <a745235f-ff64-3f7f-1264-198649795856@nvidia.com>
+References: <20210527130742.1070668-1-roid@nvidia.com>
+        <e107ce61-58bf-d106-3891-46c83e3bfe8f@gmail.com>
+        <a745235f-ff64-3f7f-1264-198649795856@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/01, Tanner Love wrote:
-> From: Tanner Love <tannerlove@google.com>
+On Thu, 3 Jun 2021 10:27:55 +0300
+Roi Dayan <roid@nvidia.com> wrote:
 
-> Amend the bpf flow dissector program type to accept virtio_net_hdr
-> members. Do this to enable bpf flow dissector programs to perform
-> virtio-net header validation. The next patch in this series will add
-> a flow dissection hook in virtio_net_hdr_to_skb and make use of this
-> extended functionality. That commit message has more background on the
-> use case.
+> On 2021-06-02 5:29 PM, David Ahern wrote:
+> > On 5/27/21 7:07 AM, Roi Dayan wrote:  
+> >> @@ -300,13 +300,13 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
+> >>   	    RTA_PAYLOAD(tb[TCA_POLICE_RATE64]) >= sizeof(rate64))
+> >>   		rate64 = rta_getattr_u64(tb[TCA_POLICE_RATE64]);
+> >>   
+> >> -	fprintf(f, " police 0x%x ", p->index);
+> >> +	print_int(PRINT_ANY, "police", "police %d ", p->index);  
+> > 
+> > this changes the output format from hex to decimal.
+> >   
+> 
+> hmm thanks for the review. actually I see another issue with this.
+> I missed this but this should actually be split into "kind" and "index".
+> And index should be unsigned as the other actions.
+> so we should have kind printed at the top of the function even if arg
+> is null and index here.
+> 
+>          print_string(PRINT_ANY, "kind", "%s", "police"); 
+> 
+>          if (arg == NULL) 
+> 
+>                  return 0;
+> ...
+>          print_uint(PRINT_ANY, "index", "\t index %u ", p->index); 
+> 
+> 
+> 
+> then the json output should be this
+> 
+>             "actions": [ {
+>                      "order": 1,
+>                      "kind": "police",
+>                      "index": 1,
+> 
+> 
+> i'll send v2.
+> 
+> 
+> >   
+> >>   	tc_print_rate(PRINT_FP, NULL, "rate %s ", rate64);
+> >>   	buffer = tc_calc_xmitsize(rate64, p->burst);
+> >>   	print_size(PRINT_FP, NULL, "burst %s ", buffer);
+> >>   	print_size(PRINT_FP, NULL, "mtu %s ", p->mtu);
+> >>   	if (show_raw)
+> >> -		fprintf(f, "[%08x] ", p->burst);
+> >> +		print_hex(PRINT_FP, NULL, "[%08x] ", p->burst);
+> >>   
+> >>   	prate64 = p->peakrate.rate;
+> >>   	if (tb[TCA_POLICE_PEAKRATE64] &&  
+> > 
+> >   
 
-> Signed-off-by: Tanner Love <tannerlove@google.com>
-> Reviewed-by: Willem de Bruijn <willemb@google.com>
-> Reviewed-by: Petar Penkov <ppenkov@google.com>
-> ---
->   drivers/net/bonding/bond_main.c |  2 +-
->   include/linux/skbuff.h          | 26 ++++++++++++----
->   include/net/flow_dissector.h    |  6 ++++
->   include/uapi/linux/bpf.h        |  6 ++++
->   net/core/filter.c               | 55 +++++++++++++++++++++++++++++++++
->   net/core/flow_dissector.c       | 24 ++++++++++++--
->   tools/include/uapi/linux/bpf.h  |  6 ++++
->   7 files changed, 116 insertions(+), 9 deletions(-)
-
-> diff --git a/drivers/net/bonding/bond_main.c  
-> b/drivers/net/bonding/bond_main.c
-> index 7e469c203ca5..5d2d7d5c5704 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -3554,7 +3554,7 @@ static bool bond_flow_dissect(struct bonding *bond,  
-> struct sk_buff *skb,
->   	case BOND_XMIT_POLICY_ENCAP34:
->   		memset(fk, 0, sizeof(*fk));
->   		return __skb_flow_dissect(NULL, skb, &flow_keys_bonding,
-> -					  fk, NULL, 0, 0, 0, 0);
-> +					  fk, NULL, 0, 0, 0, 0, NULL);
->   	default:
->   		break;
->   	}
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index dbf820a50a39..fef8f4b5db6e 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -1312,18 +1312,20 @@ struct bpf_flow_dissector;
->   bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector  
-> *ctx,
->   		      __be16 proto, int nhoff, int hlen, unsigned int flags);
-
-> +struct virtio_net_hdr;
->   bool __skb_flow_dissect(const struct net *net,
->   			const struct sk_buff *skb,
->   			struct flow_dissector *flow_dissector,
->   			void *target_container, const void *data,
-> -			__be16 proto, int nhoff, int hlen, unsigned int flags);
-> +			__be16 proto, int nhoff, int hlen, unsigned int flags,
-> +			const struct virtio_net_hdr *vhdr);
-
->   static inline bool skb_flow_dissect(const struct sk_buff *skb,
->   				    struct flow_dissector *flow_dissector,
->   				    void *target_container, unsigned int flags)
->   {
->   	return __skb_flow_dissect(NULL, skb, flow_dissector,
-> -				  target_container, NULL, 0, 0, 0, flags);
-> +				  target_container, NULL, 0, 0, 0, flags, NULL);
->   }
-
->   static inline bool skb_flow_dissect_flow_keys(const struct sk_buff *skb,
-> @@ -1332,7 +1334,20 @@ static inline bool  
-> skb_flow_dissect_flow_keys(const struct sk_buff *skb,
->   {
->   	memset(flow, 0, sizeof(*flow));
->   	return __skb_flow_dissect(NULL, skb, &flow_keys_dissector,
-> -				  flow, NULL, 0, 0, 0, flags);
-> +				  flow, NULL, 0, 0, 0, flags, NULL);
-> +}
-> +
-> +static inline bool
-> +__skb_flow_dissect_flow_keys_basic(const struct net *net,
-> +				   const struct sk_buff *skb,
-> +				   struct flow_keys_basic *flow,
-> +				   const void *data, __be16 proto,
-> +				   int nhoff, int hlen, unsigned int flags,
-> +				   const struct virtio_net_hdr *vhdr)
-> +{
-> +	memset(flow, 0, sizeof(*flow));
-> +	return __skb_flow_dissect(net, skb, &flow_keys_basic_dissector, flow,
-> +				  data, proto, nhoff, hlen, flags, vhdr);
->   }
-
->   static inline bool
-> @@ -1342,9 +1357,8 @@ skb_flow_dissect_flow_keys_basic(const struct net  
-> *net,
->   				 const void *data, __be16 proto,
->   				 int nhoff, int hlen, unsigned int flags)
->   {
-> -	memset(flow, 0, sizeof(*flow));
-> -	return __skb_flow_dissect(net, skb, &flow_keys_basic_dissector, flow,
-> -				  data, proto, nhoff, hlen, flags);
-> +	return __skb_flow_dissect_flow_keys_basic(net, skb, flow, data, proto,
-> +						  nhoff, hlen, flags, NULL);
->   }
-
->   void skb_flow_dissect_meta(const struct sk_buff *skb,
-> diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-> index ffd386ea0dbb..0796ad745e69 100644
-> --- a/include/net/flow_dissector.h
-> +++ b/include/net/flow_dissector.h
-> @@ -370,6 +370,12 @@ struct bpf_flow_dissector {
->   	const struct sk_buff	*skb;
->   	const void		*data;
->   	const void		*data_end;
-> +	__u8			vhdr_flags;
-> +	__u8			vhdr_gso_type;
-> +	__u16			vhdr_hdr_len;
-> +	__u16			vhdr_gso_size;
-> +	__u16			vhdr_csum_start;
-> +	__u16			vhdr_csum_offset;
->   };
-
->   static inline void
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 418b9b813d65..de525defd462 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -5155,6 +5155,12 @@ struct __sk_buff {
->   	__u32 gso_segs;
->   	__bpf_md_ptr(struct bpf_sock *, sk);
->   	__u32 gso_size;
-
-[..]
-
-> +	__u8  vhdr_flags;
-> +	__u8  vhdr_gso_type;
-> +	__u16 vhdr_hdr_len;
-> +	__u16 vhdr_gso_size;
-> +	__u16 vhdr_csum_start;
-> +	__u16 vhdr_csum_offset;
-
-These are flow dissector specific, any reason not to add them to
-struct bpf_flow_keys instead?
+One useful check is to run your JSON output into python parser to be sure it is valid
