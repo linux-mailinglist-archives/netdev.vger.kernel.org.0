@@ -2,107 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC3039A960
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4272A39A949
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231278AbhFCRlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 13:41:12 -0400
-Received: from mg.ssi.bg ([178.16.128.9]:52868 "EHLO mg.ssi.bg"
+        id S230412AbhFCRgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 13:36:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32976 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231246AbhFCRlM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 13:41:12 -0400
-X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Thu, 03 Jun 2021 13:41:10 EDT
-Received: from mg.ssi.bg (localhost [127.0.0.1])
-        by mg.ssi.bg (Proxmox) with ESMTP id 4909531AD7;
-        Thu,  3 Jun 2021 20:32:17 +0300 (EEST)
-Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
-        by mg.ssi.bg (Proxmox) with ESMTP id 30E0031ACD;
-        Thu,  3 Jun 2021 20:32:16 +0300 (EEST)
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id 2B7ED3C0332;
-        Thu,  3 Jun 2021 20:32:13 +0300 (EEST)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 153HW882019762;
-        Thu, 3 Jun 2021 20:32:09 +0300
-Date:   Thu, 3 Jun 2021 20:32:08 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Xin Long <lucien.xin@gmail.com>
-cc:     syzbot <syzbot+e562383183e4b1766930@syzkaller.appspotmail.com>,
-        coreteam@netfilter.org, Simon Horman <horms@verge.net.au>,
-        LKML <linux-kernel@vger.kernel.org>, lvs-devel@vger.kernel.org,
-        network dev <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: [syzbot] memory leak in ip_vs_add_service
-In-Reply-To: <CADvbK_duDeZidW1mgSyNo+f1Hj4L0V6=L-Upfgp+5DEu5P-8Ag@mail.gmail.com>
-Message-ID: <b216d7a4-c3dd-3714-3897-3124769c88f2@ssi.bg>
-References: <000000000000c91e6f05c3144acc@google.com> <CADvbK_duDeZidW1mgSyNo+f1Hj4L0V6=L-Upfgp+5DEu5P-8Ag@mail.gmail.com>
+        id S230083AbhFCRgR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 13:36:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D983613D2;
+        Thu,  3 Jun 2021 17:34:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622741672;
+        bh=nSPjwdgpt9if/5lEOJp4BlmsJ9DjmB1lCXvcoDoVfyU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=O0zvkdiE7NeWEVFbnpiYdMoMI2W8SfgrcvU6S8fBqgYmrree2to0ak7AlefGJwSeO
+         iKklKl7SPlvP9X6oWBbtxM4lpdsS2ej4UwmY3PCFejZXEKmqEb74Id/8vgPlp7wF44
+         k8KJ17XWB5uQlfRaGQywE0b8udUMqg3bNKwPzLFFsKmMAs94tBbsQe7Duv1ciXpacN
+         dGeu4tARlMYYNf4dy4DRpJCS9P8yAriASsQZM3dx+W8igmTzKw7yJ27mv+0kQE4LLU
+         miruxdTIvmeVqeGtDIwLhe40FpW/fqDSY6bUIcUXAKoKSqDz/6gfDBgDAXRGBFXWf5
+         kX4QNOaVsAOjQ==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Sharath Chandra Vurukala <sharathv@codeaurora.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH net-next] net: ethernet: rmnet: Restructure if checks to avoid uninitialized warning
+Date:   Thu,  3 Jun 2021 10:34:10 -0700
+Message-Id: <20210603173410.310362-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.32.0.rc3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Clang warns that proto in rmnet_map_v5_checksum_uplink_packet() might be
+used uninitialized:
 
-	Hello,
+drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:283:14: warning:
+variable 'proto' is used uninitialized whenever 'if' condition is false
+[-Wsometimes-uninitialized]
+                } else if (skb->protocol == htons(ETH_P_IPV6)) {
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:295:36: note:
+uninitialized use occurs here
+                check = rmnet_map_get_csum_field(proto, trans);
+                                                 ^~~~~
+drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:283:10: note:
+remove the 'if' if its condition is always true
+                } else if (skb->protocol == htons(ETH_P_IPV6)) {
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:270:11: note:
+initialize the variable 'proto' to silence this warning
+                u8 proto;
+                        ^
+                         = '\0'
+1 warning generated.
 
-On Wed, 2 Jun 2021, Xin Long wrote:
+This is technically a false positive because there is an if statement
+above this one that checks skb->protocol for not being either
+ETH_P_IP{,V6}. However, it is more obvious to sink that into the if
+statement as an else branch, which makes the code clearer and fixes the
+warning.
 
-> On Mon, May 24, 2021 at 10:33 AM syzbot
-> <syzbot+e562383183e4b1766930@syzkaller.appspotmail.com> wrote:
-> >
-> > Hello,
-> >
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    c3d0e3fd Merge tag 'fs.idmapped.mount_setattr.v5.13-rc3' o..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=148d0bd7d00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=ae7b129a135ab06b
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=e562383183e4b1766930
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15585a4bd00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13900753d00000
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+e562383183e4b1766930@syzkaller.appspotmail.com
-> >
-> > BUG: memory leak
-> > unreferenced object 0xffff888115227800 (size 512):
-> >   comm "syz-executor263", pid 8658, jiffies 4294951882 (age 12.560s)
-> >   hex dump (first 32 bytes):
-> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-> >   backtrace:
-> >     [<ffffffff83977188>] kmalloc include/linux/slab.h:556 [inline]
-> >     [<ffffffff83977188>] kzalloc include/linux/slab.h:686 [inline]
-> >     [<ffffffff83977188>] ip_vs_add_service+0x598/0x7c0 net/netfilter/ipvs/ip_vs_ctl.c:1343
-> >     [<ffffffff8397d770>] do_ip_vs_set_ctl+0x810/0xa40 net/netfilter/ipvs/ip_vs_ctl.c:2570
-> >     [<ffffffff838449a8>] nf_setsockopt+0x68/0xa0 net/netfilter/nf_sockopt.c:101
-> >     [<ffffffff839ae4e9>] ip_setsockopt+0x259/0x1ff0 net/ipv4/ip_sockglue.c:1435
-> >     [<ffffffff839fa03c>] raw_setsockopt+0x18c/0x1b0 net/ipv4/raw.c:857
-> >     [<ffffffff83691f20>] __sys_setsockopt+0x1b0/0x360 net/socket.c:2117
-> >     [<ffffffff836920f2>] __do_sys_setsockopt net/socket.c:2128 [inline]
-> >     [<ffffffff836920f2>] __se_sys_setsockopt net/socket.c:2125 [inline]
-> >     [<ffffffff836920f2>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2125
-> >     [<ffffffff84350efa>] do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
-> >     [<ffffffff84400068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-> do_ip_vs_set_ctl() allows users to add svc with the flags field set.
-> when IP_VS_SVC_F_HASHED is used, and in ip_vs_svc_hash()
-> called ip_vs_add_service() will trigger the err msg:
-> 
-> IPVS: ip_vs_svc_hash(): request for already hashed, called from
-> do_ip_vs_set_ctl+0x810/0xa40
-> 
-> and the svc allocated will leak.
-> 
-> so fix it by mask the flags with ~IP_VS_SVC_F_HASHED in
-> ip_vs_copy_usvc_compat(), while at it also remove the unnecessary
-> flag IP_VS_SVC_F_HASHED set in ip_vs_edit_service().
+At the same time, move the "IS_ENABLED(CONFIG_IPV6)" into the else if
+condition so that the else branch of the preprocessor conditional can
+be shared, since there is no build failure with CONFIG_IPV6 disabled.
 
-	The net tree already contains fix for this problem.
+Fixes: b6e5d27e32ef ("net: ethernet: rmnet: Add support for MAPv5 egress packets")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1390
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c    | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
 
-Regards
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+index 6492ec5bdec4..cecf72be5102 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+@@ -269,27 +269,20 @@ static void rmnet_map_v5_checksum_uplink_packet(struct sk_buff *skb,
+ 		void *trans;
+ 		u8 proto;
+ 
+-		if (skb->protocol != htons(ETH_P_IP) &&
+-		    skb->protocol != htons(ETH_P_IPV6)) {
+-			priv->stats.csum_err_invalid_ip_version++;
+-			goto sw_csum;
+-		}
+-
+ 		if (skb->protocol == htons(ETH_P_IP)) {
+ 			u16 ip_len = ((struct iphdr *)iph)->ihl * 4;
+ 
+ 			proto = ((struct iphdr *)iph)->protocol;
+ 			trans = iph + ip_len;
+-		} else if (skb->protocol == htons(ETH_P_IPV6)) {
+-#if IS_ENABLED(CONFIG_IPV6)
++		} else if (IS_ENABLED(CONFIG_IPV6) &&
++			   skb->protocol == htons(ETH_P_IPV6)) {
+ 			u16 ip_len = sizeof(struct ipv6hdr);
+ 
+ 			proto = ((struct ipv6hdr *)iph)->nexthdr;
+ 			trans = iph + ip_len;
+-#else
++		} else {
+ 			priv->stats.csum_err_invalid_ip_version++;
+ 			goto sw_csum;
+-#endif /* CONFIG_IPV6 */
+ 		}
+ 
+ 		check = rmnet_map_get_csum_field(proto, trans);
 
---
-Julian Anastasov <ja@ssi.bg>
+base-commit: 270d47dc1fc4756a0158778084a236bc83c156d2
+-- 
+2.32.0.rc3
 
