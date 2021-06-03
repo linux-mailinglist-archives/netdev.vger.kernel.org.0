@@ -2,98 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C451399D39
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 10:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D6C3399D50
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 11:01:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbhFCIzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 04:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54762 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbhFCIzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 04:55:41 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C4DC06174A;
-        Thu,  3 Jun 2021 01:53:57 -0700 (PDT)
-Received: from [IPv6:2003:e9:d722:28a1:9240:5b8a:f037:504] (p200300e9d72228a192405b8af0370504.dip0.t-ipconnect.de [IPv6:2003:e9:d722:28a1:9240:5b8a:f037:504])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        id S229744AbhFCJDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 05:03:00 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:15800 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229620AbhFCJC7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 05:02:59 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1622710875; h=Date: Message-Id: Cc: To: Subject: From:
+ Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
+ bh=BpO9Uierd0hCNPcdVGEgKQE2/NyXFRjvWuOrwKQLmqQ=; b=umNoDAV/B7qP0pvm+bYzH0sqcz883iy1Vkk+EDtGMj6/1Gbu+i65ALldMqCACoThcKTLcU67
+ bVTkarqNeztg1ipgYrH9EXh4svYot4EXO2zIJSQkiNfRCc5Z7dTzng++RA8KTVrFeFfnFIeY
+ xs2WxiwYpX/ijnUZNoI8QiU5RsY=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 60b89a3be27c0cc77f3ae89e (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 03 Jun 2021 09:00:43
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id A5823C433F1; Thu,  3 Jun 2021 09:00:42 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id A472EC02EE;
-        Thu,  3 Jun 2021 10:53:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1622710435;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=joNf4+AILeuIn49vemAPcdrgOG/ZJnkV8zC3Ten9Yi0=;
-        b=KAq4psuj+Yagbs7GznIl9wEJNRpfDe2NH4Nq4otXtzGZ0Jc4vJly4zRxNzHvpmf5L94wuu
-        3K/yUBIT5XnLZUPplMohT1N9s+760qxqiwQ+1LPj7YAR5yMBfI+5AfCUSBx6E5ApoMfW/5
-        xBo3/vnI0ONWB3vYRqRWKmRUom/82BFC36U1HLs6ENO7uWBSA+ekUUR868naXF4ktUZqEm
-        vjOnm6AaRVPRk2iCpsYgUrTT+VWSmKM3kk2XE4oz8JAuS5QmYfvX7crL/a9qd2yFiZzid2
-        FkY3nNq1T1gKWoX7kauzwHh/mTaYHYIeNcGIRrEp7MnPUxxwXhq10FtHAYzu7A==
-Subject: Re: [PATCH 1/1] ieee802154: fix error return code in
- ieee802154_add_iface()
-To:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wpan <linux-wpan@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20210508062517.2574-1-thunder.leizhen@huawei.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <03320214-828c-4ac8-0fb8-89bd78b85c97@datenfreihafen.org>
-Date:   Thu, 3 Jun 2021 10:53:55 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id AB2CAC433D3;
+        Thu,  3 Jun 2021 09:00:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AB2CAC433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210508062517.2574-1-thunder.leizhen@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+From:   Kalle Valo <kvalo@codeaurora.org>
+Subject: pull-request: wireless-drivers-2021-06-03
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Message-Id: <20210603090042.A5823C433F1@smtp.codeaurora.org>
+Date:   Thu,  3 Jun 2021 09:00:42 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Hi,
 
-On 08.05.21 08:25, Zhen Lei wrote:
-> Fix to return a negative error code from the error handling
-> case instead of 0, as done elsewhere in this function.
-> 
-> Fixes: be51da0f3e34 ("ieee802154: Stop using NLA_PUT*().")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->   net/ieee802154/nl-phy.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/ieee802154/nl-phy.c b/net/ieee802154/nl-phy.c
-> index 2cdc7e63fe17..88215b5c93aa 100644
-> --- a/net/ieee802154/nl-phy.c
-> +++ b/net/ieee802154/nl-phy.c
-> @@ -241,8 +241,10 @@ int ieee802154_add_iface(struct sk_buff *skb, struct genl_info *info)
->   	}
->   
->   	if (nla_put_string(msg, IEEE802154_ATTR_PHY_NAME, wpan_phy_name(phy)) ||
-> -	    nla_put_string(msg, IEEE802154_ATTR_DEV_NAME, dev->name))
-> +	    nla_put_string(msg, IEEE802154_ATTR_DEV_NAME, dev->name)) {
-> +		rc = -EMSGSIZE;
->   		goto nla_put_failure;
-> +	}
->   	dev_put(dev);
->   
->   	wpan_phy_put(phy);
-> 
+here's a pull request to net tree, more info below. Please let me know if there
+are any problems.
 
-Good find. We could indeed hit a case where the IEEE802154_ATTR_HW_ADDR 
-attribute is present and rc would be assigned 0 before reaching this 
-goto nla_put_failure
+Kalle
 
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
+The following changes since commit 6efb943b8616ec53a5e444193dccf1af9ad627b5:
 
-regards
-Stefan Schmidt
+  Linux 5.13-rc1 (2021-05-09 14:17:44 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-2021-06-03
+
+for you to fetch changes up to d4826d17b3931cf0d8351d8f614332dd4b71efc4:
+
+  mt76: mt7921: remove leftover 80+80 HE capability (2021-05-30 22:11:24 +0300)
+
+----------------------------------------------------------------
+wireless-drivers fixes for v5.13
+
+We have only mt76 fixes this time, most important being the fix for
+A-MSDU injection attacks.
+
+mt76
+
+* mitigate A-MSDU injection attacks (CVE-2020-24588)
+
+* fix possible array out of bound access in mt7921_mcu_tx_rate_report
+
+* various aggregation and HE setting fixes
+
+* suspend/resume fix for pci devices
+
+* mt7615: fix crash when runtime-pm is not supported
+
+----------------------------------------------------------------
+Felix Fietkau (4):
+      mt76: connac: fix HT A-MPDU setting field in STA_REC_PHY
+      mt76: mt7921: fix max aggregation subframes setting
+      mt76: validate rx A-MSDU subframes
+      mt76: mt7921: remove leftover 80+80 HE capability
+
+Lorenzo Bianconi (4):
+      mt76: mt7921: fix possible AOOB issue in mt7921_mcu_tx_rate_report
+      mt76: connac: do not schedule mac_work if the device is not running
+      mt76: mt76x0e: fix device hang during suspend/resume
+      mt76: mt7615: do not set MT76_STATE_PM at bootstrap
+
+ drivers/net/wireless/mediatek/mt76/mac80211.c      | 26 +++++++
+ drivers/net/wireless/mediatek/mt76/mt7615/init.c   |  1 -
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c    |  5 +-
+ .../net/wireless/mediatek/mt76/mt7615/sdio_mcu.c   | 19 +++--
+ .../net/wireless/mediatek/mt76/mt7615/usb_mcu.c    |  3 -
+ .../net/wireless/mediatek/mt76/mt76_connac_mcu.c   |  4 ++
+ drivers/net/wireless/mediatek/mt76/mt76x0/pci.c    | 81 ++++++++++++++++++++--
+ drivers/net/wireless/mediatek/mt76/mt7921/init.c   |  4 +-
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c    |  5 +-
+ drivers/net/wireless/mediatek/mt76/mt7921/main.c   |  3 +-
+ drivers/net/wireless/mediatek/mt76/mt7921/mcu.c    | 17 +++--
+ 11 files changed, 138 insertions(+), 30 deletions(-)
