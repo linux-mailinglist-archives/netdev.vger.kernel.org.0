@@ -2,114 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0986739A1BD
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 15:01:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8989939A1CF
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 15:08:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231189AbhFCNC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 09:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52604 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbhFCNC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 09:02:58 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF10C061756
-        for <netdev@vger.kernel.org>; Thu,  3 Jun 2021 06:01:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=6UQLh47qu95+hAUITg8HdqHFRusFYyMT5PIWlE027j4=; b=LfzUhCwdK/v0f6JfMJ6qBo1wPH
-        2MaCR1PibhjDhLeMbePVEDiAtvcNd/TFzHMawPIuB5trNEDMjjIdAzyFEkTzpie8BVD1pXR3Dy3YH
-        mksFzJ8NLjxRGIhbH8I+kbWNNb3EGqH8w5GzMZOot4saoVmlbDquVlyyZs6dWmiwFVK71YqgGkwKn
-        X8fsTX2vy7yNUXJ3cBLVksa7K4k0YsHTA+o6r5A2gwvyGRaSGKSxYqSfShRw7hFICHX1qMMf+WMd9
-        20pz6QB9TzhYOuLyy3dc/6MWuaQufcNgoUgLPa02Iu6HsxyQ0F+AsAzMPxgU9tT5P//1i0oKkei0p
-        D+dIa0og==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:57494 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1lomyF-0002m0-2C; Thu, 03 Jun 2021 14:01:11 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1lomyE-0003mc-RP; Thu, 03 Jun 2021 14:01:10 +0100
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: phy: marvell: use phy_modify_changed() for
- marvell_set_polarity()
+        id S230271AbhFCNJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 09:09:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46405 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229801AbhFCNJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 09:09:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622725685;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=phWDTBiOPyAG0wKIKRe1O/Soj0OfowGQS7YwZbib9wQ=;
+        b=WjH997Bkg1ZIxn3sKC3enASz2wgWX8DQWQCilvljviOroX4/0kEpdb1wZMvSWcZnyrtMEp
+        09Etx9ScBrSSLLEhQr0wmxuMM7QYddvSW84EHFw5csc5rpBAK9PKfyPyUKx8ToXduWIL9p
+        3yiiEIgXXJL6REKDBxw7STD8Fp4vDH0=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-546-jelTt1r7OFyy9xR99N-5Eg-1; Thu, 03 Jun 2021 09:08:04 -0400
+X-MC-Unique: jelTt1r7OFyy9xR99N-5Eg-1
+Received: by mail-qt1-f200.google.com with SMTP id f17-20020ac87f110000b02901e117339ea7so3039030qtk.16
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 06:08:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=phWDTBiOPyAG0wKIKRe1O/Soj0OfowGQS7YwZbib9wQ=;
+        b=lN8Jqo51rmrrCF312wjiqBzDnnFwS90qCr8i/LEW+nRap41rXHJQNN3x+6urm4wuo9
+         +hHHXpPLZUNZ9wwzN9yQZp2gHxbfQJVqfFHm4fwiWh1ZLpxGYn32XH/uNP1g+p0nebc7
+         wMbbFAYJM6DSpr8ydqglfNIQZr7/STu8cuSpnBR3JV8EEijK5M7kSgeG6VazQLBSVmTG
+         JHAwE1RDjkNOiU9VWF1vhsi0gLRm4avgB5SUZwDbXeKcjDf7Ya1qDmwnE8yWaPta0hb2
+         6cTtdZXpEwoanD0S+S/C2kCXs8L8cOA90xbYr28HHSTMb5Bx2bJ/NbuATYxYFpS1QPj9
+         36QQ==
+X-Gm-Message-State: AOAM5335iS00jWgDFO0Pg8Hfql1Q63bQ/Z+A6NLHNSIHCge504/APEa6
+        4OP8Q7tpA+0B01eQqrqEZ6ERtPqlPB8CfduvwJDmWKZRCNiudyGINiAagQjD27CHjra9V3bFJ6P
+        JhCajqnKVaeHOxKuTepr/55dFFHumNCJySoqASdYs6+N5FP/ckLWi0NkYDFSCQ9weaA==
+X-Received: by 2002:ac8:5fc1:: with SMTP id k1mr28653294qta.275.1622725683526;
+        Thu, 03 Jun 2021 06:08:03 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxZjxAZ016NuyN/W44nOTWDXC5wz52b3xuVvNZCq0Lcw66NuNZkMabgGskv6A7NYazam2qOOw==
+X-Received: by 2002:ac8:5fc1:: with SMTP id k1mr28653262qta.275.1622725683203;
+        Thu, 03 Jun 2021 06:08:03 -0700 (PDT)
+Received: from [192.168.0.106] ([24.225.235.43])
+        by smtp.gmail.com with ESMTPSA id z186sm1889159qkb.116.2021.06.03.06.08.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Jun 2021 06:08:02 -0700 (PDT)
+Subject: Re: The value of FB_MTU eats two pages
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     ying.xue@windriver.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        tipc-discussion@lists.sourceforge.net,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <CADxym3baupJJ7Q9otxtoQ-DH5e-J2isg-LZj2CsOqRPo70AL4A@mail.gmail.com>
+ <e91baaba-e00a-4b16-0787-e9460dacfbb9@redhat.com>
+ <CADxym3ZdyqJ7b_PqdcjbNhKWP7_nsPRQ9Q0TtFC6Qzr75ekK+g@mail.gmail.com>
+From:   Jon Maloy <jmaloy@redhat.com>
+Message-ID: <85310a8b-35ab-376d-ca87-7487b97232c8@redhat.com>
+Date:   Thu, 3 Jun 2021 09:08:01 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1lomyE-0003mc-RP@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Thu, 03 Jun 2021 14:01:10 +0100
+In-Reply-To: <CADxym3ZdyqJ7b_PqdcjbNhKWP7_nsPRQ9Q0TtFC6Qzr75ekK+g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rather than open-coding the phy_modify_changed() sequence, use this
-helper in marvell_set_polarity().
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/marvell.c | 27 ++++++---------------------
- 1 file changed, 6 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index e6721c1c26c2..23751d95855b 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -367,39 +367,24 @@ static irqreturn_t marvell_handle_interrupt(struct phy_device *phydev)
- 
- static int marvell_set_polarity(struct phy_device *phydev, int polarity)
- {
--	int reg;
--	int err;
--	int val;
--
--	/* get the current settings */
--	reg = phy_read(phydev, MII_M1011_PHY_SCR);
--	if (reg < 0)
--		return reg;
-+	u16 val;
- 
--	val = reg;
--	val &= ~MII_M1011_PHY_SCR_AUTO_CROSS;
- 	switch (polarity) {
- 	case ETH_TP_MDI:
--		val |= MII_M1011_PHY_SCR_MDI;
-+		val = MII_M1011_PHY_SCR_MDI;
- 		break;
- 	case ETH_TP_MDI_X:
--		val |= MII_M1011_PHY_SCR_MDI_X;
-+		val = MII_M1011_PHY_SCR_MDI_X;
- 		break;
- 	case ETH_TP_MDI_AUTO:
- 	case ETH_TP_MDI_INVALID:
- 	default:
--		val |= MII_M1011_PHY_SCR_AUTO_CROSS;
-+		val = MII_M1011_PHY_SCR_AUTO_CROSS;
- 		break;
- 	}
- 
--	if (val != reg) {
--		/* Set the new polarity value in the register */
--		err = phy_write(phydev, MII_M1011_PHY_SCR, val);
--		if (err)
--			return err;
--	}
--
--	return val != reg;
-+	return phy_modify_changed(phydev, MII_M1011_PHY_SCR,
-+				  MII_M1011_PHY_SCR_AUTO_CROSS, val);
- }
- 
- static int marvell_config_aneg(struct phy_device *phydev)
--- 
-2.20.1
+On 6/2/21 10:26 PM, Menglong Dong wrote:
+> Hello Maloy,
+>
+> On Thu, Jun 3, 2021 at 3:50 AM Jon Maloy <jmaloy@redhat.com> wrote:
+>
+> [...]
+>> Hi Dong,
+>> The value is based on empiric knowledge.
+>> When I determined it I made a small loop in a kernel driver where I
+>> allocated skbs (using tipc_buf_acquire) with an increasing size
+>> (incremented with 1 each iteration), and then printed out the
+>> corresponding truesize.
+>>
+>> That gave the value we are using now.
+>>
+>> Now, when re-running the test I get a different value, so something has
+>> obviously changed since then.
+>>
+>> [ 1622.158586] skb(513) =>> truesize 2304, prev skb(512) => prev
+>> truesize 1280
+>> [ 1622.162074] skb(1537) =>> truesize 4352, prev skb(1536) => prev
+>> truesize 2304
+>> [ 1622.165984] skb(3585) =>> truesize 8448, prev skb(3584) => prev
+>> truesize 4352
+>>
+>> As you can see, the optimal value now, for an x86_64 machine compiled
+>> with gcc, is 3584 bytes, not 3744.
+> I'm not sure if this is a perfect way to determine the value of FB_MTU.
+> If 'struct skb_shared_info' changes, this value seems should change,
+> too.
+>
+> How about we make it this:
+>
+> #define FB_MTU (PAGE_SIZE - \
+>           SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) - \
+>           SKB_DATA_ALIGN(BUF_HEADROOM + BUF_TAILROOM + 3 + \
+>                   MAX_H_SIZ))
+>
+> The value 'BUF_HEADROOM + BUF_TAILROOM + 3' come from 'tipc_buf_acquire()':
+>
+> #ifdef CONFIG_TIPC_CRYPTO
+>      unsigned int buf_size = (BUF_HEADROOM + size + BUF_TAILROOM + 3) & ~3u;
+> #else
+>      unsigned int buf_size = (BUF_HEADROOM + size + 3) & ~3u;
+> #endif
+>
+> Is it a good idea?
+Yes, I think that makes sense. I was always aware of the "fragility" of 
+my approach, -this one looks more future safe.
+
+///jon
+
+>
+> Thanks
+> Menglong Dong
+>
 
