@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D68203998AC
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 05:41:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C120E3998A3
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 05:37:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbhFCDnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 23:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbhFCDn3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 23:43:29 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EAE7C06174A
-        for <netdev@vger.kernel.org>; Wed,  2 Jun 2021 20:41:32 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id x196so4544341oif.10
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 20:41:32 -0700 (PDT)
+        id S229850AbhFCDiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 23:38:51 -0400
+Received: from mail-oo1-f45.google.com ([209.85.161.45]:46844 "EHLO
+        mail-oo1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229625AbhFCDir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 23:38:47 -0400
+Received: by mail-oo1-f45.google.com with SMTP id x22-20020a4a62160000b0290245cf6b7feeso1079315ooc.13
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 20:36:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/4RveqbdvJbI+sL7P9RkQFOVproTadjUVoq0/2eMgIM=;
-        b=bxXRTKN5tIA+Th/hbDhjVToq/rSlwq0dwchO9Ha/093fNLJJ5yQd1RE16Ftei7gtOM
-         WTPOkq30/gZ2s04FQjMlQHmbpuldp1sdr+OU+ceRYJwuFkgpaCkSIQZMxBUElGRMXYge
-         R+OL7a6dZTsWbvrooKNlToGzXF9UyoFqExgXPFvMMxeF7FOwvI311klqMK6H7emyK1/S
-         TgFBHqfndfACaqLO/4SC6h6eVSUfVw/iXYu4IpWr0fiXyQSIRMvZC+JfJRBAXhr5mUw3
-         fT5EltW5opE+jXTwG8iV5mAuLTBUJRLVY2DtXM0ONGkpj1HlKkZloWsNul4BtxlOlM7l
-         v0Dw==
+        bh=+4S5cillMkGmkj7CPEP2zgPOj2VGFqFoGJmjqdd2zV8=;
+        b=aQM7zJy7YlA9JBm6g0Mgqd0CGswohBU7MYinOtdzgNvmdeObhb60HOrs+T9esuZe8q
+         YaGQYQY8A6oYL81SlTOngsSPhWDeU5rYPNrvhbPCLBJrcpaCrULhD8XCKmyg2R9Q6WtB
+         9F5mET5iB27AmuBDeQTYiwNIPSQhEu9ztV8Af4HaUlg6uqHxT0S+50P19i05rl0YVW0Y
+         r66QA90r3vqwNi1fqQhCYlCxJFyW+XQpOTgOvapzn8XlCw6udhv64VSaNnWO1NKEGUhH
+         EeGWORTAUFMQPA7C7LI4YHNI8IVL6b65tg4usPd1lePpi+u5oAVH15W5gncyNmiJ2UiF
+         Ay8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=/4RveqbdvJbI+sL7P9RkQFOVproTadjUVoq0/2eMgIM=;
-        b=K6u37SyLv7WPXE0vRrOl3Q7D93lxCWP+w53UWfVywHsboJ4h72tXguPrrfUYk1F2eN
-         M5yEwcPogrC7AWvTXewbl1AALHSScFSiHsr3X19eCxKdDDGkyKs43SbvFy278hm1Ofty
-         tNGxmf0CbxotrLj7SA67UGyxoq2EsnietT+uMYvxYAs0AgFZMpw2dVg7hTYPKG7dkFKP
-         dUe+SkCg7RgscX+HSSAq7PS7RuHnQRXQ6ShcfiLAuXcY1QZs1oRb3VF4NHIG9S+zHHNA
-         hY8TtDh1tQgzXYxi/CDErtePUeIg3/vgBmj2HEFyjk+moDoMq7v6qTJthz8sXhTP0Xss
-         lFTg==
-X-Gm-Message-State: AOAM530bAnqTJ31TeL4rYUezWb7KUm0v/FG9ANPRGXJUdx+Raju+1TLj
-        1zJ8A+BkSDiJ03coNFAGH4cHlcGnNwQ=
-X-Google-Smtp-Source: ABdhPJz3djwZeFkpk4d6Rj+kWeRbQSl7exYCwJgoEF5HrfMnDUucvDyno3dAme8eK5rZOojOnyjong==
-X-Received: by 2002:aca:6207:: with SMTP id w7mr6094969oib.177.1622690925324;
-        Wed, 02 Jun 2021 20:28:45 -0700 (PDT)
+        bh=+4S5cillMkGmkj7CPEP2zgPOj2VGFqFoGJmjqdd2zV8=;
+        b=rtuMmotMmD+JzKteOd7GXp5p//SIHceTO0z46sx6Ys+6LiOFMY2OtuPp1CuelQWRe7
+         J4SjSuyK8FHRT7Fk3S8DPN9wTWWEhiLGrAxHb+gBRqpvTvoissjhEmHO6mXaSuqlLIMD
+         IRFz435dRXha8Q438kXidwsa+h+ugkjs8+jQ/hfJ3KqRcS0TIj0Dcmr1iLmPOpD2XXxk
+         oRQdTw+0dDBjpl6NuyzA9gIahfQrKLPqjfNGGip2mKsTvgxrwi5jd5KxH32Ac+hZAp6V
+         qCzYgc/sj2SkhGe5amGpVgFzaDm/BZSFR6DNkqpMjCnz34D9jV84ZoN2hm8XObweSTm9
+         2QRQ==
+X-Gm-Message-State: AOAM532uGokZ8gARbVw/89Gv63q9B5cppNBFPrCtqYbdyPvHf+gnCVNr
+        pSEORxKc3KZsjlT54oJcK9o=
+X-Google-Smtp-Source: ABdhPJzUUo7EnGVf9BcjXbq44ZT04LL9Jo+2UawM21bCpyevq0FXTmlMuzqz5TEpasrdfRH6mkaB9Q==
+X-Received: by 2002:a4a:b4cd:: with SMTP id g13mr26865927ooo.4.1622691110616;
+        Wed, 02 Jun 2021 20:31:50 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id m66sm450311oia.28.2021.06.02.20.28.44
+        by smtp.googlemail.com with ESMTPSA id w200sm91493oie.10.2021.06.02.20.31.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Jun 2021 20:28:44 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 0/2] configure: convert global env to
- command-line options
-To:     Hangbin Liu <haliu@redhat.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-References: <20210531094740.2483122-1-haliu@redhat.com>
+        Wed, 02 Jun 2021 20:31:50 -0700 (PDT)
+Subject: Re: [PATCH net-next v4 0/5] Support for the IOAM Pre-allocated Trace
+ with IPv6
+To:     Justin Iurman <justin.iurman@uliege.be>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        tom@herbertland.com
+References: <20210527151652.16074-1-justin.iurman@uliege.be>
+ <85a22702-da46-30c2-46c9-66d293d510ff@gmail.com>
+ <1049853171.33683948.1622305441066.JavaMail.zimbra@uliege.be>
+ <cc16923b-74bc-7681-92c7-19e84a44c0e1@gmail.com>
+ <1439349685.35359322.1622462654030.JavaMail.zimbra@uliege.be>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <c39156f1-fda1-d7a9-146a-711131817971@gmail.com>
-Date:   Wed, 2 Jun 2021 21:28:43 -0600
+Message-ID: <e619169e-adfe-4b77-b359-6378c83b3ce3@gmail.com>
+Date:   Wed, 2 Jun 2021 21:31:48 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210531094740.2483122-1-haliu@redhat.com>
+In-Reply-To: <1439349685.35359322.1622462654030.JavaMail.zimbra@uliege.be>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -68,21 +69,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/31/21 3:47 AM, Hangbin Liu wrote:
+On 5/31/21 6:04 AM, Justin Iurman wrote:
+>>> Actually, February 2021 is the last update. The main draft
+>>> (draft-ietf-ippm-ioam-data) has already come a long way (version 12) and has
+>>> already been Submitted to IESG for Publication. I don't think it would hurt
+>>
+>> when the expected decision on publication?
 > 
-> This path set converts the global environment to command-line options
-> to make it easier for users to learn or remember the config options.
+> Hard to tell precisely, a couple weeks probably. There are still some comment/discuss to clear and our next IETF working group meeting is in July. However, it shouldn't be a concern (see below).\
+
+Ok.
+
 > 
-> I only convert environment INCLUDE, LIBBPF_DIR, LIBBPF_FORCE at first.
-> The IPTC and IPTL are not converted as I don't know what they stand for.
+>> that much to have it in the kernel as we're talking about a stable
+>> draft (the other one is just a wrapper to define the encapsulation of
+>> IOAM with IPv6) and something useful. And, if you think about Segment
+>> Routing for IPv6, it was merged in the kernel when it was still a draft.
+>>
+>> The harm is if there are any changes to the uapi.
 > 
-> Hangbin Liu (2):
->   configure: add options ability
->   configure: convert LIBBPF environment variables to command-line
->     options
-> 
->  configure | 49 +++++++++++++++++++++++++++++++++++++++++++------
->  1 file changed, 43 insertions(+), 6 deletions(-)
+> Definitely agree. But, I can assure you there won't be any uapi change at this stage. None of the comment/discuss I mentioned above are about this at all. Headers definition and IANA codes are defined for a long time now and won't change anymore.
 > 
 
-applied to iproute2-next. Thanks,
+Please add tests to tools/testing/selftests/net to cover the
+functionality added.
