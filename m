@@ -2,137 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E8913997DD
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 04:05:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F4DE399806
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 04:27:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbhFCCHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 22:07:20 -0400
-Received: from mail-pj1-f43.google.com ([209.85.216.43]:50972 "EHLO
-        mail-pj1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbhFCCHU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 22:07:20 -0400
-Received: by mail-pj1-f43.google.com with SMTP id i22so2768789pju.0;
-        Wed, 02 Jun 2021 19:05:22 -0700 (PDT)
+        id S229736AbhFCC3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 22:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229617AbhFCC3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 22:29:09 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80074C06174A;
+        Wed,  2 Jun 2021 19:27:10 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id a2so6448360lfc.9;
+        Wed, 02 Jun 2021 19:27:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i/BK32Jzp3cqNvlgCq2WAqJU4RvyCZu+/H57kXLblOY=;
-        b=ZTT3h/n+q9NvXPA/E/YCXeQN7USNJVdcbtJo8VF9v00y60FczF0OvKQGwaeSg7l5uV
-         TnKhDv/DkmKIcz6WgMk0vBfMS7wF9+mDxlriCz7uzzFCNFz0SUHjN87KHYjC8Rp7SmPP
-         6Byx240lccEY99EQIDLBGR8BKuETEsti+JSqSm4g046sWyPLPC6SOajt69Gu5ZA59xba
-         NVHE7NUTZ4/VqnQTJeo8qFonlo2jSutKtWBVJWuQM6nzyJRq0yNqYl2Ast3SPmg/wwL8
-         EoKqXrsheFXfSrArHNBlMM3LZ9UbLV9ixJL/mOfxRAXGuehVVdiL6GiXvm0tLnq59UTx
-         E06w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BReYRbHXWvGepYMIo6MFKfcfxjtKBwb1nZu8ULNLHcc=;
+        b=orB6wH41AvxddfTraIb3sZd93u7R5rnd/DKRY2foZZWeKvLJUw+YowIlWCMxyynSwX
+         FohZVRdiKTZ92zW2P2Le/1762OCaepVZvnQ3QerOt4WlJhvKwZHEdnxMe3uw2WmRJnA+
+         cZYqGyfnp6sDVK6s/10il61CGquRMDVcHOHvvhldBzeC92nRphG5m5s2w9JPnklNGogQ
+         WDTFN7lHPm0+D7lPYA9NwEse1atxRxzqaU2aY7agpfbUKHaKlmzfGcenC+A1Bgo45Lqi
+         jOy7jUG9ktGWWPi3iFMyMQYgHzsqQeuaCzbdMq0VpyzvFpnjaP8/SiEhouxakvB2e2GY
+         BYQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i/BK32Jzp3cqNvlgCq2WAqJU4RvyCZu+/H57kXLblOY=;
-        b=QJ7JTas//yvN93vKHdZP1y0stzBE+pkVfqfOM7XDMGLiMeW65KnvXaYX21po3X9rT5
-         c22/N+imUJOx0H0SRfX8mQJx6OzkZhr0yW0yuUtg6oFEDPQW5qop0O1CVDLZnGSONF/T
-         np+ynoUKHToynAEvNR2X9DaD5dSHb/lDRKiLfZijt95Xn+u6mvqo8GzSUBs3qgIg27RG
-         rqKwHxKIsfZFvk9oN6bGqDtV9JGWPgO9DjqWKfZmOd6AovuG6ERFcs29zOf+3vN+2MEr
-         p7zm9aESs7PZm7QBzgUR5gt/v4b/sTgs1XkA/M53DENNloO5PWccxtiJCFB8nne3oXup
-         NKyQ==
-X-Gm-Message-State: AOAM531pnyQydhJ/hw+WrcPQkMIqRNY4PUBqoUe7Fii9zx+ZmJmSWElT
-        9N5LnpzonnF4mgrfDDHhvBk=
-X-Google-Smtp-Source: ABdhPJx0B3/Ggp+NBS94vmugYcVvag7lAAaSfuX1YaOs1IFjt/eT9JXabIJ4Lo2OWw74XqEKLunaEg==
-X-Received: by 2002:a17:90b:e04:: with SMTP id ge4mr21320131pjb.230.1622685862090;
-        Wed, 02 Jun 2021 19:04:22 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:27da])
-        by smtp.gmail.com with ESMTPSA id n2sm909234pgl.59.2021.06.02.19.04.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 19:04:21 -0700 (PDT)
-Date:   Wed, 2 Jun 2021 19:04:19 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 2/3] bpf: Add verifier checks for bpf_timer.
-Message-ID: <20210603020419.mhnueugljj5cs3ie@ast-mbp.dhcp.thefacebook.com>
-References: <20210527040259.77823-1-alexei.starovoitov@gmail.com>
- <20210527040259.77823-3-alexei.starovoitov@gmail.com>
- <CAEf4BzbPkUdsY8XD5n2yMB8CDvakz4jxshjF8xrzqHXQS0ct9g@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BReYRbHXWvGepYMIo6MFKfcfxjtKBwb1nZu8ULNLHcc=;
+        b=spiNp/IHmfp6V6ZGxiShe5AYvYDLyvyy9kQDkgot5ZIdZ54G/3WU13uEpbmEK7K6CS
+         x6NY+YUg3gm18mghwRQZZ3gATnzx5bI/t7SlpM/fUALcC8F7zHW2nzpEGQKd5Q8ja01X
+         SynxH0Vqsu/sWvABXnilBUW+tFnNFARtQoPLZFTAa9jd1Q3Nq+psLcOWz5j3uoYYvDgV
+         yr+rT3GxSLo3qUelZf56j2pdmvVrMFM22XTf7V/8lYblJCuIFQ0yoLC0MqKqL7lSFcVN
+         mYPoLySfDrQMsPrZFtrWnnhJFL0op/8x+PqS6XAKvbfwDrlBLlFpUSYWsmtAvFMgaK4e
+         faiw==
+X-Gm-Message-State: AOAM531Id6YxqyOUZn4g/2zs/H9iVEm9Nq+Ky+B/A9WHz0mkdkb4sAtZ
+        /Hmmji1ZZc4e8HfQr0EiTz4Vxl3xR/DmS00C/AA=
+X-Google-Smtp-Source: ABdhPJz+/mol60y7157Ls3YUkrtb37+vDz19gkQP11F5X3o4NCubMvUCX1DjMJ1HKeF15VRC/9pzclNBkaetPxsOkns=
+X-Received: by 2002:a19:3f0a:: with SMTP id m10mr26429532lfa.477.1622687227206;
+ Wed, 02 Jun 2021 19:27:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbPkUdsY8XD5n2yMB8CDvakz4jxshjF8xrzqHXQS0ct9g@mail.gmail.com>
+References: <CADxym3baupJJ7Q9otxtoQ-DH5e-J2isg-LZj2CsOqRPo70AL4A@mail.gmail.com>
+ <e91baaba-e00a-4b16-0787-e9460dacfbb9@redhat.com>
+In-Reply-To: <e91baaba-e00a-4b16-0787-e9460dacfbb9@redhat.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Thu, 3 Jun 2021 10:26:55 +0800
+Message-ID: <CADxym3ZdyqJ7b_PqdcjbNhKWP7_nsPRQ9Q0TtFC6Qzr75ekK+g@mail.gmail.com>
+Subject: Re: The value of FB_MTU eats two pages
+To:     Jon Maloy <jmaloy@redhat.com>
+Cc:     ying.xue@windriver.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        tipc-discussion@lists.sourceforge.net,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 03:34:29PM -0700, Andrii Nakryiko wrote:
-> 
-> >  /* copy everything but bpf_spin_lock */
-> >  static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
-> >  {
-> > +       u32 off = 0, size = 0;
-> > +
-> >         if (unlikely(map_value_has_spin_lock(map))) {
-> > -               u32 off = map->spin_lock_off;
-> > +               off = map->spin_lock_off;
-> > +               size = sizeof(struct bpf_spin_lock);
-> > +       } else if (unlikely(map_value_has_timer(map))) {
-> > +               off = map->timer_off;
-> > +               size = sizeof(struct bpf_timer);
-> > +       }
-> 
-> so the need to handle 0, 1, or 2 gaps seems to be the only reason to
-> disallow both bpf_spinlock and bpf_timer in one map element, right?
+Hello Maloy,
 
-exactly.
+On Thu, Jun 3, 2021 at 3:50 AM Jon Maloy <jmaloy@redhat.com> wrote:
 
-> Isn't it worth addressing it from the very beginning to lift the
-> artificial restriction? E.g., for speed, you'd do:
-> 
-> if (likely(neither spinlock nor timer)) {
->  /* fastest pass */
-> } else if (only one of spinlock or timer) {
->   /* do what you do here */
-> } else {
->   int off1, off2, sz1, sz2;
-> 
->   if (spinlock_off < timer_off) {
->     off1 = spinlock_off;
->     sz1 = spinlock_sz;
->     off2 = timer_off;
->     sz2 = timer_sz;
->   } else {
->     ... you get the idea
+[...]
+> Hi Dong,
+> The value is based on empiric knowledge.
+> When I determined it I made a small loop in a kernel driver where I
+> allocated skbs (using tipc_buf_acquire) with an increasing size
+> (incremented with 1 each iteration), and then printed out the
+> corresponding truesize.
+>
+> That gave the value we are using now.
+>
+> Now, when re-running the test I get a different value, so something has
+> obviously changed since then.
+>
+> [ 1622.158586] skb(513) =>> truesize 2304, prev skb(512) => prev
+> truesize 1280
+> [ 1622.162074] skb(1537) =>> truesize 4352, prev skb(1536) => prev
+> truesize 2304
+> [ 1622.165984] skb(3585) =>> truesize 8448, prev skb(3584) => prev
+> truesize 4352
+>
+> As you can see, the optimal value now, for an x86_64 machine compiled
+> with gcc, is 3584 bytes, not 3744.
 
-Not really :)
-Are you suggesting to support one bpf_spin_lock and one
-bpf_timer inside single map element, but not two spin_locks
-and/or not two bpf_timers?
-Two me it's either one or support any.
-Anything in-between doesn't seem worth extra code.
+I'm not sure if this is a perfect way to determine the value of FB_MTU.
+If 'struct skb_shared_info' changes, this value seems should change,
+too.
 
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index f386f85aee5c..0a828dc4968e 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -3241,6 +3241,15 @@ static int check_map_access(struct bpf_verifier_env *env, u32 regno,
-> >                         return -EACCES;
-> >                 }
-> >         }
-> > +       if (map_value_has_timer(map)) {
-> > +               u32 t = map->timer_off;
-> > +
-> > +               if (reg->smin_value + off < t + sizeof(struct bpf_timer) &&
-> 
-> <= ? Otherwise we allow accessing the first byte, unless I'm mistaken.
+How about we make it this:
 
-I don't think so. See the comment above in if (map_value_has_spin_lock(map))
-I didn't copy-paste it, because it's the same logic.
+#define FB_MTU (PAGE_SIZE - \
+         SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) - \
+         SKB_DATA_ALIGN(BUF_HEADROOM + BUF_TAILROOM + 3 + \
+                 MAX_H_SIZ))
 
-> > -       if (val) {
-> > -               /* todo: relax this requirement */
-> > -               verbose(env, "bpf_timer field can only be first in the map value element\n");
-> 
-> ok, this was confusing, but now I see why you did that...
+The value 'BUF_HEADROOM + BUF_TAILROOM + 3' come from 'tipc_buf_acquire()':
 
-I'll clarify the comment to say that the next patch fixes it.
+#ifdef CONFIG_TIPC_CRYPTO
+    unsigned int buf_size = (BUF_HEADROOM + size + BUF_TAILROOM + 3) & ~3u;
+#else
+    unsigned int buf_size = (BUF_HEADROOM + size + 3) & ~3u;
+#endif
+
+Is it a good idea?
+
+Thanks
+Menglong Dong
