@@ -2,127 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F19D039AE1C
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 00:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C517B39AE2C
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 00:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230468AbhFCWeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 18:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230158AbhFCWeM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 18:34:12 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BA1C061756;
-        Thu,  3 Jun 2021 15:32:15 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id y15so6001066pfl.4;
-        Thu, 03 Jun 2021 15:32:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VUfhHlJEUkLIR0EIxU6jXP1bVKyAro32mftomoJHVSQ=;
-        b=dUPVKRvL4ucDTigXFTP29OZzBupoPFAqKnumC/amO0ZZob6v9CW5aE4LOAqGxSf8wr
-         ANTBNXdTwzx5qLAEqsY0zwPXZIx6ivvToN4ROae9vwyVyWlzoasf45Ox7dB46fDqOYZK
-         iPcfopWe8E3qRgMt5BMYXfcgNfns7gNV7kHNZHtew3gwZ2E4NRXEGnNgJQpSwH2iJMCh
-         jaoruUrycy6WDokpMWZC7egJxhYWTzLCjfEThi6hvCdTvxgj0gNN0ZtqrKUrmqIltoux
-         Fk7/XOj4c/3WhFXPst67wIAQXDZxqAKKPpCQdJOlc8SvfBINGYo1sFqzkr2heuecq6pY
-         /Kbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VUfhHlJEUkLIR0EIxU6jXP1bVKyAro32mftomoJHVSQ=;
-        b=MfXYNwKUK3NeWuUpuOoeYbEgXHtTp1FSIcN6iCXbTz1RT7er4vx65zH/o7kTLWYUi/
-         OdCETT17SAgCkK+cTHxkY2jOfBS6rLABAqLM70DM55Gs4JrsvUl+35QviDJ3WpqpLeCd
-         6TXtn4yw1ElUpwBWYcnZu7DkkEyxxTZEQjtBNUpEL6F+Ca2Wh8nx11s+uefQg3rTTuLI
-         yGbwewWbxjtgQlZcHdA6lWblVnsZUtZpbDPXX4+JqXlK4km6GE8KjoWfIvvOCMU025VV
-         J7ARfzpQMMnAzSQVghrrZsd8xp2TWfKrssyqNDV8654VCvB4awOVISbqcyk9HtApl4ix
-         qatg==
-X-Gm-Message-State: AOAM530UhQfw7ovtvn926adnMLaIu7sYfR6GP4cFDhxF7Bd6fCDayD/C
-        gtVLcZmLCcKsNfb0rQawzXSFybbAJmdmWC8KISDO1cNi1H3vPQ==
-X-Google-Smtp-Source: ABdhPJzOTpRU3MtYwgO5eoq3M8jObwOxfDBiaRLRIFQsvqlRRCSPIIi4n0fauN6h3W6Gzr4IxnzGjlhxqWzJRB8nn/Y=
-X-Received: by 2002:a63:571d:: with SMTP id l29mr1628701pgb.179.1622759534685;
- Thu, 03 Jun 2021 15:32:14 -0700 (PDT)
+        id S229810AbhFCWly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 18:41:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46964 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229704AbhFCWlv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 18:41:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1FE6061401;
+        Thu,  3 Jun 2021 22:40:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622760006;
+        bh=eq5oVITcnOyriOj/YeyTGVhxV8NBkbowh22WDOn/I6M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Sy9numyBtjsTThqZ+CsJyxn7ke+kZC6sZCmKcCvSDlCBvJIcxKIRFi0qPR3bnlhyM
+         aUZ0AYzMvFvPQQ444+lKWTElHNgsbK/j6RFpeT2p+9I39A/OL9hogOVqTLQXVaiXbS
+         jAs4gy0qvZGHaWOxgfzEZmmwE0P5zKfG45Pi6rf5HmKk2IXTfHzdmwwl6o/3EHXkaP
+         P+pO5lbEXHyGHmMDciKX7YerFw367QC9Hb/ahdygQLWIQenf6dGF13aaWH6MpvWCbW
+         9LexBDaHKZpUy5VfterandyWB4znZTjmczB9mQ9QArEcGCyhLKpOU8wNw+8iWHnVT9
+         f3+HwsNq8pI3Q==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0DCC460BFB;
+        Thu,  3 Jun 2021 22:40:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210602192640.13597-1-paskripkin@gmail.com>
-In-Reply-To: <20210602192640.13597-1-paskripkin@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 3 Jun 2021 15:32:03 -0700
-Message-ID: <CAM_iQpU+1UUZhP9wHok4bajmRFeocr8d2mLZ8TtxqwyWuLgMAw@mail.gmail.com>
-Subject: Re: [PATCH] net: kcm: fix memory leak in kcm_sendmsg
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tom Herbert <tom@herbertland.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzbot+b039f5699bd82e1fb011@syzkaller.appspotmail.com,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: ethernet: rmnet: Restructure if checks to avoid
+ uninitialized warning
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162276000605.13062.14467575723320615318.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Jun 2021 22:40:06 +0000
+References: <20210603173410.310362-1-nathan@kernel.org>
+In-Reply-To: <20210603173410.310362-1-nathan@kernel.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     subashab@codeaurora.org, stranche@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, ndesaulniers@google.com,
+        sharathv@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 2, 2021 at 12:29 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
->
-> Syzbot reported memory leak in kcm_sendmsg()[1].
-> The problem was in non-freed frag_list in case of error.
->
-> In the while loop:
->
->         if (head == skb)
->                 skb_shinfo(head)->frag_list = tskb;
->         else
->                 skb->next = tskb;
->
-> frag_list filled with skbs, but nothing was freeing them.
+Hello:
 
-What do you mean by "nothing was freeing them"?
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-I am sure kfree_skb() will free those in frag_list:
+On Thu,  3 Jun 2021 10:34:10 -0700 you wrote:
+> Clang warns that proto in rmnet_map_v5_checksum_uplink_packet() might be
+> used uninitialized:
+> 
+> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:283:14: warning:
+> variable 'proto' is used uninitialized whenever 'if' condition is false
+> [-Wsometimes-uninitialized]
+>                 } else if (skb->protocol == htons(ETH_P_IPV6)) {
+>                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:295:36: note:
+> uninitialized use occurs here
+>                 check = rmnet_map_get_csum_field(proto, trans);
+>                                                  ^~~~~
+> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:283:10: note:
+> remove the 'if' if its condition is always true
+>                 } else if (skb->protocol == htons(ETH_P_IPV6)) {
+>                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:270:11: note:
+> initialize the variable 'proto' to silence this warning
+>                 u8 proto;
+>                         ^
+>                          = '\0'
+> 1 warning generated.
+> 
+> [...]
 
- 654 static void skb_release_data(struct sk_buff *skb)
- 655 {
- 656         struct skb_shared_info *shinfo = skb_shinfo(skb);
- 657         int i;
-...
- 669         if (shinfo->frag_list)
- 670                 kfree_skb_list(shinfo->frag_list);
+Here is the summary with links:
+  - [net-next] net: ethernet: rmnet: Restructure if checks to avoid uninitialized warning
+    https://git.kernel.org/netdev/net-next/c/118de6106735
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
->
-> backtrace:
->   [<0000000094c02615>] __alloc_skb+0x5e/0x250 net/core/skbuff.c:198
->   [<00000000e5386cbd>] alloc_skb include/linux/skbuff.h:1083 [inline]
->   [<00000000e5386cbd>] kcm_sendmsg+0x3b6/0xa50 net/kcm/kcmsock.c:967 [1]
->   [<00000000f1613a8a>] sock_sendmsg_nosec net/socket.c:652 [inline]
->   [<00000000f1613a8a>] sock_sendmsg+0x4c/0x60 net/socket.c:672
->
-> Reported-and-tested-by: syzbot+b039f5699bd82e1fb011@syzkaller.appspotmail.com
-> Fixes: ab7ac4eb9832 ("kcm: Kernel Connection Multiplexor module")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
->  net/kcm/kcmsock.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-> index 6201965bd822..1c572c8daced 100644
-> --- a/net/kcm/kcmsock.c
-> +++ b/net/kcm/kcmsock.c
-> @@ -1066,6 +1066,11 @@ static int kcm_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
->                 goto partial_message;
->         }
->
-> +       if (skb_has_frag_list(head)) {
-> +               kfree_skb_list(skb_shinfo(head)->frag_list);
-> +               skb_shinfo(head)->frag_list = NULL;
-> +       }
-> +
->         if (head != kcm->seq_skb)
->                 kfree_skb(head);
-
-This exact kfree_skb() should free those in frag_list. If the above
-if condition does not meet for some reason, then fix that condition?
-
-Thanks.
