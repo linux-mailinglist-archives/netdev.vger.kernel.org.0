@@ -2,295 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29F5539AE9B
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 01:24:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B98B339AEA4
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 01:27:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbhFCX0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 19:26:35 -0400
-Received: from mga05.intel.com ([192.55.52.43]:8114 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229723AbhFCX0a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 19:26:30 -0400
-IronPort-SDR: yuIgfWzdCgq4wJnYUpHleWxHOdoLYdr59eIj3ZWDGK1nik1FMPu1x1xbOFEuAD8XguBkkq/PqM
- wk60EgDAXedA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10004"; a="289807813"
-X-IronPort-AV: E=Sophos;i="5.83,246,1616482800"; 
-   d="scan'208";a="289807813"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2021 16:24:44 -0700
-IronPort-SDR: IoBk3vfl/ZSVuYUUPynlITzvPPcxIQBnju7qcAR9fZFa9kEAZwp1Idas8sBg5bXhaxjVcFo8za
- kZ+L7xMooN1Q==
-X-IronPort-AV: E=Sophos;i="5.83,246,1616482800"; 
-   d="scan'208";a="483669050"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.3.143])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2021 16:24:44 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 7/7] selftests: mptcp_connect: add SO_TIMESTAMPNS cmsg support
-Date:   Thu,  3 Jun 2021 16:24:33 -0700
-Message-Id: <20210603232433.260703-8-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210603232433.260703-1-mathew.j.martineau@linux.intel.com>
-References: <20210603232433.260703-1-mathew.j.martineau@linux.intel.com>
+        id S229761AbhFCX3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 19:29:32 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:1091 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229576AbhFCX3c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 19:29:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1622762867; x=1654298867;
+  h=date:from:to:cc:message-id:references:mime-version:
+   in-reply-to:subject;
+  bh=7ofG02ZB3R9ItNYAJX7AOjZDSEYR5bDQ9ZvKLyyiy6M=;
+  b=s4NMXVO77pvXXOzL6ItqV0+U/phI6tQWM0ia443Om1cx37MmlxxJCtjr
+   Yvf2Y4bVgAHVhXLPlGod7ZVD/Acyg8qWO9czjI7AHB7eA6daJEvo5nGtV
+   ZfAVn/LWvNlPoskfE4NzdPz1PwT9DU1UddnFipRXO7RnHoYcOSjWxVPBu
+   4=;
+X-IronPort-AV: E=Sophos;i="5.83,246,1616457600"; 
+   d="scan'208";a="116516910"
+Subject: Re: [PATCH v3 01/11] xen/manage: keep track of the on-going suspend mode
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 03 Jun 2021 23:27:45 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com (Postfix) with ESMTPS id 4C241A1D18;
+        Thu,  3 Jun 2021 23:27:43 +0000 (UTC)
+Received: from EX13D08UEE002.ant.amazon.com (10.43.62.92) by
+ EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Thu, 3 Jun 2021 23:27:42 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
+ EX13D08UEE002.ant.amazon.com (10.43.62.92) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Thu, 3 Jun 2021 23:27:42 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
+ Server id 15.0.1497.18 via Frontend Transport; Thu, 3 Jun 2021 23:27:42 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id 72A74409AC; Thu,  3 Jun 2021 23:27:42 +0000 (UTC)
+Date:   Thu, 3 Jun 2021 23:27:42 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>
+CC:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "roger.pau@citrix.com" <roger.pau@citrix.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dwmw@amazon.co.uk" <dwmw@amazon.co.uk>
+Message-ID: <20210603232742.GB14368@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <20200930212944.GA3138@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <8cd59d9c-36b1-21cf-e59f-40c5c20c65f8@oracle.com>
+ <20210521052650.GA19056@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <0b1f0772-d1b1-0e59-8e99-368e54d40fbf@oracle.com>
+ <20210526044038.GA16226@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <33380567-f86c-5d85-a79e-c1cd889f8ec2@oracle.com>
+ <20210528215008.GA19622@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <1ff91b30-3963-728e-aefb-57944197bdde@oracle.com>
+ <20210602193743.GA28861@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <2cb71322-9d3d-395e-293b-24888f5be759@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <2cb71322-9d3d-395e-293b-24888f5be759@oracle.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On Thu, Jun 03, 2021 at 04:11:46PM -0400, Boris Ostrovsky wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> 
+> 
+> 
+> On 6/2/21 3:37 PM, Anchal Agarwal wrote:
+> > On Tue, Jun 01, 2021 at 10:18:36AM -0400, Boris Ostrovsky wrote:
+> >>
+> > The resume won't fail because in the image the xen_vcpu and xen_vcpu_info are
+> > same. These are the same values that got in there during saving of the
+> > hibernation image. So whatever xen_vcpu got as a value during boot time registration on resume is
+> > essentially lost once the jump into the saved kernel image happens. Interesting
+> > part is if KASLR is not enabled boot time vcpup mfn is same as in the image.
+> 
+> 
+> Do you start the your guest right after you've hibernated it? What happens if you create (and keep running) a few other guests in-between? mfn would likely be different then I'd think.
+> 
+>
+Yes, I just run it in loops on a single guest and I am able to see the issue in
+20-40 iterations sometime may be sooner. Yeah, you could be right and this could
+definitely happen more often depending what's happening on dom0 side.
+> > Once you enable KASLR this value changes sometimes and whenever that happens
+> > resume gets stuck. Does that make sense?
+> >
+> > No it does not resume successfully if hypercall fails because I was trying to
+> > explicitly reset vcpu and invoke hypercall.
+> > I am just wondering why does restore logic fails to work here or probably I am
+> > missing a critical piece here.
+> 
+> 
+> If you are not using KASLR then xen_vcpu_info is at the same address every time you boot. So whatever you registered before hibernating stays the same when you boot second time and register again, and so successful comparison in xen_vcpu_setup() works. (Mostly by chance.)
+>
+That's what I thought so too.
+> 
+> But if KASLR is on then this comparison not failing should cause xen_vcpu pointer in the loaded image to become bogus because xen_vcpu is now registered for a different xen_vcpu_info address during boot.
+> 
+The reason for that I think is once you jump into the image that information is
+getting lost. But there is  some residue somewhere that's causing the resume to
+fail. I haven't been able to pinpoint the exact field value that may be causing
+that issue.
+Correct me if I am wrong here, but even if hypothetically I put a hack to tell the kernel
+somehow re-register vcpu it won't pass because there is no hypercall to
+unregister it in first place? Can the resumed kernel use the new values in that
+case [Now this is me just throwing wild guesses!!]
 
-This extends the existing setsockopt test case to also check for cmsg
-timestamps.
+> 
+> >>> Another line of thought is something what kexec does to come around this problem
+> >>> is to abuse soft_reset and issue it during syscore_resume or may be before the image get loaded.
+> >>> I haven't experimented with that yet as I am assuming there has to be a way to re-register vcpus during resume.
+> >>
+> >> Right, that sounds like it should work.
+> >>
+> > You mean soft reset or re-register vcpu?
+> 
+> 
+> Doing something along the lines of a soft reset. It should allow you to re-register. Not sure how you can use it without Xen changes though.
+> 
+No not without xen changes. It won't work. I will have xen changes in place to
+test that on our infrastructure. 
 
-mptcp_connect will abort/fail if the setockopt was passed but the
-timestamp cmsg isn't present after successful recvmsg().
-
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- .../selftests/net/mptcp/mptcp_connect.c       | 125 +++++++++++++++++-
- .../selftests/net/mptcp/mptcp_sockopt.sh      |   4 +-
- 2 files changed, 126 insertions(+), 3 deletions(-)
-
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.c b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-index d88e1fdfb147..89c4753c2760 100644
---- a/tools/testing/selftests/net/mptcp/mptcp_connect.c
-+++ b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-@@ -6,6 +6,7 @@
- #include <limits.h>
- #include <fcntl.h>
- #include <string.h>
-+#include <stdarg.h>
- #include <stdbool.h>
- #include <stdint.h>
- #include <stdio.h>
-@@ -25,6 +26,7 @@
- #include <netinet/in.h>
- 
- #include <linux/tcp.h>
-+#include <linux/time_types.h>
- 
- extern int optind;
- 
-@@ -66,6 +68,13 @@ static unsigned int cfg_do_w;
- static int cfg_wait;
- static uint32_t cfg_mark;
- 
-+struct cfg_cmsg_types {
-+	unsigned int cmsg_enabled:1;
-+	unsigned int timestampns:1;
-+};
-+
-+static struct cfg_cmsg_types cfg_cmsg_types;
-+
- static void die_usage(void)
- {
- 	fprintf(stderr, "Usage: mptcp_connect [-6] [-u] [-s MPTCP|TCP] [-p port] [-m mode]"
-@@ -80,11 +89,22 @@ static void die_usage(void)
- 	fprintf(stderr, "\t-M mark -- set socket packet mark\n");
- 	fprintf(stderr, "\t-u -- check mptcp ulp\n");
- 	fprintf(stderr, "\t-w num -- wait num sec before closing the socket\n");
-+	fprintf(stderr, "\t-c cmsg -- test cmsg type <cmsg>\n");
- 	fprintf(stderr,
- 		"\t-P [saveWithPeek|saveAfterPeek] -- save data with/after MSG_PEEK form tcp socket\n");
- 	exit(1);
- }
- 
-+static void xerror(const char *fmt, ...)
-+{
-+	va_list ap;
-+
-+	va_start(ap, fmt);
-+	vfprintf(stderr, fmt, ap);
-+	va_end(ap);
-+	exit(1);
-+}
-+
- static void handle_signal(int nr)
- {
- 	quit = true;
-@@ -338,6 +358,58 @@ static size_t do_write(const int fd, char *buf, const size_t len)
- 	return offset;
- }
- 
-+static void process_cmsg(struct msghdr *msgh)
-+{
-+	struct __kernel_timespec ts;
-+	bool ts_found = false;
-+	struct cmsghdr *cmsg;
-+
-+	for (cmsg = CMSG_FIRSTHDR(msgh); cmsg ; cmsg = CMSG_NXTHDR(msgh, cmsg)) {
-+		if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SO_TIMESTAMPNS_NEW) {
-+			memcpy(&ts, CMSG_DATA(cmsg), sizeof(ts));
-+			ts_found = true;
-+			continue;
-+		}
-+	}
-+
-+	if (cfg_cmsg_types.timestampns) {
-+		if (!ts_found)
-+			xerror("TIMESTAMPNS not present\n");
-+	}
-+}
-+
-+static ssize_t do_recvmsg_cmsg(const int fd, char *buf, const size_t len)
-+{
-+	char msg_buf[8192];
-+	struct iovec iov = {
-+		.iov_base = buf,
-+		.iov_len = len,
-+	};
-+	struct msghdr msg = {
-+		.msg_iov = &iov,
-+		.msg_iovlen = 1,
-+		.msg_control = msg_buf,
-+		.msg_controllen = sizeof(msg_buf),
-+	};
-+	int flags = 0;
-+	int ret = recvmsg(fd, &msg, flags);
-+
-+	if (ret <= 0)
-+		return ret;
-+
-+	if (msg.msg_controllen && !cfg_cmsg_types.cmsg_enabled)
-+		xerror("got %lu bytes of cmsg data, expected 0\n",
-+		       (unsigned long)msg.msg_controllen);
-+
-+	if (msg.msg_controllen == 0 && cfg_cmsg_types.cmsg_enabled)
-+		xerror("%s\n", "got no cmsg data");
-+
-+	if (msg.msg_controllen)
-+		process_cmsg(&msg);
-+
-+	return ret;
-+}
-+
- static ssize_t do_rnd_read(const int fd, char *buf, const size_t len)
- {
- 	int ret = 0;
-@@ -357,6 +429,8 @@ static ssize_t do_rnd_read(const int fd, char *buf, const size_t len)
- 	} else if (cfg_peek == CFG_AFTER_PEEK) {
- 		ret = recv(fd, buf, cap, MSG_PEEK);
- 		ret = (ret < 0) ? ret : read(fd, buf, cap);
-+	} else if (cfg_cmsg_types.cmsg_enabled) {
-+		ret = do_recvmsg_cmsg(fd, buf, cap);
- 	} else {
- 		ret = read(fd, buf, cap);
- 	}
-@@ -786,6 +860,48 @@ static void init_rng(void)
- 	srand(foo);
- }
- 
-+static void xsetsockopt(int fd, int level, int optname, const void *optval, socklen_t optlen)
-+{
-+	int err;
-+
-+	err = setsockopt(fd, level, optname, optval, optlen);
-+	if (err) {
-+		perror("setsockopt");
-+		exit(1);
-+	}
-+}
-+
-+static void apply_cmsg_types(int fd, const struct cfg_cmsg_types *cmsg)
-+{
-+	static const unsigned int on = 1;
-+
-+	if (cmsg->timestampns)
-+		xsetsockopt(fd, SOL_SOCKET, SO_TIMESTAMPNS_NEW, &on, sizeof(on));
-+}
-+
-+static void parse_cmsg_types(const char *type)
-+{
-+	char *next = strchr(type, ',');
-+	unsigned int len = 0;
-+
-+	cfg_cmsg_types.cmsg_enabled = 1;
-+
-+	if (next) {
-+		parse_cmsg_types(next + 1);
-+		len = next - type;
-+	} else {
-+		len = strlen(type);
-+	}
-+
-+	if (strncmp(type, "TIMESTAMPNS", len) == 0) {
-+		cfg_cmsg_types.timestampns = 1;
-+		return;
-+	}
-+
-+	fprintf(stderr, "Unrecognized cmsg option %s\n", type);
-+	exit(1);
-+}
-+
- int main_loop(void)
- {
- 	int fd;
-@@ -801,6 +917,8 @@ int main_loop(void)
- 		set_rcvbuf(fd, cfg_rcvbuf);
- 	if (cfg_sndbuf)
- 		set_sndbuf(fd, cfg_sndbuf);
-+	if (cfg_cmsg_types.cmsg_enabled)
-+		apply_cmsg_types(fd, &cfg_cmsg_types);
- 
- 	return copyfd_io(0, fd, 1);
- }
-@@ -887,7 +1005,7 @@ static void parse_opts(int argc, char **argv)
- {
- 	int c;
- 
--	while ((c = getopt(argc, argv, "6jr:lp:s:hut:m:S:R:w:M:P:")) != -1) {
-+	while ((c = getopt(argc, argv, "6jr:lp:s:hut:m:S:R:w:M:P:c:")) != -1) {
- 		switch (c) {
- 		case 'j':
- 			cfg_join = true;
-@@ -943,6 +1061,9 @@ static void parse_opts(int argc, char **argv)
- 		case 'P':
- 			cfg_peek = parse_peek(optarg);
- 			break;
-+		case 'c':
-+			parse_cmsg_types(optarg);
-+			break;
- 		}
- 	}
- 
-@@ -976,6 +1097,8 @@ int main(int argc, char *argv[])
- 			set_sndbuf(fd, cfg_sndbuf);
- 		if (cfg_mark)
- 			set_mark(fd, cfg_mark);
-+		if (cfg_cmsg_types.cmsg_enabled)
-+			apply_cmsg_types(fd, &cfg_cmsg_types);
- 
- 		return main_loop_s(fd);
- 	}
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh b/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh
-index 2fa13946ac04..1579e471a5e7 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh
-@@ -178,7 +178,7 @@ do_transfer()
- 
- 	timeout ${timeout_test} \
- 		ip netns exec ${listener_ns} \
--			$mptcp_connect -t ${timeout_poll} -l -M 1 -p $port -s ${srv_proto} \
-+			$mptcp_connect -t ${timeout_poll} -l -M 1 -p $port -s ${srv_proto} -c TIMESTAMPNS \
- 				${local_addr} < "$sin" > "$sout" &
- 	spid=$!
- 
-@@ -186,7 +186,7 @@ do_transfer()
- 
- 	timeout ${timeout_test} \
- 		ip netns exec ${connector_ns} \
--			$mptcp_connect -t ${timeout_poll} -M 2 -p $port -s ${cl_proto} \
-+			$mptcp_connect -t ${timeout_poll} -M 2 -p $port -s ${cl_proto} -c TIMESTAMPNS \
- 				$connect_addr < "$cin" > "$cout" &
- 
- 	cpid=$!
--- 
-2.31.1
-
+--
+Anchal
+> 
+> 
+> -boris
+> 
