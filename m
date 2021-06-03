@@ -2,123 +2,335 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5B4C39A4C4
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:38:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAD7D39A4BC
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:38:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbhFCPkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 11:40:07 -0400
-Received: from mail-pg1-f172.google.com ([209.85.215.172]:38543 "EHLO
-        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229881AbhFCPkF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:40:05 -0400
-Received: by mail-pg1-f172.google.com with SMTP id 6so5435014pgk.5;
-        Thu, 03 Jun 2021 08:38:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BVYx1tfLGUQhuXKxLmm7FvDthvCK68hj9EtKYIRIQHQ=;
-        b=miB2ljSk1RA9tY/uYJGQ9mMwA4UDMc4OP5R2SPNH1XSMN+zppyZP3Jc++5YNxmzOby
-         kALkMRui/3t9gSuqF33Vb3xRJqf9zGMvEy1ThQuUuoC56/3xsrdMaI/j4lWWgNSF2sTJ
-         COY0x0gCbiM503+Xvvp9Nsgl9aAqJhwkWUkCuJddQ5kBPKpL6maIzV4Esr2iyVTK2nDK
-         TGTOiLPti6ZFCSfL7YPGf1T/ifO0Td+1Cseob26JVYcCljKap3dtfQjqMVk0i9iDWAeR
-         pRTkE5bQUe239zrqx8ZeVhOf2I48ijf3+Yv7Odtm6yW32eQYlYwHea3YOPPmHlNYafZU
-         cDkg==
+        id S229850AbhFCPjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 11:39:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45690 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229778AbhFCPjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:39:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622734688;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MAfOCgAL+/4c+u2cKFnHe9PJR7//GbNGS7l7MR7qaKc=;
+        b=Vt0WcLCOaiemRoUncmv1MZTGgmuIdpKQ21SFnRn10IZ8+N1hRubwk9UZbM3IoXn1SaDyjI
+        DXCQknqP1u4rN4UWPAZOAiZO2+dNuBoeIZVjtVsK125rtQ1gHs59lIwQ74QMcAapc4y3p9
+        PGdDhniSbMxklxlH6N8OYU8m9/gBq8s=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-448-BswdoIuSMPGBKAPx7yxFVg-1; Thu, 03 Jun 2021 11:38:07 -0400
+X-MC-Unique: BswdoIuSMPGBKAPx7yxFVg-1
+Received: by mail-ej1-f70.google.com with SMTP id f1-20020a1709064941b02903f6b5ef17bfso2078534ejt.20
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 08:38:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BVYx1tfLGUQhuXKxLmm7FvDthvCK68hj9EtKYIRIQHQ=;
-        b=MBzkjYyU1bxPKcJPl/hmKhXY3+KqqWIVGjA76UkYWqFAz5VmhLCHAh8jYAUCBqxFWc
-         NMhkYUDJz94pq+srIlyKRCe3S4uUO23JZy+j5vP3+ft56bzsK5igOM524tCIcfAGTEdf
-         1+zZ2AMSTlmdBVGbiECAjUvXYCCbGx2trpg6ChylnIvrzIKNfh1sAUjTMqIXUOAp2H4l
-         g6NzkhNmGy/1Ung9cLmf+WjXRDZEAPUkJtdRaQxvAWqpDOy6jk5j1+sphx9ZCXmP3hPs
-         yYjGKl18URdA06g3v/yjM0NpVfkTLFA04pfkdZPNZONF7gOoUA5pDwMh43OS3ZQSWNE4
-         ogpQ==
-X-Gm-Message-State: AOAM530t5ftDZxmCRn8F+9X+Xj8RdIUZ10Bwt42oC4WuZlB2kG6eQfmb
-        6PLiJ+nsDyPjIouQhN07TwI=
-X-Google-Smtp-Source: ABdhPJyuSSLvdEikeh+Nq/zhDPHcKBsCeWjVlIXCtWnktcvNT96pyk1AlIWziUacbt3mBXpwaDz9WA==
-X-Received: by 2002:aa7:8755:0:b029:2eb:8c8f:d1f1 with SMTP id g21-20020aa787550000b02902eb8c8fd1f1mr271415pfo.11.1622734640422;
-        Thu, 03 Jun 2021 08:37:20 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:18:efec::4b1])
-        by smtp.gmail.com with ESMTPSA id r10sm3237979pga.48.2021.06.03.08.37.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Jun 2021 08:37:19 -0700 (PDT)
-Subject: Re: [RFC PATCH V3 09/11] HV/IOMMU: Enable swiotlb bounce buffer for
- Isolation VM
-To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com, arnd@arndb.de,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
-        rppt@kernel.org, hannes@cmpxchg.org, cai@lca.pw,
-        krish.sadhukhan@oracle.com, saravanand@fb.com,
-        Tianyu.Lan@microsoft.com, konrad.wilk@oracle.com, hch@lst.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com, jgross@suse.com,
-        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
-        xen-devel@lists.xenproject.org, davem@davemloft.net,
-        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, thomas.lendacky@amd.com,
-        brijesh.singh@amd.com, sunilmut@microsoft.com
-References: <20210530150628.2063957-1-ltykernel@gmail.com>
- <20210530150628.2063957-10-ltykernel@gmail.com>
- <9488c114-81ad-eb67-79c0-5ed319703d3e@oracle.com>
- <a023ee3f-ce85-b54f-79c3-146926bf3279@gmail.com>
- <d6714e8b-dcb6-798b-59a4-5bb68f789564@oracle.com>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <1cdf4e6e-6499-e209-d499-7ab82992040b@gmail.com>
-Date:   Thu, 3 Jun 2021 23:37:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MAfOCgAL+/4c+u2cKFnHe9PJR7//GbNGS7l7MR7qaKc=;
+        b=ucBqZsJAvFRJKFCm9ANs2cxrV/Z/6CoCxVDEAMy8RCNWCT5NVvVmAZh9NTx0oiqRF2
+         ZetBlWtgytsnFHC00ZU+Tr38cgxdwgrigrSnSSmIddk0wm3Rk85SXj7NLTUexDHbdRQe
+         DXRfnYuCPUvbGei69uRfEKdN65V2JwaTjn24RFtXWl8s9UgUJdxQV4i1OYw6GG8RJ5lU
+         7AG9pE2zH5k/3kDMdtQYyy5bwqe8L/tCM5OD+B7EE/lVsQKFa7qy4F9tCwS4xMuosOhl
+         Al2zbASHOusDVLPwy6xOhC+ER5pQiti7buUEUJXU1Ir9ObtNPgVZ0kiw0qrAzNRztGIB
+         lAgw==
+X-Gm-Message-State: AOAM530lL+UBg/fhEyWhJH6ys/Mt9YEZhyfYNiPy6vAfNQjFRGaenbZD
+        N/Dqy1w/ZKqSoqbP0/Wpyghnng56iNnY8yBp98eMy9sgXeiZlMxCl24+CnK0kFCClt84/82rvb8
+        SwDiIq9DgJuZdTwBN
+X-Received: by 2002:a05:6402:b1a:: with SMTP id bm26mr61508edb.387.1622734686330;
+        Thu, 03 Jun 2021 08:38:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzCg4RiY3uWsOMEkG7pXj17Pm1AGWGs6kIw12MPkL7qvmBz82U9B68S6pavqH2tLMDPO5l1tw==
+X-Received: by 2002:a05:6402:b1a:: with SMTP id bm26mr61493edb.387.1622734686165;
+        Thu, 03 Jun 2021 08:38:06 -0700 (PDT)
+Received: from steredhat ([5.170.129.82])
+        by smtp.gmail.com with ESMTPSA id z20sm1641999ejd.18.2021.06.03.08.38.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Jun 2021 08:38:05 -0700 (PDT)
+Date:   Thu, 3 Jun 2021 17:38:01 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, oxffffaa@gmail.com
+Subject: Re: [PATCH v10 17/18] vsock_test: add SOCK_SEQPACKET tests
+Message-ID: <20210603153801.xyew6p5d4x4orwka@steredhat>
+References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
+ <20210520191953.1272798-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-In-Reply-To: <d6714e8b-dcb6-798b-59a4-5bb68f789564@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210520191953.1272798-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/3/2021 12:02 AM, Boris Ostrovsky wrote:
-> 
-> On 6/2/21 11:01 AM, Tianyu Lan wrote:
->> Hi Boris:
->>      Thanks for your review.
->>
->> On 6/2/2021 9:16 AM, Boris Ostrovsky wrote:
->>>
->>> On 5/30/21 11:06 AM, Tianyu Lan wrote:
->>>> @@ -91,6 +92,6 @@ int pci_xen_swiotlb_init_late(void)
->>>>    EXPORT_SYMBOL_GPL(pci_xen_swiotlb_init_late);
->>>>      IOMMU_INIT_FINISH(2,
->>>> -          NULL,
->>>> +          hyperv_swiotlb_detect,
->>>>              pci_xen_swiotlb_init,
->>>>              NULL);
->>>
->>>
->>> Could you explain this change?
->>
->> Hyper-V allocates its own swiotlb bounce buffer and the default
->> swiotlb buffer should not be allocated. swiotlb_init() in pci_swiotlb_init() is to allocate default swiotlb buffer.
->> To achieve this, put hyperv_swiotlb_detect() as the first entry in the iommu_table_entry list. The detect loop in the pci_iommu_alloc() will exit once hyperv_swiotlb_detect() is called in Hyper-V VM and other iommu_table_entry callback will not be called.
-> 
-> 
-> 
-> Right. But pci_xen_swiotlb_detect() will only do something for Xen PV guests, and those guests don't run on hyperV. It's either xen_pv_domain() (i.e. hypervisor_is_type(X86_HYPER_XEN_PV)) or hypervisor_is_type(X86_HYPER_MS_HYPERV) but never both. So I don't think there needs to be a dependency between the two callbacks.
+On Thu, May 20, 2021 at 10:19:50PM +0300, Arseny Krasnov wrote:
+>Implement two tests of SOCK_SEQPACKET socket: first sends data by
+>several 'write()'s and checks that number of 'read()' were same.
+>Second test checks MSG_TRUNC flag. Cases for connect(), bind(),
+>etc. are not tested, because it is same as for stream socket.
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> v9 -> v10:
+> 1) Commit message updated.
+> 2) Add second test for message bounds.
 
-Yes, the dependency is between hyperv_swiotlb_detect() and
-pci_swiotlb_detect_override()/pci_swiotlb_detect_4gb(). Now
-pci_swiotlb_detect_override() and pci_swiotlb_detect_4gb() depends on
-pci_xen_swiotlb_detect(). To keep dependency between
-hyperv_swiotlb_detect() and pci_swiotlb_detect_override/4gb(), make 
-pci_xen_swiotlb_detect() depends on hyperv_swiotlb_detect() and just to
-keep order in the IOMMU table. Current iommu_table_entry only has one
-depend callback and this is why I put xen depends on hyperv detect function.
+This patch LGTM, but I'll review better with the next version, running 
+also the test suite on my VMs.
 
-Thanks.
+Thanks,
+Stefano
+
+>
+> tools/testing/vsock/util.c       |  32 +++++++--
+> tools/testing/vsock/util.h       |   3 +
+> tools/testing/vsock/vsock_test.c | 116 +++++++++++++++++++++++++++++++
+> 3 files changed, 146 insertions(+), 5 deletions(-)
+>
+>diff --git a/tools/testing/vsock/util.c b/tools/testing/vsock/util.c
+>index 93cbd6f603f9..2acbb7703c6a 100644
+>--- a/tools/testing/vsock/util.c
+>+++ b/tools/testing/vsock/util.c
+>@@ -84,7 +84,7 @@ void vsock_wait_remote_close(int fd)
+> }
+>
+> /* Connect to <cid, port> and return the file descriptor. */
+>-int vsock_stream_connect(unsigned int cid, unsigned int port)
+>+static int vsock_connect(unsigned int cid, unsigned int port, int type)
+> {
+> 	union {
+> 		struct sockaddr sa;
+>@@ -101,7 +101,7 @@ int vsock_stream_connect(unsigned int cid, unsigned int port)
+>
+> 	control_expectln("LISTENING");
+>
+>-	fd = socket(AF_VSOCK, SOCK_STREAM, 0);
+>+	fd = socket(AF_VSOCK, type, 0);
+>
+> 	timeout_begin(TIMEOUT);
+> 	do {
+>@@ -120,11 +120,21 @@ int vsock_stream_connect(unsigned int cid, unsigned int port)
+> 	return fd;
+> }
+>
+>+int vsock_stream_connect(unsigned int cid, unsigned int port)
+>+{
+>+	return vsock_connect(cid, port, SOCK_STREAM);
+>+}
+>+
+>+int vsock_seqpacket_connect(unsigned int cid, unsigned int port)
+>+{
+>+	return vsock_connect(cid, port, SOCK_SEQPACKET);
+>+}
+>+
+> /* Listen on <cid, port> and return the first incoming connection.  The remote
+>  * address is stored to clientaddrp.  clientaddrp may be NULL.
+>  */
+>-int vsock_stream_accept(unsigned int cid, unsigned int port,
+>-			struct sockaddr_vm *clientaddrp)
+>+static int vsock_accept(unsigned int cid, unsigned int port,
+>+			struct sockaddr_vm *clientaddrp, int type)
+> {
+> 	union {
+> 		struct sockaddr sa;
+>@@ -145,7 +155,7 @@ int vsock_stream_accept(unsigned int cid, unsigned int port,
+> 	int client_fd;
+> 	int old_errno;
+>
+>-	fd = socket(AF_VSOCK, SOCK_STREAM, 0);
+>+	fd = socket(AF_VSOCK, type, 0);
+>
+> 	if (bind(fd, &addr.sa, sizeof(addr.svm)) < 0) {
+> 		perror("bind");
+>@@ -189,6 +199,18 @@ int vsock_stream_accept(unsigned int cid, unsigned int port,
+> 	return client_fd;
+> }
+>
+>+int vsock_stream_accept(unsigned int cid, unsigned int port,
+>+			struct sockaddr_vm *clientaddrp)
+>+{
+>+	return vsock_accept(cid, port, clientaddrp, SOCK_STREAM);
+>+}
+>+
+>+int vsock_seqpacket_accept(unsigned int cid, unsigned int port,
+>+			   struct sockaddr_vm *clientaddrp)
+>+{
+>+	return vsock_accept(cid, port, clientaddrp, SOCK_SEQPACKET);
+>+}
+>+
+> /* Transmit one byte and check the return value.
+>  *
+>  * expected_ret:
+>diff --git a/tools/testing/vsock/util.h b/tools/testing/vsock/util.h
+>index e53dd09d26d9..a3375ad2fb7f 100644
+>--- a/tools/testing/vsock/util.h
+>+++ b/tools/testing/vsock/util.h
+>@@ -36,8 +36,11 @@ struct test_case {
+> void init_signals(void);
+> unsigned int parse_cid(const char *str);
+> int vsock_stream_connect(unsigned int cid, unsigned int port);
+>+int vsock_seqpacket_connect(unsigned int cid, unsigned int port);
+> int vsock_stream_accept(unsigned int cid, unsigned int port,
+> 			struct sockaddr_vm *clientaddrp);
+>+int vsock_seqpacket_accept(unsigned int cid, unsigned int port,
+>+			   struct sockaddr_vm *clientaddrp);
+> void vsock_wait_remote_close(int fd);
+> void send_byte(int fd, int expected_ret, int flags);
+> void recv_byte(int fd, int expected_ret, int flags);
+>diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+>index 5a4fb80fa832..67766bfe176f 100644
+>--- a/tools/testing/vsock/vsock_test.c
+>+++ b/tools/testing/vsock/vsock_test.c
+>@@ -14,6 +14,8 @@
+> #include <errno.h>
+> #include <unistd.h>
+> #include <linux/kernel.h>
+>+#include <sys/types.h>
+>+#include <sys/socket.h>
+>
+> #include "timeout.h"
+> #include "control.h"
+>@@ -279,6 +281,110 @@ static void test_stream_msg_peek_server(const struct test_opts *opts)
+> 	close(fd);
+> }
+>
+>+#define MESSAGES_CNT 7
+>+static void test_seqpacket_msg_bounds_client(const struct test_opts *opts)
+>+{
+>+	int fd;
+>+
+>+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
+>+	if (fd < 0) {
+>+		perror("connect");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	/* Send several messages, one with MSG_EOR flag */
+>+	for (int i = 0; i < MESSAGES_CNT; i++)
+>+		send_byte(fd, 1, 0);
+>+
+>+	control_writeln("SENDDONE");
+>+	close(fd);
+>+}
+>+
+>+static void test_seqpacket_msg_bounds_server(const struct test_opts *opts)
+>+{
+>+	int fd;
+>+	char buf[16];
+>+	struct msghdr msg = {0};
+>+	struct iovec iov = {0};
+>+
+>+	fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
+>+	if (fd < 0) {
+>+		perror("accept");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	control_expectln("SENDDONE");
+>+	iov.iov_base = buf;
+>+	iov.iov_len = sizeof(buf);
+>+	msg.msg_iov = &iov;
+>+	msg.msg_iovlen = 1;
+>+
+>+	for (int i = 0; i < MESSAGES_CNT; i++) {
+>+		if (recvmsg(fd, &msg, 0) != 1) {
+>+			perror("message bound violated");
+>+			exit(EXIT_FAILURE);
+>+		}
+>+	}
+>+
+>+	close(fd);
+>+}
+>+
+>+#define MESSAGE_TRUNC_SZ 32
+>+static void test_seqpacket_msg_trunc_client(const struct test_opts *opts)
+>+{
+>+	int fd;
+>+	char buf[MESSAGE_TRUNC_SZ];
+>+
+>+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
+>+	if (fd < 0) {
+>+		perror("connect");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	if (send(fd, buf, sizeof(buf), 0) != sizeof(buf)) {
+>+		perror("send failed");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	control_writeln("SENDDONE");
+>+	close(fd);
+>+}
+>+
+>+static void test_seqpacket_msg_trunc_server(const struct test_opts *opts)
+>+{
+>+	int fd;
+>+	char buf[MESSAGE_TRUNC_SZ / 2];
+>+	struct msghdr msg = {0};
+>+	struct iovec iov = {0};
+>+
+>+	fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
+>+	if (fd < 0) {
+>+		perror("accept");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	control_expectln("SENDDONE");
+>+	iov.iov_base = buf;
+>+	iov.iov_len = sizeof(buf);
+>+	msg.msg_iov = &iov;
+>+	msg.msg_iovlen = 1;
+>+
+>+	ssize_t ret = recvmsg(fd, &msg, MSG_TRUNC);
+>+
+>+	if (ret != MESSAGE_TRUNC_SZ) {
+>+		printf("%zi\n", ret);
+>+		perror("MSG_TRUNC doesn't work");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	if (!(msg.msg_flags & MSG_TRUNC)) {
+>+		fprintf(stderr, "MSG_TRUNC expected\n");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	close(fd);
+>+}
+>+
+> static struct test_case test_cases[] = {
+> 	{
+> 		.name = "SOCK_STREAM connection reset",
+>@@ -309,6 +415,16 @@ static struct test_case test_cases[] = {
+> 		.run_client = test_stream_msg_peek_client,
+> 		.run_server = test_stream_msg_peek_server,
+> 	},
+>+	{
+>+		.name = "SOCK_SEQPACKET msg bounds",
+>+		.run_client = test_seqpacket_msg_bounds_client,
+>+		.run_server = test_seqpacket_msg_bounds_server,
+>+	},
+>+	{
+>+		.name = "SOCK_SEQPACKET MSG_TRUNC flag",
+>+		.run_client = test_seqpacket_msg_trunc_client,
+>+		.run_server = test_seqpacket_msg_trunc_server,
+>+	},
+> 	{},
+> };
+>
+>-- 
+>2.25.1
+>
+
