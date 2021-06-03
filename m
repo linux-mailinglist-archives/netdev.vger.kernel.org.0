@@ -2,196 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96731399F60
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 12:59:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 484CB399F71
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 13:03:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229906AbhFCLBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 07:01:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50394 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229885AbhFCLBL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 07:01:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622717966;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=u2TaQuoIhZrPBRfmHby+sF4oKD6qihDcCy7za/Xxrrg=;
-        b=VlOrdzo8Ht1KxsCenvk5QeXViz3pA58mbPuKrKPsHjrRSFsy3M7XYXN8fT2tu7z5OwWaS/
-        eAnWTgHpFrkhatUacFmQmyBWo/WjrXIWmrZ0PAPXtgy0d6Nx8Y57x0v8AQCLYzspEuAsjq
-        u5qlVq6aWoarL6DHKswi5rd5Nq3/PEY=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-569-bRUaH1ojMbKTfl2e1yOBzA-1; Thu, 03 Jun 2021 06:59:25 -0400
-X-MC-Unique: bRUaH1ojMbKTfl2e1yOBzA-1
-Received: by mail-ed1-f71.google.com with SMTP id c13-20020a50f60d0000b02903900105f127so3036931edn.22
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 03:59:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=u2TaQuoIhZrPBRfmHby+sF4oKD6qihDcCy7za/Xxrrg=;
-        b=abMY+YpzJzMWSnrhK+I4zczAufEmwUDwTtToQJ0Pc1ZLoc4EV564sKlDjyrI86OznI
-         VIkAJs4/fvaz/t4zka6w1U6OxetXPUjLFAAJeMuYFJHBRVlTAFJjLHYL43KTnPOge7Uf
-         C/BlLYmE6nV2nmwFP5DJr/kdaE425cSuz08hM2cys33ytQQ5KXKIHoQ0K5GNmtZuy2xo
-         WT9DLIGiIU4XAy3D3X06TiL5T9i47Y8yao/pGnLB/QEjxa7utSwBA4oGFC4pmz+qvxEC
-         AMjVaf03lyzvQrS65fLQn42t5813Oj2MSJUd1h6iQBqJ8Om0e7WVHFZURjQCqZ0UZtsp
-         Wz9Q==
-X-Gm-Message-State: AOAM532bXrLjJiBsjgDf5z3iaWeAbjK9GLiVG5QfSpmSwy5SiTVVbmLm
-        TdVwnLjZL4x0zUIOHggdswfx2rAwpBweX0EMTZVTDo1ZWrYc56scJe9HkOs8GPNYBbJ+zWSnR0V
-        utjxftzbYKkDF3vtx
-X-Received: by 2002:a17:906:7f07:: with SMTP id d7mr4551127ejr.240.1622717964208;
-        Thu, 03 Jun 2021 03:59:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw8o64PVj7ozjTvVNJYZ2Wc+z0I8VFEZoidK/PpIuRD64hx7kkUZrQYTSN1UBLi5qhQnyGwGQ==
-X-Received: by 2002:a17:906:7f07:: with SMTP id d7mr4551106ejr.240.1622717963835;
-        Thu, 03 Jun 2021 03:59:23 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id k21sm1374270ejp.23.2021.06.03.03.59.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 03:59:23 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 576771802AA; Thu,  3 Jun 2021 12:59:22 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 1/3] bpf: Introduce bpf_timer
-In-Reply-To: <20210603015809.l2dez754vzxjueew@ast-mbp.dhcp.thefacebook.com>
-References: <20210527040259.77823-1-alexei.starovoitov@gmail.com>
- <20210527040259.77823-2-alexei.starovoitov@gmail.com>
- <87r1hsgln6.fsf@toke.dk>
- <20210602014608.wxzfsgzuq7rut4ra@ast-mbp.dhcp.thefacebook.com>
- <87a6o7aoxa.fsf@toke.dk>
- <20210603015809.l2dez754vzxjueew@ast-mbp.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 03 Jun 2021 12:59:22 +0200
-Message-ID: <874kef9pth.fsf@toke.dk>
+        id S229751AbhFCLFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 07:05:02 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:54442 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229665AbhFCLFB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 07:05:01 -0400
+Received: from fsav105.sakura.ne.jp (fsav105.sakura.ne.jp [27.133.134.232])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 153B2uuO040347;
+        Thu, 3 Jun 2021 20:02:56 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav105.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav105.sakura.ne.jp);
+ Thu, 03 Jun 2021 20:02:56 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav105.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 153B2uKZ040343
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 3 Jun 2021 20:02:56 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: [PATCH] can: bcm/raw/isotp: use per module netdevice notifier
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+References: <20210602151733.3630-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <265c1129-96f1-7bb1-1d01-b2b8cc5b1a42@hartkopp.net>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <51ed3352-b5b0-03a1-ec25-faa368adcc46@i-love.sakura.ne.jp>
+Date:   Thu, 3 Jun 2021 20:02:52 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
+In-Reply-To: <265c1129-96f1-7bb1-1d01-b2b8cc5b1a42@hartkopp.net>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+On 2021/06/03 15:09, Oliver Hartkopp wrote:
+> so I wonder why only the *registering* of a netdev notifier can cause a 'hang' in that way?!?
 
-> On Thu, Jun 03, 2021 at 12:21:05AM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>=20
->> > On Thu, May 27, 2021 at 06:57:17PM +0200, Toke H=C3=B8iland-J=C3=B8rge=
-nsen wrote:
->> >> >     if (val) {
->> >> >         bpf_timer_init(&val->timer, timer_cb2, 0);
->> >> >         bpf_timer_start(&val->timer, 1000 /* call timer_cb2 in 1 ms=
-ec */);
->> >>=20
->> >> nit: there are 1M nanoseconds in a millisecond :)
->> >
->> > oops :)
->> >
->> >> >     }
->> >> > }
->> >> >
->> >> > This patch adds helper implementations that rely on hrtimers
->> >> > to call bpf functions as timers expire.
->> >> > The following patch adds necessary safety checks.
->> >> >
->> >> > Only programs with CAP_BPF are allowed to use bpf_timer.
->> >> >
->> >> > The amount of timers used by the program is constrained by
->> >> > the memcg recorded at map creation time.
->> >> >
->> >> > The bpf_timer_init() helper is receiving hidden 'map' and 'prog' ar=
-guments
->> >> > supplied by the verifier. The prog pointer is needed to do refcntin=
-g of bpf
->> >> > program to make sure that program doesn't get freed while timer is =
-armed.
->> >> >
->> >> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
->> >>=20
->> >> Overall this LGTM, and I believe it will be usable for my intended use
->> >> case. One question:
->> >>=20
->> >> With this, it will basically be possible to create a BPF daemon, won't
->> >> it? I.e., if a program includes a timer and the callback keeps re-arm=
-ing
->> >> itself this will continue indefinitely even if userspace closes all r=
-efs
->> >> to maps and programs? Not saying this is a problem, just wanted to ch=
-eck
->> >> my understanding (i.e., that there's not some hidden requirement on
->> >> userspace keeping a ref open that I'm missing)...
->> >
->> > That is correct.
->> > Another option would be to auto-cancel the timer when the last referen=
-ce
->> > to the prog drops. That may feel safer, since forever
->> > running bpf daemon is a certainly new concept.
->> > The main benefits of doing prog_refcnt++ from bpf_timer_start are ease
->> > of use and no surprises.
->> > Disappearing timer callback when prog unloads is outside of bpf prog c=
-ontrol.
->> > For example the tracing bpf prog might collect some data and periodica=
-lly
->> > flush it to user space. The prog would arm the timer and when callback
->> > is invoked it would send the data via ring buffer and start another
->> > data collection cycle.
->> > When the user space part of the service exits it doesn't have
->> > an ability to enforce the flush of the last chunk of data.
->> > It could do prog_run cmd that will call the timer callback,
->> > but it's racy.
->> > The solution to this problem could be __init and __fini
->> > sections that will be invoked when the prog is loaded
->> > and when the last refcnt drops.
->> > It's a complementary feature though.
->> > The prog_refcnt++ from bpf_timer_start combined with a prog
->> > explicitly doing bpf_timer_cancel from __fini
->> > would be the most flexible combination.
->> > This way the prog can choose to be a daemon or it can choose
->> > to cancel its timers and do data flushing when the last prog
->> > reference drops.
->> > The prog refcnt would be split (similar to uref). The __fini callback
->> > will be invoked when refcnt reaches zero, but all increments
->> > done by bpf_timer_start will be counted separately.
->> > The user space wouldn't need to do the prog_run command.
->> > It would detach the prog and close(prog_fd).
->> > That will trigger __fini callback that will cancel the timers
->> > and the prog will be fully unloaded.
->> > That would make bpf progs resemble kernel modules even more.
->>=20
->> I like the idea of a "destructor" that will trigger on refcnt drop to
->> zero. And I do think a "bpf daemon" is potentially a useful, if novel,
->> concept.
->
-> I think so too. Long ago folks requested periodic bpf progs to
-> do sampling in tracing. All these years attaching bpf prog
-> to a perf_event was a workaround for such feature request.
-> perf_event bpf prog can be pinned in perf_event array,
-> so "bpf daemon" kinda exist today. Just more convoluted.
+Not only the *registering* of a netdev notifier causes a 'hang' in that way.
+For example,
 
-Right, agreed - triggering periodic sampling directly from BPF does seem
-like the right direction.
+> My assumption would be that a wrong type of locking mechanism is used in
+> register_netdevice_notifier() which you already tried to address here:
+> 
+> https://syzkaller.appspot.com/bug?id=391b9498827788b3cc6830226d4ff5be87107c30
 
->> The __fini thing kinda supposes a well-behaved program, though, right?
->> I.e., it would be fairly trivial to write a program that spins forever
->> by repeatedly scheduling the timer with a very short interval (whether
->> by malice or bugginess).
->
-> It's already possible without bpf_timer.
+the result of
 
-Hmm, fair point.
+> -> https://syzkaller.appspot.com/text?tag=Patch&x=106ad8dbd00000
 
->> So do we need a 'bpfkill' type utility to nuke
->> buggy programs, or how would resource constraints be enforced?
->
-> That is possible without 'bpfkill'.
-> bpftool can delete map element that contains bpf_timer and
-> that will cancel it. I'll add tests to make sure it's the case.
+is https://syzkaller.appspot.com/text?tag=CrashReport&x=1705d92fd00000 which
+says that the *unregistering* of a netdev notifier caused a 'hang'. In other
+words, making register_netdevice_notifier() killable is not sufficient, and
+it is impossible to make unregister_netdevice_notifier() killable.
 
-Ah, right, of course! Thanks, LGTM then :)
+Moreover, there are modules (e.g. CAN driver's raw/bcm/isotp modules) which are
+not prepared for register_netdevice_notifier() failure. Therefore, I made this
+patch which did not cause a 'hang' even if "many things" (see the next paragraph)
+are run concurrently.
 
--Toke
+> The removal of one to three data structures in CAN is not time consuming.
+
+Yes, it would be true that CAN socket's operations alone are not time consuming.
+But since syzkaller is a fuzzer, it concurrently runs many things (including
+non-CAN sockets operations and various networking devices), and cleanup_net()
+for some complicated combinations will be time consuming.
+
+> IMHO we need to fix some locking semantics (with pernet_ops_rwsem??) here.
+
+Assuming that lockdep is correctly detecting possibility of deadlock, no lockdep
+warning indicates that there is no locking semantics error here. In other words,
+taking locks (e.g. pernet_ops_rwsem, rtnl_mutex) that are shared by many protocols
+causes fast protocols to be slowed down to the possible slowest operations.
+
+As explained at
+https://lkml.kernel.org/r/CACT4Y+Y8KmaoEj0L8g=wX4owS38mjNLVMMLsjyoN8DU9n=FrrQ@mail.gmail.com ,
+unbounded asynchronous queuing is always a recipe for disaster. cleanup_net() is
+called from a WQ context, and does time consuming operations with pernet_ops_rwsem
+held for read. Therefore, reducing frequency of holding pernet_ops_rwsem for write
+(because CAN driver's raw/bcm/isotp modules are calling {,un}register_netdevice_notifier()
+on every socket) helps cleanup_net() to make more progress; a low-hanging mitigation
+for this problem.
 
