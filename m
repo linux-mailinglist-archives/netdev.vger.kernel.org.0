@@ -2,169 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B054739A418
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:14:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDB8239A437
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:15:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231768AbhFCPQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 11:16:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46927 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231213AbhFCPQ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:16:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622733284;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/TbnjPejbYwVan9HkOykuBL+tAV4BzyESSrfqanFgRE=;
-        b=G8G+/20/tkQbMnXpvX8HFRinXvufLQ3bNOoduXVp/EJc1DCTRGJnyB7LDuEcpXEMI1LZiM
-        Ph0PSJrX/4dorCOqQDsjK/IDHS5jlsRxoZqIvyeBtzMf75BffYVhHmvzus8cmPdzkBtgEZ
-        GFXLUyaiBKMOk6hkz9A2eDues5yEudE=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-223-U68toyVsPqin9CvQjuTFXw-1; Thu, 03 Jun 2021 11:14:43 -0400
-X-MC-Unique: U68toyVsPqin9CvQjuTFXw-1
-Received: by mail-ej1-f71.google.com with SMTP id hz18-20020a1709072cf2b02903fbaae9f4faso2076608ejc.4
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 08:14:42 -0700 (PDT)
+        id S232086AbhFCPRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 11:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232056AbhFCPRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:17:22 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCAEC061756;
+        Thu,  3 Jun 2021 08:15:29 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id x196so6196813oif.10;
+        Thu, 03 Jun 2021 08:15:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=7v66XhuZWrG8DKs0DmAQ+sD7453YhN/0jRM3VEpgNbs=;
+        b=A5XNHd1U5uUtlenn3okEPwadIdqiAJJh/q97lMxU1ChLK0BMpzpkFdSkWYcxbhGpc0
+         +A0DAQgt9VXmWI+/9ww2qR/h20TePwKRir1H/qOKvSyRBMkd7b7UDPnhSSLVVMBZ+FU3
+         q8F1h2kj20SYVgqBIUOPjIkyt0fbcMQIEL6KEo2jTbLfLJX3v4pEnIZyPiZFFqR/qN+a
+         dGx+lob6cB30Homjl1PT38IKCGtJkNeW4knOXwHqiJvk+6NVQVUeP76FBM/d5lkvqa64
+         eQp9c47SZmRwkFXup3Wv8Hra7Ih6ZyO8xfl9UOVUEuaGG3iHVxwBT5HEairg+BQntstw
+         +Uag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/TbnjPejbYwVan9HkOykuBL+tAV4BzyESSrfqanFgRE=;
-        b=S/k9R7uAxMUo3N2RrHAR6aaYKo3xfjKhbYM8BSdXoZCeC1zae4xNf4WiPSoqoIAyi5
-         bIYcXIH35RnJ72MdqHmz2e0poEG/YvdTZMw3ffN53sG3FwdgoZ9DQSFfJJ22IYgM6z6E
-         IzI29JTvf9a/MxUh8pAkmGxQUrC/84hdrTSXuEcOKz0vQsUtioCWPp2SDm0sCgO6DSec
-         Vo3GWqqD2WNLYlM3zeTrkXBJsFIkpnQxrYwfwzYEfVEGI70Z+QguAdaumAkh31EngeBo
-         t6HY3hfBTEvthUfvlIDFFMnEzSZUFJjeQJI5vtfSOWB3vpYHKcZuhC4h/D9nq4Qp2otY
-         aDzg==
-X-Gm-Message-State: AOAM533on0Oa5kqQa9icyqkm7+evfgIjgPNxeJ0WGZEetj5EKTvvhnY9
-        O7Kdqrq+YMj1FR081qUTDm8b0S5APkBmqRdHuL5h+VsLgPIxL3GWDaSs/7Mq/lQ/RAwjFqpejl7
-        BXLBiltHSYVJeHE2A
-X-Received: by 2002:a17:906:15c2:: with SMTP id l2mr102911ejd.348.1622733281792;
-        Thu, 03 Jun 2021 08:14:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx0x5W1f0mRcMdebhikIGS3xszHMVLQeFtJfQT5T5MgWSrP7f8pNxRu7aXb5Lg9wKUHaELxKA==
-X-Received: by 2002:a17:906:15c2:: with SMTP id l2mr102880ejd.348.1622733281491;
-        Thu, 03 Jun 2021 08:14:41 -0700 (PDT)
-Received: from steredhat ([5.170.129.82])
-        by smtp.gmail.com with ESMTPSA id v21sm1894572edt.48.2021.06.03.08.14.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 08:14:40 -0700 (PDT)
-Date:   Thu, 3 Jun 2021 17:14:33 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, oxffffaa@gmail.com
-Subject: Re: [PATCH v10 13/18] virtio/vsock: rest of SOCK_SEQPACKET support
-Message-ID: <20210603151433.3tbiibmcfacpcjt2@steredhat>
-References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
- <20210520191840.1272290-1-arseny.krasnov@kaspersky.com>
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7v66XhuZWrG8DKs0DmAQ+sD7453YhN/0jRM3VEpgNbs=;
+        b=Q+uOgjfjjcRPPa8Ya5FQtwwmqZnx1Wpzg4WerdG5twlyXyJsqCdgtOS+C6f/EO9b1K
+         eIY3BRhamSxH0hMvNYnMR4Nagwnk/Sb0FEn8fJF0YWCqJknvHbsT5eUAYcwPCii7u12s
+         E2RZw3i5K0DM0DIj7bx6eEOjaquMLVpyAqngctFYL1Ehd/H0XMnQMd+ovLeUsi/RZawk
+         NDKzEjQAUc4O9qrnDyJzegLx46WBmnnssMNYx0FUGT7194jai1cnwNolTTHOXh0uzSU6
+         K6fwrMwOAMbC2hAUZp0564EDm/uKh+ThhrD/utjD+aszg62L29ndg3G1Kk2gWlac2nFw
+         1NXA==
+X-Gm-Message-State: AOAM532QMDpskQwUcMQqfCYG5UeblrhxrkHaIq0NxIkUoDR5qKh6ZdVF
+        iRRXkVknLb7TLFVV15kXRet1rZvzqIs=
+X-Google-Smtp-Source: ABdhPJy/g8zxRTE76lf8ZruWGdj5WOhFV6iZ8Y2xowCRo7rddjKqgwh1Ejrdn5IU++fVbCrXyAeUkQ==
+X-Received: by 2002:aca:b107:: with SMTP id a7mr7601143oif.170.1622733328983;
+        Thu, 03 Jun 2021 08:15:28 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.22])
+        by smtp.googlemail.com with ESMTPSA id p5sm748043oip.35.2021.06.03.08.15.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Jun 2021 08:15:28 -0700 (PDT)
+Subject: Re: [PATCH] ipv6: parameter p.name is empty
+To:     nicolas.dichtel@6wind.com, zhang kai <zhangkaiheb@126.com>,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210603095030.2920-1-zhangkaiheb@126.com>
+ <d1085905-215f-fb78-4d68-324bd6e48fdd@6wind.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <dd5b5a62-841c-5a21-7571-78d75e2f2482@gmail.com>
+Date:   Thu, 3 Jun 2021 09:15:27 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210520191840.1272290-1-arseny.krasnov@kaspersky.com>
+In-Reply-To: <d1085905-215f-fb78-4d68-324bd6e48fdd@6wind.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 10:18:37PM +0300, Arseny Krasnov wrote:
->Small updates to make SOCK_SEQPACKET work:
->1) Send SHUTDOWN on socket close for SEQPACKET type.
->2) Set SEQPACKET packet type during send.
->3) Set 'VIRTIO_VSOCK_SEQ_EOR' bit in flags for last
->   packet of message.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> v9 -> v10:
-> 1) Use 'msg_data_left()' instead of direct access to 'msg_hdr'.
-> 2) Commit message updated.
-> 3) Add check for socket type when setting SEQ_EOR bit.
->
-> include/linux/virtio_vsock.h            |  4 ++++
-> net/vmw_vsock/virtio_transport_common.c | 18 ++++++++++++++++--
-> 2 files changed, 20 insertions(+), 2 deletions(-)
->
->diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
->index 02acf6e9ae04..7360ab7ea0af 100644
->--- a/include/linux/virtio_vsock.h
->+++ b/include/linux/virtio_vsock.h
->@@ -80,6 +80,10 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
-> 			       struct msghdr *msg,
-> 			       size_t len, int flags);
->
->+int
->+virtio_transport_seqpacket_enqueue(struct vsock_sock *vsk,
->+				   struct msghdr *msg,
->+				   size_t len);
-> ssize_t
-> virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
-> 				   struct msghdr *msg,
->diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->index a6f8b0f39775..f7a3281b3eab 100644
->--- a/net/vmw_vsock/virtio_transport_common.c
->+++ b/net/vmw_vsock/virtio_transport_common.c
->@@ -74,6 +74,11 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
-> 		err = memcpy_from_msg(pkt->buf, info->msg, len);
-> 		if (err)
-> 			goto out;
->+
->+		if (msg_data_left(info->msg) == 0 &&
->+		    info->type == VIRTIO_VSOCK_TYPE_SEQPACKET)
->+			pkt->hdr.flags = cpu_to_le32(info->flags |
->+						VIRTIO_VSOCK_SEQ_EOR);
+On 6/3/21 7:33 AM, Nicolas Dichtel wrote:
+> Le 03/06/2021 à 11:50, zhang kai a écrit :
+>> so do not check it.
+>>
+>> Signed-off-by: zhang kai <zhangkaiheb@126.com>
+>> ---
+>>  net/ipv6/addrconf.c | 3 ---
+>>  1 file changed, 3 deletions(-)
+>>
+>> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+>> index b0ef65eb9..4c6b3fc7e 100644
+>> --- a/net/ipv6/addrconf.c
+>> +++ b/net/ipv6/addrconf.c
+>> @@ -2833,9 +2833,6 @@ static int addrconf_set_sit_dstaddr(struct net *net, struct net_device *dev,
+>>  	if (err)
+>>  		return err;
+>>  
+>> -	dev = __dev_get_by_name(net, p.name);
+>> -	if (!dev)
+>> -		return -ENOBUFS;
+>>  	return dev_open(dev, NULL);
+>>  }
+>>  
+>>
+> This bug seems to exist since the beginning of the SIT driver (24 years!):
+> https://git.kernel.org/pub/scm/linux/kernel/git/davem/netdev-vger-cvs.git/commit/?id=e5afd356a411a
+> Search addrconf_set_dstaddr()
+> 
+> Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> 
 
-`pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR)` should be enough, 
-no?
-
-Stefano
-
-> 	}
->
-> 	trace_virtio_transport_alloc_pkt(src_cid, src_port,
->@@ -187,7 +192,7 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
-> 	struct virtio_vsock_pkt *pkt;
-> 	u32 pkt_len = info->pkt_len;
->
->-	info->type = VIRTIO_VSOCK_TYPE_STREAM;
->+	info->type = virtio_transport_get_type(sk_vsock(vsk));
->
-> 	t_ops = virtio_transport_get_ops(vsk);
-> 	if (unlikely(!t_ops))
->@@ -478,6 +483,15 @@ virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
-> }
-> EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_dequeue);
->
->+int
->+virtio_transport_seqpacket_enqueue(struct vsock_sock *vsk,
->+				   struct msghdr *msg,
->+				   size_t len)
->+{
->+	return virtio_transport_stream_enqueue(vsk, msg, len);
->+}
->+EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_enqueue);
->+
-> int
-> virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
-> 			       struct msghdr *msg,
->@@ -912,7 +926,7 @@ void virtio_transport_release(struct vsock_sock *vsk)
-> 	struct sock *sk = &vsk->sk;
-> 	bool remove_sock = true;
->
->-	if (sk->sk_type == SOCK_STREAM)
->+	if (sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET)
-> 		remove_sock = virtio_transport_close(vsk);
->
-> 	if (remove_sock) {
->-- 
->2.25.1
->
-
+A patch was sent yesterday, "sit: set name of device back to struct
+parms", to set the name field in params.
