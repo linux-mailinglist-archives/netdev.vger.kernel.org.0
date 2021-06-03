@@ -2,99 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CABF039A409
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14EF739A413
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:13:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231712AbhFCPNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 11:13:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231558AbhFCPNz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:13:55 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F22C06174A
-        for <netdev@vger.kernel.org>; Thu,  3 Jun 2021 08:12:10 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id m137so2707538oig.6
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 08:12:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bJic+6tz18vYn4XY34kgSZ1q4wb1zHF82Ip5JNMuAwg=;
-        b=LChAnGh7xp/VHexa84QvDxgT5/+FGUXS1V9sBswWi0GlTZ97RY5x1Rz8FQN8pcKiSB
-         MN6M0ImJ2k+tK0vaAzM7OA7qd6X1Pl444VSTViMhaAcLGEsxhypo9CmGTxt4zG9yEtzI
-         Gd+qTIjN4tCQ0PJcvpNu7L/r2VTbisSpCrblwxTJ1sITH3aTWzLyLjdu2eUXW9F9by2R
-         YSfoCgWjwiNiijHuzrXTAFw0ddk5hrFikBHz4p+lR4yr4egnVQpnupZLA9qiMiIQ5DyB
-         lNeqbtJ8xmKEFIjzRiXXpNrx09As9OjkCvkdHzIGxy+V6/W4LDX1IdHxd4Rod6xMDWrv
-         bqlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bJic+6tz18vYn4XY34kgSZ1q4wb1zHF82Ip5JNMuAwg=;
-        b=lu3e1dFuF9rWq3tCNI/U8OjDobr0rnL4B4aJUmMaQdqa0BSf/H4rjWyLdWA7ThZ04O
-         UbJkOt+mjWZ1t8dIlTuzPbXkTp8WXUZHJtQQTufFahbdkTXQanz6LJ1Zd4FReQOEjOg0
-         38156SQ+f75ABS98nWK4acLNpA+lXyvwJMAVBWTEWTj0uOFpdHZB63OO+ERMrtNPmQBD
-         O0LxdS+pVLLnyBGGXj6bbUuV0Pn9FOhz2FuHv/VL7rgYuMfxspzEhiDvUDpjk8B5g8XL
-         IHtLhmsyxs/WY5Wt+ZhgOTzoUnBZbxZrxdgbpR0CBKvoXILVSUHy9sw35HoZWlFn4WBB
-         xSMQ==
-X-Gm-Message-State: AOAM532OMRZthGCwzQSf4BgBjjLMoAH28aKqCzulaqh73IBp6lTXp6Jz
-        Wfbu9R3pVRe+idf3a5tGhEI=
-X-Google-Smtp-Source: ABdhPJzesQ8JUanx/8T8s9cO9ZmIlZVIoX6vM88HB5lTyHCmXOfgnEgxISmJ31L25LbuGd2OOnJHrw==
-X-Received: by 2002:a54:400a:: with SMTP id x10mr7973210oie.158.1622733130148;
-        Thu, 03 Jun 2021 08:12:10 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id d20sm756712otq.62.2021.06.03.08.12.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Jun 2021 08:12:09 -0700 (PDT)
-Subject: Re: [PATCH net] ipv6: Fix KASAN: slab-out-of-bounds Read in
- fib6_nh_flush_exceptions
-To:     Coco Li <lixiaoyan@google.com>, netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <20210603073258.1186722-1-lixiaoyan@google.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <1fb6e6f5-a89b-19b8-74df-5e8377605d6a@gmail.com>
-Date:   Thu, 3 Jun 2021 09:12:08 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+        id S231876AbhFCPOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 11:14:38 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:43404 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231846AbhFCPOg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 11:14:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=Fb2y9y2wTlsDnlaiZCRMP7KJ4VwgHPLw9e1s4N8XbZc=; b=VU
+        8SgVaEtfICjnU2iMLl8aKwR5YGpx1SaxE8k6X7CUVI5Mvgz14pQzRFWbHLYDww60eKgmkiklD2nqt
+        1ByBqbC4n74HsYw/3h/Bk3/ChMm+SWIlhqgzS71abeeAP/iMeXvQA/3p7IhcRVuwqQ7J2YvjmH8rT
+        7mGe/zMHGGljyVU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lop1L-007dj0-UZ; Thu, 03 Jun 2021 17:12:31 +0200
+Date:   Thu, 3 Jun 2021 17:12:31 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Igal Liberman <Igal.Liberman@freescale.com>,
+        Shruti Kanetkar <Shruti@freescale.com>,
+        Emil Medve <Emilian.Medve@freescale.com>,
+        Scott Wood <oss@buserror.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Unsupported phy-connection-type sgmii-2500 in
+ arch/powerpc/boot/dts/fsl/t1023rdb.dts
+Message-ID: <YLjxX/XPDoRRIvYf@lunn.ch>
+References: <20210603143453.if7hgifupx5k433b@pali>
 MIME-Version: 1.0
-In-Reply-To: <20210603073258.1186722-1-lixiaoyan@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210603143453.if7hgifupx5k433b@pali>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/3/21 1:32 AM, Coco Li wrote:
-> Reported by syzbot:
-> HEAD commit:    90c911ad Merge tag 'fixes' of git://git.kernel.org/pub/scm..
-> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> dashboard link: https://syzkaller.appspot.com/bug?extid=123aa35098fd3c000eb7
-> compiler:       Debian clang version 11.0.1-2
+On Thu, Jun 03, 2021 at 04:34:53PM +0200, Pali Rohár wrote:
+> Hello!
 > 
-...
+> In commit 84e0f1c13806 ("powerpc/mpc85xx: Add MDIO bus muxing support to
+> the board device tree(s)") was added following DT property into DT node:
+> arch/powerpc/boot/dts/fsl/t1023rdb.dts fm1mac3: ethernet@e4000
+> 
+>     phy-connection-type = "sgmii-2500";
+> 
+> But currently kernel does not recognize this "sgmii-2500" phy mode. See
+> file include/linux/phy.h. In my opinion it should be "2500base-x" as
+> this is mode which operates at 2.5 Gbps.
+> 
+> I do not think that sgmii-2500 mode exist at all (correct me if I'm
+> wrong).
 
-> 
-> In the ip6_route_info_create function, in the case that the nh pointer
-> is not NULL, the fib6_nh in fib6_info has not been allocated.
-> Therefore, when trying to free fib6_info in this error case using
-> fib6_info_release, the function will call fib6_info_destroy_rcu,
-> which it will access fib6_nh_release(f6i->fib6_nh);
-> However, f6i->fib6_nh doesn't have any refcount yet given the lack of allocation
-> causing the reported memory issue above.
-> Therefore, releasing the empty pointer directly instead would be the solution.
-> 
-> Fixes: f88d8ea67fbdb ("ipv6: Plumb support for nexthop object in a fib6_info")
-> Fixes: 706ec91916462 ("ipv6: Fix nexthop refcnt leak when creating ipv6 route info")
-> Signed-off-by: Coco Li <lixiaoyan@google.com>
-> Cc: David Ahern <dsahern@kernel.org>
-> Reviewed-by: Eric Dumazet <edumazet@google.com>
-> ---
->  net/ipv6/route.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
+Kind of exist, unofficially. Some vendors run SGMII over clocked at
+2500. But there is no standard for it, and it is unclear how inband
+signalling should work. Whenever i see code saying 2.5G SGMII, i
+always ask, are you sure, is it really 2500BaseX? Mostly it gets
+changed to 2500BaseX after review.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+PHY mode sgmii-2500 does not exist in mainline.
+
+	Andrew
+
