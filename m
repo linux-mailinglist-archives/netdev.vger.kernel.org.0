@@ -2,120 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB58399FA6
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 13:18:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E067399FA7
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 13:19:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229849AbhFCLUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 07:20:00 -0400
-Received: from mail-bn8nam11on2081.outbound.protection.outlook.com ([40.107.236.81]:13761
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        id S229801AbhFCLVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 07:21:06 -0400
+Received: from mail-bn1nam07on2061.outbound.protection.outlook.com ([40.107.212.61]:9577
+        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229764AbhFCLTc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 07:19:32 -0400
+        id S229746AbhFCLVG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 07:21:06 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ToEwRs2l/Ypm4bx2zCGMqwpsJqqpdXn1M59aVNwonk4/dP5jnPVdy8/yt5+d70JOgdHH5fZycTV0YenaTASDbhLYpCjsKcJKEJD2C0AVDvNfftSx84vPIcs8pTxsY1x90zhZQdvxhWFQPg8qnOzgUqjLfivgU3j5+XXPHi9aupikbNlp4g5HBRx69BvIVPNGVSBgSrYH3xroahwlHlo4f44l0HOORuZLbWGMD1VO75+jDjD0YRujyrWsKBIBJtvqPsxoeFqjWeaoGcl53jc9O36H0ESy7yeWqvW1qHqYr6sdcsyKbWElTwI+RqXgKs1j4vU7OToJCE3VLcWUwctloQ==
+ b=XyFfnO7P+nCsAGOBX7xJc93h35vrr4PmEhxK6K6sFOxzKVhLgSzjkQ0LMFmMcDlL2Mm2x2ptURT8+Nu2mp+7A5NZJzfQjwcURU7WVocHziTej+NK5EsvsnjN8v76rwlvf0Dvs/lG9VAgOB0wrTJFxfoLHnl454LQLfOIMZ8Aq+iT4kZeMM7dL4YuSOLU3M6HnQ2+zsY0bmfFLllZ6q7atDZ6Il71V0jEY/WHI5smxGN2lf7xxDmRDSMkGMEDKElLF4sEubp2Rme+FH3oCeMVzFFSO9R0JBNd6ZrePP2k3ySrOnzOCReLdssWBJVFkXrvouaoaMlX7lNQqUoWaE9tgQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y662K0wmZrvw8FvIPZyRqHfGj3aPm+cFBzFJCW5E7Dw=;
- b=ZKkuUwnEekuOtpJCuHP6wWm44xZdd3ijDWHIwGNtmwQ+BjBy5xA+i6jJDVRJx3KKGvBIlyEOuLf+IpIV28EmyPO0/lPRpf/qwzJTbvj1+Lwna+Vk3pheP8/JP3ExWRNPBA0+WvTgNVnM/C0CMwZBwuc9yJl/4BAuJQEgd06rGKa44tG4liB4JjtMfwT7cpFSgxuv+uoALnM1vYzY/TBPvrO+KZAcFJt2hrwieqcmw9Wmf5R+N0h1ZPnRtvXFAvcElX7tfohADOIdVmoF85lan3H7yrO5kbBTx/fCdPKJbZ5n0XGLNjPKBTk5QjnxCZJ7CDos4STuLfodzvWH7o7HZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
+ bh=0No4cLqDeq3kUNtypMU5VgkbBh0z6+w5dheemsk2iLU=;
+ b=Sx7KHbjqILfzEVxkPpyYlAtnu8E4i408baLJURZzCj/+P6lACkLbsDgLOZF3xrenwDiosMBu/kMAg6mcT8oolCS4Gbad/0Ekhf+5JSeCaYwFRTwVdkP+2RxmuEHQE+gCBrzj7xu5wgXu+cNJdwJV/Ilbn4rmWWShNfAkRwTAvGErrU6WElGYwE//wfWOiq/HU/hK7Czv2XbvFw0+P2LIt5xqcw/gGjp/EmNC37CG5Eh8sAqA+hlaBayMoPDU7nr6zrdrErYuZ3KxA+PEXstHW60Ll04YsOnv7EVdGIIc+YqD+eJoSWEs3BmzLASz14+tREsXiaOYsXqp5MSZAAHp1Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y662K0wmZrvw8FvIPZyRqHfGj3aPm+cFBzFJCW5E7Dw=;
- b=Vv1ldjqxqJptFUEbnGxKSwbXthIRau5BZc940YZ+SXw6/f0Imfr0WnU27Id7wUicNli1sLtKdgcTHataHBrGv4TZ1jg47X4qdcL8EBXil3ZKXd7HI6sstepm5vltYezVuNGRujJAiX9aYnren2MS5RR8BAO3FzlMmt7oWckUB+pTgfOfixOzbYEouGZwnrpsiGbQTyBScFvRKWf1ctKfwAWCuED0LiGeKNm2LNuz0H+K22n51/8SoBzKayu3XpzpYF6Z+OFIy31CEW3UZOhoIR4Se9GiEOOj3S8azy1yGYDN7L4n/vAzO1yq/vmT6WPUJBzwNmXeQqfZmlpAsh09jA==
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
- by PH0PR12MB5452.namprd12.prod.outlook.com (2603:10b6:510:d7::16) with
+ bh=0No4cLqDeq3kUNtypMU5VgkbBh0z6+w5dheemsk2iLU=;
+ b=BoJzHUv2eZqfDtoru52LONyy+Vo14sP7afxfoO17RBucYpNVzIgQHoyEvq1G348WjindI09r0FGjWC0fh0b5Md1QZkMv8ybajTxSNVZ+KnbinFQneyEPb31lE3j7VcXrVI8oblZ7AviuNjOgUHjeMFkSWK2xWJT85VjF0hUbdRYVoQE+jNJmLfZJbaAgnB/kFRxadvQ3qm/xiQEvx2j5LS49787IZm+ycHwOACgnL+sFM2LvUE9KN8gjRTOjaX0fkBnM05jgQiiLidhyoBBgI6rUXHIoCUA5Ba3D1BXnSSWZdEUu/J4Nh9xCZUOXzx1cvSY3TMGfoNwCX1oZHo8heA==
+Received: from MWHPR12CA0068.namprd12.prod.outlook.com (2603:10b6:300:103::30)
+ by DM4PR12MB5246.namprd12.prod.outlook.com (2603:10b6:5:399::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.29; Thu, 3 Jun
- 2021 11:17:46 +0000
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::b0d9:bff5:2fbf:b344]) by PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::b0d9:bff5:2fbf:b344%6]) with mapi id 15.20.4195.023; Thu, 3 Jun 2021
- 11:17:46 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.20; Thu, 3 Jun
+ 2021 11:19:20 +0000
+Received: from CO1NAM11FT058.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:103:cafe::34) by MWHPR12CA0068.outlook.office365.com
+ (2603:10b6:300:103::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.21 via Frontend
+ Transport; Thu, 3 Jun 2021 11:19:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT058.mail.protection.outlook.com (10.13.174.164) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4195.22 via Frontend Transport; Thu, 3 Jun 2021 11:19:20 +0000
+Received: from sw-mtx-036.mtx.labs.mlnx (172.20.187.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 3 Jun
+ 2021 11:19:19 +0000
 From:   Parav Pandit <parav@nvidia.com>
-To:     "dsahern@gmail.com" <dsahern@gmail.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Jiri Pirko <jiri@nvidia.com>
-Subject: RE: [PATCH iproute2-next internal] devlink: Add optional controller
- user input
-Thread-Topic: [PATCH iproute2-next internal] devlink: Add optional controller
- user input
-Thread-Index: AQHXWGnknjTcaCBuUke3MSjwm9jdkasCIxyg
-Date:   Thu, 3 Jun 2021 11:17:46 +0000
-Message-ID: <PH0PR12MB54811D062A746EF4E0A6614DDC3C9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20210603111603.9822-1-parav@nvidia.com>
-In-Reply-To: <20210603111603.9822-1-parav@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [49.207.207.167]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c1faa91a-4d32-4047-749f-08d926813731
-x-ms-traffictypediagnostic: PH0PR12MB5452:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PH0PR12MB5452F0FC8ADE4C63D0159551DC3C9@PH0PR12MB5452.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4502;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /X9IqQSyoS4PWFJb/hrx3WqSWX4FNQEMwl6l43PUgaU9XGWrafCv4UjsQumtBQKM3Gxp6Y6oj7uRsBzPR7Fo3HptflGCPQzRrQuhPTWYnhbdSVXubWnf1HzaJvYqBtNbmIXprstxA9Y9e7OBiJcyTSvJF3rjfmP5pOYHRDorpRqIP9nHN4NC5+d++RsactB8GWhGYStnkptjyUXI/hfhOz7D3qSC7ruykVKY6oDwTUaSKDbC3tQkxaHnnUU33STgfX1mqBSqf5ncpDeDFbELtxjXqolgT3g+ktxlNZii4XnMzajQMPbkJKzQHpcOplVenYh4G0IaCjFJ1kJNWHtlEPHb8+/f4mCSTlGR1i5NsfKobENr7j/M9TxuEJckf09uMOgp4L7jJvfVU1cU7IqthktHEzvyEjJGcWYw52LPx8vyDUCBz7mJ2K5JrB4RY8XM/wDK6zZyaQua1tkFLFLCEDR178o7vGR822g5e41aGZCt2O1vjGq3jsvOkw78NAlMjGg5ZWMt+7oW1fPnVio9gRrOYEMHyIk+80GPxYZL1avK2kUI1y2Dy7NQJNpbQAvJBvomYILyJoqswbW3yfZ2KRUZtyoM+7MxKeo39sYg/y8=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(376002)(39860400002)(136003)(346002)(8936002)(4744005)(55016002)(66946007)(2906002)(7696005)(86362001)(9686003)(38100700002)(26005)(53546011)(55236004)(478600001)(5660300002)(33656002)(4326008)(8676002)(66446008)(122000001)(6506007)(64756008)(66556008)(66476007)(186003)(107886003)(316002)(110136005)(76116006)(71200400001)(52536014);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?BzlmrqmhCKAHYlwspmlyGAEHP/y5QvI3iWpzrUhEcnB4sJMYmRuwziZhxjwD?=
- =?us-ascii?Q?MtX96xgkYVPm+NLSFVebgEtmCvAEcgEY5I3W7w4cJOGIu+nqB6w1M7sZhzbu?=
- =?us-ascii?Q?m08Ajy94QWKXaMzyvSvvh1DJ60hlP8lOb9rKkGD4cwvlupuWa2yV5JEbjcqc?=
- =?us-ascii?Q?/mN0ty+NAmi1BOmq8/jDIEBAi40+CGbtOBx0z9V2aRIzfEMoyzNRB0eE54lp?=
- =?us-ascii?Q?hWCG9PkGTX5HO8i0b741yt7sVNkdfIGk723ljuSvQggbwEnI6NuFVLr6j4dl?=
- =?us-ascii?Q?aH5jOKM2jscHVFtRPas6AHB57NSfQ7xDkGNiCF1Qt6mCMQMWtqVecF521R7L?=
- =?us-ascii?Q?2etiijMpHohd+Yje6ImUKPFef1owVyG8VQW4dvgfZ+hgl9H5hCvjpdt3JAyN?=
- =?us-ascii?Q?6+slMKezbEATrSmimAHpc6N6Hc9m3Y2tDSfvK9fxSZ9S56gSJOZrdAReGzRX?=
- =?us-ascii?Q?0wx+x25HVE4Uw4pF5drzG6JyCNCO78kqs4ix3dt5SeY5+2HvZR7bpuGP3YCr?=
- =?us-ascii?Q?QOqr7mH2DLuC6lzHSKrwrytqmea9UE9tR/dnaIt5rnfgNkDi2pDs2lYOTGYZ?=
- =?us-ascii?Q?jruwn7TTcMq38illcu6mckLEA8KtRNmxHt/daxC4mGIf5JEIV1XaggYMZQ+l?=
- =?us-ascii?Q?+rcAA42yphlL1LRmfoqAiUJ4ESTraZmzLGV+7RIX2QKuFk4G4qsZ3fE1MLw4?=
- =?us-ascii?Q?S9o4/dA0cbJOQBfd2ebOIbmc97heCcXdIPGi7/KLfxS18FKtst6g/B7qjpTF?=
- =?us-ascii?Q?ndWdPAQ+ZyRNSJD+UumD8SG2L63x0y/DpYQdPQVuuU8UeJql3fzMG42als2Y?=
- =?us-ascii?Q?qCR4Tjro0r9R9rlTN6ZsWzo+9HDuQx/COFWOFFf+5hs7JVGTHka9bvwlR2Hv?=
- =?us-ascii?Q?l985MsBMML8kyxv/DZXmuLEodnadnJJ+dVQk9QaljLZFCpb3S1wbGlk1CEAp?=
- =?us-ascii?Q?BrTY2HjSXhPwn2cegm0LNgM+OoXs8LHXStSy3vvdU+uJfwaCS5Miwaf3150w?=
- =?us-ascii?Q?TCRAs05d2hamS8xJbr7FoZCirERk9s5jIefXRBHr35/MK8PpQI8gdqQuzSM9?=
- =?us-ascii?Q?q5apZ4wSI7EybQ9qR9YDJJncy+BQxFoCDASXeOinBgOCLauwrxUmFXAe5CYM?=
- =?us-ascii?Q?cAO787Kmgq8tbjd+Qsrt4K1TmZyBcUgtRrPKO0kVuCRfy0FPNDh0phT1q4z7?=
- =?us-ascii?Q?ikIET4Wzz5X7Yr/S1CutTxHZ1O+7RoglBalkJX1lJI7f7O2cveAKHIlgIJTj?=
- =?us-ascii?Q?blrE+6x0YQuzcMLAS8Rf8XZCaDQ47rprDNbljlj6gqC09SLX1Clj6QnCkPbk?=
- =?us-ascii?Q?p78q/iItHwVhm1JmhAw0lE7u?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To:     <dsahern@gmail.com>, <stephen@networkplumber.org>,
+        <netdev@vger.kernel.org>
+CC:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH RESEND iproute2-next] devlink: Add optional controller user input
+Date:   Thu, 3 Jun 2021 14:19:01 +0300
+Message-ID: <20210603111901.9888-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4317a006-c0ff-493e-2f47-08d926816ed4
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5246:
+X-Microsoft-Antispam-PRVS: <DM4PR12MB52461F7316F54D9C0ECB4E19DC3C9@DM4PR12MB5246.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1201;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zlntEEVBKPWHaQOVFt4c4tG1RLcyR6U4K0oIOYPnMr+OsqR/Yqd0ER+gsomAiC17clAJQl/R9hedMU5djN7pNYSYsr+43TvCN4taHtLRAvXdbUd+37XnafemALcRNTuKOwLwhYg1ccgPK/GitHMaPxO+QRfi3vIzzUv8I2csf0mLQVw0QwMLHSR8b9VUSkZwliCctvvBw15TjMHEg6T6WGCnJeqipppKBlHQ+Z22iJviqQ9j3wJle+eDZ7EFBnzLENUnmTJDIbnarxSBRc7HdNVe1/ugU+tN7rfaxXGjbmymfMarT6B9pARpaeZI3oDs1RRGf/blqm5r69wGqO3jLXayrXMYDZtqJCpX6sXBlnJsCASAGQhLjs+6MpIFZC31a3WuB1rhFvLq1KtqhcotqwCXPCCj2YJeTH+zdgoIMJ5tWFy6hTXhQzdMA/FM9Aigwk6r+VO154ZiVpR6/KDpuU8n+Tm4Q3iMNSSHyzWHx8TYagi6fFUipN24ZD4sxjQzcEj6WT8Idd9m4F0jtPSLC4xg5oP3Zlep3GO1nq8u3sdtjpqoRKeO5CP9tDbn6Z6oxLYQC30+zEcmyQrghFe92Z2gjvjZYrHc6mWbyPK0zXaN/6Kc7bHFSfzaYbx1aH+XxSHgf8upMNXjDS+NpTylaA==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(376002)(346002)(136003)(39860400002)(36840700001)(46966006)(86362001)(336012)(36860700001)(1076003)(47076005)(82310400003)(36756003)(8676002)(4326008)(2906002)(8936002)(82740400003)(426003)(54906003)(107886003)(110136005)(2616005)(36906005)(7636003)(356005)(478600001)(83380400001)(5660300002)(316002)(186003)(16526019)(26005)(70206006)(70586007)(6666004);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c1faa91a-4d32-4047-749f-08d926813731
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2021 11:17:46.6418
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2021 11:19:20.0562
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gkDY/VFkHjxhRXvz8Zwawno9ECO+1pylkni/HbU7YNalNneh4PFexWZ3gNVUIJICRgQYqaiwZzGxHl60ZFtI+A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5452
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4317a006-c0ff-493e-2f47-08d926816ed4
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT058.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5246
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+A user optionally provides the external controller number when user
+wants to create devlink port for the external controller.
 
+An example on eswitch system:
+$ devlink dev eswitch set pci/0033:01:00.0 mode switchdev
 
-> From: Parav Pandit <parav@nvidia.com>
-> Sent: Thursday, June 3, 2021 4:46 PM
-> To: dsahern@gmail.com; stephen@networkplumber.org;
-> netdev@vger.kernel.org
-> Cc: Parav Pandit <parav@nvidia.com>; Jiri Pirko <jiri@nvidia.com>
-> Subject: [PATCH iproute2-next internal] devlink: Add optional controller =
-user
-> input
-I missed to drop "internal" from the subject. Resending it.
+$ devlink port show
+pci/0033:01:00.0/196607: type eth netdev enP51p1s0f0np0 flavour physical port 0 splittable false
+
+$ devlink port add pci/0033:01:00.0 flavour pcisf pfnum 0 sfnum 77 controller 1
+pci/0033:01:00.0/163840: type eth netdev eth0 flavour pcisf controller 1 pfnum 0 sfnum 77 external true splittable false
+  function:
+    hw_addr 00:00:00:00:00:00 state inactive opstate detached
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+ devlink/devlink.c       | 17 ++++++++++++++---
+ man/man8/devlink-port.8 | 19 +++++++++++++++++++
+ 2 files changed, 33 insertions(+), 3 deletions(-)
+
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 0b5548fb..170e8616 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -286,6 +286,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
+ #define DL_OPT_PORT_PFNUMBER BIT(43)
+ #define DL_OPT_PORT_SFNUMBER BIT(44)
+ #define DL_OPT_PORT_FUNCTION_STATE BIT(45)
++#define DL_OPT_PORT_CONTROLLER BIT(46)
+ 
+ struct dl_opts {
+ 	uint64_t present; /* flags of present items */
+@@ -336,6 +337,7 @@ struct dl_opts {
+ 	uint32_t overwrite_mask;
+ 	enum devlink_reload_action reload_action;
+ 	enum devlink_reload_limit reload_limit;
++	uint32_t port_controller;
+ 	uint32_t port_sfnumber;
+ 	uint16_t port_flavour;
+ 	uint16_t port_pfnumber;
+@@ -1886,6 +1888,12 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
+ 			if (err)
+ 				return err;
+ 			o_found |= DL_OPT_PORT_SFNUMBER;
++		} else if (dl_argv_match(dl, "controller") && (o_all & DL_OPT_PORT_CONTROLLER)) {
++			dl_arg_inc(dl);
++			err = dl_argv_uint32_t(dl, &opts->port_controller);
++			if (err)
++				return err;
++			o_found |= DL_OPT_PORT_CONTROLLER;
+ 		} else {
+ 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
+ 			return -EINVAL;
+@@ -2079,6 +2087,9 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
+ 		mnl_attr_put_u16(nlh, DEVLINK_ATTR_PORT_PCI_PF_NUMBER, opts->port_pfnumber);
+ 	if (opts->present & DL_OPT_PORT_SFNUMBER)
+ 		mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_PCI_SF_NUMBER, opts->port_sfnumber);
++	if (opts->present & DL_OPT_PORT_CONTROLLER)
++		mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_CONTROLLER_NUMBER,
++				 opts->port_controller);
+ }
+ 
+ static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
+@@ -3795,7 +3806,7 @@ static void cmd_port_help(void)
+ 	pr_err("       devlink port param set DEV/PORT_INDEX name PARAMETER value VALUE cmode { permanent | driverinit | runtime }\n");
+ 	pr_err("       devlink port param show [DEV/PORT_INDEX name PARAMETER]\n");
+ 	pr_err("       devlink port health show [ DEV/PORT_INDEX reporter REPORTER_NAME ]\n");
+-	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ]\n");
++	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ] [ controller CNUM ]\n");
+ 	pr_err("       devlink port del DEV/PORT_INDEX\n");
+ }
+ 
+@@ -4324,7 +4335,7 @@ static int __cmd_health_show(struct dl *dl, bool show_device, bool show_port);
+ 
+ static void cmd_port_add_help(void)
+ {
+-	pr_err("       devlink port add { DEV | DEV/PORT_INDEX } flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ]\n");
++	pr_err("       devlink port add { DEV | DEV/PORT_INDEX } flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ] [ controller CNUM ]\n");
+ }
+ 
+ static int cmd_port_add(struct dl *dl)
+@@ -4342,7 +4353,7 @@ static int cmd_port_add(struct dl *dl)
+ 
+ 	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_HANDLEP |
+ 				DL_OPT_PORT_FLAVOUR | DL_OPT_PORT_PFNUMBER,
+-				DL_OPT_PORT_SFNUMBER);
++				DL_OPT_PORT_SFNUMBER | DL_OPT_PORT_CONTROLLER);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/man/man8/devlink-port.8 b/man/man8/devlink-port.8
+index 563c5833..a5142c4e 100644
+--- a/man/man8/devlink-port.8
++++ b/man/man8/devlink-port.8
+@@ -54,6 +54,8 @@ devlink-port \- devlink port configuration
+ .IR PFNUMBER " ]"
+ .RB "{ " pcisf
+ .IR SFNUMBER " }"
++.RB "{ " controller
++.IR CNUM " }"
+ .br
+ 
+ .ti -8
+@@ -174,6 +176,12 @@ Specifies sfnumber to assign to the device of the SF.
+ This field is optional for those devices which supports auto assignment of the
+ SF number.
+ 
++.TP
++.BR controller " { " controller " } "
++Specifies controller number for which the SF port is created.
++This field is optional. It is used only when SF port is created for the
++external controller.
++
+ .ti -8
+ .SS devlink port function set - Set the port function attribute(s).
+ 
+@@ -327,6 +335,17 @@ devlink dev param set pci/0000:01:00.0/1 name internal_error_reset value true cm
+ .RS 4
+ Sets the parameter internal_error_reset of specified devlink port (#1) to true.
+ .RE
++.PP
++devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88 controller 1
++.RS 4
++Add a devlink port of flavour PCI SF on controller 1 which has PCI PF of number
++0 with SF number 88. To make use of the function an example sequence is to add
++a port, configure the function attribute and activate the function. Once
++the function usage is completed, deactivate the function and finally delete
++the port. When there is desire to reuse the port without deletion, it can be
++reconfigured and activated again when function is in inactive state and
++function's operational state is detached.
++.RE
+ 
+ .SH SEE ALSO
+ .BR devlink (8),
+-- 
+2.26.2
+
