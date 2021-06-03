@@ -2,291 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3099399B1C
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 08:59:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC499399B0F
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 08:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229906AbhFCHBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 03:01:13 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:46904 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbhFCHBK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 03:01:10 -0400
-Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 13638219F5; Thu,  3 Jun 2021 14:52:35 +0800 (AWST)
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Jeffery <andrew@aj.id.au>,
-        Matt Johnston <matt@codeconstruct.com.au>
-Subject: [PATCH RFC net-next 16/16] mctp: Add MCTP overview document
-Date:   Thu,  3 Jun 2021 14:52:18 +0800
-Message-Id: <20210603065218.570867-17-jk@codeconstruct.com.au>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210603065218.570867-1-jk@codeconstruct.com.au>
-References: <20210603065218.570867-1-jk@codeconstruct.com.au>
+        id S229769AbhFCGyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 02:54:06 -0400
+Received: from mail-pg1-f173.google.com ([209.85.215.173]:41809 "EHLO
+        mail-pg1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229665AbhFCGyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 02:54:06 -0400
+Received: by mail-pg1-f173.google.com with SMTP id r1so4382703pgk.8
+        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 23:52:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9XycJN3Z2QtVixsKYzXsAVtV+JUFSqzqxdmsTE6pZCI=;
+        b=otXLMBqu9C8yMIXKbfphbBHyfaTFlz3vlpDEPayJFgkJUv9VNDa79NiokwsBSDf4fk
+         DPipM34ggkYjMNOtORMJH07mxBssA22x516QiVJYHCEBsBlWaBcEH/5hCGzJA6eKubYx
+         HFYImtha2nhYF3xMkdnvOc1nYnNHo/Z00E89AHVSmGhQjnkq66IhdO/k48dulhuCekqv
+         truftPEvH+JhXCBwdwbXY8sslu4nfJ/BlO0xtRpsptXgbjuJ1t0hlo103Yp0WAD2BKNQ
+         /l/7uUZKc6a9xQiYyb0FBwUz1+flkxsLa41mBcePBZ2Sd26/C3FfGzFy0FbIVGnZjlzS
+         aWmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9XycJN3Z2QtVixsKYzXsAVtV+JUFSqzqxdmsTE6pZCI=;
+        b=Pcmm99nvMvNm4DnSUEmN83LZkz4p3W3Wb7LGkBH/AaxI4+F002ZFcM8ksTRBt6WtoT
+         b05xGRqmrOzy+0JtZIlVQGcUvVZO9PyZ0ElIaNlCKybA3Co7DwpyOxHU10GrE3V+yzDQ
+         OzngoOjQ8pj5WlmiEYX+4QI22yUF78mRtEosfQhkf2VGBlOaC9oebM2iLlCI3D4l9trd
+         tlvlJhNiPb9+E4yCQ3gg3bow5bgFNojIZctlQnI1/K4sERqJifbl3Zsp5QmTSLEt7bGg
+         klc6OiUcDYLlHa4abxVA2F5HAtyKUgK5KiXmV+FnDefy8Yuek4t0J4HpWkOrcJNLH7OT
+         Wnrw==
+X-Gm-Message-State: AOAM531lyW1Df5H+/gZWd88Sh9K+F7073TLPTLES3ZH9UiFCqxhxB7eq
+        kRSd0qoa5FA4d8JmumbkZMQsvA8F5n5aUvIPQYAH5Q==
+X-Google-Smtp-Source: ABdhPJyVRv4/kE+k4Aslrczm9l9JWwwxVSFmtu93acoC82cCmhfKylDQuArKPQ0jhEspi/aURX7WZnwAkODihAfEXZw=
+X-Received: by 2002:a63:1906:: with SMTP id z6mr37475603pgl.173.1622703070195;
+ Wed, 02 Jun 2021 23:51:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210601080538.71036-1-johannes@sipsolutions.net>
+ <20210601100320.7d39e9c33a18.I0474861dad426152ac7e7afddfd7fe3ce70870e4@changeid>
+ <CAMZdPi-ZaH8WWKfhfKzy0OKpUtNAiCUfekh9R1de5awFP-ed=A@mail.gmail.com>
+ <0555025c6d7a88f4f3dcdd6704612ed8ba33b175.camel@sipsolutions.net>
+ <CAMZdPi8Ca3YRaVWGL6Fjd7yfowQcX2V2RYNDNm-2kQdEZ-Z1Bw@mail.gmail.com> <17fd0311eb8b51e6d23fce8b7eb23e3d2581cf54.camel@sipsolutions.net>
+In-Reply-To: <17fd0311eb8b51e6d23fce8b7eb23e3d2581cf54.camel@sipsolutions.net>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Thu, 3 Jun 2021 09:00:27 +0200
+Message-ID: <CAMZdPi8RQ7580nTLHf+GYavU3CTME76P86haB8VCdVjXxrgqLA@mail.gmail.com>
+Subject: Re: [RFC 3/4] wwan: add interface creation support
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>
+Cc:     linux-wireless@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change adds a brief document about the sockets API provided for
-sending and receiving MCTP messages from userspace.
+On Wed, 2 Jun 2021 at 10:29, Johannes Berg <johannes@sipsolutions.net> wrote:
+>
+> On Wed, 2021-06-02 at 08:52 +0200, Loic Poulain wrote:
+> >
+> > OK no prob ;-), are you going to resubmit something or do you want I
+> > take care of this?
+>
+> I just respun a v2, but I'm still not able to test any of this (I'm in a
+> completely different group than Chetan, just have been helping/advising
+> them, so I don't even have their HW).
+>
+> So if you want to take over at some point and are able to test it, I'd
+> much appreciate it.
 
-This is roughly based on the OpenBMC design document, at:
+Thanks for this work, yes I can try testing this with mhi_net.
 
-  https://github.com/openbmc/docs/blob/master/designs/mctp/mctp-kernel.md
+Chetan, would you be able to test that as well? basically with the two
+kernel series (Johannes, Sergey) applied on top of your IOSM one + the
+iproute2 changes for the userspace side (Sergey), that should work,
+but let us know if any issues.
 
-Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
----
- Documentation/networking/index.rst |   1 +
- Documentation/networking/mctp.rst  | 213 +++++++++++++++++++++++++++++
- MAINTAINERS                        |   1 +
- 3 files changed, 215 insertions(+)
- create mode 100644 Documentation/networking/mctp.rst
-
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index e9ce55992aa9..eea3a79f4ea0 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -68,6 +68,7 @@ Contents:
-    l2tp
-    lapb-module
-    mac80211-injection
-+   mctp
-    mpls-sysctl
-    mptcp-sysctl
-    multiqueue
-diff --git a/Documentation/networking/mctp.rst b/Documentation/networking/mctp.rst
-new file mode 100644
-index 000000000000..3964771bbf0d
---- /dev/null
-+++ b/Documentation/networking/mctp.rst
-@@ -0,0 +1,213 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+===============================================
-+Management Controller Transport Protocol (MCTP)
-+===============================================
-+
-+net/mctp/ contains protocol support for MCTP, as defined by DMTF standard
-+DSP0236. Physical interface drivers ("bindings" in the specification) are
-+provided in drivers/net/mctp/.
-+
-+The core code provides a socket-based interface to send and receive MCTP
-+messages, through an AF_MCTP, SOCK_DGRAM socket.
-+
-+Structure: interfaces & networks
-+================================
-+
-+The kernel models the local MCTP topology through two items: interfaces and
-+networks.
-+
-+An interface (or "link") is an instance of an MCTP physical transport binding
-+(as defined by DSP0236, section 3.2.47), likely connected to a specific hardware
-+device. This is represented as a ``struct netdevice``.
-+
-+A network defines a unique address space for MCTP endpoints by endpoint-ID
-+(described by DSP0236, section 3.2.31). A network has a user-visible identifier
-+to allow references from userspace. Route definitions are specific to one
-+network.
-+
-+Interfaces are associated with one network. A network may be associated with one
-+or more interfaces.
-+
-+If multiple networks are present, each may contain endpoint IDs (EIDs) that are
-+also present on other networks.
-+
-+Sockets API
-+===========
-+
-+Protocol definitions
-+--------------------
-+
-+MCTP uses ``AF_MCTP`` / ``PF_MCTP`` for the address- and protocol- families.
-+Since MCTP is message-based, only ``SOCK_DGRAM`` sockets are supported.
-+
-+.. code-block:: C
-+
-+    int sd = socket(AF_MCTP, SOCK_DGRAM, 0);
-+
-+The only (current) value for the ``protocol`` argument is 0.
-+
-+As with all socket address families, source and destination addresses are
-+specified with a ``sockaddr`` type, with a single-byte endpoint address:
-+
-+.. code-block:: C
-+
-+    typedef __u8		mctp_eid_t;
-+
-+    struct mctp_addr {
-+            mctp_eid_t		s_addr;
-+    };
-+
-+    struct sockaddr_mctp {
-+            unsigned short int	smctp_family;
-+            int			smctp_network;
-+            struct mctp_addr	smctp_addr;
-+            __u8		smctp_type;
-+            __u8		smctp_tag;
-+    };
-+
-+    #define MCTP_NET_ANY	0x0
-+    #define MCTP_ADDR_ANY	0xff
-+
-+
-+Syscall behaviour
-+-----------------
-+
-+The following sections describe the MCTP-specific behaviours of the standard
-+socket system calls. These behaviours have been chosen to map closely to the
-+existing sockets APIs.
-+
-+``bind()`` : set local socket address
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+Sockets that receive incoming request packets will bind to a local address,
-+using the ``bind()`` syscall.
-+
-+.. code-block:: C
-+
-+    struct sockaddr_mctp addr;
-+
-+    addr.smctp_family = AF_MCTP;
-+    addr.smctp_network = MCTP_NET_ANY;
-+    addr.smctp_addr.s_addr = MCTP_ADDR_ANY;
-+    addr.smctp_type = MCTP_TYPE_PLDM;
-+    addr.smctp_tag = MCTP_TAG_OWNER;
-+
-+    int rc = bind(sd, (struct sockaddr *)&addr, sizeof(addr));
-+
-+This establishes the local address of the socket. Incoming MCTP messages that
-+match the network, address, and message type will be received by this socket.
-+The reference to 'incoming' is important here; a bound socket will only receive
-+messages with the TO bit set, to indicate an incoming request message, rather
-+than a response.
-+
-+The ``smctp_tag`` value will configure the tags accepted from the remote side of
-+this socket. Given the above, the only valid value is ``MCTP_TAG_OWNER``, which
-+will result in remotely "owned" tags being routed to this socket. Since
-+``MCTP_TAG_OWNER`` is set, the 3 least-significant bits of ``smctp_tag`` are not
-+used; callers must set them to zero.
-+
-+A ``smctp_network`` value of ``MCTP_NET_ANY`` will configure the socket to
-+receive incoming packets from any locally-connected network. A specific network
-+value will cause the socket to only receive incoming messages from that network.
-+
-+The ``smctp_addr`` field specifies a local address to bind to. A value of
-+``MCTP_ADDR_ANY`` configures the socket to receive messages addressed to any
-+local destination EID.
-+
-+The ``smctp_type`` field specifies which message types to receive. Only the
-+lower 7 bits of the type is matched on incoming messages (ie., the
-+most-significant IC bit is not part of the match). This results in the socket
-+receiving packets with and without a message integrity check footer.
-+
-+``sendto()``, ``sendmsg()``, ``send()`` : transmit an MCTP message
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+An MCTP message is transmitted using one of the ``sendto()``, ``sendmsg()`` or
-+``send()`` syscalls. Using ``sendto()`` as the primary example:
-+
-+.. code-block:: C
-+
-+    struct sockaddr_mctp addr;
-+    char buf[14];
-+    ssize_t len;
-+
-+    /* set message destination */
-+    addr.smctp_family = AF_MCTP;
-+    addr.smctp_network = 0;
-+    addr.smctp_addr.s_addr = 8;
-+    addr.smctp_tag = MCTP_TAG_OWNER;
-+    addr.smctp_type = MCTP_TYPE_ECHO;
-+
-+    /* arbitrary message to send, with message-type header */
-+    buf[0] = MCTP_TYPE_ECHO;
-+    memcpy(buf + 1, "hello, world!", sizeof(buf) - 1);
-+
-+    len = sendto(sd, buf, sizeof(buf), 0,
-+                    (struct sockaddr_mctp *)&addr, sizeof(addr));
-+
-+The network and address fields of ``addr`` define the remote address to send to.
-+If ``smctp_tag`` has the ``MCTP_TAG_OWNER``, the kernel will ignore any bits set
-+in ``MCTP_TAG_VALUE``, and generate a tag value suitable for the destination
-+EID. If ``MCTP_TAG_OWNER`` is not set, the message will be sent with the tag
-+value as specified. If a tag value cannot be allocated, the system call will
-+report an errno of ``EAGAIN``.
-+
-+The application must provide the message type byte as the first byte of the
-+message buffer passed to ``sendto()``. If a message integrity check is to be
-+included in the transmitted message, it must also be provided in the message
-+buffer, and the most-significant bit of the message type byte must be 1.
-+
-+The ``sendmsg()`` system call allows a more compact argument interface, and the
-+message buffer to be specified as a scatter-gather list. At present no ancillary
-+message types (used for the ``msg_control`` data passed to ``sendmsg()``) are
-+defined.
-+
-+Transmitting a message on an unconnected socket with ``MCTP_TAG_OWNER``
-+specified will cause an allocation of a tag, if no valid tag is already
-+allocated for that destination. The (destination-eid,tag) tuple acts as an
-+implicit local socket address, to allow the socket to receive responses to this
-+outgoing message. If any previous allocation has been performed (to for a
-+different remote EID), that allocation is lost.
-+
-+Sockets will only receive responses to requests they have sent (with TO=1) and
-+may only respond (with TO=0) to requests they have received.
-+
-+``recvfrom()``, ``recvmsg()``, ``recv()`` : receive an MCTP message
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+An MCTP message can be received by an application using one of the
-+``recvfrom()``, ``recvmsg()``, or ``recv()`` system calls. Using ``recvfrom()``
-+as the primary example:
-+
-+.. code-block:: C
-+
-+    struct sockaddr_mctp addr;
-+    socklen_t addrlen;
-+    char buf[14];
-+    ssize_t len;
-+
-+    addrlen = sizeof(addr);
-+
-+    len = recvfrom(sd, buf, sizeof(buf), 0,
-+                    (struct sockaddr_mctp *)&addr, &addrlen);
-+
-+    /* We can expect addr to describe an MCTP address */
-+    assert(addrlen >= sizeof(buf));
-+    assert(addr.smctp_family == AF_MCTP);
-+
-+    printf("received %zd bytes from remote EID %d\n", rc, addr.smctp_addr);
-+
-+The address argument to ``recvfrom`` and ``recvmsg`` is populated with the
-+remote address of the incoming message, including tag value (this will be needed
-+in order to reply to the message).
-+
-+The first byte of the message buffer will contain the message type byte. If an
-+integrity check follows the message, it will be included in the received buffer.
-+
-+The ``recv()`` system call behaves in a similar way, but does not provide a
-+remote address to the application. Therefore, these are only useful if the
-+remote address is already known, or the message does not require a reply.
-+
-+Like the send calls, sockets will only receive responses to requests they have
-+sent (TO=1) and may only respond (TO=0) to requests they have received.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d1fd014f9484..3a735d9f830d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10874,6 +10874,7 @@ M:	Jeremy Kerr <jk@codeconstruct.com.au>
- M:	Matt Johnston <matt@codeconstruct.com.au>
- L:	netdev@vger.kernel.org
- S:	Maintained
-+F:	Documentation/networking/mctp.rst
- F:	drivers/net/mctp/
- F:	include/net/mctp.h
- F:	include/net/mctpdevice.h
--- 
-2.30.2
-
+Regards,
+Loic
