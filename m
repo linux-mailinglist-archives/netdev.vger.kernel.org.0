@@ -2,70 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1782639AC33
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 23:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB88939AC39
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 23:02:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbhFCVB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 17:01:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46080 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229924AbhFCVBu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 17:01:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 26B3461403;
-        Thu,  3 Jun 2021 21:00:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622754005;
-        bh=fJTH/xRRuDwLq6NBkRIE5tRwqzq6Y/YonrOYGQRqEOU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=djlZI3aKM7C7UudQ9KCZQO8bsE40GMqhktA2/4QVrcRgSFrXncMdysml/nwIA6m0z
-         fUheQ1PeP/Qrn2B8J/ZsPZwsrnMYLuIO+T3fKQGz52cp5IHiodh3kOfyBORFipSeRm
-         fSEMM0j8WdtGQs/z9fAKaK9y4AZ8ts5hUirkDYHmPwLhT/wQGlH+TLVyv6NRaPix5I
-         ifTTXW7KHF0xBtgFppeFUoFJkJ3Ogz/2Gn9ixtCepTc6mYP+uKlK+p8HN0N89JIVU8
-         D7os+Y26ta74OFhjth64Xe0GxNIN3kTYCbPtwepPRWiKzRQ4UBGQqNrVHjj9iLXsIp
-         LnQ+AuDaiAQHw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 202F960A02;
-        Thu,  3 Jun 2021 21:00:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229736AbhFCVEj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Jun 2021 17:04:39 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:24132 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229576AbhFCVEi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 17:04:38 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-170-SExHqgrMNI6o2dMbOIlPQg-1; Thu, 03 Jun 2021 22:02:51 +0100
+X-MC-Unique: SExHqgrMNI6o2dMbOIlPQg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.18; Thu, 3 Jun 2021 22:02:50 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.018; Thu, 3 Jun 2021 22:02:50 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Saeed Mahameed' <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>, Aya Levin <ayal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: RE: [net 1/8] net/mlx5e: Fix incompatible casting
+Thread-Topic: [net 1/8] net/mlx5e: Fix incompatible casting
+Thread-Index: AQHXV0/fcOLeBvLXMkGlhwJRIRNuoqsCyIFQ
+Date:   Thu, 3 Jun 2021 21:02:50 +0000
+Message-ID: <7166b5e6ebc44198bbbec5afdcb699f5@AcuMS.aculab.com>
+References: <20210602013723.1142650-1-saeed@kernel.org>
+ <20210602013723.1142650-2-saeed@kernel.org>
+In-Reply-To: <20210602013723.1142650-2-saeed@kernel.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] net/smc: updates 2021-06-02
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162275400512.32659.7809586894785729146.git-patchwork-notify@kernel.org>
-Date:   Thu, 03 Jun 2021 21:00:05 +0000
-References: <20210602085626.2877926-1-kgraul@linux.ibm.com>
-In-Reply-To: <20210602085626.2877926-1-kgraul@linux.ibm.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, hca@linux.ibm.com,
-        raspl@linux.ibm.com, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Wed,  2 Jun 2021 10:56:24 +0200 you wrote:
-> Please apply the following patch series for smc to netdev's net-next tree.
+From: Saeed Mahameed
+> Sent: 02 June 2021 02:37
 > 
-> Both patches are cleanups and remove unnecessary code.
+> Device supports setting of a single fec mode at a time, enforce this
+> by bitmap_weight == 1. Input from fec command is in u32, avoid cast to
+> unsigned long and use bitmap_from_arr32 to populate bitmap safely.
 > 
-> Julian Wiedmann (1):
->   net/smc: no need to flush smcd_dev's event_wq before destroying it
+...
 > 
-> [...]
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> index 8360289813f0..c4724742eef1 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+> @@ -1624,12 +1624,13 @@ static int mlx5e_set_fecparam(struct net_device *netdev,
+>  {
+>  	struct mlx5e_priv *priv = netdev_priv(netdev);
+>  	struct mlx5_core_dev *mdev = priv->mdev;
+> +	unsigned long fec_bitmap;
+>  	u16 fec_policy = 0;
+>  	int mode;
+>  	int err;
+> 
+> -	if (bitmap_weight((unsigned long *)&fecparam->fec,
+> -			  ETHTOOL_FEC_LLRS_BIT + 1) > 1)
+> +	bitmap_from_arr32(&fec_bitmap, &fecparam->fec, sizeof(fecparam->fec) * BITS_PER_BYTE);
+> +	if (bitmap_weight(&fec_bitmap, ETHTOOL_FEC_LLRS_BIT + 1) > 1)
+>  		return -EOPNOTSUPP;
 
-Here is the summary with links:
-  - [net-next,1/2] net/smc: avoid possible duplicate dmb unregistration
-    https://git.kernel.org/netdev/net-next/c/f8e0a68babae
-  - [net-next,2/2] net/smc: no need to flush smcd_dev's event_wq before destroying it
-    https://git.kernel.org/netdev/net-next/c/5e4a43ceb22a
+What is wrong with:
+	if (fecparam->fec & (fecparam->fec - 1))
+		return -EOPNOTSUPP;
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+	David
 
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
