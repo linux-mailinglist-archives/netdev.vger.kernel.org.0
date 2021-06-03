@@ -2,114 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ABDB39A7B3
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:11:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA32939A767
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:10:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232732AbhFCRMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 13:12:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42506 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232261AbhFCRLT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 13:11:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D19A661401;
-        Thu,  3 Jun 2021 17:09:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622740174;
-        bh=GUmsdrypy+WfvYXFVm51F2A01cgs32RP1c4xJfdyHK0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GiT5X1L6mEpKGQc5Crf7hgUxeXegQMqwM4a+C3ShaVP7R7nbF1RWfy45Rk6amhS/8
-         y1tHHgKPQylJrapIE05Lmw8Lg2A5hopL5mSnsmKyOpRmrXH7EbDjmMReKgzgTNZoJT
-         mA9uFR3EygkmKn8V5isEYjjiAlyqULi5m1vu5mEQHy9PeWUDDnxlumvJ1rGpWOGeOG
-         gNFktlCwDUVOSs6Zj2bnnaPH0gyRjgKIePDvdb5WtFLqLCeTAJyh/D4YJP/rB3wUSQ
-         5FHDoU2sYsNPP1spQLVG4Vd20SDyAgO0Rri7CAg7X2y9h3BXaUfdofO7KuLvjj43G4
-         TqlD1J62O3i9w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        syzbot+69ff9dff50dcfe14ddd4@syzkaller.appspotmail.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 12/31] netlink: disable IRQs for netlink_lock_table()
-Date:   Thu,  3 Jun 2021 13:09:00 -0400
-Message-Id: <20210603170919.3169112-12-sashal@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210603170919.3169112-1-sashal@kernel.org>
-References: <20210603170919.3169112-1-sashal@kernel.org>
+        id S232115AbhFCRLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 13:11:17 -0400
+Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:50189 "EHLO
+        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232195AbhFCRKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 13:10:49 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R941e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UbAY0W._1622740141;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UbAY0W._1622740141)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 04 Jun 2021 01:09:01 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        virtualization@lists.linux-foundation.org,
+        =?UTF-8?q?Corentin=20No=C3=ABl?= <corentin.noel@collabora.com>
+Subject: [PATCH net] virtio-net: fix for skb_over_panic inside big mode
+Date:   Fri,  4 Jun 2021 01:09:01 +0800
+Message-Id: <20210603170901.66504-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+In virtio-net's large packet mode, there is a hole in the space behind
+buf.
 
-[ Upstream commit 1d482e666b8e74c7555dbdfbfb77205eeed3ff2d ]
+    hdr_padded_len - hdr_len
 
-Syzbot reports that in mac80211 we have a potential deadlock
-between our "local->stop_queue_reasons_lock" (spinlock) and
-netlink's nl_table_lock (rwlock). This is because there's at
-least one situation in which we might try to send a netlink
-message with this spinlock held while it is also possible to
-take the spinlock from a hardirq context, resulting in the
-following deadlock scenario reported by lockdep:
+We must take this into account when calculating tailroom.
 
-       CPU0                    CPU1
-       ----                    ----
-  lock(nl_table_lock);
-                               local_irq_disable();
-                               lock(&local->queue_stop_reason_lock);
-                               lock(nl_table_lock);
-  <Interrupt>
-    lock(&local->queue_stop_reason_lock);
+[   44.544385] skb_put.cold (net/core/skbuff.c:5254 (discriminator 1) net/core/skbuff.c:5252 (discriminator 1))
+[   44.544864] page_to_skb (drivers/net/virtio_net.c:485) [   44.545361] receive_buf (drivers/net/virtio_net.c:849 drivers/net/virtio_net.c:1131)
+[   44.545870] ? netif_receive_skb_list_internal (net/core/dev.c:5714)
+[   44.546628] ? dev_gro_receive (net/core/dev.c:6103)
+[   44.547135] ? napi_complete_done (./include/linux/list.h:35 net/core/dev.c:5867 net/core/dev.c:5862 net/core/dev.c:6565)
+[   44.547672] virtnet_poll (drivers/net/virtio_net.c:1427 drivers/net/virtio_net.c:1525)
+[   44.548251] __napi_poll (net/core/dev.c:6985)
+[   44.548744] net_rx_action (net/core/dev.c:7054 net/core/dev.c:7139)
+[   44.549264] __do_softirq (./arch/x86/include/asm/jump_label.h:19 ./include/linux/jump_label.h:200 ./include/trace/events/irq.h:142 kernel/softirq.c:560)
+[   44.549762] irq_exit_rcu (kernel/softirq.c:433 kernel/softirq.c:637 kernel/softirq.c:649)
+[   44.551384] common_interrupt (arch/x86/kernel/irq.c:240 (discriminator 13))
+[   44.551991] ? asm_common_interrupt (./arch/x86/include/asm/idtentry.h:638)
+[   44.552654] asm_common_interrupt (./arch/x86/include/asm/idtentry.h:638)
 
-This seems valid, we can take the queue_stop_reason_lock in
-any kind of context ("CPU0"), and call ieee80211_report_ack_skb()
-with the spinlock held and IRQs disabled ("CPU1") in some
-code path (ieee80211_do_stop() via ieee80211_free_txskb()).
-
-Short of disallowing netlink use in scenarios like these
-(which would be rather complex in mac80211's case due to
-the deep callchain), it seems the only fix for this is to
-disable IRQs while nl_table_lock is held to avoid hitting
-this scenario, this disallows the "CPU0" portion of the
-reported deadlock.
-
-Note that the writer side (netlink_table_grab()) already
-disables IRQs for this lock.
-
-Unfortunately though, this seems like a huge hammer, and
-maybe the whole netlink table locking should be reworked.
-
-Reported-by: syzbot+69ff9dff50dcfe14ddd4@syzkaller.appspotmail.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Reported-by: Corentin Noël <corentin.noel@collabora.com>
+Tested-by: Corentin Noël <corentin.noel@collabora.com>
 ---
- net/netlink/af_netlink.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/virtio_net.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index c2a5174387ff..9d993b4cf1af 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -452,11 +452,13 @@ void netlink_table_ungrab(void)
- static inline void
- netlink_lock_table(void)
- {
-+	unsigned long flags;
-+
- 	/* read_lock() synchronizes us to netlink_table_grab */
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index fa407eb8b457..78a01c71a17c 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -406,7 +406,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+ 	 * add_recvbuf_mergeable() + get_mergeable_buf_len()
+ 	 */
+ 	truesize = headroom ? PAGE_SIZE : truesize;
+-	tailroom = truesize - len - headroom;
++	tailroom = truesize - len - headroom - (hdr_padded_len - hdr_len);
+ 	buf = p - headroom;
  
--	read_lock(&nl_table_lock);
-+	read_lock_irqsave(&nl_table_lock, flags);
- 	atomic_inc(&nl_table_users);
--	read_unlock(&nl_table_lock);
-+	read_unlock_irqrestore(&nl_table_lock, flags);
- }
- 
- static inline void
+ 	len -= hdr_len;
 -- 
-2.30.2
+2.31.0
 
