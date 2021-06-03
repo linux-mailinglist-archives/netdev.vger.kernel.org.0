@@ -2,150 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B98B339AEA4
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 01:27:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF72D39AEEB
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 01:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbhFCX3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 19:29:32 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:1091 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbhFCX3c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 19:29:32 -0400
+        id S229704AbhFCX6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 19:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229576AbhFCX6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 19:58:01 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BE4C06174A
+        for <netdev@vger.kernel.org>; Thu,  3 Jun 2021 16:56:16 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id k5so4602835pjj.1
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 16:56:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1622762867; x=1654298867;
-  h=date:from:to:cc:message-id:references:mime-version:
-   in-reply-to:subject;
-  bh=7ofG02ZB3R9ItNYAJX7AOjZDSEYR5bDQ9ZvKLyyiy6M=;
-  b=s4NMXVO77pvXXOzL6ItqV0+U/phI6tQWM0ia443Om1cx37MmlxxJCtjr
-   Yvf2Y4bVgAHVhXLPlGod7ZVD/Acyg8qWO9czjI7AHB7eA6daJEvo5nGtV
-   ZfAVn/LWvNlPoskfE4NzdPz1PwT9DU1UddnFipRXO7RnHoYcOSjWxVPBu
-   4=;
-X-IronPort-AV: E=Sophos;i="5.83,246,1616457600"; 
-   d="scan'208";a="116516910"
-Subject: Re: [PATCH v3 01/11] xen/manage: keep track of the on-going suspend mode
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 03 Jun 2021 23:27:45 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com (Postfix) with ESMTPS id 4C241A1D18;
-        Thu,  3 Jun 2021 23:27:43 +0000 (UTC)
-Received: from EX13D08UEE002.ant.amazon.com (10.43.62.92) by
- EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Thu, 3 Jun 2021 23:27:42 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D08UEE002.ant.amazon.com (10.43.62.92) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Thu, 3 Jun 2021 23:27:42 +0000
-Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
- Server id 15.0.1497.18 via Frontend Transport; Thu, 3 Jun 2021 23:27:42 +0000
-Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 72A74409AC; Thu,  3 Jun 2021 23:27:42 +0000 (UTC)
-Date:   Thu, 3 Jun 2021 23:27:42 +0000
-From:   Anchal Agarwal <anchalag@amazon.com>
-To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>
-CC:     "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "roger.pau@citrix.com" <roger.pau@citrix.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "pavel@ucw.cz" <pavel@ucw.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dwmw@amazon.co.uk" <dwmw@amazon.co.uk>
-Message-ID: <20210603232742.GB14368@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-References: <20200930212944.GA3138@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <8cd59d9c-36b1-21cf-e59f-40c5c20c65f8@oracle.com>
- <20210521052650.GA19056@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <0b1f0772-d1b1-0e59-8e99-368e54d40fbf@oracle.com>
- <20210526044038.GA16226@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <33380567-f86c-5d85-a79e-c1cd889f8ec2@oracle.com>
- <20210528215008.GA19622@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <1ff91b30-3963-728e-aefb-57944197bdde@oracle.com>
- <20210602193743.GA28861@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <2cb71322-9d3d-395e-293b-24888f5be759@oracle.com>
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7X9FKrqLzt1i2t0Ku1xI3R3zrhpNkeGMlR6bn3lhGns=;
+        b=f05RDYdtRIMxeJA/R8WKQMZQxuuvO9GXTnJk+sCy/ZLaV0zUgu+PwPLZ0GwZ5Y8SpZ
+         GNn/bMTzGveNl+YZFFUsqTlVUG935cmt5Dr3YDbWKU2igLPyomWF0tRM8jth/akW4a+3
+         gYr8Kd62u3DMQH3D8jeeZ1bgkaqFQphXKA+ageq6pSbnVRLRGBNbXz2WXCSBAEgxzu4b
+         fc61ecdlpNJdhvnWzXHJRPfjvYaZc7sxsLN5OTKMcqWfiXWPtG5UyYrbAHkgr1lgoGAE
+         0kkBsBB82hIfC7nt6+OPWM/e2lgA6aqJMydGfBCTPNODW8vmRbgnKTMFn03Wc6DXJ+dC
+         p+kQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7X9FKrqLzt1i2t0Ku1xI3R3zrhpNkeGMlR6bn3lhGns=;
+        b=CFWvfIVNJ+Jbfs4lv56K9xd+nJ/6wIcnKgXeNiKLlC3SrFfLeZxIU6V2rn+19NiS2b
+         CBps+asU1p1c16KLinUQ4e6z8wWUQ7b7ruSvXDVHaOaXri7L52l6BL7VxxaK95vAIG36
+         o9bdB14LEU+SO1tgob8Ur+Vs43ys2nqJ6SYC3ymTnx4/UD963tV3pH0ZWN7MTP64aiFb
+         ryxJrImG8lrJCe9xX+svmiegg+V9G6f2O0iXinjEmGtaovADkfdcEVflHCtJT371fp99
+         gGBtej99y/KCEtSFzvV1g5fxQFGYSj4zaWQ5qS3maWNhqosnml+c2+3ODa3W/SVHE5j4
+         Tq3g==
+X-Gm-Message-State: AOAM530Rfj0BQ586MTNbMTha91ljuPX+fIdddvMriwu0Mcc+mXhYYjN3
+        ululZ5/viExUmeyEh9TPXTo=
+X-Google-Smtp-Source: ABdhPJxpfcQmjPGEudc06ohYmEKlv2AWBNeC5ewntry/Xo7dZhoLafvyk+mEJB4zm6PcSmrAVImK7w==
+X-Received: by 2002:a17:902:728e:b029:101:c3b7:a47f with SMTP id d14-20020a170902728eb0290101c3b7a47fmr1635436pll.21.1622764576133;
+        Thu, 03 Jun 2021 16:56:16 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:82fb])
+        by smtp.gmail.com with ESMTPSA id r9sm150844pfq.158.2021.06.03.16.56.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Jun 2021 16:56:15 -0700 (PDT)
+Date:   Thu, 3 Jun 2021 16:56:12 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Tanner Love <tannerlove.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tanner Love <tannerlove@google.com>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH net-next v3 2/3] virtio_net: add optional flow dissection
+ in virtio_net_hdr_to_skb
+Message-ID: <20210603235612.kwoirxd2tixk7do4@ast-mbp.dhcp.thefacebook.com>
+References: <20210601221841.1251830-1-tannerlove.kernel@gmail.com>
+ <20210601221841.1251830-3-tannerlove.kernel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2cb71322-9d3d-395e-293b-24888f5be759@oracle.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20210601221841.1251830-3-tannerlove.kernel@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 04:11:46PM -0400, Boris Ostrovsky wrote:
-> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+On Tue, Jun 01, 2021 at 06:18:39PM -0400, Tanner Love wrote:
+> From: Tanner Love <tannerlove@google.com>
 > 
+> Syzkaller bugs have resulted from loose specification of
+> virtio_net_hdr[1]. Enable execution of a BPF flow dissector program
+> in virtio_net_hdr_to_skb to validate the vnet header and drop bad
+> input.
 > 
-> 
-> On 6/2/21 3:37 PM, Anchal Agarwal wrote:
-> > On Tue, Jun 01, 2021 at 10:18:36AM -0400, Boris Ostrovsky wrote:
-> >>
-> > The resume won't fail because in the image the xen_vcpu and xen_vcpu_info are
-> > same. These are the same values that got in there during saving of the
-> > hibernation image. So whatever xen_vcpu got as a value during boot time registration on resume is
-> > essentially lost once the jump into the saved kernel image happens. Interesting
-> > part is if KASLR is not enabled boot time vcpup mfn is same as in the image.
-> 
-> 
-> Do you start the your guest right after you've hibernated it? What happens if you create (and keep running) a few other guests in-between? mfn would likely be different then I'd think.
-> 
->
-Yes, I just run it in loops on a single guest and I am able to see the issue in
-20-40 iterations sometime may be sooner. Yeah, you could be right and this could
-definitely happen more often depending what's happening on dom0 side.
-> > Once you enable KASLR this value changes sometimes and whenever that happens
-> > resume gets stuck. Does that make sense?
-> >
-> > No it does not resume successfully if hypercall fails because I was trying to
-> > explicitly reset vcpu and invoke hypercall.
-> > I am just wondering why does restore logic fails to work here or probably I am
-> > missing a critical piece here.
-> 
-> 
-> If you are not using KASLR then xen_vcpu_info is at the same address every time you boot. So whatever you registered before hibernating stays the same when you boot second time and register again, and so successful comparison in xen_vcpu_setup() works. (Mostly by chance.)
->
-That's what I thought so too.
-> 
-> But if KASLR is on then this comparison not failing should cause xen_vcpu pointer in the loaded image to become bogus because xen_vcpu is now registered for a different xen_vcpu_info address during boot.
-> 
-The reason for that I think is once you jump into the image that information is
-getting lost. But there is  some residue somewhere that's causing the resume to
-fail. I haven't been able to pinpoint the exact field value that may be causing
-that issue.
-Correct me if I am wrong here, but even if hypothetically I put a hack to tell the kernel
-somehow re-register vcpu it won't pass because there is no hypercall to
-unregister it in first place? Can the resumed kernel use the new values in that
-case [Now this is me just throwing wild guesses!!]
+> The existing behavior of accepting these vnet headers is part of the
+> ABI. 
 
-> 
-> >>> Another line of thought is something what kexec does to come around this problem
-> >>> is to abuse soft_reset and issue it during syscore_resume or may be before the image get loaded.
-> >>> I haven't experimented with that yet as I am assuming there has to be a way to re-register vcpus during resume.
-> >>
-> >> Right, that sounds like it should work.
-> >>
-> > You mean soft reset or re-register vcpu?
-> 
-> 
-> Doing something along the lines of a soft reset. It should allow you to re-register. Not sure how you can use it without Xen changes though.
-> 
-No not without xen changes. It won't work. I will have xen changes in place to
-test that on our infrastructure. 
-
---
-Anchal
-> 
-> 
-> -boris
-> 
+So ?
+It's ok to fix ABI when it's broken.
+The whole feature is a way to workaround broken ABI with additional
+BPF based validation.
+It's certainly a novel idea.
+I've never seen BPF being used to fix the kernel bugs.
+But I think the better way forward is to admit that vnet ABI is broken
+and fix it in the kernel with proper validation.
+BPF-based validation is a band-aid. The out of the box kernel will
+stay broken and syzbot will continue to crash it.
