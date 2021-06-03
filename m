@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A811039A182
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 14:52:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9834739A188
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 14:52:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230331AbhFCMxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 08:53:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48590 "EHLO mail.kernel.org"
+        id S231158AbhFCMxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 08:53:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48678 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229876AbhFCMxn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 08:53:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 875A66124B;
-        Thu,  3 Jun 2021 12:51:58 +0000 (UTC)
+        id S230453AbhFCMxu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 08:53:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5918F613B1;
+        Thu,  3 Jun 2021 12:52:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622724719;
-        bh=JqMQdAAB3GjFC3iQ5t6tWDUGbDN4unlpZL9hD6Tf1UQ=;
+        s=k20201202; t=1622724726;
+        bh=XepZ1U0Qa2Thhn1gad0wQi1sUrgO4FiRSeae6z6azOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J+MqJkWKTs8VX6JrddoSZ3cT/6ccvJt277l79SHPTzw2j49vyWxHQgpysh+LYKux6
-         MgbNHcXRWLjoZHLDHZ7hwFE1z2QP+2kcJt/aUmw1lcOzuUI/HAySE29y7HnWXFAFEd
-         Mzc6Y3Mst+WN0jq+Ph1fN8W9DYRA64DOVglmWL8I6Qo9wHTze4dRIm759wUhGxQsN/
-         bJSmz4zJMQ47ztENBGJyRypWEdCir8BF9sZqmlLdU27hBJfkmoUuqAsPnQKMFMr5T4
-         fBQxXPBfpw322rt/BfxjwuF3Cyuj3t8b1QkKLKmR7puNTNKZxJFQjB3M2kxxLq4EGW
-         FGq6toYLAPqyQ==
+        b=E/YWP2WvD+BD0xc98CnqyUST4dv4bu9lqwG1o1l/Thyl6UpBmybrXTdO6M4TpLT7M
+         Gs6AC3St/wEvQtjqcVcIx9w1QrRZhhGxO7L8W90RuBjqdmfKQKiNn/vNAPL80GD+Rz
+         yObhns2biYXicAcpUiTiHTYy7rASCoKrjvKnVuGfiaqe2EdNXyycbVlhPTDjmHxCRH
+         EhYmPMWYwh8wLGyRnfEWvIP/gPS5lFm7zD2KxXK+i9sXwBRU6E056ktFx3zDVEAAA7
+         lRQBjv/YaKfH3SEdFcXdrVnKnJbLtTVZznKqLtuevEoAkY3+kw/Szf1suTKrPvAfyf
+         +rglohzX0bQ7Q==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Lior Nahmanson <liorna@nvidia.com>, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, Meir Lichtinger <meirl@nvidia.com>,
         netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH rdma-next 2/3] RDMA/mlx5: Move DCI QP creation to separate function
-Date:   Thu,  3 Jun 2021 15:51:49 +0300
-Message-Id: <3bd27c634c8bdba836a4254ea4946a3fcc354109.1622723815.git.leonro@nvidia.com>
+Subject: [PATCH rdma-next 3/3] RDMA/mlx5: Add DCS offload support
+Date:   Thu,  3 Jun 2021 15:51:50 +0300
+Message-Id: <2ff3ac235fa6e62adafcbbf786221b92bdeae2e0.1622723815.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1622723815.git.leonro@nvidia.com>
 References: <cover.1622723815.git.leonro@nvidia.com>
@@ -43,192 +43,133 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Lior Nahmanson <liorna@nvidia.com>
 
-This will ease the process when adding new features to DCI QP.
-the code was copied from create_user_qp() while taking only DCI
-relevant bits.
+DCS is an offload to SW load balancing of DC initiator work requests.
+
+A single DCI can be connected to only one target at the time and can't
+start new connection until the previous work request is completed.
+This limitation will cause to delay when the initiator process needs to
+transfer data to multiple targets at the same time.
+The SW solution is to use a process that handling and spreading the work
+request on many DCIs according to destinations.
+
+This feature is an offload to this process and coming to reduce the load
+from the CPU and improve the performance.
 
 Reviewed-by: Meir Lichtinger <meirl@nvidia.com>
 Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/qp.c | 157 ++++++++++++++++++++++++++++++++
- 1 file changed, 157 insertions(+)
+ drivers/infiniband/hw/mlx5/main.c | 10 ++++++++++
+ drivers/infiniband/hw/mlx5/qp.c   | 11 +++++++++++
+ include/uapi/rdma/mlx5-abi.h      | 17 +++++++++++++++--
+ 3 files changed, 36 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
+index 312aa731860d..9357ed28813c 100644
+--- a/drivers/infiniband/hw/mlx5/main.c
++++ b/drivers/infiniband/hw/mlx5/main.c
+@@ -1174,6 +1174,16 @@ static int mlx5_ib_query_device(struct ib_device *ibdev,
+ 				MLX5_IB_TUNNELED_OFFLOADS_MPLS_UDP;
+ 	}
+ 
++	if (offsetofend(typeof(resp), dci_streams_caps) <= uhw_outlen) {
++		resp.response_length += sizeof(resp.dci_streams_caps);
++
++		resp.dci_streams_caps.max_log_num_concurent =
++			MLX5_CAP_GEN(mdev, log_max_dci_stream_channels);
++
++		resp.dci_streams_caps.max_log_num_errored =
++			MLX5_CAP_GEN(mdev, log_max_dci_errored_streams);
++	}
++
+ 	if (uhw_outlen) {
+ 		err = ib_copy_to_udata(uhw, &resp, resp.response_length);
+ 
 diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
-index 7a5f1eba60e3..65a380543f5a 100644
+index 65a380543f5a..7b545eac37a3 100644
 --- a/drivers/infiniband/hw/mlx5/qp.c
 +++ b/drivers/infiniband/hw/mlx5/qp.c
-@@ -1974,6 +1974,160 @@ static int create_xrc_tgt_qp(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
- 	return 0;
- }
+@@ -2056,6 +2056,13 @@ static int create_dci(struct mlx5_ib_dev *dev, struct ib_pd *pd,
+ 		MLX5_SET(qpc, qpc, log_rq_size, ilog2(qp->rq.wqe_cnt));
+ 	}
  
-+static int create_dci(struct mlx5_ib_dev *dev, struct ib_pd *pd,
-+		      struct mlx5_ib_qp *qp,
-+		      struct mlx5_create_qp_params *params)
-+{
-+	struct ib_qp_init_attr *init_attr = params->attr;
-+	struct mlx5_ib_create_qp *ucmd = params->ucmd;
-+	u32 out[MLX5_ST_SZ_DW(create_qp_out)] = {};
-+	struct ib_udata *udata = params->udata;
-+	u32 uidx = params->uidx;
-+	struct mlx5_ib_resources *devr = &dev->devr;
-+	int inlen = MLX5_ST_SZ_BYTES(create_qp_in);
-+	struct mlx5_core_dev *mdev = dev->mdev;
-+	struct mlx5_ib_cq *send_cq;
-+	struct mlx5_ib_cq *recv_cq;
-+	unsigned long flags;
-+	struct mlx5_ib_qp_base *base;
-+	int ts_format;
-+	int mlx5_st;
-+	void *qpc;
-+	u32 *in;
-+	int err;
-+
-+	spin_lock_init(&qp->sq.lock);
-+	spin_lock_init(&qp->rq.lock);
-+
-+	mlx5_st = to_mlx5_st(qp->type);
-+	if (mlx5_st < 0)
-+		return -EINVAL;
-+
-+	if (init_attr->sq_sig_type == IB_SIGNAL_ALL_WR)
-+		qp->sq_signal_bits = MLX5_WQE_CTRL_CQ_UPDATE;
-+
-+	base = &qp->trans_qp.base;
-+
-+	qp->has_rq = qp_has_rq(init_attr);
-+	err = set_rq_size(dev, &init_attr->cap, qp->has_rq, qp, ucmd);
-+	if (err) {
-+		mlx5_ib_dbg(dev, "err %d\n", err);
-+		return err;
++	if (qp->flags_en & MLX5_QP_FLAG_DCI_STREAM) {
++		MLX5_SET(qpc, qpc, log_num_dci_stream_channels,
++			 ucmd->dci_streams.log_num_concurent);
++		MLX5_SET(qpc, qpc, log_num_dci_errored_streams,
++			 ucmd->dci_streams.log_num_errored);
 +	}
 +
-+	if (ucmd->rq_wqe_shift != qp->rq.wqe_shift ||
-+	    ucmd->rq_wqe_count != qp->rq.wqe_cnt)
-+		return -EINVAL;
+ 	MLX5_SET(qpc, qpc, ts_format, ts_format);
+ 	MLX5_SET(qpc, qpc, rq_type, get_rx_type(qp, init_attr));
+ 
+@@ -2799,6 +2806,10 @@ static int process_vendor_flags(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
+ 
+ 	process_vendor_flag(dev, &flags, MLX5_QP_FLAG_TYPE_DCI, true, qp);
+ 	process_vendor_flag(dev, &flags, MLX5_QP_FLAG_TYPE_DCT, true, qp);
++	process_vendor_flag(dev, &flags, MLX5_QP_FLAG_DCI_STREAM,
++			    MLX5_CAP_GEN(mdev, log_max_dci_stream_channels) &&
++			    MLX5_CAP_GEN(mdev, log_max_dci_errored_streams),
++			    qp);
+ 
+ 	process_vendor_flag(dev, &flags, MLX5_QP_FLAG_SIGNATURE, true, qp);
+ 	process_vendor_flag(dev, &flags, MLX5_QP_FLAG_SCATTER_CQE,
+diff --git a/include/uapi/rdma/mlx5-abi.h b/include/uapi/rdma/mlx5-abi.h
+index 995faf8f44bd..6f54ab3d99e5 100644
+--- a/include/uapi/rdma/mlx5-abi.h
++++ b/include/uapi/rdma/mlx5-abi.h
+@@ -50,6 +50,7 @@ enum {
+ 	MLX5_QP_FLAG_ALLOW_SCATTER_CQE	= 1 << 8,
+ 	MLX5_QP_FLAG_PACKET_BASED_CREDIT_MODE	= 1 << 9,
+ 	MLX5_QP_FLAG_UAR_PAGE_INDEX = 1 << 10,
++	MLX5_QP_FLAG_DCI_STREAM	= 1 << 11,
+ };
+ 
+ enum {
+@@ -237,6 +238,11 @@ struct mlx5_ib_striding_rq_caps {
+ 	__u32 reserved;
+ };
+ 
++struct mlx5_ib_dci_streams_caps {
++	__u8 max_log_num_concurent;
++	__u8 max_log_num_errored;
++};
 +
-+	if (ucmd->sq_wqe_count > (1 << MLX5_CAP_GEN(mdev, log_max_qp_sz)))
-+		return -EINVAL;
+ enum mlx5_ib_query_dev_resp_flags {
+ 	/* Support 128B CQE compression */
+ 	MLX5_IB_QUERY_DEV_RESP_FLAGS_CQE_128B_COMP = 1 << 0,
+@@ -265,7 +271,8 @@ struct mlx5_ib_query_device_resp {
+ 	struct mlx5_ib_sw_parsing_caps sw_parsing_caps;
+ 	struct mlx5_ib_striding_rq_caps striding_rq_caps;
+ 	__u32	tunnel_offloads_caps; /* enum mlx5_ib_tunnel_offloads */
+-	__u32	reserved;
++	struct  mlx5_ib_dci_streams_caps dci_streams_caps;
++	__u16 reserved;
+ };
+ 
+ enum mlx5_ib_create_cq_flags {
+@@ -311,6 +318,11 @@ struct mlx5_ib_create_srq_resp {
+ 	__u32	reserved;
+ };
+ 
++struct mlx5_ib_create_qp_dci_streams {
++	__u8 log_num_concurent;
++	__u8 log_num_errored;
++};
 +
-+	ts_format = get_qp_ts_format(dev, to_mcq(init_attr->send_cq),
-+				     to_mcq(init_attr->recv_cq));
-+
-+	if (ts_format < 0)
-+		return ts_format;
-+
-+	err = _create_user_qp(dev, pd, qp, udata, init_attr, &in, &params->resp,
-+			      &inlen, base, ucmd);
-+	if (err)
-+		return err;
-+
-+	if (MLX5_CAP_GEN(mdev, ece_support))
-+		MLX5_SET(create_qp_in, in, ece, ucmd->ece_options);
-+	qpc = MLX5_ADDR_OF(create_qp_in, in, qpc);
-+
-+	MLX5_SET(qpc, qpc, st, mlx5_st);
-+	MLX5_SET(qpc, qpc, pm_state, MLX5_QP_PM_MIGRATED);
-+	MLX5_SET(qpc, qpc, pd, to_mpd(pd)->pdn);
-+
-+	if (qp->flags_en & MLX5_QP_FLAG_SIGNATURE)
-+		MLX5_SET(qpc, qpc, wq_signature, 1);
-+
-+	if (qp->flags & IB_QP_CREATE_CROSS_CHANNEL)
-+		MLX5_SET(qpc, qpc, cd_master, 1);
-+	if (qp->flags & IB_QP_CREATE_MANAGED_SEND)
-+		MLX5_SET(qpc, qpc, cd_slave_send, 1);
-+	if (qp->flags_en & MLX5_QP_FLAG_SCATTER_CQE)
-+		configure_requester_scat_cqe(dev, qp, init_attr, qpc);
-+
-+	if (qp->rq.wqe_cnt) {
-+		MLX5_SET(qpc, qpc, log_rq_stride, qp->rq.wqe_shift - 4);
-+		MLX5_SET(qpc, qpc, log_rq_size, ilog2(qp->rq.wqe_cnt));
-+	}
-+
-+	MLX5_SET(qpc, qpc, ts_format, ts_format);
-+	MLX5_SET(qpc, qpc, rq_type, get_rx_type(qp, init_attr));
-+
-+	MLX5_SET(qpc, qpc, log_sq_size, ilog2(qp->sq.wqe_cnt));
-+
-+	/* Set default resources */
-+	if (init_attr->srq) {
-+		MLX5_SET(qpc, qpc, xrcd, devr->xrcdn0);
-+		MLX5_SET(qpc, qpc, srqn_rmpn_xrqn,
-+			 to_msrq(init_attr->srq)->msrq.srqn);
-+	} else {
-+		MLX5_SET(qpc, qpc, xrcd, devr->xrcdn1);
-+		MLX5_SET(qpc, qpc, srqn_rmpn_xrqn,
-+			 to_msrq(devr->s1)->msrq.srqn);
-+	}
-+
-+	if (init_attr->send_cq)
-+		MLX5_SET(qpc, qpc, cqn_snd,
-+			 to_mcq(init_attr->send_cq)->mcq.cqn);
-+
-+	if (init_attr->recv_cq)
-+		MLX5_SET(qpc, qpc, cqn_rcv,
-+			 to_mcq(init_attr->recv_cq)->mcq.cqn);
-+
-+	MLX5_SET64(qpc, qpc, dbr_addr, qp->db.dma);
-+
-+	/* 0xffffff means we ask to work with cqe version 0 */
-+	if (MLX5_CAP_GEN(mdev, cqe_version) == MLX5_CQE_VERSION_V1)
-+		MLX5_SET(qpc, qpc, user_index, uidx);
-+
-+	if (qp->flags & IB_QP_CREATE_PCI_WRITE_END_PADDING) {
-+		MLX5_SET(qpc, qpc, end_padding_mode,
-+			 MLX5_WQ_END_PAD_MODE_ALIGN);
-+		/* Special case to clean flag */
-+		qp->flags &= ~IB_QP_CREATE_PCI_WRITE_END_PADDING;
-+	}
-+
-+	err = mlx5_qpc_create_qp(dev, &base->mqp, in, inlen, out);
-+
-+	kvfree(in);
-+	if (err)
-+		goto err_create;
-+
-+	base->container_mibqp = qp;
-+	base->mqp.event = mlx5_ib_qp_event;
-+	if (MLX5_CAP_GEN(mdev, ece_support))
-+		params->resp.ece_options = MLX5_GET(create_qp_out, out, ece);
-+
-+	get_cqs(qp->type, init_attr->send_cq, init_attr->recv_cq,
-+		&send_cq, &recv_cq);
-+	spin_lock_irqsave(&dev->reset_flow_resource_lock, flags);
-+	mlx5_ib_lock_cqs(send_cq, recv_cq);
-+	/* Maintain device to QPs access, needed for further handling via reset
-+	 * flow
-+	 */
-+	list_add_tail(&qp->qps_list, &dev->qp_list);
-+	/* Maintain CQ to QPs access, needed for further handling via reset flow
-+	 */
-+	if (send_cq)
-+		list_add_tail(&qp->cq_send_list, &send_cq->list_send_qp);
-+	if (recv_cq)
-+		list_add_tail(&qp->cq_recv_list, &recv_cq->list_recv_qp);
-+	mlx5_ib_unlock_cqs(send_cq, recv_cq);
-+	spin_unlock_irqrestore(&dev->reset_flow_resource_lock, flags);
-+
-+	return 0;
-+
-+err_create:
-+	destroy_qp(dev, qp, base, udata);
-+	return err;
-+}
-+
- static int create_user_qp(struct mlx5_ib_dev *dev, struct ib_pd *pd,
- 			  struct mlx5_ib_qp *qp,
- 			  struct mlx5_create_qp_params *params)
-@@ -2840,6 +2994,9 @@ static int create_qp(struct mlx5_ib_dev *dev, struct ib_pd *pd,
- 	case MLX5_IB_QPT_DCT:
- 		err = create_dct(dev, pd, qp, params);
- 		break;
-+	case MLX5_IB_QPT_DCI:
-+		err = create_dci(dev, pd, qp, params);
-+		break;
- 	case IB_QPT_XRC_TGT:
- 		err = create_xrc_tgt_qp(dev, qp, params);
- 		break;
+ struct mlx5_ib_create_qp {
+ 	__aligned_u64 buf_addr;
+ 	__aligned_u64 db_addr;
+@@ -325,7 +337,8 @@ struct mlx5_ib_create_qp {
+ 		__aligned_u64 access_key;
+ 	};
+ 	__u32  ece_options;
+-	__u32  reserved;
++	struct  mlx5_ib_create_qp_dci_streams dci_streams;
++	__u16 reserved;
+ };
+ 
+ /* RX Hash function flags */
 -- 
 2.31.1
 
