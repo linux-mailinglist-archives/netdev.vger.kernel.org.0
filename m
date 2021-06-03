@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C517B39AE2C
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 00:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35DB939AE2A
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 00:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbhFCWly (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 18:41:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46964 "EHLO mail.kernel.org"
+        id S229772AbhFCWlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 18:41:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46958 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229704AbhFCWlv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229695AbhFCWlv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 3 Jun 2021 18:41:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1FE6061401;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1087361402;
         Thu,  3 Jun 2021 22:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1622760006;
-        bh=eq5oVITcnOyriOj/YeyTGVhxV8NBkbowh22WDOn/I6M=;
+        bh=4r+KaXf9HhPfPuJ3L0A6ucBPg67H8QvheAAx7CS+HS0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Sy9numyBtjsTThqZ+CsJyxn7ke+kZC6sZCmKcCvSDlCBvJIcxKIRFi0qPR3bnlhyM
-         aUZ0AYzMvFvPQQ444+lKWTElHNgsbK/j6RFpeT2p+9I39A/OL9hogOVqTLQXVaiXbS
-         jAs4gy0qvZGHaWOxgfzEZmmwE0P5zKfG45Pi6rf5HmKk2IXTfHzdmwwl6o/3EHXkaP
-         P+pO5lbEXHyGHmMDciKX7YerFw367QC9Hb/ahdygQLWIQenf6dGF13aaWH6MpvWCbW
-         9LexBDaHKZpUy5VfterandyWB4znZTjmczB9mQ9QArEcGCyhLKpOU8wNw+8iWHnVT9
-         f3+HwsNq8pI3Q==
+        b=tJqr86vh3Q3ZL/yQkDKIIVUuXi0nnWG/CMD7GIg8k4YQXl0RCXGUgB3Lb9KrA6WVn
+         mYvTFZ7qiewnTrZNsGRd9JlMCC5nctShVFq8EZKHcIc25ZgCfA1i8tveWc0LDaeKnv
+         Y7ziWe0hV358zYkif8B5csGj7pznhIlzPkgs34FDfuHRwQS8v7auIftpqXTLFpyI3B
+         3bYVYjDQY7/qMY+xqURwc5V7lBVpTN2iCtMWosKU0axxH008KhSlPAIT/zDL4MY9IP
+         Gwlw+oycaYPOI9GLiMvqYiAoo5BFE90Kr9Uxj0jOsh9ILnjP1LYLIWWXMcJIijpBYJ
+         MHClJ0aZhQDWg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0DCC460BFB;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 030DA60A6F;
         Thu,  3 Jun 2021 22:40:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: ethernet: rmnet: Restructure if checks to avoid
- uninitialized warning
+Subject: Re: [PATCH][next] netdevsim: Fix unsigned being compared to less than
+ zero
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162276000605.13062.14467575723320615318.git-patchwork-notify@kernel.org>
+Message-Id: <162276000600.13062.15630996018975105780.git-patchwork-notify@kernel.org>
 Date:   Thu, 03 Jun 2021 22:40:06 +0000
-References: <20210603173410.310362-1-nathan@kernel.org>
-In-Reply-To: <20210603173410.310362-1-nathan@kernel.org>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     subashab@codeaurora.org, stranche@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org, ndesaulniers@google.com,
-        sharathv@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20210603215657.154776-1-colin.king@canonical.com>
+In-Reply-To: <20210603215657.154776-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, dlinkin@nvidia.com,
+        yuvalav@nvidia.com, jiri@nvidia.com, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -49,35 +48,21 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu,  3 Jun 2021 10:34:10 -0700 you wrote:
-> Clang warns that proto in rmnet_map_v5_checksum_uplink_packet() might be
-> used uninitialized:
+On Thu,  3 Jun 2021 22:56:57 +0100 you wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:283:14: warning:
-> variable 'proto' is used uninitialized whenever 'if' condition is false
-> [-Wsometimes-uninitialized]
->                 } else if (skb->protocol == htons(ETH_P_IPV6)) {
->                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:295:36: note:
-> uninitialized use occurs here
->                 check = rmnet_map_get_csum_field(proto, trans);
->                                                  ^~~~~
-> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:283:10: note:
-> remove the 'if' if its condition is always true
->                 } else if (skb->protocol == htons(ETH_P_IPV6)) {
->                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:270:11: note:
-> initialize the variable 'proto' to silence this warning
->                 u8 proto;
->                         ^
->                          = '\0'
-> 1 warning generated.
+> The comparison of len < 0 is always false because len is a size_t. Fix
+> this by making len a ssize_t instead.
+> 
+> Addresses-Coverity: ("Unsigned compared against 0")
+> Fixes: d395381909a3 ("netdevsim: Add max_vfs to bus_dev")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: ethernet: rmnet: Restructure if checks to avoid uninitialized warning
-    https://git.kernel.org/netdev/net-next/c/118de6106735
+  - [next] netdevsim: Fix unsigned being compared to less than zero
+    https://git.kernel.org/netdev/net-next/c/ebbf5fcb94a7
 
 You are awesome, thank you!
 --
