@@ -2,88 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5848399DE4
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 11:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD133399E1B
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 11:50:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbhFCJhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 05:37:19 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:59737 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbhFCJhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 05:37:18 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1622712934; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=CoDUZzaw4o/hGDbYV678zJhrcKCRPmjONW/25p15Llc=;
- b=dn5pXwXOl88rdnI2mSCIGUP0RiTN8/sDqyAPkgETQcHKoto3lCQmaB3qCpt9AjXFA4pYrx24
- J2+glavfiHF62TMBp9mxl8wbi9KdIuvuS3fWoavF8B+7Z4TC0UO5/AwhAkCAHWm7QPz9Ir2u
- mA4urWW1NbDDAuCc5lEufWRp3og=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 60b8a263f726fa4188b23641 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 03 Jun 2021 09:35:31
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 3F5C7C4323A; Thu,  3 Jun 2021 09:35:30 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tykki.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 72C4EC433D3;
-        Thu,  3 Jun 2021 09:35:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 72C4EC433D3
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ipw2x00: Minor documentation update
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1619347842-6638-1-git-send-email-jrdr.linux@gmail.com>
-References: <1619347842-6638-1-git-send-email-jrdr.linux@gmail.com>
-To:     Souptick Joarder <jrdr.linux@gmail.com>
-Cc:     stas.yakovlev@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Souptick Joarder <jrdr.linux@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210603093530.3F5C7C4323A@smtp.codeaurora.org>
-Date:   Thu,  3 Jun 2021 09:35:30 +0000 (UTC)
+        id S229814AbhFCJwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 05:52:35 -0400
+Received: from m15112.mail.126.com ([220.181.15.112]:38706 "EHLO
+        m15112.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229626AbhFCJwe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 05:52:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=Tzj37gS5fRDn9Q+o6l
+        FL+5giN6Xx20MQgaw/uq7nHlE=; b=geuzV4eWJ5o3ozmnVyB5B1yu7O/QlfnnFh
+        dQtDvKSIENK/E2nWhXmpfDm22antUWsvIPJ64hRmnjI0EmRRvPlEE9FkXlaCIqvE
+        wxDGIO4m1SSYA/gdw4CeO2mBvXBWLoc7QM6OiMcbeU4jGqMSxb9/ODLBXPoZe+el
+        hV3v0EvQU=
+Received: from localhost.localdomain (unknown [125.33.196.124])
+        by smtp2 (Coremail) with SMTP id DMmowAC3G0nrpbhgzOP9Bw--.8346S4;
+        Thu, 03 Jun 2021 17:50:36 +0800 (CST)
+From:   zhang kai <zhangkaiheb@126.com>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     zhang kai <zhangkaiheb@126.com>
+Subject: [PATCH] ipv6: parameter p.name is empty
+Date:   Thu,  3 Jun 2021 17:50:30 +0800
+Message-Id: <20210603095030.2920-1-zhangkaiheb@126.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: DMmowAC3G0nrpbhgzOP9Bw--.8346S4
+X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvj4RXzV8UUUUU
+X-Originating-IP: [125.33.196.124]
+X-CM-SenderInfo: x2kd0wxndlxvbe6rjloofrz/1tbi1w2m-l53WW5iUgAAss
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Souptick Joarder <jrdr.linux@gmail.com> wrote:
+so do not check it.
 
-> Kernel test robot throws below warning ->
-> 
-> drivers/net/wireless/intel/ipw2x00/ipw2100.c:5359: warning: This comment
-> starts with '/**', but isn't a kernel-doc comment. Refer
-> Documentation/doc-guide/kernel-doc.rst
-> 
-> Minor update in documentation.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
-> Cc: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: zhang kai <zhangkaiheb@126.com>
+---
+ net/ipv6/addrconf.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Patch applied to wireless-drivers-next.git, thanks.
-
-080f9c10c773 ipw2x00: Minor documentation update
-
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index b0ef65eb9..4c6b3fc7e 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -2833,9 +2833,6 @@ static int addrconf_set_sit_dstaddr(struct net *net, struct net_device *dev,
+ 	if (err)
+ 		return err;
+ 
+-	dev = __dev_get_by_name(net, p.name);
+-	if (!dev)
+-		return -ENOBUFS;
+ 	return dev_open(dev, NULL);
+ }
+ 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/1619347842-6638-1-git-send-email-jrdr.linux@gmail.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.17.1
 
