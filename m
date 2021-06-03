@@ -2,135 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B31A439A5DD
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 18:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE02239A5E6
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 18:40:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229906AbhFCQkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 12:40:24 -0400
-Received: from mail-lj1-f177.google.com ([209.85.208.177]:39717 "EHLO
-        mail-lj1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbhFCQkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 12:40:24 -0400
-Received: by mail-lj1-f177.google.com with SMTP id c11so7931992ljd.6;
-        Thu, 03 Jun 2021 09:38:38 -0700 (PDT)
+        id S230104AbhFCQlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 12:41:47 -0400
+Received: from mail-lj1-f174.google.com ([209.85.208.174]:42941 "EHLO
+        mail-lj1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229723AbhFCQlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 12:41:47 -0400
+Received: by mail-lj1-f174.google.com with SMTP id a4so7916130ljq.9;
+        Thu, 03 Jun 2021 09:39:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dg1cMbsNNvwB5OdWxFGfb7KgRwPXh4V5fRmUP5p6A38=;
-        b=RrrueZy9r9DKDF26hY7QWRZMiPiuU/NUMwjn9bjRwczXNpUWyOMueFeUpbSJBVl4uC
-         Yhp3lmS4NQQGk6NMbS7/PONLZEotmEa6VJ3/ukmRQpgz3MroFeA/pDchkQGAM3A+X7Qv
-         Nxnjze6YJ/C5wveqwwjT8PhKCZwypevofZSgyKwpVzvIsJkUkfCPMPWcnqQ7WZmLLfEm
-         Renqgr7go8J+cgZ2/WyTMNO3Arh+4F4+4aJOnyUum7DhcDXxhAgVMgS0LuBurVvd/HBW
-         W2XY243joefQYORdGSF2qJ6zfOjU31ulu/W7fmJpSoSyRe5LK32n7Y/43T2csRv4/kGF
-         b5og==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GtCPxP0lPvrT9tJ+M3sA6gONSBsSe+vnuidKP6YRQa8=;
+        b=Li0wZbaVcRzZd0WkoeT/7oYvQPgKHlbfqgRd6v68EbjXePmp8a9T0eBWubriESk7G9
+         HLqGT1cxhXWwb8FhnBWh/RjNek3gkgIoEywvEvGZFCMqBExa+kdau4eUNRWMQqAgyWdS
+         U10JuXD9R3a71nGx1ZE5yHyFsCKtx0m4exfPSgDT9vqPtRCo9BPeBT+tSZ1rOSJcN0km
+         iSC1J7LDi9fqr/FljHfci9hmC6S2PcUfJcBUXhURR4oqme2/Q/4suibG9d9cuBr4HGfy
+         SMydqIi+rgwAFM0b6OSZ8QFXGWfUMsuJJcSv6seiTR/nPOfrWDGhfzaIQAbBCIbLwc3k
+         B1vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dg1cMbsNNvwB5OdWxFGfb7KgRwPXh4V5fRmUP5p6A38=;
-        b=s89mL0QbCZz70A9MsKrkm19wgbGQyCCpcC/7cNQiUG8M+BzWYWSNXXOQBGCZwNFQgI
-         ldn868Q2gGn0ji1hiEfUt/YhnK3GE+Ibp/O1vm+zdwH9Vg+IoRJkRRm1UoTlDuB2hfXw
-         TtSG8VKBY86T9a0Wt+DuE25eudj+8XCHXzsVRZO0JhSwooLWmWm98uEkcr2LCTdTxJHT
-         QqkFm+zkWe00ecix2z4eT2CAtmL7KAmmwWx1LM4wxNk1231AcS3tX3NAD4mYJF4EttHM
-         fybcKdo8RkdT2ot65NjzDidRpNMK4e+zVPznlXcMONLpAoffu2cW/kT+rcqCMGrE+CiQ
-         piYQ==
-X-Gm-Message-State: AOAM532U7mNb6ME2SuWvZPUr22elWbOYe2cdpOslAOCagU/3KmNQymmS
-        C3qFzlfIv4YFihpa7elZNmw=
-X-Google-Smtp-Source: ABdhPJwq2FHuCJ3LCjyNk09uOXvaSyHbq7RBi7/+zBxt8W/o7kB0TkaFaA8sVLJOUd3aHk9rrCWoJg==
-X-Received: by 2002:a2e:6e19:: with SMTP id j25mr182995ljc.476.1622738258343;
-        Thu, 03 Jun 2021 09:37:38 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GtCPxP0lPvrT9tJ+M3sA6gONSBsSe+vnuidKP6YRQa8=;
+        b=NVDLJKYGUY3FCwKuzWm/US8mKA2sk8KAwGCZE0uWh5vk/Je13762LMw1EBbjG6i6lw
+         qrPiuDHdAuIHco66eoHHLmTtjhdR7LwUG1XpJSR/tJYs5TjnkkUYc2Y6sThJYCYf6bRk
+         MhR/uHm3Xgi2BKGFsNPW8maIGDuIyENXKphGBFN4t9Z3Dxx4Be+rD0ou9OD1oX9/JDW2
+         BGEuPywoDCDqY26Hrkg9J+JwOYnAMTFKRGyjHJ4RomJEAVGLMBi0XeYuodUk2GhvPOqX
+         4rTr7SqKW61TuV00+aNXmlg+HZwV9hPPeka6jsn6w2VReDa/nPbKSdnaEitCy13X4gcL
+         uqQQ==
+X-Gm-Message-State: AOAM531HNDfhmcizYtAWJ8ki7qj5nhDVs1WrY3NmGh/ck7qoNz5pAzDQ
+        7qC4IFk0+Km6t1F53bAQcH8=
+X-Google-Smtp-Source: ABdhPJz3LMpgEbt0Qcqe6W/p6dKpJTGBtnZblxXx5uInT8cHdd0M7UyM4m6Oeb1+xEHpcP0t3t2Whg==
+X-Received: by 2002:a2e:6c1a:: with SMTP id h26mr210990ljc.34.1622738325305;
+        Thu, 03 Jun 2021 09:38:45 -0700 (PDT)
 Received: from localhost.localdomain ([94.103.224.40])
-        by smtp.gmail.com with ESMTPSA id d26sm280461lja.74.2021.06.03.09.37.37
+        by smtp.gmail.com with ESMTPSA id v24sm365798lfp.37.2021.06.03.09.38.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 09:37:37 -0700 (PDT)
+        Thu, 03 Jun 2021 09:38:44 -0700 (PDT)
 From:   Pavel Skripkin <paskripkin@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org,
         sjur.brandeland@stericsson.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH 0/4] net: caif: fix 2 memory leaks
-Date:   Thu,  3 Jun 2021 19:37:27 +0300
-Message-Id: <cover.1622737854.git.paskripkin@gmail.com>
+        Pavel Skripkin <paskripkin@gmail.com>, stable@vger.kernel.org
+Subject: [PATCH 1/4] net: caif: added cfserl_release function
+Date:   Thu,  3 Jun 2021 19:38:12 +0300
+Message-Id: <0a34ac711f54b97d7041f4fe580dc14fb33177fd.1622737854.git.paskripkin@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1622737854.git.paskripkin@gmail.com>
+References: <cover.1622737854.git.paskripkin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series fix 2 memory leaks in caif
-interface.
+Added cfserl_release() function.
 
-Syzbot reported memory leak in cfserl_create().
-The problem was in cfcnfg_add_phy_layer() function.
-This function accepts struct cflayer *link_support and
-assign it to corresponting structures, but it can fail
-in some cases.
+Cc: stable@vger.kernel.org
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ include/net/caif/cfserl.h | 1 +
+ net/caif/cfserl.c         | 5 +++++
+ 2 files changed, 6 insertions(+)
 
-These cases must be handled to prevent leaking allocated
-struct cflayer *link_support pointer, because if error accured
-before assigning link_support pointer to somewhere, this pointer
-must be freed.
-
-Fail log:
-
-[   49.051872][ T7010] caif:cfcnfg_add_phy_layer(): Too many CAIF Link Layers (max 6)
-[   49.110236][ T7042] caif:cfcnfg_add_phy_layer(): Too many CAIF Link Layers (max 6)
-[   49.134936][ T7045] caif:cfcnfg_add_phy_layer(): Too many CAIF Link Layers (max 6)
-[   49.163083][ T7043] caif:cfcnfg_add_phy_layer(): Too many CAIF Link Layers (max 6)
-[   55.248950][ T6994] kmemleak: 4 new suspected memory leaks (see /sys/kernel/debug/kmemleak)
-
-int cfcnfg_add_phy_layer(..., struct cflayer *link_support, ...)
-{
-...
-	/* CAIF protocol allow maximum 6 link-layers */
-	for (i = 0; i < 7; i++) {
-		phyid = (dev->ifindex + i) & 0x7;
-		if (phyid == 0)
-			continue;
-		if (cfcnfg_get_phyinfo_rcu(cnfg, phyid) == NULL)
-			goto got_phyid;
-	}
-	pr_warn("Too many CAIF Link Layers (max 6)\n");
-	goto out;
-...
-	if (link_support != NULL) {
-		link_support->id = phyid;
-		layer_set_dn(frml, link_support);
-		layer_set_up(link_support, frml);
-		layer_set_dn(link_support, phy_layer);
-		layer_set_up(phy_layer, link_support);
-	}
-...
-}
-
-As you can see, if cfcnfg_add_phy_layer fails before layer_set_*,
-link_support becomes leaked.
-
-So, in this series, I made cfcnfg_add_phy_layer() 
-return an int and added error handling code to prevent
-leaking link_support pointer in caif_device_notify()
-and cfusbl_device_notify() functions.
-
-NOTE: this series was tested by syzbot
-https://syzkaller.appspot.com/bug?id=62bc71b5fa73349e2e6b6280eca9c9615ddeb585)
-
-Pavel Skripkin (4):
-  net: caif: added cfserl_release function
-  net: caif: add proper error handling
-  net: caif: fix memory leak in caif_device_notify
-  net: caif: fix memory leak in cfusbl_device_notify
-
- include/net/caif/caif_dev.h |  2 +-
- include/net/caif/cfcnfg.h   |  2 +-
- include/net/caif/cfserl.h   |  1 +
- net/caif/caif_dev.c         | 13 +++++++++----
- net/caif/caif_usb.c         | 14 +++++++++++++-
- net/caif/cfcnfg.c           | 16 +++++++++++-----
- net/caif/cfserl.c           |  5 +++++
- 7 files changed, 41 insertions(+), 12 deletions(-)
-
+diff --git a/include/net/caif/cfserl.h b/include/net/caif/cfserl.h
+index 14a55e03bb3c..67cce8757175 100644
+--- a/include/net/caif/cfserl.h
++++ b/include/net/caif/cfserl.h
+@@ -9,4 +9,5 @@
+ #include <net/caif/caif_layer.h>
+ 
+ struct cflayer *cfserl_create(int instance, bool use_stx);
++void cfserl_release(struct cflayer *layer);
+ #endif
+diff --git a/net/caif/cfserl.c b/net/caif/cfserl.c
+index e11725a4bb0e..40cd57ad0a0f 100644
+--- a/net/caif/cfserl.c
++++ b/net/caif/cfserl.c
+@@ -31,6 +31,11 @@ static int cfserl_transmit(struct cflayer *layr, struct cfpkt *pkt);
+ static void cfserl_ctrlcmd(struct cflayer *layr, enum caif_ctrlcmd ctrl,
+ 			   int phyid);
+ 
++void cfserl_release(struct cflayer *layer)
++{
++	kfree(layer);
++}
++
+ struct cflayer *cfserl_create(int instance, bool use_stx)
+ {
+ 	struct cfserl *this = kzalloc(sizeof(struct cfserl), GFP_ATOMIC);
 -- 
 2.31.1
 
