@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C84639A8DE
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A5B39A8DD
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:23:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233288AbhFCRSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 13:18:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43672 "EHLO mail.kernel.org"
+        id S233856AbhFCRSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 13:18:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49356 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233694AbhFCRQT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233697AbhFCRQT (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 3 Jun 2021 13:16:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 089706142B;
-        Thu,  3 Jun 2021 17:11:26 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2BB2861444;
+        Thu,  3 Jun 2021 17:11:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622740287;
-        bh=xAu6IeufdyirXUfJdU9QGi4qi+C5ycFaQoyNAW7BKWw=;
+        s=k20201202; t=1622740288;
+        bh=wsd71GWpjcCghhnVLpTuvODi+OFI3tJj2bsAKOT2WyQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OJsEwEd1IVWWQHXzyglr1h2kO6pv6PJwDdXWYHIFDsq3boMF6BQuZplmMKcm76dm0
-         WdNVECoHE8vst341EeWkRZgnqlvw2DMqDm6waboaPnrY1BwXtwBemJZj/sclttHdMM
-         IjO6GdZ3nN51/3XhTyZKoHYsJVc8KkYTMHNeWyn7Z8OBAaHvJv+nJtNjtQ+o0Y8Pdg
-         p3YPbisog/k3nETAGVuk2/W7zELH1ub3xYbVfZFlX0cfoeDh7d82bHMjCcJJzHindl
-         t5E0EKOp3FVvt5Y2kGN2y7mIYYfrUCXcYcNABh0He3+2/obuV4yrazh9T6xVuxb66D
-         0vQ8P04NqU9oA==
+        b=JC105p6fpoOnifZAjLAZcYgwEIU1jEOTn0jUsNWH6vNX+sFikIEOBf0Z3T+n7FSA8
+         mqeFQ+RfJ9g4W1op/VTtpjR0BqCSxirS56z609VKJpRvFTjS+LE1ryJ0zStxil3+1D
+         ddazN7jTZGbYj28KJkHEgg2MPjorLkAPS7Gg/Rr79bHSk69qgmVR5DnF/jlbF5e3Lm
+         mGsYDD+btyrNKQ7Nvs5ZI++toghX2mvg0biQhXbjrnS4W9/tbgLJG0R4LJv4dNXLrm
+         dXbfuUj59LK9CTfAsj7qQa55sKiC7Fe+YhlZ7n9tVgw3aUJVz8VVFO/FNd2bY2yTYh
+         tUOjvA8tAWwrg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zong Li <zong.li@sifive.com>,
+Cc:     Saubhik Mukherjee <saubhik.mukherjee@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 10/15] net: macb: ensure the device is available before accessing GEMGXL control registers
-Date:   Thu,  3 Jun 2021 13:11:09 -0400
-Message-Id: <20210603171114.3170086-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 11/15] net: appletalk: cops: Fix data race in cops_probe1
+Date:   Thu,  3 Jun 2021 13:11:10 -0400
+Message-Id: <20210603171114.3170086-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210603171114.3170086-1-sashal@kernel.org>
 References: <20210603171114.3170086-1-sashal@kernel.org>
@@ -42,43 +42,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zong Li <zong.li@sifive.com>
+From: Saubhik Mukherjee <saubhik.mukherjee@gmail.com>
 
-[ Upstream commit 5eff1461a6dec84f04fafa9128548bad51d96147 ]
+[ Upstream commit a4dd4fc6105e54393d637450a11d4cddb5fabc4f ]
 
-If runtime power menagement is enabled, the gigabit ethernet PLL would
-be disabled after macb_probe(). During this period of time, the system
-would hang up if we try to access GEMGXL control registers.
+In cops_probe1(), there is a write to dev->base_addr after requesting an
+interrupt line and registering the interrupt handler cops_interrupt().
+The handler might be called in parallel to handle an interrupt.
+cops_interrupt() tries to read dev->base_addr leading to a potential
+data race. So write to dev->base_addr before calling request_irq().
 
-We can't put runtime_pm_get/runtime_pm_put/ there due to the issue of
-sleep inside atomic section (7fa2955ff70ce453 ("sh_eth: Fix sleeping
-function called from invalid context"). Add netif_running checking to
-ensure the device is available before accessing GEMGXL device.
+Found by Linux Driver Verification project (linuxtesting.org).
 
-Changed in v2:
- - Use netif_running instead of its own flag
-
-Signed-off-by: Zong Li <zong.li@sifive.com>
+Signed-off-by: Saubhik Mukherjee <saubhik.mukherjee@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cadence/macb.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/appletalk/cops.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb.c b/drivers/net/ethernet/cadence/macb.c
-index 78803e7de360..d1cdb8540e12 100644
---- a/drivers/net/ethernet/cadence/macb.c
-+++ b/drivers/net/ethernet/cadence/macb.c
-@@ -1955,6 +1955,9 @@ static struct net_device_stats *gem_get_stats(struct macb *bp)
- 	struct gem_stats *hwstat = &bp->hw_stats.gem;
- 	struct net_device_stats *nstat = &bp->stats;
+diff --git a/drivers/net/appletalk/cops.c b/drivers/net/appletalk/cops.c
+index 7f2a032c354c..841a5de58c7c 100644
+--- a/drivers/net/appletalk/cops.c
++++ b/drivers/net/appletalk/cops.c
+@@ -324,6 +324,8 @@ static int __init cops_probe1(struct net_device *dev, int ioaddr)
+ 			break;
+ 	}
  
-+	if (!netif_running(bp->dev))
-+		return nstat;
++	dev->base_addr = ioaddr;
 +
- 	gem_update_stats(bp);
+ 	/* Reserve any actual interrupt. */
+ 	if (dev->irq) {
+ 		retval = request_irq(dev->irq, cops_interrupt, 0, dev->name, dev);
+@@ -331,8 +333,6 @@ static int __init cops_probe1(struct net_device *dev, int ioaddr)
+ 			goto err_out;
+ 	}
  
- 	nstat->rx_errors = (hwstat->rx_frame_check_sequence_errors +
+-	dev->base_addr = ioaddr;
+-
+         lp = netdev_priv(dev);
+         spin_lock_init(&lp->lock);
+ 
 -- 
 2.30.2
 
