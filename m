@@ -2,68 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3BEC39AE2F
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 00:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AF8039AE66
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 00:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229822AbhFCWl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 18:41:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46976 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229746AbhFCWlv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 18:41:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2CCD36140A;
-        Thu,  3 Jun 2021 22:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622760006;
-        bh=4sJr6/wrBhScPOqAT5+rR2J9OjmxsVirijeLB/+47yc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HTXaDfWMy4qxh8p1Ql69XsGNbOzhhdmqdXVON6Br4JI4JmsDxxMBfXHOzrAthuMa5
-         SFusx6UxzTKjhuzyA61lKJ0sGBi3GrwJnegFMzoPjjtEc1bxdgSe715CtO/dBwZwyk
-         6yqtVUqLcNfB0WHdK6jFmKBakvozL0evvJLw8d6ZW6FqJT8NuwrzXrxxFLWwBTI7jv
-         W0ITYR1ShozHeFhY2b7NXobd8dJTL3qskMxy/w6V2PSgIS3GybqA2l24SaAjLibrf1
-         AcAntdp9lffrtzQ5ojVx5ziBLqHn2RSpM7Y8kIeGEWS+hq3unDR5+U8sJ59Kp4hFbS
-         WYCLfeI+sMNnA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1848660BCF;
-        Thu,  3 Jun 2021 22:40:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229775AbhFCWyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 18:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229576AbhFCWym (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 18:54:42 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13254C06174A;
+        Thu,  3 Jun 2021 15:52:41 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id h16so4530638pjv.2;
+        Thu, 03 Jun 2021 15:52:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qFrqM5+WxjtGbTpbtf2w4MFDOOBEqwwFq+bBPvXL2oE=;
+        b=qte3jPhFf5hcVRYLFK9ul+KSmobwyqJZw5bYZ3DN6GgS8cQbP2BLL1ABa/OXxBnHex
+         WNqs9b+xX26sHbYPDUlDGJ/aKjSv1oBYchsO7XfOzcxNWsZfk2uRRbDHW+MtFK11AKUY
+         HIqJTq9vtoYLmjZRU02qnCM1JsE/xP2rVU06uWygtjcTNrtAdwEYQy7omyuziicyORC+
+         4EN/XKa1cZ0U/G81JhRcw3IEuNXDfJgULyVAsQgKk8Kynz6ukKgUBCKtcdx9WWZknXnF
+         /qW4rz9ztTbCd8vWNgX6I9scJLvj8LNIs6jby+mwWFM94oOaZKdK9hIbbAV3dCjZAgR6
+         MLtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qFrqM5+WxjtGbTpbtf2w4MFDOOBEqwwFq+bBPvXL2oE=;
+        b=WWQA1Q5Qo9XIX2XLQMqyIyoerUnBdLyspqxxfsZxe8vSmZE2ZGP5rS7mOkdspdEV3I
+         QEHhj62ne8aRNVkSGHCn1Sx2OjjYt2Nczgc0fpII4QNzdGIFArzdXXhTYr3XI/HbUeB3
+         4hLgUN8Uku1yyIWYgYWY4Wfz/+/ZzRDmp7Ut89ZOpx/hAvYH0kOw6ayrEF3raQ6yPUaX
+         TI2iX/HNgyrvhaNOJ4dFdqTam+XYFj4smyxmi/LT1RmkHa5wZpixsfwrQUBPLRU4SnRm
+         lkx9/S9zxZXjQtMHfpZ4W/7u9QIq/o84oN+XpTGkBHwPKkut2BDFF+1tmOP/R3vpOOx2
+         VgbA==
+X-Gm-Message-State: AOAM532lpEENfECvlqlfWzwlHji45z8DMsPE9JyzBEdS8j+RxIdvEY8d
+        5O0hXi4dIHe85j6XnQtB1Ll+SOiYkn2Y5g9Ycrns5m7H2LjqMg==
+X-Google-Smtp-Source: ABdhPJyUs+MYN1Cx+EkDqml0t1Q5qWBEGW/ehcsor/Fiq4Q9YhDgmIHwe1CQIi0hGIfFrasGNm0XSUn9FseypY3taMQ=
+X-Received: by 2002:a17:90a:7e92:: with SMTP id j18mr1596536pjl.231.1622760760605;
+ Thu, 03 Jun 2021 15:52:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] icmp: fix lib conflict with trinity
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162276000609.13062.5920077176509341487.git-patchwork-notify@kernel.org>
-Date:   Thu, 03 Jun 2021 22:40:06 +0000
-References: <20210603212211.335237-1-andreas.a.roeseler@gmail.com>
-In-Reply-To: <20210603212211.335237-1-andreas.a.roeseler@gmail.com>
-To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
-        kuba@kernel.org, willemdebrujin.kernel@gmail.com,
-        fweimer@sourceware.org
+References: <20210531153410.93150-1-changbin.du@gmail.com> <20210531220128.26c0cb36@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAM_iQpUEjBDK44=mD5shkmmoDYhmHQaSZtR34rLRkgd9wSWiQQ@mail.gmail.com> <20210602091451.kbdul6nhobilwqvi@wittgenstein>
+In-Reply-To: <20210602091451.kbdul6nhobilwqvi@wittgenstein>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 3 Jun 2021 15:52:29 -0700
+Message-ID: <CAM_iQpUqgeoY_mA6cazUPCWwMK6yw9SaD6DRg-Ja4r6r_zOmLg@mail.gmail.com>
+Subject: Re: [PATCH] nsfs: fix oops when ns->ops is not provided
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Changbin Du <changbin.du@gmail.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        David Laight <David.Laight@aculab.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Jun 2, 2021 at 2:14 AM Christian Brauner
+<christian.brauner@ubuntu.com> wrote:
+> But the point is that ns->ops should never be accessed when that
+> namespace type is disabled. Or in other words, the bug is that something
+> in netns makes use of namespace features when they are disabled. If we
+> handle ->ops being NULL we might be tapering over a real bug somewhere.
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+It is merely a protocol between fs/nsfs.c and other namespace users,
+so there is certainly no right or wrong here, the only question is which
+one is better.
 
-On Thu,  3 Jun 2021 16:22:11 -0500 you wrote:
-> Including <linux/in.h> and <netinet/in.h> in the dependencies breaks
-> compilation of trinity due to multiple definitions. <linux/in.h> is only
-> used in <linux/icmp.h> to provide the definition of the struct in_addr,
-> but this can be substituted out by using the datatype __be32.
-> 
-> Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
-> 
-> [...]
+>
+> Jakub's proposal in the other mail makes sense and falls in line with
+> how the rest of the netns getters are implemented. For example
+> get_net_ns_fd_fd():
 
-Here is the summary with links:
-  - [net-next] icmp: fix lib conflict with trinity
-    https://git.kernel.org/netdev/net-next/c/e32ea44c7ae4
+It does not make any sense to me. get_net_ns() merely increases
+the netns refcount, which is certainly fine for init_net too, no matter
+CONFIG_NET_NS is enabled or disabled. Returning EOPNOTSUPP
+there is literally saying we do not support increasing init_net refcount,
+which is of course false.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> struct net *get_net_ns_by_fd(int fd)
+> {
+>         return ERR_PTR(-EINVAL);
+> }
 
+There is a huge difference between just increasing netns refcount
+and retrieving it by fd, right? I have no idea why you bring this up,
+calling them getters is missing their difference.
 
+Thanks.
