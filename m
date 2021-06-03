@@ -2,95 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1D0739ABE9
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 22:42:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8945F39AC32
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 23:00:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbhFCUoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 16:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbhFCUoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 16:44:20 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCAC4C06174A;
-        Thu,  3 Jun 2021 13:42:24 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id e17so7752834iol.7;
-        Thu, 03 Jun 2021 13:42:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U5j3+XmrYWYH5LDVYd/lbOK1tf7tlgcYQD0pA5KQF/E=;
-        b=pyxX77wS5anKffcbbBNjJBOqbSWW2vwirO5pdECjHy+WTdl+EdkabpGp1SRiJgljiz
-         wyKzYkHU/BOW52/iaXGjQXw1Z2CMB7TZWw/CxwSPFR5xTySoZsqXO5713A+bYqkYtayI
-         eFpVY6zZF84U66/OADkKtTo9knRUviBIcnj+5CFUA3qQUbQEVXvYdC2jK82x0c04yPR/
-         BvlIy001XjJ81ZkrlvmPwHWNk+tk3/ieXYtC4a6hwAkGkayBxgpqoHRzwz7W3ZhohNce
-         QkuQ0HP2O5B3dkkFXsZCv/61uanUmW26/TU2YvK58pIc2wccODVMY90o1CWxME0OLv6w
-         EBoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U5j3+XmrYWYH5LDVYd/lbOK1tf7tlgcYQD0pA5KQF/E=;
-        b=QJBtWgzGJ5LuEnwaVvkm0EOoQNFIZQ7LAYzzYpYVszuS7uQX64PYM8vF3wESefKGg4
-         jsmVHZB3OdnK7hKBDr0Vd3JKZXNqu9BWmy8u/NpmeGdNUtP079rqciaGqIyZ0fBQ2INW
-         aSrE+bpDKDjtEE8/G0W6PkEr0QMGil8MyuI1yqfmZMTYEDVaamtShe0bNP8DxVdjNhWG
-         lPEK82UPrBQ8A03n8dhEyefMXJLXOVOyZHuENwfv7FZUAf6QTP9STs0u3wCOqUoJwaDN
-         hjgReKnqzL8iwMpzYtHXOzqtE/1XOczcivCvitcLDS+o9J44UNQFJLplJJ0vsWBIOCy2
-         9c9w==
-X-Gm-Message-State: AOAM531reXx2Kilqmc/U9ZTy/bCazLTEjJv8szBe28aT6K4uVDl/pXSQ
-        tRSN1TIJdF9ysMjwAcBkIJu6RwyJHFTABXnvjoiu1o8zh5f3RQ==
-X-Google-Smtp-Source: ABdhPJxxW+tYeSDoYo46Jkehjk8yMBdPxcY5yzp7TTW4ufpz8X3uP/EQ8ttGE2pldcWiBMxbuzdwbH8VHArK/WEIX1E=
-X-Received: by 2002:a02:9a17:: with SMTP id b23mr817562jal.10.1622752944215;
- Thu, 03 Jun 2021 13:42:24 -0700 (PDT)
+        id S230111AbhFCVBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 17:01:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46040 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229803AbhFCVBt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 17:01:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9B6D5613E4;
+        Thu,  3 Jun 2021 21:00:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622754004;
+        bh=2lE0Sc5EJ/jVT8FN9y3qThe0QydcNInYrfUlen1Kufs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=S0j9skKJjyLPitCzxxHh5/MMe0/dnr3kwhqHjMenbiZIs2/+zgIFcZvc6b7jx66Th
+         Mvc1x88WSuuedqc4SXFj6xHakl/DNe+Ae5BFldSReqvwVFwXvN16HlNt5XdSioIr5Q
+         HwdUAhEyc3S2kkpZ83cgsU8NeKuCbfYsUvs3k8dYUstBztQ/bi/hIbJL27Msw6JSxy
+         OxS3TCVbHY1d4Nyeb0+sV/hrab/zk48A8APac4aSm/F+zWKH3CcA/Qe0NDuKBq/iyI
+         we6RpA21roruV4cxLnIx1RUMyNXfmjlFmFZCXbSwUa1Rpp0dLmlHvslAe1E9ljjfn9
+         oPjlDYnDs2uiQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8937260BFB;
+        Thu,  3 Jun 2021 21:00:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210602065635.106561-1-zhengyongjun3@huawei.com> <162275220464.19203.17231827580306620053.git-patchwork-notify@kernel.org>
-In-Reply-To: <162275220464.19203.17231827580306620053.git-patchwork-notify@kernel.org>
-From:   Ilya Dryomov <idryomov@gmail.com>
-Date:   Thu, 3 Jun 2021 22:42:26 +0200
-Message-ID: <CAOi1vP-wwcjS+W1o_5hA8CCgYykg=V7g3zU3yNvjSVO3wsxx5w@mail.gmail.com>
-Subject: Re: [PATCH net-next] libceph: Fix spelling mistakes
-To:     patchwork-bot+netdevbpf@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ceph Development <ceph-devel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jeff Layton <jlayton@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 1/2] netfilter: nft_ct: skip expectations for confirmed
+ conntrack
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162275400455.32659.4499816404978112391.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Jun 2021 21:00:04 +0000
+References: <20210602124430.10863-2-pablo@netfilter.org>
+In-Reply-To: <20210602124430.10863-2-pablo@netfilter.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 3, 2021 at 10:30 PM <patchwork-bot+netdevbpf@kernel.org> wrote:
->
-> Hello:
->
-> This patch was applied to netdev/net-next.git (refs/heads/master):
->
-> On Wed, 2 Jun 2021 14:56:35 +0800 you wrote:
-> > Fix some spelling mistakes in comments:
-> > enconding  ==> encoding
-> > ambigous  ==> ambiguous
-> > orignal  ==> original
-> > encyption  ==> encryption
-> >
-> > Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-> >
-> > [...]
->
-> Here is the summary with links:
->   - [net-next] libceph: Fix spelling mistakes
->     https://git.kernel.org/netdev/net-next/c/dd0d91b91398
+Hello:
 
-Not sure who is in charge of the bot.  Jakub, perhaps you?
+This series was applied to netdev/net.git (refs/heads/master):
 
-This patch was picked up into ceph tree yesterday and is already in
-linux-next:
+On Wed,  2 Jun 2021 14:44:29 +0200 you wrote:
+> nft_ct_expect_obj_eval() calls nf_ct_ext_add() for a confirmed
+> conntrack entry. However, nf_ct_ext_add() can only be called for
+> !nf_ct_is_confirmed().
+> 
+> [ 1825.349056] WARNING: CPU: 0 PID: 1279 at net/netfilter/nf_conntrack_extend.c:48 nf_ct_xt_add+0x18e/0x1a0 [nf_conntrack]
+> [ 1825.351391] RIP: 0010:nf_ct_ext_add+0x18e/0x1a0 [nf_conntrack]
+> [ 1825.351493] Code: 41 5c 41 5d 41 5e 41 5f c3 41 bc 0a 00 00 00 e9 15 ff ff ff ba 09 00 00 00 31 f6 4c 89 ff e8 69 6c 3d e9 eb 96 45 31 ed eb cd <0f> 0b e9 b1 fe ff ff e8 86 79 14 e9 eb bf 0f 1f 40 00 0f 1f 44 00
+> [ 1825.351721] RSP: 0018:ffffc90002e1f1e8 EFLAGS: 00010202
+> [ 1825.351790] RAX: 000000000000000e RBX: ffff88814f5783c0 RCX: ffffffffc0e4f887
+> [ 1825.351881] RDX: dffffc0000000000 RSI: 0000000000000008 RDI: ffff88814f578440
+> [ 1825.351971] RBP: 0000000000000000 R08: 0000000000000000 R09: ffff88814f578447
+> [ 1825.352060] R10: ffffed1029eaf088 R11: 0000000000000001 R12: ffff88814f578440
+> [ 1825.352150] R13: ffff8882053f3a00 R14: 0000000000000000 R15: 0000000000000a20
+> [ 1825.352240] FS:  00007f992261c900(0000) GS:ffff889faec00000(0000) knlGS:0000000000000000
+> [ 1825.352343] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 1825.352417] CR2: 000056070a4d1158 CR3: 000000015efe0000 CR4: 0000000000350ee0
+> [ 1825.352508] Call Trace:
+> [ 1825.352544]  nf_ct_helper_ext_add+0x10/0x60 [nf_conntrack]
+> [ 1825.352641]  nft_ct_expect_obj_eval+0x1b8/0x1e0 [nft_ct]
+> [ 1825.352716]  nft_do_chain+0x232/0x850 [nf_tables]
+> 
+> [...]
 
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20210603&id=f9f9eb473076d7d1e40bfb42e626c6ae19720647
+Here is the summary with links:
+  - [net,1/2] netfilter: nft_ct: skip expectations for confirmed conntrack
+    https://git.kernel.org/netdev/net/c/1710eb913bdc
+  - [net,2/2] netfilter: nfnetlink_cthelper: hit EBUSY on updates if size mismatches
+    https://git.kernel.org/netdev/net/c/8971ee8b0877
 
-Thanks,
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-                Ilya
+
