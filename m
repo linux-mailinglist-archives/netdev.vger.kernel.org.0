@@ -2,124 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BFDD39A5EC
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 18:40:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C3E39A603
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 18:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230224AbhFCQmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 12:42:25 -0400
-Received: from mail-lf1-f42.google.com ([209.85.167.42]:36647 "EHLO
-        mail-lf1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbhFCQmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 12:42:24 -0400
-Received: by mail-lf1-f42.google.com with SMTP id v22so8449470lfa.3;
-        Thu, 03 Jun 2021 09:40:38 -0700 (PDT)
+        id S229976AbhFCQp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 12:45:27 -0400
+Received: from mail-lj1-f178.google.com ([209.85.208.178]:45806 "EHLO
+        mail-lj1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229695AbhFCQp1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 12:45:27 -0400
+Received: by mail-lj1-f178.google.com with SMTP id m3so7915559lji.12;
+        Thu, 03 Jun 2021 09:43:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lV6Q3W6nkSdzK3hzB+sseFLCHuZyidZULCgpSSGeWe4=;
-        b=sT3XU+v2p8XVmtVvsVXgp+Mmwyh4QJOmaJUdQms1f8UCaglDdkxU/mKixEj+WrTzIG
-         mRxNzwcZyc+MEVwmK5wZlffXeDGYIov/Z+36+TaAijhjW8mrhed13JMt02aiHAfx4/vz
-         2PR+ckX7M8vcaquHysmQEYQc8E/+vO6uxtXxF6cNkfRYzbKzQGwHk1k/7pPKlAsiYRoW
-         u3f2jo6MD6D6dUGRbg90BkMRzzJ5DV/fNL96XHmS10AJj0W7HmSTUYZk6NQKx33eoKT8
-         6jYuITumEvCV3Uwn6aw1ldwA4CY55z+v9CaYTr2tLY97Ywrfid3Ny9pXLw8fej3JzGFu
-         2hPA==
+        bh=nuRSAtZPeAYZdMLrOA69vUXLR2r41hPNT21AloEibuE=;
+        b=ZQz3ZTOf0Y/MZx10PyGdhVsaZCuvAsy7tCceX45QGgZ0k9HwnJsnZHOUNiZTUPySnV
+         6UHM97aWhEt3dLkS/OPo4Gcxd8jAc2YDMWcSbGyTTpv3aRQ8Sx+NmIOopD1amVaCoh1t
+         ItjXmOyDWlzeoEMxlHKfCw0I9Xy4KeFjHe8Mn+Abt7szSRdPFCvJSv4zKhDEQebAxOgg
+         NODzemGJEe4pxXjwR8/GyISWxuRiDjD2XzBPN8VW+SJTRM9USTZpMzkiXbmO0snYY1b3
+         8NbGAoohfutQilRCnBKNfh7BLjBfgKhzSCDANjESpLJrTdrJVKfv8fmmofYJo5nRYRvb
+         XoKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lV6Q3W6nkSdzK3hzB+sseFLCHuZyidZULCgpSSGeWe4=;
-        b=QQF7S5sOXzFOjVjH0FhfFahfxj+AnNIOl1HfpnkpPxQLYNtg0I0Oo6hNJmyxFG3FEZ
-         WRSCs+i1X85WAzp5xXzD6aG/6godBty1ABPNh/8DmWnGQh8l3qoF9eD35Vb/xUnlEKBB
-         G08HseZdvVSBj89ejpW3YfAzptrjTZW1HSNfvtnnv2cXvRPv9GpphxXxyHd0gbwQjl44
-         MriMgsOkz5SsREnXPFTeHgqm9PS3aUIOPDI/9HEquXH253CfZkB/GVFyNU41uVSv1347
-         0plaPSVaag8ofANZhxYG3rstJ32LZJ0HwT77MczWOGBIUkCQ9KkBdKuPT1Y7bVYqeVvX
-         ex7A==
-X-Gm-Message-State: AOAM5316vbZjBJyc52MNfPhxL3ZCH6MHzZ6rYWY4Ly0ngq1ufKmoFQso
-        wO61D1U6i+Oi711Wi8CPGME=
-X-Google-Smtp-Source: ABdhPJwTH5GT/8hnHzguYo9DcNtmZG54O90JBEoIzXGtAGwQfHJqXULHxgHKKYZkOGwLQLZzhyaK5Q==
-X-Received: by 2002:a19:c34a:: with SMTP id t71mr321369lff.499.1622738378208;
-        Thu, 03 Jun 2021 09:39:38 -0700 (PDT)
+        bh=nuRSAtZPeAYZdMLrOA69vUXLR2r41hPNT21AloEibuE=;
+        b=nGg95zjEy0sHWi0vVchgo1xQiKwNjvfOpEhTH+NZri2mpnngdigHL/yz+ycisLKu9K
+         xbFdUaZQ5sXA7Kwh39okCUGPe3hRlkI/+xUD5azfAmSIRfrflwep9QF9PWPsWzUCeL2J
+         wVi/sxSJ0Y8btiswea5YqizhPQARdZK/honHkQj2YvTGJS5UahgkfglbAdKxZyLuPfz/
+         TO2NN8Twt/zRzPRllSFdvtdn82Znt24/8kSfMiU/2HZK+Mvp7+aYaS9Y1OcmfLjzyuhu
+         jx+WxVI0pVTERdoVEMlzwIk+OBSTWxLpaLo1KNL6/BL+LG9h0dnuTx8GgOLRE7NTvWB7
+         UMew==
+X-Gm-Message-State: AOAM530Rsfhr9nxS/HOBDIRT1uc/VbJVjghtpJm1GNovMQD+GOQeRNty
+        IRoQSGm9H/BfncjPWns9v4b7wAMuCAM=
+X-Google-Smtp-Source: ABdhPJwr9OTWggEswHE0pT6GFsR8fIogF7TJJ7dR9GipsthL0HLexmo2iSFcWhqHdJcTQninWpyWvA==
+X-Received: by 2002:a2e:a550:: with SMTP id e16mr215112ljn.136.1622738550178;
+        Thu, 03 Jun 2021 09:42:30 -0700 (PDT)
 Received: from localhost.localdomain ([94.103.224.40])
-        by smtp.gmail.com with ESMTPSA id f5sm363332lfh.178.2021.06.03.09.39.37
+        by smtp.gmail.com with ESMTPSA id r22sm411638ljp.129.2021.06.03.09.42.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 09:39:37 -0700 (PDT)
+        Thu, 03 Jun 2021 09:42:29 -0700 (PDT)
+Date:   Thu, 3 Jun 2021 19:42:27 +0300
 From:   Pavel Skripkin <paskripkin@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org,
         sjur.brandeland@stericsson.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>, stable@vger.kernel.org
-Subject: [PATCH 4/4] net: caif: fix memory leak in cfusbl_device_notify
-Date:   Thu,  3 Jun 2021 19:39:35 +0300
-Message-Id: <c5d148e7a7d48dbe6887efca14863c0310d56326.1622737854.git.paskripkin@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1622737854.git.paskripkin@gmail.com>
+        stable@vger.kernel.org,
+        syzbot+7ec324747ce876a29db6@syzkaller.appspotmail.com
+Subject: Re: [PATCH 3/4] net: caif: fix memory leak in caif_device_notify
+Message-ID: <20210603194227.18f48c58@gmail.com>
+In-Reply-To: <fcddc06204f166d2ef0d75360b89f6f629a3b0c4.1622737854.git.paskripkin@gmail.com>
 References: <cover.1622737854.git.paskripkin@gmail.com>
+        <fcddc06204f166d2ef0d75360b89f6f629a3b0c4.1622737854.git.paskripkin@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of caif_enroll_dev() fail, allocated
-link_support won't be assigned to the corresponding
-structure. So simply free allocated pointer in case
-of error.
+On Thu,  3 Jun 2021 19:39:11 +0300
+Pavel Skripkin <paskripkin@gmail.com> wrote:
 
-Fixes: 7ad65bf68d70 ("caif: Add support for CAIF over CDC NCM USB interface")
-Cc: stable@vger.kernel.org
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- net/caif/caif_usb.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+> In case of caif_enroll_dev() fail, allocated
+> link_support won't be assigned to the corresponding
+> structure. So simply free allocated pointer in case
+> of error
+> 
+> Fixes: 7c18d2205ea7 ("caif: Restructure how link caif link layer
+> enroll") Cc: stable@vger.kernel.org
+> Reported-and-tested-by:
+> syzbot+7ec324747ce876a29db6@syzkaller.appspotmail.com Signed-off-by:
+> Pavel Skripkin <paskripkin@gmail.com> ---
+>  net/caif/caif_dev.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/caif/caif_dev.c b/net/caif/caif_dev.c
+> index fffbe41440b3..440139706130 100644
+> --- a/net/caif/caif_dev.c
+> +++ b/net/caif/caif_dev.c
+> @@ -370,6 +370,7 @@ static int caif_device_notify(struct
+> notifier_block *me, unsigned long what, struct cflayer *layer,
+> *link_support; int head_room = 0;
+>  	struct caif_device_entry_list *caifdevs;
+> +	int res;
+>  
+>  	cfg = get_cfcnfg(dev_net(dev));
+>  	caifdevs = caif_device_list(dev_net(dev));
+> @@ -395,8 +396,10 @@ static int caif_device_notify(struct
+> notifier_block *me, unsigned long what, break;
+>  			}
+>  		}
+> -		caif_enroll_dev(dev, caifdev, link_support,
+> head_room,
+> +		res = caif_enroll_dev(dev, caifdev, link_support,
+> head_room, &layer, NULL);
+> +		if (res)
+> +			cfserl_release(link_support);
+>  		caifdev->flowctrl = dev_flowctrl;
+>  		break;
+>  
 
-diff --git a/net/caif/caif_usb.c b/net/caif/caif_usb.c
-index a0116b9503d9..b02e1292f7f1 100644
---- a/net/caif/caif_usb.c
-+++ b/net/caif/caif_usb.c
-@@ -115,6 +115,11 @@ static struct cflayer *cfusbl_create(int phyid, u8 ethaddr[ETH_ALEN],
- 	return (struct cflayer *) this;
- }
- 
-+static void cfusbl_release(struct cflayer *layer)
-+{
-+	kfree(layer);
-+}
-+
- static struct packet_type caif_usb_type __read_mostly = {
- 	.type = cpu_to_be16(ETH_P_802_EX1),
- };
-@@ -127,6 +132,7 @@ static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
- 	struct cflayer *layer, *link_support;
- 	struct usbnet *usbnet;
- 	struct usb_device *usbdev;
-+	int res;
- 
- 	/* Check whether we have a NCM device, and find its VID/PID. */
- 	if (!(dev->dev.parent && dev->dev.parent->driver &&
-@@ -169,8 +175,11 @@ static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
- 	if (dev->num_tx_queues > 1)
- 		pr_warn("USB device uses more than one tx queue\n");
- 
--	caif_enroll_dev(dev, &common, link_support, CFUSB_MAX_HEADLEN,
-+	res = caif_enroll_dev(dev, &common, link_support, CFUSB_MAX_HEADLEN,
- 			&layer, &caif_usb_type.func);
-+	if (res)
-+		goto err;
-+
- 	if (!pack_added)
- 		dev_add_pack(&caif_usb_type);
- 	pack_added = true;
-@@ -178,6 +187,9 @@ static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
- 	strlcpy(layer->name, dev->name, sizeof(layer->name));
- 
- 	return 0;
-+err:
-+	cfusbl_release(link_support);
-+	return res;
- }
- 
- static struct notifier_block caif_device_notifier = {
--- 
-2.31.1
+One thing Im wondering about is should I return this error
+from caif_device_notify()? I look forward to hearing your perspective on
+this question and patch series :)
 
+
+
+With regards,
+Pavel Skripkin
