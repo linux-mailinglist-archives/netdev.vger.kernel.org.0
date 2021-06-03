@@ -2,135 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8989939A1CF
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 15:08:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B8B139A1D6
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 15:09:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230271AbhFCNJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 09:09:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46405 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229801AbhFCNJu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 09:09:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622725685;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=phWDTBiOPyAG0wKIKRe1O/Soj0OfowGQS7YwZbib9wQ=;
-        b=WjH997Bkg1ZIxn3sKC3enASz2wgWX8DQWQCilvljviOroX4/0kEpdb1wZMvSWcZnyrtMEp
-        09Etx9ScBrSSLLEhQr0wmxuMM7QYddvSW84EHFw5csc5rpBAK9PKfyPyUKx8ToXduWIL9p
-        3yiiEIgXXJL6REKDBxw7STD8Fp4vDH0=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-546-jelTt1r7OFyy9xR99N-5Eg-1; Thu, 03 Jun 2021 09:08:04 -0400
-X-MC-Unique: jelTt1r7OFyy9xR99N-5Eg-1
-Received: by mail-qt1-f200.google.com with SMTP id f17-20020ac87f110000b02901e117339ea7so3039030qtk.16
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 06:08:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=phWDTBiOPyAG0wKIKRe1O/Soj0OfowGQS7YwZbib9wQ=;
-        b=lN8Jqo51rmrrCF312wjiqBzDnnFwS90qCr8i/LEW+nRap41rXHJQNN3x+6urm4wuo9
-         +hHHXpPLZUNZ9wwzN9yQZp2gHxbfQJVqfFHm4fwiWh1ZLpxGYn32XH/uNP1g+p0nebc7
-         wMbbFAYJM6DSpr8ydqglfNIQZr7/STu8cuSpnBR3JV8EEijK5M7kSgeG6VazQLBSVmTG
-         JHAwE1RDjkNOiU9VWF1vhsi0gLRm4avgB5SUZwDbXeKcjDf7Ya1qDmwnE8yWaPta0hb2
-         6cTtdZXpEwoanD0S+S/C2kCXs8L8cOA90xbYr28HHSTMb5Bx2bJ/NbuATYxYFpS1QPj9
-         36QQ==
-X-Gm-Message-State: AOAM5335iS00jWgDFO0Pg8Hfql1Q63bQ/Z+A6NLHNSIHCge504/APEa6
-        4OP8Q7tpA+0B01eQqrqEZ6ERtPqlPB8CfduvwJDmWKZRCNiudyGINiAagQjD27CHjra9V3bFJ6P
-        JhCajqnKVaeHOxKuTepr/55dFFHumNCJySoqASdYs6+N5FP/ckLWi0NkYDFSCQ9weaA==
-X-Received: by 2002:ac8:5fc1:: with SMTP id k1mr28653294qta.275.1622725683526;
-        Thu, 03 Jun 2021 06:08:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxZjxAZ016NuyN/W44nOTWDXC5wz52b3xuVvNZCq0Lcw66NuNZkMabgGskv6A7NYazam2qOOw==
-X-Received: by 2002:ac8:5fc1:: with SMTP id k1mr28653262qta.275.1622725683203;
-        Thu, 03 Jun 2021 06:08:03 -0700 (PDT)
-Received: from [192.168.0.106] ([24.225.235.43])
-        by smtp.gmail.com with ESMTPSA id z186sm1889159qkb.116.2021.06.03.06.08.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Jun 2021 06:08:02 -0700 (PDT)
-Subject: Re: The value of FB_MTU eats two pages
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     ying.xue@windriver.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        tipc-discussion@lists.sourceforge.net,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-References: <CADxym3baupJJ7Q9otxtoQ-DH5e-J2isg-LZj2CsOqRPo70AL4A@mail.gmail.com>
- <e91baaba-e00a-4b16-0787-e9460dacfbb9@redhat.com>
- <CADxym3ZdyqJ7b_PqdcjbNhKWP7_nsPRQ9Q0TtFC6Qzr75ekK+g@mail.gmail.com>
-From:   Jon Maloy <jmaloy@redhat.com>
-Message-ID: <85310a8b-35ab-376d-ca87-7487b97232c8@redhat.com>
-Date:   Thu, 3 Jun 2021 09:08:01 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S231246AbhFCNKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 09:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229958AbhFCNKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 09:10:47 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC43C06174A;
+        Thu,  3 Jun 2021 06:09:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=r7TIsj5V04l+D0UamQD44FQeHlZLEN6F8u/qHhY6riI=; b=yxDe0/P5D+/Atr8y4AhzMh0vw
+        rcySwE2wWFoZtdo8Dzeo9LpdCqblSj4HIJ4PRZYMbeFG+aoQjs/9UnnF+jdZ6BQrVcAoftXQt4sLf
+        BCAKSsOz7z7QN/xv/1kswt+2Eg/EJnKNYO+RAtxDw7AGIxEUCC0X6PV9W0jphZvH1iUBy7dF/wsNO
+        V1e2KjgL6qj2Knj1hNq6EUdMw1gjI/3pZEDeaS3E3ADhCwlk5jaqC7F0ue9QmVRQkXShHI4wWvQjW
+        s6Tzp40DuYVrPpfolHfSDio1DeaHeMLfzWJYwSjahV+hqx58zASAJR7zSa70/b3+9fovhhm/RjwKY
+        8qLonrQxg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44672)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lon5j-0002nA-6s; Thu, 03 Jun 2021 14:08:55 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lon5f-00027a-7e; Thu, 03 Jun 2021 14:08:51 +0100
+Date:   Thu, 3 Jun 2021 14:08:51 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+Cc:     Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, davem@davemloft.net,
+        mcoquelin.stm32@gmail.com, weifeng.voon@intel.com,
+        boon.leong.ong@intel.com, tee.min.tan@intel.com,
+        vee.khee.wong@linux.intel.com, vee.khee.wong@intel.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH net-next v4 0/3] Enable 2.5Gbps speed for stmmac
+Message-ID: <20210603130851.GS30436@shell.armlinux.org.uk>
+References: <20210603115032.2470-1-michael.wei.hong.sit@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <CADxym3ZdyqJ7b_PqdcjbNhKWP7_nsPRQ9Q0TtFC6Qzr75ekK+g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210603115032.2470-1-michael.wei.hong.sit@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+On Thu, Jun 03, 2021 at 07:50:29PM +0800, Michael Sit Wei Hong wrote:
+> Intel mGbE supports 2.5Gbps link speed by overclocking the clock rate
+> by 2.5 times to support 2.5Gbps link speed. In this mode, the serdes/PHY
+> operates at a serial baud rate of 3.125 Gbps and the PCS data path and
+> GMII interface of the MAC operate at 312.5 MHz instead of 125 MHz.
+> This is configured in the BIOS during boot up. The kernel driver is not able
+> access to modify the clock rate for 1Gbps/2.5G mode on the fly. The way to
+> determine the current 1G/2.5G mode is by reading a dedicated adhoc
+> register through mdio bus.
 
-On 6/2/21 10:26 PM, Menglong Dong wrote:
-> Hello Maloy,
->
-> On Thu, Jun 3, 2021 at 3:50 AM Jon Maloy <jmaloy@redhat.com> wrote:
->
-> [...]
->> Hi Dong,
->> The value is based on empiric knowledge.
->> When I determined it I made a small loop in a kernel driver where I
->> allocated skbs (using tipc_buf_acquire) with an increasing size
->> (incremented with 1 each iteration), and then printed out the
->> corresponding truesize.
->>
->> That gave the value we are using now.
->>
->> Now, when re-running the test I get a different value, so something has
->> obviously changed since then.
->>
->> [ 1622.158586] skb(513) =>> truesize 2304, prev skb(512) => prev
->> truesize 1280
->> [ 1622.162074] skb(1537) =>> truesize 4352, prev skb(1536) => prev
->> truesize 2304
->> [ 1622.165984] skb(3585) =>> truesize 8448, prev skb(3584) => prev
->> truesize 4352
->>
->> As you can see, the optimal value now, for an x86_64 machine compiled
->> with gcc, is 3584 bytes, not 3744.
-> I'm not sure if this is a perfect way to determine the value of FB_MTU.
-> If 'struct skb_shared_info' changes, this value seems should change,
-> too.
->
-> How about we make it this:
->
-> #define FB_MTU (PAGE_SIZE - \
->           SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) - \
->           SKB_DATA_ALIGN(BUF_HEADROOM + BUF_TAILROOM + 3 + \
->                   MAX_H_SIZ))
->
-> The value 'BUF_HEADROOM + BUF_TAILROOM + 3' come from 'tipc_buf_acquire()':
->
-> #ifdef CONFIG_TIPC_CRYPTO
->      unsigned int buf_size = (BUF_HEADROOM + size + BUF_TAILROOM + 3) & ~3u;
-> #else
->      unsigned int buf_size = (BUF_HEADROOM + size + 3) & ~3u;
-> #endif
->
-> Is it a good idea?
-Yes, I think that makes sense. I was always aware of the "fragility" of 
-my approach, -this one looks more future safe.
+How does this interact with Vladimir's "Convert xpcs to phylink_pcs_ops"
+series? Is there an inter-dependency between these, or a preferred order
+that they should be applied?
 
-///jon
+Thanks.
 
->
-> Thanks
-> Menglong Dong
->
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
