@@ -2,228 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E067399FA7
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 13:19:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 354E2399FCD
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 13:30:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbhFCLVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 07:21:06 -0400
-Received: from mail-bn1nam07on2061.outbound.protection.outlook.com ([40.107.212.61]:9577
-        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229746AbhFCLVG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 07:21:06 -0400
+        id S229833AbhFCLcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 07:32:41 -0400
+Received: from mga09.intel.com ([134.134.136.24]:13976 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229629AbhFCLcj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 07:32:39 -0400
+IronPort-SDR: CpAYgq3sk+S23GpKPdrkorlr3OhL4gCjANLs6tgWEo2RSnbMAVssvL7gXubPJQvWK4WYk8y7Zs
+ /LnZY9dRBE5Q==
+X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="204011066"
+X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; 
+   d="scan'208";a="204011066"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2021 04:30:48 -0700
+IronPort-SDR: ASpbvUq28VHoG4bshPhtU49cGKs1K+EWohQvXrWGKpyP/1vGc51QszqrOevtIHW9sAUNl5KuuX
+ gOoT0H194xzQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; 
+   d="scan'208";a="633665540"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga006.fm.intel.com with ESMTP; 03 Jun 2021 04:30:47 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Thu, 3 Jun 2021 04:30:46 -0700
+Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Thu, 3 Jun 2021 04:30:46 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
+ via Frontend Transport; Thu, 3 Jun 2021 04:30:46 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.102)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.4; Thu, 3 Jun 2021 04:30:46 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XyFfnO7P+nCsAGOBX7xJc93h35vrr4PmEhxK6K6sFOxzKVhLgSzjkQ0LMFmMcDlL2Mm2x2ptURT8+Nu2mp+7A5NZJzfQjwcURU7WVocHziTej+NK5EsvsnjN8v76rwlvf0Dvs/lG9VAgOB0wrTJFxfoLHnl454LQLfOIMZ8Aq+iT4kZeMM7dL4YuSOLU3M6HnQ2+zsY0bmfFLllZ6q7atDZ6Il71V0jEY/WHI5smxGN2lf7xxDmRDSMkGMEDKElLF4sEubp2Rme+FH3oCeMVzFFSO9R0JBNd6ZrePP2k3ySrOnzOCReLdssWBJVFkXrvouaoaMlX7lNQqUoWaE9tgQ==
+ b=XjDetrCqOOsvpvtesQVjIQddT7B/Ho00aX/fPRAJ0xK8f0An55DOIWZ21bNNmnyN1x++NHXDuwC3kmAAGajtvI4a7cVaVMGfyQ+NpEuoLoY4Sa20kVwVdwf3JZHb4Ty6LuJNJ59Rq9opFmJ8wjHYmVLuEhyytB1RjmnSSUTC+8Q7O7RH8bzbpu57I37k3e1AzW+4N13r9NjrQmonzQ688rIv0VZn2c6uM9toSqIAEQXTZIPCmkZO9eaPLG7qEk+GBdDKJYkK0ElARMSygTyM584tor7J1w3KE2xZMLJmWrilIhoz+IGM7jATGf4HOfvc3nwu98IPB7q8Mcfyj0PQFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0No4cLqDeq3kUNtypMU5VgkbBh0z6+w5dheemsk2iLU=;
- b=Sx7KHbjqILfzEVxkPpyYlAtnu8E4i408baLJURZzCj/+P6lACkLbsDgLOZF3xrenwDiosMBu/kMAg6mcT8oolCS4Gbad/0Ekhf+5JSeCaYwFRTwVdkP+2RxmuEHQE+gCBrzj7xu5wgXu+cNJdwJV/Ilbn4rmWWShNfAkRwTAvGErrU6WElGYwE//wfWOiq/HU/hK7Czv2XbvFw0+P2LIt5xqcw/gGjp/EmNC37CG5Eh8sAqA+hlaBayMoPDU7nr6zrdrErYuZ3KxA+PEXstHW60Ll04YsOnv7EVdGIIc+YqD+eJoSWEs3BmzLASz14+tREsXiaOYsXqp5MSZAAHp1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=DYmbNuYze8neaXYnOyRE7p9RQx3TRycXZh+jfORisi4=;
+ b=bBarHl/aW8UgEePJqlsXL8HgzCocWggq2uL+1qUnm2dMsnIhJWhFuxrHYuoOwLluHGPxsUc5nnb+M99H03dnsE2xQGApsnxBWsbVP7rdd/2MhGR1BpXiKK7sPEyjBLygQyHt1f9meRAQblkkWjHMkMA30td1rNX8v+++XtCS47F6tMroxVTPri50aRPGwvnEQ856qUm2lJThA1iiPE2Siag/XqyGySjGYRIg8xTURqt5Viyin4VsqQygtWprd4O42LyPjBCCo7ge3GNj9iLp1zYc68ySOnZJoZfsUh25KwcMLhjcUP2QUD5EqoN/nNBmldulw7Ijcl/NsCY6qzFgmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0No4cLqDeq3kUNtypMU5VgkbBh0z6+w5dheemsk2iLU=;
- b=BoJzHUv2eZqfDtoru52LONyy+Vo14sP7afxfoO17RBucYpNVzIgQHoyEvq1G348WjindI09r0FGjWC0fh0b5Md1QZkMv8ybajTxSNVZ+KnbinFQneyEPb31lE3j7VcXrVI8oblZ7AviuNjOgUHjeMFkSWK2xWJT85VjF0hUbdRYVoQE+jNJmLfZJbaAgnB/kFRxadvQ3qm/xiQEvx2j5LS49787IZm+ycHwOACgnL+sFM2LvUE9KN8gjRTOjaX0fkBnM05jgQiiLidhyoBBgI6rUXHIoCUA5Ba3D1BXnSSWZdEUu/J4Nh9xCZUOXzx1cvSY3TMGfoNwCX1oZHo8heA==
-Received: from MWHPR12CA0068.namprd12.prod.outlook.com (2603:10b6:300:103::30)
- by DM4PR12MB5246.namprd12.prod.outlook.com (2603:10b6:5:399::17) with
+ bh=DYmbNuYze8neaXYnOyRE7p9RQx3TRycXZh+jfORisi4=;
+ b=PaPcp61ATkEj1XVIOgJLrukYslyeSy6ym7EWnoz0BA5jBmG1TUheHWE5Y6gd2eqnRm/4XsfCdeZQ/tLPADkF3Wy2d3cV3u9XD69r5beeDaZIX8UpLkvW9bPPWtTPJCU/U5vC8gq1Dog/AMVDFQPlx+IP8zTCwkns7JG06ppDd2w=
+Received: from MW3PR11MB4554.namprd11.prod.outlook.com (2603:10b6:303:5d::7)
+ by MW3PR11MB4683.namprd11.prod.outlook.com (2603:10b6:303:5c::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.20; Thu, 3 Jun
- 2021 11:19:20 +0000
-Received: from CO1NAM11FT058.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:103:cafe::34) by MWHPR12CA0068.outlook.office365.com
- (2603:10b6:300:103::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.21 via Frontend
- Transport; Thu, 3 Jun 2021 11:19:20 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT058.mail.protection.outlook.com (10.13.174.164) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4195.22 via Frontend Transport; Thu, 3 Jun 2021 11:19:20 +0000
-Received: from sw-mtx-036.mtx.labs.mlnx (172.20.187.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 3 Jun
- 2021 11:19:19 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     <dsahern@gmail.com>, <stephen@networkplumber.org>,
-        <netdev@vger.kernel.org>
-CC:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH RESEND iproute2-next] devlink: Add optional controller user input
-Date:   Thu, 3 Jun 2021 14:19:01 +0300
-Message-ID: <20210603111901.9888-1-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Thu, 3 Jun
+ 2021 11:30:45 +0000
+Received: from MW3PR11MB4554.namprd11.prod.outlook.com
+ ([fe80::4cf6:2087:5bb6:3518]) by MW3PR11MB4554.namprd11.prod.outlook.com
+ ([fe80::4cf6:2087:5bb6:3518%7]) with mapi id 15.20.4173.030; Thu, 3 Jun 2021
+ 11:30:45 +0000
+From:   "Penigalapati, Sandeep" <sandeep.penigalapati@intel.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Tyler S <tylerjstachecki@gmail.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
+Subject: RE: [PATCH net v4] igb: Fix XDP with PTP enabled
+Thread-Topic: [PATCH net v4] igb: Fix XDP with PTP enabled
+Thread-Index: AQHXWGvk5WHQhefeNEGUtzjHPvJYDw==
+Date:   Thu, 3 Jun 2021 11:30:44 +0000
+Message-ID: <MW3PR11MB4554208E081D4DD08EADD7669C3C9@MW3PR11MB4554.namprd11.prod.outlook.com>
+References: <20210503072800.79936-1-kurt@linutronix.de>
+In-Reply-To: <20210503072800.79936-1-kurt@linutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: linutronix.de; dkim=none (message not signed)
+ header.d=none;linutronix.de; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [203.192.251.142]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c8e8dcec-f93b-4c1e-5052-08d92683071f
+x-ms-traffictypediagnostic: MW3PR11MB4683:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW3PR11MB4683B4B85F33F4B3F9C7362F9C3C9@MW3PR11MB4683.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2582;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Uv8RpoY6ZDRW/qjRTBzRSmDx4Kp/ePzfdVS77YMWL3oBUatH5e9BJqzJ3l8By09z1TyXKfGVZG7q8aXA8rl9UX/2pfqrBVhgXxw8BSwnVLPJgGSEgHjuDYkWE9fuSw+UiWlFWHfpsCZvPsMdyHkELmOcSQWA4XAEEydb6ceZSGApxUBVRFMuE8Jka5JB7XdlOdTxkRsxOvI81m3L10RkuHl4/f69piepfK/54NN0QeYwd6kbD41jXHlF/j2SsLVrE/Evtcbk4/KNvuHSlP9O0/2Zo0diY5JzHB+5dTVefm0Vhs9iqqMc7KZOo+pWMdcEFMDWo9LTcMbb13m1KjynoKHXC2un6AGjHztAnMDZDBQh4vbi4qOpm10nhWGxluI8tReV3PBC+JcdFVMq0P9mAKr1Xk/EEvlRt4+31pSz8xhZRAg9EStr6dxEIQYK8MxEpKDU4C9iiHuq+jGZolcOOJa1eqrvXS90MboYXj/+lcezxljQ1SnvJ6AMT59d/qEquerSCf1RNxcn/ZVv3iQQJDLEh+l780dD87DLfxQgwQxkQN/wz0kCfWPuoUobe0BXIhap6AdOQvCLf8zmPJ03sOJ+nk4OcFo03zN+Nj7Ve3NpBw9cXOtUb9d1uNn1lWxVwJ7AJFImPygYYRKvlaFM2PiIPd0Shq3AwPHgahEsPpEasO2TiugGuR43tGtH8m8lr7miuzOj4WJkE5LsYy8zINqAYZzJA29O++0q9iYfcGqTj5IXJg4IWmiU7F8cW4Aw2DwjzGcIw94UxVE1/TsX5w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4554.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(366004)(136003)(396003)(39860400002)(83380400001)(86362001)(7416002)(122000001)(38100700002)(966005)(316002)(54906003)(110136005)(52536014)(2906002)(8936002)(66446008)(66556008)(5660300002)(8676002)(66946007)(76116006)(66476007)(478600001)(64756008)(6506007)(9686003)(4326008)(26005)(33656002)(55016002)(71200400001)(107886003)(7696005)(186003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?vHKYPiaW+HFBsow1MQzN11Mmf1Hi4j6dpTkv+urMKL8xeCNOdcC+kwLHONgo?=
+ =?us-ascii?Q?5InlwjfxNEWfxfp8cQP3y8xTrnBB+UvoLjpaR+EAk8nejhv0N0DbCJJWJOU1?=
+ =?us-ascii?Q?rPHoO9PezVFr0A3rfT6PmiIggN+WxHROpDXhHIVAfYQ/v1jl/qMQoz3lhyFt?=
+ =?us-ascii?Q?nZRHQxlbkPPmNhpUhIHCLO2X0zxIHXqmCsR9UTlg+TtU2naUdpskVabTB2kx?=
+ =?us-ascii?Q?lvKk5minaYN7s/cg6RUVSS3ss1T1juxub/QbVmgqImvQXEEZ4EaLPO2ehQJL?=
+ =?us-ascii?Q?PyFAjUIf+P9QoYlmjuM1nw/9rd6uW40k/foaonS6XfOuy9YdW7Iud1q5RtbO?=
+ =?us-ascii?Q?WbxvDS35lpFj3OZ1CTRWzeQrf6yZUHIkclmdjueeZ97Wm1mKfDKX6yd/f+p3?=
+ =?us-ascii?Q?M/Lqe2C2cHPT7kbDgiukf2hO9e4E42N9MKKzGmTkRKrXnjoINvwH9zagulNI?=
+ =?us-ascii?Q?R9xr1wNJt4FGG/GAKJwO0LvySXeavujNdvoY7+aBhG8HtnDCrWuodoIlPurQ?=
+ =?us-ascii?Q?fmYMzNRAwzJpzpDmAXe7nqMR4mEQvdlyQcHEQXYubYAtMqGoJgsHemLNNonX?=
+ =?us-ascii?Q?RJa1KLG4UrBGyF6e7dsUhp6ihhu8gcnPRbY2gNwU7WHxQ9A/Z761QSaNDUIn?=
+ =?us-ascii?Q?4rzNxQyOK8TOSG06CmugR49h/fDzE1zU6nOIiSSpdFkbhLWf8d+C/gc0hIug?=
+ =?us-ascii?Q?Nu699deOH8aO+CRSUApL6YdbvbOvuHxe+/b2Mpfo8UUB3qISDSLGfuwTSnsM?=
+ =?us-ascii?Q?JoT/WETnh3YPg8sqFMJjp+Ce+Cu7Bf/aWRzvh4Iy6b3+eF+1jAxB2SsIUE2F?=
+ =?us-ascii?Q?WrNlvpgMpWV0xGDTg8JJHCWX3F9ol1aZNVrz67qfFq1JVDG9AIY8G9zihaPr?=
+ =?us-ascii?Q?FmvrWht/9c0fFsD7kj7tk47GcNf/6MJE+xIHdpp+spwZ55r9v1qSFT1oAFDQ?=
+ =?us-ascii?Q?bTZaayA64vXBS4AJrPqnCmtjoY9xi6ODEbOlEkdlgh2MTTY/3QFO5VF2Ld6P?=
+ =?us-ascii?Q?Xre6nPGDIrlHW9xjOtVSYDpBaacEPXBlq0cPxfkMtWDGyz+0c5RgNkCYHYED?=
+ =?us-ascii?Q?eC3cZvcbRpfprisd36ihO/iQOAZ3UBUHcrgGzOlnzmim0utqemK471TTfytA?=
+ =?us-ascii?Q?nzWARlawvkiSLv00NAgF2wfk/pv3NsDVVgIMFno6YL2vfzi1b1R5yuHYW/KB?=
+ =?us-ascii?Q?LwJR3UUVqcipwDFPSDTlsVPj3g5nJbuRW52VmdZNWoSV+z2EnBFHkus9rQXf?=
+ =?us-ascii?Q?QWGTMXmgwp0CpAza3DuZ3fLKeqE+D1ODVkqX55bYbOXplR0RbAXqZ3kCFHof?=
+ =?us-ascii?Q?wJ590Br1tcDD2vg4yB9xJ5iN?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4317a006-c0ff-493e-2f47-08d926816ed4
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5246:
-X-Microsoft-Antispam-PRVS: <DM4PR12MB52461F7316F54D9C0ECB4E19DC3C9@DM4PR12MB5246.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1201;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zlntEEVBKPWHaQOVFt4c4tG1RLcyR6U4K0oIOYPnMr+OsqR/Yqd0ER+gsomAiC17clAJQl/R9hedMU5djN7pNYSYsr+43TvCN4taHtLRAvXdbUd+37XnafemALcRNTuKOwLwhYg1ccgPK/GitHMaPxO+QRfi3vIzzUv8I2csf0mLQVw0QwMLHSR8b9VUSkZwliCctvvBw15TjMHEg6T6WGCnJeqipppKBlHQ+Z22iJviqQ9j3wJle+eDZ7EFBnzLENUnmTJDIbnarxSBRc7HdNVe1/ugU+tN7rfaxXGjbmymfMarT6B9pARpaeZI3oDs1RRGf/blqm5r69wGqO3jLXayrXMYDZtqJCpX6sXBlnJsCASAGQhLjs+6MpIFZC31a3WuB1rhFvLq1KtqhcotqwCXPCCj2YJeTH+zdgoIMJ5tWFy6hTXhQzdMA/FM9Aigwk6r+VO154ZiVpR6/KDpuU8n+Tm4Q3iMNSSHyzWHx8TYagi6fFUipN24ZD4sxjQzcEj6WT8Idd9m4F0jtPSLC4xg5oP3Zlep3GO1nq8u3sdtjpqoRKeO5CP9tDbn6Z6oxLYQC30+zEcmyQrghFe92Z2gjvjZYrHc6mWbyPK0zXaN/6Kc7bHFSfzaYbx1aH+XxSHgf8upMNXjDS+NpTylaA==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(376002)(346002)(136003)(39860400002)(36840700001)(46966006)(86362001)(336012)(36860700001)(1076003)(47076005)(82310400003)(36756003)(8676002)(4326008)(2906002)(8936002)(82740400003)(426003)(54906003)(107886003)(110136005)(2616005)(36906005)(7636003)(356005)(478600001)(83380400001)(5660300002)(316002)(186003)(16526019)(26005)(70206006)(70586007)(6666004);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2021 11:19:20.0562
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4554.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8e8dcec-f93b-4c1e-5052-08d92683071f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2021 11:30:45.0783
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4317a006-c0ff-493e-2f47-08d926816ed4
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT058.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5246
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6YJuGsAVaxJVlKhxilk4Ycid2H/wtIBS41DfU6nR5+Yy0LgC68p4HI/cUVjUzpo+v8x8MGSQsagSwdM0HJKxcLkqIMsrbHZJdfSk5xv4Gl0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4683
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A user optionally provides the external controller number when user
-wants to create devlink port for the external controller.
-
-An example on eswitch system:
-$ devlink dev eswitch set pci/0033:01:00.0 mode switchdev
-
-$ devlink port show
-pci/0033:01:00.0/196607: type eth netdev enP51p1s0f0np0 flavour physical port 0 splittable false
-
-$ devlink port add pci/0033:01:00.0 flavour pcisf pfnum 0 sfnum 77 controller 1
-pci/0033:01:00.0/163840: type eth netdev eth0 flavour pcisf controller 1 pfnum 0 sfnum 77 external true splittable false
-  function:
-    hw_addr 00:00:00:00:00:00 state inactive opstate detached
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- devlink/devlink.c       | 17 ++++++++++++++---
- man/man8/devlink-port.8 | 19 +++++++++++++++++++
- 2 files changed, 33 insertions(+), 3 deletions(-)
-
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 0b5548fb..170e8616 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -286,6 +286,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
- #define DL_OPT_PORT_PFNUMBER BIT(43)
- #define DL_OPT_PORT_SFNUMBER BIT(44)
- #define DL_OPT_PORT_FUNCTION_STATE BIT(45)
-+#define DL_OPT_PORT_CONTROLLER BIT(46)
- 
- struct dl_opts {
- 	uint64_t present; /* flags of present items */
-@@ -336,6 +337,7 @@ struct dl_opts {
- 	uint32_t overwrite_mask;
- 	enum devlink_reload_action reload_action;
- 	enum devlink_reload_limit reload_limit;
-+	uint32_t port_controller;
- 	uint32_t port_sfnumber;
- 	uint16_t port_flavour;
- 	uint16_t port_pfnumber;
-@@ -1886,6 +1888,12 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
- 			if (err)
- 				return err;
- 			o_found |= DL_OPT_PORT_SFNUMBER;
-+		} else if (dl_argv_match(dl, "controller") && (o_all & DL_OPT_PORT_CONTROLLER)) {
-+			dl_arg_inc(dl);
-+			err = dl_argv_uint32_t(dl, &opts->port_controller);
-+			if (err)
-+				return err;
-+			o_found |= DL_OPT_PORT_CONTROLLER;
- 		} else {
- 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
- 			return -EINVAL;
-@@ -2079,6 +2087,9 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
- 		mnl_attr_put_u16(nlh, DEVLINK_ATTR_PORT_PCI_PF_NUMBER, opts->port_pfnumber);
- 	if (opts->present & DL_OPT_PORT_SFNUMBER)
- 		mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_PCI_SF_NUMBER, opts->port_sfnumber);
-+	if (opts->present & DL_OPT_PORT_CONTROLLER)
-+		mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_CONTROLLER_NUMBER,
-+				 opts->port_controller);
- }
- 
- static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
-@@ -3795,7 +3806,7 @@ static void cmd_port_help(void)
- 	pr_err("       devlink port param set DEV/PORT_INDEX name PARAMETER value VALUE cmode { permanent | driverinit | runtime }\n");
- 	pr_err("       devlink port param show [DEV/PORT_INDEX name PARAMETER]\n");
- 	pr_err("       devlink port health show [ DEV/PORT_INDEX reporter REPORTER_NAME ]\n");
--	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ]\n");
-+	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ] [ controller CNUM ]\n");
- 	pr_err("       devlink port del DEV/PORT_INDEX\n");
- }
- 
-@@ -4324,7 +4335,7 @@ static int __cmd_health_show(struct dl *dl, bool show_device, bool show_port);
- 
- static void cmd_port_add_help(void)
- {
--	pr_err("       devlink port add { DEV | DEV/PORT_INDEX } flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ]\n");
-+	pr_err("       devlink port add { DEV | DEV/PORT_INDEX } flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ] [ controller CNUM ]\n");
- }
- 
- static int cmd_port_add(struct dl *dl)
-@@ -4342,7 +4353,7 @@ static int cmd_port_add(struct dl *dl)
- 
- 	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_HANDLEP |
- 				DL_OPT_PORT_FLAVOUR | DL_OPT_PORT_PFNUMBER,
--				DL_OPT_PORT_SFNUMBER);
-+				DL_OPT_PORT_SFNUMBER | DL_OPT_PORT_CONTROLLER);
- 	if (err)
- 		return err;
- 
-diff --git a/man/man8/devlink-port.8 b/man/man8/devlink-port.8
-index 563c5833..a5142c4e 100644
---- a/man/man8/devlink-port.8
-+++ b/man/man8/devlink-port.8
-@@ -54,6 +54,8 @@ devlink-port \- devlink port configuration
- .IR PFNUMBER " ]"
- .RB "{ " pcisf
- .IR SFNUMBER " }"
-+.RB "{ " controller
-+.IR CNUM " }"
- .br
- 
- .ti -8
-@@ -174,6 +176,12 @@ Specifies sfnumber to assign to the device of the SF.
- This field is optional for those devices which supports auto assignment of the
- SF number.
- 
-+.TP
-+.BR controller " { " controller " } "
-+Specifies controller number for which the SF port is created.
-+This field is optional. It is used only when SF port is created for the
-+external controller.
-+
- .ti -8
- .SS devlink port function set - Set the port function attribute(s).
- 
-@@ -327,6 +335,17 @@ devlink dev param set pci/0000:01:00.0/1 name internal_error_reset value true cm
- .RS 4
- Sets the parameter internal_error_reset of specified devlink port (#1) to true.
- .RE
-+.PP
-+devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88 controller 1
-+.RS 4
-+Add a devlink port of flavour PCI SF on controller 1 which has PCI PF of number
-+0 with SF number 88. To make use of the function an example sequence is to add
-+a port, configure the function attribute and activate the function. Once
-+the function usage is completed, deactivate the function and finally delete
-+the port. When there is desire to reuse the port without deletion, it can be
-+reconfigured and activated again when function is in inactive state and
-+function's operational state is detached.
-+.RE
- 
- .SH SEE ALSO
- .BR devlink (8),
--- 
-2.26.2
-
+>-----Original Message-----
+>From: Kurt Kanzenbach <kurt@linutronix.de>
+>Sent: Monday, May 3, 2021 12:58 PM
+>To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+><anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
+>Jakub Kicinski <kuba@kernel.org>
+>Cc: Alexei Starovoitov <ast@kernel.org>; Daniel Borkmann
+><daniel@iogearbox.net>; Jesper Dangaard Brouer <hawk@kernel.org>; John
+>Fastabend <john.fastabend@gmail.com>; Sven Auhagen
+><sven.auhagen@voleatech.de>; intel-wired-lan@lists.osuosl.org;
+>netdev@vger.kernel.org; bpf@vger.kernel.org; Ilias Apalodimas
+><ilias.apalodimas@linaro.org>; Lorenzo Bianconi <lorenzo@kernel.org>;
+>Sebastian Andrzej Siewior <bigeasy@linutronix.de>; Richard Cochran
+><richardcochran@gmail.com>; Alexander Duyck
+><alexander.duyck@gmail.com>; Tyler S <tylerjstachecki@gmail.com>;
+>Fijalkowski, Maciej <maciej.fijalkowski@intel.com>; Kurt Kanzenbach
+><kurt@linutronix.de>
+>Subject: [PATCH net v4] igb: Fix XDP with PTP enabled
+>
+>When using native XDP with the igb driver, the XDP frame data doesn't poin=
+t
+>to the beginning of the packet. It's off by 16 bytes. Everything works as
+>expected with XDP skb mode.
+>
+>Actually these 16 bytes are used to store the packet timestamps. Therefore=
+,
+>pull the timestamp before executing any XDP operations and adjust all othe=
+r
+>code accordingly. The igc driver does it like that as well.
+>
+>Tested with Intel i210 card and AF_XDP sockets.
+>
+>Fixes: 9cbc948b5a20 ("igb: add XDP support")
+>Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+>---
+>
+>Changes since v3:
+>
+> * Get rid of timestamp check in hot path (Maciej Fijalkowski)
+>
+>Changes since v2:
+>
+> * Check timestamp for validity (Nguyen, Anthony L)
+>
+>Changes since v1:
+>
+> * Use xdp_prepare_buff() (Lorenzo Bianconi)
+>
+>Changes since RFC:
+>
+> * Removed unused return value definitions (Alexander Duyck)
+>
+>Previous versions:
+>
+> * https://lkml.kernel.org/netdev/20210422052617.17267-1-
+>kurt@linutronix.de/
+> * https://lkml.kernel.org/netdev/20210419072332.7246-1-
+>kurt@linutronix.de/
+> * https://lkml.kernel.org/netdev/20210415092145.27322-1-
+>kurt@linutronix.de/
+> * https://lkml.kernel.org/netdev/20210412101713.15161-1-
+>kurt@linutronix.de/
+>
+> drivers/net/ethernet/intel/igb/igb.h      |  2 +-
+> drivers/net/ethernet/intel/igb/igb_main.c | 45 +++++++++++++----------
+>drivers/net/ethernet/intel/igb/igb_ptp.c  | 23 +++++-------
+> 3 files changed, 37 insertions(+), 33 deletions(-)
+>
+Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
