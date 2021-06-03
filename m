@@ -2,100 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47175399A0F
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 07:38:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A60D399A55
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 07:53:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbhFCFkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 01:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40404 "EHLO
+        id S229774AbhFCFzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 01:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbhFCFkF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 01:40:05 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4D0C06174A
-        for <netdev@vger.kernel.org>; Wed,  2 Jun 2021 22:38:21 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FwZS84Lsqz9s5R;
-        Thu,  3 Jun 2021 15:38:13 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
-        s=201909; t=1622698697;
-        bh=3AA8l6yeF1h/KUuaHmWbe9gUXxJyUVXFfeXx8HjmGQE=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=Ri6vmcSojt5p7c+qOa5cNadd2YfB9oNFrJH2Hk5I3J3zSysvt2wHL+M8po3Km5R6E
-         eGA2K+9lHQdWtriADk1a3+qg1McbOVc7EiRqc/+CYr07GZyfSTTHDlYF+VU8XDk6aj
-         P+iaxdSJkV1eBzjEUwbi058opC91kM8dWlzkGf0gmNTIZUQAihq3HROdmqxKH2zzO0
-         T/zdAUeo7+xgc2tzpBEzrd5x6bsYauijTuiM+tFk9h81y4Gyxr5s+ozEwkZM0RdShh
-         gVvYOsi1Uf8sAVLoFTUbpuq5QrJqHKGE2rosz0Xf3Soyt1Lt2pb78yFqf3pzl4RGvZ
-         U4pSA5FOItPHg==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Geoff Levand <geoff@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/5] DMA fixes for PS3 device drivers
-In-Reply-To: <cover.1622577339.git.geoff@infradead.org>
-References: <cover.1622577339.git.geoff@infradead.org>
-Date:   Thu, 03 Jun 2021 15:38:13 +1000
-Message-ID: <875yyvh5iy.fsf@mpe.ellerman.id.au>
-MIME-Version: 1.0
-Content-Type: text/plain
+        with ESMTP id S229667AbhFCFzf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 01:55:35 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A11AC06174A;
+        Wed,  2 Jun 2021 22:53:51 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id s5-20020a7bc0c50000b0290147d0c21c51so2921060wmh.4;
+        Wed, 02 Jun 2021 22:53:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=+LavzohDJpbvg/dpCNljR3NbpSeXC/kKjcfv8mBT/jc=;
+        b=guI7rJGwRqalQxlRFJ83qNrLap9ESqnpMotNGMlOc29W/d6GsmHFpZm3xiEPaX7TP/
+         TNtw8t3P8y3IZGAWyH/K4CKR8mRpt/osLOYq+nkQtaS3GAId0WkMf8fvfXmkhrwi8vm2
+         BjZmDo20YCoEEDGqoCaui/Zkyij1Uo26e6Co3wWmBEQfqKYp24tPMbC89NMstQCB71rW
+         kpIeRdKIAltgfW2szfDh4i5S8Uv2RnKoyFI3asJVlKZVCRb2ZfhhrrAMlsabz5eVcS1p
+         iWGIrYS1p4zIZ1EhoU+1dA0FKkR8Ql2hyczUhEpUKZt+DXFTC6LDi29C+exWRISVZ/Nq
+         GBJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+LavzohDJpbvg/dpCNljR3NbpSeXC/kKjcfv8mBT/jc=;
+        b=UqwE47GCl8dK4Ct5jz1b3omCAYkhmuWYWrIB3XGmWRC+onpqDmo5oAKoPs1g8C1sXN
+         ewIZjRIQsoloFEklTfdSk4s1u20W9mmZKpuvUnqHepn0ONBIxy98wo1IX7wfxpY27vnv
+         CYU9xtAInOVV6xlZjOTDk/hze0ui650OsxRNtLo5RUzgiIAfMwyl2Jl9HGyLi2i44yoO
+         qOAoVKSY9GhsEnn/5ocI/0uYr9Tq70lVAs6R2cZb7yb6kxBT+ghg7f5buFuf+IjWsM28
+         waUWqBH2iriQrUf75eLiI9SAVuFoRbbxZlcEBkvpTJvLkM0tMiIWXGV1bwv5s265HSDT
+         VQmg==
+X-Gm-Message-State: AOAM533R1mpEhJATQ1fJ6F5RZr9CHAwh/NnyLclYh8L8n1jdnvZtGvtz
+        MTMxotIyxGhqUhKGZYG+hvPcSqz5SNw8DA==
+X-Google-Smtp-Source: ABdhPJxTE6CaglFYIN0bT7p+BDX3O+bhx3vkXDZHLkVV5VX1+AWxmSHjKEwEnT4mmgTq/ZwQAB+4/w==
+X-Received: by 2002:a1c:2155:: with SMTP id h82mr35846198wmh.115.1622699629622;
+        Wed, 02 Jun 2021 22:53:49 -0700 (PDT)
+Received: from wsfd-netdev-buildsys.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id e17sm2219784wre.79.2021.06.02.22.53.48
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 02 Jun 2021 22:53:49 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     linux-crypto@vger.kernel.org
+Cc:     "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH] crypto: x86/curve25519 - fix cpu feature checking logic in mod_exit
+Date:   Thu,  3 Jun 2021 01:53:40 -0400
+Message-Id: <20210603055341.24473-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Geoff Levand <geoff@infradead.org> writes:
-> Hi,
->
-> This is a set of patches that fix various DMA related problems in the PS3
-> device drivers, and add better error checking and improved message logging.
->
-> The gelic network driver had a number of problems and most of the changes are
-> in it's sources.
->
-> Please consider.
+In curve25519_mod_init() the curve25519_alg will be registered only when
+(X86_FEATURE_BMI2 && X86_FEATURE_ADX). But in curve25519_mod_exit()
+it still checks (X86_FEATURE_BMI2 || X86_FEATURE_ADX) when do crypto
+unregister. This will trigger a BUG_ON in crypto_unregister_alg() as
+alg->cra_refcnt is 0 if the cpu only supports one of X86_FEATURE_BMI2
+and X86_FEATURE_ADX.
 
-Who are you thinking would merge this?
+Fixes: 07b586fe0662 ("crypto: x86/curve25519 - replace with formally verified implementation")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ arch/x86/crypto/curve25519-x86_64.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-It's sort of splattered all over the place, but is mostly networking by
-lines changed.
+diff --git a/arch/x86/crypto/curve25519-x86_64.c b/arch/x86/crypto/curve25519-x86_64.c
+index 6706b6cb1d0f..38caf61cd5b7 100644
+--- a/arch/x86/crypto/curve25519-x86_64.c
++++ b/arch/x86/crypto/curve25519-x86_64.c
+@@ -1500,7 +1500,7 @@ static int __init curve25519_mod_init(void)
+ static void __exit curve25519_mod_exit(void)
+ {
+ 	if (IS_REACHABLE(CONFIG_CRYPTO_KPP) &&
+-	    (boot_cpu_has(X86_FEATURE_BMI2) || boot_cpu_has(X86_FEATURE_ADX)))
++	    static_branch_likely(&curve25519_use_bmi2_adx))
+ 		crypto_unregister_kpp(&curve25519_alg);
+ }
+ 
+-- 
+2.26.3
 
-Maybe patches 3-5 should go via networking and I take 1-2?
-
-cheers
-
-
-> The following changes since commit 8124c8a6b35386f73523d27eacb71b5364a68c4c:
->
->   Linux 5.13-rc4 (2021-05-30 11:58:25 -1000)
->
-> are available in the Git repository at:
->
->   git://git.kernel.org/pub/scm/linux/kernel/git/geoff/ps3-linux.git for-merge-gelic
->
-> for you to fetch changes up to 4adcfc9735bf8d1987d2bc82e914be154f2ffad8:
->
->   net/ps3_gelic: Cleanups, improve logging (2021-06-01 12:27:43 -0700)
->
-> ----------------------------------------------------------------
-> Geoff Levand (5):
->       powerpc/ps3: Add CONFIG_PS3_VERBOSE_RESULT option
->       powerpc/ps3: Warn on PS3 device errors
->       powerpc/ps3: Add dma_mask to ps3_dma_region
->       net/ps3_gelic: Add gelic_descr structures
->       net/ps3_gelic: Cleanups, improve logging
->
->  arch/powerpc/include/asm/ps3.h               |   4 +-
->  arch/powerpc/platforms/ps3/Kconfig           |   9 +
->  arch/powerpc/platforms/ps3/mm.c              |  12 +
->  arch/powerpc/platforms/ps3/system-bus.c      |   9 +-
->  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 968 +++++++++++++++------------
->  drivers/net/ethernet/toshiba/ps3_gelic_net.h |  24 +-
->  drivers/ps3/ps3-vuart.c                      |   2 +-
->  drivers/ps3/ps3av.c                          |  22 +-
->  8 files changed, 598 insertions(+), 452 deletions(-)
->
-> -- 
-> 2.25.1
