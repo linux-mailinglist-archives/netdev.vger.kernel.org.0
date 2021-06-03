@@ -2,82 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53C1339AB52
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 22:00:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18DB439AB8C
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 22:08:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230150AbhFCUC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 16:02:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37486 "EHLO mail.kernel.org"
+        id S230008AbhFCUKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 16:10:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39578 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230078AbhFCUC1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 16:02:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E5E226140A;
-        Thu,  3 Jun 2021 20:00:41 +0000 (UTC)
+        id S229656AbhFCUKf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 16:10:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E68B0611C9;
+        Thu,  3 Jun 2021 20:08:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622750441;
-        bh=bL91cu6ogtTyGxRPIZri6Ql+FCiu+SF6QSQHbM1zYpU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Tr2eRL2ruuI3sDRg5RflhkOkyV9mFTujf1VRSwWuWzGKIhZvbVCaAxYpgxsOn967z
-         NSAD7IYMIoOO8cgexRa8htj5TMa5JoT3Wkv0szF26PJNQMzsXvJWAGYrsny6UgxWOB
-         0DSG8won1tshR1VxRhArAz/SO25OQjYrnL5dyQS242aahuCLuEtgIYx6YTOuGDajz0
-         VHL9LXHRxKII0rPps4b8g2l1RYIZFPwbgL/Xx11gmnvOpzM53mf3Uy04x4VbkhOV+Z
-         glYdnkCOfixzeKFSHUpB7CAwyKWxHMoZF81Ql2bUy103FcIKpKZNrY/s3wN0K43mHs
-         i4TDGELShuacg==
-Received: by mail-ej1-f51.google.com with SMTP id a11so10323612ejf.3;
-        Thu, 03 Jun 2021 13:00:41 -0700 (PDT)
-X-Gm-Message-State: AOAM532vyxjdQayA5RHN/BZ3eSM5VLUqqhLnZp8Z0LjUv6v41+SWwB5I
-        gzz1Ys23MifmIGCwdrRsLZQ4Ow6jF77dUPl5Hg==
-X-Google-Smtp-Source: ABdhPJw+IpYqfuukI2sJnNmANmuAWrENFVxO3xUzzlu0fu/6+LhA82SGF/btdHtPoNYDNnkITP5uV0NhDBINu7IILPI=
-X-Received: by 2002:a17:906:1d0a:: with SMTP id n10mr868094ejh.341.1622750440433;
- Thu, 03 Jun 2021 13:00:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1622648507.git.mchehab+huawei@kernel.org>
-In-Reply-To: <cover.1622648507.git.mchehab+huawei@kernel.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 3 Jun 2021 15:00:29 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKLwfgj1khYFxTykjaYPjbNRd=Ajr-bfEnNYY0cu0Z18A@mail.gmail.com>
-Message-ID: <CAL_JsqKLwfgj1khYFxTykjaYPjbNRd=Ajr-bfEnNYY0cu0Z18A@mail.gmail.com>
-Subject: Re: [PATCH 00/12] Fix broken docs references at next-20210602
+        s=k20201202; t=1622750930;
+        bh=ohus4AnUUJOspGI/25odIC8ssfkU7zAoWzsK33rRY5c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fy7QLqvlvNvV19XtoYpomwc7SWdbn2/6Af6JfFQKmOnXkyzsT3KXef7oAcH6kPNo0
+         GLwyKOBjpJ1Jb/6Ce/Jw/t1ViRXdPeurRK0ej+vZnjZrrkI/yhXlvOyI7M5y/skN4s
+         4kgLGyIALAMWRz3YGnCqJ4rjNkQch2CKA3OyyHabrPyrvmSkAP/BC7PhHvypbvZc3i
+         RfhMjmxRshaYL8K19qpFBeM32chXXhP3+Asgowcs3N/8n+UG0vjZl+Kkx4M2hH80ER
+         c2hMo/d/VQ81ju9K9rwJiuQv/tsKrDF+IeHhwGFd2uKHzn5MTwgt97WTroKvNOtn+U
+         Ncnha5C7tJUEA==
+Date:   Thu, 3 Jun 2021 22:08:47 +0200
+From:   Wolfram Sang <wsa@kernel.org>
 To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Keerthy <j-keerthy@ti.com>, Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
-        Mark Brown <broonie@kernel.org>,
         Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Peter Rosin <peda@axentia.se>,
+        Nishanth Menon <nm@ti.com>, Ohad Ben-Cohen <ohad@wizery.com>,
         Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Roger Quadros <rogerq@ti.com>, Sekhar Nori <nsekhar@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Tero Kristo <kristo@kernel.org>,
         Ulf Hansson <ulf.hansson@linaro.org>,
         Vinod Koul <vkoul@kernel.org>,
         Wolfgang Grandegger <wg@grandegger.com>,
         devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-remoteproc@vger.kernel.org,
         linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH 03/12] dt-bindings: soc: ti: update sci-pm-domain.yaml
+ references
+Message-ID: <YLk2z0eEjX/kGpYb@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Nishanth Menon <nm@ti.com>, Ohad Ben-Cohen <ohad@wizery.com>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, Roger Quadros <rogerq@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>, Stephen Boyd <sboyd@kernel.org>,
+        Tero Kristo <kristo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>, Vinod Koul <vkoul@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>, devicetree@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-can@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <cover.1622648507.git.mchehab+huawei@kernel.org>
+ <c03020ff281054c3bd2527c510659e05fec6f181.1622648507.git.mchehab+huawei@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="eSf5OGSJ/yHsEMv1"
+Content-Disposition: inline
+In-Reply-To: <c03020ff281054c3bd2527c510659e05fec6f181.1622648507.git.mchehab+huawei@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 2, 2021 at 10:43 AM Mauro Carvalho Chehab
-<mchehab+huawei@kernel.org> wrote:
->
-> There are some broken references at today's linux-next with regards
-> to files inside Documentation/.
->
-> Address them.
 
-I've finally added this to my automated checks, so now anyone that
-breaks this on binding schema patches should get notified (with the
-exception of patches not Cc'ed to the DT list).
+--eSf5OGSJ/yHsEMv1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Rob
+On Wed, Jun 02, 2021 at 05:43:09PM +0200, Mauro Carvalho Chehab wrote:
+> Changeset fda55c7256fe ("dt-bindings: soc: ti: Convert ti,sci-pm-domain t=
+o json schema")
+> renamed: Documentation/devicetree/bindings/soc/ti/sci-pm-domain.txt
+> to: Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml.
+>=20
+> Update the cross-references accordingly.
+>=20
+> Fixes: fda55c7256fe ("dt-bindings: soc: ti: Convert ti,sci-pm-domain to j=
+son schema")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+
+Acked-by: Wolfram Sang <wsa@kernel.org> # for I2C
+
+
+--eSf5OGSJ/yHsEMv1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmC5Ns8ACgkQFA3kzBSg
+KbYFTRAAqF9TWZ+pTISLuMKGVBuNthxVoeuiLigsWW/9vfC9QmT42WbmWQLx2hLk
+hUIQK4Yk55RT94/cD1spz/yq0xYCXbk5J0VK0kVRt7+AcswPQG07pmbdwTpOjby8
+Um5IjYunC0vYKPDfdcAW/k7ZO4SREKVCVZUBVzo5lB+eSTlUdkPdxCGS+JtLoszv
+dzik1TD9wCS2DfdC0Mur4qvX2mdfZ+EIsh4UToC0FNN/JlowD/yUrKP9YdZco6Tt
+rHMyx1u1FxLcdhSjwMxEAS613dDaKAQMjhUQYX0n41ycMBNXqnHtbhcIRNh/9pd5
+hXumHx8IyZo/BBKUBEUjBWISpr9P9VJGbuToeDZQudumri3k8nLmGgntfrrnRSup
+gmCcuPGibZbLmw6R5POgYHujlJWpW7uVPXUTJkyX1MY91o4826M6XwweA3GCcmQZ
+CYy4XfE9EgEGYCCEPPhYw6Pbk4aJ+b2gfTeimssIBO9Ep4RtHEVr4qLR5w5QBkZM
+fLVzxA/NJFc+9b4CxkWwte+j9q3Re+JgqtPJrLa21gRMdyg/ReuA6fSAyt6ktNBy
+pM+ZxgyAcuL76EoF0qLH78ssshHX7ZRRDLWtpuE+n97YPQA0niwFkPPLwfEeVOYG
+oyATxaZ1YV6BwyJYLgeYhu0TuMT/poG+nvaDeyed23Sze4Tgunk=
+=k4Kj
+-----END PGP SIGNATURE-----
+
+--eSf5OGSJ/yHsEMv1--
