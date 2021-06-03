@@ -2,94 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C120E3998A3
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 05:37:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 711843998B1
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 05:47:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbhFCDiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 23:38:51 -0400
-Received: from mail-oo1-f45.google.com ([209.85.161.45]:46844 "EHLO
-        mail-oo1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbhFCDir (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 23:38:47 -0400
-Received: by mail-oo1-f45.google.com with SMTP id x22-20020a4a62160000b0290245cf6b7feeso1079315ooc.13
-        for <netdev@vger.kernel.org>; Wed, 02 Jun 2021 20:36:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+4S5cillMkGmkj7CPEP2zgPOj2VGFqFoGJmjqdd2zV8=;
-        b=aQM7zJy7YlA9JBm6g0Mgqd0CGswohBU7MYinOtdzgNvmdeObhb60HOrs+T9esuZe8q
-         YaGQYQY8A6oYL81SlTOngsSPhWDeU5rYPNrvhbPCLBJrcpaCrULhD8XCKmyg2R9Q6WtB
-         9F5mET5iB27AmuBDeQTYiwNIPSQhEu9ztV8Af4HaUlg6uqHxT0S+50P19i05rl0YVW0Y
-         r66QA90r3vqwNi1fqQhCYlCxJFyW+XQpOTgOvapzn8XlCw6udhv64VSaNnWO1NKEGUhH
-         EeGWORTAUFMQPA7C7LI4YHNI8IVL6b65tg4usPd1lePpi+u5oAVH15W5gncyNmiJ2UiF
-         Ay8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+4S5cillMkGmkj7CPEP2zgPOj2VGFqFoGJmjqdd2zV8=;
-        b=rtuMmotMmD+JzKteOd7GXp5p//SIHceTO0z46sx6Ys+6LiOFMY2OtuPp1CuelQWRe7
-         J4SjSuyK8FHRT7Fk3S8DPN9wTWWEhiLGrAxHb+gBRqpvTvoissjhEmHO6mXaSuqlLIMD
-         IRFz435dRXha8Q438kXidwsa+h+ugkjs8+jQ/hfJ3KqRcS0TIj0Dcmr1iLmPOpD2XXxk
-         oRQdTw+0dDBjpl6NuyzA9gIahfQrKLPqjfNGGip2mKsTvgxrwi5jd5KxH32Ac+hZAp6V
-         qCzYgc/sj2SkhGe5amGpVgFzaDm/BZSFR6DNkqpMjCnz34D9jV84ZoN2hm8XObweSTm9
-         2QRQ==
-X-Gm-Message-State: AOAM532uGokZ8gARbVw/89Gv63q9B5cppNBFPrCtqYbdyPvHf+gnCVNr
-        pSEORxKc3KZsjlT54oJcK9o=
-X-Google-Smtp-Source: ABdhPJzUUo7EnGVf9BcjXbq44ZT04LL9Jo+2UawM21bCpyevq0FXTmlMuzqz5TEpasrdfRH6mkaB9Q==
-X-Received: by 2002:a4a:b4cd:: with SMTP id g13mr26865927ooo.4.1622691110616;
-        Wed, 02 Jun 2021 20:31:50 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id w200sm91493oie.10.2021.06.02.20.31.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Jun 2021 20:31:50 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 0/5] Support for the IOAM Pre-allocated Trace
- with IPv6
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        tom@herbertland.com
-References: <20210527151652.16074-1-justin.iurman@uliege.be>
- <85a22702-da46-30c2-46c9-66d293d510ff@gmail.com>
- <1049853171.33683948.1622305441066.JavaMail.zimbra@uliege.be>
- <cc16923b-74bc-7681-92c7-19e84a44c0e1@gmail.com>
- <1439349685.35359322.1622462654030.JavaMail.zimbra@uliege.be>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e619169e-adfe-4b77-b359-6378c83b3ce3@gmail.com>
-Date:   Wed, 2 Jun 2021 21:31:48 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+        id S229772AbhFCDse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 23:48:34 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:4289 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229611AbhFCDsd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 23:48:33 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FwWt41BlBz1BHPK;
+        Thu,  3 Jun 2021 11:42:04 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 3 Jun 2021 11:46:44 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Thu, 3 Jun 2021
+ 11:46:43 +0800
+Subject: Re: [RFC net-next 0/8] Introducing subdev bus and devlink extension
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     moyufeng <moyufeng@huawei.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Parav Pandit <parav@mellanox.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "michal.lkml@markovi.net" <michal.lkml@markovi.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "lipeng (Y)" <lipeng321@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        <shenjian15@huawei.com>, "chenhao (DY)" <chenhao288@hisilicon.com>,
+        Jiaran Zhang <zhangjiaran@huawei.com>
+References: <1551418672-12822-1-git-send-email-parav@mellanox.com>
+ <20190301120358.7970f0ad@cakuba.netronome.com>
+ <VI1PR0501MB227107F2EB29C7462DEE3637D1710@VI1PR0501MB2271.eurprd05.prod.outlook.com>
+ <20190304174551.2300b7bc@cakuba.netronome.com>
+ <VI1PR0501MB22718228FC8198C068EFC455D1720@VI1PR0501MB2271.eurprd05.prod.outlook.com>
+ <76785913-b1bf-f126-a41e-14cd0f922100@huawei.com>
+ <20210531223711.19359b9a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <7c591bad-75ed-75bc-5dac-e26bdde6e615@huawei.com>
+ <20210601143451.4b042a94@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <cf961f69-c559-eaf0-e168-b014779a1519@huawei.com>
+ <20210602093440.15dc5713@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <857e7a19-1559-b929-fd15-05e8f38e9d45@huawei.com>
+Date:   Thu, 3 Jun 2021 11:46:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-In-Reply-To: <1439349685.35359322.1622462654030.JavaMail.zimbra@uliege.be>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20210602093440.15dc5713@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme711-chm.china.huawei.com (10.1.199.107) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/31/21 6:04 AM, Justin Iurman wrote:
->>> Actually, February 2021 is the last update. The main draft
->>> (draft-ietf-ippm-ioam-data) has already come a long way (version 12) and has
->>> already been Submitted to IESG for Publication. I don't think it would hurt
+On 2021/6/3 0:34, Jakub Kicinski wrote:
+> On Wed, 2 Jun 2021 10:24:11 +0800 Yunsheng Lin wrote:
+>> On 2021/6/2 5:34, Jakub Kicinski wrote:
+>>> On Tue, 1 Jun 2021 15:33:09 +0800 Yunsheng Lin wrote:  
+>>>> Is there a reason why it didn't have to be solved yet?
+>>>> Is it because the devices currently supporting devlink do not have
+>>>> this kind of problem, like single-function ASIC or multi-function
+>>>> ASIC without sharing common resource?  
+>>>
+>>> I'm not 100% sure, my guess is multi-function devices supporting
+>>> devlink are simple enough for the problem not to matter all that much.
+>>>   
+>>>> Was there a discussion how to solved it in the past?  
+>>>
+>>> Not really, we floated an idea of creating aliases for devlink
+>>> instances so a single devlink instance could answer to multiple 
+>>> bus identifiers. But nothing concrete.  
 >>
->> when the expected decision on publication?
+>> What does it mean by "answer to multiple bus identifiers"? I
+>> suppose it means user provides the bus identifiers when setting or
+>> getting something, and devlink instance uses that bus identifiers
+>> to differentiate different PF in the same ASIC?
 > 
-> Hard to tell precisely, a couple weeks probably. There are still some comment/discuss to clear and our next IETF working group meeting is in July. However, it shouldn't be a concern (see below).\
-
-Ok.
-
+> Correct.
 > 
->> that much to have it in the kernel as we're talking about a stable
->> draft (the other one is just a wrapper to define the encapsulation of
->> IOAM with IPv6) and something useful. And, if you think about Segment
->> Routing for IPv6, it was merged in the kernel when it was still a draft.
+>> can devlink port be used to indicate different PF in the same ASIC,
+>> which already has the bus identifiers in it? It seems we need a
+>> extra identifier to indicate the ASIC?
 >>
->> The harm is if there are any changes to the uapi.
+>> $ devlink port show
+>> ...
+>> pci/0000:03:00.0/61: type eth netdev sw1p1s0 split_group 0
 > 
-> Definitely agree. But, I can assure you there won't be any uapi change at this stage. None of the comment/discuss I mentioned above are about this at all. Headers definition and IANA codes are defined for a long time now and won't change anymore.
-> 
+> Ports can obviously be used, but which PCI device will you use to
+> register the devlink instance? Perhaps using just one doesn't matter 
+> if there is only one NIC in the system, but may be confusing with
+> multiple NICs, no?
 
-Please add tests to tools/testing/selftests/net to cover the
-functionality added.
+Yes, it is confusing, how about using the controler_id to indicate
+different NIC? we can make sure controler_id is unqiue in the same
+host, a controler_id corresponds to a devlink instance, vendor info
+or serial num for the devlink instance can further indicate more info
+to the system user?
+
+pci/controler_id/0000:03:00.0/61
+
+> 
+>>>> "same control domain" means if it is controlled by a single host, not
+>>>> by multi hosts, right?
+>>>>
+>>>> If the PF is not passed through to a vm using VFIO and other PF is still
+>>>> in the host, then I think we can say it is controlled by a single host.
+>>>>
+>>>> And each PF is trusted with each other right now, at least at the driver
+>>>> level, but not between VF.  
+>>>
+>>> Right, the challenge AFAIU is how to match up multiple functions into 
+>>> a single devlink instance, when driver has to probe them one by one.  
+>>
+>> Does it make sense if the PF first probed creates a auxiliary device,
+>> and the auxiliary device driver creates the devlink instance? And
+>> the PF probed later can connect/register to that devlink instance?
+> 
+> I would say no, that just adds another layer of complication and
+> doesn't link the functions in any way.
+
+How about:
+The PF first probed creates the devlink instance? PF probed later can
+connect/register to that devlink instance created by the PF first probed.
+It seems some locking need to ensure the above happens as intended too.
+
+About linking, the PF provide vendor info/serial number(or whatever is
+unqiue between different vendor) of a controller it belong to, if the
+controller does not exist yet, create one and connect/register to that
+devlink instance, otherwise just do the connecting/registering.
+
