@@ -2,168 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DF6839A94D
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:36:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91BF839A954
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:37:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230262AbhFCRh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 13:37:57 -0400
-Received: from mail-yb1-f177.google.com ([209.85.219.177]:35808 "EHLO
-        mail-yb1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229831AbhFCRh4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 13:37:56 -0400
-Received: by mail-yb1-f177.google.com with SMTP id i4so9974032ybe.2;
-        Thu, 03 Jun 2021 10:36:11 -0700 (PDT)
+        id S231174AbhFCRis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 13:38:48 -0400
+Received: from mail-wm1-f47.google.com ([209.85.128.47]:51849 "EHLO
+        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229845AbhFCRir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 13:38:47 -0400
+Received: by mail-wm1-f47.google.com with SMTP id r13so3908848wmq.1;
+        Thu, 03 Jun 2021 10:36:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=fhXTrmiEVYD8RNIr+33wie+6gXkAl42tkhV11H/Xek8=;
-        b=koOQMSH2ClflXWmOaQ1UuCknUIzGEUclH0xn/3jthccqoJ4gf8jS3YykpJLwpe1mIm
-         qApUJ33f57yAGAEYUUQlcRLh/Qxsd5++LiWtKyjps9odjtzE/mmsmIK7uKGWxSs+zGd4
-         CWVUj+xEW3srNkQYQ3pcxaVbw3P6GqNabic1ztNTOPZDKNIFXuQybbALcD011hp+uDdS
-         wZfOUuB3cHB+tZFrv/F/jk/9+nKru09uso5331AHjDYlr+pK3BvD4LXTnj2NhUgHjxE9
-         fxgLfic5snfpmsWoy6EGEEqhLeXVwiuGy2NJLMbhUu1sgKyN4Myy/Xa3+o1+DJSIcgCl
-         AiSw==
+        bh=9ZEWHSSOb74rLWBdPbbD8Bw6Cd9qJ07nhLoANozAowA=;
+        b=s1rHc9mCAalfAD9jNYasuCBfe7xeQ6PErUmHUjpRlAfZctPlDyJzoyZDFz0S644oTL
+         tuIcnViK0JYmqG7TOGcuVnIJfHLnVBhGEcYJEwyipCvInodMovVIiqZD9clCGUA3A7JG
+         UH8rHj9LeQa8Xia46PTscM8jQTd+tHoNgoXaq0JyCKCiTBzD4uUYU3bt8LiyZotOB5Tf
+         OPqA1rYk6mrXkIR/VU1MIO5EaEXW/QEBfxaCiw00pHPAccx0FNvw/Ix9lf3T//EmHchm
+         wckQ4m0buQR+jKtPUXW2psRKoSODGxOFdKrewizUUtNQAF2pOKO04u2voygJ3Qp9wrBw
+         xPrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=fhXTrmiEVYD8RNIr+33wie+6gXkAl42tkhV11H/Xek8=;
-        b=uhPD5wks2zn5yjR7E5PUnLrk1xCitUnssapbk+cxHSfwdOl4jOpEcbdxOycPeiF5CP
-         aqUc793dVcpgCAYyb4eociCknWxdiJHP5vjjIiLOp6tpxhDldRk5sgOkp3T/8CNcPQlg
-         s8RgRvEc3AL1a+2mAipfIb/uWyMOm/OyTPsiN9L08kZy8qEwySC59siCxJcuh14LO8ZE
-         drTF7WBogw6a0cAqj41LH5UKYiUs1J/RC5TaAt2etI07rvTv6arWIcmTlTDQMmaesffY
-         R6bj3ZeUchBKMP8ZpUz3oZf+rmwSYg1kZx7xgBj2dUn0e/svtOQmhOEvx+htDPc3XeQ3
-         Ubwg==
-X-Gm-Message-State: AOAM5331Wv+MwlZjgG57ckrxzpP7HEZ6uftwIsBs+wkqe6Sj73+2nXen
-        G5Q/Yp5E+vQficneEULFHroTtW5iQw0I1pYN19Q=
-X-Google-Smtp-Source: ABdhPJwYsVOmvs9NcJW5ZezwjgY3yzsZ3IpI6Lj+Genk+l845YcdEHtRGopdbtmKi192mlUSACFZDGV1rjA6u70oZis=
-X-Received: by 2002:a5b:f05:: with SMTP id x5mr280086ybr.425.1622741711434;
- Thu, 03 Jun 2021 10:35:11 -0700 (PDT)
+        bh=9ZEWHSSOb74rLWBdPbbD8Bw6Cd9qJ07nhLoANozAowA=;
+        b=t1pyXNZL9MOYj5XqD4dahA/ZCVhs8sLnEf2lCocXZGKzjAzI4neelHdehvKoc9ZyVc
+         +QCokHwbZZ76NJnsJ4wNf0ylQuOzTtkJsOtj+KVtap0P0loGc0hl0MKVP+70MBw//jD7
+         uROKhhPFevc+vaWyeKqQ3bWT7hETFi9tYAQhon/8ntx5viLgTp5YUmOCbgoy1bLqDvYZ
+         dVyK32e2smHSaNcjKd9CBCc7PVajkea/6L8p0Gac8IVfZni0Vqdsxg4tqXgnpy8bvVO9
+         9a28EiOEhMZJGDugpoLGEPTtmcgkxUxoU7o+aiKfMiwsY/3jV7Whn4bJJvn/vtS+6GYF
+         aLbQ==
+X-Gm-Message-State: AOAM531kSCyTJG3yfmFcAdPk+FrggZNACDSsGxVoQI+pktuzxniDbNSp
+        AmZYe6Ue+b9qRzon92zK4NGLq01nSSOfDUuwHWg=
+X-Google-Smtp-Source: ABdhPJzjtaHxvcA/Ycqn31cacCGPcInD2eYWcgqY43Km/VJSWBFnIj1HKH5+2lD0Fjr5vJ1aN4xcP//XCewEozbqTOg=
+X-Received: by 2002:a05:600c:c9:: with SMTP id u9mr205699wmm.156.1622741746374;
+ Thu, 03 Jun 2021 10:35:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210527040259.77823-1-alexei.starovoitov@gmail.com>
- <20210527040259.77823-3-alexei.starovoitov@gmail.com> <CAEf4BzbPkUdsY8XD5n2yMB8CDvakz4jxshjF8xrzqHXQS0ct9g@mail.gmail.com>
- <20210603020419.mhnueugljj5cs3ie@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210603020419.mhnueugljj5cs3ie@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 3 Jun 2021 10:35:00 -0700
-Message-ID: <CAEf4BzYgxR38405LoyVrwPAzdiax-Fbu+2hNrqPa_6xSnoGWiA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/3] bpf: Add verifier checks for bpf_timer.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
+References: <000000000000c91e6f05c3144acc@google.com> <CADvbK_duDeZidW1mgSyNo+f1Hj4L0V6=L-Upfgp+5DEu5P-8Ag@mail.gmail.com>
+ <b216d7a4-c3dd-3714-3897-3124769c88f2@ssi.bg>
+In-Reply-To: <b216d7a4-c3dd-3714-3897-3124769c88f2@ssi.bg>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 3 Jun 2021 13:35:35 -0400
+Message-ID: <CADvbK_cUe=T5-zBcgUm4uA7rjqsomoB+DZYs9tQSWbqP3Q77Pw@mail.gmail.com>
+Subject: Re: [syzbot] memory leak in ip_vs_add_service
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     syzbot <syzbot+e562383183e4b1766930@syzkaller.appspotmail.com>,
+        coreteam@netfilter.org, Simon Horman <horms@verge.net.au>,
+        LKML <linux-kernel@vger.kernel.org>, lvs-devel@vger.kernel.org,
+        network dev <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 2, 2021 at 7:04 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Thu, Jun 3, 2021 at 1:32 PM Julian Anastasov <ja@ssi.bg> wrote:
 >
-> On Wed, Jun 02, 2021 at 03:34:29PM -0700, Andrii Nakryiko wrote:
+>
+>         Hello,
+>
+> On Wed, 2 Jun 2021, Xin Long wrote:
+>
+> > On Mon, May 24, 2021 at 10:33 AM syzbot
+> > <syzbot+e562383183e4b1766930@syzkaller.appspotmail.com> wrote:
+> > >
+> > > Hello,
+> > >
+> > > syzbot found the following issue on:
+> > >
+> > > HEAD commit:    c3d0e3fd Merge tag 'fs.idmapped.mount_setattr.v5.13-rc3' o..
+> > > git tree:       upstream
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=148d0bd7d00000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=ae7b129a135ab06b
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=e562383183e4b1766930
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15585a4bd00000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13900753d00000
+> > >
+> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > Reported-by: syzbot+e562383183e4b1766930@syzkaller.appspotmail.com
+> > >
+> > > BUG: memory leak
+> > > unreferenced object 0xffff888115227800 (size 512):
+> > >   comm "syz-executor263", pid 8658, jiffies 4294951882 (age 12.560s)
+> > >   hex dump (first 32 bytes):
+> > >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> > >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> > >   backtrace:
+> > >     [<ffffffff83977188>] kmalloc include/linux/slab.h:556 [inline]
+> > >     [<ffffffff83977188>] kzalloc include/linux/slab.h:686 [inline]
+> > >     [<ffffffff83977188>] ip_vs_add_service+0x598/0x7c0 net/netfilter/ipvs/ip_vs_ctl.c:1343
+> > >     [<ffffffff8397d770>] do_ip_vs_set_ctl+0x810/0xa40 net/netfilter/ipvs/ip_vs_ctl.c:2570
+> > >     [<ffffffff838449a8>] nf_setsockopt+0x68/0xa0 net/netfilter/nf_sockopt.c:101
+> > >     [<ffffffff839ae4e9>] ip_setsockopt+0x259/0x1ff0 net/ipv4/ip_sockglue.c:1435
+> > >     [<ffffffff839fa03c>] raw_setsockopt+0x18c/0x1b0 net/ipv4/raw.c:857
+> > >     [<ffffffff83691f20>] __sys_setsockopt+0x1b0/0x360 net/socket.c:2117
+> > >     [<ffffffff836920f2>] __do_sys_setsockopt net/socket.c:2128 [inline]
+> > >     [<ffffffff836920f2>] __se_sys_setsockopt net/socket.c:2125 [inline]
+> > >     [<ffffffff836920f2>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2125
+> > >     [<ffffffff84350efa>] do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+> > >     [<ffffffff84400068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > do_ip_vs_set_ctl() allows users to add svc with the flags field set.
+> > when IP_VS_SVC_F_HASHED is used, and in ip_vs_svc_hash()
+> > called ip_vs_add_service() will trigger the err msg:
 > >
-> > >  /* copy everything but bpf_spin_lock */
-> > >  static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
-> > >  {
-> > > +       u32 off = 0, size = 0;
-> > > +
-> > >         if (unlikely(map_value_has_spin_lock(map))) {
-> > > -               u32 off = map->spin_lock_off;
-> > > +               off = map->spin_lock_off;
-> > > +               size = sizeof(struct bpf_spin_lock);
-> > > +       } else if (unlikely(map_value_has_timer(map))) {
-> > > +               off = map->timer_off;
-> > > +               size = sizeof(struct bpf_timer);
-> > > +       }
+> > IPVS: ip_vs_svc_hash(): request for already hashed, called from
+> > do_ip_vs_set_ctl+0x810/0xa40
 > >
-> > so the need to handle 0, 1, or 2 gaps seems to be the only reason to
-> > disallow both bpf_spinlock and bpf_timer in one map element, right?
->
-> exactly.
->
-> > Isn't it worth addressing it from the very beginning to lift the
-> > artificial restriction? E.g., for speed, you'd do:
+> > and the svc allocated will leak.
 > >
-> > if (likely(neither spinlock nor timer)) {
-> >  /* fastest pass */
-> > } else if (only one of spinlock or timer) {
-> >   /* do what you do here */
-> > } else {
-> >   int off1, off2, sz1, sz2;
-> >
-> >   if (spinlock_off < timer_off) {
-> >     off1 = spinlock_off;
-> >     sz1 = spinlock_sz;
-> >     off2 = timer_off;
-> >     sz2 = timer_sz;
-> >   } else {
-> >     ... you get the idea
+> > so fix it by mask the flags with ~IP_VS_SVC_F_HASHED in
+> > ip_vs_copy_usvc_compat(), while at it also remove the unnecessary
+> > flag IP_VS_SVC_F_HASHED set in ip_vs_edit_service().
 >
-> Not really :)
-
-hm, really? I meant that else will be:
-
-     off1 = timer_off;
-     sz1 = timer_sz;
-     off2 = spinlock_off;
-     sz2 = spinlock_sz;
-
-Just making sure that off1 < off2 always and sz1 and sz2 are matching
-
-> Are you suggesting to support one bpf_spin_lock and one
-> bpf_timer inside single map element, but not two spin_locks
-> and/or not two bpf_timers?
-
-Yes, exactly. I see bpf_spinlock and bpf_timer as two independent
-orthogonal features and I don't understand why we restrict using just
-one of them in a given map element. I think those 20 lines of code
-that decouples them and removes artificial restriction that users need
-to remember (or discover with surprise) is totally worth it.
-
-> Two me it's either one or support any.
-
-I think it's fine to start with supporting one. But one of each. They
-are independent of each other.
-
-> Anything in-between doesn't seem worth extra code.
-
-Up to you, but I disagree, obviously. It's possible to work-around
-that limitation with extra maps/complexity, so if I ever need to both
-lock an element and schedule the timer with it, it's not going to stop
-me. :)
-
+>         The net tree already contains fix for this problem.
 >
-> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > > index f386f85aee5c..0a828dc4968e 100644
-> > > --- a/kernel/bpf/verifier.c
-> > > +++ b/kernel/bpf/verifier.c
-> > > @@ -3241,6 +3241,15 @@ static int check_map_access(struct bpf_verifier_env *env, u32 regno,
-> > >                         return -EACCES;
-> > >                 }
-> > >         }
-> > > +       if (map_value_has_timer(map)) {
-> > > +               u32 t = map->timer_off;
-> > > +
-> > > +               if (reg->smin_value + off < t + sizeof(struct bpf_timer) &&
-> >
-> > <= ? Otherwise we allow accessing the first byte, unless I'm mistaken.
+> Regards
 >
-> I don't think so. See the comment above in if (map_value_has_spin_lock(map))
-> I didn't copy-paste it, because it's the same logic.
-
-Oh, I didn't realize that this is the interval intersection check I
-suggested a long time ago :) yeah, that still looks correct
-
+> --
+> Julian Anastasov <ja@ssi.bg>
 >
-> > > -       if (val) {
-> > > -               /* todo: relax this requirement */
-> > > -               verbose(env, "bpf_timer field can only be first in the map value element\n");
-> >
-> > ok, this was confusing, but now I see why you did that...
->
-> I'll clarify the comment to say that the next patch fixes it.
-
-ok, thanks
+good, thanks for the info, :-)
