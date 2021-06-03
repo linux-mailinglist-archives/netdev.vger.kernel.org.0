@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9208839995B
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 06:50:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3540399952
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 06:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229807AbhFCEwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 00:52:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
+        id S229656AbhFCEvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 00:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbhFCEwI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 00:52:08 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A8DC061756;
-        Wed,  2 Jun 2021 21:50:07 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id p20so5453723ljj.8;
-        Wed, 02 Jun 2021 21:50:07 -0700 (PDT)
+        with ESMTP id S229479AbhFCEvw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 00:51:52 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83FEEC06175F;
+        Wed,  2 Jun 2021 21:50:08 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id i9so6804205lfe.13;
+        Wed, 02 Jun 2021 21:50:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PMkoIgykrLxKf1BVjDSZxKW8LJf0Zsrl2rpAZilwckI=;
-        b=qPtMwgZPykmzU0IQ4Q8WNo09olOm3BkywOwwMd/B3jiVJcB4mDps+6JJRqmYwyhFF/
-         Bmmve3oavc5VXdywYoZAlDcqgXKwhjYvlE9Bu3AGU6KK71i1m3b1cHtUdJztwRS5X05P
-         nEcOUIO0/mBR/qpw2FlK5kFziC0RIJpxp4vc7cisqwPJx3XbKZ9mweyjaJ0cwFm2sVvK
-         YvDBYI/ouHAyardvK86QubN4ZGF9AiCiBZG27NHf0+Wfi7jeUPBXHeA7x5BX+eFcj1S6
-         6yZYUfLBI+SBzLMVzV5y6ZuyXRPyC+gpc5GNPdZcsMFePPzWZ/zhD/uwy5rZqBeoam5l
-         Tppw==
+        bh=x4E5XTU7wD0xWqzH6jn3ez00Wy8uYqD5Mj232oqDNsc=;
+        b=eSLOFmSpN0Bfsyg7YN/0klrX/bMhgfpC0raOfDEdildqldck+gVj30/hLvyhUWaaLA
+         OWqACChSQVNqKOb7qefVQmXZmg6C+f6/6zrdcUT427v05KeLUqo9Bx1JSHd6OQcrHIk/
+         DGMQahAUvbivHH1CQ/gtmrU5K1QbWSCk8TVkJ7tjkkJFx91uSjhClB8lWyBpq7Eno6WC
+         /ktbYcBZzZgobvyGUQN18u9om1hlAmL9lGIQORIEJGWtbvkC2Y9oeXqpKGgNTT1g3OGR
+         o7kCTHYyV9Z6RArcDfjoIlR6YSCcOauDa6KnlTCmdVk23htJn6pXyfwVYokToQZKruHN
+         O2rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PMkoIgykrLxKf1BVjDSZxKW8LJf0Zsrl2rpAZilwckI=;
-        b=G3pQ6Sg9wFptVPCjbOOa2szWGbziaWQ0r63HG/krjZ8be9voK42qFxMBxzs850hKbn
-         BxAtF++8bjNdRGPxcmU/ZxId884dudQDMcMEukEXHCHbB8Z/ViWR4uZKZTYxK/qx1svu
-         qGSgJLanaiINQ1AqsdTttgB4tVoaT736pLEBfMJx8uly5PVyWnjinSRHUjkHU43yryiK
-         3yy1KAKtQ4gGAp2KQQii84guYCAOMCKh0jW0ZUOu7guhA4jndEfsGjf3PR0NIuNlbf95
-         MBWEtuodNPPRmd6fF0go6inpPXOM/G8ceBIIEjBVYvS5/FVvFALO0dNCRt6fstteYPZj
-         IJSA==
-X-Gm-Message-State: AOAM532SIr/Ukl9lshW9rCA6VP8BDC+n+UlEZmgqMWyK2uJwuixeAijp
-        RAahFoqTTiuelUSWLZHD3go=
-X-Google-Smtp-Source: ABdhPJxrQYuTfTewbIIEDOKB5JbVPNslaAhZpQumZGikRou//p9oyGs8n0szLM8kbAyNBlumAbUHAA==
-X-Received: by 2002:a2e:89d7:: with SMTP id c23mr28046893ljk.318.1622695805979;
-        Wed, 02 Jun 2021 21:50:05 -0700 (PDT)
+        bh=x4E5XTU7wD0xWqzH6jn3ez00Wy8uYqD5Mj232oqDNsc=;
+        b=jLq0FjfiRL4eFp6fl5USSUdI2+VbigorO6xPbSi3U8qYO05igEUsO7s+v1BKwITTMz
+         KS6DmtJ7hkl79N/5q1ZFWODc/2A8ItjVtg8hAEOq9xhSoZOJYKTjC2R3sjsGDetnQCGG
+         UEWr2hZRPlOJ5F1NboBiZidovy1SRw13FniIG8lNnVFBJDMKhkfK9UyBQURvEDtCsCU8
+         e9ZLkkP8w5pJzQDHF6baFMt8lZuNtpwIkkgxv7ILsuv2y14y/NQKy4fMED3xKWjhyckl
+         6pY3o7+2rjT4QAI0W15iF8LReJ2LDId0wi+2x8Yd4Ncz0ockd2qn6NXZYZfzfSsttkBe
+         NFEw==
+X-Gm-Message-State: AOAM533ZO5RYcm0X7iBjbT45lpK0MKk/z/Lh71KrRIcdHvgok0W2L1Ka
+        zobq91zRC9Ff4aTBOABMeZWoGeomFE4=
+X-Google-Smtp-Source: ABdhPJw/S5Yo2Yo1LzYzIVt579lrIsi7FuNnPKhzsIni/2IlkV+ANwej29J/SFFYAkF750OJ8UvxHQ==
+X-Received: by 2002:ac2:560f:: with SMTP id v15mr14866462lfd.431.1622695806931;
+        Wed, 02 Jun 2021 21:50:06 -0700 (PDT)
 Received: from rsa-laptop.internal.lan ([217.25.229.52])
-        by smtp.gmail.com with ESMTPSA id z2sm191328lfe.229.2021.06.02.21.50.05
+        by smtp.gmail.com with ESMTPSA id z2sm191328lfe.229.2021.06.02.21.50.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 21:50:05 -0700 (PDT)
+        Wed, 02 Jun 2021 21:50:06 -0700 (PDT)
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
 To:     Johannes Berg <johannes@sipsolutions.net>,
         Loic Poulain <loic.poulain@linaro.org>
 Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RFC 3/6] rtnetlink: fill IFLA_PARENT_DEV_NAME on link dump
-Date:   Thu,  3 Jun 2021 07:49:51 +0300
-Message-Id: <20210603044954.8091-4-ryazanov.s.a@gmail.com>
+Subject: [RFC 4/6 iproute2] Update kernel headers
+Date:   Thu,  3 Jun 2021 07:49:52 +0300
+Message-Id: <20210603044954.8091-5-ryazanov.s.a@gmail.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210603044954.8091-1-ryazanov.s.a@gmail.com>
 References: <20210603044954.8091-1-ryazanov.s.a@gmail.com>
@@ -64,32 +64,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Return a parent device using the FLA_PARENT_DEV_NAME attribute during
-links dump. This should help a user figure out which links belong to a
-particular HW device. E.g. what data channels exists on a specific WWAN
-modem.
+A partial headers update that brings WWAN-related attributes. Included
+in the series mainly to make it possible to quickly compile and test the
+utility.
 
 Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 ---
- net/core/rtnetlink.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ include/uapi/linux/if_link.h |  6 ++++++
+ include/uapi/linux/wwan.h    | 16 ++++++++++++++++
+ 2 files changed, 22 insertions(+)
+ create mode 100644 include/uapi/linux/wwan.h
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 56ac16abe0ba..120887c892de 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -1819,6 +1819,11 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
- 	if (rtnl_fill_prop_list(skb, dev))
- 		goto nla_put_failure;
- 
-+	if (dev->dev.parent &&
-+	    nla_put_string(skb, IFLA_PARENT_DEV_NAME,
-+			   dev_name(dev->dev.parent)))
-+		goto nla_put_failure;
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 50193377..1cf48416 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -341,6 +341,12 @@ enum {
+ 	IFLA_ALT_IFNAME, /* Alternative ifname */
+ 	IFLA_PERM_ADDRESS,
+ 	IFLA_PROTO_DOWN_REASON,
 +
- 	nlmsg_end(skb, nlh);
- 	return 0;
++	/* device (sysfs) name as parent, used instead
++	 * of IFLA_LINK where there's no parent netdev
++	 */
++	IFLA_PARENT_DEV_NAME,
++
+ 	__IFLA_MAX
+ };
  
+diff --git a/include/uapi/linux/wwan.h b/include/uapi/linux/wwan.h
+new file mode 100644
+index 00000000..32a2720b
+--- /dev/null
++++ b/include/uapi/linux/wwan.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
++/*
++ * Copyright (C) 2021 Intel Corporation.
++ */
++#ifndef _UAPI_WWAN_H_
++#define _UAPI_WWAN_H_
++
++enum {
++	IFLA_WWAN_UNSPEC,
++	IFLA_WWAN_LINK_ID, /* u32 */
++
++	__IFLA_WWAN_MAX
++};
++#define IFLA_WWAN_MAX (__IFLA_WWAN_MAX - 1)
++
++#endif /* _UAPI_WWAN_H_ */
 -- 
 2.26.3
 
