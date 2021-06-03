@@ -2,24 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A5C3399B1D
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 08:59:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B745399B1A
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 08:59:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbhFCHBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 03:01:13 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:46906 "EHLO
+        id S229833AbhFCHBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 03:01:11 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:46900 "EHLO
         codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbhFCHBK (ORCPT
+        with ESMTP id S229665AbhFCHBK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 03:01:10 -0400
+X-Greylist: delayed 416 seconds by postgrey-1.27 at vger.kernel.org; Thu, 03 Jun 2021 03:01:10 EDT
 Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 9C9F2219ED; Thu,  3 Jun 2021 14:52:31 +0800 (AWST)
+        id 0E2A8219EE; Thu,  3 Jun 2021 14:52:32 +0800 (AWST)
 From:   Jeremy Kerr <jk@codeconstruct.com.au>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Jeffery <andrew@aj.id.au>,
         Matt Johnston <matt@codeconstruct.com.au>
-Subject: [PATCH RFC net-next 08/16] mctp: Add netlink route management
-Date:   Thu,  3 Jun 2021 14:52:10 +0800
-Message-Id: <20210603065218.570867-9-jk@codeconstruct.com.au>
+Subject: [PATCH RFC net-next 09/16] mctp: Add neighbour implementation
+Date:   Thu,  3 Jun 2021 14:52:11 +0800
+Message-Id: <20210603065218.570867-10-jk@codeconstruct.com.au>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210603065218.570867-1-jk@codeconstruct.com.au>
 References: <20210603065218.570867-1-jk@codeconstruct.com.au>
@@ -31,358 +32,274 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Matt Johnston <matt@codeconstruct.com.au>
 
-This change adds RTM_GETROUTE, RTM_NEWROUTE & RTM_DELROUTE handlers,
-allowing management of the MCTP route table.
-
-Includes changes from Jeremy Kerr <jk@codeconstruct.com.au>.
+Add an initial neighbour table implementation, to be used in the route
+output path.
 
 Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
 ---
- include/net/mctp.h |   4 +
- net/mctp/route.c   | 252 +++++++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 247 insertions(+), 9 deletions(-)
+ include/net/mctp.h       |  25 +++++++
+ include/net/mctpdevice.h |   1 +
+ include/net/netns/mctp.h |   4 ++
+ net/mctp/Makefile        |   2 +-
+ net/mctp/af_mctp.c       |   5 ++
+ net/mctp/device.c        |   1 +
+ net/mctp/neigh.c         | 141 +++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 178 insertions(+), 1 deletion(-)
+ create mode 100644 net/mctp/neigh.c
 
 diff --git a/include/net/mctp.h b/include/net/mctp.h
-index 79ac1202f8e5..131c55850853 100644
+index 131c55850853..a37f77c787a5 100644
 --- a/include/net/mctp.h
 +++ b/include/net/mctp.h
-@@ -111,6 +111,10 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 		      struct sk_buff *skb, mctp_eid_t daddr, u8 req_tag);
- 
- /* routing <--> device interface */
-+int mctp_route_add(struct mctp_dev *mdev, mctp_eid_t daddr_start,
-+		   unsigned int daddr_extent, unsigned int mtu, bool is_local);
-+int mctp_route_remove(struct mctp_dev *mdev, mctp_eid_t daddr_start,
-+		      unsigned int daddr_extent);
- int mctp_route_add_local(struct mctp_dev *mdev, mctp_eid_t addr);
+@@ -119,6 +119,31 @@ int mctp_route_add_local(struct mctp_dev *mdev, mctp_eid_t addr);
  int mctp_route_remove_local(struct mctp_dev *mdev, mctp_eid_t addr);
  void mctp_route_remove_dev(struct mctp_dev *mdev);
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 7e2997c67b8e..4c8da8e35c3d 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -20,6 +20,8 @@
  
- #include <net/mctp.h>
- #include <net/mctpdevice.h>
-+#include <net/netlink.h>
-+#include <net/sock.h>
- 
- /* route output callbacks */
- static int mctp_route_discard(struct mctp_route *route, struct sk_buff *skb)
-@@ -36,8 +38,7 @@ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
- 	return 0;
- }
- 
--static int __always_unused mctp_route_output(struct mctp_route *route,
--					     struct sk_buff *skb)
-+static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
- {
- 	unsigned int mtu;
- 	int rc;
-@@ -174,20 +175,28 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- }
- 
- /* route management */
--int mctp_route_add_local(struct mctp_dev *mdev, mctp_eid_t addr)
-+int mctp_route_add(struct mctp_dev *mdev, mctp_eid_t daddr_start,
-+		   unsigned int daddr_extent, unsigned int mtu, bool is_local)
- {
- 	struct net *net = dev_net(mdev->dev);
- 	struct mctp_route *rt, *ert;
- 
-+	if (!mctp_address_ok(daddr_start))
-+		return -EINVAL;
++/* neighbour definitions */
++enum mctp_neigh_source {
++	MCTP_NEIGH_STATIC,
++	MCTP_NEIGH_DISCOVER,
++};
 +
-+	if (daddr_extent > 0xff || daddr_start + daddr_extent >= 255)
-+		return -EINVAL;
++struct mctp_neigh {
++	struct mctp_dev		*dev;
++	mctp_eid_t		eid;
++	enum mctp_neigh_source	source;
 +
- 	rt = mctp_route_alloc();
- 	if (!rt)
- 		return -ENOMEM;
- 
--	rt->min = addr;
--	rt->max = addr;
-+	rt->min = daddr_start;
-+	rt->max = daddr_start + daddr_extent;
-+	rt->mtu = mtu;
- 	rt->dev = mdev;
- 	dev_hold(rt->dev->dev);
--	rt->output = mctp_route_input;
-+	rt->output = is_local ? mctp_route_input : mctp_route_output;
- 
- 	ASSERT_RTNL();
- 	/* Prevent duplicate identical routes. */
-@@ -203,22 +212,43 @@ int mctp_route_add_local(struct mctp_dev *mdev, mctp_eid_t addr)
- 	return 0;
- }
- 
--int mctp_route_remove_local(struct mctp_dev *mdev, mctp_eid_t addr)
-+int mctp_route_remove(struct mctp_dev *mdev, mctp_eid_t daddr_start,
-+		      unsigned int daddr_extent)
- {
- 	struct net *net = dev_net(mdev->dev);
- 	struct mctp_route *rt, *tmp;
-+	mctp_eid_t daddr_end;
-+	bool dropped;
++	unsigned char		ha[MAX_ADDR_LEN];
 +
-+	if (daddr_extent > 0xff || daddr_start + daddr_extent >= 255)
-+		return -EINVAL;
++	struct list_head	list;
++	struct rcu_head		rcu;
++};
 +
-+	daddr_end = daddr_start + daddr_extent;
-+	dropped = false;
- 
- 	ASSERT_RTNL();
- 
- 	list_for_each_entry_safe(rt, tmp, &net->mctp.routes, list) {
--		if (rt->dev == mdev && rt->min == addr && rt->max == addr) {
-+		if (rt->dev == mdev &&
-+		    rt->min == daddr_start && rt->max == daddr_end) {
- 			list_del_rcu(&rt->list);
- 			/* TODO: immediate RTM_DELROUTE */
- 			mctp_route_release(rt);
-+			dropped = true;
- 		}
- 	}
- 
--	return 0;
-+	return dropped ? 0 : -ENOENT;
-+}
++int mctp_neigh_init(void);
++void mctp_neigh_exit(void);
 +
-+int mctp_route_add_local(struct mctp_dev *mdev, mctp_eid_t addr)
-+{
-+	return mctp_route_add(mdev, addr, 0, 0, true);
-+}
++// ret_hwaddr may be NULL, otherwise must have space for MAX_ADDR_LEN
++int mctp_neigh_lookup(struct mctp_dev *dev, mctp_eid_t eid,
++		      void *ret_hwaddr);
++void mctp_neigh_remove_dev(struct mctp_dev *mdev);
 +
-+int mctp_route_remove_local(struct mctp_dev *mdev, mctp_eid_t addr)
-+{
-+	return mctp_route_remove(mdev, addr, 0);
- }
+ int mctp_routes_init(void);
+ void mctp_routes_exit(void);
  
- /* removes all entries for a given device */
-@@ -285,6 +315,199 @@ static struct packet_type mctp_packet_type = {
- 	.func = mctp_pkttype_receive,
+diff --git a/include/net/mctpdevice.h b/include/net/mctpdevice.h
+index a6ac4aee5d7b..f1ffba088d56 100644
+--- a/include/net/mctpdevice.h
++++ b/include/net/mctpdevice.h
+@@ -37,5 +37,6 @@ struct mctp_dev {
+ 
+ struct mctp_dev *mctp_dev_get_rtnl(const struct net_device *dev);
+ struct mctp_dev *__mctp_dev_get(const struct net_device *dev);
++struct mctp_dev *mctp_dev_get_rtnl(const struct net_device *dev);
+ 
+ #endif /* __NET_MCTPDEVICE_H */
+diff --git a/include/net/netns/mctp.h b/include/net/netns/mctp.h
+index 508459b08a59..2f5ebeeb320e 100644
+--- a/include/net/netns/mctp.h
++++ b/include/net/netns/mctp.h
+@@ -11,6 +11,10 @@
+ struct netns_mctp {
+ 	/* Only updated under RTNL, entries freed via RCU */
+ 	struct list_head routes;
++
++	/* neighbour table */
++	struct mutex neigh_lock;
++	struct list_head neighbours;
  };
  
-+/* netlink interface */
+ #endif /* __NETNS_MCTP_H__ */
+diff --git a/net/mctp/Makefile b/net/mctp/Makefile
+index b1a330e9d82a..0171333384d7 100644
+--- a/net/mctp/Makefile
++++ b/net/mctp/Makefile
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_MCTP) += mctp.o
+-mctp-objs := af_mctp.o device.o route.o
++mctp-objs := af_mctp.o device.o route.o neigh.o
+diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
+index 081c7b8005da..227cd49203b0 100644
+--- a/net/mctp/af_mctp.c
++++ b/net/mctp/af_mctp.c
+@@ -161,6 +161,10 @@ static __init int mctp_init(void)
+ 	if (rc)
+ 		goto err_unreg_proto;
+ 
++	rc = mctp_neigh_init();
++	if (rc)
++		goto err_unreg_proto;
 +
-+static const struct nla_policy rta_mctp_policy[RTA_MAX + 1] = {
-+	[RTA_DST]		= { .type = NLA_U8 },
-+	[RTA_METRICS]		= { .type = NLA_NESTED },
-+	[RTA_OIF]		= { .type = NLA_U32 },
-+};
-+
-+static const struct nla_policy rta_metrics_mctp_policy[RTAX_MAX + 1] = {
-+	[RTAX_MTU]		= { .type = NLA_U32 },
-+};
-+
-+/* Common part for RTM_NEWROUTE and RTM_DELROUTE parsing.
-+ * tb must hold RTA_MAX+1 elements.
+ 	mctp_device_init();
+ 
+ 	return 0;
+@@ -176,6 +180,7 @@ static __init int mctp_init(void)
+ static __exit void mctp_exit(void)
+ {
+ 	mctp_device_exit();
++	mctp_neigh_exit();
+ 	mctp_routes_exit();
+ 	proto_unregister(&mctp_proto);
+ 	sock_unregister(PF_MCTP);
+diff --git a/net/mctp/device.c b/net/mctp/device.c
+index 273041ed2d3e..d3ca9f664b30 100644
+--- a/net/mctp/device.c
++++ b/net/mctp/device.c
+@@ -285,6 +285,7 @@ static void mctp_unregister(struct net_device *dev)
+ 	RCU_INIT_POINTER(mdev->dev->mctp_ptr, NULL);
+ 
+ 	mctp_route_remove_dev(mdev);
++	mctp_neigh_remove_dev(mdev);
+ 	list_for_each_entry_safe(ifa, tmp, &mdev->addrs, dev_list) {
+ 		list_del_rcu(&ifa->dev_list);
+ 		kfree_rcu(ifa, rcu);
+diff --git a/net/mctp/neigh.c b/net/mctp/neigh.c
+new file mode 100644
+index 000000000000..acf4f38c878b
+--- /dev/null
++++ b/net/mctp/neigh.c
+@@ -0,0 +1,141 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Management Controller Transport Protocol (MCTP) - routing
++ * implementation.
++ *
++ * This is currently based on a simple routing table, with no dst cache. The
++ * number of routes should stay fairly small, so the lookup cost is small.
++ *
++ * Copyright (c) 2021 Code Construct
++ * Copyright (c) 2021 Google
 + */
-+static int mctp_route_nlparse(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			      struct netlink_ext_ack *extack,
-+			      struct nlattr **tb, struct rtmsg **rtm,
-+			      struct mctp_dev **mdev, mctp_eid_t *daddr_start)
++
++#include <linux/idr.h>
++#include <linux/mctp.h>
++#include <linux/netdevice.h>
++#include <linux/rtnetlink.h>
++#include <linux/skbuff.h>
++
++#include <net/mctp.h>
++#include <net/mctpdevice.h>
++#include <net/netlink.h>
++#include <net/sock.h>
++
++static int __always_unused mctp_neigh_add(struct mctp_dev *mdev, mctp_eid_t eid,
++					  enum mctp_neigh_source source,
++					  size_t lladdr_len, const void *lladdr)
 +{
-+	struct net *net = sock_net(skb->sk);
-+	struct net_device *dev;
-+	unsigned int ifindex;
++	struct net *net = dev_net(mdev->dev);
++	struct mctp_neigh *neigh;
 +	int rc;
 +
-+	rc = nlmsg_parse(nlh, sizeof(struct rtmsg), tb, RTA_MAX,
-+			 rta_mctp_policy, extack);
-+	if (rc < 0) {
-+		NL_SET_ERR_MSG(extack, "incorrect format");
-+		return rc;
++	mutex_lock(&net->mctp.neigh_lock);
++	if (mctp_neigh_lookup(mdev, eid, NULL) == 0) {
++		rc = -EEXIST;
++		goto out;
 +	}
 +
-+	if (!tb[RTA_DST]) {
-+		NL_SET_ERR_MSG(extack, "dst EID missing");
-+		return -EINVAL;
-+	}
-+	*daddr_start = nla_get_u8(tb[RTA_DST]);
-+
-+	if (!tb[RTA_OIF]) {
-+		NL_SET_ERR_MSG(extack, "ifindex missing");
-+		return -EINVAL;
-+	}
-+	ifindex = nla_get_u32(tb[RTA_OIF]);
-+
-+	*rtm = nlmsg_data(nlh);
-+	if ((*rtm)->rtm_family != AF_MCTP) {
-+		NL_SET_ERR_MSG(extack, "route family must be AF_MCTP");
-+		return -EINVAL;
++	if (lladdr_len > sizeof(neigh->ha)) {
++		rc = -EINVAL;
++		goto out;
 +	}
 +
-+	dev = __dev_get_by_index(net, ifindex);
-+	if (!dev) {
-+		NL_SET_ERR_MSG(extack, "bad ifindex");
-+		return -ENODEV;
++	neigh = kzalloc(sizeof(*neigh), GFP_KERNEL);
++	if (!neigh) {
++		rc = -ENOMEM;
++		goto out;
 +	}
-+	*mdev = mctp_dev_get_rtnl(dev);
-+	if (!*mdev)
-+		return -ENODEV;
++	INIT_LIST_HEAD(&neigh->list);
++	neigh->dev = mdev;
++	dev_hold(neigh->dev->dev);
++	neigh->eid = eid;
++	neigh->source = source;
++	memcpy(neigh->ha, lladdr, lladdr_len);
 +
-+	if (dev->flags & IFF_LOOPBACK) {
-+		NL_SET_ERR_MSG(extack, "no routes to loopback");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mctp_newroute(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			 struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[RTA_MAX + 1];
-+	mctp_eid_t daddr_start;
-+	struct mctp_dev *mdev;
-+	struct rtmsg *rtm;
-+	unsigned int mtu;
-+	int rc;
-+
-+	rc = mctp_route_nlparse(skb, nlh, extack, tb,
-+				&rtm, &mdev, &daddr_start);
-+	if (rc < 0)
-+		return rc;
-+
-+	/* TODO: parse mtu from nlparse */
-+	mtu = 0;
-+
-+	rc = mctp_route_add(mdev, daddr_start, rtm->rtm_dst_len, mtu, false);
++	list_add_rcu(&neigh->list, &net->mctp.neighbours);
++	rc = 0;
++out:
++	mutex_unlock(&net->mctp.neigh_lock);
 +	return rc;
 +}
 +
-+static int mctp_delroute(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			 struct netlink_ext_ack *extack)
++static void __mctp_neigh_free(struct rcu_head *rcu)
 +{
-+	struct nlattr *tb[RTA_MAX + 1];
-+	mctp_eid_t daddr_start;
-+	struct mctp_dev *mdev;
-+	struct rtmsg *rtm;
-+	int rc;
++	struct mctp_neigh *neigh = container_of(rcu, struct mctp_neigh, rcu);
 +
-+	rc = mctp_route_nlparse(skb, nlh, extack, tb,
-+				&rtm, &mdev, &daddr_start);
-+	if (rc < 0)
-+		return rc;
-+
-+	rc = mctp_route_remove(mdev, daddr_start, rtm->rtm_dst_len);
-+	return rc;
++	dev_put(neigh->dev->dev);
++	kfree(neigh);
 +}
 +
-+static int mctp_fill_rtinfo(struct sk_buff *skb, struct mctp_route *rt,
-+			    u32 portid, u32 seq, int event, unsigned int flags)
++/* Removes all neighbour entries referring to a device */
++void mctp_neigh_remove_dev(struct mctp_dev *mdev)
 +{
-+	struct nlmsghdr *nlh;
-+	struct rtmsg *hdr;
-+	void *metrics;
++	struct net *net = dev_net(mdev->dev);
++	struct mctp_neigh *neigh, *tmp;
 +
-+	nlh = nlmsg_put(skb, portid, seq, event, sizeof(*hdr), flags);
-+	if (!nlh)
-+		return -EMSGSIZE;
-+
-+	hdr = nlmsg_data(nlh);
-+	hdr->rtm_family = AF_MCTP;
-+
-+	/* we use the _len fields as a number of EIDs, rather than
-+	 * a number of bits in the address
-+	 */
-+	hdr->rtm_dst_len = rt->max - rt->min;
-+	hdr->rtm_src_len = 0;
-+	hdr->rtm_tos = 0;
-+	hdr->rtm_table = RT_TABLE_DEFAULT;
-+	hdr->rtm_protocol = RTPROT_STATIC; /* everything is user-defined */
-+	hdr->rtm_scope = RT_SCOPE_LINK; /* TODO: scope in mctp_route? */
-+	hdr->rtm_type = RTN_ANYCAST; /* TODO: type from route */
-+
-+	if (nla_put_u8(skb, RTA_DST, rt->min))
-+		goto cancel;
-+
-+	metrics = nla_nest_start_noflag(skb, RTA_METRICS);
-+	if (!metrics)
-+		goto cancel;
-+
-+	if (rt->mtu) {
-+		if (nla_put_u32(skb, RTAX_MTU, rt->mtu))
-+			goto cancel;
++	mutex_lock(&net->mctp.neigh_lock);
++	list_for_each_entry_safe(neigh, tmp, &net->mctp.neighbours, list) {
++		if (neigh->dev == mdev) {
++			list_del_rcu(&neigh->list);
++			/* TODO: immediate RTM_DELNEIGH */
++			call_rcu(&neigh->rcu, __mctp_neigh_free);
++		}
 +	}
 +
-+	nla_nest_end(skb, metrics);
-+
-+	if (rt->dev) {
-+		if (nla_put_u32(skb, RTA_OIF, rt->dev->dev->ifindex))
-+			goto cancel;
-+	}
-+
-+	/* TODO: conditional neighbour physaddr? */
-+
-+	nlmsg_end(skb, nlh);
-+
-+	return 0;
-+
-+cancel:
-+	nlmsg_cancel(skb, nlh);
-+	return -EMSGSIZE;
++	mutex_unlock(&net->mctp.neigh_lock);
 +}
 +
-+static int mctp_dump_rtinfo(struct sk_buff *skb, struct netlink_callback *cb)
++int mctp_neigh_lookup(struct mctp_dev *mdev, mctp_eid_t eid, void *ret_hwaddr)
 +{
-+	struct net *net = sock_net(skb->sk);
-+	struct mctp_route *rt;
-+	int s_idx, idx;
-+
-+	/* TODO: allow filtering on route data, possibly under
-+	 * cb->strict_check
-+	 */
-+
-+	/* TODO: change to struct overlay */
-+	s_idx = cb->args[0];
-+	idx = 0;
++	struct net *net = dev_net(mdev->dev);
++	struct mctp_neigh *neigh;
++	int rc = -EHOSTUNREACH; // TODO: or ENOENT?
 +
 +	rcu_read_lock();
-+	list_for_each_entry_rcu(rt, &net->mctp.routes, list) {
-+		if (idx++ < s_idx)
-+			continue;
-+		if (mctp_fill_rtinfo(skb, rt,
-+				     NETLINK_CB(cb->skb).portid,
-+				     cb->nlh->nlmsg_seq,
-+				     RTM_NEWROUTE, NLM_F_MULTI) < 0)
++	list_for_each_entry_rcu(neigh, &net->mctp.neighbours, list) {
++		if (mdev == neigh->dev && eid == neigh->eid) {
++			if (ret_hwaddr)
++				memcpy(ret_hwaddr, neigh->ha,
++				       sizeof(neigh->ha));
++			rc = 0;
 +			break;
++		}
 +	}
-+
 +	rcu_read_unlock();
-+	cb->args[0] = idx;
-+
-+	return skb->len;
++	return rc;
 +}
 +
- /* net namespace implementation */
- static int __net_init mctp_routes_net_init(struct net *net)
- {
-@@ -310,11 +533,22 @@ static struct pernet_operations mctp_net_ops = {
- int __init mctp_routes_init(void)
- {
- 	dev_add_pack(&mctp_packet_type);
++/* namespace registration */
++static int __net_init mctp_neigh_net_init(struct net *net)
++{
++	struct netns_mctp *ns = &net->mctp;
 +
-+	rtnl_register_module(THIS_MODULE, PF_MCTP, RTM_GETROUTE,
-+			     NULL, mctp_dump_rtinfo, 0);
-+	rtnl_register_module(THIS_MODULE, PF_MCTP, RTM_NEWROUTE,
-+			     mctp_newroute, NULL, 0);
-+	rtnl_register_module(THIS_MODULE, PF_MCTP, RTM_DELROUTE,
-+			     mctp_delroute, NULL, 0);
++	INIT_LIST_HEAD(&ns->neighbours);
++	return 0;
++}
 +
- 	return register_pernet_subsys(&mctp_net_ops);
- }
- 
- void __exit mctp_routes_exit(void)
- {
- 	unregister_pernet_subsys(&mctp_net_ops);
-+	rtnl_unregister(PF_MCTP, RTM_DELROUTE);
-+	rtnl_unregister(PF_MCTP, RTM_NEWROUTE);
-+	rtnl_unregister(PF_MCTP, RTM_GETROUTE);
- 	dev_remove_pack(&mctp_packet_type);
- }
++static void __net_exit mctp_neigh_net_exit(struct net *net)
++{
++	struct netns_mctp *ns = &net->mctp;
++	struct mctp_neigh *neigh;
++
++	list_for_each_entry(neigh, &ns->neighbours, list)
++		call_rcu(&neigh->rcu, __mctp_neigh_free);
++}
++
++/* net namespace implementation */
++
++static struct pernet_operations mctp_net_ops = {
++	.init = mctp_neigh_net_init,
++	.exit = mctp_neigh_net_exit,
++};
++
++int __init mctp_neigh_init(void)
++{
++	return register_pernet_subsys(&mctp_net_ops);
++}
++
++void __exit mctp_neigh_exit(void)
++{
++	unregister_pernet_subsys(&mctp_net_ops);
++}
 -- 
 2.30.2
 
