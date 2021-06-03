@@ -2,43 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D95839AC5F
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 23:10:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A45F39AC5B
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 23:10:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbhFCVLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 17:11:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47294 "EHLO mail.kernel.org"
+        id S230037AbhFCVLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 17:11:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47278 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229973AbhFCVLu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229972AbhFCVLu (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 3 Jun 2021 17:11:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B1DCC613EC;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9CBE2613EA;
         Thu,  3 Jun 2021 21:10:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1622754605;
-        bh=ySfnL1foLcg2ia2ArhyHfNX+pq6VlTqFrNXmFUOGEvc=;
+        bh=lbDFdHaBMvJl/yFHn0zrTbFJo59Ca7lfA6cg4Gr/kM0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Sh184MY4TICWK4JzVBZ+Y9EAv+ZKWMq/kz9aVSEEgdYEERiMxhReZ0NfHqQbuvfCi
-         cfnU39TjzACWhpm9ck0pluEfuF+wxrqCtZLT3WMEtRXVKlBkbSx1E4GATE3iyYrbQ3
-         XwesFq3rMKWS55qeTFOc5X2lZdel0P1AtR62BMw/EYi3jBxriZUh8JCK5fu3/JsvAH
-         z4ZtE2dYJs3vdDTVIHbTYsjGK4hwzv2B8O3bJbbtRWHWDAulv7WXHT+vSW8v3iXfaG
-         Mc/+0PbiHlwu/B2+2RWBxMlXVDjH7YL95sPElrT4j4wsBHVdvgAZhXr5pX8viZqjEO
-         Qou6ypaGrB9ZA==
+        b=jGOuMSsGIJ9AdhBUkOSBeD/2dq3LSINmzoG8/Bg2YDggux9i5r/3hn1Jm2lKjLmxF
+         MmiCfieEVu3pfEQqUISCSml+NmZM5xGGt7v85oDGw2rbq3/9dScLe9/bKruDPUg0P7
+         V3qhpt/X3HV7CzhZTnWZ3XtD5vsPVe+WB5aFO+8Q5QcM9LhqkDo67gs+6Hrx3YqU3H
+         XwvS2KtvMu0xWWUZkLHal2PY5CgtvyPlMMzlQY1rZIMeda+BFArOIKadjuwAeAaKnx
+         jWSChMRMjgKq/cqlv+1NzZgPzf8VwAAclF9lCZh3lpNA4IGKq3bbGYzYbwuNpJaVfA
+         rFoG5jP7zbgtA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A161C60ACA;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8DAF7609D9;
         Thu,  3 Jun 2021 21:10:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 1/2] nfc: mrvl: remove useless "continue" at end of loop
+Subject: Re: [PATCH 0/7] QED NVMeTCP Offload
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162275460565.4513.18351247670919056182.git-patchwork-notify@kernel.org>
+Message-Id: <162275460557.4513.1472731666027007171.git-patchwork-notify@kernel.org>
 Date:   Thu, 03 Jun 2021 21:10:05 +0000
-References: <20210602112011.44473-1-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20210602112011.44473-1-krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     davem@davemloft.net, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        joe@perches.com
+References: <20210602171655.23581-1-smalin@marvell.com>
+In-Reply-To: <20210602171655.23581-1-smalin@marvell.com>
+To:     Shai Malin <smalin@marvell.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-nvme@lists.infradead.org, sagi@grimberg.me, hch@lst.de,
+        axboe@fb.com, kbusch@kernel.org, aelior@marvell.com,
+        mkalderon@marvell.com, okulkarni@marvell.com,
+        pkushwaha@marvell.com, prabhakar.pkin@gmail.com,
+        malin1024@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,21 +50,36 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed,  2 Jun 2021 13:20:10 +0200 you wrote:
-> The "continue" statement at the end of a for loop does not have an
-> effect.  Entire loop contents can be slightly simplified to increase
-> code readability.  No functional change.
+On Wed, 2 Jun 2021 20:16:48 +0300 you wrote:
+> Hi Dave,
 > 
-> Suggested-by: Joe Perches <joe@perches.com>
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Intro:
+> ======
+> This is the qed part of Marvell’s NVMeTCP offload series, shared as
+> RFC series "NVMeTCP Offload ULP and QEDN Device Drive".
+> This part is a standalone series, and is not dependent on other parts
+> of the RFC.
+> The overall goal is to add qedn as the offload driver for NVMeTCP,
+> alongside the existing offload drivers (qedr, qedi and qedf for rdma,
+> iscsi and fcoe respectively).
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,1/2] nfc: mrvl: remove useless "continue" at end of loop
-    https://git.kernel.org/netdev/net-next/c/a58224040f2d
-  - [v2,2/2] nfc: mrvl: reduce the scope of local variables
-    https://git.kernel.org/netdev/net-next/c/2c95e6c7e558
+  - [1/7] qed: Add TCP_ULP FW resource layout
+    https://git.kernel.org/netdev/net-next/c/1bd4f5716fc3
+  - [2/7] qed: Add NVMeTCP Offload PF Level FW and HW HSI
+    https://git.kernel.org/netdev/net-next/c/897e87a10c35
+  - [3/7] qed: Add NVMeTCP Offload Connection Level FW and HW HSI
+    https://git.kernel.org/netdev/net-next/c/76684ab8f4f9
+  - [4/7] qed: Add support of HW filter block
+    https://git.kernel.org/netdev/net-next/c/203d136e8958
+  - [5/7] qed: Add NVMeTCP Offload IO Level FW and HW HSI
+    https://git.kernel.org/netdev/net-next/c/ab47bdfd2e2e
+  - [6/7] qed: Add NVMeTCP Offload IO Level FW Initializations
+    https://git.kernel.org/netdev/net-next/c/826da4861430
+  - [7/7] qed: Add IP services APIs support
+    https://git.kernel.org/netdev/net-next/c/806ee7f81a2b
 
 You are awesome, thank you!
 --
