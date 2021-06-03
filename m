@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5509039ACE6
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 23:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E928A39ACE9
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 23:30:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230231AbhFCVbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 17:31:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51108 "EHLO mail.kernel.org"
+        id S230303AbhFCVb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 17:31:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51088 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229963AbhFCVbw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229719AbhFCVbw (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 3 Jun 2021 17:31:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 645C4613F9;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 55899613D8;
         Thu,  3 Jun 2021 21:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1622755807;
-        bh=9ZW1bmzV6h5W7yp3MKPtM4rE53pVvzC/kouhzRQX8Jk=;
+        bh=sw4MDD9qny2ynlrCAnn04HnUSspiFRVLPaD0QeiKRRI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oDZOWEm4EsRPcl19vi1KL5iM94ifxgkeuPZfWw2W8NXZo6dH8Egn2GcBcOxjRuPvW
-         Oj7nLt8pAjApujZwb4QbZbQojnS2cWDvRceeVH2Nc7ijEaV+9pwPECyv7ff8lfJ3J3
-         /T+OrFtgNLj6eKmO0TZezH73Zdu9NdPqAq26hu4/pnQLoDWMFb0fB24xdtKUSFoplS
-         ygP6RMV7FwFLBblBypqvDkkBjz9kmIfEyrOkE8X0UEdlAKi9x+r0jwqdDaAajlfcES
-         DeIpcpbq7dGzxv90oQjlTmn0YyIX2kSgEwnCIPihCanqagEx0HYY5BPWAeTvrFIuGO
-         P+yCer0u8H+Sw==
+        b=o76L0jV5FRpBvAfWaWYeV5LtTLVhv+shZ5kDS/5+Hl8sdDF+yy1cavw9P7WW0v3sT
+         +2Rg1Eooqf23jcceafPE7bF30kbSBGbO/FKOD3RkPx/aqLZz+b+91EwfeY3/TuX1vu
+         MEd5otrE38CdmJ3jHMdKQvFxCO+Uf4It/ecR/z/z2oMHxKGL3/6qBKCsnZ31xV7mXq
+         78Jptc+F6ifiyYbZpmXwMKzOiRh4byypEJOTPkT3dXNAzDmpga8gMtetlP9B0qYx+m
+         5KLAdmYdfXcjUrGr++Xi7sVOxHzAC0bVWeeBxWxxoJBha1Tg/X7vFjeNYuPjL54ot7
+         6No5Mx96CR0/w==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 52C03609D9;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 494B460ACA;
         Thu,  3 Jun 2021 21:30:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] net: bonding: Use strscpy_pad() instead of
- manually-truncated strncpy()
+Subject: Re: [PATCH net-next] net: tcp better handling of reordering then loss
+ cases
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162275580733.14468.13433184773362130626.git-patchwork-notify@kernel.org>
+Message-Id: <162275580729.14468.5072295293344961553.git-patchwork-notify@kernel.org>
 Date:   Thu, 03 Jun 2021 21:30:07 +0000
-References: <20210602205820.361846-1-keescook@chromium.org>
-In-Reply-To: <20210602205820.361846-1-keescook@chromium.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     jay.vosburgh@canonical.com, lkp@intel.com, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20210603005121.3438186-1-ycheng@google.com>
+In-Reply-To: <20210603005121.3438186-1-ycheng@google.com>
+To:     Yuchung Cheng <ycheng@google.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        ncardwell@google.com, bianmingkun@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -49,21 +47,22 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed,  2 Jun 2021 13:58:20 -0700 you wrote:
-> Silence this warning by using strscpy_pad() directly:
+On Wed,  2 Jun 2021 17:51:21 -0700 you wrote:
+> This patch aims to improve the situation when reordering and loss are
+> ocurring in the same flight of packets.
 > 
-> drivers/net/bonding/bond_main.c:4877:3: warning: 'strncpy' specified bound 16 equals destination size [-Wstringop-truncation]
->     4877 |   strncpy(params->primary, primary, IFNAMSIZ);
->          |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> Additionally replace other strncpy() uses, as it is considered deprecated:
-> https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings
+> Previously the reordering would first induce a spurious recovery, then
+> the subsequent ACK may undo the cwnd (based on the timestamps e.g.).
+> However the current loss recovery does not proceed to invoke
+> RACK to install a reordering timer. If some packets are also lost, this
+> may lead to a long RTO-based recovery. An example is
+> https://groups.google.com/g/bbr-dev/c/OFHADvJbTEI
 > 
 > [...]
 
 Here is the summary with links:
-  - [v3] net: bonding: Use strscpy_pad() instead of manually-truncated strncpy()
-    https://git.kernel.org/netdev/net-next/c/43902070fb7b
+  - [net-next] net: tcp better handling of reordering then loss cases
+    https://git.kernel.org/netdev/net-next/c/a29cb6914681
 
 You are awesome, thank you!
 --
