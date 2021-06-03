@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5A0239A6D3
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:09:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70C6D39A6E4
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:09:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231140AbhFCRJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 13:09:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40596 "EHLO mail.kernel.org"
+        id S231225AbhFCRJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 13:09:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40766 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230440AbhFCRJe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 13:09:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E6373613F6;
-        Thu,  3 Jun 2021 17:07:48 +0000 (UTC)
+        id S231173AbhFCRJm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 13:09:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 77D57613DE;
+        Thu,  3 Jun 2021 17:07:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622740069;
-        bh=v/AaDmzeHOSL0uOmSUHpel8pKwq22kdyTmBRv3iwZAI=;
+        s=k20201202; t=1622740077;
+        bh=Jz2m3vwdQJW755VD9qnYrdVv0PeunQwMOP0ikzH8SC4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t81L8bFVh65NdauCnJNO0PwijmYtSdI03VR4C+77nKjlHo7jzyyilV3fWLTmKOANm
-         ZGoqx9dssKv/r6xipGaKdDo9iyZen+f5A4TSefVT59Ui7pNTaQj2WNJK1vRhl32PMN
-         m5Imm4mybkKuFZK+S9Eg3lR2Zd5qJC66O+1FQo8fHciJ8S0hevrplZgNn29XtcHPOd
-         Fh57Tx1H4dkM2D9faXJUYUED3fghWA/5pS8FyrxxwkTa5MoNFVhrYkLVNzWiy1hjf4
-         iLJE6mXWyQgmVdtvlxVLW2Osq1LW5H5cjsc2EybkZvtpb0a/69gzbI2NVsFASAgVlG
-         +T8OsjpVWdsSg==
+        b=hB0eKXjJKq5fgxlnqNN6N8QxQ349HVnQWTEyULq1jpt5YYJzx9TR55b6APs8yVih/
+         3VfmeEiGYCmmHfXqkxFORZgSaHBfMsJOTyOwNTYk0fM5YkEW5K3yFHS9U04YqOKHpI
+         y/1NdwUejGCLtmlSTwie1a09JBhP56B8qs2IiSJwawIqjC/+swcVCV36vW3OPf+ICO
+         1YcAMPVug9VkwXghh/NcI0ARvtQ/RQQ9DCaXKoxkI/fX25DLnsryorNLHhM1DE+Nxs
+         a9A4VJ/H9fJheR72vieJrpvy/j9k3mzb7a6DUH/uEDgJKErWOJeEJ9HIxQQUE9BMbD
+         SkpqHXzCQW1pA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 12/43] bpf: Add deny list of btf ids check for tracing programs
-Date:   Thu,  3 Jun 2021 13:07:02 -0400
-Message-Id: <20210603170734.3168284-12-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 18/43] isdn: mISDN: netjet: Fix crash in nj_probe:
+Date:   Thu,  3 Jun 2021 13:07:08 -0400
+Message-Id: <20210603170734.3168284-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210603170734.3168284-1-sashal@kernel.org>
 References: <20210603170734.3168284-1-sashal@kernel.org>
@@ -42,86 +42,166 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Olsa <jolsa@kernel.org>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 35e3815fa8102fab4dee75f3547472c66581125d ]
+[ Upstream commit 9f6f852550d0e1b7735651228116ae9d300f69b3 ]
 
-The recursion check in __bpf_prog_enter and __bpf_prog_exit
-leaves some (not inlined) functions unprotected:
+'nj_setup' in netjet.c might fail with -EIO and in this case
+'card->irq' is initialized and is bigger than zero. A subsequent call to
+'nj_release' will free the irq that has not been requested.
 
-In __bpf_prog_enter:
-  - migrate_disable is called before prog->active is checked
+Fix this bug by deleting the previous assignment to 'card->irq' and just
+keep the assignment before 'request_irq'.
 
-In __bpf_prog_exit:
-  - migrate_enable,rcu_read_unlock_strict are called after
-    prog->active is decreased
+The KASAN's log reveals it:
 
-When attaching trampoline to them we get panic like:
+[    3.354615 ] WARNING: CPU: 0 PID: 1 at kernel/irq/manage.c:1826
+free_irq+0x100/0x480
+[    3.355112 ] Modules linked in:
+[    3.355310 ] CPU: 0 PID: 1 Comm: swapper/0 Not tainted
+5.13.0-rc1-00144-g25a1298726e #13
+[    3.355816 ] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+[    3.356552 ] RIP: 0010:free_irq+0x100/0x480
+[    3.356820 ] Code: 6e 08 74 6f 4d 89 f4 e8 5e ac 09 00 4d 8b 74 24 18
+4d 85 f6 75 e3 e8 4f ac 09 00 8b 75 c8 48 c7 c7 78 c1 2e 85 e8 e0 cf f5
+ff <0f> 0b 48 8b 75 c0 4c 89 ff e8 72 33 0b 03 48 8b 43 40 4c 8b a0 80
+[    3.358012 ] RSP: 0000:ffffc90000017b48 EFLAGS: 00010082
+[    3.358357 ] RAX: 0000000000000000 RBX: ffff888104dc8000 RCX:
+0000000000000000
+[    3.358814 ] RDX: ffff8881003c8000 RSI: ffffffff8124a9e6 RDI:
+00000000ffffffff
+[    3.359272 ] RBP: ffffc90000017b88 R08: 0000000000000000 R09:
+0000000000000000
+[    3.359732 ] R10: ffffc900000179f0 R11: 0000000000001d04 R12:
+0000000000000000
+[    3.360195 ] R13: ffff888107dc6000 R14: ffff888107dc6928 R15:
+ffff888104dc80a8
+[    3.360652 ] FS:  0000000000000000(0000) GS:ffff88817bc00000(0000)
+knlGS:0000000000000000
+[    3.361170 ] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    3.361538 ] CR2: 0000000000000000 CR3: 000000000582e000 CR4:
+00000000000006f0
+[    3.362003 ] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+0000000000000000
+[    3.362175 ] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+0000000000000400
+[    3.362175 ] Call Trace:
+[    3.362175 ]  nj_release+0x51/0x1e0
+[    3.362175 ]  nj_probe+0x450/0x950
+[    3.362175 ]  ? pci_device_remove+0x110/0x110
+[    3.362175 ]  local_pci_probe+0x45/0xa0
+[    3.362175 ]  pci_device_probe+0x12b/0x1d0
+[    3.362175 ]  really_probe+0x2a9/0x610
+[    3.362175 ]  driver_probe_device+0x90/0x1d0
+[    3.362175 ]  ? mutex_lock_nested+0x1b/0x20
+[    3.362175 ]  device_driver_attach+0x68/0x70
+[    3.362175 ]  __driver_attach+0x124/0x1b0
+[    3.362175 ]  ? device_driver_attach+0x70/0x70
+[    3.362175 ]  bus_for_each_dev+0xbb/0x110
+[    3.362175 ]  ? rdinit_setup+0x45/0x45
+[    3.362175 ]  driver_attach+0x27/0x30
+[    3.362175 ]  bus_add_driver+0x1eb/0x2a0
+[    3.362175 ]  driver_register+0xa9/0x180
+[    3.362175 ]  __pci_register_driver+0x82/0x90
+[    3.362175 ]  ? w6692_init+0x38/0x38
+[    3.362175 ]  nj_init+0x36/0x38
+[    3.362175 ]  do_one_initcall+0x7f/0x3d0
+[    3.362175 ]  ? rdinit_setup+0x45/0x45
+[    3.362175 ]  ? rcu_read_lock_sched_held+0x4f/0x80
+[    3.362175 ]  kernel_init_freeable+0x2aa/0x301
+[    3.362175 ]  ? rest_init+0x2c0/0x2c0
+[    3.362175 ]  kernel_init+0x18/0x190
+[    3.362175 ]  ? rest_init+0x2c0/0x2c0
+[    3.362175 ]  ? rest_init+0x2c0/0x2c0
+[    3.362175 ]  ret_from_fork+0x1f/0x30
+[    3.362175 ] Kernel panic - not syncing: panic_on_warn set ...
+[    3.362175 ] CPU: 0 PID: 1 Comm: swapper/0 Not tainted
+5.13.0-rc1-00144-g25a1298726e #13
+[    3.362175 ] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+[    3.362175 ] Call Trace:
+[    3.362175 ]  dump_stack+0xba/0xf5
+[    3.362175 ]  ? free_irq+0x100/0x480
+[    3.362175 ]  panic+0x15a/0x3f2
+[    3.362175 ]  ? __warn+0xf2/0x150
+[    3.362175 ]  ? free_irq+0x100/0x480
+[    3.362175 ]  __warn+0x108/0x150
+[    3.362175 ]  ? free_irq+0x100/0x480
+[    3.362175 ]  report_bug+0x119/0x1c0
+[    3.362175 ]  handle_bug+0x3b/0x80
+[    3.362175 ]  exc_invalid_op+0x18/0x70
+[    3.362175 ]  asm_exc_invalid_op+0x12/0x20
+[    3.362175 ] RIP: 0010:free_irq+0x100/0x480
+[    3.362175 ] Code: 6e 08 74 6f 4d 89 f4 e8 5e ac 09 00 4d 8b 74 24 18
+4d 85 f6 75 e3 e8 4f ac 09 00 8b 75 c8 48 c7 c7 78 c1 2e 85 e8 e0 cf f5
+ff <0f> 0b 48 8b 75 c0 4c 89 ff e8 72 33 0b 03 48 8b 43 40 4c 8b a0 80
+[    3.362175 ] RSP: 0000:ffffc90000017b48 EFLAGS: 00010082
+[    3.362175 ] RAX: 0000000000000000 RBX: ffff888104dc8000 RCX:
+0000000000000000
+[    3.362175 ] RDX: ffff8881003c8000 RSI: ffffffff8124a9e6 RDI:
+00000000ffffffff
+[    3.362175 ] RBP: ffffc90000017b88 R08: 0000000000000000 R09:
+0000000000000000
+[    3.362175 ] R10: ffffc900000179f0 R11: 0000000000001d04 R12:
+0000000000000000
+[    3.362175 ] R13: ffff888107dc6000 R14: ffff888107dc6928 R15:
+ffff888104dc80a8
+[    3.362175 ]  ? vprintk+0x76/0x150
+[    3.362175 ]  ? free_irq+0x100/0x480
+[    3.362175 ]  nj_release+0x51/0x1e0
+[    3.362175 ]  nj_probe+0x450/0x950
+[    3.362175 ]  ? pci_device_remove+0x110/0x110
+[    3.362175 ]  local_pci_probe+0x45/0xa0
+[    3.362175 ]  pci_device_probe+0x12b/0x1d0
+[    3.362175 ]  really_probe+0x2a9/0x610
+[    3.362175 ]  driver_probe_device+0x90/0x1d0
+[    3.362175 ]  ? mutex_lock_nested+0x1b/0x20
+[    3.362175 ]  device_driver_attach+0x68/0x70
+[    3.362175 ]  __driver_attach+0x124/0x1b0
+[    3.362175 ]  ? device_driver_attach+0x70/0x70
+[    3.362175 ]  bus_for_each_dev+0xbb/0x110
+[    3.362175 ]  ? rdinit_setup+0x45/0x45
+[    3.362175 ]  driver_attach+0x27/0x30
+[    3.362175 ]  bus_add_driver+0x1eb/0x2a0
+[    3.362175 ]  driver_register+0xa9/0x180
+[    3.362175 ]  __pci_register_driver+0x82/0x90
+[    3.362175 ]  ? w6692_init+0x38/0x38
+[    3.362175 ]  nj_init+0x36/0x38
+[    3.362175 ]  do_one_initcall+0x7f/0x3d0
+[    3.362175 ]  ? rdinit_setup+0x45/0x45
+[    3.362175 ]  ? rcu_read_lock_sched_held+0x4f/0x80
+[    3.362175 ]  kernel_init_freeable+0x2aa/0x301
+[    3.362175 ]  ? rest_init+0x2c0/0x2c0
+[    3.362175 ]  kernel_init+0x18/0x190
+[    3.362175 ]  ? rest_init+0x2c0/0x2c0
+[    3.362175 ]  ? rest_init+0x2c0/0x2c0
+[    3.362175 ]  ret_from_fork+0x1f/0x30
+[    3.362175 ] Dumping ftrace buffer:
+[    3.362175 ]    (ftrace buffer empty)
+[    3.362175 ] Kernel Offset: disabled
+[    3.362175 ] Rebooting in 1 seconds..
 
-  traps: PANIC: double fault, error_code: 0x0
-  double fault: 0000 [#1] SMP PTI
-  RIP: 0010:__bpf_prog_enter+0x4/0x50
-  ...
-  Call Trace:
-   <IRQ>
-   bpf_trampoline_6442466513_0+0x18/0x1000
-   migrate_disable+0x5/0x50
-   __bpf_prog_enter+0x9/0x50
-   bpf_trampoline_6442466513_0+0x18/0x1000
-   migrate_disable+0x5/0x50
-   __bpf_prog_enter+0x9/0x50
-   bpf_trampoline_6442466513_0+0x18/0x1000
-   migrate_disable+0x5/0x50
-   __bpf_prog_enter+0x9/0x50
-   bpf_trampoline_6442466513_0+0x18/0x1000
-   migrate_disable+0x5/0x50
-   ...
-
-Fixing this by adding deny list of btf ids for tracing
-programs and checking btf id during program verification.
-Adding above functions to this list.
-
-Suggested-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20210429114712.43783-1-jolsa@kernel.org
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/verifier.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/isdn/hardware/mISDN/netjet.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 21247e49fe82..99d13c29af7f 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -12556,6 +12556,17 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
- 	return 0;
- }
+diff --git a/drivers/isdn/hardware/mISDN/netjet.c b/drivers/isdn/hardware/mISDN/netjet.c
+index ee925b58bbce..2a1ddd47a096 100644
+--- a/drivers/isdn/hardware/mISDN/netjet.c
++++ b/drivers/isdn/hardware/mISDN/netjet.c
+@@ -1100,7 +1100,6 @@ nj_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		card->typ = NETJET_S_TJ300;
  
-+BTF_SET_START(btf_id_deny)
-+BTF_ID_UNUSED
-+#ifdef CONFIG_SMP
-+BTF_ID(func, migrate_disable)
-+BTF_ID(func, migrate_enable)
-+#endif
-+#if !defined CONFIG_PREEMPT_RCU && !defined CONFIG_TINY_RCU
-+BTF_ID(func, rcu_read_unlock_strict)
-+#endif
-+BTF_SET_END(btf_id_deny)
-+
- static int check_attach_btf_id(struct bpf_verifier_env *env)
- {
- 	struct bpf_prog *prog = env->prog;
-@@ -12615,6 +12626,9 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 		ret = bpf_lsm_verify_prog(&env->log, prog);
- 		if (ret < 0)
- 			return ret;
-+	} else if (prog->type == BPF_PROG_TYPE_TRACING &&
-+		   btf_id_set_contains(&btf_id_deny, btf_id)) {
-+		return -EINVAL;
- 	}
- 
- 	key = bpf_trampoline_compute_key(tgt_prog, prog->aux->attach_btf, btf_id);
+ 	card->base = pci_resource_start(pdev, 0);
+-	card->irq = pdev->irq;
+ 	pci_set_drvdata(pdev, card);
+ 	err = setup_instance(card);
+ 	if (err)
 -- 
 2.30.2
 
