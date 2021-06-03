@@ -2,127 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87AC8399D8D
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 11:17:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67F1B399D9B
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 11:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbhFCJTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 05:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59968 "EHLO
+        id S229697AbhFCJWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 05:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbhFCJTl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 05:19:41 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C595C06174A
-        for <netdev@vger.kernel.org>; Thu,  3 Jun 2021 02:17:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=2qbwSl+XiRAL06aJLO8OWO6GKK3KWB/cmhCjG/H4Qe8=; b=NSxOjJ4VucdYKBRuIk7hVOE74
-        29g+lxJQ1VC+fU3nGL1532+RH1UbVFSnVSxqcTFHkbDuGA3oimMc7vizaHdDc0FP1uwWnSnf3hhU1
-        RrFvpdyBWBwk84AOB0izwrAhl7dkdpafeVOdjWWG/yOfOrcYSXkJcO2b0Q8ozPT0CmuEa6UihHfQZ
-        9Rnfww5R/BtQZ9BSr7QoyEZ39WWmeqZBMJMrjUvGT8Y+BqqMsH9dIB06zJOR19E/dmwajKLl8Y+Nq
-        zLqcMmVWXUbMDSymF2T8nJwqoy9EcImhVQMYCKmF0aeuw4BwzoBFC+spXwQdOBWCltTKY3RNuf0Nr
-        jrB18NrqQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44664)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lojU9-0002PQ-O5; Thu, 03 Jun 2021 10:17:53 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lojU6-0001zT-UY; Thu, 03 Jun 2021 10:17:50 +0100
-Date:   Thu, 3 Jun 2021 10:17:50 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Xu Liang <lxu@maxlinear.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        vee.khee.wong@linux.intel.com, hmehrtens@maxlinear.com,
-        tmohren@maxlinear.com
-Subject: Re: [PATCH v2] net: phy: add Maxlinear GPY115/21x/24x driver
-Message-ID: <20210603091750.GQ30436@shell.armlinux.org.uk>
-References: <20210603073438.33967-1-lxu@maxlinear.com>
+        with ESMTP id S229576AbhFCJWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 05:22:09 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06597C06174A;
+        Thu,  3 Jun 2021 02:20:12 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id v13so2555766ple.9;
+        Thu, 03 Jun 2021 02:20:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BogpqCOUCey2alE1P/oF0fJr06ZHXOEm/gnc1w6+dGw=;
+        b=oRq4uPqpjKfqi00/x+r3zKPWwxr092s9U9SMGSFhRN3tMhU6VpwA/k3BuOLdjBOYth
+         nUdmcWhsL3mehyfF2ui2DjNB/mI4VaYkg78liLYLRHGhiBHKGXf0EhJXgMxT9Ynm7/s3
+         h/itEZXAnWtKKKh1H7nrNNZtC4WDuXqcI3RxEYdWIXUanM6LnmHK8JudsQNNOyIH7l/L
+         znjlrL4YISkmzjFKK3+B2NJekfTQzwlUFk1OTvcucs6RJ9BGS4+WCtU3Qt8tWr/iIz8Q
+         J059fNeGhbAJplkqFoCYvapfHPII7AhJZkBZSHTDy+mZU7wRHHu0ivnA+fl25N3h2CH+
+         ms0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BogpqCOUCey2alE1P/oF0fJr06ZHXOEm/gnc1w6+dGw=;
+        b=D+RQm2iYTUI6BwxLuybOdYyRzbX3Yfo8cGDp746AsdMp8WtggX31k8KHRN8Vv9XawL
+         KbPYpmy6YGUOMezmtzY8tp4gEcDWL6tP0cT2kIW00qEHhTk2KYbG+9sCqjGWn+i9IBAy
+         slYlICHeYqjKRaYZRZgm0Ph7f5hwUk6ZibVxkFDEci3sseW9UCXznuh8+BQWMV86EnaI
+         6h4o9vHd6qzzIS+0TEMJfqJCjEtSc7y01/o4GvM3cI6sMQd5Gs71IsZTaM6sCdqqjtLo
+         DtW0UbdFxTZUEIgNfteobe6bKetKp9sj3FynSNDsd0XndEvqyjSyRLm+rZYHTshc+1qA
+         /bRw==
+X-Gm-Message-State: AOAM530do4dGstzZBpu0MF32blUGbF0lDtXgwM7rh4tY9Mk+beTns6Lr
+        xO0Tmbx+btp2j4LCd3whZeCTMafB9EzoFUATXfsmMpM7ZCE=
+X-Google-Smtp-Source: ABdhPJws9BMrj0ZBR0gjYZu9DoW0oS7QU5smzz6VfwvJ++cAaP6R3RpbO0mPZRKjcg0epixcuBLPxnoX2SUeUjiElKM=
+X-Received: by 2002:a17:90a:af8b:: with SMTP id w11mr35557628pjq.228.1622712011449;
+ Thu, 03 Jun 2021 02:20:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210603073438.33967-1-lxu@maxlinear.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20210531132226.47081-1-andriy.shevchenko@linux.intel.com> <5dd2a42d-b218-0b23-aa14-7e5681e0fb3a@datenfreihafen.org>
+In-Reply-To: <5dd2a42d-b218-0b23-aa14-7e5681e0fb3a@datenfreihafen.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 3 Jun 2021 12:19:55 +0300
+Message-ID: <CAHp75VdcFut0Tks3O=HJPLncebgDdfEv7Robm9ujG6yL+PT3OQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] mrf29j40: Drop unneeded of_match_ptr()
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-wpan@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alan Ott <alan@signal11.us>,
+        Alexander Aring <alex.aring@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Jun 3, 2021 at 11:35 AM Stefan Schmidt
+<stefan@datenfreihafen.org> wrote:
+> On 31.05.21 15:22, Andy Shevchenko wrote:
+> > Driver can be used in different environments and moreover, when compiled
+> > with !OF, the compiler may issue a warning due to unused mrf24j40_of_match
+> > variable. Hence drop unneeded of_match_ptr() call.
+> >
+> > While at it, update headers block to reflect above changes.
 
-On Thu, Jun 03, 2021 at 03:34:38PM +0800, Xu Liang wrote:
-> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-> index bcda7ed2455d..70efab3659ee 100644
-> --- a/drivers/net/phy/Makefile
-> +++ b/drivers/net/phy/Makefile
-> @@ -70,6 +70,7 @@ obj-$(CONFIG_MICREL_PHY)	+= micrel.o
->  obj-$(CONFIG_MICROCHIP_PHY)	+= microchip.o
->  obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
->  obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
-> +obj-$(CONFIG_MXL_GPHY)          += mxl-gpy.o
+...
 
-This should use tab(s) to align indentation rather than spaces.
+> I took the freedom to fix the typo in the subject line and add a better
+> prefix:
+>
+> net: ieee802154: mrf24j40: Drop unneeded of_match_ptr()
 
-> +static int gpy_config_init(struct phy_device *phydev)
-> +{
-> +	int ret, fw_ver;
-> +
-> +	/* Show GPY PHY FW version in dmesg */
-> +	fw_ver = phy_read(phydev, PHY_FWV);
-> +	if (fw_ver < 0)
-> +		return fw_ver;
-> +
-> +	phydev_info(phydev, "Firmware Version: 0x%04X (%s)\n", fw_ver,
-> +		    (fw_ver & PHY_FWV_REL_MASK) ? "release" : "test");
+Right, thanks!
 
-Does this need to print the firmware version each time config_init()
-is called? Is it likely to change beyond? Would it be more sensible
-to print it in the probe() method?
+> This patch has been applied to the wpan tree and will be
+> part of the next pull request to net. Thanks!
 
-> +static int gpy_config_aneg(struct phy_device *phydev)
-> +{
-> +	bool changed = false;
-> +	u32 adv;
-> +	int ret;
-> +
-> +	if (phydev->autoneg == AUTONEG_DISABLE) {
-> +		return phydev->duplex != DUPLEX_FULL
-> +			? genphy_setup_forced(phydev)
-> +			: genphy_c45_pma_setup_forced(phydev);
-
-I think this needs a comment to describe what is going on here to
-explain why the duplex setting influences whether we program the PHY
-via C22 or C45.
-
-> +static void gpy_update_interface(struct phy_device *phydev)
-> +{
-> +	int ret;
-> +
-> +	/* Interface mode is fixed for USXGMII and integrated PHY */
-> +	if (phydev->interface == PHY_INTERFACE_MODE_USXGMII ||
-> +	    phydev->interface == PHY_INTERFACE_MODE_INTERNAL)
-> +		return;
-> +
-> +	/* Automatically switch SERDES interface between SGMII and 2500-BaseX
-> +	 * according to speed. Disable ANEG in 2500-BaseX mode.
-> +	 */
-> +	switch (phydev->speed) {
-> +	case SPEED_2500:
-> +		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
-> +		ret = phy_modify_mmd_changed(phydev, MDIO_MMD_VEND1,
-> +					     VSPEC1_SGMII_CTRL,
-> +					     VSPEC1_SGMII_CTRL_ANEN, 0);
-
-Do you need to know if the bit was changed? It doesn't appear so, so
-please consider using phy_modify_mmd() here and in the other part of
-this switch block.
+Btw, which tree are you using for wpan development? I see one with 6
+weeks old commits, is that the correct one?
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+With Best Regards,
+Andy Shevchenko
