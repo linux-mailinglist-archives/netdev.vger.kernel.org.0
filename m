@@ -2,109 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA4B9399AE5
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 08:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8572E399B21
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 08:59:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229778AbhFCGlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 02:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53640 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbhFCGlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 02:41:10 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD3CC06174A;
-        Wed,  2 Jun 2021 23:39:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:To:From:Date:Sender:Reply-To:Cc:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=kX55QmPWFxDII3Sge2GJJeSnbWWFYdnRducRMGOGHKQ=; b=hARedGyAr0sDE+BtvdYhtLLhqT
-        xBRJL5OHbgF/0VaAM6QvlBJXr83HT5NVS7V8DRpuXyYFELaqdsUVDKE7xdQXCUsOoQxD+ZryBn0Lj
-        TQUUpF9nIf+OhCYb2DCINiYA10TI8AImzzNG9gBDI61JDK4y9IyT9HC7swn3WceMAMX+pproGTr+z
-        euH2oJmi+z8yDYk4o986bBSmMqnp2oduWzGnBnR6zXjKvIqpkjAsnYAK7TaquLehFRzRkMRw2LFzB
-        sQkU84q2RHe9CpB6m2+QJnfPaODcV/HKj6IpiHproIA95ZpBeuavpXhNkqQKbgxpRXe24aJvU2Taj
-        vd1R75YA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1loh0U-00Bsr6-Sl; Thu, 03 Jun 2021 06:39:12 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id ACAEA30029C;
-        Thu,  3 Jun 2021 08:39:05 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 8DD1F20223DB5; Thu,  3 Jun 2021 08:39:05 +0200 (CEST)
-Date:   Thu, 3 Jun 2021 08:39:05 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Jens Axboe <axboe@kernel.dk>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, cgroups@vger.kernel.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
-        rcu@vger.kernel.org, linux-mm@kvack.org, kvm@vger.kernel.org
-Subject: Re: [PATCH 5/6] sched,timer: Use __set_current_state()
-Message-ID: <YLh5CaqPHBhBhfVu@hirez.programming.kicks-ass.net>
-References: <20210602131225.336600299@infradead.org>
- <20210602133040.524487671@infradead.org>
- <20210602195458.uj3rsci4suz4mufj@offworld>
+        id S229944AbhFCHBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 03:01:18 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:46914 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229864AbhFCHBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 03:01:13 -0400
+Received: by codeconstruct.com.au (Postfix, from userid 10000)
+        id 28E57219A6; Thu,  3 Jun 2021 14:52:28 +0800 (AWST)
+From:   Jeremy Kerr <jk@codeconstruct.com.au>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Jeffery <andrew@aj.id.au>,
+        Matt Johnston <matt@codeconstruct.com.au>
+Subject: [PATCH RFC net-next 00/16] Add Management Controller Transport Protocol support
+Date:   Thu,  3 Jun 2021 14:52:02 +0800
+Message-Id: <20210603065218.570867-1-jk@codeconstruct.com.au>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210602195458.uj3rsci4suz4mufj@offworld>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 02, 2021 at 12:54:58PM -0700, Davidlohr Bueso wrote:
-> On Wed, 02 Jun 2021, Peter Zijlstra wrote:
-> 
-> -ENOCHANGELONG
+This (RFC) series adds core MCTP support to the kernel. From the Kconfig
+description:
 
-I completely failed to come up with something useful, still do. Subject
-says it all.
+  Management Controller Transport Protocol (MCTP) is an in-system
+  protocol for communicating between management controllers and
+  their managed devices (perihperals, host processors, etc.). The
+  protocol is defined by DMTF specification DSP0236.
 
-> But yeah, I thought we had gotten rid of all these.
+  This option enables core MCTP support. For communicating with other
+  devices, you'll want to enable a driver for a specific hardware
+  channel.
 
-I too was surprised to find it :-)
+This implementation allows a sockets-based API for sending and receiving
+MCTP messages via sendmsg/recvmsg on SOCK_DGRAM sockets. Kernel stack
+control is all via netlink, using existing RTM_* messages. The userspace
+ABI change is fairly small; just the necessary AF_/ETH_P_/ARPHDR_
+constants, a new sockaddr, and a new netlink attribute.
+
+For MAINTAINERS, I've just included netdev@ as the list entry. I'm happy
+to alter this based on preferences here - an alternative would be the
+OpenBMC list (the main user of the MCTP interface), or we can create a
+new list entirely.
+
+We have a couple of interface drivers almost ready to go at the moment,
+but those can wait until the core code has some review.
+
+Review, comments, questions etc. are most welcome.
+
+Cheers,
+
+
+Jeremy
+
+---
+
+Jeremy Kerr (10):
+  mctp: Add MCTP base
+  mctp: Add base socket/protocol definitions
+  mctp: Add base packet definitions
+  mctp: Add sockaddr_mctp to uapi
+  mctp: Add initial driver infrastructure
+  mctp: Add device handling and netlink interface
+  mctp: Add initial routing framework
+  mctp: Populate socket implementation
+  mctp: Implement message fragmentation & reassembly
+  mctp: Add MCTP overview document
+
+Matt Johnston (6):
+  mctp: Add netlink route management
+  mctp: Add neighbour implementation
+  mctp: Add neighbour netlink interface
+  mctp: Add dest neighbour lladdr to route output
+  mctp: Allow per-netns default networks
+  mctp: Allow MCTP on tun devices
+
+ Documentation/networking/index.rst |    1 +
+ Documentation/networking/mctp.rst  |  213 ++++++
+ MAINTAINERS                        |   12 +
+ drivers/net/Kconfig                |    2 +
+ drivers/net/Makefile               |    1 +
+ drivers/net/mctp/Kconfig           |    8 +
+ drivers/net/mctp/Makefile          |    0
+ include/linux/netdevice.h          |    3 +
+ include/linux/socket.h             |    6 +-
+ include/net/mctp.h                 |  235 ++++++
+ include/net/mctpdevice.h           |   42 ++
+ include/net/net_namespace.h        |    4 +
+ include/net/netns/mctp.h           |   36 +
+ include/uapi/linux/if_arp.h        |    1 +
+ include/uapi/linux/if_ether.h      |    3 +
+ include/uapi/linux/if_link.h       |   10 +
+ include/uapi/linux/mctp.h          |   32 +
+ net/Kconfig                        |    1 +
+ net/Makefile                       |    1 +
+ net/mctp/Kconfig                   |   13 +
+ net/mctp/Makefile                  |    3 +
+ net/mctp/af_mctp.c                 |  385 ++++++++++
+ net/mctp/device.c                  |  370 ++++++++++
+ net/mctp/neigh.c                   |  342 +++++++++
+ net/mctp/route.c                   | 1081 ++++++++++++++++++++++++++++
+ 25 files changed, 2804 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/networking/mctp.rst
+ create mode 100644 drivers/net/mctp/Kconfig
+ create mode 100644 drivers/net/mctp/Makefile
+ create mode 100644 include/net/mctp.h
+ create mode 100644 include/net/mctpdevice.h
+ create mode 100644 include/net/netns/mctp.h
+ create mode 100644 include/uapi/linux/mctp.h
+ create mode 100644 net/mctp/Kconfig
+ create mode 100644 net/mctp/Makefile
+ create mode 100644 net/mctp/af_mctp.c
+ create mode 100644 net/mctp/device.c
+ create mode 100644 net/mctp/neigh.c
+ create mode 100644 net/mctp/route.c
+
+-- 
+2.30.2
+
