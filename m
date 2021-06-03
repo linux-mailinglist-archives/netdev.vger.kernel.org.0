@@ -2,205 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8614239A912
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAC3039A960
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:39:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbhFCRXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 13:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbhFCRXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 13:23:33 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7853C06174A;
-        Thu,  3 Jun 2021 10:21:39 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id n133so9882819ybf.6;
-        Thu, 03 Jun 2021 10:21:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=7PnhWU883KxevJCSzYlL17xLw6t03PdAUgdOsMONsd4=;
-        b=uRDY8Os4DcjWrNUA7xh+f+zXOFFT3Ara0PqWHJP0FQK3czX5ChvsPw3BlZDaF7YvJD
-         JbuChJNuxiQEOBql3m8lmkepS22ez1l2+1ec9BfgiOVIK1u9tRLczxaYk79Izxfx0fcs
-         ZnZrZxFl4RwGYWPcWvHu+HrWDZ6QWSPAQXmoOTsAbnLBG4F7EU0gjmDizORI0TDkurKA
-         u22KFqWsh+MzEjFwE9mi31+hdG+3mgVQp01ZEqRpk0sCGjd5IMNhVWYqgoIHxQ+YlkSL
-         JSPNkgVdASCbYCo1puBYy9DwBHwOK/jDdygyAgm7F2o2tk0SOMjm1e3HPj3mnKy+8pZc
-         Cx5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7PnhWU883KxevJCSzYlL17xLw6t03PdAUgdOsMONsd4=;
-        b=sZzLFjyu3cese/NNImGZTNys5czqbecLPYSHe08ZYrqJaP/IUGKwOllEhKgbMoLmXK
-         WgfXFALrNSkRNFoF/PZ1y7wbZBXvgXJW2JBsKT7qRhAgArvDgoW0z75T8R92NyIqASAM
-         1KDWPNoEBMJGiBxvr7bLuzam6FCtPFZtQo4tzEe7GpsGA+p3KBP38KKnDjbQ3zgeRkbg
-         2qTsilPUgMuyf58H09l0iYgAq6M1oKQnY+qlreN71O1vTVVq4t6P5ackIN/kx34zt7Cm
-         Xua3vkcyBZFWjROxqtJPFz9knH0MXQf+Nmtw62VwHEOS5zXDhjFJdegxtxxSyCALQCna
-         2Olw==
-X-Gm-Message-State: AOAM5322TxZnEydRop9YA1jqKDziFsaFTWiEAU05o0CHLL9wdhMdDpYs
-        2siRmIeAxu6YjW6H1Rb+GvFfytuYXF3M6CQTY9g=
-X-Google-Smtp-Source: ABdhPJybk7tvmPrXi1+U/N7ly+vf8AENbWi9Q/a8cte3HOIamxIzqfJ9Zf0SIJ5NObdxjlKGyON1sN5WNbHLWCNFftA=
-X-Received: by 2002:a25:1455:: with SMTP id 82mr210329ybu.403.1622740897497;
- Thu, 03 Jun 2021 10:21:37 -0700 (PDT)
+        id S231278AbhFCRlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 13:41:12 -0400
+Received: from mg.ssi.bg ([178.16.128.9]:52868 "EHLO mg.ssi.bg"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231246AbhFCRlM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 13:41:12 -0400
+X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Thu, 03 Jun 2021 13:41:10 EDT
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id 4909531AD7;
+        Thu,  3 Jun 2021 20:32:17 +0300 (EEST)
+Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
+        by mg.ssi.bg (Proxmox) with ESMTP id 30E0031ACD;
+        Thu,  3 Jun 2021 20:32:16 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 2B7ED3C0332;
+        Thu,  3 Jun 2021 20:32:13 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 153HW882019762;
+        Thu, 3 Jun 2021 20:32:09 +0300
+Date:   Thu, 3 Jun 2021 20:32:08 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Xin Long <lucien.xin@gmail.com>
+cc:     syzbot <syzbot+e562383183e4b1766930@syzkaller.appspotmail.com>,
+        coreteam@netfilter.org, Simon Horman <horms@verge.net.au>,
+        LKML <linux-kernel@vger.kernel.org>, lvs-devel@vger.kernel.org,
+        network dev <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: [syzbot] memory leak in ip_vs_add_service
+In-Reply-To: <CADvbK_duDeZidW1mgSyNo+f1Hj4L0V6=L-Upfgp+5DEu5P-8Ag@mail.gmail.com>
+Message-ID: <b216d7a4-c3dd-3714-3897-3124769c88f2@ssi.bg>
+References: <000000000000c91e6f05c3144acc@google.com> <CADvbK_duDeZidW1mgSyNo+f1Hj4L0V6=L-Upfgp+5DEu5P-8Ag@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210527040259.77823-1-alexei.starovoitov@gmail.com>
- <20210527040259.77823-2-alexei.starovoitov@gmail.com> <87r1hsgln6.fsf@toke.dk>
- <20210602014608.wxzfsgzuq7rut4ra@ast-mbp.dhcp.thefacebook.com>
- <87a6o7aoxa.fsf@toke.dk> <20210603015809.l2dez754vzxjueew@ast-mbp.dhcp.thefacebook.com>
- <874kef9pth.fsf@toke.dk>
-In-Reply-To: <874kef9pth.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 3 Jun 2021 10:21:26 -0700
-Message-ID: <CAEf4BzZYd02+TZRE1rya=SmGL5Jf9Ff+VebivsjCYLVWyETRhw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] bpf: Introduce bpf_timer
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 3, 2021 at 3:59 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->
-> > On Thu, Jun 03, 2021 at 12:21:05AM +0200, Toke H=C3=B8iland-J=C3=B8rgen=
-sen wrote:
-> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-> >>
-> >> > On Thu, May 27, 2021 at 06:57:17PM +0200, Toke H=C3=B8iland-J=C3=B8r=
-gensen wrote:
-> >> >> >     if (val) {
-> >> >> >         bpf_timer_init(&val->timer, timer_cb2, 0);
-> >> >> >         bpf_timer_start(&val->timer, 1000 /* call timer_cb2 in 1 =
-msec */);
-> >> >>
-> >> >> nit: there are 1M nanoseconds in a millisecond :)
-> >> >
-> >> > oops :)
-> >> >
-> >> >> >     }
-> >> >> > }
-> >> >> >
-> >> >> > This patch adds helper implementations that rely on hrtimers
-> >> >> > to call bpf functions as timers expire.
-> >> >> > The following patch adds necessary safety checks.
-> >> >> >
-> >> >> > Only programs with CAP_BPF are allowed to use bpf_timer.
-> >> >> >
-> >> >> > The amount of timers used by the program is constrained by
-> >> >> > the memcg recorded at map creation time.
-> >> >> >
-> >> >> > The bpf_timer_init() helper is receiving hidden 'map' and 'prog' =
-arguments
-> >> >> > supplied by the verifier. The prog pointer is needed to do refcnt=
-ing of bpf
-> >> >> > program to make sure that program doesn't get freed while timer i=
-s armed.
-> >> >> >
-> >> >> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> >> >>
-> >> >> Overall this LGTM, and I believe it will be usable for my intended =
-use
-> >> >> case. One question:
-> >> >>
-> >> >> With this, it will basically be possible to create a BPF daemon, wo=
-n't
-> >> >> it? I.e., if a program includes a timer and the callback keeps re-a=
-rming
-> >> >> itself this will continue indefinitely even if userspace closes all=
- refs
-> >> >> to maps and programs? Not saying this is a problem, just wanted to =
-check
-> >> >> my understanding (i.e., that there's not some hidden requirement on
-> >> >> userspace keeping a ref open that I'm missing)...
-> >> >
-> >> > That is correct.
-> >> > Another option would be to auto-cancel the timer when the last refer=
-ence
-> >> > to the prog drops. That may feel safer, since forever
-> >> > running bpf daemon is a certainly new concept.
-> >> > The main benefits of doing prog_refcnt++ from bpf_timer_start are ea=
-se
-> >> > of use and no surprises.
-> >> > Disappearing timer callback when prog unloads is outside of bpf prog=
- control.
-> >> > For example the tracing bpf prog might collect some data and periodi=
-cally
-> >> > flush it to user space. The prog would arm the timer and when callba=
-ck
-> >> > is invoked it would send the data via ring buffer and start another
-> >> > data collection cycle.
-> >> > When the user space part of the service exits it doesn't have
-> >> > an ability to enforce the flush of the last chunk of data.
-> >> > It could do prog_run cmd that will call the timer callback,
-> >> > but it's racy.
-> >> > The solution to this problem could be __init and __fini
-> >> > sections that will be invoked when the prog is loaded
-> >> > and when the last refcnt drops.
-> >> > It's a complementary feature though.
-> >> > The prog_refcnt++ from bpf_timer_start combined with a prog
-> >> > explicitly doing bpf_timer_cancel from __fini
-> >> > would be the most flexible combination.
-> >> > This way the prog can choose to be a daemon or it can choose
-> >> > to cancel its timers and do data flushing when the last prog
-> >> > reference drops.
-> >> > The prog refcnt would be split (similar to uref). The __fini callbac=
-k
-> >> > will be invoked when refcnt reaches zero, but all increments
-> >> > done by bpf_timer_start will be counted separately.
-> >> > The user space wouldn't need to do the prog_run command.
-> >> > It would detach the prog and close(prog_fd).
-> >> > That will trigger __fini callback that will cancel the timers
-> >> > and the prog will be fully unloaded.
-> >> > That would make bpf progs resemble kernel modules even more.
-> >>
-> >> I like the idea of a "destructor" that will trigger on refcnt drop to
-> >> zero. And I do think a "bpf daemon" is potentially a useful, if novel,
-> >> concept.
-> >
-> > I think so too. Long ago folks requested periodic bpf progs to
-> > do sampling in tracing. All these years attaching bpf prog
-> > to a perf_event was a workaround for such feature request.
-> > perf_event bpf prog can be pinned in perf_event array,
-> > so "bpf daemon" kinda exist today. Just more convoluted.
->
-> Right, agreed - triggering periodic sampling directly from BPF does seem
-> like the right direction.
 
-This is one of the cases where knowing (or being able to specify) the
-CPU to run on is very important, btw.
+	Hello,
 
-Which made me think about scheduling timeout on a specific CPU from
-another CPU. Is it possible with hrtimer? If yes, should it be done
-through bpf_timer_init() or bpf_timer_start()?
+On Wed, 2 Jun 2021, Xin Long wrote:
 
->
-> >> The __fini thing kinda supposes a well-behaved program, though, right?
-> >> I.e., it would be fairly trivial to write a program that spins forever
-> >> by repeatedly scheduling the timer with a very short interval (whether
-> >> by malice or bugginess).
+> On Mon, May 24, 2021 at 10:33 AM syzbot
+> <syzbot+e562383183e4b1766930@syzkaller.appspotmail.com> wrote:
 > >
-> > It's already possible without bpf_timer.
->
-> Hmm, fair point.
->
-> >> So do we need a 'bpfkill' type utility to nuke
-> >> buggy programs, or how would resource constraints be enforced?
+> > Hello,
 > >
-> > That is possible without 'bpfkill'.
-> > bpftool can delete map element that contains bpf_timer and
-> > that will cancel it. I'll add tests to make sure it's the case.
->
-> Ah, right, of course! Thanks, LGTM then :)
->
-> -Toke
->
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    c3d0e3fd Merge tag 'fs.idmapped.mount_setattr.v5.13-rc3' o..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=148d0bd7d00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=ae7b129a135ab06b
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=e562383183e4b1766930
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15585a4bd00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13900753d00000
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+e562383183e4b1766930@syzkaller.appspotmail.com
+> >
+> > BUG: memory leak
+> > unreferenced object 0xffff888115227800 (size 512):
+> >   comm "syz-executor263", pid 8658, jiffies 4294951882 (age 12.560s)
+> >   hex dump (first 32 bytes):
+> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> >   backtrace:
+> >     [<ffffffff83977188>] kmalloc include/linux/slab.h:556 [inline]
+> >     [<ffffffff83977188>] kzalloc include/linux/slab.h:686 [inline]
+> >     [<ffffffff83977188>] ip_vs_add_service+0x598/0x7c0 net/netfilter/ipvs/ip_vs_ctl.c:1343
+> >     [<ffffffff8397d770>] do_ip_vs_set_ctl+0x810/0xa40 net/netfilter/ipvs/ip_vs_ctl.c:2570
+> >     [<ffffffff838449a8>] nf_setsockopt+0x68/0xa0 net/netfilter/nf_sockopt.c:101
+> >     [<ffffffff839ae4e9>] ip_setsockopt+0x259/0x1ff0 net/ipv4/ip_sockglue.c:1435
+> >     [<ffffffff839fa03c>] raw_setsockopt+0x18c/0x1b0 net/ipv4/raw.c:857
+> >     [<ffffffff83691f20>] __sys_setsockopt+0x1b0/0x360 net/socket.c:2117
+> >     [<ffffffff836920f2>] __do_sys_setsockopt net/socket.c:2128 [inline]
+> >     [<ffffffff836920f2>] __se_sys_setsockopt net/socket.c:2125 [inline]
+> >     [<ffffffff836920f2>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2125
+> >     [<ffffffff84350efa>] do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+> >     [<ffffffff84400068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+> do_ip_vs_set_ctl() allows users to add svc with the flags field set.
+> when IP_VS_SVC_F_HASHED is used, and in ip_vs_svc_hash()
+> called ip_vs_add_service() will trigger the err msg:
+> 
+> IPVS: ip_vs_svc_hash(): request for already hashed, called from
+> do_ip_vs_set_ctl+0x810/0xa40
+> 
+> and the svc allocated will leak.
+> 
+> so fix it by mask the flags with ~IP_VS_SVC_F_HASHED in
+> ip_vs_copy_usvc_compat(), while at it also remove the unnecessary
+> flag IP_VS_SVC_F_HASHED set in ip_vs_edit_service().
+
+	The net tree already contains fix for this problem.
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
+
