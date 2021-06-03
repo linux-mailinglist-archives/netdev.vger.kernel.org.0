@@ -2,118 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D381739A4E5
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:41:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0D339A4F8
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:46:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230149AbhFCPmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 11:42:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42983 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230080AbhFCPms (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:42:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622734863;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AvsQH1hyQpvPjHL2hTxdfQHPQhfR4l9xQwXErWo9HxI=;
-        b=CZbXc2ySzAMOmsJhzuq+DxSHnZhWv/bbeZH0rn3MRWJkn5hpWf+aaHowPXON1fgCWvBnwV
-        Y/6EV6dxc4FfRH6qF9vl0ru2eSEF1aU99Fx/ihT2hLltwCi78GHwh1sVFhLtkeTh4vc40w
-        wnnS76kJT3sLGhL1Ntp7v1CUKz3WMfE=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-31-mayqNeqYO0S--LoAO4nPGg-1; Thu, 03 Jun 2021 11:41:02 -0400
-X-MC-Unique: mayqNeqYO0S--LoAO4nPGg-1
-Received: by mail-ej1-f72.google.com with SMTP id eb10-20020a170907280ab02903d65bd14481so2072295ejc.21
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 08:41:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AvsQH1hyQpvPjHL2hTxdfQHPQhfR4l9xQwXErWo9HxI=;
-        b=aLHJOJveGnm1AeyF+TD7d6Ed2TRdaniQ5JxOj/Fc+0kn1F+TFa1Fw8V0+RjSqd9IfF
-         AL6yEj4ghz9hY64TsVMIkeQmiZpQ3mMeoN/hV2g82xSCYFyJP+Zs/Wty847/JZPb6CZn
-         MUrDc3tB/CIFEEfagWPUF0fqX5EpkQrylC92LrPtwtiDS97ket2W0XEZFqZBWEgS1Rwk
-         gI5lzGoKIeO+BI34i8skWOwGGeK0ppKxoKsUeKA4DscITdLzTkx4n3oKQHEz7qLw7VRx
-         R7aDSGodz9uWdMiDo8m4Yy3XDk43ZtStBO8BM49gZT0JnRJ6Rn2QpQnN/D8XDiIuM1Dk
-         QDIQ==
-X-Gm-Message-State: AOAM531T2q15j37yuxFZX0AHEBFOKypt61y1gVWnGZ14W1eSp75McX7u
-        rCOnk74nGDUhpcu8MmG5BXDy+cdRQRsFtUaoeJNi8gdJOiciohVEJjRww+XVele0gsprFF8mmR6
-        d7BFLAb6zF3zedurK
-X-Received: by 2002:a05:6402:4313:: with SMTP id m19mr80409edc.263.1622734860914;
-        Thu, 03 Jun 2021 08:41:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyY5YQ/utrtbJ0+zixQqmqhNKVQZErmThRj2KcDrDwxrmJQ2oZwOP9DefrKyZY+3MYgkheR+g==
-X-Received: by 2002:a05:6402:4313:: with SMTP id m19mr80384edc.263.1622734860773;
-        Thu, 03 Jun 2021 08:41:00 -0700 (PDT)
-Received: from steredhat ([5.170.129.82])
-        by smtp.gmail.com with ESMTPSA id l8sm1930416edt.69.2021.06.03.08.40.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 08:41:00 -0700 (PDT)
-Date:   Thu, 3 Jun 2021 17:40:56 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S229884AbhFCPsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 11:48:31 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:47084 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229617AbhFCPsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:48:30 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 153Fj79S170845;
+        Thu, 3 Jun 2021 15:46:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=JqeuEbZiTIXjC3KOdhlbcdTYqDxBV/Ur9X+bVkW1dA0=;
+ b=a6geYAtXFfh1waSU7eu0TlnYw1ZWG7KK7KR236BxQtK6P7R/BYZg+B9GbK8PiRh6CvQh
+ N1sz8RfGOeyZc4Vnfyi9cv6AZDnt3kByk/V81oA1SSt4XdnO3/0x3ZoLe3X5LFrVG/lc
+ fuhLWRz4v0typYv4Pf2g9K2OxneZ4lvHMStq3/36kUlaiZOBjHlF1cGp9tvHIlxg+4ME
+ PQaxlnwW6mqnFVXZJ3foO951o2Ahpvfl9GUWG/b925kGVMMe888LKJDRDXHEAZVNDGYK
+ TbGoed6V/6OHDjjLyN7N88VYx1GAWf/bY3GK7tdUBbYNMojdeUbnmPLG+tnvZqWW1Pl6 xQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 38ub4cutfs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 03 Jun 2021 15:46:39 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 153Fkb8W064827;
+        Thu, 3 Jun 2021 15:46:39 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 38ubneyfv7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 03 Jun 2021 15:46:39 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 153Fkcki064974;
+        Thu, 3 Jun 2021 15:46:38 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 38ubneyfuf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 03 Jun 2021 15:46:38 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 153FkXVW006379;
+        Thu, 3 Jun 2021 15:46:33 GMT
+Received: from kadam (/41.212.42.34)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 03 Jun 2021 15:46:33 +0000
+Date:   Thu, 3 Jun 2021 18:46:25 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, oxffffaa@gmail.com
-Subject: Re: [PATCH v10 18/18] virtio/vsock: update trace event for SEQPACKET
-Message-ID: <20210603154056.e3zyk2wmmutq4nia@steredhat>
-References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
- <20210520192008.1272910-1-arseny.krasnov@kaspersky.com>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] net/mlx5: check for allocation failure in
+ mlx5_ft_pool_init()
+Message-ID: <20210603154625.GI1955@kadam>
+References: <YLjNfHuTQ817oUtX@mwanda>
+ <YLjVRjAyP3UpzgVr@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210520192008.1272910-1-arseny.krasnov@kaspersky.com>
+In-Reply-To: <YLjVRjAyP3UpzgVr@unreal>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-GUID: zKS5juQhn23kX7cRcPi15XDD2LSxMgNc
+X-Proofpoint-ORIG-GUID: zKS5juQhn23kX7cRcPi15XDD2LSxMgNc
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10004 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 mlxscore=0
+ mlxlogscore=999 malwarescore=0 bulkscore=0 phishscore=0 lowpriorityscore=0
+ clxscore=1015 impostorscore=0 adultscore=0 suspectscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
+ definitions=main-2106030106
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 20, 2021 at 10:20:04PM +0300, Arseny Krasnov wrote:
->Add SEQPACKET socket type to vsock trace event.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> include/trace/events/vsock_virtio_transport_common.h | 5 ++++-
-> 1 file changed, 4 insertions(+), 1 deletion(-)
->
->diff --git a/include/trace/events/vsock_virtio_transport_common.h b/include/trace/events/vsock_virtio_transport_common.h
->index 6782213778be..b30c0e319b0e 100644
->--- a/include/trace/events/vsock_virtio_transport_common.h
->+++ b/include/trace/events/vsock_virtio_transport_common.h
->@@ -9,9 +9,12 @@
-> #include <linux/tracepoint.h>
->
-> TRACE_DEFINE_ENUM(VIRTIO_VSOCK_TYPE_STREAM);
->+TRACE_DEFINE_ENUM(VIRTIO_VSOCK_TYPE_SEQPACKET);
->
-> #define show_type(val) \
->-	__print_symbolic(val, { VIRTIO_VSOCK_TYPE_STREAM, "STREAM" })
->+	__print_symbolic(val, \
->+				{ VIRTIO_VSOCK_TYPE_STREAM, "STREAM" }, \
->+				{ VIRTIO_VSOCK_TYPE_SEQPACKET, "SEQPACKET" })
+On Thu, Jun 03, 2021 at 04:12:38PM +0300, Leon Romanovsky wrote:
+> On Thu, Jun 03, 2021 at 03:39:24PM +0300, Dan Carpenter wrote:
+> > Add a check for if the kzalloc() fails.
+> > 
+> > Fixes: 4a98544d1827 ("net/mlx5: Move chains ft pool to be used by all firmware steering")
+> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > ---
+> >  drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c
+> > index 526fbb669142..c14590acc772 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c
+> > @@ -27,6 +27,8 @@ int mlx5_ft_pool_init(struct mlx5_core_dev *dev)
+> >  	int i;
+> >  
+> >  	ft_pool = kzalloc(sizeof(*ft_pool), GFP_KERNEL);
+> > +	if (!ft_pool)
+> > +		return -ENOMEM;
+> >  
+> >  	for (i = ARRAY_SIZE(FT_POOLS) - 1; i >= 0; i--)
+> >  		ft_pool->ft_left[i] = FT_SIZE / FT_POOLS[i];
+> 
+> 
+> Dan thanks for your patch.
+> 
+> When reviewed your patch, I spotted another error in the patch from the Fixes line.
+> 
+>   2955         err = mlx5_ft_pool_init(dev);
+>   2956         if (err)
+>   2957                 return err;
+>   2958
+>   2959         steering = kzalloc(sizeof(*steering), GFP_KERNEL);
+>   2960         if (!steering)
+>   2961                 goto err;
+>                        ^^^^^^^^ it will return success, while should return ENOMEM.
 
-I think we should fixe the indentation here (e.g. following show_op):
-  #define show_type(val) \
-	__print_symbolic(val, \
-			 { VIRTIO_VSOCK_TYPE_STREAM, "STREAM" }, \
-			 { VIRTIO_VSOCK_TYPE_SEQPACKET, "SEQPACKET" })
+Smatch prints a static checker warning for this, but I never finished
+going through the backlog of old "missing error code" warnings.  At one
+point I was down to 38 warnings left but now I see that the backlog is
+62 warnings so people are adding new bugs faster than I'm reviewing
+them...  :P
 
-Thanks,
-Stefano
+I will take care of this tomorrow as a separate patch.  I will just
+report or the other 61 warnings and get the backlog cleared out so that
+I can start checking these better in the future.
 
->
-> TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_INVALID);
-> TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_REQUEST);
->-- 
->2.25.1
->
+regards,
+dan carpenter
 
