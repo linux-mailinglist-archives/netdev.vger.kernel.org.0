@@ -2,97 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1169439A140
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 14:39:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE8039A17F
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 14:51:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230380AbhFCMl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 08:41:26 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:46102 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230188AbhFCMlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 08:41:25 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 153CUmDR162320;
-        Thu, 3 Jun 2021 12:39:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=M542x0boGODnUlJz41kxOBy1SWVp7Fwn/02HuLjbGdI=;
- b=XQWDb3RhNZedNIqo+FUfXm9pwg218R7OEoKqKzdptSri1R6jCjC6hDZhd+1HpVUc1VNd
- UM9iBE5QvsmW+I4D6UNJHIiDan2psaDZiHBcZJma50vfpJWvYnvBqVoIDYkj7fplxPF2
- qNu/ib1t/lRoaSeatVREZieGfmQbKu9TywtZ6/JJALO/kNOcVwMEaMM38m26n6bvRXtW
- hXLDa73iHlPULhefWZ7wKtiPi/7YcvKhDzKIJjMxA3PYvBQoLLuiNW2r0SFN5xeYSWVl
- 2EvPzVBrZnwJ7fTu9QwlTnA/oYTvrL4kNvbZfIOiH3uroYqM92XrYhEcmYU4W+sj2ayv MA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 38ue8pk7ba-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 03 Jun 2021 12:39:33 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 153CUpt3146452;
-        Thu, 3 Jun 2021 12:39:32 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 38ubneu39x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 03 Jun 2021 12:39:32 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 153CcTdE164461;
-        Thu, 3 Jun 2021 12:39:32 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 38ubneu39q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 03 Jun 2021 12:39:31 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 153CdVAO008677;
-        Thu, 3 Jun 2021 12:39:31 GMT
-Received: from mwanda (/41.212.42.34)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 03 Jun 2021 05:39:30 -0700
-Date:   Thu, 3 Jun 2021 15:39:24 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>, Paul Blakey <paulb@nvidia.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net/mlx5: check for allocation failure in
- mlx5_ft_pool_init()
-Message-ID: <YLjNfHuTQ817oUtX@mwanda>
+        id S229994AbhFCMxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 08:53:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48550 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229876AbhFCMxk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 08:53:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 41B386124B;
+        Thu,  3 Jun 2021 12:51:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622724715;
+        bh=C8HPP5sd9YlhX8e04OtjxshaooCjbWpRclLtzli8xMs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=E0R7YiyxmLeOb7Bvejn965eCL3+0UbxbrJx53hgPYQE/8X2g1mZOOCOARxr1XCSvb
+         5uqzoR9JCbSPCFUgzpdpM1EmOk5lhusbklEDZA1T/ewSdANG3n2yyd+ZWI565Gli+J
+         BqwFH7m73O+hLeuvmTrHtIHDZ0Yq5+lrGIINFdKBZUJFMGRrLx4r0gUO/InOS/o63o
+         p4GFXyxJNKVCk3XEhYK5n2Glt92Nkb+lbSbBHZ+1lgI9m3npI71k+PjoHusnYzdZQO
+         udUggSyiqGAHGWM1lc26jxIt7iIl4hbaIN3I/FLXR7HP5JeVuQ/VlSmlNQzewTsues
+         VRrVv1vJpIaPA==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
+        Lior Nahmanson <liorna@nvidia.com>,
+        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH rdma-next 0/3] Add ConnectX DCS offload support
+Date:   Thu,  3 Jun 2021 15:51:47 +0300
+Message-Id: <cover.1622723815.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-GUID: ka4XI3IZmZpJRXB6GUXXTJK9R06JZvZY
-X-Proofpoint-ORIG-GUID: ka4XI3IZmZpJRXB6GUXXTJK9R06JZvZY
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10003 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 impostorscore=0
- malwarescore=0 adultscore=0 suspectscore=0 lowpriorityscore=0 spamscore=0
- bulkscore=0 phishscore=0 priorityscore=1501 clxscore=1011 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
- definitions=main-2106030085
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a check for if the kzalloc() fails.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Fixes: 4a98544d1827 ("net/mlx5: Move chains ft pool to be used by all firmware steering")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c | 2 ++
- 1 file changed, 2 insertions(+)
+This patchset from Lior adds support of DCI stream channel (DCS) support.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c
-index 526fbb669142..c14590acc772 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c
-@@ -27,6 +27,8 @@ int mlx5_ft_pool_init(struct mlx5_core_dev *dev)
- 	int i;
- 
- 	ft_pool = kzalloc(sizeof(*ft_pool), GFP_KERNEL);
-+	if (!ft_pool)
-+		return -ENOMEM;
- 
- 	for (i = ARRAY_SIZE(FT_POOLS) - 1; i >= 0; i--)
- 		ft_pool->ft_left[i] = FT_SIZE / FT_POOLS[i];
+DCS is an offload to SW load balancing of DC initiator work requests.
+
+A single DC QP initiator (DCI) can be connected to only one target at the time 
+and can't start new connection until the previous work request is completed.
+
+This limitation causes to delays when the initiator process needs to
+transfer data to multiple targets at the same time.
+
+Thanks
+
+Lior Nahmanson (3):
+  net/mlx5: Add DCS caps & fields support
+  RDMA/mlx5: Move DCI QP creation to separate function
+  RDMA/mlx5: Add DCS offload support
+
+ drivers/infiniband/hw/mlx5/main.c |  10 ++
+ drivers/infiniband/hw/mlx5/qp.c   | 168 ++++++++++++++++++++++++++++++
+ include/linux/mlx5/mlx5_ifc.h     |  14 ++-
+ include/uapi/rdma/mlx5-abi.h      |  17 ++-
+ 4 files changed, 204 insertions(+), 5 deletions(-)
+
 -- 
-2.30.2
+2.31.1
 
