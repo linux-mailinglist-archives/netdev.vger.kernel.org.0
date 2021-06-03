@@ -2,110 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8018839A991
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7558539A998
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbhFCRy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 13:54:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44650 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229791AbhFCRy6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 13:54:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C66861361;
-        Thu,  3 Jun 2021 17:53:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622742793;
-        bh=/4+zqLM/v5L+l1gJvmrPkAnFdvQifn4m+n1bUWinqI8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S7L2kPDWr+/Us0lQm787aWEhcQTWzAzDl+4Q6HaptAcIY6rTylqwm8p2b/9VRu5Q4
-         R4M4joTvINf9ts7vQqVSItcBFo3Li8HHGhQeoCvd0IKQz56xp76H7e4R+bhE3sNPBZ
-         DvpxN0JhR8/qZhXOgKcULS+qBNBUvEuIbd6xX4WaBzPHzFvGVAOWn0xqODFv+BRprI
-         2OGkbnLZbWIvPWslCIgQsz9g12OUn+gXpyu27nNhHlOcyu8q82uNgwD7PbXNIFR70d
-         gZwxFBBmFu9+hb+1RtLJu9Ah1YFY6zVikab/z/TRxi864AcQnDB6fSc83QvWcq1xIr
-         bTuZL/VrjDSPw==
-Date:   Thu, 3 Jun 2021 10:53:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     moyufeng <moyufeng@huawei.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Parav Pandit <parav@mellanox.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>,
+        id S229961AbhFCR4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 13:56:24 -0400
+Received: from us-smtp-delivery-115.mimecast.com ([216.205.24.115]:57395 "EHLO
+        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229710AbhFCR4X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 13:56:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
+        s=selector; t=1622742878;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=56lIRyVtFMZM0W5kj0jVCS6e9DNwsQ+Bg7GYpDYyORA=;
+        b=bNnA0ruKU6+0G55duY3PCmG469qj68i7yZ3AbVjQ6TYHcUcF8n//rs8wkWbNw34xEnOg77
+        rOCYJkacaB//yTsFdEoaRi11+SKDmhrQm/DCGKJefAKH0DdY3Sys4vhB7dFXg896Pf0uCl
+        HzokM8KJbP2DLYkwmEulIpYDYq43lC0=
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam10lp2109.outbound.protection.outlook.com [104.47.58.109])
+ (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-295-6itlKW-PPDKvMtk-ElZheg-1; Thu, 03 Jun 2021 13:54:35 -0400
+X-MC-Unique: 6itlKW-PPDKvMtk-ElZheg-1
+Received: from MWHPR19MB0077.namprd19.prod.outlook.com (2603:10b6:301:67::32)
+ by MWHPR19MB1055.namprd19.prod.outlook.com (2603:10b6:300:a6::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.24; Thu, 3 Jun
+ 2021 17:54:31 +0000
+Received: from MWHPR19MB0077.namprd19.prod.outlook.com
+ ([fe80::b931:30a4:ce59:dc87]) by MWHPR19MB0077.namprd19.prod.outlook.com
+ ([fe80::b931:30a4:ce59:dc87%4]) with mapi id 15.20.4195.022; Thu, 3 Jun 2021
+ 17:54:31 +0000
+From:   Liang Xu <lxu@maxlinear.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "michal.lkml@markovi.net" <michal.lkml@markovi.net>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "lipeng (Y)" <lipeng321@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        <shenjian15@huawei.com>, "chenhao (DY)" <chenhao288@hisilicon.com>,
-        Jiaran Zhang <zhangjiaran@huawei.com>
-Subject: Re: [RFC net-next 0/8] Introducing subdev bus and devlink extension
-Message-ID: <20210603105311.27bb0c4d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <857e7a19-1559-b929-fd15-05e8f38e9d45@huawei.com>
-References: <1551418672-12822-1-git-send-email-parav@mellanox.com>
-        <20190301120358.7970f0ad@cakuba.netronome.com>
-        <VI1PR0501MB227107F2EB29C7462DEE3637D1710@VI1PR0501MB2271.eurprd05.prod.outlook.com>
-        <20190304174551.2300b7bc@cakuba.netronome.com>
-        <VI1PR0501MB22718228FC8198C068EFC455D1720@VI1PR0501MB2271.eurprd05.prod.outlook.com>
-        <76785913-b1bf-f126-a41e-14cd0f922100@huawei.com>
-        <20210531223711.19359b9a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <7c591bad-75ed-75bc-5dac-e26bdde6e615@huawei.com>
-        <20210601143451.4b042a94@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <cf961f69-c559-eaf0-e168-b014779a1519@huawei.com>
-        <20210602093440.15dc5713@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <857e7a19-1559-b929-fd15-05e8f38e9d45@huawei.com>
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        Thomas Mohren <tmohren@maxlinear.com>
+Subject: Re: [PATCH v2] net: phy: add Maxlinear GPY115/21x/24x driver
+Thread-Topic: [PATCH v2] net: phy: add Maxlinear GPY115/21x/24x driver
+Thread-Index: AQHXWEr5aRzQQmYLZUuI1qUONcx6wKsCAhAAgABiiACAAAMRAIAAAx2AgAAaBQCAAA2gAA==
+Date:   Thu, 3 Jun 2021 17:54:31 +0000
+Message-ID: <627eca5a-04a5-5b73-2f7e-fab372d74fd3@maxlinear.com>
+References: <20210603073438.33967-1-lxu@maxlinear.com>
+ <20210603091750.GQ30436@shell.armlinux.org.uk>
+ <54b527d6-0fe6-075f-74d6-cc4c51706a87@maxlinear.com>
+ <YLjzeMpRDIUV9OAI@lunn.ch>
+ <1e580c98-3a0c-2e60-17e3-01ad8bfd69d9@maxlinear.com>
+ <YLkL6MWJCheuUJv1@lunn.ch>
+In-Reply-To: <YLkL6MWJCheuUJv1@lunn.ch>
+Accept-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
+x-originating-ip: [27.104.174.186]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0fc34ff5-f0cd-44b6-29c3-08d926b8a3bf
+x-ms-traffictypediagnostic: MWHPR19MB1055:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR19MB10555A7859E78CD1B582288EBD3C9@MWHPR19MB1055.namprd19.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0
+x-microsoft-antispam-message-info: kmtU5JTrTMOr6nNm7fn4BlkhVIieG8RfaV/am8HxPzi73rfLot2NKeT9XULCPjLb5++eROAECLUJ0xeZOJPPkHh+JibE9hUva9LSOe0TWegXMYsIO/L87aO/VwOVHZOyc3eWZgl/9Vzm5QzD3xeN8Wy3/2IVWBy9dlsekEHG99q/l0wiVhmXizE3Aws0MQMRx48b7uQNYMxUI03rI9MQbJm3PP3R66wLfg7Uarr5T8sQBerzpeulUshajroS5W2qzCuGwVtPFIjqvgCwmQiwZfNJmXSPeqxahOUlzTlQFXYDPOZohMzaTqNbeiOYmlgR5DNQdNajF9SAhPuXEysRujUKR+1kLqdJdLcD2uw7ZnAlva4x8lRpCBFSlfvIKMyDDudTBaBFwcWBX9hn+IUD4Sw8ZVVpec2sDUJOqUekRq7Ye6gnxHao6X6UPsiO7n5hzxsa+YhxOZGn0aZX+6f7jqmsut4yax+c2khhvbw+xgrTbfDXtwt7W0WScWKVCuvGmmi+Us27XHxZXLYWn9s0Lq/LQmmmG5r+dJcODhbcw5RJVpINjjyGTf2UvHRVKskGWzPk8QTvzviJcSaYItxy+M47L/gZK58s9CqM3VK6VM9KrqpVcwaWJH5JfNrhh2B8yfLA6ZRsaR+vy7SDSAPsd7Y6a87/jRNM+HF4ZdgIFBoT73scGke1P9EPYgw2bIa4
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR19MB0077.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(366004)(39840400004)(136003)(396003)(316002)(107886003)(66446008)(53546011)(6506007)(66476007)(2906002)(86362001)(76116006)(6512007)(66556008)(8936002)(64756008)(31686004)(186003)(36756003)(71200400001)(122000001)(478600001)(91956017)(66946007)(5660300002)(38100700002)(8676002)(6916009)(4326008)(31696002)(26005)(2616005)(6486002)(54906003)(4744005)(45980500001)(43740500002);DIR:OUT;SFP:1102
+x-ms-exchange-antispam-messagedata: =?utf-8?B?bmZTZlplK3FMTGlSZm0xT1pTY25za0hscmZkSTNsWEZGcDhWVzBtQ29iWHBJ?=
+ =?utf-8?B?OTdWdkdvbG93UzZyTG9LU0VLZXFjaVo5YkFnZXc2RlB5UmNwU0tmSzlPeU0z?=
+ =?utf-8?B?bE0vdk9ZMnB5Y0t2NGhyNFMxV2ZwVy81Ry9Fc29OYnFtbFprOG5FSEQ4b2Y3?=
+ =?utf-8?B?YVJBaGNhRmlXSGpIWXkvVUFPaEVKcHFPeU9jNDBOcUh1d1UvSjREa3lrZ0lD?=
+ =?utf-8?B?eVl3ZmwzYnUwT21xaVVndDI4bEYxNzZXNlUxU0tCaUYxNmtaY3NJUzBUYkFt?=
+ =?utf-8?B?THYrQUpselF5eXpiamIyaVV1Sk9SYjExcFpEdVMycXg3ZXZ1TmE0ZHp4RWVu?=
+ =?utf-8?B?dUZjZDJ0S2lUeGt2RW5rV1U5UlVzbHFmenkvbHc5UGh5Rlc5MzlDbGhlTkpY?=
+ =?utf-8?B?OE9GY3FhbStaNzczMWg1aVpwV1I0WHZDZHo4UDZwMkxHVFU1clhOanNtb3FI?=
+ =?utf-8?B?enBTTzVIOE9OeW9oUmtKRlg5UklmN2M1RnlJaDRNOHN1aWFOQU1oeU45Z0lN?=
+ =?utf-8?B?MHNBRVpCUG8rL3ZzdjVibjM2UFY5Ni91L0lQaWFuUHZ3L2VJZ2JpbkQ4VExK?=
+ =?utf-8?B?bVpuVG54RnZDUEdjYWhNdXQxVEhZaTFGZ0ZwZmVmOG93VmJEWndHOUtJQVJp?=
+ =?utf-8?B?T09yMVN4VFF1RGpVdE9qZVorMjdLaEEzUjMyeGUzdnFlV1JUdUk1R2VKOWpS?=
+ =?utf-8?B?OTVJdVJEMFRhWmpzeHVobmtQb3JtRk1jdVBaZGlhTW5oM0o3KzVPeVlOcGhN?=
+ =?utf-8?B?U0xSMVIxTHFKQVh5NWV3TmpOdlY2Um1MV2VyK0ZkTFF6bk4wUUJmbithRitU?=
+ =?utf-8?B?ZmpvdG1LMjZ3bUtITGdQL2t0c1JBQjBNa0VoUlA2WVE5SEw5dEUyYi9BdlI0?=
+ =?utf-8?B?RkhKemhoSldBRFMrRjU1Z3hGR25RUzFIWGFiRENPSUJ6elFHOTVhQ3RjZmFN?=
+ =?utf-8?B?aStXcS9MRVhZaVJWLzloMHI4eFdVQXViM2FISVkzVGpOaUtJUHNpV3ZTVmFy?=
+ =?utf-8?B?S28zQzBqS25xTCtNcmsxc1dEc1QwSGF4ZlJFYWxNRmtJL2kvZDZvK1VwZzYz?=
+ =?utf-8?B?UmQrQ25EZkk0V0MrZjVyMnBtdmVPUE1mcGJyWUxjOG1ZcFQ1dGNmaGEzR0lH?=
+ =?utf-8?B?ZWsrMlo5bGRPckE2MS9UNmRub1IzaVMzcmU2QzRwZyszUUxFb1N1WjJ6VkZt?=
+ =?utf-8?B?ZExOUkJxNkJKNG5Kc0Y2R1pucWJVd2doNWF0M3dhZjc2cTltM3cxRWxuMjNw?=
+ =?utf-8?B?dlpCc1lUMS9jb3hsUlVJNkVrZG42bmw0N1YwL3c0VUhwZGo1Vy9hN0g3L2xn?=
+ =?utf-8?B?K2tXZms2cUFBcXd3ZDk5Umk2YXN6bGhlKzlBRFhMT3dwbzRaalVkWHBUOTNG?=
+ =?utf-8?B?enp0aWpoUDRTdXFKWjZaaHQrMmlDYmdXa3k1cHZMQ3pNaHRUYks2dGJMVHMz?=
+ =?utf-8?B?Z3I0TitHUCtKZGx0eVFuaitOMHJrYndSVGpFdm5yMkJydTFKRU9iUVU0ME9N?=
+ =?utf-8?B?V0hOVmREdDZ4UWJRbGtYa1ZobjkzZGlVbXlyY0dVak5may9rWXlrbXdlelIx?=
+ =?utf-8?B?VDZTbndZeU4zcWVpbU5SOEJwa1VGdldhWE9pdjRaVDM2WE55WDlBN1hQMytn?=
+ =?utf-8?B?bFZUdE1XQnVycjNEeDVzR0V2bDcrQ3V0SWVxUER4K3BMdzRXc0V5MFhlMjNm?=
+ =?utf-8?B?MGxBd3dHR3BuM1N6MU1UMHQyQVhIOW5lWjV1L0NJN1ZFY2pmelI4RnB0Tkdu?=
+ =?utf-8?Q?50xqupmJMUrqOrgJ0zHut3OuYv9A6qyDZ+2zrAd?=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: maxlinear.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR19MB0077.namprd19.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0fc34ff5-f0cd-44b6-29c3-08d926b8a3bf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2021 17:54:31.1388
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: dac28005-13e0-41b8-8280-7663835f2b1d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vchFsijsjFe9RsRuSEYVP5M6ZF+ArdS8locQPD4nP2t+V5/309UdMzfgBumPHpldnmmoj8eEN8ZSfcg07FEKeA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR19MB1055
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: maxlinear.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-ID: <01CFE0631B528648A0BA90D0C1BB6D60@namprd19.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Jun 2021 11:46:43 +0800 Yunsheng Lin wrote:
-> >> can devlink port be used to indicate different PF in the same ASIC,
-> >> which already has the bus identifiers in it? It seems we need a
-> >> extra identifier to indicate the ASIC?
-> >>
-> >> $ devlink port show
-> >> ...
-> >> pci/0000:03:00.0/61: type eth netdev sw1p1s0 split_group 0  
-> > 
-> > Ports can obviously be used, but which PCI device will you use to
-> > register the devlink instance? Perhaps using just one doesn't matter 
-> > if there is only one NIC in the system, but may be confusing with
-> > multiple NICs, no?  
-> 
-> Yes, it is confusing, how about using the controler_id to indicate
-> different NIC? we can make sure controler_id is unqiue in the same
-> host, a controler_id corresponds to a devlink instance, vendor info
-> or serial num for the devlink instance can further indicate more info
-> to the system user?
-> 
-> pci/controler_id/0000:03:00.0/61
+T24gNC82LzIwMjEgMTowNSBhbSwgQW5kcmV3IEx1bm4gd3JvdGU6DQo+IFRoaXMgZW1haWwgd2Fz
+IHNlbnQgZnJvbSBvdXRzaWRlIG9mIE1heExpbmVhci4NCj4NCj4NCj4+IFRoZSBmaXJtd2FyZSB2
+ZXJzaW9uIGNhbiBjaGFuZ2UgYmVjYXVzZSBvZiBzd2l0Y2ggb2YgdGhlIGZpcm13YXJlIGR1cmlu
+Zw0KPj4gcnVubmluZyB0aW1lLg0KPiBQbGVhc2UgY291bGQgeW91IGV4cGxhaW4gdGhpcyBzb21l
+IG1vcmUuIFdoYXQgaGFwcGVucyBpZiBpIGluaXRpYWxpemUNCj4gdGhlIFBIWSBhbmQgdGhlbiBp
+dCBkZWNpZGVkIHRvIHN3aXRjaCBpdHMgZmlybXdhcmUuIElzIHRoZQ0KPiBjb25maWd1cmF0aW9u
+IGtlcHQ/IERvZXMgaXQgbmVlZCByZWNvbmZpZ3VyaW5nPw0KPg0KPiAgICAgICAgQW5kcmV3DQo+
+DQpJbiBvbmUgb2Ygb3VyIHByb2R1Y3QgKGluIGRldmVsb3BpbmcpLCB0aGUgTklDIGRyaXZlciBj
+YW4gZGVjaWRlIHRvIA0Kc3dpdGNoIHRvIDJuZCBmaXJtd2FyZS4NCg0KVGhlIHN3aXRjaCBoYXBw
+ZW5zIHdoZW4gbmV0d29yayBpbnRlcmZhY2UgaXMgZG93bi4NCg0KQWZ0ZXIgdGhlIHN3aXRjaCwg
+d2hlbiB0aGUgbmV0d29yayBpbnRlcmZhY2UgaXMgdXAsIHBoeV9pbml0X2h3IGlzIA0KdHJpZ2dl
+cmVkIHRvIGluaXQgdGhlIHBoeS4NCg0KVGhlIFBIWSBkZXZpY2UgaXRzZWxmIHdvbid0IGRlY2lk
+ZSB0byBzd2l0Y2ggZmlybXdhcmUuDQoNCg0K
 
-What is a "controller id" in concrete terms? Another abstract ID which
-may change on every boot?
-
-> >> Does it make sense if the PF first probed creates a auxiliary device,
-> >> and the auxiliary device driver creates the devlink instance? And
-> >> the PF probed later can connect/register to that devlink instance?  
-> > 
-> > I would say no, that just adds another layer of complication and
-> > doesn't link the functions in any way.  
-> 
-> How about:
-> The PF first probed creates the devlink instance? PF probed later can
-> connect/register to that devlink instance created by the PF first probed.
-> It seems some locking need to ensure the above happens as intended too.
-> 
-> About linking, the PF provide vendor info/serial number(or whatever is
-> unqiue between different vendor) of a controller it belong to, if the
-> controller does not exist yet, create one and connect/register to that
-> devlink instance, otherwise just do the connecting/registering.
-
-Sounds about right, but I don't understand why another ID is
-necessary. Why not allow devlink instances to have multiple names, 
-like we allow aliases for netdevs these days?
