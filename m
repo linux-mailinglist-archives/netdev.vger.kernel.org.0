@@ -2,98 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C26C739979F
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 03:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EBB63997AE
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 03:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbhFCBsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 21:48:39 -0400
-Received: from ozlabs.org ([203.11.71.1]:41029 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229567AbhFCBsi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Jun 2021 21:48:38 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FwTK82g8wz9sW7;
-        Thu,  3 Jun 2021 11:46:51 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1622684813;
-        bh=ynMpJRWwCkz86MbxAZ5P7Fs8o/NBJCBM3ePrUfjkQZw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Og5qbeWUW5IMVC/ZzrSS73TsyKrRt39tzHE0cVftwMnKcCRBGwIk1qy/+O+kYcSU9
-         VPTamEAEifp8s+XWJSEOTQYMC7XNx46Rb8saNvY7kxow12BU8kmv3HdJpmfwAvDMIh
-         d3Mof3dSLM9SbscPr5vaLP92PUdA58ZNnKnrHGM/iZ/cQBPQnsazxGHDz2+Ib960L9
-         D74XtFTa6bjaGN0+DvoBl28eEGhXuwK8GIgu1vKxcJkIx7nEmsu/EA1PJrz7JZVMqK
-         l4dQOvl8UyTHrkeeUzKj8TAiUd93/XAJRVmKiTeA1p8qBaNwW9PnDahz4KBRmyMsw0
-         x7M25pCKgTcrA==
-Date:   Thu, 3 Jun 2021 11:46:50 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20210603114650.70163765@canb.auug.org.au>
+        id S229876AbhFCBuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 21:50:04 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:7077 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229719AbhFCBuA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 21:50:00 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FwTHX2xqhzYqG6;
+        Thu,  3 Jun 2021 09:45:28 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 3 Jun 2021 09:48:13 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 3 Jun 2021 09:48:13 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
+        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
+        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
+        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
+        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
+        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
+        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
+        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
+        <alobakin@pm.me>
+Subject: [PATCH net-next v2 0/3] Some optimization for lockless qdisc
+Date:   Thu, 3 Jun 2021 09:47:57 +0800
+Message-ID: <1622684880-39895-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/BO0FPj7bs4EEMlgyakhYDM_";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/BO0FPj7bs4EEMlgyakhYDM_
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Patch 1: remove unnecessary seqcount operation.
+Patch 2: implement TCQ_F_CAN_BYPASS.
+Patch 3: remove qdisc->empty.
 
-Hi all,
+Performance data for pktgen in queue_xmit mode + dummy netdev
+with pfifo_fast:
 
-Today's linux-next merge of the net-next tree got a conflict in:
+ threads    unpatched           patched             delta
+    1       2.60Mpps            3.21Mpps             +23%
+    2       3.84Mpps            5.56Mpps             +44%
+    4       5.52Mpps            5.58Mpps             +1%
+    8       2.77Mpps            2.76Mpps             -0.3%
+   16       2.24Mpps            2.23Mpps             +0.4%
 
-  drivers/net/virtio_net.c
+Performance for IP forward testing: 1.05Mpps increases to
+1.16Mpps, about 10% improvement.
 
-between commits:
+V2: Adjust the comment and commit log according to discussion
+    in V1.
+V1: Drop RFC tag, Add nolock_qdisc_is_empty() and do the qdisc
+    empty checking without the protection of qdisc->seqlock to
+    aviod doing unnecessary spin_trylock() for contention case.
+RFC v4: Use STATE_MISSED and STATE_DRAINING to indicate non-empty
+        qdisc, and add patch 1 and 3.
 
-  5c37711d9f27 ("virtio-net: fix for unable to handle page fault for addres=
-s")
-  8fb7da9e9907 ("virtio_net: get build_skb() buf by data ptr")
+Yunsheng Lin (3):
+  net: sched: avoid unnecessary seqcount operation for lockless qdisc
+  net: sched: implement TCQ_F_CAN_BYPASS for lockless qdisc
+  net: sched: remove qdisc->empty for lockless qdisc
 
-from the net tree and commits:
+ include/net/sch_generic.h | 31 ++++++++++++++++++-------------
+ net/core/dev.c            | 27 +++++++++++++++++++++++++--
+ net/sched/sch_generic.c   | 23 ++++++++++++++++-------
+ 3 files changed, 59 insertions(+), 22 deletions(-)
 
-  6c66c147b9a4 ("virtio-net: fix for unable to handle page fault for addres=
-s")
-  7bf64460e3b2 ("virtio-net: get build_skb() buf by data ptr")
+-- 
+2.7.4
 
-from the net-next tree.
-
-These patches are different version of the same idea.
-
-I fixed it up (just used the latter versions) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/BO0FPj7bs4EEMlgyakhYDM_
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmC4NIoACgkQAVBC80lX
-0GyzKAgAo54mdzqKe5Pjbpc5sG0EVUqLSLMMGXLufC6FrzZL7zvJuFkmd+93x03E
-Sl4QUCsVu8geuQJFx/eyjbdzzHOVQKp65o/lZIb1ukSoJSmwSaAtX1oUKYPn8f12
-hBhsmumN/WFS9xpPUbhm8Xkx41hEzVBWqvuqC4kn/0jnBM9OVuqgjqqUQyuQDm7B
-hHkX+tHIxA6FaDcgah7lAsS1HH7adCwdhngyU4iQH2JCNbYFzEgCKUq26+URWwYl
-257nmq5FlyuOSks2VEYus8ffLFdNwDwfw/YI4XnUqBCHacvIltsL0Myr8+GtHOaZ
-59MPhSDlRAaHeV8hdmQEsAEqD5eUTw==
-=X3LT
------END PGP SIGNATURE-----
-
---Sig_/BO0FPj7bs4EEMlgyakhYDM_--
