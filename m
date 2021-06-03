@@ -2,139 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87C0939A08D
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 14:06:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 672D939A114
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 14:34:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230149AbhFCMIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 08:08:38 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:36237 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230105AbhFCMIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 08:08:37 -0400
-Received: from 1.general.mschiu77.us.vpn ([10.172.65.162] helo=localhost.localdomain)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <chris.chiu@canonical.com>)
-        id 1lom7d-0007iL-Iw; Thu, 03 Jun 2021 12:06:50 +0000
-From:   chris.chiu@canonical.com
-To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chris Chiu <chris.chiu@canonical.com>
-Subject: [PATCH v2 2/2] rtl8xxxu: Fix ampdu_action to get block ack session work
-Date:   Thu,  3 Jun 2021 20:06:09 +0800
-Message-Id: <20210603120609.58932-3-chris.chiu@canonical.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210603120609.58932-1-chris.chiu@canonical.com>
-References: <20210603120609.58932-1-chris.chiu@canonical.com>
+        id S230329AbhFCMfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 08:35:46 -0400
+Received: from mail-qv1-f52.google.com ([209.85.219.52]:44631 "EHLO
+        mail-qv1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230228AbhFCMfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 08:35:46 -0400
+Received: by mail-qv1-f52.google.com with SMTP id a7so3047037qvf.11;
+        Thu, 03 Jun 2021 05:33:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dgzzzAH8mID5IX+kM+X46gD1kQssopr2KLjMaxfwAfQ=;
+        b=pivw5khZunEhLNkShvJxudcY5u34StFUUUuBQ4dT2YRtoGk+ZajKR6j+GJC4EGvAjz
+         GAFuhlfNMqLusSqUyju0h8thafVT7d3i/I9E+KmKBU5swJgPoufqlzG0KUset1zUCkHD
+         fFlThKEJzjf/01c7z3kYemTUQq6xHkqXdEyIMg7+wGWO+1HbX8jcHdOrUKMmj3nVYO3b
+         VswcQIfZ3bGibSi+Ck9fb8LVZF4gREFNaGZedkI6w5m6MCuG9yhnJ41e/Z3AcaulbdXy
+         oKU1vlZpULNhX3sbH891/zGeSCGGPouyxdNkzVVXeIKop2MPowv87e+vBJxmdc/eCQjm
+         l6mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dgzzzAH8mID5IX+kM+X46gD1kQssopr2KLjMaxfwAfQ=;
+        b=i5oF0/UfpomqMAbnnSkYd+/MS6oBoLO7vcY6YhQfgstPbWnFUfnDlAbUNfe3DLhXr5
+         ATtW7PTi6Oat/Z6BAzhUautMXkG9wLjOP39z86DeRixmrDBvM0Q8iI2mgayhwZUPKjtI
+         ccxVTRzKFaJNkqHgLj6kSAPxp6S0Z1vt98GoI4enAaB3VNRWHzXhAmigM07a347lMAD3
+         st0PkYhPLq6qALEXfkIochFJhhY/q1ADkUUyEBLPJzaqUlHfn9HaHKb5NigVSCC5pvTT
+         WMcWr32NWl8pkRNXhPWiPzdI19QKpCY5x6xhRbbnglmFVm/5hYmyhQWnvgYLMHgGDapH
+         FFBA==
+X-Gm-Message-State: AOAM532MgbiwOQR7d1LTbfuHXoAztG5Q3YjrCvwUAumAqMm6kjG1R3JS
+        11s7N6loYFLE6DyHCb6Hn8DwRKi+Jgqv6Ep0eg==
+X-Google-Smtp-Source: ABdhPJwNPJrUuNg7AlPQ4HrNyA2pu83VdMWudd/dH0QdVuFb1BEOS/aHVdnAQMIz+r5TiO7abKEezeHlgQGJO327vXw=
+X-Received: by 2002:a0c:fe6c:: with SMTP id b12mr33815218qvv.32.1622723566330;
+ Thu, 03 Jun 2021 05:32:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAHn8xckNXci+X_Eb2WMv4uVYjO2331UWB2JLtXr_58z0Av8+8A@mail.gmail.com>
+ <cc58c09e-bbb5-354a-2030-bf8ebb2adc86@iogearbox.net> <7f048c57-423b-68ba-eede-7e194c1fea4e@arm.com>
+ <CAHn8xckNt3smeQPi3dgq5i_3vP7KwU45pnP5OCF8nOV_QEdyMA@mail.gmail.com>
+ <7c04eeea-22d3-c265-8e1e-b3f173f2179f@iogearbox.net> <705f90c3-b933-8863-2124-3fea7fdbd81a@arm.com>
+In-Reply-To: <705f90c3-b933-8863-2124-3fea7fdbd81a@arm.com>
+From:   Jussi Maki <joamaki@gmail.com>
+Date:   Thu, 3 Jun 2021 14:32:35 +0200
+Message-ID: <CAHn8xc=1g8bzV-uxaJAYpJ114rR7MLzth=4jyDG329ZwEG+kpg@mail.gmail.com>
+Subject: Re: Regression 5.12.0-rc4 net: ice: significant throughput drop
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, jroedel@suse.de,
+        netdev@vger.kernel.org, bpf <bpf@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org, davem@davemloft.net,
+        anthony.l.nguyen@intel.com, jesse.brandeburg@intel.com, hch@lst.de,
+        iommu@lists.linux-foundation.org, suravee.suthikulpanit@amd.com,
+        gregkh@linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Chiu <chris.chiu@canonical.com>
+On Wed, Jun 2, 2021 at 2:49 PM Robin Murphy <robin.murphy@arm.com> wrote:
+> >> Thanks for the quick response & patch. I tried it out and indeed it
+> >> does solve the issue:
+>
+> Cool, thanks Jussi. May I infer a Tested-by tag from that?
 
-The TID is not handled in the ampdu actions. Fix the ampdu_action
-to handle the ampdu operations according to the TID. The ampdu
-stop also needs to be handled by ieee80211_stop_tx_ba_cb_irqsafe
-for the mac80211 to respond accordingly.
+Of course!
 
-Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
----
- .../net/wireless/realtek/rtl8xxxu/rtl8xxxu.h  |  1 +
- .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 27 ++++++++++++-------
- 2 files changed, 19 insertions(+), 9 deletions(-)
+> Given that the race looks to have been pretty theoretical until now, I'm
+> not convinced it's worth the bother of digging through the long history
+> of default domain and DMA ops movement to figure where it started, much
+> less attempt invasive backports. The flush queue change which made it
+> apparent only landed in 5.13-rc1, so as long as we can get this in as a
+> fix in the current cycle we should be golden - in the meantime, note
+> that booting with "iommu.strict=0" should also restore the expected
+> behaviour.
+>
+> FWIW I do still plan to resend the patch "properly" soon (in all honesty
+> it wasn't even compile-tested!)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-index d1a566cc0c9e..ebd69c161899 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-@@ -1383,6 +1383,7 @@ struct rtl8xxxu_priv {
- 	u8 no_pape:1;
- 	u8 int_buf[USB_INTR_CONTENT_LENGTH];
- 	u8 rssi_level;
-+	u8 tid_bitmap;
- 	/*
- 	 * Only one virtual interface permitted because only STA mode
- 	 * is supported and no iface_combinations are provided.
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 4cf13d2f86b1..790be4ecc3d0 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -4805,6 +4805,8 @@ rtl8xxxu_fill_txdesc_v1(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
- 	struct ieee80211_rate *tx_rate = ieee80211_get_tx_rate(hw, tx_info);
- 	struct rtl8xxxu_priv *priv = hw->priv;
- 	struct device *dev = &priv->udev->dev;
-+	u8 *qc = ieee80211_get_qos_ctl(hdr);
-+	u8 tid = qc[0] & IEEE80211_QOS_CTL_TID_MASK;
- 	u32 rate;
- 	u16 rate_flags = tx_info->control.rates[0].flags;
- 	u16 seq_number;
-@@ -4828,7 +4830,8 @@ rtl8xxxu_fill_txdesc_v1(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
- 
- 	tx_desc->txdw3 = cpu_to_le32((u32)seq_number << TXDESC32_SEQ_SHIFT);
- 
--	if (ampdu_enable)
-+	if (ampdu_enable && (priv->tid_bitmap & BIT(tid)) &&
-+	    (tx_info->flags & IEEE80211_TX_CTL_AMPDU))
- 		tx_desc->txdw1 |= cpu_to_le32(TXDESC32_AGG_ENABLE);
- 	else
- 		tx_desc->txdw1 |= cpu_to_le32(TXDESC32_AGG_BREAK);
-@@ -4876,6 +4879,8 @@ rtl8xxxu_fill_txdesc_v2(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
- 	struct rtl8xxxu_priv *priv = hw->priv;
- 	struct device *dev = &priv->udev->dev;
- 	struct rtl8xxxu_txdesc40 *tx_desc40;
-+	u8 *qc = ieee80211_get_qos_ctl(hdr);
-+	u8 tid = qc[0] & IEEE80211_QOS_CTL_TID_MASK;
- 	u32 rate;
- 	u16 rate_flags = tx_info->control.rates[0].flags;
- 	u16 seq_number;
-@@ -4902,7 +4907,8 @@ rtl8xxxu_fill_txdesc_v2(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
- 
- 	tx_desc40->txdw9 = cpu_to_le32((u32)seq_number << TXDESC40_SEQ_SHIFT);
- 
--	if (ampdu_enable)
-+	if (ampdu_enable && (priv->tid_bitmap & BIT(tid)) &&
-+	    (tx_info->flags & IEEE80211_TX_CTL_AMPDU))
- 		tx_desc40->txdw2 |= cpu_to_le32(TXDESC40_AGG_ENABLE);
- 	else
- 		tx_desc40->txdw2 |= cpu_to_le32(TXDESC40_AGG_BREAK);
-@@ -6089,6 +6095,7 @@ rtl8xxxu_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 	struct device *dev = &priv->udev->dev;
- 	u8 ampdu_factor, ampdu_density;
- 	struct ieee80211_sta *sta = params->sta;
-+	u16 tid = params->tid;
- 	enum ieee80211_ampdu_mlme_action action = params->action;
- 
- 	switch (action) {
-@@ -6101,17 +6108,19 @@ rtl8xxxu_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 		dev_dbg(dev,
- 			"Changed HT: ampdu_factor %02x, ampdu_density %02x\n",
- 			ampdu_factor, ampdu_density);
--		break;
-+		return IEEE80211_AMPDU_TX_START_IMMEDIATE;
-+	case IEEE80211_AMPDU_TX_STOP_CONT:
- 	case IEEE80211_AMPDU_TX_STOP_FLUSH:
--		dev_dbg(dev, "%s: IEEE80211_AMPDU_TX_STOP_FLUSH\n", __func__);
--		rtl8xxxu_set_ampdu_factor(priv, 0);
--		rtl8xxxu_set_ampdu_min_space(priv, 0);
--		break;
- 	case IEEE80211_AMPDU_TX_STOP_FLUSH_CONT:
--		dev_dbg(dev, "%s: IEEE80211_AMPDU_TX_STOP_FLUSH_CONT\n",
--			 __func__);
-+		dev_dbg(dev, "%s: IEEE80211_AMPDU_TX_STOP\n", __func__);
- 		rtl8xxxu_set_ampdu_factor(priv, 0);
- 		rtl8xxxu_set_ampdu_min_space(priv, 0);
-+		priv->tid_bitmap &= ~BIT(tid);
-+		ieee80211_stop_tx_ba_cb_irqsafe(vif, sta->addr, tid);
-+		break;
-+	case IEEE80211_AMPDU_TX_OPERATIONAL:
-+		dev_dbg(dev, "%s: IEEE80211_AMPDU_TX_OPERATIONAL\n", __func__);
-+		priv->tid_bitmap |= BIT(tid);
- 		break;
- 	case IEEE80211_AMPDU_RX_START:
- 		dev_dbg(dev, "%s: IEEE80211_AMPDU_RX_START\n", __func__);
--- 
-2.20.1
-
+BTW, even with the patch there's quite a bit of spin lock contention
+coming from ice_xmit_xdp_ring->dma_map_page_attrs->...->alloc_iova.
+CPU load drops from 85% to 20% (~80Mpps, 64b UDP) when iommu is
+disabled. Is this type of overhead to be expected?
