@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDF8839ABA4
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 22:12:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6624639ABA5
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 22:12:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230085AbhFCUNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 16:13:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40426 "EHLO mail.kernel.org"
+        id S230150AbhFCUNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 16:13:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40442 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229934AbhFCUNr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230052AbhFCUNr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 3 Jun 2021 16:13:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E82E561408;
-        Thu,  3 Jun 2021 20:12:01 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 615936140F;
+        Thu,  3 Jun 2021 20:12:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1622751122;
-        bh=p2umgfitaKj7kQzJsvRiSicjwyWV7fgW7qjaRyHo8kA=;
+        bh=YSrDFqeX1SRtC4e4s2UzUUYnUf4jnY6M9JUal4Hw8s4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GWDFnditDSoJy5v6cf+fG9bYmMx17DKeQUNDTDOo5/gELuGS8cG/GAqkbkoMdSuoz
-         yItTtVfDU/KAmzmu75XYp6+sosxxvKngrsECohRRWYLN011g9rCnN5Qd1IxcSHNT1D
-         ii2KX5COmOErqbHA6TMRpyTkiLGorEcmlFtBaO3KZpK4wPivlUhTKa9aHefAoSxPEG
-         SIeBpA8ftq9ZjOyrFSw+/coQpkc/Moo37FH9rAMrUgPd0xQViC7BwEIH9EmJVB+Iwr
-         lKOKyzpzbpvtXr33mEL8atoXbfQhnYrLh+gyLqImF7Ktj5abgTga02xOaq2kCZujwk
-         nIRtdy1+2GS1Q==
+        b=d277b87svp7PTwWaA+vreitWyi4A477o2zbyEDN1rSKRzTyEJJbr0540MI/z5DRpH
+         2FQb0twLKMrvIoHj6D65Cp42LmvehPkJ4EwuJrNq1Dpu+u3gA9K+IdyJ4UP08o+xiC
+         oMJU5HXiX7EgjTH72IkSjEbmyBob/8D3iCXvPXNKKCyLfsVfGz2FTXmNFq77pfUUNi
+         I0jxyy+MWK00G0O4tR/+D6E+angunaXRgExfebS2O25E6Js+g6TtAjI/D/AlYsudpv
+         3ffY8Gv/UvtsOHeIM7TPvz1+yvZP0OLyeaCHtqAX//wDgk5QteW0aaKBzyHQy4jyFe
+         2PJue75Sxz5oA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Meir Lichtinger <meirl@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
+        Lama Kayal <lkayal@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 05/10] net/mlx5e: IPoIB, Add support for NDR speed
-Date:   Thu,  3 Jun 2021 13:11:50 -0700
-Message-Id: <20210603201155.109184-6-saeed@kernel.org>
+Subject: [net-next 06/10] net/mlx5e: Zero-init DIM structures
+Date:   Thu,  3 Jun 2021 13:11:51 -0700
+Message-Id: <20210603201155.109184-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210603201155.109184-1-saeed@kernel.org>
 References: <20210603201155.109184-1-saeed@kernel.org>
@@ -42,38 +41,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Meir Lichtinger <meirl@nvidia.com>
+From: Lama Kayal <lkayal@nvidia.com>
 
-Add NDR IB PTYS coding and NDR speed 100GHz.
+Initialize structs to avoid unexpected behavior.
 
-Fixes: 235b6ac30695 ("RDMA/ipoib: Add 50Gb and 100Gb link speeds to ethtool")
-Signed-off-by: Meir Lichtinger <meirl@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+No immediate issue in current code, structs are return values, it's
+safer to initialize.
+
+Signed-off-by: Lama Kayal <lkayal@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-index 97d96fc38a65..0e487ec57d5c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-@@ -150,6 +150,7 @@ enum mlx5_ptys_rate {
- 	MLX5_PTYS_RATE_FDR	= 1 << 4,
- 	MLX5_PTYS_RATE_EDR	= 1 << 5,
- 	MLX5_PTYS_RATE_HDR	= 1 << 6,
-+	MLX5_PTYS_RATE_NDR	= 1 << 7,
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index f410c1268422..69cdc4e41a46 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -201,7 +201,7 @@ int mlx5e_validate_params(struct mlx5_core_dev *mdev, struct mlx5e_params *param
  
- static inline int mlx5_ptys_rate_enum_to_int(enum mlx5_ptys_rate rate)
-@@ -162,6 +163,7 @@ static inline int mlx5_ptys_rate_enum_to_int(enum mlx5_ptys_rate rate)
- 	case MLX5_PTYS_RATE_FDR:   return 14000;
- 	case MLX5_PTYS_RATE_EDR:   return 25000;
- 	case MLX5_PTYS_RATE_HDR:   return 50000;
-+	case MLX5_PTYS_RATE_NDR:   return 100000;
- 	default:		   return -1;
- 	}
- }
+ static struct dim_cq_moder mlx5e_get_def_tx_moderation(u8 cq_period_mode)
+ {
+-	struct dim_cq_moder moder;
++	struct dim_cq_moder moder = {};
+ 
+ 	moder.cq_period_mode = cq_period_mode;
+ 	moder.pkts = MLX5E_PARAMS_DEFAULT_TX_CQ_MODERATION_PKTS;
+@@ -214,7 +214,7 @@ static struct dim_cq_moder mlx5e_get_def_tx_moderation(u8 cq_period_mode)
+ 
+ static struct dim_cq_moder mlx5e_get_def_rx_moderation(u8 cq_period_mode)
+ {
+-	struct dim_cq_moder moder;
++	struct dim_cq_moder moder = {};
+ 
+ 	moder.cq_period_mode = cq_period_mode;
+ 	moder.pkts = MLX5E_PARAMS_DEFAULT_RX_CQ_MODERATION_PKTS;
 -- 
 2.31.1
 
