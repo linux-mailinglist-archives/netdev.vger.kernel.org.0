@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A51F39A05B
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 13:55:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0822B39A05D
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 13:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230172AbhFCL5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 07:57:02 -0400
-Received: from mga01.intel.com ([192.55.52.88]:2515 "EHLO mga01.intel.com"
+        id S230201AbhFCL5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 07:57:08 -0400
+Received: from mga06.intel.com ([134.134.136.31]:52086 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229800AbhFCL5B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 07:57:01 -0400
-IronPort-SDR: 6Si0Puwrerxhebt8uabMxWS23V20Y14Xq3QaYRrT8i0J/lQjdxhFDNprbQIkOfmPOKC4zi1AhE
- d78TmAsCzohw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="225324793"
+        id S229800AbhFCL5I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 07:57:08 -0400
+IronPort-SDR: CWXHFGyCC4H7O8PNmBaSEXHIEoFEOXqXcFB6jKNFkEHw8mtoXjKjJX7MVw8qyVKNhC73F/ixMp
+ O396Gavu1MDg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="265197718"
 X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; 
-   d="scan'208";a="225324793"
+   d="scan'208";a="265197718"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2021 04:55:14 -0700
-IronPort-SDR: igZcwlBfAfW/PThawsifuGZgcbqkFFKRAyKRwPUkxAkFGZOOjmX1iy3TAd1rJd1mtDkVZHkPRn
- 9i2vY7l/pGbw==
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2021 04:55:22 -0700
+IronPort-SDR: RtQ/D6nB1wq+aKJLqcucC6nl/iCJT6cL3vzOL2PK5dZemYiZ76TMet4K+wHxtlgc0pN/IwKgjU
+ 9TERpJo09vKA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; 
-   d="scan'208";a="446263154"
+   d="scan'208";a="446263182"
 Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
-  by orsmga008.jf.intel.com with ESMTP; 03 Jun 2021 04:55:08 -0700
+  by orsmga008.jf.intel.com with ESMTP; 03 Jun 2021 04:55:14 -0700
 From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
 To:     Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
         linux@armlinux.org.uk, kuba@kernel.org, netdev@vger.kernel.org,
@@ -35,9 +35,9 @@ To:     Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
         vee.khee.wong@intel.com, michael.wei.hong.sit@intel.com,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH net-next v4 1/3] net: stmmac: split xPCS setup from mdio register
-Date:   Thu,  3 Jun 2021 19:50:30 +0800
-Message-Id: <20210603115032.2470-2-michael.wei.hong.sit@intel.com>
+Subject: [RESEND PATCH net-next v4 2/3] net: pcs: add 2500BASEX support for Intel mGbE controller
+Date:   Thu,  3 Jun 2021 19:50:31 +0800
+Message-Id: <20210603115032.2470-3-michael.wei.hong.sit@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210603115032.2470-1-michael.wei.hong.sit@intel.com>
 References: <20210603115032.2470-1-michael.wei.hong.sit@intel.com>
@@ -47,161 +47,163 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Voon Weifeng <weifeng.voon@intel.com>
 
-This patch is a preparation patch for the enabling of Intel mGbE 2.5Gbps
-link speed. The Intel mGbR link speed configuration (1G/2.5G) is depends on
-a mdio ADHOC register which can be configured in the bios menu.
-As PHY interface might be different for 1G and 2.5G, the mdio bus need be
-ready to check the link speed and select the PHY interface before probing
-the xPCS.
+XPCS IP supports 2500BASEX as PHY interface. It is configured as
+autonegotiation disable to cater for PHYs that does not supports 2500BASEX
+autonegotiation.
+
+v2: Add supported link speed masking.
+v3: Restructure to introduce xpcs_config_2500basex() used to configure the
+    xpcs for 2.5G speeds. Added 2500BASEX specific information for
+    configuration.
+v4: Fix indentation error
 
 Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  7 ++
- .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 73 ++++++++++---------
- 3 files changed, 46 insertions(+), 35 deletions(-)
+ drivers/net/pcs/pcs-xpcs.c   | 58 ++++++++++++++++++++++++++++++++++++
+ include/linux/pcs/pcs-xpcs.h |  1 +
+ 2 files changed, 59 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index b6cd43eda7ac..fd7212afc543 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -311,6 +311,7 @@ enum stmmac_state {
- int stmmac_mdio_unregister(struct net_device *ndev);
- int stmmac_mdio_register(struct net_device *ndev);
- int stmmac_mdio_reset(struct mii_bus *mii);
-+int stmmac_xpcs_setup(struct mii_bus *mii);
- void stmmac_set_ethtool_ops(struct net_device *netdev);
+diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+index aa985a5aae8d..5ac734e95e54 100644
+--- a/drivers/net/pcs/pcs-xpcs.c
++++ b/drivers/net/pcs/pcs-xpcs.c
+@@ -16,6 +16,7 @@
+ #define SYNOPSYS_XPCS_10GKR_ID		0x7996ced0
+ #define SYNOPSYS_XPCS_XLGMII_ID		0x7996ced0
+ #define SYNOPSYS_XPCS_SGMII_ID		0x7996ced0
++#define SYNOPSYS_XPCS_2500BASEX_ID	0x7996ced0
+ #define SYNOPSYS_XPCS_MASK		0xffffffff
  
- void stmmac_ptp_register(struct stmmac_priv *priv);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 13720bf6f6ff..eb81baeb13b0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7002,6 +7002,12 @@ int stmmac_dvr_probe(struct device *device,
- 		}
- 	}
+ /* Vendor regs access */
+@@ -60,9 +61,14 @@
  
-+	if (priv->plat->mdio_bus_data->has_xpcs) {
-+		ret = stmmac_xpcs_setup(priv->mii);
-+		if (ret)
-+			goto error_xpcs_setup;
-+	}
+ /* Clause 37 Defines */
+ /* VR MII MMD registers offsets */
++#define DW_VR_MII_MMD_CTRL		0x0000
+ #define DW_VR_MII_DIG_CTRL1		0x8000
+ #define DW_VR_MII_AN_CTRL		0x8001
+ #define DW_VR_MII_AN_INTR_STS		0x8002
 +
- 	ret = stmmac_phy_setup(priv);
- 	if (ret) {
- 		netdev_err(ndev, "failed to setup phy (%d)\n", ret);
-@@ -7038,6 +7044,7 @@ int stmmac_dvr_probe(struct device *device,
- 	unregister_netdev(ndev);
- error_netdev_register:
- 	phylink_destroy(priv->phylink);
-+error_xpcs_setup:
- error_phy_setup:
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index e293bf1ce9f3..3bb0a787f136 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -397,6 +397,44 @@ int stmmac_mdio_reset(struct mii_bus *bus)
- 	return 0;
++/* Enable 2.5G Mode */
++#define DW_VR_MII_DIG_CTRL1_2G5_EN	BIT(2)
++
+ /* EEE Mode Control Register */
+ #define DW_VR_MII_EEE_MCTRL0		0x8006
+ #define DW_VR_MII_EEE_MCTRL1		0x800b
+@@ -89,6 +95,11 @@
+ #define DW_VR_MII_C37_ANSGM_SP_1000		0x2
+ #define DW_VR_MII_C37_ANSGM_SP_LNKSTS		BIT(4)
+ 
++/* SR MII MMD Control defines */
++#define AN_CL37_EN		BIT(12)	/* Enable Clause 37 auto-nego */
++#define SGMII_SPEED_SS13	BIT(13)	/* SGMII speed along with SS6 */
++#define SGMII_SPEED_SS6		BIT(6)	/* SGMII speed along with SS13 */
++
+ /* VR MII EEE Control 0 defines */
+ #define DW_VR_MII_EEE_LTX_EN		BIT(0)  /* LPI Tx Enable */
+ #define DW_VR_MII_EEE_LRX_EN		BIT(1)  /* LPI Rx Enable */
+@@ -161,6 +172,14 @@ static const int xpcs_sgmii_features[] = {
+ 	__ETHTOOL_LINK_MODE_MASK_NBITS,
+ };
+ 
++static const int xpcs_2500basex_features[] = {
++	ETHTOOL_LINK_MODE_Asym_Pause_BIT,
++	ETHTOOL_LINK_MODE_Autoneg_BIT,
++	ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
++	ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
++	__ETHTOOL_LINK_MODE_MASK_NBITS,
++};
++
+ static const phy_interface_t xpcs_usxgmii_interfaces[] = {
+ 	PHY_INTERFACE_MODE_USXGMII,
+ 	PHY_INTERFACE_MODE_MAX,
+@@ -181,6 +200,11 @@ static const phy_interface_t xpcs_sgmii_interfaces[] = {
+ 	PHY_INTERFACE_MODE_MAX,
+ };
+ 
++static const phy_interface_t xpcs_2500basex_interfaces[] = {
++	PHY_INTERFACE_MODE_2500BASEX,
++	PHY_INTERFACE_MODE_MAX,
++};
++
+ static struct xpcs_id {
+ 	u32 id;
+ 	u32 mask;
+@@ -212,6 +236,12 @@ static struct xpcs_id {
+ 		.supported = xpcs_sgmii_features,
+ 		.interface = xpcs_sgmii_interfaces,
+ 		.an_mode = DW_AN_C37_SGMII,
++	}, {
++		.id = SYNOPSYS_XPCS_2500BASEX_ID,
++		.mask = SYNOPSYS_XPCS_MASK,
++		.supported = xpcs_2500basex_features,
++		.interface = xpcs_2500basex_interfaces,
++		.an_mode = DW_2500BASEX,
+ 	},
+ };
+ 
+@@ -275,6 +305,7 @@ static int xpcs_soft_reset(struct mdio_xpcs_args *xpcs)
+ 		dev = MDIO_MMD_PCS;
+ 		break;
+ 	case DW_AN_C37_SGMII:
++	case DW_2500BASEX:
+ 		dev = MDIO_MMD_VEND2;
+ 		break;
+ 	default:
+@@ -741,6 +772,28 @@ static int xpcs_config_aneg_c37_sgmii(struct mdio_xpcs_args *xpcs)
+ 	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
  }
  
-+int stmmac_xpcs_setup(struct mii_bus *bus)
++static int xpcs_config_2500basex(struct mdio_xpcs_args *xpcs)
 +{
-+	int mode, max_addr, addr, found, ret;
-+	struct net_device *ndev = bus->priv;
-+	struct mdio_xpcs_args *xpcs;
-+	struct stmmac_priv *priv;
++	int ret;
 +
-+	priv = netdev_priv(ndev);
-+	xpcs = &priv->hw->xpcs_args;
-+	mode = priv->plat->phy_interface;
-+	max_addr = PHY_MAX_ADDR;
++	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1);
++	if (ret < 0)
++		return ret;
++	ret |= DW_VR_MII_DIG_CTRL1_2G5_EN;
++	ret &= ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
++	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
++	if (ret < 0)
++		return ret;
 +
-+	priv->hw->xpcs = mdio_xpcs_get_ops();
-+	if (!priv->hw->xpcs)
-+		return -ENODEV;
-+
-+	/* Try to probe the XPCS by scanning all addresses. */
-+	xpcs->bus = bus;
-+	found = 0;
-+
-+	for (addr = 0; addr < max_addr; addr++) {
-+		xpcs->addr = addr;
-+
-+		ret = stmmac_xpcs_probe(priv, xpcs, mode);
-+		if (!ret) {
-+			found = 1;
-+			break;
-+		}
-+	}
-+
-+	if (!found) {
-+		dev_warn(priv->device, "No xPCS found\n");
-+		return -ENODEV;
-+	}
-+
-+	return ret;
++	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
++	if (ret < 0)
++		return ret;
++	ret &= ~AN_CL37_EN;
++	ret |= SGMII_SPEED_SS6;
++	ret &= ~SGMII_SPEED_SS13;
++	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL, ret);
 +}
 +
- /**
-  * stmmac_mdio_register
-  * @ndev: net device structure
-@@ -444,14 +482,6 @@ int stmmac_mdio_register(struct net_device *ndev)
- 		max_addr = PHY_MAX_ADDR;
+ static int xpcs_config(struct mdio_xpcs_args *xpcs,
+ 		       const struct phylink_link_state *state)
+ {
+@@ -759,6 +812,11 @@ static int xpcs_config(struct mdio_xpcs_args *xpcs,
+ 		if (ret)
+ 			return ret;
+ 		break;
++	case DW_2500BASEX:
++		ret = xpcs_config_2500basex(xpcs);
++		if (ret)
++			return ret;
++		break;
+ 	default:
+ 		return -1;
  	}
+diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
+index 5938ced805f4..b358bbb34bd3 100644
+--- a/include/linux/pcs/pcs-xpcs.h
++++ b/include/linux/pcs/pcs-xpcs.h
+@@ -13,6 +13,7 @@
+ /* AN mode */
+ #define DW_AN_C73			1
+ #define DW_AN_C37_SGMII			2
++#define DW_2500BASEX			3
  
--	if (mdio_bus_data->has_xpcs) {
--		priv->hw->xpcs = mdio_xpcs_get_ops();
--		if (!priv->hw->xpcs) {
--			err = -ENODEV;
--			goto bus_register_fail;
--		}
--	}
--
- 	if (mdio_bus_data->needs_reset)
- 		new_bus->reset = &stmmac_mdio_reset;
- 
-@@ -509,38 +539,11 @@ int stmmac_mdio_register(struct net_device *ndev)
- 		goto no_phy_found;
- 	}
- 
--	/* Try to probe the XPCS by scanning all addresses. */
--	if (priv->hw->xpcs) {
--		struct mdio_xpcs_args *xpcs = &priv->hw->xpcs_args;
--		int ret, mode = priv->plat->phy_interface;
--		max_addr = PHY_MAX_ADDR;
--
--		xpcs->bus = new_bus;
--
--		found = 0;
--		for (addr = 0; addr < max_addr; addr++) {
--			xpcs->addr = addr;
--
--			ret = stmmac_xpcs_probe(priv, xpcs, mode);
--			if (!ret) {
--				found = 1;
--				break;
--			}
--		}
--
--		if (!found && !mdio_node) {
--			dev_warn(dev, "No XPCS found\n");
--			err = -ENODEV;
--			goto no_xpcs_found;
--		}
--	}
--
- bus_register_done:
- 	priv->mii = new_bus;
- 
- 	return 0;
- 
--no_xpcs_found:
- no_phy_found:
- 	mdiobus_unregister(new_bus);
- bus_register_fail:
+ struct mdio_xpcs_args {
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(supported);
 -- 
 2.17.1
 
