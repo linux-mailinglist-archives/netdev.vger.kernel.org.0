@@ -2,69 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FE8039A17F
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 14:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E43F339A184
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 14:52:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229994AbhFCMxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 08:53:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48550 "EHLO mail.kernel.org"
+        id S230465AbhFCMxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 08:53:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229876AbhFCMxk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 08:53:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 41B386124B;
-        Thu,  3 Jun 2021 12:51:55 +0000 (UTC)
+        id S230453AbhFCMxr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 08:53:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E48C76124B;
+        Thu,  3 Jun 2021 12:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622724715;
-        bh=C8HPP5sd9YlhX8e04OtjxshaooCjbWpRclLtzli8xMs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=E0R7YiyxmLeOb7Bvejn965eCL3+0UbxbrJx53hgPYQE/8X2g1mZOOCOARxr1XCSvb
-         5uqzoR9JCbSPCFUgzpdpM1EmOk5lhusbklEDZA1T/ewSdANG3n2yyd+ZWI565Gli+J
-         BqwFH7m73O+hLeuvmTrHtIHDZ0Yq5+lrGIINFdKBZUJFMGRrLx4r0gUO/InOS/o63o
-         p4GFXyxJNKVCk3XEhYK5n2Glt92Nkb+lbSbBHZ+1lgI9m3npI71k+PjoHusnYzdZQO
-         udUggSyiqGAHGWM1lc26jxIt7iIl4hbaIN3I/FLXR7HP5JeVuQ/VlSmlNQzewTsues
-         VRrVv1vJpIaPA==
+        s=k20201202; t=1622724722;
+        bh=VrR6OyFEYg3e+K1DBiO/OoVYYizbyTEQb6zjKyXpRww=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AdOmXda/4UCmvbn/E6pTijdhDyl+Ahg4akGZpIujTJnr/7GlkmZUR2Su6LKQEsTsV
+         LP5SHec9BcHDJfnKGTvtBAsoK/J2DR/3zcQJUO1kOCj/2tlMRGXeyrS60o98bLBKqP
+         8tym1g9WjdbgZK+tZWNdmGeAoyX6B1SXMOuTcmx6rcDANrUUsZeJcBAz1mA8+hf3W/
+         GcgZ3Oh+JSAJdGAXTIDl1DSDj4Ow2XizrGn1fLKtNwI8q75k/Z4kqDr/oGwEi3OFrO
+         CQF9lIcTx8/IuhV/pWjQejiQFXrWZat9MihZWAQiAaBkmVx4xsZP/wepOu/yL/tFXg
+         V00SOVnRbkWMA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
-        Lior Nahmanson <liorna@nvidia.com>,
-        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
+Cc:     Lior Nahmanson <liorna@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH rdma-next 0/3] Add ConnectX DCS offload support
-Date:   Thu,  3 Jun 2021 15:51:47 +0300
-Message-Id: <cover.1622723815.git.leonro@nvidia.com>
+Subject: [PATCH mlx5-next 1/3] net/mlx5: Add DCS caps & fields support
+Date:   Thu,  3 Jun 2021 15:51:48 +0300
+Message-Id: <77b62613f56734bac9b490342f7c800b104d0876.1622723815.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1622723815.git.leonro@nvidia.com>
+References: <cover.1622723815.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Lior Nahmanson <liorna@nvidia.com>
 
-This patchset from Lior adds support of DCI stream channel (DCS) support.
+This fields will be needed when adding a support for DCS offload
 
-DCS is an offload to SW load balancing of DC initiator work requests.
+max_dci_stream_channels - maximum DCI stream channels supported per DCI.
+max_dci_errored_streams - maximum DCI error stream channels
+supported per DCI before a DCI move to error state.
 
-A single DC QP initiator (DCI) can be connected to only one target at the time 
-and can't start new connection until the previous work request is completed.
+Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ include/linux/mlx5/mlx5_ifc.h | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-This limitation causes to delays when the initiator process needs to
-transfer data to multiple targets at the same time.
-
-Thanks
-
-Lior Nahmanson (3):
-  net/mlx5: Add DCS caps & fields support
-  RDMA/mlx5: Move DCI QP creation to separate function
-  RDMA/mlx5: Add DCS offload support
-
- drivers/infiniband/hw/mlx5/main.c |  10 ++
- drivers/infiniband/hw/mlx5/qp.c   | 168 ++++++++++++++++++++++++++++++
- include/linux/mlx5/mlx5_ifc.h     |  14 ++-
- include/uapi/rdma/mlx5-abi.h      |  17 ++-
- 4 files changed, 204 insertions(+), 5 deletions(-)
-
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 6d16eed6850e..48b2529451eb 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1655,7 +1655,13 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         max_geneve_tlv_option_data_len[0x5];
+ 	u8         reserved_at_570[0x10];
+ 
+-	u8         reserved_at_580[0x33];
++	u8	   reserved_at_580[0xb];
++	u8	   log_max_dci_stream_channels[0x5];
++	u8	   reserved_at_590[0x3];
++	u8	   log_max_dci_errored_streams[0x5];
++	u8	   reserved_at_598[0x8];
++
++	u8         reserved_at_5a0[0x13];
+ 	u8         log_max_dek[0x5];
+ 	u8         reserved_at_5b8[0x4];
+ 	u8         mini_cqe_resp_stride_index[0x1];
+@@ -3013,10 +3019,12 @@ struct mlx5_ifc_qpc_bits {
+ 	u8         reserved_at_3c0[0x8];
+ 	u8         next_send_psn[0x18];
+ 
+-	u8         reserved_at_3e0[0x8];
++	u8         reserved_at_3e0[0x3];
++	u8	   log_num_dci_stream_channels[0x5];
+ 	u8         cqn_snd[0x18];
+ 
+-	u8         reserved_at_400[0x8];
++	u8         reserved_at_400[0x3];
++	u8	   log_num_dci_errored_streams[0x5];
+ 	u8         deth_sqpn[0x18];
+ 
+ 	u8         reserved_at_420[0x20];
 -- 
 2.31.1
 
