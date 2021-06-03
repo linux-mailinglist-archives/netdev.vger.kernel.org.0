@@ -2,128 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC0D339A4F8
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5833339A500
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 17:51:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229884AbhFCPsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 11:48:31 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:47084 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbhFCPsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:48:30 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 153Fj79S170845;
-        Thu, 3 Jun 2021 15:46:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=JqeuEbZiTIXjC3KOdhlbcdTYqDxBV/Ur9X+bVkW1dA0=;
- b=a6geYAtXFfh1waSU7eu0TlnYw1ZWG7KK7KR236BxQtK6P7R/BYZg+B9GbK8PiRh6CvQh
- N1sz8RfGOeyZc4Vnfyi9cv6AZDnt3kByk/V81oA1SSt4XdnO3/0x3ZoLe3X5LFrVG/lc
- fuhLWRz4v0typYv4Pf2g9K2OxneZ4lvHMStq3/36kUlaiZOBjHlF1cGp9tvHIlxg+4ME
- PQaxlnwW6mqnFVXZJ3foO951o2Ahpvfl9GUWG/b925kGVMMe888LKJDRDXHEAZVNDGYK
- TbGoed6V/6OHDjjLyN7N88VYx1GAWf/bY3GK7tdUBbYNMojdeUbnmPLG+tnvZqWW1Pl6 xQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2130.oracle.com with ESMTP id 38ub4cutfs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 03 Jun 2021 15:46:39 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 153Fkb8W064827;
-        Thu, 3 Jun 2021 15:46:39 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 38ubneyfv7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 03 Jun 2021 15:46:39 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 153Fkcki064974;
-        Thu, 3 Jun 2021 15:46:38 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 38ubneyfuf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 03 Jun 2021 15:46:38 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 153FkXVW006379;
-        Thu, 3 Jun 2021 15:46:33 GMT
-Received: from kadam (/41.212.42.34)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 03 Jun 2021 15:46:33 +0000
-Date:   Thu, 3 Jun 2021 18:46:25 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] net/mlx5: check for allocation failure in
- mlx5_ft_pool_init()
-Message-ID: <20210603154625.GI1955@kadam>
-References: <YLjNfHuTQ817oUtX@mwanda>
- <YLjVRjAyP3UpzgVr@unreal>
+        id S229762AbhFCPww (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 11:52:52 -0400
+Received: from mail-pl1-f169.google.com ([209.85.214.169]:34697 "EHLO
+        mail-pl1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229617AbhFCPww (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 11:52:52 -0400
+Received: by mail-pl1-f169.google.com with SMTP id u9so3024165plr.1
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 08:51:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=t9qIwqoKqNZvxIpLY7AClj+BTRyFe5r+O4qXXSbVYOo=;
+        b=hfjeCrQlegSGKR3qZ0SUozs3xCaJ5pkKpHpPJPyZsFdPJn6IYypTRz+lGE5r/mkuMA
+         TozQjyeIArMkim2Rguq/8uNpZLorVsgPVNmY1erK+MkTZiXVfo8/AmnhB5i7OTaAWGxv
+         nzAT9avqwf/865+DmyLihWI07egGP9Nd6/Dj2h7kGMhAUY/oJwD45dtwBRDtSBv6EY4j
+         raS+iRpvNGdv6w6G4Xt/b0/hSs38TKlQBu7JcYpEL0yj0eGIDUYJn6BuGWVst4GSr+2W
+         lVKLy0iS0HhK5uVjxFhLazcbqoRTLke1ZYY2Oty1T1roqUgagTZYt3SDoK9Dc58IJcQI
+         pkRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=t9qIwqoKqNZvxIpLY7AClj+BTRyFe5r+O4qXXSbVYOo=;
+        b=W7coR4i+Mpmx0IiwIFhN7gRuV+LnAEzpTIpn3jd5Gjc2K2Ud9FYoyHCKWBHztLvpF6
+         GUk0lQAI7M6RrSeM+njK6eNJASDfVhhyTX48IqLGOJs1h7bwHeQUHyZsxtIAYyrEg7HG
+         EeIoAqM+RuCxbOnRbOXIG89ZQjC10UX0bNttmbZ7Y2MUIb8785j0pB7QMn+BianblmPM
+         tg/NUZ70ClSJRjeNP/XvLS4qk68UwopHJMwICC+6biv0L+2pQcuLXpiWcqyF6zrwZuEQ
+         EJxwYbIx8D0y3fhBhnfYo0gjq+57ZZ4aIddl/Z83TL7dpRJyqychSP78wOO0wkA0SFy/
+         WzLg==
+X-Gm-Message-State: AOAM530OF5/7qqgux//Sl2VHFA3mfMCNcU+SU7tPTc8Tqf7UUHpXeTej
+        fMIWz1P5ChuUPJCtK9GrEWwlUAvEUIULJg==
+X-Google-Smtp-Source: ABdhPJwmnER/N/RTJYSsSf3J8mcG5qNdww4Ej9VCZgUtEu/wsViG9aSsm778GK0Pubuxsyw6Czn1Lg==
+X-Received: by 2002:a17:902:7587:b029:109:69bd:3eae with SMTP id j7-20020a1709027587b029010969bd3eaemr168209pll.40.1622735407323;
+        Thu, 03 Jun 2021 08:50:07 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id 65sm2600038pfu.159.2021.06.03.08.50.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Jun 2021 08:50:07 -0700 (PDT)
+Date:   Thu, 3 Jun 2021 08:49:57 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Roi Dayan <roid@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, Paul Blakey <paulb@nvidia.com>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH iproute2-next v2 1/1] police: Add support for json
+ output
+Message-ID: <20210603084957.7f62c467@hermes.local>
+In-Reply-To: <20210603073345.1479732-1-roid@nvidia.com>
+References: <20210603073345.1479732-1-roid@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YLjVRjAyP3UpzgVr@unreal>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-GUID: zKS5juQhn23kX7cRcPi15XDD2LSxMgNc
-X-Proofpoint-ORIG-GUID: zKS5juQhn23kX7cRcPi15XDD2LSxMgNc
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10004 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 mlxscore=0
- mlxlogscore=999 malwarescore=0 bulkscore=0 phishscore=0 lowpriorityscore=0
- clxscore=1015 impostorscore=0 adultscore=0 suspectscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
- definitions=main-2106030106
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 04:12:38PM +0300, Leon Romanovsky wrote:
-> On Thu, Jun 03, 2021 at 03:39:24PM +0300, Dan Carpenter wrote:
-> > Add a check for if the kzalloc() fails.
-> > 
-> > Fixes: 4a98544d1827 ("net/mlx5: Move chains ft pool to be used by all firmware steering")
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > ---
-> >  drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c
-> > index 526fbb669142..c14590acc772 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_ft_pool.c
-> > @@ -27,6 +27,8 @@ int mlx5_ft_pool_init(struct mlx5_core_dev *dev)
-> >  	int i;
-> >  
-> >  	ft_pool = kzalloc(sizeof(*ft_pool), GFP_KERNEL);
-> > +	if (!ft_pool)
-> > +		return -ENOMEM;
-> >  
-> >  	for (i = ARRAY_SIZE(FT_POOLS) - 1; i >= 0; i--)
-> >  		ft_pool->ft_left[i] = FT_SIZE / FT_POOLS[i];
-> 
-> 
-> Dan thanks for your patch.
-> 
-> When reviewed your patch, I spotted another error in the patch from the Fixes line.
-> 
->   2955         err = mlx5_ft_pool_init(dev);
->   2956         if (err)
->   2957                 return err;
->   2958
->   2959         steering = kzalloc(sizeof(*steering), GFP_KERNEL);
->   2960         if (!steering)
->   2961                 goto err;
->                        ^^^^^^^^ it will return success, while should return ENOMEM.
+On Thu, 3 Jun 2021 10:33:45 +0300
+Roi Dayan <roid@nvidia.com> wrote:
 
-Smatch prints a static checker warning for this, but I never finished
-going through the backlog of old "missing error code" warnings.  At one
-point I was down to 38 warnings left but now I see that the backlog is
-62 warnings so people are adding new bugs faster than I'm reviewing
-them...  :P
+>  	if (tb[TCA_POLICE_TBF] == NULL) {
+> -		fprintf(f, "[NULL police tbf]");
+> +		print_string(PRINT_FP, NULL, "%s", "[NULL police tbf]");
+>  		return 0;
+>  	}
+>  #ifndef STOOPID_8BYTE
+>  	if (RTA_PAYLOAD(tb[TCA_POLICE_TBF])  < sizeof(*p)) {
+> -		fprintf(f, "[truncated police tbf]");
+> +		print_string(PRINT_FP, NULL, "%s", "[truncated police tbf]");
 
-I will take care of this tomorrow as a separate patch.  I will just
-report or the other 61 warnings and get the backlog cleared out so that
-I can start checking these better in the future.
-
-regards,
-dan carpenter
-
+These are errors, and you should just print them to stderr.
+That way if program is using JSON they can see the output on stdout;
+and look for non-structured errors on stderr.
