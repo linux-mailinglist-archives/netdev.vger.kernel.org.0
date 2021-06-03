@@ -2,193 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A93939A58F
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 18:15:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96BED39A58D
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 18:14:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbhFCQRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 12:17:09 -0400
-Received: from mail-ej1-f46.google.com ([209.85.218.46]:33429 "EHLO
-        mail-ej1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbhFCQRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 12:17:08 -0400
-Received: by mail-ej1-f46.google.com with SMTP id g20so10156782ejt.0;
-        Thu, 03 Jun 2021 09:15:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xJa+cKTetnpXQQd53c16/1A7QuzRyd4+W33T7AT4E/Y=;
-        b=OG57Gdivz5kGldX0yMBroXGatkl8x3xO3Ul1obmCjJjZGB9mKicHiqMSRFY+5gLPUI
-         Giz5pqbJaLxrJSgJ9/C1woYDWX0z9R0NynrA0j5zw8JXrO3EPdaF9GpE2TNyscNkqIKU
-         gkq8bZY6QQ8+EbNcV17wK6tK+xMfRDBPN0Z06qNLaiPoQmHRfRpu5PGbAl1SkEILi6X9
-         8YRfD8N3/bsQ4yfgXy1b88O7J0DSGs6zfeUTltasZbuG0YLMhdkfmLwv8LC/eYbYT+HV
-         co8FieSQNPRDaCfB1Nx/bp0weEY8vcypS6Hvh8fgutf0gRQ7z8OCs+EJf9+N+xhN/J+5
-         EUrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xJa+cKTetnpXQQd53c16/1A7QuzRyd4+W33T7AT4E/Y=;
-        b=S7Ul29Ez8LBhhnT0qBkSdfbX9XpbSa0cAPICTgBGo1GrqHgiGUUTbtk6/N7zq+LAVj
-         H/1BW4BumRK3V9oNwyXijbD4CI8A754phydeyKqyZDswtJ2vakw++LQ/KSAdREyvCOQh
-         dOz0+Xeeh4uaaWp34631/Wlra9f2bNwMR3QRHZn/HcU1fcSoSybHd9qlh+NnvpI8Gag0
-         jrYPNhqPKvtY190et8QHXrL8cOBuWByqv5B2HfKfeRoEtKTibOZg4Mp3FZ9aBqFgvRhW
-         Y4TbdD0D540ZWIjKavIPhKuYDDox1ALNC9gO8ZjPMn5Ho39z50EzPwm1cA3KSxGN5ark
-         tGNw==
-X-Gm-Message-State: AOAM532QSxtACZx0z6sHJlZ0M4skFJ6qE5/YZwIEG03uHicoAmGYqRmY
-        m8ycsN8Hj4CdIL5EZdxER/o=
-X-Google-Smtp-Source: ABdhPJwXS2Ya7y1PIN+2VhS5fql1jcZ6gz+sEsu7Yf6EHpI1qjppFUgiil4jnp4q98nDnzTAEbRwew==
-X-Received: by 2002:a17:906:b10e:: with SMTP id u14mr147196ejy.546.1622736849389;
-        Thu, 03 Jun 2021 09:14:09 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id b14sm2015353edz.21.2021.06.03.09.14.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 09:14:08 -0700 (PDT)
-Date:   Thu, 3 Jun 2021 19:14:07 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Sit, Michael Wei Hong" <michael.wei.hong.sit@intel.com>
-Cc:     "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Tan, Tee Min" <tee.min.tan@intel.com>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
-        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH net-next v4 1/3] net: stmmac: split xPCS setup
- from mdio register
-Message-ID: <20210603161407.457olvjmia3zoj6w@skbuf>
-References: <20210603115032.2470-1-michael.wei.hong.sit@intel.com>
- <20210603115032.2470-2-michael.wei.hong.sit@intel.com>
- <20210603132056.zklgtbsslbkgqtsn@skbuf>
- <SA2PR11MB50513D751429D3D456A5A9409D3C9@SA2PR11MB5051.namprd11.prod.outlook.com>
+        id S230022AbhFCQQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 12:16:27 -0400
+Received: from mail-dm6nam08on2069.outbound.protection.outlook.com ([40.107.102.69]:62752
+        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229597AbhFCQQ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 12:16:26 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eiZOCMUNMd0ZydIMDHqJS3nQHgdluQqiQYOcMnVXN5iKaETHJNmmnm5dn6+mnrg/NCxkjm6OEuDj2IyoUf0FN6ZmGDbG16QlKgrpSyOIy0OpXNMaorWa3ru7xvd75uswhKMtbiGo+c1esTKsxukJKhRTIXtw3bTVMnaEI1MZfnCAD5D0xm9+/khgNcb5HxZoQ4ZtPvQbefnlB20fRaQiHD5CoUcN2tgTkVzlzD32APi1YMngUj7CHygiRJH8dC7Pnrm8Q6U8JRzZ8wT7Y463qy/IIC3wxBcUlJPNszRj9LiWBoDvNhIvCV5fHimHcftDn9q5nZMKo0u1XipXL9Ikew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4fWSwQd92IOwFxL9uuPDkfXTdCJH5srsLuaLkVwEUdw=;
+ b=OSOg42UHXY3zE0rEAtXcwee8LuZJpIURUT/4kXNhFSKwtJtJDaIGz6AlADQNvpmHl2F33yDvVBxhH3P1UF7d18wyjoghQ2LOcLzFNFaIhDcMaj3IoDpSnW8a6MhhQrHuA/eqhVtC6Pg9kAoM5y8bfaLIJM5FabpJpu3rDVOdVAXqlChCNSwek5LebPJbPCmyxcOKAxw4ctj9TApIQxGUI4iRCvbw235e12Si0H5rU7VIvWMu49/bbgOFDRBcFlcszVkpeP6G1HEy6R+K1IZ2dMPXeWao32lf0FDnX9I+c3ZGDMJ7RfA8PFyDGo+ndg5eKZ036+maHkoVwoVfbedVsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=networkplumber.org
+ smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4fWSwQd92IOwFxL9uuPDkfXTdCJH5srsLuaLkVwEUdw=;
+ b=ds/a6e+q1DCqSQXOIDD6nKwVHjIcQQ9aT153yeimPfHD5Q1Vj1hRU/JB7IqZdberCfRuXAGD4ChbZY8mZxhj/CbRaDW9tdanYsIczaQONrnA2w429JNjRPBHIOpQy6BfsOygXvY7cWmSuZHoP31BPMywx45uDYNWk8GN41B21JK0NH4gASGcDHmB3k66Y/B5rUWxtNgHD8yvOABJhOpovw5nyCkzEUwEV9LxSvx0uZV0QtA4sq/xWVw03Mp/MPvX7M031SYgEYQeQTLq69e1nyRqQvg3xKIOA4McUUudvcrvoLO5H+04cectG/DpadW2RnKLapT3UTNRHLE09DBLew==
+Received: from BN0PR02CA0049.namprd02.prod.outlook.com (2603:10b6:408:e5::24)
+ by CH0PR12MB5028.namprd12.prod.outlook.com (2603:10b6:610:e3::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Thu, 3 Jun
+ 2021 16:14:40 +0000
+Received: from BN8NAM11FT061.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e5:cafe::63) by BN0PR02CA0049.outlook.office365.com
+ (2603:10b6:408:e5::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.22 via Frontend
+ Transport; Thu, 3 Jun 2021 16:14:40 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=pass action=none
+ header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT061.mail.protection.outlook.com (10.13.177.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4195.22 via Frontend Transport; Thu, 3 Jun 2021 16:14:39 +0000
+Received: from [172.27.13.231] (172.20.187.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 3 Jun
+ 2021 16:14:37 +0000
+Subject: Re: [PATCH iproute2-next v2 1/1] police: Add support for json output
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     <netdev@vger.kernel.org>, Paul Blakey <paulb@nvidia.com>,
+        David Ahern <dsahern@gmail.com>
+References: <20210603073345.1479732-1-roid@nvidia.com>
+ <20210603084957.7f62c467@hermes.local>
+From:   Roi Dayan <roid@nvidia.com>
+Message-ID: <c15b9c71-1c37-a82d-a167-b56eace6a3b0@nvidia.com>
+Date:   Thu, 3 Jun 2021 19:14:34 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SA2PR11MB50513D751429D3D456A5A9409D3C9@SA2PR11MB5051.namprd11.prod.outlook.com>
+In-Reply-To: <20210603084957.7f62c467@hermes.local>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f8aec4fc-4b0e-4753-8307-08d926aab0c2
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5028:
+X-Microsoft-Antispam-PRVS: <CH0PR12MB50289B6771619FAFCDC535E1B83C9@CH0PR12MB5028.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:269;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZclaP7NAK1D8d3kH0SyCrnH3wfdfb5T7sHi7bk3T1v9UVYj39IIKwvCgLmwfAX8svKruedTjcJnQDRxVVdP3VRVhq1P8Rm2QciTkuvxaTklM/RhMy72uxloKF2A1pH47HWVnNWeRuNOOBPsPBbg9QnEB7A63Mn8QoYcuu2ZEP0frpgiYRiI9e02uRjmlpnBY0e4k7BtK64bKxtSUw0klgJ18wPPPyWEZKk5prtVT+hCfRu7AlRyxAb/moDzqlxrNVDuKgNgEt+Sg/LrHOsSwf5/WFfJE05QZ9gu1EjVDOFiKg7jYSa2UOvnAaSeifMb1Uvm4Is+XnCXf9CTRZmoGSwDUFeS+C62NjdZ3MW98iQ+4Tp+Z6YEYPTUmogkSiUi+eiYCwktCT0Jp9VrK1Y+Oaft5FYLlUUX6hcn235HSr2i7qAc5rGxSsiQqLKlM8NtUEopzYFoyplVXRKTL3qgMU/HMyAGbOHK0GDSHWZ2F3tG6XpkC6Yysyk5YO+oW8sCKRUvwEF/7JAqxHe+JY1/mzq15ks2L3wPCufRpHNCwX2Q4zUZSeipBoLi5klFxsE8ka++mSLKHCZzcPmaYUQje3ftzBt8a8yMhc/RAI21RrBPLPMSYPVTdSo7euSVn/MIcDzmGrL7UKOGSsZuPW41DZuppVSDhXKIJlUWAvh54IUrWt8cfSs6OdpK5sybdExES
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(376002)(396003)(136003)(39860400002)(46966006)(36840700001)(2616005)(426003)(336012)(82310400003)(31686004)(82740400003)(356005)(16526019)(5660300002)(26005)(6666004)(70206006)(478600001)(4326008)(186003)(36860700001)(53546011)(47076005)(36906005)(316002)(54906003)(70586007)(16576012)(7636003)(2906002)(8676002)(8936002)(86362001)(36756003)(6916009)(31696002)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2021 16:14:39.9620
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8aec4fc-4b0e-4753-8307-08d926aab0c2
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT061.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5028
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 01:49:20PM +0000, Sit, Michael Wei Hong wrote:
-> Hi Vladimir,
+
+
+On 2021-06-03 6:49 PM, Stephen Hemminger wrote:
+> On Thu, 3 Jun 2021 10:33:45 +0300
+> Roi Dayan <roid@nvidia.com> wrote:
 > 
-> > -----Original Message-----
-> > From: Vladimir Oltean <olteanv@gmail.com>
-> > Sent: Thursday, June 3, 2021 9:21 PM
-> > To: Sit, Michael Wei Hong <michael.wei.hong.sit@intel.com>
-> > Cc: Jose.Abreu@synopsys.com; andrew@lunn.ch;
-> > hkallweit1@gmail.com; linux@armlinux.org.uk; kuba@kernel.org;
-> > netdev@vger.kernel.org; peppe.cavallaro@st.com;
-> > alexandre.torgue@foss.st.com; davem@davemloft.net;
-> > mcoquelin.stm32@gmail.com; Voon, Weifeng
-> > <weifeng.voon@intel.com>; Ong, Boon Leong
-> > <boon.leong.ong@intel.com>; Tan, Tee Min
-> > <tee.min.tan@intel.com>; vee.khee.wong@linux.intel.com;
-> > Wong, Vee Khee <vee.khee.wong@intel.com>; linux-stm32@st-
-> > md-mailman.stormreply.com; linux-arm-
-> > kernel@lists.infradead.org; linux-kernel@vger.kernel.org
-> > Subject: Re: [RESEND PATCH net-next v4 1/3] net: stmmac: split
-> > xPCS setup from mdio register
-> > 
-> > Hi Michael,
-> > 
-> > On Thu, Jun 03, 2021 at 07:50:30PM +0800, Michael Sit Wei Hong wrote:
-> > > From: Voon Weifeng <weifeng.voon@intel.com>
-> > >
-> > > This patch is a preparation patch for the enabling of Intel mGbE
-> > > 2.5Gbps link speed. The Intel mGbR link speed configuration (1G/2.5G)
-> > > is depends on a mdio ADHOC register which can be configured in the bios menu.
-> > > As PHY interface might be different for 1G and 2.5G, the mdio bus need
-> > > be ready to check the link speed and select the PHY interface before
-> > > probing the xPCS.
-> > >
-> > > Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-> > > Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-> > > ---
-> > >  drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
-> > > .../net/ethernet/stmicro/stmmac/stmmac_main.c |  7 ++
-> > > .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 73 ++++++++++---------
-> > >  3 files changed, 46 insertions(+), 35 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-> > > b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-> > > index b6cd43eda7ac..fd7212afc543 100644
-> > > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-> > > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-> > > @@ -311,6 +311,7 @@ enum stmmac_state {  int
-> > > stmmac_mdio_unregister(struct net_device *ndev);  int
-> > > stmmac_mdio_register(struct net_device *ndev);  int
-> > > stmmac_mdio_reset(struct mii_bus *mii);
-> > > +int stmmac_xpcs_setup(struct mii_bus *mii);
-> > >  void stmmac_set_ethtool_ops(struct net_device *netdev);
-> > >
-> > >  void stmmac_ptp_register(struct stmmac_priv *priv); diff --git
-> > > a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > > b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > > index 13720bf6f6ff..eb81baeb13b0 100644
-> > > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > > @@ -7002,6 +7002,12 @@ int stmmac_dvr_probe(struct device
-> > *device,
-> > >  		}
-> > >  	}
-> > >
-> > > +	if (priv->plat->mdio_bus_data->has_xpcs) {
-> > > +		ret = stmmac_xpcs_setup(priv->mii);
-> > > +		if (ret)
-> > > +			goto error_xpcs_setup;
-> > > +	}
-> > > +
-> > 
-> > I don't understand why this change is necessary?
-> > 
-> > The XPCS probing code was at the end of stmmac_mdio_register().
-> > You moved the code right _after_ stmmac_mdio_register().
-> > So the code flow is exactly the same.
-> > 
-> Yes, the code flow may look the same, but for intel platforms,
-> we need to read the mdio ADHOC register to determine the link speed
-> that is set in the BIOS, after reading the mdio ADHOC register value,
-> we can determine the link speed and set the appropriate phy_interface
-> for 1G/2.5G, where 2.5G uses the PHY_INTERFACE_MODE_2500BASEX
-> and 1G uses the PHY_INTERFACE_MODE_SGMII.
+>>   	if (tb[TCA_POLICE_TBF] == NULL) {
+>> -		fprintf(f, "[NULL police tbf]");
+>> +		print_string(PRINT_FP, NULL, "%s", "[NULL police tbf]");
+>>   		return 0;
+>>   	}
+>>   #ifndef STOOPID_8BYTE
+>>   	if (RTA_PAYLOAD(tb[TCA_POLICE_TBF])  < sizeof(*p)) {
+>> -		fprintf(f, "[truncated police tbf]");
+>> +		print_string(PRINT_FP, NULL, "%s", "[truncated police tbf]");
 > 
-> The register reading function is added in between the mdio_register and
-> xpcs_setup in patch 3 of the series
+> These are errors, and you should just print them to stderr.
+> That way if program is using JSON they can see the output on stdout;
+> and look for non-structured errors on stderr.
+> 
 
-Ah, ok, I did not notice this bit:
+right. thanks. i'll fix it.
+I think I looked in m_ct.c example for the print and there it's using
+print_string(). so i'll do a commit also to fix it there.
 
-@@ -7002,6 +7006,9 @@ int stmmac_dvr_probe(struct device *device,
- 		}
- 	}
- 
-+	if (priv->plat->speed_mode_2500)
-+		priv->plat->speed_mode_2500(ndev, priv->plat->bsp_priv);
-+
- 	if (priv->plat->mdio_bus_data->has_xpcs) {
- 		ret = stmmac_xpcs_setup(priv->mii);
- 		if (ret)
+other actions use fprintf() but they print to stdout and not stderr.
+i guess those should be fixed as well.
 
-With the current placement, there seems to be indeed no way for the
-platform-level code to set plat->phy_interface after the MDIO bus has
-probed but before the XPCS has probed.
-
-I wonder whether it might be possible to probe the XPCS completely
-outside of stmmac_dvr_probe(); once that function ends you should have
-all knowledge necessary to set plat->phy_interface all within the Intel
-platform code. An additional benefit if you do this is that you no
-longer need the has_xpcs variable - Intel is the only one setting it
-right now, as far as I can see. What do you think?
+any reason also why the original return is 0? i think it should be -1
+also in that case.
