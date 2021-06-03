@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E117A39A24A
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 15:35:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8620A39A253
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 15:37:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230377AbhFCNhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 09:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60218 "EHLO
+        id S231124AbhFCNjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 09:39:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbhFCNhj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 09:37:39 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DAAEC06174A;
-        Thu,  3 Jun 2021 06:35:43 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id dg27so7113812edb.12;
-        Thu, 03 Jun 2021 06:35:43 -0700 (PDT)
+        with ESMTP id S230523AbhFCNjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 09:39:12 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B270C06174A;
+        Thu,  3 Jun 2021 06:37:15 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id gb17so9265699ejc.8;
+        Thu, 03 Jun 2021 06:37:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZYfxqngFwhkt1d7gs5XvlfRZD53yeD19HFe8Wc4Gag4=;
-        b=jyaZFFHLwgK1/KZecrydPu6XdFCXv5NiKES/hZ438YC7o7toLRZjfz6FeSDkfPEn4W
-         2oKo9xFMhdW0A50XsB2+FST9wWE2Pcv1lic3Ua0IBhaEiQrLggMo4CjI+hou178QJQyp
-         d/oYxu3wjzw3QsfAnQ37B1Zolg8vIpYlMw4LIwuwuuMzjijqJIRSTemD8SNAhJd9ZK5R
-         jFvktxsMMFpKoPV2+liW/hiqSBS8NlCkD2GMJHFVzqBFNW5BSp7VWKJm1hWTEWMDKwnZ
-         n3aACxzetVe9ffFvouE61B/mfoO1BFuIDs/HSRutPI5UKEFRST+DaD1pfdDqxcG0iLEh
-         B7Lw==
+        bh=0U34XCf7Z6UY7gNvwBH2H99XRLQXoEj2LFoDREg120o=;
+        b=cAWS+aBgAaeBFSWsR1u55pI/vEHI48buy7FPD5AeUWRQ/3K3Y6dbX9yMhtIL8ox7yL
+         iO6meaDNtnFFhPpBPotqtIQDEByDuTVhurcgGrhFkhH5V8pBC0xh3MNCO4DOJdeAVB63
+         ztWE0H/U/BfR3xzG1Ka7Mc5mZCfqDgaiTLEFhPVyb/+paWOz6AWdy/8iveR1XBCnzMNM
+         iaR45TxYohhemggr79SSELsuUcBjwcrakmLI+JMGV/UQnJPyPWW4890KU/xIk0gZy7HB
+         2wUBTXrS9t2c5lFHJF0HsmBnz1a+2UGJOOwxL7cgcmDFpju102dWN79vQDcmJ0oH1WE1
+         pOyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ZYfxqngFwhkt1d7gs5XvlfRZD53yeD19HFe8Wc4Gag4=;
-        b=VuFRB35LQqWGm00Y1j5gJ0JJFUCTVx53qNK0kHTdmZo/XV+cXW33hXyYIHFO7C/RMO
-         Xm/HnSgAhsuFlEVB34IP0SorxHzgcCceLJzXQFBJGm2MtLdWJPgvdbbBI3voazVyaDLt
-         4LbPKdSKj+H8yEtLm9aDVKpFs/YKOYQdhvXOO+B5yZ8cUADgojOxWnNtUOoqCYji9uJI
-         N4mcSJSVwYSc4PtgF2Q3xMjWfWeEuTRq5KyQ0AlTEWlmvEMlW9QAyNTw0guUY7TzuyVv
-         7kqD8feBJ4+BUJ8LSQGtXJbeyvmM0K8SQt0E/4SgYz8QruW2Qtc1H3nGvu3dTkaNT3xw
-         XRAA==
-X-Gm-Message-State: AOAM531IhW7Y2617/RJ9qZyn2yHwqgBvikmeSbHweNtztA4IhnuDZm26
-        hrjgQDiKf1cS8RmPCjoLJSVyllsmmgVsB3IpRf/gXw==
-X-Google-Smtp-Source: ABdhPJxyNj99fNaDPBz0vv16pUJMVYNrlJW7dc9k+/2ABFB25EsV40zH2QVDS6gOTjvG4PK5CKqpSg==
-X-Received: by 2002:a50:cb85:: with SMTP id k5mr39185003edi.170.1622727342192;
-        Thu, 03 Jun 2021 06:35:42 -0700 (PDT)
+        bh=0U34XCf7Z6UY7gNvwBH2H99XRLQXoEj2LFoDREg120o=;
+        b=eK2CWIJHX1DjML6twZ3Zu9eQGR30exVonNzSbnh+tcoXYVP2AloNakvnc3hzZyPHOU
+         Cn2zCIHJu1DF9o05PNwpYmUert4J+wBTIRGa1SMgm/uFu6fraX5cGac9fqpAe6NMc+M7
+         cX9kG243eAnoSkRtDdkGE+fTgfbDu5rgBN3hjF24tN1yLGsgCMM8A4HzSHyA9wmd6Gv1
+         v2ZCMWZusJdhE17r1HPxNfJDeUhoonKQlBdzQYPU4YeQ1t/9bw/mnyiDEwkFZevObpHA
+         jFlfiA3mMmOXF0wC0OkU8vwKPn3c3gXkhIVwM/O0lwBkQMLbZ7fBcwPBOLIpVipSvPls
+         bpIg==
+X-Gm-Message-State: AOAM5335aZpmjgm1RKtybi5zeZcdbyWU7ge3rh0p8IYrReQ1CHQX0na5
+        eG1ATex22VMQKAZI5cJYJgK4YcwH2GrBQLzCd2Fy8w==
+X-Google-Smtp-Source: ABdhPJygLKLl2SRZUz7RKv0nLgI2d6GY6ptu3TwvF5LEQsU2LCfLGXhdO11gSV/b/+M1Uqz/0sMX4g==
+X-Received: by 2002:a17:906:714d:: with SMTP id z13mr10956917ejj.48.1622727433813;
+        Thu, 03 Jun 2021 06:37:13 -0700 (PDT)
 Received: from ?IPv6:2a04:241e:502:1d80:c45a:f355:cc4:bbb0? ([2a04:241e:502:1d80:c45a:f355:cc4:bbb0])
-        by smtp.gmail.com with ESMTPSA id c14sm1529377ejm.4.2021.06.03.06.35.40
+        by smtp.gmail.com with ESMTPSA id i12sm1766975edx.13.2021.06.03.06.37.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Jun 2021 06:35:41 -0700 (PDT)
-Subject: Re: [RFCv2 3/3] tcp: Wait for sufficient data in tcp_mtu_probe
-To:     Eric Dumazet <edumazet@google.com>,
-        Matt Mathis <mattmathis@google.com>
-Cc:     Neal Cardwell <ncardwell@google.com>,
+        Thu, 03 Jun 2021 06:37:13 -0700 (PDT)
+Subject: Re: [RFCv2 1/3] tcp: Use smaller mtu probes if RACK is enabled
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Matt Mathis <mattmathis@google.com>,
+        Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -61,18 +61,18 @@ Cc:     Neal Cardwell <ncardwell@google.com>,
         Leonard Crestez <lcrestez@drivenets.com>,
         Soheil Hassas Yeganeh <soheil@google.com>,
         Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev <netdev@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
 References: <cover.1622025457.git.cdleonard@gmail.com>
- <e6dac4f513fa2ca96ccb4dcc5b11f96b3f9ddc40.1622025457.git.cdleonard@gmail.com>
- <CANn89iKT9-dsynbQaWywJ=+=mQmqU7uWesmT6iJBCjzyZMTXFg@mail.gmail.com>
+ <750563aba3687119818dac09fc987c27c7152324.1622025457.git.cdleonard@gmail.com>
+ <CADVnQynoD=NF2hG6Bs44A0jrnKG=3f97OywS-tq-p-KQAsf5Fg@mail.gmail.com>
 From:   Leonard Crestez <cdleonard@gmail.com>
-Message-ID: <79eaee0b-7046-d658-bfb1-a7df40ba4fe1@gmail.com>
-Date:   Thu, 3 Jun 2021 16:35:39 +0300
+Message-ID: <3251fc35-ef83-26fd-4b71-7d5d50945096@gmail.com>
+Date:   Thu, 3 Jun 2021 16:37:11 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <CANn89iKT9-dsynbQaWywJ=+=mQmqU7uWesmT6iJBCjzyZMTXFg@mail.gmail.com>
+In-Reply-To: <CADVnQynoD=NF2hG6Bs44A0jrnKG=3f97OywS-tq-p-KQAsf5Fg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -80,35 +80,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/26/21 5:35 PM, Eric Dumazet wrote:
-> On Wed, May 26, 2021 at 12:38 PM Leonard Crestez <cdleonard@gmail.com> wrote:
+
+
+On 5/26/21 3:11 PM, Neal Cardwell wrote:
+> On Wed, May 26, 2021 at 6:38 AM Leonard Crestez <cdleonard@gmail.com> wrote:
 >>
->> According to RFC4821 Section 7.4 "Protocols MAY delay sending non-probes
->> in order to accumulate enough data" but linux almost never does that.
->>
->> Implement this by returning 0 from tcp_mtu_probe if not enough data is
->> queued locally but some packets are still in flight. This makes mtu
->> probing more likely to happen for applications that do small writes.
->>
->> Only doing this if packets are in flight should ensure that writing will
->> be attempted again later. This is similar to how tcp_mtu_probe already
->> returns zero if the probe doesn't fit inside the receiver window or the
->> congestion window.
->>
->> Control this with a sysctl because this implies a latency tradeoff but
->> only up to one RTT.
->>
+>> RACK allows detecting a loss in rtt + min_rtt / 4 based on just one
+>> extra packet. If enabled use this instead of relying of fast retransmit.
+> 
+> IMHO it would be worth adding some more text to motivate the change,
+> to justify the added complexity and risk from the change. The
+> substance of the change seems to be decreasing the requirement for
+> PMTU probing from needing roughly 5 packets worth of data to needing
+> roughly 3 packets worth of data. It's not clear to me as a reader of
+> this patch by itself that there are lots of applications that very
+> often only have 3-4 packets worth of data to send and yet can benefit
+> greatly from PMTU discovery.
+> 
+>> Suggested-by: Neal Cardwell <ncardwell@google.com>
 >> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 >> ---
 >>   Documentation/networking/ip-sysctl.rst |  5 +++++
 >>   include/net/netns/ipv4.h               |  1 +
 >>   net/ipv4/sysctl_net_ipv4.c             |  7 +++++++
 >>   net/ipv4/tcp_ipv4.c                    |  1 +
->>   net/ipv4/tcp_output.c                  | 18 ++++++++++++++----
->>   5 files changed, 28 insertions(+), 4 deletions(-)
+>>   net/ipv4/tcp_output.c                  | 26 +++++++++++++++++++++++++-
+>>   5 files changed, 39 insertions(+), 1 deletion(-)
 >>
 >> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
->> index 7ab52a105a5d..967b7fac35b1 100644
+>> index a5c250044500..7ab52a105a5d 100644
 >> --- a/Documentation/networking/ip-sysctl.rst
 >> +++ b/Documentation/networking/ip-sysctl.rst
 >> @@ -349,10 +349,15 @@ tcp_mtu_probe_floor - INTEGER
@@ -117,18 +117,23 @@ On 5/26/21 5:35 PM, Eric Dumazet wrote:
 >>
 >>          Default : 48
 >>
->> +tcp_mtu_probe_waitdata - BOOLEAN
->> +       Wait for enough data for an mtu probe to accumulate on the sender.
+>> +tcp_mtu_probe_rack - BOOLEAN
+>> +       Try to use shorter probes if RACK is also enabled
 >> +
 >> +       Default: 1
->> +
->>   tcp_mtu_probe_rack - BOOLEAN
->>          Try to use shorter probes if RACK is also enabled
+> 
+> I  would vote to not have a sysctl for this. If we think it's a good
+> idea to allow MTU probing with a smaller amount of data if RACK is
+> enabled (which seems true to me), then this is a low-risk enough
+> change that we should just change the behavior.
+> 
+>>   tcp_min_snd_mss - INTEGER
+>>          TCP SYN and SYNACK messages usually advertise an ADVMSS option,
+>>          as described in RFC 1122 and RFC 6691.
 >>
->>          Default: 1
->>
+>>          If this ADVMSS option is smaller than tcp_min_snd_mss,
 >> diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
->> index b4ff12f25a7f..366e7b325778 100644
+>> index 746c80cd4257..b4ff12f25a7f 100644
 >> --- a/include/net/netns/ipv4.h
 >> +++ b/include/net/netns/ipv4.h
 >> @@ -112,10 +112,11 @@ struct netns_ipv4 {
@@ -137,18 +142,14 @@ On 5/26/21 5:35 PM, Eric Dumazet wrote:
 >>   #endif
 >>          u8 sysctl_tcp_mtu_probing;
 >>          int sysctl_tcp_mtu_probe_floor;
->> +       int sysctl_tcp_mtu_probe_waitdata;
-> 
-> If this is a boolean, you should use u8, and place this field to avoid
-> adding a hole.
-> 
->>          int sysctl_tcp_mtu_probe_rack;
+>> +       int sysctl_tcp_mtu_probe_rack;
 >>          int sysctl_tcp_base_mss;
 >>          int sysctl_tcp_min_snd_mss;
 >>          int sysctl_tcp_probe_threshold;
 >>          u32 sysctl_tcp_probe_interval;
+>>
 >> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
->> index 275c91fb9cf8..53868b812958 100644
+>> index 4fa77f182dcb..275c91fb9cf8 100644
 >> --- a/net/ipv4/sysctl_net_ipv4.c
 >> +++ b/net/ipv4/sysctl_net_ipv4.c
 >> @@ -847,10 +847,17 @@ static struct ctl_table ipv4_net_table[] = {
@@ -158,22 +159,19 @@ On 5/26/21 5:35 PM, Eric Dumazet wrote:
 >>                  .extra2         = &tcp_min_snd_mss_max,
 >>          },
 >> +       {
->> +               .procname       = "tcp_mtu_probe_waitdata",
->> +               .data           = &init_net.ipv4.sysctl_tcp_mtu_probe_waitdata,
+>> +               .procname       = "tcp_mtu_probe_rack",
+>> +               .data           = &init_net.ipv4.sysctl_tcp_mtu_probe_rack,
 >> +               .maxlen         = sizeof(int),
 >> +               .mode           = 0644,
 >> +               .proc_handler   = proc_dointvec,
-> 
-> If this is a boolean, please use proc_dou8vec_minmax, and SYSCTL_ZERO/SYSCTL_ONE
-> 
 >> +       },
 >>          {
->>                  .procname       = "tcp_mtu_probe_rack",
->>                  .data           = &init_net.ipv4.sysctl_tcp_mtu_probe_rack,
+>>                  .procname       = "tcp_probe_threshold",
+>>                  .data           = &init_net.ipv4.sysctl_tcp_probe_threshold,
 >>                  .maxlen         = sizeof(int),
 >>                  .mode           = 0644,
 >> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
->> index ed8af4a7325b..940df2ae4636 100644
+>> index 4f5b68a90be9..ed8af4a7325b 100644
 >> --- a/net/ipv4/tcp_ipv4.c
 >> +++ b/net/ipv4/tcp_ipv4.c
 >> @@ -2892,10 +2892,11 @@ static int __net_init tcp_sk_init(struct net *net)
@@ -182,65 +180,38 @@ On 5/26/21 5:35 PM, Eric Dumazet wrote:
 >>          net->ipv4.sysctl_tcp_probe_threshold = TCP_PROBE_THRESHOLD;
 >>          net->ipv4.sysctl_tcp_probe_interval = TCP_PROBE_INTERVAL;
 >>          net->ipv4.sysctl_tcp_mtu_probe_floor = TCP_MIN_SND_MSS;
->> +       net->ipv4.sysctl_tcp_mtu_probe_waitdata = 1;
->>          net->ipv4.sysctl_tcp_mtu_probe_rack = 1;
+>> +       net->ipv4.sysctl_tcp_mtu_probe_rack = 1;
 >>
 >>          net->ipv4.sysctl_tcp_keepalive_time = TCP_KEEPALIVE_TIME;
 >>          net->ipv4.sysctl_tcp_keepalive_probes = TCP_KEEPALIVE_PROBES;
 >>          net->ipv4.sysctl_tcp_keepalive_intvl = TCP_KEEPALIVE_INTVL;
+>>
 >> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
->> index 362f97cfb09e..268e1bac001f 100644
+>> index bde781f46b41..9691f435477b 100644
 >> --- a/net/ipv4/tcp_output.c
 >> +++ b/net/ipv4/tcp_output.c
->> @@ -2394,14 +2394,10 @@ static int tcp_mtu_probe(struct sock *sk)
->>                   */
->>                  tcp_mtu_check_reprobe(sk);
->>                  return -1;
+>> @@ -2311,10 +2311,19 @@ static bool tcp_can_coalesce_send_queue_head(struct sock *sk, int len)
 >>          }
 >>
->> -       /* Have enough data in the send queue to probe? */
->> -       if (tp->write_seq - tp->snd_nxt < size_needed)
->> -               return -1;
->> -
->>          /* Can probe fit inside congestion window? */
->>          if (packets_needed > tp->snd_cwnd)
->>                  return -1;
+>>          return true;
+>>   }
 >>
->>          /* Can probe fit inside receiver window? If not then skip probing.
->> @@ -2411,10 +2407,24 @@ static int tcp_mtu_probe(struct sock *sk)
->>           * clear below.
->>           */
->>          if (tp->snd_wnd < size_needed)
->>                  return -1;
->>
->> +       /* Have enough data in the send queue to probe? */
->> +       if (tp->write_seq - tp->snd_nxt < size_needed) {
->> +               /* If packets are already in flight it's safe to wait for more data to
->> +                * accumulate on the sender because writing will be triggered as ACKs
->> +                * arrive.
->> +                * If no packets are in flight returning zero can stall.
->> +                */
->> +               if (net->ipv4.sysctl_tcp_mtu_probe_waitdata &&
-> 
-> I have serious doubts about RPC traffic.
-> Adding one RTT latency is going to make this unlikely to be used.
-> 
->> +                   tcp_packets_in_flight(tp))
->> +                       return 0;
->> +               else
->> +                       return -1;
->> +       }
+>> +/* Check if rack is supported for current connection */
+>> +static int tcp_mtu_probe_is_rack(const struct sock *sk)
+>> +{
+>> +       struct net *net = sock_net(sk);
 >> +
+>> +       return (net->ipv4.sysctl_tcp_recovery & TCP_RACK_LOSS_DETECTION &&
+>> +                       net->ipv4.sysctl_tcp_mtu_probe_rack);
+>> +}
+> 
+> You may want to use the existing helper, tcp_is_rack(), by moving it
+> to include/net/tcp.h
 
-This could be measured with tcp_rr mode in netperf, right? I've been 
-using iperf which is more focused on bandwidth. My expectation would be 
-that the "maximum" latency would increase but not the average since MTU 
-probing is a rare occurrence.
+OK, for this and other comments.
 
-Another way to implement waiting would be to check sk_wmem_alloc > 
-skb->size like autocork does and this would promise zero latency. But 
-I'm not sure how to do that correctly. If it's up to tcp_mtu_probe to 
-ensure that traffic does not stall then could it set the TSQ_THROTTLED flag?
+Initially I though that maybe a more elaborate check is required but it 
+seems to be only up to the sender to keep individual timeouts.
 
 --
 Regards,
