@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EBB63997AE
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 03:48:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C89C03997B7
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 03:48:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229876AbhFCBuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Jun 2021 21:50:04 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:7077 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbhFCBuA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 21:50:00 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FwTHX2xqhzYqG6;
-        Thu,  3 Jun 2021 09:45:28 +0800 (CST)
+        id S229907AbhFCBuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Jun 2021 21:50:10 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3518 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229833AbhFCBuB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Jun 2021 21:50:01 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FwTHY2Q10zZcBy;
+        Thu,  3 Jun 2021 09:45:29 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Thu, 3 Jun 2021 09:48:13 +0800
 Received: from localhost.localdomain (10.69.192.56) by
@@ -40,10 +40,12 @@ CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
         <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
         <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
         <alobakin@pm.me>
-Subject: [PATCH net-next v2 0/3] Some optimization for lockless qdisc
-Date:   Thu, 3 Jun 2021 09:47:57 +0800
-Message-ID: <1622684880-39895-1-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH net-next v2 1/3] net: sched: avoid unnecessary seqcount operation for lockless qdisc
+Date:   Thu, 3 Jun 2021 09:47:58 +0800
+Message-ID: <1622684880-39895-2-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1622684880-39895-1-git-send-email-linyunsheng@huawei.com>
+References: <1622684880-39895-1-git-send-email-linyunsheng@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.69.192.56]
@@ -54,41 +56,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Patch 1: remove unnecessary seqcount operation.
-Patch 2: implement TCQ_F_CAN_BYPASS.
-Patch 3: remove qdisc->empty.
+qdisc->running seqcount operation is mainly used to do heuristic
+locking on q->busylock for locked qdisc, see qdisc_is_running()
+and __dev_xmit_skb().
 
-Performance data for pktgen in queue_xmit mode + dummy netdev
-with pfifo_fast:
+So avoid doing seqcount operation for qdisc with TCQ_F_NOLOCK
+flag.
 
- threads    unpatched           patched             delta
-    1       2.60Mpps            3.21Mpps             +23%
-    2       3.84Mpps            5.56Mpps             +44%
-    4       5.52Mpps            5.58Mpps             +1%
-    8       2.77Mpps            2.76Mpps             -0.3%
-   16       2.24Mpps            2.23Mpps             +0.4%
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+---
+ include/net/sch_generic.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Performance for IP forward testing: 1.05Mpps increases to
-1.16Mpps, about 10% improvement.
-
-V2: Adjust the comment and commit log according to discussion
-    in V1.
-V1: Drop RFC tag, Add nolock_qdisc_is_empty() and do the qdisc
-    empty checking without the protection of qdisc->seqlock to
-    aviod doing unnecessary spin_trylock() for contention case.
-RFC v4: Use STATE_MISSED and STATE_DRAINING to indicate non-empty
-        qdisc, and add patch 1 and 3.
-
-Yunsheng Lin (3):
-  net: sched: avoid unnecessary seqcount operation for lockless qdisc
-  net: sched: implement TCQ_F_CAN_BYPASS for lockless qdisc
-  net: sched: remove qdisc->empty for lockless qdisc
-
- include/net/sch_generic.h | 31 ++++++++++++++++++-------------
- net/core/dev.c            | 27 +++++++++++++++++++++++++--
- net/sched/sch_generic.c   | 23 ++++++++++++++++-------
- 3 files changed, 59 insertions(+), 22 deletions(-)
-
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 1e62551..3ed6bcc 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -188,6 +188,7 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+ 
+ nolock_empty:
+ 		WRITE_ONCE(qdisc->empty, false);
++		return true;
+ 	} else if (qdisc_is_running(qdisc)) {
+ 		return false;
+ 	}
+@@ -201,7 +202,6 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+ 
+ static inline void qdisc_run_end(struct Qdisc *qdisc)
+ {
+-	write_seqcount_end(&qdisc->running);
+ 	if (qdisc->flags & TCQ_F_NOLOCK) {
+ 		spin_unlock(&qdisc->seqlock);
+ 
+@@ -210,6 +210,8 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
+ 			clear_bit(__QDISC_STATE_MISSED, &qdisc->state);
+ 			__netif_schedule(qdisc);
+ 		}
++	} else {
++		write_seqcount_end(&qdisc->running);
+ 	}
+ }
+ 
 -- 
 2.7.4
 
