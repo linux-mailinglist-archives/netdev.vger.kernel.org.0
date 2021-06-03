@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8363039A7E3
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:11:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CA2339A7F4
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233003AbhFCRNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 13:13:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43620 "EHLO mail.kernel.org"
+        id S232713AbhFCRNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 13:13:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43644 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232721AbhFCRMO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232726AbhFCRMO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 3 Jun 2021 13:12:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 97ECF6142D;
-        Thu,  3 Jun 2021 17:10:06 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C0E6D61414;
+        Thu,  3 Jun 2021 17:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622740207;
-        bh=WiwsW1RX8l4PrJ8cEtnsjYCPYJg8lHxU+4RpRUthlVU=;
+        s=k20201202; t=1622740208;
+        bh=QjZL+O3NSFI77h2z5WDWGc3+ZvAdpEVYHaA7LKIbBw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=joBR7FaVkXWALBWSiq5LfPtbM0tmb62jcrUvtNpU9hGroFNadfcbcDB76NkpQXGrH
-         u+KWleV6L+tP9pDdO2Na06MdknLzTQ3FCxml9PpJ0crlzE4N06XXKWzxHTrDpEDXbf
-         6PaJI6MEvwWl5le6GEB6zryeB8VWxLeIgWVC6QzNlDggGGBOX218QSXiZi7+oJHgcB
-         zOG30ksBjw5whFhGZXnOOlUZ6EUvKeb9Ec32Fe1cd2TyeaSfiCJJb7SuN2/rRCkwq6
-         TT03xZxdR/DRuN4CCypqoKAmLKCxXpWmLMMMoBWjo+lEqQQLbh3D2ZuhYR0m7126yt
-         BE7dm0K6Lqp1w==
+        b=pzpHVR+0onU6Kd2dVYZeTgpc42PwOLMiK2voWOVs8lfYfs2wCgYFtpkLjYf/aO4rp
+         0BzkSDQXHJuaVzEe1cPS622nIoATzgKjVa6FWbaHyWmgUXDa6VZCVI0FRUvMUf7jxa
+         8shQyKovIaxUbTIpYKhzjrCfULrMsOLN21crrZnpf3ElgGoxbdk+IyjlvghRPD6b1P
+         J/8JGa2zuDJ6+TWWnKnNIbtPKyXWMNPMyTaKtBGodCS79gQeWQ+cP9zlewOtGcm4iG
+         gKbHgW8LRj0DidXrSSpv/qzknr0eydx0rqpKYWyk/WvdbqbxC5GAcq/UF6T2Ab6KE0
+         HT66+bd+IEA/g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        syzbot+bfda097c12a00c8cae67@syzkaller.appspotmail.com,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 06/23] isdn: mISDN: netjet: Fix crash in nj_probe:
-Date:   Thu,  3 Jun 2021 13:09:42 -0400
-Message-Id: <20210603170959.3169420-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 07/23] bonding: init notify_work earlier to avoid uninitialized use
+Date:   Thu,  3 Jun 2021 13:09:43 -0400
+Message-Id: <20210603170959.3169420-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210603170959.3169420-1-sashal@kernel.org>
 References: <20210603170959.3169420-1-sashal@kernel.org>
@@ -42,166 +44,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 9f6f852550d0e1b7735651228116ae9d300f69b3 ]
+[ Upstream commit 35d96e631860226d5dc4de0fad0a415362ec2457 ]
 
-'nj_setup' in netjet.c might fail with -EIO and in this case
-'card->irq' is initialized and is bigger than zero. A subsequent call to
-'nj_release' will free the irq that has not been requested.
+If bond_kobj_init() or later kzalloc() in bond_alloc_slave() fail,
+then we call kobject_put() on the slave->kobj. This in turn calls
+the release function slave_kobj_release() which will always try to
+cancel_delayed_work_sync(&slave->notify_work), which shouldn't be
+done on an uninitialized work struct.
 
-Fix this bug by deleting the previous assignment to 'card->irq' and just
-keep the assignment before 'request_irq'.
+Always initialize the work struct earlier to avoid problems here.
 
-The KASAN's log reveals it:
+Syzbot bisected this down to a completely pointless commit, some
+fault injection may have been at work here that caused the alloc
+failure in the first place, which may interact badly with bisect.
 
-[    3.354615 ] WARNING: CPU: 0 PID: 1 at kernel/irq/manage.c:1826
-free_irq+0x100/0x480
-[    3.355112 ] Modules linked in:
-[    3.355310 ] CPU: 0 PID: 1 Comm: swapper/0 Not tainted
-5.13.0-rc1-00144-g25a1298726e #13
-[    3.355816 ] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[    3.356552 ] RIP: 0010:free_irq+0x100/0x480
-[    3.356820 ] Code: 6e 08 74 6f 4d 89 f4 e8 5e ac 09 00 4d 8b 74 24 18
-4d 85 f6 75 e3 e8 4f ac 09 00 8b 75 c8 48 c7 c7 78 c1 2e 85 e8 e0 cf f5
-ff <0f> 0b 48 8b 75 c0 4c 89 ff e8 72 33 0b 03 48 8b 43 40 4c 8b a0 80
-[    3.358012 ] RSP: 0000:ffffc90000017b48 EFLAGS: 00010082
-[    3.358357 ] RAX: 0000000000000000 RBX: ffff888104dc8000 RCX:
-0000000000000000
-[    3.358814 ] RDX: ffff8881003c8000 RSI: ffffffff8124a9e6 RDI:
-00000000ffffffff
-[    3.359272 ] RBP: ffffc90000017b88 R08: 0000000000000000 R09:
-0000000000000000
-[    3.359732 ] R10: ffffc900000179f0 R11: 0000000000001d04 R12:
-0000000000000000
-[    3.360195 ] R13: ffff888107dc6000 R14: ffff888107dc6928 R15:
-ffff888104dc80a8
-[    3.360652 ] FS:  0000000000000000(0000) GS:ffff88817bc00000(0000)
-knlGS:0000000000000000
-[    3.361170 ] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    3.361538 ] CR2: 0000000000000000 CR3: 000000000582e000 CR4:
-00000000000006f0
-[    3.362003 ] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-0000000000000000
-[    3.362175 ] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-0000000000000400
-[    3.362175 ] Call Trace:
-[    3.362175 ]  nj_release+0x51/0x1e0
-[    3.362175 ]  nj_probe+0x450/0x950
-[    3.362175 ]  ? pci_device_remove+0x110/0x110
-[    3.362175 ]  local_pci_probe+0x45/0xa0
-[    3.362175 ]  pci_device_probe+0x12b/0x1d0
-[    3.362175 ]  really_probe+0x2a9/0x610
-[    3.362175 ]  driver_probe_device+0x90/0x1d0
-[    3.362175 ]  ? mutex_lock_nested+0x1b/0x20
-[    3.362175 ]  device_driver_attach+0x68/0x70
-[    3.362175 ]  __driver_attach+0x124/0x1b0
-[    3.362175 ]  ? device_driver_attach+0x70/0x70
-[    3.362175 ]  bus_for_each_dev+0xbb/0x110
-[    3.362175 ]  ? rdinit_setup+0x45/0x45
-[    3.362175 ]  driver_attach+0x27/0x30
-[    3.362175 ]  bus_add_driver+0x1eb/0x2a0
-[    3.362175 ]  driver_register+0xa9/0x180
-[    3.362175 ]  __pci_register_driver+0x82/0x90
-[    3.362175 ]  ? w6692_init+0x38/0x38
-[    3.362175 ]  nj_init+0x36/0x38
-[    3.362175 ]  do_one_initcall+0x7f/0x3d0
-[    3.362175 ]  ? rdinit_setup+0x45/0x45
-[    3.362175 ]  ? rcu_read_lock_sched_held+0x4f/0x80
-[    3.362175 ]  kernel_init_freeable+0x2aa/0x301
-[    3.362175 ]  ? rest_init+0x2c0/0x2c0
-[    3.362175 ]  kernel_init+0x18/0x190
-[    3.362175 ]  ? rest_init+0x2c0/0x2c0
-[    3.362175 ]  ? rest_init+0x2c0/0x2c0
-[    3.362175 ]  ret_from_fork+0x1f/0x30
-[    3.362175 ] Kernel panic - not syncing: panic_on_warn set ...
-[    3.362175 ] CPU: 0 PID: 1 Comm: swapper/0 Not tainted
-5.13.0-rc1-00144-g25a1298726e #13
-[    3.362175 ] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[    3.362175 ] Call Trace:
-[    3.362175 ]  dump_stack+0xba/0xf5
-[    3.362175 ]  ? free_irq+0x100/0x480
-[    3.362175 ]  panic+0x15a/0x3f2
-[    3.362175 ]  ? __warn+0xf2/0x150
-[    3.362175 ]  ? free_irq+0x100/0x480
-[    3.362175 ]  __warn+0x108/0x150
-[    3.362175 ]  ? free_irq+0x100/0x480
-[    3.362175 ]  report_bug+0x119/0x1c0
-[    3.362175 ]  handle_bug+0x3b/0x80
-[    3.362175 ]  exc_invalid_op+0x18/0x70
-[    3.362175 ]  asm_exc_invalid_op+0x12/0x20
-[    3.362175 ] RIP: 0010:free_irq+0x100/0x480
-[    3.362175 ] Code: 6e 08 74 6f 4d 89 f4 e8 5e ac 09 00 4d 8b 74 24 18
-4d 85 f6 75 e3 e8 4f ac 09 00 8b 75 c8 48 c7 c7 78 c1 2e 85 e8 e0 cf f5
-ff <0f> 0b 48 8b 75 c0 4c 89 ff e8 72 33 0b 03 48 8b 43 40 4c 8b a0 80
-[    3.362175 ] RSP: 0000:ffffc90000017b48 EFLAGS: 00010082
-[    3.362175 ] RAX: 0000000000000000 RBX: ffff888104dc8000 RCX:
-0000000000000000
-[    3.362175 ] RDX: ffff8881003c8000 RSI: ffffffff8124a9e6 RDI:
-00000000ffffffff
-[    3.362175 ] RBP: ffffc90000017b88 R08: 0000000000000000 R09:
-0000000000000000
-[    3.362175 ] R10: ffffc900000179f0 R11: 0000000000001d04 R12:
-0000000000000000
-[    3.362175 ] R13: ffff888107dc6000 R14: ffff888107dc6928 R15:
-ffff888104dc80a8
-[    3.362175 ]  ? vprintk+0x76/0x150
-[    3.362175 ]  ? free_irq+0x100/0x480
-[    3.362175 ]  nj_release+0x51/0x1e0
-[    3.362175 ]  nj_probe+0x450/0x950
-[    3.362175 ]  ? pci_device_remove+0x110/0x110
-[    3.362175 ]  local_pci_probe+0x45/0xa0
-[    3.362175 ]  pci_device_probe+0x12b/0x1d0
-[    3.362175 ]  really_probe+0x2a9/0x610
-[    3.362175 ]  driver_probe_device+0x90/0x1d0
-[    3.362175 ]  ? mutex_lock_nested+0x1b/0x20
-[    3.362175 ]  device_driver_attach+0x68/0x70
-[    3.362175 ]  __driver_attach+0x124/0x1b0
-[    3.362175 ]  ? device_driver_attach+0x70/0x70
-[    3.362175 ]  bus_for_each_dev+0xbb/0x110
-[    3.362175 ]  ? rdinit_setup+0x45/0x45
-[    3.362175 ]  driver_attach+0x27/0x30
-[    3.362175 ]  bus_add_driver+0x1eb/0x2a0
-[    3.362175 ]  driver_register+0xa9/0x180
-[    3.362175 ]  __pci_register_driver+0x82/0x90
-[    3.362175 ]  ? w6692_init+0x38/0x38
-[    3.362175 ]  nj_init+0x36/0x38
-[    3.362175 ]  do_one_initcall+0x7f/0x3d0
-[    3.362175 ]  ? rdinit_setup+0x45/0x45
-[    3.362175 ]  ? rcu_read_lock_sched_held+0x4f/0x80
-[    3.362175 ]  kernel_init_freeable+0x2aa/0x301
-[    3.362175 ]  ? rest_init+0x2c0/0x2c0
-[    3.362175 ]  kernel_init+0x18/0x190
-[    3.362175 ]  ? rest_init+0x2c0/0x2c0
-[    3.362175 ]  ? rest_init+0x2c0/0x2c0
-[    3.362175 ]  ret_from_fork+0x1f/0x30
-[    3.362175 ] Dumping ftrace buffer:
-[    3.362175 ]    (ftrace buffer empty)
-[    3.362175 ] Kernel Offset: disabled
-[    3.362175 ] Rebooting in 1 seconds..
-
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reported-by: syzbot+bfda097c12a00c8cae67@syzkaller.appspotmail.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/hardware/mISDN/netjet.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/bonding/bond_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/netjet.c b/drivers/isdn/hardware/mISDN/netjet.c
-index 2b317cb63d06..448370da2c3f 100644
---- a/drivers/isdn/hardware/mISDN/netjet.c
-+++ b/drivers/isdn/hardware/mISDN/netjet.c
-@@ -1114,7 +1114,6 @@ nj_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		card->typ = NETJET_S_TJ300;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index c21c4291921f..c814b266af79 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1310,6 +1310,7 @@ static struct slave *bond_alloc_slave(struct bonding *bond,
  
- 	card->base = pci_resource_start(pdev, 0);
--	card->irq = pdev->irq;
- 	pci_set_drvdata(pdev, card);
- 	err = setup_instance(card);
- 	if (err)
+ 	slave->bond = bond;
+ 	slave->dev = slave_dev;
++	INIT_DELAYED_WORK(&slave->notify_work, bond_netdev_notify_work);
+ 
+ 	if (bond_kobj_init(slave))
+ 		return NULL;
+@@ -1322,7 +1323,6 @@ static struct slave *bond_alloc_slave(struct bonding *bond,
+ 			return NULL;
+ 		}
+ 	}
+-	INIT_DELAYED_WORK(&slave->notify_work, bond_netdev_notify_work);
+ 
+ 	return slave;
+ }
 -- 
 2.30.2
 
