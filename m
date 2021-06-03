@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CA2339A7F4
-	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:11:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFEDD39A7E6
+	for <lists+netdev@lfdr.de>; Thu,  3 Jun 2021 19:11:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232713AbhFCRNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 13:13:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43644 "EHLO mail.kernel.org"
+        id S232810AbhFCRNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 13:13:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43650 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232726AbhFCRMO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Jun 2021 13:12:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C0E6D61414;
-        Thu,  3 Jun 2021 17:10:07 +0000 (UTC)
+        id S232803AbhFCRMX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Jun 2021 13:12:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1B6D3613F9;
+        Thu,  3 Jun 2021 17:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622740208;
-        bh=QjZL+O3NSFI77h2z5WDWGc3+ZvAdpEVYHaA7LKIbBw0=;
+        s=k20201202; t=1622740209;
+        bh=f2a0HndQRgm6ba+MJh1HP4RrugdLadnN5+YztHXIBz0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pzpHVR+0onU6Kd2dVYZeTgpc42PwOLMiK2voWOVs8lfYfs2wCgYFtpkLjYf/aO4rp
-         0BzkSDQXHJuaVzEe1cPS622nIoATzgKjVa6FWbaHyWmgUXDa6VZCVI0FRUvMUf7jxa
-         8shQyKovIaxUbTIpYKhzjrCfULrMsOLN21crrZnpf3ElgGoxbdk+IyjlvghRPD6b1P
-         J/8JGa2zuDJ6+TWWnKnNIbtPKyXWMNPMyTaKtBGodCS79gQeWQ+cP9zlewOtGcm4iG
-         gKbHgW8LRj0DidXrSSpv/qzknr0eydx0rqpKYWyk/WvdbqbxC5GAcq/UF6T2Ab6KE0
-         HT66+bd+IEA/g==
+        b=gLVxd1bFvEczG+4GGdxOOvBGgyyvGVM6Gla6c7448isB3lgC3EUVEf7kdPEj6D0Ud
+         P75AnCJVETWFlICFRqaPx6fgL03wVI0mAoOW7BtG7W3e4674ANC26aNaQ8xdPPCzM/
+         3mSSkIY/Br3PIkxlFq4H6IlJ10pAKiz3WiiVTskwtFi8bLt7fNfRDBcCeLI3vzxbmP
+         VTOGIs1ojRm2iadwmBhmKplSGZnmvyFPgb9nbQm7864HjpMI4BXUKHmVaU1NleSjm5
+         sMPqQ4GwZ8iQcYeByyxU2ZiNuTG99gPrTadj9GFp2sv44N/cc+PBe5V9SiE/JzenVq
+         gDi3ArGkos7sA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>,
-        syzbot+bfda097c12a00c8cae67@syzkaller.appspotmail.com,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        syzbot+69ff9dff50dcfe14ddd4@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 07/23] bonding: init notify_work earlier to avoid uninitialized use
-Date:   Thu,  3 Jun 2021 13:09:43 -0400
-Message-Id: <20210603170959.3169420-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 08/23] netlink: disable IRQs for netlink_lock_table()
+Date:   Thu,  3 Jun 2021 13:09:44 -0400
+Message-Id: <20210603170959.3169420-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210603170959.3169420-1-sashal@kernel.org>
 References: <20210603170959.3169420-1-sashal@kernel.org>
@@ -46,49 +45,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 35d96e631860226d5dc4de0fad0a415362ec2457 ]
+[ Upstream commit 1d482e666b8e74c7555dbdfbfb77205eeed3ff2d ]
 
-If bond_kobj_init() or later kzalloc() in bond_alloc_slave() fail,
-then we call kobject_put() on the slave->kobj. This in turn calls
-the release function slave_kobj_release() which will always try to
-cancel_delayed_work_sync(&slave->notify_work), which shouldn't be
-done on an uninitialized work struct.
+Syzbot reports that in mac80211 we have a potential deadlock
+between our "local->stop_queue_reasons_lock" (spinlock) and
+netlink's nl_table_lock (rwlock). This is because there's at
+least one situation in which we might try to send a netlink
+message with this spinlock held while it is also possible to
+take the spinlock from a hardirq context, resulting in the
+following deadlock scenario reported by lockdep:
 
-Always initialize the work struct earlier to avoid problems here.
+       CPU0                    CPU1
+       ----                    ----
+  lock(nl_table_lock);
+                               local_irq_disable();
+                               lock(&local->queue_stop_reason_lock);
+                               lock(nl_table_lock);
+  <Interrupt>
+    lock(&local->queue_stop_reason_lock);
 
-Syzbot bisected this down to a completely pointless commit, some
-fault injection may have been at work here that caused the alloc
-failure in the first place, which may interact badly with bisect.
+This seems valid, we can take the queue_stop_reason_lock in
+any kind of context ("CPU0"), and call ieee80211_report_ack_skb()
+with the spinlock held and IRQs disabled ("CPU1") in some
+code path (ieee80211_do_stop() via ieee80211_free_txskb()).
 
-Reported-by: syzbot+bfda097c12a00c8cae67@syzkaller.appspotmail.com
+Short of disallowing netlink use in scenarios like these
+(which would be rather complex in mac80211's case due to
+the deep callchain), it seems the only fix for this is to
+disable IRQs while nl_table_lock is held to avoid hitting
+this scenario, this disallows the "CPU0" portion of the
+reported deadlock.
+
+Note that the writer side (netlink_table_grab()) already
+disables IRQs for this lock.
+
+Unfortunately though, this seems like a huge hammer, and
+maybe the whole netlink table locking should be reworked.
+
+Reported-by: syzbot+69ff9dff50dcfe14ddd4@syzkaller.appspotmail.com
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netlink/af_netlink.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index c21c4291921f..c814b266af79 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1310,6 +1310,7 @@ static struct slave *bond_alloc_slave(struct bonding *bond,
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 1bb9f219f07d..ac3fe507bc1c 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -461,11 +461,13 @@ void netlink_table_ungrab(void)
+ static inline void
+ netlink_lock_table(void)
+ {
++	unsigned long flags;
++
+ 	/* read_lock() synchronizes us to netlink_table_grab */
  
- 	slave->bond = bond;
- 	slave->dev = slave_dev;
-+	INIT_DELAYED_WORK(&slave->notify_work, bond_netdev_notify_work);
- 
- 	if (bond_kobj_init(slave))
- 		return NULL;
-@@ -1322,7 +1323,6 @@ static struct slave *bond_alloc_slave(struct bonding *bond,
- 			return NULL;
- 		}
- 	}
--	INIT_DELAYED_WORK(&slave->notify_work, bond_netdev_notify_work);
- 
- 	return slave;
+-	read_lock(&nl_table_lock);
++	read_lock_irqsave(&nl_table_lock, flags);
+ 	atomic_inc(&nl_table_users);
+-	read_unlock(&nl_table_lock);
++	read_unlock_irqrestore(&nl_table_lock, flags);
  }
+ 
+ static inline void
 -- 
 2.30.2
 
