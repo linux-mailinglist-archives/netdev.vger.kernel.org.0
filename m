@@ -2,197 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDD1839AFE8
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 03:34:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4AD239AFE6
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 03:34:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbhFDBgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 21:36:22 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3535 "EHLO
+        id S230209AbhFDBgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 21:36:20 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3418 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbhFDBgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 21:36:21 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fx4xG43JBzYsCB;
-        Fri,  4 Jun 2021 09:31:46 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 4 Jun 2021 09:34:31 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 4 Jun 2021
- 09:34:31 +0800
-Subject: Re: [PATCH RESEND iproute2-next] devlink: Add optional controller
- user input
-To:     Parav Pandit <parav@nvidia.com>, <dsahern@gmail.com>,
-        <stephen@networkplumber.org>, <netdev@vger.kernel.org>
-CC:     Jiri Pirko <jiri@nvidia.com>, moyufeng <moyufeng@huawei.com>,
-        "Jakub Kicinski" <kuba@kernel.org>
-References: <20210603111901.9888-1-parav@nvidia.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <c50ebdd6-a388-4d39-4052-50b4966def2e@huawei.com>
-Date:   Fri, 4 Jun 2021 09:34:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        with ESMTP id S229772AbhFDBgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 21:36:20 -0400
+Received: from dggeme759-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fx4x16B8Wz6tpL;
+        Fri,  4 Jun 2021 09:31:33 +0800 (CST)
+Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
+ dggeme759-chm.china.huawei.com (10.3.19.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Fri, 4 Jun 2021 09:34:33 +0800
+Received: from dggeme760-chm.china.huawei.com ([10.6.80.70]) by
+ dggeme760-chm.china.huawei.com ([10.6.80.70]) with mapi id 15.01.2176.012;
+ Fri, 4 Jun 2021 09:34:33 +0800
+From:   zhengyongjun <zhengyongjun3@huawei.com>
+To:     "jmaloy@redhat.com" <jmaloy@redhat.com>,
+        "ying.xue@windriver.com" <ying.xue@windriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIIG5ldC1uZXh0XSB0aXBjOiBSZXR1cm4gdGhlIGNvcnJl?=
+ =?gb2312?Q?ct_errno_code?=
+Thread-Topic: [PATCH net-next] tipc: Return the correct errno code
+Thread-Index: AQHXWOGc9Q9RY5DeKECVhQca9yM8QKsDEZ6A
+Date:   Fri, 4 Jun 2021 01:34:32 +0000
+Message-ID: <7b100c7c3a7c4c658374164cb848d8e6@huawei.com>
+References: <20210604014702.2087584-1-zhengyongjun3@huawei.com>
+In-Reply-To: <20210604014702.2087584-1-zhengyongjun3@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.176.64]
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20210603111901.9888-1-parav@nvidia.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme702-chm.china.huawei.com (10.1.199.98) To
- dggpemm500005.china.huawei.com (7.185.36.74)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/6/3 19:19, Parav Pandit wrote:
-> A user optionally provides the external controller number when user
-> wants to create devlink port for the external controller.
-
-Hi, Parav
-   I was planing to use controller id to solve the devlink
-instance representing problem for multi-function which shares
-common resource in the same ASIC, see [1].
-
-It seems the controller id used here is to differentiate the
-function used in different host?
-
-1. https://lkml.org/lkml/2021/5/31/296
-
-> 
-> An example on eswitch system:
-> $ devlink dev eswitch set pci/0033:01:00.0 mode switchdev
-> 
-> $ devlink port show
-> pci/0033:01:00.0/196607: type eth netdev enP51p1s0f0np0 flavour physical port 0 splittable false
-> 
-> $ devlink port add pci/0033:01:00.0 flavour pcisf pfnum 0 sfnum 77 controller 1
-> pci/0033:01:00.0/163840: type eth netdev eth0 flavour pcisf controller 1 pfnum 0 sfnum 77 external true splittable false
->   function:
->     hw_addr 00:00:00:00:00:00 state inactive opstate detached
-> 
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-> ---
->  devlink/devlink.c       | 17 ++++++++++++++---
->  man/man8/devlink-port.8 | 19 +++++++++++++++++++
->  2 files changed, 33 insertions(+), 3 deletions(-)
-> 
-> diff --git a/devlink/devlink.c b/devlink/devlink.c
-> index 0b5548fb..170e8616 100644
-> --- a/devlink/devlink.c
-> +++ b/devlink/devlink.c
-> @@ -286,6 +286,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
->  #define DL_OPT_PORT_PFNUMBER BIT(43)
->  #define DL_OPT_PORT_SFNUMBER BIT(44)
->  #define DL_OPT_PORT_FUNCTION_STATE BIT(45)
-> +#define DL_OPT_PORT_CONTROLLER BIT(46)
->  
->  struct dl_opts {
->  	uint64_t present; /* flags of present items */
-> @@ -336,6 +337,7 @@ struct dl_opts {
->  	uint32_t overwrite_mask;
->  	enum devlink_reload_action reload_action;
->  	enum devlink_reload_limit reload_limit;
-> +	uint32_t port_controller;
->  	uint32_t port_sfnumber;
->  	uint16_t port_flavour;
->  	uint16_t port_pfnumber;
-> @@ -1886,6 +1888,12 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
->  			if (err)
->  				return err;
->  			o_found |= DL_OPT_PORT_SFNUMBER;
-> +		} else if (dl_argv_match(dl, "controller") && (o_all & DL_OPT_PORT_CONTROLLER)) {
-> +			dl_arg_inc(dl);
-> +			err = dl_argv_uint32_t(dl, &opts->port_controller);
-> +			if (err)
-> +				return err;
-> +			o_found |= DL_OPT_PORT_CONTROLLER;
->  		} else {
->  			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
->  			return -EINVAL;
-> @@ -2079,6 +2087,9 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
->  		mnl_attr_put_u16(nlh, DEVLINK_ATTR_PORT_PCI_PF_NUMBER, opts->port_pfnumber);
->  	if (opts->present & DL_OPT_PORT_SFNUMBER)
->  		mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_PCI_SF_NUMBER, opts->port_sfnumber);
-> +	if (opts->present & DL_OPT_PORT_CONTROLLER)
-> +		mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_CONTROLLER_NUMBER,
-> +				 opts->port_controller);
->  }
->  
->  static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
-> @@ -3795,7 +3806,7 @@ static void cmd_port_help(void)
->  	pr_err("       devlink port param set DEV/PORT_INDEX name PARAMETER value VALUE cmode { permanent | driverinit | runtime }\n");
->  	pr_err("       devlink port param show [DEV/PORT_INDEX name PARAMETER]\n");
->  	pr_err("       devlink port health show [ DEV/PORT_INDEX reporter REPORTER_NAME ]\n");
-> -	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ]\n");
-> +	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ] [ controller CNUM ]\n");
->  	pr_err("       devlink port del DEV/PORT_INDEX\n");
->  }
->  
-> @@ -4324,7 +4335,7 @@ static int __cmd_health_show(struct dl *dl, bool show_device, bool show_port);
->  
->  static void cmd_port_add_help(void)
->  {
-> -	pr_err("       devlink port add { DEV | DEV/PORT_INDEX } flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ]\n");
-> +	pr_err("       devlink port add { DEV | DEV/PORT_INDEX } flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ] [ controller CNUM ]\n");
->  }
->  
->  static int cmd_port_add(struct dl *dl)
-> @@ -4342,7 +4353,7 @@ static int cmd_port_add(struct dl *dl)
->  
->  	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_HANDLEP |
->  				DL_OPT_PORT_FLAVOUR | DL_OPT_PORT_PFNUMBER,
-> -				DL_OPT_PORT_SFNUMBER);
-> +				DL_OPT_PORT_SFNUMBER | DL_OPT_PORT_CONTROLLER);
->  	if (err)
->  		return err;
->  
-> diff --git a/man/man8/devlink-port.8 b/man/man8/devlink-port.8
-> index 563c5833..a5142c4e 100644
-> --- a/man/man8/devlink-port.8
-> +++ b/man/man8/devlink-port.8
-> @@ -54,6 +54,8 @@ devlink-port \- devlink port configuration
->  .IR PFNUMBER " ]"
->  .RB "{ " pcisf
->  .IR SFNUMBER " }"
-> +.RB "{ " controller
-> +.IR CNUM " }"
->  .br
->  
->  .ti -8
-> @@ -174,6 +176,12 @@ Specifies sfnumber to assign to the device of the SF.
->  This field is optional for those devices which supports auto assignment of the
->  SF number.
->  
-> +.TP
-> +.BR controller " { " controller " } "
-> +Specifies controller number for which the SF port is created.
-> +This field is optional. It is used only when SF port is created for the
-> +external controller.
-> +
->  .ti -8
->  .SS devlink port function set - Set the port function attribute(s).
->  
-> @@ -327,6 +335,17 @@ devlink dev param set pci/0000:01:00.0/1 name internal_error_reset value true cm
->  .RS 4
->  Sets the parameter internal_error_reset of specified devlink port (#1) to true.
->  .RE
-> +.PP
-> +devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88 controller 1
-> +.RS 4
-> +Add a devlink port of flavour PCI SF on controller 1 which has PCI PF of number
-> +0 with SF number 88. To make use of the function an example sequence is to add
-> +a port, configure the function attribute and activate the function. Once
-> +the function usage is completed, deactivate the function and finally delete
-> +the port. When there is desire to reuse the port without deletion, it can be
-> +reconfigured and activated again when function is in inactive state and
-> +function's operational state is detached.
-> +.RE
->  
->  .SH SEE ALSO
->  .BR devlink (8),
-> 
-
+U29ycnksIHRoaXMgcGF0Y2ggaXMgd3JvbmcsIHBsZWFzZSBpZ25vcmUgaXQsIHRoYW5rcyA6KQ0K
+DQotLS0tLdPKvP7Urbz+LS0tLS0NCreivP7Iyzogemhlbmd5b25nanVuIA0Kt6LLzcqxvOQ6IDIw
+MjHE6jbUwjTI1SA5OjQ3DQrK1bz+yMs6IGptYWxveUByZWRoYXQuY29tOyB5aW5nLnh1ZUB3aW5k
+cml2ZXIuY29tOyBkYXZlbUBkYXZlbWxvZnQubmV0OyBrdWJhQGtlcm5lbC5vcmc7IG5ldGRldkB2
+Z2VyLmtlcm5lbC5vcmc7IHRpcGMtZGlzY3Vzc2lvbkBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ7IGxp
+bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCrOty806IHpoZW5neW9uZ2p1biA8emhlbmd5b25n
+anVuM0BodWF3ZWkuY29tPg0K1vfM4jogW1BBVENIIG5ldC1uZXh0XSB0aXBjOiBSZXR1cm4gdGhl
+IGNvcnJlY3QgZXJybm8gY29kZQ0KDQpXaGVuIGthbGxvYyBvciBrbWVtZHVwIGZhaWxlZCwgc2hv
+dWxkIHJldHVybiBFTk9NRU0gcmF0aGVyIHRoYW4gRU5PQlVGLg0KDQpTaWduZWQtb2ZmLWJ5OiBa
+aGVuZyBZb25nanVuIDx6aGVuZ3lvbmdqdW4zQGh1YXdlaS5jb20+DQotLS0NCiBuZXQvdGlwYy9s
+aW5rLmMgfCA2ICsrKy0tLQ0KIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDMgZGVs
+ZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9uZXQvdGlwYy9saW5rLmMgYi9uZXQvdGlwYy9saW5r
+LmMgaW5kZXggYzQ0YjRiZmFhZWU2Li41YjYxODEyNzdjYzUgMTAwNjQ0DQotLS0gYS9uZXQvdGlw
+Yy9saW5rLmMNCisrKyBiL25ldC90aXBjL2xpbmsuYw0KQEAgLTkxMiw3ICs5MTIsNyBAQCBzdGF0
+aWMgaW50IGxpbmtfc2NoZWR1bGVfdXNlcihzdHJ1Y3QgdGlwY19saW5rICpsLCBzdHJ1Y3QgdGlw
+Y19tc2cgKmhkcikNCiAJc2tiID0gdGlwY19tc2dfY3JlYXRlKFNPQ0tfV0FLRVVQLCAwLCBJTlRf
+SF9TSVpFLCAwLA0KIAkJCSAgICAgIGRub2RlLCBsLT5hZGRyLCBkcG9ydCwgMCwgMCk7DQogCWlm
+ICghc2tiKQ0KLQkJcmV0dXJuIC1FTk9CVUZTOw0KKwkJcmV0dXJuIC1FTk9NRU07DQogCW1zZ19z
+ZXRfZGVzdF9kcm9wcGFibGUoYnVmX21zZyhza2IpLCB0cnVlKTsNCiAJVElQQ19TS0JfQ0Ioc2ti
+KS0+Y2hhaW5faW1wID0gbXNnX2ltcG9ydGFuY2UoaGRyKTsNCiAJc2tiX3F1ZXVlX3RhaWwoJmwt
+Pndha2V1cHEsIHNrYik7DQpAQCAtMTAzMCw3ICsxMDMwLDcgQEAgdm9pZCB0aXBjX2xpbmtfcmVz
+ZXQoc3RydWN0IHRpcGNfbGluayAqbCkNCiAgKg0KICAqIENvbnN1bWVzIHRoZSBidWZmZXIgY2hh
+aW4uDQogICogTWVzc2FnZXMgYXQgVElQQ19TWVNURU1fSU1QT1JUQU5DRSBhcmUgYWx3YXlzIGFj
+Y2VwdGVkDQotICogUmV0dXJuOiAwIGlmIHN1Y2Nlc3MsIG9yIGVycm5vOiAtRUxJTktDT05HLCAt
+RU1TR1NJWkUgb3IgLUVOT0JVRlMNCisgKiBSZXR1cm46IDAgaWYgc3VjY2Vzcywgb3IgZXJybm86
+IC1FTElOS0NPTkcsIC1FTVNHU0laRSBvciAtRU5PQlVGUyBvciANCisgLUVOT01FTQ0KICAqLw0K
+IGludCB0aXBjX2xpbmtfeG1pdChzdHJ1Y3QgdGlwY19saW5rICpsLCBzdHJ1Y3Qgc2tfYnVmZl9o
+ZWFkICpsaXN0LA0KIAkJICAgc3RydWN0IHNrX2J1ZmZfaGVhZCAqeG1pdHEpDQpAQCAtMTA4OCw3
+ICsxMDg4LDcgQEAgaW50IHRpcGNfbGlua194bWl0KHN0cnVjdCB0aXBjX2xpbmsgKmwsIHN0cnVj
+dCBza19idWZmX2hlYWQgKmxpc3QsDQogCQkJaWYgKCFfc2tiKSB7DQogCQkJCWtmcmVlX3NrYihz
+a2IpOw0KIAkJCQlfX3NrYl9xdWV1ZV9wdXJnZShsaXN0KTsNCi0JCQkJcmV0dXJuIC1FTk9CVUZT
+Ow0KKwkJCQlyZXR1cm4gLUVOT01FTTsNCiAJCQl9DQogCQkJX19za2JfcXVldWVfdGFpbCh0cmFu
+c21xLCBza2IpOw0KIAkJCXRpcGNfbGlua19zZXRfc2tiX3JldHJhbnNtaXRfdGltZShza2IsIGwp
+Ow0KLS0NCjIuMjUuMQ0KDQo=
