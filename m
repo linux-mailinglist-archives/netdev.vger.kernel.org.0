@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22B8939B470
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 09:57:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2AFF39B484
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 10:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbhFDH7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 03:59:19 -0400
-Received: from mailout2.secunet.com ([62.96.220.49]:57886 "EHLO
-        mailout2.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230049AbhFDH7S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 03:59:18 -0400
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 2B76A80005A;
-        Fri,  4 Jun 2021 09:57:31 +0200 (CEST)
+        id S230251AbhFDIDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 04:03:22 -0400
+Received: from mailout1.secunet.com ([62.96.220.44]:33342 "EHLO
+        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230241AbhFDIDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 04:03:19 -0400
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout1.secunet.com (Postfix) with ESMTP id 64628800056;
+        Fri,  4 Jun 2021 10:01:32 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 4 Jun 2021 09:57:31 +0200
+ 15.1.2176.2; Fri, 4 Jun 2021 10:01:32 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 4 Jun 2021
- 09:57:30 +0200
+ 10:01:31 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 5FE523180326; Fri,  4 Jun 2021 09:57:30 +0200 (CEST)
-Date:   Fri, 4 Jun 2021 09:57:30 +0200
+        id 897153180326; Fri,  4 Jun 2021 10:01:31 +0200 (CEST)
+Date:   Fri, 4 Jun 2021 10:01:31 +0200
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     Huy Nguyen <huyn@nvidia.com>
 CC:     <netdev@vger.kernel.org>, <saeedm@nvidia.com>, <borisp@nvidia.com>,
         <raeds@nvidia.com>, <danielj@nvidia.com>, <yossiku@nvidia.com>,
         <kuba@kernel.org>
-Subject: Re: [RESEND PATCH net v3 0/3] Fix IPsec crypto offloads with vxlan
- tunnel
-Message-ID: <20210604075730.GE40979@gauss3.secunet.de>
+Subject: Re: [RESEND PATCH net v3 2/3] net/xfrm: Add inner_ipproto into
+ sec_path
+Message-ID: <20210604080131.GF40979@gauss3.secunet.de>
 References: <20210603160045.11805-1-huyn@nvidia.com>
+ <20210603160045.11805-3-huyn@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20210603160045.11805-1-huyn@nvidia.com>
+In-Reply-To: <20210603160045.11805-3-huyn@nvidia.com>
 X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
  mbx-essen-01.secunet.de (10.53.40.197)
 X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
@@ -45,25 +46,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 07:00:42PM +0300, Huy Nguyen wrote:
-> v1 -> v2:
->   - Move inner_ipproto into xfrm_offload structure.
->   - Fix static code analysis errors.
->   - skip checking for skb->encapsulation to be more flexible for vendor
-> 
-> v2 -> v3:
->   - Fix bug in patch 003 when checking for xo null pointer in mlx5e_ipsec_feature_check
->   - Fix bug of accidentally commenting out memset in patch 003
-> 
-> This small series fixes ipsec TX offloads with vxlan overlay on top of
-> the offloaded ipsec packet, the driver (mlx5) was lacking such information
-> and the skb->encapsulation bit wasn't enough as indication to reach the
-> vxlan inner headers, as a solution we mark the tunnel in the offloaded
-> context of ipsec.
+On Thu, Jun 03, 2021 at 07:00:44PM +0300, Huy Nguyen wrote:
+>  
+> +/* For partial checksum offload, the outer header checksum is calculated
+> + * by software and the inner header checksum is calculated by hardware.
+> + * This requires hardware to know the inner packet type to calculate
+> + * the inner header checksum. Save inner ip protocol here to avoid
+> + * traversing the packet in the vendor's xmit code.
+> + * If the encap type is IPIP, just save skb->inner_ipproto. Otherwise,
+> + * get the ip protocol from the IP header.
+> + */
+> +static void xfrm_get_inner_ipproto(struct sk_buff *skb)
+> +{
+> +	struct xfrm_offload *xo = xfrm_offload(skb);
+> +	const struct ethhdr *eth;
+> +
+> +	if (!skb->inner_protocol)
+> +		return;
 
-This patchset does not look like a fix. It looks more that you add
-a feature that was not supported before, so the pachset should
-go to -next.
+inner_protocol is only valid if skb->encapsulation is set, maybe
+you should test for that before calling this function. In particular,
+you should do that before we set it explicitly in xfrm_output.
 
-Also, who should merge that pachset? I contains xfrm and mlx5
-parts.
+> +
+> +	xo = xfrm_offload(skb);
+> +	if (!xo)
+> +		return;
+> +
+> +	if (skb->inner_protocol_type == ENCAP_TYPE_IPPROTO) {
+> +		xo->inner_ipproto = skb->inner_ipproto;
+> +		return;
+> +	}
+> +
+> +	if (skb->inner_protocol_type != ENCAP_TYPE_ETHER)
+> +		return;
+> +
+> +	eth = (struct ethhdr *)skb_inner_mac_header(skb);
+> +
+> +	switch (ntohs(eth->h_proto)) {
+> +	case ETH_P_IPV6:
+> +		xo->inner_ipproto = inner_ipv6_hdr(skb)->nexthdr;
+> +		break;
+> +	case ETH_P_IP:
+> +		xo->inner_ipproto = inner_ip_hdr(skb)->protocol;
+> +		break;
+> +	}
+> +}
+> +
+>  int xfrm_output(struct sock *sk, struct sk_buff *skb)
+>  {
+>  	struct net *net = dev_net(skb_dst(skb)->dev);
+> @@ -594,12 +634,14 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
+>  			kfree_skb(skb);
+>  			return -ENOMEM;
+>  		}
+> -		skb->encapsulation = 1;
+>  
+> +		skb->encapsulation = 1;
+>  		sp->olen++;
+>  		sp->xvec[sp->len++] = x;
+>  		xfrm_state_hold(x);
+>  
+> +		xfrm_get_inner_ipproto(skb);
+> +
+>  		if (skb_is_gso(skb)) {
+>  			if (skb->inner_protocol)
+>  				return xfrm_output_gso(net, sk, skb);
+> -- 
+> 2.24.1
