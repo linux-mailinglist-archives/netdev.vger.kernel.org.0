@@ -2,143 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26CA939AF72
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 03:18:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2A3739AFA1
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 03:24:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbhFDBTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 21:19:54 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:4294 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbhFDBTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 21:19:53 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Fx4X13qdWz1BHn7;
-        Fri,  4 Jun 2021 09:13:21 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 4 Jun 2021 09:18:06 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 4 Jun 2021
- 09:18:05 +0800
-Subject: Re: [RFC net-next 0/8] Introducing subdev bus and devlink extension
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     moyufeng <moyufeng@huawei.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Parav Pandit <parav@mellanox.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "michal.lkml@markovi.net" <michal.lkml@markovi.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "lipeng (Y)" <lipeng321@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        <shenjian15@huawei.com>, "chenhao (DY)" <chenhao288@hisilicon.com>,
-        Jiaran Zhang <zhangjiaran@huawei.com>
-References: <1551418672-12822-1-git-send-email-parav@mellanox.com>
- <20190301120358.7970f0ad@cakuba.netronome.com>
- <VI1PR0501MB227107F2EB29C7462DEE3637D1710@VI1PR0501MB2271.eurprd05.prod.outlook.com>
- <20190304174551.2300b7bc@cakuba.netronome.com>
- <VI1PR0501MB22718228FC8198C068EFC455D1720@VI1PR0501MB2271.eurprd05.prod.outlook.com>
- <76785913-b1bf-f126-a41e-14cd0f922100@huawei.com>
- <20210531223711.19359b9a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <7c591bad-75ed-75bc-5dac-e26bdde6e615@huawei.com>
- <20210601143451.4b042a94@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <cf961f69-c559-eaf0-e168-b014779a1519@huawei.com>
- <20210602093440.15dc5713@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <857e7a19-1559-b929-fd15-05e8f38e9d45@huawei.com>
- <20210603105311.27bb0c4d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <c9afecb5-3c0e-6421-ea58-b041d8173636@huawei.com>
-Date:   Fri, 4 Jun 2021 09:18:04 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S229934AbhFDB0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 21:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229758AbhFDB0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 21:26:00 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4E9C06174A;
+        Thu,  3 Jun 2021 18:24:15 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Fx4mX1GKbz9sRf;
+        Fri,  4 Jun 2021 11:24:11 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1622769852;
+        bh=Y8Pk2CsU/n3nllqNiul95HyVmnP/XFvbdpZTTymVslw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=HaZJ5rSg+rZWGtXrU6S4+ntP6BGLgCCuLRjN+pSe7+G71+zJOKA+bskoj4fxs2Clc
+         r41uGq9HKXR1cCKwD/m/vUA9P0x3oNIO8EcTadAduia6365ZOXAYhcYhS7kYz9twmJ
+         ZKrpDQmeAcAZzzYNAEzbhZkGHa6eSzZh55/TF2U6alEx1nZlCG6LGZ/oaBFQgefl3Q
+         VbsAs22CNFSbi84KVWt4jTDV168ZjR9JOemML7Lo+GGwTXXj66yHQJt25vxJ5EZfr7
+         MT9LkHCvP4BQTleZiv+NyHh6Em50Ux52HkW4n+91Na/RLnyEyKmoJlYrLFZSu6DtLp
+         H33J9jlhRMHwQ==
+Date:   Fri, 4 Jun 2021 11:24:09 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Andre Guedes <andre.guedes@intel.com>,
+        Jithu Joseph <jithu.joseph@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Vedang Patel <vedang.patel@intel.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20210604112409.75d2cb91@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20210603105311.27bb0c4d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme714-chm.china.huawei.com (10.1.199.110) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="Sig_/=0fNk_KV8Im1axbCS.FRT0Q";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/6/4 1:53, Jakub Kicinski wrote:
-> On Thu, 3 Jun 2021 11:46:43 +0800 Yunsheng Lin wrote:
->>>> can devlink port be used to indicate different PF in the same ASIC,
->>>> which already has the bus identifiers in it? It seems we need a
->>>> extra identifier to indicate the ASIC?
->>>>
->>>> $ devlink port show
->>>> ...
->>>> pci/0000:03:00.0/61: type eth netdev sw1p1s0 split_group 0  
->>>
->>> Ports can obviously be used, but which PCI device will you use to
->>> register the devlink instance? Perhaps using just one doesn't matter 
->>> if there is only one NIC in the system, but may be confusing with
->>> multiple NICs, no?  
->>
->> Yes, it is confusing, how about using the controler_id to indicate
->> different NIC? we can make sure controler_id is unqiue in the same
->> host, a controler_id corresponds to a devlink instance, vendor info
->> or serial num for the devlink instance can further indicate more info
->> to the system user?
->>
->> pci/controler_id/0000:03:00.0/61
-> 
-> What is a "controller id" in concrete terms? Another abstract ID which
-> may change on every boot?
+--Sig_/=0fNk_KV8Im1axbCS.FRT0Q
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-My initial thinking is a id from a global IDA pool, which indeed may
-change on every boot.
+Hi all,
 
-I am not really thinking much deeper about the controller id, just
-mirroring the bus identifiers for pcie device and ifindex for netdev,
-which may change too if the device is pluged into different pci slot
-on every boot?
+Today's linux-next merge of the net-next tree got a conflict in:
 
-> 
->>>> Does it make sense if the PF first probed creates a auxiliary device,
->>>> and the auxiliary device driver creates the devlink instance? And
->>>> the PF probed later can connect/register to that devlink instance?  
->>>
->>> I would say no, that just adds another layer of complication and
->>> doesn't link the functions in any way.  
->>
->> How about:
->> The PF first probed creates the devlink instance? PF probed later can
->> connect/register to that devlink instance created by the PF first probed.
->> It seems some locking need to ensure the above happens as intended too.
->>
->> About linking, the PF provide vendor info/serial number(or whatever is
->> unqiue between different vendor) of a controller it belong to, if the
->> controller does not exist yet, create one and connect/register to that
->> devlink instance, otherwise just do the connecting/registering.
-> 
-> Sounds about right, but I don't understand why another ID is
-> necessary. Why not allow devlink instances to have multiple names, 
-> like we allow aliases for netdevs these days?
+  drivers/net/ethernet/intel/igc/igc_main.c
 
-We could still allow devlink instances to have multiple names,
-which seems to be more like devlink tool problem?
+between commit:
 
-For example, devlink tool could use the id or the vendor_info/
-serial_number to indicate a devlink instance according to user's
-request.
+  45ce08594ec3 ("igc: add correct exception tracing for XDP")
 
-Aliase could be allowed too as long as devlink core provide a
-field and ops to set/get the field mirroring the ifalias for
-netdevice?
+from the net tree and commit:
 
-> 
-> .
-> 
+  73a6e3721261 ("igc: Refactor __igc_xdp_run_prog()")
 
+from the net-next tree.
+
+I fixed it up (I am not sure, but I just used the latter version) and
+can carry the fix as necessary. This is now fixed as far as linux-next
+is concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/=0fNk_KV8Im1axbCS.FRT0Q
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmC5gLkACgkQAVBC80lX
+0GzLEAf+I2BlUmezOaUzkHxqsyiJdtrkOuKSYduYfBXCu4IP/6nw7MHy0aA1uwr7
+xzjguGkrpnh8Am5yHeGyzfx8/nzv5FRyqc/vzBXi8ayfh7yyOQsyjEpcyyu2bHZR
+W8zO1SCzvM9SUMOkkhesAh1G+MdnmYLzc2GCmiOl5MPqoaQT9ASpQ7ioCw1Zjk2b
+sKwgc50GcL7M3s7e0xcmNeIqR8VmP/9nhB6jXDHkITyVDhDkIFqESf52cawA49Lb
+00VkXSAOZqnkTXR+43+ZNCFXgbawZjIt/q43ZJvzHIB3pu6/MmVlkiFbxcGc7tH4
+D7hvTZjuWqB/6vZHxDca9p3W36OlSw==
+=NlEW
+-----END PGP SIGNATURE-----
+
+--Sig_/=0fNk_KV8Im1axbCS.FRT0Q--
