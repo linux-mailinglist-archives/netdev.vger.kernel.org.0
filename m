@@ -2,47 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A55F39B544
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 10:56:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FCF239B547
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 10:56:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbhFDI57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 04:57:59 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:56614 "EHLO
+        id S230084AbhFDI6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 04:58:07 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:5417 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229958AbhFDI56 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 04:57:58 -0400
+        with ESMTP id S230049AbhFDI6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 04:58:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1622796973; x=1654332973;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ZOmo84dmSFlp+SMjGhp7N8oAVBpdR2QKekKnuDL6DkY=;
-  b=iUIDARPMS6DW3aoxlf33a7mTgVtAoRz5MKtGhWqcR/RxLsRt//c76WGe
-   RfUCguK+t+QR/zi98HRI35MyWSwQ1Svv+oWf20qaQQSMn/yrZ3tLQs4K2
-   VWL8/L5KLgXxYXNgaWEF+Sw0BZNfsLs7Pk7hiXIObe7b9FHVKecVussP+
-   mSgwASt7JKVe6zchS+9oyT5Byw1jGKV9D7SUSTtOPO7x0IP5RBaCHUr1c
-   58X6vKMoDfZz7QvVUUMO2WsE9CMbHxsS55iVZnO3UO3FwqEchO5uQSLC+
-   r88ncu7LaFvx0EL51ydnkwmBbkqeaBx0YDG/E7lWlHd6tR1jGkHQYRDxn
-   g==;
-IronPort-SDR: kttVdD2cKcIaGyps4Ajg2/46cwjEtIue7ib+tOICpnbQR/rvpJKiF8cnuYtBWA+GNH8iVhkSSG
- qvYJzsuwx5YT7RjZz0qGSQwUMYecTMgj1zSUfnf1V2LQM8Oa2/qg+iDC+7Ftbh/BMk7SGq1WR1
- WhVCWGAG0HGgk/45l0FJ8LKNYxKoC29ZdTT644Lzi/aH9KwcG2bzwjOZGsDxHpSVTNGNoEuRer
- GEP273emOx7006RvrWtsuY7JX0MAiz0JjeKehPUwSzoDhZjGqEQmmgk3udRk58O0UTORsC30+i
- PBs=
+  t=1622796979; x=1654332979;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=IhzM4SXuYd3c0BHLyCBAIrIHkW0Oss4EiXGbDIRG1qY=;
+  b=VcTcLto/GrTjdMvf67sU6wtb4qgRrEPXadERU4Yup4kwv/ONckWv3tXD
+   hyM7SaK40inQNANPTb3sTBiGfmxkvIkC0cj4zAqrCxMBZZ5ZV5MsRtSHu
+   Cb2mCMPEK11Fuf1Q0Qd26ymT/tC9Vo1THM0nNuWo1ParR7BxdXf7mrzag
+   0dnUr81+dvB1S9wxiiMsnksf0IsvIA3NEVxX0kyfgQWZ3itoVkrvbUrPi
+   6DV7qVGRICGtIf3XUJXnhH4QBuuClpcHn+Auj7u/mLvxiprK0M6GWjQ3N
+   mq4Kcar7b7bNwDoFFO2mYGZT3zQVb9tXa5eTSmD1XsJ/CDUsDLl9fILOO
+   Q==;
+IronPort-SDR: zSvCNzqixa7R6vfMOok3ZSiQwdAh8958ow5v27OjyOJYSdtF8D62OkiGfu50eEj0zMZonCFo/I
+ k2oY/eit0NzZpj/YKytIm9cTExwc2NmVFkoQ+c7KKu3PzTNZ55fjz+ALmg6101Pa7pK02GOAhO
+ c6dnoKLcEMjgd3yJOXEflKu0d0svSO3fYxpW5tmzmC5fPLIyKKzpvAoQfyaRt9tby2H4lCk2d+
+ jQ9SoQ1ElNpzif774OVpLoaAFpuErEiWxneX1OEcHxTdbMKph/jVR9L0QCouwoHH+WaeIKmlS3
+ 9lM=
 X-IronPort-AV: E=Sophos;i="5.83,247,1616482800"; 
-   d="scan'208";a="123530962"
+   d="scan'208";a="120209919"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jun 2021 01:56:12 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jun 2021 01:56:17 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 4 Jun 2021 01:56:11 -0700
+ 15.1.2176.2; Fri, 4 Jun 2021 01:56:15 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Fri, 4 Jun 2021 01:56:08 -0700
+ 15.1.2176.2 via Frontend Transport; Fri, 4 Jun 2021 01:56:11 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Device Tree List <devicetree@vger.kernel.org>
 CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>,
@@ -55,211 +57,266 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         "Simon Horman" <simon.horman@netronome.com>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH net-next v3 00/10] Adding the Sparx5 Switch Driver
-Date:   Fri, 4 Jun 2021 10:55:50 +0200
-Message-ID: <20210604085600.3014532-1-steen.hegelund@microchip.com>
+        <linux-arm-kernel@lists.infradead.org>,
+        "Lars Povlsen" <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH net-next v3 01/10] dt-bindings: net: sparx5: Add sparx5-switch bindings
+Date:   Fri, 4 Jun 2021 10:55:51 +0200
+Message-ID: <20210604085600.3014532-2-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210604085600.3014532-1-steen.hegelund@microchip.com>
+References: <20210604085600.3014532-1-steen.hegelund@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series provides the Microchip Sparx5 Switch Driver
+Document the Sparx5 switch device driver bindings
 
-The Sparx5 Carrier Ethernet and Industrial switch family delivers 64
-Ethernet ports and up to 200 Gbps of switching bandwidth.
-
-It provides a rich set of Ethernet switching features such as hierarchical
-QoS, hardware-based OAM  and service activation testing, protection
-switching, IEEE 1588, and Synchronous Ethernet.
-
-Using provider bridging (Q-in-Q) and MPLS/MPLS-TP technology, it delivers
-MEF CE
-2.0 Ethernet virtual connections (EVCs) and features advanced TCAM
-  classification in both ingress and egress.
-
-Per-EVC features include advanced L3-aware classification, a rich set of
-statistics, OAM for end-to-end performance monitoring, and dual-rate
-policing and shaping.
-
-Time sensitive networking (TSN) is supported through a comprehensive set of
-features including frame preemption, cut-through, frame replication and
-elimination for reliability, enhanced scheduling: credit-based shaping,
-time-aware shaping, cyclic queuing, and forwarding, and per-stream policing
-and filtering.
-
-Together with IEEE 1588 and IEEE 802.1AS support, this guarantees
-low-latency deterministic networking for Fronthaul, Carrier, and Industrial
-Ethernet.
-
-The Sparx5 switch family consists of following SKUs:
-
-- VSC7546 Sparx5-64 up to 64 Gbps of bandwidth with the following primary
-  port configurations:
-  - 6 *10G
-  - 16 * 2.5G + 2 * 10G
-  - 24 * 1G + 4 * 10G
-
-- VSC7549 Sparx5-90 up to 90 Gbps of bandwidth with the following primary
-  port configurations:
-  - 9 * 10G
-  - 16 * 2.5G + 4 * 10G
-  - 48 * 1G + 4 * 10G
-
-- VSC7552 Sparx5-128 up to 128 Gbps of bandwidth with the following primary
-  port configurations:
-  - 12 * 10G
-  - 16 * 2.5G + 8 * 10G
-  - 48 * 1G + 8 * 10G
-
-- VSC7556 Sparx5-160 up to 160 Gbps of bandwidth with the following primary
-  port configurations:
-  - 16 * 10G
-  - 10 * 10G + 2 * 25G
-  - 16 * 2.5G + 10 * 10G
-  - 48 * 1G + 10 * 10G
-
-- VSC7558 Sparx5-200 up to 200 Gbps of bandwidth with the following primary
-  port configurations:
-  - 20 * 10G
-  - 8 * 25G
-
-In addition, the device supports one 10/100/1000/2500/5000 Mbps
-SGMII/SerDes node processor interface (NPI) Ethernet port.
-
-The Sparx5 support is developed on the PCB134 and PCB135 evaluation boards.
-
-- PCB134 main networking features:
-  - 12x SFP+ front 10G module slots (connected to Sparx5 through SFI).
-  - 8x SFP28 front 25G module slots (connected to Sparx5 through SFI high
-    speed).
-  - Optional, one additional 10/100/1000BASE-T (RJ45) Ethernet port
-    (on-board VSC8211 PHY connected to Sparx5 through SGMII).
-
-- PCB135 main networking features:
-  - 48x1G (10/100/1000M) RJ45 front ports using 12xVSC8514 QuadPHY’s each
-    connected to VSC7558 through QSGMII.
-  - 4x10G (1G/2.5G/5G/10G) RJ45 front ports using the AQR407 10G QuadPHY
-    each port connects to VSC7558 through SFI.
-  - 4x SFP28 25G module slots on back connected to VSC7558 through SFI high
-    speed.
-  - Optional, one additional 1G (10/100/1000M) RJ45 port using an on-board
-    VSC8211 PHY, which can be connected to VSC7558 NPI port through SGMII
-    using a loopback add-on PCB)
-
-This series provides support for:
-  - SFPs and DAC cables via PHYLINK with a number of 5G, 10G and 25G
-    devices and media types.
-  - Port module configuration for 10M to 25G speeds with SGMII, QSGMII,
-    1000BASEX, 2500BASEX and 10GBASER as appropriate for these modes.
-  - SerDes configuration via the Sparx5 SerDes driver (see below).
-  - Host mode providing register based injection and extraction.
-  - Switch mode providing MAC/VLAN table learning and Layer2 switching
-    offloaded to the Sparx5 switch.
-  - STP state, VLAN support, host/bridge port mode, Forwarding DB, and
-    configuration and statistics via ethtool.
-
-More support will be added at a later stage.
-
-The Sparx5 Chip Register Model can be browsed at this location:
-https://github.com/microchip-ung/sparx-5_reginfo
-and the datasheet is available here:
-https://ww1.microchip.com/downloads/en/DeviceDoc/SparX-5_Family_L2L3_Enterprise_10G_Ethernet_Switches_Datasheet_00003822B.pdf
-
-The series depends on the following series currently on its way
-into the kernel:
-
-- Sparx5 Reset Driver
-  Link: https://lore.kernel.org/r/20210416084054.2922327-1-steen.hegelund@microchip.com/
-
-ChangeLog:
-v3:
-    - basic driver:
-        - removed unneeded braces
-        - release reference to ports node after use
-        - use dev_err_probe to handle DEFER
-        - update error value when bailing out (a few cases)
-        - updated formatting of port struct and grouping of bool values
-        - simplified the spx5_rmw and spx5_inst_rmw inline functions
-    - host mode (netdev):
-        - removed lockless flag
-        - added port timer init
-    - host mode (packet - manual injection):
-        - updated error counters in error situations
-        - implemented timer handling of watermark threshold: stop and
-          restart netif queues.
-        - fixed error message handling (rate limited)
-        - fixed comment style error
-        - used DIV_ROUND_UP macro
-        - removed a debug message for open ports
-
-v2:
-    - Updated bindings:
-        - drop minItems for the reg property
-    - Statistics implementation:
-        - Reorganized statistics into ethtool groups:
-            eth-phy, eth-mac, eth-ctrl, rmon
-          as defined by the IEEE 802.3 categories and RFC 2819.
-        - The remaining statistics are provided by the classic ethtool
-          statistics command.
-    - Hostmode support:
-        - Removed netdev renaming
-        - Validate ethernet address in sparx5_set_mac_address()
-
-Steen Hegelund (10):
-  dt-bindings: net: sparx5: Add sparx5-switch bindings
-  net: sparx5: add the basic sparx5 driver
-  net: sparx5: add hostmode with phylink support
-  net: sparx5: add port module support
-  net: sparx5: add mactable support
-  net: sparx5: add vlan support
-  net: sparx5: add switching support
-  net: sparx5: add calendar bandwidth allocation support
-  net: sparx5: add ethtool configuration and statistics support
-  arm64: dts: sparx5: Add the Sparx5 switch node
-
- .../bindings/net/microchip,sparx5-switch.yaml |  226 +
- arch/arm64/boot/dts/microchip/sparx5.dtsi     |   94 +-
- .../dts/microchip/sparx5_pcb134_board.dtsi    |  481 +-
- .../dts/microchip/sparx5_pcb135_board.dtsi    |  621 ++-
- drivers/net/ethernet/microchip/Kconfig        |    2 +
- drivers/net/ethernet/microchip/Makefile       |    2 +
- drivers/net/ethernet/microchip/sparx5/Kconfig |    9 +
- .../net/ethernet/microchip/sparx5/Makefile    |   10 +
- .../microchip/sparx5/sparx5_calendar.c        |  596 +++
- .../microchip/sparx5/sparx5_ethtool.c         | 1227 +++++
- .../microchip/sparx5/sparx5_mactable.c        |  500 ++
- .../ethernet/microchip/sparx5/sparx5_main.c   |  869 +++
- .../ethernet/microchip/sparx5/sparx5_main.h   |  366 ++
- .../microchip/sparx5/sparx5_main_regs.h       | 4642 +++++++++++++++++
- .../ethernet/microchip/sparx5/sparx5_netdev.c |  249 +
- .../ethernet/microchip/sparx5/sparx5_packet.c |  320 ++
- .../microchip/sparx5/sparx5_phylink.c         |  195 +
- .../ethernet/microchip/sparx5/sparx5_port.c   | 1129 ++++
- .../ethernet/microchip/sparx5/sparx5_port.h   |   98 +
- .../microchip/sparx5/sparx5_switchdev.c       |  508 ++
- .../ethernet/microchip/sparx5/sparx5_vlan.c   |  224 +
- 21 files changed, 12284 insertions(+), 84 deletions(-)
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
+Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/net/microchip,sparx5-switch.yaml | 226 ++++++++++++++++++
+ 1 file changed, 226 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
- create mode 100644 drivers/net/ethernet/microchip/sparx5/Kconfig
- create mode 100644 drivers/net/ethernet/microchip/sparx5/Makefile
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_calendar.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main.h
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_phylink.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_port.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_port.h
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
 
+diff --git a/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml b/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+new file mode 100644
+index 000000000000..347b912a46bb
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+@@ -0,0 +1,226 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/microchip,sparx5-switch.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip Sparx5 Ethernet switch controller
++
++maintainers:
++  - Steen Hegelund <steen.hegelund@microchip.com>
++  - Lars Povlsen <lars.povlsen@microchip.com>
++
++description: |
++  The SparX-5 Enterprise Ethernet switch family provides a rich set of
++  Enterprise switching features such as advanced TCAM-based VLAN and
++  QoS processing enabling delivery of differentiated services, and
++  security through TCAM-based frame processing using versatile content
++  aware processor (VCAP).
++
++  IPv4/IPv6 Layer 3 (L3) unicast and multicast routing is supported
++  with up to 18K IPv4/9K IPv6 unicast LPM entries and up to 9K IPv4/3K
++  IPv6 (S,G) multicast groups.
++
++  L3 security features include source guard and reverse path
++  forwarding (uRPF) tasks. Additional L3 features include VRF-Lite and
++  IP tunnels (IP over GRE/IP).
++
++  The SparX-5 switch family targets managed Layer 2 and Layer 3
++  equipment in SMB, SME, and Enterprise where high port count
++  1G/2.5G/5G/10G switching with 10G/25G aggregation links is required.
++
++properties:
++  $nodename:
++    pattern: "^switch@[0-9a-f]+$"
++
++  compatible:
++    const: microchip,sparx5-switch
++
++  reg:
++    items:
++      - description: cpu target
++      - description: devices target
++      - description: general control block target
++
++  reg-names:
++    items:
++      - const: cpu
++      - const: devices
++      - const: gcb
++
++  interrupts:
++    minItems: 1
++    items:
++      - description: register based extraction
++      - description: frame dma based extraction
++
++  interrupt-names:
++    minItems: 1
++    items:
++      - const: xtr
++      - const: fdma
++
++  resets:
++    items:
++      - description: Reset controller used for switch core reset (soft reset)
++
++  reset-names:
++    items:
++      - const: switch
++
++  mac-address: true
++
++  ethernet-ports:
++    type: object
++    patternProperties:
++      "^port@[0-9a-f]+$":
++        type: object
++
++        properties:
++          '#address-cells':
++            const: 1
++          '#size-cells':
++            const: 0
++
++          reg:
++            description: Switch port number
++
++          phys:
++            maxItems: 1
++            description:
++              phandle of a Ethernet SerDes PHY.  This defines which SerDes
++              instance will handle the Ethernet traffic.
++
++          phy-mode:
++            description:
++              This specifies the interface used by the Ethernet SerDes towards
++              the PHY or SFP.
++
++          microchip,bandwidth:
++            description: Specifies bandwidth in Mbit/s allocated to the port.
++            $ref: "/schemas/types.yaml#/definitions/uint32"
++            maximum: 25000
++
++          phy-handle:
++            description:
++              phandle of a Ethernet PHY.  This is optional and if provided it
++              points to the cuPHY used by the Ethernet SerDes.
++
++          sfp:
++            description:
++              phandle of an SFP.  This is optional and used when not specifying
++              a cuPHY.  It points to the SFP node that describes the SFP used by
++              the Ethernet SerDes.
++
++          managed: true
++
++          microchip,sd-sgpio:
++            description:
++              Index of the ports Signal Detect SGPIO in the set of 384 SGPIOs
++              This is optional, and only needed if the default used index is
++              is not correct.
++            $ref: "/schemas/types.yaml#/definitions/uint32"
++            minimum: 0
++            maximum: 383
++
++        required:
++          - reg
++          - phys
++          - phy-mode
++          - microchip,bandwidth
++
++        oneOf:
++          - required:
++              - phy-handle
++          - required:
++              - sfp
++              - managed
++
++required:
++  - compatible
++  - reg
++  - reg-names
++  - interrupts
++  - interrupt-names
++  - resets
++  - reset-names
++  - ethernet-ports
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    switch: switch@600000000 {
++      compatible = "microchip,sparx5-switch";
++      reg =  <0 0x401000>,
++             <0x10004000 0x7fc000>,
++             <0x11010000 0xaf0000>;
++      reg-names = "cpu", "devices", "gcb";
++      interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
++      interrupt-names = "xtr";
++      resets = <&reset 0>;
++      reset-names = "switch";
++      ethernet-ports {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        port0: port@0 {
++          reg = <0>;
++          microchip,bandwidth = <1000>;
++          phys = <&serdes 13>;
++          phy-handle = <&phy0>;
++          phy-mode = "qsgmii";
++        };
++        /* ... */
++        /* Then the 25G interfaces */
++        port60: port@60 {
++          reg = <60>;
++          microchip,bandwidth = <25000>;
++          phys = <&serdes 29>;
++          phy-mode = "10gbase-r";
++          sfp = <&sfp_eth60>;
++          managed = "in-band-status";
++          microchip,sd-sgpio = <365>;
++        };
++        port61: port@61 {
++          reg = <61>;
++          microchip,bandwidth = <25000>;
++          phys = <&serdes 30>;
++          phy-mode = "10gbase-r";
++          sfp = <&sfp_eth61>;
++          managed = "in-band-status";
++          microchip,sd-sgpio = <369>;
++        };
++        port62: port@62 {
++          reg = <62>;
++          microchip,bandwidth = <25000>;
++          phys = <&serdes 31>;
++          phy-mode = "10gbase-r";
++          sfp = <&sfp_eth62>;
++          managed = "in-band-status";
++          microchip,sd-sgpio = <373>;
++        };
++        port63: port@63 {
++          reg = <63>;
++          microchip,bandwidth = <25000>;
++          phys = <&serdes 32>;
++          phy-mode = "10gbase-r";
++          sfp = <&sfp_eth63>;
++          managed = "in-band-status";
++          microchip,sd-sgpio = <377>;
++        };
++        /* Finally the Management interface */
++        port64: port@64 {
++          reg = <64>;
++          microchip,bandwidth = <1000>;
++          phys = <&serdes 0>;
++          phy-handle = <&phy64>;
++          phy-mode = "sgmii";
++          mac-address = [ 00 00 00 01 02 03 ];
++        };
++      };
++    };
++
++...
++#  vim: set ts=2 sw=2 sts=2 tw=80 et cc=80 ft=yaml :
 -- 
 2.31.1
 
