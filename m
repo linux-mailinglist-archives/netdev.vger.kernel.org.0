@@ -2,192 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A545339B40E
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 09:36:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56ACA39B417
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 09:38:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230073AbhFDHhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 03:37:23 -0400
-Received: from mail-eopbgr130088.outbound.protection.outlook.com ([40.107.13.88]:46678
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230035AbhFDHhW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Jun 2021 03:37:22 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O4PwRc/lTwjwBPoEqSZMlefKDLG7arFQrEuJcWsYvJ9aSb0BnWU0XH7HzuLAUZnK+Ez7G0Ut2baGqsC7coyTCUwKm/w8o9ONmDsrAbPn03hFd89ykeZ2u7eRoFeMDEhFqB6Va4cV9ACJx/xprQk8/v+o04WWNA+u4umvAMpW2fYIO11SmfE3a/8hC9qDCgdF1sGY6B5rc65kXEmhJyYmEBcYWSC75ak3F3Rf0mq3hhCo1Y99goDLv7VKS1f7mVuRcgAvTV2CXFD5g5dILlmBf3WyAQmv/M0Bl/Z7NrNk+t9Y63I+6gylmPAEJ8xM9y25N9Z2GUCg8EFEsG4R/iGo7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TJaI3/roFiuKOoYxIrVXEK5k20MXkZpQ5pmOJFPRTRA=;
- b=mnNiP4wa2XiOcIh21ABgWKj6xjdoiUZr+UzxqaNq888oWCjxbJ60vd1qlObnHXn1bwhoRB1z8r6JkviAB6gMSECNDnRANx8wQhvuFQdSQhXWIKygISAWkVUUYjM/KWg+5kWIwq0si5Y5NBBevSBJqESr2qwq/Gcb+1tzU9+qndXF0q6M6jlgXYrCo3+78AvkwxudA99k4dMc8lTuw4jUeHRn4TLYK2AYzQG8uOBccSC/8sKaHUmLMR1ydov1Rk0Kgju6Xvdhf+CjsAF7aqSuTIT1BRHfxP3ciqpqOQ8SzJjOj4C+kAkhQCAKxe+kBFPbBq1yrUQXinIK7OttXPTgsw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TJaI3/roFiuKOoYxIrVXEK5k20MXkZpQ5pmOJFPRTRA=;
- b=TLoSFHIqk7hvwIci/LrfP6+pM/1/Cx+TnUcipOqndEV4iE6ET2epQziTG2OtAAmgvsuUCuP1ygfmtCiIcZuPQWZlI0EfVhzq84br2MgUGaJgx/vrXuecHiGv0POKhrOe24o7njYSy5RPqAAMKq74m/9I4zFDhAflJPsM6nWiUcM=
-Received: from AM6PR04MB3976.eurprd04.prod.outlook.com (2603:10a6:209:3f::17)
- by AM5PR0401MB2562.eurprd04.prod.outlook.com (2603:10a6:203:3a::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Fri, 4 Jun
- 2021 07:35:34 +0000
-Received: from AM6PR04MB3976.eurprd04.prod.outlook.com
- ([fe80::7854:74ce:4bb7:858a]) by AM6PR04MB3976.eurprd04.prod.outlook.com
- ([fe80::7854:74ce:4bb7:858a%4]) with mapi id 15.20.4173.030; Fri, 4 Jun 2021
- 07:35:34 +0000
-From:   Madalin Bucur <madalin.bucur@nxp.com>
-To:     =?utf-8?B?UGFsaSBSb2jDoXI=?= <pali@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     Igal Liberman <Igal.Liberman@freescale.com>,
-        Shruti Kanetkar <Shruti@freescale.com>,
-        Emil Medve <Emilian.Medve@freescale.com>,
-        Scott Wood <oss@buserror.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>
-Subject: RE: Unsupported phy-connection-type sgmii-2500 in
- arch/powerpc/boot/dts/fsl/t1023rdb.dts
-Thread-Topic: Unsupported phy-connection-type sgmii-2500 in
- arch/powerpc/boot/dts/fsl/t1023rdb.dts
-Thread-Index: AQHXWIWiLLzXceBiLkWovt9CFi28O6sCZLOAgABNOICAAL4lwA==
-Date:   Fri, 4 Jun 2021 07:35:33 +0000
-Message-ID: <AM6PR04MB3976B62084EC462BA02F0C4CEC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
-References: <20210603143453.if7hgifupx5k433b@pali> <YLjxX/XPDoRRIvYf@lunn.ch>
- <20210603194853.ngz4jdso3kfncnj4@pali>
-In-Reply-To: <20210603194853.ngz4jdso3kfncnj4@pali>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [81.196.28.56]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bf2c0c6f-36e0-4a9e-7aa4-08d9272b56a7
-x-ms-traffictypediagnostic: AM5PR0401MB2562:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM5PR0401MB2562DDBDF45F1BA609C2EE0DEC3B9@AM5PR0401MB2562.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: yfoGgo8Y/Ct3sT6RKp7Uip+tJ6I0jLsW9WVcImxFCyH2q0RgH29s/QH3Rr81VHYbnUcYeXgS09Vy1vei+iAObd57QfGg1WuFribx6ytBv9pHz4BP2iJv3rh6I6PkwgOksTNH279TWRMbfvYy7NXqkYKlhswkHGOjG2N/OGJps8VNbMHrUw0BoWDpQZsn1EdbTkOnVI75RWvrABb0XXUwsgQ246L9E9byywZtBZJbYLnucP3Wr4ZJwwcPRWZW9z/c6U0LxBulBM/tcSA6gngpdNcoJ3NZrObJ/aIvGjjiq/APGFzts2bDa6WTbIPMQfjPHWrRC42wZeziEb4P3w5YPO6tXdSwGF4YA6JpdGTn7UayClr4csMGm7FDUJble0JlB23J3O+oX5Q5mRvGxal80IPrbAfkMosJFOOR7UhsMUnLYNhyYSy5Wm6Te5b9p8a4orzvugkfxl97ldghYn7hvH0anUrjaSsYoCVJsBM8Jv9CJWwd2WceueFDIq/HYSMAZAz+k/ZBBhs99eROXcs9JdDa33X2sCDMsLINMKPBBWcaMOM14AM+Owlc/1HdaSutj8qh7togW/nDKFXlYnp73nL0HnOLYdznSuKIGF3cjxg=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(396003)(136003)(376002)(39860400002)(2906002)(5660300002)(26005)(44832011)(38100700002)(33656002)(9686003)(55016002)(52536014)(186003)(86362001)(122000001)(71200400001)(316002)(53546011)(76116006)(4326008)(110136005)(54906003)(66476007)(8676002)(66446008)(478600001)(7696005)(83380400001)(66946007)(64756008)(66556008)(66574015)(7416002)(8936002)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?WWo2cnVKVjZ4MHVQOEliSTR5b2d1R0lBanZlODd1WS9jN1lGK0g5cmtWaXdG?=
- =?utf-8?B?bktpOU9YK2l0aG4rTHFHL0xkQXc5YzJGMXdKbFg2ODJvZXExcjlUY3VJTmJw?=
- =?utf-8?B?ZWFhenlxc1RlTFFYQnZZQitaRkNZSU9Ea0s0bWRrQzhMR1BFK1ZuY09xSW1s?=
- =?utf-8?B?S2NBQ2NPRUJSaWExaEtyOGFFbHVIMUtESVQya1VJM1o4VTlveituL0g1M0J1?=
- =?utf-8?B?aXFPVjc1bEI1em96NXdkNmJVQVIrTWg1QXlDVzB5dDVVTHdWYkxqQUhGT1Bq?=
- =?utf-8?B?YUdoT2VmNlFzaVM2a3plWnZUTnRBM1FieXB0UDNVMTRZY2ZjZVI2UlBhTDZo?=
- =?utf-8?B?b1BsRnljYzZzZ1g0THJ0bXRxcFdQZkwwY0RWeTNHYlptSEl1R1RSTHBPUUFV?=
- =?utf-8?B?SDZ4WWRZNXJjdTlVUy9aSUpVT0xOM0p2Y2N2NkVoR1hPbWphQ3NRcXV3RnpY?=
- =?utf-8?B?cXVxQUhFMjlsZlJ3Yzd4dlNJOGpweElFTkpmV3R0WGdkMTZIbytLUm9PczZJ?=
- =?utf-8?B?SFdibjVzK3NMaWF0c2FTWmJVdnNHRy8wSGV5RFRONHh4R241ZmR3NGk2a1Bn?=
- =?utf-8?B?RjJpSnlrZVgwQm5KVmJBYm5QaFlBUERub09VcVhPTy9GNXFPQW05RGJVTy9z?=
- =?utf-8?B?QkIxc2dBRFhlczBvZUxJUjhEZ3lCcURYZ0hkYlk5UzRVREhEODBSSndWazVI?=
- =?utf-8?B?K1lsREp5RGI5N3I3NittSHRteCsrTTQrNm05dDNqbTNUUGdjRmExOW1GZTdJ?=
- =?utf-8?B?R3JSaVpmZ2xMRnpOaHdpTU13WlM3cDFNc3dudFVBRDNaa014RXNBV2dGS2VP?=
- =?utf-8?B?T0dmSTVmY1JkUElqQjZOTXlwaHAzSkJZQ2wrVHVMR1dlRWVObXVkZEFwcDU4?=
- =?utf-8?B?aUdNYW12bG1mQWtJVVNkWWtmc0h5R0VTSElwT3BPZWJiY3V3aGV5N21nY25J?=
- =?utf-8?B?Y00xSml6OGRXVHVucytVaEFZeWpXRDhXOFFTQ1M4M3RDZUQwaUEzNFVBNjhO?=
- =?utf-8?B?OEdycXh2OWdueDZaOGF6K1lZY3ZudElYZ0pTOGN0NW5kRS9vS0hhSnV6TWht?=
- =?utf-8?B?LzltaEwzUy9zTnU3ajVpM2JpbWJtQWdNZyt5eW5RdkZXZlhDMEFudDI1eHh6?=
- =?utf-8?B?VHBqSEhuZ1JqRVBscG9DTUMzN2FoNUo1cllRWWJ1QnNlNXBpajdzRElJY3FZ?=
- =?utf-8?B?TnI0ejhBZ2JlVE0rR0ZKNk1wS2FRNXk1cUxLT1ZkVUZ6eC9xaWw0dG5LeGph?=
- =?utf-8?B?Z0FCVHpCTmZPS1N6WHRybWlwNXFGZnRWV2djN1hBNm42bksyQjBXVVUxQXZm?=
- =?utf-8?B?K01XSDNOSWd4bzRnT1RydENRSEhNOUFRTUVYaVg2eGZKV2R3SVovQUhZNjNy?=
- =?utf-8?B?QjV2MUJnUU16WHZkelZQZDRRcmtKc0hhUFBZRGRBeFYrem8rVk9tLzFtczU4?=
- =?utf-8?B?emVPMEtWM0owQUphUkVVbzBmemU3Qm8wbGZyc2ZTQlZ0NjdNSFRkb0xWdjEx?=
- =?utf-8?B?SDRPNCs2YmZxZ0lia0c4WjFmc0FkT2ZocVZzUmk0Y1d4S1hhc2plV3p0c3NN?=
- =?utf-8?B?VW1tOWp6cVdDRTdLVHRDMVNpU253ZkV5cDdqa256YldseUk2T1dlMXhXdHNV?=
- =?utf-8?B?ZWJkNEJzUHdwU0VJMklJSnNVSE1Wb1dJblVWZm9sQmZMK0VKT1J5dHlMZVJw?=
- =?utf-8?B?aDNNaG5aNnd0b0tWVjJPWUZrclNrajR4RkFhL01uRE1CWFNSeWxzeDJJVElz?=
- =?utf-8?Q?3VNs6cZbZweLwKu42U=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S229955AbhFDHkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 03:40:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60714 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229825AbhFDHkD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Jun 2021 03:40:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 117E961417
+        for <netdev@vger.kernel.org>; Fri,  4 Jun 2021 07:38:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622792298;
+        bh=qgEYwHo8FcZWEmNEe13iGuVcLASdEr/wP96OMWVmmWk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=hIyWrpLbx5CkuWKYW4AarAAFezjYzahJMWA0zXioNPjohbMT6pxk8MJlksSZ1PRsa
+         y3+aBzatJKhgceyBFcPF3GUfOqH8SGOz7fdM4Hi8PIV9Pewtj4HXCkNO+0m5VDbicL
+         kICp6d1v9rIRgwg2TyIblJG8+pe9+ua5W04bDeSZdG9non7xTJpbFROr7ShqzMrRah
+         apE5XspBTB1Jqj+b1f+1dMfgQPA91gbhA0gQ3fWY92x4sPOTVZZa6QjBzOgxEhMVPO
+         wCeZKZbeXAdn8wCsrkgQsxJrdiTclPntznIg/pgn60nutvBV18Y7dwFzfeCT1DmZlq
+         0hCwvaGwIpHEA==
+Received: by mail-wr1-f53.google.com with SMTP id z8so8251196wrp.12
+        for <netdev@vger.kernel.org>; Fri, 04 Jun 2021 00:38:17 -0700 (PDT)
+X-Gm-Message-State: AOAM533j6MudtLlwYbKY+zLGVsD1vswENPeTZ5tuA4p/dBxAkEU7CUFr
+        /k7K/v3KwdqMKgHU9TC9sBAOgYGbCa2rMSJkWTc=
+X-Google-Smtp-Source: ABdhPJxE94wDcyW9Ql38CCRiVGdqNY1Gt+/RY+WOwN6nEH+UpRD4O9bnhkhchZs4BHyp3XXZXmUBZ9lpEpGfm7duVRc=
+X-Received: by 2002:a5d:530c:: with SMTP id e12mr2353611wrv.165.1622792296713;
+ Fri, 04 Jun 2021 00:38:16 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB3976.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bf2c0c6f-36e0-4a9e-7aa4-08d9272b56a7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2021 07:35:33.9519
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pcBw8ZEOJYcGhHfQ0FSWva1v7/HCetYM5xVkD8vBU30kjlIFiQ86Rus0foQ9TePbohMGqrGFe9KyTdXV2soqeA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0401MB2562
+References: <60B24AC2.9050505@gmail.com> <ca333156-f839-9850-6e3d-696d7b725b09@gmail.com>
+ <CAP8WD_bKiGLczUfRVOWY3y4TT80yhRCPmLkN7pDMhkJ5m=2Pew@mail.gmail.com>
+ <60B2E0FF.4030705@gmail.com> <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com>
+ <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com>
+ <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com>
+ <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
+ <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com>
+ <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com>
+ <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com> <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Fri, 4 Jun 2021 09:36:33 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com>
+Message-ID: <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com>
+Subject: Re: Realtek 8139 problem on 486.
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Nikolai Zhubr <zhubr.2@gmail.com>,
+        netdev <netdev@vger.kernel.org>, Jeff Garzik <jgarzik@pobox.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQYWxpIFJvaMOhciA8cGFsaUBr
-ZXJuZWwub3JnPg0KPiBTZW50OiAwMyBKdW5lIDIwMjEgMjI6NDkNCj4gVG86IEFuZHJldyBMdW5u
-IDxhbmRyZXdAbHVubi5jaD4NCj4gQ2M6IElnYWwgTGliZXJtYW4gPElnYWwuTGliZXJtYW5AZnJl
-ZXNjYWxlLmNvbT47IFNocnV0aSBLYW5ldGthcg0KPiA8U2hydXRpQGZyZWVzY2FsZS5jb20+OyBF
-bWlsIE1lZHZlIDxFbWlsaWFuLk1lZHZlQGZyZWVzY2FsZS5jb20+OyBTY290dA0KPiBXb29kIDxv
-c3NAYnVzZXJyb3IubmV0PjsgUm9iIEhlcnJpbmcgPHJvYmgrZHRAa2VybmVsLm9yZz47IE1pY2hh
-ZWwNCj4gRWxsZXJtYW4gPG1wZUBlbGxlcm1hbi5pZC5hdT47IEJlbmphbWluIEhlcnJlbnNjaG1p
-ZHQNCj4gPGJlbmhAa2VybmVsLmNyYXNoaW5nLm9yZz47IE1hZGFsaW4gQnVjdXIgPG1hZGFsaW4u
-YnVjdXJAbnhwLmNvbT47IFJ1c3NlbGwNCj4gS2luZyA8cm1rK2tlcm5lbEBhcm1saW51eC5vcmcu
-dWs+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOw0KPiBkZXZpY2V0cmVlQHZnZXIua2VybmVsLm9y
-ZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogVW5zdXBwb3J0
-ZWQgcGh5LWNvbm5lY3Rpb24tdHlwZSBzZ21paS0yNTAwIGluDQo+IGFyY2gvcG93ZXJwYy9ib290
-L2R0cy9mc2wvdDEwMjNyZGIuZHRzDQo+IA0KPiBPbiBUaHVyc2RheSAwMyBKdW5lIDIwMjEgMTc6
-MTI6MzEgQW5kcmV3IEx1bm4gd3JvdGU6DQo+ID4gT24gVGh1LCBKdW4gMDMsIDIwMjEgYXQgMDQ6
-MzQ6NTNQTSArMDIwMCwgUGFsaSBSb2jDoXIgd3JvdGU6DQo+ID4gPiBIZWxsbyENCj4gPiA+DQo+
-ID4gPiBJbiBjb21taXQgODRlMGYxYzEzODA2ICgicG93ZXJwYy9tcGM4NXh4OiBBZGQgTURJTyBi
-dXMgbXV4aW5nIHN1cHBvcnQNCj4gdG8NCj4gPiA+IHRoZSBib2FyZCBkZXZpY2UgdHJlZShzKSIp
-IHdhcyBhZGRlZCBmb2xsb3dpbmcgRFQgcHJvcGVydHkgaW50byBEVA0KPiBub2RlOg0KPiA+ID4g
-YXJjaC9wb3dlcnBjL2Jvb3QvZHRzL2ZzbC90MTAyM3JkYi5kdHMgZm0xbWFjMzogZXRoZXJuZXRA
-ZTQwMDANCj4gPiA+DQo+ID4gPiAgICAgcGh5LWNvbm5lY3Rpb24tdHlwZSA9ICJzZ21paS0yNTAw
-IjsNCj4gPiA+DQo+ID4gPiBCdXQgY3VycmVudGx5IGtlcm5lbCBkb2VzIG5vdCByZWNvZ25pemUg
-dGhpcyAic2dtaWktMjUwMCIgcGh5IG1vZGUuDQo+IFNlZQ0KPiA+ID4gZmlsZSBpbmNsdWRlL2xp
-bnV4L3BoeS5oLiBJbiBteSBvcGluaW9uIGl0IHNob3VsZCBiZSAiMjUwMGJhc2UteCIgYXMNCj4g
-PiA+IHRoaXMgaXMgbW9kZSB3aGljaCBvcGVyYXRlcyBhdCAyLjUgR2Jwcy4NCj4gPiA+DQo+ID4g
-PiBJIGRvIG5vdCB0aGluayB0aGF0IHNnbWlpLTI1MDAgbW9kZSBleGlzdCBhdCBhbGwgKGNvcnJl
-Y3QgbWUgaWYgSSdtDQo+ID4gPiB3cm9uZykuDQo+ID4NCj4gPiBLaW5kIG9mIGV4aXN0LCB1bm9m
-ZmljaWFsbHkuIFNvbWUgdmVuZG9ycyBydW4gU0dNSUkgb3ZlciBjbG9ja2VkIGF0DQo+ID4gMjUw
-MC4gQnV0IHRoZXJlIGlzIG5vIHN0YW5kYXJkIGZvciBpdCwgYW5kIGl0IGlzIHVuY2xlYXIgaG93
-IGluYmFuZA0KPiA+IHNpZ25hbGxpbmcgc2hvdWxkIHdvcmsuIFdoZW5ldmVyIGkgc2VlIGNvZGUg
-c2F5aW5nIDIuNUcgU0dNSUksIGkNCj4gPiBhbHdheXMgYXNrLCBhcmUgeW91IHN1cmUsIGlzIGl0
-IHJlYWxseSAyNTAwQmFzZVg/IE1vc3RseSBpdCBnZXRzDQo+ID4gY2hhbmdlZCB0byAyNTAwQmFz
-ZVggYWZ0ZXIgcmV2aWV3Lg0KPiANCj4gU28gdGhpcyBpcyBxdWVzdGlvbiBmb3IgYXV0aG9ycyBv
-ZiB0aGF0IGNvbW1pdCA4NGUwZjFjMTM4MDYuIEJ1dCBpdA0KPiBsb29rcyBsaWtlIEkgY2Fubm90
-IHNlbmQgdGhlbSBlbWFpbHMgYmVjYXVzZSBvZiBmb2xsb3dpbmcgZXJyb3I6DQo+IA0KPiA8TWlu
-Z2h1YW4uTGlhbkBmcmVlc2NhbGUuY29tPjogY29ubmVjdCB0byBmcmVlc2NhbGUuY29tWzE5Mi44
-OC4xNTYuMzNdOjI1Og0KPiBDb25uZWN0aW9uIHRpbWVkIG91dA0KPiANCj4gRG8geW91IGhhdmUg
-b3RoZXIgd2F5IGhvdyB0byBjb250YWN0IG1haW50YWluZXJzIG9mIHRoYXQgRFRTIGZpbGU/DQo+
-IGFyY2gvcG93ZXJwYy9ib290L2R0cy9mc2wvdDEwMjNyZGIuZHRzDQo+IA0KPiA+IFBIWSBtb2Rl
-IHNnbWlpLTI1MDAgZG9lcyBub3QgZXhpc3QgaW4gbWFpbmxpbmUuDQo+IA0KPiBZZXMsIHRoaXMg
-aXMgcmVhc29uIHdoeSBJIHNlbnQgdGhpcyBlbWFpbC4gSW4gRFRTIGlzIHNwZWNpZmllZCB0aGlz
-IG1vZGUNCj4gd2hpY2ggZG9lcyBub3QgZXhpc3QuDQo+IA0KPiA+IAlBbmRyZXcNCg0KSGksIHRo
-ZSBGcmVlc2NhbGUgZW1haWxzIG5vIGxvbmdlciB3b3JrLCB5ZWFycyBhZnRlciBGcmVlc2NhbGUg
-am9pbmVkIE5YUC4NCkFsc28sIHRoZSBmaXJzdCBmb3VyIHJlY2lwaWVudHMgbm8gbG9uZ2VyIHdv
-cmsgZm9yIE5YUC4NCg0KSW4gcmVnYXJkcyB0byB0aGUgc2dtaWktMjUwMCB5b3Ugc2VlIGluIHRo
-ZSBkZXZpY2UgdHJlZSwgaXQgZGVzY3JpYmVzIFNHTUlJDQpvdmVyY2xvY2tlZCB0byAyLjVHYnBz
-LCB3aXRoIGF1dG9uZWdvdGlhdGlvbiBkaXNhYmxlZC4gDQoNCkEgcXVvdGUgZnJvbSBhIGxvbmcg
-dGltZSBhZ28sIGZyb20gc29tZW9uZSBmcm9tIHRoZSBIVyB0ZWFtIG9uIHRoaXM6DQoNCglUaGUg
-aW5kdXN0cnkgY29uc2Vuc3VzIGlzIHRoYXQgMi41RyBTR01JSSBpcyBvdmVyY2xvY2tlZCAxRyBT
-R01JSQ0KCXVzaW5nIFhBVUkgZWxlY3RyaWNhbHMuIEZvciB0aGUgUENTIGFuZCBNQUMgbGF5ZXJz
-LCBpdCBsb29rcyBleGFjdGx5DQoJbGlrZSAxRyBTR01JSSwganVzdCB3aXRoIGEgZmFzdGVyIGNs
-b2NrLg0KDQpUaGUgc3RhdGVtZW50IHRoYXQgaXQgZG9lcyBub3QgZXhpc3QgaXMgbm90IGFjY3Vy
-YXRlLCBpdCBleGlzdHMgaW4gSFcsIGFuZA0KaXQgaXMgZGVzY3JpYmVkIGFzIHN1Y2ggaW4gdGhl
-IGRldmljZSB0cmVlLiBXaGV0aGVyIG9yIG5vdCBpdCBpcyBwcm9wZXJseQ0KdHJlYXRlZCBpbiBT
-VyBpdCdzIGFub3RoZXIgZGlzY3Vzc2lvbi4gSW4gMjAxNSwgd2hlbiB0aGlzIHdhcyBzdWJtaXR0
-ZWQsDQp0aGVyZSB3ZXJlIG5vIG90aGVyIDIuNUcgY29tcGF0aWJsZXMgaW4gdXNlLCBpZiBJJ20g
-bm90IG1pc3Rha2VuLg0KMjUwMEJhc2UtWCBzdGFydGVkIHRvIGJlIGFkZGVkIHRvIGRldmljZSB0
-cmVlcyBmb3VyIHllYXJzIGxhdGVyLCBpdCBzaG91bGQNCmJlIGNvbXBhdGlibGUvaW50ZXJ3b3Jr
-aW5nIGJ1dCBpdCBpcyBsZXNzIHNwZWNpZmljIG9uIHRoZSBhY3R1YWwgaW1wbGVtZW50YXRpb24N
-CmRldGFpbHMgKGRlbm90ZXMgMi41RyBzcGVlZCwgOGIvMTBiIGNvZGluZywgd2hpY2ggaXMgdHJ1
-ZSBmb3IgdGhpcyBvdmVyY2xvY2tlZA0KU0dNSUkpLiBJZiB0aGV5IGFyZSBjb21wYXRpYmxlLCBT
-VyBzaG91bGQgcHJvYmFibHkgdHJlYXQgdGhlbSBpbiB0aGUgc2FtZSBtYW5uZXIuDQoNClRoZXJl
-IHdlcmUgc29tZSBkaXNjdXNzaW9ucyBhIHdoaWxlIGFnbyBhYm91dCB0aGUgbWl4IG9yIGV2ZW4g
-Y29uZnVzaW9uIGJldHdlZW4NCnRoZSBhY3R1YWwgSFcgZGVzY3JpcHRpb24gKHRoYXQncyB3aGF0
-IHRoZSBkdHMgaXMgc3VwcG9zZWQgdG8gZG8pIGFuZCB0aGUgc2V0dGluZ3MNCm9uZSB3YW50cyB0
-byByZXByZXNlbnQgaW4gU1cgKGkuZS4gc3BlZWQpIGRlbm90ZWQgbG9vc2VseSBieSBkZW5vbWlu
-YXRpb25zIGxpa2UNCjEwRyBCYXNlLVIuIA0KDQpSZWdhcmRzLA0KTWFkYWxpbg0K
+On Thu, Jun 3, 2021 at 8:32 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+> On Tue, 1 Jun 2021, Heiner Kallweit wrote:
+>
+> > > Now I'd like to ask, is quality reliable fix still wanted in mainline or rather not?
+> > > Because I'll personally do my best to create/find a good fix anyway, but if it is
+> > > of zero interest for mainline, I'll probably not invest much time into communicating
+> > > it. My understanding was that default rule is "if broken go fix it" but due to the
+> > > age of both code and hardware, maybe it is considered frozen or some such
+> > > (I'm just not aware really).
+> > >
+> > Driver 8139too has no maintainer. And you refer to "mainline" like to a number of developers
+> > who are paid by somebody to maintain all drivers in the kernel. That's not the case in general.
+> > You provided valuable input, and if you'd contribute to improving 8139too and submit patches for
+> > fixing the issue you're facing, this would be much appreciated.
+>
+>  It's an issue in x86 platform code, not the 8139too driver.  Any option
+> card wired to PCI in this system somehow could suffer from it.  Depending
+> on how you look at it you may or may not qualify it as a bug though, and
+> any solution can be considered a workaround (for a BIOS misfeature) rather
+> than a bug fix.
+
+I think it would be good though to reinstate the driver workaround in some way,
+regardless of whether the x86 platform code gets changed or not.
+
+From the old linux-2.6.2 code it appears that someone had intentionally
+added the loop as a hack to make it work on a broken or misconfigured BIOS.
+It's hard to know if that was indeed the intention, but it's clear that the
+driver change in 2.6.3 broke something that worked (most of the time)
+without fixing it in a better way.
+
+>  The question is IMHO legitimate, and I can't speak for x86 platform
+> maintainers.  If I were one, I'd accept a reasonable workaround and it
+> does not appear to me it would be a very complex one to address this case:
+> basically a PCI quirk to set "this southbridge has ELCR at the usual
+> location" (if indeed it does; you don't want to blindly poke at random
+> port I/O locations in generic code), and then a tweak to `pirq_enable_irq'
+> or `pcibios_lookup_irq' as Arnd has suggested.
+
+(adding the x86 maintainers to Cc, the thread is archived at
+ https://lore.kernel.org/netdev/60B24AC2.9050505@gmail.com/)
+
+Changing the x86 platform code as well would clearly help avoid similar
+issues with other PCI cards on these broken platforms, but doing it
+correctly  seems hard for a couple of reasons.
+
+It sounds like it would have been a good idea 20 years ago when the
+broken i486 platforms were still fairly common, but now we don't even
+know whether the code was intentional or not. I don't remember a lot of
+the specifics of pre-APIC x86, but I do remember IRQ configuration
+as a common problem without a single good solution.
+
+There is a realistic chance that other combinations of broken hardware
+and drivers rely on the x86 PCI code doing exactly what it does today.
+If overriding the BIOS setting breaks something that works today, nothing
+is gained, because the next person running into an i486 PCI specific bug
+is unlikely to be as persistent and competent as Nikolai in tracking down
+the root cause.
+
+Doing a narrower change to a specific chipset, motherboard or BIOS
+would be less risky, but would likely miss similar cases. Any x86
+specific change would clearly also miss similar problems that may
+or may not exist on other architectures.
+
+     Arnd
