@@ -2,93 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4157439BA01
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 15:42:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5639439BA0B
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 15:43:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230234AbhFDNoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 09:44:05 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:45423 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230116AbhFDNoE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 09:44:04 -0400
-Received: from mwalle01.fritz.box (ip4d17858c.dynamic.kabel-deutschland.de [77.23.133.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id B045A22236;
-        Fri,  4 Jun 2021 15:42:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1622814136;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ONfmAIxevie2vRvtwUEJy6yjfbAmZ48pmgGG3EOTVAU=;
-        b=RIc2xW1lsPPXfXZ/aXMZ1+aTF500u2vvgFTnnHl58nnM2whUkWgC0kkmlT/ZC6iF9CBePh
-        hlAYRiYZvW9gJckaHtrUQ+g/aYtAWDK8wPz3MhaTQ5HxhHwVvyPxECkXb2HpXc13gqcpNy
-        82KrnSV7CR3GtaiZ+XLuoH69ECCCtb4=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v2] net: enetc: use get/put_unaligned helpers for MAC address handling
-Date:   Fri,  4 Jun 2021 15:42:12 +0200
-Message-Id: <20210604134212.6982-1-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
+        id S230503AbhFDNos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 09:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230375AbhFDNon (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 09:44:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79F9C061768
+        for <netdev@vger.kernel.org>; Fri,  4 Jun 2021 06:42:56 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lpA63-00072k-H3; Fri, 04 Jun 2021 15:42:47 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lpA61-0000f3-G7; Fri, 04 Jun 2021 15:42:45 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v1 0/7] port asix ax88772 to the PHYlib
+Date:   Fri,  4 Jun 2021 15:42:37 +0200
+Message-Id: <20210604134244.2467-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The supplied buffer for the MAC address might not be aligned. Thus
-doing a 32bit (or 16bit) access could be on an unaligned address. For
-now, enetc is only used on aarch64 which can do unaligned accesses, thus
-there is no error. In any case, be correct and use the get/put_unaligned
-helpers.
+Port ax88772 part of asix driver to the phylib to be able to use more
+advanced external PHY attached to this controller.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-changes since v1:
- - explicitly use the little endian variant of the helpers
+Oleksij Rempel (7):
+  net: usb: asix: ax88772_bind: use devm_kzalloc() instead of kzalloc()
+  net: usb: asix: ax88772: add phylib support
+  net: usb/phy: asix: add support for ax88772A/C PHYs
+  net: usb: asix: ax88772: add generic selftest support
+  net: usb: asix: add error handling for asix_mdio_* functions
+  net: phy: do not print dump stack if device was removed
+  usbnet: run unbind() before unregister_netdev()
 
- drivers/net/ethernet/freescale/enetc/enetc_pf.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/phy/ax88796b.c     |  74 ++++++++++++++++-
+ drivers/net/phy/phy.c          |   3 +
+ drivers/net/usb/Kconfig        |   2 +
+ drivers/net/usb/asix.h         |  10 +++
+ drivers/net/usb/asix_common.c  |  68 +++++++++++++--
+ drivers/net/usb/asix_devices.c | 148 +++++++++++++++++++++++----------
+ drivers/net/usb/ax88172a.c     |  14 ----
+ drivers/net/usb/usbnet.c       |   6 +-
+ 8 files changed, 253 insertions(+), 72 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index 31274325159a..c84f6c226743 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
- /* Copyright 2017-2019 NXP */
- 
-+#include <asm/unaligned.h>
- #include <linux/mdio.h>
- #include <linux/module.h>
- #include <linux/fsl/enetc_mdio.h>
-@@ -17,15 +18,15 @@ static void enetc_pf_get_primary_mac_addr(struct enetc_hw *hw, int si, u8 *addr)
- 	u32 upper = __raw_readl(hw->port + ENETC_PSIPMAR0(si));
- 	u16 lower = __raw_readw(hw->port + ENETC_PSIPMAR1(si));
- 
--	*(u32 *)addr = upper;
--	*(u16 *)(addr + 4) = lower;
-+	put_unaligned_le32(upper, addr);
-+	put_unaligned_le16(lower, addr + 4);
- }
- 
- static void enetc_pf_set_primary_mac_addr(struct enetc_hw *hw, int si,
- 					  const u8 *addr)
- {
--	u32 upper = *(const u32 *)addr;
--	u16 lower = *(const u16 *)(addr + 4);
-+	u32 upper = get_unaligned_le32(addr);
-+	u16 lower = get_unaligned_le16(addr + 4);
- 
- 	__raw_writel(upper, hw->port + ENETC_PSIPMAR0(si));
- 	__raw_writew(lower, hw->port + ENETC_PSIPMAR1(si));
 -- 
-2.20.1
+2.29.2
 
