@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BADCC39C2A0
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 23:40:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A471A39C2A3
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 23:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbhFDVmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 17:42:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40446 "EHLO mail.kernel.org"
+        id S231450AbhFDVmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 17:42:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40464 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229665AbhFDVlw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229987AbhFDVlw (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 4 Jun 2021 17:41:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0C31A61406;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1D5FE61408;
         Fri,  4 Jun 2021 21:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1622842806;
-        bh=VOAmegZrrnqcFJsaouuuTgtXOyFUPWlsLFyrwQoRhX8=;
+        bh=fgHG7v+Kgih3XhZMXVzrOzR56W61hin3PMhbLfOJkgE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=R6rW8nCSi+PzQE9rT7XdolYvvIjmycoFwbqxiUI5mi9EKDskrP0lvaT4e7dgWFySs
-         G64i5lg0E96/bJIwAf76hyEqH3UGJD3cyS2eChqjiurABxf36bztYRCrglDdn+pjtp
-         LeEY3ELkMKRp+QmGbgPCPW9MFZa0k4Tn9kiJMVqWllcjHZNh/wjaOskQMxU5CZQ+/v
-         yWmFaXK+O5aq6wT8qpTvTa+b6xnc1Q6ag40EDHFqtytlzW0p7Yxj+8quJS8IhsKlCI
-         pfxC2VF3Xz2mZ73QFlQ/bdXVoke8nhoJkqHDCEJ3JOcUIVxzXImhbAREKCfp5+PaTz
-         8vkiLkHnzH/Ww==
+        b=sCU7HQ8+/dKu95I0y/QuJWMHs2Eb06MOmUR3YhTvGOovHRjrHy3gu3VE6oDgaitqm
+         zd8FbXYRjWv+hsVdrNzpKfNZ2zBoTqF/fuwTxePEOev54XAeSel38TKGTkT4gah/zX
+         IU/NQeU7DMt4x1XHQ45sBRML5hrh9jnTyBsEZNjLCBwmtBFlI6IkmSug9eu3Fr0U1/
+         8UQRcM/C25EtiiXjbLzz1nDMJx94sSzbvByN+moHfyFSlJl6PyfZFY0/s/uLCU9yJJ
+         WPygf107H+2azpcREi8dcI2Lu4ngTdFXY8XDDvNOtvtsSMF5S6ZmXah8JeWB1YYbMN
+         nzSbcPYhg18ng==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 072BA60BCF;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0F08F60CD2;
         Fri,  4 Jun 2021 21:40:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5][pull request] 1GbE Intel Wired LAN Driver
- Updates 2021-06-04
+Subject: Re: [PATCH net-next 0/6] net: hdlc_x25: clean up some code style issues
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162284280602.31903.16802596899153014387.git-patchwork-notify@kernel.org>
+Message-Id: <162284280605.31903.2813051469495224858.git-patchwork-notify@kernel.org>
 Date:   Fri, 04 Jun 2021 21:40:06 +0000
-References: <20210604162421.3392644-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210604162421.3392644-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com
+References: <1622791932-49876-1-git-send-email-huangguangbin2@huawei.com>
+In-Reply-To: <1622791932-49876-1-git-send-email-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, xie.he.0141@gmail.com,
+        ms@dev.tdt.de, willemb@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lipeng321@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,27 +47,34 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri,  4 Jun 2021 09:24:16 -0700 you wrote:
-> This series contains updates to igc driver only.
+On Fri, 4 Jun 2021 15:32:06 +0800 you wrote:
+> From: Peng Li <lipeng321@huawei.com>
 > 
-> Sasha utilizes the newly introduced ethtool_sprintf() function, removes
-> unused defines, and fixes indentation.
+> This patchset clean up some code style issues.
 > 
-> Muhammad adds support for hardware VLAN insertion and stripping.
+> Peng Li (6):
+>   net: hdlc_x25: remove redundant blank lines
+>   net: hdlc_x25: remove unnecessary out of memory message
+>   net: hdlc_x25: move out assignment in if condition
+>   net: hdlc_x25: add some required spaces
+>   net: hdlc_x25: fix the code issue about "if..else.."
+>   net: hdlc_x25: fix the alignment issue
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/5] igc: Update driver to use ethtool_sprintf
-    https://git.kernel.org/netdev/net-next/c/220ef1f97ec1
-  - [net-next,2/5] igc: Remove unused asymmetric pause bit from igc defines
-    https://git.kernel.org/netdev/net-next/c/cca2c030b2a7
-  - [net-next,3/5] igc: Remove unused MDICNFG register
-    https://git.kernel.org/netdev/net-next/c/6fdef25db3d4
-  - [net-next,4/5] igc: Indentation fixes
-    https://git.kernel.org/netdev/net-next/c/5cde7beb27af
-  - [net-next,5/5] igc: Enable HW VLAN Insertion and HW VLAN Stripping
-    https://git.kernel.org/netdev/net-next/c/8d7449630e34
+  - [net-next,1/6] net: hdlc_x25: remove redundant blank lines
+    https://git.kernel.org/netdev/net-next/c/1c906e369815
+  - [net-next,2/6] net: hdlc_x25: remove unnecessary out of memory message
+    https://git.kernel.org/netdev/net-next/c/579ebffe7973
+  - [net-next,3/6] net: hdlc_x25: move out assignment in if condition
+    https://git.kernel.org/netdev/net-next/c/ec1f37741244
+  - [net-next,4/6] net: hdlc_x25: add some required spaces
+    https://git.kernel.org/netdev/net-next/c/5de446075c8e
+  - [net-next,5/6] net: hdlc_x25: fix the code issue about "if..else.."
+    https://git.kernel.org/netdev/net-next/c/792b070fca8f
+  - [net-next,6/6] net: hdlc_x25: fix the alignment issue
+    https://git.kernel.org/netdev/net-next/c/316fe3cc7de3
 
 You are awesome, thank you!
 --
