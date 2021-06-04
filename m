@@ -2,110 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB3E539B2CC
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 08:44:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EC2339B2C8
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 08:43:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbhFDGqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 02:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58658 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230092AbhFDGqL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 02:46:11 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5F8C061760;
-        Thu,  3 Jun 2021 23:44:09 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id o17-20020a17090a9f91b029015cef5b3c50so6880222pjp.4;
-        Thu, 03 Jun 2021 23:44:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3lY7p/u7GioL1Vux+6QXVoEdXdtGYLzRSaAk61G4V5c=;
-        b=GVR481rCMQMyr5bI0UEuhgjcXsuiBRScn1t8jpe5n4y37B8mUFmLeAr41O29osxJfu
-         Le+xTXVDOM8GLp9qZD36Euhhqaf5jkk6o9NSXGdOtaEz/hBgdLwUyE4gXLiSsXnnujEu
-         1Vz78YrV5QD7RrMA6T2eCur9FqQJqC52kY8gj9A9mlqc11B1DPXJiwNmho2WwrNlOyEn
-         20GDuMTy23KcJdSNY+Z6J542YBJivUbhkarzFGkj5xaD/oQs2BJP6WLbwF9eN9oAqLET
-         gZMwkG24jS6Se9ooFkm8txhBPcrvBOFmyRigwGKWQ7naOC+yNQ82N9HLOnXyA0MNbNHb
-         +YTA==
+        id S230093AbhFDGpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 02:45:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47624 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229930AbhFDGpS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 02:45:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622789012;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sFnBZB4zBhY3VaJKhaqIVeCmOdORZzd7WJ6m8yQ6LGw=;
+        b=AfH7ZHQD7uV3z9LvJH6UmKVx+iJybMlYFwK7mSUrLwm3tf4Z7QOtNsFgAiWVDNhx2+1ti5
+        qZRyaEBAYEyeZdh5UjS6xDbVbOxOO6vZkwAu5AiFrokUHWi5g9A3IqGIQnc8s2Pu5uTFW5
+        VR5PR/GACmfeOM1lwE6Wiig3boXQpKU=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-434-tW35kQuDPPWiwoWT5WzkIg-1; Fri, 04 Jun 2021 02:43:31 -0400
+X-MC-Unique: tW35kQuDPPWiwoWT5WzkIg-1
+Received: by mail-pf1-f199.google.com with SMTP id q3-20020aa784230000b02902ea311f25e2so3612030pfn.1
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 23:43:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3lY7p/u7GioL1Vux+6QXVoEdXdtGYLzRSaAk61G4V5c=;
-        b=g3aWEJ+hHTG9l+2Xkndu+7YvUAG0vF+Lt+FQZ4ULq6Pcw0fSfewSxAcKm66xOgXEmy
-         HI/uVnuvxPZTIvLLqC+AdTv0fSBQ0RPPRwxH0qqghFW6hnh/LwmQ6vKxLe8EZA0Gdpk9
-         Co3333H4zoGiMCO9/gi4JArl130/ExEvg0QKmexUCj324mU68qqADekZb7aMEIw3RRsd
-         dCvgtPEP+T2Gd+YlMDjWO3jwPUu46dy9vRCACUEj8cNmltCKyZkzCoW3nsMtPGTgr1Y7
-         KOX8gDfTga1WlzHqnmWeeoGZblEVQ9r2TVpEQrEgYb84PTnt19gvcG5+nsvVQmPSkiLX
-         yxIQ==
-X-Gm-Message-State: AOAM530rsSe0tWpZD8+xWr2/pORQZ/21ieSZ7VT+LBlEVXWVKWIoGgsT
-        Nl+EOIuFzr3vQv+5W2qeoJk=
-X-Google-Smtp-Source: ABdhPJyUu+3m01oYdHZruJCA+TOkEcavRSZi/MPypBU6Qm7Q2/MzPrA7rvvO6c79G1pe69KNX8NQDw==
-X-Received: by 2002:a17:902:db06:b029:102:6e01:cecb with SMTP id m6-20020a170902db06b02901026e01cecbmr2935902plx.9.1622789048826;
-        Thu, 03 Jun 2021 23:44:08 -0700 (PDT)
-Received: from localhost ([2402:3a80:11cb:b599:c759:2079:3ef5:1764])
-        by smtp.gmail.com with ESMTPSA id s6sm3785564pjr.29.2021.06.03.23.44.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 23:44:08 -0700 (PDT)
-Date:   Fri, 4 Jun 2021 12:13:03 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=sFnBZB4zBhY3VaJKhaqIVeCmOdORZzd7WJ6m8yQ6LGw=;
+        b=B1cVQ4cQCxz0FqVdJ7gFvakETEJHHSRSWq7YEED7QG13d4Mzr9tDBxKHelQxgrPl0T
+         EFfcn/+pM6eLNduXQrEer4Tlwd6m/+GaclHuCVMTDU6azzvCj219oz2MedQGGOsNvKNJ
+         HpkSFF4cq8jns86TVIkL9ZLH93ruLZN6ZG2w4Y4nUwnnI0VgV3KKyMjZ48I4J633cxJn
+         HflnC5Gr4CeYVz0kY3KZr4KPvT5EJkR3gLspFKs62bKgSj/H6PL7e/KOFOVaFpT02Ka7
+         h4rSDhMkVOEzWS3EZ+7qaQ+k8x3AOX3N1nIP8QuOJkdfOnw8wDyYHSB5l1u5dzNraYEC
+         uh2Q==
+X-Gm-Message-State: AOAM5327nhjoLS8MIeJbwYiJ5+jhGR80q2l0e5V4qzyK5fg9DzF/q5R+
+        UeKEfVtiNFBiKaUtufae+gQjRMLLgE175aibwqyU/ArsYA/h/9S8AnXRr388AoEm/CDjTvdO4Ge
+        AweaNtDgi0Fd/6G+c
+X-Received: by 2002:a63:801:: with SMTP id 1mr3397430pgi.146.1622789010477;
+        Thu, 03 Jun 2021 23:43:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwcsep4lSVrTxiJqAf+9CJZemwxxfkxupalS2zPN+3W0/RqQLyk1fjKvbGcLoAJ74+SjHzCBg==
+X-Received: by 2002:a63:801:: with SMTP id 1mr3397401pgi.146.1622789010128;
+        Thu, 03 Jun 2021 23:43:30 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id m134sm927000pfd.148.2021.06.03.23.43.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Jun 2021 23:43:29 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 0/3] virtio_net: add optional flow dissection
+ in virtio_net_hdr_to_skb
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Tanner Love <tannerlove.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
-Message-ID: <20210604064303.bfso3oml2ouazwia@apollo>
-References: <20210528195946.2375109-1-memxor@gmail.com>
- <CAEf4BzZt5nRsfCiqGkJxW2b-==AYEVCiz6jHC-FrXKkPF=Qj7w@mail.gmail.com>
- <20210602214513.eprgwxqgqruliqeu@apollo>
- <20210602235058.njuz2gzsd5wqxwes@ast-mbp.dhcp.thefacebook.com>
+        Eric Dumazet <edumazet@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tanner Love <tannerlove@google.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+References: <20210601221841.1251830-1-tannerlove.kernel@gmail.com>
+ <eef275f7-38c5-6967-7678-57dd5d59cf76@redhat.com>
+ <CA+FuTSdEF7dONWZWR3t9EZ5VU3XrfWTb0CmWKe7pQBL-tje0WA@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <d56a153a-ba13-480f-2ce2-7cbc7fd4c529@redhat.com>
+Date:   Fri, 4 Jun 2021 14:43:20 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210602235058.njuz2gzsd5wqxwes@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <CA+FuTSdEF7dONWZWR3t9EZ5VU3XrfWTb0CmWKe7pQBL-tje0WA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 05:20:58AM IST, Alexei Starovoitov wrote:
-> On Thu, Jun 03, 2021 at 03:15:13AM +0530, Kumar Kartikeya Dwivedi wrote:
-> >
-> > > The problem is that your patch set was marked as spam by Google, so I
-> > > suspect a bunch of folks haven't gotten it. I suggest re-sending it
-> > > again but trimming down the CC list, leaving only bpf@vger,
-> > > netdev@vger, and BPF maintainers CC'ed directly.
-> > >
-> >
-> > Thanks for the heads up, I'll resend tomorrow.
+
+在 2021/6/4 上午11:51, Willem de Bruijn 写道:
+> On Thu, Jun 3, 2021 at 10:55 PM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> 在 2021/6/2 上午6:18, Tanner Love 写道:
+>>> From: Tanner Love <tannerlove@google.com>
+>>>
+>>> First patch extends the flow dissector BPF program type to accept
+>>> virtio-net header members.
+>>>
+>>> Second patch uses this feature to add optional flow dissection in
+>>> virtio_net_hdr_to_skb(). This allows admins to define permitted
+>>> packets more strictly, for example dropping deprecated UDP_UFO
+>>> packets.
+>>>
+>>> Third patch extends kselftest to cover this feature.
+>>
+>> I wonder why virtio maintainers is not copied in this series.
+> Sorry, an oversight.
+
+
+No problem.
+
+
 >
-> fyi I see this thread in my inbox, but, sadly, not the patches.
-> So guessing based on cover letter and hoping that the following is true:
-> link_fd is returned by BPF_LINK_CREATE command.
-> If anything is missing in struct link_create the patches are adding it there.
-> target_ifindex, flags are reused. attach_type indicates ingress vs egress.
+>> Several questions:
+>>
+>> 1) having bpf core to know about virito-net header seems like a layer
+>> violation, it doesn't scale as we may add new fields, actually there's
+>> already fields that is not implemented in the spec but not Linux right now.
+> struct virtio_net_hdr is used by multiple interfaces, not just virtio.
+> The interface as is will remain, regardless of additional extensions.
+>
+> If the interface is extended, the validation can be extended with it.
 
-Everything is true except the attach_type part. I don't hook directly into
-sch_handle_{ingress,egress}. It's a normal TC filter, and if one wants to hook
-into ingress, egress, they attach it to clsact qdisc. The lifetime however is
-decided by the link fd.
 
-The new version is here:
-https://lore.kernel.org/bpf/20210604063116.234316-1-memxor@gmail.com
+One possible problem is that there's no sufficient context.
 
---
-Kartikeya
+The vnet header length is not a fixed value but depends on the feature 
+negotiation. The num_buffers (not implemented in this series) is an 
+example. The field doesn't not exist for legacy device if mergeable 
+buffer is disabled. If we decide to go with this way, we probably need 
+to fix this by introducing a vnet header length.
+
+And I'm not sure it can work for all the future cases e.g the semantic 
+of a field may vary depends on the feature negotiated, but maybe it's 
+safe since it needs to set the flags.
+
+Another note is that the spec doesn't exclude the possibility to have a 
+complete new vnet header format in the future. And the bpf program is 
+unaware of any virtio features.
+
+
+>
+> Just curious: can you share what extra fields may be in the pipeline?
+> The struct has historically not seen (m)any changes.
+
+
+For extra fields, I vaguely remember we had some discussions on the 
+possible method to extend that, but I forget the actual features.
+
+But spec support RSC which may reuse csum_start/offset but it looks to 
+me RSC is not something like Linux need.
+
+
+>
+>> 2) virtio_net_hdr_to_skb() is not the single entry point, packet could
+>> go via XDP
+> Do you mean AF_XDP?
+
+
+Yes and kernel XDP as well. If the packet is redirected or transmitted, 
+it won't even go to virtio_net_hdr_to_skb().
+
+Since there's no GSO/csum support for XDP, it's probably ok, but needs 
+to consider this for the future consider the multi-buffer XDP is being 
+developed right now, we can release those restriction.
+
+
+> As far as I know, vnet_hdr is the only injection
+> interface for complex packets that include offload instructions (GSO,
+> csum) -- which are the ones mostly implicated in bug reports.
+
+
+Ideally, if GSO/csum is supported by XDP, it would be more simple to use 
+XDP I think.
+
+
+>
+>> 3) I wonder whether we can simply use XDP to solve this issue (metadata
+>> probably but I don't have a deep thought)
+>> 4) If I understand the code correctly, it should deal with all dodgy
+>> packets instead of just for virtio
+> Yes. Some callers of virtio_net_hdr_to_skb, such as tun_get_user and
+> virtio receive_buf, pass all packets to it. Others, like tap_get_user
+> and packet_snd, only call it if a virtio_net_hdr is passed. Once we
+> have a validation hook, ideally all packets need to pass it. Modifying
+> callers like tap_get_user can be a simple follow-on.
+
+
+Ok.
+
+Thanks
+
+>
+
