@@ -2,183 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E5439B19B
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 06:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C4D39B1A9
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 06:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbhFDEth convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 4 Jun 2021 00:49:37 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:60630 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbhFDEtg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 00:49:36 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1lp1kF-0005S6-QJ; Fri, 04 Jun 2021 04:47:44 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 2C3695FBC1; Thu,  3 Jun 2021 21:47:42 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 25055A040B;
-        Thu,  3 Jun 2021 21:47:42 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     zhudi <zhudi21@huawei.com>
-cc:     vfalico@gmail.com, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, rose.chen@huawei.com
-Subject: Re: [PATCH v2] bonding: 3ad: fix a crash in agg_device_up()
-In-reply-to: <20210604021420.49972-1-zhudi21@huawei.com>
-References: <20210604021420.49972-1-zhudi21@huawei.com>
-Comments: In-reply-to zhudi <zhudi21@huawei.com>
-   message dated "Fri, 04 Jun 2021 10:14:20 +0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S229952AbhFDEx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 00:53:59 -0400
+Received: from mail-ed1-f46.google.com ([209.85.208.46]:41496 "EHLO
+        mail-ed1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229800AbhFDEx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 00:53:58 -0400
+Received: by mail-ed1-f46.google.com with SMTP id g18so7622370edq.8
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 21:51:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x90Q7KLzxGnQdvlJBnm7rr4DDCt1grcPV3Uowt83bVg=;
+        b=xFkKJy1g/Dq99+LDthlyeOkxVL0vc3sgm7407xja7T/KunaG3jM6iEPHGGEd/seTuT
+         hk5+z84vISRo0CRUrakYh6Eqm8bub7dGlU1MbMHJ/9JpVMF+7TiPvML8pXyUWtwXF7+G
+         6XVruZ0XWO1KBzlMWAOH3F6vu+ZYyEOUIDvJny9CD1tSyHNiTGH3b/srW66LpZWAiv9l
+         AXA5AZPFKznr+B/8A0lLT1wraOWm3b4psmw7tSK+CZQGElAFURuG0V+x6RR4UqKzP0dp
+         ZlOSu05H3mFpWi8uuwiea2soWtThhHqWy/mWoaks8qSxbQRQo+bn+sKsL/QBymZEh2hz
+         JI3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x90Q7KLzxGnQdvlJBnm7rr4DDCt1grcPV3Uowt83bVg=;
+        b=PwTA0EirEz9T/FArymkY5dWVqCO/dQ0zW8pQxMOAATYA9cXmFMpNOD7nCpQ2qbVt73
+         POa7eSqV5ZNZOdKo3N7EuSZE5C0SqJPPaA1KFBbXDk7+pald56xLMySsYnL8hBCi2Nns
+         6LoUAAJkYQIdiz7e49P8wzpQglCwEyAUfjlxG/UuAj/OUc/uB/r9tdEz8wBqONrlPVI+
+         mYL1Lwj+LbCdJWKKBfyv/XAs9lXLOyz+vd+uyqYKqybro5/Mj+1TDThyHDgvCHTkCAZn
+         +Iz1NGEcAzObw4e2cf25Eaw8KW252s0QhkF8lJSjIecqisMaDo+DHQjN5ryZs7iqzyPB
+         QnmA==
+X-Gm-Message-State: AOAM531IMDYJv0SwBIoEDOLWqN5q4WffIuGpbBe0QPUJSY3tPA+vgx2T
+        YFS1tVsAQlOBkYalcPW23nuJgFtUJAwt/y5skW7P
+X-Google-Smtp-Source: ABdhPJxwUDF114o2gy5sFNpwgCfnJzhmnQ0CQLzlaPBqPhlrHJJdrTOWrANK8cv+0mYFczDmrkFW0Ydud/Lrf7jJCok=
+X-Received: by 2002:a05:6402:158e:: with SMTP id c14mr2758605edv.128.1622782259021;
+ Thu, 03 Jun 2021 21:50:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7666.1622782062.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Thu, 03 Jun 2021 21:47:42 -0700
-Message-ID: <7667.1622782062@famine>
+References: <20210517092006.803332-1-omosnace@redhat.com> <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
+ <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net> <CAHC9VhR-kYmMA8gsqkiL5=poN9FoL-uCyx1YOLCoG2hRiUBYug@mail.gmail.com>
+ <c7c2d7e1-e253-dce0-d35c-392192e4926e@iogearbox.net> <CAHC9VhS1XRZjKcTFgH1+n5uA-CeT+9BeSP5jvT2+RE5ougLpUg@mail.gmail.com>
+ <2e541bdc-ae21-9a07-7ac7-6c6a4dda09e8@iogearbox.net> <CAHC9VhT464vr9sWxqY3PRB4DAccz=LvRMLgWBsSViWMR0JJvOQ@mail.gmail.com>
+ <3ca181e3-df32-9ae0-12c6-efb899b7ce7a@iogearbox.net> <CAHC9VhTuPnPs1wMTmoGUZ4fvyy-es9QJpE7O_yTs2JKos4fgbw@mail.gmail.com>
+ <f4373013-88fb-b839-aaaa-3826548ebd0c@iogearbox.net>
+In-Reply-To: <f4373013-88fb-b839-aaaa-3826548ebd0c@iogearbox.net>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 4 Jun 2021 00:50:47 -0400
+Message-ID: <CAHC9VhS=BeGdaAi8Ae5Fx42Fzy_ybkcXwMNcPwK=uuA6=+SRcg@mail.gmail.com>
+Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
+ permission checks
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
+        linux-security-module@vger.kernel.org,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Casey Schaufler <casey@schaufler-ca.com>, jolsa@redhat.com,
+        ast@kernel.org, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhudi <zhudi21@huawei.com> wrote:
-
->From: Di Zhu <zhudi21@huawei.com>
+On Thu, Jun 3, 2021 at 2:53 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> On 6/2/21 5:13 PM, Paul Moore wrote:
+> [...]
+> > Help me out here, is your answer that the access check can only be
+> > done at BPF program load time?  That isn't really a solution from a
+> > SELinux perspective as far as I'm concerned.
 >
->When doing the test of restarting the network card, the system is
->broken because the port->slave is null pointer in agg_device_up().
->After in-depth investigation, we found the real cause: in
->bond_3ad_unbind_slave()  if there are no active ports in the
->aggregator to be deleted, the ad_clear_agg() will be called to
->set "aggregator->lag_ports = NULL", but the ports originally
->belonging to the aggregator are still linked together.
+> That is the current answer. The unfortunate irony is that 59438b46471a
+> ("security,lockdown,selinux: implement SELinux lockdown") broke this in
+> the first place. W/o the SELinux hook implementation it would have been
+> working just fine at runtime, but given it's UAPI since quite a while
+> now, that ship has sailed.
 
-	Presumably by "no active ports" you refer to the following block
-near the end of bond_3ad_unbind_slave() (where a port being deleted is
-removed from an aggregator):
+Explaining the other side of the "unfortunate irony ..." comment is
+going to take us in a direction that isn't very constructive so I'm
+going to skip past that now and simply say that if there was better
+cooperation across subsystems, especially with the LSM folks, a lot of
+this pain could be mitigated.
 
-				if (prev_port)
-					prev_port->next_port_in_aggregator = temp_port->next_port_in_aggregator;
-				else
-					temp_aggregator->lag_ports = temp_port->next_port_in_aggregator;
-				temp_aggregator->num_of_ports--;
-				if (__agg_active_ports(temp_aggregator) == 0) {
-					select_new_active_agg = temp_aggregator->is_active;
-					ad_clear_agg(temp_aggregator);
-					if (select_new_active_agg) {
-						slave_info(bond->dev, slave->dev, "Removing an active aggregator\n");
-						/* select new active aggregator */
-						ad_agg_selection_logic(__get_first_agg(port),
-							               &dummy_slave_update);
+... and yes I said "mitigated", I'm not foolish to think the pain
+could be avoided entirely ;)
 
-
-	by what mechanism are you causing the ports within a particular
-aggregator to all be inactive (port->is_enabled == false)?  Am I correct
-in speculating that you're removing carrier from "port1" and "port3"
-while simultaneously removing "port2" from the bond?  I believe this
-would all need to occur within a single gap between passes of the state
-machine logic.
-
-	The logic in bond_3ad_handle_link_change() that sets
-port->is_enabled = false happens on link state change, and is
-immediately followed (under the same acquisition of bond->mode_lock) by
-a call to ad_agg_selection_logic().  So, in principle, when the port is
-set to inactive (is_enabled == false), it should be reselected to a
-different aggregator (likely as an individual port) on the next run of
-the state machine.
-
->Before bond_3ad_unbind_slave():
->	aggregator4->lag_ports = port1->port2->port3
->After bond_3ad_unbind_slave():
->	aggregator4->lag_ports = NULL
->	port1->port2->port3
+> > I understand the ideas I've tossed out aren't practical from a BPF
+> > perspective, but it would be nice if we could find something that does
+> > work.  Surely you BPF folks can think of some way to provide a
+> > runtime, not load time, check?
 >
->After the port2 is deleted, the port is still  remain in the linked
->list: because the port does not belong to any agg, so unbind do
->nothing for this port.
+> I did run this entire discussion by both of the other BPF co-maintainers
+> (Alexei, Andrii, CC'ed) and together we did further brainstorming on the
+> matter on how we could solve this, but couldn't find a sensible & clean
+> solution so far.
+
+Before I jump into the patch below I just want to say that I
+appreciate you looking into solutions on the BPF side of things.
+However, I voted "no" on this patch previously and since you haven't
+really changed it, my "no"/NACK vote remains, at least until we
+exhaust a few more options.
+
+> [PATCH] bpf, lockdown, audit: Fix buggy SELinux lockdown permission checks
 >
->After a while, bond_3ad_state_machine_handler() will run and
->traverse each existing port, trying to bind each port to the
->newly selected agg, such as:
->	if (!found) {
->		if (free_aggregator) {
->			...
->			port->aggregator->lag_ports = port;
->			...
->		}
->	}
->After this operation, the link list looks like this:
->	 aggregator1->lag_ports = port1->port2(has been deleted)->port3
+> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
+> added an implementation of the locked_down LSM hook to SELinux, with the aim
+> to restrict which domains are allowed to perform operations that would breach
+> lockdown. This is indirectly also getting audit subsystem involved to report
+> events. The latter is problematic, as reported by Ondrej and Serhei, since it
+> can bring down the whole system via audit:
 >
->After that, just traverse the linked list of agg1 and access the
->port2->slave, the crash will happen.
+>    1) The audit events that are triggered due to calls to security_locked_down()
+>       can OOM kill a machine, see below details [0].
 >
->The easiest way to fix it is: if a port does not belong to any agg, delete
->it from the list and wait for the state machine to select the agg again.
-
-	As I understand the above, the bug causes a deleted (freed)
-object to be left on the linked list (port1 -> port2 -> port3 in the
-above).  I'm not quite sure how the code block above allows this to
-happen, as the port being deleted is unlinked (at the top of the code
-block).
-
-	In any event, assuming that I'm missing something and it does
-leave the freed port in the list, this fix may be the easiest, but I
-don't believe it's correct, as it leaves opportunity for something else
-to traverse the linked list and dereference the freed element.
-
-	The code sample I included above occurs immediately after
-removing a port from the aggregator's list of ports, and, in light of
-your analysis (and assuming I've got the correct code block above), I
-believe that the "__agg_active_ports(temp_aggregator) == 0" test should
-really test to determine if there are no ports at all in the aggregator
-(i.e., temp_aggregator->num_of_ports == 0), not only test for active
-ports.  This way, if any ports remain in the aggregator, then
-ad_clear_agg() would not be called, and the linked list would not end up
-detached.
-
-	Comments?
-
-	-J
-
->Fixes: 0622cab0341c ("bonding: fix 802.3ad aggregator reselection")
->Signed-off-by: Di Zhu <zhudi21@huawei.com>
->---
->/* v2 */
->-David Miller <davem@davemloft.net>
-> -add Fixes: tag
->---
-> drivers/net/bonding/bond_3ad.c | 7 +++++++
-> 1 file changed, 7 insertions(+)
+>    2) It also seems to be causing a deadlock via avc_has_perm()/slow_avc_audit()
+>       when trying to wake up kauditd, for example, when using trace_sched_switch()
+>       tracepoint, see details in [1]. Triggering this was not via some hypothetical
+>       corner case, but with existing tools like runqlat & runqslower from bcc, for
+>       example, which make use of this tracepoint. Rough call sequence goes like:
 >
->diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
->index 6908822d9773..1d6ff4e1ed28 100644
->--- a/drivers/net/bonding/bond_3ad.c
->+++ b/drivers/net/bonding/bond_3ad.c
->@@ -1793,6 +1793,8 @@ static void ad_agg_selection_logic(struct aggregator *agg,
-> static void ad_clear_agg(struct aggregator *aggregator)
-> {
-> 	if (aggregator) {
->+		struct port *port, *next;
->+
-> 		aggregator->is_individual = false;
-> 		aggregator->actor_admin_aggregator_key = 0;
-> 		aggregator->actor_oper_aggregator_key = 0;
->@@ -1801,6 +1803,11 @@ static void ad_clear_agg(struct aggregator *aggregator)
-> 		aggregator->partner_oper_aggregator_key = 0;
-> 		aggregator->receive_state = 0;
-> 		aggregator->transmit_state = 0;
->+		for (port = aggregator->lag_ports; port; port = next) {
->+			next = port->next_port_in_aggregator;
->+			if (port->aggregator == aggregator)
->+				port->next_port_in_aggregator = NULL;
->+		}
-> 		aggregator->lag_ports = NULL;
-> 		aggregator->is_active = 0;
-> 		aggregator->num_of_ports = 0;
->-- 
->2.23.0
->
+>       rq_lock(rq) -> -------------------------+
+>         trace_sched_switch() ->               |
+>           bpf_prog_xyz() ->                   +-> deadlock
+>             selinux_lockdown() ->             |
+>               audit_log_end() ->              |
+>                 wake_up_interruptible() ->    |
+>                   try_to_wake_up() ->         |
+>                     rq_lock(rq) --------------+
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Since BPF is a bit of chaotic nightmare in the sense that it basically
+out-of-tree kernel code that can be called from anywhere and do pretty
+much anything; it presents quite the challenge for those of us worried
+about LSM access controls.
+
+You and the other BPF folks have investigated ways in which BPF might
+be able to disable helper functions allowing us to do proper runtime
+access checks but haven't been able to make it work, which brings this
+patch up yet again.  I'm not a fan of this patch as it basically
+allows BPF programs to side-step any changes to the security policy
+once the BPF programs have been loaded; this is Not Good.
+
+So let's look at this from a different angle.  Let's look at the two
+problems you mention above.
+
+If we start with the runqueue deadlock we see the main problem is that
+audit_log_end() pokes the kauditd_wait waitqueue to ensure the
+kauditd_thread thread wakes up and processes the audit queue.  The
+audit_log_start() function does something similar, but it is
+conditional on a number of factors and isn't as likely to be hit.  If
+we relocate these kauditd wakeup calls we can remove the deadlock in
+trace_sched_switch().  In the case of CONFIG_AUDITSYSCALL=y we can
+probably just move the wakeup to __audit_syscall_exit() and in the
+case of CONFIG_AUDITSYSCALL=n we can likely just change the
+wait_event_freezable() call in kauditd_thread to a
+wait_event_freezable_timeout() call with a HZ timeout (the audit
+stream will be much less on these systems anyway so a queue overflow
+is much less likely).  I'm building a kernel with these changes now, I
+should have something to test when I wake up tomorrow morning.  It
+might even provide a bit of a performance boost as we would only be
+calling a wakeup function once for each syscall.
+
+The other issue is related to security_locked_down() and using the
+right subject for the access control check.  As has been pointed out
+several times in this thread, the current code uses the current() task
+as the subject, which is arguably incorrect for many of the BPF helper
+functions.  In the case of BPF, we have talked about using the
+credentials of the task which loaded the BPF program instead of
+current(), and that does make a certain amount of sense.  Such an
+approach should make the security policy easier to develop and
+rationalize, leading to a significant decrease in audit records coming
+from LSM access denials.  The question is how to implement such a
+change.  The current SELinux security_bpf_prog_alloc() hook causes the
+newly loaded BPF program to inherit the subject context from the task
+which loads the BPF program; if it is possible to reference the
+bpf_prog struct, or really just the associated bpf_prog_aux->security
+blob, from inside a security_bpf_locked_down() function we use that
+subject information to perform the access check.  BPF folks, is there
+a way to get that information from within a BPF kernel helper
+function?  If it isn't currently possible, could it be made possible
+(or something similar)?
+
+If it turns out we can do both of these things (relocated audit
+wakeup, bpf_prog reference inside kernel helpers) I think we can
+arrive at a fix which both groups can accept.
+
+-- 
+paul moore
+www.paul-moore.com
