@@ -2,70 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CC1639C312
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 00:00:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58D4739C343
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 00:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230128AbhFDWBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 18:01:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52560 "EHLO mail.kernel.org"
+        id S230403AbhFDWL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 18:11:56 -0400
+Received: from mga05.intel.com ([192.55.52.43]:24251 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229668AbhFDWBu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Jun 2021 18:01:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id BB9B061404;
-        Fri,  4 Jun 2021 22:00:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622844003;
-        bh=SFFqPJcgVlA4vsF9pOLrJMuNb8C+P28BarhiInV/NyY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Z8oEb+9nmy4+A8/JNWh23RrTIQ1NTGhdU5UjFQde6tAJUao83FJigWIZG2LVsjayw
-         sXrmsEnmy+f+6R77R/oH3Kg2rcQlOLU4dWOP4rVv8FpRINe8m1dfPh0URd9mwM42CY
-         mDgapQG9XDUGvG6sc3P5YzEZt9fOQcwGFTCYxiBT/N65WvhAz6TfBWNo2Xt7a/PMFp
-         OiI8ZMSvfEZ5yG0fFtenW0aWyt6EnLnzfTubJ8636Aryh3yNVX2xb00Df/60SQLQX9
-         8lfhIAScdryr3hHFcE9zCOmB2x62/NdDOZNrTz7M/ZY52tihYAA32IDXUv5oHGT7YP
-         e4sdrSW0ngzbA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AF31E60BFB;
-        Fri,  4 Jun 2021 22:00:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229668AbhFDWLw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Jun 2021 18:11:52 -0400
+IronPort-SDR: oYYSlq6sccd3p1hnaj951Sr39H7YD/fYD4W8qPtfDmGvXaGt6eq+q1rwpktR0TaK1LEL5c8UxR
+ i5xhpRzQeUGA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10005"; a="290007339"
+X-IronPort-AV: E=Sophos;i="5.83,249,1616482800"; 
+   d="scan'208";a="290007339"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2021 15:10:04 -0700
+IronPort-SDR: fH1wBMzQEaV0sQM2oOdiGTN+FdFsUnuXdxMYDC3JP6bLCm6TUMnV41BL/Gg07EWpgM9XIudCsA
+ PFiI3f2LyT/g==
+X-IronPort-AV: E=Sophos;i="5.83,249,1616482800"; 
+   d="scan'208";a="439326605"
+Received: from lmrivera-mobl.amr.corp.intel.com (HELO localhost.localdomain) ([10.251.24.65])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2021 15:10:03 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        sasha.neftin@intel.com, anthony.l.nguyen@intel.com,
+        linux-pci@vger.kernel.org, bhelgaas@google.com,
+        netdev@vger.kernel.org, mlichvar@redhat.com,
+        richardcochran@gmail.com, hch@infradead.org, helgaas@kernel.org
+Subject: [PATCH next-queue v4 0/4] igc: Add support for PCIe PTM
+Date:   Fri,  4 Jun 2021 15:09:29 -0700
+Message-Id: <20210604220933.3974558-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: dsa: xrs700x: allow HSR/PRP supervision dupes
- for node_table
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162284400371.9401.10316874311102871483.git-patchwork-notify@kernel.org>
-Date:   Fri, 04 Jun 2021 22:00:03 +0000
-References: <20210604162922.76954-1-george.mccollister@gmail.com>
-In-Reply-To: <20210604162922.76954-1-george.mccollister@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Changes from v3:
+  - More descriptive commit messages and comments (Bjorn Helgaas);
+  - Added a pcie_ptm_enabled() helper (Bjorn Helgaas);
 
-On Fri,  4 Jun 2021 11:29:22 -0500 you wrote:
-> Add an inbound policy filter which matches the HSR/PRP supervision
-> MAC range and forwards to the CPU port without discarding duplicates.
-> This is required to correctly populate time_in[A] and time_in[B] in the
-> HSR/PRP node_table. Leave the policy disabled by default and
-> enable/disable it when joining/leaving hsr.
-> 
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> 
-> [...]
+Changes from v2:
+  - Now the PTM timestamps are retrieved synchronously with the
+    ioctl();
+  - Fixed some typos in constants;
+  - The IGC_PTM_STAT register is write-1-to-clear, document this more
+    clearly;
 
-Here is the summary with links:
-  - [net-next] net: dsa: xrs700x: allow HSR/PRP supervision dupes for node_table
-    https://git.kernel.org/netdev/net-next/c/1a42624aecba
+Changes from v1:
+  - This now should cross compile better, convert_art_ns_to_tsc() will
+    only be used if CONFIG_X86_TSC is enabled;
+  - PCIe PTM errors reported by the NIC are logged and PTM cycles are
+    restarted in case an error is detected;
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Original cover letter (lightly edited):
 
+This adds support for PCIe PTM (Precision Time Measurement) to the igc
+driver. PCIe PTM allows the NIC and Host clocks to be compared more
+precisely, improving the clock synchronization accuracy.
+
+Patch 1/4 reverts a commit that made pci_enable_ptm() private to the
+PCI subsystem, reverting makes it possible for it to be called from
+the drivers.
+
+Patch 2/4 adds the pcie_ptm_enabled() helper.
+
+Patch 3/4 calls pci_enable_ptm() from the igc driver.
+
+Patch 4/4 implements the PCIe PTM support. It adds a workqueue that
+reads the PTM registers periodically and collects the information so a
+subsequent call to getcrosststamp() has all the timestamps needed.
+
+Some questions are raised (also pointed out in the commit message):
+
+1. Using convert_art_ns_to_tsc() is too x86 specific, there should be
+   a common way to create a 'system_counterval_t' from a timestamp.
+
+2. convert_art_ns_to_tsc() says that it should only be used when
+   X86_FEATURE_TSC_KNOWN_FREQ is true, but during tests it works even
+   when it returns false. Should that check be done?
+
+Cheers,
+
+Vinicius Costa Gomes (4):
+  Revert "PCI: Make pci_enable_ptm() private"
+  PCI: Add pcie_ptm_enabled()
+  igc: Enable PCIe PTM
+  igc: Add support for PTP getcrosststamp()
+
+ drivers/net/ethernet/intel/igc/igc.h         |   1 +
+ drivers/net/ethernet/intel/igc/igc_defines.h |  31 ++++
+ drivers/net/ethernet/intel/igc/igc_main.c    |   6 +
+ drivers/net/ethernet/intel/igc/igc_ptp.c     | 182 +++++++++++++++++++
+ drivers/net/ethernet/intel/igc/igc_regs.h    |  23 +++
+ drivers/pci/pci.h                            |   3 -
+ drivers/pci/pcie/ptm.c                       |   9 +
+ include/linux/pci.h                          |  10 +
+ 8 files changed, 262 insertions(+), 3 deletions(-)
+
+-- 
+2.31.1
 
