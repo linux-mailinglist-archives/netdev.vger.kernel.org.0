@@ -2,293 +2,379 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90DD839B84D
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 13:52:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E9A539B89F
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 14:00:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbhFDLxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 07:53:45 -0400
-Received: from mail-db8eur05on2056.outbound.protection.outlook.com ([40.107.20.56]:26145
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229682AbhFDLxo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Jun 2021 07:53:44 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PkfXpKLeomiQetrRFaMFaREpa0QsYclAvAFerVpj+52DYUjew/PzxPmWn6BX+6M6qw7Px4lALeW1a6QNBm/jtZn5Xpw2jqFbHeRJzuMII/Gz93JoQykRQE6uNkefVzZj/kqHbwTRlmpSITAiCpe9782JoUr4RIr6MMDAvpi6/Ua9fcr496UH79Kv0l87Ji664SmxqviK9Eb4yiL3UmgJ171oG3o0Ng2VEh4gFjH7FtfEpHGvQP84dBx/ghu+wZ+4IraaaVcqw2d/651gHJiVhc6Ojfk49BXHZA04asXMEUHMUFbYDh8pFhu5ZhtAxXHRIED5InkWdFlXePBAbbi4Zg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Nid/gSTZBxwkOdl1/i1A4EpZCnR+dHqf2c7hiVbfaEg=;
- b=ZlMCapKt7RKhUcNhRqbpDf8OxONG2yYECrkDdqzoxUFB6eEc/F+7L2efd/iWFl2gkjRZfodshvxDrdvraN0Xr4mO6ljNa7LbVnuwsFQbPVs1RibdYKSmTjOXVb3kzLrzL1uvS4xNC5R3lFBzJlHOiEB96b9s2haePPeOFcKa2pJ/XEwMOqLYi9cpS1W1nDO7GRsnCznh+IvjlDja650ygPt6qONh5iqkYATyuVZoIPu1f/6Y6XcwyHknCF7A5ZOX0YZiyaD7OXS0zTFXawlHTInrSy4Dr7+e8aipVzjTkfWes6Dpko79lruqqkuvFplsasr6+HaiLZoOQozfHB9JTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Nid/gSTZBxwkOdl1/i1A4EpZCnR+dHqf2c7hiVbfaEg=;
- b=kBApStJXgHXDlUt4S6nOOoe6sG9aRVyb9yNxJ8zOstg7M4x/6z+dL7UXy3551DSRkDKJKmkeKItRgUulPhsG0QcKw/dHODGJ+6XkvyKlPP+Rq543eEf+n7bdauREk/+v37r0YR3TzOpvTl4ZpZhh038OY6qtYbvmk90rckU3e58=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0402MB2798.eurprd04.prod.outlook.com (2603:10a6:800:ae::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Fri, 4 Jun
- 2021 11:51:55 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::b1a0:d654:a578:53ab]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::b1a0:d654:a578:53ab%7]) with mapi id 15.20.4195.024; Fri, 4 Jun 2021
- 11:51:54 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-CC:     "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "weifeng.voon@intel.com" <weifeng.voon@intel.com>,
-        "boon.leong.ong@intel.com" <boon.leong.ong@intel.com>,
-        "tee.min.tan@intel.com" <tee.min.tan@intel.com>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
-        "vee.khee.wong@intel.com" <vee.khee.wong@intel.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH net-next v5 1/3] net: stmmac: split xPCS setup from
- mdio register
-Thread-Topic: [RESEND PATCH net-next v5 1/3] net: stmmac: split xPCS setup
- from mdio register
-Thread-Index: AQHXWTENJC5Z8so33US6hBvpd1LPX6sDvaOA
-Date:   Fri, 4 Jun 2021 11:51:54 +0000
-Message-ID: <20210604115153.pux7qbrybs4ckg4j@skbuf>
-References: <20210604105733.31092-1-michael.wei.hong.sit@intel.com>
- <20210604105733.31092-2-michael.wei.hong.sit@intel.com>
-In-Reply-To: <20210604105733.31092-2-michael.wei.hong.sit@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.26.52.84]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3ce3843e-57f6-4f96-0640-08d9274f2664
-x-ms-traffictypediagnostic: VI1PR0402MB2798:
-x-microsoft-antispam-prvs: <VI1PR0402MB2798974EFE662ED80EE86C49E03B9@VI1PR0402MB2798.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2803;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LhkHOnMfc9XG4AfI47kr1jKtLivY17nA82tOlk5veybC66GzG5wMxEBTM3luty3KbDc0ijlw953QRxc+uXVxbyuY2rC30IhfFeqzM1z5JUk+3C+4hMJmSVjjHOkvPFhEHilIHFRuR0tx1b7PpyZ0Og3nFyMeFIkmgQ9CW6+E5VGG/Aw9VK5NXyiammMvSNeewcRJn7TciRsTbSIyM6aBXijhUHbD2/M8rQFOhZ7UqCLOI9xbfR3XKv9SMROKbKtK8J0vQcq3L4Amdk9OUq/kKApuGZPWF9OIdpwJTAzfUPmBpox6qR3DUkfwDK0uDK1NNj+vXeenOL+ZfpFYyGOOeM8DQ+dQSVvGlJdesXGwqRB/iUU4l0yX2jYQJ58b7QTTOzIyt7+RBnKE2TuGjdrGs5l73B5KIOu/PoH/znLnVODEQlloPhfpFI91fMLPmeuTvhzagB4qdnIAMGSl/Rl7on68TX7AKfmGjsK/M64fvF9VJIJDPspH6wTPyFZk+lS9j+TlY/wxmrGpBFIrntVspwnlY2/YWz2nvsB1OrJpIctEOR7wvrn2ejtkiVALvZGA4hVYUQLnkzq+qRGgPiQOWwPFchAk179n0hCtOJZKLMs=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(346002)(396003)(39860400002)(136003)(376002)(38100700002)(122000001)(4326008)(6512007)(9686003)(7416002)(26005)(478600001)(186003)(44832011)(8936002)(2906002)(316002)(83380400001)(91956017)(71200400001)(6506007)(54906003)(86362001)(64756008)(66446008)(66476007)(66556008)(66946007)(8676002)(6916009)(6486002)(33716001)(76116006)(5660300002)(1076003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?1+KLBPmYOQdWDMqvJDfqgFDeDdK5AcagKMun3oF5P5H5xe632iHqGGLDe21M?=
- =?us-ascii?Q?o61h2R5PfYnK8/MJ96fbxhQimR7bIqmmU4cEzKmfSLWbmDzJQWavdcLXwWnp?=
- =?us-ascii?Q?1W8joQi6PI7K/4ZzP7Vw/atJ6Ra9gLeVV/bAL6MunrBLNKJbgc0MddQDLCme?=
- =?us-ascii?Q?1POcGXQ4OEhfOHiWjJJhuclssMXvRyQbKsq+BbtQ12RrqANa2TcQk++x85ne?=
- =?us-ascii?Q?AL6Phf3ks/VcwuKdNZEgiIKysLyDKu82cka3S058t0IYQbOnTksXHjpiTE5j?=
- =?us-ascii?Q?TH74MhFadVQRnt6zFWgGxLPt7mUREpUVj7r5lmnXDPoyMBa0oJKRCdpqLBA6?=
- =?us-ascii?Q?JMtRl8MjDvOwXdVaGTmpPgGsHmvh9y5p3NRzuMOPDRChPlo7rldmji4s86QN?=
- =?us-ascii?Q?oT5oftpSfeVdbhTlss/BSqprVE8Nj6EmQwW10R9eulrKU0RFvfRciko4iNCS?=
- =?us-ascii?Q?HPFR+M7uaBQda9XvHaYDgrvcJicJnvKQmP8j8ETUDqEvGrINVd5Usq1PU7N6?=
- =?us-ascii?Q?1jEL3UarPAsabf5VkTzM8rZeJB7iJuh1XmuI1wtsMr4xistQ6/O9m8ZJ6ybw?=
- =?us-ascii?Q?pVS40bHkjt5GJ/yndb2WhONALw0e3Zow3zSbGaL92YgeKw6hUAdUA/COJBfN?=
- =?us-ascii?Q?jHmF63rYC/whsr0F1R+Eeu/o9R+/2ryHytdSTk/P2RFgxlP9cz+xHllWTIvj?=
- =?us-ascii?Q?k8ZSU7f48W6Wgaq+Fcb3N1Db99sN+CKIe8vOeZPHOFQTKWQN+8R6qbvErLoX?=
- =?us-ascii?Q?lv2xaNY33NpEdcKFrUvJywDAezfnqIemf8l66YzYIZIhbHPsGa7lQJUYM5nB?=
- =?us-ascii?Q?TvST/M0Z8OO6GYJXebGde7Jq9Hqo97YQsaFURF3Bn/YxcnScVe2zfoJ2gnis?=
- =?us-ascii?Q?dZuSxqpSYN5xzuJK0iMKQcS84R7Rp09sjBJ1oSaq3KMC75povRLj2oxWi3wA?=
- =?us-ascii?Q?THnUcFeeK1GEc6ZBpWHmBSqtFbUuvw7tm5Lebc4tuKljcaFBI8cjXGCBzIPI?=
- =?us-ascii?Q?8dL7b0+RiOlWbiGWkCQ3mfOYqE4MVabYM4chA1stkvuULJjL9tZakWS+xwwi?=
- =?us-ascii?Q?6HMXvftPfbgMFk2z/ix4lVPPI0pGDtgXD4SmkLtNaQUAsQAJ0WoQBLz428JH?=
- =?us-ascii?Q?++6bINy0iAvp/HjaI54CFuoQ6vxVHamB2w9IPMV77hSYuGf7JSKIFl2zL09b?=
- =?us-ascii?Q?nwUIOVwMbFidzaMlpEiCYn01t1RdQhyIsn9lWj7nmQMVBz59Ffgp0Ne6zv5g?=
- =?us-ascii?Q?Jlhay4sB1liCFj13haDf7Ne0UeLpBeFqQFwn8mQ+7EuTFivC780IBo1tdxg/?=
- =?us-ascii?Q?VMk+uphBaXLvuxclSxuzVP/c?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <214EC5EA82E94F4EB763362AE59AC680@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S230311AbhFDMCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 08:02:14 -0400
+Received: from mail-wr1-f44.google.com ([209.85.221.44]:46770 "EHLO
+        mail-wr1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230251AbhFDMCN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 08:02:13 -0400
+Received: by mail-wr1-f44.google.com with SMTP id a11so7162193wrt.13;
+        Fri, 04 Jun 2021 05:00:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LWws1dPTgXqVuB3LKpwxLUmui+8eR3xid3DI3YW0O24=;
+        b=ZPweqCe4Wk0/26ZC/KOarQrE2WqoWm0p2HgoGFiYrI/9mQ3Tv1C9PrG6ofIL6sS+gI
+         B1ybQdEE2DaNlT93jYOXH4T8IitY5dmilpRe+ptud7Bh7nz/p2zdbcSgJO5XoLm8ZZlz
+         rBdEiAzGY3zAJ+fpjHwWF7VNlwRdG3rsev5TnCkbIPULbV2Xh38xQL25nIlBydb/Uybp
+         uDbRY9Dw6q+Mng8pD3axK7hE1m14OFY2xoA6S56QJ2HbGM8NVxwnZZpLATQQxc50kvyi
+         ecoaAbmSIXWqh0Ad75ARkDHUCKI9ZCzL8yWo8gOrYM3MmkdmC36zyRQaAsyFiLLaP2pb
+         +ZEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LWws1dPTgXqVuB3LKpwxLUmui+8eR3xid3DI3YW0O24=;
+        b=qsPuHPS36lyowSnYV12ro6c9jL9b27QO9VUevG+pJBlQFCtAqMacPTMNupNS71Bqvc
+         tFm+zig8L8TVFk0o8E3qbb5VemcaejOGoVfMvbEkNIg52JunpwIjCjjaSTo1G/EgDHU+
+         GCDYNtKOaNHALH71L1lEeG+TWpXfVJM9qqBo8yPOgRDasGQHiEXbNZkCIrgAG+3lUtMf
+         QKwRyChq0oXxhebMJH+AfOk22mxY0IQoaGOKWXfDZ5MXfOugEoUe9AzmD5LCLxliH5+E
+         OS7pWvDUHUsb1sbGHc3rMqCHp1M40SHMUlFor+8y9MPqCIOswm52/V8/E6v4HFnpcI43
+         CWPw==
+X-Gm-Message-State: AOAM532rXd0sNUHMJNSYhYpy1FVxGRUE0AKJmL5XzPh3pkFwkYjc4vx1
+        CtRs2lfx8puAiWz0WBbYhm4Ad0fVRsw=
+X-Google-Smtp-Source: ABdhPJzcfzMnf1fzhnD7Bar4TL4IS1QNN6IBKnfN0AVLTaMVN/NyB65JgZzwo7TH1st//9yJmtisRQ==
+X-Received: by 2002:adf:c54b:: with SMTP id s11mr3584151wrf.349.1622807951741;
+        Fri, 04 Jun 2021 04:59:11 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:c00:e88b:5ff5:6dda:b362? (p200300ea8f2f0c00e88b5ff56ddab362.dip0.t-ipconnect.de. [2003:ea:8f2f:c00:e88b:5ff5:6dda:b362])
+        by smtp.googlemail.com with ESMTPSA id y189sm5653884wmy.25.2021.06.04.04.59.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Jun 2021 04:59:11 -0700 (PDT)
+To:     Koba Ko <koba.ko@canonical.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20210603025414.226526-1-koba.ko@canonical.com>
+ <3d2e7a11-92ad-db06-177b-c6602ef1acd4@gmail.com>
+ <CAJB-X+V4vpLoNt2C_i=3mS4UtFnDdro5+hgaFXHWxcvobO=pzg@mail.gmail.com>
+ <f969a075-25a1-84ba-daad-b4ed0e7f75f5@gmail.com>
+ <CAJB-X+U5VEeSNS4sF0DBxc-p0nxA6QLVVrORHsscZuY37rGJ7w@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH] r8169: introduce polling method for link change
+Message-ID: <bfc68450-422d-1968-1316-64f7eaa7cbe9@gmail.com>
+Date:   Fri, 4 Jun 2021 13:59:06 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3ce3843e-57f6-4f96-0640-08d9274f2664
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2021 11:51:54.8735
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7bw812ORGrLxsd0FyYmf1GHYeNT9Unzrn5MG5omGcZUjImDDF0yy4Q0OpkRUclsSyDDxSfzcig6dyS9XiHcwiA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2798
+In-Reply-To: <CAJB-X+U5VEeSNS4sF0DBxc-p0nxA6QLVVrORHsscZuY37rGJ7w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 04, 2021 at 06:57:31PM +0800, Michael Sit Wei Hong wrote:
-> From: Voon Weifeng <weifeng.voon@intel.com>
->=20
-> This patch is a preparation patch for the enabling of Intel mGbE 2.5Gbps
-> link speed. The Intel mGbR link speed configuration (1G/2.5G) is depends =
-on
-> a mdio ADHOC register which can be configured in the bios menu.
-> As PHY interface might be different for 1G and 2.5G, the mdio bus need be
-> ready to check the link speed and select the PHY interface before probing
-> the xPCS.
->=20
-> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-> Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
->  .../net/ethernet/stmicro/stmmac/stmmac_main.c |  7 ++
->  .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 64 ++++++++++---------
->  3 files changed, 43 insertions(+), 29 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/e=
-thernet/stmicro/stmmac/stmmac.h
-> index b6cd43eda7ac..fd7212afc543 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-> @@ -311,6 +311,7 @@ enum stmmac_state {
->  int stmmac_mdio_unregister(struct net_device *ndev);
->  int stmmac_mdio_register(struct net_device *ndev);
->  int stmmac_mdio_reset(struct mii_bus *mii);
-> +int stmmac_xpcs_setup(struct mii_bus *mii);
->  void stmmac_set_ethtool_ops(struct net_device *netdev);
-> =20
->  void stmmac_ptp_register(struct stmmac_priv *priv);
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/=
-net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 6d41dd6f9f7a..c1331c07623d 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -6991,6 +6991,12 @@ int stmmac_dvr_probe(struct device *device,
->  		}
->  	}
-> =20
-> +	if (priv->plat->mdio_bus_data->has_xpcs) {
+On 04.06.2021 11:08, Koba Ko wrote:
+> On Fri, Jun 4, 2021 at 4:23 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>
+>> On 04.06.2021 09:22, Koba Ko wrote:
+>>> On Thu, Jun 3, 2021 at 6:00 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>>>
+>>>> On 03.06.2021 04:54, Koba Ko wrote:
+>>>>> For RTL8106E, it's a Fast-ethernet chip.
+>>>>> If ASPM is enabled, the link chang interrupt wouldn't be triggered
+>>>>> immediately and must wait a very long time to get link change interrupt.
+>>>>> Even the link change interrupt isn't triggered, the phy link is already
+>>>>> established.
+>>>>>
+>>>> At first please provide a full dmesg log and output of lspci -vv.
+>>>> Do you have the firmware for the NIC loaded? Please provide "ethtool -i <if>"
+>>>> output.
+>>>
+>>> please get the logs from here,
+>>> https://bugzilla.kernel.org/show_bug.cgi?id=213165
+>>>
+>>>> Does the issue affect link-down and/or link-up detection?
+>>>> Do you have runtime pm enabled? Then, after 10s of link-down NIC goes to
+>>>> D3hot and link-up detection triggers a PME.
+>>>
+>>> Issue affect link-up.
+>>> yes, pm runtime is enabled, but rtl8106e always stays D0 even if the
+>>> cable isn't present.
+>>>
+>> Then runtime pm doesn't seem to be set to "auto". Else 10s after link loss
+>> the chip runtime-suspends and is set to D3hot.
+> 
+> I will check this.
+> 
+>>
+>>>>
+>>>>> Introduce a polling method to watch the status of phy link and disable
+>>>>> the link change interrupt.
+>>>>> Also add a quirk for those realtek devices have the same issue.
+>>>>>
+>>>> Which are the affected chip versions? Did you check with Realtek?
+>>>> Your patch switches to polling for all Fast Ethernet versions,
+>>>> and that's not what we want.
+>>>
+>>> I don't know the exact version, only the chip name 806e(pci device id 0x8165).
+>>> ok, Im asking Realtek to help how to identify the chip issue is observed.
+>>>
+>> At least your Bugzilla report refers to VER_39. PCI device id 0x8136 is shared
+>> by all fast ethernet chip versions.
+>> Do you know other affected chip versions apart from VER_39 ?
+>>
+>> In the Bugzilla report you also write the issue occurs with GBit-capable
+>> link partners. This sounds more like an aneg problem.
+>> The issue doesn't occur with fast ethernet link partners?
+> 
+> Issue wouldn't be observed when the link-partner has only FE capability.
+> 
+Weird. I still have no clue how FE vs. GE support at link partner and
+ASPM could be related. I could understand that the PHY might have a
+problem with a GE link partner and aneg takes more time than usual.
+But this would be completely unrelated to a potential issue with
+ASPM on the PCIe link.
 
-stmmac_mdio_register has:
+And it's also not clear how L1_1 can cause an issue if the NIC doesn't
+support L1 sub-states. Maybe the root cause isn't with the NIC but
+with some other component in the PCIe path (e.g. bridge).
 
-	if (!mdio_bus_data)
-		return 0;
+>>
+>> Your bug report also includes a patch that disables L1_1 only.
+>> Not sure how this is related because the chip version we speak about
+>> here doesn't support L1 sub-states.
+> 
+> I have tried to enable L0s, L1 and don't disable L1 substate,
+> but still get the issue that interrupt can't be fired immediately but
+> the Link status is up.
+> 
+>>
+>>>>
+>>>> My suspicion would be that something is system-dependent. Else I think
+>>>> we would have seen such a report before.
+>>> On the mainline, the aspm is disable, so you may not observe this.
+>>> If you enable ASPM and must wait CHIP go to power-saving mode, then
+>>> you can observe the issue.
+>>>>
+>>
+>> So what you're saying is that mainline is fine and your problem is with
+>> a downstream kernel with re-enabled ASPM? So there's nothing broken in
+>> mainline? In mainline you have the option to re-enable ASPM states
+>> individually via sysfs (link subdir at pci device).
+> 
+> If enable L1_1 on the mainline, the issue could be observed too.
+> 
+It has a reason that ASPM is disabled per default in mainline. Different
+chip versions have different types of issues with ASPM enabled.
+However several chip versions work fine with ASPM (also LI sub-states),
+therefore users can re-enable ASPM states at own risk.
 
-which suggests that some platforms might not populate priv->plat->mdio_bus_=
-data.
+> Thanks
+>>
+>>>>> Signed-off-by: Koba Ko <koba.ko@canonical.com>
+>>>>> ---
+>>>>>  drivers/net/ethernet/realtek/r8169.h      |   2 +
+>>>>>  drivers/net/ethernet/realtek/r8169_main.c | 112 ++++++++++++++++++----
+>>>>>  2 files changed, 98 insertions(+), 16 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/net/ethernet/realtek/r8169.h b/drivers/net/ethernet/realtek/r8169.h
+>>>>> index 2728df46ec41..a8c71adb1b57 100644
+>>>>> --- a/drivers/net/ethernet/realtek/r8169.h
+>>>>> +++ b/drivers/net/ethernet/realtek/r8169.h
+>>>>> @@ -11,6 +11,8 @@
+>>>>>  #include <linux/types.h>
+>>>>>  #include <linux/phy.h>
+>>>>>
+>>>>> +#define RTL8169_LINK_TIMEOUT (1 * HZ)
+>>>>> +
+>>>>>  enum mac_version {
+>>>>>       /* support for ancient RTL_GIGA_MAC_VER_01 has been removed */
+>>>>>       RTL_GIGA_MAC_VER_02,
+>>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>> index 2c89cde7da1e..70aacc83d641 100644
+>>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>> @@ -178,6 +178,11 @@ static const struct pci_device_id rtl8169_pci_tbl[] = {
+>>>>>
+>>>>>  MODULE_DEVICE_TABLE(pci, rtl8169_pci_tbl);
+>>>>>
+>>>>> +static const struct pci_device_id rtl8169_linkChg_polling_enabled[] = {
+>>>>> +     { PCI_VDEVICE(REALTEK, 0x8136), RTL_CFG_NO_GBIT },
+>>>>> +     { 0 }
+>>>>> +};
+>>>>> +
+>>>>
+>>>> This doesn't seem to be used.
+>>>>
+>>>>>  enum rtl_registers {
+>>>>>       MAC0            = 0,    /* Ethernet hardware address. */
+>>>>>       MAC4            = 4,
+>>>>> @@ -618,6 +623,7 @@ struct rtl8169_private {
+>>>>>       u16 cp_cmd;
+>>>>>       u32 irq_mask;
+>>>>>       struct clk *clk;
+>>>>> +     struct timer_list link_timer;
+>>>>>
+>>>>>       struct {
+>>>>>               DECLARE_BITMAP(flags, RTL_FLAG_MAX);
+>>>>> @@ -1179,6 +1185,16 @@ static void rtl8168ep_stop_cmac(struct rtl8169_private *tp)
+>>>>>       RTL_W8(tp, IBCR0, RTL_R8(tp, IBCR0) & ~0x01);
+>>>>>  }
+>>>>>
+>>>>> +static int rtl_link_chng_polling_quirk(struct rtl8169_private *tp)
+>>>>> +{
+>>>>> +     struct pci_dev *pdev = tp->pci_dev;
+>>>>> +
+>>>>> +     if (pdev->vendor == 0x10ec && pdev->device == 0x8136 && !tp->supports_gmii)
+>>>>> +             return 1;
+>>>>> +
+>>>>> +     return 0;
+>>>>> +}
+>>>>> +
+>>>>>  static void rtl8168dp_driver_start(struct rtl8169_private *tp)
+>>>>>  {
+>>>>>       r8168dp_oob_notify(tp, OOB_CMD_DRIVER_START);
+>>>>> @@ -4608,6 +4624,75 @@ static void rtl_task(struct work_struct *work)
+>>>>>       rtnl_unlock();
+>>>>>  }
+>>>>>
+>>>>> +static void r8169_phylink_handler(struct net_device *ndev)
+>>>>> +{
+>>>>> +     struct rtl8169_private *tp = netdev_priv(ndev);
+>>>>> +
+>>>>> +     if (netif_carrier_ok(ndev)) {
+>>>>> +             rtl_link_chg_patch(tp);
+>>>>> +             pm_request_resume(&tp->pci_dev->dev);
+>>>>> +     } else {
+>>>>> +             pm_runtime_idle(&tp->pci_dev->dev);
+>>>>> +     }
+>>>>> +
+>>>>> +     if (net_ratelimit())
+>>>>> +             phy_print_status(tp->phydev);
+>>>>> +}
+>>>>> +
+>>>>> +static unsigned int
+>>>>> +rtl8169_xmii_link_ok(struct net_device *dev)
+>>>>> +{
+>>>>> +     struct rtl8169_private *tp = netdev_priv(dev);
+>>>>> +     unsigned int retval;
+>>>>> +
+>>>>> +     retval = (RTL_R8(tp, PHYstatus) & LinkStatus) ? 1 : 0;
+>>>>> +
+>>>>> +     return retval;
+>>>>> +}
+>>>>> +
+>>>>> +static void
+>>>>> +rtl8169_check_link_status(struct net_device *dev)
+>>>>> +{
+>>>>> +     struct rtl8169_private *tp = netdev_priv(dev);
+>>>>> +     int link_status_on;
+>>>>> +
+>>>>> +     link_status_on = rtl8169_xmii_link_ok(dev);
+>>>>> +
+>>>>> +     if (netif_carrier_ok(dev) == link_status_on)
+>>>>> +             return;
+>>>>> +
+>>>>> +     phy_mac_interrupt(tp->phydev);
+>>>>> +
+>>>>> +     r8169_phylink_handler (dev);
+>>>>> +}
+>>>>> +
+>>>>> +static void rtl8169_link_timer(struct timer_list *t)
+>>>>> +{
+>>>>> +     struct rtl8169_private *tp = from_timer(tp, t, link_timer);
+>>>>> +     struct net_device *dev = tp->dev;
+>>>>> +     struct timer_list *timer = t;
+>>>>> +     unsigned long flags;
+>>>>
+>>>> flags isn't used and triggers a compiler warning. Did you even
+>>>> compile-test your patch?
+>>>>
+>>>>> +
+>>>>> +     rtl8169_check_link_status(dev);
+>>>>> +
+>>>>> +     if (timer_pending(&tp->link_timer))
+>>>>> +             return;
+>>>>> +
+>>>>> +     mod_timer(timer, jiffies + RTL8169_LINK_TIMEOUT);
+>>>>> +}
+>>>>> +
+>>>>> +static inline void rtl8169_delete_link_timer(struct net_device *dev, struct timer_list *timer)
+>>>>> +{
+>>>>> +     del_timer_sync(timer);
+>>>>> +}
+>>>>> +
+>>>>> +static inline void rtl8169_request_link_timer(struct net_device *dev)
+>>>>> +{
+>>>>> +     struct rtl8169_private *tp = netdev_priv(dev);
+>>>>> +
+>>>>> +     timer_setup(&tp->link_timer, rtl8169_link_timer, TIMER_INIT_FLAGS);
+>>>>> +}
+>>>>> +
+>>>>>  static int rtl8169_poll(struct napi_struct *napi, int budget)
+>>>>>  {
+>>>>>       struct rtl8169_private *tp = container_of(napi, struct rtl8169_private, napi);
+>>>>> @@ -4624,21 +4709,6 @@ static int rtl8169_poll(struct napi_struct *napi, int budget)
+>>>>>       return work_done;
+>>>>>  }
+>>>>>
+>>>>> -static void r8169_phylink_handler(struct net_device *ndev)
+>>>>> -{
+>>>>> -     struct rtl8169_private *tp = netdev_priv(ndev);
+>>>>> -
+>>>>> -     if (netif_carrier_ok(ndev)) {
+>>>>> -             rtl_link_chg_patch(tp);
+>>>>> -             pm_request_resume(&tp->pci_dev->dev);
+>>>>> -     } else {
+>>>>> -             pm_runtime_idle(&tp->pci_dev->dev);
+>>>>> -     }
+>>>>> -
+>>>>> -     if (net_ratelimit())
+>>>>> -             phy_print_status(tp->phydev);
+>>>>> -}
+>>>>> -
+>>>>>  static int r8169_phy_connect(struct rtl8169_private *tp)
+>>>>>  {
+>>>>>       struct phy_device *phydev = tp->phydev;
+>>>>> @@ -4769,6 +4839,10 @@ static int rtl_open(struct net_device *dev)
+>>>>>               goto err_free_irq;
+>>>>>
+>>>>>       rtl8169_up(tp);
+>>>>> +
+>>>>> +     if (rtl_link_chng_polling_quirk(tp))
+>>>>> +             mod_timer(&tp->link_timer, jiffies + RTL8169_LINK_TIMEOUT);
+>>>>> +
+>>>>>       rtl8169_init_counter_offsets(tp);
+>>>>>       netif_start_queue(dev);
+>>>>>  out:
+>>>>> @@ -4991,7 +5065,10 @@ static const struct net_device_ops rtl_netdev_ops = {
+>>>>>
+>>>>>  static void rtl_set_irq_mask(struct rtl8169_private *tp)
+>>>>>  {
+>>>>> -     tp->irq_mask = RxOK | RxErr | TxOK | TxErr | LinkChg;
+>>>>> +     tp->irq_mask = RxOK | RxErr | TxOK | TxErr;
+>>>>> +
+>>>>> +     if (!rtl_link_chng_polling_quirk(tp))
+>>>>> +             tp->irq_mask |= LinkChg;
+>>>>>
+>>>>>       if (tp->mac_version <= RTL_GIGA_MAC_VER_06)
+>>>>>               tp->irq_mask |= SYSErr | RxOverflow | RxFIFOOver;
+>>>>> @@ -5436,6 +5513,9 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>       if (pci_dev_run_wake(pdev))
+>>>>>               pm_runtime_put_sync(&pdev->dev);
+>>>>>
+>>>>> +     if (rtl_link_chng_polling_quirk(tp))
+>>>>> +             rtl8169_request_link_timer(dev);
+>>>>> +
+>>>>>       return 0;
+>>>>>  }
+>>>>>
+>>>>>
+>>>>
+>>>> All this isn't needed. If you want to switch to link status polling,
+>>>> why don't you simply let phylib do it? PHY_MAC_INTERRUPT -> PHY_POLL
+>>>
+>>> Thanks for suggestions, I tried to use PHY_POLL, it could do the same
+>>> thing that I did.
+>>>
+>>>> Your timer-based code most likely would have problems if runtime pm
+>>>> is enabled. Then you try to read the link status whilst NIC is in
+>>>> D3hot.
+>>
 
-Are you sure it is safe to go straight to dereferencing mdio_bus_data->has_=
-xpcs
-in the common driver probe function?
-
-> +		ret =3D stmmac_xpcs_setup(priv->mii);
-> +		if (ret)
-> +			goto error_xpcs_setup;
-> +	}
-> +
->  	ret =3D stmmac_phy_setup(priv);
->  	if (ret) {
->  		netdev_err(ndev, "failed to setup phy (%d)\n", ret);
-> @@ -7027,6 +7033,7 @@ int stmmac_dvr_probe(struct device *device,
->  	unregister_netdev(ndev);
->  error_netdev_register:
->  	phylink_destroy(priv->phylink);
-> +error_xpcs_setup:
->  error_phy_setup:
->  	if (priv->hw->pcs !=3D STMMAC_PCS_TBI &&
->  	    priv->hw->pcs !=3D STMMAC_PCS_RTBI)
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/=
-net/ethernet/stmicro/stmmac/stmmac_mdio.c
-> index 6312a152c8ad..bc900e240da2 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-> @@ -397,6 +397,41 @@ int stmmac_mdio_reset(struct mii_bus *bus)
->  	return 0;
->  }
-> =20
-> +int stmmac_xpcs_setup(struct mii_bus *bus)
-> +{
-> +	int mode, addr;
-
-Can you please sort the variables in decreasing order of line length?
-Also, "mode" can be of the phy_interface_t type.
-
-> +	struct net_device *ndev =3D bus->priv;
-> +	struct mdio_xpcs_args *xpcs;
-> +	struct stmmac_priv *priv;
-> +	struct mdio_device *mdiodev;
-> +
-> +	priv =3D netdev_priv(ndev);
-> +	mode =3D priv->plat->phy_interface;
-> +
-> +	/* Try to probe the XPCS by scanning all addresses. */
-> +	for (addr =3D 0; addr < PHY_MAX_ADDR; addr++) {
-> +		mdiodev =3D mdio_device_create(bus, addr);
-> +		if (IS_ERR(mdiodev))
-> +			continue;
-> +
-> +		xpcs =3D xpcs_create(mdiodev, mode);
-> +		if (IS_ERR_OR_NULL(xpcs)) {
-> +			mdio_device_free(mdiodev);
-> +			continue;
-> +		}
-> +
-> +		priv->hw->xpcs =3D xpcs;
-> +		break;
-> +	}
-> +
-> +	if (!priv->hw->xpcs) {
-> +		dev_warn(priv->device, "No xPCS found\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  /**
->   * stmmac_mdio_register
->   * @ndev: net device structure
-> @@ -501,40 +536,11 @@ int stmmac_mdio_register(struct net_device *ndev)
->  		goto no_phy_found;
->  	}
-> =20
-> -	/* Try to probe the XPCS by scanning all addresses. */
-> -	if (mdio_bus_data->has_xpcs) {
-> -		int mode =3D priv->plat->phy_interface;
-> -		struct mdio_device *mdiodev;
-> -		struct mdio_xpcs_args *xpcs;
-> -
-> -		for (addr =3D 0; addr < PHY_MAX_ADDR; addr++) {
-> -			mdiodev =3D mdio_device_create(new_bus, addr);
-> -			if (IS_ERR(mdiodev))
-> -				continue;
-> -
-> -			xpcs =3D xpcs_create(mdiodev, mode);
-> -			if (IS_ERR_OR_NULL(xpcs)) {
-> -				mdio_device_free(mdiodev);
-> -				continue;
-> -			}
-> -
-> -			priv->hw->xpcs =3D xpcs;
-> -			break;
-> -		}
-> -
-> -		if (!priv->hw->xpcs) {
-> -			dev_warn(dev, "No XPCS found\n");
-> -			err =3D -ENODEV;
-> -			goto no_xpcs_found;
-> -		}
-> -	}
-> -
->  bus_register_done:
->  	priv->mii =3D new_bus;
-> =20
->  	return 0;
-> =20
-> -no_xpcs_found:
->  no_phy_found:
->  	mdiobus_unregister(new_bus);
->  bus_register_fail:
-> --=20
-> 2.17.1
-> =
