@@ -2,138 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB46E39AF2E
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 02:45:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B710239AF6D
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 03:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbhFDArb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 20:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbhFDArb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 20:47:31 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD576C06174A
-        for <netdev@vger.kernel.org>; Thu,  3 Jun 2021 17:45:32 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id t3so9155995edc.7
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 17:45:32 -0700 (PDT)
+        id S229835AbhFDBPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 21:15:31 -0400
+Received: from mail-pg1-f179.google.com ([209.85.215.179]:40959 "EHLO
+        mail-pg1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229764AbhFDBPa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 21:15:30 -0400
+Received: by mail-pg1-f179.google.com with SMTP id j12so6512344pgh.7;
+        Thu, 03 Jun 2021 18:13:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3vjjDLlIJqGvVNPtCSVB+L9uu4EO5ioC0XeKkc2DZG8=;
-        b=m/Bc0v4a3vx31SXIPLQY+/der2UgHk1qj1mRmPJ2JDutUeuSdrY57xD6JQ/J4Pat+A
-         Uk73AtKtPcCep4qEwgnYCJx9BCOZ7gVsG7ocSZP+w34Tiql0p7K6DOHNe+mXb2HhTVo5
-         hoVwEtjKTrwnmqug1my0TiTIxfIx07h8nVpI/wYeISqMUBwiGUFxNXypAM6g0hqvx8kw
-         NgfLn09274WBKnd6zIJIKLklmXUbpABxWNg2ER6CTEcKMptkijNM3QFOlKL+XmdK//3M
-         LvgPWJzF9umyNWBD9y79X8ooITx4xh/REkETYqNkCSJFPV6oYN3+NwJHuuGcFBBAze5x
-         lA4g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cyAZd6hKa9HUgtM9DI+wcqUInKkOsq+lYtlBkJdUwEU=;
+        b=GXGnQZw9iGluZalhPGuRK6zuNxdzhyLlvwQsogNbu1WPBHiEW1qvZQ77GM/53m1xxt
+         olLPzx7VMBUWeNr4ADMdteXe8X5b9thXF3vUwfoRor0VJ+kk2GBRc+zIVqahuk5x1n+H
+         qQ9QCvH6OLcSF55Gv4MuFPc7zQU8H30D0Zy9q3u/18ZXLqh8qSavy2jQ5gEoI3a3xqO+
+         EUNQPU5mRz0jtEQUqqkOGJNTnnwQZhl44h/7tZnAFoskjCGRfvYdZl3WklNerBF0Lsdu
+         iiczrqSoTooE/5JmkvY42vssIo7K/snZkBGUrTvjywSRlD8LLd0amlKXnAUdEYRGa1Sb
+         gMpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3vjjDLlIJqGvVNPtCSVB+L9uu4EO5ioC0XeKkc2DZG8=;
-        b=tDOqAAZmruh5YSeQV/cBd8H9hq8mrwBJqNk4SC5wwdAwlMB/2uAppkwik/AFaIN9tQ
-         9E0P1ebLuUTwRiphVq76giQgQuSMRY32mAkp/7ERRDHZD6/6PaMXegr0r9W/EvdvPCCG
-         q6bElNcT7ZWyZPVktXcuwUBt2qPan9ujhny2r3yQmK3mnublSJjiNwMSyg19CNfrPe6r
-         NTF7MY3lBZ6fx6o8sIq8CjFaeyMfTGWYhP6C/rbNrendLr7YMhpMMaOcaD1OEZtT/aLL
-         ZCgHm0g1jDEkx//zNj8sMbzp0J2y4nnL8uIxInv0MWMhzhi49FeytvSYntKoY1eMkrOB
-         p7Qw==
-X-Gm-Message-State: AOAM533OK5p0Z0NDJyg5UdnLnUjdGRHZIjofSt/PNOwcimXCYwAAN7OU
-        UAuD1zYXmsCuYjqu/0VOnfS2l6e01JA=
-X-Google-Smtp-Source: ABdhPJxqgN4vZ/RIFQwR61sb+z5r2vA3PGr93gQC80moFl1fnbzFRBWzjwmCqjse031tAWHMCzjU+g==
-X-Received: by 2002:aa7:cc9a:: with SMTP id p26mr2017929edt.74.1622767531385;
-        Thu, 03 Jun 2021 17:45:31 -0700 (PDT)
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
-        by smtp.gmail.com with ESMTPSA id n4sm2074334eja.121.2021.06.03.17.45.30
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Jun 2021 17:45:30 -0700 (PDT)
-Received: by mail-wr1-f48.google.com with SMTP id h8so7537518wrz.8
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 17:45:30 -0700 (PDT)
-X-Received: by 2002:a5d:6209:: with SMTP id y9mr1046523wru.50.1622767529807;
- Thu, 03 Jun 2021 17:45:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210601221841.1251830-1-tannerlove.kernel@gmail.com>
- <20210601221841.1251830-3-tannerlove.kernel@gmail.com> <20210603235612.kwoirxd2tixk7do4@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210603235612.kwoirxd2tixk7do4@ast-mbp.dhcp.thefacebook.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 3 Jun 2021 20:44:51 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfXXQWi5GZQYN=E+qpaa7jPii1jgvJPeTSYuXOzZkQFog@mail.gmail.com>
-Message-ID: <CA+FuTSfXXQWi5GZQYN=E+qpaa7jPii1jgvJPeTSYuXOzZkQFog@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 2/3] virtio_net: add optional flow dissection
- in virtio_net_hdr_to_skb
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Tanner Love <tannerlove.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cyAZd6hKa9HUgtM9DI+wcqUInKkOsq+lYtlBkJdUwEU=;
+        b=c9+2YshevYqKm2J5SxJrfjcQ/T8XhSY9euJu7yBj6Xo7XGRQyVc9WoF0x0mh7Dlgkx
+         +T5VxToLKJJqoxly2d0VQQ7LXAHRYlCX03SV4xgH2U5RL0ijf98xJ4dVZkY+t4bIwW34
+         RlpAe1cm+CUy1wWZfLfoVuAwPFGQonyayknR0YiojZZcsjwGetqwKQv8WwdOLmGRDwwU
+         9XK364Otos5ZpCMf2xsFm18j4L6BvGE+YzFa6WLHrPVDjku+qaCNotj672gCknS9ZX+i
+         oTn+vZPnI1CbsMIZIum0FvB/0z3HavNDRm0V1VvvCLxgPFmWXA9wokLDpPTxRwPmhvg8
+         Gfdg==
+X-Gm-Message-State: AOAM531JacDcbHqdoWivuytTdIyLz32Yx+SUVgv9k8NEXSSD9uHX2KGZ
+        Dntf+mNqCcjpSp1XfVCrqiAWw+Vo6WA=
+X-Google-Smtp-Source: ABdhPJxVyC9K2Gn9PkjBzr+unlSk9ypEorIr29+D/AcNtQchsyI01mhdK1/Uox/QB4QvNTB+yPwenQ==
+X-Received: by 2002:aa7:92da:0:b029:2e0:461f:2808 with SMTP id k26-20020aa792da0000b02902e0461f2808mr1797802pfa.25.1622769154948;
+        Thu, 03 Jun 2021 18:12:34 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:82fb])
+        by smtp.gmail.com with ESMTPSA id y73sm228690pfb.129.2021.06.03.18.12.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Jun 2021 18:12:34 -0700 (PDT)
+Date:   Thu, 3 Jun 2021 18:12:31 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tanner Love <tannerlove@google.com>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf: Introduce bpf_timer
+Message-ID: <20210604011231.p24eb6py7hjhskn3@ast-mbp.dhcp.thefacebook.com>
+References: <20210527040259.77823-1-alexei.starovoitov@gmail.com>
+ <20210527040259.77823-2-alexei.starovoitov@gmail.com>
+ <CAEf4BzbyikY1b4vAzb+t88odbqWOR7K4TpwjM1zGF4Nmqu6ysg@mail.gmail.com>
+ <20210603015330.vd4zgr5rdishemgi@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzafEP_b7vXT9pTB4mDWWP7N5ACe82V3yq-1doH=awNbUg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzafEP_b7vXT9pTB4mDWWP7N5ACe82V3yq-1doH=awNbUg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 3, 2021 at 7:56 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Jun 01, 2021 at 06:18:39PM -0400, Tanner Love wrote:
-> > From: Tanner Love <tannerlove@google.com>
+On Thu, Jun 03, 2021 at 10:10:38AM -0700, Andrii Nakryiko wrote:
 > >
-> > Syzkaller bugs have resulted from loose specification of
-> > virtio_net_hdr[1]. Enable execution of a BPF flow dissector program
-> > in virtio_net_hdr_to_skb to validate the vnet header and drop bad
-> > input.
+> > I think going too much into implementation details in the helper
+> > description is unnecessary.
+> > " Start the timer and set its expiration N nanoseconds from
+> >   the current time. "
+> > is probably about right amount of details.
+> > I can add that the time clock is monotonic
+> > and callback is called in softirq.
+> 
+> I think mentioning whether it's going to be run on the same CPU or
+> another CPU is the most important part. I'm honestly still not sure
+> which one is the case, because I don't completely understand all the
+> implications of what "called in softirq" implies.
+
+"called in softirq" means that timer callback will be executing
+in softirq context on some cpu. That's all.
+The proposed API doesn't provide a way to call a timer on a given cpu
+or to pin it to a cpu.
+There are few places in the kernel that use ABS_PINNED and REL_PINNED
+variants of hrtimer.
+One such example is napi timer.
+The initial cpu is picked during hrtimer_init and it's always
+current cpu. napi is bound to a cpu. So when it calls hrtimer_init(.., _PINNED);
+it wants the callback to stay on the same cpu.
+The hrtimer doc says that _PINNED is ignored during hrtimer_init :)
+It is ignored, kinda, since initial target cpu is picked as current.
+Then during hrtimer_start the actual cpu will be selected.
+If it's called as hrtimer_start(,_PINNED); then the cpu will stay
+as it was during hrtimer_init.
+If hrtimer_start() is called without _PINNED the hrtimer algorithm can 
+migrate the timer to a more appropriate cpu depending on idle and no_hz. 
+See get_nohz_timer_target.
+In case of napi it's necessary to stay on the same cpu,
+so it's using _PINNED in hrtimer_init and in hrtimer_start.
+TCP is using pinned timers for compressed acks and pacing.
+I'm guessing it's done to improve performance. I suspect TCP doesn't
+need the timers pinned.
+All other _PINNED cases of hrtimer are similar to napi.
+
+In bpf world we don't have a way to deterministically
+execute on a given cpu and the hrtimer infra won't give us such
+possibility.
+
+We can potentailly hack it on top of it. Like
+bpf_timer_init(..., int cpu, ...)
+{
+  smp_call_function_single(cpu, rest_of_bpf_timer_init)
+}
+
+rest_of_bpf_timer_init()
+{
+  hrtimer_init
+}
+
+But there are lots of things to consider with such api.
+It feels like two building blocks collapsed into one already.
+If we do anything like this we should expose smp_call_function_single()
+directly as bpf helper instead of side effect of bpf_timer.
+
+> > > Also is there a chance for timer callback to be a sleepable BPF (sub-)program?
 > >
-> > The existing behavior of accepting these vnet headers is part of the
-> > ABI.
->
-> So ?
-> It's ok to fix ABI when it's broken.
-> The whole feature is a way to workaround broken ABI with additional
-> BPF based validation.
-> It's certainly a novel idea.
-> I've never seen BPF being used to fix the kernel bugs.
-> But I think the better way forward is to admit that vnet ABI is broken
-> and fix it in the kernel with proper validation.
-> BPF-based validation is a band-aid. The out of the box kernel will
-> stay broken and syzbot will continue to crash it.
+> > Eventually yes. The whole bpf program can be sleepable, but the
+> > timer callback cannot be. So the verifier would need to
+> > treat different functions of the bpf prog as sleepable and non-sleepable.
+> > Easy enough to implement. Eventually.
+> 
+> Ok, so non-sleepable callback is hrtimer's implementation restriction
+> due to softirq, right? Too bad, of course, I can imagine sleepable
+> callbacks being useful, but it's not a deal breaker.
 
-The intention is not to use this to avoid kernel fixes.
+Sleeping in softirq is no-go. The timer callback will be always
+non-sleepable. If it would need to do extra work that requires sleeping
+we'd need to create bpf kthreads similar to io_uring worker threads.
+bpf program would have to ask for such things explicitly.
 
-There are three parts:
+> > The flags argument in bpf_timer_init() will eventually
+> > be able to specify monotonic vs boottime and
+> > relative vs absolute expiry.
+> 
+> Yeah, I was thinking about relative vs absolute expiry case, but we
+> never know what kind of extensibility we'll need, so there might be
+> something that we don't see as a possibility yet. Seems simple enough
+> to reserve flags argument here (we usually do not regret adding flags
+> argument for extensibility), but I'm fine either way.
 
-1. is the ABI broken and can we simply drop certain weird packets?
-2. will we accept an extra packet parsing stage in
-virtio_net_hdr_to_skb to find all the culprits?
-3. do we want to add yet another parser in C when this is exactly what
-the BPF flow dissector does well?
+We cannot predict the future of bpf_timer, but the way it's going
+so far there is a certainty that bpf_timer_start will be limited by
+what hrtimer_start can do.
+If we ever decide to use jiffy based timer as well they most likely
+going to be represented as new set of helpers.
+May be both hidden in the same 'struct bpf_timer',
+but helper names would have to be different not to confuse users.
 
-The virtio_net_hdr interface is more permissive than I think it was
-intended. But weird edge cases like protocol 0 do occur. So I believe
-it is simply too late to drop everything that is not obviously
-correct.
+> > Currently thinking to do cmpxchg in bpf_timer_start() and
+> > bpf_timer_cancel*() similar to bpf_timer_init() to address it.
+> > Kinda sucks to use atomic ops to address a race by deliberately
+> > malicious prog. bpf prog writers cannot just stumble on such race.
+> 
+> Why deliberately malicious? Just sufficiently sloppy or even just a
+> clever concurrent BPF program. 
 
-More problematic is that some of the gray area cases are non-trivial
-and require protocol parsing. Do the packet headers match the gso
-type? Are subtle variants like IPv6/TCP with extension headers
-supported or not?
+because hrtimers internals don't have protection for concurrent access.
+It's assumed by kernel apis that the same hrtimer is not concurrently
+accessed on multiple cpus.
+Like doing hrtimer_init in parallel will certainly crash the kernel.
+That's why bpf_timer_init() has extra cmpxchg safety builtin.
+bpf_timer_start and bpf_timer_cancel don't have extra safety,
+because the first thing hrtimer_start and hrtimer_cancel do
+is they grab the lock, so everything will be safe even in bpf
+programs try to access the same timer in parallel.
 
-We have previously tried to add unconditional protocol parsing in
-virtio_net_hdr_to_skb, but received pushback because this will cause
-performance regressions, e.g., for vm-to-vm forwarding.
+The malicicous part comes when bpf prog does bpf_timer_start
+on the pointer from a deleted map element. It's clearly a bug.
+Concurrent bpf_timer_start and bpf_timer_cancel is ok to do
+and it's safe.
+The malicious situation is concurrent lookup+bpf_timer_start
+with parallel delete of that element.
+It's wrong thing to do with map element regardless of timers.
 
-Combined, that's why I think BPF flow dissection is the right approach
-here. It is optional, can be as pedantic as the admin wants / workload
-allows (e.g., dropping UFO altogether) and ensures protocol parsing
-itself is robust. Even if not enabled continuously, offers a quick way
-to patch a vulnerability when it is discovered. This is the same
-reasoning of the existing BPF flow dissector.
+> So your idea is to cmpxchg() to NULL while bpf_timer_start() or
+> bpf_timer_cancel() works with the timer? Wouldn't that cause
+> bpf_timer_init() believe that that timer is not yet initialized and
+> not return -EBUSY. Granted that's a corner-case race, but still.
 
-It is not intended as an alternative to subsequently fixing a bug in
-the kernel path.
+Not following.
+bpf prog should do bpf_timer_init only once.
+bpf_timer_init after bpf_timer_cancel is a wrong usage.
+hrtimer api doesn't have any protection for such use.
+while bpf_timer_init returns EBUSY.
+2nd bpf_timer_init is just a misuse of bpf_timer api.
+
+> What if the spinlock was moved out of struct bpf_hrtimer into struct
+> bpf_timer instead? Then all that cmpxchg and READ_ONCE/WRITE_ONCE
+> could go away and be more "obviously correct" and race-free? We'd just
+> need to make sure that the size of that spinlock struct doesn't change
+> depending on kernel config (so no diagnostics should be embedded).
+
+We already tackled that concern with bpf_spin_lock.
+So moving the lock into 'struct bpf_timer' is easy and it's a great idea.
+I suspect it should simplify the code. Thanks!
