@@ -2,262 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC9D39B99B
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 15:13:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CF2139B9C5
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 15:23:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbhFDNO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 09:14:57 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:33291 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230116AbhFDNOz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 09:14:55 -0400
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id ED1BB761E2;
-        Fri,  4 Jun 2021 16:13:07 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1622812388;
-        bh=EMYFH3ndXdjZGdotsLhxDD2V/SzrFGHmfG9CNeLWEIw=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=bNlpvX4unnJouviT8QEnul2T6XsZLRNiN5rVWYUVj6gx4wQilcXZ06JYm+di2pTri
-         BLrflv27rdzPXoFhGxkW+i4o47ni5N3/ZHDFY/xC/aTS5eQ8nugf+JpnB6PYlfSGuT
-         w8isPr7e0UAEcqLJds6yzqgfZ14YW4/a1sKlMQTRUZq3WHNv4XhUQ3ISM7ntQf+FrN
-         1Z1wkgquOn0WtqX41jRo1L2rAsI1hMNsj6BrualK0GqjA+oeCyDm3axfkVYW6XcKD/
-         piJNqlAPn+d0uZRLUYLguYNedjDSPHxjifG9Jj6dJ52nCr4n4roX7+JP85j4hO0wGh
-         pfwOp+5dovnJw==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id B50D2761DB;
-        Fri,  4 Jun 2021 16:13:07 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.64.121) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Fri, 4
- Jun 2021 16:13:07 +0300
-Subject: Re: [PATCH v10 15/18] vhost/vsock: support SEQPACKET for transport
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
- <20210520191916.1272540-1-arseny.krasnov@kaspersky.com>
- <20210603153459.4qncp25nssuby4vp@steredhat>
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <250f3836-7fb4-8c05-bfa1-e11fd37e6abe@kaspersky.com>
-Date:   Fri, 4 Jun 2021 16:13:06 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S230425AbhFDNZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 09:25:17 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:39723 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230250AbhFDNZR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 09:25:17 -0400
+Received: by mail-il1-f199.google.com with SMTP id g14-20020a926b0e0000b02901bb2deb9d71so6456989ilc.6
+        for <netdev@vger.kernel.org>; Fri, 04 Jun 2021 06:23:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Fh24XHn46QTE70Fu59zKbxgTcJCyyRl/2Zjm/XtlHpE=;
+        b=Kfpl6e6trWv8DRysFadhxcK1wO2fe2daxtc/7NoFqXOI+IM0Ui1TsFWjDagUguiE5W
+         aFfNc99dzQ/BdHXFMuWWKV3t2CPfl0ANvJGCEZehq4+XXYMNCwrvAKFD2E4u57qZ0mWP
+         YkaVnmuFu/dyZjJ3mdwsTxRKPKZH78jD/f5WzKiSkl/KXsssivV8Lqlze5q3kQIq/Ocf
+         iLtnFJZpN7wOlgBOYE+1bAQj+oST4q9fxDlF68VFHZXEPTP4Kiz2nt4sdqY4cLYOtnPw
+         XlefWJkWLhr9hOlrXfFHgdc/p5uspCus+36rxdt4KqiUlypKJqGJ7MjoM7zm9OFeiX+N
+         w6sg==
+X-Gm-Message-State: AOAM531HRXIjTOjMDuHQgqn0kMM7kqd7r/3/S1YzIRqCKMoClpkYkrXN
+        9KaED+oQlDcmyGm1X5qV1NtgZ165h+AdOOgzM7hjIUqYXnkA
+X-Google-Smtp-Source: ABdhPJxWXuAhWz8YN5zGxhVMy7R/J0EnN7+wawXQeUd+tZuHM5Xi61MX38v2juDYAsq9D4/IFOzNvIe4IXdEfR/XlXIxAxF8jD2b
 MIME-Version: 1.0
-In-Reply-To: <20210603153459.4qncp25nssuby4vp@steredhat>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/04/2021 12:54:45
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 164124 [Jun 04 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 06/04/2021 12:57:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 04.06.2021 12:18:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/06/04 11:48:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/06/04 08:54:00 #16699202
-X-KLMS-AntiVirus-Status: Clean, skipped
+X-Received: by 2002:a5e:c708:: with SMTP id f8mr3818934iop.198.1622813010489;
+ Fri, 04 Jun 2021 06:23:30 -0700 (PDT)
+Date:   Fri, 04 Jun 2021 06:23:30 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000006f82905c3f099be@google.com>
+Subject: [syzbot] WARNING in ieee80211_vif_release_channel
+From:   syzbot <syzbot+c299bc8bf2c766623e9c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 03.06.2021 18:34, Stefano Garzarella wrote:
-> On Thu, May 20, 2021 at 10:19:13PM +0300, Arseny Krasnov wrote:
->
-> Please describe better the changes included in this patch in the first 
-> part of the commit message.
->
->> As vhost places data in buffers of guest's rx queue, keep SEQ_EOR
->> bit set only when last piece of data is copied. Otherwise we get
->> sequence packets for one socket in guest's rx queue with SEQ_EOR bit
->> set. Also remove ignore of non-stream type of packets, handle SEQPACKET
->> feature bit.
->>
->> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->> ---
->> v9 -> v10:
->> 1) Move 'restore_flag' handling to 'payload_len' calculation
->>    block.
->>
->> drivers/vhost/vsock.c | 44 +++++++++++++++++++++++++++++++++++++++----
->> 1 file changed, 40 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->> index 5e78fb719602..63d15beaad05 100644
->> --- a/drivers/vhost/vsock.c
->> +++ b/drivers/vhost/vsock.c
->> @@ -31,7 +31,8 @@
->>
->> enum {
->> 	VHOST_VSOCK_FEATURES = VHOST_FEATURES |
->> -			       (1ULL << VIRTIO_F_ACCESS_PLATFORM)
->> +			       (1ULL << VIRTIO_F_ACCESS_PLATFORM) |
->> +			       (1ULL << VIRTIO_VSOCK_F_SEQPACKET)
->> };
->>
->> enum {
->> @@ -56,6 +57,7 @@ struct vhost_vsock {
->> 	atomic_t queued_replies;
->>
->> 	u32 guest_cid;
->> +	bool seqpacket_allow;
->> };
->>
->> static u32 vhost_transport_get_local_cid(void)
->> @@ -112,6 +114,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
->> 		size_t nbytes;
->> 		size_t iov_len, payload_len;
->> 		int head;
->> +		bool restore_flag = false;
->>
->> 		spin_lock_bh(&vsock->send_pkt_list_lock);
->> 		if (list_empty(&vsock->send_pkt_list)) {
->> @@ -168,9 +171,15 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
->> 		/* If the packet is greater than the space available in the
->> 		 * buffer, we split it using multiple buffers.
->> 		 */
->> -		if (payload_len > iov_len - sizeof(pkt->hdr))
->> +		if (payload_len > iov_len - sizeof(pkt->hdr)) {
->> 			payload_len = iov_len - sizeof(pkt->hdr);
->>
-> Please, add a comment here to explain why we need this.
->
->> +			if (le32_to_cpu(pkt->hdr.flags) & 
->> VIRTIO_VSOCK_SEQ_EOR) {
->> +				pkt->hdr.flags &= ~cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
->> +				restore_flag = true;
->> +			}
->> +		}
->> +
->> 		/* Set the correct length in the header */
->> 		pkt->hdr.len = cpu_to_le32(payload_len);
->>
->> @@ -181,6 +190,9 @@ vhost_transport_do_send_pkt(struct vhost_vsock 
->> *vsock,
->> 			break;
->> 		}
->>
->> +		if (restore_flag)
->> +			pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
->> +
-> Maybe we can restore the flag only if we are queueing again the same 
-> packet, I mean in the `if (pkt->off < pkt->len) {` branch below.
->
-> What do you think?
-Ack
->
->> 		nbytes = copy_to_iter(pkt->buf + pkt->off, payload_len,
->> 				      &iov_iter);
->> 		if (nbytes != payload_len) {
->> @@ -354,8 +366,7 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
->> 		return NULL;
->> 	}
->>
->> -	if (le16_to_cpu(pkt->hdr.type) == VIRTIO_VSOCK_TYPE_STREAM)
->> -		pkt->len = le32_to_cpu(pkt->hdr.len);
->> +	pkt->len = le32_to_cpu(pkt->hdr.len);
->>
->> 	/* No payload */
->> 	if (!pkt->len)
->> @@ -398,6 +409,8 @@ static bool vhost_vsock_more_replies(struct 
->> vhost_vsock *vsock)
->> 	return val < vq->num;
->> }
->>
->> +static bool vhost_transport_seqpacket_allow(u32 remote_cid);
->> +
->> static struct virtio_transport vhost_transport = {
->> 	.transport = {
->> 		.module                   = THIS_MODULE,
->> @@ -424,6 +437,10 @@ static struct virtio_transport vhost_transport = {
->> 		.stream_is_active         = virtio_transport_stream_is_active,
->> 		.stream_allow             = virtio_transport_stream_allow,
->>
->> +		.seqpacket_dequeue        = virtio_transport_seqpacket_dequeue,
->> +		.seqpacket_enqueue        = virtio_transport_seqpacket_enqueue,
->> +		.seqpacket_allow          = vhost_transport_seqpacket_allow,
->> +
->> 		.notify_poll_in           = virtio_transport_notify_poll_in,
->> 		.notify_poll_out          = virtio_transport_notify_poll_out,
->> 		.notify_recv_init         = virtio_transport_notify_recv_init,
->> @@ -441,6 +458,22 @@ static struct virtio_transport vhost_transport = {
->> 	.send_pkt = vhost_transport_send_pkt,
->> };
->>
->> +static bool vhost_transport_seqpacket_allow(u32 remote_cid)
->> +{
->> +	struct vhost_vsock *vsock;
->> +	bool seqpacket_allow = false;
->> +
->> +	rcu_read_lock();
->> +	vsock = vhost_vsock_get(remote_cid);
->> +
->> +	if (vsock)
->> +		seqpacket_allow = vsock->seqpacket_allow;
->> +
->> +	rcu_read_unlock();
->> +
->> +	return seqpacket_allow;
->> +}
->> +
->> static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
->> {
->> 	struct vhost_virtqueue *vq = container_of(work, struct vhost_virtqueue,
->> @@ -785,6 +818,9 @@ static int vhost_vsock_set_features(struct vhost_vsock *vsock, u64 features)
->> 			goto err;
->> 	}
->>
->> +	if (features & (1ULL << VIRTIO_VSOCK_F_SEQPACKET))
->> +		vsock->seqpacket_allow = true;
->> +
->> 	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
->> 		vq = &vsock->vqs[i];
->> 		mutex_lock(&vq->mutex);
->> -- 
->> 2.25.1
->>
->
+syzbot found the following issue on:
+
+HEAD commit:    a729b8e6 Merge branch 'fixes-for-yt8511-phy-driver'
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=17bbd313d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=52fb5f4163b9aa88
+dashboard link: https://syzkaller.appspot.com/bug?extid=c299bc8bf2c766623e9c
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c299bc8bf2c766623e9c@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 22187 at net/mac80211/chan.c:1830 ieee80211_vif_release_channel+0x1ad/0x220 net/mac80211/chan.c:1830
+Modules linked in:
+CPU: 1 PID: 22187 Comm: syz-executor.4 Not tainted 5.13.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:ieee80211_vif_release_channel+0x1ad/0x220 net/mac80211/chan.c:1830
+Code: c1 ea 03 80 3c 02 00 0f 85 82 00 00 00 48 8b ab 48 06 00 00 e9 60 ff ff ff e8 6f b1 fa f8 0f 0b e9 e2 fe ff ff e8 63 b1 fa f8 <0f> 0b 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1 ea 03 80 3c 02
+RSP: 0018:ffffc9000a837050 EFLAGS: 00010246
+RAX: 0000000000040000 RBX: ffff88802739cc00 RCX: ffffc90012325000
+RDX: 0000000000040000 RSI: ffffffff887a2b1d RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff887a2adc R11: 0000000000000000 R12: ffff88802739d248
+R13: 0000000000000001 R14: 00000000fffffff4 R15: 0000000000000000
+FS:  00007fe9d16b1700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f6c71cee000 CR3: 0000000077555000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ ieee80211_start_ap+0x18ed/0x24e0 net/mac80211/cfg.c:1200
+ rdev_start_ap net/wireless/rdev-ops.h:158 [inline]
+ nl80211_start_ap+0x1c17/0x2920 net/wireless/nl80211.c:5515
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1929
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
+ do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4665d9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fe9d16b1188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000056c038 RCX: 00000000004665d9
+RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 0000000000000003
+RBP: 00007fe9d16b11d0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+R13: 00007ffe90e7d1bf R14: 00007fe9d16b1300 R15: 0000000000022000
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
