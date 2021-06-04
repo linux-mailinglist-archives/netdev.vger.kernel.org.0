@@ -2,213 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90E2739C090
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 21:42:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28AEE39C09C
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 21:46:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231151AbhFDToR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 15:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230414AbhFDToQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 15:44:16 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D2EC061766;
-        Fri,  4 Jun 2021 12:42:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=bb1jA4KJJMvI5FjBqhzon96/oQku4pcdDpeVipG1x4o=; b=BowMt2rxf6wlCAcaDzFLvRL9vk
-        lu/SlDa8a1E1AUMg39AIg/J6ubklu/VeSWYyra362BJmNu884vvuCzBXgUYLrv6641nMHd9vp/ZuB
-        VgBnT5f4fO9e/LAeEd56w3Os8gbADQ/cJTfPYMXQKTchbkAkOhcDhkykbz99W+EixtD4KR1F5tYW6
-        3pt6yFc7hZRKPaho4ImmTq6eUTYbAgVr8oJJ6kwfQgkjMtSPhmKf/OWIV3oYdEAmvMVeV3zladMIB
-        V4fka3/qThGS3JCHKyhezmeapa2+QMq52cUIP2WIvCBXZTCInAsqQJ5z2h4HkuPMVolnOyyUCH+CY
-        H7vFInew==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lpFhY-00DWac-2k; Fri, 04 Jun 2021 19:42:02 +0000
-Date:   Fri, 4 Jun 2021 20:41:52 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Matteo Croce <mcroce@linux.microsoft.com>
-Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>
-Subject: Re: [PATCH net-next v7 3/5] page_pool: Allow drivers to hint on SKB
- recycling
-Message-ID: <YLqCAEVG+aLNGlIi@casper.infradead.org>
-References: <20210604183349.30040-1-mcroce@linux.microsoft.com>
- <20210604183349.30040-4-mcroce@linux.microsoft.com>
+        id S230503AbhFDTsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 15:48:00 -0400
+Received: from mail-wm1-f49.google.com ([209.85.128.49]:40556 "EHLO
+        mail-wm1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229810AbhFDTr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 15:47:59 -0400
+Received: by mail-wm1-f49.google.com with SMTP id b145-20020a1c80970000b029019c8c824054so8547240wmd.5
+        for <netdev@vger.kernel.org>; Fri, 04 Jun 2021 12:46:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qkJnhycDPhg0+Sps/O0zolSgQD1ZU1bbCfvTJVOuqqw=;
+        b=r+Pml6EZEiFwM3Wv4q6hplnsGsXcCbgTXxgcZn3o1ssqv1gAia4OaovME60kd+5N50
+         dxU8ujQgVtAJ47pHDwQoF5q3d1JR+jSDiSbuIJZ6JyYP3XWQhGUMUQ+KBGv9BBPWiX81
+         Yh4AKHwE030m+5WSlgKNEqgh92lDLDi6dyHgOpc79nl/VnbP9HfjEEVgVsCnBsnPGGPy
+         u4L/ORrsQ6OjjDeEyPuQA/fh3eBfTQyO/FkH9RNjkT8etB/bG1GoV734RLTRJVT+f1bg
+         xjzG3q7SPFS4n2HzY0cY5ESTWPIxpMgssbTpJFDm+zYrRJFPTeFCjPs+itk2pcNyJqmk
+         jUIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qkJnhycDPhg0+Sps/O0zolSgQD1ZU1bbCfvTJVOuqqw=;
+        b=UUw5gh/1wQObtb0RR+gttRaJ6J7PRZKrLKkBK3OgqdOTmEAenNuJAiA6VAIx6V/JqL
+         xP4UU5QvwGXdzsOuzqqqHKMVL+iB9JOS60CaADjQ9JBi5ZdeYS3KQ+SEBChlUnL9Vm25
+         g//93M4QvszkEieBI5Ox1H+bZJTDi3K6MGyi4ft44bEVn6MItxZ+Wb29RuJH49DEtsLg
+         QtUBQ63r/yvA2iHE/cBT6+EhPGyc9fBtZpXCI2hWYTs1NZQ+LI+VdsJyZq3p/CCliyRX
+         0pzwnkHyQA8tIaHlVlNtBCA45En08itNqsVGJf4hILEEIyEYn6G8Cy41bwXU6tI+XZvF
+         gmIw==
+X-Gm-Message-State: AOAM5321WRHf44tevY1buQJESjX3FcYfilTYjKcxmoqP+OvKMaLBFDa0
+        Al4LbuedGDXzzLMqwePPf04=
+X-Google-Smtp-Source: ABdhPJyrnwfTxPEzfo/NoQJfpGegROunXWPkbX0GZ449H1QasyoM4bj7kqGRNySX5Al+jnko2uLhOg==
+X-Received: by 2002:a1c:c256:: with SMTP id s83mr5057957wmf.86.1622835912252;
+        Fri, 04 Jun 2021 12:45:12 -0700 (PDT)
+Received: from localhost.localdomain (p200300f137127c00f22f74fffe210725.dip0.t-ipconnect.de. [2003:f1:3712:7c00:f22f:74ff:fe21:725])
+        by smtp.googlemail.com with ESMTPSA id k8sm4761676wrp.3.2021.06.04.12.45.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Jun 2021 12:45:11 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     lxu@maxlinear.com
+Cc:     andrew@lunn.ch, davem@davemloft.net, hkallweit1@gmail.com,
+        hmehrtens@maxlinear.com, kuba@kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, tmohren@maxlinear.com,
+        vee.khee.wong@linux.intel.com
+Subject: RE: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
+Date:   Fri,  4 Jun 2021 21:44:28 +0200
+Message-Id: <20210604194428.2276092-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210604161250.49749-1-lxu@maxlinear.com>
+References: <20210604161250.49749-1-lxu@maxlinear.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210604183349.30040-4-mcroce@linux.microsoft.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 04, 2021 at 08:33:47PM +0200, Matteo Croce wrote:
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 7fcfea7e7b21..057b40ad29bd 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -40,6 +40,9 @@
->  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
->  #include <linux/netfilter/nf_conntrack_common.h>
->  #endif
-> +#ifdef CONFIG_PAGE_POOL
-> +#include <net/page_pool.h>
-> +#endif
+Hello,
 
-I'm not a huge fan of conditional includes ... any reason to not include
-it always?
+> Add driver to support the Maxlinear GPY115, GPY211, GPY212, GPY215,
+> GPY241, GPY245 PHYs.
+to me this seems like an evolution of the Lantiq XWAY PHYs for which
+we already have a driver: intel-xway.c.
+Intel took over Lantiq some years ago and last year MaxLinear then
+took over what was formerly Lantiq from Intel.
 
-> @@ -3088,7 +3095,13 @@ static inline void skb_frag_ref(struct sk_buff *skb, int f)
->   */
->  static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
->  {
-> -	put_page(skb_frag_page(frag));
-> +	struct page *page = skb_frag_page(frag);
-> +
-> +#ifdef CONFIG_PAGE_POOL
-> +	if (recycle && page_pool_return_skb_page(page_address(page)))
-> +		return;
+From what I can tell right away: the interrupt handling still seems
+to be the same. Also the GPHY firmware version register also was there
+on older SoCs (with two or more GPHYs embedded into the SoC). SGMII
+support is new. And I am not sure about Wake-on-LAN.
 
-It feels weird to have a page here, convert it back to an address,
-then convert it back to a head page in page_pool_return_skb_page().
-How about passing 'page' here, calling compound_head() in
-page_pool_return_skb_page() and calling virt_to_page() in skb_free_head()?
+Have you considered adding support for these new PHYs to intel-xway.c?
 
-> @@ -251,4 +253,11 @@ static inline void page_pool_ring_unlock(struct page_pool *pool)
->  		spin_unlock_bh(&pool->ring.producer_lock);
->  }
->  
-> +/* Store mem_info on struct page and use it while recycling skb frags */
-> +static inline
-> +void page_pool_store_mem_info(struct page *page, struct page_pool *pp)
-> +{
-> +	page->pp = pp;
 
-I'm not sure this wrapper needs to exist.
 
-> +}
-> +
->  #endif /* _NET_PAGE_POOL_H */
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index e1321bc9d316..a03f48f45696 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -628,3 +628,26 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
->  	}
->  }
->  EXPORT_SYMBOL(page_pool_update_nid);
-> +
-> +bool page_pool_return_skb_page(void *data)
-> +{
-> +	struct page_pool *pp;
-> +	struct page *page;
-> +
-> +	page = virt_to_head_page(data);
-> +	if (unlikely(page->pp_magic != PP_SIGNATURE))
-> +		return false;
-> +
-> +	pp = (struct page_pool *)page->pp;
-
-You don't need the cast any more.
-
-> +	/* Driver set this to memory recycling info. Reset it on recycle.
-> +	 * This will *not* work for NIC using a split-page memory model.
-> +	 * The page will be returned to the pool here regardless of the
-> +	 * 'flipped' fragment being in use or not.
-> +	 */
-> +	page->pp = NULL;
-> +	page_pool_put_full_page(pp, page, false);
-> +
-> +	return true;
-> +}
-> +EXPORT_SYMBOL(page_pool_return_skb_page);
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 12b7e90dd2b5..f769f08e7b32 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -70,6 +70,9 @@
->  #include <net/xfrm.h>
->  #include <net/mpls.h>
->  #include <net/mptcp.h>
-> +#ifdef CONFIG_PAGE_POOL
-> +#include <net/page_pool.h>
-> +#endif
->  
->  #include <linux/uaccess.h>
->  #include <trace/events/skb.h>
-> @@ -645,10 +648,15 @@ static void skb_free_head(struct sk_buff *skb)
->  {
->  	unsigned char *head = skb->head;
->  
-> -	if (skb->head_frag)
-> +	if (skb->head_frag) {
-> +#ifdef CONFIG_PAGE_POOL
-> +		if (skb->pp_recycle && page_pool_return_skb_page(head))
-> +			return;
-> +#endif
-
-put this in a header file:
-
-static inline bool skb_pp_recycle(struct sk_buff *skb, void *data)
-{
-	if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
-		return false;
-	return page_pool_return_skb_page(virt_to_page(data));
-}
-
-then this becomes:
-
-	if (skb->head_frag) {
-		if (skb_pp_recycle(skb, head))
-			return;
->  		skb_free_frag(head);
-> -	else
-> +	} else {
->  		kfree(head);
-> +	}
->  }
->  
->  static void skb_release_data(struct sk_buff *skb)
+Best regards,
+Martin
