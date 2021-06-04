@@ -2,170 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FD5339BB11
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 16:44:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3961C39BB5F
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 17:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229886AbhFDOqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 10:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbhFDOqc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 10:46:32 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CE6C061766
-        for <netdev@vger.kernel.org>; Fri,  4 Jun 2021 07:44:32 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id ho18so3920999ejc.8
-        for <netdev@vger.kernel.org>; Fri, 04 Jun 2021 07:44:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rzUMQzM9CPDNdDmna10qeEEbaBSRzoclI/nFPuyQDgI=;
-        b=B+o51f/x+rHcsKGmjZx5n/ML2UMsFBijq9gm52HkFahb+gaMmUYYfPXJImUTmXboxg
-         Li3C2/UZsRb/pVcMKfROaBQUA07SvTfeDZIpjCwccU6/t+K6WvbSB4UGLGI5n0yaHNlr
-         NDESrwB6qM6Z/5VnMVUxv4Jtb8mvI7/TBxA8ZaXxXBZ+qd5Z6oeBeGaIN09hd/0G+/yN
-         sufzNbqgdvoapVIP34FlEGTt8AK6KN0EOeSGt/C2KnIpsqio9Q7Ry3MfL2v5dNf/X55e
-         sqIKr7qGPGf1jRctAUP4zjtPAsn2B/d5GlEsFPsNBiFCAYRWRbOXB8COLis6iJe+2Kf0
-         nLew==
+        id S230210AbhFDPFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 11:05:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20149 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230030AbhFDPFT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 11:05:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1622819012;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=N8yh602NOt1FboICUCF579RgmHMOnP9aRS2NkQT/Xt8=;
+        b=aawnn6M1B+HmNMtSau7Bk4JnMA6uS14EhwX6GcRmMzm/3pNkm3/BG5j7UWd1f4jpBUY8dQ
+        oXCW+i0+AOOFmETGlwmISt+aFXIrQuz6p/Y/TKmkRfEynliN6XANAki8AAycXCM3XmRddr
+        ySl46HBh0DxJMnCOC741ZPrJ/hrAN50=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-169-A4GZCYssN12BLBgukldKXg-1; Fri, 04 Jun 2021 11:03:30 -0400
+X-MC-Unique: A4GZCYssN12BLBgukldKXg-1
+Received: by mail-ed1-f72.google.com with SMTP id s20-20020a0564025214b029038752a2d8f3so5125554edd.2
+        for <netdev@vger.kernel.org>; Fri, 04 Jun 2021 08:03:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rzUMQzM9CPDNdDmna10qeEEbaBSRzoclI/nFPuyQDgI=;
-        b=ZnDbE+fL6kzm/lxjWRa5xGCbgyNNa1D74UgDG+4sfchirDuumW/HvyazVzZ5OpCnZZ
-         0SEsNIlPUnASopZ3ykmryfxZl+Yp3m3ZgxrI++t86z4vzZclbsn2k9Inil/l660Kf1bZ
-         7KcSG+BIVhC2fQTKjOmlsiTys10IePSO6BaJzkhl4QxaCuzbTJz2K4ypkjbFhhy06Vik
-         J1Wn3ZcS2I2S7XsVtCqNzT5U6RnC6ujpgRSK9b/1aeC/S8ZAwQALLgA9+d6xA8sIvavf
-         BoQWZaABUXEpnuV7hQnJcIXKRUWwkcwTWGa7munkKDrPvzCkCvzfgHv02bZzpnMlSO5M
-         VYXg==
-X-Gm-Message-State: AOAM533JCQEfXiZkEwLWOgWaZ8VEmX17AGh/fIAXSWqMaPo7Rs0kYO9V
-        SEYx/Ye+6QcuaUTkuO673wLj9a7IeFmA0A==
-X-Google-Smtp-Source: ABdhPJzHdcPHBxBwtgHFw7ZIhkL14xJZdQ3QH6xkM2KL7MH9njmvvexCpz3k4oFlQtaEJuHBBj101A==
-X-Received: by 2002:a17:906:4e05:: with SMTP id z5mr4452617eju.520.1622817869163;
-        Fri, 04 Jun 2021 07:44:29 -0700 (PDT)
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com. [209.85.128.49])
-        by smtp.gmail.com with ESMTPSA id b14sm3388378edz.21.2021.06.04.07.44.27
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Jun 2021 07:44:28 -0700 (PDT)
-Received: by mail-wm1-f49.google.com with SMTP id h5-20020a05600c3505b029019f0654f6f1so7547633wmq.0
-        for <netdev@vger.kernel.org>; Fri, 04 Jun 2021 07:44:27 -0700 (PDT)
-X-Received: by 2002:a1c:2456:: with SMTP id k83mr4047546wmk.87.1622817867489;
- Fri, 04 Jun 2021 07:44:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210601221841.1251830-1-tannerlove.kernel@gmail.com>
- <eef275f7-38c5-6967-7678-57dd5d59cf76@redhat.com> <CA+FuTSdEF7dONWZWR3t9EZ5VU3XrfWTb0CmWKe7pQBL-tje0WA@mail.gmail.com>
- <d56a153a-ba13-480f-2ce2-7cbc7fd4c529@redhat.com>
-In-Reply-To: <d56a153a-ba13-480f-2ce2-7cbc7fd4c529@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 4 Jun 2021 10:43:49 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfe7PmPnjqGGFfte3xhjQjb5oN0Wak205RZa3TAx2e5sA@mail.gmail.com>
-Message-ID: <CA+FuTSfe7PmPnjqGGFfte3xhjQjb5oN0Wak205RZa3TAx2e5sA@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 0/3] virtio_net: add optional flow dissection
- in virtio_net_hdr_to_skb
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Tanner Love <tannerlove.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Petar Penkov <ppenkov@google.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=N8yh602NOt1FboICUCF579RgmHMOnP9aRS2NkQT/Xt8=;
+        b=OPputkaCLUf6fujZF5LPE64PIkmyRqrVRT7Ef/se+K2MSr+9X9FVvyXZ+oGv8rizeI
+         3VAsSq4f7ageixoa2XVJ4kD2zXz5u0s3XPkDxULZ2xP+BEXStPrRDT/IHYPq0zKJX6fC
+         xTC5ySOPlc++0t9qdsDTrfMljeacnWGY087qMT266FWupfZfpIbrJIqp+ArbcLZWqLCz
+         JHmAixI4+N13Q1dx2o8zxBpSiycYotQwm0wBFGvmP6UW4MS3gtF4l8PcoVEDdKSXTTx8
+         diCysv8cf6Zo8ke1z/xD2EmFU0mklWyQGseRC1+kf0T8svAtEuhB9fqjqhM+Q0NMtLzk
+         G98Q==
+X-Gm-Message-State: AOAM532SJjfYFNEZI8f8e0acjySRVvfKUGcIPZsE/gR9D7GygskXDjc9
+        SpMxYiWyXR/c3+1i64DKLUe7qJ8p3rDjk53qQN26p5RM3eqmrNINpzkmAnjDPvMKKyhrwmBdNE2
+        JvceIYLCPP1rBrvkm
+X-Received: by 2002:a17:906:33c8:: with SMTP id w8mr4691018eja.46.1622819009587;
+        Fri, 04 Jun 2021 08:03:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwjb/RE98uava1ct94kKaUaYfBzH7VQ7rmLgnwo11bRlUBdrfcaLuOG3pu0IuBN8h+k7vCmHA==
+X-Received: by 2002:a17:906:33c8:: with SMTP id w8mr4690982eja.46.1622819009287;
+        Fri, 04 Jun 2021 08:03:29 -0700 (PDT)
+Received: from steredhat ([5.170.129.161])
+        by smtp.gmail.com with ESMTPSA id a97sm3488933edf.72.2021.06.04.08.03.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Jun 2021 08:03:28 -0700 (PDT)
+Date:   Fri, 4 Jun 2021 17:03:24 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Tanner Love <tannerlove@google.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jorgen Hansen <jhansen@vmware.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+Subject: Re: [PATCH v10 11/18] virtio/vsock: dequeue callback for
+ SOCK_SEQPACKET
+Message-ID: <20210604150324.winiikx5h3p6gsyy@steredhat>
+References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
+ <20210520191801.1272027-1-arseny.krasnov@kaspersky.com>
+ <20210603144513.ryjzauq7abnjogu3@steredhat>
+ <6b833ccf-ea93-db6a-4743-463ac1cfe817@kaspersky.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <6b833ccf-ea93-db6a-4743-463ac1cfe817@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> Several questions:
-> >>
-> >> 1) having bpf core to know about virito-net header seems like a layer
-> >> violation, it doesn't scale as we may add new fields, actually there's
-> >> already fields that is not implemented in the spec but not Linux right now.
-> > struct virtio_net_hdr is used by multiple interfaces, not just virtio.
-> > The interface as is will remain, regardless of additional extensions.
-> >
-> > If the interface is extended, the validation can be extended with it.
+On Fri, Jun 04, 2021 at 04:12:23PM +0300, Arseny Krasnov wrote:
 >
+>On 03.06.2021 17:45, Stefano Garzarella wrote:
+>> On Thu, May 20, 2021 at 10:17:58PM +0300, Arseny Krasnov wrote:
+>>> Callback fetches RW packets from rx queue of socket until whole record
+>>> is copied(if user's buffer is full, user is not woken up). This is done
+>>> to not stall sender, because if we wake up user and it leaves syscall,
+>>> nobody will send credit update for rest of record, and sender will wait
+>>> for next enter of read syscall at receiver's side. So if user buffer is
+>>> full, we just send credit update and drop data.
+>>>
+>>> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>>> ---
+>>> v9 -> v10:
+>>> 1) Number of dequeued bytes incremented even in case when
+>>>    user's buffer is full.
+>>> 2) Use 'msg_data_left()' instead of direct access to 'msg_hdr'.
+>>> 3) Rename variable 'err' to 'dequeued_len', in case of error
+>>>    it has negative value.
+>>>
+>>> include/linux/virtio_vsock.h            |  5 ++
+>>> net/vmw_vsock/virtio_transport_common.c | 65 +++++++++++++++++++++++++
+>>> 2 files changed, 70 insertions(+)
+>>>
+>>> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>>> index dc636b727179..02acf6e9ae04 100644
+>>> --- a/include/linux/virtio_vsock.h
+>>> +++ b/include/linux/virtio_vsock.h
+>>> @@ -80,6 +80,11 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
+>>> 			       struct msghdr *msg,
+>>> 			       size_t len, int flags);
+>>>
+>>> +ssize_t
+>>> +virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
+>>> +				   struct msghdr *msg,
+>>> +				   int flags,
+>>> +				   bool *msg_ready);
+>>> s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
+>>> s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
+>>>
+>>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>>> index ad0d34d41444..61349b2ea7fe 100644
+>>> --- a/net/vmw_vsock/virtio_transport_common.c
+>>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>>> @@ -393,6 +393,59 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+>>> 	return err;
+>>> }
+>>>
+>>> +static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+>>> +						 struct msghdr *msg,
+>>> +						 int flags,
+>>> +						 bool *msg_ready)
+>>> +{
+>>> +	struct virtio_vsock_sock *vvs = vsk->trans;
+>>> +	struct virtio_vsock_pkt *pkt;
+>>> +	int dequeued_len = 0;
+>>> +	size_t user_buf_len = msg_data_left(msg);
+>>> +
+>>> +	*msg_ready = false;
+>>> +	spin_lock_bh(&vvs->rx_lock);
+>>> +
+>>> +	while (!*msg_ready && !list_empty(&vvs->rx_queue) && dequeued_len >= 0) {
+>> I'
+>>
+>>> +		size_t bytes_to_copy;
+>>> +		size_t pkt_len;
+>>> +
+>>> +		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
+>>> +		pkt_len = (size_t)le32_to_cpu(pkt->hdr.len);
+>>> +		bytes_to_copy = min(user_buf_len, pkt_len);
+>>> +
+>>> +		if (bytes_to_copy) {
+>>> +			/* sk_lock is held by caller so no one else can dequeue.
+>>> +			 * Unlock rx_lock since memcpy_to_msg() may sleep.
+>>> +			 */
+>>> +			spin_unlock_bh(&vvs->rx_lock);
+>>> +
+>>> +			if (memcpy_to_msg(msg, pkt->buf, bytes_to_copy))
+>>> +				dequeued_len = -EINVAL;
+>> I think here is better to return the error returned by memcpy_to_msg(),
+>> as we do in the other place where we use memcpy_to_msg().
+>>
+>> I mean something like this:
+>> 			err = memcpy_to_msgmsg, pkt->buf, bytes_to_copy);
+>> 			if (err)
+>> 				dequeued_len = err;
+>Ack
+>>> +			else
+>>> +				user_buf_len -= bytes_to_copy;
+>>> +
+>>> +			spin_lock_bh(&vvs->rx_lock);
+>>> +		}
+>>> +
+>> Maybe here we can simply break the cycle if we have an error:
+>> 		if (dequeued_len < 0)
+>> 			break;
+>>
+>> Or we can refactor a bit, simplifying the while() condition and also the
+>> code in this way (not tested):
+>>
+>> 	while (!*msg_ready && !list_empty(&vvs->rx_queue)) {
+>> 		...
+>>
+>> 		if (bytes_to_copy) {
+>> 			int err;
+>>
+>> 			/* ...
+>> 			*/
+>> 			spin_unlock_bh(&vvs->rx_lock);
+>> 			err = memcpy_to_msgmsg, pkt->buf, bytes_to_copy);
+>> 			if (err) {
+>> 				dequeued_len = err;
+>> 				goto out;
+>> 			}
+>> 			spin_lock_bh(&vvs->rx_lock);
+>>
+>> 			user_buf_len -= bytes_to_copy;
+>> 		}
+>>
+>> 		dequeued_len += pkt_len;
+>>
+>> 		if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR)
+>> 			*msg_ready = true;
+>>
+>> 		virtio_transport_dec_rx_pkt(vvs, pkt);
+>> 		list_del(&pkt->list);
+>> 		virtio_transport_free_pkt(pkt);
+>> 	}
+>>
+>> out:
+>> 	spin_unlock_bh(&vvs->rx_lock);
+>>
+>> 	virtio_transport_send_credit_update(vsk);
+>>
+>> 	return dequeued_len;
+>> }
 >
-> One possible problem is that there's no sufficient context.
+>I think we can't do 'goto out' or break, because in case of error, we still need
+>to free packet.
+
+Didn't we have code that remove packets from a previous message?
+I don't see it anymore.
+
+For example if we have 10 packets queued for a message (the 10th packet 
+has the EOR flag) and the memcpy_to_msg() fails on the 2nd packet, with 
+you proposal we are freeing only the first 2 packets, the rest is there 
+and should be freed when reading the next message, but I don't see that 
+code.
+
+The same can happen if the recvmsg syscall is interrupted. In that case 
+we report that nothing was copied, but we freed the first N packets, so 
+they are lost but the other packets are still in the queue.
+
+Please check also the patch where we implemented 
+__vsock_seqpacket_recvmsg().
+
+I thinks we should free packets only when we are sure we copied them to 
+the user space.
+
+> It is possible to do something like this:
 >
-> The vnet header length is not a fixed value but depends on the feature
-> negotiation. The num_buffers (not implemented in this series) is an
-> example. The field doesn't not exist for legacy device if mergeable
-> buffer is disabled. If we decide to go with this way, we probably need
-> to fix this by introducing a vnet header length.
+>		virtio_transport_dec_rx_pkt(vvs, pkt);
+>		list_del(&pkt->list);
+>		virtio_transport_free_pkt(pkt);
 >
-> And I'm not sure it can work for all the future cases e.g the semantic
-> of a field may vary depends on the feature negotiated, but maybe it's
-> safe since it needs to set the flags.
+>		if (dequeued_len < 0)
+>			break;
 >
-> Another note is that the spec doesn't exclude the possibility to have a
-> complete new vnet header format in the future. And the bpf program is
-> unaware of any virtio features.
-
-We can extend the program with a version or type field, if multiple
-variants appear. The callers can set this.
-
-Thanks for the examples. As a matter of fact, I do know that kind of
-extension. I proposed new fields myself this winter, to for timestamps,
-pacing offload and hash info on tx:
-
-https://lore.kernel.org/netdev/20210208185558.995292-1-willemdebruijn.kernel@gmail.com/T/#mcbd4dff966a93d61a31844c9d968e7cd4ee7f0ab
-
-Like num_buffers, those are new fields appended to the struct.
-
-Agreed that if the semantics of the existing fields would change or
-a whole new v2 type would be defined (with much stricter semantics
-that time around, and validation from the start), then a type field in
-the flow dissector will be needed.
-
-That is feasible and won't have to break the BPF interface.
-
-> >
-> > Just curious: can you share what extra fields may be in the pipeline?
-> > The struct has historically not seen (m)any changes.
+>>
+>>
 >
->
-> For extra fields, I vaguely remember we had some discussions on the
-> possible method to extend that, but I forget the actual features.
->
-> But spec support RSC which may reuse csum_start/offset but it looks to
-> me RSC is not something like Linux need.
->
->
-> >
-> >> 2) virtio_net_hdr_to_skb() is not the single entry point, packet could
-> >> go via XDP
-> > Do you mean AF_XDP?
->
->
-> Yes and kernel XDP as well. If the packet is redirected or transmitted,
-> it won't even go to virtio_net_hdr_to_skb().
 
-Redirected packets are already in the kernel.
-
-This is strictly a chokepoint for new packets injected from userspace.
-
-> Since there's no GSO/csum support for XDP, it's probably ok, but needs
-> to consider this for the future consider the multi-buffer XDP is being
-> developed right now, we can release those restriction.
-
-Yes, we have to make sure not to introduce the same issues with any
-XDP GSO extensions, if it comes to that.
-
-> > As far as I know, vnet_hdr is the only injection
-> > interface for complex packets that include offload instructions (GSO,
-> > csum) -- which are the ones mostly implicated in bug reports.
->
->
-> Ideally, if GSO/csum is supported by XDP, it would be more simple to use
-> XDP I think.
-
-That might actually reduce the odds of seeing new virtio_net_hdr extensions?
-
-That legacy interface is here to stay, though, so we have to continue
-to be prepared to handle any input that comes that way.
