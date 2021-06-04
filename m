@@ -2,95 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAC6939BD8F
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 18:47:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 704F739BDAF
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 18:54:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229981AbhFDQth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 12:49:37 -0400
-Received: from mail-pj1-f54.google.com ([209.85.216.54]:35646 "EHLO
-        mail-pj1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbhFDQth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 12:49:37 -0400
-Received: by mail-pj1-f54.google.com with SMTP id fy24-20020a17090b0218b029016c5a59021fso1241024pjb.0;
-        Fri, 04 Jun 2021 09:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zVtGdk0rjbG9zPS1H0OAGsOMKM79c2DLp8XtkFgZJJg=;
-        b=NmgnYEKuJGca57vXvjrxkyGWDKyxWvR4N9hm8Dt+ruEie8ENfCocAcLKJR34+o63sA
-         YkcJzVbLPqxMh4i3DNWWd9Oc6a0E3NX587twmrvGXhplqBHa/KX7vrKxlLYWgkl5olgS
-         WVJ6OJsiX30c4fUuzoYzJ8zJOhsjhGdezPBkvouPZWVxLb25J1cKodinqdGz+F+wA4Av
-         aWFy4fQ2NP8YkmLWrCEH5ipi/u6Nh+ND+H4YMcEWFqyzkVi9A5Zy5U9Z+ED3mGAFMrs7
-         WWxVlMajQ0PLPzZcBFCNxCovgTsTSsPUh1uqJNjB3hdQDlpo/wPBXo9B2K7ohaIKivWA
-         vjTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zVtGdk0rjbG9zPS1H0OAGsOMKM79c2DLp8XtkFgZJJg=;
-        b=PJqqi6G/NhZ6knq+tpD/2v+82cseeSgh1pk9rpNJ/JLB//fuTNGCUZfjX/p9pZ3KcS
-         UVUd5HSpTM6kS67PXgB+P7zPFruS/DVIgRU3vhjxSg8YsVB52zHGMkx0NaaoJO+UzapE
-         PhY1Tj6rDpgTHPgSt2QLp7q1pJ3d5PIR1mAfFzTVhGJzgyUIwqofmQhsB5ryjk5BYnOl
-         Vqtn9pzyHQjXvaj6N4w6H4k8rr2K9b0xuZ6ZQ85uzA7cCW3ANFpqSKanfQqdTfrf0LIH
-         74Yug1E6ZQGXBmmG3oQiZ5tqY2qJ8iRfaoUcnnREZGn7zWhWSpLmFf6B1Uk3pDK7DwWM
-         Sy7w==
-X-Gm-Message-State: AOAM5339akikGiP4nAs+VNbxs9e3MEvdraXYePoT1v2xfK6Bb9QaKEI0
-        rVjZvky2KCw1WsONIu2o7eg=
-X-Google-Smtp-Source: ABdhPJwM962tGF6UtjnRbh5Fcr29d0zSiopF749THBT1YU/JKjGTWcyORTFSoyNQ4/lZljoCHtKvIw==
-X-Received: by 2002:a17:90a:7bce:: with SMTP id d14mr5924645pjl.38.1622825197025;
-        Fri, 04 Jun 2021 09:46:37 -0700 (PDT)
-Received: from [192.168.1.67] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id w2sm5107613pjq.5.2021.06.04.09.46.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Jun 2021 09:46:36 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 3/4] net: dsa: sja1105: determine PHY/MAC role
- from PHY interface type
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20210604140151.2885611-1-olteanv@gmail.com>
- <20210604140151.2885611-4-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <cc631491-d3bf-ae89-5d64-a6e347ab9a05@gmail.com>
-Date:   Fri, 4 Jun 2021 09:46:34 -0700
+        id S230080AbhFDQzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 12:55:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35448 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229791AbhFDQzu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Jun 2021 12:55:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4107A61287;
+        Fri,  4 Jun 2021 16:54:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622825644;
+        bh=mz6cIA1EIJyWfjzcdTql50qtZoFGmtGK88vnB2IoHAQ=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=VMcCoxmFGWNABY/u7NL4rbKbnwAXozcgMaJ3Erutzy7+POR/+zyFwIij+ifEXygTO
+         q+j4KKJf+SO7nUQ+o7yga1yQ+nYBjq5/z0mKZLp1yvs1jOcLjuvn7KxTYVXWY9mN7q
+         01Ud4GHNFn/j86dKUSMRKcX+mlV0AZ7GBRF4sHBLQlqZqx2r9C8tMjgDUWyb862HCc
+         Dh6jkM0gjo/V10ZhOs1IPi2vmvsSGf89ZzwZiAdCeMzQtwGWB/exj1gX5UIAoo1aIr
+         cj/yUz8qqZwfHVEHGL6padxG0xukQbN30OEOnsgzdA/aYW43mj/4c2NixqEMWr0Jjn
+         UNWlXfHoON4mw==
+Subject: Re: [PATCH net-next] net: ethernet: rmnet: Restructure if checks to
+ avoid uninitialized warning
+To:     subashab@codeaurora.org, patchwork-bot+netdevbpf@kernel.org
+Cc:     stranche@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        ndesaulniers@google.com, sharathv@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+References: <20210603173410.310362-1-nathan@kernel.org>
+ <162276000605.13062.14467575723320615318.git-patchwork-notify@kernel.org>
+ <1f6f8246f0cd477c0b1e2b88b4ec825a@codeaurora.org>
+From:   Nathan Chancellor <nathan@kernel.org>
+Message-ID: <2145e27f-c8b3-ef4b-793a-841cb2f7e60f@kernel.org>
+Date:   Fri, 4 Jun 2021 09:54:02 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.10.2
+ Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210604140151.2885611-4-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1f6f8246f0cd477c0b1e2b88b4ec825a@codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Subash,
 
+On 6/3/2021 10:15 PM, subashab@codeaurora.org wrote:
+> On 2021-06-03 16:40, patchwork-bot+netdevbpf@kernel.org wrote:
+>> Hello:
+>>
+>> This patch was applied to netdev/net-next.git (refs/heads/master):
+>>
+>> On Thu,  3 Jun 2021 10:34:10 -0700 you wrote:
+>>> Clang warns that proto in rmnet_map_v5_checksum_uplink_packet() might be
+>>> used uninitialized:
+>>>
+>>> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:283:14: warning:
+>>> variable 'proto' is used uninitialized whenever 'if' condition is false
+>>> [-Wsometimes-uninitialized]
+>>>                 } else if (skb->protocol == htons(ETH_P_IPV6)) {
+>>>                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:295:36: note:
+>>> uninitialized use occurs here
+>>>                 check = rmnet_map_get_csum_field(proto, trans);
+>>>                                                  ^~~~~
+>>> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:283:10: note:
+>>> remove the 'if' if its condition is always true
+>>>                 } else if (skb->protocol == htons(ETH_P_IPV6)) {
+>>>                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>> drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c:270:11: note:
+>>> initialize the variable 'proto' to silence this warning
+>>>                 u8 proto;
+>>>                         ^
+>>>                          = '\0'
+>>> 1 warning generated.
+>>>
+>>> [...]
+>>
+>> Here is the summary with links:
+>>   - [net-next] net: ethernet: rmnet: Restructure if checks to avoid
+>> uninitialized warning
+>>     https://git.kernel.org/netdev/net-next/c/118de6106735
+>>
+>> You are awesome, thank you!
+>> -- 
+>> Deet-doot-dot, I am a bot.
+>> https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> Hi Nathan
+> 
+> Can you tell why CLANG detected this error.
+> Does it require a bug fix.
 
-On 6/4/2021 7:01 AM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Now that both RevMII as well as RevRMII exist, we can deprecate the
-> sja1105,role-mac and sja1105,role-phy properties and simply let the user
-> select that a port operates in MII PHY role by using
-> 	phy-mode = "rev-mii";
-> or in RMII PHY role by using
-> 	phy-mode = "rev-rmii";
-> 
-> There are no fixed-link MII or RMII properties in mainline device trees,
-> and the setup itself is fairly uncommon, so there shouldn't be risks of
-> breaking compatibility.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+As far as I understand it, clang does not remember the conditions of 
+previous if statements when generating this warning. Basically:
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+void bar(int x)
+{
+}
+
+int foo(int a, int b)
+{
+	int x;
+
+	if (!a && !b)
+		goto out;
+
+	if (a)
+		x = 1;
+	else if (b)
+		x = 2;
+
+	bar(x);
+
+out:
+	return 0;
+}
+
+clang will warn that x is uninitialized when neither of the second if 
+statement's conditions are true, even though we as humans know that is 
+not possible due to the first if statement. I am guessing this has 
+something to do with how clang generates its control flow graphs. While 
+this is a false positive, I do not personally see this as a bug in the 
+compiler. The code is more clear to both the compiler and humans if it 
+is written as:
+
+	if (a)
+		x = 1;
+	else if (b)
+		x = 2;
+	else
+		goto out;
+
+Cheers,
+Nathan
