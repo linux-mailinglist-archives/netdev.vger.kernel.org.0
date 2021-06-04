@@ -2,126 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AEA439B147
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 06:17:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C917B39B149
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 06:18:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229825AbhFDESt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 00:18:49 -0400
-Received: from mail-wm1-f48.google.com ([209.85.128.48]:54829 "EHLO
-        mail-wm1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229474AbhFDESs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 00:18:48 -0400
-Received: by mail-wm1-f48.google.com with SMTP id o127so4554417wmo.4
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 21:16:45 -0700 (PDT)
+        id S229800AbhFDEUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 00:20:40 -0400
+Received: from mail-yb1-f181.google.com ([209.85.219.181]:44837 "EHLO
+        mail-yb1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229474AbhFDEUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 00:20:40 -0400
+Received: by mail-yb1-f181.google.com with SMTP id p184so11864533yba.11;
+        Thu, 03 Jun 2021 21:18:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gt5r+lBwCuoOA7rfQIlaZBhTcz5xyY6ZuYMcbufKUos=;
-        b=pXfVS0SZxq556lEc4rP04GJ+qgvT/OfgZ6GWjum1lWJGmFlLn0UIhfcmvLozoTMPl6
-         dFTZer+0saAoVGELO7+tFHPmONEOIFsP/2B24YoqJOSbVT1Qbp8MhvrOythK2lI8ZcSK
-         lfYFhogf0BkpuuMQ2vgzYsV8SBe/Z3umeGLXeDHcPOzyosYXZtapt4idJ2Vgt79tiV9A
-         AcbR/UUZJt4JO0HYV6GSl49RUNE1HAZ2Z0kxIct7cR2hyhnysXQ8LN/yGMV/3gz1E023
-         MEqggsPvjm0V4piYAYa5Td9JqYxf4aWJnqMAdcuRpsoKH9W/EmMQmuiHJ3kT+W4xV1Va
-         zFFA==
+        bh=4I7wNEx3l8IQ8cV8UlCXwWnxhFTI9WVBzDzbE/lAmWU=;
+        b=XZaJh1/pFYfZL/nNbYgIPJoT1tlGD56MAmBkEq/CNWfzV6l7yBWCYlQhZ5PA1bMvoZ
+         Xq7FjnBjRWbOsZpQKWqhw/dmGalEWx+hSRdqqKD7yQWAVMc982Rz6TkJJJZ3gl0IqM3q
+         yjbfKkufifnnkHZLpMoRDz8FgluM1ZYPiWQC+pfOEhHZMNxDJBgU4j35Pzb9nfUgwnxE
+         bkDEdzR9RETwXKeDuOyY1cNOhNagCnDWL2A5yRI1k8ayYnIN1tff9ucKX9+JbmT/XBD2
+         VqMRuHxFnnpC9ikSidYQizAG7S7Wc5ycxlhKhhMw4VvE1zoDpwWlYi+BiK1IEk4F789E
+         YSPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gt5r+lBwCuoOA7rfQIlaZBhTcz5xyY6ZuYMcbufKUos=;
-        b=drDlEifBWHu16tMJ1mDumWZSO5CjSJGVALk5Py4DLJVAjz/eKcq4veu7CkrjJvTBbG
-         Z957ipdVmzlotwYZ1x6F91P6bqD7ybCk/h5QSOKblukcBP9HlW+sJG54oUzL0xlsuTm0
-         +wOlGlG5au6EFozPi0xb2G8o7X2bgovj49eLzg26qbGp3K+5e0zyRMAVeiifQr4ruPPI
-         eYMSX7JkZBmGTqJeQ8hPges6yGl46d57nRNIvV/uw9E0c43eC2zX8xLTZIRFCR1EA4kQ
-         TyFs74NXSE3CReod6Trg4XA46RfGeN0ZLB1L2hEKw2O/w+5M0cxtZY4FN1RsM2q7/T9x
-         CEmg==
-X-Gm-Message-State: AOAM531VSY/GeFv2wtWAz7JodbgqLpqnIQlEdoJIxJo6AX27ucPf/lod
-        WJt4Wo5ep0AZwHbqTTWeE5/lg3xg0U8GbwQjZR3agg==
-X-Google-Smtp-Source: ABdhPJx2vWndMsU19H1kNaO6+JL/13qRYUi8/RATBdr+TJtyTLGIJgpuoWpiH5i1lF4ag++WCkz/IclGw42XD007YWQ=
-X-Received: by 2002:a1c:b603:: with SMTP id g3mr1451928wmf.58.1622780145144;
- Thu, 03 Jun 2021 21:15:45 -0700 (PDT)
+        bh=4I7wNEx3l8IQ8cV8UlCXwWnxhFTI9WVBzDzbE/lAmWU=;
+        b=JTlcIDtNBIEOy1ClptPJS4UBovIpRCkodFvj80NW+JJwX39HC68luuc3CwbwR44X99
+         pTcbLtdz8OPMA6tGkzwNiCNquZS49uCGJz0PN9YTPjQxFNUJ/5qfIuCCwBLSAxFlUxkK
+         W2kRp+p5rSH+yw6ZcV7OGVLvPutIpmEam48jjW6FEA20ch8ZUAzeFREYj7pxeWyAYo8B
+         bobsPdWus2GjG4j4ce2vrm4lkdp1sk5qWxcOP14bjDE6bt5McBNzAavPUllo/iHYppCg
+         B4sXaJU3zPuu/nsgY+1a1yPwBfPoowu4SSbuRr7o+AsbO4IZ36jOlrrODvcFfJBmkLRx
+         XTpg==
+X-Gm-Message-State: AOAM531aKQMbW5GJO8lvZP0RooaWuiHmhpFMlDcY7XPjYMzYSfhHlryB
+        5BE2rB79aTNF7YHy2xv6V1IdIdf0YrUKbVMY5FoaxrWwOafosQ==
+X-Google-Smtp-Source: ABdhPJxQYjlWICVFXqyr7jgjd3ngVPCywTO7P3H6EcRYQWsVPi1qO3LwarCvZMTRAu3+Ao3Ow7mkDO/tTAzRapDeZf0=
+X-Received: by 2002:a25:4182:: with SMTP id o124mr2413579yba.27.1622780263282;
+ Thu, 03 Jun 2021 21:17:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210602224024.300485-1-rickyman7@gmail.com>
-In-Reply-To: <20210602224024.300485-1-rickyman7@gmail.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Thu, 3 Jun 2021 21:15:32 -0700
-Message-ID: <CAP-5=fW5btkb9izxcUy+XgAQPCTRZAUMa4uQMUR_+N_d=17Mfg@mail.gmail.com>
-Subject: Re: [PATCH] perf env: fix memory leak: free bpf_prog_info_linear
-To:     Riccardo Mancini <rickyman7@gmail.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <20210527040259.77823-1-alexei.starovoitov@gmail.com>
+ <20210527040259.77823-2-alexei.starovoitov@gmail.com> <CAEf4BzbyikY1b4vAzb+t88odbqWOR7K4TpwjM1zGF4Nmqu6ysg@mail.gmail.com>
+ <20210603015330.vd4zgr5rdishemgi@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzafEP_b7vXT9pTB4mDWWP7N5ACe82V3yq-1doH=awNbUg@mail.gmail.com> <20210604011231.p24eb6py7hjhskn3@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20210604011231.p24eb6py7hjhskn3@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 3 Jun 2021 21:17:32 -0700
+Message-ID: <CAEf4BzY1oL76pMsNW6f8J=MZuM1mroyAFhMxR0OpYdQNaZT13Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf: Introduce bpf_timer
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 2, 2021 at 3:41 PM Riccardo Mancini <rickyman7@gmail.com> wrote:
+On Thu, Jun 3, 2021 at 6:12 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> ASan reported a memory leak caused by info_linear not being
-> deallocated. The info_linear was allocated during
-> perf_event__synthesize_one_bpf_prog.
-> This patch adds the corresponding free() when bpf_prog_info_node
-> is freed in perf_env__purge_bpf.
+> On Thu, Jun 03, 2021 at 10:10:38AM -0700, Andrii Nakryiko wrote:
+> > >
+> > > I think going too much into implementation details in the helper
+> > > description is unnecessary.
+> > > " Start the timer and set its expiration N nanoseconds from
+> > >   the current time. "
+> > > is probably about right amount of details.
+> > > I can add that the time clock is monotonic
+> > > and callback is called in softirq.
+> >
+> > I think mentioning whether it's going to be run on the same CPU or
+> > another CPU is the most important part. I'm honestly still not sure
+> > which one is the case, because I don't completely understand all the
+> > implications of what "called in softirq" implies.
 >
-> $ sudo ./perf record -- sleep 5
-> [ perf record: Woken up 1 times to write data ]
-> [ perf record: Captured and wrote 0.025 MB perf.data (8 samples) ]
+> "called in softirq" means that timer callback will be executing
+> in softirq context on some cpu. That's all.
+> The proposed API doesn't provide a way to call a timer on a given cpu
+> or to pin it to a cpu.
+> There are few places in the kernel that use ABS_PINNED and REL_PINNED
+> variants of hrtimer.
+> One such example is napi timer.
+> The initial cpu is picked during hrtimer_init and it's always
+> current cpu. napi is bound to a cpu. So when it calls hrtimer_init(.., _PINNED);
+> it wants the callback to stay on the same cpu.
+> The hrtimer doc says that _PINNED is ignored during hrtimer_init :)
+> It is ignored, kinda, since initial target cpu is picked as current.
+> Then during hrtimer_start the actual cpu will be selected.
+> If it's called as hrtimer_start(,_PINNED); then the cpu will stay
+> as it was during hrtimer_init.
+> If hrtimer_start() is called without _PINNED the hrtimer algorithm can
+> migrate the timer to a more appropriate cpu depending on idle and no_hz.
+> See get_nohz_timer_target.
+> In case of napi it's necessary to stay on the same cpu,
+> so it's using _PINNED in hrtimer_init and in hrtimer_start.
+> TCP is using pinned timers for compressed acks and pacing.
+> I'm guessing it's done to improve performance. I suspect TCP doesn't
+> need the timers pinned.
+> All other _PINNED cases of hrtimer are similar to napi.
 >
-> =================================================================
-> ==297735==ERROR: LeakSanitizer: detected memory leaks
+> In bpf world we don't have a way to deterministically
+> execute on a given cpu and the hrtimer infra won't give us such
+> possibility.
 >
-> Direct leak of 7688 byte(s) in 19 object(s) allocated from:
->     #0 0x4f420f in malloc (/home/user/linux/tools/perf/perf+0x4f420f)
->     #1 0xc06a74 in bpf_program__get_prog_info_linear /home/user/linux/tools/lib/bpf/libbpf.c:11113:16
->     #2 0xb426fe in perf_event__synthesize_one_bpf_prog /home/user/linux/tools/perf/util/bpf-event.c:191:16
->     #3 0xb42008 in perf_event__synthesize_bpf_events /home/user/linux/tools/perf/util/bpf-event.c:410:9
->     #4 0x594596 in record__synthesize /home/user/linux/tools/perf/builtin-record.c:1490:8
->     #5 0x58c9ac in __cmd_record /home/user/linux/tools/perf/builtin-record.c:1798:8
->     #6 0x58990b in cmd_record /home/user/linux/tools/perf/builtin-record.c:2901:8
->     #7 0x7b2a20 in run_builtin /home/user/linux/tools/perf/perf.c:313:11
->     #8 0x7b12ff in handle_internal_command /home/user/linux/tools/perf/perf.c:365:8
->     #9 0x7b2583 in run_argv /home/user/linux/tools/perf/perf.c:409:2
->     #10 0x7b0d79 in main /home/user/linux/tools/perf/perf.c:539:3
->     #11 0x7fa357ef6b74 in __libc_start_main /usr/src/debug/glibc-2.33-8.fc34.x86_64/csu/../csu/libc-start.c:332:16
+> We can potentailly hack it on top of it. Like
+> bpf_timer_init(..., int cpu, ...)
+> {
+>   smp_call_function_single(cpu, rest_of_bpf_timer_init)
+> }
 >
-> Signed-off-by: Riccardo Mancini <rickyman7@gmail.com>
+> rest_of_bpf_timer_init()
+> {
+>   hrtimer_init
+> }
+>
+> But there are lots of things to consider with such api.
+> It feels like two building blocks collapsed into one already.
+> If we do anything like this we should expose smp_call_function_single()
+> directly as bpf helper instead of side effect of bpf_timer.
 
-Acked-by: Ian Rogers <irogers@google.com>
+Yeah, all makes sense. And I agree that an orthogonal API is better.
+Never mind then.
 
-Thanks,
-Ian
+>
+> > > > Also is there a chance for timer callback to be a sleepable BPF (sub-)program?
+> > >
+> > > Eventually yes. The whole bpf program can be sleepable, but the
+> > > timer callback cannot be. So the verifier would need to
+> > > treat different functions of the bpf prog as sleepable and non-sleepable.
+> > > Easy enough to implement. Eventually.
+> >
+> > Ok, so non-sleepable callback is hrtimer's implementation restriction
+> > due to softirq, right? Too bad, of course, I can imagine sleepable
+> > callbacks being useful, but it's not a deal breaker.
+>
+> Sleeping in softirq is no-go. The timer callback will be always
+> non-sleepable. If it would need to do extra work that requires sleeping
+> we'd need to create bpf kthreads similar to io_uring worker threads.
+> bpf program would have to ask for such things explicitly.
 
-> ---
->  tools/perf/util/env.c | 1 +
->  1 file changed, 1 insertion(+)
+yep
+
 >
-> diff --git a/tools/perf/util/env.c b/tools/perf/util/env.c
-> index 9130f6fad8d54..bc5e4f294e9e9 100644
-> --- a/tools/perf/util/env.c
-> +++ b/tools/perf/util/env.c
-> @@ -144,6 +144,7 @@ static void perf_env__purge_bpf(struct perf_env *env)
->                 node = rb_entry(next, struct bpf_prog_info_node, rb_node);
->                 next = rb_next(&node->rb_node);
->                 rb_erase(&node->rb_node, root);
-> +               free(node->info_linear);
->                 free(node);
->         }
+> > > The flags argument in bpf_timer_init() will eventually
+> > > be able to specify monotonic vs boottime and
+> > > relative vs absolute expiry.
+> >
+> > Yeah, I was thinking about relative vs absolute expiry case, but we
+> > never know what kind of extensibility we'll need, so there might be
+> > something that we don't see as a possibility yet. Seems simple enough
+> > to reserve flags argument here (we usually do not regret adding flags
+> > argument for extensibility), but I'm fine either way.
 >
-> --
-> 2.31.1
+> We cannot predict the future of bpf_timer, but the way it's going
+> so far there is a certainty that bpf_timer_start will be limited by
+> what hrtimer_start can do.
+> If we ever decide to use jiffy based timer as well they most likely
+> going to be represented as new set of helpers.
+> May be both hidden in the same 'struct bpf_timer',
+> but helper names would have to be different not to confuse users.
 >
+
+ok
+
+> > > Currently thinking to do cmpxchg in bpf_timer_start() and
+> > > bpf_timer_cancel*() similar to bpf_timer_init() to address it.
+> > > Kinda sucks to use atomic ops to address a race by deliberately
+> > > malicious prog. bpf prog writers cannot just stumble on such race.
+> >
+> > Why deliberately malicious? Just sufficiently sloppy or even just a
+> > clever concurrent BPF program.
+>
+> because hrtimers internals don't have protection for concurrent access.
+> It's assumed by kernel apis that the same hrtimer is not concurrently
+> accessed on multiple cpus.
+> Like doing hrtimer_init in parallel will certainly crash the kernel.
+> That's why bpf_timer_init() has extra cmpxchg safety builtin.
+> bpf_timer_start and bpf_timer_cancel don't have extra safety,
+> because the first thing hrtimer_start and hrtimer_cancel do
+> is they grab the lock, so everything will be safe even in bpf
+> programs try to access the same timer in parallel.
+>
+> The malicicous part comes when bpf prog does bpf_timer_start
+> on the pointer from a deleted map element. It's clearly a bug.
+> Concurrent bpf_timer_start and bpf_timer_cancel is ok to do
+> and it's safe.
+> The malicious situation is concurrent lookup+bpf_timer_start
+> with parallel delete of that element.
+> It's wrong thing to do with map element regardless of timers.
+
+I don't know if I agree with calling a buggy BPF program "malicious",
+but I think that won't matter if we embed spinlock as suggested below,
+right? Because then we can free the pointer, but spinlock is always
+there and is always "usable", so can be taken first thing before doing
+anything with that extra pointer.
+
+>
+> > So your idea is to cmpxchg() to NULL while bpf_timer_start() or
+> > bpf_timer_cancel() works with the timer? Wouldn't that cause
+> > bpf_timer_init() believe that that timer is not yet initialized and
+> > not return -EBUSY. Granted that's a corner-case race, but still.
+>
+> Not following.
+> bpf prog should do bpf_timer_init only once.
+> bpf_timer_init after bpf_timer_cancel is a wrong usage.
+> hrtimer api doesn't have any protection for such use.
+> while bpf_timer_init returns EBUSY.
+> 2nd bpf_timer_init is just a misuse of bpf_timer api.
+
+Yes, clearly a bad use of API, but it's not prevented by verifier. So
+maybe I misunderstood what you meant by
+
+> > > Currently thinking to do cmpxchg in bpf_timer_start() and
+> > > bpf_timer_cancel*() similar to bpf_timer_init() to address it.
+
+because that seemed like you were going to exchange (temporarily) a
+pointer to NULL while doing bpf_timer_start() or bpf_timer_cancel(),
+and then setting NULL -> valid ptr back again (this sequence would
+open up a window when bpf_timer_init() can be used twice on the same
+element). But again, with spinlock embedded doesn't matter anymore.
+
+>
+> > What if the spinlock was moved out of struct bpf_hrtimer into struct
+> > bpf_timer instead? Then all that cmpxchg and READ_ONCE/WRITE_ONCE
+> > could go away and be more "obviously correct" and race-free? We'd just
+> > need to make sure that the size of that spinlock struct doesn't change
+> > depending on kernel config (so no diagnostics should be embedded).
+>
+> We already tackled that concern with bpf_spin_lock.
+> So moving the lock into 'struct bpf_timer' is easy and it's a great idea.
+> I suspect it should simplify the code. Thanks!
+
+sure, glad it helped
