@@ -2,217 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2140639BC78
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 18:02:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4E0239BC9A
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 18:10:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231204AbhFDQDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 12:03:46 -0400
-Received: from mail-pl1-f170.google.com ([209.85.214.170]:39714 "EHLO
-        mail-pl1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbhFDQDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 12:03:45 -0400
-Received: by mail-pl1-f170.google.com with SMTP id q16so4871561pls.6
-        for <netdev@vger.kernel.org>; Fri, 04 Jun 2021 09:01:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Xx1Z3AA+ArGBlKxMGhFW4xdB9t5fochT0OrB1eX69XQ=;
-        b=UWgXEe584ebc7HqUm2mFxcEp4fbJqpI8VbRf7fVPzyNGPTgdhk9/QHStW9o7ft5691
-         p6uKgpho+jyGQJOCPyvKFg//RuUrAgy9qKnzMUso6aysCceG43RHUbPXrO9T2bxWSnZb
-         XUBjzti4lKAoDtqQL+GPG6QwmC3OYq6+Hwb3ZXqW9ANsfz890z3G2vU3FN05naZbQeYQ
-         V/UT0wTFLdDFNozKCeKaYYgCsNk25SMO5LWMaXEZAQmFe+VBh5nClCchr6ZsC7gmtfcW
-         N6jBeniRjhRfJZkd8wD3a8Rtg2lcwAMwOHt6lWxzMYpRDbwao1ZgGp0mNN1kLhKziDmQ
-         h7cQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Xx1Z3AA+ArGBlKxMGhFW4xdB9t5fochT0OrB1eX69XQ=;
-        b=LnCyfnrr+NpzaNSTX4XrubCKsMRgoNuw0cqpcFS82/3tnVUinNjZI9eXYdqYWhPtlY
-         KERM1TFI8MtVTennwGYTDiK4xZ1YCf2q44M3DVKiM9Le1lZYI9CT2IwxsAHV1yIfYb0s
-         3V+mSnQ6Rtde8JuBbmj7o0t8Winl5rF1/+sEBEVXiF9A8a8BI3yu+ygAc1jLt2Jq6wFV
-         wLukNgDY5N9O/z7TLTOlJddEHNMGk0hHGFKeoNNuT/ZnH7GTNYwq7U28/8PwTUDLqWGK
-         Lq0W29HCdGVhp5bT943AVcn+7My4HOhNgLz5lYiABxFbfTBnGdUf9Q2K+WeUwXTr+lv0
-         Ynlg==
-X-Gm-Message-State: AOAM533MoWJho1PPx4ZF1hZZdEl6GgbIuyRrMkt40vHOXfUdVeZVqQYp
-        J56J/qZCR1SkQIsNEPm1DU8=
-X-Google-Smtp-Source: ABdhPJxbzD/dXGXJhQuMItTjWeHUNe7oUwgzWjFYxB2e6E46VtzKAErul2I09TMPTI9wDydpIVPE2g==
-X-Received: by 2002:a17:90a:8582:: with SMTP id m2mr1905171pjn.146.1622822445988;
-        Fri, 04 Jun 2021 09:00:45 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:fa9c:6f03:fb6b:28ef])
-        by smtp.gmail.com with ESMTPSA id t12sm5017803pjw.57.2021.06.04.09.00.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Jun 2021 09:00:45 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH iproute2] tc: fq: add horizon attributes
-Date:   Fri,  4 Jun 2021 09:00:41 -0700
-Message-Id: <20210604160041.3877465-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.32.0.rc1.229.g3e70b5a671-goog
+        id S230041AbhFDQMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 12:12:16 -0400
+Received: from mga11.intel.com ([192.55.52.93]:21972 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229667AbhFDQMP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Jun 2021 12:12:15 -0400
+IronPort-SDR: yNGMgfIkWubhhGNiwoRADocpzHePMNxfkAThhlBiKBLdhb41yOqsNqTQci9sNMPYRkzFZBkPbB
+ gRn9Nmh3vULQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,10005"; a="201299728"
+X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; 
+   d="scan'208";a="201299728"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2021 09:06:02 -0700
+IronPort-SDR: pz9q0zuhpSjxrggBFMp8XUvlDKuZ4PdxaOGuskaftXnR2WdDfWud6qXO+DrQX2dXyhGEa7If6r
+ 5gvQe3aqaEFg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; 
+   d="scan'208";a="475511682"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by FMSMGA003.fm.intel.com with ESMTP; 04 Jun 2021 09:05:49 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net 0/6][pull request] Intel Wired LAN Driver Updates 2021-06-04
+Date:   Fri,  4 Jun 2021 09:08:10 -0700
+Message-Id: <20210604160816.3391716-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+This series contains updates to virtchnl header file and ice driver.
 
-Commit 39d010504e6b ("net_sched: sch_fq: add horizon attribute")
-added kernel support for horizon attributes in linux-5.8
+Brett fixes VF being unable to request a different number of queues then
+allocated and adds clearing of VF_MBX_ATQLEN register for VF reset.
 
-$ tc -s -d qd sh dev wlp2s0
-qdisc fq 8006: root refcnt 2 limit 10000p flow_limit 100p buckets 1024 orphan_mask 1023 quantum 3028b initial_quantum 15140b low_rate_threshold 550Kbit refill_delay 40ms timer_slack 10us horizon 10s horizon_drop
- Sent 690924 bytes 3234 pkt (dropped 0, overlimits 0 requeues 0)
- backlog 0b 0p requeues 0
-  flows 112 (inactive 104 throttled 0)
-  gc 0 highprio 0 throttled 2 latency 8.25us
+Haiyue handles error of rebuilding VF VSI during reset.
 
-$ tc qd change dev wlp2s0 root fq horizon 500ms horizon_cap
+Paul fixes reporting of autoneg to use the PHY capabilities.
 
-$ tc -s -d qd sh dev wlp2s0
-qdisc fq 8006: root refcnt 2 limit 10000p flow_limit 100p buckets 1024 orphan_mask 1023 quantum 3028b initial_quantum 15140b low_rate_threshold 550Kbit refill_delay 40ms timer_slack 10us horizon 500ms horizon_cap
- Sent 831220 bytes 3844 pkt (dropped 0, overlimits 0 requeues 0)
- backlog 0b 0p requeues 0
-  flows 122 (inactive 120 throttled 0)
-  gc 0 highprio 0 throttled 2 latency 8.25us
+Dave allows LLDP packets without priority of TC_PRIO_CONTROL to be
+transmitted.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- tc/q_fq.c | 66 ++++++++++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 60 insertions(+), 6 deletions(-)
+Geert Uytterhoeven adds explicit padding to virtchnl_proto_hdrs
+structure in the virtchnl header file.
 
-diff --git a/tc/q_fq.c b/tc/q_fq.c
-index cff21975b89789321af76579db119bcad8508a96..8dbfc41a1e05b46cda6ccaa3e36c43de805ba169 100644
---- a/tc/q_fq.c
-+++ b/tc/q_fq.c
-@@ -58,7 +58,9 @@ static void explain(void)
- 		"		[ low_rate_threshold RATE ]\n"
- 		"		[ orphan_mask MASK]\n"
- 		"		[ timer_slack TIME]\n"
--		"		[ ce_threshold TIME ]\n");
-+		"		[ ce_threshold TIME ]\n"
-+		"		[ horizon TIME ]\n"
-+		"		[ horizon_{cap|drop} ]\n");
- }
- 
- static unsigned int ilog2(unsigned int val)
-@@ -88,6 +90,8 @@ static int fq_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 	unsigned int orphan_mask;
- 	unsigned int ce_threshold;
- 	unsigned int timer_slack;
-+	unsigned int horizon;
-+	__u8 horizon_drop = 255;
- 	bool set_plimit = false;
- 	bool set_flow_plimit = false;
- 	bool set_quantum = false;
-@@ -99,6 +103,7 @@ static int fq_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 	bool set_low_rate_threshold = false;
- 	bool set_ce_threshold = false;
- 	bool set_timer_slack = false;
-+	bool set_horizon = false;
- 	int pacing = -1;
- 	struct rtattr *tail;
- 
-@@ -163,6 +168,17 @@ static int fq_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 				return -1;
- 			}
- 			set_timer_slack = true;
-+		} else if (strcmp(*argv, "horizon_drop") == 0) {
-+			horizon_drop = 1;
-+		} else if (strcmp(*argv, "horizon_cap") == 0) {
-+			horizon_drop = 0;
-+		} else if (strcmp(*argv, "horizon") == 0) {
-+			NEXT_ARG();
-+			if (get_time(&horizon, *argv)) {
-+				fprintf(stderr, "Illegal \"horizon\"\n");
-+				return -1;
-+			}
-+			set_horizon = true;
- 		} else if (strcmp(*argv, "defrate") == 0) {
- 			NEXT_ARG();
- 			if (strchr(*argv, '%')) {
-@@ -260,6 +276,12 @@ static int fq_parse_opt(struct qdisc_util *qu, int argc, char **argv,
-     if (set_timer_slack)
- 		addattr_l(n, 1024, TCA_FQ_TIMER_SLACK,
- 			  &timer_slack, sizeof(timer_slack));
-+    if (set_horizon)
-+		addattr_l(n, 1024, TCA_FQ_HORIZON,
-+			  &horizon, sizeof(horizon));
-+    if (horizon_drop != 255)
-+		addattr_l(n, 1024, TCA_FQ_HORIZON_DROP,
-+			  &horizon_drop, sizeof(horizon_drop));
- 	addattr_nest_end(n, tail);
- 	return 0;
- }
-@@ -275,6 +297,8 @@ static int fq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	unsigned int orphan_mask;
- 	unsigned int ce_threshold;
- 	unsigned int timer_slack;
-+	unsigned int horizon;
-+	__u8 horizon_drop;
- 
- 	SPRINT_BUF(b1);
- 
-@@ -374,6 +398,23 @@ static int fq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 			     sprint_time64(timer_slack, b1));
- 	}
- 
-+	if (tb[TCA_FQ_HORIZON] &&
-+	    RTA_PAYLOAD(tb[TCA_FQ_HORIZON]) >= sizeof(__u32)) {
-+		horizon = rta_getattr_u32(tb[TCA_FQ_HORIZON]);
-+		print_uint(PRINT_JSON, "horizon", NULL, horizon);
-+		print_string(PRINT_FP, NULL, "horizon %s ",
-+			     sprint_time(horizon, b1));
-+	}
-+
-+	if (tb[TCA_FQ_HORIZON_DROP] &&
-+	    RTA_PAYLOAD(tb[TCA_FQ_HORIZON_DROP]) >= sizeof(__u8)) {
-+		horizon_drop = rta_getattr_u8(tb[TCA_FQ_HORIZON_DROP]);
-+		if (!horizon_drop)
-+			print_null(PRINT_ANY, "horizon_cap", "horizon_cap ", NULL);
-+		else
-+			print_null(PRINT_ANY, "horizon_drop", "horizon_drop ", NULL);
-+	}
-+
- 	return 0;
- }
- 
-@@ -430,12 +471,25 @@ static int fq_print_xstats(struct qdisc_util *qu, FILE *f,
- 		print_lluint(PRINT_ANY, "flows_plimit", " flows_plimit %llu",
- 			     st->flows_plimit);
- 
--	if (st->pkts_too_long || st->allocation_errors) {
-+	if (st->pkts_too_long || st->allocation_errors ||
-+	    st->horizon_drops || st->horizon_caps) {
- 		print_nl();
--		print_lluint(PRINT_ANY, "pkts_too_long",
--			     "  pkts_too_long %llu", st->pkts_too_long);
--		print_lluint(PRINT_ANY, "alloc_errors", " alloc_errors %llu",
--			     st->allocation_errors);
-+		if (st->pkts_too_long)
-+			print_lluint(PRINT_ANY, "pkts_too_long",
-+				     " pkts_too_long %llu",
-+				     st->pkts_too_long);
-+		if (st->allocation_errors)
-+			print_lluint(PRINT_ANY, "alloc_errors",
-+				     " alloc_errors %llu",
-+				     st->allocation_errors);
-+		if (st->horizon_drops)
-+			print_lluint(PRINT_ANY, "horizon_drops",
-+				     " horizon_drops %llu",
-+				     st->horizon_drops);
-+		if (st->horizon_caps)
-+			print_lluint(PRINT_ANY, "horizon_caps",
-+				     "  horizon_caps %llu",
-+				     st->horizon_caps);
- 	}
- 
- 	return 0;
+The following are changes since commit 1a8024239dacf53fcf39c0f07fbf2712af22864f:
+  virtio-net: fix for skb_over_panic inside big mode
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
+
+Brett Creeley (2):
+  ice: Fix allowing VF to request more/less queues via virtchnl
+  ice: Fix VFR issues for AVF drivers that expect ATQLEN cleared
+
+Dave Ertman (1):
+  ice: Allow all LLDP packets from PF to Tx
+
+Geert Uytterhoeven (1):
+  virtchnl: Add missing padding to virtchnl_proto_hdrs
+
+Haiyue Wang (1):
+  ice: handle the VF VSI rebuild failure
+
+Paul Greenwalt (1):
+  ice: report supported and advertised autoneg using PHY capabilities
+
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  | 51 +++----------------
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |  1 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  2 +
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  5 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 19 ++++---
+ include/linux/avf/virtchnl.h                  |  1 +
+ 6 files changed, 27 insertions(+), 52 deletions(-)
+
 -- 
-2.32.0.rc1.229.g3e70b5a671-goog
+2.26.2
 
