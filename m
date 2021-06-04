@@ -2,266 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6202B39B683
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 12:03:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 209A939B66A
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 12:02:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230299AbhFDKEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 06:04:33 -0400
-Received: from mga04.intel.com ([192.55.52.120]:53411 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230269AbhFDKEd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Jun 2021 06:04:33 -0400
-IronPort-SDR: XlD3BnxvomBMarBQGV1vrAuBR0midFs0p072/XChqI1UBVX2YU+rAqjtJIQpMAIC6TcfK3Uch7
- 2+FpI6/5DKQA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10004"; a="202404529"
-X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; 
-   d="scan'208";a="202404529"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2021 03:02:47 -0700
-IronPort-SDR: zxSkfP+pHNVbIUYBc7pky6Nd9dBT/ZA7Q9tkotulmJKibGbmKBt0Z4XQwN45NAjm0QSq7w+Emk
- 7CrQWBGIOUrQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; 
-   d="scan'208";a="633994113"
-Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
-  by fmsmga006.fm.intel.com with ESMTP; 04 Jun 2021 03:02:42 -0700
-From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-To:     Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, kuba@kernel.org, netdev@vger.kernel.org,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        davem@davemloft.net, mcoquelin.stm32@gmail.com,
-        weifeng.voon@intel.com, boon.leong.ong@intel.com,
-        tee.min.tan@intel.com, vee.khee.wong@linux.intel.com,
-        vee.khee.wong@intel.com, michael.wei.hong.sit@intel.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        vladimir.oltean@nxp.com
-Subject: [PATCH net-next v5 3/3] net: stmmac: enable Intel mGbE 2.5Gbps link speed
-Date:   Fri,  4 Jun 2021 17:58:01 +0800
-Message-Id: <20210604095801.1033-4-michael.wei.hong.sit@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210604095801.1033-1-michael.wei.hong.sit@intel.com>
-References: <20210604095801.1033-1-michael.wei.hong.sit@intel.com>
+        id S230134AbhFDKDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 06:03:48 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:54804 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229625AbhFDKDr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 06:03:47 -0400
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20210604100200euoutp0148f3b09d59e870f292eb813ef8edd5b2~FWNbTLLdM1917119171euoutp01b
+        for <netdev@vger.kernel.org>; Fri,  4 Jun 2021 10:02:00 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20210604100200euoutp0148f3b09d59e870f292eb813ef8edd5b2~FWNbTLLdM1917119171euoutp01b
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1622800920;
+        bh=vZ3KKLqiiZzrxCeZZfN5tDXvbOSiP5vGVtWjdHoKGyQ=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=eIvFk+VOK21WyUtntEBqXHbnmTIsuJa1jX5qwa97S9UtT3ikR3dSuelCC77S5Oc7o
+         WQIKyB4xdZimrqWLLknQEbBd7DycuwZngy1A/yyQf97H7SweLInzI7eq09z0djMzTN
+         rah6owpKaqlRaEDp6+zBk1fHlmZXnNLDhu7+voMA=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20210604100159eucas1p19bf3ad2927ddeb47578291dd13e14e95~FWNayKr2D0267702677eucas1p1K;
+        Fri,  4 Jun 2021 10:01:59 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id D5.7D.09452.71AF9B06; Fri,  4
+        Jun 2021 11:01:59 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20210604100159eucas1p15d9bb617c9a25a19bd929153e82e4f48~FWNaQBHwR0267702677eucas1p1H;
+        Fri,  4 Jun 2021 10:01:59 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20210604100159eusmtrp146da1bfd7e04db67e0c5025a67593b6d~FWNaPInZc1837518375eusmtrp1I;
+        Fri,  4 Jun 2021 10:01:59 +0000 (GMT)
+X-AuditID: cbfec7f2-ab7ff700000024ec-fa-60b9fa1762ea
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id E8.AC.08696.71AF9B06; Fri,  4
+        Jun 2021 11:01:59 +0100 (BST)
+Received: from localhost (unknown [106.120.51.46]) by eusmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20210604100159eusmtip2323c33dc6bc62e74cdd43ad222fd5ab6~FWNZ-Jkm02310823108eusmtip2W;
+        Fri,  4 Jun 2021 10:01:58 +0000 (GMT)
+From:   =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
+To:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Cc:     =?UTF-8?q?Bart=C5=82omiej=20=C5=BBolnierkiewicz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
+Subject: [PATCH net-next v13 0/3] AX88796C SPI Ethernet Adapter
+Date:   Fri,  4 Jun 2021 12:01:45 +0200
+Message-Id: <20210604100148.17177-1-l.stelmach@samsung.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Organization: Samsung R&D Institute Poland
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrIKsWRmVeSWpSXmKPExsWy7djPc7riv3YmGKy7qWNx/u4hZouNM9az
+        Wsw538JiMf/IOVaLRe9nsFpce3uH1aL/8Wtmi/PnN7BbXNjWx2px89AKRotNj6+xWlzeNYfN
+        Ysb5fUwWh6buZbRYe+Quu8WxBWIWrXuPsDsIely+dpHZY8vKm0weO2fdZffYtKqTzWPzknqP
+        nTs+M3n0bVnF6PF5k1wARxSXTUpqTmZZapG+XQJXxo7Z3SwFz/QrFs65ydzAuEi1i5GTQ0LA
+        ROLVkwusXYxcHEICKxglZh3dywbhfGGUmPlvL1TmM6PEvV1/mboYOcBaWheqQMSXM0ocW7MK
+        quM5o8Tr7XdZQeayCThK9C89AdYtInCPWWJ9+wNGEIdZYB+jxM57U5hBqoQF7CWuvVsJ1sEi
+        oCoxde9NRhCbV8Ba4mrLBxaIC+Ul2pdvZ4OIC0qcnPkELM4voCWxpuk6mM0MVNO8dTYzyAIJ
+        geWcEi+2PmCDaHaRmDJ/BjOELSzx6vgWdghbRuL05B4WiH/qJSZPMoPo7WGU2DbnB9Ria4k7
+        536xgdQwC2hKrN+lDxF2lDj1biobRCufxI23ghAn8ElM2jadGSLMK9HRJgRRrSKxrn8P1EAp
+        id5XKxghbA+JnS17mCcwKs5C8tgsJM/MQti7gJF5FaN4amlxbnpqsWFearlecWJucWleul5y
+        fu4mRmCqO/3v+KcdjHNffdQ7xMjEwXiIUYKDWUmEd4/ajgQh3pTEyqrUovz4otKc1OJDjNIc
+        LErivKtmr4kXEkhPLEnNTk0tSC2CyTJxcEo1MEWe8KjQLJfKCF0h9KJvSWVJlhGbz81jmjfX
+        z8r0j/JmPX22s3ZawcmXp3uevXHnll08K154Y13K+67aPzyBT5srHxgn/Zq66PT7Py+vcb85
+        GaT0J2Vn9+1ZUQsiX2SIZ7UuTJmutcRWSfR9l/DKCna7BTZKe9/uPPnfzP3Ppsjvgkvl/HtN
+        tti7yBS6OlpN8dyYezww+k3QI+mCfVGLrlXu3XhPU1n4avoM3i/mP0IXd2peP6/Y3JspI7CR
+        /bbwbWtzAd3ejxLdz+MtYx77X9J4p16273P2u4g96kdKP7v8Yi37MWXR6XmPOxbHbltUffrT
+        2buLJJhf8nI+W779icirFfV6Xc2BGz3Cv1y5cU+JpTgj0VCLuag4EQCRhCAK5AMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrJIsWRmVeSWpSXmKPExsVy+t/xe7riv3YmGMyayWVx/u4hZouNM9az
+        Wsw538JiMf/IOVaLRe9nsFpce3uH1aL/8Wtmi/PnN7BbXNjWx2px89AKRotNj6+xWlzeNYfN
+        Ysb5fUwWh6buZbRYe+Quu8WxBWIWrXuPsDsIely+dpHZY8vKm0weO2fdZffYtKqTzWPzknqP
+        nTs+M3n0bVnF6PF5k1wAR5SeTVF+aUmqQkZ+cYmtUrShhZGeoaWFnpGJpZ6hsXmslZGpkr6d
+        TUpqTmZZapG+XYJexo7Z3SwFz/QrFs65ydzAuEi1i5GDQ0LARKJ1oUoXIxeHkMBSRokf/96y
+        QcSlJFbOTe9i5AQyhSX+XOtig6h5yijx9O0zNpAEm4CjRP/SE6wgCRGBN8wSTffesoM4zAL7
+        GCX2H13MDlIlLGAvce3dSlYQm0VAVWLq3puMIDavgLXE1ZYPLBAr5CXal29ng4gLSpyc+YQF
+        5ApmAXWJ9fOEQML8AloSa5qug5UzA5U3b53NPIFRYBaSjlkIHbOQVC1gZF7FKJJaWpybnlts
+        pFecmFtcmpeul5yfu4kRGKfbjv3csoNx5auPeocYmTgYDzFKcDArifDuUduRIMSbklhZlVqU
+        H19UmpNafIjRFOiDicxSosn5wESRVxJvaGZgamhiZmlgamlmrCTOa3JkTbyQQHpiSWp2ampB
+        ahFMHxMHp1QDE9Oc7pYluzie7TOuWbX0Q7jH2anPhGZf+RV0O/iixdx5pyI6851KOq7IhTDM
+        /SsxLXvrP48g04jOI9mGuSYiPI9O5e19Y3F530kWUW/OvSlLNSO1Fwtw8XlJM1zfHKh6rezY
+        hx7XoH3TeoLZ24V0287M23cx5sPs+Jjecrb0Rx9PrzD+vHSK2cVvSsECUSLHFrtsMtZx+Tf3
+        ePZxi9YJT5fJ3Xkw+fei4K328f17J/358Kz41sOte1W5p9mYX5RX5FiwcWcIl3Dn9b7bkZ5z
+        M18Vb3jOs9H1qXzX3Qdc7ccdL38V3fnlzh/eL34PJukt3OUsw847U1ZS1CpmluCqqyGLgyd3
+        eU/f45u1680+rTYlluKMREMt5qLiRADNQmdWXAMAAA==
+X-CMS-MailID: 20210604100159eucas1p15d9bb617c9a25a19bd929153e82e4f48
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20210604100159eucas1p15d9bb617c9a25a19bd929153e82e4f48
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20210604100159eucas1p15d9bb617c9a25a19bd929153e82e4f48
+References: <CGME20210604100159eucas1p15d9bb617c9a25a19bd929153e82e4f48@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon Weifeng <weifeng.voon@intel.com>
+This is a driver for AX88796C Ethernet Adapter connected in SPI mode as
+found on ARTIK5 evaluation board. The driver has been ported from a
+v3.10.9 vendor kernel for ARTIK5 board.
 
-The Intel mGbE supports 2.5Gbps link speed by increasing the clock rate by
-2.5 times of the original rate. In this mode, the serdes/PHY operates at a
-serial baud rate of 3.125 Gbps and the PCS data path and GMII interface of
-the MAC operate at 312.5 MHz instead of 125 MHz.
+Changes in v13:
+  - rebased onto net-next (ebbf5fcb94a7)
+  - minor fix: use u64_stats_update_{begin_irqsave,end_irqrestore}
+  - minor fix: initialize the syncp lock
 
-For Intel mGbE, the overclocking of 2.5 times clock rate to support 2.5G is
-only able to be configured in the BIOS during boot time. Kernel driver has
-no access to modify the clock rate for 1Gbps/2.5G mode. The way to
-determined the current 1G/2.5G mode is by reading a dedicated adhoc
-register through mdio bus. In short, after the system boot up, it is either
-in 1G mode or 2.5G mode which not able to be changed on the fly.
+Changes in v12:
+  - rebased to net-next-5.13
+  - added missing spaces after commas
+  - corrected indentation
 
-Compared to 1G mode, the 2.5G mode selects the 2500BASEX as PHY interface and
-disables the xpcs_an_inband. This is to cater for some PHYs that only
-supports 2500BASEX PHY interface with no autonegotiation.
+Changes in v11:
+  - changed stat counters to 64-bit
+  - replaced WARN_ON(!mutex_is_locked()) with lockdep_assert_held()
+  - replaced ax88796c_free_skb_queue() with __skb_queue_purge()
+  - added cancel_work_sync() for ax_work
+  - removed unused fields of struct skb_data
+  - replaced MAX() with max() from minmax.h
+  - rebased to net-next (resend)
 
-v2: remove MAC supported link speed masking
-v3: Restructure  to introduce intel_speed_mode_2500() to read serdes registers
-    for max speed supported and select the appropritate configuration.
-    Use max_speed to determine the supported link speed mask.
+Changes in v10:
+  - removed unused variable
+ 
+Changes in v9:
+  - used pskb_extend_head()
+  - used ethtool private flags instead of tunables to switch SPI
+    compression
+  - changed
+    - alloc_skb() to netdev_alloc(skb)
+    - __pskb_trim() to pskb_trim()
+  - removed:
+    - chages to skb->truesize
+    - unnecessary casting to short
+    - return f() in a void function
+    - IRQF_SHARED flags
+    - unnecessary memset(0) of kzalloc()ed buffer
+    - unused endiannes detection
+    - unnecessary __packed attribute for some structures
+  - added:
+    - temporary variable in AX_WRITE/READ sequences
+    - missin mutex_unlock() in error paths
+  - axspi_read_reg() returns a constant value in case of an error
+  
+Changes in v8:
+  - fixed the entry in MAINTAINERS
+  - removed unnecessary netif_err()
+  - changed netif_rx() to netif_rx_ni() for code running in a process
+    context
+  - added explicit type casting for ~BIT()
 
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 48 ++++++++++++++++++-
- .../net/ethernet/stmicro/stmmac/dwmac-intel.h | 13 +++++
- .../net/ethernet/stmicro/stmmac/dwmac4_core.c |  1 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  7 +++
- include/linux/stmmac.h                        |  1 +
- 5 files changed, 69 insertions(+), 1 deletion(-)
+Changes in v7:
+  - removed duplicate code
+  - moved a constant buffer definition away from a header file
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 2ecf93c84b9d..6a9a19b0844c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -102,6 +102,22 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
- 
- 	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
- 
-+	/* Set the serdes rate and the PCLK rate */
-+	data = mdiobus_read(priv->mii, serdes_phy_addr,
-+			    SERDES_GCR0);
-+
-+	data &= ~SERDES_RATE_MASK;
-+	data &= ~SERDES_PCLK_MASK;
-+
-+	if (priv->plat->max_speed == 2500)
-+		data |= SERDES_RATE_PCIE_GEN2 << SERDES_RATE_PCIE_SHIFT |
-+			SERDES_PCLK_37p5MHZ << SERDES_PCLK_SHIFT;
-+	else
-+		data |= SERDES_RATE_PCIE_GEN1 << SERDES_RATE_PCIE_SHIFT |
-+			SERDES_PCLK_70MHZ << SERDES_PCLK_SHIFT;
-+
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
-+
- 	/* assert clk_req */
- 	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 	data |= SERDES_PLL_CLK;
-@@ -230,6 +246,32 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
- 	}
- }
- 
-+static void intel_speed_mode_2500(struct net_device *ndev, void *intel_data)
-+{
-+	struct intel_priv_data *intel_priv = intel_data;
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+	int serdes_phy_addr = 0;
-+	u32 data = 0;
-+
-+	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
-+
-+	/* Determine the link speed mode: 2.5Gbps/1Gbps */
-+	data = mdiobus_read(priv->mii, serdes_phy_addr,
-+			    SERDES_GCR);
-+
-+	if (((data & SERDES_LINK_MODE_MASK) >> SERDES_LINK_MODE_SHIFT) ==
-+	    SERDES_LINK_MODE_2G5) {
-+		dev_info(priv->device, "Link Speed Mode: 2.5Gbps\n");
-+		priv->plat->max_speed = 2500;
-+		priv->plat->phy_interface = PHY_INTERFACE_MODE_2500BASEX;
-+		priv->plat->mdio_bus_data->xpcs_an_inband = false;
-+	} else {
-+		priv->plat->max_speed = 1000;
-+		priv->plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+		priv->plat->mdio_bus_data->xpcs_an_inband = true;
-+	}
-+}
-+
- /* Program PTP Clock Frequency for different variant of
-  * Intel mGBE that has slightly different GPO mapping
-  */
-@@ -586,7 +628,7 @@ static int ehl_sgmii_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 1;
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
--
-+	plat->speed_mode_2500 = intel_speed_mode_2500;
- 	plat->serdes_powerup = intel_serdes_powerup;
- 	plat->serdes_powerdown = intel_serdes_powerdown;
- 
-@@ -639,6 +681,7 @@ static int ehl_pse0_sgmii1g_data(struct pci_dev *pdev,
- 				 struct plat_stmmacenet_data *plat)
- {
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->speed_mode_2500 = intel_speed_mode_2500;
- 	plat->serdes_powerup = intel_serdes_powerup;
- 	plat->serdes_powerdown = intel_serdes_powerdown;
- 	return ehl_pse0_common_data(pdev, plat);
-@@ -677,6 +720,7 @@ static int ehl_pse1_sgmii1g_data(struct pci_dev *pdev,
- 				 struct plat_stmmacenet_data *plat)
- {
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->speed_mode_2500 = intel_speed_mode_2500;
- 	plat->serdes_powerup = intel_serdes_powerup;
- 	plat->serdes_powerdown = intel_serdes_powerdown;
- 	return ehl_pse1_common_data(pdev, plat);
-@@ -711,6 +755,7 @@ static int tgl_sgmii_phy0_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 1;
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->speed_mode_2500 = intel_speed_mode_2500;
- 	plat->serdes_powerup = intel_serdes_powerup;
- 	plat->serdes_powerdown = intel_serdes_powerdown;
- 	return tgl_common_data(pdev, plat);
-@@ -725,6 +770,7 @@ static int tgl_sgmii_phy1_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 2;
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->speed_mode_2500 = intel_speed_mode_2500;
- 	plat->serdes_powerup = intel_serdes_powerup;
- 	plat->serdes_powerdown = intel_serdes_powerdown;
- 	return tgl_common_data(pdev, plat);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
-index 542acb8ce467..20d14e588044 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
-@@ -9,6 +9,7 @@
- #define POLL_DELAY_US 8
- 
- /* SERDES Register */
-+#define SERDES_GCR	0x0	/* Global Conguration */
- #define SERDES_GSR0	0x5	/* Global Status Reg0 */
- #define SERDES_GCR0	0xb	/* Global Configuration Reg0 */
- 
-@@ -17,8 +18,20 @@
- #define SERDES_PHY_RX_CLK	BIT(1)		/* PSE SGMII PHY rx clk */
- #define SERDES_RST		BIT(2)		/* Serdes Reset */
- #define SERDES_PWR_ST_MASK	GENMASK(6, 4)	/* Serdes Power state*/
-+#define SERDES_RATE_MASK	GENMASK(9, 8)
-+#define SERDES_PCLK_MASK	GENMASK(14, 12)	/* PCLK rate to PHY */
-+#define SERDES_LINK_MODE_MASK	GENMASK(2, 1)
-+#define SERDES_LINK_MODE_SHIFT	1
- #define SERDES_PWR_ST_SHIFT	4
- #define SERDES_PWR_ST_P0	0x0
- #define SERDES_PWR_ST_P3	0x3
-+#define SERDES_LINK_MODE_2G5	0x3
-+#define SERSED_LINK_MODE_1G	0x2
-+#define SERDES_PCLK_37p5MHZ	0x0
-+#define SERDES_PCLK_70MHZ	0x1
-+#define SERDES_RATE_PCIE_GEN1	0x0
-+#define SERDES_RATE_PCIE_GEN2	0x1
-+#define SERDES_RATE_PCIE_SHIFT	8
-+#define SERDES_PCLK_SHIFT	12
- 
- #endif /* __DWMAC_INTEL_H__ */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index f35c03c9f91e..67ba083eb90c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -1358,6 +1358,7 @@ int dwmac4_setup(struct stmmac_priv *priv)
- 	mac->link.speed10 = GMAC_CONFIG_PS;
- 	mac->link.speed100 = GMAC_CONFIG_FES | GMAC_CONFIG_PS;
- 	mac->link.speed1000 = 0;
-+	mac->link.speed2500 = GMAC_CONFIG_FES;
- 	mac->link.speed_mask = GMAC_CONFIG_FES | GMAC_CONFIG_PS;
- 	mac->mii.addr = GMAC_MDIO_ADDR;
- 	mac->mii.data = GMAC_MDIO_DATA;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index c1331c07623d..8d5ac268ad65 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -931,6 +931,10 @@ static void stmmac_validate(struct phylink_config *config,
- 	if ((max_speed > 0) && (max_speed < 1000)) {
- 		phylink_set(mask, 1000baseT_Full);
- 		phylink_set(mask, 1000baseX_Full);
-+	} else if (priv->plat->has_gmac4) {
-+		if (!max_speed || max_speed >= 2500)
-+			phylink_set(mac_supported, 2500baseT_Full);
-+			phylink_set(mac_supported, 2500baseX_Full);
- 	} else if (priv->plat->has_xgmac) {
- 		if (!max_speed || (max_speed >= 2500)) {
- 			phylink_set(mac_supported, 2500baseT_Full);
-@@ -6991,6 +6995,9 @@ int stmmac_dvr_probe(struct device *device,
- 		}
- 	}
- 
-+	if (priv->plat->speed_mode_2500)
-+		priv->plat->speed_mode_2500(ndev, priv->plat->bsp_priv);
-+
- 	if (priv->plat->mdio_bus_data->has_xpcs) {
- 		ret = stmmac_xpcs_setup(priv->mii);
- 		if (ret)
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index e55a4807e3ea..b10be3385a30 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -223,6 +223,7 @@ struct plat_stmmacenet_data {
- 	void (*fix_mac_speed)(void *priv, unsigned int speed);
- 	int (*serdes_powerup)(struct net_device *ndev, void *priv);
- 	void (*serdes_powerdown)(struct net_device *ndev, void *priv);
-+	void (*speed_mode_2500)(struct net_device *ndev, void *priv);
- 	void (*ptp_clk_freq_config)(void *priv);
- 	int (*init)(struct platform_device *pdev, void *priv);
- 	void (*exit)(struct platform_device *pdev, void *priv);
+Changes in v6:
+  - fixed typos in Kconfig
+  - checked argument value in ax88796c_set_tunable
+  - updated tags in commit messages
+
+Changes in v5:
+  - coding style (local variable declarations)
+  - added spi0 node in the DT binding example and removed
+    interrupt-parent
+  - removed comp module parameter
+  - added CONFIG_SPI_AX88796C_COMPRESSION option to set the initial
+    state of SPI compression
+  - introduced new ethtool tunable "spi-compression" to controll SPI
+    transfer compression
+  - removed unused fields in struct ax88796c_device
+  - switched from using buffers allocated on stack for SPI transfers
+    to DMA safe ones embedded in struct ax_spi and allocated with
+    kmalloc()
+
+Changes in v4:
+  - fixed compilation problems in asix,ax88796c.yaml and in
+  ax88796c_main.c introduced in v3
+
+Changes in v3:
+  - modify vendor-prefixes.yaml in a separate patch
+  - fix several problems in the dt binding
+    - removed unnecessary descriptions and properties
+    - changed the order of entries
+    - fixed problems with missing defines in the example
+  - change (1 << N) to BIT(N), left a few (0 << N)
+  - replace ax88796c_get_link(), ax88796c_get_link_ksettings(),
+    ax88796c_set_link_ksettings(), ax88796c_nway_reset(),
+    ax88796c_set_mac_address() with appropriate kernel functions.
+  - disable PHY auto-polling in MAC and use PHYLIB to track the state
+    of PHY and configure MAC
+  - propagate return values instead of returning constants in several
+    places
+  - add WARN_ON() for unlocked mutex
+  - remove local work queue and use the system_wq
+  - replace phy_connect_direct() with phy_connect() and move
+    devm_register_netdev() to the end of ax88796c_probe()
+    (Unlike phy_connect_direct() phy_connect() does not crash if the
+    network device isn't registered yet.)
+  - remove error messages on ENOMEM
+  - move free_irq() to the end of ax88796c_close() to avoid race
+    condition
+  - implement flow-control
+
+Changes in v2:
+  - use phylib
+  - added DT bindings
+  - moved #includes to *.c files
+  - used mutex instead of a semaphore for locking
+  - renamed some constants
+  - added error propagation for several functions
+  - used ethtool for dumping registers
+  - added control over checksum offloading
+  - remove vendor specific PM
+  - removed macaddr module parameter and added support for reading a MAC
+    address from platform data (e.g. DT)
+  - removed dependency on SPI from NET_VENDOR_ASIX
+  - added an entry in the MAINTAINERS file
+  - simplified logging with appropriate netif_* and netdev_* helpers
+  - lots of style fixes
+
+Łukasz Stelmach (3):
+  dt-bindings: vendor-prefixes: Add asix prefix
+  dt-bindings: net: Add bindings for AX88796C SPI Ethernet Adapter
+  net: ax88796c: ASIX AX88796C SPI Ethernet Adapter Driver
+
+ .../bindings/net/asix,ax88796c.yaml           |   73 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ MAINTAINERS                                   |    6 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/asix/Kconfig             |   35 +
+ drivers/net/ethernet/asix/Makefile            |    6 +
+ drivers/net/ethernet/asix/ax88796c_ioctl.c    |  239 ++++
+ drivers/net/ethernet/asix/ax88796c_ioctl.h    |   26 +
+ drivers/net/ethernet/asix/ax88796c_main.c     | 1149 +++++++++++++++++
+ drivers/net/ethernet/asix/ax88796c_main.h     |  568 ++++++++
+ drivers/net/ethernet/asix/ax88796c_spi.c      |  115 ++
+ drivers/net/ethernet/asix/ax88796c_spi.h      |   69 +
+ 13 files changed, 2290 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/asix,ax88796c.yaml
+ create mode 100644 drivers/net/ethernet/asix/Kconfig
+ create mode 100644 drivers/net/ethernet/asix/Makefile
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_ioctl.c
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_ioctl.h
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_main.c
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_main.h
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_spi.c
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_spi.h
+
 -- 
-2.17.1
+2.26.2
 
