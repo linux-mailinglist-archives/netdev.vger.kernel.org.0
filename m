@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEF8839B6BD
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 12:07:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7545F39B6C3
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 12:08:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbhFDKJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 06:09:08 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3061 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbhFDKJG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 06:09:06 -0400
-Received: from dggeml759-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FxJGd5fkgzWrPT;
-        Fri,  4 Jun 2021 18:02:33 +0800 (CST)
-Received: from [10.174.178.165] (10.174.178.165) by
- dggeml759-chm.china.huawei.com (10.1.199.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Fri, 4 Jun 2021 18:07:18 +0800
-Subject: Re: [PATCH net-next] net: mscc: ocelot: check return value after
- calling platform_get_resource()
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "vladimir.oltean@nxp.com" <vladimir.oltean@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-References: <20210604093234.3408625-1-yangyingliang@huawei.com>
-From:   "weiyongjun (A)" <weiyongjun1@huawei.com>
-Message-ID: <3592374c-4dd9-c489-bb5f-bd6ee0f942b6@huawei.com>
-Date:   Fri, 4 Jun 2021 18:07:18 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <20210604093234.3408625-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.165]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggeml759-chm.china.huawei.com (10.1.199.138)
-X-CFilter-Loop: Reflected
+        id S229612AbhFDKKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 06:10:22 -0400
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:43394 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229931AbhFDKKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 06:10:22 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R871e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UbFZ5Y6_1622801312;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0UbFZ5Y6_1622801312)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 04 Jun 2021 18:08:34 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     saeedm@nvidia.com
+Cc:     leon@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
+Subject: [PATCH v2] net/mlx5e: Fix an error code in mlx5e_arfs_create_tables()
+Date:   Fri,  4 Jun 2021 18:08:27 +0800
+Message-Id: <1622801307-34745-1-git-send-email-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When the code execute 'if (!priv->fs.arfs->wq)', the value of err is 0.
+So, we use -ENOMEM to indicate that the function
+create_singlethread_workqueue() return NULL.
 
-> It will cause null-ptr-deref if platform_get_resource() returns NULL,
-> we need check the return value.
->
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->   drivers/net/dsa/ocelot/seville_vsc9953.c | 4 ++++
->   1 file changed, 4 insertions(+)
->
-> diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> index 84f93a874d50..b514e2d05b6f 100644
-> --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-> +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> @@ -1206,6 +1206,10 @@ static int seville_probe(struct platform_device *pdev)
->   	felix->info = &seville_info_vsc9953;
->   
->   	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (!res) {
-> +		err = -EINVAL;
-> +		dev_err(&pdev->dev, "Invalid resource\n");
+Clean up smatch warning:
+drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c:373
+mlx5e_arfs_create_tables() warn: missing error code 'err'.
 
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Fixes: f6755b80d693 ("net/mlx5e: Dynamic alloc arfs table for netdev when needed")
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
 
-should 'goto err_alloc_felix;'
+Changes in v2:
+--According to Saeed's suggestion, we modify the format of Fixes tag, 
+--and initialize err to -ENOMEM.
+https://lore.kernel.org/patchwork/patch/1440018/
 
+ drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +	}
->   	felix->switch_base = res->start;
->   
->   	ds = kzalloc(sizeof(struct dsa_switch), GFP_KERNEL);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c
+index 5cd466e..25403af 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c
+@@ -356,7 +356,7 @@ static int arfs_create_table(struct mlx5e_priv *priv,
+ 
+ int mlx5e_arfs_create_tables(struct mlx5e_priv *priv)
+ {
+-	int err = 0;
++	int err = -ENOMEM;
+ 	int i;
+ 
+ 	if (!(priv->netdev->hw_features & NETIF_F_NTUPLE))
+-- 
+1.8.3.1
+
