@@ -2,53 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0361239C3AE
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 01:05:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FC7B39C3D6
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 01:21:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231659AbhFDXG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 19:06:59 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46340 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229853AbhFDXG6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Jun 2021 19:06:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=sCuHzEMKxxNof9R78arVZv72V+l9jUeiAKTeRh73UuQ=; b=GY9ITnhOTQyMtQ7sJoPIbLjMYq
-        z5JUMU8UwoBzEreNB8aq4U/H8bdiOKKa+5quer0gd9mZ3qXaFcYECyw9pCjwng5mnrXBJJF53uW+g
-        psvtCGb3PIe7PYtk5xYU358noepfmYca7W0/qwBL2p4VjoGASd/68Yk+SoNkOKUP9ZH8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lpIsE-007sDx-3j; Sat, 05 Jun 2021 01:05:06 +0200
-Date:   Sat, 5 Jun 2021 01:05:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/7] net: usb: asix: ax88772_bind: use
- devm_kzalloc() instead of kzalloc()
-Message-ID: <YLqxopaeo4rRDUoM@lunn.ch>
-References: <20210604134244.2467-1-o.rempel@pengutronix.de>
- <20210604134244.2467-2-o.rempel@pengutronix.de>
+        id S230227AbhFDXXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 19:23:31 -0400
+Received: from mailrelay3-2.pub.mailoutpod1-cph3.one.com ([46.30.212.2]:36571
+        "EHLO mailrelay3-2.pub.mailoutpod1-cph3.one.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229873AbhFDXX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 19:23:28 -0400
+X-Greylist: delayed 963 seconds by postgrey-1.27 at vger.kernel.org; Fri, 04 Jun 2021 19:23:28 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bordum.dk; s=20191106;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
+         from;
+        bh=SlgsVQRojbtbhqhWPWoR0U722emhmutf5u88htHKubI=;
+        b=IsTImQzgObPaJJ03Tja6yycxqfaA0bqO2GDQKbRnY0z4sa8BdVfTKJbVU0KoiTjwJDu3iq/iA1zuk
+         tN7GqrzQhX92rMTjhIWftBEvPCl3iqQl0Bh/zAo65g82WgrHa1p0uQm0f45vHUb+f2iOJ7c4197Vw8
+         9BCyGbpjc45dvlUMCd+n8VpyftSN6dYXn+L41zLwPZrfIO8Qq0B3XRXDBD9pz5I0z5flsNW48vgEON
+         pie2kYpjuIEakyd7cR4Iw1357fVO1jAiisgB1GmgnD/CThjnaqEr71xVVwyx4dUcHiGgXpbXiiuml6
+         cUgZmC7BXgz6XxN+z/HFXXmmjmhIpJw==
+X-HalOne-Cookie: cef3b369ddadb490c164b8a60e295f16499df4d3
+X-HalOne-ID: 5f5b1d6f-c589-11eb-8cd9-d0431ea8bb03
+Received: from localhost.localdomain (2-111-64-240-cable.dk.customer.tdc.net [2.111.64.240])
+        by mailrelay3.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
+        id 5f5b1d6f-c589-11eb-8cd9-d0431ea8bb03;
+        Fri, 04 Jun 2021 23:05:36 +0000 (UTC)
+From:   Carl Bordum Hansen <carl@bordum.dk>
+To:     netdev@vger.kernel.org
+Cc:     Carl Bordum Hansen <carl@bordum.dk>
+Subject: [PATCH] ip link docs: mention wireguard interface type
+Date:   Sat,  5 Jun 2021 01:05:34 +0200
+Message-Id: <20210604230534.104899-1-carl@bordum.dk>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210604134244.2467-2-o.rempel@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 04, 2021 at 03:42:38PM +0200, Oleksij Rempel wrote:
-> Make resource management easier, use devm_kzalloc().
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Carl Bordum Hansen <carl@bordum.dk>
+---
+ ip/iplink.c           | 2 +-
+ man/man8/ip-link.8.in | 6 +++++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+diff --git a/ip/iplink.c b/ip/iplink.c
+index 27c9be44..d676a8de 100644
+--- a/ip/iplink.c
++++ b/ip/iplink.c
+@@ -123,7 +123,7 @@ void iplink_usage(void)
+ 			"	   gre | gretap | erspan | ip6gre | ip6gretap | ip6erspan |\n"
+ 			"	   vti | nlmon | team_slave | bond_slave | bridge_slave |\n"
+ 			"	   ipvlan | ipvtap | geneve | bareudp | vrf | macsec | netdevsim | rmnet |\n"
+-			"	   xfrm }\n");
++			"	   xfrm | wireguard }\n");
+ 	}
+ 	exit(-1);
+ }
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index fd67e611..6fbd5bf4 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -231,7 +231,8 @@ ip-link \- network device configuration
+ .BR macsec " |"
+ .BR netdevsim " |"
+ .BR rmnet " |"
+-.BR xfrm " ]"
++.BR xfrm " |"
++.BR wireguard " ]"
+ 
+ .ti -8
+ .IR ETYPE " := [ " TYPE " |"
+@@ -377,6 +378,9 @@ Link types:
+ .sp
+ .BR xfrm
+ - Virtual xfrm interface
++.sp
++.BR wireguard
++- Wireguard interface
+ .in -8
+ 
+ .TP
+-- 
+2.27.0
 
-    Andrew
