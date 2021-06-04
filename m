@@ -2,213 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF8F839BF87
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 20:24:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB32A39BFA7
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 20:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbhFDS0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 14:26:43 -0400
-Received: from us-smtp-delivery-115.mimecast.com ([216.205.24.115]:37842 "EHLO
-        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229778AbhFDS0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 14:26:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
-        s=selector; t=1622831095;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HkBDQPxmsCg6FQBruP9/WKuC7iJbnlxUv7HSYrJffqY=;
-        b=AkdK1AWxvjoG5w+fl3aGEIYnIVHRaTPABtTBaeuLfZ5qqHDYjOVYNLnHMS75u32wA02vf7
-        YvJTwiv4Ml1t9UuUmgTp9dtiJcZffrb2Qn+q6p7hJrwVURNVJCVsm3jbUFdZSwRHIfvRbO
-        duKOi4J1tMYDwlXJsFxJM05CejOF0Ko=
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com
- (mail-co1nam11lp2176.outbound.protection.outlook.com [104.47.56.176])
- (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-521-sKH56QrXPUihfrWVC6lZQQ-1; Fri, 04 Jun 2021 14:24:53 -0400
-X-MC-Unique: sKH56QrXPUihfrWVC6lZQQ-1
-Received: from MWHPR19MB0077.namprd19.prod.outlook.com (2603:10b6:301:67::32)
- by CO1PR19MB4888.namprd19.prod.outlook.com (2603:10b6:303:f7::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Fri, 4 Jun
- 2021 18:24:48 +0000
-Received: from MWHPR19MB0077.namprd19.prod.outlook.com
- ([fe80::b931:30a4:ce59:dc87]) by MWHPR19MB0077.namprd19.prod.outlook.com
- ([fe80::b931:30a4:ce59:dc87%4]) with mapi id 15.20.4195.024; Fri, 4 Jun 2021
- 18:24:47 +0000
-From:   Liang Xu <lxu@maxlinear.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>
-CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        Hauke Mehrtens <hmehrtens@maxlinear.com>,
-        Thomas Mohren <tmohren@maxlinear.com>
-Subject: Re: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
-Thread-Topic: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
-Thread-Index: AQHXWVyDhUpan91jNkyIQ1KYwvXYZKsECXGAgAAhoAA=
-Date:   Fri, 4 Jun 2021 18:24:47 +0000
-Message-ID: <7834258b-5826-1c00-2754-b0b7e76b5910@maxlinear.com>
-References: <20210604161250.49749-1-lxu@maxlinear.com>
- <f56aa414-3002-ef85-51a9-bb36017270e6@gmail.com>
-In-Reply-To: <f56aa414-3002-ef85-51a9-bb36017270e6@gmail.com>
-Accept-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-x-originating-ip: [27.104.184.30]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bdd4865d-0bdc-4eea-e687-08d9278608ce
-x-ms-traffictypediagnostic: CO1PR19MB4888:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CO1PR19MB4888ECBD4673CDC247699BD7BD3B9@CO1PR19MB4888.namprd19.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0
-x-microsoft-antispam-message-info: SpY2DCFnRUW8ebuis0BoarB9+MzfYMtHFrXMpfGHwH2UxQsqcoMSPzKqexsK66wt63LciRF06z985VsofiJyRPaMGQby+fUHRMCB2g98NZ06l9aCrlaBjiSE8Y4CdYyOBKxosVuDdyZnvA71uEO1/ZFD7x/ukR90VaELaiJGqzbNu8kZL+ETVemVUCEITewZ8j/qn+JadDuOHlqfOZhW6PKF+YRGQBjYvRtEfVpasrLjP5hXlTMo7nPuqgR82MjX9hU+G2S0ZTZrWKnSZpOLXLbH8NluvsaEsQzfNydfjv4NdslTKRtrL2Bu7vweF1yqaMhJJQJN5LDOGcF7y9KA5ppCEK/LmVcdKqqMLOgJVFacA8UFfM4kJPrzhTpgomJQFQxnPsuD98tyUX8y4Dw0X+j2v7fZK+IQUqVqpRUpzBByesE0+U6bn7lgMYr38FcGco5xXcR3SWLgLe+hj8d0Fit8L/kjuq81WdQdXPwheh0lrV2x27KyORbrW+EEj/bhrwt+yD3qA1k8nFZimQK66TDWw1kyna+L8FNTy3FXx4/dhV7L38IkBUnuU7xzCAlfZZ4u/AnDgNHIk5qOhVt0BWjO6SzbZB/HJu7u3gfslhrAaMQA+aJNSCSlM7dp3JXxf+KAnwzKC71RsCRb7qhZrDnxPaUVoR0gyTi3h3oKG58WcKrwsYlYf/78RJVXLWcv
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR19MB0077.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(346002)(396003)(136003)(39840400004)(8676002)(66556008)(66446008)(64756008)(53546011)(6506007)(66476007)(76116006)(91956017)(83380400001)(54906003)(478600001)(66946007)(8936002)(4326008)(316002)(107886003)(6512007)(110136005)(6486002)(2906002)(5660300002)(71200400001)(26005)(186003)(122000001)(38100700002)(31696002)(2616005)(86362001)(36756003)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102
-x-ms-exchange-antispam-messagedata: =?Windows-1252?Q?KRFx9JjdYoLBXOrBu2jK3Orz0o8DAyB4NJlrWiqtYiMHLGw1lIYdT6A8?=
- =?Windows-1252?Q?zpQCVOMMwjz66CV6TBAGJojsEIdN508apRh3yc8COOzcZ9HRnnUMNKkC?=
- =?Windows-1252?Q?M8k3PmI3N4Uzl8nySE1wppB0nJrRqauNlxAvPXpDsjpln599Fo9TjXF6?=
- =?Windows-1252?Q?boukdEFRb6ed15KrqlRkXXqC5RphHhik+UtGLfTUHrn3k5MJWVWMk4ZF?=
- =?Windows-1252?Q?Zr/N3LWrxDh8LIym1BE8OWR5fBLxvI21UxDlhp0LNLHplNS9sKLJ5xl+?=
- =?Windows-1252?Q?ROVGuftjLXJlaiE6xCSt4uHXtNDbjc7qUsu9RGmfG0NXe6fBjWxrYGhN?=
- =?Windows-1252?Q?zg85+y8NgFZ7IYZfjfoeuw+bNF1kccZgFxki3jo6xC/SEzoDSOZfGrQ1?=
- =?Windows-1252?Q?0DrpE984aVwLvCkTCmquOWNoMyw2Eao4Tbq5qIntC6qGjsGILXXNQlod?=
- =?Windows-1252?Q?0e2S6ePVdLya528D7eXw+9llzVhldAZmESWtMaX3JZ8fjnbPouwe+it8?=
- =?Windows-1252?Q?9xBUz0aEPxv7RqcI58zrr3aRwpmlM/iYX/bWkU7wgp6KavrISjgPnDY1?=
- =?Windows-1252?Q?+XPD1nB1vmFIVDdbhFHh7n7JoeFQuumMPFa2Y6lEaYt4LRPjovR34Q/x?=
- =?Windows-1252?Q?KXpO7quOpMPstghYSYSraa3U5cvr0YOvz4bIl5M/0RqghbCTGogMUVpi?=
- =?Windows-1252?Q?EHIMqGq57lqNiKbmGnI7GF8TDHRj5oj4g7MWeZxEJKGDE2V8+iDQQjRB?=
- =?Windows-1252?Q?JVXow7Xpqb08iK0HuBbDNS2sjo8sSjPTERLdLoNlbFIP//sTh6YxKgn4?=
- =?Windows-1252?Q?8h8t6mcSyEescf5rHMCIwFZyrgJ56452bjLEFvqBmQ86Ms4CnWjkzcMJ?=
- =?Windows-1252?Q?yA///EBxblrZQ90na7s3QNwI7tyymRJChL32wdRb+M4jmuKM9PPBn2ze?=
- =?Windows-1252?Q?4+b5m9YPsmZRLLRH9TUbU7UubpM1TVnIy8Yq/ib+jTjmCVIGH+yf6ZOT?=
- =?Windows-1252?Q?7wm9s8rvMBiIcbozpDd2dkha23CAZVy3wCVJRgWRw1E5GRCW3YF6l4UW?=
- =?Windows-1252?Q?k6wBw9OfTSAkTglf6718BwPXKz/iIsi9R0L5G6CPdY1fjfQUlFIUal8x?=
- =?Windows-1252?Q?IqJhGqIR4fS/LW9DtvXQk3UKN1fyv/IHEx5sR28tgTXzNuK9AnTG3NXF?=
- =?Windows-1252?Q?MBrqPgraBuLSSEZNCgoJsLRlAjAJ9cc6/tqtg22DV+BEnWZOJWroXsoL?=
- =?Windows-1252?Q?gSKsAqBntMpz841JbJggQyQOG6Y46cujoDVHA4dOTjGuvIPfsOo2jSv/?=
- =?Windows-1252?Q?2J9qV0FD4Jrcv2DdzDIqJgpCBBhJ1HdnJcBF80u0YdFf/RqUiJzGeSF3?=
- =?Windows-1252?Q?guUHWICCu1bgeZHQmc/Vy1P7fpw1F8N0W5HAkSxKQg9s3ptAd+mDhK6k?=
+        id S230097AbhFDSfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 14:35:48 -0400
+Received: from mail-ej1-f43.google.com ([209.85.218.43]:38842 "EHLO
+        mail-ej1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229726AbhFDSfp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 14:35:45 -0400
+Received: by mail-ej1-f43.google.com with SMTP id og14so10615933ejc.5;
+        Fri, 04 Jun 2021 11:33:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tg06CwoioL2IXkOzwaIni0fjWWraDQZke8DSnvYGbVE=;
+        b=cODeUmLZyDhVPcaNHl+/7zHTeYQ3alQ+upnymRyZs6No9dqcKW+kky1tPS/zwKw/P1
+         AlQNjWVxbP2EiCuLiEGoutn7NM3qSBsrDQdcdoouOboPC7cE9uRtZHopesXfiIsLQ1Gd
+         w5WwBMikUA3XtNHH+xb3vw2sZy+FxjudEZFzwuBMUrlUyAnQNlWDTw4BY8rTGgDNJ2YQ
+         i7qsZylsdZhzaT9UMrOsZErH+tEHBkotj4yLKEvxUBNOjzIK2Dl6Fbom4Q5eckruHlLH
+         m3YgbOiGNx/8xnZ2LolZzRaYhGcX/kFSNbpE8xHsCUce+LjR065f9xRO62MkbvMO4oGM
+         HI+g==
+X-Gm-Message-State: AOAM531+GAfOsItmNR3CAhdAAm9ZjFAMfQO09FQiNAGTG7KnjQgD+fH4
+        VXWlMoaMjXF8Ve23c4/wcurpCNYFRVTuiA==
+X-Google-Smtp-Source: ABdhPJzEcKp5P1+5WBctql3q4YPUpHSmM2JDVHBDSdy70vk5Xgfje7Xx4fpRIWJpjJC4WRq0E4DJhg==
+X-Received: by 2002:a17:907:9801:: with SMTP id ji1mr5701196ejc.523.1622831637122;
+        Fri, 04 Jun 2021 11:33:57 -0700 (PDT)
+Received: from msft-t490s.teknoraver.net (net-37-119-128-179.cust.vodafonedsl.it. [37.119.128.179])
+        by smtp.gmail.com with ESMTPSA id k12sm3732039edi.87.2021.06.04.11.33.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Jun 2021 11:33:56 -0700 (PDT)
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+To:     netdev@vger.kernel.org, linux-mm@kvack.org
+Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>
+Subject: [PATCH net-next v7 0/5] page_pool: recycle buffers
+Date:   Fri,  4 Jun 2021 20:33:44 +0200
+Message-Id: <20210604183349.30040-1-mcroce@linux.microsoft.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-OriginatorOrg: maxlinear.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR19MB0077.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bdd4865d-0bdc-4eea-e687-08d9278608ce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2021 18:24:47.2596
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: dac28005-13e0-41b8-8280-7663835f2b1d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PSJe+eLMaMrMXsiwqyUeoYcP5Un+8tr056nyK01KlqCyfhUr6t3VAmkXcQEw6ied71T5pSkzaLH7kYEVZOheJQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR19MB4888
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: maxlinear.com
-Content-Language: en-US
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-ID: <BE231D462ED27A4B8E29DF41FCC05BB9@namprd19.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/6/2021 12:24 am, Florian Fainelli wrote:
->
-> > +/* PHY ID */
-> > +#define PHY_ID_GPY 0x67C9DC00
-> > +#define PHY_ID_MASK GENMASK(31, 4)
->
-> Consider initializing your phy_driver with PHY_ID_MATCH_MODEL() which
-> would take care of populating the mask accordingly.
->
-Thanks, I will update.
-> > +
-> > +static int gpy_read_abilities(struct phy_device *phydev)
-> > +{
-> > + int ret;
-> > +
-> > + ret =3D genphy_read_abilities(phydev);
-> > + if (ret < 0)
-> > + return ret;
-> > +
-> > + /* Detect 2.5G/5G support. */
-> > + ret =3D phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_STAT2);
-> > + if (ret < 0)
-> > + return ret;
-> > + if (!(ret & MDIO_PMA_STAT2_EXTABLE))
-> > + return 0;
-> > +
-> > + ret =3D phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-> > + if (ret < 0)
-> > + return ret;
-> > + if (!(ret & MDIO_PMA_EXTABLE_NBT))
-> > + return 0;
-> > +
-> > + ret =3D phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_NG_EXTABLE);
-> > + if (ret < 0)
-> > + return ret;
-> > +
-> > + linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
-> > + phydev->supported,
-> > + ret & MDIO_PMA_NG_EXTABLE_2_5GBT);
-> > +
-> > + linkmode_mod_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT,
-> > + phydev->supported,
-> > + ret & MDIO_PMA_NG_EXTABLE_5GBT);
->
-> This does not access vendor specific registers, should not this be part
-> of the standard genphy_read_abilities() or moved to a helper?
->
-genphy_read_abilities does not cover 2.5G.
+From: Matteo Croce <mcroce@microsoft.com>
 
-genphy_c45_pma_read_abilities checks C45 ids and this check fail if=20
-is_c45 is not set.
+This is a respin of [1]
 
-Mix of C22 and C45 is handled here, as our device support C22 with=20
-extension of C45.
+This patchset shows the plans for allowing page_pool to handle and
+maintain DMA map/unmap of the pages it serves to the driver. For this
+to work a return hook in the network core is introduced.
 
-> > +
-> > + return 0;
-> > +}
-> > +
-> > +static int gpy_config_init(struct phy_device *phydev)
-> > +{
-> > + int ret;
-> > +
-> > + /* Mask all interrupts */
-> > + ret =3D phy_write(phydev, PHY_IMASK, 0);
-> > + if (ret)
-> > + return ret;
-> > +
-> > + /* Clear all pending interrupts */
-> > + ret =3D phy_read(phydev, PHY_ISTAT);
-> > + return ret < 0 ? ret : 0;
->
-> You can certainly simplify this to:
->
-> return phy_read(phydev, PHY_ISTAT);
->
-I'm thinking to clearly differentiate negative, 0, and positive.
+The overall purpose is to simplify drivers, by providing a page
+allocation API that does recycling, such that each driver doesn't have
+to reinvent its own recycling scheme. Using page_pool in a driver
+does not require implementing XDP support, but it makes it trivially
+easy to do so. Instead of allocating buffers specifically for SKBs
+we now allocate a generic buffer and either wrap it on an SKB
+(via build_skb) or create an XDP frame.
+The recycling code leverages the XDP recycle APIs.
 
-I had experience that a positive value is treated as error sometimes.
+The Marvell mvpp2 and mvneta drivers are used in this patchset to
+demonstrate how to use the API, and tested on a MacchiatoBIN
+and EspressoBIN boards respectively.
 
+Please let this going in on a future -rc1 so to allow enough time
+to have wider tests.
 
-> [snip]
->
-> > +
-> > +MODULE_DESCRIPTION("Maxlinear Ethernet GPY Driver");
-> > +MODULE_AUTHOR("Maxlinear Corporation");
->
-> The author is not usually a company but an individual working on behalf
-> of that company.
-> --=20
-> Florian
+Note that this series depends on the change "mm: fix struct page layout
+on 32-bit systems"[2] which is not yet in master.
 
-Ok, I will update.
+v6 -> v7:
+- refresh patches against net-next
+- remove a redundant call to virt_to_head_page()
+- update mvneta benchmarks
+
+v5 -> v6
+- preserve pfmemalloc bit when setting signature
+- fix typo in mvneta
+- rebase on next-next with the new cache
+- don't clear the skb->pp_recycle in pskb_expand_head()
+
+v4 -> v5:
+- move the signature so it doesn't alias with page->mapping
+- use an invalid pointer as magic
+- incorporate Matthew Wilcox's changes for pfmemalloc pages
+- move the __skb_frag_unref() changes to a preliminary patch
+- refactor some cpp directives
+- only attempt recycling if skb->head_frag
+- clear skb->pp_recycle in pskb_expand_head()
+
+v3 -> v4:
+- store a pointer to page_pool instead of xdp_mem_info
+- drop a patch which reduces xdp_mem_info size
+- do the recycling in the page_pool code instead of xdp_return
+- remove some unused headers include
+- remove some useless forward declaration
+
+v2 -> v3:
+- added missing SOBs
+- CCed the MM people
+
+v1 -> v2:
+- fix a commit message
+- avoid setting pp_recycle multiple times on mvneta
+- squash two patches to avoid breaking bisect
+
+[1] https://lore.kernel.org/netdev/154413868810.21735.572808840657728172.stgit@firesoul/
+[2] https://lore.kernel.org/linux-mm/20210510153211.1504886-1-willy@infradead.org/
+
+Ilias Apalodimas (1):
+  page_pool: Allow drivers to hint on SKB recycling
+
+Matteo Croce (4):
+  mm: add a signature in struct page
+  skbuff: add a parameter to __skb_frag_unref
+  mvpp2: recycle buffers
+  mvneta: recycle buffers
+
+ drivers/net/ethernet/marvell/mvneta.c         | 11 +++---
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  2 +-
+ drivers/net/ethernet/marvell/sky2.c           |  2 +-
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  2 +-
+ include/linux/mm.h                            | 12 ++++---
+ include/linux/mm_types.h                      | 12 ++++++-
+ include/linux/poison.h                        |  3 ++
+ include/linux/skbuff.h                        | 34 ++++++++++++++++---
+ include/net/page_pool.h                       |  9 +++++
+ net/core/page_pool.c                          | 29 ++++++++++++++++
+ net/core/skbuff.c                             | 24 ++++++++++---
+ net/tls/tls_device.c                          |  2 +-
+ 12 files changed, 119 insertions(+), 23 deletions(-)
+
+-- 
+2.31.1
 
