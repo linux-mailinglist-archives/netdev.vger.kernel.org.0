@@ -2,88 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FC7B39C3D6
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 01:21:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98A7039C3CA
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 01:19:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230227AbhFDXXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 19:23:31 -0400
-Received: from mailrelay3-2.pub.mailoutpod1-cph3.one.com ([46.30.212.2]:36571
-        "EHLO mailrelay3-2.pub.mailoutpod1-cph3.one.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229873AbhFDXX2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 19:23:28 -0400
-X-Greylist: delayed 963 seconds by postgrey-1.27 at vger.kernel.org; Fri, 04 Jun 2021 19:23:28 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bordum.dk; s=20191106;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
-         from;
-        bh=SlgsVQRojbtbhqhWPWoR0U722emhmutf5u88htHKubI=;
-        b=IsTImQzgObPaJJ03Tja6yycxqfaA0bqO2GDQKbRnY0z4sa8BdVfTKJbVU0KoiTjwJDu3iq/iA1zuk
-         tN7GqrzQhX92rMTjhIWftBEvPCl3iqQl0Bh/zAo65g82WgrHa1p0uQm0f45vHUb+f2iOJ7c4197Vw8
-         9BCyGbpjc45dvlUMCd+n8VpyftSN6dYXn+L41zLwPZrfIO8Qq0B3XRXDBD9pz5I0z5flsNW48vgEON
-         pie2kYpjuIEakyd7cR4Iw1357fVO1jAiisgB1GmgnD/CThjnaqEr71xVVwyx4dUcHiGgXpbXiiuml6
-         cUgZmC7BXgz6XxN+z/HFXXmmjmhIpJw==
-X-HalOne-Cookie: cef3b369ddadb490c164b8a60e295f16499df4d3
-X-HalOne-ID: 5f5b1d6f-c589-11eb-8cd9-d0431ea8bb03
-Received: from localhost.localdomain (2-111-64-240-cable.dk.customer.tdc.net [2.111.64.240])
-        by mailrelay3.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
-        id 5f5b1d6f-c589-11eb-8cd9-d0431ea8bb03;
-        Fri, 04 Jun 2021 23:05:36 +0000 (UTC)
-From:   Carl Bordum Hansen <carl@bordum.dk>
-To:     netdev@vger.kernel.org
-Cc:     Carl Bordum Hansen <carl@bordum.dk>
-Subject: [PATCH] ip link docs: mention wireguard interface type
-Date:   Sat,  5 Jun 2021 01:05:34 +0200
-Message-Id: <20210604230534.104899-1-carl@bordum.dk>
-X-Mailer: git-send-email 2.27.0
+        id S231698AbhFDXUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 19:20:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42808 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229774AbhFDXUn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Jun 2021 19:20:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D62CF613EC;
+        Fri,  4 Jun 2021 23:18:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622848737;
+        bh=o5HZTLhP5wQ4KKFNqCChs2/Ti0SXDssVhVvBtp5dayI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CGVHiF4bMBkMEK0K/sxKjF+kBO4UDZkFoIv+fShW7RXBzZOZubgNL1d1nUFEJ/Mtv
+         0mHCLhI300IJKrWQi1SS7Kfquc1CjZbdj9CleQ9O6vWITg3znvEr9YbI89YHOKJuQL
+         DxlXdf6FodA1XwCH33ZFCELvVw3nsSMnjtv7NRfGzU22y1hSWyDUojZW4Pr4iPOWL1
+         gDpSPDn6MmpWeXRl9F2iIYzW2LRVjqg13stVUros0lam+qXp38IwbQPJnuly3RIiZP
+         CsrWC1gV8FbzhSWYvQeUJKL3wi8BtVn1RV81jlyqSdI1NshikcaMbFxhiB/WVHmLOE
+         Va9GuKhvvK0Ug==
+Received: by pali.im (Postfix)
+        id A5169990; Sat,  5 Jun 2021 01:18:54 +0200 (CEST)
+Date:   Sat, 5 Jun 2021 01:18:54 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Igal Liberman <Igal.Liberman@freescale.com>,
+        Shruti Kanetkar <Shruti@freescale.com>,
+        Emil Medve <Emilian.Medve@freescale.com>,
+        Scott Wood <oss@buserror.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>
+Subject: Re: Unsupported phy-connection-type sgmii-2500 in
+ arch/powerpc/boot/dts/fsl/t1023rdb.dts
+Message-ID: <20210604231854.qi3o3k4rk23jjetg@pali>
+References: <20210603143453.if7hgifupx5k433b@pali>
+ <YLjxX/XPDoRRIvYf@lunn.ch>
+ <20210603194853.ngz4jdso3kfncnj4@pali>
+ <AM6PR04MB3976B62084EC462BA02F0C4CEC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <20210604192732.GW30436@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210604192732.GW30436@shell.armlinux.org.uk>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Carl Bordum Hansen <carl@bordum.dk>
----
- ip/iplink.c           | 2 +-
- man/man8/ip-link.8.in | 6 +++++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+On Friday 04 June 2021 20:27:33 Russell King (Oracle) wrote:
+> 802.3 defined 1000base-X which is a fixed 1G speed interface using a
+> 16-bit control word. Implementations of this exist where the control
+> word can be disabled.
+> 
+> Cisco came along, took 1000base-X and augmented it to allow speeds of
+> 10M and 100M by symbol repetition, and changing the format of the
+> 16-bit control word. Otherwise, it is functionally compatible - indeed
+> SGMII with the control word disabled will connect with 1000base-X with
+> the control word disabled. I've done it several times.
+> 
+> There exists 2500base-X, which is 1000base-X clocked faster, and it
+> seems the concensus is that it has the AN disabled - in other words,
+> no control word.
 
-diff --git a/ip/iplink.c b/ip/iplink.c
-index 27c9be44..d676a8de 100644
---- a/ip/iplink.c
-+++ b/ip/iplink.c
-@@ -123,7 +123,7 @@ void iplink_usage(void)
- 			"	   gre | gretap | erspan | ip6gre | ip6gretap | ip6erspan |\n"
- 			"	   vti | nlmon | team_slave | bond_slave | bridge_slave |\n"
- 			"	   ipvlan | ipvtap | geneve | bareudp | vrf | macsec | netdevsim | rmnet |\n"
--			"	   xfrm }\n");
-+			"	   xfrm | wireguard }\n");
- 	}
- 	exit(-1);
- }
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index fd67e611..6fbd5bf4 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -231,7 +231,8 @@ ip-link \- network device configuration
- .BR macsec " |"
- .BR netdevsim " |"
- .BR rmnet " |"
--.BR xfrm " ]"
-+.BR xfrm " |"
-+.BR wireguard " ]"
- 
- .ti -8
- .IR ETYPE " := [ " TYPE " |"
-@@ -377,6 +378,9 @@ Link types:
- .sp
- .BR xfrm
- - Virtual xfrm interface
-+.sp
-+.BR wireguard
-+- Wireguard interface
- .in -8
- 
- .TP
--- 
-2.27.0
-
+Thank you for a nice explanation! I think that this information should
+be part of documentation as it could help also other people to
+understand differences between these modes.
