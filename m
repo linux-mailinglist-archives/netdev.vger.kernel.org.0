@@ -2,70 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2B7C39B05C
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 04:28:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AC1039B07F
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 04:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbhFDCal (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 22:30:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40653 "EHLO
+        id S230054AbhFDCjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Jun 2021 22:39:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43943 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229576AbhFDCai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 22:30:38 -0400
+        by vger.kernel.org with ESMTP id S229758AbhFDCjW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 22:39:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1622773733;
+        s=mimecast20190719; t=1622774257;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=W4FEeFH/pQALtmPWyCOn3tMvLw70W3gs+V22pPRCgrw=;
-        b=WUeOSinv+Hheacs/ulPKQDu6DB3JqTvYcn+bEvy7dY6gjFUZzFSeydfA/dkYPODUl8Hd3H
-        pQlHzxG2fJC8BB1/P4cq8qxJUVXvRi3kyQRMv47tHJ/QfFObhOz+6fS8gX/x1esw0xsVF/
-        mwzyF/AWUr4JOGfEYbXJ4TpkVYJPVIU=
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
- [209.85.215.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-265-S1fd-MkSN1qVHGPInZN3YA-1; Thu, 03 Jun 2021 22:28:52 -0400
-X-MC-Unique: S1fd-MkSN1qVHGPInZN3YA-1
-Received: by mail-pg1-f197.google.com with SMTP id k9-20020a63d1090000b029021091ebb84cso5089804pgg.3
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 19:28:51 -0700 (PDT)
+        bh=kOghEYXtPzp+Dy+j69IwEyf3koTKLk9pf72ZLOxEDSY=;
+        b=QrcYfmSa3B6RzAbAs96Q3tY2t1s+K+7kusyH2bzi2qQsc4XIa3WlJjsKozpSh+qojVQY3R
+        ZTqSW/NZguye8vIoYvRfVLvyu3FNBpOImsn6nszNGjxHVLGAIH0wHZhB9QfQELUL5RbofS
+        r41NlkEdfJWQXOCqoPeuay8q1+Q+nio=
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
+ [209.85.210.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-90-MKI1PoUDO4S1jSg4NAkXow-1; Thu, 03 Jun 2021 22:37:35 -0400
+X-MC-Unique: MKI1PoUDO4S1jSg4NAkXow-1
+Received: by mail-pf1-f197.google.com with SMTP id b8-20020a056a000a88b02902e97a71383dso4522086pfl.13
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 19:37:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=W4FEeFH/pQALtmPWyCOn3tMvLw70W3gs+V22pPRCgrw=;
-        b=pBQwDX5ogLuKbzxH8zyXewTuqeNS/P5iTMMjC2/x5v5ILdVpFPlaE3U2a6fLxyGgQQ
-         5QviJBf0ZzGomix4r7abpc3iWULMvBHX2eyN6so/U1RGiM6nM/cM34iUcpDLQdOsrLE1
-         +imXZHBl4jVC/qhn3FvpGEL/CW/Os71Dudr1FL+bjhUMrm6wm3CWDhfE/GNeHAEBa3UU
-         v4UCVLzCVnoSNg4ZQwuqn1IwoemoPM+8ZhBPjdavOVxVpK/HdkOTRvgdunDY632PwAFu
-         i5Tv+y8+dHouOZ6ZuPbAjZ/w7Y3cKwsJ64bVI3JhwXjzLIFcryeaum3UxfJhXaM89r4C
-         oLwQ==
-X-Gm-Message-State: AOAM533py12doPkHNMNTi18A5QREoEKmPFeT2rJ+h02ka/Roa3CdbtUD
-        UgnIFvffKckZzAhzDQGri9eV1nC0wc0Uyw1iKEePFeUDP+CRegDIBeeP1a4ANZJ7kMMevBYX2Ls
-        +irSXRui1FJYwExZ6
-X-Received: by 2002:a17:90a:8d82:: with SMTP id d2mr2387040pjo.200.1622773730977;
-        Thu, 03 Jun 2021 19:28:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw7nIC7vCX27/pebah12gefchckRdwl+x2P/Rcym5m+MUU5qWKzxUck3QlQJYl+LYPsU17LGw==
-X-Received: by 2002:a17:90a:8d82:: with SMTP id d2mr2387019pjo.200.1622773730666;
-        Thu, 03 Jun 2021 19:28:50 -0700 (PDT)
+        bh=kOghEYXtPzp+Dy+j69IwEyf3koTKLk9pf72ZLOxEDSY=;
+        b=Wm++CYX5lzXLG9WsXGqoAAoAEUwt76bKPHWlxChn1CmBcvvubTeckAokcyARzIp8Bl
+         ODvsqZIyKZ6S/Hy5/ggkY3CW1t5Vb1kcS9b3602JanJ0SKrU562H41hcLOm7ln0EGfJb
+         110Jr7GsIuTD1gJK9itL90wehI0fpgtakF3d/neYTvRzIC8/nm75e102rN3eio4yGh51
+         +giCoz4Zf44MuTfUN4L+Yps+N2NgoWHCqJfVLWTDlDjooPwJig9GKll+oXij9VSMOU81
+         8UdqvYx6udR8PDeLIlq/wfBonu5uKyCR9mFqOyidn2ru5nhrO0OBqrzKk4XmrjiY5DQU
+         D61A==
+X-Gm-Message-State: AOAM532Z2bUnOXp3amBCyVAK34qLBEFLugSbWx/I6+hnuNnWsbNT8alg
+        Vx3XqvfZVw1WTK8+22h4TRORs0YQ4lb638XIf8zM67SLDi8X5IZ8cktiEF0xWLj7QsUgYSG2PMl
+        zTuCHNKk+lEBBpPEm
+X-Received: by 2002:a65:4109:: with SMTP id w9mr2569870pgp.24.1622774254754;
+        Thu, 03 Jun 2021 19:37:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyO+9ehWqEf54UWMqlG5rIQ/fRaRzW8G0Ta0PUxjkaNeUBZnbDO3aVcQ4c02+JK6pUbEW7hUg==
+X-Received: by 2002:a65:4109:: with SMTP id w9mr2569857pgp.24.1622774254526;
+        Thu, 03 Jun 2021 19:37:34 -0700 (PDT)
 Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id i8sm3247600pjs.54.2021.06.03.19.28.47
+        by smtp.gmail.com with ESMTPSA id g63sm329829pfb.55.2021.06.03.19.37.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Jun 2021 19:28:50 -0700 (PDT)
-Subject: Re: [PATCH net] virtio-net: fix for skb_over_panic inside big mode
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        =?UTF-8?Q?Corentin_No=c3=abl?= <corentin.noel@collabora.com>
-References: <20210603170901.66504-1-xuanzhuo@linux.alibaba.com>
+        Thu, 03 Jun 2021 19:37:34 -0700 (PDT)
+Subject: Re: [PATCH net-next] virtio_net: set link state down when virtqueue
+ is broken
+To:     wangyunjian <wangyunjian@huawei.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        dingxiaoxiong <dingxiaoxiong@huawei.com>
+References: <79907bf6c835572b4af92f16d9a3ff2822b1c7ea.1622028946.git.wangyunjian@huawei.com>
+ <03c68dd1-a636-9d3b-1dec-5e11c8025ccc@redhat.com>
+ <d18383f7e675452d9392321506db6fa0@huawei.com>
+ <0fcc1413-cb20-7a17-bdcd-6f9994990432@redhat.com>
+ <20a5f1bd8a5a49fa8c0f90875a49631b@huawei.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <231466df-adc1-79a9-6950-77c88e2783c2@redhat.com>
-Date:   Fri, 4 Jun 2021 10:28:41 +0800
+Message-ID: <1cc933e6-cde4-ba20-3c54-7391db93a9a1@redhat.com>
+Date:   Fri, 4 Jun 2021 10:37:30 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210603170901.66504-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20a5f1bd8a5a49fa8c0f90875a49631b@huawei.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
@@ -74,62 +81,93 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2021/6/4 上午1:09, Xuan Zhuo 写道:
-> In virtio-net's large packet mode, there is a hole in the space behind
-> buf.
+在 2021/6/3 下午7:34, wangyunjian 写道:
+>> -----Original Message-----
+>> From: Jason Wang [mailto:jasowang@redhat.com]
+>> Sent: Monday, May 31, 2021 11:29 AM
+>> To: wangyunjian <wangyunjian@huawei.com>; netdev@vger.kernel.org
+>> Cc: kuba@kernel.org; davem@davemloft.net; mst@redhat.com;
+>> virtualization@lists.linux-foundation.org; dingxiaoxiong
+>> <dingxiaoxiong@huawei.com>
+>> Subject: Re: [PATCH net-next] virtio_net: set link state down when virtqueue is
+>> broken
+>>
+>>
+>> 在 2021/5/28 下午6:58, wangyunjian 写道:
+>>>> -----Original Message-----
+>>>>> From: Yunjian Wang <wangyunjian@huawei.com>
+>>>>>
+>>>>> The NIC can't receive/send packets if a rx/tx virtqueue is broken.
+>>>>> However, the link state of the NIC is still normal. As a result, the
+>>>>> user cannot detect the NIC exception.
+>>>> Doesn't we have:
+>>>>
+>>>>           /* This should not happen! */
+>>>>            if (unlikely(err)) {
+>>>>                    dev->stats.tx_fifo_errors++;
+>>>>                    if (net_ratelimit())
+>>>>                            dev_warn(&dev->dev,
+>>>>                                     "Unexpected TXQ (%d)
+>> queue
+>>>> failure: %d\n",
+>>>>                                     qnum, err);
+>>>>                    dev->stats.tx_dropped++;
+>>>>                    dev_kfree_skb_any(skb);
+>>>>                    return NETDEV_TX_OK;
+>>>>            }
+>>>>
+>>>> Which should be sufficient?
+>>> There may be other reasons for this error, e.g -ENOSPC(no free desc).
+>>
+>> This should not happen unless the device or driver is buggy. We always reserved
+>> sufficient slots:
+>>
+>>           if (sq->vq->num_free < 2+MAX_SKB_FRAGS) {
+>>                   netif_stop_subqueue(dev, qnum); ...
+>>
+>>
+>>> And if rx virtqueue is broken, there is no error statistics.
+>>
+>> Feel free to add one if it's necessary.
+> Currently receiving scenario, it is impossible to distinguish whether the reason for
+> not receiving packet is virtqueue's broken or no packet.
 
 
-before the buf actually or behind the vnet header?
+Can we introduce rx_fifo_errors for that?
 
 
 >
->      hdr_padded_len - hdr_len
->
-> We must take this into account when calculating tailroom.
->
-> [   44.544385] skb_put.cold (net/core/skbuff.c:5254 (discriminator 1) net/core/skbuff.c:5252 (discriminator 1))
-> [   44.544864] page_to_skb (drivers/net/virtio_net.c:485) [   44.545361] receive_buf (drivers/net/virtio_net.c:849 drivers/net/virtio_net.c:1131)
-> [   44.545870] ? netif_receive_skb_list_internal (net/core/dev.c:5714)
-> [   44.546628] ? dev_gro_receive (net/core/dev.c:6103)
-> [   44.547135] ? napi_complete_done (./include/linux/list.h:35 net/core/dev.c:5867 net/core/dev.c:5862 net/core/dev.c:6565)
-> [   44.547672] virtnet_poll (drivers/net/virtio_net.c:1427 drivers/net/virtio_net.c:1525)
-> [   44.548251] __napi_poll (net/core/dev.c:6985)
-> [   44.548744] net_rx_action (net/core/dev.c:7054 net/core/dev.c:7139)
-> [   44.549264] __do_softirq (./arch/x86/include/asm/jump_label.h:19 ./include/linux/jump_label.h:200 ./include/trace/events/irq.h:142 kernel/softirq.c:560)
-> [   44.549762] irq_exit_rcu (kernel/softirq.c:433 kernel/softirq.c:637 kernel/softirq.c:649)
-> [   44.551384] common_interrupt (arch/x86/kernel/irq.c:240 (discriminator 13))
-> [   44.551991] ? asm_common_interrupt (./arch/x86/include/asm/idtentry.h:638)
-> [   44.552654] asm_common_interrupt (./arch/x86/include/asm/idtentry.h:638)
->
-> Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Reported-by: Corentin Noël <corentin.noel@collabora.com>
-> Tested-by: Corentin Noël <corentin.noel@collabora.com>
-> ---
->   drivers/net/virtio_net.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index fa407eb8b457..78a01c71a17c 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -406,7 +406,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->   	 * add_recvbuf_mergeable() + get_mergeable_buf_len()
->   	 */
->   	truesize = headroom ? PAGE_SIZE : truesize;
-> -	tailroom = truesize - len - headroom;
-> +	tailroom = truesize - len - headroom - (hdr_padded_len - hdr_len);
+>> Let's leave the policy decision (link down) to userspace.
+>>
+>>
+>>>>> The driver can set the link state down when the virtqueue is broken.
+>>>>> If the state is down, the user can switch over to another NIC.
+>>>> Note that, we probably need the watchdog for virtio-net in order to
+>>>> be a complete solution.
+>>> Yes, I can think of is that the virtqueue's broken exception is detected on
+>> watchdog.
+>>> Is there anything else that needs to be done?
+>>
+>> Basically, it's all about TX stall which watchdog tries to catch. Broken vq is only
+>> one of the possible reason.
+> Are there any plans for the watchdog?
 
 
-The patch looks correct and I saw it has been merged.
-
-But I prefer to do that in receive_big() instead of here.
+Somebody posted a prototype 3 or 4 years ago, you can search it and 
+maybe we can start from there.
 
 Thanks
 
 
-
->   	buf = p - headroom;
->   
->   	len -= hdr_len;
+>
+> Thanks
+>
+>> Thanks
+>>
+>>
+>>> Thanks
+>>>
+>>>> Thanks
+>>>>
+>>>>
 
