@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A22E539BA77
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 16:03:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41C4C39BA79
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 16:03:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231163AbhFDOEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 10:04:46 -0400
-Received: from mail-ej1-f49.google.com ([209.85.218.49]:44682 "EHLO
-        mail-ej1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230122AbhFDOEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 10:04:45 -0400
-Received: by mail-ej1-f49.google.com with SMTP id c10so14624614eja.11;
-        Fri, 04 Jun 2021 07:02:58 -0700 (PDT)
+        id S231132AbhFDOEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 10:04:48 -0400
+Received: from mail-ed1-f48.google.com ([209.85.208.48]:34599 "EHLO
+        mail-ed1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230234AbhFDOEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 10:04:46 -0400
+Received: by mail-ed1-f48.google.com with SMTP id cb9so11314161edb.1;
+        Fri, 04 Jun 2021 07:02:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CpJVgHTUceoxbDq/gcjcqqzG+LswC1KLVcY/Z+QzfbA=;
-        b=EIJQ5L1juufTyusD9ZShvfZVWS/DJ5UPx2xVbo/hPzH6U+SD5bw91W2huYxg4LJDWz
-         DozEUjChSVJS6PH9uPc5PDffeoOLAgdD+aupJSeWx2xzN2H2SIP4bXGGG3weCcNWaeCq
-         15pnNrk1FaTcbcu6mAAbS+u0vGwDAPtcAqKaAEOvX/eTRXT8wbRgxjZ4QYcWmeR6rfdC
-         TtOyNNU8K1cnNlgRuoeuGPEmh0UbIsO+O/Ft5QWmXhC3ORWrzlJ9ReYfN2FA0enmV6P6
-         gP8yXQpKUJFIJMNEmlKgryISJSk+1EDDQB35wG4/GOwkpD9i2jiAiwk0G7yyeO+JgUg/
-         z9Kw==
+        bh=ATTEBnkS8247ZxltsEDem/zatVT8czV8mG1/GhKPjpk=;
+        b=ARDDDo9rgDhkQK/pSYHxA1ao399eEAefxkxYkhoijM5Euf3qo8Lp6etmsNjqdSQoju
+         utMGZzHZU80o3mT+kqFHi3zP6Nd1kSKBPkQhaxpcMgiDSKZ/HJ0cXRVhL+0pHeXIKqD6
+         kT/zGre0XbGkABkT+sfONkAQ4z47Is1NJIU7Tcns1mGu1QGYgdwcV4dcwPm8Zil6jQQX
+         6hQB1L/jKEm8G5KKoMAy8wReyMav/fxSpDajdbBGb7d7u6eAnwdUAES9U7HQFXWH1J7V
+         3FnLeH1JeTZS9RitVGUmEHmfwtCCAKVHj/Yvz+02VWXoxMtcsKE5VvIQ0iaUbsVw8SnU
+         tJUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CpJVgHTUceoxbDq/gcjcqqzG+LswC1KLVcY/Z+QzfbA=;
-        b=NBheQPUwZRmZGqvpsoCDTKfiBpY5vOJKeZV3m1E4O8DqC4b2iovJB4/Fioh8OX9Gy+
-         N3AxccWUts3DEyZlAUOEl5F4mhGxnmiK9oMpTUpcT4HvwDui95dcIIVkKzlduVa5MSn8
-         9+VY39fxLdmnmM+dEtR6nh9XgLRD47KalAbnbI/woW3pn6Pl335z4M3wCens7LuIUYLg
-         zswEOTtc4uHwR6CT/mYjVkkNR6V2286qXjWxsgPac9mTTNcxAdhpz7dV6J207pCyvKDe
-         5JK0AHem50TImQVRHwDp+5/ZyWvwNpvTA+BN8DvVA2xoWsDmKINjLDxdB1cwdfTGWuyr
-         TtBA==
-X-Gm-Message-State: AOAM531R2QM7IfNNug+fIqpqSoZ42ViaarDExcmMENPKlbK7slaxnn6c
-        4g1VJGaDN9Jqfh8Lw8G2EAo=
-X-Google-Smtp-Source: ABdhPJwnKPp64wqzN9JyYi/cNn0wMJaU45+lwRos9BS3F+eSDXIUvIu8twTMtdZr9FHBWFrnQT4yUg==
-X-Received: by 2002:a17:906:f285:: with SMTP id gu5mr4386548ejb.226.1622815318091;
-        Fri, 04 Jun 2021 07:01:58 -0700 (PDT)
+        bh=ATTEBnkS8247ZxltsEDem/zatVT8czV8mG1/GhKPjpk=;
+        b=nQt/i8NcngmeDEkOlS1ITPSzHSCbIt5OOiCv2nA57LzUO2PQqscffEjfrghgFWkxGj
+         cNBJuNhIjDU0SKWICPUZcpM0F5tHvBF1292sGPwQDGtV9zR+BPnVl8SFQx8qIkxkEqpR
+         sYZbbeVm5+z7Mj+4aj3N7RZnIF44LifOjJYvYeej/hEUWEIqyPkW4stsGiXrjhR7Lmer
+         nDpng6olwqzY6NeS0lyVWqtC4VTfUVtJbgxB+g6o5PTBUhelH7xsicStoFLOOWXI52bY
+         xKwvYcxW3HwUJlQq/df2DK4ZGQry9hMM/0hOItGuqXqdttVQydAC6MOnPXyR1xwE2ChU
+         Vmpg==
+X-Gm-Message-State: AOAM533RtM2Ear6Hnc/dX2S4wYPR2RqtlUyDra8870I7xRP3aG0KwDaz
+        pvVpJhFfOkdJxfSyzhDdTTbzYETzz60=
+X-Google-Smtp-Source: ABdhPJykp8uME9Kfkr0nRiH8COUbGAFklB4wBqjosLg7kyeU22g+gAgEMUmYIpyKx5guaYXf8E2klg==
+X-Received: by 2002:aa7:d6cc:: with SMTP id x12mr4855931edr.55.1622815319140;
+        Fri, 04 Jun 2021 07:01:59 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id a22sm2804513ejv.67.2021.06.04.07.01.56
+        by smtp.gmail.com with ESMTPSA id a22sm2804513ejv.67.2021.06.04.07.01.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Jun 2021 07:01:57 -0700 (PDT)
+        Fri, 04 Jun 2021 07:01:58 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -55,9 +55,9 @@ Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 2/4] net: dsa: sja1105: apply RGMII delays based on the fixed-link property
-Date:   Fri,  4 Jun 2021 17:01:49 +0300
-Message-Id: <20210604140151.2885611-3-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 3/4] net: dsa: sja1105: determine PHY/MAC role from PHY interface type
+Date:   Fri,  4 Jun 2021 17:01:50 +0300
+Message-Id: <20210604140151.2885611-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210604140151.2885611-1-olteanv@gmail.com>
 References: <20210604140151.2885611-1-olteanv@gmail.com>
@@ -69,94 +69,282 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The sja1105 driver has an intermediate way of determining whether the
-RGMII delays should be applied by the PHY or by itself: by looking at
-the port role (PHY or MAC). The port can be put in the PHY role either
-explicitly (sja1105,role-phy) or implicitly (fixed-link).
+Now that both RevMII as well as RevRMII exist, we can deprecate the
+sja1105,role-mac and sja1105,role-phy properties and simply let the user
+select that a port operates in MII PHY role by using
+	phy-mode = "rev-mii";
+or in RMII PHY role by using
+	phy-mode = "rev-rmii";
 
-We want to deprecate the sja1105,role-phy property, so all that remains
-is the fixed-link property. Introduce a "fixed_link" array of booleans
-in the driver, and use that to determine whether RGMII delays must be
-applied or not.
+There are no fixed-link MII or RMII properties in mainline device trees,
+and the setup itself is fairly uncommon, so there shouldn't be risks of
+breaking compatibility.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105.h      |  1 +
- drivers/net/dsa/sja1105/sja1105_main.c | 28 +++++++++++++-------------
- 2 files changed, 15 insertions(+), 14 deletions(-)
+ .../devicetree/bindings/net/dsa/sja1105.txt   | 37 +----------
+ drivers/net/dsa/sja1105/sja1105_main.c        | 64 ++++++-------------
+ 2 files changed, 19 insertions(+), 82 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index 867cda832e77..3c66e5945cca 100644
---- a/drivers/net/dsa/sja1105/sja1105.h
-+++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -226,6 +226,7 @@ struct sja1105_private {
- 	bool rgmii_rx_delay[SJA1105_MAX_NUM_PORTS];
- 	bool rgmii_tx_delay[SJA1105_MAX_NUM_PORTS];
- 	phy_interface_t phy_mode[SJA1105_MAX_NUM_PORTS];
-+	bool fixed_link[SJA1105_MAX_NUM_PORTS];
- 	bool best_effort_vlan_filtering;
- 	unsigned long learn_ena;
- 	unsigned long ucast_egress_floods;
+diff --git a/Documentation/devicetree/bindings/net/dsa/sja1105.txt b/Documentation/devicetree/bindings/net/dsa/sja1105.txt
+index 13fd21074d48..dcf3b2c1d26b 100644
+--- a/Documentation/devicetree/bindings/net/dsa/sja1105.txt
++++ b/Documentation/devicetree/bindings/net/dsa/sja1105.txt
+@@ -19,37 +19,6 @@ Required properties:
+ 	of support for RGMII internal delays (supported on P/Q/R/S, but not on
+ 	E/T).
+ 
+-Optional properties:
+-
+-- sja1105,role-mac:
+-- sja1105,role-phy:
+-	Boolean properties that can be assigned under each port node. By
+-	default (unless otherwise specified) a port is configured as MAC if it
+-	is driving a PHY (phy-handle is present) or as PHY if it is PHY-less
+-	(fixed-link specified, presumably because it is connected to a MAC).
+-	The effect of this property (in either its implicit or explicit form)
+-	is:
+-	- In the case of MII or RMII it specifies whether the SJA1105 port is a
+-	  clock source or sink for this interface (not applicable for RGMII
+-	  where there is a Tx and an Rx clock).
+-	- In the case of RGMII it affects the behavior regarding internal
+-	  delays:
+-	  1. If sja1105,role-mac is specified, and the phy-mode property is one
+-	     of "rgmii-id", "rgmii-txid" or "rgmii-rxid", then the entity
+-	     designated to apply the delay/clock skew necessary for RGMII
+-	     is the PHY. The SJA1105 MAC does not apply any internal delays.
+-	  2. If sja1105,role-phy is specified, and the phy-mode property is one
+-	     of the above, the designated entity to apply the internal delays
+-	     is the SJA1105 MAC (if hardware-supported). This is only supported
+-	     by the second-generation (P/Q/R/S) hardware. On a first-generation
+-	     E or T device, it is an error to specify an RGMII phy-mode other
+-	     than "rgmii" for a port that is in fixed-link mode. In that case,
+-	     the clock skew must either be added by the MAC at the other end of
+-	     the fixed-link, or by PCB serpentine traces on the board.
+-	These properties are required, for example, in the case where SJA1105
+-	ports are at both ends of a MII/RMII PHY-less setup. One end would need
+-	to have sja1105,role-mac, while the other sja1105,role-phy.
+-
+ See Documentation/devicetree/bindings/net/dsa/dsa.txt for the list of standard
+ DSA required and optional properties.
+ 
+@@ -87,7 +56,6 @@ arch/arm/boot/dts/ls1021a-tsn.dts:
+ 				phy-handle = <&rgmii_phy6>;
+ 				phy-mode = "rgmii-id";
+ 				reg = <0>;
+-				/* Implicit "sja1105,role-mac;" */
+ 			};
+ 			port@1 {
+ 				/* ETH2 written on chassis */
+@@ -95,7 +63,6 @@ arch/arm/boot/dts/ls1021a-tsn.dts:
+ 				phy-handle = <&rgmii_phy3>;
+ 				phy-mode = "rgmii-id";
+ 				reg = <1>;
+-				/* Implicit "sja1105,role-mac;" */
+ 			};
+ 			port@2 {
+ 				/* ETH3 written on chassis */
+@@ -103,7 +70,6 @@ arch/arm/boot/dts/ls1021a-tsn.dts:
+ 				phy-handle = <&rgmii_phy4>;
+ 				phy-mode = "rgmii-id";
+ 				reg = <2>;
+-				/* Implicit "sja1105,role-mac;" */
+ 			};
+ 			port@3 {
+ 				/* ETH4 written on chassis */
+@@ -111,14 +77,13 @@ arch/arm/boot/dts/ls1021a-tsn.dts:
+ 				label = "swp4";
+ 				phy-mode = "rgmii-id";
+ 				reg = <3>;
+-				/* Implicit "sja1105,role-mac;" */
+ 			};
+ 			port@4 {
+ 				/* Internal port connected to eth2 */
+ 				ethernet = <&enet2>;
+ 				phy-mode = "rgmii";
+ 				reg = <4>;
+-				/* Implicit "sja1105,role-phy;" */
++
+ 				fixed-link {
+ 					speed = <1000>;
+ 					full-duplex;
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 84edd054781b..5839c1e0475a 100644
+index 5839c1e0475a..cbce6e90dc63 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -799,26 +799,25 @@ static int sja1105_static_config_load(struct sja1105_private *priv,
- 	return sja1105_static_config_upload(priv);
+@@ -57,14 +57,6 @@ static bool sja1105_can_forward(struct sja1105_l2_forwarding_entry *l2_fwd,
+ 	return !!(l2_fwd[from].reach_port & BIT(to));
  }
  
--static int sja1105_parse_rgmii_delays(struct sja1105_private *priv,
--				      const struct sja1105_dt_port *ports)
-+static int sja1105_parse_rgmii_delays(struct sja1105_private *priv)
+-/* Structure used to temporarily transport device tree
+- * settings into sja1105_setup
+- */
+-struct sja1105_dt_port {
+-	phy_interface_t phy_mode;
+-	sja1105_mii_role_t role;
+-};
+-
+ static int sja1105_init_mac_settings(struct sja1105_private *priv)
  {
- 	struct dsa_switch *ds = priv->ds;
--	int i;
-+	int port;
+ 	struct sja1105_mac_config_entry default_mac = {
+@@ -143,8 +135,7 @@ static int sja1105_init_mac_settings(struct sja1105_private *priv)
+ 	return 0;
+ }
  
--	for (i = 0; i < ds->num_ports; i++) {
--		if (ports[i].role == XMII_MAC)
-+	for (port = 0; port < ds->num_ports; port++) {
-+		if (!priv->fixed_link[port])
+-static int sja1105_init_mii_settings(struct sja1105_private *priv,
+-				     struct sja1105_dt_port *ports)
++static int sja1105_init_mii_settings(struct sja1105_private *priv)
+ {
+ 	struct device *dev = &priv->spidev->dev;
+ 	struct sja1105_xmii_params_entry *mii;
+@@ -171,16 +162,24 @@ static int sja1105_init_mii_settings(struct sja1105_private *priv,
+ 	mii = table->entries;
+ 
+ 	for (i = 0; i < ds->num_ports; i++) {
++		sja1105_mii_role_t role = XMII_MAC;
++
+ 		if (dsa_is_unused_port(priv->ds, i))
  			continue;
  
--		if (ports[i].phy_mode == PHY_INTERFACE_MODE_RGMII_RXID ||
--		    ports[i].phy_mode == PHY_INTERFACE_MODE_RGMII_ID)
--			priv->rgmii_rx_delay[i] = true;
-+		if (priv->phy_mode[port] == PHY_INTERFACE_MODE_RGMII_RXID ||
-+		    priv->phy_mode[port] == PHY_INTERFACE_MODE_RGMII_ID)
-+			priv->rgmii_rx_delay[port] = true;
+-		switch (ports[i].phy_mode) {
++		switch (priv->phy_mode[i]) {
++		case PHY_INTERFACE_MODE_REVMII:
++			role = XMII_PHY;
++			fallthrough;
+ 		case PHY_INTERFACE_MODE_MII:
+ 			if (!priv->info->supports_mii[i])
+ 				goto unsupported;
  
--		if (ports[i].phy_mode == PHY_INTERFACE_MODE_RGMII_TXID ||
--		    ports[i].phy_mode == PHY_INTERFACE_MODE_RGMII_ID)
--			priv->rgmii_tx_delay[i] = true;
-+		if (priv->phy_mode[port] == PHY_INTERFACE_MODE_RGMII_TXID ||
-+		    priv->phy_mode[port] == PHY_INTERFACE_MODE_RGMII_ID)
-+			priv->rgmii_tx_delay[port] = true;
- 
--		if ((priv->rgmii_rx_delay[i] || priv->rgmii_tx_delay[i]) &&
--		     !priv->info->setup_rgmii_delay)
-+		if ((priv->rgmii_rx_delay[port] || priv->rgmii_tx_delay[port]) &&
-+		    !priv->info->setup_rgmii_delay)
+ 			mii->xmii_mode[i] = XMII_MODE_MII;
+ 			break;
++		case PHY_INTERFACE_MODE_REVRMII:
++			role = XMII_PHY;
++			fallthrough;
+ 		case PHY_INTERFACE_MODE_RMII:
+ 			if (!priv->info->supports_rmii[i])
+ 				goto unsupported;
+@@ -211,24 +210,11 @@ static int sja1105_init_mii_settings(struct sja1105_private *priv,
+ unsupported:
+ 		default:
+ 			dev_err(dev, "Unsupported PHY mode %s on port %d!\n",
+-				phy_modes(ports[i].phy_mode), i);
++				phy_modes(priv->phy_mode[i]), i);
  			return -EINVAL;
+ 		}
+ 
+-		/* Even though the SerDes port is able to drive SGMII autoneg
+-		 * like a PHY would, from the perspective of the XMII tables,
+-		 * the SGMII port should always be put in MAC mode.
+-		 * Similarly, RGMII is a symmetric protocol electrically
+-		 * speaking, and the 'RGMII PHY' role does not mean anything to
+-		 * hardware. Just keep the 'PHY role' notation relevant to the
+-		 * driver to mean 'the switch port should apply RGMII delays',
+-		 * but unconditionally put the port in the MAC role.
+-		 */
+-		if (ports[i].phy_mode == PHY_INTERFACE_MODE_SGMII ||
+-		    phy_interface_mode_is_rgmii(ports[i].phy_mode))
+-			mii->phy_mac[i] = XMII_MAC;
+-		else
+-			mii->phy_mac[i] = ports[i].role;
++		mii->phy_mac[i] = role;
  	}
  	return 0;
-@@ -867,6 +866,7 @@ static int sja1105_parse_ports_node(struct sja1105_private *priv,
- 			/* phy-handle is missing, but fixed-link isn't.
+ }
+@@ -751,8 +737,7 @@ static int sja1105_init_l2_policing(struct sja1105_private *priv)
+ 	return 0;
+ }
+ 
+-static int sja1105_static_config_load(struct sja1105_private *priv,
+-				      struct sja1105_dt_port *ports)
++static int sja1105_static_config_load(struct sja1105_private *priv)
+ {
+ 	int rc;
+ 
+@@ -767,7 +752,7 @@ static int sja1105_static_config_load(struct sja1105_private *priv,
+ 	rc = sja1105_init_mac_settings(priv);
+ 	if (rc < 0)
+ 		return rc;
+-	rc = sja1105_init_mii_settings(priv, ports);
++	rc = sja1105_init_mii_settings(priv);
+ 	if (rc < 0)
+ 		return rc;
+ 	rc = sja1105_init_static_fdb(priv);
+@@ -824,7 +809,6 @@ static int sja1105_parse_rgmii_delays(struct sja1105_private *priv)
+ }
+ 
+ static int sja1105_parse_ports_node(struct sja1105_private *priv,
+-				    struct sja1105_dt_port *ports,
+ 				    struct device_node *ports_node)
+ {
+ 	struct device *dev = &priv->spidev->dev;
+@@ -853,7 +837,6 @@ static int sja1105_parse_ports_node(struct sja1105_private *priv,
+ 			of_node_put(child);
+ 			return -ENODEV;
+ 		}
+-		ports[index].phy_mode = phy_mode;
+ 
+ 		phy_node = of_parse_phandle(child, "phy-handle", 0);
+ 		if (!phy_node) {
+@@ -867,27 +850,17 @@ static int sja1105_parse_ports_node(struct sja1105_private *priv,
  			 * So it's a fixed link. Default to PHY role.
  			 */
-+			priv->fixed_link[index] = true;
- 			ports[index].role = XMII_PHY;
+ 			priv->fixed_link[index] = true;
+-			ports[index].role = XMII_PHY;
  		} else {
- 			/* phy-handle present => put port in MAC role */
-@@ -3021,7 +3021,7 @@ static int sja1105_setup(struct dsa_switch *ds)
- 	/* Error out early if internal delays are required through DT
- 	 * and we can't apply them.
- 	 */
--	rc = sja1105_parse_rgmii_delays(priv, ports);
-+	rc = sja1105_parse_rgmii_delays(priv);
+-			/* phy-handle present => put port in MAC role */
+-			ports[index].role = XMII_MAC;
+ 			of_node_put(phy_node);
+ 		}
+ 
+-		/* The MAC/PHY role can be overridden with explicit bindings */
+-		if (of_property_read_bool(child, "sja1105,role-mac"))
+-			ports[index].role = XMII_MAC;
+-		else if (of_property_read_bool(child, "sja1105,role-phy"))
+-			ports[index].role = XMII_PHY;
+-
+ 		priv->phy_mode[index] = phy_mode;
+ 	}
+ 
+ 	return 0;
+ }
+ 
+-static int sja1105_parse_dt(struct sja1105_private *priv,
+-			    struct sja1105_dt_port *ports)
++static int sja1105_parse_dt(struct sja1105_private *priv)
+ {
+ 	struct device *dev = &priv->spidev->dev;
+ 	struct device_node *switch_node = dev->of_node;
+@@ -902,7 +875,7 @@ static int sja1105_parse_dt(struct sja1105_private *priv,
+ 		return -ENODEV;
+ 	}
+ 
+-	rc = sja1105_parse_ports_node(priv, ports, ports_node);
++	rc = sja1105_parse_ports_node(priv, ports_node);
+ 	of_node_put(ports_node);
+ 
+ 	return rc;
+@@ -3008,11 +2981,10 @@ static const struct dsa_8021q_ops sja1105_dsa_8021q_ops = {
+  */
+ static int sja1105_setup(struct dsa_switch *ds)
+ {
+-	struct sja1105_dt_port ports[SJA1105_MAX_NUM_PORTS];
+ 	struct sja1105_private *priv = ds->priv;
+ 	int rc;
+ 
+-	rc = sja1105_parse_dt(priv, ports);
++	rc = sja1105_parse_dt(priv);
  	if (rc < 0) {
- 		dev_err(ds->dev, "RGMII delay not supported\n");
+ 		dev_err(ds->dev, "Failed to parse DT: %d\n", rc);
  		return rc;
+@@ -3033,7 +3005,7 @@ static int sja1105_setup(struct dsa_switch *ds)
+ 		return rc;
+ 	}
+ 	/* Create and send configuration down to device */
+-	rc = sja1105_static_config_load(priv, ports);
++	rc = sja1105_static_config_load(priv);
+ 	if (rc < 0) {
+ 		dev_err(ds->dev, "Failed to load static config: %d\n", rc);
+ 		goto out_ptp_clock_unregister;
 -- 
 2.25.1
 
