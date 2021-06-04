@@ -2,132 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3B3639B643
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 11:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF43A39B67E
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 12:03:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbhFDJ4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 05:56:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46586 "EHLO mail.kernel.org"
+        id S230142AbhFDKEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 06:04:20 -0400
+Received: from mga04.intel.com ([192.55.52.120]:53397 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229930AbhFDJ4n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Jun 2021 05:56:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 96D516140C;
-        Fri,  4 Jun 2021 09:54:54 +0000 (UTC)
-Date:   Fri, 4 Jun 2021 11:54:51 +0200
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Changbin Du <changbin.du@gmail.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>
-Subject: Re: [PATCH] nsfs: fix oops when ns->ops is not provided
-Message-ID: <20210604095451.nkfgpsibm5nrqt3f@wittgenstein>
-References: <20210531153410.93150-1-changbin.du@gmail.com>
- <20210531220128.26c0cb36@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <CAM_iQpUEjBDK44=mD5shkmmoDYhmHQaSZtR34rLRkgd9wSWiQQ@mail.gmail.com>
- <20210602091451.kbdul6nhobilwqvi@wittgenstein>
- <CAM_iQpUqgeoY_mA6cazUPCWwMK6yw9SaD6DRg-Ja4r6r_zOmLg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpUqgeoY_mA6cazUPCWwMK6yw9SaD6DRg-Ja4r6r_zOmLg@mail.gmail.com>
+        id S229667AbhFDKET (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Jun 2021 06:04:19 -0400
+IronPort-SDR: bC235VD8TuEaVAbj7+3nnzEf0/m388pXyXlsGjPCTIsL3+gC4RGaK78IXiIb4bF+go54NlASwc
+ QoFZzGKslD0w==
+X-IronPort-AV: E=McAfee;i="6200,9189,10004"; a="202404506"
+X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; 
+   d="scan'208";a="202404506"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2021 03:02:33 -0700
+IronPort-SDR: X0aMog2PWyHWhbjr4gc8mFIdrOJKxQ/isHwExhyVIvi7WXt5O/DQxoIUzUAR6Rb+Guh+wyLbs6
+ jzQuuNjUJozg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; 
+   d="scan'208";a="633994095"
+Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
+  by fmsmga006.fm.intel.com with ESMTP; 04 Jun 2021 03:02:28 -0700
+From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+To:     Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, kuba@kernel.org, netdev@vger.kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        davem@davemloft.net, mcoquelin.stm32@gmail.com,
+        weifeng.voon@intel.com, boon.leong.ong@intel.com,
+        tee.min.tan@intel.com, vee.khee.wong@linux.intel.com,
+        vee.khee.wong@intel.com, michael.wei.hong.sit@intel.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        vladimir.oltean@nxp.com
+Subject: [PATCH net-next v5 0/3] Enable 2.5Gbps speed for stmmac
+Date:   Fri,  4 Jun 2021 17:57:58 +0800
+Message-Id: <20210604095801.1033-1-michael.wei.hong.sit@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 03:52:29PM -0700, Cong Wang wrote:
-> On Wed, Jun 2, 2021 at 2:14 AM Christian Brauner
-> <christian.brauner@ubuntu.com> wrote:
-> > But the point is that ns->ops should never be accessed when that
-> > namespace type is disabled. Or in other words, the bug is that something
-> > in netns makes use of namespace features when they are disabled. If we
-> > handle ->ops being NULL we might be tapering over a real bug somewhere.
-> 
-> It is merely a protocol between fs/nsfs.c and other namespace users,
-> so there is certainly no right or wrong here, the only question is which
-> one is better.
-> 
-> >
-> > Jakub's proposal in the other mail makes sense and falls in line with
-> > how the rest of the netns getters are implemented. For example
-> > get_net_ns_fd_fd():
-> 
-> It does not make any sense to me. get_net_ns() merely increases
-> the netns refcount, which is certainly fine for init_net too, no matter
-> CONFIG_NET_NS is enabled or disabled. Returning EOPNOTSUPP
-> there is literally saying we do not support increasing init_net refcount,
-> which is of course false.
-> 
-> > struct net *get_net_ns_by_fd(int fd)
-> > {
-> >         return ERR_PTR(-EINVAL);
-> > }
-> 
-> There is a huge difference between just increasing netns refcount
-> and retrieving it by fd, right? I have no idea why you bring this up,
-> calling them getters is missing their difference.
+Intel mGbE supports 2.5Gbps link speed by overclocking the clock rate
+by 2.5 times to support 2.5Gbps link speed. In this mode, the serdes/PHY
+operates at a serial baud rate of 3.125 Gbps and the PCS data path and
+GMII interface of the MAC operate at 312.5 MHz instead of 125 MHz.
+This is configured in the BIOS during boot up. The kernel driver is not able
+access to modify the clock rate for 1Gbps/2.5G mode on the fly. The way to
+determine the current 1G/2.5G mode is by reading a dedicated adhoc
+register through mdio bus.
 
-This argument doesn't hold up. All netns helpers ultimately increase the
-reference count of the net namespace they find. And if any of them
-perform operations where they are called in environments wherey they
-need CONFIG_NET_NS they handle this case at compile time.
+Changes:
+v4 -> v5
+ patch 1/3
+ - Rebase to latest code changes after Vladimir's code is merged
 
-(Pluse they are defined in a central place in net/net_namespace.{c,h}.
-That includes the low-level get_net() function and all the others.
-get_net_ns() is the only one that's defined out of band. So get_net_ns()
-currently is arguably also misplaced.)
+v3 -> v4
+ patch 1/3
+ - Rebase to latest code and Initialize 'found' to 0 to avoid build warning
 
-The problem I have with fixing this in nsfs is that it gives the
-impression that this is a bug in nsfs whereas it isn't and it
-potentially helps tapering over other bugs.
+ patch 2/3
+ - Fix indentation issue from v3
 
-get_net_ns() is only called for codepaths that call into nsfs via
-open_related_ns() and it's the only namespace that does this. But
-open_related_ns() is only well defined if CONFIG_<NAMESPACE_TYPE> is
-set. For example, none of the procfs namespace f_ops will be set for
-!CONFIG_NET_NS. So clearly the socket specific getter here is buggy as
-it doesn't account for !CONFIG_NET_NS and it should be fixed.
+v2 -> v3
+ patch 1/3
+ -New patch added to restructure the code. enabling reading the dedicated
+  adhoc register to determine link speed mode.
 
-Plus your fix leaks references to init netns without fixing get_net_ns()
-too.
-You succeed to increase the refcount of init netns in get_net_ns() but
-then you return in __ns_get_path() because ns->ops aren't set before
-ns->ops->put() can be called.  But you also _can't_ call it since it's
-not set because !CONFIG_NET_NS. So everytime you call any of those
-ioctls you increas the refcount of init net ns without decrementing it
-on failure. So the fix is buggy as it is too and would suggest you to
-fixup get_net_ns() too.
+ patch 2/3
+ -Restructure for 2.5G speed to use 2500BaseX configuration as the
+  PHY interface.
 
-Cc: <stable@vger.kernel.org>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: David Laight <David.Laight@ACULAB.COM>
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
----
- fs/nsfs.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ patch 3/3
+ -Restructure to read serdes registers to set max_speed and configure to
+  use 2500BaseX in 2.5G speeds.
 
-diff --git a/fs/nsfs.c b/fs/nsfs.c
-index 800c1d0eb0d0..6c055eb7757b 100644
---- a/fs/nsfs.c
-+++ b/fs/nsfs.c
-@@ -62,6 +62,10 @@ static int __ns_get_path(struct path *path, struct ns_common *ns)
- 	struct inode *inode;
- 	unsigned long d;
- 
-+	/* In case the namespace is not actually enabled. */
-+	if (!ns->ops)
-+		return -EOPNOTSUPP;
-+
- 	rcu_read_lock();
- 	d = atomic_long_read(&ns->stashed);
- 	if (!d)
+v1 -> v2
+ patch 1/2
+ -Remove MAC supported link speed masking
+
+ patch 2/2
+ -Add supported link speed masking in the PCS
+
+iperf3 and ping for 2.5Gbps and regression test on 10M/100M/1000Mbps
+is done to prevent regresson issues.
+
+2500Mbps
+PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=0.526 ms
+64 bytes from 192.168.1.1: icmp_seq=2 ttl=64 time=0.509 ms
+64 bytes from 192.168.1.1: icmp_seq=3 ttl=64 time=0.507 ms
+64 bytes from 192.168.1.1: icmp_seq=4 ttl=64 time=0.508 ms
+64 bytes from 192.168.1.1: icmp_seq=5 ttl=64 time=0.539 ms
+64 bytes from 192.168.1.1: icmp_seq=6 ttl=64 time=0.516 ms
+64 bytes from 192.168.1.1: icmp_seq=7 ttl=64 time=0.548 ms
+64 bytes from 192.168.1.1: icmp_seq=8 ttl=64 time=0.513 ms
+64 bytes from 192.168.1.1: icmp_seq=9 ttl=64 time=0.509 ms
+64 bytes from 192.168.1.1: icmp_seq=10 ttl=64 time=0.508 ms
+
+--- 192.168.1.1 ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9222ms
+rtt min/avg/max/mdev = 0.507/0.518/0.548/0.013 ms
+
+Connecting to host 192.168.1.1, port 5201
+[  5] local 192.168.1.2 port 40092 connected to 192.168.1.1 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   205 MBytes  1.72 Gbits/sec    0    604 KBytes       
+[  5]   1.00-2.00   sec   205 MBytes  1.72 Gbits/sec    0    632 KBytes       
+[  5]   2.00-3.00   sec   205 MBytes  1.72 Gbits/sec    0    632 KBytes       
+[  5]   3.00-4.00   sec   206 MBytes  1.73 Gbits/sec    0    632 KBytes       
+[  5]   4.00-5.00   sec   205 MBytes  1.72 Gbits/sec    0    632 KBytes       
+[  5]   5.00-6.00   sec   206 MBytes  1.73 Gbits/sec    0    632 KBytes       
+[  5]   6.00-7.00   sec   204 MBytes  1.71 Gbits/sec    0    632 KBytes       
+[  5]   7.00-8.00   sec   206 MBytes  1.73 Gbits/sec    0    632 KBytes       
+[  5]   8.00-9.00   sec   205 MBytes  1.72 Gbits/sec    0    632 KBytes       
+[  5]   9.00-10.00  sec   206 MBytes  1.73 Gbits/sec    0    632 KBytes       
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  2.00 GBytes  1.72 Gbits/sec    0             sender
+[  5]   0.00-10.00  sec  2.00 GBytes  1.72 Gbits/sec                  receiver
+
+iperf Done.
+
+10Mbps
+host@EHL$ ethtool -s enp0s30f4 duplex full speed 10
+PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=1.46 ms
+64 bytes from 192.168.1.1: icmp_seq=2 ttl=64 time=0.761 ms
+64 bytes from 192.168.1.1: icmp_seq=3 ttl=64 time=0.744 ms
+64 bytes from 192.168.1.1: icmp_seq=4 ttl=64 time=0.753 ms
+64 bytes from 192.168.1.1: icmp_seq=5 ttl=64 time=0.746 ms
+64 bytes from 192.168.1.1: icmp_seq=6 ttl=64 time=0.786 ms
+64 bytes from 192.168.1.1: icmp_seq=7 ttl=64 time=0.740 ms
+64 bytes from 192.168.1.1: icmp_seq=8 ttl=64 time=0.757 ms
+64 bytes from 192.168.1.1: icmp_seq=9 ttl=64 time=0.742 ms
+64 bytes from 192.168.1.1: icmp_seq=10 ttl=64 time=0.772 ms
+
+--- 192.168.1.1 ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9208ms
+rtt min/avg/max/mdev = 0.740/0.826/1.461/0.212 ms
+
+Connecting to host 192.168.1.1, port 5201
+[  5] local 192.168.1.2 port 35304 connected to 192.168.1.1 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec  1.26 MBytes  10.6 Mbits/sec    0   29.7 KBytes       
+[  5]   1.00-2.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes       
+[  5]   2.00-3.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes       
+[  5]   3.00-4.00   sec  1.15 MBytes  9.68 Mbits/sec    0   29.7 KBytes       
+[  5]   4.00-5.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes       
+[  5]   5.00-6.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes       
+[  5]   6.00-7.00   sec  1.15 MBytes  9.68 Mbits/sec    0   29.7 KBytes       
+[  5]   7.00-8.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes       
+[  5]   8.00-9.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes       
+[  5]   9.00-10.00  sec  1.15 MBytes  9.68 Mbits/sec    0   29.7 KBytes       
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  11.3 MBytes  9.47 Mbits/sec    0             sender
+[  5]   0.00-10.01  sec  11.1 MBytes  9.33 Mbits/sec                  receiver
+
+iperf Done.
+
+100Mbps
+host@EHL$ ethtool -s enp0s30f4 duplex full speed 100
+PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=1.05 ms
+64 bytes from 192.168.1.1: icmp_seq=2 ttl=64 time=0.535 ms
+64 bytes from 192.168.1.1: icmp_seq=3 ttl=64 time=0.522 ms
+64 bytes from 192.168.1.1: icmp_seq=4 ttl=64 time=0.529 ms
+64 bytes from 192.168.1.1: icmp_seq=5 ttl=64 time=0.523 ms
+64 bytes from 192.168.1.1: icmp_seq=6 ttl=64 time=0.543 ms
+64 bytes from 192.168.1.1: icmp_seq=7 ttl=64 time=0.553 ms
+64 bytes from 192.168.1.1: icmp_seq=8 ttl=64 time=0.542 ms
+64 bytes from 192.168.1.1: icmp_seq=9 ttl=64 time=0.517 ms
+64 bytes from 192.168.1.1: icmp_seq=10 ttl=64 time=0.515 ms
+
+--- 192.168.1.1 ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9233ms
+rtt min/avg/max/mdev = 0.515/0.582/1.048/0.155 ms
+
+Connecting to host 192.168.1.1, port 5201
+[  5] local 192.168.1.2 port 35308 connected to 192.168.1.1 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec  11.8 MBytes  99.1 Mbits/sec    0    147 KBytes       
+[  5]   1.00-2.00   sec  10.9 MBytes  91.2 Mbits/sec    0    187 KBytes       
+[  5]   2.00-3.00   sec  11.4 MBytes  95.4 Mbits/sec    0    230 KBytes       
+[  5]   3.00-4.00   sec  10.9 MBytes  91.7 Mbits/sec    0    230 KBytes       
+[  5]   4.00-5.00   sec  10.4 MBytes  87.6 Mbits/sec    0    230 KBytes       
+[  5]   5.00-6.00   sec  10.9 MBytes  91.7 Mbits/sec    0    230 KBytes       
+[  5]   6.00-7.00   sec  10.9 MBytes  91.7 Mbits/sec    0    230 KBytes       
+[  5]   7.00-8.00   sec  10.9 MBytes  91.7 Mbits/sec    0    230 KBytes       
+[  5]   8.00-9.00   sec  10.9 MBytes  91.7 Mbits/sec    0    230 KBytes       
+[  5]   9.00-10.00  sec  10.9 MBytes  91.7 Mbits/sec    0    230 KBytes       
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec   110 MBytes  92.4 Mbits/sec    0             sender
+[  5]   0.00-10.01  sec   109 MBytes  91.5 Mbits/sec                  receiver
+
+iperf Done.
+
+1000Mbps
+host@EHL$ ethtool -s enp0s30f4 duplex full speed 1000
+PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=1.02 ms
+64 bytes from 192.168.1.1: icmp_seq=2 ttl=64 time=0.507 ms
+64 bytes from 192.168.1.1: icmp_seq=3 ttl=64 time=0.539 ms
+64 bytes from 192.168.1.1: icmp_seq=4 ttl=64 time=0.506 ms
+64 bytes from 192.168.1.1: icmp_seq=5 ttl=64 time=0.504 ms
+64 bytes from 192.168.1.1: icmp_seq=6 ttl=64 time=0.489 ms
+64 bytes from 192.168.1.1: icmp_seq=7 ttl=64 time=0.499 ms
+64 bytes from 192.168.1.1: icmp_seq=8 ttl=64 time=0.483 ms
+64 bytes from 192.168.1.1: icmp_seq=9 ttl=64 time=0.480 ms
+64 bytes from 192.168.1.1: icmp_seq=10 ttl=64 time=0.493 ms
+
+--- 192.168.1.1 ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9213ms
+rtt min/avg/max/mdev = 0.480/0.551/1.015/0.155 ms
+
+Connecting to host 192.168.1.1, port 5201
+[  5] local 192.168.1.2 port 35312 connected to 192.168.1.1 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   114 MBytes   960 Mbits/sec    0    437 KBytes       
+[  5]   1.00-2.00   sec   112 MBytes   940 Mbits/sec    0    437 KBytes       
+[  5]   2.00-3.00   sec   112 MBytes   937 Mbits/sec    0    437 KBytes       
+[  5]   3.00-4.00   sec   112 MBytes   941 Mbits/sec    0    437 KBytes       
+[  5]   4.00-5.00   sec   112 MBytes   939 Mbits/sec    0    457 KBytes       
+[  5]   5.00-6.00   sec   112 MBytes   941 Mbits/sec    0    457 KBytes       
+[  5]   6.00-7.00   sec   112 MBytes   944 Mbits/sec    0    457 KBytes       
+[  5]   7.00-8.00   sec   112 MBytes   937 Mbits/sec    0    457 KBytes       
+[  5]   8.00-9.00   sec   113 MBytes   946 Mbits/sec    0    457 KBytes       
+[  5]   9.00-10.00  sec   112 MBytes   937 Mbits/sec    0    457 KBytes       
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  1.10 GBytes   942 Mbits/sec    0             sender
+[  5]   0.00-10.00  sec  1.10 GBytes   941 Mbits/sec                  receiver
+
+iperf Done.
+
+Voon Weifeng (3):
+  net: stmmac: split xPCS setup from mdio register
+  net: pcs: add 2500BASEX support for Intel mGbE controller
+  net: stmmac: enable Intel mGbE 2.5Gbps link speed
+
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 48 +++++++++++++-
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.h | 13 ++++
+ .../net/ethernet/stmicro/stmmac/dwmac4_core.c |  1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 14 ++++
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 65 ++++++++++---------
+ drivers/net/pcs/pcs-xpcs.c                    | 56 ++++++++++++++++
+ include/linux/pcs/pcs-xpcs.h                  |  1 +
+ include/linux/stmmac.h                        |  1 +
+ 9 files changed, 170 insertions(+), 30 deletions(-)
+
 -- 
-2.30.2
-
+2.17.1
 
