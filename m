@@ -2,206 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3C339BF41
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 20:02:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E34639BF4A
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 20:03:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbhFDSEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 14:04:30 -0400
-Received: from www62.your-server.de ([213.133.104.62]:34066 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbhFDSEa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 14:04:30 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lpE9V-000Frm-JT; Fri, 04 Jun 2021 20:02:37 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lpE9V-000LkL-7b; Fri, 04 Jun 2021 20:02:37 +0200
-Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
- permission checks
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
-        linux-security-module@vger.kernel.org,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Casey Schaufler <casey@schaufler-ca.com>, jolsa@redhat.com,
-        ast@kernel.org, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>
-References: <20210517092006.803332-1-omosnace@redhat.com>
- <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
- <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net>
- <CAHC9VhR-kYmMA8gsqkiL5=poN9FoL-uCyx1YOLCoG2hRiUBYug@mail.gmail.com>
- <c7c2d7e1-e253-dce0-d35c-392192e4926e@iogearbox.net>
- <CAHC9VhS1XRZjKcTFgH1+n5uA-CeT+9BeSP5jvT2+RE5ougLpUg@mail.gmail.com>
- <2e541bdc-ae21-9a07-7ac7-6c6a4dda09e8@iogearbox.net>
- <CAHC9VhT464vr9sWxqY3PRB4DAccz=LvRMLgWBsSViWMR0JJvOQ@mail.gmail.com>
- <3ca181e3-df32-9ae0-12c6-efb899b7ce7a@iogearbox.net>
- <CAHC9VhTuPnPs1wMTmoGUZ4fvyy-es9QJpE7O_yTs2JKos4fgbw@mail.gmail.com>
- <f4373013-88fb-b839-aaaa-3826548ebd0c@iogearbox.net>
- <CAHC9VhS=BeGdaAi8Ae5Fx42Fzy_ybkcXwMNcPwK=uuA6=+SRcg@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c59743f6-0000-1b15-bc16-ff761b443aef@iogearbox.net>
-Date:   Fri, 4 Jun 2021 20:02:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S231173AbhFDSFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 14:05:18 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:20617 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229823AbhFDSFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 14:05:17 -0400
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 7EA20520D20;
+        Fri,  4 Jun 2021 21:03:28 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1622829808;
+        bh=LS3nmf5kkonilBHXcYQKchvFm7Dwc3WtjhdxFzsooQM=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=ZNwmAehaTFmXwFCxQ7Md5UBcLH6M+PfHZh1Ba0b6/w463tdZiJmqk4+qO1dxKWfAS
+         ysTlzc3gjAtlSw8VdifeY6y+Qlznq0dX/PYBuJdUGB1MNkcQr+jdNGWxK2021urLo0
+         dINC1eSMd5fkI7PZYCbIhwCXHmwSc7xmfIcmGaJOQSFYZk/kDqbAUNigQ60jGZEaCY
+         gb/+mn7WT50V5+pZ03ap0DqOx9EBkA3dLchM/2zgZ/q/97MUTQe+u71FE3duFIzu+R
+         DsVwsaqKVu+z4P5Zg712a1ZCL7pPt02t7pOQRXR8EGY/kZs3O/3B5HHOUMH0b8U8Nk
+         iAc4L6VBW39Hw==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id B53CD520D1E;
+        Fri,  4 Jun 2021 21:03:27 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.129) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Fri, 4
+ Jun 2021 21:03:27 +0300
+Subject: Re: [PATCH v10 11/18] virtio/vsock: dequeue callback for
+ SOCK_SEQPACKET
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
+ <20210520191801.1272027-1-arseny.krasnov@kaspersky.com>
+ <20210603144513.ryjzauq7abnjogu3@steredhat>
+ <6b833ccf-ea93-db6a-4743-463ac1cfe817@kaspersky.com>
+ <20210604150324.winiikx5h3p6gsyy@steredhat>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <a81ae3cb-439f-7621-4ae6-bccd2c25b7e4@kaspersky.com>
+Date:   Fri, 4 Jun 2021 21:03:26 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <CAHC9VhS=BeGdaAi8Ae5Fx42Fzy_ybkcXwMNcPwK=uuA6=+SRcg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+In-Reply-To: <20210604150324.winiikx5h3p6gsyy@steredhat>
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26191/Fri Jun  4 13:07:45 2021)
+Content-Language: en-US
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/04/2021 17:51:02
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 164135 [Jun 04 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: kaspersky.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/04/2021 17:53:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 04.06.2021 14:19:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/06/04 17:28:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/06/04 14:19:00 #16700241
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/4/21 6:50 AM, Paul Moore wrote:
-> On Thu, Jun 3, 2021 at 2:53 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-[...]
->> I did run this entire discussion by both of the other BPF co-maintainers
->> (Alexei, Andrii, CC'ed) and together we did further brainstorming on the
->> matter on how we could solve this, but couldn't find a sensible & clean
->> solution so far.
-> 
-> Before I jump into the patch below I just want to say that I
-> appreciate you looking into solutions on the BPF side of things.
-> However, I voted "no" on this patch previously and since you haven't
-> really changed it, my "no"/NACK vote remains, at least until we
-> exhaust a few more options.
 
-Just to set the record straight, you previously did neither ACK nor NACK it. And
-again, as summarized earlier, this patch is _fixing_ the majority of the damage
-caused by 59438b46471a for at least the BPF side of things where users run into this,
-Ondrej the rest. Everything else can be discussed on top, and so far it seems there
-is no clean solution in front of us either, not even speaking of one that is small
-and suitable for _stable_ trees. Let me reiterate where we are: it's not that the
-original implementation in 9d1f8be5cf42 ("bpf: Restrict bpf when kernel lockdown is
-in confidentiality mode") was broken, it's that the later added _SELinux_ locked_down
-hook implementation that is broken, and not other LSMs. Now you're trying to retrofittingly
-ask us for hacks at all costs just because of /a/ broken LSM implementation. Maybe
-another avenue is to just swallow the pill and revert 59438b46471a since it made
-assumptions that don't work /generally/. And the use case for an application runtime
-policy change in particular in case of lockdown where users only have 3 choices is
-extremely tiny/rare, if it's not then something is very wrong in your deployment.
-Let me ask you this ... are you also planning to address *all* the other cases inside
-the kernel? If your answer is no, then this entire discussion is pointless.
+On 04.06.2021 18:03, Stefano Garzarella wrote:
+> On Fri, Jun 04, 2021 at 04:12:23PM +0300, Arseny Krasnov wrote:
+>> On 03.06.2021 17:45, Stefano Garzarella wrote:
+>>> On Thu, May 20, 2021 at 10:17:58PM +0300, Arseny Krasnov wrote:
+>>>> Callback fetches RW packets from rx queue of socket until whole record
+>>>> is copied(if user's buffer is full, user is not woken up). This is done
+>>>> to not stall sender, because if we wake up user and it leaves syscall,
+>>>> nobody will send credit update for rest of record, and sender will wait
+>>>> for next enter of read syscall at receiver's side. So if user buffer is
+>>>> full, we just send credit update and drop data.
+>>>>
+>>>> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>>>> ---
+>>>> v9 -> v10:
+>>>> 1) Number of dequeued bytes incremented even in case when
+>>>>    user's buffer is full.
+>>>> 2) Use 'msg_data_left()' instead of direct access to 'msg_hdr'.
+>>>> 3) Rename variable 'err' to 'dequeued_len', in case of error
+>>>>    it has negative value.
+>>>>
+>>>> include/linux/virtio_vsock.h            |  5 ++
+>>>> net/vmw_vsock/virtio_transport_common.c | 65 +++++++++++++++++++++++++
+>>>> 2 files changed, 70 insertions(+)
+>>>>
+>>>> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>>>> index dc636b727179..02acf6e9ae04 100644
+>>>> --- a/include/linux/virtio_vsock.h
+>>>> +++ b/include/linux/virtio_vsock.h
+>>>> @@ -80,6 +80,11 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
+>>>> 			       struct msghdr *msg,
+>>>> 			       size_t len, int flags);
+>>>>
+>>>> +ssize_t
+>>>> +virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
+>>>> +				   struct msghdr *msg,
+>>>> +				   int flags,
+>>>> +				   bool *msg_ready);
+>>>> s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
+>>>> s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
+>>>>
+>>>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>>>> index ad0d34d41444..61349b2ea7fe 100644
+>>>> --- a/net/vmw_vsock/virtio_transport_common.c
+>>>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>>>> @@ -393,6 +393,59 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+>>>> 	return err;
+>>>> }
+>>>>
+>>>> +static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+>>>> +						 struct msghdr *msg,
+>>>> +						 int flags,
+>>>> +						 bool *msg_ready)
+>>>> +{
+>>>> +	struct virtio_vsock_sock *vvs = vsk->trans;
+>>>> +	struct virtio_vsock_pkt *pkt;
+>>>> +	int dequeued_len = 0;
+>>>> +	size_t user_buf_len = msg_data_left(msg);
+>>>> +
+>>>> +	*msg_ready = false;
+>>>> +	spin_lock_bh(&vvs->rx_lock);
+>>>> +
+>>>> +	while (!*msg_ready && !list_empty(&vvs->rx_queue) && dequeued_len >= 0) {
+>>> I'
+>>>
+>>>> +		size_t bytes_to_copy;
+>>>> +		size_t pkt_len;
+>>>> +
+>>>> +		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
+>>>> +		pkt_len = (size_t)le32_to_cpu(pkt->hdr.len);
+>>>> +		bytes_to_copy = min(user_buf_len, pkt_len);
+>>>> +
+>>>> +		if (bytes_to_copy) {
+>>>> +			/* sk_lock is held by caller so no one else can dequeue.
+>>>> +			 * Unlock rx_lock since memcpy_to_msg() may sleep.
+>>>> +			 */
+>>>> +			spin_unlock_bh(&vvs->rx_lock);
+>>>> +
+>>>> +			if (memcpy_to_msg(msg, pkt->buf, bytes_to_copy))
+>>>> +				dequeued_len = -EINVAL;
+>>> I think here is better to return the error returned by memcpy_to_msg(),
+>>> as we do in the other place where we use memcpy_to_msg().
+>>>
+>>> I mean something like this:
+>>> 			err = memcpy_to_msgmsg, pkt->buf, bytes_to_copy);
+>>> 			if (err)
+>>> 				dequeued_len = err;
+>> Ack
+>>>> +			else
+>>>> +				user_buf_len -= bytes_to_copy;
+>>>> +
+>>>> +			spin_lock_bh(&vvs->rx_lock);
+>>>> +		}
+>>>> +
+>>> Maybe here we can simply break the cycle if we have an error:
+>>> 		if (dequeued_len < 0)
+>>> 			break;
+>>>
+>>> Or we can refactor a bit, simplifying the while() condition and also the
+>>> code in this way (not tested):
+>>>
+>>> 	while (!*msg_ready && !list_empty(&vvs->rx_queue)) {
+>>> 		...
+>>>
+>>> 		if (bytes_to_copy) {
+>>> 			int err;
+>>>
+>>> 			/* ...
+>>> 			*/
+>>> 			spin_unlock_bh(&vvs->rx_lock);
+>>> 			err = memcpy_to_msgmsg, pkt->buf, bytes_to_copy);
+>>> 			if (err) {
+>>> 				dequeued_len = err;
+>>> 				goto out;
+>>> 			}
+>>> 			spin_lock_bh(&vvs->rx_lock);
+>>>
+>>> 			user_buf_len -= bytes_to_copy;
+>>> 		}
+>>>
+>>> 		dequeued_len += pkt_len;
+>>>
+>>> 		if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR)
+>>> 			*msg_ready = true;
+>>>
+>>> 		virtio_transport_dec_rx_pkt(vvs, pkt);
+>>> 		list_del(&pkt->list);
+>>> 		virtio_transport_free_pkt(pkt);
+>>> 	}
+>>>
+>>> out:
+>>> 	spin_unlock_bh(&vvs->rx_lock);
+>>>
+>>> 	virtio_transport_send_credit_update(vsk);
+>>>
+>>> 	return dequeued_len;
+>>> }
+>> I think we can't do 'goto out' or break, because in case of error, we still need
+>> to free packet.
+> Didn't we have code that remove packets from a previous message?
+> I don't see it anymore.
+>
+> For example if we have 10 packets queued for a message (the 10th packet 
+> has the EOR flag) and the memcpy_to_msg() fails on the 2nd packet, with 
+> you proposal we are freeing only the first 2 packets, the rest is there 
+> and should be freed when reading the next message, but I don't see that 
+> code.
+>
+> The same can happen if the recvmsg syscall is interrupted. In that case 
+> we report that nothing was copied, but we freed the first N packets, so 
+> they are lost but the other packets are still in the queue.
+>
+> Please check also the patch where we implemented 
+> __vsock_seqpacket_recvmsg().
+>
+> I thinks we should free packets only when we are sure we copied them to 
+> the user space.
 
->> [PATCH] bpf, lockdown, audit: Fix buggy SELinux lockdown permission checks
+Hm, yes, this is problem. To solve it i can restore previous approach
+
+with seqbegin/seqend. In that case i can detect unfinished record and
+
+drop it's packets. Seems seqbegin will be a bit like VIRTIO_VSOCK_SEQ_EOR in flags
+
+field of header(e.g. VIRTIO_VSOCK_SEQ_BEGIN). Message id and length are unneeded,
+
+as channel considedered lossless. What do You think?
+
+
+Thank You
+
+>
+>> It is possible to do something like this:
 >>
->> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
->> added an implementation of the locked_down LSM hook to SELinux, with the aim
->> to restrict which domains are allowed to perform operations that would breach
->> lockdown. This is indirectly also getting audit subsystem involved to report
->> events. The latter is problematic, as reported by Ondrej and Serhei, since it
->> can bring down the whole system via audit:
+>> 		virtio_transport_dec_rx_pkt(vvs, pkt);
+>> 		list_del(&pkt->list);
+>> 		virtio_transport_free_pkt(pkt);
 >>
->>     1) The audit events that are triggered due to calls to security_locked_down()
->>        can OOM kill a machine, see below details [0].
+>> 		if (dequeued_len < 0)
+>> 			break;
 >>
->>     2) It also seems to be causing a deadlock via avc_has_perm()/slow_avc_audit()
->>        when trying to wake up kauditd, for example, when using trace_sched_switch()
->>        tracepoint, see details in [1]. Triggering this was not via some hypothetical
->>        corner case, but with existing tools like runqlat & runqslower from bcc, for
->>        example, which make use of this tracepoint. Rough call sequence goes like:
->>
->>        rq_lock(rq) -> -------------------------+
->>          trace_sched_switch() ->               |
->>            bpf_prog_xyz() ->                   +-> deadlock
->>              selinux_lockdown() ->             |
->>                audit_log_end() ->              |
->>                  wake_up_interruptible() ->    |
->>                    try_to_wake_up() ->         |
->>                      rq_lock(rq) --------------+
-> 
-> Since BPF is a bit of chaotic nightmare in the sense that it basically
-> out-of-tree kernel code that can be called from anywhere and do pretty
-> much anything; it presents quite the challenge for those of us worried
-> about LSM access controls.
-
-There is no need to generalize ... for those worried, BPF subsystem has LSM access
-controls for the syscall since 2017 via afdb09c720b6 ("security: bpf: Add LSM hooks
-for bpf object related syscall").
-
-[...]
-> So let's look at this from a different angle.  Let's look at the two
-> problems you mention above.
-> 
-> If we start with the runqueue deadlock we see the main problem is that
-> audit_log_end() pokes the kauditd_wait waitqueue to ensure the
-> kauditd_thread thread wakes up and processes the audit queue.  The
-> audit_log_start() function does something similar, but it is
-> conditional on a number of factors and isn't as likely to be hit.  If
-> we relocate these kauditd wakeup calls we can remove the deadlock in
-> trace_sched_switch().  In the case of CONFIG_AUDITSYSCALL=y we can
-> probably just move the wakeup to __audit_syscall_exit() and in the
-> case of CONFIG_AUDITSYSCALL=n we can likely just change the
-> wait_event_freezable() call in kauditd_thread to a
-> wait_event_freezable_timeout() call with a HZ timeout (the audit
-> stream will be much less on these systems anyway so a queue overflow
-> is much less likely).  I'm building a kernel with these changes now, I
-> should have something to test when I wake up tomorrow morning.  It
-> might even provide a bit of a performance boost as we would only be
-> calling a wakeup function once for each syscall.
-
-As other SELinux developers like Ondrej already pointed out to you in
-this thread:
-
-   Actually, I wasn't aware of the deadlock... But calling an LSM hook
-   [that is backed by a SELinux access check] from within a BPF helper
-   is calling for all kinds of trouble, so I'm not surprised
-
-This is _generally_ a bad idea since it will potentially blow up in
-random ways. A _simple_ on/off switch like lockdown_is_locked_down()
-did was okayish (maybe modulo the pr_notice() which should rather have
-been a pr_notice_ratelimited() when this is potentially called Mio
-of times per sec worst case), but everything else is, again, just
-asking for trouble now and/or in future when folks extend the SELinux
-backend implementation or add a locked_down hook to other LSMs. That
-59438b46471a was missing it was the first proof of exactly this, and
-other LSMs will run into the same. Similarly for relying on 'current'
-given it works on /some/ of the security_locked_down() call-sites /but
-not others/. No matter from which angle you look at it, calling a LSM
-hook from a helper is just plain broken.
-
-> The other issue is related to security_locked_down() and using the
-> right subject for the access control check.  As has been pointed out
-> several times in this thread, the current code uses the current() task
-> as the subject, which is arguably incorrect for many of the BPF helper
-> functions.  In the case of BPF, we have talked about using the
-> credentials of the task which loaded the BPF program instead of
-> current(), and that does make a certain amount of sense.  Such an
-> approach should make the security policy easier to develop and
-> rationalize, leading to a significant decrease in audit records coming
-> from LSM access denials.  The question is how to implement such a
-> change.  The current SELinux security_bpf_prog_alloc() hook causes the
-> newly loaded BPF program to inherit the subject context from the task
-> which loads the BPF program; if it is possible to reference the
-> bpf_prog struct, or really just the associated bpf_prog_aux->security
-> blob, from inside a security_bpf_locked_down() function we use that
-> subject information to perform the access check.  BPF folks, is there
-> a way to get that information from within a BPF kernel helper
-> function?  If it isn't currently possible, could it be made possible
-> (or something similar)?
-
-While this could be a potential avenue, the problem here is that BPF
-helpers have neither access to the prog struct nor to bpf_prog_aux. As
-I mentioned earlier, potentially you could go and fix up JITed images
-for those progs where the credentials of the loading task require this
-when policy suddenly changes to a more stricter level. I'm not a fan
-of this though because of the fragility involved here.
-
-Again, the problem is not limited to BPF at all. kprobes is doing register-
-time hooks which are equivalent to the one of BPF. Anything in run-time
-trying to prevent probe_read_kernel by kprobes or BPF is broken by design.
-
-Thanks,
-Daniel
+>>>
+>
