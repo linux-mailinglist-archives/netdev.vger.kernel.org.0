@@ -2,134 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C85DE39B121
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 05:52:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AEA439B147
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 06:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229758AbhFDDxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Jun 2021 23:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49778 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbhFDDxx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Jun 2021 23:53:53 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF08C06174A
-        for <netdev@vger.kernel.org>; Thu,  3 Jun 2021 20:52:07 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id c10so12307362eja.11
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 20:52:07 -0700 (PDT)
+        id S229825AbhFDESt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 00:18:49 -0400
+Received: from mail-wm1-f48.google.com ([209.85.128.48]:54829 "EHLO
+        mail-wm1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229474AbhFDESs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 00:18:48 -0400
+Received: by mail-wm1-f48.google.com with SMTP id o127so4554417wmo.4
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 21:16:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/4L/S+ziT9zZRS51oMaLvPt8LeGdXeAn9/h/hVqAyRM=;
-        b=HIpWWXqmxXIO4Dl7GQIh1qgX3+bvGrlb87m3vbm3WlHaSSYTtTlK6IlRb9aOXk1rAz
-         GnZnVSvhTGlPRV+8a/YLnWrMUfWs9NaeAMZXnkjCzm3HbcCDBDGy5z+WuCanfED95jIR
-         AWt4jHNUzlGD6KlzaA/mzYs9vlZE0T3nj1kX7eme9AcbvoFB/6FOiufunuQZX8B5HU53
-         5mT/7s62KMPnlDHqAbqjv+O11Rsuoo99N9IJ65hLnQJd9mOO58eKbBjvbnHnucZocjm5
-         WljhxEnOwCduqstM1aJc+0MsK+iHjhTI1SGpZrqLiblUBHA2sxFfpapTQ5y48bYsk6jL
-         iu4g==
+         :cc;
+        bh=gt5r+lBwCuoOA7rfQIlaZBhTcz5xyY6ZuYMcbufKUos=;
+        b=pXfVS0SZxq556lEc4rP04GJ+qgvT/OfgZ6GWjum1lWJGmFlLn0UIhfcmvLozoTMPl6
+         dFTZer+0saAoVGELO7+tFHPmONEOIFsP/2B24YoqJOSbVT1Qbp8MhvrOythK2lI8ZcSK
+         lfYFhogf0BkpuuMQ2vgzYsV8SBe/Z3umeGLXeDHcPOzyosYXZtapt4idJ2Vgt79tiV9A
+         AcbR/UUZJt4JO0HYV6GSl49RUNE1HAZ2Z0kxIct7cR2hyhnysXQ8LN/yGMV/3gz1E023
+         MEqggsPvjm0V4piYAYa5Td9JqYxf4aWJnqMAdcuRpsoKH9W/EmMQmuiHJ3kT+W4xV1Va
+         zFFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/4L/S+ziT9zZRS51oMaLvPt8LeGdXeAn9/h/hVqAyRM=;
-        b=Fv6FyKeNul54Gy9CfUv79u/ncOWgo9ft4Bl0zAuDzix4+/bEPl6LzgWVi/N217iZcn
-         csJE0P0I8iYQucVyFHVs8la+BR2wjX/O/xGxOSOcGRQm7/JcfS5wZWXcQa/3JBywfX4u
-         2ArSxi8BUNgnN3UXKR0XhGY9Zj9sXKaa9qy4Pg6fPMAILjhFMol+uDTyF7T2BhCuAmNO
-         GhR7s/Gl/DUikOgKTTPRfKadoGJ8DjY6Q0N4bmfjTI+HmKs3IWsVAezUnqzN3He8PPXz
-         cvMkNWSqptCHXSF0lHEyhQR/ZHwB5xQYZRt4nBh/9l8KDbt/fh0tZXmHPNRtZ8kZ9uhh
-         QqIw==
-X-Gm-Message-State: AOAM531O07Alv48Gj9ppeQNM56pVAnebDwxMaA3HjLbgYd3x0oaeNS9K
-        ZMi6ZM6Bf/eDGVYRkTXn6M2/ErRsaGhevA==
-X-Google-Smtp-Source: ABdhPJxZU80jDH3k4hEd8SNVaTcx0n88qS83r4NOLbxyIqyDzyysM94YS8mKxJxLIDahrVnaLVRg8g==
-X-Received: by 2002:a17:906:1848:: with SMTP id w8mr2209997eje.277.1622778726219;
-        Thu, 03 Jun 2021 20:52:06 -0700 (PDT)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
-        by smtp.gmail.com with ESMTPSA id w13sm2581814edc.52.2021.06.03.20.52.04
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Jun 2021 20:52:05 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id h12-20020a05600c350cb029019fae7a26cdso4780852wmq.5
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 20:52:04 -0700 (PDT)
-X-Received: by 2002:a1c:2456:: with SMTP id k83mr1386888wmk.87.1622778724368;
- Thu, 03 Jun 2021 20:52:04 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=gt5r+lBwCuoOA7rfQIlaZBhTcz5xyY6ZuYMcbufKUos=;
+        b=drDlEifBWHu16tMJ1mDumWZSO5CjSJGVALk5Py4DLJVAjz/eKcq4veu7CkrjJvTBbG
+         Z957ipdVmzlotwYZ1x6F91P6bqD7ybCk/h5QSOKblukcBP9HlW+sJG54oUzL0xlsuTm0
+         +wOlGlG5au6EFozPi0xb2G8o7X2bgovj49eLzg26qbGp3K+5e0zyRMAVeiifQr4ruPPI
+         eYMSX7JkZBmGTqJeQ8hPges6yGl46d57nRNIvV/uw9E0c43eC2zX8xLTZIRFCR1EA4kQ
+         TyFs74NXSE3CReod6Trg4XA46RfGeN0ZLB1L2hEKw2O/w+5M0cxtZY4FN1RsM2q7/T9x
+         CEmg==
+X-Gm-Message-State: AOAM531VSY/GeFv2wtWAz7JodbgqLpqnIQlEdoJIxJo6AX27ucPf/lod
+        WJt4Wo5ep0AZwHbqTTWeE5/lg3xg0U8GbwQjZR3agg==
+X-Google-Smtp-Source: ABdhPJx2vWndMsU19H1kNaO6+JL/13qRYUi8/RATBdr+TJtyTLGIJgpuoWpiH5i1lF4ag++WCkz/IclGw42XD007YWQ=
+X-Received: by 2002:a1c:b603:: with SMTP id g3mr1451928wmf.58.1622780145144;
+ Thu, 03 Jun 2021 21:15:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210601221841.1251830-1-tannerlove.kernel@gmail.com> <eef275f7-38c5-6967-7678-57dd5d59cf76@redhat.com>
-In-Reply-To: <eef275f7-38c5-6967-7678-57dd5d59cf76@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 3 Jun 2021 23:51:27 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdEF7dONWZWR3t9EZ5VU3XrfWTb0CmWKe7pQBL-tje0WA@mail.gmail.com>
-Message-ID: <CA+FuTSdEF7dONWZWR3t9EZ5VU3XrfWTb0CmWKe7pQBL-tje0WA@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 0/3] virtio_net: add optional flow dissection
- in virtio_net_hdr_to_skb
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Tanner Love <tannerlove.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+References: <20210602224024.300485-1-rickyman7@gmail.com>
+In-Reply-To: <20210602224024.300485-1-rickyman7@gmail.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Thu, 3 Jun 2021 21:15:32 -0700
+Message-ID: <CAP-5=fW5btkb9izxcUy+XgAQPCTRZAUMa4uQMUR_+N_d=17Mfg@mail.gmail.com>
+Subject: Re: [PATCH] perf env: fix memory leak: free bpf_prog_info_linear
+To:     Riccardo Mancini <rickyman7@gmail.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tanner Love <tannerlove@google.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 3, 2021 at 10:55 PM Jason Wang <jasowang@redhat.com> wrote:
+On Wed, Jun 2, 2021 at 3:41 PM Riccardo Mancini <rickyman7@gmail.com> wrote:
 >
+> ASan reported a memory leak caused by info_linear not being
+> deallocated. The info_linear was allocated during
+> perf_event__synthesize_one_bpf_prog.
+> This patch adds the corresponding free() when bpf_prog_info_node
+> is freed in perf_env__purge_bpf.
 >
-> =E5=9C=A8 2021/6/2 =E4=B8=8A=E5=8D=886:18, Tanner Love =E5=86=99=E9=81=93=
-:
-> > From: Tanner Love <tannerlove@google.com>
-> >
-> > First patch extends the flow dissector BPF program type to accept
-> > virtio-net header members.
-> >
-> > Second patch uses this feature to add optional flow dissection in
-> > virtio_net_hdr_to_skb(). This allows admins to define permitted
-> > packets more strictly, for example dropping deprecated UDP_UFO
-> > packets.
-> >
-> > Third patch extends kselftest to cover this feature.
+> $ sudo ./perf record -- sleep 5
+> [ perf record: Woken up 1 times to write data ]
+> [ perf record: Captured and wrote 0.025 MB perf.data (8 samples) ]
 >
+> =================================================================
+> ==297735==ERROR: LeakSanitizer: detected memory leaks
 >
-> I wonder why virtio maintainers is not copied in this series.
-
-Sorry, an oversight.
-
-> Several questions:
+> Direct leak of 7688 byte(s) in 19 object(s) allocated from:
+>     #0 0x4f420f in malloc (/home/user/linux/tools/perf/perf+0x4f420f)
+>     #1 0xc06a74 in bpf_program__get_prog_info_linear /home/user/linux/tools/lib/bpf/libbpf.c:11113:16
+>     #2 0xb426fe in perf_event__synthesize_one_bpf_prog /home/user/linux/tools/perf/util/bpf-event.c:191:16
+>     #3 0xb42008 in perf_event__synthesize_bpf_events /home/user/linux/tools/perf/util/bpf-event.c:410:9
+>     #4 0x594596 in record__synthesize /home/user/linux/tools/perf/builtin-record.c:1490:8
+>     #5 0x58c9ac in __cmd_record /home/user/linux/tools/perf/builtin-record.c:1798:8
+>     #6 0x58990b in cmd_record /home/user/linux/tools/perf/builtin-record.c:2901:8
+>     #7 0x7b2a20 in run_builtin /home/user/linux/tools/perf/perf.c:313:11
+>     #8 0x7b12ff in handle_internal_command /home/user/linux/tools/perf/perf.c:365:8
+>     #9 0x7b2583 in run_argv /home/user/linux/tools/perf/perf.c:409:2
+>     #10 0x7b0d79 in main /home/user/linux/tools/perf/perf.c:539:3
+>     #11 0x7fa357ef6b74 in __libc_start_main /usr/src/debug/glibc-2.33-8.fc34.x86_64/csu/../csu/libc-start.c:332:16
 >
-> 1) having bpf core to know about virito-net header seems like a layer
-> violation, it doesn't scale as we may add new fields, actually there's
-> already fields that is not implemented in the spec but not Linux right no=
-w.
+> Signed-off-by: Riccardo Mancini <rickyman7@gmail.com>
 
-struct virtio_net_hdr is used by multiple interfaces, not just virtio.
-The interface as is will remain, regardless of additional extensions.
+Acked-by: Ian Rogers <irogers@google.com>
 
-If the interface is extended, the validation can be extended with it.
+Thanks,
+Ian
 
-Just curious: can you share what extra fields may be in the pipeline?
-The struct has historically not seen (m)any changes.
-
-> 2) virtio_net_hdr_to_skb() is not the single entry point, packet could
-> go via XDP
-
-Do you mean AF_XDP? As far as I know, vnet_hdr is the only injection
-interface for complex packets that include offload instructions (GSO,
-csum) -- which are the ones mostly implicated in bug reports.
-
-> 3) I wonder whether we can simply use XDP to solve this issue (metadata
-> probably but I don't have a deep thought)
-> 4) If I understand the code correctly, it should deal with all dodgy
-> packets instead of just for virtio
-
-Yes. Some callers of virtio_net_hdr_to_skb, such as tun_get_user and
-virtio receive_buf, pass all packets to it. Others, like tap_get_user
-and packet_snd, only call it if a virtio_net_hdr is passed. Once we
-have a validation hook, ideally all packets need to pass it. Modifying
-callers like tap_get_user can be a simple follow-on.
+> ---
+>  tools/perf/util/env.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/tools/perf/util/env.c b/tools/perf/util/env.c
+> index 9130f6fad8d54..bc5e4f294e9e9 100644
+> --- a/tools/perf/util/env.c
+> +++ b/tools/perf/util/env.c
+> @@ -144,6 +144,7 @@ static void perf_env__purge_bpf(struct perf_env *env)
+>                 node = rb_entry(next, struct bpf_prog_info_node, rb_node);
+>                 next = rb_next(&node->rb_node);
+>                 rb_erase(&node->rb_node, root);
+> +               free(node->info_linear);
+>                 free(node);
+>         }
+>
+> --
+> 2.31.1
+>
