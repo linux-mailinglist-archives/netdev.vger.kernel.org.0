@@ -2,246 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB16739B26E
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 08:14:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A81339B2AA
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 08:33:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbhFDGP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 02:15:59 -0400
-Received: from mail-pj1-f49.google.com ([209.85.216.49]:34598 "EHLO
-        mail-pj1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbhFDGP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 02:15:58 -0400
-Received: by mail-pj1-f49.google.com with SMTP id g6-20020a17090adac6b029015d1a9a6f1aso4611120pjx.1
-        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 23:14:05 -0700 (PDT)
+        id S230129AbhFDGfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 02:35:09 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45030 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229844AbhFDGfI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 02:35:08 -0400
+Received: by mail-pf1-f196.google.com with SMTP id u18so6714759pfk.11;
+        Thu, 03 Jun 2021 23:33:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZFq/Jx8eq2XHYdInL8xNuEXcDvyZYc0KlxFds2uevnw=;
-        b=mMZN905DqTnWBLQw0weNX+/+kdGl59OKvH5pb+suVz/IwiOuON+VG2gEC60TK6pIDB
-         rDD6EBTuu4Yh7+xqqKC2x5eT7qpQg5ubhWFrospx3jxl44a+aLsAki3pnrkj70VvOw6y
-         hN+yBNWwNjtW5pVza0+jBpLDnFrMtDYuAz4JzpCJr57vXIXShI1UnjGQcfYoFT24v4uq
-         OLhEYUbqdK1btxjN74LJs7CncZ2SjI1NKoYbPPZjwiVnKEm+TShYdcLjoB4QfXlo6XTu
-         QTZpWC2viPv5WDkesVCiIUtG+70SXX/YnCQjzDDhpe36OPgUahSLtmuJtaHwcEAf+EBv
-         Oqww==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j7klZjcVBcs6h9HZr2YYg5JL8UCcJh1ymVzboKFNgMY=;
+        b=ub1Ve3CQiSs1uUlbxYzDX5xp3v3WY7ygxztBNK/yIZr8JT6kgkkW+SwIfMLnBrRiI9
+         xELIHzmVWgWV1whadZ5PUhiqUVf70ZgQcZSxt69vLn/YdvWDeOXk6LzRi0nS6gawomdM
+         JRESVREE2+VILd0dN6Lm5MWNZjHhm9ogSXinx9g5eIT61yRRf6x16srFmXKdBb/gcg23
+         SMBhkSXMosp/Biuu4+6g3dHeLpJ3oNxat6N0heINk/q/5lqfPscVHzO9urjZXGc8OS3S
+         99ree/L6F1TdtKm/w7IcTpYiFlc8pyUvvJatzIbynVsSyM3XlHG/0mR1YB5sbCralJ1b
+         vxUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZFq/Jx8eq2XHYdInL8xNuEXcDvyZYc0KlxFds2uevnw=;
-        b=nBjZXP55vTIWn8/DxqMJj7NL8LcTx8Qoa6iDmz1vbZ1rJKWshbrLB8E5+uWKB/GbDo
-         DcQ7WvRrU7TR1gFoOx+wPscLcgYAQimNGc5UsahPptea5yI+oE6vHqAWP2oRX9arRC2F
-         1zWqdG9Ab+d/uCjApZglxzWkg7rABNHd3cFdnh2PqOI5Lsgx9T360lhYS0btpmL4Wcqr
-         RV5mPf4fumnEbl+WPf8VIdwwmUQkRZtIqbQzpZhdbQWlYi9XdygI2xw8v1JUS+Wxmjx9
-         U501F1T5FEtm1a0rNPDooqnSiZTHkUoxUaRTPen2IH8xoBhFgsJEke32+lU2sVdB1dc3
-         BJ9Q==
-X-Gm-Message-State: AOAM530Rwjy9xCAO8HYREtJtWfLZ7uLkrUAZZoqsYDlD/cxaJXuOgMT6
-        5SldQ/WXWWxF8jKIUiiN1yKeaA==
-X-Google-Smtp-Source: ABdhPJxjoCQlzRfRJxvFjY+rSLTzLyvwEr/fZYv88Sw1BPL7nQ1CVh/z0VekvAv17M001vqauLgTqw==
-X-Received: by 2002:a17:902:c613:b029:107:ce4:f7b9 with SMTP id r19-20020a170902c613b02901070ce4f7b9mr2892201plr.11.1622787184946;
-        Thu, 03 Jun 2021 23:13:04 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id g22sm782938pfv.123.2021.06.03.23.13.02
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j7klZjcVBcs6h9HZr2YYg5JL8UCcJh1ymVzboKFNgMY=;
+        b=nruTS6cf1BaC/gZQDvZQ9xNNVCPkWVhtL6gMVeyh9Ab5V0h7fo9pWNn79uT6I6x3DT
+         Pauy1nEFOFlWEZngwaLtjeqjIdkViv3jyNZJGP+VOXb8oMFyXUL25MV8RIZ8JGrLxNjn
+         Trb7Piewsw4cSMZFTR6TOf9KeN3yUqilmfvuA0JKlFRL6NK34WNRA4e23m4ndBnR9kNh
+         YDNB12QU9QEEUafntDjm90fDdSDK41+nMp910XgrzkFOj6NAceL5bJIobpT28FpiU26m
+         aJGhoSgUenmS/KsU85m/nQNCK7QjDIDlt+1G+66c76lD8VUSDVz/oo1ouyCg/FYLumEG
+         jIkA==
+X-Gm-Message-State: AOAM532lujxVekfoU26BrJsYSB/JLkbQ58b+T6l9/Xvh5kiuZULZnLOE
+        wkSfMfmVgqSdhcoPxcKcTL5cIr7ysO0=
+X-Google-Smtp-Source: ABdhPJyDIVpwDzckUlBAmaiaX9oxLwRC6UNctHsr8zaM1cLKWINXboOBEexdZPgEoUpN0SxJm7s0+g==
+X-Received: by 2002:a63:7204:: with SMTP id n4mr3485828pgc.78.1622788342402;
+        Thu, 03 Jun 2021 23:32:22 -0700 (PDT)
+Received: from localhost ([2402:3a80:11cb:b599:c759:2079:3ef5:1764])
+        by smtp.gmail.com with ESMTPSA id i8sm3783026pjs.54.2021.06.03.23.32.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 23:13:03 -0700 (PDT)
-Date:   Thu, 3 Jun 2021 12:46:01 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Ignat Korchagin <ignat@cloudflare.com>
-Cc:     netdev@vger.kernel.org, kernel-team <kernel-team@cloudflare.com>
-Subject: Re: Strange TCP behaviour when appending data to a packet from
- netfilter
-Message-ID: <20210603124601.1c260b56@hermes.local>
-In-Reply-To: <CALrw=nEd=nB2X8HhR2yoiPemmdmqhhUZf+u8ij0mZKDm0+TK6g@mail.gmail.com>
-References: <CALrw=nEd=nB2X8HhR2yoiPemmdmqhhUZf+u8ij0mZKDm0+TK6g@mail.gmail.com>
+        Thu, 03 Jun 2021 23:32:21 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf-next v2 0/7] Add bpf_link based TC-BPF API
+Date:   Fri,  4 Jun 2021 12:01:09 +0530
+Message-Id: <20210604063116.234316-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Jun 2021 20:38:16 +0100
-Ignat Korchagin <ignat@cloudflare.com> wrote:
+This is the second (non-RFC) version.
 
-> Hi,
-> 
-> I was experimenting with a netfilter module (originally nftables
-> module) which appends a fixed byte string to outgoing IP packets and
-> removes it from incoming IP packets. In its simplest form the full
-> module code is below:
-> 
-> #include <linux/module.h>
-> #include <linux/netfilter.h>
-> #include <linux/netfilter_ipv4.h>
-> #include <net/ip.h>
-> 
-> #define TRAILER_LEN 16
-> #define TRAILER_VAL 0xfe
-> 
-> static u8 trailer_pattern[TRAILER_LEN];
-> 
-> static void adust_net_hdr(struct sk_buff *skb, bool out)
-> {
->     ip_hdr(skb)->tot_len = htons(ntohs(ip_hdr(skb)->tot_len) + (out ?
-> TRAILER_LEN : -TRAILER_LEN));
->     ip_send_check(ip_hdr(skb));
-> }
-> 
-> static unsigned int nf_crypt_trailer(void *priv, struct sk_buff *skb,
-> const struct nf_hook_state *state)
-> {
->     if (state->hook == NF_INET_LOCAL_OUT) {
->         struct sk_buff *trailer;
->         int num_frags = skb_cow_data(skb, TRAILER_LEN, &trailer);
->         if (num_frags < 0) {
->             pr_err("skb_cow_data failed for NF_INET_LOCAL_OUT");
->             return NF_DROP;
->         }
->         memset(pskb_put(skb, trailer, TRAILER_LEN), TRAILER_VAL, TRAILER_LEN);
->     }
-> 
->     if (state->hook == NF_INET_LOCAL_IN) {
->         u8 buf[TRAILER_LEN];
->         struct sk_buff *trailer;
->         int num_frags = skb_cow_data(skb, 0, &trailer);
->         if (num_frags < 0) {
->             pr_err("skb_cow_data failed for NF_INET_LOCAL_IN");
->             return NF_DROP;
->         }
-> 
->         if (skb_copy_bits(skb, skb->len - TRAILER_LEN, buf, TRAILER_LEN))
->         {
->             pr_err("skb_copy_bits failed for NF_INET_LOCAL_IN");
->             return NF_DROP;
->         }
-> 
->         if (memcmp(buf, trailer_pattern, TRAILER_LEN)) {
->             pr_err("trailer pattern not found in NF_INET_LOCAL_IN");
->             return NF_DROP;
->         }
-> 
->         if (pskb_trim(skb, skb->len - TRAILER_LEN)) {
->             pr_err("pskb_trim failed\n");
->             return NF_DROP;
->         }
->     }
->     /* adjust IP checksum */
->     adust_net_hdr(skb, state->hook == NF_INET_LOCAL_OUT);
-> 
->     return NF_ACCEPT;
-> }
-> 
-> static const struct nf_hook_ops nf_crypt_ops[] = {
->     {
->         .hook        = nf_crypt_trailer,
->         .pf            = NFPROTO_IPV4,
->         .hooknum    = NF_INET_LOCAL_IN,
->         .priority    = NF_IP_PRI_RAW,
->     },
->     {
->         .hook       = nf_crypt_trailer,
->         .pf         = NFPROTO_IPV4,
->         .hooknum    = NF_INET_LOCAL_OUT,
->         .priority   = NF_IP_PRI_RAW,
->     },
-> };
-> 
-> static int __net_init nf_crypt_net_init(struct net *net)
-> {
->     /* do nothing in the init namespace */
->     if (net == &init_net)
->         return 0;
-> 
->     return nf_register_net_hooks(net, nf_crypt_ops, ARRAY_SIZE(nf_crypt_ops));
-> }
-> 
-> static void __net_exit nf_crypt_net_exit(struct net *net)
-> {
->     /* do nothing in the init namespace */
->     if (net == &init_net)
->         return;
-> 
->     nf_unregister_net_hooks(net, nf_crypt_ops, ARRAY_SIZE(nf_crypt_ops));
-> }
-> 
-> static struct pernet_operations nf_crypt_net_ops = {
->     .init = nf_crypt_net_init,
->     .exit = nf_crypt_net_exit,
-> };
-> 
-> static int __init nf_crypt_init(void)
-> {
->     memset(trailer_pattern, TRAILER_VAL, TRAILER_LEN);
->     return register_pernet_subsys(&nf_crypt_net_ops);
-> }
-> 
-> static void __exit nf_crypt_fini(void)
-> {
->     unregister_pernet_subsys(&nf_crypt_net_ops);
-> }
-> 
-> module_init(nf_crypt_init);
-> module_exit(nf_crypt_fini);
-> 
-> MODULE_LICENSE("GPL");
-> 
-> Then I set up a test env using two Linux network namespaces:
-> #!/bin/bash -e
-> 
-> sudo ip netns add alice
-> sudo ip netns add bob
-> 
-> sudo ip -netns alice link add a0 type veth peer b0 netns bob
-> 
-> sudo ip -netns alice address add 192.168.13.5/24 dev a0
-> sudo ip -netns bob address add 192.168.13.7/24 dev b0
-> 
-> sudo ip -netns alice link set lo up
-> sudo ip -netns alice link set a0 up
-> 
-> sudo ip -netns bob link set lo up
-> sudo ip -netns bob link set b0 up
-> 
-> All works except when I try to serve a large file over HTTP (aroung 5Gb):
-> $ sudo ip netns exec bob python3 -m http.server
-> and in another terminal
-> $ sudo ip netns exec alice curl -o /dev/null http://192.168.13.7:8000/test.bin
-> 
-> The download starts, but the download speed almost immediately drops
-> to 0 and "stalls".
-> 
-> I've explicitly added the pr_err messages for the module to notify me,
-> if it drops packets for whatever reason, but it doesn't drop any
-> packets.
-> 
-> Additionally, further debugging showed - if a TCP "ack" packet to
-> "bob" gets processed on a kernel thread (and not in softirq), "# cat
-> /proc/<pid>/stack" for the thread produces:
-> 
-> [<0>] wait_woken+0x1f4/0x250
-> [<0>] sk_stream_wait_memory+0x3fb/0xde0
-> [<0>] tcp_sendmsg_locked+0x94b/0x2e60
-> [<0>] tcp_sendmsg+0x28/0x40
-> [<0>] sock_sendmsg+0xdb/0x110
-> [<0>] __sys_sendto+0x1a8/0x270
-> [<0>] __x64_sys_sendto+0xdd/0x1b0
-> [<0>] do_syscall_64+0x33/0x40
-> [<0>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-> 
-> It seems the server-side sending buffer is full, so one would assume
-> TCP acks from the client are somehow not getting processed, but I
-> definitely see client TCP acks at least in the netfilter module. I've
-> also tried to disable GSO on the veth interfaces as well as lower the
-> MTU to no avail.
-> 
-> Additionally, if I reduce TRAILER_LEN to 0 (leaving the other
-> skb_cow_data calls in place) - all start working.
-> 
-> Are there any hints why the above code causes this strange behaviour
-> in TCP given that it seems I'm undoing everything on the incoming path
-> I did for the outgoing path, so should be totally transparent to TCP?
-> 
-> Kind regards,
-> Ignat
+This adds a bpf_link path to create TC filters tied to cls_bpf classifier, and
+introduces fd based ownership for such TC filters. Netlink cannot delete or
+replace such filters, but the bpf_link is severed on indirect destruction of the
+filter (backing qdisc being deleted, or chain being flushed, etc.). To ensure
+that filters remain attached beyond process lifetime, the usual bpf_link fd
+pinning approach can be used.
 
-TCP segmentation offload doesn't know what you are doing
+The individual patches contain more details and comments, but the overall kernel
+API and libbpf helper mirrors the semantics of the netlink based TC-BPF API
+merged recently. This means that we start by always setting direct action mode,
+protocol to ETH_P_ALL, chain_index as 0, etc. If there is a need for more
+options in the future, they can be easily exposed through the bpf_link API in
+the future.
+
+Patch 1 refactors cls_bpf change function to extract two helpers that will be
+reused in bpf_link creation.
+
+Patch 2 exports some bpf_link management functions to modules. This is needed
+because our bpf_link object is tied to the cls_bpf_prog object. Tying it to
+tcf_proto would be weird, because the update path has to replace offloaded bpf
+prog, which happens using internal cls_bpf helpers, and would in general be more
+code to abstract over an operation that is unlikely to be implemented for other
+filter types.
+
+Patch 3 adds the main bpf_link API. A function in cls_api takes care of
+obtaining block reference, creating the filter object, and then calls the
+bpf_link_change tcf_proto op (only supported by cls_bpf) that returns a fd after
+setting up the internal structures. An optimization is made to not keep around
+resources for extended actions, which is explained in a code comment as it wasn't
+immediately obvious.
+
+Patch 4 adds an update path for bpf_link. Since bpf_link_update only supports
+replacing the bpf_prog, we can skip tc filter's change path by reusing the
+filter object but swapping its bpf_prog. This takes care of replacing the
+offloaded prog as well (if that fails, update is aborted). So far however,
+tcf_classify could do normal load (possibly torn) as the cls_bpf_prog->filter
+would never be modified concurrently. This is no longer true, and to not
+penalize the classify hot path, we also cannot impose serialization around
+its load. Hence the load is changed to READ_ONCE, so that the pointer value is
+always consistent. Due to invocation in a RCU critical section, the lifetime of
+the prog is guaranteed for the duration of the call.
+
+Patch 5, 6 take care of updating the userspace bits and add a bpf_link returning
+function to libbpf.
+
+Patch 7 adds a selftest that exercises all possible problematic interactions
+that I could think of.
+
+Design:
+
+This is where in the object hierarchy our bpf_link object is attached.
+
+                                                                            ┌─────┐
+                                                                            │     │
+                                                                            │ BPF │
+                                                                            program
+                                                                            │     │
+                                                                            └──▲──┘
+                                                      ┌───────┐                │
+                                                      │       │         ┌──────┴───────┐
+                                                      │  mod  ├─────────► cls_bpf_prog │
+┌────────────────┐                                    │cls_bpf│         └────┬───▲─────┘
+│    tcf_block   │                                    │       │              │   │
+└────────┬───────┘                                    └───▲───┘              │   │
+         │          ┌─────────────┐                       │                ┌─▼───┴──┐
+         └──────────►  tcf_chain  │                       │                │bpf_link│
+                    └───────┬─────┘                       │                └────────┘
+                            │          ┌─────────────┐    │
+                            └──────────►  tcf_proto  ├────┘
+                                       └─────────────┘
+
+The bpf_link is detached on destruction of the cls_bpf_prog.  Doing it this way
+allows us to implement update in a lightweight manner without having to recreate
+a new filter, where we can just replace the BPF prog attached to cls_bpf_prog.
+
+The other way to do it would be to link the bpf_link to tcf_proto, there are
+numerous downsides to this:
+
+1. All filters have to embed the pointer even though they won't be using it when
+cls_bpf is compiled in.
+2. This probably won't make sense to be extended to other filter types anyway.
+3. We aren't able to optimize the update case without adding another bpf_link
+specific update operation to tcf_proto ops.
+
+The downside with tying this to the module is having to export bpf_link
+management functions and introducing a tcf_proto op. Hopefully the cost of
+another operation func pointer is not big enough (as there is only one ops
+struct per module).
+
+Changelog:
+----------
+v1 (RFC) -> v2
+v1: https://lore.kernel.org/bpf/20210528195946.2375109-1-memxor@gmail.com
+
+ * Avoid overwriting other members of union in bpf_attr (Andrii)
+ * Set link to NULL after bpf_link_cleanup to avoid double free (Andrii)
+ * Use __be16 to store the result of htons (Kernel Test Robot)
+ * Make assignment of tcf_exts::net conditional on CONFIG_NET_CLS_ACT
+   (Kernel Test Robot)
+
+Kumar Kartikeya Dwivedi (7):
+  net: sched: refactor cls_bpf creation code
+  bpf: export bpf_link functions for modules
+  net: sched: add bpf_link API for bpf classifier
+  net: sched: add lightweight update path for cls_bpf
+  tools: bpf.h: sync with kernel sources
+  libbpf: add bpf_link based TC-BPF management API
+  libbpf: add selftest for bpf_link based TC-BPF management API
+
+ include/linux/bpf_types.h                     |   3 +
+ include/net/pkt_cls.h                         |  13 +
+ include/net/sch_generic.h                     |   6 +-
+ include/uapi/linux/bpf.h                      |  15 +
+ kernel/bpf/syscall.c                          |  14 +-
+ net/sched/cls_api.c                           | 139 ++++++-
+ net/sched/cls_bpf.c                           | 389 ++++++++++++++++--
+ tools/include/uapi/linux/bpf.h                |  15 +
+ tools/lib/bpf/bpf.c                           |   8 +-
+ tools/lib/bpf/bpf.h                           |   8 +-
+ tools/lib/bpf/libbpf.c                        |  59 ++-
+ tools/lib/bpf/libbpf.h                        |  17 +
+ tools/lib/bpf/libbpf.map                      |   1 +
+ tools/lib/bpf/netlink.c                       |   5 +-
+ tools/lib/bpf/netlink.h                       |   8 +
+ .../selftests/bpf/prog_tests/tc_bpf_link.c    | 285 +++++++++++++
+ 16 files changed, 940 insertions(+), 45 deletions(-)
+ create mode 100644 tools/lib/bpf/netlink.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_bpf_link.c
+
+-- 
+2.31.1
+
