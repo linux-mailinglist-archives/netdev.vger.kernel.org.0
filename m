@@ -2,238 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C917B39B149
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 06:18:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D83039B15E
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 06:25:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbhFDEUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 00:20:40 -0400
-Received: from mail-yb1-f181.google.com ([209.85.219.181]:44837 "EHLO
-        mail-yb1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229474AbhFDEUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 00:20:40 -0400
-Received: by mail-yb1-f181.google.com with SMTP id p184so11864533yba.11;
-        Thu, 03 Jun 2021 21:18:43 -0700 (PDT)
+        id S229799AbhFDE0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 00:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229452AbhFDE0r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 00:26:47 -0400
+Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00970C06174A
+        for <netdev@vger.kernel.org>; Thu,  3 Jun 2021 21:24:50 -0700 (PDT)
+Received: by mail-ua1-x935.google.com with SMTP id m23so4548530uao.12
+        for <netdev@vger.kernel.org>; Thu, 03 Jun 2021 21:24:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4I7wNEx3l8IQ8cV8UlCXwWnxhFTI9WVBzDzbE/lAmWU=;
-        b=XZaJh1/pFYfZL/nNbYgIPJoT1tlGD56MAmBkEq/CNWfzV6l7yBWCYlQhZ5PA1bMvoZ
-         Xq7FjnBjRWbOsZpQKWqhw/dmGalEWx+hSRdqqKD7yQWAVMc982Rz6TkJJJZ3gl0IqM3q
-         yjbfKkufifnnkHZLpMoRDz8FgluM1ZYPiWQC+pfOEhHZMNxDJBgU4j35Pzb9nfUgwnxE
-         bkDEdzR9RETwXKeDuOyY1cNOhNagCnDWL2A5yRI1k8ayYnIN1tff9ucKX9+JbmT/XBD2
-         VqMRuHxFnnpC9ikSidYQizAG7S7Wc5ycxlhKhhMw4VvE1zoDpwWlYi+BiK1IEk4F789E
-         YSPA==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=1p6Vhy2bTbozEOWPiJDqnwlyFOp9kKQyHPsFai3s6Lg=;
+        b=qW/uR5O3rDg5dd8IHvrPzQ8HOQZR/KHzNqZvgtBQ+7I+Yb3/BtkaekaLeicOwW5gVZ
+         atj914uqm++8JsQ5OgDaFt9nwX9ZHLDuCbZFGH6Neh0QccefSAT7n1GjXAP9wTNxh6MB
+         qbIZ6u4OUJpTD0mMEXoqPzcGhLnatW6Ua39jNOej98wonvionSOQ9XWG0iX5jJjomjRx
+         lTt1ALFs5Gkwe6EHl5Rx4gWdPnjLvHfIswcmwUgdjaq+AKopgL9S+f8Xjgq9WTItGfw7
+         fJofcoCyb0eQkiF/YX52npfEpxiyhgMEWTxaNi4L1owEqx1P8lGVrkIlXXoRUsGL8pWB
+         r/ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4I7wNEx3l8IQ8cV8UlCXwWnxhFTI9WVBzDzbE/lAmWU=;
-        b=JTlcIDtNBIEOy1ClptPJS4UBovIpRCkodFvj80NW+JJwX39HC68luuc3CwbwR44X99
-         pTcbLtdz8OPMA6tGkzwNiCNquZS49uCGJz0PN9YTPjQxFNUJ/5qfIuCCwBLSAxFlUxkK
-         W2kRp+p5rSH+yw6ZcV7OGVLvPutIpmEam48jjW6FEA20ch8ZUAzeFREYj7pxeWyAYo8B
-         bobsPdWus2GjG4j4ce2vrm4lkdp1sk5qWxcOP14bjDE6bt5McBNzAavPUllo/iHYppCg
-         B4sXaJU3zPuu/nsgY+1a1yPwBfPoowu4SSbuRr7o+AsbO4IZ36jOlrrODvcFfJBmkLRx
-         XTpg==
-X-Gm-Message-State: AOAM531aKQMbW5GJO8lvZP0RooaWuiHmhpFMlDcY7XPjYMzYSfhHlryB
-        5BE2rB79aTNF7YHy2xv6V1IdIdf0YrUKbVMY5FoaxrWwOafosQ==
-X-Google-Smtp-Source: ABdhPJxQYjlWICVFXqyr7jgjd3ngVPCywTO7P3H6EcRYQWsVPi1qO3LwarCvZMTRAu3+Ao3Ow7mkDO/tTAzRapDeZf0=
-X-Received: by 2002:a25:4182:: with SMTP id o124mr2413579yba.27.1622780263282;
- Thu, 03 Jun 2021 21:17:43 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=1p6Vhy2bTbozEOWPiJDqnwlyFOp9kKQyHPsFai3s6Lg=;
+        b=APnAsahT0oe2zBy5CgE0EOvRC0IJNDlteYrBqDS18kMLtD2VWstUm35edgU3Z78OGy
+         4e9Le0nOWOoSYtl3I7tNMdknPsFOrsOnUbcyzexbNxybL55C95WAD8EiudE1ghS9lnvE
+         igqFRb8I86JkeF8CxPLbkCLYIVx1eqm7YqBbcUkKQy5cVQODvmFsNyUh+k8fZWQycVmi
+         02dbdC7EfE1RDAY5mHSzMRYgKC0ZVWGto81Aw6dwzrwBoXnKx+rPqdz8jGo+LGjnS8z2
+         OJATPSQG9Spwoy7uuA39Huk3hL+aLuzxfyEYEPCbqgyGXvOLG3ph6Qdy0Mwhv7uk7bpz
+         I6ZQ==
+X-Gm-Message-State: AOAM5322Bcd0R5nzRMUj/bYqT4sRFy+aF4WdLty1NalJ1TdKSba7Zcvm
+        kCdsXv15axKkTkZbtRfN+XFFsKMTGpM1OsZ2yyFVL2CAvW7z0A==
+X-Google-Smtp-Source: ABdhPJyRTuuz3T3aW5Rc1C6FnhYB75GgNtmjXeAPBppNp/eFmOx8/IY3RfGkQQm0Gvj7BbvvQU774kwtJEUNyrEEEHU=
+X-Received: by 2002:ab0:185a:: with SMTP id j26mr1938928uag.33.1622780690000;
+ Thu, 03 Jun 2021 21:24:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210527040259.77823-1-alexei.starovoitov@gmail.com>
- <20210527040259.77823-2-alexei.starovoitov@gmail.com> <CAEf4BzbyikY1b4vAzb+t88odbqWOR7K4TpwjM1zGF4Nmqu6ysg@mail.gmail.com>
- <20210603015330.vd4zgr5rdishemgi@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzafEP_b7vXT9pTB4mDWWP7N5ACe82V3yq-1doH=awNbUg@mail.gmail.com> <20210604011231.p24eb6py7hjhskn3@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210604011231.p24eb6py7hjhskn3@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 3 Jun 2021 21:17:32 -0700
-Message-ID: <CAEf4BzY1oL76pMsNW6f8J=MZuM1mroyAFhMxR0OpYdQNaZT13Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] bpf: Introduce bpf_timer
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+From:   =?UTF-8?B?0JzQsNGA0Log0JrQvtGA0LXQvdCx0LXRgNCz?= 
+        <socketpair@gmail.com>
+Date:   Fri, 4 Jun 2021 09:24:39 +0500
+Message-ID: <CAEmTpZHK7OoWxpGXKc0_=yYhW0YxQVZUYU3_Gkpf2VeA9xBMXw@mail.gmail.com>
+Subject: [PATCH] ip link get dev if%u" now works
+To:     netdev@vger.kernel.org
+Content-Type: multipart/mixed; boundary="00000000000093b7d105c3e912cf"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 3, 2021 at 6:12 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Jun 03, 2021 at 10:10:38AM -0700, Andrii Nakryiko wrote:
-> > >
-> > > I think going too much into implementation details in the helper
-> > > description is unnecessary.
-> > > " Start the timer and set its expiration N nanoseconds from
-> > >   the current time. "
-> > > is probably about right amount of details.
-> > > I can add that the time clock is monotonic
-> > > and callback is called in softirq.
-> >
-> > I think mentioning whether it's going to be run on the same CPU or
-> > another CPU is the most important part. I'm honestly still not sure
-> > which one is the case, because I don't completely understand all the
-> > implications of what "called in softirq" implies.
->
-> "called in softirq" means that timer callback will be executing
-> in softirq context on some cpu. That's all.
-> The proposed API doesn't provide a way to call a timer on a given cpu
-> or to pin it to a cpu.
-> There are few places in the kernel that use ABS_PINNED and REL_PINNED
-> variants of hrtimer.
-> One such example is napi timer.
-> The initial cpu is picked during hrtimer_init and it's always
-> current cpu. napi is bound to a cpu. So when it calls hrtimer_init(.., _PINNED);
-> it wants the callback to stay on the same cpu.
-> The hrtimer doc says that _PINNED is ignored during hrtimer_init :)
-> It is ignored, kinda, since initial target cpu is picked as current.
-> Then during hrtimer_start the actual cpu will be selected.
-> If it's called as hrtimer_start(,_PINNED); then the cpu will stay
-> as it was during hrtimer_init.
-> If hrtimer_start() is called without _PINNED the hrtimer algorithm can
-> migrate the timer to a more appropriate cpu depending on idle and no_hz.
-> See get_nohz_timer_target.
-> In case of napi it's necessary to stay on the same cpu,
-> so it's using _PINNED in hrtimer_init and in hrtimer_start.
-> TCP is using pinned timers for compressed acks and pacing.
-> I'm guessing it's done to improve performance. I suspect TCP doesn't
-> need the timers pinned.
-> All other _PINNED cases of hrtimer are similar to napi.
->
-> In bpf world we don't have a way to deterministically
-> execute on a given cpu and the hrtimer infra won't give us such
-> possibility.
->
-> We can potentailly hack it on top of it. Like
-> bpf_timer_init(..., int cpu, ...)
-> {
->   smp_call_function_single(cpu, rest_of_bpf_timer_init)
-> }
->
-> rest_of_bpf_timer_init()
-> {
->   hrtimer_init
-> }
->
-> But there are lots of things to consider with such api.
-> It feels like two building blocks collapsed into one already.
-> If we do anything like this we should expose smp_call_function_single()
-> directly as bpf helper instead of side effect of bpf_timer.
+--00000000000093b7d105c3e912cf
+Content-Type: text/plain; charset="UTF-8"
 
-Yeah, all makes sense. And I agree that an orthogonal API is better.
-Never mind then.
+The same:
+https://github.com/shemminger/iproute2/pull/43
 
->
-> > > > Also is there a chance for timer callback to be a sleepable BPF (sub-)program?
-> > >
-> > > Eventually yes. The whole bpf program can be sleepable, but the
-> > > timer callback cannot be. So the verifier would need to
-> > > treat different functions of the bpf prog as sleepable and non-sleepable.
-> > > Easy enough to implement. Eventually.
-> >
-> > Ok, so non-sleepable callback is hrtimer's implementation restriction
-> > due to softirq, right? Too bad, of course, I can imagine sleepable
-> > callbacks being useful, but it's not a deal breaker.
->
-> Sleeping in softirq is no-go. The timer callback will be always
-> non-sleepable. If it would need to do extra work that requires sleeping
-> we'd need to create bpf kthreads similar to io_uring worker threads.
-> bpf program would have to ask for such things explicitly.
+I give any rights on this code, please merge.
 
-yep
+-- 
+Segmentation fault
 
->
-> > > The flags argument in bpf_timer_init() will eventually
-> > > be able to specify monotonic vs boottime and
-> > > relative vs absolute expiry.
-> >
-> > Yeah, I was thinking about relative vs absolute expiry case, but we
-> > never know what kind of extensibility we'll need, so there might be
-> > something that we don't see as a possibility yet. Seems simple enough
-> > to reserve flags argument here (we usually do not regret adding flags
-> > argument for extensibility), but I'm fine either way.
->
-> We cannot predict the future of bpf_timer, but the way it's going
-> so far there is a certainty that bpf_timer_start will be limited by
-> what hrtimer_start can do.
-> If we ever decide to use jiffy based timer as well they most likely
-> going to be represented as new set of helpers.
-> May be both hidden in the same 'struct bpf_timer',
-> but helper names would have to be different not to confuse users.
->
+--00000000000093b7d105c3e912cf
+Content-Type: text/x-patch; charset="UTF-8"; name="ifu.patch"
+Content-Disposition: attachment; filename="ifu.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_kphtppc20>
+X-Attachment-Id: f_kphtppc20
 
-ok
-
-> > > Currently thinking to do cmpxchg in bpf_timer_start() and
-> > > bpf_timer_cancel*() similar to bpf_timer_init() to address it.
-> > > Kinda sucks to use atomic ops to address a race by deliberately
-> > > malicious prog. bpf prog writers cannot just stumble on such race.
-> >
-> > Why deliberately malicious? Just sufficiently sloppy or even just a
-> > clever concurrent BPF program.
->
-> because hrtimers internals don't have protection for concurrent access.
-> It's assumed by kernel apis that the same hrtimer is not concurrently
-> accessed on multiple cpus.
-> Like doing hrtimer_init in parallel will certainly crash the kernel.
-> That's why bpf_timer_init() has extra cmpxchg safety builtin.
-> bpf_timer_start and bpf_timer_cancel don't have extra safety,
-> because the first thing hrtimer_start and hrtimer_cancel do
-> is they grab the lock, so everything will be safe even in bpf
-> programs try to access the same timer in parallel.
->
-> The malicicous part comes when bpf prog does bpf_timer_start
-> on the pointer from a deleted map element. It's clearly a bug.
-> Concurrent bpf_timer_start and bpf_timer_cancel is ok to do
-> and it's safe.
-> The malicious situation is concurrent lookup+bpf_timer_start
-> with parallel delete of that element.
-> It's wrong thing to do with map element regardless of timers.
-
-I don't know if I agree with calling a buggy BPF program "malicious",
-but I think that won't matter if we embed spinlock as suggested below,
-right? Because then we can free the pointer, but spinlock is always
-there and is always "usable", so can be taken first thing before doing
-anything with that extra pointer.
-
->
-> > So your idea is to cmpxchg() to NULL while bpf_timer_start() or
-> > bpf_timer_cancel() works with the timer? Wouldn't that cause
-> > bpf_timer_init() believe that that timer is not yet initialized and
-> > not return -EBUSY. Granted that's a corner-case race, but still.
->
-> Not following.
-> bpf prog should do bpf_timer_init only once.
-> bpf_timer_init after bpf_timer_cancel is a wrong usage.
-> hrtimer api doesn't have any protection for such use.
-> while bpf_timer_init returns EBUSY.
-> 2nd bpf_timer_init is just a misuse of bpf_timer api.
-
-Yes, clearly a bad use of API, but it's not prevented by verifier. So
-maybe I misunderstood what you meant by
-
-> > > Currently thinking to do cmpxchg in bpf_timer_start() and
-> > > bpf_timer_cancel*() similar to bpf_timer_init() to address it.
-
-because that seemed like you were going to exchange (temporarily) a
-pointer to NULL while doing bpf_timer_start() or bpf_timer_cancel(),
-and then setting NULL -> valid ptr back again (this sequence would
-open up a window when bpf_timer_init() can be used twice on the same
-element). But again, with spinlock embedded doesn't matter anymore.
-
->
-> > What if the spinlock was moved out of struct bpf_hrtimer into struct
-> > bpf_timer instead? Then all that cmpxchg and READ_ONCE/WRITE_ONCE
-> > could go away and be more "obviously correct" and race-free? We'd just
-> > need to make sure that the size of that spinlock struct doesn't change
-> > depending on kernel config (so no diagnostics should be embedded).
->
-> We already tackled that concern with bpf_spin_lock.
-> So moving the lock into 'struct bpf_timer' is easy and it's a great idea.
-> I suspect it should simplify the code. Thanks!
-
-sure, glad it helped
+Y29tbWl0IGM3MWExNjRmYjNhYmJjZTE3N2NiMjY5MmUyNWViYzU0ZTAxNTZkNWEgKHJlZnMvcmVt
+b3Rlcy9vcmlnaW4vZ2V0aW5kZXgpCkF1dGhvcjog0JrQvtGA0LXQvdCx0LXRgNCzIOKYou+4jyAg
+0JzQsNGA0LogPG1hcmtAaWRlY28ucnU+CkRhdGU6ICAgVGh1IE1heSAxMyAxNTo0MzoxNCAyMDIx
+ICswNTAwCgogICAgaXA6ICJpcCBsaW5rIGdldCBkZXYgaWYldSIgbm93IHdvcmtzCgpkaWZmIC0t
+Z2l0IGEvaXAvaXBfY29tbW9uLmggYi9pcC9pcF9jb21tb24uaAppbmRleCA5YTMxZTgzNy4uMWVi
+NDBhMWUgMTAwNjQ0Ci0tLSBhL2lwL2lwX2NvbW1vbi5oCisrKyBiL2lwL2lwX2NvbW1vbi5oCkBA
+IC04OSw3ICs4OSw3IEBAIGludCBkb19zZWc2KGludCBhcmdjLCBjaGFyICoqYXJndik7CiBpbnQg
+ZG9faXBuaChpbnQgYXJnYywgY2hhciAqKmFyZ3YpOwogaW50IGRvX21wdGNwKGludCBhcmdjLCBj
+aGFyICoqYXJndik7CiAKLWludCBpcGxpbmtfZ2V0KGNoYXIgKm5hbWUsIF9fdTMyIGZpbHRfbWFz
+ayk7CitpbnQgaXBsaW5rX2dldCh1bnNpZ25lZCBpZmluZGV4LCBfX3UzMiBmaWx0X21hc2spOwog
+aW50IGlwbGlua19pZmxhX3hzdGF0cyhpbnQgYXJnYywgY2hhciAqKmFyZ3YpOwogCiBpbnQgaXBf
+bGlua19saXN0KHJlcV9maWx0ZXJfZm5fdCBmaWx0ZXJfZm4sIHN0cnVjdCBubG1zZ19jaGFpbiAq
+bGluZm8pOwpkaWZmIC0tZ2l0IGEvaXAvaXBhZGRyZXNzLmMgYi9pcC9pcGFkZHJlc3MuYwppbmRl
+eCAwYmJjZWUyYi4uOWJlNmVhNGQgMTAwNjQ0Ci0tLSBhL2lwL2lwYWRkcmVzcy5jCisrKyBiL2lw
+L2lwYWRkcmVzcy5jCkBAIC0xMCw2ICsxMCw3IEBACiAgKgogICovCiAKKyNpbmNsdWRlIDxhc3Nl
+cnQuaD4KICNpbmNsdWRlIDxzdGRpby5oPgogI2luY2x1ZGUgPHN0ZGxpYi5oPgogI2luY2x1ZGUg
+PHVuaXN0ZC5oPgpAQCAtMjExMSw3ICsyMTEyLDggQEAgc3RhdGljIGludCBpcGFkZHJfbGlzdF9m
+bHVzaF9vcl9zYXZlKGludCBhcmdjLCBjaGFyICoqYXJndiwgaW50IGFjdGlvbikKIAkgKiB0aGUg
+bGluayBkZXZpY2UKIAkgKi8KIAlpZiAoZmlsdGVyX2RldiAmJiBmaWx0ZXIuZ3JvdXAgPT0gLTEg
+JiYgZG9fbGluayA9PSAxKSB7Ci0JCWlmIChpcGxpbmtfZ2V0KGZpbHRlcl9kZXYsIFJURVhUX0ZJ
+TFRFUl9WRikgPCAwKSB7CisJCWFzc2VydChmaWx0ZXIuaWZpbmRleCk7CisJCWlmIChpcGxpbmtf
+Z2V0KGZpbHRlci5pZmluZGV4LCBSVEVYVF9GSUxURVJfVkYpIDwgMCkgewogCQkJcGVycm9yKCJD
+YW5ub3Qgc2VuZCBsaW5rIGdldCByZXF1ZXN0Iik7CiAJCQlkZWxldGVfanNvbl9vYmooKTsKIAkJ
+CWV4aXQoMSk7CmRpZmYgLS1naXQgYS9pcC9pcGxpbmsuYyBiL2lwL2lwbGluay5jCmluZGV4IDI3
+YzliZTQ0Li40MzI3MmM2YiAxMDA2NDQKLS0tIGEvaXAvaXBsaW5rLmMKKysrIGIvaXAvaXBsaW5r
+LmMKQEAgLTExMDEsMjEgKzExMDEsMTcgQEAgc3RhdGljIGludCBpcGxpbmtfbW9kaWZ5KGludCBj
+bWQsIHVuc2lnbmVkIGludCBmbGFncywgaW50IGFyZ2MsIGNoYXIgKiphcmd2KQogCXJldHVybiAw
+OwogfQogCi1pbnQgaXBsaW5rX2dldChjaGFyICpuYW1lLCBfX3UzMiBmaWx0X21hc2spCitpbnQg
+aXBsaW5rX2dldCh1bnNpZ25lZCBpZmluZGV4LCBfX3UzMiBmaWx0X21hc2spCiB7CiAJc3RydWN0
+IGlwbGlua19yZXEgcmVxID0gewogCQkubi5ubG1zZ19sZW4gPSBOTE1TR19MRU5HVEgoc2l6ZW9m
+KHN0cnVjdCBpZmluZm9tc2cpKSwKIAkJLm4ubmxtc2dfZmxhZ3MgPSBOTE1fRl9SRVFVRVNULAog
+CQkubi5ubG1zZ190eXBlID0gUlRNX0dFVExJTkssCiAJCS5pLmlmaV9mYW1pbHkgPSBwcmVmZXJy
+ZWRfZmFtaWx5LAorCQkuaS5pZmlfaW5kZXggPSBpZmluZGV4LAogCX07CiAJc3RydWN0IG5sbXNn
+aGRyICphbnN3ZXI7CiAKLQlpZiAobmFtZSkgewotCQlhZGRhdHRyX2woJnJlcS5uLCBzaXplb2Yo
+cmVxKSwKLQkJCSAgIWNoZWNrX2lmbmFtZShuYW1lKSA/IElGTEFfSUZOQU1FIDogSUZMQV9BTFRf
+SUZOQU1FLAotCQkJICBuYW1lLCBzdHJsZW4obmFtZSkgKyAxKTsKLQl9CiAJYWRkYXR0cjMyKCZy
+ZXEubiwgc2l6ZW9mKHJlcSksIElGTEFfRVhUX01BU0ssIGZpbHRfbWFzayk7CiAKIAlpZiAocnRu
+bF90YWxrKCZydGgsICZyZXEubiwgJmFuc3dlcikgPCAwKQo=
+--00000000000093b7d105c3e912cf--
