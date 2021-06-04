@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CBA039B2A7
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 08:33:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA2F439B2B1
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 08:34:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230111AbhFDGer (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 02:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230099AbhFDGeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 02:34:46 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A86CC06174A;
-        Thu,  3 Jun 2021 23:32:45 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id pi6-20020a17090b1e46b029015cec51d7cdso5265920pjb.5;
-        Thu, 03 Jun 2021 23:32:45 -0700 (PDT)
+        id S230161AbhFDGfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 02:35:50 -0400
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:46830 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229917AbhFDGfu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 02:35:50 -0400
+Received: by mail-pj1-f67.google.com with SMTP id pi6-20020a17090b1e46b029015cec51d7cdso5265983pjb.5;
+        Thu, 03 Jun 2021 23:33:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NuSM2nw7OiKj22dYy2bWK9naZDCqqZDjU97+LGfZFPw=;
-        b=ueuAgrQ18VVl2Qq5rgFaUbVpkEIKoKoQU0RXUJ6CrFoGpV4iE4a6V603wE+spP0gAM
-         M2jAVttKvr8xllW1uaK6QHnHFMoSmzc6/T0ezy4+e1DSMDYDmflTpoLqZFbH8eTj/NCC
-         1htQWPIGHl2mDLYSf6rpiLlZUhTXsGO3jJFiDnpZ0mwbGMkJVQbhrqmnNnv/RwVYIBHx
-         fHqVLl2I4lN4OHTMrIzemHNgk2HF144BFGO/To4SEnGOrDzBTlwe0Y8PyhegmbswV61I
-         FXDoFDKdYsRpuPzDDjMGQSVIOmFaYQMAuSD1LCtPq2LFh7xzsrPHbwEcGYA6BWaQqzsv
-         2ryA==
+        bh=bql1CSLWVtdo+ym3+LiQMgBDO2sCSamBHF3UpfjFx8Q=;
+        b=L/IHMw2NESpV7xFUZZBBgC6xox+aRAs0r2uCV675ZpQ3buQX7jB/NVVpE5TnjTXLAa
+         dHDF/L9JQD6QZvCX26r4B27uv+6kfU0O1aUXlPxyST1oURyBRnkiD1iv91w7VASPG7/W
+         lgfXVNochO6dSF4bGOaqq9fiqZAAsaO5P+2uBHLAW84jeyhr4Y3WDIoQx0ToU/yVl9O4
+         D3zgOhfQOLjRWNPGCbXk0GVTExrpTmu537qXpHH456bnv2/FpSp9kkaHd/30ouDEhdOI
+         MzIPhhS75I2yfWYgwKktplKDjah4atZ72QJFfbArVw0n6dpEcQEU3Ho+CcFORhb4M7Sa
+         QWeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NuSM2nw7OiKj22dYy2bWK9naZDCqqZDjU97+LGfZFPw=;
-        b=fT5P/DMtDZ+0qG20Rm4pKi9Q6yYXispaTra6WjzPRHv8pa2GPIyOIBRtlIWZTrpI1S
-         qgWKc1kHSbHdSSLTmxhRPr1Rs103zUzJ6tiHPqsn1++hDgtZn41nmGWYPiz9NhsIFK6E
-         3CE0RUkAtGfgn+Ipsw2qeSYG4Z/dtOtEeKPl1+DLukROnjdFoIL24vhDUe4uKxIFMzx+
-         oh4dKUn5q1cKA0NHatOO2V6aQBBS3FI3webjcv1Am0FQ0lN8hNr7K7H/9m77UQg9RYlD
-         45qYAnjpHk5d3SJyqGb6/nX1KJ03BmUbfeDp7iDJ/y1Gq+SeQ0yG2S/o9jvqvb4VZLrw
-         qBWQ==
-X-Gm-Message-State: AOAM53018naqclVV6hvpCEPNoUVPEbxejynbihCTdLIY0SSwYNQQNBW6
-        fzJtGY6/aBCT+bKlzcwBlrRNEh60CL8=
-X-Google-Smtp-Source: ABdhPJz9Y0Cw8JfLETsNeGJA/D2nVvZCGknAod11degO//jBupPGoSKF8HvW8j5Naic5UnP9XtB8Ng==
-X-Received: by 2002:a17:902:ea0f:b029:10d:6029:780f with SMTP id s15-20020a170902ea0fb029010d6029780fmr2792672plg.66.1622788364507;
-        Thu, 03 Jun 2021 23:32:44 -0700 (PDT)
+        bh=bql1CSLWVtdo+ym3+LiQMgBDO2sCSamBHF3UpfjFx8Q=;
+        b=tkcB4vZ8d9e266OsFYNZqHc6kwUG0QPwvWY0r6HcKsq3XanqhWJeMPDjwNLjbHffNc
+         7Wfv85ULkKA1F1xfLy5kZroxGcAw1MhVgXwfmz8fh20Lon8Hk0Ol2QaJ0nF3nr881sJw
+         NXWP6GunExDNOsI5zIRcynpnwoEwSz5me8yDhnmzjv9bslJl8qI4v/82Tt+OSKIDN6NB
+         H5RRwuoOtmlkL6I1YucheB7BZ+9eYN0PqtdS6rGRmgttyjt/3KQF9lDRMX6AeTQopNYW
+         j7oSNhYRX7k1Wt0bt8lF/KhZN6Rq0eqa7xKMJXXB9Z5UZ/AGLscpiPDSKSuTKsqfuUFn
+         BK5w==
+X-Gm-Message-State: AOAM530DvPMRnSoFdBm7l6vU74j4UjAvJos6XIx7qfTV9EgpHFr/afZn
+        ngbGP6v7xWqOgSLMlK5Bj3DCX61cuOA=
+X-Google-Smtp-Source: ABdhPJwAvY1VAMv3gmiDxkdcqBkxIfKCRNaTAmpkNU/1PQCNpjkgTFPX7+Dnu9NZzIzhBK39iothwA==
+X-Received: by 2002:a17:90a:5406:: with SMTP id z6mr3221711pjh.130.1622788368221;
+        Thu, 03 Jun 2021 23:32:48 -0700 (PDT)
 Received: from localhost ([2402:3a80:11cb:b599:c759:2079:3ef5:1764])
-        by smtp.gmail.com with ESMTPSA id ca6sm3964707pjb.21.2021.06.03.23.32.43
+        by smtp.gmail.com with ESMTPSA id g6sm886321pfq.110.2021.06.03.23.32.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jun 2021 23:32:44 -0700 (PDT)
+        Thu, 03 Jun 2021 23:32:48 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -59,9 +56,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v2 6/7] libbpf: add bpf_link based TC-BPF management API
-Date:   Fri,  4 Jun 2021 12:01:15 +0530
-Message-Id: <20210604063116.234316-7-memxor@gmail.com>
+Subject: [PATCH bpf-next v2 7/7] libbpf: add selftest for bpf_link based TC-BPF management API
+Date:   Fri,  4 Jun 2021 12:01:16 +0530
+Message-Id: <20210604063116.234316-8-memxor@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210604063116.234316-1-memxor@gmail.com>
 References: <20210604063116.234316-1-memxor@gmail.com>
@@ -72,234 +69,307 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds userspace TC-BPF management API based on bpf_link.
+This covers basic attach/detach/update, and tests interaction with the
+netlink API. It also exercises the bpf_link_info and fdinfo codepaths.
 
 Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>.
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- tools/lib/bpf/bpf.c      |  8 +++++-
- tools/lib/bpf/bpf.h      |  8 +++++-
- tools/lib/bpf/libbpf.c   | 59 ++++++++++++++++++++++++++++++++++++++--
- tools/lib/bpf/libbpf.h   | 17 ++++++++++++
- tools/lib/bpf/libbpf.map |  1 +
- tools/lib/bpf/netlink.c  |  5 ++--
- tools/lib/bpf/netlink.h  |  8 ++++++
- 7 files changed, 100 insertions(+), 6 deletions(-)
- create mode 100644 tools/lib/bpf/netlink.h
+ .../selftests/bpf/prog_tests/tc_bpf_link.c    | 285 ++++++++++++++++++
+ 1 file changed, 285 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_bpf_link.c
 
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index 86dcac44f32f..bebccea9bfd7 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -28,6 +28,7 @@
- #include <asm/unistd.h>
- #include <errno.h>
- #include <linux/bpf.h>
-+#include <arpa/inet.h>
- #include "bpf.h"
- #include "libbpf.h"
- #include "libbpf_internal.h"
-@@ -693,7 +694,12 @@ int bpf_link_create(int prog_fd, int target_fd,
- 	attr.link_create.attach_type = attach_type;
- 	attr.link_create.flags = OPTS_GET(opts, flags, 0);
- 
--	if (iter_info_len) {
-+	if (attach_type == BPF_TC) {
-+		attr.link_create.tc.parent = OPTS_GET(opts, tc.parent, 0);
-+		attr.link_create.tc.handle = OPTS_GET(opts, tc.handle, 0);
-+		attr.link_create.tc.priority = OPTS_GET(opts, tc.priority, 0);
-+		attr.link_create.tc.gen_flags = OPTS_GET(opts, tc.gen_flags, 0);
-+	} else if (iter_info_len) {
- 		attr.link_create.iter_info =
- 			ptr_to_u64(OPTS_GET(opts, iter_info, (void *)0));
- 		attr.link_create.iter_info_len = iter_info_len;
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index 4f758f8f50cd..f2178309e9ea 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -177,8 +177,14 @@ struct bpf_link_create_opts {
- 	union bpf_iter_link_info *iter_info;
- 	__u32 iter_info_len;
- 	__u32 target_btf_id;
-+	struct {
-+		__u32 parent;
-+		__u32 handle;
-+		__u32 priority;
-+		__u32 gen_flags;
-+	} tc;
- };
--#define bpf_link_create_opts__last_field target_btf_id
-+#define bpf_link_create_opts__last_field tc.gen_flags
- 
- LIBBPF_API int bpf_link_create(int prog_fd, int target_fd,
- 			       enum bpf_attach_type attach_type,
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 1c4e20e75237..7809536980b1 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -55,6 +55,7 @@
- #include "libbpf_internal.h"
- #include "hashmap.h"
- #include "bpf_gen_internal.h"
-+#include "netlink.h"
- 
- #ifndef BPF_FS_MAGIC
- #define BPF_FS_MAGIC		0xcafe4a11
-@@ -7185,7 +7186,7 @@ static int bpf_object__collect_relos(struct bpf_object *obj)
- 
- 	for (i = 0; i < obj->nr_programs; i++) {
- 		struct bpf_program *p = &obj->programs[i];
--		
+diff --git a/tools/testing/selftests/bpf/prog_tests/tc_bpf_link.c b/tools/testing/selftests/bpf/prog_tests/tc_bpf_link.c
+new file mode 100644
+index 000000000000..beaf06e0557c
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/tc_bpf_link.c
+@@ -0,0 +1,285 @@
++// SPDX-License-Identifier: GPL-2.0
 +
- 		if (!p->nr_reloc)
- 			continue;
- 
-@@ -10005,7 +10006,7 @@ struct bpf_link {
- int bpf_link__update_program(struct bpf_link *link, struct bpf_program *prog)
- {
- 	int ret;
--	
++#include <test_progs.h>
++#include <linux/pkt_cls.h>
 +
- 	ret = bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog), NULL);
- 	return libbpf_err_errno(ret);
- }
-@@ -10613,6 +10614,60 @@ struct bpf_link *bpf_program__attach_xdp(struct bpf_program *prog, int ifindex)
- 	return bpf_program__attach_fd(prog, ifindex, 0, "xdp");
- }
- 
-+struct bpf_link *bpf_program__attach_tc(struct bpf_program *prog,
-+					const struct bpf_tc_hook *hook,
-+					const struct bpf_tc_link_opts *opts)
++#include "test_tc_bpf.skel.h"
++
++#define LO_IFINDEX 1
++
++static int test_tc_bpf_link_basic(struct bpf_tc_hook *hook,
++				  struct bpf_program *prog)
 +{
-+	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, lopts, 0);
-+	char errmsg[STRERR_BUFSIZE];
-+	int prog_fd, link_fd, ret;
-+	struct bpf_link *link;
-+	__u32 parent;
++	DECLARE_LIBBPF_OPTS(bpf_tc_link_opts, opts, .handle = 1, .priority = 1);
++	DECLARE_LIBBPF_OPTS(bpf_tc_opts, qopts, .handle = 1, .priority = 1);
++	struct bpf_prog_info info = {};
++	__u32 info_len = sizeof(info);
++	struct bpf_link *link, *invl;
++	int ret;
 +
-+	if (!hook || !OPTS_VALID(hook, bpf_tc_hook) ||
-+	    !OPTS_VALID(opts, bpf_tc_link_opts))
-+		return ERR_PTR(-EINVAL);
++	link = bpf_program__attach_tc(prog, hook, &opts);
++	if (!ASSERT_OK_PTR(link, "bpf_program__attach_tc"))
++		return PTR_ERR(link);
 +
-+	if (OPTS_GET(hook, ifindex, 0) <= 0 ||
-+	    OPTS_GET(opts, priority, 0) > UINT16_MAX)
-+		return ERR_PTR(-EINVAL);
++	ret = bpf_obj_get_info_by_fd(bpf_program__fd(prog), &info, &info_len);
++	if (!ASSERT_OK(ret, "bpf_obj_get_info_by_fd"))
++		goto end;
 +
-+	parent = OPTS_GET(hook, parent, 0);
++	ret = bpf_tc_query(hook, &qopts);
++	if (!ASSERT_OK(ret, "bpf_tc_query"))
++		goto end;
 +
-+	ret = tc_get_tcm_parent(OPTS_GET(hook, attach_point, 0),
-+				&parent);
-+	if (ret < 0)
-+		return ERR_PTR(ret);
++	if (!ASSERT_EQ(qopts.prog_id, info.id, "prog_id match"))
++		goto end;
 +
-+	lopts.tc.parent = parent;
-+	lopts.tc.handle = OPTS_GET(opts, handle, 0);
-+	lopts.tc.priority = OPTS_GET(opts, priority, 0);
-+	lopts.tc.gen_flags = OPTS_GET(opts, gen_flags, 0);
-+
-+	prog_fd = bpf_program__fd(prog);
-+	if (prog_fd < 0) {
-+		pr_warn("prog '%s': can't attach before loaded\n", prog->name);
-+		return ERR_PTR(-EINVAL);
++	opts.gen_flags = ~0u;
++	invl = bpf_program__attach_tc(prog, hook, &opts);
++	if (!ASSERT_ERR_PTR(invl, "bpf_program__attach_tc with invalid flags")) {
++		bpf_link__destroy(invl);
++		ret = -EINVAL;
 +	}
 +
-+	link = calloc(1, sizeof(*link));
-+	if (!link)
-+		return ERR_PTR(-ENOMEM);
-+	link->detach = &bpf_link__detach_fd;
-+
-+	link_fd = bpf_link_create(prog_fd, OPTS_GET(hook, ifindex, 0), BPF_TC, &lopts);
-+	if (link_fd < 0) {
-+		link_fd = -errno;
-+		free(link);
-+		pr_warn("prog '%s': failed to attach tc filter: %s\n",
-+			prog->name, libbpf_strerror_r(link_fd, errmsg, sizeof(errmsg)));
-+		return ERR_PTR(link_fd);
-+	}
-+	link->fd = link_fd;
-+
-+	return link;
++end:
++	bpf_link__destroy(link);
++	return ret;
 +}
 +
- struct bpf_link *bpf_program__attach_freplace(struct bpf_program *prog,
- 					      int target_fd,
- 					      const char *attach_func_name)
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 6e61342ba56c..284a446c6513 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -282,6 +282,23 @@ LIBBPF_API struct bpf_link *
- bpf_program__attach_iter(struct bpf_program *prog,
- 			 const struct bpf_iter_attach_opts *opts);
- 
-+/* TC bpf_link related API */
-+struct bpf_tc_hook;
++static int test_tc_bpf_link_netlink_interaction(struct bpf_tc_hook *hook,
++						struct bpf_program *prog)
++{
++	DECLARE_LIBBPF_OPTS(bpf_link_update_opts, lopts,
++			    .old_prog_fd = bpf_program__fd(prog));
++	DECLARE_LIBBPF_OPTS(bpf_tc_link_opts, opts, .handle = 1, .priority = 1);
++	DECLARE_LIBBPF_OPTS(bpf_tc_opts, nopts, .handle = 1, .priority = 1);
++	DECLARE_LIBBPF_OPTS(bpf_tc_opts, dopts, .handle = 1, .priority = 1);
++	struct bpf_link *link;
++	int ret;
 +
-+struct bpf_tc_link_opts {
-+	size_t sz;
-+	__u32 handle;
-+	__u32 priority;
-+	__u32 gen_flags;
-+	size_t :0;
-+};
-+#define bpf_tc_link_opts__last_field gen_flags
++	/* We need to test the following cases:
++	 *	1. BPF link owned filter cannot be replaced by netlink
++	 *	2. Netlink owned filter cannot be replaced by BPF link
++	 *	3. Netlink cannot do targeted delete of BPF link owned filter
++	 *	4. Filter is actually deleted (with chain cleanup)
++	 *	   We actually (ab)use the kernel behavior of returning EINVAL when
++	 *	   target chain doesn't exist on tc_get_tfilter (which maps to
++	 *	   bpf_tc_query) here, to know if the chain was really cleaned
++	 *	   up on tcf_proto destruction. Our setup is so that there is
++	 *	   only one reference to the chain.
++	 *
++	 *	   So on query, chain ? (filter ?: ENOENT) : EINVAL
++	 */
 +
-+LIBBPF_API struct bpf_link *
-+bpf_program__attach_tc(struct bpf_program *prog,
-+		       const struct bpf_tc_hook *hook,
-+		       const struct bpf_tc_link_opts *opts);
++	link = bpf_program__attach_tc(prog, hook, &opts);
++	if (!ASSERT_OK_PTR(link, "bpf_program__attach_tc"))
++		return PTR_ERR(link);
 +
- struct bpf_insn;
- 
- /*
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 944c99d1ded3..5aa2e62b9fc2 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -373,5 +373,6 @@ LIBBPF_0.5.0 {
- 		bpf_map__initial_value;
- 		bpf_map_lookup_and_delete_elem_flags;
- 		bpf_object__gen_loader;
-+		bpf_program__attach_tc;
- 		libbpf_set_strict_mode;
- } LIBBPF_0.4.0;
-diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
-index d743c8721aa7..b7ac36fc9c1a 100644
---- a/tools/lib/bpf/netlink.c
-+++ b/tools/lib/bpf/netlink.c
-@@ -17,6 +17,7 @@
- #include "libbpf.h"
- #include "libbpf_internal.h"
- #include "nlattr.h"
-+#include "netlink.h"
- 
- #ifndef SOL_NETLINK
- #define SOL_NETLINK 270
-@@ -405,8 +406,8 @@ static int attach_point_to_config(struct bpf_tc_hook *hook,
- 	}
- }
- 
--static int tc_get_tcm_parent(enum bpf_tc_attach_point attach_point,
--			     __u32 *parent)
-+int tc_get_tcm_parent(enum bpf_tc_attach_point attach_point,
-+		      __u32 *parent)
- {
- 	switch (attach_point) {
- 	case BPF_TC_INGRESS:
-diff --git a/tools/lib/bpf/netlink.h b/tools/lib/bpf/netlink.h
-new file mode 100644
-index 000000000000..c89133d56eb4
---- /dev/null
-+++ b/tools/lib/bpf/netlink.h
-@@ -0,0 +1,8 @@
-+// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-+#pragma once
++	nopts.prog_fd = bpf_program__fd(prog);
++	ret = bpf_tc_attach(hook, &nopts);
++	if (!ASSERT_EQ(ret, -EEXIST, "bpf_tc_attach without replace"))
++		goto end;
 +
-+#include <linux/types.h>
-+#include "libbpf.h"
++	nopts.flags = BPF_TC_F_REPLACE;
++	ret = bpf_tc_attach(hook, &nopts);
++	if (!ASSERT_EQ(ret, -EPERM, "bpf_tc_attach with replace"))
++		goto end;
 +
-+int tc_get_tcm_parent(enum bpf_tc_attach_point attach_point,
-+		      __u32 *parent);
++	ret = bpf_tc_detach(hook, &dopts);
++	if (!ASSERT_EQ(ret, -EPERM, "bpf_tc_detach"))
++		goto end;
++
++	lopts.flags = BPF_F_REPLACE;
++	ret = bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog),
++			      &lopts);
++	ASSERT_OK(ret, "bpf_link_update");
++	ret = ret < 0 ? -errno : ret;
++
++end:
++	bpf_link__destroy(link);
++	if (!ret && !ASSERT_EQ(bpf_tc_query(hook, &dopts), -EINVAL,
++			       "chain empty delete"))
++		ret = -EINVAL;
++	return ret;
++}
++
++static int test_tc_bpf_link_update_ways(struct bpf_tc_hook *hook,
++					struct bpf_program *prog)
++{
++	DECLARE_LIBBPF_OPTS(bpf_tc_link_opts, opts, .handle = 1, .priority = 1);
++	DECLARE_LIBBPF_OPTS(bpf_link_update_opts, uopts, 0);
++	struct test_tc_bpf *skel;
++	struct bpf_link *link;
++	int ret;
++
++	skel = test_tc_bpf__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "test_tc_bpf__open_and_load"))
++		return PTR_ERR(skel);
++
++	link = bpf_program__attach_tc(prog, hook, &opts);
++	if (!ASSERT_OK_PTR(link, "bpf_program__attach_tc")) {
++		ret = PTR_ERR(link);
++		goto end;
++	}
++
++	ret = bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog),
++			      &uopts);
++	if (!ASSERT_OK(ret, "bpf_link_update no old prog"))
++		goto end;
++
++	uopts.old_prog_fd = bpf_program__fd(prog);
++	ret = bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog),
++			      &uopts);
++	if (!ASSERT_TRUE(ret < 0 && errno == EINVAL,
++			 "bpf_link_update with old prog without BPF_F_REPLACE")) {
++		ret = -EINVAL;
++		goto end;
++	}
++
++	uopts.flags = BPF_F_REPLACE;
++	ret = bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog),
++			      &uopts);
++	if (!ASSERT_OK(ret, "bpf_link_update with old prog with BPF_F_REPLACE"))
++		goto end;
++
++	uopts.old_prog_fd = bpf_program__fd(skel->progs.cls);
++	ret = bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog),
++			      &uopts);
++	if (!ASSERT_TRUE(ret < 0 && errno == EINVAL,
++			 "bpf_link_update with wrong old prog")) {
++		ret = -EINVAL;
++		goto end;
++	}
++	ret = 0;
++
++end:
++	test_tc_bpf__destroy(skel);
++	return ret;
++}
++
++static int test_tc_bpf_link_info_api(struct bpf_tc_hook *hook,
++				     struct bpf_program *prog)
++{
++	DECLARE_LIBBPF_OPTS(bpf_tc_link_opts, opts, .handle = 1, .priority = 1);
++	__u32 ifindex, parent, handle, gen_flags, priority;
++	char buf[4096], path[256], *begin;
++	struct bpf_link_info info = {};
++	__u32 info_len = sizeof(info);
++	struct bpf_link *link;
++	int ret, fdinfo;
++
++	link = bpf_program__attach_tc(prog, hook, &opts);
++	if (!ASSERT_OK_PTR(link, "bpf_program__attach_tc"))
++		return PTR_ERR(link);
++
++	ret = bpf_obj_get_info_by_fd(bpf_link__fd(link), &info, &info_len);
++	if (!ASSERT_OK(ret, "bpf_obj_get_info_by_fd"))
++		goto end;
++
++	ret = snprintf(path, sizeof(path), "/proc/self/fdinfo/%d",
++		       bpf_link__fd(link));
++	if (!ASSERT_TRUE(!ret || ret < sizeof(path), "snprintf pathname"))
++		goto end;
++
++	fdinfo = open(path, O_RDONLY);
++	if (!ASSERT_GT(fdinfo, -1, "open fdinfo"))
++		goto end;
++
++	ret = read(fdinfo, buf, sizeof(buf));
++	if (!ASSERT_GT(ret, 0, "read fdinfo")) {
++		ret = -EINVAL;
++		goto end_file;
++	}
++
++	begin = strstr(buf, "ifindex");
++	if (!ASSERT_OK_PTR(begin, "find beginning of fdinfo info")) {
++		ret = -EINVAL;
++		goto end_file;
++	}
++
++	ret = sscanf(begin, "ifindex:\t%u\n"
++			    "parent:\t%u\n"
++			    "handle:\t%u\n"
++			    "priority:\t%u\n"
++			    "gen_flags:\t%u\n",
++			    &ifindex, &parent, &handle, &priority, &gen_flags);
++	if (!ASSERT_EQ(ret, 5, "sscanf fdinfo")) {
++		ret = -EINVAL;
++		goto end_file;
++	}
++
++	ret = -EINVAL;
++
++#define X(a, b, c) (!ASSERT_EQ(a, b, #a " == " #b) || !ASSERT_EQ(b, c, #b " == " #c))
++	if (X(info.tc.ifindex, ifindex, 1) ||
++	    X(info.tc.parent, parent,
++	      TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS)) ||
++	    X(info.tc.handle, handle, 1) ||
++	    X(info.tc.gen_flags, gen_flags, TCA_CLS_FLAGS_NOT_IN_HW) ||
++	    X(info.tc.priority, priority, 1))
++#undef X
++		goto end_file;
++
++	ret = 0;
++
++end_file:
++	close(fdinfo);
++end:
++	bpf_link__destroy(link);
++	return ret;
++}
++
++void test_tc_bpf_link(void)
++{
++	DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook, .ifindex = LO_IFINDEX,
++			    .attach_point = BPF_TC_INGRESS);
++	struct test_tc_bpf *skel = NULL;
++	bool hook_created = false;
++	int ret;
++
++	skel = test_tc_bpf__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "test_tc_bpf__open_and_load"))
++		return;
++
++	ret = bpf_tc_hook_create(&hook);
++	if (ret == 0)
++		hook_created = true;
++
++	ret = ret == -EEXIST ? 0 : ret;
++	if (!ASSERT_OK(ret, "bpf_tc_hook_create(BPF_TC_INGRESS)"))
++		goto end;
++
++	ret = test_tc_bpf_link_basic(&hook, skel->progs.cls);
++	if (!ASSERT_OK(ret, "test_tc_bpf_link_basic"))
++		goto end;
++
++	bpf_tc_hook_destroy(&hook);
++
++	hook.attach_point = BPF_TC_EGRESS;
++	ret = test_tc_bpf_link_basic(&hook, skel->progs.cls);
++	if (!ASSERT_OK(ret, "test_tc_bpf_link_basic"))
++		goto end;
++
++	bpf_tc_hook_destroy(&hook);
++
++	ret = test_tc_bpf_link_netlink_interaction(&hook, skel->progs.cls);
++	if (!ASSERT_OK(ret, "test_tc_bpf_link_netlink_interaction"))
++		goto end;
++
++	bpf_tc_hook_destroy(&hook);
++
++	ret = test_tc_bpf_link_update_ways(&hook, skel->progs.cls);
++	if (!ASSERT_OK(ret, "test_tc_bpf_link_update_ways"))
++		goto end;
++
++	bpf_tc_hook_destroy(&hook);
++
++	ret = test_tc_bpf_link_info_api(&hook, skel->progs.cls);
++	if (!ASSERT_OK(ret, "test_tc_bpf_link_info_api"))
++		goto end;
++
++end:
++	if (hook_created) {
++		hook.attach_point = BPF_TC_INGRESS | BPF_TC_EGRESS;
++		bpf_tc_hook_destroy(&hook);
++	}
++	test_tc_bpf__destroy(skel);
++}
 -- 
 2.31.1
 
