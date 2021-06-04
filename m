@@ -2,88 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C939639B6E1
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 12:18:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AB4139B73C
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 12:38:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbhFDKU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 06:20:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbhFDKU1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 06:20:27 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8291C06174A
-        for <netdev@vger.kernel.org>; Fri,  4 Jun 2021 03:18:41 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id h16so5305593pjv.2
-        for <netdev@vger.kernel.org>; Fri, 04 Jun 2021 03:18:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=FzDuveLp7uQGL8pZZlAKqOHjNBHyT1iJWmEcrAoVNPA=;
-        b=Eik69OqhRGmhIYakYzpWqyHIhBBP6PIMb6Wh7Vk+lAs2njafNODtq5oLzxvlJuHtQi
-         a+nFm9F4rfVhEUTl+sLQ1pZpIWPsWJcg4mclnIpJEI398SRrgNYRpvAo91nRBo63Ifni
-         UpIW4qc2MIKN8rEX1JEadNWb4FPdPOjIS3YQENLsRKGDShNQSvb0mRKXEV/JepKry19/
-         K2QjCAQsjEfTrjTBfKYhmgXOqWHioFpTbH4ZNCucMp0pPsPzrIMKiy1WY7/GqSErNWsH
-         0gNWTN3PFy06dYvrhLxXaORIFJsFToLPbs4hwqtYndmEy5eFKIBlT+IM2hVog4j71qfN
-         el+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=FzDuveLp7uQGL8pZZlAKqOHjNBHyT1iJWmEcrAoVNPA=;
-        b=XBrOIYNhZvDP7px0x1B2jW6sQcdMBLAejhwFMCLm4UqW1hYayz7XPRl+20NTl9UmNK
-         14GtCmrnmu/3lNh3I0TpDGherikG1Z6dxds9NU37EbgHUIAen4Mzg9TocwAxhwAF6kwm
-         JSIjIYUvlPuSmg0cCTNnFkjj4xPgjZljNCrry66NEdO9njUzJJlhkOVLyT/F7vY+g3kS
-         9vpDsT4qwUO1mNlkM+pEdukIPdVLs5vIW5B/Kia3bKj/bbhkDL4JLHB2hACgZCHpxxoZ
-         /2fORENkDVp0kxhLNVigdspcyJUap1b4BvoxJ6EvprU1BR62xfnb1/XC5/ItE8Jn2NNf
-         3Ypw==
-X-Gm-Message-State: AOAM530PkcHiz8ImoIUdR5ya1PahDEBGRZqwggj1QMhge3wkWvTDjRP9
-        6HEWKtC3ysT6Nq4GK+lO+E9RxbVhCHwAlggyyvzfqg==
-X-Google-Smtp-Source: ABdhPJzZui9fGbYjNE6HqSrUTEtsd0bkduXpAV11ciTlHX6kvr0IZncAcGv6PhsziqndfN1pE1al06iTIgUWzjz6QlI=
-X-Received: by 2002:a17:902:8e86:b029:10f:44bb:2c42 with SMTP id
- bg6-20020a1709028e86b029010f44bb2c42mr2245115plb.67.1622801921386; Fri, 04
- Jun 2021 03:18:41 -0700 (PDT)
+        id S230041AbhFDKju (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 06:39:50 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:12357 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229625AbhFDKjt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 06:39:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1622803083; x=1654339083;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4sXc9RFUGLKrPBrTE/aA0NwwQbDYVun7rUmFq44v2zA=;
+  b=KZmv+fk030p1ROt1V3Mb0BeYbAb9YOJmx0mZuNGvEFSzTngDIaoW+GKF
+   NixSCOP7VvGa3IpLKpHDVha3ym9Wg/jR0q32rk9Mdp79ihgdDjm7OKvzG
+   S+OX8Oheyl9zFMN2fnUpsMeaVOqqAepXBzEh5rOoZf1hjtiGPLLuetuUu
+   7o9Y+/WbyoYcSkfpLEw3t+6s8tnEeXPDMQWLYhptrpnkeLNhFYTJhFcsq
+   ppHWY/lZ/D6rJLP120jjFhEuvCZ2iz1FnwzvkOEueeFKHp00nLKFqdnj3
+   6rqmQpzN5IuVcEQ4lFaPv+eSWHNkBJgUgFZUFGbHSv6Non0LL4lRH3lKH
+   w==;
+IronPort-SDR: abUF0oX24C7cEcjkxaszfgou2C+JQ+g7Cgg7mlDxB67pz2LZxGWM0gNeJSpYgSr9rxLFWdGOpt
+ cBDo5VV8is6ATpynZlOqOoXMlUelK5Mi9JQaOvHthZ3zdfNituA9qEjAmKxYe96w74WmekP5Kq
+ Icqk19Cmb7tPDmcQlZR74z8V+Szibp1xN/bUkFaNXeruhZ0LWK3JbRo1+YZVC7gHWec0ff8+gU
+ W2IGbjzoPrOauJWvIwfG+UKFsR1vucKXeoSGkuMAheeog84fhQpA7XDSW1zA6CYGPCxbuQvvR4
+ 4yA=
+X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; 
+   d="scan'208";a="124079584"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jun 2021 03:38:02 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 4 Jun 2021 03:38:02 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2176.2 via Frontend Transport; Fri, 4 Jun 2021 03:38:00 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <roopa@nvidia.com>, <nikolay@nvidia.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <UNGLinuxDriver@microchip.com>
+CC:     <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: bridge: mrp: Update ring transitions.
+Date:   Fri, 4 Jun 2021 12:37:47 +0200
+Message-ID: <20210604103747.3824212-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Fri, 4 Jun 2021 12:27:56 +0200
-Message-ID: <CAMZdPi-MrOAfLu6SaxdEqrZyUM=pyq7U8=dokmxdB+6-C3W3aA@mail.gmail.com>
-Subject: WWAN rtnetlink follow-up
-To:     M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Dan Williams <dcbw@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi folks,
+According to the standard IEC 62439-2, the number of transitions needs
+to be counted for each transition 'between' ring state open and ring
+state closed and not from open state to closed state.
 
-Thanks for your involvement and great work on this WWAN topic. I've
-picked your patches in my tree for testing (with a Qualcomm MHI
-modem):
-https://git.linaro.org/people/loic.poulain/linux.git/log/?h=wwan-dev
+Therefore fix this for both ring and interconnect ring.
 
-This is minimal support for now since mhi_net only supports one link,
-Essentially for testing purposes, but I plan to rework it to support
-more than one once wwan rtnetlink is accepted and merged, This
-limitation will not exist for the Intel IOSM driver.
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ net/bridge/br_mrp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-I'm probably going to rebase that and squash the fix commits (from
-Sergey and I) to Johannes changes if everyone agrees. Then I'll submit
-the entire series.
+diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
+index cd2b1e424e54..f7012b7d7ce4 100644
+--- a/net/bridge/br_mrp.c
++++ b/net/bridge/br_mrp.c
+@@ -627,8 +627,7 @@ int br_mrp_set_ring_state(struct net_bridge *br,
+ 	if (!mrp)
+ 		return -EINVAL;
+ 
+-	if (mrp->ring_state == BR_MRP_RING_STATE_CLOSED &&
+-	    state->ring_state != BR_MRP_RING_STATE_CLOSED)
++	if (mrp->ring_state != state->ring_state)
+ 		mrp->ring_transitions++;
+ 
+ 	mrp->ring_state = state->ring_state;
+@@ -715,8 +714,7 @@ int br_mrp_set_in_state(struct net_bridge *br, struct br_mrp_in_state *state)
+ 	if (!mrp)
+ 		return -EINVAL;
+ 
+-	if (mrp->in_state == BR_MRP_IN_STATE_CLOSED &&
+-	    state->in_state != BR_MRP_IN_STATE_CLOSED)
++	if (mrp->in_state != state->in_state)
+ 		mrp->in_transitions++;
+ 
+ 	mrp->in_state = state->in_state;
+-- 
+2.31.1
 
-Not sure what is the procedure for iproute2, should it be included in
-the series or be part of a dedicated one?
-
-Chetan, you can use that tree for your iosm work, or cherry-pick the
-[FIXUP] changes if you already work on the submitted RFC series.
-
-Refs:
-https://lore.kernel.org/netdev/20210602082840.85828-1-johannes@xxxxxxxxxxxxxxxx/
-https://lore.kernel.org/netdev/20210603044954.8091-1-ryazanov.s.a@gmail.com/
-
-Thanks,
-Loic
