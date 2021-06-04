@@ -2,83 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28AEE39C09C
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 21:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D81E39C0A4
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 21:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230503AbhFDTsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 15:48:00 -0400
-Received: from mail-wm1-f49.google.com ([209.85.128.49]:40556 "EHLO
-        mail-wm1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229810AbhFDTr7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 15:47:59 -0400
-Received: by mail-wm1-f49.google.com with SMTP id b145-20020a1c80970000b029019c8c824054so8547240wmd.5
-        for <netdev@vger.kernel.org>; Fri, 04 Jun 2021 12:46:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qkJnhycDPhg0+Sps/O0zolSgQD1ZU1bbCfvTJVOuqqw=;
-        b=r+Pml6EZEiFwM3Wv4q6hplnsGsXcCbgTXxgcZn3o1ssqv1gAia4OaovME60kd+5N50
-         dxU8ujQgVtAJ47pHDwQoF5q3d1JR+jSDiSbuIJZ6JyYP3XWQhGUMUQ+KBGv9BBPWiX81
-         Yh4AKHwE030m+5WSlgKNEqgh92lDLDi6dyHgOpc79nl/VnbP9HfjEEVgVsCnBsnPGGPy
-         u4L/ORrsQ6OjjDeEyPuQA/fh3eBfTQyO/FkH9RNjkT8etB/bG1GoV734RLTRJVT+f1bg
-         xjzG3q7SPFS4n2HzY0cY5ESTWPIxpMgssbTpJFDm+zYrRJFPTeFCjPs+itk2pcNyJqmk
-         jUIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qkJnhycDPhg0+Sps/O0zolSgQD1ZU1bbCfvTJVOuqqw=;
-        b=UUw5gh/1wQObtb0RR+gttRaJ6J7PRZKrLKkBK3OgqdOTmEAenNuJAiA6VAIx6V/JqL
-         xP4UU5QvwGXdzsOuzqqqHKMVL+iB9JOS60CaADjQ9JBi5ZdeYS3KQ+SEBChlUnL9Vm25
-         g//93M4QvszkEieBI5Ox1H+bZJTDi3K6MGyi4ft44bEVn6MItxZ+Wb29RuJH49DEtsLg
-         QtUBQ63r/yvA2iHE/cBT6+EhPGyc9fBtZpXCI2hWYTs1NZQ+LI+VdsJyZq3p/CCliyRX
-         0pzwnkHyQA8tIaHlVlNtBCA45En08itNqsVGJf4hILEEIyEYn6G8Cy41bwXU6tI+XZvF
-         gmIw==
-X-Gm-Message-State: AOAM5321WRHf44tevY1buQJESjX3FcYfilTYjKcxmoqP+OvKMaLBFDa0
-        Al4LbuedGDXzzLMqwePPf04=
-X-Google-Smtp-Source: ABdhPJyrnwfTxPEzfo/NoQJfpGegROunXWPkbX0GZ449H1QasyoM4bj7kqGRNySX5Al+jnko2uLhOg==
-X-Received: by 2002:a1c:c256:: with SMTP id s83mr5057957wmf.86.1622835912252;
-        Fri, 04 Jun 2021 12:45:12 -0700 (PDT)
-Received: from localhost.localdomain (p200300f137127c00f22f74fffe210725.dip0.t-ipconnect.de. [2003:f1:3712:7c00:f22f:74ff:fe21:725])
-        by smtp.googlemail.com with ESMTPSA id k8sm4761676wrp.3.2021.06.04.12.45.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Jun 2021 12:45:11 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     lxu@maxlinear.com
-Cc:     andrew@lunn.ch, davem@davemloft.net, hkallweit1@gmail.com,
-        hmehrtens@maxlinear.com, kuba@kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, tmohren@maxlinear.com,
-        vee.khee.wong@linux.intel.com
-Subject: RE: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
-Date:   Fri,  4 Jun 2021 21:44:28 +0200
-Message-Id: <20210604194428.2276092-1-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210604161250.49749-1-lxu@maxlinear.com>
-References: <20210604161250.49749-1-lxu@maxlinear.com>
+        id S230314AbhFDTuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 15:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33464 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229810AbhFDTuI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 15:50:08 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8D7C061766;
+        Fri,  4 Jun 2021 12:48:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=eiQrNqdISPy8DYhhvO2OscxdNKhEOxSE8gN4mRiagEk=; b=O2upqpo6o6nhEWDpsc9Hs9Z3c9
+        faGUrFI+9BTj6l6tBDhH1UeU8hlXS/n/boLKdmkumKnrRFA/sduZ4gJBPM/CSHeENVstyMcZ6VVkX
+        3SO5Z49XSHCW/fDktp58ABTAD6S8TrZ4gL99DkyjHkI2SbZ6erV75nVvwlKZxoNWLjxIk8R04MUW4
+        kScJh+ZpTG97XID+HsY3rznGAdmWNSdAdebBr0wx6Gecr80F3JUrH2wqCk8kgVug0fKARVsicWTMi
+        KPI+pzJHvglr9vrZcT65UproKpAB6kQ72iRNwymhjN6BFeJAYjXpsICthEk73CcsRewjHbMltPieE
+        2iqI0vMw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lpFnV-00DWt8-Va; Fri, 04 Jun 2021 19:48:11 +0000
+Date:   Fri, 4 Jun 2021 20:48:01 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>
+Subject: Re: [PATCH net-next v7 4/5] mvpp2: recycle buffers
+Message-ID: <YLqDcVGPomZRLJYd@casper.infradead.org>
+References: <20210604183349.30040-1-mcroce@linux.microsoft.com>
+ <20210604183349.30040-5-mcroce@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210604183349.30040-5-mcroce@linux.microsoft.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Jun 04, 2021 at 08:33:48PM +0200, Matteo Croce wrote:
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -3997,7 +3997,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+>  		}
+>  
+>  		if (pp)
+> -			page_pool_release_page(pp, virt_to_page(data));
+> +			skb_mark_for_recycle(skb, virt_to_page(data), pp);
 
-> Add driver to support the Maxlinear GPY115, GPY211, GPY212, GPY215,
-> GPY241, GPY245 PHYs.
-to me this seems like an evolution of the Lantiq XWAY PHYs for which
-we already have a driver: intel-xway.c.
-Intel took over Lantiq some years ago and last year MaxLinear then
-took over what was formerly Lantiq from Intel.
-
-From what I can tell right away: the interrupt handling still seems
-to be the same. Also the GPHY firmware version register also was there
-on older SoCs (with two or more GPHYs embedded into the SoC). SGMII
-support is new. And I am not sure about Wake-on-LAN.
-
-Have you considered adding support for these new PHYs to intel-xway.c?
-
-
-
-Best regards,
-Martin
+Does this driver only use order-0 pages?  Should it be using
+virt_to_head_page() here?  or should skb_mark_for_recycle() call
+compound_head() internally?
