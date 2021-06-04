@@ -2,723 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B513D39C07F
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 21:38:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C38E39C088
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 21:39:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230398AbhFDTkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 15:40:00 -0400
-Received: from smtprelay0081.hostedemail.com ([216.40.44.81]:42664 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229810AbhFDTj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 15:39:58 -0400
-Received: from omf13.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 86FD4181B956E;
-        Fri,  4 Jun 2021 19:38:10 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf13.hostedemail.com (Postfix) with ESMTPA id 80AD71124FA;
-        Fri,  4 Jun 2021 19:38:08 +0000 (UTC)
-Message-ID: <144460ce4f34a51dabb76e422a718573db77cdc8.camel@perches.com>
-Subject: [PATCH] treewide: Add missing semicolons to __assign_str uses
-From:   Joe Perches <joe@perches.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, lima@lists.freedesktop.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org
-Date:   Fri, 04 Jun 2021 12:38:07 -0700
-In-Reply-To: <20210604122128.0d348960@oasis.local.home>
-References: <cover.1621024265.git.bristot@redhat.com>
-         <2c59beee3b36b15592bfbb9f26dee7f8b55fd814.1621024265.git.bristot@redhat.com>
-         <20210603172902.41648183@gandalf.local.home>
-         <1e068d21106bb6db05b735b4916bb420e6c9842a.camel@perches.com>
-         <20210604122128.0d348960@oasis.local.home>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S230519AbhFDTlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 15:41:00 -0400
+Received: from mail-eopbgr140074.outbound.protection.outlook.com ([40.107.14.74]:43617
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230022AbhFDTlA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Jun 2021 15:41:00 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G+6m3VEfeqYT/u26+6trj+uh/rOIbbw+gOINtJwZsHjHD+CcrZHFy/GnSWkzSkbvOuCZ0KQUUPDakcmlKnCa6BxcDsxmiY7fc5/nrPE3YMbgBMsu4SZIm6zUGJ6Of5zwPEbruQw9BzaVqzEULbxpDSaYUSqGao0SyD5EevrH6iCvylDoi0tpDuJSZkcNajwtvUdUe13eT0czuEm8AIiFQnoTiFf8HZrjmzzMsD+xAHv9x3oXga4Fdv2Ho4kXlU6j4Ra5VVIxLMY8+CFEZtsfcHwXPljFLyze9QYWyp1Z/udmzxy0NMOPW0SA3MnR06C1d4GDMMJMS1MnutpM0fdm3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=g9Ri8fZgv3LN2WriySMv25aum0i5w8VKwLIKPFFoJfc=;
+ b=iz02yd5xRX/5HlN1op+W9pXqFFi8O/ySt+f4gSR1JAgBnHpK03bAM5h6+VdnSUpIPYrNhnJujgOEdq3rRMwlxpTECYrldRqJ6b0SDsjox6v09RFAAWrkG7BS6IREDM/0r8D6Op5Ovlq65kGt+z+VwvUzAHW0wrhcB+5KUiJ3Ch5DXmvMPFBiGHeC++mrauY0MJbHAtTsGGHs9yGSuo4V9HgZNDY2Vy0CSBKZCljy0L+99ea6+hXOsX2DvGS7mPE/I5xHvednG1kHPxghTx3Kruc/X43CRkl5q1TtBWrGwOknI5AHCR3DjEwJZloH7x9TI0t3cIwdI9i9moy0CgOxqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=g9Ri8fZgv3LN2WriySMv25aum0i5w8VKwLIKPFFoJfc=;
+ b=CdjWoV2UIX84+1n7tTqdg9iQIbf8Iwej0OehwA8ia6grYCxc6bbPfJLaRgR8AaLRp0sbZhumX6/FQLsiyVdiiKgeL8Wgz1ls3I1E0RLp+IaACLL5AQdhrkL5cSrVuEi0uDkT/LQvHG8mzW7jp6coR7oz9YV/9ax/QxiLbN3IcTo=
+Received: from AM6PR04MB3976.eurprd04.prod.outlook.com (2603:10a6:209:3f::17)
+ by AM7PR04MB6824.eurprd04.prod.outlook.com (2603:10a6:20b:10e::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Fri, 4 Jun
+ 2021 19:39:10 +0000
+Received: from AM6PR04MB3976.eurprd04.prod.outlook.com
+ ([fe80::7854:74ce:4bb7:858a]) by AM6PR04MB3976.eurprd04.prod.outlook.com
+ ([fe80::7854:74ce:4bb7:858a%4]) with mapi id 15.20.4173.030; Fri, 4 Jun 2021
+ 19:39:10 +0000
+From:   Madalin Bucur <madalin.bucur@nxp.com>
+To:     Russell King <linux@armlinux.org.uk>
+CC:     =?iso-8859-1?Q?Pali_Roh=E1r?= <pali@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Igal Liberman <Igal.Liberman@freescale.com>,
+        Shruti Kanetkar <Shruti@freescale.com>,
+        Emil Medve <Emilian.Medve@freescale.com>,
+        Scott Wood <oss@buserror.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>
+Subject: RE: Unsupported phy-connection-type sgmii-2500 in
+ arch/powerpc/boot/dts/fsl/t1023rdb.dts
+Thread-Topic: Unsupported phy-connection-type sgmii-2500 in
+ arch/powerpc/boot/dts/fsl/t1023rdb.dts
+Thread-Index: AQHXWIWiLLzXceBiLkWovt9CFi28O6sCZLOAgABNOICAAL4lwIAAzjqAgAABF4A=
+Date:   Fri, 4 Jun 2021 19:39:10 +0000
+Message-ID: <AM6PR04MB39768A569CE3CC4EC61A8769EC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
+References: <20210603143453.if7hgifupx5k433b@pali> <YLjxX/XPDoRRIvYf@lunn.ch>
+ <20210603194853.ngz4jdso3kfncnj4@pali>
+ <AM6PR04MB3976B62084EC462BA02F0C4CEC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <20210604192732.GW30436@shell.armlinux.org.uk>
+In-Reply-To: <20210604192732.GW30436@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [81.196.28.56]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 237fcc14-3410-48bd-c2d7-08d927906d1d
+x-ms-traffictypediagnostic: AM7PR04MB6824:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM7PR04MB6824FEB82535089AF65F6620EC3B9@AM7PR04MB6824.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 8vShN9VD2om9oJebnrQ1o2Dl9bwQZ6xjchQUpraSwyaf+DNO5SNqnc5vKFJkYCAH+WYWD0iOK+usIzFfsVlR/7oaIXHl5If0ScSLFThnZRtP9DN4/UUyOG9ADC6ieeUAlfgG1zXqD5en4YLmT7mhkHNOlE7SSmSjauVxKp232qa2nY0XXCec+KD+wwiQpfYZgw5awCYWdmYA3KOv8rD3lC3EOxDK/3vxTfxp+7tox2WxwQn1/eu9eISGzVfHWaCoZqkWugyjKTNoDmqPNRfw8hpH8yTen0ow55dH9vexkXANyy7Q5YPO5p9UHInOdBiYSamvFrkY+QMK4vHv//2dPRKisNzGOsBNs+WBzsOZCk5u7NRwZmanHen9hx7ji4olBfLmn8eFoW53h3yOVTyql6khhQtBy332K3WRJ+deRGFBbeuPRtCcy6a1mNjZekTXUcZrcxuxckfV2aLGzmIjjBdj2Is6J3mfiqaKAEsh/V/WmX+3UcGxr3668REPSNtv1blXowsW+nxCMI0zf1vUEDUVYKM+o7/+pEnNaqT8ZKF4AGTBF2xH6QoOg5cchbOeQC/ygK2Wn9Aml1JgJlMAsHARPVMjYdV9RqGHIakdr00=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(346002)(396003)(136003)(376002)(366004)(5660300002)(83380400001)(53546011)(66574015)(26005)(52536014)(44832011)(6916009)(6506007)(38100700002)(478600001)(33656002)(8936002)(8676002)(71200400001)(9686003)(122000001)(316002)(66446008)(66946007)(66476007)(64756008)(7696005)(7416002)(86362001)(4326008)(2906002)(66556008)(54906003)(76116006)(55016002)(186003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?iso-8859-1?Q?g7tDFoimVfC4zIDQEl8imvCI5PLs7384+WbCD/humRiwLF/hcE++XK1ba5?=
+ =?iso-8859-1?Q?uvTUkwVUHUiMXDT0mf8xqDv/tZv/9x/rfNI5I1bx7AmEJkT6w9NqnluHXK?=
+ =?iso-8859-1?Q?+2l5x19UUld2YD82zyMSZguPRruX3Jp67iPivngxj/mKMEnJCDPABtsbaa?=
+ =?iso-8859-1?Q?Ruk1U3ysgGEjBnESH4HDL/lwtgIevSgwia8rCApOdhEVIvfGUd7jB/Z4AY?=
+ =?iso-8859-1?Q?uCJHxMBIsN4V+4siXa4oOzsZYFEV4tteNlF09XBeY595AYhhd+h1B40a9R?=
+ =?iso-8859-1?Q?UWEfeR0NIH8VLmAvPSuGyDynHHlD2RKFdNr2342qi58+ZBfILig/qC4tNs?=
+ =?iso-8859-1?Q?v+4KkhaAQKGuWceQnpxgGFv4wMmazJiycd+BQtQMeb+gPGJFfiInRbLGpy?=
+ =?iso-8859-1?Q?qDB7Ghz1d9GKYGYu57odJAu482jakFDCVHCuCsFgU0HNHMwISwTdKhlMjb?=
+ =?iso-8859-1?Q?skg/lxVAdk9tfHxoGqAGKh/bDJOi9g9YkN63sK01Ts0a2MOCxlYt3/+LkO?=
+ =?iso-8859-1?Q?Gl06Zoa8A/FN4COjhVOuTYtxEFBX3exizLuF2Hkxa5on/muWENgViLrDfQ?=
+ =?iso-8859-1?Q?2ltqpAyULrCblBWAuxjF/ALwP+Iw3RIoHmui33KV5RCoykQM9ZXCiWyZmV?=
+ =?iso-8859-1?Q?fgmQudIO9jZAtFbDgS6dhbUwzE07i0VtF7ys1E7LLsQY3aiTFwivk7CZm1?=
+ =?iso-8859-1?Q?LX8Iby5fD3nn0mfSNvTlt/XRi8wTEoOkNV6iaC1Qvw0pZJy9wrQoe2v9Ms?=
+ =?iso-8859-1?Q?uaeKYQx76rma5YIdntNvsRTOscyLO1jUDv1YK6bx9s6ktXnSG0XDyjc5Im?=
+ =?iso-8859-1?Q?9tM6kM8Id2mB4bMFjXsZweA44VJsQGJm7TOCRtKkGvcDhvNDQHoxsnGryL?=
+ =?iso-8859-1?Q?SOgmpAqCdGPZst+QVUHNjiAduGkFfdOSYL3TQMtwkFeQ/FIrZuLm3fsj3B?=
+ =?iso-8859-1?Q?yJXIa73XH6nolK60AQKm+CYAlpw2AXeeuhN7QA3iA5SFgaqI1qoTF8PRNX?=
+ =?iso-8859-1?Q?8sEt8W2ZPceceH5t/sUA+sSXB6EsPgoroGaISgOB0XsVDt5W0j39NKH06J?=
+ =?iso-8859-1?Q?KFI4qSPBqAiOIsvmv4P3aPT2MKs9emP8/bd17K0N5kmnrxta6T9ZCK9c4U?=
+ =?iso-8859-1?Q?Wp9m8gT3XHtHpwEQxt/UH/no3jxqlszQEmjI1ouo8gGifvbmWjgdbGDzjG?=
+ =?iso-8859-1?Q?qPg5X8JahcS22LjldbpuzdegRFXepDY2jiCnqD8b4tYWJYrU0aP953wIsq?=
+ =?iso-8859-1?Q?N9NYTFj4tX0BRk4mhBBbMGH91+P5XBojgGQErm7ZyenO+OHF7CQxC05irY?=
+ =?iso-8859-1?Q?bbRkD1G05JaH4Xgf1tqNg0pMW362lunAHw9elEGcNVVQ1wLdsLQGZCUpzn?=
+ =?iso-8859-1?Q?GTKgb/qL7H?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.90
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: 80AD71124FA
-X-Stat-Signature: phq1t84r7hdy78tyjsrpdrat168hrsik
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/PIeFEZ46D7snJ1nSJmE2kCP8dD8iXWeo=
-X-HE-Tag: 1622835488-93370
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB3976.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 237fcc14-3410-48bd-c2d7-08d927906d1d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2021 19:39:10.7907
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: N7MRD3MbEaeugu0mnEjEaP4erVhbpVHkJBk5lloSlnZNeoMtW3dtR3NeaaDHlsjFyrepxPDPR3CKlDds2fnMUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6824
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The __assign_str macro has an unusual ending semicolon but the vast
-majority of uses of the macro already have semicolon termination.
+> -----Original Message-----
+> From: Russell King <linux@armlinux.org.uk>
+> Sent: 04 June 2021 22:28
+> To: Madalin Bucur <madalin.bucur@nxp.com>
+> Cc: Pali Roh=E1r <pali@kernel.org>; Andrew Lunn <andrew@lunn.ch>; Igal
+> Liberman <Igal.Liberman@freescale.com>; Shruti Kanetkar
+> <Shruti@freescale.com>; Emil Medve <Emilian.Medve@freescale.com>; Scott
+> Wood <oss@buserror.net>; Rob Herring <robh+dt@kernel.org>; Michael
+> Ellerman <mpe@ellerman.id.au>; Benjamin Herrenschmidt
+> <benh@kernel.crashing.org>; netdev@vger.kernel.org;
+> devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; Camelia
+> Alexandra Groza (OSS) <camelia.groza@oss.nxp.com>
+> Subject: Re: Unsupported phy-connection-type sgmii-2500 in
+> arch/powerpc/boot/dts/fsl/t1023rdb.dts
+>=20
+> On Fri, Jun 04, 2021 at 07:35:33AM +0000, Madalin Bucur wrote:
+> > Hi, the Freescale emails no longer work, years after Freescale joined
+> NXP.
+> > Also, the first four recipients no longer work for NXP.
+> >
+> > In regards to the sgmii-2500 you see in the device tree, it describes
+> SGMII
+> > overclocked to 2.5Gbps, with autonegotiation disabled.
+> >
+> > A quote from a long time ago, from someone from the HW team on this:
+> >
+> > 	The industry consensus is that 2.5G SGMII is overclocked 1G SGMII
+> > 	using XAUI electricals. For the PCS and MAC layers, it looks exactly
+> > 	like 1G SGMII, just with a faster clock.
+> >
+> > The statement that it does not exist is not accurate, it exists in HW,
+> and
+> > it is described as such in the device tree. Whether or not it is
+> properly
+> > treated in SW it's another discussion.
+>=20
+> Here's the issue though:
+>=20
+> 802.3 defined 1000base-X which is a fixed 1G speed interface using a
+> 16-bit control word. Implementations of this exist where the control
+> word can be disabled.
+>=20
+> Cisco came along, took 1000base-X and augmented it to allow speeds of
+> 10M and 100M by symbol repetition, and changing the format of the
+> 16-bit control word. Otherwise, it is functionally compatible - indeed
+> SGMII with the control word disabled will connect with 1000base-X with
+> the control word disabled. I've done it several times.
+>=20
+> There exists 2500base-X, which is 1000base-X clocked faster, and it
+> seems the concensus is that it has the AN disabled - in other words,
+> no control word.
+>=20
+> Now you're saying that SGMII at 2.5G speed exists, which is 1G SGMII
+> fixed at 1G speed, without a control word, upclocked by 2.5x.
+>=20
+> My question to you is how is how is this SGMII 2.5G different from
+> 2500base-X?
+>=20
+> > In 2015, when this was submitted,
+> > there were no other 2.5G compatibles in use, if I'm not mistaken.
+> > 2500Base-X started to be added to device trees four years later, it
+> should
+> > be compatible/interworking but it is less specific on the actual
+> implementation
+> > details (denotes 2.5G speed, 8b/10b coding, which is true for this
+> overclocked
+> > SGMII). If they are compatible, SW should probably treat them in the
+> same manner.
+>=20
+> My argument has been (since I've had experience of SGMII talking to
+> 1000base-X, and have also accidentally clocked such a scenario at
+> 2.5G speeds) that there is in fact no functional difference between
+> SGMII and base-X when they are running at identical speeds with the
+> control word disabled.
+>=20
+> Given that we well know that industry likes to use the term "SGMII"
+> very loosely to mean <whatever>base-X as well as SGMII, it becomes
+> a very bad term to use when we wish to differentiate between a
+> base-X and a real Cisco SGMII link with their different control word
+> formats.
+>=20
+> And this has always been my point - industry has created confusion
+> over these terms, but as software programmers, we need to know the
+> difference. So, SGMII should _only_ be used to identify the Cisco
+> SGMII modified version of 802.3 base-X _with_ the modified control
+> word or with the capability of symbol repetition. In other words,
+> the very features that make it SGMII as opposed to 802.3 base-X.
+> Everything else should not use the term SGMII.
+>=20
+> > There were some discussions a while ago about the mix or even confusion
+> between
+> > the actual HW description (that's what the dts is supposed to do) and
+> the settings
+> > one wants to represent in SW (i.e. speed) denoted loosely by
+> denominations like
+> > 10G Base-R.
+>=20
+> The "confusion" comes from an abuse of terms. Abused terms really
+> can't adequately be used to describe hardware properties.
+>=20
+> As I say above, we _know_ that some manufacturers state that their
+> single lane serdes is "SGMII" when it is in fact 1000base-X. That
+> doesn't mean we stuff "sgmii" into device tree because that's what
+> the vendor decided to call it.
+>=20
+> "sgmii" in the device tree means Cisco's well defined SGMII and
+> does not mean 1000base-X.
 
-$ git grep -P '\b__assign_str\b' | wc -l
-551
-$ git grep -P '\b__assign_str\b.*;' | wc -l
-480
+The "sgmii-2500" compatible in that device tree describes an SGMII HW
+block, overclocked at 2.5G. Without that overclocking, it's a plain
+Cisco (like) SGMII HW block. That's the reason you need to disable it's
+AN setting when overclocked. With the proper Reset Configuration Word,
+you could remove the overclocking and transform that into a plain "sgmii".
+Thus, the dts compatible describes the HW, as it is.
 
-Add semicolons to the __assign_str() uses without semicolon termination
-and all the other uses without semicolon termination via additional defines
-that are equivalent to __assign_str() with the eventual goal of removing
-the semicolon from the __assign_str() macro definition.
-
-Link: https://lore.kernel.org/lkml/1e068d21106bb6db05b735b4916bb420e6c9842a.camel@perches.com/
-
-Signed-off-by: Joe Perches <joe@perches.com>
----
-
-Resending without all the direct cc's, only the mailing lists as
-it seems not to have gone through via vger.
-
-Compiled x84-64 allyesconfig
-
-On Fri, 2021-06-04 at 12:21 -0400, Steven Rostedt wrote:
-> I have no problem taking a clean up patch that adds semicolons to all
-> use cases of "__assign_str()" and ever remove the one from where it is
-> defined. As long as it doesn't break any builds, I'm fine with that.
-
-Removing the semicolon from the macro definition is left for another patch.
-
- drivers/gpu/drm/amd/amdgpu/amdgpu_trace.h          | 14 ++++----
- drivers/gpu/drm/lima/lima_trace.h                  |  2 +-
- drivers/infiniband/hw/hfi1/trace_misc.h            |  4 +--
- drivers/infiniband/hw/hfi1/trace_rc.h              |  4 +--
- drivers/infiniband/hw/hfi1/trace_tid.h             |  6 ++--
- drivers/infiniband/hw/hfi1/trace_tx.h              |  8 ++---
- drivers/infiniband/sw/rdmavt/trace_cq.h            |  4 +--
- drivers/infiniband/sw/rdmavt/trace_mr.h            |  2 +-
- drivers/infiniband/sw/rdmavt/trace_qp.h            |  4 +--
- drivers/infiniband/sw/rdmavt/trace_rc.h            |  2 +-
- drivers/infiniband/sw/rdmavt/trace_tx.h            |  4 +--
- drivers/misc/mei/mei-trace.h                       |  6 ++--
- .../net/ethernet/marvell/octeontx2/af/rvu_trace.h  | 12 +++----
- drivers/net/fjes/fjes_trace.h                      |  4 +--
- drivers/usb/cdns3/cdnsp-trace.h                    |  2 +-
- fs/nfs/nfs4trace.h                                 |  6 ++--
- fs/nfs/nfstrace.h                                  |  4 +--
- include/trace/events/btrfs.h                       |  2 +-
- include/trace/events/dma_fence.h                   |  4 +--
- include/trace/events/rpcgss.h                      |  4 +--
- include/trace/events/sunrpc.h                      | 40 +++++++++++-----------
- net/mac80211/trace.h                               |  2 +-
- 22 files changed, 70 insertions(+), 70 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_trace.h b/drivers/gpu/drm/amd/amdgpu/amdgpu_trace.h
-index 0527772fe1b80..d855cb53c7e09 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_trace.h
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_trace.h
-@@ -176,10 +176,10 @@ TRACE_EVENT(amdgpu_cs_ioctl,
- 
- 	    TP_fast_assign(
- 			   __entry->sched_job_id = job->base.id;
--			   __assign_str(timeline, AMDGPU_JOB_GET_TIMELINE_NAME(job))
-+			   __assign_str(timeline, AMDGPU_JOB_GET_TIMELINE_NAME(job));
- 			   __entry->context = job->base.s_fence->finished.context;
- 			   __entry->seqno = job->base.s_fence->finished.seqno;
--			   __assign_str(ring, to_amdgpu_ring(job->base.sched)->name)
-+			   __assign_str(ring, to_amdgpu_ring(job->base.sched)->name);
- 			   __entry->num_ibs = job->num_ibs;
- 			   ),
- 	    TP_printk("sched_job=%llu, timeline=%s, context=%u, seqno=%u, ring_name=%s, num_ibs=%u",
-@@ -201,10 +201,10 @@ TRACE_EVENT(amdgpu_sched_run_job,
- 
- 	    TP_fast_assign(
- 			   __entry->sched_job_id = job->base.id;
--			   __assign_str(timeline, AMDGPU_JOB_GET_TIMELINE_NAME(job))
-+			   __assign_str(timeline, AMDGPU_JOB_GET_TIMELINE_NAME(job));
- 			   __entry->context = job->base.s_fence->finished.context;
- 			   __entry->seqno = job->base.s_fence->finished.seqno;
--			   __assign_str(ring, to_amdgpu_ring(job->base.sched)->name)
-+			   __assign_str(ring, to_amdgpu_ring(job->base.sched)->name);
- 			   __entry->num_ibs = job->num_ibs;
- 			   ),
- 	    TP_printk("sched_job=%llu, timeline=%s, context=%u, seqno=%u, ring_name=%s, num_ibs=%u",
-@@ -229,7 +229,7 @@ TRACE_EVENT(amdgpu_vm_grab_id,
- 
- 	    TP_fast_assign(
- 			   __entry->pasid = vm->pasid;
--			   __assign_str(ring, ring->name)
-+			   __assign_str(ring, ring->name);
- 			   __entry->vmid = job->vmid;
- 			   __entry->vm_hub = ring->funcs->vmhub,
- 			   __entry->pd_addr = job->vm_pd_addr;
-@@ -424,7 +424,7 @@ TRACE_EVENT(amdgpu_vm_flush,
- 			     ),
- 
- 	    TP_fast_assign(
--			   __assign_str(ring, ring->name)
-+			   __assign_str(ring, ring->name);
- 			   __entry->vmid = vmid;
- 			   __entry->vm_hub = ring->funcs->vmhub;
- 			   __entry->pd_addr = pd_addr;
-@@ -525,7 +525,7 @@ TRACE_EVENT(amdgpu_ib_pipe_sync,
- 			     ),
- 
- 	    TP_fast_assign(
--			   __assign_str(ring, sched_job->base.sched->name)
-+			   __assign_str(ring, sched_job->base.sched->name);
- 			   __entry->id = sched_job->base.id;
- 			   __entry->fence = fence;
- 			   __entry->ctx = fence->context;
-diff --git a/drivers/gpu/drm/lima/lima_trace.h b/drivers/gpu/drm/lima/lima_trace.h
-index 3a430e93d384c..494b9790b1daf 100644
---- a/drivers/gpu/drm/lima/lima_trace.h
-+++ b/drivers/gpu/drm/lima/lima_trace.h
-@@ -24,7 +24,7 @@ DECLARE_EVENT_CLASS(lima_task,
- 		__entry->task_id = task->base.id;
- 		__entry->context = task->base.s_fence->finished.context;
- 		__entry->seqno = task->base.s_fence->finished.seqno;
--		__assign_str(pipe, task->base.sched->name)
-+		__assign_str(pipe, task->base.sched->name);
- 		),
- 
- 	TP_printk("task=%llu, context=%u seqno=%u pipe=%s",
-diff --git a/drivers/infiniband/hw/hfi1/trace_misc.h b/drivers/infiniband/hw/hfi1/trace_misc.h
-index 8db2253523ffe..93338988b9220 100644
---- a/drivers/infiniband/hw/hfi1/trace_misc.h
-+++ b/drivers/infiniband/hw/hfi1/trace_misc.h
-@@ -63,7 +63,7 @@ TRACE_EVENT(hfi1_interrupt,
- 			     __array(char, buf, 64)
- 			     __field(int, src)
- 			     ),
--	    TP_fast_assign(DD_DEV_ASSIGN(dd)
-+	    TP_fast_assign(DD_DEV_ASSIGN(dd);
- 			   is_entry->is_name(__entry->buf, 64,
- 					     src - is_entry->start);
- 			   __entry->src = src;
-@@ -100,7 +100,7 @@ TRACE_EVENT(hfi1_fault_opcode,
- 			     __field(u32, qpn)
- 			     __field(u8, opcode)
- 			     ),
--	    TP_fast_assign(DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device))
-+	    TP_fast_assign(DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
- 			   __entry->qpn = qp->ibqp.qp_num;
- 			   __entry->opcode = opcode;
- 			   ),
-diff --git a/drivers/infiniband/hw/hfi1/trace_rc.h b/drivers/infiniband/hw/hfi1/trace_rc.h
-index 1ebca37862e06..5f49e1eeb2116 100644
---- a/drivers/infiniband/hw/hfi1/trace_rc.h
-+++ b/drivers/infiniband/hw/hfi1/trace_rc.h
-@@ -70,7 +70,7 @@ DECLARE_EVENT_CLASS(hfi1_rc_template,
- 			__field(u32, r_psn)
- 			),
- 		    TP_fast_assign(
--			DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device))
-+			DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
- 			__entry->qpn = qp->ibqp.qp_num;
- 			__entry->s_flags = qp->s_flags;
- 			__entry->psn = psn;
-@@ -130,7 +130,7 @@ DECLARE_EVENT_CLASS(/* rc_ack */
- 		__field(u32, lpsn)
- 	),
- 	TP_fast_assign(/* assign */
--		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device))
-+		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
- 		__entry->qpn = qp->ibqp.qp_num;
- 		__entry->aeth = aeth;
- 		__entry->psn = psn;
-diff --git a/drivers/infiniband/hw/hfi1/trace_tid.h b/drivers/infiniband/hw/hfi1/trace_tid.h
-index 985ffa9cc958f..d129b81959599 100644
---- a/drivers/infiniband/hw/hfi1/trace_tid.h
-+++ b/drivers/infiniband/hw/hfi1/trace_tid.h
-@@ -886,7 +886,7 @@ DECLARE_EVENT_CLASS(/* sender_info */
- 		__field(u8, s_retry)
- 	),
- 	TP_fast_assign(/* assign */
--		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device))
-+		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
- 		__entry->qpn = qp->ibqp.qp_num;
- 		__entry->state = qp->state;
- 		__entry->s_cur = qp->s_cur;
-@@ -1285,7 +1285,7 @@ DECLARE_EVENT_CLASS(/* rc_rcv_err */
- 		__field(int, diff)
- 	),
- 	TP_fast_assign(/* assign */
--		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device))
-+		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
- 		__entry->qpn = qp->ibqp.qp_num;
- 		__entry->s_flags = qp->s_flags;
- 		__entry->state = qp->state;
-@@ -1574,7 +1574,7 @@ DECLARE_EVENT_CLASS(/* tid_ack */
- 		__field(u32, resync_psn)
- 	),
- 	TP_fast_assign(/* assign */
--		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device))
-+		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
- 		__entry->qpn = qp->ibqp.qp_num;
- 		__entry->aeth = aeth;
- 		__entry->psn = psn;
-diff --git a/drivers/infiniband/hw/hfi1/trace_tx.h b/drivers/infiniband/hw/hfi1/trace_tx.h
-index d44fc54858b90..f1922a7619fe8 100644
---- a/drivers/infiniband/hw/hfi1/trace_tx.h
-+++ b/drivers/infiniband/hw/hfi1/trace_tx.h
-@@ -120,7 +120,7 @@ DECLARE_EVENT_CLASS(hfi1_qpsleepwakeup_template,
- 		    __field(unsigned long, iow_flags)
- 		    ),
- 		    TP_fast_assign(
--		    DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device))
-+		    DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
- 		    __entry->flags = flags;
- 		    __entry->qpn = qp->ibqp.qp_num;
- 		    __entry->s_flags = qp->s_flags;
-@@ -868,7 +868,7 @@ TRACE_EVENT(
- 		__field(int, send_flags)
- 	),
- 	TP_fast_assign(
--		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device))
-+		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
- 		__entry->wqe = wqe;
- 		__entry->wr_id = wqe->wr.wr_id;
- 		__entry->qpn = qp->ibqp.qp_num;
-@@ -904,7 +904,7 @@ DECLARE_EVENT_CLASS(
- 		__field(bool, flag)
- 	),
- 	TP_fast_assign(
--		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device))
-+		DD_DEV_ASSIGN(dd_from_ibdev(qp->ibqp.device));
- 		__entry->qpn = qp->ibqp.qp_num;
- 		__entry->flag = flag;
- 	),
-@@ -952,7 +952,7 @@ DECLARE_EVENT_CLASS(/* AIP  */
- 		__field(u8, stopped)
- 	),
- 	TP_fast_assign(/* assign */
--		DD_DEV_ASSIGN(txq->priv->dd)
-+		DD_DEV_ASSIGN(txq->priv->dd);
- 		__entry->txq = txq;
- 		__entry->sde = txq->sde;
- 		__entry->head = txq->tx_ring.head;
-diff --git a/drivers/infiniband/sw/rdmavt/trace_cq.h b/drivers/infiniband/sw/rdmavt/trace_cq.h
-index e3c416c6f900f..91bc192cee5e4 100644
---- a/drivers/infiniband/sw/rdmavt/trace_cq.h
-+++ b/drivers/infiniband/sw/rdmavt/trace_cq.h
-@@ -85,7 +85,7 @@ DECLARE_EVENT_CLASS(rvt_cq_template,
- 				     __field(int, comp_vector_cpu)
- 				     __field(u32, flags)
- 				     ),
--		    TP_fast_assign(RDI_DEV_ASSIGN(cq->rdi)
-+		    TP_fast_assign(RDI_DEV_ASSIGN(cq->rdi);
- 				   __entry->ip = cq->ip;
- 				   __entry->cqe = attr->cqe;
- 				   __entry->comp_vector = attr->comp_vector;
-@@ -123,7 +123,7 @@ DECLARE_EVENT_CLASS(
- 		__field(u32, imm)
- 	),
- 	TP_fast_assign(
--		RDI_DEV_ASSIGN(cq->rdi)
-+		RDI_DEV_ASSIGN(cq->rdi);
- 		__entry->wr_id = wc->wr_id;
- 		__entry->status = wc->status;
- 		__entry->opcode = wc->opcode;
-diff --git a/drivers/infiniband/sw/rdmavt/trace_mr.h b/drivers/infiniband/sw/rdmavt/trace_mr.h
-index 95b8a0e3b8bdb..c5b675ca4fa08 100644
---- a/drivers/infiniband/sw/rdmavt/trace_mr.h
-+++ b/drivers/infiniband/sw/rdmavt/trace_mr.h
-@@ -195,7 +195,7 @@ TRACE_EVENT(
- 		__field(uint, sg_offset)
- 	),
- 	TP_fast_assign(
--		RDI_DEV_ASSIGN(ib_to_rvt(to_imr(ibmr)->mr.pd->device))
-+		RDI_DEV_ASSIGN(ib_to_rvt(to_imr(ibmr)->mr.pd->device));
- 		__entry->ibmr_iova = ibmr->iova;
- 		__entry->iova = to_imr(ibmr)->mr.iova;
- 		__entry->user_base = to_imr(ibmr)->mr.user_base;
-diff --git a/drivers/infiniband/sw/rdmavt/trace_qp.h b/drivers/infiniband/sw/rdmavt/trace_qp.h
-index c32d21cc615e4..800cec8bb3c76 100644
---- a/drivers/infiniband/sw/rdmavt/trace_qp.h
-+++ b/drivers/infiniband/sw/rdmavt/trace_qp.h
-@@ -65,7 +65,7 @@ DECLARE_EVENT_CLASS(rvt_qphash_template,
- 		__field(u32, bucket)
- 	),
- 	TP_fast_assign(
--		RDI_DEV_ASSIGN(ib_to_rvt(qp->ibqp.device))
-+		RDI_DEV_ASSIGN(ib_to_rvt(qp->ibqp.device));
- 		__entry->qpn = qp->ibqp.qp_num;
- 		__entry->bucket = bucket;
- 	),
-@@ -97,7 +97,7 @@ DECLARE_EVENT_CLASS(
- 		__field(u32, to)
- 	),
- 	TP_fast_assign(
--		RDI_DEV_ASSIGN(ib_to_rvt(qp->ibqp.device))
-+		RDI_DEV_ASSIGN(ib_to_rvt(qp->ibqp.device));
- 		__entry->qpn = qp->ibqp.qp_num;
- 		__entry->hrtimer = &qp->s_rnr_timer;
- 		__entry->s_flags = qp->s_flags;
-diff --git a/drivers/infiniband/sw/rdmavt/trace_rc.h b/drivers/infiniband/sw/rdmavt/trace_rc.h
-index c47357af20998..9de52e1380251 100644
---- a/drivers/infiniband/sw/rdmavt/trace_rc.h
-+++ b/drivers/infiniband/sw/rdmavt/trace_rc.h
-@@ -71,7 +71,7 @@ DECLARE_EVENT_CLASS(rvt_rc_template,
- 			__field(u32, r_psn)
- 			),
- 		    TP_fast_assign(
--			RDI_DEV_ASSIGN(ib_to_rvt(qp->ibqp.device))
-+			RDI_DEV_ASSIGN(ib_to_rvt(qp->ibqp.device));
- 			__entry->qpn = qp->ibqp.qp_num;
- 			__entry->s_flags = qp->s_flags;
- 			__entry->psn = psn;
-diff --git a/drivers/infiniband/sw/rdmavt/trace_tx.h b/drivers/infiniband/sw/rdmavt/trace_tx.h
-index d963ca755828f..cb96be0f8f194 100644
---- a/drivers/infiniband/sw/rdmavt/trace_tx.h
-+++ b/drivers/infiniband/sw/rdmavt/trace_tx.h
-@@ -111,7 +111,7 @@ TRACE_EVENT(
- 		__field(int, wr_num_sge)
- 	),
- 	TP_fast_assign(
--		RDI_DEV_ASSIGN(ib_to_rvt(qp->ibqp.device))
-+		RDI_DEV_ASSIGN(ib_to_rvt(qp->ibqp.device));
- 		__entry->wqe = wqe;
- 		__entry->wr_id = wqe->wr.wr_id;
- 		__entry->qpn = qp->ibqp.qp_num;
-@@ -170,7 +170,7 @@ TRACE_EVENT(
- 		__field(int, send_flags)
- 	),
- 	TP_fast_assign(
--		RDI_DEV_ASSIGN(ib_to_rvt(qp->ibqp.device))
-+		RDI_DEV_ASSIGN(ib_to_rvt(qp->ibqp.device));
- 		__entry->wqe = wqe;
- 		__entry->wr_id = wqe->wr.wr_id;
- 		__entry->qpn = qp->ibqp.qp_num;
-diff --git a/drivers/misc/mei/mei-trace.h b/drivers/misc/mei/mei-trace.h
-index df758033dc937..fe46ff2b9d69f 100644
---- a/drivers/misc/mei/mei-trace.h
-+++ b/drivers/misc/mei/mei-trace.h
-@@ -26,7 +26,7 @@ TRACE_EVENT(mei_reg_read,
- 		__field(u32, val)
- 	),
- 	TP_fast_assign(
--		__assign_str(dev, dev_name(dev))
-+		__assign_str(dev, dev_name(dev));
- 		__entry->reg  = reg;
- 		__entry->offs = offs;
- 		__entry->val = val;
-@@ -45,7 +45,7 @@ TRACE_EVENT(mei_reg_write,
- 		__field(u32, val)
- 	),
- 	TP_fast_assign(
--		__assign_str(dev, dev_name(dev))
-+		__assign_str(dev, dev_name(dev));
- 		__entry->reg = reg;
- 		__entry->offs = offs;
- 		__entry->val = val;
-@@ -64,7 +64,7 @@ TRACE_EVENT(mei_pci_cfg_read,
- 		__field(u32, val)
- 	),
- 	TP_fast_assign(
--		__assign_str(dev, dev_name(dev))
-+		__assign_str(dev, dev_name(dev));
- 		__entry->reg  = reg;
- 		__entry->offs = offs;
- 		__entry->val = val;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.h
-index e6609068e81be..64aa7d350df16 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.h
-@@ -21,7 +21,7 @@ TRACE_EVENT(otx2_msg_alloc,
- 			     __field(u16, id)
- 			     __field(u64, size)
- 	    ),
--	    TP_fast_assign(__assign_str(dev, pci_name(pdev))
-+	    TP_fast_assign(__assign_str(dev, pci_name(pdev));
- 			   __entry->id = id;
- 			   __entry->size = size;
- 	    ),
-@@ -36,7 +36,7 @@ TRACE_EVENT(otx2_msg_send,
- 			     __field(u16, num_msgs)
- 			     __field(u64, msg_size)
- 	    ),
--	    TP_fast_assign(__assign_str(dev, pci_name(pdev))
-+	    TP_fast_assign(__assign_str(dev, pci_name(pdev));
- 			   __entry->num_msgs = num_msgs;
- 			   __entry->msg_size = msg_size;
- 	    ),
-@@ -52,7 +52,7 @@ TRACE_EVENT(otx2_msg_check,
- 			     __field(u16, rspid)
- 			     __field(int, rc)
- 	    ),
--	    TP_fast_assign(__assign_str(dev, pci_name(pdev))
-+	    TP_fast_assign(__assign_str(dev, pci_name(pdev));
- 			   __entry->reqid = reqid;
- 			   __entry->rspid = rspid;
- 			   __entry->rc = rc;
-@@ -69,8 +69,8 @@ TRACE_EVENT(otx2_msg_interrupt,
- 			     __string(str, msg)
- 			     __field(u64, intr)
- 	    ),
--	    TP_fast_assign(__assign_str(dev, pci_name(pdev))
--			   __assign_str(str, msg)
-+	    TP_fast_assign(__assign_str(dev, pci_name(pdev));
-+			   __assign_str(str, msg);
- 			   __entry->intr = intr;
- 	    ),
- 	    TP_printk("[%s] mbox interrupt %s (0x%llx)\n", __get_str(dev),
-@@ -84,7 +84,7 @@ TRACE_EVENT(otx2_msg_process,
- 			     __field(u16, id)
- 			     __field(int, err)
- 	    ),
--	    TP_fast_assign(__assign_str(dev, pci_name(pdev))
-+	    TP_fast_assign(__assign_str(dev, pci_name(pdev));
- 			   __entry->id = id;
- 			   __entry->err = err;
- 	    ),
-diff --git a/drivers/net/fjes/fjes_trace.h b/drivers/net/fjes/fjes_trace.h
-index 9237b69d8e217..6437ddbd7842e 100644
---- a/drivers/net/fjes/fjes_trace.h
-+++ b/drivers/net/fjes/fjes_trace.h
-@@ -232,7 +232,7 @@ TRACE_EVENT(fjes_hw_start_debug_err,
- 		 __string(err, err)
- 	),
- 	TP_fast_assign(
--		__assign_str(err, err)
-+		__assign_str(err, err);
- 	),
- 	TP_printk("%s", __get_str(err))
- );
-@@ -258,7 +258,7 @@ TRACE_EVENT(fjes_hw_stop_debug_err,
- 		 __string(err, err)
- 	),
- 	TP_fast_assign(
--		__assign_str(err, err)
-+		__assign_str(err, err);
- 	),
- 	TP_printk("%s", __get_str(err))
- );
-diff --git a/drivers/usb/cdns3/cdnsp-trace.h b/drivers/usb/cdns3/cdnsp-trace.h
-index 5aa88ca012de1..6a2571c6aa9ed 100644
---- a/drivers/usb/cdns3/cdnsp-trace.h
-+++ b/drivers/usb/cdns3/cdnsp-trace.h
-@@ -138,7 +138,7 @@ DECLARE_EVENT_CLASS(cdnsp_log_simple,
- 		__string(text, msg)
- 	),
- 	TP_fast_assign(
--		__assign_str(text, msg)
-+		__assign_str(text, msg);
- 	),
- 	TP_printk("%s", __get_str(text))
- );
-diff --git a/fs/nfs/nfs4trace.h b/fs/nfs/nfs4trace.h
-index 2ef75caad6dab..7a2567aa2b86d 100644
---- a/fs/nfs/nfs4trace.h
-+++ b/fs/nfs/nfs4trace.h
-@@ -625,7 +625,7 @@ TRACE_EVENT(nfs4_state_mgr,
- 
- 		TP_fast_assign(
- 			__entry->state = clp->cl_state;
--			__assign_str(hostname, clp->cl_hostname)
-+			__assign_str(hostname, clp->cl_hostname);
- 		),
- 
- 		TP_printk(
-@@ -1637,7 +1637,7 @@ DECLARE_EVENT_CLASS(nfs4_inode_callback_event,
- 				__entry->fileid = 0;
- 				__entry->dev = 0;
- 			}
--			__assign_str(dstaddr, clp ? clp->cl_hostname : "unknown")
-+			__assign_str(dstaddr, clp ? clp->cl_hostname : "unknown");
- 		),
- 
- 		TP_printk(
-@@ -1694,7 +1694,7 @@ DECLARE_EVENT_CLASS(nfs4_inode_stateid_callback_event,
- 				__entry->fileid = 0;
- 				__entry->dev = 0;
- 			}
--			__assign_str(dstaddr, clp ? clp->cl_hostname : "unknown")
-+			__assign_str(dstaddr, clp ? clp->cl_hostname : "unknown");
- 			__entry->stateid_seq =
- 				be32_to_cpu(stateid->seqid);
- 			__entry->stateid_hash =
-diff --git a/fs/nfs/nfstrace.h b/fs/nfs/nfstrace.h
-index eb1ef3462e842..dd0df132772a2 100644
---- a/fs/nfs/nfstrace.h
-+++ b/fs/nfs/nfstrace.h
-@@ -1431,8 +1431,8 @@ DECLARE_EVENT_CLASS(nfs_xdr_event,
- 			__entry->version = task->tk_client->cl_vers;
- 			__entry->error = error;
- 			__assign_str(program,
--				     task->tk_client->cl_program->name)
--			__assign_str(procedure, task->tk_msg.rpc_proc->p_name)
-+				     task->tk_client->cl_program->name);
-+			__assign_str(procedure, task->tk_msg.rpc_proc->p_name);
- 		),
- 
- 		TP_printk(
-diff --git a/include/trace/events/btrfs.h b/include/trace/events/btrfs.h
-index 76e0be7e14d05..8cf61e42900e8 100644
---- a/include/trace/events/btrfs.h
-+++ b/include/trace/events/btrfs.h
-@@ -1093,7 +1093,7 @@ TRACE_EVENT(btrfs_trigger_flush,
- 		__entry->flags	= flags;
- 		__entry->bytes	= bytes;
- 		__entry->flush	= flush;
--		__assign_str(reason, reason)
-+		__assign_str(reason, reason);
- 	),
- 
- 	TP_printk_btrfs("%s: flush=%d(%s) flags=%llu(%s) bytes=%llu",
-diff --git a/include/trace/events/dma_fence.h b/include/trace/events/dma_fence.h
-index 64e92d56c6a8f..3963e79ca7b42 100644
---- a/include/trace/events/dma_fence.h
-+++ b/include/trace/events/dma_fence.h
-@@ -23,8 +23,8 @@ DECLARE_EVENT_CLASS(dma_fence,
- 	),
- 
- 	TP_fast_assign(
--		__assign_str(driver, fence->ops->get_driver_name(fence))
--		__assign_str(timeline, fence->ops->get_timeline_name(fence))
-+		__assign_str(driver, fence->ops->get_driver_name(fence));
-+		__assign_str(timeline, fence->ops->get_timeline_name(fence));
- 		__entry->context = fence->context;
- 		__entry->seqno = fence->seqno;
- 	),
-diff --git a/include/trace/events/rpcgss.h b/include/trace/events/rpcgss.h
-index ffdbe6f85da8b..b2a2672e66322 100644
---- a/include/trace/events/rpcgss.h
-+++ b/include/trace/events/rpcgss.h
-@@ -152,7 +152,7 @@ DECLARE_EVENT_CLASS(rpcgss_ctx_class,
- 	TP_fast_assign(
- 		__entry->cred = gc;
- 		__entry->service = gc->gc_service;
--		__assign_str(principal, gc->gc_principal)
-+		__assign_str(principal, gc->gc_principal);
- 	),
- 
- 	TP_printk("cred=%p service=%s principal='%s'",
-@@ -535,7 +535,7 @@ TRACE_EVENT(rpcgss_upcall_msg,
- 	),
- 
- 	TP_fast_assign(
--		__assign_str(msg, buf)
-+		__assign_str(msg, buf);
- 	),
- 
- 	TP_printk("msg='%s'", __get_str(msg))
-diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
-index d02e01a27b690..861f199896c6a 100644
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -154,8 +154,8 @@ TRACE_EVENT(rpc_clnt_new,
- 		__entry->client_id = clnt->cl_clid;
- 		__assign_str(addr, xprt->address_strings[RPC_DISPLAY_ADDR]);
- 		__assign_str(port, xprt->address_strings[RPC_DISPLAY_PORT]);
--		__assign_str(program, program)
--		__assign_str(server, server)
-+		__assign_str(program, program);
-+		__assign_str(server, server);
- 	),
- 
- 	TP_printk("client=%u peer=[%s]:%s program=%s server=%s",
-@@ -180,8 +180,8 @@ TRACE_EVENT(rpc_clnt_new_err,
- 
- 	TP_fast_assign(
- 		__entry->error = error;
--		__assign_str(program, program)
--		__assign_str(server, server)
-+		__assign_str(program, program);
-+		__assign_str(server, server);
- 	),
- 
- 	TP_printk("program=%s server=%s error=%d",
-@@ -284,8 +284,8 @@ TRACE_EVENT(rpc_request,
- 		__entry->client_id = task->tk_client->cl_clid;
- 		__entry->version = task->tk_client->cl_vers;
- 		__entry->async = RPC_IS_ASYNC(task);
--		__assign_str(progname, task->tk_client->cl_program->name)
--		__assign_str(procname, rpc_proc_name(task))
-+		__assign_str(progname, task->tk_client->cl_program->name);
-+		__assign_str(procname, rpc_proc_name(task));
- 	),
- 
- 	TP_printk("task:%u@%u %sv%d %s (%ssync)",
-@@ -494,10 +494,10 @@ DECLARE_EVENT_CLASS(rpc_reply_event,
- 		__entry->task_id = task->tk_pid;
- 		__entry->client_id = task->tk_client->cl_clid;
- 		__entry->xid = be32_to_cpu(task->tk_rqstp->rq_xid);
--		__assign_str(progname, task->tk_client->cl_program->name)
-+		__assign_str(progname, task->tk_client->cl_program->name);
- 		__entry->version = task->tk_client->cl_vers;
--		__assign_str(procname, rpc_proc_name(task))
--		__assign_str(servername, task->tk_xprt->servername)
-+		__assign_str(procname, rpc_proc_name(task));
-+		__assign_str(servername, task->tk_xprt->servername);
- 	),
- 
- 	TP_printk("task:%u@%d server=%s xid=0x%08x %sv%d %s",
-@@ -622,8 +622,8 @@ TRACE_EVENT(rpc_stats_latency,
- 		__entry->task_id = task->tk_pid;
- 		__entry->xid = be32_to_cpu(task->tk_rqstp->rq_xid);
- 		__entry->version = task->tk_client->cl_vers;
--		__assign_str(progname, task->tk_client->cl_program->name)
--		__assign_str(procname, rpc_proc_name(task))
-+		__assign_str(progname, task->tk_client->cl_program->name);
-+		__assign_str(procname, rpc_proc_name(task));
- 		__entry->backlog = ktime_to_us(backlog);
- 		__entry->rtt = ktime_to_us(rtt);
- 		__entry->execute = ktime_to_us(execute);
-@@ -669,15 +669,15 @@ TRACE_EVENT(rpc_xdr_overflow,
- 			__entry->task_id = task->tk_pid;
- 			__entry->client_id = task->tk_client->cl_clid;
- 			__assign_str(progname,
--				     task->tk_client->cl_program->name)
-+				     task->tk_client->cl_program->name);
- 			__entry->version = task->tk_client->cl_vers;
--			__assign_str(procedure, task->tk_msg.rpc_proc->p_name)
-+			__assign_str(procedure, task->tk_msg.rpc_proc->p_name);
- 		} else {
- 			__entry->task_id = 0;
- 			__entry->client_id = 0;
--			__assign_str(progname, "unknown")
-+			__assign_str(progname, "unknown");
- 			__entry->version = 0;
--			__assign_str(procedure, "unknown")
-+			__assign_str(procedure, "unknown");
- 		}
- 		__entry->requested = requested;
- 		__entry->end = xdr->end;
-@@ -735,9 +735,9 @@ TRACE_EVENT(rpc_xdr_alignment,
- 		__entry->task_id = task->tk_pid;
- 		__entry->client_id = task->tk_client->cl_clid;
- 		__assign_str(progname,
--			     task->tk_client->cl_program->name)
-+			     task->tk_client->cl_program->name);
- 		__entry->version = task->tk_client->cl_vers;
--		__assign_str(procedure, task->tk_msg.rpc_proc->p_name)
-+		__assign_str(procedure, task->tk_msg.rpc_proc->p_name);
- 
- 		__entry->offset = offset;
- 		__entry->copied = copied;
-@@ -1107,9 +1107,9 @@ TRACE_EVENT(xprt_retransmit,
- 		__entry->xid = be32_to_cpu(rqst->rq_xid);
- 		__entry->ntrans = rqst->rq_ntrans;
- 		__assign_str(progname,
--			     task->tk_client->cl_program->name)
-+			     task->tk_client->cl_program->name);
- 		__entry->version = task->tk_client->cl_vers;
--		__assign_str(procedure, task->tk_msg.rpc_proc->p_name)
-+		__assign_str(procedure, task->tk_msg.rpc_proc->p_name);
- 	),
- 
- 	TP_printk(
-@@ -1842,7 +1842,7 @@ TRACE_EVENT(svc_xprt_accept,
- 
- 	TP_fast_assign(
- 		__assign_str(addr, xprt->xpt_remotebuf);
--		__assign_str(protocol, xprt->xpt_class->xcl_name)
-+		__assign_str(protocol, xprt->xpt_class->xcl_name);
- 		__assign_str(service, service);
- 	),
- 
-diff --git a/net/mac80211/trace.h b/net/mac80211/trace.h
-index 8fcc390564029..3fc1e4c5344c0 100644
---- a/net/mac80211/trace.h
-+++ b/net/mac80211/trace.h
-@@ -33,7 +33,7 @@
- 			__string(vif_name, sdata->name)
- #define VIF_ASSIGN	__entry->vif_type = sdata->vif.type; __entry->sdata = sdata;	\
- 			__entry->p2p = sdata->vif.p2p;					\
--			__assign_str(vif_name, sdata->name)
-+			__assign_str(vif_name, sdata->name);
- #define VIF_PR_FMT	" vif:%s(%d%s)"
- #define VIF_PR_ARG	__get_str(vif_name), __entry->vif_type, __entry->p2p ? "/p2p" : ""
- 
+Madalin
 
 
