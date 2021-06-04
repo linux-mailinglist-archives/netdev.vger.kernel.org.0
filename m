@@ -2,163 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 087AA39B941
-	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 14:56:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A75C339B9B3
+	for <lists+netdev@lfdr.de>; Fri,  4 Jun 2021 15:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbhFDM54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 08:57:56 -0400
-Received: from mail-eopbgr60045.outbound.protection.outlook.com ([40.107.6.45]:2820
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230025AbhFDM5z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Jun 2021 08:57:55 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ViZLCaVJVMlw1aAhWiig9EHtH6l5evwzvAbsWhPGjhD8rAtHRBKa7rZu5KE1vZhgJIKXqRxdu2oc0kcSULgo7M80Mog1qH/iEmqBDCZSjLYwZtxxlxCx3VWH3g2Yr2ZVf/ChFOOW7xY8RaZVaTy33eXddTGwml1ijLbbTbMzFW28BB6vRFnqu1WPSRMH7iCxDLFsjan2ZVYIT1inJAWzco3MQ6yE2p/Vg00A8gslHbe0iaqfqv75JfizBjRKwB2ZqoZkrCf3PTr01AQenj4doho/dOeoiTBF8gRQ94g3Kc1REjLLltd2km4cp5plVdeHR2FhwuESBW156b40HiyFSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3PM+tQxTUEaDvb63NnUK7qOrB2zDD79bypILTFPi/88=;
- b=YxWvI9EoJYvOvjDub0W7Fug2rgeGBOTCcO6vIX4pW4FFcDa2YMJZAqnN1cCRBAtw4I4HPoxm8HePNdJWnHbXvD+XAaODJU7AzFWTuG6sdfYRcQSqposM6yS71XUbRwPutNY5zg/c7wbkOun9/5kGLxSebFmvpIqVfw1OKYGbnm6DEGiHHA5P57QT9q2WIrJHDHhnA7y63Vw3Y8Do37ZkAwgIkZqKVHynG0CMBO9cPOlLZSjEVIXxQijQ1phuHJZ2OtEe+DkHrkSQ9DE4S+RzHoMNH8vCxllO0mrLRQyGn4p9AR7WQjKSRGM8FxEXDPf1al818QrmoPjiWgZ+kbrgyg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3PM+tQxTUEaDvb63NnUK7qOrB2zDD79bypILTFPi/88=;
- b=fQgkBQPxoV5vFti+DTTtZZa+x2+OsfPxOf5lBRlB7y0lg7Jbm6bgsTtwLhZKguDPN33Ogb/6Xy47fDKJ6N5vOEtoL2hDJi/9tRnBIUeC0znKiBZP8arGv/2RYuB8O5XHcDbAdKSyHp+gJSorwIAi2T1Vh93lU9msaq6pkEuLArA=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5342.eurprd04.prod.outlook.com (2603:10a6:803:46::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Fri, 4 Jun
- 2021 12:56:06 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::b1a0:d654:a578:53ab]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::b1a0:d654:a578:53ab%7]) with mapi id 15.20.4195.024; Fri, 4 Jun 2021
- 12:56:06 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-CC:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Pankaj Dubey <pankaj.dubey@samsung.com>,
-        Sriranjani P <sriranjani.p@samsung.com>
-Subject: Re: linux-next: manual merge of the net-next tree with the net tree
-Thread-Topic: linux-next: manual merge of the net-next tree with the net tree
-Thread-Index: AQHXWODvW3Cyc/eKxUqfofjzTgyJ76sD0DOA
-Date:   Fri, 4 Jun 2021 12:56:06 +0000
-Message-ID: <20210604125605.t3j67pbgeovguw2h@skbuf>
-References: <20210604112825.011148a3@canb.auug.org.au>
-In-Reply-To: <20210604112825.011148a3@canb.auug.org.au>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: canb.auug.org.au; dkim=none (message not signed)
- header.d=none;canb.auug.org.au; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.26.52.84]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 87a36c5c-0d8b-41f7-f398-08d927581dfd
-x-ms-traffictypediagnostic: VI1PR04MB5342:
-x-microsoft-antispam-prvs: <VI1PR04MB53420872201A887BDDB81861E03B9@VI1PR04MB5342.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sn6S1QjYYE+sUN1soAai1OQIRAqmM1K7BKPkf0yRqPd8Z5pjzFWHTCW3DBtENpg5scSIdxIOxHqvV3Tpd76dPF8f2RhTD0wUR8wghzQLyhYrNLlQ0IUt4fkpNrF7qz6x8kOOOlN21JoKFX9iFoSXqF+TrzD37IKJxkQNWPgS55mq2Tq2LLqmJkvxnKCZ1gVinM+7GgEx8vKAIqp6TUd52NnqZnz/aOFH20ZRIUW0hHLqJ70IiFhItrcVth568fASelv1fxKzQ5MMnLTVbl7tBXDDwpXlAZPwREIQ4sLOl4siX6OymOGTRghqTr9Tm9SO/q4wNLmqXk8auHtrLZWoab1mOUb0T3uJ9Wf+XdjdqQxsAzQcytRMUfPr5b6goRG7ijmo8GRaep5khBXN1G5yxdYiHsqzLchWs876GDqpsUcVdYwqhv4a6phUmkndOYPMpKG36Oiz2Xl2uld3yXbBPlAAgfrCMA69c4tNpKXYeEItD/A2zl4c05vJrTOy0tnXfa8w/1N31Co8bmIRVfubpDvFKQdKXflFNj6tuUM8lxfWzx0DHfssBHex7jB2MalasImXkveyP1d+RRTFk0roOyNK0lduVQFI0q57NgcaWgI=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(39860400002)(376002)(136003)(366004)(396003)(346002)(122000001)(38100700002)(66946007)(4326008)(54906003)(66476007)(86362001)(478600001)(5660300002)(66556008)(66446008)(26005)(76116006)(91956017)(316002)(6512007)(9686003)(44832011)(2906002)(6506007)(186003)(6486002)(8936002)(8676002)(33716001)(71200400001)(6916009)(1076003)(64756008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?mopnxOLiteX7G1Wht17OHVD9mUxeAmqCWWbJssqCL0Wr/i0+Pj39E/Pt+VVS?=
- =?us-ascii?Q?OP5/e14Sy51eAUZebZo7X7Z/Bxd6k65Zcyaw9h9yEtogGeMMNtA4TTr6Rdcv?=
- =?us-ascii?Q?fCfiqH8lRuaFKnXIifRoRYloowRtfjSzP6Mw/A7VpVY6p43DC+VKRlE/CncH?=
- =?us-ascii?Q?Izeokk6aOt0lmJdxllST79md0vUEkWcZdPrJmXQ4DwjaWyb/lIsxbnMqucxJ?=
- =?us-ascii?Q?i7JCqfktI1Pzk3vzNmLryLxM14ubbB5XeGlsxMSvFycSJGcDHDvZP5Y4YL+1?=
- =?us-ascii?Q?VuuO5i+CIgOPHDLsEMnwBywOxhp1+PBTEcD/7cNyMSeYUP3A7mGPaNQrH1O7?=
- =?us-ascii?Q?YzNcdnVcMxx9glt/tDgipFtQw/h5TuWMf8va12HZ6yf6Yi3DsVM0RCn+355g?=
- =?us-ascii?Q?GR/Wj+myRLIN4UhRh685r53JvwTRRjLwIZ/t/GOIDYA7VXewGE4jb1+Ivzfo?=
- =?us-ascii?Q?+ybtzsjHB0GmPtD57LZRMrTzPRKMEU3KDSs+nEtejpR4X9Q549iCOYzMdHkO?=
- =?us-ascii?Q?MGA/KOHp7g92Do3pM7vf6Fpc1TdR5Ehm3Hh0OJeLhTe9s4776esMP1A1TFwr?=
- =?us-ascii?Q?8BXFbwxlcESQAUpNDaSqLLvIrI0MDPac9nwQxYpkWXpWdeD5DvdkkxZizwkU?=
- =?us-ascii?Q?RekOa+KwqvWXCAsy7Ti6Nlmi95gavfCgbZqvGUkX+toeTqBcLoRUEwBXL7ZO?=
- =?us-ascii?Q?d+2FYGXfDsTCi/yOSIQFhal5dVDZtcpNd6mZg+smKDu+rTcuxa5YZamiqMdB?=
- =?us-ascii?Q?0g+wQNNAHnhVmtDbUvI/0oX1xf6+W8st1luwStzXxywOu2dbqO9/2EHX+/Yo?=
- =?us-ascii?Q?4403J7sJW41ccXwsMd3SYpn2877QLP96naZYzDqfr5KRusr1a+fYnBJ5Xmdh?=
- =?us-ascii?Q?BGlhDptd/FA07JAAj6dzqpL91DYyP7m82uY1AGg/oOrIdisiN2FxN2t73Ndl?=
- =?us-ascii?Q?Cg7tO68HPehXvhnrtlbVJ2/N3808N4O/nVKMTC5z6jUzxbfQ7Li1Ht0/dU0f?=
- =?us-ascii?Q?ey0VC3VS/dDAgCuTdU+4SaxYu41B7GqRA/0TptzNhUL0tdnl8/So7kPTB94p?=
- =?us-ascii?Q?PGeUfdUe1Lgcsm3WJD5tp5zPmsaZX0CG7/91heE3XrpZli1rX8E/rGzM0Wkw?=
- =?us-ascii?Q?Yuc4w2yo4/4z7lb6facJteOSBxd7ejoz2kyLBSHbG/8Qa1HaCAW1ilOGypyM?=
- =?us-ascii?Q?Z3+6WAE+NqTs9/j9pWhzHA80oU3t3ZLUXUUMpYXqBTsDgnTYAIKG0LzIJTUT?=
- =?us-ascii?Q?2QDwIJ0ED1Pnt5SWrZgizHK7wExD8DCxG+g6+1a1i72AMTnJThoHhlqrIi3V?=
- =?us-ascii?Q?Stgd9LB6sc7EeN7uNoLPHDaI?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <6162C526BFF3F24A9AC9EA02472E5B73@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 87a36c5c-0d8b-41f7-f398-08d927581dfd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2021 12:56:06.2194
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: WadVZdJ/cDqXjkT77BD3+qnyZx07F8mHYlA9J8M+qHKqk5F1s8oEUNUgvEiCcTQYz/LH5EBpBy7sjDshsx7NDw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5342
+        id S230250AbhFDNVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 09:21:06 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:51913 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230004AbhFDNVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 09:21:05 -0400
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 154DJB4N018327;
+        Fri, 4 Jun 2021 06:19:12 -0700
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com
+Subject: [PATCH net] cxgb4: avoid link re-train during TC-MQPRIO configuration
+Date:   Fri,  4 Jun 2021 16:48:18 +0530
+Message-Id: <1622805498-26094-1-git-send-email-rahul.lakkireddy@chelsio.com>
+X-Mailer: git-send-email 2.5.3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen,
+When configuring TC-MQPRIO offload, only turn off netdev carrier and
+don't bring physical link down in hardware. Otherwise, when the
+physical link is brought up again after configuration, it gets
+re-trained and stalls ongoing traffic.
 
-On Fri, Jun 04, 2021 at 11:28:25AM +1000, Stephen Rothwell wrote:
-> Hi all,
->
-> Today's linux-next merge of the net-next tree got a conflict in:
->
->   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
->
-> between commit:
->
->   593f555fbc60 ("net: stmmac: fix kernel panic due to NULL pointer derefe=
-rence of mdio_bus_data")
->
-> from the net tree and commit:
->
->   11059740e616 ("net: pcs: xpcs: convert to phylink_pcs_ops")
->
-> from the net-next tree.
->
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->
-> --
-> Cheers,
-> Stephen Rothwell
->
-> diff --cc drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index c87202cbd3d6,6d41dd6f9f7a..000000000000
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@@ -1240,9 -1222,7 +1222,9 @@@ static int stmmac_phy_setup(struct stmm
->   	priv->phylink_config.dev =3D &priv->dev->dev;
->   	priv->phylink_config.type =3D PHYLINK_NETDEV;
->   	priv->phylink_config.pcs_poll =3D true;
-> - 	if (priv->plat->mdio_bus_data)
->  -	priv->phylink_config.ovr_an_inband =3D mdio_bus_data->xpcs_an_inband;
-> ++	if (mdio_bus_data)
->  +		priv->phylink_config.ovr_an_inband =3D
-> - 			priv->plat->mdio_bus_data->xpcs_an_inband;
-> ++			mdio_bus_data->xpcs_an_inband;
->
->   	if (!fwnode)
->   		fwnode =3D dev_fwnode(priv->device);
+Also, when firmware is no longer accessible or crashed, avoid sending
+FLOWC and waiting for reply that will never come.
 
-Your conflict resolution looks fine. I touched that area minimally (only
-to keep priv->plat_mdio_bus_data in a variable), it should still be
-checked against NULL.=
+Fix following hung_task_timeout_secs trace seen in these cases.
+
+INFO: task tc:20807 blocked for more than 122 seconds.
+      Tainted: G S                5.13.0-rc3+ #122
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:tc   state:D stack:14768 pid:20807 ppid: 19366 flags:0x00000000
+Call Trace:
+ __schedule+0x27b/0x6a0
+ schedule+0x37/0xa0
+ schedule_preempt_disabled+0x5/0x10
+ __mutex_lock.isra.14+0x2a0/0x4a0
+ ? netlink_lookup+0x120/0x1a0
+ ? rtnl_fill_ifinfo+0x10f0/0x10f0
+ __netlink_dump_start+0x70/0x250
+ rtnetlink_rcv_msg+0x28b/0x380
+ ? rtnl_fill_ifinfo+0x10f0/0x10f0
+ ? rtnl_calcit.isra.42+0x120/0x120
+ netlink_rcv_skb+0x4b/0xf0
+ netlink_unicast+0x1a0/0x280
+ netlink_sendmsg+0x216/0x440
+ sock_sendmsg+0x56/0x60
+ __sys_sendto+0xe9/0x150
+ ? handle_mm_fault+0x6d/0x1b0
+ ? do_user_addr_fault+0x1c5/0x620
+ __x64_sys_sendto+0x1f/0x30
+ do_syscall_64+0x3c/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f7f73218321
+RSP: 002b:00007ffd19626208 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 000055b7c0a8b240 RCX: 00007f7f73218321
+RDX: 0000000000000028 RSI: 00007ffd19626210 RDI: 0000000000000003
+RBP: 000055b7c08680ff R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000055b7c085f5f6
+R13: 000055b7c085f60a R14: 00007ffd19636470 R15: 00007ffd196262a0
+
+Fixes: b1396c2bd675 ("cxgb4: parse and configure TC-MQPRIO offload")
+Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h           | 2 --
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c      | 4 ++--
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c | 9 ++++++---
+ drivers/net/ethernet/chelsio/cxgb4/sge.c             | 6 ++++++
+ 4 files changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+index 314f8d806723..9058f09f921e 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+@@ -2177,8 +2177,6 @@ int cxgb4_update_mac_filt(struct port_info *pi, unsigned int viid,
+ 			  bool persistent, u8 *smt_idx);
+ int cxgb4_get_msix_idx_from_bmap(struct adapter *adap);
+ void cxgb4_free_msix_idx_in_bmap(struct adapter *adap, u32 msix_idx);
+-int cxgb_open(struct net_device *dev);
+-int cxgb_close(struct net_device *dev);
+ void cxgb4_enable_rx(struct adapter *adap, struct sge_rspq *q);
+ void cxgb4_quiesce_rx(struct sge_rspq *q);
+ int cxgb4_port_mirror_alloc(struct net_device *dev);
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index 421bd9b88028..1f601de02e70 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -2834,7 +2834,7 @@ static void cxgb_down(struct adapter *adapter)
+ /*
+  * net_device operations
+  */
+-int cxgb_open(struct net_device *dev)
++static int cxgb_open(struct net_device *dev)
+ {
+ 	struct port_info *pi = netdev_priv(dev);
+ 	struct adapter *adapter = pi->adapter;
+@@ -2882,7 +2882,7 @@ int cxgb_open(struct net_device *dev)
+ 	return err;
+ }
+ 
+-int cxgb_close(struct net_device *dev)
++static int cxgb_close(struct net_device *dev)
+ {
+ 	struct port_info *pi = netdev_priv(dev);
+ 	struct adapter *adapter = pi->adapter;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
+index 6c259de96f96..338b04f339b3 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
+@@ -589,7 +589,8 @@ int cxgb4_setup_tc_mqprio(struct net_device *dev,
+ 	 * down before configuring tc params.
+ 	 */
+ 	if (netif_running(dev)) {
+-		cxgb_close(dev);
++		netif_tx_stop_all_queues(dev);
++		netif_carrier_off(dev);
+ 		needs_bring_up = true;
+ 	}
+ 
+@@ -615,8 +616,10 @@ int cxgb4_setup_tc_mqprio(struct net_device *dev,
+ 	}
+ 
+ out:
+-	if (needs_bring_up)
+-		cxgb_open(dev);
++	if (needs_bring_up) {
++		netif_tx_start_all_queues(dev);
++		netif_carrier_on(dev);
++	}
+ 
+ 	mutex_unlock(&adap->tc_mqprio->mqprio_mutex);
+ 	return ret;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index 1e5f2edb70cf..6a099cb34b12 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -2556,6 +2556,12 @@ int cxgb4_ethofld_send_flowc(struct net_device *dev, u32 eotid, u32 tc)
+ 	if (!eosw_txq)
+ 		return -ENOMEM;
+ 
++	if (!(adap->flags & CXGB4_FW_OK)) {
++		/* Don't stall caller when access to FW is lost */
++		complete(&eosw_txq->completion);
++		return -EIO;
++	}
++
+ 	skb = alloc_skb(len, GFP_KERNEL);
+ 	if (!skb)
+ 		return -ENOMEM;
+-- 
+2.27.0
+
