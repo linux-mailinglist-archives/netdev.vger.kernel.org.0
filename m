@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF45F39C678
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 09:03:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0131D39C686
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 09:06:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230060AbhFEHF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 03:05:27 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:4314 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbhFEHFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 03:05:25 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Fxr886q40z1BGSn;
-        Sat,  5 Jun 2021 14:58:48 +0800 (CST)
+        id S230226AbhFEHIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 03:08:06 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:7111 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230193AbhFEHIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 03:08:05 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FxrFZ1gM5zYqHQ;
+        Sat,  5 Jun 2021 15:03:30 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
@@ -21,15 +21,15 @@ Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
 Received: from localhost.localdomain (10.67.165.24) by
  dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Sat, 5 Jun 2021 15:03:34 +0800
+ 15.1.2176.2; Sat, 5 Jun 2021 15:03:35 +0800
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
         <ms@dev.tdt.de>, <willemb@google.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 4/8] net: hd64570: fix the code style issue about trailing statements
-Date:   Sat, 5 Jun 2021 15:00:25 +0800
-Message-ID: <1622876429-47278-5-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 5/8] net: hd64570: add braces {} to all arms of the statement
+Date:   Sat, 5 Jun 2021 15:00:26 +0800
+Message-ID: <1622876429-47278-6-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1622876429-47278-1-git-send-email-huangguangbin2@huawei.com>
 References: <1622876429-47278-1-git-send-email-huangguangbin2@huawei.com>
@@ -45,97 +45,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peng Li <lipeng321@huawei.com>
 
-Trailing statements should be on next line.
+Braces {} should be used on all arms of this statement.
 
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/wan/hd64570.c | 60 +++++++++++++++++++++++++++++++++--------------
- 1 file changed, 42 insertions(+), 18 deletions(-)
+ drivers/net/wan/hd64570.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/wan/hd64570.c b/drivers/net/wan/hd64570.c
-index 6237da6..f02cce0 100644
+index f02cce0..0297fbe 100644
 --- a/drivers/net/wan/hd64570.c
 +++ b/drivers/net/wan/hd64570.c
-@@ -58,12 +58,18 @@ static inline int sca_intr_status(card_t *card)
- 	u8 isr0 = sca_in(ISR0, card);
- 	u8 isr1 = sca_in(ISR1, card);
+@@ -262,8 +262,9 @@ static inline void sca_rx(card_t *card, port_t *port, pkt_desc __iomem *desc,
+ 		memcpy_fromio(skb->data, winbase(card) + buff, maxlen);
+ 		openwin(card, page + 1);
+ 		memcpy_fromio(skb->data + maxlen, winbase(card), len - maxlen);
+-	} else
++	} else {
+ 		memcpy_fromio(skb->data, winbase(card) + buff, len);
++	}
  
--	if (isr1 & 0x03) result |= SCA_INTR_DMAC_RX(0);
--	if (isr1 & 0x0C) result |= SCA_INTR_DMAC_TX(0);
--	if (isr1 & 0x30) result |= SCA_INTR_DMAC_RX(1);
--	if (isr1 & 0xC0) result |= SCA_INTR_DMAC_TX(1);
--	if (isr0 & 0x0F) result |= SCA_INTR_MSCI(0);
--	if (isr0 & 0xF0) result |= SCA_INTR_MSCI(1);
-+	if (isr1 & 0x03)
-+		result |= SCA_INTR_DMAC_RX(0);
-+	if (isr1 & 0x0C)
-+		result |= SCA_INTR_DMAC_TX(0);
-+	if (isr1 & 0x30)
-+		result |= SCA_INTR_DMAC_RX(1);
-+	if (isr1 & 0xC0)
-+		result |= SCA_INTR_DMAC_TX(1);
-+	if (isr0 & 0x0F)
-+		result |= SCA_INTR_MSCI(0);
-+	if (isr0 & 0xF0)
-+		result |= SCA_INTR_MSCI(1);
+ #ifndef PAGE0_ALWAYS_MAPPED
+ 	openwin(card, 0);	/* select pkt_desc table page back */
+@@ -318,8 +319,9 @@ static inline void sca_rx_intr(port_t *port)
+ 				dev->stats.rx_crc_errors++;
+ 			if (stat & ST_RX_EOM)
+ 				port->rxpart = 0; /* received last fragment */
+-		} else
++		} else {
+ 			sca_rx(card, port, desc, port->rxin);
++		}
  
- 	if (!(result & SCA_INTR_DMAC_TX(0)))
- 		if (sca_in(DSR_TX(0), card) & DSR_EOM)
-@@ -447,23 +453,41 @@ static void sca_open(struct net_device *dev)
- 	u16 msci = get_msci(port);
- 	u8 md0, md2;
+ 		/* Set new error descriptor address */
+ 		sca_outw(desc_off, dmac + EDAL, card);
+@@ -417,8 +419,9 @@ static void sca_set_port(port_t *port)
+ 			tmc = 1;
+ 			br = 0;	/* For baud=CLOCK_BASE we use tmc=1 br=0 */
+ 			brv = 1;
+-		} else if (tmc > 255)
++		} else if (tmc > 255) {
+ 			tmc = 256; /* tmc=0 means 256 - low baud rates */
++		}
  
--	switch(port->encoding) {
--	case ENCODING_NRZ:	md2 = MD2_NRZ;		break;
--	case ENCODING_NRZI:	md2 = MD2_NRZI;		break;
--	case ENCODING_FM_MARK:	md2 = MD2_FM_MARK;	break;
--	case ENCODING_FM_SPACE:	md2 = MD2_FM_SPACE;	break;
--	default:		md2 = MD2_MANCHESTER;
-+	switch (port->encoding) {
-+	case ENCODING_NRZ:
-+		md2 = MD2_NRZ;
-+		break;
-+	case ENCODING_NRZI:
-+		md2 = MD2_NRZI;
-+		break;
-+	case ENCODING_FM_MARK:
-+		md2 = MD2_FM_MARK;
-+		break;
-+	case ENCODING_FM_SPACE:
-+		md2 = MD2_FM_SPACE;
-+		break;
-+	default:
-+		md2 = MD2_MANCHESTER;
- 	}
+ 		port->settings.clock_rate = CLOCK_BASE / brv / tmc;
+ 	} else {
+@@ -651,8 +654,9 @@ static netdev_tx_t sca_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		memcpy_toio(winbase(card) + buff, skb->data, maxlen);
+ 		openwin(card, page + 1);
+ 		memcpy_toio(winbase(card), skb->data + maxlen, len - maxlen);
+-	} else
++	} else {
+ 		memcpy_toio(winbase(card) + buff, skb->data, len);
++	}
  
- 	if (port->settings.loopback)
- 		md2 |= MD2_LOOPBACK;
- 
--	switch(port->parity) {
--	case PARITY_CRC16_PR0:	     md0 = MD0_HDLC | MD0_CRC_16_0;  break;
--	case PARITY_CRC16_PR1:	     md0 = MD0_HDLC | MD0_CRC_16;    break;
--	case PARITY_CRC16_PR0_CCITT: md0 = MD0_HDLC | MD0_CRC_ITU_0; break;
--	case PARITY_CRC16_PR1_CCITT: md0 = MD0_HDLC | MD0_CRC_ITU;   break;
--	default:		     md0 = MD0_HDLC | MD0_CRC_NONE;
-+	switch (port->parity) {
-+	case PARITY_CRC16_PR0:
-+		md0 = MD0_HDLC | MD0_CRC_16_0;
-+		break;
-+	case PARITY_CRC16_PR1:
-+		md0 = MD0_HDLC | MD0_CRC_16;
-+		break;
-+	case PARITY_CRC16_PR0_CCITT:
-+		md0 = MD0_HDLC | MD0_CRC_ITU_0;
-+		break;
-+	case PARITY_CRC16_PR1_CCITT:
-+		md0 = MD0_HDLC | MD0_CRC_ITU;
-+		break;
-+	default:
-+		md0 = MD0_HDLC | MD0_CRC_NONE;
- 	}
- 
- 	sca_out(CMD_RESET, msci + CMD, card);
+ #ifndef PAGE0_ALWAYS_MAPPED
+ 	openwin(card, 0);	/* select pkt_desc table page back */
 -- 
 2.8.1
 
