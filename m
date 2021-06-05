@@ -2,156 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFBB939C58B
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 05:46:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C05639C5E8
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 06:43:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbhFEDsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 23:48:10 -0400
-Received: from us-smtp-delivery-115.mimecast.com ([216.205.24.115]:57511 "EHLO
-        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229726AbhFEDsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 23:48:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
-        s=selector; t=1622864782;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+ulaQS3HPdtbwPgr0+Fpb0u+48HRfaB472826P8XqA8=;
-        b=HUmfEQibq8FPSbnGy02tGlfT6t6QtmAT4+2sRiGTpmeDMwb/jSV4lulU0hzfUnrLeHezcH
-        ajRynV1aBaD3D05dmJdXDBEQ9a0/jBlV9EoNR+zHi6fmRwVbmeO2CFWOz5W/uH8Ozz1wje
-        ll6JIZDee9amYI27CR8s0Tc4dP3UHSI=
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com
- (mail-bn7nam10lp2105.outbound.protection.outlook.com [104.47.70.105])
- (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-159-8U5IP0yjOXKs4P8r3P7_Yg-1; Fri, 04 Jun 2021 23:46:20 -0400
-X-MC-Unique: 8U5IP0yjOXKs4P8r3P7_Yg-1
-Received: from MWHPR19MB0077.namprd19.prod.outlook.com (2603:10b6:301:67::32)
- by MWHPR19MB1296.namprd19.prod.outlook.com (2603:10b6:320:30::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.25; Sat, 5 Jun
- 2021 03:46:18 +0000
-Received: from MWHPR19MB0077.namprd19.prod.outlook.com
- ([fe80::b931:30a4:ce59:dc87]) by MWHPR19MB0077.namprd19.prod.outlook.com
- ([fe80::b931:30a4:ce59:dc87%4]) with mapi id 15.20.4195.024; Sat, 5 Jun 2021
- 03:46:18 +0000
-From:   Liang Xu <lxu@maxlinear.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        Hauke Mehrtens <hmehrtens@maxlinear.com>,
-        Thomas Mohren <tmohren@maxlinear.com>
-Subject: Re: [PATCH v2] net: phy: add Maxlinear GPY115/21x/24x driver
-Thread-Topic: [PATCH v2] net: phy: add Maxlinear GPY115/21x/24x driver
-Thread-Index: AQHXWEr5aRzQQmYLZUuI1qUONcx6wKsDxf8AgAAKPYCAAIK/AIAAdxsA
-Date:   Sat, 5 Jun 2021 03:46:18 +0000
-Message-ID: <f965ae22-c5a8-ec52-322f-33ae04b76404@maxlinear.com>
-References: <20210603073438.33967-1-lxu@maxlinear.com>
- <YLoZWho/5a60wqPu@lunn.ch>
- <797fe98f-ab65-8633-dadc-beed56d251d0@maxlinear.com>
- <YLqPnpNXbd6o019o@lunn.ch>
-In-Reply-To: <YLqPnpNXbd6o019o@lunn.ch>
-Accept-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-x-originating-ip: [27.104.184.30]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 939293c6-825d-46a3-9289-08d927d479ec
-x-ms-traffictypediagnostic: MWHPR19MB1296:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR19MB12960AC305FDF582B43940CFBD3A9@MWHPR19MB1296.namprd19.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0
-x-microsoft-antispam-message-info: 6tbcV3gcYEX4XNuSZW88C/mTrNOx7lLCo1UmNZHEQ6kjgcqRIwuHyL0ImVVCxyN6ayuXdVDpnj1+O4ovePgu7NR9RQQWVtUKNblknsHCQFSAJyawusEY9RHaCdOVoWOdBn7FC5BjO8wLbo1y7NRZWMiVmZAx1I+hAbrCeBfnVLXwbfMJlj35I+ebV7TatafRElsajCty6jat1OpX3FAXHu76S94PBP4pu/A9Tlfgotof9gsYSNDOYzqttHggqbN/hTzKk1+FbGpIyBHcHDJ7r/ETi1d6Jd6gceaAVhf9p9pafIhIK11VhAr//YuknIFCrdSZbqzQRvguYWjuIHhrS3d4a75jzcZStZpNNPgFEw23PMvwU2u+ANCCfRKmD0oNlVG5/z7T14DhI3s49EdP/y/3JkEerZPdA/BTUtwALGaQHs79BKU11WidaRvBxUKIYjSUf37+bwoydC3ZP8Wqc8SsoQELIG7SfkI+gvidVR610jVIvkMsQxKYETQOO7JeLlE6KYQZyzMm5s8D+iVU4yBGvSpqRoh6iLUxQ01l30xGEJ12ihTzoe73pze6npuz7nUZS+FFZbwmZ9jiknsyxZQS6fekuhGBEYL37Kshao3v7lMtnHdEoArip6sKKOgAfEMVxvS0pyrTTT/zaTXB5hYgFH77nHojN7edqUkgYVAtpN+qR2fkzrCSFJDHIFGz
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR19MB0077.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(366004)(136003)(39840400004)(376002)(107886003)(31696002)(86362001)(2616005)(31686004)(6486002)(91956017)(4326008)(76116006)(38100700002)(122000001)(316002)(478600001)(66946007)(6506007)(53546011)(54906003)(66476007)(64756008)(66556008)(66446008)(36756003)(6916009)(5660300002)(71200400001)(8676002)(8936002)(6512007)(26005)(186003)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1102
-x-ms-exchange-antispam-messagedata: =?utf-8?B?c3Y1YWEyUC92QWw0a3ZHdWRqUTBjT0tYUHR0d2puTTRmY1E1dzNja2VnZERz?=
- =?utf-8?B?SmlOVnhwNGNxZ2tKaTA2bkZjVGxxOE0zNVFIYWlZelhHRmYwVEllWDc3Z0w2?=
- =?utf-8?B?S3ZCeTJrb0RHL1NlbVVkYkxra0RKSGZzaHlwMVRTZCs2N1N5OFZMQ3hRckZp?=
- =?utf-8?B?WCtDL1JpYmVYaDJ1dzgwL3VESDQvR3B6YVdobzZzNk5OT2RoVU5na3lSTzVT?=
- =?utf-8?B?ZFlNYlVPUTJ0bGFBekVUUEt2RlZiSytubWUzTklOdHpHUGNZdU03eVYzZU82?=
- =?utf-8?B?WHRvbmxMMy9rNmZWSjhZSHVuWXdzNS91MWJrVU4vSXZObDVhRDZSSXJGTVlk?=
- =?utf-8?B?OVVqcG5lTzVSVjhCUGpBb3ZqSU1aV0RlS2hsU0dTcHpZRFRHL2NyeGJUN1Qw?=
- =?utf-8?B?TVhPOFhBWWhkeWhNN3FlaXFBTEI5TmRSZkJJMm1XYVRBNE9NSHBtZmREL2RJ?=
- =?utf-8?B?RitFNkVZQnV6U2l4d240cUNYeEZ0bEtvMHRDckFZc0RLYnhHZXFSVkpqWkVB?=
- =?utf-8?B?SmwwTEVrMWhCSGVQc3Q0UmhSTFBzQm54TjlTTHRNSUVIQy9kQUpsVkxOdDFQ?=
- =?utf-8?B?K09BTHZYc0FCcUowQWhkT0Y1djg2c2pGSzBTeVF3S2J4TU9FWTZjTDU2U1Zw?=
- =?utf-8?B?U0hjT0ZFVEU1N0JGWW1QYjZJWnNhK3hEMG9aZS90cldyek5OYnpwbjhra3NX?=
- =?utf-8?B?Y0lVakVISk1ZWldnOEFaRFF6MDFkV3NPZDJZN0dIanArSWlVbUc5cXc0T3Zz?=
- =?utf-8?B?RXRLWXorQk0zeURMVSt6c1krRXg4KzJ1SXd0ODdhVHpBNkxieHlEejZxbEJh?=
- =?utf-8?B?QmlEZWNRNW5ZcmE4L0xCcTl2TlBFcGdPWGNIc3hHcFlXdTUrMjY0a0pQb1o2?=
- =?utf-8?B?OWo0OUlEdFVjNVZWK1VMSkpBQ3pHaFd0MWZjbnExUG9NUUE1bUJuQjFUcncy?=
- =?utf-8?B?V1VwNDZGVkhaR0lHa0dLdlhjZW1MRDZBaGJXV0pUWEhUYmwxTElRbyticzZ3?=
- =?utf-8?B?alpGejRLNkpqZ053V2RmTHdjem1sMy9ONGIzT2JpZk9uSUpMTUZ1N3VnSTVz?=
- =?utf-8?B?ZG5kT0hkbDNJQXppeXYxRTNWc2NHM3o4cnRXRlZoK0wvRkhWNkU3MU43WFFQ?=
- =?utf-8?B?UTBHMXplM0VlTSttVFUzdXpER09OYmVpNHRob1RtYkNZQ1BnK3JJYlRIV2Z0?=
- =?utf-8?B?YTI2NnlzMlVjRlV2UFpLdmZrWThvd2dnQ3hCd1JmQ0F6R2pIeGw3Nlk0U2JM?=
- =?utf-8?B?UThZbG9LbnU1NVB0czN1dmQrL1p2c1o0SDZLeWJTQlJLaVBrUzZkRkh5M1Rw?=
- =?utf-8?B?aWM3cjlNaGptRXZpZzhVaEhVUVpMUFg5UU1uVkJydG02UENkS0I1NGsvcUhs?=
- =?utf-8?B?RGdoVnhDK3UrNkVpMmo2NVhZdi80UFoxZ3o4RVpzVXRLRXNIOFMvMCtza2s2?=
- =?utf-8?B?MFllMFVCYmRMbjJaWXltTTdia2lSaExkTXR1TGVFMmpRcUp4dkVKWStNZ3RO?=
- =?utf-8?B?aGYxcHdMWHZDSVRSVEUrNjlROXEybC9VYUlCd1Y4MUNjTGZCc2o1VkY2ejg4?=
- =?utf-8?B?T0ZIOFpUKzhXQVpDZkRMbFlwRSs0YlpDMmlRNmdFZjA0NnpRVWQ3cGh3VHBv?=
- =?utf-8?B?SFByK3BoYmw1T1dlN0hvWlRiUVJnbjgxM1g2TElXdmxMdEdjbVZoWk4vQjlF?=
- =?utf-8?B?SjZpVTIwR2RhOGVRNmtQSlRlVEZhMTFxdmZnTW90SERRQ21PUjNTM2xVTkIx?=
- =?utf-8?Q?tBTy4h+e6U+PyTnDBo=3D?=
+        id S229998AbhFEEpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 00:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229660AbhFEEpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 00:45:12 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F6CC061766;
+        Fri,  4 Jun 2021 21:43:09 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id x73so8907125pfc.8;
+        Fri, 04 Jun 2021 21:43:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=2qg5afdx9qgBvuogmdH1ggvFD09I666BgcRW8giyByo=;
+        b=COrGCB3ZNEHgqmZPTtcU5G0r4SdnVImzqGAMDlJOO+KSKMf1Z5G2YDsY1R2lpQQaM4
+         g5L37k46Q0oktcSn8GgNbqGa8dQlM71/jDApAGsDHQatgdd+79FkBEmonsTmdd2eK5WW
+         7T5BMO1LamI2whUQg1vrX9Qr6gOf2NNUWl56lhJ/HU7EuCA5Ln7hJfL3Vm6uNfc/qTt3
+         igXhY0RDO4oPDzth5TeI8loMtnzheLGC7cbjckfmljpOdAPgohotwhppb0SmjLkZQk6h
+         8swYckfuNgfsx6COV74jC0dESvbmZNzuIX/6EJCn8ywLLPs+isSCF1Ne7be/k6adpBBK
+         +8iA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=2qg5afdx9qgBvuogmdH1ggvFD09I666BgcRW8giyByo=;
+        b=o5nmxiyvdMapQhsMJRxtuN47x6K5Erw1ioBdQCA7gPgW9cYsnuBOE6lw6eoHLhQeGw
+         ZFiQy2SZOCWjYibweqCYSrAJCz5V+qejsEMlmW6NEOBbPQsNljMq7X+mikY/3SluEEfc
+         vb/onEF/b1S94x4PoMFn/95nk6xa817YpfNQ7abPISgPsY56Wx3AbdtIJWTa1MXvY49D
+         SJln69gxhoUDRj03PZcT2ePhyxgImnEPS8H+bCLZ7eGkGYP0DM1jhz7f89OMPZLqspOz
+         5If6Jik1eiZEY8JHofEcBDINjqBzchBmjyWkhoajSHHXB9CvGVPXLq+LorHiR3EECX9q
+         oQbA==
+X-Gm-Message-State: AOAM530htSu8yxwC/xPZl2PftMk+OJfRUmO1LjrX+UqcPQW1d3+kgo64
+        vCRH6qT4qhaRX9NgflDgIGE=
+X-Google-Smtp-Source: ABdhPJxpYdEqeSYNb7PG+Cy41HDMCKdR5XTDebeU2+G0u+8Q1a9IXmZMUtC4Nif6MOrnYDMHfdyFnQ==
+X-Received: by 2002:a62:5e04:0:b029:2ea:a8dc:25d3 with SMTP id s4-20020a625e040000b02902eaa8dc25d3mr7794286pfb.6.1622868189239;
+        Fri, 04 Jun 2021 21:43:09 -0700 (PDT)
+Received: from localhost ([2402:3a80:11c3:3c31:71d1:71f6:fb2:d008])
+        by smtp.gmail.com with ESMTPSA id w125sm2893336pfw.214.2021.06.04.21.43.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Jun 2021 21:43:08 -0700 (PDT)
+Date:   Sat, 5 Jun 2021 10:12:04 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf@vger.kernel.org,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 4/7] net: sched: add lightweight update path
+ for cls_bpf
+Message-ID: <20210605044204.j3zbrxhdtlf7lziz@apollo>
+References: <20210604063116.234316-1-memxor@gmail.com>
+ <20210604063116.234316-5-memxor@gmail.com>
+ <20210604175428.f77zeagqavjvdndn@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: maxlinear.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR19MB0077.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 939293c6-825d-46a3-9289-08d927d479ec
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jun 2021 03:46:18.0503
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: dac28005-13e0-41b8-8280-7663835f2b1d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8GcGsIMr1qx4TaqLvqfIGT56Hzdhb1G31gv3mM6TqF4GXPW/2YpiwzAssk/6ly1fc919Jy2hC4NJZuUGyTfjlw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR19MB1296
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: maxlinear.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-ID: <5666210C87F21048B61074D824047176@namprd19.prod.outlook.com>
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210604175428.f77zeagqavjvdndn@ast-mbp.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gNS82LzIwMjEgNDozOSBhbSwgQW5kcmV3IEx1bm4gd3JvdGU6DQo+IFRoaXMgZW1haWwgd2Fz
-IHNlbnQgZnJvbSBvdXRzaWRlIG9mIE1heExpbmVhci4NCj4NCj4NCj4gT24gRnJpLCBKdW4gMDQs
-IDIwMjEgYXQgMTI6NTI6MDJQTSArMDAwMCwgTGlhbmcgWHUgd3JvdGU6DQo+PiBPbiA0LzYvMjAy
-MSA4OjE1IHBtLCBBbmRyZXcgTHVubiB3cm90ZToNCj4+PiBUaGlzIGVtYWlsIHdhcyBzZW50IGZy
-b20gb3V0c2lkZSBvZiBNYXhMaW5lYXIuDQo+Pj4NCj4+Pg0KPj4+PiArY29uZmlnIE1YTF9HUEhZ
-DQo+Pj4+ICsgICAgIHRyaXN0YXRlICJNYXhsaW5lYXIgUEhZcyINCj4+Pj4gKyAgICAgaGVscA0K
-Pj4+PiArICAgICAgIFN1cHBvcnQgZm9yIHRoZSBNYXhsaW5lYXIgR1BZMTE1LCBHUFkyMTEsIEdQ
-WTIxMiwgR1BZMjE1LA0KPj4+PiArICAgICAgIEdQWTI0MSwgR1BZMjQ1IFBIWXMuDQo+Pj4gRG8g
-dGhlc2UgUEhZcyBoYXZlIHVuaXF1ZSBJRHMgaW4gcmVnaXN0ZXIgMiBhbmQgMz8gV2hhdCBpcyB0
-aGUgZm9ybWF0DQo+Pj4gb2YgdGhlc2UgSURzPw0KPj4+DQo+Pj4gVGhlIE9VSSBpcyBmaXhlZC4g
-QnV0IG9mdGVuIHRoZSByZXN0IGlzIHNwbGl0IGludG8gdHdvLiBUaGUgaGlnaGVyDQo+Pj4gcGFy
-dCBpbmRpY2F0ZXMgdGhlIHByb2R1Y3QsIGFuZCB0aGUgbG93ZXIgcGFydCBpcyB0aGUgcmV2aXNp
-b24uIFdlDQo+Pj4gdGhlbiBoYXZlIGEgc3RydWN0IHBoeV9kcml2ZXIgZm9yIGVhY2ggcHJvZHVj
-dCwgYW5kIHRoZSBtYXNrIGlzIHVzZWQNCj4+PiB0byBtYXRjaCBvbiBhbGwgdGhlIHJldmlzaW9u
-cyBvZiB0aGUgcHJvZHVjdC4NCj4+Pg0KPj4+ICAgICAgICBBbmRyZXcNCj4+Pg0KPj4gUmVnaXN0
-ZXIgMiwgUmVnaXN0ZXIgMyBiaXQgMTB+MTUgLSBPVUkNCj4+DQo+PiBSZWdpc3RlciAzIGJpdCA0
-fjkgLSBwcm9kdWN0IG51bWJlcg0KPj4NCj4+IFJlZ2lzdGVyIDMgYml0IDB+MyAtIHJldmlzaW9u
-IG51bWJlcg0KPj4NCj4+IFRoZXNlIFBIWXMgaGF2ZSBzYW1lIElEIGluIHJlZ2lzdGVyIDIgYW5k
-IDMuDQo+IE8uSywgdGhhdCBpcyBwcmV0dHkgbm9ybWFsLiBQbGVhc2UgYWRkIGEgcGh5X2Rldmlj
-ZSBmb3IgZWFjaA0KPiBpbmRpdmlkdWFsIFBIWS4gVGhlcmUgYXJlIG1hY3JvcyB0byBoZWxwIHlv
-dSBkbyB0aGlzLg0KPg0KPiAgICAgICAgICBBbmRyZXcNCj4NClNvcnJ5LCBJIGRpZG4ndCBnZXQg
-dGhlIHBvaW50Lg0KDQpEbyB5b3UgbWVhbiBjcmVhdGUgdGhlIE1ESU8gZGV2aWNlIGZvciBlYWNo
-IFBIWSBsaWtlIGJlbG93Pw0KDQpzdGF0aWMgc3RydWN0IG1kaW9fZGV2aWNlX2lkIF9fbWF5YmVf
-dW51c2VkIGdweV90YmxbXSA9IHsNCiDCoMKgwqDCoMKgwqDCoCB7UEhZX0lEX01BVENIX01PREVM
-KFBIWV9JRF9HUFkpfSwNCiDCoMKgwqDCoMKgwqDCoCB7IH0NCn07DQpNT0RVTEVfREVWSUNFX1RB
-QkxFKG1kaW8sIGdweV90YmwpOw0KDQpUaGVzZSBQSFlzIGhhdmUgc2FtZSBJRCBhbmQgbm8gZGlm
-ZmVyZW5jZSBPVUksIHByb2R1Y3QgbnVtYmVyLCByZXZpc2lvbiANCm51bWJlci4NCg0KUGxlYXNl
-IGdpdmUgbWUgbW9yZSBndWlkYW5jZSBpZiBteSB1bmRlcnN0YW5kaW5nIGlzIHdyb25nLg0KDQpU
-aGFuayB5b3UuDQoNCg==
+On Fri, Jun 04, 2021 at 11:24:28PM IST, Alexei Starovoitov wrote:
+> On Fri, Jun 04, 2021 at 12:01:13PM +0530, Kumar Kartikeya Dwivedi wrote:
+> > This is used by BPF_LINK_UPDATE to replace the attach SCHED_CLS bpf prog
+> > effectively changing the classifier implementation for a given filter
+> > owned by a bpf_link.
+> >
+> > Note that READ_ONCE suffices in this case as the ordering for loads from
+> > the filter are implicitly provided by the data dependency on BPF prog
+> > pointer.
+> >
+> > On the writer side we can just use a relaxed WRITE_ONCE store to make
+> > sure one or the other value is visible to a reader in cls_bpf_classify.
+> > Lifetime is managed using RCU so bpf_prog_put path should wait until
+> > readers are done for old_prog.
+>
+> Should those be rcu_deref and rcu_assign_pointer ?
+> Typically the pointer would be __rcu annotated which would be
+> another small change in struct cls_bpf_prog.
+> That would make the life time easier to follow?
+>
 
+True, I'll make that change.
+
+> > All other parties accessing the BPF prog are under RTNL protection, so
+> > need no changes.
+> >
+> > Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>.
+> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > ---
+> >  net/sched/cls_bpf.c | 55 +++++++++++++++++++++++++++++++++++++++++++--
+> >  1 file changed, 53 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
+> > index bf61ffbb7fd0..f23304685c48 100644
+> > --- a/net/sched/cls_bpf.c
+> > +++ b/net/sched/cls_bpf.c
+> > @@ -9,6 +9,7 @@
+> >   * (C) 2013 Daniel Borkmann <dborkman@redhat.com>
+> >   */
+> >
+> > +#include <linux/atomic.h>
+> >  #include <linux/module.h>
+> >  #include <linux/types.h>
+> >  #include <linux/skbuff.h>
+> > @@ -104,11 +105,11 @@ static int cls_bpf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+> >  			/* It is safe to push/pull even if skb_shared() */
+> >  			__skb_push(skb, skb->mac_len);
+> >  			bpf_compute_data_pointers(skb);
+> > -			filter_res = BPF_PROG_RUN(prog->filter, skb);
+> > +			filter_res = BPF_PROG_RUN(READ_ONCE(prog->filter), skb);
+> >  			__skb_pull(skb, skb->mac_len);
+> >  		} else {
+> >  			bpf_compute_data_pointers(skb);
+> > -			filter_res = BPF_PROG_RUN(prog->filter, skb);
+> > +			filter_res = BPF_PROG_RUN(READ_ONCE(prog->filter), skb);
+> >  		}
+> >
+> >  		if (prog->exts_integrated) {
+> > @@ -775,6 +776,55 @@ static int cls_bpf_link_detach(struct bpf_link *link)
+> >  	return 0;
+> >  }
+> >
+> > +static int cls_bpf_link_update(struct bpf_link *link, struct bpf_prog *new_prog,
+> > +			       struct bpf_prog *old_prog)
+> > +{
+> > +	struct cls_bpf_link *cls_link;
+> > +	struct cls_bpf_prog cls_prog;
+> > +	struct cls_bpf_prog *prog;
+> > +	int ret;
+> > +
+> > +	rtnl_lock();
+> > +
+> > +	cls_link = container_of(link, struct cls_bpf_link, link);
+> > +	if (!cls_link->prog) {
+> > +		ret = -ENOLINK;
+> > +		goto out;
+> > +	}
+> > +
+> > +	prog = cls_link->prog;
+> > +
+> > +	/* BPF_F_REPLACEing? */
+> > +	if (old_prog && prog->filter != old_prog) {
+> > +		ret = -EINVAL;
+>
+> Other places like cgroup_bpf_replace and bpf_iter_link_replace
+> return -EPERM in such case.
+>
+
+Ok, will change.
+
+> > +		goto out;
+> > +	}
+> > +
+> > +	old_prog = prog->filter;
+> > +
+> > +	if (new_prog == old_prog) {
+> > +		ret = 0;
+> > +		goto out;
+> > +	}
+> > +
+> > +	cls_prog = *prog;
+> > +	cls_prog.filter = new_prog;
+> > +
+> > +	ret = cls_bpf_offload(prog->tp, &cls_prog, prog, NULL);
+> > +	if (ret < 0)
+> > +		goto out;
+> > +
+> > +	WRITE_ONCE(prog->filter, new_prog);
+> > +
+> > +	bpf_prog_inc(new_prog);
+> > +	/* release our reference */
+> > +	bpf_prog_put(old_prog);
+> > +
+> > +out:
+> > +	rtnl_unlock();
+> > +	return ret;
+> > +}
+> > +
+> >  static void __bpf_fill_link_info(struct cls_bpf_link *link,
+> >  				 struct bpf_link_info *info)
+> >  {
+> > @@ -859,6 +909,7 @@ static const struct bpf_link_ops cls_bpf_link_ops = {
+> >  	.show_fdinfo = cls_bpf_link_show_fdinfo,
+> >  #endif
+> >  	.fill_link_info = cls_bpf_link_fill_link_info,
+> > +	.update_prog = cls_bpf_link_update,
+> >  };
+> >
+> >  static inline char *cls_bpf_link_name(u32 prog_id, const char *name)
+> > --
+> > 2.31.1
+> >
+>
+> --
+
+--
+Kartikeya
