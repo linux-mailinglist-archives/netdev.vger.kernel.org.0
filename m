@@ -2,66 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1EC139CB8A
-	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 00:53:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9F4C39CB9A
+	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 01:02:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbhFEWze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 18:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbhFEWzd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 18:55:33 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7459C061766
-        for <netdev@vger.kernel.org>; Sat,  5 Jun 2021 15:53:32 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id n24so2391331lji.2
-        for <netdev@vger.kernel.org>; Sat, 05 Jun 2021 15:53:32 -0700 (PDT)
+        id S230084AbhFEXDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 19:03:48 -0400
+Received: from mail-ot1-f49.google.com ([209.85.210.49]:41487 "EHLO
+        mail-ot1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230010AbhFEXDp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 19:03:45 -0400
+Received: by mail-ot1-f49.google.com with SMTP id 36-20020a9d0ba70000b02902e0a0a8fe36so12919310oth.8
+        for <netdev@vger.kernel.org>; Sat, 05 Jun 2021 16:01:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=xvyLc2wx4wjjjI2rHxEzxm27254USeHJaXa8k11kOhs=;
-        b=dss/MUUd8Zt/B+J2OqXf04jTGiZ0qQv/gt8xezAtvkEPdrYezJfHquYoh/VgyeUHX2
-         OCSMI4q4vCh968M/KE/sLpheiYQosaR2r2/qSH9UvAcrBHxAiumwaaCiPZ/g6QrKhQoc
-         rcsQs7+UshblFhbEvLiVigJXeD9+e31qpi4vH6w/W3Ug2FiKbAQD2jOKDem2AB2QUJMr
-         UEK972ClEk1npYwOT5+ujEfw5l69G7QWPv9ZQvRtrxD6nVw5WSzFLsi1dpGLq0T5a70r
-         91YoSv+aiUxv7abAO9cf9Hfzu406QcKcJivllV82VehwcljE/xcKLO0f5lIj5j6hT8Js
-         ow+g==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/PU/oGXL8JrYmO+Y7A9zhyMMAj5Wc8J1xy8bpC0r4vs=;
+        b=g3dQh466HhzccuK7PJ/116EYq9ypoCWQpryDUKeDR0Rp6/Gpp672XMHej9BEnQJwb4
+         aLHmCVrEauxcsuELjwop2eg7XLmIwhrTp8x/sOwcyo1uiLdFzXUKW+1/zcee5BrjOJHM
+         PFsKc50ihElWIGfF8xyPQk6StH1jcoOO3PLJA5JyMDikoBhJloQqGqz450E6sj2Qg5Gd
+         hJ6N5qZHWjpjylOKsaHTyvcoizgvpqoFhdK4QbTfSygsr7Rs7b7lNN7lr/DX2A9jsWGe
+         a+5QHdsCbk/BieBO0eI0avfaLRrUEVo3aVYM+yFV1KG+DZo7T6IPpFphW0Lg8PfBpR3p
+         vmQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=xvyLc2wx4wjjjI2rHxEzxm27254USeHJaXa8k11kOhs=;
-        b=P+qTrD09NobBQc2Yn0o9NaNsvV/PwqRdpAOw0QUWelxQftoaXtLJ2T1OnYPwjMndcg
-         aDgx1wTknpfnDr2xiWtMUuC7st4YAPUOxFktCGY6YDAmTKmxHaWz2rhq7Zd0W0ww9JPh
-         H5qnAnrFYlk3K4o8xWZAi20iplGW8cevV6HhBf2LWzcIX6iWQvWAWpIdsrzzjUEJy/dp
-         HaUpOAPtZsjO1zLPDCPMKBnKVi75UBYICpdAey1Xu1golr86u7286oFFeUJkHOageRBS
-         JF+zG0dM4TqpQZJHj/qZvHRcSVCRrNZCgShGiDvZJpcxXCY+LQSsNmw0r7F2V9Flhphu
-         dTMQ==
-X-Gm-Message-State: AOAM531g+WGEWzIdLcPPxm/XgefTJrX4czj6CNIr6krH73jX1YV4pqd7
-        FfLI68auNILfCAb9JzuEM3qdsWNLki7p7EQ9HEU=
-X-Google-Smtp-Source: ABdhPJz8uN8kpWOKqhuM8n9PHM737R9WEm+bID4gRJV+vD9t/WSWqMICY74RAZSXobv6f965MO0sIRtr3hzEvR7DdsE=
-X-Received: by 2002:a2e:9b11:: with SMTP id u17mr8785694lji.346.1622933611332;
- Sat, 05 Jun 2021 15:53:31 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=/PU/oGXL8JrYmO+Y7A9zhyMMAj5Wc8J1xy8bpC0r4vs=;
+        b=WDdiBsHq7kFHTr7VtZMEMZCHekDrXxAvY3IDFryKX6zwsNzmXwj8UE9ZqqQY6xvX63
+         p5eXyI+KSCgnxGn1D99kqBUY+bGvikIzWP/BmZYreRg+ptA3QRiZIUlUFRPWP3cF7Zxy
+         03Lh2hEhC2tYLxeMLC/ZhYBakHVkNqKGIJPthuEUgS8AuKWVbEM1ITsVtveLzNVU4ppH
+         T1YNEoHWwDTTSzCgmoQW0XnxV172yc6KTvetAocB9AfAMVR7PG6vZWHCFMuAtMxEC/cf
+         dWitgWpAPTronhcpkvwKPXv+sPwzNRfF4pu44RPzhL6IXm2GEVR9kNyVhqru4459yh3J
+         q/JQ==
+X-Gm-Message-State: AOAM533vr4LSXnP4e+Z+UD0zUu0RRxAXx5zUxCUj5dpe1CkrSz1cjloC
+        OTZsLlG14JtVBS7USi5nP+rHmd2+TEEU6A==
+X-Google-Smtp-Source: ABdhPJxaJLsr09lRfAEprvorDWINXgPsxO6vQfiMmePMlxokpNjcJotbQtmeKZw+DAMX+z7ZA9o8xg==
+X-Received: by 2002:a05:6830:11ce:: with SMTP id v14mr338040otq.216.1622934057114;
+        Sat, 05 Jun 2021 16:00:57 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.22])
+        by smtp.googlemail.com with ESMTPSA id o14sm1368121oik.29.2021.06.05.16.00.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 05 Jun 2021 16:00:56 -0700 (PDT)
+Subject: Re: VRF/IPv4/ARP: unregister_netdevice waiting for dev to become free
+ -> Who's responsible for releasing dst_entry created by ip_route_input_noref?
+To:     Oliver Herms <oliver.peter.herms@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Cc:     David Miller <davem@davemloft.net>
+References: <20cd265b-d52d-fd1f-c47e-bfa7ea15518f@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <354f3931-1a9a-fff2-182c-d470fe46776a@gmail.com>
+Date:   Sat, 5 Jun 2021 17:00:55 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Received: by 2002:a05:6504:168d:0:0:0:0 with HTTP; Sat, 5 Jun 2021 15:53:30
- -0700 (PDT)
-Reply-To: maverickjones57@gmail.com
-From:   "Maverick Jones." <mkris951@gmail.com>
-Date:   Sat, 5 Jun 2021 23:53:30 +0100
-Message-ID: <CAAAuaTXurwBPUV9=7kD-MMSaagyHmAcgOeb5YLi1vaoL7NzfiA@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20cd265b-d52d-fd1f-c47e-bfa7ea15518f@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-We wish to notify you again that you were listed as a beneficiary in
-the intent of the deceased .Please provide your contact details to
-enable us contact you with full details on how to claims the
-Inheritance.
+On 6/5/21 11:16 AM, Oliver Herms wrote:
+> Processing the incoming ARP request causes a call to ip_route_input_noref => ip_route_input_rcu => ip_route_input_slow => rt_dst_alloc => dst_alloc => dev_hold.
+> In a non VRF use-case the dst->dev would be the loopback interface that is never deleted. In the VRF use-case dst->dev is the VRF interface. And that one I would like to delete.
+> 
+> I've tracked down that dst_release() would call dev_put() but it seems dst_release is not called here (but should be I guess?). Thus, causing a dst_entry leak that causes the VRF device to be unremovable.
+> At least that's what it looks like to me.
+> 
 
-Yours faithfully,
-
-Maverick Jones.
+I see what the problem is -- rtable is on cached on the l3mdev port
+device. I have an idea how to fix it; I will send a patch within a few
+days. Thanks for the detailed analysis and report.
