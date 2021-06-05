@@ -2,270 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6528339CA54
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 19:56:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3454639CA6C
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 20:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbhFER5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 13:57:49 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46140 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229964AbhFER5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 13:57:48 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 155HtaNo029541;
-        Sat, 5 Jun 2021 10:55:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=lpXnB1mdaG6Kps54uMygNTIYT+mQ5e/DowpE6oFhjeQ=;
- b=UjhsI8fDVaCpwHcZGDsuV89S9SQsJ/FbwHQY4m7cPo7XaDn1hereJEJyv5rHsvCL4WDn
- kW12HWd3A3I5sVMxjjDdwGkV8Pve0ORriWiFEUeYTc+7J7r+hlbw1XT+xFtEm4S6ALYt
- XpkCoFbb9DRdeihYgzqst0zhe9gRs2O7aIo= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3906ym1g59-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sat, 05 Jun 2021 10:55:38 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Sat, 5 Jun 2021 10:55:29 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jeMILDwF8BTadNmrcDYsl/5IDibQhuu9ih/Sw462BnQs2iChvsTlTWY4mwi0LHHRoObovXqV2Fjx7paXZ3KNaWv9LsDR5ZCpLTEIJ23NmxShHYGTUWiXq9iTbKWAakH8aZ41ISQToKXGeegQuiA/fN37fXOOHSuGvh0t0tc0Qy6coTFLuwlCwIQn/i/g0DVNRPxKkrsYcgpWTqyDRDpZ017XnVcrdWIxHbgdfsAXn/i0cMSWmNkxWBUKpWzs+Qg+unzmpvxIxEGl2rNwzFF8e8TZTLkHt0XJoubr3yZ/Kd0Y3qbKkiFmJgLwZHc/qyWQylddf2uiQnUwyT9kt1MkDQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/yESyUHqextMhjf13phnhUwzuU3SOWj8kyeX3a3SAhk=;
- b=oRIHp3YjhFFvsArWEVQeHkM13TGjOoD7Mpw+ga6CjDoJI2rUVm00L8Kn8lLvg+IFETQrh4aLmvHigp5F3rn+Qh33+vMDSGeCqhErY+91vMuDy/Wk/j0UVmlq1wxincstPjjfUKeVisky50lopSql9vALTHuhIio7tH49fjbqHPKVFbhrvcJDTb/z/t2c4ypOoO8R1r3iMyasqpoQfD7ZXlI1Rx0QLQY4D0yZoQpFu53eG6l4jvB603tVU1BGy5INBSJz8EPh7K3rjvItA/0jS20adpG2qhAEmA5mL/JhU/hJ3lgRzssnuGQb4D0wQzxCoUq8lzMZwLkp5IFIIHWxzg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: linuxfoundation.org; dkim=none (message not signed)
- header.d=none;linuxfoundation.org; dmarc=none action=none header.from=fb.com;
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SN6PR15MB2336.namprd15.prod.outlook.com (2603:10b6:805:26::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.22; Sat, 5 Jun
- 2021 17:55:28 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::d886:b658:e2eb:a906]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::d886:b658:e2eb:a906%5]) with mapi id 15.20.4195.026; Sat, 5 Jun 2021
- 17:55:28 +0000
-Subject: Re: [PATCH v4] bpf: core: fix shift-out-of-bounds in ___bpf_prog_run
-To:     Kurt Manucredo <fuzzybritches0@gmail.com>,
-        <syzbot+bed360704c521841c85d@syzkaller.appspotmail.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <bpf@vger.kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>, <kafai@fb.com>, <kpsingh@kernel.org>,
-        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <songliubraving@fb.com>,
-        <syzkaller-bugs@googlegroups.com>, <nathan@kernel.org>,
-        <ndesaulniers@google.com>, <clang-built-linux@googlegroups.com>,
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        <skhan@linuxfoundation.org>, <gregkh@linuxfoundation.org>
-References: <000000000000c2987605be907e41@google.com>
- <20210602212726.7-1-fuzzybritches0@gmail.com> <YLhd8BL3HGItbXmx@kroah.com>
- <87609-531187-curtm@phaethon>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <6a392b66-6f26-4532-d25f-6b09770ce366@fb.com>
-Date:   Sat, 5 Jun 2021 10:55:25 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
-In-Reply-To: <87609-531187-curtm@phaethon>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-X-Originating-IP: [2620:10d:c090:400::5:80b3]
-X-ClientProxiedBy: SJ0PR13CA0077.namprd13.prod.outlook.com
- (2603:10b6:a03:2c4::22) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21c1::1a79] (2620:10d:c090:400::5:80b3) by SJ0PR13CA0077.namprd13.prod.outlook.com (2603:10b6:a03:2c4::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.10 via Frontend Transport; Sat, 5 Jun 2021 17:55:27 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3c308d3f-51d7-4cc4-1a39-08d9284b1aa3
-X-MS-TrafficTypeDiagnostic: SN6PR15MB2336:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SN6PR15MB233634E970F8DEE1A933681CD33A9@SN6PR15MB2336.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uLHoAxorF9+anzhzuSowV2GWbtOGKUvMSrU9dr0QQVEzG2PvaHXxI/jov5AyUo+AJMa86etCj/9dbcbFQh8lewOK5blfp4RsNpRf2pMrEOzLk2PHqMGrXl5iEcEpVFFoWAgv3PY9QNGadzyEULYWqd5c6ZNq3Gd4nMVogDJ6XFPcAEAbrJh1hIwlvb9K1/Pei9PE2iugHBLSNc9kH0QYsmqtvlbtk8Hgl0OAq15TI2QUdfAT6qfaqRZYSaCFzuHbJibQMOlZqkAFdphnhmpc6X5ZOxgqyF12sUuFqLKDDeEPlR0+kYToxiaoVsXtyFZ1CJ47LbqN5XtaLp76zM31f6HOahCJXkM9h2dLjbajMnXbs6GSVQOPNSFRan/agr/YHzBNjynFMc8et0OYMRFdJGShLLwYT/Gxu3NL7v1L5iKgOJrt8aZrqCWc0ngWDT9uJ1cyhoufdoR4raMGO053UvWPWuKS9+KWAkle+l9SJBLhJZsR5LyB3HFbzSe79pslprDUH5BYKpzeJ191U4BrJEpaNnMByZu1t1FYtRU/Pg6Qbj2SVM2XUDfvk44e267QDC3zsuDqIzvWwHdYgg1G717hdwFaqFTbUaB0xHeJ+n7nB/Iv4Jw/D4LTffOKIF3RRo7mdRwCd6MqrgJjkp2S7nPYXWCPlnwMEJP2liGDG9DUoTs0KfGy8dp9Uz8pUGriHIxpWQmw+YejJTlXZJ75aAjkc9HKLf5Spo21yhHhITUKqWzcX5vegMEWdSfG4dULhwz0zLvwLbdUZTmBDxF1zDpawbfsSmA2KrJMfHClQhNsAn61Dbw1Jxb2+RQJ/5WBumQu5Kzw02VjTQzdXEIl5iSFxzlpFyfb5803my3NvXs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(366004)(39860400002)(376002)(346002)(966005)(478600001)(38100700002)(36756003)(316002)(8676002)(7416002)(186003)(4326008)(86362001)(53546011)(8936002)(2906002)(2616005)(31696002)(83380400001)(66556008)(66946007)(66476007)(52116002)(5660300002)(16526019)(6486002)(31686004)(101420200003)(99710200001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?c0F3akZRaSszZUhyUkU1MjVzaEVRMXMxNFJvakZZODI3OXhRMlBjQndiRjFt?=
- =?utf-8?B?WmRPWFhJbHRJSzBpTmQrTk9PeTkzZU05NVZCdEg5MnFZN1NjbkdCeXFDZlNX?=
- =?utf-8?B?d2dBRFlLeE5NcWVtN3dpU0hhN0M2cDhBd0w5ZG9DTEkwOW5mNzhJbTZ1QWxV?=
- =?utf-8?B?OGJHTkNLT1k2ekFGNzkxay80Vkk4ZDhqNXlmZXJ3VWl6dlhQMGU3Z0hoRUhB?=
- =?utf-8?B?emhKUTRjRThVay9TV0Z4cUQ3MUZnUStvZkljVStzbFBXSWVEc0VtRTdnaTNQ?=
- =?utf-8?B?QnZxdzdRQ3JQY3Q1UTRDMk5pSUh4N0FoS3NodmdHeXlURDlHRVkrUGRISGZw?=
- =?utf-8?B?Y1pXN0FwTEtFNmcxR2c1d2Y2UnZneUFENUovNi9TMTJCZWJUWUJnQ1F5cDQx?=
- =?utf-8?B?Q3hvZk85bU5nNTRMYkpDN1RHa3FBKzNJYlZtc09VUmZnOXpSUHVqVjJDR09X?=
- =?utf-8?B?WkFTYWlPdHJZODhyTVRuaGljbm9JWS9EbVpEbFN3c0R4RGp4L2EwVGJENm8r?=
- =?utf-8?B?SzQ1WXgrRTlJRkZvY3RuMW5IOXo0U01BL3RCYVh0YVluUFV2bTl5d3Vza1Vu?=
- =?utf-8?B?WVM4RTZmaVB5UXpkSTlPVzFhKy9aZ1ZMdXFLQjB0ZUYwT2poemlMMThIMHUw?=
- =?utf-8?B?T0ZlQWlVQ0t1UzRxRXNVN0dKMUdmS2hrUkxPYWVMQk01OWxQNE1MUXFMS0ZM?=
- =?utf-8?B?aU1WSnNhaTBYMnBqT09Nc1lTY2ZsY28vU2hadUVWZmdEOVdPNkhYT3NSNkQ4?=
- =?utf-8?B?d2lMSXliNmtGVHNUb3Z0Z2NObGlmNXh5V1A0ZW9lK1N0NjlucDU1aVVHR3oy?=
- =?utf-8?B?b3dtQnJMV1Zzc0h6aHByTCtqM3FmQWN5MTMvTTM5bDV6YUVycjB0aC9vdDdN?=
- =?utf-8?B?Vzh1ME1Uc2s0cE9NaVJyMTB4VGV6ckVwaVpjbW9tdEs5ZTFBTEtqWGszT1dw?=
- =?utf-8?B?Rmp6ZHhnUWI3VE5jL0YrU3ROZmo3cStrU0l2a25QMEFlUTllYzhhcDRGcU5n?=
- =?utf-8?B?dDdmMEdVZGZQWDJpcE1OeFZmSk5QYlZlQXlEOWI5V0lNMk95QXVBQ2xZZXN6?=
- =?utf-8?B?eUVVUkdTcmJscVRHZTVQYU8yY2NTaTV0WllDQndkR1U1aWNIdXc2bDdUbDk2?=
- =?utf-8?B?ODBCK2NJVGo2RUpXbUhxUEZZS2l3RVRDYmZsaElvN1JRcHF6RFBNN0ViYklj?=
- =?utf-8?B?V3duTDgwVVZaTEdBeHVzMUptSTkrT2laVHhLZEFrL3VodVA5ZXBEdU94WTlp?=
- =?utf-8?B?MFVDU21idmF4VlBqQktUeVFiTjlIL2pBdXpVbGhHRWFRMHBSS0E2TnRoYTc0?=
- =?utf-8?B?QWs0dXBQK2ZKQ25xOVZNNHN3Y3VHOWFLcmQxamhGR1NHWVpTQlNVVWxqTjY0?=
- =?utf-8?B?eWVCaWoyak9XeHdrbFpjdm9qV3Q0VWhJMlNTbTl0ZmNrQWtUVjVDbnppNXEx?=
- =?utf-8?B?cFVjTnZCalZESTdRZ25LVVcvQXFKNkxGNk5qQmV5aC9HTGkvYXN1YU40bEQ1?=
- =?utf-8?B?cm1hZkNNTWF6VndOOU1vUDFYWGNIeW9XVE5UZzVzY0gyQzJmYjZpUURXSFZy?=
- =?utf-8?B?L0tZY0Fka0M5cXlseWl3eUdoc1VKRTZOZHBSalN4SU1IdTdCR3IzdmIvSDdI?=
- =?utf-8?B?VnNyckxhQ1lka0licm80QmxZNkRPSnU3SHFPeExRWmtQNHBRTWloQ29MNWRO?=
- =?utf-8?B?TEtLY1VhRkRUZitjcStHV1o4MzAvUzFyeHhVbzdYb0pSVjRxb0hxYWYwOGMy?=
- =?utf-8?B?WGJRbjN5bk5RWkRXeVQ4VjFic1JyU3pNZVVwQWMwdi9lZi9qVHJOb2Ezd3Fh?=
- =?utf-8?Q?IFOAii9v5A35ODIiO+C988HKvhD4daVakCzEU=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c308d3f-51d7-4cc4-1a39-08d9284b1aa3
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2021 17:55:28.5839
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y8FjyzWEki3XuoRbLmQqTGZD3AT895mzmST/jHKvMPddvsx0Aq/VJL6H1clHNxYy
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR15MB2336
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: ZT7ZsTvVozpnJ51ooHPU1tr5PAuuPRNX
-X-Proofpoint-GUID: ZT7ZsTvVozpnJ51ooHPU1tr5PAuuPRNX
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 1 URL was un-rewritten
+        id S230083AbhFESNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 14:13:02 -0400
+Received: from sonic311-30.consmr.mail.ne1.yahoo.com ([66.163.188.211]:40043
+        "EHLO sonic311-30.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230010AbhFESMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 14:12:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1622916663; bh=Kje5cwPgu4QYPNIDOpbrtDsTRbg0y4ZTsWOdXLjZyNY=; h=Subject:To:Cc:References:From:Date:In-Reply-To:From:Subject:Reply-To; b=NHenALg2M4T+mv8CS+C0EfwlPsnt3ibsxJ8iCndyOJaIiWmMJCsYtP2SyYWdoWTRD80bDIj8XT+AkrANLv0oxkx7tkaNc1Lpi7XoKxYWzIQZRfX3GGJLsj/FpT6Qs7ayHrFzQSd4Fj9QTeTXjMBcSJa3nsMjd8EhfJMiJSs+NqvW8HCKUuWKBDqR+upSy87xQ/qrHtYlIAmLJIuZLIM9Fzm+DtYn7Zu1MDqCyuzc26C1SgLNJLK2n8Uu6rgCLjbR8gE0CPXG81T+r2Qr8GBOPcM8rM/d/yK+X7EJ4VQw9i18Yp4DxR3mfAk1Ce80Ec1xW5b18l8aFggHlv0vHRMMBA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1622916663; bh=3be9mn+SpSR6oENaqbbPO4rKoBPSzknj1RT6Yoe/bry=; h=X-Sonic-MF:Subject:To:From:Date:From:Subject; b=MXibhGPi/qqeqbyoFyBmRdVq6Gg6t6AI8cbW9qbrugmMVWVIdPlN4VtcXx84H77urDaA9JkDlTa0Yt2KtGQWNYRwAK2H32bZWj/z5gdfYeTAymShx2jQBChdx6xl/GS0NCuBbivCTEvtTjvJXTkkPqXSafeJJRu0//2LnRpzO+60KDLeBEETsK5wYgvDWbX4QDTzVwEhkAcmWiHWyQ0Vv5KWpqlic4WSSSvwjqi5dbr+huTk96//alzskJFXcLtzqVWIZVk2N5ZMNWEJqFL7C9F6Z5Dy55mNKHQUtNj1mS4wNj4L4N3jGLqOL1hAwMWZQjzbNAEq/dhaW2bPQW5yqA==
+X-YMail-OSG: cF8D8R0VM1nsuMxMLI00sxlIxjKLHsI0L1VQDvvbdxJhZj16PsIhofgaxQy9Qh5
+ PKLQ_C6CtWijqfLxwhEKuXJO.VWrw8oGZWBlqZVDEDiMGAB7y23VRKDWZbVUav15Kw5PR5ar7E14
+ vZG30SdYl_6Vq_MrrhP4hyQ6ZUokYURZBjwG1QlDJFvCwqMv5pffQXh7oCoekciyOAxqDP.nN4YX
+ Jyp34s4kGps3i32YyijYCZVtUuHvOMVxziIFU1whUeVskOOOoMvfecBI3sm2NAIyLwvd2fz.0Iw8
+ vRcMqDhIU1A0TkK8vhfTOIYFNY6go4oOEs2MpduyjxphAQpDEusjjEQ3963bYWIIQDK3AQTtfPDA
+ XNIfjVd57ckd7GtJ9s_ezKyGadVCepA08TcSSZ.a_lg8dNmz99kHo5bzgdXqzqJfGfesqdl_3pxz
+ f0eKBamSbZpbeDP7I1jJSj6wVV_nDGLeTioXu5tm.0nusPIIqOEBCZaLrAQRJQ17HfXd2ZjmxFSk
+ 7CFJSxI2REynHUqR.aLdSUMkASA3tzem5XRw7vWyp0zqMvDZL7Rl7AYBx9JMk86VkbgfHbJpTPd_
+ _olgNx_I9ior3yHUqCc_2R7HqxobiaDzl4pNOCQuOWS1BOPTVPEmCU8qsdgx2GLvzm.9JZd8_2B.
+ FjHWQAcHLXp3U0oB6oSIPTe5OuIhhYbLaAZkd3PLBudwtPfrzcBDxlVlpyAND7suHee80HtjMXOn
+ ZNKSqv3oqiEArfrYVmmRfABQF31GLhAB3CNAkkmCiWY_nYOJS6wumV4xsBpw.of1vv6a.jjLO9JI
+ jtHNJf68xC9aczo0OlKK_7oE.xRqPenZd3GUsmf2AouNSs8ApXTxLNzsedP3UKudLJCja.lq4xuD
+ u_92q78vMTUA4BAPQR101yVPoh0L_mi7HwdtY5u5nXg7pOzw9jNO_IeIO0vBsWKaNjAm7IRYTulX
+ ts3GnsDxosDZ2pINug5_Pp5hgvOQtwCNY_OfieaXs1.GhrN5LH6nLXdOIdpAIbjAUWAPQZ1s1QnC
+ MCp3k7LnOEqHUvIIr.199TWE5JfKY4Y2F1npua1NxaQNkKcOY19zFKyQUW6Zy0DhmjFOnSQiSMo7
+ KchgtzOpyj_y4T.p0yycV8OjFvbE61xND_7YRSqLH0nn4oETKisE5VaorBV3_L7Y13Khflo4RmgI
+ 67e7_IcQXQXjWMFNjLdHnw3oYFKjNQYmQo4BZTadpSei1.cf.jpJ4UwL639pGykIHQrT44NMpFA1
+ tG3WYZLj39oDTlA38PIs1uOjvq2hMR0H_IMPxQnXjzKVzCK3xRvZaiRnIyWd4TSmpJ4OyyogZ1fV
+ XXgoYNk6tGr0uEVx6jYHVA6Aw2DvueB.Bcf5Z_qc99gmJcWLST9iFxcySO5pi_U6x.0vCoOr8a3V
+ N097UKeSn40lFfX6sY4BIY6B8wRz9ESW2CXPtXfbvLUFixkbkEnAeJsjYaLfa0nlnDDgfAkGYCSU
+ aF3syfObRoC0crdAZXAC1mgqCiC_xW3_yOOQ8UKByyZRDRSBeTiw3SEcAQjulndZmFx.4ifrgbif
+ wl8iS1QR7DrzWGIWpNj1dAMB4ED4HtzOGgcrbJ0CcFTcabTUXoCtnN0J9xwC6MblCJ3C15olO2_8
+ 4KAK5Mx.Og3xCKPkpMvwfyNEGBSW3M3_YyMZRcd_TEODz7Y_w1BNoJ6f9tKOH7GxjbforI4BAUZ2
+ 18SQ9YMnKPke19i.4B2JodLdPsA6Dy5faTr9uVtD37Ymg8_xzflH.N4DJJ.pupDJunOtRh34kiO6
+ Q4xwjhrvD1iQvOuUXkJRZXVLMlMB8FzbQCOrg3Vy_v_jKPU2wgf0kjD_ttSAR9dPvlKQEGmef8RX
+ 0AMY4mn7Zbj7mul1vrFdo_sH29OEoIdIjx7ap0Cu0V5LTWXEoRGfgaGNcqHLryVgs5xF7Snou7aD
+ ws4t_K_.rETD_impryBUW0B5THpPjoNu2W1YT3TyKco6ydIsXWyFLGYwHwilBV9wvcCuT4UbTfGB
+ dvSpH1jWtrXSaXtRMbOkJVbQIIW_feCCUt6TLpmlWQrhju3P.tCFDEKg1TpT6k7ofkrjU5t3xt3L
+ JYwOncSxDio8dofJm7v0PfeXvR6K1auhdAI7.FP_hf5X8eczvZg14mBve5FPBJ4Rrc8Niabllu63
+ p3a5Hh_B4iHYf6oLcOFzD4XPC9Y1WqOiFJEofGSjxhXd.2nASVXTnr5ZdqtXQ5nBS6cXEcxUxB.I
+ jO7zBYFjmaDv_ygDjNVWw3CZ5nSqpfXFiDUMip7ckByJhloYWif4Krf9poRp3d2.y9Ihhmf7hnr1
+ nGyskCAPwf2WUBRNfYg1hQLNq5__Qrsm_zrFLBR4cIWjkVBSsujS8t3.HUad9fUvW_bWMVqE0L97
+ M1IKeuVkiANKmQuPHwnVYGDKs9vyHmNZ4qj8Woi78f3LvjVOjFztCjVpNeWccBaWvwKIzaYMd6Eq
+ 1zRtmrKDBt4gDfXfDMEn4noMMsMmG0qsqRzTq9NjotF9_ZUVos.KcvyY4X2ELQVnqaZbKiWHiA03
+ v9ZQ9wRXmCirAD8WoObjlisTSYfrYYmAh5NTq_8qAHIOy9CJtNqjN3bLj614cHxaY0KB0CwxI0Yz
+ fq2bS49dk2EwY0Rj4_futCXs8g7UAxB437g7nqjJZ3_cEXdTf272TLtSKTJwqzZV3xA4ffsKUrQD
+ .hsCXc1eYjUrfzsIuviR5Dt7lgdccp0VNkguQS_w9_U7QM3YkvARIqTSyHyxjv31FPmyJTFdNywD
+ X6WwmmvfoNo3MM4o0LBRlpuZTdOjznKYOjNgLLO.lZ2W0UiwZSO7JnvhWCvYl.SHPMqOuMuAcd98
+ TuSv6F5jrUUx1HscYbpT_KQSy4PV89TOa9qDbtHTxkrtXjuZG_JlYNZUHcJGLtht1U4YtKrDDZqP
+ YziYeK9sL5JU3EQO8ypHrtxpFir_0s.SlyEi.a3BZpouTpkZFioJvy55z_wfk5kA9LAt1ohLfD5B
+ LpVw7Q.XG7e9iQaRfAUec9So3LBcDUehA6xeTq_3e8X5Y8EuzrY0gFe2QqyImmwnAS7U7z6yaW_o
+ eXFOjM468cqLpzNsStX4lREHQC34tU4vikIentHbTwgVKH_M7V7dzU9IEnwoFeUA2bpsosaZVgKo
+ XXUFaHOCl4hZrWCOIYDbvCDXogsm4tD_HU7f2Zd6gbLiPPYtIt14dR0T20gzdsOc.5bUmFW5kRU0
+ JZO5A2t6DjY.jPDP5VRAIfMxoWuh64tdA.ag6Jig6D7f8ViVITCNOFtXu8JkBvRS27TKqg_91..b
+ J89ucG5vmW4EC_lmvLXVft4flGxRLhEL6YkGpBJPICSE1AuHfwrjieMbDuJPl5wuS_6eomVm2dm8
+ p.nQ_Qpzis.Rtk2rNqwaWx_GccY4wXFdz7FMHdMsrI7Vez54DFoq_LNXApdxANNRbLQ63q6nx8Em
+ nsXTqV9NI3Or1K9Y.gppLcLne0cPNznDkPIzkbKS8yjrcV1KaPUAVDJgnJqAWUeZMzjzr2LoTACv
+ 4xNwYbqU6b2zDXLe2KFi.pyF6WRDJ_xNQhKdHSQtabUVA2Y_.joV.0WMuxZd6JJ45uJcZhgIdZeE
+ 0DT46CbONaK6ZfcRHaZT55RTJQrs.uayemwqwuLxR1tE.H3CG_7GIktC_T30HbTNC8e07hXOtFnq
+ NQK46t5sr2iUh2CnH_xuHbkvYGabd.p_LdKECQYwWwLpvz22LlW4whY1t3OjVf6oJXhhuIbHt2QP
+ 8JbT2QY45Vzg.tUR4uW80gHns9PeoeNWFEo.BGyBFU3IrbiGT_AtqOYNp_KPlKuNlChKP54T4XSy
+ W2ThzaXXsq9y5uGxYHEryzrfdtGqPhuNX9Pu7BC_S2.qixPuC2_Xbev9pRnih_jtd27iNB7jjUjJ
+ 3EWabuxb32IGiIkuPCE7AduWlWgRCYs5kBY7vUCnBOWPBktBXfSY7I511WxOJ_RlR1ji4BTalFEG
+ nF0xF4kYpCrvA.Rk0nPfd35yCVFpPwpRusZmSzvzvwkdP8WyImNJcdSVjcOHOTc8DbCJJrZiYwTQ
+ Ai7a59irZxwmHIszqD7_BzCtaQ7Ay2VXYqJBScNKVcj6pIKtRoHeChsLiKUHZYcHM7Tmj_RSjFxf
+ QeOrVxCQWMyg-
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.ne1.yahoo.com with HTTP; Sat, 5 Jun 2021 18:11:03 +0000
+Received: by kubenode542.mail-prod1.omega.bf1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID fa5b415bf7046dbe1092e3061ce7176e;
+          Sat, 05 Jun 2021 18:11:01 +0000 (UTC)
+Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
+ permission checks
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Paul Moore <paul@paul-moore.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        selinux@vger.kernel.org, ppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Casey Schaufler <casey@schaufler-ca.com>
+References: <20210517092006.803332-1-omosnace@redhat.com>
+ <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
+ <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net>
+ <CAHC9VhR-kYmMA8gsqkiL5=poN9FoL-uCyx1YOLCoG2hRiUBYug@mail.gmail.com>
+ <c7c2d7e1-e253-dce0-d35c-392192e4926e@iogearbox.net>
+ <CAHC9VhS1XRZjKcTFgH1+n5uA-CeT+9BeSP5jvT2+RE5ougLpUg@mail.gmail.com>
+ <2e541bdc-ae21-9a07-7ac7-6c6a4dda09e8@iogearbox.net>
+ <CAHC9VhT464vr9sWxqY3PRB4DAccz=LvRMLgWBsSViWMR0JJvOQ@mail.gmail.com>
+ <3ca181e3-df32-9ae0-12c6-efb899b7ce7a@iogearbox.net>
+ <CAHC9VhTuPnPs1wMTmoGUZ4fvyy-es9QJpE7O_yTs2JKos4fgbw@mail.gmail.com>
+ <f4373013-88fb-b839-aaaa-3826548ebd0c@iogearbox.net>
+ <CAHC9VhS=BeGdaAi8Ae5Fx42Fzy_ybkcXwMNcPwK=uuA6=+SRcg@mail.gmail.com>
+ <c59743f6-0000-1b15-bc16-ff761b443aef@iogearbox.net>
+ <CAHC9VhT1JhdRw9P_m3niY-U-vukxTWKTE9q6AMyQ=r_ohpPxMw@mail.gmail.com>
+ <CAADnVQ+0bNtDj46Q8s-h=rqJgZz2JaGTeHpbmof3e7fBBQKuDQ@mail.gmail.com>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+Message-ID: <64552a82-d878-b6e6-e650-52423153b624@schaufler-ca.com>
+Date:   Sat, 5 Jun 2021 11:10:57 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-06-05_11:2021-06-04,2021-06-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
- lowpriorityscore=0 bulkscore=0 clxscore=1011 impostorscore=0
- mlxlogscore=999 mlxscore=0 malwarescore=0 phishscore=0 priorityscore=1501
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2106050131
-X-FB-Internal: deliver
+In-Reply-To: <CAADnVQ+0bNtDj46Q8s-h=rqJgZz2JaGTeHpbmof3e7fBBQKuDQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+X-Mailer: WebService/1.1.18368 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 6/4/2021 5:08 PM, Alexei Starovoitov wrote:
+> On Fri, Jun 4, 2021 at 4:34 PM Paul Moore <paul@paul-moore.com> wrote:
+>>> Again, the problem is not limited to BPF at all. kprobes is doing reg=
+ister-
+>>> the hooks which are equivalent to the one of BPF. Anything in run-tim=
+e
+>>> trying to prevent probe_read_kernel by kprobes or BPF is broken by de=
+sign.
+>> Not being an expert on kprobes I can't really comment on that, but
+>> right now I'm focused on trying to make things work for the BPF
+>> helpers.  I suspect that if we can get the SELinux lockdown
+>> implementation working properly for BPF the solution for kprobes won't=
+
+>> be far off.
+> Paul,
+>
+> Both kprobe and bpf can call probe_read_kernel=3D=3Dcopy_from_kernel_no=
+fault
+> from all contexts.
+> Including NMI. Most of audit_log_* is not acceptable.
+> Just removing a wakeup is not solving anything.
+> Audit hooks don't belong in NMI.
+> Audit design needs memory allocation. Hence it's not suitable
+> for NMI and hardirq. But kprobes and bpf progs do run just fine there.
+> BPF, for example, only uses pre-allocated memory.
+
+You have fallen into a common fallacy. The fact that the "code runs"
+does not assure that the "system works right". In the security world
+we face this all the time, often with performance expectations. In this
+case the BPF design has failed to accommodate the long standing needs
+of audit and SELinux. Shifting the responsibility for these design flaws
+to SELinux is inappropriate. Integration of sub-systems is usually the
+burden of the newcomer, which in this case is BPF. Paul is doing the
+bulk of your work for you. Maybe you could step up to your responsibility=
+
+and work with him, not against him.
 
 
-On 6/5/21 8:01 AM, Kurt Manucredo wrote:
-> Syzbot detects a shift-out-of-bounds in ___bpf_prog_run()
-> kernel/bpf/core.c:1414:2.
-
-This is not enough. We need more information on why this happens
-so we can judge whether the patch indeed fixed the issue.
-
-> 
-> I propose: In adjust_scalar_min_max_vals() move boundary check up to avoid
-> missing them and return with error when detected.
-> 
-> Reported-and-tested-by: syzbot+bed360704c521841c85d@syzkaller.appspotmail.com
-> Signed-off-by: Kurt Manucredo <fuzzybritches0@gmail.com>
-> ---
-> 
-> https://syzkaller.appspot.com/bug?id=edb51be4c9a320186328893287bb30d5eed09231
-> 
-> Changelog:
-> ----------
-> v4 - Fix shift-out-of-bounds in adjust_scalar_min_max_vals.
->       Fix commit message.
-> v3 - Make it clearer what the fix is for.
-> v2 - Fix shift-out-of-bounds in ___bpf_prog_run() by adding boundary
->       check in check_alu_op() in verifier.c.
-> v1 - Fix shift-out-of-bounds in ___bpf_prog_run() by adding boundary
->       check in ___bpf_prog_run().
-> 
-> thanks
-> 
-> kind regards
-> 
-> Kurt
-> 
->   kernel/bpf/verifier.c | 30 +++++++++---------------------
->   1 file changed, 9 insertions(+), 21 deletions(-)
-> 
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 94ba5163d4c5..ed0eecf20de5 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -7510,6 +7510,15 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
->   	u32_min_val = src_reg.u32_min_value;
->   	u32_max_val = src_reg.u32_max_value;
->   
-> +	if ((opcode == BPF_LSH || opcode == BPF_RSH || opcode == BPF_ARSH) &&
-> +			umax_val >= insn_bitness) {
-> +		/* Shifts greater than 31 or 63 are undefined.
-> +		 * This includes shifts by a negative number.
-> +		 */
-> +		verbose(env, "invalid shift %lld\n", umax_val);
-> +		return -EINVAL;
-> +	}
-
-I think your fix is good. I would like to move after
-the following code though:
-
-         if (!src_known &&
-             opcode != BPF_ADD && opcode != BPF_SUB && opcode != BPF_AND) {
-                 __mark_reg_unknown(env, dst_reg);
-                 return 0;
-         }
-
-> +
->   	if (alu32) {
->   		src_known = tnum_subreg_is_const(src_reg.var_off);
->   		if ((src_known &&
-> @@ -7592,39 +7601,18 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
->   		scalar_min_max_xor(dst_reg, &src_reg);
->   		break;
->   	case BPF_LSH:
-> -		if (umax_val >= insn_bitness) {
-> -			/* Shifts greater than 31 or 63 are undefined.
-> -			 * This includes shifts by a negative number.
-> -			 */
-> -			mark_reg_unknown(env, regs, insn->dst_reg);
-> -			break;
-> -		}
-
-I think this is what happens. For the above case, we simply
-marks the dst reg as unknown and didn't fail verification.
-So later on at runtime, the shift optimization will have wrong
-shift value (> 31/64). Please correct me if this is not right
-analysis. As I mentioned in the early please write detailed
-analysis in commit log.
-
-Please also add a test at tools/testing/selftests/bpf/verifier/.
-
-
->   		if (alu32)
->   			scalar32_min_max_lsh(dst_reg, &src_reg);
->   		else
->   			scalar_min_max_lsh(dst_reg, &src_reg);
->   		break;
->   	case BPF_RSH:
-> -		if (umax_val >= insn_bitness) {
-> -			/* Shifts greater than 31 or 63 are undefined.
-> -			 * This includes shifts by a negative number.
-> -			 */
-> -			mark_reg_unknown(env, regs, insn->dst_reg);
-> -			break;
-> -		}
->   		if (alu32)
->   			scalar32_min_max_rsh(dst_reg, &src_reg);
->   		else
->   			scalar_min_max_rsh(dst_reg, &src_reg);
->   		break;
->   	case BPF_ARSH:
-> -		if (umax_val >= insn_bitness) {
-> -			/* Shifts greater than 31 or 63 are undefined.
-> -			 * This includes shifts by a negative number.
-> -			 */
-> -			mark_reg_unknown(env, regs, insn->dst_reg);
-> -			break;
-> -		}
->   		if (alu32)
->   			scalar32_min_max_arsh(dst_reg, &src_reg);
->   		else
-> 
