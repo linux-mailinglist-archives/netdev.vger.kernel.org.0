@@ -2,105 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCCD339C42E
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 02:09:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B36EE39C450
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 02:24:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230147AbhFEAKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 20:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbhFEAKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 20:10:45 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1537C061766;
-        Fri,  4 Jun 2021 17:08:41 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id a2so16514627lfc.9;
-        Fri, 04 Jun 2021 17:08:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7O4yi6cn6gBER8XX7UVPJXE8JpTGO2BmTJOk3c1YezY=;
-        b=lONezNtAYZiUSr1iYLLF2FAFUQSyPAyKMiOyNd4PyFlEEnMeuQSfMC3kgd+j+4lyji
-         fB5o3HzOIrLuUbRM74zkvm4Lt68gJ2bu5r4E/DIf+13z01pKiEq2BtEUXGB73MKFTX3w
-         OEDOrkvwgTp9wS6cLO57bDvnaiRV8YFGvYrFASu3FMK79mLc02KdHb6y+LVIDrnO6QKw
-         OSuOcAHiocCmla4RrGF0uChppDDsJ5qc8sbiJuIE4IFOCKqw+6XUleMpLHNKKl40lPFC
-         3RjG+nHOzqrsTla4+yu4BnwK2TNFFsAS5jni8Dx5cVESEw7yHiVvjBYtk2QSO39BkQ7e
-         wgDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7O4yi6cn6gBER8XX7UVPJXE8JpTGO2BmTJOk3c1YezY=;
-        b=dvBbrvd6DRAvLd0X/ulF/IXJg7JVPaDLFRYtlkOhr3JdilQEqrIZriNMTIMX94zm6d
-         NpKNwTLGvypNYiNM6hqvfPdV6W5mQWSGJBvz4cQl1R4mzRjlosZ/mB5HbURyFvJc6c2J
-         5ny1ShcixfrqIlAjf/eVAk7A721VUrneF+NB4zHyitavLxoduKXzenDn89VGrvQwEw2+
-         tcW7d2V3u5xDEBoYdGYd2NUSiDtahVDlRcy3G+yvFVs2BELxxMQOAy+LpkIgrAGDMVz9
-         gwOzsCia8zjjEjeGegrFFsx9zUr8l/7V8NRsOPcJKqqb2RQvOKGRkde33fgtoWjRy+ks
-         B5RQ==
-X-Gm-Message-State: AOAM533VJlS/9jE4YjhS7Kps3jNjdhkHxXbnMwZhg+7l/ThFUUX5wGSX
-        4COUzwcHoZvylUKG/OgM5lfAWS3Xo3VWR0N7nbA=
-X-Google-Smtp-Source: ABdhPJyE/AGEeMxwVpH/EFqVAUdh2yIubA70g70dg+zntH7F/uX+weKdCYbLk357XbEMR55n50qHL7nDnccDNBTMu8k=
-X-Received: by 2002:a05:6512:3c91:: with SMTP id h17mr4482345lfv.214.1622851715688;
- Fri, 04 Jun 2021 17:08:35 -0700 (PDT)
+        id S230255AbhFEAZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 20:25:57 -0400
+Received: from mga02.intel.com ([134.134.136.20]:53213 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229906AbhFEAZ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Jun 2021 20:25:56 -0400
+IronPort-SDR: n/J59wQVrVOHOEJIa9rJiJ052QNSz/B7YSSTKRxdCbZ8ntDQhr6ss0rQn0dSJKH43zig/BoYa5
+ I/fJ6g3JdfHg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10005"; a="191505922"
+X-IronPort-AV: E=Sophos;i="5.83,249,1616482800"; 
+   d="scan'208";a="191505922"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2021 17:24:08 -0700
+IronPort-SDR: FurWPIQxgq+h1KVjINEEeAORtwNZTNm5b4+wsUr+gf9BZXei9zI4xA3yO4L19WrJqN67SOWI4G
+ tNyjMNDDLv7Q==
+X-IronPort-AV: E=Sophos;i="5.83,249,1616482800"; 
+   d="scan'208";a="446862943"
+Received: from lmrivera-mobl.amr.corp.intel.com (HELO localhost.localdomain) ([10.251.24.65])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2021 17:24:08 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        sasha.neftin@intel.com, anthony.l.nguyen@intel.com,
+        linux-pci@vger.kernel.org, bhelgaas@google.com,
+        netdev@vger.kernel.org, mlichvar@redhat.com,
+        richardcochran@gmail.com, hch@infradead.org, helgaas@kernel.org
+Subject: [PATCH next-queue v5 0/4] igc: Add support for PCIe PTM
+Date:   Fri,  4 Jun 2021 17:23:52 -0700
+Message-Id: <20210605002356.3996853-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210517092006.803332-1-omosnace@redhat.com> <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
- <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net> <CAHC9VhR-kYmMA8gsqkiL5=poN9FoL-uCyx1YOLCoG2hRiUBYug@mail.gmail.com>
- <c7c2d7e1-e253-dce0-d35c-392192e4926e@iogearbox.net> <CAHC9VhS1XRZjKcTFgH1+n5uA-CeT+9BeSP5jvT2+RE5ougLpUg@mail.gmail.com>
- <2e541bdc-ae21-9a07-7ac7-6c6a4dda09e8@iogearbox.net> <CAHC9VhT464vr9sWxqY3PRB4DAccz=LvRMLgWBsSViWMR0JJvOQ@mail.gmail.com>
- <3ca181e3-df32-9ae0-12c6-efb899b7ce7a@iogearbox.net> <CAHC9VhTuPnPs1wMTmoGUZ4fvyy-es9QJpE7O_yTs2JKos4fgbw@mail.gmail.com>
- <f4373013-88fb-b839-aaaa-3826548ebd0c@iogearbox.net> <CAHC9VhS=BeGdaAi8Ae5Fx42Fzy_ybkcXwMNcPwK=uuA6=+SRcg@mail.gmail.com>
- <c59743f6-0000-1b15-bc16-ff761b443aef@iogearbox.net> <CAHC9VhT1JhdRw9P_m3niY-U-vukxTWKTE9q6AMyQ=r_ohpPxMw@mail.gmail.com>
-In-Reply-To: <CAHC9VhT1JhdRw9P_m3niY-U-vukxTWKTE9q6AMyQ=r_ohpPxMw@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 4 Jun 2021 17:08:24 -0700
-Message-ID: <CAADnVQ+0bNtDj46Q8s-h=rqJgZz2JaGTeHpbmof3e7fBBQKuDQ@mail.gmail.com>
-Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
- permission checks
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        selinux@vger.kernel.org, ppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 4, 2021 at 4:34 PM Paul Moore <paul@paul-moore.com> wrote:
->
-> > Again, the problem is not limited to BPF at all. kprobes is doing register-
-> > time hooks which are equivalent to the one of BPF. Anything in run-time
-> > trying to prevent probe_read_kernel by kprobes or BPF is broken by design.
->
-> Not being an expert on kprobes I can't really comment on that, but
-> right now I'm focused on trying to make things work for the BPF
-> helpers.  I suspect that if we can get the SELinux lockdown
-> implementation working properly for BPF the solution for kprobes won't
-> be far off.
+Hi,
 
-Paul,
+Changes from v4:
+  - Improved commit messages (Bjorn Helgaas);
 
-Both kprobe and bpf can call probe_read_kernel==copy_from_kernel_nofault
-from all contexts.
-Including NMI. Most of audit_log_* is not acceptable.
-Just removing a wakeup is not solving anything.
-Audit hooks don't belong in NMI.
-Audit design needs memory allocation. Hence it's not suitable
-for NMI and hardirq. But kprobes and bpf progs do run just fine there.
-BPF, for example, only uses pre-allocated memory.
+Changes from v3:
+  - More descriptive commit messages and comments (Bjorn Helgaas);
+  - Added a pcie_ptm_enabled() helper (Bjorn Helgaas);
+
+Changes from v2:
+  - Now the PTM timestamps are retrieved synchronously with the
+    ioctl();
+  - Fixed some typos in constants;
+  - The IGC_PTM_STAT register is write-1-to-clear, document this more
+    clearly;
+
+Changes from v1:
+  - This now should cross compile better, convert_art_ns_to_tsc() will
+    only be used if CONFIG_X86_TSC is enabled;
+  - PCIe PTM errors reported by the NIC are logged and PTM cycles are
+    restarted in case an error is detected;
+
+Original cover letter (lightly edited):
+
+This adds support for PCIe PTM (Precision Time Measurement) to the igc
+driver. PCIe PTM allows the NIC and Host clocks to be compared more
+precisely, improving the clock synchronization accuracy.
+
+Patch 1/4 reverts a commit that made pci_enable_ptm() private to the
+PCI subsystem, reverting makes it possible for it to be called from
+the drivers.
+
+Patch 2/4 adds the pcie_ptm_enabled() helper.
+
+Patch 3/4 calls pci_enable_ptm() from the igc driver.
+
+Patch 4/4 implements the PCIe PTM support. It adds a workqueue that
+reads the PTM registers periodically and collects the information so a
+subsequent call to getcrosststamp() has all the timestamps needed.
+
+Some questions are raised (also pointed out in the commit message):
+
+1. Using convert_art_ns_to_tsc() is too x86 specific, there should be
+   a common way to create a 'system_counterval_t' from a timestamp.
+
+2. convert_art_ns_to_tsc() says that it should only be used when
+   X86_FEATURE_TSC_KNOWN_FREQ is true, but during tests it works even
+   when it returns false. Should that check be done?
+
+Cheers,
+
+Vinicius Costa Gomes (4):
+  Revert "PCI: Make pci_enable_ptm() private"
+  PCI: Add pcie_ptm_enabled()
+  igc: Enable PCIe PTM
+  igc: Add support for PTP getcrosststamp()
+
+ drivers/net/ethernet/intel/igc/igc.h         |   1 +
+ drivers/net/ethernet/intel/igc/igc_defines.h |  31 ++++
+ drivers/net/ethernet/intel/igc/igc_main.c    |   6 +
+ drivers/net/ethernet/intel/igc/igc_ptp.c     | 182 +++++++++++++++++++
+ drivers/net/ethernet/intel/igc/igc_regs.h    |  23 +++
+ drivers/pci/pci.h                            |   3 -
+ drivers/pci/pcie/ptm.c                       |   9 +
+ include/linux/pci.h                          |  10 +
+ 8 files changed, 262 insertions(+), 3 deletions(-)
+
+-- 
+2.31.1
+
