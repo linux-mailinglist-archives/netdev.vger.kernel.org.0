@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B358039C67D
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 09:03:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF45F39C678
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 09:03:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230142AbhFEHFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 03:05:32 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:4363 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbhFEHF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 03:05:26 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Fxr9K2BP3z68TM;
-        Sat,  5 Jun 2021 14:59:49 +0800 (CST)
+        id S230060AbhFEHF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 03:05:27 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:4314 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229726AbhFEHFZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 03:05:25 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Fxr886q40z1BGSn;
+        Sat,  5 Jun 2021 14:58:48 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Sat, 5 Jun 2021 15:03:35 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
         <ms@dev.tdt.de>, <willemb@google.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 3/8] net: hd64570: fix the code style issue about "foo* bar"
-Date:   Sat, 5 Jun 2021 15:00:24 +0800
-Message-ID: <1622876429-47278-4-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 4/8] net: hd64570: fix the code style issue about trailing statements
+Date:   Sat, 5 Jun 2021 15:00:25 +0800
+Message-ID: <1622876429-47278-5-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1622876429-47278-1-git-send-email-huangguangbin2@huawei.com>
 References: <1622876429-47278-1-git-send-email-huangguangbin2@huawei.com>
@@ -45,82 +45,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peng Li <lipeng321@huawei.com>
 
-Fix the checkpatch error as "foo* bar" and should be "foo *bar",
-and "(foo*)" should be "(foo *)".
+Trailing statements should be on next line.
 
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/wan/hd64570.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/wan/hd64570.c | 60 +++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 42 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/net/wan/hd64570.c b/drivers/net/wan/hd64570.c
-index cca6101..6237da6 100644
+index 6237da6..f02cce0 100644
 --- a/drivers/net/wan/hd64570.c
 +++ b/drivers/net/wan/hd64570.c
-@@ -75,7 +75,7 @@ static inline int sca_intr_status(card_t *card)
- 	return result;
- }
+@@ -58,12 +58,18 @@ static inline int sca_intr_status(card_t *card)
+ 	u8 isr0 = sca_in(ISR0, card);
+ 	u8 isr1 = sca_in(ISR1, card);
  
--static inline port_t* dev_to_port(struct net_device *dev)
-+static inline port_t *dev_to_port(struct net_device *dev)
- {
- 	return dev_to_hdlc(dev)->priv;
- }
-@@ -211,7 +211,7 @@ static void sca_init_port(port_t *port)
- static inline void sca_msci_intr(port_t *port)
- {
- 	u16 msci = get_msci(port);
--	card_t* card = port_to_card(port);
-+	card_t *card = port_to_card(port);
- 	u8 stat = sca_in(msci + ST1, card); /* read MSCI ST1 status */
+-	if (isr1 & 0x03) result |= SCA_INTR_DMAC_RX(0);
+-	if (isr1 & 0x0C) result |= SCA_INTR_DMAC_TX(0);
+-	if (isr1 & 0x30) result |= SCA_INTR_DMAC_RX(1);
+-	if (isr1 & 0xC0) result |= SCA_INTR_DMAC_TX(1);
+-	if (isr0 & 0x0F) result |= SCA_INTR_MSCI(0);
+-	if (isr0 & 0xF0) result |= SCA_INTR_MSCI(1);
++	if (isr1 & 0x03)
++		result |= SCA_INTR_DMAC_RX(0);
++	if (isr1 & 0x0C)
++		result |= SCA_INTR_DMAC_TX(0);
++	if (isr1 & 0x30)
++		result |= SCA_INTR_DMAC_RX(1);
++	if (isr1 & 0xC0)
++		result |= SCA_INTR_DMAC_TX(1);
++	if (isr0 & 0x0F)
++		result |= SCA_INTR_MSCI(0);
++	if (isr0 & 0xF0)
++		result |= SCA_INTR_MSCI(1);
  
- 	/* Reset MSCI TX underrun and CDCD status bit */
-@@ -329,7 +329,7 @@ static inline void sca_tx_intr(port_t *port)
- {
- 	struct net_device *dev = port_to_dev(port);
- 	u16 dmac = get_dmac_tx(port);
--	card_t* card = port_to_card(port);
-+	card_t *card = port_to_card(port);
- 	u8 stat;
- 
- 	spin_lock(&port->lock);
-@@ -360,7 +360,7 @@ static inline void sca_tx_intr(port_t *port)
- 	spin_unlock(&port->lock);
- }
- 
--static irqreturn_t sca_intr(int irq, void* dev_id)
-+static irqreturn_t sca_intr(int irq, void *dev_id)
- {
- 	card_t *card = dev_id;
- 	int i;
-@@ -392,7 +392,7 @@ static irqreturn_t sca_intr(int irq, void* dev_id)
- 
- static void sca_set_port(port_t *port)
- {
--	card_t* card = port_to_card(port);
-+	card_t *card = port_to_card(port);
- 	u16 msci = get_msci(port);
- 	u8 md2 = sca_in(msci + MD2, card);
- 	unsigned int tmc, br = 10, brv = 1024;
-@@ -443,7 +443,7 @@ static void sca_set_port(port_t *port)
- static void sca_open(struct net_device *dev)
- {
- 	port_t *port = dev_to_port(dev);
--	card_t* card = port_to_card(port);
-+	card_t *card = port_to_card(port);
+ 	if (!(result & SCA_INTR_DMAC_TX(0)))
+ 		if (sca_in(DSR_TX(0), card) & DSR_EOM)
+@@ -447,23 +453,41 @@ static void sca_open(struct net_device *dev)
  	u16 msci = get_msci(port);
  	u8 md0, md2;
  
-@@ -506,7 +506,7 @@ static void sca_open(struct net_device *dev)
- static void sca_close(struct net_device *dev)
- {
- 	port_t *port = dev_to_port(dev);
--	card_t* card = port_to_card(port);
-+	card_t *card = port_to_card(port);
+-	switch(port->encoding) {
+-	case ENCODING_NRZ:	md2 = MD2_NRZ;		break;
+-	case ENCODING_NRZI:	md2 = MD2_NRZI;		break;
+-	case ENCODING_FM_MARK:	md2 = MD2_FM_MARK;	break;
+-	case ENCODING_FM_SPACE:	md2 = MD2_FM_SPACE;	break;
+-	default:		md2 = MD2_MANCHESTER;
++	switch (port->encoding) {
++	case ENCODING_NRZ:
++		md2 = MD2_NRZ;
++		break;
++	case ENCODING_NRZI:
++		md2 = MD2_NRZI;
++		break;
++	case ENCODING_FM_MARK:
++		md2 = MD2_FM_MARK;
++		break;
++	case ENCODING_FM_SPACE:
++		md2 = MD2_FM_SPACE;
++		break;
++	default:
++		md2 = MD2_MANCHESTER;
+ 	}
  
- 	/* reset channel */
- 	sca_out(CMD_RESET, get_msci(port) + CMD, port_to_card(port));
+ 	if (port->settings.loopback)
+ 		md2 |= MD2_LOOPBACK;
+ 
+-	switch(port->parity) {
+-	case PARITY_CRC16_PR0:	     md0 = MD0_HDLC | MD0_CRC_16_0;  break;
+-	case PARITY_CRC16_PR1:	     md0 = MD0_HDLC | MD0_CRC_16;    break;
+-	case PARITY_CRC16_PR0_CCITT: md0 = MD0_HDLC | MD0_CRC_ITU_0; break;
+-	case PARITY_CRC16_PR1_CCITT: md0 = MD0_HDLC | MD0_CRC_ITU;   break;
+-	default:		     md0 = MD0_HDLC | MD0_CRC_NONE;
++	switch (port->parity) {
++	case PARITY_CRC16_PR0:
++		md0 = MD0_HDLC | MD0_CRC_16_0;
++		break;
++	case PARITY_CRC16_PR1:
++		md0 = MD0_HDLC | MD0_CRC_16;
++		break;
++	case PARITY_CRC16_PR0_CCITT:
++		md0 = MD0_HDLC | MD0_CRC_ITU_0;
++		break;
++	case PARITY_CRC16_PR1_CCITT:
++		md0 = MD0_HDLC | MD0_CRC_ITU;
++		break;
++	default:
++		md0 = MD0_HDLC | MD0_CRC_NONE;
+ 	}
+ 
+ 	sca_out(CMD_RESET, msci + CMD, card);
 -- 
 2.8.1
 
