@@ -2,103 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EED8539CA30
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 19:23:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5B6439CA31
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 19:24:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229994AbhFERZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 13:25:42 -0400
-Received: from mail-ej1-f51.google.com ([209.85.218.51]:44786 "EHLO
-        mail-ej1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229964AbhFERZl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 13:25:41 -0400
-Received: by mail-ej1-f51.google.com with SMTP id c10so19366242eja.11
-        for <netdev@vger.kernel.org>; Sat, 05 Jun 2021 10:23:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=+ViIoKAJPzyUU5XsR8IS1dmKwsxsBwo0ub/03st1PAo=;
-        b=fDlTM8G9GgeXNgU5YK0Ipk9nonu3r+2HmChalSiuxpL3eeCjL5uYRT9nf8bb7XJF7+
-         ZaMwF+F0OUXPKLJBeakm0n5bJWzZMIkM7biA5imKRfm/I8eDxvfyVTNYE80tH5smEPtI
-         XCFtYJnVABrdOHTh9vBJIlL1CBuZyoijqRfhR7PMVbJ7V+fG5KehbAwGG7d62cuiuIra
-         LNkWJjiOxS1A3BtS3qaLTu28LqIMpKbsU10vgjywZdlkqHkOmloroyIs/rw3QX6SIWIy
-         bBneVq9bq621MQGpsbpjQi7YZ4JTwGqKpVeuWJGwPh4wGuzt6Pru4bUzslZlEs7pJTB9
-         4blA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=+ViIoKAJPzyUU5XsR8IS1dmKwsxsBwo0ub/03st1PAo=;
-        b=lNWkYga1laqtO2saaK4n57YrZIK6pz7N2hEKw48VkLm3VO/Mo8xxcxTM+wxANt5TEp
-         t5V/usRF85lQ8RQeegaPu6XDX0yCoMyj0u2xOjMmPvcX17PA3Hu5GxAkBuEqks7t978v
-         T3z4D5aaFU6aNbm0GuQxuOJHPDLY3rs7ieS/3aEPQcqj/74VqhGyBPa0PPtYnEjHyxKM
-         1ftbpdrVvPg/HiR1ce/K8fdsSoaxtZLsVbHEN96oR8fAO/DONh3k9mptIpmQzm1C8X8E
-         GEfzYxaTcEm4LYxKIXdOEj2VGDCm9ulj8saE2IbyTRfQmjTrL31slj+6HPhC95wSklUO
-         k+nw==
-X-Gm-Message-State: AOAM5305frpgY+Uo/rPQfqOunfmH1H1et9/er8DxNTrLWyjl+/imYRSY
-        gLwTmOQoSJ7FAEpv1V9RSJrVxtpMtJ6M2xuCLTA=
-X-Google-Smtp-Source: ABdhPJzJatzejAAac0l/vEM2obSQ6jGyfiiXbXeRzvjnonWPhAb7lPqh1Nhj6X+lWpaePirfswZ65ylAGQXI7O4NNEo=
-X-Received: by 2002:a17:906:2d51:: with SMTP id e17mr9955625eji.500.1622913772840;
- Sat, 05 Jun 2021 10:22:52 -0700 (PDT)
+        id S230019AbhFER0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 13:26:46 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47224 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229978AbhFER0p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Jun 2021 13:26:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Rb/7FWLnTAJZbXVyN6uKXRZaBP2+UHX3uFizerIdV+k=; b=Hx+4zQRsy3mBKDFMaqAsKRcMzg
+        CJ+laIg1xzdNAaJ8hLeLaiqrrOp/O+Ww/u9qWkLJSjGFsfr9pVmI1T3RKG2mZKsvF4dFF5FHMKG69
+        WTUc8LpUMHp600ZG3UPAu7ahHNDADSzFYZU3RDimBfhM1DCKvGknrHy9+DGwIbfT/zWA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lpa2R-007wnO-P2; Sat, 05 Jun 2021 19:24:47 +0200
+Date:   Sat, 5 Jun 2021 19:24:47 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Liang Xu <lxu@maxlinear.com>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Thomas Mohren <tmohren@maxlinear.com>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>
+Subject: Re: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
+Message-ID: <YLuzX5EYfGNaosHT@lunn.ch>
+References: <20210604161250.49749-1-lxu@maxlinear.com>
+ <20210604194428.2276092-1-martin.blumenstingl@googlemail.com>
+ <b01a8ac2-b77e-32aa-7c9b-57de4f2d3a95@maxlinear.com>
 MIME-Version: 1.0
-Received: by 2002:aa7:d8d0:0:0:0:0:0 with HTTP; Sat, 5 Jun 2021 10:22:52 -0700 (PDT)
-Reply-To: revbishop.kenedward@gmail.com
-From:   "Rev. Ken Edward" <mr.abuazizi08@gmail.com>
-Date:   Sat, 5 Jun 2021 10:22:52 -0700
-Message-ID: <CAG7B4v=fjshaVKtfGdXnxQ82rMzHBuiwBBbZqoN7398gt_si+g@mail.gmail.com>
-Subject: Attn: Esteem Beneficiary.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b01a8ac2-b77e-32aa-7c9b-57de4f2d3a95@maxlinear.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nations (UN), European Union (EU) and FBI.We have been able to track down.
+On Sat, Jun 05, 2021 at 03:32:39AM +0000, Liang Xu wrote:
+> On 5/6/2021 3:44 am, Martin Blumenstingl wrote:
+> > This email was sent from outside of MaxLinear.
+> >
+> >
+> > Hello,
+> >
+> >> Add driver to support the Maxlinear GPY115, GPY211, GPY212, GPY215,
+> >> GPY241, GPY245 PHYs.
+> > to me this seems like an evolution of the Lantiq XWAY PHYs for which
+> > we already have a driver: intel-xway.c.
+> > Intel took over Lantiq some years ago and last year MaxLinear then
+> > took over what was formerly Lantiq from Intel.
+> >
+> >  From what I can tell right away: the interrupt handling still seems
+> > to be the same. Also the GPHY firmware version register also was there
+> > on older SoCs (with two or more GPHYs embedded into the SoC). SGMII
+> > support is new. And I am not sure about Wake-on-LAN.
+> >
+> > Have you considered adding support for these new PHYs to intel-xway.c?
 
-Information from Nations (UN), European Union (EU) and FBI.We have
-been able to track down some scam artist in various parts of African
-countries which includes (Nigeria, Ghana and Senegal with cote
-d'ivoire, Cotonou,
-Republic of Benin ) and they are all in Government custody now, they
-will appear at International Criminal Court (ICC) soon for Justice.
-During the course of investigation, they were able to recover some
-funds from these scam artists and IMF organization have ordered the
-funds recovered to be shared among the 100 Lucky people listed around
-the World as a compensation.
-This notice is been directed to you because your email address was
-found in one of the scam Artists file and computer hard-disk while the
-investigation, maybe you have been scammed,
-You are therefore being compensated with sum of $6.5million US Dollars
-valid into an (ATM
-Card Number 506119102227). Even if you are now dealing with this
-nonofficial directors of the bank or any department always requesting
-money from you,
-You should STOP your communication with them and forward the details
-so that we will help and recover your fund peacefully and ilegal.
-Since your email address is among the lucky beneficiaries who will
-receive a compensation funds, we have arranged your payment to be paid
-to you through ATM VISA CARD and deliver to your postal address with
-the Pin
-Numbers as to enable you withdrawal maximum of $4,000 on each
-withdrawal from any Bank ATM Machine of your choice, until all the
-funds are exhausted.
+The WOL interrupts are the same, which could imply WoL configuration
+is the same? If it is the same, it would be good to also add WoL to
+intel-xway.c.
 
-The package is coming from Ouagadougou Burkina Faso.don't forget to
-reconfirm your following information.
+What this new driver does not yet do is LEDs. It would be interesting
+to see if the LED control is the same. Hopefully, one day, generic LED
+support will get added. If this PHY and intel-xway.c has the same LED
+code, we will want to share it.
 
-1. Your Full Name:
-2. Address Where You want us to Send Your ATM Card
-3. Cell/Mobile Number
-4. Copy of your passport
+> They are based on different IP and have many differences.
 
-All that is required of your now is to contact our 100% trust
-officials by the Name of Rev. Ken Edward. Below is his contact
-information:
+Please could you list the differences? Is the datasheet available?  I
+found a datasheet for the XWAY, so it would be nice to be able to
+compare them.
 
-Contact Name:  Rev. Ken Edward
-Email Address: revbishop.kenedward@gmail.com
-Whatsapp number : +22662295810
+> The XWAY PHYs are going to EoL (or maybe already EoL).
+
+That does not matter. They are going to be in use for the next 5 years
+or more, until all the products using them have died or been
+replaced. Linux supports hardware that is in use, not just what
+vendors sell today.
+
+> It creates difficulty for the test coverage to put together.
+
+That also does not really matter. If somebody has both, does the work
+to merge the drivers and overall we have less code and more features,
+the patch will be accepted. 
 
 
-Yours Faithfully,
-Mr. Wu Hongbo
-Under-Secretary-General for Economic and Social Affairs
+	Andrew
+
+
+
