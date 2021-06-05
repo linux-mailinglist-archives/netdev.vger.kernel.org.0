@@ -2,161 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 794E739C8D1
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 15:31:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D187939C8E3
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 15:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229996AbhFENdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 09:33:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38138 "EHLO mail.kernel.org"
+        id S230128AbhFENjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 09:39:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38832 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229931AbhFENdE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 5 Jun 2021 09:33:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C9BBB613D8;
-        Sat,  5 Jun 2021 13:31:15 +0000 (UTC)
+        id S229931AbhFENi5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Jun 2021 09:38:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C23286135F;
+        Sat,  5 Jun 2021 13:37:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622899876;
-        bh=bsrt0jcKI0jjKkBzxp17PWlnlhWBCOY6fqcVWXzFkko=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WBRAmsel9z8segme8H2M/zOmgvtLJp+9pnqoV2WZfV559UYaiOETiRRRyM33h84UO
-         bBq2KJvEiu22gYdqZRjIcMPZ7j5qTrsra+fZjUqTuT4CXjlDzpKn4wnd1JLjWLKal1
-         gRbbMss/JOhUtg1JHQRmvkbD9F5mhvj4q4/+ZdJcc6uLHtlugBt/16l3tibWcdEVAQ
-         KXG+EA239371FbmRSadybfPAICX468lkIqZyFlottP5F6HS28yNnd6wUPHCwCkQfP5
-         4dhBG8XYGhB0ZKiy96Kc0hKYR3lu6FTVc3C/8fKih2GrrELBajc69RMC2R5wsxZ1Bh
-         zLq5fxWssr+7g==
-Received: by pali.im (Postfix)
-        id 51C66857; Sat,  5 Jun 2021 15:31:13 +0200 (CEST)
-Date:   Sat, 5 Jun 2021 15:31:13 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Hauke Mehrtens <hauke@hauke-m.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Igal Liberman <Igal.Liberman@freescale.com>,
-        Shruti Kanetkar <Shruti@freescale.com>,
-        Emil Medve <Emilian.Medve@freescale.com>,
-        Scott Wood <oss@buserror.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>
-Subject: Re: What is inside GPON SFP module?
-Message-ID: <20210605133113.j4gyjo4pnmxpxbqe@pali>
-References: <AM6PR04MB3976B62084EC462BA02F0C4CEC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
- <20210604192732.GW30436@shell.armlinux.org.uk>
- <AM6PR04MB39768A569CE3CC4EC61A8769EC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
- <YLqLzOltcb6jan+B@lunn.ch>
- <AM6PR04MB39760B986E86BA9169DEECC5EC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
- <20210604233455.fwcu2chlsed2gwmu@pali>
- <20210605003306.GY30436@shell.armlinux.org.uk>
- <20210605122639.4lpox5bfppoyynl3@skbuf>
- <20210605125004.v6njqob6prb7k75k@pali>
- <80966478-8a7c-b66f-50b7-e50fc00b1784@hauke-m.de>
+        s=k20201202; t=1622900229;
+        bh=vVFuxJcc2zxGSbB7UdD22Ei/qbdSpSclZeHlTn/3YhU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YvYT6g2uMiGoR+6sy8adxF2RKOKdLfZwZM1lQ2XSeGEmVRPfj+lL9GfMuDZZyN5sW
+         owde4vG3yj7p7pLXeq7cT8Quzu5K2oje+SVTkxIFZzcqSZ8hnMEW22eBk76FE287fo
+         4UO5rHWF2ckQlxw3LXeqP9dl2lb4h/WYP8nTAjJYJK6XJoYk/G411kYe/F/2iQJhoD
+         xXRTDbDCKLXwoKXPmi6Vr+WyuZ3ew8qcXU3FezEQ7yPGxTwls2XhX7YcBJMW4KIq4h
+         iQEMQ7FEZy5AfH5qZZbVs3RolIS66jPxDTIm3nQXafdQE5dr92NhDgnKsUXTMjPJ2E
+         9HOoolYpwluWw==
+Date:   Sat, 5 Jun 2021 15:37:01 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     "Jonathan Corbet" <corbet@lwn.net>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        coresight@lists.linaro.org, devicetree@vger.kernel.org,
+        kunit-dev@googlegroups.com, kvm@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-security-module@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 00/34] docs: avoid using ReST :doc:`foo` tag
+Message-ID: <20210605153701.56a8e2d8@coco.lan>
+In-Reply-To: <cover.1622898327.git.mchehab+huawei@kernel.org>
+References: <cover.1622898327.git.mchehab+huawei@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <80966478-8a7c-b66f-50b7-e50fc00b1784@hauke-m.de>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Saturday 05 June 2021 15:04:55 Hauke Mehrtens wrote:
-> On 6/5/21 2:50 PM, Pali Rohár wrote:
-> > On Saturday 05 June 2021 15:26:39 Vladimir Oltean wrote:
-> > > On Sat, Jun 05, 2021 at 01:33:07AM +0100, Russell King (Oracle) wrote:
-> > > > It started out as described - literally, 1000base-X multiplied by 2.5x.
-> > > > There are setups where that is known to work - namely GPON SFPs that
-> > > > support 2500base-X. What that means is that we know the GPON SFP
-> > > > module negotiates in-band AN with 2500base-X. However, we don't know
-> > > > whether the module will work if we disable in-band AN.
-> > > 
-> > > Pardon my ignorance, but what is inside a GPON ONT module? Just a laser
-> > > and some amplifiers? So it would still be the MAC PCS negotiating flow
-> > > control with the remote link partner? That's a different use case
-> > > from
-> a
-> > > PHY transmitting the negotiated link modes to the MAC.
-> > 
-> > Hello Vladimir! All GPON ONU/ONT SFP modules which I have tested, are
-> > fully featured mini computers. It is some SoC with powerful CPU, fiber
-> > part, at least two NICs and then two phys, one for fiber part and one
-> > for "SFP"-part (in most cases 1000base-x or 2500base-x). On SoC inside
-> > is running fully featured operating system, in most cases Linux kernel
-> > 2.6.3x and tons of userspace applications which implements "application"
-> > layer of GPON protocol -- the most important part. If OEM vendor of GPON
-> > SFP stick did not locked it, you can connect to this "computer" via
-> > telnet or web browser and configure some settings, including GPON stuff
-> > and also how GPON network is connected to SFP part -- e.g. it can be
-> > fully featured IPv4 router with NAT or just plain bridge mode where
-> > "ethernet data packets" (those which are not part of ISP configuration
-> > protocol) are pass-throw to SFP phy 1000base-x to host CPU. GPON is not
-> > ethernet, it is some incompatible and heavily layered extension on ATM.
-> > Originally I thought that ATM is long ago dead (as I saw it in used last
-> > time in ADSL2) but it is still alive and cause issues... I think it does
-> > not use 8b/10b encoding and therefore cannot be directly mapped to
-> > 1000base-x. Also GPON uses different wavelengths for inbound and
-> > outbound traffic. And to make it even more complicated it uses totally
-> > nonstandard asynchronous speeds, inbound is 2488.32Mbit/s, outbound is
-> > 1244.16Mbit/s. So I guess CPU/SoC with GPON support (something which is
-> > inside that GPON ONU/ONT stick) must use totally different modes for
-> > which we do not have any option in DTS yet.
-> > 
-> > So once mainline kernel will support these "computers" with GPON support
-> > it would be required to define new kind of phy modes... But I do not
-> > think it happens and all OEM vendors are using 2.6.3x kernels their
-> > userspace GPON implementation is closed has tons of secrets.
-> > 
+Em Sat,  5 Jun 2021 15:17:59 +0200
+Mauro Carvalho Chehab <mchehab+huawei@kernel.org> escreveu:
+
+> As discussed at:
+> 	https://lore.kernel.org/linux-doc/871r9k6rmy.fsf@meer.lwn.net/
 > 
-> Hi,
+> It is better to avoid using :doc:`foo` to refer to Documentation/foo.rst, as the
+> automarkup.py extension should handle it automatically, on most cases.
+
+Forgot to mention:
+
+1. this series is against docs-next branch;
+2. maintainers bcc, as otherwise the e-mail would be rejected,
+   due to the number of c/c. I opted to keep c/c the mailing
+   lists.
+
+Regards,
+Mauro
+
 > 
-> This description of the GPON SFP sticks is correct, but it misses some of
-> the complexity. ;-) GPON is also a shared medium like DOCSIS, you can not
-> always send, but you have to wait till you get your time slice over PLOAM.
+> There are a couple of exceptions to this rule:
+> 
+> 1. when :doc:  tag is used to point to a kernel-doc DOC: markup;
+> 2. when it is used with a named tag, e. g. :doc:`some name <foo>`;
+> 
+> It should also be noticed that automarkup.py has currently an issue:
+> if one use a markup like:
+> 
+> 	Documentation/dev-tools/kunit/api/test.rst
+> 	  - documents all of the standard testing API excluding mocking
+> 	    or mocking related features.
+> 
+> or, even:
+> 
+> 	Documentation/dev-tools/kunit/api/test.rst
+> 	    documents all of the standard testing API excluding mocking
+> 	    or mocking related features.
+> 	
+> The automarkup.py will simply ignore it. Not sure why. This patch series
+> avoid the above patterns (which is present only on 4 files), but it would be
+> nice to have a followup patch fixing the issue at automarkup.py.
+> 
+> On this series:
+> 
+> Patch 1 manually adjust the references inside driver-api/pm/devices.rst,
+> as there it uses :file:`foo` to refer to some Documentation/ files;
+> 
+> Patch 2 converts a table at Documentation/dev-tools/kunit/api/index.rst
+> into a list, carefully avoiding the 
+> 
+> Patch 3 converts the cross-references at the media documentation, also
+> avoiding the automarkup.py bug;
+> 
+> Patches 4-34 convert the other occurrences via a replace script. They were
+> manually edited, in order to honour 80-columns where possible.
+> 
+> I did a diff between the Sphinx 2.4.4 output before and after this patch
+> series in order to double-check that all converted Documentation/ 
+> references will produce <a href=<foo>.rst>foo title</a> tags.
+> 
+> Mauro Carvalho Chehab (34):
+>   docs: devices.rst: better reference documentation docs
+>   docs: dev-tools: kunit: don't use a table for docs name
+>   media: docs: */media/index.rst: don't use ReST doc:`foo`
+>   media: userspace-api: avoid using ReST :doc:`foo` markup
+>   media: driver-api: drivers: avoid using ReST :doc:`foo` markup
+>   media: admin-guide: avoid using ReST :doc:`foo` markup
+>   docs: admin-guide: pm: avoid using ReSt :doc:`foo` markup
+>   docs: admin-guide: hw-vuln: avoid using ReST :doc:`foo` markup
+>   docs: admin-guide: sysctl: avoid using ReST :doc:`foo` markup
+>   docs: block: biodoc.rst: avoid using ReSt :doc:`foo` markup
+>   docs: bpf: bpf_lsm.rst: avoid using ReSt :doc:`foo` markup
+>   docs: core-api: avoid using ReSt :doc:`foo` markup
+>   docs: dev-tools: testing-overview.rst: avoid using ReSt :doc:`foo`
+>     markup
+>   docs: dev-tools: kunit: avoid using ReST :doc:`foo` markup
+>   docs: devicetree: bindings: submitting-patches.rst: avoid using ReSt
+>     :doc:`foo` markup
+>   docs: doc-guide: avoid using ReSt :doc:`foo` markup
+>   docs: driver-api: avoid using ReSt :doc:`foo` markup
+>   docs: driver-api: gpio: using-gpio.rst: avoid using ReSt :doc:`foo`
+>     markup
+>   docs: driver-api: surface_aggregator: avoid using ReSt :doc:`foo`
+>     markup
+>   docs: driver-api: usb: avoid using ReSt :doc:`foo` markup
+>   docs: firmware-guide: acpi: avoid using ReSt :doc:`foo` markup
+>   docs: hwmon: adm1177.rst: avoid using ReSt :doc:`foo` markup
+>   docs: i2c: avoid using ReSt :doc:`foo` markup
+>   docs: kernel-hacking: hacking.rst: avoid using ReSt :doc:`foo` markup
+>   docs: networking: devlink: avoid using ReSt :doc:`foo` markup
+>   docs: PCI: endpoint: pci-endpoint-cfs.rst: avoid using ReSt :doc:`foo`
+>     markup
+>   docs: PCI: pci.rst: avoid using ReSt :doc:`foo` markup
+>   docs: process: submitting-patches.rst: avoid using ReSt :doc:`foo`
+>     markup
+>   docs: security: landlock.rst: avoid using ReSt :doc:`foo` markup
+>   docs: trace: coresight: coresight.rst: avoid using ReSt :doc:`foo`
+>     markup
+>   docs: trace: ftrace.rst: avoid using ReSt :doc:`foo` markup
+>   docs: userspace-api: landlock.rst: avoid using ReSt :doc:`foo` markup
+>   docs: virt: kvm: s390-pv-boot.rst: avoid using ReSt :doc:`foo` markup
+>   docs: x86: avoid using ReSt :doc:`foo` markup
+> 
+>  .../PCI/endpoint/pci-endpoint-cfs.rst         |  2 +-
+>  Documentation/PCI/pci.rst                     |  6 +--
+>  .../special-register-buffer-data-sampling.rst |  3 +-
+>  Documentation/admin-guide/media/bt8xx.rst     | 15 ++++----
+>  Documentation/admin-guide/media/bttv.rst      | 21 ++++++-----
+>  Documentation/admin-guide/media/index.rst     | 12 +++---
+>  Documentation/admin-guide/media/saa7134.rst   |  3 +-
+>  Documentation/admin-guide/pm/intel_idle.rst   | 16 +++++---
+>  Documentation/admin-guide/pm/intel_pstate.rst |  9 +++--
+>  Documentation/admin-guide/sysctl/abi.rst      |  2 +-
+>  Documentation/admin-guide/sysctl/kernel.rst   | 37 ++++++++++---------
+>  Documentation/block/biodoc.rst                |  2 +-
+>  Documentation/bpf/bpf_lsm.rst                 | 13 ++++---
+>  .../core-api/bus-virt-phys-mapping.rst        |  2 +-
+>  Documentation/core-api/dma-api.rst            |  5 ++-
+>  Documentation/core-api/dma-isa-lpc.rst        |  2 +-
+>  Documentation/core-api/index.rst              |  4 +-
+>  Documentation/dev-tools/kunit/api/index.rst   |  8 ++--
+>  Documentation/dev-tools/kunit/faq.rst         |  2 +-
+>  Documentation/dev-tools/kunit/index.rst       | 14 +++----
+>  Documentation/dev-tools/kunit/start.rst       |  6 +--
+>  Documentation/dev-tools/kunit/tips.rst        |  5 ++-
+>  Documentation/dev-tools/kunit/usage.rst       |  8 ++--
+>  Documentation/dev-tools/testing-overview.rst  | 16 ++++----
+>  .../bindings/submitting-patches.rst           | 11 +++---
+>  Documentation/doc-guide/contributing.rst      |  8 ++--
+>  Documentation/driver-api/gpio/using-gpio.rst  |  4 +-
+>  Documentation/driver-api/ioctl.rst            |  2 +-
+>  .../driver-api/media/drivers/bttv-devel.rst   |  2 +-
+>  Documentation/driver-api/media/index.rst      | 10 +++--
+>  Documentation/driver-api/pm/devices.rst       |  8 ++--
+>  .../surface_aggregator/clients/index.rst      |  3 +-
+>  .../surface_aggregator/internal.rst           | 15 ++++----
+>  .../surface_aggregator/overview.rst           |  6 ++-
+>  Documentation/driver-api/usb/dma.rst          |  6 +--
+>  .../acpi/dsd/data-node-references.rst         |  3 +-
+>  .../firmware-guide/acpi/dsd/graph.rst         |  2 +-
+>  .../firmware-guide/acpi/enumeration.rst       |  7 ++--
+>  Documentation/hwmon/adm1177.rst               |  3 +-
+>  Documentation/i2c/instantiating-devices.rst   |  2 +-
+>  Documentation/i2c/old-module-parameters.rst   |  3 +-
+>  Documentation/i2c/smbus-protocol.rst          |  4 +-
+>  Documentation/kernel-hacking/hacking.rst      |  4 +-
+>  .../networking/devlink/devlink-region.rst     |  2 +-
+>  .../networking/devlink/devlink-trap.rst       |  4 +-
+>  Documentation/process/submitting-patches.rst  | 32 ++++++++--------
+>  Documentation/security/landlock.rst           |  3 +-
+>  Documentation/trace/coresight/coresight.rst   |  8 ++--
+>  Documentation/trace/ftrace.rst                |  2 +-
+>  Documentation/userspace-api/landlock.rst      | 11 +++---
+>  .../userspace-api/media/glossary.rst          |  2 +-
+>  Documentation/userspace-api/media/index.rst   | 12 +++---
+>  Documentation/virt/kvm/s390-pv-boot.rst       |  2 +-
+>  Documentation/x86/boot.rst                    |  4 +-
+>  Documentation/x86/mtrr.rst                    |  2 +-
+>  55 files changed, 217 insertions(+), 183 deletions(-)
+> 
 
-Hello!
 
-I think same applies also for 1000BASE-PX or 10GBASE-PR GEPON passive
-ethernet networks (Beware GPON != GEPON).
 
-But I think this is not an issue. There are also other "shared medium"
-technologies (e.g. mobile network; or WiFi on DFS channels) for which
-exists hardware supported by mainline kernel (3G/LTE modems).
-
-> In addition the GPON SFP stick also have to talk the OMCI protocol which
-> allows to operator to configure all sorts of layer 2 things. They can also
-> login to your SFP stick. ;-)
-
-Yes, I just described it as "application" layer. It is complicated and
-basically something which is not suppose to be implemented in kernel.
-Plus GPON vendors extends (standardized) OMCI protocol with their own
-extension which means that without their implementation on client side
-it is impossible to fully establish connection to "server" OLT part.
-
-> There are also some passive GPON SFP sticks which just translate between
-> electrical and optical signals, but to operate them you need a GPON MAC and
-> managed layer on your host.
-
-Interesting... Do you know where to buy or test such passive GPON SFP sticks?
-
-And is there some documentation how these sticks works? And what kind of
-phy mode they are using over SerDes? Because due to different inbound
-and outbound speeds it cannot be neither 1000base-x nor 2500base-x.
-
-> Adding GPON support properly into Linux is not an easy task, Linux would
-> probably need a subsystem with a complexity compared to cfg80211 + hostapd.
-
-Yea... But maybe it could be easier to implement just "client part"
-(ONU/ONT) without "server part" (OLT).
-
-> Is there a list of things these GPON sticks running Linux should do better
-> in the future? For example what to avoid in the EEPROM emulation handling?
-
-Well... If you think that it is possible to address these issues
-directly to GPON vendors and they will fix them in next version of GPON
-SFP sticks, I could try to find some time and prepare list of lot of
-issues...
+Thanks,
+Mauro
