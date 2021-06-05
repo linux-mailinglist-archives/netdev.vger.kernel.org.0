@@ -2,310 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2CE639CA20
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 19:10:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38F5A39CA27
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 19:16:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229982AbhFERMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 13:12:15 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:53560 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229958AbhFERMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 13:12:14 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 155H43Fd011163;
-        Sat, 5 Jun 2021 10:10:05 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=Btw4KC6HztCo/l7eRdfE/kr3OFCT+fBbWxVDwdZ1OJE=;
- b=FXs+sXsldR8sxCTTWRquCDPxR/IE4x8DP+7c6foKRStPs0ZnV4FX7xHnctB8+nKsm/Y/
- iNdgYjH/u7ZV7Xlb5KAlkvNW6O0VDpSPPtIDHpXdJtPl/mLDLS9A3lQwXyhYm+gw11yn
- JzgIFOKBbbB5SXdvjo2WyAdtY/5GRAcymTE= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 39073uhapj-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sat, 05 Jun 2021 10:10:04 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Sat, 5 Jun 2021 10:10:04 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=APSd3PKtexRhFMTmTnJAOemJDehHAs9b9eKXFn2s3Z1GL1hE/mvi8WsRAI5sCN+JiexBSN0E9Rmhs14l60Ncc0onOk+fym8E6XzTImGahJP81TnHe+O9VTZBKeCQ2WkS3WwInBrfThlQbRIiecHpUzPNtRS0QgzOkvtKCDLgwflgAgYjLvFTblKd4TBK9JkDZjXffix6w7ndTjor94DuOQ/O2H0q8wpTQCrzYcUojXZYxoFfI/Wjx5San8iexNiDOoM4ziWOx6nDUO1gSP+cjASv53Ey8DgJiwdFHr3J1oWyDvMUnxv/PmiKvbSZIJknFarsAco1dIHT2QbO24c4pw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Btw4KC6HztCo/l7eRdfE/kr3OFCT+fBbWxVDwdZ1OJE=;
- b=F8qMgTW5ybiE8YFnUYw0nPwocj5isWejovSfq7NnKIGUya0O0oU+eqeqwImHxCJ/Xh4/j8HKrbG1/hHjEJ/J8qIE43h4uX/T3NNX4hCHqUnddQDmQV8luuj4ti90VwCuR0yLbRoGJD9H5+dke3pL7oVPIhXsqD9H87YRqqhQRHftgwqq78EYRNh6aKofbPbNIy9NPbf54gwh6M34lp6l0zeCxdmGX2z5UFW1YJ2ieNqFZG6BMvEA5mI/gnvvEXxEf4dN+uhtOZgPE40E4Gen9VzF3egoYMWO6S8RLGE/y8yTPgC9jQvVxM2bdpucJp2+fKmvwK7bt7iS5vc5Z/IHGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SN6PR1501MB2030.namprd15.prod.outlook.com (2603:10b6:805:3::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.26; Sat, 5 Jun
- 2021 17:10:02 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::d886:b658:e2eb:a906]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::d886:b658:e2eb:a906%5]) with mapi id 15.20.4195.026; Sat, 5 Jun 2021
- 17:10:02 +0000
-Subject: Re: [PATCH bpf-next v2 6/7] libbpf: add bpf_link based TC-BPF
- management API
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, <bpf@vger.kernel.org>
-CC:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        <netdev@vger.kernel.org>
-References: <20210604063116.234316-1-memxor@gmail.com>
- <20210604063116.234316-7-memxor@gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <c4273132-6ce3-f7b4-6312-4dce18a5ebc8@fb.com>
-Date:   Sat, 5 Jun 2021 10:09:59 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
-In-Reply-To: <20210604063116.234316-7-memxor@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-X-Originating-IP: [2620:10d:c090:400::5:80b3]
-X-ClientProxiedBy: BYAPR02CA0034.namprd02.prod.outlook.com
- (2603:10b6:a02:ee::47) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21c1::1a79] (2620:10d:c090:400::5:80b3) by BYAPR02CA0034.namprd02.prod.outlook.com (2603:10b6:a02:ee::47) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.22 via Frontend Transport; Sat, 5 Jun 2021 17:10:01 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 220702bf-4cf3-44d2-bcc7-08d92844c173
-X-MS-TrafficTypeDiagnostic: SN6PR1501MB2030:
-X-Microsoft-Antispam-PRVS: <SN6PR1501MB20302444A299965C1A558F31D33A9@SN6PR1501MB2030.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:279;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3iQ9dxyZcVz/9rksfANso8nZP3mXGb6luk1se0B9UGxADuH+Z+crITQweDDQ2y6flg+IDUxIqdhdOv6B3P8N6O0aD97w0hiR2bQTQ3FkphhTXauoFAfqgQO6sdpMDHyFlahxlHJPWkAsl0ylGsY1f48eFB2i4sFqrulUEjkkaUK4LZ77x+fxaB227u2oZV42ICZADeeJBwaHXRJ/H+0RmRUSrTgm6ckXNGNCJPNxZGPw6giGTlWEfqSxGKRD400U4UYrFoGaocvkKve8BLdmhD9tFK0LW+iwstZj+K071VClUzQsl/zjsDOiwXRLcOlcapLpMkKOB0dMwaCUKntZgbQnrfnXylKeAvblnkWCudR3+cjvj0Qb9CVWsbgYFl5ubw2vEDLFGSDtj8O3t0WTnT354HKpuLKPWpxb7ST59SiNecxtbvhoVVIdv6NavTesV1q++mKqUFdp1ZUFeZTBxGYp7TU+4OpWxE2raCeveF3fGuByBt1j5pqdCFk506c3RMha/145h/suXqnVCYuYrH8zKTpZMfWynI/hJtE7Y8T0tJht65CB+9Mgu+7bISPqhljDDnC996T/Lp9MrW7IYRiZ2J8EnXeFdm5nQXoj+J+tqofh+0X/a2+lf3DNCNtFdeAzdLxECE7+blNIgE/uYLG0wy7Ji0Qrq/RamDQSf7dHQbMJ8HI2foGcSbIRkW2IAFLNOWaM87oRMxwVGrWNEWxe6S0iI+QzZEAEtmqWHqP7M57U7utUwk8d+79BkAM76PDQTSwldLoaLf5jSu0YkOf2+vszG9ul82zitrEFqhKLN8ahYKSOEhStNJNTDZQM
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(396003)(366004)(376002)(136003)(4326008)(2906002)(83380400001)(86362001)(7416002)(31696002)(2616005)(66574015)(8676002)(6486002)(66946007)(66556008)(53546011)(31686004)(478600001)(52116002)(38100700002)(16526019)(966005)(66476007)(186003)(36756003)(54906003)(316002)(8936002)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?M1ZLdlhkUGd1UnE2ci9XUVMxWjVSanNDV01YSFZIVnVHajRqTlloRGdTQW8r?=
- =?utf-8?B?ZnRPUDg1QlRjYXRlbkh2ejRNdFFXMDQydE0relgwd080VG9UckVYMG9zSXIz?=
- =?utf-8?B?NzJQRWtLSjFPTGRWY01LT1ZwQWUveDJ0MU8xaWNkS0hBVlZIUVdFK0crRGhK?=
- =?utf-8?B?R3hyUWVzUDUwcE1wMjhkMUI2WjhGYVBKU1dlemt3UkpyeGdXTFcvdTFXellV?=
- =?utf-8?B?bWlsaHVNQmJ3K1o4QW84eUNpVmFnZDBpVm9lMjF0WlZySTJlY0p6NEhtS201?=
- =?utf-8?B?aGE5SGtHREx0WGVCOVNiUXkxd290YnZ1cTQxMEhnbXozNnRpWGJ5UkVuUW5r?=
- =?utf-8?B?RnRQV1E2VlB2dExpMGozdU5JalNkaTZGMjAvc05wZG9nTlhmb3BUYlYzU1JH?=
- =?utf-8?B?MmdkNCszNzE3QnBJRm1Lckw1K1FqVDZVMXpMNkdUTFNTY0dEN2dpOVVCUURQ?=
- =?utf-8?B?N3BncldYME55bXhRL0Fwb0duUkRYNjVBYUd1eTVvOHdNUEd3c3hLMklBeUc5?=
- =?utf-8?B?ZGxJRjZ0cVd4TThzRU5EdjloczBJQ0dhMTFDZGJVQTd0bEhoVTkvTXQ5OC9N?=
- =?utf-8?B?VkE5R3JQL0YraHhQUll3eU16S0M4ZDJOcnRXT2dFd3hnbWwyRXQ0VW51NTlp?=
- =?utf-8?B?aCtFOXVYLzhCN0NMcU0vNHhBV21yb254VzlKb0ZHcU41eGUyMDZEa2pPZkVZ?=
- =?utf-8?B?QWJXdkd3RGVwVTZBMm80c2FzRWYzMFdwODMyaWIwS1pwQitrODVhSWdaTEZp?=
- =?utf-8?B?Q0dGY3VNRTdPMjNyNlJzcWRmTjA5ZFNRalJ4NE9PWGdCeTVpMFBKVUxvQnlW?=
- =?utf-8?B?Q2hjSVVKTm1nbnpnWnp5V0J6aDJBc0JKREhhNklxU3FPMnkwTS9DeWsxRTZu?=
- =?utf-8?B?aTRjR3JPWldiUHJ6dVp2RjdNNUkwU2FTNCtzMllTczVCMlJKVmQveFpGZ2lo?=
- =?utf-8?B?MURIbHZnbVRvc0xMR3V2RkJVWU5MdWZUUWJ6SzFDa3ZZSWhSN1dhY1lVQkRH?=
- =?utf-8?B?TVFGK3VtUGFQSlRveENObHBBYzhYSWhNZTJzWVlhbkNKNXJRTnNxaU93ZWpm?=
- =?utf-8?B?cDZ3QnhuZ1p5T0ZIRkt6YnZmZE1SVHRYa09BSjI2eTVsZDJFdmM3cktTQkxV?=
- =?utf-8?B?UnFBSVFqQjZ1b1VZb3hDVkRES0VuRUZ2eE5ER0p6U3l4bzFWdUhWZlZYR2sx?=
- =?utf-8?B?YVIrUjZTc2IxcXlENk4zcVpVcGpaWUZKRVJ0TG43R3d3ckoxLy8zQUVlYWlL?=
- =?utf-8?B?a2NsZFZYRFJYT1RIUUlKT1praGtYZnZQRDVDeWdqMTNOa29kdFJJMFNPcXE1?=
- =?utf-8?B?OWhjYVNGUWNuMTFhWlN4WkdWRFZ2VlNFcjVxQ3VaWHV2TUxWam9Ia0lDMUlF?=
- =?utf-8?B?MWxnQ096bHNJbE9mK2lMM0JaN0I4RlAvc3REcEV3V011YVJKMXRhWkx0UW9q?=
- =?utf-8?B?TGJPd0FCT25wN2cwSWdlbU1OVlRRRzFJNVhrVHFPeU1JNzZTMmtvQmlCYnU5?=
- =?utf-8?B?MXd2TGtHRTFJU2dFUUJaSUhCTmtjSlNIVmppZHlLZnhvNEZHNTBxZjZaTEYr?=
- =?utf-8?B?bkxJZU9pYnhRRnlLbGpXWGJSNXkwRld0TkU4NDVGYWRNWG9JenhhK1F0RWE0?=
- =?utf-8?B?RC9XRENWVEJ0bWRLMitHVlVSTi9ZVFMvcHpuRHFPY0FsZ0xWRWovQnc1c24w?=
- =?utf-8?B?R3p1QkxINlQxZXR0Z2JHbzM5RVZmelNMMXVuckJsVGhCYUF0aVU0TXlaS0lh?=
- =?utf-8?B?ZVdocG91bEl2Q0lObmRCVFRZaVhEaEZJeWZIT3Noa2xvN1BHckFWcW9RM1J2?=
- =?utf-8?Q?OoH2I2l9B/tCj9pYCfd9FOexE3LWOWfNSDVuQ=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 220702bf-4cf3-44d2-bcc7-08d92844c173
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2021 17:10:01.9659
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: i0wL3yjbAxMc75WPfGY6dsFbR3iIFlkmADjtd2SFwvXc3eSiMn7klafdAgFDcfVO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR1501MB2030
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: Na4zCc9c7xzEFf4gLZU27YYyjWUdeARX
-X-Proofpoint-GUID: Na4zCc9c7xzEFf4gLZU27YYyjWUdeARX
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S230029AbhFERSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 13:18:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229933AbhFERSG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 13:18:06 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1587C061766
+        for <netdev@vger.kernel.org>; Sat,  5 Jun 2021 10:16:17 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id u24so14851117edy.11
+        for <netdev@vger.kernel.org>; Sat, 05 Jun 2021 10:16:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=33LLrKNwtNeC8taTRgqwjkos//0SmQGo8gnzun3eCe0=;
+        b=oi6qMcMRlvwyGUVjAjZfzJ15jrb4p89gYINcWf0K2GLx/IJY81Az7MRqN8LtGUOBr0
+         9pdKdyjP2lt5pQjNQBZu9RAW+0889wShsLuGXe26pcMxYbgQSYs4N0essDeRnWlvUVwl
+         09abRTAkwW5Ulj/NGMG1ArtZ+U0A4ewV4pcJd2qXJZjPt47RB5KQ+SwzOvnphf0xWgct
+         kbnIx2ilok0HclZ6/BuVpI0qbQQ/EBrmpjJ+Rk/sA/1uX3wxmJkzAZt8Iwp5kZfFdUhN
+         NuUKS0Rtdk3U0D2uszF6ptlHOKAz11fRQ+hr/SWTN1mUfVWld8hw65UHmrsQxaDNYyKk
+         LGsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=33LLrKNwtNeC8taTRgqwjkos//0SmQGo8gnzun3eCe0=;
+        b=lJT8LX2UXNiqC4XWi0FR2y8ELxMAKThHIqJ3TXti8VX/hOrI3IubtRvtUT9CgSgWup
+         835Q0vw7/Jbc8OQJ26M0QgA7PT48G6+4VaGIat/0s0hZJmdmHSunA0qfM7IBt1zXLgc/
+         9V6MWjVn8zFTxSQS9hkX5osZh87fUN3B2eSov+5lo3i5HWGpwEW0neHumlc53Hngv7hX
+         1qyOHPKdDJO7gFnolgYD8oJ/MezA1ZA56fm9jZU607etZvA8k1eTLj1itxe7b6uboB4W
+         zhIOOvZfmdyOKl19d3onEse33ZvjZIGucN2FjS445Hi8TB4spFKAfMelrkeCFVrLAb+0
+         ZoZA==
+X-Gm-Message-State: AOAM532XblAivKsc6w9EZ3KX3eoVGoveZmOdxS7MKWDWv/svpo5TEmSv
+        YEVmUgWO9IUsfhJXnwYyX9m90fmqe98log==
+X-Google-Smtp-Source: ABdhPJyfoPv8+Ler83HkiLpjCGAQq8Js9A82CPpxx7SrKduWUqz9DK6OmmPLV4k2398f9Fc/Vdj6Qw==
+X-Received: by 2002:a05:6402:14d8:: with SMTP id f24mr2270291edx.79.1622913376456;
+        Sat, 05 Jun 2021 10:16:16 -0700 (PDT)
+Received: from ?IPv6:2a0f:6480:3:1:d65d:64ff:fed0:4a9d? ([2a0f:6480:3:1:d65d:64ff:fed0:4a9d])
+        by smtp.gmail.com with ESMTPSA id zb19sm4314566ejb.120.2021.06.05.10.16.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 05 Jun 2021 10:16:15 -0700 (PDT)
+From:   Oliver Herms <oliver.peter.herms@gmail.com>
+Subject: VRF/IPv4/ARP: unregister_netdevice waiting for dev to become free ->
+ Who's responsible for releasing dst_entry created by ip_route_input_noref?
+To:     Network Development <netdev@vger.kernel.org>
+Cc:     David Miller <davem@davemloft.net>, David Ahern <dsahern@gmail.com>
+Message-ID: <20cd265b-d52d-fd1f-c47e-bfa7ea15518f@gmail.com>
+Date:   Sat, 5 Jun 2021 19:16:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-06-05_10:2021-06-04,2021-06-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- bulkscore=0 mlxlogscore=999 priorityscore=1501 suspectscore=0 spamscore=0
- impostorscore=0 malwarescore=0 adultscore=0 mlxscore=0 clxscore=1015
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2106050125
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi everyone,
 
+I'm observing an device unregistration issue when I try to delete a VRF interface after using the VRF.
+The issue is reproducible on 5.12.9, 5.10.24, 5.11.0-18 (debian).
 
-On 6/3/21 11:31 PM, Kumar Kartikeya Dwivedi wrote:
-> This adds userspace TC-BPF management API based on bpf_link.
-> 
-> Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>.
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
->   tools/lib/bpf/bpf.c      |  8 +++++-
->   tools/lib/bpf/bpf.h      |  8 +++++-
->   tools/lib/bpf/libbpf.c   | 59 ++++++++++++++++++++++++++++++++++++++--
->   tools/lib/bpf/libbpf.h   | 17 ++++++++++++
->   tools/lib/bpf/libbpf.map |  1 +
->   tools/lib/bpf/netlink.c  |  5 ++--
->   tools/lib/bpf/netlink.h  |  8 ++++++
->   7 files changed, 100 insertions(+), 6 deletions(-)
->   create mode 100644 tools/lib/bpf/netlink.h
-> 
-> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-> index 86dcac44f32f..bebccea9bfd7 100644
-> --- a/tools/lib/bpf/bpf.c
-> +++ b/tools/lib/bpf/bpf.c
-> @@ -28,6 +28,7 @@
->   #include <asm/unistd.h>
->   #include <errno.h>
->   #include <linux/bpf.h>
-> +#include <arpa/inet.h>
->   #include "bpf.h"
->   #include "libbpf.h"
->   #include "libbpf_internal.h"
-> @@ -693,7 +694,12 @@ int bpf_link_create(int prog_fd, int target_fd,
->   	attr.link_create.attach_type = attach_type;
->   	attr.link_create.flags = OPTS_GET(opts, flags, 0);
->   
-> -	if (iter_info_len) {
-> +	if (attach_type == BPF_TC) {
-> +		attr.link_create.tc.parent = OPTS_GET(opts, tc.parent, 0);
-> +		attr.link_create.tc.handle = OPTS_GET(opts, tc.handle, 0);
-> +		attr.link_create.tc.priority = OPTS_GET(opts, tc.priority, 0);
-> +		attr.link_create.tc.gen_flags = OPTS_GET(opts, tc.gen_flags, 0);
-> +	} else if (iter_info_len) {
->   		attr.link_create.iter_info =
->   			ptr_to_u64(OPTS_GET(opts, iter_info, (void *)0));
->   		attr.link_create.iter_info_len = iter_info_len;
-> diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-> index 4f758f8f50cd..f2178309e9ea 100644
-> --- a/tools/lib/bpf/bpf.h
-> +++ b/tools/lib/bpf/bpf.h
-> @@ -177,8 +177,14 @@ struct bpf_link_create_opts {
->   	union bpf_iter_link_info *iter_info;
->   	__u32 iter_info_len;
->   	__u32 target_btf_id;
-> +	struct {
-> +		__u32 parent;
-> +		__u32 handle;
-> +		__u32 priority;
-> +		__u32 gen_flags;
-> +	} tc;
->   };
-> -#define bpf_link_create_opts__last_field target_btf_id
-> +#define bpf_link_create_opts__last_field tc.gen_flags
->   
->   LIBBPF_API int bpf_link_create(int prog_fd, int target_fd,
->   			       enum bpf_attach_type attach_type,
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 1c4e20e75237..7809536980b1 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -55,6 +55,7 @@
->   #include "libbpf_internal.h"
->   #include "hashmap.h"
->   #include "bpf_gen_internal.h"
-> +#include "netlink.h"
->   
->   #ifndef BPF_FS_MAGIC
->   #define BPF_FS_MAGIC		0xcafe4a11
-> @@ -7185,7 +7186,7 @@ static int bpf_object__collect_relos(struct bpf_object *obj)
->   
->   	for (i = 0; i < obj->nr_programs; i++) {
->   		struct bpf_program *p = &obj->programs[i];
-> -		
-> +
->   		if (!p->nr_reloc)
->   			continue;
->   
-> @@ -10005,7 +10006,7 @@ struct bpf_link {
->   int bpf_link__update_program(struct bpf_link *link, struct bpf_program *prog)
->   {
->   	int ret;
-> -	
-> +
->   	ret = bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog), NULL);
->   	return libbpf_err_errno(ret);
->   }
-> @@ -10613,6 +10614,60 @@ struct bpf_link *bpf_program__attach_xdp(struct bpf_program *prog, int ifindex)
->   	return bpf_program__attach_fd(prog, ifindex, 0, "xdp");
->   }
->   
-> +struct bpf_link *bpf_program__attach_tc(struct bpf_program *prog,
-> +					const struct bpf_tc_hook *hook,
-> +					const struct bpf_tc_link_opts *opts)
-> +{
-> +	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, lopts, 0);
-> +	char errmsg[STRERR_BUFSIZE];
-> +	int prog_fd, link_fd, ret;
-> +	struct bpf_link *link;
-> +	__u32 parent;
-> +
-> +	if (!hook || !OPTS_VALID(hook, bpf_tc_hook) ||
-> +	    !OPTS_VALID(opts, bpf_tc_link_opts))
-> +		return ERR_PTR(-EINVAL);
+Here are the steps to reproduce the issue:
 
-For libbpf API functions, the libbpf proposed 1.0 change
-     https://lore.kernel.org/bpf/20210525035935.1461796-5-andrii@kernel.org
-will return NULL and set errno properly.
+ip addr add 10.0.0.1/32 dev lo
+ip netns add test-ns
+ip link add veth-outside type veth peer name veth-inside
+ip link add vrf-100 type vrf table 1100
+ip link set veth-outside master vrf-100
+ip link set veth-inside netns test-ns
+ip link set veth-outside up
+ip link set vrf-100 up
+ip route add 10.1.1.1/32 dev veth-outside table 1100
+ip netns exec test-ns ip link set veth-inside up
+ip netns exec test-ns ip addr add 10.1.1.1/32 dev veth-inside
+ip netns exec test-ns ip route add 10.0.0.1/32 dev veth-inside
+ip netns exec test-ns ip route add default via 10.0.0.1
+ip netns exec test-ns ping 10.0.0.1 -c 1 -i 1
+sleep 10
+ip link set veth-outside nomaster
+ip link set vrf-100 down
+ip link delete vrf-100 <= Never returns
 
-So the above code probably should be
-	return errno = EINVAL, NULL;
+The issue does not happen when I don't do the ping.
 
+I've tracked down all calls to dev_hold and dev_put.
+When the ping command is run there is the following call to dev_hold to which the corresponding dev_put seems to be missing (doesn't even happen when the VRF is set down or deleted):
+[  284.528775] CPU: 2 PID: 1205 Comm: ping Not tainted 5.12.9 #1
+[  284.528790] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  284.528796] Call Trace:
+[  284.528802]  <IRQ>
+[  284.528832]  dump_stack+0x7d/0x9c
+[  284.528854]  dst_alloc.cold+0x11/0x2a
+[  284.528866]  rt_dst_alloc+0x48/0xd0
+[  284.528881]  ip_route_input_slow+0x507/0xc80
+[  284.528900]  ip_route_input_rcu+0x258/0x270
+[  284.528913]  ip_route_input_noref+0x2a/0x50
+[  284.528923]  arp_process+0x4da/0x8a0
+[  284.528938]  arp_rcv+0x1a9/0x1d0
+[  284.528948]  ? trigger_load_balance+0x205/0x240
+[  284.528961]  __netif_receive_skb_one_core+0x8d/0xa0
+[  284.528974]  __netif_receive_skb+0x18/0x60
+[  284.528984]  process_backlog+0xa2/0x170
+[  284.528993]  __napi_poll+0x31/0x170
+[  284.529002]  net_rx_action+0x22f/0x280
+[  284.529012]  __do_softirq+0xce/0x281
+[  284.529024]  do_softirq+0x77/0xa0
+[  284.529049]  </IRQ>
+[  284.529054]  __local_bh_enable_ip+0x50/0x60
+[  284.529064]  ip_finish_output2+0x1ab/0x590
+[  284.529073]  ? __cgroup_bpf_run_filter_skb+0x3ce/0x3e0
+[  284.529086]  __ip_finish_output+0x110/0x270
+[  284.529096]  ip_finish_output+0x2d/0xb0
+[  284.529105]  ip_output+0x78/0x100
+[  284.529114]  ? __ip_finish_output+0x270/0x270
+[  284.529122]  ip_push_pending_frames+0xa3/0xb0
+[  284.529131]  raw_sendmsg+0x5f0/0xdb0
+[  284.529144]  ? setup_min_slab_ratio+0x68/0x90
+[  284.529182]  ? __cond_resched+0x1a/0x50
+[  284.529195]  ? aa_sk_perm+0x43/0x1b0
+[  284.529211]  inet_sendmsg+0x6c/0x70
+[  284.529221]  sock_sendmsg+0x5e/0x70
+[  284.529234]  __sys_sendto+0x113/0x190
+[  284.529249]  ? handle_mm_fault+0xda/0x2c0
+[  284.529258]  ? do_user_addr_fault+0x1f5/0x670
+[  284.529266]  ? exit_to_user_mode_prepare+0x37/0x190
+[  284.529277]  __x64_sys_sendto+0x29/0x30
+[  284.529287]  do_syscall_64+0x38/0x90
+[  284.529298]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  284.529306] RIP: 0033:0x7f89f02db53a
+[  284.529317] Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 f3 0f 1e fa 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 15 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 76 c3 0f 1f 44 00 00 55 48 83 ec 30 44 89 4c
+[  284.529325] RSP: 002b:00007ffd7c1b0478 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+[  284.529335] RAX: ffffffffffffffda RBX: 00007ffd7c1b1c00 RCX: 00007f89f02db53a
+[  284.529340] RDX: 0000000000000040 RSI: 00005592d86be100 RDI: 0000000000000003
+[  284.529345] RBP: 00005592d86be100 R08: 00007ffd7c1b3e7c R09: 0000000000000010
+[  284.529349] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000040
+[  284.529354] R13: 00007ffd7c1b1bc0 R14: 00007ffd7c1b0480 R15: 0000001d00000001
 
-> +
-> +	if (OPTS_GET(hook, ifindex, 0) <= 0 ||
-> +	    OPTS_GET(opts, priority, 0) > UINT16_MAX)
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	parent = OPTS_GET(hook, parent, 0);
-> +
-> +	ret = tc_get_tcm_parent(OPTS_GET(hook, attach_point, 0),
-> +				&parent);
-> +	if (ret < 0)
-> +		return ERR_PTR(ret);
-> +
-> +	lopts.tc.parent = parent;
-> +	lopts.tc.handle = OPTS_GET(opts, handle, 0);
-> +	lopts.tc.priority = OPTS_GET(opts, priority, 0);
-> +	lopts.tc.gen_flags = OPTS_GET(opts, gen_flags, 0);
-> +
-> +	prog_fd = bpf_program__fd(prog);
-> +	if (prog_fd < 0) {
-> +		pr_warn("prog '%s': can't attach before loaded\n", prog->name);
-> +		return ERR_PTR(-EINVAL);
-> +	}
-> +
-> +	link = calloc(1, sizeof(*link));
-> +	if (!link)
-> +		return ERR_PTR(-ENOMEM);
-> +	link->detach = &bpf_link__detach_fd;
-> +
-> +	link_fd = bpf_link_create(prog_fd, OPTS_GET(hook, ifindex, 0), BPF_TC, &lopts);
-> +	if (link_fd < 0) {
-> +		link_fd = -errno;
-> +		free(link);
-> +		pr_warn("prog '%s': failed to attach tc filter: %s\n",
-> +			prog->name, libbpf_strerror_r(link_fd, errmsg, sizeof(errmsg)));
-> +		return ERR_PTR(link_fd);
-> +	}
-> +	link->fd = link_fd;
-> +
-> +	return link;
-> +}
-> +
-[...]
+Processing the incoming ARP request causes a call to ip_route_input_noref => ip_route_input_rcu => ip_route_input_slow => rt_dst_alloc => dst_alloc => dev_hold.
+In a non VRF use-case the dst->dev would be the loopback interface that is never deleted. In the VRF use-case dst->dev is the VRF interface. And that one I would like to delete.
+
+I've tracked down that dst_release() would call dev_put() but it seems dst_release is not called here (but should be I guess?). Thus, causing a dst_entry leak that causes the VRF device to be unremovable.
+At least that's what it looks like to me.
+
+So: Who's responsible for releasing dst_entry created by ip_route_input_noref in arp_process?
+
+Kind Regards
+Oliver
