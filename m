@@ -2,558 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0105A39C547
-	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 04:51:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 591A839C560
+	for <lists+netdev@lfdr.de>; Sat,  5 Jun 2021 05:08:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231710AbhFECxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Jun 2021 22:53:21 -0400
-Received: from mail-yb1-f172.google.com ([209.85.219.172]:33781 "EHLO
-        mail-yb1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbhFECxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 22:53:20 -0400
-Received: by mail-yb1-f172.google.com with SMTP id f84so16466466ybg.0;
-        Fri, 04 Jun 2021 19:51:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0hYX+6HpwYRLBNWPsV5sxWxfLC9QpEMY3Fh+1yVFR3w=;
-        b=UP0zp4J/OzxSbXR5i5L+h5s9e+ZVyYJ+lw8IOKs/KpB3kTtsAkrjHOxAQXfzUprrFK
-         WDFkuMeRqJ7Q247W3EwxRY1QK8zDg7VMWxQtlv4e6tXxGONlCnhF3cvnPyOmJRZzf8HV
-         BR0hBSAb1YWhnLL5KAPlp8bTty2kMOqA4sHVqVg/lOixHVj9WJNoMRkWyK1NXzN58iZf
-         93zHe2+FoV/tYbXTni6n6mvs4TaAivF0spVuSGcoffEyp4aIfdL2362AEf1J1JFdX+UI
-         iLjazUQLWZ284cMrCLq27ARmALwalYDTrrGxyhcAVRKfafsHeiqDtwe5U73ds+13mdvC
-         Qe/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0hYX+6HpwYRLBNWPsV5sxWxfLC9QpEMY3Fh+1yVFR3w=;
-        b=dn1hTqvkWxCScmFlQnLrTS204NGKN5/fr4BvR8MjRfLaWNHmNBGLfGvL7A5Vyeirqo
-         cjcrrTq2UkbmdzIRiLOuWxGLXrxoxQw9iXQlA4YNjv5gTs8SqqssCM05Uvm9g919C/K+
-         4oWq3NPMh+Ha7bA0Ms7+WQ9SnSQqWO0IbpWEGew/yiK26t0wy1tCamXwO3e/2XvbRpAg
-         kh/rpwX2KJGj2jIXQTmvUaCsLeye9Gh9R8jIGUrz0eol69M+WDwbJeo5+l6hVJdQAQLg
-         p1ZlsE/nxJjmdM6ViiPB7Auss5rMPuRHHquF/wqcnmDzxHuTRofkW/CSo24ZauIkh2rP
-         BnZA==
-X-Gm-Message-State: AOAM530R6AQo0d6du0FrYSF0obVB53ESIiizrUfhSmjvE19prJf7YW2Y
-        v0iVXfy8qtKJNuGagtFzsTb8H7ZMnJ/EXIgO9wg=
-X-Google-Smtp-Source: ABdhPJwX+rzB6J1wsG+3/7kkYLlbOf83gienRlRx4GnyTLTD5wELbVLx0rPXr8TXddMRUV9JRUX2FODhCmfp/yYX3w4=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr8865985ybg.459.1622861418815;
- Fri, 04 Jun 2021 19:50:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <1622558220-2849-1-git-send-email-alan.maguire@oracle.com> <1622558220-2849-3-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1622558220-2849-3-git-send-email-alan.maguire@oracle.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 4 Jun 2021 19:50:07 -0700
-Message-ID: <CAEf4BzY8KTxsuKMb+CtU5xMftf+kmy6dpCAYSwCmmdmCeU=ONg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 2/2] selftests/bpf: add dump type data tests
- to btf dump tests
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        id S231326AbhFEDKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Jun 2021 23:10:31 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:19750 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230414AbhFEDKb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Jun 2021 23:10:31 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15535Zdf003965;
+        Fri, 4 Jun 2021 20:08:26 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=VXbecStRg8+ye1aGHhWtdKme9RQggxBhU1L4OsCc4+E=;
+ b=dTk3eFRCx5De+Yn44h8wHVf7K5rU3VeQ1GiWe5IHz4rrHEFWI3rvi8aE1Fy1P5j9RKHU
+ Lb3EFamztWPGkLWNZg2u53yTJq8YQnhfwyrF5buq7yP+V0CIC+TKVZ2SGrZRoWCyZ+yo
+ yY3X3SqIZCyfYqpYlFrQhbIWDBoZO6lo30M= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 38xtex4nxx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 04 Jun 2021 20:08:26 -0700
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 4 Jun 2021 20:08:25 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iyiIE3n+xCFUlX2VwugQE+ZDNCgzDvG+mzQoGJ7pIPkS3NzD4SF86rO6tXXWUSDTsWUCD6Moz1wW5cMHs88hmOZJeSSZkHI+jtV0eDFS8LTfHBdFlsa9YuLCeTdvVoztsyBYIsc0t5+D1SFGE4fn4bUHCHvN7nMmkM8rPwT0hLk/OVrcB/ka67YoY6sv9Q4GPTHdWLSNgFH2TJJVNoXp7UM8ilT8gDTQwNQWE7MWxmqMzaoRp1NvWE2KO+oP5xooWzfCBj91zcEZXP/9wfYhhI4586vLPKxE3I9ESYRPjhbg13gl6r8OwVyBHOf7XWkk6QiTMPiM2m5ql72c1nWi1A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VXbecStRg8+ye1aGHhWtdKme9RQggxBhU1L4OsCc4+E=;
+ b=gWSnDyXJKTLMsaatuDdDiPSlTIE4ZDle2izvjWu+3Hl2K3mQNF+2W8KHRMMzwwkMzucuIGmsD5TbxHKUXWDmYEFb4JQbm3YFzx3wtslP49QqGdp3P9Tk7d9oj8db/4NBhBbkg5byEABx2da5CtKK/H2XjyhnVI+MrOCWkFd4W3k0SeDCz/A0o1MRKputz7Q1Vl4gViTEZBBL//4wCM5Dyrm/3fOnciXuoftHK6p5R77n9fK/UZoPEnc5KijGQYuadelAmY3oC09F6W6IqoGWpHYuDhtbBa7Eyfxa51Wjt0CKfhLiLLNe37mA5o6vCOT62glqbCvSRE4sspcL4GUu9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SN6PR1501MB2127.namprd15.prod.outlook.com (2603:10b6:805:2::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Sat, 5 Jun
+ 2021 03:08:23 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::d886:b658:e2eb:a906]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::d886:b658:e2eb:a906%5]) with mapi id 15.20.4195.026; Sat, 5 Jun 2021
+ 03:08:22 +0000
+Subject: Re: [PATCH bpf-next v2 3/7] net: sched: add bpf_link API for bpf
+ classifier
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, <bpf@vger.kernel.org>
+CC:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Bill Wendling <morbo@google.com>,
-        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        <netdev@vger.kernel.org>
+References: <20210604063116.234316-1-memxor@gmail.com>
+ <20210604063116.234316-4-memxor@gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <3fca958b-dcf3-6363-5f23-a2e7c4d16f87@fb.com>
+Date:   Fri, 4 Jun 2021 20:08:17 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
+In-Reply-To: <20210604063116.234316-4-memxor@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [2620:10d:c090:400::5:7ab8]
+X-ClientProxiedBy: MW4PR03CA0196.namprd03.prod.outlook.com
+ (2603:10b6:303:b8::21) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c1::1a79] (2620:10d:c090:400::5:7ab8) by MW4PR03CA0196.namprd03.prod.outlook.com (2603:10b6:303:b8::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.15 via Frontend Transport; Sat, 5 Jun 2021 03:08:20 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8da9e145-bfc9-4e62-3a97-08d927cf2d62
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2127:
+X-Microsoft-Antispam-PRVS: <SN6PR1501MB2127A97CBD2BE65117B03C01D33A9@SN6PR1501MB2127.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TgkJuWytRZGgHT6auZuiVpZGEciFtx9oCS0JFJqhuQmP/+iS9QhvxeCWfBi3oy4wB9TD0CmZSfESZaS6jC81VqLnmj2Ef9tUiFc6D4IT+XBMMTCTeJykR6pRPikaB7gEl6FaNCN8JXU2kuFB/KPLsMFsrldz/ez6F2SffGpl3yy6+EBzgL6JMVy8KR7U6ewYFBrI/0GYmzlJhvLFMT/U2GiCRFgP6pSAexfM1g1LIZUQ7EHA7awiyarI5/i3qBbWmFARIrIX+JtpIWBUrycAYDpe6Zo3UzMzRYwuS4xOUsjn/pQo5EwVsuIaoUW5ZcrFqzoDgoDgRY2PBd5a6jZlIbuvM1StO6mslKE93zTeLolhHZMJsHhb/cXKKCLSFHJc//RLehWm90X9Z/Pamexur7yD749n1wBhrFebiFPCX8++CG4jCAMcAMF9sV+wklurD1DGplduTReeitzJDDX9/vbLrMelsD9rVSQ+rkiqWJoBgtM3LfyX6spZVIhe1vISwR35cKjWdh1ltfAiojbYZefBq+KKNgI6NbqpoD2wC9Cy7pxGIPK5rqrsKEd6dnLDLaXsJcNYOOGctgluZkJat5Sy6H1yucHZ5gGejp+McXaJxIWkorZnS3+zG6s5JkebJHpEQAb9bnfp4dh4vg1ETPMGh1+NDcucPiJQYBwqdaWIumFZaQAXZOq/+LyYeNoL
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(39860400002)(376002)(136003)(346002)(316002)(36756003)(2616005)(7416002)(6486002)(31696002)(8936002)(86362001)(6666004)(5660300002)(52116002)(66476007)(8676002)(38100700002)(66946007)(53546011)(83380400001)(66574015)(478600001)(66556008)(54906003)(31686004)(186003)(16526019)(4326008)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?c0xVUU9tK0huYWhTQjhJM1ZqRTd6RjdLN0ZEcEVnZVJOWmNxbkNqbkpXd09j?=
+ =?utf-8?B?azJybzY4YXNjYjJ6UU5ZQTdaSURvNGJSNXFTeEhQQ3V5c3FUSVpXSjVHZkNW?=
+ =?utf-8?B?TlA2a25Qa2ZuVE5zK25kWVFJNmF3azRrbXgrWHp5K1lzS2k3eXlYUmhiVE9L?=
+ =?utf-8?B?ZC85RGVETFJyc2ptbVFHcUNvV3ozZzNmd0dWODhJRDNUZGliM0UwTGZwd3Bp?=
+ =?utf-8?B?OTQyb201THorckJtOFNGRXNyQnd5SFJ5Y2V3UDN2eWtPVjJLWUNEN0V6OUhH?=
+ =?utf-8?B?OU1WcWxDeGxnYTBWaUE2Z01MT1I2eGFFeklvVENKOTRvcmxub2EyVmx3VWdP?=
+ =?utf-8?B?ZFA1TkkyNUlVMTlWN1paT1YwZmQrOGtiMFByamhNU3hkdnA5TmlGUFhhRndw?=
+ =?utf-8?B?Sm9MeDZuWklqZUp4UVplckpYV245QStVZm84MEJrYnpsVTFRRVFVSi96c3lj?=
+ =?utf-8?B?MGhTZ2Fla3FWRDIrQnJMUjJ1c1FxbG80ZDB4SFo0TDBCYTJURDBuMDZmTmNa?=
+ =?utf-8?B?TUhsZWhFaFNrbmZWVWJaTVpjMnozeUt4WXF5dGFjUG85bGMzei9RT0xFQUV4?=
+ =?utf-8?B?UFIzZ1NDOSszem83QUZjVTB2aWROY0ZvVHVmeFIyM0h2SS9NeDN0ZWtmSURz?=
+ =?utf-8?B?SHN0a2hJWHdsbjJNSlZab3BuOHF3cEkzV1NrelVqZXNGOS9YZ1dtVFQvUU00?=
+ =?utf-8?B?bEsrRDlBMTdXOS9qdmYrakVtNUw2WXBzcGJDZkk3NUxGNUpIT1hSOC82WVVS?=
+ =?utf-8?B?a05WOXc2ZUUyb2NYTkNEUEh1dXVqMVc0QXZKVWF3ekZxdE11UlNBOXlWT25u?=
+ =?utf-8?B?YXlYWWh0bUxJV2lqWlUrbCs3aitHOS9GdnlDNDh3WlRCaFRFQVBlSWtpWWdo?=
+ =?utf-8?B?akZiM1NwMDkyNmJEQlpjenJPaHZ6YVM0dkFySE90cFJodnRyeFdRMjNqZTlY?=
+ =?utf-8?B?QlFKRkRzN282L3lVcW00YmVtYVpva3dHM1BTZTNoaHQvTnJ3WjJrSUdJYXcy?=
+ =?utf-8?B?YmJkejR0aXlReCs3cTUzQWlBZjFKTlh5T2tyT201bi8zQWQ2ZjVGYWpSbUgr?=
+ =?utf-8?B?ZXl0UVUzNkcxempHKzFUdHI1OXEyZ256SmEzZWpkYmRHaUtlVFJMSEFJUFp4?=
+ =?utf-8?B?eVBBQnEzbmtUc1Q4L3V6Ly9SbVlYVVZsYk5NVGxMTjhuRjgvQnk5b0NzQU85?=
+ =?utf-8?B?TU1GVXB0NXBkeVZmc3k3TGt5SUlnYllDTjlZTTY3UmY3VlU4WUVxYWVEZ0d3?=
+ =?utf-8?B?Zzl5dDlkUVU5Ylp3dUorSEQvNUtsTHZnTXdOWkxIUTJSY3BsektzdFpNMXhU?=
+ =?utf-8?B?djVGaDdIcXNGa0FQZXFuRTZSVTNwamVBZFJNd1BraUw3Nnd3UjQwQmFHMzZ4?=
+ =?utf-8?B?WVJxa2I2clREMFlWdzJQanZmMkN5UHQvYThMRi8vVXB6Rlh0dFZFM2U4Q1or?=
+ =?utf-8?B?d2ovRFM3ZnhJVXN0U3JLcG9NZ2RtRllNQ2hYb3pOaVA1NkIrNk9vaUw4SkdI?=
+ =?utf-8?B?RGlZS3Z1MkFyQjZMZFBmaFBEaXJyN0VrM0h5L2N2b28xbUJ5RS9ldEVRRWlZ?=
+ =?utf-8?B?aCtDS01ONkQ3V2dselcySm9JSExIRE9yWm5SejVJcjJDRE1YTURHRW1FdnpQ?=
+ =?utf-8?B?Uk9PNS9rbVE5VTd3d2ZFdU5QVERyVHN6MmorcFBneXdiNkVORnNvZC9ZSTJT?=
+ =?utf-8?B?NmxOZnlqTmtiMExvY0FwTkh4b2dlV1ZJZERWbExPSi9oK0NDZ1NPVDJiQ3d4?=
+ =?utf-8?B?aFRIY3cwbmVsWkpDeTZUcjZBcVNSamc3bVVPTW9sVmQ3TkdGSXlobFN5SU9x?=
+ =?utf-8?Q?zGR89zB8ZuWwM462j5JaJXy4MPLj9xpFLI5Ec=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8da9e145-bfc9-4e62-3a97-08d927cf2d62
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2021 03:08:22.5070
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kzkJCzX/fJO1vBkj3P4g0z+0b2RzXsXLJNy3RovfYiodcpkqJHroiSEEIX7ZAlRq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR1501MB2127
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: sJy7HeYqm28ZsTe8IGIjv-qtZNRKzMpo
+X-Proofpoint-GUID: sJy7HeYqm28ZsTe8IGIjv-qtZNRKzMpo
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-05_01:2021-06-04,2021-06-05 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ adultscore=0 mlxlogscore=999 malwarescore=0 impostorscore=0 phishscore=0
+ mlxscore=0 bulkscore=0 clxscore=1011 lowpriorityscore=0 spamscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106050020
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 1, 2021 at 7:37 AM Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> Test various type data dumping operations by comparing expected
-> format with the dumped string; an snprintf-style printf function
-> is used to record the string dumped.  Also verify overflow handling
-> where the data passed does not cover the full size of a type,
-> such as would occur if a tracer has a portion of the 8k
-> "struct task_struct".
->
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+
+
+On 6/3/21 11:31 PM, Kumar Kartikeya Dwivedi wrote:
+> This commit introduces a bpf_link based kernel API for creating tc
+> filters and using the cls_bpf classifier. Only a subset of what netlink
+> API offers is supported, things like TCA_BPF_POLICE, TCA_RATE and
+> embedded actions are unsupported.
+> 
+> The kernel API and the libbpf wrapper added in a subsequent patch are
+> more opinionated and mirror the semantics of low level netlink based
+> TC-BPF API, i.e. always setting direct action mode, always setting
+> protocol to ETH_P_ALL, and only exposing handle and priority as the
+> variables the user can control. We add an additional gen_flags parameter
+> though to allow for offloading use cases. It would be trivial to extend
+> the current API to support specifying other attributes in the future,
+> but for now I'm sticking how we want to push usage.
+> 
+> The semantics around bpf_link support are as follows:
+> 
+> A user can create a classifier attached to a filter using the bpf_link
+> API, after which changing it and deleting it only happens through the
+> bpf_link API. It is not possible to bind the bpf_link to existing
+> filter, and any such attempt will fail with EEXIST. Hence EEXIST can be
+> returned in two cases, when existing bpf_link owned filter exists, or
+> existing netlink owned filter exists.
+> 
+> Removing bpf_link owned filter from netlink returns EPERM, denoting that
+> netlink is locked out from filter manipulation when bpf_link is
+> involved.
+> 
+> Whenever a filter is detached due to chain removal, or qdisc tear down,
+> or net_device shutdown, the bpf_link becomes automatically detached.
+> 
+> In this way, the netlink API and bpf_link creation path are exclusive
+> and don't stomp over one another. Filters created using bpf_link API
+> cannot be replaced by netlink API, and filters created by netlink API are
+> never replaced by bpf_link. Netfilter also cannot detach bpf_link filters.
+> 
+> We serialize all changes dover rtnl_lock as cls_bpf API doesn't support the
+
+dover => over?
+
+> unlocked classifier API.
+> 
+> Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>.
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 > ---
->  tools/testing/selftests/bpf/prog_tests/btf_dump.c | 638 ++++++++++++++++++++++
->  1 file changed, 638 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/btf_dump.c b/tools/testing/selftests/bpf/prog_tests/btf_dump.c
-> index 1b90e68..b78c308 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/btf_dump.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/btf_dump.c
-> @@ -232,6 +232,642 @@ void test_btf_dump_incremental(void)
->         btf__free(btf);
->  }
->
-> +#define STRSIZE                                4096
-> +
-> +void btf_dump_snprintf(void *ctx, const char *fmt, va_list args)
-
-static
-
-> +{
-> +       char *s = ctx, new[STRSIZE];
-> +
-> +       vsnprintf(new, STRSIZE, fmt, args);
-> +       strncat(s, new, STRSIZE);
-> +}
-> +
-> +/* skip "enum "/"struct " prefixes */
-> +#define SKIP_PREFIX(_typestr, _prefix)                                 \
-> +       do {                                                            \
-> +               if (strncmp(_typestr, _prefix, strlen(_prefix)) == 0)   \
-> +                       _typestr += strlen(_prefix) + 1;                \
-> +       } while (0)
-> +
-> +int btf_dump_data(struct btf *btf, struct btf_dump *d,
-> +                 char *name, __u64 flags, void *ptr,
-> +                 size_t ptrsize, char *str, const char *expectedval)
-
-static
-
-naming nit: expected_val is much easier to read than expected_val,
-same for ptrsize vs ptr_size; I'm also totally fine with shorter names
-using common abbreviations (exp_val, ptr_sz, etc).
-
-> +{
-> +       DECLARE_LIBBPF_OPTS(btf_dump_type_data_opts, opts);
-> +       int ret = 0, cmp;
-> +       size_t typesize;
-> +       __s32 type_id;
-> +
-> +       if (flags & BTF_F_COMPACT)
-> +               opts.compact = true;
-> +       if (flags & BTF_F_NONAME)
-> +               opts.skip_names = true;
-> +       if (flags & BTF_F_ZERO)
-> +               opts.emit_zeroes = true;
-
-nothing wrong with this, but just as an FYI, you could have combined
-that with DECLARE_LIBBPF_OPTS above:
-
-DECLARE_LIBBPF_OPTS(btf_dump_type_data_opts, opts,
-    .compact = flags & BTF_F_COMPACT,
-    .skip_names = flags & BTF_F_NONAME,
-    .emit_zeroes = flags & BTF_F_ZERO,
-);
-
-> +       SKIP_PREFIX(name, "enum");
-> +       SKIP_PREFIX(name, "struct");
-> +       SKIP_PREFIX(name, "union");
-> +       type_id = btf__find_by_name(btf, name);
-> +       if (CHECK(type_id <= 0, "find type id",
-> +                 "no '%s' in BTF: %d\n", name, type_id)) {
-
-see all the variations of ASSERT_XXX() macros, they are shorter, have
-more natural checks and they output argument values automatically if
-condition doesn't hold. So this one would be
-
-if (!ASSERT_GT(type_id, 0, "type_id")) {
-    err = -ENOENT;
-    goto err;
-}
-
-> +               ret = -ENOENT;
-> +               goto err;
-> +       }
-> +       typesize = btf__resolve_size(btf, type_id);
-> +       str[0] = '\0';
-> +       ret = btf_dump__dump_type_data(d, type_id, ptr, ptrsize, &opts);
-> +       if (typesize <= ptrsize) {
-> +               if (CHECK(ret != typesize, "btf_dump__dump_type_data",
-> +                         "failed/unexpected typesize: %d\n", ret))
-> +                       goto err;
-> +       } else {
-> +               if (CHECK(ret != -E2BIG, "btf_dump__dump_type_data -E2BIG",
-> +                         "failed to return -E2BIG: %d\n", ret))
-> +                       goto err;
-> +               ret = 0;
-> +       }
-> +
-> +       cmp = strcmp(str, expectedval);
-> +       if (CHECK(cmp, "ensure expected/actual match",
-> +                 "'%s' does not match expected '%s': %d\n",
-> +                 str, expectedval, cmp))
-> +               ret = -EFAULT;
-
-here ASSERT_STREQ() is useful
-
-> +err:
-> +       if (ret < 0)
-> +               btf_dump__free(d);
-> +       return ret;
-> +}
-> +
-> +#define TEST_BTF_DUMP_DATA(_b, _d, _str, _type, _flags, _expected, ...)        \
-> +       do {                                                            \
-> +               char __ptrtype[64] = #_type;                            \
-> +               char *_ptrtype = (char *)__ptrtype;                     \
-> +               _type _ptrdata = __VA_ARGS__;                           \
-> +               void *_ptr = &_ptrdata;                                 \
-> +               int _err;                                               \
-> +                                                                       \
-> +               _err = btf_dump_data(_b, _d, _ptrtype, _flags, _ptr,    \
-> +                                    sizeof(_type), _str, _expected);   \
-> +               if (_err < 0)                                           \
-> +                       return _err;                                    \
-> +       } while (0)
-> +
-> +/* Use where expected data string matches its stringified declaration */
-> +#define TEST_BTF_DUMP_DATA_C(_b, _d, _str, _type, _flags, ...)         \
-> +       TEST_BTF_DUMP_DATA(_b, _d, _str, _type, _flags,                 \
-> +                          "(" #_type ")" #__VA_ARGS__, __VA_ARGS__)
-> +
-> +/* overflow test; pass typesize < expected type size, ensure E2BIG returned */
-> +#define TEST_BTF_DUMP_DATA_OVER(_b, _d, _str, _type, _typesize, _expected, ...)\
-> +       do {                                                            \
-> +               char __ptrtype[64] = #_type;                            \
-> +               char *_ptrtype = (char *)__ptrtype;                     \
-> +               _type _ptrdata = __VA_ARGS__;                           \
-> +               void *_ptr = &_ptrdata;                                 \
-> +               int _err;                                               \
-> +                                                                       \
-> +               _err = btf_dump_data(_b, _d, _ptrtype, 0, _ptr,         \
-> +                                    _typesize, _str, _expected);       \
-> +               if (_err < 0)                                           \
-> +                       return _err;                                    \
-> +       } while (0)
-> +
-> +#define TEST_BTF_DUMP_VAR(_b, _d, _str, _var, _type, _flags, _expected, ...) \
-> +       do {                                                            \
-> +               _type _ptrdata = __VA_ARGS__;                           \
-> +               void *_ptr = &_ptrdata;                                 \
-> +               int _err;                                               \
-> +                                                                       \
-> +               _err = btf_dump_data(_b, _d, _var, _flags, _ptr,        \
-> +                                    sizeof(_type), _str, _expected);   \
-> +               if (_err < 0)                                           \
-> +                       return _err;                                    \
-> +       } while (0)
-> +
-> +int test_btf_dump_int_data(struct btf *btf, struct btf_dump *d, char *str)
-
-static here and in a bunch of places below
-
-> +{
-> +       /* simple int */
-> +       TEST_BTF_DUMP_DATA_C(btf, d, str, int, BTF_F_COMPACT, 1234);
-> +       TEST_BTF_DUMP_DATA(btf, d, str, int, BTF_F_COMPACT | BTF_F_NONAME,
-> +                          "1234", 1234);
-> +       TEST_BTF_DUMP_DATA(btf, d, str, int, 0, "(int)1234\n", 1234);
-
-do you think it's a good idea to append \n? it seems so simple for
-user to do that, if necessary; on the other hand, if user doesn't want
-it, they would need to do strlen() and overwriting last character,
-which seems like a hassle
-
-> +
-> +       /* zero value should be printed at toplevel */
-> +       TEST_BTF_DUMP_DATA(btf, d, str, int, BTF_F_COMPACT, "(int)0", 0);
-> +       TEST_BTF_DUMP_DATA(btf, d, str, int, BTF_F_COMPACT | BTF_F_NONAME,
-> +                          "0", 0);
-> +       TEST_BTF_DUMP_DATA(btf, d, str, int, BTF_F_COMPACT | BTF_F_ZERO,
-> +                          "(int)0", 0);
-> +       TEST_BTF_DUMP_DATA(btf, d, str, int,
-> +                          BTF_F_COMPACT | BTF_F_NONAME | BTF_F_ZERO,
-> +                          "0", 0);
-> +       TEST_BTF_DUMP_DATA_C(btf, d, str, int, BTF_F_COMPACT, -4567);
-> +       TEST_BTF_DUMP_DATA(btf, d, str, int, BTF_F_COMPACT | BTF_F_NONAME,
-> +                          "-4567", -4567);
-> +       TEST_BTF_DUMP_DATA(btf, d, str, int, 0, "(int)-4567\n", -4567);
-> +
-> +       TEST_BTF_DUMP_DATA_OVER(btf, d, str, int, sizeof(int)-1, "", 1);
-> +
-> +       return 0;
-> +}
-> +
-> +/* since the kernel does not likely have any float types in its BTF, we
-> + * will need to add some of various sizes.
-> + */
-> +#define TEST_ADD_FLOAT(_btf, _name, _sz)                               \
-> +       do {                                                            \
-> +               int _err;                                               \
-> +                                                                       \
-> +               _err = btf__add_float(_btf, _name, _sz);                \
-> +               if (CHECK(_err < 0, "btf__add_float",                   \
-> +                         "could not add float of size %d: %d",         \
-> +                         _sz, _err))                                   \
-> +                       return _err;                                    \
-> +       } while (0)
-> +
-> +#define TEST_DUMP_FLOAT(_b, _d, _str, _type, _flags, _data, _sz,       \
-> +                       _expectedval)                                   \
-> +       do {                                                            \
-> +               int _err;                                               \
-> +                                                                       \
-> +               _err = btf_dump_data(_b, _d, _type, _flags,             \
-> +                                    _data, _sz, _str, _expectedval);   \
-> +               if (CHECK(_err < 0, "btf_dump float",                   \
-> +                         "could not dump float data: %d\n", _err))     \
-> +                       return _err;                                    \
-> +       } while (0)
-> +
-> +int test_btf_dump_float_data(struct btf *btf, struct btf_dump *d, char *str)
-> +{
-> +       float t1 = 1.234567;
-> +       float t2 = -1.234567;
-> +       float t3 = 0.0;
-> +       double t4 = 5.678912;
-> +       double t5 = -5.678912;
-> +       double t6 = 0.0;
-> +       long double t7 = 9.876543;
-> +       long double t8 = -9.876543;
-> +       long double t9 = 0.0;
-> +
-> +       TEST_ADD_FLOAT(btf, "test_float", 4);
-
-I don't get this love for macros. It makes debugging experience much
-harder. It makes following the code harder. It doesn't save much
-typing at all. TEST_BTF_DUMP_DATA at least adds some convenience, but
-TEST_ADD_FLOAT and TEST_DUMP_FLOAT are completely useless, see below.
-
-> +       TEST_DUMP_FLOAT(btf, d, str, "test_float", 0, &t1, 4,
-> +                       "(test_float)1.234567\n");
-> +       TEST_DUMP_FLOAT(btf, d, str, "test_float", 0, &t2, 4,
-> +                       "(test_float)-1.234567\n");
-> +       TEST_DUMP_FLOAT(btf, d, str, "test_float", 0, &t3, 4,
-> +                       "(test_float)0.000000\n");
-
-ASSERT_OK(btf_dump_data(btf, d, "test_float", 0, &t1, 4, str,
-"(test_float)1.234567\n"));
-ASSERT_OK(btf_dump_data(btf, d, "test_float", 0, &t2, 4, str,
-"(test_float)-1.234567\n"));
-ASSERT_OK(btf_dump_data(btf, d, "test_float", 0, &t3, 4, str,
-"(test_float)0.000000\n"));
-
-It even saved some lines of code.
-
-> +
-> +       TEST_ADD_FLOAT(btf, "test_double", 8);
-> +       TEST_DUMP_FLOAT(btf, d, str, "test_double", 0, &t4, 8,
-> +                       "(test_double)5.678912\n");
-> +       TEST_DUMP_FLOAT(btf, d, str, "test_double", 0, &t5, 8,
-> +                       "(test_double)-5.678912\n");
-> +       TEST_DUMP_FLOAT(btf, d, str, "test_double", 0, &t6, 8,
-> +                       "(test_double)0.000000\n");
-> +
-
+>   include/linux/bpf_types.h |   3 +
+>   include/net/pkt_cls.h     |  13 ++
+>   include/net/sch_generic.h |   6 +-
+>   include/uapi/linux/bpf.h  |  15 +++
+>   kernel/bpf/syscall.c      |  10 +-
+>   net/sched/cls_api.c       | 139 ++++++++++++++++++++-
+>   net/sched/cls_bpf.c       | 250 +++++++++++++++++++++++++++++++++++++-
+>   7 files changed, 430 insertions(+), 6 deletions(-)
+> 
 [...]
-
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct btf_enum,
-> +                          BTF_F_COMPACT | BTF_F_NONAME,
-> +                          "{}",
-> +                          { .name_off = 0, .val = 0,});
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct btf_enum, 0,
-> +                          "(struct btf_enum){\n}\n",
-> +                          { .name_off = 0, .val = 0,});
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct btf_enum,
-> +                          BTF_F_COMPACT | BTF_F_ZERO,
-> +                          "(struct btf_enum){.name_off = (__u32)0,.val = (__s32)0,}",
-> +                          { .name_off = 0, .val = 0,});
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct btf_enum,
-> +                          BTF_F_ZERO,
-> +                          "(struct btf_enum){\n\t.name_off = (__u32)0,\n\t.val = (__s32)0,\n}\n",
-
-while for primitive types and enums above are expected strings are
-pretty easy to follow, for structs it starts to break apart. For
-instance, I find
-
-"(struct btf_enum){\
-        .name_off = (__u32)0,\
-        .val = (__s32)0,\
-}\
-",
-
-much more legible (I can mentally ignore \ at the end quite easily).
-This single line \n\t stuff just gets messier for bigger structs.
-
-> +                          { .name_off = 0, .val = 0,});
+>   subsys_initcall(tc_filter_init);
 > +
-> +       /* struct with pointers */
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct list_head, BTF_F_COMPACT,
-> +                          "(struct list_head){.next = (struct list_head *)0x1,}",
-> +                          { .next = (struct list_head *)1 });
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct list_head, 0,
-> +                          "(struct list_head){\n\t.next = (struct list_head *)0x1,\n}\n",
-> +                          { .next = (struct list_head *)1 });
-> +       /* NULL pointer should not be displayed */
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct list_head, BTF_F_COMPACT,
-> +                          "(struct list_head){}",
-> +                          { .next = (struct list_head *)0 });
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct list_head, 0,
-> +                          "(struct list_head){\n}\n",
-> +                          { .next = (struct list_head *)0 });
+> +#if IS_ENABLED(CONFIG_NET_CLS_BPF)
 > +
-> +       /* struct with function pointers */
-> +       type_id = btf__find_by_name(btf, "file_operations");
-> +       if (CHECK(type_id <= 0, "find type id",
-> +                 "no 'struct file_operations' in BTF: %d\n", type_id))
-> +               return -ENOENT;
-> +       typesize = btf__resolve_size(btf, type_id);
-> +       str[0] = '\0';
-> +
-> +       ret = btf_dump__dump_type_data(d, type_id, fops, typesize, &opts);
-> +       if (CHECK(ret != typesize,
-> +                 "dump file_operations is successful",
-> +                 "unexpected return value dumping file_operations '%s': %d\n",
-> +                 str, ret))
-> +               return -EINVAL;
-> +
-> +       cmpstr = "(struct file_operations){\n\t.owner = (struct module *)0xffffffffffffffff,\n\t.llseek = (loff_t(*)(struct file *, loff_t, int))0xffffffffffffffff,";
-> +       cmp = strncmp(str, cmpstr, strlen(cmpstr));
-> +       if (CHECK(cmp != 0, "check file_operations dump",
-> +                 "file_operations '%s' did not match expected\n",
-
-cmpstr logging is missing here. But I also think it's not the first
-time there was a need to validate only portiong of string equality, so
-I wonder if we should just add ASSERT_STRNEQ(actual, expected, len)
-variant, it should be trivial to add.
-
-> +                 str))
-> +               return -EINVAL;
-> +
-> +       /* struct with char array */
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_prog_info, BTF_F_COMPACT,
-> +                          "(struct bpf_prog_info){.name = (char[])['f','o','o',],}",
-> +                          { .name = "foo",});
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_prog_info,
-> +                          BTF_F_COMPACT | BTF_F_NONAME,
-> +                          "{['f','o','o',],}",
-> +                          {.name = "foo",});
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_prog_info, 0,
-> +                          "(struct bpf_prog_info){\n\t.name = (char[])[\n\t\t'f',\n\t\t\'o',\n\t\t'o',\n\t],\n}\n",
-> +                          {.name = "foo",});
-> +       /* leading null char means do not display string */
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_prog_info, BTF_F_COMPACT,
-> +                          "(struct bpf_prog_info){}",
-> +                          {.name = {'\0', 'f', 'o', 'o'}});
-> +       /* handle non-printable characters */
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_prog_info, BTF_F_COMPACT,
-> +                          "(struct bpf_prog_info){.name = (char[])[1,2,3,],}",
-> +                          { .name = {1, 2, 3, 0}});
-> +
-> +       /* struct with non-char array */
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct __sk_buff, BTF_F_COMPACT,
-> +                          "(struct __sk_buff){.cb = (__u32[])[1,2,3,4,5,],}",
-> +                          { .cb = {1, 2, 3, 4, 5,},});
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct __sk_buff,
-> +                          BTF_F_COMPACT | BTF_F_NONAME,
-> +                          "{[1,2,3,4,5,],}",
-> +                          { .cb = { 1, 2, 3, 4, 5},});
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct __sk_buff, 0,
-> +                          "(struct __sk_buff){\n\t.cb = (__u32[])[\n\t\t1,\n\t\t2,\n\t\t3,\n\t\t4,\n\t\t5,\n\t],\n}\n",
-
-As you can see above in my example patch, emit_type_decl would emit
-this array type as __u32[5]. I think drgn that was used as an
-inspiration for this format also does that. So I think it's good to
-stick to __u32[5] here.
-
-> +                          { .cb = { 1, 2, 3, 4, 5},});
-> +       /* For non-char, arrays, show non-zero values only */
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct __sk_buff, BTF_F_COMPACT,
-> +                          "(struct __sk_buff){.cb = (__u32[])[0,0,1,0,0,],}",
-> +                          { .cb = { 0, 0, 1, 0, 0},});
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct __sk_buff, 0,
-> +                          "(struct __sk_buff){\n\t.cb = (__u32[])[\n\t\t0,\n\t\t0,\n\t\t1,\n\t\t0,\n\t\t0,\n\t],\n}\n",
-> +                          { .cb = { 0, 0, 1, 0, 0},});
-> +
-> +       /* struct with bitfields */
-> +       TEST_BTF_DUMP_DATA_C(btf, d, str, struct bpf_insn, BTF_F_COMPACT,
-> +               {.code = (__u8)1,.dst_reg = (__u8)0x2,.src_reg = (__u8)0x3,.off = (__s16)4,.imm = (__s32)5,});
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_insn,
-> +                          BTF_F_COMPACT | BTF_F_NONAME,
-> +                          "{1,0x2,0x3,4,5,}",
-> +                          { .code = 1, .dst_reg = 0x2, .src_reg = 0x3, .off = 4,
-> +                            .imm = 5,});
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_insn, 0,
-> +                          "(struct bpf_insn){\n\t.code = (__u8)1,\n\t.dst_reg = (__u8)0x2,\n\t.src_reg = (__u8)0x3,\n\t.off = (__s16)4,\n\t.imm = (__s32)5,\n}\n",
-> +                          {.code = 1, .dst_reg = 2, .src_reg = 3, .off = 4, .imm = 5});
-> +
-> +       /* zeroed bitfields should not be displayed */
-> +       TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_insn, BTF_F_COMPACT,
-> +                          "(struct bpf_insn){.dst_reg = (__u8)0x1,}",
-> +                          { .code = 0, .dst_reg = 1});
-> +
-> +       /* struct with enum bitfield */
-> +       type_id = btf__find_by_name(btf, "nft_cmp_expr");
-
-This nft_cmp_expr breaks our CI ([0]) because we don't build kernels
-with CONFIG_NF_TABLES=y. Can you please find some other struct that
-would be in a core kernel configuration? If not, you can just do the
-same trick as with floats and generate your own struct with bitfields.
-
-  [0] https://travis-ci.com/github/kernel-patches/bpf/builds/227876698
-
-> +       if (CHECK(type_id <= 0, "find nft_cmp_expr",
-> +                 "no 'struct nft_cmp_expr' in BTF: %d\n", type_id))
-> +               return -ENOENT;
-> +       typesize = btf__resolve_size(btf, type_id);
-> +       str[0] = '\0';
-> +
-
-[...]
-
-> +void test_btf_dump_data(void)
+> +int bpf_tc_link_attach(union bpf_attr *attr, struct bpf_prog *prog)
 > +{
-> +       struct btf *btf = libbpf_find_kernel_btf();
-> +       char str[STRSIZE];
-> +       struct btf_dump_opts opts = { .ctx = str };
-> +       struct btf_dump *d;
+> +	struct net *net = current->nsproxy->net_ns;
+> +	struct tcf_chain_info chain_info;
+> +	u32 chain_index, prio, parent;
+> +	struct tcf_block *block;
+> +	struct tcf_chain *chain;
+> +	struct tcf_proto *tp;
+> +	int err, tp_created;
+> +	unsigned long cl;
+> +	struct Qdisc *q;
+> +	__be16 protocol;
+> +	void *fh;
 > +
-> +       if (CHECK(!btf, "get kernel BTF", "no kernel BTF found"))
-> +               return;
-> +
-> +       d = btf_dump__new(btf, NULL, &opts, btf_dump_snprintf);
-> +
-> +       if (CHECK(!d, "new dump", "could not create BTF dump"))
-> +               return;
-> +
-> +       /* Verify type display for various types. */
-> +       if (test_btf_dump_int_data(btf, d, str))
-> +               return;
-> +       if (test_btf_dump_float_data(btf, d, str))
-> +               return;
-> +       if (test_btf_dump_char_data(btf, d, str))
-> +               return;
-> +       if (test_btf_dump_typedef_data(btf, d, str))
-> +               return;
-> +       if (test_btf_dump_enum_data(btf, d, str))
-> +               return;
-> +       if (test_btf_dump_struct_data(btf, d, str))
-> +               return;
-> +       if (test_btf_dump_var_data(btf, d, str))
-> +               return;
+> +	/* Caller already checks bpf_capable */
+> +	if (!ns_capable(current->nsproxy->net_ns->user_ns, CAP_NET_ADMIN))
 
-it would be more convenient for each of those to be a subtest, and
-there is no need to exit early if one of them fails, so don't return
-early.
+net->user_ns?
 
-> +       btf_dump__free(d);
-> +       btf__free(btf);
+> +		return -EPERM;
 > +
-> +       /* verify datasec display */
-> +       if (test_btf_dump_datasec_data(str))
-> +               return;
+> +	if (attr->link_create.flags ||
+> +	    !attr->link_create.target_ifindex ||
+> +	    !tc_flags_valid(attr->link_create.tc.gen_flags))
+> +		return -EINVAL;
 > +
-> +}
-> +
->  void test_btf_dump() {
->         int i;
->
-> @@ -245,4 +881,6 @@ void test_btf_dump() {
->         }
->         if (test__start_subtest("btf_dump: incremental"))
->                 test_btf_dump_incremental();
-> +       if (test__start_subtest("btf_dump: data"))
-
-so instead of testing subtest name here, just do it for every
-test_btf_dump_*_data above
-
-> +               test_btf_dump_data();
->  }
-> --
-> 1.8.3.1
->
+[...]
