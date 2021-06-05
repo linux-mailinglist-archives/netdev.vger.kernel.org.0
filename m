@@ -2,316 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E46C39CB7B
-	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 00:40:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1EC139CB8A
+	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 00:53:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbhFEWmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 18:42:32 -0400
-Received: from mail-wr1-f42.google.com ([209.85.221.42]:35741 "EHLO
-        mail-wr1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229998AbhFEWmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 18:42:32 -0400
-Received: by mail-wr1-f42.google.com with SMTP id m18so13019698wrv.2;
-        Sat, 05 Jun 2021 15:40:27 -0700 (PDT)
+        id S230035AbhFEWze (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 18:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46326 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230010AbhFEWzd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 18:55:33 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7459C061766
+        for <netdev@vger.kernel.org>; Sat,  5 Jun 2021 15:53:32 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id n24so2391331lji.2
+        for <netdev@vger.kernel.org>; Sat, 05 Jun 2021 15:53:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=UufnybqE4cq7DxGgeJzoFiDmrclus4J9QFmlfRc8QqM=;
-        b=RaDXfEyBM/gucUBsbztTUDNxjPkWGImwVNv5AkWYOmM44MIoM2KgZAK67y9KPsSnQX
-         vxHYXK6x1QpGZxpzGWEJ0luhOZRALSj7YZsV3YCLCHufWdBTsIHI+0M5XNCQL0zXM2e8
-         /l14ImEp9vt26siLgRsxTHlOvXBFff56PixU1tj/EJYlJuU+J4N8SgY4nGLrxbplFo63
-         ViEHZpaKlwW3hraeDwxlnQxr8gG+2hHfo9Tn/XI2QqqkVBQBJ5ekEqMbjgFPiwOS3cZV
-         eHjSbNd7zTvbWEl5Rhsgn0z+sO2Iw+odTEMKQlGsKnggNyLEe0OINV1zZvVq9jJ8QEWD
-         qUcw==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=xvyLc2wx4wjjjI2rHxEzxm27254USeHJaXa8k11kOhs=;
+        b=dss/MUUd8Zt/B+J2OqXf04jTGiZ0qQv/gt8xezAtvkEPdrYezJfHquYoh/VgyeUHX2
+         OCSMI4q4vCh968M/KE/sLpheiYQosaR2r2/qSH9UvAcrBHxAiumwaaCiPZ/g6QrKhQoc
+         rcsQs7+UshblFhbEvLiVigJXeD9+e31qpi4vH6w/W3Ug2FiKbAQD2jOKDem2AB2QUJMr
+         UEK972ClEk1npYwOT5+ujEfw5l69G7QWPv9ZQvRtrxD6nVw5WSzFLsi1dpGLq0T5a70r
+         91YoSv+aiUxv7abAO9cf9Hfzu406QcKcJivllV82VehwcljE/xcKLO0f5lIj5j6hT8Js
+         ow+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=UufnybqE4cq7DxGgeJzoFiDmrclus4J9QFmlfRc8QqM=;
-        b=Y/uF69tbTif66hoJuFGEmJcNqu1ZKwtJtPFkeC68D8AyAeQT0JvXNjS+LR88Ntgkcp
-         hIm9fWjSMKDpmYxY59PSFl5DenptewGKbrauM60QtydgljqWOPubB3fvUW2Wfb3NjHvo
-         OQoETXbpo4X2or0gPgoyizlyoAc5tJJw4Pgd94sfOFq3ThEEeW+BMOe0zhMKN8Phh5cF
-         Zr7GTB10/CYrrceJg+oU3AcGv0nYZcgsE6ZXsPoHag7TR0Z5vgr6knFXYIdP3/kMRSo4
-         7N3PYJrHKTWwIXhxnWTBgFlllST5PFRb3S8W6cfNQurZKD7XD68X2hQkxwb/GCno/vRW
-         KQ5A==
-X-Gm-Message-State: AOAM5305+A8qvAKwUAqbzSJVtmn6SN9F7T0cBBXZCUHlnNIJKvmeWYEA
-        sCPsv8gipy6HJVf+mghKzuJIy3lbR0nh4w==
-X-Google-Smtp-Source: ABdhPJxKGjnGjVVU0y+lofqaeIqota/iY14qwfGcuDzurQW8lsMDv9PLH3lR0ok8b0tozlzW+b3pLQ==
-X-Received: by 2002:adf:ea4c:: with SMTP id j12mr9940614wrn.64.1622932766250;
-        Sat, 05 Jun 2021 15:39:26 -0700 (PDT)
-Received: from localhost.localdomain (haganm.plus.com. [212.159.108.31])
-        by smtp.gmail.com with ESMTPSA id l16sm12818672wmj.47.2021.06.05.15.39.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Jun 2021 15:39:25 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next] net: dsa: tag_qca: Check for upstream VLAN
- tag
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210605193749.730836-1-mnhagan88@gmail.com>
- <YLvgI1e3tdb+9SQC@lunn.ch>
-From:   Matthew Hagan <mnhagan88@gmail.com>
-Message-ID: <ed3940ec-5636-63db-a36b-dc6c2220b51d@gmail.com>
-Date:   Sat, 5 Jun 2021 23:39:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=xvyLc2wx4wjjjI2rHxEzxm27254USeHJaXa8k11kOhs=;
+        b=P+qTrD09NobBQc2Yn0o9NaNsvV/PwqRdpAOw0QUWelxQftoaXtLJ2T1OnYPwjMndcg
+         aDgx1wTknpfnDr2xiWtMUuC7st4YAPUOxFktCGY6YDAmTKmxHaWz2rhq7Zd0W0ww9JPh
+         H5qnAnrFYlk3K4o8xWZAi20iplGW8cevV6HhBf2LWzcIX6iWQvWAWpIdsrzzjUEJy/dp
+         HaUpOAPtZsjO1zLPDCPMKBnKVi75UBYICpdAey1Xu1golr86u7286oFFeUJkHOageRBS
+         JF+zG0dM4TqpQZJHj/qZvHRcSVCRrNZCgShGiDvZJpcxXCY+LQSsNmw0r7F2V9Flhphu
+         dTMQ==
+X-Gm-Message-State: AOAM531g+WGEWzIdLcPPxm/XgefTJrX4czj6CNIr6krH73jX1YV4pqd7
+        FfLI68auNILfCAb9JzuEM3qdsWNLki7p7EQ9HEU=
+X-Google-Smtp-Source: ABdhPJz8uN8kpWOKqhuM8n9PHM737R9WEm+bID4gRJV+vD9t/WSWqMICY74RAZSXobv6f965MO0sIRtr3hzEvR7DdsE=
+X-Received: by 2002:a2e:9b11:: with SMTP id u17mr8785694lji.346.1622933611332;
+ Sat, 05 Jun 2021 15:53:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <YLvgI1e3tdb+9SQC@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Received: by 2002:a05:6504:168d:0:0:0:0 with HTTP; Sat, 5 Jun 2021 15:53:30
+ -0700 (PDT)
+Reply-To: maverickjones57@gmail.com
+From:   "Maverick Jones." <mkris951@gmail.com>
+Date:   Sat, 5 Jun 2021 23:53:30 +0100
+Message-ID: <CAAAuaTXurwBPUV9=7kD-MMSaagyHmAcgOeb5YLi1vaoL7NzfiA@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/06/2021 21:35, Andrew Lunn wrote:
+-- 
+We wish to notify you again that you were listed as a beneficiary in
+the intent of the deceased .Please provide your contact details to
+enable us contact you with full details on how to claims the
+Inheritance.
 
->> The tested case is a Meraki MX65 which features two QCA8337 switches with
->> their CPU ports attached to a BCM58625 switch ports 4 and 5 respectively.
-> Hi Matthew
->
-> The BCM58625 switch is also running DSA? What does you device tree
-> look like? I know Florian has used two broadcom switches in cascade
-> and did not have problems.
->
->     Andrew
+Yours faithfully,
 
-Hi Andrew
-
-I did discuss this with Florian, who recommended I submit the changes. Can
-confirm the b53 DSA driver is being used. The issue here is that tagging
-must occur on all ports. We can't selectively disable for ports 4 and 5
-where the QCA switches are attached, thus this patch is required to get
-things working.
-
-Setup is like this:
-                       sw0p2     sw0p4            sw1p2     sw1p4 
-    wan1    wan2  sw0p1  +  sw0p3  +  sw0p5  sw1p1  +  sw1p3  +  sw1p5
-     +       +      +    |    +    |    +      +    |    +    |    +
-     |       |      |    |    |    |    |      |    |    |    |    |
-     |       |    +--+----+----+----+----+-+ +--+----+----+----+----+-+
-     |       |    |         QCA8337        | |        QCA8337         |
-     |       |    +------------+-----------+ +-----------+------------+
-     |       |             sw0 |                     sw1 |
-+----+-------+-----------------+-------------------------+------------+
-|    0       1    BCM58625     4                         5            |
-+----+-------+-----------------+-------------------------+------------+
-
-Relevant sections of the device tree are as follows:
-
-mdio@0 {
-    reg = <0x0>;
-    #address-cells = <1>;
-    #size-cells = <0>;
-
-    phy_port6: phy@0 {
-        reg = <0>;
-    };
-
-    phy_port7: phy@1 {
-        reg = <1>;
-    };
-
-    phy_port8: phy@2 {
-        reg = <2>;
-    };
-
-    phy_port9: phy@3 {
-        reg = <3>;
-    };
-
-    phy_port10: phy@4 {
-        reg = <4>;
-    };
-
-    switch@10 {
-        compatible = "qca,qca8337";
-        #address-cells = <1>;
-        #size-cells = <0>;
-        reg = <0x10>;
-        dsa,member = <1 0>;
-
-        ports {
-            #address-cells = <1>;
-            #size-cells = <0>;
-            port@0 {
-                reg = <0>;
-                label = "cpu";
-                ethernet = <&sgmii1>;
-                phy-mode = "sgmii";
-                fixed-link {
-                    speed = <1000>;
-                    full-duplex;
-                };
-            };
-
-            port@1 {
-                reg = <1>;
-                label = "sw1p1";
-                phy-handle = <&phy_port6>;
-            };
-
-            port@2 {
-                reg = <2>;
-                label = "sw1p2";
-                phy-handle = <&phy_port7>;
-            };
-
-            port@3 {
-                reg = <3>;
-                label = "sw1p3";
-                phy-handle = <&phy_port8>;
-            };
-
-            port@4 {
-                reg = <4>;
-                label = "sw1p4";
-                phy-handle = <&phy_port9>;
-            };
-
-            port@5 {
-                reg = <5>;
-                label = "sw1p5";
-                phy-handle = <&phy_port10>;
-            };
-        };
-    };
-};
-
-mdio-mii@2000 {
-    reg = <0x2000>;
-    #address-cells = <1>;
-    #size-cells = <0>;
-
-    phy_port1: phy@0 {
-        reg = <0>;
-    };
-
-    phy_port2: phy@1 {
-        reg = <1>;
-    };
-
-    phy_port3: phy@2 {
-        reg = <2>;
-    };
-
-    phy_port4: phy@3 {
-        reg = <3>;
-    };
-
-    phy_port5: phy@4 {
-        reg = <4>;
-    };
-
-    switch@10 {
-        compatible = "qca,qca8337";
-        #address-cells = <1>;
-        #size-cells = <0>;
-        reg = <0x10>;
-        dsa,member = <2 0>;
-
-        ports {
-            #address-cells = <1>;
-            #size-cells = <0>;
-            port@0 {
-                reg = <0>;
-                label = "cpu";
-                ethernet = <&sgmii0>;
-                phy-mode = "sgmii";
-                fixed-link {
-                    speed = <1000>;
-                    full-duplex;
-                };
-            };
-
-            port@1 {
-                reg = <1>;
-                label = "sw0p1";
-                phy-handle = <&phy_port1>;
-            };
-
-            port@2 {
-                reg = <2>;
-                label = "sw0p2";
-                phy-handle = <&phy_port2>;
-            };
-
-            port@3 {
-                reg = <3>;
-                label = "sw0p3";
-                phy-handle = <&phy_port3>;
-            };
-
-            port@4 {
-                reg = <4>;
-                label = "sw0p4";
-                phy-handle = <&phy_port4>;
-            };
-
-            port@5 {
-                reg = <5>;
-                label = "sw0p5";
-                phy-handle = <&phy_port5>;
-            };
-        };
-    };
-};
-
-
-&srab {
-    compatible = "brcm,bcm58625-srab", "brcm,nsp-srab";
-    status = "okay";
-    dsa,member = <0 0>;
-
-    ports {
-        #address-cells = <1>;
-        #size-cells = <0>;
-
-        port@0 {
-            label = "wan1";
-            reg = <0>;
-        };
-
-        port@1 {
-            label = "wan2";
-            reg = <1>;
-        };
-
-        sgmii0: port@4 {
-            label = "sw0";
-            reg = <4>;
-            fixed-link {
-                speed = <1000>;
-                full-duplex;
-            };
-        };
-
-        sgmii1: port@5 {
-            label = "sw1";
-            reg = <5>;
-            fixed-link {
-                speed = <1000>;
-                full-duplex;
-            };
-        };
-
-        port@8 {
-            ethernet = <&amac2>;
-            label = "cpu";
-            reg = <8>;
-            fixed-link {
-                speed = <1000>;
-                full-duplex;
-            };
-        };
-    };
-};
-
-Matthew
-
+Maverick Jones.
