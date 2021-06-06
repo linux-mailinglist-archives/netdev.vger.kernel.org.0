@@ -2,77 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9F4C39CB9A
-	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 01:02:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14A1839CBF5
+	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 02:55:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbhFEXDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 19:03:48 -0400
-Received: from mail-ot1-f49.google.com ([209.85.210.49]:41487 "EHLO
-        mail-ot1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbhFEXDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 19:03:45 -0400
-Received: by mail-ot1-f49.google.com with SMTP id 36-20020a9d0ba70000b02902e0a0a8fe36so12919310oth.8
-        for <netdev@vger.kernel.org>; Sat, 05 Jun 2021 16:01:57 -0700 (PDT)
+        id S230139AbhFFA4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 20:56:41 -0400
+Received: from mail-ed1-f53.google.com ([209.85.208.53]:37675 "EHLO
+        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230022AbhFFA4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 20:56:41 -0400
+Received: by mail-ed1-f53.google.com with SMTP id b11so15719285edy.4;
+        Sat, 05 Jun 2021 17:54:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/PU/oGXL8JrYmO+Y7A9zhyMMAj5Wc8J1xy8bpC0r4vs=;
-        b=g3dQh466HhzccuK7PJ/116EYq9ypoCWQpryDUKeDR0Rp6/Gpp672XMHej9BEnQJwb4
-         aLHmCVrEauxcsuELjwop2eg7XLmIwhrTp8x/sOwcyo1uiLdFzXUKW+1/zcee5BrjOJHM
-         PFsKc50ihElWIGfF8xyPQk6StH1jcoOO3PLJA5JyMDikoBhJloQqGqz450E6sj2Qg5Gd
-         hJ6N5qZHWjpjylOKsaHTyvcoizgvpqoFhdK4QbTfSygsr7Rs7b7lNN7lr/DX2A9jsWGe
-         a+5QHdsCbk/BieBO0eI0avfaLRrUEVo3aVYM+yFV1KG+DZo7T6IPpFphW0Lg8PfBpR3p
-         vmQQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=5k/iS3Z5RT6D+xK4ZwQ9/9Ly3jmBdwhBfNLrRJfoaKQ=;
+        b=CXkXjD1GeZAay7O/29IZo/OJIv7emonfM2TvpipbnXf4YfcKxIPmU2vQhaUUcfah3S
+         aoDXyTOzTU7g2Jz+oN9xfBkHSHHnK+kLMXilgJeoEceZ+Kib306aKDAEhuy+tmzXVKmh
+         k1Z8WCrDJbWK4YLxoWk7LQf6RWdGlmnjskQ2hPMqb07rB0/M47kmz7eM1hc+tW3xIBfB
+         XM/NxfKCsGFXikH1hE8h5UJW68HIYGx96XeQfuKrt9SVkF4H705UIl0yVoAnoP5jk+ey
+         gZ+uWd8z/iWTz15bnnzFEiUMy+ept3veXt9NVijPaqxb8iyDJBrvbYXZMDcQDU8trg4v
+         7/Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/PU/oGXL8JrYmO+Y7A9zhyMMAj5Wc8J1xy8bpC0r4vs=;
-        b=WDdiBsHq7kFHTr7VtZMEMZCHekDrXxAvY3IDFryKX6zwsNzmXwj8UE9ZqqQY6xvX63
-         p5eXyI+KSCgnxGn1D99kqBUY+bGvikIzWP/BmZYreRg+ptA3QRiZIUlUFRPWP3cF7Zxy
-         03Lh2hEhC2tYLxeMLC/ZhYBakHVkNqKGIJPthuEUgS8AuKWVbEM1ITsVtveLzNVU4ppH
-         T1YNEoHWwDTTSzCgmoQW0XnxV172yc6KTvetAocB9AfAMVR7PG6vZWHCFMuAtMxEC/cf
-         dWitgWpAPTronhcpkvwKPXv+sPwzNRfF4pu44RPzhL6IXm2GEVR9kNyVhqru4459yh3J
-         q/JQ==
-X-Gm-Message-State: AOAM533vr4LSXnP4e+Z+UD0zUu0RRxAXx5zUxCUj5dpe1CkrSz1cjloC
-        OTZsLlG14JtVBS7USi5nP+rHmd2+TEEU6A==
-X-Google-Smtp-Source: ABdhPJxaJLsr09lRfAEprvorDWINXgPsxO6vQfiMmePMlxokpNjcJotbQtmeKZw+DAMX+z7ZA9o8xg==
-X-Received: by 2002:a05:6830:11ce:: with SMTP id v14mr338040otq.216.1622934057114;
-        Sat, 05 Jun 2021 16:00:57 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id o14sm1368121oik.29.2021.06.05.16.00.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Jun 2021 16:00:56 -0700 (PDT)
-Subject: Re: VRF/IPv4/ARP: unregister_netdevice waiting for dev to become free
- -> Who's responsible for releasing dst_entry created by ip_route_input_noref?
-To:     Oliver Herms <oliver.peter.herms@gmail.com>,
-        Network Development <netdev@vger.kernel.org>
-Cc:     David Miller <davem@davemloft.net>
-References: <20cd265b-d52d-fd1f-c47e-bfa7ea15518f@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <354f3931-1a9a-fff2-182c-d470fe46776a@gmail.com>
-Date:   Sat, 5 Jun 2021 17:00:55 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=5k/iS3Z5RT6D+xK4ZwQ9/9Ly3jmBdwhBfNLrRJfoaKQ=;
+        b=neTRNHPikGZst/8nX3PfnAlqrvJnr/MoffXWtUyIGtsj96UcfJNrrdlIr1zMghayYP
+         PCe9eoVC0kOzMF2q8m5cmTLmznUQiTP3H0vLmZg/u029wNUjufkUY0ITIRE2babPeqIi
+         hTcFkA/P3FuL7Sry7tSxwHIXwjXrtjJLj5JfU8xhxa/Uwj0yTPuFflJtez25Nf3EgFq3
+         8Z2MZsAmmyO8sTmA+cISzM+OAdsIrYEnpmt/tmMdrZBAeHw6rhfTcGIYnjrMgi7BlADD
+         zV0+KJqKq8ZRQFepLxVxhFWxYJbuOgnbes3gYoOxV2epNTG59gL7LLblrWoEgSaG6r9c
+         H05w==
+X-Gm-Message-State: AOAM532h3KjzMZ/Bov65FwZBYRDHALiOfSRiKg9Kj+TlrYm1wkpBwYPb
+        fAvKskHJ1zHEuQoow+wTsaE=
+X-Google-Smtp-Source: ABdhPJwWwPaMVkAk4H9NtVZPFoTRMWMXB6KCo1G+BQT3qFv6QwV/tXO//GPnIy1PR5omg4d47Jw8sw==
+X-Received: by 2002:a05:6402:510f:: with SMTP id m15mr12782128edd.283.1622940817497;
+        Sat, 05 Jun 2021 17:53:37 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id gw7sm4692666ejb.5.2021.06.05.17.53.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 05 Jun 2021 17:53:37 -0700 (PDT)
+Date:   Sun, 6 Jun 2021 03:53:35 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Matthew Hagan <mnhagan88@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next] net: dsa: tag_qca: Check for upstream VLAN
+ tag
+Message-ID: <20210606005335.iuqi4yelxr5irmqg@skbuf>
+References: <20210605193749.730836-1-mnhagan88@gmail.com>
+ <YLvgI1e3tdb+9SQC@lunn.ch>
+ <ed3940ec-5636-63db-a36b-dc6c2220b51d@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20cd265b-d52d-fd1f-c47e-bfa7ea15518f@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ed3940ec-5636-63db-a36b-dc6c2220b51d@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/5/21 11:16 AM, Oliver Herms wrote:
-> Processing the incoming ARP request causes a call to ip_route_input_noref => ip_route_input_rcu => ip_route_input_slow => rt_dst_alloc => dst_alloc => dev_hold.
-> In a non VRF use-case the dst->dev would be the loopback interface that is never deleted. In the VRF use-case dst->dev is the VRF interface. And that one I would like to delete.
-> 
-> I've tracked down that dst_release() would call dev_put() but it seems dst_release is not called here (but should be I guess?). Thus, causing a dst_entry leak that causes the VRF device to be unremovable.
-> At least that's what it looks like to me.
-> 
+Hi Matthew,
 
-I see what the problem is -- rtable is on cached on the l3mdev port
-device. I have an idea how to fix it; I will send a patch within a few
-days. Thanks for the detailed analysis and report.
+On Sat, Jun 05, 2021 at 11:39:24PM +0100, Matthew Hagan wrote:
+> On 05/06/2021 21:35, Andrew Lunn wrote:
+> 
+> >> The tested case is a Meraki MX65 which features two QCA8337 switches with
+> >> their CPU ports attached to a BCM58625 switch ports 4 and 5 respectively.
+> > Hi Matthew
+> >
+> > The BCM58625 switch is also running DSA? What does you device tree
+> > look like? I know Florian has used two broadcom switches in cascade
+> > and did not have problems.
+> >
+> >     Andrew
+> 
+> Hi Andrew
+> 
+> I did discuss this with Florian, who recommended I submit the changes. Can
+> confirm the b53 DSA driver is being used. The issue here is that tagging
+> must occur on all ports. We can't selectively disable for ports 4 and 5
+> where the QCA switches are attached, thus this patch is required to get
+> things working.
+> 
+> Setup is like this:
+>                        sw0p2     sw0p4            sw1p2     sw1p4 
+>     wan1    wan2  sw0p1  +  sw0p3  +  sw0p5  sw1p1  +  sw1p3  +  sw1p5
+>      +       +      +    |    +    |    +      +    |    +    |    +
+>      |       |      |    |    |    |    |      |    |    |    |    |
+>      |       |    +--+----+----+----+----+-+ +--+----+----+----+----+-+
+>      |       |    |         QCA8337        | |        QCA8337         |
+>      |       |    +------------+-----------+ +-----------+------------+
+>      |       |             sw0 |                     sw1 |
+> +----+-------+-----------------+-------------------------+------------+
+> |    0       1    BCM58625     4                         5            |
+> +----+-------+-----------------+-------------------------+------------+
+
+It is a bit unconventional for the upstream Broadcom switch, which is a
+DSA master of its own, to insert a VLAN ID of zero out of the blue,
+especially if it operates in standalone mode. Supposedly sw0 and sw1 are
+not under a bridge net device, are they?
+
+If I'm not mistaken, this patch should solve your problem?
+
+-----------------------------[ cut here ]-----------------------------
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 3ca6b394dd5f..d6655b516bd8 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1462,6 +1462,7 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
+ 	struct b53_device *dev = ds->priv;
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
++	bool really_untagged = false;
+ 	struct b53_vlan *vl;
+ 	int err;
+ 
+@@ -1474,10 +1475,10 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
+ 	b53_get_vlan_entry(dev, vlan->vid, vl);
+ 
+ 	if (vlan->vid == 0 && vlan->vid == b53_default_pvid(dev))
+-		untagged = true;
++		really_untagged = true;
+ 
+ 	vl->members |= BIT(port);
+-	if (untagged && !dsa_is_cpu_port(ds, port))
++	if (really_untagged || (untagged && !dsa_is_cpu_port(ds, port)))
+ 		vl->untag |= BIT(port);
+ 	else
+ 		vl->untag &= ~BIT(port);
+-----------------------------[ cut here ]-----------------------------
