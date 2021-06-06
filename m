@@ -2,115 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D4839CE23
-	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 10:25:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5277739CE6E
+	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 11:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbhFFI1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Jun 2021 04:27:13 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:35513 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230355AbhFFI1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 04:27:11 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id CAA215C01AE;
-        Sun,  6 Jun 2021 04:25:21 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Sun, 06 Jun 2021 04:25:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=84kLIDzoa3JgNM6hauLK0/KbxKUqqROPBrOa3lXSSc4=; b=Tem6VjeQ
-        hRz5iTZAHQ35kRCgaHD608+4EvpSDPdI+me/e3MnDPuKDNh3Z1aDc4BrQQ+6NJHJ
-        uCnha+zASlVDLmTE+RnJZfaMQOGHkfjq6bu/SdkxOxKn3wYX57a0Eki9dy2bVusY
-        xTSBCGBWegf1S+mUzFZS+JCXDQm2MFSPgcmJX+I0enpUNFIwi/gAB7sYDhcToiHr
-        u1bnamiA768TIKzD588SQ6NcZK5XChsRUpiWVTvS0k7xKGtC8j08MUYd2Lm71P2A
-        Kj5Jrxgv/e+QLcnx97juccEfrW8G8DGSk6SwGO5Ehf4vfd8Pp63vYTcaAMLCE6W6
-        hWbYyUYDQX666A==
-X-ME-Sender: <xms:cYa8YDX3tXLiU8p9viV16C10XEXIgkuKhfcIVnn02ERUFe7pwX2LKw>
-    <xme:cYa8YLn7ZXbLYG5888LyEkI01e2Vd9vdsR_EOkke1LpYIYmZoIAaYE_3lE8zccwHp
-    aPKALgHKD79nNk>
-X-ME-Received: <xmr:cYa8YPa7gH3p_RTL6DxsIGFxBuOEnzG6xPrZUqKN6zOWQNhM7EJVnIpamOIxq4O6pKScRs09nELt>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedthedgtdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeduteeiveffffevleekleejffekhfekhefgtdfftefhledvjefggfehgfevjeek
-    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:cYa8YOV3Wvi68g3A6TRLcTCXuvzo9fKDSTL5TBum2s9K6GqacCCtDw>
-    <xmx:cYa8YNmOnF_BFbjMPQ1EOPGWxzNS7ECN6qLVWQiRonf5wfzKJwIUvw>
-    <xmx:cYa8YLdk8ry4sNPu1hnQwAaB7-u1bJRF5gfj4yZ-XimW7WkZY-E2Kw>
-    <xmx:cYa8YLaTkxupZCxvc9z8e_dsC_bdEqVDnW0qvCF4CPJkKC1m44R3gA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 6 Jun 2021 04:25:19 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        petrm@nvidia.com, mlxsw@nvidia.com,
-        Mykola Kostenok <c_mykolak@nvidia.com>,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 3/3] mlxsw: core: Set thermal zone polling delay argument to real value at init
-Date:   Sun,  6 Jun 2021 11:24:32 +0300
-Message-Id: <20210606082432.1463577-4-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210606082432.1463577-1-idosch@idosch.org>
-References: <20210606082432.1463577-1-idosch@idosch.org>
+        id S230142AbhFFJj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Jun 2021 05:39:26 -0400
+Received: from mail-wm1-f44.google.com ([209.85.128.44]:37677 "EHLO
+        mail-wm1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229962AbhFFJj0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 05:39:26 -0400
+Received: by mail-wm1-f44.google.com with SMTP id f16-20020a05600c1550b02901b00c1be4abso211306wmg.2;
+        Sun, 06 Jun 2021 02:37:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=MJuP8CxV6bjU2gIDe6Qlmusnyce3p54TGbmJ67b3i24=;
+        b=moV/rgoyuYvOuX2oJAMxsMD5dWl7bn8Kth+LDjn06gSDP96MKJJtdHeiblB9HNbTXN
+         CJVga/pAzwi2UGAy2Xah3nC1sDDXnzhSLsV7IgNbTATu+KxD9Du9Aqkuhht+qGqVUFth
+         zREl1PjycLCiF3R4miwRpR6dG7UKyAcmIx/J6bFgXosCHIjQ04826C4o8bG9bUzO0yok
+         6qdDtV7kY87J+m6ArfVNYqcgD4tA5dYPB1ETPXBpB4W5ixR7yG5sBqVh/aD1KXSD7n/j
+         1Cx92lwyi51TCpnB2g33560bSASlyfzUBMRz+99cgHZK8JAYY1YZmsVX+FV/D2/ioPro
+         upwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=MJuP8CxV6bjU2gIDe6Qlmusnyce3p54TGbmJ67b3i24=;
+        b=uKlR2Qcjvo5AUezNsfdG7W0wWNFFWdMpIofZH6wRW8MlPKtrJ/j1mfgBQI3OZ46riD
+         zEDMyfTEW92EgLLtEuLKYKYymSnM8SLJU/3vONDIjca82TLzIHBc3yl2mBa4/Koxzgqf
+         fm3GHtrzHJXiRfF+GSBk3IzDv9aSpjO/pNF/LmfxCyl/efkQlchM1nAnMwvPyYewvNXc
+         5eaiaQCXL1K6d8fTjgacuNA2ra6E5v9zajIjB18ZodYF0k0P+V7i8vBHvJaEDpdu5q9F
+         9jLq3jtq690DRNd2tLvwQ9VrKb5vBOsjJdtoLNRtoNQvmHR973uKDFr6eUzygZ6EIcKJ
+         gSKQ==
+X-Gm-Message-State: AOAM531b20CAiTfnoUduLkDYVpscNJcxRBx4eE86f3SHOlnTJJAu/xEu
+        /CC2BWQSCDHurrdbx793O8s=
+X-Google-Smtp-Source: ABdhPJyNIZqQPUm8ZPsH8rrCJBxDeoLQi0RWvWLyw30Db65AgsZUfT6IQD3f5Q7tthNSJ6IOqVhmcQ==
+X-Received: by 2002:a7b:c2a2:: with SMTP id c2mr9663889wmk.89.1622972195496;
+        Sun, 06 Jun 2021 02:36:35 -0700 (PDT)
+Received: from localhost.localdomain (haganm.plus.com. [212.159.108.31])
+        by smtp.gmail.com with ESMTPSA id y6sm13818467wmy.23.2021.06.06.02.36.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Jun 2021 02:36:34 -0700 (PDT)
+Subject: Re: [PATCH 1/3] net: stmmac: explicitly deassert GMAC_AHB_RESET
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        Fugang Duan <fugang.duan@nxp.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+References: <20210605173546.4102455-1-mnhagan88@gmail.com>
+ <YLw//XARgqNlRoTB@builder.lan>
+From:   Matthew Hagan <mnhagan88@gmail.com>
+Message-ID: <3436f8f0-77dc-d4ff-4489-e9294c434a08@gmail.com>
+Date:   Sun, 6 Jun 2021 10:36:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YLw//XARgqNlRoTB@builder.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mykola Kostenok <c_mykolak@nvidia.com>
+On 06/06/2021 04:24, Bjorn Andersson wrote:
 
-Thermal polling delay argument for modules and gearboxes thermal zones
-used to be initialized with zero value, while actual delay was used to
-be set by mlxsw_thermal_set_mode() by thermal operation callback
-set_mode(). After operations set_mode()/get_mode() have been removed by
-cited commits, modules and gearboxes thermal zones always have polling
-time set to zero and do not perform temperature monitoring.
+> On Sat 05 Jun 12:35 CDT 2021, Matthew Hagan wrote:
+>
+>> We are currently assuming that GMAC_AHB_RESET will already be deasserted
+>> by the bootloader. However if this has not been done, probing of the GMAC
+>> will fail. To remedy this we must ensure GMAC_AHB_RESET has been deasserted
+>> prior to probing.
+>>
+> Sounds good, just some small style comments below.
+>
+>> Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
+>> ---
+>>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c     | 7 +++++++
+>>  drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 7 +++++++
+>>  include/linux/stmmac.h                                | 1 +
+>>  3 files changed, 15 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> index 6d41dd6f9f7a..1e28058b65a8 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> @@ -6840,6 +6840,13 @@ int stmmac_dvr_probe(struct device *device,
+>>  			reset_control_reset(priv->plat->stmmac_rst);
+>>  	}
+>>  
+>> +	if (priv->plat->stmmac_ahb_rst) {
+> You don't need this conditional, stmmac_ahb_rst will be NULL if not
+> specified and you can reset_control_deassert(NULL) without any problems.
+>
+>> +		ret = reset_control_deassert(priv->plat->stmmac_ahb_rst);
+>> +		if (ret == -ENOTSUPP)
+>> +			dev_err(priv->device,
+>> +				"unable to bring out of ahb reset\n");
+> No need to wrap this line.
+>
+>> +	}
+>> +
+>>  	/* Init MAC and get the capabilities */
+>>  	ret = stmmac_hw_init(priv);
+>>  	if (ret)
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> index 97a1fedcc9ac..d8ae58bdbbe3 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> @@ -600,6 +600,13 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
+>>  		goto error_hw_init;
+>>  	}
+>>  
+>> +	plat->stmmac_ahb_rst = devm_reset_control_get_optional_shared(
+>> +							&pdev->dev, "ahb");
+>> +	if (IS_ERR(plat->stmmac_ahb_rst)) {
+>> +		ret = plat->stmmac_ahb_rst;
+> You need a PTR_ERR() around the plat->stmmac_ahb_rst.
+>
+> Regards,
+> Bjorn
+>
+>> +		goto error_hw_init;
+>> +	}
+>> +
+>>  	return plat;
+>>  
+>>  error_hw_init:
+>> diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+>> index e55a4807e3ea..9b6a64f3e3dc 100644
+>> --- a/include/linux/stmmac.h
+>> +++ b/include/linux/stmmac.h
+>> @@ -239,6 +239,7 @@ struct plat_stmmacenet_data {
+>>  	unsigned int mult_fact_100ns;
+>>  	s32 ptp_max_adj;
+>>  	struct reset_control *stmmac_rst;
+>> +	struct reset_control *stmmac_ahb_rst;
+>>  	struct stmmac_axi *axi;
+>>  	int has_gmac4;
+>>  	bool has_sun8i;
+>> -- 
+>> 2.26.3
+>>
+>>
+Thanks for the review. Will submit a v2 shortly.
 
-Set non-zero "polling_delay" in thermal_zone_device_register() routine,
-thus, the relevant thermal zones will perform thermal monitoring.
-
-Cc: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Fixes: 5d7bd8aa7c35 ("thermal: Simplify or eliminate unnecessary set_mode() methods")
-Fixes: 1ee14820fd8e ("thermal: remove get_mode() operation of drivers")
-Signed-off-by: Mykola Kostenok <c_mykolak@nvidia.com>
-Acked-by: Vadim Pasternak <vadimp@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-index dfea14399607..85f0ce285146 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-@@ -693,7 +693,8 @@ mlxsw_thermal_module_tz_init(struct mlxsw_thermal_module *module_tz)
- 							MLXSW_THERMAL_TRIP_MASK,
- 							module_tz,
- 							&mlxsw_thermal_module_ops,
--							NULL, 0, 0);
-+							NULL, 0,
-+							module_tz->parent->polling_delay);
- 	if (IS_ERR(module_tz->tzdev)) {
- 		err = PTR_ERR(module_tz->tzdev);
- 		return err;
-@@ -815,7 +816,8 @@ mlxsw_thermal_gearbox_tz_init(struct mlxsw_thermal_module *gearbox_tz)
- 						MLXSW_THERMAL_TRIP_MASK,
- 						gearbox_tz,
- 						&mlxsw_thermal_gearbox_ops,
--						NULL, 0, 0);
-+						NULL, 0,
-+						gearbox_tz->parent->polling_delay);
- 	if (IS_ERR(gearbox_tz->tzdev))
- 		return PTR_ERR(gearbox_tz->tzdev);
- 
--- 
-2.31.1
+Matthew
 
