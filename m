@@ -2,107 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F359A39CC28
-	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 03:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DB8B39CC34
+	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 04:12:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230097AbhFFCBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 22:01:34 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:59942 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230022AbhFFCBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 22:01:33 -0400
-Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 482E720B800D;
-        Sat,  5 Jun 2021 18:59:44 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 482E720B800D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1622944784;
-        bh=v/+GCrGCCiPOlEjb4rq7aCBL9rxGyv3aVds9kZ4ujNQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tRG2p/kKeTFnQgkFuOTQm8B9APLq2o4jNM5EepWHqYsCilVJgn/cP8JibdMPhRuOI
-         7svObQJAObd9IMJYrCnRqKntzQUbXKb2GPZT+L9ulYr4/wppCIcEr4l1yl0ko4aaTh
-         NmU9SpHKVdZE7huTPXpz64Ap9e28hTwpWVPkLbFQ=
-Received: by mail-pg1-f177.google.com with SMTP id n12so11007232pgs.13;
-        Sat, 05 Jun 2021 18:59:44 -0700 (PDT)
-X-Gm-Message-State: AOAM532W0+bWgO8Iip0lpyvhB57vnboz+qL9zS/gDOGEb57zwfxgNQET
-        ZEhtfPmeDMz7zTm8r3eeD/pOAbx+F0lh6NLkgmk=
-X-Google-Smtp-Source: ABdhPJyJeNJEBI4674XtFMAx5L3S7zmvOKQRlj9lAF8s80MVlfhY8BrtvtRDvcQbfjZyo9n03+RoP71oGOBsqvjqEq8=
-X-Received: by 2002:a63:1703:: with SMTP id x3mr11946603pgl.421.1622944783737;
- Sat, 05 Jun 2021 18:59:43 -0700 (PDT)
+        id S230191AbhFFCNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 22:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60632 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230111AbhFFCNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 22:13:20 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF9CC061768
+        for <netdev@vger.kernel.org>; Sat,  5 Jun 2021 19:11:15 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id g18so13822928edq.8
+        for <netdev@vger.kernel.org>; Sat, 05 Jun 2021 19:11:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nOTcniWTVc9slYXWLxXSv1uRyKmcmZRO+63M/pSzE/U=;
+        b=cwZ2lIKKIQuoesuejMOtqIBw38LWmdJQRco7DTpm+On7hiyFzSIynCDa52d+sLCIqB
+         2zP8pj4E3rGCuqfhnJ5MRag1NFm53lXVMwQKVQbdijwfbaxWRtV4bmYjHioSZXD6kkwg
+         Dlj3L7D4QLBXl9X//0lK2mPz5kWslHUxKRvcBa2juD05DpNuxQp//Z0f+OYjTO6stdwc
+         EZHN0Y1DxgOncdZ7gzfETOgtK9k4bhYfZebdAtgUMPDxU3VJkT9f7Tfuk6EcJw0zLdbF
+         FqFv+pxxBNtA2aX39hOynje/H5TcETj5t1HDzA84k39g9uwCsZz2riUv/7IvQm3jw6Tq
+         ydjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nOTcniWTVc9slYXWLxXSv1uRyKmcmZRO+63M/pSzE/U=;
+        b=eLmK+RVNEUh4sFrziTB0Wu1iV/DhWb+dMDWTkIa4gzOnIeXuGy8rgPHiBBT8jbWm/r
+         3xWe/ik0y7o2h0cv1wRhbUtlbJcbnG/Ncge1GQXaD1wZgJrOnpmULU9fHrAYvTB+xkbh
+         BWjBqQwZR98OgKB01+6QpiEqONjiru54TFdmAVsc/HlEKMTCeMQ+Wvp5t6Q/U8hwsXEw
+         2FvTGNYHgU9O6bdsKtPxPf3ar4N//dkCux6LTR/hrA3cHGqSKIwk92LMp5Sdc0bC5pxY
+         XNf9WSSNo9v+9QylX/H3Di/vEKyg4L8r3IKhiZViMaClIRKODWLqFwhDgXvDVioPXbhh
+         DWUQ==
+X-Gm-Message-State: AOAM530RHwBvhDxD1lpa0VbAV3m5Jjzn7EhTfhpIIrK0h0gBL+4x/HQ+
+        +ZyGXLHRUdYTmIMJyomymBVWcUFSbOJY3PZqk6+L
+X-Google-Smtp-Source: ABdhPJwLR1qKiHaU3a0P90iLeTPVN3ZXpgSHJmVvViAS0IGrSqN4ECheDNlb9g/W/t2kLVz7Gr1DZIJGJ5G/2AgcIkk=
+X-Received: by 2002:a05:6402:348f:: with SMTP id v15mr1175334edc.135.1622945471846;
+ Sat, 05 Jun 2021 19:11:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210604183349.30040-1-mcroce@linux.microsoft.com>
- <20210604183349.30040-5-mcroce@linux.microsoft.com> <YLqDcVGPomZRLJYd@casper.infradead.org>
-In-Reply-To: <YLqDcVGPomZRLJYd@casper.infradead.org>
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-Date:   Sun, 6 Jun 2021 03:59:07 +0200
-X-Gmail-Original-Message-ID: <CAFnufp2tKX7v78SR1wpCUud+mh3K+ydf6YLU3yoccKmZ3RsYBw@mail.gmail.com>
-Message-ID: <CAFnufp2tKX7v78SR1wpCUud+mh3K+ydf6YLU3yoccKmZ3RsYBw@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 4/5] mvpp2: recycle buffers
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <20210517092006.803332-1-omosnace@redhat.com> <CAHC9VhTasra0tU=bKwVqAwLRYaC+hYakirRz0Mn5jbVMuDkwrA@mail.gmail.com>
+ <01135120-8bf7-df2e-cff0-1d73f1f841c3@iogearbox.net> <CAHC9VhR-kYmMA8gsqkiL5=poN9FoL-uCyx1YOLCoG2hRiUBYug@mail.gmail.com>
+ <c7c2d7e1-e253-dce0-d35c-392192e4926e@iogearbox.net> <CAHC9VhS1XRZjKcTFgH1+n5uA-CeT+9BeSP5jvT2+RE5ougLpUg@mail.gmail.com>
+ <2e541bdc-ae21-9a07-7ac7-6c6a4dda09e8@iogearbox.net> <CAHC9VhT464vr9sWxqY3PRB4DAccz=LvRMLgWBsSViWMR0JJvOQ@mail.gmail.com>
+ <3ca181e3-df32-9ae0-12c6-efb899b7ce7a@iogearbox.net> <CAHC9VhTuPnPs1wMTmoGUZ4fvyy-es9QJpE7O_yTs2JKos4fgbw@mail.gmail.com>
+ <f4373013-88fb-b839-aaaa-3826548ebd0c@iogearbox.net> <CAHC9VhS=BeGdaAi8Ae5Fx42Fzy_ybkcXwMNcPwK=uuA6=+SRcg@mail.gmail.com>
+ <c59743f6-0000-1b15-bc16-ff761b443aef@iogearbox.net> <CAHC9VhT1JhdRw9P_m3niY-U-vukxTWKTE9q6AMyQ=r_ohpPxMw@mail.gmail.com>
+ <CAADnVQ+0bNtDj46Q8s-h=rqJgZz2JaGTeHpbmof3e7fBBQKuDQ@mail.gmail.com>
+ <64552a82-d878-b6e6-e650-52423153b624@schaufler-ca.com> <CAHk-=wiUVqHN76YUwhkjZzwTdjMMJf_zN4+u7vEJjmEGh3recw@mail.gmail.com>
+In-Reply-To: <CAHk-=wiUVqHN76YUwhkjZzwTdjMMJf_zN4+u7vEJjmEGh3recw@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Sat, 5 Jun 2021 22:11:00 -0400
+Message-ID: <CAHC9VhRJDr6HO8NbEwcqcXCgpzyLL7KEmKM=VLXGz0zPJG5iXw@mail.gmail.com>
+Subject: Re: [PATCH v2] lockdown,selinux: avoid bogus SELinux lockdown
+ permission checks
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Casey Schaufler <casey@schaufler-ca.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        SElinux list <selinux@vger.kernel.org>,
+        ppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 4, 2021 at 9:48 PM Matthew Wilcox <willy@infradead.org> wrote:
->
-> On Fri, Jun 04, 2021 at 08:33:48PM +0200, Matteo Croce wrote:
-> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > @@ -3997,7 +3997,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
-> >               }
+On Sat, Jun 5, 2021 at 2:17 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+> On Sat, Jun 5, 2021 at 11:11 AM Casey Schaufler <casey@schaufler-ca.com> wrote:
 > >
-> >               if (pp)
-> > -                     page_pool_release_page(pp, virt_to_page(data));
-> > +                     skb_mark_for_recycle(skb, virt_to_page(data), pp);
+> > You have fallen into a common fallacy. The fact that the "code runs"
+> > does not assure that the "system works right". In the security world
+> > we face this all the time, often with performance expectations. In this
+> > case the BPF design has failed [..]
 >
-> Does this driver only use order-0 pages?  Should it be using
-> virt_to_head_page() here?  or should skb_mark_for_recycle() call
-> compound_head() internally?
+> I think it's the lockdown patches that have failed. They did the wrong
+> thing, they didn't work,
+>
+> The report in question is for a regression.
+>
+> THERE ARE NO VALID ARGUMENTS FOR REGRESSIONS.
 
-This driver uses only order-0 pages.
+To think I was worried we might end this thread without a bit of CAPS
+LOCK, whew! :)
+
+I don't think anyone in this discussion, even Casey's last comment,
+was denying that there was a problem.  The discussion and the
+disagreements were about what a "proper" fix would be, and how one
+might implement that fix; of course there were different ideas of
+"proper" and implementations vary even when people agree, so things
+were a bit of a mess.  If you want to get upset and shouty, I think
+there are a few things spread across the subsystems involved that
+would be worthy targets, but to say that Casey, myself, or anyone else
+who plays under security/ denied the problem in this thread is not
+fair, or correct, in my opinion.
+
+> Honestly, security people need to understand that "not working" is not
+> a success case of security. It's a failure case.
+
+I can't pretend to know what all of the "security people" are
+thinking, but I can say with a good degree of certainty that my goal
+is not to crash, panic, kill, or otherwise disable a user's system.
+When it comes to things like the LSM hooks, my goal is to try and make
+sure we have the right hooks in the right places so that admins and
+users have the tools they need to control access to their data and
+systems in the way that they choose.  Sometimes this puts us at odds
+with other subsystems in the kernel, we saw that in this thread, but
+that's to be expected anytime you have competing priorities.  The
+important part is that eventually we figure out some way to move
+forward, and the fact that we are still all making progress and
+putting out new kernel releases is proof that we are finding a way.
+That's what matters to me, and if I was forced to guess, I would
+imagine that matters quite a lot to most of us here.
 
 -- 
-per aspera ad upstream
+paul moore
+www.paul-moore.com
