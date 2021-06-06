@@ -2,105 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F06A39CF9B
-	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 16:41:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 223B839CFB2
+	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 17:10:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbhFFOm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Jun 2021 10:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230194AbhFFOmw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 10:42:52 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5C7C061766;
-        Sun,  6 Jun 2021 07:41:02 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id w15so18290947ljo.10;
-        Sun, 06 Jun 2021 07:41:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V+VQqbr+HWpVtU96EDTK4cz59cFWA3McxCpzstRJ2Tk=;
-        b=YHDeJwekUG0Gl6MUE1DBa7d+qzmxYzcWiiSr6n5Z0L2baYXh4gGORm98wn9Nb/et6J
-         kcS58UZkb2lyntDqdm9DxuIehfIsW/QZAJ8rPV1PyaOjIOYihlVriMtHTEz6nTEIst9G
-         Q6jHsRF56U4zD2F3xnT8KwqlFdo3Z5wdPURLFXcP37IKKCO7BbDCUFgoEqMCVkcrgkEB
-         4ojHNYEhNulufiFW7C5kc5Nwseteq1drB2rto0xdA8dDeastmYfiRN6pErouiNS8jHIg
-         qhykKID+E85H6BZ69bgYAt7LWytYKgvWll+C0S2LAwMqMb4RRbk970q5+Gju874zrmPk
-         keIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V+VQqbr+HWpVtU96EDTK4cz59cFWA3McxCpzstRJ2Tk=;
-        b=A7BAQjGNdI71I2K/vpHzI8Ct8Z6fOKJ/rMn3RttZItHk0t7goOFoR4Lc8Qu1bN8Y8X
-         xInpPgKyP3rxd0HCNLjIHMPqwv6TWjrKzBX0WkVr8mVYyeXZagBLq9OpvQeqot9cyX1F
-         /AvB5+ZlZ0Uliv8jlx5oRwotng1oIRBDRc4vfCv5go6e8XijfQtqEvIhSqaWYl3z0haf
-         RN85aHBKSZIraqXhx97ukuaKonN0XYEBosp5q0MwRVU70JezdFBqh2kgqCo4igG9JUEl
-         N1slm7p5bgnNZ3UkNe9hYDYKx47IbRz1AJRMXlkJfcM3nfxzI/PaIabpSYfiDK6nSTmg
-         UZNg==
-X-Gm-Message-State: AOAM531oGox2V74+EoVjJ/AjDp5S5dSnZLHwSfG2nxGsZeJKK7aD+Ljg
-        /FpgkESXs9QUtTxoKpgtH1HfGfj8AbaiP5lCSso=
-X-Google-Smtp-Source: ABdhPJyOuZJy0EalPIAQqe5bGOWe11Mgw0zgNqrBLc6w4fRHwNS6WEbfjqe3DGI1Mc7ncvbX7HGQDLUxRFOy7SNYUrE=
-X-Received: by 2002:a2e:5347:: with SMTP id t7mr11257632ljd.464.1622990460716;
- Sun, 06 Jun 2021 07:41:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210604074419.53956-1-dong.menglong@zte.com.cn>
- <e997a058-9f6e-86a0-8591-56b0b89441aa@redhat.com> <CADxym3ZostCAY0GwUpTxEHcOPyOj5Lmv4F7xP-Q4=AEAVaEAxw@mail.gmail.com>
- <998cce2c-b18d-59c1-df64-fc62856c63a1@redhat.com>
-In-Reply-To: <998cce2c-b18d-59c1-df64-fc62856c63a1@redhat.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Sun, 6 Jun 2021 22:40:49 +0800
-Message-ID: <CADxym3a_iTXWWOxK1vfNxuWRh7ve4vOWZERho7jTVUkxc2Z_rQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: tipc: fix FB_MTU eat two pages
-To:     Jon Maloy <jmaloy@redhat.com>
-Cc:     ying.xue@windriver.com, David Miller <davem@davemloft.net>,
+        id S230191AbhFFPMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Jun 2021 11:12:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45384 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230088AbhFFPMA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Jun 2021 11:12:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C5D2C6142A;
+        Sun,  6 Jun 2021 15:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622992211;
+        bh=6SAVyd1SzFpYco+54dJsIay9qkBgHR9Q47j6DtBPqvk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=lKQw6RmlnW8/saMq4ls0pS4VxyyNwAOr+IyTQkXXtLDq55gbCUJLCNiDWL96NVxTp
+         RLWegtsAQUQqO3R3z4xhmU0uM6MDPkvcV/D7BIdx7DjPZ4nvg6J9iMevMycuKLJZQI
+         SvTRI52hIICbrfUi+u65yosDgFFc63IqtUuaBteBwqIsRJA6O3RfbfHs+cVsUS7vaK
+         B0pBMITIal0XHX/zR0So1v8MpqDcycFRWQJ5Ag59af1iwy4cIWV50UVMd2qIyV/Cz6
+         9hTJdxTg/rLWjqmqtOVXza3KvUxpWjJTDzWOCfmoo2b5BALYsU7mmanRx7FMcWRN32
+         bKw0vSXZTQOJw==
+Received: by pali.im (Postfix)
+        id 614017B9; Sun,  6 Jun 2021 17:10:08 +0200 (CEST)
+Date:   Sun, 6 Jun 2021 17:10:08 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        tipc-discussion@lists.sourceforge.net,
-        Menglong Dong <dong.menglong@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        linux-kernel@vger.kernel.org
+Subject: Issues during assigning addresses on point to point interfaces
+Message-ID: <20210606151008.7dwx5ukrlvxt4t3k@pali>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 5, 2021 at 10:25 PM Jon Maloy <jmaloy@redhat.com> wrote:
->
->
->
-> On 6/4/21 9:28 PM, Menglong Dong wrote:
-> > Hello Maloy,
-> >
-> > On Sat, Jun 5, 2021 at 3:20 AM Jon Maloy <jmaloy@redhat.com> wrote:
-> >>
-> > [...]
-> >> Please don't add any extra file just for this little fix. We have enough
-> >> files.
-> >> Keep the macros in msg.h/c where they used to be.  You can still add
-> >> your copyright line to those files.
-> >> Regarding the macros kept inside msg.c, they are there because we design
-> >> by the principle of minimal exposure, even among our module internal files.
-> >> Otherwise it is ok.
-> >>
-> > I don't want to add a new file too, but I found it's hard to define FB_MTU. I
-> > tried to define it in msg.h, and 'crypto.h' should be included, which
-> > 'BUF_HEADROOM' is defined in. However, 'msg.h' is already included in
-> > 'crypto.h', so it doesn't work.
-> >
-> > I tried to define FB_MTU in 'crypto.h', but it feels weird to define
-> > it here. And
-> > FB_MTU is also used in 'bcast.c', so it can't be defined in 'msg.c'.
-> >
-> > I will see if there is a better solution.
-> I think we can leverage the fact that this by definition is a node local
-> message, and those are never encrypted.
-> So, if you base FB_MTU on the non-crypto versions of BUF_HEADROOM and
-> BUF_TAILROOM we should be safe.
-> That will even give us better utilization of the space available.
->
+Hello!
 
-Ok, that sounds nice. I'll make a V2 based on that.
+Seems that there is a bug during assigning IP addresses on point to
+point interfaces.
 
-Thanks!
-Menglong Dong
+Assigning just one local address works fine:
+
+    ip address add fe80::6 dev ppp1 --> inet6 fe80::6/128 scope link
+
+Assigning both local and remote peer address also works fine:
+
+    ip address add fe80::7 peer fe80::8 dev ppp1 ---> inet6 fe80::7 peer fe80::8/128 scope link
+
+But trying to assign just remote peer address does not work. Moreover
+"ip address" call does not fail, it returns zero but instead of setting
+remote peer address, it sets local address:
+
+    ip address add peer fe80::5 dev ppp1 --> inet6 fe80::5/128 scope link
+
+I suspect that this is a bug either in iproute2 "ip" utility or in
+kernel how it parse and process netlink messages.
+
+strace for the last command see this netlink packet:
+
+    sendmsg(3, {
+        msg_name={
+            sa_family=AF_NETLINK,
+            nl_pid=0,
+            nl_groups=00000000
+        },
+        msg_namelen=12,
+        msg_iov=[{
+            iov_base={
+                {
+                    len=44,
+                    type=RTM_NEWADDR,
+                    flags=NLM_F_REQUEST|NLM_F_ACK|NLM_F_EXCL|NLM_F_CREATE,
+                    seq=1622990155,
+                    pid=0
+                },
+                {
+                    ifa_family=AF_INET6,
+                    ifa_prefixlen=128,
+                    ifa_flags=0,
+                    ifa_scope=RT_SCOPE_UNIVERSE,
+                    ifa_index=if_nametoindex("ppp1")
+                },
+                {
+                    {
+                        nla_len=20,
+                        nla_type=IFA_ADDRESS
+                    },
+                    inet_pton(AF_INET6, "fe80::5")
+                }
+            },
+            iov_len=44
+        }],
+        msg_iovlen=1,
+        msg_controllen=0,
+        msg_flags=0
+    }, 0) = 44
+
+On the other hand strace for the first command (which assigns only local
+address) see following netlink packet:
+
+    sendmsg(3, {
+        msg_name={
+            sa_family=AF_NETLINK,
+            nl_pid=0,
+            nl_groups=00000000
+        },
+        msg_namelen=12,
+        msg_iov=[{
+            iov_base={
+                {
+                    len=64,
+                    type=RTM_NEWADDR,
+                    flags=NLM_F_REQUEST|NLM_F_ACK|NLM_F_EXCL|NLM_F_CREATE,
+                    seq=1622990488,
+                    pid=0
+                },
+                {
+                    ifa_family=AF_INET6,
+                    ifa_prefixlen=128,
+                    ifa_flags=0,
+                    ifa_scope=RT_SCOPE_UNIVERSE,
+                    ifa_index=if_nametoindex("ppp1")
+                },
+                [
+                    {
+                        {
+                            nla_len=20,
+                            nla_type=IFA_LOCAL
+                        },
+                        inet_pton(AF_INET6, "fe80::6")
+                    },
+                    {
+                        {
+                            nla_len=20,
+                            nla_type=IFA_ADDRESS
+                        },
+                        inet_pton(AF_INET6, "fe80::6")
+                    }
+                ]
+            },
+            iov_len=64
+        }],
+        msg_iovlen=1,
+        msg_controllen=0,
+        msg_flags=0
+    }, 0) = 64
+
+So it sends two addresses, one IFA_LOCAL, one IFA_ADDRESS, but both are
+same.
+
+For completeness here is strace output when assigning both local and
+remote peer address:
+
+    sendmsg(3, {
+        msg_name={
+            sa_family=AF_NETLINK,
+            nl_pid=0,
+            nl_groups=00000000
+        },
+        msg_namelen=12,
+        msg_iov=[{
+            iov_base={
+                {
+                    len=64,
+                    type=RTM_NEWADDR,
+                    flags=NLM_F_REQUEST|NLM_F_ACK|NLM_F_EXCL|NLM_F_CREATE,
+                    seq=1622990883,
+                    pid=0
+                },
+                {
+                    ifa_family=AF_INET6,
+                    ifa_prefixlen=128,
+                    ifa_flags=0,
+                    ifa_scope=RT_SCOPE_UNIVERSE,
+                    ifa_index=if_nametoindex("ppp1")
+                },
+                [
+                    {
+                        {
+                            nla_len=20,
+                            nla_type=IFA_LOCAL
+                        },
+                        inet_pton(AF_INET6, "fe80::7")
+                    },
+                    {
+                        {
+                            nla_len=20,
+                            nla_type=IFA_ADDRESS
+                        },
+                        inet_pton(AF_INET6, "fe80::8")
+                    }
+                ]
+            },
+            iov_len=64
+        }],
+        msg_iovlen=1,
+        msg_controllen=0,
+        msg_flags=0
+    }, 0) = 64
+
+Which means that IFA_LOCAL sets local address and IFA_ADDRESS sets
+remote peer address on point point interface.
+
+Therefore there are two suspicious things about address configuration on
+point to point interfaces:
+
+1) "ip address add fe80::6 dev ppp1" is trying to set not only local but
+   also remote peer address to fe80::6
+
+2) kernel does not configure remote peer address from IFA_ADDRESS when
+   local address via IFA_LOCAL is not specified in netlink packet
+
+
+For tests I used:
+
+    ip -V --> ip utility, iproute2-ss190107
+    uname -r -v -m --> 4.19.0-16-amd64 #1 SMP Debian 4.19.181-1 (2021-03-19) x86_64
