@@ -2,140 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14A1839CBF5
-	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 02:55:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D981839CBF2
+	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 02:55:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbhFFA4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Jun 2021 20:56:41 -0400
-Received: from mail-ed1-f53.google.com ([209.85.208.53]:37675 "EHLO
-        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230022AbhFFA4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Jun 2021 20:56:41 -0400
-Received: by mail-ed1-f53.google.com with SMTP id b11so15719285edy.4;
-        Sat, 05 Jun 2021 17:54:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=5k/iS3Z5RT6D+xK4ZwQ9/9Ly3jmBdwhBfNLrRJfoaKQ=;
-        b=CXkXjD1GeZAay7O/29IZo/OJIv7emonfM2TvpipbnXf4YfcKxIPmU2vQhaUUcfah3S
-         aoDXyTOzTU7g2Jz+oN9xfBkHSHHnK+kLMXilgJeoEceZ+Kib306aKDAEhuy+tmzXVKmh
-         k1Z8WCrDJbWK4YLxoWk7LQf6RWdGlmnjskQ2hPMqb07rB0/M47kmz7eM1hc+tW3xIBfB
-         XM/NxfKCsGFXikH1hE8h5UJW68HIYGx96XeQfuKrt9SVkF4H705UIl0yVoAnoP5jk+ey
-         gZ+uWd8z/iWTz15bnnzFEiUMy+ept3veXt9NVijPaqxb8iyDJBrvbYXZMDcQDU8trg4v
-         7/Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=5k/iS3Z5RT6D+xK4ZwQ9/9Ly3jmBdwhBfNLrRJfoaKQ=;
-        b=neTRNHPikGZst/8nX3PfnAlqrvJnr/MoffXWtUyIGtsj96UcfJNrrdlIr1zMghayYP
-         PCe9eoVC0kOzMF2q8m5cmTLmznUQiTP3H0vLmZg/u029wNUjufkUY0ITIRE2babPeqIi
-         hTcFkA/P3FuL7Sry7tSxwHIXwjXrtjJLj5JfU8xhxa/Uwj0yTPuFflJtez25Nf3EgFq3
-         8Z2MZsAmmyO8sTmA+cISzM+OAdsIrYEnpmt/tmMdrZBAeHw6rhfTcGIYnjrMgi7BlADD
-         zV0+KJqKq8ZRQFepLxVxhFWxYJbuOgnbes3gYoOxV2epNTG59gL7LLblrWoEgSaG6r9c
-         H05w==
-X-Gm-Message-State: AOAM532h3KjzMZ/Bov65FwZBYRDHALiOfSRiKg9Kj+TlrYm1wkpBwYPb
-        fAvKskHJ1zHEuQoow+wTsaE=
-X-Google-Smtp-Source: ABdhPJwWwPaMVkAk4H9NtVZPFoTRMWMXB6KCo1G+BQT3qFv6QwV/tXO//GPnIy1PR5omg4d47Jw8sw==
-X-Received: by 2002:a05:6402:510f:: with SMTP id m15mr12782128edd.283.1622940817497;
-        Sat, 05 Jun 2021 17:53:37 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id gw7sm4692666ejb.5.2021.06.05.17.53.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Jun 2021 17:53:37 -0700 (PDT)
-Date:   Sun, 6 Jun 2021 03:53:35 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Matthew Hagan <mnhagan88@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        id S230085AbhFFA4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Jun 2021 20:56:13 -0400
+Received: from mga12.intel.com ([192.55.52.136]:47919 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230022AbhFFA4M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Jun 2021 20:56:12 -0400
+IronPort-SDR: qpzvihpEEDaZGQKRs1Jmb6V9+5F2Z+pHIl/tG5n9fIgI89oYgsHhwMSSJgU9iNuXe46YXnzyIu
+ Uece5OkT0Lsg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10006"; a="184150402"
+X-IronPort-AV: E=Sophos;i="5.83,252,1616482800"; 
+   d="scan'208";a="184150402"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2021 17:54:23 -0700
+IronPort-SDR: Z9Git1Ru7Cz8NqeCFcygTofXGZrBDyXZeGZue/4AhMzH2zN/hc+LeqsFrvdhc+Y6yrvy+UE0Ty
+ Yt8ECc9QyuNA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,252,1616482800"; 
+   d="scan'208";a="439617649"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga007.jf.intel.com with ESMTP; 05 Jun 2021 17:54:23 -0700
+Received: from linux.intel.com (unknown [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id AE541580522;
+        Sat,  5 Jun 2021 17:54:21 -0700 (PDT)
+Date:   Sun, 6 Jun 2021 08:54:18 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next] net: dsa: tag_qca: Check for upstream VLAN
- tag
-Message-ID: <20210606005335.iuqi4yelxr5irmqg@skbuf>
-References: <20210605193749.730836-1-mnhagan88@gmail.com>
- <YLvgI1e3tdb+9SQC@lunn.ch>
- <ed3940ec-5636-63db-a36b-dc6c2220b51d@gmail.com>
+Subject: Re: [RFC net-next 0/2] Introduce MDIO probe order C45 over C22
+Message-ID: <20210606005418.GA9776@linux.intel.com>
+References: <YLYwcx3aHXFu4n5C@lunn.ch>
+ <20210601154423.GA27463@linux.intel.com>
+ <YLazBrpXbpsb6aXI@lunn.ch>
+ <20210601230352.GA28209@linux.intel.com>
+ <YLbqv0Sy/3E2XaVU@lunn.ch>
+ <20210602141557.GA29554@linux.intel.com>
+ <YLed2G1iDRTbA9eT@lunn.ch>
+ <20210602235155.GA31624@linux.intel.com>
+ <20210605003722.GA4979@linux.intel.com>
+ <YLvENQ/aadG0TcRp@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ed3940ec-5636-63db-a36b-dc6c2220b51d@gmail.com>
+In-Reply-To: <YLvENQ/aadG0TcRp@lunn.ch>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Matthew,
-
-On Sat, Jun 05, 2021 at 11:39:24PM +0100, Matthew Hagan wrote:
-> On 05/06/2021 21:35, Andrew Lunn wrote:
+On Sat, Jun 05, 2021 at 08:36:37PM +0200, Andrew Lunn wrote:
+> > Can you take a look at the latest implementation and provide
+> > feedback?
 > 
-> >> The tested case is a Meraki MX65 which features two QCA8337 switches with
-> >> their CPU ports attached to a BCM58625 switch ports 4 and 5 respectively.
-> > Hi Matthew
-> >
-> > The BCM58625 switch is also running DSA? What does you device tree
-> > look like? I know Florian has used two broadcom switches in cascade
-> > and did not have problems.
-> >
-> >     Andrew
-> 
-> Hi Andrew
-> 
-> I did discuss this with Florian, who recommended I submit the changes. Can
-> confirm the b53 DSA driver is being used. The issue here is that tagging
-> must occur on all ports. We can't selectively disable for ports 4 and 5
-> where the QCA switches are attached, thus this patch is required to get
-> things working.
-> 
-> Setup is like this:
->                        sw0p2     sw0p4            sw1p2     sw1p4 
->     wan1    wan2  sw0p1  +  sw0p3  +  sw0p5  sw1p1  +  sw1p3  +  sw1p5
->      +       +      +    |    +    |    +      +    |    +    |    +
->      |       |      |    |    |    |    |      |    |    |    |    |
->      |       |    +--+----+----+----+----+-+ +--+----+----+----+----+-+
->      |       |    |         QCA8337        | |        QCA8337         |
->      |       |    +------------+-----------+ +-----------+------------+
->      |       |             sw0 |                     sw1 |
-> +----+-------+-----------------+-------------------------+------------+
-> |    0       1    BCM58625     4                         5            |
-> +----+-------+-----------------+-------------------------+------------+
+> I think we are close, so please submit a proper patch.
+>
 
-It is a bit unconventional for the upstream Broadcom switch, which is a
-DSA master of its own, to insert a VLAN ID of zero out of the blue,
-especially if it operates in standalone mode. Supposedly sw0 and sw1 are
-not under a bridge net device, are they?
+Will do. Thanks Andrew!
 
-If I'm not mistaken, this patch should solve your problem?
-
------------------------------[ cut here ]-----------------------------
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 3ca6b394dd5f..d6655b516bd8 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1462,6 +1462,7 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
- 	struct b53_device *dev = ds->priv;
- 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
- 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
-+	bool really_untagged = false;
- 	struct b53_vlan *vl;
- 	int err;
- 
-@@ -1474,10 +1475,10 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
- 	b53_get_vlan_entry(dev, vlan->vid, vl);
- 
- 	if (vlan->vid == 0 && vlan->vid == b53_default_pvid(dev))
--		untagged = true;
-+		really_untagged = true;
- 
- 	vl->members |= BIT(port);
--	if (untagged && !dsa_is_cpu_port(ds, port))
-+	if (really_untagged || (untagged && !dsa_is_cpu_port(ds, port)))
- 		vl->untag |= BIT(port);
- 	else
- 		vl->untag &= ~BIT(port);
------------------------------[ cut here ]-----------------------------
+ VK 
