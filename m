@@ -2,223 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E6D39D108
-	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 21:27:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1545039D116
+	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 21:42:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbhFFT3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Jun 2021 15:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbhFFT3l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 15:29:41 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C62C061766;
-        Sun,  6 Jun 2021 12:27:51 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id ci15so22890661ejc.10;
-        Sun, 06 Jun 2021 12:27:51 -0700 (PDT)
+        id S230078AbhFFTn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Jun 2021 15:43:56 -0400
+Received: from mail-wr1-f44.google.com ([209.85.221.44]:39569 "EHLO
+        mail-wr1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229799AbhFFTn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 15:43:56 -0400
+Received: by mail-wr1-f44.google.com with SMTP id l2so15013890wrw.6;
+        Sun, 06 Jun 2021 12:41:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kwLpsaMsWkVJ1T6oWouZGFmodFghrfNy99oCZ6B0+9E=;
-        b=C7akB2sPGu1EiioFGAgI41M8ZBhH2uKJmGxHhb7xXPL2e+KXXTlOxkw2CIT1/etfqn
-         J+lqMeUBc+mKOktRjtEIqTgkWYH0dugO1VhgIcVk3hahRUwi6rkl+4Jt2LuovSa8tg+g
-         cfY90a0jSk9TTFgtMVtjVj534e1m3cEOmJvBibQKgta3O9OO6YXr+Dp42v0adi7C44RD
-         mW8CSmMSIiTaaUHu3PBfzyCX+9kOZuv6qJD0S3JSrdlXrNMlBNzMDWUE2VicqtSlIJoP
-         H3jAsNvwq1nXRnMM5lOpdHfYTVxZl7L8Cj893rQKaDAvqlsVenkba4k1lpgEw5KCBbgS
-         aJcA==
+        h=cc:to:from:message-id:in-reply-to:references:date:subject;
+        bh=oZ1GBZrLrWXtFesbiX91BZUiYjDuBUEVaSbSR2qwXnk=;
+        b=Vb7IpsFy+BRK9mzlMUFUVTpdpPwQgx02PAl7qfZN0OpzSd9XTK9vScN0k9i3S+Ur4h
+         AFdi91WOX/K4e+2eMsAqEApSTWKeCHNfvZQcuadANxmO2pX+iqw81EKL6JeNmagsqWpB
+         A7RAHnvFb/cQ8FdUM32kdyr8lRM9Z0WIGwCOu1Rqf7UhOTqEmUxj3tPGvyQYoK5nAOjS
+         MlboEBKLlQ9zocUlka0a+QP9DeIbk7swJPuRXLDnTcpcKK1f0zGvl7O5yHbii+uH7Tmm
+         umi32cSNu3n+Q2xR3Fe7h/6SJqjy0SICy8v1+9pBvuoh9KvaF0G7aBQiKv0OhFLRuIsU
+         ihvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kwLpsaMsWkVJ1T6oWouZGFmodFghrfNy99oCZ6B0+9E=;
-        b=qcbeRU7do5c7i7o+jC2+uxfTQi7C/t/+6b9FKpRZmPj0gwX5gi/Aoi/Tw4OR6o5rMl
-         j+eBg0bgn1cchYzLR087HoRJPsOltxQzEARwhCOO0BnAxsK4q1luTQk521qkvITD6lvL
-         i8bPj/hvRgPhpy2EjRpQ7hUiLc7Yzfxh9/uZ6hOjaFN7W9Tl48vV+vXvER3QDyXpo56c
-         nkghPTtFX8UhzV0E6+ZbxWUOOAWD6f+Ck8pfX1VApDZUjFnIrKYzqpEDKDSCpamKkWhN
-         yiYL+ZRidFC7kWJ10LvGshLuK0eJ9gyo176GwnoIkgAawCYQ4/8j5+sI8Y5mt1k36IpF
-         MUhQ==
-X-Gm-Message-State: AOAM532m9BidQ+NtMV8rGvfJxzpLIlnw/R2oa0ZaeupqdziHH/aGW/FI
-        DcEEmX2HpdWEl5VyKets3Zxmez+6+oI=
-X-Google-Smtp-Source: ABdhPJwH8zBLnSLh+iddO3nGrS8cECnQkS+FXxsA7Xnq1yx+v8nbdlaos8yvRMbgunNZk1znzZ3oeQ==
-X-Received: by 2002:a17:906:8041:: with SMTP id x1mr14399177ejw.81.1623007669700;
-        Sun, 06 Jun 2021 12:27:49 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id v1sm5561146ejw.117.2021.06.06.12.27.48
+        h=x-gm-message-state:cc:to:from:message-id:in-reply-to:references
+         :date:subject;
+        bh=oZ1GBZrLrWXtFesbiX91BZUiYjDuBUEVaSbSR2qwXnk=;
+        b=End6g0Ca6J0d3k7CeTrXNY+1lL72fSHcs9bqPbALsCQADC1zpjubkm+MkRPcuUI65D
+         vEd8HoFlnOQEstOMLGRlElQdZFXlT5CV853YT7g5ivdcm6xJB4s9GXgb0lBRCWQsbdWK
+         8ngfiXiPW/OWCUk6sGy/1BoL0QXk3LAP+M3nxJ+9UogFgxUf2htBsO76dOGn3fKIBvIt
+         oMZpJvIqjJDRoQanNLedDwlvzWCg1suSLqLSDxlt22XG2em8velQFu766fTHMtiLvWJi
+         TVf+Dh73kW43n3uLYgTAoTuox3+9jNH6XNqT/UgcGQSXB3iAhECHiOsyXRPbC4Ap/bmD
+         TfEg==
+X-Gm-Message-State: AOAM531UWn5CuymJQl/MXkiV3bxBqH3jwJt4SymQJFz91jwtXpk6ghrP
+        Xb/OjFGeQWmd+CdSnlK25/A=
+X-Google-Smtp-Source: ABdhPJy5jJ91aNujE1QtO1DS2ck9EWnjopyoYjaJ6DQaRnIsh7ax62b4yVNiRpDVe+DXfmwFWs3rYQ==
+X-Received: by 2002:a05:6000:18ac:: with SMTP id b12mr13369745wri.44.1623008448271;
+        Sun, 06 Jun 2021 12:40:48 -0700 (PDT)
+Received: from localhost ([185.199.80.151])
+        by smtp.gmail.com with ESMTPSA id n10sm15227477wre.95.2021.06.06.12.40.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Jun 2021 12:27:49 -0700 (PDT)
-Date:   Sun, 6 Jun 2021 22:27:48 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Matthew Hagan <mnhagan88@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next] net: dsa: tag_qca: Check for upstream VLAN
- tag
-Message-ID: <20210606192748.3txhzfzhoxsp3czp@skbuf>
-References: <20210605193749.730836-1-mnhagan88@gmail.com>
- <YLvgI1e3tdb+9SQC@lunn.ch>
- <ed3940ec-5636-63db-a36b-dc6c2220b51d@gmail.com>
- <20210606005335.iuqi4yelxr5irmqg@skbuf>
- <9f07737c-f80b-6bd1-584a-a81a265d73eb@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9f07737c-f80b-6bd1-584a-a81a265d73eb@gmail.com>
+        Sun, 06 Jun 2021 12:40:47 -0700 (PDT)
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, nathan@kernel.org,
+        ndesaulniers@google.com, clang-built-linux@googlegroups.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        skhan@linuxfoundation.org, gregkh@linuxfoundation.org
+To:     syzbot+bed360704c521841c85d@syzkaller.appspotmail.com, yhs@fb.com
+From:   "Kurt Manucredo" <fuzzybritches0@gmail.com>
+Message-ID: <20484-14561-curtm@phaethon>
+In-Reply-To: <6a392b66-6f26-4532-d25f-6b09770ce366@fb.com>
+References: <000000000000c2987605be907e41@google.com>
+ <20210602212726.7-1-fuzzybritches0@gmail.com>
+ <YLhd8BL3HGItbXmx@kroah.com>
+ <87609-531187-curtm@phaethon>
+ <6a392b66-6f26-4532-d25f-6b09770ce366@fb.com>
+Date:   Sun, 06 Jun 2021 21:15:46 +0200
+Subject: Re: [PATCH v4] bpf: core: fix shift-out-of-bounds in ___bpf_prog_run
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 06, 2021 at 02:09:24PM +0100, Matthew Hagan wrote:
-> On 06/06/2021 01:53, Vladimir Oltean wrote:
+On Sat, 5 Jun 2021 10:55:25 -0700, Yonghong Song <yhs@fb.com> wrote:
 > 
-> > It is a bit unconventional for the upstream Broadcom switch, which is a
-> > DSA master of its own, to insert a VLAN ID of zero out of the blue,
-> > especially if it operates in standalone mode. Supposedly sw0 and sw1 are
-> > not under a bridge net device, are they?
 > 
-> sw0 and sw1 are brought up but otherwise left unconfigured. The bridge
-> consists of the user ports only (wanN and swNpN). A side note here is that
-> your "net: dsa: don't set skb->offload_fwd_mark when not offloading the
-> bridge" patch is also in use. Would setting up a bridge for sw0/sw1 not
-> have implications for receiving unknown frames on one port, that have been
-> sent from another port of the same switch? Since unknown frames will go to
-> the CPU, dp->bridge_dev would return the bridge name, setting
-> offload_fwd_mark=1 thus preventing those frames being sent back out
-> sw0/sw1 to its other ports.
+> 
+> On 6/5/21 8:01 AM, Kurt Manucredo wrote:
+> > Syzbot detects a shift-out-of-bounds in ___bpf_prog_run()
+> > kernel/bpf/core.c:1414:2.
+> 
+> This is not enough. We need more information on why this happens
+> so we can judge whether the patch indeed fixed the issue.
+> 
+> > 
+> > I propose: In adjust_scalar_min_max_vals() move boundary check up to avoid
+> > missing them and return with error when detected.
+> > 
+> > Reported-and-tested-by: syzbot+bed360704c521841c85d@syzkaller.appspotmail.com
+> > Signed-off-by: Kurt Manucredo <fuzzybritches0@gmail.com>
+> > ---
+> > 
+> > https://syzkaller.appspot.com/bug?id=edb51be4c9a320186328893287bb30d5eed09231
+> > 
+> > Changelog:
+> > ----------
+> > v4 - Fix shift-out-of-bounds in adjust_scalar_min_max_vals.
+> >       Fix commit message.
+> > v3 - Make it clearer what the fix is for.
+> > v2 - Fix shift-out-of-bounds in ___bpf_prog_run() by adding boundary
+> >       check in check_alu_op() in verifier.c.
+> > v1 - Fix shift-out-of-bounds in ___bpf_prog_run() by adding boundary
+> >       check in ___bpf_prog_run().
+> > 
+> > thanks
+> > 
+> > kind regards
+> > 
+> > Kurt
+> > 
+> >   kernel/bpf/verifier.c | 30 +++++++++---------------------
+> >   1 file changed, 9 insertions(+), 21 deletions(-)
+> > 
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 94ba5163d4c5..ed0eecf20de5 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -7510,6 +7510,15 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+> >   	u32_min_val = src_reg.u32_min_value;
+> >   	u32_max_val = src_reg.u32_max_value;
+> >   
+> > +	if ((opcode == BPF_LSH || opcode == BPF_RSH || opcode == BPF_ARSH) &&
+> > +			umax_val >= insn_bitness) {
+> > +		/* Shifts greater than 31 or 63 are undefined.
+> > +		 * This includes shifts by a negative number.
+> > +		 */
+> > +		verbose(env, "invalid shift %lldn", umax_val);
+> > +		return -EINVAL;
+> > +	}
+> 
+> I think your fix is good. I would like to move after
+> the following code though:
+> 
+>          if (!src_known &&
+>              opcode != BPF_ADD && opcode != BPF_SUB && opcode != BPF_AND) {
+>                  __mark_reg_unknown(env, dst_reg);
+>                  return 0;
+>          }
+> 
 
-What you have is called "cross-chip bridging for disjoint DSA trees" and
-has some level of support since this series:
-http://patchwork.ozlabs.org/project/netdev/cover/20200510163743.18032-1-olteanv@gmail.com/
+It can only be right before that code not after. That's the latest. In the
+case of the syzbot bug, opcode == BPF_LSH and !src_known. Therefore it
+needs to be before that block of code.
 
-What you can/should do is:
+> > +
+> >   	if (alu32) {
+> >   		src_known = tnum_subreg_is_const(src_reg.var_off);
+> >   		if ((src_known &&
+> > @@ -7592,39 +7601,18 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+> >   		scalar_min_max_xor(dst_reg, &src_reg);
+> >   		break;
+> >   	case BPF_LSH:
+> > -		if (umax_val >= insn_bitness) {
+> > -			/* Shifts greater than 31 or 63 are undefined.
+> > -			 * This includes shifts by a negative number.
+> > -			 */
+> > -			mark_reg_unknown(env, regs, insn->dst_reg);
+> > -			break;
+> > -		}
+> 
+> I think this is what happens. For the above case, we simply
+> marks the dst reg as unknown and didn't fail verification.
+> So later on at runtime, the shift optimization will have wrong
+> shift value (> 31/64). Please correct me if this is not right
+> analysis. As I mentioned in the early please write detailed
+> analysis in commit log.
+> 
 
-create a bridge between sw0 and sw1 (say br1)
-create another bridge between wanN and swNpM (say br0)
+Shouldn't the src reg be changed so that the shift-out-of-bounds can't
+occur, if return -EINVAL is not what we want here? Changing the dst reg
+might not help. If I look into kernel/bpf/core.c I can see:
+	DST = DST OP SRC;
 
-Here's the secret:
+> Please also add a test at tools/testing/selftests/bpf/verifier/.
+> 
+I'm going to look into selftests,
 
-- the br1 bridge only performs hardware acceleration for forwarding
-  between the 2 QCA switches. The Broadcom switch is still able to
-  understand enough (aka the destination MAC) of the packets coming from
-  the QCA switches, even if they are DSA tagged, in order to perform L2
-  forwarding to the other port or to the CPU port. And because br0 != br1,
-  what you mentioned above for skb->offload_fwd_mark does not actually
-  matter - there are only 2 ports in br1, and both are part of the same
-  hardware domain, so the software bridge doesn't need to forward any
-  packet. As for br0, by the time the packets from swNpM reach the
-  software bridge, there is no longer any indication that they were
-  originally processed by the Broadcom ports as DSA masters, so there is
-  no problem forwarding them in software to the other Broadcom ports
-  (not DSA masters).
-- the br0 bridge, in the presence of br1, doesn't have to do software
-  forwarding of packets between the 2 QCA switches - br1 handles it. But
-  even if br1 did not exist, it still could. How?
-  nbp_switchdev_allowed_egress() will happily forward packets between
-  ports with different offload_fwd_mark values. These are derived from:
+kind regards
+thanks,
 
-  nbp_switchdev_mark_set
-  -> dev_get_port_parent_id
-     -> devlink_compat_switch_id_get
-        -> &devlink_port->attrs.switch_id
-
-  populated by &devlink_port->attrs.switch_id based on dst->index.
-
-  Otherwise said, the devlink switch id is equal to the DSA switch tree
-  index.
-
-  But you already set the dsa,member properties properly (i.e. each QCA
-  switch is in its own tree with a unique index):
-
-    switch@10 {
-        compatible = "qca,qca8337";
-        dsa,member = <1 0>;
-    };
-
-    switch@10 {
-        compatible = "qca,qca8337";
-        dsa,member = <2 0>;
-    };
-
-  So there is in fact no problem.
-
-The "net: dsa: don't set skb->offload_fwd_mark when not offloading the bridge"
-patch was not accepted yet, am I right?
-https://patchwork.kernel.org/project/netdevbpf/patch/20210318231829.3892920-15-olteanv@gmail.com/
-Why are you using RFC patches instead of asking for them to be submitted
-properly? :)
-
-Regardless of that patch being present or not (which affects a different
-use case which I cannot see how it relates to this), I think there is a bug:
-
-if the DSA master sets skb->offload_fwd_mark = true, and then the DSA
-tagger gets to process that same skb, and it wants to indicate it is a
-standalone / non-offloading port, currently it will simply not set
-skb->offload_fwd_mark = true. But not setting it to true is different
-than always setting skb->offload_fwd_mark to true or false - it just
-works because we assume that skb->offload_fwd_mark is initially false,
-which is obv not true if the DSA master had already set it to true.
-So if there is a provable bug caused by this, we might need a patch
-which sets skb->offload_fwd_mark = false in dsa_switch_rcv(), right
-before the call to cpu_dp->rcv(), in order to satisfy the taggers'
-expectation that we do indeed start from a blank slate.
-Does that make sense?
-
-> >
-> > If I'm not mistaken, this patch should solve your problem?
-> >
-> > -----------------------------[ cut here ]-----------------------------
-> > diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-> > index 3ca6b394dd5f..d6655b516bd8 100644
-> > --- a/drivers/net/dsa/b53/b53_common.c
-> > +++ b/drivers/net/dsa/b53/b53_common.c
-> > @@ -1462,6 +1462,7 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
-> >  	struct b53_device *dev = ds->priv;
-> >  	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-> >  	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
-> > +	bool really_untagged = false;
-> >  	struct b53_vlan *vl;
-> >  	int err;
-> >  
-> > @@ -1474,10 +1475,10 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
-> >  	b53_get_vlan_entry(dev, vlan->vid, vl);
-> >  
-> >  	if (vlan->vid == 0 && vlan->vid == b53_default_pvid(dev))
-> > -		untagged = true;
-> > +		really_untagged = true;
-> >  
-> >  	vl->members |= BIT(port);
-> > -	if (untagged && !dsa_is_cpu_port(ds, port))
-> > +	if (really_untagged || (untagged && !dsa_is_cpu_port(ds, port)))
-> >  		vl->untag |= BIT(port);
-> >  	else
-> >  		vl->untag &= ~BIT(port);
-> > -----------------------------[ cut here ]-----------------------------
-> >
-> This does seem to sort the issue as well in this case. Thanks!
-
-I'm sure Florian will explain some of the additional constraints around
-why we might want the Broadcom switches to send untagged packets as
-tagged with VID 0 towards the CPU, so the patch might suffer some
-changes until submitted proper. At the very least, the same configuration
-needs to work regardless of the value of CONFIG_VLAN_8021Q.
-Currently, the default VLAN configuration done by b53_configure_vlan()
-is overwritten by:
-
-vlan_device_event (the "adding VLAN 0 to HW filter on device %s" message)
--> vlan_vid_add
-   -> ...
-      -> dsa_slave_vlan_rx_add_vid
-         -> dsa_port_vlan_add
-            -> ...
-               -> b53_vlan_add
-
-so my point is that it is not robust to only fix the case where this
-chain of events happens, because CONFIG_VLAN_8021Q is entirely optional,
-and if it is not enabled, nobody will add VID 0 to the RX filter of the
-net devices, so the configuration of VID 0 on the Broadcom ports will be
-left as it is done by the switch initialization code, and that code
-should produce the same results.
+Kurt Manucredo
