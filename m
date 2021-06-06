@@ -2,203 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59B7A39D1F7
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 00:44:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCFA339D21B
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 00:53:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231181AbhFFWp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Jun 2021 18:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43568 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230368AbhFFWp6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 18:45:58 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ABDEC061766;
-        Sun,  6 Jun 2021 15:43:51 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id u18so11677148pfk.11;
-        Sun, 06 Jun 2021 15:43:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eNOF3ocK1bnUV5j829woqGXLqBC6/W8Y2N0Kd8NG6pU=;
-        b=Xo4ahIrmK/5Yqr9D9Pqtra0ehH3DD09lw6u2D6Z/wvb0ot9Ja4Q7aceJXGNZUtehCe
-         wZdE6epDvJ1xtNPJ/zQ+SO/gSsoMeDzGanbzgrYAhq6Z0fgnCW0W2ZUILOuXYpto0C6a
-         bI16PfMH53jZtjbuhbh7dlRLxF44H8L6sf2XwZaS43NEM89sii57Vn0Kq9P/p0gBn2i/
-         EDHANfe+f6Xv8k+QKoGqHU6a469R+AXKhxZH7lo1NBikI5PsuQ6tutTA62qQNz6SFA8C
-         qXWJS3wXyeiDebcgIZ6zjwZph8NHE0S4vS8UgwnP3j0VWq+uw1Emw8DCJ/U36jmyedsl
-         ez5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eNOF3ocK1bnUV5j829woqGXLqBC6/W8Y2N0Kd8NG6pU=;
-        b=Uo3oJfs/m8enhKJVDeggTGQXx55FGElNZclCVBazAtgBb1ACw4YQzIgicLbP4lE8FU
-         qIuJtyrb9x+DEGzDyzP7XCaAo+MIfbwvV2mDyfg3/Of8JBN5SyvS8CyuU3LQ6Qc+LdE9
-         LquiHl8hvMOHXe720+zFeACezOEUV9+BgnWyfPq5v+6RhuRmZeEilsVFjiOmeKCEQRN9
-         uRbSVfAzT6SWf3zIBm5q+/LGxw8js0wnDwxY004NmjmkeeEJydR6lW+L99CNIU4SnTV9
-         O6hpvv7/zpnI0juLWGLd5PjKIYbAzLh75L+W+CJBK/hoT8QyAIhrN3RlXAqozhFYVsNv
-         cyXA==
-X-Gm-Message-State: AOAM5315rzO77VQ4T0i/oPizWSFU7CPZeeRW/m6xix/nt6t6ByyE7A/Q
-        yunqXlZiEDH01JRh6PgvUNOO7qNuMGI2jg==
-X-Google-Smtp-Source: ABdhPJwaddkKb2bZBzrmNU3GQ/oZe3ox6eCtYA7qPpTT6KSyu90ElG4mZIt0tkwai1olP+sLbhAmhA==
-X-Received: by 2002:a62:8491:0:b029:2e9:c618:fa32 with SMTP id k139-20020a6284910000b02902e9c618fa32mr14598919pfd.15.1623019430666;
-        Sun, 06 Jun 2021 15:43:50 -0700 (PDT)
-Received: from mail.google.com ([141.164.41.4])
-        by smtp.gmail.com with ESMTPSA id x22sm6498245pfn.10.2021.06.06.15.43.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Jun 2021 15:43:49 -0700 (PDT)
-Date:   Mon, 7 Jun 2021 06:43:41 +0800
-From:   Changbin Du <changbin.du@gmail.com>
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Changbin Du <changbin.du@gmail.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>
-Subject: Re: [PATCH] nsfs: fix oops when ns->ops is not provided
-Message-ID: <20210606224322.yxr47tgdqis35dcl@mail.google.com>
-References: <20210531153410.93150-1-changbin.du@gmail.com>
- <20210531220128.26c0cb36@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <CAM_iQpUEjBDK44=mD5shkmmoDYhmHQaSZtR34rLRkgd9wSWiQQ@mail.gmail.com>
- <20210602091451.kbdul6nhobilwqvi@wittgenstein>
- <CAM_iQpUqgeoY_mA6cazUPCWwMK6yw9SaD6DRg-Ja4r6r_zOmLg@mail.gmail.com>
- <20210604095451.nkfgpsibm5nrqt3f@wittgenstein>
+        id S231312AbhFFWzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Jun 2021 18:55:15 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:53791 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230368AbhFFWzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 18:55:10 -0400
+Received: (Authenticated sender: n@nfraprado.net)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 861051BF203;
+        Sun,  6 Jun 2021 22:53:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nfraprado.net;
+        s=gm1; t=1623019997;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LEITmbgA+ypfFiT6sDRv13/uCob4oKC9Sq9src0AzZE=;
+        b=chA+i0RmfXwj/WF8vUQcsG8LWn2bONkphlI9FxGByy3xXZzQ3/zHKFPGJxmKXuKUW335J7
+        jYK4CRJ9+UN7xZA7RoqojnjXZW+0cqiNSJEER76idFul1Hmyyid+LU7eBwqw4Yf6VUnAAy
+        EO/oCOnOkrJSrla2lWMUer63YFPTS6rPVGC6R5VJrg9wTSN5B9e0Ariq05tQnFO7ePJjQo
+        bl4pkIEG3/A5X1Ubh0QT5mRcrGJQ8WehYjr1NfQyPqrYiwulB4ynbpB9vRe3MCb4L15B0r
+        jLNt083VPjq8mnz5SK6VyymWvFVmHAPrKBJPANhNFdLyuGqe1sYaP2/+H+QnUQ==
+Date:   Sun, 6 Jun 2021 19:52:25 -0300
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado <n@nfraprado.net>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        coresight@lists.linaro.org, devicetree@vger.kernel.org,
+        kunit-dev@googlegroups.com, kvm@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-security-module@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 00/34] docs: avoid using ReST :doc:`foo` tag
+Message-ID: <20210606225225.fz4dsyz6im4bqena@notapiano>
+References: <cover.1622898327.git.mchehab+huawei@kernel.org>
+ <20210605151109.axm3wzbcstsyxczp@notapiano>
+ <20210605210836.540577d4@coco.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210604095451.nkfgpsibm5nrqt3f@wittgenstein>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210605210836.540577d4@coco.lan>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 04, 2021 at 11:54:51AM +0200, Christian Brauner wrote:
-> On Thu, Jun 03, 2021 at 03:52:29PM -0700, Cong Wang wrote:
-> > On Wed, Jun 2, 2021 at 2:14 AM Christian Brauner
-> > <christian.brauner@ubuntu.com> wrote:
-> > > But the point is that ns->ops should never be accessed when that
-> > > namespace type is disabled. Or in other words, the bug is that something
-> > > in netns makes use of namespace features when they are disabled. If we
-> > > handle ->ops being NULL we might be tapering over a real bug somewhere.
+On Sat, Jun 05, 2021 at 09:08:36PM +0200, Mauro Carvalho Chehab wrote:
+> Em Sat, 5 Jun 2021 12:11:09 -0300
+> Nícolas F. R. A. Prado <n@nfraprado.net> escreveu:
+> 
+> > Hi Mauro,
 > > 
-> > It is merely a protocol between fs/nsfs.c and other namespace users,
-> > so there is certainly no right or wrong here, the only question is which
-> > one is better.
+> > On Sat, Jun 05, 2021 at 03:17:59PM +0200, Mauro Carvalho Chehab wrote:
+> > > As discussed at:
+> > > 	https://lore.kernel.org/linux-doc/871r9k6rmy.fsf@meer.lwn.net/
+> > > 
+> > > It is better to avoid using :doc:`foo` to refer to Documentation/foo.rst, as the
+> > > automarkup.py extension should handle it automatically, on most cases.
+> > > 
+> > > There are a couple of exceptions to this rule:
+> > > 
+> > > 1. when :doc:  tag is used to point to a kernel-doc DOC: markup;
+> > > 2. when it is used with a named tag, e. g. :doc:`some name <foo>`;
+> > > 
+> > > It should also be noticed that automarkup.py has currently an issue:
+> > > if one use a markup like:
+> > > 
+> > > 	Documentation/dev-tools/kunit/api/test.rst
+> > > 	  - documents all of the standard testing API excluding mocking
+> > > 	    or mocking related features.
+> > > 
+> > > or, even:
+> > > 
+> > > 	Documentation/dev-tools/kunit/api/test.rst
+> > > 	    documents all of the standard testing API excluding mocking
+> > > 	    or mocking related features.
+> > > 	
+> > > The automarkup.py will simply ignore it. Not sure why. This patch series
+> > > avoid the above patterns (which is present only on 4 files), but it would be
+> > > nice to have a followup patch fixing the issue at automarkup.py.  
 > > 
-> > >
-> > > Jakub's proposal in the other mail makes sense and falls in line with
-> > > how the rest of the netns getters are implemented. For example
-> > > get_net_ns_fd_fd():
-> > 
-> > It does not make any sense to me. get_net_ns() merely increases
-> > the netns refcount, which is certainly fine for init_net too, no matter
-> > CONFIG_NET_NS is enabled or disabled. Returning EOPNOTSUPP
-> > there is literally saying we do not support increasing init_net refcount,
-> > which is of course false.
-> > 
-> > > struct net *get_net_ns_by_fd(int fd)
-> > > {
-> > >         return ERR_PTR(-EINVAL);
-> > > }
-> > 
-> > There is a huge difference between just increasing netns refcount
-> > and retrieving it by fd, right? I have no idea why you bring this up,
-> > calling them getters is missing their difference.
+> > What I think is happening here is that we're using rST's syntax for definition
+> > lists [1]. automarkup.py ignores literal nodes, and perhaps a definition is
+> > considered a literal by Sphinx. Adding a blank line after the Documentation/...
+> > or removing the additional indentation makes it work, like you did in your
+> > 2nd and 3rd patch, since then it's not a definition anymore, although then the
+> > visual output is different as well.
 > 
-> This argument doesn't hold up. All netns helpers ultimately increase the
-> reference count of the net namespace they find. And if any of them
-> perform operations where they are called in environments wherey they
-> need CONFIG_NET_NS they handle this case at compile time.
-> 
-> (Pluse they are defined in a central place in net/net_namespace.{c,h}.
-> That includes the low-level get_net() function and all the others.
-> get_net_ns() is the only one that's defined out of band. So get_net_ns()
-> currently is arguably also misplaced.)
-> 
-Ihe get_net_ns() was a static helper function and then sb made it exported
-but didn't move it. See commit d8d211a2a0 ('net: Make extern and export get_net_ns()').
+> A literal has a different output. I think that this is not the case, but I 
+> didn't check the python code from docutils/Sphinx.
 
-> The problem I have with fixing this in nsfs is that it gives the
-> impression that this is a bug in nsfs whereas it isn't and it
-> potentially helps tapering over other bugs.
-> 
-> get_net_ns() is only called for codepaths that call into nsfs via
-> open_related_ns() and it's the only namespace that does this. But
-> open_related_ns() is only well defined if CONFIG_<NAMESPACE_TYPE> is
-> set. For example, none of the procfs namespace f_ops will be set for
-> !CONFIG_NET_NS. So clearly the socket specific getter here is buggy as
-> it doesn't account for !CONFIG_NET_NS and it should be fixed.
-I agree with Cong that a pure getter returns a generic error is a bit weird.
-And get_net_ns() is to get the ns_common which always exists indepent of
-CONFIG_NET_NS. For get_net_ns_by_fd(), I think it is a 'findder + getter'.
+Okay, I went in deeper to understand the issue and indeed it wasn't what I
+thought. The reason definitions are ignored by automarkup.py is because the main
+loop iterates only over nodes that are of type paragraph:
 
-So maybe we can rollback to patch V1 to fix all code called into
-open_related_ns()?
-https://lore.kernel.org/netdev/CAM_iQpWwApLVg39rUkyXxnhsiP0SZf=0ft6vsq=VxFtJ2SumAQ@mail.gmail.com/T/
+    for para in doctree.traverse(nodes.paragraph):
+        for node in para.traverse(nodes.Text):
+            if not isinstance(node.parent, nodes.literal):
+                node.parent.replace(node, markup_refs(name, app, node))
 
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -1149,11 +1149,15 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
- 			mutex_unlock(&vlan_ioctl_mutex);
- 			break;
- 		case SIOCGSKNS:
-+#ifdef CONFIG_NET_NS
- 			err = -EPERM;
- 			if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
- 				break;
- 
- 			err = open_related_ns(&net->ns, get_net_ns);
-+#else
-+			err = -ENOTSUPP;
-+#endif
+And inspecting the HTML output from your example, the definition name is inside
+a <dt> tag, and it doesn't have a <p> inside. So in summary, automarkup.py will
+only work on elements which are inside a <p> in the output.
 
-> 
-> Plus your fix leaks references to init netns without fixing get_net_ns()
-> too.
-> You succeed to increase the refcount of init netns in get_net_ns() but
-> then you return in __ns_get_path() because ns->ops aren't set before
-> ns->ops->put() can be called.  But you also _can't_ call it since it's
-> not set because !CONFIG_NET_NS. So everytime you call any of those
-> ioctls you increas the refcount of init net ns without decrementing it
-> on failure. So the fix is buggy as it is too and would suggest you to
-> fixup get_net_ns() too.
-Yes, it is a problem. Can be put a BUG_ON() in nsfs so that such bug (calling
-into nsfs without ops) can be catched early?
+Only applying the automarkup inside paragraphs seems like a good decision (which
+covers text in lists and tables as well), so unless there are other types of
+elements without paragraphs where automarkup should work, I think we should just
+avoid using definition lists pointing to documents like that.
 
-> 
-> Cc: <stable@vger.kernel.org>
-> Cc: Cong Wang <xiyou.wangcong@gmail.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: David Laight <David.Laight@ACULAB.COM>
-> Signed-off-by: Changbin Du <changbin.du@gmail.com>
-> ---
->  fs/nsfs.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/fs/nsfs.c b/fs/nsfs.c
-> index 800c1d0eb0d0..6c055eb7757b 100644
-> --- a/fs/nsfs.c
-> +++ b/fs/nsfs.c
-> @@ -62,6 +62,10 @@ static int __ns_get_path(struct path *path, struct ns_common *ns)
->  	struct inode *inode;
->  	unsigned long d;
 >  
-> +	/* In case the namespace is not actually enabled. */
-> +	if (!ns->ops)
-> +		return -EOPNOTSUPP;
-> +
->  	rcu_read_lock();
->  	d = atomic_long_read(&ns->stashed);
->  	if (!d)
-> -- 
-> 2.30.2
+> > I'm not sure this is something we need to fix. Does it make sense to use
+> > definition lists for links like that? If it does, I guess one option would be to
+> > whitelist definition lists so they aren't ignored by automarkup, but I feel
+> > this could get ugly really quickly.
 > 
+> Yes, we should avoid handling literal blocks, as this can be a nightmare.
 > 
+> > FWIW note that it's also possible to use relative paths to docs with automarkup.
+> 
+> Not sure if you meant to say using something like ../driver-api/foo.rst.
+> If so, relative paths are a problem, as it will pass unnoticed by this script:
+> 
+> 	./scripts/documentation-file-ref-check
+> 
+> which is meant to warn when a file is moved to be elsewhere. Ok, it
+> could be taught to use "../" to identify paths, but I suspect that this
+> could lead to false positives, like here:
+> 
+> 	Documentation/usb/gadget-testing.rst:  # ln -s ../../uncompressed/u
+> 	Documentation/usb/gadget-testing.rst:  # cd ../../class/fs
+> 	Documentation/usb/gadget-testing.rst:  # ln -s ../../header/h
 
--- 
-Cheers,
-Changbin Du
+Yes, that's what I meant. 
+
+Ok, that makes sense. Although after automarkup.py starts printing warnings on
+missing references to files (which is a patch I still need to resend), it would
+work out-of-the-box with relative paths. automarkup wouldn't face that false
+positives issue since it ignores literal blocks, which isn't as easy for a
+standalone script. But that's still in the future, we can discuss what to do
+then after it is implemented, so full paths seem better for now.
+
+Thanks,
+Nícolas
+
+> 
+> If you meant, instead, :doc:`../foo`, this series address those too.
+> 
+> Regards,
+> Mauro
