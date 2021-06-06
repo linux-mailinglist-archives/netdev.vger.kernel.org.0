@@ -2,124 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BABE39CF47
-	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 15:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BD0239CF57
+	for <lists+netdev@lfdr.de>; Sun,  6 Jun 2021 15:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbhFFNMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Jun 2021 09:12:32 -0400
-Received: from mail-wr1-f52.google.com ([209.85.221.52]:34559 "EHLO
-        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbhFFNMb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 09:12:31 -0400
-Received: by mail-wr1-f52.google.com with SMTP id q5so14291654wrm.1;
-        Sun, 06 Jun 2021 06:10:26 -0700 (PDT)
+        id S230111AbhFFNcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Jun 2021 09:32:14 -0400
+Received: from mail-pj1-f46.google.com ([209.85.216.46]:46963 "EHLO
+        mail-pj1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229878AbhFFNcN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 09:32:13 -0400
+Received: by mail-pj1-f46.google.com with SMTP id pi6-20020a17090b1e46b029015cec51d7cdso8682335pjb.5;
+        Sun, 06 Jun 2021 06:30:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=YHW3j/yUXkD5+ub22MZhxBtOBlDuCGoenhVrhi0GjK4=;
-        b=i2sUfEjoyoWAGBwk1wvK1kU4ED84DbnDTDZY64r5vubn4gcouEYNLSudg69l7h5k7P
-         HOgKFwpbipduVMjYVvktLZwnrwnUlbqEPQFUOh+M2rNDVbJZ7FukqnVV5N4SiRQY4Jj1
-         TOkjRNlnEBiM4ayyzWZeKwTa1dGZjLINpCIcb7YKxksHJ4IdkjO/5/C2mXqsYeDrLwQS
-         XOQC6205aGtfxBKgvIfPXj3kmg07vaxJ0Ex1U/dD2eDFZ4y7jCtwYGJqCkiQWh1+QDcp
-         Ibu4CBFQnesHHdlQiYlCD6E42+N8V0NpqyRGjzCg4xgyd1U89kmWyANm7J2I2reZtDxL
-         4bYw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hYcKAmYrkT12yrCkZCPxBOfTA321ZJWoXkYrMXfOxJ0=;
+        b=WQueEqbo2NBlKjvZ6KO/rLFnz5TpCCSTcmQMDcf8qtQHRJyp6tjkvQqjMDDvRWNvg/
+         ojY8msMKfjue0x9xNFLV3t9l/kCCZeo4JZAtzeTrJkJn3SFMywdU2rbl7Bd9WakOBlRt
+         YAkrkqMw8+KgLDVnCzFAlNQ2pzF9dRv5CMtiVoVq1m4MkFGfG+VbcraT09mYoB0nW95S
+         S4POp00X3jRUtpk/R9SiR0aACf9o8cOZZo8DgNZhtn9cFN5sK4dLesBr9cQ176nXSfwd
+         miSgxm/3GlEik79UCHguP4u3DWg9W5kiYmjWSfiZLY9AHLffbf2fsBGYawntp6VsMINT
+         VOvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=YHW3j/yUXkD5+ub22MZhxBtOBlDuCGoenhVrhi0GjK4=;
-        b=iYLr9+NXRPuMDP6V9Z0nTMwSjqILL0r/Nzlz5Ou9nj8jLgd9GmsUJ22xwWKQrqk5+x
-         Sid5A8/TVA0Kes90mntTxmRU/GT1VOwdJHGJKQuX9Wtw/RIhp00dxG5c5l4QitFACUs9
-         hd+vt9KxZ7TIyVTE+X42hOHjWYTrk+iFYuDYGOLv3peRLVXphUbUUSCG3uupcKH0udKw
-         Wp84oxlcykVqie+P+/V8mb2BQ3P0w8eJrs6ejIB+bfPsPcMEyuVJ2FxPrxsU/DIA/Z/e
-         UoL2VA7BTDqfxDaVA8IlzbBmYzG5r6cIwbe4ona85UmHzHoUOLVVZxxcGcwMl0EKpGhs
-         X2rA==
-X-Gm-Message-State: AOAM532UpNMeXBDvdiDdw3QlTAPBBMwsxQpDFubWJY73yo5x2OT8nZY/
-        2GL7M6e/wz0zfLj3E1SyQLoZH+XeWev8bw==
-X-Google-Smtp-Source: ABdhPJyKmCsnt9eAaouxAkxJtIGRBhAuhSpxWpJAdDMg0JX1QSWGeY3OyTftbAKRbd1T43YzyUGjRQ==
-X-Received: by 2002:a5d:5082:: with SMTP id a2mr12867761wrt.199.1622984965562;
-        Sun, 06 Jun 2021 06:09:25 -0700 (PDT)
-Received: from localhost.localdomain (haganm.plus.com. [212.159.108.31])
-        by smtp.gmail.com with ESMTPSA id o22sm13723412wmc.17.2021.06.06.06.09.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Jun 2021 06:09:25 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next] net: dsa: tag_qca: Check for upstream VLAN
- tag
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hYcKAmYrkT12yrCkZCPxBOfTA321ZJWoXkYrMXfOxJ0=;
+        b=Fc+X3mdYqrZusJ5JqQ6vxTRjVjSbrXfZ9vCyDwjXNfyYdCw1GSU3FBZYxqa7AjVYIY
+         76z5Hyw6D5qVsVDpO5u/07TVjXw3XQf1z/uEjdmttdn7LpyGY1lfib7eUmXxP9pmhucV
+         ETUswCyka919Sm9v17lFixL0qfa9Li5XpQuauHhBOp80Ktx+YLsA1mdE4kTE710ihaX9
+         PqhpLvwSvYZ4yDXRITlNjDLD+2v3HnNrbugKXAmnbUmNK+D/LuMZMJh6eIXGJq9jvUOL
+         qnVOpZkjQb6fdtmNDvxOv0WfqGNhyk576Es5URPpBfsz31NyLuedLL1mEYneQNU33/Nw
+         9CLA==
+X-Gm-Message-State: AOAM531Z9HhHOLcRu2UjwWJjJetLN/mOvMpE6mYXI5Jy8d69HC/Bl7DB
+        KR5v2hp5fUmjCUmpw7tUpy8=
+X-Google-Smtp-Source: ABdhPJyj2di16bPb/HKfLXkHVUGrsIbLZuBW9vI9YNQDT8Dz2RXLca9RdoJpECF8q1i5AX0DFaPRow==
+X-Received: by 2002:a17:90b:4504:: with SMTP id iu4mr15678423pjb.110.1622986150087;
+        Sun, 06 Jun 2021 06:29:10 -0700 (PDT)
+Received: from ndr730u.nd.solarflarecom.com ([182.71.24.30])
+        by smtp.googlemail.com with ESMTPSA id bv3sm8252826pjb.1.2021.06.06.06.29.06
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 06 Jun 2021 06:29:09 -0700 (PDT)
+From:   Gautam Dawar <gdawar.xilinx@gmail.com>
+Cc:     martinh@xilinx.com, hanand@xilinx.com, gdawar@xilinx.com,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20210605193749.730836-1-mnhagan88@gmail.com>
- <YLvgI1e3tdb+9SQC@lunn.ch> <ed3940ec-5636-63db-a36b-dc6c2220b51d@gmail.com>
- <20210606005335.iuqi4yelxr5irmqg@skbuf>
-From:   Matthew Hagan <mnhagan88@gmail.com>
-Message-ID: <9f07737c-f80b-6bd1-584a-a81a265d73eb@gmail.com>
-Date:   Sun, 6 Jun 2021 14:09:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+Subject: [PATCH] vhost-vdpa: log warning message if vhost_vdpa_remove gets blocked
+Date:   Sun,  6 Jun 2021 18:59:09 +0530
+Message-Id: <20210606132909.177640-1-gdawar.xilinx@gmail.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-In-Reply-To: <20210606005335.iuqi4yelxr5irmqg@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/06/2021 01:53, Vladimir Oltean wrote:
+From: Gautam Dawar <gdawar@xilinx.com>
 
-> It is a bit unconventional for the upstream Broadcom switch, which is a
-> DSA master of its own, to insert a VLAN ID of zero out of the blue,
-> especially if it operates in standalone mode. Supposedly sw0 and sw1 are
-> not under a bridge net device, are they?
+If some module invokes vdpa_device_unregister (usually in the module
+unload function) when the userspace app (eg. QEMU) which had opened
+the vhost-vdpa character device is still running, vhost_vdpa_remove()
+function will block indefinitely in call to wait_for_completion().
 
-sw0 and sw1 are brought up but otherwise left unconfigured. The bridge
-consists of the user ports only (wanN and swNpN). A side note here is that
-your "net: dsa: don't set skb->offload_fwd_mark when not offloading the
-bridge" patch is also in use. Would setting up a bridge for sw0/sw1 not
-have implications for receiving unknown frames on one port, that have been
-sent from another port of the same switch? Since unknown frames will go to
-the CPU, dp->bridge_dev would return the bridge name, setting
-offload_fwd_mark=1 thus preventing those frames being sent back out
-sw0/sw1 to its other ports.
+This causes the vdpa_device_unregister caller to hang and with a
+usual side-effect of rmmod command not returning when this call
+is in the module_exit function.
 
->
-> If I'm not mistaken, this patch should solve your problem?
->
-> -----------------------------[ cut here ]-----------------------------
-> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-> index 3ca6b394dd5f..d6655b516bd8 100644
-> --- a/drivers/net/dsa/b53/b53_common.c
-> +++ b/drivers/net/dsa/b53/b53_common.c
-> @@ -1462,6 +1462,7 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
->  	struct b53_device *dev = ds->priv;
->  	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
->  	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
-> +	bool really_untagged = false;
->  	struct b53_vlan *vl;
->  	int err;
->  
-> @@ -1474,10 +1475,10 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
->  	b53_get_vlan_entry(dev, vlan->vid, vl);
->  
->  	if (vlan->vid == 0 && vlan->vid == b53_default_pvid(dev))
-> -		untagged = true;
-> +		really_untagged = true;
->  
->  	vl->members |= BIT(port);
-> -	if (untagged && !dsa_is_cpu_port(ds, port))
-> +	if (really_untagged || (untagged && !dsa_is_cpu_port(ds, port)))
->  		vl->untag |= BIT(port);
->  	else
->  		vl->untag &= ~BIT(port);
-> -----------------------------[ cut here ]-----------------------------
->
-This does seem to sort the issue as well in this case. Thanks!
+This patch converts the wait_for_completion call to its timeout based
+counterpart (wait_for_completion_timeout) and also adds a warning
+message to alert the user/administrator about this hang situation.
 
-Matthew
+To eventually fix this problem, a mechanism will be required to let
+vhost-vdpa module inform the userspace of this situation and
+userspace will close the descriptor of vhost-vdpa char device.
+This will enable vhost-vdpa to continue with graceful clean-up.
+
+Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+---
+ drivers/vhost/vdpa.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index bfa4c6ef554e..572b64d09b06 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -1091,7 +1091,11 @@ static void vhost_vdpa_remove(struct vdpa_device *vdpa)
+ 		opened = atomic_cmpxchg(&v->opened, 0, 1);
+ 		if (!opened)
+ 			break;
+-		wait_for_completion(&v->completion);
++		wait_for_completion_timeout(&v->completion,
++					    msecs_to_jiffies(1000));
++		dev_warn_ratelimited(&v->dev,
++				     "%s waiting for /dev/%s to be closed\n",
++				     __func__, dev_name(&v->dev));
+ 	} while (1);
+ 
+ 	put_device(&v->dev);
+-- 
+2.30.1
 
