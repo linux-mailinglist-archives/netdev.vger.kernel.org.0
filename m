@@ -2,165 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24D2B39E662
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 20:19:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D73639E669
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 20:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230414AbhFGSVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 14:21:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21480 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230333AbhFGSVK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 14:21:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623089958;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yjGtNlz0YSV75CHNPH9tpJ1XPnNMcmYEPEhB0Rb7CaA=;
-        b=ZIIPJ66tiqCFgejXbEV89c7eeE/CPh3MLyuYaRb3aaZrfDduaRF+t1RQrcwixh3DFZF1Dx
-        318kdlxKgn/Nt0sU6rGfLQkKd0sNarFDn5WaoZupIKweaeMnq7Z6XIF5yBMyLY/LTklxbj
-        IK3cx0UyJQ09iEu8vmc/6+WgVlYruWk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-120-7qi5iDKNP3CPHBaEBypoRQ-1; Mon, 07 Jun 2021 14:19:17 -0400
-X-MC-Unique: 7qi5iDKNP3CPHBaEBypoRQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 137E71020C36;
-        Mon,  7 Jun 2021 18:19:01 +0000 (UTC)
-Received: from krava (unknown [10.40.192.167])
-        by smtp.corp.redhat.com (Postfix) with SMTP id DE43970139;
-        Mon,  7 Jun 2021 18:18:49 +0000 (UTC)
-Date:   Mon, 7 Jun 2021 20:18:48 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCH 11/19] bpf: Add support to load multi func tracing program
-Message-ID: <YL5jCPZhmMxfFy26@krava>
-References: <20210605111034.1810858-1-jolsa@kernel.org>
- <20210605111034.1810858-12-jolsa@kernel.org>
- <db5c591c-c5f2-9bcc-28bf-f5890c2cf61c@fb.com>
+        id S230454AbhFGSWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 14:22:30 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:52504 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230266AbhFGSW3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 14:22:29 -0400
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 157I372K135897;
+        Mon, 7 Jun 2021 14:20:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=gGaZcnGDLWgZB6TLbn7fB/8GElv3gNq4DTe/6Ybs81g=;
+ b=QCxOQ/d02XIChJMXoCzxym6CyOsVhJM6QGBngiG14Ltp/Wt9fu9Wq2NfdK2B5aOyEXpR
+ OCLg0nnVSk8C2fnDc/RDl8iaewqNrY4aGJJGeiVSSYq2+74ebm1BFt/csqyHFTz6YGtP
+ WZG9F3Ucj5trZwQRGgngCRxyrC5knVGr4i4zyVgmAyJo/7FLpUSxYaPqroDOhG/jlwko
+ 3TnzCwSF4sMO/kIskmxj2G2U8u6pR83h3hJ/0AO0c6Hu44RLm6bY31BwyzWh3KDWCk8D
+ O+VLnvTUXu25DadAiVrTAgeeJJoxC2wAc0ULRaMdkUvjuRMlGHLGRhO3DajGZ5Qv8Xhk 1g== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 391r9q0ksc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Jun 2021 14:20:36 -0400
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 157IBlmv025552;
+        Mon, 7 Jun 2021 18:20:33 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06fra.de.ibm.com with ESMTP id 3900hhgke6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Jun 2021 18:20:33 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 157IKU6723134660
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Jun 2021 18:20:30 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 54887A4055;
+        Mon,  7 Jun 2021 18:20:30 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1A4C9A4053;
+        Mon,  7 Jun 2021 18:20:30 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Jun 2021 18:20:30 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH net-next 0/4] net/smc: Add SMC statistic support
+Date:   Mon,  7 Jun 2021 20:20:10 +0200
+Message-Id: <20210607182014.3384922-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <db5c591c-c5f2-9bcc-28bf-f5890c2cf61c@fb.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: f-YetUM1KquOa2xrEFfX4K08FEdE4AGO
+X-Proofpoint-GUID: f-YetUM1KquOa2xrEFfX4K08FEdE4AGO
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-07_14:2021-06-04,2021-06-07 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 malwarescore=0 lowpriorityscore=0
+ mlxscore=0 adultscore=0 bulkscore=0 spamscore=0 mlxlogscore=996
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106070125
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 06, 2021 at 08:56:47PM -0700, Yonghong Song wrote:
-> 
-> 
-> On 6/5/21 4:10 AM, Jiri Olsa wrote:
-> > Adding support to load tracing program with new BPF_F_MULTI_FUNC flag,
-> > that allows the program to be loaded without specific function to be
-> > attached to.
-> > 
-> > The verifier assumes the program is using all (6) available arguments
-> 
-> Is this a verifier failure or it is due to the check in the
-> beginning of function arch_prepare_bpf_trampoline()?
-> 
->         /* x86-64 supports up to 6 arguments. 7+ can be added in the future
-> */
->         if (nr_args > 6)
->                 return -ENOTSUPP;
+Please apply the following patch series for smc to netdev's net-next tree.
 
-yes, that's the limit.. it allows the traced program to
-touch 6 arguments, because it's the maximum for JIT
+The patchset adds statistic support to the SMC protocol. Per-cpu
+variables are used to collect the statistic information for better
+performance and for reducing concurrency pitfalls. The code that is
+collecting statistic data is implemented in macros to increase code
+reuse and readability.
+The generic netlink mechanism in SMC is extended to provide the
+collected statistics to userspace.
+Network namespace awareness is also part of the statistics
+implementation.
 
-> 
-> If it is indeed due to arch_prepare_bpf_trampoline() maybe we
-> can improve it instead of specially processing the first argument
-> "ip" in quite some places?
+Guvenc Gulce (4):
+  net/smc: Add SMC statistics support
+  net/smc: Add netlink support for SMC statistics
+  net/smc: Add netlink support for SMC fallback statistics
+  net/smc: Make SMC statistics network namespace aware
 
-do you mean to teach JIT to process more than 6 arguments?
+ include/net/net_namespace.h |   4 +
+ include/net/netns/smc.h     |  16 ++
+ include/uapi/linux/smc.h    |  83 ++++++++
+ net/smc/Makefile            |   2 +-
+ net/smc/af_smc.c            | 102 +++++++--
+ net/smc/smc_core.c          |  13 +-
+ net/smc/smc_netlink.c       |  11 +
+ net/smc/smc_netlink.h       |   2 +-
+ net/smc/smc_rx.c            |   8 +
+ net/smc/smc_stats.c         | 413 ++++++++++++++++++++++++++++++++++++
+ net/smc/smc_stats.h         | 266 +++++++++++++++++++++++
+ net/smc/smc_tx.c            |  18 +-
+ 12 files changed, 917 insertions(+), 21 deletions(-)
+ create mode 100644 include/net/netns/smc.h
+ create mode 100644 net/smc/smc_stats.c
+ create mode 100644 net/smc/smc_stats.h
 
-> 
-> > as unsigned long values. We can't add extra ip argument at this time,
-> > because JIT on x86 would fail to process this function. Instead we
-> > allow to access extra first 'ip' argument in btf_ctx_access.
-> > 
-> > Such program will be allowed to be attached to multiple functions
-> > in following patches.
-> > 
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >   include/linux/bpf.h            |  1 +
-> >   include/uapi/linux/bpf.h       |  7 +++++++
-> >   kernel/bpf/btf.c               |  5 +++++
-> >   kernel/bpf/syscall.c           | 35 +++++++++++++++++++++++++++++-----
-> >   kernel/bpf/verifier.c          |  3 ++-
-> >   tools/include/uapi/linux/bpf.h |  7 +++++++
-> >   6 files changed, 52 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index 6cbf3c81c650..23221e0e8d3c 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -845,6 +845,7 @@ struct bpf_prog_aux {
-> >   	bool sleepable;
-> >   	bool tail_call_reachable;
-> >   	struct hlist_node tramp_hlist;
-> > +	bool multi_func;
-> 
-> Move this field right after "tail_call_reachable"?
-> 
-> >   	/* BTF_KIND_FUNC_PROTO for valid attach_btf_id */
-> >   	const struct btf_type *attach_func_proto;
-> >   	/* function name for valid attach_btf_id */
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 2c1ba70abbf1..ad9340fb14d4 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -1109,6 +1109,13 @@ enum bpf_link_type {
-> >    */
-> >   #define BPF_F_SLEEPABLE		(1U << 4)
-> > +/* If BPF_F_MULTI_FUNC is used in BPF_PROG_LOAD command, the verifier does
-> > + * not expect BTF ID for the program, instead it assumes it's function
-> > + * with 6 u64 arguments. No trampoline is created for the program. Such
-> > + * program can be attached to multiple functions.
-> > + */
-> > +#define BPF_F_MULTI_FUNC	(1U << 5)
-> > +
-> >   /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
-> >    * the following extensions:
-> >    *
-> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > index a6e39c5ea0bf..c233aaa6a709 100644
-> > --- a/kernel/bpf/btf.c
-> > +++ b/kernel/bpf/btf.c
-> > @@ -4679,6 +4679,11 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
-> >   		args++;
-> >   		nr_args--;
-> >   	}
-> > +	if (prog->aux->multi_func) {
-> > +		if (arg == 0)
-> > +			return true;
-> > +		arg--;
-> 
-> Some comments in the above to mention like "the first 'ip' argument
-> is omitted" will be good.
-
-will do, thanks
-
-jirka
-
-> 
-> > +	}
-> >   	if (arg > nr_args) {
-> >   		bpf_log(log, "func '%s' doesn't have %d-th argument\n",
-> [...]
-> 
+-- 
+2.25.1
 
