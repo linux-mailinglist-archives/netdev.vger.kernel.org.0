@@ -2,86 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 641A139D2F8
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 04:32:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52BFE39D301
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 04:38:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbhFGCd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Jun 2021 22:33:57 -0400
-Received: from mga11.intel.com ([192.55.52.93]:42307 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230133AbhFGCd4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Jun 2021 22:33:56 -0400
-IronPort-SDR: gPo2bU+kI09WyJ4/eGCnbFlSKnjfouGN6fjaLPQmO7wBqlOiD7eETF4wYsbO1wi+TfAoZG0Rgi
- RDYLq2FC9AzQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10007"; a="201529669"
-X-IronPort-AV: E=Sophos;i="5.83,254,1616482800"; 
-   d="scan'208";a="201529669"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2021 19:32:06 -0700
-IronPort-SDR: xacJE92Mzk0/Sc3cfFlgel8bTGGFYfbFldpaixql4Taf+123qagviLyUed53V2f66y8JqFjcJU
- UV3xXuk+bYhw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,254,1616482800"; 
-   d="scan'208";a="551745168"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Jun 2021 19:32:06 -0700
-Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
-        by linux.intel.com (Postfix) with ESMTP id 81228580973;
-        Sun,  6 Jun 2021 19:32:04 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 1/1] net: phy: probe for C45 PHYs that return PHY ID of zero in C22 space
-Date:   Mon,  7 Jun 2021 10:36:45 +0800
-Message-Id: <20210607023645.2958840-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S230207AbhFGCkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Jun 2021 22:40:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230139AbhFGCkD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 22:40:03 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E2AC061766;
+        Sun,  6 Jun 2021 19:37:56 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id k15so11988629pfp.6;
+        Sun, 06 Jun 2021 19:37:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=oLQtUOIn4QtzdXXro9qIUOXoA9lqcXyVqOHi0yt3oF0=;
+        b=HYx5cZpxB91PiEdWIKHPNZ1PdHIFcdlgacW4GuvFI+pa7MvWY28ediYtgjY3wXZnlp
+         vewbr5MfTtbjNL5MCmXt7fQaL55Udn01hCuVaK/LmuAt0skBmsc2MywLtrB0Ea/IFf2F
+         /6uHroP2dJVFfQZOo1Ih37myAN3l9o1BayOcAjwzki5wdDPq5mIt6NiWeSl9jMBP/eb7
+         u8d++83umKWthmTp+MT/4pFsc4SLdy7szU9ykUeXO2pUxkjR0fAvBiIhCQxlmamqKktY
+         7Jzoh+cB0MPki6tjJ8YyPKi5E1MF/Zx1YXY9YA0SUazWTiuviclbJnxJPOw53HsqeHfC
+         eeYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=oLQtUOIn4QtzdXXro9qIUOXoA9lqcXyVqOHi0yt3oF0=;
+        b=Pmce7eNWXKc16545qrptdvb2bgab5ITTuO0W2+0OSxXCnm79jS1v/Hw+dK0UpkhpN3
+         T6X/GLl72HpYBYlNwSxasDUDsQkJLht7GcptN3HNkK/Mjz6VhntVh8cnjy0iDbPZZLw+
+         Il0Q1igl7/tHtOdq6ZW4AziI6V2AYQHccmBA/9wVANLhbflE1Bs3aPsDvt+ncw9d7W7t
+         RYLBndbSnaH23mBP26ojoqnuX2qESHPNM7k2IMn9DCwtzK3GbWjnddoyojnerzGvpesb
+         I2rcpVMumqo20UY/DAbwPrsJe/S8yKA7df2baedAWKKHgIOwDl9wQz8HFxXFtqfMVmeg
+         dkpg==
+X-Gm-Message-State: AOAM533X008o6L3JkcjVVlrcYj3yxWxEXAAp+R58yLw3o48xbn7r50k4
+        +t5PZNPbN3xZaFhhf1hfNi8=
+X-Google-Smtp-Source: ABdhPJxMe6+SMdMIaJGLcuBRboZ3H+G5Pz60NdwiWMe++XrNXG2PHGHvKlvJHHum59rsPnO3yNcPKA==
+X-Received: by 2002:a63:4d0:: with SMTP id 199mr16178107pge.423.1623033474438;
+        Sun, 06 Jun 2021 19:37:54 -0700 (PDT)
+Received: from sz-dl-056.autox.sz ([185.241.43.163])
+        by smtp.gmail.com with ESMTPSA id 18sm10350540pje.22.2021.06.06.19.37.52
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 06 Jun 2021 19:37:54 -0700 (PDT)
+From:   Yejune Deng <yejune.deng@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, yebin10@huawei.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yejune Deng <yejune.deng@gmail.com>
+Subject: [PATCH] pktgen: add pktgen_handle_all_threads() for the same code
+Date:   Mon,  7 Jun 2021 10:37:41 +0800
+Message-Id: <1623033461-3003-1-git-send-email-yejune.deng@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PHY devices such as the Marvell Alaska 88E2110 does not return a valid
-PHY ID when probed using Clause-22. The current implementation treats
-PHY ID of zero as a non-error and valid PHY ID, and causing the PHY
-device failed to bind to the Marvell driver.
+The pktgen_{run, reset, stop}_all_threads() has the same code,
+so add pktgen_handle_all_threads() for it.
 
-For such devices, we do an additional probe in the Clause-45 space,
-if a valid PHY ID is returned, we then proceed to attach the PHY
-device to the matching PHY ID driver.
-
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
 ---
- drivers/net/phy/phy_device.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ net/core/pktgen.c | 38 +++++++++++++-------------------------
+ 1 file changed, 13 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 1539ea021ac0..495d86b4af7c 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -870,6 +870,18 @@ struct phy_device *get_phy_device(struct mii_bus *bus, int addr, bool is_c45)
- 	if (r)
- 		return ERR_PTR(r);
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index 3fba429..7e258d2 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -467,7 +467,7 @@ static struct pktgen_dev *pktgen_find_dev(struct pktgen_thread *t,
+ static int pktgen_device_event(struct notifier_block *, unsigned long, void *);
+ static void pktgen_run_all_threads(struct pktgen_net *pn);
+ static void pktgen_reset_all_threads(struct pktgen_net *pn);
+-static void pktgen_stop_all_threads_ifs(struct pktgen_net *pn);
++static void pktgen_stop_all_threads(struct pktgen_net *pn);
  
-+	/* PHY device such as the Marvell Alaska 88E2110 will return a PHY ID
-+	 * of 0 when probed using get_phy_c22_id() with no error. Proceed to
-+	 * probe with C45 to see if we're able to get a valid PHY ID in the C45
-+	 * space, if successful, create the C45 PHY device.
-+	 */
-+	if (!is_c45 && phy_id == 0 && bus->probe_capabilities >= MDIOBUS_C45) {
-+		r = get_phy_c45_ids(bus, addr, &c45_ids);
-+		if (!r)
-+			return phy_device_create(bus, addr, phy_id,
-+						 true, &c45_ids);
-+	}
-+
- 	return phy_device_create(bus, addr, phy_id, is_c45, &c45_ids);
+ static void pktgen_stop(struct pktgen_thread *t);
+ static void pktgen_clear_counters(struct pktgen_dev *pkt_dev);
+@@ -516,14 +516,11 @@ static ssize_t pgctrl_write(struct file *file, const char __user *buf,
+ 	data[count - 1] = 0;	/* Strip trailing '\n' and terminate string */
+ 
+ 	if (!strcmp(data, "stop"))
+-		pktgen_stop_all_threads_ifs(pn);
+-
++		pktgen_stop_all_threads(pn);
+ 	else if (!strcmp(data, "start"))
+ 		pktgen_run_all_threads(pn);
+-
+ 	else if (!strcmp(data, "reset"))
+ 		pktgen_reset_all_threads(pn);
+-
+ 	else
+ 		return -EINVAL;
+ 
+@@ -3027,20 +3024,25 @@ static void pktgen_run(struct pktgen_thread *t)
+ 		t->control &= ~(T_STOP);
  }
- EXPORT_SYMBOL(get_phy_device);
+ 
+-static void pktgen_stop_all_threads_ifs(struct pktgen_net *pn)
++static void pktgen_handle_all_threads(struct pktgen_net *pn, u32 flags)
+ {
+ 	struct pktgen_thread *t;
+ 
+-	func_enter();
+-
+ 	mutex_lock(&pktgen_thread_lock);
+ 
+ 	list_for_each_entry(t, &pn->pktgen_threads, th_list)
+-		t->control |= T_STOP;
++		t->control |= (flags);
+ 
+ 	mutex_unlock(&pktgen_thread_lock);
+ }
+ 
++static void pktgen_stop_all_threads(struct pktgen_net *pn)
++{
++	func_enter();
++
++	pktgen_handle_all_threads(pn, T_STOP);
++}
++
+ static int thread_is_running(const struct pktgen_thread *t)
+ {
+ 	const struct pktgen_dev *pkt_dev;
+@@ -3103,16 +3105,9 @@ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
+ 
+ static void pktgen_run_all_threads(struct pktgen_net *pn)
+ {
+-	struct pktgen_thread *t;
+-
+ 	func_enter();
+ 
+-	mutex_lock(&pktgen_thread_lock);
+-
+-	list_for_each_entry(t, &pn->pktgen_threads, th_list)
+-		t->control |= (T_RUN);
+-
+-	mutex_unlock(&pktgen_thread_lock);
++	pktgen_handle_all_threads(pn, T_RUN);
+ 
+ 	/* Propagate thread->control  */
+ 	schedule_timeout_interruptible(msecs_to_jiffies(125));
+@@ -3122,16 +3117,9 @@ static void pktgen_run_all_threads(struct pktgen_net *pn)
+ 
+ static void pktgen_reset_all_threads(struct pktgen_net *pn)
+ {
+-	struct pktgen_thread *t;
+-
+ 	func_enter();
+ 
+-	mutex_lock(&pktgen_thread_lock);
+-
+-	list_for_each_entry(t, &pn->pktgen_threads, th_list)
+-		t->control |= (T_REMDEVALL);
+-
+-	mutex_unlock(&pktgen_thread_lock);
++	pktgen_handle_all_threads(pn, T_REMDEVALL);
+ 
+ 	/* Propagate thread->control  */
+ 	schedule_timeout_interruptible(msecs_to_jiffies(125));
 -- 
-2.25.1
+2.7.4
 
