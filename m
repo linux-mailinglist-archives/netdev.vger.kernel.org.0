@@ -2,95 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAF2D39DE53
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 16:05:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C83839DE78
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 16:17:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbhFGOG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 10:06:58 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:41067 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbhFGOG5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 10:06:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1623074707; x=1654610707;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=rk4evP7hJI2TbuMWBLbd1c2o/uWG+hPkZfrlX2ejnw4=;
-  b=uPYZMz3cuVa+4pD6VVybVMY6De69Jmm1LQLjPqhSOOJ5hNEMjXjNK5y2
-   JZzX1LZS4MowsMV0QsMktLGfpq+xx1QKfMo+jHoXSJbWY/3Ny7lGCC5zk
-   xl8bqNzmCwASl7kWbS6UUA6nMH42Q6RUYdYFrBEtNcPpYc+LHcsJRwNDH
-   rl53HysZUxR+GzFqXBV4KZNgqqW9Ebuy0Tsduq22jqMl79WNTqJm2NHuR
-   TcXr3dnzlpaXvA67OENWCjmGdHoR+GcCqjMwUVgeuHZ9EjebvQnEk9bml
-   FqjI1zg3adED5uk6xo4efm2n0leW7Pp1Fuw4JeG+zXtSC2PWFJCXQqluU
-   Q==;
-IronPort-SDR: qNqrwgp7bVsxPlymDuDbHYTP50xQwJKomXgoBPuyRY4TPoojnq+PPBlaLizYmBkK1h0/hmN/Q2
- Q82K6U8Kd/ycgCMrSD9XgjUx+sOCqjxPXjvbDy6/YmqYtGTT4rw8164wrrv3spJUCun0B3yueC
- 2U6GENnbEISWx1Loy/PvjQs7jBCf/A9tdaCpSGi9L2GgH9e4yVa91xt7Y/14WOcz/k5NhvL1e1
- r10mEOoQ3CyHdKyfmj5VG7h3yquwwogM4F1NmqZNpMSsk+CvXdORvQH6bAvHPpX71PUlzT7Vxi
- mig=
-X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; 
-   d="scan'208";a="123789838"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Jun 2021 07:05:07 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+        id S230313AbhFGOS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 10:18:57 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3453 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230253AbhFGOSz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 10:18:55 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FzFjL1hgGz6x4J;
+        Mon,  7 Jun 2021 22:13:58 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 7 Jun 2021 07:05:05 -0700
-Received: from [10.12.74.44] (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Mon, 7 Jun 2021 07:05:04 -0700
-Subject: Re: [PATCH net-next] net: macb: Use
- devm_platform_get_and_ioremap_resource()
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>
-References: <20210607134354.3582182-1-yangyingliang@huawei.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <9e2c68af-637b-daff-5793-2d537c188998@microchip.com>
-Date:   Mon, 7 Jun 2021 16:05:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ 15.1.2176.2; Mon, 7 Jun 2021 22:16:57 +0800
+Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
+ (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 7 Jun 2021
+ 22:16:56 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <rafal@milecki.pl>, <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH net-next] net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname
+Date:   Mon, 7 Jun 2021 22:21:09 +0800
+Message-ID: <20210607142109.3992446-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210607134354.3582182-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/06/2021 at 15:43, Yang Yingliang wrote:
-> Use devm_platform_get_and_ioremap_resource() to simplify
-> code.
-> 
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Use the devm_platform_ioremap_resource_byname() helper instead of
+calling platform_get_resource_byname() and devm_ioremap_resource()
+separately.
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ .../net/ethernet/broadcom/bgmac-platform.c    | 21 +++++++------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
 
-> ---
->   drivers/net/ethernet/cadence/macb_main.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index a0c7b1167dbb..7d2fe13a52f8 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -4655,8 +4655,7 @@ static int macb_probe(struct platform_device *pdev)
->          struct macb *bp;
->          int err, val;
-> 
-> -       regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -       mem = devm_ioremap_resource(&pdev->dev, regs);
-> +       mem = devm_platform_get_and_ioremap_resource(pdev, 0, &regs);
->          if (IS_ERR(mem))
->                  return PTR_ERR(mem);
-> 
-> --
-> 2.25.1
-> 
-
-
+diff --git a/drivers/net/ethernet/broadcom/bgmac-platform.c b/drivers/net/ethernet/broadcom/bgmac-platform.c
+index 9834b77cf4b6..4ab5bf64d353 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-platform.c
++++ b/drivers/net/ethernet/broadcom/bgmac-platform.c
+@@ -172,7 +172,6 @@ static int bgmac_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct bgmac *bgmac;
+-	struct resource *regs;
+ 	int ret;
+ 
+ 	bgmac = bgmac_alloc(&pdev->dev);
+@@ -206,21 +205,15 @@ static int bgmac_probe(struct platform_device *pdev)
+ 	if (IS_ERR(bgmac->plat.base))
+ 		return PTR_ERR(bgmac->plat.base);
+ 
+-	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "idm_base");
+-	if (regs) {
+-		bgmac->plat.idm_base = devm_ioremap_resource(&pdev->dev, regs);
+-		if (IS_ERR(bgmac->plat.idm_base))
+-			return PTR_ERR(bgmac->plat.idm_base);
++	bgmac->plat.idm_base = devm_platform_ioremap_resource_byname(pdev, "idm_base");
++	if (IS_ERR(bgmac->plat.idm_base))
++		return PTR_ERR(bgmac->plat.idm_base);
++	else
+ 		bgmac->feature_flags &= ~BGMAC_FEAT_IDM_MASK;
+-	}
+ 
+-	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "nicpm_base");
+-	if (regs) {
+-		bgmac->plat.nicpm_base = devm_ioremap_resource(&pdev->dev,
+-							       regs);
+-		if (IS_ERR(bgmac->plat.nicpm_base))
+-			return PTR_ERR(bgmac->plat.nicpm_base);
+-	}
++	bgmac->plat.nicpm_base = devm_platform_ioremap_resource_byname(pdev, "nicpm_base");
++	if (IS_ERR(bgmac->plat.nicpm_base))
++		return PTR_ERR(bgmac->plat.nicpm_base);
+ 
+ 	bgmac->read = platform_bgmac_read;
+ 	bgmac->write = platform_bgmac_write;
 -- 
-Nicolas Ferre
+2.25.1
+
