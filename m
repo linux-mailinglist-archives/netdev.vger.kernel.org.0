@@ -2,146 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA74739D663
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 09:55:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3487C39D665
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 09:56:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbhFGH50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 03:57:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55566 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229436AbhFGH5Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Jun 2021 03:57:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E8E2E60238;
-        Mon,  7 Jun 2021 07:55:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1623052534;
-        bh=qlaXBBljfuNy9WKbCWLsVZBe2CUbxsFeGMx1HeZlRao=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=r0TrbnG7uOmzox7WYNlVPtv2R0PIW2dzfzFoCoabl0Z/vTQV1kgLsyHchCLxNLcQI
-         4baEnybEh4BAZGia/iNRJL6FTBI6PRj415vAikhogurOMkyqAWafpp0HcGQN3zFxYJ
-         C7gcq62LUzHRziw7Qd7xiJPtbmaNoLi8xVGHOjPQ=
-Date:   Mon, 7 Jun 2021 09:55:31 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Leon Romanovsky <leon@kernel.org>, SyzScope <syzscope@gmail.com>,
-        davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: use-after-free Read in hci_chan_del
-Message-ID: <YL3Q848EVIdkUrF4@kroah.com>
-References: <000000000000adea7f05abeb19cf@google.com>
- <c2004663-e54a-7fbc-ee19-b2749549e2dd@gmail.com>
- <YLn24sFxJqGDNBii@kroah.com>
- <0f489a64-f080-2f89-6e4a-d066aeaea519@gmail.com>
- <YLsrLz7otkQAkIN7@kroah.com>
- <20210606085004.12212-1-hdanton@sina.com>
- <20210607074828.3259-1-hdanton@sina.com>
+        id S230214AbhFGH5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 03:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229436AbhFGH5w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 03:57:52 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C37C061766
+        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 00:56:02 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lqA75-0008DB-Uy; Mon, 07 Jun 2021 09:55:59 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lqA74-0006om-IB; Mon, 07 Jun 2021 09:55:58 +0200
+Date:   Mon, 7 Jun 2021 09:55:58 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v1 5/7] net: usb: asix: add error handling for
+ asix_mdio_* functions
+Message-ID: <20210607075558.ynlzlgwl7mipre7r@pengutronix.de>
+References: <20210604134244.2467-1-o.rempel@pengutronix.de>
+ <20210604134244.2467-6-o.rempel@pengutronix.de>
+ <YLq3wuAMvljqEJbn@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210607074828.3259-1-hdanton@sina.com>
+In-Reply-To: <YLq3wuAMvljqEJbn@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 09:55:41 up 186 days, 22:02, 44 users,  load average: 0.12, 0.11,
+ 0.09
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 07, 2021 at 03:48:28PM +0800, Hillf Danton wrote:
-> On Sun, 6 Jun 2021 11:54:22 +0200 Greg KH wrote:
-> >On Sun, Jun 06, 2021 at 04:50:04PM +0800, Hillf Danton wrote:
-> >> 
-> >> To fix the uaf reported, add reference count to hci channel to track users.
-> >> Then only channels with zero users will be released.
-> >> 
-> >> It is now only for thoughts.
-> >> 
-> >> +++ x/include/net/bluetooth/hci_core.h
-> >> @@ -704,6 +704,7 @@ struct hci_chan {
-> >>  	struct sk_buff_head data_q;
-> >>  	unsigned int	sent;
-> >>  	__u8		state;
-> >> +	atomic_t ref;
-> >
-> >Please no, never use "raw" atomic variables.  Especially for something
-> >like this, use a kref.
+On Sat, Jun 05, 2021 at 01:31:14AM +0200, Andrew Lunn wrote:
+> > -void asix_mdio_write(struct net_device *netdev, int phy_id, int loc, int val)
+> > +static int __asix_mdio_write(struct net_device *netdev, int phy_id, int loc,
+> > +			     int val)
+> >  {
+> >  	struct usbnet *dev = netdev_priv(netdev);
+> >  	__le16 res = cpu_to_le16(val);
+> > @@ -517,13 +522,24 @@ void asix_mdio_write(struct net_device *netdev, int phy_id, int loc, int val)
+> >  	} while (!(smsr & AX_HOST_EN) && (i++ < 30) && (ret != -ENODEV));
+> >  	if (ret == -ENODEV) {
+> >  		mutex_unlock(&dev->phy_mutex);
+> > -		return;
+> > +		return ret;
 > 
-> Fair, thanks for taking a look at it.
+> Now that you have added an out: it might be better to use a goto?
+
+ack, done
+
+> Otherwise
 > 
-> Spin with care for the race the added ref fails to cut.
-
-I do not understand what you mean here.
-
-> To ease review the full syzreport is also attached.
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 > 
-> To fix uaf, add user track to hci channel and we will only release channel if
-> its user hits zero. And a dryrun mechanism is also added to take care of the
-> race user track fails to cut.
+>     Andrew
 > 
-> 	CPU0			CPU1
-> 	----			----
-> 	hci_chan_del		l2cap_conn_del
-> 				chan->user = 0;
 > 
-> 	if (chan->user != 0)
-> 		return;
-> 	synchronize_rcu();
-> 	kfree(chan);
-> 
-> 				hci_chan_del();
-> 
-> It is now only for thoughts.
-> 
-> +++ x/include/net/bluetooth/hci_core.h
-> @@ -704,6 +704,10 @@ struct hci_chan {
->  	struct sk_buff_head data_q;
->  	unsigned int	sent;
->  	__u8		state;
-> +	__u8		user;
 
-No.
-
-> +	__u8		release;
-
-No please no.
-
-> +
-> +#define HCHAN_RELEASE_DRYRUN 1
->  };
->  
->  struct hci_conn_params {
-> +++ x/net/bluetooth/l2cap_core.c
-> @@ -1903,6 +1903,12 @@ static void l2cap_conn_del(struct hci_co
->  
->  	mutex_unlock(&conn->chan_lock);
->  
-> +	/* see comment in hci_chan_del() */
-> +	conn->hchan->release = HCHAN_RELEASE_DRYRUN;
-> +	smp_wmb();
-> +	conn->hchan->user--;
-
-And the reason you are open-coding a kref is why???
-
-Please again no.
-
-> +	hci_chan_del(conn->hchan);
-> +	conn->hchan->release = 0;
->  	hci_chan_del(conn->hchan);
->  
->  	if (conn->info_state & L2CAP_INFO_FEAT_MASK_REQ_SENT)
-> @@ -7716,6 +7722,8 @@ static struct l2cap_conn *l2cap_conn_add
->  	kref_init(&conn->ref);
->  	hcon->l2cap_data = conn;
->  	conn->hcon = hci_conn_get(hcon);
-> +	/* dec in l2cap_conn_del() */
-> +	hchan->user++;
-
-{sigh}
-
-No, there is a reason we wrote kref many _decades_ ago.  Please use it,
-your original attempt with an atomic was just fine, just use the proper
-data structures the kernel provides you as this is obviously a reference
-counted object.
-
-thanks,
-
-greg k-h
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
