@@ -2,131 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B730D39D6D2
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 10:14:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19ACE39D6E1
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 10:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbhFGIPv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 7 Jun 2021 04:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbhFGIPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 04:15:50 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C22C061766
-        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 01:13:59 -0700 (PDT)
-Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1lqAOO-0002eo-8s; Mon, 07 Jun 2021 10:13:52 +0200
-Received: from pza by lupine with local (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1lqAOM-0000nj-Qq; Mon, 07 Jun 2021 10:13:50 +0200
-Message-ID: <b2d2a1b09704d09105be75aec04e27b9cc8db116.camel@pengutronix.de>
-Subject: Re: [PATCH net-next v3 02/10] net: sparx5: add the basic sparx5
- driver
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Steen Hegelund <steen.hegelund@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Simon Horman <simon.horman@netronome.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Date:   Mon, 07 Jun 2021 10:13:50 +0200
-In-Reply-To: <b215ecea90794688906fb0a6d34636e1e8c1fc3e.camel@microchip.com>
-References: <20210604085600.3014532-1-steen.hegelund@microchip.com>
-         <20210604085600.3014532-3-steen.hegelund@microchip.com>
-         <6a1500fb623e6513e39a468ac53d1caf6a2cf7c5.camel@pengutronix.de>
-         <b215ecea90794688906fb0a6d34636e1e8c1fc3e.camel@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.30.5-1.1 
+        id S230316AbhFGIR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 04:17:57 -0400
+Received: from mail-pj1-f54.google.com ([209.85.216.54]:53199 "EHLO
+        mail-pj1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229545AbhFGIR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 04:17:56 -0400
+Received: by mail-pj1-f54.google.com with SMTP id h16so9344558pjv.2;
+        Mon, 07 Jun 2021 01:15:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=c5tZw1PE5ja1kIfp0A9CThFtz7RTJJ96vn5JKsdn4zo=;
+        b=XoQyLvz24OoCRIOShkQNcu9DiR7bBkokC0zH2y0VsTYjxJfKw7R0siA80dncjT3YUK
+         wAQolPJ8LMP2QAHMUANfaqPmSCX0C5CGSEEQPtRRcQTl1EKUo8gRIPdRN/yizwXOvk7a
+         MyxLl0xOVUFh4CzE2lkyyns1y8zU/3BfW8wnjMepLuBa14dDIuRlcgHvnJy9KhXaOr8X
+         f1b1b3SWDcQzR8oj41QVFoJZ6XqUPNURZphda8kDAwgTk/UUkxjzRis3jA/H1Gt2YM49
+         MOGgQu1k2QTfbhGmrfPyoKrM3mYFHKWoquCiDY9UKYa1vj3gMvLKx5aFnrcD/cKhHcp4
+         J8+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=c5tZw1PE5ja1kIfp0A9CThFtz7RTJJ96vn5JKsdn4zo=;
+        b=U5B5//UCw1NXbo2scwqBFg38TxwRH3IiycN05CUTa6Am23xPa9mLhy3mtLnJGvNv/Q
+         s42PMnrkoWbfp7t9Ryd7RFn4aVpXpDPyvHf520aKDpkiNSL/x2OyS6CKzpxTf3Anc4zj
+         8joYLjNtX2CqCr9PmkA2D5u9Zepe5ChMRSJO/BqtlijT6+K39sUD+RTCTSET7kc44taA
+         oxwbYtndMH4dTHzRn5QfFF76fWLvJDIO25FHvtV8IrSoZASfOt94QPZjA89R0g8gWPGK
+         csXopPcXTsn7ihQwWEiPZOgMs4PxqnvEBcrgfUvrdVKUcN79twhv4Gy3vwXptmFr3X9F
+         UVzg==
+X-Gm-Message-State: AOAM531xCCSZT9paFIA/Oe0RszpZIcYjNxmBHGU3BR9sy8HQWUC3s1yC
+        0wlKPicluEu0K5glcRAQaA0=
+X-Google-Smtp-Source: ABdhPJz5DsUF3lCnv8yQA4dIwCqwn7lOEnqmDAyx9VQ48+J+hBL0/9GZGiwWD3mDm4r9zCHOflaTmA==
+X-Received: by 2002:a17:902:9a42:b029:f5:1cf7:2e52 with SMTP id x2-20020a1709029a42b02900f51cf72e52mr16701852plv.25.1623053690127;
+        Mon, 07 Jun 2021 01:14:50 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+        by smtp.gmail.com with ESMTPSA id r11sm8236573pgl.34.2021.06.07.01.14.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Jun 2021 01:14:49 -0700 (PDT)
+Subject: Re: [RFC PATCH V3 01/11] x86/HV: Initialize GHCB page in Isolation VM
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        arnd@arndb.de, dave.hansen@linux.intel.com, luto@kernel.org,
+        peterz@infradead.org, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        hannes@cmpxchg.org, cai@lca.pw, krish.sadhukhan@oracle.com,
+        saravanand@fb.com, Tianyu.Lan@microsoft.com,
+        konrad.wilk@oracle.com, m.szyprowski@samsung.com,
+        robin.murphy@arm.com, boris.ostrovsky@oracle.com, jgross@suse.com,
+        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
+        xen-devel@lists.xenproject.org, davem@davemloft.net,
+        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, thomas.lendacky@amd.com,
+        brijesh.singh@amd.com, sunilmut@microsoft.com
+References: <20210530150628.2063957-1-ltykernel@gmail.com>
+ <20210530150628.2063957-2-ltykernel@gmail.com>
+ <20210607064142.GA24478@lst.de>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <37260f47-bd32-08f7-b006-f75f4d3c408a@gmail.com>
+Date:   Mon, 7 Jun 2021 16:14:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20210607064142.GA24478@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-06-07 at 09:34 +0200, Steen Hegelund wrote:
-> Hi Philipp,
+Hi Christoph:
+	Thanks for your review.
+
+On 6/7/2021 2:41 PM, Christoph Hellwig wrote:
+> On Sun, May 30, 2021 at 11:06:18AM -0400, Tianyu Lan wrote:
+>> +	if (ms_hyperv.ghcb_base) {
+>> +		rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
+>> +
+>> +		ghcb_va = ioremap_cache(ghcb_gpa, HV_HYP_PAGE_SIZE);
+>> +		if (!ghcb_va)
+>> +			return -ENOMEM;
 > 
-> Thanks for your comments.
+> Can you explain this a bit more?  We've very much deprecated
+> ioremap_cache in favor of memremap.  Why yo you need a __iomem address
+> here?  Why do we need the remap here at all? >
+
+GHCB physical address is an address in extra address space which is 
+above shared gpa boundary reported by Hyper-V CPUID. The addresses below
+shared gpa boundary treated as encrypted and the one above is treated as 
+decrypted. System memory is remapped in the extra address space and it 
+starts from the boundary. The shared memory with host needs to use 
+address in the extra address(pa + shared_gpa_boundary) in Linux guest.
+
+Here is to map ghcb page for the communication operations with 
+Hypervisor(e.g, hypercall and read/write MSR) via GHCB page.
+
+memremap() will go through iomem_resource list and the address in extra 
+address space will not be in the list. So I used ioremap_cache(). I will
+memremap() instead of ioremap() here.
+
+> Does the data structure at this address not have any types that we
+> could use a struct for?
+
+The struct will be added in the following patch. I will refresh the 
+following patch and use the struct hv_ghcb for the mapped point.
 > 
-> On Fri, 2021-06-04 at 11:28 +0200, Philipp Zabel wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > Hi Steen,
-> > 
-> > On Fri, 2021-06-04 at 10:55 +0200, Steen Hegelund wrote:
-> > > This adds the Sparx5 basic SwitchDev driver framework with IO range
-> > > mapping, switch device detection and core clock configuration.
-> > > 
-> > > Support for ports, phylink, netdev, mactable etc. are in the following
-> > > patches.
-> > > 
-> > > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> > > Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
-> > > Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-> > > ---
-> > >  drivers/net/ethernet/microchip/Kconfig        |    2 +
-> > >  drivers/net/ethernet/microchip/Makefile       |    2 +
-> > >  drivers/net/ethernet/microchip/sparx5/Kconfig |    9 +
-> > >  .../net/ethernet/microchip/sparx5/Makefile    |    8 +
-> > >  .../ethernet/microchip/sparx5/sparx5_main.c   |  746 +++
-> > >  .../ethernet/microchip/sparx5/sparx5_main.h   |  273 +
-> > >  .../microchip/sparx5/sparx5_main_regs.h       | 4642 +++++++++++++++++
-> > >  7 files changed, 5682 insertions(+)
-> > >  create mode 100644 drivers/net/ethernet/microchip/sparx5/Kconfig
-> > >  create mode 100644 drivers/net/ethernet/microchip/sparx5/Makefile
-> > >  create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-> > >  create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-> > >  create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
-> > > 
-> > [...]
-> > > diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-> > > b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-> > > new file mode 100644
-> > > index 000000000000..73beb85bc52d
-> > > --- /dev/null
-> > > +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-> > > @@ -0,0 +1,746 @@
-> > [...]
-> > > +static int mchp_sparx5_probe(struct platform_device *pdev)
-> > > +{
-> > [...]
-> > > +
-> > > +     sparx5->reset = devm_reset_control_get_shared(&pdev->dev, "switch");
-> > > +     if (IS_ERR(sparx5->reset)) {
-> > 
-> > Could you use devm_reset_control_get_optional_shared() instead of
-> > ignoring this error? That would just return NULL if there's no "switch"
-> > reset specified in the device tree.
+>> +
+>> +		rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
+>> +		ghcb_va = ioremap_cache(ghcb_gpa, HV_HYP_PAGE_SIZE);
+>> +		if (!ghcb_va) {
 > 
-> Yes.  That sounds like a good idea.  I assume that the devm_reset_control_get_optional_shared()
-> would also return null if another driver has already performed the reset?
+> This seems to duplicate the above code.
 
-It returns the same (shared) reset control. But the following
-reset_control_reset() [1] is a no-op if the control has already
-triggered once.
+The above is to map ghcb for BSP and here does the same thing for APs
+Will add a new function to avoid the duplication.
 
-If multiple drivers need to coordinate to trigger the reset more than
-once (for example once after suspend/resume), both have to use
-reset_control_rearm() [2].
+> 
+>> +bool hv_isolation_type_snp(void)
+>> +{
+>> +	return static_branch_unlikely(&isolation_type_snp);
+>> +}
+>> +EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
+> 
+> This probably wants a kerneldoc explaining when it should be used. >
 
-[1] https://www.kernel.org/doc/html/latest/driver-api/reset.html#c.reset_control_reset
-[2] https://www.kernel.org/doc/html/latest/driver-api/reset.html#c.reset_control_rearm
+OK. I will add.
 
-regards
-Philipp
