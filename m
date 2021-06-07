@@ -2,104 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAD6F39D8EE
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 11:35:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BC8A39D905
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 11:46:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230265AbhFGJhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 05:37:39 -0400
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:50717 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229436AbhFGJhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 05:37:38 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=chengshuyi@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0UbaGK7H_1623058536;
-Received: from localhost(mailfrom:chengshuyi@linux.alibaba.com fp:SMTPD_---0UbaGK7H_1623058536)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 07 Jun 2021 17:35:44 +0800
-From:   Shuyi Cheng <chengshuyi@linux.alibaba.com>
-To:     chengshuyi@linux.alibaba.com, edumazet@google.com,
-        davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net: tcp:  Updating MSS, when the sending window is smaller than MSS.
-Date:   Mon,  7 Jun 2021 17:35:34 +0800
-Message-Id: <1623058534-78782-1-git-send-email-chengshuyi@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S230334AbhFGJry convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 7 Jun 2021 05:47:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46558 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230127AbhFGJrx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 05:47:53 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082F3C061766
+        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 02:46:03 -0700 (PDT)
+Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1lqBpJ-0000ke-06; Mon, 07 Jun 2021 11:45:45 +0200
+Received: from pza by lupine with local (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1lqBpE-00032G-DJ; Mon, 07 Jun 2021 11:45:40 +0200
+Message-ID: <b89d828a08528aaa07e3527d254785f1e40b9bee.camel@pengutronix.de>
+Subject: Re: [PATCH v2] net: stmmac: explicitly deassert GMAC_AHB_RESET
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Matthew Hagan <mnhagan88@gmail.com>
+Cc:     bjorn.andersson@linaro.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Mon, 07 Jun 2021 11:45:40 +0200
+In-Reply-To: <20210606103019.2807397-1-mnhagan88@gmail.com>
+References: <3436f8f0-77dc-d4ff-4489-e9294c434a08@gmail.com>
+         <20210606103019.2807397-1-mnhagan88@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.30.5-1.1 
+MIME-Version: 1.0
+X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the lo network card is used for communication, the tcp server
-reduces the size of the receiving buffer, causing the tcp client
-to have a delay of 200ms. Examples are as follows:
+On Sun, 2021-06-06 at 11:30 +0100, Matthew Hagan wrote:
+> We are currently assuming that GMAC_AHB_RESET will already be deasserted
+> by the bootloader. However if this has not been done, probing of the GMAC
+> will fail. To remedy this we must ensure GMAC_AHB_RESET has been deasserted
+> prior to probing.
+> 
+> v2 changes:
+>  - remove NULL condition check for stmmac_ahb_rst in stmmac_main.c
+>  - unwrap dev_err() message in stmmac_main.c
+>  - add PTR_ERR() around plat->stmmac_ahb_rst in stmmac_platform.c
+> 
+> Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c     | 4 ++++
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 7 +++++++
+>  include/linux/stmmac.h                                | 1 +
+>  3 files changed, 12 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 6d41dd6f9f7a..0d4cb423cbbd 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -6840,6 +6840,10 @@ int stmmac_dvr_probe(struct device *device,
+>  			reset_control_reset(priv->plat->stmmac_rst);
+>  	}
+>  
+> +	ret = reset_control_deassert(priv->plat->stmmac_ahb_rst);
+> +	if (ret == -ENOTSUPP)
+> +		dev_err(priv->device, "unable to bring out of ahb reset\n");
+> +
 
-Suppose that the MTU of the lo network card is 65536, and the tcp server
-sets the receive buffer size to 42KB. According to the
-tcp_bound_to_half_wnd function, the MSS of the server and client is
-21KB. Then, the tcp server sets the buffer size of the connection to
-16KB. At this time, the MSS of the server is 8KB, and the MSS of the
-client is still 21KB. But it will cause the client to fail to send the
-message, that is, tcp_write_xmit fails. Mainly because tcp_snd_wnd_test
-failed, and then entered the zero window detection phase, resulting in a
-200ms delay.
+I would make this
 
-Therefore, we mainly modify two places. One is the tcp_current_mss
-function. When the sending window is smaller than the current mss, mss
-needs to be updated. The other is the tcp_bound_to_half_wnd function.
-When the sending window is smaller than the current mss, the mss value
-should be calculated according to the current sending window, not
-max_window.
+	if (ret)
+		dev_err(priv->device, "unable to bring out of ahb reset: %pe\n", ERR_PTR(ret));
 
-Signed-off-by: Shuyi Cheng <chengshuyi@linux.alibaba.com>
----
- include/net/tcp.h     | 11 ++++++++---
- net/ipv4/tcp_output.c |  3 ++-
- 2 files changed, 10 insertions(+), 4 deletions(-)
+Also consider asserting the reset again in the remove path. Or is there
+a reason not to?
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index e668f1b..fcdef16 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -641,6 +641,11 @@ static inline void tcp_clear_xmit_timers(struct sock *sk)
- static inline int tcp_bound_to_half_wnd(struct tcp_sock *tp, int pktsize)
- {
- 	int cutoff;
-+	int window;
-+
-+	window = tp->max_window;
-+	if (tp->snd_wnd && tp->snd_wnd < pktsize)
-+		window = tp->snd_wnd;
- 
- 	/* When peer uses tiny windows, there is no use in packetizing
- 	 * to sub-MSS pieces for the sake of SWS or making sure there
-@@ -649,10 +654,10 @@ static inline int tcp_bound_to_half_wnd(struct tcp_sock *tp, int pktsize)
- 	 * On the other hand, for extremely large MSS devices, handling
- 	 * smaller than MSS windows in this way does make sense.
- 	 */
--	if (tp->max_window > TCP_MSS_DEFAULT)
--		cutoff = (tp->max_window >> 1);
-+	if (window > TCP_MSS_DEFAULT)
-+		cutoff = (window >> 1);
- 	else
--		cutoff = tp->max_window;
-+		cutoff = window;
- 
- 	if (cutoff && pktsize > cutoff)
- 		return max_t(int, cutoff, 68U - tp->tcp_header_len);
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index bde781f..88dcdf2 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1833,7 +1833,8 @@ unsigned int tcp_current_mss(struct sock *sk)
- 
- 	if (dst) {
- 		u32 mtu = dst_mtu(dst);
--		if (mtu != inet_csk(sk)->icsk_pmtu_cookie)
-+		if (mtu != inet_csk(sk)->icsk_pmtu_cookie ||
-+		    (tp->snd_wnd && tp->snd_wnd < mss_now))
- 			mss_now = tcp_sync_mss(sk, mtu);
- 	}
- 
--- 
-1.8.3.1
+With that addressed,
 
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+
+regards
+Philipp
