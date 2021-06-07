@@ -2,196 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1078439E729
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 21:04:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFC5A39E775
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 21:24:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231639AbhFGTF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 15:05:57 -0400
-Received: from mail-wr1-f42.google.com ([209.85.221.42]:44557 "EHLO
-        mail-wr1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231623AbhFGTFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 15:05:52 -0400
-Received: by mail-wr1-f42.google.com with SMTP id f2so18770578wri.11;
-        Mon, 07 Jun 2021 12:03:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KVXA2B0j0E76Hw4rKgteG9BP+cY/0VQ2EiVfHUNMg/4=;
-        b=L/I6KHhV8nWwyacvEtPNzdmBXfUH5ZEsJ4J3th5BcP1l8pDnNmk13+0zJztQKhpGUM
-         gUF6ef9BXpbjnTROVIjQpJyxc56/YboXAH7+OKJLwR8UAR0pnyUqAjL1iSFVsYm4z/DZ
-         opnL8u8J796ZTLQfy37dMVKmMG77Q78HbH/hfh6+BAmHZWJgw+w+cVV+cnnQguH4X3X+
-         NCi1LBy738cvWEHIKGkv0Ut/DCzdasLNbUTv00VqX+tDj5lS2pJIMqvXw6sPNMKPznGF
-         fWKBZhAut8pI3MOmJ8R7bZSWVU/5p9GuX8Gi/Y6BRICnR7o7vzx/4I+uGkfG9x9p8W3n
-         pw6Q==
-X-Gm-Message-State: AOAM532uc+6IyeF6e723v6jsE6a3ox0Z+Lny+B3+FJ1SVdAQCmwpke/q
-        xAMm3+GVKrqYcdrkjNyukHn7uNQ7Z1U22w==
-X-Google-Smtp-Source: ABdhPJzNZJiNdyZFFUxhc150qts/zF4QA/HLJcifyxEuiMByRZ69cr9rwdxpgcIZFH/A7yaeZ1ZcTA==
-X-Received: by 2002:a5d:698e:: with SMTP id g14mr18619051wru.212.1623092624709;
-        Mon, 07 Jun 2021 12:03:44 -0700 (PDT)
-Received: from msft-t490s.teknoraver.net (net-37-119-128-179.cust.vodafonedsl.it. [37.119.128.179])
-        by smtp.gmail.com with ESMTPSA id g17sm12185968wrp.61.2021.06.07.12.03.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Jun 2021 12:03:44 -0700 (PDT)
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     netdev@vger.kernel.org, linux-mm@kvack.org
-Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        Yonghong Song <yhs@fb.com>,
-        Michel Lespinasse <walken@google.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Hildenbrand <david@redhat.com>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH net-next v8 5/5] mvneta: recycle buffers
-Date:   Mon,  7 Jun 2021 21:02:40 +0200
-Message-Id: <20210607190240.36900-6-mcroce@linux.microsoft.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210607190240.36900-1-mcroce@linux.microsoft.com>
-References: <20210607190240.36900-1-mcroce@linux.microsoft.com>
+        id S230353AbhFGT0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 15:26:20 -0400
+Received: from mail-dm6nam11on2042.outbound.protection.outlook.com ([40.107.223.42]:17953
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230261AbhFGT0T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 15:26:19 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DhWMbzWUsA/dj4PIn4z6n/2ww2BrCTgehL5YhJ/EoV5u+4oYzZNqXOPoimtwYapMw4xD/LaDJhWqhjQ0+/Xk6goXtyuBDleWPtpmmevvFxpK08SnOEuMHQXv9/AajKbG/qc0+y2U2HXHvu/Lj4z8gG4etcd/vUewTshoJp2oKfDGFg+K+ENWqZ6qb623I4EN5QHRNaLiMqph8pKwkmlQk8v5K+Esap0eULwTC4rZLOmzBnQjT5MRa7qlcUgPAzP22N6UkD8u//qm2LFhJ+pXNXEhoB4gc2lG8DgTZdRUNH1gvTAxoiHMXW/U1hqwFEu2hPJ9UQYb0muz/WyEDJBKlg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=de7v57ZkxbGxBHsa9doFJSB8dALejaWDCAc1Lq2V1U8=;
+ b=FbhYqHewLYFwpVibYLUIBE/nZ6MsQadcV2fKLLweI8Bj3jkjvir0WcnduQNrrgqXCBYiKFDt7WxTYTAQnx2mlFdlMOo119F8vPUY5tJnRfxvjjAw9LnjkaCRukcRvUtdaGzMOIC2fxX8DnO7JEfo2ruy3rC70x+gYdwiouiGM78Q5Go4GOHyb6vtY+fgbFk5V13tdpr6maqu1eN+zuuTdLu5vIMMVfzTuIcMaHU8XXDtDYZe+HSAP/fnIk7E4rmgAa0ejPTK9H2KhxnKA1gocQhyfKURJEB6v0k/agtnm9ue8Y5FwBHTjTbwHjDNKdWJqxXaUDULe2g4v1DQZ0IGhA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=de7v57ZkxbGxBHsa9doFJSB8dALejaWDCAc1Lq2V1U8=;
+ b=hyK53y4CFmYQ/vHVLHjmX51M63fH9ygPbJSJghD2ufvb82uo0p3o9tDZKHRRsmjf1HXNp6xZfm8V71QP2AMc4eSrKVqblAzfqwkC2Z1ge4YmhHMrjTWzYgYA7c0ffbXsrPzLjrIIeY7yLMmQa9AfOUybKIYgLjxc67sj4DZWcEK9Owogio5ONzCdFfUFB2RVfrPJVE2jEBhj1gCBLORQX+QYrtDkMiX5YTrrr1pJEbj5JIJzuGSnpabxv18mK2Et9jtgrmIiAsKtE8GGsX+e07NJebSqYK7rZL9Btm1dmQG/U6zmAmmcPrbkA53743CG261IscRhR6feie/E39veEQ==
+Received: from DM3PR11CA0014.namprd11.prod.outlook.com (2603:10b6:0:54::24) by
+ DM5PR12MB2343.namprd12.prod.outlook.com (2603:10b6:4:b3::38) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4195.24; Mon, 7 Jun 2021 19:24:27 +0000
+Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:0:54:cafe::41) by DM3PR11CA0014.outlook.office365.com
+ (2603:10b6:0:54::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.22 via Frontend
+ Transport; Mon, 7 Jun 2021 19:24:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT035.mail.protection.outlook.com (10.13.172.100) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4195.22 via Frontend Transport; Mon, 7 Jun 2021 19:24:26 +0000
+Received: from sw-mtx-036.mtx.labs.mlnx (172.20.187.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Jun
+ 2021 19:24:25 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     <dsahern@gmail.com>, <stephen@networkplumber.org>,
+        <netdev@vger.kernel.org>
+CC:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH iproute2-next v2] devlink: Add optional controller user input
+Date:   Mon, 7 Jun 2021 22:24:06 +0300
+Message-ID: <20210607192406.14884-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.187.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b5703e03-3ce8-47ab-47ff-08d929e9dd7b
+X-MS-TrafficTypeDiagnostic: DM5PR12MB2343:
+X-Microsoft-Antispam-PRVS: <DM5PR12MB2343C4A67455F46294FEA087DC389@DM5PR12MB2343.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1443;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qwFobqyzybxK5eX1XZmY1xENWrqDFnI56PE5pd5zbiELtVOdJN5adIATzRHgGv5CPjr21tKjjYuDRVVwOIhlhAqvcHV0ExR//rMVdYVUt17gDK2x32iSVG/Frg/gepC9osZa/NyFa8ukjQ3uQ6wQsvvwMdHFhI7FrP69VhrAbXeWG6NchemqFZV0RNzVbDzg/JBmZ/nfQXeqKpDO9TC6BuqRSF4J0iv015VXAoQbYFLM/tA+/xNU4XQUqDNzLr4JVs6YEtSWV26SBkvqxd7D/9dfXggUSVQjMw/KXqU4RakPzdWXiRAxyPW7cFJ7aZIWweLN+bbmpzg/U3X01HWNxAChqf4/xdKStjivKGmSGqpg3jDU9wHjJBcRDpLGcDkFObB6YcCrkzfGLOr9uFiSbSh4slAjs7Ay0qVxKMVTOSBSAdJvtr7BHSysj4pah0ENoRGAW6mABBzKAZhyiyoqmsTJEBMINkZY7E97IV0q4HTeKdDQmYiilQvPtGBlyVepABcIWkAAj52Ox2Y8/jkClIY784m3ZF5lau1vH+CN7pERQcdCP25BalixeCHpk8Q/wtZGzSiVPBc1k99KiD5+o56iJLWqAs3/Iceo149NM8BeAlhaFBcrOK122uuHKYGELKlYlYMMfq1k0K390sZruQ==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(39860400002)(376002)(346002)(396003)(36840700001)(46966006)(356005)(16526019)(186003)(2906002)(7636003)(47076005)(1076003)(478600001)(426003)(4326008)(5660300002)(36906005)(54906003)(110136005)(316002)(36756003)(8936002)(107886003)(83380400001)(36860700001)(8676002)(6666004)(26005)(82310400003)(70206006)(86362001)(82740400003)(336012)(2616005)(70586007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2021 19:24:26.8609
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5703e03-3ce8-47ab-47ff-08d929e9dd7b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2343
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@microsoft.com>
+A user optionally provides the external controller number when user
+wants to create devlink port for the external controller.
 
-Use the new recycling API for page_pool.
-In a drop rate test, the packet rate increased by 10%,
-from 296 Kpps to 326 Kpps.
+An example on eswitch system:
+$ devlink dev eswitch set pci/0033:01:00.0 mode switchdev
 
-perf top on a stock system shows:
+$ devlink port show
+pci/0033:01:00.0/196607: type eth netdev enP51p1s0f0np0 flavour physical port 0 splittable false
+pci/0033:01:00.0/131072: type eth netdev eth0 flavour pcipf controller 1 pfnum 0 external true splittable false
+  function:
+    hw_addr 00:00:00:00:00:00
 
-Overhead  Shared Object     Symbol
-  23.66%  [kernel]          [k] __pi___inval_dcache_area
-  22.85%  [mvneta]          [k] mvneta_rx_swbm
-   7.54%  [kernel]          [k] kmem_cache_alloc
-   6.49%  [kernel]          [k] eth_type_trans
-   3.94%  [kernel]          [k] dev_gro_receive
-   3.91%  [kernel]          [k] __netif_receive_skb_core
-   3.91%  [kernel]          [k] kmem_cache_free
-   3.76%  [kernel]          [k] page_pool_release_page
-   3.56%  [kernel]          [k] free_unref_page
-   2.40%  [kernel]          [k] build_skb
-   1.49%  [kernel]          [k] skb_release_data
-   1.45%  [kernel]          [k] __alloc_pages_bulk
-   1.30%  [kernel]          [k] page_frag_free
+$ devlink port add pci/0033:01:00.0 flavour pcisf pfnum 0 sfnum 77 controller 1
+pci/0033:01:00.0/163840: type eth netdev eth1 flavour pcisf controller 1 pfnum 0 sfnum 77 external true splittable false
+  function:
+    hw_addr 00:00:00:00:00:00 state inactive opstate detached
 
-And this is the same output with recycling enabled:
-
-Overhead  Shared Object     Symbol
-  26.41%  [kernel]          [k] __pi___inval_dcache_area
-  25.00%  [mvneta]          [k] mvneta_rx_swbm
-   8.14%  [kernel]          [k] kmem_cache_alloc
-   6.84%  [kernel]          [k] eth_type_trans
-   4.44%  [kernel]          [k] __netif_receive_skb_core
-   4.38%  [kernel]          [k] kmem_cache_free
-   4.16%  [kernel]          [k] dev_gro_receive
-   3.21%  [kernel]          [k] page_pool_put_page
-   2.41%  [kernel]          [k] build_skb
-   1.82%  [kernel]          [k] skb_release_data
-   1.61%  [kernel]          [k] napi_gro_receive
-   1.25%  [kernel]          [k] page_pool_refill_alloc_cache
-   1.16%  [kernel]          [k] __netif_receive_skb_list_core
-
-We can see that page_pool_release_page(), free_unref_page() and
-__alloc_pages_bulk() are no longer on top of the list when receiving
-traffic.
-
-The test was done with mausezahn on the TX side with 64 byte raw
-ethernet frames.
-
-Signed-off-by: Matteo Croce <mcroce@microsoft.com>
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/ethernet/marvell/mvneta.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+changelog:
+v1->v2: (addresssed comments from David)
+ - split the command help output and man page to multiple lines to make it readable
+---
+ devlink/devlink.c       | 21 ++++++++++++++++++---
+ man/man8/devlink-port.8 | 21 +++++++++++++++++++++
+ 2 files changed, 39 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 7d5cd9bc6c99..c15ce06427d0 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2320,7 +2320,7 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 0b5548fb..30f15e07 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -286,6 +286,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
+ #define DL_OPT_PORT_PFNUMBER BIT(43)
+ #define DL_OPT_PORT_SFNUMBER BIT(44)
+ #define DL_OPT_PORT_FUNCTION_STATE BIT(45)
++#define DL_OPT_PORT_CONTROLLER BIT(46)
+ 
+ struct dl_opts {
+ 	uint64_t present; /* flags of present items */
+@@ -336,6 +337,7 @@ struct dl_opts {
+ 	uint32_t overwrite_mask;
+ 	enum devlink_reload_action reload_action;
+ 	enum devlink_reload_limit reload_limit;
++	uint32_t port_controller;
+ 	uint32_t port_sfnumber;
+ 	uint16_t port_flavour;
+ 	uint16_t port_pfnumber;
+@@ -1886,6 +1888,12 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
+ 			if (err)
+ 				return err;
+ 			o_found |= DL_OPT_PORT_SFNUMBER;
++		} else if (dl_argv_match(dl, "controller") && (o_all & DL_OPT_PORT_CONTROLLER)) {
++			dl_arg_inc(dl);
++			err = dl_argv_uint32_t(dl, &opts->port_controller);
++			if (err)
++				return err;
++			o_found |= DL_OPT_PORT_CONTROLLER;
+ 		} else {
+ 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
+ 			return -EINVAL;
+@@ -2079,6 +2087,9 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
+ 		mnl_attr_put_u16(nlh, DEVLINK_ATTR_PORT_PCI_PF_NUMBER, opts->port_pfnumber);
+ 	if (opts->present & DL_OPT_PORT_SFNUMBER)
+ 		mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_PCI_SF_NUMBER, opts->port_sfnumber);
++	if (opts->present & DL_OPT_PORT_CONTROLLER)
++		mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_CONTROLLER_NUMBER,
++				 opts->port_controller);
  }
  
- static struct sk_buff *
--mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
-+mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
- 		      struct xdp_buff *xdp, u32 desc_status)
+ static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
+@@ -3795,7 +3806,9 @@ static void cmd_port_help(void)
+ 	pr_err("       devlink port param set DEV/PORT_INDEX name PARAMETER value VALUE cmode { permanent | driverinit | runtime }\n");
+ 	pr_err("       devlink port param show [DEV/PORT_INDEX name PARAMETER]\n");
+ 	pr_err("       devlink port health show [ DEV/PORT_INDEX reporter REPORTER_NAME ]\n");
+-	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ]\n");
++	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM\n"
++	       "                      [ sfnum SFNUM ]\n"
++	       "                      [ controller CNUM ]\n");
+ 	pr_err("       devlink port del DEV/PORT_INDEX\n");
+ }
+ 
+@@ -4324,7 +4337,9 @@ static int __cmd_health_show(struct dl *dl, bool show_device, bool show_port);
+ 
+ static void cmd_port_add_help(void)
  {
- 	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-@@ -2331,7 +2331,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 	if (!skb)
- 		return ERR_PTR(-ENOMEM);
+-	pr_err("       devlink port add { DEV | DEV/PORT_INDEX } flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ]\n");
++	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM\n"
++	       "                      [ sfnum SFNUM ]\n"
++	       "                      [ controller CNUM ]\n");
+ }
  
--	page_pool_release_page(rxq->page_pool, virt_to_page(xdp->data));
-+	skb_mark_for_recycle(skb, virt_to_page(xdp->data), pool);
+ static int cmd_port_add(struct dl *dl)
+@@ -4342,7 +4357,7 @@ static int cmd_port_add(struct dl *dl)
  
- 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	skb_put(skb, xdp->data_end - xdp->data);
-@@ -2343,7 +2343,10 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
- 				skb_frag_page(frag), skb_frag_off(frag),
- 				skb_frag_size(frag), PAGE_SIZE);
--		page_pool_release_page(rxq->page_pool, skb_frag_page(frag));
-+		/* We don't need to reset pp_recycle here. It's already set, so
-+		 * just mark fragments for recycling.
-+		 */
-+		page_pool_store_mem_info(skb_frag_page(frag), pool);
- 	}
+ 	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_HANDLEP |
+ 				DL_OPT_PORT_FLAVOUR | DL_OPT_PORT_PFNUMBER,
+-				DL_OPT_PORT_SFNUMBER);
++				DL_OPT_PORT_SFNUMBER | DL_OPT_PORT_CONTROLLER);
+ 	if (err)
+ 		return err;
  
- 	return skb;
-@@ -2425,7 +2428,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 		    mvneta_run_xdp(pp, rxq, xdp_prog, &xdp_buf, frame_sz, &ps))
- 			goto next;
+diff --git a/man/man8/devlink-port.8 b/man/man8/devlink-port.8
+index 563c5833..78cfd076 100644
+--- a/man/man8/devlink-port.8
++++ b/man/man8/devlink-port.8
+@@ -52,9 +52,13 @@ devlink-port \- devlink port configuration
+ .IR FLAVOUR " ]"
+ .RB "[ " pcipf
+ .IR PFNUMBER " ]"
++.br
+ .RB "{ " pcisf
+ .IR SFNUMBER " }"
+ .br
++.RB "[ " controller
++.IR CNUM " ]"
++.br
  
--		skb = mvneta_swbm_build_skb(pp, rxq, &xdp_buf, desc_status);
-+		skb = mvneta_swbm_build_skb(pp, rxq->page_pool, &xdp_buf, desc_status);
- 		if (IS_ERR(skb)) {
- 			struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
+ .ti -8
+ .B devlink port del
+@@ -174,6 +178,12 @@ Specifies sfnumber to assign to the device of the SF.
+ This field is optional for those devices which supports auto assignment of the
+ SF number.
  
++.TP
++.BR controller " { " controller " } "
++Specifies controller number for which the SF port is created.
++This field is optional. It is used only when SF port is created for the
++external controller.
++
+ .ti -8
+ .SS devlink port function set - Set the port function attribute(s).
+ 
+@@ -327,6 +337,17 @@ devlink dev param set pci/0000:01:00.0/1 name internal_error_reset value true cm
+ .RS 4
+ Sets the parameter internal_error_reset of specified devlink port (#1) to true.
+ .RE
++.PP
++devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88 controller 1
++.RS 4
++Add a devlink port of flavour PCI SF on controller 1 which has PCI PF of number
++0 with SF number 88. To make use of the function an example sequence is to add
++a port, configure the function attribute and activate the function. Once
++the function usage is completed, deactivate the function and finally delete
++the port. When there is desire to reuse the port without deletion, it can be
++reconfigured and activated again when function is in inactive state and
++function's operational state is detached.
++.RE
+ 
+ .SH SEE ALSO
+ .BR devlink (8),
 -- 
-2.31.1
+2.26.2
 
