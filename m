@@ -2,103 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BC8A39D905
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 11:46:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D42539D989
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 12:22:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbhFGJry convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 7 Jun 2021 05:47:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230127AbhFGJrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 05:47:53 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082F3C061766
-        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 02:46:03 -0700 (PDT)
-Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1lqBpJ-0000ke-06; Mon, 07 Jun 2021 11:45:45 +0200
-Received: from pza by lupine with local (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1lqBpE-00032G-DJ; Mon, 07 Jun 2021 11:45:40 +0200
-Message-ID: <b89d828a08528aaa07e3527d254785f1e40b9bee.camel@pengutronix.de>
-Subject: Re: [PATCH v2] net: stmmac: explicitly deassert GMAC_AHB_RESET
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Matthew Hagan <mnhagan88@gmail.com>
-Cc:     bjorn.andersson@linaro.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Mon, 07 Jun 2021 11:45:40 +0200
-In-Reply-To: <20210606103019.2807397-1-mnhagan88@gmail.com>
-References: <3436f8f0-77dc-d4ff-4489-e9294c434a08@gmail.com>
-         <20210606103019.2807397-1-mnhagan88@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.30.5-1.1 
+        id S230255AbhFGKYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 06:24:12 -0400
+Received: from m12-15.163.com ([220.181.12.15]:32894 "EHLO m12-15.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230097AbhFGKYL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 06:24:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=/dZ2f
+        mv2oUKXYfG7Nec1EKOUsYIgVLd4MmVJRQOEOM8=; b=pdVh7ke6umNuqwvlFs4x5
+        KWKJV4CoxT3Jv3VNxbb6D2o/pSVHtQ5lZWXGepPFHfiKESaCU68embjui0Y2FdxQ
+        QaKdn0YvwkSsG9iR4zUuueFoc0FY9mEiyc3tO1yEBc+4opeaKcdpJ98YZDzxLUOZ
+        W7jFYodZOpwSzBeOo4wAww=
+Received: from ubuntu.localdomain (unknown [218.17.89.92])
+        by smtp11 (Coremail) with SMTP id D8CowAA34simvb1gsNMmAA--.101S2;
+        Mon, 07 Jun 2021 14:33:20 +0800 (CST)
+From:   13145886936@163.com
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gushengxian <gushengxian@yulong.com>
+Subject: [PATCH] atm: [br2864] fix spelling mistakes
+Date:   Sun,  6 Jun 2021 23:33:07 -0700
+Message-Id: <20210607063307.376988-1-13145886936@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: D8CowAA34simvb1gsNMmAA--.101S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZF4xXw1fZw1UXrWUGr1rJFb_yoWfWwbEgw
+        nYvw1fWrWUJr1Sy342yrsxJryIq347uFySg3Z2kFyrJ345JwsYga4kur95Ar1xWF47Awnx
+        CFZava1SqF129jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUe17K3UUUUU==
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/1tbiyhCqg1QHMTv4oQAAsz
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2021-06-06 at 11:30 +0100, Matthew Hagan wrote:
-> We are currently assuming that GMAC_AHB_RESET will already be deasserted
-> by the bootloader. However if this has not been done, probing of the GMAC
-> will fail. To remedy this we must ensure GMAC_AHB_RESET has been deasserted
-> prior to probing.
-> 
-> v2 changes:
->  - remove NULL condition check for stmmac_ahb_rst in stmmac_main.c
->  - unwrap dev_err() message in stmmac_main.c
->  - add PTR_ERR() around plat->stmmac_ahb_rst in stmmac_platform.c
-> 
-> Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c     | 4 ++++
->  drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 7 +++++++
->  include/linux/stmmac.h                                | 1 +
->  3 files changed, 12 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 6d41dd6f9f7a..0d4cb423cbbd 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -6840,6 +6840,10 @@ int stmmac_dvr_probe(struct device *device,
->  			reset_control_reset(priv->plat->stmmac_rst);
->  	}
->  
-> +	ret = reset_control_deassert(priv->plat->stmmac_ahb_rst);
-> +	if (ret == -ENOTSUPP)
-> +		dev_err(priv->device, "unable to bring out of ahb reset\n");
-> +
+From: gushengxian <gushengxian@yulong.com>
 
-I would make this
+interrupt should be changed to interrupting.
 
-	if (ret)
-		dev_err(priv->device, "unable to bring out of ahb reset: %pe\n", ERR_PTR(ret));
+Signed-off-by: gushengxian <gushengxian@yulong.com>
+---
+ net/atm/br2684.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Also consider asserting the reset again in the remove path. Or is there
-a reason not to?
+diff --git a/net/atm/br2684.c b/net/atm/br2684.c
+index 3e17a5ecaa94..dd2a8dabed84 100644
+--- a/net/atm/br2684.c
++++ b/net/atm/br2684.c
+@@ -93,8 +93,8 @@ struct br2684_dev {
+  * This lock should be held for writing any time the list of devices or
+  * their attached vcc's could be altered.  It should be held for reading
+  * any time these are being queried.  Note that we sometimes need to
+- * do read-locking under interrupt context, so write locking must block
+- * the current CPU's interrupts
++ * do read-locking under interrupting context, so write locking must block
++ * the current CPU's interrupts.
+  */
+ static DEFINE_RWLOCK(devs_lock);
+ 
+-- 
+2.25.1
 
-With that addressed,
-
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-
-regards
-Philipp
