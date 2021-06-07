@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E9939E2AD
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:17:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02A8039E2B4
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:17:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232170AbhFGQSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 12:18:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49406 "EHLO mail.kernel.org"
+        id S231917AbhFGQS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 12:18:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49460 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232166AbhFGQQp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Jun 2021 12:16:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EBBFD61469;
-        Mon,  7 Jun 2021 16:14:04 +0000 (UTC)
+        id S232468AbhFGQQq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 12:16:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3111261483;
+        Mon,  7 Jun 2021 16:14:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623082445;
-        bh=gnIHSmiRm2ZA2eahi/RuH956Cu8q5rAqA8rv2HTFy0s=;
+        s=k20201202; t=1623082446;
+        bh=dndo5HyOpfsUnMnPT+Hg0W1T7gWqp+NzF5p0g52ZC5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lYH5ETPkGEbeVRM3iDG+bisWAhJ7CqUybLGFAud9IYfJx08y5AqrP6Or4Y4Ix+Xqt
-         3knT8OYDd82GVUame35iQPevxX+2Md3LBlCMA2WnwOqkFpJ4h56iRva55HXfk3HzQ7
-         u0Q/ga9Iwg9N6Rr8opSOh8GiUMe5HajFqjR3DiHuvsIuzPyPkigstM+UeVALx6j579
-         2QH7XXO6UOrcptogi6V9Zoqh887O5Mj5TFynItSgCIXxYIWW6bSeHzz6kfE/FRFVFt
-         3T926hGzCFMdKuHn0hOwhh7LhmrqODWsDRBWLwTzTVLA9CaMI71u6dhA9nJf4awgQs
-         wcSV+OjizLddA==
+        b=sov8rIWRlQJBIGnLgWdgK4I5ZqM8sLXl1ExqRZwO8vb84svRBPim4dID3zIKoc5c2
+         fZmTEMnUR+kjhCR5BbjfTd1eiLS5iemTrInNgAfXeXEN7evKXyIDPIdfXbqHQaSI+3
+         SmICi8PTZE1h8bhzzuioz77Lt6xpqINjGmLLtebAqC9mtjowJpFP9z/hKo+1mTtPyt
+         vUl6bpCljOUzj3yc0DKiHjU6ZD0qnVACIMLGBmjXToa07pGvIYJM734SeLpxZe9tKD
+         Kw0kSQmPGXVHFQTBwgUc7bi4UpUi7oiwXERzbi99imcjKXEpLKutJ1pWm4K4V7I3dL
+         tZ6CYvPZ6Ta3g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>,
+Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 36/39] rtnetlink: Fix missing error code in rtnl_bridge_notify()
-Date:   Mon,  7 Jun 2021 12:13:15 -0400
-Message-Id: <20210607161318.3583636-36-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 37/39] net/x25: Return the correct errno code
+Date:   Mon,  7 Jun 2021 12:13:16 -0400
+Message-Id: <20210607161318.3583636-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210607161318.3583636-1-sashal@kernel.org>
 References: <20210607161318.3583636-1-sashal@kernel.org>
@@ -43,42 +43,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit a8db57c1d285c758adc7fb43d6e2bad2554106e1 ]
+[ Upstream commit d7736958668c4facc15f421e622ffd718f5be80a ]
 
-The error code is missing in this code scenario, add the error code
-'-EINVAL' to the return value 'err'.
+When kalloc or kmemdup failed, should return ENOMEM rather than ENOBUF.
 
-Eliminate the follow smatch warning:
-
-net/core/rtnetlink.c:4834 rtnl_bridge_notify() warn: missing error code
-'err'.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/rtnetlink.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/x25/af_x25.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index eae8e87930cd..83894723ebee 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -4842,8 +4842,10 @@ static int rtnl_bridge_notify(struct net_device *dev)
- 	if (err < 0)
- 		goto errout;
+diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+index e65a50192432..03ed170b8125 100644
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -546,7 +546,7 @@ static int x25_create(struct net *net, struct socket *sock, int protocol,
+ 	if (protocol)
+ 		goto out;
  
--	if (!skb->len)
-+	if (!skb->len) {
-+		err = -EINVAL;
- 		goto errout;
-+	}
+-	rc = -ENOBUFS;
++	rc = -ENOMEM;
+ 	if ((sk = x25_alloc_socket(net, kern)) == NULL)
+ 		goto out;
  
- 	rtnl_notify(skb, net, 0, RTNLGRP_LINK, NULL, GFP_ATOMIC);
- 	return 0;
 -- 
 2.30.2
 
