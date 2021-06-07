@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A024139E88E
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 22:40:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1923439E88F
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 22:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231472AbhFGUmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 16:42:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57316 "EHLO mail.kernel.org"
+        id S231389AbhFGUmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 16:42:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57302 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231347AbhFGUl7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231266AbhFGUl7 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 7 Jun 2021 16:41:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C0FFE611AE;
+Received: by mail.kernel.org (Postfix) with ESMTPS id B041B61153;
         Mon,  7 Jun 2021 20:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623098407;
-        bh=pW1olbDAUwjIuEKi5QiEewzxJZpCTB0ZaiU543otTic=;
+        bh=gHuCtipgI2q1I0zjV2FdCI0c5o2XlIfwzzPl815MSqE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jir2Ne4cqGXUl6iBAnC8kypzTNQ51jXm+rZae12hZXgO+gAMaMro8tHjLaAbQh6MB
-         rgiOcgVpY7te0Jkj/8+e3jo9lj2YuUUJK5EHNPf7Mt0DEM/ebDChWab3cT45LdIq1B
-         TgZLDk731XLspCRA5QHaW2jKdhsBtW0xdm1br3zawgV3GdQpLxZbxe1M6kMYmWJGYW
-         +rn8c2n/bl88f6DHfdSacuHF6Fjy3OqFW8w0TmVq9jnNo2yNhJxNXbDbIcaaocG5Md
-         p8YaI2mNuO6MTO3i6RXzwT9gDhIi8ybSpe1KWrSC3ex5W6tEtCOcLv2GEYIzyARIE5
-         R49nctMynr+9w==
+        b=FbW3Gl+2czTxklICjC8DpfDpmIk5f4J4k9oKyVWxnuktbisNLwQlk0JpHOxGAtX65
+         VoTqQ9EXSF9BcWQIfoP6MwT1ISy0W0Sqwc5k3wgrR34E7SNAn7aceAE9I5ddbMmmVA
+         QnWc3D8WNx0Oafg6dkSbrEcHpcHUAPUVtjSm5Tl3Vuj/QGXM+XXTdPyre3Pj0F3eh+
+         UOL1s22tl6RqFi3oYVg6A7VD+KxQO1BfI0KWSQ3rU8kl88XZGz7r/RFsZWMoEGVjfE
+         6fcBDTYCiCK6YpYi0mu9r2wNXrxKmORESZwPtqiJwE5hEv0xz+Vi644PSqvWRzBAI0
+         Xn0Iggm79ji1g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B35CC609F1;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A8D8E60A16;
         Mon,  7 Jun 2021 20:40:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/15][pull request] 100GbE Intel Wired LAN Driver
- Updates 2021-06-07
+Subject: Re: [PATCH net-next v2 0/8] port asix ax88772 to the PHYlib
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162309840772.17620.8064607622633479170.git-patchwork-notify@kernel.org>
+Message-Id: <162309840768.17620.18116264543013097296.git-patchwork-notify@kernel.org>
 Date:   Mon, 07 Jun 2021 20:40:07 +0000
-References: <20210607165325.182087-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210607165325.182087-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+References: <20210607082727.26045-1-o.rempel@pengutronix.de>
+In-Reply-To: <20210607082727.26045-1-o.rempel@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,48 +48,34 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon,  7 Jun 2021 09:53:10 -0700 you wrote:
-> This series contains updates to virtchnl header file and ice driver.
+On Mon,  7 Jun 2021 10:27:19 +0200 you wrote:
+> changes v2:
+> - add Reviewed-by: Andrew Lunn <andrew@lunn.ch> to some patches
+> - refactor asix_read_phy_addr() and add error handling for all callers
+> - refactor asix_mdio_bus_read()
 > 
-> Brett adds capability bits to virtchnl to specify whether a primary or
-> secondary MAC address is being requested and adds the implementation to
-> ice. He also adds storing of VF MAC address so that it will be preserved
-> across reboots of VM and refactors VF queue configuration to remove the
-> expectation that configuration be done all at once.
+> Port ax88772 part of asix driver to the phylib to be able to use more
+> advanced external PHY attached to this controller.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/15] virtchnl: Use pad byte in virtchnl_ether_addr to specify MAC type
-    https://git.kernel.org/netdev/net-next/c/eb550f53099b
-  - [net-next,02/15] ice: Manage VF's MAC address for both legacy and new cases
-    https://git.kernel.org/netdev/net-next/c/51efbbdf1dca
-  - [net-next,03/15] ice: Save VF's MAC across reboot
-    https://git.kernel.org/netdev/net-next/c/f28cd5ce1a60
-  - [net-next,04/15] ice: Refactor ice_setup_rx_ctx
-    https://git.kernel.org/netdev/net-next/c/43c7f9198deb
-  - [net-next,05/15] ice: Refactor VIRTCHNL_OP_CONFIG_VSI_QUEUES handling
-    https://git.kernel.org/netdev/net-next/c/7ad15440acf8
-  - [net-next,06/15] ice: set the value of global config lock timeout longer
-    https://git.kernel.org/netdev/net-next/c/fb3612840d4f
-  - [net-next,07/15] ice: Re-organizes reqstd/avail {R, T}XQ check/code for efficiency
-    https://git.kernel.org/netdev/net-next/c/b38b7f2bb418
-  - [net-next,08/15] ice: use static inline for dummy functions
-    https://git.kernel.org/netdev/net-next/c/96cf4f689bf7
-  - [net-next,09/15] ice: add extack when unable to read device caps
-    https://git.kernel.org/netdev/net-next/c/d5f84ae95f1d
-  - [net-next,10/15] ice: add error message when pldmfw_flash_image fails
-    https://git.kernel.org/netdev/net-next/c/e872b94f9cf0
-  - [net-next,11/15] ice: wait for reset before reporting devlink info
-    https://git.kernel.org/netdev/net-next/c/1c08052ec49e
-  - [net-next,12/15] ice: (re)initialize NVM fields when rebuilding
-    https://git.kernel.org/netdev/net-next/c/97a4ec010705
-  - [net-next,13/15] ice: Detect and report unsupported module power levels
-    https://git.kernel.org/netdev/net-next/c/c77849f54609
-  - [net-next,14/15] ice: downgrade error print to debug print
-    https://git.kernel.org/netdev/net-next/c/a69606cde176
-  - [net-next,15/15] ice: fix clang warning regarding deadcode.DeadStores
-    https://git.kernel.org/netdev/net-next/c/7e94090ae13e
+  - [net-next,v2,1/8] net: usb: asix: ax88772_bind: use devm_kzalloc() instead of kzalloc()
+    https://git.kernel.org/netdev/net-next/c/218d154f540a
+  - [net-next,v2,2/8] net: usb: asix: refactor asix_read_phy_addr() and handle errors on return
+    https://git.kernel.org/netdev/net-next/c/7e88b11a862a
+  - [net-next,v2,3/8] net: usb/phy: asix: add support for ax88772A/C PHYs
+    https://git.kernel.org/netdev/net-next/c/dde258469257
+  - [net-next,v2,4/8] net: usb: asix: ax88772: add phylib support
+    https://git.kernel.org/netdev/net-next/c/e532a096be0e
+  - [net-next,v2,5/8] net: usb: asix: ax88772: add generic selftest support
+    https://git.kernel.org/netdev/net-next/c/34a1dee6bc44
+  - [net-next,v2,6/8] net: usb: asix: add error handling for asix_mdio_* functions
+    https://git.kernel.org/netdev/net-next/c/d275afb66371
+  - [net-next,v2,7/8] net: phy: do not print dump stack if device was removed
+    https://git.kernel.org/netdev/net-next/c/06edf1a940be
+  - [net-next,v2,8/8] usbnet: run unbind() before unregister_netdev()
+    https://git.kernel.org/netdev/net-next/c/2c9d6c2b871d
 
 You are awesome, thank you!
 --
