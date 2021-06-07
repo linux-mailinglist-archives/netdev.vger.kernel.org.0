@@ -2,151 +2,379 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35F1B39D3C3
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 06:06:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 450D639D410
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 06:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230208AbhFGEIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 00:08:40 -0400
-Received: from us-smtp-delivery-115.mimecast.com ([170.10.133.115]:45180 "EHLO
-        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230178AbhFGEIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 00:08:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
-        s=selector; t=1623038807;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ilgAovHx7Z4KRiwp8HrMTyzavnR6BZV4uAWCylgkY28=;
-        b=FtZfKBk7CgrWhjLCRKG1P0sJEAUiM5RCx/Osm3Z8oi1Rxrlaajqkjq3S66Lw57iJrn0HVV
-        11Kb/U5io0yJG74ERduJpuh2kQ1zdGAag8yq5np4spP3qXZsOiB8OSYedjO6YvKKWTwPOY
-        /CtsOFAQBKYhUjaaLD0IkAC0tsoCHeg=
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11lp2169.outbound.protection.outlook.com [104.47.57.169])
- (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-304-3e0DOZvuOiCNqbi1qXF9DA-1; Mon, 07 Jun 2021 00:06:45 -0400
-X-MC-Unique: 3e0DOZvuOiCNqbi1qXF9DA-1
-Received: from MWHPR19MB0077.namprd19.prod.outlook.com (2603:10b6:301:67::32)
- by CO6PR19MB4802.namprd19.prod.outlook.com (2603:10b6:5:343::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Mon, 7 Jun
- 2021 04:06:43 +0000
-Received: from MWHPR19MB0077.namprd19.prod.outlook.com
- ([fe80::b931:30a4:ce59:dc87]) by MWHPR19MB0077.namprd19.prod.outlook.com
- ([fe80::b931:30a4:ce59:dc87%4]) with mapi id 15.20.4195.029; Mon, 7 Jun 2021
- 04:06:43 +0000
-From:   Liang Xu <lxu@maxlinear.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        Hauke Mehrtens <hmehrtens@maxlinear.com>,
-        Thomas Mohren <tmohren@maxlinear.com>
-Subject: Re: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
-Thread-Topic: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
-Thread-Index: AQHXWVyDhUpan91jNkyIQ1KYwvXYZKsECXGAgAAhoACAAB2SAIAAfDEAgAC87YCAAnCRAA==
-Date:   Mon, 7 Jun 2021 04:06:42 +0000
-Message-ID: <9a838afe-83e7-b575-db49-f210022966d5@maxlinear.com>
-References: <20210604161250.49749-1-lxu@maxlinear.com>
- <f56aa414-3002-ef85-51a9-bb36017270e6@gmail.com>
- <7834258b-5826-1c00-2754-b0b7e76b5910@maxlinear.com>
- <YLqIvGIzBIULI2Gm@lunn.ch>
- <2b9945f9-16a4-bda5-40df-d79089be3c12@maxlinear.com>
- <YLuPZTXFrJ9KjNpl@lunn.ch>
-In-Reply-To: <YLuPZTXFrJ9KjNpl@lunn.ch>
-Accept-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-x-originating-ip: [138.75.37.21]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4899cebc-83e2-4b8e-0367-08d92969a8e2
-x-ms-traffictypediagnostic: CO6PR19MB4802:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CO6PR19MB4802F6A0CA340B0FE6A8813EBD389@CO6PR19MB4802.namprd19.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0
-x-microsoft-antispam-message-info: c0CvkE9e1wlpHQRj7OfL2SDpFNjL/ZfTOoTIAcSQdSGtQSVbf61V+0cBG4UMpcBLt2FKFat05LQBmGIwgbkhFG5BFdbAQdU190jhp8TevQvE/E3NMdlgcDquKlkHoBYGczLGRztLRhcz/uf8RoYwd6ztX224XjjF3LI5x1SHwXWqXH8jYr3DuJJZBTM/BaEBR8179nmMozx7eKfTi4BysErDSkSeAT7ri7UgGpizyeBMqz92Gr9iLs0ZRRFJRIWRyLbif9xyfIWx5g8SPXs48RTFhEk+NkQPZIELS3hH5scB2f9NZmqHBytK+LBX3Gjzm7Sz/j0/syzhVrrmJTB1qy2h0RW2VlKaNrGXoyHYTReYdZDuoW/9bPw7fH/KOxIFZ9dXmXk0l9iElil7ewG5/NpEt3EOnNpHU32wyo8NFJU94MumDZ/x7aMk7NYMVdsBJlspnTdtKK52gf7VS/zTkOai2+HQS7e8nV2brwToyOTZD5ambSqTzhUEthVFMIioBg9sNnvbfOL6HOG6Fz+qiPtNYq3NDe7zxHK9bkk0HaXa7/mKKXxBPmQGeXWxMJmBMH3FjufN6tjVxd1067yDnB+KHCuPWyh2/oEL98Md55FnmLfDmHEFMgBpAcDpDjpaDSSRIwA/ISa6zR2IvzEC6YJURNEsesnb6NSKLI9w/h543q76vAtfTiRJcbHDzHX5
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR19MB0077.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(366004)(396003)(376002)(136003)(346002)(122000001)(4326008)(66946007)(31696002)(6916009)(8936002)(2616005)(316002)(38100700002)(64756008)(91956017)(76116006)(66476007)(66556008)(66446008)(478600001)(107886003)(26005)(186003)(2906002)(71200400001)(5660300002)(36756003)(8676002)(54906003)(6486002)(86362001)(53546011)(6506007)(83380400001)(6512007)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102
-x-ms-exchange-antispam-messagedata: =?utf-8?B?MDBqcVJ1N2FOdmdrcTRwd3dqUEpuZmRFVE9iaEJKWnJlc09ta0lnZjJjaTRz?=
- =?utf-8?B?azhKOHh5S3hNKzZLNWRyZnpSZk5GaDVrSEVmNXJMWW5BcERlVHRzckdIRjVP?=
- =?utf-8?B?SGdEL0RsUm5nKyt4RHgxZzdvREF2UXdyZ0prYmlsSFpPNWpBSU8vbWl0MTZU?=
- =?utf-8?B?aDZKdHZxZ3VteWtueG1QUkhPVFlIU0trMUs1amNRaUswNTAyOEo4U3FicjFE?=
- =?utf-8?B?V0pTeVY0SThCUkUxL1RuOEMrUUYzZlNsYWh4V1VXdCtYSEsxMHE1bTdRbWs4?=
- =?utf-8?B?N3NmT0hjZTlSY1ZvTXIxcmZ2MDB4QnZ2YkI1c3BETjRVam9QY0o5NTRwM1lx?=
- =?utf-8?B?cEZkUlpsM2R6eE5tWDJFeFdJODE2UlZCV0JtOXpBMXhqdkljVmNNUTBmTGZp?=
- =?utf-8?B?anQvcW5DbE1sTitVYUF6V1hyNkJiV1RtaWlKcXZud2ZYeWlyYmw5WU81VEt6?=
- =?utf-8?B?WUs2REhuQ3NSbzFLQkZQS3FBL2Q5Z3pPN0FHTEk0amJOOVo3R2NRSVdrTHc5?=
- =?utf-8?B?RXZZckpoWUtWc3cvUVlPWUwzVHNTblFSblhHUlR0NlpJOVRGWmJWWHZHTkRT?=
- =?utf-8?B?OWVHRXFsd2N1NnUyRkZUNVJXcVZGNXVkT3R3WVZBY0tQSzZZb1dvUm9VcVpi?=
- =?utf-8?B?UGNOQWlINlkvZ0hSOFlvam55MGZ0UXRGNTd2eHNZbmtaeXJJSEZOdmxrVEQ4?=
- =?utf-8?B?VmpzZHAyc0EzemFIODkxL2JtazV3bDBYeW50dFZZV3grS1RKZ2FtU2kwUk9J?=
- =?utf-8?B?S1RsKzRINlpjNUxpWDhoK1Fnc1RqcFc2QWVEOEhpMFBEbmRTdXU2dm81S0hF?=
- =?utf-8?B?VXNWWUdaZkdnN0cyR2N3L1RNNkUwcEg0emRKMXdlTDUvOEZVRWZaTUR5ZVRM?=
- =?utf-8?B?SGdNWW9SdTVXZ2kxZXMzRTh0dzhMY0JGejZQb2pQdFEraE1tZEk1WEhzd20y?=
- =?utf-8?B?b004aFRzeEQ5ay9ESmpmeSsxOVpiU2Zub1pWcGgya1U0ZlFCMFd2clpnZmIv?=
- =?utf-8?B?cHE5VWRBNDAvUmV1Smp1WVQwWWJMUUtycFZ2ZkxJVXJpQkNUWXhJTEV1aU9n?=
- =?utf-8?B?dDFDcTB1UktISTh4eE9tTjNpY2pjOVgxZXR5S2ZEREhTK0U2bFgzTjlTUFlX?=
- =?utf-8?B?UXppTXZ3UlFJc3R3Qjl6Uy9kZmlpblk2emJZcVFTRldGV08xN0dQNk5CdGFh?=
- =?utf-8?B?YlE0WDRVZDVWbjBZU2xUWUxhSVJGTUw1ZkVqVm9qZzZCbEFiQWVDcHNQY1Fv?=
- =?utf-8?B?Nk1lTU11K3A0USsvTm5YRGlaRGpRMGJmNVg4eTBFMlYrdlR6M05kNnlkSTlK?=
- =?utf-8?B?MDFhODVOZUV4aUxGWDMwcDNwSDgyemR3WGFuMXVzZHdMVmRsRUpZVUtyVXE5?=
- =?utf-8?B?c3Y5TkJQdTgvSDhWUTR5MVpLTUFQaHpoeVp4SjVKdjVsdU56UnQ2bGh3RWl2?=
- =?utf-8?B?RGtPZlJtOUN2NHU0bGFmQXhnUHBmR08yd2x6N1RsY1dTR3VpSk00WmZCMmJB?=
- =?utf-8?B?UFNBYTJCVklQMW81c1gxay84TTNaMWpEMDU4NTkvTDN2SWtvRU14MzVVdHAx?=
- =?utf-8?B?M0ZsaVo4Ty9TZWdyREIwZU1BSVZ6R2ZGc21yMDZhbHM3YUtJcDRsemNwdFVw?=
- =?utf-8?B?SUJoWmNHejFLODRTN0M0TzVPdHF0WTZUQmFmdmtQK2w0Lzd6dHBKOGFBajFo?=
- =?utf-8?B?N3JNbFVneTAweU5RL0xDSkxLSDYwRHAyN2VJTGZ1Zk9BZEwwZVRTTVZpRlV1?=
- =?utf-8?Q?ga28Wu65Q0iArUpMTM=3D?=
+        id S230127AbhFGEgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 00:36:38 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:59839 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229449AbhFGEgh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 00:36:37 -0400
+Received: from mail-ot1-f69.google.com ([209.85.210.69])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <koba.ko@canonical.com>)
+        id 1lq6yL-0003k5-Q3
+        for netdev@vger.kernel.org; Mon, 07 Jun 2021 04:34:46 +0000
+Received: by mail-ot1-f69.google.com with SMTP id 59-20020a9d0dc10000b02902a57e382ca1so10805474ots.7
+        for <netdev@vger.kernel.org>; Sun, 06 Jun 2021 21:34:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qtu4iTrpU9/kzQwEVhk1adXPjb5HoUrN2kVcPGYw1zA=;
+        b=U5zKLcbNT6RDM0+cuvGmO0dDxeu2raPMtNHkHdE54xiYG3QZWa2RpMhBUQu8uBWMLy
+         NXlf2JBQzuv6FDeIGgPOalCpkAByHaq1iIiiKYp+4sQULVD5iJHNOQxejbcVvTQOX+CM
+         MEC8hOTflWLXGVyfE+J72WIjp0dhFepEtg2pulmGmNjvajV6mzAcdCdMBrku9Cli2XXP
+         jv9RWvmXqBu6gOj4jq+vS+3rk+RrlYNS2lUgJX0RSW55nb2dMN4+6j6bsZ97M0xeX/OV
+         qYTn67gDu9FJ1Dtak4kMH+2pnfj2BjsdgMJbuWuUPmzlxE8TQcxV/+M6zijP85n/k6lu
+         QiZg==
+X-Gm-Message-State: AOAM530ZDSo9/oKS3z0/nr9jPz4gmTVEmiJ6BDADWouOD+d49vQYqOlx
+        /GC1K50zvOjNb/rwpWwGiKhV5YkAPLIX9Z7nR8+OKuPrhMqPMjiZG+C0+U2H5SoQ27F52XrJCts
+        WznZSdr1UBl8WJ1U8KDgOWdcqkdzz8aLQU6nv1dzK6dfOnCOgGA==
+X-Received: by 2002:aca:b3d5:: with SMTP id c204mr17950269oif.17.1623040484325;
+        Sun, 06 Jun 2021 21:34:44 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyF+pvWGAlz5BLP+XdQUyRaq6xdXzv7T8pktyNfPOrl0EkPAHMXRicNG3YKyGlYQYdM70AV5D7u90jKcEV9wkY=
+X-Received: by 2002:aca:b3d5:: with SMTP id c204mr17950262oif.17.1623040483922;
+ Sun, 06 Jun 2021 21:34:43 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: maxlinear.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR19MB0077.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4899cebc-83e2-4b8e-0367-08d92969a8e2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2021 04:06:42.8956
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: dac28005-13e0-41b8-8280-7663835f2b1d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8DaGm1o1+t9Nx39+4K7OneI4Px3hcyhFOjercH0iY1Bc6h3tYVn2DcuW7Vx2y82MOGLEzarpQtgCHWhnBqkt6A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR19MB4802
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: maxlinear.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-ID: <84869CBC894E31488198290A904CF195@namprd19.prod.outlook.com>
-Content-Transfer-Encoding: base64
+References: <20210603025414.226526-1-koba.ko@canonical.com>
+ <3d2e7a11-92ad-db06-177b-c6602ef1acd4@gmail.com> <CAJB-X+V4vpLoNt2C_i=3mS4UtFnDdro5+hgaFXHWxcvobO=pzg@mail.gmail.com>
+ <f969a075-25a1-84ba-daad-b4ed0e7f75f5@gmail.com> <CAJB-X+U5VEeSNS4sF0DBxc-p0nxA6QLVVrORHsscZuY37rGJ7w@mail.gmail.com>
+ <bfc68450-422d-1968-1316-64f7eaa7cbe9@gmail.com>
+In-Reply-To: <bfc68450-422d-1968-1316-64f7eaa7cbe9@gmail.com>
+From:   Koba Ko <koba.ko@canonical.com>
+Date:   Mon, 7 Jun 2021 12:34:32 +0800
+Message-ID: <CAJB-X+UDRK5-fKEGc+PS+_02HePmb34Pw_+tMyNr_iGGeE+jbQ@mail.gmail.com>
+Subject: Re: [PATCH] r8169: introduce polling method for link change
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gNS82LzIwMjEgMTA6NTEgcG0sIEFuZHJldyBMdW5uIHdyb3RlOg0KPiBUaGlzIGVtYWlsIHdh
-cyBzZW50IGZyb20gb3V0c2lkZSBvZiBNYXhMaW5lYXIuDQo+DQo+DQo+Pj4+PiBUaGlzIGRvZXMg
-bm90IGFjY2VzcyB2ZW5kb3Igc3BlY2lmaWMgcmVnaXN0ZXJzLCBzaG91bGQgbm90IHRoaXMgYmUg
-cGFydA0KPj4+Pj4gb2YgdGhlIHN0YW5kYXJkIGdlbnBoeV9yZWFkX2FiaWxpdGllcygpIG9yIG1v
-dmVkIHRvIGEgaGVscGVyPw0KPj4+Pj4NCj4+Pj4gZ2VucGh5X3JlYWRfYWJpbGl0aWVzIGRvZXMg
-bm90IGNvdmVyIDIuNUcuDQo+Pj4+DQo+Pj4+IGdlbnBoeV9jNDVfcG1hX3JlYWRfYWJpbGl0aWVz
-IGNoZWNrcyBDNDUgaWRzIGFuZCB0aGlzIGNoZWNrIGZhaWwgaWYNCj4+Pj4gaXNfYzQ1IGlzIG5v
-dCBzZXQuDQo+Pj4gWW91IGFwcGVhciB0byBvZiBpZ25vcmVkIG15IGNvbW1lbnQgYWJvdXQgdGhp
-cy4gUGxlYXNlIGFkZCB0aGUgaGVscGVyDQo+Pj4gdG8gdGhlIGNvcmUgYXMgaSBzdWdnZXN0ZWQs
-IGFuZCB0aGVuIHVzZQ0KPj4+IGdlbnBoeV9jNDVfcG1hX3JlYWRfYWJpbGl0aWVzKCkuDQo+Pj4N
-Cj4+PiAgICAgICAgICAgQW5kcmV3DQo+Pj4NCj4+IEknbSBuZXcgdG8gdXBzdHJlYW0gYW5kIGRv
-IG5vdCBrbm93IHRoZSBwcm9jZXNzIHRvIGNoYW5nZSBjb2RlIGluIGNvcmUuDQo+IFByZXR0eSBt
-dWNoIHRoZSBzYW1lIHdheSB5b3UgY2hhbmdlIGNvZGUgaW4gYSBkcml2ZXIuIFN1Ym1pdCBhIHBh
-dGghDQo+DQo+IFBsZWFzZSBwdXQgaXQgaW50byBhIHNlcGFyYXRlIHBhdGNoLCBzbyBtYWtpbmcg
-YSBwYXRjaCBzZXJpZXMuIFBsZWFzZQ0KPiBhZGQgc29tZSBrZXJuZWwgZG9jIHN0eWxlIGRvY3Vt
-ZW50YXRpb24sIGRlc2NyaWJpbmcgd2hhdCB0aGUgZnVuY3Rpb24NCj4gZG9lcy4gTG9vayBhdCBv
-dGhlciBmdW5jdGlvbnMgaW4gcGh5X2RldmljZS5jIGZvciBleGFtcGxlcy4NCj4NCj4gQW55Ym9k
-eSBjYW4gY2hhbmdlIGNvcmUgY29kZS4gSXQganVzdCBnZXRzIGxvb2tlZCBhdCBjbG9zZXIsIGFu
-ZCBuZWVkDQo+IHRvIGJlIGdlbmVyaWMuDQo+DQo+ICAgICBBbmRyZXcNCj4NClRoYW5rIHlvdS4g
-SSB3aWxsIGNyZWF0ZSAyIHBhdGNoZXMgZm9yIHRoZSBjb3JlIG1vZGlmaWNhdGlvbiBhbmQgZHJp
-dmVyIA0Kc2VwYXJhdGVseQ0KDQppbiBuZXh0IHVwZGF0ZS4NCg0K
+On Fri, Jun 4, 2021 at 7:59 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>
+> On 04.06.2021 11:08, Koba Ko wrote:
+> > On Fri, Jun 4, 2021 at 4:23 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> >>
+> >> On 04.06.2021 09:22, Koba Ko wrote:
+> >>> On Thu, Jun 3, 2021 at 6:00 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> >>>>
+> >>>> On 03.06.2021 04:54, Koba Ko wrote:
+> >>>>> For RTL8106E, it's a Fast-ethernet chip.
+> >>>>> If ASPM is enabled, the link chang interrupt wouldn't be triggered
+> >>>>> immediately and must wait a very long time to get link change interrupt.
+> >>>>> Even the link change interrupt isn't triggered, the phy link is already
+> >>>>> established.
+> >>>>>
+> >>>> At first please provide a full dmesg log and output of lspci -vv.
+> >>>> Do you have the firmware for the NIC loaded? Please provide "ethtool -i <if>"
+> >>>> output.
+> >>>
+> >>> please get the logs from here,
+> >>> https://bugzilla.kernel.org/show_bug.cgi?id=213165
+> >>>
+> >>>> Does the issue affect link-down and/or link-up detection?
+> >>>> Do you have runtime pm enabled? Then, after 10s of link-down NIC goes to
+> >>>> D3hot and link-up detection triggers a PME.
+> >>>
+> >>> Issue affect link-up.
+> >>> yes, pm runtime is enabled, but rtl8106e always stays D0 even if the
+> >>> cable isn't present.
+> >>>
+> >> Then runtime pm doesn't seem to be set to "auto". Else 10s after link loss
+> >> the chip runtime-suspends and is set to D3hot.
+> >
+> > I will check this.
+> >
+> >>
+> >>>>
+> >>>>> Introduce a polling method to watch the status of phy link and disable
+> >>>>> the link change interrupt.
+> >>>>> Also add a quirk for those realtek devices have the same issue.
+> >>>>>
+> >>>> Which are the affected chip versions? Did you check with Realtek?
+> >>>> Your patch switches to polling for all Fast Ethernet versions,
+> >>>> and that's not what we want.
+> >>>
+> >>> I don't know the exact version, only the chip name 806e(pci device id 0x8165).
+> >>> ok, Im asking Realtek to help how to identify the chip issue is observed.
+> >>>
+> >> At least your Bugzilla report refers to VER_39. PCI device id 0x8136 is shared
+> >> by all fast ethernet chip versions.
+> >> Do you know other affected chip versions apart from VER_39 ?
+> >>
+> >> In the Bugzilla report you also write the issue occurs with GBit-capable
+> >> link partners. This sounds more like an aneg problem.
+> >> The issue doesn't occur with fast ethernet link partners?
+> >
+> > Issue wouldn't be observed when the link-partner has only FE capability.
+> >
+> Weird. I still have no clue how FE vs. GE support at link partner and
+> ASPM could be related. I could understand that the PHY might have a
+> problem with a GE link partner and aneg takes more time than usual.
+> But this would be completely unrelated to a potential issue with
+> ASPM on the PCIe link.
+>
+> And it's also not clear how L1_1 can cause an issue if the NIC doesn't
+> support L1 sub-states. Maybe the root cause isn't with the NIC but
+> with some other component in the PCIe path (e.g. bridge).
+>
 
+I prefer that there's a interrupt issue when aspm is enabled on RTL8106e,
+
+> >>
+> >> Your bug report also includes a patch that disables L1_1 only.
+> >> Not sure how this is related because the chip version we speak about
+> >> here doesn't support L1 sub-states.
+> >
+> > I have tried to enable L0s, L1 and don't disable L1 substate,
+> > but still get the issue that interrupt can't be fired immediately but
+> > the Link status is up.
+> >
+> >>
+> >>>>
+> >>>> My suspicion would be that something is system-dependent. Else I think
+> >>>> we would have seen such a report before.
+> >>> On the mainline, the aspm is disable, so you may not observe this.
+> >>> If you enable ASPM and must wait CHIP go to power-saving mode, then
+> >>> you can observe the issue.
+> >>>>
+> >>
+> >> So what you're saying is that mainline is fine and your problem is with
+> >> a downstream kernel with re-enabled ASPM? So there's nothing broken in
+> >> mainline? In mainline you have the option to re-enable ASPM states
+> >> individually via sysfs (link subdir at pci device).
+> >
+> > If enable L1_1 on the mainline, the issue could be observed too.
+> >
+> It has a reason that ASPM is disabled per default in mainline. Different
+> chip versions have different types of issues with ASPM enabled.
+> However several chip versions work fine with ASPM (also LI sub-states),
+> therefore users can re-enable ASPM states at own risk.
+
+After consulting with REALTEK, I can identify RTL8106e by PCI_VENDOR
+REALTEK, DEVICE 0x8136, Revision 0x7.
+I would like to make PHY_POLL as default for RTL8106E on V2.
+because there's no side effects besides the cpu usage rate would be a
+little higher,
+How do you think?
+
+> > Thanks
+> >>
+> >>>>> Signed-off-by: Koba Ko <koba.ko@canonical.com>
+> >>>>> ---
+> >>>>>  drivers/net/ethernet/realtek/r8169.h      |   2 +
+> >>>>>  drivers/net/ethernet/realtek/r8169_main.c | 112 ++++++++++++++++++----
+> >>>>>  2 files changed, 98 insertions(+), 16 deletions(-)
+> >>>>>
+> >>>>> diff --git a/drivers/net/ethernet/realtek/r8169.h b/drivers/net/ethernet/realtek/r8169.h
+> >>>>> index 2728df46ec41..a8c71adb1b57 100644
+> >>>>> --- a/drivers/net/ethernet/realtek/r8169.h
+> >>>>> +++ b/drivers/net/ethernet/realtek/r8169.h
+> >>>>> @@ -11,6 +11,8 @@
+> >>>>>  #include <linux/types.h>
+> >>>>>  #include <linux/phy.h>
+> >>>>>
+> >>>>> +#define RTL8169_LINK_TIMEOUT (1 * HZ)
+> >>>>> +
+> >>>>>  enum mac_version {
+> >>>>>       /* support for ancient RTL_GIGA_MAC_VER_01 has been removed */
+> >>>>>       RTL_GIGA_MAC_VER_02,
+> >>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> >>>>> index 2c89cde7da1e..70aacc83d641 100644
+> >>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> >>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> >>>>> @@ -178,6 +178,11 @@ static const struct pci_device_id rtl8169_pci_tbl[] = {
+> >>>>>
+> >>>>>  MODULE_DEVICE_TABLE(pci, rtl8169_pci_tbl);
+> >>>>>
+> >>>>> +static const struct pci_device_id rtl8169_linkChg_polling_enabled[] = {
+> >>>>> +     { PCI_VDEVICE(REALTEK, 0x8136), RTL_CFG_NO_GBIT },
+> >>>>> +     { 0 }
+> >>>>> +};
+> >>>>> +
+> >>>>
+> >>>> This doesn't seem to be used.
+> >>>>
+> >>>>>  enum rtl_registers {
+> >>>>>       MAC0            = 0,    /* Ethernet hardware address. */
+> >>>>>       MAC4            = 4,
+> >>>>> @@ -618,6 +623,7 @@ struct rtl8169_private {
+> >>>>>       u16 cp_cmd;
+> >>>>>       u32 irq_mask;
+> >>>>>       struct clk *clk;
+> >>>>> +     struct timer_list link_timer;
+> >>>>>
+> >>>>>       struct {
+> >>>>>               DECLARE_BITMAP(flags, RTL_FLAG_MAX);
+> >>>>> @@ -1179,6 +1185,16 @@ static void rtl8168ep_stop_cmac(struct rtl8169_private *tp)
+> >>>>>       RTL_W8(tp, IBCR0, RTL_R8(tp, IBCR0) & ~0x01);
+> >>>>>  }
+> >>>>>
+> >>>>> +static int rtl_link_chng_polling_quirk(struct rtl8169_private *tp)
+> >>>>> +{
+> >>>>> +     struct pci_dev *pdev = tp->pci_dev;
+> >>>>> +
+> >>>>> +     if (pdev->vendor == 0x10ec && pdev->device == 0x8136 && !tp->supports_gmii)
+> >>>>> +             return 1;
+> >>>>> +
+> >>>>> +     return 0;
+> >>>>> +}
+> >>>>> +
+> >>>>>  static void rtl8168dp_driver_start(struct rtl8169_private *tp)
+> >>>>>  {
+> >>>>>       r8168dp_oob_notify(tp, OOB_CMD_DRIVER_START);
+> >>>>> @@ -4608,6 +4624,75 @@ static void rtl_task(struct work_struct *work)
+> >>>>>       rtnl_unlock();
+> >>>>>  }
+> >>>>>
+> >>>>> +static void r8169_phylink_handler(struct net_device *ndev)
+> >>>>> +{
+> >>>>> +     struct rtl8169_private *tp = netdev_priv(ndev);
+> >>>>> +
+> >>>>> +     if (netif_carrier_ok(ndev)) {
+> >>>>> +             rtl_link_chg_patch(tp);
+> >>>>> +             pm_request_resume(&tp->pci_dev->dev);
+> >>>>> +     } else {
+> >>>>> +             pm_runtime_idle(&tp->pci_dev->dev);
+> >>>>> +     }
+> >>>>> +
+> >>>>> +     if (net_ratelimit())
+> >>>>> +             phy_print_status(tp->phydev);
+> >>>>> +}
+> >>>>> +
+> >>>>> +static unsigned int
+> >>>>> +rtl8169_xmii_link_ok(struct net_device *dev)
+> >>>>> +{
+> >>>>> +     struct rtl8169_private *tp = netdev_priv(dev);
+> >>>>> +     unsigned int retval;
+> >>>>> +
+> >>>>> +     retval = (RTL_R8(tp, PHYstatus) & LinkStatus) ? 1 : 0;
+> >>>>> +
+> >>>>> +     return retval;
+> >>>>> +}
+> >>>>> +
+> >>>>> +static void
+> >>>>> +rtl8169_check_link_status(struct net_device *dev)
+> >>>>> +{
+> >>>>> +     struct rtl8169_private *tp = netdev_priv(dev);
+> >>>>> +     int link_status_on;
+> >>>>> +
+> >>>>> +     link_status_on = rtl8169_xmii_link_ok(dev);
+> >>>>> +
+> >>>>> +     if (netif_carrier_ok(dev) == link_status_on)
+> >>>>> +             return;
+> >>>>> +
+> >>>>> +     phy_mac_interrupt(tp->phydev);
+> >>>>> +
+> >>>>> +     r8169_phylink_handler (dev);
+> >>>>> +}
+> >>>>> +
+> >>>>> +static void rtl8169_link_timer(struct timer_list *t)
+> >>>>> +{
+> >>>>> +     struct rtl8169_private *tp = from_timer(tp, t, link_timer);
+> >>>>> +     struct net_device *dev = tp->dev;
+> >>>>> +     struct timer_list *timer = t;
+> >>>>> +     unsigned long flags;
+> >>>>
+> >>>> flags isn't used and triggers a compiler warning. Did you even
+> >>>> compile-test your patch?
+> >>>>
+> >>>>> +
+> >>>>> +     rtl8169_check_link_status(dev);
+> >>>>> +
+> >>>>> +     if (timer_pending(&tp->link_timer))
+> >>>>> +             return;
+> >>>>> +
+> >>>>> +     mod_timer(timer, jiffies + RTL8169_LINK_TIMEOUT);
+> >>>>> +}
+> >>>>> +
+> >>>>> +static inline void rtl8169_delete_link_timer(struct net_device *dev, struct timer_list *timer)
+> >>>>> +{
+> >>>>> +     del_timer_sync(timer);
+> >>>>> +}
+> >>>>> +
+> >>>>> +static inline void rtl8169_request_link_timer(struct net_device *dev)
+> >>>>> +{
+> >>>>> +     struct rtl8169_private *tp = netdev_priv(dev);
+> >>>>> +
+> >>>>> +     timer_setup(&tp->link_timer, rtl8169_link_timer, TIMER_INIT_FLAGS);
+> >>>>> +}
+> >>>>> +
+> >>>>>  static int rtl8169_poll(struct napi_struct *napi, int budget)
+> >>>>>  {
+> >>>>>       struct rtl8169_private *tp = container_of(napi, struct rtl8169_private, napi);
+> >>>>> @@ -4624,21 +4709,6 @@ static int rtl8169_poll(struct napi_struct *napi, int budget)
+> >>>>>       return work_done;
+> >>>>>  }
+> >>>>>
+> >>>>> -static void r8169_phylink_handler(struct net_device *ndev)
+> >>>>> -{
+> >>>>> -     struct rtl8169_private *tp = netdev_priv(ndev);
+> >>>>> -
+> >>>>> -     if (netif_carrier_ok(ndev)) {
+> >>>>> -             rtl_link_chg_patch(tp);
+> >>>>> -             pm_request_resume(&tp->pci_dev->dev);
+> >>>>> -     } else {
+> >>>>> -             pm_runtime_idle(&tp->pci_dev->dev);
+> >>>>> -     }
+> >>>>> -
+> >>>>> -     if (net_ratelimit())
+> >>>>> -             phy_print_status(tp->phydev);
+> >>>>> -}
+> >>>>> -
+> >>>>>  static int r8169_phy_connect(struct rtl8169_private *tp)
+> >>>>>  {
+> >>>>>       struct phy_device *phydev = tp->phydev;
+> >>>>> @@ -4769,6 +4839,10 @@ static int rtl_open(struct net_device *dev)
+> >>>>>               goto err_free_irq;
+> >>>>>
+> >>>>>       rtl8169_up(tp);
+> >>>>> +
+> >>>>> +     if (rtl_link_chng_polling_quirk(tp))
+> >>>>> +             mod_timer(&tp->link_timer, jiffies + RTL8169_LINK_TIMEOUT);
+> >>>>> +
+> >>>>>       rtl8169_init_counter_offsets(tp);
+> >>>>>       netif_start_queue(dev);
+> >>>>>  out:
+> >>>>> @@ -4991,7 +5065,10 @@ static const struct net_device_ops rtl_netdev_ops = {
+> >>>>>
+> >>>>>  static void rtl_set_irq_mask(struct rtl8169_private *tp)
+> >>>>>  {
+> >>>>> -     tp->irq_mask = RxOK | RxErr | TxOK | TxErr | LinkChg;
+> >>>>> +     tp->irq_mask = RxOK | RxErr | TxOK | TxErr;
+> >>>>> +
+> >>>>> +     if (!rtl_link_chng_polling_quirk(tp))
+> >>>>> +             tp->irq_mask |= LinkChg;
+> >>>>>
+> >>>>>       if (tp->mac_version <= RTL_GIGA_MAC_VER_06)
+> >>>>>               tp->irq_mask |= SYSErr | RxOverflow | RxFIFOOver;
+> >>>>> @@ -5436,6 +5513,9 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+> >>>>>       if (pci_dev_run_wake(pdev))
+> >>>>>               pm_runtime_put_sync(&pdev->dev);
+> >>>>>
+> >>>>> +     if (rtl_link_chng_polling_quirk(tp))
+> >>>>> +             rtl8169_request_link_timer(dev);
+> >>>>> +
+> >>>>>       return 0;
+> >>>>>  }
+> >>>>>
+> >>>>>
+> >>>>
+> >>>> All this isn't needed. If you want to switch to link status polling,
+> >>>> why don't you simply let phylib do it? PHY_MAC_INTERRUPT -> PHY_POLL
+> >>>
+> >>> Thanks for suggestions, I tried to use PHY_POLL, it could do the same
+> >>> thing that I did.
+> >>>
+> >>>> Your timer-based code most likely would have problems if runtime pm
+> >>>> is enabled. Then you try to read the link status whilst NIC is in
+> >>>> D3hot.
+> >>
+>
