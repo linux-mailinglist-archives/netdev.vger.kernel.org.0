@@ -2,95 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715E239DC03
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 14:14:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 389AC39DC0C
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 14:16:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230203AbhFGMPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 08:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51124 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230145AbhFGMPz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 08:15:55 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD569C061766
-        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 05:13:48 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id r16so2717352ljk.9
-        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 05:13:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=DMjTqjD1pePan0o9IugSGJk/X3ga2QYCfYQFfSpkOS8=;
-        b=tJuL70o/OTYt3njlbYSZjRTOUBnpiHSo4jIMAwB4+z2W/iecfj4JxYbXBbcJI0RnTp
-         EXIxfcxYy+5EIh/WsO442pVWiCG31FHgcxCFtw4NrmlnMW2R9HMt54l7mGJSBQEwI8tE
-         SrTdLQP06zkyTFPOIIQnChRKe2sV9wNzkbT6SnOO4ZW5RjQ22j3f6bg95xlLgdiG5b3o
-         IImR24xs7eSUnT7LPdz3SMz87cGSxQiNKCS2vh6vEMXMc1gSymG8qf4So9RZrndGyXEg
-         mFjDoQ8NCCjvoYYCYU6rq1lu30xzEUeLmde/IVTC9Tj1/RHPky30CQzjJg3kStwTQ5xv
-         1CQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=DMjTqjD1pePan0o9IugSGJk/X3ga2QYCfYQFfSpkOS8=;
-        b=bC766cNqnJ96T2LbMmHZpilm1DT20/vmmDojZJ1y+bS3oer+vuiUNUaONponbmDdKM
-         C/yRFcnmfbs1eLRKhtPcmgPy/IRxe2L8ZrVPtuscneC7BIgta8V8SbRCSfv4YCIeHKqv
-         imP92h3ghaaplVEewLMfc4RtULl2fYhLem7bx0CS4l5fxDTziCcwiK/CzSCD1hkRA884
-         zRZwVjxWd50DYWZOHpwOOEnh5hxHvmjkUA2J3ElK3G3rxVz/shopA8aA1Fv7kSWg30Ko
-         9dHrdV5nJj1s7Jiy4dgDTMmx1f//7mMIch+MyQXim+YOeip+sNwSyNzSsCuJc7B3K6dJ
-         8jrA==
-X-Gm-Message-State: AOAM533gJUjKRMn/XUiYew0KfzWS7O3Sp68/MufdRatp3aB/wgWwLQ1I
-        PgJh7cRG+YrAp3c96/xv+30/NuMRiuOsBxeS3g==
-X-Google-Smtp-Source: ABdhPJx4wCuH+7bOycqkJrky8bv0TG2pC8V7TSz3TC1R7JQBnLyjyEp8Gf01yLSAWObrZrnELN9kKDy3fpxTiAiXKhQ=
-X-Received: by 2002:a2e:a16e:: with SMTP id u14mr14113432ljl.343.1623068022005;
- Mon, 07 Jun 2021 05:13:42 -0700 (PDT)
+        id S230226AbhFGMRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 08:17:50 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49080 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230233AbhFGMRo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 08:17:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=PvUCPI59T8MNKYSVJ0l6BLjhUdZg7ZN5P9rHrdvpfWo=; b=4Mo5fcTGlq6pKWlfHg3WUoLPNB
+        VEyOjDZPz2OP5BJb8H0HkVj1zW3yDVKn7IfQS6Dd5OMVbyoiAE01t80R+qIOKBiZl9BitUuR4S+ZZ
+        5cb6zsA680ZbS35ZOu0sT0qQm3PS4wHsCZFtgu+qBY0V0faWMqiu5VaQbLKLG1oqtguA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lqEAX-008AjM-GG; Mon, 07 Jun 2021 14:15:49 +0200
+Date:   Mon, 7 Jun 2021 14:15:49 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Liang Xu <lxu@maxlinear.com>
+Cc:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        Thomas Mohren <tmohren@maxlinear.com>
+Subject: Re: [PATCH v2] net: phy: add Maxlinear GPY115/21x/24x driver
+Message-ID: <YL4N9XMFKOrRdH4l@lunn.ch>
+References: <20210603073438.33967-1-lxu@maxlinear.com>
+ <YLoZWho/5a60wqPu@lunn.ch>
+ <797fe98f-ab65-8633-dadc-beed56d251d0@maxlinear.com>
+ <YLqPnpNXbd6o019o@lunn.ch>
+ <f965ae22-c5a8-ec52-322f-33ae04b76404@maxlinear.com>
+ <YLuMDyg2IIpalOIo@lunn.ch>
+ <f329dca8-9962-0b43-eaa7-cbed838d5dc0@maxlinear.com>
 MIME-Version: 1.0
-From:   Johannes Pointner <h4nn35.work@gmail.com>
-Date:   Mon, 7 Jun 2021 14:13:31 +0200
-Message-ID: <CAHvQdo2yzJC89K74c_CZFjPydDQ5i22w36XPR5tKVv_W8a2vcg@mail.gmail.com>
-Subject: net: phy: DP83822: not able to get a link
-To:     dmurphy@ti.com
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f329dca8-9962-0b43-eaa7-cbed838d5dc0@maxlinear.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> Yes, they all have same product number.
+> 
+> They are one IP.
 
-I just updated a i.MX6 device which uses the DP83822 from 5.4 to 5.10
-and can't get a link anymore.
+O.K, this is the sort of information which is useful to have in the
+commit message. Basically anything which is odd about your PHY it is
+good to mention, because reviewers are probably going to notice and
+ask.
 
-ip addr shows:
-1: lo: <LOOPBACK> mtu 65536 qdisc noop qlen 1000
-   link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc pfifo_fast qlen 1000
-   link/ether 00:60:65:54:32:10 brd ff:ff:ff:ff:ff:ff
+> The difference is feature set it's enabled by fusing in silicon.
+> 
+> For example, GPY115 has 10/100/1000Mbps support, so in the ability 
+> register 2.5G capable is 0.
+> 
+> GPY211 has 10/100/1000/2500Mbps support, so in the capability register 
+> 2.5G capable is 1.
+ 
+I assume it is more than just the capability register? Linux could
+easily ignore that and make use of 2.5G if it still actually works.
 
-It seems to me that the commit 5dc39fd5ef35 ("net: phy: DP83822: Add
-ability to advertise Fiber connection") causes this.
-If I revert the following part of this commit, it is working again:
-@@ -314,13 +451,85 @@ static int dp83822_phy_reset(struct phy_device *phydev)
- {
-  int err;
-
-- err = phy_write(phydev, MII_DP83822_RESET_CTRL, DP83822_HW_RESET);
-+ err = phy_write(phydev, MII_DP83822_RESET_CTRL, DP83822_SW_RESET);
-
-Was this change intentional? Because I took a look at the driver
-DP83867 which has similar bits to reset the phy and there this wasn't
-changed.
-Maybe the naming of the defines in case of the DP83822 is a bit misleading?
-DP83882:
-#define DP83822_HW_RESET BIT(15)
-#define DP83822_SW_RESET BIT(14)
-datasheet description:
-15 Software Reset
-14 Digital Restart
-
-DP83867:
-#define DP83867_SW_RESET BIT(15)
-#define DP83867_SW_RESTART BIT(14)
-datasheet description:
-15 SW_RESET
-14 SW_RESTART
-
-Thanks,
-Hannes
+       Andrew
