@@ -2,100 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BC2D39DD4B
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 15:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E3A039DD4F
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 15:09:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbhFGNKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 09:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
+        id S230286AbhFGNL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 09:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230194AbhFGNKc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 09:10:32 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FDAC061766;
-        Mon,  7 Jun 2021 06:08:40 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id k5-20020a05600c1c85b02901affeec3ef8so2304222wms.0;
-        Mon, 07 Jun 2021 06:08:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=Blqm8HDtxq2DCywo/otFV5fX8E6HMxdWztbHqtnhcQ4=;
-        b=cYn0h2r3Og5Kv2IB6Ch8Nef2WtD0NS5tR8Qkw7JnR14mhvVUZDuDHssVmMhj9L7cYM
-         ux8F7ZiQjdEfpB7ImquMEGAMOO65OGLlqggEBz9eRIDUfv5FNxNMNFtq7SMVxcdrn+eB
-         UPaGR6Izbcnzx9JvyoY7OKihWxzQBIlrk04+lXeF+HdpjaWOStxVMBmr5lDj5NjTfwbA
-         R1YoRphDY+m5urDxK7QGmBpLHuLinklwEgs5sLY/xvZgexrKqWIW14C0db3nI6Mkdmme
-         Oesv6G8v+nLJ4gK5h2fSBchW3xDqbEt5dwAdi80/koq05EzZR2Q8Nfxvj2LG69YHoWwZ
-         rCSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Blqm8HDtxq2DCywo/otFV5fX8E6HMxdWztbHqtnhcQ4=;
-        b=eNJZbj5GgLVxTGDxJIb3XvbVRGaWbnyOgFcZyn/aj/VkGm3irJFe8eX/l9kamANwev
-         3RKbcZBKWWA9sEazQYMuZDATI6H0jDHrdy8j4ZzXe9QLMLgPyzM83pDsw6hFwYvVDCVa
-         CK2buQixwtZOqgozbSQ3QE4vAdwG+munxeQfLxV+Dt8SKSh2CrBFgd32kA2SXvoLRHpT
-         LAO9ZguOJh2nm9w82cyW5IDgQnW27MmXfEzz1srBN0aCWVjZ3YzaeYdzY9bG+U8YINBF
-         IRH7EtxiLgKPlUdxsW62vFPREXLIrfY9ppwuMfSQXR8B2CbhBvYr0nJ8HWl++zLLU0Kf
-         C40Q==
-X-Gm-Message-State: AOAM5314P+jntL59w+UWd3XpPdniiECRAMQOwa9bFUJ0MO+VncLNvcyV
-        V8d8VD3aBmm069O9x8RKwPo=
-X-Google-Smtp-Source: ABdhPJxeGzMQVek2rzeTsU89oXk+OB6CMX7fRQTS8ECgarjAh0DmuwMBrb4/CptbA5tB8XsMg8do3Q==
-X-Received: by 2002:a05:600c:204:: with SMTP id 4mr13651408wmi.95.1623071317518;
-        Mon, 07 Jun 2021 06:08:37 -0700 (PDT)
-Received: from linux-dev (host81-153-178-248.range81-153.btcentralplus.com. [81.153.178.248])
-        by smtp.gmail.com with ESMTPSA id p187sm14802839wmp.28.2021.06.07.06.08.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Jun 2021 06:08:37 -0700 (PDT)
-Date:   Mon, 7 Jun 2021 14:08:35 +0100
-From:   Kev Jackson <foamdino@gmail.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] libbpf: Fixes incorrect rx_ring_setup_done
-Message-ID: <YL4aU4f3Aaik7CN0@linux-dev>
+        with ESMTP id S230193AbhFGNL2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 09:11:28 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987C9C061766;
+        Mon,  7 Jun 2021 06:09:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=vbgOzbtmK58ivP99PkrwPY3SZvVaeQG4u1eF2Jf+fZY=; b=OcCrKMaH36LqXSa70uu0yk6vd
+        Zij7bwVolkc0d3fTU3An7/IFuQpoTo51lQ9PuQSvtPbY6/W2NbtvUEtowi4YVn7bQWXqeBtT35D3D
+        aRHX+OukHQLa0wbUkSdiJw9jrM1x+uu37vqWwAu9mIF1njMIpV4tNQu/nnjNJ01yXYpzuWerxFNdt
+        IEpbaTY7+R5C496dIX5KdDB2Honj/5yeBY4tDv5sz9eBvl/EYVez1hUVKqHoadDi98xrroDC8aDXz
+        SFRUogOzph3IeUZS2NfK718XYkUWSuq2Y3Rh1vcHvfL6n+tZUds2W6xDc2+VCm/thYFtCMYP+lgVZ
+        Ue0vwJVFg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44792)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lqF0R-0000XY-5z; Mon, 07 Jun 2021 14:09:27 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lqF0O-0005x1-LV; Mon, 07 Jun 2021 14:09:24 +0100
+Date:   Mon, 7 Jun 2021 14:09:24 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Simon Horman <simon.horman@netronome.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Subject: Re: [PATCH net-next v3 03/10] net: sparx5: add hostmode with phylink
+ support
+Message-ID: <20210607130924.GE22278@shell.armlinux.org.uk>
+References: <20210604085600.3014532-1-steen.hegelund@microchip.com>
+ <20210604085600.3014532-4-steen.hegelund@microchip.com>
+ <20210607091536.GA30436@shell.armlinux.org.uk>
+ <9f4fad323e17c8ba6ebde728fcc99c87dd06fc75.camel@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <9f4fad323e17c8ba6ebde728fcc99c87dd06fc75.camel@microchip.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calling xsk_socket__create_shared(), the logic at line 1097 marks a
-boolean flag true within the xsk_umem structure to track setup progress
-in order to support multiple calls to the function.  However, instead of
-marking umem->tx_ring_setup_done, the code incorrectly sets
-umem->rx_ring_setup_done.  This leads to improper behaviour when
-creating and destroying xsk and umem structures.
+On Mon, Jun 07, 2021 at 02:45:01PM +0200, Steen Hegelund wrote:
+> Hi Russell,
+> 
+> Thanks for your comments.
+> 
+> On Mon, 2021-06-07 at 10:15 +0100, Russell King (Oracle) wrote:
+> > 3) I really don't get what's going on with setting the port mode to
+> >    2500base-X and 1000base-X here when state->interface is 10GBASER.
+> 
+> The high speed interfaces (> 2.5G) do not support any in-band signalling, so the only way that e.g a
+> 10G interface running at 2.5G will be able to link up with its partner is if both ends configure the
+> speed manually via ethtool.
 
-Multiple calls to this function is documented as supported.
+We really should not have drivers hacking around in this way. If we want
+to operate in 2500base-x or 1000base-x, then that is what phylink should
+be telling the MAC driver. The MAC driver should not be making these
+decisions in its mac_config() callback. Doing so makes a joke of kernel
+programming.
 
-Signed-off-by: Kev Jackson <foamdino@gmail.com>
----
- tools/lib/bpf/xsk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 6061431ee04c..e9b619aa0cdf 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -1094,7 +1094,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 			goto out_put_ctx;
- 		}
- 		if (xsk->fd == umem->fd)
--			umem->rx_ring_setup_done = true;
-+			umem->tx_ring_setup_done = true;
- 	}
- 
- 	err = xsk_get_mmap_offsets(xsk->fd, &off);
 -- 
-2.30.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
