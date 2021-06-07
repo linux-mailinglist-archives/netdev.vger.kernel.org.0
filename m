@@ -2,387 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C94CE39D5F5
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 09:26:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB05839D60F
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 09:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230265AbhFGH2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 03:28:12 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3443 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230266AbhFGH2K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 03:28:10 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fz4bN17lCz6wT2;
-        Mon,  7 Jun 2021 15:23:12 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 7 Jun 2021 15:26:04 +0800
-Received: from thunder-town.china.huawei.com (10.174.177.72) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 7 Jun 2021 15:26:03 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Jason Baron <jbaron@akamai.com>,
-        Stefani Seibold <stefani@seibold.net>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Thomas Graf <tgraf@suug.ch>,
-        "Herbert Xu" <herbert@gondor.apana.org.au>,
-        Jens Axboe <axboe@kernel.dk>, Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 1/1] lib: Fix spelling mistakes
-Date:   Mon, 7 Jun 2021 15:25:55 +0800
-Message-ID: <20210607072555.12416-1-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
+        id S230214AbhFGHfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 03:35:08 -0400
+Received: from de-smtp-delivery-102.mimecast.com ([194.104.111.102]:20276 "EHLO
+        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230200AbhFGHfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 03:35:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1623051194;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=18sc27qt2MdAUPAfqSvsq6VWZxZ7AlczriAkSGpC5ng=;
+        b=Pyix9SHANTciYU2xqifUQmsV1pPfamOBPjkhWpad5Ne4T76j3sh/lOjXpOmJ1rLifMtrak
+        mlO8qHY0hoOFBAesfuTQkCbBAqBXEspUI3dEcjP+q2jngRmwVDfrDCZNdD1ih0buF6aMm1
+        6At6s6H3Q7AEhg63ZsWigpc5ZL5vQM4=
+Received: from EUR03-DB5-obe.outbound.protection.outlook.com
+ (mail-db5eur03lp2055.outbound.protection.outlook.com [104.47.10.55]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ de-mta-38-Ay9mnpsqPUCWs1ZkDMNT7g-1; Mon, 07 Jun 2021 09:33:12 +0200
+X-MC-Unique: Ay9mnpsqPUCWs1ZkDMNT7g-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I+gcBiY7SsoqJjr/ZfbF51TqIsqqrnrc0FOnqqduULWuQQ41x5/YfiyAFNEaSUIB3TcFUPhESBu7zfPtb8DxPUpJOJmxSca7PmxLZC2rNWCMdAGfG+1v6U3ymUafvhPLX8Rt/gu0QqhXYObiOd5/3i77FT6fU3rINZupXMRPoM37AFaJVtU40UCBJh8F6OhQECVL3bB5UEf7yLLa9FTtR2SAoO2VNjDYEq8oKuARWEy81ylvFIyzUpZdOA8dVIKc4BhDLtHmPAOyfCrFSB0p3HcCaeHNluIgXucAKufsxLhXpWuKEmQTiCCkO/mwhXViI4rGBOf3VBFzQKAw9MsAag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=18sc27qt2MdAUPAfqSvsq6VWZxZ7AlczriAkSGpC5ng=;
+ b=cNVXG2a+26AtCDTMnZzlgU5yoiBDkdSm6uGCZul2+aXnkq4ejYTlpRe+g2Hr7RMG2uRQ+ygsvmfQWSzI7GkUxGIB1ruLbM/rNtbW5xlV6ERJSQfYts11+vJHdT502I1utjrmMlmZ4PRQjfcAOAKUSwQx3FIbj/AjEDByLMKgWAKMJ4AtqhYJWb3Nxv+/B64EXEjAynPBKiIGiCuegL7Pqgj+HAZVLok2lpsB2gpwUZW9qvQSupX+GiWxfBVS2ts8JEl0dw7Q7KDJBAxE6CCGbiZJAhC9SpXtmyX8/DPeFI/sfiqV0kB7/8Yq4HrjEYtww4BmVOabkOc28K4rxxldxQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=suse.com;
+Received: from DB7PR04MB5177.eurprd04.prod.outlook.com (2603:10a6:10:20::21)
+ by DB6PR0401MB2294.eurprd04.prod.outlook.com (2603:10a6:4:46::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.20; Mon, 7 Jun
+ 2021 07:33:10 +0000
+Received: from DB7PR04MB5177.eurprd04.prod.outlook.com
+ ([fe80::790f:c865:4660:1565]) by DB7PR04MB5177.eurprd04.prod.outlook.com
+ ([fe80::790f:c865:4660:1565%7]) with mapi id 15.20.4195.030; Mon, 7 Jun 2021
+ 07:33:10 +0000
+Date:   Mon, 7 Jun 2021 15:33:02 +0800
+From:   Shung-Hsi Yu <shung-hsi.yu@suse.com>
+To:     linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
+        netdev@vger.kernel.org, linux-pci@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Nitesh Lal <nilal@redhat.com>
+Subject: [RFC] genirq: Add effective CPU index retrieving interface
+Message-ID: <YL3LrgAzMNI2hp5i@syu-laptop>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+X-Originating-IP: [39.12.96.182]
+X-ClientProxiedBy: FR0P281CA0013.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:15::18) To DB7PR04MB5177.eurprd04.prod.outlook.com
+ (2603:10a6:10:20::21)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.177.72]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from syu-laptop (39.12.96.182) by FR0P281CA0013.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:15::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.11 via Frontend Transport; Mon, 7 Jun 2021 07:33:06 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9363e986-da74-4521-8516-08d929868037
+X-MS-TrafficTypeDiagnostic: DB6PR0401MB2294:
+X-Microsoft-Antispam-PRVS: <DB6PR0401MB2294D41DA9F2DAE97FBEC246BF389@DB6PR0401MB2294.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /hWMOC0ayEFV3Yp015C9yYeL5E4Mz3p9/G+/jemCI3ioXpLIRDHmwu8VO6Nat8RViafYMUlmqi9Tr/UmvKeP6cUoozTzx12GitWtt7fDVCeUr6jDj4HD9Z4VaksmaJgk9sdlCHGYAcShORzlNsE2vNGDoGAIfHn/bppp8SkKs37vcX9KJpStbel7JKuZTQt8xmEFNb/uT744HYZdY8HlNSQ6v1baiTWfPrTv0NGXUageGR5ucReNMcl0ECKqW99+ZXXM8PbFGnQsnifhYjuvIocDgHL1ptwxTH1dm5u7E431YOKwEDzFrC47ziZEzb9PeSoG6SM3pvOWLgPW0Rw7ZxtTAWtku/xXrHmGcIzlikxBQm1nLZM9oYyYXH/0ufTDAsGxucJkMlxeNY63MubQrvjFeVQduJYZFpy28I6Q8Zrzi6OYObz5/yz+z97GvhVANKe0MoQ3M71K0qYh/G0TJC3WInpmMGw+YcAKeVr0gUrWYK4KGFvSTWiRU8S80lMWEkhDIIVhw7kTTpq+TJ4RL1C+0Rm04ih3RBjwRyLJZumhf04RDZruJS8QTb36njf41wEhqCtBPVc7zjQrETp0BnWks2XGwxjRrHGCVw8615jPnQxV16bOvwXI+HjLidwhlXeUdfj6wxRGfkso9JA6hsvcca7L835n024FVWMEchyo/Qn7UHokl0Ixuiuj4E4ms314bUCDiERMF0mBWmYm2k+3NzKRzArzMy8+vNRgQk/BVCD/1j2/WyFMYJ4plZr5O+AN3+H97gYVTOvx2NloJA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5177.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(396003)(39850400004)(366004)(136003)(376002)(33716001)(83380400001)(8936002)(316002)(478600001)(6496006)(966005)(86362001)(4326008)(186003)(16526019)(8676002)(26005)(66946007)(6666004)(66556008)(2906002)(5660300002)(55016002)(9686003)(956004)(38100700002)(66476007)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?SGVjVlQxcUl1QmRtUWd6aGZObytBU3djaWUzcS8yazZLTEFCN0haOWFiQ2dt?=
+ =?utf-8?B?Z3ZOMXFHZEhqSTFCOWF3SHl1MGxWVU9mdjdrb0FvV1paQW1acU9LeThzMHF3?=
+ =?utf-8?B?UmdFMXZuRHZOVDlSeUg0Wm4vODZEZEVLMm5NWGR0Qy92NmxqUXpCdFltdnhz?=
+ =?utf-8?B?aGNLV0lOKzBVSFhXQzduZ0oweWRtTlhvRytDZGQwdG9ZdVNTL3BtU0g3b0E3?=
+ =?utf-8?B?ZUpHOUxuT0k2WllpaWtReFdDcFIvL0xNZWdaQkJ0NEVYQXhoVE1Qck9tcGN3?=
+ =?utf-8?B?OEZKNHc0VVJIaEFyb1l3WTVLdlBtQWxaUUJld0xvL0kwRUVBUUV3akRJdWVz?=
+ =?utf-8?B?THY0YktudFFCcW5PQW9sWksrWVhXbDBGczVGM1U0eXRuaS80SnI1bEx6SjA1?=
+ =?utf-8?B?MWgwaG53ZE5obFlLWmpRc2FqUnJGd1ZCcmhCc3A2TkdPQ2RaQ0FCejFsTXZK?=
+ =?utf-8?B?aUhXanZUM1ZxNHVVNXQvU1M2elpJNTFicXFXRlp2YWJXZ0ZCcklNajcra1g5?=
+ =?utf-8?B?WDNhNzN0QnVvc1VhRGNkZlBpYTlrNDVHM1VHdjJXcWx1cS9tL0NLVDNBditB?=
+ =?utf-8?B?Q25rT1NERVFSaVNOQnc2UHZ2ckFHZnc4ZVhHWkR1UDMvK01Kc2RBODBSOXlF?=
+ =?utf-8?B?SVV2SWdqblBBcXpxeG0vMmNlR2Y2ZzRLanZyRmg4aTVnYXZ6WW80ZXJSOVA5?=
+ =?utf-8?B?b0hDT3lTbTlpQlBkbzcrQkIrYitUNlJFSHlRU21Idk5TQVZEZUsxbVRsdnVx?=
+ =?utf-8?B?Ym42Wmt5S0RQUEY4SWVTMXZwSmZPTlZkRUM4OENCYUc2QUpPUFJBczNpSXZ3?=
+ =?utf-8?B?UGthODdjeitLU1kwNXE1aVF3OUQyaGR2by9WUStQNUdlbE4xRGpFcFVGaGRJ?=
+ =?utf-8?B?MkFyRzVHUyt5QmJDV1JuQzVucGE3NSt4MTh0cTBuL205V1UvenVjNXVKNitj?=
+ =?utf-8?B?TFpPaUtISHJmRTRMUmtReXBwV0JSc2xrSTg4cUMwdFZwN3UvV1ZGbFJ6K096?=
+ =?utf-8?B?Mlk4Mi9GOTRUMU9nN1h6V1Y3N0JMbXcvOHlSSzZZdWVIQS9BNmpoQWlZeFJF?=
+ =?utf-8?B?aHVTNi9pcVRSalV1V3hiSWcxMHBLV2ZuakRSWlNUN1NnaWZqdEd0aVdyVG53?=
+ =?utf-8?B?R0xDNTlBVEExV3h3TmVuRTloZTE0YlBra3F6QTJGeDlHTVNrR1dJYWlUTnA1?=
+ =?utf-8?B?STRKT2VzOExOVnpmbzh6cWlid0JIN0pBam5QTS8wR2JJS0VGV204dWY0TzJu?=
+ =?utf-8?B?WGRpRXZYOUlhMUxQdDVoL252MFA2MXFuaUo2WXVMYlNJV3ovb1U1NFEraVMz?=
+ =?utf-8?B?Ylh6LzI0QjFTRUhsRTVEeU5idHg1Qk1Kdk5jM0R5WkxUOVRaemNmQUU0NlFT?=
+ =?utf-8?B?Ulp2UlhEMmtNL2sxYkNMbEYvOXJJK0NKUUtVQkdkcGlSYWRxamptVWhvZVY2?=
+ =?utf-8?B?Szd2TXBCRzk1d0MwRW1ONTJGMkRRYUc1VHJjNFJXNVFraEVodFdjWlBZUXJM?=
+ =?utf-8?B?bGpOclAxZHdKT0VZVGhObWZ5ZW80V0NZODV6dWlNY1dOeC9KaFF3bGpSclZv?=
+ =?utf-8?B?SW1tdjhtSkhOQldQaCtka3g5S1hlcDNUckVTSmtUMjFmaERocEhTenRRLzVl?=
+ =?utf-8?B?TEYvaWdiRHdFU2I2akszUTdyVFN3bzRkZmtjL21xZk03bnpVeU54QmlWblM1?=
+ =?utf-8?B?Z1ZHdE12SDJmaDJCbmN6QWQ3VlNncWVyOVYveURzTzhPMDJOZXdUenNRQWlO?=
+ =?utf-8?Q?N+Ad4xNRKkW6jILRlIuGpdP1+pLHMbSHGR0M1IY?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9363e986-da74-4521-8516-08d929868037
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5177.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2021 07:33:10.4123
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5ffQbu9I3AUFE8o8SJr15s0AfXZnjxpspbOP2Od69gedguz3mfPfFqXi1/9YhdlizBv0LTtSbsUxTt9U29g+RA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2294
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix some spelling mistakes in comments:
-permanentely ==> permanently
-wont ==> won't
-remaning ==> remaining
-succed ==> succeed
-shouldnt ==> shouldn't
-alpha-numeric ==> alphanumeric
-storeing ==> storing
-funtion ==> function
-documenation ==> documentation
-Determin ==> Determine
-intepreted ==> interpreted
-ammount ==> amount
-obious ==> obvious
-interupts ==> interrupts
-occured ==> occurred
-asssociated ==> associated
-taking into acount ==> taking into account
-squence ==> sequence
-stil ==> still
-contiguos ==> contiguous
-matchs ==> matches
+Most driver's IRQ spreading scheme is naive compared to the IRQ spreading
+scheme introduced since IRQ subsystem rework, so it better to rely
+request_irq() to spread IRQ out.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+However, drivers that care about performance enough also tends to try
+allocating memory on the same NUMA node on which the IRQ handler will run.
+For such driver to rely on request_irq() for IRQ spreading, we also need to
+provide an interface to retrieve the CPU index after calling request_irq().
+
+This should be the last missing piece of puzzle that allows removal of
+calls to irq_set_affinity_hint() that were actually intended to spread out
+IRQ.
+
+Link: https://lore.kernel.org/lkml/CAFki+Lm0W_brLu31epqD3gAV+WNKOJfVDfX2M8ZM__aj3nv9uA@mail.gmail.com/
+Link: https://lore.kernel.org/linux-api/87zgwo9u79.ffs@nanos.tec.linutronix.de/
+Signed-off-by: Shung-Hsi Yu <shung-hsi.yu@suse.com>
 ---
- lib/Kconfig.debug             | 6 +++---
- lib/asn1_encoder.c            | 2 +-
- lib/devres.c                  | 2 +-
- lib/dynamic_debug.c           | 2 +-
- lib/fonts/font_pearl_8x8.c    | 2 +-
- lib/kfifo.c                   | 2 +-
- lib/list_sort.c               | 2 +-
- lib/nlattr.c                  | 4 ++--
- lib/oid_registry.c            | 2 +-
- lib/pldmfw/pldmfw.c           | 2 +-
- lib/reed_solomon/test_rslib.c | 2 +-
- lib/refcount.c                | 2 +-
- lib/rhashtable.c              | 2 +-
- lib/sbitmap.c                 | 2 +-
- lib/scatterlist.c             | 4 ++--
- lib/seq_buf.c                 | 2 +-
- lib/sort.c                    | 2 +-
- lib/stackdepot.c              | 2 +-
- lib/vsprintf.c                | 2 +-
- 19 files changed, 23 insertions(+), 23 deletions(-)
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 150f13baa6cc..3cf48998a374 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -1293,7 +1293,7 @@ config PROVE_RAW_LOCK_NESTING
- 	 option expect lockdep splats until these problems have been fully
- 	 addressed which is work in progress. This config switch allows to
- 	 identify and analyze these problems. It will be removed and the
--	 check permanentely enabled once the main issues have been fixed.
-+	 check permanently enabled once the main issues have been fixed.
+I've ask previously in another thread[1], but there doesn't seem to be one,
+so hence this patch.
+
+I apologize if there's anything glaringly wrong, it's my 1st time trying to
+send a patch that deals with driver interface. Just let me know, and I'll
+get it fixed.
+
+Also, there's probably better a name for the interface but I can't think of
+one.
+
+1: https://lore.kernel.org/r/YK9yxQoBPeUfQG05@syu-laptop
+
+---
+ include/linux/interrupt.h |  1 +
+ kernel/irq/manage.c       | 17 +++++++++++++++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+index 2ed65b01c961..b67621ccde35 100644
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -324,6 +324,7 @@ extern cpumask_var_t irq_default_affinity;
  
- 	 If unsure, select N.
+ extern int irq_set_affinity(unsigned int irq, const struct cpumask *cpumask);
+ extern int irq_force_affinity(unsigned int irq, const struct cpumask *cpumask);
++extern int irq_get_effective_cpu(unsigned int irq);
  
-@@ -1459,7 +1459,7 @@ config DEBUG_LOCKING_API_SELFTESTS
- 	  Say Y here if you want the kernel to run a short self-test during
- 	  bootup. The self-test checks whether common types of locking bugs
- 	  are detected by debugging mechanisms or not. (if you disable
--	  lock debugging then those bugs wont be detected of course.)
-+	  lock debugging then those bugs won't be detected of course.)
- 	  The following locking APIs are covered: spinlocks, rwlocks,
- 	  mutexes and rwsems.
- 
-@@ -1945,7 +1945,7 @@ config FAIL_IO_TIMEOUT
- 	  thus exercising the error handling.
- 
- 	  Only works with drivers that use the generic timeout handling,
--	  for others it wont do anything.
-+	  for others it won't do anything.
- 
- config FAIL_FUTEX
- 	bool "Fault-injection capability for futexes"
-diff --git a/lib/asn1_encoder.c b/lib/asn1_encoder.c
-index 41e71aae3ef6..27bbe891714f 100644
---- a/lib/asn1_encoder.c
-+++ b/lib/asn1_encoder.c
-@@ -181,7 +181,7 @@ EXPORT_SYMBOL_GPL(asn1_encode_oid);
- /**
-  * asn1_encode_length() - encode a length to follow an ASN.1 tag
-  * @data: pointer to encode at
-- * @data_len: pointer to remaning length (adjusted by routine)
-+ * @data_len: pointer to remaining length (adjusted by routine)
-  * @len: length to encode
-  *
-  * This routine can encode lengths up to 65535 using the ASN.1 rules.
-diff --git a/lib/devres.c b/lib/devres.c
-index bdb06898a977..b0e1c6702c71 100644
---- a/lib/devres.c
-+++ b/lib/devres.c
-@@ -355,7 +355,7 @@ static void pcim_iomap_release(struct device *gendev, void *res)
-  * detach.
-  *
-  * This function might sleep when the table is first allocated but can
-- * be safely called without context and guaranteed to succed once
-+ * be safely called without context and guaranteed to succeed once
-  * allocated.
-  */
- void __iomem * const *pcim_iomap_table(struct pci_dev *pdev)
-diff --git a/lib/dynamic_debug.c b/lib/dynamic_debug.c
-index d3ce78298832..cb5abb42c16a 100644
---- a/lib/dynamic_debug.c
-+++ b/lib/dynamic_debug.c
-@@ -991,7 +991,7 @@ static int ddebug_dyndbg_param_cb(char *param, char *val,
- 
- 	ddebug_exec_queries((val ? val : "+p"), modname);
- 
--	return 0; /* query failure shouldnt stop module load */
-+	return 0; /* query failure shouldn't stop module load */
+ extern int irq_can_set_affinity(unsigned int irq);
+ extern int irq_select_affinity(unsigned int irq);
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index ef30b4762947..5e2a722c5d93 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -487,6 +487,23 @@ int irq_force_affinity(unsigned int irq, const struct cpumask *cpumask)
  }
+ EXPORT_SYMBOL_GPL(irq_force_affinity);
  
- /* handle both dyndbg and $module.dyndbg params at boot */
-diff --git a/lib/fonts/font_pearl_8x8.c b/lib/fonts/font_pearl_8x8.c
-index b1678ed0017c..ae98ca17982e 100644
---- a/lib/fonts/font_pearl_8x8.c
-+++ b/lib/fonts/font_pearl_8x8.c
-@@ -3,7 +3,7 @@
- /*                                            */
- /*       Font file generated by cpi2fnt       */
- /*       ------------------------------       */
--/*       Combined with the alpha-numeric      */
-+/*       Combined with the alphanumeric       */
- /*       portion of Greg Harp's old PEARL     */
- /*       font (from earlier versions of       */
- /*       linux-m86k) by John Shifflett        */
-diff --git a/lib/kfifo.c b/lib/kfifo.c
-index 70dab9ac7827..12f5a347aa13 100644
---- a/lib/kfifo.c
-+++ b/lib/kfifo.c
-@@ -415,7 +415,7 @@ static unsigned int __kfifo_peek_n(struct __kfifo *fifo, size_t recsize)
- 	)
- 
- /*
-- * __kfifo_poke_n internal helper function for storeing the length of
-+ * __kfifo_poke_n internal helper function for storing the length of
-  * the record into the fifo
-  */
- static void __kfifo_poke_n(struct __kfifo *fifo, unsigned int n, size_t recsize)
-diff --git a/lib/list_sort.c b/lib/list_sort.c
-index 1e1e37762799..0fb59e92ca2d 100644
---- a/lib/list_sort.c
-+++ b/lib/list_sort.c
-@@ -104,7 +104,7 @@ static void merge_final(void *priv, list_cmp_func_t cmp, struct list_head *head,
-  * @head: the list to sort
-  * @cmp: the elements comparison function
-  *
-- * The comparison funtion @cmp must return > 0 if @a should sort after
-+ * The comparison function @cmp must return > 0 if @a should sort after
-  * @b ("@a > @b" if you want an ascending sort), and <= 0 if @a should
-  * sort before @b *or* their original order should be preserved.  It is
-  * always called with the element that came first in the input in @a,
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index 1d051ef66afe..86029ad5ead4 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -619,7 +619,7 @@ static int __nla_validate_parse(const struct nlattr *head, int len, int maxtype,
-  * Validates all attributes in the specified attribute stream against the
-  * specified policy. Validation depends on the validate flags passed, see
-  * &enum netlink_validation for more details on that.
-- * See documenation of struct nla_policy for more details.
-+ * See documentation of struct nla_policy for more details.
-  *
-  * Returns 0 on success or a negative error code.
-  */
-@@ -633,7 +633,7 @@ int __nla_validate(const struct nlattr *head, int len, int maxtype,
- EXPORT_SYMBOL(__nla_validate);
- 
- /**
-- * nla_policy_len - Determin the max. length of a policy
-+ * nla_policy_len - Determine the max. length of a policy
-  * @policy: policy to use
-  * @n: number of policies
-  *
-diff --git a/lib/oid_registry.c b/lib/oid_registry.c
-index 3dfaa836e7c5..e592d48b1974 100644
---- a/lib/oid_registry.c
-+++ b/lib/oid_registry.c
-@@ -124,7 +124,7 @@ EXPORT_SYMBOL_GPL(parse_OID);
-  * @bufsize: The size of the buffer
-  *
-  * The OID is rendered into the buffer in "a.b.c.d" format and the number of
-- * bytes is returned.  -EBADMSG is returned if the data could not be intepreted
-+ * bytes is returned.  -EBADMSG is returned if the data could not be interpreted
-  * and -ENOBUFS if the buffer was too small.
-  */
- int sprint_oid(const void *data, size_t datasize, char *buffer, size_t bufsize)
-diff --git a/lib/pldmfw/pldmfw.c b/lib/pldmfw/pldmfw.c
-index e5d4b3b2af81..6e77eb6d8e72 100644
---- a/lib/pldmfw/pldmfw.c
-+++ b/lib/pldmfw/pldmfw.c
-@@ -82,7 +82,7 @@ pldm_check_fw_space(struct pldmfw_priv *data, size_t offset, size_t length)
-  * @bytes_to_move: number of bytes to move the offset forward by
-  *
-  * Check that there is enough space past the current offset, and then move the
-- * offset forward by this ammount.
-+ * offset forward by this amount.
-  *
-  * Returns: zero on success, or -EFAULT if the image is too small to fit the
-  * expected length.
-diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
-index 4eb29f365ece..d9d1c33aebda 100644
---- a/lib/reed_solomon/test_rslib.c
-+++ b/lib/reed_solomon/test_rslib.c
-@@ -385,7 +385,7 @@ static void test_bc(struct rs_control *rs, int len, int errs,
- 
- 			/*
- 			 * We check that the returned word is actually a
--			 * codeword. The obious way to do this would be to
-+			 * codeword. The obvious way to do this would be to
- 			 * compute the syndrome, but we don't want to replicate
- 			 * that code here. However, all the codes are in
- 			 * systematic form, and therefore we can encode the
-diff --git a/lib/refcount.c b/lib/refcount.c
-index ebac8b7d15a7..a207a8f22b3c 100644
---- a/lib/refcount.c
-+++ b/lib/refcount.c
-@@ -164,7 +164,7 @@ EXPORT_SYMBOL(refcount_dec_and_lock);
-  * @flags: saved IRQ-flags if the is acquired
-  *
-  * Same as refcount_dec_and_lock() above except that the spinlock is acquired
-- * with disabled interupts.
-+ * with disabled interrupts.
-  *
-  * Return: true and hold spinlock if able to decrement refcount to 0, false
-  *         otherwise
-diff --git a/lib/rhashtable.c b/lib/rhashtable.c
-index c949c1e3b87c..e12bbfb240b8 100644
---- a/lib/rhashtable.c
-+++ b/lib/rhashtable.c
-@@ -703,7 +703,7 @@ EXPORT_SYMBOL_GPL(rhashtable_walk_exit);
-  *
-  * Returns zero if successful.
-  *
-- * Returns -EAGAIN if resize event occured.  Note that the iterator
-+ * Returns -EAGAIN if resize event occurred.  Note that the iterator
-  * will rewind back to the beginning and you may use it immediately
-  * by calling rhashtable_walk_next.
-  *
-diff --git a/lib/sbitmap.c b/lib/sbitmap.c
-index 47b3691058eb..b25db9be938a 100644
---- a/lib/sbitmap.c
-+++ b/lib/sbitmap.c
-@@ -583,7 +583,7 @@ void sbitmap_queue_clear(struct sbitmap_queue *sbq, unsigned int nr,
- 	/*
- 	 * Once the clear bit is set, the bit may be allocated out.
- 	 *
--	 * Orders READ/WRITE on the asssociated instance(such as request
-+	 * Orders READ/WRITE on the associated instance(such as request
- 	 * of blk_mq) by this bit for avoiding race with re-allocation,
- 	 * and its pair is the memory barrier implied in __sbitmap_get_word.
- 	 *
-diff --git a/lib/scatterlist.c b/lib/scatterlist.c
-index a59778946404..27efa6178153 100644
---- a/lib/scatterlist.c
-+++ b/lib/scatterlist.c
-@@ -38,7 +38,7 @@ EXPORT_SYMBOL(sg_next);
-  * @sg:		The scatterlist
-  *
-  * Description:
-- * Allows to know how many entries are in sg, taking into acount
-+ * Allows to know how many entries are in sg, taking into account
-  * chaining as well
-  *
-  **/
-@@ -59,7 +59,7 @@ EXPORT_SYMBOL(sg_nents);
-  *
-  * Description:
-  * Determines the number of entries in sg that are required to meet
-- * the supplied length, taking into acount chaining as well
-+ * the supplied length, taking into account chaining as well
-  *
-  * Returns:
-  *   the number of sg entries needed, negative error on failure
-diff --git a/lib/seq_buf.c b/lib/seq_buf.c
-index 707453f5d58e..b81e87ab34f6 100644
---- a/lib/seq_buf.c
-+++ b/lib/seq_buf.c
-@@ -285,7 +285,7 @@ int seq_buf_path(struct seq_buf *s, const struct path *path, const char *esc)
- }
- 
- /**
-- * seq_buf_to_user - copy the squence buffer to user space
-+ * seq_buf_to_user - copy the sequence buffer to user space
-  * @s: seq_buf descriptor
-  * @ubuf: The userspace memory location to copy to
-  * @cnt: The amount to copy
-diff --git a/lib/sort.c b/lib/sort.c
-index 3ad454411997..aa18153864d2 100644
---- a/lib/sort.c
-+++ b/lib/sort.c
-@@ -51,7 +51,7 @@ static bool is_aligned(const void *base, size_t size, unsigned char align)
-  * which basically all CPUs have, to minimize loop overhead computations.
-  *
-  * For some reason, on x86 gcc 7.3.0 adds a redundant test of n at the
-- * bottom of the loop, even though the zero flag is stil valid from the
-+ * bottom of the loop, even though the zero flag is still valid from the
-  * subtract (since the intervening mov instructions don't alter the flags).
-  * Gcc 8.1.0 doesn't have that problem.
-  */
-diff --git a/lib/stackdepot.c b/lib/stackdepot.c
-index df9179f4f441..0a2e417f83cb 100644
---- a/lib/stackdepot.c
-+++ b/lib/stackdepot.c
-@@ -11,7 +11,7 @@
-  * Instead, stack depot maintains a hashtable of unique stacktraces. Since alloc
-  * and free stacks repeat a lot, we save about 100x space.
-  * Stacks are never removed from depot, so we store them contiguously one after
-- * another in a contiguos memory allocation.
-+ * another in a contiguous memory allocation.
-  *
-  * Author: Alexander Potapenko <glider@google.com>
-  * Copyright (C) 2016 Google, Inc.
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 1d6bca047690..87acf66f0e4c 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -3422,7 +3422,7 @@ int vsscanf(const char *buf, const char *fmt, va_list args)
- 
- 	while (*fmt) {
- 		/* skip any white space in format */
--		/* white space in format matchs any amount of
-+		/* white space in format matches any amount of
- 		 * white space, including none, in the input.
- 		 */
- 		if (isspace(*fmt)) {
++/**
++ * irq_get_effective_cpu - Retrieve the effective CPU index
++ * @irq:	Target interrupt to retrieve effective CPU index
++ *
++ * When the effective affinity cpumask has multiple CPU toggled, it just
++ * returns the first CPU in the cpumask.
++ */
++int irq_get_effective_cpu(unsigned int irq)
++{
++	struct irq_data *data = irq_get_irq_data(irq);
++	struct cpumask *m;
++
++	m = irq_data_get_effective_affinity_mask(data);
++	return cpumask_first(m);
++}
++EXPORT_SYMBOL_GPL(irq_get_effective_cpu);
++
+ int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
+ {
+ 	unsigned long flags;
 -- 
-2.25.1
-
+2.31.1
 
