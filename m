@@ -2,144 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAA9A39DCE0
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 14:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B6439DCE9
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 14:49:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbhFGMsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 08:48:41 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:22616 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230269AbhFGMsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 08:48:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1623070010; x=1654606010;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FIZFB2bYQ1/lIPincdEySVOxkMfoPs9wW+HB5gfqoBA=;
-  b=rA+S08OjeIDnwmVFxm+nFmocFOsc3Dj0NU37zncT7WusHC+xZSy1LlVN
-   lWoL2076fkI5OGXfuok3lsD2LY+0tD3iO6YZilsdpU+RG+hiuBirRf/aH
-   4blWvqt2P/6R0JSbdpl9ufbjVy1vbc69zKuNy/47RhLTp6YilOOZzdKgW
-   rD0uUbUpp3MyYNqxvhRDUCtRBJIxwQx/oRKxVz1LanKZI8aZGOeha3LhZ
-   sTxL2GPWcsL1ayzhVMTpcQDg96RUxCDlRNxNWfbQdK544WyXNE8vu9dYt
-   lPV1eiuXfn0Rapm5GmYvS/Uxq+PL5eQMfDdDSchQNU4YVURCIm0X9GuvY
-   g==;
-IronPort-SDR: pSLu3m6JBVRYdtAo9Ni0/Kun1aTgxO+YivEENshwypXWwXDnQelbTY9twd7KGUZsQorHts3tlN
- Dn0liR6QhnquCyvIQggRjjXLj+RsDBIyihE2agehB1TsiqNJ25jumgPzxo9C7QD07yr4abK1sZ
- mnYKVz0RLa/D+sHz/A2fli0WEM1f/xtmhx88io2L1BRrJlJZlo1wXN4CMDFZXqzkqDqTDPHvTs
- TKmT1flZ5k/HOGFHnnpfSRtw2vfnQ5DPY/OSngkiXDb6FWM5tyJLLSxagVEhLVXAqdfLC35dyM
- qqA=
-X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; 
-   d="scan'208";a="120430542"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Jun 2021 05:46:48 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 7 Jun 2021 05:46:48 -0700
-Received: from den-her-m31857h.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Mon, 7 Jun 2021 05:46:44 -0700
-Message-ID: <d5ffe24ce7fbe5dd4cc0b98449b0594b086e3ba9.camel@microchip.com>
-Subject: Re: [PATCH net-next v3 04/10] net: sparx5: add port module support
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Simon Horman" <simon.horman@netronome.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Date:   Mon, 7 Jun 2021 14:46:44 +0200
-In-Reply-To: <20210607092136.GA22278@shell.armlinux.org.uk>
-References: <20210604085600.3014532-1-steen.hegelund@microchip.com>
-         <20210604085600.3014532-5-steen.hegelund@microchip.com>
-         <20210607092136.GA22278@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        id S230220AbhFGMu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 08:50:58 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:18208 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230226AbhFGMu5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 08:50:57 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1623070138; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=E26R7pk8r8OdbRWXephuuQYBXQ1cnrrrx1evfW78ZvpO1LwwQZ7n+QKzD9XdwxdHlK
+    6X8h401pivpHVkabGLjCpT8fEd4ezTo4vBFb9XOQM9rOSzNC81C/Ukwhj4YGnwvKJ5Ft
+    iwWZNGmIq2BxOWMkGgA2QLgIjZoKKIewkpdLR29d0A7E2jzk5vuej1UHPLHfGC1NsOxn
+    KalwNWYXMwRJw+Q5xQQAU6MrAMKsdSaDnp962ggG93+NNuQKpK5xAGDQdCU8i/ldYXLs
+    OE+NdF94N5MgOIoI1EaHYy4sdQ7+LtZteeo3FV92HjQmxGdrMx/BdoSgyVScCvb/GM7C
+    Dw4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623070138;
+    s=strato-dkim-0002; d=strato.com;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=+SU65bGHAWVzzLktQHmvLbpL6Os1Tep8tLAd0BZJBW8=;
+    b=MbeOQ67ftzk9RsFgSJ8e/vwT49bCrWTTd96teRmQu1crgOcLKhBVxPFUSFOaY4cW1G
+    2hI0mCuZbJ6MBAvetw4Tu7l0Ep49DwcYJPZm8UC4TYTwgVbVf9XU1ihf4tL11vj14QRU
+    ShH19KH9fxweFOPmT06zI3artkhLenmx8XT8f7glPTYZ46BwzY0102Ci1TFovgm3Mo6I
+    an9BMpoxL6qz+/zQLFuE13sJhmtEC8XYaBsnIsXB4nLCz0YurGd9BaNgojB2lvT2Sj39
+    SLrlFcHeo7Sw0I4Tlv+qTGLnd9UDttFvc5uk9lbqijIuZCsWomhHOddXn2dkm23RCCTy
+    89KA==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623070138;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=+SU65bGHAWVzzLktQHmvLbpL6Os1Tep8tLAd0BZJBW8=;
+    b=lIFYLpwHiTfz+yI4tqjlQmoZigJN4H4+O8S8j4WQ1mhVU5G3iIMDPlGkfghosVmo+z
+    GmMEvFc1OzbULmi6F3etwwd9VA0xlxtPG/qFfeI5wda+YTg5ntvbCzjFyFNb53F1WwZg
+    rL37iymiwD6hBSKq70bGYh5kzETMewOYQCLBcKzQPg7coNjJsIDTc7loYvm5ZA8kHFIc
+    RRKUSFpGyPv3nOF9biMxqhXwE5M7ewyWdnEO3buwqsrmdAzCe2EoQbbjFOhsrJNePaPO
+    Z83r+ur/tBroj7dnCxxDwNayEaoU6UwOGisms6Jh787SQ0Hjop5FY+KSbipDHgw6uNfR
+    OTIA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u26zEodhPgRDZ8j7Ic/BBg=="
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net
+    by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
+    with ESMTPSA id y01375x57CmvUiI
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Mon, 7 Jun 2021 14:48:57 +0200 (CEST)
+Date:   Mon, 7 Jun 2021 14:48:47 +0200
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-remoteproc@vger.kernel.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+Subject: Re: [RFC] Integrate RPMSG/SMD into WWAN subsystem
+Message-ID: <YL4Vr0mhiOJp8jkT@gerhold.net>
+References: <YLfL9Q+4860uqS8f@gerhold.net>
+ <CAMZdPi9tcye-4P4i0uXZcECJ-Big5T11JdvdXW6k2mEEi9XwyA@mail.gmail.com>
+ <YLtDB2Cz5ttewsFu@gerhold.net>
+ <CAMZdPi_-Qa=JnThHs_h-144dAfSAjF5s+QdBawdXZ3kk8Mx8ng@mail.gmail.com>
+ <YL364+xK3mE2FU8a@gerhold.net>
+ <87sg1tvryx.fsf@toke.dk>
+ <YL4GiEEcOQC2XrjP@gerhold.net>
+ <CAMZdPi-91y+t1bHb+6NY5Dh-xV_yvJTzG65efaSKzyTNsEGBvA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMZdPi-91y+t1bHb+6NY5Dh-xV_yvJTzG65efaSKzyTNsEGBvA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+Hi,
 
-Thanks for your comments.
-
-
-On Mon, 2021-06-07 at 10:21 +0100, Russell King (Oracle) wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On Mon, Jun 07, 2021 at 02:16:10PM +0200, Loic Poulain wrote:
+> On Mon, 7 Jun 2021 at 13:44, Stephan Gerhold <stephan@gerhold.net> wrote:
+> >
+> > On Mon, Jun 07, 2021 at 01:23:18PM +0200, Toke Høiland-Jørgensen wrote:
+> > > Stephan Gerhold <stephan@gerhold.net> writes:
+> > > > On Mon, Jun 07, 2021 at 11:27:07AM +0200, Loic Poulain wrote:
+> > > >> On Sat, 5 Jun 2021 at 11:25, Stephan Gerhold <stephan@gerhold.net> wrote:
+> > > >> > On Fri, Jun 04, 2021 at 11:11:45PM +0200, Loic Poulain wrote:
+> > > >> > > On Wed, 2 Jun 2021 at 20:20, Stephan Gerhold <stephan@gerhold.net> wrote:
+> > > >> > > > I've been thinking about creating some sort of "RPMSG" driver for the
+> > > >> > > > new WWAN subsystem; this would be used as a QMI/AT channel to the
+> > > >> > > > integrated modem on some older Qualcomm SoCs such as MSM8916 and MSM8974.
+> > > >> > > >
+> > > >> > > > It's easy to confuse all the different approaches that Qualcomm has to
+> > > >> > > > talk to their modems, so I will first try to briefly give an overview
+> > > >> > > > about those that I'm familiar with:
+> > > >> > > >
+> > > >> > > > ---
+> > > >> > > > There is USB and MHI that are mainly used to talk to "external" modems.
+> > > >> > > >
+> > > >> > > > For the integrated modems in many Qualcomm SoCs there is typically
+> > > >> > > > a separate control and data path. They are not really related to each
+> > > >> > > > other (e.g. currently no common parent device in sysfs).
+> > > >> > > >
+> > > >> > > > For the data path (network interface) there is "IPA" (drivers/net/ipa)
+> > > >> > > > on newer SoCs or "BAM-DMUX" on some older SoCs (e.g. MSM8916/MSM8974).
+> > > >> > > > I have a driver for BAM-DMUX that I hope to finish up and submit soon.
+> > > >> > > >
+> > > >> > > > The connection is set up via QMI. The messages are either sent via
+> > > >> > > > a shared RPMSG channel (net/qrtr sockets in Linux) or via standalone
+> > > >> > > > SMD/RPMSG channels (e.g. "DATA5_CNTL" for QMI and "DATA1" for AT).
+> > > >> > > >
+> > > >> > > > This gives a lot of possible combinations like BAM-DMUX+RPMSG
+> > > >> > > > (MSM8916, MSM8974), or IPA+QRTR (SDM845) but also other funny
+> > > >> > > > combinations like IPA+RPMSG (MSM8994) or BAM-DMUX+QRTR (MSM8937).
+> > > >> > > >
+> > > >> > > > Simply put, supporting all these in userspace like ModemManager
+> > > >> > > > is a mess (Aleksander can probably confirm).
+> > > >> > > > It would be nice if this could be simplified through the WWAN subsystem.
+> > > >> > > >
+> > > >> > > > It's not clear to me if or how well QRTR sockets can be mapped to a char
+> > > >> > > > device for the WWAN subsystem, so for now I'm trying to focus on the
+> > > >> > > > standalone RPMSG approach (for MSM8916, MSM8974, ...).
+> > > >> > > > ---
+> > > >> > > >
+> > > >> > > > Currently ModemManager uses the RPMSG channels via the rpmsg-chardev
+> > > >> > > > (drivers/rpmsg/rpmsg_char.c). It wasn't my idea to use it like this,
+> > > >> > > > I just took that over from someone else. Realistically speaking, the
+> > > >> > > > current approach isn't too different from the UCI "backdoor interface"
+> > > >> > > > approach that was rejected for MHI...
+> > > >> > > >
+> > > >> > > > I kind of expected that I can just trivially copy some code from
+> > > >> > > > rpmsg_char.c into a WWAN driver since they both end up as a simple char
+> > > >> > > > device. But it looks like the abstractions in wwan_core are kind of
+> > > >> > > > getting in the way here... As far as I can tell, they don't really fit
+> > > >> > > > together with the RPMSG interface.
+> > > >> > > >
+> > > >> > > > For example there is rpmsg_send(...) (blocking) and rpmsg_trysend(...)
+> > > >> > > > (non-blocking) and even a rpmsg_poll(...) [1] but I don't see a way to
+> > > >> > > > get notified when the TX queue is full or no longer full so I can call
+> > > >> > > > wwan_port_txon/off().
+> > > >> > > >
+> > > >> > > > Any suggestions or other thoughts?
+> > > >> > >
+> > > >> > > It would be indeed nice to get this in the WWAN framework.
+> > > >> > > I don't know much about rpmsg but I think it is straightforward for
+> > > >> > > the RX path, the ept_cb can simply forward the buffers to
+> > > >> > > wwan_port_rx.
+> > > >> >
+> > > >> > Right, that part should be straightforward.
+> > > >> >
+> > > >> > > For tx, simply call rpmsg_trysend() in the wwan tx
+> > > >> > > callback and don't use the txon/off helpers. In short, keep it simple
+> > > >> > > and check if you observe any issues.
+> > > >> > >
+> > > >> >
+> > > >> > I'm not sure that's a good idea. This sounds like exactly the kind of
+> > > >> > thing that might explode later just because I don't manage to get the
+> > > >> > TX queue full in my tests. In that case, writing to the WWAN char dev
+> > > >> > would not block, even if O_NONBLOCK is not set.
+> > > >>
+> > > >> Right, if you think it could be a problem, you can always implement a
+> > > >> more complex solution like calling rpmsg_send from a
+> > > >> workqueue/kthread, and only re-enable tx once rpmsg_send returns.
+> > > >>
+> > > >
+> > > > I did run into trouble when I tried to stream lots of data into the WWAN
+> > > > char device (e.g. using dd). However, in practice (with ModemManager)
+> > > > I did not manage to cause such issues yet. Personally, I think it's
+> > > > something we should get right, just to avoid trouble later
+> > > > (like "modem suddenly stops working").
+> > > >
+> > > > Right now I extended the WWAN port ops a bit so I tells me if the write
+> > > > should be non-blocking or blocking and so I can call rpmsg_poll(...).
 > 
-> On Fri, Jun 04, 2021 at 10:55:54AM +0200, Steen Hegelund wrote:
-> > This add configuration of the Sparx5 port module instances.
-> > 
-> > Sparx5 has in total 65 logical ports (denoted D0 to D64) and 33
-> > physical SerDes connections (S0 to S32).  The 65th port (D64) is fixed
-> > allocated to SerDes0 (S0). The remaining 64 ports can in various
-> > multiplexing scenarios be connected to the remaining 32 SerDes using
-> > QSGMII, or USGMII or USXGMII extenders. 32 of the ports can have a 1:1
-> > mapping to the 32 SerDes.
-> > 
-> > Some additional ports (D65 to D69) are internal to the device and do not
-> > connect to port modules or SerDes macros. For example, internal ports are
-> > used for frame injection and extraction to the CPU queues.
-> > 
-> > The 65 logical ports are split up into the following blocks.
-> > 
-> > - 13 x 5G ports (D0-D11, D64)
-> > - 32 x 2G5 ports (D16-D47)
-> > - 12 x 10G ports (D12-D15, D48-D55)
-> > - 8 x 25G ports (D56-D63)
-> > 
-> > Each logical port supports different line speeds, and depending on the
-> > speeds supported, different port modules (MAC+PCS) are needed. A port
-> > supporting 5 Gbps, 10 Gbps, or 25 Gbps as maximum line speed, will have a
-> > DEV5G, DEV10G, or DEV25G module to support the 5 Gbps, 10 Gbps (incl 5
-> > Gbps), or 25 Gbps (including 10 Gbps and 5 Gbps) speeds. As well as, it
-> > will have a shadow DEV2G5 port module to support the lower speeds
-> > (10/100/1000/2500Mbps). When a port needs to operate at lower speed and the
-> > shadow DEV2G5 needs to be connected to its corresponding SerDes
-> > 
-> > Not all interface modes are supported in this series, but will be added at
-> > a later stage.
+> OK, but note that poll seems to be an optional rpmsg ops, rpmsg_poll
+> can be a no-op and so would not guarantee that EPOLL_OUT will ever be
+> set.
 > 
-> It looks to me like the phylink code in your patch series is based on
-> an older version of phylink and hasn't been updated for the split PCS
-> support - you seem to be munging the PCS parts in with the MAC
-> callbacks. If so, please update to the modern way of dealing with this.
-> 
-> If that isn't the case, please explain why you are not using the split
-> PCS support.
 
-I need to be able to let the user set the speed to get the link up.
+Wouldn't that be more a limitation of the driver that provides the rpmsg
+ops then? If rpmsg_send(...) may block, it should also be possible to
+implement rpmsg_poll(...). Right now my implementation basically behaves
+mostly like the existing rpmsg-char. That's what has been used on
+several devices for more than a year and it works quite well.
 
-So far I have only been able to get the user configured speeds via the mac_ops, but if this is also
-possible via the pcs_ops, there should not anything preventing me from using these ops instead.
+Granted, so far testing was mostly done with the "qcom_smd" RPMSG driver
+(which is likely going to be the primary use case for my driver for now).
+This one also happens to be the only one that implements rpmsg_poll()
+at the moment...
 
-Will the pcs_ops also support this?
+I asked some other people to test it for AT messages with "glink" on
+newer Qualcomm SoCs and that doesn't work that well yet. However, as far
+as I can tell most of the trouble seems to be caused by various strange
+bugs in the "glink" driver.
+(See drivers/rpmsg for the drivers I'm referring to...)
 
-> 
-> Thanks.
-> 
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+---
 
+One of the main potential problems I see with some kind of workqueue
+approach is that all writes would seemingly succeed for the client.
+When the extra thread is done with rpmsg_send(...) we will have already
+returned from the char dev write(...) syscall, without a way to report
+the error. Perhaps that's unlikely though and we don't need to worry
+about that too much?
 
--- 
-BR
-Steen
+I'm not really sure which one of the solution is best at the end.
+I think it doesn't make too much of a difference at the end, both can
+work well and both have some advantages/disadvantages in certain fairly
+unlikely situations.
 
--=-=-=-=-=-=-=-=-=-=-=-=-=-=
-steen.hegelund@microchip.com
-
-
+Stephan
