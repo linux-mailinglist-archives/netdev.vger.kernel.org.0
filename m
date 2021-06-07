@@ -2,166 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B34E939D623
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 09:35:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C990539D62C
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 09:38:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbhFGHg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 03:36:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49074 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230231AbhFGHgU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Jun 2021 03:36:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 29FEA60720;
-        Mon,  7 Jun 2021 07:34:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623051269;
-        bh=0ypPpkJHDs3edXD5bDeKaiim7X/xfBueG4AuE8+Qj+U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MCZa/wfgoJSof9wCVVOv/LrdFcXdwY1vCJuTly8zaeAIwTuRDtC8rzfgyHA9r6/+g
-         NW2tP3feh93C/5Dxty7jg+vScZHZGMhUEyWQ5FgxO8vpWG7sfVd2/FVm9kFVWmNyKF
-         EQBYWqrXHDSSXIu/AIkm5+Ioyl/4Y8qqVlITSp7EP1AHAdF2gq6+t5N/EukG8nlrD5
-         /Z/7kCrp6V3McL/0xD3Opj9oSYMVR4OQwEiMuDlxNhhxICUhrFF3xy6Xf7sAtNEHPC
-         UZ6EjZnr6psnuld6cX9JYfcpHnFwEGAKkBcwq4fn3pJEE/OA/DfL7AgTqkUjjnfOU7
-         t/jaztuq+MVCA==
-Date:   Mon, 7 Jun 2021 09:34:22 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     "=?UTF-8?B?TsOtY29sYXM=?= F. R. A. Prado" <n@nfraprado.net>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        coresight@lists.linaro.org, devicetree@vger.kernel.org,
-        kunit-dev@googlegroups.com, kvm@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-security-module@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 00/34] docs: avoid using ReST :doc:`foo` tag
-Message-ID: <20210607093422.0a369909@coco.lan>
-In-Reply-To: <20210606225225.fz4dsyz6im4bqena@notapiano>
-References: <cover.1622898327.git.mchehab+huawei@kernel.org>
-        <20210605151109.axm3wzbcstsyxczp@notapiano>
-        <20210605210836.540577d4@coco.lan>
-        <20210606225225.fz4dsyz6im4bqena@notapiano>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S230169AbhFGHks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 03:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229545AbhFGHkr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 03:40:47 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDB9C061766
+        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 00:38:56 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id p21so192537qtw.6
+        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 00:38:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FkDnZkLm7S26Fub+7GJQrbQgH8zlz9fkqHVVt8EUVII=;
+        b=nHm4WK6cYXy60WGLih3X49PfQoCmkrbdxEffYKfbL3/RwZaUJn+ZpFlw1f4qhBKOsh
+         ahRqwNfz/pELzJOgvhEH7fSmrENCdPGqiDPPnxASXGD5q9sd6Dk5WUdbdBbPUArWSpgz
+         YhjtWV0vG8EhX7zQlQ+lNbW/aFKCucpeFKWsmDvBb4gvT3urI0A7KLePEk+N9605Vxec
+         pkm2nZH26PbCFEe3Rt8MWK2GYZWEhX1zJkTawVJymWS9/t+exzEZtixnPBaQ3CKp7qxO
+         KJPc74KVXSeqk4iHCZH7tGPVflFVx/UFdpy6RZ1xAkh+rjGRzUNDiP+yZ5nLQUld/tUh
+         Nh2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FkDnZkLm7S26Fub+7GJQrbQgH8zlz9fkqHVVt8EUVII=;
+        b=KaenvHB2VWoUYLebToZPkATiDggqbCIoOIlDlfSGh6I1FzyDg69tm7h/zqulTEb/3o
+         S5dGqNpyyOlnnG4QR4OUOXfQoqWPx50xhP70oL1Kywch5ZcBXqtGvAIw8/GxuVqeIM7n
+         S5/hsE6of5BWRcX4bo49IRkmaQ5ZhrX3NIe14VWDuBIg73TrCwEbliz3HO0BWBjOuzoM
+         kV2EpUNxQjURkPAK5n5Vc1j0GJ+tqjGaPUZojIGEIma91Wimm3yTcClTjg6RTQwCrOaZ
+         CJ/A0zbnG9X4VYNEsy5Pa6Ozi1btnwMfoXzgumwrAg/d6YIkYvSCV6lBI8uWjEFBcovg
+         twHA==
+X-Gm-Message-State: AOAM531eO2GqLPMcJDusCUgwxWKD+3RU1eU4yY03jHojKapX0t11Gi/B
+        VJK6mjXmogaDsnqQ2VZCD007+8a08ScAen1c5XehCQ==
+X-Google-Smtp-Source: ABdhPJw+kgwDX9eCqL8hOPDdudAvKTGNSsQ1Stvnfjs7IZaa/qdT3iEe5T8MNwE87hz52U2sn3g3U6qP7w8/LoXc35w=
+X-Received: by 2002:ac8:7c4e:: with SMTP id o14mr14825948qtv.290.1623051534847;
+ Mon, 07 Jun 2021 00:38:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <000000000000c2987605be907e41@google.com> <20210602212726.7-1-fuzzybritches0@gmail.com>
+ <YLhd8BL3HGItbXmx@kroah.com> <87609-531187-curtm@phaethon>
+ <6a392b66-6f26-4532-d25f-6b09770ce366@fb.com> <CAADnVQKexxZQw0yK_7rmFOdaYabaFpi2EmF6RGs5bXvFHtUQaA@mail.gmail.com>
+In-Reply-To: <CAADnVQKexxZQw0yK_7rmFOdaYabaFpi2EmF6RGs5bXvFHtUQaA@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 7 Jun 2021 09:38:43 +0200
+Message-ID: <CACT4Y+b=si6NCx=nRHKm_pziXnVMmLo-eSuRajsxmx5+Hy_ycg@mail.gmail.com>
+Subject: Re: [PATCH v4] bpf: core: fix shift-out-of-bounds in ___bpf_prog_run
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>,
+        Kurt Manucredo <fuzzybritches0@gmail.com>,
+        syzbot+bed360704c521841c85d@syzkaller.appspotmail.com,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        nathan@kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
+        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        kasan-dev <kasan-dev@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Sun, 6 Jun 2021 19:52:25 -0300
-N=C3=ADcolas F. R. A. Prado <n@nfraprado.net> escreveu:
+On Sat, Jun 5, 2021 at 9:10 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+> On Sat, Jun 5, 2021 at 10:55 AM Yonghong Song <yhs@fb.com> wrote:
+> > On 6/5/21 8:01 AM, Kurt Manucredo wrote:
+> > > Syzbot detects a shift-out-of-bounds in ___bpf_prog_run()
+> > > kernel/bpf/core.c:1414:2.
+> >
+> > This is not enough. We need more information on why this happens
+> > so we can judge whether the patch indeed fixed the issue.
+> >
+> > >
+> > > I propose: In adjust_scalar_min_max_vals() move boundary check up to avoid
+> > > missing them and return with error when detected.
+> > >
+> > > Reported-and-tested-by: syzbot+bed360704c521841c85d@syzkaller.appspotmail.com
+> > > Signed-off-by: Kurt Manucredo <fuzzybritches0@gmail.com>
+> > > ---
+> > >
+> > > https://syzkaller.appspot.com/bug?id=edb51be4c9a320186328893287bb30d5eed09231
+> > >
+> > > Changelog:
+> > > ----------
+> > > v4 - Fix shift-out-of-bounds in adjust_scalar_min_max_vals.
+> > >       Fix commit message.
+> > > v3 - Make it clearer what the fix is for.
+> > > v2 - Fix shift-out-of-bounds in ___bpf_prog_run() by adding boundary
+> > >       check in check_alu_op() in verifier.c.
+> > > v1 - Fix shift-out-of-bounds in ___bpf_prog_run() by adding boundary
+> > >       check in ___bpf_prog_run().
+> > >
+> > > thanks
+> > >
+> > > kind regards
+> > >
+> > > Kurt
+> > >
+> > >   kernel/bpf/verifier.c | 30 +++++++++---------------------
+> > >   1 file changed, 9 insertions(+), 21 deletions(-)
+> > >
+> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > > index 94ba5163d4c5..ed0eecf20de5 100644
+> > > --- a/kernel/bpf/verifier.c
+> > > +++ b/kernel/bpf/verifier.c
+> > > @@ -7510,6 +7510,15 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+> > >       u32_min_val = src_reg.u32_min_value;
+> > >       u32_max_val = src_reg.u32_max_value;
+> > >
+> > > +     if ((opcode == BPF_LSH || opcode == BPF_RSH || opcode == BPF_ARSH) &&
+> > > +                     umax_val >= insn_bitness) {
+> > > +             /* Shifts greater than 31 or 63 are undefined.
+> > > +              * This includes shifts by a negative number.
+> > > +              */
+> > > +             verbose(env, "invalid shift %lld\n", umax_val);
+> > > +             return -EINVAL;
+> > > +     }
+> >
+> > I think your fix is good. I would like to move after
+>
+> I suspect such change will break valid programs that do shift by register.
+>
+> > the following code though:
+> >
+> >          if (!src_known &&
+> >              opcode != BPF_ADD && opcode != BPF_SUB && opcode != BPF_AND) {
+> >                  __mark_reg_unknown(env, dst_reg);
+> >                  return 0;
+> >          }
+> >
+> > > +
+> > >       if (alu32) {
+> > >               src_known = tnum_subreg_is_const(src_reg.var_off);
+> > >               if ((src_known &&
+> > > @@ -7592,39 +7601,18 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+> > >               scalar_min_max_xor(dst_reg, &src_reg);
+> > >               break;
+> > >       case BPF_LSH:
+> > > -             if (umax_val >= insn_bitness) {
+> > > -                     /* Shifts greater than 31 or 63 are undefined.
+> > > -                      * This includes shifts by a negative number.
+> > > -                      */
+> > > -                     mark_reg_unknown(env, regs, insn->dst_reg);
+> > > -                     break;
+> > > -             }
+> >
+> > I think this is what happens. For the above case, we simply
+> > marks the dst reg as unknown and didn't fail verification.
+> > So later on at runtime, the shift optimization will have wrong
+> > shift value (> 31/64). Please correct me if this is not right
+> > analysis. As I mentioned in the early please write detailed
+> > analysis in commit log.
+>
+> The large shift is not wrong. It's just undefined.
+> syzbot has to ignore such cases.
 
-> On Sat, Jun 05, 2021 at 09:08:36PM +0200, Mauro Carvalho Chehab wrote:
-> > Em Sat, 5 Jun 2021 12:11:09 -0300
-> > N=C3=ADcolas F. R. A. Prado <n@nfraprado.net> escreveu:
-> >  =20
-> > > Hi Mauro,
-> > >=20
-> > > On Sat, Jun 05, 2021 at 03:17:59PM +0200, Mauro Carvalho Chehab wrote=
-: =20
-> > > > As discussed at:
-> > > > 	https://lore.kernel.org/linux-doc/871r9k6rmy.fsf@meer.lwn.net/
-> > > >=20
-> > > > It is better to avoid using :doc:`foo` to refer to Documentation/fo=
-o.rst, as the
-> > > > automarkup.py extension should handle it automatically, on most cas=
-es.
-> > > >=20
-> > > > There are a couple of exceptions to this rule:
-> > > >=20
-> > > > 1. when :doc:  tag is used to point to a kernel-doc DOC: markup;
-> > > > 2. when it is used with a named tag, e. g. :doc:`some name <foo>`;
-> > > >=20
-> > > > It should also be noticed that automarkup.py has currently an issue:
-> > > > if one use a markup like:
-> > > >=20
-> > > > 	Documentation/dev-tools/kunit/api/test.rst
-> > > > 	  - documents all of the standard testing API excluding mocking
-> > > > 	    or mocking related features.
-> > > >=20
-> > > > or, even:
-> > > >=20
-> > > > 	Documentation/dev-tools/kunit/api/test.rst
-> > > > 	    documents all of the standard testing API excluding mocking
-> > > > 	    or mocking related features.
-> > > > =09
-> > > > The automarkup.py will simply ignore it. Not sure why. This patch s=
-eries
-> > > > avoid the above patterns (which is present only on 4 files), but it=
- would be
-> > > > nice to have a followup patch fixing the issue at automarkup.py.   =
-=20
-> > >=20
-> > > What I think is happening here is that we're using rST's syntax for d=
-efinition
-> > > lists [1]. automarkup.py ignores literal nodes, and perhaps a definit=
-ion is
-> > > considered a literal by Sphinx. Adding a blank line after the Documen=
-tation/...
-> > > or removing the additional indentation makes it work, like you did in=
- your
-> > > 2nd and 3rd patch, since then it's not a definition anymore, although=
- then the
-> > > visual output is different as well. =20
-> >=20
-> > A literal has a different output. I think that this is not the case, bu=
-t I=20
-> > didn't check the python code from docutils/Sphinx. =20
->=20
-> Okay, I went in deeper to understand the issue and indeed it wasn't what I
-> thought. The reason definitions are ignored by automarkup.py is because t=
-he main
-> loop iterates only over nodes that are of type paragraph:
->=20
->     for para in doctree.traverse(nodes.paragraph):
->         for node in para.traverse(nodes.Text):
->             if not isinstance(node.parent, nodes.literal):
->                 node.parent.replace(node, markup_refs(name, app, node))
->=20
-> And inspecting the HTML output from your example, the definition name is =
-inside
-> a <dt> tag, and it doesn't have a <p> inside. So in summary, automarkup.p=
-y will
-> only work on elements which are inside a <p> in the output.
+Hi Alexei,
 
-
-Yeah, that's what I was suspecting, based on the comments.
-
-Maybe something similar to the above could be done also for some
-non-paragraph data. By looking at:
-
-	https://docutils.sourceforge.io/docs/ref/doctree.html
-
-It says that the body elements are:
-
-	admonition, attention, block_quote, bullet_list, caution, citation,=20
-	comment, compound, container, danger, definition_list, doctest_block,=20
-	enumerated_list, error, field_list, figure, footnote, hint, image,=20
-	important, line_block, literal_block, note, option_list, paragraph,=20
-	pending, raw, rubric, substitution_definition, system_message,=20
-	table, target, tip, warning
-
-So, perhaps a similar loop for definition_list would do the trick,
-but maybe automarkup should also look at other types, like enum lists,
-notes (and their variants, like error/warning) and footnotes.
-
-No idea how this would affect the docs build time, though.
-
-> Only applying the automarkup inside paragraphs seems like a good decision=
- (which
-> covers text in lists and tables as well), so unless there are other types=
- of
-> elements without paragraphs where automarkup should work, I think we shou=
-ld just
-> avoid using definition lists pointing to documents like that.
-
-Checking the code or doing some tests are needed for us to be sure about wh=
-at
-of the above types docutils don't consider a paragraph.
-
-Thanks,
-Mauro
+The report is produced by KUBSAN. I thought there was an agreement on
+cleaning up KUBSAN reports from the kernel (the subset enabled on
+syzbot at least).
+What exactly cases should KUBSAN ignore?
++linux-hardening/kasan-dev for KUBSAN false positive
