@@ -2,96 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE8C439E532
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 19:20:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7438939E55A
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 19:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230519AbhFGRWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 13:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbhFGRWY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 13:22:24 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C0FC061766;
-        Mon,  7 Jun 2021 10:20:21 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id r198so24209754lff.11;
-        Mon, 07 Jun 2021 10:20:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y2ro6T0qqojf4blqEYp6j8bNJdFK/yK6RngDggYxJQ8=;
-        b=ioxSVn6ocOUUCeFsK89IAZxzVuvn35J3Fj7YPLaWRe6Rd9CXH8IwOSM5U5LYqjfFsV
-         lcoHRBUuGzlUJbf/9cpn3YqryqB1sTrV0hWFsscK1wR6LRhClmJLy72J1I+zHy72E524
-         XSZhcRCKWzZYP5ou9VbGEOlpvUlhg5oVzQKTu6dV2CLTkDc/+xVSoQ+aDAeGp9DkCl0H
-         7QdrfAooIhLcPF6YmLUwg0ECUMKEY103PxSjpVN+/RxtmW2+Jxr/sEtwzNY2sJRujufb
-         gLXgBKDzWaVBr85wcu0v8359UuVYSWIWhkhZilcNRIiUtmqT4d87u5DjnKlZ/ABi0Vo1
-         01qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y2ro6T0qqojf4blqEYp6j8bNJdFK/yK6RngDggYxJQ8=;
-        b=LYOLjFRjWQsJazhMIufS45Vz2zED18Izq9d3f5pSLpuM/jM5jYNTTCZG9bcMchtCr/
-         97+XB9UoQ++DP7pPh1dDYuE0D9eEJ/6U8cvt0Ai8uz3Jb5gr1qwDfb3QCxlaCOLKji5k
-         e4DI7ygNZYZhyPNKeDc1WYbn+JA/W53kq7lP5Yq9DzwfAnPo8/UGoE7PHEWEppuvxt4J
-         eyOtQ7IlxphvIQ4Lj+2lnUbUItzx7wqJL7eCouOC/UY+LKI79jomGvYv7h70jFK9drBm
-         G6/JGP3WB26ky/YxFKdcDveLqBwJ0XOVYHDY9BcG/hsEo9PElEgCFkM8GUW/3Stb1quL
-         mQng==
-X-Gm-Message-State: AOAM531vCdmi37hV+aSxmVJIXfPfHWqET1HdhI/y3MMfGNHaJhoimRoX
-        yKcVh5SeHLdn288nXgxSY2gU91+fmaU=
-X-Google-Smtp-Source: ABdhPJyPsUkq6BesCer/N77aEXiYiusKsN2vOkBOUTT1MS4jEYu6LljDHOeMGAVrfa8LFKfXNPDjqA==
-X-Received: by 2002:ac2:5d4f:: with SMTP id w15mr12427499lfd.348.1623086419489;
-        Mon, 07 Jun 2021 10:20:19 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.224.40])
-        by smtp.gmail.com with ESMTPSA id w24sm1560402lfa.143.2021.06.07.10.20.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Jun 2021 10:20:19 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+65badd5e74ec62cb67dc@syzkaller.appspotmail.com
-Subject: [PATCH] revert "net: kcm: fix memory leak in kcm_sendmsg"
-Date:   Mon,  7 Jun 2021 20:20:15 +0300
-Message-Id: <20210607172015.19265-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        id S230462AbhFGRaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 13:30:12 -0400
+Received: from out28-197.mail.aliyun.com ([115.124.28.197]:42575 "EHLO
+        out28-197.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229997AbhFGRaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 13:30:11 -0400
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.5632897|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.00534723-0.0028745-0.991778;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047206;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=20;RT=20;SR=0;TI=SMTPD_---.KP.FCzB_1623086888;
+Received: from zhouyanjie-virtual-machine.localdomain(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.KP.FCzB_1623086888)
+          by smtp.aliyun-inc.com(10.147.40.44);
+          Tue, 08 Jun 2021 01:28:16 +0800
+From:   =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0=20=28Zhou=20Yanjie=29?= 
+        <zhouyanjie@wanyeetech.com>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, dongsheng.qiu@ingenic.com,
+        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
+        sihui.liu@ingenic.com, jun.jiang@ingenic.com,
+        sernia.zhou@foxmail.com, paul@crapouillou.net
+Subject: [PATCH 0/2] Add Ingenic SoCs MAC support.
+Date:   Tue,  8 Jun 2021 01:27:45 +0800
+Message-Id: <1623086867-119039-1-git-send-email-zhouyanjie@wanyeetech.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit c47cc304990a ("net: kcm: fix memory leak in kcm_sendmsg")
-I misunderstand the root case of memory leak and came up
-completely broken fix.
+1.Add the dwmac bindings for the JZ4775 SoC, the X1000 SoC,
+  the X1600 SoC, the X1830 SoC and the X2000 SoC from Ingenic.
+2.Add support for Ingenic SoC MAC glue layer support for the stmmac
+  device driver. This driver is used on for the MAC ethernet controller
+  found in the JZ4775 SoC, the X1000 SoC, the X1600 SoC, the X1830 SoC,
+  and the X2000 SoC.
 
-So, simply revert this commit to avoid GPF.
+周琰杰 (Zhou Yanjie) (2):
+  dt-bindings: dwmac: Add bindings for new Ingenic SoCs.
+  net: stmmac: Add Ingenic SoCs MAC support.
 
-Im so sorry about this one.
+ .../devicetree/bindings/net/snps,dwmac.yaml        |  15 +
+ drivers/net/ethernet/stmicro/stmmac/Kconfig        |  16 +-
+ drivers/net/ethernet/stmicro/stmmac/Makefile       |   1 +
+ .../net/ethernet/stmicro/stmmac/dwmac-ingenic.c    | 367 +++++++++++++++++++++
+ 4 files changed, 397 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
 
-Reported-by: syzbot+65badd5e74ec62cb67dc@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- net/kcm/kcmsock.c | 5 -----
- 1 file changed, 5 deletions(-)
-
-diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-index 1c572c8daced..6201965bd822 100644
---- a/net/kcm/kcmsock.c
-+++ b/net/kcm/kcmsock.c
-@@ -1066,11 +1066,6 @@ static int kcm_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 		goto partial_message;
- 	}
- 
--	if (skb_has_frag_list(head)) {
--		kfree_skb_list(skb_shinfo(head)->frag_list);
--		skb_shinfo(head)->frag_list = NULL;
--	}
--
- 	if (head != kcm->seq_skb)
- 		kfree_skb(head);
- 
 -- 
-2.31.1
+2.7.4
 
