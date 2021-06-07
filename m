@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8EA39E842
+	by mail.lfdr.de (Postfix) with ESMTP id 8A9A839E843
 	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 22:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231634AbhFGUV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 16:21:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44784 "EHLO mail.kernel.org"
+        id S231690AbhFGUWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 16:22:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44790 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231553AbhFGUVz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231572AbhFGUVz (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 7 Jun 2021 16:21:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 236F1611AD;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2E51C611C0;
         Mon,  7 Jun 2021 20:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623097204;
-        bh=YdeDKy8F6mirt7OLSlruTUjX1Z85Ptgb3xCCLRBNqGI=;
+        bh=ulVIm9VsWFOTmR3rlMKU8YtDWTDdGNSRRefrCg2/Vxs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LGdDNwwTfB9DUQjzePWpyzCqWVQKoNmb3orsiGUTrGWAyx6UeBMulO2ejInR8W8f4
-         1nzZuraiQyEdZs85KTUIR1PggA0/bGxXPd9W/hpdid9pH9cXSqYMDi+PgE4YeskRfo
-         /F4msZJw1AikCNr+RC6po0/6HRLopSvzesisBtjkb239YZvptUTIuHdbl9DI7mIT7d
-         IzUsTOqEtpgtnpM/Qy2I+vCSULwj2WAkY0WSMCt9DURywLGZIP+qhdLdWqDYyqcSss
-         /BdEAyLwNmsBA8+THc08bzk1z+QuFks2KcpEFQ9vBIA2hZO2yyOTS8K+EkrAEGfmmD
-         eIPTVZnf5aY4w==
+        b=Y7ix8oSbT/yljKdqR1PT0//zKzgh72QP5+0NXUaa2D6QKVIG+1/+Put+IKPK2ePBh
+         PKo136rGS0Vulu32jv+hosoFF7WQvSGwnjTskWeasB3zoKGo70DPxy/28XpgjJI7MV
+         MRQGCjsZRbqcLkj3vpUiB1LmU0d2afJiEJ94WwpXzAhHEtRxqmOHOm0rjiWelDDzX/
+         u6OqgsOkjGQGgoUZWKKP7CRrJVKQFbOeJBDWmKd912PUXEZ5NlhLR7IvxboOfEdX7v
+         DtCcL2sACsWfXACs4jGliihIbF38ZxmvM5kRlwaxa/QPSgVoHZuDJc4UrVlj1xo0rr
+         rVRYFJ+9pj0nA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1E950609F1;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2828C60BE1;
         Mon,  7 Jun 2021 20:20:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] atm: [br2864] fix spelling mistakes
+Subject: Re: [PATCH -next] net: dsa: hellcreek: Use is_zero_ether_addr() instead
+ of memcmp()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162309720412.9512.5228590021806034561.git-patchwork-notify@kernel.org>
+Message-Id: <162309720416.9512.9308224561664728090.git-patchwork-notify@kernel.org>
 Date:   Mon, 07 Jun 2021 20:20:04 +0000
-References: <20210607063307.376988-1-13145886936@163.com>
-In-Reply-To: <20210607063307.376988-1-13145886936@163.com>
-To:     None <13145886936@163.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gushengxian@yulong.com
+References: <1623034629-30384-1-git-send-email-zou_wei@huawei.com>
+In-Reply-To: <1623034629-30384-1-git-send-email-zou_wei@huawei.com>
+To:     Zou Wei <zou_wei@huawei.com>
+Cc:     kurt@linutronix.de, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,19 +49,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sun,  6 Jun 2021 23:33:07 -0700 you wrote:
-> From: gushengxian <gushengxian@yulong.com>
+On Mon, 7 Jun 2021 10:57:09 +0800 you wrote:
+> Using is_zero_ether_addr() instead of directly use
+> memcmp() to determine if the ethernet address is all
+> zeros.
 > 
-> interrupt should be changed to interrupting.
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zou Wei <zou_wei@huawei.com>
 > 
-> Signed-off-by: gushengxian <gushengxian@yulong.com>
-> ---
->  net/atm/br2684.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> [...]
 
 Here is the summary with links:
-  - atm: [br2864] fix spelling mistakes
-    https://git.kernel.org/netdev/net-next/c/4fb473fe7325
+  - [-next] net: dsa: hellcreek: Use is_zero_ether_addr() instead of memcmp()
+    https://git.kernel.org/netdev/net-next/c/3f07ce8e5287
 
 You are awesome, thank you!
 --
