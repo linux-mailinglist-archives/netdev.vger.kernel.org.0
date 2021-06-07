@@ -2,90 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7628739E09B
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 17:34:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E157539E096
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 17:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231218AbhFGPgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 11:36:21 -0400
-Received: from mail-pl1-f181.google.com ([209.85.214.181]:34525 "EHLO
-        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbhFGPgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 11:36:20 -0400
-Received: by mail-pl1-f181.google.com with SMTP id h1so1241093plt.1
-        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 08:34:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=73i5sakrC+i/nwD2XDXZACOiGIEuee7Cd/JkLRfjWDU=;
-        b=GL/9X0t6PeQHVLfFDEvclaSHaaG+z6gqgsGNFmYhcSE+V/N5SWLFUE9+pXJHBg4G9R
-         goUzHwlzrsVrOFtONjT4TPLqBtqW1v+/bk9YOx6yqM6cG+U19q3RcZTQ1vw1Ha8vejDS
-         a7hJOmVwy9OojR2ZPie0yzHAGXKZAnE473DzJoI2LV27aGFZkxrSFaLkeSbF/L4zZ6el
-         8M+M1u/swgmrmyPq8UJjcw3oyfuFferMigYPXTXh6JH9ZWcTZ6knuWhhkMEYXDrpfE2N
-         CSpxJsL1cCEHadBP3OJkJUu0+Hrm50xTCiMruIMRnHgGDeafks9XKnFEceez2VJjqIH5
-         pr+A==
+        id S231132AbhFGPft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 11:35:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43197 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230237AbhFGPfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 11:35:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623080037;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DankcACZXWslvex/hGCrRKXxxv4UiIym257Vx0lNYb4=;
+        b=gY48wKg8HE7Ya3PBUad8Wz0enAHJYtlMEkF+40qIcDYrGe5qvyWk18gm/XK4laomlQtxPI
+        VpLhCFELGifwJKttDnUi5DpcVwVGiyxu+0INlNdMSnik4qDtvJkP7oHVs2jXn7O33XTPL9
+        sRlDPAaVKhl/dnguZc5eGReUR3bJehc=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-446-z1hRM7OBMwuUiQmDlEorQQ-1; Mon, 07 Jun 2021 11:33:55 -0400
+X-MC-Unique: z1hRM7OBMwuUiQmDlEorQQ-1
+Received: by mail-ej1-f69.google.com with SMTP id n8-20020a1709067b48b02904171dc68f87so942129ejo.21
+        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 08:33:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=73i5sakrC+i/nwD2XDXZACOiGIEuee7Cd/JkLRfjWDU=;
-        b=ueXdq1BZXILSn/BBprh0W0/SMbX4LJuRnSSKWkCSQ48hdyizWm+9KybhansekqqIpQ
-         tI8wiKStBF+gKCQQq57YPvXY32oQEFWHjx9Fichpgy1GFOWhbtDtApizzZFIHz9/eLns
-         QPqPA+asiIPYfoQs2EQ5OL8az+EyDhTuD4RG9zGVBsyeTd5LV+lu6TiWaySwRPauA18w
-         JAke5hapuVoIEmqLdEqmmCKNWkIk+Pzu8xFKgVmBtt0kdcMM+zWluzbim9n2bYmZBpSj
-         sAPa97gpX7w7G1f61axNCKlaYAqVTbKhZr+FYmX0h87MzbiFDetUkGkYm08NwESOUPP5
-         1zCw==
-X-Gm-Message-State: AOAM532Z8BZku3/XBPRKya0N6VUmCWFfs4Ea7MVPX3TAJ9pofNdpO5LM
-        pvTRkss4t2C6ZGX+VUgf7P/Z3i3rcFKLSTAK
-X-Google-Smtp-Source: ABdhPJwiigIXKgYCQ6iUifhbZgwYSJKZ0SAnMRVmqFzUbDiT0h/yeb/MM1nHg7njiWhAJnEBqCa8Mw==
-X-Received: by 2002:a17:902:7404:b029:101:af04:4e24 with SMTP id g4-20020a1709027404b0290101af044e24mr18782851pll.3.1623080008978;
-        Mon, 07 Jun 2021 08:33:28 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id g4sm9377305pgu.46.2021.06.07.08.33.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Jun 2021 08:33:28 -0700 (PDT)
-Date:   Mon, 7 Jun 2021 08:33:25 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     13145886936@163.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>
-Subject: Re: [PATCH] vlan: Avoid crashing the kernel
-Message-ID: <20210607083325.1a68e8e6@hermes.local>
-In-Reply-To: <20210607030839.374323-1-13145886936@163.com>
-References: <20210607030839.374323-1-13145886936@163.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DankcACZXWslvex/hGCrRKXxxv4UiIym257Vx0lNYb4=;
+        b=jA4hag/zeNCkUM0xiR81KF8BcA4clnMPWVrYyZJVu0Q1UuQ1eOfN1vlj/x3LRjE5ZW
+         FUMHivZ7poijYt8QKYhu+AB2AbFRRtlQoC4MyZuuvepmlP838G2MrvRXgfTqkycHtROf
+         xLApvMIc6yBp3Zwat4NVviBlkyVi2/PyvEUB6cBQ54JusRdl8pITrk6VEV4N63YHaRHX
+         1Z3LgAHOxxqY/slk0bIcd7r8k8iwH2SAc6U+jSFHy9D1kPiT9u0rH6P+Ot8GX7Ao2TNO
+         +wmIThcV7U9criWK4/gf4I1k4PWGLfIf/uJgnbyYZtNMbSo2/+IW3oZRaIoKEelvFNPg
+         izNw==
+X-Gm-Message-State: AOAM531f8bpiaybze9pW0GrekbF9ZAlau7Th/03epeBsQfG5/tJiySEP
+        uRxNz7vuCZAhYRbBXNJOiwl0iyUenmL5zEp4iesJGxv8dBHKcwRX7hZe1reR/x1eHYDzMR15NyV
+        MbqNv2+M8CKf83O83
+X-Received: by 2002:a17:907:20da:: with SMTP id qq26mr17820560ejb.42.1623080033902;
+        Mon, 07 Jun 2021 08:33:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyI7KVwpREF18YgH/3bFCnlBjU/J/cfKvgYikWI+jCFkukPGJiLXyu+tjZ0OfcXFYMkBnvSKw==
+X-Received: by 2002:a17:907:20da:: with SMTP id qq26mr17820533ejb.42.1623080033736;
+        Mon, 07 Jun 2021 08:33:53 -0700 (PDT)
+Received: from x1.localdomain (2001-1c00-0c1e-bf00-1054-9d19-e0f0-8214.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1054:9d19:e0f0:8214])
+        by smtp.gmail.com with ESMTPSA id s2sm7949873edu.89.2021.06.07.08.33.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Jun 2021 08:33:53 -0700 (PDT)
+Subject: Re: [PATCH] brcmfmac: Add clm_blob firmware files to modinfo
+To:     matthias.bgg@kernel.org, Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     brcm80211-dev-list.pdl@broadcom.com,
+        Remi Depommier <rde@setrix.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        linux-wireless@vger.kernel.org, Amar Shankar <amsr@cypress.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        SHA-cyfmac-dev-list@infineon.com, rafal@milecki.pl,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <mbrugger@suse.com>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Wright Feng <wright.feng@infineon.com>
+References: <20210607103433.21022-1-matthias.bgg@kernel.org>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <b43c0fe0-0252-40f5-39f2-1c60905fd0ea@redhat.com>
+Date:   Mon, 7 Jun 2021 17:33:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210607103433.21022-1-matthias.bgg@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  6 Jun 2021 20:08:39 -0700
-13145886936@163.com wrote:
+Hi,
 
-> From: gushengxian <gushengxian@yulong.com>
+On 6/7/21 12:34 PM, matthias.bgg@kernel.org wrote:
+> From: Matthias Brugger <mbrugger@suse.com>
 > 
-> Avoid crashing the kernel, try using WARN_ON & recovery code
-> rather than BUG() or BUG_ON().
+> Cypress Wi-Fi chipsets include information regarding regulatory
+> constraints. These are provided to the driver through "Country Local
+> Matrix" (CLM) blobs. Files present in Linux firmware repository are
+> on a generic world-wide safe version with conservative power
+> settings which is designed to comply with regulatory but may not
+> provide best performance on all boards. Never the less, a better
+> functionality can be expected with the file present, so add it to the
+> modinfo of the driver.
 > 
-> Signed-off-by: gushengxian <gushengxian@yulong.com>
+> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+
+Thanks, patch looks good to me:
+
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+Regards,
+
+Hans
+
+
+> 
 > ---
->  net/8021q/vlan.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-> index 4cdf8416869d..6e784fd8795b 100644
-> --- a/net/8021q/vlan.c
-> +++ b/net/8021q/vlan.c
-> @@ -97,7 +97,7 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
->  	ASSERT_RTNL();
+>  .../wireless/broadcom/brcm80211/brcmfmac/firmware.h  |  7 +++++++
+>  .../net/wireless/broadcom/brcm80211/brcmfmac/pcie.c  |  4 ++--
+>  .../net/wireless/broadcom/brcm80211/brcmfmac/sdio.c  | 12 ++++++------
+>  3 files changed, 15 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
+> index 46c66415b4a6..e290dec9c53d 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
+> @@ -32,6 +32,13 @@ static const char BRCM_ ## fw_name ## _FIRMWARE_BASENAME[] = \
+>  	BRCMF_FW_DEFAULT_PATH fw_base; \
+>  MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH fw_base ".bin")
 >  
->  	vlan_info = rtnl_dereference(real_dev->vlan_info);
-> -	BUG_ON(!vlan_info);
-> +	WARN_ON(!vlan_info);
+> +/* Firmware and Country Local Matrix files */
+> +#define BRCMF_FW_CLM_DEF(fw_name, fw_base) \
+> +static const char BRCM_ ## fw_name ## _FIRMWARE_BASENAME[] = \
+> +	BRCMF_FW_DEFAULT_PATH fw_base; \
+> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH fw_base ".bin"); \
+> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH fw_base ".clm_blob")
+> +
+>  #define BRCMF_FW_ENTRY(chipid, mask, name) \
+>  	{ chipid, mask, BRCM_ ## name ## _FIRMWARE_BASENAME }
 >  
->  	grp = &vlan_info->grp;
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> index 143a705b5cb3..c49dd0c36ae4 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> @@ -48,8 +48,8 @@ enum brcmf_pcie_state {
+>  BRCMF_FW_DEF(43602, "brcmfmac43602-pcie");
+>  BRCMF_FW_DEF(4350, "brcmfmac4350-pcie");
+>  BRCMF_FW_DEF(4350C, "brcmfmac4350c2-pcie");
+> -BRCMF_FW_DEF(4356, "brcmfmac4356-pcie");
+> -BRCMF_FW_DEF(43570, "brcmfmac43570-pcie");
+> +BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-pcie");
+> +BRCMF_FW_CLM_DEF(43570, "brcmfmac43570-pcie");
+>  BRCMF_FW_DEF(4358, "brcmfmac4358-pcie");
+>  BRCMF_FW_DEF(4359, "brcmfmac4359-pcie");
+>  BRCMF_FW_DEF(4364, "brcmfmac4364-pcie");
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+> index b8788d7090a4..69cbe38f05ce 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+> @@ -616,14 +616,14 @@ BRCMF_FW_DEF(43362, "brcmfmac43362-sdio");
+>  BRCMF_FW_DEF(4339, "brcmfmac4339-sdio");
+>  BRCMF_FW_DEF(43430A0, "brcmfmac43430a0-sdio");
+>  /* Note the names are not postfixed with a1 for backward compatibility */
+> -BRCMF_FW_DEF(43430A1, "brcmfmac43430-sdio");
+> -BRCMF_FW_DEF(43455, "brcmfmac43455-sdio");
+> +BRCMF_FW_CLM_DEF(43430A1, "brcmfmac43430-sdio");
+> +BRCMF_FW_CLM_DEF(43455, "brcmfmac43455-sdio");
+>  BRCMF_FW_DEF(43456, "brcmfmac43456-sdio");
+> -BRCMF_FW_DEF(4354, "brcmfmac4354-sdio");
+> -BRCMF_FW_DEF(4356, "brcmfmac4356-sdio");
+> +BRCMF_FW_CLM_DEF(4354, "brcmfmac4354-sdio");
+> +BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-sdio");
+>  BRCMF_FW_DEF(4359, "brcmfmac4359-sdio");
+> -BRCMF_FW_DEF(4373, "brcmfmac4373-sdio");
+> -BRCMF_FW_DEF(43012, "brcmfmac43012-sdio");
+> +BRCMF_FW_CLM_DEF(4373, "brcmfmac4373-sdio");
+> +BRCMF_FW_CLM_DEF(43012, "brcmfmac43012-sdio");
+>  
+>  /* firmware config files */
+>  MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-sdio.*.txt");
+> 
 
-NACK
-
-You change turns bug on into warning and crash from null pointer dereference.
