@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FDC939E24F
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:16:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E96A939E288
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232320AbhFGQQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 12:16:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48738 "EHLO mail.kernel.org"
+        id S232658AbhFGQRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 12:17:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48406 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231998AbhFGQPR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Jun 2021 12:15:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4FD6361407;
-        Mon,  7 Jun 2021 16:13:20 +0000 (UTC)
+        id S231949AbhFGQQL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 12:16:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CF8DA61452;
+        Mon,  7 Jun 2021 16:13:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623082401;
-        bh=/KOVpH4rv9fwOqe9CmwxcXiyoVX1h85wYnu2sLJMTgc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DkVbRWXQVNF5k0ZPI7AVXdZViVDNltT+Ilf6Mm6GZuCTzhhrY4OWEFBnmjsTDG1kz
-         ZzcEJ6+GYB5dMaQMo7sJPyTvvZYp1IUqkvcgyohbG2CQWDAJtRiav4J/q6oeTT5n1g
-         B5P9A+jQmtCdsJmTsDUMmyCjt7rtKgpFEpLeFUbD2NBBpRTZth+/pz81SKT0poMtbG
-         Sqnayjl2Hs7QRIj0RlWM4LdlevQeKOC4f6VyCX/6SobY9J9xAUnI6KHYh7fQRYqNcf
-         PFtpB+wufSHS3Zvdk+7f67Hu2L3v8+tsU4TGptOD+sT/QjNTrMFZzszxjt8UwORfrw
-         jCNj1hN05rtyQ==
+        s=k20201202; t=1623082424;
+        bh=EfJUgZAXEQ4e3/YoC+7oj97TJtaGz+HewvLUCRFRV0E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RwNcnHAPG0m0kCbZ7AX/4HEcqIEiY8nj4QLLj8sKq7hSgyrsS4i5+ZbU1dDnoG5TC
+         GApskweTDmruIKnnkkXGeOBe6gUYtL9jKD9+/Ox60PWEkt/KGafcyaAkwGozxkTbqp
+         Or97Tr6BXJMtr6ghaon8yUgwEiKNmD8V3DbHI64d/jZTX2cQ3sOJ9fagvfNYyJJAfh
+         wxLhQwmo5sKbYPgbHG774vXoOJ5kSNsLoUqDm1NfxQFDBu06I772myjrjfxI/GVl6a
+         prBTn0luqz2pN+8T1lfAUEM8OvCr4bP3V/5z8TFScgsREN2x+cNZP7yv4wiasya9TX
+         wo0Gi9PowjQ8w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dan Robertson <dan@dlrobertson.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 01/39] net: ieee802154: fix null deref in parse dev addr
-Date:   Mon,  7 Jun 2021 12:12:40 -0400
-Message-Id: <20210607161318.3583636-1-sashal@kernel.org>
+Cc:     Lin Ma <linma@zju.edu.cn>, Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 20/39] Bluetooth: use correct lock to prevent UAF of hdev object
+Date:   Mon,  7 Jun 2021 12:12:59 -0400
+Message-Id: <20210607161318.3583636-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210607161318.3583636-1-sashal@kernel.org>
+References: <20210607161318.3583636-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,51 +42,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Robertson <dan@dlrobertson.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 9fdd04918a452980631ecc499317881c1d120b70 ]
+[ Upstream commit e305509e678b3a4af2b3cfd410f409f7cdaabb52 ]
 
-Fix a logic error that could result in a null deref if the user sets
-the mode incorrectly for the given addr type.
+The hci_sock_dev_event() function will cleanup the hdev object for
+sockets even if this object may still be in used within the
+hci_sock_bound_ioctl() function, result in UAF vulnerability.
 
-Signed-off-by: Dan Robertson <dan@dlrobertson.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20210423040214.15438-2-dan@dlrobertson.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+This patch replace the BH context lock to serialize these affairs
+and prevent the race condition.
+
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ieee802154/nl802154.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/bluetooth/hci_sock.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index f0b47d43c9f6..b34e4f827e75 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -1298,19 +1298,20 @@ ieee802154_llsec_parse_dev_addr(struct nlattr *nla,
- 	if (!nla || nla_parse_nested_deprecated(attrs, NL802154_DEV_ADDR_ATTR_MAX, nla, nl802154_dev_addr_policy, NULL))
- 		return -EINVAL;
+diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+index 251b9128f530..eed0dd066e12 100644
+--- a/net/bluetooth/hci_sock.c
++++ b/net/bluetooth/hci_sock.c
+@@ -762,7 +762,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+ 		/* Detach sockets from device */
+ 		read_lock(&hci_sk_list.lock);
+ 		sk_for_each(sk, &hci_sk_list.head) {
+-			bh_lock_sock_nested(sk);
++			lock_sock(sk);
+ 			if (hci_pi(sk)->hdev == hdev) {
+ 				hci_pi(sk)->hdev = NULL;
+ 				sk->sk_err = EPIPE;
+@@ -771,7 +771,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
  
--	if (!attrs[NL802154_DEV_ADDR_ATTR_PAN_ID] ||
--	    !attrs[NL802154_DEV_ADDR_ATTR_MODE] ||
--	    !(attrs[NL802154_DEV_ADDR_ATTR_SHORT] ||
--	      attrs[NL802154_DEV_ADDR_ATTR_EXTENDED]))
-+	if (!attrs[NL802154_DEV_ADDR_ATTR_PAN_ID] || !attrs[NL802154_DEV_ADDR_ATTR_MODE])
- 		return -EINVAL;
- 
- 	addr->pan_id = nla_get_le16(attrs[NL802154_DEV_ADDR_ATTR_PAN_ID]);
- 	addr->mode = nla_get_u32(attrs[NL802154_DEV_ADDR_ATTR_MODE]);
- 	switch (addr->mode) {
- 	case NL802154_DEV_ADDR_SHORT:
-+		if (!attrs[NL802154_DEV_ADDR_ATTR_SHORT])
-+			return -EINVAL;
- 		addr->short_addr = nla_get_le16(attrs[NL802154_DEV_ADDR_ATTR_SHORT]);
- 		break;
- 	case NL802154_DEV_ADDR_EXTENDED:
-+		if (!attrs[NL802154_DEV_ADDR_ATTR_EXTENDED])
-+			return -EINVAL;
- 		addr->extended_addr = nla_get_le64(attrs[NL802154_DEV_ADDR_ATTR_EXTENDED]);
- 		break;
- 	default:
+ 				hci_dev_put(hdev);
+ 			}
+-			bh_unlock_sock(sk);
++			release_sock(sk);
+ 		}
+ 		read_unlock(&hci_sk_list.lock);
+ 	}
 -- 
 2.30.2
 
