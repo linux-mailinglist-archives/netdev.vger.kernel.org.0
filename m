@@ -2,118 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5432539E139
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 17:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEDE839E15C
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:01:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbhFGPvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 11:51:40 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:39242 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231284AbhFGPvj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 11:51:39 -0400
-Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 642FE219B6;
-        Mon,  7 Jun 2021 15:49:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1623080987; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z8DP83ezEIRx09dRuboZviqfN18ugIBwF8ldlpJk2No=;
-        b=cHxfr4TB9WZQ8+5qJ1EWxRYVA6pR1OD531xB1fpbRSca9OMNFjHK+gtz0cq76cP2Pt1xLZ
-        IOAtA2KEthX1QU3mbxyi8RZX9zyFYEaKCNzrOIDJ6NgvEnG/aYu05kes1HgHAAEPjA1ZFO
-        pw/yQxVFwzt60l1FcZYqaaYU+oIDSOk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1623080987;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z8DP83ezEIRx09dRuboZviqfN18ugIBwF8ldlpJk2No=;
-        b=lOLp5JUGNHQpER+764JZSLjcvk09v+PXHCE8W2bMDggoVEth6lN6fkGjwKXophdQLoIwWa
-        lObGzkGH55Z7N7AA==
-Received: from imap3-int (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        by imap.suse.de (Postfix) with ESMTP id 3AE64118DD;
-        Mon,  7 Jun 2021 15:49:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1623080987; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z8DP83ezEIRx09dRuboZviqfN18ugIBwF8ldlpJk2No=;
-        b=cHxfr4TB9WZQ8+5qJ1EWxRYVA6pR1OD531xB1fpbRSca9OMNFjHK+gtz0cq76cP2Pt1xLZ
-        IOAtA2KEthX1QU3mbxyi8RZX9zyFYEaKCNzrOIDJ6NgvEnG/aYu05kes1HgHAAEPjA1ZFO
-        pw/yQxVFwzt60l1FcZYqaaYU+oIDSOk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1623080987;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z8DP83ezEIRx09dRuboZviqfN18ugIBwF8ldlpJk2No=;
-        b=lOLp5JUGNHQpER+764JZSLjcvk09v+PXHCE8W2bMDggoVEth6lN6fkGjwKXophdQLoIwWa
-        lObGzkGH55Z7N7AA==
-Received: from director2.suse.de ([192.168.254.72])
-        by imap3-int with ESMTPSA
-        id 25LqDRtAvmBieQAALh3uQQ
-        (envelope-from <hare@suse.de>); Mon, 07 Jun 2021 15:49:47 +0000
-Subject: Re: [PATCH 7/8] nvme-tcp-offload: Add queue level implementation
-To:     Shai Malin <smalin@marvell.com>, linux-nvme@lists.infradead.org,
-        sagi@grimberg.me, hch@lst.de, axboe@fb.com, kbusch@kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        aelior@marvell.com, mkalderon@marvell.com, okulkarni@marvell.com,
-        pkushwaha@marvell.com, prabhakar.pkin@gmail.com,
-        malin1024@gmail.com, Dean Balandin <dbalandin@marvell.com>
-References: <20210602184246.14184-1-smalin@marvell.com>
- <20210602184246.14184-8-smalin@marvell.com>
-From:   Hannes Reinecke <hare@suse.de>
-Organization: SUSE Linux GmbH
-Message-ID: <68d83513-aaf1-4956-367e-ab69ca1d37ce@suse.de>
-Date:   Mon, 7 Jun 2021 17:49:46 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S230523AbhFGQCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 12:02:39 -0400
+Received: from mail-ed1-f53.google.com ([209.85.208.53]:42932 "EHLO
+        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230386AbhFGQCi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 12:02:38 -0400
+Received: by mail-ed1-f53.google.com with SMTP id i13so21016909edb.9;
+        Mon, 07 Jun 2021 09:00:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=f1Picyv92DBNFnyWc2siMe7sp2wXeSWEx4iNIZ5Pf5w=;
+        b=dL07qiP7TOSZbZOSw8ZTFQlXosJ0Gy144toG1HMQyHTlWp4YQUPmaSUFHO0lwsieuh
+         d8JLY1Lg25QAIh12ny6aD6fwUZJJxLDUzQ9br3xZwkWaOwSbt+A7uX1Kq/dm8CHps7l6
+         ortqszK9HV3wVO+D0dUuMDY91hHI1RyM8nS6iLgoB+Myc/iNOITMFjemMokj+cci4806
+         TYjNUXZ3/Z7Cmn6czunKKBUVqrR96xi1hd1La62JcZ9wzoCshtcmiyTOm0TZ3ec3fYzS
+         06nCd6AbMQTC4zUANpewzOXlT3SGiAkr909gTmzaaXn/lpTlgNR7fhquopggpWpCfDjP
+         LB8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=f1Picyv92DBNFnyWc2siMe7sp2wXeSWEx4iNIZ5Pf5w=;
+        b=LESD79Ta1CPgAtMFJq7FwvTyldQ6Nff62D+lVjV03AH8sJDo6OfonYWzzZhfwXGmBc
+         6653wtJbL89GFlez0LuuC8VtMMco6WVEz4u5xQf24m/PRCbbl39OxetWXOwpO0IcTFJr
+         +lhbBOb+n91PIiZZSuLEXgWPqy1B+HgsEF4rTwOIcPG5cjkISEOzsLORRiIkZUIb1KY2
+         CpGSF1yx5Wn14+lTsr+rdOOKTHNRQMBYMKgftmO4a/SUMPZJXO4iDwBbNLpvEZTAnye9
+         K8xkjQvJG1nJr+DI2YnluicsnceQEiFm5TfjKFdHxMLA6MUxwh7HFQRYdry6ptgIb486
+         oUcw==
+X-Gm-Message-State: AOAM530ILEg4ySdqo5fXUtyJPEDQw3o/i0JQTg6lGWXCBZhBI/boyGuZ
+        Cu+cfE+R+gbzfSwV6tNFt8HWR2gGm5+oedfel2Uj41+9W4Ah4A==
+X-Google-Smtp-Source: ABdhPJw2VAWCKse4tSPNvYI+lLRKFUw2bKeeeE6O+RzAW4YHEVLLICwCcpxLxxVbWJGDW1CeChfB831LSe0kn7R6QsA=
+X-Received: by 2002:aa7:c40f:: with SMTP id j15mr19816194edq.169.1623081585663;
+ Mon, 07 Jun 2021 08:59:45 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210602184246.14184-8-smalin@marvell.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From:   Ujjal Roy <royujjal@gmail.com>
+Date:   Mon, 7 Jun 2021 21:29:34 +0530
+Message-ID: <CAE2MWkkL9x+FRzggdOSPcyFpguwP9VuQPD9AJWLTsfLzaLodfQ@mail.gmail.com>
+Subject: net: bridge: multicast: Renaming of flag BRIDGE_IGMP_SNOOPING
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        bridge@lists.linux-foundation.org, Kernel <netdev@vger.kernel.org>,
+        Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/2/21 8:42 PM, Shai Malin wrote:
-> From: Dean Balandin <dbalandin@marvell.com>
-> 
-> In this patch we implement queue level functionality.
-> The implementation is similar to the nvme-tcp module, the main
-> difference being that we call the vendor specific create_queue op which
-> creates the TCP connection, and NVMeTPC connection including
-> icreq+icresp negotiation.
-> Once create_queue returns successfully, we can move on to the fabrics
-> connect.
-> 
-> Acked-by: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Dean Balandin <dbalandin@marvell.com>
-> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
-> Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-> ---
->  drivers/nvme/host/tcp-offload.c | 417 +++++++++++++++++++++++++++++---
->  drivers/nvme/host/tcp-offload.h |   4 +
->  2 files changed, 393 insertions(+), 28 deletions(-)
-> 
-Reviewed-by: Hannes Reinecke <hare@suse.de>
+Hi Stephen,
 
-Cheers,
+Can we rename this flag BRIDGE_IGMP_SNOOPING into something like
+BRIDGE_MULTICAST_SNOOPING/BRIDGE_MCAST_SNOOPING? I am starting this
+thread because this BRIDGE_IGMP_SNOOPING flag holds information about
+IGMP only but not about MLD. Or this is not a common name to describe
+both IGMP and MLD. Please let me know about my concern, so that I can
+change the code and submit a patch.
 
-Hannes
--- 
-Dr. Hannes Reinecke		        Kernel Storage Architect
-hare@suse.de			               +49 911 74053 688
-SUSE Software Solutions Germany GmbH, 90409 Nürnberg
-GF: F. Imendörffer, HRB 36809 (AG Nürnberg)
+Thanks,
+UjjaL Roy
