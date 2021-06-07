@@ -2,219 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B3A539D4A9
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 08:08:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB53239D4AB
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 08:10:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230208AbhFGGKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 02:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbhFGGKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 02:10:37 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23F0C061787;
-        Sun,  6 Jun 2021 23:08:33 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id v13so8041027ple.9;
-        Sun, 06 Jun 2021 23:08:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XX/Cz/jPDNz70lBll3Fz6hXSYN53/2SVvORBvn52j8w=;
-        b=Ok01GTXNXChMjjWwhILN0OzaB1n0MrOoA6DbgesNwxDIjJh2y3dbudNy++f190NYvv
-         GXmPO6Jz6Ei9my2Mb6g+/X71w1aVSkh6YCm9ELcfzuZsDGoCG+dpHJpcBShAwwHmQHPR
-         u5Eii06UzApu0VrDkYhE/nXF1D7AFVKQCjzZNwp5AI7C4x948R2hWW7M2laoaZeByq/+
-         nUe5DL6K9lM5bgJwhW5dg+5Y7FXz8q1Pe4Ly3vE2KJwpki9ZPDvbmasa9Mx4BmFzmZr8
-         HSz1RdU8Edb309FaX4FqXyzoHCzwLraO0gtLVnysA31iHGWN6mNqcHk5JcmjlnSoZACD
-         vpDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XX/Cz/jPDNz70lBll3Fz6hXSYN53/2SVvORBvn52j8w=;
-        b=ky7j7kAyItn3VPJWiQCeThqisjWUGXdCLFKNCg1UA07pDtcQYnIXzjquYmBH41LKJS
-         vbdry5Qu3m2Ht6KRQ9iGOgjW5ePmC8PblFAHpVn46trCHOCkfWfXAtl0L611Y9ix4+X8
-         qWXKs2tIGtear4rZuAT8uu/FCFVr9+8fWJQK4kWrApyhe5ZSmjkjSu/g+s/f9vVd47ko
-         H0GJNHaWKVjI65vazD+lFnDYi0G8DB8eLAvmInBAQ5PSEtfnTMiZ5C3apeYSIBcFMp5n
-         HrVGtKcMhxme0g8OAR8VfC6F/SIiQyd1IEnFMIxg3C0+lJYSdOQCAOy2NrB/k4R+npNf
-         JxQw==
-X-Gm-Message-State: AOAM530NZVZ6iVJ3iuLGCOFRccr/A9pD559m9M+RbR348B/QPJPO2Jb7
-        TclrEvr7MkoRkLVxyfUyXPE=
-X-Google-Smtp-Source: ABdhPJz1busZjVB3pJZ2+lpCj29b2eeKI5qFJ2YSYy+/c+x9mNzAdCGyjCuP7fEiGjV1O3VIk7j9sg==
-X-Received: by 2002:a17:902:9f83:b029:f6:5c3c:db03 with SMTP id g3-20020a1709029f83b02900f65c3cdb03mr16632393plq.2.1623046113059;
-        Sun, 06 Jun 2021 23:08:33 -0700 (PDT)
-Received: from localhost ([2402:3a80:11c3:8bc4:aa5:8732:af1e:76c3])
-        by smtp.gmail.com with ESMTPSA id o17sm10980510pjp.33.2021.06.06.23.08.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Jun 2021 23:08:32 -0700 (PDT)
-Date:   Mon, 7 Jun 2021 11:37:24 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Vlad Buslov <vladbu@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
-Message-ID: <20210607060724.4nidap5eywb23l3d@apollo>
-References: <20210528195946.2375109-1-memxor@gmail.com>
- <CAM_iQpVqVKhK+09Sj_At226mdWpVXfVbhy89As2dai7ip8Nmtw@mail.gmail.com>
- <20210607033724.wn6qn4v42dlm4j4o@apollo>
- <CAM_iQpVCnG8pSci2sMbJ1B5YE-y=reAUp82itgrguecyNBCUVQ@mail.gmail.com>
+        id S230097AbhFGGMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 02:12:40 -0400
+Received: from mail-co1nam11on2061.outbound.protection.outlook.com ([40.107.220.61]:43657
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229470AbhFGGMj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 02:12:39 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jkVSFmscMwF6TGPCbW0DpbVDEplMzX+GammjCEjPeEMtrxrFd67ScjjmLIRRrm7MITn6gZeqgImhH6wAO0XFKRisjj85ZVFS3Q1ohDmk+6CTiO5uFB/Ul1Q/S2Ds5kxgQfcxIH/pYU2t323zQIGLLdO1qB6QJntGbskyXYn7dkO6V9BmPOQEVOLdyRlT05spGaFfT8VHmIah6Puypl9RaAtBe4Jl9VZbsOhpivuxZO7rCsYrdlkii4J1ze2npxg8rjYQpv4FY+JemSSloJ5h4GtwfkHDrg/mdXLdUGt7eMEp/Fjzh2XuyIMSgZTXTRCKBPDdsflYx8UEZLu305nVXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IpGZsHG5qbxkHDpiLauVHVn31epSRq+TWk0xlM8HJmQ=;
+ b=IRI40sQr4w6fi+XHfXh4AQKqacAOBHX/cfjvjokIHQaAOyqGiVAhh0XEBVlpZ9EHnDmUl3N9/cJhxmU59J+gqgdDIsy8Qf47AUqWKDONISqCt1P5z1FAVfLXatAAatBG0b7VhnAInfcmvJeeBw2BZTRSg6bN6munhNudl1BO7FqORjvIDfXZ0GBsrhl2yRbYPbM9VLnxtQY5NXB7iy7o/eQkLMcPWmVDu1+M3xWtZurQ+XQKfFGLYVoHpwMdmEQpezMvuhWJaJ/x+5JrGdOlInK/+oIGIEcAh0jnH5gkLwEivFlBV35/f6lc/q/XRrSP7tOBw4Xn968Q4YJZt8tSpQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IpGZsHG5qbxkHDpiLauVHVn31epSRq+TWk0xlM8HJmQ=;
+ b=sJgMoADu9erwt62Gg4sZknSKMICY2WGw38FPVrr87rkt3D72+JDzAQ2JwBZa6HySuDpBEjdODsLGYrS4OnoxekQ+bVyYv7+mEraUEvERCgpe+W7JwbejjovmPxE4Oj4XNtTsiTD0NOX2teFPziCuF0my3tr80xamQCaTxYJtEBea7z++FqGsNQPdQ3H9ADGnPSLJTBQMRPxLN4ZUsVaIE8uPN1fCmIXhgVWKxCsUU7eTKGvKH/joRLQrTS8MB2v/PcPVooKTFDT3hbqqxy0XU3K/ezV2Eq26Cl1Su2AfkQXRfl7VbUPFLNR6Jn0Ja+B44wHg4OYvTZ/PCNLGAw3dKA==
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
+ by PH0PR12MB5500.namprd12.prod.outlook.com (2603:10b6:510:ef::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.24; Mon, 7 Jun
+ 2021 06:10:47 +0000
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::b0d9:bff5:2fbf:b344]) by PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::b0d9:bff5:2fbf:b344%6]) with mapi id 15.20.4195.030; Mon, 7 Jun 2021
+ 06:10:47 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Jiri Pirko <jiri@nvidia.com>, moyufeng <moyufeng@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: RE: [PATCH RESEND iproute2-next] devlink: Add optional controller
+ user input
+Thread-Topic: [PATCH RESEND iproute2-next] devlink: Add optional controller
+ user input
+Thread-Index: AQHXWGpNwXhSEOm/yUu2yThJsUjGQKsDErIAgAN3H5CAAWCHgIAAKVuQ
+Date:   Mon, 7 Jun 2021 06:10:47 +0000
+Message-ID: <PH0PR12MB5481A9B54850A62DF80E3EC1DC389@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20210603111901.9888-1-parav@nvidia.com>
+ <c50ebdd6-a388-4d39-4052-50b4966def2e@huawei.com>
+ <PH0PR12MB548115AC5D6005781BAEC217DC399@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <a1b853ef-0c94-ba51-cf31-f1f194610204@huawei.com>
+In-Reply-To: <a1b853ef-0c94-ba51-cf31-f1f194610204@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [49.207.218.7]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8007ab0f-d28b-429c-2dc3-08d9297afe52
+x-ms-traffictypediagnostic: PH0PR12MB5500:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <PH0PR12MB5500C596A086E73796C4B184DC389@PH0PR12MB5500.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: jwlDen7cxofLXqXGTerhYUVPuLc8Rel8vDojdcZnvuCHv/93PdFCkfJfV21ajQ8X4NAK9bvK7ZXOX9aq8POoxOF9WqG+BrQBQIR34s5a7737I9NBMl6MTlg1ujT0clDOcRobKhZoMUzJ3ToYwCFX46R/8X4GAyZh3BXCA9h5iwGwt+xGIBhlQ0+tIDDeZ0xM9JxnQCyuJDrE43btpRN684HvdDFMMrawMf/jV45FC7pKmc/G4gomTVuac/nAneEbsWvyxU/yLAwOr8ECDjBEOJWQERV1zTk6PSTroYk1PW9wtV3d8XOGLm/H/Q0PhODzxgkkx5itBmNKX+OsRDYSGnbFN8dD6ZjS3YRkKYhKgu9983VJQZ9/GiCMPfQZfWGNGOh5QtNRXYoE7p958wS5fIh9uS7014akIOTHcvo695kAEMYR3rlpgaegnbPv4JNQ5TCSWwpn3AQvEouVuTPIBHjr5R0P9uXCFXVPLTJmoxsWZd6qo1gFXXIQ3/VY+ze3gDv0hV9h1P97Kwf1EqWIgON807Us6SoP700wgWvkG5JqXVfDE9prLhtvbFfFNUMbFv4pY1T8napux5qZz2vB/JqrutTfKowXTJh8r63ASf66PrtGnHjPs3VU0NPsjn5dOlxLhdUlenWv+X+pM8qFRTeyrkdpLH3zXqwl1jpmv/ExWqS56V5ttS34lc9KQY+pAfzEBfxinNhujo1WdmkUIl1I9ui9b51cfWT/iAzIvaYG51QQ2WkdIXuXEl2M5cQyjxOmLOL1d6hichvIyJcXog==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(366004)(376002)(39860400002)(396003)(4326008)(5660300002)(55016002)(54906003)(110136005)(52536014)(316002)(7696005)(2906002)(86362001)(83380400001)(71200400001)(966005)(9686003)(26005)(186003)(122000001)(33656002)(8676002)(66946007)(8936002)(478600001)(76116006)(66556008)(66476007)(64756008)(66446008)(38100700002)(6506007)(53546011)(55236004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?OXdpTkRiM3BqOWJlYWt1S0ZsUjdoZ3Ywb3I1MXFDUUg2a05PdjNSOFQreVh3?=
+ =?utf-8?B?MDg3aVRyclNNeWlWY0lzcS9QclBQZlZuZEcvWWJuV1VrZHhtazMyS2o4WXo3?=
+ =?utf-8?B?ZURoV2NDdTVjUXpVTVZnQnpzTGl1d2NaUjRRZytXVHJPbTlUbmZ5am52S0sr?=
+ =?utf-8?B?NHBJR2JVWS9VWGZvRjBJVmVyTHQyWUMxTU94bUdub0dqR2EvUlVrbUlhOHFU?=
+ =?utf-8?B?bHYrTWhlRFZPZkY4dGR1WjVpTXpSMGtuMEVWdlJrdDhjMEtsdWxwWmdPNFNl?=
+ =?utf-8?B?b2dSQXBKWm1EanBmOUVxNG5qcStwTS9vWGNHRkx2UXErQm5KYWtoSVhtQTVQ?=
+ =?utf-8?B?RFU1NGdXeDVjQzJoemFja0ZXc1FONDVYeXF3cy9YTG5kWktmZUd5TERIamRM?=
+ =?utf-8?B?dUtxMzE0QU1SZno1UTFMTjNFZVhMUGpoVjhnS2s5aHNlTGlaYTVMZlkybC9Z?=
+ =?utf-8?B?aUtjWTcrMmE2WEE2WWpROC9vVm5vbGFGbzIyb1ZwNTBWYVVSS2ZmeC96cEF5?=
+ =?utf-8?B?MktXN1ZjNy9hYmhpbzZNd3lnbGdJTEhKV21aS3RxUXdJMlRHOVVmUkdYM3li?=
+ =?utf-8?B?b0tIMnVKMUdnZ3ZTTHRKcm9aRkxraFBpclRWbGV6NXRKQ2tTa3gySXZMMGJ4?=
+ =?utf-8?B?Vkxiam4rc2V3R1B1QzA3TDdkanpKZ0drYUFMUDJRV3hKeVFScVFZZmZkRXpJ?=
+ =?utf-8?B?RFdOeFU0VnM5djIvNXpvOUl2TXBRNG5WTHBCeHVFTHBDSEVVL1plTFFqMGxY?=
+ =?utf-8?B?Rlg0YkVJMWNUUXBhYnI1UFJ6VlRjNlJNK3l1R1hCSnpzN1hzaVMzYnFRZVIw?=
+ =?utf-8?B?WTRZYVAyaElNMjJUWHB5cVVDY2lLV2xTdjRFL29ETjk0eHNucHVXSkVtcXNJ?=
+ =?utf-8?B?RTVqaXAyY21VRy9keFh2Y1U1V0RQQTVkZEVtNkVOb3NFOThwWGdIWEg0R0Uz?=
+ =?utf-8?B?VFFEc0ViRkNnL1pYckJpd0ZFY0JsSXEyQ3J4MGhYcitYNHg1RjJvZVkyRGlt?=
+ =?utf-8?B?VWhtZWxIcHVHNUc3bG5yeG1xaDVyRmZTc1VQUGcvejFCaURZMUxoRlcvOFZn?=
+ =?utf-8?B?QldYYnJiRnFVT3MwOXhGY3NQeHVreHNLMTAvQWV4NGk2ODN2Q0YzR2ZOR1Av?=
+ =?utf-8?B?QlFEYnN2Um0vajA1ZWZTYmFCa2pSTzBXdTRId2x5R1U5VWdiTEZFVTdieTkv?=
+ =?utf-8?B?WmJFaHZRakR2a2NjSVJ6ZjFPTllCVzlVMXkyWWd3UU5wcnhKUUlSZVVicm1X?=
+ =?utf-8?B?MVlUNklqZWhWazlEa1JmbzN5T05FUTA2MXF6eFcxYTVmSndwekx6NzhvQ3JN?=
+ =?utf-8?B?R3EzZU9keHdPLzl3RlVGMGFCS1BYVDRFVGo0ZkhBVlBOa2NTUTRYTXlyWEhy?=
+ =?utf-8?B?SnpyMy9xMnEvb3dzRDJvWkQ3N3dGcVJnWWF6WGVZOWFXUVIxaERMTW5VOEV2?=
+ =?utf-8?B?bEs3TlVKdVl2MC9rQS9xaDRLNngyRzI5ZThPdUhxU3hZT2ZDZzZNQW5qK1J4?=
+ =?utf-8?B?eEdqdWdSL1FMbGthOFgzSUlEbDZEc09jVC9BSUQ2K2VtUFBpQi82QkpNd2Zm?=
+ =?utf-8?B?TXYwT05paWl0ZzBFekV6d2pMVWJqS2x3RGJpSHZOM0FIMW9GVG1QeFBpSlJT?=
+ =?utf-8?B?U1NvbDRteXJCZ0ExemVEbmFKeDRZZndLZ283K2FSZEVrWTVjTnA2UGQvODdM?=
+ =?utf-8?B?VWRXbVRaQnM3RCtCYStYWER0alFuL1NnWEorT0JXWmZEa1I2c0hGTGNrOW51?=
+ =?utf-8?Q?fIHf0qEuGMI0Dblzyw=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpVCnG8pSci2sMbJ1B5YE-y=reAUp82itgrguecyNBCUVQ@mail.gmail.com>
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8007ab0f-d28b-429c-2dc3-08d9297afe52
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2021 06:10:47.7829
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ycbj8IiN5R1eHvEgaXrN13Zb3Y8uTEOl8R2/fUA1SoS+LJ6pyENwRvgqG0KywMVfJOzNr+gg7uqLcu82I5nSqA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5500
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 07, 2021 at 10:48:04AM IST, Cong Wang wrote:
-> On Sun, Jun 6, 2021 at 8:38 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
-> >
-> > On Mon, Jun 07, 2021 at 05:07:28AM IST, Cong Wang wrote:
-> > > On Fri, May 28, 2021 at 1:00 PM Kumar Kartikeya Dwivedi
-> > > <memxor@gmail.com> wrote:
-> > > >
-> > > > This is the first RFC version.
-> > > >
-> > > > This adds a bpf_link path to create TC filters tied to cls_bpf classifier, and
-> > > > introduces fd based ownership for such TC filters. Netlink cannot delete or
-> > > > replace such filters, but the bpf_link is severed on indirect destruction of the
-> > > > filter (backing qdisc being deleted, or chain being flushed, etc.). To ensure
-> > > > that filters remain attached beyond process lifetime, the usual bpf_link fd
-> > > > pinning approach can be used.
-> > >
-> > > I have some troubles understanding this. So... why TC filter is so special
-> > > here that it deserves such a special treatment?
-> > >
-> >
-> > So the motivation behind this was automatic cleanup of filters installed by some
-> > program. Usually from the userspace side you need a bunch of things (handle,
-> > priority, protocol, chain_index, etc.) to be able to delete a filter without
-> > stepping on others' toes. Also, there is no gurantee that filter hasn't been
-> > replaced, so you need to check some other way (either tag or prog_id, but these
-> > are also not perfect).
-> >
-> > bpf_link provides isolation from netlink and fd-based lifetime management. As
-> > for why it needs special treatment (by which I guess you mean why it _creates_
-> > an object instead of simply attaching to one, see below):
->
-> Are you saying TC filter is not independent? IOW, it has to rely on TC qdisc
-> to exist. This is true, and is of course different with netns/cgroup.
-> This is perhaps
-> not hard to solve, because TC actions are already independent, we can perhaps
-> convert TC filters too (the biggest blocker is compatibility).
->
-
-True, but that would mean you need some way to create a detached TC filter, correct?
-Can you give some ideas on how the setup would look like from userspace side?
-
-IIUC you mean
-
-RTM_NEWTFILTER (with kind == bpf) parent == SOME_MAGIC_DETACHED ifindex == INVALID
-
-then bpf_link comes in and creates the binding to the qdisc, parent, prio,
-chain, handle ... ?
-
-> Or do you just need an ephemeral representation of a TC filter which only exists
-> for a process? If so, see below.
->
-> >
-> > > The reason why I ask is that none of other bpf links actually create any
-> > > object, they merely attach bpf program to an existing object. For example,
-> > > netns bpf_link does not create an netns, cgroup bpf_link does not create
-> > > a cgroup either. So, why TC filter is so lucky to be the first one requires
-> > > creating an object?
-> > >
-> >
-> > They are created behind the scenes, but are also fairly isolated from netlink
-> > (i.e.  can only be introspected, so not hidden in that sense, but are
-> > effectively locked for replace/delete).
-> >
-> > The problem would be (of not creating a filter during attach) is that a typical
-> > 'attach point' for TC exists in form of tcf_proto. If we take priority (protocol
-> > is fixed) out of the equation, it becomes possible to attach just a single BPF
-> > prog, but that seems like a needless limitation when TC already supports list of
-> > filters at each 'attach point'.
-> >
-> > My point is that the created object (the tcf_proto under the 'chain' object) is
-> > the attach point, and since there can be so many, keeping them around at all
-> > times doesn't make sense, so the refcounted attach locations are created as
-> > needed.  Both netlink and bpf_link owned filters can be attached under the same
-> > location, with different ownership story in userspace.
->
-> I do not understand "created behind the scenes". These are all created
-> independent of bpf_link, right? For example, we create a cgroup with
-> mkdir, then open it and pass the fd to bpf_link. Clearly, cgroup is not
-> created by bpf_link or any bpf syscall.
-
-Sorry, that must be confusing. I was only referring to what this patch does.
-Indeed, as far as implementation is concerned this has no precedence.
-
->
-> The only thing different is fd, or more accurately, an identifier to locate
-> these objects. For example, ifindex can also be used to locate a netdev.
-> We can certainly locate a TC filter with (prio,proto,handle) but this has to
-> be passed via netlink. So if you need some locator, I think we can
-> introduce a kernel API which takes all necessary parameters to locate
-> a TC filter and return it to you. For a quick example, like this:
->
-> struct tcf_proto *tcf_get_proto(struct net *net, int ifindex,
->                                 int parent, char* kind, int handle...);
->
-
-I think this already exists in some way, i.e. you can just ignore if filter
-handle from tp->ops->get doesn't exist (reusing the exsiting code) that walks
-from qdisc/block -> chain -> tcf_proto during creation.
-
-> (Note, it can grab a refcnt in case of being deleted by others.)
->
-> With this, you can simply call it in bpf_link, and attach bpf prog to tcf_proto
-> (of course, only cls_bpf succeeds here).
->
-
-So IIUC, you are proposing to first create a filter normally using netlink, then
-attach it using bpf_link to the proper parent? I.e. your main contention point
-is to not create filter from bpf_link, instead take a filter and attach it to a
-parent with bpf_link representing this attachment?
-
-But then the created filter stays with refcount of 1 until RTM_DELTFILTER, i.e.
-the lifetime of the attachment may be managed by bpf_link (in that we can detach
-the filter from parent) but the filter itself will not be cleaned up. One of the
-goals of tying TC filter to fd was to bind lifetime of filter itself, along with
-attachment. Separating both doesn't seem to buy anything here. You always create
-a filter to attach somewhere.
-
-With actions, things are different, you may create one action but bind it to
-multiple filters, so actions existing as their own thing makes sense. A single
-action can serve multiple filters, and save on memory.
-
-You could argue that even with filters this is true, as you may want to attach
-the same filter to multiple qdiscs, but we already have a facility to do that
-(shared tcf_block with block->q == NULL). However that is not as flexible as
-what you are proposing.
-
-It may be odd from the kernel side but to userspace a parent, prio, handle (we
-don't let user choose anything else for now) is itself the attach point, how
-bpf_link manages the attachment internally isn't really that interesting. It
-does so now by way of creating an object that represents a certain hook, then
-binding the BPF prog to it. I consider this mostly an implementation detail.
-What you are really attaching to is the qdisc/block, which is the resource
-analogous to cgroup fd, netns fd, and ifindex, and 'where' is described by other
-attributes.
-
-> Thanks.
-
---
-Kartikeya
+DQoNCj4gRnJvbTogWXVuc2hlbmcgTGluIDxsaW55dW5zaGVuZ0BodWF3ZWkuY29tPg0KPiBTZW50
+OiBNb25kYXksIEp1bmUgNywgMjAyMSA5OjAxIEFNDQo+IA0KPiBPbiAyMDIxLzYvNiAxNToxMCwg
+UGFyYXYgUGFuZGl0IHdyb3RlOg0KPiA+IEhpIFl1bnNoZW5nLA0KPiA+DQo+ID4+IEZyb206IFl1
+bnNoZW5nIExpbiA8bGlueXVuc2hlbmdAaHVhd2VpLmNvbT4NCj4gPj4gU2VudDogRnJpZGF5LCBK
+dW5lIDQsIDIwMjEgNzowNSBBTQ0KPiA+Pg0KPiA+PiBPbiAyMDIxLzYvMyAxOToxOSwgUGFyYXYg
+UGFuZGl0IHdyb3RlOg0KPiA+Pj4gQSB1c2VyIG9wdGlvbmFsbHkgcHJvdmlkZXMgdGhlIGV4dGVy
+bmFsIGNvbnRyb2xsZXIgbnVtYmVyIHdoZW4gdXNlcg0KPiA+Pj4gd2FudHMgdG8gY3JlYXRlIGRl
+dmxpbmsgcG9ydCBmb3IgdGhlIGV4dGVybmFsIGNvbnRyb2xsZXIuDQo+ID4+DQo+ID4+IEhpLCBQ
+YXJhdg0KPiA+PiAgICBJIHdhcyBwbGFuaW5nIHRvIHVzZSBjb250cm9sbGVyIGlkIHRvIHNvbHZl
+IHRoZSBkZXZsaW5rIGluc3RhbmNlDQo+ID4+IHJlcHJlc2VudGluZyBwcm9ibGVtIGZvciBtdWx0
+aS1mdW5jdGlvbiB3aGljaCBzaGFyZXMgY29tbW9uIHJlc291cmNlDQo+ID4+IGluIHRoZSBzYW1l
+IEFTSUMsIHNlZSBbMV0uDQo+ID4+DQo+ID4+IEl0IHNlZW1zIHRoZSBjb250cm9sbGVyIGlkIHVz
+ZWQgaGVyZSBpcyB0byBkaWZmZXJlbnRpYXRlIHRoZSBmdW5jdGlvbg0KPiA+PiB1c2VkIGluIGRp
+ZmZlcmVudCBob3N0Pw0KPiA+Pg0KPiA+IFRoYXTigJlzIGNvcnJlY3QuIENvbnRyb2xsZXIgaG9s
+ZHMgb25lIG9yIG1vcmUgUENJIGZ1bmN0aW9ucyAoUEYsVkYsU0YpLg0KPiANCj4gSSBhbSBub3Qg
+c3VyZSBJIHVuZGVyc3RhbmQgdGhlIGV4YWN0IHVzYWdlIG9mIGNvbnRyb2xsZXIgYW5kIHdoeSBj
+b250cm9sbGVyIGlkDQo+IGlzIGluICJkZXZsaW5rX3BvcnRfKl9hdHRycyIuDQo+IA0KPiBMZXQn
+cyBjb25zaWRlciBhIHNpbXBsaWZpZWQgY2FzZSB3aGVyZSB0aGVyZSBpcyB0d28gUEYoc3VwcG9z
+aW5nIGJvdGggaGF2ZQ0KPiBWRiBlbmFibGVkKSwgYW5kIGVhY2ggUEYgaGFzIGRpZmZlcmVudCBj
+b250cm9sbGVyIGFuZCBlYWNoIFBGIGNvcnJlc3BvbmRzIHRvDQo+IGEgZGlmZmVyZW50IHBoeXNp
+Y2FsIHBvcnQoT3IgaXQgaXMgYWJvdXQgbXVsdGktaG9zdCBjYXNlIG11bHRpIFBGIG1heSBzaGFy
+aW5nDQo+IHRoZSBzYW1lIHBoeXNpY2FsIHBvcnQ/KToNClR5cGljYWxseSBzaW5nbGUgaG9zdCB3
+aXRoIHR3byBQRnMgaGF2ZSB0aGVpciBvd24gcGh5c2ljYWwgcG9ydHMuDQpNdWx0aS1ob3N0IHdp
+dGggdHdvIFBGcywgb24gZWFjaCBob3N0IHRoZXkgc2hhcmUgcmVzcGVjdGl2ZSBwaHlzaWNhbCBw
+b3J0cy4NCg0KU2luZ2xlIGhvc3Q6DQpQZjAucGh5c2ljYWxfcG9ydCA9IHAwDQpQZjEucGh5c2lj
+YWxfcG9ydCA9IHAxLg0KDQpNdWx0aS1ob3N0ICh0d28pIGhvc3Qgc2V0dXANCkgxLnBmMC5waHlp
+Y2FsX3BvcnQgPSBwMC4NCkgxLnBmMS5waHlpY2FsX3BvcnQgPSBwMS4NCkgyLnBmMC5waHlpY2Fs
+X3BvcnQgPSBwMC4NCkgyLnBmMS5waHlpY2FsX3BvcnQgPSBwMS4NCg0KPiAxLiBJIHN1cHBvc2Ug
+ZWFjaCBQRiBoYXMgaXQncyBkZXZsaW5rIGluc3RhbmNlIGZvciBtbHggY2FzZShJIHN1cHBvc2Ug
+ZWFjaA0KPiAgICBWRiBjYW4gbm90IGhhdmUgaXQncyBvd24gZGV2bGluayBpbnN0YW5jZSBmb3Ig
+VkYgc2hhcmVzIHRoZSBzYW1lIHBoeXNpY2FsDQo+ICAgIHBvcnQgd2l0aCBQRiwgcmlnaHQ/KS4N
+ClZGIGFuZCBTRiBwb3J0cyBhcmUgb2YgZmxhdm91ciBWSVJUVUFMLg0KDQo+IDIuIGVhY2ggUEYn
+cyBkZXZsaW5rIGluc3RhbmNlIGhhcyB0aHJlZSB0eXBlcyBvZiBwb3J0LCB3aGljaCBpcw0KPiAg
+ICBGTEFWT1VSX1BIWVNJQ0FMLCBGTEFWT1VSX1BDSV9QRiBhbmQgRkxBVk9VUl9QQ0lfVkYoc3Vw
+cG9zaW5nIEkNCj4gdW5kZXJzdGFuZA0KPiAgICBwb3J0IGZsYXZvdXIgY29ycmVjdGx5KS4NCj4g
+DQpGTEFWT1VSX1BDSV97UEYsVkYsU0Z9IGJlbG9uZ3MgdG8gZXN3aXRjaCAocmVwcmVzZW50b3Ip
+IHNpZGUgb24gc3dpdGNoZGV2IGRldmljZS4NCg0KPiBJZiBJIHVuZGVyc3RhbmQgYWJvdmUgY29y
+cmVjdGx5LCBhbGwgcG9ydHMgaW4gdGhlIHNhbWUgZGV2bGluayBpbnN0YW5jZSBzaG91bGQNCj4g
+aGF2ZSB0aGUgc2FtZSBjb250cm9sbGVyIGlkLCByaWdodD8gSWYgeWVzLCB3aHkgbm90IHB1dCB0
+aGUgY29udHJvbGxlciBpZCBpbiB0aGUNCj4gZGV2bGluayBpbnN0YW5jZT8NCk5lZWQgbm90IGJl
+LiBBbGwgUENJX3tQRixWRixTRn0gY2FuIGhhdmUgY29udHJvbGxlciBpZCBkaWZmZXJlbnQgZm9y
+IGRpZmZlcmVudCBjb250cm9sbGVycy4NClVzdWFsbHkgZWFjaCBtdWx0aS1ob3N0IGlzIGEgZGlm
+ZmVyZW50IGNvbnRyb2xsZXIuIA0KUmVmZXIgdG8gdGhpcyBkaWFncmFtIFsxXSBhbmQgZGV0YWls
+ZWQgZGVzY3JpcHRpb24uDQoNCj4gDQo+ID4gSW4geW91ciBjYXNlIGlmIHRoZXJlIGlzIHNpbmds
+ZSBkZXZsaW5rIGluc3RhbmNlIHJlcHJlc2VudGluZyBBU0lDLCBpdCBpcyBiZXR0ZXINCj4gdG8g
+aGF2ZSBoZWFsdGggcmVwb3J0ZXJzIHVuZGVyIHRoaXMgc2luZ2xlIGluc3RhbmNlLg0KPiA+DQo+
+ID4gRGV2bGluayBwYXJhbWV0ZXJzIGRvIG5vdCBzcGFuIG11bHRpcGxlIGRldmxpbmsgaW5zdGFu
+Y2UuDQo+IA0KPiBZZXMsIHRoYXQgaXMgd2hhdCBJIHRyeSB0byBkbzogc2hhcmVkIHN0YXR1cy9w
+YXJhbWV0ZXJzIGluIGRldmxpbmsgaW5zdGFuY2UsDQo+IHBoeXNpY2FsIHBvcnQgc3BlY2lmaWMg
+c3RhdHVzL3BhcmFtZXRlcnMgaW4gZGV2bGluayBwb3J0IGluc3RhbmNlLg0KPiANCj4gPiBTbyBp
+ZiB5b3UgbmVlZCB0byBjb250cm9sIGRldmxpbmsgaW5zdGFuY2UgcGFyYW1ldGVycyBvZiBlYWNo
+IGZ1bmN0aW9uDQo+IGJ5aXRzZWxmLCB5b3UgbGlrZWx5IG5lZWQgZGV2bGluayBpbnN0YW5jZSBm
+b3IgZWFjaC4NCj4gPiBBbmQgc3RpbGwgY29udGludWUgdG8gaGF2ZSBBU0lDIHdpZGUgaGVhbHRo
+IHJlcG9ydGVycyB1bmRlciBzaW5nbGUgaW5zdGFuY2UNCj4gdGhhdCByZXByZXNlbnRzIHdob2xl
+IEFTSUMuDQo+IA0KPiBJIGRvIG5vdCB0aGluayBlYWNoIGZ1bmN0aW9uIG5lZWQgYSBkZXZsaW5r
+IGluc3RhbmNlIGlmIHRoZXJlIGlzIGEgZGV2bGluaw0KPiBpbnN0YW5jZSByZXByZXNlbnRpbmcg
+YSB3aG9sZSBBU0lDLCB1c2luZyB0aGUgZGV2bGluayBwb3J0IGluc3RhbmNlIHRvDQo+IHJlcHJl
+c2VudCB0aGUgZnVuY3Rpb24gc2VlbXMgZW5vdWdoPw0KJ2RldmxpbmsgcG9ydCBmdW5jdGlvbidz
+IGlzIGVxdWl2YWxlbnQgb2YgaHlwZXJ2aXNvci9uaWN2aXNvciBlbnRpdHkgY29udHJvbGxlZCBi
+eSB0aGUgbmV0d29yay9zeXNhZG1pbi4NCldoaWxlIGRldmxpbmsgaW5zdGFuY2Ugb2YgYSBnaXZl
+biBQRixWRixTRiBpcyBtYW5hZ2VkIGJ5IHRoZSB1c2VyIG9mIHN1Y2ggZnVuY3Rpb24gaXRzZWxm
+Lg0KRm9yIGV4YW1wbGUgd2hlbiBhIFZGIGlzIG1hcHBlZCB0byBhIFZNLCBkZXZsaW5rIGluc3Rh
+bmNlIG9mIHRoaXMgVkYgcmVzaWRlcyBpbiB0aGUgVk0gbWFuYWdlZCBieSB0aGUgZ3Vlc3QgVk0u
+DQoNCkJlZm9yZSB0aGlzIFZGIGlzIGdpdmVuIHRvIFZNLCB1c3VhbGx5IGh5cGVydmlzb3Ivbmlj
+dmlzb3IgYWRtaW4gcHJvZ3JhbXMgdGhpcyBmdW5jdGlvbiAoc3VjaCBhcyBtYWMgYWRkcmVzcykg
+ZXhwbGFpbmVkIGluIFszXS4NClNvIHRoYXQgYSBnaXZlbiBWTSBhbHdheXMgZ2V0cyB0aGUgc2Ft
+ZSBtYWMgYWRkcmVzcyByZWdhcmRsZXNzIG9mIHdoaWNoIFZGIHthIG9yIGIpLg0KDQpbMV0gaHR0
+cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvdG9ydmFsZHMvbGlu
+dXguZ2l0L3RyZWUvRG9jdW1lbnRhdGlvbi9uZXR3b3JraW5nL2RldmxpbmsvZGV2bGluay1wb3J0
+LnJzdD9oPXY1LjEzLXJjNSNuNzINClsyXSBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20v
+bGludXgva2VybmVsL2dpdC90b3J2YWxkcy9saW51eC5naXQvdHJlZS9Eb2N1bWVudGF0aW9uL25l
+dHdvcmtpbmcvZGV2bGluay9kZXZsaW5rLXBvcnQucnN0P2g9djUuMTMtcmM1I242MA0KWzNdIGh0
+dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xp
+bnV4LmdpdC90cmVlL0RvY3VtZW50YXRpb24vbmV0d29ya2luZy9kZXZsaW5rL2RldmxpbmstcG9y
+dC5yc3Q/aD12NS4xMy1yYzUjbjExMA0KDQo+IA0KPiA+DQo+ID4+IDEuIGh0dHBzOi8vbGttbC5v
+cmcvbGttbC8yMDIxLzUvMzEvMjk2DQoNCg==
