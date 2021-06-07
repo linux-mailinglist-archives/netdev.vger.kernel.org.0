@@ -2,248 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFCD139D437
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 06:53:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD8F939D448
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 07:18:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230191AbhFGEzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 00:55:09 -0400
-Received: from mail-wr1-f47.google.com ([209.85.221.47]:45018 "EHLO
-        mail-wr1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229993AbhFGEzI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 00:55:08 -0400
-Received: by mail-wr1-f47.google.com with SMTP id f2so15933830wri.11
-        for <netdev@vger.kernel.org>; Sun, 06 Jun 2021 21:53:02 -0700 (PDT)
+        id S229923AbhFGFUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 01:20:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44092 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229436AbhFGFUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 01:20:22 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E20C061766;
+        Sun,  6 Jun 2021 22:18:15 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id l1so12952952pgm.1;
+        Sun, 06 Jun 2021 22:18:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GSrkzkz7xM597OmtYCnt2HUmLY0/0lkG7FOWLrVNAms=;
-        b=FHl4f2ZMNz83wbOOximW+hD3upYQGy1AuGocMMiFVdvqnDQaqr0v5s4QckDZNIRw+G
-         fXR/saqHsOXCJX/B+NJqEvCwCHsZUFAQa5eTqGBit32iZWBABoWo9dW9UGuHlucHyYEn
-         Hv/YFYR54d5IddJbd2vEnZ28MlHEQG6/RAJpJgohGxMDsGtPLO6DPPu3sBlJqBszMErr
-         tSpH4uoPeh5eTTm1tOJPWyRY/0yc9Ls3NRMfQDSUJqd0qrFQ8SZ6S88tIO44S4HPIaoh
-         RZmcqSUQpMJ+YHXuDmOVZ8XvROg5CDwAO3rVuqJ1a/LEtaMI8DY45It6NF9hG71vJu0h
-         F3rQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B0kpbwlLEKHffTb9r0y58pRuUyIlCbeO2oTPDW9l57g=;
+        b=s8X0WucaKQsIlDWYUBvEpgZZ49HcKRQJjSMgds1BeX75oTXQZzHFaDTccTbsKie4fT
+         r/ROR//NNybAI3wtjbO1qoal9HuNEyreAUVJkQ/doyW8+sWxuXSU3DYEQtSIPMmmTsMU
+         2kJgiK24JXVu+bSYofJJ8mTUsYY3UWYhGKw1rLRBNaoNdBtRXk/qLYGS7D84WDgvH8ri
+         9AvJ6wMMQR+lDgA0OH1dOxEXdH2qQm9Q5zfIT5JMSB8gTKsJ8jNF56IAB+SJ3YMlNKnH
+         +eltmuxN1T6NocpijSeMUELA6lq44mLxNSC4y1uRI9gfxhHZrjuU0lqzH46+Po7ca6Oh
+         svNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GSrkzkz7xM597OmtYCnt2HUmLY0/0lkG7FOWLrVNAms=;
-        b=XrVJHSfJKk7AaN5h2/FRjVSl6wLLws+82jqbGOnqsm/y62u5NDHAY4X+95O9WSS44l
-         MlU9DRx+COd3Zo1YP66+fAQx07jQ9E8IJkMAyDt4TeuqiizI6BUG9vuuR63Tkf/boTQy
-         VwVzqgreun/kx5ByxDSAjKUJkLbewsLPsJoOqfpda5aG6nXHX5QuBNOaaqz+Y6E9ufte
-         CyvlpxRY1ktpBiAtRMc20FiaSQFWU4Uay/q0AVMmyuCQBc+z5612MP+ecuJVGhXFbq3k
-         0DuQTv22PszpAX+d0vY4Dl4ts9L48dv+GrU9TLhttt28cMSv3lvdA0xbXrdxQ/D65tVN
-         /Ujg==
-X-Gm-Message-State: AOAM5326mcuGcMz71aiRVQHrDxVYrB2/yehRQyWo5hLt2wLawGI57+NC
-        HMn01gA5duMYgi1efjq/jxi9AA==
-X-Google-Smtp-Source: ABdhPJyH2kD08IkD4rO54NrYaJ6NqrZO0rrFvYt+XutsC9lnfAjdURf0mdSoSNbTp3YUeEf2+VNTpg==
-X-Received: by 2002:a5d:6b09:: with SMTP id v9mr15195054wrw.297.1623041521972;
-        Sun, 06 Jun 2021 21:52:01 -0700 (PDT)
-Received: from Iliass-MBP (ppp-94-66-57-185.home.otenet.gr. [94.66.57.185])
-        by smtp.gmail.com with ESMTPSA id n2sm15303342wmb.32.2021.06.06.21.51.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Jun 2021 21:52:01 -0700 (PDT)
-Date:   Mon, 7 Jun 2021 07:51:56 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Matteo Croce <mcroce@linux.microsoft.com>, netdev@vger.kernel.org,
-        linux-mm@kvack.org, Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>
-Subject: Re: [PATCH net-next v7 3/5] page_pool: Allow drivers to hint on SKB
- recycling
-Message-ID: <YL2l7OxN4m7+d303@Iliass-MBP>
-References: <20210604183349.30040-1-mcroce@linux.microsoft.com>
- <20210604183349.30040-4-mcroce@linux.microsoft.com>
- <YLqCAEVG+aLNGlIi@casper.infradead.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B0kpbwlLEKHffTb9r0y58pRuUyIlCbeO2oTPDW9l57g=;
+        b=mEQAl1F+522V323BTZ2UfK3ws0uUVyvyyr4hFHr3bC58MSQfpQlw2kDytNzPxKAPIw
+         fI8h8LNC9LUaoho2iGHZgajz5bTB33F0ghzHNq5fEAgyixm+r6DU6SRUCN1XHsOoPNVr
+         LVO1Iun7OTPyKYmyxJALtW91OAcCxogdeBl7WflVcnW0CpeoH6l51bvzxQsemSxwruOI
+         uci33KDoZbfWriDgJieEV3zgCW/GOKapJW+q9A7FMTiGqPVfiOPOXjqWxVW2HvfvTR7i
+         z3NxEY66tyHU5dm/hKGttjmfCV/HygCdXD4dx/kHauv9PEFmkcoIORH9KZWVReb/JmJM
+         UrDw==
+X-Gm-Message-State: AOAM530dmu6+QeqlkLD2GhnovkCRcgPsfdA1p06+io49F7DWITSBsJva
+        zgo5M4ZlXTvEeSLXMupH8oJF1v4D1NuDPJf0eiU=
+X-Google-Smtp-Source: ABdhPJz3S99YhwWL0SmLfjaCB6WpYXOWwIfjbb4sHdWse1F4jkYEK+gi/v/LU+XFNPS1LuRc8bk38T2I935zQVjqGcA=
+X-Received: by 2002:a63:e709:: with SMTP id b9mr16334126pgi.18.1623043095039;
+ Sun, 06 Jun 2021 22:18:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YLqCAEVG+aLNGlIi@casper.infradead.org>
+References: <20210528195946.2375109-1-memxor@gmail.com> <CAM_iQpVqVKhK+09Sj_At226mdWpVXfVbhy89As2dai7ip8Nmtw@mail.gmail.com>
+ <20210607033724.wn6qn4v42dlm4j4o@apollo>
+In-Reply-To: <20210607033724.wn6qn4v42dlm4j4o@apollo>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sun, 6 Jun 2021 22:18:04 -0700
+Message-ID: <CAM_iQpVCnG8pSci2sMbJ1B5YE-y=reAUp82itgrguecyNBCUVQ@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Vlad Buslov <vladbu@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 04, 2021 at 08:41:52PM +0100, Matthew Wilcox wrote:
-> On Fri, Jun 04, 2021 at 08:33:47PM +0200, Matteo Croce wrote:
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index 7fcfea7e7b21..057b40ad29bd 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -40,6 +40,9 @@
-> >  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
-> >  #include <linux/netfilter/nf_conntrack_common.h>
-> >  #endif
-> > +#ifdef CONFIG_PAGE_POOL
-> > +#include <net/page_pool.h>
-> > +#endif
-> 
-> I'm not a huge fan of conditional includes ... any reason to not include
-> it always?
+On Sun, Jun 6, 2021 at 8:38 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+>
+> On Mon, Jun 07, 2021 at 05:07:28AM IST, Cong Wang wrote:
+> > On Fri, May 28, 2021 at 1:00 PM Kumar Kartikeya Dwivedi
+> > <memxor@gmail.com> wrote:
+> > >
+> > > This is the first RFC version.
+> > >
+> > > This adds a bpf_link path to create TC filters tied to cls_bpf classifier, and
+> > > introduces fd based ownership for such TC filters. Netlink cannot delete or
+> > > replace such filters, but the bpf_link is severed on indirect destruction of the
+> > > filter (backing qdisc being deleted, or chain being flushed, etc.). To ensure
+> > > that filters remain attached beyond process lifetime, the usual bpf_link fd
+> > > pinning approach can be used.
+> >
+> > I have some troubles understanding this. So... why TC filter is so special
+> > here that it deserves such a special treatment?
+> >
+>
+> So the motivation behind this was automatic cleanup of filters installed by some
+> program. Usually from the userspace side you need a bunch of things (handle,
+> priority, protocol, chain_index, etc.) to be able to delete a filter without
+> stepping on others' toes. Also, there is no gurantee that filter hasn't been
+> replaced, so you need to check some other way (either tag or prog_id, but these
+> are also not perfect).
+>
+> bpf_link provides isolation from netlink and fd-based lifetime management. As
+> for why it needs special treatment (by which I guess you mean why it _creates_
+> an object instead of simply attaching to one, see below):
 
-I think we can. I'll check and change it. 
+Are you saying TC filter is not independent? IOW, it has to rely on TC qdisc
+to exist. This is true, and is of course different with netns/cgroup.
+This is perhaps
+not hard to solve, because TC actions are already independent, we can perhaps
+convert TC filters too (the biggest blocker is compatibility).
 
-> 
-> > @@ -3088,7 +3095,13 @@ static inline void skb_frag_ref(struct sk_buff *skb, int f)
-> >   */
-> >  static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
-> >  {
-> > -	put_page(skb_frag_page(frag));
-> > +	struct page *page = skb_frag_page(frag);
-> > +
-> > +#ifdef CONFIG_PAGE_POOL
-> > +	if (recycle && page_pool_return_skb_page(page_address(page)))
-> > +		return;
-> 
-> It feels weird to have a page here, convert it back to an address,
-> then convert it back to a head page in page_pool_return_skb_page().
-> How about passing 'page' here, calling compound_head() in
-> page_pool_return_skb_page() and calling virt_to_page() in skb_free_head()?
-> 
+Or do you just need an ephemeral representation of a TC filter which only exists
+for a process? If so, see below.
 
-Sure, sounds reasonable. 
+>
+> > The reason why I ask is that none of other bpf links actually create any
+> > object, they merely attach bpf program to an existing object. For example,
+> > netns bpf_link does not create an netns, cgroup bpf_link does not create
+> > a cgroup either. So, why TC filter is so lucky to be the first one requires
+> > creating an object?
+> >
+>
+> They are created behind the scenes, but are also fairly isolated from netlink
+> (i.e.  can only be introspected, so not hidden in that sense, but are
+> effectively locked for replace/delete).
+>
+> The problem would be (of not creating a filter during attach) is that a typical
+> 'attach point' for TC exists in form of tcf_proto. If we take priority (protocol
+> is fixed) out of the equation, it becomes possible to attach just a single BPF
+> prog, but that seems like a needless limitation when TC already supports list of
+> filters at each 'attach point'.
+>
+> My point is that the created object (the tcf_proto under the 'chain' object) is
+> the attach point, and since there can be so many, keeping them around at all
+> times doesn't make sense, so the refcounted attach locations are created as
+> needed.  Both netlink and bpf_link owned filters can be attached under the same
+> location, with different ownership story in userspace.
 
-> > @@ -251,4 +253,11 @@ static inline void page_pool_ring_unlock(struct page_pool *pool)
-> >  		spin_unlock_bh(&pool->ring.producer_lock);
-> >  }
-> >  
-> > +/* Store mem_info on struct page and use it while recycling skb frags */
-> > +static inline
-> > +void page_pool_store_mem_info(struct page *page, struct page_pool *pp)
-> > +{
-> > +	page->pp = pp;
-> 
-> I'm not sure this wrapper needs to exist.
-> 
-> > +}
-> > +
-> >  #endif /* _NET_PAGE_POOL_H */
-> > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> > index e1321bc9d316..a03f48f45696 100644
-> > --- a/net/core/page_pool.c
-> > +++ b/net/core/page_pool.c
-> > @@ -628,3 +628,26 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
-> >  	}
-> >  }
-> >  EXPORT_SYMBOL(page_pool_update_nid);
-> > +
-> > +bool page_pool_return_skb_page(void *data)
-> > +{
-> > +	struct page_pool *pp;
-> > +	struct page *page;
-> > +
-> > +	page = virt_to_head_page(data);
-> > +	if (unlikely(page->pp_magic != PP_SIGNATURE))
-> > +		return false;
-> > +
-> > +	pp = (struct page_pool *)page->pp;
-> 
-> You don't need the cast any more.
-> 
+I do not understand "created behind the scenes". These are all created
+independent of bpf_link, right? For example, we create a cgroup with
+mkdir, then open it and pass the fd to bpf_link. Clearly, cgroup is not
+created by bpf_link or any bpf syscall.
 
-True
+The only thing different is fd, or more accurately, an identifier to locate
+these objects. For example, ifindex can also be used to locate a netdev.
+We can certainly locate a TC filter with (prio,proto,handle) but this has to
+be passed via netlink. So if you need some locator, I think we can
+introduce a kernel API which takes all necessary parameters to locate
+a TC filter and return it to you. For a quick example, like this:
 
-> > +	/* Driver set this to memory recycling info. Reset it on recycle.
-> > +	 * This will *not* work for NIC using a split-page memory model.
-> > +	 * The page will be returned to the pool here regardless of the
-> > +	 * 'flipped' fragment being in use or not.
-> > +	 */
-> > +	page->pp = NULL;
-> > +	page_pool_put_full_page(pp, page, false);
-> > +
-> > +	return true;
-> > +}
-> > +EXPORT_SYMBOL(page_pool_return_skb_page);
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index 12b7e90dd2b5..f769f08e7b32 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -70,6 +70,9 @@
-> >  #include <net/xfrm.h>
-> >  #include <net/mpls.h>
-> >  #include <net/mptcp.h>
-> > +#ifdef CONFIG_PAGE_POOL
-> > +#include <net/page_pool.h>
-> > +#endif
-> >  
-> >  #include <linux/uaccess.h>
-> >  #include <trace/events/skb.h>
-> > @@ -645,10 +648,15 @@ static void skb_free_head(struct sk_buff *skb)
-> >  {
-> >  	unsigned char *head = skb->head;
-> >  
-> > -	if (skb->head_frag)
-> > +	if (skb->head_frag) {
-> > +#ifdef CONFIG_PAGE_POOL
-> > +		if (skb->pp_recycle && page_pool_return_skb_page(head))
-> > +			return;
-> > +#endif
-> 
-> put this in a header file:
-> 
-> static inline bool skb_pp_recycle(struct sk_buff *skb, void *data)
-> {
-> 	if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
-> 		return false;
-> 	return page_pool_return_skb_page(virt_to_page(data));
-> }
-> 
-> then this becomes:
-> 
-> 	if (skb->head_frag) {
-> 		if (skb_pp_recycle(skb, head))
-> 			return;
-> >  		skb_free_frag(head);
-> > -	else
-> > +	} else {
-> >  		kfree(head);
-> > +	}
-> >  }
-> >  
+struct tcf_proto *tcf_get_proto(struct net *net, int ifindex,
+                                int parent, char* kind, int handle...);
 
-ok
+(Note, it can grab a refcnt in case of being deleted by others.)
 
+With this, you can simply call it in bpf_link, and attach bpf prog to tcf_proto
+(of course, only cls_bpf succeeds here).
 
-Thanks for having a look
-
-Cheers
-/Ilias
+Thanks.
