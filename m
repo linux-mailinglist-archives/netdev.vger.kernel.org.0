@@ -2,157 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2D9839E281
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:17:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3885039E309
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:39:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232633AbhFGQRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 12:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232289AbhFGQQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 12:16:10 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 936BCC061766
-        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 09:14:05 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id h9so18603643oih.4
-        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 09:14:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QpPCoMIIEN/pLv0DBVofSnqALoENTFlCa3f78nmEXYU=;
-        b=oAOsKfiCgSGstExE/d/Goj+Ys00P1oaX/ja8P6RFV5B2J6eFkE+rOqKQCNcBxlnW9D
-         UtjfTMG1DFUkbJetKPRtsbeReCHqzCs8gmkmGmzJR79qwOg6jgZYVbc2tORKXnMZh2u/
-         x9cXiC2L4j1b+WwoSQg07Dz0ZL7b2yk0y8Gg2AgY+Z+6JsFoH/roztAz7HjIhHECQfFd
-         E9RborPP9vsInXNEu0Ri8CIMTGFyAsTotPyfYfbQ0qBvWOtTAwQG4sUyQ2MVuaDodN0X
-         3w78tDLo3aaWFOVYsljFO6amjr56OGgzhdGbzWN4y6RWBZE8MYKL5W8OlO0F7G1rOOIV
-         deFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QpPCoMIIEN/pLv0DBVofSnqALoENTFlCa3f78nmEXYU=;
-        b=WhbM6aEJcxU14ePJYLWxrtF37l0+LvDG5KvZSRTixFgsT4TWVVgwGuwL2dZDlGmvF3
-         9PDatLgcUdo/ezPIBVGjj7VXJmDfXUGiEAm7mYx7Uzwk+Fg4V8lnkjBCtAbrXUgZQvJu
-         TcxGOOpaaqnnGX/JR9NYIV5LCR1ra6+pxC9OcgmHzcECKeM+M6xI6ByKzFjtJZrBPiI9
-         UU1uaH3re84N6DAfGFzDE5DxqrN7Yj8W0eXv7m0EpTJ7Pi+xz2POwf6GwavZbbMEEmUz
-         mnUvr0b14OYpSM6v3dPBez7quS4SeDQ5Gvgweg5AFekA9jkdySQwqlT1XalkF2t0Pix9
-         6Zcg==
-X-Gm-Message-State: AOAM533N/siWRfbRmfR9WXYZDuzAc8lb1DuYBH+dC8ltOZZ2+JZ7Mhnk
-        EiDe9OW+VrOVe3HQOhKEEfbAtDWxUaE=
-X-Google-Smtp-Source: ABdhPJxJp2B6TBYDgw1lBmqjRHmbzEJJrsfl3casq+ITXg8/M7LaO+VeabMxaOn4DRctbE6jPIGpZQ==
-X-Received: by 2002:aca:d4cd:: with SMTP id l196mr26139oig.58.1623082442524;
-        Mon, 07 Jun 2021 09:14:02 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id x9sm2336806oig.18.2021.06.07.09.14.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Jun 2021 09:14:01 -0700 (PDT)
-Subject: Re: [PATCH RESEND iproute2-next] devlink: Add optional controller
- user input
-To:     Parav Pandit <parav@nvidia.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Jiri Pirko <jiri@nvidia.com>
-References: <20210603111901.9888-1-parav@nvidia.com>
- <43ebc191-4b2d-4866-411b-81de63024942@gmail.com>
- <PH0PR12MB548101A3A5CEAD2CAAB04FB1DC389@PH0PR12MB5481.namprd12.prod.outlook.com>
- <d41a4e6c-0669-0b6c-5a2d-af1f3e5ae3bd@gmail.com>
- <PH0PR12MB54813150C3567170590BE36DDC389@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5a3a1292-a18d-8088-f835-44060aeb6a8a@gmail.com>
-Date:   Mon, 7 Jun 2021 10:14:00 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        id S231434AbhFGQUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 12:20:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49390 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232859AbhFGQSl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 12:18:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 493AD61447;
+        Mon,  7 Jun 2021 16:14:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623082470;
+        bh=w+FWYyVwd9RSj+ZtsicAIXWoBJ04oNi5iYxYp0GNzmE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dg1okwJ72S824Mp4Yh4JKkbKECwz0uo/l5zInAboLLs9hKjpWbhpJW2DuM4RgY3Sh
+         f90PmYflkEVZQziaa/foYpi5yVPJJLpunEPBIwKtoVVrPunCf09Smu63RsHl7gj8LW
+         W8/XmscwfKRVQVQKnMM24njoZtRpSOi9cJRhMK8tkIg9QjBYpOfYkvkVfPZ+LFifJm
+         p/ZViSqQKY6Rats+cXQ1XkkpLyW6qaj6rcmYEZi82wrQNfDXRNG52i1oQgLVwpuV/e
+         Tox+2ixnjispWJiHm0Oz99nXynJfBe3JxXnjaNR567rb5iHLpDeq5tExeiQQJC/oif
+         r4LXABDcbxcBg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Lin Ma <linma@zju.edu.cn>, Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 15/29] Bluetooth: use correct lock to prevent UAF of hdev object
+Date:   Mon,  7 Jun 2021 12:13:56 -0400
+Message-Id: <20210607161410.3584036-15-sashal@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210607161410.3584036-1-sashal@kernel.org>
+References: <20210607161410.3584036-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB54813150C3567170590BE36DDC389@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/7/21 9:12 AM, Parav Pandit wrote:
-> 
-> 
->> From: David Ahern <dsahern@gmail.com>
->> Sent: Monday, June 7, 2021 8:11 PM
->>
->> On 6/7/21 5:43 AM, Parav Pandit wrote:
->>> Hi David,
->>>
->>>> From: David Ahern <dsahern@gmail.com>
->>>> Sent: Monday, June 7, 2021 8:31 AM
->>>>
->>>> On 6/3/21 5:19 AM, Parav Pandit wrote:
->>>>> @@ -3795,7 +3806,7 @@ static void cmd_port_help(void)
->>>>>  	pr_err("       devlink port param set DEV/PORT_INDEX name
->>>> PARAMETER value VALUE cmode { permanent | driverinit | runtime }\n");
->>>>>  	pr_err("       devlink port param show [DEV/PORT_INDEX name
->>>> PARAMETER]\n");
->>>>>  	pr_err("       devlink port health show [ DEV/PORT_INDEX reporter
->>>> REPORTER_NAME ]\n");
->>>>> -	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR
->>>> pfnum PFNUM [ sfnum SFNUM ]\n");
->>>>> +	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR
->>>> pfnum PFNUM [ sfnum SFNUM ] [ controller CNUM ]\n");
->>>>>  	pr_err("       devlink port del DEV/PORT_INDEX\n");
->>>>>  }
->>>>>
->>>>> @@ -4324,7 +4335,7 @@ static int __cmd_health_show(struct dl *dl,
->>>>> bool show_device, bool show_port);
->>>>>
->>>>>  static void cmd_port_add_help(void)  {
->>>>> -	pr_err("       devlink port add { DEV | DEV/PORT_INDEX } flavour
->>>> FLAVOUR pfnum PFNUM [ sfnum SFNUM ]\n");
->>>>> +	pr_err("       devlink port add { DEV | DEV/PORT_INDEX } flavour
->>>> FLAVOUR pfnum PFNUM [ sfnum SFNUM ] [ controller CNUM ]\n");
->>>>
->>>> This line and the one above need to be wrapped. This addition puts it
->>>> well into the 90s.
->>>>
->>> It’s a print message.
->>> I was following coding style of [1] that says "However, never break user-
->> visible strings such as printk messages because that breaks the ability to grep
->> for them.".
->>> Recent code of dcb_ets.c has similar long string in print. So I didn't wrap it.
->>
->> I missed that when reviewing the dcb command then.
->>
->>> Should we warp it?
->>>
->>> [1]
->>> https://www.kernel.org/doc/html/latest/process/coding-style.html#break
->>> ing-long-lines-and-strings
->>>
->>
->> [1] is referring to messages from kernel code, and I agree with that style. This
->> is help message from iproute2. I tend to keep my terminal widths between
->> 80 and 90 columns, so the long help lines from commands are not very
->> friendly causing me to resize the terminal.
-> I see. So do you recommend splitting the print message?
-> I personally feel easier to follow kernel coding standard as much possible in spirit of "grep them". 😊
-> But its really up to you. Please let me know.
-> 
+From: Lin Ma <linma@zju.edu.cn>
 
+[ Upstream commit e305509e678b3a4af2b3cfd410f409f7cdaabb52 ]
 
-There are different type of strings:
-1. help,
-2. error messages,
-3. informational messages,
-4. displaying a configuration
+The hci_sock_dev_event() function will cleanup the hdev object for
+sockets even if this object may still be in used within the
+hci_sock_bound_ioctl() function, result in UAF vulnerability.
 
-1. is "how do I use this command". There is no reason to make that 1
-gigantic line. All of the iproute2 commands wrap the help. My comment
-above is on this category.
+This patch replace the BH context lock to serialize these affairs
+and prevent the race condition.
 
-2. and 3. should not be wrapped to allow someone to attempt to go from
-"why did I get this output" to a line of code (or many lines). This is
-the kernel reference above.
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/bluetooth/hci_sock.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-4. Displaying attributes and settings for some object getting dumped.
-The lines can get really long and unreadable to humans; these should be
-split across multiple lines - like iproute2 commands do. There is no
-reason for this to be on online unless the user asks for it via -oneline
-option.
+diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+index 8159b344deef..8d2c26c4b6d3 100644
+--- a/net/bluetooth/hci_sock.c
++++ b/net/bluetooth/hci_sock.c
+@@ -755,7 +755,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+ 		/* Detach sockets from device */
+ 		read_lock(&hci_sk_list.lock);
+ 		sk_for_each(sk, &hci_sk_list.head) {
+-			bh_lock_sock_nested(sk);
++			lock_sock(sk);
+ 			if (hci_pi(sk)->hdev == hdev) {
+ 				hci_pi(sk)->hdev = NULL;
+ 				sk->sk_err = EPIPE;
+@@ -764,7 +764,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+ 
+ 				hci_dev_put(hdev);
+ 			}
+-			bh_unlock_sock(sk);
++			release_sock(sk);
+ 		}
+ 		read_unlock(&hci_sk_list.lock);
+ 	}
+-- 
+2.30.2
+
