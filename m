@@ -2,100 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA02739E632
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 20:07:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE5F39E647
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 20:13:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231501AbhFGSJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 14:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230363AbhFGSJG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 14:09:06 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917A8C061766;
-        Mon,  7 Jun 2021 11:06:59 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id j12so14436532pgh.7;
-        Mon, 07 Jun 2021 11:06:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FuFCxxhlqU1gJ6Q4Qz+Q1WuISkrmAV+veNCgzB0JY00=;
-        b=kuOL0fuiPa7F7ByFMrWT55XaKJA81MJT49hCSvfUhTetF5lmf6+GyuoT2Mv0i6G5vD
-         4XxTxqNFcjaVg63Hjj4Dth2BWqVToV6ELrpbEyBJCDG2b6KeLythaOu+zvqqCTN4kjHg
-         d/VO/Po8E86FZYdf9d3y59EBXPC8FoMvPt6aXR5MLi6GdnvP2TjMQPtV60l42LNzdQaw
-         uqnEoseVznQ57LqR32Kc5TOJLQefWipxIyQnM+hgmjTHg0AyFkLqRPq34CO4omcgux5S
-         ly7+Dt0oUlCRPFngVPuB6gwke7bYV8k37aVv37H/ahnfE5AkwtUtsxVkYxYx1SGtsY9+
-         1n8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FuFCxxhlqU1gJ6Q4Qz+Q1WuISkrmAV+veNCgzB0JY00=;
-        b=XnnZ23xU2snNnkj+9t01jeBXNK5+DiYoS8Qk/HRkvTT/fVC8/7pDNSZdSaHAveIJYD
-         O6oAic+c2Xlh3Ft7lM04daeBilS+OZSoynAykPfX0fzFA8r9/XoXQpAvbmHHdiMUcMRb
-         PXU4k/dxN7mDE7YklvdGPUlzMkjZja7opeW9ePrOMNnHNkx6ScJEBZRgnuKLgZcHrMhO
-         RGg6BDJhOuVYk8D3+AYRO/zP88Iqoft3H8y/Fi2UF9tm7FxIh4cNXSyYfBQ720ql7wV/
-         cg6ad2a01Fqf7idjjU9Uup66lP3qVXNf5Du8jz4qSfiV/a9Ahepk1Ce5ZAIpwh2HSAsz
-         ijUg==
-X-Gm-Message-State: AOAM532bXb/Y1EixaudbICSyJ3QkTkNIG0VP1JhNivKGMtbyZzghdbNR
-        TOSDbKAw5sqQxrlnPK3IxuuKNvFcsKetMdir6fg=
-X-Google-Smtp-Source: ABdhPJzeNnoVt3jjJSGHz9gnsdo6w872WBQBE+scFXh06cicWVZKw8r5aJVWDd8xefFUSsKtkHeRRSDajz+L82/QXDE=
-X-Received: by 2002:a65:50c5:: with SMTP id s5mr18835460pgp.138.1623089219001;
- Mon, 07 Jun 2021 11:06:59 -0700 (PDT)
+        id S230523AbhFGSPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 14:15:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38225 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230212AbhFGSPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 14:15:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623089595;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=asb/9Oxq6iV6eknKm5P2s6yb7SzFrvOXop8qlFBN3c4=;
+        b=QyA8jldDco6czzGF4xjpL8+LFit1gdTjcCmQf16ztgS+XS2Xwm/ON6qxHVtzCGCTgNHhZ1
+        qvrdPSbTRD/JPX7OxP61pciWp2jpw38WlE8RDEoBEqAjK9S8OpG5SRhkXfxp47oskz/0yh
+        JkXV3YvEv5ETHFXB5jIyUeeJEE2RvNM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-290-kJga-Xd1OcaTyCfV1CIyKg-1; Mon, 07 Jun 2021 14:13:14 -0400
+X-MC-Unique: kJga-Xd1OcaTyCfV1CIyKg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EAD52106BAB9;
+        Mon,  7 Jun 2021 18:13:11 +0000 (UTC)
+Received: from krava (unknown [10.40.192.167])
+        by smtp.corp.redhat.com (Postfix) with SMTP id A731C620DE;
+        Mon,  7 Jun 2021 18:13:08 +0000 (UTC)
+Date:   Mon, 7 Jun 2021 20:13:07 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Viktor Malik <vmalik@redhat.com>
+Subject: Re: [PATCH 09/19] bpf, x64: Allow to use caller address from stack
+Message-ID: <YL5hs/xi3RpbLlKy@krava>
+References: <20210605111034.1810858-1-jolsa@kernel.org>
+ <20210605111034.1810858-10-jolsa@kernel.org>
+ <e590aa58-bdfa-86c1-eaca-79b4e5bff1f3@fb.com>
 MIME-Version: 1.0
-References: <000000000000f8e51405beaebdde@google.com> <00000000000064e7d505c4214310@google.com>
-In-Reply-To: <00000000000064e7d505c4214310@google.com>
-From:   Maxim Mikityanskiy <maxtram95@gmail.com>
-Date:   Mon, 7 Jun 2021 21:06:32 +0300
-Message-ID: <CAKErNvpTgH+=fcoNy=D31Ky2USJSfd5tNXpTGn7wCPYt-5Hfig@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in nfc_llcp_sock_unlink
-To:     syzbot <syzbot+8b7c5fc0cfb74afee8d1@syzkaller.appspotmail.com>
-Cc:     akpm@linux-foundation.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        bp@alien8.de, "David S. Miller" <davem@davemloft.net>,
-        hpa@zytor.com, Jiri Kosina <jikos@kernel.org>, jkosina@suse.cz,
-        jmattson@google.com, joro@8bytes.org, kuba@kernel.org,
-        kvm@vger.kernel.org, linux-input@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mark.rutland@arm.com, masahiroy@kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, pbonzini@redhat.com, peterz@infradead.org,
-        rafael.j.wysocki@intel.com, rostedt@goodmis.org, seanjc@google.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        tseewald@gmail.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        will@kernel.org, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e590aa58-bdfa-86c1-eaca-79b4e5bff1f3@fb.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 7, 2021 at 2:27 AM syzbot
-<syzbot+8b7c5fc0cfb74afee8d1@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit f567d6ef8606fb427636e824c867229ecb5aefab
-> Author: Maxim Mikityanskiy <maxtram95@gmail.com>
-> Date:   Sun Feb 7 14:47:40 2021 +0000
->
->     HID: plantronics: Workaround for double volume key presses
+On Sun, Jun 06, 2021 at 08:07:44PM -0700, Yonghong Song wrote:
+> 
+> 
+> On 6/5/21 4:10 AM, Jiri Olsa wrote:
+> > Currently we call the original function by using the absolute address
+> > given at the JIT generation. That's not usable when having trampoline
+> > attached to multiple functions. In this case we need to take the
+> > return address from the stack.
+> 
+> Here, it is mentioned to take the return address from the stack.
+> 
+> > 
+> > Adding support to retrieve the original function address from the stack
+> 
+> Here, it is said to take original funciton address from the stack.
 
-Dear syzbot,
+sorry if the description is confusing as always, the idea
+is to take the function's return address from fentry call:
 
-I highly doubt my commit could fix any use-after-free bug in NFC. It's
-not related to NFC, and it's not a bugfix. Probably the repro isn't
-100% stable, so the bisect results are invalid.
+   function
+     call fentry
+     xxxx             <---- this address 
 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14e41588300000
-> start commit:   bbd6f0a9 bnxt_en: Fix RX consumer index logic in the error..
-> git tree:       net
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=339c2ecce8fdd1d0
-> dashboard link: https://syzkaller.appspot.com/bug?extid=8b7c5fc0cfb74afee8d1
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1712a893d00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1298b469d00000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: HID: plantronics: Workaround for double volume key presses
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+and use it to call the original function body before fexit handler
+
+jirka
+
+> 
+> > by adding new BPF_TRAMP_F_ORIG_STACK flag for arch_prepare_bpf_trampoline
+> > function.
+> > 
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >   arch/x86/net/bpf_jit_comp.c | 13 +++++++++----
+> >   include/linux/bpf.h         |  5 +++++
+> >   2 files changed, 14 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> > index 2a2e290fa5d8..b77e6bd78354 100644
+> > --- a/arch/x86/net/bpf_jit_comp.c
+> > +++ b/arch/x86/net/bpf_jit_comp.c
+> > @@ -2013,10 +2013,15 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+> >   	if (flags & BPF_TRAMP_F_CALL_ORIG) {
+> >   		restore_regs(m, &prog, nr_args, stack_size);
+> > -		/* call original function */
+> > -		if (emit_call(&prog, orig_call, prog)) {
+> > -			ret = -EINVAL;
+> > -			goto cleanup;
+> > +		if (flags & BPF_TRAMP_F_ORIG_STACK) {
+> > +			emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
+> 
+> This is load double from base_pointer + 8 which should be func return
+> address for x86, yet we try to call it.
+> I guess I must have missed something
+> here. Could you give some explanation?
+> 
+> > +			EMIT2(0xff, 0xd0); /* call *rax */
+> > +		} else {
+> > +			/* call original function */
+> > +			if (emit_call(&prog, orig_call, prog)) {
+> > +				ret = -EINVAL;
+> > +				goto cleanup;
+> > +			}
+> >   		}
+> >   		/* remember return value in a stack for bpf prog to access */
+> >   		emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -8);
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 86dec5001ae2..16fc600503fb 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -554,6 +554,11 @@ struct btf_func_model {
+> >    */
+> >   #define BPF_TRAMP_F_SKIP_FRAME		BIT(2)
+> > +/* Get original function from stack instead of from provided direct address.
+> > + * Makes sense for fexit programs only.
+> > + */
+> > +#define BPF_TRAMP_F_ORIG_STACK		BIT(3)
+> > +
+> >   /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
+> >    * bytes on x86.  Pick a number to fit into BPF_IMAGE_SIZE / 2
+> >    */
+> > 
+> 
+
