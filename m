@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D40239E64F
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 20:15:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24D2B39E662
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 20:19:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbhFGSRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 14:17:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37007 "EHLO
+        id S230414AbhFGSVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 14:21:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21480 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230316AbhFGSRf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 14:17:35 -0400
+        by vger.kernel.org with ESMTP id S230333AbhFGSVK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 14:21:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623089743;
+        s=mimecast20190719; t=1623089958;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=nmsvIH7jJcORAKoc1AzQ0n7U+J/SmLHSILZ4a3vgCdo=;
-        b=RkHYHcUK+5Xu0oaSXkI7vGdZfRcoMoM3MkcfRZTNGdc17g2yknyTRSa45rThG4d3Jeqco7
-        SOvbi2CDmB2TGy6SpwmrHCiMfo0guWX12XkW+RsY6WA1A5QPe/a93VZJqCdF/P+JMQy/EK
-        zICNmWOrC58sPpGE0LYG+H1eN5RK9qw=
+        bh=yjGtNlz0YSV75CHNPH9tpJ1XPnNMcmYEPEhB0Rb7CaA=;
+        b=ZIIPJ66tiqCFgejXbEV89c7eeE/CPh3MLyuYaRb3aaZrfDduaRF+t1RQrcwixh3DFZF1Dx
+        318kdlxKgn/Nt0sU6rGfLQkKd0sNarFDn5WaoZupIKweaeMnq7Z6XIF5yBMyLY/LTklxbj
+        IK3cx0UyJQ09iEu8vmc/6+WgVlYruWk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-309-KEzEeyYeOQGZv6QW_cC4rw-1; Mon, 07 Jun 2021 14:15:39 -0400
-X-MC-Unique: KEzEeyYeOQGZv6QW_cC4rw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-120-7qi5iDKNP3CPHBaEBypoRQ-1; Mon, 07 Jun 2021 14:19:17 -0400
+X-MC-Unique: 7qi5iDKNP3CPHBaEBypoRQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9242C101371C;
-        Mon,  7 Jun 2021 18:15:37 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 137E71020C36;
+        Mon,  7 Jun 2021 18:19:01 +0000 (UTC)
 Received: from krava (unknown [10.40.192.167])
-        by smtp.corp.redhat.com (Postfix) with SMTP id DC6A0620DE;
-        Mon,  7 Jun 2021 18:15:34 +0000 (UTC)
-Date:   Mon, 7 Jun 2021 20:15:33 +0200
+        by smtp.corp.redhat.com (Postfix) with SMTP id DE43970139;
+        Mon,  7 Jun 2021 18:18:49 +0000 (UTC)
+Date:   Mon, 7 Jun 2021 20:18:48 +0200
 From:   Jiri Olsa <jolsa@redhat.com>
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
@@ -45,100 +45,122 @@ Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
         Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCH 10/19] bpf: Allow to store caller's ip as argument
-Message-ID: <YL5iRT59TpOiUWe3@krava>
+Subject: Re: [PATCH 11/19] bpf: Add support to load multi func tracing program
+Message-ID: <YL5jCPZhmMxfFy26@krava>
 References: <20210605111034.1810858-1-jolsa@kernel.org>
- <20210605111034.1810858-11-jolsa@kernel.org>
- <03777e58-a2b0-83b5-959f-3ae4afadb191@fb.com>
+ <20210605111034.1810858-12-jolsa@kernel.org>
+ <db5c591c-c5f2-9bcc-28bf-f5890c2cf61c@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <03777e58-a2b0-83b5-959f-3ae4afadb191@fb.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <db5c591c-c5f2-9bcc-28bf-f5890c2cf61c@fb.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 06, 2021 at 08:21:51PM -0700, Yonghong Song wrote:
+On Sun, Jun 06, 2021 at 08:56:47PM -0700, Yonghong Song wrote:
 > 
 > 
 > On 6/5/21 4:10 AM, Jiri Olsa wrote:
-> > When we will have multiple functions attached to trampoline
-> > we need to propagate the function's address to the bpf program.
+> > Adding support to load tracing program with new BPF_F_MULTI_FUNC flag,
+> > that allows the program to be loaded without specific function to be
+> > attached to.
 > > 
-> > Adding new BPF_TRAMP_F_IP_ARG flag to arch_prepare_bpf_trampoline
-> > function that will store origin caller's address before function's
-> > arguments.
+> > The verifier assumes the program is using all (6) available arguments
+> 
+> Is this a verifier failure or it is due to the check in the
+> beginning of function arch_prepare_bpf_trampoline()?
+> 
+>         /* x86-64 supports up to 6 arguments. 7+ can be added in the future
+> */
+>         if (nr_args > 6)
+>                 return -ENOTSUPP;
+
+yes, that's the limit.. it allows the traced program to
+touch 6 arguments, because it's the maximum for JIT
+
+> 
+> If it is indeed due to arch_prepare_bpf_trampoline() maybe we
+> can improve it instead of specially processing the first argument
+> "ip" in quite some places?
+
+do you mean to teach JIT to process more than 6 arguments?
+
+> 
+> > as unsigned long values. We can't add extra ip argument at this time,
+> > because JIT on x86 would fail to process this function. Instead we
+> > allow to access extra first 'ip' argument in btf_ctx_access.
+> > 
+> > Such program will be allowed to be attached to multiple functions
+> > in following patches.
 > > 
 > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > > ---
-> >   arch/x86/net/bpf_jit_comp.c | 18 ++++++++++++++----
-> >   include/linux/bpf.h         |  5 +++++
-> >   2 files changed, 19 insertions(+), 4 deletions(-)
+> >   include/linux/bpf.h            |  1 +
+> >   include/uapi/linux/bpf.h       |  7 +++++++
+> >   kernel/bpf/btf.c               |  5 +++++
+> >   kernel/bpf/syscall.c           | 35 +++++++++++++++++++++++++++++-----
+> >   kernel/bpf/verifier.c          |  3 ++-
+> >   tools/include/uapi/linux/bpf.h |  7 +++++++
+> >   6 files changed, 52 insertions(+), 6 deletions(-)
 > > 
-> > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> > index b77e6bd78354..d2425c18272a 100644
-> > --- a/arch/x86/net/bpf_jit_comp.c
-> > +++ b/arch/x86/net/bpf_jit_comp.c
-> > @@ -1951,7 +1951,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> >   				void *orig_call)
-> >   {
-> >   	int ret, i, cnt = 0, nr_args = m->nr_args;
-> > -	int stack_size = nr_args * 8;
-> > +	int stack_size = nr_args * 8, ip_arg = 0;
-> >   	struct bpf_tramp_progs *fentry = &tprogs[BPF_TRAMP_FENTRY];
-> >   	struct bpf_tramp_progs *fexit = &tprogs[BPF_TRAMP_FEXIT];
-> >   	struct bpf_tramp_progs *fmod_ret = &tprogs[BPF_TRAMP_MODIFY_RETURN];
-> > @@ -1975,6 +1975,9 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> >   		 */
-> >   		orig_call += X86_PATCH_SIZE;
-> > +	if (flags & BPF_TRAMP_F_IP_ARG)
-> > +		stack_size += 8;
-> > +
-> >   	prog = image;
-> >   	EMIT1(0x55);		 /* push rbp */
-> > @@ -1982,7 +1985,14 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> >   	EMIT4(0x48, 0x83, 0xEC, stack_size); /* sub rsp, stack_size */
-> >   	EMIT1(0x53);		 /* push rbx */
-> > -	save_regs(m, &prog, nr_args, stack_size);
-> > +	if (flags & BPF_TRAMP_F_IP_ARG) {
-> > +		emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
-> > +		EMIT4(0x48, 0x83, 0xe8, X86_PATCH_SIZE); /* sub $X86_PATCH_SIZE,%rax*/
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 6cbf3c81c650..23221e0e8d3c 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -845,6 +845,7 @@ struct bpf_prog_aux {
+> >   	bool sleepable;
+> >   	bool tail_call_reachable;
+> >   	struct hlist_node tramp_hlist;
+> > +	bool multi_func;
 > 
-> Could you explain what the above EMIT4 is for? I am not quite familiar with
-> this piece of code and hence the question. Some comments here
-> should help too.
+> Move this field right after "tail_call_reachable"?
+> 
+> >   	/* BTF_KIND_FUNC_PROTO for valid attach_btf_id */
+> >   	const struct btf_type *attach_func_proto;
+> >   	/* function name for valid attach_btf_id */
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 2c1ba70abbf1..ad9340fb14d4 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -1109,6 +1109,13 @@ enum bpf_link_type {
+> >    */
+> >   #define BPF_F_SLEEPABLE		(1U << 4)
+> > +/* If BPF_F_MULTI_FUNC is used in BPF_PROG_LOAD command, the verifier does
+> > + * not expect BTF ID for the program, instead it assumes it's function
+> > + * with 6 u64 arguments. No trampoline is created for the program. Such
+> > + * program can be attached to multiple functions.
+> > + */
+> > +#define BPF_F_MULTI_FUNC	(1U << 5)
+> > +
+> >   /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+> >    * the following extensions:
+> >    *
+> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > index a6e39c5ea0bf..c233aaa6a709 100644
+> > --- a/kernel/bpf/btf.c
+> > +++ b/kernel/bpf/btf.c
+> > @@ -4679,6 +4679,11 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+> >   		args++;
+> >   		nr_args--;
+> >   	}
+> > +	if (prog->aux->multi_func) {
+> > +		if (arg == 0)
+> > +			return true;
+> > +		arg--;
+> 
+> Some comments in the above to mention like "the first 'ip' argument
+> is omitted" will be good.
 
-it's there to generate the 'sub $X86_PATCH_SIZE,%rax' instruction
-to get the real IP address of the traced function, and it's stored
-to stack on the next line
-
-I'll put more comments in there
+will do, thanks
 
 jirka
 
 > 
-> > +		emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -stack_size);
-> > +		ip_arg = 8;
 > > +	}
-> > +
-> > +	save_regs(m, &prog, nr_args, stack_size - ip_arg);
-> >   	if (flags & BPF_TRAMP_F_CALL_ORIG) {
-> >   		/* arg1: mov rdi, im */
-> > @@ -2011,7 +2021,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> >   	}
-> >   	if (flags & BPF_TRAMP_F_CALL_ORIG) {
-> > -		restore_regs(m, &prog, nr_args, stack_size);
-> > +		restore_regs(m, &prog, nr_args, stack_size - ip_arg);
-> >   		if (flags & BPF_TRAMP_F_ORIG_STACK) {
-> >   			emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
-> > @@ -2052,7 +2062,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> >   		}
-> >   	if (flags & BPF_TRAMP_F_RESTORE_REGS)
-> > -		restore_regs(m, &prog, nr_args, stack_size);
-> > +		restore_regs(m, &prog, nr_args, stack_size - ip_arg);
-> >   	/* This needs to be done regardless. If there were fmod_ret programs,
-> >   	 * the return value is only updated on the stack and still needs to be
+> >   	if (arg > nr_args) {
+> >   		bpf_log(log, "func '%s' doesn't have %d-th argument\n",
 > [...]
 > 
 
