@@ -2,205 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C93839D2F2
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 04:29:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 641A139D2F8
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 04:32:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230211AbhFGCa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Jun 2021 22:30:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56930 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230193AbhFGCa6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 22:30:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623032947;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5VUeJVdhPn2VuLW7BaccrekOt7TaxxTxZqwvCsiTqLA=;
-        b=bUFuofInTLh8Sa4kbMx1BIbBBQTJc1Yin7k5aamCrYsePfokEjKf2eNK1n2fmcX4iI7trt
-        w+pzZNGBfYFFxSbYF1Iq6CVnJ7PkXr+HoK0tcooFMRCRUTvADtDZzG98kHuF89Fijp1THp
-        NNwHySuVSSu7zzDNwx7QRMPeIFixf0A=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-493-mqd1kZOXMWqReEWaMbH-FA-1; Sun, 06 Jun 2021 22:29:02 -0400
-X-MC-Unique: mqd1kZOXMWqReEWaMbH-FA-1
-Received: by mail-pf1-f198.google.com with SMTP id i13-20020aa78b4d0000b02902ea019ef670so6975270pfd.0
-        for <netdev@vger.kernel.org>; Sun, 06 Jun 2021 19:29:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=5VUeJVdhPn2VuLW7BaccrekOt7TaxxTxZqwvCsiTqLA=;
-        b=Z6NCd85GkMGgJ2p8Q3xOOQ7d8U+rYiByC2qYiQSxfI8FfvsB6ESOUVYB9tSEHIDGuF
-         H55Qwcl03vjz9hSIXETItQm2McBa2Ojuv8gLWQi6PXgtzyBpvYqejZ/LstJ0WUbfU+/n
-         nysAbnjDH9BkfhoVxJLmyJp+wtmI2n4lXEuaX3tt/m1PBKaxj45juqDI+Qmp/qwT3YhI
-         HsfWCpywADObxDaCNpPcKA9Wg9m7x0dZZowoyL7B1sxtIPKIAUhB2Aya8zpgqUCgoh5X
-         9Hc+CAIvDSAnqCJZMsgOvcwLuoBr6wYSVzMKwIzUSXXz91q96r5ByPnPX03G4726WGZZ
-         uNkw==
-X-Gm-Message-State: AOAM5304XDvsElbZxOPKG6zKyTBQDY+jFditYseIgdo3HNsPcqCijBOJ
-        YBMj8Qx+/uCrw+fKXXgc7VFLuRXOPv29TFwjP97W8G70+u2TJ/luXKyseFB6+q7rLR0JLJfk6ST
-        xYAUSsWhnLQpXs2ic
-X-Received: by 2002:a17:90b:4b51:: with SMTP id mi17mr30393731pjb.109.1623032941724;
-        Sun, 06 Jun 2021 19:29:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwvVvxNkgnHrJ2d3RgrbdFzecGugtjc5EPSwjXywyTeTkJohMyytdl/wnAUpQRjX3BuI/eg8Q==
-X-Received: by 2002:a17:90b:4b51:: with SMTP id mi17mr30393705pjb.109.1623032941406;
-        Sun, 06 Jun 2021 19:29:01 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id in24sm3095374pjb.54.2021.06.06.19.28.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Jun 2021 19:29:00 -0700 (PDT)
-Subject: Re: [PATCH net-next] virtio_net: set link state down when virtqueue
- is broken
-To:     wangyunjian <wangyunjian@huawei.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jcfaracco@gmail.com" <jcfaracco@gmail.com>
-Cc:     "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mst@redhat.com" <mst@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        dingxiaoxiong <dingxiaoxiong@huawei.com>
-References: <79907bf6c835572b4af92f16d9a3ff2822b1c7ea.1622028946.git.wangyunjian@huawei.com>
- <03c68dd1-a636-9d3b-1dec-5e11c8025ccc@redhat.com>
- <d18383f7e675452d9392321506db6fa0@huawei.com>
- <0fcc1413-cb20-7a17-bdcd-6f9994990432@redhat.com>
- <20a5f1bd8a5a49fa8c0f90875a49631b@huawei.com>
- <1cc933e6-cde4-ba20-3c54-7391db93a9a1@redhat.com>
- <5d6fdd5c8e62498ba804aa22d71eb6a8@huawei.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <0cc0cba2-dcda-6d8c-4304-af51089a649e@redhat.com>
-Date:   Mon, 7 Jun 2021 10:28:56 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        id S230200AbhFGCd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Jun 2021 22:33:57 -0400
+Received: from mga11.intel.com ([192.55.52.93]:42307 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230133AbhFGCd4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Jun 2021 22:33:56 -0400
+IronPort-SDR: gPo2bU+kI09WyJ4/eGCnbFlSKnjfouGN6fjaLPQmO7wBqlOiD7eETF4wYsbO1wi+TfAoZG0Rgi
+ RDYLq2FC9AzQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,10007"; a="201529669"
+X-IronPort-AV: E=Sophos;i="5.83,254,1616482800"; 
+   d="scan'208";a="201529669"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2021 19:32:06 -0700
+IronPort-SDR: xacJE92Mzk0/Sc3cfFlgel8bTGGFYfbFldpaixql4Taf+123qagviLyUed53V2f66y8JqFjcJU
+ UV3xXuk+bYhw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,254,1616482800"; 
+   d="scan'208";a="551745168"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga001.fm.intel.com with ESMTP; 06 Jun 2021 19:32:06 -0700
+Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
+        by linux.intel.com (Postfix) with ESMTP id 81228580973;
+        Sun,  6 Jun 2021 19:32:04 -0700 (PDT)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next 1/1] net: phy: probe for C45 PHYs that return PHY ID of zero in C22 space
+Date:   Mon,  7 Jun 2021 10:36:45 +0800
+Message-Id: <20210607023645.2958840-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <5d6fdd5c8e62498ba804aa22d71eb6a8@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+PHY devices such as the Marvell Alaska 88E2110 does not return a valid
+PHY ID when probed using Clause-22. The current implementation treats
+PHY ID of zero as a non-error and valid PHY ID, and causing the PHY
+device failed to bind to the Marvell driver.
 
-在 2021/6/5 下午3:10, wangyunjian 写道:
->> -----Original Message-----
->> From: Jason Wang [mailto:jasowang@redhat.com]
->> Sent: Friday, June 4, 2021 10:38 AM
->> To: wangyunjian <wangyunjian@huawei.com>; netdev@vger.kernel.org
->> Cc: kuba@kernel.org; davem@davemloft.net; mst@redhat.com;
->> virtualization@lists.linux-foundation.org; dingxiaoxiong
->> <dingxiaoxiong@huawei.com>
->> Subject: Re: [PATCH net-next] virtio_net: set link state down when virtqueue is
->> broken
->>
->>
->> 在 2021/6/3 下午7:34, wangyunjian 写道:
->>>> -----Original Message-----
->>>> From: Jason Wang [mailto:jasowang@redhat.com]
->>>> Sent: Monday, May 31, 2021 11:29 AM
->>>> To: wangyunjian <wangyunjian@huawei.com>; netdev@vger.kernel.org
->>>> Cc: kuba@kernel.org; davem@davemloft.net; mst@redhat.com;
->>>> virtualization@lists.linux-foundation.org; dingxiaoxiong
->>>> <dingxiaoxiong@huawei.com>
->>>> Subject: Re: [PATCH net-next] virtio_net: set link state down when
->>>> virtqueue is broken
->>>>
->>>>
->>>> 在 2021/5/28 下午6:58, wangyunjian 写道:
->>>>>> -----Original Message-----
->>>>>>> From: Yunjian Wang <wangyunjian@huawei.com>
->>>>>>>
->>>>>>> The NIC can't receive/send packets if a rx/tx virtqueue is broken.
->>>>>>> However, the link state of the NIC is still normal. As a result,
->>>>>>> the user cannot detect the NIC exception.
->>>>>> Doesn't we have:
->>>>>>
->>>>>>            /* This should not happen! */
->>>>>>             if (unlikely(err)) {
->>>>>>                     dev->stats.tx_fifo_errors++;
->>>>>>                     if (net_ratelimit())
->>>>>>                             dev_warn(&dev->dev,
->>>>>>                                      "Unexpected TXQ (%d)
->>>> queue
->>>>>> failure: %d\n",
->>>>>>                                      qnum, err);
->>>>>>                     dev->stats.tx_dropped++;
->>>>>>                     dev_kfree_skb_any(skb);
->>>>>>                     return NETDEV_TX_OK;
->>>>>>             }
->>>>>>
->>>>>> Which should be sufficient?
->>>>> There may be other reasons for this error, e.g -ENOSPC(no free desc).
->>>> This should not happen unless the device or driver is buggy. We
->>>> always reserved sufficient slots:
->>>>
->>>>            if (sq->vq->num_free < 2+MAX_SKB_FRAGS) {
->>>>                    netif_stop_subqueue(dev, qnum); ...
->>>>
->>>>
->>>>> And if rx virtqueue is broken, there is no error statistics.
->>>> Feel free to add one if it's necessary.
->>> Currently receiving scenario, it is impossible to distinguish whether
->>> the reason for not receiving packet is virtqueue's broken or no packet.
->>
->> Can we introduce rx_fifo_errors for that?
->>
->>
->>>> Let's leave the policy decision (link down) to userspace.
->>>>
->>>>
->>>>>>> The driver can set the link state down when the virtqueue is broken.
->>>>>>> If the state is down, the user can switch over to another NIC.
->>>>>> Note that, we probably need the watchdog for virtio-net in order to
->>>>>> be a complete solution.
->>>>> Yes, I can think of is that the virtqueue's broken exception is
->>>>> detected on
->>>> watchdog.
->>>>> Is there anything else that needs to be done?
->>>> Basically, it's all about TX stall which watchdog tries to catch.
->>>> Broken vq is only one of the possible reason.
->>> Are there any plans for the watchdog?
->>
->> Somebody posted a prototype 3 or 4 years ago, you can search it and maybe we
->> can start from there.
-> I find the patch (https://patchwork.ozlabs.org/project/netdev/patch/20191126200628.22251-3-jcfaracco@gmail.com/)
->
-> The patch checks only the scenario where the sending queue is abnormal, but can
-> not detect the exception in the receiving queue.
+For such devices, we do an additional probe in the Clause-45 space,
+if a valid PHY ID is returned, we then proceed to attach the PHY
+device to the matching PHY ID driver.
 
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+---
+ drivers/net/phy/phy_device.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-It's almost impossible to detect the abnormal of receiving queue since 
-we there's no deterministic time for a receiving packet.
-
-
->
-> And the patch restores the NIC by reset, which is inappropriate because the broken
-> state may be caused by a front-end or back-end bug. We should keep the scene to
-> locate bugs.
-
-
-This could be changed, we can increase the error counters and let 
-userspce to decide what to do.
-
-Thanks
-
-
->
-> Thanks
->
->> Thanks
->>
->>
->>> Thanks
->>>
->>>> Thanks
->>>>
->>>>
->>>>> Thanks
->>>>>
->>>>>> Thanks
->>>>>>
->>>>>>
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 1539ea021ac0..495d86b4af7c 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -870,6 +870,18 @@ struct phy_device *get_phy_device(struct mii_bus *bus, int addr, bool is_c45)
+ 	if (r)
+ 		return ERR_PTR(r);
+ 
++	/* PHY device such as the Marvell Alaska 88E2110 will return a PHY ID
++	 * of 0 when probed using get_phy_c22_id() with no error. Proceed to
++	 * probe with C45 to see if we're able to get a valid PHY ID in the C45
++	 * space, if successful, create the C45 PHY device.
++	 */
++	if (!is_c45 && phy_id == 0 && bus->probe_capabilities >= MDIOBUS_C45) {
++		r = get_phy_c45_ids(bus, addr, &c45_ids);
++		if (!r)
++			return phy_device_create(bus, addr, phy_id,
++						 true, &c45_ids);
++	}
++
+ 	return phy_device_create(bus, addr, phy_id, is_c45, &c45_ids);
+ }
+ EXPORT_SYMBOL(get_phy_device);
+-- 
+2.25.1
 
