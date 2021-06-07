@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7438939E55A
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 19:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AD9339E55E
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 19:28:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230462AbhFGRaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 13:30:12 -0400
-Received: from out28-197.mail.aliyun.com ([115.124.28.197]:42575 "EHLO
-        out28-197.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbhFGRaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 13:30:11 -0400
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.5632897|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.00534723-0.0028745-0.991778;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047206;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=20;RT=20;SR=0;TI=SMTPD_---.KP.FCzB_1623086888;
+        id S231197AbhFGRaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 13:30:14 -0400
+Received: from out28-194.mail.aliyun.com ([115.124.28.194]:34536 "EHLO
+        out28-194.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230215AbhFGRaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 13:30:12 -0400
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.8995042|0.7245346;CH=green;DM=|SPAM|false|;DS=CONTINUE|ham_regular_dialog|0.0829513-0.00479038-0.912258;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047207;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=20;RT=20;SR=0;TI=SMTPD_---.KP.FCzB_1623086888;
 Received: from zhouyanjie-virtual-machine.localdomain(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.KP.FCzB_1623086888)
           by smtp.aliyun-inc.com(10.147.40.44);
-          Tue, 08 Jun 2021 01:28:16 +0800
+          Tue, 08 Jun 2021 01:28:17 +0800
 From:   =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0=20=28Zhou=20Yanjie=29?= 
         <zhouyanjie@wanyeetech.com>
 To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
@@ -27,10 +27,12 @@ Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
         aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
         sihui.liu@ingenic.com, jun.jiang@ingenic.com,
         sernia.zhou@foxmail.com, paul@crapouillou.net
-Subject: [PATCH 0/2] Add Ingenic SoCs MAC support.
-Date:   Tue,  8 Jun 2021 01:27:45 +0800
-Message-Id: <1623086867-119039-1-git-send-email-zhouyanjie@wanyeetech.com>
+Subject: [PATCH 1/2] dt-bindings: dwmac: Add bindings for new Ingenic SoCs.
+Date:   Tue,  8 Jun 2021 01:27:46 +0800
+Message-Id: <1623086867-119039-2-git-send-email-zhouyanjie@wanyeetech.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1623086867-119039-1-git-send-email-zhouyanjie@wanyeetech.com>
+References: <1623086867-119039-1-git-send-email-zhouyanjie@wanyeetech.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -38,24 +40,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1.Add the dwmac bindings for the JZ4775 SoC, the X1000 SoC,
-  the X1600 SoC, the X1830 SoC and the X2000 SoC from Ingenic.
-2.Add support for Ingenic SoC MAC glue layer support for the stmmac
-  device driver. This driver is used on for the MAC ethernet controller
-  found in the JZ4775 SoC, the X1000 SoC, the X1600 SoC, the X1830 SoC,
-  and the X2000 SoC.
+Add the dwmac bindings for the JZ4775 SoC, the X1000 SoC,
+the X1600 SoC, the X1830 SoC and the X2000 SoC from Ingenic.
 
-周琰杰 (Zhou Yanjie) (2):
-  dt-bindings: dwmac: Add bindings for new Ingenic SoCs.
-  net: stmmac: Add Ingenic SoCs MAC support.
+Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+---
+ Documentation/devicetree/bindings/net/snps,dwmac.yaml | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
- .../devicetree/bindings/net/snps,dwmac.yaml        |  15 +
- drivers/net/ethernet/stmicro/stmmac/Kconfig        |  16 +-
- drivers/net/ethernet/stmicro/stmmac/Makefile       |   1 +
- .../net/ethernet/stmicro/stmmac/dwmac-ingenic.c    | 367 +++++++++++++++++++++
- 4 files changed, 397 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
-
+diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+index 2edd8be..9c0ce92 100644
+--- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+@@ -56,6 +56,11 @@ properties:
+         - amlogic,meson8m2-dwmac
+         - amlogic,meson-gxbb-dwmac
+         - amlogic,meson-axg-dwmac
++        - ingenic,jz4775-mac
++        - ingenic,x1000-mac
++        - ingenic,x1600-mac
++        - ingenic,x1830-mac
++        - ingenic,x2000-mac
+         - rockchip,px30-gmac
+         - rockchip,rk3128-gmac
+         - rockchip,rk3228-gmac
+@@ -310,6 +315,11 @@ allOf:
+               - allwinner,sun8i-r40-emac
+               - allwinner,sun8i-v3s-emac
+               - allwinner,sun50i-a64-emac
++              - ingenic,jz4775-mac
++              - ingenic,x1000-mac
++              - ingenic,x1600-mac
++              - ingenic,x1830-mac
++              - ingenic,x2000-mac
+               - snps,dwxgmac
+               - snps,dwxgmac-2.10
+               - st,spear600-gmac
+@@ -353,6 +363,11 @@ allOf:
+               - allwinner,sun8i-r40-emac
+               - allwinner,sun8i-v3s-emac
+               - allwinner,sun50i-a64-emac
++              - ingenic,jz4775-mac
++              - ingenic,x1000-mac
++              - ingenic,x1600-mac
++              - ingenic,x1830-mac
++              - ingenic,x2000-mac
+               - snps,dwmac-4.00
+               - snps,dwmac-4.10a
+               - snps,dwmac-4.20a
 -- 
 2.7.4
 
