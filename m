@@ -2,137 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A86DC39E0A5
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 17:35:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A67739E116
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 17:45:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231217AbhFGPh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 11:37:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230436AbhFGPh1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 11:37:27 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212DEC061766;
-        Mon,  7 Jun 2021 08:35:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=wiwtGBBtOy1eKpoT4ldaI9kf1JnbFr4Prhtmyk8X7b0=; b=hezBByk28dJaim4wWX//nPdaB
-        eUXlFDKLe+deRHVKfwtzUOeomyD2iHvui3iOvQSon20CqOTBQuYfyz9b4v0VtZD6sNlpOrZT7WADq
-        AxyfJKolzFtO1hyHI5QMAWQapr27gDeCVPnyI7LmaHh9Xm5Ia3xexNvqavASacapjme7jovGp3TKg
-        /YlFhN346Go0o+5c2LWJKdkqlNW26GQ+rNba9pXwICkiXszuCl1BMQva+HXDP4luKSKT1M86+Zqej
-        zVeopo78EaZLGUCfu7xiDcFnkhScATyD9+MsLuTuXLb/bywWYc7vbLfmlYPUHVwBUBnD2gVBNy5K0
-        1IqiC09Sg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44796)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lqHHg-0000il-SR; Mon, 07 Jun 2021 16:35:24 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lqHHe-000627-G8; Mon, 07 Jun 2021 16:35:22 +0100
-Date:   Mon, 7 Jun 2021 16:35:22 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Simon Horman <simon.horman@netronome.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: Re: [PATCH net-next v3 03/10] net: sparx5: add hostmode with phylink
- support
-Message-ID: <20210607153522.GG22278@shell.armlinux.org.uk>
-References: <20210604085600.3014532-1-steen.hegelund@microchip.com>
- <20210604085600.3014532-4-steen.hegelund@microchip.com>
- <20210607091536.GA30436@shell.armlinux.org.uk>
- <9f4fad323e17c8ba6ebde728fcc99c87dd06fc75.camel@microchip.com>
- <20210607130924.GE22278@shell.armlinux.org.uk>
- <7abe6b779c1432d9dfd2fc791d70c9443caec066.camel@microchip.com>
+        id S231288AbhFGPrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 11:47:25 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:52992 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231235AbhFGPrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 11:47:24 -0400
+Received: by mail-io1-f69.google.com with SMTP id e20-20020a6b50140000b02904b13c0d0212so7271426iob.19
+        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 08:45:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=vggOEuSYGh0DPtk53CZVVjPXOtkcKPmtX+CgwTmSW6g=;
+        b=HCdg9a+q98QoC+8+tgzfZx3XbpjrlZxWfedLSofBpgahFRw9n0Krdc5INSdzIa++Tm
+         tfTjeLb8rjJ+MW5HbGP83F52yowy9GEp6uWxMozmOmoU4ezce2kv1ETSKpMwdlf8LKWW
+         e1oMhbgrOKOcUzFWA/iISrG3x2TGvtVL53dXlk4a0hJObe3g+cieKI4Yu9VC+fQJ4CTv
+         bDlvKAn9EDhLm+xuIa41VtpT+3+7FUsAIlBNUuCITvh7+M1LWQ+LcKlGIiqXIE+HBxQF
+         IIQqaBqsiPcIG76gkDRA0TjG74CRgZMbqyY5X1PAAbak/qn7dFTt5ahrEPYWujpjLy8V
+         JfnA==
+X-Gm-Message-State: AOAM532HzKdwSsK3JUYode673TOvBpKPQC0wmGZ3y6/fj3eSkIHBa11C
+        +hzx/hSqTMJTgIIaoiUiLh1brc5gZlFk6D7On3NM9CNxK4lx
+X-Google-Smtp-Source: ABdhPJzBjp1H1H5Rcq6hgUBBT5DH5nKDd6JV1aYFnIgk0t8alMMGkJhQlDag1SIR/5qmGXs7eZADVee/XppNy+FXAoyfGGlKKyUW
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7abe6b779c1432d9dfd2fc791d70c9443caec066.camel@microchip.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Received: by 2002:a02:445:: with SMTP id 66mr16613269jab.11.1623080720530;
+ Mon, 07 Jun 2021 08:45:20 -0700 (PDT)
+Date:   Mon, 07 Jun 2021 08:45:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ca047005c42eedaf@google.com>
+Subject: [syzbot] memory leak in hwsim_add_one
+From:   syzbot <syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com>
+To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, stefan@datenfreihafen.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 07, 2021 at 05:12:07PM +0200, Steen Hegelund wrote:
-> Hi Russell,
-> 
-> Thanks for your comments,
-> 
-> On Mon, 2021-06-07 at 14:09 +0100, Russell King (Oracle) wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > On Mon, Jun 07, 2021 at 02:45:01PM +0200, Steen Hegelund wrote:
-> > > Hi Russell,
-> > > 
-> > > Thanks for your comments.
-> > > 
-> > > On Mon, 2021-06-07 at 10:15 +0100, Russell King (Oracle) wrote:
-> > > > 3) I really don't get what's going on with setting the port mode to
-> > > >    2500base-X and 1000base-X here when state->interface is 10GBASER.
-> > > 
-> > > The high speed interfaces (> 2.5G) do not support any in-band signalling, so the only way that
-> > > e.g a
-> > > 10G interface running at 2.5G will be able to link up with its partner is if both ends configure
-> > > the
-> > > speed manually via ethtool.
-> > 
-> > We really should not have drivers hacking around in this way. If we want
-> > to operate in 2500base-x or 1000base-x, then that is what phylink should
-> > be telling the MAC driver. The MAC driver should not be making these
-> > decisions in its mac_config() callback. Doing so makes a joke of kernel
-> > programming.
-> 
-> I have this scenario where two Sparx5 Devices are connected via a 25G DAC cable.
-> Sparx5 Device A has the cable connected to one of its 25G Serdes devices, but Sparx5 Device B has
-> the cable connected to one of its 10G Serdes devices.
-> 
-> By default the Sparx5 A device will configure the link to use a speed of 25G, but the Sparx5 device
-> B will configure the link speed to 10G, so the link will remain down, as the two devices cannot
-> communicate.
-> 
-> So to fix this the user will have to manually change the speed of the link on Device A to be 10G
-> using ethtool.
-> 
-> I may have misunderstood the usage of the mac_config callback, but then where would the driver then
-> use the speed information from the user to configure the Serdes?
+Hello,
 
-How is this any different to the situation that we have on SolidRun
-Clearfog platforms and the Macchiatobin where we have a SFP port
-capable of 2500base-X and 1000base-X. If we plug in a 4.3Gbps
-fiberchannel SFP, the port is able to run at either of those speeds.
+syzbot found the following issue on:
 
-We can control this via ethtool, changing between the two modes by
-either forcing the speed to either 1000 or 2500, or switching the
-"advertisement" between 1000base-X or 2500base-X - we enforce that
-only one of these can be advertised at any one time. The switching
-between them happens in the ->validate callback, but that may change
-in the future (especially as there has been a report that making
-this decision in ->validate causes some issues in a particular usage
-scenarios.) It seems we need to solve that basic issue first, and
-then expand it to cater for the case you have.
+HEAD commit:    9d32fa5d Merge tag 'net-5.13-rc5' of git://git.kernel.org/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15dee1bbd00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=de8efb0998945e75
+dashboard link: https://syzkaller.appspot.com/bug?extid=b80c9959009a9325cdff
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1706bbb5d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14d708afd00000
 
-Phylink expects that the *_config and link_up callbacks are a "do
-what I say" setup; they don't expect MAC or PCS drivers to start
-making their own decisions at that point - because then the state
-known to phylink and the actual hardware setup then differ.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Warning: Permanently added '10.128.1.19' (ECDSA) to the list of known hosts.
+executing program
+BUG: memory leak
+unreferenced object 0xffff8881020ec480 (size 64):
+  comm "swapper/0", pid 1, jiffies 4294937719 (age 53.000s)
+  hex dump (first 32 bytes):
+    60 5d 7c 06 81 88 ff ff c0 17 65 04 81 88 ff ff  `]|.......e.....
+    80 35 12 42 81 88 ff ff 80 35 12 42 81 88 ff ff  .5.B.....5.B....
+  backtrace:
+    [<ffffffff82b09f12>] kmalloc include/linux/slab.h:556 [inline]
+    [<ffffffff82b09f12>] kzalloc include/linux/slab.h:686 [inline]
+    [<ffffffff82b09f12>] hwsim_alloc_edge.constprop.0+0x22/0x80 drivers/net/ieee802154/mac802154_hwsim.c:385
+    [<ffffffff82b0b0f3>] hwsim_subscribe_all_others drivers/net/ieee802154/mac802154_hwsim.c:709 [inline]
+    [<ffffffff82b0b0f3>] hwsim_add_one+0x3b3/0x640 drivers/net/ieee802154/mac802154_hwsim.c:802
+    [<ffffffff82b0b3c4>] hwsim_probe+0x44/0xd0 drivers/net/ieee802154/mac802154_hwsim.c:848
+    [<ffffffff82628bf1>] platform_probe+0x81/0x120 drivers/base/platform.c:1447
+    [<ffffffff82625679>] really_probe+0x159/0x500 drivers/base/dd.c:576
+    [<ffffffff82625aab>] driver_probe_device+0x8b/0x100 drivers/base/dd.c:763
+    [<ffffffff82626325>] device_driver_attach+0x105/0x110 drivers/base/dd.c:1039
+    [<ffffffff826263d1>] __driver_attach drivers/base/dd.c:1117 [inline]
+    [<ffffffff826263d1>] __driver_attach+0xa1/0x140 drivers/base/dd.c:1070
+    [<ffffffff82622459>] bus_for_each_dev+0xa9/0x100 drivers/base/bus.c:305
+    [<ffffffff826244e0>] bus_add_driver+0x160/0x280 drivers/base/bus.c:622
+    [<ffffffff82627233>] driver_register+0xc3/0x150 drivers/base/driver.c:171
+    [<ffffffff874fa3dc>] hwsim_init_module+0xae/0x107 drivers/net/ieee802154/mac802154_hwsim.c:899
+    [<ffffffff81001083>] do_one_initcall+0x63/0x2e0 init/main.c:1249
+    [<ffffffff87489873>] do_initcall_level init/main.c:1322 [inline]
+    [<ffffffff87489873>] do_initcalls init/main.c:1338 [inline]
+    [<ffffffff87489873>] do_basic_setup init/main.c:1358 [inline]
+    [<ffffffff87489873>] kernel_init_freeable+0x1f4/0x26e init/main.c:1560
+    [<ffffffff84359255>] kernel_init+0xc/0x1a7 init/main.c:1447
+    [<ffffffff810022ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+
+BUG: memory leak
+unreferenced object 0xffff8881046517c0 (size 32):
+  comm "swapper/0", pid 1, jiffies 4294937719 (age 53.000s)
+  hex dump (first 32 bytes):
+    ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82b09f35>] kmalloc include/linux/slab.h:556 [inline]
+    [<ffffffff82b09f35>] kzalloc include/linux/slab.h:686 [inline]
+    [<ffffffff82b09f35>] hwsim_alloc_edge.constprop.0+0x45/0x80 drivers/net/ieee802154/mac802154_hwsim.c:389
+    [<ffffffff82b0b0f3>] hwsim_subscribe_all_others drivers/net/ieee802154/mac802154_hwsim.c:709 [inline]
+    [<ffffffff82b0b0f3>] hwsim_add_one+0x3b3/0x640 drivers/net/ieee802154/mac802154_hwsim.c:802
+    [<ffffffff82b0b3c4>] hwsim_probe+0x44/0xd0 drivers/net/ieee802154/mac802154_hwsim.c:848
+    [<ffffffff82628bf1>] platform_probe+0x81/0x120 drivers/base/platform.c:1447
+    [<ffffffff82625679>] really_probe+0x159/0x500 drivers/base/dd.c:576
+    [<ffffffff82625aab>] driver_probe_device+0x8b/0x100 drivers/base/dd.c:763
+    [<ffffffff82626325>] device_driver_attach+0x105/0x110 drivers/base/dd.c:1039
+    [<ffffffff826263d1>] __driver_attach drivers/base/dd.c:1117 [inline]
+    [<ffffffff826263d1>] __driver_attach+0xa1/0x140 drivers/base/dd.c:1070
+    [<ffffffff82622459>] bus_for_each_dev+0xa9/0x100 drivers/base/bus.c:305
+    [<ffffffff826244e0>] bus_add_driver+0x160/0x280 drivers/base/bus.c:622
+    [<ffffffff82627233>] driver_register+0xc3/0x150 drivers/base/driver.c:171
+    [<ffffffff874fa3dc>] hwsim_init_module+0xae/0x107 drivers/net/ieee802154/mac802154_hwsim.c:899
+    [<ffffffff81001083>] do_one_initcall+0x63/0x2e0 init/main.c:1249
+    [<ffffffff87489873>] do_initcall_level init/main.c:1322 [inline]
+    [<ffffffff87489873>] do_initcalls init/main.c:1338 [inline]
+    [<ffffffff87489873>] do_basic_setup init/main.c:1358 [inline]
+    [<ffffffff87489873>] kernel_init_freeable+0x1f4/0x26e init/main.c:1560
+    [<ffffffff84359255>] kernel_init+0xc/0x1a7 init/main.c:1447
+    [<ffffffff810022ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
