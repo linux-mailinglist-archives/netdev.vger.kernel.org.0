@@ -2,99 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7C3D39DD5D
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 15:12:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8649839DD77
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 15:17:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230210AbhFGNOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 09:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36088 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230145AbhFGNO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 09:14:29 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68373C061766;
-        Mon,  7 Jun 2021 06:12:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=mzx+toA+I5GhMZJQ4bshpMENsBCltPEDS9fQ3Twfj7g=; b=bd0/P2zv8OxN2aVXSWnOUmYg/
-        aAmWH4AskdREZQW0GRs6yatKOr8pzi8lUzSILehQ1+JrS469ZEehPY66eojybpFjQcaFuQIATEL1G
-        smkIGo30rk+3bnoIdEWQn1nLjOBIgeewLXNrg75mpVuaANWFym9dPQlraYGiex+6ZtpDlzK0zhsH7
-        gg0CCwD7Lm4LAl6tcmC5SfXNVMqLHF8K5kE4DTtyJH7QA5kQgpdP2kvB2Nl60FdgDIToKC+LbNfKV
-        wFDsi20DA506bpZ3g2fAoooHoCR8x+iD2uAYipfJ048acaFGSssrrrtLZyxqZtV4oI1NgucOXF6vE
-        xreUBIc5w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44794)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lqF3Q-0000YM-At; Mon, 07 Jun 2021 14:12:32 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lqF3P-0005xU-Vc; Mon, 07 Jun 2021 14:12:31 +0100
-Date:   Mon, 7 Jun 2021 14:12:31 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Simon Horman <simon.horman@netronome.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: Re: [PATCH net-next v3 04/10] net: sparx5: add port module support
-Message-ID: <20210607131231.GF22278@shell.armlinux.org.uk>
-References: <20210604085600.3014532-1-steen.hegelund@microchip.com>
- <20210604085600.3014532-5-steen.hegelund@microchip.com>
- <20210607092136.GA22278@shell.armlinux.org.uk>
- <d5ffe24ce7fbe5dd4cc0b98449b0594b086e3ba9.camel@microchip.com>
+        id S230266AbhFGNTH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 7 Jun 2021 09:19:07 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:35287 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230227AbhFGNTG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 09:19:06 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-232-PLAYMgjKODCUrXQ11EE9cw-1; Mon, 07 Jun 2021 14:17:12 +0100
+X-MC-Unique: PLAYMgjKODCUrXQ11EE9cw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.18; Mon, 7 Jun 2021 14:17:11 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.018; Mon, 7 Jun 2021 14:17:11 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Andrew Lunn' <andrew@lunn.ch>
+CC:     'Koba Ko' <koba.ko@canonical.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] r8169: introduce polling method for link change
+Thread-Topic: [PATCH] r8169: introduce polling method for link change
+Thread-Index: AQHXW1Z1J4XkbqR7K0q4sy48RuQacKsIelDA///1bwCAABSCIA==
+Date:   Mon, 7 Jun 2021 13:17:11 +0000
+Message-ID: <85afdf3eb2de443da78f6c10c8eb4dc7@AcuMS.aculab.com>
+References: <20210603025414.226526-1-koba.ko@canonical.com>
+ <3d2e7a11-92ad-db06-177b-c6602ef1acd4@gmail.com>
+ <CAJB-X+V4vpLoNt2C_i=3mS4UtFnDdro5+hgaFXHWxcvobO=pzg@mail.gmail.com>
+ <f969a075-25a1-84ba-daad-b4ed0e7f75f5@gmail.com>
+ <CAJB-X+U5VEeSNS4sF0DBxc-p0nxA6QLVVrORHsscZuY37rGJ7w@mail.gmail.com>
+ <bfc68450-422d-1968-1316-64f7eaa7cbe9@gmail.com>
+ <CAJB-X+UDRK5-fKEGc+PS+_02HePmb34Pw_+tMyNr_iGGeE+jbQ@mail.gmail.com>
+ <16f24c21776a4772ac41e6d3e0a9150c@AcuMS.aculab.com>
+ <YL4V6jak3TYxDPg8@lunn.ch>
+In-Reply-To: <YL4V6jak3TYxDPg8@lunn.ch>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d5ffe24ce7fbe5dd4cc0b98449b0594b086e3ba9.camel@microchip.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Andrew Lunn
+> Sent: 07 June 2021 13:50
+> 
+> On Mon, Jun 07, 2021 at 12:32:29PM +0000, David Laight wrote:
+> > From: Koba Ko
+> > > Sent: 07 June 2021 05:35
+> > ...
+> > > After consulting with REALTEK, I can identify RTL8106e by PCI_VENDOR
+> > > REALTEK, DEVICE 0x8136, Revision 0x7.
+> > > I would like to make PHY_POLL as default for RTL8106E on V2.
+> > > because there's no side effects besides the cpu usage rate would be a
+> > > little higher,
+> > > How do you think?
+> >
+> > If reading the PHY registers involves a software bit-bang
+> > of an MII register (rather than, say, a sleep for interrupt
+> > while the MAC unit does the bit-bang) then you can clobber
+> > interrupt latency because of all the time spent spinning.
+> 
+> That is not what PHY IRQ/POLL means in the PHY subsystem.
+> 
+> Many PHYs don't actually have there interrupt output connected to a
+> GPIO. This is partially because 803.2 C22 and C45 standards don't
+> define interrupts. Each vendor which supports interrupts uses
+> proprietary registers. So by default, the PHY subsystem will poll the
+> status of the PHY once per second to see if the link has changed
+> state. If the combination of PHY hardware, board hardware and PHY
+> driver does have interrupts, the PHY subsystem will not poll, but wait
+> for an interrupt, and then check the status of the link.
 
-On Mon, Jun 07, 2021 at 02:46:44PM +0200, Steen Hegelund wrote:
-> Hi Russell,
-> 
-> Thanks for your comments.
-> 
-> On Mon, 2021-06-07 at 10:21 +0100, Russell King (Oracle) wrote:
-> > It looks to me like the phylink code in your patch series is based on
-> > an older version of phylink and hasn't been updated for the split PCS
-> > support - you seem to be munging the PCS parts in with the MAC
-> > callbacks. If so, please update to the modern way of dealing with this.
-> > 
-> > If that isn't the case, please explain why you are not using the split
-> > PCS support.
-> 
-> I need to be able to let the user set the speed to get the link up.
-> 
-> So far I have only been able to get the user configured speeds via the mac_ops, but if this is also
-> possible via the pcs_ops, there should not anything preventing me from using these ops instead.
-> 
-> Will the pcs_ops also support this?
+I know. I might be 30 years since I wrote anything to read MII
+but I don't remember seeing anything that made it less horrid.
 
-I really don't understand what you're saying here, so I can't answer.
+One of the MAC units (probably AMD lance based) could be configured
+to repeatedly read one PHY register and generate a MAC interrupt
+if it changed - but I've not seen that on some later MAC chips.
 
-What exactly do you mean "user configured speeds" ? Please give
-examples of exactly what you're wanting to do.
+> As for MII bus masters, i only know of one which is interrupt driven,
+> rather than polled IO, for completion. The hardware is clocking out 64
+> bits at 2.5MHz. So it is done rather quickly. I profiled that one
+> using interrupts, and the overhead of dealing with the interrupt is
+> bigger than polling.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+64 bits at 2.5MHz is some 64000 cpu clocks - not inconsiderable.
+
+It has to be said that I don't know how to solve the delays
+associated with software bit-bang (apart from persuading the
+hardware engineers it isn't a good idea).
+With my 'hardware engineer' hat on (I'm currently (ir)responsible
+for some FPGA internals as well as the drivers) the logic to
+do things like I2C (etc) reads and writes from fpga memory
+sits in a tiny corner of a modern device.
+
+One possibility for 'slow polls' is to do them slowly!
+One edge per timer tick - although 'tickless' probably
+kills that.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
