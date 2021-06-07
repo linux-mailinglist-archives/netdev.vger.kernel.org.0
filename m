@@ -2,198 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D2E39DA4A
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 12:54:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94D4639DA55
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 12:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230231AbhFGK4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 06:56:33 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:26085 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230131AbhFGK4c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 06:56:32 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1623063273; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=U2IUTV4H2dq/GOzdZ1PFhSHiW/DFDHabhUWoHotRiSopxeSxdD3CknsWYjXK/iyJ5d
-    g0tUFLDAtEGdsJJih0mKnMqOOITAnt+2tMmWNyLtULLvgcgG3qrcgrO+JZvmWNKeVeZR
-    Zw3p5j4QzPSOSec9y/6V91ZVYvtE5HV+k17dI1uWo7TfN4nU/EBgcbsLzU/i+imgpssX
-    IHMpB2hqqfPKV7DDOZFAi/WcoEW5RoGsxiLuDUzgnCoKmjFoxGWanGm0cpKFaHfCP2O5
-    vOLFBEMzff7Z/ZfbdOMvnNBbMY6F0e+RkTz1UDJYN+FiiyoNsGnW0pnafcMkJdPtqUOD
-    MUFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623063273;
-    s=strato-dkim-0002; d=strato.com;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=hdm4hBggGM17oX9y9jwL4+IJ8JgrHVXkX3Pxwr0GLLs=;
-    b=llKxed79twSurxjLYd+XhpLK+3gwVXUr2LjUEkXsRT6QxVLFha+kC1ayfyEdCKzaP5
-    XkSmH9ZEOln+9CucDNWkJZgwraYOWpc4BjwpAbnSdRDcqS40NaceH0PghFATNcq7E3oZ
-    dAByynKkLSDY0+LBo2L8wamPavUxmmNxM0sRVwlOw2W/oee9MBLB37WfEp7GToypxByC
-    b0MpNVUeUnJPvYOcX979gI04zqrC8iI0tqQt0c2S/bTHq6USlN3aA+5xPdd2WVUkLOph
-    r7Yqcy6tTIZ2XS19uJBeeQqwt/1n5nxZDvnYPraABv5WcJdvCIehBapcH+6nh06Xyfg1
-    HSLg==
-ARC-Authentication-Results: i=1; strato.com;
-    dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623063273;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=hdm4hBggGM17oX9y9jwL4+IJ8JgrHVXkX3Pxwr0GLLs=;
-    b=K1Wv6NVTRhrYMo3X9PrgJkrYiuG5gNRC3xJwxdeb4qRSmV+7FHgMS4E+3k/FnMvtFQ
-    naha4v4dJ9qZkH5wZx1Sgju9/NG9QxVv5qLoNumhtPP4Fo2JcKF9cJPFj7dWPD/fX8oB
-    cjo0FApUYcHA/ZLoZBFbmu8Dkz1Pod16mHJI50LNKTfHewTVTVCp39p90CXK+ucWx29+
-    K5IMSYBSgtDHXSR8L9GYdHv3vuJm/TqI3tOE7vVtmrbx7uHL6vt/sXr0qEV5wsauvMdQ
-    DVPlD7YouK6AubTlwK/J5vuRx1/56A03C30q2psP5A3yik2Vzl9dLTjkqkY4+8EgWhLz
-    m88g==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u26zEodhPgRDZ8j7Ic/BBg=="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
-    with ESMTPSA id y01375x57AsWTsN
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Mon, 7 Jun 2021 12:54:32 +0200 (CEST)
-Date:   Mon, 7 Jun 2021 12:54:27 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-remoteproc@vger.kernel.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-Subject: Re: [RFC] Integrate RPMSG/SMD into WWAN subsystem
-Message-ID: <YL364+xK3mE2FU8a@gerhold.net>
-References: <YLfL9Q+4860uqS8f@gerhold.net>
- <CAMZdPi9tcye-4P4i0uXZcECJ-Big5T11JdvdXW6k2mEEi9XwyA@mail.gmail.com>
- <YLtDB2Cz5ttewsFu@gerhold.net>
- <CAMZdPi_-Qa=JnThHs_h-144dAfSAjF5s+QdBawdXZ3kk8Mx8ng@mail.gmail.com>
+        id S231157AbhFGK6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 06:58:49 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:7125 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230418AbhFGK6s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 06:58:48 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Fz9Gk0fbyzYsk5;
+        Mon,  7 Jun 2021 18:54:06 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 7 Jun 2021 18:56:54 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Mon, 7 Jun 2021
+ 18:56:54 +0800
+Subject: Re: [PATCH RESEND iproute2-next] devlink: Add optional controller
+ user input
+To:     Parav Pandit <parav@nvidia.com>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Jiri Pirko <jiri@nvidia.com>, <moyufeng@huawei.com>,
+        <linuxarm@openeuler.org>
+References: <20210603111901.9888-1-parav@nvidia.com>
+ <c50ebdd6-a388-4d39-4052-50b4966def2e@huawei.com>
+ <PH0PR12MB548115AC5D6005781BAEC217DC399@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <a1b853ef-0c94-ba51-cf31-f1f194610204@huawei.com>
+ <PH0PR12MB5481A9B54850A62DF80E3EC1DC389@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <338a2463-eb3a-f642-a288-9ae45f721992@huawei.com>
+Date:   Mon, 7 Jun 2021 18:56:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMZdPi_-Qa=JnThHs_h-144dAfSAjF5s+QdBawdXZ3kk8Mx8ng@mail.gmail.com>
+In-Reply-To: <PH0PR12MB5481A9B54850A62DF80E3EC1DC389@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme711-chm.china.huawei.com (10.1.199.107) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Loic,
-
-On Mon, Jun 07, 2021 at 11:27:07AM +0200, Loic Poulain wrote:
-> On Sat, 5 Jun 2021 at 11:25, Stephan Gerhold <stephan@gerhold.net> wrote:
-> > On Fri, Jun 04, 2021 at 11:11:45PM +0200, Loic Poulain wrote:
-> > > On Wed, 2 Jun 2021 at 20:20, Stephan Gerhold <stephan@gerhold.net> wrote:
-> > > > I've been thinking about creating some sort of "RPMSG" driver for the
-> > > > new WWAN subsystem; this would be used as a QMI/AT channel to the
-> > > > integrated modem on some older Qualcomm SoCs such as MSM8916 and MSM8974.
-> > > >
-> > > > It's easy to confuse all the different approaches that Qualcomm has to
-> > > > talk to their modems, so I will first try to briefly give an overview
-> > > > about those that I'm familiar with:
-> > > >
-> > > > ---
-> > > > There is USB and MHI that are mainly used to talk to "external" modems.
-> > > >
-> > > > For the integrated modems in many Qualcomm SoCs there is typically
-> > > > a separate control and data path. They are not really related to each
-> > > > other (e.g. currently no common parent device in sysfs).
-> > > >
-> > > > For the data path (network interface) there is "IPA" (drivers/net/ipa)
-> > > > on newer SoCs or "BAM-DMUX" on some older SoCs (e.g. MSM8916/MSM8974).
-> > > > I have a driver for BAM-DMUX that I hope to finish up and submit soon.
-> > > >
-> > > > The connection is set up via QMI. The messages are either sent via
-> > > > a shared RPMSG channel (net/qrtr sockets in Linux) or via standalone
-> > > > SMD/RPMSG channels (e.g. "DATA5_CNTL" for QMI and "DATA1" for AT).
-> > > >
-> > > > This gives a lot of possible combinations like BAM-DMUX+RPMSG
-> > > > (MSM8916, MSM8974), or IPA+QRTR (SDM845) but also other funny
-> > > > combinations like IPA+RPMSG (MSM8994) or BAM-DMUX+QRTR (MSM8937).
-> > > >
-> > > > Simply put, supporting all these in userspace like ModemManager
-> > > > is a mess (Aleksander can probably confirm).
-> > > > It would be nice if this could be simplified through the WWAN subsystem.
-> > > >
-> > > > It's not clear to me if or how well QRTR sockets can be mapped to a char
-> > > > device for the WWAN subsystem, so for now I'm trying to focus on the
-> > > > standalone RPMSG approach (for MSM8916, MSM8974, ...).
-> > > > ---
-> > > >
-> > > > Currently ModemManager uses the RPMSG channels via the rpmsg-chardev
-> > > > (drivers/rpmsg/rpmsg_char.c). It wasn't my idea to use it like this,
-> > > > I just took that over from someone else. Realistically speaking, the
-> > > > current approach isn't too different from the UCI "backdoor interface"
-> > > > approach that was rejected for MHI...
-> > > >
-> > > > I kind of expected that I can just trivially copy some code from
-> > > > rpmsg_char.c into a WWAN driver since they both end up as a simple char
-> > > > device. But it looks like the abstractions in wwan_core are kind of
-> > > > getting in the way here... As far as I can tell, they don't really fit
-> > > > together with the RPMSG interface.
-> > > >
-> > > > For example there is rpmsg_send(...) (blocking) and rpmsg_trysend(...)
-> > > > (non-blocking) and even a rpmsg_poll(...) [1] but I don't see a way to
-> > > > get notified when the TX queue is full or no longer full so I can call
-> > > > wwan_port_txon/off().
-> > > >
-> > > > Any suggestions or other thoughts?
-> > >
-> > > It would be indeed nice to get this in the WWAN framework.
-> > > I don't know much about rpmsg but I think it is straightforward for
-> > > the RX path, the ept_cb can simply forward the buffers to
-> > > wwan_port_rx.
-> >
-> > Right, that part should be straightforward.
-> >
-> > > For tx, simply call rpmsg_trysend() in the wwan tx
-> > > callback and don't use the txon/off helpers. In short, keep it simple
-> > > and check if you observe any issues.
-> > >
-> >
-> > I'm not sure that's a good idea. This sounds like exactly the kind of
-> > thing that might explode later just because I don't manage to get the
-> > TX queue full in my tests. In that case, writing to the WWAN char dev
-> > would not block, even if O_NONBLOCK is not set.
+On 2021/6/7 14:10, Parav Pandit wrote:
+>> From: Yunsheng Lin <linyunsheng@huawei.com>
+>> Sent: Monday, June 7, 2021 9:01 AM
+>>
+>> On 2021/6/6 15:10, Parav Pandit wrote:
+>>> Hi Yunsheng,
+>>>
+>>>> From: Yunsheng Lin <linyunsheng@huawei.com>
+>>>> Sent: Friday, June 4, 2021 7:05 AM
+>>>>
+>>>> On 2021/6/3 19:19, Parav Pandit wrote:
+>>>>> A user optionally provides the external controller number when user
+>>>>> wants to create devlink port for the external controller.
+>>>>
+>>>> Hi, Parav
+>>>>    I was planing to use controller id to solve the devlink instance
+>>>> representing problem for multi-function which shares common resource
+>>>> in the same ASIC, see [1].
+>>>>
+>>>> It seems the controller id used here is to differentiate the function
+>>>> used in different host?
+>>>>
+>>> That’s correct. Controller holds one or more PCI functions (PF,VF,SF).
+>>
+>> I am not sure I understand the exact usage of controller and why controller id
+>> is in "devlink_port_*_attrs".
+>>
+>> Let's consider a simplified case where there is two PF(supposing both have
+>> VF enabled), and each PF has different controller and each PF corresponds to
+>> a different physical port(Or it is about multi-host case multi PF may sharing
+>> the same physical port?):
+> Typically single host with two PFs have their own physical ports.
+> Multi-host with two PFs, on each host they share respective physical ports.
 > 
-> Right, if you think it could be a problem, you can always implement a
-> more complex solution like calling rpmsg_send from a
-> workqueue/kthread, and only re-enable tx once rpmsg_send returns.
+> Single host:
+> Pf0.physical_port = p0
+> Pf1.physical_port = p1.
+> 
+> Multi-host (two) host setup
+> H1.pf0.phyical_port = p0.
+> H1.pf1.phyical_port = p1.
+> H2.pf0.phyical_port = p0.
+> H2.pf1.phyical_port = p1.
+
+Multi-host (two) host setup with separate physical port for each host:
+H1.pf0.phyical_port = p0
+H2.pf0.phyical_port = p1
+
+Does above use case make sense for mlx, it seems a common case for
+our internal use.
+
+> 
+>> 1. I suppose each PF has it's devlink instance for mlx case(I suppose each
+>>    VF can not have it's own devlink instance for VF shares the same physical
+>>    port with PF, right?).
+> VF and SF ports are of flavour VIRTUAL.
+
+Which devlink instance does the flavour VIRTUAL port instance for VF and SF is
+registered to?
+Does it mean VF has it's own devlink instance in VM when it is passed a VM,
+and flavour VIRTUAL port instance for that VF is registered to that devlink
+instance in the VM too？
+
+Even in the same host as PF, the VF also has it's own devlink instance?
+
+> 
+>> 2. each PF's devlink instance has three types of port, which is
+>>    FLAVOUR_PHYSICAL, FLAVOUR_PCI_PF and FLAVOUR_PCI_VF(supposing I
+>> understand
+>>    port flavour correctly).
+>>
+> FLAVOUR_PCI_{PF,VF,SF} belongs to eswitch (representor) side on switchdev device.
+
+If devlink instance or eswitch is in DEVLINK_ESWITCH_MODE_LEGACY mode, the
+FLAVOUR_PCI_{PF,VF,SF} port instance does not need to created?
+
+> 
+>> If I understand above correctly, all ports in the same devlink instance should
+>> have the same controller id, right? If yes, why not put the controller id in the
+>> devlink instance?
+> Need not be. All PCI_{PF,VF,SF} can have controller id different for different controllers.
+
+The point is that two VF from different PF may be in the different
+host, all VF of a specific PF need to be in the same host, right?
+otherwise it may break PCI enumeration process?
+
+If yes, as PCI_{PF,VF,SF} belongs to eswitch (representor) side on
+switchdev device(which means PCI_{PF,VF,SF} port instance is in the
+same host, as the host corresponding to "controller_num=0" in diagram
+[1]), so it seems all the PCI_{PF,VF,SF} of a specific PF should have
+the same controller id, and using a controller id of the devlink instance
+in "controller_num=0" in diagram [1] seems enough?
+
+> Usually each multi-host is a different controller. 
+> Refer to this diagram [1] and detailed description.
+
+devlink instance does not exist in the host corresponding to
+"controller_num=1" in diagram [1]?
+Or devlink instance does exist in the host corresponding to
+"controller_num=1", but the mode of that devlink instance is
+DEVLINK_ESWITCH_MODE_LEGACY in diagram [1]?
+
+Also, eswitch mode can only be set on the devlink instance corresponding
+to PF, but not for VF/SF(supposing that VF/SF could have it's own devlink
+instance too), right?
+
+> 
+>>
+>>> In your case if there is single devlink instance representing ASIC, it is better
+>> to have health reporters under this single instance.
+>>>
+>>> Devlink parameters do not span multiple devlink instance.
+>>
+>> Yes, that is what I try to do: shared status/parameters in devlink instance,
+>> physical port specific status/parameters in devlink port instance.
+>>
+>>> So if you need to control devlink instance parameters of each function
+>> byitself, you likely need devlink instance for each.
+>>> And still continue to have ASIC wide health reporters under single instance
+>> that represents whole ASIC.
+>>
+>> I do not think each function need a devlink instance if there is a devlink
+>> instance representing a whole ASIC, using the devlink port instance to
+>> represent the function seems enough?
+> 'devlink port function's is equivalent of hypervisor/nicvisor entity controlled by the network/sysadmin.
+> While devlink instance of a given PF,VF,SF is managed by the user of such function itself.
+
+'devlink port function' means "struct devlink_port", right?
+It seems 'devlink port function' in the host is representing
+a VF when devlink instance of that VF is in the VM?
+
+> For example when a VF is mapped to a VM, devlink instance of this VF resides in the VM managed by the guest VM.
+
+Does the user in VM really care about devlink info or configuration
+when network/sysadmin has configured the VF through 'devlink port function'
+in the host?
+which devlink info or configuration does user need to query or configure
+in a VM?
+
+> 
+> Before this VF is given to VM, usually hypervisor/nicvisor admin programs this function (such as mac address) explained in [3].
+> So that a given VM always gets the same mac address regardless of which VF {a or b).
+> 
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/devlink/devlink-port.rst?h=v5.13-rc5#n72
+> [2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/devlink/devlink-port.rst?h=v5.13-rc5#n60
+> [3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/devlink/devlink-port.rst?h=v5.13-rc5#n110
+> 
+>>
+>>>
+>>>> 1. https://lkml.org/lkml/2021/5/31/296
 > 
 
-I did run into trouble when I tried to stream lots of data into the WWAN
-char device (e.g. using dd). However, in practice (with ModemManager) 
-I did not manage to cause such issues yet. Personally, I think it's
-something we should get right, just to avoid trouble later
-(like "modem suddenly stops working").
-
-Right now I extended the WWAN port ops a bit so I tells me if the write
-should be non-blocking or blocking and so I can call rpmsg_poll(...).
-
-But having some sort of workqueue also sounds like it could work quite
-well, thanks for the suggestion! Will think about it some more, or
-I might post what I have right now so you can take a look.
-
-> >
-> > But I think you're right that it's probably easiest if I start with
-> > that, see if I can get anything working at all ...
-> >
-> > > And for sure you can propose changes in the WWAN framework if you
-> > > think something is missing to support your specific case.
-> > >
-> >
-> > ... and then we can discuss that further on a RFC PATCH or something
-> > like that. Does that sound good to you?
-> 
-> Yes, you can submit the series, no need to be RFC IMHO, this thread is
-> already your RFC.
-> 
-
-I kind of see "RFC" like a "I'm not sure if the approach taken here is
-really a good idea" and my current patch set currently still fits that
-criteria. But at the end it's just a strange prefix for the mail subject
-so it shouldn't matter too much. :)
-
-Thanks!
-Stephan
