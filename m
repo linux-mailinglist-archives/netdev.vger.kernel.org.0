@@ -2,80 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A250739E5DA
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 19:47:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 304BF39E5FF
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 19:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbhFGRtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 13:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbhFGRtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 13:49:22 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AF5C061766;
-        Mon,  7 Jun 2021 10:47:20 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id z3-20020a17090a3983b029016bc232e40bso515884pjb.4;
-        Mon, 07 Jun 2021 10:47:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+JcPMa7HS/G5uEYOivUU91OgbCiCeeoLi8/ELtNiNKg=;
-        b=bji1Z8zuREp+lKQRCaXyfYyYVdP3N0jZ76R3v35FmsLnzxwCmHNSTqM/LsayVQX0Pn
-         pOLZaCgJuA6+LacVmFW8aEhmUJDPb9JPxOUjqYk89MUs//uPpxoVE01uMjrTElGk6oU2
-         c0CYQp9FWYma99f1z/VQx1hZJrMUcBSskfKakXt2ZJFlrrTp+u0nm3K2KlpqZQqnC5xt
-         Lmm/PdZtS+IUs1LJ4lOn87Gi1e8066mzPtL/CTiOBFahdtJFXYNWw7ZlRDZfnkZs/yay
-         JkiZhCSsJyIUG+x0uqc0aud7GjJdDKFIRojxLcco5FmRGTiTjp8UYkBovUg34tYzMdO7
-         rFWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+JcPMa7HS/G5uEYOivUU91OgbCiCeeoLi8/ELtNiNKg=;
-        b=K0WwYUVu2meM2J9LH0F7Gv0SEqU51SI3z3hNfjSl0vXjMol4s9YDvIF5UHfObOh/sV
-         Df5Y5XugyuMSYTM7ZZw1TFqcyzRSNsO3o5l1Oj000HS8TPBmkq8NBMvVb7TH3z6nUYTI
-         MDMGxpbE9WuWF0CuRVlcNh1iG/CYmM1I2v/u2xAcKGc8SzLzPdbV8iQoTidYl8Okyt3J
-         cirpUm4HFh7jZrAEJBWJ49b6HsfTtmDVKzJoLWfSOF7QzslkSpoy92O51UKyFDTs38Zb
-         BSLjxElNTZqrcgWf4FAs+0cxIcbv+DABSxqbiPuGPou3Xpv4sjiL1bcYRzV4mZdvSUDF
-         gOAA==
-X-Gm-Message-State: AOAM531XbSZ5Xvn2cMBRyoVLyeNFsm2djiF1DIkyKtYcC1QpuDkzaYde
-        DnI8FgJXNr/OQtP4RQ03auc=
-X-Google-Smtp-Source: ABdhPJzHqjHk4DE33M4AnFCbLsLHVkL6LnRIFKy3croUU1xW4x0yJzzwOmDQoGtRqJQhbvp5RL/y2g==
-X-Received: by 2002:a17:90b:f84:: with SMTP id ft4mr324524pjb.104.1623088040064;
-        Mon, 07 Jun 2021 10:47:20 -0700 (PDT)
-Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b195sm9467533pga.47.2021.06.07.10.47.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Jun 2021 10:47:19 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: bcmgenet: check return value after calling
- platform_get_resource()
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     opendmb@gmail.com, davem@davemloft.net, kuba@kernel.org
-References: <20210607133837.3579163-1-yangyingliang@huawei.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <d4a768d9-dde1-76a5-5d02-80bab7ca5225@gmail.com>
-Date:   Mon, 7 Jun 2021 10:47:18 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.10.2
+        id S231246AbhFGR6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 13:58:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47800 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231220AbhFGR6R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 13:58:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6933D610A8;
+        Mon,  7 Jun 2021 17:56:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623088585;
+        bh=FxlPlGwzOH68vLMvGAmu0DApAPfPqgM1WS9nhpC1Qys=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ceqn3Md5mBq7rpR+DevcxNZ2ndKbBJVYkLBgt0mvuCNQkp0UgZk+H6wgOG5IAUNuK
+         keJEnYh3XAWwmudcCOn6Nnj8KOuUnt7KLJYf2loRTzh2Pe1iwdtERBxu9+blDE2z8y
+         0zj4FUE/nVSAhtp8WpTGFOkiDg+XJJ6bTMx2SdAgzIanTQIP8shVTAFCqh8QzqnKJQ
+         kpHiIRHAFOitnqaBzfK0ghJACJauCkHRX8SER0GWoU3jUn70e/r4KcnldnRWFIOyiY
+         ybESfpuU6MgTd7gkKhzkGT6w/pw2lI7AOPE7lJXR9zf80fcc1xdzm8UhZOf+ROPqq2
+         wwijnNTTjm2fw==
+Date:   Mon, 7 Jun 2021 18:56:11 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-spi@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH v3 net-next 1/2] net: dsa: sja1105: send multiple
+ spi_messages instead of using cs_change
+Message-ID: <20210607175611.GD10625@sirena.org.uk>
+References: <20210520211657.3451036-1-olteanv@gmail.com>
+ <20210520211657.3451036-2-olteanv@gmail.com>
+ <20210524083529.GA4318@sirena.org.uk>
+ <20210524130212.g6jcf7y4grc64mki@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20210607133837.3579163-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jL2BoiuKMElzg3CS"
+Content-Disposition: inline
+In-Reply-To: <20210524130212.g6jcf7y4grc64mki@skbuf>
+X-Cookie: I never did it that way before.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--jL2BoiuKMElzg3CS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 6/7/2021 6:38 AM, Yang Yingliang wrote:
-> It will cause null-ptr-deref if platform_get_resource() returns NULL,
-> we need check the return value.
-> 
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+On Mon, May 24, 2021 at 04:02:12PM +0300, Vladimir Oltean wrote:
+> On Mon, May 24, 2021 at 09:35:29AM +0100, Mark Brown wrote:
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+> > This is not the case, spi_message_max_size() is a limit on the size of a
+> > spi_message.
+
+> That is true, although it doesn't mean much, since in the presence of
+> cs_change, a spi_message has no correspondent in the physical world
+> (i.e. you can't look at a logic analyzer dump and say "this spi_message
+> was from this to this point"), and that is the problem really.
+
+It may affect how things are implemented by the driver, for example if
+the driver can send a command stream to the hardware the limit might be
+due to that command stream.  There is no need or expectation for drivers
+to pattern match what the're being asked to do and parse out something
+that should be a string of messages from the spi_message they get, it is
+expected that client drivers should split things up naturally.
+
+> Describing the controller's inability to send more than N SPI words with
+> continuous chip select using spi_message_max_size() is what seems flawed
+> to me, but it's what we have, and what I've adapted to.
+
+I can't entirely parse that but the limit here isn't to do with how long
+chip select is asserted for.
+
+--jL2BoiuKMElzg3CS
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmC+XboACgkQJNaLcl1U
+h9DdMwf+L2U5OSSMrunBQzsZp+5RREPvEx2yKgVRob8DbI9vMpxB3aKbxV5ID0qC
+QRcbIwIC1O4GhLEKVmLM76uNZ0gEd0bUbR5ckMPSAUqhKttwQj0oZpmqEhEp5TSS
+nJG7DqGvnBPzyFoSWhX6yYPi+MIW12afAqp+yekYEi5BoAnPmrvUK6m8TVDqTxDr
+7ubMMg79xYyR8yiHLSd2l4ets49nH5ziAi1NTxr1eAQaiQf6SJLVI8fVFooAbxKY
+0UwEJcCxbsrQCXO7MluffsJSwbecF6hgkYpckVTmhX26+fo6Edc6cTU8MQyWib4a
+IjfuVJJPQSzq8dBe9RhQXSvjjfuIYg==
+=AiGc
+-----END PGP SIGNATURE-----
+
+--jL2BoiuKMElzg3CS--
