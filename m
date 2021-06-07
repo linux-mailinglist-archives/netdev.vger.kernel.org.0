@@ -2,77 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4388839D6CD
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 10:10:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FC0639D6C0
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 10:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbhFGIMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 04:12:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230127AbhFGIMF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 04:12:05 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3D0C061787
-        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 01:10:13 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id bn21so20999760ljb.1
-        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 01:10:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GFm0dzV1rxyymG1x9+b3biG2kx5e317PTQKCNEoutCQ=;
-        b=glHZhLz1R6c51WmXVF1XClc9Rz0NQvEeCy5xpkih86MTpEQKmhYHYXcoTLQvRKxgPX
-         YLka3TIohf1coxqIz3itfoP3QmK1/ULeC6doPcLEKfqI4obE3LwuSNoJPZKGkZxd9daX
-         kK65Eal65LnkYXlNg1Mwun+w2S70cNM7kQcDr+3HWp01MQwXHqH9ImRUPuHCS5d32UfO
-         HEmjox+N+/3dZegYvXccl3+ejXCMGLqjrbITQIbqXWVWUSH1OOPF8eF7ebtFzHjAQe0r
-         IzFJhPJ7ndvwvbTQxgIbc/UFWTsY+QRm5YIHTV81bvf73h2IYvDNn16+gXbc8XjWZcJ3
-         CTNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GFm0dzV1rxyymG1x9+b3biG2kx5e317PTQKCNEoutCQ=;
-        b=IGDLkUSLhgRdtO3RtK8/5PeiNZH4xunzVm3eXuvgj6x34Cfxy0AIsJFTBGQVD7Eghi
-         +t+pbTENETxE06EjasMg+W4MRz5iqe55uIv70gy5z+bNEbtdNzkG7rbap2wIdrt6FJ0q
-         hYHWsdTaDMxk2baLoO6npvg1Ztn7QB/aqz3joYXOgEE7JzNBR+gsR2vwdX7t+K1QoBKk
-         7j4sZiQMvXSCIwbA4bEPW4kUGtgM7xJ/XCOvunJw9dr36hFW9FcjTaDmB+IwUSxnw/Or
-         45MPJV60nVrwAJ2z8srr8/esFjVIQQqz0hsHrzqpZMcauXpPPXWvdwPKygihFCSM0EA2
-         zf2A==
-X-Gm-Message-State: AOAM5334Gx4nXPq12p34QtuHUEkD8lEhoBI0HK0NOXCQI63syGXyFDuJ
-        FVdYrrQjnl/Od5cNhRgce5YWhiZQIqDAE2W96AZDdA==
-X-Google-Smtp-Source: ABdhPJwqI1MBFpKXCoH9g8iKyng0T9Fa/009mVPR+5u5x/F4tSdgGaxIoWEB9DKXPa/kIHk6QLVHZwYWXvGJF3J0Qhw=
-X-Received: by 2002:a2e:7811:: with SMTP id t17mr4349895ljc.368.1623053412251;
- Mon, 07 Jun 2021 01:10:12 -0700 (PDT)
+        id S230220AbhFGIJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 04:09:38 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:4375 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229436AbhFGIJh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 04:09:37 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Fz5VM2tvkz69cH;
+        Mon,  7 Jun 2021 16:03:55 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 7 Jun 2021 16:07:32 +0800
+Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
+ (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 7 Jun 2021
+ 16:07:31 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH net-next v3] net: gemini: Use devm_platform_get_and_ioremap_resource()
+Date:   Mon, 7 Jun 2021 16:11:45 +0800
+Message-ID: <20210607081145.1617593-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210607081145.1617593-1-yangyingliang@huawei.com>
-In-Reply-To: <20210607081145.1617593-1-yangyingliang@huawei.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 7 Jun 2021 10:10:01 +0200
-Message-ID: <CACRpkdbe7psaJJfwTsp9miQuDqEtWrd5TB92uso2Wp1eryyh_w@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net: gemini: Use devm_platform_get_and_ioremap_resource()
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 7, 2021 at 10:08 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
+Use devm_platform_get_and_ioremap_resource() to simplify
+code.
 
-> Use devm_platform_get_and_ioremap_resource() to simplify
-> code.
->
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
-> v3:
->   remove netdev_info(...) in gemini_ethernet_port_probe()
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+v3:
+  remove netdev_info(...) in gemini_ethernet_port_probe()
+v2:
+  Also use devm_platform_get_and_ioremap_resource() in gemini_ethernet_probe().
+  Keep the error message to distinguish remap which address failed in
+  gemini_ethernet_port_probe().
+---
+ drivers/net/ethernet/cortina/gemini.c | 34 +++++++--------------------
+ 1 file changed, 9 insertions(+), 25 deletions(-)
 
-Nice!
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
+index 8df6f081f244..c2ebb3388789 100644
+--- a/drivers/net/ethernet/cortina/gemini.c
++++ b/drivers/net/ethernet/cortina/gemini.c
+@@ -2356,8 +2356,6 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct gemini_ethernet *geth;
+ 	struct net_device *netdev;
+-	struct resource *gmacres;
+-	struct resource *dmares;
+ 	struct device *parent;
+ 	unsigned int id;
+ 	int irq;
+@@ -2390,24 +2388,18 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
+ 	port->msg_enable = netif_msg_init(debug, DEFAULT_MSG_ENABLE);
+ 
+ 	/* DMA memory */
+-	dmares = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!dmares) {
+-		dev_err(dev, "no DMA resource\n");
+-		return -ENODEV;
+-	}
+-	port->dma_base = devm_ioremap_resource(dev, dmares);
+-	if (IS_ERR(port->dma_base))
++	port->dma_base = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
++	if (IS_ERR(port->dma_base)) {
++		dev_err(dev, "get DMA address failed\n");
+ 		return PTR_ERR(port->dma_base);
++	}
+ 
+ 	/* GMAC config memory */
+-	gmacres = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	if (!gmacres) {
+-		dev_err(dev, "no GMAC resource\n");
+-		return -ENODEV;
+-	}
+-	port->gmac_base = devm_ioremap_resource(dev, gmacres);
+-	if (IS_ERR(port->gmac_base))
++	port->gmac_base = devm_platform_get_and_ioremap_resource(pdev, 1, NULL);
++	if (IS_ERR(port->gmac_base)) {
++		dev_err(dev, "get GMAC address failed\n");
+ 		return PTR_ERR(port->gmac_base);
++	}
+ 
+ 	/* Interrupt */
+ 	irq = platform_get_irq(pdev, 0);
+@@ -2502,10 +2494,6 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto unprepare;
+ 
+-	netdev_info(netdev,
+-		    "irq %d, DMA @ 0x%pap, GMAC @ 0x%pap\n",
+-		    port->irq, &dmares->start,
+-		    &gmacres->start);
+ 	return 0;
+ 
+ unprepare:
+@@ -2544,17 +2532,13 @@ static int gemini_ethernet_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct gemini_ethernet *geth;
+ 	unsigned int retry = 5;
+-	struct resource *res;
+ 	u32 val;
+ 
+ 	/* Global registers */
+ 	geth = devm_kzalloc(dev, sizeof(*geth), GFP_KERNEL);
+ 	if (!geth)
+ 		return -ENOMEM;
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res)
+-		return -ENODEV;
+-	geth->base = devm_ioremap_resource(dev, res);
++	geth->base = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
+ 	if (IS_ERR(geth->base))
+ 		return PTR_ERR(geth->base);
+ 	geth->dev = dev;
+-- 
+2.25.1
 
-Yours,
-Linus Walleij
