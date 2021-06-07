@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC89239D74C
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 10:28:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C3EF39D754
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 10:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231177AbhFGI3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 04:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
+        id S231512AbhFGI36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 04:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231163AbhFGI33 (ORCPT
+        with ESMTP id S231175AbhFGI33 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 04:29:29 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AAAC06178B
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44C6C0611C0
         for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 01:27:38 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lqAbb-0004fH-Tt; Mon, 07 Jun 2021 10:27:31 +0200
+        id 1lqAbb-0004fI-Ux; Mon, 07 Jun 2021 10:27:31 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lqAbb-0006oJ-Az; Mon, 07 Jun 2021 10:27:31 +0200
+        id 1lqAbb-0006oS-Bt; Mon, 07 Jun 2021 10:27:31 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
@@ -30,9 +30,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH net-next v2 6/8] net: usb: asix: add error handling for asix_mdio_* functions
-Date:   Mon,  7 Jun 2021 10:27:25 +0200
-Message-Id: <20210607082727.26045-7-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 7/8] net: phy: do not print dump stack if device was removed
+Date:   Mon,  7 Jun 2021 10:27:26 +0200
+Message-Id: <20210607082727.26045-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210607082727.26045-1-o.rempel@pengutronix.de>
 References: <20210607082727.26045-1-o.rempel@pengutronix.de>
@@ -46,91 +46,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This usb devices can be removed at any time, so we need to forward
-correct error value if device was detached.
+In case phy_state_machine() works on top of USB device, we can get -ENODEV
+at any point. So, be less noisy if device was removed.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/usb/asix_common.c | 42 +++++++++++++++++++++++------------
- 1 file changed, 28 insertions(+), 14 deletions(-)
+ drivers/net/phy/phy.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index 085bc8281082..ac92bc52a85e 100644
---- a/drivers/net/usb/asix_common.c
-+++ b/drivers/net/usb/asix_common.c
-@@ -485,18 +485,23 @@ int asix_mdio_read(struct net_device *netdev, int phy_id, int loc)
- 		return ret;
- 	}
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 1f0512e39c65..1089a93d12f6 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -1136,6 +1136,9 @@ void phy_state_machine(struct work_struct *work)
+ 	else if (do_suspend)
+ 		phy_suspend(phydev);
  
--	asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
--				(__u16)loc, 2, &res, 0);
--	asix_set_hw_mii(dev, 0);
-+	ret = asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id, (__u16)loc, 2,
-+			    &res, 0);
-+	if (ret < 0)
-+		goto out;
++	if (err == -ENODEV)
++		return;
 +
-+	ret = asix_set_hw_mii(dev, 0);
-+out:
- 	mutex_unlock(&dev->phy_mutex);
+ 	if (err < 0)
+ 		phy_error(phydev);
  
- 	netdev_dbg(dev->net, "asix_mdio_read() phy_id=0x%02x, loc=0x%02x, returns=0x%04x\n",
- 			phy_id, loc, le16_to_cpu(res));
- 
--	return le16_to_cpu(res);
-+	return ret < 0 ? ret : le16_to_cpu(res);
- }
- 
--void asix_mdio_write(struct net_device *netdev, int phy_id, int loc, int val)
-+static int __asix_mdio_write(struct net_device *netdev, int phy_id, int loc,
-+			     int val)
- {
- 	struct usbnet *dev = netdev_priv(netdev);
- 	__le16 res = cpu_to_le16(val);
-@@ -516,15 +521,25 @@ void asix_mdio_write(struct net_device *netdev, int phy_id, int loc, int val)
- 		ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG,
- 				    0, 0, 1, &smsr, 0);
- 	} while (!(smsr & AX_HOST_EN) && (i++ < 30) && (ret != -ENODEV));
--	if (ret == -ENODEV) {
--		mutex_unlock(&dev->phy_mutex);
--		return;
--	}
- 
--	asix_write_cmd(dev, AX_CMD_WRITE_MII_REG, phy_id,
--		       (__u16)loc, 2, &res, 0);
--	asix_set_hw_mii(dev, 0);
-+	if (ret == -ENODEV)
-+		goto out;
-+
-+	ret = asix_write_cmd(dev, AX_CMD_WRITE_MII_REG, phy_id, (__u16)loc, 2,
-+			     &res, 0);
-+	if (ret < 0)
-+		goto out;
-+
-+	ret = asix_set_hw_mii(dev, 0);
-+out:
- 	mutex_unlock(&dev->phy_mutex);
-+
-+	return ret < 0 ? ret : 0;
-+}
-+
-+void asix_mdio_write(struct net_device *netdev, int phy_id, int loc, int val)
-+{
-+	__asix_mdio_write(netdev, phy_id, loc, val);
- }
- 
- /* MDIO read and write wrappers for phylib */
-@@ -539,8 +554,7 @@ int asix_mdio_bus_write(struct mii_bus *bus, int phy_id, int regnum, u16 val)
- {
- 	struct usbnet *priv = bus->priv;
- 
--	asix_mdio_write(priv->net, phy_id, regnum, val);
--	return 0;
-+	return __asix_mdio_write(priv->net, phy_id, regnum, val);
- }
- 
- int asix_mdio_read_nopm(struct net_device *netdev, int phy_id, int loc)
 -- 
 2.29.2
 
