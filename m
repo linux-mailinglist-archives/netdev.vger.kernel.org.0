@@ -2,65 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6663239D80C
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 10:58:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5135939D83D
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 11:05:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbhFGI7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 04:59:48 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:4495 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbhFGI7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 04:59:48 -0400
-Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fz6dR3hJ1zZcBH;
-        Mon,  7 Jun 2021 16:55:07 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeme760-chm.china.huawei.com (10.3.19.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Mon, 7 Jun 2021 16:57:54 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] net: ipv4: use BUG_ON instead of if condition followed by BUG
-Date:   Mon, 7 Jun 2021 17:11:31 +0800
-Message-ID: <20210607091131.2766890-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S230383AbhFGJGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 05:06:41 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:33508 "EHLO deadmen.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230173AbhFGJGk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 05:06:40 -0400
+Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
+        by deadmen.hmeau.com with esmtp (Exim 4.92 #5 (Debian))
+        id 1lqBBX-0004lK-Pa; Mon, 07 Jun 2021 17:04:39 +0800
+Received: from herbert by gondobar with local (Exim 4.92)
+        (envelope-from <herbert@gondor.apana.org.au>)
+        id 1lqBBT-0002rF-P6; Mon, 07 Jun 2021 17:04:35 +0800
+Date:   Mon, 7 Jun 2021 17:04:35 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc:     steffen.klassert@secunet.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] xfrm: use BUG_ON instead of if condition
+ followed by BUG
+Message-ID: <20210607090435.GA10960@gondor.apana.org.au>
+References: <20210607091121.2766815-1-zhengyongjun3@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210607091121.2766815-1-zhengyongjun3@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use BUG_ON instead of if condition followed by BUG in inet_set_link_af.
+On Mon, Jun 07, 2021 at 05:11:21PM +0800, Zheng Yongjun wrote:
+> Use BUG_ON instead of if condition followed by BUG.
+> 
+> This issue was detected with the help of Coccinelle.
+> 
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+> ---
+>  net/xfrm/xfrm_policy.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+> index ce500f847b99..532314578151 100644
+> --- a/net/xfrm/xfrm_policy.c
+> +++ b/net/xfrm/xfrm_policy.c
+> @@ -421,8 +421,7 @@ void xfrm_policy_destroy(struct xfrm_policy *policy)
+>  {
+>  	BUG_ON(!policy->walk.dead);
+>  
+> -	if (del_timer(&policy->timer) || del_timer(&policy->polq.hold_timer))
+> -		BUG();
+> +	BUG_ON(del_timer(&policy->timer) || del_timer(&policy->polq.hold_timer));
 
-This issue was detected with the help of Coccinelle.
-
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- net/ipv4/devinet.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index 2e35f68da40a..e3e1e8a600ef 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -1988,8 +1988,7 @@ static int inet_set_link_af(struct net_device *dev, const struct nlattr *nla,
- 	if (!in_dev)
- 		return -EAFNOSUPPORT;
- 
--	if (nla_parse_nested_deprecated(tb, IFLA_INET_MAX, nla, NULL, NULL) < 0)
--		BUG();
-+	BUG_ON(nla_parse_nested_deprecated(tb, IFLA_INET_MAX, nla, NULL, NULL) < 0);
- 
- 	if (tb[IFLA_INET_CONF]) {
- 		nla_for_each_nested(a, tb[IFLA_INET_CONF], rem)
+Nack.  Do not put statements with side effects within BUG_ON.
 -- 
-2.25.1
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
