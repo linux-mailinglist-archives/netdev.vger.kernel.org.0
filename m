@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C189639E716
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 21:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 949AB39E71D
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 21:03:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231530AbhFGTFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 15:05:15 -0400
-Received: from mail-wr1-f46.google.com ([209.85.221.46]:46034 "EHLO
-        mail-wr1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230382AbhFGTFM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 15:05:12 -0400
-Received: by mail-wr1-f46.google.com with SMTP id z8so18772139wrp.12;
-        Mon, 07 Jun 2021 12:03:19 -0700 (PDT)
+        id S231566AbhFGTFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 15:05:33 -0400
+Received: from mail-wr1-f45.google.com ([209.85.221.45]:33756 "EHLO
+        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231281AbhFGTFb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 15:05:31 -0400
+Received: by mail-wr1-f45.google.com with SMTP id a20so18869978wrc.0;
+        Mon, 07 Jun 2021 12:03:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gpCyRaWvrKvU/PVxSVlqs7O19Kt+5N+CG6yZ5xm4LxQ=;
-        b=ESqJVSX7FcTzBe9BSWmDQB9qXJFW0Dg1zXZVVqFFjs55PLlB9L0BT7gI0NWT6ZFvlk
-         6Ro6qYvL27SLa+9VKziPCM5pXV//xsE+N1lxokgWJWIR9U5I+P9dugtQMwR8OA4QL+5+
-         5hHG215h8QDuyc0ullY15I99YkjrKDeVIn+bCpLS3kKaynE5oVfo5+GoeTZlh31ZEkQI
-         2wAwp9rPAdccyB39h54ceFeB56wo7bZYPF5Bd5jyPLrEubiC4zAGU5NGntQyKQ7X2fy2
-         ACHkoc0bZIHpjQh0V/dhGTBFdAJCLHtSqkBirn77Wan6fLfSSySw146P6AMR5GW2Iyjs
-         VQvA==
-X-Gm-Message-State: AOAM532mVd6iUH81dwCm4fv/Onhyk67RHnXKN9z3rPBPB9E0SueuHJ+n
-        nk5lHNFdtYBSSOfHjMQ8Vfxp5YIDo4FBkQ==
-X-Google-Smtp-Source: ABdhPJzmC4x5xCIwkqe1+nWEg0m9lr4FhVpHQo6ynPfRQVlyQhSSXDg3l8PQsFhoSNSw7Be1YbQe6A==
-X-Received: by 2002:adf:f2ca:: with SMTP id d10mr18183035wrp.314.1623092599073;
-        Mon, 07 Jun 2021 12:03:19 -0700 (PDT)
+        bh=d5R/Y787deGXI27/C5ydk9yyfai3EZKj2N6INNdZwRE=;
+        b=LCfnhqgRNAcuEdsmPu1A+jFzGuXC26tu7a43k8UNJZmW5OUbEnJ15SlaDutb3kDoV+
+         z0Tv/DDlXuZb48YpbMcM3gyRoXsM1r4NJzkgE/neHOmXKJF5VwlIAgFJaN2EjnojWhga
+         mFSrWLxKJDbIztyxBNRv4tj646TLLZ9AlMlbvO+grVgX9JpJJVF24TEFF4tvUaRQVi+H
+         Qx913EFPhKS+T8T6C5QG1hO0vwhr+UdQSCYKi71cO27wImAaY/BUnc4R1scOzX2FcKZF
+         QSEsA8sfinqiE3Vef1aapZVn6cgkjFn/GP6Gw2SiIzAHh0KHMdk/mZuz8Raw9z90E2yO
+         Xyvg==
+X-Gm-Message-State: AOAM530GgVjsiDnXfK5FNZhtoRXnYAbLDfo83KT/qMVCW6rUoB17skT2
+        2SebCa6B/JS8iClgT7RUtD9TQ5z4/qkLBw==
+X-Google-Smtp-Source: ABdhPJwXAVeGKb20OchlDcpFARTCfj5wSWcd0sVVqP41F1+y4gqRBRSun2vUXAiBLD8b4gI1xkR7Cg==
+X-Received: by 2002:a5d:6082:: with SMTP id w2mr18715401wrt.209.1623092618348;
+        Mon, 07 Jun 2021 12:03:38 -0700 (PDT)
 Received: from msft-t490s.teknoraver.net (net-37-119-128-179.cust.vodafonedsl.it. [37.119.128.179])
-        by smtp.gmail.com with ESMTPSA id g17sm12185968wrp.61.2021.06.07.12.03.17
+        by smtp.gmail.com with ESMTPSA id g17sm12185968wrp.61.2021.06.07.12.03.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Jun 2021 12:03:18 -0700 (PDT)
+        Mon, 07 Jun 2021 12:03:37 -0700 (PDT)
 From:   Matteo Croce <mcroce@linux.microsoft.com>
 To:     netdev@vger.kernel.org, linux-mm@kvack.org
 Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
@@ -85,9 +85,9 @@ Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
         Martin KaFai Lau <kafai@fb.com>,
         David Hildenbrand <david@redhat.com>,
         Song Liu <songliubraving@fb.com>
-Subject: [PATCH net-next v8 1/5] mm: add a signature in struct page
-Date:   Mon,  7 Jun 2021 21:02:36 +0200
-Message-Id: <20210607190240.36900-2-mcroce@linux.microsoft.com>
+Subject: [PATCH net-next v8 2/5] skbuff: add a parameter to __skb_frag_unref
+Date:   Mon,  7 Jun 2021 21:02:37 +0200
+Message-Id: <20210607190240.36900-3-mcroce@linux.microsoft.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210607190240.36900-1-mcroce@linux.microsoft.com>
 References: <20210607190240.36900-1-mcroce@linux.microsoft.com>
@@ -99,126 +99,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Matteo Croce <mcroce@microsoft.com>
 
-This is needed by the page_pool to avoid recycling a page not allocated
-via page_pool.
+This is a prerequisite patch, the next one is enabling recycling of
+skbs and fragments. Add an extra argument on __skb_frag_unref() to
+handle recycling, and update the current users of the function with that.
 
-The page->signature field is aliased to page->lru.next and
-page->compound_head, but it can't be set by mistake because the
-signature value is a bad pointer, and can't trigger a false positive
-in PageTail() because the last bit is 0.
-
-Co-developed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Signed-off-by: Matteo Croce <mcroce@microsoft.com>
 ---
- include/linux/mm.h       | 11 ++++++-----
- include/linux/mm_types.h |  7 +++++++
- include/linux/poison.h   |  3 +++
- net/core/page_pool.c     |  6 ++++++
- 4 files changed, 22 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/marvell/sky2.c        | 2 +-
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c | 2 +-
+ include/linux/skbuff.h                     | 8 +++++---
+ net/core/skbuff.c                          | 4 ++--
+ net/tls/tls_device.c                       | 2 +-
+ 5 files changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index c274f75efcf9..a0434e8c2617 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1668,10 +1668,11 @@ struct address_space *page_mapping(struct page *page);
- static inline bool page_is_pfmemalloc(const struct page *page)
- {
- 	/*
--	 * Page index cannot be this large so this must be
--	 * a pfmemalloc page.
-+	 * lru.next has bit 1 set if the page is allocated from the
-+	 * pfmemalloc reserves.  Callers may simply overwrite it if
-+	 * they do not need to preserve that information.
- 	 */
--	return page->index == -1UL;
-+	return (uintptr_t)page->lru.next & BIT(1);
- }
+diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
+index 324c280cc22c..8b8bff59c8fe 100644
+--- a/drivers/net/ethernet/marvell/sky2.c
++++ b/drivers/net/ethernet/marvell/sky2.c
+@@ -2503,7 +2503,7 @@ static void skb_put_frags(struct sk_buff *skb, unsigned int hdr_space,
  
- /*
-@@ -1680,12 +1681,12 @@ static inline bool page_is_pfmemalloc(const struct page *page)
+ 		if (length == 0) {
+ 			/* don't need this page */
+-			__skb_frag_unref(frag);
++			__skb_frag_unref(frag, false);
+ 			--skb_shinfo(skb)->nr_frags;
+ 		} else {
+ 			size = min(length, (unsigned) PAGE_SIZE);
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+index e35e4d7ef4d1..cea62b8f554c 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+@@ -526,7 +526,7 @@ static int mlx4_en_complete_rx_desc(struct mlx4_en_priv *priv,
+ fail:
+ 	while (nr > 0) {
+ 		nr--;
+-		__skb_frag_unref(skb_shinfo(skb)->frags + nr);
++		__skb_frag_unref(skb_shinfo(skb)->frags + nr, false);
+ 	}
+ 	return 0;
+ }
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index dbf820a50a39..7fcfea7e7b21 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3081,10 +3081,12 @@ static inline void skb_frag_ref(struct sk_buff *skb, int f)
+ /**
+  * __skb_frag_unref - release a reference on a paged fragment.
+  * @frag: the paged fragment
++ * @recycle: recycle the page if allocated via page_pool
+  *
+- * Releases a reference on the paged fragment @frag.
++ * Releases a reference on the paged fragment @frag
++ * or recycles the page via the page_pool API.
   */
- static inline void set_page_pfmemalloc(struct page *page)
+-static inline void __skb_frag_unref(skb_frag_t *frag)
++static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
  {
--	page->index = -1UL;
-+	page->lru.next = (void *)BIT(1);
+ 	put_page(skb_frag_page(frag));
+ }
+@@ -3098,7 +3100,7 @@ static inline void __skb_frag_unref(skb_frag_t *frag)
+  */
+ static inline void skb_frag_unref(struct sk_buff *skb, int f)
+ {
+-	__skb_frag_unref(&skb_shinfo(skb)->frags[f]);
++	__skb_frag_unref(&skb_shinfo(skb)->frags[f], false);
  }
  
- static inline void clear_page_pfmemalloc(struct page *page)
- {
--	page->index = 0;
-+	page->lru.next = NULL;
- }
+ /**
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 3ad22870298c..12b7e90dd2b5 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -664,7 +664,7 @@ static void skb_release_data(struct sk_buff *skb)
+ 	skb_zcopy_clear(skb, true);
  
- /*
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 5aacc1c10a45..ed6862eacb52 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -96,6 +96,13 @@ struct page {
- 			unsigned long private;
- 		};
- 		struct {	/* page_pool used by netstack */
-+			/**
-+			 * @pp_magic: magic value to avoid recycling non
-+			 * page_pool allocated pages.
-+			 */
-+			unsigned long pp_magic;
-+			struct page_pool *pp;
-+			unsigned long _pp_mapping_pad;
- 			/**
- 			 * @dma_addr: might require a 64-bit value on
- 			 * 32-bit architectures.
-diff --git a/include/linux/poison.h b/include/linux/poison.h
-index aff1c9250c82..d62ef5a6b4e9 100644
---- a/include/linux/poison.h
-+++ b/include/linux/poison.h
-@@ -78,4 +78,7 @@
- /********** security/ **********/
- #define KEY_DESTROY		0xbd
+ 	for (i = 0; i < shinfo->nr_frags; i++)
+-		__skb_frag_unref(&shinfo->frags[i]);
++		__skb_frag_unref(&shinfo->frags[i], false);
  
-+/********** net/core/page_pool.c **********/
-+#define PP_SIGNATURE		(0x40 + POISON_POINTER_DELTA)
-+
- #endif
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 3c4c4c7a0402..e1321bc9d316 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -17,6 +17,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/page-flags.h>
- #include <linux/mm.h> /* for __put_page() */
-+#include <linux/poison.h>
+ 	if (shinfo->frag_list)
+ 		kfree_skb_list(shinfo->frag_list);
+@@ -3495,7 +3495,7 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
+ 		fragto = &skb_shinfo(tgt)->frags[merge];
  
- #include <trace/events/page_pool.h>
- 
-@@ -221,6 +222,8 @@ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
- 		return NULL;
+ 		skb_frag_size_add(fragto, skb_frag_size(fragfrom));
+-		__skb_frag_unref(fragfrom);
++		__skb_frag_unref(fragfrom, false);
  	}
  
-+	page->pp_magic |= PP_SIGNATURE;
-+
- 	/* Track how many pages are held 'in-flight' */
- 	pool->pages_state_hold_cnt++;
- 	trace_page_pool_state_hold(pool, page, pool->pages_state_hold_cnt);
-@@ -263,6 +266,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 			put_page(page);
- 			continue;
- 		}
-+		page->pp_magic |= PP_SIGNATURE;
- 		pool->alloc.cache[pool->alloc.count++] = page;
- 		/* Track how many pages are held 'in-flight' */
- 		pool->pages_state_hold_cnt++;
-@@ -341,6 +345,8 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
- 			     DMA_ATTR_SKIP_CPU_SYNC);
- 	page_pool_set_dma_addr(page, 0);
- skip_dma_unmap:
-+	page->pp_magic = 0;
-+
- 	/* This may be the last page returned, releasing the pool, so
- 	 * it is not safe to reference pool afterwards.
- 	 */
+ 	/* Reposition in the original skb */
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index 76a6f8c2eec4..ad11db2c4f63 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -127,7 +127,7 @@ static void destroy_record(struct tls_record_info *record)
+ 	int i;
+ 
+ 	for (i = 0; i < record->num_frags; i++)
+-		__skb_frag_unref(&record->frags[i]);
++		__skb_frag_unref(&record->frags[i], false);
+ 	kfree(record);
+ }
+ 
 -- 
 2.31.1
 
