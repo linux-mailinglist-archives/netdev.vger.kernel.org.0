@@ -2,67 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA9E139D518
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 08:38:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D18339D526
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 08:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbhFGGk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 02:40:29 -0400
-Received: from m12-11.163.com ([220.181.12.11]:36584 "EHLO m12-11.163.com"
+        id S230242AbhFGGnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 02:43:42 -0400
+Received: from verein.lst.de ([213.95.11.211]:44563 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229498AbhFGGk2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Jun 2021 02:40:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=2r79z
-        HB8lgl3dUvf+w3zMGVsp+hgssJhFNBRhWN5wVQ=; b=jQc9OVPUMSFgLZJx7pFrA
-        4l36XRmP3hVBTf/pWqxCBRft6iC4uwHmXUCkK0FyhXiN09EjnbjTP0Wt8bi/6f/v
-        NO/9aUHoVmB3mDAl7l9811faMZFAQvQDo8N1ooXZ48nZ+WukRAS7SXkYUc5nQuAj
-        InmjjyGDJweu0ThpLj/OTo=
-Received: from ubuntu.localdomain (unknown [218.17.89.92])
-        by smtp7 (Coremail) with SMTP id C8CowAA3Mprivr1gxM6vgg--.2222S2;
-        Mon, 07 Jun 2021 14:38:27 +0800 (CST)
-From:   13145886936@163.com
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gushengxian <gushengxian@yulong.com>
-Subject: [PATCH] net/atm/common.c fix a spelling mistake
-Date:   Sun,  6 Jun 2021 23:38:19 -0700
-Message-Id: <20210607063819.377166-1-13145886936@163.com>
-X-Mailer: git-send-email 2.25.1
+        id S229470AbhFGGnj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 02:43:39 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id C9F1667373; Mon,  7 Jun 2021 08:41:42 +0200 (CEST)
+Date:   Mon, 7 Jun 2021 08:41:42 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        arnd@arndb.de, dave.hansen@linux.intel.com, luto@kernel.org,
+        peterz@infradead.org, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        hannes@cmpxchg.org, cai@lca.pw, krish.sadhukhan@oracle.com,
+        saravanand@fb.com, Tianyu.Lan@microsoft.com,
+        konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
+        robin.murphy@arm.com, boris.ostrovsky@oracle.com, jgross@suse.com,
+        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
+        xen-devel@lists.xenproject.org, davem@davemloft.net,
+        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, thomas.lendacky@amd.com,
+        brijesh.singh@amd.com, sunilmut@microsoft.com
+Subject: Re: [RFC PATCH V3 01/11] x86/HV: Initialize GHCB page in Isolation
+ VM
+Message-ID: <20210607064142.GA24478@lst.de>
+References: <20210530150628.2063957-1-ltykernel@gmail.com> <20210530150628.2063957-2-ltykernel@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8CowAA3Mprivr1gxM6vgg--.2222S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrur1rAw43tF43AF1fZF48tFb_yoWxtrXEkw
-        1kZ3W0grWUAFySywsrJr43Zr4xXa4rWr15CFn7Ca48J34DXr4rK395KF4kXry3WrW7ZF9x
-        Z3Z0yr45tF17tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU501v3UUUUU==
-X-Originating-IP: [218.17.89.92]
-X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/xtbBRwSqg1PAC+eXigAAsI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210530150628.2063957-2-ltykernel@gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: gushengxian <gushengxian@yulong.com>
+On Sun, May 30, 2021 at 11:06:18AM -0400, Tianyu Lan wrote:
+> +	if (ms_hyperv.ghcb_base) {
+> +		rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
+> +
+> +		ghcb_va = ioremap_cache(ghcb_gpa, HV_HYP_PAGE_SIZE);
+> +		if (!ghcb_va)
+> +			return -ENOMEM;
 
-iff should be changed to if.
+Can you explain this a bit more?  We've very much deprecated
+ioremap_cache in favor of memremap.  Why yo you need a __iomem address
+here?  Why do we need the remap here at all?
 
-Signed-off-by: gushengxian <gushengxian@yulong.com>
----
- net/atm/common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Does the data structure at this address not have any types that we
+could use a struct for?
 
-diff --git a/net/atm/common.c b/net/atm/common.c
-index 1cfa9bf1d187..55e92982a484 100644
---- a/net/atm/common.c
-+++ b/net/atm/common.c
-@@ -328,7 +328,7 @@ static int check_ci(const struct atm_vcc *vcc, short vpi, int vci)
- 			return -EADDRINUSE;
- 	}
- 
--	/* allow VCCs with same VPI/VCI iff they don't collide on
-+	/* allow VCCs with same VPI/VCI if they don't collide on
- 	   TX/RX (but we may refuse such sharing for other reasons,
- 	   e.g. if protocol requires to have both channels) */
- 
--- 
-2.25.1
+> +
+> +		rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
+> +		ghcb_va = ioremap_cache(ghcb_gpa, HV_HYP_PAGE_SIZE);
+> +		if (!ghcb_va) {
 
+This seems to duplicate the above code.
+
+> +bool hv_isolation_type_snp(void)
+> +{
+> +	return static_branch_unlikely(&isolation_type_snp);
+> +}
+> +EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
+
+This probably wants a kerneldoc explaining when it should be used.
