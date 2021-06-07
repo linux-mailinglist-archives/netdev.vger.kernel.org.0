@@ -2,91 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E3A039DD4F
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 15:09:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAFB639DD57
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 15:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbhFGNL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 09:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35422 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbhFGNL2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 09:11:28 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987C9C061766;
-        Mon,  7 Jun 2021 06:09:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=vbgOzbtmK58ivP99PkrwPY3SZvVaeQG4u1eF2Jf+fZY=; b=OcCrKMaH36LqXSa70uu0yk6vd
-        Zij7bwVolkc0d3fTU3An7/IFuQpoTo51lQ9PuQSvtPbY6/W2NbtvUEtowi4YVn7bQWXqeBtT35D3D
-        aRHX+OukHQLa0wbUkSdiJw9jrM1x+uu37vqWwAu9mIF1njMIpV4tNQu/nnjNJ01yXYpzuWerxFNdt
-        IEpbaTY7+R5C496dIX5KdDB2Honj/5yeBY4tDv5sz9eBvl/EYVez1hUVKqHoadDi98xrroDC8aDXz
-        SFRUogOzph3IeUZS2NfK718XYkUWSuq2Y3Rh1vcHvfL6n+tZUds2W6xDc2+VCm/thYFtCMYP+lgVZ
-        Ue0vwJVFg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44792)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lqF0R-0000XY-5z; Mon, 07 Jun 2021 14:09:27 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lqF0O-0005x1-LV; Mon, 07 Jun 2021 14:09:24 +0100
-Date:   Mon, 7 Jun 2021 14:09:24 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Simon Horman <simon.horman@netronome.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: Re: [PATCH net-next v3 03/10] net: sparx5: add hostmode with phylink
- support
-Message-ID: <20210607130924.GE22278@shell.armlinux.org.uk>
-References: <20210604085600.3014532-1-steen.hegelund@microchip.com>
- <20210604085600.3014532-4-steen.hegelund@microchip.com>
- <20210607091536.GA30436@shell.armlinux.org.uk>
- <9f4fad323e17c8ba6ebde728fcc99c87dd06fc75.camel@microchip.com>
+        id S230294AbhFGNM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 09:12:58 -0400
+Received: from mail.2ds.eu ([159.69.24.75]:39706 "EHLO mail.2ds.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230207AbhFGNM6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 09:12:58 -0400
+Received: by mail.2ds.eu (Postfix, from userid 119)
+        id 66DD7C4A1B; Mon,  7 Jun 2021 13:11:06 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on cloud-db-1
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=ham autolearn_force=no version=3.4.2
+Received: from [192.168.1.168] (91-133-69-233.stat.cablelink.at [91.133.69.233])
+        (Authenticated sender: admin@2ds.eu)
+        by mail.2ds.eu (Postfix) with ESMTPSA id F1706C4A0B
+        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 13:11:05 +0000 (UTC)
+Message-ID: <5b08afe02cb0baa7ae3e19fd0bc9d1cbe9ea89c9.camel@2ds.eu>
+Subject: Load on RTL8168g/8111g stalls network for multiple seconds
+From:   Johannes =?ISO-8859-1?Q?Brandst=E4tter?= <jbrandst@2ds.eu>
+To:     netdev@vger.kernel.org
+Date:   Mon, 07 Jun 2021 15:11:05 +0200
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9f4fad323e17c8ba6ebde728fcc99c87dd06fc75.camel@microchip.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 07, 2021 at 02:45:01PM +0200, Steen Hegelund wrote:
-> Hi Russell,
-> 
-> Thanks for your comments.
-> 
-> On Mon, 2021-06-07 at 10:15 +0100, Russell King (Oracle) wrote:
-> > 3) I really don't get what's going on with setting the port mode to
-> >    2500base-X and 1000base-X here when state->interface is 10GBASER.
-> 
-> The high speed interfaces (> 2.5G) do not support any in-band signalling, so the only way that e.g a
-> 10G interface running at 2.5G will be able to link up with its partner is if both ends configure the
-> speed manually via ethtool.
+Hi,
 
-We really should not have drivers hacking around in this way. If we want
-to operate in 2500base-x or 1000base-x, then that is what phylink should
-be telling the MAC driver. The MAC driver should not be making these
-decisions in its mac_config() callback. Doing so makes a joke of kernel
-programming.
+just the other day I wanted to set up a bridge between an external 2.5G
+RTL8156 USB Ethernet adapter (using r8152) and the built in dual
+RTL8168g/8111g Ethernet chip (using r8169).
+I compiled the kernel as of 5.13.0-rc4 because of the r8125 supporting
+the RTL8156.
+This was done using the Debian kernel config of 5.10.0-4 as a base and
+left the rest as default.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+So this setup was working the way I wanted it to, but unfortunately
+when running iperf3 against the machine it would rather quickly stall
+all communications on the internal RTL8168g.
+I was still able to communicate fine over the external RTL8156 link
+with the machine.
+Even without the generated network load, it would occasionally become
+stalled.
+
+The only information I could really gather were that the rx_missed
+counter was going up, and this kernel message some time after the stall
+was happening:
+
+[81853.129107] r8169 0000:02:00.0 enp2s0: rtl_rxtx_empty_cond == 0
+(loop: 42, delay: 100).
+
+Which has apparently to do with the wait for an empty fifo within the
+r8169 driver.
+
+Until that the machine (an UP² board) using the RTL8168g ran without
+any issues for multiple years in different configurations.
+Only bridging immediately showed the issue when given enough network
+load.
+
+After many hours of trying out different things, nothing of which
+showed any difference whatsoever, I tried to replace the internal
+RTL8168g with an additional external USB Ethernet adapter which I had
+laying around, having a RTL8153 inside.
+
+Once the RTL8168g was removed and the RTL8153 added to the bridge, I
+was unable to reproduce the issue.
+Of course I'd rather like to make use of the two internal Ethernet
+ports if I somehow can.
+
+So is there anything I could try to do?
+
+I'm eyeing with a regression test next on the kernel's r8168 driver.
+Though this is without me knowing if there ever was a working version.
+As this is a rather large task, with only limited time I wanted to seek
+out some help before I go down that route.
+
+Maybe you could point me into the right direction, as to what to try
+next.
+
+Thanks and best regards,
+Johannes
+
