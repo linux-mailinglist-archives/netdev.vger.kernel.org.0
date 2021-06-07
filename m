@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F37739E3BA
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8FE139E3C0
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:40:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233514AbhFGQ1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 12:27:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60478 "EHLO mail.kernel.org"
+        id S233718AbhFGQ1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 12:27:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32772 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233764AbhFGQY2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Jun 2021 12:24:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CF37F61949;
-        Mon,  7 Jun 2021 16:15:54 +0000 (UTC)
+        id S233839AbhFGQYj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 12:24:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8D1F36194F;
+        Mon,  7 Jun 2021 16:15:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623082555;
-        bh=QJbYxkmjGTiKMFT/ADimCcoSFQEo3WxH3FOOmcIHplA=;
+        s=k20201202; t=1623082558;
+        bh=HwkUWxdB04+3z1cNU4FKIS3SuMuWux3wDGdui7mJktI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JBFyyEBgTHc0lRU6TBiOi+WTmdIdKJfzW2mRts+u8cf0eVYB5ptglhGo1SGHYm6ET
-         anM7B82bG7Gm6pPvTlrfd+AysV2O7lkVTZJx+lV4+S6UaE6sHtjMNsXxo5b7s1l/Vt
-         f4+GSmVfBVQ3YDYY4/MmUv+36prnUFi8D2Q5MJykq445YEWduyBgQ0nwPqFhCD76M5
-         1Idvdnt+X7Y5a4Mw3q2vGWCL5qQGM+SDDZz7aB2qzPOWjczCvfFOqqw2hXZaWivwO8
-         MelZI+0Qyp04xa76uAv67U1sDGOC+5ulV+xsJcl6G3DCGrRR49IyXth3rGAUV90bxS
-         NoHx202WR95Zg==
+        b=RWwedStbzdI3eskJUKzeRIaHb/fer+bmO1FXNhFEHM2nqq8HAWnRRnhIpF7AtfPkY
+         Rb6YV35WnQBQjzsG8LSkKjSEmfwSWmb0GSZuztvvpw5ktpBYnQbVA/qJIMHy9ff2lS
+         JjKB85Tj+O8KZQueTvfYZ89SOHC1ym/L+M1ALh+e/Ksw/IZciBhIXEEbdgFoA8Klrw
+         T1tklgPr8x0vf75scTNp7S7Vq1LioUv4lYs3s0hUXVCAnchaWdm6PqfY4a3ia7+8Hy
+         eiFoZB8lskT6U2epmdULT88AHgjZCTN60Xt+sJG4rDExaVJg8pEEfrb5df2KEbjCVm
+         VktUi7UARkJDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lin Ma <linma@zju.edu.cn>, Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 08/15] Bluetooth: use correct lock to prevent UAF of hdev object
-Date:   Mon,  7 Jun 2021 12:15:36 -0400
-Message-Id: <20210607161543.3584778-8-sashal@kernel.org>
+Cc:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 10/15] ethernet: myri10ge: Fix missing error code in myri10ge_probe()
+Date:   Mon,  7 Jun 2021 12:15:38 -0400
+Message-Id: <20210607161543.3584778-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210607161543.3584778-1-sashal@kernel.org>
 References: <20210607161543.3584778-1-sashal@kernel.org>
@@ -42,46 +43,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-[ Upstream commit e305509e678b3a4af2b3cfd410f409f7cdaabb52 ]
+[ Upstream commit f336d0b93ae978f12c5e27199f828da89b91e56a ]
 
-The hci_sock_dev_event() function will cleanup the hdev object for
-sockets even if this object may still be in used within the
-hci_sock_bound_ioctl() function, result in UAF vulnerability.
+The error code is missing in this code scenario, add the error code
+'-EINVAL' to the return value 'status'.
 
-This patch replace the BH context lock to serialize these affairs
-and prevent the race condition.
+Eliminate the follow smatch warning:
 
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+drivers/net/ethernet/myricom/myri10ge/myri10ge.c:3818 myri10ge_probe()
+warn: missing error code 'status'.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sock.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-index 44b3146c6117..35f5585188de 100644
---- a/net/bluetooth/hci_sock.c
-+++ b/net/bluetooth/hci_sock.c
-@@ -750,7 +750,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
- 		/* Detach sockets from device */
- 		read_lock(&hci_sk_list.lock);
- 		sk_for_each(sk, &hci_sk_list.head) {
--			bh_lock_sock_nested(sk);
-+			lock_sock(sk);
- 			if (hci_pi(sk)->hdev == hdev) {
- 				hci_pi(sk)->hdev = NULL;
- 				sk->sk_err = EPIPE;
-@@ -759,7 +759,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
- 
- 				hci_dev_put(hdev);
- 			}
--			bh_unlock_sock(sk);
-+			release_sock(sk);
- 		}
- 		read_unlock(&hci_sk_list.lock);
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index 02ec326cb129..5eeba263b5f8 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -4050,6 +4050,7 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		dev_err(&pdev->dev,
+ 			"invalid sram_size %dB or board span %ldB\n",
+ 			mgp->sram_size, mgp->board_span);
++		status = -EINVAL;
+ 		goto abort_with_ioremap;
  	}
+ 	memcpy_fromio(mgp->eeprom_strings,
 -- 
 2.30.2
 
