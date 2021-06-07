@@ -2,174 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D94E739DFCE
+	by mail.lfdr.de (Postfix) with ESMTP id 182E939DFCC
 	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 16:57:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230463AbhFGO7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 10:59:31 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:23400 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231277AbhFGO7S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 10:59:18 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 157EiqDd018308;
-        Mon, 7 Jun 2021 07:56:28 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : references
- : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=OKiUFXMeeiL7WyBWC/C3vCAaK2MBFww+mQeAzYWHIXs=;
- b=VOzOPy9mhzRF6l84olPNnA0veNCrDA+tK16arOWcVV0D044vNzXIau4jdbbldj6JKaOl
- Yhuks6dYe1BSohK1z9y6SNceXwfDDW+ZIqXWrCIRGOuI2kaRzlR6kSkKg+g02NePEzat
- rHLRh/nCuY64WfYoOW3gaww8cDOhUweexio= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 390s14p23t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 07 Jun 2021 07:56:28 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 7 Jun 2021 07:56:26 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GUp5P5NsYc3PAK3rG/yp9aCZ+mV+LL8dg3jcT/5C5lGGMGltlrPNMVwdrANRgHk7EL6lbnrj3Zs55wX9Nk9txdWeutoYzlcQ2ycV++NMubE/dgNTh6OROaJCCBkHLs0sSHjRxMCQEBboWammZxRvyTbWHIciXBIP6AO4uivCGe8UVnEiCsZoMaxZVX5Kg0MBJVkG2vQx++pkZdUTCF/mi6INqd88RAXWjMK9BIYnqJbBik7OnhWQj7i8pSB9oJ30cEJ8Zwx//lh+kyhxSoCoiawBxvBz5S5G0bMthy7hEhiwh4xkxwHvjmjBh8CqpwM+9srNZJMv4hFUVAqdu9QvhA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OKiUFXMeeiL7WyBWC/C3vCAaK2MBFww+mQeAzYWHIXs=;
- b=DTaLflDlFKk6nuGBieH1WRXzYq+3vQrKnvjaFoULOJNt3RttGi0Cmik2YsmNiAsz1mMkcIQYoRCQjy9pwu1C7XDqKa8GDMn9Y53kUX1WjhxrKKCmHHX7bwgOa2jhckMnSCQOujUbD/QoTclRxN4XUFNh3in7pySGM27gD/rsD0cko8canD+bgchvBtMJIgSYUycGeI1UzKUF7OjF52vyC1aOk/hGqWxRhDaNvrKDcFh0uMb+fsEsxLC2AoO1SE1WyTwD9sWtabiwNzfY65JO4hoJMMBku4BL3b6pjYpBEUSQVwNSbRe1Y30+3d42+og6X7i/28fFSJ8guU+YuPRxXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA0PR15MB4014.namprd15.prod.outlook.com (2603:10b6:806:8e::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Mon, 7 Jun
- 2021 14:56:25 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::d886:b658:e2eb:a906]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::d886:b658:e2eb:a906%5]) with mapi id 15.20.4195.030; Mon, 7 Jun 2021
- 14:56:25 +0000
-Subject: Re: [PATCH v2 1/1] lib/test: Fix spelling mistakes
-To:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20210607133036.12525-1-thunder.leizhen@huawei.com>
- <20210607133036.12525-2-thunder.leizhen@huawei.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <e788d0c5-51a3-4cb1-52e1-f57d0d17d7be@fb.com>
-Date:   Mon, 7 Jun 2021 07:56:22 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
-In-Reply-To: <20210607133036.12525-2-thunder.leizhen@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+        id S230390AbhFGO7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 10:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230193AbhFGO7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 10:59:04 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85F9C061766;
+        Mon,  7 Jun 2021 07:57:01 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id 27so14010942pgy.3;
+        Mon, 07 Jun 2021 07:57:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mkL4psSj+prMNO7AohBJyTx+Q189qdo7fgANRpB5e+4=;
+        b=lhaKoBcNOuAsXD3pTAmPwsFop0hqZ7JU5MLd+d9L1no2Uoec0Qyp3qHl7oh02shWeI
+         Jes/SZ8q3U+KfCNoq9c1Xrlmq8EXws4qXzfcpkEnMBLnTwTeOLVn57/5lNMv0IIQu936
+         eZ7O1rSFr9fTp5zpfxPADKjK5NrHWx5QoMUdi6NsRSJlWsZAOZ1xE13fUHg60coHCGz9
+         L8KTelBvvQsClf1NodL6YCelq4Ol69U2fD2Jwlp+Qg82jWdc6cKvPRG+8Dfwd10h1GXK
+         eJIB1Vu38FzkxJlUAMfqjcOa76EjkPTv6FXCcrF7OHioGvvqCsPHt0hXWXzpcsKlznTI
+         Ov6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mkL4psSj+prMNO7AohBJyTx+Q189qdo7fgANRpB5e+4=;
+        b=FwS6i0uKIdwoGvDNri0MVo4csFd3/e/afhHykIx33QdV5oVVTlDVmnRfLXkAbR/ZOZ
+         dqlubCpcoT8p6jf3rDaFvUtM411rFOqNt3zJzHB0g44L0EOd2gn57E4JNqdEe8dCrbp3
+         Thk1HCW8OHcok4kCyCuRrfX58zZOOq+MA1pcpJ8oaraabaoDOno32/6ccb6UKTDUZCpq
+         KGJoajV9T0+0mC2QAwhLWb23ScCKklTc19wezbdyHF450EEnGoCUrWuVG2LkMbbmXG9h
+         oZwxyl7rng+Ub/CKN5EBf/QqZ/ZstlN2/JczEdBY4BohM+z8ynWmDjflRPI2DVNhS9VM
+         mFtw==
+X-Gm-Message-State: AOAM53203/RcrdZZty4YE+UJ6Aa2bSbHN3mjILh8WB9DPJ4NfRlNoYyJ
+        3yY0gvVQd4zS6Ub4hhV1Cgk=
+X-Google-Smtp-Source: ABdhPJyAa6AVd7SFvf1Ep4fkh59q91v76tY7vbke901CKM7Z5XY+dbd7TJGFiS7g5cKGjx+7iiHgJA==
+X-Received: by 2002:a65:6a51:: with SMTP id o17mr18093661pgu.170.1623077821197;
+        Mon, 07 Jun 2021 07:57:01 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+        by smtp.gmail.com with ESMTPSA id p14sm9148073pgk.6.2021.06.07.07.56.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Jun 2021 07:57:00 -0700 (PDT)
+Subject: Re: [RFC PATCH V3 08/11] swiotlb: Add bounce buffer remap address
+ setting function
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        arnd@arndb.de, dave.hansen@linux.intel.com, luto@kernel.org,
+        peterz@infradead.org, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        hannes@cmpxchg.org, cai@lca.pw, krish.sadhukhan@oracle.com,
+        saravanand@fb.com, Tianyu.Lan@microsoft.com,
+        konrad.wilk@oracle.com, m.szyprowski@samsung.com,
+        robin.murphy@arm.com, boris.ostrovsky@oracle.com, jgross@suse.com,
+        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
+        xen-devel@lists.xenproject.org, davem@davemloft.net,
+        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, thomas.lendacky@amd.com,
+        brijesh.singh@amd.com, sunilmut@microsoft.com
+References: <20210530150628.2063957-1-ltykernel@gmail.com>
+ <20210530150628.2063957-9-ltykernel@gmail.com>
+ <20210607064312.GB24478@lst.de>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <48516ce3-564c-419e-b355-0ce53794dcb1@gmail.com>
+Date:   Mon, 7 Jun 2021 22:56:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <20210607064312.GB24478@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:db22]
-X-ClientProxiedBy: SJ0PR03CA0311.namprd03.prod.outlook.com
- (2603:10b6:a03:39d::16) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21cf::1097] (2620:10d:c090:400::5:db22) by SJ0PR03CA0311.namprd03.prod.outlook.com (2603:10b6:a03:39d::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23 via Frontend Transport; Mon, 7 Jun 2021 14:56:24 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 218db573-26ca-4b45-e717-08d929c46c08
-X-MS-TrafficTypeDiagnostic: SA0PR15MB4014:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA0PR15MB4014655B1ABC3A96402A6E06D3389@SA0PR15MB4014.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:538;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0WP17DvnpvuVgDdlhg9500iYvZ+KHF+gxnYK0veqKXo1oC576cJdPyGi+CMHIPTDycffpN9K6Bda+N/s6xwoDuJfQ4G32oada6HpIQPKlLew3sW4FbqG4kuhWPpeYYXt2zbD6Vcaw4e220c7AZuXnMuRzNqtHzzt5aJWroia5XSPR8FqqzpB97TBMKUyPN6BI/w1X3fnBnhljXo/+F3ININV7e3wbeBc1/xUXiN2w0yTZJ1bYBeld90eBKRaomgSo3+pBYnFkq2kzyeo9hfR291HlP03eYKZWueuzxP7sKQ42BTUopOSn23iCFijskNiRuLGUlBTxCX/LNPo/Zuxxu8umeQSOgAKRjybI+p8/8+kFcyzgCSBW9iErIdAkrV6AicAbRAswDYnxN2OUPBRz0gjUY6nWgyUxGlEzXEYEr7WZM3NOBSTc8tVID3HB1XFBkEHpfLgw5ctQQcw/Za2HOh3VQgw0Zf4i8FhjIF5Gp5y7XfdeP3+2pZqBGVX6yaBkuuN6Z1xxt/u1WSN4LwpkAhvtMFR2+nRHxdclGfGBp1+co8019ebFYOqXnomZVPmNtnE0eGI3x1ahMH2bG0HyPOzgHks2rRub6XMN+IurRDnr/bBU0c0JxTevagd3FtL2EPxa4bgFmLJedb/qjWlwhwKa1x1cZZ/VnJbBNq94l2JKwdbLL0jYfYXGh9nKQCr4SSvaQUp3UW4Sc6HtJfnDQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(136003)(396003)(346002)(376002)(921005)(7416002)(478600001)(52116002)(2616005)(53546011)(2906002)(31696002)(38100700002)(316002)(4744005)(16526019)(186003)(66946007)(36756003)(66476007)(66556008)(86362001)(5660300002)(8936002)(31686004)(110136005)(6486002)(8676002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?MkdrTnRlOUdwLzhkRHR3a0ppRTRkblhNU21CT0orNlVYZ0NQaEFqYXMweHRN?=
- =?utf-8?B?bVIybjRFMWcwYU9EeDBaeXZvZ1VDYlBQSWxiS2hzd3djTkNkbnRRSGIyWCsr?=
- =?utf-8?B?UTNVTXhOd2U4UWRxS3NLdXZGSVFtKzJvMlVBN3RvRkllblUxVTNQNFVLc3NT?=
- =?utf-8?B?Uko0T2hISzRSM1I4cFhHMjcrYVZFbkVnRnpHSEtMbWFudmZVWkFpbDhkSE5n?=
- =?utf-8?B?TTRXVTBVZTdPWktMMGFZdm9iWG1ab2hVdm1VVHE0TldyemIxTmNvQ1EzQVlr?=
- =?utf-8?B?dDhhbUcvZUlzeTA4U3NlaHRCblgyNXpYejh5bWo1VTVxUXBOeTZBSWpjaC9F?=
- =?utf-8?B?b2lhSW1ScW5HUGNGU1M2cVFOMVlzd0NvVWJ1MFdVcG4zdTBXZE1RZml5ZGoz?=
- =?utf-8?B?R3labk1LcVNiYmc4NHBqSlVMUlJkbzAxb3dkY1ZUalNYYmsyci9nQjV4Zmll?=
- =?utf-8?B?Y0JwT1hDTGNZdnRNb0lsMmxzQ1ltWjdQRmZZalBQdXlYMHV1NTFNdnF4MVpE?=
- =?utf-8?B?MWZVcUducm5PMS9rZ3hwYmU0Ukx6SzYvOTJnbFhaejNNZFdoRlRIY3BDa0FH?=
- =?utf-8?B?ZW9LOUJodlJxRHg3L2pTZGt0L2dubUkzWmpBbHpVYWlwbE83K3Y1VnZ0K1Zh?=
- =?utf-8?B?cXhRTFRpcnNhQjAzM3IxWVVvZEtxYW10c2xobnVEcDY0TFYwTDFJUUVvZFEy?=
- =?utf-8?B?djJveTI4WHdsM1VHSExsVTlIYmgrRVN2TjVJYmk3aS9OSlRMQ1RDTXYreDVJ?=
- =?utf-8?B?SFNxbEJrSXBXQmh3em1QZUZHcDFGVHp6MnkzMWtkWkNCZXhaVmNFSFVJVHlq?=
- =?utf-8?B?SXV3MGxMVE1sQlFrR1k2MWZWRk5tSCtWTmdhSUFPSit3TXpXUWFLWkVTOWRG?=
- =?utf-8?B?UzhnaWlCbW96QnhhYlF2UmFnNE9kRnpWdm13UEliR2FpMlpYZXprSkxETmJi?=
- =?utf-8?B?cFJWRi8yTlVZcmdHZEh1RFMybThUT2p0UVl5VjI5YVZzaU01NWxySlZiZnk0?=
- =?utf-8?B?YzAzQm5xRWZmK2x5WCtMRHZ4NnNNb3pzM29lcnl0RnN1S0pSUVhxSDhiUVFZ?=
- =?utf-8?B?eVVWcXRzbXNKVS9EcW1yWmdBRE95RXpUOXFTeExJNUdSWmVEOVkrWjBhOWxk?=
- =?utf-8?B?VFZrV05zeitOeENRV0dKdFUrQnRDS25ZMEpCaGRRRG90Q2lIZWRTQnRYQWE0?=
- =?utf-8?B?SGFmNjJ5UjdrY2ZnL08xRmM0QXpvbFdtZittUWJUWGhtOGlHUG0yR2E0VnNw?=
- =?utf-8?B?TWFYaGQzOHovaG80S3FTc0YyZGVjVHJqSGRwTCtCa0Y4bGtLQWFqSE9pQ0Y2?=
- =?utf-8?B?T2VVbE90TXFNS1pmNW9NMVprQkFkZG45RWpLNG5YclZDZWZlR2Y4bmxUQ3Bv?=
- =?utf-8?B?WW1UR1d4K0VCaTFkeDVSZVJHTlBLUHVRTG41TCtaT3VwSVVGZnVQc2tEayt0?=
- =?utf-8?B?OGxtUThpWHpwN1R6U1gzdDRiWVowdDB6OVYwUVh1Z1BHYkFpK0twSnVYRnEy?=
- =?utf-8?B?L0k0Umd5ZUV0WER2eldwRExYYjRjKzJxN2lxbG9pcjFab0dncXFJN0Zjblk2?=
- =?utf-8?B?MHhzZzRod0FVMTFINEdxUG9nMWRENGNOY3hwTTF5ZFZFTGtZTllxcDBSRytm?=
- =?utf-8?B?UE9GUFE4Tllna0w2aHBRdEs1UlNPa0RtYzB1T0RaY3AzanlkUGovSnozNDJH?=
- =?utf-8?B?ZlY2U2dKSjVlM0owemtEditCQmNvSnFWWDlwaUpZWXg2Uk8vT1JiYmZBY3oz?=
- =?utf-8?B?YVlTOFBNZFBBZ1ZNdFB1azlkSlNvRE9ualNSNlgxcGdzS1V1Y0J3V0ZOSzNh?=
- =?utf-8?B?WHpWcmpkdGFVZTlaMS9UZz09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 218db573-26ca-4b45-e717-08d929c46c08
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2021 14:56:25.6625
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: E6VcF4x56nhCPhr3ajtgZZlUIs0di0gJoGnbBjpFBou3gn+BMj/mXy+GcbaExW+K
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR15MB4014
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: i2WKBEe7YhsiBiYAZBvRC80Sx5X_6OvN
-X-Proofpoint-GUID: i2WKBEe7YhsiBiYAZBvRC80Sx5X_6OvN
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-06-07_11:2021-06-04,2021-06-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- clxscore=1011 impostorscore=0 mlxscore=0 malwarescore=0 spamscore=0
- priorityscore=1501 adultscore=0 suspectscore=0 phishscore=0
- mlxlogscore=968 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104190000 definitions=main-2106070108
-X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 6/7/21 6:30 AM, Zhen Lei wrote:
-> Fix some spelling mistakes in comments found by "codespell":
-> thats ==> that's
-> unitialized ==> uninitialized
-> panicing ==> panicking
-> sucess ==> success
-> possitive ==> positive
-> intepreted ==> interpreted
+On 6/7/2021 2:43 PM, Christoph Hellwig wrote:
+> On Sun, May 30, 2021 at 11:06:25AM -0400, Tianyu Lan wrote:
+>> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+>>
+>> For Hyper-V isolation VM with AMD SEV SNP, the bounce buffer(shared memory)
+>> needs to be accessed via extra address space(e.g address above bit39).
+>> Hyper-V code may remap extra address space outside of swiotlb. swiotlb_
+>> bounce() needs to use remap virtual address to copy data from/to bounce
+>> buffer. Add new interface swiotlb_set_bounce_remap() to do that.
 > 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> Why can't you use the bus_dma_region ranges to remap to your preferred
+> address?
+> 
 
-Ack for lib/test_bpf.c change:
-Acked-by: Yonghong Song <yhs@fb.com>
+Thanks for your suggestion.
+
+These addresses in extra address space works as system memory mirror. 
+The shared memory with host in Isolation VM needs to be accessed via 
+extra address space which is above shared gpa boundary. During 
+initializing swiotlb bounce buffer pool, only address bellow shared gpa 
+boundary can be accepted by swiotlb API because it is treated as system 
+memory and managed by memory management. This is why Hyper-V swiotlb 
+bounce buffer pool needs to be allocated in Hyper-V code and map
+associated physical address in extra address space. The patch target is
+to add the new interface to set start virtual address of bounce buffer
+pool and let swiotlb boucne buffer copy function to use right virtual 
+address for extra address space.
+
+bus_dma_region is to translate cpu physical address to dma address.
+It can't modify the virtual address of bounce buffer pool and let
+swiotlb code to copy data with right address. If some thing missed,
+please correct me.
+
+Thanks.
