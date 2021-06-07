@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3E239E48A
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 386B039E47B
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 18:51:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231501AbhFGQxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 12:53:11 -0400
-Received: from mga07.intel.com ([134.134.136.100]:16640 "EHLO mga07.intel.com"
+        id S230404AbhFGQwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 12:52:47 -0400
+Received: from mga14.intel.com ([192.55.52.115]:57113 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231441AbhFGQxG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Jun 2021 12:53:06 -0400
-IronPort-SDR: TrEooIQ8E9Yj6M/96CpdNdPQ0KRPBW7Jul4cLKCBHlCRWy7yQ2GQXIlYRKuuHGpW0AQOjdtN5l
- gbGBnRK0DtEg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10008"; a="268516247"
+        id S230197AbhFGQwp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 12:52:45 -0400
+IronPort-SDR: FrrUFKo6efipi6BbiQ4eXeaReuOhNxWKnswGNScpQOXh1V60wWgct8mQEAENQHw8MjsM7+jvVN
+ dRMcSeS8si0g==
+X-IronPort-AV: E=McAfee;i="6200,9189,10008"; a="204474547"
 X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; 
-   d="scan'208";a="268516247"
+   d="scan'208";a="204474547"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2021 09:50:53 -0700
-IronPort-SDR: G/e5Uk2imgMuMt4HstGrwulnmsqX8C8J7smmaSnXpD8EYAnnUmBo7wJUCbW2+QPcLCAyHYuXcj
- OnJGymwFWoQw==
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2021 09:50:53 -0700
+IronPort-SDR: eL0YKK8/z44CcWiYAjt5gwuXJuh8VAOPNbLMbVfKQXVLHBm3O07lozRZR9XV4mIP2xdr5STL/M
+ BNkhYONhE5Bw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; 
-   d="scan'208";a="484841225"
+   d="scan'208";a="484841231"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga002.fm.intel.com with ESMTP; 07 Jun 2021 09:50:52 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 07 Jun 2021 09:50:53 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next 03/15] ice: Save VF's MAC across reboot
-Date:   Mon,  7 Jun 2021 09:53:13 -0700
-Message-Id: <20210607165325.182087-4-anthony.l.nguyen@intel.com>
+Cc:     Krzysztof Kazimierczak <krzysztof.kazimierczak@intel.com>,
+        netdev@vger.kernel.org, sassmann@redhat.com,
+        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com,
+        Kiran Bhandare <kiranx.bhandare@intel.com>
+Subject: [PATCH net-next 04/15] ice: Refactor ice_setup_rx_ctx
+Date:   Mon,  7 Jun 2021 09:53:14 -0700
+Message-Id: <20210607165325.182087-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210607165325.182087-1-anthony.l.nguyen@intel.com>
 References: <20210607165325.182087-1-anthony.l.nguyen@intel.com>
@@ -42,187 +44,242 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+From: Krzysztof Kazimierczak <krzysztof.kazimierczak@intel.com>
 
-If a VM reboots and/or VF driver is unloaded, its cached hardware MAC
-address (hw_lan_addr.addr) is cleared in some cases. If the VF is
-trusted, then the PF driver allows the VF to clear its old MAC address
-even if this MAC was configured by a host administrator. If the VF is
-untrusted, then the PF driver allows the VF to clear its old MAC
-address only if the host admin did not set it.
+Move AF_XDP logic and buffer allocation out of ice_setup_rx_ctx() to a
+new function ice_vsi_cfg_rxq(), so the function actually sets up the Rx
+context.
 
-For the trusted VF case, this is unexpected and will cause issues
-because the host configured MAC (i.e. via XML) will be cleared on VM
-reboot. For the untrusted VF case, this is done to be consistent and it
-will allow the VF to keep the same MAC across VM reboot.
-
-Fix this by introducing dev_lan_addr to the VF structure. This will be
-the VF's MAC address when it's up and running and in most cases will be
-the same as the hw_lan_addr. However, to address the VM reboot and
-unload/reload problem, the driver will never allow the hw_lan_addr to be
-cleared via VIRTCHNL_OP_DEL_ETH_ADDR. When the VF's MAC is changed, the
-dev_lan_addr and hw_lan_addr will always be updated with the same value.
-The only ways the VF's MAC can change are the following:
-
-- Set the VF's MAC administratively on the host via iproute2.
-- If the VF is trusted and changes/sets its own MAC.
-- If the VF is untrusted and the host has not set the MAC via iproute2.
-
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Krzysztof Kazimierczak <krzysztof.kazimierczak@intel.com>
+Co-developed-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 47 ++++++++++++-------
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  1 +
- 2 files changed, 31 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_base.c | 120 +++++++++++++---------
+ drivers/net/ethernet/intel/ice/ice_base.h |   2 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c  |  10 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c  |   2 +-
+ 4 files changed, 78 insertions(+), 56 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index b0a15b821b15..677d29fd0885 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -947,6 +947,8 @@ static int ice_vf_rebuild_host_mac_cfg(struct ice_vf *vf)
- 			return ice_status_to_errno(status);
- 		}
- 		vf->num_mac++;
+diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+index 5985a7e5ca8a..142d660010c6 100644
+--- a/drivers/net/ethernet/intel/ice/ice_base.c
++++ b/drivers/net/ethernet/intel/ice/ice_base.c
+@@ -319,11 +319,9 @@ static unsigned int ice_rx_offset(struct ice_ring *rx_ring)
+  *
+  * Configure the Rx descriptor ring in RLAN context.
+  */
+-int ice_setup_rx_ctx(struct ice_ring *ring)
++static int ice_setup_rx_ctx(struct ice_ring *ring)
+ {
+-	struct device *dev = ice_pf_to_dev(ring->vsi->back);
+ 	int chain_len = ICE_MAX_CHAINED_RX_BUFS;
+-	u16 num_bufs = ICE_DESC_UNUSED(ring);
+ 	struct ice_vsi *vsi = ring->vsi;
+ 	u32 rxdid = ICE_RXDID_FLEX_NIC;
+ 	struct ice_rlan_ctx rlan_ctx;
+@@ -339,48 +337,6 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+ 	/* clear the context structure first */
+ 	memset(&rlan_ctx, 0, sizeof(rlan_ctx));
+ 
+-	ring->rx_buf_len = vsi->rx_buf_len;
+-
+-	if (ring->vsi->type == ICE_VSI_PF) {
+-		if (!xdp_rxq_info_is_reg(&ring->xdp_rxq))
+-			/* coverity[check_return] */
+-			xdp_rxq_info_reg(&ring->xdp_rxq, ring->netdev,
+-					 ring->q_index, ring->q_vector->napi.napi_id);
+-
+-		ring->xsk_pool = ice_xsk_pool(ring);
+-		if (ring->xsk_pool) {
+-			xdp_rxq_info_unreg_mem_model(&ring->xdp_rxq);
+-
+-			ring->rx_buf_len =
+-				xsk_pool_get_rx_frame_size(ring->xsk_pool);
+-			/* For AF_XDP ZC, we disallow packets to span on
+-			 * multiple buffers, thus letting us skip that
+-			 * handling in the fast-path.
+-			 */
+-			chain_len = 1;
+-			err = xdp_rxq_info_reg_mem_model(&ring->xdp_rxq,
+-							 MEM_TYPE_XSK_BUFF_POOL,
+-							 NULL);
+-			if (err)
+-				return err;
+-			xsk_pool_set_rxq_info(ring->xsk_pool, &ring->xdp_rxq);
+-
+-			dev_info(dev, "Registered XDP mem model MEM_TYPE_XSK_BUFF_POOL on Rx ring %d\n",
+-				 ring->q_index);
+-		} else {
+-			if (!xdp_rxq_info_is_reg(&ring->xdp_rxq))
+-				/* coverity[check_return] */
+-				xdp_rxq_info_reg(&ring->xdp_rxq,
+-						 ring->netdev,
+-						 ring->q_index, ring->q_vector->napi.napi_id);
+-
+-			err = xdp_rxq_info_reg_mem_model(&ring->xdp_rxq,
+-							 MEM_TYPE_PAGE_SHARED,
+-							 NULL);
+-			if (err)
+-				return err;
+-		}
+-	}
+ 	/* Receive Queue Base Address.
+ 	 * Indicates the starting address of the descriptor queue defined in
+ 	 * 128 Byte units.
+@@ -415,6 +371,12 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+ 	 */
+ 	rlan_ctx.showiv = 0;
+ 
++	/* For AF_XDP ZC, we disallow packets to span on
++	 * multiple buffers, thus letting us skip that
++	 * handling in the fast-path.
++	 */
++	if (ring->xsk_pool)
++		chain_len = 1;
+ 	/* Max packet size for this queue - must not be set to a larger value
+ 	 * than 5 x DBUF
+ 	 */
+@@ -438,7 +400,7 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+ 	/* Absolute queue number out of 2K needs to be passed */
+ 	err = ice_write_rxq_ctx(hw, &rlan_ctx, pf_q);
+ 	if (err) {
+-		dev_err(dev, "Failed to set LAN Rx queue context for absolute Rx queue %d error: %d\n",
++		dev_err(ice_pf_to_dev(vsi->back), "Failed to set LAN Rx queue context for absolute Rx queue %d error: %d\n",
+ 			pf_q, err);
+ 		return -EIO;
+ 	}
+@@ -458,6 +420,66 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+ 	ring->tail = hw->hw_addr + QRX_TAIL(pf_q);
+ 	writel(0, ring->tail);
+ 
++	return 0;
++}
 +
-+		ether_addr_copy(vf->dev_lan_addr.addr, vf->hw_lan_addr.addr);
++/**
++ * ice_vsi_cfg_rxq - Configure an Rx queue
++ * @ring: the ring being configured
++ *
++ * Return 0 on success and a negative value on error.
++ */
++int ice_vsi_cfg_rxq(struct ice_ring *ring)
++{
++	struct device *dev = ice_pf_to_dev(ring->vsi->back);
++	u16 num_bufs = ICE_DESC_UNUSED(ring);
++	int err;
++
++	ring->rx_buf_len = ring->vsi->rx_buf_len;
++
++	if (ring->vsi->type == ICE_VSI_PF) {
++		if (!xdp_rxq_info_is_reg(&ring->xdp_rxq))
++			/* coverity[check_return] */
++			xdp_rxq_info_reg(&ring->xdp_rxq, ring->netdev,
++					 ring->q_index, ring->q_vector->napi.napi_id);
++
++		ring->xsk_pool = ice_xsk_pool(ring);
++		if (ring->xsk_pool) {
++			xdp_rxq_info_unreg_mem_model(&ring->xdp_rxq);
++
++			ring->rx_buf_len =
++				xsk_pool_get_rx_frame_size(ring->xsk_pool);
++			err = xdp_rxq_info_reg_mem_model(&ring->xdp_rxq,
++							 MEM_TYPE_XSK_BUFF_POOL,
++							 NULL);
++			if (err)
++				return err;
++			xsk_pool_set_rxq_info(ring->xsk_pool, &ring->xdp_rxq);
++
++			dev_info(dev, "Registered XDP mem model MEM_TYPE_XSK_BUFF_POOL on Rx ring %d\n",
++				 ring->q_index);
++		} else {
++			if (!xdp_rxq_info_is_reg(&ring->xdp_rxq))
++				/* coverity[check_return] */
++				xdp_rxq_info_reg(&ring->xdp_rxq,
++						 ring->netdev,
++						 ring->q_index, ring->q_vector->napi.napi_id);
++
++			err = xdp_rxq_info_reg_mem_model(&ring->xdp_rxq,
++							 MEM_TYPE_PAGE_SHARED,
++							 NULL);
++			if (err)
++				return err;
++		}
++	}
++
++	err = ice_setup_rx_ctx(ring);
++	if (err) {
++		dev_err(dev, "ice_setup_rx_ctx failed for RxQ %d, err %d\n",
++			ring->q_index, err);
++		return err;
++	}
++
+ 	if (ring->xsk_pool) {
+ 		bool ok;
+ 
+@@ -470,9 +492,13 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+ 		}
+ 
+ 		ok = ice_alloc_rx_bufs_zc(ring, num_bufs);
+-		if (!ok)
++		if (!ok) {
++			u16 pf_q = ring->vsi->rxq_map[ring->q_index];
++
+ 			dev_info(dev, "Failed to allocate some buffers on XSK buffer pool enabled Rx ring %d (pf_q %d)\n",
+ 				 ring->q_index, pf_q);
++		}
++
+ 		return 0;
+ 	}
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_base.h b/drivers/net/ethernet/intel/ice/ice_base.h
+index 44efdb627043..20e1c29aa68a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_base.h
++++ b/drivers/net/ethernet/intel/ice/ice_base.h
+@@ -6,7 +6,7 @@
+ 
+ #include "ice.h"
+ 
+-int ice_setup_rx_ctx(struct ice_ring *ring);
++int ice_vsi_cfg_rxq(struct ice_ring *ring);
+ int __ice_vsi_get_qs(struct ice_qs_cfg *qs_cfg);
+ int
+ ice_vsi_ctrl_one_rx_ring(struct ice_vsi *vsi, bool ena, u16 rxq_idx, bool wait);
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 56e1ae558761..bd84c1f09296 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -1698,15 +1698,11 @@ int ice_vsi_cfg_rxqs(struct ice_vsi *vsi)
+ 	ice_vsi_cfg_frame_size(vsi);
+ setup_rings:
+ 	/* set up individual rings */
+-	for (i = 0; i < vsi->num_rxq; i++) {
+-		int err;
++	ice_for_each_rxq(vsi, i) {
++		int err = ice_vsi_cfg_rxq(vsi->rx_rings[i]);
+ 
+-		err = ice_setup_rx_ctx(vsi->rx_rings[i]);
+-		if (err) {
+-			dev_err(ice_pf_to_dev(vsi->back), "ice_setup_rx_ctx failed for RxQ %d, err %d\n",
+-				i, err);
++		if (err)
+ 			return err;
+-		}
  	}
  
  	return 0;
-@@ -3709,17 +3711,19 @@ ice_vfhw_mac_add(struct ice_vf *vf, struct virtchnl_ether_addr *vc_ether_addr)
- 	if (!is_valid_ether_addr(mac_addr))
- 		return;
- 
--	/* only allow legacy VF drivers to set the hardware MAC if it is zero
--	 * and allow new VF drivers to set the hardware MAC if the type was
--	 * correctly specified over VIRTCHNL
-+	/* only allow legacy VF drivers to set the device and hardware MAC if it
-+	 * is zero and allow new VF drivers to set the hardware MAC if the type
-+	 * was correctly specified over VIRTCHNL
- 	 */
- 	if ((ice_is_vc_addr_legacy(vc_ether_addr) &&
- 	     is_zero_ether_addr(vf->hw_lan_addr.addr)) ||
--	    ice_is_vc_addr_primary(vc_ether_addr))
-+	    ice_is_vc_addr_primary(vc_ether_addr)) {
-+		ether_addr_copy(vf->dev_lan_addr.addr, mac_addr);
- 		ether_addr_copy(vf->hw_lan_addr.addr, mac_addr);
-+	}
- 
--	/* hardware MAC is already set, but its possible that the VF driver sent
--	 * the VIRTCHNL_OP_ADD_ETH_ADDR message before the
-+	/* hardware and device MACs are already set, but its possible that the
-+	 * VF driver sent the VIRTCHNL_OP_ADD_ETH_ADDR message before the
- 	 * VIRTCHNL_OP_DEL_ETH_ADDR when trying to update its MAC, so save it
- 	 * away for the legacy VF driver case as it will be updated in the
- 	 * delete flow for this case
-@@ -3745,8 +3749,8 @@ ice_vc_add_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
- 	u8 *mac_addr = vc_ether_addr->addr;
- 	enum ice_status status;
- 
--	/* default unicast MAC already added */
--	if (ether_addr_equal(mac_addr, vf->hw_lan_addr.addr))
-+	/* device MAC already added */
-+	if (ether_addr_equal(mac_addr, vf->dev_lan_addr.addr))
- 		return 0;
- 
- 	if (is_unicast_ether_addr(mac_addr) && !ice_can_vf_change_mac(vf)) {
-@@ -3794,19 +3798,26 @@ ice_vfhw_mac_del(struct ice_vf *vf, struct virtchnl_ether_addr *vc_ether_addr)
- 	u8 *mac_addr = vc_ether_addr->addr;
- 
- 	if (!is_valid_ether_addr(mac_addr) ||
--	    !ether_addr_equal(vf->hw_lan_addr.addr, mac_addr))
-+	    !ether_addr_equal(vf->dev_lan_addr.addr, mac_addr))
- 		return;
- 
--	/* allow the hardware MAC to be repopulated in the add flow */
--	eth_zero_addr(vf->hw_lan_addr.addr);
-+	/* allow the device MAC to be repopulated in the add flow and don't
-+	 * clear the hardware MAC (i.e. hw_lan_addr.addr) here as that is meant
-+	 * to be persistent on VM reboot and across driver unload/load, which
-+	 * won't work if we clear the hardware MAC here
-+	 */
-+	eth_zero_addr(vf->dev_lan_addr.addr);
- 
- 	/* only update cached hardware MAC for legacy VF drivers on delete
- 	 * because we cannot guarantee order/type of MAC from the VF driver
- 	 */
- 	if (ice_is_vc_addr_legacy(vc_ether_addr) &&
--	    !ice_is_legacy_umac_expired(&vf->legacy_last_added_umac))
-+	    !ice_is_legacy_umac_expired(&vf->legacy_last_added_umac)) {
-+		ether_addr_copy(vf->dev_lan_addr.addr,
-+				vf->legacy_last_added_umac.addr);
- 		ether_addr_copy(vf->hw_lan_addr.addr,
- 				vf->legacy_last_added_umac.addr);
-+	}
- }
- 
- /**
-@@ -3824,7 +3835,7 @@ ice_vc_del_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
- 	enum ice_status status;
- 
- 	if (!ice_can_vf_change_mac(vf) &&
--	    ether_addr_equal(mac_addr, vf->hw_lan_addr.addr))
-+	    ether_addr_equal(vf->dev_lan_addr.addr, mac_addr))
- 		return 0;
- 
- 	status = ice_fltr_remove_mac(vsi, mac_addr, ICE_FWD_TO_VSI);
-@@ -4621,7 +4632,8 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
- 
- 	vf = &pf->vf[vf_id];
- 	/* nothing left to do, unicast MAC already set */
--	if (ether_addr_equal(vf->hw_lan_addr.addr, mac))
-+	if (ether_addr_equal(vf->dev_lan_addr.addr, mac) &&
-+	    ether_addr_equal(vf->hw_lan_addr.addr, mac))
- 		return 0;
- 
- 	ret = ice_check_vf_ready_for_cfg(vf);
-@@ -4637,6 +4649,7 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
- 	/* VF is notified of its new MAC via the PF's response to the
- 	 * VIRTCHNL_OP_GET_VF_RESOURCES message after the VF has been reset
- 	 */
-+	ether_addr_copy(vf->dev_lan_addr.addr, mac);
- 	ether_addr_copy(vf->hw_lan_addr.addr, mac);
- 	if (is_zero_ether_addr(mac)) {
- 		/* VF will send VIRTCHNL_OP_ADD_ETH_ADDR message with its MAC */
-@@ -4790,7 +4803,7 @@ void ice_print_vf_rx_mdd_event(struct ice_vf *vf)
- 
- 	dev_info(dev, "%d Rx Malicious Driver Detection events detected on PF %d VF %d MAC %pM. mdd-auto-reset-vfs=%s\n",
- 		 vf->mdd_rx_events.count, pf->hw.pf_id, vf->vf_id,
--		 vf->hw_lan_addr.addr,
-+		 vf->dev_lan_addr.addr,
- 		 test_bit(ICE_FLAG_MDD_AUTO_RESET_VF, pf->flags)
- 			  ? "on" : "off");
- }
-@@ -4834,7 +4847,7 @@ void ice_print_vfs_mdd_events(struct ice_pf *pf)
- 
- 			dev_info(dev, "%d Tx Malicious Driver Detection events detected on PF %d VF %d MAC %pM.\n",
- 				 vf->mdd_tx_events.count, hw->pf_id, i,
--				 vf->hw_lan_addr.addr);
-+				 vf->dev_lan_addr.addr);
- 		}
+diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+index faa7b8d96adb..b0576415ffdb 100644
+--- a/drivers/net/ethernet/intel/ice/ice_xsk.c
++++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+@@ -236,7 +236,7 @@ static int ice_qp_ena(struct ice_vsi *vsi, u16 q_idx)
+ 		xdp_ring->xsk_pool = ice_xsk_pool(xdp_ring);
  	}
- }
-@@ -4924,7 +4937,7 @@ ice_is_malicious_vf(struct ice_pf *pf, struct ice_rq_event_info *event,
  
- 			if (pf_vsi)
- 				dev_warn(dev, "VF MAC %pM on PF MAC %pM is generating asynchronous messages and may be overflowing the PF message queue. Please see the Adapter User Guide for more information\n",
--					 &vf->hw_lan_addr.addr[0],
-+					 &vf->dev_lan_addr.addr[0],
- 					 pf_vsi->netdev->dev_addr);
- 		}
+-	err = ice_setup_rx_ctx(rx_ring);
++	err = ice_vsi_cfg_rxq(rx_ring);
+ 	if (err)
+ 		goto free_buf;
  
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 91749c67129b..77ff0023f7be 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -83,6 +83,7 @@ struct ice_vf {
- 	struct ice_sw *vf_sw_id;	/* switch ID the VF VSIs connect to */
- 	struct virtchnl_version_info vf_ver;
- 	u32 driver_caps;		/* reported by VF driver */
-+	struct virtchnl_ether_addr dev_lan_addr;
- 	struct virtchnl_ether_addr hw_lan_addr;
- 	struct ice_time_mac legacy_last_added_umac;
- 	DECLARE_BITMAP(txq_ena, ICE_MAX_RSS_QS_PER_VF);
 -- 
 2.26.2
 
