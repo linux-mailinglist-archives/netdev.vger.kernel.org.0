@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AD9339E55E
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 19:28:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2B0939E562
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 19:28:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231197AbhFGRaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 13:30:14 -0400
-Received: from out28-194.mail.aliyun.com ([115.124.28.194]:34536 "EHLO
-        out28-194.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbhFGRaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 13:30:12 -0400
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.8995042|0.7245346;CH=green;DM=|SPAM|false|;DS=CONTINUE|ham_regular_dialog|0.0829513-0.00479038-0.912258;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047207;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=20;RT=20;SR=0;TI=SMTPD_---.KP.FCzB_1623086888;
+        id S231517AbhFGRaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 13:30:17 -0400
+Received: from out28-97.mail.aliyun.com ([115.124.28.97]:52284 "EHLO
+        out28-97.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230522AbhFGRaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 13:30:15 -0400
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07436282|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0180648-0.000191969-0.981743;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047202;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=20;RT=20;SR=0;TI=SMTPD_---.KP.FCzB_1623086888;
 Received: from zhouyanjie-virtual-machine.localdomain(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.KP.FCzB_1623086888)
           by smtp.aliyun-inc.com(10.147.40.44);
-          Tue, 08 Jun 2021 01:28:17 +0800
+          Tue, 08 Jun 2021 01:28:18 +0800
 From:   =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0=20=28Zhou=20Yanjie=29?= 
         <zhouyanjie@wanyeetech.com>
 To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
@@ -27,9 +27,9 @@ Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
         aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
         sihui.liu@ingenic.com, jun.jiang@ingenic.com,
         sernia.zhou@foxmail.com, paul@crapouillou.net
-Subject: [PATCH 1/2] dt-bindings: dwmac: Add bindings for new Ingenic SoCs.
-Date:   Tue,  8 Jun 2021 01:27:46 +0800
-Message-Id: <1623086867-119039-2-git-send-email-zhouyanjie@wanyeetech.com>
+Subject: [PATCH 2/2] net: stmmac: Add Ingenic SoCs MAC support.
+Date:   Tue,  8 Jun 2021 01:27:47 +0800
+Message-Id: <1623086867-119039-3-git-send-email-zhouyanjie@wanyeetech.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1623086867-119039-1-git-send-email-zhouyanjie@wanyeetech.com>
 References: <1623086867-119039-1-git-send-email-zhouyanjie@wanyeetech.com>
@@ -40,54 +40,445 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the dwmac bindings for the JZ4775 SoC, the X1000 SoC,
-the X1600 SoC, the X1830 SoC and the X2000 SoC from Ingenic.
+Add support for Ingenic SoC MAC glue layer support for the stmmac
+device driver. This driver is used on for the MAC ethernet controller
+found in the JZ4775 SoC, the X1000 SoC, the X1600 SoC, the X1830 SoC,
+and the X2000 SoC.
 
 Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
 ---
- Documentation/devicetree/bindings/net/snps,dwmac.yaml | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/Kconfig        |  16 +-
+ drivers/net/ethernet/stmicro/stmmac/Makefile       |   1 +
+ .../net/ethernet/stmicro/stmmac/dwmac-ingenic.c    | 367 +++++++++++++++++++++
+ 3 files changed, 382 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
 
-diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 2edd8be..9c0ce92 100644
---- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -56,6 +56,11 @@ properties:
-         - amlogic,meson8m2-dwmac
-         - amlogic,meson-gxbb-dwmac
-         - amlogic,meson-axg-dwmac
-+        - ingenic,jz4775-mac
-+        - ingenic,x1000-mac
-+        - ingenic,x1600-mac
-+        - ingenic,x1830-mac
-+        - ingenic,x2000-mac
-         - rockchip,px30-gmac
-         - rockchip,rk3128-gmac
-         - rockchip,rk3228-gmac
-@@ -310,6 +315,11 @@ allOf:
-               - allwinner,sun8i-r40-emac
-               - allwinner,sun8i-v3s-emac
-               - allwinner,sun50i-a64-emac
-+              - ingenic,jz4775-mac
-+              - ingenic,x1000-mac
-+              - ingenic,x1600-mac
-+              - ingenic,x1830-mac
-+              - ingenic,x2000-mac
-               - snps,dwxgmac
-               - snps,dwxgmac-2.10
-               - st,spear600-gmac
-@@ -353,6 +363,11 @@ allOf:
-               - allwinner,sun8i-r40-emac
-               - allwinner,sun8i-v3s-emac
-               - allwinner,sun50i-a64-emac
-+              - ingenic,jz4775-mac
-+              - ingenic,x1000-mac
-+              - ingenic,x1600-mac
-+              - ingenic,x1830-mac
-+              - ingenic,x2000-mac
-               - snps,dwmac-4.00
-               - snps,dwmac-4.10a
-               - snps,dwmac-4.20a
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+index 7737e4d0..fb58537 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
++++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+@@ -66,6 +66,18 @@ config DWMAC_ANARION
+ 
+ 	  This selects the Anarion SoC glue layer support for the stmmac driver.
+ 
++config DWMAC_INGENIC
++	tristate "Ingenic MAC support"
++	default MACH_INGENIC
++	depends on OF && HAS_IOMEM && (MACH_INGENIC || COMPILE_TEST)
++	select MFD_SYSCON
++	help
++	  Support for ethernet controller on Ingenic SoCs.
++
++	  This selects Ingenic SoCs glue layer support for the stmmac
++	  device driver. This driver is used on for the Ingenic SoCs
++	  MAC ethernet controller.
++
+ config DWMAC_IPQ806X
+ 	tristate "QCA IPQ806x DWMAC support"
+ 	default ARCH_QCOM
+@@ -129,7 +141,7 @@ config DWMAC_QCOM_ETHQOS
+ 
+ config DWMAC_ROCKCHIP
+ 	tristate "Rockchip dwmac support"
+-	default ARCH_ROCKCHIP
++	default MACH_ROCKCHIP
+ 	depends on OF && (ARCH_ROCKCHIP || COMPILE_TEST)
+ 	select MFD_SYSCON
+ 	help
+@@ -164,7 +176,7 @@ config DWMAC_STI
+ 
+ config DWMAC_STM32
+ 	tristate "STM32 DWMAC support"
+-	default ARCH_STM32
++	default MACH_STM32
+ 	depends on OF && HAS_IOMEM && (ARCH_STM32 || COMPILE_TEST)
+ 	select MFD_SYSCON
+ 	help
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
+index f2e478b..6471f93 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Makefile
++++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
+@@ -14,6 +14,7 @@ stmmac-$(CONFIG_STMMAC_SELFTESTS) += stmmac_selftests.o
+ # Ordering matters. Generic driver must be last.
+ obj-$(CONFIG_STMMAC_PLATFORM)	+= stmmac-platform.o
+ obj-$(CONFIG_DWMAC_ANARION)	+= dwmac-anarion.o
++obj-$(CONFIG_DWMAC_INGENIC)	+= dwmac-ingenic.o
+ obj-$(CONFIG_DWMAC_IPQ806X)	+= dwmac-ipq806x.o
+ obj-$(CONFIG_DWMAC_LPC18XX)	+= dwmac-lpc18xx.o
+ obj-$(CONFIG_DWMAC_MEDIATEK)	+= dwmac-mediatek.o
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
+new file mode 100644
+index 00000000..8be8caa
+--- /dev/null
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
+@@ -0,0 +1,367 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * dwmac-ingenic.c - Ingenic SoCs DWMAC specific glue layer
++ *
++ * Copyright (c) 2020 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
++ */
++
++#include <linux/bitfield.h>
++#include <linux/clk.h>
++#include <linux/kernel.h>
++#include <linux/mfd/syscon.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/of_net.h>
++#include <linux/phy.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/slab.h>
++#include <linux/stmmac.h>
++
++#include "stmmac_platform.h"
++
++#define MACPHYC_TXCLK_SEL_MASK		GENMASK(31, 31)
++#define MACPHYC_TXCLK_SEL_OUTPUT	0x1
++#define MACPHYC_TXCLK_SEL_INPUT		0x0
++#define MACPHYC_MODE_SEL_MASK		GENMASK(31, 31)
++#define MACPHYC_MODE_SEL_RMII		0x0
++#define MACPHYC_TX_SEL_MASK			GENMASK(19, 19)
++#define MACPHYC_TX_SEL_ORIGIN		0x0
++#define MACPHYC_TX_SEL_DELAY		0x1
++#define MACPHYC_TX_DELAY_MASK		GENMASK(18, 12)
++#define MACPHYC_TX_DELAY_63_UNIT	0x3e
++#define MACPHYC_RX_SEL_MASK			GENMASK(11, 11)
++#define MACPHYC_RX_SEL_ORIGIN		0x0
++#define MACPHYC_RX_SEL_DELAY		0x1
++#define MACPHYC_RX_DELAY_MASK		GENMASK(10, 4)
++#define MACPHYC_SOFT_RST_MASK		GENMASK(3, 3)
++#define MACPHYC_PHY_INFT_MASK		GENMASK(2, 0)
++#define MACPHYC_PHY_INFT_RMII		0x4
++#define MACPHYC_PHY_INFT_RGMII		0x1
++#define MACPHYC_PHY_INFT_GMII		0x0
++#define MACPHYC_PHY_INFT_MII		0x0
++
++enum ingenic_mac_version {
++	ID_JZ4775,
++	ID_X1000,
++	ID_X1600,
++	ID_X1830,
++	ID_X2000,
++};
++
++struct ingenic_mac {
++	const struct ingenic_soc_info *soc_info;
++	struct device *dev;
++	struct regmap *regmap;
++};
++
++struct ingenic_soc_info {
++	enum ingenic_mac_version version;
++	u32 mask;
++
++	int (*set_mode)(struct plat_stmmacenet_data *plat_dat);
++	int (*suspend)(struct ingenic_mac *mac);
++	void (*resume)(struct ingenic_mac *mac);
++};
++
++static int ingenic_mac_init(struct plat_stmmacenet_data *plat_dat)
++{
++	struct ingenic_mac *mac = plat_dat->bsp_priv;
++	int ret;
++
++	if (mac->soc_info->set_mode) {
++		ret = mac->soc_info->set_mode(plat_dat);
++		if (ret)
++			return ret;
++	}
++
++	return ret;
++}
++
++static int jz4775_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
++{
++	struct ingenic_mac *mac = plat_dat->bsp_priv;
++	int val;
++
++	switch (plat_dat->interface) {
++	case PHY_INTERFACE_MODE_MII:
++		val = FIELD_PREP(MACPHYC_TXCLK_SEL_MASK, MACPHYC_TXCLK_SEL_INPUT) |
++			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_MII);
++		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_MII\n");
++		break;
++
++	case PHY_INTERFACE_MODE_GMII:
++		val = FIELD_PREP(MACPHYC_TXCLK_SEL_MASK, MACPHYC_TXCLK_SEL_INPUT) |
++			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_GMII);
++		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_GMII\n");
++		break;
++
++	case PHY_INTERFACE_MODE_RMII:
++		val = FIELD_PREP(MACPHYC_TXCLK_SEL_MASK, MACPHYC_TXCLK_SEL_INPUT) |
++			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RMII);
++		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_RMII\n");
++		break;
++
++	case PHY_INTERFACE_MODE_RGMII:
++		val = FIELD_PREP(MACPHYC_TXCLK_SEL_MASK, MACPHYC_TXCLK_SEL_INPUT) |
++			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
++		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII\n");
++		break;
++
++	default:
++		dev_err(mac->dev, "unsupported interface %d", plat_dat->interface);
++		return -EINVAL;
++	}
++
++	/* Update MAC PHY control register */
++	return regmap_update_bits(mac->regmap, 0, mac->soc_info->mask, val);
++}
++
++static int x1000_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
++{
++	struct ingenic_mac *mac = plat_dat->bsp_priv;
++	int val;
++
++	switch (plat_dat->interface) {
++	case PHY_INTERFACE_MODE_RMII:
++		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_RMII\n");
++		break;
++
++	default:
++		dev_err(mac->dev, "unsupported interface %d", plat_dat->interface);
++		return -EINVAL;
++	}
++
++	/* Update MAC PHY control register */
++	return regmap_update_bits(mac->regmap, 0, mac->soc_info->mask, val);
++}
++
++static int x1600_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
++{
++	struct ingenic_mac *mac = plat_dat->bsp_priv;
++	int val;
++
++	switch (plat_dat->interface) {
++	case PHY_INTERFACE_MODE_RMII:
++		val = FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RMII);
++		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_RMII\n");
++		break;
++
++	default:
++		dev_err(mac->dev, "unsupported interface %d", plat_dat->interface);
++		return -EINVAL;
++	}
++
++	/* Update MAC PHY control register */
++	return regmap_update_bits(mac->regmap, 0, mac->soc_info->mask, val);
++}
++
++static int x1830_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
++{
++	struct ingenic_mac *mac = plat_dat->bsp_priv;
++	int val;
++
++	switch (plat_dat->interface) {
++	case PHY_INTERFACE_MODE_RMII:
++		val = FIELD_PREP(MACPHYC_MODE_SEL_MASK, MACPHYC_MODE_SEL_RMII) |
++			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RMII);
++		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_RMII\n");
++		break;
++
++	default:
++		dev_err(mac->dev, "unsupported interface %d", plat_dat->interface);
++		return -EINVAL;
++	}
++
++	/* Update MAC PHY control register */
++	return regmap_update_bits(mac->regmap, 0, mac->soc_info->mask, val);
++}
++
++static int x2000_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
++{
++	struct ingenic_mac *mac = plat_dat->bsp_priv;
++	int val;
++
++	switch (plat_dat->interface) {
++	case PHY_INTERFACE_MODE_RMII:
++		val = FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN) |
++			  FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN) |
++			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RMII);
++		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_RMII\n");
++		break;
++
++	case PHY_INTERFACE_MODE_RGMII:
++		val = FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_DELAY) |
++			  FIELD_PREP(MACPHYC_TX_DELAY_MASK, MACPHYC_TX_DELAY_63_UNIT) |
++			  FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN) |
++			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
++		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII\n");
++		break;
++
++	default:
++		dev_err(mac->dev, "unsupported interface %d", plat_dat->interface);
++		return -EINVAL;
++	}
++
++	/* Update MAC PHY control register */
++	return regmap_update_bits(mac->regmap, 0, mac->soc_info->mask, val);
++}
++
++static int ingenic_mac_probe(struct platform_device *pdev)
++{
++	struct plat_stmmacenet_data *plat_dat;
++	struct stmmac_resources stmmac_res;
++	struct ingenic_mac *mac;
++	const struct ingenic_soc_info *data;
++	int ret;
++
++	ret = stmmac_get_platform_resources(pdev, &stmmac_res);
++	if (ret)
++		return ret;
++
++	plat_dat = stmmac_probe_config_dt(pdev, stmmac_res.mac);
++	if (IS_ERR(plat_dat))
++		return PTR_ERR(plat_dat);
++
++	mac = devm_kzalloc(&pdev->dev, sizeof(*mac), GFP_KERNEL);
++	if (!mac) {
++		ret = -ENOMEM;
++		goto err_remove_config_dt;
++	}
++
++	data = of_device_get_match_data(&pdev->dev);
++	if (!data) {
++		dev_err(&pdev->dev, "no of match data provided\n");
++		ret = -EINVAL;
++		goto err_remove_config_dt;
++	}
++
++	/* Get MAC PHY control register */
++	mac->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node, "mode-reg");
++	if (IS_ERR(mac->regmap)) {
++		pr_err("%s: failed to get syscon regmap\n", __func__);
++		goto err_remove_config_dt;
++	}
++
++	mac->soc_info = data;
++	mac->dev = &pdev->dev;
++
++	plat_dat->bsp_priv = mac;
++
++	ret = ingenic_mac_init(plat_dat);
++	if (ret)
++		goto err_remove_config_dt;
++
++	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
++	if (ret)
++		goto err_remove_config_dt;
++
++	return 0;
++
++err_remove_config_dt:
++	stmmac_remove_config_dt(pdev, plat_dat);
++
++	return ret;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int ingenic_mac_suspend(struct device *dev)
++{
++	struct net_device *ndev = dev_get_drvdata(dev);
++	struct stmmac_priv *priv = netdev_priv(ndev);
++	struct ingenic_mac *mac = priv->plat->bsp_priv;
++
++	int ret;
++
++	ret = stmmac_suspend(dev);
++
++	if (mac->soc_info->suspend)
++		ret = mac->soc_info->suspend(mac);
++
++	return ret;
++}
++
++static int ingenic_mac_resume(struct device *dev)
++{
++	struct net_device *ndev = dev_get_drvdata(dev);
++	struct stmmac_priv *priv = netdev_priv(ndev);
++	struct ingenic_mac *mac = priv->plat->bsp_priv;
++	int ret;
++
++	if (mac->soc_info->resume)
++		mac->soc_info->resume(mac);
++
++	ret = ingenic_mac_init(priv->plat);
++	if (ret)
++		return ret;
++
++	ret = stmmac_resume(dev);
++
++	return ret;
++}
++#endif /* CONFIG_PM_SLEEP */
++
++static SIMPLE_DEV_PM_OPS(ingenic_mac_pm_ops,
++	ingenic_mac_suspend, ingenic_mac_resume);
++
++static struct ingenic_soc_info jz4775_soc_info = {
++	.version = ID_JZ4775,
++	.mask = MACPHYC_TXCLK_SEL_MASK | MACPHYC_SOFT_RST_MASK | MACPHYC_PHY_INFT_MASK,
++
++	.set_mode = jz4775_mac_set_mode,
++};
++
++static struct ingenic_soc_info x1000_soc_info = {
++	.version = ID_X1000,
++	.mask = MACPHYC_SOFT_RST_MASK,
++
++	.set_mode = x1000_mac_set_mode,
++};
++
++static struct ingenic_soc_info x1600_soc_info = {
++	.version = ID_X1600,
++	.mask = MACPHYC_SOFT_RST_MASK | MACPHYC_PHY_INFT_MASK,
++
++	.set_mode = x1600_mac_set_mode,
++};
++
++static struct ingenic_soc_info x1830_soc_info = {
++	.version = ID_X1830,
++	.mask = MACPHYC_MODE_SEL_MASK | MACPHYC_SOFT_RST_MASK | MACPHYC_PHY_INFT_MASK,
++
++	.set_mode = x1830_mac_set_mode,
++};
++
++static struct ingenic_soc_info x2000_soc_info = {
++	.version = ID_X2000,
++	.mask = MACPHYC_TX_SEL_MASK | MACPHYC_TX_DELAY_MASK | MACPHYC_RX_SEL_MASK |
++			MACPHYC_RX_DELAY_MASK | MACPHYC_SOFT_RST_MASK | MACPHYC_PHY_INFT_MASK,
++
++	.set_mode = x2000_mac_set_mode,
++};
++
++static const struct of_device_id ingenic_mac_of_matches[] = {
++	{ .compatible = "ingenic,jz4775-mac", .data = &jz4775_soc_info },
++	{ .compatible = "ingenic,x1000-mac", .data = &x1000_soc_info },
++	{ .compatible = "ingenic,x1600-mac", .data = &x1600_soc_info },
++	{ .compatible = "ingenic,x1830-mac", .data = &x1830_soc_info },
++	{ .compatible = "ingenic,x2000-mac", .data = &x2000_soc_info },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ingenic_mac_of_matches);
++
++static struct platform_driver ingenic_mac_driver = {
++	.probe		= ingenic_mac_probe,
++	.remove		= stmmac_pltfr_remove,
++	.driver		= {
++		.name	= "ingenic-mac",
++		.pm		= &ingenic_mac_pm_ops,
++		.of_match_table = ingenic_mac_of_matches,
++	},
++};
++module_platform_driver(ingenic_mac_driver);
++
++MODULE_AUTHOR("周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>");
++MODULE_DESCRIPTION("Ingenic SoCs DWMAC specific glue layer");
++MODULE_LICENSE("GPL v2");
 -- 
 2.7.4
 
