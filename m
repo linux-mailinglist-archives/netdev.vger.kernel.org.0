@@ -2,204 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BC0839E955
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 00:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DADDF39E96B
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 00:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231410AbhFGWMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 18:12:02 -0400
-Received: from mail-pj1-f46.google.com ([209.85.216.46]:36550 "EHLO
-        mail-pj1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231184AbhFGWMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 18:12:02 -0400
-Received: by mail-pj1-f46.google.com with SMTP id d5-20020a17090ab305b02901675357c371so12489610pjr.1;
-        Mon, 07 Jun 2021 15:09:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=S4r4ZMmFGJcBB3JQm3vcl+jS+Ow4hR8FEe4q6UtWXKE=;
-        b=sFpAKTPEqZfpoRnvHmkwyzKd8c09qRYgEHV2VvvZVor1yZW/qR8dEosTRj2a/7JblR
-         Obq9+6+6XmgXBVNZ+cpuJ29G117OjoUdYuPvfGob6WNNiV0rYxuuhu1x+PmOu/cUUQqF
-         ekiPmV2GbkZv9l4QEzfnIvCEpCL789a5E5xGFePcBIx1y8vqq/IYz9tfVQOCYb6Jtnh3
-         l3qTn92ZKNnSNdcQw9x9FZ6wiYR7MYS/OuOgXC92+sFzr1xVs17j6KdGxmnswnPPcaGe
-         WnfQ+6vVa2goYe8p/ofQIGtScUDI3ekF2N3AV+cDOsoqECxYiRDCKUuM0uzo3JZPKhe2
-         cQkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=S4r4ZMmFGJcBB3JQm3vcl+jS+Ow4hR8FEe4q6UtWXKE=;
-        b=sS4qP5E4gYeL1BKGGOdMtnYs/dNbDBqXnmogrqk+/B+9BAP+owZfxSHopKf5y8M8Rr
-         9mZkefN1BQ97nPsC1xw4zPzBwdYM2WBLtJmgNDZ0qKkZCI4EZTq4LbAPb9dNVNStdd8b
-         fdi+7VqHmrLV/UjmgJToiIqTw3MkSke9dfEruGiThGITC2k4lsaIt/rOR+IYsHx9S5KO
-         wMzIuCaEdQeqwy7O9DHIdV1EAwuhH+yOUzpjG4lHcizMpBhcZK/7PRKcqAI2pPZgop7X
-         HRFQYfKRNILUM1Z/WSo51QCS0XVfYjnClB0d0gRqQJg/8mjPjOPf7FKbpRIkzBzI/h+n
-         jeeA==
-X-Gm-Message-State: AOAM533nVMG4xpQ+iDBIBAUMP6AU3QiaLZH5gftjZbsfLP1DCqAlaVnC
-        3NI2nETv1lYCXKGLahRI/mFm/TiLnYs=
-X-Google-Smtp-Source: ABdhPJxXPFfEMLA0nHUzknXp5XZjopH2KlJ3NK8ld6PPf19u0JCwzHEGxRXML2pTxHvyby6hj+DZpw==
-X-Received: by 2002:a17:90a:fd05:: with SMTP id cv5mr21890580pjb.24.1623103733228;
-        Mon, 07 Jun 2021 15:08:53 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id h8sm9144845pfn.0.2021.06.07.15.08.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Jun 2021 15:08:52 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel@vger.kernel.org (open list),
-        Matthew Hagan <mnhagan88@gmail.com>
-Subject: [PATCH net-next 2/2] net: dsa: Remove bridge PVID untagging
-Date:   Mon,  7 Jun 2021 15:08:43 -0700
-Message-Id: <20210607220843.3799414-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210607220843.3799414-1-f.fainelli@gmail.com>
-References: <20210607220843.3799414-1-f.fainelli@gmail.com>
+        id S231261AbhFGWSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 18:18:21 -0400
+Received: from mail-sn1anam02on2066.outbound.protection.outlook.com ([40.107.96.66]:19465
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231184AbhFGWSU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 18:18:20 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ad6niik3hXElfwnJtPlgKcwgtUl9TYl44ouemWm5+76vSLj91FkNEikldkovlsp9Ye/dlaisKj07Fu3jA70UUbluEuSQdvfj/WL4sABoqDB3wgADEool7mGJw2KD84mS0L5J1BnjjRbLhwWzf59JXlkvqDjBW9aIz7p9VYT06B92ya81UPAkzU6XuUmZDyDXJLB5U9BN63eVtWLQN8pG1P7CyaJt/Hsg572t429m25MeXDKwbEHnso3eR6ah2yMPuAVLorHkLtANF3czcpfPNPBpYYdvImgbxzWOB4FSZh1i3KZ9z6jo2Vga/RO0o9J/RtHO4r+ImcTbnSqczvk8SQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NMMfsfD4VXvsTn2OjayVDelvTxn1Qu7428HXv1a3qqY=;
+ b=cwTTPqAAeRbBw8gb9wTSgpz3WGekQ0fWiI3Y5piinsx/S2cO9rDC34s6zDbR2G2Cy08zilQPSvrnG0XaVga4WaFqc4IijRFBVcLhcWuuUA9gSkIEmYNUVjmh6DC+P/7coY1RHQV2Aj/F9cW8xPmSxz24rBtzKDYMHIS4QcRasqHNJ4gq4jPnSMDGKhd7EZU7HEGm78kCozuejFW9KKES8rHKQr16TJtAYCrZ5x4i9NeWknuB8ZTTDRnAU6JGhvGYeLbWzxBe9m9SKxygMdihIV7SWOsYNogyRsazmMEmygJnu5VT6GMN2cplPKFUKB8nwJXf2FVkikf11TD22SIDsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NMMfsfD4VXvsTn2OjayVDelvTxn1Qu7428HXv1a3qqY=;
+ b=UHN9FhuhVcKyUYRIU9wa4/niYD+kjjQEAygK6/ZA92a0oAJfHcwRNuLdrqtRECLzjwfiepPpKpATXUN4ZCjl/VKsvWIEyz/S1Ci6SGSo6zc3dtm+CqnuqFbvBJoz3b3bOlwrwa6VQwFZguQChyrrAAmlZu4Y3Zz7BoenWQM1RCvuIq7XtMvYERmLp1zhd2ZMYaQYj75vfOcukPwmdcb5mHkxtj4b9NayEPsOCjD8CKZKmcs2hO9wXrVF6Y/CWD7yLOxpuWHCG2MtFf+feW2oKxOdII/1XoPCB2p7kMyBISsCfbyfn3R5m5+UV+2eiR3oJhjFPfL2xklA7APVOCAJYw==
+Received: from MW4PR04CA0325.namprd04.prod.outlook.com (2603:10b6:303:82::30)
+ by BYAPR12MB3336.namprd12.prod.outlook.com (2603:10b6:a03:d7::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Mon, 7 Jun
+ 2021 22:16:27 +0000
+Received: from CO1NAM11FT054.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:82:cafe::5f) by MW4PR04CA0325.outlook.office365.com
+ (2603:10b6:303:82::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.22 via Frontend
+ Transport; Mon, 7 Jun 2021 22:16:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT054.mail.protection.outlook.com (10.13.174.70) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4195.22 via Frontend Transport; Mon, 7 Jun 2021 22:16:27 +0000
+Received: from [10.2.55.16] (172.20.187.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Jun
+ 2021 22:16:26 +0000
+Subject: Re: [PATCH net] neighbour: allow NUD_NOARP entries to be forced GCed
+To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>
+CC:     Kasper Dupont <kasperd@gjkwv.06.feb.2021.kasperd.net>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+References: <20210607173530.46493-1-dsahern@kernel.org>
+ <c704333a-e326-57ba-78e7-1e7111f1e79c@nvidia.com>
+ <080b469b-1fb2-dcb6-1a95-7c02918e97c4@gmail.com>
+From:   Roopa Prabhu <roopa@nvidia.com>
+Message-ID: <e114a16f-5cb2-472a-e790-a84311481251@nvidia.com>
+Date:   Mon, 7 Jun 2021 15:16:22 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <080b469b-1fb2-dcb6-1a95-7c02918e97c4@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: de0d2858-2637-49e7-a119-08d92a01e4d8
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3336:
+X-Microsoft-Antispam-PRVS: <BYAPR12MB3336629D5D5D65E130DFDE24CB389@BYAPR12MB3336.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hILeK2/wu8tFR6f7GuQopKL1ePCxrtLMYUd2BD11/wOTdjltl3SWoxCtHt+Pb99mbZNrivsdL39SJg9YbupQYTx512119r1Y3qWZCt/iWiKRjuY5b92k4MuZb2HqVAnycGXn+6xEFa84ltjNxkME5mUpscd6x9nE5X2YobO/oXnGUdGCPAfApDP3caHCdHuoGAXEpbm2eKoj8T7gIrjgzUBEnzWKdXvSYt+hgP6oWWJFQ86xP1WNHkWh308h9TOKILR+vbtbKv50vNmxUc2LXakmE0ii+iiDB/OMpJImV0iKYmY3UmuVGD/9M6bIyAzBHwBB6Vm7NTqR6FmpdkBp1Pjj19BHb3wEf8zVnavK9w+kJsQbLRU/6pBOOxF/QXpZUj4sXmvupbyt36sa/A62gHkKC0ygu16P69b2FN6L8NXsS8dpha6/2Gb/Bn4ulwhDwHO//OP2KCTxNRM+Eks6ZIyh3f7hZUo53aaeec2ktm++TvIBDERxwCzTF8fXb/CL5rPxV/OvW5s/tXAJQUn2LbSw35gpbBT1csl7mrXJtiZKjTggOgctyF+7CV51lhro7uSjvrmlw5/M8l0mB6/5YMtMwvZc6da3Vz1tfXGAUNvbvCCUe5JHJLG65MuKYQMT6zDI1bdpUDF9EhwlIm83jo6HPdQrbVR9V0dT7qTlj9aa99EJMeaDBLCdJnggbbJs
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(376002)(39860400002)(346002)(396003)(36840700001)(46966006)(8936002)(70586007)(7636003)(26005)(82740400003)(8676002)(83380400001)(70206006)(53546011)(356005)(31686004)(16576012)(36906005)(5660300002)(316002)(6666004)(36860700001)(2906002)(47076005)(36756003)(110136005)(54906003)(2616005)(86362001)(31696002)(82310400003)(478600001)(336012)(426003)(186003)(16526019)(4326008)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2021 22:16:27.1234
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: de0d2858-2637-49e7-a119-08d92a01e4d8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT054.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3336
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that the only user of the bridge PVID untagging code is no longer
-forcing the PVID untagged VLAN configuration to be PVID egress tagged
-for the CPU, we no longer need this support code to pop the VLAN tag
-automatically.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/b53/b53_common.c |  1 -
- include/net/dsa.h                |  8 -----
- net/dsa/dsa.c                    |  9 -----
- net/dsa/dsa_priv.h               | 59 --------------------------------
- 4 files changed, 77 deletions(-)
+On 6/7/21 3:04 PM, David Ahern wrote:
+> On 6/7/21 12:53 PM, Roopa Prabhu wrote:
+>> On 6/7/21 10:35 AM, David Ahern wrote:
+>>> IFF_POINTOPOINT interfaces use NUD_NOARP entries for IPv6. It's
+>>> possible to
+>>> fill up the neighbour table with enough entries that it will overflow for
+>>> valid connections after that.
+>>>
+>>> This behaviour is more prevalent after commit 58956317c8de ("neighbor:
+>>> Improve garbage collection") is applied, as it prevents removal from
+>>> entries that are not NUD_FAILED, unless they are more than 5s old.
+>>>
+>>> Fixes: 58956317c8de (neighbor: Improve garbage collection)
+>>> Reported-by: Kasper Dupont <kasperd@gjkwv.06.feb.2021.kasperd.net>
+>>> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+>>> Signed-off-by: David Ahern <dsahern@kernel.org>
+>>> ---
+>>> rebased to net tree
+>>
+>> There are other use-cases  that use NUD_NOARP as static neighbour
+>> entries which should be exempt from forced gc.
+>>
+>> for example when qualified by NTF_EXT_LEARNED for the E-VPN use-case.
+>>
+>> The check in your patch below should exclude NTF_EXT_LEARNED entries.
+>>
+>>
+>> (unrelated to the neighbour code ,  but bridge driver also uses
+>> NUD_NOARP for static entries)
+>>
+>>
+> Maybe I misunderstand your comment: forced_gc does not apply to static
+> entries; those were moved to a separate list to avoid walking them.
+>
+I think you are right. so just to confirm, NUD_NOARP + NTF_EXT_LEARNED 
+will never be included in the list for forced_gc and hence not affected 
+by your patch ?
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 56e3b42ec28c..dc43dadd6d31 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -2660,7 +2660,6 @@ struct b53_device *b53_switch_alloc(struct device *base,
- 	dev->priv = priv;
- 	dev->ops = ops;
- 	ds->ops = &b53_switch_ops;
--	ds->untag_bridge_pvid = true;
- 	dev->vlan_enabled = true;
- 	/* Let DSA handle the case were multiple bridges span the same switch
- 	 * device and different VLAN awareness settings are requested, which
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index e1a2610a0e06..216443820a7e 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -355,14 +355,6 @@ struct dsa_switch {
- 	 */
- 	bool			configure_vlan_while_not_filtering;
- 
--	/* If the switch driver always programs the CPU port as egress tagged
--	 * despite the VLAN configuration indicating otherwise, then setting
--	 * @untag_bridge_pvid will force the DSA receive path to pop the bridge's
--	 * default_pvid VLAN tagged frames to offer a consistent behavior
--	 * between a vlan_filtering=0 and vlan_filtering=1 bridge device.
--	 */
--	bool			untag_bridge_pvid;
--
- 	/* Let DSA manage the FDB entries towards the CPU, based on the
- 	 * software bridge database.
- 	 */
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index 84cad1be9ce4..daac329b6e93 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -260,15 +260,6 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
- 
- 	p = netdev_priv(skb->dev);
- 
--	if (unlikely(cpu_dp->ds->untag_bridge_pvid)) {
--		nskb = dsa_untag_bridge_pvid(skb);
--		if (!nskb) {
--			kfree_skb(skb);
--			return 0;
--		}
--		skb = nskb;
--	}
--
- 	dev_sw_netstats_rx_add(skb->dev, skb->len);
- 
- 	if (dsa_skb_defer_rx_timestamp(p, skb))
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 92282de54230..08d915d951b0 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -290,65 +290,6 @@ dsa_slave_to_master(const struct net_device *dev)
- 	return dp->cpu_dp->master;
- }
- 
--/* If under a bridge with vlan_filtering=0, make sure to send pvid-tagged
-- * frames as untagged, since the bridge will not untag them.
-- */
--static inline struct sk_buff *dsa_untag_bridge_pvid(struct sk_buff *skb)
--{
--	struct dsa_port *dp = dsa_slave_to_port(skb->dev);
--	struct net_device *br = dp->bridge_dev;
--	struct net_device *dev = skb->dev;
--	struct net_device *upper_dev;
--	u16 vid, pvid, proto;
--	int err;
--
--	if (!br || br_vlan_enabled(br))
--		return skb;
--
--	err = br_vlan_get_proto(br, &proto);
--	if (err)
--		return skb;
--
--	/* Move VLAN tag from data to hwaccel */
--	if (!skb_vlan_tag_present(skb) && skb->protocol == htons(proto)) {
--		skb = skb_vlan_untag(skb);
--		if (!skb)
--			return NULL;
--	}
--
--	if (!skb_vlan_tag_present(skb))
--		return skb;
--
--	vid = skb_vlan_tag_get_id(skb);
--
--	/* We already run under an RCU read-side critical section since
--	 * we are called from netif_receive_skb_list_internal().
--	 */
--	err = br_vlan_get_pvid_rcu(dev, &pvid);
--	if (err)
--		return skb;
--
--	if (vid != pvid)
--		return skb;
--
--	/* The sad part about attempting to untag from DSA is that we
--	 * don't know, unless we check, if the skb will end up in
--	 * the bridge's data path - br_allowed_ingress() - or not.
--	 * For example, there might be an 8021q upper for the
--	 * default_pvid of the bridge, which will steal VLAN-tagged traffic
--	 * from the bridge's data path. This is a configuration that DSA
--	 * supports because vlan_filtering is 0. In that case, we should
--	 * definitely keep the tag, to make sure it keeps working.
--	 */
--	upper_dev = __vlan_find_dev_deep_rcu(br, htons(proto), vid);
--	if (upper_dev)
--		return skb;
--
--	__vlan_hwaccel_clear_tag(skb);
--
--	return skb;
--}
--
- /* switch.c */
- int dsa_switch_register_notifier(struct dsa_switch *ds);
- void dsa_switch_unregister_notifier(struct dsa_switch *ds);
--- 
-2.25.1
+if yes, I am good.
+
+
 
