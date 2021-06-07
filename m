@@ -2,115 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5596839D23F
-	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 01:38:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8899039D265
+	for <lists+netdev@lfdr.de>; Mon,  7 Jun 2021 02:39:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230177AbhFFXko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Jun 2021 19:40:44 -0400
-Received: from mail-pl1-f175.google.com ([209.85.214.175]:37748 "EHLO
-        mail-pl1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbhFFXkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 19:40:43 -0400
-Received: by mail-pl1-f175.google.com with SMTP id u7so7646421plq.4;
-        Sun, 06 Jun 2021 16:38:40 -0700 (PDT)
+        id S230128AbhFGAk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Jun 2021 20:40:57 -0400
+Received: from mail-pg1-f178.google.com ([209.85.215.178]:33653 "EHLO
+        mail-pg1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229894AbhFGAkz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Jun 2021 20:40:55 -0400
+Received: by mail-pg1-f178.google.com with SMTP id e20so593954pgg.0;
+        Sun, 06 Jun 2021 17:38:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=46M8XUzBewi0sCNBK0KRAjsw23b8WmSZifhRY13uplo=;
-        b=IxSTG/9CxihA3FV+Rvyh7+Pw9UIF9J+HU19uvBIYgLRTotVYxKT8wuLI0/+gdSRlHP
-         Y8SIi4NDt4bJSZV+is7Nj76KEAVBwnubFHujrgDbXh670MlA2vz632qk7C2CqynKnz0w
-         apmy7lM5sIpu7OENQXUq+dG0+Xsh4qB+RxEuUJAa8eGxSruX9bli2Two4Abpa6OLA8C8
-         g/jtYjxk+5oa0Hr5e4Ykr/QfaxGGmdv8zlx1RbwBhvK4QQ4sdrha4SVnwdGttAe3L199
-         Gonj4aj3jQ+EVMFvRPHDVbu3V1EhNzuCXT1TZEUtC80ijG0O4Xky9ZjSmKTJ5RtzfCmJ
-         1LSg==
+        bh=BhyIEJR3nChTbrHZqmUAy7TeMp1NR81AY1C+mI8Wo5w=;
+        b=CWYiO1KP83T0IsRKn1QMS3LzHYuzKeraoS+zY+9stRMeqTU/QawI/cXPX1GsYiaNwM
+         ErNvLOOIG5GbvdDV5e/V3fpHpp/tWIAfbeFb1g5wWAue492QId7XvxdUXKa6GE6Tdh/x
+         20Xyn9yAOB+rTnqGf9uvrxjwhAquFLuIPtCF/FNSx1aVgV5a5zF9CyZC10xbGTeFjyJr
+         6XXl51cVBaxYirDF4wY0whtEZf3XSLpyAG+iPRpmpdk5hrPH43bDlByAse3ofRX05GCr
+         Gt4whNUx3OnUIw2Cgyi4XITOMLI9ayVVgnnbrl7ciVqzgZ1roUYtOJmUsuCDEo8r0nOF
+         UMTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=46M8XUzBewi0sCNBK0KRAjsw23b8WmSZifhRY13uplo=;
-        b=YCTuI71caBUkqcQ2CQyku0GemQ9GL8fvV3zNFnVLTIdmBtW+g6PQDvOKMFocn02GH9
-         ISdZAufHw56G/ZoMGfPHQpfz6LM1o1ql0cHgut2YrnpT1k/bZByJoRMvs/2z6gIry2mv
-         LKK/8kFIZHwQedLe95Lh2MgxHuVki5WEief4hmpgi0jD1CDSCnVvyNs+PFgukkVxaBfk
-         0hnC46vDq6Y8xx5pasIPLDsecvFzRbQWdXeopM9VVcBOuSY5PHZhFJrv2UpiK2GS8T6d
-         SNbw90mEQ4TyXwqYhsBQhrP0hCX0H/G2WMdL58BfML1p75l/gBYTaTybhEhqsiNfEGpu
-         cnSw==
-X-Gm-Message-State: AOAM532a+1TtwIgl+LvWxYYfqTCHb/5paDuqidB5COCdMP08ebahb0Dj
-        LZzNWMS8ysFXavQa8JfMbDrdeEnuz2zB+4tmIOE=
-X-Google-Smtp-Source: ABdhPJxG6A/lquocSRhAAjKeIItcxd+ESbK3kN1pvz6Jns+jdGKGqexan1uoPCDrG5Rbg++j7Y3CZYbui3f3HdgSY8U=
-X-Received: by 2002:a17:90a:8816:: with SMTP id s22mr3022962pjn.231.1623022660101;
- Sun, 06 Jun 2021 16:37:40 -0700 (PDT)
+        bh=BhyIEJR3nChTbrHZqmUAy7TeMp1NR81AY1C+mI8Wo5w=;
+        b=bnskK6KR2BfguykN1IAlK6VGdpT511wdqpwrmmeo/Qja006gaIb/EWZvX3baxOqk9s
+         kfacGIFFRmFNoAyutSwYHEBpUvDhEQY63cfdkbDDIVQ3hNab0FxSi0UcKTvdc+fKa5OF
+         PLuIw6uYby/+/Xt6MyLJwrw076tmRa8RG2sLNDx+SdOK5hjKg6n5WYhenAWc3vlyq5z2
+         IlIRqnff4mzdaT7O0ArshZq6gA2oKdarj/b3coXnHpVy4FdrkZvOVb+kUjBCOgXjsd5y
+         R0ltCBcIRUzDbzj5P+6oQk5gPBZO+DfsS/ZFKBCwYu07Nf4ZbXX8ry0tZQvKvj0v8ICs
+         7tUQ==
+X-Gm-Message-State: AOAM531ujpkje3I0JhATOUKB6XOS6PyhDVswA83GgPzGP0yLY/Wl15bE
+        /TvKVlfCNjrOMFu8Ixnz4+bYGIiVfj+LQhTOEclfywHrgGChtw==
+X-Google-Smtp-Source: ABdhPJzuvBMg7egK8k5L+PkFrO+ZvQzvq6MygAgiCjcVVvRSQOFNzHTdxJdTiCpuUvBHM3A/EiXdnN3tgJJkKfGqsag=
+X-Received: by 2002:a62:31c7:0:b029:2e9:2c05:52d3 with SMTP id
+ x190-20020a6231c70000b02902e92c0552d3mr14607993pfx.78.1623026271508; Sun, 06
+ Jun 2021 17:37:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210528195946.2375109-1-memxor@gmail.com>
-In-Reply-To: <20210528195946.2375109-1-memxor@gmail.com>
+References: <20210531153410.93150-1-changbin.du@gmail.com> <20210531220128.26c0cb36@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAM_iQpUEjBDK44=mD5shkmmoDYhmHQaSZtR34rLRkgd9wSWiQQ@mail.gmail.com>
+ <20210602091451.kbdul6nhobilwqvi@wittgenstein> <CAM_iQpUqgeoY_mA6cazUPCWwMK6yw9SaD6DRg-Ja4r6r_zOmLg@mail.gmail.com>
+ <20210604095451.nkfgpsibm5nrqt3f@wittgenstein>
+In-Reply-To: <20210604095451.nkfgpsibm5nrqt3f@wittgenstein>
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun, 6 Jun 2021 16:37:28 -0700
-Message-ID: <CAM_iQpVqVKhK+09Sj_At226mdWpVXfVbhy89As2dai7ip8Nmtw@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Vlad Buslov <vladbu@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
+Date:   Sun, 6 Jun 2021 17:37:40 -0700
+Message-ID: <CAM_iQpUqp1PRKfS6WcsZ16yjF4jjOrkTHX7Zdhrqo0nrE2VH1Q@mail.gmail.com>
+Subject: Re: [PATCH] nsfs: fix oops when ns->ops is not provided
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Changbin Du <changbin.du@gmail.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        David Laight <David.Laight@aculab.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 28, 2021 at 1:00 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
+On Fri, Jun 4, 2021 at 2:54 AM Christian Brauner
+<christian.brauner@ubuntu.com> wrote:
 >
-> This is the first RFC version.
+> On Thu, Jun 03, 2021 at 03:52:29PM -0700, Cong Wang wrote:
+> > On Wed, Jun 2, 2021 at 2:14 AM Christian Brauner
+> > <christian.brauner@ubuntu.com> wrote:
+> > > But the point is that ns->ops should never be accessed when that
+> > > namespace type is disabled. Or in other words, the bug is that something
+> > > in netns makes use of namespace features when they are disabled. If we
+> > > handle ->ops being NULL we might be tapering over a real bug somewhere.
+> >
+> > It is merely a protocol between fs/nsfs.c and other namespace users,
+> > so there is certainly no right or wrong here, the only question is which
+> > one is better.
+> >
+> > >
+> > > Jakub's proposal in the other mail makes sense and falls in line with
+> > > how the rest of the netns getters are implemented. For example
+> > > get_net_ns_fd_fd():
+> >
+> > It does not make any sense to me. get_net_ns() merely increases
+> > the netns refcount, which is certainly fine for init_net too, no matter
+> > CONFIG_NET_NS is enabled or disabled. Returning EOPNOTSUPP
+> > there is literally saying we do not support increasing init_net refcount,
+> > which is of course false.
+> >
+> > > struct net *get_net_ns_by_fd(int fd)
+> > > {
+> > >         return ERR_PTR(-EINVAL);
+> > > }
+> >
+> > There is a huge difference between just increasing netns refcount
+> > and retrieving it by fd, right? I have no idea why you bring this up,
+> > calling them getters is missing their difference.
 >
-> This adds a bpf_link path to create TC filters tied to cls_bpf classifier, and
-> introduces fd based ownership for such TC filters. Netlink cannot delete or
-> replace such filters, but the bpf_link is severed on indirect destruction of the
-> filter (backing qdisc being deleted, or chain being flushed, etc.). To ensure
-> that filters remain attached beyond process lifetime, the usual bpf_link fd
-> pinning approach can be used.
+> This argument doesn't hold up. All netns helpers ultimately increase the
+> reference count of the net namespace they find. And if any of them
+> perform operations where they are called in environments wherey they
+> need CONFIG_NET_NS they handle this case at compile time.
 
-I have some troubles understanding this. So... why TC filter is so special
-here that it deserves such a special treatment?
+Let me explain it in this more straight way: what is the protocol here
+for indication of !CONFIG_XXX_NS? Clearly it must be ns->ops==NULL,
+because all namespaces use the following similar pattern:
 
-The reason why I ask is that none of other bpf links actually create any
-object, they merely attach bpf program to an existing object. For example,
-netns bpf_link does not create an netns, cgroup bpf_link does not create
-a cgroup either. So, why TC filter is so lucky to be the first one requires
-creating an object?
+#ifdef CONFIG_NET_NS
+        net->ns.ops = &netns_operations;
+#endif
 
-Is it because there is no fd associated with any TC object?  Or what?
-TC object, like all other netlink stuffs, is not fs based, hence does not
-have an fd. Or maybe you don't need an fd at all? Since at least xdp
-bpf_link is associated with a netdev which does not have an fd either.
+Now you are arguing the protocol is not this, but it is the getter of
+open_related_ns() returns an error pointer.
 
 >
-> The individual patches contain more details and comments, but the overall kernel
-> API and libbpf helper mirrors the semantics of the netlink based TC-BPF API
-> merged recently. This means that we start by always setting direct action mode,
-> protocol to ETH_P_ALL, chain_index as 0, etc. If there is a need for more
-> options in the future, they can be easily exposed through the bpf_link API in
-> the future.
+> (Pluse they are defined in a central place in net/net_namespace.{c,h}.
+> That includes the low-level get_net() function and all the others.
+> get_net_ns() is the only one that's defined out of band. So get_net_ns()
+> currently is arguably also misplaced.)
 
-As you already see, this fits really oddly into TC infrastructure, because
-TC qdisc/filter/action are a whole subsystem, here you are trying to punch
-a hole in the middle. ;) This usually indicates that we are going in a wrong
-direction, maybe your case is an exception, but I can't find anything to justify
-it in your cover letter.
+Of course they do, only struct ns_common is generic. What's your
+point? Each ns.ops is defined by each namespace too.
 
-Even if you really want to go down this path (I still double), you probably
-want to explore whether there is any generic way to associate a TC object
-with an fd, because we have TC bpf action and we will have TC bpf qdisc
-too, I don't see any bpf_cls is more special than them.
+>
+> The problem I have with fixing this in nsfs is that it gives the
+> impression that this is a bug in nsfs whereas it isn't and it
+> potentially helps tapering over other bugs.
+
+Like I keep saying, this is just a protocol, there is no right or
+wrong here. If the protocol is just ops==NULL, then there is nothing
+wrong use it.
+
+(BTW, we have a lot of places that use ops==NULL as a protocol,
+they work really well.)
+
+>
+> get_net_ns() is only called for codepaths that call into nsfs via
+> open_related_ns() and it's the only namespace that does this. But
+
+I am pretty sure userns does the same:
+
+197         case NS_GET_USERNS:
+198                 return open_related_ns(ns, ns_get_owner);
+
+
+> open_related_ns() is only well defined if CONFIG_<NAMESPACE_TYPE> is
+> set. For example, none of the procfs namespace f_ops will be set for
+> !CONFIG_NET_NS. So clearly the socket specific getter here is buggy as
+> it doesn't account for !CONFIG_NET_NS and it should be fixed.
+
+If the protocol is just ops==NULL, then the core part should just check
+ops==NULL. Pure and simple. I have no idea why you do not admit the
+fact that every namespace intentionally leaves ops as NULL when its
+config is disabled.
+
+>
+> Plus your fix leaks references to init netns without fixing get_net_ns()
+> too.
+
+I thought it is 100% clear that this patch is not from me?
+
+Plus, the PoC patch from me actually suggests to change
+open_related_ns(), not __ns_get_path(). I have no idea why you
+both miss it.
 
 Thanks.
