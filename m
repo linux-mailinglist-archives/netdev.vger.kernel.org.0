@@ -2,206 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5501939F3DB
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 12:43:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBBB339F3E3
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 12:44:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbhFHKpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 06:45:13 -0400
-Received: from smtp.uniroma2.it ([160.80.6.16]:47532 "EHLO smtp.uniroma2.it"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231262AbhFHKpL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Jun 2021 06:45:11 -0400
-Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 158AhAPX017531
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 8 Jun 2021 12:43:10 +0200
-From:   Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-Subject: [RFC iproute2-next] seg6: add support for SRv6 End.DT46 Behavior
-Date:   Tue,  8 Jun 2021 12:42:46 +0200
-Message-Id: <20210608104246.6387-1-paolo.lungaroni@uniroma2.it>
-X-Mailer: git-send-email 2.20.1
+        id S231664AbhFHKqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 06:46:04 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:57596 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231450AbhFHKqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 06:46:03 -0400
+Received: from mail-ot1-f71.google.com ([209.85.210.71])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <koba.ko@canonical.com>)
+        id 1lqZDO-0005Ev-3a
+        for netdev@vger.kernel.org; Tue, 08 Jun 2021 10:44:10 +0000
+Received: by mail-ot1-f71.google.com with SMTP id r16-20020a0568301350b0290363e6a9392fso13672922otq.13
+        for <netdev@vger.kernel.org>; Tue, 08 Jun 2021 03:44:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qCY5WNTu+UDTiFQqiIKFFkypfQ54bdSFH3ROo1PqtWY=;
+        b=GNo8h1ho4d4ofy/az/wfUp53TlS+ftgkuLGPmm7he+qeYKoWV5/gYXDvrjEFBxIvkw
+         mYmYlJNg1DFSgknq5ZReQsBU+NqlLWrdO6KMCipqhbFwuljM2IPXMnnv7MUFb0PSnlP0
+         K3HqrPagC5/Q2i8XgnMh48UZ8aE/vxzo4r8S0i5JZmx/my3i6sxov2pPf310DKS7jCrx
+         vzDBs4ziCVdsrsZ6tuK5oQYPf/kuSulThClGTeDygeORjoaBEWCuAeAF/fpral+8wkV4
+         692/Ey2DDqUpqTCpu7eLCQPWMu5yBgoAaRjSkPNhZCIQ7GRxgt4ux1NwyrmjnTyVV3up
+         3WPw==
+X-Gm-Message-State: AOAM530QKRh8wfwJ+L0ZkYS0zuLa1DtalGThS5ikvAYiv+e3bonEQtkq
+        TCbmmi2sWYwgXuzwr8oRsHN1eylLZfoyKwU5uVEqx7VB48aDBu22qsj1YqUMNLj9RAQ/WozLufA
+        nR69LJtD2gzFgLc5HhBS3UPEJwuZsG8cRT7A7HRccHY7MwaGHqg==
+X-Received: by 2002:a9d:6291:: with SMTP id x17mr17571291otk.326.1623149048769;
+        Tue, 08 Jun 2021 03:44:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzOX1PcXLsYQDy2BKePJwDT8Z337BIIIgYOi7paLnFxX1vuyhE2far3cvKk31GjQ74pISXBS2WgnunjUVT+58Q=
+X-Received: by 2002:a9d:6291:: with SMTP id x17mr17571272otk.326.1623149048432;
+ Tue, 08 Jun 2021 03:44:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+References: <20210608032207.2923574-1-koba.ko@canonical.com> <84eb168e-58ff-0350-74e2-c55249eb258c@gmail.com>
+In-Reply-To: <84eb168e-58ff-0350-74e2-c55249eb258c@gmail.com>
+From:   Koba Ko <koba.ko@canonical.com>
+Date:   Tue, 8 Jun 2021 18:43:57 +0800
+Message-ID: <CAJB-X+XFYa1cZgtJEL1KCNWviL3Y4X6EbN--rE8CD_9oD9EFyA@mail.gmail.com>
+Subject: Re: [PATCH] [v2] r8169: Use PHY_POLL when RTL8106E enable ASPM
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We introduce the new "End.DT46" action for supporting the SRv6 End.DT46
-Behavior in iproute2.
-The SRv6 End.DT46 Behavior, defined in RFC 8986 [1] section 4.8, can be
-used to implement L3 VPNs based on Segment Routing over IPv6 networks in
-multi-tenants environments and it is capable of handling both IPv4 and
-IPv6 tenant traffic at the same time.
-The SRv6 End.DT46 Behavior decapsulates the received packets and it
-performs the IPv4 or IPv6 routing lookup in the routing table of the
-tenant.
+On Tue, Jun 8, 2021 at 4:00 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>
+> On 08.06.2021 05:22, Koba Ko wrote:
+> > For RTL8106E, it's a Fast-ethernet chip.
+> > If ASPM is enabled, the link chang interrupt wouldn't be triggered
+> > immediately and must wait a very long time to get link change interrupt.
+> > Even the link change interrupt isn't triggered, the phy link is already
+> > established.
+> >
+> > Use PHY_POLL to watch the status of phy link and disable
+> > the link change interrupt when ASPM is enabled on RTL8106E.
+> >
+> > v2: Instead use PHY_POLL and identify 8106E by RTL_GIGA_MAC_VER_39.
+> >
+>
+> Still the issue description doesn't convince me that it's a hw bug
+> with the respective chip version. What has been stated so far:
+>
+> 1. (and most important) Issue doesn't occur in mainline because ASPM
+>    is disabled in mainline for r8169. Issue occurs only with a
+>    downstream kernel with ASPM enabled for r8169.
 
-As for the End.DT4 and for the End.DT6 in VRF mode, the SRv6 End.DT46
-Behavior leverages a VRF device in order to force the routing lookup into
-the associated routing table using the "vrftable" attribute.
+mainline kernel and enable L1, the issue is also observed.
 
-To make the End.DT46 work properly, it must be guaranteed that the
-routing table used for routing lookup operations is bound to one and
-only one VRF during the tunnel creation. Such constraint has to be
-enforced by enabling the VRF strict_mode sysctl parameter, i.e.:
+> 2. Issue occurs only with ASPM L1.1 not disabled, even though this chip
+>    version doesn't support L1 sub-states. Just L0s/L1 don't trigger
+>    the issue.
+>    The NIC doesn't announce L1.1 support, therefore PCI core won't
+>    enable L1 sub-states on the PCIe link between NIC and upstream
+>    PCI bridge.
 
- $ sysctl -wq net.vrf.strict_mode=1
+More precisely, when L1 is enabled, the issue would be triggered.
+For RTL8106E,
+1. Only disable L0s, pcie_aspm_enabled return 1, issue is triggered.
+2. Only disable L1_1, pcie_aspm_enabled return 1, issue is triggered.
 
-Note that the same approach is used for the End.DT4 Behavior and for the
-End.DT6 Behavior in VRF mode.
+3. Only disable L1, pcie_aspm_enabled return 0, issue is not triggered.
 
-An SRv6 End.DT46 Behavior instance can be created as follows:
+>
+> 3. Issue occurs only with a GBit-capable link partner. 100MBit link
+>    partners are fine. Not clear whether issue occurs with a specific
+>    Gbit link partner only or with GBit-capable link partners in general.
+>
+> 4. Only link-up interrupt is affected. Not link-down and not interrupts
+>    triggered by other interrupt sources.
+>
+> 5. Realtek couldn't confirm that there's such a hw bug on RTL8106e.
+>
+> One thing that hasn't been asked yet:
+> Does issue occur always if you re-plug the cable? Or only on boot?
+> I'm asking because in the dmesg log you attached to the bugzilla issue
+> the following looks totally ok.
+>
+> [   61.651643] r8169 0000:01:00.0 enp1s0: Link is Down
+> [   63.720015] r8169 0000:01:00.0 enp1s0: Link is Up - 100Mbps/Full - flow control rx/tx
+> [   66.685499] r8169 0000:01:00.0 enp1s0: Link is Down
 
- $ ip -6 route add 2001:db8::1 encap seg6local action End.DT46 vrftable 100 dev vrf100
+Once the link is up,
+1. If cable is unplug&plug immediately,  you wouldn't see the issue.
+2. Unplug cable and wait a long time (~1Mins), then plug the cable,
+the issue appears again.
 
-Standard Output:
- $ ip -6 route show 2001:db8::1
- 2001:db8::1  encap seg6local action End.DT46 vrftable 100 dev vrf100 metric 1024 pref medium
+>
+> > Signed-off-by: Koba Ko <koba.ko@canonical.com>
+> > ---
+> >  drivers/net/ethernet/realtek/r8169_main.c | 21 +++++++++++++++++++--
+> >  1 file changed, 19 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> > index 2c89cde7da1e..a59cbaef2839 100644
+> > --- a/drivers/net/ethernet/realtek/r8169_main.c
+> > +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> > @@ -4914,6 +4914,19 @@ static const struct dev_pm_ops rtl8169_pm_ops = {
+> >
+> >  #endif /* CONFIG_PM */
+> >
+> > +static int rtl_phy_poll_quirk(struct rtl8169_private *tp)
+> > +{
+> > +     struct pci_dev *pdev = tp->pci_dev;
+> > +
+> > +     if (!pcie_aspm_enabled(pdev))
+>
+> That's the wrong call. According to what you said earlier you want to
+> check for L1 sub-states, not for ASPM in general.
 
-JSON Output:
-$ ip -6 -j -p route show 2001:db8::1
-[ {
-        "dst": "2001:db8::1",
-        "encap": "seg6local",
-        "action": "End.DT46",
-        "vrftable": 100,
-        "dev": "vrf100",
-        "metric": 1024,
-        "flags": [ ],
-        "pref": "medium"
-} ]
+As per described above, that's why use pcie_aspm_enabled here.
 
-This patch updates the route.8 man page and the ip route help with the
-information related to End.DT46.
-Considering that the same information was missing for the SRv6 End.DT4 and
-the End.DT6 Behaviors, we have also added it.
-
-[1] https://www.rfc-editor.org/rfc/rfc8986.html#name-enddt46-decapsulation-and-s
-
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
-Signed-off-by: Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
----
- include/uapi/linux/seg6_local.h |  2 ++
- ip/iproute.c                    |  4 +--
- ip/iproute_lwtunnel.c           |  1 +
- man/man8/ip-route.8.in          | 48 +++++++++++++++++++++++++++++++++
- 4 files changed, 53 insertions(+), 2 deletions(-)
-
-diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
-index 85955514..ab724498 100644
---- a/include/uapi/linux/seg6_local.h
-+++ b/include/uapi/linux/seg6_local.h
-@@ -64,6 +64,8 @@ enum {
- 	SEG6_LOCAL_ACTION_END_AM	= 14,
- 	/* custom BPF action */
- 	SEG6_LOCAL_ACTION_END_BPF	= 15,
-+	/* decap and lookup of DA in v4 or v6 table */
-+	SEG6_LOCAL_ACTION_END_DT46	= 16,
- 
- 	__SEG6_LOCAL_ACTION_MAX,
- };
-diff --git a/ip/iproute.c b/ip/iproute.c
-index c6d87e58..bdeb9644 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -107,8 +107,8 @@ static void usage(void)
- 		"SEGMODE := [ encap | inline ]\n"
- 		"SEG6LOCAL := action ACTION [ OPTIONS ] [ count ]\n"
- 		"ACTION := { End | End.X | End.T | End.DX2 | End.DX6 | End.DX4 |\n"
--		"            End.DT6 | End.DT4 | End.B6 | End.B6.Encaps | End.BM |\n"
--		"            End.S | End.AS | End.AM | End.BPF }\n"
-+		"            End.DT6 | End.DT4 | End.DT46 | End.B6 | End.B6.Encaps |\n"
-+		"            End.BM | End.S | End.AS | End.AM | End.BPF }\n"
- 		"OPTIONS := OPTION [ OPTIONS ]\n"
- 		"OPTION := { srh SEG6HDR | nh4 ADDR | nh6 ADDR | iif DEV | oif DEV |\n"
- 		"            table TABLEID | vrftable TABLEID | endpoint PROGNAME }\n"
-diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
-index ebc688e2..c4bae68d 100644
---- a/ip/iproute_lwtunnel.c
-+++ b/ip/iproute_lwtunnel.c
-@@ -220,6 +220,7 @@ static const char *seg6_action_names[SEG6_LOCAL_ACTION_MAX + 1] = {
- 	[SEG6_LOCAL_ACTION_END_AS]		= "End.AS",
- 	[SEG6_LOCAL_ACTION_END_AM]		= "End.AM",
- 	[SEG6_LOCAL_ACTION_END_BPF]		= "End.BPF",
-+	[SEG6_LOCAL_ACTION_END_DT46]		= "End.DT46",
- };
- 
- static const char *format_action_type(int action)
-diff --git a/man/man8/ip-route.8.in b/man/man8/ip-route.8.in
-index 2978bc0e..4b1947ab 100644
---- a/man/man8/ip-route.8.in
-+++ b/man/man8/ip-route.8.in
-@@ -834,6 +834,49 @@ rules. This action only accepts packets with either a zero Segments
- Left value or no SRH at all, and an inner IPv6 packet. Other
- matching packets are dropped.
- 
-+.BR End.DT6 " { " table " | " vrftable " } "
-+.I TABLEID
-+- Decapsulate the inner IPv6 packet and forward it according to the
-+specified lookup table.
-+.I TABLEID
-+is either a number or a string from the file
-+.BR "@SYSCONFDIR@/rt_tables" .
-+If
-+.B vrftable
-+is used, the argument must be a VRF device associated with
-+the table id. Moreover, the VRF table associated with the
-+table id must be configured with the VRF strict mode turned
-+on (net.vrf.strict_mode=1). This action only accepts packets
-+with either a zero Segments Left value or no SRH at all,
-+and an inner IPv6 packet. Other matching packets are dropped.
-+
-+.B End.DT4 vrftable
-+.I TABLEID
-+- Decapsulate the inner IPv4 packet and forward it according to the
-+specified lookup table.
-+.I TABLEID
-+is either a number or a string from the file
-+.BR "@SYSCONFDIR@/rt_tables" .
-+The argument must be a VRF device associated with the table id.
-+Moreover, the VRF table associated with the table id must be configured
-+with the VRF strict mode turned on (net.vrf.strict_mode=1). This action
-+only accepts packets with either a zero Segments Left value or no SRH
-+at all, and an inner IPv4 packet. Other matching packets are dropped.
-+
-+.B End.DT46 vrftable
-+.I TABLEID
-+- Decapsulate the inner IPv4 or IPv6 packet and forward it according
-+to the specified lookup table.
-+.I TABLEID
-+is either a number or a string from the file
-+.BR "@SYSCONFDIR@/rt_tables" .
-+The argument must be a VRF device associated with the table id.
-+Moreover, the VRF table associated with the table id must be configured
-+with the VRF strict mode turned on (net.vrf.strict_mode=1). This action
-+only accepts packets with either a zero Segments Left value or no SRH
-+at all, and an inner IPv4 or IPv6 packet. Other matching packets are
-+dropped.
-+
- .B End.B6 srh segs
- .IR SEGMENTS " [ "
- .B hmac
-@@ -1172,6 +1215,11 @@ ip -6 route add 2001:db8:1::/64 encap seg6 mode encap segs 2001:db8:42::1,2001:d
- Adds an IPv6 route with SRv6 encapsulation and two segments attached.
- .RE
- .PP
-+ip -6 route add 2001:db8:1::/64 encap seg6local action End.DT46 vrftable 100 dev vrf100
-+.RS 4
-+Adds an IPv6 route with SRv6 decapsulation and forward with lookup in VRF table.
-+.RE
-+.PP
- ip route add 10.1.1.0/30 nhid 10
- .RS 4
- Adds an ipv4 route using nexthop object with id 10.
--- 
-2.20.1
-
+>
+> > +             return 0;
+> > +
+> > +     if (tp->mac_version == RTL_GIGA_MAC_VER_39)
+> > +             return 1;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> >  static void rtl_wol_shutdown_quirk(struct rtl8169_private *tp)
+> >  {
+> >       /* WoL fails with 8168b when the receiver is disabled. */
+> > @@ -4991,7 +5004,10 @@ static const struct net_device_ops rtl_netdev_ops = {
+> >
+> >  static void rtl_set_irq_mask(struct rtl8169_private *tp)
+> >  {
+> > -     tp->irq_mask = RxOK | RxErr | TxOK | TxErr | LinkChg;
+> > +     tp->irq_mask = RxOK | RxErr | TxOK | TxErr;
+> > +
+> > +     if (!rtl_phy_poll_quirk(tp))
+> > +             tp->irq_mask |= LinkChg;
+> >
+> >       if (tp->mac_version <= RTL_GIGA_MAC_VER_06)
+> >               tp->irq_mask |= SYSErr | RxOverflow | RxFIFOOver;
+> > @@ -5085,7 +5101,8 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
+> >       new_bus->name = "r8169";
+> >       new_bus->priv = tp;
+> >       new_bus->parent = &pdev->dev;
+> > -     new_bus->irq[0] = PHY_MAC_INTERRUPT;
+> > +     new_bus->irq[0] =
+> > +             (rtl_phy_poll_quirk(tp) ? PHY_POLL : PHY_MAC_INTERRUPT);
+> >       snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x", pci_dev_id(pdev));
+> >
+> >       new_bus->read = r8169_mdio_read_reg;
+> >
+>
