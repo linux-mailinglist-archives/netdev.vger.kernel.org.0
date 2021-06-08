@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 647B639F090
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:16:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB03939F093
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:16:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231173AbhFHIR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 04:17:58 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3789 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbhFHIRp (ORCPT
+        id S231224AbhFHISD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 04:18:03 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3468 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230280AbhFHIRp (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 04:17:45 -0400
 Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Fzjc50Y5FzWrHP;
-        Tue,  8 Jun 2021 16:11:01 +0800 (CST)
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fzjf906pGz6vvL;
+        Tue,  8 Jun 2021 16:12:49 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
  dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
         <ms@dev.tdt.de>, <willemb@google.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 07/16] net: farsync: remove trailing whitespaces
-Date:   Tue, 8 Jun 2021 16:12:33 +0800
-Message-ID: <1623139962-34847-8-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 08/16] net: farsync: code indent use tabs where possible
+Date:   Tue, 8 Jun 2021 16:12:34 +0800
+Message-ID: <1623139962-34847-9-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1623139962-34847-1-git-send-email-huangguangbin2@huawei.com>
 References: <1623139962-34847-1-git-send-email-huangguangbin2@huawei.com>
@@ -45,104 +45,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peng Li <lipeng321@huawei.com>
 
-This patch removes trailing whitespaces.
+Code indent should use tabs where possible.
 
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/wan/farsync.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/net/wan/farsync.c | 36 ++++++++++++++++++------------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/net/wan/farsync.c b/drivers/net/wan/farsync.c
-index f8c7558..7653ff0 100644
+index 7653ff0..075f50d 100644
 --- a/drivers/net/wan/farsync.c
 +++ b/drivers/net/wan/farsync.c
-@@ -524,25 +524,25 @@ do {								\
- /*      PCI ID lookup table
+@@ -422,7 +422,7 @@ struct buf_window {
+ /*      Per port (line or channel) information
   */
- static const struct pci_device_id fst_pci_dev_id[] = {
--	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_T2P, PCI_ANY_ID, 
-+	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_T2P, PCI_ANY_ID,
- 	 PCI_ANY_ID, 0, 0, FST_TYPE_T2P},
- 
--	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_T4P, PCI_ANY_ID, 
-+	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_T4P, PCI_ANY_ID,
- 	 PCI_ANY_ID, 0, 0, FST_TYPE_T4P},
- 
--	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_T1U, PCI_ANY_ID, 
-+	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_T1U, PCI_ANY_ID,
- 	 PCI_ANY_ID, 0, 0, FST_TYPE_T1U},
- 
--	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_T2U, PCI_ANY_ID, 
-+	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_T2U, PCI_ANY_ID,
- 	 PCI_ANY_ID, 0, 0, FST_TYPE_T2U},
- 
--	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_T4U, PCI_ANY_ID, 
-+	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_T4U, PCI_ANY_ID,
- 	 PCI_ANY_ID, 0, 0, FST_TYPE_T4U},
- 
--	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_TE1, PCI_ANY_ID, 
-+	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_TE1, PCI_ANY_ID,
- 	 PCI_ANY_ID, 0, 0, FST_TYPE_TE1},
- 
--	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_TE1C, PCI_ANY_ID, 
-+	{PCI_VENDOR_ID_FARSITE, PCI_DEVICE_ID_FARSITE_TE1C, PCI_ANY_ID,
- 	 PCI_ANY_ID, 0, 0, FST_TYPE_TE1},
- 	{0,}			/* End */
- };
-@@ -551,11 +551,11 @@ MODULE_DEVICE_TABLE(pci, fst_pci_dev_id);
- 
- /*      Device Driver Work Queues
-  *
-- *      So that we don't spend too much time processing events in the 
-- *      Interrupt Service routine, we will declare a work queue per Card 
-+ *      So that we don't spend too much time processing events in the
-+ *      Interrupt Service routine, we will declare a work queue per Card
-  *      and make the ISR schedule a task in the queue for later execution.
-  *      In the 2.4 Kernel we used to use the immediate queue for BH's
-- *      Now that they are gone, tasklets seem to be much better than work 
-+ *      Now that they are gone, tasklets seem to be much better than work
-  *      queues.
-  */
- 
-@@ -1139,7 +1139,7 @@ fst_recover_rx_error(struct fst_card_info *card, struct fst_port_info *port,
- 	pi = port->index;
- 	/* Discard buffer descriptors until we see the start of the
- 	 * next frame.  Note that for long frames this could be in
--	 * a subsequent interrupt. 
-+	 * a subsequent interrupt.
- 	 */
- 	i = 0;
- 	while ((dmabits & (DMA_OWN | RX_STP)) == 0) {
-@@ -1436,7 +1436,7 @@ fst_intr(int dummy, void *dev_id)
- 
- 		/* It is possible to really be running, i.e. we have re-loaded
- 		 * a running card
--		 * Clear and reprime the interrupt source 
-+		 * Clear and reprime the interrupt source
- 		 */
- 		fst_clear_intr(card);
- 		return IRQ_HANDLED;
-@@ -1616,8 +1616,8 @@ set_conf_from_info(struct fst_card_info *card, struct fst_port_info *port,
- 	int err;
- 	unsigned char my_framing;
- 
--	/* Set things according to the user set valid flags 
--	 * Several of the old options have been invalidated/replaced by the 
-+	/* Set things according to the user set valid flags
-+	 * Several of the old options have been invalidated/replaced by the
- 	 * generic hdlc package.
- 	 */
- 	err = 0;
-@@ -1739,7 +1739,7 @@ gather_conf_info(struct fst_card_info *card, struct fst_port_info *port,
- 	info->smcFirmwareVersion = FST_RDL(card, smcFirmwareVersion);
- 
- 	/* The T2U can report cable presence for both A or B
--	 * in bits 0 and 1 of cableStatus.  See which port we are and 
-+	 * in bits 0 and 1 of cableStatus.  See which port we are and
- 	 * do the mapping.
+ struct fst_port_info {
+-        struct net_device *dev; /* Device struct - must be first */
++	struct net_device *dev; /* Device struct - must be first */
+ 	struct fst_card_info *card;	/* Card we're associated with */
+ 	int index;		/* Port index on the card */
+ 	int hwif;		/* Line hardware (lineInterface copy) */
+@@ -786,7 +786,7 @@ fst_init_dma(struct fst_card_info *card)
+ 	/* This is only required for the PLX 9054
  	 */
  	if (card->family == FST_FAMILY_TXU) {
+-	        pci_set_master(card->device);
++		pci_set_master(card->device);
+ 		outl(0x00020441, card->pci_conf + DMAMODE0);
+ 		outl(0x00020441, card->pci_conf + DMAMODE1);
+ 		outl(0x0, card->pci_conf + DMATHR);
+@@ -1561,7 +1561,7 @@ fst_intr(int dummy, void *dev_id)
+ 			rdidx = 0;
+ 	}
+ 	FST_WRB(card, interruptEvent.rdindex, rdidx);
+-        return IRQ_HANDLED;
++	return IRQ_HANDLED;
+ }
+ 
+ /*      Check that the shared memory configuration is one that we can handle
+@@ -2129,7 +2129,7 @@ fst_open(struct net_device *dev)
+ 
+ 	port = dev_to_port(dev);
+ 	if (!try_module_get(THIS_MODULE))
+-          return -EBUSY;
++		return -EBUSY;
+ 
+ 	if (port->mode != FST_RAW) {
+ 		err = hdlc_open(dev);
+@@ -2421,9 +2421,9 @@ fst_add_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 				(ent->driver_data == FST_TYPE_T2U)) ? 2 : 4;
+ 
+ 	card->state = FST_UNINIT;
+-        spin_lock_init ( &card->card_lock );
++	spin_lock_init(&card->card_lock);
+ 
+-        for ( i = 0 ; i < card->nports ; i++ ) {
++	for (i = 0; i < card->nports; i++) {
+ 		struct net_device *dev = alloc_hdlcdev(&card->ports[i]);
+ 		hdlc_device *hdlc;
+ 
+@@ -2435,29 +2435,29 @@ fst_add_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			goto hdlcdev_fail;
+ 		}
+ 		card->ports[i].dev    = dev;
+-                card->ports[i].card   = card;
+-                card->ports[i].index  = i;
+-                card->ports[i].run    = 0;
++		card->ports[i].card   = card;
++		card->ports[i].index  = i;
++		card->ports[i].run    = 0;
+ 
+ 		hdlc = dev_to_hdlc(dev);
+ 
+-                /* Fill in the net device info */
++		/* Fill in the net device info */
+ 		/* Since this is a PCI setup this is purely
+ 		 * informational. Give them the buffer addresses
+ 		 * and basic card I/O.
+ 		 */
+-                dev->mem_start   = card->phys_mem
+-                                 + BUF_OFFSET ( txBuffer[i][0][0]);
+-                dev->mem_end     = card->phys_mem
+-                                 + BUF_OFFSET ( txBuffer[i][NUM_TX_BUFFER - 1][LEN_RX_BUFFER - 1]);
+-                dev->base_addr   = card->pci_conf;
+-                dev->irq         = card->irq;
++		dev->mem_start   = card->phys_mem
++				+ BUF_OFFSET(txBuffer[i][0][0]);
++		dev->mem_end     = card->phys_mem
++				+ BUF_OFFSET(txBuffer[i][NUM_TX_BUFFER - 1][LEN_RX_BUFFER - 1]);
++		dev->base_addr   = card->pci_conf;
++		dev->irq         = card->irq;
+ 
+ 		dev->netdev_ops = &fst_ops;
+ 		dev->tx_queue_len = FST_TX_QUEUE_LEN;
+ 		dev->watchdog_timeo = FST_TX_TIMEOUT;
+-                hdlc->attach = fst_attach;
+-                hdlc->xmit   = fst_start_xmit;
++		hdlc->attach = fst_attach;
++		hdlc->xmit   = fst_start_xmit;
+ 	}
+ 
+ 	card->device = pdev;
 -- 
 2.8.1
 
