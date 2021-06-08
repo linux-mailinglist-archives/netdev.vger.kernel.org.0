@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9E3E39F706
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 14:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 783E139F707
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 14:44:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232723AbhFHMqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 08:46:42 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:43613 "EHLO
+        id S232732AbhFHMqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 08:46:45 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:34267 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232705AbhFHMqi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 08:46:38 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id F3CF85C0143;
-        Tue,  8 Jun 2021 08:44:44 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S232704AbhFHMql (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 08:46:41 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 496405C00AE;
+        Tue,  8 Jun 2021 08:44:47 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 08 Jun 2021 08:44:44 -0400
+  by compute6.internal (MEProxy); Tue, 08 Jun 2021 08:44:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=Nu7J7pNvpqCFJZuLTkkTkmiCN1pIlz+BJJUdl4RN+cQ=; b=gR1wlwYn
-        gY8P5p8GvYUOhrLbTU1sjYq+XnJZPRTIj/W69XZ5ej+xOfcdXJhyGAlMLnLqp9Bx
-        2S5l6sclSubTBMkw/RGMNJVTb1KN+13/RghJJWGjSMePgQxA4D9QaSlU6f0G5aV4
-        T29biQeOKY9wJiZU4J5ZoRfTYhqxvYAxXlx7nxAya2JGvRxeH8SMmU1egRfLNJuy
-        V/Z/NL/KGZcjmWuX2TMZtwLWLjTabN+qjFWr08/2vbz0GAAQvBFF7yZavkbM45Fh
-        X1hPpDgq7KMzfUDC8MYm1UMqi9NJSPhSQpQQ+zGcPeRxQlMREcoM5uCKDHxbZUrD
-        W5nuzQ15V9BHYg==
-X-ME-Sender: <xms:PGa_YHZOiShXFUmjha4nksgfl5_KCxreTzTZIEum24SuGW9S65Y9pg>
-    <xme:PGa_YGaIso8wzV4TdJNqeqwshMlfPn8SxdutoAaeVmNT27H15LqNvCHQEP95tDqzv
-    7MIpENu1PNEYw8>
-X-ME-Received: <xmr:PGa_YJ8P-L5VD_p54ynt-KfbWo704paCSXJyqAM-Kl0aZhq56rSWs6v1KUumLYLZ9FUAazyvGP4VcSulY5zJ8veo95a3GLKZmRZqQDeOEnIlRA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedtledgfeelucetufdoteggodetrfdotf
+        fm3; bh=K4kDhtbEB+P0gDPeh80v9Bpjxrxmvtfn4m/YHa1XzKs=; b=JD366IYl
+        fM9Hi0WWKhatybqFkmfwef9Co06tUetPDib+fVLjEESuQwmXzGA1V85U2VtKxxTY
+        GUvju0jHDmG0GX7HA8adB7ZQL93jh2Rqwb2YrnhLZKRPpUTAjpb7DS2UtxSfVhPJ
+        0kpekMkl5Lgr851dVY+MEDbIT1LQHBp4nKriIIg7HRoHH/3ZalT2oTfFKDIkD8qk
+        lRRap1z4SPbvdA2iGU3b4G61rufdGDXz4rTeKGw8oXocYOvrBxrJ7wp/JRShwzMz
+        CAS8KA5misN8/6HlxE8gu1Ujyo0xv4uZA55t6Hp8ljxSOJAf1lu3LWMTzP3+m2A+
+        SNTcOgEdZB10NA==
+X-ME-Sender: <xms:P2a_YNJ29uS-xmGSDIsdCHFn4YYPA_RTX81JYqDCWpbhOQdqyqIyUw>
+    <xme:P2a_YJJfP9nFTc5bLJbBaUdU0rjp7NSvHe-ftasq6sYq7TSBJXN1TvwPSeoDEChtk
+    YaBot1DXoNOIik>
+X-ME-Received: <xmr:P2a_YFs10R3rq1Cajtvp9K7pkpjYZpIfnI0qbdigvG6htKnEODnelqB3skyoM-w0MS6xQgoMDdnDkKstqHccmfipC0fB2LltpomtQpmqBtQL8g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedtledggedtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepudenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:PGa_YNrsHrtOKSubUijMG5Xil0Iz1yBoqe5mg1B0DofeciZxH4geiA>
-    <xmx:PGa_YCp5Mhb4dQkbLTypw5-O2BWo5sjQR2W3OAnIZaTZ8rZlVr9wpA>
-    <xmx:PGa_YDTv92vFWtzpIqEmRmpIrYw1PPpEFrN9yPhF80o3w_IXv445Jg>
-    <xmx:PGa_YCL4BuKPIaBrv4vh1Rq6p8EGHUNA8FvcSfHr7pN9tNQxce2Nwg>
+X-ME-Proxy: <xmx:P2a_YOblygbQ1xOixvUYRwfueSoRTnwJb3onFAz0dDIahzpEMsd-YQ>
+    <xmx:P2a_YEZLPM9UDqn7SbRUIHDkvm8zHqHoV78KRc5C90JG8RC4Ivm_yQ>
+    <xmx:P2a_YCCNuwGGcfW8AkMrw69v9XoCKLLot_SbH7J5fA23xjQh2Knb_w>
+    <xmx:P2a_YE7yZ6jvlhfz7I2UclxpYe07MrDVOPHE56ouPgsCU2zYcCah_Q>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 8 Jun 2021 08:44:42 -0400 (EDT)
+ 8 Jun 2021 08:44:45 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, amcohen@nvidia.com, vadimp@nvidia.com,
         c_mykolak@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 2/8] selftests: router_scale: Do not count failed routes
-Date:   Tue,  8 Jun 2021 15:44:08 +0300
-Message-Id: <20210608124414.1664294-3-idosch@idosch.org>
+Subject: [PATCH net-next 3/8] selftests: Clean forgotten resources as part of cleanup()
+Date:   Tue,  8 Jun 2021 15:44:09 +0300
+Message-Id: <20210608124414.1664294-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210608124414.1664294-1-idosch@idosch.org>
 References: <20210608124414.1664294-1-idosch@idosch.org>
@@ -64,39 +64,110 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-To check how many routes are installed in hardware, the test runs "ip
-route" and greps for "offload", which includes routes with state
-"offload_failed".
+Several tests do not set some ports down as part of their cleanup(),
+resulting in IPv6 link-local addresses and associated routes not being
+deleted.
 
-Till now, this wrong check was not found because after one failure in
-route insertion, the driver moved to "abort" mode, which means that user
-cannot try to add more routes.
+These leaks were found using a BPF tool that monitors ASIC resources.
 
-The previous patch removed the abort mechanism and now failed routes are
-counted as offloaded.
-
-Fix this by not considering routes with "offload_failed" flag as
-offloaded.
+Solve this by setting the ports down at the end of the tests.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- tools/testing/selftests/drivers/net/mlxsw/router_scale.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh       | 3 +++
+ .../selftests/drivers/net/mlxsw/devlink_trap_l3_exceptions.sh  | 3 +++
+ tools/testing/selftests/drivers/net/mlxsw/qos_dscp_bridge.sh   | 2 ++
+ tools/testing/selftests/net/forwarding/pedit_dsfield.sh        | 2 ++
+ tools/testing/selftests/net/forwarding/pedit_l4port.sh         | 2 ++
+ tools/testing/selftests/net/forwarding/skbedit_priority.sh     | 2 ++
+ 6 files changed, 14 insertions(+)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/router_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/router_scale.sh
-index e93878d42596..683759d29199 100644
---- a/tools/testing/selftests/drivers/net/mlxsw/router_scale.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/router_scale.sh
-@@ -68,7 +68,7 @@ wait_for_routes()
- 	local t0=$1; shift
- 	local route_count=$1; shift
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh
+index 4029833f7e27..160891dcb4bc 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh
+@@ -109,6 +109,9 @@ router_destroy()
+ 	__addr_add_del $rp1 del 192.0.2.2/24 2001:db8:1::2/64
  
--	local t1=$(ip route | grep -o 'offload' | wc -l)
-+	local t1=$(ip route | grep 'offload' | grep -v 'offload_failed' | wc -l)
- 	local delta=$((t1 - t0))
- 	echo $delta
- 	[[ $delta -ge $route_count ]]
+ 	tc qdisc del dev $rp2 clsact
++
++	ip link set dev $rp2 down
++	ip link set dev $rp1 down
+ }
+ 
+ setup_prepare()
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_exceptions.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_exceptions.sh
+index 42d44e27802c..190c1b6b5365 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_exceptions.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_exceptions.sh
+@@ -111,6 +111,9 @@ router_destroy()
+ 	__addr_add_del $rp1 del 192.0.2.2/24 2001:db8:1::2/64
+ 
+ 	tc qdisc del dev $rp2 clsact
++
++	ip link set dev $rp2 down
++	ip link set dev $rp1 down
+ }
+ 
+ setup_prepare()
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/qos_dscp_bridge.sh b/tools/testing/selftests/drivers/net/mlxsw/qos_dscp_bridge.sh
+index 5cbff8038f84..28a570006d4d 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/qos_dscp_bridge.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/qos_dscp_bridge.sh
+@@ -93,7 +93,9 @@ switch_destroy()
+ 	lldptool -T -i $swp1 -V APP -d $(dscp_map 10) >/dev/null
+ 	lldpad_app_wait_del
+ 
++	ip link set dev $swp2 down
+ 	ip link set dev $swp2 nomaster
++	ip link set dev $swp1 down
+ 	ip link set dev $swp1 nomaster
+ 	ip link del dev br1
+ }
+diff --git a/tools/testing/selftests/net/forwarding/pedit_dsfield.sh b/tools/testing/selftests/net/forwarding/pedit_dsfield.sh
+index 55eeacf59241..64fbd211d907 100755
+--- a/tools/testing/selftests/net/forwarding/pedit_dsfield.sh
++++ b/tools/testing/selftests/net/forwarding/pedit_dsfield.sh
+@@ -75,7 +75,9 @@ switch_destroy()
+ 	tc qdisc del dev $swp2 clsact
+ 	tc qdisc del dev $swp1 clsact
+ 
++	ip link set dev $swp2 down
+ 	ip link set dev $swp2 nomaster
++	ip link set dev $swp1 down
+ 	ip link set dev $swp1 nomaster
+ 	ip link del dev br1
+ }
+diff --git a/tools/testing/selftests/net/forwarding/pedit_l4port.sh b/tools/testing/selftests/net/forwarding/pedit_l4port.sh
+index 5f20d289ee43..10e594c55117 100755
+--- a/tools/testing/selftests/net/forwarding/pedit_l4port.sh
++++ b/tools/testing/selftests/net/forwarding/pedit_l4port.sh
+@@ -71,7 +71,9 @@ switch_destroy()
+ 	tc qdisc del dev $swp2 clsact
+ 	tc qdisc del dev $swp1 clsact
+ 
++	ip link set dev $swp2 down
+ 	ip link set dev $swp2 nomaster
++	ip link set dev $swp1 down
+ 	ip link set dev $swp1 nomaster
+ 	ip link del dev br1
+ }
+diff --git a/tools/testing/selftests/net/forwarding/skbedit_priority.sh b/tools/testing/selftests/net/forwarding/skbedit_priority.sh
+index e3bd8a6bb8b4..bde11dc27873 100755
+--- a/tools/testing/selftests/net/forwarding/skbedit_priority.sh
++++ b/tools/testing/selftests/net/forwarding/skbedit_priority.sh
+@@ -72,7 +72,9 @@ switch_destroy()
+ 	tc qdisc del dev $swp2 clsact
+ 	tc qdisc del dev $swp1 clsact
+ 
++	ip link set dev $swp2 down
+ 	ip link set dev $swp2 nomaster
++	ip link set dev $swp1 down
+ 	ip link set dev $swp1 nomaster
+ 	ip link del dev br1
+ }
 -- 
 2.31.1
 
