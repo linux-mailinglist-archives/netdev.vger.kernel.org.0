@@ -2,94 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A2FA39ED74
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 06:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C9539EDD2
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 06:53:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbhFHEZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 00:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
+        id S229678AbhFHEz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 00:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbhFHEZK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 00:25:10 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43D7C061574
-        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 21:23:02 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id v13so9925222ple.9
-        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 21:23:02 -0700 (PDT)
+        with ESMTP id S229457AbhFHEz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 00:55:26 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBA5C061574;
+        Mon,  7 Jun 2021 21:53:19 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id l1so30391317ejb.6;
+        Mon, 07 Jun 2021 21:53:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=23xXcExaBA0F4qdO0hM21zJQMO2ogSgobhGUIkD3kD0=;
-        b=TNIVaDTU/IuKv8+Z+eWo5LpWT144NW0a5lKecxwhF6qePF/88g0imzqmaIW8WdkeKI
-         gRVsQXxuBk7TODW0SFH4MHJSJLdbda4mOiHD+HU5ALr2GSSZ5mdIBHqnBSJWYDBVmn0L
-         mXgDyGSgy/7aRFpfVG74uFgkuVTFJayy0UiEiBHXMOw1hwjC3vXUW6GKt3D1mIj/Dwf2
-         JA/EYsFdgRzdUEGHRzHzW59Ji/ToLfQlmTN1blsDg1eJjCUKN0Vo5N6ufwJ6WaFradY8
-         H7aJEuXEv/d1up7v65vBW/D92KsU7iodFWtHFcpwZLooovIQnAUt9EPOKP7w/+FQLDu/
-         hl2Q==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HhTJvhXQRpXrK1DarhAlRYbBfua3nyn/yHyOslBWJcs=;
+        b=ioZ3BNAMIpb4kBehQ3jJ7ZUK3o7D5uE0qxuvePy6skLatGTSbTmt0EFQasHk2IC8UC
+         qZgBez6I9509CoyWBVRNGfYAaXFf+VUfxuXflzzIbZZM+YaWTywQ3ZWBFlQmJCsYKBn5
+         +NPHQFVwQDP7zm2JmvfeIee5TT61w7AzVMWCr4SyKwKtral77QymPtCDom4YxaxBdwnd
+         +JY3DL+QLD6eiqZqQUPwuYkxZrE4/fyCaANWEryi26ZKyzMEe21psLSBjNInbdlAZHlR
+         NZhbCDylPspsaA5GjBgBWAz5qx6B/48lmflyY3T7lSWnYOmfhz/tu3/KD5b39MYu5prh
+         ATKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=23xXcExaBA0F4qdO0hM21zJQMO2ogSgobhGUIkD3kD0=;
-        b=MS3wK511MRfowTJn2c2q+5we/zCskEBCVqXXvDrkwZUpqJaNmYEZxzF8kTGRDMA8Zs
-         vKfZCVgJ6twX4brjOeF5wSbQGufXECgmU62qBVUOZsuqVx7NNLDqkmtTSsCedTc07m3B
-         SkCFnl6aF4RUGghjm8XGGlGxrNmf6P7lBA0UlR27lnp288qFsv+rxVq0bBcda3l+bghX
-         RkcEbRoqvvOuNe4MihrxjtBzn8ibtAUhTc3gOATUg6OjaT1vAqJQFyS3ilHBMrz8Z2hD
-         YQcumG2xSAGMRByXc7T20jCXTRFYxkFXr4F0ToBPPN8yFmiVgdQnkjR27hZQ83VOqHqy
-         WCHA==
-X-Gm-Message-State: AOAM532cClXtBIf2JGSOkrdilIFa7HT5NHV3dYUsQZq9B4JF8wKmTUAd
-        za6SkWj07cR/rS0RAg/l2kC3dL7JuIrR0MVxQso=
-X-Google-Smtp-Source: ABdhPJw2ohWaVbWFSXmWVtO2aUj0XMMP048S0LThlZUT+8QCP6qXbBttraQ8lR+ZwNsX/rqTZoZ52kW8Zh1cHUv7zKA=
-X-Received: by 2002:a17:902:b288:b029:111:4a4f:9917 with SMTP id
- u8-20020a170902b288b02901114a4f9917mr12241576plr.70.1623126182341; Mon, 07
- Jun 2021 21:23:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAM6ytZoLkndXUaBxDDk36y_QW3JfNwtksQm3XAdUk+GLr28rEw@mail.gmail.com>
-In-Reply-To: <CAM6ytZoLkndXUaBxDDk36y_QW3JfNwtksQm3XAdUk+GLr28rEw@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 7 Jun 2021 21:22:51 -0700
-Message-ID: <CAM_iQpUpQ_b5UbKRA+crSmhYeDN8PFE-KaBOp9je-zOkhg=3Kg@mail.gmail.com>
-Subject: Re: CAP_NET_ADMIN check in tc_ctl_action() makes it not allowed for
- user ns root
-To:     tianyu zhou <tyjoe.linux@gmail.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=HhTJvhXQRpXrK1DarhAlRYbBfua3nyn/yHyOslBWJcs=;
+        b=G/7F7j1I4AAGhglIGHww5jzGWKZk2iWOpwc1t5fEqziUJlJ030h1GxIivWIYyNFGq2
+         KRMCsTDhyWKLFzVVBK0BWrNx9km19s7VW/Pdei1/szgbIjWHe7s3LToMWnUkEOzIb2k5
+         zHxbAX+1LdUHfS9W29fdXcB+9Dzds4xCS8BKjHBcxZ173aV/QpCXGKwAfG7zK3I60FZ/
+         EX0ocggdnC3YNUgM9LTRA3N+2n8egp4JLW72k2iFcOtfKzJgCWXSAAs9bwP9M4Ap6ZKI
+         b2v/eOMmDmF1v/EZ5Wxy+/r1FyiO/+CmuIn/i3wznLj6WsZS6jUQJLIQOw1H/ruVQyP0
+         tcxg==
+X-Gm-Message-State: AOAM532yF8+l48VJxxILaDXMHycHb8V8zel9RQexomcHH+dFwjFOW9cI
+        TE9V4x9oq5H2ZE/H268JveyGHT7gMP/qqA==
+X-Google-Smtp-Source: ABdhPJwOGDkpPewucg2h667ejKhMAaKvXo7/m9DONKIyJ4jEepIVd+ykVanF4zO4tHR7NDs1ZDDbqg==
+X-Received: by 2002:a17:906:2c1b:: with SMTP id e27mr21626901ejh.5.1623127998599;
+        Mon, 07 Jun 2021 21:53:18 -0700 (PDT)
+Received: from eldamar (80-218-24-251.dclient.hispeed.ch. [80.218.24.251])
+        by smtp.gmail.com with ESMTPSA id d5sm8460426edt.49.2021.06.07.21.53.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Jun 2021 21:53:17 -0700 (PDT)
+Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
+Date:   Tue, 8 Jun 2021 06:53:17 +0200
+From:   Salvatore Bonaccorso <carnil@debian.org>
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linma <linma@zju.edu.cn>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Hao Xiong <mart1n@zju.edu.cn>, stable <stable@vger.kernel.org>
+Subject: Re: [PATCH v2] Bluetooth: fix the erroneous flush_work() order
+Message-ID: <YL73vTBtgWkaup+A@eldamar.lan>
+References: <20210525123902.189012-1-gregkh@linuxfoundation.org>
+ <BF0493D4-AB96-44D3-8229-9EA6D084D260@holtmann.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BF0493D4-AB96-44D3-8229-9EA6D084D260@holtmann.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 1, 2021 at 1:17 AM tianyu zhou <tyjoe.linux@gmail.com> wrote:
->
-> Hi, from commit "net: Allow tc changes in user
-> namespaces"(SHA:4e8bbb819d1594a01f91b1de83321f68d3e6e245) I learned
-> that "root in a user namespace may set tc rules inside that
-> namespace".
->
-> I do see the CAP_NET_ADMIN check in tc_* functions has changed from
-> capable() to ns_capable() (which is now in term of
-> netlink_ns_capable())
->
-> However, in function tc_ctl_action(), the check for CAP_NET_ADMIN is
-> still netlink_capable which does not allow user ns root to pass this
-> check.
->
-> static int tc_ctl_action(struct sk_buff *skb, struct nlmsghdr *n,
->              struct netlink_ext_ack *extack)
-> {
->     ...
->     if ((n->nlmsg_type != RTM_GETACTION) &&
->         !netlink_capable(skb, CAP_NET_ADMIN))
->         return -EPERM;
->     ...
-> }
->
-> So is this a check missing changing for user ns?
+Hi Greg,
 
-It seems so, I do not see TC action is any different with other
-TC objects here. So feel free to send a patch.
+On Thu, May 27, 2021 at 10:14:59PM +0200, Marcel Holtmann wrote:
+> Hi Greg,
+> 
+> > In the cleanup routine for failed initialization of HCI device,
+> > the flush_work(&hdev->rx_work) need to be finished before the
+> > flush_work(&hdev->cmd_work). Otherwise, the hci_rx_work() can
+> > possibly invoke new cmd_work and cause a bug, like double free,
+> > in late processings.
+> > 
+> > This was assigned CVE-2021-3564.
+> > 
+> > This patch reorder the flush_work() to fix this bug.
+> > 
+> > Cc: Marcel Holtmann <marcel@holtmann.org>
+> > Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> > Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: linux-bluetooth@vger.kernel.org
+> > Cc: netdev@vger.kernel.org
+> > Cc: linux-kernel@vger.kernel.org
+> > Signed-off-by: Lin Ma <linma@zju.edu.cn>
+> > Signed-off-by: Hao Xiong <mart1n@zju.edu.cn>
+> > Cc: stable <stable@vger.kernel.org>
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > ---
+> > net/bluetooth/hci_core.c | 7 ++++++-
+> > 1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> patch has been applied to bluetooth-stable tree.
 
-Thanks.
+Can you queue this one as well for the stable series? It is
+6a137caec23aeb9e036cdfd8a46dd8a366460e5d commit upstream and in
+5.13-rc5.
+
+Regards,
+Salvatore
