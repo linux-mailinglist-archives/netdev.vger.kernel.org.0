@@ -2,165 +2,693 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A9AC39F39E
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 12:34:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A670339F39F
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 12:34:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231300AbhFHKfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 06:35:50 -0400
-Received: from mail-dm6nam10on2088.outbound.protection.outlook.com ([40.107.93.88]:20637
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        id S231326AbhFHKf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 06:35:59 -0400
+Received: from mail-dm6nam11on2044.outbound.protection.outlook.com ([40.107.223.44]:37120
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231294AbhFHKft (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Jun 2021 06:35:49 -0400
+        id S231382AbhFHKf4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Jun 2021 06:35:56 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dVwRmYM3K9m2JS+2x8xdKUYzfiZ/vBu58hs9fAI393G92bwOv8siWCb1JoN+/c/HSHlmvKaVZu0jxEYKnKKCjRbBTSlewQywCJeufL2+hPgogP208RNhRv9KZrPSjlvmnTLptyhP0hSKYE0NMYxrZOkasmBePxwpiTCb6zj9TL/c3or1R6hUpfLXIiMwXuF3KDtBx/zSJK+iPSPkWtKoehv3WA8en3YVxIMv3hq/2IrkoeLCDldQTLJ3Usj9vzZtGWMhkwsubosJMyVTrMeuM04Cqe+w9R2bnb5Yf0unosIj70cD0/NREC80Vnu0uEAA0753c3xOxOW67LW+OyHmYA==
+ b=JwBsXzEMLzjhDKEgd6lM9SL14OpsRYaz+B/U9OcZruhxjoMtzFCRp63JFwBxpRknjCsS85oI//2znFlAjnEKqRrFik8kVWBuT65pHjMrItetR3bB/vnKSyimr0qgSHz8ppIVyLfj7cAguylLFgfLjvkjyB8SdXvXSZvEPQMV62pri101/7bPbEjxRjpspThPFDfmKpCIWBH8OFaXMchCCZFq5iBgksERtFIrDfussAagrcNDT2QtyAVpxhgsMrIlnsfbqjsUXkI6G3Qo1DhgZAjx8KYZKOYMP5fl7sjnjHK+tpEUoJChuqJxruQ9DzT9VOqHBA66cUrtnNqpTW983w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=axG7Kdv5ctwhHhs5BnMlfAQav9V+rkcs6Nu7bgXQwo8=;
- b=mamWwJT9/HUi/tq9LcHgtl53gq41arpTU0vHu+O7IhBuO++DpEZg+jTZhQFirO9s8+ag1m82GvbqLjv4lXJAmuZKQLmjsKCBrp95vyoPnHNR2sVXOmHPr9mrUWeaE5u+4zFavgyOWOjNTN509Lt86uRMXzKqpX9DYX9EkG0QY99XGBaUc+ZdRGmSw0214PIaXh/ub60j7Wh5aJeEO19J6VQqTc4o5m6nIM3lHvU/zi1cYT4zc3bSr2iFYU6JgTQarlZ2xh6+myaWJpKssu495TtRsKS4dAiJdjqJdSP9Y+QaEmZoO1dg9P4uxHJKPHT0jeaMnC+n4IN35GTSNlz6kQ==
+ bh=LaNa4f+Tk6r7Rlq5o/NGIcd3iN8kRuD+/wY2yqR38x4=;
+ b=I0C8bIA62AnFsrOLRny4ouwQaOGql8llTceryUmF2AnEJ3K5/2D6PwCZ376v+XfiPqJHCnUqWT3aJdqix/BDmdlSPOX4aKwgv6w8/v9s+2wylC3i0oeDBxjab5oeP3JAQnj7qAU7/Yd5ZYaenOF4V9e53uNkkNfl+UWuAKdg18P+lLaBkd4uXvUj2C3bmoHBnc40ZvPC7hwkbzMqvj3PpHDKU0hftCctG3j4r7dFUClP57nluOGeSFb3s9Ks7WS64haev704Oa3st+WGGH6rJl7VEtrggkR1mNsk8/cZb1+f1hQN2a3VzjUmxEAvDyR9NyqZ1BZEPesq8hokyCi/2A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=thebollingers.org smtp.mailfrom=nvidia.com;
+ 216.228.112.36) smtp.rcpttodomain=thebollingers.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=axG7Kdv5ctwhHhs5BnMlfAQav9V+rkcs6Nu7bgXQwo8=;
- b=Dt9znM5VVqDVMgkyHLQG/LhSZsHDDGsdt8KqQ5NjfXcVGlYpNWiiM5v6OGiMZXPDSTXsDo+TDVVhf4fwuTqjI72Vzs328oqHFTzgAeQpihDEqspLcZy5/0EJdEeN6y9k8oHrB2D0N+6o1FxWmkMOfVJPQ+9/EIz0+VObUWB13sYOGdjpKlqFpXTSH7OBnoMxknJN0lyy6men71/5fyF0UnE5pQtHOq8U6pcZS32kM3+ih2VBhifW9Aa4a5w66RLBnoDT/dqJ9piqE/MM7W6v7ZpcVPz0GJV/LrDB8MDa7hq/bl+NzUCr1WykgWJq8Nerir2kNal6PSlqWwQqj/6NAg==
-Received: from MW4PR04CA0176.namprd04.prod.outlook.com (2603:10b6:303:85::31)
- by DM6PR12MB3529.namprd12.prod.outlook.com (2603:10b6:5:15d::18) with
+ bh=LaNa4f+Tk6r7Rlq5o/NGIcd3iN8kRuD+/wY2yqR38x4=;
+ b=gLPazaoX0qYQUN52i7VWcoIdMYaI6TyCulADGm4rep6gS3liKH8BaMzac/d2ZJlb8HWyfk05jvUp3A5ywtiAS3lwLNT8ieWn5J/04oInQItxOqDVTXG6d9mwPRCgtB7HLNSCEYnvoS0TNzSglrExQGFk/w+Q5p4wfBskt49nlLToCBwDVy6rfTN1ItlX2oSLByGrj1KkiK4W8GjN4mZTxSrJVhEFdtPHHvCSYxo55YfmO5lnLDu6lP4n0VXRvVgwgHWdsXDfe86Ri42LhRlDw5aDm8plval25wUsvg+fdKHO0lMJRQsI/uQtkfgyz/gCUr9xpQWsy6dhYMe94XzCXg==
+Received: from MW3PR06CA0003.namprd06.prod.outlook.com (2603:10b6:303:2a::8)
+ by MN2PR12MB3856.namprd12.prod.outlook.com (2603:10b6:208:168::29) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.25; Tue, 8 Jun
- 2021 10:33:55 +0000
-Received: from CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:85:cafe::61) by MW4PR04CA0176.outlook.office365.com
- (2603:10b6:303:85::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.24; Tue, 8 Jun
+ 2021 10:34:01 +0000
+Received: from CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:2a:cafe::31) by MW3PR06CA0003.outlook.office365.com
+ (2603:10b6:303:2a::8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.20 via Frontend
- Transport; Tue, 8 Jun 2021 10:33:55 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
+ Transport; Tue, 8 Jun 2021 10:34:01 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
  smtp.mailfrom=nvidia.com; thebollingers.org; dkim=none (message not signed)
  header.d=none;thebollingers.org; dmarc=pass action=none
  header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- CO1NAM11FT012.mail.protection.outlook.com (10.13.175.192) with Microsoft SMTP
+ 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.36; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.36) by
+ CO1NAM11FT005.mail.protection.outlook.com (10.13.174.147) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4195.22 via Frontend Transport; Tue, 8 Jun 2021 10:33:55 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 8 Jun
- 2021 10:33:53 +0000
+ 15.20.4195.22 via Frontend Transport; Tue, 8 Jun 2021 10:34:01 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 8 Jun
+ 2021 10:34:00 +0000
 Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 8 Jun 2021 10:33:48 +0000
+ Transport; Tue, 8 Jun 2021 10:33:54 +0000
 From:   Moshe Shemesh <moshe@nvidia.com>
 To:     Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>,
         "Jakub Kicinski" <kuba@kernel.org>,
         Don Bollinger <don@thebollingers.org>, <netdev@vger.kernel.org>
 CC:     Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>
-Subject: [PATCH ethtool v3 0/4] Extend module EEPROM API
-Date:   Tue, 8 Jun 2021 13:32:24 +0300
-Message-ID: <1623148348-2033898-1-git-send-email-moshe@nvidia.com>
+Subject: [PATCH ethtool v3 1/4] ethtool: Add netlink handler for getmodule (-m)
+Date:   Tue, 8 Jun 2021 13:32:25 +0300
+Message-ID: <1623148348-2033898-2-git-send-email-moshe@nvidia.com>
 X-Mailer: git-send-email 1.8.4.3
+In-Reply-To: <1623148348-2033898-1-git-send-email-moshe@nvidia.com>
+References: <1623148348-2033898-1-git-send-email-moshe@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8b755d35-b5c5-41cc-800b-08d92a68eaf7
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3529:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB35290C8992BD01A120D107E2D4379@DM6PR12MB3529.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Office365-Filtering-Correlation-Id: 12924a51-7257-4822-eafa-08d92a68ee67
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3856:
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3856EEB4E050632C66368010D4379@MN2PR12MB3856.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XA6pIZ91NUrq/rSHHBIlAPa1S42x88Py7eLZn9RGCGVxDcMa2ECtp9e2JK+V3CKLhHPD+5WnxgHnoDzFcTqj9qQwXFCnjRsm9P+GzvQUC5Udcc+gYIrNhDZlS1tA+Be4EqSzwm3Av6+mhK4QgkkL5y86/vFUrh8rta5I8sDOLcB1H/ruC2kOnXzmCYVUyy+TS+pHCF4hB1Kv3vT+zTjKVSXau0SMszRTsNBPOlRSgL7yoaWQnZkdj2cZaAjge9ixH3PK6dxYZaXDEZLW/1rSwRjrob1J+alW4xbIBflTkUlnqsGsy0fgr5ApXrjz41d50FY7S6qCB0OUVlo02G3RQGUmUn26JjItQgXj8xtcNyuWI1ZBT/jSMPu2sIEFshqhvLddRwyWM3KOA5WFEb4SS+6iuEI6WEMr9swri1uLAFj5uZwGP+1W0xHRc/jRBjJXYqJfIvpG6xarm03bUKj6Hy3q/2WdyOwYQDvQx8np9ZXUL4T8L0jqkVKfzgVPYR5YY1BFxJS7FsEHw88vMiUgt9mm+obpRsxx7difK5tzad0A5suAxySKkWKoCSjeZX/SPXyihiXKhB1o5OdWL33ZmcS0xwtgINgMFY1B2jPygRj3gItBH5hPQ9d4U6tbTyGpHOSpjMrhzPU60MhQT0/jsDhbhZNla/eiAwJLu7rYYEI=
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid04.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(376002)(136003)(346002)(39860400002)(36840700001)(46966006)(7636003)(336012)(426003)(2616005)(316002)(36860700001)(82740400003)(4326008)(82310400003)(70206006)(356005)(70586007)(86362001)(36756003)(7696005)(36906005)(6666004)(47076005)(5660300002)(54906003)(8936002)(83380400001)(110136005)(478600001)(8676002)(186003)(2906002)(26005)(107886003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: bLH5INZuxCa51TdmkblBm8vdUTKe0/fm35DfsWRSto0jVjuQDvmoYRfvp6fiVrSbHcIyxHLeHTz1STh05etPSexWQVAUwjsIu/RZkM6ro2BAPaldP1IN3e1TLknI19BDH5rkPqnEiX6OKpUKGvTRCXBiO71NghsJbAg3o8ZaYU5C1WtN743fQ8VM2g0oYs16P7DGu0JSOZ2tSgClCduRZXmrkJtBRv1YA4XmbBU+jdN/QOxx52JNiyE9XwpT+LW72KIGztmLGhppURdgwl0OCE+nAIT7KMKypftDeQwnqdaqJypRjrBfQr1Aa3YBGx3/yYMm1mX14whpxgfGzBZPidSJmjE6r3j/oNKRs2UVbuXydu9C8QB9BtZfGp2lxSAwEDernPzgrmDJXTr9jCK77RzwZRrLtiwP3ZRLCTxFV9RswqmwqAuO6048aoOmZgznfC3/oBviOUaHo1SHSlwTe/ndbmlFJbBIgIvyFWRgUjZ9yVndp48LirHqJwBp0K83WriYH3YUtHvhYpo8KMuX5DAmkH+SIiitO555i3gkhh+CHmehqvFFD14DGvRL3hImo1TYTMUTv5uWsODzXz1+4dgxnBS65EjzL8xyPxVak3H96vSvVZfOo6MWTnypRCFR3OCQVLP4SnBLfNWV9qlIisiTxxwysKowr2tWmuBc2JA=
+X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(136003)(396003)(39860400002)(376002)(46966006)(36840700001)(4326008)(5660300002)(36906005)(316002)(7696005)(54906003)(107886003)(6666004)(2906002)(82310400003)(110136005)(82740400003)(47076005)(356005)(83380400001)(36756003)(26005)(186003)(36860700001)(8676002)(426003)(30864003)(70586007)(8936002)(478600001)(2616005)(70206006)(7636003)(86362001)(336012);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2021 10:33:55.5660
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2021 10:34:01.3069
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8b755d35-b5c5-41cc-800b-08d92a68eaf7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12924a51-7257-4822-eafa-08d92a68ee67
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3529
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3856
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ethtool supports module EEPROM dumps via the `ethtool -m <dev>` command.
-But in current state its functionality is limited - offset and length
-parameters, which are used to specify a linear desired region of EEPROM
-data to dump, is not enough, considering emergence of complex module
-EEPROM layouts such as CMIS.
+From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 
-Moreover, CMIS extends the amount of pages that may be accessible by
-introducing another parameter for page addressing - banks. Besides,
-currently module EEPROM is represented as a chunk of concatenated pages,
-where lower 128 bytes of all pages, except page 00h, are omitted. Offset
-and length are used to address parts of this fake linear memory. But in
-practice drivers, which implement get_module_info() and
-get_module_eeprom() ethtool ops still calculate page number and set I2C
-address on their own.
+Implement "ethtool -m <dev>" subcommand using netlink and extend the
+interface for new module EEPROM standards. Currently, ethtool supports
+module EEPROM dumps of continuous memory regions, which are specified
+using a pair of parameters - offset and length. But due to emergence of
+new standards such as CMIS 4.0, which further extends possible
+addressed memory, this approach shows its limitations.
 
-This series adds support in `ethtool -m` of dumping an arbitrary page
-specified by page number, bank number and I2C address. Implement netlink
-handler for `ethtool -m` in order to make such requests to the kernel
-and extend CLI by adding corresponding parameters.
-New command line format:
- ethtool -m <dev> [hex on|off] [raw on|off] [offset N] [length N] [page N] [bank N] [i2c N]
+Extend command line interface in order to support dumps of arbitrary
+pages including CMIS specific banked pages:
+ ethtool -m <dev> [page N] [bank N] [i2c N]
 
-Netlink infrastructure works on per-page basis and allows dumps of a
-single page at once. But in case user requests human-readable output,
-which currently may require more than one page, userspace can make such
-additional calls to kernel on demand and place pages in a linked list.
-It allows to get pages from cache on demand and pass them to refactored
-SFF decoders.
+Command example:
+ # ethtool -m eth2 page 1 offset 0x80 length 0x20
 
-Change Log:
-v2 -> v3:
-- Removed spec version from CMIS identifiers by changing 'CMIS4' and 'cmis4' to 'CMIS' and 'cmis' respectively.
+ Offset          Values
+ ------          ------
+ 0x0080:         11 00 23 80 00 00 00 00 00 00 00 08 ff 00 00 00
+ 0x0090:         00 00 01 a0 4d 65 6c 6c 61 6e 6f 78 20 20 20 20
 
-v1 -> v2:
-- Changed offset defines to specification values.
-- Added default offset value (128) if page number is specified.
-- Fixed return values.
-- Removed page_available()
-
-
-Vladyslav Tarasiuk (4):
-  ethtool: Add netlink handler for getmodule (-m)
-  ethtool: Refactor human-readable module EEPROM output for new API
-  ethtool: Rename QSFP-DD identifiers to use CMIS
-  ethtool: Update manpages to reflect changes to getmodule (-m) command
-
- Makefile.am             |   3 +-
- cmis.c                  | 359 +++++++++++++++++++++++++++++++++++++++++
- cmis.h                  | 128 +++++++++++++++
- ethtool.8.in            |  14 ++
+Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+---
+ Makefile.am             |   1 +
  ethtool.c               |   4 +
- internal.h              |  12 ++
+ internal.h              |  10 ++
  list.h                  |  34 ++++
  netlink/desc-ethtool.c  |  13 ++
  netlink/extapi.h        |   2 +
- netlink/module-eeprom.c | 416 ++++++++++++++++++++++++++++++++++++++++++++++++
- qsfp-dd.c               | 333 --------------------------------------
- qsfp-dd.h               | 125 ---------------
- qsfp.c                  | 130 ++++++++-------
- qsfp.h                  |  51 +++---
- sff-common.c            |   3 +
- sff-common.h            |   3 +-
- 16 files changed, 1090 insertions(+), 540 deletions(-)
- create mode 100644 cmis.c
- create mode 100644 cmis.h
+ netlink/module-eeprom.c | 404 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 468 insertions(+)
  create mode 100644 list.h
  create mode 100644 netlink/module-eeprom.c
- delete mode 100644 qsfp-dd.c
- delete mode 100644 qsfp-dd.h
 
+diff --git a/Makefile.am b/Makefile.am
+index 75c2456..6abd2b7 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -38,6 +38,7 @@ ethtool_SOURCES += \
+ 		  netlink/eee.c netlink/tsinfo.c netlink/fec.c \
+ 		  netlink/stats.c \
+ 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
++		  netlink/module-eeprom.c \
+ 		  netlink/desc-rtnl.c netlink/cable_test.c netlink/tunnels.c \
+ 		  uapi/linux/ethtool_netlink.h \
+ 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
+diff --git a/ethtool.c b/ethtool.c
+index 8ed5a33..33a0a49 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -5897,11 +5897,15 @@ static const struct option args[] = {
+ 	{
+ 		.opts	= "-m|--dump-module-eeprom|--module-info",
+ 		.func	= do_getmodule,
++		.nlfunc = nl_getmodule,
+ 		.help	= "Query/Decode Module EEPROM information and optical diagnostics if available",
+ 		.xhelp	= "		[ raw on|off ]\n"
+ 			  "		[ hex on|off ]\n"
+ 			  "		[ offset N ]\n"
+ 			  "		[ length N ]\n"
++			  "		[ page N ]\n"
++			  "		[ bank N ]\n"
++			  "		[ i2c N ]\n"
+ 	},
+ 	{
+ 		.opts	= "--show-eee",
+diff --git a/internal.h b/internal.h
+index 27da8ea..2affebe 100644
+--- a/internal.h
++++ b/internal.h
+@@ -216,6 +216,16 @@ static inline int ethtool_link_mode_set_bit(unsigned int nr, u32 *mask)
+ 	return 0;
+ }
+ 
++/* Struct for managing module EEPROM pages */
++struct ethtool_module_eeprom {
++	u32	offset;
++	u32	length;
++	u8	page;
++	u8	bank;
++	u8	i2c_address;
++	u8	*data;
++};
++
+ /* Context for sub-commands */
+ struct cmd_context {
+ 	const char *devname;	/* net device name */
+diff --git a/list.h b/list.h
+new file mode 100644
+index 0000000..aa97fdd
+--- /dev/null
++++ b/list.h
+@@ -0,0 +1,34 @@
++#ifndef ETHTOOL_LIST_H__
++#define ETHTOOL_LIST_H__
++
++#include <unistd.h>
++
++/* Generic list utilities */
++
++struct list_head {
++	struct list_head *next, *prev;
++};
++
++#define LIST_HEAD_INIT(name) { &(name), &(name) }
++
++static inline void list_add(struct list_head *new, struct list_head *head)
++{
++	head->next->prev = new;
++	new->next = head->next;
++	new->prev = head;
++	head->next = new;
++}
++
++static inline void list_del(struct list_head *entry)
++{
++	entry->next->prev = entry->prev;
++	entry->prev->next = entry->next;
++	entry->next = NULL;
++	entry->prev = NULL;
++}
++
++#define list_for_each_safe(pos, n, head) \
++	for (pos = (head)->next, n = pos->next; pos != (head); \
++		pos = n, n = pos->next)
++
++#endif
+diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
+index 8ea7c53..d6fc4e2 100644
+--- a/netlink/desc-ethtool.c
++++ b/netlink/desc-ethtool.c
+@@ -363,6 +363,17 @@ static const struct pretty_nla_desc __stats_desc[] = {
+ 	NLATTR_DESC_NESTED(ETHTOOL_A_STATS_GRP, stats_grp),
+ };
+ 
++const struct pretty_nla_desc __module_eeprom_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_MODULE_EEPROM_UNSPEC),
++	NLATTR_DESC_NESTED(ETHTOOL_A_MODULE_EEPROM_HEADER, header),
++	NLATTR_DESC_U32(ETHTOOL_A_MODULE_EEPROM_OFFSET),
++	NLATTR_DESC_U32(ETHTOOL_A_MODULE_EEPROM_LENGTH),
++	NLATTR_DESC_U8(ETHTOOL_A_MODULE_EEPROM_PAGE),
++	NLATTR_DESC_U8(ETHTOOL_A_MODULE_EEPROM_BANK),
++	NLATTR_DESC_U8(ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS),
++	NLATTR_DESC_BINARY(ETHTOOL_A_MODULE_EEPROM_DATA)
++};
++
+ const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
+ 	NLMSG_DESC_INVALID(ETHTOOL_MSG_USER_NONE),
+ 	NLMSG_DESC(ETHTOOL_MSG_STRSET_GET, strset),
+@@ -396,6 +407,7 @@ const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
+ 	NLMSG_DESC(ETHTOOL_MSG_FEC_GET, fec),
+ 	NLMSG_DESC(ETHTOOL_MSG_FEC_SET, fec),
+ 	NLMSG_DESC(ETHTOOL_MSG_STATS_GET, stats),
++	NLMSG_DESC(ETHTOOL_MSG_MODULE_EEPROM_GET, module_eeprom),
+ };
+ 
+ const unsigned int ethnl_umsg_n_desc = ARRAY_SIZE(ethnl_umsg_desc);
+@@ -434,6 +446,7 @@ const struct pretty_nlmsg_desc ethnl_kmsg_desc[] = {
+ 	NLMSG_DESC(ETHTOOL_MSG_FEC_GET_REPLY, fec),
+ 	NLMSG_DESC(ETHTOOL_MSG_FEC_NTF, fec),
+ 	NLMSG_DESC(ETHTOOL_MSG_STATS_GET_REPLY, stats),
++	NLMSG_DESC(ETHTOOL_MSG_MODULE_EEPROM_GET_REPLY, module_eeprom),
+ };
+ 
+ const unsigned int ethnl_kmsg_n_desc = ARRAY_SIZE(ethnl_kmsg_desc);
+diff --git a/netlink/extapi.h b/netlink/extapi.h
+index 7015907..91bf02b 100644
+--- a/netlink/extapi.h
++++ b/netlink/extapi.h
+@@ -44,6 +44,7 @@ int nl_sfec(struct cmd_context *ctx);
+ bool nl_gstats_chk(struct cmd_context *ctx);
+ int nl_gstats(struct cmd_context *ctx);
+ int nl_monitor(struct cmd_context *ctx);
++int nl_getmodule(struct cmd_context *ctx);
+ 
+ void nl_monitor_usage(void);
+ 
+@@ -97,6 +98,7 @@ static inline void nl_monitor_usage(void)
+ #define nl_sfec			NULL
+ #define nl_gstats_chk		NULL
+ #define nl_gstats		NULL
++#define nl_getmodule		NULL
+ 
+ #endif /* ETHTOOL_ENABLE_NETLINK */
+ 
+diff --git a/netlink/module-eeprom.c b/netlink/module-eeprom.c
+new file mode 100644
+index 0000000..16fe09e
+--- /dev/null
++++ b/netlink/module-eeprom.c
+@@ -0,0 +1,404 @@
++/*
++ * module-eeprom.c - netlink implementation of module eeprom get command
++ *
++ * ethtool -m <dev>
++ */
++
++#include <errno.h>
++#include <string.h>
++#include <stdio.h>
++#include <stddef.h>
++
++#include "../sff-common.h"
++#include "../qsfp.h"
++#include "../qsfp-dd.h"
++#include "../internal.h"
++#include "../common.h"
++#include "../list.h"
++#include "netlink.h"
++#include "parser.h"
++
++#define ETH_I2C_ADDRESS_LOW	0x50
++#define ETH_I2C_ADDRESS_HIGH	0x51
++#define ETH_I2C_MAX_ADDRESS	0x7F
++
++static struct cmd_params
++{
++	u8 dump_hex;
++	u8 dump_raw;
++	u32 offset;
++	u32 length;
++	u32 page;
++	u32 bank;
++	u32 i2c_address;
++} getmodule_cmd_params;
++
++static const struct param_parser getmodule_params[] = {
++	{
++		.arg		= "hex",
++		.handler	= nl_parse_u8bool,
++		.dest_offset	= offsetof(struct cmd_params, dump_hex),
++		.min_argc	= 1,
++	},
++	{
++		.arg		= "raw",
++		.handler	= nl_parse_u8bool,
++		.dest_offset	= offsetof(struct cmd_params, dump_raw),
++		.min_argc	= 1,
++	},
++	{
++		.arg		= "offset",
++		.handler	= nl_parse_direct_u32,
++		.dest_offset	= offsetof(struct cmd_params, offset),
++		.min_argc	= 1,
++	},
++	{
++		.arg		= "length",
++		.handler	= nl_parse_direct_u32,
++		.dest_offset	= offsetof(struct cmd_params, length),
++		.min_argc	= 1,
++	},
++	{
++		.arg		= "page",
++		.handler	= nl_parse_direct_u32,
++		.dest_offset	= offsetof(struct cmd_params, page),
++		.min_argc	= 1,
++	},
++	{
++		.arg		= "bank",
++		.handler	= nl_parse_direct_u32,
++		.dest_offset	= offsetof(struct cmd_params, bank),
++		.min_argc	= 1,
++	},
++	{
++		.arg		= "i2c",
++		.handler	= nl_parse_direct_u32,
++		.dest_offset	= offsetof(struct cmd_params, i2c_address),
++		.min_argc	= 1,
++	},
++	{}
++};
++
++struct page_entry {
++	struct list_head link;
++	struct ethtool_module_eeprom *page;
++};
++
++static struct list_head page_list = LIST_HEAD_INIT(page_list);
++
++static int cache_add(struct ethtool_module_eeprom *page)
++{
++	struct page_entry *list_element;
++
++	if (!page)
++		return -1;
++	list_element = malloc(sizeof(*list_element));
++	if (!list_element)
++		return -ENOMEM;
++	list_element->page = page;
++
++	list_add(&list_element->link, &page_list);
++	return 0;
++}
++
++static void page_free(struct ethtool_module_eeprom *page)
++{
++	free(page->data);
++	free(page);
++}
++
++static void cache_del(struct ethtool_module_eeprom *page)
++{
++	struct ethtool_module_eeprom *entry;
++	struct list_head *head, *next;
++
++	list_for_each_safe(head, next, &page_list) {
++		entry = ((struct page_entry *)head)->page;
++		if (entry == page) {
++			list_del(head);
++			free(head);
++			page_free(entry);
++			break;
++		}
++	}
++}
++
++static void cache_free(void)
++{
++	struct ethtool_module_eeprom *entry;
++	struct list_head *head, *next;
++
++	list_for_each_safe(head, next, &page_list) {
++		entry = ((struct page_entry *)head)->page;
++		list_del(head);
++		free(head);
++		page_free(entry);
++	}
++}
++
++static struct ethtool_module_eeprom *page_join(struct ethtool_module_eeprom *page_a,
++					       struct ethtool_module_eeprom *page_b)
++{
++	struct ethtool_module_eeprom *joined_page;
++	u32 total_length;
++
++	if (!page_a || !page_b ||
++	    page_a->page != page_b->page ||
++	    page_a->bank != page_b->bank ||
++	    page_a->i2c_address != page_b->i2c_address)
++		return NULL;
++
++	total_length = page_a->length + page_b->length;
++	joined_page = calloc(1, sizeof(*joined_page));
++	joined_page->data = calloc(1, total_length);
++	joined_page->page = page_a->page;
++	joined_page->bank = page_a->bank;
++	joined_page->length = total_length;
++	joined_page->i2c_address = page_a->i2c_address;
++
++	if (page_a->offset < page_b->offset) {
++		memcpy(joined_page->data, page_a->data, page_a->length);
++		memcpy(joined_page->data + page_a->length, page_b->data, page_b->length);
++		joined_page->offset = page_a->offset;
++	} else {
++		memcpy(joined_page->data, page_b->data, page_b->length);
++		memcpy(joined_page->data + page_b->length, page_a->data, page_a->length);
++		joined_page->offset = page_b->offset;
++	}
++
++	return joined_page;
++}
++
++static struct ethtool_module_eeprom *cache_get(u32 page, u32 bank, u8 i2c_address)
++{
++	struct ethtool_module_eeprom *entry;
++	struct list_head *head, *next;
++
++	list_for_each_safe(head, next, &page_list) {
++		entry = ((struct page_entry *)head)->page;
++		if (entry->page == page && entry->bank == bank &&
++		    entry->i2c_address == i2c_address)
++			return entry;
++	}
++
++	return NULL;
++}
++
++static int getmodule_page_fetch_reply_cb(const struct nlmsghdr *nlhdr,
++					 void *data)
++{
++	const struct nlattr *tb[ETHTOOL_A_MODULE_EEPROM_DATA + 1] = {};
++	DECLARE_ATTR_TB_INFO(tb);
++	struct ethtool_module_eeprom *lower_page;
++	struct ethtool_module_eeprom *response;
++	struct ethtool_module_eeprom *request;
++	struct ethtool_module_eeprom *joined;
++	u8 *eeprom_data;
++	int ret;
++
++	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
++	if (ret < 0)
++		return ret;
++
++	if (!tb[ETHTOOL_A_MODULE_EEPROM_DATA]) {
++		fprintf(stderr, "Malformed netlink message (getmodule)\n");
++		return MNL_CB_ERROR;
++	}
++
++	response = calloc(1, sizeof(*response));
++	if (!response)
++		return -ENOMEM;
++
++	request = (struct ethtool_module_eeprom *)data;
++	response->offset = request->offset;
++	response->page = request->page;
++	response->bank = request->bank;
++	response->i2c_address = request->i2c_address;
++	response->length = mnl_attr_get_payload_len(tb[ETHTOOL_A_MODULE_EEPROM_DATA]);
++	eeprom_data = mnl_attr_get_payload(tb[ETHTOOL_A_MODULE_EEPROM_DATA]);
++
++	response->data = malloc(response->length);
++	if (!response->data) {
++		free(response);
++		return -ENOMEM;
++	}
++	memcpy(response->data, eeprom_data, response->length);
++
++	if (!request->page) {
++		lower_page = cache_get(request->page, request->bank, response->i2c_address);
++		if (lower_page) {
++			joined = page_join(lower_page, response);
++			page_free(response);
++			cache_del(lower_page);
++			return cache_add(joined);
++		}
++	}
++
++	return cache_add(response);
++}
++
++static int page_fetch(struct nl_context *nlctx, const struct ethtool_module_eeprom *request)
++{
++	struct nl_socket *nlsock = nlctx->ethnl_socket;
++	struct nl_msg_buff *msg = &nlsock->msgbuff;
++	struct ethtool_module_eeprom *page;
++	int ret;
++
++	if (!request || request->i2c_address > ETH_I2C_MAX_ADDRESS)
++		return -EINVAL;
++
++	/* Satisfy request right away, if region is already in cache */
++	page = cache_get(request->page, request->bank, request->i2c_address);
++	if (page && page->offset <= request->offset &&
++	    page->offset + page->length >= request->offset + request->length) {
++		return 0;
++	}
++
++	ret = nlsock_prep_get_request(nlsock, ETHTOOL_MSG_MODULE_EEPROM_GET,
++				      ETHTOOL_A_MODULE_EEPROM_HEADER, 0);
++	if (ret < 0)
++		return ret;
++
++	if (ethnla_put_u32(msg, ETHTOOL_A_MODULE_EEPROM_LENGTH, request->length) ||
++	    ethnla_put_u32(msg, ETHTOOL_A_MODULE_EEPROM_OFFSET, request->offset) ||
++	    ethnla_put_u8(msg, ETHTOOL_A_MODULE_EEPROM_PAGE, request->page) ||
++	    ethnla_put_u8(msg, ETHTOOL_A_MODULE_EEPROM_BANK, request->bank) ||
++	    ethnla_put_u8(msg, ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS, request->i2c_address))
++		return -EMSGSIZE;
++
++	ret = nlsock_sendmsg(nlsock, NULL);
++	if (ret < 0)
++		return ret;
++	ret = nlsock_process_reply(nlsock, getmodule_page_fetch_reply_cb, (void *)request);
++	if (ret < 0)
++		return ret;
++
++	return nlsock_process_reply(nlsock, nomsg_reply_cb, NULL);
++}
++
++static int decoder_prefetch(struct nl_context *nlctx)
++{
++	struct ethtool_module_eeprom *page_zero_lower = cache_get(0, 0, ETH_I2C_ADDRESS_LOW);
++	struct ethtool_module_eeprom request = {0};
++	u8 module_id = page_zero_lower->data[0];
++	int err = 0;
++
++	/* Fetch rest of page 00 */
++	request.i2c_address = ETH_I2C_ADDRESS_LOW;
++	request.offset = 128;
++	request.length = 128;
++	err = page_fetch(nlctx, &request);
++	if (err)
++		return err;
++
++	switch (module_id) {
++	case SFF8024_ID_QSFP:
++	case SFF8024_ID_QSFP28:
++	case SFF8024_ID_QSFP_PLUS:
++		memset(&request, 0, sizeof(request));
++		request.i2c_address = ETH_I2C_ADDRESS_LOW;
++		request.offset = 128;
++		request.length = 128;
++		request.page = 3;
++		break;
++	case SFF8024_ID_QSFP_DD:
++		memset(&request, 0, sizeof(request));
++		request.i2c_address = ETH_I2C_ADDRESS_LOW;
++		request.offset = 128;
++		request.length = 128;
++		request.page = 1;
++		break;
++	}
++
++	return page_fetch(nlctx, &request);
++}
++
++static void decoder_print(void)
++{
++	struct ethtool_module_eeprom *page_zero = cache_get(0, 0, ETH_I2C_ADDRESS_LOW);
++	u8 module_id = page_zero->data[SFF8636_ID_OFFSET];
++
++	switch (module_id) {
++	case SFF8024_ID_SFP:
++		sff8079_show_all(page_zero->data);
++		break;
++	default:
++		dump_hex(stdout, page_zero->data, page_zero->length, page_zero->offset);
++		break;
++	}
++}
++
++int nl_getmodule(struct cmd_context *ctx)
++{
++	struct ethtool_module_eeprom request = {0};
++	struct ethtool_module_eeprom *reply_page;
++	struct nl_context *nlctx = ctx->nlctx;
++	u32 dump_length;
++	u8 *eeprom_data;
++	int ret;
++
++	if (netlink_cmd_check(ctx, ETHTOOL_MSG_MODULE_EEPROM_GET, false))
++		return -EOPNOTSUPP;
++
++	nlctx->cmd = "-m";
++	nlctx->argp = ctx->argp;
++	nlctx->argc = ctx->argc;
++	nlctx->devname = ctx->devname;
++	ret = nl_parser(nlctx, getmodule_params, &getmodule_cmd_params, PARSER_GROUP_NONE, NULL);
++	if (ret < 0)
++		return ret;
++
++	if (getmodule_cmd_params.dump_hex && getmodule_cmd_params.dump_raw) {
++		fprintf(stderr, "Hex and raw dump cannot be specified together\n");
++		return -EINVAL;
++	}
++
++	request.i2c_address = ETH_I2C_ADDRESS_LOW;
++	request.length = 128;
++	ret = page_fetch(nlctx, &request);
++	if (ret)
++		goto cleanup;
++
++#ifdef ETHTOOL_ENABLE_PRETTY_DUMP
++	if (getmodule_cmd_params.page || getmodule_cmd_params.bank ||
++	    getmodule_cmd_params.offset || getmodule_cmd_params.length)
++#endif
++		getmodule_cmd_params.dump_hex = true;
++
++	request.offset = getmodule_cmd_params.offset;
++	request.length = getmodule_cmd_params.length ?: 128;
++	request.page = getmodule_cmd_params.page;
++	request.bank = getmodule_cmd_params.bank;
++	request.i2c_address = getmodule_cmd_params.i2c_address ?: ETH_I2C_ADDRESS_LOW;
++
++	if (request.page && !request.offset)
++		request.offset = 128;
++
++	if (getmodule_cmd_params.dump_hex || getmodule_cmd_params.dump_raw) {
++		ret = page_fetch(nlctx, &request);
++		if (ret < 0)
++			goto cleanup;
++		reply_page = cache_get(request.page, request.bank, request.i2c_address);
++		if (!reply_page) {
++			ret = -EINVAL;
++			goto cleanup;
++		}
++
++		eeprom_data = reply_page->data + (request.offset - reply_page->offset);
++		dump_length = reply_page->length < request.length ? reply_page->length
++								  : request.length;
++		if (getmodule_cmd_params.dump_raw)
++			fwrite(eeprom_data, 1, request.length, stdout);
++		else
++			dump_hex(stdout, eeprom_data, dump_length, request.offset);
++	} else {
++		ret = decoder_prefetch(nlctx);
++		if (ret)
++			goto cleanup;
++		decoder_print();
++	}
++
++cleanup:
++	cache_free();
++	return ret;
++}
 -- 
 1.8.2.3
 
