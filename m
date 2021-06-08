@@ -2,212 +2,333 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34FA339F273
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 11:32:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D465639F29B
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 11:40:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbhFHJeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 05:34:05 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3798 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbhFHJeE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 05:34:04 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FzlJ66wH9zWsjv;
-        Tue,  8 Jun 2021 17:27:18 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 8 Jun 2021 17:32:09 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 8 Jun 2021
- 17:32:09 +0800
-Subject: Re: Re: [PATCH RESEND iproute2-next] devlink: Add optional controller
- user input
-To:     Parav Pandit <parav@nvidia.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Jiri Pirko <jiri@nvidia.com>,
-        "moyufeng@huawei.com" <moyufeng@huawei.com>,
-        "linuxarm@openeuler.org" <linuxarm@openeuler.org>
-References: <20210603111901.9888-1-parav@nvidia.com>
- <c50ebdd6-a388-4d39-4052-50b4966def2e@huawei.com>
- <PH0PR12MB548115AC5D6005781BAEC217DC399@PH0PR12MB5481.namprd12.prod.outlook.com>
- <a1b853ef-0c94-ba51-cf31-f1f194610204@huawei.com>
- <PH0PR12MB5481A9B54850A62DF80E3EC1DC389@PH0PR12MB5481.namprd12.prod.outlook.com>
- <338a2463-eb3a-f642-a288-9ae45f721992@huawei.com>
- <PH0PR12MB5481FB8528A90E34FA3578C1DC389@PH0PR12MB5481.namprd12.prod.outlook.com>
- <8c3e48ce-f5ed-d35d-4f5e-1b572f251bd1@huawei.com>
- <PH0PR12MB5481EA2EB1B78BC7DD92FD19DC379@PH0PR12MB5481.namprd12.prod.outlook.com>
- <17a59ab0-be25-3588-dd1e-9497652bfe23@huawei.com>
- <PH0PR12MB5481256C55F3498F63FE103DDC379@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <4e696fd6-3c7b-b48c-18da-16aa57da4d54@huawei.com>
-Date:   Tue, 8 Jun 2021 17:32:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S230421AbhFHJmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 05:42:37 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:30599 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229507AbhFHJmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 05:42:36 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id D883C7630B;
+        Tue,  8 Jun 2021 12:40:41 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1623145242;
+        bh=G/rPiVEXMO3+5PqI2e0+ezBMaov7rlBomm4aVPOPlzY=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=Ada3iUwiNLFiiseWIkh8Vy+1jvIE/kWWC9kBOuUNG+WBaKS1GhmIrgUq2I2c22EUh
+         fEmI6udlgKplNlPFvKzuJjUtyVVgyHxwzoZPqWWlpqpzj6eOyMm2tnr36VeRNA2rk8
+         hU3aatXNok/QV+lFEmPDxoLkOPMzsm+CYIJHt7vMzXVlq9K5Rl1Nlo2DnwfyV8XDoT
+         Pdh4GeOUCEdH/QdfPbldL2dZeVbxMf3oSmJ+o54/QNcEgEOTQVnV87vHIcQ1mRxM0P
+         dqWhQsejtuykPVEaqetLkCd9oMFnEbe+3UqJmZ6VOoSJJ3ajGwRei5UuWR8nXW+YSQ
+         jjUCKL/2TRT/A==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 26D5C7631B;
+        Tue,  8 Jun 2021 12:40:41 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Tue, 8
+ Jun 2021 12:40:40 +0300
+Subject: Re: [PATCH v10 11/18] virtio/vsock: dequeue callback for
+ SOCK_SEQPACKET
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+References: <20210520191357.1270473-1-arseny.krasnov@kaspersky.com>
+ <20210520191801.1272027-1-arseny.krasnov@kaspersky.com>
+ <20210603144513.ryjzauq7abnjogu3@steredhat>
+ <6b833ccf-ea93-db6a-4743-463ac1cfe817@kaspersky.com>
+ <20210604150324.winiikx5h3p6gsyy@steredhat>
+ <a81ae3cb-439f-7621-4ae6-bccd2c25b7e4@kaspersky.com>
+ <20210607110421.wkx4dj7wipwsqztj@steredhat>
+ <8e2eb802-7c5d-70b0-82b5-ec8de4fdc046@kaspersky.com>
+ <20210608082320.vs2tzgpxgr2dhxye@steredhat>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <3c35f04a-8406-d26f-27d0-becbd3c43c1b@kaspersky.com>
+Date:   Tue, 8 Jun 2021 12:40:39 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <PH0PR12MB5481256C55F3498F63FE103DDC379@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210608082320.vs2tzgpxgr2dhxye@steredhat>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme720-chm.china.huawei.com (10.1.199.116) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/08/2021 09:15:14
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 164173 [Jun 08 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
+X-KSE-AntiSpam-Info: {Tracking_phishing_log_reg_60_70}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/08/2021 09:17:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 08.06.2021 8:03:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/06/08 07:53:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/06/08 04:10:00 #16685488
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/6/8 16:47, Parav Pandit wrote:
->> From: Yunsheng Lin <linyunsheng@huawei.com>
->> Sent: Tuesday, June 8, 2021 1:06 PM
->>
->> On 2021/6/8 13:26, Parav Pandit wrote:
->>>> From: Yunsheng Lin <linyunsheng@huawei.com>
->>>> Sent: Tuesday, June 8, 2021 8:58 AM
->>>>
->>>> On 2021/6/7 19:12, Parav Pandit wrote:
->>>>>> From: Yunsheng Lin <linyunsheng@huawei.com>
->>>>>> Sent: Monday, June 7, 2021 4:27 PM
->>>>>>
->>>>
->>>> [..]
->>>>
->>>>>>>
->>>>>>>> 2. each PF's devlink instance has three types of port, which is
->>>>>>>>    FLAVOUR_PHYSICAL, FLAVOUR_PCI_PF and
->>>>>> FLAVOUR_PCI_VF(supposing I
->>>>>>>> understand
->>>>>>>>    port flavour correctly).
+
+On 08.06.2021 11:23, Stefano Garzarella wrote:
+> On Mon, Jun 07, 2021 at 04:18:38PM +0300, Arseny Krasnov wrote:
+>> On 07.06.2021 14:04, Stefano Garzarella wrote:
+>>> On Fri, Jun 04, 2021 at 09:03:26PM +0300, Arseny Krasnov wrote:
+>>>> On 04.06.2021 18:03, Stefano Garzarella wrote:
+>>>>> On Fri, Jun 04, 2021 at 04:12:23PM +0300, Arseny Krasnov wrote:
+>>>>>> On 03.06.2021 17:45, Stefano Garzarella wrote:
+>>>>>>> On Thu, May 20, 2021 at 10:17:58PM +0300, Arseny Krasnov wrote:
+>>>>>>>> Callback fetches RW packets from rx queue of socket until whole record
+>>>>>>>> is copied(if user's buffer is full, user is not woken up). This is done
+>>>>>>>> to not stall sender, because if we wake up user and it leaves syscall,
+>>>>>>>> nobody will send credit update for rest of record, and sender will wait
+>>>>>>>> for next enter of read syscall at receiver's side. So if user buffer is
+>>>>>>>> full, we just send credit update and drop data.
 >>>>>>>>
->>>>>>> FLAVOUR_PCI_{PF,VF,SF} belongs to eswitch (representor) side on
->>>>>> switchdev device.
->>>>>>
->>>>>> If devlink instance or eswitch is in DEVLINK_ESWITCH_MODE_LEGACY
->>>>>> mode, the FLAVOUR_PCI_{PF,VF,SF} port instance does not need to
->>>> created?
->>>>> No. in eswitch legacy, there are no representor netdevice or devlink
->> ports.
+>>>>>>>> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>>>>>>>> ---
+>>>>>>>> v9 -> v10:
+>>>>>>>> 1) Number of dequeued bytes incremented even in case when
+>>>>>>>>    user's buffer is full.
+>>>>>>>> 2) Use 'msg_data_left()' instead of direct access to 'msg_hdr'.
+>>>>>>>> 3) Rename variable 'err' to 'dequeued_len', in case of error
+>>>>>>>>    it has negative value.
+>>>>>>>>
+>>>>>>>> include/linux/virtio_vsock.h            |  5 ++
+>>>>>>>> net/vmw_vsock/virtio_transport_common.c | 65 +++++++++++++++++++++++++
+>>>>>>>> 2 files changed, 70 insertions(+)
+>>>>>>>>
+>>>>>>>> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>>>>>>>> index dc636b727179..02acf6e9ae04 100644
+>>>>>>>> --- a/include/linux/virtio_vsock.h
+>>>>>>>> +++ b/include/linux/virtio_vsock.h
+>>>>>>>> @@ -80,6 +80,11 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
+>>>>>>>> 			       struct msghdr *msg,
+>>>>>>>> 			       size_t len, int flags);
+>>>>>>>>
+>>>>>>>> +ssize_t
+>>>>>>>> +virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
+>>>>>>>> +				   struct msghdr *msg,
+>>>>>>>> +				   int flags,
+>>>>>>>> +				   bool *msg_ready);
+>>>>>>>> s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
+>>>>>>>> s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
+>>>>>>>>
+>>>>>>>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>>>>>>>> index ad0d34d41444..61349b2ea7fe 100644
+>>>>>>>> --- a/net/vmw_vsock/virtio_transport_common.c
+>>>>>>>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>>>>>>>> @@ -393,6 +393,59 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+>>>>>>>> 	return err;
+>>>>>>>> }
+>>>>>>>>
+>>>>>>>> +static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+>>>>>>>> +						 struct msghdr *msg,
+>>>>>>>> +						 int flags,
+>>>>>>>> +						 bool *msg_ready)
+>>>>>>>> +{
+>>>>>>>> +	struct virtio_vsock_sock *vvs = vsk->trans;
+>>>>>>>> +	struct virtio_vsock_pkt *pkt;
+>>>>>>>> +	int dequeued_len = 0;
+>>>>>>>> +	size_t user_buf_len = msg_data_left(msg);
+>>>>>>>> +
+>>>>>>>> +	*msg_ready = false;
+>>>>>>>> +	spin_lock_bh(&vvs->rx_lock);
+>>>>>>>> +
+>>>>>>>> +	while (!*msg_ready && !list_empty(&vvs->rx_queue) && dequeued_len >= 0) {
+>>>>>>> I'
+>>>>>>>
+>>>>>>>> +		size_t bytes_to_copy;
+>>>>>>>> +		size_t pkt_len;
+>>>>>>>> +
+>>>>>>>> +		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
+>>>>>>>> +		pkt_len = (size_t)le32_to_cpu(pkt->hdr.len);
+>>>>>>>> +		bytes_to_copy = min(user_buf_len, pkt_len);
+>>>>>>>> +
+>>>>>>>> +		if (bytes_to_copy) {
+>>>>>>>> +			/* sk_lock is held by caller so no one else can dequeue.
+>>>>>>>> +			 * Unlock rx_lock since memcpy_to_msg() may sleep.
+>>>>>>>> +			 */
+>>>>>>>> +			spin_unlock_bh(&vvs->rx_lock);
+>>>>>>>> +
+>>>>>>>> +			if (memcpy_to_msg(msg, pkt->buf, bytes_to_copy))
+>>>>>>>> +				dequeued_len = -EINVAL;
+>>>>>>> I think here is better to return the error returned by memcpy_to_msg(),
+>>>>>>> as we do in the other place where we use memcpy_to_msg().
+>>>>>>>
+>>>>>>> I mean something like this:
+>>>>>>> 			err = memcpy_to_msgmsg, pkt->buf, bytes_to_copy);
+>>>>>>> 			if (err)
+>>>>>>> 				dequeued_len = err;
+>>>>>> Ack
+>>>>>>>> +			else
+>>>>>>>> +				user_buf_len -= bytes_to_copy;
+>>>>>>>> +
+>>>>>>>> +			spin_lock_bh(&vvs->rx_lock);
+>>>>>>>> +		}
+>>>>>>>> +
+>>>>>>> Maybe here we can simply break the cycle if we have an error:
+>>>>>>> 		if (dequeued_len < 0)
+>>>>>>> 			break;
+>>>>>>>
+>>>>>>> Or we can refactor a bit, simplifying the while() condition and also the
+>>>>>>> code in this way (not tested):
+>>>>>>>
+>>>>>>> 	while (!*msg_ready && !list_empty(&vvs->rx_queue)) {
+>>>>>>> 		...
+>>>>>>>
+>>>>>>> 		if (bytes_to_copy) {
+>>>>>>> 			int err;
+>>>>>>>
+>>>>>>> 			/* ...
+>>>>>>> 			*/
+>>>>>>> 			spin_unlock_bh(&vvs->rx_lock);
+>>>>>>> 			err = memcpy_to_msgmsg, pkt->buf, bytes_to_copy);
+>>>>>>> 			if (err) {
+>>>>>>> 				dequeued_len = err;
+>>>>>>> 				goto out;
+>>>>>>> 			}
+>>>>>>> 			spin_lock_bh(&vvs->rx_lock);
+>>>>>>>
+>>>>>>> 			user_buf_len -= bytes_to_copy;
+>>>>>>> 		}
+>>>>>>>
+>>>>>>> 		dequeued_len += pkt_len;
+>>>>>>>
+>>>>>>> 		if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR)
+>>>>>>> 			*msg_ready = true;
+>>>>>>>
+>>>>>>> 		virtio_transport_dec_rx_pkt(vvs, pkt);
+>>>>>>> 		list_del(&pkt->list);
+>>>>>>> 		virtio_transport_free_pkt(pkt);
+>>>>>>> 	}
+>>>>>>>
+>>>>>>> out:
+>>>>>>> 	spin_unlock_bh(&vvs->rx_lock);
+>>>>>>>
+>>>>>>> 	virtio_transport_send_credit_update(vsk);
+>>>>>>>
+>>>>>>> 	return dequeued_len;
+>>>>>>> }
+>>>>>> I think we can't do 'goto out' or break, because in case of error,
+>>>>>> we still need
+>>>>>> to free packet.
+>>>>> Didn't we have code that remove packets from a previous message?
+>>>>> I don't see it anymore.
+>>>>>
+>>>>> For example if we have 10 packets queued for a message (the 10th
+>>>>> packet
+>>>>> has the EOR flag) and the memcpy_to_msg() fails on the 2nd packet, with
+>>>>> you proposal we are freeing only the first 2 packets, the rest is there
+>>>>> and should be freed when reading the next message, but I don't see that
+>>>>> code.
+>>>>>
+>>>>> The same can happen if the recvmsg syscall is interrupted. In that case
+>>>>> we report that nothing was copied, but we freed the first N packets, so
+>>>>> they are lost but the other packets are still in the queue.
+>>>>>
+>>>>> Please check also the patch where we implemented
+>>>>> __vsock_seqpacket_recvmsg().
+>>>>>
+>>>>> I thinks we should free packets only when we are sure we copied them to
+>>>>> the user space.
+>>>> Hm, yes, this is problem. To solve it i can restore previous approach
+>>>> with seqbegin/seqend. In that case i can detect unfinished record and
+>>>> drop it's packets. Seems seqbegin will be a bit like
+>>>> VIRTIO_VSOCK_SEQ_EOR in flags
+>>>> field of header(e.g. VIRTIO_VSOCK_SEQ_BEGIN). Message id and length are
+>>>> unneeded,
+>>>> as channel considedered lossless. What do You think?
 >>>>
->>>> It seems each devlink port instance corresponds to a netdevice.
->>>> More specificly, the devlink instance is created in the struct
->>>> pci_driver' probe function of a pci function, a devlink port instance
->>>> is created and registered to that devlink instance when a netdev of that
->> pci function is created?
->>>>
->>> Yes.
+>>> I think VIRTIO_VSOCK_SEQ_BEGIN is redundant, using only EOR should be
+>>> fine.
 >>>
->>>> As in diagram [1], the devlink port instance(flavour
->>>> FLAVOUR_PHYSICAL) for
->>>> ctrl-0-pf0 is created when the netdev of ctrl-0-pf0 is created in the
->>>> host of smartNIC, the devlink port instance(flavour FLAVOUR_VIRTUAL)
->>>> for ctrl-0- pf0vfN is created when the netdev of ctrl-0-pf0vfN is
->>>> created in the host of smartNIC, right?
->>>>
->>> Ctrl-0-pf0vfN, ctrl-0-pf0 ports are eswitch ports. They are created where
->> there is eswitch.
->>> Usually in smartnic where eswitch is located.
+>>> When we receive EOR we know that this is the last packet on this message
+>>> and the next packet will be the first of a new message.
+>>>
+>>> What we should do is check that we have all the fragments of a packet
+>>> and return them all together, otherwise we have to say we have nothing.
+>>>
+>>> For example as we process packets from the vitqueue and queue them in
+>>> the rx_queue we could use a counter of how many EORs are in the
+>>> rx_queue, which we decrease in virtio_transport_seqpacket_do_dequeue()
+>>> when we copied all the fragments.
+>>>
+>>> If the counter is 0, we don't remove anything from the queue and
+>>> virtio_transport_seqpacket_do_dequeue() returns 0.
+>>>
+>>> So .seqpacket_dequeue should return 0 if there is not at least one
+>>> complete message, or return the entire message. A partial message should
+>>> never return.
+>>>
+>>> What do you think?
+>> I like it, i've implemented this approach in some early pre v1 versions.
 >>
->> Does diagram in [1] corresponds to the multi-host (two) host setup as
->> memtioned previously?
->> H1.pf0.phyical_port = p0.
->> H1.pf1.phyical_port = p1.
->> H2.pf0.phyical_port = p0.
->> H2.pf1.phyical_port = p1.
+>> But in this case, credit update logic will be changed - in current implementation
 >>
-> Yes.
-> 
->> Let's say H1 = server and H2 = smartNIC as the pci rc connected to below:
->>                  ---------------------------------------------------------
->>                  |                                                       |
->>                  |           --------- ---------         ------- ------- |
->>     -----------  |           | vf(s) | | sf(s) |         |vf(s)| |sf(s)| |
->>     | server  |  | -------   ----/---- ---/----- ------- ---/--- ---/--- |
->>     | pci rc  |=== | pf0 |______/________/       | pf1 |___/_______/     |
->>     | connect |  | -------                       -------                 |
->>     -----------  |     | controller_num=1 (no eswitch)                   |
->>                  ------|--------------------------------------------------
->>                  (internal wire)
->>                        |
->>                  ---------------------------------------------------------
->>                  | devlink eswitch ports and reps                        |
->>                  | ----------------------------------------------------- |
->>                  | |ctrl-0 | ctrl-0 | ctrl-0 | ctrl-0 | ctrl-0 |ctrl-0 | |
->>                  | |pf0    | pf0vfN | pf0sfN | pf1    | pf1vfN |pf1sfN | |
->>                  | ----------------------------------------------------- |
->>                  | |ctrl-1 | ctrl-1 | ctrl-1 | ctrl-1 | ctrl-1 |ctrl-1 | |
->>                  | |pf0    | pf0vfN | pf0sfN | pf1    | pf1vfN |pf1sfN | |
->>                  | ----------------------------------------------------- |
->>                  |                                                       |
->>                  |                                                       |
->>     -----------  |           --------- ---------         ------- ------- |
->>     | smartNIC|  |           | vf(s) | | sf(s) |         |vf(s)| |sf(s)| |
->>     | pci rc  |==| -------   ----/---- ---/----- ------- ---/--- ---/--- |
->>     | connect |  | | pf0 |______/________/       | pf1 |___/_______/     |
->>     -----------  | -------                       -------                 |
->>                  |                                                       |
->>                  |  local controller_num=0 (eswitch)                     |
->>                  ---------------------------------------------------------
+>> (both seqpacket and stream) credit update reply is sent when data is copied
 >>
->> A vanilla kernel can run on the smartNIC host, right?
-> Right.
-> 
->> what the smartNIC host see is two PF corresponding to ctrl-0-pf0 and
->> ctrl-0-pf1 When the kernel is boot up first and mlx driver is not loaded yet,
->> right?
+>> to user's buffer(e.g. we copy data somewhere, free packet and ready to process
 >>
->> I am not sure it is ok to leave out the VF and SF, but let's leave them out for
->> simplicity now.
->> When mlx driver is loaded, two devlink instances are created, which
->> corresponds to ctrl-0-pf0 and ctrl-0-pf1, and two devlink port instances
->> (flavour FLAVOUR_PHYSICAL) is created and registered to corresponding
->> devlink instances just created, right?
+>> new packet). But if we don't touch user's buffer and keeping incoming packet in rx queue
 >>
->> As the eswitch mode is based on devlink instance, Let's only set the mode of
->> ctrl-0-pf0' devlink instance to DEVLINK_ESWITCH_MODE_SWITCHDEV, the
->> representor netdev of ctrl-1-pf0 is created and devlink port instance of that
->> representor netdev is created and registered to devlink instances
->> corresponding to ctrl-0-pf0?
->>
->> I think I miss something here, the above does not seems right, because：
->> 1. For single host case：the PF is not passed through to the VM, devlink port
->>    instance of VF's representor netdev can be registered to the devlink
->> instance
->>    corresponding to it's PF, right?
-> Yes, if I understand your question right.
-> 
->> 2. But for two-host case as above, do we need to create a devlink instances
->>    for the PF corresponding to ctrl-1-pf0 in smartNIC host?
-> You can choose not to create a devlink instance in external controller PF. It may not be even a Linux OS running there.
-> 
-> I read questions few more times, but I find it hard to understand what you really want to ask.
-> Not sure I understood you.
-> 
-> Trying again,
-> 
-> The model is really very straight forward as visible in the diagram.
-> 
-> There is one PF that has the eswitch. Eswitch contains representor ports.
+>> until whole record is ready, when to send credit update?
+> I think the best approach could be to send credit updates when we remove 
+> them from the rx_queue.
 
-I thought the representor ports of a PF'eswitch is decided by the function
-under a specific PF(For example, the PF itself and the VF under this PF)?
+In that case, it will be impossible to send message bigger than size of rx buffer
 
-> Each representor port represent either PF, VF or SF.
-> This PF, VF or SF can be of local controller residing on the eswitch device or it can be of an external controller(s).
-> Here external controller = 1.
+(e.g. credit allowed size), because packet will be queued without credit update
 
-If I understood above correctly:
-The fw/hw decide which PF has the eswitch, and how many devlink/representor
-port does this eswitch has?
-Suppose PF0 of controller_num=0 in have the eswitch, and the eswitch may has
-devlink/representor port representing other PF, like PF1 in controller_num=0,
-and even PF0/PF1 in controller_num=1?
+reply until credit allowed reach 0.
 
-> 
-> Every single PF, VF, SF has devlink instance including the eswitch PF and PF of external controller (often called as external host).
-> Why such devlink instance exists? -> I explained you before in [1].
-> 
-> [1] https://lore.kernel.org/netdev/PH0PR12MB5481FB8528A90E34FA3578C1DC389@PH0PR12MB5481.namprd12.prod.outlook.com/
 
+Thank You
+
+>
+> Stefano
+>
+>
