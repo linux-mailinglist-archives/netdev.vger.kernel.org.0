@@ -2,96 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2C0739EB47
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 03:19:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5592F39EB7C
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 03:32:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230502AbhFHBVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 21:21:42 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3457 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230272AbhFHBVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 21:21:41 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FzXQ444dfz6wqB;
-        Tue,  8 Jun 2021 09:16:44 +0800 (CST)
-Received: from dggpemm000001.china.huawei.com (7.185.36.245) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 8 Jun 2021 09:19:47 +0800
-Received: from huawei.com (10.175.113.32) by dggpemm000001.china.huawei.com
- (7.185.36.245) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 8 Jun 2021
- 09:19:46 +0800
-From:   Nanyong Sun <sunnanyong@huawei.com>
-To:     <paul@paul-moore.com>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-security-module@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <sunnanyong@huawei.com>
-Subject: [PATCH] net: ipv4: fix memory leak in netlbl_cipsov4_add_std
-Date:   Tue, 8 Jun 2021 09:51:58 +0800
-Message-ID: <20210608015158.3848878-1-sunnanyong@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
+        id S231515AbhFHBeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 21:34:07 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:5275 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231470AbhFHBeF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 21:34:05 -0400
+Received: from dggeme762-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FzXfJ6WC4z1BKgf;
+        Tue,  8 Jun 2021 09:27:20 +0800 (CST)
+Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
+ dggeme762-chm.china.huawei.com (10.3.19.108) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Tue, 8 Jun 2021 09:32:10 +0800
+Received: from dggeme760-chm.china.huawei.com ([10.6.80.70]) by
+ dggeme760-chm.china.huawei.com ([10.6.80.70]) with mapi id 15.01.2176.012;
+ Tue, 8 Jun 2021 09:32:10 +0800
+From:   zhengyongjun <zhengyongjun3@huawei.com>
+To:     David Ahern <dsahern@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggbmV0LW5leHRdIG5ldDogaXB2NDogUmVtb3ZlIHVu?=
+ =?utf-8?Q?need_BUG()_function?=
+Thread-Topic: [PATCH net-next] net: ipv4: Remove unneed BUG() function
+Thread-Index: AQHXW6j7NF91AHGh+Uu1rQMEw2T1x6sINL8AgAEgCKA=
+Date:   Tue, 8 Jun 2021 01:32:10 +0000
+Message-ID: <e06f752c9dc647428a7d4ebb80f28592@huawei.com>
+References: <20210607143909.2844407-1-zhengyongjun3@huawei.com>
+ <9274e18e-dc57-f6c2-e0cc-0d06841df54e@gmail.com>
+In-Reply-To: <9274e18e-dc57-f6c2-e0cc-0d06841df54e@gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.176.64]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.32]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm000001.china.huawei.com (7.185.36.245)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reported by syzkaller:
-BUG: memory leak
-unreferenced object 0xffff888105df7000 (size 64):
-comm "syz-executor842", pid 360, jiffies 4294824824 (age 22.546s)
-hex dump (first 32 bytes):
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-backtrace:
-[<00000000e67ed558>] kmalloc include/linux/slab.h:590 [inline]
-[<00000000e67ed558>] kzalloc include/linux/slab.h:720 [inline]
-[<00000000e67ed558>] netlbl_cipsov4_add_std net/netlabel/netlabel_cipso_v4.c:145 [inline]
-[<00000000e67ed558>] netlbl_cipsov4_add+0x390/0x2340 net/netlabel/netlabel_cipso_v4.c:416
-[<0000000006040154>] genl_family_rcv_msg_doit.isra.0+0x20e/0x320 net/netlink/genetlink.c:739
-[<00000000204d7a1c>] genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
-[<00000000204d7a1c>] genl_rcv_msg+0x2bf/0x4f0 net/netlink/genetlink.c:800
-[<00000000c0d6a995>] netlink_rcv_skb+0x134/0x3d0 net/netlink/af_netlink.c:2504
-[<00000000d78b9d2c>] genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
-[<000000009733081b>] netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
-[<000000009733081b>] netlink_unicast+0x4a0/0x6a0 net/netlink/af_netlink.c:1340
-[<00000000d5fd43b8>] netlink_sendmsg+0x789/0xc70 net/netlink/af_netlink.c:1929
-[<000000000a2d1e40>] sock_sendmsg_nosec net/socket.c:654 [inline]
-[<000000000a2d1e40>] sock_sendmsg+0x139/0x170 net/socket.c:674
-[<00000000321d1969>] ____sys_sendmsg+0x658/0x7d0 net/socket.c:2350
-[<00000000964e16bc>] ___sys_sendmsg+0xf8/0x170 net/socket.c:2404
-[<000000001615e288>] __sys_sendmsg+0xd3/0x190 net/socket.c:2433
-[<000000004ee8b6a5>] do_syscall_64+0x37/0x90 arch/x86/entry/common.c:47
-[<00000000171c7cee>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The memory of doi_def->map.std pointing is allocated in
-netlbl_cipsov4_add_std, but no place has freed it. It should be
-freed in cipso_v4_doi_free which frees the cipso DOI resource.
-
-Fixes: 96cb8e3313c7a ("[NetLabel]: CIPSOv4 and Unlabeled packet integration")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
----
- net/ipv4/cipso_ipv4.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
-index d6e3a92841e3..099259fc826a 100644
---- a/net/ipv4/cipso_ipv4.c
-+++ b/net/ipv4/cipso_ipv4.c
-@@ -471,6 +471,7 @@ void cipso_v4_doi_free(struct cipso_v4_doi *doi_def)
- 		kfree(doi_def->map.std->lvl.local);
- 		kfree(doi_def->map.std->cat.cipso);
- 		kfree(doi_def->map.std->cat.local);
-+		kfree(doi_def->map.std);
- 		break;
- 	}
- 	kfree(doi_def);
--- 
-2.18.0.huawei.25
-
+SSB3aWxsIGRvIGFzIHlvdXIgYWR2aWNlIGFuZCBzZW5kIHBhdGNoIHYyIDopDQoNCi0tLS0t6YKu
+5Lu25Y6f5Lu2LS0tLS0NCuWPkeS7tuS6ujogRGF2aWQgQWhlcm4gW21haWx0bzpkc2FoZXJuQGdt
+YWlsLmNvbV0gDQrlj5HpgIHml7bpl7Q6IDIwMjHlubQ25pyIOOaXpSAwOjIxDQrmlLbku7bkuro6
+IHpoZW5neW9uZ2p1biA8emhlbmd5b25nanVuM0BodWF3ZWkuY29tPjsgZGF2ZW1AZGF2ZW1sb2Z0
+Lm5ldDsgeW9zaGZ1amlAbGludXgtaXB2Ni5vcmc7IGRzYWhlcm5Aa2VybmVsLm9yZzsga3ViYUBr
+ZXJuZWwub3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJu
+ZWwub3JnDQrkuLvpopg6IFJlOiBbUEFUQ0ggbmV0LW5leHRdIG5ldDogaXB2NDogUmVtb3ZlIHVu
+bmVlZCBCVUcoKSBmdW5jdGlvbg0KDQpPbiA2LzcvMjEgODozOSBBTSwgWmhlbmcgWW9uZ2p1biB3
+cm90ZToNCj4gV2hlbiAnbmxhX3BhcnNlX25lc3RlZF9kZXByZWNhdGVkJyBmYWlsZWQsIGl0J3Mg
+bm8gbmVlZCB0bw0KPiBCVUcoKSBoZXJlLCByZXR1cm4gLUVJTlZBTCBpcyBvay4NCj4gDQo+IFNp
+Z25lZC1vZmYtYnk6IFpoZW5nIFlvbmdqdW4gPHpoZW5neW9uZ2p1bjNAaHVhd2VpLmNvbT4NCj4g
+LS0tDQo+ICBuZXQvaXB2NC9kZXZpbmV0LmMgfCAyICstDQo+ICAxIGZpbGUgY2hhbmdlZCwgMSBp
+bnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9uZXQvaXB2NC9k
+ZXZpbmV0LmMgYi9uZXQvaXB2NC9kZXZpbmV0LmMgaW5kZXggDQo+IDJlMzVmNjhkYTQwYS4uMWM2
+NDI5YzM1M2E5IDEwMDY0NA0KPiAtLS0gYS9uZXQvaXB2NC9kZXZpbmV0LmMNCj4gKysrIGIvbmV0
+L2lwdjQvZGV2aW5ldC5jDQo+IEBAIC0xOTg5LDcgKzE5ODksNyBAQCBzdGF0aWMgaW50IGluZXRf
+c2V0X2xpbmtfYWYoc3RydWN0IG5ldF9kZXZpY2UgKmRldiwgY29uc3Qgc3RydWN0IG5sYXR0ciAq
+bmxhLA0KPiAgCQlyZXR1cm4gLUVBRk5PU1VQUE9SVDsNCj4gIA0KPiAgCWlmIChubGFfcGFyc2Vf
+bmVzdGVkX2RlcHJlY2F0ZWQodGIsIElGTEFfSU5FVF9NQVgsIG5sYSwgTlVMTCwgTlVMTCkgDQo+
+IDwgMCkNCg0KQXZvaWQgYXNzdW1wdGlvbnMgb24gdGhlIGZhaWx1cmUgcmVhc29uOg0KDQoJaW50
+IGVycjsNCg0KCWVyciA9IG5sYV9wYXJzZV9uZXN0ZWRfZGVwcmVjYXRlZCgpOw0KCWlmIChlcnIg
+PCAwKQ0KCQlyZXR1cm4gZXJyOw0KDQo+IC0JCUJVRygpOw0KPiArCQlyZXR1cm4gLUVJTlZBTDsN
+Cj4gIA0KPiAgCWlmICh0YltJRkxBX0lORVRfQ09ORl0pIHsNCj4gIAkJbmxhX2Zvcl9lYWNoX25l
+c3RlZChhLCB0YltJRkxBX0lORVRfQ09ORl0sIHJlbSkNCj4gDQoNCnNlZW1zIGxpa2UgdGhpcyBw
+YXRjaCBhbmQgYSBzaW1pbGFyIGZpeCBmb3IgdGhlIElQdjYgdmVyc2lvbiBvZiBzZXRfbGlua19h
+ZiBzaG91bGQgZ28gdG8gbmV0IHJhdGhlciB0aGFuIG5ldC1uZXh0Lg0KDQo=
