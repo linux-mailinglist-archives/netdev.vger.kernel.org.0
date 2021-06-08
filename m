@@ -2,115 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 229D539F24F
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 11:28:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34FA339F273
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 11:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbhFHJas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 05:30:48 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:36752 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbhFHJar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 05:30:47 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 65DB8219BD;
-        Tue,  8 Jun 2021 09:28:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1623144534; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ApQjojFmYK9xInKxu2RlyXp4GgfPzo0whl3Ae6gpdDg=;
-        b=peTV3z7ImOA3W/CpxJ3LYbOGv1uJPlVMDN7dUO96UXqkW1xVpDt1X9t9hdQebiiB0+yUHO
-        0YbwgH3BBBgO5o0yi34wWDryx3KeElcX9VgndlBPD1nI3qrKT0kBx2p4TcWILUraNC+Ij/
-        umnxOKFPDtyLELFx+BOMgBurGzcxfkU=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 3187FA3B96;
-        Tue,  8 Jun 2021 09:28:54 +0000 (UTC)
-Date:   Tue, 8 Jun 2021 11:28:53 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Shai Malin <smalin@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
-        davem@davemloft.net, kuba@kernel.org, sagi@grimberg.me, hch@lst.de,
-        axboe@fb.com, kbusch@kernel.org, aelior@marvell.com,
-        mkalderon@marvell.com, okulkarni@marvell.com,
-        pkushwaha@marvell.com, malin1024@gmail.com,
-        Dean Balandin <dbalandin@marvell.com>
-Subject: Re: [RFC PATCH v5 01/27] nvme-tcp-offload: Add nvme-tcp-offload -
- NVMeTCP HW offload ULP
-Message-ID: <YL84VamVh78Ds2Eg@alley>
-References: <20210519111340.20613-1-smalin@marvell.com>
- <20210519111340.20613-2-smalin@marvell.com>
+        id S230487AbhFHJeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 05:34:05 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:3798 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229512AbhFHJeE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 05:34:04 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FzlJ66wH9zWsjv;
+        Tue,  8 Jun 2021 17:27:18 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 8 Jun 2021 17:32:09 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 8 Jun 2021
+ 17:32:09 +0800
+Subject: Re: Re: [PATCH RESEND iproute2-next] devlink: Add optional controller
+ user input
+To:     Parav Pandit <parav@nvidia.com>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Jiri Pirko <jiri@nvidia.com>,
+        "moyufeng@huawei.com" <moyufeng@huawei.com>,
+        "linuxarm@openeuler.org" <linuxarm@openeuler.org>
+References: <20210603111901.9888-1-parav@nvidia.com>
+ <c50ebdd6-a388-4d39-4052-50b4966def2e@huawei.com>
+ <PH0PR12MB548115AC5D6005781BAEC217DC399@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <a1b853ef-0c94-ba51-cf31-f1f194610204@huawei.com>
+ <PH0PR12MB5481A9B54850A62DF80E3EC1DC389@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <338a2463-eb3a-f642-a288-9ae45f721992@huawei.com>
+ <PH0PR12MB5481FB8528A90E34FA3578C1DC389@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <8c3e48ce-f5ed-d35d-4f5e-1b572f251bd1@huawei.com>
+ <PH0PR12MB5481EA2EB1B78BC7DD92FD19DC379@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <17a59ab0-be25-3588-dd1e-9497652bfe23@huawei.com>
+ <PH0PR12MB5481256C55F3498F63FE103DDC379@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <4e696fd6-3c7b-b48c-18da-16aa57da4d54@huawei.com>
+Date:   Tue, 8 Jun 2021 17:32:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210519111340.20613-2-smalin@marvell.com>
+In-Reply-To: <PH0PR12MB5481256C55F3498F63FE103DDC379@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme720-chm.china.huawei.com (10.1.199.116) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 2021-05-19 14:13:14, Shai Malin wrote:
-> This patch will present the structure for the NVMeTCP offload common
-> layer driver. This module is added under "drivers/nvme/host/" and future
-> offload drivers which will register to it will be placed under
-> "drivers/nvme/hw".
-> This new driver will be enabled by the Kconfig "NVM Express over Fabrics
-> TCP offload commmon layer".
-> In order to support the new transport type, for host mode, no change is
-> needed.
+On 2021/6/8 16:47, Parav Pandit wrote:
+>> From: Yunsheng Lin <linyunsheng@huawei.com>
+>> Sent: Tuesday, June 8, 2021 1:06 PM
+>>
+>> On 2021/6/8 13:26, Parav Pandit wrote:
+>>>> From: Yunsheng Lin <linyunsheng@huawei.com>
+>>>> Sent: Tuesday, June 8, 2021 8:58 AM
+>>>>
+>>>> On 2021/6/7 19:12, Parav Pandit wrote:
+>>>>>> From: Yunsheng Lin <linyunsheng@huawei.com>
+>>>>>> Sent: Monday, June 7, 2021 4:27 PM
+>>>>>>
+>>>>
+>>>> [..]
+>>>>
+>>>>>>>
+>>>>>>>> 2. each PF's devlink instance has three types of port, which is
+>>>>>>>>    FLAVOUR_PHYSICAL, FLAVOUR_PCI_PF and
+>>>>>> FLAVOUR_PCI_VF(supposing I
+>>>>>>>> understand
+>>>>>>>>    port flavour correctly).
+>>>>>>>>
+>>>>>>> FLAVOUR_PCI_{PF,VF,SF} belongs to eswitch (representor) side on
+>>>>>> switchdev device.
+>>>>>>
+>>>>>> If devlink instance or eswitch is in DEVLINK_ESWITCH_MODE_LEGACY
+>>>>>> mode, the FLAVOUR_PCI_{PF,VF,SF} port instance does not need to
+>>>> created?
+>>>>> No. in eswitch legacy, there are no representor netdevice or devlink
+>> ports.
+>>>>
+>>>> It seems each devlink port instance corresponds to a netdevice.
+>>>> More specificly, the devlink instance is created in the struct
+>>>> pci_driver' probe function of a pci function, a devlink port instance
+>>>> is created and registered to that devlink instance when a netdev of that
+>> pci function is created?
+>>>>
+>>> Yes.
+>>>
+>>>> As in diagram [1], the devlink port instance(flavour
+>>>> FLAVOUR_PHYSICAL) for
+>>>> ctrl-0-pf0 is created when the netdev of ctrl-0-pf0 is created in the
+>>>> host of smartNIC, the devlink port instance(flavour FLAVOUR_VIRTUAL)
+>>>> for ctrl-0- pf0vfN is created when the netdev of ctrl-0-pf0vfN is
+>>>> created in the host of smartNIC, right?
+>>>>
+>>> Ctrl-0-pf0vfN, ctrl-0-pf0 ports are eswitch ports. They are created where
+>> there is eswitch.
+>>> Usually in smartnic where eswitch is located.
+>>
+>> Does diagram in [1] corresponds to the multi-host (two) host setup as
+>> memtioned previously?
+>> H1.pf0.phyical_port = p0.
+>> H1.pf1.phyical_port = p1.
+>> H2.pf0.phyical_port = p0.
+>> H2.pf1.phyical_port = p1.
+>>
+> Yes.
 > 
-> Each new vendor-specific offload driver will register to this ULP during
-> its probe function, by filling out the nvme_tcp_ofld_dev->ops and
-> nvme_tcp_ofld_dev->private_data and calling nvme_tcp_ofld_register_dev
-> with the initialized struct.
+>> Let's say H1 = server and H2 = smartNIC as the pci rc connected to below:
+>>                  ---------------------------------------------------------
+>>                  |                                                       |
+>>                  |           --------- ---------         ------- ------- |
+>>     -----------  |           | vf(s) | | sf(s) |         |vf(s)| |sf(s)| |
+>>     | server  |  | -------   ----/---- ---/----- ------- ---/--- ---/--- |
+>>     | pci rc  |=== | pf0 |______/________/       | pf1 |___/_______/     |
+>>     | connect |  | -------                       -------                 |
+>>     -----------  |     | controller_num=1 (no eswitch)                   |
+>>                  ------|--------------------------------------------------
+>>                  (internal wire)
+>>                        |
+>>                  ---------------------------------------------------------
+>>                  | devlink eswitch ports and reps                        |
+>>                  | ----------------------------------------------------- |
+>>                  | |ctrl-0 | ctrl-0 | ctrl-0 | ctrl-0 | ctrl-0 |ctrl-0 | |
+>>                  | |pf0    | pf0vfN | pf0sfN | pf1    | pf1vfN |pf1sfN | |
+>>                  | ----------------------------------------------------- |
+>>                  | |ctrl-1 | ctrl-1 | ctrl-1 | ctrl-1 | ctrl-1 |ctrl-1 | |
+>>                  | |pf0    | pf0vfN | pf0sfN | pf1    | pf1vfN |pf1sfN | |
+>>                  | ----------------------------------------------------- |
+>>                  |                                                       |
+>>                  |                                                       |
+>>     -----------  |           --------- ---------         ------- ------- |
+>>     | smartNIC|  |           | vf(s) | | sf(s) |         |vf(s)| |sf(s)| |
+>>     | pci rc  |==| -------   ----/---- ---/----- ------- ---/--- ---/--- |
+>>     | connect |  | | pf0 |______/________/       | pf1 |___/_______/     |
+>>     -----------  | -------                       -------                 |
+>>                  |                                                       |
+>>                  |  local controller_num=0 (eswitch)                     |
+>>                  ---------------------------------------------------------
+>>
+>> A vanilla kernel can run on the smartNIC host, right?
+> Right.
 > 
-> The internal implementation:
-> - tcp-offload.h:
->   Includes all common structs and ops to be used and shared by offload
->   drivers.
+>> what the smartNIC host see is two PF corresponding to ctrl-0-pf0 and
+>> ctrl-0-pf1 When the kernel is boot up first and mlx driver is not loaded yet,
+>> right?
+>>
+>> I am not sure it is ok to leave out the VF and SF, but let's leave them out for
+>> simplicity now.
+>> When mlx driver is loaded, two devlink instances are created, which
+>> corresponds to ctrl-0-pf0 and ctrl-0-pf1, and two devlink port instances
+>> (flavour FLAVOUR_PHYSICAL) is created and registered to corresponding
+>> devlink instances just created, right?
+>>
+>> As the eswitch mode is based on devlink instance, Let's only set the mode of
+>> ctrl-0-pf0' devlink instance to DEVLINK_ESWITCH_MODE_SWITCHDEV, the
+>> representor netdev of ctrl-1-pf0 is created and devlink port instance of that
+>> representor netdev is created and registered to devlink instances
+>> corresponding to ctrl-0-pf0?
+>>
+>> I think I miss something here, the above does not seems right, because：
+>> 1. For single host case：the PF is not passed through to the VM, devlink port
+>>    instance of VF's representor netdev can be registered to the devlink
+>> instance
+>>    corresponding to it's PF, right?
+> Yes, if I understand your question right.
 > 
-> - tcp-offload.c:
->   Includes the init function which registers as a NVMf transport just
->   like any other transport.
+>> 2. But for two-host case as above, do we need to create a devlink instances
+>>    for the PF corresponding to ctrl-1-pf0 in smartNIC host?
+> You can choose not to create a devlink instance in external controller PF. It may not be even a Linux OS running there.
 > 
-> Acked-by: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Dean Balandin <dbalandin@marvell.com>
-> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
-> Reviewed-by: Hannes Reinecke <hare@suse.de>
+> I read questions few more times, but I find it hard to understand what you really want to ask.
+> Not sure I understood you.
+> 
+> Trying again,
+> 
+> The model is really very straight forward as visible in the diagram.
+> 
+> There is one PF that has the eswitch. Eswitch contains representor ports.
 
-> --- a/drivers/nvme/host/Kconfig
-> +++ b/drivers/nvme/host/Kconfig
-> @@ -84,3 +84,19 @@ config NVME_TCP
->  	  from https://github.com/linux-nvme/nvme-cli.
->  
->  	  If unsure, say N.
-> +
-> +config NVME_TCP_OFFLOAD
-> +	tristate "NVM Express over Fabrics TCP offload common layer"
-> +	default m
+I thought the representor ports of a PF'eswitch is decided by the function
+under a specific PF(For example, the PF itself and the VF under this PF)?
 
-Is this intentional, please?
+> Each representor port represent either PF, VF or SF.
+> This PF, VF or SF can be of local controller residing on the eswitch device or it can be of an external controller(s).
+> Here external controller = 1.
 
-> +	depends on INET
-> +	depends on BLK_DEV_NVME
-> +	select NVME_FABRICS
-> +	help
-> +	  This provides support for the NVMe over Fabrics protocol using
-> +	  the TCP offload transport. This allows you to use remote block devices
-> +	  exported using the NVMe protocol set.
-> +
-> +	  To configure a NVMe over Fabrics controller use the nvme-cli tool
-> +	  from https://github.com/linux-nvme/nvme-cli.
-> +
-> +	  If unsure, say N.
+If I understood above correctly:
+The fw/hw decide which PF has the eswitch, and how many devlink/representor
+port does this eswitch has?
+Suppose PF0 of controller_num=0 in have the eswitch, and the eswitch may has
+devlink/representor port representing other PF, like PF1 in controller_num=0,
+and even PF0/PF1 in controller_num=1?
 
-I would expect that the default would be "n" so that people that are
-not sure or do not care about NWMe just take the default. IMHO, it is
-the usual behavior.
+> 
+> Every single PF, VF, SF has devlink instance including the eswitch PF and PF of external controller (often called as external host).
+> Why such devlink instance exists? -> I explained you before in [1].
+> 
+> [1] https://lore.kernel.org/netdev/PH0PR12MB5481FB8528A90E34FA3578C1DC389@PH0PR12MB5481.namprd12.prod.outlook.com/
 
-Best Regards,
-Petr
