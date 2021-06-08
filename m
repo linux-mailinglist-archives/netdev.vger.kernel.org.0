@@ -2,50 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBFE039FDDF
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 19:38:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B219139FDEB
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 19:41:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233593AbhFHRjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 13:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233082AbhFHRjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 13:39:40 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325DAC061789
-        for <netdev@vger.kernel.org>; Tue,  8 Jun 2021 10:37:47 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id h24-20020a9d64180000b029036edcf8f9a6so21132220otl.3
-        for <netdev@vger.kernel.org>; Tue, 08 Jun 2021 10:37:47 -0700 (PDT)
+        id S233774AbhFHRnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 13:43:02 -0400
+Received: from mail-oi1-f175.google.com ([209.85.167.175]:42817 "EHLO
+        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233081AbhFHRnB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 13:43:01 -0400
+Received: by mail-oi1-f175.google.com with SMTP id v142so21897731oie.9
+        for <netdev@vger.kernel.org>; Tue, 08 Jun 2021 10:40:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:from:date:message-id:subject:to;
-        bh=mf0cOm6a9lH9rthgxSvnKitToPRlx8kXWIj/JtvwTK8=;
-        b=oHNotyRvil+Z2mqPXh20bYqBDFwb5Z6cvvndqUQ/MfPwzlQIw1l8kwKmJBvy9e5XfL
-         4nuLOrisd6Aq2dNOdtL+LOm4FKydRD3thFr8bJLf4nRjYHScdZ/bU1A1vDK83RGKvytH
-         +x6O0Yz9obeW1RTP9VJ1KPK/Ww+NTeFjVhwQ99GkZpPTMTyZJdw+CcIhYCM1Nnr6k5qa
-         2GzTw3wpOaInvun6U2bCgNnMv/k2AzczD5rXICb7yB+V6T/auw8uSQfNF58R9olkSjJr
-         bzJeDtnANfrDnrJQcqw/6ZhEp5Z4c8jtHaO2tYZY1fwVWAOAS7vtpJ17Jp6D3s3Z0/TG
-         4l/w==
+        bh=ifWNI0Y06EMrvpmxrX3HdEcHCzhlFx5Cd+IHeVFjUo8=;
+        b=do5luAmwhzalCWPKncpBgjFX6cFnDKYcQizEem9mzCXtIdBT5DXCax/zJCj8MiN7mv
+         j9AlquROWlr1RCVpz6STXtEpp9nUNWDK6UoLGQx/QI71qlDnFyXaadkfYke2etgojzM3
+         y5FWf280RKNeteoS0c1GLLv4cJ+kKWQ4lLaVitS9jhIzsipSlNw6ObiwVYNKuHxki/T7
+         Wl9GHEOl6z6ODUd6Z9sG7UrCzA2DGVrDA/aC0iYU/VvL8/h7CW4zN+MMnq/lK7pQUlZC
+         a3iqwvOA24xOa8Ur5aiKI1hDp0D71eIIAEYXmD1Fi8D9laAqz58ZZTNiVudiN19RvP0P
+         tobg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=mf0cOm6a9lH9rthgxSvnKitToPRlx8kXWIj/JtvwTK8=;
-        b=j89mAwqZR8nUn+ywAee5xdMMVQ7CZs9wahcOr5gkGhyaniMrVD+exXaKhbD14uutgM
-         B3A1bLcXL0h9RtwNTdW1Re9l+y/2ABfQ0KLW6rkIpKGHzOTKoWiMHxxEpzKFHNZeCYRA
-         Ow/zHCmcysizl9sY3O+ckWv+bjA3c/Oeukl5Ve+22trpFwNPgH2drE39m8ab+2kX9ynC
-         TEDwOkFF9nO9BQTFRJsQtjPMLTROUHhefeBBLhPt+NwpnT0NduCC9RUCD9uF/MaFkMV0
-         irTyUybe4RZBWHlgPdkYFhi0hBAnI+oWXtSvJXYFEjO8nksFYICG19c6ocQ2MQAr8jYt
-         EwXg==
-X-Gm-Message-State: AOAM530bdcudwKuxDQM5XWHKlgkoREJI8IQ1x+GjHcJ+b31pajeTAeRW
-        Ub2SLo/oL1inX92ffkAXu4e+UzhAt9S+dAxIJJNiIeOzjd+fmg==
-X-Google-Smtp-Source: ABdhPJwGifw4XBwE/KLHMfRanS8qpmWv9/QN/p8nQVmo+M+GKMxKWkFOiMit9qPiH0eufcREXN3TTq6DAGjm9FGAjH8=
-X-Received: by 2002:a05:6830:119a:: with SMTP id u26mr19634221otq.87.1623173866188;
- Tue, 08 Jun 2021 10:37:46 -0700 (PDT)
+        bh=ifWNI0Y06EMrvpmxrX3HdEcHCzhlFx5Cd+IHeVFjUo8=;
+        b=KvjbK0NwJ9V2D/pBG3ufA3RCk2+FAdPliUHzjNbcNVpWAkKrMUV7Q3eIoDj9Ocnnb7
+         Lkts9zX8lEakEck0IxwWpMROKym9GkJblbA/8j+UcJduxVbTSfH2/kfUOmaOeVPQqWZM
+         XBns8WuIRfwpQiVfGgWqSJzP6lEIBqfcORXrJwZwGmtZJ4Ew+/9h7mMlqZigoip481gt
+         gLCgUU08vSkp3HEq3KAsTTbRJYKpXLVd142/GsLH5ikluVG29I1bN3GoQW9XCIT4YycP
+         e1scqh2uH0P0teNtGjfnCMAZhfTrvPc1eahLBrHZsQpqQe/YjOe+mMfpS90SUBWQ1dff
+         AggA==
+X-Gm-Message-State: AOAM5337Xa4m1zy0YwQ+ecyzP+YkiPjkye7+hkJZzvljuwaoL1Bf5q9a
+        CenWZW1ior91THYfDGz+uAJKYhBFHHY2JxMGIb8L2Krn18/+vw==
+X-Google-Smtp-Source: ABdhPJyKojGzKhZ3YmMSALX8YRleMMWvB9X2xu0BO1+EdnKOPxMDNmjn79/Q2NXTMA9i/+KggzJ+mFhXwvYxTbpF7Ok=
+X-Received: by 2002:aca:f5d6:: with SMTP id t205mr3651883oih.58.1623173992683;
+ Tue, 08 Jun 2021 10:39:52 -0700 (PDT)
 MIME-Version: 1.0
 From:   Lalitha Sahitya Maruvada <sahitya.lalitha@gmail.com>
-Date:   Tue, 8 Jun 2021 10:37:35 -0700
-Message-ID: <CAFxY_Ev-q+Q3Dhx45g6HMiEYDGkr_D-QqKi_zdf0kq_OCY0yaQ@mail.gmail.com>
-Subject: 
+Date:   Tue, 8 Jun 2021 10:39:41 -0700
+Message-ID: <CAFxY_EsE6t_ezpQ5HyiTc_PhLAkX=hbEO1b77JLKihuEOm7VZA@mail.gmail.com>
+Subject: TC filter rule not doing an atomic replace for tc-matchall filter type
 To:     netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
@@ -165,13 +162,12 @@ index 9 ref 1 bind 1
 
 
 This is the first time I am reporting a bug, apologies if I am not
-clear. My mail with formatting was marked as spam by the mail Delivery
+clear. My previous mails with formatting were marked as spam by the
+mail Delivery
 system and hence sending it in plain text. Happy to clarify if
 required.
 
 Thank You!
-
-
 
 Best,
 Sahitya Maruvada.
