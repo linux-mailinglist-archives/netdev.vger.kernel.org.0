@@ -2,123 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7683A06FC
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 00:37:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D6603A0759
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 01:00:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235046AbhFHWji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 18:39:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43387 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235005AbhFHWjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 18:39:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623191863;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0ZbqZA/8gJY2hDLGy844pJ9jlRQOVxQQ+Lr9OCxPWbQ=;
-        b=asjxBNEPFg+BCgEXduV3+hOHsAIBTJqydzt7/nzs9tsqybj38GRrfMB6vsW3iVWkn+JeLc
-        igTthj8wV1KI7UBfTLOVObhoWFG5y8yjpBxYxu5Vyty5f23Q/amtZpE8vyh5LpeGuQrYFL
-        jGDkEwcXeE346gQonpDVXW/LLVE3rGo=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-264-aanbR0LVMUSRrXceZ3l2tw-1; Tue, 08 Jun 2021 18:37:42 -0400
-X-MC-Unique: aanbR0LVMUSRrXceZ3l2tw-1
-Received: by mail-qk1-f197.google.com with SMTP id o5-20020a05620a22c5b02903aa5498b6f8so10054393qki.5
-        for <netdev@vger.kernel.org>; Tue, 08 Jun 2021 15:37:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=0ZbqZA/8gJY2hDLGy844pJ9jlRQOVxQQ+Lr9OCxPWbQ=;
-        b=aVl0SP/vmLTiNNYkSFuNFjXscXCoMgTeH8eSb2rhKwnuydZab+E4kf4VdSfNplsLep
-         wZW30I6dFqizSDv6HD4S5gtIkg28VcRPrhBRpLtHLM9L0Ofry54+DxXwSt9BSY2zDdYJ
-         cbsxvVryHbkN/f82nQBJtKIRmwSvIWNmPSeUSoHbPTVMg2Y8NgNETvgN9+yTYT3Dle9t
-         NkZf/40YlAqOHFDoE50nQvlJHus8Er6h2hCV0B5ot9Iqinc8SgxcD2VYy3Pa32R2sBFq
-         J7370LCrk/myl0+uhXjH5BEOIO3ytfLoU4LRqP7iHl12tVomZMowU3eRPoz4sD5a+8Jg
-         GJdQ==
-X-Gm-Message-State: AOAM532Xz9u4UDYkgz4etO63iiCtayfTm+Jg5u+F43vGsmnbRGXiLoQ1
-        KM83PEHwaZu4eBpC57b1hHgOQwiXM4ElyVnb3QJeN6PldhdxJgLg2gUzuu7a7baZvMUg8ufz2ry
-        zOrQMmdtnnJV2qI3v
-X-Received: by 2002:a0c:e047:: with SMTP id y7mr2763918qvk.46.1623191861238;
-        Tue, 08 Jun 2021 15:37:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzN3+8jezv+uBmSCAiZeWBmG/9g55nu0g8Xgb648WprNmsOozNnN12ovngdJP8/5aogFVeXsQ==
-X-Received: by 2002:a0c:e047:: with SMTP id y7mr2763897qvk.46.1623191860991;
-        Tue, 08 Jun 2021 15:37:40 -0700 (PDT)
-Received: from [192.168.0.106] ([24.225.235.43])
-        by smtp.gmail.com with ESMTPSA id u26sm11513815qtf.24.2021.06.08.15.37.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Jun 2021 15:37:40 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: tipc: fix FB_MTU eat two pages
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     ying.xue@windriver.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        tipc-discussion@lists.sourceforge.net,
-        Menglong Dong <dong.menglong@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20210604074419.53956-1-dong.menglong@zte.com.cn>
- <e997a058-9f6e-86a0-8591-56b0b89441aa@redhat.com>
- <CADxym3ZostCAY0GwUpTxEHcOPyOj5Lmv4F7xP-Q4=AEAVaEAxw@mail.gmail.com>
- <998cce2c-b18d-59c1-df64-fc62856c63a1@redhat.com> <20210607125120.GA4262@www>
-From:   Jon Maloy <jmaloy@redhat.com>
-Message-ID: <46d2a694-6a85-0f8e-4156-9bb1c4dbdb69@redhat.com>
-Date:   Tue, 8 Jun 2021 18:37:38 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-MIME-Version: 1.0
-In-Reply-To: <20210607125120.GA4262@www>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+        id S234786AbhFHXCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 19:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230330AbhFHXCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 19:02:30 -0400
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63FCEC061574
+        for <netdev@vger.kernel.org>; Tue,  8 Jun 2021 16:00:37 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id C1EB54D2DFB12;
+        Tue,  8 Jun 2021 16:00:32 -0700 (PDT)
+Date:   Tue, 08 Jun 2021 16:00:28 -0700 (PDT)
+Message-Id: <20210608.160028.2094273846699936083.davem@davemloft.net>
+To:     m.chetan.kumar@intel.com
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        johannes@sipsolutions.net, krishna.c.sudi@intel.com,
+        linuxwwan@intel.com
+Subject: Re: [PATCH V4 00/16] net: iosm: PCIe Driver for Intel M.2 Modem
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210608170449.28031-1-m.chetan.kumar@intel.com>
+References: <20210608170449.28031-1-m.chetan.kumar@intel.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-7
+Content-Transfer-Encoding: base64
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 08 Jun 2021 16:00:33 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 6/7/21 8:51 AM, Menglong Dong wrote:
-> On Sat, Jun 05, 2021 at 10:25:53AM -0400, Jon Maloy wrote:
->>
->> On 6/4/21 9:28 PM, Menglong Dong wrote:
->>> Hello Maloy,
->>>
->>> On Sat, Jun 5, 2021 at 3:20 AM Jon Maloy <jmaloy@redhat.com> wrote:
-
->>>> [...]
->>>
->>> So if I use the non-crypto version, the size allocated will be:
->>>
->>>    PAGE_SIZE - BUF_HEADROOM_non-crypto - BUF_TAILROOM_non-crypt +
->>>      BUF_HEADROOM_crypto + BUF_TAILROOM_crypto
->>>
->>> which is larger than PAGE_SIZE.
->>>
->>> So, I think the simple way is to define FB_MTU in 'crypto.h'. Is this
->>> acceptable?
->>>
->>> Thanks!
->>> Menglong Dong
->>>
-
-I spent a little more time looking into this. I think the best we can do 
-is to keep FB_MTU internal to msg.c, and then add an outline function to 
-msg.c that can be used by bcast.c. The way it is used is never time 
-critical.
-
-I also see that we could need a little cleanup around this. There is a 
-redundant align() function that should be removed and replaced with the 
-global ALIGN() macro.
-Even tipc_buf_acquire() should use this macro instead of the explicit 
-method that is used now.
-In general, I stongly dislike conditional code, and it is not necessary 
-in this function. If we redefine the non-crypto BUF_TAILROOM to 0 
-instead of 16 (it is not used anywhere else) we could get rid of this too.
-
-But I leave that to you. If you only fix the FB_MTU macro I am content.
-
-///jon
-
+DQpQbGVhc2UgZml4IHRoZXNlIGJ1aWxkIGZhaWx1cmVzLCB0aGFuayB5b3U6DQoNCmRyaXZlcnMv
+bmV0L3d3YW4vaW9zbS9pb3NtX2lwY193d2FuLmM6MjMxOjIxOiBlcnJvcjogdmFyaWFibGUgoWlv
+c21fd3dhbl9vcHOiIGhhcyBpbml0aWFsaXplciBidXQgaW5jb21wbGV0ZSB0eXBlDQogIDIzMSB8
+IHN0YXRpYyBjb25zdCBzdHJ1Y3Qgd3dhbl9vcHMgaW9zbV93d2FuX29wcyA9IHsNCiAgICAgIHwg
+ICAgICAgICAgICAgICAgICAgICBefn5+fn5+fg0KZHJpdmVycy9uZXQvd3dhbi9pb3NtL2lvc21f
+aXBjX3d3YW4uYzoyMzI6MzogZXJyb3I6IKFjb25zdCBzdHJ1Y3Qgd3dhbl9vcHOiIGhhcyBubyBt
+ZW1iZXIgbmFtZWQgoXByaXZfc2l6ZaINCiAgMjMyIHwgIC5wcml2X3NpemUgPSBzaXplb2Yoc3Ry
+dWN0IGlvc21fbmV0ZGV2X3ByaXYpLA0KICAgICAgfCAgIF5+fn5+fn5+fg0KZHJpdmVycy9uZXQv
+d3dhbi9pb3NtL2lvc21faXBjX3d3YW4uYzoyMzI6MTU6IHdhcm5pbmc6IGV4Y2VzcyBlbGVtZW50
+cyBpbiBzdHJ1Y3QgaW5pdGlhbGl6ZXINCiAgMjMyIHwgIC5wcml2X3NpemUgPSBzaXplb2Yoc3Ry
+dWN0IGlvc21fbmV0ZGV2X3ByaXYpLA0KICAgICAgfCAgICAgICAgICAgICAgIF5+fn5+fg0KZHJp
+dmVycy9uZXQvd3dhbi9pb3NtL2lvc21faXBjX3d3YW4uYzoyMzI6MTU6IG5vdGU6IChuZWFyIGlu
+aXRpYWxpemF0aW9uIGZvciChaW9zbV93d2FuX29wc6IpDQpkcml2ZXJzL25ldC93d2FuL2lvc20v
+aW9zbV9pcGNfd3dhbi5jOjIzMzozOiBlcnJvcjogoWNvbnN0IHN0cnVjdCB3d2FuX29wc6IgaGFz
+IG5vIG1lbWJlciBuYW1lZCChc2V0dXCiDQogIDIzMyB8ICAuc2V0dXAgPSBpcGNfd3dhbl9zZXR1
+cCwNCiAgICAgIHwgICBefn5+fg0KZHJpdmVycy9uZXQvd3dhbi9pb3NtL2lvc21faXBjX3d3YW4u
+YzoyMzM6MTE6IHdhcm5pbmc6IGV4Y2VzcyBlbGVtZW50cyBpbiBzdHJ1Y3QgaW5pdGlhbGl6ZXIN
+CiAgMjMzIHwgIC5zZXR1cCA9IGlwY193d2FuX3NldHVwLA0KICAgICAgfCAgICAgICAgICAgXn5+
+fn5+fn5+fn5+fn4NCmRyaXZlcnMvbmV0L3d3YW4vaW9zbS9pb3NtX2lwY193d2FuLmM6MjMzOjEx
+OiBub3RlOiAobmVhciBpbml0aWFsaXphdGlvbiBmb3IgoWlvc21fd3dhbl9vcHOiKQ0KZHJpdmVy
+cy9uZXQvd3dhbi9pb3NtL2lvc21faXBjX3d3YW4uYzoyMzQ6MzogZXJyb3I6IKFjb25zdCBzdHJ1
+Y3Qgd3dhbl9vcHOiIGhhcyBubyBtZW1iZXIgbmFtZWQgoW5ld2xpbmuiDQogIDIzNCB8ICAubmV3
+bGluayA9IGlwY193d2FuX25ld2xpbmssDQogICAgICB8ICAgXn5+fn5+fg0KZHJpdmVycy9uZXQv
+d3dhbi9pb3NtL2lvc21faXBjX3d3YW4uYzoyMzQ6MTM6IHdhcm5pbmc6IGV4Y2VzcyBlbGVtZW50
+cyBpbiBzdHJ1Y3QgaW5pdGlhbGl6ZXINCiAgMjM0IHwgIC5uZXdsaW5rID0gaXBjX3d3YW5fbmV3
+bGluaywNCiAgICAgIHwgICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn5+fg0KZHJpdmVycy9uZXQv
+d3dhbi9pb3NtL2lvc21faXBjX3d3YW4uYzoyMzQ6MTM6IG5vdGU6IChuZWFyIGluaXRpYWxpemF0
+aW9uIGZvciChaW9zbV93d2FuX29wc6IpDQpkcml2ZXJzL25ldC93d2FuL2lvc20vaW9zbV9pcGNf
+d3dhbi5jOjIzNTozOiBlcnJvcjogoWNvbnN0IHN0cnVjdCB3d2FuX29wc6IgaGFzIG5vIG1lbWJl
+ciBuYW1lZCChZGVsbGlua6INCiAgMjM1IHwgIC5kZWxsaW5rID0gaXBjX3d3YW5fZGVsbGluaywN
+CiAgICAgIHwgICBefn5+fn5+DQpkcml2ZXJzL25ldC93d2FuL2lvc20vaW9zbV9pcGNfd3dhbi5j
+OjIzNToxMzogd2FybmluZzogZXhjZXNzIGVsZW1lbnRzIGluIHN0cnVjdCBpbml0aWFsaXplcg0K
+ICAyMzUgfCAgLmRlbGxpbmsgPSBpcGNfd3dhbl9kZWxsaW5rLA0KICAgICAgfCAgICAgICAgICAg
+ICBefn5+fn5+fn5+fn5+fn5+DQpkcml2ZXJzL25ldC93d2FuL2lvc20vaW9zbV9pcGNfd3dhbi5j
+OjIzNToxMzogbm90ZTogKG5lYXIgaW5pdGlhbGl6YXRpb24gZm9yIKFpb3NtX3d3YW5fb3BzoikN
+CmRyaXZlcnMvbmV0L3d3YW4vaW9zbS9pb3NtX2lwY193d2FuLmM6IEluIGZ1bmN0aW9uIKFpcGNf
+d3dhbl9pbml0ojoNCmRyaXZlcnMvbmV0L3d3YW4vaW9zbS9pb3NtX2lwY193d2FuLmM6MzE5OjY6
+IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiChd3dhbl9yZWdpc3Rlcl9v
+cHOiIFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQ0KICAzMTkgfCAgaWYg
+KHd3YW5fcmVnaXN0ZXJfb3BzKGlwY193d2FuLT5kZXYsICZpb3NtX3d3YW5fb3BzLCBpcGNfd3dh
+bikpIHsNCiAgICAgIHwgICAgICBefn5+fn5+fn5+fn5+fn5+fg0KZHJpdmVycy9uZXQvd3dhbi9p
+b3NtL2lvc21faXBjX3d3YW4uYzogSW4gZnVuY3Rpb24goWlwY193d2FuX2RlaW5pdKI6DQpkcml2
+ZXJzL25ldC93d2FuL2lvc20vaW9zbV9pcGNfd3dhbi5jOjMzMzoyOiBlcnJvcjogaW1wbGljaXQg
+ZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24goXd3YW5fdW5yZWdpc3Rlcl9vcHOiIFstV2Vycm9yPWlt
+cGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQ0KICAzMzMgfCAgd3dhbl91bnJlZ2lzdGVyX29w
+cyhpcGNfd3dhbi0+ZGV2KTsNCiAgICAgIHwgIF5+fn5+fn5+fn5+fn5+fn5+fn4NCmRyaXZlcnMv
+bmV0L3d3YW4vaW9zbS9pb3NtX2lwY193d2FuLmM6IEF0IHRvcCBsZXZlbDoNCmRyaXZlcnMvbmV0
+L3d3YW4vaW9zbS9pb3NtX2lwY193d2FuLmM6MjMxOjMwOiBlcnJvcjogc3RvcmFnZSBzaXplIG9m
+IKFpb3NtX3d3YW5fb3BzoiBpc26idCBrbm93bg0KICAyMzEgfCBzdGF0aWMgY29uc3Qgc3RydWN0
+IHd3YW5fb3BzIGlvc21fd3dhbl9vcHMgPSB7DQogICAgICB8ICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgXn5+fn5+fn5+fn5+fg0KY2MxOiBzb21lIHdhcm5pbmdzIGJlaW5nIHRyZWF0ZWQg
+YXMgZXJyb3JzDQptYWtlWzRdOiAqKiogW3NjcmlwdHMvTWFrZWZpbGUuYnVpbGQ6MjcyOiBkcml2
+ZXJzL25ldC93d2FuL2lvc20vaW9zbV9pcGNfd3dhbi5vXSBFcnJvciAxDQptYWtlWzRdOiAqKiog
+V2FpdGluZyBmb3IgdW5maW5pc2hlZCBqb2JzLi4uLg0KbWFrZVszXTogKioqIFtzY3JpcHRzL01h
+a2VmaWxlLmJ1aWxkOjUxNTogZHJpdmVycy9uZXQvd3dhbi9pb3NtXSBFcnJvciAyDQptYWtlWzJd
+OiAqKiogW3NjcmlwdHMvTWFrZWZpbGUuYnVpbGQ6NTE1OiBkcml2ZXJzL25ldC93d2FuXSBFcnJv
+ciAyDQptYWtlWzJdOiAqKiogV2FpdGluZyBmb3IgdW5maW5pc2hlZCBqb2JzLi4uLg0KbWFrZVsx
+XTogKioqIFtzY3JpcHRzL01ha2VmaWxlLmJ1aWxkOjUxNTogZHJpdmVycy9uZXRdIEVycm9yIDIN
+Cm1ha2VbMV06ICoqKiBXYWl0aW5nIGZvciB1bmZpbmlzaGVkIGpvYnMuLi4uDQo=
