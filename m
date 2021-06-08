@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9725039F0A0
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:16:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE9E39F097
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:16:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231575AbhFHISY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 04:18:24 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:4398 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230291AbhFHIRq (ORCPT
+        id S231366AbhFHISH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 04:18:07 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:4516 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230316AbhFHIRq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 04:17:46 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FzjdF69FKz6vY7;
-        Tue,  8 Jun 2021 16:12:01 +0800 (CST)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FzjfR2lk1zZdFN;
+        Tue,  8 Jun 2021 16:13:03 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Tue, 8 Jun 2021 16:15:52 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
         <ms@dev.tdt.de>, <willemb@google.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 12/16] net: farsync: remove redundant spaces
-Date:   Tue, 8 Jun 2021 16:12:38 +0800
-Message-ID: <1623139962-34847-13-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 13/16] net: farsync: remove redundant parentheses
+Date:   Tue, 8 Jun 2021 16:12:39 +0800
+Message-ID: <1623139962-34847-14-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1623139962-34847-1-git-send-email-huangguangbin2@huawei.com>
 References: <1623139962-34847-1-git-send-email-huangguangbin2@huawei.com>
@@ -45,87 +45,76 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peng Li <lipeng321@huawei.com>
 
-According to the chackpatch.pl,
-space prohibited between function name and open parenthesis '(',
-no space is necessary after a cast.
+Unnecessary parentheses around 'port->hwif == X21'.
 
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/wan/farsync.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/net/wan/farsync.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/wan/farsync.c b/drivers/net/wan/farsync.c
-index 8b96f35..bbe87d9 100644
+index bbe87d9..f6919cf 100644
 --- a/drivers/net/wan/farsync.c
 +++ b/drivers/net/wan/farsync.c
-@@ -708,7 +708,7 @@ fst_cpurelease(struct fst_card_info *card)
- 	if (card->family == FST_FAMILY_TXU) {
- 		/* Force posted writes to complete
+@@ -1075,7 +1075,7 @@ fst_intr_ctlchg(struct fst_card_info *card, struct fst_port_info *port)
+ 
+ 	signals = FST_RDL(card, v24DebouncedSts[port->index]);
+ 
+-	if (signals & (((port->hwif == X21) || (port->hwif == X21D))
++	if (signals & ((port->hwif == X21 || port->hwif == X21D)
+ 		       ? IPSTS_INDICATE : IPSTS_DCD)) {
+ 		if (!netif_carrier_ok(port_to_dev(port))) {
+ 			dbg(DBG_INTR, "DCD active\n");
+@@ -1233,7 +1233,7 @@ fst_intr_rx(struct fst_card_info *card, struct fst_port_info *port)
+ 	 * FST_MIN_DMA_LEN
+ 	 */
+ 
+-	if ((len < FST_MIN_DMA_LEN) || (card->family == FST_FAMILY_TXP)) {
++	if (len < FST_MIN_DMA_LEN || card->family == FST_FAMILY_TXP) {
+ 		memcpy_fromio(skb_put(skb, len),
+ 			      card->mem + BUF_OFFSET(rxBuffer[pi][rxp][0]),
+ 			      len);
+@@ -1326,8 +1326,8 @@ do_bottom_half_tx(struct fst_card_info *card)
+ 				 */
+ 				FST_WRW(card, txDescrRing[pi][port->txpos].bcnt,
+ 					cnv_bcnt(skb->len));
+-				if ((skb->len < FST_MIN_DMA_LEN) ||
+-				    (card->family == FST_FAMILY_TXP)) {
++				if (skb->len < FST_MIN_DMA_LEN ||
++				    card->family == FST_FAMILY_TXP) {
+ 					/* Enqueue the packet with normal io */
+ 					memcpy_toio(card->mem +
+ 						    BUF_OFFSET(txBuffer[pi]
+@@ -2079,7 +2079,7 @@ fst_openport(struct fst_port_info *port)
+ 		port->run = 1;
+ 
+ 		signals = FST_RDL(port->card, v24DebouncedSts[port->index]);
+-		if (signals & (((port->hwif == X21) || (port->hwif == X21D))
++		if (signals & ((port->hwif == X21 || port->hwif == X21D)
+ 			       ? IPSTS_INDICATE : IPSTS_DCD))
+ 			netif_carrier_on(port_to_dev(port));
+ 		else
+@@ -2340,7 +2340,7 @@ fst_add_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		 *
  		 */
--		(void) readb(card->mem);
-+		(void)readb(card->mem);
- 
- 		/* Release LRESET DO = 1
- 		 * Then release Local Hold, DO = 1
-@@ -716,7 +716,7 @@ fst_cpurelease(struct fst_card_info *card)
- 		outw(0x040e, card->pci_conf + CNTRL_9054 + 2);
- 		outw(0x040f, card->pci_conf + CNTRL_9054 + 2);
- 	} else {
--		(void) readb(card->ctlmem);
-+		(void)readb(card->ctlmem);
- 	}
- }
- 
-@@ -726,7 +726,7 @@ static inline void
- fst_clear_intr(struct fst_card_info *card)
- {
- 	if (card->family == FST_FAMILY_TXU) {
--		(void) readb(card->ctlmem);
-+		(void)readb(card->ctlmem);
- 	} else {
- 		/* Poke the appropriate PLX chip register (same as enabling interrupts)
- 		 */
-@@ -984,8 +984,8 @@ fst_rx_config(struct fst_port_info *port)
- 	for (i = 0; i < NUM_RX_BUFFER; i++) {
- 		offset = BUF_OFFSET(rxBuffer[pi][i][0]);
- 
--		FST_WRW(card, rxDescrRing[pi][i].ladr, (u16) offset);
--		FST_WRB(card, rxDescrRing[pi][i].hadr, (u8) (offset >> 16));
-+		FST_WRW(card, rxDescrRing[pi][i].ladr, (u16)offset);
-+		FST_WRB(card, rxDescrRing[pi][i].hadr, (u8)(offset >> 16));
- 		FST_WRW(card, rxDescrRing[pi][i].bcnt, cnv_bcnt(LEN_RX_BUFFER));
- 		FST_WRW(card, rxDescrRing[pi][i].mcnt, LEN_RX_BUFFER);
- 		FST_WRB(card, rxDescrRing[pi][i].bits, DMA_OWN);
-@@ -1011,8 +1011,8 @@ fst_tx_config(struct fst_port_info *port)
- 	for (i = 0; i < NUM_TX_BUFFER; i++) {
- 		offset = BUF_OFFSET(txBuffer[pi][i][0]);
- 
--		FST_WRW(card, txDescrRing[pi][i].ladr, (u16) offset);
--		FST_WRB(card, txDescrRing[pi][i].hadr, (u8) (offset >> 16));
-+		FST_WRW(card, txDescrRing[pi][i].ladr, (u16)offset);
-+		FST_WRB(card, txDescrRing[pi][i].hadr, (u8)(offset >> 16));
- 		FST_WRW(card, txDescrRing[pi][i].bcnt, 0);
- 		FST_WRB(card, txDescrRing[pi][i].bits, 0);
- 	}
-@@ -1697,7 +1697,7 @@ gather_conf_info(struct fst_card_info *card, struct fst_port_info *port,
- {
- 	int i;
- 
--	memset(info, 0, sizeof (struct fstioc_info));
-+	memset(info, 0, sizeof(struct fstioc_info));
- 
- 	i = port->index;
- 	info->kernelVersion = LINUX_VERSION_CODE;
-@@ -1905,7 +1905,7 @@ fst_get_iface(struct fst_card_info *card, struct fst_port_info *port,
- 	if (copy_to_user(ifr->ifr_settings.ifs_ifsu.sync, &sync, sizeof(sync)))
- 		return -EFAULT;
- 
--	ifr->ifr_settings.size = sizeof (sync);
-+	ifr->ifr_settings.size = sizeof(sync);
- 	return 0;
- }
- 
+ 		for (i = 0; i < fst_excluded_cards; i++) {
+-			if ((pdev->devfn) >> 3 == fst_excluded_list[i]) {
++			if (pdev->devfn >> 3 == fst_excluded_list[i]) {
+ 				pr_info("FarSync PCI device %d not assigned\n",
+ 					(pdev->devfn) >> 3);
+ 				return -EBUSY;
+@@ -2397,8 +2397,8 @@ fst_add_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	card->family = ((ent->driver_data == FST_TYPE_T2P) ||
+ 			(ent->driver_data == FST_TYPE_T4P))
+ 	    ? FST_FAMILY_TXP : FST_FAMILY_TXU;
+-	if ((ent->driver_data == FST_TYPE_T1U) ||
+-	    (ent->driver_data == FST_TYPE_TE1))
++	if (ent->driver_data == FST_TYPE_T1U ||
++	    ent->driver_data == FST_TYPE_TE1)
+ 		card->nports = 1;
+ 	else
+ 		card->nports = ((ent->driver_data == FST_TYPE_T2P) ||
 -- 
 2.8.1
 
