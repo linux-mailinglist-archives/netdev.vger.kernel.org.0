@@ -2,149 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9280639F052
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:00:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E56939F054
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbhFHICN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 04:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+        id S230396AbhFHICy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 04:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbhFHICI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 04:02:08 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4000C061574;
-        Tue,  8 Jun 2021 01:00:14 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id m21so14947438lfg.13;
-        Tue, 08 Jun 2021 01:00:14 -0700 (PDT)
+        with ESMTP id S230329AbhFHICu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 04:02:50 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07EEC061574;
+        Tue,  8 Jun 2021 01:00:56 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id h24so31149546ejy.2;
+        Tue, 08 Jun 2021 01:00:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/zwC/kyfhzlU9ELEMaOUsa+R12SEwNDHqbYhuIjCnI0=;
-        b=b6smCZlSuJg4PVXjTq2KZanbEL4Yja4T/OMZb6aHCQ0oTo2BkHN5R72NdLc5e37FwP
-         nDd7bCIflLJ2BTDBaSwZhOCGy9bJD7n1FgY4F3X1PTnIn7SHBX/M2f9e8hkKvMuMCQq6
-         AvGAI5AVyO73h2shLD2NMZK4OFNxn0uCMUx+7s3Gr/GL3NMVxPwTITIPo8XpylQQBZQf
-         o84QIqD/UXCOsNocHZo9oupA+fGSHk/88o39gUkmSIMIHxrczsOkv4sHqGpJfmcaurqP
-         GIMWE/clEn1hTVt4fy34qHx9YK19QPtq/ox+l3oiLFNNYzReWEZ1ZR8DsICpU+xfwZ3H
-         aTRQ==
+        h=to:references:from:subject:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=Au4T37pZxwQ7mFzfSfWn4Yc9q6vCOt0deECCIjdAjrE=;
+        b=PLqsWcPCGCfIcEiWaTQRGOIse4KNIlcBVWW/O1SIYB5od8ltM+pGjiLegCeuJqY5T1
+         QdYl8d26lcRGRNdEiWWlixZKuBVMh6Go7kKu35eIdqlTwVCdGVsR2pVbUjgoNUeQ9SA2
+         1r4pquRHjnLCOuuT84hdZSjBH4M4ydpi2uz1ZXiyRf1nXq5RQVlcJF4vmJHwpgzgrTrB
+         SyToomiVrcEEQ4T+QDF5Hs4F357RWTJy0KDpVNv4PkwyMwcU5/hWRk+pKpR/Az5XSZaG
+         juzE+4IE0y82gmqfhUExLUwnbctAnhgmhOejza3+1khjiOVKBMWKv21qGdXTiPUnA74W
+         uYEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/zwC/kyfhzlU9ELEMaOUsa+R12SEwNDHqbYhuIjCnI0=;
-        b=IJenjdjdFl2aXZ9Jfsq45t6vKgBgWQKEG/MEXL9a3+fGi7qAJ6ehlTtjZ3dBexUUbB
-         KySvk5tEV0yFNOqHoBcBiaDbHcZiZk8vxKhh77DUC0lUiKAsZe7d0kCT0MbhW7N8Kmwv
-         LiWSHs09jXZmGs3SxZ06ho8GSSMFw+XpnHZ/xFkn9XtRv7P+1l3Yi4NZN69m6tcG09CZ
-         FtfP655fhHIioxtuyxBtrjvYlV7cs5LKDeSiaIobaX+azxq1fmT2072Yqvv6PB/An/H7
-         vkY7+IkFTGmhQ66G7LVSJZMnhZavI+lO24GZYI+bb5sHotgYr36QafovCEPFdxoWgxk9
-         lekw==
-X-Gm-Message-State: AOAM532U8bXtGvpc5xc0FW8dH7lJwHLpNiewSADe8l5b6ziP6qpEgiFR
-        Oi0YSodQf8DrPov1knReZpM=
-X-Google-Smtp-Source: ABdhPJx4rhGsbnzUeei4HZMeEzBjtQMeVgfHvcMrX0ZYJPTgZXLhbb/EgvzolL6zGE66voa6ImkAqQ==
-X-Received: by 2002:ac2:5d4f:: with SMTP id w15mr14361525lfd.348.1623139209262;
-        Tue, 08 Jun 2021 01:00:09 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.224.40])
-        by smtp.gmail.com with ESMTPSA id w24sm1798743lfa.143.2021.06.08.01.00.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Jun 2021 01:00:09 -0700 (PDT)
-Date:   Tue, 8 Jun 2021 11:00:06 +0300
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     Haakon Bugge <haakon.bugge@oracle.com>
-Cc:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        h=x-gm-message-state:to:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Au4T37pZxwQ7mFzfSfWn4Yc9q6vCOt0deECCIjdAjrE=;
+        b=RkxVMRMpFz/3f4T8T3aV5+rhE3Xs/y7PW/pdNu5dMvCt632kWoFNyHHk99YRqP41Vh
+         qLqJmbD8FQud22gdqLePQjM7q4iZy9UzrPcomZkWV4bhDXzIKrwj/KOAmICtvk39rH/I
+         byLmqKLfHeUtSJbLs17pZP1IBF3EwSdvw4YYJiu71t3HxdEZwkQ5aoyHT5kw9xSN1rNN
+         wpBoeUi0p9nW8fynGGf1NtNQB/eQr0m3npmm1mBZ+gSJHJDZU7Lo/3dJZhySXo6QhOkj
+         GIOc8iXD9AP7G8c0EVO+8MZ+nb0xxdKSPIEiJ8jdbMgFJipDxBdRuI2umbJPAg8W8TWk
+         PinA==
+X-Gm-Message-State: AOAM532QgI1A5AwddH1jp6Bu7nJ7VTVJcMIioEfobVTsBgAy4XgUayB5
+        LXX6LfCpORcvL3RdYEqYDive4yeq/B0=
+X-Google-Smtp-Source: ABdhPJxVx1X9K1isEc7HPCpDBQ0kGz8wzJP0ZX0o1CYXKwXWzfU876EV7znqJLYKfhJxFbOzDDoCjA==
+X-Received: by 2002:a17:906:a1d9:: with SMTP id bx25mr21604744ejb.363.1623139255151;
+        Tue, 08 Jun 2021 01:00:55 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:3800:944:853f:7699:6a08? (p200300ea8f2938000944853f76996a08.dip0.t-ipconnect.de. [2003:ea:8f29:3800:944:853f:7699:6a08])
+        by smtp.googlemail.com with ESMTPSA id v7sm8600517edx.38.2021.06.08.01.00.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Jun 2021 01:00:54 -0700 (PDT)
+To:     Koba Ko <koba.ko@canonical.com>,
         "David S. Miller" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        OFED mailing list <linux-rdma@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com" 
-        <syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com>
-Subject: Re: [PATCH] net: rds: fix memory leak in rds_recvmsg
-Message-ID: <20210608110006.5dbca106@gmail.com>
-In-Reply-To: <CF68E17D-CC8A-4B30-9B67-4A0B0047FCE1@oracle.com>
-References: <20210607194102.2883-1-paskripkin@gmail.com>
-        <CF68E17D-CC8A-4B30-9B67-4A0B0047FCE1@oracle.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210608032207.2923574-1-koba.ko@canonical.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH] [v2] r8169: Use PHY_POLL when RTL8106E enable ASPM
+Message-ID: <84eb168e-58ff-0350-74e2-c55249eb258c@gmail.com>
+Date:   Tue, 8 Jun 2021 10:00:38 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210608032207.2923574-1-koba.ko@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Jun 2021 07:11:27 +0000
-Haakon Bugge <haakon.bugge@oracle.com> wrote:
+On 08.06.2021 05:22, Koba Ko wrote:
+> For RTL8106E, it's a Fast-ethernet chip.
+> If ASPM is enabled, the link chang interrupt wouldn't be triggered
+> immediately and must wait a very long time to get link change interrupt.
+> Even the link change interrupt isn't triggered, the phy link is already
+> established.
+> 
+> Use PHY_POLL to watch the status of phy link and disable
+> the link change interrupt when ASPM is enabled on RTL8106E.
+> 
+> v2: Instead use PHY_POLL and identify 8106E by RTL_GIGA_MAC_VER_39.
+> 
 
->=20
->=20
-> > On 7 Jun 2021, at 21:41, Pavel Skripkin <paskripkin@gmail.com>
-> > wrote:
-> >=20
-> > Syzbot reported memory leak in rds. The problem
-> > was in unputted refcount in case of error.
-> >=20
-> > int rds_recvmsg(struct socket *sock, struct msghdr *msg, size_t
-> > size, int msg_flags)
-> > {
-> > ...
-> >=20
-> > 	if (!rds_next_incoming(rs, &inc)) {
-> > 		...
-> > 	}
-> >=20
-> > After this "if" inc refcount incremented and
-> >=20
-> > 	if (rds_cmsg_recv(inc, msg, rs)) {
-> > 		ret =3D -EFAULT;
-> > 		goto out;
-> > 	}
-> > ...
-> > out:
-> > 	return ret;
-> > }
-> >=20
-> > in case of rds_cmsg_recv() fail the refcount won't be
-> > decremented. And it's easy to see from ftrace log, that
-> > rds_inc_addref() don't have rds_inc_put() pair in
-> > rds_recvmsg() after rds_cmsg_recv()
-> >=20
-> > 1)               |  rds_recvmsg() {
-> > 1)   3.721 us    |    rds_inc_addref();
-> > 1)   3.853 us    |    rds_message_inc_copy_to_user();
-> > 1) + 10.395 us   |    rds_cmsg_recv();
-> > 1) + 34.260 us   |  }
-> >=20
-> > Fixes: bdbe6fbc6a2f ("RDS: recv.c")
-> > Reported-and-tested-by:
-> > syzbot+5134cdf021c4ed5aaa5f@syzkaller.appspotmail.com
-> > Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
->=20
-> Thank for your commit and analyses. One small nit below.
->=20
-> > ---
-> > net/rds/recv.c | 3 ++-
-> > 1 file changed, 2 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/net/rds/recv.c b/net/rds/recv.c
-> > index 4db109fb6ec2..3fa16c339bfe 100644
-> > --- a/net/rds/recv.c
-> > +++ b/net/rds/recv.c
-> > @@ -714,7 +714,7 @@ int rds_recvmsg(struct socket *sock, struct
-> > msghdr *msg, size_t size,
-> >=20
-> > 		if (rds_cmsg_recv(inc, msg, rs)) {
-> > 			ret =3D -EFAULT;
-> > -			goto out;
-> > +			goto out_put;
->=20
-> Would a simple "break;" do it here and no need for the next hunk?
->=20
->=20
-> Thxs, H=C3=A5kon
->=20
+Still the issue description doesn't convince me that it's a hw bug
+with the respective chip version. What has been stated so far:
 
-Sure! I'll send v2 soon. Thank you for feedback :)
+1. (and most important) Issue doesn't occur in mainline because ASPM
+   is disabled in mainline for r8169. Issue occurs only with a
+   downstream kernel with ASPM enabled for r8169.
 
+2. Issue occurs only with ASPM L1.1 not disabled, even though this chip
+   version doesn't support L1 sub-states. Just L0s/L1 don't trigger
+   the issue.
+   The NIC doesn't announce L1.1 support, therefore PCI core won't
+   enable L1 sub-states on the PCIe link between NIC and upstream
+   PCI bridge.
 
-With regards,
-Pavel Skripkin
+3. Issue occurs only with a GBit-capable link partner. 100MBit link
+   partners are fine. Not clear whether issue occurs with a specific
+   Gbit link partner only or with GBit-capable link partners in general.
+
+4. Only link-up interrupt is affected. Not link-down and not interrupts
+   triggered by other interrupt sources.
+
+5. Realtek couldn't confirm that there's such a hw bug on RTL8106e.
+
+One thing that hasn't been asked yet:
+Does issue occur always if you re-plug the cable? Or only on boot?
+I'm asking because in the dmesg log you attached to the bugzilla issue
+the following looks totally ok.
+
+[   61.651643] r8169 0000:01:00.0 enp1s0: Link is Down
+[   63.720015] r8169 0000:01:00.0 enp1s0: Link is Up - 100Mbps/Full - flow control rx/tx
+[   66.685499] r8169 0000:01:00.0 enp1s0: Link is Down
+
+> Signed-off-by: Koba Ko <koba.ko@canonical.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 21 +++++++++++++++++++--
+>  1 file changed, 19 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 2c89cde7da1e..a59cbaef2839 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -4914,6 +4914,19 @@ static const struct dev_pm_ops rtl8169_pm_ops = {
+>  
+>  #endif /* CONFIG_PM */
+>  
+> +static int rtl_phy_poll_quirk(struct rtl8169_private *tp)
+> +{
+> +	struct pci_dev *pdev = tp->pci_dev;
+> +
+> +	if (!pcie_aspm_enabled(pdev))
+
+That's the wrong call. According to what you said earlier you want to
+check for L1 sub-states, not for ASPM in general.
+
+> +		return 0;
+> +
+> +	if (tp->mac_version == RTL_GIGA_MAC_VER_39)
+> +		return 1;
+> +
+> +	return 0;
+> +}
+> +
+>  static void rtl_wol_shutdown_quirk(struct rtl8169_private *tp)
+>  {
+>  	/* WoL fails with 8168b when the receiver is disabled. */
+> @@ -4991,7 +5004,10 @@ static const struct net_device_ops rtl_netdev_ops = {
+>  
+>  static void rtl_set_irq_mask(struct rtl8169_private *tp)
+>  {
+> -	tp->irq_mask = RxOK | RxErr | TxOK | TxErr | LinkChg;
+> +	tp->irq_mask = RxOK | RxErr | TxOK | TxErr;
+> +
+> +	if (!rtl_phy_poll_quirk(tp))
+> +		tp->irq_mask |= LinkChg;
+>  
+>  	if (tp->mac_version <= RTL_GIGA_MAC_VER_06)
+>  		tp->irq_mask |= SYSErr | RxOverflow | RxFIFOOver;
+> @@ -5085,7 +5101,8 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
+>  	new_bus->name = "r8169";
+>  	new_bus->priv = tp;
+>  	new_bus->parent = &pdev->dev;
+> -	new_bus->irq[0] = PHY_MAC_INTERRUPT;
+> +	new_bus->irq[0] =
+> +		(rtl_phy_poll_quirk(tp) ? PHY_POLL : PHY_MAC_INTERRUPT);
+>  	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x", pci_dev_id(pdev));
+>  
+>  	new_bus->read = r8169_mdio_read_reg;
+> 
+
