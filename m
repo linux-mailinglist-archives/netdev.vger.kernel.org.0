@@ -2,389 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68CB939EA7A
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 01:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 860E839EA85
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 02:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230254AbhFGX7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 19:59:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbhFGX7h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 19:59:37 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C5FC061574;
-        Mon,  7 Jun 2021 16:57:31 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id n133so27556594ybf.6;
-        Mon, 07 Jun 2021 16:57:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=x3zJJ5nkdyylLHqsLzPp8G+AsfkdmX8PbkXlCWveIxE=;
-        b=np80f27h7tYZhE61kUm3efv8yXNx+VEugnkmNWzNtAAnCOch4U5XMewQiHZwAHc7xr
-         styhWHqieDIn2ctXL2Ceovm1hNtu4BiitSFZuogvzRViKPrCfF1KETM/qreT5427p11p
-         k814ljZiipmmcbtjVOYeB2QY7niPuZ4daZqt6jOAzUrAPud7+ubVHDOg5dz61I4xZC9o
-         fYmlDZ7/gjKaq6yeztRsRnhymkYof5jNESZ5WnjjlshjCSHI/wakOmjNffLciEfEcytW
-         lCCDlEP3wzLCfO9RfpV99lLik4s6qUu+f3dGg7EjvUfcuJKXX41etvWV0+RDhgNaCeB0
-         QFmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=x3zJJ5nkdyylLHqsLzPp8G+AsfkdmX8PbkXlCWveIxE=;
-        b=Y/ccRqNTPO3m9jdUPjTsPU10R5RocvY92mFh2TqMgYImrO6iunfFZ/Wa2KWweKtrkk
-         4M+MZCMJTRroKdZbr3J6X0ZSRR9dnSy3YvxqdpxQg4pmnApOPZJd4gdS9f3G0yLijLVa
-         3EVkSsMAtUyy+0KcZ+hkgpCXKO8dxPup2U60GDR31wGV6cXBPCo9SsUkx5TwOJ3VSXFa
-         WSgNRqwApgYeipvIIOMXUqN9f81Y6ZBxH5rfcynZwnWLIsB+F16/WLTbPVN2kok81c7G
-         u2cNCGC18vaMOIf6jwGOKAB2zpzhgjRB2lE44nsFAvtgm82SZbTOntCta4VN/mftBk2/
-         kSMQ==
-X-Gm-Message-State: AOAM531iVf2H7keFWUV9kLdPTxHwLD0trGT9mxjtNNb3wQ1CblhZBA09
-        tWgLARJGzYpIfcYrm2bEWBX0U4/9bKJhWJxMq5I=
-X-Google-Smtp-Source: ABdhPJwdAJc+8fjqVmL6x9FJ8EujTlSIDLqwYnJ9cajfL2ZOLxqsdsa/vuMn7i9jTLMKu3y0888d3ijjqQ2MoS2u2f4=
-X-Received: by 2002:a25:9942:: with SMTP id n2mr27998805ybo.230.1623110250943;
- Mon, 07 Jun 2021 16:57:30 -0700 (PDT)
+        id S230396AbhFHAD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 20:03:57 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50400 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230282AbhFHAD4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 20:03:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=N3a+03kBTMfQSx5Hd/bgZB3TBPMGzTKqpBlMp1B0wk8=; b=nakdTipNHB98wcXQ2sRFnxmLlF
+        WoyocyN0jrUpK+Zcdvcu2GYF34gelZzc6rMgPNpe6zxlAVZE7cwYGNe+aAHNR9ozGYlAVFVT6HYBS
+        x1EBu7rwkrI8Yx2xyCDXKAF7Y0MixQIOsjKlaDfC4SRgb88JciIQq9gImH4SrflyzGC0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lqPBa-008GfJ-3G; Tue, 08 Jun 2021 02:01:38 +0200
+Date:   Tue, 8 Jun 2021 02:01:38 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?B?5ZGo55Cw5p2wIChaaG91IFlhbmppZSk=?= 
+        <zhouyanjie@wanyeetech.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, dongsheng.qiu@ingenic.com,
+        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
+        sihui.liu@ingenic.com, jun.jiang@ingenic.com,
+        sernia.zhou@foxmail.com, paul@crapouillou.net
+Subject: Re: [PATCH 2/2] net: stmmac: Add Ingenic SoCs MAC support.
+Message-ID: <YL6zYgGdqxqL9c0j@lunn.ch>
+References: <1623086867-119039-1-git-send-email-zhouyanjie@wanyeetech.com>
+ <1623086867-119039-3-git-send-email-zhouyanjie@wanyeetech.com>
 MIME-Version: 1.0
-References: <20210604063116.234316-1-memxor@gmail.com> <20210604063116.234316-8-memxor@gmail.com>
-In-Reply-To: <20210604063116.234316-8-memxor@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 7 Jun 2021 16:57:19 -0700
-Message-ID: <CAEf4BzYdO=uZcW4PLySPUq8hv7qTdT2B0=s_8w+RVv53FvqfSg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 7/7] libbpf: add selftest for bpf_link based
- TC-BPF management API
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1623086867-119039-3-git-send-email-zhouyanjie@wanyeetech.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 3, 2021 at 11:32 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> This covers basic attach/detach/update, and tests interaction with the
-> netlink API. It also exercises the bpf_link_info and fdinfo codepaths.
->
-> Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>.
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
->  .../selftests/bpf/prog_tests/tc_bpf_link.c    | 285 ++++++++++++++++++
->  1 file changed, 285 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_bpf_link.c
->
+>  config DWMAC_ROCKCHIP
+>  	tristate "Rockchip dwmac support"
+> -	default ARCH_ROCKCHIP
+> +	default MACH_ROCKCHIP
+>  	depends on OF && (ARCH_ROCKCHIP || COMPILE_TEST)
+>  	select MFD_SYSCON
+>  	help
+> @@ -164,7 +176,7 @@ config DWMAC_STI
+>  
+>  config DWMAC_STM32
+>  	tristate "STM32 DWMAC support"
+> -	default ARCH_STM32
+> +	default MACH_STM32
 
-[...]
+It would be good to explain in the commit message why you are changing
+these two. It is not obvious.
 
-> +static int test_tc_bpf_link_netlink_interaction(struct bpf_tc_hook *hook=
-,
-> +                                               struct bpf_program *prog)
+> +static int jz4775_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
 > +{
-> +       DECLARE_LIBBPF_OPTS(bpf_link_update_opts, lopts,
-> +                           .old_prog_fd =3D bpf_program__fd(prog));
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_link_opts, opts, .handle =3D 1, .prior=
-ity =3D 1);
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_opts, nopts, .handle =3D 1, .priority =
-=3D 1);
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_opts, dopts, .handle =3D 1, .priority =
-=3D 1);
-> +       struct bpf_link *link;
-> +       int ret;
+> +	struct ingenic_mac *mac = plat_dat->bsp_priv;
+> +	int val;
 > +
-> +       /* We need to test the following cases:
-> +        *      1. BPF link owned filter cannot be replaced by netlink
-> +        *      2. Netlink owned filter cannot be replaced by BPF link
-> +        *      3. Netlink cannot do targeted delete of BPF link owned fi=
-lter
-> +        *      4. Filter is actually deleted (with chain cleanup)
-> +        *         We actually (ab)use the kernel behavior of returning E=
-INVAL when
-> +        *         target chain doesn't exist on tc_get_tfilter (which ma=
-ps to
-> +        *         bpf_tc_query) here, to know if the chain was really cl=
-eaned
-> +        *         up on tcf_proto destruction. Our setup is so that ther=
-e is
-> +        *         only one reference to the chain.
-> +        *
-> +        *         So on query, chain ? (filter ?: ENOENT) : EINVAL
-> +        */
+> +	switch (plat_dat->interface) {
+> +	case PHY_INTERFACE_MODE_MII:
+> +		val = FIELD_PREP(MACPHYC_TXCLK_SEL_MASK, MACPHYC_TXCLK_SEL_INPUT) |
+> +			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_MII);
+> +		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_MII\n");
+> +		break;
 > +
-> +       link =3D bpf_program__attach_tc(prog, hook, &opts);
-> +       if (!ASSERT_OK_PTR(link, "bpf_program__attach_tc"))
-> +               return PTR_ERR(link);
+> +	case PHY_INTERFACE_MODE_GMII:
+> +		val = FIELD_PREP(MACPHYC_TXCLK_SEL_MASK, MACPHYC_TXCLK_SEL_INPUT) |
+> +			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_GMII);
+> +		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_GMII\n");
+> +		break;
 > +
-> +       nopts.prog_fd =3D bpf_program__fd(prog);
-> +       ret =3D bpf_tc_attach(hook, &nopts);
-> +       if (!ASSERT_EQ(ret, -EEXIST, "bpf_tc_attach without replace"))
-> +               goto end;
+> +	case PHY_INTERFACE_MODE_RMII:
+> +		val = FIELD_PREP(MACPHYC_TXCLK_SEL_MASK, MACPHYC_TXCLK_SEL_INPUT) |
+> +			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RMII);
+> +		pr_debug("MAC PHY Control Register: PHY_INTERFACE_MODE_RMII\n");
+> +		break;
 > +
-> +       nopts.flags =3D BPF_TC_F_REPLACE;
-> +       ret =3D bpf_tc_attach(hook, &nopts);
-> +       if (!ASSERT_EQ(ret, -EPERM, "bpf_tc_attach with replace"))
-> +               goto end;
-> +
-> +       ret =3D bpf_tc_detach(hook, &dopts);
-> +       if (!ASSERT_EQ(ret, -EPERM, "bpf_tc_detach"))
-> +               goto end;
-> +
-> +       lopts.flags =3D BPF_F_REPLACE;
-> +       ret =3D bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog)=
-,
-> +                             &lopts);
-> +       ASSERT_OK(ret, "bpf_link_update");
-> +       ret =3D ret < 0 ? -errno : ret;
+> +	case PHY_INTERFACE_MODE_RGMII:
 
-all selftests run in libbpf 1.0 mode, so you get actual error
-directly, so no need to deal with -errno here.
+What about the other three RGMII modes?
 
-> +
-> +end:
-> +       bpf_link__destroy(link);
-> +       if (!ret && !ASSERT_EQ(bpf_tc_query(hook, &dopts), -EINVAL,
-> +                              "chain empty delete"))
-> +               ret =3D -EINVAL;
-> +       return ret;
-> +}
-> +
-> +static int test_tc_bpf_link_update_ways(struct bpf_tc_hook *hook,
-> +                                       struct bpf_program *prog)
-> +{
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_link_opts, opts, .handle =3D 1, .prior=
-ity =3D 1);
-> +       DECLARE_LIBBPF_OPTS(bpf_link_update_opts, uopts, 0);
-> +       struct test_tc_bpf *skel;
-> +       struct bpf_link *link;
-> +       int ret;
-> +
-> +       skel =3D test_tc_bpf__open_and_load();
-> +       if (!ASSERT_OK_PTR(skel, "test_tc_bpf__open_and_load"))
-> +               return PTR_ERR(skel);
-> +
-> +       link =3D bpf_program__attach_tc(prog, hook, &opts);
-> +       if (!ASSERT_OK_PTR(link, "bpf_program__attach_tc")) {
-> +               ret =3D PTR_ERR(link);
-> +               goto end;
-> +       }
-> +
-> +       ret =3D bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog)=
-,
-> +                             &uopts);
-> +       if (!ASSERT_OK(ret, "bpf_link_update no old prog"))
-> +               goto end;
-> +
-> +       uopts.old_prog_fd =3D bpf_program__fd(prog);
-> +       ret =3D bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog)=
-,
-> +                             &uopts);
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +		val = FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_DELAY) |
+> +			  FIELD_PREP(MACPHYC_TX_DELAY_MASK, MACPHYC_TX_DELAY_63_UNIT) |
+> +			  FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN) |
+> +			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
 
-please keep all such calls single-line, they aren't excessively long at all
+What exactly does MACPHYC_TX_DELAY_63_UNIT mean here? Ideally, the MAC
+should not be adding any RGMII delays. It should however pass mode
+through to the PHY, so it can add the delays, if the mode indicates it
+should, e.g. PHY_INTERFACE_MODE_RGMII_ID. This is also why you should
+be handling all 4 RGMII modes here, not just one.
 
-> +       if (!ASSERT_TRUE(ret < 0 && errno =3D=3D EINVAL,
-> +                        "bpf_link_update with old prog without BPF_F_REP=
-LACE")) {
-
-same as above, ret should already be -EINVAL, so just check directly
-
-> +               ret =3D -EINVAL;
-> +               goto end;
-> +       }
-> +
-> +       uopts.flags =3D BPF_F_REPLACE;
-> +       ret =3D bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog)=
-,
-> +                             &uopts);
-> +       if (!ASSERT_OK(ret, "bpf_link_update with old prog with BPF_F_REP=
-LACE"))
-> +               goto end;
-> +
-> +       uopts.old_prog_fd =3D bpf_program__fd(skel->progs.cls);
-> +       ret =3D bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog)=
-,
-> +                             &uopts);
-> +       if (!ASSERT_TRUE(ret < 0 && errno =3D=3D EINVAL,
-> +                        "bpf_link_update with wrong old prog")) {
-
-and here
-
-> +               ret =3D -EINVAL;
-> +               goto end;
-> +       }
-> +       ret =3D 0;
-> +
-> +end:
-> +       test_tc_bpf__destroy(skel);
-> +       return ret;
-> +}
-> +
-> +static int test_tc_bpf_link_info_api(struct bpf_tc_hook *hook,
-> +                                    struct bpf_program *prog)
-> +{
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_link_opts, opts, .handle =3D 1, .prior=
-ity =3D 1);
-> +       __u32 ifindex, parent, handle, gen_flags, priority;
-> +       char buf[4096], path[256], *begin;
-> +       struct bpf_link_info info =3D {};
-> +       __u32 info_len =3D sizeof(info);
-> +       struct bpf_link *link;
-> +       int ret, fdinfo;
-> +
-> +       link =3D bpf_program__attach_tc(prog, hook, &opts);
-> +       if (!ASSERT_OK_PTR(link, "bpf_program__attach_tc"))
-> +               return PTR_ERR(link);
-> +
-> +       ret =3D bpf_obj_get_info_by_fd(bpf_link__fd(link), &info, &info_l=
-en);
-> +       if (!ASSERT_OK(ret, "bpf_obj_get_info_by_fd"))
-> +               goto end;
-> +
-> +       ret =3D snprintf(path, sizeof(path), "/proc/self/fdinfo/%d",
-> +                      bpf_link__fd(link));
-> +       if (!ASSERT_TRUE(!ret || ret < sizeof(path), "snprintf pathname")=
-)
-> +               goto end;
-
-ASSERT_TRUE is very generic, it's better to do ASSERT_LT(ret,
-sizeof(path), "snprintf") here
-
-not sure why `!ret` is allowed?..
-
-> +
-> +       fdinfo =3D open(path, O_RDONLY);
-> +       if (!ASSERT_GT(fdinfo, -1, "open fdinfo"))
-> +               goto end;
-> +
-> +       ret =3D read(fdinfo, buf, sizeof(buf));
-> +       if (!ASSERT_GT(ret, 0, "read fdinfo")) {
-> +               ret =3D -EINVAL;
-> +               goto end_file;
-> +       }
-> +
-> +       begin =3D strstr(buf, "ifindex");
-> +       if (!ASSERT_OK_PTR(begin, "find beginning of fdinfo info")) {
-> +               ret =3D -EINVAL;
-> +               goto end_file;
-> +       }
-> +
-> +       ret =3D sscanf(begin, "ifindex:\t%u\n"
-> +                           "parent:\t%u\n"
-> +                           "handle:\t%u\n"
-> +                           "priority:\t%u\n"
-> +                           "gen_flags:\t%u\n",
-> +                           &ifindex, &parent, &handle, &priority, &gen_f=
-lags);
-> +       if (!ASSERT_EQ(ret, 5, "sscanf fdinfo")) {
-> +               ret =3D -EINVAL;
-> +               goto end_file;
-> +       }
-> +
-> +       ret =3D -EINVAL;
-> +
-> +#define X(a, b, c) (!ASSERT_EQ(a, b, #a " =3D=3D " #b) || !ASSERT_EQ(b, =
-c, #b " =3D=3D " #c))
-> +       if (X(info.tc.ifindex, ifindex, 1) ||
-> +           X(info.tc.parent, parent,
-> +             TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS)) ||
-> +           X(info.tc.handle, handle, 1) ||
-> +           X(info.tc.gen_flags, gen_flags, TCA_CLS_FLAGS_NOT_IN_HW) ||
-> +           X(info.tc.priority, priority, 1))
-> +#undef X
-
-This seems to be a bit too convoluted and over-engineered. Just
-validate all the equalities unconditionally.
-
-ASSERT_EQ(info.tc.ifindex, 1, "info.tc.ifindex");
-ASSERT_EQ(ifindex, 1, "fdinfo.ifindex");
-ASSERT_EQ(info.tc.parent, TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS),
-"info.tc.parent");
-
-and so on.
-
-Then, you don't really need to propagate errors from
-test_tc_bpf_link_info_api, because each ASSERT_EQ() marks the test (or
-subtest) as failed, so you don't have to do that below in
-test_tc_bpf_link.
-
-> +               goto end_file;
-> +
-> +       ret =3D 0;
-> +
-> +end_file:
-> +       close(fdinfo);
-> +end:
-> +       bpf_link__destroy(link);
-> +       return ret;
-> +}
-> +
-> +void test_tc_bpf_link(void)
-> +{
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook, .ifindex =3D LO_IFINDEX,
-> +                           .attach_point =3D BPF_TC_INGRESS);
-> +       struct test_tc_bpf *skel =3D NULL;
-> +       bool hook_created =3D false;
-> +       int ret;
-> +
-> +       skel =3D test_tc_bpf__open_and_load();
-> +       if (!ASSERT_OK_PTR(skel, "test_tc_bpf__open_and_load"))
-> +               return;
-> +
-> +       ret =3D bpf_tc_hook_create(&hook);
-> +       if (ret =3D=3D 0)
-> +               hook_created =3D true;
-> +
-> +       ret =3D ret =3D=3D -EEXIST ? 0 : ret;
-> +       if (!ASSERT_OK(ret, "bpf_tc_hook_create(BPF_TC_INGRESS)"))
-> +               goto end;
-> +
-> +       ret =3D test_tc_bpf_link_basic(&hook, skel->progs.cls);
-> +       if (!ASSERT_OK(ret, "test_tc_bpf_link_basic"))
-> +               goto end;
-> +
-> +       bpf_tc_hook_destroy(&hook);
-> +
-> +       hook.attach_point =3D BPF_TC_EGRESS;
-> +       ret =3D test_tc_bpf_link_basic(&hook, skel->progs.cls);
-> +       if (!ASSERT_OK(ret, "test_tc_bpf_link_basic"))
-> +               goto end;
-> +
-> +       bpf_tc_hook_destroy(&hook);
-> +
-> +       ret =3D test_tc_bpf_link_netlink_interaction(&hook, skel->progs.c=
-ls);
-> +       if (!ASSERT_OK(ret, "test_tc_bpf_link_netlink_interaction"))
-> +               goto end;
-> +
-> +       bpf_tc_hook_destroy(&hook);
-> +
-> +       ret =3D test_tc_bpf_link_update_ways(&hook, skel->progs.cls);
-> +       if (!ASSERT_OK(ret, "test_tc_bpf_link_update_ways"))
-> +               goto end;
-> +
-> +       bpf_tc_hook_destroy(&hook);
-> +
-> +       ret =3D test_tc_bpf_link_info_api(&hook, skel->progs.cls);
-> +       if (!ASSERT_OK(ret, "test_tc_bpf_link_info_api"))
-
-I was talking about this above, it's completely unnecessary and
-redundant. Just complicates everything.
-
-> +               goto end;
-> +
-> +end:
-> +       if (hook_created) {
-> +               hook.attach_point =3D BPF_TC_INGRESS | BPF_TC_EGRESS;
-> +               bpf_tc_hook_destroy(&hook);
-> +       }
-> +       test_tc_bpf__destroy(skel);
-> +}
-> --
-> 2.31.1
->
+	 Andrew
