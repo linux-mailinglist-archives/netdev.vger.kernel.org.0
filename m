@@ -2,68 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D765E39F9C5
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 16:58:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7ACB39F9F2
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 17:07:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233732AbhFHPAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 11:00:21 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:37430 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233540AbhFHPAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 11:00:19 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <colin.king@canonical.com>)
-        id 1lqdBP-0003XW-MY; Tue, 08 Jun 2021 14:58:23 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] net: usb: asix: ax88772: Fix less than zero comparison of a u16
-Date:   Tue,  8 Jun 2021 15:58:23 +0100
-Message-Id: <20210608145823.159467-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.31.1
+        id S233758AbhFHPJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 11:09:21 -0400
+Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:33197 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S233716AbhFHPJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 11:09:19 -0400
+X-Greylist: delayed 443 seconds by postgrey-1.27 at vger.kernel.org; Tue, 08 Jun 2021 11:09:19 EDT
+Received: from bretzel (unknown [10.16.0.57])
+        by proxy.6wind.com (Postfix) with ESMTPS id C6E939F39AB;
+        Tue,  8 Jun 2021 16:59:59 +0200 (CEST)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1lqdCx-0006Wa-Ok; Tue, 08 Jun 2021 16:59:59 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Miaohe Lin <linmiaohe@huawei.com>
+Subject: [PATCH net] vrf: fix maximum MTU
+Date:   Tue,  8 Jun 2021 16:59:51 +0200
+Message-Id: <20210608145951.24985-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+My initial goal was to fix the default MTU, which is set to 65536, ie above
+the maximum defined in the driver: 65535 (ETH_MAX_MTU).
 
-The comparison of the u16 priv->phy_addr < 0 is always false because
-phy_addr is unsigned. Fix this by assigning the return from the call
-to function asix_read_phy_addr to int ret and using this for the
-less than zero error check comparison.
+In fact, it's seems more consistent, wrt min_mtu, to set the max_mtu to
+IP6_MAX_MTU (65535 + sizeof(struct ipv6hdr)) and use it by default.
 
-Addresses-Coverity: ("Unsigned compared against 0")
-Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Let's also, for consistency, set the mtu in vrf_setup(). This function
+calls ether_setup(), which set the mtu to 1500. Thus, the whole mtu config
+is done in the same function.
+
+Before the patch:
+$ ip link add blue type vrf table 1234
+$ ip link list blue
+9: blue: <NOARP,MASTER> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether fa:f5:27:70:24:2a brd ff:ff:ff:ff:ff:ff
+$ ip link set dev blue mtu 65535
+$ ip link set dev blue mtu 65536
+Error: mtu greater than device maximum.
+
+Fixes: 5055376a3b44 ("net: vrf: Fix ping failed when vrf mtu is set to 0")
+CC: Miaohe Lin <linmiaohe@huawei.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 ---
- drivers/net/usb/asix_devices.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/vrf.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 57dafb3262d9..211c5a87eb15 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -704,9 +704,10 @@ static int ax88772_init_phy(struct usbnet *dev)
- 	struct asix_common_private *priv = dev->driver_priv;
- 	int ret;
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index 503e2fd7ce51..28a6c4cfe9b8 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -1183,9 +1183,6 @@ static int vrf_dev_init(struct net_device *dev)
  
--	priv->phy_addr = asix_read_phy_addr(dev, true);
--	if (priv->phy_addr < 0)
-+	ret = asix_read_phy_addr(dev, true);
-+	if (ret < 0)
- 		return priv->phy_addr;
-+	priv->phy_addr = ret;
+ 	dev->flags = IFF_MASTER | IFF_NOARP;
  
- 	snprintf(priv->phy_name, sizeof(priv->phy_name), PHY_ID_FMT,
- 		 priv->mdio->id, priv->phy_addr);
+-	/* MTU is irrelevant for VRF device; set to 64k similar to lo */
+-	dev->mtu = 64 * 1024;
+-
+ 	/* similarly, oper state is irrelevant; set to up to avoid confusion */
+ 	dev->operstate = IF_OPER_UP;
+ 	netdev_lockdep_set_classes(dev);
+@@ -1685,7 +1682,8 @@ static void vrf_setup(struct net_device *dev)
+ 	 * which breaks networking.
+ 	 */
+ 	dev->min_mtu = IPV6_MIN_MTU;
+-	dev->max_mtu = ETH_MAX_MTU;
++	dev->max_mtu = IP6_MAX_MTU;
++	dev->mtu = dev->max_mtu;
+ }
+ 
+ static int vrf_validate(struct nlattr *tb[], struct nlattr *data[],
 -- 
-2.31.1
+2.30.0
 
