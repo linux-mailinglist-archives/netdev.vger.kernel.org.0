@@ -2,42 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3787C3A066F
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:50:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EECF13A0672
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:50:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234794AbhFHVwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 17:52:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47284 "EHLO mail.kernel.org"
+        id S234880AbhFHVwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 17:52:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47300 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234779AbhFHVwC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234788AbhFHVwC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 8 Jun 2021 17:52:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5C16F6139A;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 80DAD613BE;
         Tue,  8 Jun 2021 21:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623189009;
-        bh=SuZf5CCqqwfWwZLQBRQFTsWwPtyHFG/LGSMt/78I1gM=;
+        bh=7HaHqXDkQAaRmLuluhwhaz+pMlSPbe51C6w0nDiCRmU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VaxR1TnZvcKdmaGZ206X230Obdb6HljyYAmmes4BQ34xqyg63YKY2Zg/EkLeP/B90
-         BvjHJdtHP7AVosi4SLw//10D2g8k2ywqb6LaySDpuJIDqgROm+BL3oYk9+zPRQB3vE
-         c4imgc0cOC1wfG0zJs8rdd222ZQRtIALVqGN7EBaHvqWjBDorsZgImOQ6iWqvdfl34
-         5MbdIEqJPIMUa/r417ZOe0/0+0rBgAfwEqgC9Za6SC7QqK9lJTz4RCWUbL9XFMtOBm
-         J8Zjr34UNC1Q0eUBtPzJqJKcEGTuAut9m10K/s8EAeyLJLLIs7gvnojyaNMBHxF6rf
-         monlPBAlBSQ3w==
+        b=iP6t6aRPlOFIxZCTjewUjpLHYg2kCRGviV1B752hTRLqurh/qmP6tWEmJ4d+uuM43
+         tuYfk9J8LddEoRvbGDgNjxyY7FormTJT8aTH7jklV0QNnS6LraOKFC4XtBCxRSfehx
+         SpaPgyaQ7cqU9rmCMbfPqJRzkXdG0qD4Cb57BUbQqRmcf4fMc/9bYNHR9HQZB5cWjn
+         ow4tLwD2+kQD6efQ0MUQDab28jzz1RUso0mMW46I1FLwQu1Dcp0F1X4XnzIuyv+473
+         uwVHj/Xr2dCFjiC/nWz4ZbmS1qippQDc/N7tKrSldCxRwOVQzzYb25HxO/4XRjmSax
+         mKo7HlgmLMEiQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 50B0E609D2;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7A558609E3;
         Tue,  8 Jun 2021 21:50:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 00/10] net: WWAN subsystem improvements
+Subject: Re: [PATCH v3 net-next 0/4] Add NXP SJA1110 support to the sja1105 DSA
+ driver
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162318900932.8715.4669669259208557381.git-patchwork-notify@kernel.org>
+Message-Id: <162318900949.8715.14591221292425232059.git-patchwork-notify@kernel.org>
 Date:   Tue, 08 Jun 2021 21:50:09 +0000
-References: <20210608040241.10658-1-ryazanov.s.a@gmail.com>
-In-Reply-To: <20210608040241.10658-1-ryazanov.s.a@gmail.com>
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc:     loic.poulain@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+References: <20210608092538.3920217-1-olteanv@gmail.com>
+In-Reply-To: <20210608092538.3920217-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        vladimir.oltean@nxp.com, linux@armlinux.org.uk,
+        hkallweit1@gmail.com, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,41 +50,26 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue,  8 Jun 2021 07:02:31 +0300 you wrote:
-> While working on WWAN netdev creation support, I notice a few things
-> that could be done to make the wwan subsystem more developer and user
-> friendly. This series implements them.
+On Tue,  8 Jun 2021 12:25:34 +0300 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> The series begins with a WWAN HW simulator designed simplify testing
-> and make the WWAN subsystem available for a wider audience. The next two
-> patches are intended to make the code a bit more clearer. This is
-> followed by a few patches to make the port device naming more
-> user-friendly. The series is finishes with a set of changes that allow
-> the WWAN AT port to be used with terminal emulation software.
+> The NXP SJA1110 is an automotive Ethernet switch with an embedded Arm
+> Cortex-M7 microcontroller. The switch has 11 ports (10 external + one
+> for the DSA-style connection to the microcontroller).
+> The microcontroller can be disabled and the switch can be controlled
+> over SPI, a la SJA1105 - this is how this driver handles things.
 > 
 > [...]
 
 Here is the summary with links:
-  - [01/10] wwan_hwsim: WWAN device simulator
-    https://git.kernel.org/netdev/net-next/c/f36a111a74e7
-  - [02/10] wwan_hwsim: add debugfs management interface
-    https://git.kernel.org/netdev/net-next/c/9ee23f48f670
-  - [03/10] net: wwan: make WWAN_PORT_MAX meaning less surprised
-    https://git.kernel.org/netdev/net-next/c/b64d76b78226
-  - [04/10] net: wwan: core: init port type string array using enum values
-    https://git.kernel.org/netdev/net-next/c/64cc80c0ff2e
-  - [05/10] net: wwan: core: spell port device name in lowercase
-    https://git.kernel.org/netdev/net-next/c/392c26f7f133
-  - [06/10] net: wwan: core: make port names more user-friendly
-    https://git.kernel.org/netdev/net-next/c/f458709ff40b
-  - [07/10] net: wwan: core: expand ports number limit
-    https://git.kernel.org/netdev/net-next/c/72eedfc4bbc7
-  - [08/10] net: wwan: core: implement TIOCINQ ioctl
-    https://git.kernel.org/netdev/net-next/c/e263c5b2e891
-  - [09/10] net: wwan: core: implement terminal ioctls for AT port
-    https://git.kernel.org/netdev/net-next/c/c230035c2f2f
-  - [10/10] net: wwan: core: purge rx queue on port close
-    https://git.kernel.org/netdev/net-next/c/504672038b17
+  - [v3,net-next,1/4] dt-bindings: net: dsa: sja1105: add SJA1110 bindings
+    https://git.kernel.org/netdev/net-next/c/070f5b701d55
+  - [v3,net-next,2/4] net: dsa: sja1105: add support for the SJA1110 switch family
+    https://git.kernel.org/netdev/net-next/c/3e77e59bf8cf
+  - [v3,net-next,3/4] net: dsa: sja1105: make sure the retagging port is enabled for SJA1110
+    https://git.kernel.org/netdev/net-next/c/ceec8bc0988d
+  - [v3,net-next,4/4] net: dsa: sja1105: register the MDIO buses for 100base-T1 and 100base-TX
+    https://git.kernel.org/netdev/net-next/c/5a8f09748ee7
 
 You are awesome, thank you!
 --
