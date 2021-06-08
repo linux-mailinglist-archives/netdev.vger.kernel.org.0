@@ -2,157 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CCBB39EC71
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 04:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8976239EC8C
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 05:01:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231186AbhFHC7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 22:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231176AbhFHC7K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 22:59:10 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B02C061787
-        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 19:57:09 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id ba2so21035748edb.2
-        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 19:57:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EuJsYuOqrG8SwCz3ljrkwXN4K75nXvxXvYn9NFBNIIk=;
-        b=b/Tb/DenmCtu38YpFqyJ5pZcHaHq4/WyfqjMlIGoJNiMNfANIToEi7K3/qi09KX65a
-         HRsvOsFx+++DN8XaG4MI5HPv4SMOBayo6cqyJGsiG6aGwNoWgOThbdrCnc1M/kiKTDuw
-         +e8aOaNSZer3m2ERgU+iQHrkKM9Ih6pE7oq8p94nEBr5JM3cGp+CaEFXg0uwOaZKTMLi
-         VWfNBoB4fieEEYeHmPRvLyGxPP0rDQCj53AfH2C1O8iLMWQYLKlUGZ/IFMgxHPVAYjNV
-         Vz/YtPwa1I1AqE2X//PBAtJTAGCg5fSzP+dHq5E3HFtwmfeft43ZUpLKzAyaTKk9fqqT
-         Q3RQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EuJsYuOqrG8SwCz3ljrkwXN4K75nXvxXvYn9NFBNIIk=;
-        b=XK4DqhGXwciAYoWTJOT/AJo1/uYJrSWXIbtlx1CQTnBkPwMCBWNNfm3WK3yztvvFab
-         bd2EMerkJ3RKltDrrRjje/jaXYUXzfb3pwCHIZKIYu2RMjMNZU5ji0UqMcY15SCXBW9k
-         b9g0ZXUiKzwR5U0unEEC5N4HPKie9MtVnRLRrYtViwLdjXxLmBCg4mxKi/FNLu/8HggW
-         k1lJUvexltrA9lRHA3ZGqAd99vL1SIqXgb1yoe9tEaDJ8F8uCdMc7pDzn3UGUtqYYvQL
-         wMw7TCOmkNr9Uui+7qPJ5nDWp3Jahdqd6VlCzw5FRwspREZfAL3AFIquNO6XwZecdAYx
-         AqOg==
-X-Gm-Message-State: AOAM530Uga8dan8KGIBZrKwQiDiihyq1xFpBhrABU69M/qIQLRL5uhv5
-        aOr4Sfd3kREQ8CxVISLL5ns/fb/Vc8J6hO53ndhx
-X-Google-Smtp-Source: ABdhPJxmiiOxK28u0wIUfqakPqSPdOGryiWaqVkUadFKJswOOkz07/rWunWEUHe2KpR3G3nPPsBjc/LJMKVW1pJVeqU=
-X-Received: by 2002:a05:6402:1771:: with SMTP id da17mr19127260edb.31.1623121028094;
- Mon, 07 Jun 2021 19:57:08 -0700 (PDT)
+        id S231283AbhFHDDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 23:03:23 -0400
+Received: from mail-eopbgr30044.outbound.protection.outlook.com ([40.107.3.44]:45942
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230266AbhFHDDW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 23:03:22 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U1E1AWi3icXp9whSbOEmrba/gmjVGyhPIojL5XYyfwofULBcrG+Dx+4rlDo/MpWnFklB3rApFDNG6p6N+w+sS74i18ofUKVauuT12eNp2sU/xQmZZZtSyBtJp1bewTXbvGGOU/zkKQ5AFpH/9NJxdbSIgCoaTTPbZwNxE9xqDIsfjEM3UD2zn/HhmQJwXCqphP2NGgR6LLSdp2vx9h/S4KkjTGEQEqhD/fe+VP/xpjQROhLp2Js0/kBlqvL7ltzrBGLpXy5aps/7qODGG6i+hersCZEHk78zOZWNrA6lcKNoK5KHEbd1mn9efkkNYzu5NXcDEDgt0aP1BUZwXGWOjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AKuGHE1fCh7gBbhwlOxBGwtEgxgXSjjKHAwmnpPX0Dg=;
+ b=HDky6UZN+2ZvPZKr0J1xeH0ym/XeS6VbY0o5jcu9MyH9DQb9nX0vOoAbodFCQZYx3+vPKOmwxnSeYvu/aLvCbcZBTO1TEj/NJklVc6bfV/plviWRlCIPLyHH+CzX3qkUpnlAaL8ujSuS9gLB69b/yPD2+KsxUylkgnnn39I+FrQYfWOK92QQ9nx7yna/j38dXAcvWps1yUvhj1ChM0whrXOUBXVyrv/+bibRfC/RqF/Ruj/pRXDwzrfqz5llQ11+gMezfAOTEG4EEmMNd3C6eWg0Q7WPiC4cD7p8DDwFDrO1x/kM/wE4S2aUVP/ugSOM3dRpNQi0ltmK1fHIm9gAow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AKuGHE1fCh7gBbhwlOxBGwtEgxgXSjjKHAwmnpPX0Dg=;
+ b=WHpdLgp7UQ4R1JB+oBvVmOa9sK5R9a6tLlYd0u1/OfgsnoRD1s2uUZe4mAjxWzlGNTo4SejIgBF9dKHUltaQ0t6ALRwzcKetqX/lU0h4ss3JfMz5T7z5B/jloi+WP4EBldFGea7M1cF8bg9bW/3RgfuryA4neVlW9k2Ev0u+scs=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB6PR0402MB2904.eurprd04.prod.outlook.com (2603:10a6:4:9c::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.26; Tue, 8 Jun
+ 2021 03:01:28 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4195.030; Tue, 8 Jun 2021
+ 03:01:28 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        f.fainelli@gmail.com, Jisheng.Zhang@synaptics.com
+Cc:     linux-imx@nxp.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH V2 net-next 0/4] net: phy: add dt property for realtek phy
+Date:   Tue,  8 Jun 2021 11:00:30 +0800
+Message-Id: <20210608030034.3113-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [119.31.174.71]
+X-ClientProxiedBy: SG2PR01CA0151.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:8f::31) To DB8PR04MB6795.eurprd04.prod.outlook.com
+ (2603:10a6:10:fa::15)
 MIME-Version: 1.0
-References: <20210608015158.3848878-1-sunnanyong@huawei.com>
- <CAHC9VhTqDjN1VwakrYZznaMVTyqkEKcYLo=bPtHsOXugS_mexQ@mail.gmail.com> <CAD-N9QXFbO_FVBTHN6k+ZPw7GF6bKp+f4wK_LfMQLRsdML=XcA@mail.gmail.com>
-In-Reply-To: <CAD-N9QXFbO_FVBTHN6k+ZPw7GF6bKp+f4wK_LfMQLRsdML=XcA@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 7 Jun 2021 22:56:57 -0400
-Message-ID: <CAHC9VhQZVOmy7n14nTSRGHzwN-y=E_JTUP+NpRCgD8rJN5sOGA@mail.gmail.com>
-Subject: Re: [PATCH] net: ipv4: fix memory leak in netlbl_cipsov4_add_std
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Nanyong Sun <sunnanyong@huawei.com>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by SG2PR01CA0151.apcprd01.prod.exchangelabs.com (2603:1096:4:8f::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.21 via Frontend Transport; Tue, 8 Jun 2021 03:01:24 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2e2bd3c6-044f-4478-348c-08d92a29b5a6
+X-MS-TrafficTypeDiagnostic: DB6PR0402MB2904:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB6PR0402MB2904CBD4FC58BBE1CA674615E6379@DB6PR0402MB2904.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZhRlyEMJHDVfffXgmBAlWF4xiO5e+B7ZDPu6KNB8oQesa+nXLOXgQAkVtvBpXtrPBNHY9l+vU+wJJynytnlVXmnxhoTvhJPVzSGd6ZhMaujnBVHoZOxtN0OFL6qnyYP5z/BNdKljnV6x+KKNK6DqCOHoAV3w+bhqYdS3Rx30XWSiZN1r/yv6B0TwRQsWw/tPhzZaimQQhp2qdxjxqIVK/fZm9JJV+Xzo08D/E9JprzbQ1KF1OyK9WoMq/AVgMkQpDBv2ek67m9Ztz1Ek+v/cUxBDfVSiBwM1gOPFyfPxVt+O7uVuAtYRrdjv3MvOJe0b8eK40wnVs0Om/vlRQi+Yd0/w3Dlg7VDFfb2bvAVJa6Hi3BPrG3HzZcuXYN5iJCjet8eILkJVjq2yx+KlrFbrqgvhxGbQj57FPv8joaeJZrv3mhKULtfgRgNhNl+BXJmQDQHTQ8AHq5vhGIvIYn9QJUg8hB4/P3Ih7N5NCUUwTnxkfvL/M/Up3wUR5BDfb5xYahi35r4RK3a03VU/raxbUtRLduGocN4WAVWL6gJcOdm9Y9hrcxnEDlfiFgGKxVT6jutRs2K4ecLVLfBgGnA6C4BoLluXA8ZkkRbG2NRdjmU+7S0e0/NgAgnXqE4smaDxnKoeYtug6FeaJDounb4KEUIZImvRrZC+UzonztbbUbpSkuy6yJJkCVBzFcOUekV4
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(346002)(39860400002)(366004)(376002)(83380400001)(6666004)(38350700002)(4744005)(86362001)(7416002)(6486002)(52116002)(16526019)(6512007)(6506007)(38100700002)(4326008)(2906002)(66476007)(66556008)(8936002)(956004)(316002)(66946007)(5660300002)(8676002)(186003)(26005)(2616005)(1076003)(478600001)(36756003)(69590400013);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?mX6+WbyJxTRKNq1a9ATvEhlroWQpkXLjXpJnY82STT96qyJ/N0A9pa4Mxav6?=
+ =?us-ascii?Q?ms1CrQJsJCrLzH6MeBzeJRArSNmF6uNt6BqUxyIxI0/ijSOnYeZgwN82nJWe?=
+ =?us-ascii?Q?9SMcXrNorjvVGh/Bj7tT8rfvNj5jTzh+zQacskM3B2Tqq9gjQxEnlsFKpjAr?=
+ =?us-ascii?Q?88wAEuyTKUoKQtbnCfbb/e6bnjYOPUxFhHspivi0M5EbQ2vV+SQVFCKiKOY6?=
+ =?us-ascii?Q?lcr+frZ/Ccq2Tfb2j5wy5r9AdmybMzeD5SW/JsOzhbGeZguU6zwONIO5nviP?=
+ =?us-ascii?Q?S4jjQlbYf5jY+U0D+72+4QHVvsgTQP947EH0LQ/kC6RxSCPUkf/uckd7FA+X?=
+ =?us-ascii?Q?PpV72+VOE2pOgUvM0ZEo42CHOsr/jIUc29i+6/SDGcdB1mqqPf8AJ1tW1ZwV?=
+ =?us-ascii?Q?+yQld7qoZyuH9WlH9NtYSzc7PMoMe3jit540PwrGkg2Osp1TYUHGWMxohLkO?=
+ =?us-ascii?Q?NIw3z5JIC0R/RyVOhSx75QUv7Ft/7Wrzy1PkCGRQkc6GCIGDRdowR1jkMMXT?=
+ =?us-ascii?Q?E5xvxiyys9PJblhPKn9GhOIBLKY5RJjJvDuPj8z9kdi6zh+hDQwS3brpiZCr?=
+ =?us-ascii?Q?x9Yj6aVq/oo5wAubNbL0mUWIj6d4tbrLoWnv/LGsxMsYzYByViICAiIfhm34?=
+ =?us-ascii?Q?eeloP5jacWj7cTBZ3AP8cc0UI5SJecVqrQP1Cu7vL0rNupqg1UDnkleonkwA?=
+ =?us-ascii?Q?JlWYnL50LkGBSYpjoUn8nMe2feg8AXlo8ZumneQUmy1WS985esZwcS5Fgl3M?=
+ =?us-ascii?Q?eg4RouFtCAsjo1BDM2Gi3bWd5sOZn7TBOStCW0u3jAXV47STUqbOLE/kJ4CG?=
+ =?us-ascii?Q?6G0AdaWRNPmhuTeANnYHGkxFCiti5Mnoxuc+T868PsTDMmZnVtdFMdugx7i/?=
+ =?us-ascii?Q?gXmi9iheM8zZyvgVmHRwLw7kXIFFGgv+MnpH5hZL4DiLX8rSE4DBG8ZgK0dA?=
+ =?us-ascii?Q?AjJ3xoUq0AFmBmdkroL9hbb6Srukbe/njcyrOv5SaSOqX6t2Oq0pRxxadcfF?=
+ =?us-ascii?Q?zTOhjatmCUv9+mXX5s4tucp0lYP/7ZN56Z3QDoWOswx5jkY+uybiW4JRlVdo?=
+ =?us-ascii?Q?gbeRb2yryGAbk97IEbvvrSV9g1MO9C3082pgC2r2Yg0tEeIUGmFzCUqJ+JEc?=
+ =?us-ascii?Q?KrKPCMWiv3oXhY1NOGa8aaPNAdaXqiNiLhM3AkBs0a5on2wGckPXr4JerClJ?=
+ =?us-ascii?Q?+u30kr0y929aL7j8b10DhqdmqvckPZr2Nx8u+HjayECGX5ZwRwcln/O7VwmN?=
+ =?us-ascii?Q?4X0Nvefb0U/Sww7lWbQAz0dFCsxBe5D8yglX1JumbYJ4nvw7e9JPScL+5lXV?=
+ =?us-ascii?Q?pAjaUEwg/W1zRWmUvOYnXydJ?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e2bd3c6-044f-4478-348c-08d92a29b5a6
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2021 03:01:28.2435
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: V6JEk+Hn0ZL/eOW8oV3iN36ql9LQ+515noGj3SyY/amRUBkfDZ/FxdEYNu+D/GwThz29IS9Tij2mnXy81ImGMQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2904
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 7, 2021 at 10:31 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> On Tue, Jun 8, 2021 at 9:57 AM Paul Moore <paul@paul-moore.com> wrote:
-> > On Mon, Jun 7, 2021 at 9:19 PM Nanyong Sun <sunnanyong@huawei.com> wrote:
-> > >
-> > > Reported by syzkaller:
-> > > BUG: memory leak
-> > > unreferenced object 0xffff888105df7000 (size 64):
-> > > comm "syz-executor842", pid 360, jiffies 4294824824 (age 22.546s)
-> > > hex dump (first 32 bytes):
-> > > 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-> > > 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-> > > backtrace:
-> > > [<00000000e67ed558>] kmalloc include/linux/slab.h:590 [inline]
-> > > [<00000000e67ed558>] kzalloc include/linux/slab.h:720 [inline]
-> > > [<00000000e67ed558>] netlbl_cipsov4_add_std net/netlabel/netlabel_cipso_v4.c:145 [inline]
-> > > [<00000000e67ed558>] netlbl_cipsov4_add+0x390/0x2340 net/netlabel/netlabel_cipso_v4.c:416
-> > > [<0000000006040154>] genl_family_rcv_msg_doit.isra.0+0x20e/0x320 net/netlink/genetlink.c:739
-> > > [<00000000204d7a1c>] genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
-> > > [<00000000204d7a1c>] genl_rcv_msg+0x2bf/0x4f0 net/netlink/genetlink.c:800
-> > > [<00000000c0d6a995>] netlink_rcv_skb+0x134/0x3d0 net/netlink/af_netlink.c:2504
-> > > [<00000000d78b9d2c>] genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
-> > > [<000000009733081b>] netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
-> > > [<000000009733081b>] netlink_unicast+0x4a0/0x6a0 net/netlink/af_netlink.c:1340
-> > > [<00000000d5fd43b8>] netlink_sendmsg+0x789/0xc70 net/netlink/af_netlink.c:1929
-> > > [<000000000a2d1e40>] sock_sendmsg_nosec net/socket.c:654 [inline]
-> > > [<000000000a2d1e40>] sock_sendmsg+0x139/0x170 net/socket.c:674
-> > > [<00000000321d1969>] ____sys_sendmsg+0x658/0x7d0 net/socket.c:2350
-> > > [<00000000964e16bc>] ___sys_sendmsg+0xf8/0x170 net/socket.c:2404
-> > > [<000000001615e288>] __sys_sendmsg+0xd3/0x190 net/socket.c:2433
-> > > [<000000004ee8b6a5>] do_syscall_64+0x37/0x90 arch/x86/entry/common.c:47
-> > > [<00000000171c7cee>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > >
-> > > The memory of doi_def->map.std pointing is allocated in
-> > > netlbl_cipsov4_add_std, but no place has freed it. It should be
-> > > freed in cipso_v4_doi_free which frees the cipso DOI resource.
-> > >
-> > > Fixes: 96cb8e3313c7a ("[NetLabel]: CIPSOv4 and Unlabeled packet integration")
-> > > Reported-by: Hulk Robot <hulkci@huawei.com>
-> > > Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
-> > > ---
-> > >  net/ipv4/cipso_ipv4.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> >
-> > Nice catch, thanks for fixing this.
-> >
-> > Acked-by: Paul Moore <paul@paul-moore.com>
-> >
-> > > diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
-> > > index d6e3a92841e3..099259fc826a 100644
-> > > --- a/net/ipv4/cipso_ipv4.c
-> > > +++ b/net/ipv4/cipso_ipv4.c
-> > > @@ -471,6 +471,7 @@ void cipso_v4_doi_free(struct cipso_v4_doi *doi_def)
-> > >                 kfree(doi_def->map.std->lvl.local);
-> > >                 kfree(doi_def->map.std->cat.cipso);
-> > >                 kfree(doi_def->map.std->cat.local);
-> > > +               kfree(doi_def->map.std);
-> > >                 break;
-> > >         }
-> > >         kfree(doi_def);
->
-> Hi kernel developers,
->
-> I doubt this patch may cause invalid free in other functions where
-> map.std is not allocated or initialized, such as
-> netlbl_cipsov4_add_local, netlbl_cipsov4_add_pass.
+Add dt property for realtek phy.
 
-It isn't perfectly clear to me if you are implying there is a problem
-with the proposed patch or not, so I thought it might help to try and
-add some clarity.
+---
+ChangeLogs:
+V1->V2:
+	* store the desired PHYCR1/2 register value in "priv" rather than
+	using "quirks", per Russell King suggestion, as well as can
+	cover the bootloader setting.
+	* change the behavior of ALDPS mode, default is disabled, add dt
+	property for users to enable it.
+	* fix dt binding yaml build issues.
 
-The patch above frees the cipso_v4_doi->map.std field, which is only
-valid when the cipso_v4_doi->type field is equal to
-CIPSO_V4_MAP_TRANS.  This is why the cipso_v4_doi_free() function
-checks the type field before freeing the cipso_v4_doi->map related
-fields, and why the proposed patch places the new kfree() inside that
-conditional code block.
+Joakim Zhang (4):
+  dt-bindings: net: add dt binding for realtek rtl82xx phy
+  net: phy: realtek: add dt property to disable CLKOUT clock
+  net: phy: realtek: add dt property to disable ALDPS mode
+  net: phy: realtek: add delay to fix RXC generation issue
 
-If we look at netlalbel_cipsov4_add_pass() we see that the first thing
-it does after allocating a cipso_v4_doi struct is to set the type
-field to CIPSO_V4_MAP_PASS.  Any calls to cipso_v4_doi_free after this
-point will not end up calling the proposed kfree() addition due to the
-cipso_v4_doi->type check.
-
-We see something very similar with netlbl_cipsov4_add_local(),
-although in this case the type field is set to CIPSO_V4_MAP_LOCAL.
-This type value will also not trigger the proposed kfree().
-
-If you are aware of any other potential issues with this patch please
-do let us know, but from what I can see, the two concerns you
-presented here are not problems with the current or proposed code.
+ .../bindings/net/realtek,rtl82xx.yaml         | 45 +++++++++++
+ drivers/net/phy/realtek.c                     | 75 ++++++++++++++++++-
+ 2 files changed, 116 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/realtek,rtl82xx.yaml
 
 -- 
-paul moore
-www.paul-moore.com
+2.17.1
+
