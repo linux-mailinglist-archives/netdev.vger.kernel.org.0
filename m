@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 870743A0493
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 21:58:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B97FD3A047E
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 21:57:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237439AbhFHTlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 15:41:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236519AbhFHTlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 15:41:06 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF234C06114E;
-        Tue,  8 Jun 2021 12:30:09 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id b9so20916949ilr.2;
-        Tue, 08 Jun 2021 12:30:09 -0700 (PDT)
+        id S238451AbhFHTfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 15:35:34 -0400
+Received: from mail-il1-f169.google.com ([209.85.166.169]:38558 "EHLO
+        mail-il1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238872AbhFHTdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 15:33:32 -0400
+Received: by mail-il1-f169.google.com with SMTP id d1so17846375ils.5;
+        Tue, 08 Jun 2021 12:31:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=Q+AFeIk+1Wo3OVzoBBOFsZcJ17Rk8amBn+Q22ssWRXw=;
-        b=Zc9I5aRcgtPCDMrkR6VOcBCYuquTbEOH4P4oHOHpvO5+mDbYZLTyM+Yqfme0cka3d0
-         BxFciO0yN5EVbhxTVwCvTu+ayxf9QfS8omsqyz80S1JPjyRJpvov2gEx5XchOg7Ms3vl
-         jDhz1j2heTmgbrZALwDoSGyPPe9m1awhrvfVC+TjRdnlGjBxtEQhG9Ajnnti7BzidUNX
-         TbDOYTmYNmyoLoONGCVQjr/fpAaY47PcwiBOUb9z18kbrdh7MT/j0SIfN1qCqpaBAtx7
-         QrTLltxLM0XLjP25Obbottq3s68cUiciJcLjw1BXBN2WWxPlbjXN9IYijZic3evu0iqC
-         lD1A==
+        h=subject:from:to:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=AAEaQnkcEin0xfopI4B5HxP0UPGqn6HkcxHsdLoqoo8=;
+        b=lN0ezurN19ijysdHRyRCpv7N1gqTE7BQCzDCX19YSxzhzI8ftYBH5Z3FUDAJSmGnPS
+         TcR+D2T6YDMsJil0GI1UAEAR/F7s2v9DVMaHvcExwcqueWkqNOz8H+pwhoQLlrulpIwL
+         BBeW8jfUfLJDfbQSGH8zbO9tlxqoMmRDvpElyqERq6pSt8GjgfSUt4Hsg9j+9U3cjXIo
+         2N+wyduePEsP6hcmiQZgS9swUaaRn8khoW/A0OplVwwV3ijjcMi5iHgSJAbx3gQkqOMh
+         ghC9+9c18aVCk0JH3pgqZ/t9R4xWC6+YsE3JhA6VitBiCk02M9lF9qU1Yz7jEaNwnK0R
+         ewcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=Q+AFeIk+1Wo3OVzoBBOFsZcJ17Rk8amBn+Q22ssWRXw=;
-        b=YQtSIsaSE9F+mUK8QLU4Wfw50UXbtP2rMOCLr5bcLKp3uSuJ2NUTxK0OYT4WZfwUYv
-         yOF2NbgWyZT50Bn9R3cPCLzrD5V2U7Eu4BzqyqnKic1dzVZyUHkB3n7Db12oNRtx7xc9
-         EPIErTLJqN+CgYggYIvry12qGY6x26423DvFilFB4kfpzpXmvPwTN/jM9BvARA2w6jQx
-         Nnsy6c5cSy+6SVJB0KqGw/f1wL+zaRxF63aNfDVUqV0EliCxIopoVH0zc/2xUiwbYnLQ
-         VbrQAigBd99ZaeJGv8VB1rtI1F5d1NoBhyBu9hrjZeUiZDvT+aj8jY+Emxz29glIlslg
-         lvfA==
-X-Gm-Message-State: AOAM533gb6hoOEt/S/XzdHYKv1xQIc+8BzdAQAKD31Ck7LKJsXO8g8XY
-        TEo2hGZ07W9VMn86NYcDfbU=
-X-Google-Smtp-Source: ABdhPJywl+IoZFzEkRAmQFjsbeFRXnO3PbVBlb9t1Nf0HSFjUvZGyfUt0rMaS/eh2GzZ/avxUbO86Q==
-X-Received: by 2002:a6b:4e0a:: with SMTP id c10mr19649163iob.183.1623180609175;
-        Tue, 08 Jun 2021 12:30:09 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=AAEaQnkcEin0xfopI4B5HxP0UPGqn6HkcxHsdLoqoo8=;
+        b=EHr/VYVruuF7gtOP1Zc8lGDubjywAEghaiHFjzrImo35FwAn1nlOX/oZLbaEpxPc0E
+         uZ3q2/7PAcWNiLKiG2evzM2dfq8TsRReLkky23chI042pm2PjXZhMCCoMqScXj8rhDMi
+         7PzYxsQO2KxwPk+b5lwNzzg2XW4N5KJKPeqdIjofbvDAllzFmCezN6w1LZKVIfqHXAPx
+         O3diJDZZ58L1Pe71DUeipnu6TOWIWhyRrupYX7jYP7RmbjZ/H5eX9HRqYZjJkJcL2RMe
+         LY+Y88tpdg+TbhbZxUsDUy5xVHV7PT3Youjk6fWM7+l/Q3JAoOZCJvjPp2jzJXnQ1JbJ
+         /qmw==
+X-Gm-Message-State: AOAM532gFYEeJ8nThMImgbKBmIFBga9Hh/w0JxmLLKHdwjfGmmdQGiig
+        uai4bZ/kSesSbkACBeu5dqg=
+X-Google-Smtp-Source: ABdhPJwyvZckIsCq+ekKEwln5K68p9lAiarvDCnEo/yZB9FN/vh/X12yRNJlGqvNQa6hN0ws0C8ZEQ==
+X-Received: by 2002:a92:c949:: with SMTP id i9mr14825767ilq.38.1623180627229;
+        Tue, 08 Jun 2021 12:30:27 -0700 (PDT)
 Received: from [127.0.1.1] ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id o18sm364277ioh.35.2021.06.08.12.30.02
+        by smtp.gmail.com with ESMTPSA id t15sm302258ilq.84.2021.06.08.12.30.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Jun 2021 12:30:08 -0700 (PDT)
-Subject: [PATCH bpf  0/2] bpf fix for mixed tail calls and subprograms
+        Tue, 08 Jun 2021 12:30:26 -0700 (PDT)
+Subject: [PATCH bpf 1/2] bpf: Fix null ptr deref with mixed tail calls and
+ subprogs
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com
 Cc:     john.fastabend@gmail.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org, maciej.fijalkowski@intel.com
-Date:   Tue, 08 Jun 2021 12:29:57 -0700
-Message-ID: <162318053542.323820.3719766457956848570.stgit@john-XPS-13-9370>
+Date:   Tue, 08 Jun 2021 12:30:15 -0700
+Message-ID: <162318061518.323820.4329181800429686297.stgit@john-XPS-13-9370>
+In-Reply-To: <162318053542.323820.3719766457956848570.stgit@john-XPS-13-9370>
+References: <162318053542.323820.3719766457956848570.stgit@john-XPS-13-9370>
 User-Agent: StGit/0.23-85-g6af9
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -62,22 +62,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We recently tried to use mixed programs that have both tail calls and
-subprograms, but it needs the attached fix. Also added a small test
-addition that will cause the failure without the fix.
+The sub-programs prog->aux->poke_tab[] is populated in jit_subprogs() and
+then used when emitting 'BPF_JMP|BPF_TAIL_CALL' insn->code from the
+individual JITs. The poke_tab[] to use is stored in the insn->imm by
+the code adding it to that array slot. The JIT then uses imm to find the
+right entry for an individual instruction. In the x86 bpf_jit_comp.c
+this is done by calling emit_bpf_tail_call_direct with the poke_tab[]
+of the imm value.
 
-Thanks,
-John
+However, we observed the below null-ptr-deref when mixing tail call
+programs with subprog programs. For this to happen we just need to
+mix bpf-2-bpf calls and tailcalls with some extra calls or instructions
+that would be patched later by one of the fixup routines. So whats
+happening?
 
+Before the fixup_call_args() -- where the jit op is done -- various
+code patching is done by do_misc_fixups(). This may increase the
+insn count, for example when we patch map_lookup_up using map_gen_lookup
+hook. This does two things. First, it means the instruction index,
+insn_idx field, of a tail call instruction will move by a 'delta'.
+
+In verifier code,
+
+ struct bpf_jit_poke_descriptor desc = {
+  .reason = BPF_POKE_REASON_TAIL_CALL,
+  .tail_call.map = BPF_MAP_PTR(aux->map_ptr_state),
+  .tail_call.key = bpf_map_key_immediate(aux),
+  .insn_idx = i + delta,
+ };
+
+Then subprog start values subprog_info[i].start will be updated
+with the delta and any poke descriptor index will also be updated
+with the delta in adjust_poke_desc(). If we look at the adjust
+subprog starts though we see its only adjusted when the delta
+occurs before the new instructions,
+
+        /* NOTE: fake 'exit' subprog should be updated as well. */
+        for (i = 0; i <= env->subprog_cnt; i++) {
+                if (env->subprog_info[i].start <= off)
+                        continue;
+
+Earlier subprograms are not changed because their start values
+are not moved. But, adjust_poke_desc() does the offset + delta
+indiscriminately. The result is poke descriptors are potentially
+corrupted.
+
+Then in jit_subprogs() we only populate the poke_tab[]
+when the above insn_idx is less than the next subprogram start. From
+above we corrupted our insn_idx so we might incorrectly assume a
+poke descriptor is not used in a subprogram omitting it from the
+subprogram. And finally when the jit runs it does the deref of poke_tab
+when emitting the instruction and crashes with below. Because earlier
+step omitted the poke descriptor.
+
+The fix is straight forward with above context. Simply move same logic
+from adjust_subprog_starts() into adjust_poke_descs() and only adjust
+insn_idx when needed.
+
+[   88.487438] BUG: KASAN: null-ptr-deref in do_jit+0x184a/0x3290
+[   88.487455] Write of size 8 at addr 0000000000000008 by task test_progs/5295
+[   88.487490] Call Trace:
+[   88.487498]  dump_stack+0x93/0xc2
+[   88.487515]  kasan_report.cold+0x5f/0xd8
+[   88.487530]  ? do_jit+0x184a/0x3290
+[   88.487542]  do_jit+0x184a/0x3290
+ ...
+[   88.487709]  bpf_int_jit_compile+0x248/0x810
+ ...
+[   88.487765]  bpf_check+0x3718/0x5140
+ ...
+[   88.487920]  bpf_prog_load+0xa22/0xf10
+
+CC: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Fixes: a748c6975dea3 ("bpf: propagate poke descriptors to subprograms")
+Reviewed-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
+ kernel/bpf/verifier.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-John Fastabend (2):
-      bpf: Fix null ptr deref with mixed tail calls and subprogs
-      bpf: selftest to verify mixing bpf2bpf calls and tailcalls with insn patch
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 94ba5163d4c5..ac8373da849c 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -11408,7 +11408,7 @@ static void adjust_subprog_starts(struct bpf_verifier_env *env, u32 off, u32 len
+ 	}
+ }
+ 
+-static void adjust_poke_descs(struct bpf_prog *prog, u32 len)
++static void adjust_poke_descs(struct bpf_prog *prog, u32 off, u32 len)
+ {
+ 	struct bpf_jit_poke_descriptor *tab = prog->aux->poke_tab;
+ 	int i, sz = prog->aux->size_poke_tab;
+@@ -11416,6 +11416,8 @@ static void adjust_poke_descs(struct bpf_prog *prog, u32 len)
+ 
+ 	for (i = 0; i < sz; i++) {
+ 		desc = &tab[i];
++		if (desc->insn_idx <= off)
++			continue;
+ 		desc->insn_idx += len - 1;
+ 	}
+ }
+@@ -11436,7 +11438,7 @@ static struct bpf_prog *bpf_patch_insn_data(struct bpf_verifier_env *env, u32 of
+ 	if (adjust_insn_aux_data(env, new_prog, off, len))
+ 		return NULL;
+ 	adjust_subprog_starts(env, off, len);
+-	adjust_poke_descs(new_prog, len);
++	adjust_poke_descs(new_prog, off, len);
+ 	return new_prog;
+ }
+ 
 
-
- .../selftests/bpf/progs/tailcall_bpf2bpf4.c     | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
---
 
