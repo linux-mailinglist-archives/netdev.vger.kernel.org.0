@@ -2,154 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A014C3A0592
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:11:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E57503A059F
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:20:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233673AbhFHVNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 17:13:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23816 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230251AbhFHVNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 17:13:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623186685;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=P9caRgSXRopT3Z0zxG/yy7LhFxX0y7zWv7Io5Kq0860=;
-        b=C+uZBGKIhhxaPmxNslcj5P2oz11/0NwFdXuJyJwHQlJpgYdmLhvbgP/Q+9YTt7EeiqwDCf
-        73+EObt5Cnm1indzyJsauMH71tm5mdI83seRILSPn1+YQRh5rXVY8/93d1xG78RjYzpcGr
-        Kvw+dBmo5DEkkCCTTFg0701P09OjSSk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-211-0v1sXVZyMLeE_X0jRyROvQ-1; Tue, 08 Jun 2021 17:11:24 -0400
-X-MC-Unique: 0v1sXVZyMLeE_X0jRyROvQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D9D94107B2B8;
-        Tue,  8 Jun 2021 21:11:21 +0000 (UTC)
-Received: from krava (unknown [10.40.192.49])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 091EA5D75A;
-        Tue,  8 Jun 2021 21:11:18 +0000 (UTC)
-Date:   Tue, 8 Jun 2021 23:11:18 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCH 10/19] bpf: Allow to store caller's ip as argument
-Message-ID: <YL/c9ia8fETFhaCl@krava>
-References: <20210605111034.1810858-1-jolsa@kernel.org>
- <20210605111034.1810858-11-jolsa@kernel.org>
- <CAEf4BzZH5ck1Do7oRxP9D5U2v659tFXNW2RfCYAQXV_d2dYc4g@mail.gmail.com>
- <YL/Z+MMB8db5904r@krava>
- <CAEf4Bza2u_bHFkCVj4t0yPsNqBqvVkda8mQ-ff-rcgH1rAvRuw@mail.gmail.com>
+        id S232031AbhFHVWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 17:22:19 -0400
+Received: from mail-pg1-f171.google.com ([209.85.215.171]:46640 "EHLO
+        mail-pg1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230297AbhFHVWS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 17:22:18 -0400
+Received: by mail-pg1-f171.google.com with SMTP id n12so17559406pgs.13;
+        Tue, 08 Jun 2021 14:20:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GQwh626zfM0U1fcFtkvnbbFBBL2HeKYCTc8Ov3QqP4A=;
+        b=SS7DicXMMBMKZ7ie6EtJkLEw0evfTPyAuOuXZnrnG7Ptwpe0XEnIwfvSQSIKrcTwr7
+         FF3oEG28yFCs8gdj2qKbIUbAy6HtCEgocfWSMIN0KZb6IC6sDXpjWToBqRyZohl/0GjG
+         Gi28AxNyxKedpAzj7dz/xCRVOKGe+w9y6FTZcGgNnSRyORDaDV3LIj+eS+H1wKPuov/1
+         m/iCikpcC0m9Ny2PYgYt7Sm4+aEeKG/rhVy/Czgt992bBEPc73rRFLSMSrqv7OUoy0uv
+         sR2q/VhZa+z9sEdANtNC5Vw/vexju96qoEudw2NKwJ27IcNj6+2Fhw/Q1boF/NP0W+S6
+         3NfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GQwh626zfM0U1fcFtkvnbbFBBL2HeKYCTc8Ov3QqP4A=;
+        b=n5AYtwIVcnmlqZFBCUlSX1NLF32gelTSuSbpb7nOVRM0iFpAS08vLMYMFDX3gj1no0
+         g3TtmhsNRZmqrcCAurWmt3QoQOD1eiw/Y5KkyqlKbyfcWp6x1s7ZoiqVUStKWZP9D7xh
+         DyYPFaCGOoh0EwrGL34jXxns9B66dz3MnuhiWPELYu9mZnMZMmvhB0k0Rw0HmitRao2Y
+         yQSVVD/QjyaNoWysghA3wmRdt6AK91Mim5rdnfLk2+2nWSMxATMFAF+ZJIYgzKe6oxg2
+         8dTqGcVAijzEna04H8uodt7hy3vfvRHLe9MlXbaMiRhU6ZQezip/Y1cw3CRDr12EbyU0
+         rPNg==
+X-Gm-Message-State: AOAM5314r4/QnvQN82Fb1GPYgrON3jqcedyP3gndcr4uqFswm03lMfk8
+        TB3wGn7kh+C7VGcahVb89kdg6XE1p7w=
+X-Google-Smtp-Source: ABdhPJygWFsMb/NOsKZoaO9oP0XFGhfudCSBTF1S3GtJKoosdbqaixIbEv27pInfwAtVYPE7Kxax2w==
+X-Received: by 2002:a63:5756:: with SMTP id h22mr168526pgm.377.1623187164943;
+        Tue, 08 Jun 2021 14:19:24 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id r24sm3120205pjz.11.2021.06.08.14.19.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Jun 2021 14:19:24 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netev@vger.kernel.org
+Cc:     mnhagan88@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org (open list:BROADCOM B53 ETHERNET SWITCH DRIVER),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next v2] net: dsa: b53: Do not force CPU to be always tagged
+Date:   Tue,  8 Jun 2021 14:19:15 -0700
+Message-Id: <20210608211915.3978509-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bza2u_bHFkCVj4t0yPsNqBqvVkda8mQ-ff-rcgH1rAvRuw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 08, 2021 at 02:02:56PM -0700, Andrii Nakryiko wrote:
-> On Tue, Jun 8, 2021 at 1:58 PM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > On Tue, Jun 08, 2021 at 11:49:31AM -0700, Andrii Nakryiko wrote:
-> > > On Sat, Jun 5, 2021 at 4:12 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > > >
-> > > > When we will have multiple functions attached to trampoline
-> > > > we need to propagate the function's address to the bpf program.
-> > > >
-> > > > Adding new BPF_TRAMP_F_IP_ARG flag to arch_prepare_bpf_trampoline
-> > > > function that will store origin caller's address before function's
-> > > > arguments.
-> > > >
-> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > > ---
-> > > >  arch/x86/net/bpf_jit_comp.c | 18 ++++++++++++++----
-> > > >  include/linux/bpf.h         |  5 +++++
-> > > >  2 files changed, 19 insertions(+), 4 deletions(-)
-> > > >
-> > > > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> > > > index b77e6bd78354..d2425c18272a 100644
-> > > > --- a/arch/x86/net/bpf_jit_comp.c
-> > > > +++ b/arch/x86/net/bpf_jit_comp.c
-> > > > @@ -1951,7 +1951,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> > > >                                 void *orig_call)
-> > > >  {
-> > > >         int ret, i, cnt = 0, nr_args = m->nr_args;
-> > > > -       int stack_size = nr_args * 8;
-> > > > +       int stack_size = nr_args * 8, ip_arg = 0;
-> > > >         struct bpf_tramp_progs *fentry = &tprogs[BPF_TRAMP_FENTRY];
-> > > >         struct bpf_tramp_progs *fexit = &tprogs[BPF_TRAMP_FEXIT];
-> > > >         struct bpf_tramp_progs *fmod_ret = &tprogs[BPF_TRAMP_MODIFY_RETURN];
-> > > > @@ -1975,6 +1975,9 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> > > >                  */
-> > > >                 orig_call += X86_PATCH_SIZE;
-> > > >
-> > > > +       if (flags & BPF_TRAMP_F_IP_ARG)
-> > > > +               stack_size += 8;
-> > > > +
-> > >
-> > > nit: move it a bit up where we adjust stack_size for BPF_TRAMP_F_CALL_ORIG flag?
-> >
-> > ok
-> >
-> > >
-> > > >         prog = image;
-> > > >
-> > > >         EMIT1(0x55);             /* push rbp */
-> > > > @@ -1982,7 +1985,14 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> > > >         EMIT4(0x48, 0x83, 0xEC, stack_size); /* sub rsp, stack_size */
-> > > >         EMIT1(0x53);             /* push rbx */
-> > > >
-> > > > -       save_regs(m, &prog, nr_args, stack_size);
-> > > > +       if (flags & BPF_TRAMP_F_IP_ARG) {
-> > > > +               emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
-> > > > +               EMIT4(0x48, 0x83, 0xe8, X86_PATCH_SIZE); /* sub $X86_PATCH_SIZE,%rax*/
-> > > > +               emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -stack_size);
-> > > > +               ip_arg = 8;
-> > > > +       }
-> > >
-> > > why not pass flags into save_regs and let it handle this case without
-> > > this extra ip_arg adjustment?
-> > >
-> > > > +
-> > > > +       save_regs(m, &prog, nr_args, stack_size - ip_arg);
-> > > >
-> > > >         if (flags & BPF_TRAMP_F_CALL_ORIG) {
-> > > >                 /* arg1: mov rdi, im */
-> > > > @@ -2011,7 +2021,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> > > >         }
-> > > >
-> > > >         if (flags & BPF_TRAMP_F_CALL_ORIG) {
-> > > > -               restore_regs(m, &prog, nr_args, stack_size);
-> > > > +               restore_regs(m, &prog, nr_args, stack_size - ip_arg);
-> > > >
-> > >
-> > > similarly (and symmetrically), pass flags into restore_regs() to
-> > > handle that ip_arg transparently?
-> >
-> > so you mean something like:
-> >
-> >         if (flags & BPF_TRAMP_F_IP_ARG)
-> >                 stack_size -= 8;
-> >
-> > in both save_regs and restore_regs function, right?
-> 
-> yes, but for save_regs it will do more (emit_ldx and stuff)
+Commit ca8931948344 ("net: dsa: b53: Keep CPU port as tagged in all
+VLANs") forced the CPU port to be always tagged in any VLAN membership.
+This was necessary back then because we did not support Broadcom tags
+for all configurations so the only way to differentiate tagged and
+untagged traffic while DSA_TAG_PROTO_NONE was used was to force the CPU
+port into being always tagged.
 
-so the whole stuff then, ok
+With most configurations enabling Broadcom tags, especially after
+8fab459e69ab ("net: dsa: b53: Enable Broadcom tags for 531x5/539x
+families") we do not need to apply this unconditional force tagging of
+the CPU port in all VLANs.
 
-jirka
+A helper function is introduced to faciliate the encapsulation of the
+specific condition requiring the CPU port to be tagged in all VLANs and
+the dsa_switch_ops::untag_bridge_pvid boolean is moved to when
+dsa_switch_ops::setup is called when we have already determined the
+tagging protocol we will be using.
+
+Reported-by: Matthew Hagan <mnhagan88@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+Changes in v2:
+
+- properly deal with DSA_TAG_PROTO_NONE so we continue to support
+  that mode on older chips like 5325 and 5365 until they gain Broadcom
+  tag support
+
+ drivers/net/dsa/b53/b53_common.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 3ca6b394dd5f..6e199454e41d 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1084,6 +1084,11 @@ static int b53_setup(struct dsa_switch *ds)
+ 	unsigned int port;
+ 	int ret;
+ 
++	/* Request bridge PVID untagged when DSA_TAG_PROTO_NONE is set
++	 * which forces the CPU port to be tagged in all VLANs.
++	 */
++	ds->untag_bridge_pvid = dev->tag_protocol == DSA_TAG_PROTO_NONE;
++
+ 	ret = b53_reset_switch(dev);
+ 	if (ret) {
+ 		dev_err(ds->dev, "failed to reset switch\n");
+@@ -1455,6 +1460,13 @@ static int b53_vlan_prepare(struct dsa_switch *ds, int port,
+ 	return 0;
+ }
+ 
++static bool b53_vlan_port_needs_forced_tagged(struct dsa_switch *ds, int port)
++{
++	struct b53_device *dev = ds->priv;
++
++	return dev->tag_protocol == DSA_TAG_PROTO_NONE && dsa_is_cpu_port(ds, port);
++}
++
+ int b53_vlan_add(struct dsa_switch *ds, int port,
+ 		 const struct switchdev_obj_port_vlan *vlan,
+ 		 struct netlink_ext_ack *extack)
+@@ -1477,7 +1489,7 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
+ 		untagged = true;
+ 
+ 	vl->members |= BIT(port);
+-	if (untagged && !dsa_is_cpu_port(ds, port))
++	if (untagged && !b53_vlan_port_needs_forced_tagged(ds, port))
+ 		vl->untag |= BIT(port);
+ 	else
+ 		vl->untag &= ~BIT(port);
+@@ -1514,7 +1526,7 @@ int b53_vlan_del(struct dsa_switch *ds, int port,
+ 	if (pvid == vlan->vid)
+ 		pvid = b53_default_pvid(dev);
+ 
+-	if (untagged && !dsa_is_cpu_port(ds, port))
++	if (untagged && !b53_vlan_port_needs_forced_tagged(ds, port))
+ 		vl->untag &= ~(BIT(port));
+ 
+ 	b53_set_vlan_entry(dev, vlan->vid, vl);
+@@ -2660,7 +2672,6 @@ struct b53_device *b53_switch_alloc(struct device *base,
+ 	dev->priv = priv;
+ 	dev->ops = ops;
+ 	ds->ops = &b53_switch_ops;
+-	ds->untag_bridge_pvid = true;
+ 	dev->vlan_enabled = true;
+ 	/* Let DSA handle the case were multiple bridges span the same switch
+ 	 * device and different VLAN awareness settings are requested, which
+-- 
+2.25.1
 
