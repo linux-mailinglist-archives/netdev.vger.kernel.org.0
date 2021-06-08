@@ -2,101 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F39F39FEC9
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 20:17:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B37AF39FF3E
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 20:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233933AbhFHSTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 14:19:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48329 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233651AbhFHSTG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 14:19:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623176231;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FgcNrFAjjDfM6kscY0HroHEpq/799D0mYtyjXFcJssg=;
-        b=KLI/LlQfBcxH3f6cTiLoaZ9YqnoS54eKyF0WmMcpUFIR6kgqO7oLTPNmPh9M3erj487lwR
-        stzOgl5mPoI2P5Pr/RJtTfJY2hRgEp4QqToh9gWDnmvbwE5Iwe9LJSxX7mq/hKBD5mAbQ/
-        xopfDctOOa5lQJQOPZ1DUhEbAQlmtnU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-436-snZbmUCDPcKyjcBflb7kmw-1; Tue, 08 Jun 2021 14:17:08 -0400
-X-MC-Unique: snZbmUCDPcKyjcBflb7kmw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1159D8189C6;
-        Tue,  8 Jun 2021 18:17:05 +0000 (UTC)
-Received: from krava (unknown [10.40.195.112])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 2B1D0620DE;
-        Tue,  8 Jun 2021 18:17:01 +0000 (UTC)
-Date:   Tue, 8 Jun 2021 20:17:00 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCH 13/19] bpf: Add support to link multi func tracing program
-Message-ID: <YL+0HLQ9oSrNM7ip@krava>
-References: <20210605111034.1810858-1-jolsa@kernel.org>
- <20210605111034.1810858-14-jolsa@kernel.org>
- <CAADnVQJV+0SjqUrTw+3Y02tFedcAaPKJS-W8sQHw5YT4XUW0hQ@mail.gmail.com>
+        id S234080AbhFHSbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 14:31:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56008 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234164AbhFHSbS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Jun 2021 14:31:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AF6BA613AC;
+        Tue,  8 Jun 2021 18:29:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1623176952;
+        bh=/1mCeOgaUwamvf5jGFid4iJx7VUU0RlW3DOilkc3oGY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fPeX+qDMkP4X0J2CdfSBeAamGUK7kJaPCeDc/EQCufi2wwQMdzoJb+0CL8ESSBBbe
+         cXliuweT/QkkYSbMdnuqSnyc/U06v02kA40dG0foWOh05lvOBJYO/NKFdWN1m0vtn4
+         HUWqqNzhWmEirz2722frBz9vu9Fh/jTCaeIlvFDs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        Lin Ma <linma@zju.edu.cn>, Hao Xiong <mart1n@zju.edu.cn>
+Subject: [PATCH 4.4 09/23] Bluetooth: fix the erroneous flush_work() order
+Date:   Tue,  8 Jun 2021 20:27:01 +0200
+Message-Id: <20210608175926.842991911@linuxfoundation.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210608175926.524658689@linuxfoundation.org>
+References: <20210608175926.524658689@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQJV+0SjqUrTw+3Y02tFedcAaPKJS-W8sQHw5YT4XUW0hQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 08, 2021 at 08:42:32AM -0700, Alexei Starovoitov wrote:
-> On Sat, Jun 5, 2021 at 4:11 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > Adding support to attach multiple functions to tracing program
-> > by using the link_create/link_update interface.
-> >
-> > Adding multi_btf_ids/multi_btf_ids_cnt pair to link_create struct
-> > API, that define array of functions btf ids that will be attached
-> > to prog_fd.
-> >
-> > The prog_fd needs to be multi prog tracing program (BPF_F_MULTI_FUNC).
-> >
-> > The new link_create interface creates new BPF_LINK_TYPE_TRACING_MULTI
-> > link type, which creates separate bpf_trampoline and registers it
-> > as direct function for all specified btf ids.
-> >
-> > The new bpf_trampoline is out of scope (bpf_trampoline_lookup) of
-> > standard trampolines, so all registered functions need to be free
-> > of direct functions, otherwise the link fails.
-> 
-> Overall the api makes sense to me.
-> The restriction of multi vs non-multi is too severe though.
-> The multi trampoline can serve normal fentry/fexit too.
+From: Lin Ma <linma@zju.edu.cn>
 
-so multi trampoline gets called from all the registered functions,
-so there would need to be filter for specific ip before calling the
-standard program.. single cmp/jnz might not be that bad, I'll check
+commit 6a137caec23aeb9e036cdfd8a46dd8a366460e5d upstream.
 
-> If ip is moved to the end (instead of start) the trampoline
-> will be able to call into multi and normal fentry/fexit progs. Right?
-> 
+In the cleanup routine for failed initialization of HCI device,
+the flush_work(&hdev->rx_work) need to be finished before the
+flush_work(&hdev->cmd_work). Otherwise, the hci_rx_work() can
+possibly invoke new cmd_work and cause a bug, like double free,
+in late processings.
 
-we could just skip ip arg when generating entry for normal programs 
-and start from first argument address for %rdi
+This was assigned CVE-2021-3564.
 
-and it'd need to be transparent for current trampolines user API,
-so I wonder there will be some hiccup ;-) let's see
+This patch reorder the flush_work() to fix this bug.
 
-thanks,
-jirka
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hedberg <johan.hedberg@gmail.com>
+Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-bluetooth@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: Hao Xiong <mart1n@zju.edu.cn>
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/bluetooth/hci_core.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -1555,8 +1555,13 @@ static int hci_dev_do_open(struct hci_de
+ 	} else {
+ 		/* Init failed, cleanup */
+ 		flush_work(&hdev->tx_work);
+-		flush_work(&hdev->cmd_work);
++
++		/* Since hci_rx_work() is possible to awake new cmd_work
++		 * it should be flushed first to avoid unexpected call of
++		 * hci_cmd_work()
++		 */
+ 		flush_work(&hdev->rx_work);
++		flush_work(&hdev->cmd_work);
+ 
+ 		skb_queue_purge(&hdev->cmd_q);
+ 		skb_queue_purge(&hdev->rx_q);
+
 
