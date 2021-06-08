@@ -2,73 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DCB39F0F0
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:29:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18FEA39F0FA
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230519AbhFHIbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 04:31:25 -0400
-Received: from mail-pf1-f174.google.com ([209.85.210.174]:45897 "EHLO
-        mail-pf1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbhFHIbY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 04:31:24 -0400
-Received: by mail-pf1-f174.google.com with SMTP id d16so15119644pfn.12
-        for <netdev@vger.kernel.org>; Tue, 08 Jun 2021 01:29:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Jj5f2gvIADDwGqqk4CkC+CrbL7NcUmlIgcNJ3sTAYeo=;
-        b=h++7QPspdw/hwT1HeBu2IdcNSoGyuy4Idv/7x64CB1g4ArZkMFXjTXQWEkhkC2s6yP
-         PsX+w/FfPfAYm7/xcf32v4/XA/gCTuqr/Q0ln6p4G6/35abHAFHeXcIxwIgpov8lc3+o
-         in8hfmaKOJ/BlO8iVZA7W8VWxwpDHHEDblSsUumFhl19yA0ox9d0VJsSRtcLRBO5OFlz
-         kAJ5r/TBcRX/UH/pWP3IaVhuB/B3UkNj24gPxbW4MQKUbe27pJy1LlEDPCYP2U5xnGTC
-         PhwEovJJcwNo59lCfF5a6WQCsVJdKmxxlp3CXGk0lGDNoVsIJJ6F8qHsO68GqwYK3Frl
-         pcWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Jj5f2gvIADDwGqqk4CkC+CrbL7NcUmlIgcNJ3sTAYeo=;
-        b=cvffqTnXXpyd88PINDPHW8+NIm48IDDD0Rs04jU7uq7biS+CqhXY9w8yIwezr1j27Z
-         6PXNckhfBIgpDvbutX1xewPU4yinM9aUo4pVkJZ0SPbXzcj/5K9sx7xAZSJXgP9eiuQ9
-         8qNjAsz1DdUsW5Z5rL5Pp78H6zwpGZSZr2I/XA8H8ILDVNYud4a0hIyXoHcPeTSELP0s
-         IX07mj5xSzrGTVXjAbUjcUiNfRuXNHUDOEFXrGO2joyK4XL71YCVMjzuDf1zMhICok1Y
-         /CrPoisbjJqKVjuB5kJElCQu4ZsbkJ/P+N4hvE2zTN1GYpEd+o3q4syqzShXoThekw82
-         eYOQ==
-X-Gm-Message-State: AOAM533GFwwhMcuTMGpRo1PJaBVTA9FfnXVZJ9VZdnpYtHy2W6m47HqS
-        r+8cDlUUj+jnln8pjtoUUzmKGQEpSq+ijYgzLdmgRg==
-X-Google-Smtp-Source: ABdhPJwsp1BOBs+GjpkaTFZMN4u6Pzc1LPJ40KRWbKMgoK4uC3/m0j/wGzPT9KDUgDcXtDJKLHrk5+WuPU2I3NFZ2Dk=
-X-Received: by 2002:a62:d447:0:b029:291:19f7:ddcd with SMTP id
- u7-20020a62d4470000b029029119f7ddcdmr21182371pfl.54.1623140912313; Tue, 08
- Jun 2021 01:28:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210608040241.10658-1-ryazanov.s.a@gmail.com> <20210608040241.10658-6-ryazanov.s.a@gmail.com>
-In-Reply-To: <20210608040241.10658-6-ryazanov.s.a@gmail.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 8 Jun 2021 10:37:43 +0200
-Message-ID: <CAMZdPi8dHp1MBtgpA16AHVdY=Wxpb4dWmhgwDW+xOEx=vExQwA@mail.gmail.com>
-Subject: Re: [PATCH 05/10] net: wwan: core: spell port device name in lowercase
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S230432AbhFHId6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 04:33:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52794 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229507AbhFHId5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Jun 2021 04:33:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 299D06124B;
+        Tue,  8 Jun 2021 08:32:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1623141125;
+        bh=bWFAmKd3DNZ+NkTU8ZsF5ftLYqiBVXsIWH5ZAF+xP4U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hFI58qU597v46ZY746x3xrEZgo6uu+TuqBXM9QpZ2/baCj6ZTtmHTrfO6RkDw4yfm
+         Lnjwl1iQCvCdFRAScDBLAMqVYI1Fv88Jue3ktj71s3EobuX3WQBNRDxKxZLL9bva7L
+         sUapmD98BOr6hBnhyvo0pponS2gGC1rSy6lwLlrs=
+Date:   Tue, 8 Jun 2021 10:32:02 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Salvatore Bonaccorso <carnil@debian.org>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linma <linma@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-wireless@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Hao Xiong <mart1n@zju.edu.cn>, stable <stable@vger.kernel.org>
+Subject: Re: [PATCH v2] Bluetooth: fix the erroneous flush_work() order
+Message-ID: <YL8rAlo56DT9Ok0B@kroah.com>
+References: <20210525123902.189012-1-gregkh@linuxfoundation.org>
+ <BF0493D4-AB96-44D3-8229-9EA6D084D260@holtmann.org>
+ <YL73vTBtgWkaup+A@eldamar.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YL73vTBtgWkaup+A@eldamar.lan>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Jun 2021 at 06:02, Sergey Ryazanov <ryazanov.s.a@gmail.com> wrote:
->
-> Usually a device name is spelled in lowercase, let us follow this
-> practice in the WWAN subsystem as well. The bottom line is that such
-> name is easier to type.
->
-> To keep the device type attribute contents more natural (i.e., spell
-> abbreviations in uppercase), while making the device name lowercase,
-> turn the port type strings array to an array of structure that contains
-> both the port type name and the device name suffix.
->
-> Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+On Tue, Jun 08, 2021 at 06:53:17AM +0200, Salvatore Bonaccorso wrote:
+> Hi Greg,
+> 
+> On Thu, May 27, 2021 at 10:14:59PM +0200, Marcel Holtmann wrote:
+> > Hi Greg,
+> > 
+> > > In the cleanup routine for failed initialization of HCI device,
+> > > the flush_work(&hdev->rx_work) need to be finished before the
+> > > flush_work(&hdev->cmd_work). Otherwise, the hci_rx_work() can
+> > > possibly invoke new cmd_work and cause a bug, like double free,
+> > > in late processings.
+> > > 
+> > > This was assigned CVE-2021-3564.
+> > > 
+> > > This patch reorder the flush_work() to fix this bug.
+> > > 
+> > > Cc: Marcel Holtmann <marcel@holtmann.org>
+> > > Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> > > Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+> > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > Cc: Jakub Kicinski <kuba@kernel.org>
+> > > Cc: linux-bluetooth@vger.kernel.org
+> > > Cc: netdev@vger.kernel.org
+> > > Cc: linux-kernel@vger.kernel.org
+> > > Signed-off-by: Lin Ma <linma@zju.edu.cn>
+> > > Signed-off-by: Hao Xiong <mart1n@zju.edu.cn>
+> > > Cc: stable <stable@vger.kernel.org>
+> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > ---
+> > > net/bluetooth/hci_core.c | 7 ++++++-
+> > > 1 file changed, 6 insertions(+), 1 deletion(-)
+> > 
+> > patch has been applied to bluetooth-stable tree.
+> 
+> Can you queue this one as well for the stable series? It is
+> 6a137caec23aeb9e036cdfd8a46dd8a366460e5d commit upstream and in
+> 5.13-rc5.
 
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+It's now queued up, thanks.
+
+greg k-h
