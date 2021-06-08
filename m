@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DCFC39FD37
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 19:06:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B58B39FD35
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 19:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233935AbhFHRIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 13:08:38 -0400
-Received: from mga09.intel.com ([134.134.136.24]:45969 "EHLO mga09.intel.com"
+        id S233910AbhFHRIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 13:08:36 -0400
+Received: from mga09.intel.com ([134.134.136.24]:45976 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233523AbhFHRIT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Jun 2021 13:08:19 -0400
-IronPort-SDR: w3rMFRBH78dpaQKzHASJFkVblQN0XUwsV3/wbeZo69CVgN3uSNOoWw6Plf6DqFv2iVpFKSyP5B
- HEtVN+5A2XaQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10009"; a="204855386"
+        id S233194AbhFHRIS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Jun 2021 13:08:18 -0400
+IronPort-SDR: IG3A9YBaQyuBkek012ih5qxKHcCI749KlPs+SIr+54j6bQJT4gPD0qwBqaRRVEA1QSGMB5N7FN
+ rQglHLjUwjMg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10009"; a="204855404"
 X-IronPort-AV: E=Sophos;i="5.83,258,1616482800"; 
-   d="scan'208";a="204855386"
+   d="scan'208";a="204855404"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2021 10:05:56 -0700
-IronPort-SDR: hPNQtg/89IeI3XXbjbE7xOk/ehlnD45MEgCLGaTzJpv7cHQNcLLybQa2dUhpSKgcTlo6/+JOX7
- /5cP8P+YOvCQ==
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2021 10:05:59 -0700
+IronPort-SDR: afeGvq1wkbJx1EnaUWmswkbttrwO13czTmlOpSmoAfoaqBH5pKNKNQIagPBfENA5S5SoZ4HjE+
+ t6XrJ0AiWUHg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,258,1616482800"; 
-   d="scan'208";a="482035619"
+   d="scan'208";a="482035662"
 Received: from bgsxx0031.iind.intel.com ([10.106.222.40])
-  by orsmga001.jf.intel.com with ESMTP; 08 Jun 2021 10:05:53 -0700
+  by orsmga001.jf.intel.com with ESMTP; 08 Jun 2021 10:05:57 -0700
 From:   M Chetan Kumar <m.chetan.kumar@intel.com>
 To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Cc:     johannes@sipsolutions.net, krishna.c.sudi@intel.com,
         linuxwwan@intel.com
-Subject: [PATCH V4 15/16] net: iosm: net driver
-Date:   Tue,  8 Jun 2021 22:34:48 +0530
-Message-Id: <20210608170449.28031-16-m.chetan.kumar@intel.com>
+Subject: [PATCH V4 16/16] net: iosm: infrastructure
+Date:   Tue,  8 Jun 2021 22:34:49 +0530
+Message-Id: <20210608170449.28031-17-m.chetan.kumar@intel.com>
 X-Mailer: git-send-email 2.12.3
 In-Reply-To: <20210608170449.28031-1-m.chetan.kumar@intel.com>
 References: <20210608170449.28031-1-m.chetan.kumar@intel.com>
@@ -39,444 +39,252 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1) Create net device & implement net operations for data/IP communication.
-2) Bind IP Link to mux IP session for simultaneous IP traffic.
+1) Kconfig & Makefile changes for IOSM Driver compilation.
+2) Add IOSM Driver documentation.
+3) Modified MAINTAINER file for IOSM Driver addition.
 
 Signed-off-by: M Chetan Kumar <m.chetan.kumar@intel.com>
 ---
-v4:
-* Adapt to wwan subsystem rtnet_link ops.
-* Fix stats and RCU bugs in RX.
+v4: Adapt to wwan subsystem rtnet_link framework.
 v3:
-* Clean-up DSS channel implementation.
-* Aligned ipc_ prefix for function name to be consistent across file.
+* Clean-up driver/net Kconfig & Makefile (Changes available as
+  part of wwan subsystem).
+* Removed NET dependency key word from iosm Kconfig.
+* Removed IOCTL section from documentation.
 v2:
-* Removed Ethernet header & VLAN tag handling from wwan net driver.
-* Implement rtnet_link interface for IP traffic handling.
+* Moved driver documentation to RsT file.
+* Modified if_link.h file to support link type iosm.
 ---
- drivers/net/wwan/iosm/iosm_ipc_wwan.c | 350 ++++++++++++++++++++++++++
- drivers/net/wwan/iosm/iosm_ipc_wwan.h |  55 ++++
- 2 files changed, 405 insertions(+)
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_wwan.c
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_wwan.h
+ .../networking/device_drivers/index.rst       |  1 +
+ .../networking/device_drivers/wwan/index.rst  | 18 ++++
+ .../networking/device_drivers/wwan/iosm.rst   | 96 +++++++++++++++++++
+ MAINTAINERS                                   |  7 ++
+ drivers/net/wwan/Kconfig                      | 12 +++
+ drivers/net/wwan/Makefile                     |  1 +
+ drivers/net/wwan/iosm/Makefile                | 26 +++++
+ 7 files changed, 161 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/wwan/index.rst
+ create mode 100644 Documentation/networking/device_drivers/wwan/iosm.rst
+ create mode 100644 drivers/net/wwan/iosm/Makefile
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_wwan.c b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
+diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
+index d8279de7bf25..3a5a1d46e77e 100644
+--- a/Documentation/networking/device_drivers/index.rst
++++ b/Documentation/networking/device_drivers/index.rst
+@@ -18,6 +18,7 @@ Contents:
+    qlogic/index
+    wan/index
+    wifi/index
++   wwan/index
+ 
+ .. only::  subproject and html
+ 
+diff --git a/Documentation/networking/device_drivers/wwan/index.rst b/Documentation/networking/device_drivers/wwan/index.rst
 new file mode 100644
-index 000000000000..80306b37c2b5
+index 000000000000..1cb8c7371401
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
-@@ -0,0 +1,350 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2020-21 Intel Corporation.
-+ */
++++ b/Documentation/networking/device_drivers/wwan/index.rst
+@@ -0,0 +1,18 @@
++.. SPDX-License-Identifier: GPL-2.0-only
 +
-+#include <linux/etherdevice.h>
-+#include <linux/if_arp.h>
-+#include <linux/if_link.h>
-+#include <linux/rtnetlink.h>
-+#include <linux/wwan.h>
++WWAN Device Drivers
++===================
 +
-+#include "iosm_ipc_chnl_cfg.h"
-+#include "iosm_ipc_imem_ops.h"
-+#include "iosm_ipc_wwan.h"
++Contents:
 +
-+#define IOSM_IP_TYPE_MASK 0xF0
-+#define IOSM_IP_TYPE_IPV4 0x40
-+#define IOSM_IP_TYPE_IPV6 0x60
++.. toctree::
++   :maxdepth: 2
 +
-+#define IOSM_IF_ID_PAYLOAD 2
++   iosm
 +
-+/**
-+ * struct iosm_netdev_priv - netdev private data
-+ * @if_id:	Interface id for device.
-+ * @ch_id:	IPC channel number for which interface device is created.
-+ * @ipc_wwan:	Pointer to iosm_wwan struct
-+ */
-+struct iosm_netdev_priv {
-+	struct iosm_wwan *ipc_wwan;
-+	struct net_device *netdev;
-+	int if_id;
-+	int ch_id;
-+};
++.. only::  subproject and html
 +
-+/**
-+ * struct iosm_wwan - This structure contains information about WWAN root device
-+ *		      and interface to the IPC layer.
-+ * @ipc_imem:		Pointer to imem data-struct
-+ * @sub_netlist:	List of active netdevs
-+ * @dev:		Pointer device structure
-+ * @if_mutex:		Mutex used for add and remove interface id
-+ */
-+struct iosm_wwan {
-+	struct iosm_imem *ipc_imem;
-+	struct iosm_netdev_priv __rcu *sub_netlist[IP_MUX_SESSION_END + 1];
-+	struct device *dev;
-+	struct mutex if_mutex; /* Mutex used for add and remove interface id */
-+};
++   Indices
++   =======
 +
-+/* Bring-up the wwan net link */
-+static int ipc_wwan_link_open(struct net_device *netdev)
-+{
-+	struct iosm_netdev_priv *priv = netdev_priv(netdev);
-+	struct iosm_wwan *ipc_wwan = priv->ipc_wwan;
-+	int if_id = priv->if_id;
-+	int ret;
-+
-+	if (if_id < IP_MUX_SESSION_START ||
-+	    if_id >= ARRAY_SIZE(ipc_wwan->sub_netlist))
-+		return -EINVAL;
-+
-+	mutex_lock(&ipc_wwan->if_mutex);
-+
-+	/* get channel id */
-+	priv->ch_id = ipc_imem_sys_wwan_open(ipc_wwan->ipc_imem, if_id);
-+
-+	if (priv->ch_id < 0) {
-+		dev_err(ipc_wwan->dev,
-+			"cannot connect wwan0 & id %d to the IPC mem layer",
-+			if_id);
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	/* enable tx path, DL data may follow */
-+	netif_start_queue(netdev);
-+
-+	dev_dbg(ipc_wwan->dev, "Channel id %d allocated to if_id %d",
-+		priv->ch_id, priv->if_id);
-+
-+	ret = 0;
-+out:
-+	mutex_unlock(&ipc_wwan->if_mutex);
-+	return ret;
-+}
-+
-+/* Bring-down the wwan net link */
-+static int ipc_wwan_link_stop(struct net_device *netdev)
-+{
-+	struct iosm_netdev_priv *priv = netdev_priv(netdev);
-+
-+	netif_stop_queue(netdev);
-+
-+	mutex_lock(&priv->ipc_wwan->if_mutex);
-+	ipc_imem_sys_wwan_close(priv->ipc_wwan->ipc_imem, priv->if_id,
-+				priv->ch_id);
-+	priv->ch_id = -1;
-+	mutex_unlock(&priv->ipc_wwan->if_mutex);
-+
-+	return 0;
-+}
-+
-+/* Transmit a packet */
-+static int ipc_wwan_link_transmit(struct sk_buff *skb,
-+				  struct net_device *netdev)
-+{
-+	struct iosm_netdev_priv *priv = netdev_priv(netdev);
-+	struct iosm_wwan *ipc_wwan = priv->ipc_wwan;
-+	int if_id = priv->if_id;
-+	int ret;
-+
-+	/* Interface IDs from 1 to 8 are for IP data
-+	 * & from 257 to 261 are for non-IP data
-+	 */
-+	if (if_id < IP_MUX_SESSION_START ||
-+	    if_id >= ARRAY_SIZE(ipc_wwan->sub_netlist))
-+		return -EINVAL;
-+
-+	/* Send the SKB to device for transmission */
-+	ret = ipc_imem_sys_wwan_transmit(ipc_wwan->ipc_imem,
-+					 if_id, priv->ch_id, skb);
-+
-+	/* Return code of zero is success */
-+	if (ret == 0) {
-+		ret = NETDEV_TX_OK;
-+	} else if (ret == -EBUSY) {
-+		ret = NETDEV_TX_BUSY;
-+		dev_err(ipc_wwan->dev, "unable to push packets");
-+	} else {
-+		goto exit;
-+	}
-+
-+	return ret;
-+
-+exit:
-+	/* Log any skb drop */
-+	if (if_id)
-+		dev_dbg(ipc_wwan->dev, "skb dropped. IF_ID: %d, ret: %d", if_id,
-+			ret);
-+
-+	dev_kfree_skb_any(skb);
-+	return ret;
-+}
-+
-+/* Ops structure for wwan net link */
-+static const struct net_device_ops ipc_inm_ops = {
-+	.ndo_open = ipc_wwan_link_open,
-+	.ndo_stop = ipc_wwan_link_stop,
-+	.ndo_start_xmit = ipc_wwan_link_transmit,
-+};
-+
-+/* Setup function for creating new net link */
-+static void ipc_wwan_setup(struct net_device *iosm_dev)
-+{
-+	iosm_dev->header_ops = NULL;
-+	iosm_dev->hard_header_len = 0;
-+	iosm_dev->priv_flags |= IFF_NO_QUEUE;
-+
-+	iosm_dev->type = ARPHRD_NONE;
-+	iosm_dev->min_mtu = ETH_MIN_MTU;
-+	iosm_dev->max_mtu = ETH_MAX_MTU;
-+
-+	iosm_dev->flags = IFF_POINTOPOINT | IFF_NOARP;
-+
-+	iosm_dev->netdev_ops = &ipc_inm_ops;
-+}
-+
-+/* Create new wwan net link */
-+static int ipc_wwan_newlink(void *ctxt, struct net_device *dev,
-+			    u32 if_id, struct netlink_ext_ack *extack)
-+{
-+	struct iosm_wwan *ipc_wwan = ctxt;
-+	struct iosm_netdev_priv *priv;
-+	int err;
-+
-+	if (if_id < IP_MUX_SESSION_START ||
-+	    if_id >= ARRAY_SIZE(ipc_wwan->sub_netlist))
-+		return -EINVAL;
-+
-+	priv = netdev_priv(dev);
-+	priv->if_id = if_id;
-+	priv->netdev = dev;
-+	priv->ipc_wwan = ipc_wwan;
-+
-+	mutex_lock(&ipc_wwan->if_mutex);
-+	if (rcu_access_pointer(ipc_wwan->sub_netlist[if_id])) {
-+		err = -EBUSY;
-+		goto out_unlock;
-+	}
-+
-+	err = register_netdevice(dev);
-+	if (err)
-+		goto out_unlock;
-+
-+	rcu_assign_pointer(ipc_wwan->sub_netlist[if_id], priv);
-+	mutex_unlock(&ipc_wwan->if_mutex);
-+
-+	netif_device_attach(dev);
-+
-+	return 0;
-+
-+out_unlock:
-+	mutex_unlock(&ipc_wwan->if_mutex);
-+	return err;
-+}
-+
-+static void ipc_wwan_dellink(void *ctxt, struct net_device *dev,
-+			     struct list_head *head)
-+{
-+	struct iosm_wwan *ipc_wwan = ctxt;
-+	struct iosm_netdev_priv *priv = netdev_priv(dev);
-+	int if_id = priv->if_id;
-+
-+	if (WARN_ON(if_id < IP_MUX_SESSION_START ||
-+		    if_id >= ARRAY_SIZE(ipc_wwan->sub_netlist)))
-+		return;
-+
-+	mutex_lock(&ipc_wwan->if_mutex);
-+
-+	if (WARN_ON(rcu_access_pointer(ipc_wwan->sub_netlist[if_id]) != priv))
-+		goto unlock;
-+
-+	RCU_INIT_POINTER(ipc_wwan->sub_netlist[if_id], NULL);
-+	/* unregistering includes synchronize_net() */
-+	unregister_netdevice(dev);
-+
-+unlock:
-+	mutex_unlock(&ipc_wwan->if_mutex);
-+}
-+
-+static const struct wwan_ops iosm_wwan_ops = {
-+	.priv_size = sizeof(struct iosm_netdev_priv),
-+	.setup = ipc_wwan_setup,
-+	.newlink = ipc_wwan_newlink,
-+	.dellink = ipc_wwan_dellink,
-+};
-+
-+int ipc_wwan_receive(struct iosm_wwan *ipc_wwan, struct sk_buff *skb_arg,
-+		     bool dss, int if_id)
-+{
-+	struct sk_buff *skb = skb_arg;
-+	struct net_device_stats *stats;
-+	struct iosm_netdev_priv *priv;
-+	int ret;
-+
-+	if ((skb->data[0] & IOSM_IP_TYPE_MASK) == IOSM_IP_TYPE_IPV4)
-+		skb->protocol = htons(ETH_P_IP);
-+	else if ((skb->data[0] & IOSM_IP_TYPE_MASK) ==
-+		 IOSM_IP_TYPE_IPV6)
-+		skb->protocol = htons(ETH_P_IPV6);
-+
-+	skb->pkt_type = PACKET_HOST;
-+
-+	if (if_id < (IP_MUX_SESSION_START - 1) ||
-+	    if_id > (IP_MUX_SESSION_END - 1)) {
-+		ret = -EINVAL;
-+		goto free;
-+	}
-+
-+	rcu_read_lock();
-+	priv = rcu_dereference(ipc_wwan->sub_netlist[if_id]);
-+	if (!priv) {
-+		ret = -EINVAL;
-+		goto unlock;
-+	}
-+	skb->dev = priv->netdev;
-+	stats = &priv->netdev->stats;
-+	stats->rx_packets++;
-+	stats->rx_bytes += skb->len;
-+
-+	ret = netif_rx(skb);
-+	skb = NULL;
-+unlock:
-+	rcu_read_unlock();
-+free:
-+	dev_kfree_skb(skb);
-+	return ret;
-+}
-+
-+void ipc_wwan_tx_flowctrl(struct iosm_wwan *ipc_wwan, int if_id, bool on)
-+{
-+	struct net_device *netdev;
-+	struct iosm_netdev_priv *priv;
-+	bool is_tx_blk;
-+
-+	rcu_read_lock();
-+	priv = rcu_dereference(ipc_wwan->sub_netlist[if_id]);
-+	if (!priv) {
-+		rcu_read_unlock();
-+		return;
-+	}
-+
-+	netdev = priv->netdev;
-+
-+	is_tx_blk = netif_queue_stopped(netdev);
-+
-+	if (on)
-+		dev_dbg(ipc_wwan->dev, "session id[%d]: flowctrl enable",
-+			if_id);
-+
-+	if (on && !is_tx_blk)
-+		netif_stop_queue(netdev);
-+	else if (!on && is_tx_blk)
-+		netif_wake_queue(netdev);
-+	rcu_read_unlock();
-+}
-+
-+struct iosm_wwan *ipc_wwan_init(struct iosm_imem *ipc_imem, struct device *dev)
-+{
-+	struct iosm_wwan *ipc_wwan;
-+
-+	ipc_wwan = kzalloc(sizeof(*ipc_wwan), GFP_KERNEL);
-+	if (!ipc_wwan)
-+		return NULL;
-+
-+	ipc_wwan->dev = dev;
-+	ipc_wwan->ipc_imem = ipc_imem;
-+
-+	if (wwan_register_ops(ipc_wwan->dev, &iosm_wwan_ops, ipc_wwan)) {
-+		kfree(ipc_wwan);
-+		return NULL;
-+	}
-+
-+	mutex_init(&ipc_wwan->if_mutex);
-+
-+	return ipc_wwan;
-+}
-+
-+void ipc_wwan_deinit(struct iosm_wwan *ipc_wwan)
-+{
-+	int if_id;
-+
-+	wwan_unregister_ops(ipc_wwan->dev);
-+
-+	for (if_id = 0; if_id < ARRAY_SIZE(ipc_wwan->sub_netlist); if_id++) {
-+		struct iosm_netdev_priv *priv;
-+
-+		priv = rcu_access_pointer(ipc_wwan->sub_netlist[if_id]);
-+		if (!priv)
-+			continue;
-+
-+		rtnl_lock();
-+		ipc_wwan_dellink(ipc_wwan, priv->netdev, NULL);
-+		rtnl_unlock();
-+	}
-+
-+	mutex_destroy(&ipc_wwan->if_mutex);
-+
-+	kfree(ipc_wwan);
-+}
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_wwan.h b/drivers/net/wwan/iosm/iosm_ipc_wwan.h
++   * :ref:`genindex`
+diff --git a/Documentation/networking/device_drivers/wwan/iosm.rst b/Documentation/networking/device_drivers/wwan/iosm.rst
 new file mode 100644
-index 000000000000..4925f22dff0a
+index 000000000000..b83a8a239c22
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_wwan.h
-@@ -0,0 +1,55 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ *
-+ * Copyright (C) 2020-21 Intel Corporation.
-+ */
++++ b/Documentation/networking/device_drivers/wwan/iosm.rst
+@@ -0,0 +1,96 @@
++.. SPDX-License-Identifier: GPL-2.0-only
 +
-+#ifndef IOSM_IPC_WWAN_H
-+#define IOSM_IPC_WWAN_H
++.. Copyright (C) 2020-21 Intel Corporation
 +
-+/**
-+ * ipc_wwan_init - Allocate, Init and register WWAN device
-+ * @ipc_imem:		Pointer to imem data-struct
-+ * @dev:		Pointer to device structure
-+ *
-+ * Returns: Pointer to instance on success else NULL
-+ */
-+struct iosm_wwan *ipc_wwan_init(struct iosm_imem *ipc_imem, struct device *dev);
++.. _iosm_driver_doc:
 +
-+/**
-+ * ipc_wwan_deinit - Unregister and free WWAN device, clear pointer
-+ * @ipc_wwan:	Pointer to wwan instance data
-+ */
-+void ipc_wwan_deinit(struct iosm_wwan *ipc_wwan);
++===========================================
++IOSM Driver for Intel M.2 PCIe based Modems
++===========================================
++The IOSM (IPC over Shared Memory) driver is a WWAN PCIe host driver developed
++for linux or chrome platform for data exchange over PCIe interface between
++Host platform & Intel M.2 Modem. The driver exposes interface conforming to the
++MBIM protocol [1]. Any front end application ( eg: Modem Manager) could easily
++manage the MBIM interface to enable data communication towards WWAN.
 +
-+/**
-+ * ipc_wwan_receive - Receive a downlink packet from CP.
-+ * @ipc_wwan:	Pointer to wwan instance
-+ * @skb_arg:	Pointer to struct sk_buff
-+ * @dss:	Set to true if interafce id is from 257 to 261,
-+ *		else false
-+ * @if_id:	Interface ID
-+ *
-+ * Return: 0 on success and failure value on error
-+ */
-+int ipc_wwan_receive(struct iosm_wwan *ipc_wwan, struct sk_buff *skb_arg,
-+		     bool dss, int if_id);
++Basic usage
++===========
++MBIM functions are inactive when unmanaged. The IOSM driver only provides a
++userspace interface MBIM "WWAN PORT" representing MBIM control channel and does
++not play any role in managing the functionality. It is the job of a userspace
++application to detect port enumeration and enable MBIM functionality.
 +
-+/**
-+ * ipc_wwan_tx_flowctrl - Enable/Disable TX flow control
-+ * @ipc_wwan:	Pointer to wwan instance
-+ * @id:		Ipc mux channel session id
-+ * @on:		if true then flow ctrl would be enabled else disable
-+ *
-+ */
-+void ipc_wwan_tx_flowctrl(struct iosm_wwan *ipc_wwan, int id, bool on);
++Examples of few such userspace application are:
++- mbimcli (included with the libmbim [2] library), and
++- Modem Manager [3]
 +
-+/**
-+ * ipc_wwan_is_tx_stopped - Checks if Tx stopped for a Interface id.
-+ * @ipc_wwan:	Pointer to wwan instance
-+ * @id:		Ipc mux channel session id
-+ *
-+ * Return: true if stopped, false otherwise
-+ */
-+bool ipc_wwan_is_tx_stopped(struct iosm_wwan *ipc_wwan, int id);
++Management Applications to carry out below required actions for establishing
++MBIM IP session:
++- open the MBIM control channel
++- configure network connection settings
++- connect to network
++- configure IP network interface
 +
-+#endif
++Management application development
++==================================
++The driver and userspace interfaces are described below. The MBIM protocol is
++described in [1] Mobile Broadband Interface Model v1.0 Errata-1.
++
++MBIM control channel userspace ABI
++----------------------------------
++
++/dev/wwan0p3MBIM character device
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++The driver exposes an MBIM interface to the MBIM function by implementing
++MBIM WWAN Port. The userspace end of the control channel pipe is a
++/dev/wwan0p3MBIM character device. Application shall use this interface for
++MBIM protocol communication.
++
++Fragmentation
++~~~~~~~~~~~~~
++The userspace application is responsible for all control message fragmentation
++and defragmentation as per MBIM specification.
++
++/dev/wwan0p3MBIM write()
++~~~~~~~~~~~~~~~~~~~~~
++The MBIM control messages from the management application must not exceed the
++negotiated control message size.
++
++/dev/wwan0p3MBIM read()
++~~~~~~~~~~~~~~~~~~~~
++The management application must accept control messages of up the negotiated
++control message size.
++
++MBIM data channel userspace ABI
++-------------------------------
++
++wwan0-X network device
++~~~~~~~~~~~~~~~~~~~~
++The IOSM driver exposes IP link interface "wwan0-X" of type "wwan" for IP
++traffic. Iproute network utility is used for creating "wwan0-X" network
++interface and for associating it with MBIM IP session. The Driver supports
++upto 8 IP sessions for simultaneous IP communication.
++
++The userspace management application is responsible for creating new IP link
++prior to establishing MBIM IP session where the SessionId is greater than 0.
++
++For example, creating new IP link for a MBIM IP session with SessionId 1:
++
++  ip link add dev wwan0-1 parentdev-name wwan0 type wwan linkid 1
++
++The driver will automatically map the "wwan0-1" network device to MBIM IP
++session 1.
++
++References
++==========
++[1] "MBIM (Mobile Broadband Interface Model) Errata-1"
++      - https://www.usb.org/document-library/
++
++[2] libmbim - "a glib-based library for talking to WWAN modems and
++      devices which speak the Mobile Interface Broadband Model (MBIM)
++      protocol"
++      - http://www.freedesktop.org/wiki/Software/libmbim/
++
++[3] Modem Manager - "a DBus-activated daemon which controls mobile
++      broadband (2G/3G/4G) devices and connections"
++      - http://www.freedesktop.org/wiki/Software/ModemManager/
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b706dd20ff2b..52f1fc58f33b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9452,6 +9452,13 @@ L:	Dell.Client.Kernel@dell.com
+ S:	Maintained
+ F:	drivers/platform/x86/intel-wmi-thunderbolt.c
+ 
++INTEL WWAN IOSM DRIVER
++M:	M Chetan Kumar <m.chetan.kumar@intel.com>
++M:	Intel Corporation <linuxwwan@intel.com>
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	drivers/net/wwan/iosm/
++
+ INTEL(R) TRACE HUB
+ M:	Alexander Shishkin <alexander.shishkin@linux.intel.com>
+ S:	Supported
+diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
+index 7ad1920120bc..d91bc646706e 100644
+--- a/drivers/net/wwan/Kconfig
++++ b/drivers/net/wwan/Kconfig
+@@ -34,4 +34,16 @@ config MHI_WWAN_CTRL
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called mhi_wwan_ctrl.
+ 
++config IOSM
++	tristate "IOSM Driver for Intel M.2 WWAN Device"
++	select WWAN_CORE
++	depends on INTEL_IOMMU
++	help
++	  This driver enables Intel M.2 WWAN Device communication.
++
++	  If you have one of those Intel M.2 WWAN Modules and wish to use it in
++	  Linux say Y/M here.
++
++	  If unsure, say N.
++
+ endif # WWAN
+diff --git a/drivers/net/wwan/Makefile b/drivers/net/wwan/Makefile
+index 556cd90958ca..5ff6725943da 100644
+--- a/drivers/net/wwan/Makefile
++++ b/drivers/net/wwan/Makefile
+@@ -7,3 +7,4 @@ obj-$(CONFIG_WWAN_CORE) += wwan.o
+ wwan-objs += wwan_core.o
+ 
+ obj-$(CONFIG_MHI_WWAN_CTRL) += mhi_wwan_ctrl.o
++obj-$(CONFIG_IOSM) += iosm/
+diff --git a/drivers/net/wwan/iosm/Makefile b/drivers/net/wwan/iosm/Makefile
+new file mode 100644
+index 000000000000..cdeeb9357af6
+--- /dev/null
++++ b/drivers/net/wwan/iosm/Makefile
+@@ -0,0 +1,26 @@
++# SPDX-License-Identifier: (GPL-2.0-only)
++#
++# Copyright (C) 2020-21 Intel Corporation.
++#
++
++iosm-y = \
++	iosm_ipc_task_queue.o	\
++	iosm_ipc_imem.o			\
++	iosm_ipc_imem_ops.o		\
++	iosm_ipc_mmio.o			\
++	iosm_ipc_port.o			\
++	iosm_ipc_wwan.o			\
++	iosm_ipc_uevent.o		\
++	iosm_ipc_pm.o			\
++	iosm_ipc_pcie.o			\
++	iosm_ipc_irq.o			\
++	iosm_ipc_chnl_cfg.o		\
++	iosm_ipc_protocol.o		\
++	iosm_ipc_protocol_ops.o	\
++	iosm_ipc_mux.o			\
++	iosm_ipc_mux_codec.o
++
++obj-$(CONFIG_IOSM) := iosm.o
++
++# compilation flags
++ccflags-y += -DDEBUG
 -- 
 2.25.1
 
