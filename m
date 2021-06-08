@@ -2,154 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E57503A059F
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:20:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29F333A05A1
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232031AbhFHVWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 17:22:19 -0400
-Received: from mail-pg1-f171.google.com ([209.85.215.171]:46640 "EHLO
-        mail-pg1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230297AbhFHVWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 17:22:18 -0400
-Received: by mail-pg1-f171.google.com with SMTP id n12so17559406pgs.13;
-        Tue, 08 Jun 2021 14:20:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GQwh626zfM0U1fcFtkvnbbFBBL2HeKYCTc8Ov3QqP4A=;
-        b=SS7DicXMMBMKZ7ie6EtJkLEw0evfTPyAuOuXZnrnG7Ptwpe0XEnIwfvSQSIKrcTwr7
-         FF3oEG28yFCs8gdj2qKbIUbAy6HtCEgocfWSMIN0KZb6IC6sDXpjWToBqRyZohl/0GjG
-         Gi28AxNyxKedpAzj7dz/xCRVOKGe+w9y6FTZcGgNnSRyORDaDV3LIj+eS+H1wKPuov/1
-         m/iCikpcC0m9Ny2PYgYt7Sm4+aEeKG/rhVy/Czgt992bBEPc73rRFLSMSrqv7OUoy0uv
-         sR2q/VhZa+z9sEdANtNC5Vw/vexju96qoEudw2NKwJ27IcNj6+2Fhw/Q1boF/NP0W+S6
-         3NfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GQwh626zfM0U1fcFtkvnbbFBBL2HeKYCTc8Ov3QqP4A=;
-        b=n5AYtwIVcnmlqZFBCUlSX1NLF32gelTSuSbpb7nOVRM0iFpAS08vLMYMFDX3gj1no0
-         g3TtmhsNRZmqrcCAurWmt3QoQOD1eiw/Y5KkyqlKbyfcWp6x1s7ZoiqVUStKWZP9D7xh
-         DyYPFaCGOoh0EwrGL34jXxns9B66dz3MnuhiWPELYu9mZnMZMmvhB0k0Rw0HmitRao2Y
-         yQSVVD/QjyaNoWysghA3wmRdt6AK91Mim5rdnfLk2+2nWSMxATMFAF+ZJIYgzKe6oxg2
-         8dTqGcVAijzEna04H8uodt7hy3vfvRHLe9MlXbaMiRhU6ZQezip/Y1cw3CRDr12EbyU0
-         rPNg==
-X-Gm-Message-State: AOAM5314r4/QnvQN82Fb1GPYgrON3jqcedyP3gndcr4uqFswm03lMfk8
-        TB3wGn7kh+C7VGcahVb89kdg6XE1p7w=
-X-Google-Smtp-Source: ABdhPJygWFsMb/NOsKZoaO9oP0XFGhfudCSBTF1S3GtJKoosdbqaixIbEv27pInfwAtVYPE7Kxax2w==
-X-Received: by 2002:a63:5756:: with SMTP id h22mr168526pgm.377.1623187164943;
-        Tue, 08 Jun 2021 14:19:24 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r24sm3120205pjz.11.2021.06.08.14.19.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Jun 2021 14:19:24 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netev@vger.kernel.org
-Cc:     mnhagan88@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org (open list:BROADCOM B53 ETHERNET SWITCH DRIVER),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next v2] net: dsa: b53: Do not force CPU to be always tagged
-Date:   Tue,  8 Jun 2021 14:19:15 -0700
-Message-Id: <20210608211915.3978509-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S230297AbhFHVXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 17:23:05 -0400
+Received: from mx4.wp.pl ([212.77.101.12]:53775 "EHLO mx4.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231712AbhFHVXF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Jun 2021 17:23:05 -0400
+Received: (wp-smtpd smtp.wp.pl 9564 invoked from network); 8 Jun 2021 23:21:09 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1623187269; bh=lBM9fagQUsqB5rm/xWIhTisDyZOvVhgoTpGJnaeI+fE=;
+          h=From:To:Cc:Subject;
+          b=KChRhIdhFcNqZ/31gvgN7CfBzAFoVZFyK9yFkJyW/1kq3iNkFD8a4ATlamZxArnyF
+           9M6h3TFss+ME/x6n3FcYSosD75HHmHoGhmYBSgFDcABV8hT7JfHDw0HSzWheBvo0Yi
+           NSd24gACxoGzNHWSJT7rgwif48nNRMpltXyurlaQ=
+Received: from riviera.nat.ds.pw.edu.pl (HELO LAPTOP-OLEK.lan) (olek2@wp.pl@[194.29.137.1])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <hauke@hauke-m.de>; 8 Jun 2021 23:21:09 +0200
+From:   Aleksander Jan Bajkowski <olek2@wp.pl>
+To:     hauke@hauke-m.de, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Aleksander Jan Bajkowski <olek2@wp.pl>
+Subject: [PATCH net] net: lantiq: disable interrupt before sheduling NAPI
+Date:   Tue,  8 Jun 2021 23:21:07 +0200
+Message-Id: <20210608212107.222690-1-olek2@wp.pl>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-WP-DKIM-Status: good (id: wp.pl)                                      
+X-WP-MailID: 74f9476f921faa77c221978c56049973
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [gUPk]                               
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit ca8931948344 ("net: dsa: b53: Keep CPU port as tagged in all
-VLANs") forced the CPU port to be always tagged in any VLAN membership.
-This was necessary back then because we did not support Broadcom tags
-for all configurations so the only way to differentiate tagged and
-untagged traffic while DSA_TAG_PROTO_NONE was used was to force the CPU
-port into being always tagged.
+This patch fixes TX hangs with threaded NAPI enabled. The scheduled
+NAPI seems to be executed in parallel with the interrupt on second
+thread. Sometimes it happens that ltq_dma_disable_irq() is executed
+after xrx200_tx_housekeeping(). The symptom is that TX interrupts
+are disabled in the DMA controller. As a result, the TX hangs after
+a few seconds of the iperf test. Scheduling NAPI after disabling
+interrupts fixes this issue.
 
-With most configurations enabling Broadcom tags, especially after
-8fab459e69ab ("net: dsa: b53: Enable Broadcom tags for 531x5/539x
-families") we do not need to apply this unconditional force tagging of
-the CPU port in all VLANs.
+Tested on Lantiq xRX200 (BT Home Hub 5A).
 
-A helper function is introduced to faciliate the encapsulation of the
-specific condition requiring the CPU port to be tagged in all VLANs and
-the dsa_switch_ops::untag_bridge_pvid boolean is moved to when
-dsa_switch_ops::setup is called when we have already determined the
-tagging protocol we will be using.
-
-Reported-by: Matthew Hagan <mnhagan88@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: 9423361da523 ("net: lantiq: Disable IRQs only if NAPI gets scheduled ")
+Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
 ---
-Changes in v2:
+ drivers/net/ethernet/lantiq_xrx200.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- properly deal with DSA_TAG_PROTO_NONE so we continue to support
-  that mode on older chips like 5325 and 5365 until they gain Broadcom
-  tag support
-
- drivers/net/dsa/b53/b53_common.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 3ca6b394dd5f..6e199454e41d 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1084,6 +1084,11 @@ static int b53_setup(struct dsa_switch *ds)
- 	unsigned int port;
- 	int ret;
+diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+index 36dc3e5f6218..0e10d8aeffe1 100644
+--- a/drivers/net/ethernet/lantiq_xrx200.c
++++ b/drivers/net/ethernet/lantiq_xrx200.c
+@@ -352,8 +352,8 @@ static irqreturn_t xrx200_dma_irq(int irq, void *ptr)
+ 	struct xrx200_chan *ch = ptr;
  
-+	/* Request bridge PVID untagged when DSA_TAG_PROTO_NONE is set
-+	 * which forces the CPU port to be tagged in all VLANs.
-+	 */
-+	ds->untag_bridge_pvid = dev->tag_protocol == DSA_TAG_PROTO_NONE;
-+
- 	ret = b53_reset_switch(dev);
- 	if (ret) {
- 		dev_err(ds->dev, "failed to reset switch\n");
-@@ -1455,6 +1460,13 @@ static int b53_vlan_prepare(struct dsa_switch *ds, int port,
- 	return 0;
- }
+ 	if (napi_schedule_prep(&ch->napi)) {
+-		__napi_schedule(&ch->napi);
+ 		ltq_dma_disable_irq(&ch->dma);
++		__napi_schedule(&ch->napi);
+ 	}
  
-+static bool b53_vlan_port_needs_forced_tagged(struct dsa_switch *ds, int port)
-+{
-+	struct b53_device *dev = ds->priv;
-+
-+	return dev->tag_protocol == DSA_TAG_PROTO_NONE && dsa_is_cpu_port(ds, port);
-+}
-+
- int b53_vlan_add(struct dsa_switch *ds, int port,
- 		 const struct switchdev_obj_port_vlan *vlan,
- 		 struct netlink_ext_ack *extack)
-@@ -1477,7 +1489,7 @@ int b53_vlan_add(struct dsa_switch *ds, int port,
- 		untagged = true;
- 
- 	vl->members |= BIT(port);
--	if (untagged && !dsa_is_cpu_port(ds, port))
-+	if (untagged && !b53_vlan_port_needs_forced_tagged(ds, port))
- 		vl->untag |= BIT(port);
- 	else
- 		vl->untag &= ~BIT(port);
-@@ -1514,7 +1526,7 @@ int b53_vlan_del(struct dsa_switch *ds, int port,
- 	if (pvid == vlan->vid)
- 		pvid = b53_default_pvid(dev);
- 
--	if (untagged && !dsa_is_cpu_port(ds, port))
-+	if (untagged && !b53_vlan_port_needs_forced_tagged(ds, port))
- 		vl->untag &= ~(BIT(port));
- 
- 	b53_set_vlan_entry(dev, vlan->vid, vl);
-@@ -2660,7 +2672,6 @@ struct b53_device *b53_switch_alloc(struct device *base,
- 	dev->priv = priv;
- 	dev->ops = ops;
- 	ds->ops = &b53_switch_ops;
--	ds->untag_bridge_pvid = true;
- 	dev->vlan_enabled = true;
- 	/* Let DSA handle the case were multiple bridges span the same switch
- 	 * device and different VLAN awareness settings are requested, which
+ 	ltq_dma_ack_irq(&ch->dma);
 -- 
-2.25.1
+2.30.2
 
