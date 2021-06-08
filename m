@@ -2,253 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B81339ECC2
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 05:09:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55B9C39ECC5
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 05:09:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230330AbhFHDK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 23:10:58 -0400
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:50392 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230311AbhFHDK5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 23:10:57 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0Ubj56te_1623121743;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0Ubj56te_1623121743)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 08 Jun 2021 11:09:03 +0800
-Date:   Tue, 8 Jun 2021 11:09:03 +0800
-From:   "dust.li" <dust.li@linux.alibaba.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Tony Lu <tonylu@linux.alibaba.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next] tcp: avoid spurious loopback retransmit
-Message-ID: <20210608030903.GN53857@linux.alibaba.com>
-Reply-To: dust.li@linux.alibaba.com
-References: <20210607154534.57034-1-dust.li@linux.alibaba.com>
- <CANn89i+dDy6ev50mBMwoK7f0NN+0xHf8V-Jas8zAmew02hJV4w@mail.gmail.com>
+        id S230444AbhFHDLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 23:11:21 -0400
+Received: from mail-eopbgr50045.outbound.protection.outlook.com ([40.107.5.45]:20227
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230351AbhFHDLU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 23:11:20 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZCC4YCG6W03ho1IJv3egbcX8S4VTZUIJBINNH4EIyvcfkz8QmWLBbtub6F+heKQz6lXA+yS0OdgPjyAQ+gxNW6+9RjF/Ov4lpQrL0BrTUUTEnDKybGDbYBIG+mtOh8A/7bv4hagyIm7yJbMakGumf78/etjeKWT29bDaIp/IhXPkgDH7mrrTDPHrgNPIFFXXmgXAll6+eCEyQ5M2Vja9cJXWgMRUTVinsfjvYkxjW/lJSu7hawDrf/KKSDz8NLRNE5qM2zK0xG5Huw1oquwrwIkCcVO4XSW0CSSTczw3LOxUnRWhVaYZbmixBSGtRlKJ6eN79SKytZlKyUozC5m0+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+0ADrBefv/2tqiPmh5YTPJB9Ek5YtOIHjFo/5sg3aM8=;
+ b=fBAmwp3a2Ts7pwbE1NR+JL72DTzwsddhtaAvUlaaFsnmvC0fpjQJTgAl9M6ZrwoJ5c2gXX2o5WORWrq0+jLR3QZtY+8NoO7pMsBlB9RUgQtD9MkgGn6DI1SrHZxD95qlTEOGuWkobEBHpXM0/Glad94CcxRm4pschg1XzTpw4w/6yMcz/eykMl/j0AnQVFUekJGA8j3oDSrOBEVTVHy6lLneZS7XMXvYP74Pb4Y5Sb8/ah9vxTd1ztRUIgzvOa5GtB1smtoP+GU3Qr+9fqlprvhgVIQnvZ87+0oLd6nRH8EyWGdjGF1SrU47TObygdQk5YkDWrCTdoKK11NTw1MbIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+0ADrBefv/2tqiPmh5YTPJB9Ek5YtOIHjFo/5sg3aM8=;
+ b=dW53U1cOuFlep8f1lux6A+oYP3d1rL+JCytqVQMYS57TQNhO0kItbCzW+CzghGqT3DE9qeMGF26GgaJjYREMbkJISh2bBdbLjXMIDwktNs15LRuOLkm1oJFFMh50rUSuWd6/ov6KJkFbTdH3zEwx+Oi3c3dHluEwbinDHd1GqLU=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DBBPR04MB6139.eurprd04.prod.outlook.com (2603:10a6:10:ca::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.20; Tue, 8 Jun
+ 2021 03:09:17 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4195.030; Tue, 8 Jun 2021
+ 03:09:17 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "Jisheng.Zhang@synaptics.com" <Jisheng.Zhang@synaptics.com>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH V2 net-next 0/4] net: phy: add dt property for realtek phy
+Thread-Topic: [PATCH V2 net-next 0/4] net: phy: add dt property for realtek
+ phy
+Thread-Index: AQHXXBKTte8wXkM9pkSUCkO0aEHdiasJbnFw
+Date:   Tue, 8 Jun 2021 03:09:17 +0000
+Message-ID: <DB8PR04MB6795910502B23313565F909CE6379@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20210608030034.3113-1-qiangqing.zhang@nxp.com>
+In-Reply-To: <20210608030034.3113-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c645f305-5d61-4773-5609-08d92a2acd83
+x-ms-traffictypediagnostic: DBBPR04MB6139:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DBBPR04MB613942926C8CF6F54CD6F35FE6379@DBBPR04MB6139.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1201;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ycbDCXyEGf8iNk6Bd2/boJ4alLZoiJetwVr9Uzd+DVcoAdnbhSOwxXXAMnS1qJP5/+j5H8KOThqy9YhclnfK6C05B5iK6TuD9J9gpeD/3QgpHa0GgVBEsDcnsy+31OOEHh+YShxiASPqa4dXXrSApdnakhT+eLG73c2SyQfsuig1iA9MKWXycWqm7nqJ2XywsmbvKxD9a8Gu/GbodTLzXsInnBrxvrRZPc75nNTDDxugYXEE3Wpjats69jdxQaRyQguxOdCdCSBAAwQU1LTArUDqs+rJowcqwmlVQl60cFxVUWti4NUh+b/ivXI6yISI4axpS3YGy6vGWuVzqx5fFaLXRN5NdOBelgGpZ/41qNSXeVxpHZ82uFUM0TCSBhZ/wKm1nrfXkkM9zD2RQOWHAKkwdWr4VgsVhkrQOprHVP8GmMWg+o0zS820sUjZdVm2AwIVeTlCyHw/xDVU8ib/+rQ1xVJnadTHsxeN7iRNWYzy4E12QO+z4E9oEmQO06e5WjOjRu+y6USeMbWi2VEqUtRfwE9m8AweRwVMSk6sQhP+vJOMIQDwvETDh4TcRvgoBaUengvlF/kdzN5Byh/dQRQeETEIabevlL/AF/N05uI=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(346002)(396003)(376002)(39860400002)(186003)(33656002)(7416002)(26005)(316002)(110136005)(2906002)(4326008)(53546011)(478600001)(7696005)(52536014)(83380400001)(64756008)(66946007)(38100700002)(55016002)(66446008)(66476007)(66556008)(71200400001)(8676002)(5660300002)(122000001)(6506007)(86362001)(76116006)(9686003)(8936002)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?gb2312?B?ZWxsOFp6d2NReUlXOTVGOXdqTHA5aEw4Um1HakZCMDNvQnl2NEoxU3VSNmxh?=
+ =?gb2312?B?dkdNNm9QNmE4TVJWS3QwRUxocVplQ2ozLzVQQXdsQ25jd2RLZ0d6bWVYdzdS?=
+ =?gb2312?B?aXZwR045bDYwcDhrb1lFSnFFQlY0S2R1YkdYdytlVG4wU0RqNy9Xa1AyZ3NC?=
+ =?gb2312?B?QTBiQkpFU3BMcENmS2hvZEU5by9hc3lhK1EzNlNURXZpMzVGWVhyYmZWeVRW?=
+ =?gb2312?B?OFZtc3ZnWUtHdW1aSjBkUE1yMWVmUTJVVlNCVzdQVTNJbVBCWTNITisxeEVC?=
+ =?gb2312?B?aTk4c1dqKy9GNHdHaThDR2Y4dlRweVRHOVM2dVVSa29YTXRmZWxDT3lWRnpQ?=
+ =?gb2312?B?T0NHYXNrOXNiLzhMVExZcG1kc3lRMzdNM2ttNU9FMTNCdHBiUytZVkYzZkRW?=
+ =?gb2312?B?RHUwUHhvVmZLMUthRXRQMzV5RUNENUIvWEFSRHZVUGRMNFVxZUY0RXVDMlBP?=
+ =?gb2312?B?eUY5Ry9lYVVHZlljaDc0RWIzMUF2THF6cjZCRlpsanZFdjluOGp0ZkV3NWZQ?=
+ =?gb2312?B?RmxTZW5lNkE0ZzlKR3hzT2RSdmZsZSt0OUdMOEo3R0xzZUMrUjBCT2NpQ1lV?=
+ =?gb2312?B?VUtHMHRUMzlLNGlhSno0S0lnMjByVEZYVXV4akI0aklXRHBGTTV1OVZyVERW?=
+ =?gb2312?B?K2Z1SHJzMklNM3BQeTFWZ1FlYnNJMTRwMHQ0d0tiSngyUjZXZk4xaVljQlUw?=
+ =?gb2312?B?bTFYcUZURWN2bmo4Z1A5NjRic0h3Zk4wOVlsdjdjK216dDlMK1lZYnRhdXhu?=
+ =?gb2312?B?Y2c1eEFKUTVYNCt6Q3ZRSmk2Qm52c0hkV05xcmJ1aU9lcnhNeU55ZStmQmVG?=
+ =?gb2312?B?QURhazE3QUtmRkNMdVRtN3NwNGkwTWl4QWN0V3RTUHhlK0tFU2E1emR6MStt?=
+ =?gb2312?B?Sks5RTBXajMzVDJxOXNaVEpVOGtTcmVuR1NrZjZ6RHhsdDM4azFCRDkzTnFJ?=
+ =?gb2312?B?a011YVEvUGNPbnE3VHlhaGtHLzFFM1Z1MUh5RWVrRGFueUhqbG9NZHNxRS8v?=
+ =?gb2312?B?dTk0bGxHQ2NnL2RhT3VZeHgzMGl0K0trS1VOY3FxVTRzNUoyQ3pqVmFJVmtu?=
+ =?gb2312?B?NW04czg0OUZ5ckhTNmVCZUxnaEJQbytoVlNIbGdMeEVHdHBrTm1JSVRjNXNC?=
+ =?gb2312?B?eDZ1eUlrNXpVbUt4cGdkdWF2V0E0Nm9STFJQMEZDaDhEWi9qWUliWjVTYjd5?=
+ =?gb2312?B?dGhqeG1BZlRYcmdVUm5zVFVhdGV0bHVEdklCRzFNSDdPM01ZQmphWlh0bmEy?=
+ =?gb2312?B?QUxvcmtwM2luM0k2amY5bHpsUTYrSDh0TE9Ub2s1NktzVlhhQkc0amsyTGFp?=
+ =?gb2312?B?Ry9rL0ZQa1pYUVNaalJxeDNFakRKbzlNcitrU3paZytod2ZDazdDU0N4Qy9x?=
+ =?gb2312?B?VUUxZFpFT1l2ejE3Y3ZCaE9iSVNobVNqeklCeGhQek5Ka0pFd1NJYmR5Y0Rz?=
+ =?gb2312?B?QnJRbG9CN2FkSDYvczFrcjhxbFE1MnFaeVpzWmU4cUE0Si83VWFqeUpQWU5h?=
+ =?gb2312?B?VnRQNGgvUXNXbGFHeUNPVXRBVDZNQW9ZQzIwTENTSWlTWi9mZmVlbUFndUtR?=
+ =?gb2312?B?VHNDZ1RnSGEzWUNzWFNnTU1ZRFJCT2RlS0JtWGdQMk1DdEh4eHQ1SWN3MUxQ?=
+ =?gb2312?B?UXZ2SWw1K25nWnpkR3dkVk1HOWZFdFV5Q2Y1ZGlHV1pDRkRhUEF1V243RWFq?=
+ =?gb2312?B?UjVTT2NHbXQwUlpIOUNCYWxJNnpPeGhOcnpRWWo4dWQySkg5c3lNYXYzNVFI?=
+ =?gb2312?Q?ayfVaN3WNNl91n2PXc=3D?=
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89i+dDy6ev50mBMwoK7f0NN+0xHf8V-Jas8zAmew02hJV4w@mail.gmail.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c645f305-5d61-4773-5609-08d92a2acd83
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jun 2021 03:09:17.3062
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eKViF4lRUUSPnVCwNXmvAe5Joll3AKFdG7xm4Avq7pGdr+jh98rmg1lf5EEpcFjxuNIqWXYDQcC8/v5iSl8+sw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB6139
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 07, 2021 at 06:17:45PM +0200, Eric Dumazet wrote:
->On Mon, Jun 7, 2021 at 5:45 PM Dust Li <dust.li@linux.alibaba.com> wrote:
->>
->> We found there are pretty much loopback TCP retransmitions
->> on our online servers. Most of them are TLP retransmition.
->>
->> This is because for loopback communication, TLP is usally
->> triggered about 2ms after the last packet was sent if no
->> ACK was received within that period.
->> This condition can be met if there are some kernel tasks
->> running on that CPU for more than 2ms, which delays the
->> softirq to process the sd->backlog.
->>
->> We sampled the loopback TLP retransmit on our online servers,
->> and found an average 2K+ retransmit per hour. But in some cases,
->> this can be much bigger, I found a peak 40 retrans/s on the
->> same server.
->> Actually, those loopback retransmitions are not a big problem as
->> long as they don't happen too frequently. It's just spurious and
->> meanless and waste some CPU cycles.
->
->So, why do you send such a patch, adding a lot of code ?
-It's because we are doing retransmition analysis, we did a statistic
-on our online server and found the most frequented retransmitted
-(src_ip, dst_ip) tuple of all is between (127.0.0.1, 127.0.0.1),
-but actually there are no loopback drop at all.
-
-Those loopback retransmittions distract us, and are really meaningless,
-that why I tried to get rid of it.
-
->
->>
->> I also write a test module which just busy-loop in the kernel
->> for more then 2ms, and the lo retransmition can be triggered
->> every time we run the busy-loop on the target CPU.
->> With this patch, the retransmition is gone and the throughput
->> is not affected.
->
->
->This makes no sense to me.
->
->Are you running a pristine linux kernel, or some modified version of it ?
-No, I did the exact same test on the current upstream kernel.
-
->
->Why loopback is magical, compared to veth pair ?
->
->The only case where skb_fclone_busy() might have an issue is when a driver
->is very slow to perform tx completion (compared to possible RTX)
->
->But given that the loopback driver does an skb_orphan() in its
->ndo_start_xmit (loopback_xmit()),
->the skb_fclone_busy() should not be fired at all.
->
->(skb->sk is NULL, before packet is 'looped back')
->
->It seems your diagnosis is wrong.
-
-For loopback, this should be the opposite, because in most cases
-the orignal packet maybe still in the per CPU backlog queue.
-We want the skb_fclone_busy() to fire to prevent the retransmittion
-
-But now after skb->sk set to NULL in loopback_xmit(),
-skb_still_in_host_queue() returns false, and triggered the unneeded
-retransmittion.
-
-Given the following case:
-
-     CPU0                        CPU1
------------------
-      |
-      v
-loopback_xmit()                 -----
-      |                           ^
-      v                           |
-enqueue_to_backlog()              | CPU1 is doing some work in
-      |                           | kernel for more than 2ms without
- (more then 2ms                   | calling net_rx_action()
-  without ACK)		          | CPU1's backlog queue not been processed.
-      |                           v
-      v                         -----
-CPU0 try TLP probe                |
-and skb_fclone_busy()             |
-found skb been orphaned.          |
-So, send the TLP probe            |
-                                  v
-			   process_backlog()
-			        After CPU0's TLP probe, CPU1 finnally
-				come back and processed its backlog queue,
-				and saw the original packet, send the ACK
-				back to CPU0.
-
-
-The problem here is packet sent by CPU0 is first queued in CPU1's
-backlog queue, but CPU1 is busy doing something else for longer
-then TLP probe time. And CPU0 don't think the packet is still in
-"host queue", so he retransmitted.
-
-I think the core problem is how we define "host queue", currently we
-only think qdisc and device driver is "host queue", I think we should
-also cover the per CPU backlog queue.
-
-
-For veth, since it also uses netif_rx() to receive the packet on the
-peer's device, it should have the some problem.
-Yeah, checking sock_is_loopback() seems not a good solution, maybe any
-better suggestions ?
-
-
-Thanks.
-
->
->>
->> Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
->> ---
->>  include/linux/skbuff.h |  7 +++++--
->>  net/ipv4/tcp_output.c  | 31 +++++++++++++++++++++++++++----
->>  net/xfrm/xfrm_policy.c |  2 +-
->>  3 files changed, 33 insertions(+), 7 deletions(-)
->>
->> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
->> index dbf820a50a39..290e0a6a3a47 100644
->> --- a/include/linux/skbuff.h
->> +++ b/include/linux/skbuff.h
->> @@ -1131,9 +1131,12 @@ struct sk_buff_fclones {
->>   * Returns true if skb is a fast clone, and its clone is not freed.
->>   * Some drivers call skb_orphan() in their ndo_start_xmit(),
->>   * so we also check that this didnt happen.
->> + * For loopback, the skb maybe in the target sock's receive_queue
->> + * we need to ignore that case.
->>   */
->>  static inline bool skb_fclone_busy(const struct sock *sk,
->> -                                  const struct sk_buff *skb)
->> +                                  const struct sk_buff *skb,
->> +                                  bool is_loopback)
->>  {
->>         const struct sk_buff_fclones *fclones;
->>
->> @@ -1141,7 +1144,7 @@ static inline bool skb_fclone_busy(const struct sock *sk,
->>
->>         return skb->fclone == SKB_FCLONE_ORIG &&
->>                refcount_read(&fclones->fclone_ref) > 1 &&
->> -              READ_ONCE(fclones->skb2.sk) == sk;
->> +              is_loopback ? true : READ_ONCE(fclones->skb2.sk) == sk;
->>  }
->>
->>  /**
->> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
->> index bde781f46b41..f51a6a565678 100644
->> --- a/net/ipv4/tcp_output.c
->> +++ b/net/ipv4/tcp_output.c
->> @@ -2771,6 +2771,20 @@ bool tcp_schedule_loss_probe(struct sock *sk, bool advancing_rto)
->>         return true;
->>  }
->>
->> +static int sock_is_loopback(const struct sock *sk)
->> +{
->> +       struct dst_entry *dst;
->> +       int loopback = 0;
->> +
->> +       rcu_read_lock();
->> +       dst = rcu_dereference(sk->sk_dst_cache);
->> +       if (dst && dst->dev &&
->> +           (dst->dev->features & NETIF_F_LOOPBACK))
->> +               loopback = 1;
->> +       rcu_read_unlock();
->> +       return loopback;
->> +}
->> +
->>  /* Thanks to skb fast clones, we can detect if a prior transmit of
->>   * a packet is still in a qdisc or driver queue.
->>   * In this case, there is very little point doing a retransmit !
->> @@ -2778,15 +2792,24 @@ bool tcp_schedule_loss_probe(struct sock *sk, bool advancing_rto)
->>  static bool skb_still_in_host_queue(struct sock *sk,
->>                                     const struct sk_buff *skb)
->>  {
->> -       if (unlikely(skb_fclone_busy(sk, skb))) {
->> -               set_bit(TSQ_THROTTLED, &sk->sk_tsq_flags);
->> -               smp_mb__after_atomic();
->> -               if (skb_fclone_busy(sk, skb)) {
->> +       bool is_loopback = sock_is_loopback(sk);
->> +
->> +       if (unlikely(skb_fclone_busy(sk, skb, is_loopback))) {
->> +               if (!is_loopback) {
->> +                       set_bit(TSQ_THROTTLED, &sk->sk_tsq_flags);
->> +                       smp_mb__after_atomic();
->> +                       if (skb_fclone_busy(sk, skb, is_loopback)) {
->> +                               NET_INC_STATS(sock_net(sk),
->> +                                             LINUX_MIB_TCPSPURIOUS_RTX_HOSTQUEUES);
->> +                               return true;
->> +                       }
->> +               } else {
->>                         NET_INC_STATS(sock_net(sk),
->>                                       LINUX_MIB_TCPSPURIOUS_RTX_HOSTQUEUES);
->>                         return true;
->>                 }
->>         }
->> +
->>         return false;
->>  }
->>
->> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
->> index ce500f847b99..f8ea62a840e9 100644
->> --- a/net/xfrm/xfrm_policy.c
->> +++ b/net/xfrm/xfrm_policy.c
->> @@ -2846,7 +2846,7 @@ static int xdst_queue_output(struct net *net, struct sock *sk, struct sk_buff *s
->>         struct xfrm_policy *pol = xdst->pols[0];
->>         struct xfrm_policy_queue *pq = &pol->polq;
->>
->> -       if (unlikely(skb_fclone_busy(sk, skb))) {
->> +       if (unlikely(skb_fclone_busy(sk, skb, false))) {
->>                 kfree_skb(skb);
->>                 return 0;
->>         }
->> --
->> 2.19.1.3.ge56e4f7
->>
+DQpIaSwNCg0KUGxlYXNlIGlnbm9yZSB0aGlzIHBhdGNoIHNldCwgSSB3aWxsIHJlc2VuZCBpdCwg
+c2luY2UgSSBmb3VuZCBhIGlzc3VlIGluIHRoZSBjb21taXQgdGl0bGUuIFNvcnJ5Lg0KDQpCZXN0
+IFJlZ2FyZHMsDQpKb2FraW0gWmhhbmcNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0K
+PiBGcm9tOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiBTZW50OiAy
+MDIxxOo21MI4yNUgMTE6MDENCj4gVG86IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVs
+Lm9yZzsgcm9iaCtkdEBrZXJuZWwub3JnOw0KPiBhbmRyZXdAbHVubi5jaDsgaGthbGx3ZWl0MUBn
+bWFpbC5jb207IGxpbnV4QGFybWxpbnV4Lm9yZy51azsNCj4gZi5mYWluZWxsaUBnbWFpbC5jb207
+IEppc2hlbmcuWmhhbmdAc3luYXB0aWNzLmNvbQ0KPiBDYzogZGwtbGludXgtaW14IDxsaW51eC1p
+bXhAbnhwLmNvbT47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7DQo+IGRldmljZXRyZWVAdmdlci5r
+ZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFtQQVRD
+SCBWMiBuZXQtbmV4dCAwLzRdIG5ldDogcGh5OiBhZGQgZHQgcHJvcGVydHkgZm9yIHJlYWx0ZWsg
+cGh5DQo+IA0KPiBBZGQgZHQgcHJvcGVydHkgZm9yIHJlYWx0ZWsgcGh5Lg0KPiANCj4gLS0tDQo+
+IENoYW5nZUxvZ3M6DQo+IFYxLT5WMjoNCj4gCSogc3RvcmUgdGhlIGRlc2lyZWQgUEhZQ1IxLzIg
+cmVnaXN0ZXIgdmFsdWUgaW4gInByaXYiIHJhdGhlciB0aGFuDQo+IAl1c2luZyAicXVpcmtzIiwg
+cGVyIFJ1c3NlbGwgS2luZyBzdWdnZXN0aW9uLCBhcyB3ZWxsIGFzIGNhbg0KPiAJY292ZXIgdGhl
+IGJvb3Rsb2FkZXIgc2V0dGluZy4NCj4gCSogY2hhbmdlIHRoZSBiZWhhdmlvciBvZiBBTERQUyBt
+b2RlLCBkZWZhdWx0IGlzIGRpc2FibGVkLCBhZGQgZHQNCj4gCXByb3BlcnR5IGZvciB1c2VycyB0
+byBlbmFibGUgaXQuDQo+IAkqIGZpeCBkdCBiaW5kaW5nIHlhbWwgYnVpbGQgaXNzdWVzLg0KPiAN
+Cj4gSm9ha2ltIFpoYW5nICg0KToNCj4gICBkdC1iaW5kaW5nczogbmV0OiBhZGQgZHQgYmluZGlu
+ZyBmb3IgcmVhbHRlayBydGw4Mnh4IHBoeQ0KPiAgIG5ldDogcGh5OiByZWFsdGVrOiBhZGQgZHQg
+cHJvcGVydHkgdG8gZGlzYWJsZSBDTEtPVVQgY2xvY2sNCj4gICBuZXQ6IHBoeTogcmVhbHRlazog
+YWRkIGR0IHByb3BlcnR5IHRvIGRpc2FibGUgQUxEUFMgbW9kZQ0KPiAgIG5ldDogcGh5OiByZWFs
+dGVrOiBhZGQgZGVsYXkgdG8gZml4IFJYQyBnZW5lcmF0aW9uIGlzc3VlDQo+IA0KPiAgLi4uL2Jp
+bmRpbmdzL25ldC9yZWFsdGVrLHJ0bDgyeHgueWFtbCAgICAgICAgIHwgNDUgKysrKysrKysrKysN
+Cj4gIGRyaXZlcnMvbmV0L3BoeS9yZWFsdGVrLmMgICAgICAgICAgICAgICAgICAgICB8IDc1DQo+
+ICsrKysrKysrKysrKysrKysrKy0NCj4gIDIgZmlsZXMgY2hhbmdlZCwgMTE2IGluc2VydGlvbnMo
+KyksIDQgZGVsZXRpb25zKC0pICBjcmVhdGUgbW9kZSAxMDA2NDQNCj4gRG9jdW1lbnRhdGlvbi9k
+ZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9yZWFsdGVrLHJ0bDgyeHgueWFtbA0KPiANCj4gLS0NCj4g
+Mi4xNy4xDQoNCg==
