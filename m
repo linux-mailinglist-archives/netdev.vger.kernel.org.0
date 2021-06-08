@@ -2,191 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 682C33A0575
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F1C13A0579
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:03:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232640AbhFHVFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 17:05:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbhFHVFC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 17:05:02 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3CF9C061787;
-        Tue,  8 Jun 2021 14:03:08 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id i4so32254121ybe.2;
-        Tue, 08 Jun 2021 14:03:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RLjgsFnKC4L7IcgxiiV4HyzmCPppo7n+3ZonyTCNhNc=;
-        b=JNvnPU6xcNUVR2XnBre+lPvftUOVDXdSNZtM7nuBwBU/hWaTMYBAFi4msQLii16eIu
-         ITNmli1Fxlgt5+2AnEX6n7mXx181IpTaAjs6/xCNc6vsd/UkESFyNsu7DKJxt1vvDmhL
-         dtacalmEIz/na/idxCkXXXVHzTnivsLkVjLM8Xt+xpx+r4q4z9cm8RKURhUU7AK0MAVq
-         BoB9EbtOsB0P1uFjA3M6SyhHpUUNJfG47hjo1TjNhLDaTfsoO/3hLryOWgArae/RNYcF
-         nFfGHnvX/Yi3mZBA0U91PmyUoyWSnGB0ocVg9G6f0Vw7yzEHHAE0BgACpBI/W075kOb+
-         IH5g==
+        id S234102AbhFHVFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 17:05:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55949 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233998AbhFHVFX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 17:05:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623186210;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wgwzQeYzF2U3DxVcbwq7elji6MiiyMu51zrQBJinESg=;
+        b=iqZP0IosOiopGTHE3uVc/njVZz5oq3YMHajMaczjzhUCn9gIvBe4p+rRsnvPKINqqKAiYK
+        zNJNKj0MPvG+CfbtcQ/vZnJWWcLtHW1y0RHZwLYc4j640zWXduyjeFV8TQPJ/srLo8uORa
+        CKVd5ZU2hqPs0JLIcyihXe815Kr8ZNI=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-145-V-U75yoQNX-MLDGVZPsjKg-1; Tue, 08 Jun 2021 17:03:28 -0400
+X-MC-Unique: V-U75yoQNX-MLDGVZPsjKg-1
+Received: by mail-il1-f200.google.com with SMTP id d7-20020a056e020c07b02901d77a47ab82so16104446ile.19
+        for <netdev@vger.kernel.org>; Tue, 08 Jun 2021 14:03:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=RLjgsFnKC4L7IcgxiiV4HyzmCPppo7n+3ZonyTCNhNc=;
-        b=jIcrqvX/xMq4XsBBLjTzKsmyZvNONhqY0ZZo8+ATPSE00iuYaQ/RFB2WSZehOAu6L+
-         EyCdfq96+TmaG0d97JQXEmSsRr4g2aGIzuCSj/i0qrpd+WIpY1XWAG0lz16ddVdPq4Ee
-         32cnr/QAzobfi4Y6MplZWRwTDZHxrrA+e98P34ydQ2bBmwGcyXizdAZcXgtUjbpjWlnn
-         T9nCDtP7tySkMVNcb4dxOmnPGfWLdEdafTY3rGKkFtxCZyppeae2rsrJZKkxMvq+xrDG
-         QJB/vPPu4zlQPEjOysxFgnuoSslP/wsOK3+33eo/aRN3JHfi6b3Zhsu87wLzoNvUKzKs
-         Ue5g==
-X-Gm-Message-State: AOAM533EXI5kcz9o/MJUcT5+N6WgyQR4IVhUqSJlRSd3Q1yRZLIU2486
-        GXwu5UzIB5eytaR2HTszUjr26XINY52rGGL6v1U=
-X-Google-Smtp-Source: ABdhPJyZcQg075Q25ka4UEJEGwBI+hI7HPVhnTmvoWXUDmtDsYXNub8XC2rhVz8Euyp7yfXu0BM4PIioouQt2gHiLaE=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr32159539ybg.459.1623186187814;
- Tue, 08 Jun 2021 14:03:07 -0700 (PDT)
+        bh=wgwzQeYzF2U3DxVcbwq7elji6MiiyMu51zrQBJinESg=;
+        b=ud9zsHqD7OTB5EBSfnprDiTFSYslezwSqGJ39snFX0P33UsIC8vNzITiDEuqaxNiYl
+         +NKsNxwukJmAhbs1vozlh1DhJS1TPNDooqj/7NbyPYUMW62MvbRb6g4quN4cE/EfkhH8
+         Kn/rD5jzNGDxtaQognSUg68kN3QrhL1ngl3dPqvBBGk69BvsL08OHb7c/haxnj+5Ub8y
+         eR91qao5jvxSjrPbgcNV7BjsdaO+lbZ3/hfZg+8hnzbSFlfp7I+6oqrj6TTKF1IHmZ4I
+         5bHRKnwGhFQdtKNMzvq029iXfhj2Lj4fT25XZuEfkQbRqidNiVO3q1iqdbwlC6hBzymi
+         WAcw==
+X-Gm-Message-State: AOAM530KCKkexkIoShy1Oe+TYqRxkNlGW8WbDVkv3VVB9m68Ug3C1fyy
+        lXjbiOYl4fjrQtX9UaD7KiSYQ6Cw9NpKJf/oC9DuOYao8MEz/1h2JzqanpqWQ2WAEz6qQTUje+e
+        gd8ikfsOxQu5C62bQP6Vb+NAZiTddS/jN
+X-Received: by 2002:a5d:948f:: with SMTP id v15mr20684491ioj.28.1623186207676;
+        Tue, 08 Jun 2021 14:03:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxwfNmW3upGXJ5Dve4Ej9WBccBXA4QinwdWTxjQZOfwjWS64lkmPpJPrRs/IwQ0cW8sqNkKdXyXf3uAs6HhDcY=
+X-Received: by 2002:a5d:948f:: with SMTP id v15mr20684477ioj.28.1623186207488;
+ Tue, 08 Jun 2021 14:03:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210605111034.1810858-1-jolsa@kernel.org> <20210605111034.1810858-11-jolsa@kernel.org>
- <CAEf4BzZH5ck1Do7oRxP9D5U2v659tFXNW2RfCYAQXV_d2dYc4g@mail.gmail.com> <YL/Z+MMB8db5904r@krava>
-In-Reply-To: <YL/Z+MMB8db5904r@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 8 Jun 2021 14:02:56 -0700
-Message-ID: <CAEf4Bza2u_bHFkCVj4t0yPsNqBqvVkda8mQ-ff-rcgH1rAvRuw@mail.gmail.com>
-Subject: Re: [PATCH 10/19] bpf: Allow to store caller's ip as argument
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>
+References: <CAK-6q+hS29yoTF4tKq+Xt3G=_PPDi9vmFVwGPmutbsQyD2i=CA@mail.gmail.com>
+ <87pmwxsjxm.fsf@suse.com> <CAH2r5msMBZ5AYQcfK=-xrOASzVC0SgoHdPnyqEPRcfd-tzUstw@mail.gmail.com>
+ <35352ef0-86ed-aaa5-4a49-b2b08dc3674d@samba.org>
+In-Reply-To: <35352ef0-86ed-aaa5-4a49-b2b08dc3674d@samba.org>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Tue, 8 Jun 2021 17:03:16 -0400
+Message-ID: <CAK-6q+g3_9g++wQGbhzBhk2cp=0fb3aVL9GoAoYNPq6M4QnCdQ@mail.gmail.com>
+Subject: Re: quic in-kernel implementation?
+To:     Stefan Metzmacher <metze@samba.org>
+Cc:     Steve French <smfrench@gmail.com>,
+        =?UTF-8?Q?Aur=C3=A9lien_Aptel?= <aaptel@suse.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-nfs <linux-nfs@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        Leif Sahlberg <lsahlber@redhat.com>,
+        Steven Whitehouse <swhiteho@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 8, 2021 at 1:58 PM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Tue, Jun 08, 2021 at 11:49:31AM -0700, Andrii Nakryiko wrote:
-> > On Sat, Jun 5, 2021 at 4:12 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > >
-> > > When we will have multiple functions attached to trampoline
-> > > we need to propagate the function's address to the bpf program.
-> > >
-> > > Adding new BPF_TRAMP_F_IP_ARG flag to arch_prepare_bpf_trampoline
-> > > function that will store origin caller's address before function's
-> > > arguments.
-> > >
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > ---
-> > >  arch/x86/net/bpf_jit_comp.c | 18 ++++++++++++++----
-> > >  include/linux/bpf.h         |  5 +++++
-> > >  2 files changed, 19 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> > > index b77e6bd78354..d2425c18272a 100644
-> > > --- a/arch/x86/net/bpf_jit_comp.c
-> > > +++ b/arch/x86/net/bpf_jit_comp.c
-> > > @@ -1951,7 +1951,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> > >                                 void *orig_call)
-> > >  {
-> > >         int ret, i, cnt = 0, nr_args = m->nr_args;
-> > > -       int stack_size = nr_args * 8;
-> > > +       int stack_size = nr_args * 8, ip_arg = 0;
-> > >         struct bpf_tramp_progs *fentry = &tprogs[BPF_TRAMP_FENTRY];
-> > >         struct bpf_tramp_progs *fexit = &tprogs[BPF_TRAMP_FEXIT];
-> > >         struct bpf_tramp_progs *fmod_ret = &tprogs[BPF_TRAMP_MODIFY_RETURN];
-> > > @@ -1975,6 +1975,9 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> > >                  */
-> > >                 orig_call += X86_PATCH_SIZE;
-> > >
-> > > +       if (flags & BPF_TRAMP_F_IP_ARG)
-> > > +               stack_size += 8;
-> > > +
-> >
-> > nit: move it a bit up where we adjust stack_size for BPF_TRAMP_F_CALL_ORIG flag?
->
-> ok
->
-> >
-> > >         prog = image;
-> > >
-> > >         EMIT1(0x55);             /* push rbp */
-> > > @@ -1982,7 +1985,14 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> > >         EMIT4(0x48, 0x83, 0xEC, stack_size); /* sub rsp, stack_size */
-> > >         EMIT1(0x53);             /* push rbx */
-> > >
-> > > -       save_regs(m, &prog, nr_args, stack_size);
-> > > +       if (flags & BPF_TRAMP_F_IP_ARG) {
-> > > +               emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
-> > > +               EMIT4(0x48, 0x83, 0xe8, X86_PATCH_SIZE); /* sub $X86_PATCH_SIZE,%rax*/
-> > > +               emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -stack_size);
-> > > +               ip_arg = 8;
-> > > +       }
-> >
-> > why not pass flags into save_regs and let it handle this case without
-> > this extra ip_arg adjustment?
-> >
-> > > +
-> > > +       save_regs(m, &prog, nr_args, stack_size - ip_arg);
-> > >
-> > >         if (flags & BPF_TRAMP_F_CALL_ORIG) {
-> > >                 /* arg1: mov rdi, im */
-> > > @@ -2011,7 +2021,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> > >         }
-> > >
-> > >         if (flags & BPF_TRAMP_F_CALL_ORIG) {
-> > > -               restore_regs(m, &prog, nr_args, stack_size);
-> > > +               restore_regs(m, &prog, nr_args, stack_size - ip_arg);
-> > >
-> >
-> > similarly (and symmetrically), pass flags into restore_regs() to
-> > handle that ip_arg transparently?
->
-> so you mean something like:
->
->         if (flags & BPF_TRAMP_F_IP_ARG)
->                 stack_size -= 8;
->
-> in both save_regs and restore_regs function, right?
+Hi,
 
-yes, but for save_regs it will do more (emit_ldx and stuff)
+On Tue, Jun 8, 2021 at 3:36 AM Stefan Metzmacher <metze@samba.org> wrote:
+...
+>
+> > 2) then switch focus to porting a smaller C userspace implementation of
+> > QUIC to Linux (probably not msquic since it is larger and doesn't
+> > follow kernel style)
+> > to kernel in fs/cifs  (since currently SMB3.1.1 is the only protocol
+> > that uses QUIC,
+> > and the Windows server target is quite stable and can be used to test against)> 3) use the userspace upcall example from step 1 for
+> > comparison/testing/debugging etc.
+> > since we know the userspace version is stable
+>
+> With having the fuse-like socket before it should be trivial to switch
+> between the implementations.
 
->
-> jirka
->
-> >
-> > >                 if (flags & BPF_TRAMP_F_ORIG_STACK) {
-> > >                         emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
-> > > @@ -2052,7 +2062,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> > >                 }
-> > >
-> > >         if (flags & BPF_TRAMP_F_RESTORE_REGS)
-> > > -               restore_regs(m, &prog, nr_args, stack_size);
-> > > +               restore_regs(m, &prog, nr_args, stack_size - ip_arg);
-> > >
-> > >         /* This needs to be done regardless. If there were fmod_ret programs,
-> > >          * the return value is only updated on the stack and still needs to be
-> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > index 16fc600503fb..6cbf3c81c650 100644
-> > > --- a/include/linux/bpf.h
-> > > +++ b/include/linux/bpf.h
-> > > @@ -559,6 +559,11 @@ struct btf_func_model {
-> > >   */
-> > >  #define BPF_TRAMP_F_ORIG_STACK         BIT(3)
-> > >
-> > > +/* First argument is IP address of the caller. Makes sense for fentry/fexit
-> > > + * programs only.
-> > > + */
-> > > +#define BPF_TRAMP_F_IP_ARG             BIT(4)
-> > > +
-> > >  /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
-> > >   * bytes on x86.  Pick a number to fit into BPF_IMAGE_SIZE / 2
-> > >   */
-> > > --
-> > > 2.31.1
-> > >
-> >
->
+So a good starting point would be to have such a "fuse-like socket"
+component? What about having a simple example for that at first
+without having quic involved. The kernel calls some POSIX-like socket
+interface which triggers a communication to a user space application.
+This user space application will then map everything to a user space
+generated socket. This would be a map from socket struct
+"proto/proto_ops" to user space and vice versa. The kernel application
+probably can use the kernel_FOO() (e.g. kernel_recvmsg()) socket api
+directly then. Exactly like "fuse" as you mentioned just for sockets.
+
+I think two veth interfaces can help to test something like that,
+either with a "fuse-like socket" on the other end or an user space
+application. Just doing a ping-pong example.
+
+Afterwards we can look at how to replace the user generated socket
+application with any $LIBQUIC e.g. msquic implementation as second
+step.
+
+- Alex
+
