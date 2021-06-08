@@ -2,110 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1F9E39F688
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 14:26:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE94D39F647
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 14:19:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232568AbhFHM2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 08:28:00 -0400
-Received: from mga11.intel.com ([192.55.52.93]:55188 "EHLO mga11.intel.com"
+        id S232516AbhFHMVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 08:21:22 -0400
+Received: from verein.lst.de ([213.95.11.211]:50559 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232530AbhFHM17 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Jun 2021 08:27:59 -0400
-IronPort-SDR: QDIZoaNZ/FJeDOfiwToxfANS1R9g/sS9dCsps66mJqvXy+a55ZThuzFes5KWcj4GoxOYwvEDfa
- e4tu/yoToGZg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10008"; a="201812287"
-X-IronPort-AV: E=Sophos;i="5.83,258,1616482800"; 
-   d="scan'208";a="201812287"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2021 05:26:02 -0700
-IronPort-SDR: 1bb5WJ3mCHSSL5VrOzifX8sfMZtnoQj+fFtXefgePoJi8+w1TsW8E0q/h9K/bDl1kSIZgf8e+P
- 0GTjLGdSUeOg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,258,1616482800"; 
-   d="scan'208";a="476586564"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by FMSMGA003.fm.intel.com with ESMTP; 08 Jun 2021 05:26:00 -0700
-Date:   Tue, 8 Jun 2021 14:13:40 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Cc:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "bjorn@kernel.org" <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: Re: [PATCH intel-next 2/2] ice: introduce XDP Tx fallback path
-Message-ID: <20210608121340.GB1971@ranger.igk.intel.com>
-References: <20210601113236.42651-1-maciej.fijalkowski@intel.com>
- <20210601113236.42651-3-maciej.fijalkowski@intel.com>
- <39b84a66bae09568cd1f95802395af3e2df8fdb1.camel@intel.com>
+        id S232504AbhFHMVW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Jun 2021 08:21:22 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id E93F468AFE; Tue,  8 Jun 2021 14:19:25 +0200 (CEST)
+Date:   Tue, 8 Jun 2021 14:19:25 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Omkar Kulkarni <okulkarni@marvell.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Dean Balandin <dbalandin@marvell.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Shai Malin <smalin@marvell.com>,
+        Petr Mladek <pmladek@suse.com>, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nvme: NVME_TCP_OFFLOAD should not default to m
+Message-ID: <20210608121925.GA24201@lst.de>
+References: <39b1a3684880e1d85ef76e34403886e8f1d22508.1623149635.git.geert+renesas@glider.be>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <39b84a66bae09568cd1f95802395af3e2df8fdb1.camel@intel.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <39b1a3684880e1d85ef76e34403886e8f1d22508.1623149635.git.geert+renesas@glider.be>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 01:52:38AM +0100, Nguyen, Anthony L wrote:
-> On Tue, 2021-06-01 at 13:32 +0200, Maciej Fijalkowski wrote:
-> > Under rare circumstances there might be a situation where a
-> > requirement
-> > of having a XDP Tx queue per core could not be fulfilled and some of
-> > the
-> > Tx resources would have to be shared between cores. This yields a
-> > need
-> > for placing accesses to xdp_rings array onto critical section
-> > protected
-> > by spinlock.
-> >
-> > Design of handling such scenario is to at first find out how many
-> > queues
-> > are there that XDP could use. Any number that is not less than the
-> > half
-> > of a count of cores of platform is allowed. XDP queue count < cpu
-> > count
-> > is signalled via new VSI state ICE_VSI_XDP_FALLBACK which carries the
-> > information further down to Rx rings where new ICE_TX_XDP_LOCKED is
-> > set
-> > based on the mentioned VSI state. This ring flag indicates that
-> > locking
-> > variants for getting/putting xdp_ring need to be used in fast path.
-> >
-> > For XDP_REDIRECT the impact on standard case (one XDP ring per CPU)
-> > can
-> > be reduced a bit by providing a separate ndo_xdp_xmit and swap it at
-> > configuration time. However, due to the fact that net_device_ops
-> > struct
-> > is a const, it is not possible to replace a single ndo, so for the
-> > locking variant of ndo_xdp_xmit, whole net_device_ops needs to be
-> > replayed.
-> >
-> > It has an impact on performance (1-2 %) of a non-fallback path as
-> > branches are introduced.
-> >
-> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice.h          | 37 +++++++++
-> >  drivers/net/ethernet/intel/ice/ice_base.c     |  5 ++
-> >  drivers/net/ethernet/intel/ice/ice_lib.c      |  4 +-
-> >  drivers/net/ethernet/intel/ice/ice_main.c     | 76
-> > ++++++++++++++++++-
-> >  drivers/net/ethernet/intel/ice/ice_txrx.c     | 62 ++++++++++++++-
-> >  drivers/net/ethernet/intel/ice/ice_txrx.h     |  2 +
-> >  drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 13 +++-
-> >  7 files changed, 191 insertions(+), 8 deletions(-)
+On Tue, Jun 08, 2021 at 12:56:09PM +0200, Geert Uytterhoeven wrote:
+> The help text for the symbol controlling support for the NVM Express
+> over Fabrics TCP offload common layer suggests to not enable this
+> support when unsure.
 > 
-> This isn't applying to next-queue/dev-queue. I believe it's becuase the
-> branch has the soon to be sent tracing patch from Magnus [1].
+> Hence drop the "default m", which actually means "default y" if
+> CONFIG_MODULES is not enabled.
+> 
+> Fixes: f0e8cb6106da2703 ("nvme-tcp-offload: Add nvme-tcp-offload - NVMeTCP HW offload ULP")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Thanks for a heads up Tony, I'll send rebased revision.
-
-> 
-> Thanks,
-> Tony
-> 
-> [1] https://patchwork.ozlabs.org/project/intel-wired-
-> lan/patch/20210510093854.31652-3-magnus.karlsson@gmail.com/
+Err, where did this appear from?  This code has not been accepted into
+the NVMe tree and is indeed not acceptable in this form.
