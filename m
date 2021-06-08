@@ -2,33 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF86239FAE4
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 17:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFBB739FAE1
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 17:35:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233360AbhFHPhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 11:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233032AbhFHPhZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 11:37:25 -0400
-Received: from simonwunderlich.de (packetmixer.de [IPv6:2001:4d88:2000:24::c0de])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4890BC061574
-        for <netdev@vger.kernel.org>; Tue,  8 Jun 2021 08:35:32 -0700 (PDT)
+        id S233233AbhFHPhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 11:37:32 -0400
+Received: from simonwunderlich.de ([79.140.42.25]:34660 "EHLO
+        simonwunderlich.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233009AbhFHPhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 11:37:24 -0400
 Received: from kero.packetmixer.de (p200300c5970dd3e020a52263b5aabfb3.dip0.t-ipconnect.de [IPv6:2003:c5:970d:d3e0:20a5:2263:b5aa:bfb3])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by simonwunderlich.de (Postfix) with ESMTPSA id 5DDE917402A;
+        by simonwunderlich.de (Postfix) with ESMTPSA id CB55617402B;
         Tue,  8 Jun 2021 17:27:04 +0200 (CEST)
 From:   Simon Wunderlich <sw@simonwunderlich.de>
 To:     kuba@kernel.org, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
         Sven Eckelmann <sven@narfation.org>,
         Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 06/11] batman-adv: Remove the repeated declaration
-Date:   Tue,  8 Jun 2021 17:26:55 +0200
-Message-Id: <20210608152700.30315-7-sw@simonwunderlich.de>
+Subject: [PATCH 07/11] batman-adv: Fix spelling mistakes
+Date:   Tue,  8 Jun 2021 17:26:56 +0200
+Message-Id: <20210608152700.30315-8-sw@simonwunderlich.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210608152700.30315-1-sw@simonwunderlich.de>
 References: <20210608152700.30315-1-sw@simonwunderlich.de>
@@ -38,30 +35,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shaokun Zhang <zhangshaokun@hisilicon.com>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-Function 'batadv_bla_claim_dump' is declared twice, so remove the
-repeated declaration.
+Fix some spelling mistakes in comments:
+containg  ==> containing
+dont  ==> don't
+datas  ==> data
+brodcast  ==> broadcast
 
-Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 Signed-off-by: Sven Eckelmann <sven@narfation.org>
 Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 ---
- net/batman-adv/bridge_loop_avoidance.h | 1 -
- 1 file changed, 1 deletion(-)
+ net/batman-adv/bridge_loop_avoidance.c | 4 ++--
+ net/batman-adv/hard-interface.c        | 2 +-
+ net/batman-adv/hash.h                  | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/batman-adv/bridge_loop_avoidance.h b/net/batman-adv/bridge_loop_avoidance.h
-index 5c22955bb9d5..8673a265995f 100644
---- a/net/batman-adv/bridge_loop_avoidance.h
-+++ b/net/batman-adv/bridge_loop_avoidance.h
-@@ -52,7 +52,6 @@ void batadv_bla_update_orig_address(struct batadv_priv *bat_priv,
- void batadv_bla_status_update(struct net_device *net_dev);
- int batadv_bla_init(struct batadv_priv *bat_priv);
- void batadv_bla_free(struct batadv_priv *bat_priv);
--int batadv_bla_claim_dump(struct sk_buff *msg, struct netlink_callback *cb);
- #ifdef CONFIG_BATMAN_ADV_DAT
- bool batadv_bla_check_claim(struct batadv_priv *bat_priv, u8 *addr,
- 			    unsigned short vid);
+diff --git a/net/batman-adv/bridge_loop_avoidance.c b/net/batman-adv/bridge_loop_avoidance.c
+index 7dc133cfc363..63d42dcc9324 100644
+--- a/net/batman-adv/bridge_loop_avoidance.c
++++ b/net/batman-adv/bridge_loop_avoidance.c
+@@ -395,7 +395,7 @@ static void batadv_bla_send_claim(struct batadv_priv *bat_priv, u8 *mac,
+ 		break;
+ 	case BATADV_CLAIM_TYPE_ANNOUNCE:
+ 		/* announcement frame
+-		 * set HW SRC to the special mac containg the crc
++		 * set HW SRC to the special mac containing the crc
+ 		 */
+ 		ether_addr_copy(hw_src, mac);
+ 		batadv_dbg(BATADV_DBG_BLA, bat_priv,
+@@ -1040,7 +1040,7 @@ static int batadv_check_claim_group(struct batadv_priv *bat_priv,
+ 	/* lets see if this originator is in our mesh */
+ 	orig_node = batadv_orig_hash_find(bat_priv, backbone_addr);
+ 
+-	/* dont accept claims from gateways which are not in
++	/* don't accept claims from gateways which are not in
+ 	 * the same mesh or group.
+ 	 */
+ 	if (!orig_node)
+diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interface.c
+index 4a6a25d551a8..b99f64f483fc 100644
+--- a/net/batman-adv/hard-interface.c
++++ b/net/batman-adv/hard-interface.c
+@@ -403,7 +403,7 @@ int batadv_hardif_no_broadcast(struct batadv_hard_iface *if_outgoing,
+ 		goto out;
+ 	}
+ 
+-	/* >1 neighbors -> (re)brodcast */
++	/* >1 neighbors -> (re)broadcast */
+ 	if (rcu_dereference(hlist_next_rcu(first)))
+ 		goto out;
+ 
+diff --git a/net/batman-adv/hash.h b/net/batman-adv/hash.h
+index 46696759f194..fb251c385a1b 100644
+--- a/net/batman-adv/hash.h
++++ b/net/batman-adv/hash.h
+@@ -18,7 +18,7 @@
+ #include <linux/stddef.h>
+ #include <linux/types.h>
+ 
+-/* callback to a compare function.  should compare 2 element datas for their
++/* callback to a compare function.  should compare 2 element data for their
+  * keys
+  *
+  * Return: true if same and false if not same
 -- 
 2.20.1
 
