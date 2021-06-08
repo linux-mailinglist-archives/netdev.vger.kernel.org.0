@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DE3F39F821
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 15:52:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9419B39F82A
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 15:53:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233070AbhFHNyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 09:54:09 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3800 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231162AbhFHNyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 09:54:09 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Fzs4B21nlzWsQn;
-        Tue,  8 Jun 2021 21:47:22 +0800 (CST)
+        id S233088AbhFHNzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 09:55:03 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:5294 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233074AbhFHNzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 09:55:03 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Fzs5G0HMdz1BK1Q;
+        Tue,  8 Jun 2021 21:48:18 +0800 (CST)
 Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 8 Jun 2021 21:52:13 +0800
+ 15.1.2176.2; Tue, 8 Jun 2021 21:53:08 +0800
 Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
  (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 8 Jun 2021
- 21:52:12 +0800
+ 21:53:08 +0800
 From:   Yang Yingliang <yangyingliang@huawei.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>
-Subject: [PATCH net-next] net: nixge: simplify code with devm platform functions
-Date:   Tue, 8 Jun 2021 21:56:22 +0800
-Message-ID: <20210608135622.3009485-1-yangyingliang@huawei.com>
+CC:     <sergei.shtylyov@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+Subject: [PATCH net-next] sh_eth: Use devm_platform_get_and_ioremap_resource()
+Date:   Tue, 8 Jun 2021 21:57:18 +0800
+Message-ID: <20210608135718.3009950-1-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -40,42 +41,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use devm_platform_get_and_ioremap_resource() and
-devm_platform_ioremap_resource_byname to simplify
+Use devm_platform_get_and_ioremap_resource() to simplify
 code.
 
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/net/ethernet/ni/nixge.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/renesas/sh_eth.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ni/nixge.c b/drivers/net/ethernet/ni/nixge.c
-index a6861df9904f..2d097dcb7bda 100644
---- a/drivers/net/ethernet/ni/nixge.c
-+++ b/drivers/net/ethernet/ni/nixge.c
-@@ -1224,7 +1224,6 @@ static int nixge_of_get_resources(struct platform_device *pdev)
- 	const struct of_device_id *of_id;
- 	enum nixge_version version;
- 	struct resource *ctrlres;
--	struct resource *dmares;
+diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
+index c5b154868c1f..177523be4fb6 100644
+--- a/drivers/net/ethernet/renesas/sh_eth.c
++++ b/drivers/net/ethernet/renesas/sh_eth.c
+@@ -3225,9 +3225,6 @@ static int sh_eth_drv_probe(struct platform_device *pdev)
  	struct net_device *ndev;
- 	struct nixge_priv *priv;
+ 	int ret;
  
-@@ -1236,12 +1235,9 @@ static int nixge_of_get_resources(struct platform_device *pdev)
- 
- 	version = (enum nixge_version)of_id->data;
- 	if (version <= NIXGE_V2)
--		dmares = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+		priv->dma_regs = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
- 	else
--		dmares = platform_get_resource_byname(pdev, IORESOURCE_MEM,
--						      "dma");
+-	/* get base addr */
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 -
--	priv->dma_regs = devm_ioremap_resource(&pdev->dev, dmares);
-+		priv->dma_regs = devm_platform_ioremap_resource_byname(pdev, "dma");
- 	if (IS_ERR(priv->dma_regs)) {
- 		netdev_err(ndev, "failed to map dma regs\n");
- 		return PTR_ERR(priv->dma_regs);
+ 	ndev = alloc_etherdev(sizeof(struct sh_eth_private));
+ 	if (!ndev)
+ 		return -ENOMEM;
+@@ -3245,7 +3242,7 @@ static int sh_eth_drv_probe(struct platform_device *pdev)
+ 	mdp = netdev_priv(ndev);
+ 	mdp->num_tx_ring = TX_RING_SIZE;
+ 	mdp->num_rx_ring = RX_RING_SIZE;
+-	mdp->addr = devm_ioremap_resource(&pdev->dev, res);
++	mdp->addr = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(mdp->addr)) {
+ 		ret = PTR_ERR(mdp->addr);
+ 		goto out_release;
 -- 
 2.25.1
 
