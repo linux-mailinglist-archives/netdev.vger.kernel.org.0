@@ -2,123 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10B6439F170
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61CA739F187
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:59:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230522AbhFHIzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 04:55:44 -0400
-Received: from mail-bn8nam11on2054.outbound.protection.outlook.com ([40.107.236.54]:34401
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229507AbhFHIzn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Jun 2021 04:55:43 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Itt5QGNqKfegTW+9ZtL/Eu511/ZgovwLQg8vMJqaXnaYVyzAIr2lT84u9CkuGMknnWhVG3zxclAhh40Qzg90YSPzb5n448ijKLEqo0/n4rOAWh3M4UVonnc5IZV9IMfsiA8jBcw5/iJUN2shzTwnaeGEsZOb/3+A4+Y2gNXFukHICpZGUV1ccBDRen/ET+d6zAvArz5zs6O8Hs4FEuanDvzApiaWx+bduH7o/9obBvuOXD2q/nCpT6KDg22oVtqmAZNOpG6syEd+xl6qNmM5UHzWLbg0SXBiR1s2avI5jDRmQekeV96kCEp7crBHv1UzIXKmj3rOmpS4B+IoubzliQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qt4gkILoypk2WG79sJwqeAWJ8suDLrOX329sokfeIgE=;
- b=Tf67oFo0rkEB0GZPwAOYExE5L6HU924SjbaFJJ5zXiedjaS67zQCW1XEA5Om7W72BFmtZj5PoXHpqo8OK3fi1IXOiw92l9I/rU7KErGGDq1WZQ3rcXPOqdb64bdhPpHG7I6JisyJRpN10cmYA0uABDg7rh+sA3uxJLm4duXn0I67w8NFq9sJezrlGacB+1oMvPqsVMylq2rjv6TnaE45BQbyyyxQEjywr3qd30HJWF9R+zgggmSvp8fqSSx+C443f9PbmYnwv7/0o2mb3Q9cWX+Kztg21a/9d+Dun/bBOFatSPcSFZ7x3E7o7ukjP6PGqkeMnLf2AVvPwv7+yd2zDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qt4gkILoypk2WG79sJwqeAWJ8suDLrOX329sokfeIgE=;
- b=Quem6LOKLCImj6wNVdZUGdkUNs0+yBtoWs2zxpD+c/JzCPeQqIP4Qa1FxOL3udP8Ub7ikB5RPE0NsSe3QL35n+9AWvDE0mV2VQk40Dowz1AY+C+uolYDMfk86zyNWXMdddfnjpxe7tq2AMdGHtWvrwy7iFUYkFv3qjyHCqBNBL1nSHWOUkrJLEBzgrpteDAwJvDbQgQJI3b4PwxDVTH653hrPEg8SCEYOyJbNrpPFYwiwlYc8arWnxAEpp6LMb7UZMtyY7iOxxSel+/Xqiz6Ul0aWqdeFJp9nV4iY8vCKCPRJNmidNQIT4DFoeEt3MRiH/aSo2o8dexk6Ad3GPITZw==
-Received: from BN0PR04CA0102.namprd04.prod.outlook.com (2603:10b6:408:ec::17)
- by CH0PR12MB5059.namprd12.prod.outlook.com (2603:10b6:610:e2::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Tue, 8 Jun
- 2021 08:53:50 +0000
-Received: from BN8NAM11FT052.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ec:cafe::43) by BN0PR04CA0102.outlook.office365.com
- (2603:10b6:408:ec::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.20 via Frontend
- Transport; Tue, 8 Jun 2021 08:53:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT052.mail.protection.outlook.com (10.13.177.210) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4195.22 via Frontend Transport; Tue, 8 Jun 2021 08:53:49 +0000
-Received: from yaviefel (172.20.187.5) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 8 Jun 2021 08:53:47
- +0000
-References: <20210608085325.61c6056f@canb.auug.org.au>
- <YL8Mz573gNRktQTh@shredder>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-CC:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Petr Machata <petrm@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: Fixes tag needs some work in the net tree
-In-Reply-To: <YL8Mz573gNRktQTh@shredder>
-Message-ID: <87sg1s20vb.fsf@nvidia.com>
-Date:   Tue, 8 Jun 2021 10:53:44 +0200
+        id S230291AbhFHJBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 05:01:25 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:64854 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229507AbhFHJBW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 05:01:22 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1588ttPe092876;
+        Tue, 8 Jun 2021 04:59:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=zncH8Y9Ig0Sn9Z3dBCqA5uZhMuCKXbQPTA0d+6pwXOo=;
+ b=Se6/j3C2gQwm99LOmRd4SZODrfND5eLXc4af3CFsBFRpQnVRztp8X8mfQ6xYi9ULA8bQ
+ Mf25UOu0OVtRGlQvwVMjhyiXq85M8z1TRxn31xIhvqnhrhdukfcH6PopbMcvSferxHQU
+ Z7HCrOgsYl69d60snbYKVQ38Oo32NUAK3yYscjurSlo+nT7IBqHV4dUmCn2PcOs2n8us
+ dCQkMrqdF30SsbE8HmCRBWnMKczUSY5UC2ZyL5FJet5Y8xHGGgbjvccjEDQE7vOXK55e
+ XPn3fU9IyM+5PGF9/4wKjj5P5wUMbZMUNk+o6B2UioI2eGsYyBELE/MEd1APJTwNgbj/ sg== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3925fj01e7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Jun 2021 04:59:27 -0400
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1588vaL9032077;
+        Tue, 8 Jun 2021 08:59:27 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma04dal.us.ibm.com with ESMTP id 3900w9b6qd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Jun 2021 08:59:27 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1588xPxs22741264
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 8 Jun 2021 08:59:25 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 82CA278068;
+        Tue,  8 Jun 2021 08:59:25 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4B48E7805C;
+        Tue,  8 Jun 2021 08:59:24 +0000 (GMT)
+Received: from [9.171.25.104] (unknown [9.171.25.104])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTPS;
+        Tue,  8 Jun 2021 08:59:24 +0000 (GMT)
+Subject: Re: [PATCH net-next 0/4] net/smc: Add SMC statistic support
+To:     David Miller <davem@davemloft.net>, kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, hca@linux.ibm.com, raspl@linux.ibm.com,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org
+References: <20210607182014.3384922-1-kgraul@linux.ibm.com>
+ <20210607.133346.155691512247470187.davem@davemloft.net>
+From:   Guvenc Gulce <guvenc@linux.ibm.com>
+Message-ID: <1df10dbb-a3bd-9b8f-6fb9-8a8fe98ae175@linux.ibm.com>
+Date:   Tue, 8 Jun 2021 10:59:22 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 13d33455-89f6-4ba8-26f4-08d92a5aef1c
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5059:
-X-Microsoft-Antispam-PRVS: <CH0PR12MB5059B78EC30D1DDCB49AF61FD6379@CH0PR12MB5059.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:383;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SOMA0qPRaLjUIPpKtSM2AVaFGlE75Pk65KoZuQvRHETKvwjFjnJfNGw9i/ZjHcXCeVC7kAve/adms/m/XCAFrVXziQeyTA6JNW4qHVGNT9mATT2qt1l8bRW2vidn9UqxxxPrHQyA+UTRBiHSTeWpF/7cQnfQVlIMR7qrF3PSTtM2UJ2l2vtlWyEl9eVbGlki3ctRNIn1oV8rdQzow0tD+1+bhwdWjZcwce0vvdOm4AKKZ3HKZw+wNO7mf/DUP165EnKz9f7zr862elP5SwWuccsszLNygy316BF7PPzrm1wCgZs2KxowEaOfZ9gX68eEtpC6nnAXKFOeW/ovUkc4+vEs48qDhsREx4tK/jrESa8RO9jN8iTNExF9waxJR+dlv9Syd/FmDeu3PAhn7FEAYGsjaYNGrO1HA6urH3bG7wITKpq9S8keYi6jZSro0ZaNN+EooFIwhER06Xi9YW4hZWG+Q8RY+SPbL3OKhUIZITqEpyVbYViM5VvRRen+3lh9MWLvTerG5EqzJt+WnvXKMThhxnPd/J+dGXA/EsLFgZQ+63Qt0r6RPetM17A57PD+sQCx6V0wAZAVWC7aic6DAlGa5L1prlN5OzlUHgpnWYppFXNlo7m9ptJaExPWSoWvbrAmi/HztDt+Vdh60Y5LgQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(346002)(376002)(396003)(39860400002)(46966006)(36840700001)(6862004)(6666004)(37006003)(82310400003)(5660300002)(54906003)(426003)(356005)(4326008)(16526019)(186003)(70206006)(82740400003)(47076005)(4744005)(336012)(8676002)(2616005)(70586007)(2906002)(36756003)(36860700001)(7636003)(316002)(26005)(6636002)(86362001)(478600001)(36906005)(8936002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2021 08:53:49.4909
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 13d33455-89f6-4ba8-26f4-08d92a5aef1c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT052.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5059
+In-Reply-To: <20210607.133346.155691512247470187.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 8RMZyZaSZ0X8X33-1jINQtzzJmIPiTlN
+X-Proofpoint-GUID: 8RMZyZaSZ0X8X33-1jINQtzzJmIPiTlN
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-08_05:2021-06-04,2021-06-08 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ lowpriorityscore=0 impostorscore=0 suspectscore=0 priorityscore=1501
+ malwarescore=0 mlxscore=0 adultscore=0 clxscore=1011 phishscore=0
+ bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106080051
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Dave,
+Thank you for looking into this. SMC is a protocol interacting with PCI devices (like RoCE Cards) and
+runs on top of TCP protocol. As SMC is a network protocol and not an ethernet device driver, we
+decided to use the generic netlink interface. There is already an established internal generic netlink
+interface mechanism in SMC which is used to collect SMC Protocol internal information. This patchset
+extends that existing mechanism.
+Ethtool's predefined netlink interfaces are specifically tailored for the ethernet device internals and needs
+and these netlink interfaces wouldn't really fit to the use cases of the SMC protocol.
 
-Ido Schimmel <idosch@nvidia.com> writes:
+Other protocols (like tipc, ncsi, ieee802154, tcp metrics) under the net subsystem use also similar generic
+netlink mechanism for collecting and transporting protocol specific information to userspace. This also
+encouraged us to make the generic netlink decision for exposing the gathered SMC protocol statistics
+and internal information to the userspace.
 
-> On Tue, Jun 08, 2021 at 08:53:25AM +1000, Stephen Rothwell wrote:
->> Hi all,
->> 
->> In commit
->> 
->>   d566ed04e42b ("mlxsw: spectrum_qdisc: Pass handle, not band number to find_class()")
->> 
->> Fixes tag
->> 
->>   Fixes: 28052e618b04 ("mlxsw: spectrum_qdisc: Track children per qdisc")
->> 
->> has these problem(s):
->> 
->>   - Target SHA1 does not exist
->> 
->> Maybe you meant
->> 
->> Fixes: 51d52ed95550 ("mlxsw: spectrum_qdisc: Track children per qdisc")
+Regards,
+
+Guvenc Gulce
+
+On 07/06/2021 22:33, David Miller wrote:
+> From: Karsten Graul <kgraul@linux.ibm.com>
+> Date: Mon,  7 Jun 2021 20:20:10 +0200
 >
-> Yes, correct. Sorry about that. The first was an internal tag. Will
-> double-check next time.
+>> Please apply the following patch series for smc to netdev's net-next tree.
+>>
+>> The patchset adds statistic support to the SMC protocol. Per-cpu
+>> variables are used to collect the statistic information for better
+>> performance and for reducing concurrency pitfalls. The code that is
+>> collecting statistic data is implemented in macros to increase code
+>> reuse and readability.
+>> The generic netlink mechanism in SMC is extended to provide the
+>> collected statistics to userspace.
+>> Network namespace awareness is also part of the statistics
+>> implementation.
+> Why not use ethtool stats?
+>
+> Thank you.
 
-My mistake. I must have been looking into the wrong checkout when I was
-hunting for the reference.
