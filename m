@@ -2,242 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74D673A056D
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:00:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 682C33A0575
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:03:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234047AbhFHVBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 17:01:51 -0400
-Received: from mail-ej1-f54.google.com ([209.85.218.54]:40469 "EHLO
-        mail-ej1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbhFHVBv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 17:01:51 -0400
-Received: by mail-ej1-f54.google.com with SMTP id my49so18155578ejc.7;
-        Tue, 08 Jun 2021 13:59:57 -0700 (PDT)
+        id S232640AbhFHVFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 17:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229526AbhFHVFC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 17:05:02 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3CF9C061787;
+        Tue,  8 Jun 2021 14:03:08 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id i4so32254121ybe.2;
+        Tue, 08 Jun 2021 14:03:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=30xnlef1ElHYHsbW4hyY7qER+x2vQ7X1mjznnJz++Yk=;
-        b=Ggsn5TdOgIHYna/yQm7O1jfZ3wc6tjW6tmznRjLfvPivgWANv5iG890vhiFhW3PTb0
-         I5JQqt6AYKY/YeIyXiOzjcdKN7UYCClO02NitlpL8La8SquT/H6Pi2zDVcFRBRo7sw6f
-         2i6Z6Dodfq4QWBRevaGS/ykl6+cNiXuZoOJHaeDirbjcL+QBFcmUHr18CGVf568Qq2by
-         yRJWJAaFB94YrU2jrCEK+E/HUrTDRvd0JKEb0DDrmyQFK2/7JLGDDUlk9Iga08ZDTknB
-         llRaCNud5ojld4rvVvhiBvQUO29XmggqPGdbcx2NuGYZcbRth64w4509VzjHe8TRlsfT
-         s81A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RLjgsFnKC4L7IcgxiiV4HyzmCPppo7n+3ZonyTCNhNc=;
+        b=JNvnPU6xcNUVR2XnBre+lPvftUOVDXdSNZtM7nuBwBU/hWaTMYBAFi4msQLii16eIu
+         ITNmli1Fxlgt5+2AnEX6n7mXx181IpTaAjs6/xCNc6vsd/UkESFyNsu7DKJxt1vvDmhL
+         dtacalmEIz/na/idxCkXXXVHzTnivsLkVjLM8Xt+xpx+r4q4z9cm8RKURhUU7AK0MAVq
+         BoB9EbtOsB0P1uFjA3M6SyhHpUUNJfG47hjo1TjNhLDaTfsoO/3hLryOWgArae/RNYcF
+         nFfGHnvX/Yi3mZBA0U91PmyUoyWSnGB0ocVg9G6f0Vw7yzEHHAE0BgACpBI/W075kOb+
+         IH5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=30xnlef1ElHYHsbW4hyY7qER+x2vQ7X1mjznnJz++Yk=;
-        b=aAmm+ueLMQUCE5MjM/lYP74XB42WS8SS6FuqfO7Rf38bsnAbJ5GYvpKfEDQrs8P7jI
-         sxKg1Fdu0aQR9gF9Wt5rrs42t12f/RiBrWUV1u4Fi+buK4GqZx7Yz/IX5Sz9odxPQB3u
-         oHnhRW13o3Hb6clbbs6/mxDrjOiLet5UroHF7yGtaBQwtOM1yUC+Mtp2EemGShpFlbFz
-         9ioAlRW9/WCDYzqsbvk0LlflIcN8XywR0Hl/JcE9S8awQDaJzWJ5aBURG3YbJ7dSVXF3
-         1RXzp3+yfK+BUgOel0EfunBVOTfloEhQqwddcfWNUDyhgGtUNv3EbQFZki2CU7aU2Q4j
-         pZhg==
-X-Gm-Message-State: AOAM530l9U8lSPRecCaUkDEo2Fdht+lmXjxQdoDfTa5ZNSdIxqrmJTzO
-        nz1C4JgGqo8OLJ5x8JGE605J33BPXis=
-X-Google-Smtp-Source: ABdhPJy4h/oncno/1eXgbfF74nyajmJnGB8JEsY36TAUwLttKvMZz15F4SuDitIqXZtEFy9gYyWUeA==
-X-Received: by 2002:a17:907:2141:: with SMTP id rk1mr5831396ejb.200.1623185936553;
-        Tue, 08 Jun 2021 13:58:56 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:3800:8cb5:6cf8:6fac:256f? (p200300ea8f2938008cb56cf86fac256f.dip0.t-ipconnect.de. [2003:ea:8f29:3800:8cb5:6cf8:6fac:256f])
-        by smtp.googlemail.com with ESMTPSA id m15sm291524eji.39.2021.06.08.13.58.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Jun 2021 13:58:55 -0700 (PDT)
-To:     Koba Ko <koba.ko@canonical.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20210608032207.2923574-1-koba.ko@canonical.com>
- <84eb168e-58ff-0350-74e2-c55249eb258c@gmail.com>
- <CAJB-X+XFYa1cZgtJEL1KCNWviL3Y4X6EbN--rE8CD_9oD9EFyA@mail.gmail.com>
- <7a36c032-38fa-6aa6-fa0f-c3664850d8ea@gmail.com>
- <CAJB-X+V78kUM97AZQp9ZQbp=tzWwD9FQWEcFS6VnVRZnSHkb7g@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH] [v2] r8169: Use PHY_POLL when RTL8106E enable ASPM
-Message-ID: <4508fbcb-f8ec-3805-4aa3-eeea4975de31@gmail.com>
-Date:   Tue, 8 Jun 2021 22:58:49 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RLjgsFnKC4L7IcgxiiV4HyzmCPppo7n+3ZonyTCNhNc=;
+        b=jIcrqvX/xMq4XsBBLjTzKsmyZvNONhqY0ZZo8+ATPSE00iuYaQ/RFB2WSZehOAu6L+
+         EyCdfq96+TmaG0d97JQXEmSsRr4g2aGIzuCSj/i0qrpd+WIpY1XWAG0lz16ddVdPq4Ee
+         32cnr/QAzobfi4Y6MplZWRwTDZHxrrA+e98P34ydQ2bBmwGcyXizdAZcXgtUjbpjWlnn
+         T9nCDtP7tySkMVNcb4dxOmnPGfWLdEdafTY3rGKkFtxCZyppeae2rsrJZKkxMvq+xrDG
+         QJB/vPPu4zlQPEjOysxFgnuoSslP/wsOK3+33eo/aRN3JHfi6b3Zhsu87wLzoNvUKzKs
+         Ue5g==
+X-Gm-Message-State: AOAM533EXI5kcz9o/MJUcT5+N6WgyQR4IVhUqSJlRSd3Q1yRZLIU2486
+        GXwu5UzIB5eytaR2HTszUjr26XINY52rGGL6v1U=
+X-Google-Smtp-Source: ABdhPJyZcQg075Q25ka4UEJEGwBI+hI7HPVhnTmvoWXUDmtDsYXNub8XC2rhVz8Euyp7yfXu0BM4PIioouQt2gHiLaE=
+X-Received: by 2002:a25:ba06:: with SMTP id t6mr32159539ybg.459.1623186187814;
+ Tue, 08 Jun 2021 14:03:07 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAJB-X+V78kUM97AZQp9ZQbp=tzWwD9FQWEcFS6VnVRZnSHkb7g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210605111034.1810858-1-jolsa@kernel.org> <20210605111034.1810858-11-jolsa@kernel.org>
+ <CAEf4BzZH5ck1Do7oRxP9D5U2v659tFXNW2RfCYAQXV_d2dYc4g@mail.gmail.com> <YL/Z+MMB8db5904r@krava>
+In-Reply-To: <YL/Z+MMB8db5904r@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 8 Jun 2021 14:02:56 -0700
+Message-ID: <CAEf4Bza2u_bHFkCVj4t0yPsNqBqvVkda8mQ-ff-rcgH1rAvRuw@mail.gmail.com>
+Subject: Re: [PATCH 10/19] bpf: Allow to store caller's ip as argument
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Viktor Malik <vmalik@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.06.2021 16:17, Koba Ko wrote:
-> On Tue, Jun 8, 2021 at 9:45 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>
->> On 08.06.2021 12:43, Koba Ko wrote:
->>> On Tue, Jun 8, 2021 at 4:00 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>>>
->>>> On 08.06.2021 05:22, Koba Ko wrote:
->>>>> For RTL8106E, it's a Fast-ethernet chip.
->>>>> If ASPM is enabled, the link chang interrupt wouldn't be triggered
->>>>> immediately and must wait a very long time to get link change interrupt.
->>>>> Even the link change interrupt isn't triggered, the phy link is already
->>>>> established.
->>>>>
->>>>> Use PHY_POLL to watch the status of phy link and disable
->>>>> the link change interrupt when ASPM is enabled on RTL8106E.
->>>>>
->>>>> v2: Instead use PHY_POLL and identify 8106E by RTL_GIGA_MAC_VER_39.
->>>>>
->>>>
->>>> Still the issue description doesn't convince me that it's a hw bug
->>>> with the respective chip version. What has been stated so far:
->>>>
->>>> 1. (and most important) Issue doesn't occur in mainline because ASPM
->>>>    is disabled in mainline for r8169. Issue occurs only with a
->>>>    downstream kernel with ASPM enabled for r8169.
->>>
->>> mainline kernel and enable L1, the issue is also observed.
->>>
->> Yes, but enabling L1 via sysfs is at own risk.
-> 
-> but we could have a workaround if hw have an aspm issue.
-> 
->>
->>>> 2. Issue occurs only with ASPM L1.1 not disabled, even though this chip
->>>>    version doesn't support L1 sub-states. Just L0s/L1 don't trigger
->>>>    the issue.
->>>>    The NIC doesn't announce L1.1 support, therefore PCI core won't
->>>>    enable L1 sub-states on the PCIe link between NIC and upstream
->>>>    PCI bridge.
->>>
->>> More precisely, when L1 is enabled, the issue would be triggered.
->>> For RTL8106E,
->>> 1. Only disable L0s, pcie_aspm_enabled return 1, issue is triggered.
->>> 2. Only disable L1_1, pcie_aspm_enabled return 1, issue is triggered.
->>>
->>> 3. Only disable L1, pcie_aspm_enabled return 0, issue is not triggered.
->>>
->>>>
->>>> 3. Issue occurs only with a GBit-capable link partner. 100MBit link
->>>>    partners are fine. Not clear whether issue occurs with a specific
->>>>    Gbit link partner only or with GBit-capable link partners in general.
->>>>
->>>> 4. Only link-up interrupt is affected. Not link-down and not interrupts
->>>>    triggered by other interrupt sources.
->>>>
->>>> 5. Realtek couldn't confirm that there's such a hw bug on RTL8106e.
->>>>
->>>> One thing that hasn't been asked yet:
->>>> Does issue occur always if you re-plug the cable? Or only on boot?
->>>> I'm asking because in the dmesg log you attached to the bugzilla issue
->>>> the following looks totally ok.
->>>>
->>>> [   61.651643] r8169 0000:01:00.0 enp1s0: Link is Down
->>>> [   63.720015] r8169 0000:01:00.0 enp1s0: Link is Up - 100Mbps/Full - flow control rx/tx
->>>> [   66.685499] r8169 0000:01:00.0 enp1s0: Link is Down
->>>
->>> Once the link is up,
->>> 1. If cable is unplug&plug immediately,  you wouldn't see the issue.
->>> 2. Unplug cable and wait a long time (~1Mins), then plug the cable,
->>> the issue appears again.
->>>
->> This sounds runtime-pm-related. After 10s the NIC runtime-suspends,
->> and once the cable is re-plugged a PME is triggered that lets the
->> PCI core return the PCIe link from D3hot to D0.
->> If you re-plug the cable after such a longer time, do you see the
->> PCIe PME immediately in /proc/interrupts?
-> 
-> I don't know which irq number is for RTL8106e PME, but check all PME
-> in /proc/interrupt,
-> 
-> There's no interrupt increase on all PME entries and rtl8106e irq entry(irq 32).
-> 
->>
->> And if you set /sys/class/net/<if>/power/control to "on", does the
->> issue still occur?
-> 
-> Yes, after echo "on" to /sys/class/net/<if>/power/control and
-> replugging the cable, the issue is still caught.
->>
->>>>
->>>>> Signed-off-by: Koba Ko <koba.ko@canonical.com>
->>>>> ---
->>>>>  drivers/net/ethernet/realtek/r8169_main.c | 21 +++++++++++++++++++--
->>>>>  1 file changed, 19 insertions(+), 2 deletions(-)
->>>>>
->>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
->>>>> index 2c89cde7da1e..a59cbaef2839 100644
->>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
->>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->>>>> @@ -4914,6 +4914,19 @@ static const struct dev_pm_ops rtl8169_pm_ops = {
->>>>>
->>>>>  #endif /* CONFIG_PM */
->>>>>
->>>>> +static int rtl_phy_poll_quirk(struct rtl8169_private *tp)
->>>>> +{
->>>>> +     struct pci_dev *pdev = tp->pci_dev;
->>>>> +
->>>>> +     if (!pcie_aspm_enabled(pdev))
->>>>
->>>> That's the wrong call. According to what you said earlier you want to
->>>> check for L1 sub-states, not for ASPM in general.
->>>
->>> As per described above, that's why use pcie_aspm_enabled here.
->>>
->>>>
->>>>> +             return 0;
->>>>> +
->>>>> +     if (tp->mac_version == RTL_GIGA_MAC_VER_39)
->>>>> +             return 1;
->>>>> +
->>>>> +     return 0;
->>>>> +}
->>>>> +
->>>>>  static void rtl_wol_shutdown_quirk(struct rtl8169_private *tp)
->>>>>  {
->>>>>       /* WoL fails with 8168b when the receiver is disabled. */
->>>>> @@ -4991,7 +5004,10 @@ static const struct net_device_ops rtl_netdev_ops = {
->>>>>
->>>>>  static void rtl_set_irq_mask(struct rtl8169_private *tp)
->>>>>  {
->>>>> -     tp->irq_mask = RxOK | RxErr | TxOK | TxErr | LinkChg;
->>>>> +     tp->irq_mask = RxOK | RxErr | TxOK | TxErr;
->>>>> +
->>>>> +     if (!rtl_phy_poll_quirk(tp))
->>>>> +             tp->irq_mask |= LinkChg;
->>>>>
->>>>>       if (tp->mac_version <= RTL_GIGA_MAC_VER_06)
->>>>>               tp->irq_mask |= SYSErr | RxOverflow | RxFIFOOver;
->>>>> @@ -5085,7 +5101,8 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->>>>>       new_bus->name = "r8169";
->>>>>       new_bus->priv = tp;
->>>>>       new_bus->parent = &pdev->dev;
->>>>> -     new_bus->irq[0] = PHY_MAC_INTERRUPT;
->>>>> +     new_bus->irq[0] =
->>>>> +             (rtl_phy_poll_quirk(tp) ? PHY_POLL : PHY_MAC_INTERRUPT);
->>>>>       snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x", pci_dev_id(pdev));
->>>>>
->>>>>       new_bus->read = r8169_mdio_read_reg;
->>>>>
->>>>
->>
+On Tue, Jun 8, 2021 at 1:58 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Tue, Jun 08, 2021 at 11:49:31AM -0700, Andrii Nakryiko wrote:
+> > On Sat, Jun 5, 2021 at 4:12 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > >
+> > > When we will have multiple functions attached to trampoline
+> > > we need to propagate the function's address to the bpf program.
+> > >
+> > > Adding new BPF_TRAMP_F_IP_ARG flag to arch_prepare_bpf_trampoline
+> > > function that will store origin caller's address before function's
+> > > arguments.
+> > >
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> > >  arch/x86/net/bpf_jit_comp.c | 18 ++++++++++++++----
+> > >  include/linux/bpf.h         |  5 +++++
+> > >  2 files changed, 19 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> > > index b77e6bd78354..d2425c18272a 100644
+> > > --- a/arch/x86/net/bpf_jit_comp.c
+> > > +++ b/arch/x86/net/bpf_jit_comp.c
+> > > @@ -1951,7 +1951,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+> > >                                 void *orig_call)
+> > >  {
+> > >         int ret, i, cnt = 0, nr_args = m->nr_args;
+> > > -       int stack_size = nr_args * 8;
+> > > +       int stack_size = nr_args * 8, ip_arg = 0;
+> > >         struct bpf_tramp_progs *fentry = &tprogs[BPF_TRAMP_FENTRY];
+> > >         struct bpf_tramp_progs *fexit = &tprogs[BPF_TRAMP_FEXIT];
+> > >         struct bpf_tramp_progs *fmod_ret = &tprogs[BPF_TRAMP_MODIFY_RETURN];
+> > > @@ -1975,6 +1975,9 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+> > >                  */
+> > >                 orig_call += X86_PATCH_SIZE;
+> > >
+> > > +       if (flags & BPF_TRAMP_F_IP_ARG)
+> > > +               stack_size += 8;
+> > > +
+> >
+> > nit: move it a bit up where we adjust stack_size for BPF_TRAMP_F_CALL_ORIG flag?
+>
+> ok
+>
+> >
+> > >         prog = image;
+> > >
+> > >         EMIT1(0x55);             /* push rbp */
+> > > @@ -1982,7 +1985,14 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+> > >         EMIT4(0x48, 0x83, 0xEC, stack_size); /* sub rsp, stack_size */
+> > >         EMIT1(0x53);             /* push rbx */
+> > >
+> > > -       save_regs(m, &prog, nr_args, stack_size);
+> > > +       if (flags & BPF_TRAMP_F_IP_ARG) {
+> > > +               emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
+> > > +               EMIT4(0x48, 0x83, 0xe8, X86_PATCH_SIZE); /* sub $X86_PATCH_SIZE,%rax*/
+> > > +               emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -stack_size);
+> > > +               ip_arg = 8;
+> > > +       }
+> >
+> > why not pass flags into save_regs and let it handle this case without
+> > this extra ip_arg adjustment?
+> >
+> > > +
+> > > +       save_regs(m, &prog, nr_args, stack_size - ip_arg);
+> > >
+> > >         if (flags & BPF_TRAMP_F_CALL_ORIG) {
+> > >                 /* arg1: mov rdi, im */
+> > > @@ -2011,7 +2021,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+> > >         }
+> > >
+> > >         if (flags & BPF_TRAMP_F_CALL_ORIG) {
+> > > -               restore_regs(m, &prog, nr_args, stack_size);
+> > > +               restore_regs(m, &prog, nr_args, stack_size - ip_arg);
+> > >
+> >
+> > similarly (and symmetrically), pass flags into restore_regs() to
+> > handle that ip_arg transparently?
+>
+> so you mean something like:
+>
+>         if (flags & BPF_TRAMP_F_IP_ARG)
+>                 stack_size -= 8;
+>
+> in both save_regs and restore_regs function, right?
 
-The r8101 vendor driver applies a special setting for RTL8106e if ASPM is enabled.
-Not sure whether it's related but it's worth a try. Could you please check whether
-the following makes a difference?
+yes, but for save_regs it will do more (emit_ldx and stuff)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c b/drivers/net/ethernet/realtek/r8169_phy_config.c
-index 50f0f621b..60014b9c4 100644
---- a/drivers/net/ethernet/realtek/r8169_phy_config.c
-+++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
-@@ -1153,6 +1153,7 @@ static void rtl8106e_hw_phy_config(struct rtl8169_private *tp,
- 	r8169_apply_firmware(tp);
- 
- 	rtl_writephy_batch(phydev, phy_reg_init);
-+	phy_write(phydev, 0x18, 0x8310);
- }
- 
- static void rtl8125_legacy_force_mode(struct phy_device *phydev)
--- 
-2.32.0
-
-
+>
+> jirka
+>
+> >
+> > >                 if (flags & BPF_TRAMP_F_ORIG_STACK) {
+> > >                         emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
+> > > @@ -2052,7 +2062,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+> > >                 }
+> > >
+> > >         if (flags & BPF_TRAMP_F_RESTORE_REGS)
+> > > -               restore_regs(m, &prog, nr_args, stack_size);
+> > > +               restore_regs(m, &prog, nr_args, stack_size - ip_arg);
+> > >
+> > >         /* This needs to be done regardless. If there were fmod_ret programs,
+> > >          * the return value is only updated on the stack and still needs to be
+> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > index 16fc600503fb..6cbf3c81c650 100644
+> > > --- a/include/linux/bpf.h
+> > > +++ b/include/linux/bpf.h
+> > > @@ -559,6 +559,11 @@ struct btf_func_model {
+> > >   */
+> > >  #define BPF_TRAMP_F_ORIG_STACK         BIT(3)
+> > >
+> > > +/* First argument is IP address of the caller. Makes sense for fentry/fexit
+> > > + * programs only.
+> > > + */
+> > > +#define BPF_TRAMP_F_IP_ARG             BIT(4)
+> > > +
+> > >  /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
+> > >   * bytes on x86.  Pick a number to fit into BPF_IMAGE_SIZE / 2
+> > >   */
+> > > --
+> > > 2.31.1
+> > >
+> >
+>
