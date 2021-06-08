@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAB673A0232
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 21:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8D603A032C
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 21:24:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234602AbhFHTBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 15:01:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34780 "EHLO mail.kernel.org"
+        id S235153AbhFHTNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 15:13:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54970 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236769AbhFHS7e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Jun 2021 14:59:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C996461442;
-        Tue,  8 Jun 2021 18:43:22 +0000 (UTC)
+        id S236241AbhFHTLf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Jun 2021 15:11:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AA6BD61463;
+        Tue,  8 Jun 2021 18:48:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1623177803;
-        bh=8inqZlLFAoPV/eTd2CWwAlxCN2FGHO0YFkuEPuXML6U=;
+        s=korg; t=1623178139;
+        bh=pn13S/AjcrIJW3Mi34pVkbRx7C5aq8EKpZpstVbRLD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DqCdiyjacsLE7CgDp3soQpHfTMs9mdGYShr3O8dLuIbvczCGq+61aMf+4emQkQU6h
-         QbdqJ01iPqye6eMK+KBKgZRn6Edp719xnpweDCgLgA/hBW1xDHz+2xjAnnp6X8LRqw
-         QYmlu3/q22ow/GVev7L9jvukadhTJaBVNKNa0w6I=
+        b=RNmcn+I1DU8F4MSDBFQ5JfW8A21EzjciSJ9wri1CDnnX1HanG7gZNz6X71UvUGvtG
+         38ZtQ86B14aio4oiQ1X8OQoZuHd8tcmP1Klq2xINPjHWwsFkH6GTTPnPvgv6vvDcbo
+         66iEMyxoMNx2VIZdJO74lE87NfdcK8dMN8QNEk18=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -30,12 +30,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
         linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
         Lin Ma <linma@zju.edu.cn>, Hao Xiong <mart1n@zju.edu.cn>
-Subject: [PATCH 5.10 078/137] Bluetooth: fix the erroneous flush_work() order
-Date:   Tue,  8 Jun 2021 20:26:58 +0200
-Message-Id: <20210608175944.992647333@linuxfoundation.org>
+Subject: [PATCH 5.12 092/161] Bluetooth: fix the erroneous flush_work() order
+Date:   Tue,  8 Jun 2021 20:27:02 +0200
+Message-Id: <20210608175948.557042246@linuxfoundation.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210608175942.377073879@linuxfoundation.org>
-References: <20210608175942.377073879@linuxfoundation.org>
+In-Reply-To: <20210608175945.476074951@linuxfoundation.org>
+References: <20210608175945.476074951@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -77,7 +77,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/net/bluetooth/hci_core.c
 +++ b/net/bluetooth/hci_core.c
-@@ -1602,8 +1602,13 @@ setup_failed:
+@@ -1608,8 +1608,13 @@ setup_failed:
  	} else {
  		/* Init failed, cleanup */
  		flush_work(&hdev->tx_work);
