@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3FD339F75C
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 15:12:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB4CF39F75A
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 15:11:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232783AbhFHNNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 09:13:38 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3473 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231162AbhFHNNe (ORCPT
+        id S232768AbhFHNNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 09:13:36 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:5292 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232730AbhFHNNe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 09:13:34 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FzrCS0V6zz6w3c;
-        Tue,  8 Jun 2021 21:08:36 +0800 (CST)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Fzr9N3RFdz1BJWk;
+        Tue,  8 Jun 2021 21:06:48 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
  dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <lipeng321@huawei.com>,
         <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 3/5] net: hns3: add support for imp-handle ras capability
-Date:   Tue, 8 Jun 2021 21:08:29 +0800
-Message-ID: <1623157711-26846-4-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 4/5] net: hns3: update error recovery module and type
+Date:   Tue, 8 Jun 2021 21:08:30 +0800
+Message-ID: <1623157711-26846-5-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1623157711-26846-1-git-send-email-huangguangbin2@huawei.com>
 References: <1623157711-26846-1-git-send-email-huangguangbin2@huawei.com>
@@ -45,101 +45,173 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiaran Zhang <zhangjiaran@huawei.com>
 
-IMP(Intelligent Management Processor) firmware add a new feature to
-handle and consolidate RAS information for new devices, NIC driver
-only needs to query the reported RAS information. NIC driver adds
-support for this feature.
+Update error recovery module and type for RoCE.
 
-Driver queries device capability to check whether IMP support this
-feature, If yes, execute the new RAS processing branch.
+The enumeration values of module names and error types are not sorted
+in sequence. If use the current printing mode, they cannot be correctly
+printed.
 
-In order to add a method to check whether PF supports imp-handle RAS
-feature, add dumping this info in debugfs.
+Use the index mode, If mod_id and type_id match the enumerated value,
+display the corresponding information.
 
 Signed-off-by: Jiaran Zhang <zhangjiaran@huawei.com>
+Signed-off-by: Weihang Li <liweihang@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h             | 4 ++++
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c      | 3 +++
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c  | 2 ++
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h  | 1 +
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 +-
- 5 files changed, 11 insertions(+), 1 deletion(-)
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c | 58 ++++++++++++++++++++--
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h | 18 +++++++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  3 +-
+ 3 files changed, 74 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index dc9b5bc3431b..e564aa32a414 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -91,6 +91,7 @@ enum HNAE3_DEV_CAP_BITS {
- 	HNAE3_DEV_SUPPORT_STASH_B,
- 	HNAE3_DEV_SUPPORT_UDP_TUNNEL_CSUM_B,
- 	HNAE3_DEV_SUPPORT_PAUSE_B,
-+	HNAE3_DEV_SUPPORT_RAS_IMP_B,
- 	HNAE3_DEV_SUPPORT_RXD_ADV_LAYOUT_B,
- 	HNAE3_DEV_SUPPORT_PORT_VLAN_BYPASS_B,
- 	HNAE3_DEV_SUPPORT_VLAN_FLTR_MDF_B,
-@@ -129,6 +130,9 @@ enum HNAE3_DEV_CAP_BITS {
- #define hnae3_dev_phy_imp_supported(hdev) \
- 	test_bit(HNAE3_DEV_SUPPORT_PHY_IMP_B, (hdev)->ae_dev->caps)
- 
-+#define hnae3_dev_ras_imp_supported(hdev) \
-+	test_bit(HNAE3_DEV_SUPPORT_RAS_IMP_B, (hdev)->ae_dev->caps)
-+
- #define hnae3_dev_tqp_txrx_indep_supported(hdev) \
- 	test_bit(HNAE3_DEV_SUPPORT_TQP_TXRX_INDEP_B, (hdev)->ae_dev->caps)
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index cf1efd2f4a0f..a0edca848392 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -350,6 +350,9 @@ static struct hns3_dbg_cap_info hns3_dbg_cap[] = {
- 		.name = "support imp-controlled PHY",
- 		.cap_bit = HNAE3_DEV_SUPPORT_PHY_IMP_B,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
+index 36f8055bd859..0e942d11dbf3 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
+@@ -677,6 +677,36 @@ static const struct hclge_hw_module_id hclge_hw_module_id_st[] = {
  	}, {
-+		.name = "support imp-controlled RAS",
-+		.cap_bit = HNAE3_DEV_SUPPORT_RAS_IMP_B,
+ 		.module_id = MODULE_MASTER,
+ 		.msg = "MODULE_MASTER"
 +	}, {
- 		.name = "support rxd advanced layout",
- 		.cap_bit = HNAE3_DEV_SUPPORT_RXD_ADV_LAYOUT_B,
++		.module_id = MODULE_ROCEE_TOP,
++		.msg = "MODULE_ROCEE_TOP"
++	}, {
++		.module_id = MODULE_ROCEE_TIMER,
++		.msg = "MODULE_ROCEE_TIMER"
++	}, {
++		.module_id = MODULE_ROCEE_MDB,
++		.msg = "MODULE_ROCEE_MDB"
++	}, {
++		.module_id = MODULE_ROCEE_TSP,
++		.msg = "MODULE_ROCEE_TSP"
++	}, {
++		.module_id = MODULE_ROCEE_TRP,
++		.msg = "MODULE_ROCEE_TRP"
++	}, {
++		.module_id = MODULE_ROCEE_SCC,
++		.msg = "MODULE_ROCEE_SCC"
++	}, {
++		.module_id = MODULE_ROCEE_CAEP,
++		.msg = "MODULE_ROCEE_CAEP"
++	}, {
++		.module_id = MODULE_ROCEE_GEN_AC,
++		.msg = "MODULE_ROCEE_GEN_AC"
++	}, {
++		.module_id = MODULE_ROCEE_QMM,
++		.msg = "MODULE_ROCEE_QMM"
++	}, {
++		.module_id = MODULE_ROCEE_LSAN,
++		.msg = "MODULE_ROCEE_LSAN"
+ 	}
+ };
+ 
+@@ -720,6 +750,12 @@ static const struct hclge_hw_type_id hclge_hw_type_id_st[] = {
  	}, {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-index 614763f5e877..887297e37cf3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-@@ -387,6 +387,8 @@ static void hclge_parse_capability(struct hclge_dev *hdev,
- 		set_bit(HNAE3_DEV_SUPPORT_PAUSE_B, ae_dev->caps);
- 	if (hnae3_get_bit(caps, HCLGE_CAP_PHY_IMP_B))
- 		set_bit(HNAE3_DEV_SUPPORT_PHY_IMP_B, ae_dev->caps);
-+	if (hnae3_get_bit(caps, HCLGE_CAP_RAS_IMP_B))
-+		set_bit(HNAE3_DEV_SUPPORT_RAS_IMP_B, ae_dev->caps);
- 	if (hnae3_get_bit(caps, HCLGE_CAP_RXD_ADV_LAYOUT_B))
- 		set_bit(HNAE3_DEV_SUPPORT_RXD_ADV_LAYOUT_B, ae_dev->caps);
- 	if (hnae3_get_bit(caps, HCLGE_CAP_PORT_VLAN_BYPASS_B)) {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index 234f0a3beec1..221811af9473 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -392,6 +392,7 @@ enum HCLGE_CAP_BITS {
- 	HCLGE_CAP_HW_PAD_B,
- 	HCLGE_CAP_STASH_B,
- 	HCLGE_CAP_UDP_TUNNEL_CSUM_B,
-+	HCLGE_CAP_RAS_IMP_B = 12,
- 	HCLGE_CAP_FEC_B = 13,
- 	HCLGE_CAP_PAUSE_B = 14,
- 	HCLGE_CAP_RXD_ADV_LAYOUT_B = 15,
+ 		.type_id = GLB_ERROR,
+ 		.msg = "glb_error"
++	}, {
++		.type_id = ROCEE_NORMAL_ERR,
++		.msg = "rocee_normal_error"
++	}, {
++		.type_id = ROCEE_OVF_ERR,
++		.msg = "rocee_ovf_error"
+ 	}
+ };
+ 
+@@ -2125,6 +2161,8 @@ hclge_handle_error_type_reg_log(struct device *dev,
+ #define HCLGE_ERR_TYPE_IS_RAS_OFFSET 7
+ 
+ 	u8 mod_id, total_module, type_id, total_type, i, is_ras;
++	u8 index_module = MODULE_NONE;
++	u8 index_type = NONE_ERROR;
+ 
+ 	mod_id = mod_info->mod_id;
+ 	type_id = type_reg_info->type_id & HCLGE_ERR_TYPE_MASK;
+@@ -2133,11 +2171,25 @@ hclge_handle_error_type_reg_log(struct device *dev,
+ 	total_module = ARRAY_SIZE(hclge_hw_module_id_st);
+ 	total_type = ARRAY_SIZE(hclge_hw_type_id_st);
+ 
+-	if (mod_id < total_module && type_id < total_type)
++	for (i = 0; i < total_module; i++) {
++		if (mod_id == hclge_hw_module_id_st[i].module_id) {
++			index_module = i;
++			break;
++		}
++	}
++
++	for (i = 0; i < total_type; i++) {
++		if (type_id == hclge_hw_type_id_st[i].type_id) {
++			index_type = i;
++			break;
++		}
++	}
++
++	if (index_module != MODULE_NONE && index_type != NONE_ERROR)
+ 		dev_err(dev,
+ 			"found %s %s, is %s error.\n",
+-			hclge_hw_module_id_st[mod_id].msg,
+-			hclge_hw_type_id_st[type_id].msg,
++			hclge_hw_module_id_st[index_module].msg,
++			hclge_hw_type_id_st[index_type].msg,
+ 			is_ras ? "ras" : "msix");
+ 	else
+ 		dev_err(dev,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
+index 27ab772c665e..ce4c96bbef8e 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
+@@ -15,6 +15,8 @@
+ #define HCLGE_RAS_PF_OTHER_INT_STS_REG   0x20B00
+ #define HCLGE_RAS_REG_NFE_MASK   0xFF00
+ #define HCLGE_RAS_REG_ROCEE_ERR_MASK   0x3000000
++#define HCLGE_RAS_REG_ERR_MASK \
++	(HCLGE_RAS_REG_NFE_MASK | HCLGE_RAS_REG_ROCEE_ERR_MASK)
+ 
+ #define HCLGE_VECTOR0_REG_MSIX_MASK   0x1FF00
+ 
+@@ -134,6 +136,18 @@ enum hclge_mod_name_list {
+ 	MODULE_RCB_TX		= 12,
+ 	MODULE_TXDMA		= 13,
+ 	MODULE_MASTER		= 14,
++	/* add new MODULE NAME for NIC here in order */
++	MODULE_ROCEE_TOP	= 40,
++	MODULE_ROCEE_TIMER	= 41,
++	MODULE_ROCEE_MDB	= 42,
++	MODULE_ROCEE_TSP	= 43,
++	MODULE_ROCEE_TRP	= 44,
++	MODULE_ROCEE_SCC	= 45,
++	MODULE_ROCEE_CAEP	= 46,
++	MODULE_ROCEE_GEN_AC	= 47,
++	MODULE_ROCEE_QMM	= 48,
++	MODULE_ROCEE_LSAN	= 49,
++	/* add new MODULE NAME for RoCEE here in order */
+ };
+ 
+ enum hclge_err_type_list {
+@@ -150,6 +164,10 @@ enum hclge_err_type_list {
+ 	ETS_ERROR		= 10,
+ 	NCSI_ERROR		= 11,
+ 	GLB_ERROR		= 12,
++	/* add new ERROR TYPE for NIC here in order */
++	ROCEE_NORMAL_ERR	= 40,
++	ROCEE_OVF_ERR		= 41,
++	/* add new ERROR TYPE for ROCEE here in order */
+ };
+ 
+ struct hclge_hw_blk {
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 3c08fc71b951..cf34216df171 100644
+index cf34216df171..9ff4210f6477 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -4299,7 +4299,7 @@ static void hclge_errhand_service_task(struct hclge_dev *hdev)
- 	if (!test_and_clear_bit(HCLGE_STATE_ERR_SERVICE_SCHED, &hdev->state))
- 		return;
+@@ -3343,8 +3343,7 @@ static u32 hclge_check_event_cause(struct hclge_dev *hdev, u32 *clearval)
  
--	if (hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3)
-+	if (hnae3_dev_ras_imp_supported(hdev))
- 		hclge_handle_err_recovery(hdev);
- 	else
- 		hclge_misc_err_recovery(hdev);
+ 	/* check for vector0 msix event and hardware error event source */
+ 	if (msix_src_reg & HCLGE_VECTOR0_REG_MSIX_MASK ||
+-	    hw_err_src_reg & HCLGE_RAS_REG_NFE_MASK ||
+-	    hw_err_src_reg & HCLGE_RAS_REG_ROCEE_ERR_MASK)
++	    hw_err_src_reg & HCLGE_RAS_REG_ERR_MASK)
+ 		return HCLGE_VECTOR0_EVENT_ERR;
+ 
+ 	/* check for vector0 mailbox(=CMDQ RX) event source */
 -- 
 2.8.1
 
