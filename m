@@ -2,147 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56D8939FA30
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 17:19:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A15039FA4B
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 17:22:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbhFHPVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 11:21:07 -0400
-Received: from mail-lf1-f42.google.com ([209.85.167.42]:33455 "EHLO
-        mail-lf1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230450AbhFHPVH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 11:21:07 -0400
-Received: by mail-lf1-f42.google.com with SMTP id t7so25564424lff.0
-        for <netdev@vger.kernel.org>; Tue, 08 Jun 2021 08:19:00 -0700 (PDT)
+        id S230458AbhFHPYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 11:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231312AbhFHPYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 11:24:37 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C4AC061789
+        for <netdev@vger.kernel.org>; Tue,  8 Jun 2021 08:22:30 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id 36-20020a9d0ba70000b02902e0a0a8fe36so20660561oth.8
+        for <netdev@vger.kernel.org>; Tue, 08 Jun 2021 08:22:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6MwjdJLeEpSC0apKdrMCy6GpFHPBUueYy/xEq2Hv4io=;
-        b=kwbPIiDLHkRMufb2YxgISZsRSbm/GagyaCa9VHTv0lQ/5Slza/CSFZceLnA9XRY2Ul
-         Dld7kVJYCFkkaFyT1WHUrzSjK/hhRvpL0mq/7umCK7N8U4boGBcHYvRD1F+uA60TqvlG
-         kNNT5jh+uvhFIDPJfWdS/eF/moYWSdiS/E7Tk0CEgh3GYyJAeyhG1gSzXymZssyuYTgB
-         ZGK6KYfBR5AT8P+987ONKgPghScs1kRupTl1JADk6e7/PiaBbPgNvOYD6T+bkkscXPE3
-         sVDGbgEKjb37U0Je1pnAkCf2zyqVKjgxwIt0RRPBz/QejwGFRXmNOdhmCskzG7eTzy81
-         06MQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DbrexN6T3qYALxrfqnzpVNU8ZucTGPuReVbJKBBnx5M=;
+        b=KF3AiI0apoSYCEwRrEU1o7jVJQ8KLVjRW9ClZLxD01DTz41fSdJPJxL9YWH8jpZtkn
+         cCbskIUy0Y55bOfazmNtsNqe88y9Lo/POhMjNdW5cdleDg0Op/TVX2TJNkOV2uig3LfK
+         SIR1WCAWrnzgeAj4TRr7G+0OAXPEVmwY2EhDrOUduZQsXqFe7rk+k3OJYSL3DaPpWWkg
+         8GA3jy8hOxNQsNYDP5s5Lbx6h12cBAturURydzJwwOWFAByTujPMoVCazXGnrsBKYsUo
+         itY1qmgz6Mcrm1HdFQrGSKZ5sLJzaUTq+ad8pafapldK/W7HFJVEdjCqduFc5Wcvv+8M
+         zVWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6MwjdJLeEpSC0apKdrMCy6GpFHPBUueYy/xEq2Hv4io=;
-        b=Oh7C9v1+QzGaJBk/q6G2L4bwxr11l3ySD52AjJOi+mFrgybg6LWsSn6M6S0A240/1p
-         2+z2Oc9USBuV0jdkO7e1I3gDBIwW3LW0ymqopVy5nl0+ckTtQB38SecWASE35VRj6gGO
-         scT0qxBn0aY0pobF1DzYI8eB+PNsQe9UDBQgaq7zK1BRsOnxK+fC32qVGhR5dILTX+V4
-         794oD5n5xil6ceInT8ih8Bpgg8b0sYQFn6fjztNquh5DhL/xRiTRdgayEbon/9/PX2Xd
-         ANPfVsHUViNNG6+z0rYphLkAV34FU8i8Fj3XSF8znhkCSolPma6Cysk6rEwqGsqluE6H
-         IVWw==
-X-Gm-Message-State: AOAM530nf39aBgcHAIdjQ8t0zXEsLxVKupN28L/wPbWqrWD9meG+9hyD
-        661io43Kc1DaVV6VQGTctUE=
-X-Google-Smtp-Source: ABdhPJxInk2gYl9TGXWq536sx4l9EnLbhAw7QWJFEsknsxemgAdL60J4wpDgmSw1y+4HoYjdZ1xZ9Q==
-X-Received: by 2002:a19:7604:: with SMTP id c4mr11474486lff.398.1623165479446;
-        Tue, 08 Jun 2021 08:17:59 -0700 (PDT)
-Received: from dau-work-pc.sunlink.ru ([87.244.6.228])
-        by smtp.googlemail.com with ESMTPSA id x10sm2367ljj.126.2021.06.08.08.17.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Jun 2021 08:17:59 -0700 (PDT)
-From:   Anton Danilov <littlesmilingcloud@gmail.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org,
-        Anton Danilov <littlesmilingcloud@gmail.com>
-Subject: [PATCH] [RFC iproute2-next] tc: f_u32: Rename commands and functions ip6 to ipv6 to unify naming
-Date:   Tue,  8 Jun 2021 18:17:39 +0300
-Message-Id: <20210608151739.3220-3-littlesmilingcloud@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210608151739.3220-1-littlesmilingcloud@gmail.com>
-References: <20210608151739.3220-1-littlesmilingcloud@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DbrexN6T3qYALxrfqnzpVNU8ZucTGPuReVbJKBBnx5M=;
+        b=KsJiqmz4XbRUjb/qJrmA06gIQrhSdyf1AaoGJRlz5uK00NrLx3vR+J9tuTR3uq+omx
+         6q5tybwGiY5H/CyOmoSaNsCl4LNs4TNNP2NT72GjdmzOksagGtutBqrqDvEBu8G/SMpM
+         9CoJKMswC9oDiWwTvU/VqrM1DHwH6I3phv5oAn7fPZPbThEM9Lvnl/IKlpo8Hr7DwrAb
+         pMXQIzA1d7bHyJbUD5VeZuWEefXaUuy92HcY3ewpGq6D5u93bJUItJ2gcdO65nXU2gWF
+         HaVoGjYd2+bS4Vf2cfGBmlGfdel2ZEsbIOqo+N9NZlJfj7O57s21IzcH1x0UM9T3P58T
+         SgLg==
+X-Gm-Message-State: AOAM531Z0FAGN8h4mk54RlSmJDVShFN0XNrnZX1EVsHoszE2Q2lismLv
+        Z8PG5m4Zb+dSka51yNOcMe8=
+X-Google-Smtp-Source: ABdhPJxp3vXTLUXE7o6bY8WvC7geOXXvBzcJrongYPX10cvScuHr8W+A65FE7RVVAQ+pjpXxC1i/Mw==
+X-Received: by 2002:a9d:5f0c:: with SMTP id f12mr3010509oti.149.1623165750289;
+        Tue, 08 Jun 2021 08:22:30 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.22])
+        by smtp.googlemail.com with ESMTPSA id 102sm3110145otf.37.2021.06.08.08.22.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Jun 2021 08:22:29 -0700 (PDT)
+Subject: Re: [PATCH net] vrf: fix maximum MTU
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>
+References: <20210608145951.24985-1-nicolas.dichtel@6wind.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f99c6805-c8ae-0938-8d33-823f36f04b75@gmail.com>
+Date:   Tue, 8 Jun 2021 09:22:28 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210608145951.24985-1-nicolas.dichtel@6wind.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before patch:
-~$ tc filter add dev dummy0 parent 1: protocol ipv6 prio 10 \
-    u32 match ip6 src aa:bb:cc:dd::/128 flowid 1:1
+On 6/8/21 8:59 AM, Nicolas Dichtel wrote:
+> My initial goal was to fix the default MTU, which is set to 65536, ie above
+> the maximum defined in the driver: 65535 (ETH_MAX_MTU).
+> 
+> In fact, it's seems more consistent, wrt min_mtu, to set the max_mtu to
+> IP6_MAX_MTU (65535 + sizeof(struct ipv6hdr)) and use it by default.
+> 
+> Let's also, for consistency, set the mtu in vrf_setup(). This function
+> calls ether_setup(), which set the mtu to 1500. Thus, the whole mtu config
+> is done in the same function.
+> 
+> Before the patch:
+> $ ip link add blue type vrf table 1234
+> $ ip link list blue
+> 9: blue: <NOARP,MASTER> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>     link/ether fa:f5:27:70:24:2a brd ff:ff:ff:ff:ff:ff
+> $ ip link set dev blue mtu 65535
+> $ ip link set dev blue mtu 65536
+> Error: mtu greater than device maximum.
+> 
+> Fixes: 5055376a3b44 ("net: vrf: Fix ping failed when vrf mtu is set to 0")
+> CC: Miaohe Lin <linmiaohe@huawei.com>
+> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> ---
+>  drivers/net/vrf.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
 
-After patch:
-~$ tc filter add dev dummy0 parent 1: protocol ipv6 prio 10 \
-    u32 match ipv6 src aa:bb:cc:dd::/128 flowid 1:1
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
-Signed-off-by: Anton Danilov <littlesmilingcloud@gmail.com>
----
- tc/f_u32.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
-
-diff --git a/tc/f_u32.c b/tc/f_u32.c
-index 2ed5254a..3fd3eb17 100644
---- a/tc/f_u32.c
-+++ b/tc/f_u32.c
-@@ -35,7 +35,7 @@ static void explain(void)
- 		"or         u32 divisor DIVISOR\n"
- 		"\n"
- 		"Where: SELECTOR := SAMPLE SAMPLE ...\n"
--		"       SAMPLE := { ip | ip6 | udp | tcp | icmp | u{32|16|8} | mark }\n"
-+		"       SAMPLE := { ip | ipv6 | udp | tcp | icmp | u{32|16|8} | mark }\n"
- 		"                 SAMPLE_ARGS [ divisor DIVISOR ]\n"
- 		"       FILTERID := X:Y:Z\n"
- 		"\nNOTE: CLASSID is parsed at hexadecimal input.\n");
-@@ -356,7 +356,7 @@ static int parse_ip_addr(int *argc_p, char ***argv_p, struct tc_u32_sel *sel,
- 	return res;
- }
- 
--static int parse_ip6_addr(int *argc_p, char ***argv_p,
-+static int parse_ipv6_addr(int *argc_p, char ***argv_p,
- 			  struct tc_u32_sel *sel, int off)
- {
- 	int res = -1;
-@@ -403,7 +403,7 @@ static int parse_ip6_addr(int *argc_p, char ***argv_p,
- 	return res;
- }
- 
--static int parse_ip6_class(int *argc_p, char ***argv_p, struct tc_u32_sel *sel)
-+static int parse_ipv6_class(int *argc_p, char ***argv_p, struct tc_u32_sel *sel)
- {
- 	int res = -1;
- 	int argc = *argc_p;
-@@ -538,7 +538,7 @@ static int parse_ip(int *argc_p, char ***argv_p, struct tc_u32_sel *sel)
- 	return res;
- }
- 
--static int parse_ip6(int *argc_p, char ***argv_p, struct tc_u32_sel *sel)
-+static int parse_ipv6(int *argc_p, char ***argv_p, struct tc_u32_sel *sel)
- {
- 	int res = -1;
- 	int argc = *argc_p;
-@@ -549,13 +549,13 @@ static int parse_ip6(int *argc_p, char ***argv_p, struct tc_u32_sel *sel)
- 
- 	if (strcmp(*argv, "src") == 0) {
- 		NEXT_ARG();
--		res = parse_ip6_addr(&argc, &argv, sel, 8);
-+		res = parse_ipv6_addr(&argc, &argv, sel, 8);
- 	} else if (strcmp(*argv, "dst") == 0) {
- 		NEXT_ARG();
--		res = parse_ip6_addr(&argc, &argv, sel, 24);
--	} else if (strcmp(*argv, "priority") == 0) {
-+		res = parse_ipv6_addr(&argc, &argv, sel, 24);
-+	} else if (strcmp(*argv, "priority") == 0 || strcmp(*argv, "class") == 0) {
- 		NEXT_ARG();
--		res = parse_ip6_class(&argc, &argv, sel);
-+		res = parse_ipv6_class(&argc, &argv, sel);
- 	} else if (strcmp(*argv, "protocol") == 0) {
- 		NEXT_ARG();
- 		res = parse_u8(&argc, &argv, sel, 6, 0);
-@@ -712,9 +712,9 @@ static int parse_selector(int *argc_p, char ***argv_p,
- 	} else if (matches(*argv, "ip") == 0) {
- 		NEXT_ARG();
- 		res = parse_ip(&argc, &argv, sel);
--	} else	if (matches(*argv, "ip6") == 0) {
-+	} else	if (matches(*argv, "ip6") == 0 || matches(*argv, "ipv6") == 0) {
- 		NEXT_ARG();
--		res = parse_ip6(&argc, &argv, sel);
-+		res = parse_ipv6(&argc, &argv, sel);
- 	} else if (matches(*argv, "udp") == 0) {
- 		NEXT_ARG();
- 		res = parse_udp(&argc, &argv, sel);
--- 
-2.20.1
 
