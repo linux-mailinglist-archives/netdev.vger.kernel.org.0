@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB03939F093
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:16:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0B8839F091
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 10:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231224AbhFHISD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 04:18:03 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3468 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbhFHIRp (ORCPT
+        id S231222AbhFHISB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 04:18:01 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:8081 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230287AbhFHIRp (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 04:17:45 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fzjf906pGz6vvL;
-        Tue,  8 Jun 2021 16:12:49 +0800 (CST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FzjfQ73M1zYrtv;
+        Tue,  8 Jun 2021 16:13:02 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
  dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Tue, 8 Jun 2021 16:15:51 +0800
+ 15.1.2176.2; Tue, 8 Jun 2021 16:15:52 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
         <ms@dev.tdt.de>, <willemb@google.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 08/16] net: farsync: code indent use tabs where possible
-Date:   Tue, 8 Jun 2021 16:12:34 +0800
-Message-ID: <1623139962-34847-9-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 09/16] net: farsync: fix the code style issue about macros
+Date:   Tue, 8 Jun 2021 16:12:35 +0800
+Message-ID: <1623139962-34847-10-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1623139962-34847-1-git-send-email-huangguangbin2@huawei.com>
 References: <1623139962-34847-1-git-send-email-huangguangbin2@huawei.com>
@@ -45,108 +45,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peng Li <lipeng321@huawei.com>
 
-Code indent should use tabs where possible.
+Macros with complex values should be enclosed in parentheses.
+space required after that ',' .
 
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/wan/farsync.c | 36 ++++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 18 deletions(-)
+ drivers/net/wan/farsync.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/wan/farsync.c b/drivers/net/wan/farsync.c
-index 7653ff0..075f50d 100644
+index 075f50d..f2cd832 100644
 --- a/drivers/net/wan/farsync.c
 +++ b/drivers/net/wan/farsync.c
-@@ -422,7 +422,7 @@ struct buf_window {
- /*      Per port (line or channel) information
+@@ -489,13 +489,13 @@ struct fst_card_info {
   */
- struct fst_port_info {
--        struct net_device *dev; /* Device struct - must be first */
-+	struct net_device *dev; /* Device struct - must be first */
- 	struct fst_card_info *card;	/* Card we're associated with */
- 	int index;		/* Port index on the card */
- 	int hwif;		/* Line hardware (lineInterface copy) */
-@@ -786,7 +786,7 @@ fst_init_dma(struct fst_card_info *card)
- 	/* This is only required for the PLX 9054
- 	 */
- 	if (card->family == FST_FAMILY_TXU) {
--	        pci_set_master(card->device);
-+		pci_set_master(card->device);
- 		outl(0x00020441, card->pci_conf + DMAMODE0);
- 		outl(0x00020441, card->pci_conf + DMAMODE1);
- 		outl(0x0, card->pci_conf + DMATHR);
-@@ -1561,7 +1561,7 @@ fst_intr(int dummy, void *dev_id)
- 			rdidx = 0;
- 	}
- 	FST_WRB(card, interruptEvent.rdindex, rdidx);
--        return IRQ_HANDLED;
-+	return IRQ_HANDLED;
- }
+ #define WIN_OFFSET(X)   ((long)&(((struct fst_shared *)SMC_BASE)->X))
  
- /*      Check that the shared memory configuration is one that we can handle
-@@ -2129,7 +2129,7 @@ fst_open(struct net_device *dev)
+-#define FST_RDB(C,E)    readb ((C)->mem + WIN_OFFSET(E))
+-#define FST_RDW(C,E)    readw ((C)->mem + WIN_OFFSET(E))
+-#define FST_RDL(C,E)    readl ((C)->mem + WIN_OFFSET(E))
++#define FST_RDB(C, E)    (readb((C)->mem + WIN_OFFSET(E)))
++#define FST_RDW(C, E)    (readw((C)->mem + WIN_OFFSET(E)))
++#define FST_RDL(C, E)    (readl((C)->mem + WIN_OFFSET(E)))
  
- 	port = dev_to_port(dev);
- 	if (!try_module_get(THIS_MODULE))
--          return -EBUSY;
-+		return -EBUSY;
+-#define FST_WRB(C,E,B)  writeb ((B), (C)->mem + WIN_OFFSET(E))
+-#define FST_WRW(C,E,W)  writew ((W), (C)->mem + WIN_OFFSET(E))
+-#define FST_WRL(C,E,L)  writel ((L), (C)->mem + WIN_OFFSET(E))
++#define FST_WRB(C, E, B)  (writeb((B), (C)->mem + WIN_OFFSET(E)))
++#define FST_WRW(C, E, W)  (writew((W), (C)->mem + WIN_OFFSET(E)))
++#define FST_WRL(C, E, L)  (writel((L), (C)->mem + WIN_OFFSET(E)))
  
- 	if (port->mode != FST_RAW) {
- 		err = hdlc_open(dev);
-@@ -2421,9 +2421,9 @@ fst_add_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 				(ent->driver_data == FST_TYPE_T2U)) ? 2 : 4;
- 
- 	card->state = FST_UNINIT;
--        spin_lock_init ( &card->card_lock );
-+	spin_lock_init(&card->card_lock);
- 
--        for ( i = 0 ; i < card->nports ; i++ ) {
-+	for (i = 0; i < card->nports; i++) {
- 		struct net_device *dev = alloc_hdlcdev(&card->ports[i]);
- 		hdlc_device *hdlc;
- 
-@@ -2435,29 +2435,29 @@ fst_add_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 			goto hdlcdev_fail;
- 		}
- 		card->ports[i].dev    = dev;
--                card->ports[i].card   = card;
--                card->ports[i].index  = i;
--                card->ports[i].run    = 0;
-+		card->ports[i].card   = card;
-+		card->ports[i].index  = i;
-+		card->ports[i].run    = 0;
- 
- 		hdlc = dev_to_hdlc(dev);
- 
--                /* Fill in the net device info */
-+		/* Fill in the net device info */
- 		/* Since this is a PCI setup this is purely
- 		 * informational. Give them the buffer addresses
- 		 * and basic card I/O.
- 		 */
--                dev->mem_start   = card->phys_mem
--                                 + BUF_OFFSET ( txBuffer[i][0][0]);
--                dev->mem_end     = card->phys_mem
--                                 + BUF_OFFSET ( txBuffer[i][NUM_TX_BUFFER - 1][LEN_RX_BUFFER - 1]);
--                dev->base_addr   = card->pci_conf;
--                dev->irq         = card->irq;
-+		dev->mem_start   = card->phys_mem
-+				+ BUF_OFFSET(txBuffer[i][0][0]);
-+		dev->mem_end     = card->phys_mem
-+				+ BUF_OFFSET(txBuffer[i][NUM_TX_BUFFER - 1][LEN_RX_BUFFER - 1]);
-+		dev->base_addr   = card->pci_conf;
-+		dev->irq         = card->irq;
- 
- 		dev->netdev_ops = &fst_ops;
- 		dev->tx_queue_len = FST_TX_QUEUE_LEN;
- 		dev->watchdog_timeo = FST_TX_TIMEOUT;
--                hdlc->attach = fst_attach;
--                hdlc->xmit   = fst_start_xmit;
-+		hdlc->attach = fst_attach;
-+		hdlc->xmit   = fst_start_xmit;
- 	}
- 
- 	card->device = pdev;
+ /*      Debug support
+  */
 -- 
 2.8.1
 
