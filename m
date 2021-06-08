@@ -2,152 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F55639EC9B
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 05:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A357039ECAF
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 05:04:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231502AbhFHDDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 23:03:39 -0400
-Received: from mail-eopbgr30076.outbound.protection.outlook.com ([40.107.3.76]:50913
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231465AbhFHDDi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Jun 2021 23:03:38 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rjm/5T/wRFmSKfBGlkZqkLp5Y0fD0VlQV18dvCxmRPQ6UtfbwmFqoX/VCDcgC+RwrNvrYNlVUQIcyKjh/OCW6q9yncKbJtUaErGFod6fZRL7xmjXT01en8PGvHGlHRm+6jmAsJYehi/w8ugxmtmAb38l5yE8PW0CNOP7bLd9e8O2iRhb0b4JsagXiYJoB2FFx3lgIQ+iwu76t+ADq/IAWjeU6wD+hoKbENaa3dM6MWm1+g6yLf62SWue29T8QMm9KAvwoYK0KNsVKsxS7exCMw2507oknWaWIiZx9CwpIVKxL/Y1UZGe0qf06u7nl3EYyk77n0ICG2JsfuzNj3pv4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XoJr1xoxYoHqMvfgMN1jpHrsrbHvTrgIezAdGHxm2no=;
- b=kyabTEtjLsm2rO4uMeFN0jova7qHlMQMDRmSReejFWUmOlEz9fLviH3N1z0HiLuFWJtf/F6RLsui35kPV/PCSR4ap0E/o2UhK7LHwdUMuE6Xuey1uoubgRCBPGM4pu00jhP7nIqWQaDifFgQO5iXMAbeOLag7vZjOzIXpTRO20g+XaavkvmUfkcfQ6C9sAlJ9ylW/0pjoOhZY3Im3pdrmBQsqSfi/NaIxT7vpzighlm9IJGciPwDNulUQn0B7IXv4q7M9CEXxF1i6/jAElXlAhSCwlWt5oYSDl6B062/sH1h1ydX/+PxWnI5ChSlWTjnYzBnmIbh04zPN+9MCnikug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XoJr1xoxYoHqMvfgMN1jpHrsrbHvTrgIezAdGHxm2no=;
- b=KfFlmFMUjYl7fdITpy5qGRG0T6CO7iDekbRaim1duX0Q+tAFJCdt4U/IUbWn6+2KR2hc7HXptUFggmEurFHoTlX4WvWGhmNxkr8uG7GUaGTAa+Epz3TEwL0rGqWCQkIfiL8Ik5cHc2kccX1AWvncJUowSFpKwjvzG25zOBvb2UY=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB6PR0402MB2904.eurprd04.prod.outlook.com (2603:10a6:4:9c::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.26; Tue, 8 Jun
- 2021 03:01:44 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4195.030; Tue, 8 Jun 2021
- 03:01:44 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, Jisheng.Zhang@synaptics.com
-Cc:     linux-imx@nxp.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH V2 net-next 4/4] net: phy: realtek: add delay to fix RXC generation issue
-Date:   Tue,  8 Jun 2021 11:00:34 +0800
-Message-Id: <20210608030034.3113-5-qiangqing.zhang@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210608030034.3113-1-qiangqing.zhang@nxp.com>
-References: <20210608030034.3113-1-qiangqing.zhang@nxp.com>
-Content-Type: text/plain
-X-Originating-IP: [119.31.174.71]
-X-ClientProxiedBy: SG2PR01CA0151.apcprd01.prod.exchangelabs.com
- (2603:1096:4:8f::31) To DB8PR04MB6795.eurprd04.prod.outlook.com
- (2603:10a6:10:fa::15)
+        id S230522AbhFHDG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 23:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230365AbhFHDG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 23:06:27 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938F6C061574;
+        Mon,  7 Jun 2021 20:04:27 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id 131so24993101ljj.3;
+        Mon, 07 Jun 2021 20:04:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=m82KiBKX5qk29fmxWKD5zTJ6phmL6QfB1KLgqjZgjnk=;
+        b=oTf7Dw1CBl9w7lIv7NXMfYBNT+zs6XDymTBcBF5UCr+wfrZv1iBd2HC3nQhYExvRGB
+         SsZPBgoLGCYyOHdNnePhyy7jC5tLT4uWy9qCda3j8D4MWB4d1l0nwrj6GlovZCqwzfrs
+         kU/Q6+9hcsscLLt8pcm6vdOjGbWv0xJQIRjpj+Xzyqv9d5riAITBqZHYciQWQHWglbTi
+         k3iduwra9DCs8xZ+ojPCBibLRJ7lANb1jK1O2c4gkycmirca3XzJs7koIbwuRdrGYfJ7
+         Ts9RU7YnYPF94R3YgvHyb68xA9nUPiVKDO8W50Xf0u8Tnix33NWM6hGXj70S1AZWgb9h
+         EydQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=m82KiBKX5qk29fmxWKD5zTJ6phmL6QfB1KLgqjZgjnk=;
+        b=TI96UoezudCoLk8s8ixzx2UCjgxLSiOMDaNc3071uYMVfCPE5F+W6LSOZhsoVMtQMC
+         nQzTcVlWCBgHZYgHyVsg1rD1ujrZEJ2XnAqYGL3YyTb4kb6xnvNno/ukmzT4C5k0I9nY
+         Oiyz0HeCKw2h+JgipucvlUZQsF4CUoSRgzmxTBFYZ7FH+ZjL4i+w1/rt42llMHtNT60R
+         KI8sgUPqew/KyVk9swM0EnYQlkUSa9rJxEWQe/NsUbGSebrx6xfYLeyLxUyRRKLT+Era
+         A97AjTufb1+Whe7MQ1/X8tO4WY82Kk0GeXxbWiVJ2LEjWYuPDhb/S4a4FEiN7Ql/UcNR
+         toRg==
+X-Gm-Message-State: AOAM532ASXfkxAZPPxjtiB1wvAKBalyLpoazE0d6IhmA2a6DE6kXPrvw
+        TeEJDOYty1+w0/1gUgXCN3owEilXSjFJIiXmG20=
+X-Google-Smtp-Source: ABdhPJwpx7U2S6QZGs1NSIDBmHkjX+ap88j9ZEP+8OAQ1yQxpsj8M/6JWxAixkiQMwnI+tMuSd7Yhbwu58rqC38GBFc=
+X-Received: by 2002:a2e:9a87:: with SMTP id p7mr12088387lji.477.1623121465844;
+ Mon, 07 Jun 2021 20:04:25 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2PR01CA0151.apcprd01.prod.exchangelabs.com (2603:1096:4:8f::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.21 via Frontend Transport; Tue, 8 Jun 2021 03:01:40 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: de3e8c6b-b820-4378-e542-08d92a29bf0e
-X-MS-TrafficTypeDiagnostic: DB6PR0402MB2904:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB6PR0402MB2904289C49D562B11179C0A2E6379@DB6PR0402MB2904.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ok3JvQt9TNSikZrIt0cFsqK2ammKhalzydpCGJEM48TNHQ2SJUJZqRA10GoGS83JsimnbCktN6gZuub7S0OhYCSifWbBzIlfLfpBW/zHZsN52HLvl6WJ1MnzT8Ime2mv+gD01UXC+qdlaLcXSAkCPu1bMLQWAlGcVJn7CAXI9HRtIsE06QV+XQ8EZi4uDML2IOHgMiC2j3Lg7mN8C4+HyIk09WXStwQUmNEQiR8YrQg+9GfMcVz24Fj+gnkDIPm3iFw7ThnnX8op2eshfmSttlA4MQzuaCLOimQsu8NhBMMuH4E84RMP/IO1AKOva0W0nM04QAAMkYPNTI2s6tVJq3njDTuoFVvAX2dTsZftsewDZMWamCUACpAbtO63ZkfN4SeRjbxYHdBmdowEvU9Bqnp+cRLNi9/mG3mILmRCmGxS/hu6lqbVHv/P797G7/pwoEObiwmr+bMcqxZkPGkKW5z5GaUarF3OCjArSXLuGpndzmKbdHIB0FpQ9S3DGc+qkI/r+/lrzLDWqNF7FrROCblcvxVnqoSj8sZhY45IipycE77zsmZmQm92cnElj7kbjHYGWw162ExstjmxeJfYToyOrepRbK1ECDm3JvZvubEG7OGg0wTFbcoky/z3usnMLRMp07EldyGMRFl5kNcuEuqYkfj8PjZrAhMgxgvk5JPO9VwMY58jn8xc9C6pGjI8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(346002)(39860400002)(366004)(376002)(83380400001)(6666004)(38350700002)(86362001)(7416002)(6486002)(52116002)(16526019)(6512007)(6506007)(38100700002)(4326008)(2906002)(66476007)(66556008)(8936002)(956004)(316002)(66946007)(5660300002)(8676002)(186003)(26005)(2616005)(1076003)(478600001)(36756003)(69590400013);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?wdNt01EapliesshgoqBO+YJszgHo/TZTJiWeLNYXMpOstxisfDpWOgUO97RW?=
- =?us-ascii?Q?iBd9iwB0rdptI4tyQuPPSLeoOdxzX7hmLXKltByju1imOsQ064YBNANGuwz5?=
- =?us-ascii?Q?NxVvhO2hITQ7X+hqigOujPcf+7tQTHqMxtCfKDyqpx+efRvflvvjgxkbuz7T?=
- =?us-ascii?Q?2cisAMjV6BT//E5UJ1BbEQo1AzfDPRiL4GZJx9hWpjpM0onwCPOmAGYrbBuQ?=
- =?us-ascii?Q?1FPK9MCXPpJfyrdZlvnVPdCoHkhGxkR/MCXa93XFYGPA/KM86tox6ObfdQtf?=
- =?us-ascii?Q?1Xo2F5+AlSeg25X0Tp22pvbG2cm0ZW6Rr9sP4Jeo3+Q033VqWfApfw5aQKUh?=
- =?us-ascii?Q?kupapuVkEky+eH/rQLV+MYKscb4TxOMCpCwAp4U1TK+6AdkV9TjzeXgawybe?=
- =?us-ascii?Q?K9raIzWJgZNg+sKXehY7Z7d/TurJnDftLYilrV4OlONxD4cP/hOb+i0olJs8?=
- =?us-ascii?Q?Q0vccEUjKzSGJHabPalDaBWIMpn2rmTtaeotQMZ/BHTixh8hotTMk6K1tC9+?=
- =?us-ascii?Q?kmfiEPdUlGzq5hYqYXjH2khRyEu2J2nYIKsI0BnAeRfE7IIcsbblXcNqzG/S?=
- =?us-ascii?Q?J8ITeWRRqGZWXLotmMu0U3rWQVPgZfM7ZvqmozTkN45JzZr/1Zkn6OFR4Hyh?=
- =?us-ascii?Q?JPZ5GISYuNfPss+ytSOVnwUe3gIJu5eDtpevgYpCcPQV7K0JTdiKv8pL2Tao?=
- =?us-ascii?Q?J6KLaN8mhD9yxtbaX29lRISJKNcr5KUtEnzuPC3U2E4zyzmgOO8sKsCAgWRn?=
- =?us-ascii?Q?QYck/ddX7NdpkvWu/objOv4N1aSdKO2uNQ8wwvpNxyJehisLDtaMojtBjowa?=
- =?us-ascii?Q?xK7fu2AYycZ0bvXoU/eFDYFyxGtzoIN7OpLL58W1QZCwO7gCE0BRLbnt2dOT?=
- =?us-ascii?Q?oDBMR/B+nKYuGk72BNS5uiXmx6t4CPMANwPMHMNodQkxN8CujuRsc/kge7P+?=
- =?us-ascii?Q?Jzcj/2eslBQd9Ln0m0131Fj/3LNp377ImvcTPYJqdmn6TPKfFmCa2E7GHLc6?=
- =?us-ascii?Q?92fkraiqwDE865S6cYUL0LcYb08VCEBTWG+3MIGTHX6o7glJ2YHqjthPL4C7?=
- =?us-ascii?Q?afLi6Lcdd7Ka0foGbRrIqkHdbfNf3ILwgrVBp2J9+g7Nw41t86RUGr6Xf3NB?=
- =?us-ascii?Q?7qN9SRP2G9dO65BsWulMGgmZfoGzddYJGwdnQuJuBbcKDcNaayPsYsjZkn6o?=
- =?us-ascii?Q?p9K/E3iSOF1+SU7k2TooIDASgbQm23qRiFgk4ltrnLn9GBGJiNATfi5b1HPz?=
- =?us-ascii?Q?pFtJENsY41CdnJEQLpuLClsDUCy8xd41asA7/8/ALMZiKdiIMB59Tl94Quq+?=
- =?us-ascii?Q?uu/vbjvbfhPnWyV2mBZyLCmK?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: de3e8c6b-b820-4378-e542-08d92a29bf0e
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2021 03:01:43.9963
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mlyJhrHvGemqcYFEb1vWZLpxq3oIa2hH1pLRHI4mSM6qfidsTWYOp9WGB184y7Fg/I4ngfPGeSwDKK2ecNwrxw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2904
+References: <CAK-6q+hS29yoTF4tKq+Xt3G=_PPDi9vmFVwGPmutbsQyD2i=CA@mail.gmail.com>
+ <87pmwxsjxm.fsf@suse.com>
+In-Reply-To: <87pmwxsjxm.fsf@suse.com>
+From:   Steve French <smfrench@gmail.com>
+Date:   Mon, 7 Jun 2021 22:04:15 -0500
+Message-ID: <CAH2r5msMBZ5AYQcfK=-xrOASzVC0SgoHdPnyqEPRcfd-tzUstw@mail.gmail.com>
+Subject: Re: quic in-kernel implementation?
+To:     =?UTF-8?Q?Aur=C3=A9lien_Aptel?= <aaptel@suse.com>
+Cc:     Alexander Ahring Oder Aring <aahringo@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-nfs <linux-nfs@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        Leif Sahlberg <lsahlber@redhat.com>,
+        Steven Whitehouse <swhiteho@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PHY will delay about 11.5ms to generate RXC clock when switching from
-power down to normal operation. Read/write registers would also cause RXC
-become unstable and stop for a while during this process. Realtek engineer
-suggests 15ms or more delay can workaround this issue.
+On Mon, Jun 7, 2021 at 11:45 AM Aur=C3=A9lien Aptel <aaptel@suse.com> wrote=
+:
+>
+> Alexander Ahring Oder Aring <aahringo@redhat.com> writes:
+> > as I notice there exists several quic user space implementations, is
+> > there any interest or process of doing an in-kernel implementation? I
+> > am asking because I would like to try out quic with an in-kernel
+> > application protocol like DLM. Besides DLM I've heard that the SMB
+> > community is also interested into such implementation.
+>
+> Yes SMB can work over QUIC. It would be nice if there was an in-kernel
+> implementation that cifs.ko could use. Many firewall block port 445
+> (SMB) despite the newer version of the protocol now having encryption,
+> signing, etc. Using QUIC (UDP port 443) would allow for more reliable
+> connectivity to cloud storage like azure.
+>
+> There are already multiple well-tested C QUIC implementation out there
+> (Microsoft one for example, has a lot of extra code annotation to allow
+> for deep static analysis) but I'm not sure how we would go about porting
+> it to linux.
+>
+> https://github.com/microsoft/msquic
 
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
----
- drivers/net/phy/realtek.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+Since the Windows implementation of SMB3.1.1 over QUIC appears stable
+(for quite a while now) and well tested, and even wireshark can now decode =
+it, a
+possible sequence of steps has been discussed similar to the below:
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 79dc55bb4091..1b844a06fe72 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -410,6 +410,19 @@ static int rtl8211f_config_init(struct phy_device *phydev)
- 	return genphy_soft_reset(phydev);
- }
- 
-+static int rtl821x_resume(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = genphy_resume(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	msleep(20);
-+
-+	return 0;
-+}
-+
- static int rtl8211e_config_init(struct phy_device *phydev)
- {
- 	int ret = 0, oldpage;
-@@ -906,7 +919,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.config_intr	= &rtl8211f_config_intr,
- 		.handle_interrupt = rtl8211f_handle_interrupt,
- 		.suspend	= genphy_suspend,
--		.resume		= genphy_resume,
-+		.resume		= rtl821x_resume,
- 		.read_page	= rtl821x_read_page,
- 		.write_page	= rtl821x_write_page,
- 	}, {
--- 
-2.17.1
+1) using a userspace port of QUIC (e.g. msquic since is one of the more tes=
+ted
+ports, and apparently similar to what already works well for QUIC on Window=
+s
+with SMB3.1.1) finish up the SMB3.1.1 kernel pieces needed for running over
+QUIC
+2) then switch focus to porting a smaller C userspace implementation of
+QUIC to Linux (probably not msquic since it is larger and doesn't
+follow kernel style)
+to kernel in fs/cifs  (since currently SMB3.1.1 is the only protocol
+that uses QUIC,
+and the Windows server target is quite stable and can be used to test again=
+st)
+3) use the userspace upcall example from step 1 for
+comparison/testing/debugging etc.
+since we know the userspace version is stable
+4) Once SMB3.1.1 over QUIC is no longer experimental, remove, and
+we are convinced it (kernel QUIC port) works well with SMB3.1.1
+to servers which support QUIC, then move the quic code from fs/cifs to the =
+/net
+tree
 
+
+
+
+--=20
+Thanks,
+
+Steve
