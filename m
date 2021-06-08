@@ -2,127 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB6739ED66
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 06:10:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A2FA39ED74
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 06:23:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbhFHEL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 00:11:56 -0400
-Received: from mail-yb1-f178.google.com ([209.85.219.178]:34811 "EHLO
-        mail-yb1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbhFHELz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 00:11:55 -0400
-Received: by mail-yb1-f178.google.com with SMTP id i6so13587761ybm.1;
-        Mon, 07 Jun 2021 21:09:48 -0700 (PDT)
+        id S229942AbhFHEZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 00:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229451AbhFHEZK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 00:25:10 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43D7C061574
+        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 21:23:02 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id v13so9925222ple.9
+        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 21:23:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=W+YYX7eX4erF8UOmYB6hJ2LH934H53RUcP2kIN4EhKg=;
-        b=GI1r/+UloL43pfUTgJgLTIAaHwyht1tWz/wdZ5HVr5blyaKLbstroidAc6XT4qSJic
-         S8E9CJgyVcjbKrScG8K3vrtZw0BXo42Ut4xPlFxTQmn7YgxD6yEWU2gdR00za4ohm6Cq
-         Q4NQPyxBbnvpt/DDt9FCWnaqYcOz9Ulj0Ij6R9KS4LiA9KbWuZ+NkwweC/iLMu4JuOUb
-         vnAhiJOG7Mol+niA69WMSGEgG6Wit6aYTHO1PQ85u+j8cZIXOhCAcMTklTBOsBcKfg6a
-         64TjZhB8SiATUG8tFXP7OWB0z7KIRxoAl26ccHfzAPc0VBT8WfROy9eaG8sywzcQoGH9
-         bwmw==
+         :cc;
+        bh=23xXcExaBA0F4qdO0hM21zJQMO2ogSgobhGUIkD3kD0=;
+        b=TNIVaDTU/IuKv8+Z+eWo5LpWT144NW0a5lKecxwhF6qePF/88g0imzqmaIW8WdkeKI
+         gRVsQXxuBk7TODW0SFH4MHJSJLdbda4mOiHD+HU5ALr2GSSZ5mdIBHqnBSJWYDBVmn0L
+         mXgDyGSgy/7aRFpfVG74uFgkuVTFJayy0UiEiBHXMOw1hwjC3vXUW6GKt3D1mIj/Dwf2
+         JA/EYsFdgRzdUEGHRzHzW59Ji/ToLfQlmTN1blsDg1eJjCUKN0Vo5N6ufwJ6WaFradY8
+         H7aJEuXEv/d1up7v65vBW/D92KsU7iodFWtHFcpwZLooovIQnAUt9EPOKP7w/+FQLDu/
+         hl2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=W+YYX7eX4erF8UOmYB6hJ2LH934H53RUcP2kIN4EhKg=;
-        b=P3q97UOt2Dp/QFSW8BL6Irg+XjZkvLSNDqgfqboNrm9m61hUdPtxvjLYrhE8/QgZJR
-         5RlmfT0eeC0DPnAsaikSkTbB3lv5P+yi0v2L9I/AYvZ3YmSWs7oQtlE7xbB722BRhVao
-         5uu5v+9KPy9GwM1DES3B3y5BRUpWLt29nkrgiRRFEH64aSaNyoVre/5GHJIybfFgTTK9
-         pnJ74Pbj8/Fd5ZWcTKfKAgs7DWoIhCoBBrsEUZUuECcjd1gYctZ1uZx/KOQgmMVpYg39
-         gqPcywxngtLR0i0mYYN828IOU+duD4QofjWKYt/CV0b5fk3kKUy6xhQxvru0N5XcRviX
-         qusA==
-X-Gm-Message-State: AOAM531c4kK22DYQ66KwGyWR3f6J0znEmIRPpO1/wfeSK/4me0GV0beY
-        B8QN9t1HRtztCdA6q0AzLzkGhk/rELlcWTeq/dkVcZWqTg8=
-X-Google-Smtp-Source: ABdhPJzO/nVFVwrF+obb/wUz+coXrAlSTjmJLfhMooTjT0BvI5mXPqU0qWT0/QlokB6QiKDyhjKisHaHihMQhvoAy5s=
-X-Received: by 2002:a25:4182:: with SMTP id o124mr27953959yba.27.1623125328006;
- Mon, 07 Jun 2021 21:08:48 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=23xXcExaBA0F4qdO0hM21zJQMO2ogSgobhGUIkD3kD0=;
+        b=MS3wK511MRfowTJn2c2q+5we/zCskEBCVqXXvDrkwZUpqJaNmYEZxzF8kTGRDMA8Zs
+         vKfZCVgJ6twX4brjOeF5wSbQGufXECgmU62qBVUOZsuqVx7NNLDqkmtTSsCedTc07m3B
+         SkCFnl6aF4RUGghjm8XGGlGxrNmf6P7lBA0UlR27lnp288qFsv+rxVq0bBcda3l+bghX
+         RkcEbRoqvvOuNe4MihrxjtBzn8ibtAUhTc3gOATUg6OjaT1vAqJQFyS3ilHBMrz8Z2hD
+         YQcumG2xSAGMRByXc7T20jCXTRFYxkFXr4F0ToBPPN8yFmiVgdQnkjR27hZQ83VOqHqy
+         WCHA==
+X-Gm-Message-State: AOAM532cClXtBIf2JGSOkrdilIFa7HT5NHV3dYUsQZq9B4JF8wKmTUAd
+        za6SkWj07cR/rS0RAg/l2kC3dL7JuIrR0MVxQso=
+X-Google-Smtp-Source: ABdhPJw2ohWaVbWFSXmWVtO2aUj0XMMP048S0LThlZUT+8QCP6qXbBttraQ8lR+ZwNsX/rqTZoZ52kW8Zh1cHUv7zKA=
+X-Received: by 2002:a17:902:b288:b029:111:4a4f:9917 with SMTP id
+ u8-20020a170902b288b02901114a4f9917mr12241576plr.70.1623126182341; Mon, 07
+ Jun 2021 21:23:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210313193537.1548766-7-andrii@kernel.org> <20210607231146.1077-1-tstellar@redhat.com>
- <CAEf4Bzad7OQj9JS7GVmBjAXyxKcc-nd77gxPQfFB8_hy_Xo+_g@mail.gmail.com>
- <b1bdf1df-e3a8-1ce8-fc33-4ab40b39fb06@redhat.com> <84b3cb2c-2dff-4cd8-724c-a1b56316816b@redhat.com>
-In-Reply-To: <84b3cb2c-2dff-4cd8-724c-a1b56316816b@redhat.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 7 Jun 2021 21:08:36 -0700
-Message-ID: <CAEf4BzbCiMkQazSe2hky=Jx6QXZiZ2jyf+AuzMJEyAv+_B7vug@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 06/11] libbpf: add BPF static linker APIs
-To:     Tom Stellard <tstellar@redhat.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
+References: <CAM6ytZoLkndXUaBxDDk36y_QW3JfNwtksQm3XAdUk+GLr28rEw@mail.gmail.com>
+In-Reply-To: <CAM6ytZoLkndXUaBxDDk36y_QW3JfNwtksQm3XAdUk+GLr28rEw@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 7 Jun 2021 21:22:51 -0700
+Message-ID: <CAM_iQpUpQ_b5UbKRA+crSmhYeDN8PFE-KaBOp9je-zOkhg=3Kg@mail.gmail.com>
+Subject: Re: CAP_NET_ADMIN check in tc_ctl_action() makes it not allowed for
+ user ns root
+To:     tianyu zhou <tyjoe.linux@gmail.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 7, 2021 at 7:41 PM Tom Stellard <tstellar@redhat.com> wrote:
+On Tue, Jun 1, 2021 at 1:17 AM tianyu zhou <tyjoe.linux@gmail.com> wrote:
 >
-> On 6/7/21 5:25 PM, Andrii Nakryiko wrote:
-> > On Mon, Jun 7, 2021 at 4:12 PM Tom Stellard <tstellar@redhat.com> wrote=
-:
-> >>
-> >>
-> >> Hi,
-> >>
-> >>> +                               } else {
-> >>> +                                       pr_warn("relocation against S=
-TT_SECTION in non-exec section is not supported!\n");
-> >>> +                                       return -EINVAL;
-> >>> +                               }
-> >>
-> >> Kernel build of commit 324c92e5e0ee are failing for me with this error
-> >> message:
-> >>
-> >> /builddir/build/BUILD/kernel-5.13-rc4-61-g324c92e5e0ee/linux-5.13.0-0.=
-rc4.20210603git324c92e5e0ee.35.fc35.x86_64/tools/bpf/bpftool/bpftool gen ob=
-ject /builddir/build/BUILD/kernel-5.13-rc4-61-g324c92e5e0ee/linux-5.13.0-0.=
-rc4.20210603git324c92e5e0ee.35.fc35.x86_64/tools/testing/selftests/bpf/bind=
-_perm.linked1.o /builddir/build/BUILD/kernel-5.13-rc4-61-g324c92e5e0ee/linu=
-x-5.13.0-0.rc4.20210603git324c92e5e0ee.35.fc35.x86_64/tools/testing/selftes=
-ts/bpf/bind_perm.o
-> >> libbpf: relocation against STT_SECTION in non-exec section is not supp=
-orted!
-> >>
-> >> What information can I provide to help debug this failure?
-> >
-> > Can you please send that bind_perm.o file? Also what's your `clang
-> > --version` output?
-> >
+> Hi, from commit "net: Allow tc changes in user
+> namespaces"(SHA:4e8bbb819d1594a01f91b1de83321f68d3e6e245) I learned
+> that "root in a user namespace may set tc rules inside that
+> namespace".
 >
-> clang version 12.0.0 (Fedora 12.0.0-2.fc35)
+> I do see the CAP_NET_ADMIN check in tc_* functions has changed from
+> capable() to ns_capable() (which is now in term of
+> netlink_ns_capable())
 >
-> >> I suspect this might be due to Clang commit 6a2ea84600ba ("BPF: Add
-> >> more relocation kinds"), but I get a different error on 324c92e5e0ee.
-> >> So meanwhile you might try applying 9f0c317f6aa1 ("libbpf: Add support
-> >> for new llvm bpf relocations") from bpf-next/master and check if that
-> >> helps. But please do share bind_perm.o, just to double-check what's
-> >> going on.
-> >>
+> However, in function tc_ctl_action(), the check for CAP_NET_ADMIN is
+> still netlink_capable which does not allow user ns root to pass this
+> check.
 >
-> Here is bind_perm.o: https://fedorapeople.org/~tstellar/bind_perm.o
+> static int tc_ctl_action(struct sk_buff *skb, struct nlmsghdr *n,
+>              struct netlink_ext_ack *extack)
+> {
+>     ...
+>     if ((n->nlmsg_type != RTM_GETACTION) &&
+>         !netlink_capable(skb, CAP_NET_ADMIN))
+>         return -EPERM;
+>     ...
+> }
 >
+> So is this a check missing changing for user ns?
 
-So somehow you end up with .eh_frame section in BPF object file, which
-shouldn't ever happen. So there must be something that you are doing
-differently (compiler flags or something else) that makes Clang
-produce .eh_frame. So we need to figure out why .eh_frame gets
-generated. Not sure how, but maybe you have some ideas of what might
-be different about your build.
+It seems so, I do not see TC action is any different with other
+TC objects here. So feel free to send a patch.
 
-> Thanks,
-> Tom
->
-> >>
-> >>>
-> >>> Thanks,
-> >>> Tom
-> >>>
-> >>
-> >
->
+Thanks.
