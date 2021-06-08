@@ -2,151 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B9C39ECC5
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 05:09:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B742039ECCE
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 05:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230444AbhFHDLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 23:11:21 -0400
-Received: from mail-eopbgr50045.outbound.protection.outlook.com ([40.107.5.45]:20227
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230351AbhFHDLU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Jun 2021 23:11:20 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZCC4YCG6W03ho1IJv3egbcX8S4VTZUIJBINNH4EIyvcfkz8QmWLBbtub6F+heKQz6lXA+yS0OdgPjyAQ+gxNW6+9RjF/Ov4lpQrL0BrTUUTEnDKybGDbYBIG+mtOh8A/7bv4hagyIm7yJbMakGumf78/etjeKWT29bDaIp/IhXPkgDH7mrrTDPHrgNPIFFXXmgXAll6+eCEyQ5M2Vja9cJXWgMRUTVinsfjvYkxjW/lJSu7hawDrf/KKSDz8NLRNE5qM2zK0xG5Huw1oquwrwIkCcVO4XSW0CSSTczw3LOxUnRWhVaYZbmixBSGtRlKJ6eN79SKytZlKyUozC5m0+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+0ADrBefv/2tqiPmh5YTPJB9Ek5YtOIHjFo/5sg3aM8=;
- b=fBAmwp3a2Ts7pwbE1NR+JL72DTzwsddhtaAvUlaaFsnmvC0fpjQJTgAl9M6ZrwoJ5c2gXX2o5WORWrq0+jLR3QZtY+8NoO7pMsBlB9RUgQtD9MkgGn6DI1SrHZxD95qlTEOGuWkobEBHpXM0/Glad94CcxRm4pschg1XzTpw4w/6yMcz/eykMl/j0AnQVFUekJGA8j3oDSrOBEVTVHy6lLneZS7XMXvYP74Pb4Y5Sb8/ah9vxTd1ztRUIgzvOa5GtB1smtoP+GU3Qr+9fqlprvhgVIQnvZ87+0oLd6nRH8EyWGdjGF1SrU47TObygdQk5YkDWrCTdoKK11NTw1MbIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+0ADrBefv/2tqiPmh5YTPJB9Ek5YtOIHjFo/5sg3aM8=;
- b=dW53U1cOuFlep8f1lux6A+oYP3d1rL+JCytqVQMYS57TQNhO0kItbCzW+CzghGqT3DE9qeMGF26GgaJjYREMbkJISh2bBdbLjXMIDwktNs15LRuOLkm1oJFFMh50rUSuWd6/ov6KJkFbTdH3zEwx+Oi3c3dHluEwbinDHd1GqLU=
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DBBPR04MB6139.eurprd04.prod.outlook.com (2603:10a6:10:ca::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.20; Tue, 8 Jun
- 2021 03:09:17 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4195.030; Tue, 8 Jun 2021
- 03:09:17 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "Jisheng.Zhang@synaptics.com" <Jisheng.Zhang@synaptics.com>
-CC:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH V2 net-next 0/4] net: phy: add dt property for realtek phy
-Thread-Topic: [PATCH V2 net-next 0/4] net: phy: add dt property for realtek
- phy
-Thread-Index: AQHXXBKTte8wXkM9pkSUCkO0aEHdiasJbnFw
-Date:   Tue, 8 Jun 2021 03:09:17 +0000
-Message-ID: <DB8PR04MB6795910502B23313565F909CE6379@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20210608030034.3113-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20210608030034.3113-1-qiangqing.zhang@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c645f305-5d61-4773-5609-08d92a2acd83
-x-ms-traffictypediagnostic: DBBPR04MB6139:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DBBPR04MB613942926C8CF6F54CD6F35FE6379@DBBPR04MB6139.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1201;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ycbDCXyEGf8iNk6Bd2/boJ4alLZoiJetwVr9Uzd+DVcoAdnbhSOwxXXAMnS1qJP5/+j5H8KOThqy9YhclnfK6C05B5iK6TuD9J9gpeD/3QgpHa0GgVBEsDcnsy+31OOEHh+YShxiASPqa4dXXrSApdnakhT+eLG73c2SyQfsuig1iA9MKWXycWqm7nqJ2XywsmbvKxD9a8Gu/GbodTLzXsInnBrxvrRZPc75nNTDDxugYXEE3Wpjats69jdxQaRyQguxOdCdCSBAAwQU1LTArUDqs+rJowcqwmlVQl60cFxVUWti4NUh+b/ivXI6yISI4axpS3YGy6vGWuVzqx5fFaLXRN5NdOBelgGpZ/41qNSXeVxpHZ82uFUM0TCSBhZ/wKm1nrfXkkM9zD2RQOWHAKkwdWr4VgsVhkrQOprHVP8GmMWg+o0zS820sUjZdVm2AwIVeTlCyHw/xDVU8ib/+rQ1xVJnadTHsxeN7iRNWYzy4E12QO+z4E9oEmQO06e5WjOjRu+y6USeMbWi2VEqUtRfwE9m8AweRwVMSk6sQhP+vJOMIQDwvETDh4TcRvgoBaUengvlF/kdzN5Byh/dQRQeETEIabevlL/AF/N05uI=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(346002)(396003)(376002)(39860400002)(186003)(33656002)(7416002)(26005)(316002)(110136005)(2906002)(4326008)(53546011)(478600001)(7696005)(52536014)(83380400001)(64756008)(66946007)(38100700002)(55016002)(66446008)(66476007)(66556008)(71200400001)(8676002)(5660300002)(122000001)(6506007)(86362001)(76116006)(9686003)(8936002)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?gb2312?B?ZWxsOFp6d2NReUlXOTVGOXdqTHA5aEw4Um1HakZCMDNvQnl2NEoxU3VSNmxh?=
- =?gb2312?B?dkdNNm9QNmE4TVJWS3QwRUxocVplQ2ozLzVQQXdsQ25jd2RLZ0d6bWVYdzdS?=
- =?gb2312?B?aXZwR045bDYwcDhrb1lFSnFFQlY0S2R1YkdYdytlVG4wU0RqNy9Xa1AyZ3NC?=
- =?gb2312?B?QTBiQkpFU3BMcENmS2hvZEU5by9hc3lhK1EzNlNURXZpMzVGWVhyYmZWeVRW?=
- =?gb2312?B?OFZtc3ZnWUtHdW1aSjBkUE1yMWVmUTJVVlNCVzdQVTNJbVBCWTNITisxeEVC?=
- =?gb2312?B?aTk4c1dqKy9GNHdHaThDR2Y4dlRweVRHOVM2dVVSa29YTXRmZWxDT3lWRnpQ?=
- =?gb2312?B?T0NHYXNrOXNiLzhMVExZcG1kc3lRMzdNM2ttNU9FMTNCdHBiUytZVkYzZkRW?=
- =?gb2312?B?RHUwUHhvVmZLMUthRXRQMzV5RUNENUIvWEFSRHZVUGRMNFVxZUY0RXVDMlBP?=
- =?gb2312?B?eUY5Ry9lYVVHZlljaDc0RWIzMUF2THF6cjZCRlpsanZFdjluOGp0ZkV3NWZQ?=
- =?gb2312?B?RmxTZW5lNkE0ZzlKR3hzT2RSdmZsZSt0OUdMOEo3R0xzZUMrUjBCT2NpQ1lV?=
- =?gb2312?B?VUtHMHRUMzlLNGlhSno0S0lnMjByVEZYVXV4akI0aklXRHBGTTV1OVZyVERW?=
- =?gb2312?B?K2Z1SHJzMklNM3BQeTFWZ1FlYnNJMTRwMHQ0d0tiSngyUjZXZk4xaVljQlUw?=
- =?gb2312?B?bTFYcUZURWN2bmo4Z1A5NjRic0h3Zk4wOVlsdjdjK216dDlMK1lZYnRhdXhu?=
- =?gb2312?B?Y2c1eEFKUTVYNCt6Q3ZRSmk2Qm52c0hkV05xcmJ1aU9lcnhNeU55ZStmQmVG?=
- =?gb2312?B?QURhazE3QUtmRkNMdVRtN3NwNGkwTWl4QWN0V3RTUHhlK0tFU2E1emR6MStt?=
- =?gb2312?B?Sks5RTBXajMzVDJxOXNaVEpVOGtTcmVuR1NrZjZ6RHhsdDM4azFCRDkzTnFJ?=
- =?gb2312?B?a011YVEvUGNPbnE3VHlhaGtHLzFFM1Z1MUh5RWVrRGFueUhqbG9NZHNxRS8v?=
- =?gb2312?B?dTk0bGxHQ2NnL2RhT3VZeHgzMGl0K0trS1VOY3FxVTRzNUoyQ3pqVmFJVmtu?=
- =?gb2312?B?NW04czg0OUZ5ckhTNmVCZUxnaEJQbytoVlNIbGdMeEVHdHBrTm1JSVRjNXNC?=
- =?gb2312?B?eDZ1eUlrNXpVbUt4cGdkdWF2V0E0Nm9STFJQMEZDaDhEWi9qWUliWjVTYjd5?=
- =?gb2312?B?dGhqeG1BZlRYcmdVUm5zVFVhdGV0bHVEdklCRzFNSDdPM01ZQmphWlh0bmEy?=
- =?gb2312?B?QUxvcmtwM2luM0k2amY5bHpsUTYrSDh0TE9Ub2s1NktzVlhhQkc0amsyTGFp?=
- =?gb2312?B?Ry9rL0ZQa1pYUVNaalJxeDNFakRKbzlNcitrU3paZytod2ZDazdDU0N4Qy9x?=
- =?gb2312?B?VUUxZFpFT1l2ejE3Y3ZCaE9iSVNobVNqeklCeGhQek5Ka0pFd1NJYmR5Y0Rz?=
- =?gb2312?B?QnJRbG9CN2FkSDYvczFrcjhxbFE1MnFaeVpzWmU4cUE0Si83VWFqeUpQWU5h?=
- =?gb2312?B?VnRQNGgvUXNXbGFHeUNPVXRBVDZNQW9ZQzIwTENTSWlTWi9mZmVlbUFndUtR?=
- =?gb2312?B?VHNDZ1RnSGEzWUNzWFNnTU1ZRFJCT2RlS0JtWGdQMk1DdEh4eHQ1SWN3MUxQ?=
- =?gb2312?B?UXZ2SWw1K25nWnpkR3dkVk1HOWZFdFV5Q2Y1ZGlHV1pDRkRhUEF1V243RWFq?=
- =?gb2312?B?UjVTT2NHbXQwUlpIOUNCYWxJNnpPeGhOcnpRWWo4dWQySkg5c3lNYXYzNVFI?=
- =?gb2312?Q?ayfVaN3WNNl91n2PXc=3D?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S230421AbhFHDQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 23:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230237AbhFHDQB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 23:16:01 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95BBAC061574;
+        Mon,  7 Jun 2021 20:13:54 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id m21so13990437lfg.13;
+        Mon, 07 Jun 2021 20:13:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b71LtaSQOEalI7Wb6oIYULiHeLXln/VVhWK4vkhKUmc=;
+        b=fT/nwBiGE67zpjQxpY9UxGqZT9b+/lWmhFrMT2AqKDfY/qLlTS89yISQUnLyMASJeA
+         IZf4K0h0H9num9H0Z7yWthhJ/MlusWb8yOZDWpWkWM47jSRBnqbz+GWBM/SqP1Ii2g9I
+         XMr2k1CiodjH0GzVzh6+KdKoFIQXhvQBfijxkN6EIxgY3REQWUwDQxyouf4PBjGQSr20
+         CG49Iv2+EwypG3GRuvVPbb/ywzTCnu9pgJ/eqluqRA3h1Fd5LmJa/gLsUyltxv2o3MYt
+         bn0EexDXcWFanzbiIctSfpAXdj9jILw265jSGLtMPjusMvzuvOy6icxJxkRfu5hCuHef
+         8Tng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b71LtaSQOEalI7Wb6oIYULiHeLXln/VVhWK4vkhKUmc=;
+        b=V5rK63IQ0RCDNCtJx9BKXZC4hC+tip7ssUQisy4J8QUt4Nggthz9bGxRz6NIeO9e2e
+         He/9Ob/882+SykbbX7arJCFXsxPuxkQzjIEjG9ufterorav/TgX4qr6yFMPHfnS+cP0V
+         o+f5ufyBYUbwsqVe2x7FMOvQvSqyG3xQEHh5HtFhSjVgkAWCjpttogSZKrtjpqwI/0Gt
+         H+BCz5DGEHJFI2Bh/dPZd65ISeKMGUvhY/ugcvlHQJQOJb8ZrJ8PRePoUtDuVd4ZpEBS
+         dXeK7ngCW/nWa0KUOvSwdr97oiQmFgICVFrDGzB8xaagBplvZI2SK6fUr+jtaX+scZRQ
+         ecGQ==
+X-Gm-Message-State: AOAM530uzIvkdQ0aSIBjvtzDdp5iJGXioBVUDg74//GnX1mlRu5ZKO42
+        iiVwaChjI41hBHaGjNGps9tJgQP5R3i9WwdO9Hk=
+X-Google-Smtp-Source: ABdhPJxBFASWnHLu4/DydbhtQFlH0qnVY3yYAKNLdfEArnLeowEF3WxjaeKW25A/4KAob5s02n/n9XA9VwTJL8OpIOs=
+X-Received: by 2002:a05:6512:2010:: with SMTP id a16mr11344288lfb.38.1623122032820;
+ Mon, 07 Jun 2021 20:13:52 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c645f305-5d61-4773-5609-08d92a2acd83
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jun 2021 03:09:17.3062
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eKViF4lRUUSPnVCwNXmvAe5Joll3AKFdG7xm4Avq7pGdr+jh98rmg1lf5EEpcFjxuNIqWXYDQcC8/v5iSl8+sw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB6139
+References: <20210521182104.18273-1-kuniyu@amazon.co.jp> <c423bd7b-03ab-91f2-60af-25c6dfa28b71@iogearbox.net>
+In-Reply-To: <c423bd7b-03ab-91f2-60af-25c6dfa28b71@iogearbox.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 7 Jun 2021 20:13:41 -0700
+Message-ID: <CAADnVQJ5wwLoQXegWK6c2vCnLx-J32ZUFAHGouP2HwKNJkU8zg@mail.gmail.com>
+Subject: Re: [PATCH v7 bpf-next 00/11] Socket migration for SO_REUSEPORT.
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpIaSwNCg0KUGxlYXNlIGlnbm9yZSB0aGlzIHBhdGNoIHNldCwgSSB3aWxsIHJlc2VuZCBpdCwg
-c2luY2UgSSBmb3VuZCBhIGlzc3VlIGluIHRoZSBjb21taXQgdGl0bGUuIFNvcnJ5Lg0KDQpCZXN0
-IFJlZ2FyZHMsDQpKb2FraW0gWmhhbmcNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0K
-PiBGcm9tOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiBTZW50OiAy
-MDIxxOo21MI4yNUgMTE6MDENCj4gVG86IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVs
-Lm9yZzsgcm9iaCtkdEBrZXJuZWwub3JnOw0KPiBhbmRyZXdAbHVubi5jaDsgaGthbGx3ZWl0MUBn
-bWFpbC5jb207IGxpbnV4QGFybWxpbnV4Lm9yZy51azsNCj4gZi5mYWluZWxsaUBnbWFpbC5jb207
-IEppc2hlbmcuWmhhbmdAc3luYXB0aWNzLmNvbQ0KPiBDYzogZGwtbGludXgtaW14IDxsaW51eC1p
-bXhAbnhwLmNvbT47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7DQo+IGRldmljZXRyZWVAdmdlci5r
-ZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFtQQVRD
-SCBWMiBuZXQtbmV4dCAwLzRdIG5ldDogcGh5OiBhZGQgZHQgcHJvcGVydHkgZm9yIHJlYWx0ZWsg
-cGh5DQo+IA0KPiBBZGQgZHQgcHJvcGVydHkgZm9yIHJlYWx0ZWsgcGh5Lg0KPiANCj4gLS0tDQo+
-IENoYW5nZUxvZ3M6DQo+IFYxLT5WMjoNCj4gCSogc3RvcmUgdGhlIGRlc2lyZWQgUEhZQ1IxLzIg
-cmVnaXN0ZXIgdmFsdWUgaW4gInByaXYiIHJhdGhlciB0aGFuDQo+IAl1c2luZyAicXVpcmtzIiwg
-cGVyIFJ1c3NlbGwgS2luZyBzdWdnZXN0aW9uLCBhcyB3ZWxsIGFzIGNhbg0KPiAJY292ZXIgdGhl
-IGJvb3Rsb2FkZXIgc2V0dGluZy4NCj4gCSogY2hhbmdlIHRoZSBiZWhhdmlvciBvZiBBTERQUyBt
-b2RlLCBkZWZhdWx0IGlzIGRpc2FibGVkLCBhZGQgZHQNCj4gCXByb3BlcnR5IGZvciB1c2VycyB0
-byBlbmFibGUgaXQuDQo+IAkqIGZpeCBkdCBiaW5kaW5nIHlhbWwgYnVpbGQgaXNzdWVzLg0KPiAN
-Cj4gSm9ha2ltIFpoYW5nICg0KToNCj4gICBkdC1iaW5kaW5nczogbmV0OiBhZGQgZHQgYmluZGlu
-ZyBmb3IgcmVhbHRlayBydGw4Mnh4IHBoeQ0KPiAgIG5ldDogcGh5OiByZWFsdGVrOiBhZGQgZHQg
-cHJvcGVydHkgdG8gZGlzYWJsZSBDTEtPVVQgY2xvY2sNCj4gICBuZXQ6IHBoeTogcmVhbHRlazog
-YWRkIGR0IHByb3BlcnR5IHRvIGRpc2FibGUgQUxEUFMgbW9kZQ0KPiAgIG5ldDogcGh5OiByZWFs
-dGVrOiBhZGQgZGVsYXkgdG8gZml4IFJYQyBnZW5lcmF0aW9uIGlzc3VlDQo+IA0KPiAgLi4uL2Jp
-bmRpbmdzL25ldC9yZWFsdGVrLHJ0bDgyeHgueWFtbCAgICAgICAgIHwgNDUgKysrKysrKysrKysN
-Cj4gIGRyaXZlcnMvbmV0L3BoeS9yZWFsdGVrLmMgICAgICAgICAgICAgICAgICAgICB8IDc1DQo+
-ICsrKysrKysrKysrKysrKysrKy0NCj4gIDIgZmlsZXMgY2hhbmdlZCwgMTE2IGluc2VydGlvbnMo
-KyksIDQgZGVsZXRpb25zKC0pICBjcmVhdGUgbW9kZSAxMDA2NDQNCj4gRG9jdW1lbnRhdGlvbi9k
-ZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9yZWFsdGVrLHJ0bDgyeHgueWFtbA0KPiANCj4gLS0NCj4g
-Mi4xNy4xDQoNCg==
+On Tue, May 25, 2021 at 11:42 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 5/21/21 8:20 PM, Kuniyuki Iwashima wrote:
+> > The SO_REUSEPORT option allows sockets to listen on the same port and to
+> > accept connections evenly. However, there is a defect in the current
+> > implementation [1]. When a SYN packet is received, the connection is tied
+> > to a listening socket. Accordingly, when the listener is closed, in-flight
+> > requests during the three-way handshake and child sockets in the accept
+> > queue are dropped even if other listeners on the same port could accept
+> > such connections.
+> >
+> > This situation can happen when various server management tools restart
+> > server (such as nginx) processes. For instance, when we change nginx
+> > configurations and restart it, it spins up new workers that respect the new
+> > configuration and closes all listeners on the old workers, resulting in the
+> > in-flight ACK of 3WHS is responded by RST.
+> >
+> > To avoid such a situation, users have to know deeply how the kernel handles
+> > SYN packets and implement connection draining by eBPF [2]:
+> >
+> >    1. Stop routing SYN packets to the listener by eBPF.
+> >    2. Wait for all timers to expire to complete requests
+> >    3. Accept connections until EAGAIN, then close the listener.
+> >
+> >    or
+> >
+> >    1. Start counting SYN packets and accept syscalls using the eBPF map.
+> >    2. Stop routing SYN packets.
+> >    3. Accept connections up to the count, then close the listener.
+> >
+> > In either way, we cannot close a listener immediately. However, ideally,
+> > the application need not drain the not yet accepted sockets because 3WHS
+> > and tying a connection to a listener are just the kernel behaviour. The
+> > root cause is within the kernel, so the issue should be addressed in kernel
+> > space and should not be visible to user space. This patchset fixes it so
+> > that users need not take care of kernel implementation and connection
+> > draining. With this patchset, the kernel redistributes requests and
+> > connections from a listener to the others in the same reuseport group
+> > at/after close or shutdown syscalls.
+> >
+> > Although some software does connection draining, there are still merits in
+> > migration. For some security reasons, such as replacing TLS certificates,
+> > we may want to apply new settings as soon as possible and/or we may not be
+> > able to wait for connection draining. The sockets in the accept queue have
+> > not started application sessions yet. So, if we do not drain such sockets,
+> > they can be handled by the newer listeners and could have a longer
+> > lifetime. It is difficult to drain all connections in every case, but we
+> > can decrease such aborted connections by migration. In that sense,
+> > migration is always better than draining.
+> >
+> > Moreover, auto-migration simplifies user space logic and also works well in
+> > a case where we cannot modify and build a server program to implement the
+> > workaround.
+> >
+> > Note that the source and destination listeners MUST have the same settings
+> > at the socket API level; otherwise, applications may face inconsistency and
+> > cause errors. In such a case, we have to use the eBPF program to select a
+> > specific listener or to cancel migration.
+> >
+> > Special thanks to Martin KaFai Lau for bouncing ideas and exchanging code
+> > snippets along the way.
+> >
+> >
+> > Link:
+> >   [1] The SO_REUSEPORT socket option
+> >   https://lwn.net/Articles/542629/
+> >
+> >   [2] Re: [PATCH 1/1] net: Add SO_REUSEPORT_LISTEN_OFF socket option as drain mode
+> >   https://lore.kernel.org/netdev/1458828813.10868.65.camel@edumazet-glaptop3.roam.corp.google.com/
+>
+> This series needs review/ACKs from TCP maintainers. Eric/Neal/Yuchung please take
+> a look again.
+
+Eric,
+
+I've looked through bpf and tcp changes and they don't look scary at all.
+I think the feature is useful and a bit of extra complexity is worth it.
+So please review tcp bits to make sure we didn't miss anything.
+
+Thanks!
