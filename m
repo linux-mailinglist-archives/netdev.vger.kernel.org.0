@@ -2,105 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A5B39EC36
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 04:36:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBF8039EC42
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 04:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231263AbhFHCiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 22:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230361AbhFHCiS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 22:38:18 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA60C061574;
-        Mon,  7 Jun 2021 19:36:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=YCz40GTQLvU2H6cUTWTueAet4oQOTC6hBNiQ/DdKO2w=; b=U2u7kkSBQ4K3iQohb91DtBBgIG
-        OP5v4q/rHXGTouXwRucsYS9shtZDKzUSVEy5bHB3PeCE4mqFRHP8/22IaYDy7clxBezdZCdIMX3NJ
-        kno+Q2+HKaVQ1yVXTv2Yqi/Io6OS5w/RjXQDnXoGIvyTTmT7sQVBQ8jRlTaClSYcnVRj/0in2Qc3W
-        rWQ6c0OxHnIP26/5x5JtaZtRZY9fZCA1Vt9p6JmGI84jq+ISylED2aidxYq2QyaNA37sk3ubbMlTT
-        j6qS4QJbjPTrNWv6SdH8DcHUy3OT6555xGa9rYY1n0si5pYgZUWV7UeQMCDpnJbl4PDyRmygs0Yyu
-        wZ91dIrQ==;
-Received: from [2601:1c0:6280:3f0::bd57]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lqRbM-0063t4-GF; Tue, 08 Jun 2021 02:36:24 +0000
-Subject: Re: [PATCH] net: appletalk: fix some mistakes in grammar
-To:     13145886936@163.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gushengxian <gushengxian@yulong.com>
-References: <20210608022546.7587-1-13145886936@163.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <c9b6ed9d-92c1-55da-fe1f-0af33305bb89@infradead.org>
-Date:   Mon, 7 Jun 2021 19:36:22 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S230406AbhFHClG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 22:41:06 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:4503 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230261AbhFHClF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 22:41:05 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FzZ9y1kvqzZfs3;
+        Tue,  8 Jun 2021 10:36:22 +0800 (CST)
+Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Tue, 8 Jun 2021 10:39:11 +0800
+Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
+ dggema769-chm.china.huawei.com (10.1.198.211) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Tue, 8 Jun 2021 10:39:10 +0800
+Received: from dggeme760-chm.china.huawei.com ([10.6.80.70]) by
+ dggeme760-chm.china.huawei.com ([10.6.80.70]) with mapi id 15.01.2176.012;
+ Tue, 8 Jun 2021 10:39:11 +0800
+From:   zhengyongjun <zhengyongjun3@huawei.com>
+To:     yuehaibing <yuehaibing@huawei.com>,
+        "patchwork-bot+netdevbpf@kernel.org" 
+        <patchwork-bot+netdevbpf@kernel.org>
+CC:     "jmaloy@redhat.com" <jmaloy@redhat.com>,
+        "ying.xue@windriver.com" <ying.xue@windriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggbmV0LW5leHRdIHRpcGM6IFJldHVybiB0aGUgY29y?=
+ =?utf-8?Q?rect_errno_code?=
+Thread-Topic: [PATCH net-next] tipc: Return the correct errno code
+Thread-Index: AQHXWOGc9Q9RY5DeKECVhQca9yM8QKsD1uUAgAUJqwCAAIxtYA==
+Date:   Tue, 8 Jun 2021 02:39:10 +0000
+Message-ID: <b0dce8ff570541788137990d6fddc3c2@huawei.com>
+References: <20210604014702.2087584-1-zhengyongjun3@huawei.com>
+ <162284160438.23356.17911968954229324185.git-patchwork-notify@kernel.org>
+ <410bbe52-5ead-4719-d711-8dc355a9a5f4@huawei.com>
+In-Reply-To: <410bbe52-5ead-4719-d711-8dc355a9a5f4@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.176.64]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20210608022546.7587-1-13145886936@163.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/7/21 7:25 PM, 13145886936@163.com wrote:
-> From: gushengxian <gushengxian@yulong.com>
-> 
-> Fix some mistakes in grammar.
-> 
-> Signed-off-by: gushengxian <gushengxian@yulong.com>
-> ---
->  net/appletalk/ddp.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/appletalk/ddp.c b/net/appletalk/ddp.c
-> index ebda397fa95a..bc76b2fa3dfb 100644
-> --- a/net/appletalk/ddp.c
-> +++ b/net/appletalk/ddp.c
-> @@ -707,7 +707,7 @@ static int atif_ioctl(int cmd, void __user *arg)
->  
->  		/*
->  		 * Phase 1 is fine on LocalTalk but we don't do
-> -		 * EtherTalk phase 1. Anyone wanting to add it go ahead.
-> +		 * EtherTalk phase 1. Anyone wanting to add it goes ahead.
->  		 */
->  		if (dev->type == ARPHRD_ETHER && nr->nr_phase != 2)
->  			return -EPROTONOSUPPORT;
-> @@ -828,7 +828,7 @@ static int atif_ioctl(int cmd, void __user *arg)
->  		nr = (struct atalk_netrange *)&(atif->nets);
->  		/*
->  		 * Phase 1 is fine on Localtalk but we don't do
-> -		 * Ethertalk phase 1. Anyone wanting to add it go ahead.
-> +		 * Ethertalk phase 1. Anyone wanting to add it goes ahead.
-
-Nak on these 2 changes.
-If anything, it could be something like:
-		                      Anyone wanting to add it, go ahead.
-or
-		                      If anyone wants to add it, go ahead.
-
-
->  		 */
->  		if (dev->type == ARPHRD_ETHER && nr->nr_phase != 2)
->  			return -EPROTONOSUPPORT;
-> @@ -2018,7 +2018,7 @@ module_init(atalk_init);
->   * by the network device layer.
->   *
->   * Ergo, before the AppleTalk module can be removed, all AppleTalk
-> - * sockets be closed from user space.
-> + * sockets should be closed from user space.
-
-ok.
-
->   */
->  static void __exit atalk_exit(void)
->  {
-> 
-
-
--- 
-~Randy
-
+U29ycnkgYWdhaW4sIEkgaW50cm9kdWNlIGEgYnVnIHRvIGtlcm5lbCwgSSB3aWxsIGRvIGl0IGNh
+cmVmdWxseSBsYXRlci4NCg0KLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0K5Y+R5Lu25Lq6OiB5dWVo
+YWliaW5nIA0K5Y+R6YCB5pe26Ze0OiAyMDIx5bm0NuaciDjml6UgMTA6MTYNCuaUtuS7tuS6ujog
+cGF0Y2h3b3JrLWJvdCtuZXRkZXZicGZAa2VybmVsLm9yZzsgemhlbmd5b25nanVuIDx6aGVuZ3lv
+bmdqdW4zQGh1YXdlaS5jb20+DQrmioTpgIE6IGptYWxveUByZWRoYXQuY29tOyB5aW5nLnh1ZUB3
+aW5kcml2ZXIuY29tOyBkYXZlbUBkYXZlbWxvZnQubmV0OyBrdWJhQGtlcm5lbC5vcmc7IG5ldGRl
+dkB2Z2VyLmtlcm5lbC5vcmc7IHRpcGMtZGlzY3Vzc2lvbkBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ7
+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCuS4u+mimDogUmU6IFtQQVRDSCBuZXQtbmV4
+dF0gdGlwYzogUmV0dXJuIHRoZSBjb3JyZWN0IGVycm5vIGNvZGUNCg0KDQpPbiAyMDIxLzYvNSA1
+OjIwLCBwYXRjaHdvcmstYm90K25ldGRldmJwZkBrZXJuZWwub3JnIHdyb3RlOg0KPiBIZWxsbzoN
+Cj4gDQo+IFRoaXMgcGF0Y2ggd2FzIGFwcGxpZWQgdG8gbmV0ZGV2L25ldC1uZXh0LmdpdCAocmVm
+cy9oZWFkcy9tYXN0ZXIpOg0KDQpUaGlzIHNob3VsZCBub3QgYmUgYXBwbGllZC4NCg0KdGlwY19u
+b2RlX3htaXQoKSBub3cgY2hlY2sgLUVOT0JVRlMgcmF0aGVyIHRoYW4gLUVOT01FTS4NCg0KWW9u
+Z2p1biwgbWF5YmUgeW91IGZpeCB0aGlzIG5vdz8NCg0KPiANCj4gT24gRnJpLCA0IEp1biAyMDIx
+IDA5OjQ3OjAyICswODAwIHlvdSB3cm90ZToNCj4+IFdoZW4ga2FsbG9jIG9yIGttZW1kdXAgZmFp
+bGVkLCBzaG91bGQgcmV0dXJuIEVOT01FTSByYXRoZXIgdGhhbiBFTk9CVUYuDQo+Pg0KPj4gU2ln
+bmVkLW9mZi1ieTogWmhlbmcgWW9uZ2p1biA8emhlbmd5b25nanVuM0BodWF3ZWkuY29tPg0KPj4g
+LS0tDQo+PiAgbmV0L3RpcGMvbGluay5jIHwgNiArKystLS0NCj4+ICAxIGZpbGUgY2hhbmdlZCwg
+MyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gSGVyZSBpcyB0aGUgc3VtbWFy
+eSB3aXRoIGxpbmtzOg0KPiAgIC0gW25ldC1uZXh0XSB0aXBjOiBSZXR1cm4gdGhlIGNvcnJlY3Qg
+ZXJybm8gY29kZQ0KPiAgICAgaHR0cHM6Ly9naXQua2VybmVsLm9yZy9uZXRkZXYvbmV0LW5leHQv
+Yy8wZWZlYTNjNjQ5ZjANCj4gDQo+IFlvdSBhcmUgYXdlc29tZSwgdGhhbmsgeW91IQ0KPiAtLQ0K
+PiBEZWV0LWRvb3QtZG90LCBJIGFtIGEgYm90Lg0KPiBodHRwczovL2tvcmcuZG9jcy5rZXJuZWwu
+b3JnL3BhdGNod29yay9wd2JvdC5odG1sDQo+IA0KPiANCj4gLg0KPiANCg==
